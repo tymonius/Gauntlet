@@ -1,4 +1,4 @@
-import canonicalCandidateJson from '../../v0.6.3/data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json';
+import canonicalCandidateJson from '../../artifacts/reconstruction/v0.6.3-browser-candidate/data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json';
 
 export const V063_RULES_VERSION = 'v0.6.3-candidate' as const;
 

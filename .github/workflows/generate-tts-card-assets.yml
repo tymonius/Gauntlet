@@ -19,6 +19,7 @@ on:
       - 'scripts/assemble-tts-supplemental-save.mjs'
       - 'scripts/tts-current-catalog.mjs'
       - 'scripts/tts-component-contract.mjs'
+      - 'scripts/tts-sliding-trackers.mjs'
       - 'tts/**'
       - 'card-design/**'
       - 'releases/**'
@@ -84,6 +85,7 @@ jobs:
             scripts/assemble-tts-supplemental-save.mjs
             scripts/tts-current-catalog.mjs
             scripts/tts-component-contract.mjs
+            scripts/tts-sliding-trackers.mjs
             tts
             card-design
             releases

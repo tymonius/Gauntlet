@@ -34,18 +34,18 @@ npm run tts:package
 ```
 
 - `tts:components:check` validates the physical-component contract, current faction inventories, standard-back resolution, two-sided requirements, and sliding-tracker metadata.
-- `tts:supplementals:check` verifies that every component currently marked ready has a supported export path and usable current-guide source selectors; artwork-backed sides must also resolve their artwork.
+- `tts:supplementals:check` verifies that every component currently marked ready has a supported export path and usable production/current-guide inputs; artwork-backed sides must also resolve their artwork.
 - `tts:check` runs the component-contract, supplemental, current-release, save-publisher, and supplemental-save-assembler source checks without writing raster output.
 - `tts:catalog` writes deterministic playable/Territory catalog JSON/browser data under both the current release and `tts/generated/current/`.
 - `tts:cards` renders current playable-card faces, all six standard-back color variants, TTS face sheets, and `manifest.json`.
 - `tts:territories` renders current landscape Territory/Arena faces and sheets. It deliberately does **not** create a Territory-specific back.
 - `tts:leaders` renders current production Leader faces and resolves their backs through the standard-back policy.
 - `tts:starters` joins current starter data to generated card, Territory, and Leader manifests and resolves one standard back for each player package.
-- `tts:supplementals` renders only contract components whose production status is `ready`, including both sides of public reference cards and Rite cards, and leaves all other component records pending without TTS objects.
+- `tts:supplementals` renders only contract components whose production status is `ready`, including both sides of public reference cards and Rite cards plus production sliding-tracker faces and measured snap registrations; all other component records remain pending without TTS objects.
 - `tts:build` validates the component contract, renders cards, Territories, and Leaders, then assembles the starter manifests.
-- `tts:release:stage` stages only network assets required by TTS, including ready supplemental fronts/reverses and the supplemental manifest, with deterministic GitHub Release filenames, hashes, and hosted URLs.
+- `tts:release:stage` stages only network assets required by TTS, including ready supplemental fronts/reverses, tracker faces, and the supplemental manifest, with deterministic GitHub Release filenames, hashes, and hosted URLs.
 - `tts:save` builds the base current review-save scaffold from the staged starter assets.
-- `tts:save:assemble` consumes the current starter and supplemental manifests plus staged hosted URLs, then injects every ready faction supplemental into every matching starter kit.
+- `tts:save:assemble` consumes the current starter and supplemental manifests plus staged hosted URLs, then injects every ready faction supplemental into every matching starter kit, including non-stackable sliding trackers and their tagged cover cards.
 - `tts:package` performs the complete core build, supplemental rendering, staging, scaffold generation, and ready-component assembly pipeline.
 
 The generated directory is ignored by Git. GitHub Actions uploads `tts/generated/` as a review artifact rather than committing derived PNGs.
@@ -63,7 +63,7 @@ The generated directory is ignored by Git. GitHub Actions uploads `tts/generated
 - source selectors for generated two-sided reference faces;
 - TTS representation metadata, including non-stackable sliding trackers and stacked tracker assemblies.
 
-A pending component remains visible in the contract instead of being silently omitted. Structural errors still fail closed: duplicate IDs, invalid quantities or factions, missing two-sided reverses, unresolved standard backs, invalid special backs, missing ready-family exporters, unresolved reference headings, or incomplete sliding-tracker metadata stop packaging.
+A pending component remains visible in the contract instead of being silently omitted. Structural errors still fail closed: duplicate IDs, invalid quantities or factions, missing two-sided reverses, unresolved standard backs, invalid special backs, missing ready-family exporters, unresolved reference headings, missing production tracker surfaces, or incomplete sliding-tracker metadata stop packaging.
 
 The current faction supplemental inventory encoded by the contract is:
 
@@ -76,7 +76,7 @@ The current faction supplemental inventory encoded by the contract is:
 | Mystics | Mystics Reference Card; 3 double-sided Rite cards |
 | Inquisition | Inquisition Doctrine Reference Card; Purge Reference Card; Conviction Tracker |
 
-The three Mystics Rite cards and all seven faction reference cards are ready. The nine Diplomat Proposal/Treaty cards remain artwork-pending. Trackers, the Capital Ledger, and Deeds retain their declared pending status until their production inputs are integrated.
+The three Mystics Rite cards, all seven faction reference cards, and all five sliding trackers are ready. The nine Diplomat Proposal/Treaty cards remain artwork-pending. The Financier Capital Ledger remains export-pending and the eight Deeds remain design-pending.
 
 ## Standard card-back policy
 
@@ -104,7 +104,7 @@ Neutral playable cards always use the same standard back as the rest of their pl
 
 ## Sliding trackers in TTS
 
-Sliding trackers are represented as non-stackable, card-proportioned TTS objects rather than normal stackable cards. The contract records the interaction rather than hard-coding faction logic into the save builder:
+Sliding trackers are represented as non-stackable, card-proportioned Custom Tiles rather than normal stackable cards. The contract records the physical interaction rather than hard-coding faction logic into the save builder:
 
 - `representation: sliding-tracker`;
 - `stackable: false`;
@@ -112,11 +112,31 @@ Sliding trackers are represented as non-stackable, card-proportioned TTS objects
 - assembly identifier;
 - layer;
 - snap tag;
-- registration positions, currently `artwork-defined` until final exported geometry supplies exact coordinates.
+- `snapPositions: renderer-derived`;
+- the production tracker component to render; and
+- the Leader or Reference Card used as its physical cover/pointer.
 
 Military Command, Diplomat Influence, Intelligence Intel, Intelligence Operation Progress, and Inquisition Conviction all use the same generic interaction model.
 
-The Intelligence trackers share the `intelligence-progress` assembly but occupy separate layers and use separate snap tags. That allows the two sliding trackers to remain physically stacked while moving independently in TTS. When their final raster geometry is integrated, the generic exporter can derive the legal snap points from the artwork registrations rather than adding Intelligence-specific Lua rules.
+The exporter opens the production `/card-design/` supplemental-card surface, finds the declared `.sliding-tracker-card`, and measures the actual `.tracker-registration-line` positions. Those rendered registrations become the TTS snap offsets. There is no second faction-specific coordinate table, so later changes to the physical value-band geometry flow into TTS automatically.
+
+The physical tracker scale is intentionally separate from any rules maximum. For example, Command currently has a rules maximum of 2 while its printed tracker provides headroom through 4; Intel and Operation Progress are rules-uncapped but use practical finite printed scales. TTS follows the production physical component rather than treating a rules cap as layout geometry.
+
+The cover mapping is:
+
+| Tracker | Physical cover / pointer |
+| --- | --- |
+| Command | selected Military Leader Card |
+| Influence | selected Diplomat Leader Card |
+| Intel | Operations Reference Card |
+| Operation Progress | Mission Reference Card |
+| Conviction | selected Inquisition Leader Card |
+
+Each tracker receives object-attached snap points tagged with its declared resource tag, and only its cover card receives the matching tag. Value 0 is the fully covered position. Positive values slide the cover upward until its bottom edge aligns with the corresponding production registration line.
+
+The Intelligence trackers share the `intelligence-progress` assembly but occupy separate layers and use separate snap tags and covers. They can therefore be physically stacked while Intel and Operation Progress remain independently draggable. No Lua rule changes a resource value automatically; the interaction reproduces the physical tracker.
+
+See `docs/tts-sliding-trackers.md` for the implementation contract.
 
 ## Playable-card sheet contract
 
@@ -188,7 +208,9 @@ The `reference-card` renderer generates both informational sides from source sel
 
 Reference cards intentionally use no ordinary Deck back. Both generated sides carry the faction treatment and an explicit public-supplemental footer so their physical role remains unambiguous in TTS.
 
-Ready supplemental cards use deterministic one-card deck IDs beginning at 200, after the existing playable-card, Territory, and Leader ranges. The manifest records both faces and their TTS IDs; the later save-assembly step places ready card representations into matching starter Bags.
+The `sliding-tracker` renderer uses the existing production supplemental-card surface rather than recreating tracker art inside TTS. It captures the declared production tracker at exact poker-card geometry and derives its snap registration from the rendered lines. Tracker backs reuse the starter's resolved standard-back asset instead of creating duplicate tracker-back files.
+
+Ready supplemental cards use deterministic one-card deck IDs beginning at 200, after the existing playable-card, Territory, and Leader ranges. Sliding trackers are Custom Tiles and consume no CustomDeck ID. The manifest records both representation types for the later save-assembly step.
 
 ## Supplemental save assembly contract
 
@@ -198,18 +220,26 @@ For every generated starter it:
 
 1. identifies that starter's faction from `starter-deck-manifest.json`;
 2. selects only `supplemental-manifest.json` records whose `productionStatus` is `ready` and whose faction matches the starter;
-3. resolves each ready object's face and reverse through the staged release-asset manifest rather than embedding local file paths;
+3. resolves each ready object's hosted assets through the staged release-asset manifest rather than embedding local file paths;
 4. expands the contract quantity without any faction-specific quantity constant;
-5. inserts the objects into the starter Bag with deterministic non-colliding GUIDs; and
-6. leaves every pending component absent from the save.
+5. inserts card or sliding-tracker representations into the starter Bag with deterministic non-colliding GUIDs;
+6. tags the declared Leader/Reference cover for each tracker; and
+7. leaves every pending component absent from the save.
 
 Assembly is idempotent. Generated supplemental objects carry a `gauntlet:supplemental:<component-id>` marker in `GMNotes`; rerunning assembly removes the prior generated supplemental objects before rebuilding the current ready set. The base Deck, Leader, Territories, and other Bag contents are untouched.
 
-The placement layer currently supports the `card` representation. If a component becomes ready with another representation, such as `sliding-tracker`, before save assembly support exists, packaging fails closed instead of silently placing the wrong object. This is deliberate: tracker geometry, snapping, and stacked interaction must be production-ready before those components ship.
+Sliding trackers are non-stackable Custom Tiles with the production tracker face as their primary image and the starter's resolved standard card back as their secondary image. Their object-attached snap points come directly from the measured production registrations. The corresponding cover card receives the matching tag so it can slide and snap as the physical pointer.
 
-With the current contract, every starter Bag receives its faction's ready reference card or cards where that faction has them; Mystics Bags also receive all three Rites. Military currently has no reference card and its Command Tracker remains pending.
+With the current contract:
 
-Rules automation remains out of scope. Assembly reproduces physical components; it does not implement Rite completion, resource changes, battle resolution, or other gameplay rules in Lua.
+- Military starter Bags receive the Command Tracker and tag the selected Leader as its cover;
+- Diplomat Bags receive the Influence Tracker plus the Diplomat Reference Card and tag the selected Leader as the tracker cover;
+- Intelligence Bags receive Mission and Operations Reference Cards plus both stacked trackers, with each reference tagged for its corresponding tracker;
+- Mystics Bags receive their Reference Card and all three Rites;
+- Inquisition Bags receive Doctrine and Purge Reference Cards plus the Conviction Tracker and tag the selected Leader as its cover; and
+- Financier Bags currently receive the ready Financier Reference Card while the Ledger and Deeds remain pending.
+
+Rules automation remains out of scope. Assembly reproduces physical components; it does not implement resource changes, Rite completion, battle resolution, or other gameplay rules in Lua.
 
 ## GitHub Release asset hosting
 
@@ -220,10 +250,11 @@ The network-hosting layer stages only files TTS must request directly:
 - Territory face sheets;
 - individual rendered Leader faces;
 - ready supplemental fronts and reverse sides;
+- ready sliding-tracker faces;
 - generated card, Territory, Leader, starter, and supplemental manifests; and
 - a release-asset manifest mapping generated source paths to deterministic public download URLs.
 
-There is no separate Territory back asset. Territories reuse one of the already-staged standard-back variants selected by starter assembly.
+There is no separate Territory or tracker back asset. Territories and trackers reuse the already-staged standard-back variant selected for the starter package.
 
 Every staged network asset records byte size and SHA-256 digest. Publication remains explicit: run the **Generate TTS card assets** workflow from `main` with release publication enabled after the current GitHub Release exists.
 
@@ -234,19 +265,18 @@ For an ordinary future release, TTS should continue working when the normal rele
 1. advances `config/release-lifecycle.json` and `config/github-release-contract.json` to the new current release;
 2. publishes the new canonical data and starter-deck data;
 3. updates shared production render surfaces and artwork as needed;
-4. updates `config/tts-component-contract.json` only when the physical component inventory, status, back behavior, source selectors, or interaction model changes; and
+4. updates `config/tts-component-contract.json` only when the physical component inventory, status, back behavior, source selectors, production tracker mapping, or interaction model changes; and
 5. runs `npm run tts:package` / the TTS asset workflow.
 
 Playable-card and Territory counts already derive from current canonical data. Supplemental quantities, readiness, and behavior have one declared contract instead of being scattered through future save-builder special cases. Changing a component from pending to ready is intentionally a validation boundary: the package will refuse to ship it until an exporter exists for that family and the save assembler supports its TTS representation.
 
 ## Remaining TTS work
 
-Ready card-representation supplementals now flow end to end from the physical contract through rendering, hosting, and faction starter placement. Remaining component work is driven by genuinely unfinished production inputs:
+Ready card and sliding-tracker supplementals now flow end to end from the physical contract through rendering, hosting, and faction starter placement. Remaining physical-component work is driven by genuinely unfinished production inputs:
 
 - complete artwork for the nine Diplomat Proposal / Treaty Article cards;
 - define and export the Financier Capital Ledger and eight Deeds;
-- supply final tracker artwork registrations, then implement the generic non-stackable sliding-tracker object and snap-position assembler;
-- use that tracker path for Military Command, Diplomat Influence, Inquisition Conviction, and the stacked Intelligence Intel / Operation Progress assembly; and
+- assemble the finished component set into the final playable table layout once those remaining physical components are production-ready; and
 - keep rules execution manual unless a separate, explicit automation phase is approved later.
 
-Future component completion is additive: finish the production source, change its contract status to `ready`, let the supplemental exporter render it, and let the save assembly layer place it into every matching starter without adding faction-specific rules to the scaffold.
+Future component completion is additive: finish the production source, change its contract status to `ready`, let the supplemental exporter render it, and let the save assembly layer place it into every matching starter without adding faction-specific gameplay rules to the scaffold.

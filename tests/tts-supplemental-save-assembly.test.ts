@@ -1,14 +1,19 @@
 import { describe, expect, it } from 'vitest';
 import { assembleReadySupplementals } from '../scripts/assemble-tts-supplemental-save.mjs';
 
-function bag(nickname: string, guid: string) {
+function bag(nickname: string, guid: string, leaderCardId?: number) {
   return {
     Name: 'Bag',
     Nickname: nickname,
     Description: 'Starter kit',
     GUID: guid,
     ContainedObjects: [
-      { Name: 'CardCustom', Nickname: 'Existing card', GUID: `${guid.slice(0, 5)}a` },
+      {
+        Name: 'CardCustom',
+        Nickname: leaderCardId ? 'Selected Leader' : 'Existing card',
+        GUID: `${guid.slice(0, 5)}a`,
+        ...(leaderCardId ? { CardID: leaderCardId } : {}),
+      },
     ],
   };
 }
@@ -19,14 +24,20 @@ function fixture() {
     Rules: 'This scaffold intentionally does not yet include faction-specific supplemental trackers or secondary components. Rules remain manual.',
     ObjectStates: [
       bag('Mystics Starter — Alchemist', '000010'),
-      bag('Military Starter — General', '000020'),
+      bag('Military Starter — General', '000020', 10000),
     ],
   };
   const starters = {
     gameVersion: 'current-test',
     decks: [
       { id: 'mystics-starter', name: 'Mystics Starter', factionId: 'mystics', leader: { name: 'Alchemist' } },
-      { id: 'military-starter', name: 'Military Starter', factionId: 'military', leader: { name: 'General' } },
+      {
+        id: 'military-starter',
+        name: 'Military Starter',
+        factionId: 'military',
+        leader: { name: 'General', tts: { cardId: 10000 } },
+        back: { file: 'backs/military.png' },
+      },
     ],
   };
   const supplementals = {
@@ -76,6 +87,7 @@ function fixture() {
       'supplementals/fronts/rite-a.png': 'https://example.invalid/rite-a.png',
       'supplementals/reverses/completed.png': 'https://example.invalid/completed.png',
       'supplementals/fronts/military.png': 'https://example.invalid/military.png',
+      'supplementals/trackers/command.png': 'https://example.invalid/command.png',
       'backs/military.png': 'https://example.invalid/military-back.png',
     },
   };
@@ -115,6 +127,55 @@ describe('TTS ready supplemental save assembly', () => {
     expect(card.CustomDeck['200'].UniqueBack).toBe(false);
   });
 
+  it('creates non-stackable sliding tracker tiles with production snap points and tags the declared Leader cover', () => {
+    const { save, starters, supplementals, assets } = fixture();
+    supplementals.ready.push({
+      id: 'military-command-tracker',
+      name: 'Military Command Tracker',
+      faction: 'military',
+      family: 'tracker',
+      quantity: 1,
+      productionStatus: 'ready',
+      representation: 'sliding-tracker',
+      cover: { kind: 'leader' },
+      physicalScale: { minimum: 0, maximum: 4 },
+      tts: {
+        faceFile: 'supplementals/trackers/command.png',
+        widthScale: 2.5,
+        heightScale: 3.5,
+        thickness: 0.05,
+        stackable: false,
+        assembly: 'military-command',
+        axis: 'vertical',
+        layer: 1,
+        snapTag: 'military-command',
+        snapPoints: [
+          { value: 0, offset: 0 },
+          { value: 1, offset: 0.8 },
+          { value: 2, offset: 1.3 },
+          { value: 3, offset: 1.8 },
+          { value: 4, offset: 2.3 },
+        ],
+      },
+    } as any);
+    supplementals.readyCount = supplementals.ready.length;
+
+    const result = assembleReadySupplementals(save, starters, supplementals, assets);
+    const military = result.save.ObjectStates[1];
+    const tracker = military.ContainedObjects.find((object: any) => object.GMNotes === 'gauntlet:supplemental:military-command-tracker');
+    const leader = military.ContainedObjects.find((object: any) => object.CardID === 10000);
+
+    expect(tracker.Name).toBe('Custom_Tile');
+    expect(tracker.CustomImage.ImageURL).toBe('https://example.invalid/command.png');
+    expect(tracker.CustomImage.ImageSecondaryURL).toBe('https://example.invalid/military-back.png');
+    expect(tracker.CustomImage.CustomTile.Stackable).toBe(false);
+    expect(tracker.AttachedSnapPoints).toHaveLength(5);
+    expect(tracker.AttachedSnapPoints[0].Position.z).toBe(0);
+    expect(tracker.AttachedSnapPoints[4].Position.z).toBe(2.3);
+    expect(tracker.AttachedSnapPoints.every((point: any) => point.Tags.includes('military-command'))).toBe(true);
+    expect(leader.Tags).toContain('military-command');
+  });
+
   it('is idempotent when assembly runs more than once', () => {
     const { save, starters, supplementals, assets } = fixture();
     const first = assembleReadySupplementals(save, starters, supplementals, assets).save;
@@ -127,9 +188,9 @@ describe('TTS ready supplemental save assembly', () => {
 
   it('fails closed when a ready component has an unsupported save representation', () => {
     const { save, starters, supplementals, assets } = fixture();
-    supplementals.ready[0].representation = 'sliding-tracker';
+    supplementals.ready[0].representation = 'ledger';
 
-    expect(() => assembleReadySupplementals(save, starters, supplementals, assets)).toThrow(/unsupported save representation sliding-tracker/);
+    expect(() => assembleReadySupplementals(save, starters, supplementals, assets)).toThrow(/unsupported save representation ledger/);
   });
 
   it('updates the scaffold note without pretending rules are automated', () => {
@@ -137,7 +198,7 @@ describe('TTS ready supplemental save assembly', () => {
     const result = assembleReadySupplementals(save, starters, supplementals, assets);
 
     expect(result.save.Note).toContain('marked ready are included automatically');
-    expect(result.save.Note).toContain('pending components remain excluded');
+    expect(result.save.Note).toContain('production-derived snap registration');
     expect(result.save.Note).toContain('Rules remain manual');
     expect(result.save.Rules).toBe(result.save.Note);
   });
