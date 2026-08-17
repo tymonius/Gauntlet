@@ -8,12 +8,14 @@ const read = (relative: string) => fs.readFileSync(path.join(root, relative), 'u
 
 const authoritySetId = '64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49';
 const attestationPath = 'publication/v0.6.3/verification.json';
+const canonicalManifestPath = 'releases/v0.6.3/Gauntlet_v0.6.3_Manifest.json';
+const legacyAliasManifestPath = 'releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Manifest.json';
 
 describe('clean v0.6.3 publication closeout', () => {
   it('records the completed live publication without rewriting phase-specific evidence', () => {
     const attestation = readJson(attestationPath);
     const lifecycle = readJson('config/release-lifecycle.json');
-    const manifest = readJson('releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Manifest.json');
+    const manifest = readJson(canonicalManifestPath);
     const candidate = readJson('artifacts/reconstruction/clean-v0.6.3/current-release-metadata/release-candidate.json');
     const currentPointer = read('src/content/current.ts');
 
@@ -69,13 +71,19 @@ describe('clean v0.6.3 publication closeout', () => {
 
     expect(lifecycle.current_release).toBe('v0.6.3');
     expect(lifecycle.releases['v0.6.1'].status).toBe('historical');
-    expect(lifecycle.releases['v0.6.2'].status).toBe('withdrawn');
+    expect(lifecycle.releases['v0.6.2']).toMatchObject({
+      status: 'withdrawn',
+      artifacts_preserved: true,
+      public_cutover: false,
+      historical_package_path: 'releases/v0.6.2-withdrawn/',
+    });
     expect(lifecycle.releases['v0.6.3']).toMatchObject({
       status: 'current',
       artifacts_preserved: true,
       public_cutover: true,
-      historical_package_path: 'releases/v0.6.3/',
-      current_reconstructed_package_path: 'releases/v0.6.3-reconstructed/',
+      historical_package_path: 'releases/v0.6.3-withdrawn/',
+      current_package_path: 'releases/v0.6.3/',
+      legacy_package_aliases: ['releases/v0.6.3-reconstructed/'],
       authority_set_id: authoritySetId,
     });
     expect(currentPointer).toContain("CURRENT_RULES_VERSION = 'v0.6.3'");
@@ -83,9 +91,9 @@ describe('clean v0.6.3 publication closeout', () => {
 
     expect(manifest.release_version).toBe('v0.6.3');
     expect(manifest.authority_set_id).toBe(authoritySetId);
-    expect(manifest.status).toBe('current_pending_live_verification');
-    expect(manifest.post_merge_verification.gauntlet_run).toBe('pending_after_merge');
-    expect(manifest.post_merge_verification.production_workers).toBe('pending_after_merge');
+    expect(manifest.status).toBe('current');
+    expect(manifest.historical_withdrawn_package_preserved_at).toBe('releases/v0.6.3-withdrawn/');
+    expect(manifest.current_package_path).toBe('releases/v0.6.3/');
 
     expect(candidate.status).toBe('candidate_not_current');
     expect(candidate.public_current_release).toBe('v0.6.1');
@@ -93,7 +101,10 @@ describe('clean v0.6.3 publication closeout', () => {
     expect(candidate.post_merge_verification.production_workers).toBe('pending_after_authorized_publication_merge');
     expect(attestation.preserved_evidence.note).toMatch(/phase-specific pending fields as historical evidence/);
 
-    expect(fs.existsSync(path.join(root, 'releases/v0.6.3/Gauntlet_v0.6.3_Manifest.json'))).toBe(true);
-    expect(fs.existsSync(path.join(root, 'releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Manifest.json'))).toBe(true);
+    expect(fs.existsSync(path.join(root, 'releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Manifest.json'))).toBe(true);
+    expect(fs.existsSync(path.join(root, 'releases/v0.6.3-withdrawn/Gauntlet_v0.6.3_Manifest.json'))).toBe(true);
+    expect(fs.existsSync(path.join(root, canonicalManifestPath))).toBe(true);
+    expect(fs.existsSync(path.join(root, legacyAliasManifestPath))).toBe(true);
+    expect(read(legacyAliasManifestPath)).toBe(read(canonicalManifestPath));
   });
 });
