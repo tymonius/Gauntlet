@@ -1,7 +1,7 @@
 (() => {
   const VERSION = "v0.6.3";
   const SOURCE_VERSION = "clean-v0.6.3-downstream";
-  const CANONICAL_URL = "../releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Canonical_Data.json";
+  const CANONICAL_URL = "../releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json";
   const oldStorageKey = "gauntlet-v0.6.1-decks";
   const storageKey = "gauntlet-v0.6.3-decks";
   const nativeFetch = window.fetch.bind(window);
@@ -133,7 +133,7 @@
     const importField = document.getElementById("importJson");
     if (importField) importField.placeholder = "Paste an exported v0.6.3 Deck JSON here";
     document.querySelectorAll('a[href="../releases/v0.6.1/"]').forEach(link => {
-      link.href = "../releases/v0.6.3-reconstructed/";
+      link.href = "../releases/v0.6.3/";
       link.textContent = "v0.6.3 release";
     });
     document.querySelectorAll('a[href="../rulebook/"]').forEach(link => link.href = "../rulebook/");
