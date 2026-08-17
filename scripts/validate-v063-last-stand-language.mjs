@@ -20,8 +20,8 @@ const targets = [
   'index.html',
   'start/index.html',
   'factions/military/index.html',
-  'releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md',
-  'releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Canonical_Data.json',
+  'releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md',
+  'releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json',
   'rules-assistant/rules-deterministic-v063.js',
   'scripts/build-clean-v063-publication-release.mjs',
   'scripts/generate-v063-canonical-data-candidate.mjs',
@@ -100,8 +100,8 @@ for (const [relativePath, expectedHash] of certifiedInputs) {
 
 for (const [relativePath, required] of [
   ['docs/Gauntlet_v0.6.3_Shared_Rules_Candidate.md', 'force the opponent to make a Last Stand and win the resulting battle'],
-  ['releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md', 'The resulting contest is a Last Stand battle.'],
-  ['releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Canonical_Data.json', 'force the opponent to make a Last Stand'],
+  ['releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md', 'The resulting contest is a Last Stand battle.'],
+  ['releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json', 'force the opponent to make a Last Stand'],
 ]) {
   failures += requireText(relativePath, required, `PR #171 terminology: ${JSON.stringify(required)}`);
 }
