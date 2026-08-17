@@ -1,8 +1,8 @@
 # Card Artwork Tracker
 
-This file tracks playable cards and Territory cards that do not yet have canonical artwork merged to `main`.
+This file tracks unique illustration requirements for playable cards, Territory cards, and identified supplemental card fronts that do not yet have canonical artwork merged to `main`.
 
-Current basis: Gauntlet v0.6.2 canonical component pools, with accepted v0.6.3 development renames reflected where applicable.
+Current basis: Gauntlet v0.6.3 canonical component pools and the actual canonical artwork present on `main`.
 
 Status convention:
 
@@ -15,6 +15,7 @@ Canonical artwork paths:
 - Neutral: `images/artwork/cards/neutral/`
 - Military: `images/artwork/cards/military/`
 - Diplomats: `images/artwork/cards/diplomats/`
+- Diplomat Proposal fronts: `images/artwork/cards/diplomats/`
 - Financiers: `images/artwork/cards/financiers/`
 - Intelligence: `images/artwork/cards/intelligence/`
 - Mystics: `images/artwork/cards/mystics/`
@@ -25,9 +26,12 @@ Canonical artwork paths:
 
 | Component pool | Total | Canonical on `main` | Approved, pending merge | Still needs artwork |
 | --- | ---: | ---: | ---: | ---: |
-| Playable cards | 128 | 86 | 14 | 28 |
+| Playable cards | 128 | 115 | 0 | 13 |
 | Territory cards | 25 | 2 | 0 | 23 |
-| **All tracked cards** | **153** | **88** | **14** | **51** |
+| Diplomat Proposal fronts | 9 | 0 | 0 | 9 |
+| **All tracked card illustrations** | **162** | **117** | **0** | **45** |
+
+The shared Treaty Article reverse is one shared reverse treatment, not nine additional unique Proposal-front illustrations, so it is not multiplied into the Proposal-front count.
 
 ### Playable cards by faction
 
@@ -35,12 +39,12 @@ Canonical artwork paths:
 | --- | ---: | ---: | ---: |
 | Neutral | 50 | 0 | 0 |
 | Military | 13 | 0 | 0 |
-| Diplomats | 9 | 4 | 0 |
-| Financiers | 12 | 1 | 0 |
-| Intelligence | 2 | 9 | 2 |
-| Mystics | 0 | 0 | 13 |
+| Diplomats | 13 | 0 | 0 |
+| Financiers | 13 | 0 | 0 |
+| Intelligence | 13 | 0 | 0 |
+| Mystics | 13 | 0 | 0 |
 | Inquisition | 0 | 0 | 13 |
-| **Playable-card total** | **86** | **14** | **28** |
+| **Playable-card total** | **115** | **0** | **13** |
 
 ## Neutral — complete
 
@@ -50,61 +54,43 @@ All 50 Neutral cards have canonical artwork on `main`.
 
 All 13 Military cards have canonical artwork on `main`.
 
-## Diplomats — complete, 4 pending canonical merge
+## Diplomats — complete
 
-Approved, pending canonical merge:
+All 13 Diplomat playable cards have canonical artwork on `main`.
 
-- [x] Détente
-- [x] Gunboat Diplomacy
-- [x] Sanctions: Blockade
-- [x] Sanctions: Censure
+## Diplomat Proposals — 9 supplemental front illustrations
 
-Diplomat artwork still needing creation/selection: **0**.
-
-## Financiers — complete, 1 pending canonical merge
-
-Approved, pending canonical merge:
-
-- [x] Compound Interest
-
-Financier artwork still needing creation/selection: **0**.
-
-## Intelligence — 11
-
-Approved, pending canonical merge:
-
-- [x] Deep Cover
-- [x] Disinformation
-- [x] Exfiltration
-- [x] Extraordinary Rendition
-- [x] Fog of War
-- [x] Intercepted Orders
-- [x] Operational Reassessment
-- [x] Reconnaissance
-- [x] Sleeper Network
+Each current Proposal needs one unique front illustration. The Proposal face and Treaty Article face share the same Proposal identity; the reverse uses one shared Treaty Article treatment rather than nine unique reverse illustrations.
 
 Still needs approved artwork:
 
-- [ ] Subversion
-- [ ] Treason
+- [ ] De-escalation
+- [ ] Orderly Withdrawal
+- [ ] Capitulation
+- [ ] Open Channels
+- [ ] Mutual Disarmament
+- [ ] Prisoner Exchange
+- [ ] Rebuilding Pact
+- [ ] Ultimatum
+- [ ] Diplomatic Recognition
 
-## Mystics — 13
+## Financiers — complete
 
-- [ ] Accursed Wager
-- [ ] Black Covenant
-- [ ] Circle of Bones
-- [ ] Dark Omens
-- [ ] Fate's Toll
-- [ ] Grave Ward
-- [ ] Nature's Altar
-- [ ] Necromancy
-- [ ] Paths of Shadow
-- [ ] Rend the Veil
-- [ ] Soul for Soul
-- [ ] Spirit Hollow
-- [ ] Witchcraft
+All 13 Financier playable cards have canonical artwork on `main`.
+
+## Intelligence — complete
+
+All 13 Intelligence playable cards have canonical artwork on `main`.
+
+## Mystics — complete
+
+All 13 Mystics playable cards have canonical artwork on `main`.
+
+Mystics Rite/Ritual and other supplemental imagery is outside the 128-card playable-card count above.
 
 ## Inquisition — 13
+
+Still needs approved artwork:
 
 - [ ] Accusation
 - [ ] Act of Faith
