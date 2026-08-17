@@ -7,7 +7,7 @@ const root = process.cwd();
 const generatedDir = 'artifacts/reconstruction/clean-v0.6.3/booklet/generated';
 const generatedManifestPath = `${generatedDir}/Gauntlet_v0.6.3_Rulebook_Booklet_Manifest.json`;
 const generatedPdfPath = `${generatedDir}/Gauntlet_v0.6.3_Rulebook_Booklet.pdf`;
-const releaseDir = 'releases/v0.6.3-reconstructed';
+const releaseDir = 'releases/v0.6.3';
 const releasePdfName = 'Gauntlet_v0.6.3_Rulebook_Booklet.pdf';
 const releasePdfPath = `${releaseDir}/${releasePdfName}`;
 const releaseManifestPath = `${releaseDir}/Gauntlet_v0.6.3_Manifest.json`;
@@ -47,6 +47,7 @@ fs.copyFileSync(path.join(root, generatedPdfPath), path.join(root, releasePdfPat
 const manifest = readJson(releaseManifestPath);
 assert.equal(manifest.release_version, 'v0.6.3');
 assert.equal(manifest.authority_set_id, generated.authority_set_id);
+assert.equal(manifest.current_package_path, 'releases/v0.6.3/');
 manifest.counts.print_pdfs = 10;
 manifest.pdf_outputs = manifest.pdf_outputs.filter((item) => item.key !== 'rulebook-booklet');
 const rulebookIndex = manifest.pdf_outputs.findIndex((item) => item.key === 'rulebook');
@@ -72,9 +73,9 @@ manifest.rulebook_booklet_provenance = {
 fs.writeFileSync(path.join(root, releaseManifestPath), `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
 
 const rulebookIndexHtml = fs.readFileSync(path.join(root, rulebookIndexPath), 'utf8');
-assert(rulebookIndexHtml.includes(`../${releasePdfPath}`), 'Browser Rulebook does not link the printable booklet.');
+assert(rulebookIndexHtml.includes(`../${releasePdfPath}`), 'Browser Rulebook does not link the canonical printable booklet.');
 assert(!rulebookIndexHtml.includes('>Reader PDF<'), 'Browser Rulebook still exposes Reader PDF as a competing print/download action.');
 assert(!rulebookIndexHtml.includes('>Markdown<'), 'Browser Rulebook still exposes Markdown as a competing download action.');
 assert(!rulebookIndexHtml.includes('data-print-rulebook'), 'Browser Rulebook still exposes browser printing as a competing print action.');
 
-console.log(`Materialized approved-design v0.6.3 booklet: ${printable.pages} imposed sides, ${generated.counts.physical_sheets} physical sheets, SHA-256 ${printable.sha256}.`);
+console.log(`Materialized approved-design v0.6.3 booklet into canonical package: ${printable.pages} imposed sides, ${generated.counts.physical_sheets} physical sheets, SHA-256 ${printable.sha256}.`);

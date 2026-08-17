@@ -22,8 +22,8 @@ const ANALYTICS_EXCLUDED_FILES = new Set([
   "artifacts/reconstruction/clean-v0.6.3/faction-pages/inquisition/index.html",
   "artifacts/reconstruction/clean-v0.6.3/start/index.html",
   "artifacts/reconstruction/clean-v0.6.3/deckbuilder/index.html",
-  // Redirect shim; analytics belongs on the canonical /v0.6.3/ landing page.
-  "releases/v0.6.3-reconstructed/index.html",
+  // Render-only TTS capture surface; it is not a public navigation page.
+  "tts/back-renderer/index.html",
   // Versioned development/review surfaces are not public analytics pages.
   "v0.6.3/changes/index.html",
   "v0.6.3/deckbuilder/index.html",
@@ -33,6 +33,22 @@ const ANALYTICS_EXCLUDED_FILES = new Set([
   "v0.6.3/rules-arbiter/index.html",
   "v0.6.3/start/index.html"
 ]);
+
+function normalizePackageRoot(value) {
+  return String(value || "").replace(/^\/+/, "").replace(/\/+$/, "");
+}
+
+// The current release package index is a redirect shim. Analytics belongs on
+// the canonical public landing page (/v0.6.3/), not on the package directory.
+try {
+  const lifecycle = JSON.parse(await readFile(path.join(ROOT, "config/release-lifecycle.json"), "utf8"));
+  const current = lifecycle.releases?.[lifecycle.current_release];
+  if (current?.current_package_path) {
+    ANALYTICS_EXCLUDED_FILES.add(`${normalizePackageRoot(current.current_package_path)}/index.html`);
+  }
+} catch (error) {
+  if (error?.code !== "ENOENT") throw error;
+}
 
 const GOOGLE_TAG = `  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=${MEASUREMENT_ID}"></script>

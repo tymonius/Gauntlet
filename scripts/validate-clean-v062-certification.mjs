@@ -150,8 +150,8 @@ for (const faction of factions) {
 }
 
 for (const forbidden of [
-  'releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md',
-  'releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md',
+  'releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Rulebook.md',
+  'releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Faction_and_Component_Guide.md',
 ]) {
   assert(manifest.forbidden_authority_sources?.includes(forbidden), `manifest must quarantine ${forbidden}`);
   assert(!manifestPaths.includes(forbidden), `forbidden historical source entered the certified authority set: ${forbidden}`);

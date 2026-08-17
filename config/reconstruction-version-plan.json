@@ -32,8 +32,8 @@
         "role": "evidence_only"
       },
       "forbidden_authority_sources": [
-        "releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md",
-        "releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md"
+        "releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Rulebook.md",
+        "releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Faction_and_Component_Guide.md"
       ],
       "governing_reconstruction_rule": "Synthesize a complete release from the v0.6.1 Rulebook plus all six v0.6.1 faction guides and only verified v0.6.2 decisions/corrections. Preserve the v0.6.1 self-contained document architecture.",
       "required_shared_rules": [
@@ -160,8 +160,8 @@
         "role": "evidence_only"
       },
       "forbidden_authority_sources": [
-        "releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md",
-        "releases/v0.6.3/Gauntlet_v0.6.3_Faction_and_Component_Guide.md"
+        "releases/v0.6.3-withdrawn/Gauntlet_v0.6.3_Rulebook.md",
+        "releases/v0.6.3-withdrawn/Gauntlet_v0.6.3_Faction_and_Component_Guide.md"
       ],
       "governing_reconstruction_rule": "Start from the certified clean v0.6.2 authority and apply only verified v0.6.3 deltas. Do not clean or reuse the withdrawn v0.6.3 Rulebook as a skeleton.",
       "required_v063_deltas": [

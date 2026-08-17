@@ -10,7 +10,7 @@ import {
 } from './publication-utils.mjs';
 
 const root = process.cwd();
-const releaseManifestPath = 'releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Manifest.json';
+const releaseManifestPath = 'releases/v0.6.3/Gauntlet_v0.6.3_Manifest.json';
 const hash = (data) => crypto.createHash('sha256').update(data).digest('hex');
 const read = (relative) => fs.readFileSync(path.join(root, relative));
 const manifest = JSON.parse(read(releaseManifestPath).toString('utf8'));

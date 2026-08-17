@@ -1,38 +1,34 @@
 {
-  "version": "v0.6.3",
+  "schema_version": 1,
   "release_version": "v0.6.3",
-  "name": "Third Playtest Revision",
-  "status": "published",
-  "published_date": "2026-08-12",
-  "previous_version": "v0.6.2",
+  "name": "Third Playtest Revision — Clean Reconstruction",
+  "status": "current",
+  "authority_set_id": "64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49",
+  "publication_date": "2026-08-14",
+  "historical_withdrawn_package_preserved_at": "releases/v0.6.3-withdrawn/",
+  "current_package_path": "releases/v0.6.3/",
+  "binding_sources": {
+    "rulebook": {
+      "path": "artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md",
+      "sha256": "7cca20e8de2eee10332c4e3e82ca5e7abdae3a0af61837bf77caa79ccbc9d643"
+    },
+    "canonical_data": {
+      "path": "artifacts/reconstruction/clean-v0.6.3/downstream/canonical-data.json",
+      "sha256": "641c813366a8bcb52f9cb505ada640994d416024deed1f71a6ec59fb24ed2c4c"
+    },
+    "approved_starters": {
+      "path": "artifacts/reconstruction/clean-v0.6.3/downstream/starter-decks.json",
+      "sha256": "4c0ebe201584fc709623e37bb31630394294830dbe7b0f75ba43ae61bce33d64"
+    }
+  },
   "counts": {
     "playable_cards": 128,
     "territories": 25,
-    "arenas": 4,
-    "proposals": 9,
     "factions": 6,
     "leaders": 12,
     "starter_decks": 12,
-    "print_pdfs": 11
-  },
-  "closeout": {
-    "status": "validated",
-    "matrix": "docs/Gauntlet_v0.6.3_Cross_Surface_Closeout_Matrix.md",
-    "source_package_fingerprint": {
-      "algorithm": "sha256",
-      "files": 12,
-      "digest": "4114492c77a70b6e526f2248d9f02b78cde900f9cb550632e3fbe15f8d5b4494"
-    },
-    "print_semantics_fingerprint": {
-      "algorithm": "sha256",
-      "files": 13,
-      "digest": "7d79aec8d4a1bbee5907b406d9491eb186a026551d47127e96a00ac32696f3af"
-    },
-    "tracked_candidate_surfaces_fingerprint": {
-      "algorithm": "sha256",
-      "files": 79,
-      "digest": "15d154ae9c36f8bf02a4cb55c9d2bc5e400850caf8a18eca3a5409054fbee8e9"
-    }
+    "print_pdfs": 10,
+    "json_exports": 3
   },
   "public_defaults": {
     "website": "v0.6.3",
@@ -40,13 +36,224 @@
     "rules_arbiter": "v0.6.3",
     "digital_rules": "v0.6.3"
   },
-  "historical_access": {
-    "v062_release": "releases/v0.6.2/",
-    "v062_site": "v0.6.2/",
-    "v062_rules_api": "/api/v062/rules",
-    "v061_rules_api": "/api/v061/rules",
-    "v063_candidate_rules_api": "/api/v063-candidate/rules"
+  "public_routes": {
+    "start": "/start/",
+    "rulebook": "/rulebook/",
+    "card_reference": "/card-reference/",
+    "factions": "/factions/",
+    "deckbuilder": "/deckbuilder/",
+    "rules_arbiter": "/rules-arbiter/"
   },
-  "source_candidate": "artifacts/v0.6.3/release-candidate",
-  "print_candidate": "artifacts/v0.6.3/print-candidate"
+  "json_exports": [
+    "Gauntlet_v0.6.3_Canonical_Data.json",
+    "Gauntlet_v0.6.3_Starter_Decks.json",
+    "Gauntlet_v0.6.3_Deck_Export_Schema.json"
+  ],
+  "pdf_outputs": [
+    {
+      "key": "rulebook",
+      "path": "Gauntlet_v0.6.3_Rulebook.pdf",
+      "pages": 85,
+      "sha256": "936f37e45595b11e277ebcfe4d27197205a01dcb1499d7d4af62a962e55ddf5a",
+      "bytes": 298301
+    },
+    {
+      "key": "rulebook-booklet",
+      "path": "Gauntlet_v0.6.3_Rulebook_Booklet.pdf",
+      "pages": 48,
+      "sha256": "3a9152f92f8e3a7b5029ac9179c41d10c703ed51b07e5e9608568bdde1359041",
+      "bytes": 28912452
+    },
+    {
+      "key": "military",
+      "path": "Gauntlet_v0.6.3_Military_Faction_Guide.pdf",
+      "pages": 11,
+      "sha256": "1cbee036bb9efe7da05d2b95312e6a26430cb36d5e394c8acb33c6eb67128e0b",
+      "bytes": 71134
+    },
+    {
+      "key": "diplomats",
+      "path": "Gauntlet_v0.6.3_Diplomats_Faction_Guide.pdf",
+      "pages": 16,
+      "sha256": "1e4e1458448ae2d584f7f3d425f77fe543ca727ccde054421685b3dff428c4a5",
+      "bytes": 82291
+    },
+    {
+      "key": "financiers",
+      "path": "Gauntlet_v0.6.3_Financiers_Faction_Guide.pdf",
+      "pages": 14,
+      "sha256": "26488409e656d64869685dd46a69a51ac9da886157b2eee7f45814f47adb68c5",
+      "bytes": 84199
+    },
+    {
+      "key": "intelligence",
+      "path": "Gauntlet_v0.6.3_Intelligence_Faction_Guide.pdf",
+      "pages": 15,
+      "sha256": "6e472ced4d7b4e12287ec34a023bcd764a3a670cbeb8ded6c12ddcc42765e81a",
+      "bytes": 82887
+    },
+    {
+      "key": "mystics",
+      "path": "Gauntlet_v0.6.3_Mystics_Faction_Guide.pdf",
+      "pages": 16,
+      "sha256": "53feeae7350c48d29286bb56ec3f00421f94109d367ea729972383c3612ea086",
+      "bytes": 83627
+    },
+    {
+      "key": "inquisition",
+      "path": "Gauntlet_v0.6.3_Inquisition_Faction_Guide.pdf",
+      "pages": 13,
+      "sha256": "b1c738e1dc5023d2e98cc3491d0964034294be2da04b8ab341e0968d53d51aee",
+      "bytes": 77719
+    },
+    {
+      "key": "card-reference",
+      "path": "Gauntlet_v0.6.3_Card_and_Territory_Reference.pdf",
+      "pages": 42,
+      "sha256": "aad6981b36b53c713d79349b7f66f2339660898ceda23ea6f671818a719eb413",
+      "bytes": 233447
+    },
+    {
+      "key": "starter-catalog",
+      "path": "Gauntlet_v0.6.3_Starter_Deck_Catalog.pdf",
+      "pages": 19,
+      "sha256": "ae6edb4ca30f99c74cf5da06aaf4fa87b15fce9870dab3b2a88d25ded7c063b9",
+      "bytes": 87147
+    }
+  ],
+  "post_merge_verification": {
+    "gauntlet_run": "verified",
+    "production_workers": "verified",
+    "publication_complete_only_after_both_pass": true
+  },
+  "payload_files": [
+    {
+      "path": "Gauntlet_v0.6.3_Canonical_Data.json",
+      "sha256": "1d3d1f282e4a4d1b0db197a400a9b7fbf5540b618d1149265665e9b09ee1ef24",
+      "bytes": 271091
+    },
+    {
+      "path": "Gauntlet_v0.6.3_Card_and_Territory_Reference.md",
+      "sha256": "99d2706480162b5d51d9b57dcbfda49ffe9abeb8bd503ffba61cc3b1e5932a2b",
+      "bytes": 60329
+    },
+    {
+      "path": "Gauntlet_v0.6.3_Card_and_Territory_Reference.pdf",
+      "sha256": "aad6981b36b53c713d79349b7f66f2339660898ceda23ea6f671818a719eb413",
+      "bytes": 233447
+    },
+    {
+      "path": "Gauntlet_v0.6.3_Deck_Export_Schema.json",
+      "sha256": "f016493e96f16fb46b7844a0eb0be42df132b7a123283a654108d24c8bc63cc6",
+      "bytes": 960
+    },
+    {
+      "path": "Gauntlet_v0.6.3_Diplomats_Faction_Guide.pdf",
+      "sha256": "1e4e1458448ae2d584f7f3d425f77fe543ca727ccde054421685b3dff428c4a5",
+      "bytes": 82291
+    },
+    {
+      "path": "Gauntlet_v0.6.3_Financiers_Faction_Guide.pdf",
+      "sha256": "26488409e656d64869685dd46a69a51ac9da886157b2eee7f45814f47adb68c5",
+      "bytes": 84199
+    },
+    {
+      "path": "Gauntlet_v0.6.3_Inquisition_Faction_Guide.pdf",
+      "sha256": "b1c738e1dc5023d2e98cc3491d0964034294be2da04b8ab341e0968d53d51aee",
+      "bytes": 77719
+    },
+    {
+      "path": "Gauntlet_v0.6.3_Intelligence_Faction_Guide.pdf",
+      "sha256": "6e472ced4d7b4e12287ec34a023bcd764a3a670cbeb8ded6c12ddcc42765e81a",
+      "bytes": 82887
+    },
+    {
+      "path": "Gauntlet_v0.6.3_Military_Faction_Guide.pdf",
+      "sha256": "1cbee036bb9efe7da05d2b95312e6a26430cb36d5e394c8acb33c6eb67128e0b",
+      "bytes": 71134
+    },
+    {
+      "path": "Gauntlet_v0.6.3_Mystics_Faction_Guide.pdf",
+      "sha256": "53feeae7350c48d29286bb56ec3f00421f94109d367ea729972383c3612ea086",
+      "bytes": 83627
+    },
+    {
+      "path": "Gauntlet_v0.6.3_Rulebook.md",
+      "sha256": "9bbde08376daea4558581ef598a07b0d3a8fc21666809890d846114229bc44c2",
+      "bytes": 112464
+    },
+    {
+      "path": "Gauntlet_v0.6.3_Rulebook.pdf",
+      "sha256": "936f37e45595b11e277ebcfe4d27197205a01dcb1499d7d4af62a962e55ddf5a",
+      "bytes": 298301
+    },
+    {
+      "path": "Gauntlet_v0.6.3_Rulebook_Booklet.pdf",
+      "sha256": "3a9152f92f8e3a7b5029ac9179c41d10c703ed51b07e5e9608568bdde1359041",
+      "bytes": 28912452
+    },
+    {
+      "path": "Gauntlet_v0.6.3_Starter_Deck_Catalog.md",
+      "sha256": "b8accfd0615cee363df93c0308f82304701d5354d8093cafbbda3fe10a0f08d9",
+      "bytes": 13314
+    },
+    {
+      "path": "Gauntlet_v0.6.3_Starter_Deck_Catalog.pdf",
+      "sha256": "ae6edb4ca30f99c74cf5da06aaf4fa87b15fce9870dab3b2a88d25ded7c063b9",
+      "bytes": 87147
+    },
+    {
+      "path": "Gauntlet_v0.6.3_Starter_Decks.json",
+      "sha256": "4c0ebe201584fc709623e37bb31630394294830dbe7b0f75ba43ae61bce33d64",
+      "bytes": 36516
+    },
+    {
+      "path": "faction-guides/diplomats/Gauntlet_v0.6.3_Diplomat_Faction_Guide.md",
+      "sha256": "1d730ed0f0f6fba466ebbe57ae38533f5b2331c4fc520136c14697ed02dbd689",
+      "bytes": 15309
+    },
+    {
+      "path": "faction-guides/financiers/Gauntlet_v0.6.3_Financier_Faction_Guide.md",
+      "sha256": "859d98ebdef8040a1b6228102d213464191734953bd554ab9808258e5fc594cc",
+      "bytes": 16174
+    },
+    {
+      "path": "faction-guides/inquisition/Gauntlet_v0.6.3_Inquisition_Faction_Guide.md",
+      "sha256": "5728e7d5b948755548fb8a178c43b5781af90172279446f72504d449534ff217",
+      "bytes": 13200
+    },
+    {
+      "path": "faction-guides/intelligence/Gauntlet_v0.6.3_Intelligence_Faction_Guide.md",
+      "sha256": "d47b3d3ae6b8a8ffcd897f71ad94a9ab6371e3bab15ea3a542d211797bc90795",
+      "bytes": 16127
+    },
+    {
+      "path": "faction-guides/military/Gauntlet_v0.6.3_Military_Faction_Guide.md",
+      "sha256": "ae536af0afb7f9e55e0feaeba5df4383ffaf09217506ec6fea360fd12b7051d8",
+      "bytes": 10844
+    },
+    {
+      "path": "faction-guides/mystics/Gauntlet_v0.6.3_Mystics_Faction_Guide.md",
+      "sha256": "3cd40381a4fdcdf323f62c72dbfbef61025f8fb03855bc6f8dd449109d3bdf42",
+      "bytes": 14743
+    },
+    {
+      "path": "index.html",
+      "sha256": "2f12055140c8e52d1164ee5a0b70dd3707d4dcfa50c214b3f815a474d025e2d5",
+      "bytes": 510
+    }
+  ],
+  "rulebook_booklet_provenance": {
+    "player_facing_rulebook_sha256": "a536e93fc18556268ceb21b0d41da74d88f8978f1fcc4afb4128b5f1ab798314",
+    "certified_rulebook_sha256": "7cca20e8de2eee10332c4e3e82ca5e7abdae3a0af61837bf77caa79ccbc9d643",
+    "published_rulebook_sha256": "9bbde08376daea4558581ef598a07b0d3a8fc21666809890d846114229bc44c2",
+    "player_facing_chapter_11_sha256": "35ecc609fa8cb5557a3dabd701cd17da9c2318db4ce3f17bfafc70be1c5d3671",
+    "approved_design_pr": 357,
+    "production_pr": 434,
+    "logical_pages": 96,
+    "imposed_sides": 48,
+    "physical_sheets": 24,
+    "padding_pages": 7,
+    "duplex_flip": "short-edge"
+  }
 }

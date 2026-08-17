@@ -8,7 +8,7 @@ import { normalizeV063LastStandOnlyText } from '../rules-assistant/v063-last-sta
 
 const root = process.cwd();
 const cleanRulebookPath = 'artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md';
-const publishedRulebookPath = 'releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md';
+const publishedRulebookPath = 'releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md';
 const playerChapter11Path = 'rulebook/player-facing/chapter-11.md';
 const playerProductionInputPath = 'rulebook-production/.v063-player-facing-input.md';
 const outDir = 'artifacts/reconstruction/clean-v0.6.3/booklet/generated';
@@ -76,7 +76,7 @@ run('python', ['rulebook-production/build_fidelity_gate.py']);
 
 // Verify immutable recovered evidence first. Then hand the complete reviewed
 // player-facing Rulebook to the approved production adapter through a dedicated
-// transient input. The checked-in reconstructed release source is never mutated.
+// transient input. The checked-in current release source is never mutated.
 write(playerProductionInputPath, playerRulebook);
 try {
   assert.equal(read(playerProductionInputPath), playerRulebook, 'Transient player-facing Rulebook input changed before production.');

@@ -207,8 +207,8 @@ const manifest = {
   approval_pr: 606,
   build_unlock_pr: 607,
   forbidden_authority_sources: [
-    'releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md',
-    'releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md'
+    'releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Rulebook.md',
+    'releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Faction_and_Component_Guide.md'
   ],
   evidence_sources: [
     'docs/Gauntlet_v0.6.2_Shared_Rules_Candidate.md',

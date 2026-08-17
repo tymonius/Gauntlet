@@ -4,8 +4,8 @@ import { normalizeV063LastStandText } from '../rules-assistant/v063-last-stand-l
 const SOURCE_URL = '/artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md';
 const SOURCE_SHA256 = '7cca20e8de2eee10332c4e3e82ca5e7abdae3a0af61837bf77caa79ccbc9d643';
 const CHAPTER_11_URL = './player-facing/chapter-11.md';
-const PUBLISHED_SOURCE_URL = '../releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md';
-const PDF_URL = '../releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.pdf';
+const PUBLISHED_SOURCE_URL = '../releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md';
+const PDF_URL = '../releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.pdf';
 const content = document.querySelector('[data-rulebook-content]');
 const toc = document.querySelector('[data-rulebook-toc]');
 const status = document.querySelector('[data-rulebook-status]');

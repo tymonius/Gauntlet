@@ -43,7 +43,7 @@
 - [ ] Assemble twelve starter Decks and validation output.
 - [ ] Generate Deckbuilder/browser-tool data.
 - [ ] Generate TTS and card-media source assets from the 128-card pool.
-- [ ] Create immutable `releases/v0.6.2/` package.
+- [ ] Create immutable `releases/v0.6.2-withdrawn/` package.
 - [ ] Confirm `releases/v0.6.1/` is unchanged.
 
 ## 4. Public cutover

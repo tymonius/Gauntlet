@@ -125,7 +125,7 @@ assert(ledger.decision_registry.records.every((entry) => entry.historical_human_
 assert(ledger.decision_registry.records.every((entry) => entry.approved_reconstruction_disposition !== 'pending'));
 assert(ledger.non_authority_sources?.some((entry) => entry.path === 'governance/traceability.json'));
 assert(ledger.non_authority_sources?.some((entry) => entry.path === 'artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json'));
-assert(ledger.non_authority_sources?.some((entry) => entry.path === 'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json'));
+assert(ledger.non_authority_sources?.some((entry) => entry.path === 'releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Canonical_Data.json'));
 
 const forbiddenContentSource = 'artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json';
 assert(!read(canonicalPath).includes(forbiddenContentSource), 'Historical v0.6.3 release candidate leaked into canonical authority.');

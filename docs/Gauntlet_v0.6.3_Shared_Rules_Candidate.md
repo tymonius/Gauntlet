@@ -1,7 +1,7 @@
 # Gauntlet v0.6.3 Shared Rules Candidate
 
 **Status:** Adopted v0.6.3 shared-rule text awaiting full propagation  
-**Baseline:** [Gauntlet v0.6.2](../releases/v0.6.2/README.md)  
+**Baseline:** [Gauntlet v0.6.2](../releases/v0.6.2-withdrawn/README.md)  
 **Release tracker:** [Issue #528](https://github.com/tymonius/Gauntlet/issues/528)  
 **Implementation ledger:** [Gauntlet v0.6.3 Implementation Ledger](Gauntlet_v0.6.3_Implementation_Ledger.md)
 

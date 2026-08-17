@@ -4,6 +4,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { AUTHORITY_SET_ID as authoritySetId, RELEASE_DIR as releaseDir, root, read, factionGuides } from './publication-utils.mjs';
 
+const lifecycle = JSON.parse(read('config/release-lifecycle.json'));
+const currentRelease = lifecycle.releases?.[lifecycle.current_release];
+const legacyAliasPrefixes = (currentRelease?.legacy_package_aliases ?? []).map((value) => String(value).replace(/\/+$/, '') + '/');
+
 const publicHtml = [
   'index.html','rulebook/index.html','card-reference/index.html','factions/index.html',
   ...factionGuides.map(([, route]) => `factions/${route}/index.html`),
@@ -18,7 +22,7 @@ const home = read('index.html');
 assert(home.includes('Current canonical playtest edition · v0.6.3'));
 assert(home.includes('<dt>128</dt><dd>Playable cards</dd>'));
 assert(home.includes("Run the Gauntlet by capturing the Territory at the opponent's end or by winning the opponent's Last Stand."));
-assert(home.includes('releases/v0.6.3-reconstructed/'));
+assert(home.includes('releases/v0.6.3/'));
 assert(home.includes('rules-arbiter/'));
 assert(!home.includes('releases/v0.6.1/'));
 assert(!/Current canonical playtest edition · v0\.6\.1/.test(home));
@@ -52,6 +56,7 @@ assert(cardReferenceIndex.includes('128 playable cards and 25 Territories'));
 assert(!cardReferenceIndex.includes('../browser-rulebook/'));
 assert(!/certified clean|current public release:\s*v0\.6\.1/i.test(cardReferenceIndex));
 assert(cardReferenceApp.includes("const RULEBOOK_URL = '../rulebook/';"));
+assert(cardReferenceApp.includes("const PUBLIC_DATA_EXPORT = '../releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json';"));
 assert(!cardReferenceApp.includes('../browser-rulebook/'));
 assert(!cardReferenceApp.includes('publication remains locked'));
 assert(!cardReferenceApp.includes('Authority set'));
@@ -95,6 +100,7 @@ assert(corpus.includes('CLEAN_V063_RULEBOOK_SHA256'));
 assert(corpus.includes('CLEAN_V063_CANONICAL_DATA_SHA256'));
 assert(corpus.includes('crypto.subtle.digest'));
 assert(corpus.includes('V063_PUBLISHED_RULEBOOK_PATH'));
+assert(corpus.includes('releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md'));
 assert(corpus.includes('rulebookBrowserUrl: `${base}/${CLEAN_V063_BROWSER_RULEBOOK_PATH}`'));
 assert(widget.includes('version: "v0.6.3"'));
 assert(widget.includes('loadV063RulesCorpus'));
@@ -129,21 +135,22 @@ try {
     'scripts/render-clean-v063-publication.mjs',
     'scripts/validate-clean-v063-publication.mjs',
     'scripts/validate-clean-v063-publication-data.mjs',
-     'scripts/validate-clean-v063-publication-surfaces.mjs',
+    'scripts/validate-clean-v063-publication-surfaces.mjs',
     'scripts/verify-clean-v063-live-publication.mjs',
+    'scripts/sync-v063-legacy-package-alias.mjs',
     'tests/standalone-new-player-onboarding.test.ts',
     'tests/current-rulebook-player-experience.test.ts',
     'tests/current-player-site-integrity.test.ts',
     'config/release-lifecycle.json','src/content/current.ts','index.html',
     'rules-assistant/worker-entry.js','rules-assistant/worker-v063.js','rules-assistant/v063-public-corpus.js','rules-assistant/widget.js',
   ]);
-  const allowedPrefixes = ['rulebook/','card-reference/','factions/','start/','deckbuilder/','rules-arbiter/',`${releaseDir}/`];
+  const allowedPrefixes = ['rulebook/','card-reference/','factions/','start/','deckbuilder/','rules-arbiter/','v0.6.3/',`${releaseDir}/`, ...legacyAliasPrefixes];
   for (const file of changed) {
     assert(allowedFiles.has(file) || allowedPrefixes.some((prefix) => file.startsWith(prefix)), `Publication diff escaped allowed current/public surfaces: ${file}`);
-    assert(!file.startsWith('releases/v0.6.3/'), 'Preserved withdrawn v0.6.3 release package was modified.');
+    assert(!file.startsWith('releases/v0.6.2-withdrawn/'), 'Immutable withdrawn v0.6.2 release package was modified.');
+    assert(!file.startsWith('releases/v0.6.3-withdrawn/'), 'Immutable withdrawn original v0.6.3 release package was modified.');
     assert(!file.startsWith('artifacts/reconstruction/clean-v0.6.3/'), 'Certified clean reconstruction source was modified during publication.');
     assert(!file.startsWith('artifacts/v0.6.3/'), 'Withdrawn v0.6.3 evidence was modified during publication.');
-    assert(!file.startsWith('v0.6.3/'), 'Withdrawn versioned v0.6.3 browser evidence was modified during publication.');
     assert(!file.startsWith('src/v063/'), 'Withdrawn historical digital implementation was modified during publication.');
     assert.notEqual(file, 'config/release-locks.json');
     assert.notEqual(file, 'config/reconstruction-version-plan.json');
@@ -152,4 +159,4 @@ try {
   if (error instanceof assert.AssertionError) throw error;
   console.warn('Publication diff firewall skipped because origin/main is unavailable.');
 }
-console.log('Validated current/public browser surfaces, restored player tools, clean digital pointer, Rules Arbiter cutover compatibility, and publication diff firewall.');
+console.log('Validated current/public browser surfaces, restored player tools, canonical digital pointer, Rules Arbiter cutover compatibility, immutable withdrawn packages, and publication diff firewall.');

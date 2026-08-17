@@ -278,7 +278,7 @@ All active v0.6.3 Leader, faction, card, Territory, Rules Arbiter, and digital s
 
 ### V063-S50 — Published v0.6.2 remains immutable
 
-The v0.6.3 source layer must not modify files under `releases/v0.6.2/`.
+The v0.6.3 source layer must not modify files under `releases/v0.6.2-withdrawn/`.
 
 ---
 

@@ -1,0 +1,18 @@
+{
+  "version": "v0.6.2",
+  "status": "published",
+  "publication_date": "2026-08-05",
+  "canonical_public_version": "v0.6.2",
+  "public_defaults": {
+    "website": "v0.6.2",
+    "browser_tools": "v0.6.2",
+    "rules_arbiter": "v0.6.2",
+    "digital_rules": "v0.6.2"
+  },
+  "historical_versions": [
+    "v0.6.1"
+  ],
+  "release_tracker": 470,
+  "closeout_tracker": 506,
+  "returning_player_tracker": 503
+}

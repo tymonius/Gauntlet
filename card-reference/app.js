@@ -1,5 +1,5 @@
 const CANONICAL_DATA_SOURCE = '/artifacts/reconstruction/clean-v0.6.3/complete-authority/canonical-structured-data.json';
-const PUBLIC_DATA_EXPORT = '../releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Canonical_Data.json';
+const PUBLIC_DATA_EXPORT = '../releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json';
 const RULEBOOK_URL = '../rulebook/';
 const EXPECTED_TARGET = "clean-v0.6.3-canonical-structured-authority";
 

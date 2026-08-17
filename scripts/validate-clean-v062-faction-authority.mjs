@@ -29,8 +29,8 @@ assert(manifest.target === 'clean-v0.6.2', 'manifest target must be clean-v0.6.2
 assert(manifest.authority_base === 'v0.6.1', 'manifest authority base must remain v0.6.1');
 assert(manifest.approval_pr === 606 && manifest.build_unlock_pr === 607, 'manifest must record approval PR #606 and build-unlock PR #607');
 assert(manifest.status === 'authority_candidate_pending_semantic_review', 'candidate must remain pending semantic review');
-assert(Array.isArray(manifest.forbidden_authority_sources) && manifest.forbidden_authority_sources.includes('releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md'), 'withdrawn v0.6.2 Rulebook must remain forbidden authority');
-assert(manifest.forbidden_authority_sources.includes('releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md'), 'withdrawn v0.6.2 combined faction guide must remain forbidden authority');
+assert(Array.isArray(manifest.forbidden_authority_sources) && manifest.forbidden_authority_sources.includes('releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Rulebook.md'), 'withdrawn v0.6.2 Rulebook must remain forbidden authority');
+assert(manifest.forbidden_authority_sources.includes('releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Faction_and_Component_Guide.md'), 'withdrawn v0.6.2 combined faction guide must remain forbidden authority');
 assert(JSON.stringify([...manifest.guides].sort()) === JSON.stringify(Object.keys(guides).sort()), 'manifest must enumerate all six faction guides');
 
 const text = {};

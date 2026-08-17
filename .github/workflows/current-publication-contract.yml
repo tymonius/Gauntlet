@@ -24,6 +24,7 @@ jobs:
             /config/release-lifecycle.json
             /config/github-release-contract.json
             /scripts/validate-current-public-contract.mjs
+            /scripts/validate-current-release-payload.mjs
             /scripts/validate-current-rulebook-booklet-provenance.mjs
             /scripts/validate-github-release-contract.mjs
             /scripts/publication-utils.mjs
@@ -48,11 +49,7 @@ jobs:
             /images/faction-symbols/*.svg
             /releases/*/Gauntlet_*_Manifest.json
             /releases/*/Gauntlet_*_Rulebook_Booklet.pdf
-            /releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.pdf
-            /releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Card_and_Territory_Reference.pdf
-            /releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Starter_Deck_Catalog.pdf
-            /releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Canonical_Data.json
-            /releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Starter_Decks.json
+            /releases/v0.6.3/**
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -65,5 +62,6 @@ jobs:
       - name: Validate current player-facing publication contract
         run: |
           node scripts/validate-current-public-contract.mjs
+          node scripts/validate-current-release-payload.mjs
           node scripts/validate-current-rulebook-booklet-provenance.mjs
           node scripts/validate-github-release-contract.mjs

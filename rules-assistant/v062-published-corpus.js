@@ -2,18 +2,18 @@ import { buildCanonicalDocuments, parseRulebookSections } from './local-search.j
 
 export const V062_PUBLISHED_VERSION = 'v0.6.2';
 export const V062_PUBLISHED_SOURCES = Object.freeze([
-  'releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md',
-  'releases/v0.6.2/Gauntlet_v0.6.2_Reference_Guide.md',
-  'releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md',
-  'releases/v0.6.2/Gauntlet_v0.6.2_First_Game_Guide.md',
-  'releases/v0.6.2/Gauntlet_v0.6.2_Returning_Player_Changes.md'
+  'releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Rulebook.md',
+  'releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Reference_Guide.md',
+  'releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Faction_and_Component_Guide.md',
+  'releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_First_Game_Guide.md',
+  'releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Returning_Player_Changes.md'
 ]);
 
 export function defaultPublishedV062SourceUrls(siteOrigin = 'https://gauntlet.run') {
   const origin = String(siteOrigin || 'https://gauntlet.run').replace(/\/$/, '');
   return {
     siteOrigin: origin,
-    canonicalUrl: `${origin}/releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json`,
+    canonicalUrl: `${origin}/releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Canonical_Data.json`,
     canonicalReferenceUrl: `${origin}/v0.6.2/reference/`,
     documentUrls: V062_PUBLISHED_SOURCES.map((sourcePath) => ({
       sourcePath,
@@ -67,7 +67,7 @@ export async function loadPublishedV062RulesCorpus(options = {}) {
     generatedAt: new Date().toISOString(),
     documents: [...markdownDocuments, ...canonicalDocuments],
     sourcePaths: [
-      'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json',
+      'releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Canonical_Data.json',
       ...V062_PUBLISHED_SOURCES
     ]
   };

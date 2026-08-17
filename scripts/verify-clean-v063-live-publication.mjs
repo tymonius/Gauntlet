@@ -56,7 +56,7 @@ const [home, rulebook, deckbuilder, arbiter, manifestText] = await Promise.all([
   readText('https://gauntlet.run/rulebook/'),
   readText('https://gauntlet.run/deckbuilder/'),
   readText('https://gauntlet.run/rules-arbiter/'),
-  readText('https://gauntlet.run/releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Manifest.json'),
+  readText('https://gauntlet.run/releases/v0.6.3/Gauntlet_v0.6.3_Manifest.json'),
 ]);
 const manifest = JSON.parse(manifestText);
 if (!home.includes('Current canonical playtest edition · v0.6.3') || !home.includes('<dt>128</dt><dd>Playable cards</dd>')) throw new Error('gauntlet.run homepage is not current v0.6.3.');
@@ -66,4 +66,4 @@ if (!/Gauntlet v0\.6\.3 Rules Arbiter/.test(arbiter)) throw new Error('Public Ru
 if (manifest.release_version !== 'v0.6.3' || manifest.authority_set_id !== '64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49') {
   throw new Error(`Unexpected public reconstructed manifest: ${JSON.stringify(manifest)}`);
 }
-console.log('gauntlet.run and production Rules Arbiter live verification passed for the clean reconstructed v0.6.3 publication.');
+console.log('gauntlet.run and production Rules Arbiter live verification passed for canonical reconstructed v0.6.3 publication.');

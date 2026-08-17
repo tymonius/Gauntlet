@@ -8,14 +8,15 @@
       "status": "withdrawn",
       "artifacts_preserved": true,
       "public_cutover": false,
-      "reason": "Withdrawn after canonical release-authority and Rulebook completeness defects were discovered. Original published artifacts are preserved unchanged; clean reconstruction and full audit are required before re-release."
+      "historical_package_path": "releases/v0.6.2-withdrawn/",
+      "reason": "Withdrawn after canonical release-authority and Rulebook completeness defects were discovered. Original published artifacts are preserved unchanged under a clearly withdrawn path. Clean reconstruction and full audit were required before re-release."
     },
     "v0.6.3": {
       "status": "current",
       "artifacts_preserved": true,
       "public_cutover": true,
-      "historical_package_path": "releases/v0.6.3/",
-      "current_reconstructed_package_path": "releases/v0.6.3-reconstructed/",
+      "historical_package_path": "releases/v0.6.3-withdrawn/",
+      "current_package_path": "releases/v0.6.3/",
       "authority_set_id": "64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49"
     }
   }

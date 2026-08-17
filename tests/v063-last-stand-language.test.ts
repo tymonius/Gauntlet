@@ -22,8 +22,8 @@ const currentTextSurfaces = [
   'index.html',
   'start/index.html',
   'factions/military/index.html',
-  'releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md',
-  'releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Canonical_Data.json',
+  'releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md',
+  'releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json',
   'v0.6.3/data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json',
   'rules-assistant/rules-deterministic-v063.js',
 ];

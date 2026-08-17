@@ -1,0 +1,52 @@
+{
+  "version": "v0.6.3",
+  "release_version": "v0.6.3",
+  "name": "Third Playtest Revision",
+  "status": "published",
+  "published_date": "2026-08-12",
+  "previous_version": "v0.6.2",
+  "counts": {
+    "playable_cards": 128,
+    "territories": 25,
+    "arenas": 4,
+    "proposals": 9,
+    "factions": 6,
+    "leaders": 12,
+    "starter_decks": 12,
+    "print_pdfs": 11
+  },
+  "closeout": {
+    "status": "validated",
+    "matrix": "docs/Gauntlet_v0.6.3_Cross_Surface_Closeout_Matrix.md",
+    "source_package_fingerprint": {
+      "algorithm": "sha256",
+      "files": 12,
+      "digest": "4114492c77a70b6e526f2248d9f02b78cde900f9cb550632e3fbe15f8d5b4494"
+    },
+    "print_semantics_fingerprint": {
+      "algorithm": "sha256",
+      "files": 13,
+      "digest": "7d79aec8d4a1bbee5907b406d9491eb186a026551d47127e96a00ac32696f3af"
+    },
+    "tracked_candidate_surfaces_fingerprint": {
+      "algorithm": "sha256",
+      "files": 79,
+      "digest": "15d154ae9c36f8bf02a4cb55c9d2bc5e400850caf8a18eca3a5409054fbee8e9"
+    }
+  },
+  "public_defaults": {
+    "website": "v0.6.3",
+    "browser_tools": "v0.6.3",
+    "rules_arbiter": "v0.6.3",
+    "digital_rules": "v0.6.3"
+  },
+  "historical_access": {
+    "v062_release": "releases/v0.6.2/",
+    "v062_site": "v0.6.2/",
+    "v062_rules_api": "/api/v062/rules",
+    "v061_rules_api": "/api/v061/rules",
+    "v063_candidate_rules_api": "/api/v063-candidate/rules"
+  },
+  "source_candidate": "artifacts/v0.6.3/release-candidate",
+  "print_candidate": "artifacts/v0.6.3/print-candidate"
+}

@@ -45,7 +45,9 @@ jobs:
             const publication = any(
               exact('config/release-lifecycle.json'),
               exact('scripts/validate-current-public-contract.mjs'),
+              exact('scripts/validate-current-release-payload.mjs'),
               exact('.github/workflows/current-publication-contract.yml'),
+              under('releases/v0.6.3/'),
               under('releases/v0.6.3-reconstructed/'),
               under('v0.6.3/'),
               under('changelog/'),
@@ -86,9 +88,9 @@ jobs:
               under('rulebook-production/'),
               under('rulebook-design/'),
               exact('artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md'),
-              exact('releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md'),
-              exact('releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook_Booklet.pdf'),
-              exact('releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Manifest.json'),
+              exact('releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md'),
+              exact('releases/v0.6.3/Gauntlet_v0.6.3_Rulebook_Booklet.pdf'),
+              exact('releases/v0.6.3/Gauntlet_v0.6.3_Manifest.json'),
               exact('rulebook/markdown.js'),
               under('images/sketches/hero-sketches/')
             );

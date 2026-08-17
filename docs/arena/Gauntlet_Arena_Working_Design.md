@@ -1,7 +1,7 @@
 # Gauntlet: Arena — Working Design Record
 
 **Status:** Exploratory multiplayer design; not canonical rules  
-**Base rules:** [Gauntlet v0.6.2](../../releases/v0.6.2/README.md)  
+**Base rules:** [Gauntlet v0.6.2](../../releases/v0.6.2-withdrawn/README.md)  
 **Format:** Four-player free-for-all  
 **Target release:** Provisionally v0.7; v0.8 if the Complete Illustrated Edition publishes first  
 **Tracking issue:** [#523 — Design and prototype Gauntlet: Arena](https://github.com/tymonius/Gauntlet/issues/523)  

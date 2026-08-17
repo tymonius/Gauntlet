@@ -12,7 +12,7 @@ export const CLEAN_V063_RULEBOOK_SOURCE_PATH =
 export const CLEAN_V063_CANONICAL_SOURCE_PATH =
   "artifacts/reconstruction/clean-v0.6.3/downstream/canonical-data.json";
 export const CLEAN_V063_BROWSER_RULEBOOK_PATH = "rulebook/";
-export const V063_PUBLISHED_RULEBOOK_PATH = "releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md";
+export const V063_PUBLISHED_RULEBOOK_PATH = "releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md";
 
 export function defaultV063SourceUrls(origin = "https://gauntlet.run") {
   const base = String(origin || "https://gauntlet.run").replace(/\/$/, "");

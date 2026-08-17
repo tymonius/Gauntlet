@@ -121,14 +121,14 @@ assert(currentRelease, `Release lifecycle has no entry for ${currentVersion}.`);
 assert.equal(currentRelease.status, 'current', `${currentVersion} is not marked current.`);
 assert.equal(currentRelease.public_cutover, true, `${currentVersion} is not marked for public cutover.`);
 
-const releaseRoot = publicPath(currentRelease.current_reconstructed_package_path || currentRelease.current_package_path);
+const releaseRoot = publicPath(currentRelease.current_package_path);
 assert(releaseRoot, `${currentVersion} does not define its current package path.`);
 const normalizedReleaseRoot = releaseRoot.endsWith('/') ? releaseRoot : `${releaseRoot}/`;
 const historicalRootValue = currentRelease.historical_package_path;
 const historicalRoot = historicalRootValue ? `${publicPath(historicalRootValue).replace(/\/+$/, '')}/` : null;
 const manifestPath = `${normalizedReleaseRoot}Gauntlet_${currentVersion}_Manifest.json`;
-
-const manifest = JSON.parse(await getText(manifestPath));
+const manifestBytes = await getBytes(manifestPath);
+const manifest = JSON.parse(manifestBytes.toString('utf8'));
 assert.equal(manifest.release_version, currentVersion, 'Current release manifest version disagrees with release lifecycle.');
 assert.equal(publicPath(manifest.current_package_path).replace(/\/+$/, '/'), normalizedReleaseRoot, 'Current package pointer drifted.');
 if (currentRelease.authority_set_id) {
@@ -153,6 +153,19 @@ const changelogRoute = '/changelog/';
 const withdrawnVersionRoutes = Object.entries(lifecycle.releases ?? {})
   .filter(([, release]) => release?.status === 'withdrawn')
   .flatMap(([version]) => [`/${version}/`, `/releases/${version}/`]);
+const withdrawnPackageRoutes = Object.values(lifecycle.releases ?? {})
+  .map((release) => release?.historical_package_path)
+  .filter(Boolean)
+  .map((packagePath) => `${publicPath(packagePath).replace(/\/+$/, '')}/`);
+const removedLegacyPackageRoutes = [
+  '/releases/v0.6.2/',
+  '/releases/v0.6.3-reconstructed/',
+];
+const forbiddenReleaseRoutes = [...new Set([
+  ...withdrawnVersionRoutes,
+  ...withdrawnPackageRoutes,
+  ...removedLegacyPackageRoutes,
+])];
 const corePages = [
   '/',
   releaseLandingRoute,
@@ -172,10 +185,10 @@ for (const route of uniqueCorePages) {
   const normalizedRefs = htmlRefs(html)
     .map((ref) => normalizeRef(route, ref))
     .filter(Boolean);
-  for (const withdrawnRoute of withdrawnVersionRoutes) {
+  for (const forbiddenRoute of forbiddenReleaseRoutes) {
     assert(
-      !normalizedRefs.some((ref) => ref === withdrawnRoute || ref.startsWith(withdrawnRoute)),
-      `${route} links to withdrawn release route ${withdrawnRoute}.`,
+      !normalizedRefs.some((ref) => ref === forbiddenRoute || ref.startsWith(forbiddenRoute)),
+      `${route} links to withdrawn or removed release route ${forbiddenRoute}.`,
     );
   }
 }
@@ -237,4 +250,4 @@ for (const normalized of localReferences) {
   }
 }
 
-console.log(`Current public contract passed${remoteBase ? ` against ${remoteBase}` : ' against the repository'}: ${currentVersion}, canonical global header navigation, release landing/changelog, booklet integrity, resolvable player links, canonical faction symbols, withdrawn-route isolation, and defined typography tokens.`);
+console.log(`Current public contract passed${remoteBase ? ` against ${remoteBase}` : ' against the repository'}: ${currentVersion}, canonical global header navigation, release landing/changelog, booklet integrity, resolvable player links, canonical faction symbols, withdrawn/removed-route isolation, and defined typography tokens.`);

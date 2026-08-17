@@ -3,16 +3,16 @@ import { describe, expect, test } from 'vitest';
 
 const read = (path: string) => readFileSync(path, 'utf8');
 const rulebook = () => read(
-  'releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md',
+  'releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Rulebook.md',
 );
 const factionGuide = () => read(
-  'releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md',
+  'releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Faction_and_Component_Guide.md',
 );
 const firstGameGuide = () => read(
-  'releases/v0.6.2/Gauntlet_v0.6.2_First_Game_Guide.md',
+  'releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_First_Game_Guide.md',
 );
 const returningGuide = () => read(
-  'releases/v0.6.2/Gauntlet_v0.6.2_Returning_Player_Changes.md',
+  'releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Returning_Player_Changes.md',
 );
 
 describe('published v0.6.2 rulebook integrity', () => {

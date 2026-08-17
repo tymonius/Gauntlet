@@ -11,8 +11,8 @@ init().catch(error => {
 
 async function init() {
   const [data, starterData] = await Promise.all([
-    fetch("../../releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json", { cache: "no-store" }).then(assertJson),
-    fetch("../../releases/v0.6.2/Gauntlet_v0.6.2_Starter_Decks.json", { cache: "no-store" }).then(assertJson)
+    fetch("../../releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Canonical_Data.json", { cache: "no-store" }).then(assertJson),
+    fetch("../../releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Starter_Decks.json", { cache: "no-store" }).then(assertJson)
   ]);
   state.data = data;
   state.starters = starterData.decks ?? [];

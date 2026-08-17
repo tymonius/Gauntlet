@@ -1,0 +1,14 @@
+{
+  "canonical_public_version": "v0.6.3",
+  "status": "published",
+  "published_date": "2026-08-12",
+  "release_package": "releases/v0.6.3/",
+  "closeout_gate": "validated",
+  "public_defaults": {
+    "website": "v0.6.3",
+    "browser_tools": "v0.6.3",
+    "rules_arbiter": "v0.6.3",
+    "digital_rules": "v0.6.3"
+  },
+  "previous_version": "v0.6.2"
+}

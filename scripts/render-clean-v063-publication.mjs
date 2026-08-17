@@ -7,7 +7,7 @@ import { PDFDocument } from 'pdf-lib';
 import { renderMarkdown } from '../artifacts/reconstruction/clean-v0.6.3/browser-rulebook/markdown.js';
 
 const root = process.cwd();
-const releaseDir = 'releases/v0.6.3-reconstructed';
+const releaseDir = 'releases/v0.6.3';
 const authoritySetId = '64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49';
 const manifestPath = `${releaseDir}/Gauntlet_v0.6.3_Manifest.json`;
 const materials = [
@@ -89,4 +89,5 @@ manifest.payload_files = [...new Set(payloadFiles)].sort().map((relative) => {
   return { path: relative, sha256: hash(bytes), bytes: bytes.length };
 });
 fs.writeFileSync(path.join(root, manifestPath), `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
-console.log(`Rendered ${pdfOutputs.length} current v0.6.3 PDFs and sealed the reconstructed release manifest.`);
+await import('./sync-v063-legacy-package-alias.mjs');
+console.log(`Rendered ${pdfOutputs.length} current v0.6.3 PDFs, sealed the canonical release manifest, and synchronized legacy package aliases.`);
