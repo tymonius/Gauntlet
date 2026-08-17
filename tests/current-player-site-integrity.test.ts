@@ -135,6 +135,7 @@ describe("current v0.6.3 player-site closeout", () => {
     expect(app).toContain('secondLine?.name !== "Second Line"');
     expect(app).toContain('smugglersRun?.name !== "Smuggler\'s Run"');
     expect(app).toContain("const RULEBOOK_URL = '../rulebook/';");
+    expect(app).toContain("const PUBLIC_DATA_EXPORT = '../releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json';");
     expect(app).not.toContain("../browser-rulebook/");
     expect(app).not.toContain("View clean canonical authority");
     expect(app).not.toContain("This reconstruction");
@@ -167,11 +168,12 @@ describe("current v0.6.3 player-site closeout", () => {
     expect(html).toContain("Gauntlet v0.6.3 Deckbuilder");
     expect(html).toContain("Playtest tool · canonical v0.6.3");
     expect(visibleText(html)).not.toContain("v0.6.1");
-    expect(html).toContain('href="../releases/v0.6.3-reconstructed/"');
+    expect(html).toContain('href="../releases/v0.6.3/"');
+    expect(html).not.toContain('href="../releases/v0.6.3-reconstructed/"');
     expect(html).not.toContain('href="../releases/v0.6.1/"');
     expect(html).toMatch(/src="v061-runtime\.js(?:\?[^\"]*)?"/);
     expect(runtime).toContain('const VERSION = "v0.6.3";');
-    expect(runtime).toContain("Gauntlet_v0.6.3_Canonical_Data.json");
+    expect(runtime).toContain('const CANONICAL_URL = "../releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json";');
     expect(runtime).toContain('document.title = "Gauntlet v0.6.3 Deckbuilder"');
     expect(runtime).toContain('.replaceAll("v0.6.1", "v0.6.3")');
     expect(runtime).toContain('data.gameVersion = VERSION');
