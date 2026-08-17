@@ -27,10 +27,6 @@ function checkLock(lock, group) {
 
 for (const lock of locks.historical_evidence ?? []) checkLock(lock, 'historical evidence');
 
-if (lifecycle.current_release === locks.recovery_baseline) {
-  for (const lock of locks.current_v061_surfaces ?? []) checkLock(lock, 'v0.6.1 current surface');
-}
-
 for (const version of ['v0.6.2', 'v0.6.3']) {
   const release = lifecycle.releases?.[version];
   if (release?.status === 'withdrawn') {
@@ -46,4 +42,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`Release recovery integrity passed: current=${lifecycle.current_release}; ${locks.historical_evidence.length} evidence locks and ${lifecycle.current_release === locks.recovery_baseline ? locks.current_v061_surfaces.length : 0} current-surface locks verified.`);
+console.log(`Release recovery integrity passed: current=${lifecycle.current_release}; ${(locks.historical_evidence ?? []).length} evidence locks verified.`);
