@@ -24,6 +24,7 @@ jobs:
             /config/release-lifecycle.json
             /config/github-release-contract.json
             /scripts/validate-current-public-contract.mjs
+            /scripts/validate-current-release-payload.mjs
             /scripts/validate-current-rulebook-booklet-provenance.mjs
             /scripts/validate-github-release-contract.mjs
             /scripts/publication-utils.mjs
@@ -61,5 +62,6 @@ jobs:
       - name: Validate current player-facing publication contract
         run: |
           node scripts/validate-current-public-contract.mjs
+          node scripts/validate-current-release-payload.mjs
           node scripts/validate-current-rulebook-booklet-provenance.mjs
           node scripts/validate-github-release-contract.mjs
