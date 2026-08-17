@@ -42,6 +42,7 @@ describe('TTS supplemental component exports', () => {
     expect(echoesText).toContain('Gambit, Tactic, or Gambit or Tactic effect');
     expect(bloodText).toContain('without setting a Gambit or choosing a Tactic');
     expect(crossingText).toContain('during Denouement');
+    expect(crossingText).not.toContain('Ritual of Ascendance');
     expect(renderer).toContain("image.src = `/${String(record.reverseArtwork");
     expect(renderer).toContain("'mystics-rite-echoes': '◉'");
     expect(renderer).toContain("'mystics-rite-blood': '◆'");
