@@ -9,6 +9,8 @@ const CARD_WIDTH = 240;
 const CARD_HEIGHT = 336;
 const EXPECTED_RITES = ['Rite of Echoes', 'Rite of Blood', 'Rite of Crossing'];
 const EXPECTED_RITUAL = 'Ritual of Ascendance';
+const RITUAL_CARD_BACK_ID = 'ritual-ascendance';
+const RITUAL_CARD_BACK_ART_PATH = '/images/card-backs/mystics/ritual-of-ascendance-card-back.avif';
 const COMPLETED_RITE_ART_PATH = '/images/artwork/supplemental/mystics/rite-completed.webp';
 const COMPLETED_RITE_ART_WIDTH = 1448;
 const COMPLETED_RITE_ART_HEIGHT = 1086;
@@ -20,6 +22,7 @@ function contentType(path) {
     '.mjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
     '.json': 'application/json; charset=utf-8', '.svg': 'image/svg+xml',
     '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp',
+    '.avif': 'image/avif',
   }[extension] || 'application/octet-stream';
 }
 
@@ -66,6 +69,10 @@ async function main() {
     await page.waitForFunction(() => [...document.querySelectorAll('.completed-rite-card .rite-completed-panel > img')].every(image => (
       image.complete && image.naturalWidth > 0 && image.naturalHeight > 0
     )));
+    await page.waitForFunction(() => {
+      const image = document.querySelector('#ritual-ascendance .ritual-card-back__image-window > img');
+      return image?.complete && image.naturalWidth > 0 && image.naturalHeight > 0;
+    });
     await page.evaluate(async () => document.fonts?.ready);
     await page.waitForTimeout(150);
 
@@ -90,7 +97,7 @@ async function main() {
         rulesScale: Number.parseFloat(getComputedStyle(card).getPropertyValue('--rules-scale')) || 1,
         completed,
         ritual,
-        standardCardBack: card.dataset.cardBack,
+        cardBack: card.dataset.cardBack,
         artworkPending: Boolean(card.querySelector('.ritual-art-pending')),
         ruleLabels: [...card.querySelectorAll('.rule-section h4')].map(node => node.textContent?.trim()),
         ruleText: [...card.querySelectorAll('.rule-section p')].map(node => node.textContent?.trim()).join(' '),
@@ -115,11 +122,11 @@ async function main() {
     if (!ritual || !ritual.ritual || ritual.type !== 'Ritual') {
       throw new Error(`Ritual of Ascendance card is missing or mislabeled: ${JSON.stringify(ritual)}.`);
     }
-    if (ritual.standardCardBack !== 'standard') {
-      throw new Error(`Ritual of Ascendance is not marked for the standard playable-card back: ${JSON.stringify(ritual)}.`);
+    if (ritual.cardBack !== RITUAL_CARD_BACK_ID) {
+      throw new Error(`Ritual of Ascendance is not marked for its dedicated card back: ${JSON.stringify(ritual)}.`);
     }
     if (!ritual.artworkPending) {
-      throw new Error(`Ritual of Ascendance must visibly retain its artwork-pending state until approved art is committed: ${JSON.stringify(ritual)}.`);
+      throw new Error(`Ritual of Ascendance must visibly retain its front-artwork-pending state until approved front art is committed: ${JSON.stringify(ritual)}.`);
     }
     const expectedRitualRules = ['Begin', 'Convergence', 'Complete', 'Interrupted'];
     if (expectedRitualRules.some(label => !ritual.ruleLabels.includes(label))) {
@@ -130,13 +137,34 @@ async function main() {
         throw new Error(`Ritual of Ascendance is missing canonical rule text (${phrase}): ${JSON.stringify(ritual)}.`);
       }
     }
-    const ritualReview = await page.locator('#ritual-ascendance').evaluate(section => ({
-      standardCardBack: section.dataset.standardCardBack,
-      completedFaces: section.querySelectorAll('.completed-rite-card').length,
-      faces: section.querySelectorAll('.rite-face').length,
-    }));
-    if (ritualReview.standardCardBack !== 'true' || ritualReview.completedFaces !== 0 || ritualReview.faces !== 1) {
-      throw new Error(`Ritual review must be a single front using the standard card back, not a completed-state pair: ${JSON.stringify(ritualReview)}.`);
+
+    const ritualReview = await page.locator('#ritual-ascendance').evaluate(section => {
+      const back = section.querySelector('.ritual-card-back');
+      const backRect = back?.getBoundingClientRect();
+      const image = back?.querySelector('.ritual-card-back__image-window > img');
+      return {
+        standardCardBack: section.dataset.standardCardBack,
+        completedFaces: section.querySelectorAll('.completed-rite-card').length,
+        faces: section.querySelectorAll('.rite-face').length,
+        dedicatedBacks: section.querySelectorAll('.ritual-card-back').length,
+        backWidth: backRect?.width || 0,
+        backHeight: backRect?.height || 0,
+        backImageNaturalWidth: image?.naturalWidth || 0,
+        backImageNaturalHeight: image?.naturalHeight || 0,
+        backImagePath: image ? new URL(image.currentSrc || image.src).pathname : '',
+      };
+    });
+    if (ritualReview.standardCardBack !== undefined || ritualReview.completedFaces !== 0 || ritualReview.faces !== 2 || ritualReview.dedicatedBacks !== 1) {
+      throw new Error(`Ritual review must contain one front and one dedicated card back, not a completed-state pair or standard back: ${JSON.stringify(ritualReview)}.`);
+    }
+    if (Math.abs(ritualReview.backWidth - CARD_WIDTH) > 0.25 || Math.abs(ritualReview.backHeight - CARD_HEIGHT) > 0.25) {
+      throw new Error(`Ritual card back has unexpected dimensions: ${JSON.stringify(ritualReview)}.`);
+    }
+    if (ritualReview.backImageNaturalWidth <= 0 || ritualReview.backImageNaturalHeight <= 0) {
+      throw new Error(`Ritual card-back artwork did not load: ${JSON.stringify(ritualReview)}.`);
+    }
+    if (ritualReview.backImagePath !== RITUAL_CARD_BACK_ART_PATH) {
+      throw new Error(`Ritual of Ascendance uses the wrong card-back artwork: ${JSON.stringify(ritualReview)}.`);
     }
 
     for (const metric of metrics) {
@@ -165,7 +193,7 @@ async function main() {
 
     await page.locator('#rite-cards').screenshot({ path: join(OUTPUT, 'mystics-rite-card-review.png') });
     await page.locator('#ritual-ascendance').screenshot({ path: join(OUTPUT, 'ritual-of-ascendance-review.png') });
-    console.log(JSON.stringify(metrics, null, 2));
+    console.log(JSON.stringify({ metrics, ritualReview }, null, 2));
   } finally {
     await browser.close();
     await new Promise(resolve => server.close(resolve));
