@@ -79,6 +79,7 @@ jobs:
               .addHeading('Test routing')
               .addTable([
                 [{data: 'Check', header: true}, {data: 'Run?', header: true}],
+                ['Release-path normalization', 'true'],
                 ['Vitest', String(code)],
                 ['Full Vitest suite', String(fullTests)],
                 ['TypeScript', String(types)],
@@ -90,10 +91,12 @@ jobs:
               .write();
 
       - name: Checkout
-        if: steps.scope.outputs.relevant == 'true'
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
+
+      - name: Audit repository-wide release path normalization
+        run: node scripts/validate-release-path-normalization.mjs
 
       - name: Setup Node
         if: steps.scope.outputs.relevant == 'true'
@@ -148,6 +151,6 @@ jobs:
         if: steps.scope.outputs.media == 'true'
         run: npm run media:check
 
-      - name: No repository test work required
+      - name: No scoped repository test work required
         if: steps.scope.outputs.relevant != 'true'
-        run: echo 'No repository-owned regression checks are relevant to this change.'
+        run: echo 'Release-path normalization passed; no additional repository-owned regression checks are relevant to this change.'
