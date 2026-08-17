@@ -163,6 +163,43 @@
   user-select: none;
 }
 
+/* The Ritual uses its own reverse rather than the standard playable-card back.
+   The approved manuscript image already runs edge-to-edge as paper, so the
+   physical Mystics frame can crop into it without exposing a parchment edge. */
+.ritual-card-back {
+  padding: 0;
+  border-color: #38204e;
+  background: #5d347e;
+  box-shadow:
+    0 0.16in 0.36in var(--card-shadow),
+    inset 0 0 0 0.015in rgba(255, 255, 255, 0.24);
+}
+
+.ritual-card-back::before {
+  z-index: 3;
+  border-color: rgba(251, 244, 255, 0.38);
+}
+
+.ritual-card-back__image-window {
+  position: absolute;
+  inset: 0.075in;
+  overflow: hidden;
+  border: 1px solid #38204e;
+  border-radius: 0.055in;
+  background: #492962;
+}
+
+.ritual-card-back__image-window > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: center;
+  pointer-events: none;
+  user-select: none;
+}
+
 /* Completed faces become useful table references rather than dead rules text.
    The four rows are identical on every completed Rite because progression is
    based on the number of completed Rites, not which named Rite completed. */
@@ -233,7 +270,7 @@
 }
 
 .ritual-face-grid {
-  grid-template-columns: 2.5in;
+  grid-template-columns: repeat(2, 2.5in);
 }
 
 .rite-face {
@@ -268,8 +305,12 @@
 @media print {
   .rite-faction-emblem,
   .rite-completed-panel,
-  .rite-completed-panel > img {
+  .rite-completed-panel > img,
+  .ritual-card-back,
+  .ritual-card-back__image-window,
+  .ritual-card-back__image-window > img {
     print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
   }
 
   .rite-review-pair {
