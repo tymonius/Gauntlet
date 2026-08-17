@@ -9,6 +9,10 @@ import {
   PLAYABLE_BACK_FACTIONS,
   ROOT,
 } from './tts-current-catalog.mjs';
+import {
+  loadTtsComponentContract,
+  resolveStandardBackFile,
+} from './tts-component-contract.mjs';
 
 function jsonText(value) {
   return `${JSON.stringify(value, null, 2)}\n`;
@@ -140,15 +144,20 @@ function flattenCardManifest(manifest) {
 }
 
 function flattenTerritoryManifest(manifest) {
+  if (manifest.backPolicy !== 'standardBack') {
+    throw new Error(`Territory manifest must use standardBack; found ${manifest.backPolicy || 'missing'}.`);
+  }
   const result = new Map();
   for (const sheet of manifest.sheets || []) {
+    if (sheet.backPolicy !== 'standardBack') {
+      throw new Error(`Territory sheet ${sheet.sheetNumber} must use standardBack; found ${sheet.backPolicy || 'missing'}.`);
+    }
     for (const territory of sheet.cards || []) {
       result.set(territory.id, {
         ...territory,
         sheetNumber: sheet.sheetNumber,
         deckId: sheet.deckId,
         faceFile: sheet.faceFile,
-        backFile: sheet.backFile,
         numWidth: sheet.numWidth,
         numHeight: sheet.numHeight,
       });
@@ -177,18 +186,19 @@ function makePlayableReference(card, render, quantity) {
   };
 }
 
-function makeTerritoryReference(territory, render) {
+function makeTerritoryReference(territory, render, backFile) {
   return {
     id: territory.id,
     name: territory.name,
     arena: territory.arena,
+    backPolicy: 'standardBack',
     tts: {
       cardId: render.ttsCardId,
       deckId: render.deckId,
       sheetNumber: render.sheetNumber,
       index: render.index,
       faceFile: render.faceFile,
-      backFile: render.backFile,
+      backFile,
       numWidth: render.numWidth,
       numHeight: render.numHeight,
     },
@@ -205,7 +215,7 @@ function makeLeaderReference(leader, render) {
   };
 }
 
-function buildStarterManifest(starterDecks, catalog, leaders, cardManifest, territoryManifest, leaderManifest) {
+function buildStarterManifest(starterDecks, catalog, leaders, cardManifest, territoryManifest, leaderManifest, componentContract) {
   const { cardByName, territoryByName, leaderByKey } = validateStarterDecks(starterDecks, catalog, leaders);
   const renderedCards = flattenCardManifest(cardManifest);
   const renderedTerritories = flattenTerritoryManifest(territoryManifest);
@@ -222,16 +232,17 @@ function buildStarterManifest(starterDecks, catalog, leaders, cardManifest, terr
   const decks = starterDecks.decks.map((deck) => {
     const faction = String(deck.factionId).trim().toLowerCase();
     const leaderId = String(deck.leaderId).trim().toLowerCase();
-    const backFile = `backs/${faction}.png`;
-    if (!cardManifest.backVariants?.[faction] || cardManifest.backVariants[faction].file !== backFile) {
-      throw new Error(`Generated card manifest does not provide the ${faction} production back required by ${deck.id}.`);
+    const backFile = resolveStandardBackFile(componentContract, faction);
+    const backVariant = backFile.replace(/^backs\//, '').replace(/\.png$/i, '');
+    if (!cardManifest.backVariants?.[backVariant] || cardManifest.backVariants[backVariant].file !== backFile) {
+      throw new Error(`Generated card manifest does not provide the standard back ${backFile} required by ${deck.id}.`);
     }
 
     const canonicalLeader = leaderByKey.get(`${faction}:${leaderId}`);
     const renderedLeader = renderedLeaders.get(`${faction}:${leaderId}`);
     if (!renderedLeader) throw new Error(`Rendered Leader manifest is missing ${faction}:${leaderId} required by ${deck.id}.`);
     if (renderedLeader.tts?.backFile !== backFile) {
-      throw new Error(`Rendered Leader ${faction}:${leaderId} does not use the ${faction} production back required by ${deck.id}.`);
+      throw new Error(`Rendered Leader ${faction}:${leaderId} does not use resolved standard back ${backFile} required by ${deck.id}.`);
     }
     const leader = makeLeaderReference(canonicalLeader, renderedLeader);
 
@@ -246,7 +257,7 @@ function buildStarterManifest(starterDecks, catalog, leaders, cardManifest, terr
       const territory = territoryByName.get(name);
       const render = renderedTerritories.get(territory.id);
       if (!render) throw new Error(`Rendered Territory manifest is missing ${territory.id} required by ${deck.id}.`);
-      return makeTerritoryReference(territory, render);
+      return makeTerritoryReference(territory, render, backFile);
     });
 
     const faceSheetMap = new Map();
@@ -284,8 +295,10 @@ function buildStarterManifest(starterDecks, catalog, leaders, cardManifest, terr
       back: {
         faction,
         file: backFile,
-        assignment: 'player-faction',
-        neutralCardsUsePlayerFactionBack: true,
+        policy: 'standardBack',
+        mode: componentContract.standardBack.mode,
+        neutralCardsUseSameStandardBack: true,
+        territoriesUseSameStandardBack: true,
       },
       cards,
       deckCardIds,
@@ -297,16 +310,20 @@ function buildStarterManifest(starterDecks, catalog, leaders, cardManifest, terr
   });
 
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     gameVersion: catalog.gameVersion,
     release: catalog.release,
     source: {
       starterDecks: catalog.release.starterDecksSource,
       starterDeckDataVersion: starterDecks.version || null,
       starterDeckDataStatus: starterDecks.status || null,
+      componentContract: 'config/tts-component-contract.json',
     },
     construction: starterDecks.construction || {},
-    backPolicy: cardManifest.backPolicy,
+    backPolicy: {
+      policy: 'standardBack',
+      ...componentContract.standardBack,
+    },
     deckCount: decks.length,
     decks,
   };
@@ -328,18 +345,24 @@ async function readGeneratedManifests(outputRoot) {
 
 async function main() {
   const checkOnly = process.argv.includes('--check');
-  const catalog = await buildCatalog();
-  const { release, starterDecks } = await loadCurrentStarterDecks();
-  const { leaders } = await loadCurrentLeaders();
+  const [catalog, currentStarterDecks, currentLeaders, componentContract] = await Promise.all([
+    buildCatalog(),
+    loadCurrentStarterDecks(),
+    loadCurrentLeaders(),
+    loadTtsComponentContract(),
+  ]);
+  const { release, starterDecks } = currentStarterDecks;
+  const { leaders } = currentLeaders;
   validateStarterDecks(starterDecks, catalog, leaders);
 
   if (checkOnly) {
-    console.log(`Current TTS starter-deck source check passed for ${catalog.gameVersion}: ${starterDecks.decks.length} starter decks.`);
+    for (const deck of starterDecks.decks) resolveStandardBackFile(componentContract, String(deck.factionId).trim().toLowerCase());
+    console.log(`Current TTS starter-deck source check passed for ${catalog.gameVersion}: ${starterDecks.decks.length} starter decks using ${componentContract.standardBack.mode} standard backs.`);
     return;
   }
 
   const { cardManifest, territoryManifest, leaderManifest } = await readGeneratedManifests(release.outputRoot);
-  const manifest = buildStarterManifest(starterDecks, catalog, leaders, cardManifest, territoryManifest, leaderManifest);
+  const manifest = buildStarterManifest(starterDecks, catalog, leaders, cardManifest, territoryManifest, leaderManifest, componentContract);
   const outputPath = join(release.outputRoot, 'starter-deck-manifest.json');
   const aliasPath = join(CURRENT_ALIAS_ROOT, 'starter-deck-manifest.json');
   await writeFile(outputPath, jsonText(manifest));
