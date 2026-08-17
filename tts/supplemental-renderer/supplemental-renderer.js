@@ -16,6 +16,16 @@ function element(tag, className, text = '') {
   return node;
 }
 
+function riteHeader(record, kicker) {
+  const header = element('header', 'rite-header');
+  header.append(
+    element('p', 'rite-kicker', kicker),
+    element('h1', 'rite-title', record.name),
+    element('div', 'rite-symbol', riteSymbols[record.id] || '✦'),
+  );
+  return header;
+}
+
 function renderBlock(block) {
   const wrapper = element('div', 'rite-block');
   if (block.label) {
@@ -41,26 +51,26 @@ function renderFront(record) {
   card.dataset.componentId = record.id;
   card.dataset.renderer = record.renderer;
 
-  const header = element('header', 'rite-header');
-  header.append(
-    element('p', 'rite-kicker', 'Incomplete Rite'),
-    element('h1', 'rite-title', record.name),
-    element('div', 'rite-symbol', riteSymbols[record.id] || '✦'),
-  );
-
   const rules = element('section', 'rite-rules');
   for (const block of record.front?.blocks || []) rules.append(renderBlock(block));
 
-  card.append(header, rules, element('div', 'rite-source-note', `${record.name} • incomplete side`));
+  card.append(
+    riteHeader(record, 'Incomplete Rite'),
+    rules,
+    element('div', 'rite-source-note', `${record.name} • incomplete side`),
+  );
   target.replaceChildren(card);
   document.body.dataset.renderReady = 'true';
 }
 
 function renderReverse(record) {
-  const card = element('article', 'supplemental-card reverse-card');
+  const card = element('article', 'supplemental-card completed-card');
   card.dataset.componentId = record.id;
+  card.dataset.renderer = record.renderer;
+
+  const art = element('div', 'completed-art');
   const image = document.createElement('img');
-  image.alt = `${record.name} completed side`;
+  image.alt = `${record.name} completed graphic`;
   image.addEventListener('load', () => {
     document.body.dataset.renderReady = 'true';
   }, { once: true });
@@ -68,7 +78,13 @@ function renderReverse(record) {
     throw new Error(`Failed to load reverse artwork for ${record.id}: ${record.reverseArtwork}`);
   }, { once: true });
   image.src = `/${String(record.reverseArtwork || '').replace(/^\/+/, '')}`;
-  card.append(image);
+  art.append(image);
+
+  card.append(
+    riteHeader(record, 'Rite Completed'),
+    art,
+    element('div', 'rite-source-note', `${record.name} • completed side`),
+  );
   target.replaceChildren(card);
 }
 
