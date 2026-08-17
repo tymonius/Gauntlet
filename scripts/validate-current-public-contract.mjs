@@ -153,6 +153,11 @@ const changelogRoute = '/changelog/';
 const withdrawnVersionRoutes = Object.entries(lifecycle.releases ?? {})
   .filter(([, release]) => release?.status === 'withdrawn')
   .flatMap(([version]) => [`/${version}/`, `/releases/${version}/`]);
+const withdrawnPackageRoutes = Object.values(lifecycle.releases ?? {})
+  .map((release) => release?.historical_package_path)
+  .filter(Boolean)
+  .map((packagePath) => `${publicPath(packagePath).replace(/\/+$/, '')}/`);
+const forbiddenWithdrawnRoutes = [...new Set([...withdrawnVersionRoutes, ...withdrawnPackageRoutes])];
 const corePages = [
   '/',
   releaseLandingRoute,
@@ -172,7 +177,7 @@ for (const route of uniqueCorePages) {
   const normalizedRefs = htmlRefs(html)
     .map((ref) => normalizeRef(route, ref))
     .filter(Boolean);
-  for (const withdrawnRoute of withdrawnVersionRoutes) {
+  for (const withdrawnRoute of forbiddenWithdrawnRoutes) {
     assert(
       !normalizedRefs.some((ref) => ref === withdrawnRoute || ref.startsWith(withdrawnRoute)),
       `${route} links to withdrawn release route ${withdrawnRoute}.`,
