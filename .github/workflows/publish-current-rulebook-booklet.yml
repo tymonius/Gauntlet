@@ -66,10 +66,13 @@ jobs:
       - name: Commit canonical booklet payload and compatibility alias
         env:
           GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
         run: |
+          set -euo pipefail
+          alias_root="$(node -e "const l=require('./config/release-lifecycle.json'); const a=l.releases?.[l.current_release]?.legacy_package_aliases || []; if(a.length!==1) process.exit(2); process.stdout.write(String(a[0]).replace(/\/$/,''))")"
           node scripts/commit-generated-files.mjs \
             "Publish approved v0.6.3 Rulebook booklet with official wordmark" -- \
             releases/v0.6.3/Gauntlet_v0.6.3_Rulebook_Booklet.pdf \
             releases/v0.6.3/Gauntlet_v0.6.3_Manifest.json \
-            releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook_Booklet.pdf \
-            releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Manifest.json
+            "$alias_root/Gauntlet_v0.6.3_Rulebook_Booklet.pdf" \
+            "$alias_root/Gauntlet_v0.6.3_Manifest.json"
