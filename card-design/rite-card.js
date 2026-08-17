@@ -1,6 +1,7 @@
 const RITE_SOURCE = '/artifacts/reconstruction/clean-v0.6.3/faction-guides/mystics/Gauntlet_v0.6.3_Mystics_Faction_Guide.md';
 const RITE_ART_ROOT = '../images/artwork/cards/mystics/rites-and-rituals';
 const COMPLETED_RITE_ART_SOURCE = '../images/artwork/supplemental/mystics/rite-completed.webp';
+const RITUAL_CARD_BACK_SOURCE = '../images/card-backs/mystics/ritual-of-ascendance-card-back.avif';
 
 const RITES = Object.freeze([
   {
@@ -104,6 +105,14 @@ function ritualArtwork() {
   </figure>`;
 }
 
+function ritualCardBack() {
+  return `<article class="gauntlet-card ritual-card-back mystic-card" data-faction="mystics" aria-label="${esc(RITUAL.name)} card back">
+    <div class="ritual-card-back__image-window">
+      <img src="${RITUAL_CARD_BACK_SOURCE}" alt="Ritual working sheet drawn in deep purple ink, with mystical symbols surrounded by alchemical notes, diagrams, and formulas" />
+    </div>
+  </article>`;
+}
+
 function riteFace(rite, completed = false) {
   const type = completed ? 'Completed Rite' : 'Rite';
   const rules = completed
@@ -138,7 +147,7 @@ function ritualFace() {
     ruleSection('Interrupted', RITUAL.interrupted),
   ].join('');
 
-  return `<article class="gauntlet-card faction-component-card rite-card ritual-card mystic-card dense-card" data-faction="mystics" data-art-max="1.16" data-art-min="0.64" data-title-min="8.5" data-card-back="standard" aria-label="${esc(RITUAL.name)} Ritual card" data-rite-source="${RITE_SOURCE}">
+  return `<article class="gauntlet-card faction-component-card rite-card ritual-card mystic-card dense-card" data-faction="mystics" data-art-max="1.16" data-art-min="0.64" data-title-min="8.5" data-card-back="ritual-ascendance" aria-label="${esc(RITUAL.name)} Ritual card" data-rite-source="${RITE_SOURCE}">
     <div class="card-interior">
       <header class="card-heading">
         <h3 class="card-title">${esc(RITUAL.name)}</h3>
@@ -171,15 +180,19 @@ function reviewPair(rite) {
 }
 
 function ritualReview() {
-  return `<section class="rite-review-pair ritual-review" id="ritual-ascendance" aria-labelledby="ritual-ascendance-title" data-standard-card-back="true">
+  return `<section class="rite-review-pair ritual-review" id="ritual-ascendance" aria-labelledby="ritual-ascendance-title">
     <div class="review-faction-heading screen-only">
       <h3 id="ritual-ascendance-title">${esc(RITUAL.name)}</h3>
-      <span>Single-sided Ritual · standard card back</span>
+      <span>Single-sided Ritual · dedicated card back</span>
     </div>
     <div class="rite-face-grid ritual-face-grid">
       <div class="rite-face">
         <p class="rite-face-label screen-only"><strong>Ritual</strong><span>Victory card</span></p>
         ${ritualFace()}
+      </div>
+      <div class="rite-face">
+        <p class="rite-face-label screen-only"><strong>Back</strong><span>Ritual working sheet</span></p>
+        ${ritualCardBack()}
       </div>
     </div>
   </section>`;
