@@ -147,7 +147,7 @@ describe('durable current-release TTS pipeline', () => {
     expect(releaseStager).toContain('for (const leader of leaderManifest.leaders || [])');
     expect(savePublisher).toContain('const rows = Math.ceil(total / 2)');
     expect(readme).toContain('additional sheets/deck IDs created automatically');
-    expect(readme).toContain('does not hard-code the number of starter decks or Leaders');
+    expect(readme).toContain('does not hard-code starter, card, Leader, or Territory counts');
   });
 
   it('keeps CI release-agnostic and watches release authority changes', () => {
