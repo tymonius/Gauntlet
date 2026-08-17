@@ -21,7 +21,7 @@ Every open issue must have a current top-level triage comment containing the mar
 
 When the tracked work is complete, superseded, duplicated, or no longer planned, close the issue with the appropriate GitHub state reason rather than leaving it open as project memory.
 
-Refresh the triage comment whenever the status, blocker, or next step changes. The automated issue-triage audit also treats a triage record older than 90 days as stale so long-lived issues must be consciously reviewed rather than silently forgotten.
+Refresh the triage comment whenever the status, blocker, or next step changes. The automated issue-triage audit also treats a triage record older than 14 days as stale so long-lived issues must be consciously reviewed rather than silently forgotten.
 
 ## Rules, cards, terminology, and release data
 
