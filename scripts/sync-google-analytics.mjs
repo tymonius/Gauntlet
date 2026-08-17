@@ -23,7 +23,9 @@ const ANALYTICS_EXCLUDED_FILES = new Set([
   "artifacts/reconstruction/clean-v0.6.3/start/index.html",
   "artifacts/reconstruction/clean-v0.6.3/deckbuilder/index.html",
   // Redirect shim; analytics belongs on the canonical /v0.6.3/ landing page.
-  "releases/v0.6.3-reconstructed/index.html",
+  "releases/v0.6.3/index.html",
+  // Render-only TTS capture surface; it is not a public navigation page.
+  "tts/back-renderer/index.html",
   // Versioned development/review surfaces are not public analytics pages.
   "v0.6.3/changes/index.html",
   "v0.6.3/deckbuilder/index.html",
