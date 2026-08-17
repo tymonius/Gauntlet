@@ -73,12 +73,14 @@ jobs:
           node scripts/validate-clean-v063-booklet.mjs
 
       - name: Exercise canonical materialization and legacy-alias sync
+        shell: bash
         run: |
           set -euo pipefail
           node scripts/materialize-clean-v063-booklet.mjs
           node scripts/sync-v063-legacy-package-alias.mjs
           node scripts/validate-current-rulebook-booklet-provenance.mjs
-          diff -qr releases/v0.6.3 releases/v0.6.3-reconstructed
+          alias_root="$(node -e "const l=require('./config/release-lifecycle.json'); const a=l.releases?.[l.current_release]?.legacy_package_aliases || []; if(a.length!==1) process.exit(2); process.stdout.write(String(a[0]).replace(/\/$/,''))")"
+          diff -qr releases/v0.6.3 "$alias_root"
 
       - name: Upload current booklet review artifact
         uses: actions/upload-artifact@v4
