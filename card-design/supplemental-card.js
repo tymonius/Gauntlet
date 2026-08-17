@@ -175,7 +175,7 @@ function trackerMarks(component, resourceName) {
 function trackerFace(component, faction, factionLabel) {
   const { max, cover, scaleHeight, labelSize } = component.tracker;
   const resourceName = component.name.replace(/\s+Tracker$/, '');
-  return `<article class="gauntlet-card faction-component-card sliding-tracker-card ${esc(faction)}-card" data-faction="${esc(faction)}" aria-label="${esc(component.name)} sliding tracker, physical scale 0 through ${max}">
+  return `<article class="gauntlet-card faction-component-card sliding-tracker-card ${esc(faction)}-card" data-faction="${esc(faction)}" data-component-id="${esc(component.id)}" aria-label="${esc(component.name)} sliding tracker, physical scale 0 through ${max}">
     <div class="card-interior tracker-interior">
       <span class="tracker-watermark" aria-hidden="true"></span>
       <header class="tracker-heading">
