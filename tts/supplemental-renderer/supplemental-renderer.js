@@ -141,43 +141,6 @@ function referenceHeader(record, face, sideName) {
   return header;
 }
 
-function sectionWeight(section) {
-  const headingWeight = String(section?.heading || '').length * 4;
-  const bodyWeight = JSON.stringify(section?.blocks || []).length;
-  return Math.max(1, headingWeight + bodyWeight);
-}
-
-function balancedReferenceFaces(faces) {
-  const front = faces?.front;
-  const reverse = faces?.reverse;
-  if (!front?.sections?.length || !reverse?.sections?.length) return faces;
-
-  const sections = [...front.sections, ...reverse.sections];
-  const originalBoundary = front.sections.length;
-  const weights = sections.map(sectionWeight);
-  const total = weights.reduce((sum, weight) => sum + weight, 0);
-  let left = 0;
-  let bestBoundary = originalBoundary;
-  let bestScore = Number.POSITIVE_INFINITY;
-
-  for (let boundary = 1; boundary < sections.length; boundary += 1) {
-    left += weights[boundary - 1];
-    const right = total - left;
-    const imbalance = Math.abs(left - right);
-    const movementPenalty = Math.abs(boundary - originalBoundary) * total * 0.035;
-    const score = imbalance + movementPenalty;
-    if (score < bestScore) {
-      bestScore = score;
-      bestBoundary = boundary;
-    }
-  }
-
-  return {
-    front: { ...front, sections: sections.slice(0, bestBoundary) },
-    reverse: { ...reverse, sections: sections.slice(bestBoundary) },
-  };
-}
-
 function fitReferenceCard(card) {
   const body = card.querySelector('.reference-body');
   if (!body) return;
@@ -199,8 +162,7 @@ function fitReferenceCard(card) {
 }
 
 function renderReference(record, sideName) {
-  const balancedFaces = balancedReferenceFaces(record.faces);
-  const face = balancedFaces?.[sideName];
+  const face = record.faces?.[sideName];
   if (!face) throw new Error(`Reference card ${record.id} has no ${sideName} face.`);
 
   const card = element('article', 'supplemental-card reference-card');
