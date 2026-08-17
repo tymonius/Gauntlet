@@ -48,11 +48,11 @@ jobs:
             /images/faction-symbols/*.svg
             /releases/*/Gauntlet_*_Manifest.json
             /releases/*/Gauntlet_*_Rulebook_Booklet.pdf
-            /releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.pdf
-            /releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Card_and_Territory_Reference.pdf
-            /releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Starter_Deck_Catalog.pdf
-            /releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Canonical_Data.json
-            /releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Starter_Decks.json
+            /releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.pdf
+            /releases/v0.6.3/Gauntlet_v0.6.3_Card_and_Territory_Reference.pdf
+            /releases/v0.6.3/Gauntlet_v0.6.3_Starter_Deck_Catalog.pdf
+            /releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json
+            /releases/v0.6.3/Gauntlet_v0.6.3_Starter_Decks.json
 
       - name: Set up Node
         uses: actions/setup-node@v4
