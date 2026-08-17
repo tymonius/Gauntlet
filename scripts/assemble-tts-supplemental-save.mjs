@@ -15,6 +15,10 @@ function color(r = 1, g = 1, b = 1) {
   return { r, g, b };
 }
 
+function vector(x = 0, y = 0, z = 0) {
+  return { x, y, z };
+}
+
 function transform(posX = 0, posY = 1, posZ = 0, rotY = 0, scaleX = 1, scaleY = 1, scaleZ = 1) {
   return { posX, posY, posZ, rotX: 0, rotY, rotZ: 0, scaleX, scaleY, scaleZ };
 }
@@ -46,9 +50,6 @@ function makeContinuationGuidFactory(save) {
 }
 
 function makeSupplementalCard(component, releaseAssets, guid) {
-  if (component.representation !== 'card') {
-    throw new Error(`Ready supplemental component ${component.id} uses unsupported save representation ${component.representation || 'missing'}.`);
-  }
   if (!component.tts?.faceFile || !component.tts?.backFile || !component.tts?.deckId) {
     throw new Error(`Ready supplemental card ${component.id} is missing rendered TTS metadata.`);
   }
@@ -89,6 +90,75 @@ function makeSupplementalCard(component, releaseAssets, guid) {
   };
 }
 
+function makeTrackerSnapPoints(component) {
+  const tag = String(component.tts?.snapTag || '').trim();
+  const points = component.tts?.snapPoints;
+  if (!tag || !Array.isArray(points) || points.length < 2) {
+    throw new Error(`Ready sliding tracker ${component.id} is missing snap tag or renderer-derived snap points.`);
+  }
+  if (points[0]?.value !== 0 || Number(points[0]?.offset) !== 0) {
+    throw new Error(`Ready sliding tracker ${component.id} must begin with its fully covered 0 registration.`);
+  }
+
+  return points.map((point) => ({
+    Position: vector(0, 0.12, Number(point.offset)),
+    Rotation: vector(0, 0, 0),
+    Tags: [tag],
+  }));
+}
+
+function makeSlidingTracker(component, starter, releaseAssets, guid) {
+  if (!component.tts?.faceFile || component.tts?.stackable !== false) {
+    throw new Error(`Ready sliding tracker ${component.id} is missing its production face or non-stackable metadata.`);
+  }
+  if (!starter.back?.file) throw new Error(`Starter ${starter.id} has no standard back for tracker ${component.id}.`);
+
+  const faceUrl = requireHostedUrl(releaseAssets, component.tts.faceFile);
+  const backUrl = requireHostedUrl(releaseAssets, starter.back.file);
+  const snapTag = String(component.tts.snapTag || '').trim();
+
+  return {
+    Name: 'Custom_Tile',
+    Transform: transform(),
+    Nickname: component.name || component.id,
+    Description: `${component.faction || 'Faction'} sliding tracker · ${component.physicalScale?.minimum ?? 0}–${component.physicalScale?.maximum ?? '?'}`,
+    GMNotes: `${SUPPLEMENTAL_GUID_NOTE_PREFIX}${component.id}`,
+    ColorDiffuse: color(),
+    Locked: false,
+    Grid: false,
+    Snap: true,
+    Autoraise: true,
+    Sticky: false,
+    Tooltip: true,
+    GridProjection: false,
+    HideWhenFaceDown: false,
+    Hands: false,
+    LuaScript: '',
+    LuaScriptState: '',
+    XmlUI: '',
+    GUID: guid(),
+    Tags: [snapTag],
+    AttachedSnapPoints: makeTrackerSnapPoints(component),
+    CustomImage: {
+      ImageURL: faceUrl,
+      ImageSecondaryURL: backUrl,
+      WidthScale: Number(component.tts.widthScale || 2.5),
+      CustomTile: {
+        Type: 0,
+        Thickness: Number(component.tts.thickness || 0.05),
+        Stackable: false,
+        Stretch: true,
+      },
+    },
+  };
+}
+
+function makeSupplementalObject(component, starter, releaseAssets, guid) {
+  if (component.representation === 'card') return makeSupplementalCard(component, releaseAssets, guid);
+  if (component.representation === 'sliding-tracker') return makeSlidingTracker(component, starter, releaseAssets, guid);
+  throw new Error(`Ready supplemental component ${component.id} uses unsupported save representation ${component.representation || 'missing'}.`);
+}
+
 function starterBagNickname(starter) {
   return `${starter.name} — ${starter.leader.name}`;
 }
@@ -122,6 +192,42 @@ function validateSupplementalManifest(supplementalManifest, version) {
   return ready;
 }
 
+function addObjectTag(object, tag) {
+  if (!tag) return;
+  const tags = new Set(Array.isArray(object.Tags) ? object.Tags : []);
+  tags.add(tag);
+  object.Tags = [...tags].sort();
+}
+
+function removeGeneratedTrackerTags(object, generatedTags) {
+  if (!Array.isArray(object?.Tags)) return;
+  object.Tags = object.Tags.filter((tag) => !generatedTags.has(tag));
+  if (!object.Tags.length) delete object.Tags;
+}
+
+function resolveTrackerCover(bag, starter, tracker) {
+  const cover = tracker.cover;
+  if (cover?.kind === 'leader') {
+    const leaderCardId = Number(starter.leader?.tts?.cardId);
+    const matches = (bag.ContainedObjects || []).filter((object) => object?.Name === 'CardCustom' && Number(object.CardID) === leaderCardId);
+    if (matches.length !== 1) {
+      throw new Error(`Tracker ${tracker.id} expected exactly one selected Leader cover in starter ${starter.id}; found ${matches.length}.`);
+    }
+    return matches[0];
+  }
+
+  if (cover?.kind === 'component') {
+    const marker = `${SUPPLEMENTAL_GUID_NOTE_PREFIX}${cover.componentId}`;
+    const matches = (bag.ContainedObjects || []).filter((object) => object?.GMNotes === marker);
+    if (matches.length !== 1) {
+      throw new Error(`Tracker ${tracker.id} expected exactly one supplemental cover ${cover.componentId} in starter ${starter.id}; found ${matches.length}.`);
+    }
+    return matches[0];
+  }
+
+  throw new Error(`Tracker ${tracker.id} has unsupported cover definition ${JSON.stringify(cover || null)}.`);
+}
+
 export function assembleReadySupplementals(save, starterManifest, supplementalManifest, releaseAssets) {
   const version = String(starterManifest?.gameVersion || '').trim();
   if (!version) throw new Error('Starter manifest does not declare gameVersion.');
@@ -138,10 +244,13 @@ export function assembleReadySupplementals(save, starterManifest, supplementalMa
   for (const starter of starters) {
     const bag = findStarterBag(save, starter);
     const factionComponents = ready.filter((component) => component.faction === starter.factionId);
+    const factionTrackers = factionComponents.filter((component) => component.representation === 'sliding-tracker');
+    const generatedTrackerTags = new Set(factionTrackers.map((component) => component.tts?.snapTag).filter(Boolean));
 
     bag.ContainedObjects = (bag.ContainedObjects || []).filter(
       (object) => !String(object?.GMNotes || '').startsWith(SUPPLEMENTAL_GUID_NOTE_PREFIX),
     );
+    for (const object of bag.ContainedObjects || []) removeGeneratedTrackerTags(object, generatedTrackerTags);
 
     const placedNames = [];
     for (const component of factionComponents) {
@@ -150,10 +259,15 @@ export function assembleReadySupplementals(save, starterManifest, supplementalMa
         throw new Error(`Ready supplemental component ${component.id} has invalid quantity ${component.quantity}.`);
       }
       for (let copy = 0; copy < quantity; copy += 1) {
-        bag.ContainedObjects.push(makeSupplementalCard(component, releaseAssets, guid));
+        bag.ContainedObjects.push(makeSupplementalObject(component, starter, releaseAssets, guid));
         placedCount += 1;
       }
       placedNames.push(quantity === 1 ? component.name : `${component.name} ×${quantity}`);
+    }
+
+    for (const tracker of factionTrackers) {
+      const cover = resolveTrackerCover(bag, starter, tracker);
+      addObjectTag(cover, tracker.tts.snapTag);
     }
 
     const baseDescription = stripSupplementalDescription(bag.Description);
@@ -163,7 +277,7 @@ export function assembleReadySupplementals(save, starterManifest, supplementalMa
   }
 
   const oldSentence = 'This scaffold intentionally does not yet include faction-specific supplemental trackers or secondary components. Rules remain manual.';
-  const newSentence = 'Faction supplemental components marked ready are included automatically in the matching starter kits; pending components remain excluded. Rules remain manual.';
+  const newSentence = 'Faction supplemental components marked ready are included automatically in the matching starter kits; sliding trackers use production-derived snap registration and tagged physical cover cards. Rules remain manual.';
   for (const field of ['Note', 'Rules']) {
     const text = String(save[field] || '');
     save[field] = text.includes(oldSentence)
