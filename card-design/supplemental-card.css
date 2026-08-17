@@ -210,10 +210,10 @@
 }
 
 /* The tracker title rail is deliberately single-line. Operation Progress is
-   the one current tracker name that exceeds the standard title measure, so fit
-   it against the actual production-card width rather than relying on the
-   scaled-down catalog thumbnail to hide clipping. */
-#supplemental-intelligence-operation-progress-tracker .tracker-heading h3 {
+   the one current tracker name that exceeds the standard title measure. Keep
+   the component identity on the card itself so this fit rule also survives the
+   inspection dialog, which clones the card without its catalog wrapper. */
+.sliding-tracker-card[data-component-id="operation-progress-tracker"] .tracker-heading h3 {
   font-size: 10.1pt;
   letter-spacing: 0.006em;
 }
