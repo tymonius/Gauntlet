@@ -125,8 +125,7 @@ function parseMarkdownBlocks(sourceLines, sourceName) {
   };
 
   for (let index = 0; index < sourceLines.length; index += 1) {
-    const original = sourceLines[index];
-    let line = original.trim();
+    let line = sourceLines[index].trim();
 
     if (!line) {
       flushText();
@@ -157,7 +156,7 @@ function parseMarkdownBlocks(sourceLines, sourceName) {
       }
       index -= 1;
 
-      let headers = rows.shift() || [];
+      const headers = rows.shift() || [];
       if (rows.length && isSeparatorRow(rows[0])) rows.shift();
       if (!headers.length || !rows.length) {
         throw new Error(`Malformed Markdown table while extracting ${sourceName}.`);
@@ -375,8 +374,13 @@ async function captureCard(page, baseUrl, record, side, outputPath) {
   await page.goto(`${baseUrl}/tts/supplemental-renderer/?component=${encodeURIComponent(record.id)}&side=${encodeURIComponent(side)}`, { waitUntil: 'load' });
   await page.waitForSelector('.supplemental-card');
   await page.waitForFunction(() => document.body.dataset.renderReady === 'true' || document.body.dataset.renderError === 'true');
-  const error = await page.evaluate(() => document.body.dataset.renderError === 'true');
-  if (error) throw new Error(`Supplemental renderer failed for ${record.id} (${side}).`);
+  const renderState = await page.evaluate(() => ({
+    error: document.body.dataset.renderError === 'true',
+    message: document.body.dataset.renderErrorMessage || '',
+  }));
+  if (renderState.error) {
+    throw new Error(`Supplemental renderer failed for ${record.id} (${side}): ${renderState.message || 'browser renderer reported an unspecified error'}`);
+  }
 
   const metrics = await page.locator('.supplemental-card').evaluate((element) => {
     const rect = element.getBoundingClientRect();
@@ -489,6 +493,14 @@ export async function renderSupplementalAssets(release, catalog) {
   }
 }
 
+function githubErrorAnnotation(message) {
+  const escaped = String(message || '')
+    .replace(/%/g, '%25')
+    .replace(/\r/g, '%0D')
+    .replace(/\n/g, '%0A');
+  return `::error title=TTS supplemental export::${escaped}`;
+}
+
 async function main() {
   const checkOnly = process.argv.includes('--check');
   const componentContract = await loadTtsComponentContract();
@@ -505,7 +517,9 @@ async function main() {
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main().catch((error) => {
-    console.error(error.stack || error.message || error);
+    const message = error.stack || error.message || String(error);
+    console.error(message);
+    if (process.env.GITHUB_ACTIONS === 'true') console.error(githubErrorAnnotation(message));
     process.exitCode = 1;
   });
 }
