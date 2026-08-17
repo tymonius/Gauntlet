@@ -119,12 +119,14 @@ describe("TTS Territory assets", () => {
     expect(generator).not.toContain("Expected four canonical Arenas");
   });
 
-  it("uses separate deterministic Territory deck IDs across dynamically created sheets", () => {
+  it("uses separate deterministic Territory deck IDs with the shared standard-back policy", () => {
     expect(generator).toContain("const FIRST_DECK_ID = 50");
     expect(generator).toContain("const deckId = FIRST_DECK_ID + sheetIndex");
     expect(generator).toContain("ttsCardId: deckId * 100 + index");
     expect(generator).toContain("territory-manifest.json");
-    expect(generator).toContain("territory-back.png");
+    expect(generator).toContain("backPolicy: 'standardBack'");
+    expect(generator).toContain("resolveStandardBackFile(componentContract");
+    expect(generator).not.toContain("territory-back.png");
   });
 
   it("uses restrained Arena accents", () => {
@@ -147,10 +149,11 @@ describe("TTS Territory assets", () => {
   });
 
   it("exposes stable release-agnostic npm commands", () => {
+    expect(packageJson.scripts["tts:components:check"]).toBe("node scripts/tts-component-contract.mjs");
     expect(packageJson.scripts["tts:cards"]).toBe("node scripts/generate-tts-card-assets.mjs");
     expect(packageJson.scripts["tts:territories"]).toBe("node scripts/generate-tts-territory-assets.mjs");
     expect(packageJson.scripts["tts:leaders"]).toBe("node scripts/generate-tts-leader-assets.mjs");
     expect(packageJson.scripts["tts:starters"]).toBe("node scripts/generate-tts-starter-decks.mjs");
-    expect(packageJson.scripts["tts:build"]).toBe("npm run tts:cards && npm run tts:territories && npm run tts:leaders && npm run tts:starters");
+    expect(packageJson.scripts["tts:build"]).toBe("npm run tts:components:check && npm run tts:cards && npm run tts:territories && npm run tts:leaders && npm run tts:starters");
   });
 });
