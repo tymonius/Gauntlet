@@ -65,6 +65,7 @@ export async function captureProductionTracker(page, baseUrl, record, outputPath
     throw new Error(`Production tracker ${record.id} expected exactly one ${selector}; found ${count}.`);
   }
 
+  await locator.scrollIntoViewIfNeeded();
   const geometry = await locator.evaluate((card) => {
     const rect = card.getBoundingClientRect();
     const marks = [...card.querySelectorAll('.tracker-mark')].map((mark) => {
@@ -79,8 +80,8 @@ export async function captureProductionTracker(page, baseUrl, record, outputPath
       };
     }).filter(Boolean);
     return {
-      x: rect.x,
-      y: rect.y,
+      x: rect.x + window.scrollX,
+      y: rect.y + window.scrollY,
       width: rect.width,
       height: rect.height,
       marks,
@@ -122,6 +123,7 @@ export async function captureProductionTracker(page, baseUrl, record, outputPath
       width: CSS_CARD_WIDTH,
       height: CSS_CARD_HEIGHT,
     },
+    captureBeyondViewport: true,
   });
   return {
     physicalScale: {
