@@ -41,7 +41,7 @@ jobs:
             tts/renderer
             card-design
             media
-            releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json
+            releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Canonical_Data.json
             images/artwork/cards
             images/artwork/card-backgrounds
       - uses: actions/setup-node@v4
