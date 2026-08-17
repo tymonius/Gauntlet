@@ -52,9 +52,13 @@ export async function captureProductionTracker(page, baseUrl, record, outputPath
   if (!componentId) throw new Error(`Tracker ${record.id} has no production component id.`);
 
   await page.goto(`${baseUrl}/card-design/`, { waitUntil: 'load' });
-  await page.evaluate(() => document.fonts?.ready || Promise.resolve());
 
   const selector = `.sliding-tracker-card[data-component-id="${componentId}"]`;
+  await page.waitForSelector(selector);
+  await page.evaluate(async () => {
+    if (document.fonts?.ready) await document.fonts.ready;
+  });
+
   const locator = page.locator(selector);
   const count = await locator.count();
   if (count !== 1) {
