@@ -1,7 +1,7 @@
 {
-  "version": "v0.6.3",
-  "status": "published",
-  "purpose": "Finalized v0.6.3 starter Decks optimized for competitive strength, winning capability, and powerful or creative Leader strategies; teaching simplicity and card-pool coverage are not optimization targets. Further composition changes require playtest evidence.",
+  "version": "clean-v0.6.3-downstream",
+  "status": "PR #573 competitive starter set validated against certified clean v0.6.3 authority — not published",
+  "purpose": "Recommended v0.6.3 starter Decks optimized to be strong, capable of winning, and capable of expressing powerful or creative Leader strategies. Teaching simplicity and card-pool coverage are not optimization targets.",
   "construction": {
     "minimumCards": 30,
     "maximumDeckbuildingValue": 60,
@@ -1436,12 +1436,13 @@
       }
     }
   ],
-  "compositionSource": "v0.6.3/data/starter-decks-candidate.js",
-  "audit": "docs/Gauntlet_v0.6.3_Starter_Deck_Finalization.md",
-  "predecessorAudit": "docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md",
-  "publicationBoundary": {
-    "publishedVersion": "v0.6.2",
-    "publicationCutoverComplete": false
+  "authority_set_id": "64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49",
+  "approval": {
+    "pr": 573,
+    "merge_commit": "e13cd423bacc4c965aad9f8ed622100bef88d48f",
+    "source": "https://github.com/tymonius/Gauntlet/pull/573",
+    "source_file": "v0.6.3/data/starter-decks-candidate.js",
+    "audit": "docs/Gauntlet_v0.6.3_Starter_Deck_Finalization.md"
   },
-  "publishedDate": "2026-08-12"
+  "publication_unlocked": false
 }
