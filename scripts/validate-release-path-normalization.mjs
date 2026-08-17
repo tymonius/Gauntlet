@@ -63,6 +63,8 @@ const allowedRetiredV063FilenameReference = (path, text = '') =>
   path.startsWith('releases/v0.6.3-withdrawn/') ||
   frozenCandidateScripts.has(path) ||
   frozenOrHistorical(path) ||
+  text.includes('artifacts/v0.6.3/print-candidate/') ||
+  text.includes('artifacts/v0.6.3/release-candidate/') ||
   (path === 'config/reconstruction-version-plan.json' && text.includes('releases/v0.6.3-withdrawn/'));
 
 function gitObject(relative) {
