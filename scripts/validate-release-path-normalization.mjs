@@ -31,9 +31,9 @@ const frozenOrHistorical = (path) =>
   path.startsWith('publication/v0.6.3/') ||
   path === 'governance/traceability.json';
 
-// These scripts enforce phase-specific reconstruction states that intentionally
-// predate publication (for example, v0.6.1 current / v0.6.3 withdrawn). They are
-// retained as provenance and are not current release tooling.
+// These scripts enforce phase-specific reconstruction/candidate states that
+// intentionally predate publication. They are retained as provenance and are
+// not current release tooling.
 const frozenCandidateScripts = new Set([
   'scripts/build-clean-v063-downstream-data.mjs',
   'scripts/validate-clean-v063-downstream-data.mjs',
@@ -43,6 +43,9 @@ const frozenCandidateScripts = new Set([
   'scripts/validate-v063-release-candidate.mjs',
   'scripts/render-v063-print-candidate.mjs',
   'scripts/validate-v063-print-candidate.mjs',
+  'scripts/build-v063-cross-surface-closeout.mjs',
+  'scripts/validate-v063-cross-surface-closeout.mjs',
+  'scripts/validate-v063-print-visual-regressions.mjs',
 ]);
 
 const explicitCompatibilityInfrastructure = new Set([
