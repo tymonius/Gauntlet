@@ -20,7 +20,6 @@ const retiredV063PackageFiles = [
   'Gauntlet_v0.6.3_Returning_Player_Changes.md',
   'Gauntlet_v0.6.3_Returning_Player_Changes.pdf',
   'Gauntlet_v0.6.3_Tableside_Pack.pdf',
-  'deployment-status.json',
 ];
 
 const frozenOrHistorical = (path) =>
