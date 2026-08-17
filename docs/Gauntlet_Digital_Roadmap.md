@@ -3,7 +3,7 @@
 **Status:** Active post-v0.6.3 roadmap.  
 **Purpose:** Define the path from the current physical-game sources and browser tools to a versioned digital rules implementation.
 
-The [official v0.6.3 rulebook](../releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md), [Faction and Component Guide](../releases/v0.6.3/Gauntlet_v0.6.3_Faction_and_Component_Guide.md), [Complete Card and Territory Reference](../releases/v0.6.3/Gauntlet_v0.6.3_Complete_Card_Reference.md), and generated canonical data are authoritative. Digital behavior must follow those sources.
+The [official v0.6.3 rulebook](../releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md), the six faction guides under `releases/v0.6.3/faction-guides/`, the [Card and Territory Reference](../releases/v0.6.3/Gauntlet_v0.6.3_Card_and_Territory_Reference.md), and generated canonical data are authoritative. Digital behavior must follow those sources.
 
 The detailed legacy-to-v0.6 subsystem assessment and acceptance criteria are maintained in the [v0.6 Digital Migration Audit](Gauntlet_v0.6_Digital_Migration_Audit.md).
 
@@ -15,9 +15,9 @@ The detailed legacy-to-v0.6 subsystem assessment and acceptance criteria are mai
 
 - `releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json`
 - `releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md`
-- `releases/v0.6.3/Gauntlet_v0.6.3_Faction_and_Component_Guide.md`
-- `releases/v0.6.3/Gauntlet_v0.6.3_Complete_Card_Reference.md`
-- generated release manifest
+- `releases/v0.6.3/faction-guides/*/Gauntlet_v0.6.3_*_Faction_Guide.md`
+- `releases/v0.6.3/Gauntlet_v0.6.3_Card_and_Territory_Reference.md`
+- `releases/v0.6.3/Gauntlet_v0.6.3_Manifest.json`
 
 This layer defines the current versioned content and identifiers.
 
