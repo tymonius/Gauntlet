@@ -57,11 +57,12 @@ async function stageReleaseAssets() {
     throw new Error(`Invalid TTS release repository ${JSON.stringify(repository)}; expected owner/repo.`);
   }
 
-  const [cardManifest, territoryManifest, leaderManifest, starterManifest] = await Promise.all([
+  const [cardManifest, territoryManifest, leaderManifest, starterManifest, supplementalManifest] = await Promise.all([
     readJson(join(outputRoot, 'manifest.json')),
     readJson(join(outputRoot, 'territory-manifest.json')),
     readJson(join(outputRoot, 'leader-manifest.json')),
     readJson(join(outputRoot, 'starter-deck-manifest.json')),
+    readJson(join(outputRoot, 'supplemental-manifest.json')),
   ]).catch((error) => {
     if (error.code === 'ENOENT') {
       throw new Error('TTS release staging requires a complete current build. Run npm run tts:build first.');
@@ -74,6 +75,7 @@ async function stageReleaseAssets() {
     ['Territory manifest', territoryManifest],
     ['Leader manifest', leaderManifest],
     ['starter-deck manifest', starterManifest],
+    ['supplemental manifest', supplementalManifest],
   ]) {
     if (manifest.gameVersion !== release.version) {
       throw new Error(`${label} targets ${manifest.gameVersion || 'no version'}; current release is ${release.version}.`);
@@ -81,6 +83,9 @@ async function stageReleaseAssets() {
   }
   if (territoryManifest.backPolicy !== 'standardBack') {
     throw new Error(`Territory manifest must use standardBack; found ${territoryManifest.backPolicy || 'missing'}.`);
+  }
+  if (supplementalManifest.placement?.includedInReviewSave !== false) {
+    throw new Error('Supplemental manifest must keep save placement deferred until the component-assembly layer lands.');
   }
 
   const prefix = assetPrefix(release.version);
@@ -135,11 +140,38 @@ async function stageReleaseAssets() {
     );
   }
 
+  const supplementalReverseSources = new Set();
+  for (const component of supplementalManifest.ready || []) {
+    if (!component.frontFile || !component.reverseFile) {
+      throw new Error(`Ready supplemental component ${component.id || 'missing id'} lacks rendered front/reverse files.`);
+    }
+    addAsset(
+      records,
+      seenNames,
+      component.frontFile,
+      `${prefix}_Supplemental_${safeSegment(component.faction)}_${safeSegment(component.id)}_Front.png`,
+      'supplemental-front',
+      { id: component.id, name: component.name, faction: component.faction, family: component.family },
+    );
+    if (!supplementalReverseSources.has(component.reverseFile)) {
+      supplementalReverseSources.add(component.reverseFile);
+      addAsset(
+        records,
+        seenNames,
+        component.reverseFile,
+        `${prefix}_Supplemental_Reverse_${safeSegment(component.reverseFile)}.png`,
+        'supplemental-reverse',
+        { sourceArtwork: component.reverseArtwork || null },
+      );
+    }
+  }
+
   const manifestFiles = [
     ['manifest.json', `${prefix}_Card_Manifest.json`, 'card-manifest'],
     ['territory-manifest.json', `${prefix}_Territory_Manifest.json`, 'territory-manifest'],
     ['leader-manifest.json', `${prefix}_Leader_Manifest.json`, 'leader-manifest'],
     ['starter-deck-manifest.json', `${prefix}_Starter_Deck_Manifest.json`, 'starter-deck-manifest'],
+    ['supplemental-manifest.json', `${prefix}_Supplemental_Manifest.json`, 'supplemental-manifest'],
   ];
   for (const [sourceFile, releaseAsset, kind] of manifestFiles) {
     addAsset(records, seenNames, sourceFile, releaseAsset, kind);
@@ -177,6 +209,11 @@ async function stageReleaseAssets() {
       note: 'The publication workflow replaces only these deterministic TTS-named assets on the existing current GitHub Release. The release tag itself is not moved.',
     },
     backPolicy: starterManifest.backPolicy,
+    supplemental: {
+      readyCount: supplementalManifest.readyCount,
+      pendingCount: supplementalManifest.pendingCount,
+      includedInReviewSave: false,
+    },
     assetCount: staged.length,
     assets: staged,
     bySourceFile: Object.fromEntries(staged.map((asset) => [asset.sourceFile, asset.url])),

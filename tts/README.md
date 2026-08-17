@@ -17,6 +17,7 @@ The exporters then consume the resolved current canonical dataset, current start
 
 ```bash
 npm run tts:components:check
+npm run tts:supplementals:check
 npm run tts:check
 npm run tts:catalog
 npx playwright install chromium
@@ -24,6 +25,7 @@ npm run tts:cards
 npm run tts:territories
 npm run tts:leaders
 npm run tts:starters
+npm run tts:supplementals
 npm run tts:build
 npm run tts:release:stage
 npm run tts:save
@@ -31,16 +33,18 @@ npm run tts:package
 ```
 
 - `tts:components:check` validates the physical-component contract, current faction inventories, standard-back resolution, two-sided requirements, and sliding-tracker metadata.
-- `tts:check` runs the component-contract validation plus the existing current-release source checks without writing raster output.
+- `tts:supplementals:check` verifies that every component currently marked ready has a supported export path, a usable canonical source, and any required reverse artwork; pending components remain cataloged but are not rendered.
+- `tts:check` runs the component-contract, supplemental, and existing current-release source checks without writing raster output.
 - `tts:catalog` writes deterministic playable/Territory catalog JSON/browser data under both the current release and `tts/generated/current/`.
 - `tts:cards` renders current playable-card faces, all six standard-back color variants, TTS face sheets, and `manifest.json`.
 - `tts:territories` renders current landscape Territory/Arena faces and sheets. It deliberately does **not** create a Territory-specific back.
 - `tts:leaders` renders current production Leader faces and resolves their backs through the standard-back policy.
 - `tts:starters` joins current starter data to generated card, Territory, and Leader manifests and resolves one standard back for each player package.
+- `tts:supplementals` renders only contract components whose production status is `ready`, writes the supplemental catalog/manifest, and leaves all other component records pending without TTS objects.
 - `tts:build` validates the component contract, renders cards, Territories, and Leaders, then assembles the starter manifests.
-- `tts:release:stage` stages only network assets required by TTS, with deterministic GitHub Release filenames, hashes, and hosted URLs.
-- `tts:save` builds the current review-save scaffold from those staged assets.
-- `tts:package` performs the complete build, staging, and save pipeline.
+- `tts:release:stage` stages only network assets required by TTS, including ready supplemental fronts/reverses and the supplemental manifest, with deterministic GitHub Release filenames, hashes, and hosted URLs.
+- `tts:save` builds the current review-save scaffold from the staged starter assets. Supplemental placement is still intentionally deferred.
+- `tts:package` performs the core build, supplemental rendering, staging, and save pipeline.
 
 The generated directory is ignored by Git. GitHub Actions uploads `tts/generated/` as a review artifact rather than committing derived PNGs.
 
@@ -170,6 +174,19 @@ For each starter it records the exact rendered Leader, playable-card IDs and qua
 
 The assembler validates construction limits from the starter artifact itself; it does not hard-code starter, card, Leader, or Territory counts.
 
+## Supplemental asset contract
+
+`scripts/generate-tts-supplemental-assets.mjs` is the bridge between the physical-component contract and TTS-ready supplemental files.
+
+It does not keep a second hand-maintained list of components. On every run it partitions `config/tts-component-contract.json` by `productionStatus`:
+
+- `ready` components must have a supported renderer and all required inputs or the export fails closed;
+- every other component is retained in `supplemental-catalog.json` and `supplemental-manifest.json` with its status, but produces no face, reverse, hosted asset, or TTS object yet.
+
+The first supported family is the Mystics `rite-card` family. The incomplete fronts use the established physical Rite presentation while their wording is extracted from each Rite's heading in the current canonical Mystics guide. That keeps the TTS faces synchronized with current rules wording instead of copying v0.6-era component text into the exporter. The completed side uses the approved shared `reverseArtwork` declared by the component contract and is rasterized once even when several ready cards share it.
+
+Ready supplemental cards use deterministic one-card deck IDs beginning at 200, after the existing playable-card, Territory, and Leader ranges. The manifest records both faces and their TTS IDs, but `placement.includedInReviewSave` remains `false` until the component-assembly layer decides where and how each faction's supplementals belong on the table.
+
 ## GitHub Release asset hosting
 
 The network-hosting layer stages only files TTS must request directly:
@@ -178,7 +195,8 @@ The network-hosting layer stages only files TTS must request directly:
 - the six standard-back variants;
 - Territory face sheets;
 - individual rendered Leader faces;
-- generated card, Territory, Leader, and starter manifests; and
+- ready supplemental fronts and shared reverse rasters;
+- generated card, Territory, Leader, starter, and supplemental manifests; and
 - a release-asset manifest mapping generated source paths to deterministic public download URLs.
 
 There is no separate Territory back asset. Territories reuse one of the already-staged standard-back variants selected by starter assembly.
@@ -195,10 +213,10 @@ For an ordinary future release, TTS should continue working when the normal rele
 4. updates `config/tts-component-contract.json` only when the physical component inventory, status, back behavior, or interaction model changes; and
 5. runs `npm run tts:package` / the TTS asset workflow.
 
-Playable-card and Territory counts already derive from current canonical data. Supplemental quantities and behavior now have one declared contract instead of being scattered through future save-builder special cases.
+Playable-card and Territory counts already derive from current canonical data. Supplemental quantities, readiness, and behavior have one declared contract instead of being scattered through future save-builder special cases. Changing a component from pending to ready is intentionally a validation boundary: the package will refuse to ship it until an exporter exists for that family and all required production inputs are present.
 
 ## Remaining TTS work
 
-This contract PR intentionally does **not** place unfinished supplemental components into the review save yet. The next integration layer is to render/export the supplemental families from this contract, stage the ready network assets, and let the save generator add only components whose production status is ready.
+Ready supplemental components can now be rendered and hosted without changing the review save. The next integration layer is **component assembly**: consume `supplemental-manifest.json`, add the appropriate ready components to each faction package, and instantiate tracker assemblies/snap behavior only after their production exports are ready.
 
-That keeps the current review scaffold usable while making future component completion additive: finish the artwork/export source, change its declared readiness, and let the package pipeline pick it up without rebuilding faction-specific rules in the save generator.
+That keeps the current review scaffold usable while making future component completion additive: finish the artwork/export source, change its declared readiness, let the supplemental exporter pick it up, and then let the assembly layer place it without rebuilding faction-specific rules in the save generator.
