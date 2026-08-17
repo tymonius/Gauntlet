@@ -82,7 +82,6 @@ jobs:
               exact('scripts/render-clean-v063-booklet.mjs'),
               exact('scripts/validate-clean-v063-booklet.mjs'),
               exact('scripts/materialize-clean-v063-booklet.mjs'),
-              exact('scripts/sync-v063-legacy-package-alias.mjs'),
               exact('scripts/publication-utils.mjs'),
               exact('rules-assistant/v063-last-stand-language.js'),
               under('rulebook/player-facing/'),

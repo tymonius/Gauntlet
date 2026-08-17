@@ -49,13 +49,22 @@ const frozenCandidateScripts = new Set([
   'scripts/validate-v063-print-visual-regressions.mjs',
 ]);
 
+// These current files intentionally name removed paths only to detect/reject
+// their reintroduction. They must never read from or publish to those paths.
+const removalGuards = new Set([
+  '.github/workflows/pr-quality-gate.yml',
+  '.github/workflows/release-history-integrity.yml',
+  'scripts/validate-current-public-contract.mjs',
+  'scripts/validate-release-path-normalization.mjs',
+]);
+
 const allowedRemovedV063Reference = (filePath) =>
-  filePath === 'scripts/validate-release-path-normalization.mjs' ||
+  removalGuards.has(filePath) ||
   frozenCandidateScripts.has(filePath) ||
   frozenOrHistorical(filePath);
 
 const allowedRemovedV062Reference = (filePath) =>
-  filePath === 'scripts/validate-release-path-normalization.mjs' ||
+  removalGuards.has(filePath) ||
   filePath.startsWith('releases/v0.6.2-withdrawn/') ||
   frozenOrHistorical(filePath);
 
@@ -124,7 +133,7 @@ for (const filename of retiredV063PackageFiles) {
 
 console.log(
   `Release-path normalization passed: removed package roots are absent; ` +
-  `${removedV063Matches.length} old v0.6.3 reconstructed-path reference(s) are confined to frozen provenance; ` +
-  `${removedV062Matches.length} old v0.6.2 path reference(s) are confined to withdrawn/frozen provenance; ` +
+  `${removedV063Matches.length} old v0.6.3 reconstructed-path reference(s) are confined to removal guards/frozen provenance; ` +
+  `${removedV062Matches.length} old v0.6.2 path reference(s) are confined to removal guards/withdrawn/frozen provenance; ` +
   `${retiredFilenameMatches} retired original-v0.6.3 filename reference(s) are confined to frozen/withdrawn provenance surfaces.`,
 );
