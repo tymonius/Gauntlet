@@ -22,8 +22,6 @@ const ANALYTICS_EXCLUDED_FILES = new Set([
   "artifacts/reconstruction/clean-v0.6.3/faction-pages/inquisition/index.html",
   "artifacts/reconstruction/clean-v0.6.3/start/index.html",
   "artifacts/reconstruction/clean-v0.6.3/deckbuilder/index.html",
-  // Redirect shim; analytics belongs on the canonical /v0.6.3/ landing page.
-  "releases/v0.6.3/index.html",
   // Render-only TTS capture surface; it is not a public navigation page.
   "tts/back-renderer/index.html",
   // Versioned development/review surfaces are not public analytics pages.
@@ -35,6 +33,29 @@ const ANALYTICS_EXCLUDED_FILES = new Set([
   "v0.6.3/rules-arbiter/index.html",
   "v0.6.3/start/index.html"
 ]);
+
+function normalizePackageRoot(value) {
+  return String(value || "").replace(/^\/+/, "").replace(/\/+$/, "");
+}
+
+// Release package index pages are redirect/compatibility shims. Analytics belongs
+// on the canonical public landing page (/v0.6.3/), not on package-directory shims.
+// Derive these exclusions from lifecycle metadata so compatibility aliases cannot
+// accidentally become analytics-bearing copies of the same redirect.
+try {
+  const lifecycle = JSON.parse(await readFile(path.join(ROOT, "config/release-lifecycle.json"), "utf8"));
+  for (const release of Object.values(lifecycle.releases || {})) {
+    const packageRoots = [
+      release?.status === "current" ? release?.current_package_path : null,
+      ...(release?.legacy_package_aliases || [])
+    ].filter(Boolean);
+    for (const packageRoot of packageRoots) {
+      ANALYTICS_EXCLUDED_FILES.add(`${normalizePackageRoot(packageRoot)}/index.html`);
+    }
+  }
+} catch (error) {
+  if (error?.code !== "ENOENT") throw error;
+}
 
 const GOOGLE_TAG = `  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=${MEASUREMENT_ID}"></script>
@@ -80,7 +101,7 @@ if (CHECK_ONLY && missing.length) {
   for (const file of missing) console.error(`- ${file}`);
   process.exitCode = 1;
 } else if (CHECK_ONLY) {
-  console.log(`Google Analytics tag ${MEASUREMENT_ID} is present in all ${eligibleFiles.length} eligible HTML files; ${ANALYTICS_EXCLUDED_FILES.size} private, redirect, development, or print-only pages are intentionally excluded.`);
+  console.log(`Google Analytics tag ${MEASUREMENT_ID} is present in all ${eligibleFiles.length} eligible HTML files; ${ANALYTICS_EXCLUDED_FILES.size} private, redirect, development, compatibility, or print-only pages are intentionally excluded.`);
 } else {
   console.log(`Added Google Analytics tag ${MEASUREMENT_ID} to ${updated} HTML files.`);
 }
