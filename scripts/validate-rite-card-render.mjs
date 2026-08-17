@@ -8,9 +8,9 @@ const OUTPUT = join(ROOT, 'card-design', 'generated', 'leaders');
 const CARD_WIDTH = 240;
 const CARD_HEIGHT = 336;
 const EXPECTED_RITES = ['Rite of Echoes', 'Rite of Blood', 'Rite of Crossing'];
-const EXPECTED_RITUAL = 'Ritual of Ascendance';
-const RITUAL_CARD_BACK_ID = 'ritual-ascendance';
-const RITUAL_CARD_BACK_ART_PATH = '/images/card-backs/mystics/ritual-of-ascendance-card-back.avif';
+const EXPECTED_RITUAL = 'Ritual of Ascension';
+const RITUAL_CARD_BACK_ID = 'ritual-ascension';
+const RITUAL_CARD_BACK_ART_PATH = '/images/card-backs/mystics/ritual-of-ascension-card-back.avif';
 const COMPLETED_RITE_ART_PATH = '/images/artwork/supplemental/mystics/rite-completed.webp';
 const COMPLETED_RITE_ART_WIDTH = 1448;
 const COMPLETED_RITE_ART_HEIGHT = 1086;
@@ -70,7 +70,7 @@ async function main() {
       image.complete && image.naturalWidth > 0 && image.naturalHeight > 0
     )));
     await page.waitForFunction(() => {
-      const image = document.querySelector('#ritual-ascendance .ritual-card-back__image-window > img');
+      const image = document.querySelector('#ritual-ascension .ritual-card-back__image-window > img');
       return image?.complete && image.naturalWidth > 0 && image.naturalHeight > 0;
     });
     await page.evaluate(async () => document.fonts?.ready);
@@ -120,25 +120,25 @@ async function main() {
 
     const ritual = metrics.find(metric => metric.name === EXPECTED_RITUAL);
     if (!ritual || !ritual.ritual || ritual.type !== 'Ritual') {
-      throw new Error(`Ritual of Ascendance card is missing or mislabeled: ${JSON.stringify(ritual)}.`);
+      throw new Error(`Ritual of Ascension card is missing or mislabeled: ${JSON.stringify(ritual)}.`);
     }
     if (ritual.cardBack !== RITUAL_CARD_BACK_ID) {
-      throw new Error(`Ritual of Ascendance is not marked for its dedicated card back: ${JSON.stringify(ritual)}.`);
+      throw new Error(`Ritual of Ascension is not marked for its dedicated card back: ${JSON.stringify(ritual)}.`);
     }
     if (!ritual.artworkPending) {
-      throw new Error(`Ritual of Ascendance must visibly retain its front-artwork-pending state until approved front art is committed: ${JSON.stringify(ritual)}.`);
+      throw new Error(`Ritual of Ascension must visibly retain its front-artwork-pending state until approved front art is committed: ${JSON.stringify(ritual)}.`);
     }
     const expectedRitualRules = ['Begin', 'Convergence', 'Complete', 'Interrupted'];
     if (expectedRitualRules.some(label => !ritual.ruleLabels.includes(label))) {
-      throw new Error(`Ritual of Ascendance is missing a required rules section: ${JSON.stringify(ritual)}.`);
+      throw new Error(`Ritual of Ascension is missing a required rules section: ${JSON.stringify(ritual)}.`);
     }
     for (const phrase of ['Hand', 'Discard Pile', 'Graveyard', 'add +1', 'immediately win the game', 'Withdrawal neither completes nor interrupts']) {
       if (!ritual.ruleText.includes(phrase)) {
-        throw new Error(`Ritual of Ascendance is missing canonical rule text (${phrase}): ${JSON.stringify(ritual)}.`);
+        throw new Error(`Ritual of Ascension is missing canonical rule text (${phrase}): ${JSON.stringify(ritual)}.`);
       }
     }
 
-    const ritualReview = await page.locator('#ritual-ascendance').evaluate(section => {
+    const ritualReview = await page.locator('#ritual-ascension').evaluate(section => {
       const back = section.querySelector('.ritual-card-back');
       const backRect = back?.getBoundingClientRect();
       const image = back?.querySelector('.ritual-card-back__image-window > img');
@@ -164,7 +164,7 @@ async function main() {
       throw new Error(`Ritual card-back artwork did not load: ${JSON.stringify(ritualReview)}.`);
     }
     if (ritualReview.backImagePath !== RITUAL_CARD_BACK_ART_PATH) {
-      throw new Error(`Ritual of Ascendance uses the wrong card-back artwork: ${JSON.stringify(ritualReview)}.`);
+      throw new Error(`Ritual of Ascension uses the wrong card-back artwork: ${JSON.stringify(ritualReview)}.`);
     }
 
     for (const metric of metrics) {
@@ -177,7 +177,7 @@ async function main() {
       if (metric.rulesScale < 0.82 - 0.001) throw new Error(`Mystics component typography fell below the readability floor: ${JSON.stringify(metric)}.`);
       if (metric.artWidth <= 0 || metric.artHeight <= 0) throw new Error(`Mystics component artwork field collapsed: ${JSON.stringify(metric)}.`);
       if (metric.completed) {
-        const expected = ['Invocation', 'Transmutation', 'Convergence', 'Ritual of Ascendance'];
+        const expected = ['Invocation', 'Transmutation', 'Convergence', 'Ritual of Ascension'];
         if (expected.some(name => !metric.abilityNames.includes(name))) throw new Error(`Completed Rite reference is incomplete: ${JSON.stringify(metric)}.`);
         if (metric.completedImageWidth <= 0 || metric.completedImageHeight <= 0 || metric.completedImageNaturalWidth <= 0 || metric.completedImageNaturalHeight <= 0) {
           throw new Error(`Completed Rite artwork did not render: ${JSON.stringify(metric)}.`);
@@ -192,7 +192,7 @@ async function main() {
     }
 
     await page.locator('#rite-cards').screenshot({ path: join(OUTPUT, 'mystics-rite-card-review.png') });
-    await page.locator('#ritual-ascendance').screenshot({ path: join(OUTPUT, 'ritual-of-ascendance-review.png') });
+    await page.locator('#ritual-ascension').screenshot({ path: join(OUTPUT, 'ritual-of-ascension-review.png') });
     console.log(JSON.stringify({ metrics, ritualReview }, null, 2));
   } finally {
     await browser.close();
