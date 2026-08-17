@@ -79,6 +79,8 @@ export async function captureProductionTracker(page, baseUrl, record, outputPath
       };
     }).filter(Boolean);
     return {
+      x: rect.x,
+      y: rect.y,
       width: rect.width,
       height: rect.height,
       marks,
@@ -111,7 +113,16 @@ export async function captureProductionTracker(page, baseUrl, record, outputPath
     }
   }
 
-  await locator.screenshot({ path: outputPath, omitBackground: true });
+  await page.screenshot({
+    path: outputPath,
+    omitBackground: true,
+    clip: {
+      x: geometry.x,
+      y: geometry.y,
+      width: CSS_CARD_WIDTH,
+      height: CSS_CARD_HEIGHT,
+    },
+  });
   return {
     physicalScale: {
       minimum: 0,
