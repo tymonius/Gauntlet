@@ -30,6 +30,11 @@ const frozenOrHistorical = (path) =>
   path.startsWith('artifacts/v0.6.3/') ||
   path.startsWith('publication/v0.6.3/');
 
+const frozenPrintCandidateScripts = new Set([
+  'scripts/render-v063-print-candidate.mjs',
+  'scripts/validate-v063-print-candidate.mjs',
+]);
+
 const explicitCompatibilityInfrastructure = new Set([
   '.github/workflows/pr-quality-gate.yml',
   '.github/workflows/release-history-integrity.yml',
@@ -46,6 +51,7 @@ const allowedLegacyReference = (path) =>
 const allowedRetiredV063FilenameReference = (path) =>
   path === 'scripts/validate-release-path-normalization.mjs' ||
   path.startsWith('releases/v0.6.3-withdrawn/') ||
+  frozenPrintCandidateScripts.has(path) ||
   frozenOrHistorical(path);
 
 function gitObject(relative) {
