@@ -25,7 +25,7 @@ const targets = [
   'rules-assistant/rules-deterministic-v063.js',
   'scripts/build-clean-v063-publication-release.mjs',
   'scripts/generate-v063-canonical-data-candidate.mjs',
-  'v0.6.3/data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json',
+  'artifacts/reconstruction/v0.6.3-browser-candidate/data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json',
 ];
 
 const certifiedInputs = [
