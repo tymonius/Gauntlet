@@ -20,7 +20,7 @@ init().catch(error => {
 });
 
 async function init() {
-  state.data = await fetch(`../../releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json?rev=${REFERENCE_REVISION}`, { cache: "no-store" }).then(assertJson);
+  state.data = await fetch(`../../releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Canonical_Data.json?rev=${REFERENCE_REVISION}`, { cache: "no-store" }).then(assertJson);
   validateReferenceData(state.data);
   $("status").innerHTML = `<strong class="status-good">Published ${escapeHtml(SURFACE_VERSION)}</strong><p>${state.data.cards.length} cards · ${state.data.territories.length} Territories · ${state.data.proposals.length} Proposals</p>`;
   $("cardCount").textContent = state.data.cards.length;

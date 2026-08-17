@@ -43,7 +43,7 @@
       "title": "Expand playable card pool from 122 to 128",
       "status": "pending",
       "audit_issue": 593,
-      "evidence": ["releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json"],
+      "evidence": ["releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Canonical_Data.json"],
       "affected_surfaces": ["cards", "canonical-data", "starters", "deckbuilder", "rules-arbiter", "digital", "print"]
     },
     {
@@ -52,7 +52,7 @@
       "title": "Landslide, Invasion, Détente, Compound Interest, Extraordinary Rendition, Nature's Altar, and Martyrdom",
       "status": "pending",
       "audit_issue": 593,
-      "evidence": ["releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json"],
+      "evidence": ["releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Canonical_Data.json"],
       "affected_surfaces": ["cards", "factions", "starters", "canonical-data", "deckbuilder", "rules-arbiter", "digital", "print"]
     },
     {
@@ -61,7 +61,7 @@
       "title": "Opening and Denouement terminology/timing",
       "status": "pending",
       "audit_issue": 594,
-      "evidence": ["releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md"],
+      "evidence": ["releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Rulebook.md"],
       "affected_surfaces": ["rules", "cards", "factions", "territories", "rules-arbiter", "digital", "print"]
     },
     {
@@ -70,7 +70,7 @@
       "title": "Onset timing term",
       "status": "pending",
       "audit_issue": 594,
-      "evidence": ["releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md"],
+      "evidence": ["releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Rulebook.md"],
       "affected_surfaces": ["rules", "cards", "rules-arbiter", "digital", "print"]
     },
     {
@@ -79,7 +79,7 @@
       "title": "Advance / Hold / Fall Back movement vocabulary",
       "status": "pending",
       "audit_issue": 594,
-      "evidence": ["releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md"],
+      "evidence": ["releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Rulebook.md"],
       "affected_surfaces": ["rules", "cards", "leaders", "territories", "rules-arbiter", "digital", "print"]
     },
     {
@@ -88,7 +88,7 @@
       "title": "Withdraw versus retreat terminology",
       "status": "pending",
       "audit_issue": 594,
-      "evidence": ["releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md"],
+      "evidence": ["releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Rulebook.md"],
       "affected_surfaces": ["rules", "cards", "leaders", "rules-arbiter", "digital", "print"]
     },
     {
@@ -97,7 +97,7 @@
       "title": "Front Line capture model",
       "status": "pending",
       "audit_issue": 594,
-      "evidence": ["releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md"],
+      "evidence": ["releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Rulebook.md"],
       "affected_surfaces": ["rules", "territories", "leaders", "cards", "victory", "rules-arbiter", "digital", "print"]
     },
     {
@@ -106,7 +106,7 @@
       "title": "Defensive Edge and Tiebreak Roll battle-tie model",
       "status": "pending",
       "audit_issue": 594,
-      "evidence": ["releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md"],
+      "evidence": ["releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Rulebook.md"],
       "affected_surfaces": ["rules", "cards", "leaders", "territories", "rules-arbiter", "digital", "print"]
     },
     {
@@ -115,7 +115,7 @@
       "title": "All faction and Leader revisions after v0.6.1",
       "status": "pending",
       "audit_issue": 597,
-      "evidence": ["releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md", "releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md"],
+      "evidence": ["releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Faction_and_Component_Guide.md", "releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md"],
       "affected_surfaces": ["rules", "factions", "leaders", "cards", "starters", "rules-arbiter", "digital", "print"]
     },
     {
@@ -268,7 +268,7 @@
       "title": "Starter Deck, Territory-order, and onboarding revisions after v0.6.1",
       "status": "pending",
       "audit_issue": 599,
-      "evidence": ["releases/v0.6.2/Gauntlet_v0.6.2_Starter_Decks.json", "releases/v0.6.3/Gauntlet_v0.6.3_Starter_Decks.json"],
+      "evidence": ["releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Starter_Decks.json", "releases/v0.6.3/Gauntlet_v0.6.3_Starter_Decks.json"],
       "affected_surfaces": ["starters", "onboarding", "rules", "deckbuilder", "print"]
     }
   ]

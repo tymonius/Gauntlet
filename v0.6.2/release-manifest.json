@@ -52,9 +52,9 @@
   "printMaterials": {
     "status": "published",
     "source": "/v0.6.2/print/",
-    "manifest": "/releases/v0.6.2/Gauntlet_v0.6.2_Print_Manifest.json",
-    "rulebookReader": "/releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.pdf",
-    "rulebookBooklet": "/releases/v0.6.2/Gauntlet_v0.6.2_Rulebook_Booklet.pdf",
-    "tablesidePack": "/releases/v0.6.2/Gauntlet_v0.6.2_Tableside_Pack.pdf"
+    "manifest": "/releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Print_Manifest.json",
+    "rulebookReader": "/releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Rulebook.pdf",
+    "rulebookBooklet": "/releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Rulebook_Booklet.pdf",
+    "tablesidePack": "/releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Tableside_Pack.pdf"
   }
 }

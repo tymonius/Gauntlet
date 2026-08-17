@@ -421,8 +421,8 @@ const manifest = {
   faction_authority_root: FACTION_ROOT,
   governing_plan: 'config/reconstruction-version-plan.json',
   forbidden_authority_sources: [
-    'releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md',
-    'releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md',
+    'releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Rulebook.md',
+    'releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Faction_and_Component_Guide.md',
   ],
   output: OUTPUT_PATH,
   publication_unlocked: false,

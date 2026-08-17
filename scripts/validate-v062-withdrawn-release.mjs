@@ -20,7 +20,7 @@ try {
   failures.push('release recovery Git-object locks failed');
 }
 
-const manifest = readJson('releases/v0.6.2/Gauntlet_v0.6.2_Manifest.json');
+const manifest = readJson('releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Manifest.json');
 assert(manifest.version === 'v0.6.2', `preserved v0.6.2 manifest version is ${String(manifest.version)}`);
 assert(manifest.status === 'published', `historical v0.6.2 manifest must retain its original published status; found ${String(manifest.status)}`);
 assert(manifest.publication_date === '2026-08-05', `historical v0.6.2 publication date drifted: ${String(manifest.publication_date)}`);
@@ -30,14 +30,14 @@ assert(manifest.territories === 25, `historical v0.6.2 manifest expected 25 Terr
 assert(manifest.proposals === 9, `historical v0.6.2 manifest expected 9 Proposals; found ${String(manifest.proposals)}`);
 assert(manifest.factions === 6 && manifest.leaders === 12, 'historical v0.6.2 manifest must retain six factions and twelve Leaders');
 
-const canonical = readJson('releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json');
+const canonical = readJson('releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Canonical_Data.json');
 assert(canonical.version === 'v0.6.2', `historical v0.6.2 canonical version is ${String(canonical.version)}`);
 assert(canonical.cards?.length === 128, `historical v0.6.2 canonical data expected 128 cards; found ${canonical.cards?.length}`);
 assert(canonical.territories?.length === 25, `historical v0.6.2 canonical data expected 25 Territories; found ${canonical.territories?.length}`);
 assert(canonical.proposals?.length === 9, `historical v0.6.2 canonical data expected 9 Proposals; found ${canonical.proposals?.length}`);
 assert(canonical.factions?.length === 6, `historical v0.6.2 canonical data expected six factions; found ${canonical.factions?.length}`);
 
-const printManifest = readJson('releases/v0.6.2/Gauntlet_v0.6.2_Print_Manifest.json');
+const printManifest = readJson('releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Print_Manifest.json');
 assert(printManifest.version === 'v0.6.2', `historical v0.6.2 print manifest version is ${String(printManifest.version)}`);
 const printFiles = new Set((printManifest.outputs ?? []).map((output) => output.file));
 for (const file of [

@@ -33,14 +33,14 @@ describe('published v0.6.2 player surfaces', () => {
   test('loads canonical data and starter Decks from the immutable published release package', () => {
     for (const path of APP_SURFACES) {
       const text = read(path);
-      expect(text).toContain('../../releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json');
+      expect(text).toContain('../../releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Canonical_Data.json');
       expect(text).not.toContain('../../releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json');
       expect(text).not.toContain('loadV062CanonicalData(');
     }
 
     for (const path of ['v0.6.2/start/app.js', 'v0.6.2/deckbuilder/app.js']) {
       const text = read(path);
-      expect(text).toContain('../../releases/v0.6.2/Gauntlet_v0.6.2_Starter_Decks.json');
+      expect(text).toContain('../../releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Starter_Decks.json');
       expect(text).not.toContain('Gauntlet_v0.6.2_Starter_Decks_Candidate.json');
     }
   });
@@ -52,7 +52,7 @@ describe('published v0.6.2 player surfaces', () => {
     expect(deckbuilder).toContain('Legal v0.6.2 Deck.');
     expect(deckbuilder).not.toContain('Legal v0.6.2 candidate Deck.');
 
-    const changes = read('releases/v0.6.2/Gauntlet_v0.6.2_Returning_Player_Changes.md');
+    const changes = read('releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Returning_Player_Changes.md');
     expect(changes).toContain('at least 30 cards and no more than 60 total deckbuilding value');
     expect(changes).toContain('recommended starter Decks are exact 30-card, 60-value lists');
     expect(changes).not.toContain('A constructed Deck remains 30 cards with a total deckbuilding value of 60.');

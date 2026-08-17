@@ -64,7 +64,7 @@ This matrix governs the last comparison pass between the merged v0.6.3 source ca
 | CS-054 | Public boundary | Root site | Root/current site still identifies v0.6.2 as canonical before publication. |
 | CS-055 | Public boundary | Digital default | `src/content/current.ts` still exports v0.6.2 before publication. |
 | CS-056 | Public boundary | Rules Arbiter default | Public widget and worker entry still route v0.6.2 before publication. |
-| CS-057 | Public boundary | Historical release | Immutable `releases/v0.6.2/` and `/v0.6.2/` are not modified by closeout. |
+| CS-057 | Public boundary | Historical release | Immutable `releases/v0.6.2-withdrawn/` and `/v0.6.2/` are not modified by closeout. |
 | CS-058 | Validation | Component gates | Final card, player-facing, canonical, browser, starter, Arbiter, digital, source-package, and print validators all pass together. |
 | CS-059 | Validation | Executable tests | v0.6.3 digital and Rules Arbiter regression suites pass in the same closeout workflow. |
 | CS-060 | Publication | Exit condition | A green closeout authorizes the separate publication/cutover PR; no public default changes occur in this PR. |

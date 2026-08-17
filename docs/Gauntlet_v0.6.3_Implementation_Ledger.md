@@ -1,7 +1,7 @@
 # Gauntlet v0.6.3 Implementation Ledger
 
 **Status:** Active next-release decision and propagation record  
-**Current canonical release:** [Gauntlet v0.6.2](../releases/v0.6.2/README.md)  
+**Current canonical release:** [Gauntlet v0.6.2](../releases/v0.6.2-withdrawn/README.md)  
 **Release tracker:** [Issue #528](https://github.com/tymonius/Gauntlet/issues/528)  
 **Last updated:** August 11, 2026
 
@@ -11,7 +11,7 @@
 
 This ledger records adopted changes for Gauntlet v0.6.3 and the work required to propagate them safely.
 
-Gauntlet v0.6.2 remains the sole canonical playtest release until v0.6.3 has been integrated, validated, packaged, and published. Files under `releases/v0.6.2/` are immutable historical release artifacts and must not be edited to simulate a v0.6.3 release.
+Gauntlet v0.6.2 remains the sole canonical playtest release until v0.6.3 has been integrated, validated, packaged, and published. Files under `releases/v0.6.2-withdrawn/` are immutable historical release artifacts and must not be edited to simulate a v0.6.3 release.
 
 A decision recorded here is adopted for v0.6.3 unless later discussion expressly supersedes it. Derived browser, print, structured-data, Rules Arbiter, or digital surfaces do not become authoritative merely because they are updated first.
 
