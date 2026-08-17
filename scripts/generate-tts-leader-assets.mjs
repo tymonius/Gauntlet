@@ -7,6 +7,10 @@ import {
   loadCurrentLeaders,
   ROOT,
 } from './tts-current-catalog.mjs';
+import {
+  loadTtsComponentContract,
+  resolveStandardBackFile,
+} from './tts-component-contract.mjs';
 
 const CARD_WIDTH = 400;
 const CARD_HEIGHT = 560;
@@ -142,7 +146,7 @@ async function captureLeader(page, leader, outputPath) {
   }
 }
 
-async function renderLeaderAssets(release, leaders) {
+async function renderLeaderAssets(release, leaders, componentContract) {
   let chromium;
   try {
     ({ chromium } = await import('playwright'));
@@ -184,7 +188,7 @@ async function renderLeaderAssets(release, leaders) {
       await validateLeader(page, leader, release.version);
       const deckId = FIRST_LEADER_DECK_ID + index;
       const faceFile = `leaders/${leader.faction}-${leader.id}.png`;
-      const backFile = `backs/${leader.faction}.png`;
+      const backFile = resolveStandardBackFile(componentContract, leader.faction);
       await captureLeader(page, leader, join(outputRoot, faceFile));
 
       records.push({
@@ -194,6 +198,7 @@ async function renderLeaderAssets(release, leaders) {
         factionLabel: leader.factionLabel,
         canonicalImage: leader.canonicalImage,
         source: leader.source,
+        backPolicy: 'standardBack',
         tts: {
           cardId: deckId * 100,
           deckId,
@@ -209,7 +214,7 @@ async function renderLeaderAssets(release, leaders) {
     }
 
     const manifest = {
-      schemaVersion: 1,
+      schemaVersion: 2,
       gameVersion: release.version,
       release: {
         lifecycleSource: release.lifecycleSource,
@@ -218,6 +223,7 @@ async function renderLeaderAssets(release, leaders) {
         releasePackageRoot: release.releasePackageRoot,
       },
       sourceSurface: 'card-design/',
+      componentContract: 'config/tts-component-contract.json',
       output: {
         cardPixels: { width: CARD_WIDTH, height: CARD_HEIGHT },
         numWidth: 1,
@@ -225,10 +231,11 @@ async function renderLeaderAssets(release, leaders) {
         firstDeckId: FIRST_LEADER_DECK_ID,
       },
       backPolicy: {
-        assignment: 'leader-faction',
+        policy: 'standardBack',
+        ...componentContract.standardBack,
         backIsHidden: true,
         uniqueBack: false,
-        note: 'Leader cards reuse the production back for their faction. The final TTS publisher supplies hosted FaceURL and BackURL values.',
+        note: 'Leader cards resolve the same standard-back policy used by playable cards and Territories.',
       },
       leaderCount: records.length,
       leaders: records,
@@ -247,14 +254,19 @@ async function renderLeaderAssets(release, leaders) {
 
 async function main() {
   const checkOnly = process.argv.includes('--check');
-  const { release, leaders } = await loadCurrentLeaders();
+  const [currentLeaders, componentContract] = await Promise.all([
+    loadCurrentLeaders(),
+    loadTtsComponentContract(),
+  ]);
+  const { release, leaders } = currentLeaders;
 
   if (checkOnly) {
-    console.log(`Current TTS Leader source check passed for ${release.version}: ${leaders.length} Leaders across ${new Set(leaders.map((leader) => leader.faction)).size} factions.`);
+    for (const leader of leaders) resolveStandardBackFile(componentContract, leader.faction);
+    console.log(`Current TTS Leader source check passed for ${release.version}: ${leaders.length} Leaders across ${new Set(leaders.map((leader) => leader.faction)).size} factions using ${componentContract.standardBack.mode} standard backs.`);
     return;
   }
 
-  const manifest = await renderLeaderAssets(release, leaders);
+  const manifest = await renderLeaderAssets(release, leaders, componentContract);
   console.log(`Rendered ${manifest.leaderCount} current Leader cards to ${relative(ROOT, release.outputRoot)}.`);
 }
 
