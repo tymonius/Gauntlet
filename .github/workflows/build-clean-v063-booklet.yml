@@ -35,7 +35,7 @@ jobs:
             /rulebook-production/
             /releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md
             /artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md
-            /releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md
+            /releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md
             /images/sketches/
 
       - name: Use Node.js
