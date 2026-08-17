@@ -16,6 +16,7 @@ const CSS_CARD_HEIGHT = 336;
 const FIRST_SUPPLEMENTAL_DECK_ID = 200;
 const SUPPORTED_RENDERERS = new Map([
   ['rite-card', 'rite-card'],
+  ['reference-card', 'reference-card'],
 ]);
 
 function jsonText(value) {
@@ -64,18 +65,29 @@ function cleanInlineMarkdown(value) {
   return String(value || '')
     .replace(/^>\s*/, '')
     .replace(/\*\*/g, '')
+    .replace(/__/g, '')
     .replace(/`/g, '')
+    .replace(/\*([^*]+)\*/g, '$1')
+    .replace(/_([^_]+)_/g, '$1')
     .trim();
 }
 
-function sectionLines(markdown, heading) {
+function headingLines(markdown, heading, depth = 2) {
+  const level = Number(depth);
+  if (!Number.isInteger(level) || level < 1 || level > 6) {
+    throw new Error(`Invalid supplemental source heading depth ${depth} for ${heading}.`);
+  }
   const lines = String(markdown || '').split(/\r?\n/);
-  const marker = `## ${heading}`;
+  const marker = `${'#'.repeat(level)} ${heading}`;
   const start = lines.findIndex((line) => line.trim() === marker);
-  if (start < 0) throw new Error(`Canonical supplemental source is missing heading ${JSON.stringify(marker)}.`);
+  if (start < 0) {
+    throw new Error(`Canonical supplemental source is missing heading ${JSON.stringify(marker)}.`);
+  }
+
   let end = lines.length;
   for (let index = start + 1; index < lines.length; index += 1) {
-    if (/^#{1,2}\s+/.test(lines[index].trim())) {
+    const match = lines[index].trim().match(/^(#{1,6})\s+/);
+    if (match && match[1].length <= level) {
       end = index;
       break;
     }
@@ -83,33 +95,95 @@ function sectionLines(markdown, heading) {
   return lines.slice(start + 1, end);
 }
 
-function parseRiteBlocks(markdown, heading) {
-  const blocks = [];
-  let activeList = null;
+function parseTableRow(line) {
+  const text = line.trim().replace(/^\|/, '').replace(/\|$/, '');
+  return text.split('|').map((cell) => cleanInlineMarkdown(cell));
+}
 
+function isSeparatorRow(cells) {
+  return cells.length > 0 && cells.every((cell) => /^:?-{3,}:?$/.test(cell.replace(/\s+/g, '')));
+}
+
+function parseMarkdownBlocks(sourceLines, sourceName) {
+  const blocks = [];
+  let paragraph = [];
+  let list = null;
+
+  const flushParagraph = () => {
+    if (paragraph.length) {
+      blocks.push({ type: 'paragraph', text: cleanInlineMarkdown(paragraph.join(' ')) });
+      paragraph = [];
+    }
+  };
   const flushList = () => {
-    if (activeList?.items.length) blocks.push(activeList);
-    activeList = null;
+    if (list?.items.length) blocks.push(list);
+    list = null;
+  };
+  const flushText = () => {
+    flushParagraph();
+    flushList();
   };
 
-  for (const sourceLine of sectionLines(markdown, heading)) {
-    let line = sourceLine.trim();
+  for (let index = 0; index < sourceLines.length; index += 1) {
+    let line = sourceLines[index].trim();
+
     if (!line) {
-      flushList();
+      flushText();
       continue;
     }
+    if (/^---+$/.test(line)) {
+      flushText();
+      continue;
+    }
+
+    const heading = line.match(/^(#{1,6})\s+(.+)$/);
+    if (heading) {
+      flushText();
+      blocks.push({
+        type: 'subheading',
+        level: heading[1].length,
+        text: cleanInlineMarkdown(heading[2]),
+      });
+      continue;
+    }
+
+    if (/^\|.*\|$/.test(line)) {
+      flushText();
+      const rows = [];
+      while (index < sourceLines.length && /^\s*\|.*\|\s*$/.test(sourceLines[index])) {
+        rows.push(parseTableRow(sourceLines[index]));
+        index += 1;
+      }
+      index -= 1;
+
+      const headers = rows.shift() || [];
+      if (rows.length && isSeparatorRow(rows[0])) rows.shift();
+      if (!headers.length || !rows.length) {
+        throw new Error(`Malformed Markdown table while extracting ${sourceName}.`);
+      }
+      blocks.push({ type: 'table', headers, rows });
+      continue;
+    }
+
     line = line.replace(/^>\s*/, '').trim();
 
-    const listMatch = line.match(/^[-*]\s+(.+)$/);
-    if (listMatch) {
-      if (!activeList) activeList = { type: 'list', items: [] };
-      activeList.items.push(cleanInlineMarkdown(listMatch[1]));
+    const unordered = line.match(/^[-*]\s+(.+)$/);
+    const ordered = line.match(/^\d+\.\s+(.+)$/);
+    if (unordered || ordered) {
+      flushParagraph();
+      const orderedList = Boolean(ordered);
+      if (!list || list.ordered !== orderedList) {
+        flushList();
+        list = { type: 'list', ordered: orderedList, items: [] };
+      }
+      list.items.push(cleanInlineMarkdown((ordered || unordered)[1]));
       continue;
     }
     flushList();
 
     const labeled = line.match(/^\*\*([^*]+?):\*\*\s*(.*)$/);
     if (labeled) {
+      flushParagraph();
       blocks.push({
         type: 'rule',
         label: cleanInlineMarkdown(labeled[1]),
@@ -118,21 +192,55 @@ function parseRiteBlocks(markdown, heading) {
       continue;
     }
 
-    const headingOnly = line.match(/^([A-Z][A-Za-z ]+):$/);
-    if (headingOnly) {
-      blocks.push({ type: 'rule', label: headingOnly[1], text: '' });
-      continue;
-    }
-
-    const text = cleanInlineMarkdown(line);
-    const previous = blocks.at(-1);
-    if (previous?.type === 'paragraph') previous.text = `${previous.text} ${text}`;
-    else blocks.push({ type: 'paragraph', text });
+    paragraph.push(line);
   }
-  flushList();
+  flushText();
 
-  if (!blocks.length) throw new Error(`No printable rules were extracted for ${heading}.`);
+  if (!blocks.length) throw new Error(`No printable rules were extracted for ${sourceName}.`);
   return blocks;
+}
+
+function parseRiteBlocks(markdown, heading) {
+  return parseMarkdownBlocks(headingLines(markdown, heading, 2), heading);
+}
+
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function parseReferenceSection(markdown, selector, componentName) {
+  const heading = String(selector?.heading || '').trim();
+  const depth = Number(selector?.depth);
+  if (!heading || !Number.isInteger(depth)) {
+    throw new Error(`${componentName} reference selector must declare heading and depth.`);
+  }
+
+  let lines = headingLines(markdown, heading, depth);
+  if (selector.ruleLabel) {
+    const label = String(selector.ruleLabel).trim();
+    const matcher = new RegExp(`^>?\\s*\\*\\*${escapeRegExp(label)}:\\*\\*`, 'i');
+    const start = lines.findIndex((line) => matcher.test(line.trim()));
+    if (start < 0) {
+      throw new Error(`${componentName} reference selector ${heading} is missing rule label ${label}.`);
+    }
+    lines = lines.slice(start);
+  }
+
+  return {
+    heading: String(selector.title || heading),
+    sourceHeading: heading,
+    blocks: parseMarkdownBlocks(lines, `${componentName} — ${heading}`),
+  };
+}
+
+function parseReferenceFace(markdown, face, componentName, side) {
+  if (!face || !String(face.title || '').trim() || !Array.isArray(face.sections) || !face.sections.length) {
+    throw new Error(`${componentName} reference ${side} face must declare a title and source sections.`);
+  }
+  return {
+    title: String(face.title).trim(),
+    sections: face.sections.map((selector) => parseReferenceSection(markdown, selector, componentName)),
+  };
 }
 
 function pendingRecord(component) {
@@ -148,26 +256,12 @@ function pendingRecord(component) {
   };
 }
 
-async function readyRecord(component, sourceCache) {
-  const renderer = SUPPORTED_RENDERERS.get(component.family);
-  if (!renderer) {
-    throw new Error(`Ready supplemental component ${component.id} has no supported exporter for family ${component.family}.`);
-  }
+function readyBase(component, renderer) {
   if (!component.cardLike || component.tts?.representation !== 'card') {
     throw new Error(`Ready supplemental component ${component.id} cannot use ${renderer}: expected a card-like TTS card.`);
   }
   if (component.backPolicy !== 'twoSided') {
     throw new Error(`Ready supplemental component ${component.id} must be explicitly two-sided before export; found ${component.backPolicy || 'missing'}.`);
-  }
-  if (!component.reverseArtwork) {
-    throw new Error(`Ready supplemental component ${component.id} is two-sided but has no reverseArtwork.`);
-  }
-  await access(join(ROOT, component.reverseArtwork));
-
-  let markdown = sourceCache.get(component.source);
-  if (!markdown) {
-    markdown = await readFile(join(ROOT, component.source), 'utf8');
-    sourceCache.set(component.source, markdown);
   }
 
   return {
@@ -179,15 +273,56 @@ async function readyRecord(component, sourceCache) {
     productionStatus: component.productionStatus,
     backPolicy: component.backPolicy,
     reverse: component.reverse,
-    reverseArtwork: component.reverseArtwork,
     representation: component.tts.representation,
     source: component.source,
     renderer,
+  };
+}
+
+async function readyRiteRecord(component, renderer, markdown) {
+  if (!component.reverseArtwork) {
+    throw new Error(`Ready supplemental component ${component.id} is two-sided but has no reverseArtwork.`);
+  }
+  await access(join(ROOT, component.reverseArtwork));
+  return {
+    ...readyBase(component, renderer),
+    reverseArtwork: component.reverseArtwork,
     front: {
       sourceHeading: component.name,
       blocks: parseRiteBlocks(markdown, component.name),
     },
   };
+}
+
+async function readyReferenceRecord(component, renderer, markdown) {
+  const faces = component.referenceFaces;
+  if (!faces?.front || !faces?.reverse) {
+    throw new Error(`Ready reference card ${component.id} must declare referenceFaces.front and referenceFaces.reverse.`);
+  }
+  return {
+    ...readyBase(component, renderer),
+    faces: {
+      front: parseReferenceFace(markdown, faces.front, component.name, 'front'),
+      reverse: parseReferenceFace(markdown, faces.reverse, component.name, 'reverse'),
+    },
+  };
+}
+
+async function readyRecord(component, sourceCache) {
+  const renderer = SUPPORTED_RENDERERS.get(component.family);
+  if (!renderer) {
+    throw new Error(`Ready supplemental component ${component.id} has no supported exporter for family ${component.family}.`);
+  }
+
+  let markdown = sourceCache.get(component.source);
+  if (!markdown) {
+    markdown = await readFile(join(ROOT, component.source), 'utf8');
+    sourceCache.set(component.source, markdown);
+  }
+
+  if (component.family === 'rite-card') return readyRiteRecord(component, renderer, markdown);
+  if (component.family === 'reference-card') return readyReferenceRecord(component, renderer, markdown);
+  throw new Error(`Ready supplemental component ${component.id} reached unsupported exporter ${renderer}.`);
 }
 
 export async function buildSupplementalCatalog(componentContract = null) {
@@ -205,7 +340,7 @@ export async function buildSupplementalCatalog(componentContract = null) {
   return {
     release,
     catalog: {
-      schemaVersion: 1,
+      schemaVersion: 2,
       gameVersion: release.version,
       componentContract: 'config/tts-component-contract.json',
       sourcePolicy: 'ready components export; pending components remain cataloged but produce no TTS objects',
@@ -225,25 +360,42 @@ async function writeSupplementalCatalog(release, catalog) {
   await writeFile(join(CURRENT_ALIAS_ROOT, 'supplemental-catalog.json'), text);
 }
 
-function reverseFileFor(record) {
+function artworkReverseFileFor(record) {
   const extension = extname(record.reverseArtwork);
   const stem = basename(record.reverseArtwork, extension).replace(/[^a-z0-9_-]+/gi, '-');
   return `supplementals/reverses/${stem}.png`;
+}
+
+function generatedReverseFileFor(record) {
+  return `supplementals/reverses/${record.id}.png`;
 }
 
 async function captureCard(page, baseUrl, record, side, outputPath) {
   await page.goto(`${baseUrl}/tts/supplemental-renderer/?component=${encodeURIComponent(record.id)}&side=${encodeURIComponent(side)}`, { waitUntil: 'load' });
   await page.waitForSelector('.supplemental-card');
   await page.waitForFunction(() => document.body.dataset.renderReady === 'true' || document.body.dataset.renderError === 'true');
-  const error = await page.evaluate(() => document.body.dataset.renderError === 'true');
-  if (error) throw new Error(`Supplemental renderer failed for ${record.id} (${side}).`);
+  const renderState = await page.evaluate(() => ({
+    error: document.body.dataset.renderError === 'true',
+    message: document.body.dataset.renderErrorMessage || '',
+  }));
+  if (renderState.error) {
+    throw new Error(`Supplemental renderer failed for ${record.id} (${side}): ${renderState.message || 'browser renderer reported an unspecified error'}`);
+  }
 
   const metrics = await page.locator('.supplemental-card').evaluate((element) => {
     const rect = element.getBoundingClientRect();
-    return { width: rect.width, height: rect.height };
+    return {
+      width: rect.width,
+      height: rect.height,
+      overflowHeight: element.scrollHeight,
+      clientHeight: element.clientHeight,
+    };
   });
   if (Math.abs(metrics.width - CSS_CARD_WIDTH) > 0.25 || Math.abs(metrics.height - CSS_CARD_HEIGHT) > 0.25) {
     throw new Error(`Unexpected supplemental geometry for ${record.id} (${side}): ${metrics.width} × ${metrics.height}.`);
+  }
+  if (metrics.overflowHeight > metrics.clientHeight + 1) {
+    throw new Error(`Supplemental content overflows ${record.id} (${side}): ${metrics.overflowHeight}px > ${metrics.clientHeight}px.`);
   }
 
   await page.locator('.supplemental-card').screenshot({ path: outputPath, omitBackground: true });
@@ -272,30 +424,38 @@ export async function renderSupplementalAssets(release, catalog) {
   const page = await context.newPage();
 
   try {
-    const renderedReverses = new Map();
+    const renderedArtworkReverses = new Map();
     const records = [];
     for (let index = 0; index < catalog.ready.length; index += 1) {
       const record = catalog.ready[index];
       const deckId = FIRST_SUPPLEMENTAL_DECK_ID + index;
       const frontFile = `supplementals/fronts/${record.id}.png`;
-      const reverseFile = reverseFileFor(record);
+      let reverseFile;
 
       await captureCard(page, baseUrl, record, 'front', join(outputRoot, frontFile));
-      if (!renderedReverses.has(record.reverseArtwork)) {
+
+      if (record.renderer === 'rite-card') {
+        reverseFile = artworkReverseFileFor(record);
+        if (!renderedArtworkReverses.has(record.reverseArtwork)) {
+          await captureCard(page, baseUrl, record, 'reverse', join(outputRoot, reverseFile));
+          renderedArtworkReverses.set(record.reverseArtwork, reverseFile);
+        }
+        reverseFile = renderedArtworkReverses.get(record.reverseArtwork);
+      } else {
+        reverseFile = generatedReverseFileFor(record);
         await captureCard(page, baseUrl, record, 'reverse', join(outputRoot, reverseFile));
-        renderedReverses.set(record.reverseArtwork, reverseFile);
       }
 
       records.push({
         ...record,
         frontFile,
-        reverseFile: renderedReverses.get(record.reverseArtwork),
+        reverseFile,
         tts: {
           cardId: deckId * 100,
           deckId,
           index: 0,
           faceFile: frontFile,
-          backFile: renderedReverses.get(record.reverseArtwork),
+          backFile: reverseFile,
           numWidth: 1,
           numHeight: 1,
           backIsHidden: true,
@@ -305,7 +465,7 @@ export async function renderSupplementalAssets(release, catalog) {
     }
 
     const manifest = {
-      schemaVersion: 1,
+      schemaVersion: 2,
       gameVersion: release.version,
       componentContract: catalog.componentContract,
       output: {
@@ -317,8 +477,8 @@ export async function renderSupplementalAssets(release, catalog) {
       ready: records,
       pending: catalog.pending,
       placement: {
-        includedInReviewSave: false,
-        note: 'Ready supplemental assets are exported and hosted here; table/save placement is intentionally deferred to the component-assembly layer.',
+        assembly: 'starter-faction',
+        note: 'Ready card-representation supplementals are hosted here and assembled into matching starter Bags by the supplemental save-assembly layer.',
       },
     };
 
@@ -331,6 +491,14 @@ export async function renderSupplementalAssets(release, catalog) {
     await browser.close();
     await new Promise((done) => server.close(done));
   }
+}
+
+function githubErrorAnnotation(message) {
+  const escaped = String(message || '')
+    .replace(/%/g, '%25')
+    .replace(/\r/g, '%0D')
+    .replace(/\n/g, '%0A');
+  return `::error title=TTS supplemental export::${escaped}`;
 }
 
 async function main() {
@@ -349,7 +517,9 @@ async function main() {
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main().catch((error) => {
-    console.error(error.stack || error.message || error);
+    const message = error.stack || error.message || String(error);
+    console.error(message);
+    if (process.env.GITHUB_ACTIONS === 'true') console.error(githubErrorAnnotation(message));
     process.exitCode = 1;
   });
 }

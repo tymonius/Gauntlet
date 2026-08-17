@@ -9,7 +9,7 @@ The TTS pipeline does not hard-code a game version. It resolves the current rele
 - `config/release-lifecycle.json` declares which release is current and publicly cut over;
 - `config/github-release-contract.json` must agree on that release and identifies its published canonical-data and starter-deck assets;
 - `scripts/tts-current-catalog.mjs` validates that agreement, finds the current release assets, and derives the versioned output path;
-- `config/tts-component-contract.json` declares physical-component families, faction supplemental components, production readiness, back behavior, and TTS interaction metadata that are not part of the ordinary playable-card dataset.
+- `config/tts-component-contract.json` declares physical-component families, faction supplemental components, production readiness, back behavior, source selectors, and TTS interaction metadata that are not part of the ordinary playable-card dataset.
 
 The exporters then consume the resolved current canonical dataset, current starter decks, shared production renderers, approved artwork, and the physical-component contract. A normal release cutover should require **no TTS script fork, count update, or version-string edit**.
 
@@ -34,14 +34,14 @@ npm run tts:package
 ```
 
 - `tts:components:check` validates the physical-component contract, current faction inventories, standard-back resolution, two-sided requirements, and sliding-tracker metadata.
-- `tts:supplementals:check` verifies that every component currently marked ready has a supported export path, a usable canonical source, and any required reverse artwork; pending components remain cataloged but are not rendered.
+- `tts:supplementals:check` verifies that every component currently marked ready has a supported export path and usable current-guide source selectors; artwork-backed sides must also resolve their artwork.
 - `tts:check` runs the component-contract, supplemental, current-release, save-publisher, and supplemental-save-assembler source checks without writing raster output.
 - `tts:catalog` writes deterministic playable/Territory catalog JSON/browser data under both the current release and `tts/generated/current/`.
 - `tts:cards` renders current playable-card faces, all six standard-back color variants, TTS face sheets, and `manifest.json`.
 - `tts:territories` renders current landscape Territory/Arena faces and sheets. It deliberately does **not** create a Territory-specific back.
 - `tts:leaders` renders current production Leader faces and resolves their backs through the standard-back policy.
 - `tts:starters` joins current starter data to generated card, Territory, and Leader manifests and resolves one standard back for each player package.
-- `tts:supplementals` renders only contract components whose production status is `ready`, writes the supplemental catalog/manifest, and leaves all other component records pending without TTS objects.
+- `tts:supplementals` renders only contract components whose production status is `ready`, including both sides of public reference cards and Rite cards, and leaves all other component records pending without TTS objects.
 - `tts:build` validates the component contract, renders cards, Territories, and Leaders, then assembles the starter manifests.
 - `tts:release:stage` stages only network assets required by TTS, including ready supplemental fronts/reverses and the supplemental manifest, with deterministic GitHub Release filenames, hashes, and hosted URLs.
 - `tts:save` builds the base current review-save scaffold from the staged starter assets.
@@ -60,9 +60,10 @@ The generated directory is ignored by Git. GitHub Actions uploads `tts/generated
 - faction supplemental component identities and quantities;
 - whether a component is ready, artwork-pending, export-pending, or design-pending;
 - whether a card-like component uses `standardBack`, is `twoSided`, or has a declared `specialBack`;
+- source selectors for generated two-sided reference faces;
 - TTS representation metadata, including non-stackable sliding trackers and stacked tracker assemblies.
 
-A pending component remains visible in the contract instead of being silently omitted. Structural errors still fail closed: duplicate IDs, invalid quantities or factions, missing two-sided reverses, unresolved standard backs, invalid special backs, or incomplete sliding-tracker metadata fail validation.
+A pending component remains visible in the contract instead of being silently omitted. Structural errors still fail closed: duplicate IDs, invalid quantities or factions, missing two-sided reverses, unresolved standard backs, invalid special backs, missing ready-family exporters, unresolved reference headings, or incomplete sliding-tracker metadata stop packaging.
 
 The current faction supplemental inventory encoded by the contract is:
 
@@ -75,19 +76,15 @@ The current faction supplemental inventory encoded by the contract is:
 | Mystics | Mystics Reference Card; 3 double-sided Rite cards |
 | Inquisition | Inquisition Doctrine Reference Card; Purge Reference Card; Conviction Tracker |
 
-The three Mystics Rite cards are marked ready. The nine Diplomat Proposal/Treaty cards are marked artwork-pending. Other supplemental components retain their current export/design status until their production assets are integrated.
+The three Mystics Rite cards and all seven faction reference cards are ready. The nine Diplomat Proposal/Treaty cards remain artwork-pending. Trackers, the Capital Ledger, and Deeds retain their declared pending status until their production inputs are integrated.
 
 ## Standard card-back policy
 
 Every ordinary card-like component uses `standardBack` unless it is explicitly `twoSided` or declares a `specialBack`.
 
-This includes:
+Ordinary standard-backed cards currently include playable cards, Leaders, Territories, tracker cards, Deeds, and other card-shaped supplemental components that do not declare another policy.
 
-- playable cards;
-- Leaders;
-- Territories;
-- reference cards;
-- tracker cards and other ordinary card-shaped supplemental components.
+**Reference cards are an explicit exception because they are two-sided public reference material.** They do not use the playable Deck back on either side. Keeping both faces visibly informational also prevents a reference card from being mistaken for or shuffled into the Deck.
 
 Territories have **no Territory-specific back**. In a starter package, each Territory receives the same resolved standard back as that player's playable Deck and Leader.
 
@@ -99,7 +96,7 @@ Territories have **no Territory-specific back**. In a starter package, each Terr
 }
 ```
 
-The policy also supports `universal-black`. The current universal variant points at the existing black Intelligence back. Switching between faction-colored backs and one universal black back therefore changes one policy field rather than every component definition.
+The policy also supports `universal-black`. The current universal variant points at the existing black Intelligence back. Switching between faction-colored backs and one universal black back therefore changes one policy field rather than every standard-backed component definition.
 
 All six production variants continue to be rendered because they are cheap shared assets and allow either policy without redesigning the renderer. The final face-sheet slot uses the black variant only as a deterministic hidden-card fallback image; it does not override the resolved `BackURL`.
 
@@ -185,9 +182,13 @@ It does not keep a second hand-maintained list of components. On every run it pa
 - `ready` components must have a supported renderer and all required inputs or the export fails closed;
 - every other component is retained in `supplemental-catalog.json` and `supplemental-manifest.json` with its status, but produces no face, reverse, hosted asset, or TTS object yet.
 
-The first supported family is the Mystics `rite-card` family. The incomplete fronts use the established physical Rite presentation while their wording is extracted from each Rite's heading in the current canonical Mystics guide. That keeps the TTS faces synchronized with current rules wording instead of copying old component text into the exporter. The completed side uses the approved shared `reverseArtwork` declared by the component contract and is rasterized once even when several ready cards share it.
+The Mystics `rite-card` renderer extracts the incomplete face from the Rite's current-guide heading and composes the approved shared Completed artwork into the established Rite frame.
 
-Ready supplemental cards use deterministic one-card deck IDs beginning at 200, after the existing playable-card, Territory, and Leader ranges. The manifest records both faces and their TTS IDs. Its `placement.includedInReviewSave` field describes the exporter's own stage and therefore remains `false`: the exporter does not mutate saves. The later save-assembly step is what places those ready records into the final review scaffold.
+The `reference-card` renderer generates both informational sides from source selectors declared in the physical contract. Selectors name current faction-guide headings rather than copying rules text into the contract. The Markdown parser preserves paragraphs, lists, labelled rules, subheadings, and tables. Missing headings, missing faces, or content that cannot fit the physical card fail the build rather than silently deleting canonical reference text.
+
+Reference cards intentionally use no ordinary Deck back. Both generated sides carry the faction treatment and an explicit public-supplemental footer so their physical role remains unambiguous in TTS.
+
+Ready supplemental cards use deterministic one-card deck IDs beginning at 200, after the existing playable-card, Territory, and Leader ranges. The manifest records both faces and their TTS IDs; the later save-assembly step places ready card representations into matching starter Bags.
 
 ## Supplemental save assembly contract
 
@@ -206,7 +207,7 @@ Assembly is idempotent. Generated supplemental objects carry a `gauntlet:supplem
 
 The placement layer currently supports the `card` representation. If a component becomes ready with another representation, such as `sliding-tracker`, before save assembly support exists, packaging fails closed instead of silently placing the wrong object. This is deliberate: tracker geometry, snapping, and stacked interaction must be production-ready before those components ship.
 
-With the current contract, both Mystics starter kits receive the three ready Rite cards. Other faction kits receive no supplemental objects yet because their supplemental components remain pending.
+With the current contract, every starter Bag receives its faction's ready reference card or cards where that faction has them; Mystics Bags also receive all three Rites. Military currently has no reference card and its Command Tracker remains pending.
 
 Rules automation remains out of scope. Assembly reproduces physical components; it does not implement Rite completion, resource changes, battle resolution, or other gameplay rules in Lua.
 
@@ -218,7 +219,7 @@ The network-hosting layer stages only files TTS must request directly:
 - the six standard-back variants;
 - Territory face sheets;
 - individual rendered Leader faces;
-- ready supplemental fronts and shared reverse rasters;
+- ready supplemental fronts and reverse sides;
 - generated card, Territory, Leader, starter, and supplemental manifests; and
 - a release-asset manifest mapping generated source paths to deterministic public download URLs.
 
@@ -233,17 +234,18 @@ For an ordinary future release, TTS should continue working when the normal rele
 1. advances `config/release-lifecycle.json` and `config/github-release-contract.json` to the new current release;
 2. publishes the new canonical data and starter-deck data;
 3. updates shared production render surfaces and artwork as needed;
-4. updates `config/tts-component-contract.json` only when the physical component inventory, status, back behavior, or interaction model changes; and
+4. updates `config/tts-component-contract.json` only when the physical component inventory, status, back behavior, source selectors, or interaction model changes; and
 5. runs `npm run tts:package` / the TTS asset workflow.
 
 Playable-card and Territory counts already derive from current canonical data. Supplemental quantities, readiness, and behavior have one declared contract instead of being scattered through future save-builder special cases. Changing a component from pending to ready is intentionally a validation boundary: the package will refuse to ship it until an exporter exists for that family and the save assembler supports its TTS representation.
 
 ## Remaining TTS work
 
-Ready card-representation supplementals now flow end to end from the physical contract through rendering, hosting, and faction starter placement. The next component work is therefore driven by production readiness rather than save-builder plumbing:
+Ready card-representation supplementals now flow end to end from the physical contract through rendering, hosting, and faction starter placement. Remaining component work is driven by genuinely unfinished production inputs:
 
-- integrate final exports for reference cards, ledgers, Deeds, and other ordinary card-like supplementals as they become ready;
-- implement the generic non-stackable sliding-tracker object and snap-position assembler once tracker artwork supplies final registration geometry;
+- complete artwork for the nine Diplomat Proposal / Treaty Article cards;
+- define and export the Financier Capital Ledger and eight Deeds;
+- supply final tracker artwork registrations, then implement the generic non-stackable sliding-tracker object and snap-position assembler;
 - use that tracker path for Military Command, Diplomat Influence, Inquisition Conviction, and the stacked Intelligence Intel / Operation Progress assembly; and
 - keep rules execution manual unless a separate, explicit automation phase is approved later.
 
