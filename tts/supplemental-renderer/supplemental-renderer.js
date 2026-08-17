@@ -25,6 +25,13 @@ function element(tag, className, text = '') {
   return node;
 }
 
+function reportRenderError(error) {
+  const message = error?.stack || error?.message || String(error);
+  console.error(error);
+  document.body.dataset.renderErrorMessage = message;
+  document.body.dataset.renderError = 'true';
+}
+
 function riteHeader(record, kicker) {
   const header = element('header', 'rite-header');
   header.append(
@@ -111,7 +118,7 @@ function renderRiteReverse(record) {
     document.body.dataset.renderReady = 'true';
   }, { once: true });
   image.addEventListener('error', () => {
-    throw new Error(`Failed to load reverse artwork for ${record.id}: ${record.reverseArtwork}`);
+    reportRenderError(new Error(`Failed to load reverse artwork for ${record.id}: ${record.reverseArtwork}`));
   }, { once: true });
   image.src = `/${String(record.reverseArtwork || '').replace(/^\/+/, '')}`;
   art.append(image);
@@ -150,7 +157,7 @@ function fitReferenceCard(card) {
   }
 
   if (card.scrollHeight > card.clientHeight + 1) {
-    throw new Error(`Reference content cannot fit ${card.dataset.componentId} ${card.dataset.side} without dropping canonical text.`);
+    throw new Error(`Reference content cannot fit ${card.dataset.componentId} ${card.dataset.side} without dropping canonical text (scroll ${card.scrollHeight}px, client ${card.clientHeight}px, body font ${size.toFixed(2)}px).`);
   }
 }
 
@@ -186,8 +193,7 @@ function renderReference(record, sideName) {
       fitReferenceCard(card);
       document.body.dataset.renderReady = 'true';
     } catch (error) {
-      console.error(error);
-      document.body.dataset.renderError = 'true';
+      reportRenderError(error);
     }
   });
 }
@@ -216,7 +222,7 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error(error);
-  target.replaceChildren(element('pre', 'render-error', error.stack || error.message || String(error)));
-  document.body.dataset.renderError = 'true';
+  const message = error?.stack || error?.message || String(error);
+  target.replaceChildren(element('pre', 'render-error', message));
+  reportRenderError(error);
 });
