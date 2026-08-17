@@ -9,15 +9,15 @@ Public pages:
 - Formal session page: `https://gauntlet.run/playtest/session/?code=<SESSION-TOKEN>`
 - Coded batch generator: `https://gauntlet.run/playtest/batch/`
 
-This directory contains the routine human-playtest questionnaire and its linked formal-session workflow. For the tagged v0.6.3 release artifact, use [`releases/v0.6.3/Gauntlet_v0.6.3_Formal_Playtest_Sheet.pdf`](../releases/v0.6.3/Gauntlet_v0.6.3_Formal_Playtest_Sheet.pdf).
+This directory contains the routine human-playtest questionnaire and its linked formal-session workflow. The certified reconstructed v0.6.3 package does not contain the withdrawn release's standalone Formal Playtest Sheet PDF; use the live `/playtest/` print source for current v0.6.3 sessions.
 
 The browser pages and coded-session infrastructure are active development surfaces rather than immutable release artifacts. New sessions created by the live workflow use the v0.6.3 runtime contract, while older stored sessions retain their persisted rules version and remain addressable by their existing session tokens.
 
 ## Printable sheet
 
-The release-canonical printable sheet for the current rules package is:
+The current v0.6.3 printable playtest sheet is the live browser surface:
 
-- [`Gauntlet_v0.6.3_Formal_Playtest_Sheet.pdf`](../releases/v0.6.3/Gauntlet_v0.6.3_Formal_Playtest_Sheet.pdf)
+- `https://gauntlet.run/playtest/`
 
 Print on Letter paper at Actual Size / 100%, with browser or printer headers and footers disabled.
 
