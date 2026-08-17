@@ -29,12 +29,13 @@ npm run tts:supplementals
 npm run tts:build
 npm run tts:release:stage
 npm run tts:save
+npm run tts:save:assemble
 npm run tts:package
 ```
 
 - `tts:components:check` validates the physical-component contract, current faction inventories, standard-back resolution, two-sided requirements, and sliding-tracker metadata.
 - `tts:supplementals:check` verifies that every component currently marked ready has a supported export path, a usable canonical source, and any required reverse artwork; pending components remain cataloged but are not rendered.
-- `tts:check` runs the component-contract, supplemental, and existing current-release source checks without writing raster output.
+- `tts:check` runs the component-contract, supplemental, current-release, save-publisher, and supplemental-save-assembler source checks without writing raster output.
 - `tts:catalog` writes deterministic playable/Territory catalog JSON/browser data under both the current release and `tts/generated/current/`.
 - `tts:cards` renders current playable-card faces, all six standard-back color variants, TTS face sheets, and `manifest.json`.
 - `tts:territories` renders current landscape Territory/Arena faces and sheets. It deliberately does **not** create a Territory-specific back.
@@ -43,8 +44,9 @@ npm run tts:package
 - `tts:supplementals` renders only contract components whose production status is `ready`, writes the supplemental catalog/manifest, and leaves all other component records pending without TTS objects.
 - `tts:build` validates the component contract, renders cards, Territories, and Leaders, then assembles the starter manifests.
 - `tts:release:stage` stages only network assets required by TTS, including ready supplemental fronts/reverses and the supplemental manifest, with deterministic GitHub Release filenames, hashes, and hosted URLs.
-- `tts:save` builds the current review-save scaffold from the staged starter assets. Supplemental placement is still intentionally deferred.
-- `tts:package` performs the core build, supplemental rendering, staging, and save pipeline.
+- `tts:save` builds the base current review-save scaffold from the staged starter assets.
+- `tts:save:assemble` consumes the current starter and supplemental manifests plus staged hosted URLs, then injects every ready faction supplemental into every matching starter kit.
+- `tts:package` performs the complete core build, supplemental rendering, staging, scaffold generation, and ready-component assembly pipeline.
 
 The generated directory is ignored by Git. GitHub Actions uploads `tts/generated/` as a review artifact rather than committing derived PNGs.
 
@@ -183,9 +185,30 @@ It does not keep a second hand-maintained list of components. On every run it pa
 - `ready` components must have a supported renderer and all required inputs or the export fails closed;
 - every other component is retained in `supplemental-catalog.json` and `supplemental-manifest.json` with its status, but produces no face, reverse, hosted asset, or TTS object yet.
 
-The first supported family is the Mystics `rite-card` family. The incomplete fronts use the established physical Rite presentation while their wording is extracted from each Rite's heading in the current canonical Mystics guide. That keeps the TTS faces synchronized with current rules wording instead of copying v0.6-era component text into the exporter. The completed side uses the approved shared `reverseArtwork` declared by the component contract and is rasterized once even when several ready cards share it.
+The first supported family is the Mystics `rite-card` family. The incomplete fronts use the established physical Rite presentation while their wording is extracted from each Rite's heading in the current canonical Mystics guide. That keeps the TTS faces synchronized with current rules wording instead of copying old component text into the exporter. The completed side uses the approved shared `reverseArtwork` declared by the component contract and is rasterized once even when several ready cards share it.
 
-Ready supplemental cards use deterministic one-card deck IDs beginning at 200, after the existing playable-card, Territory, and Leader ranges. The manifest records both faces and their TTS IDs, but `placement.includedInReviewSave` remains `false` until the component-assembly layer decides where and how each faction's supplementals belong on the table.
+Ready supplemental cards use deterministic one-card deck IDs beginning at 200, after the existing playable-card, Territory, and Leader ranges. The manifest records both faces and their TTS IDs. Its `placement.includedInReviewSave` field describes the exporter's own stage and therefore remains `false`: the exporter does not mutate saves. The later save-assembly step is what places those ready records into the final review scaffold.
+
+## Supplemental save assembly contract
+
+`scripts/assemble-tts-supplemental-save.mjs` is the generic placement layer between rendered supplemental assets and starter Bags.
+
+For every generated starter it:
+
+1. identifies that starter's faction from `starter-deck-manifest.json`;
+2. selects only `supplemental-manifest.json` records whose `productionStatus` is `ready` and whose faction matches the starter;
+3. resolves each ready object's face and reverse through the staged release-asset manifest rather than embedding local file paths;
+4. expands the contract quantity without any faction-specific quantity constant;
+5. inserts the objects into the starter Bag with deterministic non-colliding GUIDs; and
+6. leaves every pending component absent from the save.
+
+Assembly is idempotent. Generated supplemental objects carry a `gauntlet:supplemental:<component-id>` marker in `GMNotes`; rerunning assembly removes the prior generated supplemental objects before rebuilding the current ready set. The base Deck, Leader, Territories, and other Bag contents are untouched.
+
+The placement layer currently supports the `card` representation. If a component becomes ready with another representation, such as `sliding-tracker`, before save assembly support exists, packaging fails closed instead of silently placing the wrong object. This is deliberate: tracker geometry, snapping, and stacked interaction must be production-ready before those components ship.
+
+With the current contract, both Mystics starter kits receive the three ready Rite cards. Other faction kits receive no supplemental objects yet because their supplemental components remain pending.
+
+Rules automation remains out of scope. Assembly reproduces physical components; it does not implement Rite completion, resource changes, battle resolution, or other gameplay rules in Lua.
 
 ## GitHub Release asset hosting
 
@@ -213,10 +236,15 @@ For an ordinary future release, TTS should continue working when the normal rele
 4. updates `config/tts-component-contract.json` only when the physical component inventory, status, back behavior, or interaction model changes; and
 5. runs `npm run tts:package` / the TTS asset workflow.
 
-Playable-card and Territory counts already derive from current canonical data. Supplemental quantities, readiness, and behavior have one declared contract instead of being scattered through future save-builder special cases. Changing a component from pending to ready is intentionally a validation boundary: the package will refuse to ship it until an exporter exists for that family and all required production inputs are present.
+Playable-card and Territory counts already derive from current canonical data. Supplemental quantities, readiness, and behavior have one declared contract instead of being scattered through future save-builder special cases. Changing a component from pending to ready is intentionally a validation boundary: the package will refuse to ship it until an exporter exists for that family and the save assembler supports its TTS representation.
 
 ## Remaining TTS work
 
-Ready supplemental components can now be rendered and hosted without changing the review save. The next integration layer is **component assembly**: consume `supplemental-manifest.json`, add the appropriate ready components to each faction package, and instantiate tracker assemblies/snap behavior only after their production exports are ready.
+Ready card-representation supplementals now flow end to end from the physical contract through rendering, hosting, and faction starter placement. The next component work is therefore driven by production readiness rather than save-builder plumbing:
 
-That keeps the current review scaffold usable while making future component completion additive: finish the artwork/export source, change its declared readiness, let the supplemental exporter pick it up, and then let the assembly layer place it without rebuilding faction-specific rules in the save generator.
+- integrate final exports for reference cards, ledgers, Deeds, and other ordinary card-like supplementals as they become ready;
+- implement the generic non-stackable sliding-tracker object and snap-position assembler once tracker artwork supplies final registration geometry;
+- use that tracker path for Military Command, Diplomat Influence, Inquisition Conviction, and the stacked Intelligence Intel / Operation Progress assembly; and
+- keep rules execution manual unless a separate, explicit automation phase is approved later.
+
+Future component completion is additive: finish the production source, change its contract status to `ready`, let the supplemental exporter render it, and let the save assembly layer place it into every matching starter without adding faction-specific rules to the scaffold.
