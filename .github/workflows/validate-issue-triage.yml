@@ -1,0 +1,118 @@
+name: Issue triage integrity
+
+on:
+  issues:
+    types: [opened, reopened]
+  issue_comment:
+    types: [created, edited, deleted]
+  pull_request:
+    paths:
+      - CONTRIBUTING.md
+      - .github/workflows/validate-issue-triage.yml
+  schedule:
+    - cron: '17 13 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: read
+
+jobs:
+  validate-open-issue-triage:
+    if: ${{ github.event_name != 'issue_comment' || !github.event.issue.pull_request }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate open issue triage
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const marker = '<!-- gauntlet-triage -->';
+            const maxAgeDays = 14;
+            const millisecondsPerDay = 24 * 60 * 60 * 1000;
+            const now = Date.now();
+
+            const allIssues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 100,
+            });
+
+            const issues = allIssues.filter((issue) => !issue.pull_request);
+            const defects = [];
+            const rows = [
+              [
+                { data: 'Issue', header: true },
+                { data: 'Status', header: true },
+                { data: 'Triage age', header: true },
+              ],
+            ];
+
+            for (const issue of issues) {
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                per_page: 100,
+              });
+
+              const triageComments = comments
+                .filter((comment) => comment.body?.includes(marker))
+                .sort((a, b) => new Date(a.updated_at) - new Date(b.updated_at));
+
+              if (triageComments.length === 0) {
+                defects.push(`#${issue.number} ${issue.title}: missing ${marker} triage comment.`);
+                rows.push([`#${issue.number}`, 'Missing', '—']);
+                continue;
+              }
+
+              const triage = triageComments.at(-1);
+              const body = triage.body ?? '';
+              const actionable = /\*\*Status:\*\*\s*Actionable now\b/i.test(body);
+              const blocked = /\*\*Status:\*\*\s*Blocked\b/i.test(body);
+              const ageDays = Math.floor((now - new Date(triage.updated_at).getTime()) / millisecondsPerDay);
+
+              let status = 'Invalid';
+              if (actionable && !blocked) status = 'Actionable now';
+              if (blocked && !actionable) status = 'Blocked';
+
+              if (status === 'Invalid') {
+                defects.push(`#${issue.number} ${issue.title}: triage status must be exactly "Actionable now" or "Blocked".`);
+              }
+
+              if (status === 'Actionable now' && !/\*\*Next step:\*\*[ \t]*\S/.test(body)) {
+                defects.push(`#${issue.number} ${issue.title}: actionable triage is missing a non-empty **Next step:**.`);
+              }
+
+              if (status === 'Blocked') {
+                if (!/\*\*Blocked on:\*\*[ \t]*\S/.test(body)) {
+                  defects.push(`#${issue.number} ${issue.title}: blocked triage is missing a non-empty **Blocked on:**.`);
+                }
+                if (!/\*\*Resume when:\*\*[ \t]*\S/.test(body)) {
+                  defects.push(`#${issue.number} ${issue.title}: blocked triage is missing a non-empty **Resume when:**.`);
+                }
+              }
+
+              if (ageDays > maxAgeDays) {
+                defects.push(`#${issue.number} ${issue.title}: triage is ${ageDays} days old; refresh it after reviewing current status.`);
+              }
+
+              rows.push([`#${issue.number}`, status, `${ageDays} day${ageDays === 1 ? '' : 's'}`]);
+            }
+
+            core.summary
+              .addHeading('Open issue triage')
+              .addRaw(`${issues.length} open issue(s) checked.\n`)
+              .addTable(rows);
+
+            if (defects.length > 0) {
+              core.summary
+                .addHeading('Triage defects', 2)
+                .addList(defects);
+              await core.summary.write();
+              core.setFailed(defects.join('\n'));
+              return;
+            }
+
+            core.summary.addRaw('\nAll open issues have current, valid triage records.');
+            await core.summary.write();
