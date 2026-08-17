@@ -8,7 +8,7 @@ describe("published faction pages", () => {
     expect(mysticsPage).not.toContain("The third wins the game.");
     expect(mysticsPage).not.toContain("The third completion immediately wins the game");
     expect(mysticsPage).toContain(
-      "The third unlocks Convergence and permission to begin the Ritual of Ascendance."
+      "The third unlocks Convergence and permission to begin the Ritual of Ascension."
     );
     expect(mysticsPage).toContain(
       "Initiate and win a battle while all three remain bound to complete the Ritual and win the game."
