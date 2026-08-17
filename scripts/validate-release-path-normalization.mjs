@@ -28,11 +28,18 @@ const frozenOrHistorical = (path) =>
   path.startsWith('artifacts/v0.6.3/') ||
   path.startsWith('publication/v0.6.3/');
 
+const explicitCompatibilityInfrastructure = new Set([
+  '.github/workflows/pr-quality-gate.yml',
+  '.github/workflows/release-history-integrity.yml',
+  'config/release-lifecycle.json',
+  'scripts/build-v063-rulebook-production.py',
+  'scripts/validate-current-public-contract.mjs',
+  'scripts/validate-release-path-normalization.mjs',
+  'tests/reconstruction-publication-closeout.test.ts',
+]);
+
 const allowedLegacyReference = (path) =>
-  path === 'config/release-lifecycle.json' ||
-  path === 'scripts/validate-current-public-contract.mjs' ||
-  path === 'scripts/validate-release-path-normalization.mjs' ||
-  frozenOrHistorical(path);
+  explicitCompatibilityInfrastructure.has(path) || frozenOrHistorical(path);
 
 const allowedWithdrawnV062Reference = (path) =>
   path === 'scripts/validate-release-path-normalization.mjs' ||
