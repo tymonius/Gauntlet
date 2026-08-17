@@ -28,9 +28,12 @@ const frozenOrHistorical = (path) =>
   path.startsWith('docs/recovery/') ||
   path.startsWith('artifacts/reconstruction/') ||
   path.startsWith('artifacts/v0.6.3/') ||
-  path.startsWith('publication/v0.6.3/');
+  path.startsWith('publication/v0.6.3/') ||
+  path === 'governance/traceability.json';
 
-const frozenPrintCandidateScripts = new Set([
+const frozenCandidateScripts = new Set([
+  'scripts/build-v063-release-candidate.mjs',
+  'scripts/validate-v063-release-candidate.mjs',
   'scripts/render-v063-print-candidate.mjs',
   'scripts/validate-v063-print-candidate.mjs',
 ]);
@@ -51,7 +54,7 @@ const allowedLegacyReference = (path) =>
 const allowedRetiredV063FilenameReference = (path) =>
   path === 'scripts/validate-release-path-normalization.mjs' ||
   path.startsWith('releases/v0.6.3-withdrawn/') ||
-  frozenPrintCandidateScripts.has(path) ||
+  frozenCandidateScripts.has(path) ||
   frozenOrHistorical(path);
 
 function gitObject(relative) {
