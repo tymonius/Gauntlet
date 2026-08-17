@@ -7,7 +7,7 @@ on:
       - "docs/Gauntlet_v0.6.3_*.md"
       - "factions/**/index.html"
       - "index.html"
-      - "releases/v0.6.3-reconstructed/**"
+      - "releases/v0.6.3/**"
       - "rulebook/**"
       - "rules-assistant/**"
       - "scripts/*v063*"
@@ -22,7 +22,7 @@ on:
       - "docs/Gauntlet_v0.6.3_*.md"
       - "factions/**/index.html"
       - "index.html"
-      - "releases/v0.6.3-reconstructed/**"
+      - "releases/v0.6.3/**"
       - "rulebook/**"
       - "rules-assistant/**"
       - "scripts/*v063*"
@@ -69,8 +69,8 @@ jobs:
             factions/military/index.html
             factions/financiers/index.html
             factions/inquisition/index.html
-            releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md
-            releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Canonical_Data.json
+            releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md
+            releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json
             v0.6.3/data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json
             artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md
             artifacts/reconstruction/clean-v0.6.3/downstream/canonical-data.json
