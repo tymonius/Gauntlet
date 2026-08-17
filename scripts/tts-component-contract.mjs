@@ -1,6 +1,7 @@
 import { access, readFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { resolveCurrentTtsRelease } from './tts-current-catalog.mjs';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 export const TTS_COMPONENT_CONTRACT_SOURCE = 'config/tts-component-contract.json';
@@ -20,8 +21,32 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+function resolveCanonicalSource(source, version) {
+  const value = String(source || '').trim();
+  if (!value.startsWith('artifacts/reconstruction/')) return value;
+  return value
+    .replace(/artifacts\/reconstruction\/clean-v[^/]+/, `artifacts/reconstruction/clean-${version}`)
+    .replace(/Gauntlet_v[^_]+_/, `Gauntlet_${version}_`);
+}
+
+function resolveContractSources(contract, version) {
+  const resolveComponent = (component) => ({
+    ...component,
+    source: resolveCanonicalSource(component.source, version),
+  });
+  return {
+    ...contract,
+    sharedComponents: (contract.sharedComponents || []).map(resolveComponent),
+    components: (contract.components || []).map(resolveComponent),
+  };
+}
+
 async function readContract() {
-  return JSON.parse(await readFile(join(ROOT, TTS_COMPONENT_CONTRACT_SOURCE), 'utf8'));
+  const [contract, release] = await Promise.all([
+    readFile(join(ROOT, TTS_COMPONENT_CONTRACT_SOURCE), 'utf8').then(JSON.parse),
+    resolveCurrentTtsRelease(),
+  ]);
+  return resolveContractSources(contract, release.version);
 }
 
 function componentMap(contract) {
