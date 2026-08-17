@@ -1,5 +1,5 @@
 import { createServer } from 'node:http';
-import { mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
+import { access, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { extname, join, relative, resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import {
@@ -8,6 +8,10 @@ import {
   ROOT,
   writeCatalog,
 } from './tts-current-catalog.mjs';
+import {
+  loadTtsComponentContract,
+  resolveStandardBackFile,
+} from './tts-component-contract.mjs';
 
 const TERRITORY_WIDTH = 560;
 const TERRITORY_HEIGHT = 400;
@@ -76,20 +80,10 @@ async function startStaticServer() {
   return { server, baseUrl: `http://127.0.0.1:${server.address().port}` };
 }
 
-function temporaryTerritoryBackHtml(version) {
-  return `<!doctype html><html><head><meta charset="utf-8"><style>
-    *{box-sizing:border-box}html,body{margin:0;background:transparent}
-    .back{position:relative;width:${CSS_TERRITORY_WIDTH}px;height:${CSS_TERRITORY_HEIGHT}px;overflow:hidden;border:1px solid #241c15;border-radius:12px;background:#282827;color:#fff9f1;font-family:Georgia,serif}
-    .back:before{position:absolute;inset:7px;border:1px solid #d7b783;border-radius:8px;content:""}
-    .mark{position:absolute;inset:0;display:grid;place-items:center;font-size:38px;letter-spacing:.12em;text-transform:uppercase}
-    .edition{position:absolute;left:0;right:0;bottom:18px;text-align:center;font:700 7px Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#d7b783}
-  </style></head><body><div class="back"><div class="mark">Gauntlet</div><div class="edition">${version} temporary Territory back</div></div></body></html>`;
-}
-
-function territorySheetHtml(baseUrl, version, territories) {
+function territorySheetHtml(baseUrl, version, territories, fallbackBackFile) {
   const slots = Array.from({ length: SHEET_COLUMNS * SHEET_ROWS }, (_, index) => {
     if (index === HIDDEN_SLOT) {
-      return `<img src="${baseUrl}/tts/generated/${version}/territory-back.png" alt="hidden Territory image">`;
+      return `<img src="${baseUrl}/tts/generated/${version}/${fallbackBackFile}" alt="standard hidden-card image">`;
     }
     const territory = territories[index];
     return territory
@@ -130,7 +124,7 @@ async function validateRenderedTerritory(page, territory) {
   if (result.parchment !== 'true') throw new Error(`Territory parchment failed to load for ${territory.id}.`);
 }
 
-async function renderTerritories(catalog) {
+async function renderTerritories(catalog, componentContract) {
   let chromium;
   try {
     ({ chromium } = await import('playwright'));
@@ -140,6 +134,14 @@ async function renderTerritories(catalog) {
 
   const release = await resolveCurrentTtsRelease();
   const outputRoot = release.outputRoot;
+  const fallbackBackFile = resolveStandardBackFile(componentContract, 'intelligence');
+  await access(join(outputRoot, fallbackBackFile)).catch((error) => {
+    if (error.code === 'ENOENT') {
+      throw new Error(`Territory sheet rendering requires the shared standard back ${fallbackBackFile}. Run npm run tts:cards first, or use npm run tts:build.`);
+    }
+    throw error;
+  });
+
   await rm(join(outputRoot, 'territories'), { recursive: true, force: true });
   await rm(join(outputRoot, 'territory-sheets'), { recursive: true, force: true });
   await mkdir(join(outputRoot, 'territories'), { recursive: true });
@@ -182,13 +184,6 @@ async function renderTerritories(catalog) {
       });
     }
 
-    await page.setViewportSize({ width: 620, height: 500 });
-    await page.setContent(temporaryTerritoryBackHtml(release.version), { waitUntil: 'load' });
-    await page.locator('.back').screenshot({
-      path: join(outputRoot, 'territory-back.png'),
-      omitBackground: true,
-    });
-
     const sheetGroups = chunk(catalog.territories, TERRITORIES_PER_SHEET);
     const sheetRecords = [];
     for (let sheetIndex = 0; sheetIndex < sheetGroups.length; sheetIndex += 1) {
@@ -199,7 +194,7 @@ async function renderTerritories(catalog) {
         width: SHEET_COLUMNS * CSS_TERRITORY_WIDTH,
         height: SHEET_ROWS * CSS_TERRITORY_HEIGHT,
       });
-      await page.setContent(territorySheetHtml(baseUrl, release.version, territories), { waitUntil: 'load' });
+      await page.setContent(territorySheetHtml(baseUrl, release.version, territories, fallbackBackFile), { waitUntil: 'load' });
       await page.waitForFunction(() => Array.from(document.images).every(
         (image) => image.complete && image.naturalWidth > 0,
       ));
@@ -214,7 +209,8 @@ async function renderTerritories(catalog) {
         sheetNumber,
         deckId,
         faceFile,
-        backFile: 'territory-back.png',
+        fallbackHiddenFile: fallbackBackFile,
+        backPolicy: 'standardBack',
         numWidth: SHEET_COLUMNS,
         numHeight: SHEET_ROWS,
         backIsHidden: true,
@@ -231,7 +227,7 @@ async function renderTerritories(catalog) {
     }
 
     await writeFile(join(outputRoot, 'territory-manifest.json'), jsonText({
-      schemaVersion: 3,
+      schemaVersion: 4,
       gameVersion: release.version,
       release: catalog.release,
       component: 'territories',
@@ -247,13 +243,14 @@ async function renderTerritories(catalog) {
         hiddenSlotIndex: HIDDEN_SLOT,
         firstDeckId: FIRST_DECK_ID,
       },
+      backPolicy: 'standardBack',
+      fallbackHiddenFile: fallbackBackFile,
       sheets: sheetRecords,
       counts: {
         territories: catalog.territories.filter((territory) => !territory.arena).length,
         arenas: catalog.territories.filter((territory) => territory.arena).length,
         total: catalog.territories.length,
       },
-      temporaryBack: true,
     }));
   } finally {
     await context.close();
@@ -264,16 +261,22 @@ async function renderTerritories(catalog) {
 
 async function main() {
   const checkOnly = process.argv.includes('--check');
-  const catalog = await buildCatalog();
+  const [catalog, componentContract] = await Promise.all([
+    buildCatalog(),
+    loadTtsComponentContract(),
+  ]);
   validateCatalog(catalog);
 
   if (checkOnly) {
-    console.log(`Current TTS Territory source check passed for ${catalog.gameVersion}: ${catalog.territories.length} Territories, including ${catalog.territories.filter((territory) => territory.arena).length} Arenas.`);
+    if (componentContract.canonicalFamilies?.['territory-card']?.backPolicy !== 'standardBack') {
+      throw new Error('Territory component contract must use standardBack.');
+    }
+    console.log(`Current TTS Territory source check passed for ${catalog.gameVersion}: ${catalog.territories.length} Territories, including ${catalog.territories.filter((territory) => territory.arena).length} Arenas, all using standardBack.`);
     return;
   }
 
   const release = await writeCatalog(catalog);
-  await renderTerritories(catalog);
+  await renderTerritories(catalog, componentContract);
   console.log(`Rendered ${catalog.territories.length} current landscape Territories across ${Math.ceil(catalog.territories.length / TERRITORIES_PER_SHEET)} sheet(s) to ${relative(ROOT, release.outputRoot)}.`);
 }
 
