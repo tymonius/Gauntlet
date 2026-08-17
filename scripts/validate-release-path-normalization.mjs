@@ -6,6 +6,15 @@ JSON.parse(fs.readFileSync('config/release-lifecycle.json', 'utf8'));
 
 const removedV063Root = 'releases/v0.6.3-reconstructed/';
 const removedV062Root = 'releases/v0.6.2/';
+const retiredPublicCandidatePaths = [
+  'v0.6.3/data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json',
+  'v0.6.3/data/starter-decks-candidate.js',
+  'v0.6.3/deckbuilder/app.js',
+  'v0.6.3/deckbuilder/starter-adapter.js',
+  'v0.6.3/reference/app.js',
+  'v0.6.3/rules-arbiter/app.js',
+  'v0.6.3/styles.css',
+];
 const retiredV063PackageFiles = [
   'Gauntlet_v0.6.3_Active_Player_Marker.pdf',
   'Gauntlet_v0.6.3_Complete_Card_Reference.md',
@@ -34,7 +43,6 @@ const frozenOrHistorical = (filePath) =>
 
 const frozenCandidateSurfaces = new Set([
   'card-design/generated/v0.6.3/long-card-review-catalog.js',
-  'v0.6.3/data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json',
 ]);
 
 // These scripts enforce phase-specific reconstruction/candidate states that
@@ -154,6 +162,9 @@ function rejectUnexpected(label, matches, allowed) {
 
 assert.equal(pathExistsInHead(removedV062Root), false, `${removedV062Root} must not exist after release-path normalization.`);
 assert.equal(pathExistsInHead(removedV063Root), false, `${removedV063Root} must not exist after release-path normalization.`);
+for (const candidatePath of retiredPublicCandidatePaths) {
+  assert.equal(pathExistsInHead(candidatePath), false, `${candidatePath} is retired candidate material and must not remain in the current-version public namespace.`);
+}
 
 const removedV063Matches = grepLiteral(removedV063Root);
 rejectUnexpected('Removed reconstructed-package path', removedV063Matches, allowedRemovedV063Reference);
@@ -169,7 +180,7 @@ for (const filename of retiredV063PackageFiles) {
 }
 
 console.log(
-  `Release-path normalization passed: removed package roots are absent; ` +
+  `Release-path normalization passed: removed package roots and ${retiredPublicCandidatePaths.length} retired public candidate path(s) are absent; ` +
   `${removedV063Matches.length} old v0.6.3 reconstructed-path reference(s) are confined to removal guards/frozen provenance; ` +
   `${removedV062Matches.length} old v0.6.2 path reference(s) are confined to removal guards/historical targets/frozen provenance; ` +
   `${retiredFilenameMatches} retired original-v0.6.3 filename reference(s) are confined to frozen/withdrawn provenance surfaces.`,
