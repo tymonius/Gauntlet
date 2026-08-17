@@ -31,11 +31,12 @@ describe('TTS GitHub Release asset hosting', () => {
     expect(stager).not.toMatch(/v0\.6\.[0-9]+/);
   });
 
-  it('uses deterministic release-safe names for every TTS network asset family', () => {
+  it('uses deterministic release-safe names for every TTS network asset family without creating a Territory-specific back', () => {
     expect(stager).toContain('_Playable_Sheet_');
     expect(stager).toContain('_Back_');
     expect(stager).toContain('_Territory_Sheet_');
-    expect(stager).toContain('_Territory_Back.png');
+    expect(stager).not.toContain('_Territory_Back.png');
+    expect(stager).toContain("if (territoryManifest.backPolicy !== 'standardBack')");
     expect(stager).toContain('_Leader_');
     expect(stager).toContain('_Card_Manifest.json');
     expect(stager).toContain('_Territory_Manifest.json');
