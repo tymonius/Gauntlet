@@ -75,7 +75,7 @@ function sectionLines(markdown, heading) {
   if (start < 0) throw new Error(`Canonical supplemental source is missing heading ${JSON.stringify(marker)}.`);
   let end = lines.length;
   for (let index = start + 1; index < lines.length; index += 1) {
-    if (/^##\s+/.test(lines[index].trim())) {
+    if (/^#{1,2}\s+/.test(lines[index].trim())) {
       end = index;
       break;
     }
