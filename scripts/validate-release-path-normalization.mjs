@@ -64,15 +64,20 @@ function gitObject(relative) {
 function assertAliasParity(version) {
   const release = lifecycle.releases?.[version];
   assert(release, `Missing lifecycle entry for ${version}.`);
-  const historical = release.historical_package_path;
   const aliases = release.legacy_package_aliases ?? [];
-  if (!historical || !aliases.length) return;
-  const historicalTree = gitObject(historical);
+  if (!aliases.length) return;
+
+  const authorityPath = release.status === 'current'
+    ? release.current_package_path
+    : release.historical_package_path;
+  assert(authorityPath, `${version} declares compatibility aliases but no authority package path.`);
+  const authorityTree = gitObject(authorityPath);
+
   for (const alias of aliases) {
     assert.equal(
       gitObject(alias),
-      historicalTree,
-      `${version} compatibility alias ${alias} drifted from preserved package ${historical}.`,
+      authorityTree,
+      `${version} compatibility alias ${alias} drifted from authority package ${authorityPath}.`,
     );
   }
 }
@@ -104,6 +109,7 @@ function rejectUnexpected(label, matches, allowed) {
 }
 
 assertAliasParity('v0.6.2');
+assertAliasParity('v0.6.3');
 
 const legacyMatches = grepLiteral(legacyCurrentPath);
 rejectUnexpected('Legacy reconstructed-package path', legacyMatches, allowedLegacyReference);
@@ -123,7 +129,7 @@ for (const filename of retiredV063PackageFiles) {
 }
 
 console.log(
-  `Release-path normalization passed: v0.6.2 compatibility alias matches its withdrawn tree; ` +
+  `Release-path normalization passed: compatibility aliases match their lifecycle authority packages; ` +
   `${legacyMatches.length} legacy v0.6.3 reconstructed-path reference(s) are classified; ` +
   `${legacyV062Matches.length} legacy v0.6.2 path reference(s) remain URL-safe through exact-tree aliasing; ` +
   `${retiredFilenameMatches} retired original-v0.6.3 filename reference(s) are confined to frozen/withdrawn provenance surfaces.`,
