@@ -68,7 +68,7 @@ A current engine must own:
 
 ### Canonical release data exists
 
-The earlier roadmap statement that no canonical v0.6 dataset existed is obsolete. v0.6.3 is published with canonical JSON, rulebook, faction/component rules, a complete card and Territory reference, starter Deck data, and release manifests.
+The earlier roadmap statement that no canonical v0.6 dataset existed is obsolete. v0.6.3 is published with canonical JSON, rulebook, six faction guides, a complete card and Territory reference, starter Deck data, and release manifests.
 
 Digital implementation work must therefore synchronize to the published v0.6.3 package rather than reconstructing current rules from card-review notes or stale v0.5 records.
 
@@ -93,9 +93,9 @@ Avoid maintaining several manually divergent current card databases.
 For v0.6.3 digital work, use this hierarchy:
 
 1. `releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md` for shared rules;
-2. `releases/v0.6.3/Gauntlet_v0.6.3_Faction_and_Component_Guide.md` for faction and supplemental-component rules;
-3. `releases/v0.6.3/Gauntlet_v0.6.3_Complete_Card_Reference.md` for exact playable-card, Territory, Leader, and component text; and
-4. `releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json` as the generated machine-readable release dataset.
+2. the six Markdown guides under `releases/v0.6.3/faction-guides/` for faction, Leader, and supplemental-component rules;
+3. `releases/v0.6.3/Gauntlet_v0.6.3_Card_and_Territory_Reference.md` for exact playable-card and Territory text; and
+4. `releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json` as the generated machine-readable release dataset and stable identifier source.
 
 The implementation must not invent current text from stale v0.5 data, superseded working rules, or old implementation ledgers.
 
