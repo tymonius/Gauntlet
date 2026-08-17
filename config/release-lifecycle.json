@@ -9,7 +9,10 @@
       "artifacts_preserved": true,
       "public_cutover": false,
       "historical_package_path": "releases/v0.6.2-withdrawn/",
-      "reason": "Withdrawn after canonical release-authority and Rulebook completeness defects were discovered. Original published artifacts are preserved unchanged under a clearly withdrawn path; clean reconstruction and full audit were required before re-release."
+      "legacy_package_aliases": [
+        "releases/v0.6.2/"
+      ],
+      "reason": "Withdrawn after canonical release-authority and Rulebook completeness defects were discovered. Original published artifacts are preserved unchanged under a clearly withdrawn path; the former package path remains only as a byte-identical URL-compatibility alias. Clean reconstruction and full audit were required before re-release."
     },
     "v0.6.3": {
       "status": "current",
