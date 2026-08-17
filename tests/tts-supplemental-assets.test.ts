@@ -7,7 +7,7 @@ const contract = JSON.parse(readFileSync('config/tts-component-contract.json', '
 const generator = readFileSync('scripts/generate-tts-supplemental-assets.mjs', 'utf8');
 const renderer = readFileSync('tts/supplemental-renderer/supplemental-renderer.js', 'utf8');
 const stager = readFileSync('scripts/stage-tts-release-assets.mjs', 'utf8');
-const savePublisher = readFileSync('scripts/generate-tts-save.mjs', 'utf8');
+const assembler = readFileSync('scripts/assemble-tts-supplemental-save.mjs', 'utf8');
 const workflow = readFileSync('.github/workflows/generate-tts-card-assets.yml', 'utf8');
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 
@@ -56,23 +56,29 @@ describe('TTS supplemental component exports', () => {
     expect(generator).toContain('No printable rules were extracted');
   });
 
-  it('stages ready supplemental network assets while leaving save placement deferred', () => {
+  it('stages ready supplemental network assets and assembles them by starter faction', () => {
     expect(stager).toContain("readJson(join(outputRoot, 'supplemental-manifest.json'))");
     expect(stager).toContain("'supplemental-front'");
     expect(stager).toContain("'supplemental-reverse'");
     expect(stager).toContain('_Supplemental_Manifest.json');
-    expect(generator).toContain('includedInReviewSave: false');
-    expect(savePublisher).not.toContain("readJson(join(outputRoot, 'supplemental-manifest.json'))");
+    expect(assembler).toContain("readFile(join(release.outputRoot, 'supplemental-manifest.json')");
+    expect(assembler).toContain('component.faction === starter.factionId');
+    expect(assembler).toContain("component.productionStatus !== 'ready'");
+    expect(assembler).toContain("object?.GMNotes || '').startsWith(SUPPLEMENTAL_GUID_NOTE_PREFIX");
   });
 
-  it('is wired into source checks, package generation, and TTS CI', () => {
+  it('is wired into source checks, package generation, save assembly, and TTS CI', () => {
     expect(packageJson.scripts['tts:supplementals:check']).toBe('node scripts/generate-tts-supplemental-assets.mjs --check');
     expect(packageJson.scripts['tts:supplementals']).toBe('node scripts/generate-tts-supplemental-assets.mjs');
-    expect(packageJson.scripts['tts:check']).toContain('tts:supplementals:check');
+    expect(packageJson.scripts['tts:save:assemble']).toBe('node scripts/assemble-tts-supplemental-save.mjs');
+    expect(packageJson.scripts['tts:check']).toContain('assemble-tts-supplemental-save.mjs --check');
     expect(packageJson.scripts['tts:package']).toContain('npm run tts:supplementals');
+    expect(packageJson.scripts['tts:package']).toContain('npm run tts:save:assemble');
     expect(workflow).toContain('scripts/generate-tts-supplemental-assets.mjs');
+    expect(workflow).toContain('scripts/assemble-tts-supplemental-save.mjs');
     expect(workflow).toContain('Generate ready supplemental components');
-    expect(workflow).toContain('run: npm run tts:supplementals');
+    expect(workflow).toContain('Assemble ready supplemental components into review scaffold');
+    expect(workflow).toContain('run: npm run tts:save:assemble');
   });
 
   it('accepts the current component contract and authoritative Rite sections end to end', () => {
