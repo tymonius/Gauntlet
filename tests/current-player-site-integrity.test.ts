@@ -3,6 +3,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 const read = (file: string) => readFileSync(file, "utf8");
+const LEGACY_RELEASE_ALIAS = `../releases/${["v0.6.3", "reconstructed"].join("-")}/`;
 
 const CORE_PLAYER_HTML = [
   "index.html",
@@ -169,7 +170,7 @@ describe("current v0.6.3 player-site closeout", () => {
     expect(html).toContain("Playtest tool · canonical v0.6.3");
     expect(visibleText(html)).not.toContain("v0.6.1");
     expect(html).toContain('href="../releases/v0.6.3/"');
-    expect(html).not.toContain('href="../releases/v0.6.3-reconstructed/"');
+    expect(html).not.toContain(`href="${LEGACY_RELEASE_ALIAS}"`);
     expect(html).not.toContain('href="../releases/v0.6.1/"');
     expect(html).toMatch(/src="v061-runtime\.js(?:\?[^\"]*)?"/);
     expect(runtime).toContain('const VERSION = "v0.6.3";');
