@@ -26,7 +26,7 @@ const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 assert.equal(manifest.release_version, version, 'Current release manifest version drifted.');
 assert.equal(manifest.status, 'current', 'Current release manifest is not marked current.');
 assert.equal(
-  String(manifest.current_package_path || '').replace(/\\/g, '/').replace(/\/+$/, '/') ,
+  String(manifest.current_package_path || '').replace(/\\/g, '/').replace(/\/+$/, '/'),
   String(release.current_package_path).replace(/\\/g, '/').replace(/\/+$/, '/'),
   'Current release manifest package path disagrees with lifecycle metadata.',
 );
@@ -35,6 +35,7 @@ const hash = (bytes) => crypto.createHash('sha256').update(bytes).digest('hex');
 const payloads = manifest.payload_files;
 assert(Array.isArray(payloads) && payloads.length > 0, 'Current release manifest has no payload_files.');
 
+const mismatches = [];
 const payloadByPath = new Map();
 for (const item of payloads) {
   assert(item && typeof item.path === 'string' && item.path.trim(), 'Manifest payload has no path.');
@@ -46,9 +47,18 @@ for (const item of payloads) {
   assert(fs.statSync(target).isFile(), `Declared current release payload is not a file: ${item.path}`);
 
   const bytes = fs.readFileSync(target);
-  assert.equal(bytes.length, item.bytes, `Payload byte count mismatch: ${item.path}`);
-  assert.equal(hash(bytes), item.sha256, `Payload SHA-256 mismatch: ${item.path}`);
-  payloadByPath.set(item.path, { item, target, bytes });
+  const actualSha256 = hash(bytes);
+  if (bytes.length !== item.bytes || actualSha256 !== item.sha256) {
+    mismatches.push({
+      kind: 'payload',
+      path: item.path,
+      manifest_bytes: item.bytes,
+      actual_bytes: bytes.length,
+      manifest_sha256: item.sha256,
+      actual_sha256: actualSha256,
+    });
+  }
+  payloadByPath.set(item.path, { item, target, bytes, actualSha256 });
 }
 
 const pdfOutputs = manifest.pdf_outputs;
@@ -60,14 +70,35 @@ for (const output of pdfOutputs) {
   pdfKeys.add(output.key);
   const payload = payloadByPath.get(output.path);
   assert(payload, `PDF output is not present in payload_files: ${output.path}`);
-  assert.equal(payload.item.bytes, output.bytes, `PDF output byte count disagrees with payload entry: ${output.path}`);
-  assert.equal(payload.item.sha256, output.sha256, `PDF output hash disagrees with payload entry: ${output.path}`);
+
   const pdf = await PDFDocument.load(payload.bytes);
-  assert.equal(pdf.getPageCount(), output.pages, `PDF page count mismatch: ${output.path}`);
+  const actualPages = pdf.getPageCount();
+  if (
+    payload.bytes.length !== output.bytes ||
+    payload.actualSha256 !== output.sha256 ||
+    actualPages !== output.pages
+  ) {
+    mismatches.push({
+      kind: 'pdf_output',
+      key: output.key,
+      path: output.path,
+      manifest_bytes: output.bytes,
+      actual_bytes: payload.bytes.length,
+      manifest_sha256: output.sha256,
+      actual_sha256: payload.actualSha256,
+      manifest_pages: output.pages,
+      actual_pages: actualPages,
+    });
+  }
 }
 
-if (Number.isInteger(manifest.counts?.print_pdfs)) {
-  assert.equal(manifest.counts.print_pdfs, pdfOutputs.length, 'Manifest print_pdfs count disagrees with pdf_outputs.');
+if (Number.isInteger(manifest.counts?.print_pdfs) && manifest.counts.print_pdfs !== pdfOutputs.length) {
+  mismatches.push({
+    kind: 'count',
+    field: 'counts.print_pdfs',
+    manifest_value: manifest.counts.print_pdfs,
+    actual_value: pdfOutputs.length,
+  });
 }
 
 for (const required of [
@@ -85,6 +116,12 @@ for (const required of [
   assert(payloadByPath.has(required), `Current release manifest is missing required payload: ${required}`);
 }
 
-console.log(
-  `Current release payload integrity passed: ${version}; ${payloads.length} declared files and ${pdfOutputs.length} PDFs match manifest bytes, hashes, and page counts.`,
-);
+if (mismatches.length) {
+  console.error(`Current release payload manifest has ${mismatches.length} mismatch(es):`);
+  console.error(JSON.stringify(mismatches, null, 2));
+  process.exitCode = 1;
+} else {
+  console.log(
+    `Current release payload integrity passed: ${version}; ${payloads.length} declared files and ${pdfOutputs.length} PDFs match manifest bytes, hashes, and page counts.`,
+  );
+}
