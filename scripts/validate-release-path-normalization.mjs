@@ -2,9 +2,10 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { execFileSync } from 'node:child_process';
 
-const lifecycle = JSON.parse(fs.readFileSync('config/release-lifecycle.json', 'utf8'));
-const legacyCurrentPath = 'v0.6.3-reconstructed';
-const legacyV062Path = 'releases/v0.6.2/';
+JSON.parse(fs.readFileSync('config/release-lifecycle.json', 'utf8'));
+
+const removedV063Root = 'releases/v0.6.3-reconstructed/';
+const removedV062Root = 'releases/v0.6.2/';
 const retiredV063PackageFiles = [
   'Gauntlet_v0.6.3_Active_Player_Marker.pdf',
   'Gauntlet_v0.6.3_Complete_Card_Reference.md',
@@ -24,12 +25,12 @@ const retiredV063PackageFiles = [
   'Gauntlet_v0.6.3_Tableside_Pack.pdf',
 ];
 
-const frozenOrHistorical = (path) =>
-  path.startsWith('docs/recovery/') ||
-  path.startsWith('artifacts/reconstruction/') ||
-  path.startsWith('artifacts/v0.6.3/') ||
-  path.startsWith('publication/v0.6.3/') ||
-  path === 'governance/traceability.json';
+const frozenOrHistorical = (filePath) =>
+  filePath.startsWith('docs/recovery/') ||
+  filePath.startsWith('artifacts/reconstruction/') ||
+  filePath.startsWith('artifacts/v0.6.3/') ||
+  filePath.startsWith('publication/v0.6.3/') ||
+  filePath === 'governance/traceability.json';
 
 // These scripts enforce phase-specific reconstruction/candidate states that
 // intentionally predate publication. They are retained as provenance and are
@@ -48,53 +49,34 @@ const frozenCandidateScripts = new Set([
   'scripts/validate-v063-print-visual-regressions.mjs',
 ]);
 
-const explicitCompatibilityInfrastructure = new Set([
-  '.github/workflows/pr-quality-gate.yml',
-  '.github/workflows/release-history-integrity.yml',
-  'config/release-lifecycle.json',
-  'scripts/build-v063-rulebook-production.py',
-  'scripts/validate-current-public-contract.mjs',
-  'scripts/validate-release-path-normalization.mjs',
-  'tests/reconstruction-publication-closeout.test.ts',
-]);
+const allowedRemovedV063Reference = (filePath) =>
+  filePath === 'scripts/validate-release-path-normalization.mjs' ||
+  frozenCandidateScripts.has(filePath) ||
+  frozenOrHistorical(filePath);
 
-const allowedLegacyReference = (path) =>
-  explicitCompatibilityInfrastructure.has(path) || frozenOrHistorical(path);
+const allowedRemovedV062Reference = (filePath) =>
+  filePath === 'scripts/validate-release-path-normalization.mjs' ||
+  filePath.startsWith('releases/v0.6.2-withdrawn/') ||
+  frozenOrHistorical(filePath);
 
-const allowedRetiredV063FilenameReference = (path, text = '') =>
-  path === 'scripts/validate-release-path-normalization.mjs' ||
-  path.startsWith('releases/v0.6.3-withdrawn/') ||
-  frozenCandidateScripts.has(path) ||
-  frozenOrHistorical(path) ||
+const allowedRetiredV063FilenameReference = (filePath, text = '') =>
+  filePath === 'scripts/validate-release-path-normalization.mjs' ||
+  filePath.startsWith('releases/v0.6.3-withdrawn/') ||
+  frozenCandidateScripts.has(filePath) ||
+  frozenOrHistorical(filePath) ||
   text.includes('artifacts/v0.6.3/print-candidate/') ||
   text.includes('artifacts/v0.6.3/release-candidate/') ||
-  (path === 'config/reconstruction-version-plan.json' && text.includes('releases/v0.6.3-withdrawn/'));
+  (filePath === 'config/reconstruction-version-plan.json' && text.includes('releases/v0.6.3-withdrawn/'));
 
-function gitObject(relative) {
-  return execFileSync('git', ['rev-parse', `HEAD:${String(relative).replace(/^\/+|\/+$/g, '')}`], {
-    encoding: 'utf8',
-    stdio: ['ignore', 'pipe', 'ignore'],
-  }).trim();
-}
-
-function assertAliasParity(version) {
-  const release = lifecycle.releases?.[version];
-  assert(release, `Missing lifecycle entry for ${version}.`);
-  const aliases = release.legacy_package_aliases ?? [];
-  if (!aliases.length) return;
-
-  const authorityPath = release.status === 'current'
-    ? release.current_package_path
-    : release.historical_package_path;
-  assert(authorityPath, `${version} declares compatibility aliases but no authority package path.`);
-  const authorityTree = gitObject(authorityPath);
-
-  for (const alias of aliases) {
-    assert.equal(
-      gitObject(alias),
-      authorityTree,
-      `${version} compatibility alias ${alias} drifted from authority package ${authorityPath}.`,
-    );
+function pathExistsInHead(relative) {
+  try {
+    execFileSync('git', ['cat-file', '-e', `HEAD:${String(relative).replace(/^\/+|\/+$/g, '')}`], {
+      encoding: 'utf8',
+      stdio: ['ignore', 'ignore', 'ignore'],
+    });
+    return true;
+  } catch {
+    return false;
   }
 }
 
@@ -124,18 +106,14 @@ function rejectUnexpected(label, matches, allowed) {
   throw new Error(`${label} remains in active/unclassified repository content:\n${detail}`);
 }
 
-assertAliasParity('v0.6.2');
-assertAliasParity('v0.6.3');
+assert.equal(pathExistsInHead(removedV062Root), false, `${removedV062Root} must not exist after release-path normalization.`);
+assert.equal(pathExistsInHead(removedV063Root), false, `${removedV063Root} must not exist after release-path normalization.`);
 
-const legacyMatches = grepLiteral(legacyCurrentPath);
-rejectUnexpected('Legacy reconstructed-package path', legacyMatches, allowedLegacyReference);
+const removedV063Matches = grepLiteral(removedV063Root);
+rejectUnexpected('Removed reconstructed-package path', removedV063Matches, allowedRemovedV063Reference);
 
-// The former v0.6.2 package path is intentionally retained as a byte-identical
-// compatibility alias. Existing historical scripts, pages, and external URLs may
-// continue to read it without breakage; authority remains the explicit -withdrawn
-// path recorded in release lifecycle metadata. Current public surfaces are checked
-// separately and are forbidden from treating v0.6.2 as current authority.
-const legacyV062Matches = grepLiteral(legacyV062Path);
+const removedV062Matches = grepLiteral(removedV062Root);
+rejectUnexpected('Removed v0.6.2 package path', removedV062Matches, allowedRemovedV062Reference);
 
 let retiredFilenameMatches = 0;
 for (const filename of retiredV063PackageFiles) {
@@ -145,8 +123,8 @@ for (const filename of retiredV063PackageFiles) {
 }
 
 console.log(
-  `Release-path normalization passed: compatibility aliases match their lifecycle authority packages; ` +
-  `${legacyMatches.length} legacy v0.6.3 reconstructed-path reference(s) are classified; ` +
-  `${legacyV062Matches.length} legacy v0.6.2 path reference(s) remain URL-safe through exact-tree aliasing; ` +
+  `Release-path normalization passed: removed package roots are absent; ` +
+  `${removedV063Matches.length} old v0.6.3 reconstructed-path reference(s) are confined to frozen provenance; ` +
+  `${removedV062Matches.length} old v0.6.2 path reference(s) are confined to withdrawn/frozen provenance; ` +
   `${retiredFilenameMatches} retired original-v0.6.3 filename reference(s) are confined to frozen/withdrawn provenance surfaces.`,
 );

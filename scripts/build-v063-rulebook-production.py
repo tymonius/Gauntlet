@@ -9,7 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 PRODUCTION = ROOT / "rulebook-production"
-CURRENT_RULEBOOK = ROOT / "releases" / "v0.6.3-reconstructed" / "Gauntlet_v0.6.3_Rulebook.md"
+CURRENT_RULEBOOK = ROOT / "releases" / "v0.6.3" / "Gauntlet_v0.6.3_Rulebook.md"
 PLAYER_RULEBOOK_INPUT = PRODUCTION / ".v063-player-facing-input.md"
 PLAYER_CHAPTER_11 = ROOT / "rulebook" / "player-facing" / "chapter-11.md"
 PRODUCTION_SOURCE = PRODUCTION / ".v063-production-source.md"

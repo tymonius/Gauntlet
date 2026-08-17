@@ -9,7 +9,6 @@ const read = (relative: string) => fs.readFileSync(path.join(root, relative), 'u
 const authoritySetId = '64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49';
 const attestationPath = 'publication/v0.6.3/verification.json';
 const canonicalManifestPath = 'releases/v0.6.3/Gauntlet_v0.6.3_Manifest.json';
-const legacyAliasManifestPath = 'releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Manifest.json';
 
 describe('clean v0.6.3 publication closeout', () => {
   it('records the completed live publication without rewriting phase-specific evidence', () => {
@@ -77,15 +76,16 @@ describe('clean v0.6.3 publication closeout', () => {
       public_cutover: false,
       historical_package_path: 'releases/v0.6.2-withdrawn/',
     });
+    expect(lifecycle.releases['v0.6.2'].legacy_package_aliases).toBeUndefined();
     expect(lifecycle.releases['v0.6.3']).toMatchObject({
       status: 'current',
       artifacts_preserved: true,
       public_cutover: true,
       historical_package_path: 'releases/v0.6.3-withdrawn/',
       current_package_path: 'releases/v0.6.3/',
-      legacy_package_aliases: ['releases/v0.6.3-reconstructed/'],
       authority_set_id: authoritySetId,
     });
+    expect(lifecycle.releases['v0.6.3'].legacy_package_aliases).toBeUndefined();
     expect(currentPointer).toContain("CURRENT_RULES_VERSION = 'v0.6.3'");
     expect(currentPointer).toContain('../reconstruction/clean-v063/content');
 
@@ -104,7 +104,7 @@ describe('clean v0.6.3 publication closeout', () => {
     expect(fs.existsSync(path.join(root, 'releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Manifest.json'))).toBe(true);
     expect(fs.existsSync(path.join(root, 'releases/v0.6.3-withdrawn/Gauntlet_v0.6.3_Manifest.json'))).toBe(true);
     expect(fs.existsSync(path.join(root, canonicalManifestPath))).toBe(true);
-    expect(fs.existsSync(path.join(root, legacyAliasManifestPath))).toBe(true);
-    expect(read(legacyAliasManifestPath)).toBe(read(canonicalManifestPath));
+    expect(fs.existsSync(path.join(root, 'releases/v0.6.2'))).toBe(false);
+    expect(fs.existsSync(path.join(root, 'releases/v0.6.3-reconstructed'))).toBe(false);
   });
 });
