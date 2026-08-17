@@ -1,7 +1,7 @@
 const RITE_SOURCE = '/artifacts/reconstruction/clean-v0.6.3/faction-guides/mystics/Gauntlet_v0.6.3_Mystics_Faction_Guide.md';
 const RITE_ART_ROOT = '../images/artwork/cards/mystics/rites-and-rituals';
 const COMPLETED_RITE_ART_SOURCE = '../images/artwork/supplemental/mystics/rite-completed.webp';
-const RITUAL_CARD_BACK_SOURCE = '../images/artwork/supplemental/mystics/ritual-of-ascendance-card-back.avif';
+const RITUAL_CARD_BACK_SOURCE = '../images/card-backs/mystics/ritual-of-ascendance-card-back.avif';
 
 const RITES = Object.freeze([
   {
