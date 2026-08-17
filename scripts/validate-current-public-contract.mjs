@@ -32,6 +32,19 @@ function gitEntry(relative) {
   }
 }
 
+function gitObject(relative) {
+  if (remoteBase || !relative) return null;
+  try {
+    return execFileSync('git', ['rev-parse', `HEAD:${relative.replaceAll('\\', '/').replace(/^\/+|\/+$/g, '')}`], {
+      cwd: root,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
+  } catch {
+    return null;
+  }
+}
+
 function repositoryPathExists(relative) {
   return fs.existsSync(path.join(root, relative)) || Boolean(gitEntry(relative));
 }
@@ -126,9 +139,11 @@ assert(releaseRoot, `${currentVersion} does not define its current package path.
 const normalizedReleaseRoot = releaseRoot.endsWith('/') ? releaseRoot : `${releaseRoot}/`;
 const historicalRootValue = currentRelease.historical_package_path;
 const historicalRoot = historicalRootValue ? `${publicPath(historicalRootValue).replace(/\/+$/, '')}/` : null;
+const legacyAliasRoots = (currentRelease.legacy_package_aliases ?? [])
+  .map((packagePath) => `${publicPath(packagePath).replace(/\/+$/, '')}/`);
 const manifestPath = `${normalizedReleaseRoot}Gauntlet_${currentVersion}_Manifest.json`;
-
-const manifest = JSON.parse(await getText(manifestPath));
+const manifestBytes = await getBytes(manifestPath);
+const manifest = JSON.parse(manifestBytes.toString('utf8'));
 assert.equal(manifest.release_version, currentVersion, 'Current release manifest version disagrees with release lifecycle.');
 assert.equal(publicPath(manifest.current_package_path).replace(/\/+$/, '/'), normalizedReleaseRoot, 'Current package pointer drifted.');
 if (currentRelease.authority_set_id) {
@@ -136,6 +151,21 @@ if (currentRelease.authority_set_id) {
 }
 for (const [surface, version] of Object.entries(manifest.public_defaults ?? {})) {
   assert.equal(version, currentVersion, `Public default ${surface} points to ${version} instead of ${currentVersion}.`);
+}
+
+if (!remoteBase && legacyAliasRoots.length) {
+  const canonicalTree = gitObject(normalizedReleaseRoot);
+  assert(canonicalTree, `Canonical current package tree is missing: ${normalizedReleaseRoot}`);
+  for (const aliasRoot of legacyAliasRoots) {
+    const aliasTree = gitObject(aliasRoot);
+    assert(aliasTree, `Legacy package alias is missing: ${aliasRoot}`);
+    assert.equal(aliasTree, canonicalTree, `Legacy package alias drifted from canonical package: ${aliasRoot}`);
+  }
+} else if (remoteBase) {
+  for (const aliasRoot of legacyAliasRoots) {
+    const aliasManifest = await getBytes(`${aliasRoot}Gauntlet_${currentVersion}_Manifest.json`);
+    assert.equal(sha256(aliasManifest), sha256(manifestBytes), `Legacy package alias manifest drifted from canonical package: ${aliasRoot}`);
+  }
 }
 
 const bookletEntry = manifest.pdf_outputs?.find((item) => item.key === 'rulebook-booklet');
@@ -158,6 +188,7 @@ const withdrawnPackageRoutes = Object.values(lifecycle.releases ?? {})
   .filter(Boolean)
   .map((packagePath) => `${publicPath(packagePath).replace(/\/+$/, '')}/`);
 const forbiddenWithdrawnRoutes = [...new Set([...withdrawnVersionRoutes, ...withdrawnPackageRoutes])];
+const forbiddenLegacyAliasRoutes = [...new Set(legacyAliasRoots)];
 const corePages = [
   '/',
   releaseLandingRoute,
@@ -181,6 +212,12 @@ for (const route of uniqueCorePages) {
     assert(
       !normalizedRefs.some((ref) => ref === withdrawnRoute || ref.startsWith(withdrawnRoute)),
       `${route} links to withdrawn release route ${withdrawnRoute}.`,
+    );
+  }
+  for (const aliasRoute of forbiddenLegacyAliasRoutes) {
+    assert(
+      !normalizedRefs.some((ref) => ref === aliasRoute || ref.startsWith(aliasRoute)),
+      `${route} links to legacy package alias ${aliasRoute} instead of canonical ${normalizedReleaseRoot}.`,
     );
   }
 }
@@ -242,4 +279,4 @@ for (const normalized of localReferences) {
   }
 }
 
-console.log(`Current public contract passed${remoteBase ? ` against ${remoteBase}` : ' against the repository'}: ${currentVersion}, canonical global header navigation, release landing/changelog, booklet integrity, resolvable player links, canonical faction symbols, withdrawn-route isolation, and defined typography tokens.`);
+console.log(`Current public contract passed${remoteBase ? ` against ${remoteBase}` : ' against the repository'}: ${currentVersion}, canonical global header navigation, release landing/changelog, booklet integrity, resolvable player links, canonical faction symbols, withdrawn-route isolation, legacy-alias parity, and defined typography tokens.`);
