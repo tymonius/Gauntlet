@@ -1,8 +1,10 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { execFileSync } from 'node:child_process';
 
+const lifecycle = JSON.parse(fs.readFileSync('config/release-lifecycle.json', 'utf8'));
 const legacyCurrentPath = 'v0.6.3-reconstructed';
-const withdrawnV062Path = 'releases/v0.6.2/';
+const legacyV062Path = 'releases/v0.6.2/';
 const retiredV063PackageFiles = [
   'Gauntlet_v0.6.3_Active_Player_Marker.pdf',
   'Gauntlet_v0.6.3_Complete_Card_Reference.md',
@@ -41,14 +43,33 @@ const explicitCompatibilityInfrastructure = new Set([
 const allowedLegacyReference = (path) =>
   explicitCompatibilityInfrastructure.has(path) || frozenOrHistorical(path);
 
-const allowedWithdrawnV062Reference = (path) =>
-  path === 'scripts/validate-release-path-normalization.mjs' ||
-  frozenOrHistorical(path);
-
 const allowedRetiredV063FilenameReference = (path) =>
   path === 'scripts/validate-release-path-normalization.mjs' ||
   path.startsWith('releases/v0.6.3-withdrawn/') ||
   frozenOrHistorical(path);
+
+function gitObject(relative) {
+  return execFileSync('git', ['rev-parse', `HEAD:${String(relative).replace(/^\/+|\/+$/g, '')}`], {
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'ignore'],
+  }).trim();
+}
+
+function assertAliasParity(version) {
+  const release = lifecycle.releases?.[version];
+  assert(release, `Missing lifecycle entry for ${version}.`);
+  const historical = release.historical_package_path;
+  const aliases = release.legacy_package_aliases ?? [];
+  if (!historical || !aliases.length) return;
+  const historicalTree = gitObject(historical);
+  for (const alias of aliases) {
+    assert.equal(
+      gitObject(alias),
+      historicalTree,
+      `${version} compatibility alias ${alias} drifted from preserved package ${historical}.`,
+    );
+  }
+}
 
 function grepLiteral(needle) {
   try {
@@ -76,11 +97,17 @@ function rejectUnexpected(label, matches, allowed) {
   throw new Error(`${label} remains in active/unclassified repository content:\n${detail}`);
 }
 
+assertAliasParity('v0.6.2');
+
 const legacyMatches = grepLiteral(legacyCurrentPath);
 rejectUnexpected('Legacy reconstructed-package path', legacyMatches, allowedLegacyReference);
 
-const withdrawnV062Matches = grepLiteral(withdrawnV062Path);
-rejectUnexpected('Bare withdrawn v0.6.2 release path', withdrawnV062Matches, allowedWithdrawnV062Reference);
+// The former v0.6.2 package path is intentionally retained as a byte-identical
+// compatibility alias. Existing historical scripts, pages, and external URLs may
+// continue to read it without breakage; authority remains the explicit -withdrawn
+// path recorded in release lifecycle metadata. Current public surfaces are checked
+// separately and are forbidden from treating v0.6.2 as current authority.
+const legacyV062Matches = grepLiteral(legacyV062Path);
 
 let retiredFilenameMatches = 0;
 for (const filename of retiredV063PackageFiles) {
@@ -90,7 +117,8 @@ for (const filename of retiredV063PackageFiles) {
 }
 
 console.log(
-  `Release-path normalization passed: ${legacyMatches.length} legacy v0.6.3 reconstructed-path reference(s), ` +
-  `${withdrawnV062Matches.length} bare withdrawn v0.6.2 path reference(s), and ${retiredFilenameMatches} retired original-v0.6.3 filename reference(s) ` +
-  'are confined to explicit compatibility or frozen/withdrawn provenance surfaces.',
+  `Release-path normalization passed: v0.6.2 compatibility alias matches its withdrawn tree; ` +
+  `${legacyMatches.length} legacy v0.6.3 reconstructed-path reference(s) are classified; ` +
+  `${legacyV062Matches.length} legacy v0.6.2 path reference(s) remain URL-safe through exact-tree aliasing; ` +
+  `${retiredFilenameMatches} retired original-v0.6.3 filename reference(s) are confined to frozen/withdrawn provenance surfaces.`,
 );
