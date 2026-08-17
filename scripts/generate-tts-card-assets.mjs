@@ -9,6 +9,10 @@ import {
   ROOT,
   writeCatalog,
 } from './tts-current-catalog.mjs';
+import {
+  loadTtsComponentContract,
+  resolveStandardBackFile,
+} from './tts-component-contract.mjs';
 
 const CARD_WIDTH = 400;
 const CARD_HEIGHT = 560;
@@ -18,8 +22,8 @@ const SHEET_COLUMNS = 10;
 const SHEET_ROWS = 7;
 const HIDDEN_SLOT = SHEET_COLUMNS * SHEET_ROWS - 1;
 const CARDS_PER_SHEET = HIDDEN_SLOT;
-const DEFAULT_BACK_FACTION = 'intelligence';
-const DEFAULT_BACK_FILE = `backs/${DEFAULT_BACK_FACTION}.png`;
+const FALLBACK_BACK_FACTION = 'intelligence';
+const FALLBACK_BACK_FILE = `backs/${FALLBACK_BACK_FACTION}.png`;
 
 function jsonText(value) {
   return `${JSON.stringify(value, null, 2)}\n`;
@@ -74,7 +78,7 @@ async function startStaticServer() {
 function sheetHtml(baseUrl, version, sheetCards) {
   const slots = Array.from({ length: SHEET_COLUMNS * SHEET_ROWS }, (_, index) => {
     if (index === HIDDEN_SLOT) {
-      return `<img src="${baseUrl}/tts/generated/${version}/${DEFAULT_BACK_FILE}" alt="fallback hidden-card image">`;
+      return `<img src="${baseUrl}/tts/generated/${version}/${FALLBACK_BACK_FILE}" alt="fallback hidden-card image">`;
     }
     const card = sheetCards[index];
     return card
@@ -147,7 +151,7 @@ async function renderProductionBack(page, baseUrl, outputRoot, faction) {
   return { faction, file, pixels: { width: CARD_WIDTH, height: CARD_HEIGHT } };
 }
 
-async function renderAssets(catalog) {
+async function renderAssets(catalog, componentContract) {
   let chromium;
   try {
     ({ chromium } = await import('playwright'));
@@ -230,7 +234,7 @@ async function renderAssets(catalog) {
         sheetNumber,
         deckId,
         faceFile: file,
-        fallbackHiddenFile: DEFAULT_BACK_FILE,
+        fallbackHiddenFile: FALLBACK_BACK_FILE,
         numWidth: SHEET_COLUMNS,
         numHeight: SHEET_ROWS,
         backIsHidden: true,
@@ -246,7 +250,7 @@ async function renderAssets(catalog) {
     }
 
     await writeFile(join(outputRoot, 'manifest.json'), jsonText({
-      schemaVersion: 3,
+      schemaVersion: 4,
       gameVersion: release.version,
       release: catalog.release,
       output: {
@@ -261,13 +265,15 @@ async function renderAssets(catalog) {
         hiddenSlotIndex: HIDDEN_SLOT,
       },
       prototypeBack: false,
+      componentContract: 'config/tts-component-contract.json',
       backPolicy: {
-        assignment: 'player-faction',
-        neutralCardsUsePlayerFactionBack: true,
+        policy: 'standardBack',
+        ...componentContract.standardBack,
+        neutralCardsUseSameStandardBack: true,
         backIsHidden: true,
         uniqueBack: false,
-        defaultFaction: DEFAULT_BACK_FACTION,
-        note: 'Bind BackURL to the player faction when constructing a TTS deck. Neutral and faction cards in the same player deck use the same back.',
+        fallbackHiddenFile: FALLBACK_BACK_FILE,
+        note: 'All ordinary playable cards use standardBack. The current mode chooses either the player faction variant or the universal black variant; Neutral cards never reveal allegiance while face down.',
       },
       backVariants,
       sheets: sheetRecords,
@@ -285,19 +291,23 @@ async function main() {
   const checkOnly = options.has('--check');
   const catalogOnly = options.has('--catalog-only') || checkOnly;
   const strictArt = options.has('--strict-art');
-  const catalog = await buildCatalog();
+  const [catalog, componentContract] = await Promise.all([
+    buildCatalog(),
+    loadTtsComponentContract(),
+  ]);
 
   if (strictArt && catalog.missingArtwork.length) {
     throw new Error(`Missing artwork for ${catalog.missingArtwork.length} cards:\n${catalog.missingArtwork.join('\n')}`);
   }
+  for (const faction of PLAYABLE_BACK_FACTIONS) resolveStandardBackFile(componentContract, faction);
 
   if (checkOnly) {
-    console.log(`Current TTS source check passed for ${catalog.gameVersion}: ${catalog.playableCards.length} playable cards, ${catalog.territories.length} Territories, ${catalog.missingArtwork.length} cards without artwork.`);
+    console.log(`Current TTS source check passed for ${catalog.gameVersion}: ${catalog.playableCards.length} playable cards, ${catalog.territories.length} Territories, ${catalog.missingArtwork.length} cards without artwork, standard backs=${componentContract.standardBack.mode}.`);
     return;
   }
 
   const release = await writeCatalog(catalog);
-  if (!catalogOnly) await renderAssets(catalog);
+  if (!catalogOnly) await renderAssets(catalog, componentContract);
   console.log(catalogOnly
     ? `Wrote current TTS catalog for ${release.version} to ${relative(ROOT, release.outputRoot)} and tts/generated/current/.`
     : `Rendered ${catalog.playableCards.length} card images, ${PLAYABLE_BACK_FACTIONS.length} production backs, and ${Math.ceil(catalog.playableCards.length / CARDS_PER_SHEET)} TTS sheets to ${relative(ROOT, release.outputRoot)}.`);
