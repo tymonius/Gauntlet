@@ -80,6 +80,19 @@ export function resolveStandardBackFile(contract, faction) {
   return `backs/${resolveStandardBackVariant(contract, faction)}.png`;
 }
 
+async function validateTrackerRenderSource(component) {
+  const surface = String(component.renderSource?.surface || '').trim();
+  const componentId = String(component.renderSource?.componentId || '').trim();
+  assert(surface, `${component.id} sliding tracker must declare its production render surface.`);
+  assert(componentId, `${component.id} sliding tracker must declare its production component id.`);
+  await access(join(ROOT, surface));
+  const source = await readFile(join(ROOT, surface), 'utf8');
+  assert(
+    source.includes(`id: '${componentId}'`) || source.includes(`id: "${componentId}"`),
+    `${component.id} production component ${componentId} is missing from ${surface}.`,
+  );
+}
+
 export async function validateTtsComponentContract(contract) {
   assert(contract?.schemaVersion === 1, `Unsupported TTS component-contract schema: ${contract?.schemaVersion ?? 'missing'}.`);
 
@@ -131,18 +144,36 @@ export async function validateTtsComponentContract(contract) {
     }
 
     if (component.tts?.representation === 'sliding-tracker') {
+      assert(component.productionStatus === 'ready', `${component.id} has a production tracker face and must be marked ready.`);
+      assert(component.backPolicy === 'standardBack', `${component.id} sliding tracker must use the standard back policy.`);
       assert(component.tts.stackable === false, `${component.id} sliding tracker must be non-stackable in TTS.`);
       assert(['vertical', 'horizontal'].includes(component.tts.axis), `${component.id} sliding tracker must declare a valid axis.`);
       assert(String(component.tts.assembly || '').trim(), `${component.id} sliding tracker must declare an assembly.`);
       assert(Number.isInteger(component.tts.layer) && component.tts.layer > 0, `${component.id} sliding tracker must declare a positive layer.`);
       assert(String(component.tts.snapTag || '').trim(), `${component.id} sliding tracker must declare a snapTag.`);
-      assert(component.tts.snapPositions === 'artwork-defined' || Array.isArray(component.tts.snapPositions), `${component.id} sliding tracker must declare snap positions or artwork-defined registration.`);
+      assert(component.tts.snapPositions === 'renderer-derived' || Array.isArray(component.tts.snapPositions), `${component.id} sliding tracker must use renderer-derived or explicit snap positions.`);
+      assert(['leader', 'component'].includes(component.cover?.kind), `${component.id} sliding tracker must declare a leader or component cover.`);
+      if (component.cover?.kind === 'component') {
+        assert(String(component.cover.componentId || '').trim(), `${component.id} component cover must declare componentId.`);
+      }
+      await validateTrackerRenderSource(component);
     }
   }
 
   for (const faction of FACTIONS) resolveStandardBackVariant(contract, faction);
 
   const map = componentMap(contract);
+  const trackers = (contract.components || []).filter((component) => component.tts?.representation === 'sliding-tracker');
+  assert(trackers.length === 5, `Current physical package must contain exactly five sliding trackers; found ${trackers.length}.`);
+  for (const tracker of trackers) {
+    if (tracker.cover?.kind === 'component') {
+      const cover = map.get(tracker.cover.componentId);
+      assert(cover, `${tracker.id} references missing cover component ${tracker.cover.componentId}.`);
+      assert(cover.faction === tracker.faction, `${tracker.id} cover ${cover.id} must belong to the same faction.`);
+      assert(cover.productionStatus === 'ready', `${tracker.id} cover ${cover.id} must be ready before tracker assembly can ship.`);
+    }
+  }
+
   assert(map.has('military-command-tracker'), 'Military package must contain its Command Tracker.');
   assert(!componentsFor(contract, 'military', 'reference-card').length, 'Military must not acquire a reference card that its guide does not specify.');
 
@@ -165,6 +196,8 @@ export async function validateTtsComponentContract(contract) {
   assert(intelligenceTrackers.every((component) => component.tts?.assembly === 'intelligence-progress'), 'Intelligence trackers must share the stacked intelligence-progress assembly.');
   assert(new Set(intelligenceTrackers.map((component) => component.tts.layer)).size === 2, 'Intelligence stacked trackers must occupy distinct layers.');
   assert(new Set(intelligenceTrackers.map((component) => component.tts.snapTag)).size === 2, 'Intelligence stacked trackers must use distinct snap tags.');
+  assert(map.get('intelligence-intel-tracker').cover?.componentId === 'intelligence-operations-reference', 'Intel Tracker must use the Operations Reference Card as its physical cover.');
+  assert(map.get('intelligence-operation-progress-tracker').cover?.componentId === 'intelligence-mission-reference', 'Operation Progress Tracker must use the Mission Reference Card as its physical cover.');
 
   const rites = componentsFor(contract, 'mystics', 'rite-card');
   assert(rites.length === 3, `Mystics must contain exactly 3 Rite cards; found ${rites.length}.`);
