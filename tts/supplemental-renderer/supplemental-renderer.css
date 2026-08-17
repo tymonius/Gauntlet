@@ -157,8 +157,8 @@ body {
 /* Reference cards are intentionally distinct from playable cards. They stay face up,
    are informational on both sides, and use no ordinary Deck back. */
 .reference-card {
-  --reference-section-gap: 5px;
-  padding: 9px 9px 12px;
+  --reference-section-gap: 4.4px;
+  padding: 7px 8px 9px;
   color: var(--reference-ink);
   background:
     radial-gradient(circle at 15% 5%, var(--reference-accent-soft), transparent 36%),
@@ -194,13 +194,13 @@ body {
 }
 
 .reference-header {
-  padding-bottom: 5px;
-  margin-bottom: 5px;
+  padding-bottom: 4px;
+  margin-bottom: 4px;
   border-bottom: 1.4px solid var(--reference-accent);
 }
 
 .reference-kicker {
-  margin: 0 0 2px;
+  margin: 0 0 1px;
   color: var(--reference-accent);
   font-family: var(--font-interface, Arial, sans-serif);
   font-size: 5.15px;
@@ -219,7 +219,7 @@ body {
 }
 
 .reference-face-title {
-  margin: 2px 0 0;
+  margin: 1px 0 0;
   color: var(--reference-accent);
   font-family: var(--font-interface, Arial, sans-serif);
   font-size: 6.4px;
@@ -233,7 +233,7 @@ body {
   flex-direction: column;
   gap: var(--reference-section-gap);
   font-size: 6.65px;
-  line-height: 1.17;
+  line-height: 1.13;
 }
 
 .reference-section {
@@ -241,7 +241,7 @@ body {
 }
 
 .reference-section-title {
-  margin: 0 0 2px;
+  margin: 0 0 1px;
   padding-bottom: 1px;
   border-bottom: 0.7px solid color-mix(in srgb, var(--reference-accent) 58%, transparent);
   color: var(--reference-accent);
@@ -262,7 +262,7 @@ body {
 }
 
 .reference-block + .reference-block {
-  margin-top: 2px;
+  margin-top: 1px;
 }
 
 .reference-block strong {
@@ -274,15 +274,15 @@ body {
 
 .reference-block ul,
 .reference-block ol {
-  padding-left: 11px;
+  padding-left: 10px;
 }
 
 .reference-block li + li {
-  margin-top: 1px;
+  margin-top: 0.5px;
 }
 
 .reference-inline-heading {
-  margin: 2px 0 1px;
+  margin: 1px 0;
   color: #382d26;
   font-family: var(--font-interface, Arial, sans-serif);
   font-size: 0.95em;
@@ -296,7 +296,7 @@ body {
   table-layout: fixed;
   font-family: var(--font-interface, Arial, sans-serif);
   font-size: 0.9em;
-  line-height: 1.1;
+  line-height: 1.08;
 }
 
 .reference-table th,
@@ -315,15 +315,15 @@ body {
 
 .reference-footer {
   position: absolute;
-  right: 8px;
-  bottom: 4px;
-  left: 8px;
-  padding-top: 2px;
+  right: 7px;
+  bottom: 3px;
+  left: 7px;
+  padding-top: 1px;
   border-top: 0.5px solid rgba(54, 42, 32, 0.24);
   color: rgba(46, 37, 30, 0.66);
   font-family: var(--font-interface, Arial, sans-serif);
-  font-size: 4.45px;
-  letter-spacing: 0.025em;
+  font-size: 4.35px;
+  letter-spacing: 0.02em;
   text-align: center;
 }
 
