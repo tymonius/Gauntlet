@@ -84,8 +84,8 @@ async function stageReleaseAssets() {
   if (territoryManifest.backPolicy !== 'standardBack') {
     throw new Error(`Territory manifest must use standardBack; found ${territoryManifest.backPolicy || 'missing'}.`);
   }
-  if (supplementalManifest.placement?.includedInReviewSave !== false) {
-    throw new Error('Supplemental manifest must keep save placement deferred until the component-assembly layer lands.');
+  if (supplementalManifest.placement?.assembly !== 'starter-faction') {
+    throw new Error(`Supplemental manifest must declare starter-faction save assembly; found ${supplementalManifest.placement?.assembly || 'missing'}.`);
   }
 
   const prefix = assetPrefix(release.version);
@@ -212,7 +212,8 @@ async function stageReleaseAssets() {
     supplemental: {
       readyCount: supplementalManifest.readyCount,
       pendingCount: supplementalManifest.pendingCount,
-      includedInReviewSave: false,
+      assembly: supplementalManifest.placement.assembly,
+      includedInReviewSaveAfterAssembly: true,
     },
     assetCount: staged.length,
     assets: staged,
