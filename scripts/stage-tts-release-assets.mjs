@@ -142,6 +142,31 @@ async function stageReleaseAssets() {
 
   const supplementalReverseSources = new Set();
   for (const component of supplementalManifest.ready || []) {
+    if (component.representation === 'sliding-tracker') {
+      if (!component.frontFile) {
+        throw new Error(`Ready supplemental tracker ${component.id || 'missing id'} lacks a rendered tracker face.`);
+      }
+      addAsset(
+        records,
+        seenNames,
+        component.frontFile,
+        `${prefix}_Supplemental_${safeSegment(component.faction)}_${safeSegment(component.id)}_Tracker.png`,
+        'supplemental-tracker-face',
+        {
+          id: component.id,
+          name: component.name,
+          faction: component.faction,
+          family: component.family,
+          assembly: component.tts?.assembly,
+          layer: component.tts?.layer,
+        },
+      );
+      continue;
+    }
+
+    if (component.representation !== 'card') {
+      throw new Error(`Ready supplemental component ${component.id || 'missing id'} uses unsupported staged representation ${component.representation || 'missing'}.`);
+    }
     if (!component.frontFile || !component.reverseFile) {
       throw new Error(`Ready supplemental component ${component.id || 'missing id'} lacks rendered front/reverse files.`);
     }
@@ -197,7 +222,7 @@ async function stageReleaseAssets() {
 
   const releaseManifestName = `${prefix}_Release_Assets.json`;
   const releaseManifest = {
-    schemaVersion: 2,
+    schemaVersion: 3,
     gameVersion: release.version,
     repository,
     releaseTag: release.version,
