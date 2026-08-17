@@ -58,11 +58,12 @@ const explicitCompatibilityInfrastructure = new Set([
 const allowedLegacyReference = (path) =>
   explicitCompatibilityInfrastructure.has(path) || frozenOrHistorical(path);
 
-const allowedRetiredV063FilenameReference = (path) =>
+const allowedRetiredV063FilenameReference = (path, text = '') =>
   path === 'scripts/validate-release-path-normalization.mjs' ||
   path.startsWith('releases/v0.6.3-withdrawn/') ||
   frozenCandidateScripts.has(path) ||
-  frozenOrHistorical(path);
+  frozenOrHistorical(path) ||
+  (path === 'config/reconstruction-version-plan.json' && text.includes('releases/v0.6.3-withdrawn/'));
 
 function gitObject(relative) {
   return execFileSync('git', ['rev-parse', `HEAD:${String(relative).replace(/^\/+|\/+$/g, '')}`], {
@@ -112,7 +113,7 @@ function grepLiteral(needle) {
 }
 
 function rejectUnexpected(label, matches, allowed) {
-  const unexpected = matches.filter((match) => !allowed(match.path));
+  const unexpected = matches.filter((match) => !allowed(match.path, match.text));
   if (!unexpected.length) return;
   const detail = unexpected.map((match) => `${match.path}:${match.line}: ${match.text.trim()}`).join('\n');
   throw new Error(`${label} remains in active/unclassified repository content:\n${detail}`);
