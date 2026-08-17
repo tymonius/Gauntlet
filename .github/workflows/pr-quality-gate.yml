@@ -45,6 +45,7 @@ jobs:
             const publication = any(
               exact('config/release-lifecycle.json'),
               exact('scripts/validate-current-public-contract.mjs'),
+              exact('scripts/validate-current-release-payload.mjs'),
               exact('.github/workflows/current-publication-contract.yml'),
               under('releases/v0.6.3/'),
               under('releases/v0.6.3-reconstructed/'),
