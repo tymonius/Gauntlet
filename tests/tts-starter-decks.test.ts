@@ -58,7 +58,7 @@ describe('TTS starter-deck assembly', () => {
     expect(assembler).toContain('starterDecks.decks.map((deck) =>');
     expect(assembler).toContain('deckCount: decks.length');
     expect(assembler).not.toMatch(/Expected 12|=== 12|!== 12/);
-    expect(readme).toContain('does not hard-code the number of starter decks or Leaders');
+    expect(readme).toContain('does not hard-code starter, card, Leader, or Territory counts');
   });
 
   it('is part of source checking and the complete TTS build after component validation and Leader generation', () => {
