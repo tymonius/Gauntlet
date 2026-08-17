@@ -16,6 +16,7 @@ on:
       - 'scripts/generate-tts-supplemental-assets.mjs'
       - 'scripts/stage-tts-release-assets.mjs'
       - 'scripts/generate-tts-save.mjs'
+      - 'scripts/assemble-tts-supplemental-save.mjs'
       - 'scripts/tts-current-catalog.mjs'
       - 'scripts/tts-component-contract.mjs'
       - 'tts/**'
@@ -80,6 +81,7 @@ jobs:
             scripts/generate-tts-supplemental-assets.mjs
             scripts/stage-tts-release-assets.mjs
             scripts/generate-tts-save.mjs
+            scripts/assemble-tts-supplemental-save.mjs
             scripts/tts-current-catalog.mjs
             scripts/tts-component-contract.mjs
             tts
@@ -125,6 +127,8 @@ jobs:
         run: npm run tts:release:stage
       - name: Generate TTS review scaffold
         run: npm run tts:save
+      - name: Assemble ready supplemental components into review scaffold
+        run: npm run tts:save:assemble
       - uses: actions/upload-artifact@v4
         with:
           name: gauntlet-current-tts-card-assets
