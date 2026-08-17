@@ -281,6 +281,7 @@ function normalizeNonCardProse(text, faction) {
     .replaceAll('Gambit or Battle effect', 'Gambit or Tactic effect')
     .replaceAll('Battle effects', 'Gambit or Tactic effects')
     .replaceAll('Battle effect', 'Gambit or Tactic effect')
+    .replaceAll('Ritual of Ascendance', 'Ritual of Ascension')
     .replaceAll('Gauntlet v0.6.2 reconstruction candidate © 2026 Tymon Scott.', 'Gauntlet v0.6.3 reconstruction candidate © 2026 Tymon Scott.');
 }
 
