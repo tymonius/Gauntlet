@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { copyFile, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
-import { basename, join, relative } from 'node:path';
+import { join, relative } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { resolveCurrentTtsRelease, ROOT } from './tts-current-catalog.mjs';
 
@@ -79,6 +79,9 @@ async function stageReleaseAssets() {
       throw new Error(`${label} targets ${manifest.gameVersion || 'no version'}; current release is ${release.version}.`);
     }
   }
+  if (territoryManifest.backPolicy !== 'standardBack') {
+    throw new Error(`Territory manifest must use standardBack; found ${territoryManifest.backPolicy || 'missing'}.`);
+  }
 
   const prefix = assetPrefix(release.version);
   const records = [];
@@ -101,12 +104,15 @@ async function stageReleaseAssets() {
       seenNames,
       back.file,
       `${prefix}_Back_${safeSegment(faction)}.png`,
-      'playable-back',
+      'standard-back-variant',
       { faction },
     );
   }
 
   for (const sheet of territoryManifest.sheets || []) {
+    if (sheet.backPolicy !== 'standardBack') {
+      throw new Error(`Territory sheet ${sheet.sheetNumber} must use standardBack; found ${sheet.backPolicy || 'missing'}.`);
+    }
     addAsset(
       records,
       seenNames,
@@ -117,9 +123,6 @@ async function stageReleaseAssets() {
     );
   }
   if (!territoryManifest.sheets?.length) throw new Error('Territory manifest contains no sheets to publish.');
-  addAsset(records, seenNames, territoryManifest.sheets[0].backFile, `${prefix}_Territory_Back.png`, 'territory-back', {
-    temporary: Boolean(territoryManifest.temporaryBack),
-  });
 
   for (const leader of leaderManifest.leaders || []) {
     addAsset(
@@ -162,7 +165,7 @@ async function stageReleaseAssets() {
 
   const releaseManifestName = `${prefix}_Release_Assets.json`;
   const releaseManifest = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     gameVersion: release.version,
     repository,
     releaseTag: release.version,
@@ -173,6 +176,7 @@ async function stageReleaseAssets() {
       mutableAssetNames: true,
       note: 'The publication workflow replaces only these deterministic TTS-named assets on the existing current GitHub Release. The release tag itself is not moved.',
     },
+    backPolicy: starterManifest.backPolicy,
     assetCount: staged.length,
     assets: staged,
     bySourceFile: Object.fromEntries(staged.map((asset) => [asset.sourceFile, asset.url])),

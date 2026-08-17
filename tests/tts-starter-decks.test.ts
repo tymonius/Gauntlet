@@ -40,16 +40,17 @@ describe('TTS starter-deck assembly', () => {
     expect(assembler).not.toContain('const FIRST_DECK_ID');
   });
 
-  it('emits publisher-ready Leader, card, Territory, sheet, and faction-back references', () => {
+  it('emits publisher-ready Leader, card, Territory, sheet, and resolved standard-back references', () => {
     expect(assembler).toContain('leader,');
     expect(assembler).toContain('makeLeaderReference');
     expect(assembler).toContain('deckCardIds');
     expect(assembler).toContain('faceSheets: [...faceSheetMap.values()]');
     expect(assembler).toContain('territories,');
-    expect(assembler).toContain("const backFile = `backs/${faction}.png`");
-    expect(assembler).toContain("assignment: 'player-faction'");
-    expect(assembler).toContain('neutralCardsUsePlayerFactionBack: true');
-    expect(assembler).toContain('schemaVersion: 2');
+    expect(assembler).toContain('resolveStandardBackFile(componentContract, faction)');
+    expect(assembler).toContain("policy: 'standardBack'");
+    expect(assembler).toContain('neutralCardsUseSameStandardBack: true');
+    expect(assembler).toContain('territoriesUseSameStandardBack: true');
+    expect(assembler).toContain('schemaVersion: 3');
     expect(assembler).toContain("'starter-deck-manifest.json'");
   });
 
@@ -57,15 +58,17 @@ describe('TTS starter-deck assembly', () => {
     expect(assembler).toContain('starterDecks.decks.map((deck) =>');
     expect(assembler).toContain('deckCount: decks.length');
     expect(assembler).not.toMatch(/Expected 12|=== 12|!== 12/);
-    expect(readme).toContain('does not hard-code the number of starter decks or Leaders');
+    expect(readme).toContain('does not hard-code starter, card, Leader, or Territory counts');
   });
 
-  it('is part of source checking and the complete TTS build after Leader generation', () => {
+  it('is part of source checking and the complete TTS build after component validation and Leader generation', () => {
+    expect(packageJson.scripts['tts:components:check']).toBe('node scripts/tts-component-contract.mjs');
     expect(packageJson.scripts['tts:leaders']).toBe('node scripts/generate-tts-leader-assets.mjs');
     expect(packageJson.scripts['tts:starters']).toBe('node scripts/generate-tts-starter-decks.mjs');
+    expect(packageJson.scripts['tts:check']).toContain('tts:components:check');
     expect(packageJson.scripts['tts:check']).toContain('generate-tts-leader-assets.mjs --check');
     expect(packageJson.scripts['tts:check']).toContain('generate-tts-starter-decks.mjs --check');
-    expect(packageJson.scripts['tts:build']).toBe('npm run tts:cards && npm run tts:territories && npm run tts:leaders && npm run tts:starters');
+    expect(packageJson.scripts['tts:build']).toBe('npm run tts:components:check && npm run tts:cards && npm run tts:territories && npm run tts:leaders && npm run tts:starters');
     expect(workflow.indexOf('Generate Leader cards')).toBeLessThan(workflow.indexOf('Assemble current starter decks'));
     expect(workflow).toContain('run: npm run tts:leaders');
     expect(workflow).toContain('run: npm run tts:starters');
