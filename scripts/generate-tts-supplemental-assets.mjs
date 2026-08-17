@@ -8,6 +8,10 @@ import {
   ROOT,
 } from './tts-current-catalog.mjs';
 import { loadTtsComponentContract } from './tts-component-contract.mjs';
+import {
+  buildReadyTrackerRecord,
+  captureProductionTracker,
+} from './tts-sliding-trackers.mjs';
 
 const CARD_WIDTH = 400;
 const CARD_HEIGHT = 560;
@@ -17,6 +21,7 @@ const FIRST_SUPPLEMENTAL_DECK_ID = 200;
 const SUPPORTED_RENDERERS = new Map([
   ['rite-card', 'rite-card'],
   ['reference-card', 'reference-card'],
+  ['tracker', 'sliding-tracker'],
 ]);
 
 function jsonText(value) {
@@ -256,12 +261,12 @@ function pendingRecord(component) {
   };
 }
 
-function readyBase(component, renderer) {
+function readyCardBase(component, renderer) {
   if (!component.cardLike || component.tts?.representation !== 'card') {
     throw new Error(`Ready supplemental component ${component.id} cannot use ${renderer}: expected a card-like TTS card.`);
   }
   if (component.backPolicy !== 'twoSided') {
-    throw new Error(`Ready supplemental component ${component.id} must be explicitly two-sided before export; found ${component.backPolicy || 'missing'}.`);
+    throw new Error(`Ready supplemental component ${component.id} must be explicitly two-sided before card export; found ${component.backPolicy || 'missing'}.`);
   }
 
   return {
@@ -285,7 +290,7 @@ async function readyRiteRecord(component, renderer, markdown) {
   }
   await access(join(ROOT, component.reverseArtwork));
   return {
-    ...readyBase(component, renderer),
+    ...readyCardBase(component, renderer),
     reverseArtwork: component.reverseArtwork,
     front: {
       sourceHeading: component.name,
@@ -300,7 +305,7 @@ async function readyReferenceRecord(component, renderer, markdown) {
     throw new Error(`Ready reference card ${component.id} must declare referenceFaces.front and referenceFaces.reverse.`);
   }
   return {
-    ...readyBase(component, renderer),
+    ...readyCardBase(component, renderer),
     faces: {
       front: parseReferenceFace(markdown, faces.front, component.name, 'front'),
       reverse: parseReferenceFace(markdown, faces.reverse, component.name, 'reverse'),
@@ -313,6 +318,8 @@ async function readyRecord(component, sourceCache) {
   if (!renderer) {
     throw new Error(`Ready supplemental component ${component.id} has no supported exporter for family ${component.family}.`);
   }
+
+  if (component.family === 'tracker') return buildReadyTrackerRecord(component, renderer);
 
   let markdown = sourceCache.get(component.source);
   if (!markdown) {
@@ -340,10 +347,10 @@ export async function buildSupplementalCatalog(componentContract = null) {
   return {
     release,
     catalog: {
-      schemaVersion: 2,
+      schemaVersion: 3,
       gameVersion: release.version,
       componentContract: 'config/tts-component-contract.json',
-      sourcePolicy: 'ready components export; pending components remain cataloged but produce no TTS objects',
+      sourcePolicy: 'ready components export through their declared representation; pending components remain cataloged but produce no TTS objects',
       readyCount: ready.length,
       pendingCount: pending.length,
       ready,
@@ -413,6 +420,7 @@ export async function renderSupplementalAssets(release, catalog) {
   await rm(join(outputRoot, 'supplementals'), { recursive: true, force: true });
   await mkdir(join(outputRoot, 'supplementals', 'fronts'), { recursive: true });
   await mkdir(join(outputRoot, 'supplementals', 'reverses'), { recursive: true });
+  await mkdir(join(outputRoot, 'supplementals', 'trackers'), { recursive: true });
   await writeSupplementalCatalog(release, catalog);
 
   const { server, baseUrl } = await startStaticServer();
@@ -426,9 +434,35 @@ export async function renderSupplementalAssets(release, catalog) {
   try {
     const renderedArtworkReverses = new Map();
     const records = [];
-    for (let index = 0; index < catalog.ready.length; index += 1) {
-      const record = catalog.ready[index];
-      const deckId = FIRST_SUPPLEMENTAL_DECK_ID + index;
+    let nextDeckId = FIRST_SUPPLEMENTAL_DECK_ID;
+
+    for (const record of catalog.ready) {
+      if (record.renderer === 'sliding-tracker') {
+        const frontFile = `supplementals/trackers/${record.id}.png`;
+        const geometry = await captureProductionTracker(page, baseUrl, record, join(outputRoot, frontFile));
+        records.push({
+          ...record,
+          frontFile,
+          physicalScale: geometry.physicalScale,
+          snapPoints: geometry.snapPoints,
+          tts: {
+            faceFile: frontFile,
+            widthScale: geometry.physicalScale.cardWidth,
+            heightScale: geometry.physicalScale.cardHeight,
+            thickness: 0.05,
+            stackable: false,
+            assembly: record.tracker.assembly,
+            axis: record.tracker.axis,
+            layer: record.tracker.layer,
+            snapTag: record.tracker.snapTag,
+            snapPoints: geometry.snapPoints,
+          },
+        });
+        continue;
+      }
+
+      const deckId = nextDeckId;
+      nextDeckId += 1;
       const frontFile = `supplementals/fronts/${record.id}.png`;
       let reverseFile;
 
@@ -465,7 +499,7 @@ export async function renderSupplementalAssets(release, catalog) {
     }
 
     const manifest = {
-      schemaVersion: 2,
+      schemaVersion: 3,
       gameVersion: release.version,
       componentContract: catalog.componentContract,
       output: {
@@ -478,7 +512,7 @@ export async function renderSupplementalAssets(release, catalog) {
       pending: catalog.pending,
       placement: {
         assembly: 'starter-faction',
-        note: 'Ready card-representation supplementals are hosted here and assembled into matching starter Bags by the supplemental save-assembly layer.',
+        note: 'Ready card and sliding-tracker supplementals are hosted here and assembled into matching starter Bags by the generic supplemental save-assembly layer.',
       },
     };
 
