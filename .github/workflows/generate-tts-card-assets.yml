@@ -13,6 +13,7 @@ on:
       - 'scripts/generate-tts-territory-assets.mjs'
       - 'scripts/generate-tts-leader-assets.mjs'
       - 'scripts/generate-tts-starter-decks.mjs'
+      - 'scripts/generate-tts-supplemental-assets.mjs'
       - 'scripts/stage-tts-release-assets.mjs'
       - 'scripts/generate-tts-save.mjs'
       - 'scripts/tts-current-catalog.mjs'
@@ -76,6 +77,7 @@ jobs:
             scripts/generate-tts-territory-assets.mjs
             scripts/generate-tts-leader-assets.mjs
             scripts/generate-tts-starter-decks.mjs
+            scripts/generate-tts-supplemental-assets.mjs
             scripts/stage-tts-release-assets.mjs
             scripts/generate-tts-save.mjs
             scripts/tts-current-catalog.mjs
@@ -117,6 +119,8 @@ jobs:
         run: npm run tts:leaders
       - name: Assemble current starter decks
         run: npm run tts:starters
+      - name: Generate ready supplemental components
+        run: npm run tts:supplementals
       - name: Stage hosted TTS release assets
         run: npm run tts:release:stage
       - name: Generate TTS review scaffold
