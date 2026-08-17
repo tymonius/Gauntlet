@@ -32,13 +32,26 @@ const frozenOrHistorical = (filePath) =>
   filePath.startsWith('publication/v0.6.3/') ||
   filePath === 'governance/traceability.json';
 
+const frozenCandidateSurfaces = new Set([
+  'card-design/generated/v0.6.3/long-card-review-catalog.js',
+  'v0.6.3/data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json',
+]);
+
 // These scripts enforce phase-specific reconstruction/candidate states that
 // intentionally predate publication. They are retained as provenance and are
 // not current release tooling.
 const frozenCandidateScripts = new Set([
+  'scripts/apply-v063-asset-language.mjs',
+  'scripts/apply-v063-compact-shorthand.mjs',
+  'scripts/apply-v063-general-card-rules.mjs',
+  'scripts/apply-v063-natural-advantage-wording.mjs',
+  'scripts/apply-v063-numeric-shorthand.mjs',
   'scripts/build-clean-v063-downstream-data.mjs',
   'scripts/validate-clean-v063-downstream-data.mjs',
   'scripts/validate-reconstruction-version-plan.mjs',
+  'scripts/build-v062-release.mjs',
+  'scripts/build-v063-browser-development.mjs',
+  'scripts/build-v063-card-normalization.mjs',
   'scripts/build-v063-print-candidate-html.mjs',
   'scripts/build-v063-release-candidate.mjs',
   'scripts/validate-v063-release-candidate.mjs',
@@ -47,6 +60,14 @@ const frozenCandidateScripts = new Set([
   'scripts/build-v063-cross-surface-closeout.mjs',
   'scripts/validate-v063-cross-surface-closeout.mjs',
   'scripts/validate-v063-print-visual-regressions.mjs',
+  'scripts/finalize-v063-card-conventions.mjs',
+  'scripts/generate-v063-canonical-data-candidate.mjs',
+  'scripts/generate-v063-player-facing-candidates.mjs',
+  'scripts/generate-v063-production-card-preview.mjs',
+  'scripts/validate-v063-browser-development.mjs',
+  'scripts/validate-v063-canonical-data-candidate.mjs',
+  'scripts/validate-v063-canonical-promotion-boundary.mjs',
+  'scripts/validate-v063-shared-rules.mjs',
 ]);
 
 // These current files intentionally name removed paths only to detect/reject
@@ -54,9 +75,20 @@ const frozenCandidateScripts = new Set([
 const removalGuards = new Set([
   '.github/workflows/pr-quality-gate.yml',
   '.github/workflows/release-history-integrity.yml',
+  'scripts/validate-clean-v062-digital.mjs',
+  'scripts/validate-clean-v063-rules-arbiter.mjs',
   'scripts/validate-current-public-contract.mjs',
   'scripts/validate-release-path-normalization.mjs',
 ]);
+
+// This contract is evaluated at the historical v0.6.2 GitHub Release target
+// commit, where the old package path genuinely existed. It is not a HEAD-time
+// path dependency.
+const historicalTargetContracts = new Set([
+  'config/github-release-contract.json',
+]);
+
+const isPreRecoveryScript = (filePath) => filePath.endsWith('.pre-recovery.mjs');
 
 const allowedRemovedV063Reference = (filePath) =>
   removalGuards.has(filePath) ||
@@ -65,7 +97,12 @@ const allowedRemovedV063Reference = (filePath) =>
 
 const allowedRemovedV062Reference = (filePath) =>
   removalGuards.has(filePath) ||
+  historicalTargetContracts.has(filePath) ||
+  frozenCandidateSurfaces.has(filePath) ||
+  frozenCandidateScripts.has(filePath) ||
+  isPreRecoveryScript(filePath) ||
   filePath.startsWith('releases/v0.6.2-withdrawn/') ||
+  filePath.startsWith('releases/v0.6.3-withdrawn/') ||
   frozenOrHistorical(filePath);
 
 const allowedRetiredV063FilenameReference = (filePath, text = '') =>
@@ -134,6 +171,6 @@ for (const filename of retiredV063PackageFiles) {
 console.log(
   `Release-path normalization passed: removed package roots are absent; ` +
   `${removedV063Matches.length} old v0.6.3 reconstructed-path reference(s) are confined to removal guards/frozen provenance; ` +
-  `${removedV062Matches.length} old v0.6.2 path reference(s) are confined to removal guards/withdrawn/frozen provenance; ` +
+  `${removedV062Matches.length} old v0.6.2 path reference(s) are confined to removal guards/historical targets/frozen provenance; ` +
   `${retiredFilenameMatches} retired original-v0.6.3 filename reference(s) are confined to frozen/withdrawn provenance surfaces.`,
 );
