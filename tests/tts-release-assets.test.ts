@@ -62,6 +62,6 @@ describe('TTS GitHub Release asset hosting', () => {
     expect(workflow).toContain('Verified ${manifest.assets.length} hosted TTS asset URLs');
     expect(stager).toContain('The release tag itself is not moved.');
     expect(readme).toContain('GitHub Release asset hosting');
-    expect(readme).toContain('does not move or recreate the release tag');
+    expect(readme).toContain('Publication remains explicit');
   });
 });
