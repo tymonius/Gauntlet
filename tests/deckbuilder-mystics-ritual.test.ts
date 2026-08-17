@@ -5,12 +5,12 @@ const readRepoFile = (path: string) =>
   readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
 
 describe("Mystics Ritual Deckbuilder component", () => {
-  it("adds the Ritual of Ascendance to the Mystics supplemental package", () => {
+  it("adds the Ritual of Ascension to the Mystics supplemental package", () => {
     const source = readRepoFile("deckbuilder/faction-components.js");
 
-    expect(source).toContain('const MYSTICS_RITUAL_COMPONENT_ID = "mystics-ritual-of-ascendance"');
-    expect(source).toContain('const summaryLabel = "Ritual of Ascendance card"');
-    expect(source).toContain('title: "Ritual of Ascendance"');
+    expect(source).toContain('const MYSTICS_RITUAL_COMPONENT_ID = "mystics-ritual-of-ascension"');
+    expect(source).toContain('const summaryLabel = "Ritual of Ascension card"');
+    expect(source).toContain('title: "Ritual of Ascension"');
     expect(source).toContain('kind: "ritual"');
     expect(source).toContain('type: "reference"');
     expect(source).toContain('label: "Convergence"');
