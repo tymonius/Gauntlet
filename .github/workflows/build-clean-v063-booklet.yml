@@ -22,20 +22,25 @@ jobs:
             /package-lock.json
             /brand.css
             /assets/wordmark/
+            /config/release-lifecycle.json
             /scripts/build-v063-rulebook-production.py
             /scripts/run-v063-rulebook-renderer.mjs
             /scripts/render-clean-v063-booklet.mjs
             /scripts/validate-clean-v063-booklet.mjs
             /scripts/validate-v063-rulebook-wordmark.mjs
+            /scripts/materialize-clean-v063-booklet.mjs
+            /scripts/sync-v063-legacy-package-alias.mjs
+            /scripts/validate-current-rulebook-booklet-provenance.mjs
             /scripts/publication-utils.mjs
             /rules-assistant/v063-last-stand-language.js
+            /rulebook/index.html
             /rulebook/player-facing/chapter-11.md
             /rulebook/player-facing/corrections.js
             /rulebook-design/
             /rulebook-production/
             /releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md
             /artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md
-            /releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md
+            /releases/v0.6.3/**
             /images/sketches/
 
       - name: Use Node.js
@@ -66,6 +71,14 @@ jobs:
           node scripts/validate-v063-rulebook-wordmark.mjs
           node scripts/render-clean-v063-booklet.mjs
           node scripts/validate-clean-v063-booklet.mjs
+
+      - name: Exercise canonical materialization and legacy-alias sync
+        run: |
+          set -euo pipefail
+          node scripts/materialize-clean-v063-booklet.mjs
+          node scripts/sync-v063-legacy-package-alias.mjs
+          node scripts/validate-current-rulebook-booklet-provenance.mjs
+          diff -qr releases/v0.6.3 releases/v0.6.3-reconstructed
 
       - name: Upload current booklet review artifact
         uses: actions/upload-artifact@v4
