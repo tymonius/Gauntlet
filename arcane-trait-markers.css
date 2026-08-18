@@ -1,16 +1,16 @@
 .arcane-marked-title {
   display: flex !important;
   align-items: center;
-  gap: 0.34em;
+  gap: 0.3em;
   min-width: 0;
 }
 
 .gauntlet-arcane-title-marker {
   display: inline-block;
-  width: 0.82em;
-  height: 0.82em;
-  flex: 0 0 0.82em;
-  background: var(--arcane-marker-color, #8a6535);
+  width: 1em;
+  height: 1em;
+  flex: 0 0 1em;
+  background: var(--arcane-marker-color, #eee7d5);
   -webkit-mask: url("/images/faction-symbols/mystics.svg") center / contain no-repeat;
   mask: url("/images/faction-symbols/mystics.svg") center / contain no-repeat;
 }

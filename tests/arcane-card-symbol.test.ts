@@ -30,11 +30,15 @@ describe("Arcane playable-card symbol", () => {
     expect(factionCss).toMatch(/\.card-title \.arcane-trait-marker\s*\{/);
   });
 
-  it("uses allegiance color while keeping Neutral readable", () => {
+  it("uses allegiance color, with Neutral matching its ivory border", () => {
     expect(factionCss).toMatch(/\.faction-specimen-page \.gauntlet-card\s*\{[\s\S]*?--arcane-trait-color:\s*var\(--faction-border\);/);
-    expect(factionCss).toMatch(/\[data-faction="neutral"\]\s*\{[\s\S]*?--arcane-trait-color:\s*var\(--card-bronze\);/);
-    expect(factionCss).toMatch(/\.arcane-trait-marker\s*\{[\s\S]*?background:\s*var\(--arcane-trait-color\);/);
+    expect(factionCss).toMatch(/\[data-faction="neutral"\]\s*\{[\s\S]*?--faction-border:\s*#eee7d5;[\s\S]*?--arcane-trait-color:\s*var\(--faction-border\);/);
+    expect(factionCss).toMatch(/\.arcane-trait-marker\s*\{[\s\S]*?width:\s*0\.135in;[\s\S]*?height:\s*0\.135in;[\s\S]*?background:\s*var\(--arcane-trait-color\);/);
     expect(factionCss).toContain('mask: url("../images/faction-symbols/mystics.svg") center / contain no-repeat;');
+    expect(markerUi).toContain("neutral: '#eee7d5'");
+    expect(markerUi).toContain("width:.135in;height:.135in;flex:0 0 .135in");
+    expect(markerUiCss).toContain("width: 1em;");
+    expect(markerUiCss).toContain("height: 1em;");
   });
 
   it("propagates the same title marker to Card Reference, Deckbuilder, and Deckbuilder print", () => {
