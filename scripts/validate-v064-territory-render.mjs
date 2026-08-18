@@ -8,12 +8,14 @@ const SOURCE_PATH = join(ROOT, 'docs', 'v0.6.4-territories.json');
 const OUTPUT = join(ROOT, 'card-design', 'generated', 'territories-v064');
 const CSS_WIDTH = 336;
 const CSS_HEIGHT = 240;
+const CSS_PIXELS_PER_INCH = 96;
 const OUTPUT_WIDTH = 560;
 const OUTPUT_HEIGHT = 400;
 const DEVICE_SCALE = OUTPUT_WIDTH / CSS_WIDTH;
 const EXPECTED_SOURCE_ISSUE = 738;
 const EXPECTED_VERSION = 'v0.6.4-candidate';
 const MINIMUM_READABLE_EFFECT_SCALE = 0.78;
+const MINIMUM_ARTWORK_HEIGHT = 0.78 * CSS_PIXELS_PER_INCH;
 
 function contentType(path) {
   const extension = extname(path).toLowerCase();
@@ -137,8 +139,10 @@ async function main() {
       if (metric.artworkLoaded !== 'true' || !metric.artworkSource) {
         throw new Error(`Territory artwork did not resolve: ${territory.name}.`);
       }
-      if (metric.artHeight <= 0 || metric.artWidth <= 0 || metric.artSpansBody !== 'true') {
-        throw new Error(`Territory artwork frame collapsed: ${JSON.stringify({ territory: territory.name, ...metric })}.`);
+      if (metric.artHeight < MINIMUM_ARTWORK_HEIGHT - 0.5
+        || metric.artWidth <= 0
+        || metric.artSpansBody !== 'true') {
+        throw new Error(`Territory artwork frame is too small or collapsed: ${JSON.stringify({ territory: territory.name, ...metric })}.`);
       }
 
       await page.locator('.territory-card').screenshot({
@@ -153,6 +157,7 @@ async function main() {
       cssPixels: { width: CSS_WIDTH, height: CSS_HEIGHT },
       outputPixels: { width: OUTPUT_WIDTH, height: OUTPUT_HEIGHT },
       minimumReadableEffectScale: MINIMUM_READABLE_EFFECT_SCALE,
+      minimumArtworkHeight: MINIMUM_ARTWORK_HEIGHT,
       metrics,
     }, null, 2)}\n`);
     console.log(JSON.stringify({ sourceIssue: source.source_issue, count: metrics.length, metrics }, null, 2));

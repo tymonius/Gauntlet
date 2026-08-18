@@ -7,7 +7,8 @@ const OUTPUT = 'card-design/generated/leaders';
 const ID = 'territory-difficult-terrain';
 const WIDTH = 336;
 const HEIGHT = 240;
-const ART_FLOOR = 0.55 * 96;
+const ART_FLOOR = 0.78 * 96;
+const CROSS_ENGINE_ART_TOLERANCE = 2.25;
 
 async function ready(frame) {
   await frame.waitForFunction(
@@ -123,7 +124,7 @@ function validateInspection(label, life, desktop) {
   validate(`${label} delayed`, life.delayed);
   assertClose(`${label} art stability`, life.settled.artHeight, life.delayed.artHeight, 0.25);
   assertClose(`${label} type stability`, life.settled.fontSize, life.delayed.fontSize, 0.05);
-  assertClose(`${label} art vs desktop`, desktop.artHeight, life.delayed.artHeight, 1);
+  assertClose(`${label} art vs desktop`, desktop.artHeight, life.delayed.artHeight, CROSS_ENGINE_ART_TOLERANCE);
   assertClose(`${label} scale stability`, life.settled.scale, life.delayed.scale, 0.001);
 }
 
@@ -163,7 +164,7 @@ try {
     ['mobile Chromium', mobileChromium],
     ['mobile WebKit', mobileWebKit],
   ]) {
-    assertClose(`${label} art height`, desktop.artHeight, value.artHeight, 1);
+    assertClose(`${label} art height`, desktop.artHeight, value.artHeight, CROSS_ENGINE_ART_TOLERANCE);
     assertClose(`${label} art width`, desktop.artWidth, value.artWidth, 1);
     assertClose(`${label} font`, desktop.fontSize, value.fontSize, 0.1);
     assertClose(`${label} line height`, desktop.lineHeight, value.lineHeight, 0.1);
