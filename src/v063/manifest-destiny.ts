@@ -9,6 +9,10 @@ import {
 export const V063_MANIFEST_DESTINY_ID = 'neutral-manifest-destiny' as const;
 export const V063_MANIFEST_DESTINY_NAME = 'Manifest Destiny' as const;
 
+export function v063ManifestDestinyInstanceId(player: PlayerId): string {
+  return `${V063_MANIFEST_DESTINY_ID}:${player}`;
+}
+
 export interface V063ManifestDestinyZones {
   hand: string[];
   assetBank: string[];
@@ -108,13 +112,15 @@ export function resolveV063ManifestDestinyBattle(
   };
 }
 
-function manifestDestinyTerritory(): {
-  id: typeof V063_MANIFEST_DESTINY_ID;
+function manifestDestinyTerritory(player: PlayerId): {
+  instanceId: string;
+  cardId: typeof V063_MANIFEST_DESTINY_ID;
   name: typeof V063_MANIFEST_DESTINY_NAME;
   blank: true;
 } {
   return {
-    id: V063_MANIFEST_DESTINY_ID,
+    instanceId: v063ManifestDestinyInstanceId(player),
+    cardId: V063_MANIFEST_DESTINY_ID,
     name: V063_MANIFEST_DESTINY_NAME,
     blank: true,
   };
@@ -124,12 +130,12 @@ function insertManifestDestinyAtPlayerEnd(
   gauntlet: V063GauntletState,
   player: PlayerId,
 ): V063TerritoryInsertionResult {
-  return insertV063TerritoryAtPlayerEnd(gauntlet, player, manifestDestinyTerritory());
+  return insertV063TerritoryAtPlayerEnd(gauntlet, player, manifestDestinyTerritory(player));
 }
 
 function insertManifestDestinyAtFrontLine(
   gauntlet: V063GauntletState,
   player: PlayerId,
 ): V063TerritoryInsertionResult {
-  return insertV063TerritoryAtFrontLine(gauntlet, player, manifestDestinyTerritory());
+  return insertV063TerritoryAtFrontLine(gauntlet, player, manifestDestinyTerritory(player));
 }
