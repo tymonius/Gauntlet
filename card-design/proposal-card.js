@@ -1,4 +1,5 @@
 const PROPOSAL_SOURCE = '/docs/v0.6.4-diplomat-proposals.json';
+const PROPOSAL_ART_ROOT = '/images/artwork/cards/diplomats/proposals';
 const RATIFIED_SEAL_SOURCE = '/images/artwork/supplemental/diplomats/ratified-wax-seal.webp';
 const EXPECTED_PROPOSAL_COUNT = 9;
 const EXPECTED_SOURCE_ISSUE = 617;
@@ -23,12 +24,53 @@ function supplementalLabel(type) {
   return `<div class="proposal-type-line"><span class="proposal-faction-emblem" aria-hidden="true"></span><span>${esc(type)}</span></div>`;
 }
 
+function proposalArtwork(proposal) {
+  const source = `${PROPOSAL_ART_ROOT}/${proposal.id}.png`;
+  return `<figure class="card-art proposal-art-pending" data-proposal-artwork="${esc(source)}" aria-label="Artwork for ${esc(proposal.name)}">
+    <img alt="Artwork for ${esc(proposal.name)}" hidden />
+    <span>Artwork pending</span>
+  </figure>`;
+}
+
+function imageExists(source) {
+  return new Promise(resolve => {
+    const image = new Image();
+    let settled = false;
+    const finish = loaded => {
+      if (settled) return;
+      settled = true;
+      resolve(loaded);
+    };
+    image.addEventListener('load', () => finish(true), { once: true });
+    image.addEventListener('error', () => finish(false), { once: true });
+    image.src = source;
+    if (image.complete) finish(image.naturalWidth > 0);
+  });
+}
+
+async function loadProposalArtwork() {
+  if (!root) return;
+  const figures = Array.from(root.querySelectorAll('[data-proposal-artwork]'));
+  await Promise.all(figures.map(async figure => {
+    const source = figure.dataset.proposalArtwork;
+    const image = figure.querySelector('img');
+    const pending = figure.querySelector('span');
+    if (!source || !image || !await imageExists(source)) return;
+
+    image.src = source;
+    image.hidden = false;
+    if (pending) pending.hidden = true;
+    figure.classList.add('has-image');
+    figure.classList.remove('proposal-art-pending');
+  }));
+}
+
 function proposalFace(proposal, ratified = false) {
   const type = ratified ? 'Treaty Article' : 'Proposal';
   const longTitle = proposal.name.length >= 20 ? ' long-title' : '';
   const art = ratified
     ? `<figure class="card-art proposal-ratified-panel" aria-label="Ratified treaty article"><div class="proposal-ratified-word">Ratified</div><img class="proposal-wax-seal" src="${RATIFIED_SEAL_SOURCE}" alt="" aria-hidden="true" /></figure>`
-    : `<figure class="card-art proposal-art-pending" aria-label="Artwork pending"><span>Artwork pending</span></figure>`;
+    : proposalArtwork(proposal);
 
   return `<article class="gauntlet-card faction-component-card proposal-card diplomat-card${longTitle}" data-faction="diplomats" data-art-max="1.52" data-art-min="1.04" data-title-min="8.5" aria-label="${esc(proposal.name)} ${esc(type)} card">
     <div class="card-interior">
@@ -103,6 +145,7 @@ async function renderProposalCatalog() {
     root.dataset.proposalCount = String(proposals.length);
     root.dataset.proposalSourceIssue = String(source.source_issue);
     root.innerHTML = `<div class="proposal-review-block">${proposals.map(reviewPair).join('')}</div>`;
+    await loadProposalArtwork();
   } catch (error) {
     root.innerHTML = `<p class="review-note">Unable to load complete Proposal set: ${esc(error.message)}</p>`;
     console.error(error);
