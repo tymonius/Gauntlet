@@ -133,8 +133,6 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
-      - name: Install Playwright system dependencies
-        run: npx playwright install-deps chromium
       - name: Install Playwright Chromium
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install chromium
