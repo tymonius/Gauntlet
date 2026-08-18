@@ -89,7 +89,7 @@ describe('v0.6.3 copied/repeated-effect semantics', () => {
       sourceEventTriggers: false,
       remakeChoices: true,
       repayCosts: true,
-      mayCreateFurtherCopiedApplication: true,
+      chainAllowsFurtherCopiedApplication: true,
     });
     expect(graveyard).toEqual(['neutral-rallying-cry']);
   });
@@ -105,7 +105,24 @@ describe('v0.6.3 copied/repeated-effect semantics', () => {
     })).toThrow(/cannot apply at the current timing/);
   });
 
-  test('permits one further copied application but no third layer in the same chain', () => {
+  test('chain depth does not itself permit an ordinary copied effect to create another application', () => {
+    const ordinary = prepareV063ArcaneKnowledgeBattleApplication({
+      controller: 'A',
+      graveyard: ['neutral-rallying-cry'],
+      cardsById: v063CanonicalContent.cardsById,
+      targetCardId: 'neutral-rallying-cry',
+      targetEffectLabel: 'Gambit/Tactic',
+      canApplyNow: () => true,
+    });
+    expect(() => continueV063CopiedEffectApplication(
+      ordinary,
+      ordinary,
+      'A',
+      false,
+    )).toThrow(/printed text instructs another application/);
+  });
+
+  test('permits one further instructed copied application but no third layer in the same chain', () => {
     const first = prepareV063ArcaneKnowledgeBattleApplication({
       controller: 'A',
       graveyard: ['neutral-arcane-knowledge'],
@@ -123,14 +140,16 @@ describe('v0.6.3 copied/repeated-effect semantics', () => {
       first,
       v063EffectReference(heresy!, heresyEffect!),
       'A',
+      true,
     );
 
     expect(second.chainDepth).toBe(2);
-    expect(second.mayCreateFurtherCopiedApplication).toBe(false);
+    expect(second.chainAllowsFurtherCopiedApplication).toBe(false);
     expect(() => continueV063CopiedEffectApplication(
       second,
       v063EffectReference(heresy!, heresyEffect!),
       'A',
+      true,
     )).toThrow(/third application layer/);
   });
 
