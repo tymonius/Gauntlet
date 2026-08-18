@@ -103,7 +103,7 @@
   gap: 0.04in;
   min-width: 0;
   min-height: 0;
-  margin: 0 0.055in 0.04in 0.045in;
+  margin: 0 0.055in 0.012in 0.045in;
 }
 
 /* Match the standard playable card's mounted-print artwork frame. */
@@ -188,7 +188,7 @@
   min-width: 0;
   min-height: 0;
   overflow: visible;
-  padding: 0.045in 0.07in 0.045in;
+  padding: 0.045in 0.07in 0.018in;
   border-top: 0;
   background: rgba(238, 226, 198, 0.14);
   font-family: var(--font-reading);
@@ -253,7 +253,7 @@
 
 .territory-card.compact .territory-effect {
   padding-top: 0.035in;
-  padding-bottom: 0.035in;
+  padding-bottom: 0.012in;
 }
 
 .territory-card.compact .territory-effect p {
