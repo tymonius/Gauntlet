@@ -22,4 +22,12 @@ describe('card artwork resolution', () => {
     expect(candidates).toEqual(['/images/artwork/cards/mystics/fate-s-toll.png']);
     expect(existsSync(`.${candidates[0]}`)).toBe(true);
   });
+
+  it('resolves Tyranny through its correctly spelled canonical filename', () => {
+    const card = { id: 'inquisition-tyranny', name: 'Tyranny' };
+    const candidates = artworkCandidates(card, 'inquisition', ['png']);
+    expect(candidates).toEqual(['/images/artwork/cards/inquisition/tyranny.png']);
+    expect(existsSync(`.${candidates[0]}`)).toBe(true);
+    expect(existsSync('./images/artwork/cards/inquisition/tyrrany.png')).toBe(false);
+  });
 });
