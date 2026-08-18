@@ -9,7 +9,7 @@ const CARD_WIDTH = 240;
 const CARD_HEIGHT = 336;
 const TERRITORY_WIDTH = 336;
 const TERRITORY_HEIGHT = 240;
-const EXPECTED_PLAYABLE_CARDS = 128;
+const EXPECTED_PLAYABLE_CARDS = 134;
 const EXPECTED_TERRITORIES = 25;
 const EXPECTED_PROPOSALS = [
   'De-escalation', 'Orderly Withdrawal', 'Capitulation', 'Open Channels',
@@ -69,6 +69,7 @@ async function main() {
 
   try {
     await page.goto(`${baseUrl}/card-design/#leader-cards`, { waitUntil: 'load' });
+    await page.waitForFunction(() => document.body.dataset.v064FactionCards === 'ready');
     await page.waitForSelector('.leader-card');
     await page.waitForFunction(expected => document.querySelectorAll('.full-card-review-frame').length === expected, EXPECTED_PLAYABLE_CARDS);
     await page.waitForFunction(expected => document.querySelectorAll('.territory-review-frame').length === expected, EXPECTED_TERRITORIES);
