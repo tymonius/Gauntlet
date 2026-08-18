@@ -19,4 +19,5 @@ export * from '../v063/arcane-knowledge';
 export * from '../v063/copied-effect-callers';
 export * from '../v063/gauntlet';
 export * from '../v063/manifest-destiny';
+export * from '../v063/territories';
 export { V063_RULES_VERSION as CURRENT_RULES_VERSION } from './v063';
