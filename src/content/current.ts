@@ -1,9 +1,17 @@
 export {
-  CLEAN_V063_RULES_VERSION,
-  CLEAN_V063_AUTHORITY_TARGET,
-  cleanV063Content,
-  loadCleanV063Content,
-} from '../reconstruction/clean-v063/content';
-export * from '../reconstruction/clean-v063/rules';
-export * from '../reconstruction/clean-v063/cards';
-export const CURRENT_RULES_VERSION = 'v0.6.3' as const;
+  V063_RULES_VERSION,
+  V063_CANONICAL_DATA_SOURCE,
+  V063_RELEASE_MANIFEST_SOURCE,
+  loadV063CanonicalContent,
+  v063CanonicalContent,
+  type V063CanonicalCardEffect,
+  type V063CanonicalCard,
+  type V063CanonicalTerritory,
+  type V063CanonicalFaction,
+  type V063CanonicalData,
+  type V063ReleaseManifest,
+  type V063CanonicalContentIndex,
+} from './v063';
+export * from '../v063/rules';
+export * from '../v063/cards';
+export { V063_RULES_VERSION as CURRENT_RULES_VERSION } from './v063';
