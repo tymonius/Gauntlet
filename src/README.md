@@ -13,9 +13,9 @@ The release manifest identifies the binding Rulebook source as `artifacts/recons
 
 ## Migration layers
 
-- `v063/` — current incremental v0.6.3 rule/card procedures and tests. The rules module owns the migrated v0.6.3 runtime surface for setup, Front Line/Capture, movement, retreat/withdrawal, battle outcome, and Last Stand; it no longer re-exports v0.6.2 runtime procedures.
+- `v063/` — current incremental v0.6.3 rule/card procedures and tests. The rules module owns the migrated v0.6.3 runtime surface for setup, Front Line/Capture, movement, retreat/withdrawal, battle outcome, and Last Stand. The card module owns the migrated shared card procedures plus the previously inherited Invasion, Landslide, Détente, Compound Interest, Extraordinary Rendition, Nature's Altar, and Martyrdom handlers. Neither module re-exports v0.6.2 runtime behavior.
 - `content/v063.ts` — published v0.6.3 content index for engine migration work.
-- `v062/` — earlier versioned migration work retained as implementation history. Stable structural types may still be shared deliberately, and the v0.6.3 card layer still has an explicit runtime inheritance dependency that remains to be migrated under #741.
+- `v062/` — earlier versioned migration work retained as implementation history. Stable structural types may still be shared deliberately, but current v0.6.3 rules and card behavior must not be inherited through blanket runtime exports.
 - `state/`, `effects/`, `cards/`, `cli/`, and `gui/` — pre-v0.6 prototype architecture and interfaces. These remain useful implementation material but are **not** presumed v0.6.3-compatible.
 
 Issue #741 tracks the full synchronization of the playable engine with v0.6.3. The existence of a `v063/` adapter or passing tests for an implemented procedure does not imply complete engine parity; unsupported or stale legacy behavior must remain explicit until migrated and validated.
