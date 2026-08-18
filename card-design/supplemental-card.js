@@ -240,11 +240,15 @@ function referenceLoadingFace(component, faction, factionLabel, sideName) {
     <div class="reference-card-interior">
       <span class="reference-watermark" aria-hidden="true"></span>
       <header class="reference-card-header">
-        <div class="reference-kicker"><span class="reference-faction-emblem" aria-hidden="true"></span><span>${esc(factionLabel)} Reference</span></div>
         <h3 class="reference-face-title">Loading reference…</h3>
-        <p class="reference-component-name">${esc(component.name)}</p>
+        <div class="reference-type-line"><span class="reference-faction-emblem" aria-hidden="true"></span><span>${esc(component.name.replace(/\s+Card$/i, ''))}</span></div>
       </header>
-      <div class="reference-body"><section class="reference-section"><h4 class="reference-section-title">Canonical source</h4><div class="reference-blocks"><p>Loading current faction-guide rules.</p></div></section></div>
+      <div class="reference-body">
+        <section class="reference-section reference-panel reference-panel--rules">
+          <header class="reference-panel-heading"><h4>Canonical source</h4></header>
+          <div class="reference-panel-content"><p class="reference-prose">Loading current faction-guide rules.</p></div>
+        </section>
+      </div>
       <footer class="reference-card-footer"><span>${esc(factionLabel)}</span><strong>Reference</strong><span>v0.6.3</span></footer>
     </div>
   </article>`;
