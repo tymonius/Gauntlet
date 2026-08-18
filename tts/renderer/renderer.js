@@ -25,9 +25,7 @@
   const longTitleClass = catalog?.gameVersion === 'v0.6.3' && String(card.name).length > 21
     ? ' long-title'
     : '';
-  const footerCenter = card.unique
-    ? 'Unique'
-    : (card.form || (card.complexity !== 'Unspecified' ? card.complexity : ''));
+  const footerCenter = card.unique ? 'Unique' : '';
   const isArcane = hasTrait(card.trait, 'arcane');
   const arcaneMarker = isArcane
     ? '<i class="arcane-trait-marker" role="img" aria-label="Arcane trait" title="Arcane"></i>'
