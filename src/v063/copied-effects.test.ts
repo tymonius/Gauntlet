@@ -69,7 +69,7 @@ describe('v0.6.3 copied/repeated-effect semantics', () => {
     expect(choices.every((choice) => choice.sourceZone === 'graveyard')).toBe(true);
   });
 
-  test('a copied application is controlled by the instructed player without moving or replaying the source card', () => {
+  test('a copied application is controlled by the instructed player without moving or replaying the source card merely because it was copied', () => {
     const graveyard = ['neutral-rallying-cry'];
     const application = prepareV063ArcaneKnowledgeBattleApplication({
       controller: 'B',
@@ -84,7 +84,8 @@ describe('v0.6.3 copied/repeated-effect semantics', () => {
       cardId: 'neutral-rallying-cry',
       controller: 'B',
       chainDepth: 1,
-      sourceCardMoves: false,
+      sourceCardMovesMerelyBecauseCopied: false,
+      printedEffectOrCallerMayMoveSource: true,
       sourceCardIsPlayedSetOrChosen: false,
       sourceEventTriggers: false,
       remakeChoices: true,

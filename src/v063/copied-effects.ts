@@ -10,10 +10,21 @@ export interface V063EffectReference {
   text: string;
 }
 
+export interface V063CardInstanceReference {
+  instanceId: string;
+  cardId: string;
+}
+
+export interface V063EffectInstanceReference extends V063EffectReference {
+  sourceInstanceId: string;
+  sourceZoneIndex: number;
+}
+
 export interface V063CopiedEffectApplication extends V063EffectReference {
   controller: PlayerId;
   chainDepth: 1 | 2;
-  sourceCardMoves: false;
+  sourceCardMovesMerelyBecauseCopied: false;
+  printedEffectOrCallerMayMoveSource: true;
   sourceCardIsPlayedSetOrChosen: false;
   sourceEventTriggers: false;
   remakeChoices: true;
@@ -53,8 +64,8 @@ export function v063EffectReference(
  * Return printed effects that the caller has proven can apply at the current
  * timing with their printed conditions and legal targets satisfied.
  *
- * This deliberately does not maintain a title whitelist: v0.6.3 copied-effect
- * legality is semantic and timing-dependent, not a fixed registry of cards.
+ * This title-level helper intentionally deduplicates identical card ids. Use
+ * eligibleV063CopiedEffectInstances when the physical source card matters.
  */
 export function eligibleV063CopiedEffects(
   cardsById: ReadonlyMap<string, V063CanonicalCard>,
@@ -84,12 +95,44 @@ export function eligibleV063CopiedEffects(
 }
 
 /**
+ * Instance-preserving variant for callers such as Rend the Veil that later
+ * move the exact physical source card selected from a Graveyard.
+ */
+export function eligibleV063CopiedEffectInstances(
+  cardsById: ReadonlyMap<string, V063CanonicalCard>,
+  cardInstances: readonly V063CardInstanceReference[],
+  allowedLabels: readonly V063CopyableEffectLabel[],
+  canApplyNow: V063CanApplyEffectNow,
+): V063EffectInstanceReference[] {
+  const allowed = new Set(allowedLabels);
+  const results: V063EffectInstanceReference[] = [];
+
+  cardInstances.forEach((instance, sourceZoneIndex) => {
+    const card = cardsById.get(instance.cardId);
+    if (!card) return;
+    for (const effect of card.effects) {
+      if (!isV063CopyableEffectLabel(effect.label) || !allowed.has(effect.label)) continue;
+      const reference = v063EffectReference(card, effect);
+      if (!canApplyNow(reference)) continue;
+      results.push({
+        ...reference,
+        sourceInstanceId: instance.instanceId,
+        sourceZoneIndex,
+      });
+    }
+  });
+
+  return results;
+}
+
+/**
  * Start the new application created when an effect tells a player to apply or
  * repeat another printed effect.
  *
- * The source card stays where it is. It is not played, set, chosen, or moved;
- * play/set/choose triggers therefore do not fire. Choices and costs belong to
- * this new application and must be made/paid again by its controller.
+ * Applying/copying does not itself move, play, set, or choose the source card.
+ * The printed effect or the caller's own later instruction may still move that
+ * physical source card when it expressly says to do so. Choices and costs for
+ * the new application are made and paid again by its controller.
  */
 export function beginV063CopiedEffectApplication(
   effect: V063EffectReference,
@@ -99,7 +142,8 @@ export function beginV063CopiedEffectApplication(
     ...effect,
     controller,
     chainDepth: 1,
-    sourceCardMoves: false,
+    sourceCardMovesMerelyBecauseCopied: false,
+    printedEffectOrCallerMayMoveSource: true,
     sourceCardIsPlayedSetOrChosen: false,
     sourceEventTriggers: false,
     remakeChoices: true,
@@ -129,7 +173,8 @@ export function continueV063CopiedEffectApplication(
     ...effect,
     controller,
     chainDepth: 2,
-    sourceCardMoves: false,
+    sourceCardMovesMerelyBecauseCopied: false,
+    printedEffectOrCallerMayMoveSource: true,
     sourceCardIsPlayedSetOrChosen: false,
     sourceEventTriggers: false,
     remakeChoices: true,
