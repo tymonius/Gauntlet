@@ -166,7 +166,9 @@
 /* The Ritual uses its own reverse rather than the standard playable-card back.
    The approved manuscript image already runs edge-to-edge as paper. Its source
    orientation is landscape relative to the physical card, so the compositor
-   rotates it 90 degrees while preserving the portrait 2.5 x 3.5 card frame. */
+   rotates it 90 degrees while preserving the portrait 2.5 x 3.5 card frame.
+   The artwork is offset after rotation so the center of the large ritual circle,
+   rather than the source image bounds, lands on the physical card center. */
 .ritual-card-back {
   padding: 0;
   border-color: #38204e;
@@ -192,8 +194,8 @@
 
 .ritual-card-back__image-window > img {
   position: absolute;
-  top: 50%;
-  left: 50%;
+  top: calc(50% + 0.021in);
+  left: calc(50% - 0.187in);
   display: block;
   width: calc(3.5in - 0.15in);
   height: calc(2.5in - 0.15in);
