@@ -99,12 +99,12 @@ const REFERENCE_PRESENTATION = Object.freeze({
 });
 
 function esc(value) {
-  return String(value ?? '').replace(/[&<>'\"]/g, character => ({
+  return String(value ?? '').replace(/[&<>'"]/g, character => ({
     '&': '&amp;',
     '<': '&lt;',
     '>': '&gt;',
     "'": '&#39;',
-    '\"': '&quot;',
+    '"': '&quot;',
   })[character]);
 }
 
