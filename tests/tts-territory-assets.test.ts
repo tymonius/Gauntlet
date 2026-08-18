@@ -93,7 +93,7 @@ describe("TTS Territory assets", () => {
     expect(sharedStyles).not.toContain("line-height: 1.18");
   });
 
-  it("implements the complete canonical Territory catalog on the unified review page", () => {
+  it("keeps the current catalog index stable while candidate review frames use v0.6.4 Territory text", () => {
     expect(specimenPage).toContain('id="territory-title"');
     expect(specimenPage).toContain('class="card-section territory-specimen-section"');
     expect(specimenPage).toContain('id="territoryReviewSections"');
@@ -104,9 +104,12 @@ describe("TTS Territory assets", () => {
     expect(reviewScript).toContain("territoryGroup('arenas','Arenas',arenas)");
     expect(reviewScript).toContain('class="territory-review-frame"');
     expect(reviewScript).toContain("territory-review-render.html?territory=");
-    expect(territoryReviewScript).toContain("Gauntlet_v0.6.3_Canonical_Data.json");
-    expect(territoryReviewScript).toContain("canonical.territories || []");
-    expect(territoryReviewScript).toContain("version.textContent = 'v0.6.3'");
+    expect(territoryReviewScript).toContain("const CANDIDATE_SOURCE = '/docs/v0.6.4-territories.json'");
+    expect(territoryReviewScript).toContain("const EXPECTED_SOURCE_ISSUE = 738");
+    expect(territoryReviewScript).toContain("const EXPECTED_VERSION = 'v0.6.4-candidate'");
+    expect(territoryReviewScript).toContain("source.territories || []");
+    expect(territoryReviewScript).not.toContain("Gauntlet_v0.6.3_Canonical_Data.json");
+    expect(territoryReviewPage).toContain("Gauntlet v0.6.4 Candidate Territory Review Render");
     expect(dedicatedSpecimenPage).toContain("Gauntlet Territory Card Mockup");
     expect(dedicatedSpecimenPage).toContain('aria-label="High Ground Territory card-front prototype"');
   });
