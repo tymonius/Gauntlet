@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { mkdir, readFile, stat } from 'node:fs/promises';
 import { extname, join, resolve, sep } from 'node:path';
@@ -6,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const OUTPUT = join(ROOT, 'card-design', 'generated', 'proposals');
 const SOURCE_PATH = join(ROOT, 'docs', 'v0.6.4-diplomat-proposals.json');
+const PROPOSAL_ART_ROOT = join(ROOT, 'images', 'artwork', 'cards', 'diplomats', 'proposals');
 const CARD_WIDTH = 240;
 const CARD_HEIGHT = 336;
 const EXPECTED_PROPOSALS = 9;
@@ -142,8 +144,8 @@ async function main() {
         if (face.stake !== proposal.stake) {
           throw new Error(`Stake mismatch for ${proposal.name}: ${JSON.stringify(face)}.`);
         }
-        if (face.version !== 'v0.6.4 candidate') {
-          throw new Error(`Candidate version footer missing for ${proposal.name}: ${JSON.stringify(face)}.`);
+        if (face.version !== 'v0.6.4-dev') {
+          throw new Error(`Development version footer missing for ${proposal.name}: ${JSON.stringify(face)}.`);
         }
         if (Math.abs(face.width - CARD_WIDTH) > 0.25 || Math.abs(face.height - CARD_HEIGHT) > 0.25) {
           throw new Error(`Unexpected production card dimensions for ${proposal.name}: ${JSON.stringify(face)}.`);
@@ -167,8 +169,9 @@ async function main() {
         }
       }
 
-      if (!proposalFace.pendingArtwork || proposalFace.ratifiedPanel) {
-        throw new Error(`Unratified Proposal face has the wrong artwork state for ${proposal.name}: ${JSON.stringify(proposalFace)}.`);
+      const hasApprovedArtwork = existsSync(join(PROPOSAL_ART_ROOT, `${proposal.id}.png`));
+      if (proposalFace.pendingArtwork === hasApprovedArtwork || proposalFace.ratifiedPanel) {
+        throw new Error(`Unratified Proposal face has the wrong artwork state for ${proposal.name}: ${JSON.stringify({ hasApprovedArtwork, proposalFace })}.`);
       }
       if (treatyFace.pendingArtwork || !treatyFace.ratifiedPanel) {
         throw new Error(`Treaty Article face has the wrong ratified artwork state for ${proposal.name}: ${JSON.stringify(treatyFace)}.`);

@@ -1,7 +1,8 @@
 const RITE_SOURCE = '/artifacts/reconstruction/clean-v0.6.3/faction-guides/mystics/Gauntlet_v0.6.3_Mystics_Faction_Guide.md';
 const RITE_ART_ROOT = '../images/artwork/cards/mystics/rites-and-rituals';
 const COMPLETED_RITE_ART_SOURCE = '../images/artwork/supplemental/mystics/rite-completed.webp';
-const RITUAL_CARD_BACK_SOURCE = '../images/card-backs/mystics/ritual-of-ascension-card-back.avif';
+const RITUAL_ART_SOURCE = `${RITE_ART_ROOT}/ritual-of-ascension.png`;
+const RITUAL_CARD_BACK_SOURCE = '../images/artwork/cardbacks/mystics/ritual-of-ascension.png';
 
 const RITES = Object.freeze([
   {
@@ -58,6 +59,7 @@ const UNLOCKS = Object.freeze([
   {
     count: 'Ritual',
     name: 'Ritual of Ascension',
+    headerLines: ['Ritual of', 'Ascension'],
     text: 'After completing all three Rites, during Denouement, spend 1 Action to bind one Arcane card from your Hand, one from your Discard Pile, and one from your Graveyard. Initiate a battle while all three remain bound. If you win that battle, complete the Ritual and immediately win the game.',
   },
 ]);
@@ -84,6 +86,10 @@ function ruleSection(label, text) {
 }
 
 function unlockSection(unlock) {
+  if (unlock.headerLines?.length) {
+    const header = unlock.headerLines.map(line => `<span>${esc(line)}</span>`).join(' ');
+    return `<section class="rite-unlock-section rite-unlock-section--ritual"><h4><strong class="rite-unlock-ritual-heading">${header}</strong></h4><p>${esc(unlock.text)}</p></section>`;
+  }
   return `<section class="rite-unlock-section"><h4>${esc(unlock.count)}</h4><p><strong>${esc(unlock.name)}</strong> ${esc(unlock.text)}</p></section>`;
 }
 
@@ -100,8 +106,8 @@ function completedArtwork(rite) {
 }
 
 function ritualArtwork() {
-  return `<figure class="card-art rite-art-pending ritual-art-pending" aria-label="Artwork pending for ${esc(RITUAL.name)}">
-    <span>Artwork pending</span>
+  return `<figure class="card-art has-image" aria-label="Artwork for ${esc(RITUAL.name)}">
+    <img src="${RITUAL_ART_SOURCE}" alt="Artwork for ${esc(RITUAL.name)}" />
   </figure>`;
 }
 

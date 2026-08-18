@@ -110,9 +110,6 @@ await (async () => {
     await loadScript('/tts/artwork-crop.js');
     await loadScript('/tts/territory-renderer/territory-renderer.js');
 
-    const version = target?.querySelector('.territory-footer span:last-child');
-    if (version) version.textContent = 'v0.6.3';
-
     // Dynamic loading may finish after the document's native load event. Replay
     // it once in that case so the shared Territory fitting/cropping lifecycle runs.
     if (document.readyState === 'complete') window.dispatchEvent(new Event('load'));

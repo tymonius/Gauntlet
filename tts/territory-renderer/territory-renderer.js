@@ -44,9 +44,9 @@
           </section>
         </div>
         <footer class="territory-footer">
+          <span>Shared</span>
           <span>${territory.arena ? 'Arena' : 'Territory'}</span>
-          <span>${escapeHtml(territory.complexity)}</span>
-          <span>v0.6.2</span>
+          <span>${escapeHtml(catalog?.gameVersion || 'v0.6.3')}</span>
         </footer>
       </div>
     </article>`;
@@ -236,7 +236,7 @@
       : [];
     for (const slug of slugs) {
       for (const extension of ['png', 'webp', 'jpg', 'jpeg']) {
-        candidates.push(`/images/artwork/territories/${slug}.${extension}`);
+        candidates.push(`/images/artwork/cards/territories/${slug}.${extension}`);
       }
     }
     return [...new Set(candidates)];

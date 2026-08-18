@@ -4,16 +4,19 @@ export const V064_CANDIDATE_RULES_VERSION = "v0.6.4-candidate";
 export const V064_CANDIDATE_VERSION_LABEL = "Gauntlet v0.6.4 candidate";
 export const V064_PROPOSAL_SOURCE_PATH = "docs/v0.6.4-diplomat-proposals.json";
 export const V064_PROPOSAL_SOURCE_ISSUE = 617;
+export const V064_ARCANE_SYMBOL_SOURCE_PATH = "docs/v0.6.4-arcane-symbol.json";
 
 export function defaultV064CandidateSourceUrls(origin = "https://gauntlet.run") {
   const base = String(origin || "https://gauntlet.run").replace(/\/$/, "");
   return {
-    proposalSourceUrl: `${base}/${V064_PROPOSAL_SOURCE_PATH}`
+    proposalSourceUrl: `${base}/${V064_PROPOSAL_SOURCE_PATH}`,
+    arcaneSymbolSourceUrl: `${base}/${V064_ARCANE_SYMBOL_SOURCE_PATH}`
   };
 }
 
 export async function loadV064CandidateRulesCorpus({
   proposalSourceUrl,
+  arcaneSymbolSourceUrl,
   fetchImpl = globalThis.fetch,
   ...v063Options
 } = {}) {
@@ -23,20 +26,28 @@ export async function loadV064CandidateRulesCorpus({
   const defaults = defaultV064CandidateSourceUrls(
     globalThis.location?.origin || "https://gauntlet.run"
   );
-  const sourceUrl = proposalSourceUrl || defaults.proposalSourceUrl;
-  const proposalResponsePromise = fetchImpl(sourceUrl, { cache: "no-store" });
+  const proposalUrl = proposalSourceUrl || defaults.proposalSourceUrl;
+  const arcaneUrl = arcaneSymbolSourceUrl || defaults.arcaneSymbolSourceUrl;
+  const proposalResponsePromise = fetchImpl(proposalUrl, { cache: "no-store" });
+  const arcaneResponsePromise = fetchImpl(arcaneUrl, { cache: "no-store" });
 
-  const [baseCorpus, proposalResponse] = await Promise.all([
+  const [baseCorpus, proposalResponse, arcaneResponse] = await Promise.all([
     baseCorpusPromise,
-    proposalResponsePromise
+    proposalResponsePromise,
+    arcaneResponsePromise
   ]);
 
   if (!proposalResponse.ok) {
     throw new Error(`v0.6.4 Proposal candidate source returned ${proposalResponse.status}.`);
   }
+  if (!arcaneResponse.ok) {
+    throw new Error(`v0.6.4 Arcane-symbol candidate source returned ${arcaneResponse.status}.`);
+  }
 
   const proposalSource = await proposalResponse.json();
-  return applyV064ProposalOverride(baseCorpus, proposalSource, sourceUrl);
+  const arcaneSource = await arcaneResponse.json();
+  const proposalCorpus = applyV064ProposalOverride(baseCorpus, proposalSource, proposalUrl);
+  return applyV064ArcaneSymbolOverride(proposalCorpus, arcaneSource, arcaneUrl);
 }
 
 export function applyV064ProposalOverride(baseCorpus, proposalSource, sourceUrl) {
@@ -65,6 +76,33 @@ export function applyV064ProposalOverride(baseCorpus, proposalSource, sourceUrl)
   };
 }
 
+export function applyV064ArcaneSymbolOverride(baseCorpus, arcaneSource, sourceUrl) {
+  validateV064ArcaneSymbolSource(arcaneSource);
+  const replacedHeadings = new Set([
+    arcaneSource.general_rule.heading,
+    arcaneSource.mystics_rule.heading
+  ]);
+  const retainedDocuments = (baseCorpus?.documents || []).filter((document) => {
+    return !(document.kind === "rulebook" && replacedHeadings.has(document.heading));
+  });
+  const arcaneDocuments = buildV064ArcaneSymbolDocuments(arcaneSource, sourceUrl);
+  const documents = [...retainedDocuments, ...arcaneDocuments];
+
+  return {
+    ...baseCorpus,
+    version: V064_CANDIDATE_RULES_VERSION,
+    versionLabel: V064_CANDIDATE_VERSION_LABEL,
+    published: false,
+    currentPublicRelease: "v0.6.3",
+    candidateBaseVersion: "v0.6.3",
+    arcaneSymbolSourcePath: V064_ARCANE_SYMBOL_SOURCE_PATH,
+    arcaneSymbolSourceUrl: sourceUrl,
+    arcaneSymbolSource: arcaneSource,
+    documents,
+    byId: new Map(documents.map((document) => [document.id, document]))
+  };
+}
+
 export function buildV064ProposalDocuments(proposalSource, sourceUrl) {
   validateV064ProposalSource(proposalSource);
   const resolvedUrl = sourceUrl || defaultV064CandidateSourceUrls().proposalSourceUrl;
@@ -88,6 +126,23 @@ export function buildV064ProposalDocuments(proposalSource, sourceUrl) {
       searchText: `${proposal.name} ${body}`.toLowerCase()
     };
   });
+}
+
+export function buildV064ArcaneSymbolDocuments(arcaneSource, sourceUrl) {
+  validateV064ArcaneSymbolSource(arcaneSource);
+  const resolvedUrl = sourceUrl || defaultV064CandidateSourceUrls().arcaneSymbolSourceUrl;
+  return [arcaneSource.general_rule, arcaneSource.mystics_rule].map((rule) => ({
+    id: `rulebook:v064-${rule.id}`,
+    kind: "rulebook",
+    title: rule.id === "arcane-symbol"
+      ? "Cards, Zones, and the Play Area › Arcane symbol"
+      : "Mystics › Arcane trait",
+    heading: rule.heading,
+    body: rule.body,
+    sourcePath: V064_ARCANE_SYMBOL_SOURCE_PATH,
+    sourceUrl: resolvedUrl,
+    searchText: `${rule.heading} ${rule.body}`.toLowerCase()
+  }));
 }
 
 export function validateV064ProposalSource(source) {
@@ -124,5 +179,34 @@ export function validateV064ProposalSource(source) {
     ids.add(proposal.id);
   }
 
+  return true;
+}
+
+export function validateV064ArcaneSymbolSource(source) {
+  if (!source || typeof source !== "object") {
+    throw new Error("v0.6.4 Arcane-symbol candidate source is missing.");
+  }
+  if (source.version !== V064_CANDIDATE_RULES_VERSION) {
+    throw new Error(`Unexpected Arcane-symbol candidate version: ${source.version || "missing"}.`);
+  }
+  if (source.base_version !== "v0.6.3") {
+    throw new Error("v0.6.4 Arcane-symbol candidate must remain based on v0.6.3.");
+  }
+  if (source.mechanics_changed !== false) {
+    throw new Error("The Arcane-symbol candidate must remain a visual/rules clarification only.");
+  }
+  for (const key of ["general_rule", "mystics_rule"]) {
+    const rule = source[key];
+    for (const field of ["id", "heading", "placement", "body"]) {
+      if (typeof rule?.[field] !== "string" || !rule[field].trim()) {
+        throw new Error(`Arcane-symbol ${key} is missing ${field}.`);
+      }
+    }
+  }
+  if (!/Mystics sigil/.test(source.general_rule.body)
+    || !/shape identifies the Arcane trait/.test(source.general_rule.body)
+    || !/color reflects the card's allegiance/.test(source.general_rule.body)) {
+    throw new Error("The general Arcane-symbol rule must explain symbol shape and allegiance color.");
+  }
   return true;
 }

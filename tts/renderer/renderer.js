@@ -25,9 +25,11 @@
   const longTitleClass = catalog?.gameVersion === 'v0.6.3' && String(card.name).length > 21
     ? ' long-title'
     : '';
-  const footerCenter = card.unique
-    ? 'Unique'
-    : (card.form || (card.complexity !== 'Unspecified' ? card.complexity : ''));
+  const footerCenter = card.unique ? 'Unique' : '';
+  const isArcane = hasTrait(card.trait, 'arcane');
+  const arcaneMarker = isArcane
+    ? '<i class="arcane-trait-marker" role="img" aria-label="Arcane trait" title="Arcane"></i>'
+    : '';
   const art = card.artwork
     ? `<img src="/${escapeAttribute(card.artwork)}" alt="">`
     : '<span class="pending-label">Artwork pending</span>';
@@ -40,7 +42,7 @@
             <span class="overlay-title">${escapeHtml(card.name)}</span>
           </aside>` : ''}
         <header class="card-heading">
-          <h1 class="card-title">${escapeHtml(card.name)}</h1>
+          <h1 class="card-title">${arcaneMarker}${escapeHtml(card.name)}</h1>
           <div class="value-medallion" aria-label="Card value ${card.cost}">${card.cost}</div>
         </header>
         <figure class="card-art${card.artwork ? '' : ' pending-art'}">${art}</figure>
@@ -169,6 +171,13 @@
       if (performance.now() - started > timeoutMs) break;
       await new Promise((resolve) => setTimeout(resolve, 25));
     }
+  }
+
+  function hasTrait(value, expected) {
+    const traits = Array.isArray(value)
+      ? value
+      : String(value ?? '').split(/[,/•]/);
+    return traits.some((trait) => String(trait).trim().toLowerCase() === expected);
   }
 
   function formatText(value) {

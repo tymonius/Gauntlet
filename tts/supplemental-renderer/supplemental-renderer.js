@@ -1,3 +1,8 @@
+import {
+  fitReferenceCard,
+  referenceCardMarkup,
+} from '/card-design/reference-card.js';
+
 const params = new URLSearchParams(window.location.search);
 const componentId = params.get('component') || '';
 const side = params.get('side') || 'front';
@@ -7,15 +12,6 @@ const riteSymbols = Object.freeze({
   'mystics-rite-echoes': '◉',
   'mystics-rite-blood': '◆',
   'mystics-rite-crossing': '✦',
-});
-
-const factionLabels = Object.freeze({
-  diplomats: 'Diplomats',
-  financiers: 'Financiers',
-  intelligence: 'Intelligence',
-  mystics: 'Mystics',
-  inquisition: 'Inquisition',
-  military: 'Military',
 });
 
 function element(tag, className, text = '') {
@@ -131,66 +127,22 @@ function renderRiteReverse(record) {
   target.replaceChildren(card);
 }
 
-function referenceHeader(record, face, sideName) {
-  const header = element('header', 'reference-header');
-  header.append(
-    element('p', 'reference-kicker', `${factionLabels[record.faction] || record.faction} · Supplemental Reference`),
-    element('h1', 'reference-title', record.name),
-    element('p', 'reference-face-title', face.title || sideName),
-  );
-  return header;
-}
-
-function fitReferenceCard(card) {
-  const body = card.querySelector('.reference-body');
-  if (!body) return;
-
-  let size = 6.65;
-  let gap = 5;
-  let attempts = 0;
-  while (card.scrollHeight > card.clientHeight + 1 && size > 5.15 && attempts < 18) {
-    size -= 0.1;
-    gap = Math.max(2.2, gap - 0.18);
-    body.style.fontSize = `${size}px`;
-    body.style.setProperty('--reference-section-gap', `${gap}px`);
-    attempts += 1;
-  }
-
-  if (card.scrollHeight > card.clientHeight + 1) {
-    throw new Error(`Reference content cannot fit ${card.dataset.componentId} ${card.dataset.side} without dropping canonical text (scroll ${card.scrollHeight}px, client ${card.clientHeight}px, body font ${size.toFixed(2)}px).`);
-  }
-}
-
-function renderReference(record, sideName) {
-  const face = record.faces?.[sideName];
-  if (!face) throw new Error(`Reference card ${record.id} has no ${sideName} face.`);
-
-  const card = element('article', 'supplemental-card reference-card');
-  card.dataset.componentId = record.id;
+function renderReference(record, sideName, gameVersion) {
+  if (!record.faces?.[sideName]) throw new Error(`Reference card ${record.id} has no ${sideName} face.`);
+  target.innerHTML = referenceCardMarkup(record, sideName, { version: gameVersion });
+  const card = target.querySelector('.reference-card');
+  if (!card) throw new Error(`Production reference renderer did not create ${record.id} ${sideName}.`);
+  card.classList.add('supplemental-card');
   card.dataset.renderer = record.renderer;
-  card.dataset.faction = record.faction;
-  card.dataset.side = sideName;
+  card.dataset.referenceUsage = 'Public supplemental reference · no card value · not part of the Deck';
 
-  const body = element('section', 'reference-body');
-  for (const section of face.sections || []) {
-    const sectionNode = element('section', 'reference-section');
-    sectionNode.append(element('h2', 'reference-section-title', section.heading));
-    for (const block of section.blocks || []) {
-      sectionNode.append(renderBlock(block, 'reference-block'));
-    }
-    body.append(sectionNode);
-  }
-
-  card.append(
-    referenceHeader(record, face, sideName),
-    body,
-    element('div', 'reference-footer', 'Public supplemental reference · no card value · not part of the Deck'),
-  );
-  target.replaceChildren(card);
-
-  requestAnimationFrame(() => {
+  requestAnimationFrame(async () => {
     try {
-      fitReferenceCard(card);
+      if (document.fonts?.ready) await document.fonts.ready;
+      const result = fitReferenceCard(card);
+      if (result.overflow) {
+        throw new Error(`Reference content cannot fit ${record.id} ${sideName} at the production readability floor.`);
+      }
       document.body.dataset.renderReady = 'true';
     } catch (error) {
       reportRenderError(error);
@@ -202,7 +154,7 @@ async function main() {
   const response = await fetch('/tts/generated/current/supplemental-catalog.json', { cache: 'no-store' });
   if (!response.ok) throw new Error(`Supplemental catalog request failed: ${response.status}`);
   const catalog = await response.json();
-  const record = (catalog.ready || []).find((item) => item.id === componentId);
+  const record = (catalog.ready || []).find(item => item.id === componentId);
   if (!record) throw new Error(`Unknown ready supplemental component: ${componentId || 'missing'}`);
 
   if (record.renderer === 'rite-card') {
@@ -214,14 +166,14 @@ async function main() {
 
   if (record.renderer === 'reference-card') {
     if (side !== 'front' && side !== 'reverse') throw new Error(`Unsupported supplemental side: ${side}`);
-    renderReference(record, side);
+    renderReference(record, side, catalog.gameVersion || 'Reference');
     return;
   }
 
   throw new Error(`Unsupported supplemental renderer ${record.renderer} for ${record.id}.`);
 }
 
-main().catch((error) => {
+main().catch(error => {
   const message = error?.stack || error?.message || String(error);
   target.replaceChildren(element('pre', 'render-error', message));
   reportRenderError(error);
