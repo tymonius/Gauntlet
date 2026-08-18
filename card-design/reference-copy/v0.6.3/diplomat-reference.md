@@ -54,6 +54,8 @@ After refused Terms · **before dice** · spend available Influence. Staked Infl
 |---|---:|---:|---:|---:|
 | Cost | 1 | 3 | 6 | 10 |
 
+Further +1 bonuses cost 5, then 6, then 7 Influence, and so on.
+
 ### Treaty Articles
 
 Ratified Proposals may be offered again, but cannot be ratified or award Influence again.
