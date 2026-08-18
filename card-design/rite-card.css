@@ -164,8 +164,9 @@
 }
 
 /* The Ritual uses its own reverse rather than the standard playable-card back.
-   The approved manuscript image already runs edge-to-edge as paper, so the
-   physical Mystics frame can crop into it without exposing a parchment edge. */
+   The approved manuscript image already runs edge-to-edge as paper. Its source
+   orientation is landscape relative to the physical card, so the compositor
+   rotates it 90 degrees while preserving the portrait 2.5 x 3.5 card frame. */
 .ritual-card-back {
   padding: 0;
   border-color: #38204e;
@@ -190,12 +191,17 @@
 }
 
 .ritual-card-back__image-window > img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
   display: block;
-  width: 100%;
-  height: 100%;
+  width: calc(3.5in - 0.15in);
+  height: calc(2.5in - 0.15in);
   max-width: none;
   object-fit: cover;
   object-position: center;
+  translate: -50% -50%;
+  rotate: 90deg;
   pointer-events: none;
   user-select: none;
 }
