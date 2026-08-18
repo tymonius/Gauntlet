@@ -9,6 +9,10 @@ import {
 
 const renderer = readFileSync("tts/renderer/renderer.js", "utf8");
 const factionCss = readFileSync("card-design/faction-specimens.css", "utf8");
+const markerUi = readFileSync("arcane-trait-markers.js", "utf8");
+const markerUiCss = readFileSync("arcane-trait-markers.css", "utf8");
+const cardReferenceIndex = readFileSync("card-reference/index.html", "utf8");
+const deckbuilderIndex = readFileSync("deckbuilder/index.html", "utf8");
 const source = JSON.parse(readFileSync("docs/v0.6.4-arcane-symbol.json", "utf8"));
 
 describe("Arcane playable-card symbol", () => {
@@ -19,11 +23,35 @@ describe("Arcane playable-card symbol", () => {
     expect(renderer).toContain("function hasTrait(value, expected)");
   });
 
+  it("places the Arcane marker immediately before the production card title", () => {
+    expect(renderer).toContain('<h1 class="card-title">${arcaneMarker}${escapeHtml(card.name)}</h1>');
+    expect(renderer).toContain('<span>${escapeHtml(card.factionLabel)}</span>');
+    expect(renderer).not.toContain('card-footer-allegiance');
+    expect(factionCss).toMatch(/\.card-title \.arcane-trait-marker\s*\{/);
+  });
+
   it("uses allegiance color while keeping Neutral readable", () => {
     expect(factionCss).toMatch(/\.faction-specimen-page \.gauntlet-card\s*\{[\s\S]*?--arcane-trait-color:\s*var\(--faction-border\);/);
     expect(factionCss).toMatch(/\[data-faction="neutral"\]\s*\{[\s\S]*?--arcane-trait-color:\s*var\(--card-bronze\);/);
     expect(factionCss).toMatch(/\.arcane-trait-marker\s*\{[\s\S]*?background:\s*var\(--arcane-trait-color\);/);
     expect(factionCss).toContain('mask: url("../images/faction-symbols/mystics.svg") center / contain no-repeat;');
+  });
+
+  it("propagates the same title marker to Card Reference, Deckbuilder, and Deckbuilder print", () => {
+    expect(markerUi).toContain(".reference-row-title");
+    expect(markerUi).toContain(".reference-preview h3");
+    expect(markerUi).toContain(".compact-card-title");
+    expect(markerUi).toContain(".deck-row .deck-title");
+    expect(markerUi).toContain(".card-preview h3");
+    expect(markerUi).toContain(".print-card.main-card .card-header");
+    expect(markerUi).toContain("__gauntletArcaneMarkerOpenWrapped");
+    expect(markerUi).toContain("/images/faction-symbols/mystics.svg");
+    expect(markerUiCss).toContain(".gauntlet-arcane-title-marker");
+    expect(markerUiCss).toContain('mask: url("/images/faction-symbols/mystics.svg") center / contain no-repeat;');
+    expect(cardReferenceIndex).toContain('../arcane-trait-markers.css');
+    expect(cardReferenceIndex).toContain('../arcane-trait-markers.js');
+    expect(deckbuilderIndex).toContain('../arcane-trait-markers.css');
+    expect(deckbuilderIndex).toContain('../arcane-trait-markers.js');
   });
 });
 

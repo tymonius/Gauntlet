@@ -93,23 +93,18 @@
   white-space: nowrap;
 }
 
-.faction-specimen-page .card-footer-allegiance {
-  display: flex;
-  align-items: center;
-  gap: 0.028in;
-}
-
 /* The Mystics sigil doubles as the Arcane-trait mark. Its shape says Arcane;
    its ink follows the playable card's actual allegiance. Neutral cards use
    the established bronze neutral accent so the mark remains legible. */
-.faction-specimen-page .arcane-trait-marker {
+.faction-specimen-page .card-title .arcane-trait-marker {
   display: inline-block;
-  width: 0.105in;
-  height: 0.105in;
-  flex: 0 0 0.105in;
+  width: 0.112in;
+  height: 0.112in;
+  margin-right: 0.045in;
   background: var(--arcane-trait-color);
   -webkit-mask: url("../images/faction-symbols/mystics.svg") center / contain no-repeat;
   mask: url("../images/faction-symbols/mystics.svg") center / contain no-repeat;
+  vertical-align: -0.01in;
 }
 
 .faction-specimen-page .card-art img {

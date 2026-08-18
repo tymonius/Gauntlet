@@ -44,7 +44,7 @@
             <span class="overlay-title">${escapeHtml(card.name)}</span>
           </aside>` : ''}
         <header class="card-heading">
-          <h1 class="card-title">${escapeHtml(card.name)}</h1>
+          <h1 class="card-title">${arcaneMarker}${escapeHtml(card.name)}</h1>
           <div class="value-medallion" aria-label="Card value ${card.cost}">${card.cost}</div>
         </header>
         <figure class="card-art${card.artwork ? '' : ' pending-art'}">${art}</figure>
@@ -53,7 +53,7 @@
           ${reminder ? `<aside class="card-reminder"><strong>Reminder:</strong> ${formatText(reminder[1])}</aside>` : ''}
         </div>
         <footer class="card-footer">
-          <span class="card-footer-allegiance">${escapeHtml(card.factionLabel)}${arcaneMarker}</span>
+          <span>${escapeHtml(card.factionLabel)}</span>
           <span>${escapeHtml(footerCenter)}</span>
           <span>${escapeHtml(catalog?.gameVersion || 'v0.6.2')}</span>
         </footer>
