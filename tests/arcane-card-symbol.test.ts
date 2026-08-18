@@ -37,14 +37,17 @@ describe("Arcane playable-card symbol", () => {
     expect(factionCss).toContain('mask: url("../images/faction-symbols/mystics.svg") center / contain no-repeat;');
   });
 
-  it("propagates the same title marker to the live Card Reference and Deckbuilder", () => {
+  it("propagates the same title marker to Card Reference, Deckbuilder, and Deckbuilder print", () => {
     expect(markerUi).toContain(".reference-row-title");
     expect(markerUi).toContain(".reference-preview h3");
     expect(markerUi).toContain(".compact-card-title");
     expect(markerUi).toContain(".deck-row .deck-title");
     expect(markerUi).toContain(".card-preview h3");
+    expect(markerUi).toContain(".print-card.main-card .card-header");
+    expect(markerUi).toContain("__gauntletArcaneMarkerOpenWrapped");
     expect(markerUi).toContain("/images/faction-symbols/mystics.svg");
     expect(markerUiCss).toContain(".gauntlet-arcane-title-marker");
+    expect(markerUiCss).toContain('mask: url("/images/faction-symbols/mystics.svg") center / contain no-repeat;');
     expect(cardReferenceIndex).toContain('../arcane-trait-markers.css');
     expect(cardReferenceIndex).toContain('../arcane-trait-markers.js');
     expect(deckbuilderIndex).toContain('../arcane-trait-markers.css');
