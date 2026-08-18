@@ -238,10 +238,25 @@ function placeholderFace(component, faction, factionLabel, faceLabel = '') {
   </article>`;
 }
 
+function referenceLoadingFace(component, faction, factionLabel, faceLabel) {
+  return `<article class="gauntlet-card faction-component-card reference-card reference-card-loading" data-faction="${esc(faction)}" data-component-id="${esc(component.referenceId)}" data-reference-side="${esc(faceLabel.toLowerCase())}" aria-label="${esc(component.name)} ${esc(faceLabel)} loading canonical rules">
+    <div class="reference-card-interior">
+      <span class="reference-watermark" aria-hidden="true"></span>
+      <header class="reference-card-header">
+        <div class="reference-kicker"><span class="reference-faction-emblem" aria-hidden="true"></span><span>${esc(factionLabel)} Reference</span></div>
+        <h3 class="reference-face-title">Loading reference…</h3>
+        <p class="reference-component-name">${esc(component.name)}</p>
+      </header>
+      <div class="reference-body"><section class="reference-section"><h4 class="reference-section-title">Canonical source</h4><div class="reference-blocks"><p>Loading current faction-guide rules.</p></div></section></div>
+      <footer class="reference-card-footer"><span>${esc(factionLabel)}</span><strong>Reference · Not a Deck Card</strong><span>v0.6.3</span></footer>
+    </div>
+  </article>`;
+}
+
 function componentFace(component, faction, factionLabel, faceLabel = '') {
   if (component.referenceId) {
     const record = referenceRecords.get(component.referenceId);
-    if (!record) throw new Error(`Missing production reference record ${component.referenceId}.`);
+    if (!record) return referenceLoadingFace(component, faction, factionLabel, faceLabel || 'Front');
     return referenceCardMarkup(record, /^reverse$/i.test(faceLabel) ? 'reverse' : 'front');
   }
   if (component.tracker && !faceLabel) return trackerFace(component, faction, factionLabel);
@@ -255,8 +270,8 @@ function componentSpecimen(component, faction, factionLabel) {
 
   if (component.doubleSided) {
     const record = component.referenceId ? referenceRecords.get(component.referenceId) : null;
-    const frontStatus = record?.faces?.front?.title || 'Production face';
-    const reverseStatus = record?.faces?.reverse?.title || 'Production face';
+    const frontStatus = record?.faces?.front?.title || 'Loading canonical face';
+    const reverseStatus = record?.faces?.reverse?.title || 'Loading canonical face';
     return `<section class="supplemental-review-item supplemental-review-pair" id="supplemental-${esc(faction)}-${esc(component.id)}">
       <div class="supplemental-item-heading screen-only"><strong>${esc(component.name)}</strong><span>${esc(statusText)}</span></div>
       <div class="supplemental-face-grid">
@@ -284,8 +299,23 @@ function groupMarkup(group) {
   </section>`;
 }
 
+function renderSupplementalMarkup() {
+  if (!root) return;
+  const uniqueCount = SUPPLEMENTAL_COMPONENTS.reduce((sum, group) => sum + group.cards.length, 0);
+  const physicalCount = SUPPLEMENTAL_COMPONENTS.reduce((sum, group) => sum + group.cards.reduce((groupSum, component) => groupSum + (Number(component.quantity) || 1), 0), 0);
+  root.dataset.supplementalDesignCount = String(uniqueCount);
+  root.dataset.supplementalPhysicalCount = String(physicalCount);
+  document.querySelectorAll('[data-supplemental-design-count]').forEach(node => { node.textContent = String(uniqueCount); });
+  document.querySelectorAll('[data-supplemental-physical-count]').forEach(node => { node.textContent = String(physicalCount); });
+  root.innerHTML = SUPPLEMENTAL_COMPONENTS.map(groupMarkup).join('');
+}
+
 async function renderSupplementalCatalog() {
   if (!root) return;
+
+  // Trackers and unresolved design slots must remain synchronously available to
+  // production capture even while source-driven reference content is loading.
+  renderSupplementalMarkup();
 
   const records = await loadReferenceRecords();
   referenceRecords = new Map(records.map(record => [record.id, record]));
@@ -295,14 +325,7 @@ async function renderSupplementalCatalog() {
     throw new Error(`Reference-card contract mismatch: ${missingReferences.map(component => component.referenceId).join(', ')}`);
   }
 
-  const uniqueCount = SUPPLEMENTAL_COMPONENTS.reduce((sum, group) => sum + group.cards.length, 0);
-  const physicalCount = SUPPLEMENTAL_COMPONENTS.reduce((sum, group) => sum + group.cards.reduce((groupSum, component) => groupSum + (Number(component.quantity) || 1), 0), 0);
-  root.dataset.supplementalDesignCount = String(uniqueCount);
-  root.dataset.supplementalPhysicalCount = String(physicalCount);
-  document.querySelectorAll('[data-supplemental-design-count]').forEach(node => { node.textContent = String(uniqueCount); });
-  document.querySelectorAll('[data-supplemental-physical-count]').forEach(node => { node.textContent = String(physicalCount); });
-  root.innerHTML = SUPPLEMENTAL_COMPONENTS.map(groupMarkup).join('');
-
+  renderSupplementalMarkup();
   await new Promise(resolve => requestAnimationFrame(resolve));
   if (document.fonts?.ready) await document.fonts.ready;
   const fitResults = fitAllReferenceCards(root);
@@ -320,5 +343,5 @@ renderSupplementalCatalog()
   .catch(error => {
     console.error(error);
     root.dataset.referenceCardsReady = 'error';
-    root.innerHTML = `<pre class="supplemental-render-error">${esc(error?.stack || error?.message || String(error))}</pre>`;
+    root.insertAdjacentHTML('afterbegin', `<pre class="supplemental-render-error">${esc(error?.stack || error?.message || String(error))}</pre>`);
   });
