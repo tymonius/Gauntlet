@@ -6,7 +6,7 @@
 
 ## How it works
 
-Mystics sacrifice, bind, exchange, and recover cards while completing three public **Rites**. The first completed Rite unlocks **Invocation**, the second unlocks **Transmutation**, and the third unlocks **Convergence** and the ability to begin the **Ritual of Ascendance**.
+Mystics sacrifice, bind, exchange, and recover cards while completing three public **Rites**. The first completed Rite unlocks **Invocation**, the second unlocks **Transmutation**, and the third unlocks **Convergence** and the ability to begin the **Ritual of Ascension**.
 
 To win through Ritual, bind three cards from three different zones, initiate a battle while they remain bound, and win that battle.
 
@@ -14,11 +14,11 @@ To win through Ritual, bind three cards from three different zones, initiate a b
 
 | Element | Mystics rule |
 |---|---|
-| Victory | Run the Gauntlet or complete the Ritual of Ascendance. |
+| Victory | Run the Gauntlet or complete the Ritual of Ascension. |
 | Resource | None. |
 | Trait | All thirteen Mystics cards have the Arcane trait. |
 | Progression | First Rite: Invocation; second: Transmutation; third: Convergence and Ritual. |
-| Faction Actions | Begin a Rite or, after all three Rites are complete, begin the Ritual of Ascendance; both are normally Denouement Actions. |
+| Faction Actions | Begin a Rite or, after all three Rites are complete, begin the Ritual of Ascension; both are normally Denouement Actions. |
 | Leaders | Alchemist and Spirit Walker. |
 | Faction pool | 13 Mystics card titles. |
 | Unique card | Necromancy, cost 5; maximum one copy per Deck. |
@@ -28,7 +28,7 @@ To win through Ritual, bind three cards from three different zones, initiate a b
 Mystics have the following Faction Actions. Each costs one Action and is normally legal only during Denouement:
 
 - **Begin a Rite:** Choose one incomplete Rite you may legally begin and pay its beginning cost.
-- **Begin the Ritual of Ascendance:** After completing all three Rites, bind the required Arcane cards from Hand, Discard Pile, and Graveyard.
+- **Begin the Ritual of Ascension:** After completing all three Rites, bind the required Arcane cards from Hand, Discard Pile, and Graveyard.
 
 Completing a Rite is not a Faction Action; it occurs when that Rite's completion condition and timing are satisfied. Invocation, Transmutation, Convergence, and the Leader abilities are Faction Abilities, not Faction Actions.
 
@@ -67,7 +67,7 @@ During Denouement, take an Action to begin one incomplete Rite by paying its beg
 
 - Complete the first Rite to unlock **Invocation**.
 - Complete the second Rite to unlock **Transmutation**.
-- Complete the third Rite to unlock **Convergence** and permission to begin the **Ritual of Ascendance**.
+- Complete the third Rite to unlock **Convergence** and permission to begin the **Ritual of Ascension**.
 
 ### Bound cards
 
@@ -120,7 +120,7 @@ You may take the Begin a Rite Faction Action for Rite of Crossing during Denouem
 
 > **Completion:** At the start of your next turn, after the Capture step, complete this Rite if you are still the occupier or now control that Territory. Otherwise, the Rite is interrupted and resets.
 
-# 5. Ritual of Ascendance and Convergence
+# 5. Ritual of Ascension and Convergence
 
 ## How it works
 
@@ -138,7 +138,7 @@ After completing all three Rites, during an Denouement, spend 1 Action to bind:
 - one Arcane card from your Discard Pile; and
 - one Arcane card from your Graveyard.
 
-This begins the Ritual of Ascendance.
+This begins the Ritual of Ascension.
 
 ### Convergence
 
@@ -176,7 +176,7 @@ A Gambit does not trigger Materia Prima merely because it moves from battle to y
 **Archetype:** Rite endurance and protective sacrifice  
 **Motto:** *The spirits remember what the living abandon.*
 
-> **Guardians of the Circle:** The first time on your turn that you lose a battle and that loss would interrupt a begun Rite or your Ritual of Ascendance, you may put one Arcane card from your Hand in your Graveyard whose value is at least 1 plus the number of Rites you have completed. If you do, prevent that interruption.
+> **Guardians of the Circle:** The first time on your turn that you lose a battle and that loss would interrupt a begun Rite or your Ritual of Ascension, you may put one Arcane card from your Hand in your Graveyard whose value is at least 1 plus the number of Rites you have completed. If you do, prevent that interruption.
 
 Guardians of the Circle cannot preserve a continuing position requirement.
 
@@ -340,7 +340,7 @@ Choose up to three non-Necromancy cards in your Graveyard. Put all cards in your
 - A Rite cannot complete on the turn it begins.
 - First Rite unlocks Invocation.
 - Second Rite unlocks Transmutation.
-- Third Rite unlocks Convergence and Ritual of Ascendance.
+- Third Rite unlocks Convergence and Ritual of Ascension.
 - Ritual binds one Arcane card from Hand, Discard Pile, and Graveyard.
 - The Mystic must initiate and win the final Ritual battle.
 - Losing a battle interrupts Ritual; withdrawal does not.

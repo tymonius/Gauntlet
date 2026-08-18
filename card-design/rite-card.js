@@ -1,7 +1,7 @@
 const RITE_SOURCE = '/artifacts/reconstruction/clean-v0.6.3/faction-guides/mystics/Gauntlet_v0.6.3_Mystics_Faction_Guide.md';
 const RITE_ART_ROOT = '../images/artwork/cards/mystics/rites-and-rituals';
 const COMPLETED_RITE_ART_SOURCE = '../images/artwork/supplemental/mystics/rite-completed.webp';
-const RITUAL_CARD_BACK_SOURCE = '../images/card-backs/mystics/ritual-of-ascendance-card-back.avif';
+const RITUAL_CARD_BACK_SOURCE = '../images/card-backs/mystics/ritual-of-ascension-card-back.avif';
 
 const RITES = Object.freeze([
   {
@@ -31,8 +31,8 @@ const RITES = Object.freeze([
 ]);
 
 const RITUAL = Object.freeze({
-  id: 'ascendance',
-  name: 'Ritual of Ascendance',
+  id: 'ascension',
+  name: 'Ritual of Ascension',
   begin: 'After completing all three Rites, during Denouement, spend 1 Action to bind one Arcane card from your Hand, one Arcane card from your Discard Pile, and one Arcane card from your Graveyard. This begins the Ritual.',
   convergence: 'While the Ritual is underway, during a battle you initiated, add +1 to your battle total for each card bound to the Ritual.',
   complete: 'Initiate a battle while all three Ritual cards remain bound. If you win that battle, complete the Ritual and immediately win the game.',
@@ -57,7 +57,7 @@ const UNLOCKS = Object.freeze([
   },
   {
     count: 'Ritual',
-    name: 'Ritual of Ascendance',
+    name: 'Ritual of Ascension',
     text: 'After completing all three Rites, during Denouement, spend 1 Action to bind one Arcane card from your Hand, one from your Discard Pile, and one from your Graveyard. Initiate a battle while all three remain bound. If you win that battle, complete the Ritual and immediately win the game.',
   },
 ]);
@@ -147,7 +147,7 @@ function ritualFace() {
     ruleSection('Interrupted', RITUAL.interrupted),
   ].join('');
 
-  return `<article class="gauntlet-card faction-component-card rite-card ritual-card mystic-card dense-card" data-faction="mystics" data-art-max="1.16" data-art-min="0.64" data-title-min="8.5" data-card-back="ritual-ascendance" aria-label="${esc(RITUAL.name)} Ritual card" data-rite-source="${RITE_SOURCE}">
+  return `<article class="gauntlet-card faction-component-card rite-card ritual-card mystic-card dense-card" data-faction="mystics" data-art-max="1.16" data-art-min="0.64" data-title-min="8.5" data-card-back="ritual-ascension" aria-label="${esc(RITUAL.name)} Ritual card" data-rite-source="${RITE_SOURCE}">
     <div class="card-interior">
       <header class="card-heading">
         <h3 class="card-title">${esc(RITUAL.name)}</h3>
@@ -180,9 +180,9 @@ function reviewPair(rite) {
 }
 
 function ritualReview() {
-  return `<section class="rite-review-pair ritual-review" id="ritual-ascendance" aria-labelledby="ritual-ascendance-title">
+  return `<section class="rite-review-pair ritual-review" id="ritual-ascension" aria-labelledby="ritual-ascension-title">
     <div class="review-faction-heading screen-only">
-      <h3 id="ritual-ascendance-title">${esc(RITUAL.name)}</h3>
+      <h3 id="ritual-ascension-title">${esc(RITUAL.name)}</h3>
       <span>Single-sided Ritual · dedicated card back</span>
     </div>
     <div class="rite-face-grid ritual-face-grid">

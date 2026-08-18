@@ -22,8 +22,9 @@ const ANALYTICS_EXCLUDED_FILES = new Set([
   "artifacts/reconstruction/clean-v0.6.3/faction-pages/inquisition/index.html",
   "artifacts/reconstruction/clean-v0.6.3/start/index.html",
   "artifacts/reconstruction/clean-v0.6.3/deckbuilder/index.html",
-  // Render-only TTS capture surface; it is not a public navigation page.
+  // Render-only TTS capture surfaces; they are not public navigation pages.
   "tts/back-renderer/index.html",
+  "tts/supplemental-renderer/index.html",
   // Versioned development/review surfaces are not public analytics pages.
   "v0.6.3/changes/index.html",
   "v0.6.3/deckbuilder/index.html",

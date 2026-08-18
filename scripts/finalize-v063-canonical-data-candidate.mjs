@@ -17,5 +17,17 @@ data.card_rules.effect_headings = {
   all_present_headings: presentHeadings,
 };
 
-fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n', 'utf8');
+function applyCanonicalNaming(value) {
+  if (Array.isArray(value)) return value.map(applyCanonicalNaming);
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value).map(([key, child]) => [key, applyCanonicalNaming(child)]));
+  }
+  return typeof value === 'string'
+    ? value.replaceAll('Ritual of Ascendance', 'Ritual of Ascension')
+    : value;
+}
+
+const finalized = applyCanonicalNaming(data);
+
+fs.writeFileSync(path, JSON.stringify(finalized, null, 2) + '\n', 'utf8');
 console.log(`Finalized canonical effect-heading metadata: ${ordinaryRoleHeadings.length} ordinary role headings and ${specialOrProceduralHeadings.length} special/procedural headings.`);

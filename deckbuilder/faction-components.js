@@ -1,5 +1,5 @@
 (() => {
-  const MYSTICS_RITUAL_COMPONENT_ID = "mystics-ritual-of-ascendance";
+  const MYSTICS_RITUAL_COMPONENT_ID = "mystics-ritual-of-ascension";
 
   installMysticsRitualComponent();
 
@@ -16,7 +16,7 @@
     const packageData = window.GAUNTLET_V06_SUPPLEMENTALS?.mystics;
     if (!packageData) return;
 
-    const summaryLabel = "Ritual of Ascendance card";
+    const summaryLabel = "Ritual of Ascension card";
     packageData.summary ||= [];
     if (!packageData.summary.includes(summaryLabel)) {
       const riteSummaryIndex = packageData.summary.findIndex(item => /Rite cards/i.test(item));
@@ -31,7 +31,7 @@
       type: "reference",
       kind: "ritual",
       id: MYSTICS_RITUAL_COMPONENT_ID,
-      title: "Ritual of Ascendance",
+      title: "Ritual of Ascension",
       subtitle: "Mystics victory ritual",
       sections: [
         {
