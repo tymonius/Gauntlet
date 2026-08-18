@@ -1,0 +1,186 @@
+{
+  "version": "v0.6.4-candidate",
+  "base_version": "v0.6.3",
+  "status": "six-card faction expansion prototypes under design and balance review",
+  "source_issue": 576,
+  "source_url": "https://github.com/tymonius/Gauntlet/issues/576",
+  "mechanics_changed": true,
+  "ready_for_game_data": false,
+  "card_count": 6,
+  "cards": [
+    {
+      "id": "military-high-command",
+      "name": "High Command",
+      "allegiance": "Military",
+      "cost": 4,
+      "cost_status": "provisional",
+      "trait": null,
+      "card_form": "Asset",
+      "unique": false,
+      "unique_rule": null,
+      "design_status": "accepted concept; exact cost and restriction provisional",
+      "effects": [
+        {
+          "label": "Action",
+          "text": "Bank this card. You may have only one banked High Command."
+        },
+        {
+          "label": "Asset",
+          "text": "Your maximum Command is 3."
+        }
+      ],
+      "open_questions": [
+        "Confirm cost 4.",
+        "Determine whether maximum-one-banked is sufficient or Unique is warranted.",
+        "Test General and Commandant Order chains at a 3-Command ceiling."
+      ]
+    },
+    {
+      "id": "diplomats-plenipotentiary",
+      "name": "Plenipotentiary",
+      "allegiance": "Diplomats",
+      "cost": 4,
+      "cost_status": "provisional",
+      "trait": null,
+      "card_form": "Asset",
+      "unique": true,
+      "unique_rule": "Maximum one copy per Deck",
+      "design_status": "accepted prototype direction; Influence curve remains a balance test",
+      "effects": [
+        {
+          "label": "Action",
+          "text": "Bank this card."
+        },
+        {
+          "label": "Asset",
+          "text": "After the opponent refuses an unratified Proposal, you may put this card in your Graveyard and spend Influence equal to the number of Proposals you would then have ratified. If you do, ratify that Proposal. Gain no Influence for ratifying it this way. Its Refused effect still applies."
+        },
+        {
+          "label": "Gambit",
+          "text": "If this battle follows refused Terms, apply the Refused effect of one other ratified Proposal whose requirement is met."
+        }
+      ],
+      "open_questions": [
+        "Test whether the 1/2/3/4/5 Influence curve is steep enough, especially as a fifth-Article finisher.",
+        "If needed, compare a mildly steeper 1/2/3/5/7 curve.",
+        "Audit every Proposal requirement and Refused effect against the Gambit mode."
+      ]
+    },
+    {
+      "id": "financiers-war-bonds",
+      "name": "War Bonds",
+      "allegiance": "Financiers",
+      "cost": 4,
+      "cost_status": "provisional",
+      "trait": null,
+      "card_form": "Asset",
+      "unique": false,
+      "unique_rule": null,
+      "design_status": "accepted concept; exact cost and restriction provisional",
+      "effects": [
+        {
+          "label": "Action",
+          "text": "Bank this card. You may have only one banked War Bonds."
+        },
+        {
+          "label": "Asset",
+          "text": "After the first battle each turn, you may place one card from your Hand face up in your Treasury. If you do, +1 Capital."
+        }
+      ],
+      "open_questions": [
+        "Confirm cost 4 and +1 Capital tuning.",
+        "Test defensive-battle triggers and Treasury growth rate.",
+        "Audit Financial Capacity and Executive action-economy interactions."
+      ]
+    },
+    {
+      "id": "intelligence-regime-change",
+      "name": "Regime Change",
+      "allegiance": "Intelligence",
+      "cost": 4,
+      "cost_status": "provisional",
+      "trait": null,
+      "card_form": "Asset",
+      "unique": false,
+      "unique_rule": null,
+      "design_status": "accepted concept; exact cost and uniqueness/restriction provisional",
+      "effects": [
+        {
+          "label": "Action",
+          "text": "Bank this card. You may have only one banked Regime Change."
+        },
+        {
+          "label": "Asset",
+          "text": "The opponent cannot use their Leader abilities."
+        }
+      ],
+      "rules_intent": [
+        "Military Leader Orders count as Leader abilities.",
+        "The opponent retains their faction engine; only Leader-specific abilities are suppressed.",
+        "Regime Change does not remove, replace, or discard the Leader Card."
+      ],
+      "open_questions": [
+        "Audit every current Leader and Military Order.",
+        "Test leader-dependence and Asset-removal counterplay.",
+        "Confirm cost and whether the card should be Unique."
+      ]
+    },
+    {
+      "id": "mystics-sacrifice-recovery",
+      "name": "Title TBD",
+      "title_status": "unresolved; Reincarnation rejected; Transmigration is only a working possibility",
+      "allegiance": "Mystics",
+      "cost": 4,
+      "cost_status": "provisional",
+      "trait": null,
+      "trait_status": "not yet specified in issue #576",
+      "card_form": "Asset",
+      "unique": false,
+      "unique_rule": null,
+      "design_status": "accepted mechanical direction; title and recursion details unresolved",
+      "effects": [
+        {
+          "label": "Action",
+          "text": "Bank this card. You may have only one banked copy."
+        },
+        {
+          "label": "Asset",
+          "text": "The first time each turn you put an Arcane card from your Hand in your Graveyard as a cost or effect you control, after that effect resolves, you may return one other lower-value card from your Graveyard to your Hand."
+        }
+      ],
+      "open_questions": [
+        "Set the final title.",
+        "Confirm whether the card itself has the Arcane trait.",
+        "Test recursion loops and whether recovery should remain unrestricted by allegiance or trait.",
+        "Confirm the first-time-each-turn and post-resolution timing."
+      ]
+    },
+    {
+      "id": "inquisition-retribution",
+      "name": "Retribution",
+      "allegiance": "Inquisition",
+      "cost": 4,
+      "cost_status": "provisional",
+      "trait": null,
+      "card_form": "Asset",
+      "unique": false,
+      "unique_rule": null,
+      "design_status": "accepted leading direction; punishment tuning provisional",
+      "effects": [
+        {
+          "label": "Action",
+          "text": "Bank this card."
+        },
+        {
+          "label": "Asset",
+          "text": "After the opponent loses a battle they initiated, you may discard this card. If you do, they choose one: put one of their Assets in their Graveyard; or +2 Conviction. If they have no Assets, +2 Conviction."
+        }
+      ],
+      "open_questions": [
+        "Confirm whether 2 Conviction is the correct alternative to losing an Asset.",
+        "Test Graveyard versus Discard as the Asset destination.",
+        "Test interaction with Asset protection such as Decoys."
+      ]
+    }
+  ]
+}
