@@ -46,8 +46,8 @@ describe('production faction reference cards', () => {
     expect(copy).toContain('Player-aid copy, not faction-rule authority.');
     expect(copy).toContain('## Front — Terms');
     expect(copy).toContain('## Reverse — Outcomes & Treaties');
-    expect(copy).toContain('No battle begins.');
-    expect(copy).toContain('Offering Terms and using Leverage **do not take an Action**.');
+    expect(copy).toContain('**No battle.** Resolve Accepted.');
+    expect(copy).toContain('**Terms + Leverage do not take an Action.**');
     for (const heading of diplomat.auditHeadings) expect(authority).toContain(heading);
 
     // The migration is intentionally incremental: Diplomat proves the bespoke-copy
