@@ -70,12 +70,12 @@ describe("Mystics Rite card prototypes", () => {
     expect(riteRenderer).not.toContain("Artwork pending for ${esc(RITUAL.name)}");
   });
 
-  it("rotates and offsets the Ritual of Ascension card-back artwork around the ritual circle without rotating the physical card", () => {
+  it("rotates, scales, and offsets the Ritual of Ascension card-back artwork around the ritual circle without rotating the physical card", () => {
     expect(riteStyles).toContain(".ritual-card-back__image-window > img");
-    expect(riteStyles).toContain("width: calc(3.5in - 0.15in)");
-    expect(riteStyles).toContain("height: calc(2.5in - 0.15in)");
-    expect(riteStyles).toContain("top: calc(50% + 0.021in)");
-    expect(riteStyles).toContain("left: calc(50% - 0.187in)");
+    expect(riteStyles).toContain("width: 4.02in");
+    expect(riteStyles).toContain("height: 2.82in");
+    expect(riteStyles).toContain("top: calc(50% + 0.025in)");
+    expect(riteStyles).toContain("left: calc(50% - 0.224in)");
     expect(riteStyles).toContain("translate: -50% -50%");
     expect(riteStyles).toContain("rotate: 90deg");
     expect(riteStyles).toContain(".ritual-face-grid");
