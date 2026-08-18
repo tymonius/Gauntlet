@@ -77,6 +77,22 @@ describe('current digital rules surface', () => {
       'useV063SmugglersRunStash',
       'resolveV063SmugglersRunStartTurn',
       'resolveV063SmugglersRunControlLoss',
+      'v063PoisonousGasAllowsCommitment',
+      'resolveV063PoisonousGasNoTacticPenalty',
+      'v063GarrisonInitialReserveBonus',
+      'resolveV063FieldHospitalSave',
+      'v063ExposedFlankOccupierCanSetGambit',
+      'v063HighGroundDefenderHasAdvantage',
+      'v063FortifiedPassAttackerBankedAssetsActive',
+      'v063InsurgencyOccupierBankedAssetsActive',
+      'v063WatchtowerGambitPlan',
+      'resolveV063OldBattlefieldReserveOverride',
+      'v063TrainingGroundsReplacementPlan',
+      'applyV063ArenaDefensiveEdgeRule',
+      'resolveV063SpoilsOfWarReserveOverride',
+      'resolveV063NoQuarterAdditionalRetreat',
+      'v063SingleCombatBankedAssetsActive',
+      'v063GrandMeleeBattleBonus',
     ]) {
       expect(typeof current[name as keyof typeof current]).toBe('function');
     }
