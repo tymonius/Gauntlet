@@ -83,7 +83,7 @@ describe("TTS Territory assets", () => {
     expect(dedicatedSpecimenPage).toContain("open parchment spacing rather than a divider");
     expect(territoryReviewScript).toContain("/tts/territory-renderer/territory-renderer.js");
     expect(territoryReviewScript).toContain("/tts/artwork-crop.js");
-    expect(dedicatedSpecimenPage).toContain('class="territory-art"');
+    expect(dedicatedSpecimenPage).toContain('class="territory-art has-image"');
   });
 
   it("gives Territory effect text its natural height before clipping", () => {
