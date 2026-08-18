@@ -20,7 +20,7 @@ describe('current digital rules surface', () => {
     expect('createCleanV063TurnState' in current).toBe(false);
   });
 
-  test('exposes the migrated v0.6.3 rules, cards, and copied-effect procedures rather than stale rule-runtime names', () => {
+  test('exposes migrated v0.6.3 gameplay procedures rather than stale rule-runtime names', () => {
     for (const name of [
       'createV063TurnState',
       'advanceV063TurnPhase',
@@ -46,6 +46,13 @@ describe('current digital rules surface', () => {
       'resolveV063ArcaneKnowledgeAction',
       'v063ArcaneKnowledgeBattleChoices',
       'prepareV063ArcaneKnowledgeBattleApplication',
+      'createV063GauntletState',
+      'insertV063TerritoryAtPlayerEnd',
+      'insertV063TerritoryAtFrontLine',
+      'v063DeedCost',
+      'v063HasControllingInterest',
+      'resolveV063ManifestDestinyAction',
+      'resolveV063ManifestDestinyBattle',
     ]) {
       expect(typeof current[name as keyof typeof current]).toBe('function');
     }
