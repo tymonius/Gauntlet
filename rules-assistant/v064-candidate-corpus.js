@@ -5,18 +5,22 @@ export const V064_CANDIDATE_VERSION_LABEL = "Gauntlet v0.6.4 candidate";
 export const V064_PROPOSAL_SOURCE_PATH = "docs/v0.6.4-diplomat-proposals.json";
 export const V064_PROPOSAL_SOURCE_ISSUE = 617;
 export const V064_ARCANE_SYMBOL_SOURCE_PATH = "docs/v0.6.4-arcane-symbol.json";
+export const V064_TERRITORY_SOURCE_PATH = "docs/v0.6.4-territories.json";
+export const V064_TERRITORY_SOURCE_ISSUE = 738;
 
 export function defaultV064CandidateSourceUrls(origin = "https://gauntlet.run") {
   const base = String(origin || "https://gauntlet.run").replace(/\/$/, "");
   return {
     proposalSourceUrl: `${base}/${V064_PROPOSAL_SOURCE_PATH}`,
-    arcaneSymbolSourceUrl: `${base}/${V064_ARCANE_SYMBOL_SOURCE_PATH}`
+    arcaneSymbolSourceUrl: `${base}/${V064_ARCANE_SYMBOL_SOURCE_PATH}`,
+    territorySourceUrl: `${base}/${V064_TERRITORY_SOURCE_PATH}`
   };
 }
 
 export async function loadV064CandidateRulesCorpus({
   proposalSourceUrl,
   arcaneSymbolSourceUrl,
+  territorySourceUrl,
   fetchImpl = globalThis.fetch,
   ...v063Options
 } = {}) {
@@ -28,13 +32,16 @@ export async function loadV064CandidateRulesCorpus({
   );
   const proposalUrl = proposalSourceUrl || defaults.proposalSourceUrl;
   const arcaneUrl = arcaneSymbolSourceUrl || defaults.arcaneSymbolSourceUrl;
+  const territoryUrl = territorySourceUrl || defaults.territorySourceUrl;
   const proposalResponsePromise = fetchImpl(proposalUrl, { cache: "no-store" });
   const arcaneResponsePromise = fetchImpl(arcaneUrl, { cache: "no-store" });
+  const territoryResponsePromise = fetchImpl(territoryUrl, { cache: "no-store" });
 
-  const [baseCorpus, proposalResponse, arcaneResponse] = await Promise.all([
+  const [baseCorpus, proposalResponse, arcaneResponse, territoryResponse] = await Promise.all([
     baseCorpusPromise,
     proposalResponsePromise,
-    arcaneResponsePromise
+    arcaneResponsePromise,
+    territoryResponsePromise
   ]);
 
   if (!proposalResponse.ok) {
@@ -43,11 +50,16 @@ export async function loadV064CandidateRulesCorpus({
   if (!arcaneResponse.ok) {
     throw new Error(`v0.6.4 Arcane-symbol candidate source returned ${arcaneResponse.status}.`);
   }
+  if (!territoryResponse.ok) {
+    throw new Error(`v0.6.4 Territory candidate source returned ${territoryResponse.status}.`);
+  }
 
   const proposalSource = await proposalResponse.json();
   const arcaneSource = await arcaneResponse.json();
+  const territorySource = await territoryResponse.json();
   const proposalCorpus = applyV064ProposalOverride(baseCorpus, proposalSource, proposalUrl);
-  return applyV064ArcaneSymbolOverride(proposalCorpus, arcaneSource, arcaneUrl);
+  const arcaneCorpus = applyV064ArcaneSymbolOverride(proposalCorpus, arcaneSource, arcaneUrl);
+  return applyV064TerritoryOverride(arcaneCorpus, territorySource, territoryUrl);
 }
 
 export function applyV064ProposalOverride(baseCorpus, proposalSource, sourceUrl) {
@@ -103,6 +115,41 @@ export function applyV064ArcaneSymbolOverride(baseCorpus, arcaneSource, sourceUr
   };
 }
 
+export function applyV064TerritoryOverride(baseCorpus, territorySource, sourceUrl) {
+  validateV064TerritorySource(territorySource);
+  const retainedDocuments = (baseCorpus?.documents || []).filter((document) => {
+    return document.kind !== "territory" && document.kind !== "arena";
+  });
+  const territoryDocuments = buildV064TerritoryDocuments(territorySource, sourceUrl);
+  const documents = [...retainedDocuments, ...territoryDocuments];
+
+  const baseTerritories = Array.isArray(baseCorpus?.data?.territories)
+    ? baseCorpus.data.territories
+    : [];
+  const baseById = new Map(baseTerritories.map((territory) => [territory.id, territory]));
+  const territories = territorySource.territories.map((territory) => ({
+    ...(baseById.get(territory.id) || {}),
+    ...territory,
+    effects: territory.effects
+  }));
+
+  return {
+    ...baseCorpus,
+    version: V064_CANDIDATE_RULES_VERSION,
+    versionLabel: V064_CANDIDATE_VERSION_LABEL,
+    published: false,
+    currentPublicRelease: "v0.6.3",
+    candidateBaseVersion: "v0.6.3",
+    territorySourceIssue: V064_TERRITORY_SOURCE_ISSUE,
+    territorySourcePath: V064_TERRITORY_SOURCE_PATH,
+    territorySourceUrl: sourceUrl,
+    territorySource,
+    data: baseCorpus?.data ? { ...baseCorpus.data, territories } : baseCorpus?.data,
+    documents,
+    byId: new Map(documents.map((document) => [document.id, document]))
+  };
+}
+
 export function buildV064ProposalDocuments(proposalSource, sourceUrl) {
   validateV064ProposalSource(proposalSource);
   const resolvedUrl = sourceUrl || defaultV064CandidateSourceUrls().proposalSourceUrl;
@@ -143,6 +190,24 @@ export function buildV064ArcaneSymbolDocuments(arcaneSource, sourceUrl) {
     sourceUrl: resolvedUrl,
     searchText: `${rule.heading} ${rule.body}`.toLowerCase()
   }));
+}
+
+export function buildV064TerritoryDocuments(territorySource, sourceUrl) {
+  validateV064TerritorySource(territorySource);
+  const resolvedUrl = sourceUrl || defaultV064CandidateSourceUrls().territorySourceUrl;
+  return territorySource.territories.map((territory) => {
+    const kind = territory.arena ? "arena" : "territory";
+    return {
+      id: `${kind}:${territory.id}`,
+      kind,
+      title: territory.arena ? territory.name : `Territory: ${territory.name}`,
+      heading: territory.name,
+      body: territory.text,
+      sourcePath: V064_TERRITORY_SOURCE_PATH,
+      sourceUrl: resolvedUrl,
+      searchText: `${territory.name} ${territory.text}`.toLowerCase()
+    };
+  });
 }
 
 export function validateV064ProposalSource(source) {
@@ -208,5 +273,50 @@ export function validateV064ArcaneSymbolSource(source) {
     || !/color reflects the card's allegiance/.test(source.general_rule.body)) {
     throw new Error("The general Arcane-symbol rule must explain symbol shape and allegiance color.");
   }
+  return true;
+}
+
+export function validateV064TerritorySource(source) {
+  if (!source || typeof source !== "object") {
+    throw new Error("v0.6.4 Territory candidate source is missing.");
+  }
+  if (source.version !== V064_CANDIDATE_RULES_VERSION) {
+    throw new Error(`Unexpected Territory candidate version: ${source.version || "missing"}.`);
+  }
+  if (source.base_version !== "v0.6.3") {
+    throw new Error("v0.6.4 Territory candidate must remain based on v0.6.3.");
+  }
+  if (source.source_issue !== V064_TERRITORY_SOURCE_ISSUE) {
+    throw new Error(`v0.6.4 Territory candidate must remain pinned to issue #${V064_TERRITORY_SOURCE_ISSUE}.`);
+  }
+  if (source.mechanics_changed !== true) {
+    throw new Error("Issue #738 Territory candidate must retain its approved clarification metadata.");
+  }
+  if (source.count !== 25 || !Array.isArray(source.territories) || source.territories.length !== 25) {
+    throw new Error("Expected all 25 approved Territories and Arenas.");
+  }
+
+  const ids = new Set();
+  let arenaCount = 0;
+  for (const territory of source.territories) {
+    for (const field of ["id", "name", "text", "type"]) {
+      if (typeof territory?.[field] !== "string" || !territory[field].trim()) {
+        throw new Error(`Territory ${territory?.id || "unknown"} is missing ${field}.`);
+      }
+    }
+    if (!Number.isInteger(territory.number) || territory.number < 1 || territory.number > 25) {
+      throw new Error(`Territory ${territory.id} has an invalid number.`);
+    }
+    if (!Array.isArray(territory.effects)
+      || territory.effects.length !== 1
+      || territory.effects[0]?.label !== "Text"
+      || territory.effects[0]?.text !== territory.text) {
+      throw new Error(`Territory ${territory.id} must keep its Text effect synchronized.`);
+    }
+    if (ids.has(territory.id)) throw new Error(`Duplicate Territory id: ${territory.id}.`);
+    ids.add(territory.id);
+    if (territory.arena) arenaCount += 1;
+  }
+  if (arenaCount !== 4) throw new Error(`Expected four Arenas, received ${arenaCount}.`);
   return true;
 }
