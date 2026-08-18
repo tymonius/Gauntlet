@@ -1,7 +1,8 @@
 import type { FrontLineState, PlayerId } from './rules';
 
 export interface V063GauntletTerritory {
-  id: string;
+  instanceId: string;
+  cardId: string;
   name: string;
   blank: boolean;
   hasDeed: true;
@@ -21,23 +22,26 @@ export interface V063TerritoryInsertionResult {
 }
 
 export function createV063GauntletState(
-  territories: readonly Pick<V063GauntletTerritory, 'id' | 'name'>[],
+  territories: readonly Pick<V063GauntletTerritory, 'instanceId' | 'cardId' | 'name'>[],
   frontLine: FrontLineState,
   deedOwners: Readonly<Record<string, PlayerId | null>> = {},
 ): V063GauntletState {
   if (territories.length !== frontLine.territoryCount) {
     throw new Error('Ordered Gauntlet Territories must match the Front Line territory count.');
   }
-  const ids = new Set<string>();
+  const instanceIds = new Set<string>();
   const normalized = territories.map((territory) => {
-    if (ids.has(territory.id)) throw new Error(`Duplicate Territory id in the Gauntlet: ${territory.id}.`);
-    ids.add(territory.id);
+    if (instanceIds.has(territory.instanceId)) {
+      throw new Error(`Duplicate Territory instance in the Gauntlet: ${territory.instanceId}.`);
+    }
+    instanceIds.add(territory.instanceId);
     return {
-      id: territory.id,
+      instanceId: territory.instanceId,
+      cardId: territory.cardId,
       name: territory.name,
       blank: false,
       hasDeed: true as const,
-      deedOwner: deedOwners[territory.id] ?? null,
+      deedOwner: deedOwners[territory.instanceId] ?? null,
     };
   });
   assertFrontLineCompatible(frontLine, normalized.length);
@@ -73,20 +77,21 @@ export function insertV063ControlledTerritory(
   state: V063GauntletState,
   player: PlayerId,
   insertionIndex: number,
-  territory: Pick<V063GauntletTerritory, 'id' | 'name'> & { blank?: boolean },
+  territory: Pick<V063GauntletTerritory, 'instanceId' | 'cardId' | 'name'> & { blank?: boolean },
 ): V063TerritoryInsertionResult {
   assertGauntletState(state);
   if (!Number.isInteger(insertionIndex) || insertionIndex < 0 || insertionIndex > state.territories.length) {
     throw new Error('A Territory insertion point must be between existing Gauntlet Positions.');
   }
-  if (state.territories.some((existing) => existing.id === territory.id)) {
-    throw new Error(`${territory.id} is already in the Gauntlet.`);
+  if (state.territories.some((existing) => existing.instanceId === territory.instanceId)) {
+    throw new Error(`${territory.instanceId} is already in the Gauntlet.`);
   }
 
   const oldCount = state.territories.length;
   const territories = [...state.territories];
   territories.splice(insertionIndex, 0, {
-    id: territory.id,
+    instanceId: territory.instanceId,
+    cardId: territory.cardId,
     name: territory.name,
     blank: Boolean(territory.blank),
     hasDeed: true,
@@ -118,7 +123,7 @@ export function insertV063ControlledTerritory(
 export function insertV063TerritoryAtPlayerEnd(
   state: V063GauntletState,
   player: PlayerId,
-  territory: Pick<V063GauntletTerritory, 'id' | 'name'> & { blank?: boolean },
+  territory: Pick<V063GauntletTerritory, 'instanceId' | 'cardId' | 'name'> & { blank?: boolean },
 ): V063TerritoryInsertionResult {
   return insertV063ControlledTerritory(
     state,
@@ -138,7 +143,7 @@ export function v063FrontLineInsertionIndex(state: V063GauntletState, player: Pl
 export function insertV063TerritoryAtFrontLine(
   state: V063GauntletState,
   player: PlayerId,
-  territory: Pick<V063GauntletTerritory, 'id' | 'name'> & { blank?: boolean },
+  territory: Pick<V063GauntletTerritory, 'instanceId' | 'cardId' | 'name'> & { blank?: boolean },
 ): V063TerritoryInsertionResult {
   return insertV063ControlledTerritory(
     state,
@@ -183,11 +188,11 @@ export function v063HasControllingInterest(state: V063GauntletState, player: Pla
 export function v063DeedCost(
   state: V063GauntletState,
   buyer: PlayerId,
-  territoryId: string,
+  territoryInstanceId: string,
 ): number {
   assertGauntletState(state);
-  const territoryIndex = state.territories.findIndex((territory) => territory.id === territoryId);
-  if (territoryIndex < 0) throw new Error(`${territoryId} is not a Territory in the Gauntlet.`);
+  const territoryIndex = state.territories.findIndex((territory) => territory.instanceId === territoryInstanceId);
+  if (territoryIndex < 0) throw new Error(`${territoryInstanceId} is not a Territory in the Gauntlet.`);
   const territory = state.territories[territoryIndex];
   if (territory.deedOwner === buyer) throw new Error('A Financier cannot buy a Deed they already own.');
 
@@ -206,12 +211,12 @@ export function v063DeedCost(
 
 export function setV063DeedOwner(
   state: V063GauntletState,
-  territoryId: string,
+  territoryInstanceId: string,
   owner: PlayerId | null,
 ): V063GauntletState {
   assertGauntletState(state);
-  const index = state.territories.findIndex((territory) => territory.id === territoryId);
-  if (index < 0) throw new Error(`${territoryId} is not a Territory in the Gauntlet.`);
+  const index = state.territories.findIndex((territory) => territory.instanceId === territoryInstanceId);
+  if (index < 0) throw new Error(`${territoryInstanceId} is not a Territory in the Gauntlet.`);
   return {
     territories: state.territories.map((territory, territoryIndex) => territoryIndex === index
       ? { ...territory, deedOwner: owner }
@@ -224,8 +229,10 @@ function assertGauntletState(state: V063GauntletState): void {
   if (state.territories.length !== state.frontLine.territoryCount) {
     throw new Error('Gauntlet Territory ordering and Front Line territory count are out of sync.');
   }
-  const ids = new Set(state.territories.map((territory) => territory.id));
-  if (ids.size !== state.territories.length) throw new Error('Gauntlet Territory ids must be unique.');
+  const instanceIds = new Set(state.territories.map((territory) => territory.instanceId));
+  if (instanceIds.size !== state.territories.length) {
+    throw new Error('Gauntlet Territory instance ids must be unique.');
+  }
   assertFrontLineCompatible(state.frontLine, state.territories.length);
 }
 
@@ -233,7 +240,8 @@ function assertFrontLineCompatible(frontLine: FrontLineState, territoryCount: nu
   if (frontLine.territoryCount !== territoryCount) {
     throw new Error('Front Line territory count does not match the ordered Gauntlet.');
   }
-  if (frontLine.control.A < 0 || frontLine.control.B < 0
+  if (!Number.isInteger(frontLine.control.A) || !Number.isInteger(frontLine.control.B)
+    || frontLine.control.A < 0 || frontLine.control.B < 0
     || frontLine.control.A + frontLine.control.B > territoryCount) {
     throw new Error('Front Line control lengths are invalid for this Gauntlet.');
   }
