@@ -22,17 +22,37 @@ describe('production faction reference cards', () => {
     expect((supplemental.match(/doubleSided: true/g) || [])).toHaveLength(7);
   });
 
-  it('keeps the faction guides authoritative while curating only exact source blocks for the card surface', () => {
-    expect(referenceRenderer).toContain("fetch(contractUrl, { cache: 'no-store' })");
-    expect(referenceRenderer).toContain("component.family === 'reference-card'");
-    expect(referenceRenderer).toContain('parseReferenceFace(markdown, component.referenceFaces.front');
-    expect(referenceRenderer).toContain('parseReferenceFace(markdown, component.referenceFaces.reverse');
-    expect(referenceRenderer).toContain('REFERENCE_PRESENTATION');
-    expect(referenceRenderer).toContain('selectedSectionBlocks');
-    expect(referenceRenderer).toContain('typedBlock');
-    expect(referenceRenderer).toContain('Reference presentation');
-    expect(referenceRenderer).toContain('never replace');
-    expect(referenceRenderer).not.toMatch(/Diplomats begin with 1 Influence|Purge is the Inquisition's only Faction Action|Before dice are rolled in a battle following refused Terms/);
+  it('supports bespoke player-aid copy with a separate canonical audit source', () => {
+    const references = contract.components.filter((component: any) => component.family === 'reference-card');
+    const diplomat = references.find((component: any) => component.id === 'diplomats-reference');
+    const inherited = references.filter((component: any) => component.id !== 'diplomats-reference');
+
+    expect(diplomat.copyMode).toBe('bespoke');
+    expect(diplomat.source).toBe('card-design/reference-copy/v0.6.3/diplomat-reference.md');
+    expect(diplomat.authoritySource).toBe('artifacts/reconstruction/clean-v0.6.3/faction-guides/diplomat/Gauntlet_v0.6.3_Diplomat_Faction_Guide.md');
+    expect(diplomat.auditHeadings).toEqual([
+      'Faction Actions',
+      'Influence',
+      'Offering Terms',
+      'Diplomat mirrors',
+      'Accepted Terms',
+      'Refused Terms',
+      'Leverage',
+      'Treaty Articles and Peace Treaty',
+    ]);
+
+    const copy = readFileSync(diplomat.source, 'utf8');
+    const authority = readFileSync(diplomat.authoritySource, 'utf8');
+    expect(copy).toContain('Player-aid copy, not faction-rule authority.');
+    expect(copy).toContain('## Front — Terms');
+    expect(copy).toContain('## Reverse — Outcomes & Treaties');
+    expect(copy).toContain('**No battle.** Resolve Accepted.');
+    expect(copy).toContain('**Terms + Leverage do not take an Action.**');
+    for (const heading of diplomat.auditHeadings) expect(authority).toContain(heading);
+
+    // The migration is intentionally incremental: Diplomat proves the bespoke-copy
+    // model while the other six cards remain on their existing guide-derived sources.
+    expect(inherited.every((component: any) => component.source.includes('/faction-guides/'))).toBe(true);
   });
 
   it('re-expresses source blocks as card-native information components instead of document prose', () => {
