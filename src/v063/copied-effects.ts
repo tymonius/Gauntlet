@@ -18,7 +18,7 @@ export interface V063CopiedEffectApplication extends V063EffectReference {
   sourceEventTriggers: false;
   remakeChoices: true;
   repayCosts: true;
-  mayCreateFurtherCopiedApplication: boolean;
+  chainAllowsFurtherCopiedApplication: boolean;
 }
 
 export type V063CanApplyEffectNow = (effect: V063EffectReference) => boolean;
@@ -104,20 +104,25 @@ export function beginV063CopiedEffectApplication(
     sourceEventTriggers: false,
     remakeChoices: true,
     repayCosts: true,
-    mayCreateFurtherCopiedApplication: true,
+    chainAllowsFurtherCopiedApplication: true,
   };
 }
 
 /**
- * A copied/repeated effect may create one further copied application if its own
- * printed text instructs it to. That second application is the end of the chain.
+ * A first copied/repeated application may create one further application only
+ * when its own printed text instructs that application. Chain depth alone is not
+ * permission. The resulting second copied application is the end of the chain.
  */
 export function continueV063CopiedEffectApplication(
   parent: V063CopiedEffectApplication,
   effect: V063EffectReference,
   controller: PlayerId,
+  parentEffectInstructsFurtherApplication: boolean,
 ): V063CopiedEffectApplication {
-  if (!parent.mayCreateFurtherCopiedApplication || parent.chainDepth !== 1) {
+  if (!parentEffectInstructsFurtherApplication) {
+    throw new Error('A copied effect may continue the chain only when its printed text instructs another application.');
+  }
+  if (!parent.chainAllowsFurtherCopiedApplication || parent.chainDepth !== 1) {
     throw new Error('A v0.6.3 copied-effect chain cannot create a third application layer.');
   }
   return {
@@ -129,7 +134,7 @@ export function continueV063CopiedEffectApplication(
     sourceEventTriggers: false,
     remakeChoices: true,
     repayCosts: true,
-    mayCreateFurtherCopiedApplication: false,
+    chainAllowsFurtherCopiedApplication: false,
   };
 }
 
