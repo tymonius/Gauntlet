@@ -156,12 +156,12 @@ const SUPPLEMENTAL_COMPONENTS = Object.freeze([
 const root = document.querySelector('#supplementalReviewSections');
 
 function esc(value) {
-  return String(value ?? '').replace(/[&<>'"]/g, character => ({
+  return String(value ?? '').replace(/[&<>'\"]/g, character => ({
     '&': '&amp;',
     '<': '&lt;',
     '>': '&gt;',
     "'": '&#39;',
-    '"': '&quot;',
+    '\"': '&quot;',
   })[character]);
 }
 
@@ -249,7 +249,7 @@ function referenceLoadingFace(component, faction, factionLabel, sideName) {
           <div class="reference-panel-content"><p class="reference-prose">Loading current faction-guide rules.</p></div>
         </section>
       </div>
-      <footer class="reference-card-footer"><span>${esc(factionLabel)}</span><strong>Reference</strong><span>v0.6.3</span></footer>
+      <footer class="card-footer"><span>${esc(factionLabel)}</span><span>Reference</span><span>v0.6.3</span></footer>
     </div>
   </article>`;
 }
