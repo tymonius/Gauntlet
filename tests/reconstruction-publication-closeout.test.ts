@@ -86,8 +86,9 @@ describe('clean v0.6.3 publication closeout', () => {
       authority_set_id: authoritySetId,
     });
     expect(lifecycle.releases['v0.6.3'].legacy_package_aliases).toBeUndefined();
-    expect(currentPointer).toContain("CURRENT_RULES_VERSION = 'v0.6.3'");
-    expect(currentPointer).toContain('../reconstruction/clean-v063/content');
+    expect(currentPointer).toContain("V063_RULES_VERSION as CURRENT_RULES_VERSION");
+    expect(currentPointer).toContain("from './v063'");
+    expect(currentPointer).not.toContain('../reconstruction/clean-v063/content');
 
     expect(manifest.release_version).toBe('v0.6.3');
     expect(manifest.authority_set_id).toBe(authoritySetId);
