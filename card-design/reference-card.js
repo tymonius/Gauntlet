@@ -275,22 +275,22 @@ export function referenceCardMarkup(record, sideName, options = {}) {
   </article>`;
 }
 
-export function fitReferenceCard(card, { minimumScale = 0.82 } = {}) {
+export function fitReferenceCard(card, { minimumScale = 0.82, maximumScale = 1.18 } = {}) {
   if (!card) throw new Error('Reference card fitter received no card.');
   const body = card.querySelector('.reference-body');
   if (!body) throw new Error(`Reference card ${card.dataset.componentId || 'unknown'} has no body.`);
 
-  let scale = 1;
-  let sectionGap = 0.035;
+  let scale = maximumScale;
+  let sectionGap = 0.04;
   let attempts = 0;
   const overflows = () => body.scrollHeight > body.clientHeight + 0.75;
 
   card.style.setProperty('--reference-rules-scale', scale.toFixed(3));
   card.style.setProperty('--reference-section-gap', `${sectionGap.toFixed(3)}in`);
 
-  while (overflows() && scale > minimumScale && attempts < 24) {
+  while (overflows() && scale > minimumScale && attempts < 32) {
     scale = Math.max(minimumScale, scale - 0.015);
-    sectionGap = Math.max(0.018, sectionGap - 0.0015);
+    sectionGap = Math.max(0.014, sectionGap - 0.0011);
     card.style.setProperty('--reference-rules-scale', scale.toFixed(3));
     card.style.setProperty('--reference-section-gap', `${sectionGap.toFixed(3)}in`);
     attempts += 1;
