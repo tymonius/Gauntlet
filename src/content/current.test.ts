@@ -20,9 +20,33 @@ describe('current digital rules surface', () => {
     expect('createCleanV063TurnState' in current).toBe(false);
   });
 
-  test('exposes the active v0.6.3 rule and card migration procedures', () => {
-    expect(typeof current.createV063TurnState).toBe('function');
-    expect(typeof current.applyV063Capture).toBe('function');
-    expect(typeof current.hasInherentBankAction).toBe('function');
+  test('exposes the migrated v0.6.3 rules procedures rather than stale v0.6.2 runtime names', () => {
+    for (const name of [
+      'createV063TurnState',
+      'advanceV063TurnPhase',
+      'applyV063Capture',
+      'createV063PendingBattle',
+      'createV063LastStandBattle',
+      'resolveV063BattleOutcome',
+      'applyV063BattleOutcome',
+      'resolveV063Withdrawal',
+      'retreatV063Position',
+      'hasInherentBankAction',
+    ]) {
+      expect(typeof current[name as keyof typeof current]).toBe('function');
+    }
+
+    for (const name of [
+      'createTurnState',
+      'advanceTurnPhase',
+      'applyNormalCapture',
+      'createPendingBattle',
+      'resolveBattleOutcome',
+      'applyBattleOutcome',
+      'resolveWithdrawal',
+      'retreatPosition',
+    ]) {
+      expect(current).not.toHaveProperty(name);
+    }
   });
 });
