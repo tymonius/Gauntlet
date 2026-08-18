@@ -75,6 +75,24 @@ for (const marker of [
   'additionalTacticPermission',
   'defaultBoundCardDestinationWhenBindingEnds',
   'orderRevealStageEffects',
+  'activateInvasionAction',
+  'applyInvasionBattleMode',
+  'placeLandslide',
+  'placeLandslideAfterBattle',
+  'resolveLandslideRetreatChain',
+  'bankDetente',
+  'resolveDetenteAcceptance',
+  'resolveCompoundInterest',
+  'bankExtraordinaryRendition',
+  'extraordinaryRenditionDiscardOrder',
+  'releaseExtraordinaryRendition',
+  'placeNaturesAltarByAction',
+  'placeNaturesAltarAfterBattle',
+  'canBeginRiteFromNaturesAltar',
+  'canCompleteAltarRiteThisTurn',
+  'playMartyrdomBeforeBattleCardsClear',
+  'clearOpponentReserveUnderMartyrdom',
+  'completeMartyrdomAfterBattleCardsClear',
   'bankMarginLoan',
   'resolveMarginLoanAfterIncome',
   'removeMarginLoan',
@@ -97,9 +115,15 @@ assert(rules.includes("from '../v062/rules';"), 'v0.6.3 rules may continue shari
 for (const forbidden of ['applyNormalCapture(', 'resolveBattleOutcome(', 'applyBattleOutcome(', 'resolveWithdrawal(', 'retreatPosition(']) {
   assert(!rules.includes(forbidden), `v0.6.3 rules still expose or call stale v0.6.2 procedure ${forbidden}.`);
 }
-assert(cards.includes("export * from '../v062/cards';"), 'v0.6.3 cards currently inherit the isolated v0.6.2 card core; that remaining migration dependency must stay explicit until its own #741 tranche.');
+assert(!cards.includes("export * from '../v062/cards';"), 'v0.6.3 cards must not re-export the stale v0.6.2 card runtime surface.');
+assert(!cards.includes("from '../v062/cards'"), 'v0.6.3 card behavior must be owned by the v0.6.3 layer.');
+assert(cards.includes('retreatV063Position'), 'Landslide must use the v0.6.3 edge-aware retreat procedure.');
+assert(cardTests.includes("expect(result.position).toBe(6)"), 'Landslide regression coverage must include retreat beyond the defender own end.');
+assert(cardTests.includes('Overlay ownership'), 'Nature\'s Altar regression coverage must distinguish Overlay ownership from Territory control.');
+assert(cardTests.includes('playMartyrdomBeforeBattleCardsClear'), 'Martyrdom regression coverage must preserve its pre-clear timing.');
+assert(cardTests.includes('completeMartyrdomAfterBattleCardsClear'), 'Martyrdom regression coverage must preserve its post-clear timing.');
 
-console.log('v0.6.3 digital baseline validation passed: published content authority is locked, the rules runtime no longer leaks v0.6.2 behavior, and v0.6.3 Front Line, retreat, Last Stand, battle outcome, withdrawal, and movement procedures are regression-tested. Card-core parity remains tracked by #741.');
+console.log('v0.6.3 digital baseline validation passed: published content authority is locked, v0.6.3 owns the shared rules and migrated card runtimes, and Front Line, retreat, Last Stand, battle, withdrawal, Landslide, Overlay-control, Martyrdom timing, and persistent Margin Loan behavior are regression-tested. Full engine parity remains tracked by #741.');
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
