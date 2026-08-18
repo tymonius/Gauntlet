@@ -177,6 +177,7 @@ function placeholderArtwork(component, faceLabel = '') {
     <span>Production layout pending</span>
   </figure>`;
 }
+
 function trackerMarks(component, resourceName) {
   const { max } = component.tracker;
   return Array.from({ length: max }, (_, index) => index + 1).map(value => {
