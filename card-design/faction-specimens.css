@@ -4,6 +4,7 @@
   --faction-border: var(--card-ivory);
   --faction-border-outline: rgba(62, 52, 41, 0.52);
   --faction-border-rule: rgba(62, 52, 41, 0.24);
+  --arcane-trait-color: var(--faction-border);
   border-color: var(--faction-border-outline);
   background: var(--faction-border);
 }
@@ -17,6 +18,7 @@
   --faction-border: #eee7d5;
   --faction-border-outline: rgba(62, 52, 41, 0.52);
   --faction-border-rule: rgba(62, 52, 41, 0.24);
+  --arcane-trait-color: var(--card-bronze);
 }
 
 .faction-specimen-page .military-card,
@@ -91,6 +93,25 @@
   white-space: nowrap;
 }
 
+.faction-specimen-page .card-footer-allegiance {
+  display: flex;
+  align-items: center;
+  gap: 0.028in;
+}
+
+/* The Mystics sigil doubles as the Arcane-trait mark. Its shape says Arcane;
+   its ink follows the playable card's actual allegiance. Neutral cards use
+   the established bronze neutral accent so the mark remains legible. */
+.faction-specimen-page .arcane-trait-marker {
+  display: inline-block;
+  width: 0.105in;
+  height: 0.105in;
+  flex: 0 0 0.105in;
+  background: var(--arcane-trait-color);
+  -webkit-mask: url("../images/faction-symbols/mystics.svg") center / contain no-repeat;
+  mask: url("../images/faction-symbols/mystics.svg") center / contain no-repeat;
+}
+
 .faction-specimen-page .card-art img {
   object-position: center 48%;
 }
@@ -138,5 +159,9 @@
 
   .faction-card-sheet .specimen-column:last-child {
     grid-column: 2;
+  }
+
+  .arcane-trait-marker {
+    print-color-adjust: exact;
   }
 }

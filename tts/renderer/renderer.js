@@ -28,6 +28,10 @@
   const footerCenter = card.unique
     ? 'Unique'
     : (card.form || (card.complexity !== 'Unspecified' ? card.complexity : ''));
+  const isArcane = hasTrait(card.trait, 'arcane');
+  const arcaneMarker = isArcane
+    ? '<i class="arcane-trait-marker" role="img" aria-label="Arcane trait" title="Arcane"></i>'
+    : '';
   const art = card.artwork
     ? `<img src="/${escapeAttribute(card.artwork)}" alt="">`
     : '<span class="pending-label">Artwork pending</span>';
@@ -49,7 +53,7 @@
           ${reminder ? `<aside class="card-reminder"><strong>Reminder:</strong> ${formatText(reminder[1])}</aside>` : ''}
         </div>
         <footer class="card-footer">
-          <span>${escapeHtml(card.factionLabel)}</span>
+          <span class="card-footer-allegiance">${escapeHtml(card.factionLabel)}${arcaneMarker}</span>
           <span>${escapeHtml(footerCenter)}</span>
           <span>${escapeHtml(catalog?.gameVersion || 'v0.6.2')}</span>
         </footer>
@@ -169,6 +173,13 @@
       if (performance.now() - started > timeoutMs) break;
       await new Promise((resolve) => setTimeout(resolve, 25));
     }
+  }
+
+  function hasTrait(value, expected) {
+    const traits = Array.isArray(value)
+      ? value
+      : String(value ?? '').split(/[,/•]/);
+    return traits.some((trait) => String(trait).trim().toLowerCase() === expected);
   }
 
   function formatText(value) {
