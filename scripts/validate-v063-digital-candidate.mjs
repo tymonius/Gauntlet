@@ -9,8 +9,13 @@ const contentAdapter = readFileSync('src/content/v063.ts', 'utf8');
 const contentTests = readFileSync('src/content/v063.test.ts', 'utf8');
 const rules = readFileSync('src/v063/rules.ts', 'utf8');
 const cards = readFileSync('src/v063/cards.ts', 'utf8');
+const copiedEffects = readFileSync('src/v063/copied-effects.ts', 'utf8');
+const arcaneKnowledge = readFileSync('src/v063/arcane-knowledge.ts', 'utf8');
 const rulesTests = readFileSync('src/v063/rules.test.ts', 'utf8');
 const cardTests = readFileSync('src/v063/cards.test.ts', 'utf8');
+const copiedEffectTests = readFileSync('src/v063/copied-effects.test.ts', 'utf8');
+const currentSurface = readFileSync('src/content/current.ts', 'utf8');
+const legacyNeutralContainment = readFileSync('src/cards/neutral-audit-containment.ts', 'utf8');
 
 assert(manifest.release_version === 'v0.6.3', 'Digital engine baseline must use the published v0.6.3 release.');
 assert(manifest.status === 'current', 'v0.6.3 release manifest must remain current.');
@@ -47,6 +52,10 @@ assert(smugglersRun?.name === "Smuggler's Run", "territory-smuggler-s-pass must 
 const marginLoan = canonical.cards.find((card) => card.id === 'financiers-margin-loan');
 const marginLoanAsset = marginLoan?.effects?.find((effect) => effect.label === 'Asset')?.text ?? '';
 assert(marginLoanAsset.includes('While this remains banked, you may not draw at the start of your turn.'), 'Persistent Margin Loan draw restriction is missing.');
+const arcaneKnowledgeCard = canonical.cards.find((card) => card.id === 'neutral-arcane-knowledge');
+assert(arcaneKnowledgeCard?.cost === 4, 'Arcane Knowledge must retain v0.6.3 cost 4.');
+assert(arcaneKnowledgeCard?.effects?.find((effect) => effect.label === 'Action')?.text === 'Move one card from your Graveyard to your Discard Pile.', 'Arcane Knowledge Action text does not match published v0.6.3 authority.');
+assert(arcaneKnowledgeCard?.effects?.find((effect) => effect.label === 'Gambit/Tactic')?.text === 'Apply the Gambit or Tactic effect of one card in your Graveyard that can apply now.', 'Arcane Knowledge battle text does not match published v0.6.3 authority.');
 
 for (const marker of [
   'resolveOpeningSelection',
@@ -102,6 +111,32 @@ for (const marker of [
   assert(cardTests.includes(marker), `Digital v0.6.3 card tests do not exercise ${marker}.`);
 }
 
+for (const marker of [
+  'eligibleV063CopiedEffects',
+  'beginV063CopiedEffectApplication',
+  'continueV063CopiedEffectApplication',
+  'sourceCardMoves: false',
+  'sourceCardIsPlayedSetOrChosen: false',
+  'sourceEventTriggers: false',
+  'remakeChoices: true',
+  'repayCosts: true',
+]) {
+  assert(copiedEffects.includes(marker), `Digital v0.6.3 copied-effect layer is missing ${marker}.`);
+}
+for (const marker of [
+  'resolveV063ArcaneKnowledgeAction',
+  'v063ArcaneKnowledgeBattleChoices',
+  'prepareV063ArcaneKnowledgeBattleApplication',
+]) {
+  assert(arcaneKnowledge.includes(marker), `Digital v0.6.3 Arcane Knowledge layer is missing ${marker}.`);
+  assert(copiedEffectTests.includes(marker), `Digital v0.6.3 copied-effect tests do not exercise ${marker}.`);
+}
+assert(!copiedEffects.includes('replayableBattleEffectIds'), 'v0.6.3 copied-effect legality must not use the legacy title whitelist.');
+assert(copiedEffectTests.includes('third application layer'), 'Copied-effect regression coverage must enforce the v0.6.3 chain ceiling.');
+assert(copiedEffectTests.includes('sourceCardIsPlayedSetOrChosen'), 'Copied-effect regression coverage must guard source-card event semantics.');
+assert(currentSurface.includes("export * from '../v063/copied-effects';"), 'Current digital surface must expose v0.6.3 copied-effect procedures.');
+assert(currentSurface.includes("export * from '../v063/arcane-knowledge';"), 'Current digital surface must expose v0.6.3 Arcane Knowledge procedures.');
+
 assert(contentAdapter.includes("V063_RULES_VERSION = 'v0.6.3'"), 'v0.6.3 content adapter is not release-version locked.');
 assert(contentAdapter.includes("../../releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json"), 'v0.6.3 content adapter does not import the published canonical-data export.');
 assert(contentAdapter.includes("../../releases/v0.6.3/Gauntlet_v0.6.3_Manifest.json"), 'v0.6.3 content adapter does not import the published release manifest.');
@@ -123,7 +158,13 @@ assert(cardTests.includes('Overlay ownership'), 'Nature\'s Altar regression cove
 assert(cardTests.includes('playMartyrdomBeforeBattleCardsClear'), 'Martyrdom regression coverage must preserve its pre-clear timing.');
 assert(cardTests.includes('completeMartyrdomAfterBattleCardsClear'), 'Martyrdom regression coverage must preserve its post-clear timing.');
 
-console.log('v0.6.3 digital baseline validation passed: published content authority is locked, v0.6.3 owns the shared rules and migrated card runtimes, and Front Line, retreat, Last Stand, battle, withdrawal, Landslide, Overlay-control, Martyrdom timing, and persistent Margin Loan behavior are regression-tested. Full engine parity remains tracked by #741.');
+// The pre-v0.6 prototype remains a historical compatibility surface. Keep its
+// old Arcane Knowledge battle path quarantined until that shell is explicitly
+// migrated to the v0.6.3 procedures rather than treating the legacy replay
+// implementation as current behavior.
+assert(legacyNeutralContainment.includes("'neutral-arcane-knowledge': ['battle_hand_commit', 'battle_draw_play']"), 'Legacy Arcane Knowledge battle replay must remain quarantined until the legacy shell is migrated.');
+
+console.log('v0.6.3 digital baseline validation passed: published content authority is locked, v0.6.3 owns shared rules and card runtimes, Arcane Knowledge and copied/repeated-effect semantics are modeled without legacy virtual replay, and the historical prototype remains explicitly quarantined where it is not yet migrated. Full engine parity remains tracked by #741.');
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
