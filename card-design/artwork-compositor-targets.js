@@ -37,10 +37,9 @@
     });
   }
 
-  // Native dialog focus can move a long catalog to the top when showModal()
-  // opens. Capture the exact catalog viewport before the compositor click and
-  // restore it before the next paint, then restore it again when the dialog
-  // closes so the user returns to the card they were editing.
+  // Capture the exact catalog viewport before the compositor opens. Native
+  // dialog focus is allowed to manage the modal normally; when the compositor
+  // closes, return to the card the user was editing.
   document.addEventListener('click', (event) => {
     const opener = event.target instanceof Element
       ? event.target.closest('.art-compositor-launch')
@@ -51,11 +50,7 @@
       y: window.scrollY,
       opener,
     };
-    queueMicrotask(() => {
-      hookDialog();
-      restoreViewport(returnView);
-      requestAnimationFrame(() => restoreViewport(returnView));
-    });
+    queueMicrotask(hookDialog);
   }, true);
 
   function tagTargets(root = document) {
