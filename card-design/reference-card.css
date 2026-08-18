@@ -8,7 +8,6 @@
   --reference-accent: #6b5945;
   --reference-accent-soft: rgba(107, 89, 69, 0.10);
   --reference-panel-tint: rgba(255, 250, 239, 0.46);
-  --reference-footer-tint: rgba(177, 139, 83, 0.24);
   --reference-border: #eee7d5;
   --reference-border-outline: rgba(62, 52, 41, 0.52);
   --reference-border-rule: rgba(62, 52, 41, 0.24);
@@ -44,7 +43,6 @@
   --reference-accent: #203f73;
   --reference-accent-soft: rgba(38, 79, 145, 0.11);
   --reference-panel-tint: rgba(38, 79, 145, 0.055);
-  --reference-footer-tint: rgba(38, 79, 145, 0.20);
   --reference-border: #264f91;
   --reference-border-outline: #17345f;
   --reference-border-rule: rgba(244, 248, 255, 0.38);
@@ -55,7 +53,6 @@
   --reference-accent: #1d5d39;
   --reference-accent-soft: rgba(34, 112, 68, 0.11);
   --reference-panel-tint: rgba(34, 112, 68, 0.055);
-  --reference-footer-tint: rgba(34, 112, 68, 0.20);
   --reference-border: #227044;
   --reference-border-outline: #124429;
   --reference-border-rule: rgba(242, 255, 246, 0.38);
@@ -66,7 +63,6 @@
   --reference-accent: #282827;
   --reference-accent-soft: rgba(40, 40, 39, 0.095);
   --reference-panel-tint: rgba(40, 40, 39, 0.045);
-  --reference-footer-tint: rgba(40, 40, 39, 0.18);
   --reference-border: #282827;
   --reference-border-outline: #111111;
   --reference-border-rule: rgba(255, 255, 250, 0.34);
@@ -77,7 +73,6 @@
   --reference-accent: #563073;
   --reference-accent-soft: rgba(93, 52, 126, 0.11);
   --reference-panel-tint: rgba(93, 52, 126, 0.055);
-  --reference-footer-tint: rgba(93, 52, 126, 0.20);
   --reference-border: #5d347e;
   --reference-border-outline: #38204e;
   --reference-border-rule: rgba(251, 244, 255, 0.38);
@@ -88,7 +83,6 @@
   --reference-accent: #765616;
   --reference-accent-soft: rgba(166, 122, 39, 0.12);
   --reference-panel-tint: rgba(166, 122, 39, 0.06);
-  --reference-footer-tint: rgba(166, 122, 39, 0.22);
   --reference-border: #a67a27;
   --reference-border-outline: #66470e;
   --reference-border-rule: rgba(255, 249, 225, 0.42);
@@ -136,8 +130,7 @@
 }
 
 .reference-card-header,
-.reference-body,
-.reference-card-footer {
+.reference-body {
   position: relative;
   z-index: 2;
 }
@@ -474,46 +467,6 @@
   padding-top: calc(0.004in * var(--reference-rules-scale));
 }
 
-.reference-card-footer {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: 0.035in;
-  min-width: 0;
-  padding: 0.025in 0.055in 0.018in;
-  border-top: 0.55px solid rgba(58, 45, 34, 0.30);
-  background: var(--reference-footer-tint);
-  color: var(--card-muted-ink, #5c4d3e);
-  font-family: var(--font-interface, Arial, sans-serif);
-  font-size: 4.05pt;
-  font-weight: 750;
-  letter-spacing: 0.07em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-.reference-card-footer span,
-.reference-card-footer strong {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.reference-card-footer span:first-child {
-  text-align: left;
-}
-
-.reference-card-footer strong {
-  color: var(--reference-accent);
-  font-weight: 850;
-  text-align: center;
-}
-
-.reference-card-footer span:last-child {
-  text-align: right;
-}
-
 .reference-card[data-fit-warning="true"] .reference-card-interior {
   outline: 2px solid #a11118;
   outline-offset: -2px;
@@ -525,8 +478,7 @@
   .reference-watermark,
   .reference-panel,
   .reference-option-mark,
-  .reference-table th,
-  .reference-card-footer {
+  .reference-table th {
     print-color-adjust: exact;
   }
 }
