@@ -5,7 +5,6 @@ on:
     paths:
       - '.github/workflows/generate-tts-card-assets.yml'
       - 'package.json'
-      - 'package-lock.json'
       - 'config/release-lifecycle.json'
       - 'config/github-release-contract.json'
       - 'config/tts-component-contract.json'
@@ -74,7 +73,6 @@ jobs:
           sparse-checkout-cone-mode: false
           sparse-checkout: |
             package.json
-            package-lock.json
             design-tokens.css
             config/release-lifecycle.json
             config/github-release-contract.json
@@ -115,10 +113,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-          cache-dependency-path: package-lock.json
+      - name: Restore npm cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
       - name: Install Node dependencies
-        run: npm ci
+        run: npm install --no-audit --no-fund
       - name: Resolve Playwright version
         id: playwright-version
         shell: bash
