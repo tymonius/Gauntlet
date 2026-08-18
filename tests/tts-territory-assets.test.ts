@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const generator = readFileSync("scripts/generate-tts-territory-assets.mjs", "utf8");
@@ -64,7 +64,9 @@ describe("TTS Territory assets", () => {
     expect(renderer).toContain('class="territory-art"');
     expect(renderer).toContain("Artwork pending");
     expect(renderer).toContain("territoryArtworkCandidates");
-    expect(renderer).toContain("/images/artwork/territories/");
+    expect(renderer).toContain("/images/artwork/cards/territories/");
+    expect(existsSync("images/artwork/cards/territories/high-ground.jpg")).toBe(true);
+    expect(existsSync("images/artwork/cards/territories/arena-grand-melee.png")).toBe(true);
     expect(sharedStyles).toContain("grid-template-rows: minmax(0, var(--art-height)) auto");
     expect(sharedStyles).not.toContain("grid-template-columns: var(--art-width)");
     expect(sharedStyles).toContain(".territory-art {");
@@ -81,7 +83,7 @@ describe("TTS Territory assets", () => {
     expect(dedicatedSpecimenPage).toContain("open parchment spacing rather than a divider");
     expect(territoryReviewScript).toContain("/tts/territory-renderer/territory-renderer.js");
     expect(territoryReviewScript).toContain("/tts/artwork-crop.js");
-    expect(dedicatedSpecimenPage).toContain('class="territory-art"');
+    expect(dedicatedSpecimenPage).toContain('class="territory-art has-image"');
   });
 
   it("gives Territory effect text its natural height before clipping", () => {

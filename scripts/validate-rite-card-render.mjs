@@ -10,7 +10,8 @@ const CARD_HEIGHT = 336;
 const EXPECTED_RITES = ['Rite of Echoes', 'Rite of Blood', 'Rite of Crossing'];
 const EXPECTED_RITUAL = 'Ritual of Ascension';
 const RITUAL_CARD_BACK_ID = 'ritual-ascension';
-const RITUAL_CARD_BACK_ART_PATH = '/images/card-backs/mystics/ritual-of-ascension-card-back.avif';
+const RITUAL_FRONT_ART_PATH = '/images/artwork/cards/mystics/rites-and-rituals/ritual-of-ascension.png';
+const RITUAL_CARD_BACK_ART_PATH = '/images/artwork/cardbacks/mystics/ritual-of-ascension.png';
 const COMPLETED_RITE_ART_PATH = '/images/artwork/supplemental/mystics/rite-completed.webp';
 const COMPLETED_RITE_ART_WIDTH = 1448;
 const COMPLETED_RITE_ART_HEIGHT = 1086;
@@ -70,6 +71,10 @@ async function main() {
       image.complete && image.naturalWidth > 0 && image.naturalHeight > 0
     )));
     await page.waitForFunction(() => {
+      const image = document.querySelector('#ritual-ascension .ritual-card .card-art > img');
+      return image?.complete && image.naturalWidth > 0 && image.naturalHeight > 0;
+    });
+    await page.waitForFunction(() => {
       const image = document.querySelector('#ritual-ascension .ritual-card-back__image-window > img');
       return image?.complete && image.naturalWidth > 0 && image.naturalHeight > 0;
     });
@@ -84,6 +89,7 @@ async function main() {
       const abilityNames = [...card.querySelectorAll('.rite-unlock-section strong')].map(node => node.textContent?.trim());
       const completedImage = card.querySelector('.rite-completed-panel > img');
       const completedImageRect = completedImage?.getBoundingClientRect();
+      const ritualImage = ritual ? card.querySelector('.card-art > img') : null;
       return {
         name: card.querySelector('.card-title')?.textContent?.trim(),
         type: card.querySelector('.card-footer span:nth-child(2)')?.textContent?.trim(),
@@ -107,6 +113,9 @@ async function main() {
         completedImageNaturalWidth: completedImage?.naturalWidth || 0,
         completedImageNaturalHeight: completedImage?.naturalHeight || 0,
         completedImagePath: completedImage ? new URL(completedImage.currentSrc || completedImage.src).pathname : '',
+        ritualImageNaturalWidth: ritualImage?.naturalWidth || 0,
+        ritualImageNaturalHeight: ritualImage?.naturalHeight || 0,
+        ritualImagePath: ritualImage ? new URL(ritualImage.currentSrc || ritualImage.src).pathname : '',
       };
     }));
 
@@ -125,8 +134,14 @@ async function main() {
     if (ritual.cardBack !== RITUAL_CARD_BACK_ID) {
       throw new Error(`Ritual of Ascension is not marked for its dedicated card back: ${JSON.stringify(ritual)}.`);
     }
-    if (!ritual.artworkPending) {
-      throw new Error(`Ritual of Ascension must visibly retain its front-artwork-pending state until approved front art is committed: ${JSON.stringify(ritual)}.`);
+    if (ritual.artworkPending) {
+      throw new Error(`Ritual of Ascension must use its approved front artwork rather than the pending state: ${JSON.stringify(ritual)}.`);
+    }
+    if (ritual.ritualImageNaturalWidth <= 0 || ritual.ritualImageNaturalHeight <= 0) {
+      throw new Error(`Ritual of Ascension front artwork did not load: ${JSON.stringify(ritual)}.`);
+    }
+    if (ritual.ritualImagePath !== RITUAL_FRONT_ART_PATH) {
+      throw new Error(`Ritual of Ascension uses the wrong front artwork: ${JSON.stringify(ritual)}.`);
     }
     const expectedRitualRules = ['Begin', 'Convergence', 'Complete', 'Interrupted'];
     if (expectedRitualRules.some(label => !ritual.ruleLabels.includes(label))) {

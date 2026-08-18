@@ -1,7 +1,8 @@
 const RITE_SOURCE = '/artifacts/reconstruction/clean-v0.6.3/faction-guides/mystics/Gauntlet_v0.6.3_Mystics_Faction_Guide.md';
 const RITE_ART_ROOT = '../images/artwork/cards/mystics/rites-and-rituals';
 const COMPLETED_RITE_ART_SOURCE = '../images/artwork/supplemental/mystics/rite-completed.webp';
-const RITUAL_CARD_BACK_SOURCE = '../images/card-backs/mystics/ritual-of-ascension-card-back.avif';
+const RITUAL_ART_SOURCE = `${RITE_ART_ROOT}/ritual-of-ascension.png`;
+const RITUAL_CARD_BACK_SOURCE = '../images/artwork/cardbacks/mystics/ritual-of-ascension.png';
 
 const RITES = Object.freeze([
   {
@@ -105,8 +106,8 @@ function completedArtwork(rite) {
 }
 
 function ritualArtwork() {
-  return `<figure class="card-art rite-art-pending ritual-art-pending" aria-label="Artwork pending for ${esc(RITUAL.name)}">
-    <span>Artwork pending</span>
+  return `<figure class="card-art has-image" aria-label="Artwork for ${esc(RITUAL.name)}">
+    <img src="${RITUAL_ART_SOURCE}" alt="Artwork for ${esc(RITUAL.name)}" />
   </figure>`;
 }
 

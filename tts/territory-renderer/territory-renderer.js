@@ -236,7 +236,7 @@
       : [];
     for (const slug of slugs) {
       for (const extension of ['png', 'webp', 'jpg', 'jpeg']) {
-        candidates.push(`/images/artwork/territories/${slug}.${extension}`);
+        candidates.push(`/images/artwork/cards/territories/${slug}.${extension}`);
       }
     }
     return [...new Set(candidates)];
