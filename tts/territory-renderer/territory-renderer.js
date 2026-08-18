@@ -5,6 +5,7 @@
   const ART_HEIGHT_STEP = 2;
   const EFFECT_STEP = 0.01;
   const MINIMUM_TITLE_SIZE = 8 * CSS_PIXELS_PER_POINT;
+  const PREFERRED_MINIMUM_ART_HEIGHT = 0.78 * CSS_PIXELS_PER_INCH;
   const MINIMUM_ART_HEIGHT = 0.55 * CSS_PIXELS_PER_INCH;
   const MINIMUM_EFFECT_SCALE = 0.68;
   const PARCHMENT_SOURCE = '/images/artwork/card-backgrounds/neutral-parchment-v2.png';
@@ -131,9 +132,18 @@
       forceLayout(card);
     }
 
-    while (cardOverflows(card) && artHeight > MINIMUM_ART_HEIGHT) {
-      artHeight = Math.max(MINIMUM_ART_HEIGHT, artHeight - ART_HEIGHT_STEP);
+    /* Keep artwork visually meaningful before spending the remaining fit budget
+       on typography. Dense Territories may compact their surrounding spacing and
+       reduce effect type modestly, but should not collapse immediately to the
+       legacy 0.55in postage-stamp frame. */
+    while (cardOverflows(card) && artHeight > PREFERRED_MINIMUM_ART_HEIGHT) {
+      artHeight = Math.max(PREFERRED_MINIMUM_ART_HEIGHT, artHeight - ART_HEIGHT_STEP);
       card.style.setProperty('--art-height', `${artHeight}px`);
+      forceLayout(card);
+    }
+
+    if (cardOverflows(card)) {
+      card.classList.add('compact');
       forceLayout(card);
     }
 
@@ -143,8 +153,12 @@
       forceLayout(card);
     }
 
-    if (cardOverflows(card)) {
-      card.classList.add('compact');
+    /* Emergency compatibility fallback for older/denser Territory copy. Current
+       v0.6.4 candidates are regression-tested to stay at or above the preferred
+       artwork floor, so this path should not be part of their normal layout. */
+    while (cardOverflows(card) && artHeight > MINIMUM_ART_HEIGHT) {
+      artHeight = Math.max(MINIMUM_ART_HEIGHT, artHeight - ART_HEIGHT_STEP);
+      card.style.setProperty('--art-height', `${artHeight}px`);
       forceLayout(card);
     }
 
