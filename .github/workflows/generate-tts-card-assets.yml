@@ -59,6 +59,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   render:
     runs-on: ubuntu-latest
@@ -111,8 +115,26 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm install
-      - run: npx playwright install --with-deps chromium
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Install Node dependencies
+        run: npm ci
+      - name: Resolve Playwright version
+        id: playwright-version
+        shell: bash
+        run: |
+          echo "version=$(node -p "require('playwright/package.json').version")" >> "$GITHUB_OUTPUT"
+      - name: Restore Playwright Chromium cache
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
+      - name: Install Playwright system dependencies
+        run: npx playwright install-deps chromium
+      - name: Install Playwright Chromium
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install chromium
       - name: Validate current TTS sources
         run: npm run tts:check
       - name: Generate playable card sheets and production backs
