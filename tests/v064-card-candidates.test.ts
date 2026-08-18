@@ -1,0 +1,116 @@
+import { readFileSync } from "node:fs";
+import { describe, expect, it } from "vitest";
+
+const source = JSON.parse(readFileSync("docs/v0.6.4-card-additions.json", "utf8"));
+const catalogPage = readFileSync("card-design/index.html", "utf8");
+const catalogOverlay = readFileSync("card-design/v064-card-candidates.js", "utf8");
+const cardRenderer = readFileSync("card-design/card-review-render.js", "utf8");
+
+const expectedByAllegiance: Record<string, string[]> = {
+  Neutral: ["Phantom Passage", "Battlefield Plunder"],
+  Military: ["High Command", "War Witch"],
+  Diplomats: ["Plenipotentiary", "Diplomatic Divination"],
+  Financiers: ["War Bonds", "Actuarial Alchemy"],
+  Intelligence: ["Regime Change", "Spectral Surveillance"],
+  Mystics: ["Reembodiment", "Threefold Vision"],
+  Inquisition: ["Retribution", "Anathema"],
+};
+
+const expectedArcane = new Set([
+  "Phantom Passage",
+  "War Witch",
+  "Diplomatic Divination",
+  "Actuarial Alchemy",
+  "Spectral Surveillance",
+  "Reembodiment",
+  "Threefold Vision",
+]);
+
+describe("v0.6.4 full card-expansion candidate staging", () => {
+  it("targets 52 Neutral cards, 15 per faction, and 142 playable cards", () => {
+    expect(source.version).toBe("v0.6.4-candidate");
+    expect(source.base_version).toBe("v0.6.3");
+    expect(source.ready_for_game_data).toBe(false);
+    expect(source.card_count).toBe(14);
+    expect(source.cards).toHaveLength(14);
+    expect(source.target_pool_sizes).toEqual({
+      neutral: 52,
+      each_faction: 15,
+      total_playable_cards: 142,
+    });
+
+    for (const [allegiance, names] of Object.entries(expectedByAllegiance)) {
+      expect(source.cards.filter((card: any) => card.allegiance === allegiance).map((card: any) => card.name)).toEqual(names);
+    }
+  });
+
+  it("keeps the accepted Arcane identities explicit in card data", () => {
+    for (const card of source.cards) {
+      expect(card.trait === "Arcane").toBe(expectedArcane.has(card.name));
+    }
+  });
+
+  it("uses current effect headings and inherent-bank conventions", () => {
+    const retired = new Set(["Use", "Activate", "Battle"]);
+    for (const card of source.cards) {
+      for (const effect of card.effects) {
+        expect(retired.has(effect.label)).toBe(false);
+        expect(effect.text).not.toBe("Bank this card.");
+      }
+    }
+
+    const printedBankActions = source.cards
+      .flatMap((card: any) => card.effects
+        .filter((effect: any) => effect.label === "Action" && effect.text.startsWith("Bank this card."))
+        .map((effect: any) => [card.name, effect.text]));
+    expect(printedBankActions).toEqual([
+      ["High Command", "Bank this card. You may have only one banked High Command."],
+      ["War Bonds", "Bank this card. You may have only one banked War Bonds."],
+      ["Regime Change", "Bank this card. You may have only one banked Regime Change."],
+      ["Reembodiment", "Bank this card. You may have only one banked copy."],
+    ]);
+  });
+
+  it("applies the shared movement, Overlay, shorthand, and role-label conventions", () => {
+    const phantomPassage = source.cards.find((card: any) => card.name === "Phantom Passage");
+    expect(phantomPassage.effects[0].text).toBe("Put this card in your Graveyard. Move to any Territory you control.");
+    expect(phantomPassage.effects[0].text).not.toMatch(/may (start|create) a battle/i);
+
+    const battlefieldPlunder = source.cards.find((card: any) => card.name === "Battlefield Plunder");
+    expect(battlefieldPlunder.effects.map((effect: any) => effect.label)).toEqual(["Gambit/Tactic", "Overlay"]);
+    expect(battlefieldPlunder.effects[0].text).toContain("place this Overlay");
+    expect(battlefieldPlunder.effects[1].text).toContain("+2 Cards");
+
+    const warWitch = source.cards.find((card: any) => card.name === "War Witch");
+    expect(warWitch.effects[0].text).toContain("+1 Tactic from your Graveyard");
+
+    const plenipotentiary = source.cards.find((card: any) => card.name === "Plenipotentiary");
+    expect(plenipotentiary.effects.map((effect: any) => effect.label)).toEqual(["Asset", "Gambit"]);
+    expect(plenipotentiary.unique).toBe(true);
+  });
+
+  it("preserves the locked wording-sensitive details from the Arcane pass", () => {
+    const actuarial = source.cards.find((card: any) => card.name === "Actuarial Alchemy");
+    expect(actuarial.effects[0].text).toContain("Battle Total or Tiebreak Roll exceeded yours");
+
+    const spectral = source.cards.find((card: any) => card.name === "Spectral Surveillance");
+    expect(spectral.effects[0].text).toContain("instead of spending Intel");
+    expect(spectral.effects[0].text).toContain("Gambits OR Tactics");
+
+    const divination = source.cards.find((card: any) => card.name === "Diplomatic Divination");
+    expect(divination.effects[0].label).toBe("Terms");
+    expect(divination.effects[0].text).toContain("Otherwise, put it in your Graveyard.");
+  });
+
+  it("layers all fourteen candidates onto /card-design without changing canonical v0.6.3 data", () => {
+    expect(catalogPage).toContain('src="v064-card-candidates.js"');
+    expect(catalogPage).toContain("142");
+    expect(catalogPage).toContain("52 Neutral cards and 15 cards in each faction");
+    expect(catalogOverlay).toContain("/docs/v0.6.4-card-additions.json");
+    expect(catalogOverlay).toContain("EXPECTED_CARD_COUNT = 14");
+    expect(catalogOverlay).toContain("ready_for_game_data !== false");
+    expect(cardRenderer).toContain("/artifacts/reconstruction/clean-v0.6.3/downstream/canonical-data.json");
+    expect(cardRenderer).toContain("/docs/v0.6.4-card-additions.json");
+    expect(cardRenderer).toContain("gameVersion = 'v0.6.4 candidate'");
+  });
+});

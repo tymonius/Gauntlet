@@ -15,7 +15,7 @@
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
   <meta name="robots" content="noindex,nofollow" />
-  <meta name="description" content="Internal Gauntlet v0.6.3 visual review catalog for card-back colorways, every playable card, Leader, Territory, faction reference and tracker card, Deed, Diplomat Proposal / Treaty Article, and Mystics Rite / Ritual component." />
+  <meta name="description" content="Internal Gauntlet card review catalog using released v0.6.3 as the production base with the fourteen current v0.6.4 playable-card candidates layered on top." />
   <title>Gauntlet Card Review Catalog</title>
   <link rel="preconnect" href="https://use.typekit.net" />
   <link rel="preconnect" href="https://p.typekit.net" crossorigin />
@@ -36,6 +36,7 @@
   <link rel="stylesheet" href="../developer-tools.css?v=20260815-3" media="screen" />
   <link rel="stylesheet" href="card-catalog-shell.css?v=20260815-3" />
   <script src="card-review.js" defer></script>
+  <script type="module" src="v064-card-candidates.js"></script>
   <script type="module" src="proposal-card.js"></script>
   <script type="module" src="rite-card.js"></script>
   <script type="module" src="supplemental-card.js"></script>
@@ -56,19 +57,19 @@
   <main class="developer-catalog-main">
     <section class="section-shell developer-catalog-hero analysis-hero screen-only" aria-labelledby="catalog-title">
       <div class="catalog-hero-copy">
-        <p class="eyebrow">Canonical v0.6.3 · developer review surface</p>
+        <p class="eyebrow">Released v0.6.3 base · v0.6.4 candidate review surface</p>
         <h1 id="catalog-title">Card review <span>catalog.</span></h1>
-        <p class="intro-copy">Inspect the complete production card system in one place: the card-back color studies, playable cards, Leaders, faction reference and tracker cards, Financier Deeds, Diplomat Proposals and Treaty Articles, Mystics Rites and Ritual, Territories, and Arenas. Production renderers and geometry stay intact while this surrounding workspace provides the review and inspection tools.</p>
+        <p class="intro-copy">Inspect the complete production card system in one place. Released v0.6.3 remains the canonical base while the current v0.6.4 playable-card additions are layered into the same production renderer for wording, fit, artwork, and balance review.</p>
       </div>
       <aside class="catalog-overview" aria-label="Catalog snapshot">
         <p class="catalog-overview-label">Catalog snapshot</p>
         <dl class="catalog-metrics">
-          <div><dt data-playable-count>128</dt><dd>Playable cards</dd></div>
+          <div><dt data-playable-count>142</dt><dd>Playable-card renders</dd></div>
           <div><dt>12</dt><dd>Leader cards</dd></div>
           <div><dt data-territory-count>25</dt><dd>Territories <span><strong data-arena-count>4</strong> arenas</span></dd></div>
           <div><dt><span data-proposal-count>9</span> / <span data-rite-count>3</span></dt><dd>Proposal / Rite pairs <span><strong data-ritual-count>1</strong> Ritual</span></dd></div>
         </dl>
-        <p class="catalog-overview-note">Artwork and component-design gaps remain visible for review. Card geometry, renderer behavior, and print output are unchanged.</p>
+        <p class="catalog-overview-note">Released v0.6.3 remains the canonical base. The fourteen v0.6.4 cards shown here are review candidates only.</p>
       </aside>
     </section>
 
@@ -139,10 +140,10 @@
     <section id="playable-cards" class="card-section long-card-review-section" aria-labelledby="cards-title">
       <div class="section-shell card-section-heading screen-only">
         <div>
-          <p class="section-label">Complete production set</p>
+          <p class="section-label">Released base + 14 candidate additions</p>
           <h2 id="cards-title">All playable cards</h2>
         </div>
-        <p>All <span data-playable-count>128</span> v0.6.3 playable cards, grouped by allegiance and rendered through the production path used by the release audit. Missing artwork stays visible so frame, text fit, and eventual illustration can still be reviewed in context.</p>
+        <p>The complete 128-card v0.6.3 release plus fourteen proposed v0.6.4 additions, targeting 52 Neutral cards and 15 cards in each faction. Candidates use the production card renderer but remain outside canonical game data until their final balance and wording are approved.</p>
       </div>
       <div id="playableReviewSections"></div>
     </section>

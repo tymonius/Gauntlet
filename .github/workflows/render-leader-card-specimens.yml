@@ -11,6 +11,7 @@ on:
       - "card-design/card-review.css"
       - "card-design/card-review-render.html"
       - "card-design/card-review-render.js"
+      - "card-design/v064-card-candidates.js"
       - "card-design/territory-review-render.html"
       - "card-design/territory-review-render.js"
       - "card-design/territories/index.html"
@@ -27,6 +28,7 @@ on:
       - "card-design/card-rule-columns.css"
       - "card-design/faction-specimens.css"
       - "docs/v0.6.4-diplomat-proposals.json"
+      - "docs/v0.6.4-card-additions.json"
       - "docs/v0.6.4-territories.json"
       - "tts/territory-renderer/**"
       - "design-tokens.css"
@@ -42,6 +44,7 @@ on:
       - "scripts/validate-v064-territory-render.mjs"
       - "scripts/validate-rite-card-render.mjs"
       - "scripts/validate-proposal-card-render.mjs"
+      - "scripts/validate-v064-card-render.mjs"
       - ".github/workflows/render-leader-card-specimens.yml"
   workflow_dispatch:
 
@@ -81,6 +84,8 @@ jobs:
         run: node scripts/validate-rite-card-render.mjs
       - name: Validate Diplomat Proposal card specimens
         run: node scripts/validate-proposal-card-render.mjs
+      - name: Validate v0.6.4 playable-card candidates
+        run: node scripts/validate-v064-card-render.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: gauntlet-card-review-specimens
@@ -88,4 +93,5 @@ jobs:
             card-design/generated/leaders/
             card-design/generated/proposals/
             card-design/generated/territories-v064/
+            card-design/generated/v064-card-candidates/
           if-no-files-found: error

@@ -9,7 +9,7 @@ const CARD_WIDTH = 240;
 const CARD_HEIGHT = 336;
 const TERRITORY_WIDTH = 336;
 const TERRITORY_HEIGHT = 240;
-const EXPECTED_PLAYABLE_CARDS = 128;
+const EXPECTED_PLAYABLE_CARDS = 142;
 const EXPECTED_TERRITORIES = 25;
 const EXPECTED_PROPOSALS = [
   'De-escalation', 'Orderly Withdrawal', 'Capitulation', 'Open Channels',
