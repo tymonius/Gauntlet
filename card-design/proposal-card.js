@@ -83,7 +83,7 @@ function proposalFace(proposal, ratified = false) {
         ${ruleSection('Accepted', proposal.accepted)}
         ${ruleSection('Refused', proposal.refused)}
       </div>
-      <footer class="card-footer"><span>Diplomats</span><span>${esc(type)}</span><span>v0.6.4 candidate</span></footer>
+      <footer class="card-footer"><span>Diplomats</span><span>${esc(type)}</span><span>v0.6.4-dev</span></footer>
     </div>
   </article>`;
 }

@@ -44,9 +44,9 @@
           </section>
         </div>
         <footer class="territory-footer">
+          <span>Shared</span>
           <span>${territory.arena ? 'Arena' : 'Territory'}</span>
-          <span>${escapeHtml(territory.complexity)}</span>
-          <span>v0.6.2</span>
+          <span>${escapeHtml(catalog?.gameVersion || 'v0.6.3')}</span>
         </footer>
       </div>
     </article>`;

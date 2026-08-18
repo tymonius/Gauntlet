@@ -216,8 +216,6 @@ function trackerFace(component, faction, factionLabel) {
 }
 
 function placeholderFace(component, faction, factionLabel, faceLabel = '') {
-  const quantity = Number(component.quantity) || 1;
-  const quantityText = quantity > 1 ? ` · ×${quantity} required` : '';
   const faceText = faceLabel ? ` · ${faceLabel}` : '';
   return `<article class="gauntlet-card faction-component-card supplemental-placeholder-card ${esc(faction)}-card" data-faction="${esc(faction)}" data-art-max="1.52" data-art-min="1.18" data-title-min="8.5" aria-label="${esc(component.name)} ${esc(component.type)}${esc(faceText)}">
     <div class="card-interior">
@@ -232,7 +230,7 @@ function placeholderFace(component, faction, factionLabel, faceLabel = '') {
           <p>${esc(component.detail)}</p>
         </section>
       </div>
-      <footer class="card-footer"><span>${esc(factionLabel)}</span><span>${esc(component.type)}${esc(quantityText)}</span><span>v0.6.3</span></footer>
+      <footer class="card-footer"><span>${esc(factionLabel)}</span><span>${esc(component.name)}</span><span>v0.6.3</span></footer>
     </div>
   </article>`;
 }
@@ -247,7 +245,7 @@ function referenceLoadingFace(component, faction, factionLabel, sideName) {
         <p class="reference-component-name">${esc(component.name)}</p>
       </header>
       <div class="reference-body"><section class="reference-section"><h4 class="reference-section-title">Canonical source</h4><div class="reference-blocks"><p>Loading current faction-guide rules.</p></div></section></div>
-      <footer class="reference-card-footer"><span>${esc(factionLabel)}</span><strong>Reference · Not a Deck Card</strong><span>v0.6.3</span></footer>
+      <footer class="reference-card-footer"><span>${esc(factionLabel)}</span><strong>Reference</strong><span>v0.6.3</span></footer>
     </div>
   </article>`;
 }
