@@ -62,6 +62,21 @@ describe('current digital rules surface', () => {
       'v063HasControllingInterest',
       'resolveV063ManifestDestinyAction',
       'resolveV063ManifestDestinyBattle',
+      'v063QuicksandMovementRule',
+      'v063DifficultTerrainTurnState',
+      'v063DisruptedSupplyLinesActiveAssets',
+      'resolveV063RuinedStorehouseReplacementDraw',
+      'v063SupplyDepotNormalDrawCount',
+      'v063RefugeCardBonus',
+      'v063CommandTentActionPlan',
+      'v063MonasteryAllowsGraveyardExit',
+      'v063MonasterySuppressesArcaneEffect',
+      'v063KingsRoadAdditionalMovement',
+      'resolveV063TollBridgeAdvanceCost',
+      'stashV063SmugglersRunCard',
+      'useV063SmugglersRunStash',
+      'resolveV063SmugglersRunStartTurn',
+      'resolveV063SmugglersRunControlLoss',
     ]) {
       expect(typeof current[name as keyof typeof current]).toBe('function');
     }
