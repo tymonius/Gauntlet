@@ -144,8 +144,8 @@ async function main() {
         if (face.stake !== proposal.stake) {
           throw new Error(`Stake mismatch for ${proposal.name}: ${JSON.stringify(face)}.`);
         }
-        if (face.version !== 'v0.6.4 candidate') {
-          throw new Error(`Candidate version footer missing for ${proposal.name}: ${JSON.stringify(face)}.`);
+        if (face.version !== 'v0.6.4-dev') {
+          throw new Error(`Development version footer missing for ${proposal.name}: ${JSON.stringify(face)}.`);
         }
         if (Math.abs(face.width - CARD_WIDTH) > 0.25 || Math.abs(face.height - CARD_HEIGHT) > 0.25) {
           throw new Error(`Unexpected production card dimensions for ${proposal.name}: ${JSON.stringify(face)}.`);
