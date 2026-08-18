@@ -2,6 +2,7 @@
   const MYSTICS_RITUAL_COMPONENT_ID = "mystics-ritual-of-ascension";
 
   installMysticsRitualComponent();
+  installDiplomatProposalWording();
 
   const baseRenderAll = renderAll;
 
@@ -53,6 +54,95 @@
       ],
       footer: "Supplemental Ritual card — not a Playable Deck card"
     });
+  }
+
+  function installDiplomatProposalWording() {
+    const packageData = window.GAUNTLET_V06_SUPPLEMENTALS?.diplomats;
+    if (!packageData) return;
+
+    packageData.proposals = [
+      {
+        number: 1,
+        id: "de-escalation",
+        name: "De-escalation",
+        stake: 0,
+        requirement: "None",
+        accepted: "Both players withdraw. Accepting player: +1 Card.",
+        refused: "Diplomat: +1 Card."
+      },
+      {
+        number: 2,
+        id: "orderly-withdrawal",
+        name: "Orderly Withdrawal",
+        stake: 0,
+        requirement: "The Diplomat must be the attacker.",
+        accepted: "The Diplomat withdraws. Accepting player: +1 Card.",
+        refused: "Diplomat: +1 Battle Total."
+      },
+      {
+        number: 3,
+        id: "capitulation",
+        name: "Capitulation",
+        stake: 0,
+        requirement: "The Diplomat must be the defender.",
+        accepted: "The Diplomat withdraws. Accepting player: +1 Card.",
+        refused: "If the Diplomat loses, +2 Cards."
+      },
+      {
+        number: 4,
+        id: "open-channels",
+        name: "Open Channels",
+        stake: 1,
+        requirement: "The Diplomat must have a card in Hand.",
+        accepted: "Both players reveal their Hands, then both withdraw. Accepting player: +1 Card.",
+        refused: "Refusing player reveals their Hand. Diplomat: +1 Reserve."
+      },
+      {
+        number: 5,
+        id: "mutual-disarmament",
+        name: "Mutual Disarmament",
+        stake: 1,
+        requirement: "Both players must have a card in Hand.",
+        accepted: "Each player discards 1 from Hand. Accepting player: +1 Card. Then both withdraw.",
+        refused: "Diplomat may discard 1 from Hand. If they do: +1 Reserve."
+      },
+      {
+        number: 6,
+        id: "prisoner-exchange",
+        name: "Prisoner Exchange",
+        stake: 1,
+        requirement: "Each player must have a card in their Graveyard.",
+        accepted: "Each player may move 1 card from their Graveyard to their Discard Pile. Then both withdraw.",
+        refused: "If the Diplomat loses, they may move 1 card from their Graveyard to their Discard Pile."
+      },
+      {
+        number: 7,
+        id: "rebuilding-pact",
+        name: "Rebuilding Pact",
+        stake: 1,
+        requirement: "The Diplomat must have a card in Hand that can be banked as an Asset.",
+        accepted: "Each player may bank 1 Asset from Hand. Then both withdraw.",
+        refused: "In the Aftermath, the Diplomat may bank 1 Asset from Hand."
+      },
+      {
+        number: 8,
+        id: "ultimatum",
+        name: "Ultimatum",
+        stake: 2,
+        requirement: "None",
+        accepted: "The accepting player withdraws.",
+        refused: "Diplomat: +1 Battle Total."
+      },
+      {
+        number: 9,
+        id: "diplomatic-recognition",
+        name: "Diplomatic Recognition",
+        stake: 2,
+        requirement: "The Diplomat must be defending a Counterattack.",
+        accepted: "Diplomat: Advance Front Line 1, if able. Accepting player withdraws, then +2 Cards.",
+        refused: "If the Diplomat wins: Advance Front Line 1 during the Aftermath, if able. No Influence for imposing this Proposal."
+      }
+    ];
   }
 
   function installFactionComponentDisplay() {

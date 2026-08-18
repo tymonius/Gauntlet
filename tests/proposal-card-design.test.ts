@@ -6,7 +6,7 @@ const proposalRenderer = readFileSync("card-design/proposal-card.js", "utf8");
 const proposalStyles = readFileSync("card-design/proposal-card.css", "utf8");
 const leaderStyles = readFileSync("card-design/leader-card.css", "utf8");
 const cardRefinementStyles = readFileSync("card-design/card-design-refinement.css", "utf8");
-const canonical = JSON.parse(readFileSync("releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json", "utf8"));
+const approved = JSON.parse(readFileSync("docs/v0.6.4-diplomat-proposals.json", "utf8"));
 const ratifiedSealPath = "images/artwork/supplemental/diplomats/ratified-wax-seal.webp";
 
 const proposalIds = [
@@ -33,15 +33,34 @@ describe("Diplomat Proposal / Treaty Article catalog", () => {
     expect(reviewPage).toContain("All <span data-proposal-count>9</span> canonical Proposals in order");
   });
 
-  it("renders every published v0.6.3 Proposal directly from canonical data", () => {
-    expect(canonical.proposals).toHaveLength(9);
-    expect(canonical.proposals.map((proposal: { id: string }) => proposal.id)).toEqual(proposalIds);
-    expect(proposalRenderer).toContain("/releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json");
+  it("renders all nine approved issue #617 Proposal rewrites from the post-release source", () => {
+    expect(approved.source_issue).toBe(617);
+    expect(approved.mechanics_changed).toBe(false);
+    expect(approved.proposals).toHaveLength(9);
+    expect(approved.proposals.map((proposal: { id: string }) => proposal.id)).toEqual(proposalIds);
+    expect(proposalRenderer).toContain("/docs/v0.6.4-diplomat-proposals.json");
     expect(proposalRenderer).toContain("const EXPECTED_PROPOSAL_COUNT = 9");
-    expect(proposalRenderer).toContain("Array.isArray(canonical.proposals) ? canonical.proposals : []");
+    expect(proposalRenderer).toContain("const EXPECTED_SOURCE_ISSUE = 617");
+    expect(proposalRenderer).toContain("Array.isArray(source.proposals) ? source.proposals : []");
     expect(proposalRenderer).toContain("proposals.map(reviewPair).join('')");
-    expect(proposalRenderer).not.toContain("PROTOTYPE_IDS");
-    expect(proposalRenderer).not.toContain("Both players withdraw. The accepting player draws one card.");
+    expect(proposalRenderer).not.toContain("/releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json");
+  });
+
+  it("pins the approved compact wording that changed the densest Proposal faces", () => {
+    const byId = new Map(approved.proposals.map((proposal: { id: string }) => [proposal.id, proposal]));
+    expect(byId.get("open-channels")).toMatchObject({
+      accepted: "Both players reveal their Hands, then both withdraw. Accepting player: +1 Card.",
+      refused: "Refusing player reveals their Hand. Diplomat: +1 Reserve.",
+    });
+    expect(byId.get("mutual-disarmament")).toMatchObject({
+      accepted: "Each player discards 1 from Hand. Accepting player: +1 Card. Then both withdraw.",
+      refused: "Diplomat may discard 1 from Hand. If they do: +1 Reserve.",
+    });
+    expect(byId.get("diplomatic-recognition")).toMatchObject({
+      requirement: "The Diplomat must be defending a Counterattack.",
+      accepted: "Diplomat: Advance Front Line 1, if able. Accepting player withdraws, then +2 Cards.",
+      refused: "If the Diplomat wins: Advance Front Line 1 during the Aftermath, if able. No Influence for imposing this Proposal.",
+    });
   });
 
   it("keeps both faces mechanically complete and identical apart from state presentation", () => {
@@ -53,11 +72,14 @@ describe("Diplomat Proposal / Treaty Article catalog", () => {
     expect(proposalRenderer).toContain("value-medallion");
   });
 
-  it("guards the catalog against omitted or malformed canonical Proposals", () => {
-    expect(proposalRenderer).toContain("validateCanonicalProposals(proposals)");
+  it("guards the catalog against omitted, malformed, or mechanically reclassified Proposal data", () => {
+    expect(proposalRenderer).toContain("validateApprovedProposalSource(source, proposals)");
+    expect(proposalRenderer).toContain("source.source_issue !== EXPECTED_SOURCE_ISSUE");
+    expect(proposalRenderer).toContain("source.mechanics_changed !== false");
     expect(proposalRenderer).toContain("proposals.length !== EXPECTED_PROPOSAL_COUNT");
     expect(proposalRenderer).toContain("['id', 'name', 'stake', 'requirement', 'accepted', 'refused']");
     expect(proposalRenderer).toContain("root.dataset.proposalCount = String(proposals.length)");
+    expect(proposalRenderer).toContain("root.dataset.proposalSourceIssue = String(source.source_issue)");
     expect(proposalRenderer).toContain("document.querySelectorAll('[data-proposal-count]')");
   });
 

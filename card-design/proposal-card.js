@@ -1,6 +1,7 @@
-const PROPOSAL_SOURCE = '/releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json';
+const PROPOSAL_SOURCE = '/docs/v0.6.4-diplomat-proposals.json';
 const RATIFIED_SEAL_SOURCE = '/images/artwork/supplemental/diplomats/ratified-wax-seal.webp';
 const EXPECTED_PROPOSAL_COUNT = 9;
+const EXPECTED_SOURCE_ISSUE = 617;
 
 const root = document.querySelector('#proposalReviewSections');
 
@@ -42,7 +43,7 @@ function proposalFace(proposal, ratified = false) {
         ${ruleSection('Accepted', proposal.accepted)}
         ${ruleSection('Refused', proposal.refused)}
       </div>
-      <footer class="card-footer"><span>Diplomats</span><span>${esc(type)}</span><span>v0.6.3</span></footer>
+      <footer class="card-footer"><span>Diplomats</span><span>${esc(type)}</span><span>v0.6.4 candidate</span></footer>
     </div>
   </article>`;
 }
@@ -72,9 +73,15 @@ function updateProposalCounts(count) {
   });
 }
 
-function validateCanonicalProposals(proposals) {
+function validateApprovedProposalSource(source, proposals) {
+  if (source.source_issue !== EXPECTED_SOURCE_ISSUE) {
+    throw new Error(`Expected approved Proposal source from issue #${EXPECTED_SOURCE_ISSUE}`);
+  }
+  if (source.mechanics_changed !== false) {
+    throw new Error('Proposal rewrite source must remain wording-only');
+  }
   if (proposals.length !== EXPECTED_PROPOSAL_COUNT) {
-    throw new Error(`Expected ${EXPECTED_PROPOSAL_COUNT} canonical Proposals, found ${proposals.length}`);
+    throw new Error(`Expected ${EXPECTED_PROPOSAL_COUNT} approved Proposals, found ${proposals.length}`);
   }
 
   const requiredFields = ['id', 'name', 'stake', 'requirement', 'accepted', 'refused'];
@@ -89,11 +96,12 @@ async function renderProposalCatalog() {
   try {
     const response = await fetch(PROPOSAL_SOURCE, { cache: 'no-cache' });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const canonical = await response.json();
-    const proposals = Array.isArray(canonical.proposals) ? canonical.proposals : [];
-    validateCanonicalProposals(proposals);
+    const source = await response.json();
+    const proposals = Array.isArray(source.proposals) ? source.proposals : [];
+    validateApprovedProposalSource(source, proposals);
     updateProposalCounts(proposals.length);
     root.dataset.proposalCount = String(proposals.length);
+    root.dataset.proposalSourceIssue = String(source.source_issue);
     root.innerHTML = `<div class="proposal-review-block">${proposals.map(reviewPair).join('')}</div>`;
   } catch (error) {
     root.innerHTML = `<p class="review-note">Unable to load complete Proposal set: ${esc(error.message)}</p>`;
