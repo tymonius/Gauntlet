@@ -68,7 +68,7 @@
 .reference-card-interior {
   position: relative;
   display: grid;
-  grid-template-rows: 0.60in minmax(0, 1fr) 0.18in;
+  grid-template-rows: 0.49in minmax(0, 1fr) 0.15in;
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -95,7 +95,7 @@
   position: absolute;
   z-index: 1;
   right: 0.14in;
-  bottom: 0.27in;
+  bottom: 0.24in;
   width: 1.42in;
   height: 1.42in;
   background: var(--reference-accent);
@@ -115,29 +115,29 @@
 .reference-card-header {
   min-width: 0;
   overflow: hidden;
-  padding: 0.036in 0.07in 0.025in;
+  padding: 0.026in 0.065in 0.016in;
   border-bottom: 1px solid color-mix(in srgb, var(--reference-accent) 68%, transparent);
 }
 
 .reference-kicker {
   display: flex;
   align-items: center;
-  gap: 0.045in;
-  margin: 0 0 0.012in;
+  gap: 0.04in;
+  margin: 0 0 0.009in;
   color: var(--reference-accent);
   font-family: var(--font-interface, Arial, sans-serif);
-  font-size: 5.0pt;
+  font-size: 4.7pt;
   font-weight: 850;
-  letter-spacing: 0.10em;
+  letter-spacing: 0.09em;
   line-height: 1;
   text-transform: uppercase;
 }
 
 .reference-faction-emblem {
   display: block;
-  width: 0.145in;
-  height: 0.145in;
-  flex: 0 0 0.145in;
+  width: 0.13in;
+  height: 0.13in;
+  flex: 0 0 0.13in;
   background: currentColor;
   -webkit-mask: var(--reference-symbol) center / contain no-repeat;
   mask: var(--reference-symbol) center / contain no-repeat;
@@ -149,11 +149,11 @@
   overflow: hidden;
   color: var(--card-ink, #241c15);
   font-family: var(--font-display-historical, Georgia, serif);
-  font-size: 10.6pt;
+  font-size: 10.2pt;
   font-style: normal;
   font-weight: 500;
-  letter-spacing: 0.012em;
-  line-height: 0.90;
+  letter-spacing: 0.01em;
+  line-height: 0.89;
   text-overflow: clip;
   text-transform: uppercase;
   white-space: normal;
@@ -162,17 +162,7 @@
 }
 
 .reference-component-name {
-  margin: 0.012in 0 0;
-  overflow: hidden;
-  color: var(--reference-accent);
-  font-family: var(--font-interface, Arial, sans-serif);
-  font-size: 4.35pt;
-  font-weight: 750;
-  letter-spacing: 0.04em;
-  line-height: 1;
-  text-overflow: ellipsis;
-  text-transform: uppercase;
-  white-space: nowrap;
+  display: none;
 }
 
 .reference-body {
@@ -181,10 +171,10 @@
   flex-direction: column;
   gap: var(--reference-section-gap);
   overflow: hidden;
-  padding: 0.04in 0.065in 0.025in;
+  padding: 0.03in 0.06in 0.018in;
   font-family: "adobe-caslon-pro", Georgia, serif;
-  font-size: calc(5.9pt * var(--reference-rules-scale));
-  line-height: 1.075;
+  font-size: calc(5.95pt * var(--reference-rules-scale));
+  line-height: 1.065;
 }
 
 .reference-section {
@@ -192,15 +182,15 @@
 }
 
 .reference-section-title {
-  margin: 0 0 0.012in;
-  padding-bottom: 0.009in;
+  margin: 0 0 0.009in;
+  padding-bottom: 0.006in;
   border-bottom: 0.5px solid color-mix(in srgb, var(--reference-accent) 46%, transparent);
   color: var(--reference-accent);
   font-family: var(--font-interface, Arial, sans-serif);
-  font-size: calc(4.75pt * var(--reference-rules-scale));
+  font-size: calc(4.65pt * var(--reference-rules-scale));
   font-weight: 850;
-  letter-spacing: 0.04em;
-  line-height: 1.03;
+  letter-spacing: 0.038em;
+  line-height: 1.02;
   text-transform: uppercase;
 }
 
@@ -213,7 +203,7 @@
 }
 
 .reference-blocks > * + * {
-  margin-top: 0.012in;
+  margin-top: 0.009in;
 }
 
 .reference-blocks strong {
@@ -225,21 +215,21 @@
 
 .reference-blocks ul,
 .reference-blocks ol {
-  padding-left: 0.13in;
+  padding-left: 0.125in;
 }
 
 .reference-blocks li + li {
-  margin-top: 0.006in;
+  margin-top: 0.004in;
 }
 
 .reference-inline-heading {
-  margin: 0.012in 0 0;
+  margin: 0.009in 0 0;
   color: var(--card-muted-ink, #5c4d3e);
   font-family: var(--font-interface, Arial, sans-serif);
-  font-size: 0.94em;
+  font-size: 0.93em;
   font-weight: 850;
-  letter-spacing: 0.025em;
-  line-height: 1.02;
+  letter-spacing: 0.023em;
+  line-height: 1.01;
   text-transform: uppercase;
 }
 
@@ -248,13 +238,13 @@
   border-collapse: collapse;
   table-layout: fixed;
   font-family: var(--font-interface, Arial, sans-serif);
-  font-size: 0.86em;
-  line-height: 1.02;
+  font-size: 0.84em;
+  line-height: 1.0;
 }
 
 .reference-table th,
 .reference-table td {
-  padding: 0.012in 0.018in;
+  padding: 0.009in 0.014in;
   border: 0.45px solid rgba(65, 49, 35, 0.30);
   vertical-align: top;
 }
@@ -270,16 +260,16 @@
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  gap: 0.025in;
+  gap: 0.02in;
   min-width: 0;
-  padding: 0.032in 0.05in 0.018in;
+  padding: 0.021in 0.045in 0.011in;
   border-top: 0.55px solid rgba(58, 45, 34, 0.30);
   background: var(--reference-accent-soft);
   color: var(--card-muted-ink, #5c4d3e);
   font-family: var(--font-interface, Arial, sans-serif);
-  font-size: 4.15pt;
+  font-size: 3.9pt;
   font-weight: 750;
-  letter-spacing: 0.025em;
+  letter-spacing: 0.022em;
   line-height: 1;
   text-transform: uppercase;
 }
@@ -294,7 +284,7 @@
 
 .reference-card-footer strong {
   color: var(--reference-accent);
-  font-size: 4.0pt;
+  font-size: 3.8pt;
   font-weight: 900;
   text-align: center;
 }
