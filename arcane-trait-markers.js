@@ -16,9 +16,13 @@
     ['.deck-row .deck-title', 'strong'],
     ['.card-preview h3', null],
   ]);
+  const PRINT_TITLE_TARGETS = Object.freeze([
+    ['.print-card.main-card .card-header', '.card-name'],
+  ]);
 
   let arcaneCardsByName = new Map();
   let decorateScheduled = false;
+  let arcaneReady = Promise.resolve();
 
   function slugify(value) {
     return String(value || '')
@@ -42,8 +46,8 @@
     return String(source.textContent || '').trim();
   }
 
-  function markerFor(card) {
-    const marker = document.createElement('i');
+  function markerFor(card, ownerDocument = document) {
+    const marker = ownerDocument.createElement('i');
     marker.className = 'gauntlet-arcane-title-marker';
     marker.setAttribute('role', 'img');
     marker.setAttribute('aria-label', 'Arcane trait');
@@ -55,20 +59,21 @@
     return marker;
   }
 
-  function decorateTitle(element, nestedSelector) {
+  function decorateTitle(element, nestedSelector, ownerDocument = document) {
     if (!element || element.querySelector(':scope > .gauntlet-arcane-title-marker')) return;
     const card = arcaneCardsByName.get(titleText(element, nestedSelector));
     if (!card) return;
     element.classList.add('arcane-marked-title');
     const anchor = nestedSelector ? element.querySelector(nestedSelector) : element.firstChild;
-    const marker = markerFor(card);
+    const marker = markerFor(card, ownerDocument);
     if (anchor) element.insertBefore(marker, anchor);
     else element.prepend(marker);
   }
 
-  function decorate(root = document) {
-    for (const [selector, nestedSelector] of TITLE_TARGETS) {
-      root.querySelectorAll(selector).forEach((element) => decorateTitle(element, nestedSelector));
+  function decorate(root = document, targets = TITLE_TARGETS) {
+    const ownerDocument = root.nodeType === Node.DOCUMENT_NODE ? root : root.ownerDocument || document;
+    for (const [selector, nestedSelector] of targets) {
+      root.querySelectorAll(selector).forEach((element) => decorateTitle(element, nestedSelector, ownerDocument));
     }
   }
 
@@ -79,6 +84,52 @@
       decorateScheduled = false;
       decorate();
     });
+  }
+
+  function ensurePrintStyles(ownerDocument) {
+    if (ownerDocument.querySelector('style[data-arcane-title-marker-styles]')) return;
+    const style = ownerDocument.createElement('style');
+    style.dataset.arcaneTitleMarkerStyles = 'true';
+    style.textContent = `
+      .arcane-marked-title{display:flex!important;align-items:center;gap:.045in;min-width:0}
+      .gauntlet-arcane-title-marker{display:inline-block;width:.12in;height:.12in;flex:0 0 .12in;background:var(--arcane-marker-color,#8a6535);-webkit-mask:url('/images/faction-symbols/mystics.svg') center/contain no-repeat;mask:url('/images/faction-symbols/mystics.svg') center/contain no-repeat;print-color-adjust:exact}
+    `;
+    ownerDocument.head?.append(style);
+  }
+
+  function decoratePopup(popup) {
+    if (!popup || popup.closed) return;
+    try {
+      const ownerDocument = popup.document;
+      if (!ownerDocument?.documentElement) return;
+      ensurePrintStyles(ownerDocument);
+      decorate(ownerDocument, PRINT_TITLE_TARGETS);
+      if (ownerDocument.body && popup.MutationObserver && !ownerDocument.body.dataset.arcaneMarkerObserver) {
+        ownerDocument.body.dataset.arcaneMarkerObserver = 'true';
+        const observer = new popup.MutationObserver(() => decorate(ownerDocument, PRINT_TITLE_TARGETS));
+        observer.observe(ownerDocument.body, { childList: true, subtree: true });
+      }
+    } catch {
+      // Ignore cross-origin or already-closed windows. The hook exists only to
+      // decorate same-origin Deckbuilder print documents.
+    }
+  }
+
+  function installPopupHook() {
+    if (window.__gauntletArcaneMarkerOpenWrapped) return;
+    window.__gauntletArcaneMarkerOpenWrapped = true;
+    const nativeOpen = window.open.bind(window);
+    window.open = (...args) => {
+      const popup = nativeOpen(...args);
+      if (popup) {
+        arcaneReady.finally(() => {
+          [0, 25, 100, 250].forEach((delay) => {
+            window.setTimeout(() => decoratePopup(popup), delay);
+          });
+        });
+      }
+      return popup;
+    };
   }
 
   async function loadArcaneCards() {
@@ -96,8 +147,10 @@
   }
 
   async function start() {
+    installPopupHook();
     try {
-      await loadArcaneCards();
+      arcaneReady = loadArcaneCards();
+      await arcaneReady;
       decorate();
       const observer = new MutationObserver(scheduleDecorate);
       observer.observe(document.body, { childList: true, subtree: true });
