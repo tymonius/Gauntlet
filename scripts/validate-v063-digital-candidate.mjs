@@ -11,9 +11,11 @@ const rules = readFileSync('src/v063/rules.ts', 'utf8');
 const cards = readFileSync('src/v063/cards.ts', 'utf8');
 const copiedEffects = readFileSync('src/v063/copied-effects.ts', 'utf8');
 const arcaneKnowledge = readFileSync('src/v063/arcane-knowledge.ts', 'utf8');
+const copiedEffectCallers = readFileSync('src/v063/copied-effect-callers.ts', 'utf8');
 const rulesTests = readFileSync('src/v063/rules.test.ts', 'utf8');
 const cardTests = readFileSync('src/v063/cards.test.ts', 'utf8');
 const copiedEffectTests = readFileSync('src/v063/copied-effects.test.ts', 'utf8');
+const copiedEffectCallerTests = readFileSync('src/v063/copied-effect-callers.test.ts', 'utf8');
 const currentSurface = readFileSync('src/content/current.ts', 'utf8');
 const legacyNeutralContainment = readFileSync('src/cards/neutral-audit-containment.ts', 'utf8');
 
@@ -113,9 +115,11 @@ for (const marker of [
 
 for (const marker of [
   'eligibleV063CopiedEffects',
+  'eligibleV063CopiedEffectInstances',
   'beginV063CopiedEffectApplication',
   'continueV063CopiedEffectApplication',
-  'sourceCardMoves: false',
+  'sourceCardMovesMerelyBecauseCopied: false',
+  'printedEffectOrCallerMayMoveSource: true',
   'sourceCardIsPlayedSetOrChosen: false',
   'sourceEventTriggers: false',
   'remakeChoices: true',
@@ -131,11 +135,33 @@ for (const marker of [
   assert(arcaneKnowledge.includes(marker), `Digital v0.6.3 Arcane Knowledge layer is missing ${marker}.`);
   assert(copiedEffectTests.includes(marker), `Digital v0.6.3 copied-effect tests do not exercise ${marker}.`);
 }
+for (const marker of [
+  'v063HeresyChoices',
+  'prepareV063HeresyApplication',
+  'v063RendTheVeilChoices',
+  'prepareV063RendTheVeilApplication',
+  'completeV063RendTheVeilAftermath',
+  'v063WitchcraftRepeatChoices',
+  'prepareV063WitchcraftBattleApplication',
+  'prepareV063WitchcraftAssetApplication',
+]) {
+  assert(copiedEffectCallers.includes(marker), `Digital v0.6.3 copied-effect caller layer is missing ${marker}.`);
+  assert(copiedEffectCallerTests.includes(marker), `Digital v0.6.3 copied-effect caller tests do not exercise ${marker}.`);
+}
 assert(!copiedEffects.includes('replayableBattleEffectIds'), 'v0.6.3 copied-effect legality must not use the legacy title whitelist.');
+assert(!copiedEffectCallers.includes('addReplayedBattleCard'), 'Current copied-effect callers must not inject virtual replay cards into battles.');
+assert(!copiedEffectCallers.includes('addVirtualRepeat'), 'Current Witchcraft must not create a virtual replay card.');
+assert(copiedEffectCallerTests.includes("'black-1'"), 'Rend the Veil tests must distinguish physical duplicate source instances.');
+assert(copiedEffectCallerTests.includes("'black-2'"), 'Rend the Veil tests must distinguish physical duplicate source instances.');
+assert(copiedEffectCallerTests.includes('createsCopiedOrRepeatedApplication'), 'Witchcraft tests must guard repeat/copy target exclusion.');
+assert(copiedEffectCallerTests.includes('addsBattleCard'), 'Witchcraft tests must guard card-adding target exclusion.');
+assert(copiedEffectCallerTests.includes('fallbackAdvantage'), 'Witchcraft tests must guard its no-target Advantage fallback.');
+assert(copiedEffectCallerTests.includes('once per turn'), 'Witchcraft Asset tests must guard its once-per-turn limit.');
 assert(copiedEffectTests.includes('third application layer'), 'Copied-effect regression coverage must enforce the v0.6.3 chain ceiling.');
 assert(copiedEffectTests.includes('sourceCardIsPlayedSetOrChosen'), 'Copied-effect regression coverage must guard source-card event semantics.');
 assert(currentSurface.includes("export * from '../v063/copied-effects';"), 'Current digital surface must expose v0.6.3 copied-effect procedures.');
 assert(currentSurface.includes("export * from '../v063/arcane-knowledge';"), 'Current digital surface must expose v0.6.3 Arcane Knowledge procedures.');
+assert(currentSurface.includes("export * from '../v063/copied-effect-callers';"), 'Current digital surface must expose migrated v0.6.3 copied-effect callers.');
 
 assert(contentAdapter.includes("V063_RULES_VERSION = 'v0.6.3'"), 'v0.6.3 content adapter is not release-version locked.');
 assert(contentAdapter.includes("../../releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json"), 'v0.6.3 content adapter does not import the published canonical-data export.');
@@ -164,7 +190,7 @@ assert(cardTests.includes('completeMartyrdomAfterBattleCardsClear'), 'Martyrdom 
 // implementation as current behavior.
 assert(legacyNeutralContainment.includes("'neutral-arcane-knowledge': ['battle_hand_commit', 'battle_draw_play']"), 'Legacy Arcane Knowledge battle replay must remain quarantined until the legacy shell is migrated.');
 
-console.log('v0.6.3 digital baseline validation passed: published content authority is locked, v0.6.3 owns shared rules and card runtimes, Arcane Knowledge and copied/repeated-effect semantics are modeled without legacy virtual replay, and the historical prototype remains explicitly quarantined where it is not yet migrated. Full engine parity remains tracked by #741.');
+console.log('v0.6.3 digital baseline validation passed: published content authority is locked; shared rules/card runtimes, Arcane Knowledge, Heresy, Rend the Veil, and Witchcraft use the active v0.6.3 semantics; copied/repeated effects preserve physical source identity without virtual replay; and the historical prototype remains explicitly quarantined where it is not yet migrated. Full engine parity remains tracked by #741.');
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
