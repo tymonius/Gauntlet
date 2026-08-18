@@ -1,6 +1,9 @@
-import canonicalCandidateJson from '../../artifacts/reconstruction/v0.6.3-browser-candidate/data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json';
+import canonicalReleaseJson from '../../releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json';
+import releaseManifestJson from '../../releases/v0.6.3/Gauntlet_v0.6.3_Manifest.json';
 
-export const V063_RULES_VERSION = 'v0.6.3-candidate' as const;
+export const V063_RULES_VERSION = 'v0.6.3' as const;
+export const V063_CANONICAL_DATA_SOURCE = 'releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json' as const;
+export const V063_RELEASE_MANIFEST_SOURCE = 'releases/v0.6.3/Gauntlet_v0.6.3_Manifest.json' as const;
 
 export interface V063CanonicalCardEffect {
   label: string;
@@ -29,8 +32,6 @@ export interface V063CanonicalFaction {
 }
 
 export interface V063CanonicalData {
-  version: string;
-  name: string;
   deck_construction: {
     opening_hand: number;
     opening_draw: number;
@@ -57,9 +58,35 @@ export interface V063CanonicalData {
   territories: V063CanonicalTerritory[];
 }
 
+export interface V063ReleaseManifest {
+  schema_version: number;
+  release_version: typeof V063_RULES_VERSION;
+  name: string;
+  status: 'current';
+  current_package_path: 'releases/v0.6.3/';
+  binding_sources: {
+    canonical_data: {
+      path: string;
+      sha256: string;
+    };
+  };
+  counts: {
+    playable_cards: number;
+    territories: number;
+    factions: number;
+    leaders: number;
+  };
+  public_defaults: {
+    digital_rules: typeof V063_RULES_VERSION;
+  };
+  json_exports: string[];
+}
+
 export interface V063CanonicalContentIndex {
   rulesVersion: typeof V063_RULES_VERSION;
   releaseName: string;
+  canonicalDataSource: typeof V063_CANONICAL_DATA_SOURCE;
+  releaseManifestSource: typeof V063_RELEASE_MANIFEST_SOURCE;
   content: V063CanonicalData;
   factionsById: ReadonlyMap<string, V063CanonicalFaction>;
   cardsById: ReadonlyMap<string, V063CanonicalCard>;
@@ -76,12 +103,32 @@ function uniqueMap<T>(items: readonly T[], keyFor: (item: T) => string, label: s
   return result;
 }
 
+function assertV063ReleaseManifest(value: unknown): asserts value is V063ReleaseManifest {
+  if (!value || typeof value !== 'object') throw new Error('v0.6.3 release manifest must be an object.');
+  const manifest = value as Partial<V063ReleaseManifest>;
+  if (manifest.release_version !== V063_RULES_VERSION || manifest.status !== 'current') {
+    throw new Error(`Expected current ${V063_RULES_VERSION} release manifest.`);
+  }
+  if (manifest.current_package_path !== 'releases/v0.6.3/') {
+    throw new Error('v0.6.3 engine content must remain bound to the published release package.');
+  }
+  if (manifest.public_defaults?.digital_rules !== V063_RULES_VERSION) {
+    throw new Error('Published release manifest does not identify v0.6.3 as the digital-rules default.');
+  }
+  if (manifest.counts?.playable_cards !== 128 || manifest.counts?.territories !== 25 || manifest.counts?.factions !== 6 || manifest.counts?.leaders !== 12) {
+    throw new Error('Published v0.6.3 release counts do not match the engine migration baseline.');
+  }
+  if (!manifest.json_exports?.includes('Gauntlet_v0.6.3_Canonical_Data.json')) {
+    throw new Error('Published v0.6.3 manifest must declare the canonical-data export.');
+  }
+  if (!manifest.binding_sources?.canonical_data?.path || !manifest.binding_sources.canonical_data.sha256) {
+    throw new Error('Published v0.6.3 manifest must identify its binding canonical-data source.');
+  }
+}
+
 function assertV063CanonicalData(value: unknown): asserts value is V063CanonicalData {
   if (!value || typeof value !== 'object') throw new Error('v0.6.3 canonical content must be an object.');
   const data = value as Partial<V063CanonicalData>;
-  if (data.version !== V063_RULES_VERSION) {
-    throw new Error(`Expected ${V063_RULES_VERSION}, received ${String(data.version)}.`);
-  }
   if (!Array.isArray(data.factions) || data.factions.length !== 6) {
     throw new Error('v0.6.3 canonical content must include exactly six factions.');
   }
@@ -100,7 +147,7 @@ function assertV063CanonicalData(value: unknown): asserts value is V063Canonical
   }
   const lastStand = data.battlefield?.last_stand;
   if (!lastStand || lastStand.final_territory_control_required || lastStand.final_territory_capture_required || !lastStand.separate_movement_sequence_required) {
-    throw new Error('v0.6.3 Last Stand access metadata does not match the adopted candidate.');
+    throw new Error('v0.6.3 Last Stand access metadata does not match the published release.');
   }
 }
 
@@ -109,7 +156,10 @@ function cardEffect(card: V063CanonicalCard | undefined, label: string): string 
 }
 
 export function loadV063CanonicalContent(): V063CanonicalContentIndex {
-  const raw: unknown = canonicalCandidateJson;
+  const manifest: unknown = releaseManifestJson;
+  assertV063ReleaseManifest(manifest);
+
+  const raw: unknown = canonicalReleaseJson;
   assertV063CanonicalData(raw);
 
   const factionsById = uniqueMap(raw.factions, (faction) => faction.id, 'faction id');
@@ -153,7 +203,9 @@ export function loadV063CanonicalContent(): V063CanonicalContentIndex {
 
   return {
     rulesVersion: V063_RULES_VERSION,
-    releaseName: raw.name,
+    releaseName: manifest.name,
+    canonicalDataSource: V063_CANONICAL_DATA_SOURCE,
+    releaseManifestSource: V063_RELEASE_MANIFEST_SOURCE,
     content: raw,
     factionsById,
     cardsById,

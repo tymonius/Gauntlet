@@ -1,23 +1,24 @@
-# Legacy Gauntlet Digital Prototype
+# Gauntlet Digital Engine Work
 
-This directory contains the pre-v0.6 TypeScript rules-engine experiment and its development interfaces.
+This directory contains both the preserved legacy rules-engine prototype and the incremental migration toward the current published Gauntlet rules.
 
-The code is preserved because it contains useful architecture, state-transition tests, hidden-information work, and interface prototypes. It does **not** implement the canonical v0.6.0 faction-era game and is not an authoritative rules source.
+## Current authority boundary
 
-Current references:
+The published rules baseline is **v0.6.3**. Engine-facing v0.6.3 content in `src/content/v063.ts` is loaded from the immutable release package:
 
-- `releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md`
-- `releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json`
-- `docs/Gauntlet_Digital_Roadmap.md`
-- `docs/Gauntlet_Playtest_Targets_and_Metrics.md`
+- `releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json`
+- `releases/v0.6.3/Gauntlet_v0.6.3_Manifest.json`
 
-## Preserved areas
+The release manifest identifies the binding Rulebook source as `artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md`; the published package carries the corresponding Rulebook PDF. The release contract is authoritative. Pre-publication browser candidates are historical/provenance inputs, not the active engine content source.
 
-- `state/` — setup, actions, reducers, views, movement, battles, capture, and win-evaluation experiments.
-- `effects/` — early card-effect handlers.
-- `cards/` — prototype card integration.
-- `cli/` — guided command-line runner and logs.
-- `gui/` — local browser development server.
+## Migration layers
+
+- `v063/` — current incremental v0.6.3 rule/card procedures and tests.
+- `content/v063.ts` — published v0.6.3 content index for engine migration work.
+- `v062/` — earlier versioned migration work retained as implementation history and selectively reused by the v0.6.3 layer.
+- `state/`, `effects/`, `cards/`, `cli/`, and `gui/` — pre-v0.6 prototype architecture and interfaces. These remain useful implementation material but are **not** presumed v0.6.3-compatible.
+
+Issue #741 tracks the full synchronization of the playable engine with v0.6.3. The existence of a `v063/` adapter or passing tests for an implemented procedure does not imply complete engine parity; unsupported or stale legacy behavior must remain explicit until migrated and validated.
 
 ## Development commands
 
@@ -31,8 +32,8 @@ npm run dev:cli
 npm run dev:gui
 ```
 
-These commands exercise the legacy prototype. Passing tests confirms internal consistency of that prototype, not compliance with v0.6.0.
+The broad development commands still exercise legacy code as well as versioned migration code. Passing them demonstrates repository consistency, not completion of #741.
 
 ## Reuse policy
 
-New canonical engine work should extract reusable architecture deliberately rather than continuing the mixed-version model. Any retained module must be tested against v0.6.0 terminology, zones, timing, Battle Hands, Defender's Advantage, running the Gauntlet, faction systems, and supplemental components.
+Reuse legacy architecture deliberately. New or retained gameplay behavior must be checked against the published v0.6.3 Rulebook and canonical data rather than inherited from an older prototype merely because a handler or test already exists.

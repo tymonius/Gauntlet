@@ -21,8 +21,8 @@ import {
 } from './rules';
 
 describe('v0.6.3 canonical digital content', () => {
-  test('loads the exact integrated candidate rather than the published v0.6.2 adapter', () => {
-    expect(v063CanonicalContent.rulesVersion).toBe('v0.6.3-candidate');
+  test('loads the published v0.6.3 release rather than a pre-publication candidate', () => {
+    expect(v063CanonicalContent.rulesVersion).toBe('v0.6.3');
     expect(v063CanonicalContent.content.cards).toHaveLength(128);
     expect(v063CanonicalContent.content.territories).toHaveLength(25);
     expect(v063CanonicalContent.cardsById.get('neutral-reserves')?.name).toBe('Second Line');
