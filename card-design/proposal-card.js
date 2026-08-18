@@ -27,7 +27,6 @@ function supplementalLabel(type) {
 function proposalArtwork(proposal) {
   const source = `${PROPOSAL_ART_ROOT}/${proposal.id}.png`;
   return `<figure class="card-art proposal-art-pending" data-proposal-artwork="${esc(source)}" aria-label="Artwork for ${esc(proposal.name)}">
-    <img alt="Artwork for ${esc(proposal.name)}" hidden />
     <span>Artwork pending</span>
   </figure>`;
 }
@@ -53,13 +52,12 @@ async function loadProposalArtwork() {
   const figures = Array.from(root.querySelectorAll('[data-proposal-artwork]'));
   await Promise.all(figures.map(async figure => {
     const source = figure.dataset.proposalArtwork;
-    const image = figure.querySelector('img');
-    const pending = figure.querySelector('span');
-    if (!source || !image || !await imageExists(source)) return;
+    if (!source || !await imageExists(source)) return;
 
+    const image = document.createElement('img');
     image.src = source;
-    image.hidden = false;
-    if (pending) pending.hidden = true;
+    image.alt = figure.getAttribute('aria-label') || 'Proposal artwork';
+    figure.replaceChildren(image);
     figure.classList.add('has-image');
     figure.classList.remove('proposal-art-pending');
   }));
