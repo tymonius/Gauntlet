@@ -16,10 +16,12 @@ import {
   V063_MANIFEST_DESTINY_ID,
   resolveV063ManifestDestinyAction,
   resolveV063ManifestDestinyBattle,
+  v063ManifestDestinyInstanceId,
 } from './manifest-destiny';
 
 const initialTerritories = Array.from({ length: 6 }, (_, index) => ({
-  id: `territory-${index}`,
+  instanceId: `territory-instance-${index}`,
+  cardId: `territory-${index}`,
   name: `Territory ${index}`,
 }));
 
@@ -46,15 +48,16 @@ describe('published Manifest Destiny authority', () => {
 describe('dynamic v0.6.3 Gauntlet insertion', () => {
   test('inserting at player A end shifts existing physical Positions without movement or entry', () => {
     const result = insertV063TerritoryAtPlayerEnd(initialGauntlet(), 'A', {
-      id: 'added-a',
+      instanceId: 'added-a-instance',
+      cardId: 'added-a',
       name: 'Added A',
       blank: true,
     });
 
     expect(result.insertedIndex).toBe(0);
-    expect(result.state.territories.map((territory) => territory.id)).toEqual([
-      'added-a',
-      ...initialTerritories.map((territory) => territory.id),
+    expect(result.state.territories.map((territory) => territory.instanceId)).toEqual([
+      'added-a-instance',
+      ...initialTerritories.map((territory) => territory.instanceId),
     ]);
     expect(result.state.frontLine).toEqual({
       territoryCount: 7,
@@ -69,13 +72,14 @@ describe('dynamic v0.6.3 Gauntlet insertion', () => {
     const gauntlet = initialGauntlet();
     gauntlet.frontLine.position.B = 6;
     const result = insertV063TerritoryAtPlayerEnd(gauntlet, 'B', {
-      id: 'added-b',
+      instanceId: 'added-b-instance',
+      cardId: 'added-b',
       name: 'Added B',
       blank: true,
     });
 
     expect(result.insertedIndex).toBe(6);
-    expect(result.state.territories.at(-1)?.id).toBe('added-b');
+    expect(result.state.territories.at(-1)?.instanceId).toBe('added-b-instance');
     expect(result.state.frontLine).toEqual({
       territoryCount: 7,
       control: { A: 3, B: 4 },
@@ -87,15 +91,34 @@ describe('dynamic v0.6.3 Gauntlet insertion', () => {
     const gauntlet = initialGauntlet();
     gauntlet.frontLine.position = { A: 3, B: 4 };
     const result = insertV063TerritoryAtFrontLine(gauntlet, 'A', {
-      id: 'front-line-added',
+      instanceId: 'front-line-added-instance',
+      cardId: 'front-line-added',
       name: 'Front Line Added',
       blank: true,
     });
 
     expect(result.insertedIndex).toBe(3);
-    expect(result.state.territories[3].id).toBe('front-line-added');
+    expect(result.state.territories[3].instanceId).toBe('front-line-added-instance');
     expect(result.state.frontLine.control).toEqual({ A: 4, B: 3 });
     expect(result.state.frontLine.position).toEqual({ A: 4, B: 5 });
+  });
+
+  test('physical instance identity allows both players copies of the same Territory card identity', () => {
+    const first = insertV063TerritoryAtFrontLine(initialGauntlet(), 'A', {
+      instanceId: 'same-card:A',
+      cardId: 'same-card',
+      name: 'Same Card',
+      blank: true,
+    }).state;
+    const second = insertV063TerritoryAtFrontLine(first, 'B', {
+      instanceId: 'same-card:B',
+      cardId: 'same-card',
+      name: 'Same Card',
+      blank: true,
+    }).state;
+
+    expect(second.territories.filter((territory) => territory.cardId === 'same-card')).toHaveLength(2);
+    expect(new Set(second.territories.map((territory) => territory.instanceId)).size).toBe(8);
   });
 });
 
@@ -116,7 +139,8 @@ describe('Manifest Destiny Action', () => {
       graveyard: ['old', 'hand-one', 'hand-two', 'asset-one'],
     });
     expect(result.gauntlet.territories[0]).toMatchObject({
-      id: V063_MANIFEST_DESTINY_ID,
+      instanceId: v063ManifestDestinyInstanceId('A'),
+      cardId: V063_MANIFEST_DESTINY_ID,
       name: 'Manifest Destiny',
       blank: true,
       hasDeed: true,
@@ -151,13 +175,31 @@ describe('Manifest Destiny battle mode', () => {
 
     expect(result.insertedIndex).toBe(3);
     expect(result.gauntlet.territories[3]).toMatchObject({
-      id: V063_MANIFEST_DESTINY_ID,
+      instanceId: v063ManifestDestinyInstanceId('A'),
+      cardId: V063_MANIFEST_DESTINY_ID,
       blank: true,
       hasDeed: true,
       deedOwner: null,
     });
     expect(result.gauntlet.frontLine.position).toEqual({ A: 4, B: 5 });
     expect(result.sourceDestination).toBe('gauntlet');
+  });
+
+  test('both players may independently turn their Unique copy into a Territory', () => {
+    const afterA = resolveV063ManifestDestinyBattle(initialGauntlet(), 'A', {
+      role: 'attacker',
+      result: 'win',
+    }).gauntlet;
+    const afterB = resolveV063ManifestDestinyBattle(afterA, 'B', {
+      role: 'attacker',
+      result: 'win',
+    }).gauntlet;
+
+    const manifests = afterB.territories.filter((territory) => territory.cardId === V063_MANIFEST_DESTINY_ID);
+    expect(manifests.map((territory) => territory.instanceId).sort()).toEqual([
+      v063ManifestDestinyInstanceId('A'),
+      v063ManifestDestinyInstanceId('B'),
+    ]);
   });
 
   test('does not insert after a defender win, attacker loss, or withdrawal', () => {
@@ -189,7 +231,7 @@ describe('normal rules for an added Territory', () => {
   test('its unowned Deed expands Controlling Interest and uses the normal capped cost formula', () => {
     let gauntlet = initialGauntlet();
     for (const territory of gauntlet.territories) {
-      gauntlet = setV063DeedOwner(gauntlet, territory.id, 'A');
+      gauntlet = setV063DeedOwner(gauntlet, territory.instanceId, 'A');
     }
     expect(v063HasControllingInterest(gauntlet, 'A')).toBe(true);
 
@@ -197,10 +239,11 @@ describe('normal rules for an added Territory', () => {
       role: 'attacker',
       result: 'win',
     }).gauntlet;
+    const manifestInstance = v063ManifestDestinyInstanceId('A');
     expect(v063HasControllingInterest(inserted, 'A')).toBe(false);
-    expect(v063DeedCost(inserted, 'A', V063_MANIFEST_DESTINY_ID)).toBe(5);
+    expect(v063DeedCost(inserted, 'A', manifestInstance)).toBe(5);
 
-    const acquired = setV063DeedOwner(inserted, V063_MANIFEST_DESTINY_ID, 'A');
+    const acquired = setV063DeedOwner(inserted, manifestInstance, 'A');
     expect(v063DeedIncome(acquired, 'A')).toBe(7);
     expect(v063HasControllingInterest(acquired, 'A')).toBe(true);
   });
