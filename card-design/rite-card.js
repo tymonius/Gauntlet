@@ -58,6 +58,7 @@ const UNLOCKS = Object.freeze([
   {
     count: 'Ritual',
     name: 'Ritual of Ascension',
+    headerLines: ['Ritual of', 'Ascension'],
     text: 'After completing all three Rites, during Denouement, spend 1 Action to bind one Arcane card from your Hand, one from your Discard Pile, and one from your Graveyard. Initiate a battle while all three remain bound. If you win that battle, complete the Ritual and immediately win the game.',
   },
 ]);
@@ -84,6 +85,10 @@ function ruleSection(label, text) {
 }
 
 function unlockSection(unlock) {
+  if (unlock.headerLines?.length) {
+    const header = unlock.headerLines.map(line => `<span>${esc(line)}</span>`).join(' ');
+    return `<section class="rite-unlock-section rite-unlock-section--ritual"><h4><strong class="rite-unlock-ritual-heading">${header}</strong></h4><p>${esc(unlock.text)}</p></section>`;
+  }
   return `<section class="rite-unlock-section"><h4>${esc(unlock.count)}</h4><p><strong>${esc(unlock.name)}</strong> ${esc(unlock.text)}</p></section>`;
 }
 
