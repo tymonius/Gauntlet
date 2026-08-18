@@ -20,7 +20,7 @@ describe('current digital rules surface', () => {
     expect('createCleanV063TurnState' in current).toBe(false);
   });
 
-  test('exposes the migrated v0.6.3 rules procedures rather than stale v0.6.2 runtime names', () => {
+  test('exposes the migrated v0.6.3 rules and card procedures rather than stale rule-runtime names', () => {
     for (const name of [
       'createV063TurnState',
       'advanceV063TurnPhase',
@@ -32,6 +32,14 @@ describe('current digital rules surface', () => {
       'resolveV063Withdrawal',
       'retreatV063Position',
       'hasInherentBankAction',
+      'activateInvasionAction',
+      'resolveLandslideRetreatChain',
+      'resolveDetenteAcceptance',
+      'resolveCompoundInterest',
+      'bankExtraordinaryRendition',
+      'canBeginRiteFromNaturesAltar',
+      'playMartyrdomBeforeBattleCardsClear',
+      'completeMartyrdomAfterBattleCardsClear',
     ]) {
       expect(typeof current[name as keyof typeof current]).toBe('function');
     }
