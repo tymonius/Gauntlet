@@ -1,82 +1,112 @@
+/* Production reference-card grammar.
+   References use the same poker-card shell, faction frame, parchment, historical
+   display face, component subheading, and metadata band as the rest of Gauntlet.
+   Canonical guide text is re-expressed as game-facing rule rows, procedures,
+   callouts, and matrices rather than laid out like a miniature rulebook page. */
+
 .reference-card {
   --reference-accent: #6b5945;
-  --reference-accent-soft: rgba(107, 89, 69, 0.12);
-  --reference-border: #8d765c;
+  --reference-accent-soft: rgba(107, 89, 69, 0.10);
+  --reference-panel-tint: rgba(255, 250, 239, 0.46);
+  --reference-footer-tint: rgba(177, 139, 83, 0.24);
+  --reference-border: #eee7d5;
+  --reference-border-outline: rgba(62, 52, 41, 0.52);
+  --reference-border-rule: rgba(62, 52, 41, 0.24);
   --reference-symbol: none;
   --reference-rules-scale: 1;
-  --reference-section-gap: 0.035in;
+  --reference-section-gap: 0.038in;
   position: relative;
   width: 2.5in;
   height: 3.5in;
   overflow: hidden;
-  padding: 0.045in;
-  border: 1px solid color-mix(in srgb, var(--reference-border) 70%, #1b1510 30%);
+  padding: 0.075in;
+  border: 1px solid var(--reference-border-outline);
   border-radius: 0.125in;
   background: var(--reference-border);
   color: var(--card-ink, #241c15);
   box-shadow:
     0 0.16in 0.36in var(--card-shadow, rgba(38, 28, 20, 0.22)),
-    inset 0 0 0 0.012in rgba(255, 255, 255, 0.36);
+    inset 0 0 0 0.015in rgba(255, 255, 255, 0.42);
   break-inside: avoid;
   page-break-inside: avoid;
 }
 
 .reference-card::before {
   position: absolute;
-  inset: 0.018in;
-  border: 0.5px solid rgba(255, 248, 232, 0.34);
-  border-radius: 0.10in;
+  inset: 0.03in;
+  border: 0.5px solid var(--reference-border-rule);
+  border-radius: 0.09in;
   content: "";
   pointer-events: none;
 }
 
 .reference-card[data-faction="diplomats"] {
   --reference-accent: #203f73;
-  --reference-accent-soft: rgba(38, 79, 145, 0.13);
+  --reference-accent-soft: rgba(38, 79, 145, 0.11);
+  --reference-panel-tint: rgba(38, 79, 145, 0.055);
+  --reference-footer-tint: rgba(38, 79, 145, 0.20);
   --reference-border: #264f91;
+  --reference-border-outline: #17345f;
+  --reference-border-rule: rgba(244, 248, 255, 0.38);
   --reference-symbol: url("../images/faction-symbols/diplomats.svg");
 }
 
 .reference-card[data-faction="financiers"] {
   --reference-accent: #1d5d39;
-  --reference-accent-soft: rgba(34, 112, 68, 0.13);
+  --reference-accent-soft: rgba(34, 112, 68, 0.11);
+  --reference-panel-tint: rgba(34, 112, 68, 0.055);
+  --reference-footer-tint: rgba(34, 112, 68, 0.20);
   --reference-border: #227044;
+  --reference-border-outline: #124429;
+  --reference-border-rule: rgba(242, 255, 246, 0.38);
   --reference-symbol: url("../images/faction-symbols/financiers.svg");
 }
 
 .reference-card[data-faction="intelligence"] {
   --reference-accent: #282827;
-  --reference-accent-soft: rgba(40, 40, 39, 0.11);
+  --reference-accent-soft: rgba(40, 40, 39, 0.095);
+  --reference-panel-tint: rgba(40, 40, 39, 0.045);
+  --reference-footer-tint: rgba(40, 40, 39, 0.18);
   --reference-border: #282827;
+  --reference-border-outline: #111111;
+  --reference-border-rule: rgba(255, 255, 250, 0.34);
   --reference-symbol: url("../images/faction-symbols/intelligence.svg");
 }
 
 .reference-card[data-faction="mystics"] {
   --reference-accent: #563073;
-  --reference-accent-soft: rgba(93, 52, 126, 0.13);
+  --reference-accent-soft: rgba(93, 52, 126, 0.11);
+  --reference-panel-tint: rgba(93, 52, 126, 0.055);
+  --reference-footer-tint: rgba(93, 52, 126, 0.20);
   --reference-border: #5d347e;
+  --reference-border-outline: #38204e;
+  --reference-border-rule: rgba(251, 244, 255, 0.38);
   --reference-symbol: url("../images/faction-symbols/mystics.svg");
 }
 
 .reference-card[data-faction="inquisition"] {
   --reference-accent: #765616;
-  --reference-accent-soft: rgba(166, 122, 39, 0.14);
+  --reference-accent-soft: rgba(166, 122, 39, 0.12);
+  --reference-panel-tint: rgba(166, 122, 39, 0.06);
+  --reference-footer-tint: rgba(166, 122, 39, 0.22);
   --reference-border: #a67a27;
+  --reference-border-outline: #66470e;
+  --reference-border-rule: rgba(255, 249, 225, 0.42);
   --reference-symbol: url("../images/faction-symbols/inquisition.svg");
 }
 
 .reference-card-interior {
   position: relative;
   display: grid;
-  grid-template-rows: 0.49in minmax(0, 1fr) 0.15in;
+  grid-template-rows: 0.50in minmax(0, 1fr) 0.16in;
   width: 100%;
   height: 100%;
   overflow: hidden;
   border: 1px solid var(--card-keyline, #3d3024);
-  border-radius: 0.07in;
+  border-radius: 0.055in;
   background:
-    radial-gradient(circle at 88% 8%, var(--reference-accent-soft), transparent 34%),
-    linear-gradient(rgba(255, 255, 255, 0.08), rgba(121, 88, 48, 0.035)),
+    linear-gradient(var(--reference-accent-soft), var(--reference-accent-soft)),
+    linear-gradient(rgba(255, 255, 255, 0.10), rgba(121, 88, 48, 0.035)),
     var(--card-parchment, #e6d4ae);
 }
 
@@ -94,12 +124,12 @@
 .reference-watermark {
   position: absolute;
   z-index: 1;
-  right: 0.11in;
-  bottom: 0.21in;
-  width: 1.48in;
-  height: 1.48in;
+  right: 0.10in;
+  bottom: 0.24in;
+  width: 1.35in;
+  height: 1.35in;
   background: var(--reference-accent);
-  opacity: 0.035;
+  opacity: 0.026;
   -webkit-mask: var(--reference-symbol) center / contain no-repeat;
   mask: var(--reference-symbol) center / contain no-repeat;
   pointer-events: none;
@@ -113,47 +143,29 @@
 }
 
 .reference-card-header {
+  display: grid;
+  grid-template-rows: auto auto;
+  align-content: center;
+  gap: 0.012in;
   min-width: 0;
   overflow: hidden;
-  padding: 0.026in 0.055in 0.016in;
-  border-bottom: 1px solid color-mix(in srgb, var(--reference-accent) 68%, transparent);
-}
-
-.reference-kicker {
-  display: flex;
-  align-items: center;
-  gap: 0.04in;
-  margin: 0 0 0.009in;
-  color: var(--reference-accent);
-  font-family: var(--font-interface, Arial, sans-serif);
-  font-size: 4.7pt;
-  font-weight: 850;
-  letter-spacing: 0.09em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-.reference-faction-emblem {
-  display: block;
-  width: 0.13in;
-  height: 0.13in;
-  flex: 0 0 0.13in;
-  background: currentColor;
-  -webkit-mask: var(--reference-symbol) center / contain no-repeat;
-  mask: var(--reference-symbol) center / contain no-repeat;
+  padding: 0.028in 0.085in 0.022in;
+  border-bottom: 0.7px solid rgba(61, 48, 36, 0.34);
+  background: rgba(239, 223, 191, 0.30);
 }
 
 .reference-face-title {
   display: -webkit-box;
+  max-width: 100%;
   margin: 0;
   overflow: hidden;
   color: var(--card-ink, #241c15);
   font-family: var(--font-display-historical, Georgia, serif);
-  font-size: 10.2pt;
+  font-size: 12.2pt;
   font-style: normal;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  line-height: 0.89;
+  font-weight: 400;
+  letter-spacing: 0.026em;
+  line-height: 0.86;
   text-overflow: clip;
   text-transform: uppercase;
   white-space: normal;
@@ -161,8 +173,35 @@
   -webkit-line-clamp: 2;
 }
 
-.reference-component-name {
-  display: none;
+.reference-type-line {
+  display: flex;
+  align-items: center;
+  gap: 0.043in;
+  min-width: 0;
+  color: var(--reference-accent);
+  font-family: var(--font-interface, Arial, sans-serif);
+  font-size: 5.9pt;
+  font-weight: 800;
+  letter-spacing: 0.075em;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+
+.reference-type-line span:last-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reference-faction-emblem {
+  display: block;
+  width: 0.17in;
+  height: 0.17in;
+  flex: 0 0 0.17in;
+  background: currentColor;
+  -webkit-mask: var(--reference-symbol) center / contain no-repeat;
+  mask: var(--reference-symbol) center / contain no-repeat;
 }
 
 .reference-body {
@@ -171,81 +210,215 @@
   flex-direction: column;
   gap: var(--reference-section-gap);
   overflow: hidden;
-  padding: 0.026in 0.045in 0.014in;
-  font-family: "adobe-caslon-pro", Georgia, serif;
-  font-size: calc(5.95pt * var(--reference-rules-scale));
-  line-height: 1.02;
+  padding: 0.024in 0.060in 0.020in;
+  font-family: var(--font-reading, "adobe-caslon-pro", Georgia, serif);
+  font-size: calc(5.78pt * var(--reference-rules-scale));
+  line-height: 1.055;
 }
 
-.reference-section {
+.reference-section,
+.reference-panel {
   min-width: 0;
 }
 
-.reference-section-title {
-  margin: 0 0 0.007in;
-  padding-bottom: 0.005in;
-  border-bottom: 0.5px solid color-mix(in srgb, var(--reference-accent) 46%, transparent);
+/* Sections borrow the open label-and-rule rhythm of playable cards. The faction
+   rail supplies structure without spending vertical space on nested box chrome. */
+.reference-panel {
+  flex: 0 0 auto;
+  overflow: visible;
+  padding-left: 0.038in;
+  border: 0;
+  border-left: 0.018in solid var(--reference-accent);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.reference-panel + .reference-panel {
+  padding-top: calc(0.010in * var(--reference-rules-scale));
+  border-top: 0.5px solid rgba(61, 48, 36, 0.24);
+}
+
+.reference-panel-heading {
+  display: flex;
+  min-height: 0;
+  align-items: baseline;
+  padding: 0 0 calc(0.004in * var(--reference-rules-scale));
+  border: 0;
+  background: transparent;
+}
+
+.reference-panel-heading h4 {
+  margin: 0;
   color: var(--reference-accent);
   font-family: var(--font-interface, Arial, sans-serif);
   font-size: calc(4.65pt * var(--reference-rules-scale));
   font-weight: 850;
-  letter-spacing: 0.038em;
-  line-height: 1.0;
+  letter-spacing: 0.052em;
+  line-height: 1;
   text-transform: uppercase;
 }
 
-.reference-blocks,
-.reference-blocks p,
-.reference-blocks ul,
-.reference-blocks ol,
-.reference-blocks table {
+.reference-panel-content {
+  min-width: 0;
+  padding: 0;
+}
+
+.reference-panel-content > * {
   margin: 0;
 }
 
-.reference-blocks > * + * {
-  margin-top: 0.007in;
+.reference-panel-content > * + * {
+  margin-top: calc(0.006in * var(--reference-rules-scale));
 }
 
-.reference-blocks strong {
+.reference-prose {
+  margin: 0;
+  font-family: var(--font-reading, "adobe-caslon-pro", Georgia, serif);
+  font-size: calc(5.78pt * var(--reference-rules-scale));
+  line-height: 1.055;
+}
+
+.reference-inline-banner {
+  display: flex;
+  align-items: center;
+  min-height: 0;
+  padding: calc(0.005in * var(--reference-rules-scale)) 0;
+  border-top: 0.45px solid color-mix(in srgb, var(--reference-accent) 32%, transparent);
+  border-bottom: 0.45px solid color-mix(in srgb, var(--reference-accent) 32%, transparent);
+  background: color-mix(in srgb, var(--reference-accent) 6%, transparent);
   color: var(--reference-accent);
   font-family: var(--font-interface, Arial, sans-serif);
-  font-size: 0.93em;
+  font-size: calc(4.35pt * var(--reference-rules-scale));
   font-weight: 850;
-}
-
-.reference-blocks ul,
-.reference-blocks ol {
-  padding-left: 0.105in;
-}
-
-.reference-blocks li + li {
-  margin-top: 0.003in;
-}
-
-.reference-inline-heading {
-  margin: 0.007in 0 0;
-  color: var(--card-muted-ink, #5c4d3e);
-  font-family: var(--font-interface, Arial, sans-serif);
-  font-size: 0.93em;
-  font-weight: 850;
-  letter-spacing: 0.023em;
-  line-height: 1.0;
+  letter-spacing: 0.045em;
+  line-height: 1;
   text-transform: uppercase;
+}
+
+.reference-callout {
+  display: grid;
+  grid-template-columns: minmax(0.48in, 0.66in) minmax(0, 1fr);
+  align-items: baseline;
+  column-gap: 0.030in;
+  min-width: 0;
+}
+
+.reference-callout + .reference-callout {
+  padding-top: calc(0.006in * var(--reference-rules-scale));
+  border-top: 0.45px solid rgba(61, 48, 36, 0.19);
+}
+
+.reference-callout-label {
+  color: var(--reference-accent);
+  font-family: var(--font-interface, Arial, sans-serif);
+  font-size: calc(4.35pt * var(--reference-rules-scale));
+  font-weight: 850;
+  letter-spacing: 0.032em;
+  line-height: 1.02;
+  text-transform: uppercase;
+}
+
+.reference-callout p {
+  margin: 0;
+  font-family: var(--font-reading, "adobe-caslon-pro", Georgia, serif);
+  font-size: calc(5.55pt * var(--reference-rules-scale));
+  line-height: 1.045;
+}
+
+/* Doctrine has enough room to treat named trigger rules as stacked card callouts.
+   This avoids long labels colliding with enlarged sparse-face prose. */
+.reference-card[data-component-id="inquisition-doctrine-reference"] .reference-callout {
+  display: block;
+}
+
+.reference-card[data-component-id="inquisition-doctrine-reference"] .reference-callout-label {
+  display: block;
+  margin-bottom: calc(0.006in * var(--reference-rules-scale));
+}
+
+.reference-step-list,
+.reference-option-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reference-step-list {
+  counter-reset: reference-step;
+}
+
+.reference-step-list li {
+  display: grid;
+  grid-template-columns: 0.155in minmax(0, 1fr);
+  align-items: start;
+  gap: 0.025in;
+  counter-increment: reference-step;
+}
+
+.reference-step-list li + li,
+.reference-option-list li + li {
+  margin-top: calc(0.006in * var(--reference-rules-scale));
+  padding-top: calc(0.006in * var(--reference-rules-scale));
+  border-top: 0.45px solid rgba(61, 48, 36, 0.17);
+}
+
+.reference-step-index {
+  display: block;
+  width: auto;
+  padding-top: 0.002in;
+  text-align: right;
+}
+
+.reference-step-text {
+  padding-top: 0.003in;
+  font-family: var(--font-reading, "adobe-caslon-pro", Georgia, serif);
+  font-size: calc(5.55pt * var(--reference-rules-scale));
+  line-height: 1.045;
+}
+
+.reference-option-list li {
+  display: grid;
+  grid-template-columns: 0.09in minmax(0, 1fr);
+  align-items: start;
+  gap: 0.024in;
+  font-family: var(--font-reading, "adobe-caslon-pro", Georgia, serif);
+  font-size: calc(5.55pt * var(--reference-rules-scale));
+  line-height: 1.045;
+}
+
+.reference-option-mark {
+  width: 0.055in;
+  height: 0.055in;
+  margin-top: 0.024in;
+  background: var(--reference-accent);
+  transform: rotate(45deg);
+}
+
+.reference-matrix {
+  overflow: hidden;
+  border: 0.5px solid rgba(61, 48, 36, 0.34);
+  border-radius: 0.018in;
+  background: rgba(255, 251, 241, 0.48);
 }
 
 .reference-table {
   width: 100%;
+  margin: 0;
   border-collapse: collapse;
   table-layout: auto;
   font-family: var(--font-interface, Arial, sans-serif);
-  font-size: 0.84em;
-  line-height: 0.98;
+  font-size: calc(4.25pt * var(--reference-rules-scale));
+  line-height: 0.99;
 }
 
 .reference-table th,
 .reference-table td {
-  padding: 0.006in 0.009in;
-  border: 0.45px solid rgba(65, 49, 35, 0.30);
+  padding:
+    calc(0.007in * var(--reference-rules-scale))
+    0.010in
+    calc(0.006in * var(--reference-rules-scale));
+  border: 0;
   vertical-align: top;
 }
 
@@ -253,28 +426,68 @@
   color: #fff9ec;
   background: var(--reference-accent);
   font-weight: 800;
+  letter-spacing: 0.012em;
   text-align: left;
 }
 
-.reference-table th:first-child,
-.reference-table td:first-child {
+.reference-table tbody tr + tr td {
+  border-top: 0.45px solid rgba(61, 48, 36, 0.22);
+}
+
+.reference-table tbody tr:nth-child(even) td {
+  background: color-mix(in srgb, var(--reference-accent) 4%, transparent);
+}
+
+.reference-table-key {
+  color: var(--reference-accent);
+  font-weight: 800;
   white-space: nowrap;
+}
+
+/* The Diplomat front has two procedures that players compare while resolving
+   Terms. Put them side by side rather than stacking two mini-rulebook sections. */
+.reference-card[data-component-id="diplomats-reference"][data-reference-side="front"] .reference-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-auto-rows: max-content;
+  align-content: start;
+  column-gap: 0.045in;
+  row-gap: var(--reference-section-gap);
+}
+
+.reference-card[data-component-id="diplomats-reference"][data-reference-side="front"] .reference-panel:first-child {
+  grid-column: 1 / -1;
+}
+
+.reference-card[data-component-id="diplomats-reference"][data-reference-side="front"] .reference-panel + .reference-panel {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.reference-card[data-component-id="diplomats-reference"][data-reference-side="front"] .reference-step-list li {
+  grid-template-columns: 0.105in minmax(0, 1fr);
+  gap: 0.016in;
+}
+
+.reference-card[data-component-id="diplomats-reference"][data-reference-side="front"] .reference-step-list li + li {
+  margin-top: calc(0.004in * var(--reference-rules-scale));
+  padding-top: calc(0.004in * var(--reference-rules-scale));
 }
 
 .reference-card-footer {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  gap: 0.02in;
+  gap: 0.035in;
   min-width: 0;
-  padding: 0.021in 0.04in 0.011in;
+  padding: 0.025in 0.055in 0.018in;
   border-top: 0.55px solid rgba(58, 45, 34, 0.30);
-  background: var(--reference-accent-soft);
+  background: var(--reference-footer-tint);
   color: var(--card-muted-ink, #5c4d3e);
   font-family: var(--font-interface, Arial, sans-serif);
-  font-size: 3.9pt;
+  font-size: 4.05pt;
   font-weight: 750;
-  letter-spacing: 0.022em;
+  letter-spacing: 0.07em;
   line-height: 1;
   text-transform: uppercase;
 }
@@ -287,10 +500,13 @@
   white-space: nowrap;
 }
 
+.reference-card-footer span:first-child {
+  text-align: left;
+}
+
 .reference-card-footer strong {
   color: var(--reference-accent);
-  font-size: 3.8pt;
-  font-weight: 900;
+  font-weight: 850;
   text-align: center;
 }
 
@@ -307,6 +523,8 @@
   .reference-card,
   .reference-faction-emblem,
   .reference-watermark,
+  .reference-panel,
+  .reference-option-mark,
   .reference-table th,
   .reference-card-footer {
     print-color-adjust: exact;

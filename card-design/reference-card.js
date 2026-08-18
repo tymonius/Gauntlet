@@ -7,6 +7,97 @@ const FACTION_LABELS = Object.freeze({
   military: 'Military',
 });
 
+// Presentation-only selectors. Every rendered word still comes from the canonical
+// source section declared by the component contract. These selectors remove
+// document-style lead-ins and redundant explanatory prose; they never replace
+// source text with a second hand-written rules summary.
+const REFERENCE_PRESENTATION = Object.freeze({
+  'diplomats-reference': {
+    front: {
+      Influence: ['paragraph:0'],
+      'Offering Terms': ['paragraph:0', 'list:0', 'paragraph:2'],
+      'Accepted Terms': ['list:0', 'paragraph:1'],
+    },
+    reverse: {
+      'Refused Terms': ['list:0', 'table:0', 'paragraph:3'],
+      'Diplomat mirrors': ['list:0'],
+      Leverage: ['paragraph:0', 'table:0', 'paragraph:1'],
+      'Treaty Articles and Peace Treaty': ['paragraph:0', 'paragraph:1'],
+    },
+  },
+  'financiers-reference': {
+    front: {
+      'Capital and Capital Ledger': ['paragraph:1', 'paragraph:2'],
+      'Financial Capacity': ['paragraph:0', 'paragraph:1', 'paragraph:2'],
+      Income: ['paragraph:0'],
+      'Controlling Interest': ['paragraph:0'],
+    },
+    reverse: {
+      'Buying and buying out Deeds': ['paragraph:0', 'paragraph:1', 'paragraph:2', 'paragraph:3', 'table:0', 'paragraph:4', 'paragraph:6'],
+      'Play the Market': ['paragraph:0', 'table:0'],
+      Subsidize: ['paragraph:0', 'table:0', 'paragraph:1'],
+    },
+  },
+  'intelligence-mission-reference': {
+    front: {
+      Intel: ['paragraph:0'],
+      'Operation Progress': ['paragraph:0'],
+      'Starting a Mission': ['paragraph:0', 'list:0'],
+      'Completing a Mission': ['paragraph:0', 'list:0', 'paragraph:1'],
+    },
+    reverse: {
+      'Aborting and failing': ['paragraph:0', 'paragraph:1'],
+      'Starting a Special Operation': ['list:0', 'paragraph:1', 'paragraph:2'],
+      'Readiness and completion': ['paragraph:0', 'paragraph:1', 'paragraph:2', 'paragraph:3'],
+    },
+  },
+  'intelligence-operations-reference': {
+    front: {
+      'Gambit Surveillance': ['paragraph:0', 'paragraph:1'],
+      'Tactic Surveillance': ['paragraph:0', 'paragraph:1', 'paragraph:2'],
+      'Interference after Surveillance': ['paragraph:0', 'list:0', 'paragraph:1'],
+    },
+    reverse: {
+      'Direct Interference': ['paragraph:0'],
+      'Intelligence mirrors': ['list:0'],
+    },
+  },
+  'mystics-reference': {
+    front: {
+      'Beginning a Rite': ['paragraph:0', 'list:0'],
+      Progression: ['list:0'],
+      Invocation: ['paragraph:0', 'paragraph:1'],
+      Transmutation: ['paragraph:0', 'paragraph:1'],
+    },
+    reverse: {
+      'Bound cards': ['paragraph:0'],
+      'Beginning the Ritual': ['paragraph:0', 'list:0'],
+      Convergence: ['paragraph:0', 'paragraph:1'],
+      Completion: ['paragraph:0'],
+      Interruption: ['paragraph:0', 'paragraph:2'],
+    },
+  },
+  'inquisition-doctrine-reference': {
+    front: {
+      Conviction: ['rule:0', 'list:0'],
+      Condemnation: ['rule:0', 'paragraph:0'],
+    },
+    reverse: {
+      Blasphemy: ['rule:0', 'paragraph:0'],
+      Purification: ['paragraph:0', 'paragraph:1'],
+    },
+  },
+  'inquisition-purge-reference': {
+    front: {
+      Purge: ['paragraph:0', 'table:0', 'paragraph:1', 'paragraph:2'],
+    },
+    reverse: {
+      'Faction Actions': ['rule:0', 'list:0'],
+      'Final Judgment — Grand Inquisitor': ['rule:0', 'paragraph:0'],
+    },
+  },
+});
+
 function esc(value) {
   return String(value ?? '').replace(/[&<>'"]/g, character => ({
     '&': '&amp;',
@@ -219,27 +310,81 @@ export async function loadReferenceRecords(contractUrl = '/config/tts-component-
   return records;
 }
 
+function typedBlock(blocks, type, index, sourceName) {
+  const candidates = blocks.filter(block => block.type === type);
+  const block = candidates[index];
+  if (!block) throw new Error(`Reference presentation ${sourceName} is missing ${type}:${index}.`);
+  return block;
+}
+
+function selectedSectionBlocks(record, sideName, section) {
+  const selectors = REFERENCE_PRESENTATION[record.id]?.[sideName]?.[section.sourceHeading];
+  if (!selectors) return section.blocks;
+
+  return selectors.map(selector => {
+    const match = String(selector).match(/^(paragraph|list|table|rule|subheading):(\d+)$/);
+    if (!match) throw new Error(`Invalid reference presentation selector ${selector} for ${record.id}/${sideName}/${section.sourceHeading}.`);
+    return typedBlock(section.blocks, match[1], Number(match[2]), `${record.id}/${sideName}/${section.sourceHeading}`);
+  });
+}
+
+function presentationFace(record, sideName) {
+  const face = record?.faces?.[sideName];
+  if (!face) throw new Error(`Reference card ${record?.id || 'unknown'} has no ${sideName} face.`);
+  return {
+    ...face,
+    sections: face.sections.map(section => ({
+      ...section,
+      blocks: selectedSectionBlocks(record, sideName, section),
+    })),
+  };
+}
+
+function renderOrderedList(block) {
+  return `<ol class="reference-step-list">${(block.items || []).map((item, index) => `<li><strong class="reference-callout-label reference-step-index" aria-hidden="true">${index + 1}</strong><span class="reference-step-text">${esc(item)}</span></li>`).join('')}</ol>`;
+}
+
+function renderOptionList(block) {
+  return `<ul class="reference-option-list">${(block.items || []).map(item => `<li><span class="reference-option-mark" aria-hidden="true"></span><span>${esc(item)}</span></li>`).join('')}</ul>`;
+}
+
+function renderTable(block) {
+  const head = `<thead><tr>${(block.headers || []).map(header => `<th>${esc(header)}</th>`).join('')}</tr></thead>`;
+  const body = `<tbody>${(block.rows || []).map(row => `<tr>${row.map((cell, index) => `<td${index === 0 ? ' class="reference-table-key"' : ''}>${esc(cell)}</td>`).join('')}</tr>`).join('')}</tbody>`;
+  return `<div class="reference-matrix"><table class="reference-table">${head}${body}</table></div>`;
+}
+
 function renderBlock(block) {
   if (block.type === 'subheading') {
-    return `<h5 class="reference-inline-heading">${esc(block.text)}</h5>`;
+    return `<div class="reference-inline-banner"><span>${esc(block.text)}</span></div>`;
   }
 
   if (block.label) {
-    return `<p class="reference-rule"><strong>${esc(block.label)}:</strong> ${esc(block.text)}</p>`;
+    return `<div class="reference-callout"><strong class="reference-callout-label">${esc(block.label)}</strong><p>${esc(block.text)}</p></div>`;
   }
 
   if (block.type === 'list') {
-    const tag = block.ordered ? 'ol' : 'ul';
-    return `<${tag}>${(block.items || []).map(item => `<li>${esc(item)}</li>`).join('')}</${tag}>`;
+    return block.ordered ? renderOrderedList(block) : renderOptionList(block);
   }
 
-  if (block.type === 'table') {
-    const head = `<thead><tr>${(block.headers || []).map(header => `<th>${esc(header)}</th>`).join('')}</tr></thead>`;
-    const body = `<tbody>${(block.rows || []).map(row => `<tr>${row.map(cell => `<td>${esc(cell)}</td>`).join('')}</tr>`).join('')}</tbody>`;
-    return `<table class="reference-table">${head}${body}</table>`;
-  }
+  if (block.type === 'table') return renderTable(block);
 
-  return `<p>${esc(block.text)}</p>`;
+  return `<p class="reference-prose">${esc(block.text)}</p>`;
+}
+
+function sectionKind(section) {
+  if (section.blocks.some(block => block.type === 'table')) return 'matrix';
+  if (section.blocks.some(block => block.type === 'list' && block.ordered)) return 'procedure';
+  if (section.blocks.every(block => block.label || block.type === 'subheading')) return 'callouts';
+  return 'rules';
+}
+
+function renderSection(section) {
+  const kind = sectionKind(section);
+  return `<section class="reference-section reference-panel reference-panel--${kind}" data-reference-panel-kind="${kind}">
+    <header class="reference-panel-heading"><h4>${esc(section.heading)}</h4></header>
+    <div class="reference-panel-content">${section.blocks.map(renderBlock).join('')}</div>
+  </section>`;
 }
 
 function shortComponentName(name) {
@@ -250,24 +395,18 @@ function shortComponentName(name) {
 }
 
 export function referenceCardMarkup(record, sideName, options = {}) {
-  const face = record?.faces?.[sideName];
-  if (!record || !face) throw new Error(`Reference card ${record?.id || 'unknown'} has no ${sideName} face.`);
+  const face = presentationFace(record, sideName);
   const factionLabel = FACTION_LABELS[record.faction] || record.faction;
   const version = options.version || record.version || 'Reference';
   const componentName = shortComponentName(record.name);
-
-  const sections = face.sections.map(section => `<section class="reference-section">
-    <h4 class="reference-section-title">${esc(section.heading)}</h4>
-    <div class="reference-blocks">${section.blocks.map(renderBlock).join('')}</div>
-  </section>`).join('');
+  const sections = face.sections.map(renderSection).join('');
 
   return `<article class="gauntlet-card faction-component-card reference-card" data-faction="${esc(record.faction)}" data-component-id="${esc(record.id)}" data-reference-side="${esc(sideName)}" aria-label="${esc(record.name)} — ${esc(face.title)}">
     <div class="reference-card-interior">
       <span class="reference-watermark" aria-hidden="true"></span>
       <header class="reference-card-header">
-        <div class="reference-kicker"><span class="reference-faction-emblem" aria-hidden="true"></span><span>${esc(factionLabel)} Reference</span></div>
         <h3 class="reference-face-title">${esc(face.title)}</h3>
-        <p class="reference-component-name">${esc(componentName)}</p>
+        <div class="reference-type-line"><span class="reference-faction-emblem" aria-hidden="true"></span><span>${esc(componentName)}</span></div>
       </header>
       <div class="reference-body">${sections}</div>
       <footer class="reference-card-footer"><span>${esc(factionLabel)}</span><strong>Reference</strong><span>${esc(version)}</span></footer>
@@ -275,22 +414,27 @@ export function referenceCardMarkup(record, sideName, options = {}) {
   </article>`;
 }
 
-export function fitReferenceCard(card, { minimumScale = 0.82, maximumScale = 1.18 } = {}) {
+export function fitReferenceCard(card, { minimumScale = 0.82, maximumScale = 1.40 } = {}) {
   if (!card) throw new Error('Reference card fitter received no card.');
   const body = card.querySelector('.reference-body');
   if (!body) throw new Error(`Reference card ${card.dataset.componentId || 'unknown'} has no body.`);
 
   let scale = maximumScale;
-  let sectionGap = 0.04;
+  let sectionGap = 0.038;
   let attempts = 0;
-  const overflows = () => body.scrollHeight > body.clientHeight + 0.75;
+  const hasClippedPanels = () => Array.from(card.querySelectorAll('.reference-panel')).some(panel => {
+    const overflowY = getComputedStyle(panel).overflowY;
+    const canClip = overflowY === 'hidden' || overflowY === 'clip';
+    return canClip && panel.scrollHeight > panel.clientHeight + 0.75;
+  });
+  const overflows = () => body.scrollHeight > body.clientHeight + 0.75 || hasClippedPanels();
 
   card.style.setProperty('--reference-rules-scale', scale.toFixed(3));
   card.style.setProperty('--reference-section-gap', `${sectionGap.toFixed(3)}in`);
 
-  while (overflows() && scale > minimumScale && attempts < 32) {
+  while (overflows() && scale > minimumScale && attempts < 48) {
     scale = Math.max(minimumScale, scale - 0.015);
-    sectionGap = Math.max(0.014, sectionGap - 0.0011);
+    sectionGap = Math.max(0.010, sectionGap - 0.0011);
     card.style.setProperty('--reference-rules-scale', scale.toFixed(3));
     card.style.setProperty('--reference-section-gap', `${sectionGap.toFixed(3)}in`);
     attempts += 1;

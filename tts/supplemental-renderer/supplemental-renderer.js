@@ -127,6 +127,16 @@ function renderRiteReverse(record) {
   target.replaceChildren(card);
 }
 
+function referenceFitDiagnostics(card, result) {
+  const body = card.querySelector('.reference-body');
+  const bodyMetrics = body ? `${body.scrollHeight}/${body.clientHeight}px` : 'missing';
+  const panelMetrics = Array.from(card.querySelectorAll('.reference-panel')).map((panel, index) => {
+    const title = panel.querySelector('.reference-panel-heading')?.textContent?.trim() || `panel-${index + 1}`;
+    return `${title}:${panel.scrollHeight}/${panel.clientHeight}px`;
+  }).join(', ');
+  return `scale=${Number(result.scale).toFixed(3)} gap=${Number(result.sectionGap).toFixed(3)}in body=${bodyMetrics} panels=[${panelMetrics}]`;
+}
+
 function renderReference(record, sideName, gameVersion) {
   if (!record.faces?.[sideName]) throw new Error(`Reference card ${record.id} has no ${sideName} face.`);
   target.innerHTML = referenceCardMarkup(record, sideName, { version: gameVersion });
@@ -141,7 +151,7 @@ function renderReference(record, sideName, gameVersion) {
       if (document.fonts?.ready) await document.fonts.ready;
       const result = fitReferenceCard(card);
       if (result.overflow) {
-        throw new Error(`Reference content cannot fit ${record.id} ${sideName} at the production readability floor.`);
+        throw new Error(`Reference content cannot fit ${record.id} ${sideName} at the production readability floor (${referenceFitDiagnostics(card, result)}).`);
       }
       document.body.dataset.renderReady = 'true';
     } catch (error) {
