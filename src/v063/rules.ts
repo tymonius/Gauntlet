@@ -1,12 +1,25 @@
-import {
-  createTurnState as createV062TurnState,
-  type FrontLineState,
-  type MovementChoice,
-  type PlayerId,
-  type TurnState,
+import type {
+  MovementChoice,
+  PlayerId,
+  TurnPhase,
+  TurnState,
 } from '../v062/rules';
 
-export * from '../v062/rules';
+export type {
+  MovementChoice,
+  PlayerId,
+  TurnPhase,
+  TurnState,
+} from '../v062/rules';
+
+export const V063_TURN_SEQUENCE: readonly TurnPhase[] = [
+  'capture',
+  'draw',
+  'opening',
+  'movement',
+  'denouement',
+  'cleanup',
+] as const;
 
 export const V063_SETUP_SEQUENCE = [
   'prepare_faction_components',
@@ -62,8 +75,16 @@ export function arrangeOpeningTerritories(
   return [...arrangedTerritories];
 }
 
+export type ExtendedPosition = number;
+
+export interface FrontLineState {
+  territoryCount: number;
+  control: Record<PlayerId, number>;
+  position: Record<PlayerId, ExtendedPosition>;
+}
+
 export interface SetupPlacement {
-  positions: Record<PlayerId, number>;
+  positions: Record<PlayerId, ExtendedPosition>;
   movementOccurred: false;
   enteredTerritory: false;
 }
@@ -96,8 +117,8 @@ export function createInitialFrontLineState(
 }
 
 export function determineFirstPlayer(rolls: Record<PlayerId, number>): PlayerId {
-  assertDie(rolls.A);
-  assertDie(rolls.B);
+  assertDie(rolls.A, 'First-player rolls');
+  assertDie(rolls.B, 'First-player rolls');
   if (rolls.A === rolls.B) throw new Error('Tied first-player rolls must be rerolled.');
   return rolls.A > rolls.B ? 'A' : 'B';
 }
@@ -126,46 +147,68 @@ export interface V063CaptureResolution {
 }
 
 /**
- * Capture the next contiguous Territory supported by the player's Position.
- * Unlike the older neutral-gap experiment, capturing an opposing frontier
- * Territory transfers that Territory out of the opponent's Front Line.
+ * During Capture, add at most the next opposing Territory immediately beyond
+ * the active player's Front Line. Deep Position never skips intervening control.
  */
 export function applyV063Capture(state: FrontLineState, player: PlayerId): V063CaptureResolution {
   assertV063FrontLine(state);
-  const opponent: PlayerId = player === 'A' ? 'B' : 'A';
+  const opponent = otherPlayer(player);
   const target = player === 'A'
     ? state.control.A
     : state.territoryCount - state.control.B - 1;
 
-  if (target < 0 || target >= state.territoryCount) {
+  if (!isTerritoryIndex(target, state.territoryCount)) {
     return { state: cloneFrontLine(state), capturedTerritory: null, victory: null };
   }
   const supportsCapture = player === 'A'
     ? state.position.A >= target
     : state.position.B <= target;
-  if (!supportsCapture) {
+  if (!supportsCapture || !controlsIndex(state, opponent, target)) {
     return { state: cloneFrontLine(state), capturedTerritory: null, victory: null };
   }
 
-  const opponentControlsTarget = controlsIndex(state, opponent, target);
   const next: FrontLineState = {
     ...cloneFrontLine(state),
     control: {
       ...state.control,
       [player]: state.control[player] + 1,
-      [opponent]: opponentControlsTarget ? state.control[opponent] - 1 : state.control[opponent],
+      [opponent]: state.control[opponent] - 1,
     },
   };
   assertV063FrontLine(next);
-  const won = next.control[player] === next.territoryCount;
   return {
     state: next,
     capturedTerritory: target,
-    victory: won ? victoryFromFinalTerritoryCapture(player) : null,
+    victory: next.control[player] === next.territoryCount
+      ? victoryFromFinalTerritoryCapture(player)
+      : null,
   };
 }
 
-export type ExtendedPosition = number;
+export function finalTerritoryAtOpponentEnd(player: PlayerId, territoryCount: number): number {
+  assertTerritoryCount(territoryCount);
+  return player === 'A' ? territoryCount - 1 : 0;
+}
+
+export function outsideOwnEnd(player: PlayerId, territoryCount: number): ExtendedPosition {
+  assertTerritoryCount(territoryCount);
+  return player === 'A' ? -1 : territoryCount;
+}
+
+export function outsideOpponentEnd(player: PlayerId, territoryCount: number): ExtendedPosition {
+  return outsideOwnEnd(otherPlayer(player), territoryCount);
+}
+
+export function retreatV063Position(
+  player: PlayerId,
+  position: ExtendedPosition,
+  territoryCount: number,
+): ExtendedPosition {
+  assertExtendedPosition(position, territoryCount, `${player} Position`);
+  return player === 'A'
+    ? Math.max(-1, position - 1)
+    : Math.min(territoryCount, position + 1);
+}
 
 export function retreatFromOwnFinalTerritoryBeyondGauntlet(
   player: PlayerId,
@@ -175,12 +218,11 @@ export function retreatFromOwnFinalTerritoryBeyondGauntlet(
   assertTerritoryCount(territoryCount);
   const ownFinal = player === 'A' ? 0 : territoryCount - 1;
   if (position !== ownFinal) throw new Error('Edge retreat applies only from the retreating player’s own final Territory.');
-  return player === 'A' ? -1 : territoryCount;
+  return retreatV063Position(player, position, territoryCount);
 }
 
 export function isBeyondOwnEnd(player: PlayerId, position: ExtendedPosition, territoryCount: number): boolean {
-  assertTerritoryCount(territoryCount);
-  return player === 'A' ? position === -1 : position === territoryCount;
+  return position === outsideOwnEnd(player, territoryCount);
 }
 
 export interface LastStandAccessInput {
@@ -196,11 +238,244 @@ export interface LastStandAccessInput {
 export function canInitiateLastStand(input: LastStandAccessInput): boolean {
   if (input.attacker === input.defender) return false;
   assertTerritoryCount(input.territoryCount);
-  const defenderFinalTerritory = input.defender === 'A' ? 0 : input.territoryCount - 1;
-  return input.attackerPosition === defenderFinalTerritory
-    && isBeyondOwnEnd(input.defender, input.defenderPosition, input.territoryCount)
+  return input.attackerPosition === finalTerritoryAtOpponentEnd(input.attacker, input.territoryCount)
+    && input.defenderPosition === outsideOwnEnd(input.defender, input.territoryCount)
     && input.separateMovementSequence
     && input.advancingBeyondOpponentEnd;
+}
+
+export type V063BattleStage = 'pending' | 'onset' | 'active' | 'resolved' | 'withdrawn';
+
+export interface V063PendingBattleInput {
+  territoryCount: number;
+  attacker: PlayerId;
+  defender: PlayerId;
+  attackerOrigin: ExtendedPosition;
+  contestedPosition: ExtendedPosition;
+  positions: Record<PlayerId, ExtendedPosition>;
+  defenderControlsContested: boolean;
+  lastStand?: boolean;
+  defensiveEdgeRemoved?: boolean;
+}
+
+export interface V063BattleState extends V063PendingBattleInput {
+  lastStand: boolean;
+  defensiveEdgeRemoved: boolean;
+  stage: V063BattleStage;
+  termsAccepted: boolean | null;
+  winner: PlayerId | null;
+  loser: PlayerId | null;
+  occupier: PlayerId | null;
+  positions: Record<PlayerId, ExtendedPosition>;
+  completeNonResultAftermath: boolean;
+  clearCommittedCards: boolean;
+}
+
+export interface V063BattleOutcomeInput {
+  attacker: PlayerId;
+  defender: PlayerId;
+  attackerTotal: number;
+  defenderTotal: number;
+  defenderHasDefensiveEdge: boolean;
+  tiebreakRolls?: readonly [number, number][];
+}
+
+export interface V063BattleOutcome {
+  winner: PlayerId;
+  loser: PlayerId;
+  method: 'total' | 'defensive_edge' | 'tiebreak_roll';
+  tiebreakRounds: number;
+}
+
+export interface V063BattleResolution {
+  state: V063BattleState;
+  victory: RunTheGauntletVictory | null;
+}
+
+export function createV063PendingBattle(input: V063PendingBattleInput): V063BattleState {
+  if (input.attacker === input.defender) throw new Error('Attacker and defender must be different players.');
+  assertTerritoryCount(input.territoryCount);
+  assertTerritoryIndex(input.attackerOrigin, input.territoryCount, 'attacker origin');
+  assertExtendedPosition(input.contestedPosition, input.territoryCount, 'contested Position');
+  assertExtendedPosition(input.positions.A, input.territoryCount, 'A Position');
+  assertExtendedPosition(input.positions.B, input.territoryCount, 'B Position');
+
+  const lastStand = Boolean(input.lastStand);
+  if (lastStand) {
+    if (input.contestedPosition !== outsideOwnEnd(input.defender, input.territoryCount)) {
+      throw new Error('A Last Stand is fought beyond the defender’s own end of the Gauntlet.');
+    }
+    if (input.attackerOrigin !== finalTerritoryAtOpponentEnd(input.attacker, input.territoryCount)) {
+      throw new Error('A Last Stand attacker must Advance from the Territory at the opponent’s end.');
+    }
+  } else {
+    assertTerritoryIndex(input.contestedPosition, input.territoryCount, 'normal contested Position');
+  }
+
+  if (input.positions[input.attacker] !== input.contestedPosition || input.positions[input.defender] !== input.contestedPosition) {
+    throw new Error('A pending battle requires both Player Tokens at the contested Position.');
+  }
+
+  return {
+    ...input,
+    lastStand,
+    defensiveEdgeRemoved: Boolean(input.defensiveEdgeRemoved),
+    stage: 'pending',
+    termsAccepted: null,
+    winner: null,
+    loser: null,
+    occupier: null,
+    positions: { ...input.positions },
+    completeNonResultAftermath: false,
+    clearCommittedCards: false,
+  };
+}
+
+export function createV063LastStandBattle(input: LastStandAccessInput): V063BattleState {
+  if (!canInitiateLastStand(input)) {
+    throw new Error('Last Stand requires the defender beyond their end and a separate legal Advance beyond that end.');
+  }
+  const contestedPosition = outsideOwnEnd(input.defender, input.territoryCount);
+  return createV063PendingBattle({
+    territoryCount: input.territoryCount,
+    attacker: input.attacker,
+    defender: input.defender,
+    attackerOrigin: input.attackerPosition,
+    contestedPosition,
+    positions: { A: contestedPosition, B: contestedPosition },
+    defenderControlsContested: false,
+    lastStand: true,
+  });
+}
+
+export function defenderHasV063DefensiveEdge(battle: V063BattleState): boolean {
+  return !battle.defensiveEdgeRemoved && (battle.defenderControlsContested || battle.lastStand);
+}
+
+export function beginV063Onset(battle: V063BattleState): V063BattleState {
+  if (battle.stage !== 'pending') throw new Error('Onset begins only from a pending battle.');
+  return { ...battle, stage: 'onset' };
+}
+
+export function beginV063ActiveBattle(battle: V063BattleState): V063BattleState {
+  if (battle.stage !== 'onset') throw new Error('The active battle proceeds after Onset.');
+  return { ...battle, stage: 'active' };
+}
+
+export function resolveV063BattleOutcome(input: V063BattleOutcomeInput): V063BattleOutcome {
+  if (input.attacker === input.defender) throw new Error('Attacker and defender must be different players.');
+  if (input.attackerTotal > input.defenderTotal) {
+    return { winner: input.attacker, loser: input.defender, method: 'total', tiebreakRounds: 0 };
+  }
+  if (input.defenderTotal > input.attackerTotal) {
+    return { winner: input.defender, loser: input.attacker, method: 'total', tiebreakRounds: 0 };
+  }
+  if (input.defenderHasDefensiveEdge) {
+    return { winner: input.defender, loser: input.attacker, method: 'defensive_edge', tiebreakRounds: 0 };
+  }
+
+  const rolls = input.tiebreakRolls ?? [];
+  for (let index = 0; index < rolls.length; index += 1) {
+    const [attackerRoll, defenderRoll] = rolls[index];
+    assertDie(attackerRoll, 'Tiebreak Rolls');
+    assertDie(defenderRoll, 'Tiebreak Rolls');
+    if (attackerRoll > defenderRoll) {
+      return { winner: input.attacker, loser: input.defender, method: 'tiebreak_roll', tiebreakRounds: index + 1 };
+    }
+    if (defenderRoll > attackerRoll) {
+      return { winner: input.defender, loser: input.attacker, method: 'tiebreak_roll', tiebreakRounds: index + 1 };
+    }
+  }
+  throw new Error('A tied battle without Defensive Edge requires a decisive unmodified Tiebreak Roll.');
+}
+
+export function applyV063BattleOutcome(
+  battle: V063BattleState,
+  outcome: V063BattleOutcome,
+): V063BattleResolution {
+  if (battle.stage !== 'active') throw new Error('A battle outcome may be applied only after the active battle sequence.');
+  assertOutcomeMatchesBattle(battle, outcome);
+
+  const positions = { ...battle.positions };
+  if (outcome.loser === battle.attacker) {
+    positions[battle.attacker] = battle.attackerOrigin;
+  } else {
+    positions[battle.defender] = retreatV063Position(
+      battle.defender,
+      battle.contestedPosition,
+      battle.territoryCount,
+    );
+  }
+  positions[outcome.winner] = battle.contestedPosition;
+
+  const attackerWon = outcome.winner === battle.attacker;
+  const occupier = attackerWon
+    && !battle.lastStand
+    && isTerritoryIndex(battle.contestedPosition, battle.territoryCount)
+    && battle.defenderControlsContested
+      ? battle.attacker
+      : null;
+  const state: V063BattleState = {
+    ...battle,
+    stage: 'resolved',
+    winner: outcome.winner,
+    loser: outcome.loser,
+    occupier,
+    positions,
+    clearCommittedCards: true,
+  };
+  return {
+    state,
+    victory: battle.lastStand && attackerWon
+      ? victoryFromLastStand(battle.attacker, battle.defender)
+      : null,
+  };
+}
+
+export function resolveV063Withdrawal(
+  battle: V063BattleState,
+  withdrawingPlayers: readonly PlayerId[],
+): V063BattleState {
+  if (battle.stage === 'resolved' || battle.stage === 'withdrawn') {
+    throw new Error('A completed battle cannot withdraw again.');
+  }
+  const withdrawing = new Set(withdrawingPlayers);
+  if (withdrawing.size === 0) throw new Error('At least one player must withdraw.');
+  if ([...withdrawing].some((player) => player !== battle.attacker && player !== battle.defender)) {
+    throw new Error('Only the attacker or defender may withdraw from this battle.');
+  }
+
+  const afterOnset = battle.stage === 'onset' || battle.stage === 'active';
+  const positions = { ...battle.positions };
+  if (withdrawing.has(battle.attacker)) positions[battle.attacker] = battle.attackerOrigin;
+  if (withdrawing.has(battle.defender)) {
+    positions[battle.defender] = retreatV063Position(
+      battle.defender,
+      battle.contestedPosition,
+      battle.territoryCount,
+    );
+  }
+  if (!withdrawing.has(battle.attacker)) positions[battle.attacker] = battle.contestedPosition;
+  if (!withdrawing.has(battle.defender)) positions[battle.defender] = battle.contestedPosition;
+
+  const defenderOnly = withdrawing.size === 1 && withdrawing.has(battle.defender);
+  const occupier = defenderOnly
+    && !battle.lastStand
+    && isTerritoryIndex(battle.contestedPosition, battle.territoryCount)
+    && battle.defenderControlsContested
+      ? battle.attacker
+      : null;
+
+  return {
+    ...battle,
+    stage: 'withdrawn',
+    winner: null,
+    loser: null,
+    occupier,
+    positions,
+    completeNonResultAftermath: afterOnset,
+    clearCommittedCards: afterOnset,
+  };
 }
 
 export type MovementSequenceSource = 'normal' | 'effect';
@@ -210,7 +485,28 @@ export interface V063TurnState extends TurnState {
 }
 
 export function createV063TurnState(additionalActions = 0): V063TurnState {
-  return { ...createV062TurnState(additionalActions), movementSequenceSource: null };
+  return {
+    phase: 'capture',
+    actionsAvailable: 1 + nonnegativeInteger(additionalActions),
+    actionsTaken: { opening: 0, denouement: 0 },
+    movementRemaining: 0,
+    movementSequenceOpen: false,
+    pendingBattleCreated: false,
+    movementSequenceSource: null,
+  };
+}
+
+export function advanceV063TurnPhase(state: V063TurnState): V063TurnState {
+  const index = V063_TURN_SEQUENCE.indexOf(state.phase);
+  if (index < 0 || index === V063_TURN_SEQUENCE.length - 1) return { ...state };
+  return {
+    ...state,
+    phase: V063_TURN_SEQUENCE[index + 1],
+    movementRemaining: 0,
+    movementSequenceOpen: false,
+    pendingBattleCreated: false,
+    movementSequenceSource: null,
+  };
 }
 
 export function beginEffectGrantedMovement(state: TurnState, movement = 1): V063TurnState {
@@ -256,10 +552,14 @@ export function applyV063MovementChoice(
   return {
     ...state,
     movementRemaining: remaining,
-    movementSequenceOpen: createsPendingBattle ? false : remaining > 0,
+    movementSequenceOpen: !createsPendingBattle && remaining > 0,
     movementSequenceSource: createsPendingBattle || remaining === 0 ? null : state.movementSequenceSource,
     pendingBattleCreated: createsPendingBattle,
   };
+}
+
+export function otherPlayer(player: PlayerId): PlayerId {
+  return player === 'A' ? 'B' : 'A';
 }
 
 function controlsIndex(state: FrontLineState, player: PlayerId, index: number): boolean {
@@ -271,13 +571,10 @@ function assertV063FrontLine(state: FrontLineState): void {
   assertTerritoryCount(state.territoryCount);
   for (const player of ['A', 'B'] as const) {
     const controlled = state.control[player];
-    const position = state.position[player];
     if (!Number.isInteger(controlled) || controlled < 0 || controlled > state.territoryCount) {
       throw new Error(`${player} has an invalid Front Line length.`);
     }
-    if (!Number.isInteger(position) || position < 0 || position >= state.territoryCount) {
-      throw new Error(`${player} has an invalid in-Gauntlet Position.`);
-    }
+    assertExtendedPosition(state.position[player], state.territoryCount, `${player} Position`);
   }
   if (state.control.A + state.control.B > state.territoryCount) {
     throw new Error('Contiguous Front Lines cannot overlap.');
@@ -292,6 +589,13 @@ function cloneFrontLine(state: FrontLineState): FrontLineState {
   };
 }
 
+function assertOutcomeMatchesBattle(battle: V063BattleState, outcome: V063BattleOutcome): void {
+  const players = new Set([battle.attacker, battle.defender]);
+  if (outcome.winner === outcome.loser || !players.has(outcome.winner) || !players.has(outcome.loser)) {
+    throw new Error('Battle outcome winner and loser must match the battle participants.');
+  }
+}
+
 function sameMultiset(left: readonly string[], right: readonly string[]): boolean {
   const counts = new Map<string, number>();
   for (const value of left) counts.set(value, (counts.get(value) ?? 0) + 1);
@@ -304,10 +608,28 @@ function nonnegativeInteger(value: number): number {
   return Math.max(0, Math.floor(value));
 }
 
+function isTerritoryIndex(value: number, territoryCount: number): boolean {
+  return Number.isInteger(value) && value >= 0 && value < territoryCount;
+}
+
+function assertTerritoryIndex(value: number, territoryCount: number, label: string): void {
+  if (!isTerritoryIndex(value, territoryCount)) {
+    throw new Error(`${label} must be a Territory Position.`);
+  }
+}
+
+function assertExtendedPosition(value: number, territoryCount: number, label: string): void {
+  if (!Number.isInteger(value) || value < -1 || value > territoryCount) {
+    throw new Error(`${label} must be a legal in-Gauntlet or edge-of-Gauntlet Position.`);
+  }
+}
+
 function assertTerritoryCount(value: number): void {
   if (!Number.isInteger(value) || value < 2) throw new Error('territoryCount must be an integer of at least two.');
 }
 
-function assertDie(value: number): void {
-  if (!Number.isInteger(value) || value < 1 || value > 6) throw new Error('First-player rolls must be d6 results.');
+function assertDie(value: number, label: string): void {
+  if (!Number.isInteger(value) || value < 1 || value > 6) {
+    throw new Error(`${label} must be unmodified d6 results.`);
+  }
 }
