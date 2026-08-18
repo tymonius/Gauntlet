@@ -270,7 +270,7 @@ export function referenceCardMarkup(record, sideName, options = {}) {
         <p class="reference-component-name">${esc(componentName)}</p>
       </header>
       <div class="reference-body">${sections}</div>
-      <footer class="reference-card-footer"><span>${esc(factionLabel)}</span><strong>Reference · Not a Deck Card</strong><span>${esc(version)}</span></footer>
+      <footer class="reference-card-footer"><span>${esc(factionLabel)}</span><strong>Reference</strong><span>${esc(version)}</span></footer>
     </div>
   </article>`;
 }
