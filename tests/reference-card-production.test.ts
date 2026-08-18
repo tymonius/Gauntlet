@@ -69,6 +69,8 @@ describe('production faction reference cards', () => {
     expect(supplemental).toContain('<footer class="card-footer"><span>${esc(factionLabel)}</span><span>Reference</span><span>v0.6.3</span></footer>');
     expect(referenceRenderer).not.toContain('reference-card-footer');
     expect(supplemental).not.toContain('reference-card-footer');
+    expect(referenceCss).not.toContain('.reference-card-footer');
+    expect(referenceCss).not.toContain('--reference-footer-tint');
     expect(referenceRenderer).not.toContain('Reference · Not a Deck Card');
     expect(supplemental).not.toContain('Reference · Not a Deck Card');
   });
