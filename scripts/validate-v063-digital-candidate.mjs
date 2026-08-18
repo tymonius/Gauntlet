@@ -56,6 +56,13 @@ for (const marker of [
   'victoryFromFinalTerritoryCapture',
   'victoryFromLastStand',
   'canInitiateLastStand',
+  'createV063LastStandBattle',
+  'retreatV063Position',
+  'defenderHasV063DefensiveEdge',
+  'resolveV063BattleOutcome',
+  'applyV063BattleOutcome',
+  'resolveV063Withdrawal',
+  'advanceV063TurnPhase',
   'beginEffectGrantedMovement',
 ]) {
   assert(rules.includes(marker), `Digital v0.6.3 rules layer is missing ${marker}.`);
@@ -85,10 +92,14 @@ assert(!contentAdapter.includes("'v0.6.3-candidate'"), 'v0.6.3 engine content st
 assert(contentTests.includes("toBe('v0.6.3')"), 'v0.6.3 content tests do not lock the released rules identity.');
 assert(contentTests.includes("not.toContain('candidate')"), 'v0.6.3 content tests do not guard against candidate-source regression.');
 
-assert(rules.includes("export * from '../v062/rules';"), 'v0.6.3 rules currently inherit the isolated v0.6.2 shared core; migration must remain explicit while that dependency exists.');
-assert(cards.includes("export * from '../v062/cards';"), 'v0.6.3 cards currently inherit the isolated v0.6.2 card core; migration must remain explicit while that dependency exists.');
+assert(!rules.includes("export * from '../v062/rules';"), 'v0.6.3 rules must not re-export the stale v0.6.2 runtime surface.');
+assert(rules.includes("from '../v062/rules';"), 'v0.6.3 rules may continue sharing stable structural types with the versioned v0.6.2 layer while runtime behavior is migrated.');
+for (const forbidden of ['applyNormalCapture(', 'resolveBattleOutcome(', 'applyBattleOutcome(', 'resolveWithdrawal(', 'retreatPosition(']) {
+  assert(!rules.includes(forbidden), `v0.6.3 rules still expose or call stale v0.6.2 procedure ${forbidden}.`);
+}
+assert(cards.includes("export * from '../v062/cards';"), 'v0.6.3 cards currently inherit the isolated v0.6.2 card core; that remaining migration dependency must stay explicit until its own #741 tranche.');
 
-console.log('v0.6.3 digital baseline validation passed: engine content is release-bound and current migrated setup, victory, movement, shared card procedures, and persistent Margin Loan checks remain executable. Full engine parity is still tracked by #741.');
+console.log('v0.6.3 digital baseline validation passed: published content authority is locked, the rules runtime no longer leaks v0.6.2 behavior, and v0.6.3 Front Line, retreat, Last Stand, battle outcome, withdrawal, and movement procedures are regression-tested. Card-core parity remains tracked by #741.');
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
