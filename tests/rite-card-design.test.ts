@@ -70,6 +70,16 @@ describe("Mystics Rite card prototypes", () => {
     expect(riteRenderer).not.toContain("Artwork pending for ${esc(RITUAL.name)}");
   });
 
+  it("rotates the Ritual of Ascension card-back artwork 90 degrees without rotating the physical card", () => {
+    expect(riteStyles).toContain(".ritual-card-back__image-window > img");
+    expect(riteStyles).toContain("width: calc(3.5in - 0.15in)");
+    expect(riteStyles).toContain("height: calc(2.5in - 0.15in)");
+    expect(riteStyles).toContain("translate: -50% -50%");
+    expect(riteStyles).toContain("rotate: 90deg");
+    expect(riteStyles).toContain(".ritual-face-grid");
+    expect(riteStyles).toContain("grid-template-columns: repeat(2, 2.5in)");
+  });
+
   it("turns every completed face into the same count-based progression reference", () => {
     for (const label of ["1 Rite", "2 Rites", "3 Rites", "Ritual"]) expect(riteRenderer).toContain(`count: '${label}'`);
     for (const ability of ["Invocation", "Transmutation", "Convergence", "Ritual of Ascension"]) expect(riteRenderer).toContain(`name: '${ability}'`);
