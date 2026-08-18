@@ -1,5 +1,5 @@
 import {
-  fitAllReferenceCards,
+  fitReferenceCard,
   loadReferenceRecords,
   referenceCardMarkup,
 } from './reference-card.js';
@@ -154,7 +154,6 @@ const SUPPLEMENTAL_COMPONENTS = Object.freeze([
 ]);
 
 const root = document.querySelector('#supplementalReviewSections');
-let referenceRecords = new Map();
 
 function esc(value) {
   return String(value ?? '').replace(/[&<>'"]/g, character => ({
@@ -238,8 +237,8 @@ function placeholderFace(component, faction, factionLabel, faceLabel = '') {
   </article>`;
 }
 
-function referenceLoadingFace(component, faction, factionLabel, faceLabel) {
-  return `<article class="gauntlet-card faction-component-card reference-card reference-card-loading" data-faction="${esc(faction)}" data-component-id="${esc(component.referenceId)}" data-reference-side="${esc(faceLabel.toLowerCase())}" aria-label="${esc(component.name)} ${esc(faceLabel)} loading canonical rules">
+function referenceLoadingFace(component, faction, factionLabel, sideName) {
+  return `<article class="gauntlet-card faction-component-card reference-card reference-card-loading" data-faction="${esc(faction)}" data-component-id="${esc(component.referenceId)}" data-reference-side="${esc(sideName)}" aria-label="${esc(component.name)} ${esc(sideName)} loading canonical rules">
     <div class="reference-card-interior">
       <span class="reference-watermark" aria-hidden="true"></span>
       <header class="reference-card-header">
@@ -254,11 +253,7 @@ function referenceLoadingFace(component, faction, factionLabel, faceLabel) {
 }
 
 function componentFace(component, faction, factionLabel, faceLabel = '') {
-  if (component.referenceId) {
-    const record = referenceRecords.get(component.referenceId);
-    if (!record) return referenceLoadingFace(component, faction, factionLabel, faceLabel || 'Front');
-    return referenceCardMarkup(record, /^reverse$/i.test(faceLabel) ? 'reverse' : 'front');
-  }
+  if (component.referenceId) return referenceLoadingFace(component, faction, factionLabel, /^reverse$/i.test(faceLabel) ? 'reverse' : 'front');
   if (component.tracker && !faceLabel) return trackerFace(component, faction, factionLabel);
   return placeholderFace(component, faction, factionLabel, faceLabel);
 }
@@ -269,14 +264,11 @@ function componentSpecimen(component, faction, factionLabel) {
   const statusText = component.tracker ? `Designed · physical 0–${component.tracker.max}` : component.referenceId ? 'Designed · source-driven' : quantityText;
 
   if (component.doubleSided) {
-    const record = component.referenceId ? referenceRecords.get(component.referenceId) : null;
-    const frontStatus = record?.faces?.front?.title || 'Loading canonical face';
-    const reverseStatus = record?.faces?.reverse?.title || 'Loading canonical face';
     return `<section class="supplemental-review-item supplemental-review-pair" id="supplemental-${esc(faction)}-${esc(component.id)}">
       <div class="supplemental-item-heading screen-only"><strong>${esc(component.name)}</strong><span>${esc(statusText)}</span></div>
       <div class="supplemental-face-grid">
-        <div class="supplemental-face"><p class="supplemental-face-label screen-only"><strong>Front</strong><span>${esc(frontStatus)}</span></p>${componentFace(component, faction, factionLabel, 'Front')}</div>
-        <div class="supplemental-face"><p class="supplemental-face-label screen-only"><strong>Reverse</strong><span>${esc(reverseStatus)}</span></p>${componentFace(component, faction, factionLabel, 'Reverse')}</div>
+        <div class="supplemental-face" data-reference-face="front"><p class="supplemental-face-label screen-only"><strong>Front</strong><span>Loading canonical face</span></p>${componentFace(component, faction, factionLabel, 'Front')}</div>
+        <div class="supplemental-face" data-reference-face="reverse"><p class="supplemental-face-label screen-only"><strong>Reverse</strong><span>Loading canonical face</span></p>${componentFace(component, faction, factionLabel, 'Reverse')}</div>
       </div>
     </section>`;
   }
@@ -310,38 +302,54 @@ function renderSupplementalMarkup() {
   root.innerHTML = SUPPLEMENTAL_COMPONENTS.map(groupMarkup).join('');
 }
 
-async function renderSupplementalCatalog() {
+function markupToElement(markup) {
+  const template = document.createElement('template');
+  template.innerHTML = markup.trim();
+  const element = template.content.firstElementChild;
+  if (!element) throw new Error('Reference-card renderer returned no element.');
+  return element;
+}
+
+async function hydrateReferenceCards() {
   if (!root) return;
-
-  // Trackers and unresolved design slots must remain synchronously available to
-  // production capture even while source-driven reference content is loading.
-  renderSupplementalMarkup();
-
   const records = await loadReferenceRecords();
-  referenceRecords = new Map(records.map(record => [record.id, record]));
-  const expectedReferences = SUPPLEMENTAL_COMPONENTS.flatMap(group => group.cards).filter(component => component.referenceId);
-  const missingReferences = expectedReferences.filter(component => !referenceRecords.has(component.referenceId));
-  if (missingReferences.length) {
-    throw new Error(`Reference-card contract mismatch: ${missingReferences.map(component => component.referenceId).join(', ')}`);
+  const recordsById = new Map(records.map(record => [record.id, record]));
+  const referenceComponents = SUPPLEMENTAL_COMPONENTS.flatMap(group => group.cards.map(component => ({ group, component }))).filter(({ component }) => component.referenceId);
+  const missing = referenceComponents.filter(({ component }) => !recordsById.has(component.referenceId));
+  if (missing.length) throw new Error(`Reference-card contract mismatch: ${missing.map(({ component }) => component.referenceId).join(', ')}`);
+
+  for (const { group, component } of referenceComponents) {
+    const record = recordsById.get(component.referenceId);
+    const specimen = root.querySelector(`#supplemental-${CSS.escape(group.faction)}-${CSS.escape(component.id)}`);
+    if (!specimen) throw new Error(`Missing production specimen for ${component.id}.`);
+
+    for (const sideName of ['front', 'reverse']) {
+      const faceContainer = specimen.querySelector(`[data-reference-face="${sideName}"]`);
+      if (!faceContainer) throw new Error(`Missing ${sideName} face container for ${component.id}.`);
+      const loadingCard = faceContainer.querySelector('.reference-card-loading');
+      if (!loadingCard) throw new Error(`Missing ${sideName} loading card for ${component.id}.`);
+      loadingCard.replaceWith(markupToElement(referenceCardMarkup(record, sideName)));
+      const label = faceContainer.querySelector('.supplemental-face-label span');
+      if (label) label.textContent = record.faces[sideName].title;
+    }
   }
 
-  renderSupplementalMarkup();
   await new Promise(resolve => requestAnimationFrame(resolve));
   if (document.fonts?.ready) await document.fonts.ready;
-  const fitResults = fitAllReferenceCards(root);
-  const failures = fitResults.filter(result => result.overflow);
+  const failures = [];
+  for (const card of root.querySelectorAll('.reference-card:not(.reference-card-loading)')) {
+    const result = fitReferenceCard(card);
+    if (result.overflow) failures.push(card);
+  }
   if (failures.length) {
-    throw new Error(`Reference-card text cannot fit at the readability floor: ${failures.map(({ card }) => `${card.dataset.componentId}/${card.dataset.referenceSide}`).join(', ')}`);
+    throw new Error(`Reference-card text cannot fit at the readability floor: ${failures.map(card => `${card.dataset.componentId}/${card.dataset.referenceSide}`).join(', ')}`);
   }
   root.dataset.referenceCardsReady = 'true';
 }
 
-renderSupplementalCatalog()
-  .then(() => {
-    if (document.readyState === 'complete') window.dispatchEvent(new Event('load'));
-  })
-  .catch(error => {
-    console.error(error);
-    root.dataset.referenceCardsReady = 'error';
-    root.insertAdjacentHTML('afterbegin', `<pre class="supplemental-render-error">${esc(error?.stack || error?.message || String(error))}</pre>`);
-  });
+renderSupplementalMarkup();
+hydrateReferenceCards().catch(error => {
+  console.error(error);
+  root.dataset.referenceCardsReady = 'error';
+  root.insertAdjacentHTML('afterbegin', `<pre class="supplemental-render-error">${esc(error?.stack || error?.message || String(error))}</pre>`);
+});
