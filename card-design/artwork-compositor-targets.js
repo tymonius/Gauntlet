@@ -7,6 +7,57 @@
   `;
   document.head.append(style);
 
+  let returnView = null;
+  let hookedDialog = null;
+
+  function restoreViewport(view) {
+    if (!view) return;
+    const root = document.documentElement;
+    const body = document.body;
+    const rootBehavior = root.style.scrollBehavior;
+    const bodyBehavior = body?.style.scrollBehavior || '';
+    root.style.scrollBehavior = 'auto';
+    if (body) body.style.scrollBehavior = 'auto';
+    window.scrollTo(view.x, view.y);
+    root.style.scrollBehavior = rootBehavior;
+    if (body) body.style.scrollBehavior = bodyBehavior;
+  }
+
+  function hookDialog() {
+    const dialog = document.querySelector('.art-compositor-dialog');
+    if (!dialog || dialog === hookedDialog) return;
+    hookedDialog = dialog;
+    dialog.addEventListener('close', () => {
+      const view = returnView;
+      returnView = null;
+      if (!view) return;
+      restoreViewport(view);
+      view.opener?.focus?.({ preventScroll: true });
+      requestAnimationFrame(() => restoreViewport(view));
+    });
+  }
+
+  // Native dialog focus can move a long catalog to the top when showModal()
+  // opens. Capture the exact catalog viewport before the compositor click and
+  // restore it before the next paint, then restore it again when the dialog
+  // closes so the user returns to the card they were editing.
+  document.addEventListener('click', (event) => {
+    const opener = event.target instanceof Element
+      ? event.target.closest('.art-compositor-launch')
+      : null;
+    if (!opener) return;
+    returnView = {
+      x: window.scrollX,
+      y: window.scrollY,
+      opener,
+    };
+    queueMicrotask(() => {
+      hookDialog();
+      restoreViewport(returnView);
+      requestAnimationFrame(() => restoreViewport(returnView));
+    });
+  }, true);
+
   function tagTargets(root = document) {
     root.querySelectorAll('.proposal-review-pair[id]').forEach(pair => {
       const faces = Array.from(pair.querySelectorAll(':scope .proposal-face .gauntlet-card'));
