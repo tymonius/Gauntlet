@@ -25,6 +25,7 @@ on:
       - "card-design/card-parchment.css"
       - "card-design/card-rule-columns.css"
       - "card-design/faction-specimens.css"
+      - "docs/v0.6.4-diplomat-proposals.json"
       - "tts/territory-renderer/**"
       - "design-tokens.css"
       - "images/*.png"
@@ -36,6 +37,7 @@ on:
       - "scripts/render-leader-card-specimens.mjs"
       - "scripts/validate-territory-mobile-render.mjs"
       - "scripts/validate-rite-card-render.mjs"
+      - "scripts/validate-proposal-card-render.mjs"
       - ".github/workflows/render-leader-card-specimens.yml"
   workflow_dispatch:
 
@@ -71,8 +73,12 @@ jobs:
           TERRITORY_TEST_BASE_URL=http://127.0.0.1:4173 node scripts/validate-territory-mobile-render.mjs
       - name: Validate Mystics Rite card specimens
         run: node scripts/validate-rite-card-render.mjs
+      - name: Validate Diplomat Proposal card specimens
+        run: node scripts/validate-proposal-card-render.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: gauntlet-card-review-specimens
-          path: card-design/generated/leaders/
+          path: |
+            card-design/generated/leaders/
+            card-design/generated/proposals/
           if-no-files-found: error
