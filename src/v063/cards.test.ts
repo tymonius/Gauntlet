@@ -109,7 +109,7 @@ describe('published authority for migrated card handlers', () => {
     expect(effect('intelligence-extraordinary-rendition', 'Asset')).toContain(
       'Whenever you discard one or more of your Assets, discard this card before any others, if able.',
     );
-    expect(effect('mystics-natures-altar', 'Overlay')).toBe(
+    expect(effect('mystics-nature-s-altar', 'Overlay')).toBe(
       'During your Opening, while you are here, you may take the Begin a Rite Faction Action. A Rite begun this way may complete this turn if you control this Territory when its completion condition and timing are satisfied.',
     );
     expect(effect('inquisition-martyrdom', 'Aftermath')).toBe(
