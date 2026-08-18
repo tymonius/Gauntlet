@@ -132,6 +132,7 @@ function renderReference(record, sideName, gameVersion) {
   target.innerHTML = referenceCardMarkup(record, sideName, { version: gameVersion });
   const card = target.querySelector('.reference-card');
   if (!card) throw new Error(`Production reference renderer did not create ${record.id} ${sideName}.`);
+  card.classList.add('supplemental-card');
   card.dataset.renderer = record.renderer;
 
   requestAnimationFrame(async () => {
