@@ -65,10 +65,16 @@ describe("Mystics Rite card prototypes", () => {
 
   it("turns every completed face into the same count-based progression reference", () => {
     for (const label of ["1 Rite", "2 Rites", "3 Rites", "Ritual"]) expect(riteRenderer).toContain(`count: '${label}'`);
-    for (const ability of ["Invocation", "Transmutation", "Convergence", "Ritual of Ascendance"]) expect(riteRenderer).toContain(`name: '${ability}'`);
+    for (const ability of ["Invocation", "Transmutation", "Convergence", "Ritual of Ascension"]) expect(riteRenderer).toContain(`name: '${ability}'`);
+    expect(riteRenderer).toContain("headerLines: ['Ritual of', 'Ascension']");
+    expect(riteRenderer).toContain("rite-unlock-section--ritual");
+    expect(riteRenderer).toContain("rite-unlock-ritual-heading");
+    expect(riteRenderer).toContain('<p>${esc(unlock.text)}</p>');
     expect(riteRenderer).toContain("UNLOCKS.map(unlockSection).join('')");
     expect(riteRenderer).toContain("completed-rite-card");
     expect(riteStyles).toContain(".rite-unlock-section");
+    expect(riteStyles).toContain(".rite-unlock-ritual-heading span");
+    expect(riteStyles).toContain("white-space: nowrap");
     expect(ruleColumnStyles).toContain("grid-template-columns: fit-content(var(--rule-label-max)) minmax(0, 1fr)");
     expect(ruleColumnStyles).toContain("grid-template-columns: subgrid !important");
     expect(ruleColumnStyles).toContain(".completed-rite-card");
