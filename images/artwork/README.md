@@ -10,15 +10,23 @@ images/artwork/
     neutral/
     military/
     diplomats/
+      proposals/
     financiers/
     intelligence/
     mystics/
+      rites-and-rituals/
     inquisition/
-  territories/
+    territories/
+  cardbacks/
+    mystics/
+  supplemental/
+    diplomats/
+    mystics/
   reference/
     factions/
     leaders/
     environments/
+    reserve/
   promotional/
   manifest.json
 ```
@@ -26,7 +34,10 @@ images/artwork/
 ## Filing rules
 
 - Canonical playable-card illustrations belong under `cards/<allegiance>/`.
-- Canonical Territory and Arena illustrations belong under `territories/`.
+- Supplemental faction component faces may use a component-specific subdirectory under their faction, such as `cards/diplomats/proposals/` or `cards/mystics/rites-and-rituals/`.
+- Canonical Territory and Arena illustrations belong under `cards/territories/`.
+- Dedicated card-back artwork belongs under `cardbacks/<faction>/`.
+- Shared state graphics and other reusable component artwork belong under `supplemental/<faction>/`.
 - Approved visual-development pieces that are not canonical card titles belong under `reference/`.
 - Website, box, rulebook splash, and campaign images belong under `promotional/`.
 - Exploratory, rejected, or superseded generations must not be placed in this directory.
