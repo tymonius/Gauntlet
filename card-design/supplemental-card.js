@@ -1,3 +1,9 @@
+import {
+  fitAllReferenceCards,
+  loadReferenceRecords,
+  referenceCardMarkup,
+} from './reference-card.js';
+
 const SUPPLEMENTAL_COMPONENTS = Object.freeze([
   {
     faction: 'military',
@@ -27,7 +33,8 @@ const SUPPLEMENTAL_COMPONENTS = Object.freeze([
       },
       {
         id: 'diplomat-reference',
-        name: 'Diplomat Reference',
+        referenceId: 'diplomats-reference',
+        name: 'Diplomat Reference Card',
         type: 'Double-sided reference card',
         detail: 'Summarizes Terms resolution, Influence, Leverage, and Treaty Articles.',
         quantity: 1,
@@ -41,10 +48,12 @@ const SUPPLEMENTAL_COMPONENTS = Object.freeze([
     cards: [
       {
         id: 'financier-reference',
-        name: 'Financier Reference',
-        type: 'Reference card',
-        detail: 'Summarizes the Capital limit, Deed costs, Play the Market, Subsidize, and Controlling Interest.',
+        referenceId: 'financiers-reference',
+        name: 'Financier Reference Card',
+        type: 'Double-sided reference card',
+        detail: 'Summarizes Capital, Financial Capacity, Deeds, Play the Market, Subsidize, and Controlling Interest.',
         quantity: 1,
+        doubleSided: true,
       },
       {
         id: 'deed',
@@ -61,17 +70,21 @@ const SUPPLEMENTAL_COMPONENTS = Object.freeze([
     cards: [
       {
         id: 'mission-reference',
-        name: 'Mission Reference',
-        type: 'Reference card',
-        detail: 'Required reference for starting, completing, aborting, and failing normal Missions.',
+        referenceId: 'intelligence-mission-reference',
+        name: 'Mission Reference Card',
+        type: 'Double-sided reference card',
+        detail: 'Required reference for Missions, Operation Progress, and Special Operations.',
         quantity: 1,
+        doubleSided: true,
       },
       {
         id: 'operations-reference',
-        name: 'Operations Reference',
-        type: 'Reference card',
-        detail: 'Required reference for Operation Progress and Special Operation readiness and completion.',
+        referenceId: 'intelligence-operations-reference',
+        name: 'Operations Reference Card',
+        type: 'Double-sided reference card',
+        detail: 'Required reference for Surveillance, Interference, and Intelligence mirrors.',
         quantity: 1,
+        doubleSided: true,
       },
       {
         id: 'intel-tracker',
@@ -97,10 +110,12 @@ const SUPPLEMENTAL_COMPONENTS = Object.freeze([
     cards: [
       {
         id: 'mystics-reference',
-        name: 'Mystics Reference',
-        type: 'Reference card',
+        referenceId: 'mystics-reference',
+        name: 'Mystics Reference Card',
+        type: 'Double-sided reference card',
         detail: 'Summarizes Rite progression, Invocation, Transmutation, Convergence, Ritual, and bound-card rules.',
         quantity: 1,
+        doubleSided: true,
       },
     ],
   },
@@ -110,17 +125,21 @@ const SUPPLEMENTAL_COMPONENTS = Object.freeze([
     cards: [
       {
         id: 'doctrine-reference',
-        name: 'Inquisition Doctrine Reference',
-        type: 'Reference card',
+        referenceId: 'inquisition-doctrine-reference',
+        name: 'Inquisition Doctrine Reference Card',
+        type: 'Double-sided reference card',
         detail: 'Summarizes Conviction, Condemnation, Blasphemy, and Purification.',
         quantity: 1,
+        doubleSided: true,
       },
       {
         id: 'purge-reference',
-        name: 'Purge Reference',
-        type: 'Reference card',
-        detail: 'Carries the complete Purge menu and Final Judgment reminder.',
+        referenceId: 'inquisition-purge-reference',
+        name: 'Purge Reference Card',
+        type: 'Double-sided reference card',
+        detail: 'Carries the complete Purge menu, Purge timing, and Final Judgment reminder.',
         quantity: 1,
+        doubleSided: true,
       },
       {
         id: 'conviction-tracker',
@@ -135,6 +154,7 @@ const SUPPLEMENTAL_COMPONENTS = Object.freeze([
 ]);
 
 const root = document.querySelector('#supplementalReviewSections');
+let referenceRecords = new Map();
 
 function esc(value) {
   return String(value ?? '').replace(/[&<>'"]/g, character => ({
@@ -219,6 +239,11 @@ function placeholderFace(component, faction, factionLabel, faceLabel = '') {
 }
 
 function componentFace(component, faction, factionLabel, faceLabel = '') {
+  if (component.referenceId) {
+    const record = referenceRecords.get(component.referenceId);
+    if (!record) throw new Error(`Missing production reference record ${component.referenceId}.`);
+    return referenceCardMarkup(record, /^reverse$/i.test(faceLabel) ? 'reverse' : 'front');
+  }
   if (component.tracker && !faceLabel) return trackerFace(component, faction, factionLabel);
   return placeholderFace(component, faction, factionLabel, faceLabel);
 }
@@ -226,14 +251,17 @@ function componentFace(component, faction, factionLabel, faceLabel = '') {
 function componentSpecimen(component, faction, factionLabel) {
   const quantity = Number(component.quantity) || 1;
   const quantityText = quantity > 1 ? `×${quantity} physical copies` : component.doubleSided ? '2 faces · 1 physical card' : '1 physical card';
-  const statusText = component.tracker ? `Designed · physical 0–${component.tracker.max}` : quantityText;
+  const statusText = component.tracker ? `Designed · physical 0–${component.tracker.max}` : component.referenceId ? 'Designed · source-driven' : quantityText;
 
   if (component.doubleSided) {
+    const record = component.referenceId ? referenceRecords.get(component.referenceId) : null;
+    const frontStatus = record?.faces?.front?.title || 'Production face';
+    const reverseStatus = record?.faces?.reverse?.title || 'Production face';
     return `<section class="supplemental-review-item supplemental-review-pair" id="supplemental-${esc(faction)}-${esc(component.id)}">
-      <div class="supplemental-item-heading screen-only"><strong>${esc(component.name)}</strong><span>${esc(quantityText)}</span></div>
+      <div class="supplemental-item-heading screen-only"><strong>${esc(component.name)}</strong><span>${esc(statusText)}</span></div>
       <div class="supplemental-face-grid">
-        <div class="supplemental-face"><p class="supplemental-face-label screen-only"><strong>Front</strong><span>Design pending</span></p>${componentFace(component, faction, factionLabel, 'Front')}</div>
-        <div class="supplemental-face"><p class="supplemental-face-label screen-only"><strong>Reverse</strong><span>Design pending</span></p>${componentFace(component, faction, factionLabel, 'Reverse')}</div>
+        <div class="supplemental-face"><p class="supplemental-face-label screen-only"><strong>Front</strong><span>${esc(frontStatus)}</span></p>${componentFace(component, faction, factionLabel, 'Front')}</div>
+        <div class="supplemental-face"><p class="supplemental-face-label screen-only"><strong>Reverse</strong><span>${esc(reverseStatus)}</span></p>${componentFace(component, faction, factionLabel, 'Reverse')}</div>
       </div>
     </section>`;
   }
@@ -256,8 +284,17 @@ function groupMarkup(group) {
   </section>`;
 }
 
-function renderSupplementalCatalog() {
+async function renderSupplementalCatalog() {
   if (!root) return;
+
+  const records = await loadReferenceRecords();
+  referenceRecords = new Map(records.map(record => [record.id, record]));
+  const expectedReferences = SUPPLEMENTAL_COMPONENTS.flatMap(group => group.cards).filter(component => component.referenceId);
+  const missingReferences = expectedReferences.filter(component => !referenceRecords.has(component.referenceId));
+  if (missingReferences.length) {
+    throw new Error(`Reference-card contract mismatch: ${missingReferences.map(component => component.referenceId).join(', ')}`);
+  }
+
   const uniqueCount = SUPPLEMENTAL_COMPONENTS.reduce((sum, group) => sum + group.cards.length, 0);
   const physicalCount = SUPPLEMENTAL_COMPONENTS.reduce((sum, group) => sum + group.cards.reduce((groupSum, component) => groupSum + (Number(component.quantity) || 1), 0), 0);
   root.dataset.supplementalDesignCount = String(uniqueCount);
@@ -265,8 +302,23 @@ function renderSupplementalCatalog() {
   document.querySelectorAll('[data-supplemental-design-count]').forEach(node => { node.textContent = String(uniqueCount); });
   document.querySelectorAll('[data-supplemental-physical-count]').forEach(node => { node.textContent = String(physicalCount); });
   root.innerHTML = SUPPLEMENTAL_COMPONENTS.map(groupMarkup).join('');
+
+  await new Promise(resolve => requestAnimationFrame(resolve));
+  if (document.fonts?.ready) await document.fonts.ready;
+  const fitResults = fitAllReferenceCards(root);
+  const failures = fitResults.filter(result => result.overflow);
+  if (failures.length) {
+    throw new Error(`Reference-card text cannot fit at the readability floor: ${failures.map(({ card }) => `${card.dataset.componentId}/${card.dataset.referenceSide}`).join(', ')}`);
+  }
+  root.dataset.referenceCardsReady = 'true';
 }
 
-renderSupplementalCatalog();
-
-if (document.readyState === 'complete') window.dispatchEvent(new Event('load'));
+renderSupplementalCatalog()
+  .then(() => {
+    if (document.readyState === 'complete') window.dispatchEvent(new Event('load'));
+  })
+  .catch(error => {
+    console.error(error);
+    root.dataset.referenceCardsReady = 'error';
+    root.innerHTML = `<pre class="supplemental-render-error">${esc(error?.stack || error?.message || String(error))}</pre>`;
+  });
