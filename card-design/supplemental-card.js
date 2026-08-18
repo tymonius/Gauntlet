@@ -1,3 +1,9 @@
+import {
+  fitReferenceCard,
+  loadReferenceRecords,
+  referenceCardMarkup,
+} from './reference-card.js';
+
 const SUPPLEMENTAL_COMPONENTS = Object.freeze([
   {
     faction: 'military',
@@ -27,7 +33,8 @@ const SUPPLEMENTAL_COMPONENTS = Object.freeze([
       },
       {
         id: 'diplomat-reference',
-        name: 'Diplomat Reference',
+        referenceId: 'diplomats-reference',
+        name: 'Diplomat Reference Card',
         type: 'Double-sided reference card',
         detail: 'Summarizes Terms resolution, Influence, Leverage, and Treaty Articles.',
         quantity: 1,
@@ -41,10 +48,12 @@ const SUPPLEMENTAL_COMPONENTS = Object.freeze([
     cards: [
       {
         id: 'financier-reference',
-        name: 'Financier Reference',
-        type: 'Reference card',
-        detail: 'Summarizes the Capital limit, Deed costs, Play the Market, Subsidize, and Controlling Interest.',
+        referenceId: 'financiers-reference',
+        name: 'Financier Reference Card',
+        type: 'Double-sided reference card',
+        detail: 'Summarizes Capital, Financial Capacity, Deeds, Play the Market, Subsidize, and Controlling Interest.',
         quantity: 1,
+        doubleSided: true,
       },
       {
         id: 'deed',
@@ -61,17 +70,21 @@ const SUPPLEMENTAL_COMPONENTS = Object.freeze([
     cards: [
       {
         id: 'mission-reference',
-        name: 'Mission Reference',
-        type: 'Reference card',
-        detail: 'Required reference for starting, completing, aborting, and failing normal Missions.',
+        referenceId: 'intelligence-mission-reference',
+        name: 'Mission Reference Card',
+        type: 'Double-sided reference card',
+        detail: 'Required reference for Missions, Operation Progress, and Special Operations.',
         quantity: 1,
+        doubleSided: true,
       },
       {
         id: 'operations-reference',
-        name: 'Operations Reference',
-        type: 'Reference card',
-        detail: 'Required reference for Operation Progress and Special Operation readiness and completion.',
+        referenceId: 'intelligence-operations-reference',
+        name: 'Operations Reference Card',
+        type: 'Double-sided reference card',
+        detail: 'Required reference for Surveillance, Interference, and Intelligence mirrors.',
         quantity: 1,
+        doubleSided: true,
       },
       {
         id: 'intel-tracker',
@@ -97,10 +110,12 @@ const SUPPLEMENTAL_COMPONENTS = Object.freeze([
     cards: [
       {
         id: 'mystics-reference',
-        name: 'Mystics Reference',
-        type: 'Reference card',
+        referenceId: 'mystics-reference',
+        name: 'Mystics Reference Card',
+        type: 'Double-sided reference card',
         detail: 'Summarizes Rite progression, Invocation, Transmutation, Convergence, Ritual, and bound-card rules.',
         quantity: 1,
+        doubleSided: true,
       },
     ],
   },
@@ -110,17 +125,21 @@ const SUPPLEMENTAL_COMPONENTS = Object.freeze([
     cards: [
       {
         id: 'doctrine-reference',
-        name: 'Inquisition Doctrine Reference',
-        type: 'Reference card',
+        referenceId: 'inquisition-doctrine-reference',
+        name: 'Inquisition Doctrine Reference Card',
+        type: 'Double-sided reference card',
         detail: 'Summarizes Conviction, Condemnation, Blasphemy, and Purification.',
         quantity: 1,
+        doubleSided: true,
       },
       {
         id: 'purge-reference',
-        name: 'Purge Reference',
-        type: 'Reference card',
-        detail: 'Carries the complete Purge menu and Final Judgment reminder.',
+        referenceId: 'inquisition-purge-reference',
+        name: 'Purge Reference Card',
+        type: 'Double-sided reference card',
+        detail: 'Carries the complete Purge menu, Purge timing, and Final Judgment reminder.',
         quantity: 1,
+        doubleSided: true,
       },
       {
         id: 'conviction-tracker',
@@ -218,7 +237,23 @@ function placeholderFace(component, faction, factionLabel, faceLabel = '') {
   </article>`;
 }
 
+function referenceLoadingFace(component, faction, factionLabel, sideName) {
+  return `<article class="gauntlet-card faction-component-card reference-card reference-card-loading" data-faction="${esc(faction)}" data-component-id="${esc(component.referenceId)}" data-reference-side="${esc(sideName)}" aria-label="${esc(component.name)} ${esc(sideName)} loading canonical rules">
+    <div class="reference-card-interior">
+      <span class="reference-watermark" aria-hidden="true"></span>
+      <header class="reference-card-header">
+        <div class="reference-kicker"><span class="reference-faction-emblem" aria-hidden="true"></span><span>${esc(factionLabel)} Reference</span></div>
+        <h3 class="reference-face-title">Loading reference…</h3>
+        <p class="reference-component-name">${esc(component.name)}</p>
+      </header>
+      <div class="reference-body"><section class="reference-section"><h4 class="reference-section-title">Canonical source</h4><div class="reference-blocks"><p>Loading current faction-guide rules.</p></div></section></div>
+      <footer class="reference-card-footer"><span>${esc(factionLabel)}</span><strong>Reference · Not a Deck Card</strong><span>v0.6.3</span></footer>
+    </div>
+  </article>`;
+}
+
 function componentFace(component, faction, factionLabel, faceLabel = '') {
+  if (component.referenceId) return referenceLoadingFace(component, faction, factionLabel, /^reverse$/i.test(faceLabel) ? 'reverse' : 'front');
   if (component.tracker && !faceLabel) return trackerFace(component, faction, factionLabel);
   return placeholderFace(component, faction, factionLabel, faceLabel);
 }
@@ -226,14 +261,14 @@ function componentFace(component, faction, factionLabel, faceLabel = '') {
 function componentSpecimen(component, faction, factionLabel) {
   const quantity = Number(component.quantity) || 1;
   const quantityText = quantity > 1 ? `×${quantity} physical copies` : component.doubleSided ? '2 faces · 1 physical card' : '1 physical card';
-  const statusText = component.tracker ? `Designed · physical 0–${component.tracker.max}` : quantityText;
+  const statusText = component.tracker ? `Designed · physical 0–${component.tracker.max}` : component.referenceId ? 'Designed · source-driven' : quantityText;
 
   if (component.doubleSided) {
     return `<section class="supplemental-review-item supplemental-review-pair" id="supplemental-${esc(faction)}-${esc(component.id)}">
-      <div class="supplemental-item-heading screen-only"><strong>${esc(component.name)}</strong><span>${esc(quantityText)}</span></div>
+      <div class="supplemental-item-heading screen-only"><strong>${esc(component.name)}</strong><span>${esc(statusText)}</span></div>
       <div class="supplemental-face-grid">
-        <div class="supplemental-face"><p class="supplemental-face-label screen-only"><strong>Front</strong><span>Design pending</span></p>${componentFace(component, faction, factionLabel, 'Front')}</div>
-        <div class="supplemental-face"><p class="supplemental-face-label screen-only"><strong>Reverse</strong><span>Design pending</span></p>${componentFace(component, faction, factionLabel, 'Reverse')}</div>
+        <div class="supplemental-face" data-reference-face="front"><p class="supplemental-face-label screen-only"><strong>Front</strong><span>Loading canonical face</span></p>${componentFace(component, faction, factionLabel, 'Front')}</div>
+        <div class="supplemental-face" data-reference-face="reverse"><p class="supplemental-face-label screen-only"><strong>Reverse</strong><span>Loading canonical face</span></p>${componentFace(component, faction, factionLabel, 'Reverse')}</div>
       </div>
     </section>`;
   }
@@ -256,7 +291,7 @@ function groupMarkup(group) {
   </section>`;
 }
 
-function renderSupplementalCatalog() {
+function renderSupplementalMarkup() {
   if (!root) return;
   const uniqueCount = SUPPLEMENTAL_COMPONENTS.reduce((sum, group) => sum + group.cards.length, 0);
   const physicalCount = SUPPLEMENTAL_COMPONENTS.reduce((sum, group) => sum + group.cards.reduce((groupSum, component) => groupSum + (Number(component.quantity) || 1), 0), 0);
@@ -267,6 +302,54 @@ function renderSupplementalCatalog() {
   root.innerHTML = SUPPLEMENTAL_COMPONENTS.map(groupMarkup).join('');
 }
 
-renderSupplementalCatalog();
+function markupToElement(markup) {
+  const template = document.createElement('template');
+  template.innerHTML = markup.trim();
+  const element = template.content.firstElementChild;
+  if (!element) throw new Error('Reference-card renderer returned no element.');
+  return element;
+}
 
-if (document.readyState === 'complete') window.dispatchEvent(new Event('load'));
+async function hydrateReferenceCards() {
+  if (!root) return;
+  const records = await loadReferenceRecords();
+  const recordsById = new Map(records.map(record => [record.id, record]));
+  const referenceComponents = SUPPLEMENTAL_COMPONENTS.flatMap(group => group.cards.map(component => ({ group, component }))).filter(({ component }) => component.referenceId);
+  const missing = referenceComponents.filter(({ component }) => !recordsById.has(component.referenceId));
+  if (missing.length) throw new Error(`Reference-card contract mismatch: ${missing.map(({ component }) => component.referenceId).join(', ')}`);
+
+  for (const { group, component } of referenceComponents) {
+    const record = recordsById.get(component.referenceId);
+    const specimen = root.querySelector(`#supplemental-${CSS.escape(group.faction)}-${CSS.escape(component.id)}`);
+    if (!specimen) throw new Error(`Missing production specimen for ${component.id}.`);
+
+    for (const sideName of ['front', 'reverse']) {
+      const faceContainer = specimen.querySelector(`[data-reference-face="${sideName}"]`);
+      if (!faceContainer) throw new Error(`Missing ${sideName} face container for ${component.id}.`);
+      const loadingCard = faceContainer.querySelector('.reference-card-loading');
+      if (!loadingCard) throw new Error(`Missing ${sideName} loading card for ${component.id}.`);
+      loadingCard.replaceWith(markupToElement(referenceCardMarkup(record, sideName)));
+      const label = faceContainer.querySelector('.supplemental-face-label span');
+      if (label) label.textContent = record.faces[sideName].title;
+    }
+  }
+
+  await new Promise(resolve => requestAnimationFrame(resolve));
+  if (document.fonts?.ready) await document.fonts.ready;
+  const failures = [];
+  for (const card of root.querySelectorAll('.reference-card:not(.reference-card-loading)')) {
+    const result = fitReferenceCard(card);
+    if (result.overflow) failures.push(card);
+  }
+  if (failures.length) {
+    throw new Error(`Reference-card text cannot fit at the readability floor: ${failures.map(card => `${card.dataset.componentId}/${card.dataset.referenceSide}`).join(', ')}`);
+  }
+  root.dataset.referenceCardsReady = 'true';
+}
+
+renderSupplementalMarkup();
+hydrateReferenceCards().catch(error => {
+  console.error(error);
+  root.dataset.referenceCardsReady = 'error';
+  root.insertAdjacentHTML('afterbegin', `<pre class="supplemental-render-error">${esc(error?.stack || error?.message || String(error))}</pre>`);
+});
