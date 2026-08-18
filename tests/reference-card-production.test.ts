@@ -55,7 +55,7 @@ describe('production faction reference cards', () => {
     expect(supplemental).toContain('Designed · source-driven');
   });
 
-  it('uses the production faction shell, parallel Terms procedures, and standardized Reference footer', () => {
+  it('uses the production faction shell, parallel Terms procedures, and the shared standard footer', () => {
     expect(referenceCss).toContain('padding: 0.075in');
     expect(referenceCss).toContain('font-family: var(--font-display-historical');
     expect(referenceCss).toContain('.reference-card[data-faction="diplomats"]');
@@ -65,8 +65,12 @@ describe('production faction reference cards', () => {
     expect(referenceCss).toContain('.reference-card[data-faction="inquisition"]');
     expect(referenceCss).toContain('[data-component-id="diplomats-reference"][data-reference-side="front"] .reference-body');
     expect(referenceCss).toContain('grid-template-columns: minmax(0, 1fr) minmax(0, 1fr)');
-    expect(referenceRenderer).toContain('<strong>Reference</strong>');
-    expect(supplemental).toContain('<strong>Reference</strong>');
+    expect(referenceRenderer).toContain('<footer class="card-footer"><span>${esc(factionLabel)}</span><span>Reference</span><span>${esc(version)}</span></footer>');
+    expect(supplemental).toContain('<footer class="card-footer"><span>${esc(factionLabel)}</span><span>Reference</span><span>v0.6.3</span></footer>');
+    expect(referenceRenderer).not.toContain('reference-card-footer');
+    expect(supplemental).not.toContain('reference-card-footer');
+    expect(referenceCss).not.toContain('.reference-card-footer');
+    expect(referenceCss).not.toContain('--reference-footer-tint');
     expect(referenceRenderer).not.toContain('Reference · Not a Deck Card');
     expect(supplemental).not.toContain('Reference · Not a Deck Card');
   });
@@ -84,10 +88,11 @@ describe('production faction reference cards', () => {
     expect(referenceCss).toContain('.reference-card[data-fit-warning="true"]');
   });
 
-  it('reuses the production renderer and production typefaces for TTS', () => {
+  it('reuses the production renderer, standard card chrome, and production typefaces for TTS', () => {
     expect(ttsRenderer).toContain("from '/card-design/reference-card.js'");
     expect(ttsRenderer).toContain('referenceCardMarkup(record, sideName');
     expect(ttsRenderer).toContain('fitReferenceCard(card)');
+    expect(ttsRendererHtml).toContain('/card-design/card-design.css');
     expect(ttsRendererHtml).toContain('/card-design/reference-card.css');
     expect(ttsRendererHtml).toContain('https://use.typekit.net/vgm6nwi.css');
   });

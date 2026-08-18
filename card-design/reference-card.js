@@ -409,7 +409,7 @@ export function referenceCardMarkup(record, sideName, options = {}) {
         <div class="reference-type-line"><span class="reference-faction-emblem" aria-hidden="true"></span><span>${esc(componentName)}</span></div>
       </header>
       <div class="reference-body">${sections}</div>
-      <footer class="reference-card-footer"><span>${esc(factionLabel)}</span><strong>Reference</strong><span>${esc(version)}</span></footer>
+      <footer class="card-footer"><span>${esc(factionLabel)}</span><span>Reference</span><span>${esc(version)}</span></footer>
     </div>
   </article>`;
 }
