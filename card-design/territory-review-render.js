@@ -1,5 +1,7 @@
 await (async () => {
-  const CANONICAL_SOURCE = '/artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json';
+  const CANDIDATE_SOURCE = '/docs/v0.6.4-territories.json';
+  const EXPECTED_SOURCE_ISSUE = 738;
+  const EXPECTED_VERSION = 'v0.6.4-candidate';
   const territoryId = new URLSearchParams(window.location.search).get('territory');
   const inspectionRender = new URLSearchParams(window.location.search).get('inspection') === '1';
   const target = document.getElementById('renderTarget');
@@ -81,10 +83,13 @@ await (async () => {
 
   try {
     if (!territoryId) throw new Error('No Territory selected.');
-    const response = await fetch(CANONICAL_SOURCE, { cache: 'no-cache' });
-    if (!response.ok) throw new Error(`Unable to load canonical Territories (HTTP ${response.status}).`);
-    const canonical = await response.json();
-    const territory = (canonical.territories || []).find(item => item.id === territoryId);
+    const response = await fetch(CANDIDATE_SOURCE, { cache: 'no-cache' });
+    if (!response.ok) throw new Error(`Unable to load v0.6.4 candidate Territories (HTTP ${response.status}).`);
+    const source = await response.json();
+    if (source.version !== EXPECTED_VERSION || source.source_issue !== EXPECTED_SOURCE_ISSUE) {
+      throw new Error('Territory review source is not the approved issue #738 v0.6.4 candidate.');
+    }
+    const territory = (source.territories || []).find(item => item.id === territoryId);
     if (!territory) throw new Error(`Unknown Territory: ${territoryId}`);
 
     const preview = {
@@ -92,17 +97,17 @@ await (async () => {
       kind: 'territory',
       name: territory.name,
       arena: Boolean(territory.arena),
-      complexity: territory.complexity || 'Basic',
+      complexity: territory.complexity || 'Unspecified',
       watchlist: territory.watchlist || 'None',
-      status: territory.status || 'Approved',
+      status: territory.status || 'Approved candidate',
       text: String(territory.text || '').trim(),
-      source: territory.source || CANONICAL_SOURCE,
+      source: CANDIDATE_SOURCE,
       artDirection: territory.artDirection,
     };
     window.GAUNTLET_TTS_CATALOG = {
       schemaVersion: 1,
-      gameVersion: 'v0.6.3',
-      sourceHierarchy: [CANONICAL_SOURCE],
+      gameVersion: EXPECTED_VERSION,
+      sourceHierarchy: [CANDIDATE_SOURCE],
       territories: [preview],
     };
 
@@ -110,8 +115,6 @@ await (async () => {
     await loadScript('/tts/artwork-crop.js');
     await loadScript('/tts/territory-renderer/territory-renderer.js');
 
-    // Dynamic loading may finish after the document's native load event. Replay
-    // it once in that case so the shared Territory fitting/cropping lifecycle runs.
     if (document.readyState === 'complete') window.dispatchEvent(new Event('load'));
     await waitFor(() => document.body.dataset.renderReady === 'true');
     installEmbeddedBridges();

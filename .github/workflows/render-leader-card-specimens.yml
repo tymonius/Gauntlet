@@ -13,6 +13,7 @@ on:
       - "card-design/card-review-render.js"
       - "card-design/territory-review-render.html"
       - "card-design/territory-review-render.js"
+      - "card-design/territories/index.html"
       - "card-design/leader-card.css"
       - "card-design/proposal-card.css"
       - "card-design/proposal-card.js"
@@ -26,16 +27,19 @@ on:
       - "card-design/card-rule-columns.css"
       - "card-design/faction-specimens.css"
       - "docs/v0.6.4-diplomat-proposals.json"
+      - "docs/v0.6.4-territories.json"
       - "tts/territory-renderer/**"
       - "design-tokens.css"
       - "images/*.png"
       - "images/*.svg"
       - "images/faction-symbols/*.svg"
       - "images/artwork/territories/*"
+      - "images/artwork/cards/territories/**"
       - "images/artwork/supplemental/**"
       - "scripts/render-card-back-specimen.mjs"
       - "scripts/render-leader-card-specimens.mjs"
       - "scripts/validate-territory-mobile-render.mjs"
+      - "scripts/validate-v064-territory-render.mjs"
       - "scripts/validate-rite-card-render.mjs"
       - "scripts/validate-proposal-card-render.mjs"
       - ".github/workflows/render-leader-card-specimens.yml"
@@ -71,6 +75,8 @@ jobs:
             sleep 0.1
           done
           TERRITORY_TEST_BASE_URL=http://127.0.0.1:4173 node scripts/validate-territory-mobile-render.mjs
+      - name: Validate v0.6.4 Territory candidate specimens
+        run: node scripts/validate-v064-territory-render.mjs
       - name: Validate Mystics Rite card specimens
         run: node scripts/validate-rite-card-render.mjs
       - name: Validate Diplomat Proposal card specimens
@@ -81,4 +87,5 @@ jobs:
           path: |
             card-design/generated/leaders/
             card-design/generated/proposals/
+            card-design/generated/territories-v064/
           if-no-files-found: error
