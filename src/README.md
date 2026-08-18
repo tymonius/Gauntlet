@@ -8,9 +8,8 @@ The published rules baseline is **v0.6.3**. Engine-facing v0.6.3 content in `src
 
 - `releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json`
 - `releases/v0.6.3/Gauntlet_v0.6.3_Manifest.json`
-- `releases/v0.6.3/Gauntlet_v0.6.3_Official_Rulebook.md`
 
-The release package is authoritative. Reconstruction and pre-publication candidate data are historical/provenance inputs, not the active engine content source.
+The release manifest identifies the binding Rulebook source as `artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md`; the published package carries the corresponding Rulebook PDF. The release contract is authoritative. Pre-publication browser candidates are historical/provenance inputs, not the active engine content source.
 
 ## Migration layers
 
