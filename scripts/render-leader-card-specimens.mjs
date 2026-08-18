@@ -227,8 +227,8 @@ async function main() {
       parchmentLoaded: card.dataset.parchmentLoaded,
       version: card.querySelector('.territory-footer span:last-child')?.textContent?.trim(),
     }));
-    if (territorySmoke.title !== "Smuggler's Run" || territorySmoke.fitWarning || territorySmoke.titleFit !== 'true' || territorySmoke.parchmentLoaded !== 'true' || territorySmoke.version !== 'v0.6.3') {
-      throw new Error(`Canonical Territory review renderer failed smoke test: ${JSON.stringify(territorySmoke)}.`);
+    if (territorySmoke.title !== "Smuggler's Run" || territorySmoke.fitWarning || territorySmoke.titleFit !== 'true' || territorySmoke.parchmentLoaded !== 'true' || territorySmoke.version !== 'v0.6.4-candidate') {
+      throw new Error(`v0.6.4 candidate Territory review renderer failed smoke test: ${JSON.stringify(territorySmoke)}.`);
     }
     await territoryPage.locator('.territory-card').screenshot({ path: join(OUTPUT, 'territory-review-smoke.png'), omitBackground: true });
     await territoryPage.close();
