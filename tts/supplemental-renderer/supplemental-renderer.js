@@ -134,6 +134,7 @@ function renderReference(record, sideName, gameVersion) {
   if (!card) throw new Error(`Production reference renderer did not create ${record.id} ${sideName}.`);
   card.classList.add('supplemental-card');
   card.dataset.renderer = record.renderer;
+  card.dataset.referenceUsage = 'Public supplemental reference · no card value · not part of the Deck';
 
   requestAnimationFrame(async () => {
     try {
