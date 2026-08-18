@@ -2,7 +2,7 @@ import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-import { buildCatalog } from './generate-tts-card-assets.mjs';
+import { buildCatalog } from './tts-current-catalog.mjs';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const VERSION = 'v0.6.2';
