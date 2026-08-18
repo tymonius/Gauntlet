@@ -249,6 +249,18 @@
   text-transform: uppercase;
 }
 
+.rite-unlock-ritual-heading {
+  display: block;
+  font-size: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+}
+
+.rite-unlock-ritual-heading span {
+  display: block;
+  white-space: nowrap;
+}
+
 .rite-review-block {
   width: min(76rem, calc(100% - 2rem));
   margin: 0 auto clamp(3rem, 6vw, 5rem);
