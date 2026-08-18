@@ -2,7 +2,9 @@ import { resolveFirstArtwork, slugify } from './card-artwork-resolver.js';
 import { normalizeV063CardForPresentation } from './v063-card-heading-normalizer.js';
 
 await (async () => {
-  const CANONICAL_SOURCE = '/artifacts/reconstruction/clean-v0.6.3/downstream/canonical-data.json';
+  const RELEASE_SOURCE = '/releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json';
+  const CANDIDATE_SOURCE = '/docs/v0.6.4-faction-card-additions.json';
+  const EXPECTED_CANDIDATE_ISSUE = 576;
   const cardId = new URLSearchParams(window.location.search).get('card');
   const target = document.getElementById('renderTarget');
 
@@ -36,12 +38,30 @@ await (async () => {
     });
   }
 
+  async function loadJson(src) {
+    const response = await fetch(src, { cache: 'no-cache' });
+    if (!response.ok) throw new Error(`Unable to load ${src} (HTTP ${response.status}).`);
+    return response.json();
+  }
+
   try {
     if (!cardId) throw new Error('No card selected.');
-    const response = await fetch(CANONICAL_SOURCE, { cache: 'no-cache' });
-    if (!response.ok) throw new Error(`Unable to load canonical cards (HTTP ${response.status}).`);
-    const canonical = await response.json();
-    const sourceCard = (canonical.cards || []).find(item => item.id === cardId);
+
+    const release = await loadJson(RELEASE_SOURCE);
+    let sourceCard = (release.cards || []).find(item => item.id === cardId);
+    let sourcePath = RELEASE_SOURCE;
+    let gameVersion = 'v0.6.3';
+
+    if (!sourceCard) {
+      const candidate = await loadJson(CANDIDATE_SOURCE);
+      if (candidate.source_issue !== EXPECTED_CANDIDATE_ISSUE || candidate.version !== 'v0.6.4-candidate') {
+        throw new Error(`Unexpected v0.6.4 candidate source for ${cardId}`);
+      }
+      sourceCard = (candidate.cards || []).find(item => item.id === cardId);
+      sourcePath = CANDIDATE_SOURCE;
+      gameVersion = 'v0.6.4 candidate';
+    }
+
     if (!sourceCard) throw new Error(`Unknown card: ${cardId}`);
     const card = normalizeV063CardForPresentation(sourceCard);
     const faction = slugify(card.allegiance);
@@ -58,13 +78,13 @@ await (async () => {
       form: card.card_form || '',
       unique: Boolean(card.unique),
       sections: sectionsFromEffects(card.effects),
-      source: card.v063_source || card.source || CANONICAL_SOURCE,
+      source: card.v063_source || card.source || sourcePath,
       artwork,
     };
     window.GAUNTLET_TTS_CATALOG = {
       schemaVersion: 1,
-      gameVersion: 'v0.6.3',
-      sourceHierarchy: [CANONICAL_SOURCE],
+      gameVersion,
+      sourceHierarchy: [sourcePath],
       playableCards: [preview],
       missingArtwork: artwork ? [] : [preview.id],
     };
