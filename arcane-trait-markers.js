@@ -1,7 +1,7 @@
 (() => {
   const CANONICAL_SOURCE = '/artifacts/reconstruction/clean-v0.6.3/complete-authority/canonical-structured-data.json';
   const FACTION_COLORS = Object.freeze({
-    neutral: '#8a6535',
+    neutral: '#eee7d5',
     military: '#9e262c',
     diplomats: '#264f91',
     financiers: '#227044',
@@ -92,7 +92,7 @@
     style.dataset.arcaneTitleMarkerStyles = 'true';
     style.textContent = `
       .arcane-marked-title{display:flex!important;align-items:center;gap:.045in;min-width:0}
-      .gauntlet-arcane-title-marker{display:inline-block;width:.12in;height:.12in;flex:0 0 .12in;background:var(--arcane-marker-color,#8a6535);-webkit-mask:url('/images/faction-symbols/mystics.svg') center/contain no-repeat;mask:url('/images/faction-symbols/mystics.svg') center/contain no-repeat;print-color-adjust:exact}
+      .gauntlet-arcane-title-marker{display:inline-block;width:.135in;height:.135in;flex:0 0 .135in;background:var(--arcane-marker-color,#eee7d5);-webkit-mask:url('/images/faction-symbols/mystics.svg') center/contain no-repeat;mask:url('/images/faction-symbols/mystics.svg') center/contain no-repeat;print-color-adjust:exact}
     `;
     ownerDocument.head?.append(style);
   }
