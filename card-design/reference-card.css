@@ -114,7 +114,8 @@
 
 .reference-card-header {
   min-width: 0;
-  padding: 0.044in 0.07in 0.032in;
+  overflow: hidden;
+  padding: 0.036in 0.07in 0.025in;
   border-bottom: 1px solid color-mix(in srgb, var(--reference-accent) 68%, transparent);
 }
 
@@ -122,10 +123,10 @@
   display: flex;
   align-items: center;
   gap: 0.045in;
-  margin: 0 0 0.018in;
+  margin: 0 0 0.012in;
   color: var(--reference-accent);
   font-family: var(--font-interface, Arial, sans-serif);
-  font-size: 5.1pt;
+  font-size: 5.0pt;
   font-weight: 850;
   letter-spacing: 0.10em;
   line-height: 1;
@@ -134,37 +135,40 @@
 
 .reference-faction-emblem {
   display: block;
-  width: 0.15in;
-  height: 0.15in;
-  flex: 0 0 0.15in;
+  width: 0.145in;
+  height: 0.145in;
+  flex: 0 0 0.145in;
   background: currentColor;
   -webkit-mask: var(--reference-symbol) center / contain no-repeat;
   mask: var(--reference-symbol) center / contain no-repeat;
 }
 
 .reference-face-title {
+  display: -webkit-box;
   margin: 0;
   overflow: hidden;
   color: var(--card-ink, #241c15);
   font-family: var(--font-display-historical, Georgia, serif);
-  font-size: 11.7pt;
+  font-size: 10.6pt;
   font-style: normal;
   font-weight: 500;
-  letter-spacing: 0.018em;
-  line-height: 0.95;
+  letter-spacing: 0.012em;
+  line-height: 0.90;
   text-overflow: clip;
   text-transform: uppercase;
-  white-space: nowrap;
+  white-space: normal;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .reference-component-name {
-  margin: 0.018in 0 0;
+  margin: 0.012in 0 0;
   overflow: hidden;
   color: var(--reference-accent);
   font-family: var(--font-interface, Arial, sans-serif);
-  font-size: 4.55pt;
+  font-size: 4.35pt;
   font-weight: 750;
-  letter-spacing: 0.045em;
+  letter-spacing: 0.04em;
   line-height: 1;
   text-overflow: ellipsis;
   text-transform: uppercase;
