@@ -370,21 +370,17 @@
       "card_form": "Asset",
       "unique": false,
       "unique_rule": null,
-      "design_status": "title and core mechanic locked; exact targeting, duration, and cost provisional",
+      "design_status": "title and per-card heresy mechanic locked; cost provisional",
       "effects": [
         {
-          "label": "Action",
-          "text": "Choose one non-Arcane card title represented in the opponent's Discard Pile or Graveyard, then bank this card. You may have only one banked Malleus Maleficarum."
-        },
-        {
           "label": "Asset",
-          "text": "Cards the opponent owns with the chosen title have the Arcane trait."
+          "text": "Once per turn, when an opponent plays or reveals a non-Arcane card, you may declare it heretical. It has the Arcane trait for that play or reveal and until the end of the turn."
         }
       ],
       "language_review": [
-        "Uses a title-level designation so the classification persists across zones without tracking one physical copy.",
-        "Requires a public Discard Pile or Graveyard example before the Inquisition can classify a title as Arcane.",
-        "Retains a printed banking Action because choosing the title and enforcing the maximum-one-banked restriction are special banking procedures."
+        "Uses the inherent Asset banking Action because Malleus Maleficarum has no special banking procedure.",
+        "The Arcane trait applies to the triggering play or reveal so that existing Arcane-triggered rules can recognize that event.",
+        "The declaration applies only to the specific card and expires at the end of the turn."
       ]
     }
   ]
