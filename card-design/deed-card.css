@@ -3,9 +3,9 @@
 /* Financier Deed
    Landscape ownership marker placed beside a Territory. The face is composed
    entirely from the existing Financiers frame, approved parchment, restrained
-   green wash, one centered Declaration Blackletter wordmark, and a restrained
-   typographic flourish beneath it. No artwork, emblem, watermark, rules, or
-   footer belongs on this component. */
+   green wash, and one centered Declaration Blackletter wordmark. No artwork,
+   emblem, watermark, rules, footer, or decorative flourish belongs on the
+   production face until an approved typographic ornament is selected. */
 
 /* Catalog layout. These wrapper rules are intentionally separate from the
    card-face rules below; inspection clones do not retain this outer wrapper. */
@@ -102,33 +102,12 @@
   pointer-events: none;
 }
 
-/* A single blackletter-adjacent printer's flourish completes the title block
-   without introducing separate artwork or faction iconography. The central
-   pointed lozenge and mirrored hooked rules use the same ink as the wordmark.
-   This Deed-specific ::after also supersedes the catalog's generic fit-warning
-   red dot, which is not meaningful for this intentionally custom landscape face. */
-#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "]::after,
-.supplemental-placeholder-card[aria-label^="Deed "]::after {
-  position: absolute;
-  z-index: 5;
-  top: calc(50% + 0.48in);
-  left: 50%;
-  width: 1.45in;
-  height: 0.16in;
-  border-radius: 0;
-  background:
-    linear-gradient(135deg, transparent 42%, currentColor 43% 57%, transparent 58%) center / 0.085in 0.085in no-repeat,
-    linear-gradient(45deg, transparent 42%, currentColor 43% 57%, transparent 58%) center / 0.085in 0.085in no-repeat,
-    radial-gradient(ellipse at 100% 100%, transparent 62%, currentColor 63% 67%, transparent 68%) left 0.11in center / 0.50in 0.13in no-repeat,
-    radial-gradient(ellipse at 0% 100%, transparent 62%, currentColor 63% 67%, transparent 68%) right 0.11in center / 0.50in 0.13in no-repeat,
-    linear-gradient(to right, transparent 0, currentColor 14%, currentColor 86%, transparent 100%) left center / 0.64in 1px no-repeat,
-    linear-gradient(to left, transparent 0, currentColor 14%, currentColor 86%, transparent 100%) right center / 0.64in 1px no-repeat;
-  box-shadow: none;
-  color: var(--card-ink);
-  content: "";
-  opacity: 0.92;
-  transform: translateX(-50%);
-  pointer-events: none;
+/* The generic fit-warning diagnostic is a portrait-card fitting aid and does
+   not apply to this intentionally custom landscape face. Suppress the red dot
+   without consuming the Deed's outer pseudo-element for production artwork. */
+#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "].fit-warning::after,
+.supplemental-placeholder-card[aria-label^="Deed "].fit-warning::after {
+  display: none;
 }
 
 @media screen and (max-width: 760px) {
@@ -146,7 +125,6 @@
     grid-template-columns: 3.5in;
   }
 
-  .supplemental-placeholder-card[aria-label^="Deed "]::after,
   .supplemental-placeholder-card[aria-label^="Deed "] .card-interior::before,
   .supplemental-placeholder-card[aria-label^="Deed "] .card-interior::after {
     print-color-adjust: exact;
