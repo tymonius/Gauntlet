@@ -1,0 +1,13 @@
+name = "gauntlet-artwork-authoring"
+main = "src/index.js"
+compatibility_date = "2026-08-19"
+
+[vars]
+PUBLIC_SITE_ORIGIN = "https://gauntlet.run"
+ALLOWED_ORIGINS = "https://gauntlet.run"
+GITHUB_ALLOWED_LOGIN = "tymonius"
+GITHUB_REPOSITORY = "tymonius/Gauntlet"
+GITHUB_DEFAULT_BRANCH = "main"
+GITHUB_AUTHOR_BRANCH = "artwork/compositor-authoring"
+GITHUB_OVERRIDE_PATH = "tts/artwork-direction-overrides.js"
+OAUTH_CALLBACK_URL = "https://gauntlet-artwork-authoring.tymon-scott.workers.dev/auth/callback"

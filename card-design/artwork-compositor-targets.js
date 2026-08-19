@@ -7,6 +7,15 @@
   `;
   document.head.append(style);
 
+  // The public catalog is static, so canonical saves are bridged through the
+  // authenticated artwork-authoring Worker. The client is a no-op on the local
+  // authoring server, where /api/art-direction continues to write the repo file
+  // directly.
+  const authoringClient = document.createElement('script');
+  authoringClient.async = false;
+  authoringClient.src = 'artwork-authoring-client.js';
+  document.head.append(authoringClient);
+
   let returnView = null;
   let hookedDialog = null;
 

@@ -140,4 +140,5 @@ const server = createServer(async (request, response) => {
 server.listen(PORT, HOST, () => {
   console.log(`Gauntlet card-design compositor: http://${HOST}:${PORT}/card-design/`);
   console.log('Save position writes tts/artwork-direction-overrides.js directly.');
+  console.log('When the compositing pass is finished, run: node scripts/validate-artwork-render-pipeline.mjs && npm run tts:package');
 });
