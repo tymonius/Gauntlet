@@ -9,7 +9,11 @@
     *{box-sizing:border-box}
     html,body{width:2.5in;height:3.5in;margin:0;overflow:hidden;background:transparent}
     #renderTarget{width:2.5in;height:3.5in;transform-origin:center center}
-    html[data-card-back-rotation="180"] #renderTarget{transform:rotate(180deg)}
+    /* The canonical card-back artwork already rotates its wordmark 90 degrees,
+       matching the Territory face orientation inside portrait print slots.
+       Keep the legacy duplex rotation query compatible, but do not rotate the
+       entire back surface another 180 degrees. */
+    html[data-card-back-rotation="180"] #renderTarget{transform:none}
   </style>
   <link rel="stylesheet" href="/design-tokens.css">
   <link rel="stylesheet" href="/card-design/card-back.css">

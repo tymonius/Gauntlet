@@ -7,6 +7,7 @@ const componentRenderHtml = readFileSync("card-design/component-print-render.htm
 const componentRenderJs = readFileSync("card-design/component-print-render.js", "utf8");
 const territoryRender = readFileSync("card-design/territory-print-render.html", "utf8");
 const backRender = readFileSync("tts/back-renderer/index.html", "utf8");
+const cardBackCss = readFileSync("card-design/card-back.css", "utf8");
 const printTransform = readFileSync("deckbuilder/print-duplex-sheet-pairing.js", "utf8");
 const cardBackPreview = readFileSync("deckbuilder/card-back-preview.js", "utf8");
 const printOptionsCss = readFileSync("deckbuilder/print-options.css", "utf8");
@@ -103,11 +104,12 @@ describe("Deckbuilder production printing", () => {
     expect(printTransform).toContain('production deck-card back');
   });
 
-  it("rotates printed production backs 180 degrees inside the back renderer", () => {
-    expect(printTransform).toContain('&rotation=180');
-    expect(printTransform).toContain('transform: none !important;');
+  it("keeps printed production backs aligned with the rotated Territory orientation", () => {
+    expect(printTransform).toContain('transform: rotate(90deg);');
+    expect(cardBackCss).toContain('transform: translate(-50%, -50%) rotate(90deg);');
     expect(backRender).toContain("params.get('rotation') === '180'");
-    expect(backRender).toContain('html[data-card-back-rotation="180"] #renderTarget{transform:rotate(180deg)}');
+    expect(backRender).toContain('html[data-card-back-rotation="180"] #renderTarget{transform:none}');
+    expect(backRender).not.toContain('html[data-card-back-rotation="180"] #renderTarget{transform:rotate(180deg)}');
   });
 
   it("offers faction-colored backs only as an explicit print option", () => {
