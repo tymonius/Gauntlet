@@ -1,3 +1,5 @@
+import { loadCurrentGame } from '../game-data/current-game.mjs';
+
 const FACTION_LABELS = Object.freeze({
   diplomats: 'Diplomats',
   financiers: 'Financiers',
@@ -7,10 +9,8 @@ const FACTION_LABELS = Object.freeze({
   military: 'Military',
 });
 
-// Presentation-only selectors. Every rendered word still comes from the canonical
-// source section declared by the component contract. These selectors remove
-// document-style lead-ins and redundant explanatory prose; they never replace
-// source text with a second hand-written rules summary.
+// Presentation-only selectors. Every rendered word still comes from the source
+// section declared by the component contract in the current-game authority.
 const REFERENCE_PRESENTATION = Object.freeze({
   'diplomats-reference': {
     front: {
@@ -267,16 +267,10 @@ function parseReferenceFace(markdown, face, componentName, side) {
   };
 }
 
-function versionFromSource(source) {
-  return String(source || '').match(/v\d+\.\d+\.\d+/i)?.[0] || '';
-}
-
-export async function loadReferenceRecords(contractUrl = '/config/tts-component-contract.json') {
-  const contractResponse = await fetch(contractUrl, { cache: 'no-store' });
-  if (!contractResponse.ok) throw new Error(`Reference component contract request failed: ${contractResponse.status}`);
-  const contract = await contractResponse.json();
-  const components = (contract.components || []).filter(component => component.family === 'reference-card');
-  if (components.length !== 7) throw new Error(`Expected 7 reference cards in the component contract; found ${components.length}.`);
+export async function loadReferenceRecords() {
+  const currentGame = await loadCurrentGame();
+  const components = (currentGame.components || []).filter(component => component.family === 'reference-card');
+  if (!components.length) throw new Error('Current-game authority declares no reference cards.');
 
   const sourceCache = new Map();
   const records = [];
@@ -299,8 +293,8 @@ export async function loadReferenceRecords(contractUrl = '/config/tts-component-
       name: component.name,
       faction: component.faction,
       family: component.family,
-      source: component.source,
-      version: versionFromSource(component.source),
+      source: currentGame.authorityUrl,
+      version: currentGame.displayVersion,
       faces: {
         front: parseReferenceFace(markdown, component.referenceFaces.front, component.name, 'front'),
         reverse: parseReferenceFace(markdown, component.referenceFaces.reverse, component.name, 'reverse'),
