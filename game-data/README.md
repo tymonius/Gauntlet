@@ -33,7 +33,7 @@ This makes an update to an existing card propagate exactly like a new card: once
 
 The Card Design compositor remains the authoring surface for manual artwork composition. Its canonical save file is `tts/artwork-direction-overrides.js`, keyed by the same stable card/Territory IDs used by current-game data.
 
-`game-data/current-game.mjs` resolves that canonical input into `currentGame.artDirection` and `currentGame.artDirectionFor(id)`. Current production card and Territory renderers consume those resolved values rather than independently loading an artwork-position source. Because Deckbuilder preview/printing and Card Reference reuse those renderers, an approved compositor save propagates to all of them.
+`game-data/current-game.mjs` resolves that canonical input into `currentGame.artDirection` and `currentGame.artDirectionFor(id)`. Current production card and Territory renderers consume those resolved values rather than independently loading an artwork-position source. Because Card Reference, Deckbuilder previews, and Deckbuilder printing reuse those production renderers, an approved compositor save propagates to all of them.
 
 The existing artwork-authoring GitHub App does not need additional repository permissions, OAuth changes, new secrets, or a different save path for this arrangement: it continues to update the same canonical file on the same authoring branch and open/reuse the same pull request. The authority change is downstream consumption, not a new privileged operation.
 
@@ -62,6 +62,6 @@ Some TypeScript build surfaces cannot dynamically import an arbitrary JSON path 
 
 ## Guardrails
 
-`tests/current-game-authority.test.ts` prevents active runtime surfaces from directly selecting the raw v0.6.4 source files, verifies stable-ID replacement/retirement semantics, and verifies that compositor-authored artwork direction is resolved through current-game before production rendering.
+`tests/current-game-authority.test.ts` prevents active runtime surfaces from directly selecting the raw v0.6.4 source files, verifies stable-ID replacement/retirement semantics, and verifies that compositor-authored artwork direction is resolved through current-game before production rendering. `tests/deckbuilder-territory-preview.test.ts` guards the Deckbuilder Territory pane so it continues to use the actual 3.5 × 2.5 production Territory renderer rather than reconstructing Territory text locally.
 
 If a future current-development tool needs game data, the default answer is: **load the current-game authority, not another versioned file.**
