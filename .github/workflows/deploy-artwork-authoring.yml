@@ -1,0 +1,103 @@
+name: Validate and Deploy Artwork Authoring Worker
+
+on:
+  pull_request:
+    paths:
+      - "workers/artwork-authoring/**"
+      - "card-design/artwork-authoring-client.js"
+      - "card-design/artwork-compositor-targets.js"
+      - ".github/workflows/deploy-artwork-authoring.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "workers/artwork-authoring/**"
+      - "card-design/artwork-authoring-client.js"
+      - "card-design/artwork-compositor-targets.js"
+      - ".github/workflows/deploy-artwork-authoring.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: artwork-authoring-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || 'production' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out validation revision
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate artwork authoring code
+        run: |
+          node --check workers/artwork-authoring/src/index.js
+          node --check workers/artwork-authoring/src/format.js
+          node --check card-design/artwork-authoring-client.js
+          node --check card-design/artwork-compositor-targets.js
+          node --test workers/artwork-authoring/src/index.test.mjs
+
+  deploy:
+    if: ${{ github.event_name != 'pull_request' }}
+    needs: validate
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ARTWORK_GITHUB_CLIENT_ID: ${{ secrets.ARTWORK_GITHUB_CLIENT_ID }}
+      ARTWORK_GITHUB_CLIENT_SECRET: ${{ secrets.ARTWORK_GITHUB_CLIENT_SECRET }}
+      ARTWORK_SESSION_SECRET: ${{ secrets.ARTWORK_SESSION_SECRET }}
+    steps:
+      - name: Check out deployment revision
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Verify deployment secrets
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo "CLOUDFLARE_API_TOKEN is not configured"; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "CLOUDFLARE_ACCOUNT_ID is not configured"; exit 1; }
+          test -n "$ARTWORK_GITHUB_CLIENT_ID" || { echo "ARTWORK_GITHUB_CLIENT_ID is not configured"; exit 1; }
+          test -n "$ARTWORK_GITHUB_CLIENT_SECRET" || { echo "ARTWORK_GITHUB_CLIENT_SECRET is not configured"; exit 1; }
+          test -n "$ARTWORK_SESSION_SECRET" || { echo "ARTWORK_SESSION_SECRET is not configured"; exit 1; }
+
+      - name: Install Worker tooling
+        run: npm install --no-save wrangler@4
+
+      - name: Deploy artwork authoring service
+        run: npx wrangler deploy --config workers/artwork-authoring/wrangler.toml
+
+      - name: Configure Worker secrets
+        run: |
+          printf '%s' "$ARTWORK_GITHUB_CLIENT_ID" |
+            npx wrangler secret put ARTWORK_GITHUB_CLIENT_ID --config workers/artwork-authoring/wrangler.toml
+          printf '%s' "$ARTWORK_GITHUB_CLIENT_SECRET" |
+            npx wrangler secret put ARTWORK_GITHUB_CLIENT_SECRET --config workers/artwork-authoring/wrangler.toml
+          printf '%s' "$ARTWORK_SESSION_SECRET" |
+            npx wrangler secret put ARTWORK_SESSION_SECRET --config workers/artwork-authoring/wrangler.toml
+
+      - name: Verify production health endpoint
+        run: |
+          curl --fail --retry 8 --retry-delay 4 --retry-all-errors \
+            https://gauntlet-artwork-authoring.tymon-scott.workers.dev/health \
+            -o /tmp/artwork-authoring-health.json
+          node -e '
+            const fs = require("fs");
+            const health = JSON.parse(fs.readFileSync("/tmp/artwork-authoring-health.json", "utf8"));
+            if (!health.ok || health.service !== "gauntlet-artwork-authoring" || !health.configured) {
+              console.error(health);
+              process.exit(1);
+            }
+            console.log("Verified production artwork-authoring service.");
+          '
