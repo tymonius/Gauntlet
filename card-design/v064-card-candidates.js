@@ -1,5 +1,6 @@
 const CANDIDATE_SOURCE = '/docs/v0.6.4-card-additions.json';
-const EXPECTED_CARD_COUNT = 14;
+const EXPECTED_CARD_COUNT = 15;
+const EXPECTED_RETIREMENT_COUNT = 1;
 const EXPECTED_COUNTS = new Map([
   ['neutral', 2],
   ['military', 2],
@@ -7,7 +8,7 @@ const EXPECTED_COUNTS = new Map([
   ['financiers', 2],
   ['intelligence', 2],
   ['mystics', 2],
-  ['inquisition', 2],
+  ['inquisition', 3],
 ]);
 
 const slugify = value => String(value ?? '')
@@ -40,6 +41,16 @@ function validateCandidateSource(source) {
     throw new Error(`Expected ${EXPECTED_CARD_COUNT} card candidates, found ${cards.length}`);
   }
 
+  const retiredCards = Array.isArray(source.retired_cards) ? source.retired_cards : [];
+  if (retiredCards.length !== EXPECTED_RETIREMENT_COUNT) {
+    throw new Error(`Expected ${EXPECTED_RETIREMENT_COUNT} retired base card, found ${retiredCards.length}`);
+  }
+  for (const retired of retiredCards) {
+    if (!retired.id || !retired.name || !retired.archive) {
+      throw new Error(`Incomplete retired-card record: ${retired.id || retired.name || 'unknown'}`);
+    }
+  }
+
   const counts = new Map([...EXPECTED_COUNTS.keys()].map(key => [key, 0]));
   for (const card of cards) {
     const allegiance = slugify(card.allegiance);
@@ -55,7 +66,7 @@ function validateCandidateSource(source) {
       throw new Error(`Expected ${expected} ${allegiance} candidates, found ${counts.get(allegiance)}`);
     }
   }
-  return cards;
+  return { cards, retiredCards };
 }
 
 async function waitForBaseCatalog() {
@@ -79,6 +90,20 @@ function candidateSpecimen(card) {
   </div>`;
 }
 
+function removeRetiredCards(retiredCards) {
+  const retiredIds = new Set(retiredCards.map(card => card.id));
+  let removed = 0;
+  for (const frame of document.querySelectorAll('#playableReviewSections .full-card-review-frame')) {
+    const cardId = new URL(frame.src, window.location.href).searchParams.get('card');
+    if (!retiredIds.has(cardId)) continue;
+    frame.closest('.specimen-column')?.remove();
+    removed += 1;
+  }
+  if (removed !== retiredCards.length) {
+    throw new Error(`Expected to retire ${retiredCards.length} released card specimen, removed ${removed}`);
+  }
+}
+
 function updateCatalogCopy(totalCards) {
   document.querySelectorAll('[data-playable-count]').forEach(node => {
     node.textContent = String(totalCards);
@@ -89,27 +114,28 @@ function updateCatalogCopy(totalCards) {
 
   const playableHeading = document.querySelector('#playable-cards .card-section-heading');
   const sectionLabel = playableHeading?.querySelector('.section-label');
-  if (sectionLabel) sectionLabel.textContent = 'Released base + 14 candidate additions';
+  if (sectionLabel) sectionLabel.textContent = 'Released base + 15 candidates − 1 retirement';
 
   const description = playableHeading?.querySelector(':scope > p:last-child');
   if (description) {
-    description.innerHTML = 'The complete 128-card v0.6.3 release plus fourteen proposed v0.6.4 additions, targeting 52 Neutral cards and 15 cards in each faction. Candidates use the production card renderer but remain outside canonical game data until their final balance and wording are approved.';
+    description.innerHTML = 'The v0.6.3 release with one retired Inquisition card removed and fifteen proposed v0.6.4 candidates added, targeting 52 Neutral cards and 15 cards in each faction. Candidates use the production card renderer but remain outside canonical game data until their final balance and wording are approved.';
   }
 
   const overviewNote = document.querySelector('.catalog-overview-note');
   if (overviewNote) {
-    overviewNote.textContent = 'Released v0.6.3 remains the canonical base. The fourteen v0.6.4 cards shown here are review candidates only.';
+    overviewNote.textContent = 'Released v0.6.3 remains the canonical base. The v0.6.4 review overlay removes one retired base card and adds fifteen candidates.';
   }
 }
 
-function addCandidateNotice(cards) {
+function addCandidateNotice(cards, retiredCards) {
   const section = document.querySelector('#playable-cards');
   const heading = section?.querySelector('.card-section-heading');
   if (!section || !heading || section.querySelector('[data-v064-card-notice]')) return;
   const names = cards.map(card => card.name).join(', ');
+  const retiredNames = retiredCards.map(card => card.name).join(', ');
   heading.insertAdjacentHTML('afterend', `
     <p class="section-shell review-note screen-only" data-v064-card-notice>
-      <strong>v0.6.4 candidates:</strong> ${esc(names)}. Costs remain provisional; the earlier Mystics sacrifice/recovery card still has an unresolved title.
+      <strong>v0.6.4 candidates:</strong> ${esc(names)}. <strong>Retired from the active v0.6.4 pool:</strong> ${esc(retiredNames)}. Candidate costs and unresolved wording remain provisional.
     </p>`);
 }
 
@@ -119,8 +145,9 @@ async function renderCandidateCards() {
     const response = await fetch(CANDIDATE_SOURCE, { cache: 'no-cache' });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const source = await response.json();
-    const cards = validateCandidateSource(source);
+    const { cards, retiredCards } = validateCandidateSource(source);
 
+    removeRetiredCards(retiredCards);
     const existingCount = document.querySelectorAll('#playableReviewSections .specimen-column:not([data-v064-candidate-card])').length;
     for (const [allegiance, expectedCandidates] of EXPECTED_COUNTS) {
       const block = document.querySelector(`#playable-${allegiance}`);
@@ -139,7 +166,7 @@ async function renderCandidateCards() {
     }
 
     updateCatalogCopy(existingCount + cards.length);
-    addCandidateNotice(cards);
+    addCandidateNotice(cards, retiredCards);
     document.body.dataset.v064Cards = 'ready';
   } catch (error) {
     console.error(error);
