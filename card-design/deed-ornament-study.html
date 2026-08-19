@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex,nofollow" />
-  <title>Gauntlet Deed — Poetica Ornament Study</title>
+  <title>Gauntlet Deed — Poetica Ornament Index Study</title>
   <link rel="preconnect" href="https://use.typekit.net" />
   <link rel="preconnect" href="https://p.typekit.net" crossorigin />
   <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
@@ -34,9 +34,7 @@
       margin: 0 auto;
     }
 
-    header {
-      margin-bottom: 1.5rem;
-    }
+    header { margin-bottom: 1.5rem; }
 
     h1 {
       margin: 0 0 0.45rem;
@@ -82,6 +80,11 @@
       box-shadow: 0 0.18rem 0.45rem rgba(38, 28, 20, 0.13);
     }
 
+    .candidate.baseline {
+      border-style: dashed;
+      opacity: 0.72;
+    }
+
     .candidate-context {
       display: flex;
       min-height: 5.9rem;
@@ -106,14 +109,13 @@
     }
 
     .candidate-ornament {
-      min-height: 2rem;
+      min-height: 2.15rem;
       display: grid;
       place-items: center;
       font-family: "poetica-std", "Poetica Std", serif;
-      font-size: 29pt;
+      font-size: 31pt;
       font-style: normal;
       font-weight: 400;
-      font-feature-settings: "ornm" 1;
       line-height: 0.82;
       white-space: nowrap;
     }
@@ -149,24 +151,24 @@
 <body>
   <main>
     <header>
-      <h1>Poetica ornament study</h1>
-      <p>Each tile applies Poetica's OpenType <code>ornm</code> feature to one lower-ASCII source character, then shows the result directly beneath the Declaration Blackletter <strong>Deed</strong> wordmark. The source character is retained below each tile so the selected ornament can be reproduced exactly in CSS.</p>
-      <p>This page is a design study only. None of these ornaments is applied to the production Deed until one is selected.</p>
+      <h1>Poetica ornament index study</h1>
+      <p>Poetica exposes its ornaments as OpenType alternates of the bullet character. Each tile below keeps the source text as <code>U+2022</code> and changes only the numeric selection index passed to <code>font-feature-settings: "ornm" N</code>.</p>
+      <p>Index 0 is the unmodified bullet baseline. Indexes 1–64 test the webfont's alternate set directly beneath the Declaration Blackletter <strong>Deed</strong> wordmark. If the historical supplemental ornaments were folded into Poetica Std, they should appear here as distinct numbered alternates.</p>
       <span class="font-status" id="fontStatus">Checking Poetica webfont…</span>
     </header>
 
-    <section class="candidate-grid" id="candidateGrid" aria-label="Poetica ornament candidates"></section>
+    <section class="candidate-grid" id="candidateGrid" aria-label="Poetica ornament alternate indexes"></section>
 
-    <p class="study-note">The OpenType <code>ornm</code> feature is specifically designed to expose ornaments through the bullet and lower-ASCII characters. If a tile displays an ordinary letter rather than an ornament, that mapping is not exposed by the webfont build and should be ignored.</p>
+    <p class="study-note">Once the sequence stops producing distinct ornaments and begins repeating or falling back, later indexes can be ignored. The selected ornament can then be reproduced exactly with the same <code>ornm</code> index on a bullet character; no image asset is required.</p>
   </main>
 
   <script>
-    const candidates = ['•', ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ', ...'abcdefghijklmnopqrstuvwxyz'];
+    const maxIndex = 64;
     const grid = document.querySelector('#candidateGrid');
 
-    for (const source of candidates) {
+    for (let index = 0; index <= maxIndex; index += 1) {
       const article = document.createElement('article');
-      article.className = 'candidate';
+      article.className = `candidate${index === 0 ? ' baseline' : ''}`;
 
       const context = document.createElement('div');
       context.className = 'candidate-context';
@@ -177,15 +179,16 @@
 
       const ornament = document.createElement('div');
       ornament.className = 'candidate-ornament';
-      ornament.textContent = source;
-      ornament.setAttribute('aria-label', `Poetica ornament mapped from ${source === '•' ? 'bullet' : source}`);
+      ornament.textContent = '•';
+      ornament.style.fontFeatureSettings = `"ornm" ${index}`;
+      ornament.setAttribute('aria-label', index === 0 ? 'Poetica bullet baseline' : `Poetica ornament alternate ${index}`);
 
       const label = document.createElement('div');
       label.className = 'candidate-label';
       const descriptor = document.createElement('span');
-      descriptor.textContent = source === '•' ? 'bullet mapping' : 'ASCII mapping';
+      descriptor.textContent = index === 0 ? 'baseline · U+2022' : 'bullet alternate';
       const code = document.createElement('code');
-      code.textContent = source === '•' ? 'U+2022' : source;
+      code.textContent = index === 0 ? 'ornm 0' : `ornm ${index}`;
 
       label.append(descriptor, code);
       context.append(wordmark, ornament);
@@ -196,7 +199,7 @@
     const status = document.querySelector('#fontStatus');
     document.fonts.ready.then(() => {
       const loaded = document.fonts.check('32px "poetica-std"') || document.fonts.check('32px "Poetica Std"');
-      status.textContent = loaded ? 'Poetica webfont loaded' : 'Poetica webfont not detected — check Adobe kit publication';
+      status.textContent = loaded ? 'Poetica webfont loaded · testing ornm indexes 0–64' : 'Poetica webfont not detected — check Adobe kit publication';
     });
   </script>
 </body>
