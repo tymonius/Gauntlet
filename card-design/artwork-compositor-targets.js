@@ -19,7 +19,7 @@
 
   const batchPublishControl = document.createElement('script');
   batchPublishControl.async = false;
-  batchPublishControl.src = 'artwork-batch-publish-control.js?v=20260819-1';
+  batchPublishControl.src = 'artwork-batch-publish-control.js?v=20260819-2';
   document.head.append(batchPublishControl);
 
   let returnView = null;
