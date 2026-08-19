@@ -6,7 +6,6 @@ const supplementalRenderer = readFileSync("card-design/supplemental-card.js", "u
 const supplementalStyles = readFileSync("card-design/supplemental-card.css", "utf8");
 const deedStyles = readFileSync("card-design/deed-card.css", "utf8");
 const factionStyles = readFileSync("card-design/faction-specimens.css", "utf8");
-const leaderStyles = readFileSync("card-design/leader-card.css", "utf8");
 const territoryStyles = readFileSync("card-design/territory-card.css", "utf8");
 const proposalStyles = readFileSync("card-design/proposal-card.css", "utf8");
 
@@ -39,23 +38,24 @@ describe("Financier Deed card", () => {
     expect(deedStyles).not.toContain("deed.svg");
   });
 
-  it("applies the standard Financiers green parchment wash to the landscape Deed face", () => {
-    expect(leaderStyles).toContain("--component-parchment-tint: rgba(34, 112, 68, 0.13)");
-    expect(deedStyles).toContain("linear-gradient(var(--component-parchment-tint), var(--component-parchment-tint))");
-    expect(deedStyles).toContain("background-blend-mode: multiply");
+  it("applies a visibly green Financiers wash without multiplying the warm parchment into ochre", () => {
+    expect(deedStyles).toContain("--deed-parchment-tint: rgba(34, 112, 68, 0.18)");
+    expect(deedStyles).toContain("linear-gradient(var(--deed-parchment-tint), var(--deed-parchment-tint))");
+    expect(deedStyles).not.toContain("background-blend-mode: multiply");
     expect(deedStyles).toContain("print-color-adjust: exact");
   });
 
-  it("centers only the Deed wordmark in Declaration Blackletter with no watermark or footer treatment", () => {
+  it("centers only the Deed wordmark across the full card interior in Declaration Blackletter", () => {
     expect(proposalStyles).toContain('"P22 Declaration W01 Blackletter"');
     expect(deedStyles).toContain('content: "Deed"');
     expect(deedStyles).not.toContain('content: "DEED"');
     expect(deedStyles).toContain('"P22 Declaration W01 Blackletter"');
     expect(deedStyles).toContain("font-size: 42pt");
+    expect(deedStyles).toContain("position: absolute");
+    expect(deedStyles).toContain("inset: 0");
+    expect(deedStyles).toContain("display: grid");
     expect(deedStyles).toContain("place-items: center");
-    expect(deedStyles).toContain("position: relative");
-    expect(deedStyles).toContain("inset: auto");
-    expect(deedStyles).toContain("transform: none");
+    expect(deedStyles).toContain("mix-blend-mode: normal");
     expect(deedStyles).toContain(".card-interior > *");
     expect(deedStyles).toContain("display: none");
     expect(deedStyles).not.toContain("deed-watermark");
