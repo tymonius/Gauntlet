@@ -33,7 +33,7 @@ window.GAUNTLET_ART_DIRECTION = Object.freeze({
   "territory-poisonous-gas": {"focusY":0.575},
   "territory-quicksand": {"focusY":0.702},
   "territory-refuge": {"focusY":0.463},
-  "territory-ruined-storehouse": {"focusY":0.516},
+  "territory-ruined-storehouse": {"focusY":0.454},
   "territory-smuggler-s-pass": {"focusY":0.648},
   "territory-supply-depot": {"focusY":0.523},
   "territory-toll-bridge": {"focusY":0.463},
