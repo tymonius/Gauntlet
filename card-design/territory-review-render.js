@@ -96,7 +96,7 @@ await (async () => {
       status: territory.status || 'Current candidate',
       text: String(territory.text || '').trim(),
       source: currentGame.authorityUrl,
-      artDirection: territory.artDirection,
+      artDirection: currentGame.artDirectionFor(territory.id) || territory.artDirection,
     };
     window.GAUNTLET_TTS_CATALOG = {
       schemaVersion: 1,
@@ -104,8 +104,8 @@ await (async () => {
       sourceHierarchy: [currentGame.authorityUrl],
       territories: [preview],
     };
+    window.GAUNTLET_ART_DIRECTION = currentGame.artDirection;
 
-    await loadScript('/tts/artwork-direction-overrides.js');
     await loadScript('/tts/artwork-crop.js');
     await loadScript('/tts/territory-renderer/territory-renderer.js');
 
