@@ -12,6 +12,7 @@
   // authoring server, where /api/art-direction continues to write the repo file
   // directly.
   const authoringClient = document.createElement('script');
+  authoringClient.async = false;
   authoringClient.src = 'artwork-authoring-client.js';
   document.head.append(authoringClient);
 
