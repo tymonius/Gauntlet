@@ -3,9 +3,9 @@
 /* Financier Deed
    Landscape ownership marker placed beside a Territory. The face is composed
    entirely from the existing Financiers frame, approved parchment, restrained
-   green wash, and one centered Declaration Blackletter wordmark. No artwork,
-   emblem, watermark, rules, footer, or decorative flourish belongs on the
-   production face until an approved typographic ornament is selected. */
+   green wash, centered Declaration Blackletter wordmark, and an approved
+   Poetica ornament composition beneath it. No artwork, emblem, watermark,
+   rules, or footer belongs on this component. */
 
 /* Catalog layout. These wrapper rules are intentionally separate from the
    card-face rules below; inspection clones do not retain this outer wrapper. */
@@ -102,9 +102,80 @@
   pointer-events: none;
 }
 
+/* Reuse the otherwise-hidden card heading as a three-glyph ornament row. The
+   side glyphs are Poetica ornm 11, with only the left glyph mirrored; the
+   smaller center glyph is ornm 44. This keeps the ornament fully typographic
+   and gives each glyph its own transform / OpenType alternate selection. */
+#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .card-heading,
+.supplemental-placeholder-card[aria-label^="Deed "] .card-heading {
+  position: absolute;
+  z-index: 3;
+  top: calc(50% + 0.48in);
+  left: 50%;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  align-items: center;
+  column-gap: 0.055in;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .card-heading::before,
+#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .card-heading::after,
+.supplemental-placeholder-card[aria-label^="Deed "] .card-heading::before,
+.supplemental-placeholder-card[aria-label^="Deed "] .card-heading::after {
+  display: block;
+  color: var(--card-ink);
+  content: "•";
+  font-family: "poetica-std", "Poetica Std", serif;
+  font-size: 28pt;
+  font-style: normal;
+  font-weight: 400;
+  font-feature-settings: "ornm" 11;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .card-heading::before,
+.supplemental-placeholder-card[aria-label^="Deed "] .card-heading::before {
+  transform: scaleX(-1);
+  transform-origin: center;
+}
+
+#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .card-title,
+.supplemental-placeholder-card[aria-label^="Deed "] .card-title {
+  width: auto;
+  margin: 0;
+  color: var(--card-ink);
+  font-size: 0;
+  line-height: 1;
+}
+
+#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .card-title::after,
+.supplemental-placeholder-card[aria-label^="Deed "] .card-title::after {
+  display: block;
+  content: "•";
+  font-family: "poetica-std", "Poetica Std", serif;
+  font-size: 18pt;
+  font-style: normal;
+  font-weight: 400;
+  font-feature-settings: "ornm" 44;
+  line-height: 1;
+  transform: translateY(-0.01in);
+  transform-origin: center;
+  white-space: nowrap;
+}
+
+#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .supplemental-type-line,
+.supplemental-placeholder-card[aria-label^="Deed "] .supplemental-type-line {
+  display: none;
+}
+
 /* The generic fit-warning diagnostic is a portrait-card fitting aid and does
-   not apply to this intentionally custom landscape face. Suppress the red dot
-   without consuming the Deed's outer pseudo-element for production artwork. */
+   not apply to this intentionally custom landscape face. */
 #supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "].fit-warning::after,
 .supplemental-placeholder-card[aria-label^="Deed "].fit-warning::after {
   display: none;
@@ -125,6 +196,7 @@
     grid-template-columns: 3.5in;
   }
 
+  .supplemental-placeholder-card[aria-label^="Deed "] .card-heading,
   .supplemental-placeholder-card[aria-label^="Deed "] .card-interior::before,
   .supplemental-placeholder-card[aria-label^="Deed "] .card-interior::after {
     print-color-adjust: exact;
