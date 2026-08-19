@@ -2,6 +2,7 @@
   const CARD_WIDTH = 240;
   const CARD_HEIGHT = 336;
   const MAX_SCALE = 2.35;
+  const INSPECTION_HISTORY_KEY = 'gauntletCardInspection';
 
   let dialog;
   let cardStage;
@@ -19,6 +20,7 @@
     buildDialog();
     window.addEventListener('message', handleRendererMessage);
     window.addEventListener('resize', scaleCardStage);
+    window.addEventListener('popstate', handlePopState);
   }
 
   function buildDialog() {
@@ -52,14 +54,13 @@
     closeButton = dialog.querySelector('.card-reference-inspection-close');
 
     backButton.addEventListener('click', showCard);
-    closeButton.addEventListener('click', closeInspection);
+    closeButton.addEventListener('click', requestCloseInspection);
     dialog.addEventListener('click', event => {
-      if (event.target === dialog) closeInspection();
+      if (event.target === dialog) requestCloseInspection();
     });
     dialog.addEventListener('cancel', event => {
       event.preventDefault();
-      if (!artStage.hidden && currentCardHref) showCard();
-      else closeInspection();
+      requestCloseInspection();
     });
   }
 
@@ -82,6 +83,16 @@
     }
   }
 
+  function handlePopState(event) {
+    const inspectionState = readInspectionState(event.state);
+    if (inspectionState) {
+      restoreInspectionState(inspectionState);
+      return;
+    }
+
+    if (dialog?.open) dismissInspection();
+  }
+
   function sameOriginUrl(value) {
     if (!value) return null;
     try {
@@ -98,32 +109,102 @@
     return url.href;
   }
 
+  function readInspectionState(state = history.state) {
+    if (!state || typeof state !== 'object') return null;
+    const inspectionState = state[INSPECTION_HISTORY_KEY];
+    return inspectionState && typeof inspectionState === 'object' ? inspectionState : null;
+  }
+
+  function currentHistoryState() {
+    return history.state && typeof history.state === 'object' ? history.state : {};
+  }
+
+  function buildInspectionState() {
+    if (!artStage.hidden && artImage.src) {
+      return {
+        view: 'art',
+        source: artImage.src,
+        cardHref: currentCardHref,
+        label: currentLabel,
+      };
+    }
+
+    return {
+      view: 'card',
+      cardHref: currentCardHref,
+      label: currentLabel,
+    };
+  }
+
+  function pushInspectionHistory() {
+    history.pushState(
+      { ...currentHistoryState(), [INSPECTION_HISTORY_KEY]: buildInspectionState() },
+      '',
+      window.location.href,
+    );
+  }
+
+  function replaceInspectionHistory() {
+    if (!readInspectionState()) return;
+    history.replaceState(
+      { ...currentHistoryState(), [INSPECTION_HISTORY_KEY]: buildInspectionState() },
+      '',
+      window.location.href,
+    );
+  }
+
+  function restoreInspectionState(inspectionState) {
+    const label = String(inspectionState.label || 'Gauntlet card');
+    const cardHref = sameOriginUrl(inspectionState.cardHref) || '';
+
+    if (inspectionState.view === 'art') {
+      const source = sameOriginUrl(inspectionState.source);
+      if (source) {
+        currentCardHref = cardHref;
+        showArtwork(source, label, false);
+        return;
+      }
+    }
+
+    if (cardHref) {
+      openCard(cardHref, label, false);
+      return;
+    }
+
+    dismissInspection();
+  }
+
   function setLabel(label) {
     currentLabel = String(label || currentLabel || 'Gauntlet card').trim() || 'Gauntlet card';
     const labelElement = dialog.querySelector('.card-reference-inspection-label');
     labelElement.textContent = currentLabel;
   }
 
-  function openCard(href, label) {
+  function openCard(href, label, pushHistory = true) {
     currentCardHref = href;
     setLabel(label);
     const renderHref = inspectionRenderUrl(href);
     if (cardFrame.src !== renderHref) cardFrame.src = renderHref;
-    showCard();
-    if (!dialog.open) dialog.showModal();
+    showCard(false);
+    openDialog(pushHistory);
     requestAnimationFrame(scaleCardStage);
   }
 
-  function showCard() {
+  function showCard(updateHistory = true) {
     artStage.hidden = true;
     artStage.setAttribute('aria-hidden', 'true');
     cardStage.hidden = false;
     cardStage.setAttribute('aria-hidden', 'false');
     backButton.hidden = true;
+    if (updateHistory) replaceInspectionHistory();
     requestAnimationFrame(scaleCardStage);
   }
 
   function openArtwork(source, label) {
+    showArtwork(source, label, true);
+  }
+
+  function showArtwork(source, label, pushHistory) {
     setLabel(label);
     artImage.src = source;
     artImage.alt = `Full artwork for ${currentLabel}`;
@@ -132,7 +213,15 @@
     artStage.hidden = false;
     artStage.setAttribute('aria-hidden', 'false');
     backButton.hidden = !currentCardHref;
-    if (!dialog.open) dialog.showModal();
+    const wasOpen = dialog.open;
+    openDialog(pushHistory);
+    if (wasOpen) replaceInspectionHistory();
+  }
+
+  function openDialog(pushHistory) {
+    if (dialog.open) return;
+    if (pushHistory) pushInspectionHistory();
+    dialog.showModal();
   }
 
   function scaleCardStage() {
@@ -150,7 +239,16 @@
     cardFrame.style.transform = `scale(${scale})`;
   }
 
-  function closeInspection() {
+  function requestCloseInspection() {
+    if (!dialog?.open) return;
+    if (readInspectionState()) {
+      history.back();
+      return;
+    }
+    dismissInspection();
+  }
+
+  function dismissInspection() {
     if (!dialog?.open) return;
     dialog.close();
     cardFrame.src = 'about:blank';
