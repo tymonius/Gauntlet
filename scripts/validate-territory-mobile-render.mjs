@@ -22,8 +22,17 @@ async function ready(frame) {
 async function metrics(frame) {
   return frame.locator('.territory-card').evaluate(card => {
     const cardRect = card.getBoundingClientRect();
-    const artRect = card.querySelector('.territory-art')?.getBoundingClientRect();
-    const effect = card.querySelector('.territory-effect p');
+    const interior = card.querySelector('.territory-interior');
+    const body = card.querySelector('.territory-body');
+    const art = card.querySelector('.territory-art');
+    const effectBox = card.querySelector('.territory-effect');
+    const footer = card.querySelector('.territory-footer');
+    const interiorRect = interior?.getBoundingClientRect();
+    const bodyRect = body?.getBoundingClientRect();
+    const artRect = art?.getBoundingClientRect();
+    const effectRect = effectBox?.getBoundingClientRect();
+    const footerRect = footer?.getBoundingClientRect();
+    const effect = effectBox?.querySelector('p');
     const style = effect ? getComputedStyle(effect) : null;
     return {
       width: cardRect.width,
@@ -36,6 +45,20 @@ async function metrics(frame) {
       fitWarning: card.classList.contains('fit-warning'),
       titleFit: card.dataset.titleFit,
       parchmentLoaded: card.dataset.parchmentLoaded,
+      bodyHeight: bodyRect?.height || 0,
+      bodyTop: bodyRect?.top || 0,
+      bodyBottom: bodyRect?.bottom || 0,
+      artTop: artRect?.top || 0,
+      artBottom: artRect?.bottom || 0,
+      effectHeight: effectRect?.height || 0,
+      effectTop: effectRect?.top || 0,
+      effectBottom: effectRect?.bottom || 0,
+      effectClientHeight: effectBox?.clientHeight || 0,
+      effectScrollHeight: effectBox?.scrollHeight || 0,
+      effectClientWidth: effectBox?.clientWidth || 0,
+      effectScrollWidth: effectBox?.scrollWidth || 0,
+      footerBottom: footerRect?.bottom || 0,
+      interiorBottom: interiorRect?.bottom || 0,
     };
   });
 }
