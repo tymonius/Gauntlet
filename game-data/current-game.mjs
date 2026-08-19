@@ -170,7 +170,7 @@ function validateManifest(manifest) {
   if (!manifest.version || !manifest.baseVersion || !manifest.sources) {
     throw new Error('Current-game authority is missing version or source declarations.');
   }
-  for (const key of ['baseGameplay', 'cardChanges', 'territories', 'proposals', 'arcaneSymbol', 'componentContract']) {
+  for (const key of ['baseGameplay', 'cardChanges', 'territories', 'proposals', 'arcaneSymbol', 'componentContract', 'starterDecks']) {
     if (!manifest.sources[key]) throw new Error(`Current-game authority is missing source ${key}.`);
   }
 }
@@ -179,13 +179,14 @@ async function resolveCurrentGame() {
   const manifest = await loadJson(CURRENT_GAME_AUTHORITY_URL);
   validateManifest(manifest);
 
-  const [base, cardChanges, territorySource, proposalSource, arcaneSymbolSource, componentContract, artDirectionSource] = await Promise.all([
+  const [base, cardChanges, territorySource, proposalSource, arcaneSymbolSource, componentContract, starterDeckSource, artDirectionSource] = await Promise.all([
     loadJson(manifest.sources.baseGameplay),
     loadJson(manifest.sources.cardChanges),
     loadJson(manifest.sources.territories),
     loadJson(manifest.sources.proposals),
     loadJson(manifest.sources.arcaneSymbol),
     loadJson(manifest.sources.componentContract),
+    loadJson(manifest.sources.starterDecks),
     loadText(CURRENT_ART_DIRECTION_SOURCE_URL),
   ]);
 
@@ -208,6 +209,7 @@ async function resolveCurrentGame() {
     current_game_authority: CURRENT_GAME_AUTHORITY_URL,
   }));
   const proposals = requireArray(proposalSource.proposals, 'current Proposals').map(proposal => clone(proposal));
+  const starterDecks = requireArray(starterDeckSource.decks, 'current starter Decks').map(deck => clone(deck));
   const factions = resolveFactions(gameplay.factions, manifest);
   const factionRules = resolveFactionRules(gameplay.faction_rules, manifest);
   const artDirection = parseArtDirectionSource(artDirectionSource);
@@ -221,6 +223,11 @@ async function resolveCurrentGame() {
   for (const territory of territories) {
     if (!territory.id || territoryIds.has(territory.id)) throw new Error(`Duplicate or missing resolved Territory id: ${territory.id || 'unknown'}.`);
     territoryIds.add(territory.id);
+  }
+  const starterIds = new Set();
+  for (const deck of starterDecks) {
+    if (!deck.id || starterIds.has(deck.id)) throw new Error(`Duplicate or missing current starter Deck id: ${deck.id || 'unknown'}.`);
+    starterIds.add(deck.id);
   }
 
   const resolvedSources = {
@@ -249,6 +256,8 @@ async function resolveCurrentGame() {
     cards: Object.freeze(cards),
     territories: Object.freeze(territories),
     proposals: Object.freeze(proposals),
+    starterDecks: Object.freeze(starterDecks),
+    starterDeckData: Object.freeze(clone(starterDeckSource)),
     arcaneSymbol: Object.freeze(clone(arcaneSymbolSource)),
     artDirection: Object.freeze(clone(artDirection)),
     mystics: Object.freeze(clone(manifest.mystics || {})),
@@ -260,12 +269,14 @@ async function resolveCurrentGame() {
       cardChanges: Object.freeze({ status: cardChanges.status || null, sourceIssues: clone(cardChanges.source_issues || []) }),
       territories: Object.freeze({ status: territorySource.status || null, sourceIssue: territorySource.source_issue || null }),
       proposals: Object.freeze({ status: proposalSource.status || null, sourceIssue: proposalSource.source_issue || null }),
+      starterDecks: Object.freeze({ version: starterDeckSource.version || null, status: starterDeckSource.status || null }),
       arcaneSymbol: Object.freeze({ changeType: arcaneSymbolSource.change_type || null, mechanicsChanged: arcaneSymbolSource.mechanics_changed }),
       artDirection: Object.freeze({ source: CURRENT_ART_DIRECTION_SOURCE_URL, entries: Object.keys(artDirection).length }),
     }),
     findCard(id) { return cards.find(card => card.id === id) || null; },
     findTerritory(id) { return territories.find(territory => territory.id === id) || null; },
     findLeader(faction, id) { return factions.find(item => item.id === faction)?.leaders.find(leader => leader.id === id) || null; },
+    findStarterDeck(faction, leader) { return starterDecks.find(deck => deck.factionId === faction && deck.leaderId === leader) || null; },
     artDirectionFor(id) { return artDirection[id] ? clone(artDirection[id]) : null; },
     slugify,
   });
