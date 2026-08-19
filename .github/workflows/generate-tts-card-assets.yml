@@ -6,6 +6,7 @@ on:
       - '.github/workflows/generate-tts-card-assets.yml'
       - 'package.json'
       - 'game-data/**'
+      - 'deckbuilder/starter-decks.json'
       - 'docs/v0.6.4-*.json'
       - 'config/release-lifecycle.json'
       - 'config/github-release-contract.json'
@@ -78,6 +79,7 @@ jobs:
             package.json
             design-tokens.css
             game-data
+            deckbuilder/starter-decks.json
             docs/v0.6.4-card-additions.json
             docs/v0.6.4-territories.json
             docs/v0.6.4-diplomat-proposals.json
