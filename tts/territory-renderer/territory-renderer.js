@@ -209,10 +209,11 @@
     const effectRect = effect.getBoundingClientRect();
     const bodyStyle = getComputedStyle(body);
     const gap = Number.parseFloat(bodyStyle.rowGap || bodyStyle.gap || '0') || 0;
-    const effectContentOverflows = effect.scrollHeight > effect.clientHeight + 0.5
-      || effect.scrollWidth > effect.clientWidth + 0.5;
-    const flowOverflows = artRect.height + gap + effectRect.height > bodyRect.height + 0.5;
-    return effectContentOverflows || flowOverflows;
+
+    /* The effect is a non-shrinking flex item sized from its own content. Its
+       integer scroll metrics can exceed its fractional client box by a pixel at
+       some type sizes even when nothing is clipped, so use flow geometry here. */
+    return artRect.height + gap + effectRect.height > bodyRect.height + 0.5;
   }
 
   function territoryArtworkCandidates(item, name) {
