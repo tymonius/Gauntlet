@@ -8,13 +8,16 @@ const reviewPage = readFileSync('card-design/territory-review-render.html', 'utf
 const specimen = readFileSync('card-design/territories/index.html', 'utf8');
 const renderValidator = readFileSync('scripts/validate-v064-territory-render.mjs', 'utf8');
 const renderWorkflow = readFileSync('.github/workflows/render-leader-card-specimens.yml', 'utf8');
+const currentAuthority = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
 
 describe('v0.6.4 Territory downstream propagation', () => {
-  it('binds the browser/TTS review renderer directly to the issue #738 candidate source', () => {
-    expect(reviewRenderer).toContain("const CANDIDATE_SOURCE = '/docs/v0.6.4-territories.json'");
-    expect(reviewRenderer).toContain("const EXPECTED_SOURCE_ISSUE = 738");
-    expect(reviewRenderer).toContain("const EXPECTED_VERSION = 'v0.6.4-candidate'");
-    expect(reviewRenderer).toContain('source.territories || []');
+  it('binds the browser/TTS review renderer to the resolved current-game authority', () => {
+    expect(currentAuthority.sources.territories).toBe('/docs/v0.6.4-territories.json');
+    expect(reviewRenderer).toContain("loadCurrentGame");
+    expect(reviewRenderer).toContain('currentGame.findTerritory(territoryId)');
+    expect(reviewRenderer).toContain('source: currentGame.authorityUrl');
+    expect(reviewRenderer).not.toContain("const CANDIDATE_SOURCE = '/docs/v0.6.4-territories.json'");
+    expect(reviewRenderer).not.toContain('EXPECTED_SOURCE_ISSUE');
     expect(reviewRenderer).not.toContain('Gauntlet_v0.6.3_Canonical_Data.json');
     expect(reviewPage).toContain('Gauntlet v0.6.4 Candidate Territory Review Render');
   });
@@ -35,9 +38,11 @@ describe('v0.6.4 Territory downstream propagation', () => {
     expect(reference).toContain('Shared battle rules already require a Tiebreak Roll');
   });
 
-  it('runs production-size render validation for all candidate Territories in CI', () => {
-    expect(renderValidator).toContain("const EXPECTED_SOURCE_ISSUE = 738");
-    expect(renderValidator).toContain("const EXPECTED_VERSION = 'v0.6.4-candidate'");
+  it('runs production-size render validation through the authority-selected Territory source in CI', () => {
+    expect(renderValidator).toContain("readCurrentJsonSource('territories')");
+    expect(renderValidator).toContain('source.version !== manifest.version');
+    expect(renderValidator).toContain('source.base_version !== manifest.baseVersion');
+    expect(renderValidator).toContain('const EXPECTED_SOURCE_ISSUE = 738');
     expect(renderValidator).toContain('const CSS_WIDTH = 336');
     expect(renderValidator).toContain('const CSS_HEIGHT = 240');
     expect(renderValidator).toContain('const OUTPUT_WIDTH = 560');

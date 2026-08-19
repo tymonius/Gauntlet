@@ -69,7 +69,9 @@ describe('TTS supplemental component exports', () => {
     expect(references.every((component: any) => component.faces?.reverse?.sections?.length)).toBe(true);
 
     const byId = new Map(references.map((component: any) => [component.id, component]));
-    expect(JSON.stringify(byId.get('diplomats-reference'))).toContain('Treaty Articles and Peace Treaty');
+    const diplomatReference = JSON.stringify(byId.get('diplomats-reference'));
+    expect(diplomatReference).toContain('Treaty Articles');
+    expect(diplomatReference).toContain('Peace Treaty');
     expect(JSON.stringify(byId.get('financiers-reference'))).toContain('Play the Market');
     expect(JSON.stringify(byId.get('financiers-reference'))).toContain('Subsidize');
     expect(JSON.stringify(byId.get('intelligence-mission-reference'))).toContain('Starting a Special Operation');
@@ -99,11 +101,11 @@ describe('TTS supplemental component exports', () => {
     expect(intel.trackedValue.maximum).toBeNull();
     expect(progress.trackedValue.maximum).toBeNull();
 
-    expect(productionSupplementals).toMatch(/id: 'command-tracker'[\s\S]*?max: 4/);
-    expect(productionSupplementals).toMatch(/id: 'influence-tracker'[\s\S]*?max: 10/);
-    expect(productionSupplementals).toMatch(/id: 'intel-tracker'[\s\S]*?max: 12/);
-    expect(productionSupplementals).toMatch(/id: 'operation-progress-tracker'[\s\S]*?max: 8/);
-    expect(productionSupplementals).toMatch(/id: 'conviction-tracker'[\s\S]*?max: 4/);
+    expect(productionSupplementals).toMatch(/'military-command-tracker'\s*:\s*\{[\s\S]*?max:\s*4/);
+    expect(productionSupplementals).toMatch(/'diplomats-influence-tracker'\s*:\s*\{[\s\S]*?max:\s*10/);
+    expect(productionSupplementals).toMatch(/'intelligence-intel-tracker'\s*:\s*\{[\s\S]*?max:\s*12/);
+    expect(productionSupplementals).toMatch(/'intelligence-operation-progress-tracker'\s*:\s*\{[\s\S]*?max:\s*8/);
+    expect(productionSupplementals).toMatch(/'inquisition-conviction-tracker'\s*:\s*\{[\s\S]*?max:\s*4/);
 
     const { catalog } = await buildSupplementalCatalog(contract);
     const readyTrackers = catalog.ready.filter((component: any) => component.representation === 'sliding-tracker');

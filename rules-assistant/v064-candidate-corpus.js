@@ -1,65 +1,71 @@
 import { loadV063RulesCorpus } from "./v063-public-corpus.js";
+import { loadCurrentGame } from "../game-data/current-game.mjs";
 
+export const CURRENT_GAME_AUTHORITY_PATH = "game-data/current-game.json";
 export const V064_CANDIDATE_RULES_VERSION = "v0.6.4-candidate";
 export const V064_CANDIDATE_VERSION_LABEL = "Gauntlet v0.6.4 candidate";
-export const V064_PROPOSAL_SOURCE_PATH = "docs/v0.6.4-diplomat-proposals.json";
+export const V064_PROPOSAL_SOURCE_PATH = CURRENT_GAME_AUTHORITY_PATH;
 export const V064_PROPOSAL_SOURCE_ISSUE = 617;
-export const V064_ARCANE_SYMBOL_SOURCE_PATH = "docs/v0.6.4-arcane-symbol.json";
-export const V064_TERRITORY_SOURCE_PATH = "docs/v0.6.4-territories.json";
+export const V064_ARCANE_SYMBOL_SOURCE_PATH = CURRENT_GAME_AUTHORITY_PATH;
+export const V064_TERRITORY_SOURCE_PATH = CURRENT_GAME_AUTHORITY_PATH;
 export const V064_TERRITORY_SOURCE_ISSUE = 738;
 
 export function defaultV064CandidateSourceUrls(origin = "https://gauntlet.run") {
   const base = String(origin || "https://gauntlet.run").replace(/\/$/, "");
+  const authorityUrl = `${base}/${CURRENT_GAME_AUTHORITY_PATH}`;
   return {
-    proposalSourceUrl: `${base}/${V064_PROPOSAL_SOURCE_PATH}`,
-    arcaneSymbolSourceUrl: `${base}/${V064_ARCANE_SYMBOL_SOURCE_PATH}`,
-    territorySourceUrl: `${base}/${V064_TERRITORY_SOURCE_PATH}`
+    currentGameAuthorityUrl: authorityUrl,
+    proposalSourceUrl: authorityUrl,
+    arcaneSymbolSourceUrl: authorityUrl,
+    territorySourceUrl: authorityUrl
   };
 }
 
 export async function loadV064CandidateRulesCorpus({
-  proposalSourceUrl,
-  arcaneSymbolSourceUrl,
-  territorySourceUrl,
   fetchImpl = globalThis.fetch,
   ...v063Options
 } = {}) {
   if (typeof fetchImpl !== "function") throw new Error("A fetch implementation is required.");
 
-  const baseCorpusPromise = loadV063RulesCorpus({ ...v063Options, fetchImpl });
-  const defaults = defaultV064CandidateSourceUrls(
-    globalThis.location?.origin || "https://gauntlet.run"
-  );
-  const proposalUrl = proposalSourceUrl || defaults.proposalSourceUrl;
-  const arcaneUrl = arcaneSymbolSourceUrl || defaults.arcaneSymbolSourceUrl;
-  const territoryUrl = territorySourceUrl || defaults.territorySourceUrl;
-  const proposalResponsePromise = fetchImpl(proposalUrl, { cache: "no-store" });
-  const arcaneResponsePromise = fetchImpl(arcaneUrl, { cache: "no-store" });
-  const territoryResponsePromise = fetchImpl(territoryUrl, { cache: "no-store" });
-
-  const [baseCorpus, proposalResponse, arcaneResponse, territoryResponse] = await Promise.all([
-    baseCorpusPromise,
-    proposalResponsePromise,
-    arcaneResponsePromise,
-    territoryResponsePromise
+  const [baseCorpus, currentGame] = await Promise.all([
+    loadV063RulesCorpus({ ...v063Options, fetchImpl }),
+    loadCurrentGame()
   ]);
 
-  if (!proposalResponse.ok) {
-    throw new Error(`v0.6.4 Proposal candidate source returned ${proposalResponse.status}.`);
+  if (currentGame.version !== V064_CANDIDATE_RULES_VERSION) {
+    throw new Error(`Rules Arbiter expected ${V064_CANDIDATE_RULES_VERSION}, received ${currentGame.version}.`);
   }
-  if (!arcaneResponse.ok) {
-    throw new Error(`v0.6.4 Arcane-symbol candidate source returned ${arcaneResponse.status}.`);
-  }
-  if (!territoryResponse.ok) {
-    throw new Error(`v0.6.4 Territory candidate source returned ${territoryResponse.status}.`);
+  if (baseCorpus.version !== currentGame.baseVersion) {
+    throw new Error(`Rules Arbiter base corpus ${baseCorpus.version} does not match current-game base ${currentGame.baseVersion}.`);
   }
 
-  const proposalSource = await proposalResponse.json();
-  const arcaneSource = await arcaneResponse.json();
-  const territorySource = await territoryResponse.json();
-  const proposalCorpus = applyV064ProposalOverride(baseCorpus, proposalSource, proposalUrl);
-  const arcaneCorpus = applyV064ArcaneSymbolOverride(proposalCorpus, arcaneSource, arcaneUrl);
-  return applyV064TerritoryOverride(arcaneCorpus, territorySource, territoryUrl);
+  const authorityUrl = currentGame.authorityUrl;
+  const proposalSource = {
+    version: currentGame.version,
+    base_version: currentGame.baseVersion,
+    source_issue: currentGame.sourceMetadata?.proposals?.sourceIssue ?? V064_PROPOSAL_SOURCE_ISSUE,
+    mechanics_changed: false,
+    proposals: currentGame.proposals
+  };
+  const territorySource = {
+    version: currentGame.version,
+    base_version: currentGame.baseVersion,
+    source_issue: currentGame.sourceMetadata?.territories?.sourceIssue ?? V064_TERRITORY_SOURCE_ISSUE,
+    mechanics_changed: true,
+    count: currentGame.territories.length,
+    territories: currentGame.territories
+  };
+  const arcaneSource = currentGame.arcaneSymbol;
+
+  const proposalCorpus = applyV064ProposalOverride(baseCorpus, proposalSource, authorityUrl);
+  const arcaneCorpus = applyV064ArcaneSymbolOverride(proposalCorpus, arcaneSource, authorityUrl);
+  const resolved = applyV064TerritoryOverride(arcaneCorpus, territorySource, authorityUrl);
+  return {
+    ...resolved,
+    currentGameAuthority: authorityUrl,
+    currentGameVersion: currentGame.version,
+    currentGameSources: currentGame.sources
+  };
 }
 
 export function applyV064ProposalOverride(baseCorpus, proposalSource, sourceUrl) {
@@ -152,7 +158,7 @@ export function applyV064TerritoryOverride(baseCorpus, territorySource, sourceUr
 
 export function buildV064ProposalDocuments(proposalSource, sourceUrl) {
   validateV064ProposalSource(proposalSource);
-  const resolvedUrl = sourceUrl || defaultV064CandidateSourceUrls().proposalSourceUrl;
+  const resolvedUrl = sourceUrl || defaultV064CandidateSourceUrls().currentGameAuthorityUrl;
 
   return proposalSource.proposals.map((proposal) => {
     const body = [
@@ -177,7 +183,7 @@ export function buildV064ProposalDocuments(proposalSource, sourceUrl) {
 
 export function buildV064ArcaneSymbolDocuments(arcaneSource, sourceUrl) {
   validateV064ArcaneSymbolSource(arcaneSource);
-  const resolvedUrl = sourceUrl || defaultV064CandidateSourceUrls().arcaneSymbolSourceUrl;
+  const resolvedUrl = sourceUrl || defaultV064CandidateSourceUrls().currentGameAuthorityUrl;
   return [arcaneSource.general_rule, arcaneSource.mystics_rule].map((rule) => ({
     id: `rulebook:v064-${rule.id}`,
     kind: "rulebook",
@@ -194,7 +200,7 @@ export function buildV064ArcaneSymbolDocuments(arcaneSource, sourceUrl) {
 
 export function buildV064TerritoryDocuments(territorySource, sourceUrl) {
   validateV064TerritorySource(territorySource);
-  const resolvedUrl = sourceUrl || defaultV064CandidateSourceUrls().territorySourceUrl;
+  const resolvedUrl = sourceUrl || defaultV064CandidateSourceUrls().currentGameAuthorityUrl;
   return territorySource.territories.map((territory) => {
     const kind = territory.arena ? "arena" : "territory";
     return {

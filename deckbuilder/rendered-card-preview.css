@@ -1,20 +1,21 @@
-.card-preview.rendered-card-preview {
+.card-preview.rendered-card-preview,
+.territory-preview.rendered-territory-preview {
   overflow: visible;
 }
 
-.deckbuilder-card-render-stage {
+.deckbuilder-card-render-stage,
+.deckbuilder-territory-render-stage {
   position: relative;
   width: 100%;
   min-height: 1px;
   overflow: visible;
 }
 
-.deckbuilder-card-render-frame {
+.deckbuilder-card-render-frame,
+.deckbuilder-territory-render-frame {
   position: absolute;
   top: 0;
   left: 50%;
-  width: 240px;
-  height: 336px;
   margin: 0;
   border: 0;
   background: transparent;
@@ -23,9 +24,24 @@
   cursor: zoom-in;
 }
 
-.rendered-card-preview-actions {
+.deckbuilder-card-render-frame {
+  width: 240px;
+  height: 336px;
+}
+
+.deckbuilder-territory-render-frame {
+  width: 336px;
+  height: 240px;
+}
+
+.rendered-card-preview-actions,
+.rendered-territory-preview-actions {
   justify-content: center;
   margin-top: 14px;
+}
+
+.territory-preview .territory-watchlist.rendered-territory-watchlist {
+  margin-top: 12px;
 }
 
 @media (max-width: 760px) {
@@ -33,12 +49,14 @@
     max-height: min(88vh, 48rem);
   }
 
-  .deckbuilder-card-render-stage {
-    width: min(100%, 320px);
+  .deckbuilder-card-render-stage,
+  .deckbuilder-territory-render-stage {
+    width: min(100%, 360px);
     margin: 0 auto;
   }
 
-  .rendered-card-preview-actions {
+  .rendered-card-preview-actions,
+  .rendered-territory-preview-actions {
     padding-bottom: 0.25rem;
   }
 }

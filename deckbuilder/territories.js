@@ -1,7 +1,9 @@
 (() => {
-  const TERRITORY_SOURCE = "../docs/Gauntlet_v0.6.1_Territory_Pool.md";
   const REQUIRED_TERRITORIES = 3;
   const MAX_ARENAS = 1;
+  const TERRITORY_WIDTH = 336;
+  const TERRITORY_HEIGHT = 240;
+  const MAX_TERRITORY_PREVIEW_WIDTH = 360;
 
   state.territoryPool = [];
   state.territories = [];
@@ -11,6 +13,7 @@
   state.pendingTerritories = null;
 
   const territoryElements = {};
+  let territoryPreviewResizeObserver = null;
   const baseRenderAll = renderAll;
   const baseValidateDeck = validateDeck;
   const baseValidateAndRender = validateAndRender;
@@ -47,9 +50,18 @@
 
   async function loadTerritories() {
     try {
-      const response = await fetch(TERRITORY_SOURCE, { cache: "no-store" });
-      if (!response.ok) throw new Error(`Failed to load ${TERRITORY_SOURCE}: ${response.status}`);
-      state.territoryPool = parseTerritoryPool(await response.text());
+      const { loadCurrentGame } = await import("../game-data/current-game.mjs");
+      const currentGame = await loadCurrentGame();
+      state.territoryPool = (currentGame.territories || []).map(territory => ({
+        id: territory.id,
+        name: territory.name,
+        arena: Boolean(territory.arena),
+        complexity: territory.complexity || "Current",
+        watchlist: territory.watchlist || "None",
+        status: territory.status || "Approved",
+        text: String(territory.text || territory.effects?.map(effect => effect.text).filter(Boolean).join("\n") || ""),
+        source: currentGame.authorityUrl
+      }));
 
       if (state.pendingTerritories) {
         state.territories = resolveTerritoryIds(state.pendingTerritories);
@@ -64,40 +76,9 @@
       console.error(error);
       if (territoryElements.territoryList) {
         territoryElements.territoryList.className = "compact-territory-list empty-state";
-        territoryElements.territoryList.textContent = "Unable to load the v0.6.1 Territory source.";
+        territoryElements.territoryList.textContent = "Unable to load Territories from the current-game authority.";
       }
     }
-  }
-
-  function parseTerritoryPool(markdown) {
-    const source = markdown.replace(/\r/g, "");
-    const headings = [...source.matchAll(/^##\s+(\d+)\.\s+(.+)$/gm)];
-
-    return headings.map((match, index) => {
-      const name = match[2].trim();
-      const start = match.index + match[0].length;
-      const end = index + 1 < headings.length ? headings[index + 1].index : source.length;
-      const block = source.slice(start, end);
-      const complexity = block.match(/\*\*Complexity:\*\*\s*([^\n]+)/i)?.[1].trim() || "Unspecified";
-      const watchlist = block.match(/\*\*Watchlist:\*\*\s*([^\n]+)/i)?.[1].trim() || "None";
-      const status = block.match(/\*\*Status:\*\*\s*([^\n]+)/i)?.[1].trim() || "Approved";
-      const text = block.split("\n")
-        .filter(line => line.trim().startsWith(">"))
-        .map(line => cleanInlineMarkdown(line.trim().replace(/^>\s?/, "")))
-        .filter(Boolean)
-        .join("\n");
-
-      return {
-        id: `territory-${slugify(name)}`,
-        name,
-        arena: name.startsWith("Arena:"),
-        complexity,
-        watchlist,
-        status,
-        text,
-        source: TERRITORY_SOURCE
-      };
-    });
   }
 
   function enhancedRenderAll() {
@@ -109,7 +90,7 @@
 
   function syncSourceStatus() {
     if (!state.territoryPool.length || !el.dataStatus) return;
-    el.dataStatus.textContent = `${state.cards.length} active cards + ${state.territoryPool.length} Territories loaded`;
+    el.dataStatus.textContent = `${state.currentGameDisplayVersion || "Current game"} · ${state.cards.length} active cards + ${state.territoryPool.length} Territories loaded`;
   }
 
   function filteredTerritories() {
@@ -190,9 +171,12 @@
     const preview = territoryElements.territoryPreview;
     if (!preview) return;
 
+    territoryPreviewResizeObserver?.disconnect();
+    territoryPreviewResizeObserver = null;
+
     if (!territory) {
       preview.className = "territory-preview empty-state";
-      preview.textContent = "Select a Territory to view its active working text.";
+      preview.textContent = "Select a Territory to view its complete rendered card.";
       return;
     }
 
@@ -202,23 +186,48 @@
       state.territories.length >= REQUIRED_TERRITORIES ||
       (territory.arena && arenaSelected)
     );
+    const rendererUrl = `../card-design/territory-review-render.html?territory=${encodeURIComponent(territory.id)}`;
 
-    preview.className = "territory-preview";
+    preview.className = "territory-preview rendered-territory-preview";
     preview.innerHTML = `
-      <h3>${escapeHtml(territory.name)}</h3>
-      <div class="card-preview-meta">
-        <span class="mini-pill">${territory.arena ? "Arena" : "Territory"}</span>
-        <span class="mini-pill">${escapeHtml(territory.complexity)}</span>
-        ${territory.status !== "Approved" ? `<span class="mini-pill">${escapeHtml(territory.status)}</span>` : ""}
+      <div class="deckbuilder-territory-render-stage" data-territory-render-stage>
+        <iframe
+          class="deckbuilder-territory-render-frame"
+          src="${escapeHtml(rendererUrl)}"
+          title="${escapeHtml(territory.name)} complete rendered Territory card"
+          loading="eager"
+          scrolling="no"
+        ></iframe>
       </div>
-      <section class="card-text-section">
-        <div class="card-text-label">Effect</div>
-        <p>${escapeHtml(territory.text)}</p>
-      </section>
-      ${territory.watchlist !== "None" ? `<section class="territory-watchlist"><strong>Playtest watchlist:</strong> ${escapeHtml(territory.watchlist)}</section>` : ""}
-      <div class="button-row"><button id="previewTerritoryButton" type="button" class="${selected ? "secondary danger" : ""}" ${unavailable ? "disabled" : ""}>${selected ? "Remove Territory" : "Choose Territory"}</button></div>
+      ${territory.watchlist !== "None" ? `<section class="territory-watchlist rendered-territory-watchlist"><strong>Playtest watchlist:</strong> ${escapeHtml(territory.watchlist)}</section>` : ""}
+      <div class="button-row rendered-territory-preview-actions"><button id="previewTerritoryButton" type="button" class="${selected ? "secondary danger" : ""}" ${unavailable ? "disabled" : ""}>${selected ? "Remove Territory" : "Choose Territory"}</button></div>
     `;
     document.getElementById("previewTerritoryButton")?.addEventListener("click", () => toggleTerritory(territory.id));
+    installTerritoryPreviewScaling();
+  }
+
+  function installTerritoryPreviewScaling() {
+    const stage = territoryElements.territoryPreview?.querySelector("[data-territory-render-stage]");
+    if (!stage) return;
+
+    const resize = () => scaleTerritoryPreview(stage);
+    if ("ResizeObserver" in window) {
+      territoryPreviewResizeObserver = new ResizeObserver(resize);
+      territoryPreviewResizeObserver.observe(stage);
+    }
+    requestAnimationFrame(resize);
+  }
+
+  function scaleTerritoryPreview(stage) {
+    const frame = stage.querySelector(".deckbuilder-territory-render-frame");
+    if (!frame) return;
+
+    const availableWidth = Math.max(0, stage.clientWidth);
+    const targetWidth = Math.min(MAX_TERRITORY_PREVIEW_WIDTH, availableWidth || TERRITORY_WIDTH);
+    const scale = targetWidth / TERRITORY_WIDTH;
+
+    stage.style.height = `${TERRITORY_HEIGHT * scale}px`;
+    frame.style.transform = `translateX(-50%) scale(${scale})`;
   }
 
   function toggleTerritory(id) {
