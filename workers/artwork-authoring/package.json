@@ -3,6 +3,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test src/index.test.mjs"
+    "test": "node --test src/index.node-test.mjs"
   }
 }
