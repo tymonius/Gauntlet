@@ -6,6 +6,8 @@ const starterDecks = JSON.parse(readFileSync("deckbuilder/starter-decks.json", "
 const catalogPage = readFileSync("card-design/index.html", "utf8");
 const catalogOverlay = readFileSync("card-design/v064-card-candidates.js", "utf8");
 const cardRenderer = readFileSync("card-design/card-review-render.js", "utf8");
+const currentAuthority = JSON.parse(readFileSync("game-data/current-game.json", "utf8"));
+const currentResolver = readFileSync("game-data/current-game.mjs", "utf8");
 
 const expectedByAllegiance: Record<string, string[]> = {
   Neutral: ["Phantom Passage", "Battlefield Plunder"],
@@ -155,17 +157,23 @@ describe("v0.6.4 full card-expansion candidate staging", () => {
     expect(divination.effects[0].text).toContain("Otherwise, put it in your Graveyard.");
   });
 
-  it("layers fifteen candidates and one retirement onto /card-design without changing canonical v0.6.3 data", () => {
+  it("resolves candidate additions, same-id revisions, and retirements once through the current-game authority", () => {
+    expect(currentAuthority.sources.cardChanges).toBe("/docs/v0.6.4-card-additions.json");
+    expect(currentAuthority.resolution.cards).toContain("replace an existing stable id");
+    expect(currentResolver).toContain("export function resolveCards");
+    expect(currentResolver).toContain("byId.set(card.id, card)");
+    expect(currentResolver).toContain("byId.delete(id)");
+
     expect(catalogPage).toContain('src="v064-card-candidates.js"');
-    expect(catalogPage).toContain("142");
-    expect(catalogPage).toContain("52 Neutral cards and 15 cards in each faction");
-    expect(catalogOverlay).toContain("/docs/v0.6.4-card-additions.json");
-    expect(catalogOverlay).toContain("EXPECTED_CARD_COUNT = 15");
-    expect(catalogOverlay).toContain("EXPECTED_RETIREMENT_COUNT = 1");
-    expect(catalogOverlay).toContain("removeRetiredCards");
-    expect(catalogOverlay).toContain("ready_for_game_data !== false");
-    expect(cardRenderer).toContain("/artifacts/reconstruction/clean-v0.6.3/downstream/canonical-data.json");
-    expect(cardRenderer).toContain("/docs/v0.6.4-card-additions.json");
-    expect(cardRenderer).toContain("gameVersion = 'v0.6.4 candidate'");
+    expect(catalogOverlay).toContain("loadCurrentGame");
+    expect(catalogOverlay).not.toContain("/docs/v0.6.4-card-additions.json");
+    expect(catalogOverlay).not.toContain("removeRetiredCards");
+    expect(catalogOverlay).not.toContain("installV064PlaytestCards");
+
+    expect(cardRenderer).toContain("loadCurrentGame");
+    expect(cardRenderer).toContain("currentGame.findCard(cardId)");
+    expect(cardRenderer).toContain("source: currentGame.authorityUrl");
+    expect(cardRenderer).not.toContain("/artifacts/reconstruction/clean-v0.6.3/downstream/canonical-data.json");
+    expect(cardRenderer).not.toContain("/docs/v0.6.4-card-additions.json");
   });
 });
