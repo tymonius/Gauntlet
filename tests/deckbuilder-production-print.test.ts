@@ -15,7 +15,7 @@ const analyticsSync = readFileSync("scripts/sync-google-analytics.mjs", "utf8");
 const componentContract = JSON.parse(readFileSync("config/tts-component-contract.json", "utf8"));
 
 describe("Deckbuilder production printing", () => {
-  it("prints playable cards through the same production renderer used by Card Reference", () => {
+  it("prints playable cards through the shared production renderer", () => {
     expect(playableRender).toContain('/card-design/card-review-render.js');
     expect(playableRender).toContain('/card-design/card-design.css');
     expect(playableRender).toContain('/tts/renderer/renderer.css');
@@ -27,7 +27,7 @@ describe("Deckbuilder production printing", () => {
     expect(printTransform).toContain('print-card main-card production-render-card production-standard-back');
   });
 
-  it("prints Territory faces at their native landscape production size inside portrait cut slots", () => {
+  it("prints Territory faces at native landscape production size inside portrait cut slots", () => {
     expect(territoryRender).toContain('/card-design/territory-review-render.js');
     expect(territoryRender).toContain('/tts/territory-renderer/territory-renderer.css');
     expect(territoryRender).toContain('width: 3.5in;');
@@ -39,7 +39,7 @@ describe("Deckbuilder production printing", () => {
     expect(printTransform).toContain('left: 2.5in;');
   });
 
-  it("loads production Leaders, trackers, references, Proposals, and Rites instead of legacy print approximations", () => {
+  it("hosts production Leaders, references, trackers, Proposals, Rites, Ritual, and generic supplemental components", () => {
     expect(componentRenderHtml).toContain('/card-design/leader-card.css');
     expect(componentRenderHtml).toContain('/card-design/proposal-card.css');
     expect(componentRenderHtml).toContain('/card-design/rite-card.css');
@@ -50,29 +50,27 @@ describe("Deckbuilder production printing", () => {
     expect(componentRenderHtml).toContain('id="riteReviewSections"');
     expect(componentRenderHtml).toContain('id="supplementalReviewSections"');
 
-    for (const kind of ['leader', 'proposal', 'reference', 'rite', 'tracker', 'supplemental']) {
+    for (const kind of ['leader', 'proposal', 'reference', 'rite', 'ritual', 'tracker', 'supplemental']) {
       expect(componentRenderJs).toContain(`"${kind}"`);
     }
-    expect(printTransform).toContain('kind: "leader"');
-    expect(printTransform).toContain('kind: "proposal"');
-    expect(printTransform).toContain('kind: "rite"');
+    expect(componentRenderJs).toContain('supplemental-placeholder-card');
     expect(printTransform).toContain('/card-design/component-print-render.html?kind=');
   });
 
-  it("adds a contract-driven upgrade path for any supplemental face left on fallback", () => {
-    expect(cardBackPreview).toContain('const COMPONENT_CONTRACT_URL = "/config/tts-component-contract.json";');
-    expect(cardBackPreview).toContain('componentContractPromise');
-    expect(cardBackPreview).toContain('contractComponentForLegacy');
-    expect(cardBackPreview).toContain('component.renderSource?.printEndpoint');
-    expect(cardBackPreview).toContain('component.renderSource?.componentId');
-    expect(cardBackPreview).toContain('component.productionStatus');
-    expect(cardBackPreview).toContain('upgradeContractProductionFallbacks');
-    expect(cardBackPreview).toContain('kind=supplemental&id=');
-    expect(componentRenderJs).toContain('.supplemental-review-item');
-    expect(componentRenderJs).toContain('supplemental-placeholder-card');
+  it("uses the resolved current-game component contract rather than per-card print lookup tables", () => {
+    expect(printTransform).toContain('state.currentGameData || window.GAUNTLET_CURRENT_GAME_DATA');
+    expect(printTransform).toContain('currentGame.components');
+    expect(printTransform).toContain('component.family');
+    expect(printTransform).toContain('component.productionStatus');
+    expect(printTransform).toContain('component.backPolicy');
+    expect(printTransform).toContain('component.renderSource');
+    expect(printTransform).toContain('component.renderSource?.printEndpoint');
+    expect(printTransform).toContain('component.renderSource?.componentId');
+    expect(printTransform).not.toContain('TRACKER_COMPONENT_IDS');
+    expect(printTransform).not.toContain('REFERENCE_COMPONENTS');
   });
 
-  it("keeps pending Financier components on fallback until their contract entries expose a finalized production renderer", () => {
+  it("keeps genuinely pending Financier faces on fallback until the authority exposes a production renderer", () => {
     const ledger = componentContract.components.find((component: any) => component.id === 'financiers-capital-ledger');
     const deed = componentContract.components.find((component: any) => component.id === 'financiers-deed');
     expect(ledger?.productionStatus).not.toBe('ready');
@@ -80,35 +78,24 @@ describe("Deckbuilder production printing", () => {
     expect(ledger?.renderSource).toBeUndefined();
     expect(deed?.renderSource).toBeUndefined();
 
-    expect(cardBackPreview).toContain('status === "ready" && componentId');
-    expect(cardBackPreview).toContain('card-design\\/supplemental-card\\.js');
-    expect(cardBackPreview).toContain('component.renderSource?.printUrl');
+    expect(printTransform).toContain('annotateFallback(legacyCard, component)');
+    expect(printTransform).toContain('componentIsPrintableProduction(component, descriptor)');
+    expect(printTransform).toContain('component.productionStatus === "ready"');
   });
 
-  it("can give newly contract-upgraded standard-back and two-sided components the correct reverse treatment", () => {
-    expect(cardBackPreview).toContain('component.backPolicy === "standardBack"');
-    expect(cardBackPreview).toContain('ensureStandardBack(documentNode, replacement)');
-    expect(cardBackPreview).toContain('ensureIntrinsicReverse(documentNode, replacement, component, renderUrl)');
-    expect(cardBackPreview).toContain('mirrorIndexForLongEdge(frontIndex)');
-  });
-
-  it("prints every current production reference as a real two-sided card even when ordinary card backs are not requested", () => {
-    expect(printTransform).toContain('ensureReferenceReversePages(documentNode);');
-    expect(printTransform).toContain('data-production-component-side="front"');
+  it("automatically applies intrinsic reverse faces from component back policy", () => {
+    expect(printTransform).toContain('ensureIntrinsicReversePages(documentNode, currentGame)');
+    expect(printTransform).toContain('data-production-back-policy="twoSided"');
+    expect(printTransform).toContain('data-production-back-policy="specialBack"');
     expect(printTransform).toContain('side: "reverse"');
     expect(printTransform).toContain('ensureBackPageForFront');
     expect(printTransform).toContain('mirrorIndexForLongEdge(frontIndex)');
   });
 
-  it("leaves genuinely pending Financier faces on their existing fallback while still giving standard-back components the selected production back", () => {
-    expect(printTransform).not.toContain('kind: "capital"');
-    expect(printTransform).not.toContain('kind: "deed"');
-    expect(printTransform).toContain('.capital-tracker-card, .deed-card');
-  });
-
-  it("uses one shared back for standard-back cards, defaulting to black", () => {
+  it("uses one shared back for every standard-back card, defaulting to black", () => {
     expect(duplexTransform).toContain('cell.querySelector(".main-card, .territory")');
     expect(printTransform).toContain('production-standard-back');
+    expect(printTransform).toContain('[data-contract-back-policy="standardBack"]');
     expect(printTransform).toContain('/tts/back-renderer/index.html?faction=');
     expect(printTransform).toContain('if (!useFactionColor) return "intelligence";');
     expect(printTransform).toContain('String(state.factionId || "intelligence")');
@@ -131,7 +118,7 @@ describe("Deckbuilder production printing", () => {
     expect(printOptionsCss).toContain('.faction-back-option.disabled');
   });
 
-  it("shows the selected production back beside the print-back options and updates it live", () => {
+  it("keeps the card-back preview presentation-only", () => {
     expect(deckbuilderHtml).toContain('card-back-preview.js?v=20260819-1');
     expect(deckbuilderHtml).toContain('print-options.css?v=20260819-1');
     expect(cardBackPreview).toContain('preview.id = "cardBackPreview"');
@@ -141,6 +128,8 @@ describe("Deckbuilder production printing", () => {
     expect(cardBackPreview).toContain('factionColor.addEventListener("change", updatePreview)');
     expect(cardBackPreview).toContain('factionSelect?.addEventListener("change"');
     expect(cardBackPreview).toContain('"Black back (default)"');
+    expect(cardBackPreview).not.toContain('/config/tts-component-contract.json');
+    expect(cardBackPreview).not.toContain('upgradeContractProductionFallbacks');
     expect(printOptionsCss).toContain('.card-back-controls');
     expect(printOptionsCss).toContain('.card-back-preview-frame');
   });
