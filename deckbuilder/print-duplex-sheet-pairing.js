@@ -50,7 +50,7 @@
 
     if (printCardBacks) ensureSheetBackPages(documentNode);
     replaceProductionFronts(documentNode);
-    if (printCardBacks) replacePlayableProductionBacks(documentNode);
+    if (printCardBacks) replaceProductionBacks(documentNode);
     injectProductionPrintStyles(documentNode);
     installProductionReadinessGate(documentNode);
 
@@ -155,7 +155,7 @@
     return wrapper;
   }
 
-  function replacePlayableProductionBacks(documentNode) {
+  function replaceProductionBacks(documentNode) {
     const faction = String(state.factionId || "intelligence").trim().toLowerCase();
     const backPages = [...documentNode.querySelectorAll(".deck-card-back-page[data-duplex-pair]")];
 
@@ -167,25 +167,25 @@
       const frontCells = [...frontPage.querySelectorAll(".card-table td")];
       const backCells = [...backPage.querySelectorAll(".card-table td")];
       frontCells.forEach((frontCell, frontIndex) => {
-        if (!frontCell.querySelector(".production-render-card")) return;
+        if (!frontCell.querySelector(".production-render-card, .production-render-territory")) return;
         const backCell = backCells[mirrorIndexForLongEdge(frontIndex)];
         if (!backCell) return;
-        backCell.replaceChildren(makeProductionPlayableBack(documentNode, faction));
+        backCell.replaceChildren(makeProductionDeckBack(documentNode, faction));
       });
     });
   }
 
-  function makeProductionPlayableBack(documentNode, faction) {
+  function makeProductionDeckBack(documentNode, faction) {
     const wrapper = documentNode.createElement("article");
     wrapper.className = "print-card production-render-back";
-    wrapper.setAttribute("aria-label", `${faction} production playable-card back`);
+    wrapper.setAttribute("aria-label", `${faction} production deck-card back`);
 
     const frame = documentNode.createElement("iframe");
     frame.className = "production-back-frame";
     frame.dataset.productionRenderFrame = "true";
     frame.dataset.productionRenderKind = "back";
     frame.src = `/tts/back-renderer/index.html?faction=${encodeURIComponent(faction)}`;
-    frame.title = `${faction} production playable-card back`;
+    frame.title = `${faction} production deck-card back`;
     frame.setAttribute("scrolling", "no");
     frame.setAttribute("loading", "eager");
     wrapper.append(frame);
