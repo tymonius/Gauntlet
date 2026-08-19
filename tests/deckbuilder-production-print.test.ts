@@ -1,9 +1,11 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
+const deckbuilderHtml = readFileSync("deckbuilder/index.html", "utf8");
 const playableRender = readFileSync("card-design/card-print-render.html", "utf8");
 const territoryRender = readFileSync("card-design/territory-print-render.html", "utf8");
 const printTransform = readFileSync("deckbuilder/print-duplex-sheet-pairing.js", "utf8");
+const cardBackPreview = readFileSync("deckbuilder/card-back-preview.js", "utf8");
 const printOptionsCss = readFileSync("deckbuilder/print-options.css", "utf8");
 const duplexTransform = readFileSync("deckbuilder/print-duplex.js", "utf8");
 
@@ -48,6 +50,20 @@ describe("Deckbuilder production printing", () => {
     expect(printTransform).toContain('checkbox.disabled = !printBacks.checked');
     expect(printOptionsCss).toContain('.faction-back-option');
     expect(printOptionsCss).toContain('.faction-back-option.disabled');
+  });
+
+  it("shows the selected production back beside the print-back options and updates it live", () => {
+    expect(deckbuilderHtml).toContain('card-back-preview.js?v=20260819-1');
+    expect(deckbuilderHtml).toContain('print-options.css?v=20260819-1');
+    expect(cardBackPreview).toContain('preview.id = "cardBackPreview"');
+    expect(cardBackPreview).toContain('frame.id = "cardBackPreviewFrame"');
+    expect(cardBackPreview).toContain('/tts/back-renderer/index.html?faction=');
+    expect(cardBackPreview).toContain('if (!factionColor.checked) return "intelligence";');
+    expect(cardBackPreview).toContain('factionColor.addEventListener("change", updatePreview)');
+    expect(cardBackPreview).toContain('factionSelect?.addEventListener("change"');
+    expect(cardBackPreview).toContain('"Black back (default)"');
+    expect(printOptionsCss).toContain('.card-back-controls');
+    expect(printOptionsCss).toContain('.card-back-preview-frame');
   });
 
   it("waits for every production render before opening the browser print dialog", () => {
