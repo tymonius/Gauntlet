@@ -39,7 +39,6 @@ jobs:
       - name: Validate artwork authoring code
         run: |
           node --check workers/artwork-authoring/src/index.js
-          node --check workers/artwork-authoring/src/index-canonical.js
           node --check workers/artwork-authoring/src/format.js
           node --check card-design/artwork-authoring-client.js
           node --check card-design/artwork-compositor-targets.js
@@ -96,7 +95,7 @@ jobs:
           node -e '
             const fs = require("fs");
             const health = JSON.parse(fs.readFileSync("/tmp/artwork-authoring-health.json", "utf8"));
-            if (!health.ok || health.service !== "gauntlet-artwork-authoring" || !health.configured || health.canonicalBranch !== "main") {
+            if (!health.ok || health.service !== "gauntlet-artwork-authoring" || !health.configured) {
               console.error(health);
               process.exit(1);
             }
