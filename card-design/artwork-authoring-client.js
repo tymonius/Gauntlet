@@ -240,7 +240,7 @@
         link.target = '_blank';
         link.rel = 'noopener';
         link.textContent = `PR #${detail.pr.number}`;
-        status.append(link, '. Continue editing; merge the PR once when the batch is ready to make all saved positions canonical.');
+        status.append(link, '. Continue editing; merge the PR once when the batch is ready. All saved positions become canonical together.');
       } else if (detail.kind === 'auth-expired') {
         status.textContent = 'GitHub authoring session expired. Click Save position again to sign in.';
       } else if (detail.kind === 'error') {
