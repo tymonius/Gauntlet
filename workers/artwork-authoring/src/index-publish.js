@@ -1,6 +1,7 @@
 import baseWorker, { __test } from './index.js';
 
 const API_VERSION = '2022-11-28';
+const PUBLISH_PATH = '/api/art-direction/publish';
 
 function config(env) {
   const [owner, repo] = String(env.GITHUB_REPOSITORY || 'tymonius/Gauntlet').split('/');
@@ -99,6 +100,22 @@ function publicPull(pr) {
   };
 }
 
+async function handleHealth(request, env) {
+  const baseResponse = await baseWorker.fetch(request, env);
+  let baseHealth = {};
+  try {
+    baseHealth = await baseResponse.json();
+  } catch {
+    baseHealth = {};
+  }
+  return json({
+    ...baseHealth,
+    batchPublishing: true,
+    publishEndpoint: PUBLISH_PATH,
+    authorBranch: config(env).authorBranch,
+  }, baseResponse.status || 200, request, env);
+}
+
 async function handleBatchStatus(request, env) {
   requireAllowedOrigin(request, env);
   const session = await authenticatedSession(request, env);
@@ -163,9 +180,8 @@ async function handlePublish(request, env) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
-    const publishPath = '/api/art-direction/publish';
 
-    if (url.pathname === publishPath && request.method === 'OPTIONS') {
+    if (url.pathname === PUBLISH_PATH && request.method === 'OPTIONS') {
       try {
         requireAllowedOrigin(request, env);
         return new Response(null, { status: 204, headers: corsHeaders(request, env) });
@@ -175,8 +191,9 @@ export default {
     }
 
     try {
-      if (url.pathname === publishPath && request.method === 'GET') return handleBatchStatus(request, env);
-      if (url.pathname === publishPath && request.method === 'POST') return handlePublish(request, env);
+      if (url.pathname === '/health' && request.method === 'GET') return handleHealth(request, env);
+      if (url.pathname === PUBLISH_PATH && request.method === 'GET') return handleBatchStatus(request, env);
+      if (url.pathname === PUBLISH_PATH && request.method === 'POST') return handlePublish(request, env);
       return baseWorker.fetch(request, env);
     } catch (error) {
       console.error(error);
