@@ -87,7 +87,7 @@
       "faction": "financiers",
       "factionLabel": "Financiers",
       "name": "Banker",
-      "image": "/images/leader-cards/banker.svg",
+      "image": "/images/banker.png",
       "note": "Collateral and flexible financing",
       "sections": [
         ["Capital", "Begin with 2 Capital. Cards in Treasury raise the amount of Capital you can retain."],
@@ -100,7 +100,7 @@
       "faction": "financiers",
       "factionLabel": "Financiers",
       "name": "Executive",
-      "image": "/images/leader-cards/executive.svg",
+      "image": "/images/executive.png",
       "note": "Offensive acquisition and control",
       "sections": [
         ["Capital", "Begin with 2 Capital. Cards in Treasury raise the amount of Capital you can retain."],
@@ -139,7 +139,7 @@
       "faction": "mystics",
       "factionLabel": "Mystics",
       "name": "Alchemist",
-      "image": "/images/leader-cards/alchemist.svg",
+      "image": "/images/alchemist.png",
       "note": "Sacrifice sequencing and conversion",
       "sections": [
         ["Rites", "The first completed Rite unlocks Invocation; the second unlocks Transmutation; the third unlocks Convergence and the Ritual of Ascendance."],
@@ -152,7 +152,7 @@
       "faction": "mystics",
       "factionLabel": "Mystics",
       "name": "Spirit Walker",
-      "image": "/images/leader-cards/spirit-walker.svg",
+      "image": "/images/spirit%20walker.png",
       "note": "Ritual endurance and protection",
       "sections": [
         ["Rites", "The first completed Rite unlocks Invocation; the second unlocks Transmutation; the third unlocks Convergence and the Ritual of Ascendance."],
