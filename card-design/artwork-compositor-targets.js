@@ -14,7 +14,7 @@
   // authoring client in the browser cache after authoring changes ship.
   const authoringClient = document.createElement('script');
   authoringClient.async = false;
-  authoringClient.src = 'artwork-authoring-client.js?v=20260819-4';
+  authoringClient.src = 'artwork-authoring-client.js?v=20260819-5';
   document.head.append(authoringClient);
 
   let returnView = null;
