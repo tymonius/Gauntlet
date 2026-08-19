@@ -100,6 +100,11 @@
     return rect.width > 0 && rect.height > 0;
   }
 
+  function needsSharedCardPreparation(card) {
+    if (!card?.matches?.(".gauntlet-card[data-art-max]")) return false;
+    return card.dataset.parchmentLoaded === undefined || card.dataset.titleFit === undefined;
+  }
+
   function fitReady(card) {
     if (card.classList.contains("fit-warning")) {
       throw new Error(`Production ${kind} ${id} reports a fit warning.`);
@@ -142,10 +147,22 @@
 
     const deadline = performance.now() + TIMEOUT_MS;
     let card = null;
+    let sharedPreparationRequested = false;
     while (performance.now() < deadline) {
       const error = sourceError();
       if (error) throw new Error(error);
       card = selectedCard();
+
+      // Leader/Proposal/Rite catalogs are populated asynchronously. The shared
+      // card fitter normally runs on window.load, which can occur before the
+      // selected component has been inserted. Replay the established load
+      // lifecycle once after the requested card actually exists so parchment,
+      // title fitting, and art sizing are deterministic instead of timing-based.
+      if (card && !sharedPreparationRequested && needsSharedCardPreparation(card)) {
+        sharedPreparationRequested = true;
+        window.dispatchEvent(new Event("load"));
+      }
+
       if (card && fitReady(card) && imagesReady(card)) break;
       await delay(25);
     }
