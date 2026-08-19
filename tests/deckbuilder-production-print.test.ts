@@ -31,12 +31,13 @@ describe("Deckbuilder production printing", () => {
     expect(printTransform).toContain('left: 2.5in;');
   });
 
-  it("preserves duplex slot semantics and uses the selected faction production back for playable cards", () => {
+  it("uses the same selected-faction production back for playable cards and Territories", () => {
     expect(duplexTransform).toContain('cell.querySelector(".main-card, .territory")');
-    expect(printTransform).toContain('frontCell.querySelector(".production-render-card")');
+    expect(printTransform).toContain('frontCell.querySelector(".production-render-card, .production-render-territory")');
     expect(printTransform).toContain('/tts/back-renderer/index.html?faction=');
     expect(printTransform).toContain('String(state.factionId || "intelligence")');
     expect(printTransform).toContain('mirrorIndexForLongEdge(frontIndex)');
+    expect(printTransform).toContain('production deck-card back');
   });
 
   it("waits for every production render before opening the browser print dialog", () => {
