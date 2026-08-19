@@ -4,14 +4,13 @@
   const MAX_PREVIEW_WIDTH = 300;
   let resizeObserver = null;
 
-  const baseRenderCardPreview = renderCardPreview;
-
   renderCardPreview = function renderProductionCardPreview(card) {
     resizeObserver?.disconnect();
     resizeObserver = null;
 
     if (!card) {
-      baseRenderCardPreview(null);
+      el.cardPreview.className = "card-preview empty-state";
+      el.cardPreview.textContent = "Select a card to view its complete rendered card.";
       return;
     }
 
