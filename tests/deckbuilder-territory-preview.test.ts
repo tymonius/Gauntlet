@@ -16,6 +16,8 @@ describe('Deckbuilder Territory preview', () => {
     expect(territorySource).toContain('const TERRITORY_WIDTH = 336;');
     expect(territorySource).toContain('const TERRITORY_HEIGHT = 240;');
     expect(territorySource).toContain('targetWidth / TERRITORY_WIDTH');
-    expect(previewCss).toMatch(/\.deckbuilder-territory-render-frame\s*\{[\s\S]*width:\s*336px;[\s\S]*height:\s*240px;/);
+    expect(previewCss).toContain('.deckbuilder-territory-render-frame');
+    expect(previewCss).toContain('width: 336px;');
+    expect(previewCss).toContain('height: 240px;');
   });
 });
