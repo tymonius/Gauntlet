@@ -4,7 +4,8 @@ const V064_TERRITORY_SOURCE = '../docs/v0.6.4-territories.json';
 const RULEBOOK_URL = '../rulebook/';
 const BASE_EXPECTED_TARGET = 'clean-v0.6.3-canonical-structured-authority';
 const EXPECTED_BASE_CARD_COUNT = 128;
-const EXPECTED_ADDITION_COUNT = 14;
+const EXPECTED_ADDITION_COUNT = 15;
+const EXPECTED_RETIREMENT_COUNT = 1;
 const EXPECTED_TERRITORY_COUNT = 25;
 const CARD_RENDER_WIDTH = 240;
 const CARD_RENDER_HEIGHT = 336;
@@ -60,7 +61,17 @@ async function init() {
     const additions = validateAdditions(additionsData);
     const territories = validateTerritories(territoryData);
 
-    const cards = [...baseGameplay.cards, ...additions.cards];
+    const retiredIds = new Set(additions.retired_cards.map(card => card.id));
+    const retiredNames = new Set(additions.retired_cards.map(card => card.name));
+    const activeBaseCards = baseGameplay.cards.filter(card => !retiredIds.has(card.id) && !retiredNames.has(card.name));
+    if (activeBaseCards.length !== EXPECTED_BASE_CARD_COUNT - EXPECTED_RETIREMENT_COUNT) {
+      throw new Error('v0.6.4 retirement overlay did not remove exactly one released base card.');
+    }
+
+    const cards = [...activeBaseCards, ...additions.cards];
+    if (cards.length !== additions.target_pool_sizes.total_playable_cards) {
+      throw new Error(`Expected ${additions.target_pool_sizes.total_playable_cards} active v0.6.4 cards, received ${cards.length}.`);
+    }
     assertUniqueIds(cards, 'playable card');
 
     state.entries = [
@@ -108,6 +119,15 @@ function validateAdditions(data) {
   }
   if (!Array.isArray(data.cards) || data.cards.length !== EXPECTED_ADDITION_COUNT) {
     throw new Error(`Expected ${EXPECTED_ADDITION_COUNT} v0.6.4 additions, received ${data.cards?.length ?? 'none'}.`);
+  }
+  if (!Array.isArray(data.retired_cards) || data.retired_cards.length !== EXPECTED_RETIREMENT_COUNT) {
+    throw new Error(`Expected ${EXPECTED_RETIREMENT_COUNT} v0.6.4 retired base card, received ${data.retired_cards?.length ?? 'none'}.`);
+  }
+  if (data.retired_cards[0]?.id !== 'inquisition-no-martyrs') {
+    throw new Error('v0.6.4 Card Reference expects No Martyrs to be retired from the active pool.');
+  }
+  if (data.target_pool_sizes?.total_playable_cards !== 142) {
+    throw new Error('Unexpected v0.6.4 target playable-card count.');
   }
   return data;
 }
