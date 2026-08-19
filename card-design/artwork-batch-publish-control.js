@@ -281,8 +281,20 @@
     window.setTimeout(renderPanel, 0);
   }, true);
 
-  new MutationObserver(() => {
-    if (document.querySelector('.art-compositor-dialog') && currentPr) renderPanel();
+  // Only respond when the compositor dialog itself is inserted. The previous
+  // observer rerendered for every child mutation inside the dialog, including
+  // mutations made by renderPanel(), creating an infinite MutationObserver loop
+  // whenever an artwork batch PR was open.
+  new MutationObserver(mutations => {
+    for (const mutation of mutations) {
+      for (const node of mutation.addedNodes) {
+        if (!(node instanceof Element)) continue;
+        if (node.matches('.art-compositor-dialog') || node.querySelector('.art-compositor-dialog')) {
+          requestAnimationFrame(renderPanel);
+          return;
+        }
+      }
+    }
   }).observe(document.body, { childList: true, subtree: true });
 
   discoverOpenBatch();
