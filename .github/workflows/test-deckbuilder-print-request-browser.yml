@@ -20,21 +20,16 @@ concurrency:
 jobs:
   journey:
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.62.1-noble
     steps:
       - name: Checkout source branch
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref || github.ref_name }}
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install Playwright
-        run: |
-          npm install --no-save playwright
-          npx playwright install --with-deps chromium
+      - name: Install matching Playwright package
+        run: npm install --no-audit --no-fund --no-save playwright@1.62.1
 
       - name: Serve repository
         run: python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
