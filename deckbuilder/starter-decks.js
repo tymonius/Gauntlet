@@ -2,7 +2,9 @@
   const STARTER_DECK_SOURCE = "starter-decks.json";
   const STARTER_TIP_SOURCE = "starter-first-game-tips.json";
   const V064_CARD_SOURCE = "../docs/v0.6.4-card-additions.json";
-  const V064_EXPECTED_CARD_COUNT = 14;
+  const V064_EXPECTED_CARD_COUNT = 15;
+  const V064_EXPECTED_RETIREMENT_COUNT = 1;
+  const V064_EXPECTED_ACTIVE_CARD_COUNT = 142;
   let starterDecks = [];
   let loadError = null;
   let v064CardsReady = false;
@@ -80,11 +82,23 @@
 
   function installV064PlaytestCards(source) {
     const cards = Array.isArray(source?.cards) ? source.cards : [];
+    const retiredCards = Array.isArray(source?.retired_cards) ? source.retired_cards : [];
     if (source?.base_version !== "v0.6.3" || source?.version !== "v0.6.4-candidate") {
       throw new Error("Unexpected v0.6.4 playtest card source identity.");
     }
     if (cards.length !== V064_EXPECTED_CARD_COUNT) {
       throw new Error(`Expected ${V064_EXPECTED_CARD_COUNT} v0.6.4 playtest cards but found ${cards.length}.`);
+    }
+    if (retiredCards.length !== V064_EXPECTED_RETIREMENT_COUNT) {
+      throw new Error(`Expected ${V064_EXPECTED_RETIREMENT_COUNT} retired v0.6.3 card but found ${retiredCards.length}.`);
+    }
+
+    for (const retired of retiredCards) {
+      const index = state.cards.findIndex(card => card.id === retired.id || card.name === retired.name);
+      if (index < 0) throw new Error(`Unable to retire missing base card: ${retired.id || retired.name || "unknown"}.`);
+      state.cards.splice(index, 1);
+      if (state.deck?.[retired.id]) delete state.deck[retired.id];
+      if (state.selectedCardId === retired.id) state.selectedCardId = null;
     }
 
     for (const candidate of cards) {
@@ -111,6 +125,9 @@
       });
     }
 
+    if (state.cards.length !== V064_EXPECTED_ACTIVE_CARD_COUNT) {
+      throw new Error(`Expected ${V064_EXPECTED_ACTIVE_CARD_COUNT} active v0.6.4 cards but found ${state.cards.length}.`);
+    }
     state.cards.sort((a, b) => a.name.localeCompare(b.name));
     v064CardsReady = true;
     document.body.dataset.v064PlaytestCards = "ready";
