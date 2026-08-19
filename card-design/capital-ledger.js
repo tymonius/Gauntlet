@@ -5,6 +5,17 @@ import { loadCurrentGame } from '../game-data/current-game.mjs';
 
 const root = document.querySelector('#capitalLedgerReview');
 
+function ensureLedgerStylesheet() {
+  if (document.querySelector('link[data-capital-ledger-style]')) return;
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = './capital-ledger.css';
+  link.dataset.capitalLedgerStyle = 'true';
+  document.head.append(link);
+}
+
+ensureLedgerStylesheet();
+
 function esc(value) {
   return String(value ?? '').replace(/[&<>'\"]/g, character => ({
     '&': '&amp;',
@@ -23,7 +34,7 @@ function ledgerRows(count = 10) {
 }
 
 export function capitalLedgerMarkup(version = 'Current') {
-  return `<article class="gauntlet-card faction-component-card reference-card capital-ledger-card" data-faction="financiers" data-component-id="financiers-capital-ledger" aria-label="Financiers Capital Ledger">
+  return `<article class="gauntlet-card faction-component-card reference-card capital-ledger-card" data-faction="financiers" data-component-id="financiers-capital-ledger" data-contract-component-id="financiers-capital-ledger" aria-label="Financiers Capital Ledger">
     <div class="reference-card-interior capital-ledger-interior">
       <header class="reference-card-header capital-ledger-header">
         <div class="capital-ledger-faction-line"><span class="reference-faction-emblem" aria-hidden="true"></span><span>Financiers</span></div>
