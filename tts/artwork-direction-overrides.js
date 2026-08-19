@@ -21,6 +21,7 @@ window.GAUNTLET_ART_DIRECTION = Object.freeze({
   "military-commandant": {"focusY":0.099},
   "mystics-alchemist": {"focusY":0.095},
   "mystics-necromancy": {"focusY":0.398},
+  "rite-crossing-completed": {"focusY":0.413},
   "territory-arena-grand-melee": {"focusY":0.747},
   "territory-arena-single-combat": {"focusY":0.26},
   "territory-arena-spoils-of-war": {"focusY":0.442},
