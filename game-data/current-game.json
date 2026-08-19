@@ -11,12 +11,14 @@
     "cardChanges": "/docs/v0.6.4-card-additions.json",
     "territories": "/docs/v0.6.4-territories.json",
     "proposals": "/docs/v0.6.4-diplomat-proposals.json",
+    "arcaneSymbol": "/docs/v0.6.4-arcane-symbol.json",
     "componentContract": "/config/tts-component-contract.json"
   },
   "resolution": {
     "cards": "Start with baseGameplay.gameplay.cards; remove cardChanges.retired_cards; then replace an existing stable id with cardChanges.cards or add it when the id is new.",
     "territories": "territories.territories is the complete current Territory pool.",
     "proposals": "proposals.proposals is the complete current Proposal pool.",
+    "arcaneSymbol": "arcaneSymbol supplies the current Arcane-symbol and Arcane-trait clarification rules.",
     "components": "componentContract is the current physical-component contract."
   },
   "factionOverrides": {
