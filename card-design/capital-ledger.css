@@ -6,7 +6,7 @@
 }
 
 .capital-ledger-card .reference-card-interior {
-  grid-template-rows: 0.59in minmax(0, 1fr) 0.18in;
+  grid-template-rows: 0.47in minmax(0, 1fr) 0.18in;
   background-color: var(--card-parchment, #e6d4ae);
   background-image:
     linear-gradient(var(--component-parchment-tint), var(--component-parchment-tint)),
@@ -26,7 +26,7 @@
 .capital-ledger-header {
   display: grid;
   grid-template-columns: 0.18in minmax(0, 1fr);
-  grid-template-rows: auto auto auto;
+  grid-template-rows: auto auto;
   align-content: center;
   column-gap: 0.055in;
   row-gap: 0;
@@ -72,23 +72,6 @@
   -webkit-line-clamp: unset;
 }
 
-.capital-ledger-subtitle {
-  grid-column: 1 / -1;
-  grid-row: 3;
-  min-width: 0;
-  margin-top: 0.038in;
-  padding-top: 0.027in;
-  border-top: 0.65px solid color-mix(in srgb, var(--component-accent-ink, var(--reference-accent)) 38%, transparent);
-  color: var(--component-accent-ink, var(--reference-accent));
-  font-family: var(--font-interface, Arial, sans-serif);
-  font-size: 4.65pt;
-  font-weight: 750;
-  letter-spacing: 0.07em;
-  line-height: 1;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
 .capital-ledger-body {
   display: block;
   padding: 0.028in 0.068in 0.018in;
@@ -99,7 +82,7 @@
   display: grid;
   width: 100%;
   height: 100%;
-  grid-template-rows: 0.20in 0.20in 0.20in repeat(10, 1fr);
+  grid-template-rows: 0.20in 0.20in 0.20in repeat(11, 1fr);
   border-top: 0.65px solid color-mix(in srgb, var(--component-accent-ink, var(--reference-accent)) 46%, transparent);
   border-bottom: 0.65px solid color-mix(in srgb, var(--component-accent-ink, var(--reference-accent)) 32%, transparent);
 }
