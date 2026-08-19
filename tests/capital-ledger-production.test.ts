@@ -52,7 +52,7 @@ describe('Financiers Capital Ledger production component', () => {
     expect(supplemental).toContain("doubleSided: ledger || component.backPolicy === 'twoSided'");
     expect(supplemental).toContain("backPolicy: ledger ? 'twoSided' : component.backPolicy");
     expect(supplemental).toContain('if (component.ledger) return capitalLedgerMarkup(currentDisplayVersion);');
-    expect(supplemental).toContain("component.ledger ? 'Designed · identical duplex ledger'");
-    expect(supplemental).toContain("component.ledger ? 'Identical ledger face' : 'Loading current face'");
+    expect(supplemental).toContain("'Designed · identical duplex ledger'");
+    expect(supplemental).toContain("const faceDescription = component.ledger ? 'Identical ledger face' : 'Loading current face';");
   });
 });
