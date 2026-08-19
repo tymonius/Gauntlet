@@ -29,7 +29,7 @@ Use:
 
 The Worker uses the GitHub App's web application OAuth flow and acts only on behalf of the explicitly authorized `tymonius` account. GitHub Apps are intentionally used here so repository access can be limited to this repo and these permissions.
 
-The current-game integration does **not** require changing these App permissions, OAuth callback settings, or repository installation. The Worker still performs the same contents write and pull-request operations against the same repository; only downstream consumption of the saved composition changed.
+The current-game integration does **not** require changing these App permissions, OAuth callback settings, repository installation, Worker secrets, or save endpoint. The Worker still performs the same contents write and pull-request operations against the same repository and canonical file; only downstream consumption of the saved composition changed.
 
 ## Required GitHub Actions secrets
 
