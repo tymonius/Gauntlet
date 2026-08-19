@@ -1,6 +1,6 @@
 # Current Gauntlet game data
 
-`game-data/current-game.json` is the root authority for the active Gauntlet development build.
+`game-data/current-game.json` is the root authority for the active Gauntlet development build, with `game-data/current-game.mjs` responsible for resolving the full current-game object consumed by runtime surfaces.
 
 Current-development tools and render surfaces must **not** choose versioned source files independently. They consume the resolved current-game service in `game-data/current-game.mjs` (browser/runtime) or the corresponding Node authority helpers under `scripts/`.
 
@@ -33,9 +33,9 @@ This makes an update to an existing card propagate exactly like a new card: once
 
 The Card Design compositor remains the authoring surface for manual artwork composition. Its canonical save file is `tts/artwork-direction-overrides.js`, keyed by the same stable card/Territory IDs used by current-game data.
 
-`game-data/current-game.mjs` now resolves that file into `currentGame.artDirection` and `currentGame.artDirectionFor(id)`. Current production card and Territory renderers consume those resolved values rather than independently loading an artwork-position source. Because Deckbuilder preview/printing and Card Reference reuse those renderers, an approved compositor save propagates to all of them.
+`game-data/current-game.mjs` resolves that canonical input into `currentGame.artDirection` and `currentGame.artDirectionFor(id)`. Current production card and Territory renderers consume those resolved values rather than independently loading an artwork-position source. Because Deckbuilder preview/printing and Card Reference reuse those renderers, an approved compositor save propagates to all of them.
 
-The existing artwork-authoring GitHub App does not need additional repository permissions for this arrangement: it continues to update the same file on the same authoring branch and open/reuse the same pull request. The authority change is downstream consumption, not a new privileged operation.
+The existing artwork-authoring GitHub App does not need additional repository permissions, OAuth changes, new secrets, or a different save path for this arrangement: it continues to update the same canonical file on the same authoring branch and open/reuse the same pull request. The authority change is downstream consumption, not a new privileged operation.
 
 ## What may remain version-pinned
 
