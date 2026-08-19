@@ -27,7 +27,7 @@ Use:
   - Pull requests: Read and write
   - Metadata: Read-only (implicit)
 
-The Worker uses the GitHub App's web application OAuth flow and acts only on behalf of the explicitly authorized `tymonius` account.
+The Worker uses the GitHub App's web application OAuth flow and acts only on behalf of the explicitly authorized `tymonius` account. GitHub Apps are intentionally used here so repository access can be limited to this repo and these permissions.
 
 ## Required GitHub Actions secrets
 
