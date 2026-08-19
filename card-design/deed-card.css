@@ -71,20 +71,43 @@
   pointer-events: none;
 }
 
-/* Fill the entire interior with the generated-content layer, then center the
-   wordmark inside that full face. This avoids inherited card grid rows, which
-   previously placed Deed in the first row near the top edge. */
+/* The general component-card tint also uses .card-interior::after. The Deed
+   carries its tint in the parchment layer above, so suppress that inherited
+   pseudo-element and keep the title as real markup. */
 #supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .card-interior::after,
 .supplemental-placeholder-card[aria-label^="Deed "] .card-interior::after {
+  display: none;
+  content: none;
+}
+
+/* Treat the wordmark and ornament row as one title block and center that
+   complete block on the physical card. This keeps the ornament from making an
+   otherwise-centered wordmark feel visually bottom-heavy. */
+#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .card-heading,
+.supplemental-placeholder-card[aria-label^="Deed "] .card-heading {
   position: absolute;
-  z-index: 2;
-  inset: 0;
+  z-index: 3;
+  top: 50%;
+  left: 50%;
   display: grid;
-  place-items: center;
+  justify-items: center;
+  row-gap: 0.055in;
+  width: max-content;
   margin: 0;
+  padding: 0;
+  border: 0;
   background: transparent;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .card-title,
+.supplemental-placeholder-card[aria-label^="Deed "] .card-title {
+  display: block;
+  width: auto;
+  margin: 0;
+  padding: 0;
   color: var(--card-ink);
-  content: "Deed";
   font-family:
     "P22 Declaration W01 Blackletter",
     "P22 Declaration Blackletter",
@@ -93,42 +116,37 @@
   font-style: normal;
   font-weight: 400;
   letter-spacing: 0.015em;
-  line-height: 1;
+  line-height: 0.92;
   text-align: center;
   text-transform: none;
-  mix-blend-mode: normal;
-  transform: none;
   white-space: nowrap;
-  pointer-events: none;
 }
 
-/* Reuse the otherwise-hidden card heading as a three-glyph ornament row. The
-   side glyphs are Poetica ornm 11, with only the left glyph mirrored; the
-   smaller center glyph is ornm 44. This keeps the ornament fully typographic
-   and gives each glyph its own transform / OpenType alternate selection. */
-#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .card-heading,
-.supplemental-placeholder-card[aria-label^="Deed "] .card-heading {
-  position: absolute;
-  z-index: 3;
-  top: calc(50% + 0.48in);
-  left: 50%;
+/* The existing type-line markup becomes the ornament row. The left and right
+   wings are Poetica ornm 11; only the left wing is mirrored. The center mark is
+   Poetica ornm 44 at a smaller size. */
+#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .supplemental-type-line,
+.supplemental-placeholder-card[aria-label^="Deed "] .supplemental-type-line {
   display: grid;
   grid-template-columns: auto auto auto;
   align-items: center;
+  justify-content: center;
   column-gap: 0.055in;
-  width: auto;
+  width: max-content;
+  min-height: 0;
   margin: 0;
   padding: 0;
-  transform: translateX(-50%);
-  pointer-events: none;
+  border: 0;
+  background: transparent;
+  color: var(--card-ink);
+  line-height: 1;
 }
 
-#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .card-heading::before,
-#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .card-heading::after,
-.supplemental-placeholder-card[aria-label^="Deed "] .card-heading::before,
-.supplemental-placeholder-card[aria-label^="Deed "] .card-heading::after {
+#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .supplemental-type-line::before,
+#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .supplemental-type-line::after,
+.supplemental-placeholder-card[aria-label^="Deed "] .supplemental-type-line::before,
+.supplemental-placeholder-card[aria-label^="Deed "] .supplemental-type-line::after {
   display: block;
-  color: var(--card-ink);
   content: "•";
   font-family: "poetica-std", "Poetica Std", serif;
   font-size: 28pt;
@@ -139,23 +157,26 @@
   white-space: nowrap;
 }
 
-#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .card-heading::before,
-.supplemental-placeholder-card[aria-label^="Deed "] .card-heading::before {
+#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .supplemental-type-line::before,
+.supplemental-placeholder-card[aria-label^="Deed "] .supplemental-type-line::before {
   transform: scaleX(-1);
   transform-origin: center;
 }
 
-#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .card-title,
-.supplemental-placeholder-card[aria-label^="Deed "] .card-title {
-  width: auto;
-  margin: 0;
-  color: var(--card-ink);
+#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .supplemental-faction-emblem,
+.supplemental-placeholder-card[aria-label^="Deed "] .supplemental-faction-emblem {
+  display: none;
+}
+
+#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .supplemental-type-line > span:last-child,
+.supplemental-placeholder-card[aria-label^="Deed "] .supplemental-type-line > span:last-child {
+  display: block;
   font-size: 0;
   line-height: 1;
 }
 
-#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .card-title::after,
-.supplemental-placeholder-card[aria-label^="Deed "] .card-title::after {
+#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .supplemental-type-line > span:last-child::after,
+.supplemental-placeholder-card[aria-label^="Deed "] .supplemental-type-line > span:last-child::after {
   display: block;
   content: "•";
   font-family: "poetica-std", "Poetica Std", serif;
@@ -167,11 +188,6 @@
   transform: translateY(-0.01in);
   transform-origin: center;
   white-space: nowrap;
-}
-
-#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .supplemental-type-line,
-.supplemental-placeholder-card[aria-label^="Deed "] .supplemental-type-line {
-  display: none;
 }
 
 /* The generic fit-warning diagnostic is a portrait-card fitting aid and does
@@ -197,8 +213,7 @@
   }
 
   .supplemental-placeholder-card[aria-label^="Deed "] .card-heading,
-  .supplemental-placeholder-card[aria-label^="Deed "] .card-interior::before,
-  .supplemental-placeholder-card[aria-label^="Deed "] .card-interior::after {
+  .supplemental-placeholder-card[aria-label^="Deed "] .card-interior::before {
     print-color-adjust: exact;
   }
 }
