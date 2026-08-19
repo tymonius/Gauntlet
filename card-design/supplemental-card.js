@@ -1,3 +1,4 @@
+import './deed-card.js';
 import {
   fitReferenceCard,
   loadReferenceRecords,
