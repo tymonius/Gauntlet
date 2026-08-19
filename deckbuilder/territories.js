@@ -1,6 +1,9 @@
 (() => {
   const REQUIRED_TERRITORIES = 3;
   const MAX_ARENAS = 1;
+  const TERRITORY_WIDTH = 336;
+  const TERRITORY_HEIGHT = 240;
+  const MAX_TERRITORY_PREVIEW_WIDTH = 360;
 
   state.territoryPool = [];
   state.territories = [];
@@ -10,6 +13,7 @@
   state.pendingTerritories = null;
 
   const territoryElements = {};
+  let territoryPreviewResizeObserver = null;
   const baseRenderAll = renderAll;
   const baseValidateDeck = validateDeck;
   const baseValidateAndRender = validateAndRender;
@@ -167,9 +171,12 @@
     const preview = territoryElements.territoryPreview;
     if (!preview) return;
 
+    territoryPreviewResizeObserver?.disconnect();
+    territoryPreviewResizeObserver = null;
+
     if (!territory) {
       preview.className = "territory-preview empty-state";
-      preview.textContent = "Select a Territory to view its current text.";
+      preview.textContent = "Select a Territory to view its complete rendered card.";
       return;
     }
 
@@ -179,23 +186,48 @@
       state.territories.length >= REQUIRED_TERRITORIES ||
       (territory.arena && arenaSelected)
     );
+    const rendererUrl = `../card-design/territory-review-render.html?territory=${encodeURIComponent(territory.id)}`;
 
-    preview.className = "territory-preview";
+    preview.className = "territory-preview rendered-territory-preview";
     preview.innerHTML = `
-      <h3>${escapeHtml(territory.name)}</h3>
-      <div class="card-preview-meta">
-        <span class="mini-pill">${territory.arena ? "Arena" : "Territory"}</span>
-        <span class="mini-pill">${escapeHtml(territory.complexity)}</span>
-        ${territory.status !== "Approved" ? `<span class="mini-pill">${escapeHtml(territory.status)}</span>` : ""}
+      <div class="deckbuilder-territory-render-stage" data-territory-render-stage>
+        <iframe
+          class="deckbuilder-territory-render-frame"
+          src="${escapeHtml(rendererUrl)}"
+          title="${escapeHtml(territory.name)} complete rendered Territory card"
+          loading="eager"
+          scrolling="no"
+        ></iframe>
       </div>
-      <section class="card-text-section">
-        <div class="card-text-label">Effect</div>
-        <p>${escapeHtml(territory.text)}</p>
-      </section>
-      ${territory.watchlist !== "None" ? `<section class="territory-watchlist"><strong>Playtest watchlist:</strong> ${escapeHtml(territory.watchlist)}</section>` : ""}
-      <div class="button-row"><button id="previewTerritoryButton" type="button" class="${selected ? "secondary danger" : ""}" ${unavailable ? "disabled" : ""}>${selected ? "Remove Territory" : "Choose Territory"}</button></div>
+      ${territory.watchlist !== "None" ? `<section class="territory-watchlist rendered-territory-watchlist"><strong>Playtest watchlist:</strong> ${escapeHtml(territory.watchlist)}</section>` : ""}
+      <div class="button-row rendered-territory-preview-actions"><button id="previewTerritoryButton" type="button" class="${selected ? "secondary danger" : ""}" ${unavailable ? "disabled" : ""}>${selected ? "Remove Territory" : "Choose Territory"}</button></div>
     `;
     document.getElementById("previewTerritoryButton")?.addEventListener("click", () => toggleTerritory(territory.id));
+    installTerritoryPreviewScaling();
+  }
+
+  function installTerritoryPreviewScaling() {
+    const stage = territoryElements.territoryPreview?.querySelector("[data-territory-render-stage]");
+    if (!stage) return;
+
+    const resize = () => scaleTerritoryPreview(stage);
+    if ("ResizeObserver" in window) {
+      territoryPreviewResizeObserver = new ResizeObserver(resize);
+      territoryPreviewResizeObserver.observe(stage);
+    }
+    requestAnimationFrame(resize);
+  }
+
+  function scaleTerritoryPreview(stage) {
+    const frame = stage.querySelector(".deckbuilder-territory-render-frame");
+    if (!frame) return;
+
+    const availableWidth = Math.max(0, stage.clientWidth);
+    const targetWidth = Math.min(MAX_TERRITORY_PREVIEW_WIDTH, availableWidth || TERRITORY_WIDTH);
+    const scale = targetWidth / TERRITORY_WIDTH;
+
+    stage.style.height = `${TERRITORY_HEIGHT * scale}px`;
+    frame.style.transform = `translateX(-50%) scale(${scale})`;
   }
 
   function toggleTerritory(id) {
