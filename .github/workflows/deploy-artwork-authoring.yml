@@ -42,7 +42,7 @@ jobs:
           node --check workers/artwork-authoring/src/format.js
           node --check card-design/artwork-authoring-client.js
           node --check card-design/artwork-compositor-targets.js
-          node --test workers/artwork-authoring/src/index.test.mjs
+          node --test workers/artwork-authoring/src/index.node-test.mjs
 
   deploy:
     if: ${{ github.event_name != 'pull_request' }}
