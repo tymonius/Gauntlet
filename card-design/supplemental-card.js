@@ -3,6 +3,7 @@ import {
   loadReferenceRecords,
   referenceCardMarkup,
 } from './reference-card.js';
+import { capitalLedgerMarkup } from './capital-ledger.js';
 import { loadCurrentGame } from '../game-data/current-game.mjs';
 
 const FACTION_LABELS = Object.freeze({
@@ -57,6 +58,7 @@ function componentDetail(component) {
     return `Physical tracker for ${tracked}. Production status: ${component.productionStatus}.`;
   }
   if (component.family === 'reference-card') return 'Source-driven current reference card.';
+  if (component.family === 'ledger') return 'Consumable duplex Capital record with identical ledger faces.';
   return `Production status: ${component.productionStatus}.`;
 }
 
@@ -65,6 +67,7 @@ function presentationComponent(component) {
     contractId: component.id,
     id: rendererId(component),
     referenceId: component.family === 'reference-card' ? component.id : '',
+    ledger: component.family === 'ledger',
     name: component.name,
     type: componentType(component),
     detail: componentDetail(component),
@@ -179,6 +182,7 @@ function referenceLoadingFace(component, faction, factionLabel, sideName) {
 
 function componentFace(component, faction, factionLabel, faceLabel = '') {
   if (component.referenceId) return referenceLoadingFace(component, faction, factionLabel, /^reverse$/i.test(faceLabel) ? 'reverse' : 'front');
+  if (component.ledger) return capitalLedgerMarkup(currentDisplayVersion);
   if (component.tracker && !faceLabel) return trackerFace(component, faction, factionLabel);
   return placeholderFace(component, faction, factionLabel, faceLabel);
 }
@@ -186,14 +190,21 @@ function componentFace(component, faction, factionLabel, faceLabel = '') {
 function componentSpecimen(component, faction, factionLabel) {
   const quantity = Number(component.quantity) || 1;
   const quantityText = quantity > 1 ? `×${quantity} physical copies` : component.doubleSided ? '2 faces · 1 physical card' : '1 physical card';
-  const statusText = component.tracker ? `Designed · physical 0–${component.tracker.max}` : component.referenceId ? 'Designed · source-driven' : quantityText;
+  const statusText = component.tracker
+    ? `Designed · physical 0–${component.tracker.max}`
+    : component.referenceId
+      ? 'Designed · source-driven'
+      : component.ledger
+        ? 'Designed · identical duplex ledger'
+        : quantityText;
 
   if (component.doubleSided) {
+    const faceDescription = component.ledger ? 'Identical ledger face' : 'Loading current face';
     return `<section class="supplemental-review-item supplemental-review-pair" id="supplemental-${esc(faction)}-${esc(component.id)}" data-contract-component-id="${esc(component.contractId)}">
       <div class="supplemental-item-heading screen-only"><strong>${esc(component.name)}</strong><span>${esc(statusText)}</span></div>
       <div class="supplemental-face-grid">
-        <div class="supplemental-face" data-reference-face="front"><p class="supplemental-face-label screen-only"><strong>Front</strong><span>Loading current face</span></p>${componentFace(component, faction, factionLabel, 'Front')}</div>
-        <div class="supplemental-face" data-reference-face="reverse"><p class="supplemental-face-label screen-only"><strong>Reverse</strong><span>Loading current face</span></p>${componentFace(component, faction, factionLabel, 'Reverse')}</div>
+        <div class="supplemental-face" data-reference-face="front"><p class="supplemental-face-label screen-only"><strong>Front</strong><span>${esc(faceDescription)}</span></p>${componentFace(component, faction, factionLabel, 'Front')}</div>
+        <div class="supplemental-face" data-reference-face="reverse"><p class="supplemental-face-label screen-only"><strong>Reverse</strong><span>${esc(faceDescription)}</span></p>${componentFace(component, faction, factionLabel, 'Reverse')}</div>
       </div>
     </section>`;
   }
@@ -264,7 +275,7 @@ async function hydrateReferenceCards() {
   await new Promise(resolve => requestAnimationFrame(resolve));
   if (document.fonts?.ready) await document.fonts.ready;
   const failures = [];
-  for (const card of root.querySelectorAll('.reference-card:not(.reference-card-loading)')) {
+  for (const card of root.querySelectorAll('.reference-card[data-reference-side]:not(.reference-card-loading)')) {
     const result = fitReferenceCard(card);
     if (result.overflow) failures.push(card);
   }
