@@ -5,6 +5,7 @@ const reviewPage = readFileSync("card-design/index.html", "utf8");
 const supplementalRenderer = readFileSync("card-design/supplemental-card.js", "utf8");
 const supplementalStyles = readFileSync("card-design/supplemental-card.css", "utf8");
 const deedStyles = readFileSync("card-design/deed-card.css", "utf8");
+const refinementStyles = readFileSync("card-design/card-design-refinement.css", "utf8");
 const factionStyles = readFileSync("card-design/faction-specimens.css", "utf8");
 const territoryStyles = readFileSync("card-design/territory-card.css", "utf8");
 const proposalStyles = readFileSync("card-design/proposal-card.css", "utf8");
@@ -66,6 +67,18 @@ describe("Financier Deed card", () => {
     expect(deedStyles).toContain("display: none");
     expect(deedStyles).not.toContain("deed-watermark");
     expect(deedStyles).not.toContain("deed-footer");
+  });
+
+  it("adds a restrained ink flourish beneath the wordmark and replaces the irrelevant fit-warning dot", () => {
+    expect(refinementStyles).toContain(".gauntlet-card.fit-warning::after");
+    expect(deedStyles).toContain('.supplemental-placeholder-card[aria-label^="Deed "]::after');
+    expect(deedStyles).toContain("top: calc(50% + 0.48in)");
+    expect(deedStyles).toContain("width: 1.45in");
+    expect(deedStyles).toContain("height: 0.16in");
+    expect(deedStyles).toContain("color: var(--card-ink)");
+    expect(deedStyles).toContain("linear-gradient(135deg");
+    expect(deedStyles).toContain("radial-gradient(ellipse at 100% 100%");
+    expect(deedStyles).toContain("box-shadow: none");
   });
 
   it("styles the card itself so the inspection clone does not depend on the catalog wrapper", () => {
