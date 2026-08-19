@@ -3,10 +3,13 @@
 
 .capital-ledger-card {
   --reference-rules-scale: 1;
+  /* Exact Y position of the former “Public Capital Record” top rule in the
+     original 0.59in three-row header. The ledger now begins on that same line. */
+  --capital-ledger-former-subheader-rule-y: 0.3851840278in;
 }
 
 .capital-ledger-card .reference-card-interior {
-  grid-template-rows: 0.47in minmax(0, 1fr) 0.18in;
+  grid-template-rows: var(--capital-ledger-former-subheader-rule-y) minmax(0, 1fr) 0.18in;
   background-color: var(--card-parchment, #e6d4ae);
   background-image:
     linear-gradient(var(--component-parchment-tint), var(--component-parchment-tint)),
@@ -74,7 +77,7 @@
 
 .capital-ledger-body {
   display: block;
-  padding: 0.028in 0.068in 0.018in;
+  padding: 0 0.068in 0.018in;
   overflow: hidden;
 }
 

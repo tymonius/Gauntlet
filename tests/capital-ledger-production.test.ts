@@ -25,6 +25,12 @@ describe('Financiers Capital Ledger production component', () => {
     expect(renderer.indexOf('capital-ledger-row--opening')).toBeLessThan(renderer.indexOf('capital-ledger-row--example'));
   });
 
+  it('starts the ledger exactly on the former subheader rule while preserving side padding', () => {
+    expect(css).toContain('--capital-ledger-former-subheader-rule-y: 0.3851840278in;');
+    expect(css).toContain('grid-template-rows: var(--capital-ledger-former-subheader-rule-y) minmax(0, 1fr) 0.18in;');
+    expect(css).toContain('padding: 0 0.068in 0.018in;');
+  });
+
   it('uses the project Declaration Pro flavor face for the faint example entry', () => {
     expect(css).toContain('.capital-ledger-row--example');
     expect(css).toContain('font-family: var(--font-flavor, "p22-declaration-pro", Georgia, serif)');
