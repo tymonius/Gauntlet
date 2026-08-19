@@ -2,10 +2,8 @@
   const CSS_PIXELS_PER_INCH = 96;
   const CSS_PIXELS_PER_POINT = CSS_PIXELS_PER_INCH / 72;
   const TITLE_STEP = 0.05 * CSS_PIXELS_PER_POINT;
-  const ART_HEIGHT_STEP = 2;
   const EFFECT_STEP = 0.01;
   const MINIMUM_TITLE_SIZE = 8 * CSS_PIXELS_PER_POINT;
-  const PREFERRED_MINIMUM_ART_HEIGHT = 0.78 * CSS_PIXELS_PER_INCH;
   const MINIMUM_ART_HEIGHT = 0.55 * CSS_PIXELS_PER_INCH;
   const MINIMUM_EFFECT_SCALE = 0.68;
   const PARCHMENT_SOURCE = '/images/artwork/card-backgrounds/neutral-parchment-v2.png';
@@ -122,10 +120,10 @@
     const body = card.querySelector('.territory-body');
     const art = card.querySelector('.territory-art');
     const effect = card.querySelector('.territory-effect');
+    const footer = card.querySelector('.territory-footer');
+    const interior = card.querySelector('.territory-interior');
     let titleSize = Number.parseFloat(getComputedStyle(title).fontSize);
-    let artHeight = art?.getBoundingClientRect().height || 0;
     let effectScale = 1;
-    let artClamped = false;
 
     while (textOverflows(title) && titleSize > MINIMUM_TITLE_SIZE) {
       titleSize = Math.max(MINIMUM_TITLE_SIZE, titleSize - TITLE_STEP);
@@ -133,48 +131,27 @@
       forceLayout(card);
     }
 
-    /* Short-copy Territories keep a fully fluid artwork frame with no maximum.
-       Dense copy clamps the current frame and spends artwork height before type. */
-    if (cardOverflows(card)) {
-      artClamped = true;
-      artHeight = art?.getBoundingClientRect().height || artHeight;
-      art.style.flex = `0 0 ${artHeight}px`;
-      forceLayout(card);
-    }
-
-    while (cardOverflows(card) && artHeight > PREFERRED_MINIMUM_ART_HEIGHT) {
-      artHeight = Math.max(PREFERRED_MINIMUM_ART_HEIGHT, artHeight - ART_HEIGHT_STEP);
-      art.style.flex = `0 0 ${artHeight}px`;
-      forceLayout(card);
-    }
-
-    if (cardOverflows(card)) {
+    /* The flex column does the art fitting itself: effect copy keeps its natural
+       height and artwork receives every remaining pixel, down to the 0.78in CSS
+       floor. Only after that floor is exhausted do we compact or scale type. */
+    if (bodyOverflows(body, art, effect)) {
       card.classList.add('compact');
       forceLayout(card);
     }
 
-    while (cardOverflows(card) && effectScale > 0.78) {
+    while (bodyOverflows(body, art, effect) && effectScale > 0.78) {
       effectScale = Math.max(0.78, effectScale - EFFECT_STEP);
       card.style.setProperty('--effect-scale', effectScale.toFixed(2));
       forceLayout(card);
     }
 
-    /* Emergency compatibility fallback for older/denser copy. Lower the CSS
-       minimum as well as the fixed flex basis so this path can actually shrink. */
-    if (cardOverflows(card) && artHeight > MINIMUM_ART_HEIGHT) {
+    /* Emergency compatibility fallback for copy denser than the v0.6.4 set. */
+    if (bodyOverflows(body, art, effect)) {
       art.style.minHeight = `${MINIMUM_ART_HEIGHT}px`;
-    }
-    while (cardOverflows(card) && artHeight > MINIMUM_ART_HEIGHT) {
-      if (!artClamped) {
-        artClamped = true;
-        artHeight = art?.getBoundingClientRect().height || artHeight;
-      }
-      artHeight = Math.max(MINIMUM_ART_HEIGHT, artHeight - ART_HEIGHT_STEP);
-      art.style.flex = `0 0 ${artHeight}px`;
       forceLayout(card);
     }
 
-    while (cardOverflows(card) && effectScale > MINIMUM_EFFECT_SCALE) {
+    while (bodyOverflows(body, art, effect) && effectScale > MINIMUM_EFFECT_SCALE) {
       effectScale = Math.max(MINIMUM_EFFECT_SCALE, effectScale - EFFECT_STEP);
       card.style.setProperty('--effect-scale', effectScale.toFixed(2));
       forceLayout(card);
@@ -182,11 +159,20 @@
 
     const bodyRect = body?.getBoundingClientRect();
     const artRect = art?.getBoundingClientRect();
+    const footerRect = footer?.getBoundingClientRect();
+    const interiorRect = interior?.getBoundingClientRect();
     const artSpansBody = Boolean(
       bodyRect
       && artRect
       && Math.abs(artRect.left - bodyRect.left) <= 0.75
       && Math.abs(artRect.right - bodyRect.right) <= 0.75
+    );
+    const footerFits = Boolean(
+      footer
+      && footerRect
+      && interiorRect
+      && footerRect.bottom <= interiorRect.bottom + 0.5
+      && !footerOverflows(footer)
     );
 
     card.dataset.titleFit = textOverflows(title) ? 'false' : 'true';
@@ -195,8 +181,9 @@
     card.dataset.artWidth = artRect ? artRect.width.toFixed(2) : '0';
     card.dataset.artSpansBody = String(artSpansBody);
 
-    const fits = !cardOverflows(card)
+    const fits = !bodyOverflows(body, art, effect)
       && !textOverflows(title)
+      && footerFits
       && Boolean(effect.textContent.trim())
       && Boolean(artRect && artRect.height >= MINIMUM_ART_HEIGHT - 0.5 && artRect.width > 0)
       && artSpansBody;
@@ -215,36 +202,17 @@
     ));
   }
 
-  /* Measure the actual flex-flow demand rather than descendant positions. The
-     latter can report false overflow after the artwork becomes a flexible item,
-     especially across Chromium/WebKit rounding differences. */
-  function cardOverflows(card) {
-    const interior = card.querySelector('.territory-interior');
-    const body = card.querySelector('.territory-body');
-    const art = card.querySelector('.territory-art');
-    const effect = card.querySelector('.territory-effect');
-    const footer = card.querySelector('.territory-footer');
-    if (!interior || !body || !art || !effect || !footer) return true;
-
-    const interiorRect = interior.getBoundingClientRect();
+  function bodyOverflows(body, art, effect) {
+    if (!body || !art || !effect) return true;
     const bodyRect = body.getBoundingClientRect();
     const artRect = art.getBoundingClientRect();
     const effectRect = effect.getBoundingClientRect();
-    const footerRect = footer.getBoundingClientRect();
     const bodyStyle = getComputedStyle(body);
     const gap = Number.parseFloat(bodyStyle.rowGap || bodyStyle.gap || '0') || 0;
-
     const effectContentOverflows = effect.scrollHeight > effect.clientHeight + 0.5
       || effect.scrollWidth > effect.clientWidth + 0.5;
-    const bodyFlowOverflows = artRect.height + gap + effectRect.height > bodyRect.height + 0.5;
-    const bodyWidthOverflows = artRect.width > bodyRect.width + 0.5
-      || effectRect.width > bodyRect.width + 0.5;
-
-    return effectContentOverflows
-      || bodyFlowOverflows
-      || bodyWidthOverflows
-      || footerRect.bottom > interiorRect.bottom + 0.5
-      || footerOverflows(footer);
+    const flowOverflows = artRect.height + gap + effectRect.height > bodyRect.height + 0.5;
+    return effectContentOverflows || flowOverflows;
   }
 
   function territoryArtworkCandidates(item, name) {
