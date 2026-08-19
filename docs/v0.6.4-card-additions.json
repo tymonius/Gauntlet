@@ -1,7 +1,7 @@
 {
   "version": "v0.6.4-candidate",
   "base_version": "v0.6.3",
-  "status": "fourteen-card expansion prototypes under design, wording, and balance review",
+  "status": "fifteen card candidates plus one v0.6.3 retirement under design, wording, and balance review",
   "source_issues": [576, 762],
   "mechanics_changed": true,
   "ready_for_game_data": false,
@@ -10,7 +10,18 @@
     "each_faction": 15,
     "total_playable_cards": 142
   },
-  "card_count": 14,
+  "card_count": 15,
+  "retirement_count": 1,
+  "retired_cards": [
+    {
+      "id": "inquisition-no-martyrs",
+      "name": "No Martyrs",
+      "allegiance": "Inquisition",
+      "last_active_version": "v0.6.3",
+      "replacement": "inquisition-malleus-maleficarum",
+      "archive": "docs/Archive/v0.6.4-development/retired-cards/no-martyrs-v0.6.3.json"
+    }
+  ],
   "language_basis": [
     "docs/Gauntlet_v0.6.3_Card_Language_Normalization.md",
     "docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md",
@@ -347,6 +358,33 @@
       "language_review": [
         "Retains its printed Action because moving an opposing card and then banking is a special banking procedure.",
         "Uses direct zone language for the Action and a replacement clause for the any-zone recovery prevention."
+      ]
+    },
+    {
+      "id": "inquisition-malleus-maleficarum",
+      "name": "Malleus Maleficarum",
+      "allegiance": "Inquisition",
+      "cost": 3,
+      "cost_status": "provisional; test 3 versus 4",
+      "trait": null,
+      "card_form": "Asset",
+      "unique": false,
+      "unique_rule": null,
+      "design_status": "title and core mechanic locked; exact targeting, duration, and cost provisional",
+      "effects": [
+        {
+          "label": "Action",
+          "text": "Choose one non-Arcane card title represented in the opponent's Discard Pile or Graveyard, then bank this card. You may have only one banked Malleus Maleficarum."
+        },
+        {
+          "label": "Asset",
+          "text": "Cards the opponent owns with the chosen title have the Arcane trait."
+        }
+      ],
+      "language_review": [
+        "Uses a title-level designation so the classification persists across zones without tracking one physical copy.",
+        "Requires a public Discard Pile or Graveyard example before the Inquisition can classify a title as Arcane.",
+        "Retains a printed banking Action because choosing the title and enforcing the maximum-one-banked restriction are special banking procedures."
       ]
     }
   ]

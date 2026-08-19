@@ -2,10 +2,8 @@
   const CSS_PIXELS_PER_INCH = 96;
   const CSS_PIXELS_PER_POINT = CSS_PIXELS_PER_INCH / 72;
   const TITLE_STEP = 0.05 * CSS_PIXELS_PER_POINT;
-  const ART_HEIGHT_STEP = 2;
   const EFFECT_STEP = 0.01;
   const MINIMUM_TITLE_SIZE = 8 * CSS_PIXELS_PER_POINT;
-  const PREFERRED_MINIMUM_ART_HEIGHT = 0.78 * CSS_PIXELS_PER_INCH;
   const MINIMUM_ART_HEIGHT = 0.55 * CSS_PIXELS_PER_INCH;
   const MINIMUM_EFFECT_SCALE = 0.68;
   const PARCHMENT_SOURCE = '/images/artwork/card-backgrounds/neutral-parchment-v2.png';
@@ -122,8 +120,9 @@
     const body = card.querySelector('.territory-body');
     const art = card.querySelector('.territory-art');
     const effect = card.querySelector('.territory-effect');
+    const footer = card.querySelector('.territory-footer');
+    const interior = card.querySelector('.territory-interior');
     let titleSize = Number.parseFloat(getComputedStyle(title).fontSize);
-    let artHeight = art?.getBoundingClientRect().height || 0;
     let effectScale = 1;
 
     while (textOverflows(title) && titleSize > MINIMUM_TITLE_SIZE) {
@@ -132,37 +131,27 @@
       forceLayout(card);
     }
 
-    /* Keep artwork visually meaningful before spending the remaining fit budget
-       on typography. Dense Territories may compact their surrounding spacing and
-       reduce effect type modestly, but should not collapse immediately to the
-       legacy 0.55in postage-stamp frame. */
-    while (cardOverflows(card) && artHeight > PREFERRED_MINIMUM_ART_HEIGHT) {
-      artHeight = Math.max(PREFERRED_MINIMUM_ART_HEIGHT, artHeight - ART_HEIGHT_STEP);
-      card.style.setProperty('--art-height', `${artHeight}px`);
-      forceLayout(card);
-    }
-
-    if (cardOverflows(card)) {
+    /* The flex column does the art fitting itself: effect copy keeps its natural
+       height and artwork receives every remaining pixel, down to the 0.78in CSS
+       floor. Only after that floor is exhausted do we compact or scale type. */
+    if (bodyOverflows(body, art, effect)) {
       card.classList.add('compact');
       forceLayout(card);
     }
 
-    while (cardOverflows(card) && effectScale > 0.78) {
+    while (bodyOverflows(body, art, effect) && effectScale > 0.78) {
       effectScale = Math.max(0.78, effectScale - EFFECT_STEP);
       card.style.setProperty('--effect-scale', effectScale.toFixed(2));
       forceLayout(card);
     }
 
-    /* Emergency compatibility fallback for older/denser Territory copy. Current
-       v0.6.4 candidates are regression-tested to stay at or above the preferred
-       artwork floor, so this path should not be part of their normal layout. */
-    while (cardOverflows(card) && artHeight > MINIMUM_ART_HEIGHT) {
-      artHeight = Math.max(MINIMUM_ART_HEIGHT, artHeight - ART_HEIGHT_STEP);
-      card.style.setProperty('--art-height', `${artHeight}px`);
+    /* Emergency compatibility fallback for copy denser than the v0.6.4 set. */
+    if (bodyOverflows(body, art, effect)) {
+      art.style.minHeight = `${MINIMUM_ART_HEIGHT}px`;
       forceLayout(card);
     }
 
-    while (cardOverflows(card) && effectScale > MINIMUM_EFFECT_SCALE) {
+    while (bodyOverflows(body, art, effect) && effectScale > MINIMUM_EFFECT_SCALE) {
       effectScale = Math.max(MINIMUM_EFFECT_SCALE, effectScale - EFFECT_STEP);
       card.style.setProperty('--effect-scale', effectScale.toFixed(2));
       forceLayout(card);
@@ -170,11 +159,20 @@
 
     const bodyRect = body?.getBoundingClientRect();
     const artRect = art?.getBoundingClientRect();
+    const footerRect = footer?.getBoundingClientRect();
+    const interiorRect = interior?.getBoundingClientRect();
     const artSpansBody = Boolean(
       bodyRect
       && artRect
       && Math.abs(artRect.left - bodyRect.left) <= 0.75
       && Math.abs(artRect.right - bodyRect.right) <= 0.75
+    );
+    const footerFits = Boolean(
+      footer
+      && footerRect
+      && interiorRect
+      && footerRect.bottom <= interiorRect.bottom + 0.5
+      && !footerOverflows(footer)
     );
 
     card.dataset.titleFit = textOverflows(title) ? 'false' : 'true';
@@ -183,8 +181,9 @@
     card.dataset.artWidth = artRect ? artRect.width.toFixed(2) : '0';
     card.dataset.artSpansBody = String(artSpansBody);
 
-    const fits = !cardOverflows(card)
+    const fits = !bodyOverflows(body, art, effect)
       && !textOverflows(title)
+      && footerFits
       && Boolean(effect.textContent.trim())
       && Boolean(artRect && artRect.height >= MINIMUM_ART_HEIGHT - 0.5 && artRect.width > 0)
       && artSpansBody;
@@ -203,40 +202,18 @@
     ));
   }
 
-  /* Only flow content should influence fitting. The Territory parchment is a
-     large, rotated ::before layer inside .territory-interior. WebKit includes
-     transformed decorative descendants in scrollHeight on some mobile layouts,
-     even when overflow is clipped. Using interior/body scrollHeight therefore
-     reports permanent overflow and drives artwork to the 0.55in minimum.
-     Compare the real flow boxes instead so decorative layers cannot affect fit. */
-  function cardOverflows(card) {
-    const interior = card.querySelector('.territory-interior');
-    const body = card.querySelector('.territory-body');
-    const art = card.querySelector('.territory-art');
-    const effect = card.querySelector('.territory-effect');
-    const footer = card.querySelector('.territory-footer');
-    if (!interior || !body || !art || !effect || !footer) return true;
-
-    const interiorRect = interior.getBoundingClientRect();
+  function bodyOverflows(body, art, effect) {
+    if (!body || !art || !effect) return true;
     const bodyRect = body.getBoundingClientRect();
     const artRect = art.getBoundingClientRect();
     const effectRect = effect.getBoundingClientRect();
-    const footerRect = footer.getBoundingClientRect();
+    const bodyStyle = getComputedStyle(body);
+    const gap = Number.parseFloat(bodyStyle.rowGap || bodyStyle.gap || '0') || 0;
 
-    const effectContentOverflows = effect.scrollHeight > effect.clientHeight + 0.5
-      || effect.scrollWidth > effect.clientWidth + 0.5;
-    const bodyContentPastBottom = artRect.bottom > bodyRect.bottom + 0.5
-      || effectRect.bottom > bodyRect.bottom + 0.5;
-    const bodyContentPastSides = artRect.left < bodyRect.left - 0.5
-      || artRect.right > bodyRect.right + 0.5
-      || effectRect.left < bodyRect.left - 0.5
-      || effectRect.right > bodyRect.right + 0.5;
-
-    return effectContentOverflows
-      || bodyContentPastBottom
-      || bodyContentPastSides
-      || footerRect.bottom > interiorRect.bottom + 0.5
-      || footerOverflows(footer);
+    /* The effect is a non-shrinking flex item sized from its own content. Its
+       integer scroll metrics can exceed its fractional client box by a pixel at
+       some type sizes even when nothing is clipped, so use flow geometry here. */
+    return artRect.height + gap + effectRect.height > bodyRect.height + 0.5;
   }
 
   function territoryArtworkCandidates(item, name) {

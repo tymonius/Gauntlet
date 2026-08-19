@@ -8,7 +8,8 @@ const OUTPUT = join(ROOT, 'card-design', 'generated', 'v064-card-candidates');
 const SOURCE_PATH = join(ROOT, 'docs', 'v0.6.4-card-additions.json');
 const CARD_WIDTH = 240;
 const CARD_HEIGHT = 336;
-const EXPECTED_CANDIDATE_COUNT = 14;
+const EXPECTED_CANDIDATE_COUNT = 15;
+const EXPECTED_RETIREMENT_COUNT = 1;
 const EXPECTED_CATALOG_COUNT = 142;
 
 function slugify(value) {
@@ -57,6 +58,12 @@ function validateSource(source) {
   if (!Array.isArray(source.cards) || source.cards.length !== EXPECTED_CANDIDATE_COUNT) {
     throw new Error(`Expected ${EXPECTED_CANDIDATE_COUNT} card candidates.`);
   }
+  if (!Array.isArray(source.retired_cards) || source.retired_cards.length !== EXPECTED_RETIREMENT_COUNT) {
+    throw new Error(`Expected ${EXPECTED_RETIREMENT_COUNT} retired base card.`);
+  }
+  if (source.retired_cards[0]?.id !== 'inquisition-no-martyrs') {
+    throw new Error('v0.6.4 replacement validation expects No Martyrs to be the retired base card.');
+  }
   if (source.target_pool_sizes?.total_playable_cards !== EXPECTED_CATALOG_COUNT) {
     throw new Error(`Expected catalog target ${EXPECTED_CATALOG_COUNT}.`);
   }
@@ -85,6 +92,8 @@ async function main() {
       candidates: document.querySelectorAll('[data-v064-candidate-card]').length,
       playableFrames: document.querySelectorAll('.full-card-review-frame').length,
       playableCounts: [...document.querySelectorAll('[data-playable-count]')].map(node => node.textContent?.trim()),
+      retiredNoMartyrsPresent: [...document.querySelectorAll('#playableReviewSections .full-card-review-frame')]
+        .some(frame => new URL(frame.src, window.location.href).searchParams.get('card') === 'inquisition-no-martyrs'),
       allegianceCounts: Object.fromEntries(
         ['neutral', 'military', 'diplomats', 'financiers', 'intelligence', 'mystics', 'inquisition']
           .map(allegiance => [allegiance, document.querySelectorAll(`#playable-${allegiance} .specimen-column`).length]),
@@ -96,6 +105,7 @@ async function main() {
     if (catalogState.candidates !== EXPECTED_CANDIDATE_COUNT
       || catalogState.playableFrames !== EXPECTED_CATALOG_COUNT
       || catalogState.playableCounts.some(value => value !== String(EXPECTED_CATALOG_COUNT))
+      || catalogState.retiredNoMartyrsPresent
       || !allegianceCountsCorrect) {
       throw new Error(`Candidate catalog integration is incomplete: ${JSON.stringify(catalogState)}.`);
     }
@@ -164,6 +174,7 @@ async function main() {
 
     await writeFile(join(OUTPUT, 'metrics.json'), `${JSON.stringify({
       candidateCount: EXPECTED_CANDIDATE_COUNT,
+      retirementCount: EXPECTED_RETIREMENT_COUNT,
       catalogCount: EXPECTED_CATALOG_COUNT,
       cards: metrics,
     }, null, 2)}\n`);

@@ -1,0 +1,27 @@
+{
+  "card": {
+    "id": "inquisition-no-martyrs",
+    "name": "No Martyrs",
+    "allegiance": "Inquisition",
+    "last_active_version": "v0.6.3",
+    "cost": 3,
+    "card_form": "Asset",
+    "trait": null,
+    "effects": [
+      {
+        "label": "Asset",
+        "text": "After Tactics are revealed, before dice are rolled, you may discard this card. If the opponent loses, they cannot benefit from effects they control triggered by that loss or resulting retreat; Retreat +1."
+      },
+      {
+        "label": "Gambit/Tactic",
+        "text": "If the opponent loses, they cannot benefit from effects they control triggered by that loss or resulting retreat; Retreat +1."
+      }
+    ]
+  },
+  "retirement": {
+    "effective_version": "v0.6.4",
+    "replacement": "inquisition-malleus-maleficarum",
+    "reason": "Replaced to make room for a more distinctive expression of Inquisition identity. No Martyrs remains preserved for possible future reuse of loss- and retreat-trigger suppression."
+  },
+  "source": "releases/v0.6.3/faction-guides/inquisition/Gauntlet_v0.6.3_Inquisition_Faction_Guide.md"
+}

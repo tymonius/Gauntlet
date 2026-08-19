@@ -1,6 +1,6 @@
 .territory-card {
   --effect-scale: 1;
-  --art-height: 1.42in;
+  --art-height: 0.78in;
   --parchment-image: none;
   --territory-border: #795332;
   --territory-border-outline: #49301d;
@@ -98,8 +98,8 @@
 }
 
 .territory-body {
-  display: grid;
-  grid-template-rows: minmax(0, var(--art-height)) auto;
+  display: flex;
+  flex-direction: column;
   gap: 0.04in;
   min-width: 0;
   min-height: 0;
@@ -110,9 +110,10 @@
 .territory-art {
   position: relative;
   isolation: isolate;
+  flex: 1 1 0;
   width: 100%;
   min-width: 0;
-  min-height: 0;
+  min-height: var(--art-height);
   margin: 0;
   overflow: hidden;
   border: 1px solid rgba(54, 41, 29, 0.94);
@@ -185,6 +186,7 @@
 }
 
 .territory-effect {
+  flex: 0 0 auto;
   min-width: 0;
   min-height: 0;
   overflow: visible;
