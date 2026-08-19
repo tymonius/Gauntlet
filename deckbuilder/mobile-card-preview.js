@@ -4,7 +4,33 @@
   let backdrop = null;
   let open = false;
 
+  installRenderedCardAssets();
   document.addEventListener("DOMContentLoaded", installMobileCardPreview);
+
+  function installRenderedCardAssets() {
+    ensureStylesheet("rendered-card-preview.css?v=20260819-1", "deckbuilder-rendered-card-preview");
+    ensureStylesheet("../card-reference/card-inspection.css?v=20260819-2", "shared-card-inspection");
+    ensureScript("rendered-card-preview.js?v=20260819-1", "deckbuilder-rendered-card-preview");
+    ensureScript("../card-reference/card-inspection.js?v=20260819-2", "shared-card-inspection");
+  }
+
+  function ensureStylesheet(href, key) {
+    if (document.querySelector(`link[data-preview-asset="${key}"]`)) return;
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = href;
+    link.dataset.previewAsset = key;
+    document.head.append(link);
+  }
+
+  function ensureScript(src, key) {
+    if (document.querySelector(`script[data-preview-asset="${key}"]`)) return;
+    const script = document.createElement("script");
+    script.src = src;
+    script.async = false;
+    script.dataset.previewAsset = key;
+    document.head.append(script);
+  }
 
   function installMobileCardPreview() {
     preview = document.getElementById("cardPreview");
@@ -63,7 +89,7 @@
       title.id = "mobileCardPreviewTitle";
       preview.setAttribute("aria-labelledby", title.id);
     } else {
-      preview.setAttribute("aria-label", "Card details");
+      preview.setAttribute("aria-label", "Card preview");
     }
 
     preview.querySelector(".mobile-card-preview-close")?.focus({ preventScroll: true });
@@ -92,7 +118,7 @@
     closeButton = document.createElement("button");
     closeButton.type = "button";
     closeButton.className = "mobile-card-preview-close";
-    closeButton.setAttribute("aria-label", "Close card details");
+    closeButton.setAttribute("aria-label", "Close card preview");
     closeButton.textContent = "×";
     closeButton.addEventListener("click", closePreview);
     preview.prepend(closeButton);

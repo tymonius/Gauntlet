@@ -13,10 +13,17 @@
   let closeButton;
   let currentCardHref = '';
   let currentLabel = 'Gauntlet card';
+  let initialized = false;
 
-  document.addEventListener('DOMContentLoaded', init);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  } else {
+    init();
+  }
 
   function init() {
+    if (initialized) return;
+    initialized = true;
     buildDialog();
     window.addEventListener('message', handleRendererMessage);
     window.addEventListener('resize', scaleCardStage);
