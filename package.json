@@ -37,6 +37,8 @@
     "test:deckbuilder": "node scripts/validate-starter-decks.mjs",
     "analytics:sync": "node scripts/sync-google-analytics.mjs",
     "analytics:check": "node scripts/sync-google-analytics.mjs --check",
+    "artwork:compositor": "node scripts/card-design-server.mjs",
+    "artwork:finalize": "npm run tts:package",
     "tts:components:check": "node scripts/tts-component-contract.mjs",
     "tts:supplementals:check": "node scripts/generate-tts-supplemental-assets.mjs --check",
     "tts:check": "npm run tts:components:check && npm run tts:supplementals:check && node scripts/generate-tts-card-assets.mjs --check && node scripts/generate-tts-territory-assets.mjs --check && node scripts/generate-tts-leader-assets.mjs --check && node scripts/generate-tts-starter-decks.mjs --check && node scripts/generate-tts-save.mjs --check && node scripts/assemble-tts-supplemental-save.mjs --check",
