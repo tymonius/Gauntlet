@@ -5,9 +5,12 @@ on:
     paths:
       - '.github/workflows/generate-tts-card-assets.yml'
       - 'package.json'
+      - 'game-data/**'
+      - 'docs/v0.6.4-*.json'
       - 'config/release-lifecycle.json'
       - 'config/github-release-contract.json'
       - 'config/tts-component-contract.json'
+      - 'scripts/current-game-authority.mjs'
       - 'scripts/generate-tts-card-assets.mjs'
       - 'scripts/generate-tts-territory-assets.mjs'
       - 'scripts/generate-tts-leader-assets.mjs'
@@ -74,9 +77,15 @@ jobs:
           sparse-checkout: |
             package.json
             design-tokens.css
+            game-data
+            docs/v0.6.4-card-additions.json
+            docs/v0.6.4-territories.json
+            docs/v0.6.4-diplomat-proposals.json
+            docs/v0.6.4-arcane-symbol.json
             config/release-lifecycle.json
             config/github-release-contract.json
             config/tts-component-contract.json
+            scripts/current-game-authority.mjs
             scripts/generate-tts-card-assets.mjs
             scripts/generate-tts-territory-assets.mjs
             scripts/generate-tts-leader-assets.mjs
