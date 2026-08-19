@@ -1,15 +1,9 @@
 (() => {
   const STARTER_DECK_SOURCE = "starter-decks.json";
   const STARTER_TIP_SOURCE = "starter-first-game-tips.json";
-  const V064_CARD_SOURCE = "../docs/v0.6.4-card-additions.json";
-  const V064_EXPECTED_CARD_COUNT = 15;
-  const V064_EXPECTED_RETIREMENT_COUNT = 1;
-  const V064_EXPECTED_ACTIVE_CARD_COUNT = 142;
   let starterDecks = [];
   let loadError = null;
-  let v064CardsReady = false;
-
-  applyV064FactionCopy();
+  let currentGameReady = false;
 
   window.GAUNTLET_STARTER_DECKS = {
     getSelectedDeck: selectedStarterDeck,
@@ -40,23 +34,21 @@
     installStarterPrintTips();
 
     try {
-      const [deckResponse, tipResponse, cardResponse] = await Promise.all([
+      const [deckResponse, tipResponse] = await Promise.all([
         fetch(STARTER_DECK_SOURCE, { cache: "no-store" }),
-        fetch(STARTER_TIP_SOURCE, { cache: "no-store" }),
-        fetch(V064_CARD_SOURCE, { cache: "no-store" })
+        fetch(STARTER_TIP_SOURCE, { cache: "no-store" })
       ]);
       if (!deckResponse.ok) throw new Error(`Failed to load ${STARTER_DECK_SOURCE}: ${deckResponse.status}`);
       if (!tipResponse.ok) throw new Error(`Failed to load ${STARTER_TIP_SOURCE}: ${tipResponse.status}`);
-      if (!cardResponse.ok) throw new Error(`Failed to load ${V064_CARD_SOURCE}: ${cardResponse.status}`);
 
-      const [data, tipData, cardData] = await Promise.all([
+      const [data, tipData] = await Promise.all([
         deckResponse.json(),
-        tipResponse.json(),
-        cardResponse.json()
+        tipResponse.json()
       ]);
 
-      await waitForBaseCardPool();
-      installV064PlaytestCards(cardData);
+      await waitForCurrentGamePool();
+      currentGameReady = true;
+      document.body.dataset.currentGameCards = "ready";
 
       const tips = tipData?.tips && typeof tipData.tips === "object" ? tipData.tips : {};
       starterDecks = (Array.isArray(data.decks) ? data.decks : []).map(deck => ({
@@ -71,99 +63,13 @@
     renderAll();
   }
 
-  async function waitForBaseCardPool() {
+  async function waitForCurrentGamePool() {
     const deadline = Date.now() + 10000;
     while (Date.now() < deadline) {
-      if (Array.isArray(state.cards) && state.cards.length) return;
+      if (state.currentGameVersion && Array.isArray(state.cards) && state.cards.length && state.territoryPool?.length) return;
       await new Promise(resolve => window.setTimeout(resolve, 25));
     }
-    throw new Error("Timed out waiting for the released card pool before applying the v0.6.4 playtest overlay.");
-  }
-
-  function installV064PlaytestCards(source) {
-    const cards = Array.isArray(source?.cards) ? source.cards : [];
-    const retiredCards = Array.isArray(source?.retired_cards) ? source.retired_cards : [];
-    if (source?.base_version !== "v0.6.3" || source?.version !== "v0.6.4-candidate") {
-      throw new Error("Unexpected v0.6.4 playtest card source identity.");
-    }
-    if (cards.length !== V064_EXPECTED_CARD_COUNT) {
-      throw new Error(`Expected ${V064_EXPECTED_CARD_COUNT} v0.6.4 playtest cards but found ${cards.length}.`);
-    }
-    if (retiredCards.length !== V064_EXPECTED_RETIREMENT_COUNT) {
-      throw new Error(`Expected ${V064_EXPECTED_RETIREMENT_COUNT} retired v0.6.3 card but found ${retiredCards.length}.`);
-    }
-
-    for (const retired of retiredCards) {
-      const index = state.cards.findIndex(card => card.id === retired.id || card.name === retired.name);
-      if (index < 0) throw new Error(`Unable to retire missing base card: ${retired.id || retired.name || "unknown"}.`);
-      state.cards.splice(index, 1);
-      if (state.deck?.[retired.id]) delete state.deck[retired.id];
-      if (state.selectedCardId === retired.id) state.selectedCardId = null;
-    }
-
-    for (const candidate of cards) {
-      const faction = allegianceKey(candidate.allegiance);
-      if (!candidate.id || !candidate.name || !faction || !Number.isFinite(Number(candidate.cost))) {
-        throw new Error(`Incomplete v0.6.4 playtest card: ${candidate.id || candidate.name || "unknown"}.`);
-      }
-      if (state.cards.some(card => card.id === candidate.id || card.name === candidate.name)) continue;
-
-      state.cards.push({
-        id: candidate.id,
-        name: candidate.name,
-        faction,
-        factionLabel: candidate.allegiance,
-        cost: Number(candidate.cost),
-        complexity: candidate.complexity || "Unspecified",
-        trait: candidate.trait || "",
-        form: candidate.card_form || "",
-        unique: Boolean(candidate.unique),
-        sections: candidateSections(candidate.effects),
-        source: V064_CARD_SOURCE,
-        v064Playtest: true,
-        costStatus: candidate.cost_status || ""
-      });
-    }
-
-    if (state.cards.length !== V064_EXPECTED_ACTIVE_CARD_COUNT) {
-      throw new Error(`Expected ${V064_EXPECTED_ACTIVE_CARD_COUNT} active v0.6.4 cards but found ${state.cards.length}.`);
-    }
-    state.cards.sort((a, b) => a.name.localeCompare(b.name));
-    v064CardsReady = true;
-    document.body.dataset.v064PlaytestCards = "ready";
-  }
-
-  function candidateSections(effects) {
-    const sections = {};
-    for (const effect of Array.isArray(effects) ? effects : []) {
-      const label = String(effect?.label || "Text").trim() || "Text";
-      const text = String(effect?.text || "").trim();
-      if (!text) continue;
-      sections[label] = sections[label] ? `${sections[label]}\n${text}` : text;
-    }
-    return sections;
-  }
-
-  function allegianceKey(value) {
-    return String(value || "")
-      .toLowerCase()
-      .normalize("NFKD")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "");
-  }
-
-  function applyV064FactionCopy() {
-    const diplomats = FACTIONS.find(faction => faction.id === "diplomats");
-    if (!diplomats) return;
-
-    diplomats.victory = "Peace Treaty: after the Capture step, have six different ratified Proposals.";
-    for (const leader of diplomats.leaders || []) {
-      for (const rule of leader.rules || []) {
-        if (rule?.[0] === "Peace Treaty") {
-          rule[1] = "After the Capture step at the start of your turn, six different ratified Proposals win the game.";
-        }
-      }
-    }
+    throw new Error("Timed out waiting for the shared current-game card and Territory pool.");
   }
 
   function installResetDeckButton(starterButton) {
@@ -246,7 +152,8 @@
   function starterDeckReady() {
     return Boolean(
       selectedStarterDeck() &&
-      v064CardsReady &&
+      currentGameReady &&
+      state.currentGameVersion &&
       state.cards.length &&
       state.territoryPool?.length
     );
@@ -267,8 +174,8 @@
     button.title = loadError
       ? "Recommended Decks could not be loaded"
       : starterDeckReady()
-        ? "Replace the current Deck with the recommended v0.6.4 playtest preset for this Leader"
-        : "Waiting for v0.6.4 card, Territory, and starter Deck data";
+        ? `Replace the current Deck with the recommended ${state.currentGameDisplayVersion || "current"} preset for this Leader`
+        : "Waiting for current-game card, Territory, and starter Deck data";
   }
 
   function renderStarterDeckPreview() {
@@ -294,7 +201,7 @@
     preview.innerHTML = `
       <div class="starter-deck-heading">
         <div>
-          <p class="eyebrow">Recommended v0.6.4 playtest Deck</p>
+          <p class="eyebrow">Recommended ${escapeHtml(state.currentGameDisplayVersion || "current")} playtest Deck</p>
           <h3>${escapeHtml(preset.name)}</h3>
         </div>
         <div class="starter-deck-metrics">
@@ -435,8 +342,8 @@
         ...missingCards.map(name => `card: ${name}`),
         ...missingTerritories.map(name => `Territory: ${name}`)
       ];
-      console.error("Starter Deck references missing source entries", missing);
-      alert(`Unable to load this starter Deck because source entries are missing:\n\n${missing.join("\n")}`);
+      console.error("Starter Deck references missing current-game entries", missing);
+      alert(`Unable to load this starter Deck because current-game entries are missing:\n\n${missing.join("\n")}`);
       return;
     }
 
