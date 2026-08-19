@@ -145,9 +145,11 @@
 
 .capital-ledger-row--example {
   color: rgba(67, 42, 55, 0.34);
-  font-family: var(--font-handwritten, "p22-declaration-pro", cursive);
+  font-family: var(--font-flavor, "p22-declaration-pro", Georgia, serif);
   font-size: 7.2pt;
   font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0;
   line-height: 1;
 }
 
