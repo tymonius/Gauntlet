@@ -1,7 +1,6 @@
 import { access, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { resolveCurrentTtsRelease } from './tts-current-catalog.mjs';
 import {
   ROOT,
   CURRENT_GAME_MANIFEST_SOURCE,
@@ -25,35 +24,12 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
-function resolveCanonicalSource(source, version) {
-  const value = String(source || '').trim();
-  if (!value.startsWith('artifacts/reconstruction/')) return value;
-  return value
-    .replace(/artifacts\/reconstruction\/clean-v[^/]+/, `artifacts/reconstruction/clean-${version}`)
-    .replace(/Gauntlet_v[^_]+_/, `Gauntlet_${version}_`);
-}
-
-function resolveContractSources(contract, version) {
-  const resolveComponent = (component) => ({
-    ...component,
-    source: resolveCanonicalSource(component.source, version),
-  });
-  return {
-    ...contract,
-    sharedComponents: (contract.sharedComponents || []).map(resolveComponent),
-    components: (contract.components || []).map(resolveComponent),
-  };
-}
-
 async function readContract() {
-  const [{ source, absolutePath }, release] = await Promise.all([
-    resolveCurrentSourcePath('componentContract'),
-    resolveCurrentTtsRelease(),
-  ]);
+  const { source, absolutePath } = await resolveCurrentSourcePath('componentContract');
   const contract = JSON.parse(await readFile(absolutePath, 'utf8'));
   contract.currentGameAuthority = CURRENT_GAME_MANIFEST_SOURCE;
   contract.currentGameComponentSource = source;
-  return resolveContractSources(contract, release.version);
+  return contract;
 }
 
 function componentMap(contract) {
