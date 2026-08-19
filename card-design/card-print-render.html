@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Gauntlet production card print render</title>
+  <base href="/card-design/">
+  <link rel="preconnect" href="https://use.typekit.net">
+  <link rel="preconnect" href="https://p.typekit.net" crossorigin>
+  <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css">
+  <link rel="stylesheet" href="/design-tokens.css">
+  <link rel="stylesheet" href="/card-design/card-design.css">
+  <link rel="stylesheet" href="/card-design/card-design-refinement.css">
+  <link rel="stylesheet" href="/card-design/faction-specimens.css">
+  <link rel="stylesheet" href="/tts/renderer/renderer.css">
+  <style>
+    html, body, #renderTarget {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: transparent;
+    }
+    html, body {
+      width: 2.5in;
+      height: 3.5in;
+    }
+    #renderTarget {
+      width: 2.5in;
+      height: 3.5in;
+    }
+  </style>
+</head>
+<body class="faction-specimen-page">
+  <main id="renderTarget" aria-live="polite"></main>
+  <script type="module" src="/card-design/card-review-render.js"></script>
+</body>
+</html>
