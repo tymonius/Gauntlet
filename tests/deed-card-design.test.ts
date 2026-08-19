@@ -53,47 +53,54 @@ describe("Financier Deed card", () => {
     expect(deedStyles).toContain("linear-gradient(var(--deed-parchment-tint), var(--deed-parchment-tint)),\n    var(--card-parchment)");
   });
 
-  it("centers a large Deed wordmark across the full card interior in Declaration Blackletter", () => {
+  it("centers the Deed wordmark and flourish together as one title block", () => {
     expect(proposalStyles).toContain('"P22 Declaration W01 Blackletter"');
-    expect(deedStyles).toContain('content: "Deed"');
-    expect(deedStyles).not.toContain('content: "DEED"');
+    expect(supplementalRenderer).toContain('<h3 class="card-title">${esc(component.name)}</h3>');
     expect(deedStyles).toContain('"P22 Declaration W01 Blackletter"');
     expect(deedStyles).toContain("font-size: 72pt");
-    expect(deedStyles).toContain("position: absolute");
-    expect(deedStyles).toContain("inset: 0");
-    expect(deedStyles).toContain("display: grid");
-    expect(deedStyles).toContain("place-items: center");
-    expect(deedStyles).toContain("mix-blend-mode: normal");
+    expect(deedStyles).toContain(".card-heading");
+    expect(deedStyles).toContain("top: 50%");
+    expect(deedStyles).toContain("left: 50%");
+    expect(deedStyles).toContain("justify-items: center");
+    expect(deedStyles).toContain("row-gap: 0.055in");
+    expect(deedStyles).toContain("transform: translate(-50%, -50%)");
     expect(deedStyles).toContain(".card-interior > *");
-    expect(deedStyles).toContain("display: none");
     expect(deedStyles).not.toContain("deed-watermark");
     expect(deedStyles).not.toContain("deed-footer");
   });
 
-  it("removes the rejected constructed flourish while suppressing only the irrelevant fit-warning dot", () => {
+  it("uses the selected Poetica mirror-11, 44, 11 ornament composition", () => {
+    expect(deedStyles).toContain('font-family: "poetica-std", "Poetica Std", serif');
+    expect(deedStyles).toContain('font-feature-settings: "ornm" 11');
+    expect(deedStyles).toContain('font-feature-settings: "ornm" 44');
+    expect(deedStyles).toContain("font-size: 28pt");
+    expect(deedStyles).toContain("font-size: 18pt");
+    expect(deedStyles).toContain("transform: scaleX(-1)");
+    expect(deedStyles).toContain(".supplemental-type-line::before");
+    expect(deedStyles).toContain(".supplemental-type-line::after");
+    expect(deedStyles).toContain(".supplemental-type-line > span:last-child::after");
+  });
+
+  it("suppresses the irrelevant fit-warning dot without restoring the rejected CSS-built flourish", () => {
     expect(refinementStyles).toContain(".gauntlet-card.fit-warning::after");
     expect(deedStyles).toContain('.supplemental-placeholder-card[aria-label^="Deed "].fit-warning::after');
-    expect(deedStyles).toContain("display: none");
-    expect(deedStyles).not.toContain("top: calc(50% + 0.48in)");
     expect(deedStyles).not.toContain("radial-gradient(ellipse at 100% 100%");
     expect(deedStyles).not.toContain("linear-gradient(135deg, transparent 42%");
   });
 
-  it("provides a separate Poetica ornament study without applying a candidate to the production card", () => {
+  it("retains the Poetica ornament index study that established the selected glyphs", () => {
     expect(ornamentStudy).toContain('https://use.typekit.net/vgm6nwi.css');
     expect(ornamentStudy).toContain('font-family: "poetica-std", "Poetica Std", serif');
-    expect(ornamentStudy).toContain('font-feature-settings: "ornm" 1');
-    expect(ornamentStudy).toContain("['•', ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ', ...'abcdefghijklmnopqrstuvwxyz']");
+    expect(ornamentStudy).toContain("const maxIndex = 64");
+    expect(ornamentStudy).toContain('ornament.style.fontFeatureSettings = `"ornm" ${index}`');
     expect(ornamentStudy).toContain("candidate-wordmark");
     expect(ornamentStudy).toContain("candidate-ornament");
-    expect(ornamentStudy).toContain("None of these ornaments is applied to the production Deed until one is selected");
-    expect(deedStyles).not.toContain("poetica-std");
   });
 
   it("styles the card itself so the inspection clone does not depend on the catalog wrapper", () => {
     expect(deedStyles).toContain('.supplemental-placeholder-card[aria-label^="Deed "] .card-interior');
     expect(deedStyles).toContain('.supplemental-placeholder-card[aria-label^="Deed "] .card-interior::before');
-    expect(deedStyles).toContain('.supplemental-placeholder-card[aria-label^="Deed "] .card-interior::after');
+    expect(deedStyles).toContain('.supplemental-placeholder-card[aria-label^="Deed "] .card-heading');
     expect(supplementalStyles).toContain("#supplemental-financiers-deed");
   });
 });
