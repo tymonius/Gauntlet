@@ -2,7 +2,6 @@
   const oldStorageKey = "gauntlet-v0.6.1-decks";
   const releaseStorageKey = "gauntlet-v0.6.3-decks";
   const storageKey = "gauntlet-current-game-decks";
-  const nativeFetch = window.fetch.bind(window);
   let currentGamePromise = null;
   let hydrated = false;
 
@@ -21,9 +20,11 @@
       currentGamePromise = import("../game-data/current-game.mjs")
         .then(module => module.loadCurrentGame())
         .then(data => {
+          state.currentGameData = data;
           state.currentGameVersion = data.version;
           state.currentGameDisplayVersion = data.displayVersion;
           state.currentGameAuthority = data.authorityUrl;
+          window.GAUNTLET_CURRENT_GAME_DATA = data;
           hydrateFactions(data);
           return data;
         });
@@ -85,23 +86,6 @@
         sections: Object.fromEntries((card.effects || []).map(effect => [effect.label || "Text", effect.text || ""])),
         source: `../card-reference/#${encodeURIComponent(card.id)}`
       }));
-  };
-
-  function territoryMarkdown(data) {
-    return (data.territories || []).map(territory => {
-      const text = String(territory.text || territory.effects?.map(effect => effect.text).filter(Boolean).join("\n") || "")
-        .split("\n").map(line => `> ${line}`).join("\n");
-      return `## ${territory.number}. ${territory.name}\n\n**Complexity:** ${territory.complexity || "Current"}\n\n**Status:** Approved\n\n${text}`;
-    }).join("\n\n");
-  }
-
-  window.fetch = async function currentGameAwareFetch(input, init) {
-    const url = typeof input === "string" ? input : input?.url || "";
-    if (url.includes("Gauntlet_v0.6.1_Territory_Pool.md")) {
-      const data = await currentGame();
-      return new Response(territoryMarkdown(data), { status: 200, headers: { "Content-Type": "text/markdown; charset=utf-8" } });
-    }
-    return nativeFetch(input, init);
   };
 
   state.deckName = "Untitled Gauntlet Deck";
