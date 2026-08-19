@@ -13,7 +13,7 @@ const expectedByAllegiance: Record<string, string[]> = {
   Financiers: ["War Bonds", "Actuarial Alchemy"],
   Intelligence: ["Regime Change", "Spectral Surveillance"],
   Mystics: ["Reembodiment", "Threefold Vision"],
-  Inquisition: ["Retribution", "Anathema"],
+  Inquisition: ["Retribution", "Anathema", "Malleus Maleficarum"],
 };
 
 const expectedArcane = new Set([
@@ -27,12 +27,21 @@ const expectedArcane = new Set([
 ]);
 
 describe("v0.6.4 full card-expansion candidate staging", () => {
-  it("targets 52 Neutral cards, 15 per faction, and 142 playable cards", () => {
+  it("targets 52 Neutral cards, 15 per faction, and 142 playable cards after one retirement", () => {
     expect(source.version).toBe("v0.6.4-candidate");
     expect(source.base_version).toBe("v0.6.3");
     expect(source.ready_for_game_data).toBe(false);
-    expect(source.card_count).toBe(14);
-    expect(source.cards).toHaveLength(14);
+    expect(source.card_count).toBe(15);
+    expect(source.cards).toHaveLength(15);
+    expect(source.retirement_count).toBe(1);
+    expect(source.retired_cards).toEqual([
+      expect.objectContaining({
+        id: "inquisition-no-martyrs",
+        name: "No Martyrs",
+        last_active_version: "v0.6.3",
+        replacement: "inquisition-malleus-maleficarum",
+      }),
+    ]);
     expect(source.target_pool_sizes).toEqual({
       neutral: 52,
       each_faction: 15,
@@ -48,6 +57,21 @@ describe("v0.6.4 full card-expansion candidate staging", () => {
     for (const card of source.cards) {
       expect(card.trait === "Arcane").toBe(expectedArcane.has(card.name));
     }
+  });
+
+  it("records Malleus Maleficarum as an Inquisition Asset that imposes the Arcane trait", () => {
+    const malleus = source.cards.find((card: any) => card.name === "Malleus Maleficarum");
+    expect(malleus).toMatchObject({
+      id: "inquisition-malleus-maleficarum",
+      allegiance: "Inquisition",
+      cost: 3,
+      card_form: "Asset",
+      trait: null,
+    });
+    expect(malleus.cost_status).toContain("test 3 versus 4");
+    expect(malleus.effects.map((effect: any) => effect.label)).toEqual(["Action", "Asset"]);
+    expect(malleus.effects[0].text).toContain("one non-Arcane card title");
+    expect(malleus.effects[1].text).toBe("Cards the opponent owns with the chosen title have the Arcane trait.");
   });
 
   it("uses current effect headings and inherent-bank conventions", () => {
@@ -69,6 +93,10 @@ describe("v0.6.4 full card-expansion candidate staging", () => {
       ["Regime Change", "Bank this card. You may have only one banked Regime Change."],
       ["Reembodiment", "Bank this card. You may have only one banked copy."],
     ]);
+
+    const malleus = source.cards.find((card: any) => card.name === "Malleus Maleficarum");
+    expect(malleus.effects[0].text).toContain("then bank this card");
+    expect(malleus.effects[0].text).toContain("only one banked Malleus Maleficarum");
   });
 
   it("applies the shared movement, Overlay, shorthand, and role-label conventions", () => {
@@ -102,12 +130,14 @@ describe("v0.6.4 full card-expansion candidate staging", () => {
     expect(divination.effects[0].text).toContain("Otherwise, put it in your Graveyard.");
   });
 
-  it("layers all fourteen candidates onto /card-design without changing canonical v0.6.3 data", () => {
+  it("layers fifteen candidates and one retirement onto /card-design without changing canonical v0.6.3 data", () => {
     expect(catalogPage).toContain('src="v064-card-candidates.js"');
     expect(catalogPage).toContain("142");
     expect(catalogPage).toContain("52 Neutral cards and 15 cards in each faction");
     expect(catalogOverlay).toContain("/docs/v0.6.4-card-additions.json");
-    expect(catalogOverlay).toContain("EXPECTED_CARD_COUNT = 14");
+    expect(catalogOverlay).toContain("EXPECTED_CARD_COUNT = 15");
+    expect(catalogOverlay).toContain("EXPECTED_RETIREMENT_COUNT = 1");
+    expect(catalogOverlay).toContain("removeRetiredCards");
     expect(catalogOverlay).toContain("ready_for_game_data !== false");
     expect(cardRenderer).toContain("/artifacts/reconstruction/clean-v0.6.3/downstream/canonical-data.json");
     expect(cardRenderer).toContain("/docs/v0.6.4-card-additions.json");
