@@ -45,12 +45,18 @@ describe("Financier Deed card", () => {
     expect(deedStyles).toContain("print-color-adjust: exact");
   });
 
-  it("centers only the Deed wordmark across the full card interior in Declaration Blackletter", () => {
+  it("overscans the rotated parchment beneath the keyline so no subpixel seam can appear", () => {
+    expect(deedStyles).toContain("width: 72%");
+    expect(deedStyles).toContain("height: 145%");
+    expect(deedStyles).toContain("linear-gradient(var(--deed-parchment-tint), var(--deed-parchment-tint)),\n    var(--card-parchment)");
+  });
+
+  it("centers a large Deed wordmark across the full card interior in Declaration Blackletter", () => {
     expect(proposalStyles).toContain('"P22 Declaration W01 Blackletter"');
     expect(deedStyles).toContain('content: "Deed"');
     expect(deedStyles).not.toContain('content: "DEED"');
     expect(deedStyles).toContain('"P22 Declaration W01 Blackletter"');
-    expect(deedStyles).toContain("font-size: 42pt");
+    expect(deedStyles).toContain("font-size: 72pt");
     expect(deedStyles).toContain("position: absolute");
     expect(deedStyles).toContain("inset: 0");
     expect(deedStyles).toContain("display: grid");
