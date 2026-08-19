@@ -5,7 +5,7 @@
   const side = String(params.get("side") || "front").trim().toLowerCase();
   const target = document.getElementById("renderTarget");
   const TIMEOUT_MS = 30000;
-  const supportedKinds = new Set(["leader", "proposal", "reference", "rite", "tracker", "supplemental"]);
+  const supportedKinds = new Set(["leader", "proposal", "reference", "rite", "ritual", "tracker", "supplemental"]);
 
   const delay = ms => new Promise(resolve => window.setTimeout(resolve, ms));
   const reverseSide = () => side === "reverse" || side === "back" || side === "treaty" || side === "completed";
@@ -49,13 +49,19 @@
       return reverseSide() ? cards[1] || null : cards[0] || null;
     }
 
+    if (kind === "ritual") {
+      const pair = document.querySelector(`#ritual-${CSS.escape(id)}`);
+      if (!pair) return null;
+      return reverseSide()
+        ? pair.querySelector(".ritual-card-back")
+        : pair.querySelector(".ritual-card");
+    }
+
     if (kind === "tracker") {
       return document.querySelector(`.sliding-tracker-card[data-component-id="${CSS.escape(id)}"]`);
     }
 
     if (kind === "supplemental") {
-      // Generic contract handoff: a finalized component may expose its
-      // supplemental-card componentId without requiring a Deckbuilder mapping.
       const direct = document.querySelector(`[data-component-id="${CSS.escape(id)}"]`);
       if (direct) return direct;
       const specimen = [...document.querySelectorAll(".supplemental-review-item")].find(section => {
@@ -70,6 +76,9 @@
   function sourceError() {
     if (kind === "proposal") {
       return document.querySelector("#proposalReviewSections .review-note")?.textContent?.trim() || "";
+    }
+    if (kind === "rite" || kind === "ritual") {
+      return document.querySelector("#riteReviewSections .review-note")?.textContent?.trim() || "";
     }
 
     if (kind === "reference" || kind === "tracker" || kind === "supplemental") {
@@ -99,9 +108,11 @@
       throw new Error(`Component ${id} still resolves to a production-layout placeholder.`);
     }
 
-    if (kind === "leader" || kind === "proposal" || kind === "rite") {
+    if (kind === "leader" || kind === "proposal" || kind === "rite" || (kind === "ritual" && !reverseSide())) {
       return card.dataset.parchmentLoaded === "true" && card.dataset.titleFit === "true";
     }
+
+    if (kind === "ritual" && reverseSide()) return dimensionsReady(card);
 
     if (kind === "reference") {
       return !card.classList.contains("reference-card-loading")
