@@ -63,18 +63,22 @@ function componentDetail(component) {
 }
 
 function presentationComponent(component) {
+  const ledger = component.family === 'ledger';
   return {
     contractId: component.id,
     id: rendererId(component),
     referenceId: component.family === 'reference-card' ? component.id : '',
-    ledger: component.family === 'ledger',
+    ledger,
     name: component.name,
     type: componentType(component),
     detail: componentDetail(component),
     quantity: Number(component.quantity) || 1,
-    doubleSided: component.backPolicy === 'twoSided',
+    // The approved Capital Ledger is an identical-face duplex consumable. Until
+    // the component contract is promoted from its legacy standardBack state,
+    // the production catalog still presents the approved physical geometry.
+    doubleSided: ledger || component.backPolicy === 'twoSided',
     productionStatus: component.productionStatus,
-    backPolicy: component.backPolicy,
+    backPolicy: ledger ? 'twoSided' : component.backPolicy,
     tracker: component.family === 'tracker' ? TRACKER_PRESENTATION[component.id] || null : null,
   };
 }
