@@ -3,7 +3,7 @@
 /* Financier Deed
    Landscape ownership marker placed beside a Territory. The face is composed
    entirely from the existing Financiers frame, approved parchment, restrained
-   faction wash, and one centered Declaration Blackletter wordmark. No artwork,
+   green wash, and one centered Declaration Blackletter wordmark. No artwork,
    emblem, watermark, rules, footer, or other ornament belongs on this component. */
 
 /* Catalog layout. These wrapper rules are intentionally separate from the
@@ -25,6 +25,7 @@
    older supplemental-card.css prototype rules in the catalog. */
 #supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "],
 .supplemental-placeholder-card[aria-label^="Deed "] {
+  --deed-parchment-tint: rgba(34, 112, 68, 0.18);
   width: 3.5in;
   height: 2.5in;
 }
@@ -32,9 +33,8 @@
 #supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .card-interior,
 .supplemental-placeholder-card[aria-label^="Deed "] .card-interior {
   position: relative;
-  display: grid;
+  display: block;
   overflow: hidden;
-  place-items: center;
   background-color: var(--card-parchment);
   background-image: none;
 }
@@ -45,10 +45,9 @@
 }
 
 /* The approved Financiers parchment source is portrait-oriented. Rotate that
-   exact source as one layer, then apply the same restrained Financiers wash
-   used by the other faction components. The shared component system normally
-   puts this wash on ::after, but Deed uses ::after for its wordmark, so the
-   wash is composed directly with the parchment layer here instead. */
+   exact source as one layer and place a translucent green wash above the
+   parchment within the same background stack. Do not multiply the wash into
+   the warm paper: that turns the field brown/ochre instead of visibly green. */
 #supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .card-interior::before,
 .supplemental-placeholder-card[aria-label^="Deed "] .card-interior::before {
   position: absolute;
@@ -59,9 +58,8 @@
   height: 142.55%;
   background-color: var(--card-parchment);
   background-image:
-    linear-gradient(var(--component-parchment-tint), var(--component-parchment-tint)),
+    linear-gradient(var(--deed-parchment-tint), var(--deed-parchment-tint)),
     var(--parchment-image);
-  background-blend-mode: multiply;
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -71,15 +69,18 @@
   pointer-events: none;
 }
 
-/* Grid centering deliberately avoids top/left + translate positioning. That
-   keeps the wordmark centered both in the catalog and in inspection clones. */
+/* Fill the entire interior with the generated-content layer, then center the
+   wordmark inside that full face. This avoids inherited card grid rows, which
+   previously placed Deed in the first row near the top edge. */
 #supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .card-interior::after,
 .supplemental-placeholder-card[aria-label^="Deed "] .card-interior::after {
-  position: relative;
+  position: absolute;
   z-index: 2;
-  inset: auto;
+  inset: 0;
+  display: grid;
+  place-items: center;
   margin: 0;
-  background: none;
+  background: transparent;
   color: var(--card-ink);
   content: "Deed";
   font-family:
@@ -93,6 +94,7 @@
   line-height: 1;
   text-align: center;
   text-transform: none;
+  mix-blend-mode: normal;
   transform: none;
   white-space: nowrap;
   pointer-events: none;
@@ -113,7 +115,8 @@
     grid-template-columns: 3.5in;
   }
 
-  .supplemental-placeholder-card[aria-label^="Deed "] .card-interior::before {
+  .supplemental-placeholder-card[aria-label^="Deed "] .card-interior::before,
+  .supplemental-placeholder-card[aria-label^="Deed "] .card-interior::after {
     print-color-adjust: exact;
   }
 }
