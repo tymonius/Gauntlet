@@ -15,6 +15,7 @@ on:
       - 'start/**'
       - 'rulebook/**'
       - 'card-reference/**'
+      - 'card-design/**'
       - 'factions/**'
       - 'deckbuilder/**'
       - 'rules-arbiter/**'
