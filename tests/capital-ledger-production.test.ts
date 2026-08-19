@@ -9,7 +9,7 @@ const supplemental = readFileSync('card-design/supplemental-card.js', 'utf8');
 describe('Financiers Capital Ledger production component', () => {
   it('renders the approved ledger content and writable rows', () => {
     expect(renderer).toContain('Capital Ledger');
-    expect(renderer).toContain('Public Capital Record');
+    expect(renderer).not.toContain('Public Capital Record');
     expect(renderer).toContain('>Entry<');
     expect(renderer).toContain('>±<');
     expect(renderer).toContain('>Balance<');
@@ -18,7 +18,8 @@ describe('Financiers Capital Ledger production component', () => {
     expect(renderer).toContain('>Income<');
     expect(renderer).toContain('>+1<');
     expect(renderer).toContain('>3<');
-    expect(renderer).toContain('${ledgerRows(10)}');
+    expect(renderer).toContain('${ledgerRows(11)}');
+    expect(css).toContain('repeat(11, 1fr)');
 
     // The example demonstrates a gain from the preprinted opening balance of 2 to 3.
     expect(renderer.indexOf('capital-ledger-row--opening')).toBeLessThan(renderer.indexOf('capital-ledger-row--example'));
