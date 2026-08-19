@@ -49,15 +49,15 @@ export function capitalLedgerMarkup(version = 'Current') {
             <span role="columnheader">±</span>
             <span role="columnheader">Balance</span>
           </div>
-          <div class="capital-ledger-row capital-ledger-row--example" role="row" aria-label="Example entry">
-            <span role="cell">Income</span>
-            <span role="cell">+1</span>
-            <span role="cell">3</span>
-          </div>
           <div class="capital-ledger-row capital-ledger-row--opening" role="row">
             <span role="cell">Opening Balance</span>
             <span role="cell"></span>
             <span role="cell">2</span>
+          </div>
+          <div class="capital-ledger-row capital-ledger-row--example" role="row" aria-label="Example entry">
+            <span role="cell">Income</span>
+            <span role="cell">+1</span>
+            <span role="cell">3</span>
           </div>
           ${ledgerRows(10)}
         </div>
