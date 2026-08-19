@@ -1,6 +1,23 @@
 (() => {
   const COLUMNS = 3;
   const RENDER_TIMEOUT_MS = 30000;
+  const TRACKER_COMPONENT_IDS = Object.freeze({
+    "military command": "command-tracker",
+    "diplomat influence": "influence-tracker",
+    "intel tracker": "intel-tracker",
+    "operation progress": "operation-progress-tracker",
+    "inquisition conviction": "conviction-tracker",
+  });
+  const REFERENCE_COMPONENTS = Object.freeze({
+    "diplomat reference": { id: "diplomats-reference", side: "front" },
+    "influence treaty": { id: "diplomats-reference", side: "reverse" },
+    "financier reference": { id: "financiers-reference", side: "front" },
+    "mission reference": { id: "intelligence-mission-reference", side: "front" },
+    "operations reference": { id: "intelligence-operations-reference", side: "front" },
+    "mystics reference": { id: "mystics-reference", side: "front" },
+    "inquisition doctrine": { id: "inquisition-doctrine-reference", side: "front" },
+    "purge reference": { id: "inquisition-purge-reference", side: "front" },
+  });
 
   document.addEventListener("DOMContentLoaded", installDuplexSheetPairingFix);
 
@@ -81,11 +98,28 @@
 
     if (printCardBacks) ensureSheetBackPages(documentNode);
     replaceProductionFronts(documentNode);
+    ensureReferenceReversePages(documentNode);
     if (printCardBacks) replaceProductionBacks(documentNode);
     injectProductionPrintStyles(documentNode);
     installProductionReadinessGate(documentNode);
 
     return `<!doctype html>\n${documentNode.documentElement.outerHTML}`;
+  }
+
+  function normalizeLabel(value) {
+    return String(value || "")
+      .toLowerCase()
+      .replace(/&/g, " ")
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim();
+  }
+
+  function slugify(value) {
+    return String(value || "")
+      .toLowerCase()
+      .normalize("NFKD")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
   }
 
   function ensureSheetBackPages(documentNode) {
@@ -95,23 +129,133 @@
     ].filter(Boolean);
 
     frontPages.forEach((frontPage, index) => {
-      if (frontPage.nextElementSibling?.classList.contains("deck-card-back-page")) return;
+      const existingBackPage = frontPage.nextElementSibling?.classList.contains("deck-card-back-page")
+        ? frontPage.nextElementSibling
+        : null;
+      const pairName = frontPage.dataset.duplexPair
+        || existingBackPage?.dataset.duplexPair
+        || `deck-sheet-${index + 1}`;
+
+      frontPage.classList.add("deck-card-front-page");
+      frontPage.dataset.duplexPair = pairName;
+
+      if (existingBackPage) {
+        existingBackPage.dataset.duplexPair = pairName;
+        return;
+      }
 
       const frontTable = frontPage.querySelector(".card-table");
       if (!frontTable) return;
       const rowCount = frontTable.classList.contains("two-row") ? 2 : 3;
       const isFirstPage = frontPage.classList.contains("first-page");
-      const pairName = frontPage.dataset.duplexPair || `deck-sheet-${index + 1}`;
       const backPage = makeBlankBackPage(documentNode, rowCount, isFirstPage);
-
-      frontPage.classList.add("deck-card-front-page");
-      frontPage.dataset.duplexPair = pairName;
       backPage.dataset.duplexPair = pairName;
       frontPage.after(backPage);
     });
   }
 
   function replaceProductionFronts(documentNode) {
+    replaceProductionLeader(documentNode);
+    replaceProductionTrackers(documentNode);
+    replaceProductionReferences(documentNode);
+    replaceProductionProposals(documentNode);
+    replaceProductionRites(documentNode);
+    replacePlayableAndTerritoryFronts(documentNode);
+  }
+
+  function replaceProductionLeader(documentNode) {
+    const legacyLeader = documentNode.querySelector(".print-card.leader-card");
+    if (!legacyLeader) return;
+
+    const faction = String(state.factionId || "").trim().toLowerCase();
+    const leader = String(state.leaderId || "").trim().toLowerCase();
+    if (!faction || !leader) throw new Error("Could not resolve the selected Leader for production printing.");
+
+    legacyLeader.replaceWith(makeProductionComponent(documentNode, {
+      kind: "leader",
+      id: `${faction}-${leader}`,
+      label: `${legacyLeader.querySelector(".leader-title")?.textContent.trim() || leader} Leader`,
+      standardBack: true,
+    }));
+  }
+
+  function replaceProductionTrackers(documentNode) {
+    documentNode.querySelectorAll(".print-card.tracker-card").forEach(legacyTracker => {
+      const title = normalizeLabel(legacyTracker.querySelector(".tracker-title")?.textContent);
+      const id = TRACKER_COMPONENT_IDS[title];
+      if (!id) return;
+
+      legacyTracker.replaceWith(makeProductionComponent(documentNode, {
+        kind: "tracker",
+        id,
+        label: legacyTracker.querySelector(".tracker-title")?.textContent.trim() || id,
+        standardBack: true,
+      }));
+    });
+  }
+
+  function referenceDescriptor(legacyReference) {
+    const title = normalizeLabel(legacyReference.querySelector(".supplemental-header")?.textContent);
+    const descriptor = REFERENCE_COMPONENTS[title];
+    if (!descriptor) return null;
+
+    const subtitle = normalizeLabel(legacyReference.querySelector(".supplemental-subtitle")?.textContent);
+    if (descriptor.id === "diplomats-reference" && /side b/.test(subtitle)) {
+      return { ...descriptor, side: "reverse" };
+    }
+    return descriptor;
+  }
+
+  function replaceProductionReferences(documentNode) {
+    documentNode.querySelectorAll(".print-card.reference-card, .print-card.purge-card").forEach(legacyReference => {
+      const descriptor = referenceDescriptor(legacyReference);
+      if (!descriptor) return;
+      const label = legacyReference.querySelector(".supplemental-header")?.textContent.trim() || descriptor.id;
+
+      legacyReference.replaceWith(makeProductionComponent(documentNode, {
+        kind: "reference",
+        id: descriptor.id,
+        side: descriptor.side,
+        label,
+        reference: true,
+      }));
+    });
+  }
+
+  function replaceProductionProposals(documentNode) {
+    documentNode.querySelectorAll(".print-card.proposal-card").forEach(legacyProposal => {
+      const name = legacyProposal.querySelector(".proposal-title")?.textContent.trim() || "";
+      if (!name) throw new Error("Could not resolve a Proposal name for production printing.");
+      const side = legacyProposal.classList.contains("treaty") ? "reverse" : "front";
+
+      legacyProposal.replaceWith(makeProductionComponent(documentNode, {
+        kind: "proposal",
+        id: slugify(name),
+        side,
+        label: `${name} ${side === "reverse" ? "Treaty Article" : "Proposal"}`,
+      }));
+    });
+  }
+
+  function replaceProductionRites(documentNode) {
+    documentNode.querySelectorAll(".print-card.rite-card").forEach(legacyRite => {
+      const name = legacyRite.dataset.riteName || legacyRite.querySelector(".rite-title")?.textContent.trim() || "";
+      if (!name) throw new Error("Could not resolve a Rite name for production printing.");
+      const riteId = slugify(name).replace(/^rite-of-/, "");
+      const side = legacyRite.classList.contains("rite-back-card") || legacyRite.classList.contains("completed")
+        ? "reverse"
+        : "front";
+
+      legacyRite.replaceWith(makeProductionComponent(documentNode, {
+        kind: "rite",
+        id: riteId,
+        side,
+        label: `${name} ${side === "reverse" ? "Completed" : "Rite"}`,
+      }));
+    });
+  }
+
+  function replacePlayableAndTerritoryFronts(documentNode) {
     const cardsByName = new Map(
       (Array.isArray(state.cards) ? state.cards : []).map(card => [String(card.name || "").trim(), card])
     );
@@ -145,9 +289,30 @@
     }
   }
 
+  function makeProductionComponent(documentNode, options) {
+    const { kind, id, side = "front", label, standardBack = false, reference = false } = options;
+    const wrapper = documentNode.createElement("article");
+    wrapper.className = `print-card production-render-component production-render-${kind}${standardBack ? " production-standard-back" : ""}${reference ? " production-render-reference" : ""}`;
+    wrapper.dataset.productionComponentKind = kind;
+    wrapper.dataset.productionComponentId = id;
+    wrapper.dataset.productionComponentSide = side;
+    wrapper.setAttribute("aria-label", `${label} production render`);
+
+    const frame = documentNode.createElement("iframe");
+    frame.className = "production-component-frame";
+    frame.dataset.productionRenderFrame = "true";
+    frame.dataset.productionRenderKind = "component";
+    frame.src = `/card-design/component-print-render.html?kind=${encodeURIComponent(kind)}&id=${encodeURIComponent(id)}&side=${encodeURIComponent(side)}`;
+    frame.title = `${label} production render`;
+    frame.setAttribute("scrolling", "no");
+    frame.setAttribute("loading", "eager");
+    wrapper.append(frame);
+    return wrapper;
+  }
+
   function makeProductionCard(documentNode, card) {
     const wrapper = documentNode.createElement("article");
-    wrapper.className = "print-card main-card production-render-card";
+    wrapper.className = "print-card main-card production-render-card production-standard-back";
     wrapper.dataset.productionCardId = card.id;
     wrapper.setAttribute("aria-label", `${card.name} production card`);
 
@@ -165,7 +330,7 @@
 
   function makeProductionTerritory(documentNode, territory) {
     const wrapper = documentNode.createElement("article");
-    wrapper.className = "print-card territory production-render-territory";
+    wrapper.className = "print-card territory production-render-territory production-standard-back";
     wrapper.dataset.productionTerritoryId = territory.id;
     wrapper.setAttribute("aria-label", `${territory.name} production Territory`);
 
@@ -186,6 +351,72 @@
     return wrapper;
   }
 
+  function ensureReferenceReversePages(documentNode) {
+    const referenceFronts = [...documentNode.querySelectorAll('.production-render-reference[data-production-component-side="front"]')];
+    referenceFronts.forEach((front, index) => {
+      const componentId = front.dataset.productionComponentId;
+      if (!componentId) return;
+
+      const existingReverse = [...documentNode.querySelectorAll('.production-render-reference[data-production-component-side="reverse"]')]
+        .find(card => card.dataset.productionComponentId === componentId);
+      if (existingReverse) return;
+
+      const frontPage = front.closest(".first-page, .card-page");
+      const frontCell = front.closest("td");
+      if (!frontPage || !frontCell || frontPage.classList.contains("duplex-back-page")) return;
+
+      const frontTable = frontPage.querySelector(".card-table");
+      if (!frontTable) return;
+      const frontCells = [...frontTable.querySelectorAll("td")];
+      const frontIndex = frontCells.indexOf(frontCell);
+      if (frontIndex < 0) return;
+
+      const backPage = ensureBackPageForFront(documentNode, frontPage, `reference-sheet-${index + 1}`);
+      const backCells = [...backPage.querySelectorAll(".card-table td")];
+      const backCell = backCells[mirrorIndexForLongEdge(frontIndex)];
+      if (!backCell) throw new Error(`Could not align reverse face for ${componentId}.`);
+
+      backCell.replaceChildren(makeProductionComponent(documentNode, {
+        kind: "reference",
+        id: componentId,
+        side: "reverse",
+        label: `${componentId} reverse reference`,
+        reference: true,
+      }));
+    });
+  }
+
+  function ensureBackPageForFront(documentNode, frontPage, fallbackPairName) {
+    const existingDirect = frontPage.nextElementSibling?.classList.contains("deck-card-back-page")
+      ? frontPage.nextElementSibling
+      : null;
+    const existingPairName = frontPage.dataset.duplexPair;
+    const existingByPair = existingPairName
+      ? [...documentNode.querySelectorAll(".deck-card-back-page[data-duplex-pair]")].find(page => page.dataset.duplexPair === existingPairName)
+      : null;
+    const existing = existingDirect || existingByPair;
+    if (existing) {
+      const pairName = existingPairName || existing.dataset.duplexPair || fallbackPairName;
+      frontPage.classList.add("deck-card-front-page");
+      frontPage.dataset.duplexPair = pairName;
+      existing.dataset.duplexPair = pairName;
+      return existing;
+    }
+
+    const frontTable = frontPage.querySelector(".card-table");
+    if (!frontTable) throw new Error("Reference front page has no card table.");
+    const rowCount = frontTable.classList.contains("two-row") ? 2 : 3;
+    const isFirstPage = frontPage.classList.contains("first-page");
+    const pairName = frontPage.dataset.duplexPair || fallbackPairName;
+    const backPage = makeBlankBackPage(documentNode, rowCount, isFirstPage);
+
+    frontPage.classList.add("deck-card-front-page");
+    frontPage.dataset.duplexPair = pairName;
+    backPage.dataset.duplexPair = pairName;
+    frontPage.after(backPage);
+    return backPage;
+  }
+
   function selectedBackFaction() {
     const useFactionColor = Boolean(document.getElementById("factionColorCardBack")?.checked);
     if (!useFactionColor) return "intelligence";
@@ -204,7 +435,8 @@
       const frontCells = [...frontPage.querySelectorAll(".card-table td")];
       const backCells = [...backPage.querySelectorAll(".card-table td")];
       frontCells.forEach((frontCell, frontIndex) => {
-        if (!frontCell.querySelector(".production-render-card, .production-render-territory")) return;
+        const needsStandardBack = frontCell.querySelector(".production-standard-back, .capital-tracker-card, .deed-card");
+        if (!needsStandardBack) return;
         const backCell = backCells[mirrorIndexForLongEdge(frontIndex)];
         if (!backCell) return;
         backCell.replaceChildren(makeProductionDeckBack(documentNode, faction));
@@ -215,13 +447,13 @@
   function makeProductionDeckBack(documentNode, faction) {
     const wrapper = documentNode.createElement("article");
     wrapper.className = "print-card production-render-back";
-    wrapper.setAttribute("aria-label", `${faction} production deck-card back`);
+    wrapper.setAttribute("aria-label", `${faction} production deck-card back, rotated 180 degrees for duplex printing`);
 
     const frame = documentNode.createElement("iframe");
     frame.className = "production-back-frame";
     frame.dataset.productionRenderFrame = "true";
     frame.dataset.productionRenderKind = "back";
-    frame.src = `/tts/back-renderer/index.html?faction=${encodeURIComponent(faction)}`;
+    frame.src = `/tts/back-renderer/index.html?faction=${encodeURIComponent(faction)}&rotation=180`;
     frame.title = `${faction} production deck-card back`;
     frame.setAttribute("scrolling", "no");
     frame.setAttribute("loading", "eager");
@@ -235,15 +467,22 @@
     style.textContent = `
 .print-card.production-render-card,
 .print-card.production-render-territory,
+.print-card.production-render-component,
 .print-card.production-render-back {
   border: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
 }
-.print-card.production-render-card {
+.print-card.production-render-card,
+.print-card.production-render-component,
+.print-card.production-render-back {
   display: block !important;
+  width: 2.5in;
+  height: 3.5in;
 }
-.production-card-frame {
+.production-card-frame,
+.production-component-frame,
+.production-back-frame {
   display: block;
   width: 2.5in;
   height: 3.5in;
@@ -278,22 +517,7 @@
   pointer-events: none;
 }
 .print-card.production-render-back {
-  display: block !important;
-  width: 2.5in;
-  height: 3.5in;
-  transform: rotate(180deg) !important;
-  transform-origin: center center !important;
-}
-.production-back-frame {
-  display: block;
-  width: 2.5in;
-  height: 3.5in;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  overflow: hidden;
-  background: transparent;
-  pointer-events: none;
+  transform: none !important;
 }`;
     documentNode.head.append(style);
   }
