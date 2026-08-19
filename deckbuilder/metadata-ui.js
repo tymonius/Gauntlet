@@ -82,9 +82,9 @@
 
       stats.innerHTML = `
         <div class="deck-stat-strip" aria-label="${escapeHtml(name)} deck quantities">
-          <span class="deck-stat"><span class="deck-stat-label">Qty</span><strong>${quantity}</strong></span>
-          <span class="deck-stat"><span class="deck-stat-label">Value</span><strong>${value}</strong></span>
-          <span class="deck-stat deck-stat-total"><span class="deck-stat-label">Total</span><strong>${total}</strong></span>
+          <span class="deck-stat deck-stat-box"><span class="deck-stat-label">Qty</span><strong>${quantity}</strong></span>
+          <span class="deck-stat deck-stat-value" aria-label="Card value ${value}"><span class="deck-stat-label">Value</span><strong class="mini-pill value-badge deck-value-medallion">${value}</strong></span>
+          <span class="deck-stat deck-stat-box deck-stat-total"><span class="deck-stat-label">Total</span><strong>${total}</strong></span>
         </div>
         ${card.unique ? '<span class="mini-pill meta-tag detail-tag deck-unique-tag">Unique</span>' : ""}
       `;
