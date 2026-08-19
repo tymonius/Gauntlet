@@ -35,8 +35,9 @@
   position: relative;
   display: block;
   overflow: hidden;
-  background-color: var(--card-parchment);
-  background-image: none;
+  background:
+    linear-gradient(var(--deed-parchment-tint), var(--deed-parchment-tint)),
+    var(--card-parchment);
 }
 
 #supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .card-interior > *,
@@ -45,17 +46,17 @@
 }
 
 /* The approved Financiers parchment source is portrait-oriented. Rotate that
-   exact source as one layer and place a translucent green wash above the
-   parchment within the same background stack. Do not multiply the wash into
-   the warm paper: that turns the field brown/ochre instead of visibly green. */
+   exact source and deliberately overscan it beneath the interior keyline so
+   subpixel rounding can never expose a bright seam at any edge. The green
+   wash stays above the parchment in the same background stack. */
 #supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .card-interior::before,
 .supplemental-placeholder-card[aria-label^="Deed "] .card-interior::before {
   position: absolute;
   z-index: 0;
   top: 50%;
   left: 50%;
-  width: 70.15%;
-  height: 142.55%;
+  width: 72%;
+  height: 145%;
   background-color: var(--card-parchment);
   background-image:
     linear-gradient(var(--deed-parchment-tint), var(--deed-parchment-tint)),
@@ -87,7 +88,7 @@
     "P22 Declaration W01 Blackletter",
     "P22 Declaration Blackletter",
     var(--font-flavor);
-  font-size: 42pt;
+  font-size: 72pt;
   font-style: normal;
   font-weight: 400;
   letter-spacing: 0.015em;
