@@ -35,6 +35,7 @@ window.GAUNTLET_ART_DIRECTION = Object.freeze({
   "territory-refuge": {"focusY":0.463},
   "territory-ruined-storehouse": {"focusY":0.516},
   "territory-smuggler-s-pass": {"focusY":0.648},
+  "territory-supply-depot": {"focusY":0.523},
   "territory-toll-bridge": {"focusY":0.463},
   "territory-watchtower": {"focusY":0.229},
 });
