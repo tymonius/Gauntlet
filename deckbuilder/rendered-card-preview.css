@@ -1,0 +1,44 @@
+.card-preview.rendered-card-preview {
+  overflow: visible;
+}
+
+.deckbuilder-card-render-stage {
+  position: relative;
+  width: 100%;
+  min-height: 1px;
+  overflow: visible;
+}
+
+.deckbuilder-card-render-frame {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 240px;
+  height: 336px;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  transform-origin: top center;
+  pointer-events: auto;
+  cursor: zoom-in;
+}
+
+.rendered-card-preview-actions {
+  justify-content: center;
+  margin-top: 14px;
+}
+
+@media (max-width: 760px) {
+  .card-preview.rendered-card-preview {
+    max-height: min(88vh, 48rem);
+  }
+
+  .deckbuilder-card-render-stage {
+    width: min(100%, 320px);
+    margin: 0 auto;
+  }
+
+  .rendered-card-preview-actions {
+    padding-bottom: 0.25rem;
+  }
+}
