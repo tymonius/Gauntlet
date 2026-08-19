@@ -2,6 +2,7 @@
   const PUBLIC_ORIGIN = 'https://gauntlet.run';
   const API_ORIGIN = 'https://gauntlet-artwork-authoring.tymon-scott.workers.dev';
   const SESSION_KEY = 'gauntlet.artwork-authoring-session.v1';
+  const DRAFTS_KEY = 'gauntlet.art-direction-drafts.v1';
   const AUTH_MESSAGE = 'gauntlet-artwork-authoring-authenticated';
   const PUBLIC_SAVE_PATH = '/api/art-direction';
 
@@ -9,6 +10,7 @@
 
   const nativeFetch = window.fetch.bind(window);
   let authenticationPromise = null;
+  let hydrationPromise = null;
 
   function consumeAuthFragment() {
     const fragment = new URLSearchParams(window.location.hash.replace(/^#/, ''));
@@ -90,9 +92,73 @@
     window.dispatchEvent(new CustomEvent('gauntlet-artwork-authoring-status', { detail }));
   }
 
+  function readDrafts() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(DRAFTS_KEY) || '{}');
+      return parsed && typeof parsed === 'object' ? parsed : {};
+    } catch {
+      return {};
+    }
+  }
+
+  function installCanonicalDirections(directions) {
+    const next = directions && typeof directions === 'object' ? directions : {};
+    const before = readDrafts();
+    if (JSON.stringify(before) === JSON.stringify(next)) return false;
+    localStorage.setItem(DRAFTS_KEY, JSON.stringify(next));
+    return true;
+  }
+
+  async function hydrateCanonicalDirections(token, { reloadIfChanged = false } = {}) {
+    if (!token) return false;
+    if (hydrationPromise) return hydrationPromise;
+
+    hydrationPromise = (async () => {
+      const response = await nativeFetch(`${API_ORIGIN}${PUBLIC_SAVE_PATH}`, {
+        method: 'GET',
+        headers: { authorization: `Bearer ${token}` },
+        mode: 'cors',
+        credentials: 'omit',
+      });
+
+      if (response.status === 401) {
+        sessionStorage.removeItem(SESSION_KEY);
+        announce({ kind: 'auth-expired' });
+        return false;
+      }
+
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload.error || `Canonical artwork sync failed (${response.status}).`);
+
+      const changed = installCanonicalDirections(payload.directions);
+      if (changed && reloadIfChanged) window.location.reload();
+      return changed;
+    })().finally(() => {
+      hydrationPromise = null;
+    });
+
+    return hydrationPromise;
+  }
+
+  function installSavedDirection(payload) {
+    if (!payload?.saved || !payload.id) return;
+    const drafts = readDrafts();
+    if (payload.direction && typeof payload.direction === 'object' && Object.keys(payload.direction).length) {
+      drafts[payload.id] = payload.direction;
+    } else {
+      delete drafts[payload.id];
+    }
+    localStorage.setItem(DRAFTS_KEY, JSON.stringify(drafts));
+  }
+
   async function canonicalSave(input, init) {
     let token = sessionStorage.getItem(SESSION_KEY);
     if (!token) token = await requestAuthentication();
+
+    // The public page itself is served from main, while canonical in-progress
+    // compositions live on the authoring branch. Hydrate that branch before
+    // saving so reopening/reloading the compositor reflects the working state.
+    await hydrateCanonicalDirections(token);
 
     const headers = new Headers(init?.headers || {});
     headers.set('authorization', `Bearer ${token}`);
@@ -115,7 +181,10 @@
     if (!response.ok) {
       throw new Error(payload.error || `Canonical artwork save failed (${response.status}).`);
     }
-    if (payload.saved) announce({ kind: 'saved', ...payload });
+    if (payload.saved) {
+      installSavedDirection(payload);
+      announce({ kind: 'saved', ...payload });
+    }
     return response;
   }
 
@@ -151,4 +220,11 @@
   });
 
   consumeAuthFragment();
+
+  const existingSession = sessionStorage.getItem(SESSION_KEY);
+  if (existingSession) {
+    hydrateCanonicalDirections(existingSession, { reloadIfChanged: true }).catch(error => {
+      announce({ kind: 'error', message: error instanceof Error ? error.message : String(error) });
+    });
+  }
 })();
