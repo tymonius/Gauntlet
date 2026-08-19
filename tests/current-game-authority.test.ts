@@ -1,6 +1,10 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { resolveCards } from '../game-data/current-game.mjs';
+import {
+  CURRENT_ART_DIRECTION_SOURCE_URL,
+  parseArtDirectionSource,
+  resolveCards,
+} from '../game-data/current-game.mjs';
 
 const manifest = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
 
@@ -73,6 +77,20 @@ describe('single current-game authority', () => {
     expect(resolved.find(card => card.id === 'revise')?.cost).toBe(4);
     expect(resolved.some(card => card.id === 'retire')).toBe(false);
     expect(resolved.every(card => card.current_game_authority === '/game-data/current-game.json')).toBe(true);
+  });
+
+  it('resolves compositor artwork positioning into the current-game object', () => {
+    expect(CURRENT_ART_DIRECTION_SOURCE_URL).toBe('/tts/artwork-direction-overrides.js');
+    const source = readFileSync(`.${CURRENT_ART_DIRECTION_SOURCE_URL}`, 'utf8');
+    const directions = parseArtDirectionSource(source);
+    expect(directions['territory-quicksand']).toEqual(expect.objectContaining({ focusY: expect.any(Number) }));
+
+    const cardRenderer = readFileSync('card-design/card-review-render.js', 'utf8');
+    const territoryRenderer = readFileSync('card-design/territory-review-render.js', 'utf8');
+    expect(cardRenderer).toContain('currentGame.artDirection');
+    expect(territoryRenderer).toContain('currentGame.artDirection');
+    expect(cardRenderer).not.toContain("loadScript('/tts/artwork-direction-overrides.js')");
+    expect(territoryRenderer).not.toContain("loadScript('/tts/artwork-direction-overrides.js')");
   });
 
   it('prevents current browser/runtime surfaces from selecting raw version sources independently', () => {
