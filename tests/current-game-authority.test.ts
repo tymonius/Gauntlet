@@ -34,6 +34,7 @@ const RAW_CURRENT_SOURCE_MARKERS = [
   'clean-v0.6.3/complete-authority/canonical-structured-data.json',
   'clean-v0.6.3/downstream/canonical-data.json',
   '/config/tts-component-contract.json',
+  '/deckbuilder/starter-decks.json',
 ];
 
 describe('single current-game authority', () => {
@@ -50,6 +51,7 @@ describe('single current-game authority', () => {
       proposals: expect.any(String),
       arcaneSymbol: expect.any(String),
       componentContract: expect.any(String),
+      starterDecks: '/deckbuilder/starter-decks.json',
     }));
   });
 
@@ -117,6 +119,8 @@ describe('single current-game authority', () => {
     const factionComponents = readFileSync('deckbuilder/faction-components.js', 'utf8');
     expect(starters).not.toContain('installV064PlaytestCards');
     expect(starters).not.toContain('retired_cards');
+    expect(starters).not.toContain('fetch(STARTER_DECK_SOURCE');
+    expect(starters).toContain('state.currentGameData?.starterDeckData');
     expect(factionComponents).not.toContain('installDiplomatProposalWording');
     expect(factionComponents).not.toContain('installMysticsRitualComponent');
   });
