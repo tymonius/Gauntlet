@@ -25,6 +25,9 @@ const ANALYTICS_EXCLUDED_FILES = new Set([
   // Render-only TTS capture surfaces; they are not public navigation pages.
   "tts/back-renderer/index.html",
   "tts/supplemental-renderer/index.html",
+  // Print-only production render surfaces; they are embedded by Deckbuilder.
+  "card-design/card-print-render.html",
+  "card-design/territory-print-render.html",
   // Versioned development/review surfaces are not public analytics pages.
   "v0.6.3/changes/index.html",
   "v0.6.3/deckbuilder/index.html",
