@@ -11,8 +11,15 @@
   gap: 18px;
 }
 
+.rendered-card-header > div {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
 .rendered-card-header h3 {
   margin-bottom: 0;
+  font-size: clamp(1.8rem, 3vw, 2.75rem);
+  white-space: nowrap;
 }
 
 .rendered-card-cost {
@@ -61,6 +68,7 @@
 
   .rendered-card-header h3 {
     font-size: clamp(1.8rem, 10vw, 2.5rem);
+    white-space: normal;
   }
 
   .render-stage-shell {
