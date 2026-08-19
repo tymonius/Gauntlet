@@ -5,6 +5,7 @@
   const DRAFTS_KEY = 'gauntlet.art-direction-drafts.v1';
   const AUTH_MESSAGE = 'gauntlet-artwork-authoring-authenticated';
   const PUBLIC_SAVE_PATH = '/api/art-direction';
+  const PUBLISH_PATH = '/api/art-direction/publish';
   const WORKING_BRANCH = 'artwork/compositor-authoring';
   const WORKING_FILE_API = `https://api.github.com/repos/tymonius/Gauntlet/contents/tts/artwork-direction-overrides.js?ref=${encodeURIComponent(WORKING_BRANCH)}`;
 
@@ -13,6 +14,7 @@
   const nativeFetch = window.fetch.bind(window);
   let authenticationPromise = null;
   let hydrationPromise = null;
+  let currentBatchPr = null;
 
   function consumeAuthFragment() {
     const fragment = new URLSearchParams(window.location.hash.replace(/^#/, ''));
@@ -45,7 +47,7 @@
       'popup=yes,width=720,height=780,resizable=yes,scrollbars=yes',
     );
     if (!popup) {
-      return Promise.reject(new Error('GitHub sign-in popup was blocked. Allow popups for gauntlet.run and click Save position again.'));
+      return Promise.reject(new Error('GitHub sign-in popup was blocked. Allow popups for gauntlet.run and try again.'));
     }
 
     authenticationPromise = new Promise((resolve, reject) => {
@@ -214,9 +216,97 @@
     }
     if (payload.saved) {
       installSavedDirection(payload);
+      currentBatchPr = payload.pr || currentBatchPr;
       announce({ kind: 'saved', ...payload });
     }
     return response;
+  }
+
+  async function publishBatch(pr) {
+    let token = sessionStorage.getItem(SESSION_KEY);
+    if (!token) token = await requestAuthentication();
+
+    const response = await nativeFetch(`${API_ORIGIN}${PUBLISH_PATH}`, {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${token}`,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({ prNumber: pr?.number || null }),
+      mode: 'cors',
+      credentials: 'omit',
+    });
+
+    if (response.status === 401) {
+      sessionStorage.removeItem(SESSION_KEY);
+      announce({ kind: 'auth-expired' });
+      throw new Error('GitHub authoring session expired. Click Publish batch again to sign in.');
+    }
+
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok || !payload.published) {
+      throw new Error(payload.error || `Artwork batch publication failed (${response.status}).`);
+    }
+
+    currentBatchPr = null;
+    localStorage.removeItem(DRAFTS_KEY);
+    announce({ kind: 'published', ...payload });
+    return payload;
+  }
+
+  async function refreshBatchStatus() {
+    const token = sessionStorage.getItem(SESSION_KEY);
+    if (!token) return null;
+
+    const response = await nativeFetch(`${API_ORIGIN}${PUBLISH_PATH}`, {
+      method: 'GET',
+      headers: { authorization: `Bearer ${token}` },
+      mode: 'cors',
+      credentials: 'omit',
+    });
+
+    if (response.status === 401) {
+      sessionStorage.removeItem(SESSION_KEY);
+      return null;
+    }
+    if (!response.ok) return null;
+
+    const payload = await response.json().catch(() => ({}));
+    currentBatchPr = payload.open ? payload.pr : null;
+    return currentBatchPr;
+  }
+
+  function renderBatchStatus(status, pr, lead = 'Saved to artwork composition batch ') {
+    if (!status || !pr?.number || !pr?.url) return;
+    status.textContent = '';
+    status.append(lead);
+
+    const link = document.createElement('a');
+    link.href = pr.url;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    link.textContent = `PR #${pr.number}`;
+    status.append(link, '. Keep saving additional cards to this same batch.');
+
+    const actions = document.createElement('span');
+    actions.className = 'art-compositor-publish-actions';
+
+    const publish = document.createElement('button');
+    publish.type = 'button';
+    publish.className = 'art-compositor-publish-batch';
+    publish.textContent = 'Publish batch';
+    publish.addEventListener('click', async () => {
+      publish.disabled = true;
+      publish.textContent = 'Publishing…';
+      try {
+        await publishBatch(pr);
+      } catch (error) {
+        announce({ kind: 'error', message: error instanceof Error ? error.message : String(error), pr });
+      }
+    });
+
+    actions.append(publish);
+    status.append(actions);
   }
 
   window.fetch = function gauntletArtworkAuthoringFetch(input, init) {
@@ -232,29 +322,52 @@
       const status = document.querySelector('.art-compositor-save-status');
       if (!status) return;
       const detail = event.detail || {};
+
       if (detail.kind === 'saved' && detail.pr?.url) {
+        renderBatchStatus(status, detail.pr);
+      } else if (detail.kind === 'published' && detail.published) {
         status.textContent = '';
-        status.append('Saved to artwork composition batch ');
-        const link = document.createElement('a');
-        link.href = detail.pr.url;
-        link.target = '_blank';
-        link.rel = 'noopener';
-        link.textContent = `PR #${detail.pr.number}`;
-        status.append(link, '. Keep saving additional cards to this same PR; merge it once when the batch is ready. All saved positions become canonical together.');
+        status.append(`Published PR #${detail.pr?.number || ''} to main. All saved artwork positions in the batch are now canonical.`);
+        if (detail.merge?.url) {
+          status.append(' ');
+          const link = document.createElement('a');
+          link.href = detail.merge.url;
+          link.target = '_blank';
+          link.rel = 'noopener';
+          link.textContent = 'View merge commit';
+          status.append(link, '.');
+        }
+        if (detail.warning) status.append(` ${detail.warning}`);
+        status.append(' Reloading the canonical catalog…');
+        window.setTimeout(() => window.location.reload(), 1400);
       } else if (detail.kind === 'auth-expired') {
-        status.textContent = 'GitHub authoring session expired. Click Save position again to sign in.';
+        status.textContent = 'GitHub authoring session expired. Save or publish again to sign in.';
       } else if (detail.kind === 'error') {
-        status.textContent = `${detail.message} The current crop remains saved as a browser draft.`;
+        status.textContent = `${detail.message} The artwork batch has not been published.`;
+        if (detail.pr) renderBatchStatus(status, detail.pr, `${detail.message} `);
       }
     }, 0);
   });
+
+  document.addEventListener('click', event => {
+    const opener = event.target instanceof Element
+      ? event.target.closest('.art-compositor-launch')
+      : null;
+    if (!opener || !currentBatchPr) return;
+    window.setTimeout(() => {
+      const status = document.querySelector('.art-compositor-save-status');
+      if (status) renderBatchStatus(status, currentBatchPr, 'Current artwork composition batch ');
+    }, 0);
+  }, true);
 
   consumeAuthFragment();
 
   // Show the current in-progress batch on every catalog load. It becomes
   // canonical for Card Reference, Deckbuilder, print, and other shared
-  // renderers only when the batch PR is merged into main.
+  // renderers only when the batch PR is published into main.
   hydrateWorkingDirections({ reloadIfChanged: true }).catch(error => {
     announce({ kind: 'error', message: error instanceof Error ? error.message : String(error) });
   });
+
+  refreshBatchStatus().catch(() => {});
 })();
