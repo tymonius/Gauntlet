@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 const playableRender = readFileSync("card-design/card-print-render.html", "utf8");
 const territoryRender = readFileSync("card-design/territory-print-render.html", "utf8");
 const printTransform = readFileSync("deckbuilder/print-duplex-sheet-pairing.js", "utf8");
+const printOptionsCss = readFileSync("deckbuilder/print-options.css", "utf8");
 const duplexTransform = readFileSync("deckbuilder/print-duplex.js", "utf8");
 
 describe("Deckbuilder production printing", () => {
@@ -31,13 +32,22 @@ describe("Deckbuilder production printing", () => {
     expect(printTransform).toContain('left: 2.5in;');
   });
 
-  it("uses the same selected-faction production back for playable cards and Territories", () => {
+  it("uses one shared back for playable cards and Territories, defaulting to black", () => {
     expect(duplexTransform).toContain('cell.querySelector(".main-card, .territory")');
     expect(printTransform).toContain('frontCell.querySelector(".production-render-card, .production-render-territory")');
     expect(printTransform).toContain('/tts/back-renderer/index.html?faction=');
+    expect(printTransform).toContain('if (!useFactionColor) return "intelligence";');
     expect(printTransform).toContain('String(state.factionId || "intelligence")');
     expect(printTransform).toContain('mirrorIndexForLongEdge(frontIndex)');
     expect(printTransform).toContain('production deck-card back');
+  });
+
+  it("offers faction-colored backs only as an explicit print option", () => {
+    expect(printTransform).toContain('checkbox.id = "factionColorCardBack"');
+    expect(printTransform).toContain('label.textContent = "Faction color card back"');
+    expect(printTransform).toContain('checkbox.disabled = !printBacks.checked');
+    expect(printOptionsCss).toContain('.faction-back-option');
+    expect(printOptionsCss).toContain('.faction-back-option.disabled');
   });
 
   it("waits for every production render before opening the browser print dialog", () => {
