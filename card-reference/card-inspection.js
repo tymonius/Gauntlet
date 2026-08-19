@@ -92,6 +92,12 @@
     }
   }
 
+  function inspectionRenderUrl(href) {
+    const url = new URL(href, window.location.href);
+    url.searchParams.set('inspection', '1');
+    return url.href;
+  }
+
   function setLabel(label) {
     currentLabel = String(label || currentLabel || 'Gauntlet card').trim() || 'Gauntlet card';
     const labelElement = dialog.querySelector('.card-reference-inspection-label');
@@ -101,7 +107,8 @@
   function openCard(href, label) {
     currentCardHref = href;
     setLabel(label);
-    if (cardFrame.src !== href) cardFrame.src = href;
+    const renderHref = inspectionRenderUrl(href);
+    if (cardFrame.src !== renderHref) cardFrame.src = renderHref;
     showCard();
     if (!dialog.open) dialog.showModal();
     requestAnimationFrame(scaleCardStage);
