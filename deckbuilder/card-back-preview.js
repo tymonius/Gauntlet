@@ -120,7 +120,7 @@
   }
 
   function selectedFactionId() {
-    return String(window.state?.factionId || document.getElementById("factionSelect")?.value || "")
+    return String(state?.factionId || document.getElementById("factionSelect")?.value || "")
       .trim()
       .toLowerCase();
   }
