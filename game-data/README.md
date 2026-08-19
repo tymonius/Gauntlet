@@ -6,7 +6,7 @@ Current-development tools and render surfaces must **not** choose versioned sour
 
 ## Authority model
 
-The current-game authority declares:
+The current-game authority declares or centrally resolves:
 
 - the active development version and base release;
 - the provenance inputs that define the current playable-card pool;
@@ -15,6 +15,7 @@ The current-game authority declares:
 - current Leader definitions;
 - current Mystics Rite/Ritual definitions;
 - the current physical-component contract;
+- canonical manual artwork positioning saved by the Card Design compositor;
 - explicit resolution semantics for additions, revisions, and retirements.
 
 The resolver turns those inputs into one current-game object. A consumer receives that resolved object; it does not decide source precedence itself.
@@ -27,6 +28,14 @@ For playable cards, stable IDs are authoritative. Resolution is:
 4. add any new stable ID supplied by the current card-change source.
 
 This makes an update to an existing card propagate exactly like a new card: once the authority's current change record is updated, every current consumer sees the same resolved card.
+
+## Artwork positioning
+
+The Card Design compositor remains the authoring surface for manual artwork composition. Its canonical save file is `tts/artwork-direction-overrides.js`, keyed by the same stable card/Territory IDs used by current-game data.
+
+`game-data/current-game.mjs` now resolves that file into `currentGame.artDirection` and `currentGame.artDirectionFor(id)`. Current production card and Territory renderers consume those resolved values rather than independently loading an artwork-position source. Because Deckbuilder preview/printing and Card Reference reuse those renderers, an approved compositor save propagates to all of them.
+
+The existing artwork-authoring GitHub App does not need additional repository permissions for this arrangement: it continues to update the same file on the same authoring branch and open/reuse the same pull request. The authority change is downstream consumption, not a new privileged operation.
 
 ## What may remain version-pinned
 
@@ -53,6 +62,6 @@ Some TypeScript build surfaces cannot dynamically import an arbitrary JSON path 
 
 ## Guardrails
 
-`tests/current-game-authority.test.ts` prevents active runtime surfaces from directly selecting the raw v0.6.4 source files and verifies stable-ID replacement/retirement semantics.
+`tests/current-game-authority.test.ts` prevents active runtime surfaces from directly selecting the raw v0.6.4 source files, verifies stable-ID replacement/retirement semantics, and verifies that compositor-authored artwork direction is resolved through current-game before production rendering.
 
 If a future current-development tool needs game data, the default answer is: **load the current-game authority, not another versioned file.**
