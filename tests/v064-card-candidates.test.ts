@@ -59,7 +59,7 @@ describe("v0.6.4 full card-expansion candidate staging", () => {
     }
   });
 
-  it("records Malleus Maleficarum as an Inquisition Asset that imposes the Arcane trait", () => {
+  it("records Malleus Maleficarum as an Inquisition Asset that declares specific cards heretical", () => {
     const malleus = source.cards.find((card: any) => card.name === "Malleus Maleficarum");
     expect(malleus).toMatchObject({
       id: "inquisition-malleus-maleficarum",
@@ -69,9 +69,10 @@ describe("v0.6.4 full card-expansion candidate staging", () => {
       trait: null,
     });
     expect(malleus.cost_status).toContain("test 3 versus 4");
-    expect(malleus.effects.map((effect: any) => effect.label)).toEqual(["Action", "Asset"]);
-    expect(malleus.effects[0].text).toContain("one non-Arcane card title");
-    expect(malleus.effects[1].text).toBe("Cards the opponent owns with the chosen title have the Arcane trait.");
+    expect(malleus.effects.map((effect: any) => effect.label)).toEqual(["Asset"]);
+    expect(malleus.effects[0].text).toBe(
+      "Once per turn, when an opponent plays or reveals a non-Arcane card, you may declare it heretical. It has the Arcane trait for that play or reveal and until the end of the turn.",
+    );
   });
 
   it("uses current effect headings and inherent-bank conventions", () => {
@@ -93,10 +94,6 @@ describe("v0.6.4 full card-expansion candidate staging", () => {
       ["Regime Change", "Bank this card. You may have only one banked Regime Change."],
       ["Reembodiment", "Bank this card. You may have only one banked copy."],
     ]);
-
-    const malleus = source.cards.find((card: any) => card.name === "Malleus Maleficarum");
-    expect(malleus.effects[0].text).toContain("then bank this card");
-    expect(malleus.effects[0].text).toContain("only one banked Malleus Maleficarum");
   });
 
   it("applies the shared movement, Overlay, shorthand, and role-label conventions", () => {
