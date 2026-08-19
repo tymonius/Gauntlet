@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="/card-design/faction-specimens.css">
   <link rel="stylesheet" href="/card-design/leader-card.css">
   <link rel="stylesheet" href="/card-design/proposal-card.css">
+  <link rel="stylesheet" href="/card-design/rite-card.css">
   <link rel="stylesheet" href="/card-design/reference-card.css">
   <link rel="stylesheet" href="/card-design/supplemental-card.css">
   <style>
@@ -35,6 +36,7 @@
 
     #leaderReviewSections,
     #proposalReviewSections,
+    #riteReviewSections,
     #supplementalReviewSections {
       position: fixed;
       left: -10000px;
@@ -57,6 +59,7 @@
   </style>
   <script src="/card-design/card-review.js" defer></script>
   <script type="module" src="/card-design/proposal-card.js"></script>
+  <script type="module" src="/card-design/rite-card.js"></script>
   <script type="module" src="/card-design/supplemental-card.js"></script>
   <script src="/card-design/card-design.js" defer></script>
   <script src="/tts/artwork-direction-overrides.js" defer></script>
@@ -66,6 +69,7 @@
 <body class="faction-specimen-page">
   <div id="leaderReviewSections" aria-hidden="true"></div>
   <div id="proposalReviewSections" aria-hidden="true"></div>
+  <div id="riteReviewSections" aria-hidden="true"></div>
   <div id="supplementalReviewSections" aria-hidden="true"></div>
   <main id="renderTarget" aria-live="polite"></main>
 </body>
