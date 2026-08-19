@@ -123,8 +123,9 @@
     const art = card.querySelector('.territory-art');
     const effect = card.querySelector('.territory-effect');
     let titleSize = Number.parseFloat(getComputedStyle(title).fontSize);
-    let artHeight = PREFERRED_MINIMUM_ART_HEIGHT;
+    let artHeight = art?.getBoundingClientRect().height || 0;
     let effectScale = 1;
+    let artClamped = false;
 
     while (textOverflows(title) && titleSize > MINIMUM_TITLE_SIZE) {
       titleSize = Math.max(MINIMUM_TITLE_SIZE, titleSize - TITLE_STEP);
@@ -132,9 +133,22 @@
       forceLayout(card);
     }
 
-    /* The artwork track has no maximum: it expands to all space left after the
-       effect text. The preferred floor is already the normal grid minimum, so
-       fitting dense copy should compact spacing/type before reducing artwork. */
+    /* Short-copy Territories keep a fully fluid artwork frame with no maximum.
+       If the fluid layout itself overflows, clamp the frame only for that card
+       and spend artwork height before reducing the rules typography. */
+    if (cardOverflows(card)) {
+      artClamped = true;
+      artHeight = art?.getBoundingClientRect().height || artHeight;
+      art.style.flex = `0 0 ${artHeight}px`;
+      forceLayout(card);
+    }
+
+    while (cardOverflows(card) && artHeight > PREFERRED_MINIMUM_ART_HEIGHT) {
+      artHeight = Math.max(PREFERRED_MINIMUM_ART_HEIGHT, artHeight - ART_HEIGHT_STEP);
+      art.style.flex = `0 0 ${artHeight}px`;
+      forceLayout(card);
+    }
+
     if (cardOverflows(card)) {
       card.classList.add('compact');
       forceLayout(card);
@@ -150,8 +164,12 @@
        v0.6.4 candidates are regression-tested to stay at or above the preferred
        artwork floor, so this path should not be part of their normal layout. */
     while (cardOverflows(card) && artHeight > MINIMUM_ART_HEIGHT) {
+      if (!artClamped) {
+        artClamped = true;
+        artHeight = art?.getBoundingClientRect().height || artHeight;
+      }
       artHeight = Math.max(MINIMUM_ART_HEIGHT, artHeight - ART_HEIGHT_STEP);
-      card.style.setProperty('--art-height', `${artHeight}px`);
+      art.style.flex = `0 0 ${artHeight}px`;
       forceLayout(card);
     }
 
