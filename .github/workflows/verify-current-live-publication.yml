@@ -16,6 +16,7 @@ on:
       - 'rulebook/**'
       - 'card-reference/**'
       - 'card-design/**'
+      - 'tts/artwork-direction-overrides.js'
       - 'factions/**'
       - 'deckbuilder/**'
       - 'rules-arbiter/**'

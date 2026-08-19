@@ -10,10 +10,11 @@
   // The public catalog is static, so canonical saves are bridged through the
   // authenticated artwork-authoring Worker. The client is a no-op on the local
   // authoring server, where /api/art-direction continues to write the repo file
-  // directly.
+  // directly. Keep this URL versioned so Pages deployments cannot leave an old
+  // authoring client in the browser cache after authoring changes ship.
   const authoringClient = document.createElement('script');
   authoringClient.async = false;
-  authoringClient.src = 'artwork-authoring-client.js';
+  authoringClient.src = 'artwork-authoring-client.js?v=20260819-6';
   document.head.append(authoringClient);
 
   let returnView = null;
