@@ -5,6 +5,8 @@
   document.addEventListener("DOMContentLoaded", installDuplexSheetPairingFix);
 
   function installDuplexSheetPairingFix() {
+    installFactionBackOption();
+
     const button = document.getElementById("printDeckButton");
     if (!button) return;
 
@@ -42,6 +44,35 @@
       window.open = pairingAwareOpen;
       window.setTimeout(restoreOpen, 0);
     }, true);
+  }
+
+  function installFactionBackOption() {
+    const printBacks = document.getElementById("printCardBacks");
+    const existing = document.getElementById("factionColorCardBack");
+    if (!printBacks || existing) return;
+
+    const parentOption = printBacks.closest(".print-option");
+    if (!parentOption) return;
+
+    const option = document.createElement("label");
+    option.className = "print-option faction-back-option";
+
+    const checkbox = document.createElement("input");
+    checkbox.id = "factionColorCardBack";
+    checkbox.type = "checkbox";
+
+    const label = document.createElement("span");
+    label.textContent = "Faction color card back";
+
+    option.append(checkbox, label);
+    parentOption.after(option);
+
+    const syncAvailability = () => {
+      checkbox.disabled = !printBacks.checked;
+      option.classList.toggle("disabled", checkbox.disabled);
+    };
+    printBacks.addEventListener("change", syncAvailability);
+    syncAvailability();
   }
 
   function prepareProductionPrintDocument(html) {
@@ -155,8 +186,14 @@
     return wrapper;
   }
 
+  function selectedBackFaction() {
+    const useFactionColor = Boolean(document.getElementById("factionColorCardBack")?.checked);
+    if (!useFactionColor) return "intelligence";
+    return String(state.factionId || "intelligence").trim().toLowerCase();
+  }
+
   function replaceProductionBacks(documentNode) {
-    const faction = String(state.factionId || "intelligence").trim().toLowerCase();
+    const faction = selectedBackFaction();
     const backPages = [...documentNode.querySelectorAll(".deck-card-back-page[data-duplex-pair]")];
 
     documentNode.querySelectorAll(".deck-card-front-page[data-duplex-pair]").forEach(frontPage => {
