@@ -20,7 +20,7 @@ window.GAUNTLET_ART_DIRECTION = Object.freeze({
   "financiers-war-bonds": {"focus":[0.368,0.572],"zoom":1.06},
   "inquisition-grand-inquisitor": {"focusY":0.075},
   "intelligence-sleeper-network": {"focusY":0.763},
-  "intelligence-spymaster": {"focusY":0.14},
+  "intelligence-spymaster": {"focusY":0.126},
   "military-commandant": {"focusY":0.099},
   "mystics-alchemist": {"focusY":0.095},
   "mystics-necromancy": {"focusY":0.398},
