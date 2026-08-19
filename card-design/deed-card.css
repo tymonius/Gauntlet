@@ -46,8 +46,9 @@
 
 /* The approved Financiers parchment source is portrait-oriented. Rotate that
    exact source as one layer, then apply the same restrained Financiers wash
-   used by the other faction components. The Deed uses ::after for its wordmark,
-   so the wash must live in this parchment layer instead of the shared ::after. */
+   used by the other faction components. The shared component system normally
+   puts this wash on ::after, but Deed uses ::after for its wordmark, so the
+   wash is composed directly with the parchment layer here instead. */
 #supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .card-interior::before,
 .supplemental-placeholder-card[aria-label^="Deed "] .card-interior::before {
   position: absolute;
