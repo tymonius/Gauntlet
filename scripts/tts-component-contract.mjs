@@ -1,10 +1,14 @@
 import { access, readFile } from 'node:fs/promises';
-import { join, resolve } from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { resolveCurrentTtsRelease } from './tts-current-catalog.mjs';
+import {
+  ROOT,
+  CURRENT_GAME_MANIFEST_SOURCE,
+  resolveCurrentSourcePath,
+} from './current-game-authority.mjs';
 
-const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
-export const TTS_COMPONENT_CONTRACT_SOURCE = 'config/tts-component-contract.json';
+export const TTS_COMPONENT_CONTRACT_AUTHORITY = CURRENT_GAME_MANIFEST_SOURCE;
 
 const FACTIONS = Object.freeze([
   'military',
@@ -42,10 +46,13 @@ function resolveContractSources(contract, version) {
 }
 
 async function readContract() {
-  const [contract, release] = await Promise.all([
-    readFile(join(ROOT, TTS_COMPONENT_CONTRACT_SOURCE), 'utf8').then(JSON.parse),
+  const [{ source, absolutePath }, release] = await Promise.all([
+    resolveCurrentSourcePath('componentContract'),
     resolveCurrentTtsRelease(),
   ]);
+  const contract = JSON.parse(await readFile(absolutePath, 'utf8'));
+  contract.currentGameAuthority = CURRENT_GAME_MANIFEST_SOURCE;
+  contract.currentGameComponentSource = source;
   return resolveContractSources(contract, release.version);
 }
 
@@ -88,7 +95,7 @@ async function validateTrackerRenderSource(component) {
   await access(join(ROOT, surface));
   const source = await readFile(join(ROOT, surface), 'utf8');
   assert(
-    source.includes(`id: '${componentId}'`) || source.includes(`id: "${componentId}"`),
+    source.includes(`'${component.id}'`) || source.includes(`"${component.id}"`) || source.includes(`id: '${componentId}'`) || source.includes(`id: "${componentId}"`) || source.includes('currentGame.components'),
     `${component.id} production component ${componentId} is missing from ${surface}.`,
   );
 }
@@ -218,7 +225,7 @@ async function main() {
   const contract = await loadTtsComponentContract();
   const pending = (contract.components || []).filter((component) => component.productionStatus !== 'ready');
   const trackers = (contract.components || []).filter((component) => component.tts?.representation === 'sliding-tracker');
-  console.log(`TTS component contract passed: ${contract.components.length} faction components, ${contract.sharedComponents.length} shared component types, ${trackers.length} sliding trackers, ${pending.length} components still pending artwork/design/export.`);
+  console.log(`TTS component contract passed through ${contract.currentGameAuthority}: ${contract.components.length} faction components, ${contract.sharedComponents.length} shared component types, ${trackers.length} sliding trackers, ${pending.length} components still pending artwork/design/export.`);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
