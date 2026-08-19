@@ -68,8 +68,8 @@ await (async () => {
       playableCards: [preview],
       missingArtwork: artwork ? [] : [preview.id],
     };
+    window.GAUNTLET_ART_DIRECTION = currentGame.artDirection;
 
-    await loadScript('/tts/artwork-direction-overrides.js');
     await loadScript('/tts/artwork-crop.js');
     await loadScript('/tts/renderer/renderer.js');
     await loadScript('/card-design/card-design.js');
