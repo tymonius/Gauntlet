@@ -17,3 +17,13 @@
   margin: 0;
   accent-color: var(--accent);
 }
+
+.faction-back-option {
+  margin-top: 0.4rem;
+  margin-left: 1.55rem;
+}
+
+.faction-back-option.disabled {
+  opacity: 0.55;
+  cursor: default;
+}
