@@ -1,4 +1,5 @@
 export const CURRENT_GAME_AUTHORITY_URL = '/game-data/current-game.json';
+export const CURRENT_ART_DIRECTION_SOURCE_URL = '/tts/artwork-direction-overrides.js';
 
 let currentGamePromise = null;
 
@@ -13,9 +14,65 @@ async function loadJson(url) {
   return response.json();
 }
 
+async function loadText(url) {
+  const response = await fetch(url, { cache: 'no-store' });
+  if (!response.ok) throw new Error(`Current-game source request failed for ${url}: HTTP ${response.status}.`);
+  return response.text();
+}
+
 function requireArray(value, label) {
   if (!Array.isArray(value)) throw new Error(`Current-game authority expected ${label} to be an array.`);
   return value;
+}
+
+function normalizeArtFocus(value) {
+  if (value === undefined || value === null || value === '') return undefined;
+  const number = Number.parseFloat(value);
+  if (!Number.isFinite(number)) return undefined;
+  return Math.min(1, Math.max(0, number > 1 ? number / 100 : number));
+}
+
+function normalizeArtDirection(value) {
+  const source = value && typeof value === 'object' ? value : {};
+  const direction = {};
+  const focus = Array.isArray(source.focus) ? source.focus : [];
+  const focusX = normalizeArtFocus(source.focusX ?? source.focus_x ?? source.x ?? focus[0]);
+  const focusY = normalizeArtFocus(source.focusY ?? source.focus_y ?? source.y ?? focus[1]);
+
+  if (focusX !== undefined && focusY !== undefined) direction.focus = [focusX, focusY];
+  else if (focusX !== undefined) direction.focusX = focusX;
+  else if (focusY !== undefined) direction.focusY = focusY;
+
+  const zoom = Number.parseFloat(source.zoom);
+  if (Number.isFinite(zoom)) {
+    const normalizedZoom = Math.min(1.8, Math.max(1, zoom));
+    if (Math.abs(normalizedZoom - 1) > 0.0001) direction.zoom = normalizedZoom;
+  }
+  if (source.fit === 'contain') direction.fit = 'contain';
+  if (source.smart === false) direction.smart = false;
+  return direction;
+}
+
+export function parseArtDirectionSource(source) {
+  const text = String(source || '');
+  const match = text.match(/window\.GAUNTLET_ART_DIRECTION\s*=\s*Object\.freeze\(\{([\s\S]*?)\}\);?/);
+  if (!match) return {};
+  const body = match[1].trim();
+  if (!body) return {};
+
+  const jsonBody = body
+    .replace(/,\s*$/u, '')
+    .replace(/([,{]\s*)(focus|focusX|focusY|zoom|fit|smart)\s*:/gu, '$1"$2":');
+  const raw = JSON.parse(`{${jsonBody}}`);
+  const result = {};
+  for (const [id, direction] of Object.entries(raw)) {
+    if (!/^[A-Za-z0-9][A-Za-z0-9._:-]*$/.test(id)) {
+      throw new Error(`Current-game artwork direction contains an invalid id: ${id || '(empty)'}.`);
+    }
+    const normalized = normalizeArtDirection(direction);
+    if (Object.keys(normalized).length) result[id] = normalized;
+  }
+  return result;
 }
 
 export function slugify(value) {
@@ -122,13 +179,14 @@ async function resolveCurrentGame() {
   const manifest = await loadJson(CURRENT_GAME_AUTHORITY_URL);
   validateManifest(manifest);
 
-  const [base, cardChanges, territorySource, proposalSource, arcaneSymbolSource, componentContract] = await Promise.all([
+  const [base, cardChanges, territorySource, proposalSource, arcaneSymbolSource, componentContract, artDirectionSource] = await Promise.all([
     loadJson(manifest.sources.baseGameplay),
     loadJson(manifest.sources.cardChanges),
     loadJson(manifest.sources.territories),
     loadJson(manifest.sources.proposals),
     loadJson(manifest.sources.arcaneSymbol),
     loadJson(manifest.sources.componentContract),
+    loadText(CURRENT_ART_DIRECTION_SOURCE_URL),
   ]);
 
   const gameplay = base?.gameplay;
@@ -152,6 +210,7 @@ async function resolveCurrentGame() {
   const proposals = requireArray(proposalSource.proposals, 'current Proposals').map(proposal => clone(proposal));
   const factions = resolveFactions(gameplay.factions, manifest);
   const factionRules = resolveFactionRules(gameplay.faction_rules, manifest);
+  const artDirection = parseArtDirectionSource(artDirectionSource);
 
   const ids = new Set();
   for (const card of cards) {
@@ -164,6 +223,11 @@ async function resolveCurrentGame() {
     territoryIds.add(territory.id);
   }
 
+  const resolvedSources = {
+    ...clone(manifest.sources),
+    artDirection: CURRENT_ART_DIRECTION_SOURCE_URL,
+  };
+
   return Object.freeze({
     schemaVersion: manifest.schemaVersion,
     authority: manifest.authority,
@@ -172,7 +236,7 @@ async function resolveCurrentGame() {
     displayVersion: manifest.displayVersion || manifest.version,
     baseVersion: manifest.baseVersion,
     status: manifest.status,
-    sources: Object.freeze(clone(manifest.sources)),
+    sources: Object.freeze(resolvedSources),
     deckConstruction: Object.freeze(clone(gameplay.deck_construction || {})),
     battlefield: Object.freeze(clone(gameplay.battlefield || {})),
     battle: Object.freeze(clone(gameplay.battle || {})),
@@ -186,6 +250,7 @@ async function resolveCurrentGame() {
     territories: Object.freeze(territories),
     proposals: Object.freeze(proposals),
     arcaneSymbol: Object.freeze(clone(arcaneSymbolSource)),
+    artDirection: Object.freeze(clone(artDirection)),
     mystics: Object.freeze(clone(manifest.mystics || {})),
     componentContract: Object.freeze(clone(componentContract)),
     components: Object.freeze(clone(componentContract.components || [])),
@@ -196,10 +261,12 @@ async function resolveCurrentGame() {
       territories: Object.freeze({ status: territorySource.status || null, sourceIssue: territorySource.source_issue || null }),
       proposals: Object.freeze({ status: proposalSource.status || null, sourceIssue: proposalSource.source_issue || null }),
       arcaneSymbol: Object.freeze({ changeType: arcaneSymbolSource.change_type || null, mechanicsChanged: arcaneSymbolSource.mechanics_changed }),
+      artDirection: Object.freeze({ source: CURRENT_ART_DIRECTION_SOURCE_URL, entries: Object.keys(artDirection).length }),
     }),
     findCard(id) { return cards.find(card => card.id === id) || null; },
     findTerritory(id) { return territories.find(territory => territory.id === id) || null; },
     findLeader(faction, id) { return factions.find(item => item.id === faction)?.leaders.find(leader => leader.id === id) || null; },
+    artDirectionFor(id) { return artDirection[id] ? clone(artDirection[id]) : null; },
     slugify,
   });
 }
