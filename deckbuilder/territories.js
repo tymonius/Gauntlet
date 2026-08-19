@@ -56,7 +56,6 @@
         id: territory.id,
         name: territory.name,
         arena: Boolean(territory.arena),
-        complexity: territory.complexity || "Current",
         watchlist: territory.watchlist || "None",
         status: territory.status || "Approved",
         text: String(territory.text || territory.effects?.map(effect => effect.text).filter(Boolean).join("\n") || ""),
@@ -102,7 +101,7 @@
       })
       .filter(territory => {
         if (!state.territorySearch) return true;
-        return `${territory.name} ${territory.complexity} ${territory.watchlist} ${territory.text}`
+        return `${territory.name} ${territory.watchlist} ${territory.text}`
           .toLowerCase()
           .includes(state.territorySearch);
       });
@@ -149,7 +148,6 @@
           <div class="compact-card-title"><strong>${escapeHtml(territory.name)}</strong></div>
           <div class="compact-card-meta">
             <span class="mini-pill">${territory.arena ? "Arena" : "Territory"}</span>
-            <span class="mini-pill">${escapeHtml(territory.complexity)}</span>
             ${selected ? '<span class="mini-pill">Selected</span>' : ""}
           </div>
         </div>
@@ -265,7 +263,6 @@
       row.innerHTML = `
         <div>
           <div class="deck-title"><strong>${escapeHtml(territory.name)}</strong><span class="mini-pill">${territory.arena ? "Arena" : "Territory"}</span></div>
-          <div class="deck-stats"><span class="mini-pill">${escapeHtml(territory.complexity)}</span></div>
         </div>
         <div class="deck-actions"><button type="button" class="secondary danger" aria-label="Remove ${escapeHtml(territory.name)}">×</button></div>
       `;
