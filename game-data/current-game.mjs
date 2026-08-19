@@ -113,7 +113,7 @@ function validateManifest(manifest) {
   if (!manifest.version || !manifest.baseVersion || !manifest.sources) {
     throw new Error('Current-game authority is missing version or source declarations.');
   }
-  for (const key of ['baseGameplay', 'cardChanges', 'territories', 'proposals', 'componentContract']) {
+  for (const key of ['baseGameplay', 'cardChanges', 'territories', 'proposals', 'arcaneSymbol', 'componentContract']) {
     if (!manifest.sources[key]) throw new Error(`Current-game authority is missing source ${key}.`);
   }
 }
@@ -122,11 +122,12 @@ async function resolveCurrentGame() {
   const manifest = await loadJson(CURRENT_GAME_AUTHORITY_URL);
   validateManifest(manifest);
 
-  const [base, cardChanges, territorySource, proposalSource, componentContract] = await Promise.all([
+  const [base, cardChanges, territorySource, proposalSource, arcaneSymbolSource, componentContract] = await Promise.all([
     loadJson(manifest.sources.baseGameplay),
     loadJson(manifest.sources.cardChanges),
     loadJson(manifest.sources.territories),
     loadJson(manifest.sources.proposals),
+    loadJson(manifest.sources.arcaneSymbol),
     loadJson(manifest.sources.componentContract),
   ]);
 
@@ -137,6 +138,9 @@ async function resolveCurrentGame() {
   }
   if (proposalSource?.version !== manifest.version || proposalSource?.base_version !== manifest.baseVersion) {
     throw new Error(`Current Proposal source does not match ${manifest.version} over ${manifest.baseVersion}.`);
+  }
+  if (arcaneSymbolSource?.version !== manifest.version || arcaneSymbolSource?.base_version !== manifest.baseVersion) {
+    throw new Error(`Current Arcane-symbol source does not match ${manifest.version} over ${manifest.baseVersion}.`);
   }
 
   const cards = resolveCards(gameplay.cards, cardChanges, manifest);
@@ -181,6 +185,7 @@ async function resolveCurrentGame() {
     cards: Object.freeze(cards),
     territories: Object.freeze(territories),
     proposals: Object.freeze(proposals),
+    arcaneSymbol: Object.freeze(clone(arcaneSymbolSource)),
     mystics: Object.freeze(clone(manifest.mystics || {})),
     componentContract: Object.freeze(clone(componentContract)),
     components: Object.freeze(clone(componentContract.components || [])),
@@ -190,6 +195,7 @@ async function resolveCurrentGame() {
       cardChanges: Object.freeze({ status: cardChanges.status || null, sourceIssues: clone(cardChanges.source_issues || []) }),
       territories: Object.freeze({ status: territorySource.status || null, sourceIssue: territorySource.source_issue || null }),
       proposals: Object.freeze({ status: proposalSource.status || null, sourceIssue: proposalSource.source_issue || null }),
+      arcaneSymbol: Object.freeze({ changeType: arcaneSymbolSource.change_type || null, mechanicsChanged: arcaneSymbolSource.mechanics_changed }),
     }),
     findCard(id) { return cards.find(card => card.id === id) || null; },
     findTerritory(id) { return territories.find(territory => territory.id === id) || null; },
