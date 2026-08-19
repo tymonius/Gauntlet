@@ -26,7 +26,7 @@ function esc(value) {
   })[character]);
 }
 
-function ledgerRows(count = 10) {
+function ledgerRows(count = 11) {
   return Array.from({ length: count }, () => `
     <div class="capital-ledger-row capital-ledger-row--blank" aria-hidden="true">
       <span></span><span></span><span></span>
@@ -39,7 +39,6 @@ export function capitalLedgerMarkup(version = 'Current') {
       <header class="reference-card-header capital-ledger-header">
         <div class="capital-ledger-faction-line"><span class="reference-faction-emblem" aria-hidden="true"></span><span>Financiers</span></div>
         <h3 class="reference-face-title">Capital Ledger</h3>
-        <div class="capital-ledger-subtitle">Public Capital Record</div>
       </header>
 
       <div class="reference-body capital-ledger-body">
@@ -59,7 +58,7 @@ export function capitalLedgerMarkup(version = 'Current') {
             <span role="cell">+1</span>
             <span role="cell">3</span>
           </div>
-          ${ledgerRows(10)}
+          ${ledgerRows(11)}
         </div>
       </div>
 
