@@ -4,7 +4,8 @@
    Landscape ownership marker placed beside a Territory. The face is composed
    entirely from the existing Financiers frame, approved parchment, restrained
    green wash, and one centered Declaration Blackletter wordmark. No artwork,
-   emblem, watermark, rules, footer, or other ornament belongs on this component. */
+   emblem, watermark, rules, footer, or decorative flourish belongs on the
+   production face until an approved typographic ornament is selected. */
 
 /* Catalog layout. These wrapper rules are intentionally separate from the
    card-face rules below; inspection clones do not retain this outer wrapper. */
@@ -99,6 +100,14 @@
   transform: none;
   white-space: nowrap;
   pointer-events: none;
+}
+
+/* The generic fit-warning diagnostic is a portrait-card fitting aid and does
+   not apply to this intentionally custom landscape face. Suppress the red dot
+   without consuming the Deed's outer pseudo-element for production artwork. */
+#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "].fit-warning::after,
+.supplemental-placeholder-card[aria-label^="Deed "].fit-warning::after {
+  display: none;
 }
 
 @media screen and (max-width: 760px) {

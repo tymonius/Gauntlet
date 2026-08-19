@@ -3,157 +3,31 @@ import {
   loadReferenceRecords,
   referenceCardMarkup,
 } from './reference-card.js';
+import { loadCurrentGame } from '../game-data/current-game.mjs';
 
-const SUPPLEMENTAL_COMPONENTS = Object.freeze([
-  {
-    faction: 'military',
-    factionLabel: 'Military',
-    cards: [
-      {
-        id: 'command-tracker',
-        name: 'Command Tracker',
-        type: 'Sliding tracker card',
-        detail: 'Tracks Command beneath the selected Military Leader Card. The printed scale includes headroom beyond the current v0.6.3 maximum of 2 for durable future effects.',
-        quantity: 1,
-        tracker: { max: 4, cover: 'Leader Card', scaleHeight: 1.18, labelSize: 11.2 },
-      },
-    ],
-  },
-  {
-    faction: 'diplomats',
-    factionLabel: 'Diplomats',
-    cards: [
-      {
-        id: 'influence-tracker',
-        name: 'Influence Tracker',
-        type: 'Sliding tracker card',
-        detail: 'Tracks 0–10 Influence beneath the selected Diplomat Leader Card.',
-        quantity: 1,
-        tracker: { max: 10, cover: 'Leader Card', scaleHeight: 2.08, labelSize: 7.9 },
-      },
-      {
-        id: 'diplomat-reference',
-        referenceId: 'diplomats-reference',
-        name: 'Diplomat Reference Card',
-        type: 'Double-sided reference card',
-        detail: 'Summarizes Terms resolution, Influence, Leverage, and Treaty Articles.',
-        quantity: 1,
-        doubleSided: true,
-      },
-    ],
-  },
-  {
-    faction: 'financiers',
-    factionLabel: 'Financiers',
-    cards: [
-      {
-        id: 'financier-reference',
-        referenceId: 'financiers-reference',
-        name: 'Financier Reference Card',
-        type: 'Double-sided reference card',
-        detail: 'Summarizes Capital, Financial Capacity, Deeds, Play the Market, Subsidize, and Controlling Interest.',
-        quantity: 1,
-        doubleSided: true,
-      },
-      {
-        id: 'deed',
-        name: 'Deed',
-        type: 'Shared full-size card',
-        detail: 'Eight identical cards form the shared unowned Deed supply. Each Territory currently in the Gauntlet has one Deed.',
-        quantity: 8,
-      },
-    ],
-  },
-  {
-    faction: 'intelligence',
-    factionLabel: 'Intelligence',
-    cards: [
-      {
-        id: 'mission-reference',
-        referenceId: 'intelligence-mission-reference',
-        name: 'Mission Reference Card',
-        type: 'Double-sided reference card',
-        detail: 'Required reference for Missions, Operation Progress, and Special Operations.',
-        quantity: 1,
-        doubleSided: true,
-      },
-      {
-        id: 'operations-reference',
-        referenceId: 'intelligence-operations-reference',
-        name: 'Operations Reference Card',
-        type: 'Double-sided reference card',
-        detail: 'Required reference for Surveillance, Interference, and Intelligence mirrors.',
-        quantity: 1,
-        doubleSided: true,
-      },
-      {
-        id: 'intel-tracker',
-        name: 'Intel Tracker',
-        type: 'Sliding tracker card',
-        detail: 'Provides a practical 0–12 physical tracking scale for uncapped Intel beneath the Operations Reference Card.',
-        quantity: 1,
-        tracker: { max: 12, cover: 'Operations Reference', scaleHeight: 2.08, labelSize: 7.2 },
-      },
-      {
-        id: 'operation-progress-tracker',
-        name: 'Operation Progress Tracker',
-        type: 'Sliding tracker card',
-        detail: 'Provides a practical 0–8 physical tracking scale for uncapped Operation Progress beneath the Mission Reference Card.',
-        quantity: 1,
-        tracker: { max: 8, cover: 'Mission Reference', scaleHeight: 1.84, labelSize: 6.8 },
-      },
-    ],
-  },
-  {
-    faction: 'mystics',
-    factionLabel: 'Mystics',
-    cards: [
-      {
-        id: 'mystics-reference',
-        referenceId: 'mystics-reference',
-        name: 'Mystics Reference Card',
-        type: 'Double-sided reference card',
-        detail: 'Summarizes Rite progression, Invocation, Transmutation, Convergence, Ritual, and bound-card rules.',
-        quantity: 1,
-        doubleSided: true,
-      },
-    ],
-  },
-  {
-    faction: 'inquisition',
-    factionLabel: 'Inquisition',
-    cards: [
-      {
-        id: 'doctrine-reference',
-        referenceId: 'inquisition-doctrine-reference',
-        name: 'Inquisition Doctrine Reference Card',
-        type: 'Double-sided reference card',
-        detail: 'Summarizes Conviction, Condemnation, Blasphemy, and Purification.',
-        quantity: 1,
-        doubleSided: true,
-      },
-      {
-        id: 'purge-reference',
-        referenceId: 'inquisition-purge-reference',
-        name: 'Purge Reference Card',
-        type: 'Double-sided reference card',
-        detail: 'Carries the complete Purge menu, Purge timing, and Final Judgment reminder.',
-        quantity: 1,
-        doubleSided: true,
-      },
-      {
-        id: 'conviction-tracker',
-        name: 'Conviction Tracker',
-        type: 'Sliding tracker card',
-        detail: 'Tracks 0–4 Conviction beneath the selected Inquisition Leader Card.',
-        quantity: 1,
-        tracker: { max: 4, cover: 'Leader Card', scaleHeight: 1.18, labelSize: 10.4 },
-      },
-    ],
-  },
-]);
+const FACTION_LABELS = Object.freeze({
+  military: 'Military',
+  diplomats: 'Diplomats',
+  financiers: 'Financiers',
+  intelligence: 'Intelligence',
+  mystics: 'Mystics',
+  inquisition: 'Inquisition',
+});
+
+// Physical print geometry is presentation data, not gameplay authority. The
+// identity, quantity, status, back policy, and tracked value all come from the
+// current-game component contract; only the drawn scale/layout lives here.
+const TRACKER_PRESENTATION = Object.freeze({
+  'military-command-tracker': { max: 4, cover: 'Leader Card', scaleHeight: 1.18, labelSize: 11.2 },
+  'diplomats-influence-tracker': { max: 10, cover: 'Leader Card', scaleHeight: 2.08, labelSize: 7.9 },
+  'intelligence-intel-tracker': { max: 12, cover: 'Operations Reference', scaleHeight: 2.08, labelSize: 7.2 },
+  'intelligence-operation-progress-tracker': { max: 8, cover: 'Mission Reference', scaleHeight: 1.84, labelSize: 6.8 },
+  'inquisition-conviction-tracker': { max: 4, cover: 'Leader Card', scaleHeight: 1.18, labelSize: 10.4 },
+});
 
 const root = document.querySelector('#supplementalReviewSections');
+let currentDisplayVersion = 'Current';
+let supplementalGroups = [];
 
 function esc(value) {
   return String(value ?? '').replace(/[&<>'"]/g, character => ({
@@ -163,6 +37,54 @@ function esc(value) {
     "'": '&#39;',
     '"': '&quot;',
   })[character]);
+}
+
+function rendererId(component) {
+  return String(component.renderSource?.componentId || component.id || '').trim();
+}
+
+function componentType(component) {
+  if (component.family === 'tracker') return 'Sliding tracker card';
+  if (component.family === 'reference-card') return 'Double-sided reference card';
+  if (component.family === 'ledger') return 'Ledger';
+  if (component.family === 'deed-card') return 'Shared full-size card';
+  return component.family || 'Supplemental component';
+}
+
+function componentDetail(component) {
+  if (component.family === 'tracker') {
+    const tracked = component.trackedValue?.name || component.name;
+    return `Physical tracker for ${tracked}. Production status: ${component.productionStatus}.`;
+  }
+  if (component.family === 'reference-card') return 'Source-driven current reference card.';
+  return `Production status: ${component.productionStatus}.`;
+}
+
+function presentationComponent(component) {
+  return {
+    contractId: component.id,
+    id: rendererId(component),
+    referenceId: component.family === 'reference-card' ? component.id : '',
+    name: component.name,
+    type: componentType(component),
+    detail: componentDetail(component),
+    quantity: Number(component.quantity) || 1,
+    doubleSided: component.backPolicy === 'twoSided',
+    productionStatus: component.productionStatus,
+    backPolicy: component.backPolicy,
+    tracker: component.family === 'tracker' ? TRACKER_PRESENTATION[component.id] || null : null,
+  };
+}
+
+function buildSupplementalGroups(currentGame) {
+  const supportedFamilies = new Set(['tracker', 'reference-card', 'ledger', 'deed-card']);
+  return Object.entries(FACTION_LABELS).map(([faction, factionLabel]) => ({
+    faction,
+    factionLabel,
+    cards: (currentGame.components || [])
+      .filter(component => component.faction === faction && supportedFamilies.has(component.family))
+      .map(presentationComponent),
+  })).filter(group => group.cards.length);
 }
 
 function supplementalTypeLine(component) {
@@ -192,9 +114,10 @@ function trackerMarks(component, resourceName) {
 }
 
 function trackerFace(component, faction, factionLabel) {
+  if (!component.tracker) throw new Error(`Current tracker ${component.contractId} has no presentation geometry.`);
   const { max, cover, scaleHeight, labelSize } = component.tracker;
-  const resourceName = component.name.replace(/\s+Tracker$/, '');
-  return `<article class="gauntlet-card faction-component-card sliding-tracker-card ${esc(faction)}-card" data-faction="${esc(faction)}" data-component-id="${esc(component.id)}" aria-label="${esc(component.name)} sliding tracker, physical scale 0 through ${max}">
+  const resourceName = component.name.replace(/\s+Tracker$/i, '');
+  return `<article class="gauntlet-card faction-component-card sliding-tracker-card ${esc(faction)}-card" data-faction="${esc(faction)}" data-component-id="${esc(component.id)}" data-contract-component-id="${esc(component.contractId)}" aria-label="${esc(component.name)} sliding tracker, physical scale 0 through ${max}">
     <div class="card-interior tracker-interior">
       <span class="tracker-watermark" aria-hidden="true"></span>
       <header class="tracker-heading">
@@ -210,14 +133,14 @@ function trackerFace(component, faction, factionLabel) {
         <strong>0 = fully covered</strong>
         <span>Place ${esc(cover)} over this card. Slide it upward until its bottom edge aligns with the line above the current value.</span>
       </div>
-      <footer class="card-footer tracker-footer"><span>${esc(factionLabel)}</span><span>Tracker</span><span>v0.6.3</span></footer>
+      <footer class="card-footer tracker-footer"><span>${esc(factionLabel)}</span><span>Tracker</span><span>${esc(currentDisplayVersion)}</span></footer>
     </div>
   </article>`;
 }
 
 function placeholderFace(component, faction, factionLabel, faceLabel = '') {
   const faceText = faceLabel ? ` · ${faceLabel}` : '';
-  return `<article class="gauntlet-card faction-component-card supplemental-placeholder-card ${esc(faction)}-card" data-faction="${esc(faction)}" data-art-max="1.52" data-art-min="1.18" data-title-min="8.5" aria-label="${esc(component.name)} ${esc(component.type)}${esc(faceText)}">
+  return `<article class="gauntlet-card faction-component-card supplemental-placeholder-card ${esc(faction)}-card" data-faction="${esc(faction)}" data-component-id="${esc(component.id)}" data-contract-component-id="${esc(component.contractId)}" data-production-status="${esc(component.productionStatus)}" data-art-max="1.52" data-art-min="1.18" data-title-min="8.5" aria-label="${esc(component.name)} ${esc(component.type)}${esc(faceText)}">
     <div class="card-interior">
       <header class="card-heading">
         <h3 class="card-title">${esc(component.name)}</h3>
@@ -230,13 +153,13 @@ function placeholderFace(component, faction, factionLabel, faceLabel = '') {
           <p>${esc(component.detail)}</p>
         </section>
       </div>
-      <footer class="card-footer"><span>${esc(factionLabel)}</span><span>${esc(component.name)}</span><span>v0.6.3</span></footer>
+      <footer class="card-footer"><span>${esc(factionLabel)}</span><span>${esc(component.name)}</span><span>${esc(currentDisplayVersion)}</span></footer>
     </div>
   </article>`;
 }
 
 function referenceLoadingFace(component, faction, factionLabel, sideName) {
-  return `<article class="gauntlet-card faction-component-card reference-card reference-card-loading" data-faction="${esc(faction)}" data-component-id="${esc(component.referenceId)}" data-reference-side="${esc(sideName)}" aria-label="${esc(component.name)} ${esc(sideName)} loading canonical rules">
+  return `<article class="gauntlet-card faction-component-card reference-card reference-card-loading" data-faction="${esc(faction)}" data-component-id="${esc(component.referenceId)}" data-contract-component-id="${esc(component.contractId)}" data-reference-side="${esc(sideName)}" aria-label="${esc(component.name)} ${esc(sideName)} loading current rules">
     <div class="reference-card-interior">
       <span class="reference-watermark" aria-hidden="true"></span>
       <header class="reference-card-header">
@@ -245,11 +168,11 @@ function referenceLoadingFace(component, faction, factionLabel, sideName) {
       </header>
       <div class="reference-body">
         <section class="reference-section reference-panel reference-panel--rules">
-          <header class="reference-panel-heading"><h4>Canonical source</h4></header>
-          <div class="reference-panel-content"><p class="reference-prose">Loading current faction-guide rules.</p></div>
+          <header class="reference-panel-heading"><h4>Current-game authority</h4></header>
+          <div class="reference-panel-content"><p class="reference-prose">Loading current reference rules.</p></div>
         </section>
       </div>
-      <footer class="card-footer"><span>${esc(factionLabel)}</span><span>Reference</span><span>v0.6.3</span></footer>
+      <footer class="card-footer"><span>${esc(factionLabel)}</span><span>Reference</span><span>${esc(currentDisplayVersion)}</span></footer>
     </div>
   </article>`;
 }
@@ -266,16 +189,16 @@ function componentSpecimen(component, faction, factionLabel) {
   const statusText = component.tracker ? `Designed · physical 0–${component.tracker.max}` : component.referenceId ? 'Designed · source-driven' : quantityText;
 
   if (component.doubleSided) {
-    return `<section class="supplemental-review-item supplemental-review-pair" id="supplemental-${esc(faction)}-${esc(component.id)}">
+    return `<section class="supplemental-review-item supplemental-review-pair" id="supplemental-${esc(faction)}-${esc(component.id)}" data-contract-component-id="${esc(component.contractId)}">
       <div class="supplemental-item-heading screen-only"><strong>${esc(component.name)}</strong><span>${esc(statusText)}</span></div>
       <div class="supplemental-face-grid">
-        <div class="supplemental-face" data-reference-face="front"><p class="supplemental-face-label screen-only"><strong>Front</strong><span>Loading canonical face</span></p>${componentFace(component, faction, factionLabel, 'Front')}</div>
-        <div class="supplemental-face" data-reference-face="reverse"><p class="supplemental-face-label screen-only"><strong>Reverse</strong><span>Loading canonical face</span></p>${componentFace(component, faction, factionLabel, 'Reverse')}</div>
+        <div class="supplemental-face" data-reference-face="front"><p class="supplemental-face-label screen-only"><strong>Front</strong><span>Loading current face</span></p>${componentFace(component, faction, factionLabel, 'Front')}</div>
+        <div class="supplemental-face" data-reference-face="reverse"><p class="supplemental-face-label screen-only"><strong>Reverse</strong><span>Loading current face</span></p>${componentFace(component, faction, factionLabel, 'Reverse')}</div>
       </div>
     </section>`;
   }
 
-  return `<section class="supplemental-review-item" id="supplemental-${esc(faction)}-${esc(component.id)}">
+  return `<section class="supplemental-review-item" id="supplemental-${esc(faction)}-${esc(component.id)}" data-contract-component-id="${esc(component.contractId)}">
     <div class="supplemental-item-heading screen-only"><strong>${esc(component.name)}</strong><span>${esc(statusText)}</span></div>
     <div class="supplemental-face-grid supplemental-single-face-grid">
       <div class="supplemental-face">${componentFace(component, faction, factionLabel)}</div>
@@ -295,13 +218,13 @@ function groupMarkup(group) {
 
 function renderSupplementalMarkup() {
   if (!root) return;
-  const uniqueCount = SUPPLEMENTAL_COMPONENTS.reduce((sum, group) => sum + group.cards.length, 0);
-  const physicalCount = SUPPLEMENTAL_COMPONENTS.reduce((sum, group) => sum + group.cards.reduce((groupSum, component) => groupSum + (Number(component.quantity) || 1), 0), 0);
+  const uniqueCount = supplementalGroups.reduce((sum, group) => sum + group.cards.length, 0);
+  const physicalCount = supplementalGroups.reduce((sum, group) => sum + group.cards.reduce((groupSum, component) => groupSum + (Number(component.quantity) || 1), 0), 0);
   root.dataset.supplementalDesignCount = String(uniqueCount);
   root.dataset.supplementalPhysicalCount = String(physicalCount);
   document.querySelectorAll('[data-supplemental-design-count]').forEach(node => { node.textContent = String(uniqueCount); });
   document.querySelectorAll('[data-supplemental-physical-count]').forEach(node => { node.textContent = String(physicalCount); });
-  root.innerHTML = SUPPLEMENTAL_COMPONENTS.map(groupMarkup).join('');
+  root.innerHTML = supplementalGroups.map(groupMarkup).join('');
 }
 
 function markupToElement(markup) {
@@ -316,7 +239,7 @@ async function hydrateReferenceCards() {
   if (!root) return;
   const records = await loadReferenceRecords();
   const recordsById = new Map(records.map(record => [record.id, record]));
-  const referenceComponents = SUPPLEMENTAL_COMPONENTS.flatMap(group => group.cards.map(component => ({ group, component }))).filter(({ component }) => component.referenceId);
+  const referenceComponents = supplementalGroups.flatMap(group => group.cards.map(component => ({ group, component }))).filter(({ component }) => component.referenceId);
   const missing = referenceComponents.filter(({ component }) => !recordsById.has(component.referenceId));
   if (missing.length) throw new Error(`Reference-card contract mismatch: ${missing.map(({ component }) => component.referenceId).join(', ')}`);
 
@@ -330,7 +253,9 @@ async function hydrateReferenceCards() {
       if (!faceContainer) throw new Error(`Missing ${sideName} face container for ${component.id}.`);
       const loadingCard = faceContainer.querySelector('.reference-card-loading');
       if (!loadingCard) throw new Error(`Missing ${sideName} loading card for ${component.id}.`);
-      loadingCard.replaceWith(markupToElement(referenceCardMarkup(record, sideName)));
+      const rendered = markupToElement(referenceCardMarkup(record, sideName, { version: currentDisplayVersion }));
+      rendered.dataset.contractComponentId = component.contractId;
+      loadingCard.replaceWith(rendered);
       const label = faceContainer.querySelector('.supplemental-face-label span');
       if (label) label.textContent = record.faces[sideName].title;
     }
@@ -349,9 +274,20 @@ async function hydrateReferenceCards() {
   root.dataset.referenceCardsReady = 'true';
 }
 
-renderSupplementalMarkup();
-hydrateReferenceCards().catch(error => {
-  console.error(error);
-  root.dataset.referenceCardsReady = 'error';
-  root.insertAdjacentHTML('afterbegin', `<pre class="supplemental-render-error">${esc(error?.stack || error?.message || String(error))}</pre>`);
-});
+async function renderCurrentSupplementals() {
+  if (!root) return;
+  try {
+    const currentGame = await loadCurrentGame();
+    currentDisplayVersion = currentGame.displayVersion;
+    supplementalGroups = buildSupplementalGroups(currentGame);
+    root.dataset.currentGameAuthority = currentGame.authorityUrl;
+    renderSupplementalMarkup();
+    await hydrateReferenceCards();
+  } catch (error) {
+    console.error(error);
+    root.dataset.referenceCardsReady = 'error';
+    root.innerHTML = `<pre class="supplemental-render-error">${esc(error?.stack || error?.message || String(error))}</pre>`;
+  }
+}
+
+await renderCurrentSupplementals();

@@ -2,9 +2,11 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const reviewPage = readFileSync("card-design/index.html", "utf8");
+const ornamentStudy = readFileSync("card-design/deed-ornament-study.html", "utf8");
 const supplementalRenderer = readFileSync("card-design/supplemental-card.js", "utf8");
 const supplementalStyles = readFileSync("card-design/supplemental-card.css", "utf8");
 const deedStyles = readFileSync("card-design/deed-card.css", "utf8");
+const refinementStyles = readFileSync("card-design/card-design-refinement.css", "utf8");
 const factionStyles = readFileSync("card-design/faction-specimens.css", "utf8");
 const territoryStyles = readFileSync("card-design/territory-card.css", "utf8");
 const proposalStyles = readFileSync("card-design/proposal-card.css", "utf8");
@@ -66,6 +68,26 @@ describe("Financier Deed card", () => {
     expect(deedStyles).toContain("display: none");
     expect(deedStyles).not.toContain("deed-watermark");
     expect(deedStyles).not.toContain("deed-footer");
+  });
+
+  it("removes the rejected constructed flourish while suppressing only the irrelevant fit-warning dot", () => {
+    expect(refinementStyles).toContain(".gauntlet-card.fit-warning::after");
+    expect(deedStyles).toContain('.supplemental-placeholder-card[aria-label^="Deed "].fit-warning::after');
+    expect(deedStyles).toContain("display: none");
+    expect(deedStyles).not.toContain("top: calc(50% + 0.48in)");
+    expect(deedStyles).not.toContain("radial-gradient(ellipse at 100% 100%");
+    expect(deedStyles).not.toContain("linear-gradient(135deg, transparent 42%");
+  });
+
+  it("provides a separate Poetica ornament study without applying a candidate to the production card", () => {
+    expect(ornamentStudy).toContain('https://use.typekit.net/vgm6nwi.css');
+    expect(ornamentStudy).toContain('font-family: "poetica-std", "Poetica Std", serif');
+    expect(ornamentStudy).toContain('font-feature-settings: "ornm" 1');
+    expect(ornamentStudy).toContain("['•', ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ', ...'abcdefghijklmnopqrstuvwxyz']");
+    expect(ornamentStudy).toContain("candidate-wordmark");
+    expect(ornamentStudy).toContain("candidate-ornament");
+    expect(ornamentStudy).toContain("None of these ornaments is applied to the production Deed until one is selected");
+    expect(deedStyles).not.toContain("poetica-std");
   });
 
   it("styles the card itself so the inspection clone does not depend on the catalog wrapper", () => {

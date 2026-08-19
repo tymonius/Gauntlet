@@ -1,0 +1,256 @@
+{
+  "schemaVersion": 1,
+  "authority": "current-game",
+  "version": "v0.6.4-candidate",
+  "displayVersion": "v0.6.4 candidate",
+  "baseVersion": "v0.6.3",
+  "status": "active-development",
+  "runtimePolicy": "All current-development tools and render surfaces consume the resolved current-game authority. Versioned release snapshots remain immutable provenance and release inputs only.",
+  "sources": {
+    "baseGameplay": "/artifacts/reconstruction/clean-v0.6.3/complete-authority/canonical-structured-data.json",
+    "cardChanges": "/docs/v0.6.4-card-additions.json",
+    "territories": "/docs/v0.6.4-territories.json",
+    "proposals": "/docs/v0.6.4-diplomat-proposals.json",
+    "arcaneSymbol": "/docs/v0.6.4-arcane-symbol.json",
+    "componentContract": "/config/tts-component-contract.json",
+    "starterDecks": "/deckbuilder/starter-decks.json"
+  },
+  "resolution": {
+    "cards": "Start with baseGameplay.gameplay.cards; remove cardChanges.retired_cards; then replace an existing stable id with cardChanges.cards or add it when the id is new.",
+    "territories": "territories.territories is the complete current Territory pool.",
+    "proposals": "proposals.proposals is the complete current Proposal pool.",
+    "arcaneSymbol": "arcaneSymbol supplies the current Arcane-symbol and Arcane-trait clarification rules.",
+    "components": "componentContract is the current physical-component contract.",
+    "starterDecks": "starterDecks.decks is the complete current recommended starter-deck set."
+  },
+  "factionOverrides": {
+    "diplomats": {
+      "victory": "Peace Treaty: after the Capture step, have six different ratified Proposals.",
+      "factionRules": {
+        "peace_treaty_threshold": 6
+      }
+    }
+  },
+  "leaders": [
+    {
+      "id": "general",
+      "faction": "military",
+      "factionLabel": "Military",
+      "name": "General",
+      "image": "/images/general.png",
+      "note": "Movement and attack",
+      "sections": [
+        ["Command", "Maximum 2. The first time each turn you win a battle, gain 1 Command."],
+        ["Onward", "During your Movement, before a pending battle is created, move one additional Position. This movement may create a pending battle.", "1 Command"],
+        ["Rally", "Before dice are rolled in a battle you initiated, add +1 to your battle total.", "1 Command"],
+        ["Rout", "At the end of the Aftermath of a battle you initiated and won, advance one Position. This movement may create a pending battle.", "2 Command"]
+      ]
+    },
+    {
+      "id": "commandant",
+      "faction": "military",
+      "factionLabel": "Military",
+      "name": "Commandant",
+      "image": "/images/commandant.png",
+      "note": "Defense and control",
+      "sections": [
+        ["Command", "Maximum 2. The first time each turn you win a battle, gain 1 Command."],
+        ["Entrench", "Before dice are rolled in a battle you did not initiate, add +1 to your battle total.", "1 Command"],
+        ["Repel", "During the Aftermath of a battle you did not initiate and won, after the opponent's normal retreat, they retreat one additional Position, if able.", "1 Command"],
+        ["Fortify", "During the Aftermath of a battle you won while occupying an enemy-controlled Territory, advance your Front Line by one Territory, if able.", "2 Command"]
+      ]
+    },
+    {
+      "id": "ambassador",
+      "faction": "diplomats",
+      "factionLabel": "Diplomats",
+      "name": "Ambassador",
+      "image": "/images/ambassador.png",
+      "note": "Agreement and card flow",
+      "sections": [
+        ["Influence", "Begin with 1 Influence and build toward a maximum of 10."],
+        ["Cordiality", "Once per turn, after the opponent accepts your Terms, draw one card."],
+        ["Peace Treaty", "After the Capture step at the start of your turn, six different ratified Proposals win the game."]
+      ]
+    },
+    {
+      "id": "senator",
+      "faction": "diplomats",
+      "factionLabel": "Diplomats",
+      "name": "Senator",
+      "image": "/images/senator.png",
+      "note": "Risk management and resilience",
+      "sections": [
+        ["Influence", "Begin with 1 Influence and build toward a maximum of 10."],
+        ["Political Capital", "Once per turn, sacrifice cards from Hand to recover an equal amount of Influence that would otherwise be lost after refused Terms."],
+        ["Peace Treaty", "After the Capture step at the start of your turn, six different ratified Proposals win the game."]
+      ]
+    },
+    {
+      "id": "banker",
+      "faction": "financiers",
+      "factionLabel": "Financiers",
+      "name": "Banker",
+      "image": "/images/banker.png",
+      "note": "Collateral and flexible financing",
+      "sections": [
+        ["Capital", "Begin with 2 Capital. Cards in Treasury raise the amount of Capital you can retain."],
+        ["Line of Credit", "On the first Deed purchase of your turn, one card may contribute part of the price as collateral; pay the remainder with Capital."],
+        ["Controlling Interest", "Own the Deed to every Territory currently in the Gauntlet and win immediately."]
+      ]
+    },
+    {
+      "id": "executive",
+      "faction": "financiers",
+      "factionLabel": "Financiers",
+      "name": "Executive",
+      "image": "/images/executive.png",
+      "note": "Offensive acquisition and control",
+      "sections": [
+        ["Capital", "Begin with 2 Capital. Cards in Treasury raise the amount of Capital you can retain."],
+        ["Hostile Takeover", "During Denouement, after winning as attacker and becoming the occupier of an enemy Territory, take the Faction Action to buy or buy out its Deed. A successful purchase advances your Front Line by one Territory, if able; it never creates isolated control."],
+        ["Controlling Interest", "Own the Deed to every Territory currently in the Gauntlet and win immediately."]
+      ]
+    },
+    {
+      "id": "ranger",
+      "faction": "intelligence",
+      "factionLabel": "Intelligence",
+      "name": "Ranger",
+      "image": "/images/ranger.png",
+      "note": "Terrain and field operations",
+      "sections": [
+        ["Missions", "Completed normal Missions grant 1 Operation Progress and Intel equal to the card's value."],
+        ["Fieldcraft", "Once per turn, spend 1 Intel to ignore a Territory's printed effect when it would affect you, your movement, or a battle involving you.", "1 Intel"],
+        ["Special Operation", "When Operation Progress exceeds opposing controlled Territories, prepare and complete a Special Operation to win."]
+      ]
+    },
+    {
+      "id": "spymaster",
+      "faction": "intelligence",
+      "factionLabel": "Intelligence",
+      "name": "Spymaster",
+      "image": "/images/spymaster.png",
+      "note": "Mission tempo and coordination",
+      "sections": [
+        ["Missions", "Completed normal Missions grant 1 Operation Progress and Intel equal to the card's value."],
+        ["Mission Control", "Once per turn, after completing a normal Mission, immediately start another eligible Mission from Hand without spending an Action. It cannot complete that turn and cannot be a Special Operation."],
+        ["Special Operation", "When Operation Progress exceeds opposing controlled Territories, prepare and complete a Special Operation to win."]
+      ]
+    },
+    {
+      "id": "alchemist",
+      "faction": "mystics",
+      "factionLabel": "Mystics",
+      "name": "Alchemist",
+      "image": "/images/alchemist.png",
+      "note": "Sacrifice sequencing and conversion",
+      "sections": [
+        ["Rites", "The first completed Rite unlocks Invocation; the second unlocks Transmutation; the third unlocks Convergence and the Ritual of Ascendance."],
+        ["Materia Prima", "The first qualifying sacrifice from Hand on your turn draws one replacement card; during battle, draw after the battle resolves."],
+        ["Ascendance", "Complete all three Rites, then complete the Ritual of Ascendance to win."]
+      ]
+    },
+    {
+      "id": "spirit-walker",
+      "faction": "mystics",
+      "factionLabel": "Mystics",
+      "name": "Spirit Walker",
+      "image": "/images/spirit%20walker.png",
+      "note": "Ritual endurance and protection",
+      "sections": [
+        ["Rites", "The first completed Rite unlocks Invocation; the second unlocks Transmutation; the third unlocks Convergence and the Ritual of Ascendance."],
+        ["Guardians of the Circle", "The first time on your turn a battle loss would interrupt a begun Rite or Ritual, put an Arcane card from Hand in your Graveyard of the required value to prevent that interruption."],
+        ["Ascendance", "Complete all three Rites, then complete the Ritual of Ascendance to win."]
+      ]
+    },
+    {
+      "id": "grand-inquisitor",
+      "faction": "inquisition",
+      "factionLabel": "Inquisition",
+      "name": "Grand Inquisitor",
+      "image": "/images/grand%20inquisitor.png",
+      "note": "Judgment and efficient Purges",
+      "sections": [
+        ["Conviction", "Gain Conviction from qualifying opposing post-battle Graveyard entries, up to 4."],
+        ["Final Judgment", "Once per turn during the Aftermath of a battle you won, after battle cards are cleared, immediately Purge without spending an Action and reduce its Conviction cost by 1, minimum 1."],
+        ["Purification", "If the opponent's normal Draw produces nothing because both Draw Pile and Discard Pile are empty, win immediately."]
+      ]
+    },
+    {
+      "id": "witch-hunter",
+      "faction": "inquisition",
+      "factionLabel": "Inquisition",
+      "name": "Witch Hunter",
+      "image": "/images/witch%20hunter.png",
+      "note": "Defense, retaliation, and pursuit",
+      "sections": [
+        ["Conviction", "Gain Conviction from qualifying opposing post-battle Graveyard entries, up to 4."],
+        ["Relentless Pursuit", "Once per turn, at the end of the Aftermath of a battle an opponent initiated against you and lost, spend 2 Conviction to end their turn and advance one Position toward their end. Any resulting pending battle uses you as attacker.", "2 Conviction"],
+        ["Purification", "If the opponent's normal Draw produces nothing because both Draw Pile and Discard Pile are empty, win immediately."]
+      ]
+    }
+  ],
+  "mystics": {
+    "rites": [
+      {
+        "id": "echoes",
+        "name": "Rite of Echoes",
+        "artwork": "/images/artwork/cards/mystics/rites-and-rituals/rite-of-echoes.png",
+        "begin": "Bind one chosen card from your Graveyard face up beneath this Rite. Then bind one card from your Hand face down beneath it whose title matches at least one other card in your Deck.",
+        "complete": "On a later turn, complete this Rite after the Gambit, Tactic, or Gambit or Tactic effect of another card with the bound Hand card's title is applied during a battle.",
+        "interrupted": "If you lose a battle before completion, put both bound cards in your Graveyard and reset the Rite."
+      },
+      {
+        "id": "blood",
+        "name": "Rite of Blood",
+        "artwork": "/images/artwork/cards/mystics/rites-and-rituals/rite-of-blood.png",
+        "begin": "Put one card from your Hand in your Graveyard.",
+        "complete": "On a later turn, complete this Rite when you win a battle without setting a Gambit or choosing a Tactic. Using Transmutation, an Asset, Overlay, Territory, Leader ability, or card from another source does not by itself prevent completion.",
+        "interrupted": "If you lose a battle before completion, reset the Rite."
+      },
+      {
+        "id": "crossing",
+        "name": "Rite of Crossing",
+        "artwork": "/images/artwork/cards/mystics/rites-and-rituals/rite-of-crossing.png",
+        "begin": "You may take the Begin a Rite Faction Action for Rite of Crossing during Denouement only after winning a battle that turn that made you the occupier of a Territory the opponent controlled immediately before that battle. Put one Arcane card from your Hand in your Graveyard. If you have none, reveal your Hand and move one Arcane card from your Discard Pile to your Graveyard instead.",
+        "complete": "At the start of your next turn, after the Capture step, complete this Rite if you are still the occupier or now control that Territory. Otherwise, the Rite is interrupted and resets.",
+        "interrupted": ""
+      }
+    ],
+    "ritual": {
+      "id": "ascension",
+      "name": "Ritual of Ascension",
+      "artwork": "/images/artwork/cards/mystics/rites-and-rituals/ritual-of-ascension.png",
+      "cardBack": "/images/artwork/cardbacks/mystics/ritual-of-ascension.png",
+      "begin": "After completing all three Rites, during Denouement, spend 1 Action to bind one Arcane card from your Hand, one Arcane card from your Discard Pile, and one Arcane card from your Graveyard. This begins the Ritual.",
+      "convergence": "While the Ritual is underway, during a battle you initiated, add +1 to your battle total for each card bound to the Ritual.",
+      "complete": "Initiate a battle while all three Ritual cards remain bound. If you win that battle, complete the Ritual and immediately win the game.",
+      "interrupted": "If you lose any battle before Ritual completion, the Ritual is interrupted. Put all three Ritual-bound cards in your Graveyard. Withdrawal neither completes nor interrupts the Ritual."
+    },
+    "unlocks": [
+      {
+        "count": "1 Rite",
+        "name": "Invocation",
+        "text": "Once per turn, after applying the Action, Gambit, Tactic, or Gambit or Tactic effect of an Arcane card you played, set, or chose, you may move one card from your Graveyard to your Discard Pile."
+      },
+      {
+        "count": "2 Rites",
+        "name": "Transmutation",
+        "text": "Once per turn, before dice are rolled in a battle involving you, you may put one card from your Hand in your Graveyard. Add its value to your battle total."
+      },
+      {
+        "count": "3 Rites",
+        "name": "Convergence",
+        "text": "While the Ritual is underway, during a battle you initiated, add +1 to your battle total for each card bound to the Ritual."
+      },
+      {
+        "count": "Ritual",
+        "name": "Ritual of Ascension",
+        "headerLines": ["Ritual of", "Ascension"],
+        "text": "After completing all three Rites, during Denouement, spend 1 Action to bind one Arcane card from your Hand, one from your Discard Pile, and one from your Graveyard. Initiate a battle while all three remain bound. If you win that battle, complete the Ritual and immediately win the game."
+      }
+    ],
+    "completedArtwork": "/images/artwork/supplemental/mystics/rite-completed.webp"
+  }
+}

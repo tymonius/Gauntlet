@@ -1,7 +1,6 @@
+import { loadCurrentGame } from '../game-data/current-game.mjs';
+
 await (async () => {
-  const CANDIDATE_SOURCE = '/docs/v0.6.4-territories.json';
-  const EXPECTED_SOURCE_ISSUE = 738;
-  const EXPECTED_VERSION = 'v0.6.4-candidate';
   const territoryId = new URLSearchParams(window.location.search).get('territory');
   const inspectionRender = new URLSearchParams(window.location.search).get('inspection') === '1';
   const target = document.getElementById('renderTarget');
@@ -83,14 +82,9 @@ await (async () => {
 
   try {
     if (!territoryId) throw new Error('No Territory selected.');
-    const response = await fetch(CANDIDATE_SOURCE, { cache: 'no-cache' });
-    if (!response.ok) throw new Error(`Unable to load v0.6.4 candidate Territories (HTTP ${response.status}).`);
-    const source = await response.json();
-    if (source.version !== EXPECTED_VERSION || source.source_issue !== EXPECTED_SOURCE_ISSUE) {
-      throw new Error('Territory review source is not the approved issue #738 v0.6.4 candidate.');
-    }
-    const territory = (source.territories || []).find(item => item.id === territoryId);
-    if (!territory) throw new Error(`Unknown Territory: ${territoryId}`);
+    const currentGame = await loadCurrentGame();
+    const territory = currentGame.findTerritory(territoryId);
+    if (!territory) throw new Error(`Unknown current Territory: ${territoryId}`);
 
     const preview = {
       id: territory.id,
@@ -99,19 +93,19 @@ await (async () => {
       arena: Boolean(territory.arena),
       complexity: territory.complexity || 'Unspecified',
       watchlist: territory.watchlist || 'None',
-      status: territory.status || 'Approved candidate',
+      status: territory.status || 'Current candidate',
       text: String(territory.text || '').trim(),
-      source: CANDIDATE_SOURCE,
-      artDirection: territory.artDirection,
+      source: currentGame.authorityUrl,
+      artDirection: currentGame.artDirectionFor(territory.id) || territory.artDirection,
     };
     window.GAUNTLET_TTS_CATALOG = {
       schemaVersion: 1,
-      gameVersion: EXPECTED_VERSION,
-      sourceHierarchy: [CANDIDATE_SOURCE],
+      gameVersion: currentGame.displayVersion,
+      sourceHierarchy: [currentGame.authorityUrl],
       territories: [preview],
     };
+    window.GAUNTLET_ART_DIRECTION = currentGame.artDirection;
 
-    await loadScript('/tts/artwork-direction-overrides.js');
     await loadScript('/tts/artwork-crop.js');
     await loadScript('/tts/territory-renderer/territory-renderer.js');
 

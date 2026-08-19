@@ -71,7 +71,7 @@ function pngDimensions(buffer) {
   return { width: buffer.readUInt32BE(16), height: buffer.readUInt32BE(20) };
 }
 
-async function validateLeader(page, leader, version) {
+async function validateLeader(page, leader, displayVersion) {
   const selector = leaderSelector(leader);
   const card = page.locator(selector);
   await card.waitFor();
@@ -96,12 +96,12 @@ async function validateLeader(page, leader, version) {
     throw new Error(`Unexpected Leader geometry for ${leader.faction}:${leader.id}: ${metrics.width} × ${metrics.height}.`);
   }
   if (metrics.faction !== leader.faction || metrics.title !== leader.name) {
-    throw new Error(`Production Leader surface does not match canonical ${leader.faction}:${leader.id}: ${JSON.stringify(metrics)}.`);
+    throw new Error(`Production Leader surface does not match current-game ${leader.faction}:${leader.id}: ${JSON.stringify(metrics)}.`);
   }
   if (metrics.fitWarning) throw new Error(`Leader content does not fit the approved frame: ${leader.faction}:${leader.id}.`);
   if (!metrics.imageLoaded) throw new Error(`Leader portrait failed to load: ${leader.faction}:${leader.id}.`);
-  if (metrics.footer.at(-1) !== version) {
-    throw new Error(`Leader ${leader.faction}:${leader.id} renders ${metrics.footer.at(-1) || 'no version'} but current release is ${version}.`);
+  if (metrics.footer.at(-1) !== displayVersion) {
+    throw new Error(`Leader ${leader.faction}:${leader.id} renders ${metrics.footer.at(-1) || 'no version'} but current game displays ${displayVersion}.`);
   }
 }
 
@@ -185,7 +185,7 @@ async function renderLeaderAssets(release, leaders, componentContract) {
     const records = [];
     for (let index = 0; index < leaders.length; index += 1) {
       const leader = leaders[index];
-      await validateLeader(page, leader, release.version);
+      await validateLeader(page, leader, release.displayVersion || release.version);
       const deckId = FIRST_LEADER_DECK_ID + index;
       const faceFile = `leaders/${leader.faction}-${leader.id}.png`;
       const backFile = resolveStandardBackFile(componentContract, leader.faction);
@@ -214,13 +214,16 @@ async function renderLeaderAssets(release, leaders, componentContract) {
     }
 
     const manifest = {
-      schemaVersion: 2,
+      schemaVersion: 3,
       gameVersion: release.version,
+      displayVersion: release.displayVersion || release.version,
+      authority: release.currentGameSource || release.canonicalDataSource,
       release: {
         lifecycleSource: release.lifecycleSource,
         githubReleaseContractSource: release.githubReleaseContractSource,
         canonicalDataSource: release.canonicalDataSource,
         releasePackageRoot: release.releasePackageRoot,
+        publishedVersion: release.publishedVersion || release.version,
       },
       sourceSurface: 'card-design/',
       componentContract: 'config/tts-component-contract.json',

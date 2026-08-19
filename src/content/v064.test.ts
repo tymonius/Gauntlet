@@ -1,21 +1,24 @@
 import { describe, expect, it } from 'vitest';
 import { cleanV063Content } from '../reconstruction/clean-v063/content';
 import {
+  CURRENT_GAME_AUTHORITY_PATH,
   V064_CANDIDATE_RULES_VERSION,
   V064_TERRITORY_SOURCE_ISSUE,
   v064CandidateContent,
 } from './v064';
 
-describe('v0.6.4 candidate digital Territory content', () => {
-  it('overlays only the 25 approved issue #738 Territories onto the v0.6.3 game content', () => {
+describe('v0.6.4 candidate digital current-game content', () => {
+  it('resolves playable cards, factions, and Territories under the current-game authority', () => {
+    expect(v064CandidateContent.authorityPath).toBe(CURRENT_GAME_AUTHORITY_PATH);
     expect(v064CandidateContent.rulesVersion).toBe(V064_CANDIDATE_RULES_VERSION);
     expect(v064CandidateContent.territorySourceIssue).toBe(V064_TERRITORY_SOURCE_ISSUE);
     expect(v064CandidateContent.content.territories).toHaveLength(25);
-    expect(v064CandidateContent.content.cards).toBe(cleanV063Content.content.cards);
-    expect(v064CandidateContent.content.factions).toBe(cleanV063Content.content.factions);
+    expect(v064CandidateContent.content.cards).toHaveLength(142);
+    expect(v064CandidateContent.content.factions).toHaveLength(6);
+    expect(v064CandidateContent.cardsById.has('inquisition-no-martyrs')).toBe(false);
   });
 
-  it('preserves stable Territory identities while exposing approved candidate text', () => {
+  it('preserves stable Territory identities while exposing approved current text', () => {
     const baseIds = cleanV063Content.content.territories.map((territory) => territory.id).sort();
     const candidateIds = [...v064CandidateContent.territoriesById.keys()].sort();
     expect(candidateIds).toEqual(baseIds);
@@ -34,5 +37,11 @@ describe('v0.6.4 candidate digital Territory content', () => {
       expect(v064CandidateContent.content.territories.find((item) => item.id === territory.id)?.text)
         .toBe(territory.text);
     }
+  });
+
+  it('uses the current Leader definitions instead of the immutable release Leader list', () => {
+    const mystics = v064CandidateContent.content.factions.find(faction => faction.id === 'mystics');
+    expect(mystics?.leaders.map(leader => leader.name)).toEqual(['Alchemist', 'Spirit Walker']);
+    expect(mystics?.leaders.find(leader => leader.name === 'Spirit Walker')?.image).toBe('/images/spirit%20walker.png');
   });
 });

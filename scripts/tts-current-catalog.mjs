@@ -1,6 +1,8 @@
 import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { dirname, extname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { resolveCards } from '../game-data/current-game.mjs';
+import { loadCurrentGameManifest, readCurrentJsonSource } from './current-game-authority.mjs';
 
 export const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 export const CURRENT_ALIAS_ROOT = join(ROOT, 'tts', 'generated', 'current');
@@ -25,6 +27,7 @@ export const PLAYABLE_BACK_FACTIONS = Object.freeze([
 ]);
 
 const ART_EXTENSIONS = new Set(['.png', '.webp', '.jpg', '.jpeg']);
+const CURRENT_GAME_SOURCE = 'game-data/current-game.json';
 const LIFECYCLE_SOURCE = 'config/release-lifecycle.json';
 const GITHUB_RELEASE_CONTRACT_SOURCE = 'config/github-release-contract.json';
 
@@ -41,10 +44,10 @@ export function slugify(value) {
 }
 
 async function readJson(relativePath) {
-  return JSON.parse(await readFile(join(ROOT, relativePath), 'utf8'));
+  return JSON.parse(await readFile(join(ROOT, String(relativePath).replace(/^\/+/, '')), 'utf8'));
 }
 
-export async function resolveCurrentTtsRelease() {
+export async function resolvePublishedTtsRelease() {
   const lifecycle = await readJson(LIFECYCLE_SOURCE);
   const releaseContract = await readJson(GITHUB_RELEASE_CONTRACT_SOURCE);
   const version = String(lifecycle.current_release || '').trim();
@@ -72,6 +75,7 @@ export async function resolveCurrentTtsRelease() {
 
   return Object.freeze({
     version,
+    displayVersion: version,
     canonicalDataSource,
     starterDecksSource,
     releasePackageRoot: dirname(canonicalDataSource),
@@ -81,10 +85,36 @@ export async function resolveCurrentTtsRelease() {
   });
 }
 
+// "Current" TTS is the active development game, not necessarily the latest
+// published release. Publication remains an explicit, separately resolved step.
+export async function resolveCurrentTtsRelease() {
+  const [manifest, published] = await Promise.all([
+    loadCurrentGameManifest(),
+    resolvePublishedTtsRelease(),
+  ]);
+  const version = String(manifest.version || '').trim();
+  if (!version) throw new Error(`${CURRENT_GAME_SOURCE} does not declare a current version.`);
+
+  return Object.freeze({
+    version,
+    displayVersion: String(manifest.displayVersion || version),
+    baseVersion: String(manifest.baseVersion || ''),
+    canonicalDataSource: CURRENT_GAME_SOURCE,
+    starterDecksSource: manifest.sources?.starterDecks || published.starterDecksSource,
+    releasePackageRoot: 'game-data',
+    outputRoot: join(ROOT, 'tts', 'generated', version),
+    currentGameSource: CURRENT_GAME_SOURCE,
+    currentGameSources: Object.freeze({ ...(manifest.sources || {}) }),
+    publishedVersion: published.version,
+    lifecycleSource: LIFECYCLE_SOURCE,
+    githubReleaseContractSource: GITHUB_RELEASE_CONTRACT_SOURCE,
+  });
+}
+
 export async function loadCurrentStarterDecks() {
   const release = await resolveCurrentTtsRelease();
   if (!release.starterDecksSource) {
-    throw new Error(`${GITHUB_RELEASE_CONTRACT_SOURCE} does not publish a starter-deck asset for ${release.version}.`);
+    throw new Error(`${CURRENT_GAME_SOURCE} does not declare starter Deck data and the published-release fallback is unavailable.`);
   }
 
   const starterDecks = await readJson(release.starterDecksSource);
@@ -97,45 +127,37 @@ export async function loadCurrentStarterDecks() {
 
 export async function loadCurrentLeaders() {
   const release = await resolveCurrentTtsRelease();
-  const canonical = await readJson(release.canonicalDataSource);
-
-  if (!Array.isArray(canonical.factions) || !canonical.factions.length) {
-    throw new Error(`Canonical data is missing factions: ${release.canonicalDataSource}.`);
-  }
+  const manifest = await loadCurrentGameManifest();
+  const sourceLeaders = Array.isArray(manifest.leaders) ? manifest.leaders : [];
+  if (!sourceLeaders.length) throw new Error(`${CURRENT_GAME_SOURCE} does not declare current Leaders.`);
 
   const leaders = [];
   const keys = new Set();
-  for (const faction of canonical.factions) {
-    const factionId = slugify(faction.id || faction.name);
+  for (const leader of sourceLeaders) {
+    const factionId = slugify(leader?.faction || leader?.factionLabel);
+    const name = String(leader?.name || '').trim();
+    const id = slugify(leader?.id || name);
     if (!PLAYABLE_BACK_FACTIONS.includes(factionId)) {
-      throw new Error(`Unknown canonical faction for TTS Leader export: ${faction.id || faction.name || 'missing'}.`);
+      throw new Error(`Unknown current-game faction for TTS Leader export: ${leader?.faction || 'missing'}.`);
     }
-    if (!Array.isArray(faction.leaders) || !faction.leaders.length) {
-      throw new Error(`Canonical faction ${factionId} does not declare Leaders.`);
-    }
-
-    for (const leader of faction.leaders) {
-      const name = String(leader?.name || '').trim();
-      const id = slugify(leader?.id || name);
-      if (!name || !id) throw new Error(`Canonical faction ${factionId} contains a Leader without a usable name/id.`);
-      const key = `${factionId}:${id}`;
-      if (keys.has(key)) throw new Error(`Duplicate canonical Leader key detected: ${key}.`);
-      keys.add(key);
-      leaders.push(Object.freeze({
-        id,
-        kind: 'leader',
-        name,
-        faction: factionId,
-        factionLabel: faction.name || factionId,
-        canonicalImage: leader.image || null,
-        source: faction.source || release.canonicalDataSource,
-      }));
-    }
+    if (!name || !id) throw new Error(`Current-game faction ${factionId} contains a Leader without a usable name/id.`);
+    const key = `${factionId}:${id}`;
+    if (keys.has(key)) throw new Error(`Duplicate current-game Leader key detected: ${key}.`);
+    keys.add(key);
+    leaders.push(Object.freeze({
+      id,
+      kind: 'leader',
+      name,
+      faction: factionId,
+      factionLabel: leader.factionLabel || factionId,
+      canonicalImage: leader.image || null,
+      source: CURRENT_GAME_SOURCE,
+    }));
   }
 
   return Object.freeze({
     release,
-    canonicalDataVersion: canonical.version || null,
+    canonicalDataVersion: release.version,
     leaders: Object.freeze(leaders),
   });
 }
@@ -151,10 +173,10 @@ function sectionsFromEffects(effects) {
   return sections;
 }
 
-function playableCardFromCanonical(card, canonicalDataSource) {
+function playableCardFromCanonical(card, source) {
   const faction = slugify(card.allegiance);
   if (!GROUP_ORDER.includes(faction)) {
-    throw new Error(`Unknown canonical allegiance for ${card.id}: ${card.allegiance}.`);
+    throw new Error(`Unknown current-game allegiance for ${card.id}: ${card.allegiance}.`);
   }
 
   return {
@@ -169,11 +191,11 @@ function playableCardFromCanonical(card, canonicalDataSource) {
     form: card.card_form || '',
     unique: Boolean(card.unique),
     sections: sectionsFromEffects(card.effects),
-    source: card.source || canonicalDataSource,
+    source: card.source || source,
   };
 }
 
-function territoryFromCanonical(territory, canonicalDataSource) {
+function territoryFromCanonical(territory, source) {
   return {
     id: territory.id,
     kind: 'territory',
@@ -182,8 +204,8 @@ function territoryFromCanonical(territory, canonicalDataSource) {
     complexity: territory.complexity || 'Unspecified',
     watchlist: territory.watchlist || 'None',
     status: territory.status || 'Approved',
-    text: String(territory.text || '').trim(),
-    source: territory.source || canonicalDataSource,
+    text: String(territory.text || territory.effects?.map((effect) => effect?.text).filter(Boolean).join('\n') || '').trim(),
+    source: territory.source || source,
   };
 }
 
@@ -238,20 +260,26 @@ function stableCardSort(a, b) {
 
 export async function buildCatalog() {
   const release = await resolveCurrentTtsRelease();
-  const canonical = await readJson(release.canonicalDataSource);
-
-  if (!Array.isArray(canonical.cards) || !Array.isArray(canonical.territories)) {
-    throw new Error(`Canonical data is missing cards or territories: ${release.canonicalDataSource}.`);
+  const [manifest, baseSource, cardChangeSource, territorySource] = await Promise.all([
+    loadCurrentGameManifest(),
+    readCurrentJsonSource('baseGameplay'),
+    readCurrentJsonSource('cardChanges'),
+    readCurrentJsonSource('territories'),
+  ]);
+  const gameplay = baseSource.data?.gameplay;
+  if (!gameplay || !Array.isArray(gameplay.cards)) {
+    throw new Error(`Current-game base source is missing gameplay.cards: ${baseSource.source}.`);
   }
-  if (!canonical.cards.length || !canonical.territories.length) {
-    throw new Error(`Canonical data must contain playable cards and Territories: ${release.canonicalDataSource}.`);
+  if (!Array.isArray(territorySource.data?.territories) || !territorySource.data.territories.length) {
+    throw new Error(`Current-game Territory source is empty: ${territorySource.source}.`);
   }
 
-  const playableCards = canonical.cards
-    .map((card) => playableCardFromCanonical(card, release.canonicalDataSource))
+  const resolvedCards = resolveCards(gameplay.cards, cardChangeSource.data, manifest);
+  const playableCards = resolvedCards
+    .map((card) => playableCardFromCanonical(card, CURRENT_GAME_SOURCE))
     .sort(stableCardSort);
-  const territories = canonical.territories
-    .map((territory) => territoryFromCanonical(territory, release.canonicalDataSource))
+  const territories = territorySource.data.territories
+    .map((territory) => territoryFromCanonical(territory, territorySource.source))
     .sort((a, b) => a.name.localeCompare(b.name, 'en-US'));
 
   const artworkIndex = await buildArtworkIndex();
@@ -261,7 +289,7 @@ export async function buildCatalog() {
   }));
 
   const ids = [...cardsWithArtwork, ...territories].map((item) => item.id);
-  if (new Set(ids).size !== ids.length) throw new Error('Duplicate canonical component IDs detected.');
+  if (new Set(ids).size !== ids.length) throw new Error('Duplicate current-game component IDs detected.');
 
   const counts = Object.fromEntries(
     GROUP_ORDER.map((faction) => [
@@ -274,15 +302,18 @@ export async function buildCatalog() {
   counts.playableCards = cardsWithArtwork.length;
 
   return {
-    schemaVersion: 3,
+    schemaVersion: 4,
     gameVersion: release.version,
+    displayVersion: release.displayVersion,
+    authority: CURRENT_GAME_SOURCE,
     release: {
-      lifecycleSource: release.lifecycleSource,
-      githubReleaseContractSource: release.githubReleaseContractSource,
-      canonicalDataSource: release.canonicalDataSource,
-      canonicalDataVersion: canonical.version || null,
+      currentGameAuthority: CURRENT_GAME_SOURCE,
+      baseVersion: release.baseVersion,
+      publishedVersion: release.publishedVersion,
+      canonicalDataSource: CURRENT_GAME_SOURCE,
+      canonicalDataVersion: release.version,
       starterDecksSource: release.starterDecksSource,
-      releasePackageRoot: release.releasePackageRoot,
+      sourceInputs: { ...(manifest.sources || {}) },
     },
     counts,
     playableCards: cardsWithArtwork,
@@ -304,7 +335,10 @@ export async function writeCatalog(catalog) {
   await writeFile(join(CURRENT_ALIAS_ROOT, 'catalog.js'), catalogJs);
   await writeFile(join(CURRENT_ALIAS_ROOT, 'release.json'), jsonText({
     gameVersion: release.version,
-    canonicalDataSource: release.canonicalDataSource,
+    displayVersion: release.displayVersion,
+    currentGameAuthority: CURRENT_GAME_SOURCE,
+    publishedVersion: release.publishedVersion,
+    canonicalDataSource: CURRENT_GAME_SOURCE,
     canonicalDataVersion: catalog.release.canonicalDataVersion,
     versionedOutput: relative(ROOT, release.outputRoot).split(sep).join('/'),
   }));

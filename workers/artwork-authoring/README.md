@@ -9,7 +9,7 @@ This Cloudflare Worker makes the public `/card-design/` compositor capable of sa
 3. GitHub returns to this Worker through the GitHub App OAuth callback.
 4. The Worker verifies the signed-in GitHub login is `tymonius` and returns an encrypted, short-lived authoring session to the browser. The GitHub user token itself is never exposed to page JavaScript.
 5. Saves update `tts/artwork-direction-overrides.js` on `artwork/compositor-authoring` and create or reuse one pull request against `main`.
-6. Merging that PR publishes the composition to every surface that uses the shared artwork crop pipeline.
+6. `game-data/current-game.mjs` resolves that canonical file into `currentGame.artDirection`; current production card/Territory renderers consume the resolved map, so a merged compositor PR propagates to Card Design, Card Reference, Deckbuilder preview, and production printing through the shared render pipeline.
 
 The browser session is kept in `sessionStorage`; closing the browser session requires GitHub sign-in again.
 
@@ -28,6 +28,8 @@ Use:
   - Metadata: Read-only (implicit)
 
 The Worker uses the GitHub App's web application OAuth flow and acts only on behalf of the explicitly authorized `tymonius` account. GitHub Apps are intentionally used here so repository access can be limited to this repo and these permissions.
+
+The current-game integration does **not** require changing these App permissions, OAuth callback settings, repository installation, Worker secrets, or save endpoint. The Worker still performs the same contents write and pull-request operations against the same repository and canonical file; only downstream consumption of the saved composition changed.
 
 ## Required GitHub Actions secrets
 

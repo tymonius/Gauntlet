@@ -2,10 +2,10 @@ import { createServer } from 'node:http';
 import { mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { extname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { readCurrentJsonSource, CURRENT_GAME_MANIFEST_SOURCE } from './current-game-authority.mjs';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const OUTPUT = join(ROOT, 'card-design', 'generated', 'v064-card-candidates');
-const SOURCE_PATH = join(ROOT, 'docs', 'v0.6.4-card-additions.json');
 const CARD_WIDTH = 240;
 const CARD_HEIGHT = 336;
 const EXPECTED_CANDIDATE_COUNT = 15;
@@ -48,24 +48,21 @@ async function startStaticServer() {
   return { server, baseUrl: `http://127.0.0.1:${server.address().port}` };
 }
 
-function validateSource(source) {
-  if (source.version !== 'v0.6.4-candidate' || source.base_version !== 'v0.6.3') {
-    throw new Error('Card render validation requires the v0.6.4 candidate overlay on v0.6.3.');
-  }
-  if (source.ready_for_game_data !== false) {
-    throw new Error('Card candidate source must remain outside canonical game data.');
+function validateSource(source, manifest) {
+  if (source.version !== manifest.version || source.base_version !== manifest.baseVersion) {
+    throw new Error('Card render validation source does not match the current-game authority.');
   }
   if (!Array.isArray(source.cards) || source.cards.length !== EXPECTED_CANDIDATE_COUNT) {
-    throw new Error(`Expected ${EXPECTED_CANDIDATE_COUNT} card candidates.`);
+    throw new Error(`Expected ${EXPECTED_CANDIDATE_COUNT} current card changes.`);
   }
   if (!Array.isArray(source.retired_cards) || source.retired_cards.length !== EXPECTED_RETIREMENT_COUNT) {
     throw new Error(`Expected ${EXPECTED_RETIREMENT_COUNT} retired base card.`);
   }
   if (source.retired_cards[0]?.id !== 'inquisition-no-martyrs') {
-    throw new Error('v0.6.4 replacement validation expects No Martyrs to be the retired base card.');
+    throw new Error('Current card resolution validation expects No Martyrs to be the retired base card.');
   }
   if (source.target_pool_sizes?.total_playable_cards !== EXPECTED_CATALOG_COUNT) {
-    throw new Error(`Expected catalog target ${EXPECTED_CATALOG_COUNT}.`);
+    throw new Error(`Expected current catalog target ${EXPECTED_CATALOG_COUNT}.`);
   }
 }
 
@@ -74,8 +71,8 @@ async function main() {
   try { ({ chromium } = await import('playwright')); }
   catch { throw new Error('Playwright is required.'); }
 
-  const source = JSON.parse(await readFile(SOURCE_PATH, 'utf8'));
-  validateSource(source);
+  const { manifest, source: sourcePath, data: source } = await readCurrentJsonSource('cardChanges');
+  validateSource(source, manifest);
   await rm(OUTPUT, { recursive: true, force: true });
   await mkdir(OUTPUT, { recursive: true });
 
@@ -87,9 +84,8 @@ async function main() {
   try {
     const catalogPage = await context.newPage();
     await catalogPage.goto(`${baseUrl}/card-design/#playable-cards`, { waitUntil: 'load' });
-    await catalogPage.waitForFunction(() => document.body.dataset.v064Cards === 'ready');
+    await catalogPage.waitForFunction(() => document.body.dataset.currentGameCards === 'ready');
     const catalogState = await catalogPage.evaluate(() => ({
-      candidates: document.querySelectorAll('[data-v064-candidate-card]').length,
       playableFrames: document.querySelectorAll('.full-card-review-frame').length,
       playableCounts: [...document.querySelectorAll('[data-playable-count]')].map(node => node.textContent?.trim()),
       retiredNoMartyrsPresent: [...document.querySelectorAll('#playableReviewSections .full-card-review-frame')]
@@ -98,16 +94,17 @@ async function main() {
         ['neutral', 'military', 'diplomats', 'financiers', 'intelligence', 'mystics', 'inquisition']
           .map(allegiance => [allegiance, document.querySelectorAll(`#playable-${allegiance} .specimen-column`).length]),
       ),
+      authority: document.body.dataset.currentGameAuthority,
     }));
     const allegianceCountsCorrect = catalogState.allegianceCounts.neutral === 52
       && ['military', 'diplomats', 'financiers', 'intelligence', 'mystics', 'inquisition']
         .every(allegiance => catalogState.allegianceCounts[allegiance] === 15);
-    if (catalogState.candidates !== EXPECTED_CANDIDATE_COUNT
-      || catalogState.playableFrames !== EXPECTED_CATALOG_COUNT
+    if (catalogState.playableFrames !== EXPECTED_CATALOG_COUNT
       || catalogState.playableCounts.some(value => value !== String(EXPECTED_CATALOG_COUNT))
       || catalogState.retiredNoMartyrsPresent
-      || !allegianceCountsCorrect) {
-      throw new Error(`Candidate catalog integration is incomplete: ${JSON.stringify(catalogState)}.`);
+      || !allegianceCountsCorrect
+      || catalogState.authority !== '/game-data/current-game.json') {
+      throw new Error(`Current-game catalog integration is incomplete: ${JSON.stringify(catalogState)}.`);
     }
     await catalogPage.close();
 
@@ -140,20 +137,20 @@ async function main() {
       });
 
       if (metric.title !== sourceCard.name) {
-        throw new Error(`Candidate title mismatch for ${sourceCard.id}: ${JSON.stringify(metric)}.`);
+        throw new Error(`Current card title mismatch for ${sourceCard.id}: ${JSON.stringify(metric)}.`);
       }
       if (Math.abs(metric.width - CARD_WIDTH) > 0.25 || Math.abs(metric.height - CARD_HEIGHT) > 0.25) {
-        throw new Error(`Unexpected candidate dimensions for ${sourceCard.name}: ${metric.width} × ${metric.height}.`);
+        throw new Error(`Unexpected current card dimensions for ${sourceCard.name}: ${metric.width} × ${metric.height}.`);
       }
       if (metric.fitWarning || metric.titleFit !== 'true' || metric.parchmentLoaded !== 'true') {
-        throw new Error(`Candidate card does not fit or load correctly: ${JSON.stringify(metric)}.`);
+        throw new Error(`Current card does not fit or load correctly: ${JSON.stringify(metric)}.`);
       }
       if (!Number.isFinite(metric.rulesScale) || metric.rulesScale <= 0) {
         throw new Error(`Invalid rules scale for ${sourceCard.name}: ${JSON.stringify(metric)}.`);
       }
-      if (metric.gameVersion !== 'v0.6.4 candidate'
-        || metric.sourceHierarchy?.[0] !== '/docs/v0.6.4-card-additions.json') {
-        throw new Error(`Candidate render is not using the staged v0.6.4 source: ${JSON.stringify(metric)}.`);
+      if (metric.gameVersion !== manifest.displayVersion
+        || metric.sourceHierarchy?.[0] !== '/game-data/current-game.json') {
+        throw new Error(`Current card render is not using the current-game authority: ${JSON.stringify(metric)}.`);
       }
       if (metric.arcaneMarkerCount !== (sourceCard.trait === 'Arcane' ? 1 : 0)) {
         throw new Error(`Arcane title marker mismatch for ${sourceCard.name}: ${JSON.stringify(metric)}.`);
@@ -161,7 +158,7 @@ async function main() {
 
       const expectedLabels = sourceCard.effects.map(effect => effect.label);
       if (JSON.stringify(metric.labels) !== JSON.stringify(expectedLabels)) {
-        throw new Error(`Candidate effect headings drifted for ${sourceCard.name}: ${JSON.stringify(metric.labels)}.`);
+        throw new Error(`Current card effect headings drifted for ${sourceCard.name}: ${JSON.stringify(metric.labels)}.`);
       }
 
       await page.locator('.gauntlet-card').screenshot({
@@ -173,6 +170,8 @@ async function main() {
     }
 
     await writeFile(join(OUTPUT, 'metrics.json'), `${JSON.stringify({
+      authority: CURRENT_GAME_MANIFEST_SOURCE,
+      source: sourcePath,
       candidateCount: EXPECTED_CANDIDATE_COUNT,
       retirementCount: EXPECTED_RETIREMENT_COUNT,
       catalogCount: EXPECTED_CATALOG_COUNT,

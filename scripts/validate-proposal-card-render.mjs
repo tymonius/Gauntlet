@@ -3,10 +3,10 @@ import { createServer } from 'node:http';
 import { mkdir, readFile, stat } from 'node:fs/promises';
 import { extname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { readCurrentJsonSource, CURRENT_GAME_MANIFEST_SOURCE } from './current-game-authority.mjs';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const OUTPUT = join(ROOT, 'card-design', 'generated', 'proposals');
-const SOURCE_PATH = join(ROOT, 'docs', 'v0.6.4-diplomat-proposals.json');
 const PROPOSAL_ART_ROOT = join(ROOT, 'images', 'artwork', 'cards', 'diplomats', 'proposals');
 const CARD_WIDTH = 240;
 const CARD_HEIGHT = 336;
@@ -60,12 +60,15 @@ async function main() {
   try { ({ chromium } = await import('playwright')); }
   catch { throw new Error('Playwright is required.'); }
 
-  const source = JSON.parse(await readFile(SOURCE_PATH, 'utf8'));
-  if (source.source_issue !== EXPECTED_SOURCE_ISSUE || source.mechanics_changed !== false) {
-    throw new Error('Proposal render validation requires the approved wording-only issue #617 source.');
+  const { manifest, source: sourcePath, data: source } = await readCurrentJsonSource('proposals');
+  if (source.version !== manifest.version
+    || source.base_version !== manifest.baseVersion
+    || source.source_issue !== EXPECTED_SOURCE_ISSUE
+    || source.mechanics_changed !== false) {
+    throw new Error('Proposal render validation source does not match the current-game authority.');
   }
   if (!Array.isArray(source.proposals) || source.proposals.length !== EXPECTED_PROPOSALS) {
-    throw new Error(`Expected ${EXPECTED_PROPOSALS} approved Proposals in the render source.`);
+    throw new Error(`Expected ${EXPECTED_PROPOSALS} current Proposals in the authority-selected render source.`);
   }
 
   await mkdir(OUTPUT, { recursive: true });
@@ -77,11 +80,11 @@ async function main() {
   try {
     await page.goto(`${baseUrl}/card-design/#proposal-cards`, { waitUntil: 'load' });
     await page.waitForFunction(expected => document.querySelectorAll('.proposal-card').length === expected, EXPECTED_FACES);
-    await page.waitForFunction(({ count, issue }) => {
+    await page.waitForFunction(count => {
       const root = document.querySelector('#proposalReviewSections');
       return root?.dataset.proposalCount === String(count)
-        && root?.dataset.proposalSourceIssue === String(issue);
-    }, { count: EXPECTED_PROPOSALS, issue: EXPECTED_SOURCE_ISSUE });
+        && root?.dataset.proposalAuthority === '/game-data/current-game.json';
+    }, EXPECTED_PROPOSALS);
     await page.waitForFunction(() => [...document.querySelectorAll('.proposal-card')].every(card => (
       card.dataset.parchmentLoaded === 'true'
       && card.dataset.titleFit === 'true'
@@ -144,8 +147,8 @@ async function main() {
         if (face.stake !== proposal.stake) {
           throw new Error(`Stake mismatch for ${proposal.name}: ${JSON.stringify(face)}.`);
         }
-        if (face.version !== 'v0.6.4-dev') {
-          throw new Error(`Development version footer missing for ${proposal.name}: ${JSON.stringify(face)}.`);
+        if (face.version !== manifest.displayVersion) {
+          throw new Error(`Current-game version footer missing for ${proposal.name}: ${JSON.stringify(face)}.`);
         }
         if (Math.abs(face.width - CARD_WIDTH) > 0.25 || Math.abs(face.height - CARD_HEIGHT) > 0.25) {
           throw new Error(`Unexpected production card dimensions for ${proposal.name}: ${JSON.stringify(face)}.`);
@@ -184,7 +187,12 @@ async function main() {
     await page.locator('#proposal-cards').screenshot({
       path: join(OUTPUT, 'diplomat-proposal-card-review.png'),
     });
-    console.log(JSON.stringify({ sourceIssue: source.source_issue, metrics }, null, 2));
+    console.log(JSON.stringify({
+      authority: CURRENT_GAME_MANIFEST_SOURCE,
+      source: sourcePath,
+      sourceIssue: source.source_issue,
+      metrics,
+    }, null, 2));
   } finally {
     await browser.close();
     await new Promise(resolve => server.close(resolve));

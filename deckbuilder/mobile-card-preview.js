@@ -8,7 +8,7 @@
   document.addEventListener("DOMContentLoaded", installMobileCardPreview);
 
   function installRenderedCardAssets() {
-    ensureStylesheet("rendered-card-preview.css?v=20260819-1", "deckbuilder-rendered-card-preview");
+    ensureStylesheet("rendered-card-preview.css?v=20260819-2", "deckbuilder-rendered-card-preview");
     ensureStylesheet("../card-reference/card-inspection.css?v=20260819-2", "shared-card-inspection");
     ensureScript("rendered-card-preview.js?v=20260819-1", "deckbuilder-rendered-card-preview");
     ensureScript("../card-reference/card-inspection.js?v=20260819-2", "shared-card-inspection");

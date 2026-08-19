@@ -2,9 +2,9 @@ import { createServer } from 'node:http';
 import { mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { extname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { readCurrentJsonSource, CURRENT_GAME_MANIFEST_SOURCE } from './current-game-authority.mjs';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
-const SOURCE_PATH = join(ROOT, 'docs', 'v0.6.4-territories.json');
 const OUTPUT = join(ROOT, 'card-design', 'generated', 'territories-v064');
 const CSS_WIDTH = 336;
 const CSS_HEIGHT = 240;
@@ -13,7 +13,6 @@ const OUTPUT_WIDTH = 560;
 const OUTPUT_HEIGHT = 400;
 const DEVICE_SCALE = OUTPUT_WIDTH / CSS_WIDTH;
 const EXPECTED_SOURCE_ISSUE = 738;
-const EXPECTED_VERSION = 'v0.6.4-candidate';
 const MINIMUM_READABLE_EFFECT_SCALE = 0.78;
 const MINIMUM_ARTWORK_HEIGHT = 0.78 * CSS_PIXELS_PER_INCH;
 
@@ -62,14 +61,15 @@ async function main() {
   try { ({ chromium } = await import('playwright')); }
   catch { throw new Error('Playwright is required.'); }
 
-  const source = JSON.parse(await readFile(SOURCE_PATH, 'utf8'));
-  if (source.version !== EXPECTED_VERSION
+  const { manifest, source: sourcePath, data: source } = await readCurrentJsonSource('territories');
+  if (source.version !== manifest.version
+    || source.base_version !== manifest.baseVersion
     || source.source_issue !== EXPECTED_SOURCE_ISSUE
     || source.mechanics_changed !== true) {
-    throw new Error('Territory render validation requires the approved issue #738 v0.6.4 candidate source.');
+    throw new Error('Territory render validation source does not match the current-game authority.');
   }
   if (!Array.isArray(source.territories) || source.territories.length !== 25) {
-    throw new Error('Expected all 25 approved Territories and Arenas in the render source.');
+    throw new Error('Expected all 25 current Territories and Arenas in the authority-selected render source.');
   }
 
   await rm(OUTPUT, { recursive: true, force: true });
@@ -117,6 +117,7 @@ async function main() {
           version,
           artRectHeight: art?.height || 0,
           artRectWidth: art?.width || 0,
+          sourceHierarchy: window.GAUNTLET_TTS_CATALOG?.sourceHierarchy,
         };
       });
       metrics.push({ id: territory.id, name: territory.name, ...metric });
@@ -127,8 +128,8 @@ async function main() {
       if (metric.renderedText !== territory.text) {
         throw new Error(`Rendered Territory text drifted for ${territory.name}.`);
       }
-      if (metric.version !== EXPECTED_VERSION) {
-        throw new Error(`Candidate version footer missing for ${territory.name}: ${metric.version}.`);
+      if (metric.version !== manifest.displayVersion || metric.sourceHierarchy?.[0] !== '/game-data/current-game.json') {
+        throw new Error(`Territory render is not using the current-game authority for ${territory.name}: ${JSON.stringify(metric)}.`);
       }
       if (metric.fitWarning || metric.titleFit !== 'true' || metric.parchmentLoaded !== 'true') {
         throw new Error(`Territory does not fit or load correctly: ${JSON.stringify({ territory: territory.name, ...metric })}.`);
@@ -152,6 +153,8 @@ async function main() {
     }
 
     await writeFile(join(OUTPUT, 'render-metrics.json'), `${JSON.stringify({
+      authority: CURRENT_GAME_MANIFEST_SOURCE,
+      source: sourcePath,
       sourceIssue: source.source_issue,
       sourceVersion: source.version,
       cssPixels: { width: CSS_WIDTH, height: CSS_HEIGHT },
@@ -160,7 +163,7 @@ async function main() {
       minimumArtworkHeight: MINIMUM_ARTWORK_HEIGHT,
       metrics,
     }, null, 2)}\n`);
-    console.log(JSON.stringify({ sourceIssue: source.source_issue, count: metrics.length, metrics }, null, 2));
+    console.log(JSON.stringify({ authority: CURRENT_GAME_MANIFEST_SOURCE, sourceIssue: source.source_issue, count: metrics.length, metrics }, null, 2));
   } finally {
     await context.close();
     await browser.close();

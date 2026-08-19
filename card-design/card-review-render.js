@@ -1,10 +1,11 @@
 import { resolveFirstArtwork, slugify } from './card-artwork-resolver.js';
 import { normalizeV063CardForPresentation } from './v063-card-heading-normalizer.js';
+import { loadCurrentGame } from '../game-data/current-game.mjs';
 
 await (async () => {
-  const CANONICAL_SOURCE = '/artifacts/reconstruction/clean-v0.6.3/downstream/canonical-data.json';
-  const CANDIDATE_SOURCE = '/docs/v0.6.4-card-additions.json';
-  const cardId = new URLSearchParams(window.location.search).get('card');
+  const params = new URLSearchParams(window.location.search);
+  const cardId = params.get('card');
+  const productionFit = params.get('fit') === 'production';
   const target = document.getElementById('renderTarget');
 
   function sectionsFromEffects(effects) {
@@ -37,31 +38,51 @@ await (async () => {
     });
   }
 
-  async function loadJson(src) {
-    const response = await fetch(src, { cache: 'no-cache' });
-    if (!response.ok) throw new Error(`Unable to load ${src} (HTTP ${response.status}).`);
-    return response.json();
+  async function loadCardFonts(card) {
+    if (!document.fonts?.load) {
+      if (productionFit) throw new Error('This browser cannot verify the production card fonts.');
+      return;
+    }
+
+    const titleSample = String(card?.name || 'Gauntlet');
+    const rulesSample = (card?.effects || [])
+      .map(effect => `${String(effect?.label || '')} ${String(effect?.text || '')}`)
+      .join(' ')
+      .trim() || 'Gauntlet';
+    const requests = [
+      ['400 12.1pt "p22-1722-pro"', titleSample],
+      ['400 7.05pt "adobe-caslon-pro"', rulesSample],
+      ['700 7.05pt "adobe-caslon-pro"', rulesSample],
+    ];
+
+    const results = await Promise.all(requests.map(async ([font, sample]) => {
+      try {
+        return await document.fonts.load(font, sample);
+      } catch (error) {
+        console.warn(`Unable to preload card font ${font}.`, error);
+        return [];
+      }
+    }));
+
+    try {
+      await document.fonts.ready;
+    } catch (error) {
+      console.warn('Card fonts did not report ready before rendering.', error);
+    }
+
+    if (productionFit && results.some(faces => !faces.length)) {
+      throw new Error('One or more production card fonts failed to load.');
+    }
+    document.body.dataset.renderFontsReady = 'true';
   }
 
   try {
     if (!cardId) throw new Error('No card selected.');
 
-    const canonical = await loadJson(CANONICAL_SOURCE);
-    let sourceCard = (canonical.cards || []).find(item => item.id === cardId);
-    let sourcePath = CANONICAL_SOURCE;
-    let gameVersion = 'v0.6.3';
+    const currentGame = await loadCurrentGame();
+    const sourceCard = currentGame.findCard(cardId);
+    if (!sourceCard) throw new Error(`Unknown current card: ${cardId}`);
 
-    if (!sourceCard) {
-      const candidate = await loadJson(CANDIDATE_SOURCE);
-      if (candidate.version !== 'v0.6.4-candidate' || candidate.base_version !== 'v0.6.3' || candidate.ready_for_game_data !== false) {
-        throw new Error(`Unexpected v0.6.4 candidate source for ${cardId}`);
-      }
-      sourceCard = (candidate.cards || []).find(item => item.id === cardId);
-      sourcePath = CANDIDATE_SOURCE;
-      gameVersion = 'v0.6.4 candidate';
-    }
-
-    if (!sourceCard) throw new Error(`Unknown card: ${cardId}`);
     const card = normalizeV063CardForPresentation(sourceCard);
     const faction = slugify(card.allegiance);
     const artwork = await resolveFirstArtwork(card, faction, imageExists);
@@ -77,18 +98,23 @@ await (async () => {
       form: card.card_form || '',
       unique: Boolean(card.unique),
       sections: sectionsFromEffects(card.effects),
-      source: card.v063_source || card.source || sourcePath,
+      source: currentGame.authorityUrl,
       artwork,
     };
     window.GAUNTLET_TTS_CATALOG = {
       schemaVersion: 1,
-      gameVersion,
-      sourceHierarchy: [sourcePath],
+      gameVersion: currentGame.displayVersion,
+      sourceHierarchy: [currentGame.authorityUrl],
       playableCards: [preview],
       missingArtwork: artwork ? [] : [preview.id],
     };
+    window.GAUNTLET_ART_DIRECTION = currentGame.artDirection;
 
-    await loadScript('/tts/artwork-direction-overrides.js');
+    // Production layout is content-sensitive. Explicitly request the exact
+    // display and reading faces before either shared renderer is allowed to
+    // measure the card; FontFaceSet.ready alone can resolve before a newly
+    // inserted card has caused those faces to be requested.
+    await loadCardFonts(card);
     await loadScript('/tts/artwork-crop.js');
     await loadScript('/tts/renderer/renderer.js');
     await loadScript('/card-design/card-design.js');
