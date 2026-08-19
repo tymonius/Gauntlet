@@ -225,6 +225,72 @@
 .first-page-summary.summary-auto-tightest .summary-side{font-size:5.55pt!important;line-height:1.02!important}
 .first-page-summary.summary-very-dense h2,
 .first-page-summary.summary-auto-tightest h2{margin-bottom:.026in!important;padding-bottom:.018in!important;font-size:5.35pt!important}
+
+/* Starter decks insert a fourth direct child between the metrics line and the
+   deck/side grid. Budget it explicitly inside the same fixed 3.5in region
+   instead of letting the browser create an implicit row that collides with the
+   card grid below. */
+.first-page-summary.has-starter-strategy{
+  grid-template-rows:auto auto auto minmax(0,1fr)!important;
+  row-gap:.04in!important;
+}
+.first-page-summary.has-starter-strategy .starter-print-strategy{
+  min-height:0!important;
+  max-height:.66in!important;
+  margin:0!important;
+  padding:.045in .07in!important;
+  overflow:hidden!important;
+  grid-template-columns:minmax(0,.9fr) minmax(0,1.45fr)!important;
+  gap:.03in .12in!important;
+  font-family:"adobe-caslon-pro",Georgia,"Times New Roman",serif!important;
+  font-size:6.05pt!important;
+  line-height:1.06!important;
+}
+.first-page-summary.has-starter-strategy .starter-print-strategy h2{
+  margin:0 0 .018in!important;
+  padding:0!important;
+  border:0!important;
+  font-size:5.25pt!important;
+  line-height:1!important;
+}
+.first-page-summary.has-starter-strategy .starter-print-strategy p{margin:0!important}
+.first-page-summary.has-starter-strategy .starter-print-territories{
+  grid-column:1/-1!important;
+  display:grid!important;
+  grid-template-columns:1.38in minmax(0,1fr)!important;
+  gap:.06in!important;
+  padding-top:.025in!important;
+}
+.first-page-summary.has-starter-strategy .starter-print-territories p{
+  min-width:0!important;
+  overflow:hidden!important;
+  white-space:nowrap!important;
+  text-overflow:ellipsis!important;
+  font-size:5.8pt!important;
+}
+.first-page-summary.has-starter-strategy .summary-grid{
+  min-height:0!important;
+  height:auto!important;
+  overflow:hidden!important;
+}
+.first-page-summary.has-starter-strategy .deck-list{
+  height:1.36in!important;
+}
+.first-page-summary.has-starter-strategy.summary-auto-tight .starter-print-strategy,
+.first-page-summary.has-starter-strategy.summary-dense .starter-print-strategy{
+  max-height:.61in!important;
+  font-size:5.75pt!important;
+}
+.first-page-summary.has-starter-strategy.summary-auto-tightest .starter-print-strategy,
+.first-page-summary.has-starter-strategy.summary-very-dense .starter-print-strategy{
+  max-height:.57in!important;
+  font-size:5.45pt!important;
+  line-height:1!important;
+}
+.first-page-summary.has-starter-strategy.summary-auto-tightest .deck-list,
+.first-page-summary.has-starter-strategy.summary-very-dense .deck-list{
+  height:1.39in!important;
+}
 .first-page>.card-table.two-row{
   grid-row:2;
   width:7.5in!important;
@@ -239,12 +305,19 @@
     fitScript.textContent = `(() => {
   const summary = document.querySelector('.first-page-summary');
   if (!summary) return;
+  const overflowTargets = () => [
+    summary,
+    ...summary.querySelectorAll('.deck-list, .summary-side, .starter-print-strategy')
+  ];
+  const overflows = () => overflowTargets().some(node => (
+    node.scrollHeight > node.clientHeight + 1 || node.scrollWidth > node.clientWidth + 1
+  ));
   const fit = () => {
     summary.classList.remove('summary-auto-tight', 'summary-auto-tightest');
-    if (summary.scrollHeight <= summary.clientHeight + 1) return;
+    if (!overflows()) return;
     summary.classList.add('summary-auto-tight');
     void summary.offsetHeight;
-    if (summary.scrollHeight > summary.clientHeight + 1) summary.classList.add('summary-auto-tightest');
+    if (overflows()) summary.classList.add('summary-auto-tightest');
   };
   const run = async () => {
     try { if (document.fonts?.ready) await document.fonts.ready; } catch (error) {}
