@@ -7,8 +7,8 @@ const css = readFileSync("deckbuilder/metadata-ui.css", "utf8");
 
 describe("Deckbuilder metadata hierarchy", () => {
   it("loads the shared metadata cleanup alongside the rendered card preview", () => {
-    expect(loader).toContain('metadata-ui.css?v=20260819-1');
-    expect(loader).toContain('metadata-ui.js?v=20260819-1');
+    expect(loader).toContain('metadata-ui.css?v=20260819-2');
+    expect(loader).toContain('metadata-ui.js?v=20260819-2');
   });
 
   it("keeps card value circular while converting other compact metadata to boxes", () => {
@@ -22,12 +22,18 @@ describe("Deckbuilder metadata hierarchy", () => {
     expect(css).toContain('border-radius: 2px');
   });
 
-  it("labels selected-deck quantities as Qty, Value, and Total", () => {
+  it("uses the established Value medallion between boxed Qty and Total fields", () => {
     expect(ui).toContain('<span class="deck-stat-label">Qty</span>');
     expect(ui).toContain('<span class="deck-stat-label">Value</span>');
     expect(ui).toContain('<span class="deck-stat-label">Total</span>');
+    expect(ui).toContain('class="deck-stat deck-stat-box"');
+    expect(ui).toContain('class="deck-stat deck-stat-value"');
+    expect(ui).toContain('class="mini-pill value-badge deck-value-medallion"');
+    expect(ui).toContain('class="deck-stat deck-stat-box deck-stat-total"');
     expect(ui).not.toContain('${quantity}×');
     expect(ui).not.toContain('${value} each');
-    expect(css).toContain('.deck-stat-strip');
+    expect(css).toContain('.deck-stat-box');
+    expect(css).toContain('.deck-stat-value');
+    expect(css).toContain('.deck-value-medallion');
   });
 });
