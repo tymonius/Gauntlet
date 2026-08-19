@@ -83,6 +83,7 @@ describe('single current-game authority', () => {
     expect(CURRENT_ART_DIRECTION_SOURCE_URL).toBe('/tts/artwork-direction-overrides.js');
     const source = readFileSync(`.${CURRENT_ART_DIRECTION_SOURCE_URL}`, 'utf8');
     const directions = parseArtDirectionSource(source);
+    expect(Object.keys(directions).length).toBeGreaterThan(0);
     expect(directions['territory-quicksand']).toEqual(expect.objectContaining({ focusY: expect.any(Number) }));
 
     const cardRenderer = readFileSync('card-design/card-review-render.js', 'utf8');
