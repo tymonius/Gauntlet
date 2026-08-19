@@ -26,7 +26,7 @@ export function slugify(value) {
     .replace(/^-|-$/g, '');
 }
 
-function resolveCards(baseCards, changes, manifest) {
+export function resolveCards(baseCards, changes, manifest) {
   if (changes?.version !== manifest.version || changes?.base_version !== manifest.baseVersion) {
     throw new Error(`Current card changes do not match ${manifest.version} over ${manifest.baseVersion}.`);
   }
