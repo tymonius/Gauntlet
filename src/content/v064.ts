@@ -1,3 +1,4 @@
+import currentGameAuthorityJson from '../../game-data/current-game.json';
 import territorySourceJson from '../../docs/v0.6.4-territories.json';
 import {
   cleanV063Content,
@@ -5,8 +6,17 @@ import {
   type CleanV063Territory,
 } from '../reconstruction/clean-v063/content';
 
+const currentGameAuthority = currentGameAuthorityJson as {
+  authority: string;
+  version: string;
+  baseVersion: string;
+  sources: { territories?: string };
+};
+
+export const CURRENT_GAME_AUTHORITY_PATH = 'game-data/current-game.json' as const;
 export const V064_CANDIDATE_RULES_VERSION = 'v0.6.4-candidate' as const;
 export const V064_TERRITORY_SOURCE_ISSUE = 738 as const;
+const BUNDLED_TERRITORY_SOURCE = '/docs/v0.6.4-territories.json' as const;
 
 export interface V064TerritorySourceEntry extends CleanV063Territory {
   number: number;
@@ -27,6 +37,7 @@ export interface V064TerritorySource {
 }
 
 export interface V064CandidateContentIndex {
+  authorityPath: typeof CURRENT_GAME_AUTHORITY_PATH;
   rulesVersion: typeof V064_CANDIDATE_RULES_VERSION;
   baseVersion: 'v0.6.3';
   territorySourceIssue: typeof V064_TERRITORY_SOURCE_ISSUE;
@@ -35,11 +46,23 @@ export interface V064CandidateContentIndex {
   territoriesById: ReadonlyMap<string, V064TerritorySourceEntry>;
 }
 
+function assertCurrentGameAuthority(): void {
+  if (currentGameAuthority.authority !== 'current-game') {
+    throw new Error('Digital v0.6.4 content must be governed by the current-game authority.');
+  }
+  if (currentGameAuthority.version !== V064_CANDIDATE_RULES_VERSION || currentGameAuthority.baseVersion !== 'v0.6.3') {
+    throw new Error(`Digital candidate adapter does not match current-game version ${currentGameAuthority.version}/${currentGameAuthority.baseVersion}.`);
+  }
+  if (currentGameAuthority.sources.territories !== BUNDLED_TERRITORY_SOURCE) {
+    throw new Error(`Digital candidate Territory bundle ${BUNDLED_TERRITORY_SOURCE} drifted from current-game authority ${currentGameAuthority.sources.territories || 'missing'}.`);
+  }
+}
+
 function assertV064TerritorySource(value: unknown): asserts value is V064TerritorySource {
   if (!value || typeof value !== 'object') throw new Error('v0.6.4 Territory source must be an object.');
   const source = value as Partial<V064TerritorySource>;
-  if (source.version !== V064_CANDIDATE_RULES_VERSION || source.base_version !== 'v0.6.3') {
-    throw new Error('v0.6.4 Territory source version metadata is invalid.');
+  if (source.version !== currentGameAuthority.version || source.base_version !== currentGameAuthority.baseVersion) {
+    throw new Error('Digital Territory source version metadata does not match the current-game authority.');
   }
   if (source.source_issue !== V064_TERRITORY_SOURCE_ISSUE || source.mechanics_changed !== true) {
     throw new Error('v0.6.4 Territory source must remain pinned to the approved issue #738 clarification set.');
@@ -63,6 +86,7 @@ function assertV064TerritorySource(value: unknown): asserts value is V064Territo
 }
 
 export function loadV064CandidateContent(): V064CandidateContentIndex {
+  assertCurrentGameAuthority();
   const raw: unknown = territorySourceJson;
   assertV064TerritorySource(raw);
 
@@ -81,6 +105,7 @@ export function loadV064CandidateContent(): V064CandidateContentIndex {
   };
 
   return {
+    authorityPath: CURRENT_GAME_AUTHORITY_PATH,
     rulesVersion: V064_CANDIDATE_RULES_VERSION,
     baseVersion: 'v0.6.3',
     territorySourceIssue: V064_TERRITORY_SOURCE_ISSUE,
