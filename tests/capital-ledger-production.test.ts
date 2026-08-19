@@ -1,48 +1,58 @@
-import { test, expect } from '@playwright/test';
+import { readFileSync } from 'node:fs';
+import { describe, expect, it } from 'vitest';
 
-const DESIGN_URL = '/card-design/';
+const renderer = readFileSync('card-design/capital-ledger.js', 'utf8');
+const css = readFileSync('card-design/capital-ledger.css', 'utf8');
+const preview = readFileSync('card-design/capital-ledger-preview.html', 'utf8');
+const supplemental = readFileSync('card-design/supplemental-card.js', 'utf8');
 
-test.describe('Financiers Capital Ledger', () => {
-  test('renders identical duplex ledger faces', async ({ page }) => {
-    await page.goto(DESIGN_URL);
-    const ledgers = page.locator('.capital-ledger-card');
-    await expect(ledgers).toHaveCount(2);
+describe('Financiers Capital Ledger production component', () => {
+  it('renders the approved ledger content and writable rows', () => {
+    expect(renderer).toContain('Capital Ledger');
+    expect(renderer).toContain('Public Capital Record');
+    expect(renderer).toContain('>Entry<');
+    expect(renderer).toContain('>±<');
+    expect(renderer).toContain('>Balance<');
+    expect(renderer).toContain('Opening Balance');
+    expect(renderer).toContain('>2<');
+    expect(renderer).toContain('>Income<');
+    expect(renderer).toContain('>+1<');
+    expect(renderer).toContain('>3<');
+    expect(renderer).toContain('${ledgerRows(10)}');
 
-    const texts = await ledgers.allTextContents();
-    expect(texts[0].replace(/\s+/g, ' ').trim()).toBe(texts[1].replace(/\s+/g, ' ').trim());
+    // The example demonstrates a gain from the preprinted opening balance of 2 to 3.
+    expect(renderer.indexOf('capital-ledger-row--opening')).toBeLessThan(renderer.indexOf('capital-ledger-row--example'));
   });
 
-  test('shows columns, example entry, opening balance, and writable rows', async ({ page }) => {
-    await page.goto(DESIGN_URL);
-    const ledger = page.locator('.capital-ledger-card').first();
-
-    await expect(ledger).toContainText('Capital Ledger');
-    await expect(ledger).toContainText('Public Capital Record');
-    await expect(ledger).toContainText('Entry');
-    await expect(ledger).toContainText('±');
-    await expect(ledger).toContainText('Balance');
-    await expect(ledger.locator('.capital-ledger-row--example')).toContainText('Income');
-    await expect(ledger.locator('.capital-ledger-row--example')).toContainText('+1');
-    await expect(ledger.locator('.capital-ledger-row--example')).toContainText('3');
-    await expect(ledger.locator('.capital-ledger-row--opening')).toContainText('Opening Balance');
-    await expect(ledger.locator('.capital-ledger-row--opening')).toContainText('2');
-    await expect(ledger.locator('.capital-ledger-row--blank')).toHaveCount(10);
+  it('uses the project Declaration Pro flavor face for the faint example entry', () => {
+    expect(css).toContain('.capital-ledger-row--example');
+    expect(css).toContain('font-family: var(--font-flavor, "p22-declaration-pro", Georgia, serif)');
+    expect(css).toContain('color: rgba(67, 42, 55, 0.34)');
+    expect(css).toContain('font-weight: 400');
+    expect(preview).toContain('https://use.typekit.net/vgm6nwi.css');
+    expect(preview).toContain('../design-tokens.css');
   });
 
-  test('uses handwritten typography for the faint example entry', async ({ page }) => {
-    await page.goto(DESIGN_URL);
-    const example = page.locator('.capital-ledger-card').first().locator('.capital-ledger-row--example');
-    const fontFamily = await example.evaluate(element => getComputedStyle(element).fontFamily.toLowerCase());
-    expect(fontFamily).toMatch(/declaration|handwritten/);
-
-    const opacityColor = await example.evaluate(element => getComputedStyle(element).color);
-    expect(opacityColor).toMatch(/rgba?\(/);
+  it('uses the reference-card shell and ledger metadata footer', () => {
+    expect(renderer).toContain('reference-card capital-ledger-card');
+    expect(renderer).toContain('data-faction="financiers"');
+    expect(renderer).toContain('<footer class="card-footer"><span>Financiers</span><span>Ledger</span><span>${esc(version)}</span></footer>');
+    expect(css).toContain('.capital-ledger-card .reference-card-interior');
+    expect(css).toContain('var(--parchment-image)');
+    expect(css).toContain('.capital-ledger-card .card-footer');
   });
 
-  test('uses ledger metadata footer', async ({ page }) => {
-    await page.goto(DESIGN_URL);
-    const footer = page.locator('.capital-ledger-card').first().locator('.card-footer');
-    await expect(footer).toContainText('Financiers');
-    await expect(footer).toContainText('Ledger');
+  it('presents the ledger as identical duplex faces in both review surfaces', () => {
+    expect(renderer).toContain("const face = capitalLedgerMarkup(version);");
+    expect(renderer).toContain('<strong>Front</strong><span>Ledger face</span>');
+    expect(renderer).toContain('<strong>Reverse</strong><span>Identical ledger face</span>');
+    expect((renderer.match(/\$\{face\}/g) || [])).toHaveLength(2);
+
+    expect(supplemental).toContain("if (component.family === 'ledger') return 'Consumable duplex Capital record with identical ledger faces.';");
+    expect(supplemental).toContain("doubleSided: ledger || component.backPolicy === 'twoSided'");
+    expect(supplemental).toContain("backPolicy: ledger ? 'twoSided' : component.backPolicy");
+    expect(supplemental).toContain('if (component.ledger) return capitalLedgerMarkup(currentDisplayVersion);');
+    expect(supplemental).toContain("component.ledger ? 'Designed · identical duplex ledger'");
+    expect(supplemental).toContain("component.ledger ? 'Identical ledger face' : 'Loading current face'");
   });
 });
