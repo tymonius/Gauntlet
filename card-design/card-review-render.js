@@ -3,7 +3,9 @@ import { normalizeV063CardForPresentation } from './v063-card-heading-normalizer
 import { loadCurrentGame } from '../game-data/current-game.mjs';
 
 await (async () => {
-  const cardId = new URLSearchParams(window.location.search).get('card');
+  const params = new URLSearchParams(window.location.search);
+  const cardId = params.get('card');
+  const productionFit = params.get('fit') === 'production';
   const target = document.getElementById('renderTarget');
 
   function sectionsFromEffects(effects) {
@@ -34,6 +36,44 @@ await (async () => {
       script.addEventListener('error', () => reject(new Error(`Unable to load ${src}`)), { once: true });
       document.body.append(script);
     });
+  }
+
+  async function loadCardFonts(card) {
+    if (!document.fonts?.load) {
+      if (productionFit) throw new Error('This browser cannot verify the production card fonts.');
+      return;
+    }
+
+    const titleSample = String(card?.name || 'Gauntlet');
+    const rulesSample = (card?.effects || [])
+      .map(effect => `${String(effect?.label || '')} ${String(effect?.text || '')}`)
+      .join(' ')
+      .trim() || 'Gauntlet';
+    const requests = [
+      ['400 12.1pt "p22-1722-pro"', titleSample],
+      ['400 7.05pt "adobe-caslon-pro"', rulesSample],
+      ['700 7.05pt "adobe-caslon-pro"', rulesSample],
+    ];
+
+    const results = await Promise.all(requests.map(async ([font, sample]) => {
+      try {
+        return await document.fonts.load(font, sample);
+      } catch (error) {
+        console.warn(`Unable to preload card font ${font}.`, error);
+        return [];
+      }
+    }));
+
+    try {
+      await document.fonts.ready;
+    } catch (error) {
+      console.warn('Card fonts did not report ready before rendering.', error);
+    }
+
+    if (productionFit && results.some(faces => !faces.length)) {
+      throw new Error('One or more production card fonts failed to load.');
+    }
+    document.body.dataset.renderFontsReady = 'true';
   }
 
   try {
@@ -70,6 +110,11 @@ await (async () => {
     };
     window.GAUNTLET_ART_DIRECTION = currentGame.artDirection;
 
+    // Production layout is content-sensitive. Explicitly request the exact
+    // display and reading faces before either shared renderer is allowed to
+    // measure the card; FontFaceSet.ready alone can resolve before a newly
+    // inserted card has caused those faces to be requested.
+    await loadCardFonts(card);
     await loadScript('/tts/artwork-crop.js');
     await loadScript('/tts/renderer/renderer.js');
     await loadScript('/card-design/card-design.js');
