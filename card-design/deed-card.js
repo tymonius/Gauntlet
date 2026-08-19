@@ -14,6 +14,15 @@ function ornamentGlyph(className, index) {
 
 function hydrateDeedOrnaments() {
   document.querySelectorAll(DEED_SELECTOR).forEach(card => {
+    // The shared card-title rule clips overflow for ordinary card titles. P22
+    // Declaration's capital D deliberately overhangs its advance box on the
+    // top and left, so allow that ink to remain visible on this custom face.
+    const title = card.querySelector('.card-title');
+    if (title) {
+      title.style.overflow = 'visible';
+      title.style.maxWidth = 'none';
+    }
+
     const row = card.querySelector('.supplemental-type-line');
     if (!row || row.dataset.deedOrnamentsReady === 'true') return;
 
