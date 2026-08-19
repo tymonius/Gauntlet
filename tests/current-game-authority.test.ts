@@ -9,6 +9,7 @@ const CURRENT_RUNTIME_SURFACES = [
   'card-design/card-review-render.js',
   'card-design/territory-review-render.js',
   'card-design/card-review.js',
+  'card-design/v064-card-candidates.js',
   'card-design/proposal-card.js',
   'card-design/rite-card.js',
   'card-design/reference-card.js',
@@ -18,12 +19,14 @@ const CURRENT_RUNTIME_SURFACES = [
   'deckbuilder/territories.js',
   'deckbuilder/faction-components.js',
   'deckbuilder/print-duplex-sheet-pairing.js',
+  'rules-assistant/v064-candidate-corpus.js',
 ];
 
 const RAW_CURRENT_SOURCE_MARKERS = [
   'v0.6.4-card-additions.json',
   'v0.6.4-territories.json',
   'v0.6.4-diplomat-proposals.json',
+  'v0.6.4-arcane-symbol.json',
   'clean-v0.6.3/complete-authority/canonical-structured-data.json',
   'clean-v0.6.3/downstream/canonical-data.json',
   '/config/tts-component-contract.json',
@@ -41,6 +44,7 @@ describe('single current-game authority', () => {
       cardChanges: expect.any(String),
       territories: expect.any(String),
       proposals: expect.any(String),
+      arcaneSymbol: expect.any(String),
       componentContract: expect.any(String),
     }));
   });
@@ -71,7 +75,7 @@ describe('single current-game authority', () => {
     expect(resolved.every(card => card.current_game_authority === '/game-data/current-game.json')).toBe(true);
   });
 
-  it('prevents current runtime surfaces from selecting raw version sources independently', () => {
+  it('prevents current browser/runtime surfaces from selecting raw version sources independently', () => {
     for (const path of CURRENT_RUNTIME_SURFACES) {
       const source = readFileSync(path, 'utf8');
       expect(source, `${path} must consume the current-game authority`).toMatch(/current-game|loadCurrentGame|currentGameData|GAUNTLET_CURRENT_GAME_DATA/);
@@ -79,6 +83,14 @@ describe('single current-game authority', () => {
         expect(source, `${path} must not select ${marker} directly`).not.toContain(marker);
       }
     }
+  });
+
+  it('makes the static digital-game adapter subordinate to the same authority', () => {
+    const digital = readFileSync('src/content/v064.ts', 'utf8');
+    expect(digital).toContain("import currentGameAuthorityJson from '../../game-data/current-game.json'");
+    expect(digital).toContain('currentGameAuthority.sources.territories !== BUNDLED_TERRITORY_SOURCE');
+    expect(digital).toContain("currentGameAuthority.authority !== 'current-game'");
+    expect(digital).toContain('rulesVersion: V064_CANDIDATE_RULES_VERSION');
   });
 
   it('keeps source precedence out of the Deckbuilder starter and faction-component layers', () => {
@@ -99,6 +111,16 @@ describe('single current-game authority', () => {
     expect(rites).not.toContain("name: 'Ritual of Ascension'");
     expect(cardCatalog).toContain('current.leaders');
     expect(rites).toContain('currentGame.mystics');
+  });
+
+  it('makes the Rules Arbiter consume the resolved current-game corpus inputs', () => {
+    const rules = readFileSync('rules-assistant/v064-candidate-corpus.js', 'utf8');
+    expect(rules).toContain('loadCurrentGame');
+    expect(rules).toContain('currentGame.proposals');
+    expect(rules).toContain('currentGame.territories');
+    expect(rules).toContain('currentGame.arcaneSymbol');
+    expect(rules).not.toContain('fetchImpl(proposalUrl');
+    expect(rules).not.toContain('fetchImpl(territoryUrl');
   });
 
   it('drives production print component identity and back policy from the resolved contract', () => {
