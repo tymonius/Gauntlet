@@ -64,7 +64,12 @@
     frame.style.transform = `translateX(-50%) scale(${scale})`;
   }
 
-  if (document.readyState !== "loading") {
+  if (
+    document.readyState !== "loading" &&
+    typeof el !== "undefined" &&
+    el.cardPreview &&
+    el.availableCards
+  ) {
     renderAvailable();
   }
 })();
