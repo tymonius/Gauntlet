@@ -6,6 +6,7 @@ const supplementalRenderer = readFileSync("card-design/supplemental-card.js", "u
 const supplementalStyles = readFileSync("card-design/supplemental-card.css", "utf8");
 const deedStyles = readFileSync("card-design/deed-card.css", "utf8");
 const factionStyles = readFileSync("card-design/faction-specimens.css", "utf8");
+const leaderStyles = readFileSync("card-design/leader-card.css", "utf8");
 const territoryStyles = readFileSync("card-design/territory-card.css", "utf8");
 const proposalStyles = readFileSync("card-design/proposal-card.css", "utf8");
 
@@ -32,10 +33,17 @@ describe("Financier Deed card", () => {
   it("reuses the approved Financiers border and faction parchment rather than adding a new art asset", () => {
     expect(factionStyles).toContain("--faction-border: #227044");
     expect(factionStyles).toContain("--faction-border-outline: #124429");
-    expect(deedStyles).toContain("background-image: var(--parchment-image)");
+    expect(deedStyles).toContain("var(--parchment-image)");
     expect(deedStyles).not.toContain("deed.png");
     expect(deedStyles).not.toContain("deed.webp");
     expect(deedStyles).not.toContain("deed.svg");
+  });
+
+  it("applies the standard Financiers green parchment wash to the landscape Deed face", () => {
+    expect(leaderStyles).toContain("--component-parchment-tint: rgba(34, 112, 68, 0.13)");
+    expect(deedStyles).toContain("linear-gradient(var(--component-parchment-tint), var(--component-parchment-tint))");
+    expect(deedStyles).toContain("background-blend-mode: multiply");
+    expect(deedStyles).toContain("print-color-adjust: exact");
   });
 
   it("centers only the Deed wordmark in Declaration Blackletter with no watermark or footer treatment", () => {
