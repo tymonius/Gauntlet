@@ -19,10 +19,20 @@ describe("Deckbuilder print intro summary", () => {
     expect(printSummaryTransform).toContain('content:"GAUNTLET · DECK PACKAGE"');
   });
 
-  it("tightens unusually dense summaries instead of allowing them to collide with cards", () => {
+  it("budgets starter strategy as an explicit fourth row inside the 3.5in summary", () => {
+    expect(printSummaryTransform).toContain(".first-page-summary.has-starter-strategy");
+    expect(printSummaryTransform).toContain("grid-template-rows:auto auto auto minmax(0,1fr)!important");
+    expect(printSummaryTransform).toContain(".first-page-summary.has-starter-strategy .starter-print-strategy");
+    expect(printSummaryTransform).toContain("max-height:.66in!important");
+    expect(printSummaryTransform).toContain(".first-page-summary.has-starter-strategy .deck-list");
+    expect(printSummaryTransform).toContain("height:1.36in!important");
+  });
+
+  it("tightens overflowing descendants instead of allowing clipped content to collide with cards", () => {
     expect(printSummaryTransform).toContain('summary.classList.add("summary-dense")');
     expect(printSummaryTransform).toContain('summary.classList.add("summary-very-dense")');
-    expect(printSummaryTransform).toContain("summary.scrollHeight <= summary.clientHeight + 1");
+    expect(printSummaryTransform).toContain(".deck-list, .summary-side, .starter-print-strategy");
+    expect(printSummaryTransform).toContain("node.scrollHeight > node.clientHeight + 1");
     expect(printSummaryTransform).toContain("summary-auto-tight");
     expect(printSummaryTransform).toContain("summary-auto-tightest");
     expect(printSummaryTransform).toContain("document.fonts?.ready");
