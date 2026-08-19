@@ -64,8 +64,8 @@ describe("Deckbuilder production printing", () => {
     expect(printTransform).toContain('component.productionStatus');
     expect(printTransform).toContain('component.backPolicy');
     expect(printTransform).toContain('component.renderSource');
-    expect(printTransform).toContain('component.renderSource?.printEndpoint');
-    expect(printTransform).toContain('component.renderSource?.componentId');
+    expect(printTransform).toContain('explicit.printUrl || explicit.printEndpoint');
+    expect(printTransform).toContain('explicit.componentId');
     expect(printTransform).not.toContain('TRACKER_COMPONENT_IDS');
     expect(printTransform).not.toContain('REFERENCE_COMPONENTS');
   });
