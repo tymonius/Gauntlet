@@ -2,9 +2,9 @@
 
 /* Financier Deed
    Landscape ownership marker placed beside a Territory. The face is composed
-   entirely from the existing Financiers frame and parchment plus one centered
-   Declaration Blackletter wordmark. No artwork, emblem, watermark, rules,
-   footer, or other ornament belongs on this component. */
+   entirely from the existing Financiers frame, approved parchment, restrained
+   faction wash, and one centered Declaration Blackletter wordmark. No artwork,
+   emblem, watermark, rules, footer, or other ornament belongs on this component. */
 
 /* Catalog layout. These wrapper rules are intentionally separate from the
    card-face rules below; inspection clones do not retain this outer wrapper. */
@@ -44,8 +44,10 @@
   display: none;
 }
 
-/* The approved Financiers parchment source is portrait-oriented. Rotate the
-   exact source as one opaque layer, matching the landscape Territory grammar. */
+/* The approved Financiers parchment source is portrait-oriented. Rotate that
+   exact source as one layer, then apply the same restrained Financiers wash
+   used by the other faction components. The Deed uses ::after for its wordmark,
+   so the wash must live in this parchment layer instead of the shared ::after. */
 #supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .card-interior::before,
 .supplemental-placeholder-card[aria-label^="Deed "] .card-interior::before {
   position: absolute;
@@ -55,7 +57,10 @@
   width: 70.15%;
   height: 142.55%;
   background-color: var(--card-parchment);
-  background-image: var(--parchment-image);
+  background-image:
+    linear-gradient(var(--component-parchment-tint), var(--component-parchment-tint)),
+    var(--parchment-image);
+  background-blend-mode: multiply;
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -105,5 +110,9 @@
 
   #supplemental-financiers-deed .supplemental-single-face-grid {
     grid-template-columns: 3.5in;
+  }
+
+  .supplemental-placeholder-card[aria-label^="Deed "] .card-interior::before {
+    print-color-adjust: exact;
   }
 }
