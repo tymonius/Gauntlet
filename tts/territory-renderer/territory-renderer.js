@@ -134,8 +134,7 @@
     }
 
     /* Short-copy Territories keep a fully fluid artwork frame with no maximum.
-       If the fluid layout itself overflows, clamp the frame only for that card
-       and spend artwork height before reducing the rules typography. */
+       Dense copy clamps the current frame and spends artwork height before type. */
     if (cardOverflows(card)) {
       artClamped = true;
       artHeight = art?.getBoundingClientRect().height || artHeight;
@@ -160,9 +159,11 @@
       forceLayout(card);
     }
 
-    /* Emergency compatibility fallback for older/denser Territory copy. Current
-       v0.6.4 candidates are regression-tested to stay at or above the preferred
-       artwork floor, so this path should not be part of their normal layout. */
+    /* Emergency compatibility fallback for older/denser copy. Lower the CSS
+       minimum as well as the fixed flex basis so this path can actually shrink. */
+    if (cardOverflows(card) && artHeight > MINIMUM_ART_HEIGHT) {
+      art.style.minHeight = `${MINIMUM_ART_HEIGHT}px`;
+    }
     while (cardOverflows(card) && artHeight > MINIMUM_ART_HEIGHT) {
       if (!artClamped) {
         artClamped = true;
@@ -214,12 +215,9 @@
     ));
   }
 
-  /* Only flow content should influence fitting. The Territory parchment is a
-     large, rotated ::before layer inside .territory-interior. WebKit includes
-     transformed decorative descendants in scrollHeight on some mobile layouts,
-     even when overflow is clipped. Using interior/body scrollHeight therefore
-     reports permanent overflow and drives artwork to the 0.55in minimum.
-     Compare the real flow boxes instead so decorative layers cannot affect fit. */
+  /* Measure the actual flex-flow demand rather than descendant positions. The
+     latter can report false overflow after the artwork becomes a flexible item,
+     especially across Chromium/WebKit rounding differences. */
   function cardOverflows(card) {
     const interior = card.querySelector('.territory-interior');
     const body = card.querySelector('.territory-body');
@@ -233,19 +231,18 @@
     const artRect = art.getBoundingClientRect();
     const effectRect = effect.getBoundingClientRect();
     const footerRect = footer.getBoundingClientRect();
+    const bodyStyle = getComputedStyle(body);
+    const gap = Number.parseFloat(bodyStyle.rowGap || bodyStyle.gap || '0') || 0;
 
     const effectContentOverflows = effect.scrollHeight > effect.clientHeight + 0.5
       || effect.scrollWidth > effect.clientWidth + 0.5;
-    const bodyContentPastBottom = artRect.bottom > bodyRect.bottom + 0.5
-      || effectRect.bottom > bodyRect.bottom + 0.5;
-    const bodyContentPastSides = artRect.left < bodyRect.left - 0.5
-      || artRect.right > bodyRect.right + 0.5
-      || effectRect.left < bodyRect.left - 0.5
-      || effectRect.right > bodyRect.right + 0.5;
+    const bodyFlowOverflows = artRect.height + gap + effectRect.height > bodyRect.height + 0.5;
+    const bodyWidthOverflows = artRect.width > bodyRect.width + 0.5
+      || effectRect.width > bodyRect.width + 0.5;
 
     return effectContentOverflows
-      || bodyContentPastBottom
-      || bodyContentPastSides
+      || bodyFlowOverflows
+      || bodyWidthOverflows
       || footerRect.bottom > interiorRect.bottom + 0.5
       || footerOverflows(footer);
   }
