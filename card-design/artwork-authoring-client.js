@@ -11,6 +11,24 @@
 
   if (window.location.origin !== PUBLIC_ORIGIN) return;
 
+  const publishStyle = document.createElement('style');
+  publishStyle.textContent = `
+    .art-compositor-publish-actions { display: block; margin-top: 9px; }
+    .art-compositor-publish-batch {
+      appearance: none;
+      border: 1px solid #e4d3b7;
+      border-radius: 8px;
+      background: #e4d3b7;
+      color: #251f19;
+      cursor: pointer;
+      font: 650 0.72rem/1.15 system-ui, sans-serif;
+      padding: 8px 11px;
+    }
+    .art-compositor-publish-batch:hover { filter: brightness(1.05); }
+    .art-compositor-publish-batch:disabled { cursor: wait; opacity: 0.65; }
+  `;
+  document.head.append(publishStyle);
+
   const nativeFetch = window.fetch.bind(window);
   let authenticationPromise = null;
   let hydrationPromise = null;
