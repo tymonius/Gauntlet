@@ -1,6 +1,6 @@
 # Gauntlet artwork authoring Worker
 
-This Cloudflare Worker makes the public `/card-design/` compositor capable of saving canonical artwork compositions without exposing repository credentials to the browser.
+This Cloudflare Worker makes the public `/card-design/` compositor capable of saving artwork-composition batches without exposing repository credentials to the browser.
 
 ## How it works
 
@@ -8,8 +8,10 @@ This Cloudflare Worker makes the public `/card-design/` compositor capable of sa
 2. If no authoring session exists, it opens GitHub sign-in in a popup.
 3. GitHub returns to this Worker through the GitHub App OAuth callback.
 4. The Worker verifies the signed-in GitHub login is `tymonius` and returns an encrypted, short-lived authoring session to the browser. The GitHub user token itself is never exposed to page JavaScript.
-5. Saves update `tts/artwork-direction-overrides.js` on `artwork/compositor-authoring` and create or reuse one pull request against `main`.
-6. `game-data/current-game.mjs` resolves that canonical file into `currentGame.artDirection`; current production card/Territory renderers consume the resolved map, so a merged compositor PR propagates to Card Design, Card Reference, Deckbuilder preview, and production printing through the shared render pipeline.
+5. Each **Save position** updates `tts/artwork-direction-overrides.js` on `artwork/compositor-authoring` and creates or reuses one pull request against `main`.
+6. Additional saved cards and Territories keep accumulating in that same open PR.
+7. When the batch is ready, **Publish batch** in the compositor calls the Worker's authenticated publication endpoint. The Worker merges the active composition PR into `main`, then resets `artwork/compositor-authoring` to the merge commit so the next batch starts cleanly.
+8. `game-data/current-game.mjs` resolves the canonical file into `currentGame.artDirection`; current production card/Territory renderers consume the resolved map, so the published batch propagates to Card Design, Card Reference, Deckbuilder preview, and production printing through the shared render pipeline.
 
 The browser session is kept in `sessionStorage`; closing the browser session requires GitHub sign-in again.
 
@@ -29,7 +31,7 @@ Use:
 
 The Worker uses the GitHub App's web application OAuth flow and acts only on behalf of the explicitly authorized `tymonius` account. GitHub Apps are intentionally used here so repository access can be limited to this repo and these permissions.
 
-The current-game integration does **not** require changing these App permissions, OAuth callback settings, repository installation, Worker secrets, or save endpoint. The Worker still performs the same contents write and pull-request operations against the same repository and canonical file; only downstream consumption of the saved composition changed.
+The publication endpoint uses GitHub's pull-request merge and Git-reference update APIs. Both are covered by the existing Contents: Read and write permission; no additional App permission or secret is required.
 
 ## Required GitHub Actions secrets
 
@@ -55,9 +57,10 @@ Do not commit any of these values.
 cd workers/artwork-authoring
 npm test
 node --check src/index.js
+node --check src/index-publish.js
 node --check ../../card-design/artwork-authoring-client.js
 ```
 
 ## Publication boundary
 
-`Save position` on the public page saves to the authoring PR, not directly to `main`. The composition becomes canonical/public when that PR is merged. For local fallback authoring, `node scripts/card-design-server.mjs` still writes the working-tree override file directly.
+**Save position** adds or updates a composition in the current authoring PR. **Publish batch** merges that PR into `main` from the compositor page. Only the merge makes the batch canonical for Card Reference, Deckbuilder, printing, and the other shared renderers. For local fallback authoring, `node scripts/card-design-server.mjs` still writes the working-tree override file directly.
