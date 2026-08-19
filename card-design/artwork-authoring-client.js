@@ -5,14 +5,15 @@
   const DRAFTS_KEY = 'gauntlet.art-direction-drafts.v1';
   const AUTH_MESSAGE = 'gauntlet-artwork-authoring-authenticated';
   const PUBLIC_SAVE_PATH = '/api/art-direction';
-  const WORKING_BRANCH = 'artwork/compositor-authoring';
-  const WORKING_FILE_API = `https://api.github.com/repos/tymonius/Gauntlet/contents/tts/artwork-direction-overrides.js?ref=${encodeURIComponent(WORKING_BRANCH)}`;
 
   if (window.location.origin !== PUBLIC_ORIGIN) return;
 
   const nativeFetch = window.fetch.bind(window);
   let authenticationPromise = null;
-  let hydrationPromise = null;
+
+  // Online authoring now writes the canonical source on main. Do not let an old
+  // browser-only draft silently override that source when the catalog loads.
+  localStorage.removeItem(DRAFTS_KEY);
 
   function consumeAuthFragment() {
     const fragment = new URLSearchParams(window.location.hash.replace(/^#/, ''));
@@ -92,104 +93,9 @@
     window.dispatchEvent(new CustomEvent('gauntlet-artwork-authoring-status', { detail }));
   }
 
-  function readDrafts() {
-    try {
-      const parsed = JSON.parse(localStorage.getItem(DRAFTS_KEY) || '{}');
-      return parsed && typeof parsed === 'object' ? parsed : {};
-    } catch {
-      return {};
-    }
-  }
-
-  function installCanonicalDirections(directions) {
-    const next = directions && typeof directions === 'object' ? directions : {};
-    const before = readDrafts();
-    if (JSON.stringify(before) === JSON.stringify(next)) return false;
-    localStorage.setItem(DRAFTS_KEY, JSON.stringify(next));
-    return true;
-  }
-
-  function numberField(body, name) {
-    const match = body.match(new RegExp(`(?:^|[,\\s{])["']?${name}["']?\\s*:\\s*(-?\\d+(?:\\.\\d+)?)`, 'u'));
-    return match ? Number(match[1]) : undefined;
-  }
-
-  function parseDirectionBody(body) {
-    const direction = {};
-    const focus = body.match(/(?:^|[,\s{])["']?focus["']?\s*:\s*\[\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*\]/u);
-    if (focus) direction.focus = [Number(focus[1]), Number(focus[2])];
-    for (const key of ['focusX', 'focusY', 'zoom']) {
-      const value = numberField(body, key);
-      if (value !== undefined) direction[key] = value;
-    }
-    const fit = body.match(/(?:^|[,\s{])["']?fit["']?\s*:\s*["'](cover|contain)["']/u);
-    if (fit) direction.fit = fit[1];
-    return direction;
-  }
-
-  function parseDirectionSource(source) {
-    const directions = {};
-    const entry = /^\s*"((?:\\.|[^"\\])+)"\s*:\s*(\{[^\n]*\})\s*,?\s*$/gmu;
-    for (const match of String(source || '').matchAll(entry)) {
-      const id = JSON.parse(`"${match[1]}"`);
-      directions[id] = parseDirectionBody(match[2]);
-    }
-    return directions;
-  }
-
-  function decodeGitHubContent(content) {
-    const binary = atob(String(content || '').replace(/\s+/gu, ''));
-    return new TextDecoder().decode(Uint8Array.from(binary, char => char.charCodeAt(0)));
-  }
-
-  async function hydrateWorkingDirections({ reloadIfChanged = false } = {}) {
-    if (hydrationPromise) return hydrationPromise;
-
-    hydrationPromise = (async () => {
-      const response = await nativeFetch(WORKING_FILE_API, {
-        method: 'GET',
-        headers: {
-          accept: 'application/vnd.github+json',
-          'x-github-api-version': '2022-11-28',
-        },
-        cache: 'no-store',
-        mode: 'cors',
-        credentials: 'omit',
-      });
-
-      if (response.status === 404) return false;
-      const payload = await response.json().catch(() => ({}));
-      if (!response.ok || !payload.content) {
-        throw new Error(payload.message || `Working artwork sync failed (${response.status}).`);
-      }
-
-      const directions = parseDirectionSource(decodeGitHubContent(payload.content));
-      const changed = installCanonicalDirections(directions);
-      if (changed && reloadIfChanged) window.location.reload();
-      return changed;
-    })().finally(() => {
-      hydrationPromise = null;
-    });
-
-    return hydrationPromise;
-  }
-
-  function installSavedDirection(payload) {
-    if (!payload?.saved || !payload.id) return;
-    const drafts = readDrafts();
-    if (payload.direction && typeof payload.direction === 'object' && Object.keys(payload.direction).length) {
-      drafts[payload.id] = payload.direction;
-    } else {
-      delete drafts[payload.id];
-    }
-    localStorage.setItem(DRAFTS_KEY, JSON.stringify(drafts));
-  }
-
   async function canonicalSave(input, init) {
     let token = sessionStorage.getItem(SESSION_KEY);
     if (!token) token = await requestAuthentication();
-
-    if (hydrationPromise) await hydrationPromise;
 
     const headers = new Headers(init?.headers || {});
     headers.set('authorization', `Bearer ${token}`);
@@ -212,10 +118,7 @@
     if (!response.ok) {
       throw new Error(payload.error || `Canonical artwork save failed (${response.status}).`);
     }
-    if (payload.saved) {
-      installSavedDirection(payload);
-      announce({ kind: 'saved', ...payload });
-    }
+    if (payload.saved) announce({ kind: 'saved', ...payload });
     return response;
   }
 
@@ -232,29 +135,25 @@
       const status = document.querySelector('.art-compositor-save-status');
       if (!status) return;
       const detail = event.detail || {};
-      if (detail.kind === 'saved' && detail.pr?.url) {
+      if (detail.kind === 'saved' && detail.canonical) {
         status.textContent = '';
-        status.append('Saved to canonical composition ');
-        const link = document.createElement('a');
-        link.href = detail.pr.url;
-        link.target = '_blank';
-        link.rel = 'noopener';
-        link.textContent = `PR #${detail.pr.number}`;
-        status.append(link, '. Merge that PR to publish the crop everywhere.');
+        status.append('Saved canonically to main. ');
+        if (detail.commit?.url) {
+          const link = document.createElement('a');
+          link.href = detail.commit.url;
+          link.target = '_blank';
+          link.rel = 'noopener';
+          link.textContent = 'View commit';
+          status.append(link, '. ');
+        }
+        status.append('Card Reference and other shared renderers will use this composition after the site publication build completes.');
       } else if (detail.kind === 'auth-expired') {
         status.textContent = 'GitHub authoring session expired. Click Save position again to sign in.';
       } else if (detail.kind === 'error') {
-        status.textContent = `${detail.message} The current crop remains saved as a browser draft.`;
+        status.textContent = `${detail.message} The displayed crop has not become canonical.`;
       }
     }, 0);
   });
 
   consumeAuthFragment();
-
-  // The working composition branch is public repository data. Read it on every
-  // catalog load so saved crops survive new tabs, browser restarts, and expired
-  // OAuth sessions. Authentication remains required only for writes.
-  hydrateWorkingDirections({ reloadIfChanged: true }).catch(error => {
-    announce({ kind: 'error', message: error instanceof Error ? error.message : String(error) });
-  });
 })();
