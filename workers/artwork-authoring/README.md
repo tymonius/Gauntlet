@@ -63,4 +63,4 @@ node --check ../../card-design/artwork-authoring-client.js
 
 ## Publication boundary
 
-**Save position** adds or updates a composition in the current authoring PR. **Publish batch** merges that PR into `main` from the compositor page. Only the merge makes the batch canonical for Card Reference, Deckbuilder, printing, and the other shared renderers. For local fallback authoring, `node scripts/card-design-server.mjs` still writes the working-tree override file directly.
+**Save position** adds or updates a composition in the current authoring PR. **Publish batch** merges that PR into `main` from the compositor page. Only that publication action makes the batch canonical for Card Reference, Deckbuilder, printing, and the other shared renderers. The merge of `tts/artwork-direction-overrides.js` also triggers the current live-publication workflow, so the canonical web surfaces rebuild from the same source. For local fallback authoring, `node scripts/card-design-server.mjs` still writes the working-tree override file directly.
