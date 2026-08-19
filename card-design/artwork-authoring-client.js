@@ -5,6 +5,8 @@
   const DRAFTS_KEY = 'gauntlet.art-direction-drafts.v1';
   const AUTH_MESSAGE = 'gauntlet-artwork-authoring-authenticated';
   const PUBLIC_SAVE_PATH = '/api/art-direction';
+  const WORKING_BRANCH = 'artwork/compositor-authoring';
+  const WORKING_FILE_API = `https://api.github.com/repos/tymonius/Gauntlet/contents/tts/artwork-direction-overrides.js?ref=${encodeURIComponent(WORKING_BRANCH)}`;
 
   if (window.location.origin !== PUBLIC_ORIGIN) return;
 
@@ -37,8 +39,6 @@
     if (existing) return Promise.resolve(existing);
     if (authenticationPromise) return authenticationPromise;
 
-    // This runs synchronously inside the compositor's Save click handler, so
-    // browsers treat the GitHub sign-in window as a user-initiated popup.
     const popup = window.open(
       loginUrl(),
       'gauntlet-artwork-authoring',
@@ -109,28 +109,62 @@
     return true;
   }
 
-  async function hydrateCanonicalDirections(token, { reloadIfChanged = false } = {}) {
-    if (!token) return false;
+  function numberField(body, name) {
+    const match = body.match(new RegExp(`(?:^|[,\\s{])["']?${name}["']?\\s*:\\s*(-?\\d+(?:\\.\\d+)?)`, 'u'));
+    return match ? Number(match[1]) : undefined;
+  }
+
+  function parseDirectionBody(body) {
+    const direction = {};
+    const focus = body.match(/(?:^|[,\s{])["']?focus["']?\s*:\s*\[\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*\]/u);
+    if (focus) direction.focus = [Number(focus[1]), Number(focus[2])];
+    for (const key of ['focusX', 'focusY', 'zoom']) {
+      const value = numberField(body, key);
+      if (value !== undefined) direction[key] = value;
+    }
+    const fit = body.match(/(?:^|[,\s{])["']?fit["']?\s*:\s*["'](cover|contain)["']/u);
+    if (fit) direction.fit = fit[1];
+    return direction;
+  }
+
+  function parseDirectionSource(source) {
+    const directions = {};
+    const entry = /^\s*"((?:\\.|[^"\\])+)"\s*:\s*(\{[^\n]*\})\s*,?\s*$/gmu;
+    for (const match of String(source || '').matchAll(entry)) {
+      const id = JSON.parse(`"${match[1]}"`);
+      directions[id] = parseDirectionBody(match[2]);
+    }
+    return directions;
+  }
+
+  function decodeGitHubContent(content) {
+    const binary = atob(String(content || '').replace(/\s+/gu, ''));
+    return new TextDecoder().decode(Uint8Array.from(binary, char => char.charCodeAt(0)));
+  }
+
+  async function hydrateWorkingDirections({ reloadIfChanged = false } = {}) {
     if (hydrationPromise) return hydrationPromise;
 
     hydrationPromise = (async () => {
-      const response = await nativeFetch(`${API_ORIGIN}${PUBLIC_SAVE_PATH}`, {
+      const response = await nativeFetch(WORKING_FILE_API, {
         method: 'GET',
-        headers: { authorization: `Bearer ${token}` },
+        headers: {
+          accept: 'application/vnd.github+json',
+          'x-github-api-version': '2022-11-28',
+        },
+        cache: 'no-store',
         mode: 'cors',
         credentials: 'omit',
       });
 
-      if (response.status === 401) {
-        sessionStorage.removeItem(SESSION_KEY);
-        announce({ kind: 'auth-expired' });
-        return false;
+      if (response.status === 404) return false;
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || !payload.content) {
+        throw new Error(payload.message || `Working artwork sync failed (${response.status}).`);
       }
 
-      const payload = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(payload.error || `Canonical artwork sync failed (${response.status}).`);
-
-      const changed = installCanonicalDirections(payload.directions);
+      const directions = parseDirectionSource(decodeGitHubContent(payload.content));
+      const changed = installCanonicalDirections(directions);
       if (changed && reloadIfChanged) window.location.reload();
       return changed;
     })().finally(() => {
@@ -155,10 +189,7 @@
     let token = sessionStorage.getItem(SESSION_KEY);
     if (!token) token = await requestAuthentication();
 
-    // The public page itself is served from main, while canonical in-progress
-    // compositions live on the authoring branch. Hydrate that branch before
-    // saving so reopening/reloading the compositor reflects the working state.
-    await hydrateCanonicalDirections(token);
+    if (hydrationPromise) await hydrationPromise;
 
     const headers = new Headers(init?.headers || {});
     headers.set('authorization', `Bearer ${token}`);
@@ -197,7 +228,6 @@
   };
 
   window.addEventListener('gauntlet-artwork-authoring-status', event => {
-    // Let artwork-compositor.js finish its own Save-position status update first.
     window.setTimeout(() => {
       const status = document.querySelector('.art-compositor-save-status');
       if (!status) return;
@@ -221,10 +251,10 @@
 
   consumeAuthFragment();
 
-  const existingSession = sessionStorage.getItem(SESSION_KEY);
-  if (existingSession) {
-    hydrateCanonicalDirections(existingSession, { reloadIfChanged: true }).catch(error => {
-      announce({ kind: 'error', message: error instanceof Error ? error.message : String(error) });
-    });
-  }
+  // The working composition branch is public repository data. Read it on every
+  // catalog load so saved crops survive new tabs, browser restarts, and expired
+  // OAuth sessions. Authentication remains required only for writes.
+  hydrateWorkingDirections({ reloadIfChanged: true }).catch(error => {
+    announce({ kind: 'error', message: error instanceof Error ? error.message : String(error) });
+  });
 })();
