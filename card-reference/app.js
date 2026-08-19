@@ -1,12 +1,4 @@
-const BASE_CARD_DATA_SOURCE = '/artifacts/reconstruction/clean-v0.6.3/complete-authority/canonical-structured-data.json';
-const V064_CARD_ADDITIONS = '../docs/v0.6.4-card-additions.json';
-const V064_TERRITORY_SOURCE = '../docs/v0.6.4-territories.json';
 const RULEBOOK_URL = '../rulebook/';
-const BASE_EXPECTED_TARGET = 'clean-v0.6.3-canonical-structured-authority';
-const EXPECTED_BASE_CARD_COUNT = 128;
-const EXPECTED_ADDITION_COUNT = 15;
-const EXPECTED_RETIREMENT_COUNT = 1;
-const EXPECTED_TERRITORY_COUNT = 25;
 const CARD_RENDER_WIDTH = 240;
 const CARD_RENDER_HEIGHT = 336;
 const CARD_RENDER_MAX_WIDTH = 420;
@@ -28,7 +20,7 @@ const state = {
   faction: 'all',
   cost: 'all',
   selectedId: null,
-  version: 'v0.6.4 candidate'
+  version: 'current game'
 };
 
 const el = {};
@@ -41,42 +33,12 @@ async function init() {
   bindEvents();
 
   try {
-    const [baseResponse, additionsResponse, territoryResponse] = await Promise.all([
-      fetch(BASE_CARD_DATA_SOURCE, { cache: 'no-store' }),
-      fetch(V064_CARD_ADDITIONS, { cache: 'no-store' }),
-      fetch(V064_TERRITORY_SOURCE, { cache: 'no-store' })
-    ]);
-
-    for (const response of [baseResponse, additionsResponse, territoryResponse]) {
-      if (!response.ok) throw new Error(`Failed to load current card data: ${response.status}`);
-    }
-
-    const [baseData, additionsData, territoryData] = await Promise.all([
-      baseResponse.json(),
-      additionsResponse.json(),
-      territoryResponse.json()
-    ]);
-
-    const baseGameplay = validateBaseData(baseData);
-    const additions = validateAdditions(additionsData);
-    const territories = validateTerritories(territoryData);
-
-    const retiredIds = new Set(additions.retired_cards.map(card => card.id));
-    const retiredNames = new Set(additions.retired_cards.map(card => card.name));
-    const activeBaseCards = baseGameplay.cards.filter(card => !retiredIds.has(card.id) && !retiredNames.has(card.name));
-    if (activeBaseCards.length !== EXPECTED_BASE_CARD_COUNT - EXPECTED_RETIREMENT_COUNT) {
-      throw new Error('v0.6.4 retirement overlay did not remove exactly one released base card.');
-    }
-
-    const cards = [...activeBaseCards, ...additions.cards];
-    if (cards.length !== additions.target_pool_sizes.total_playable_cards) {
-      throw new Error(`Expected ${additions.target_pool_sizes.total_playable_cards} active v0.6.4 cards, received ${cards.length}.`);
-    }
-    assertUniqueIds(cards, 'playable card');
-
+    const { loadCurrentGame } = await import('../game-data/current-game.mjs');
+    const currentGame = await loadCurrentGame();
+    state.version = currentGame.displayVersion;
     state.entries = [
-      ...cards.map(normalizeCard),
-      ...territories.territories.map(normalizeTerritory)
+      ...currentGame.cards.map(normalizeCard),
+      ...currentGame.territories.map(normalizeTerritory)
     ].sort(sortEntries);
 
     applyHashSelection();
@@ -85,7 +47,7 @@ async function init() {
     const territoryCount = state.entries.filter(entry => entry.type === 'territory').length;
     el.cardTotal.textContent = cardCount;
     el.territoryTotal.textContent = territoryCount;
-    el.dataStatus.textContent = `${state.version} · ${cardCount} playable cards + ${territoryCount} Territories loaded`;
+    el.dataStatus.textContent = `${state.version} · ${cardCount} playable cards + ${territoryCount} Territories loaded from current-game authority`;
     el.app.hidden = false;
     render();
   } catch (error) {
@@ -93,62 +55,8 @@ async function init() {
     el.dataStatus.textContent = 'Card Reference data unavailable';
     document.body.insertAdjacentHTML(
       'beforeend',
-      `<p class="noscript">Unable to load the current v0.6.4 development card data. Serve the repository through a web server rather than opening this file directly.</p>`
+      `<p class="noscript">Unable to load the current-game authority. Serve the repository through a web server rather than opening this file directly.</p>`
     );
-  }
-}
-
-function validateBaseData(data) {
-  if (!data || typeof data !== 'object') throw new Error('Base canonical data is not an object.');
-  if (data.target !== BASE_EXPECTED_TARGET) {
-    throw new Error(`Expected ${BASE_EXPECTED_TARGET}, received ${data.target || 'unknown target'}.`);
-  }
-
-  const gameplay = data.gameplay;
-  if (!gameplay || typeof gameplay !== 'object') throw new Error('Base canonical data has no gameplay payload.');
-  if (!Array.isArray(gameplay.cards) || gameplay.cards.length !== EXPECTED_BASE_CARD_COUNT) {
-    throw new Error(`Expected ${EXPECTED_BASE_CARD_COUNT} base playable cards, received ${gameplay.cards?.length ?? 'none'}.`);
-  }
-  return gameplay;
-}
-
-function validateAdditions(data) {
-  if (!data || typeof data !== 'object') throw new Error('v0.6.4 card additions are not an object.');
-  if (data.version !== 'v0.6.4-candidate' || data.base_version !== 'v0.6.3') {
-    throw new Error('Unexpected v0.6.4 card-addition source.');
-  }
-  if (!Array.isArray(data.cards) || data.cards.length !== EXPECTED_ADDITION_COUNT) {
-    throw new Error(`Expected ${EXPECTED_ADDITION_COUNT} v0.6.4 additions, received ${data.cards?.length ?? 'none'}.`);
-  }
-  if (!Array.isArray(data.retired_cards) || data.retired_cards.length !== EXPECTED_RETIREMENT_COUNT) {
-    throw new Error(`Expected ${EXPECTED_RETIREMENT_COUNT} v0.6.4 retired base card, received ${data.retired_cards?.length ?? 'none'}.`);
-  }
-  if (data.retired_cards[0]?.id !== 'inquisition-no-martyrs') {
-    throw new Error('v0.6.4 Card Reference expects No Martyrs to be retired from the active pool.');
-  }
-  if (data.target_pool_sizes?.total_playable_cards !== 142) {
-    throw new Error('Unexpected v0.6.4 target playable-card count.');
-  }
-  return data;
-}
-
-function validateTerritories(data) {
-  if (!data || typeof data !== 'object') throw new Error('v0.6.4 Territory data is not an object.');
-  if (data.version !== 'v0.6.4-candidate' || data.base_version !== 'v0.6.3') {
-    throw new Error('Unexpected v0.6.4 Territory source.');
-  }
-  if (!Array.isArray(data.territories) || data.territories.length !== EXPECTED_TERRITORY_COUNT) {
-    throw new Error(`Expected ${EXPECTED_TERRITORY_COUNT} Territories, received ${data.territories?.length ?? 'none'}.`);
-  }
-  return data;
-}
-
-function assertUniqueIds(items, label) {
-  const seen = new Set();
-  for (const item of items) {
-    if (!item?.id) throw new Error(`A ${label} is missing its stable id.`);
-    if (seen.has(item.id)) throw new Error(`Duplicate ${label} id: ${item.id}.`);
-    seen.add(item.id);
   }
 }
 
@@ -383,7 +291,7 @@ function renderPreview(entry) {
       <a class="button secondary" href="${RULEBOOK_URL}">Open Browser Rulebook</a>
       <a class="button secondary" href="../deckbuilder/">Open Deckbuilder</a>
     </div>
-    <p class="preview-source">Complete card face rendered with the shared production card pipeline and current approved artwork.</p>
+    <p class="preview-source">Complete card face rendered with the shared production card pipeline and current-game authority.</p>
   `;
 
   document.getElementById('copyLink')?.addEventListener('click', copyDirectLink);
