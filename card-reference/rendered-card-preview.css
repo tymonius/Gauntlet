@@ -37,7 +37,8 @@
   border: 0;
   background: transparent;
   transform-origin: top center;
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: zoom-in;
 }
 
 .rendered-preview .preview-actions {
