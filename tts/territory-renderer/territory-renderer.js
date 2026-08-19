@@ -7,6 +7,7 @@
   const MINIMUM_ART_HEIGHT = 0.55 * CSS_PIXELS_PER_INCH;
   const MINIMUM_EFFECT_SCALE = 0.68;
   const PARCHMENT_SOURCE = '/images/artwork/card-backgrounds/neutral-parchment-v2.png';
+  const ARTWORK_MANIFEST_SOURCE = '/images/artwork/manifest.json';
   const catalog = window.GAUNTLET_TTS_CATALOG;
   const target = document.getElementById('renderTarget');
   const territoryId = new URLSearchParams(window.location.search).get('territory');
@@ -25,7 +26,6 @@
     .split('\n')
     .map((line) => line.trim())
     .filter(Boolean);
-  const artworkCandidates = territoryArtworkCandidates(territory, displayName);
 
   target.innerHTML = `
     <article class="territory-card${territory.arena ? ' arena' : ''}" aria-label="${escapeAttribute(territory.name)} Territory card">
@@ -55,6 +55,7 @@
   async function prepareTerritory() {
     if (document.fonts?.ready) await document.fonts.ready.catch(() => {});
     const card = target.querySelector('.territory-card');
+    const artworkCandidates = await territoryArtworkCandidates(territory, displayName);
     await Promise.all([
       loadParchment(card),
       loadArtwork(card, artworkCandidates),
@@ -216,15 +217,32 @@
     return artRect.height + gap + effectRect.height > bodyRect.height + 0.5;
   }
 
-  function territoryArtworkCandidates(item, name) {
+  async function territoryArtworkCandidates(item, name) {
     const explicit = String(item.artwork || '').trim();
+    if (explicit) return [`/${explicit.replace(/^\/+/, '')}`];
+
+    const candidates = [];
+    try {
+      const response = await fetch(ARTWORK_MANIFEST_SOURCE, { cache: 'force-cache' });
+      if (response.ok) {
+        const manifest = await response.json();
+        const approved = (manifest.assets || []).find((asset) => (
+          asset.id === item.id
+          && asset.status === 'approved-final'
+          && asset.canonical_component === true
+          && ['territory', 'arena'].includes(asset.usage)
+          && asset.path
+        ));
+        if (approved?.path) candidates.push(`/${String(approved.path).replace(/^\/+/, '')}`);
+      }
+    } catch {
+      // The production inventory is an optimization, not the only artwork path.
+    }
+
     const slugs = [...new Set([
       String(item.id || '').replace(/^territory-/, ''),
       slugify(name),
     ].filter(Boolean))];
-    const candidates = explicit
-      ? [`/${explicit.replace(/^\/+/, '')}`]
-      : [];
     for (const slug of slugs) {
       for (const extension of ['png', 'webp', 'jpg', 'jpeg']) {
         candidates.push(`/images/artwork/cards/territories/${slug}.${extension}`);
