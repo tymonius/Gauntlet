@@ -31,9 +31,10 @@ describe("Financier Deed card", () => {
     expect(supplementalStyles).not.toContain("deed.svg");
   });
 
-  it("centers only the DEED wordmark in Declaration Blackletter with no watermark or footer treatment", () => {
+  it("centers only the Deed wordmark in Declaration Blackletter with no watermark or footer treatment", () => {
     expect(proposalStyles).toContain('"P22 Declaration W01 Blackletter"');
-    expect(supplementalStyles).toContain('content: "DEED"');
+    expect(supplementalStyles).toContain('content: "Deed"');
+    expect(supplementalStyles).not.toContain('content: "DEED"');
     expect(supplementalStyles).toContain('"P22 Declaration W01 Blackletter"');
     expect(supplementalStyles).toContain("font-size: 42pt");
     expect(supplementalStyles).toContain("top: 50%");
