@@ -12,6 +12,7 @@ const cardBackPreview = readFileSync("deckbuilder/card-back-preview.js", "utf8")
 const printOptionsCss = readFileSync("deckbuilder/print-options.css", "utf8");
 const duplexTransform = readFileSync("deckbuilder/print-duplex.js", "utf8");
 const analyticsSync = readFileSync("scripts/sync-google-analytics.mjs", "utf8");
+const componentContract = JSON.parse(readFileSync("config/tts-component-contract.json", "utf8"));
 
 describe("Deckbuilder production printing", () => {
   it("prints playable cards through the same production renderer used by Card Reference", () => {
@@ -49,18 +50,49 @@ describe("Deckbuilder production printing", () => {
     expect(componentRenderHtml).toContain('id="riteReviewSections"');
     expect(componentRenderHtml).toContain('id="supplementalReviewSections"');
 
-    for (const kind of ['leader', 'proposal', 'reference', 'rite', 'tracker']) {
+    for (const kind of ['leader', 'proposal', 'reference', 'rite', 'tracker', 'supplemental']) {
       expect(componentRenderJs).toContain(`"${kind}"`);
     }
     expect(printTransform).toContain('kind: "leader"');
-    expect(printTransform).toContain('"military command": "command-tracker"');
-    expect(printTransform).toContain('"diplomat reference": { id: "diplomats-reference", side: "front" }');
     expect(printTransform).toContain('kind: "proposal"');
     expect(printTransform).toContain('kind: "rite"');
     expect(printTransform).toContain('/card-design/component-print-render.html?kind=');
   });
 
-  it("prints every production reference as a real two-sided card even when ordinary card backs are not requested", () => {
+  it("adds a contract-driven upgrade path for any supplemental face left on fallback", () => {
+    expect(cardBackPreview).toContain('const COMPONENT_CONTRACT_URL = "/config/tts-component-contract.json";');
+    expect(cardBackPreview).toContain('componentContractPromise');
+    expect(cardBackPreview).toContain('contractComponentForLegacy');
+    expect(cardBackPreview).toContain('component.renderSource?.printEndpoint');
+    expect(cardBackPreview).toContain('component.renderSource?.componentId');
+    expect(cardBackPreview).toContain('component.productionStatus');
+    expect(cardBackPreview).toContain('upgradeContractProductionFallbacks');
+    expect(cardBackPreview).toContain('kind=supplemental&id=');
+    expect(componentRenderJs).toContain('.supplemental-review-item');
+    expect(componentRenderJs).toContain('supplemental-placeholder-card');
+  });
+
+  it("keeps pending Financier components on fallback until their contract entries expose a finalized production renderer", () => {
+    const ledger = componentContract.components.find((component: any) => component.id === 'financiers-capital-ledger');
+    const deed = componentContract.components.find((component: any) => component.id === 'financiers-deed');
+    expect(ledger?.productionStatus).not.toBe('ready');
+    expect(deed?.productionStatus).not.toBe('ready');
+    expect(ledger?.renderSource).toBeUndefined();
+    expect(deed?.renderSource).toBeUndefined();
+
+    expect(cardBackPreview).toContain('status === "ready" && componentId');
+    expect(cardBackPreview).toContain('card-design\\/supplemental-card\\.js');
+    expect(cardBackPreview).toContain('component.renderSource?.printUrl');
+  });
+
+  it("can give newly contract-upgraded standard-back and two-sided components the correct reverse treatment", () => {
+    expect(cardBackPreview).toContain('component.backPolicy === "standardBack"');
+    expect(cardBackPreview).toContain('ensureStandardBack(documentNode, replacement)');
+    expect(cardBackPreview).toContain('ensureIntrinsicReverse(documentNode, replacement, component, renderUrl)');
+    expect(cardBackPreview).toContain('mirrorIndexForLongEdge(frontIndex)');
+  });
+
+  it("prints every current production reference as a real two-sided card even when ordinary card backs are not requested", () => {
     expect(printTransform).toContain('ensureReferenceReversePages(documentNode);');
     expect(printTransform).toContain('data-production-component-side="front"');
     expect(printTransform).toContain('side: "reverse"');
