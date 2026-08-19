@@ -1,10 +1,9 @@
-const PROPOSAL_SOURCE = '/docs/v0.6.4-diplomat-proposals.json';
+import { loadCurrentGame } from '../game-data/current-game.mjs';
+
 const PROPOSAL_ART_ROOT = '/images/artwork/cards/diplomats/proposals';
 const RATIFIED_SEAL_SOURCE = '/images/artwork/supplemental/diplomats/ratified-wax-seal.webp';
-const EXPECTED_PROPOSAL_COUNT = 9;
-const EXPECTED_SOURCE_ISSUE = 617;
-
 const root = document.querySelector('#proposalReviewSections');
+let currentDisplayVersion = 'Current';
 
 function esc(value) {
   return String(value ?? '').replace(/[&<>'\"]/g, character => ({
@@ -83,7 +82,7 @@ function proposalFace(proposal, ratified = false) {
         ${ruleSection('Accepted', proposal.accepted)}
         ${ruleSection('Refused', proposal.refused)}
       </div>
-      <footer class="card-footer"><span>Diplomats</span><span>${esc(type)}</span><span>v0.6.4-dev</span></footer>
+      <footer class="card-footer"><span>Diplomats</span><span>${esc(type)}</span><span>${esc(currentDisplayVersion)}</span></footer>
     </div>
   </article>`;
 }
@@ -113,35 +112,16 @@ function updateProposalCounts(count) {
   });
 }
 
-function validateApprovedProposalSource(source, proposals) {
-  if (source.source_issue !== EXPECTED_SOURCE_ISSUE) {
-    throw new Error(`Expected approved Proposal source from issue #${EXPECTED_SOURCE_ISSUE}`);
-  }
-  if (source.mechanics_changed !== false) {
-    throw new Error('Proposal rewrite source must remain wording-only');
-  }
-  if (proposals.length !== EXPECTED_PROPOSAL_COUNT) {
-    throw new Error(`Expected ${EXPECTED_PROPOSAL_COUNT} approved Proposals, found ${proposals.length}`);
-  }
-
-  const requiredFields = ['id', 'name', 'stake', 'requirement', 'accepted', 'refused'];
-  for (const proposal of proposals) {
-    const missing = requiredFields.filter(field => proposal[field] === undefined || proposal[field] === null || proposal[field] === '');
-    if (missing.length) throw new Error(`Proposal ${proposal.id || proposal.name || '(unknown)'} is missing: ${missing.join(', ')}`);
-  }
-}
-
 async function renderProposalCatalog() {
   if (!root) return;
   try {
-    const response = await fetch(PROPOSAL_SOURCE, { cache: 'no-cache' });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const source = await response.json();
-    const proposals = Array.isArray(source.proposals) ? source.proposals : [];
-    validateApprovedProposalSource(source, proposals);
+    const currentGame = await loadCurrentGame();
+    const proposals = Array.isArray(currentGame.proposals) ? currentGame.proposals : [];
+    if (!proposals.length) throw new Error('Current-game authority has no Proposals.');
+    currentDisplayVersion = currentGame.displayVersion;
     updateProposalCounts(proposals.length);
     root.dataset.proposalCount = String(proposals.length);
-    root.dataset.proposalSourceIssue = String(source.source_issue);
+    root.dataset.proposalAuthority = currentGame.authorityUrl;
     root.innerHTML = `<div class="proposal-review-block">${proposals.map(reviewPair).join('')}</div>`;
     await loadProposalArtwork();
   } catch (error) {
@@ -152,7 +132,7 @@ async function renderProposalCatalog() {
 
 await renderProposalCatalog();
 
-// Proposal data is fetched asynchronously. If it arrives after the native load
-// event, replay the established card preparation lifecycle so these late-added
-// cards still receive parchment loading, fitting, and inspection behavior.
+// Current-game data is resolved asynchronously. If it arrives after the native
+// load event, replay the established card preparation lifecycle so these
+// late-added cards still receive parchment loading, fitting, and inspection.
 if (document.readyState === 'complete') window.dispatchEvent(new Event('load'));
