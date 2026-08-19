@@ -30,6 +30,7 @@ on:
       - 'artifacts/reconstruction/**/faction-guides/**'
       - 'images/Gauntlet.svg'
       - 'images/faction-symbols/**'
+      - 'images/artwork/manifest.json'
       - 'images/artwork/cards/**'
       - 'images/artwork/territories/**'
       - 'images/artwork/card-backgrounds/**'
@@ -105,6 +106,7 @@ jobs:
             artifacts/reconstruction
             images/Gauntlet.svg
             images/faction-symbols
+            images/artwork/manifest.json
             images/artwork/cards
             images/artwork/territories
             images/artwork/card-backgrounds
