@@ -99,7 +99,7 @@
 
 .territory-body {
   display: grid;
-  grid-template-rows: minmax(var(--art-height), 1fr) auto;
+  grid-template-rows: minmax(var(--art-height), 1fr) max-content;
   gap: 0.04in;
   min-width: 0;
   min-height: 0;
