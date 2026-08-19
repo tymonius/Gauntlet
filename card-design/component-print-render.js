@@ -54,6 +54,8 @@
     }
 
     if (kind === "supplemental") {
+      // Generic contract handoff: a finalized component may expose its
+      // supplemental-card componentId without requiring a Deckbuilder mapping.
       const direct = document.querySelector(`[data-component-id="${CSS.escape(id)}"]`);
       if (direct) return direct;
       const specimen = [...document.querySelectorAll(".supplemental-review-item")].find(section => {
