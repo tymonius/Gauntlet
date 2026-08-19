@@ -5,8 +5,10 @@
   const side = String(params.get("side") || "front").trim().toLowerCase();
   const target = document.getElementById("renderTarget");
   const TIMEOUT_MS = 30000;
+  const supportedKinds = new Set(["leader", "proposal", "reference", "rite", "tracker"]);
 
   const delay = ms => new Promise(resolve => window.setTimeout(resolve, ms));
+  const reverseSide = () => side === "reverse" || side === "back" || side === "treaty" || side === "completed";
 
   function reportError(error) {
     const message = error?.stack || error?.message || String(error);
@@ -32,7 +34,19 @@
       const pair = document.querySelector(`#proposal-${CSS.escape(id)}`);
       const cards = [...(pair?.querySelectorAll(".proposal-card") || [])];
       if (!cards.length) return null;
-      return side === "reverse" || side === "back" || side === "treaty" ? cards[1] || null : cards[0] || null;
+      return reverseSide() ? cards[1] || null : cards[0] || null;
+    }
+
+    if (kind === "reference") {
+      const referenceSide = reverseSide() ? "reverse" : "front";
+      return document.querySelector(`.reference-card[data-component-id="${CSS.escape(id)}"][data-reference-side="${referenceSide}"]`);
+    }
+
+    if (kind === "rite") {
+      const pair = document.querySelector(`#rite-${CSS.escape(id)}`);
+      const cards = [...(pair?.querySelectorAll(".rite-card") || [])];
+      if (!cards.length) return null;
+      return reverseSide() ? cards[1] || null : cards[0] || null;
     }
 
     if (kind === "tracker") {
@@ -46,12 +60,14 @@
     if (kind === "proposal") {
       return document.querySelector("#proposalReviewSections .review-note")?.textContent?.trim() || "";
     }
-    if (kind === "tracker") {
+
+    if (kind === "reference" || kind === "tracker") {
       const root = document.getElementById("supplementalReviewSections");
       if (root?.dataset.referenceCardsReady === "error") {
         return root.querySelector(".supplemental-render-error")?.textContent?.trim() || "Supplemental component renderer failed.";
       }
     }
+
     return "";
   }
 
@@ -64,8 +80,14 @@
       throw new Error(`Production ${kind} ${id} reports a fit warning.`);
     }
 
-    if (kind === "leader" || kind === "proposal") {
+    if (kind === "leader" || kind === "proposal" || kind === "rite") {
       return card.dataset.parchmentLoaded === "true" && card.dataset.titleFit === "true";
+    }
+
+    if (kind === "reference") {
+      return document.getElementById("supplementalReviewSections")?.dataset.referenceCardsReady === "true"
+        && card.getBoundingClientRect().width > 0
+        && card.getBoundingClientRect().height > 0;
     }
 
     if (kind === "tracker") {
@@ -78,9 +100,7 @@
   async function main() {
     if (!target) throw new Error("Missing component print render target.");
     if (!kind || !id) throw new Error("Component print renderer requires kind and id query parameters.");
-    if (!new Set(["leader", "proposal", "tracker"]).has(kind)) {
-      throw new Error(`Unsupported production component kind: ${kind}`);
-    }
+    if (!supportedKinds.has(kind)) throw new Error(`Unsupported production component kind: ${kind}`);
 
     if (document.readyState !== "complete") {
       await new Promise(resolve => window.addEventListener("load", resolve, { once: true }));
@@ -105,6 +125,7 @@
     target.replaceChildren(card);
     document.getElementById("leaderReviewSections")?.remove();
     document.getElementById("proposalReviewSections")?.remove();
+    document.getElementById("riteReviewSections")?.remove();
     document.getElementById("supplementalReviewSections")?.remove();
     document.body.dataset.renderReady = "true";
   }
