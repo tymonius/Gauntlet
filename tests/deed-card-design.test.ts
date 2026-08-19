@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const reviewPage = readFileSync("card-design/index.html", "utf8");
+const ornamentStudy = readFileSync("card-design/deed-ornament-study.html", "utf8");
 const supplementalRenderer = readFileSync("card-design/supplemental-card.js", "utf8");
 const supplementalStyles = readFileSync("card-design/supplemental-card.css", "utf8");
 const deedStyles = readFileSync("card-design/deed-card.css", "utf8");
@@ -69,16 +70,24 @@ describe("Financier Deed card", () => {
     expect(deedStyles).not.toContain("deed-footer");
   });
 
-  it("adds a restrained ink flourish beneath the wordmark and replaces the irrelevant fit-warning dot", () => {
+  it("removes the rejected constructed flourish while suppressing only the irrelevant fit-warning dot", () => {
     expect(refinementStyles).toContain(".gauntlet-card.fit-warning::after");
-    expect(deedStyles).toContain('.supplemental-placeholder-card[aria-label^="Deed "]::after');
-    expect(deedStyles).toContain("top: calc(50% + 0.48in)");
-    expect(deedStyles).toContain("width: 1.45in");
-    expect(deedStyles).toContain("height: 0.16in");
-    expect(deedStyles).toContain("color: var(--card-ink)");
-    expect(deedStyles).toContain("linear-gradient(135deg");
-    expect(deedStyles).toContain("radial-gradient(ellipse at 100% 100%");
-    expect(deedStyles).toContain("box-shadow: none");
+    expect(deedStyles).toContain('.supplemental-placeholder-card[aria-label^="Deed "].fit-warning::after');
+    expect(deedStyles).toContain("display: none");
+    expect(deedStyles).not.toContain("top: calc(50% + 0.48in)");
+    expect(deedStyles).not.toContain("radial-gradient(ellipse at 100% 100%");
+    expect(deedStyles).not.toContain("linear-gradient(135deg, transparent 42%");
+  });
+
+  it("provides a separate Poetica ornament study without applying a candidate to the production card", () => {
+    expect(ornamentStudy).toContain('https://use.typekit.net/vgm6nwi.css');
+    expect(ornamentStudy).toContain('font-family: "poetica-std", "Poetica Std", serif');
+    expect(ornamentStudy).toContain('font-feature-settings: "ornm" 1');
+    expect(ornamentStudy).toContain("['•', ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ', ...'abcdefghijklmnopqrstuvwxyz']");
+    expect(ornamentStudy).toContain("candidate-wordmark");
+    expect(ornamentStudy).toContain("candidate-ornament");
+    expect(ornamentStudy).toContain("None of these ornaments is applied to the production Deed until one is selected");
+    expect(deedStyles).not.toContain("poetica-std");
   });
 
   it("styles the card itself so the inspection clone does not depend on the catalog wrapper", () => {
