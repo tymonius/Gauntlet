@@ -5,7 +5,7 @@
   const side = String(params.get("side") || "front").trim().toLowerCase();
   const target = document.getElementById("renderTarget");
   const TIMEOUT_MS = 30000;
-  const supportedKinds = new Set(["leader", "proposal", "reference", "rite", "tracker"]);
+  const supportedKinds = new Set(["leader", "proposal", "reference", "rite", "tracker", "supplemental"]);
 
   const delay = ms => new Promise(resolve => window.setTimeout(resolve, ms));
   const reverseSide = () => side === "reverse" || side === "back" || side === "treaty" || side === "completed";
@@ -53,6 +53,15 @@
       return document.querySelector(`.sliding-tracker-card[data-component-id="${CSS.escape(id)}"]`);
     }
 
+    if (kind === "supplemental") {
+      const direct = document.querySelector(`[data-component-id="${CSS.escape(id)}"]`);
+      if (direct) return direct;
+      const specimen = [...document.querySelectorAll(".supplemental-review-item")].find(section => {
+        return section.id === `supplemental-${id}` || section.id.endsWith(`-${id}`);
+      });
+      return specimen?.querySelector(".gauntlet-card") || null;
+    }
+
     return null;
   }
 
@@ -61,7 +70,7 @@
       return document.querySelector("#proposalReviewSections .review-note")?.textContent?.trim() || "";
     }
 
-    if (kind === "reference" || kind === "tracker") {
+    if (kind === "reference" || kind === "tracker" || kind === "supplemental") {
       const root = document.getElementById("supplementalReviewSections");
       if (root?.dataset.referenceCardsReady === "error") {
         return root.querySelector(".supplemental-render-error")?.textContent?.trim() || "Supplemental component renderer failed.";
@@ -75,9 +84,17 @@
     return [...card.querySelectorAll("img")].every(image => image.complete && image.naturalWidth > 0);
   }
 
+  function dimensionsReady(card) {
+    const rect = card.getBoundingClientRect();
+    return rect.width > 0 && rect.height > 0;
+  }
+
   function fitReady(card) {
     if (card.classList.contains("fit-warning")) {
       throw new Error(`Production ${kind} ${id} reports a fit warning.`);
+    }
+    if (card.classList.contains("supplemental-placeholder-card")) {
+      throw new Error(`Component ${id} still resolves to a production-layout placeholder.`);
     }
 
     if (kind === "leader" || kind === "proposal" || kind === "rite") {
@@ -85,13 +102,16 @@
     }
 
     if (kind === "reference") {
-      return document.getElementById("supplementalReviewSections")?.dataset.referenceCardsReady === "true"
-        && card.getBoundingClientRect().width > 0
-        && card.getBoundingClientRect().height > 0;
+      return !card.classList.contains("reference-card-loading")
+        && document.getElementById("supplementalReviewSections")?.dataset.referenceCardsReady === "true"
+        && dimensionsReady(card);
     }
 
-    if (kind === "tracker") {
-      return card.getBoundingClientRect().width > 0 && card.getBoundingClientRect().height > 0;
+    if (kind === "tracker") return dimensionsReady(card);
+
+    if (kind === "supplemental") {
+      if (card.classList.contains("reference-card-loading")) return false;
+      return dimensionsReady(card);
     }
 
     return false;
