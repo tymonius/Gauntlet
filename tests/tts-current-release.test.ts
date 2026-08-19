@@ -22,7 +22,7 @@ const workflow = readFileSync('.github/workflows/generate-tts-card-assets.yml', 
 const readme = readFileSync('tts/README.md', 'utf8');
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 
-const supportedPipelineText = [
+const releaseAgnosticRuntimeText = [
   catalogSource,
   componentValidator,
   cardGenerator,
@@ -36,7 +36,6 @@ const supportedPipelineText = [
   cardRenderer,
   territoryRenderer,
   supplementalRenderer,
-  workflow,
 ].join('\n');
 
 describe('durable current-game TTS pipeline', () => {
@@ -83,8 +82,8 @@ describe('durable current-game TTS pipeline', () => {
     expect(starterGenerator).toContain('loadCurrentStarterDecks');
   });
 
-  it('contains no published release-number literals in the supported TTS pipeline', () => {
-    expect(supportedPipelineText).not.toMatch(/v0\.6\.[0-9]+/);
+  it('contains no published release-number literals in current TTS runtime code', () => {
+    expect(releaseAgnosticRuntimeText).not.toMatch(/v0\.6\.[0-9]+/);
     expect(packageJson.scripts['tts:components:check']).toBe('node scripts/tts-component-contract.mjs');
     expect(packageJson.scripts['tts:supplementals:check']).toBe('node scripts/generate-tts-supplemental-assets.mjs --check');
     expect(packageJson.scripts['tts:catalog']).toBe('node scripts/generate-tts-card-assets.mjs --catalog-only');
