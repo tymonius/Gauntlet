@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 const reviewPage = readFileSync("card-design/index.html", "utf8");
 const ornamentStudy = readFileSync("card-design/deed-ornament-study.html", "utf8");
+const deedScript = readFileSync("card-design/deed-card.js", "utf8");
 const supplementalRenderer = readFileSync("card-design/supplemental-card.js", "utf8");
 const supplementalStyles = readFileSync("card-design/supplemental-card.css", "utf8");
 const deedStyles = readFileSync("card-design/deed-card.css", "utf8");
@@ -78,16 +79,21 @@ describe("Financier Deed card", () => {
     expect(deedStyles).not.toContain("deed-footer");
   });
 
-  it("uses the selected Poetica mirror-11, 44, 11 ornament composition", () => {
+  it("uses real Poetica elements for the selected mirror-11, 44, 11 ornament composition", () => {
+    expect(supplementalRenderer).toContain("import './deed-card.js';");
+    expect(deedScript).toContain("glyph.style.fontFeatureSettings = `\"ornm\" ${index}`");
+    expect(deedScript).toContain("ornamentGlyph('deed-ornament-left', 11)");
+    expect(deedScript).toContain("ornamentGlyph('deed-ornament-center', 44)");
+    expect(deedScript).toContain("ornamentGlyph('deed-ornament-right', 11)");
     expect(deedStyles).toContain('font-family: "poetica-std", "Poetica Std", serif');
-    expect(deedStyles).toContain('font-feature-settings: "ornm" 11');
-    expect(deedStyles).toContain('font-feature-settings: "ornm" 44');
+    expect(deedStyles).toContain(".deed-ornament-left");
+    expect(deedStyles).toContain(".deed-ornament-center");
+    expect(deedStyles).toContain(".deed-ornament-right");
     expect(deedStyles).toContain("font-size: 28pt");
     expect(deedStyles).toContain("font-size: 18pt");
     expect(deedStyles).toContain("transform: scaleX(-1)");
-    expect(deedStyles).toContain(".supplemental-type-line::before");
-    expect(deedStyles).toContain(".supplemental-type-line::after");
-    expect(deedStyles).toContain(".supplemental-type-line > span:last-child::after");
+    expect(deedStyles).not.toContain(".supplemental-type-line::before");
+    expect(deedStyles).not.toContain(".supplemental-type-line::after");
   });
 
   it("suppresses the irrelevant fit-warning dot without restoring the rejected CSS-built flourish", () => {
