@@ -80,8 +80,7 @@
 }
 
 /* Treat the wordmark and ornament row as one title block and center that
-   complete block on the physical card. This keeps the ornament from making an
-   otherwise-centered wordmark feel visually bottom-heavy. */
+   complete block on the physical card. */
 :is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) .supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .card-heading,
 .supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .card-heading {
   position: absolute;
@@ -101,9 +100,7 @@
 }
 
 /* The component contract calls the physical component “Deed Card”; the printed
-   face remains the approved single-word title “Deed”. Hide the contract label
-   typographically and supply only that approved face word from this design
-   layer, without changing component identity. */
+   face remains the approved single-word title “Deed”. */
 :is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) .supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .card-title,
 .supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .card-title {
   display: block;
@@ -137,9 +134,9 @@
   white-space: nowrap;
 }
 
-/* The existing type-line markup becomes the ornament row. The left and right
-   wings are Poetica ornm 11; only the left wing is mirrored. The center mark is
-   Poetica ornm 44 at a smaller size. */
+/* deed-card.js replaces the generic type-line contents with three real Poetica
+   bullet characters and assigns their numeric `ornm` alternates inline, using
+   the same mechanism proven by deed-ornament-study.html. */
 :is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) .supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .supplemental-type-line,
 .supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .supplemental-type-line {
   display: grid;
@@ -157,52 +154,35 @@
   line-height: 1;
 }
 
-:is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) .supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .supplemental-type-line::before,
-:is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) .supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .supplemental-type-line::after,
-.supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .supplemental-type-line::before,
-.supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .supplemental-type-line::after {
+:is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) .supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .deed-ornament,
+.supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .deed-ornament {
   display: block;
-  content: "•";
+  color: var(--card-ink);
   font-family: "poetica-std", "Poetica Std", serif;
-  font-size: 28pt;
   font-style: normal;
   font-weight: 400;
-  font-feature-settings: "ornm" 11;
   line-height: 1;
   white-space: nowrap;
 }
 
-:is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) .supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .supplemental-type-line::before,
-.supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .supplemental-type-line::before {
+:is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) .supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .deed-ornament-left,
+:is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) .supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .deed-ornament-right,
+.supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .deed-ornament-left,
+.supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .deed-ornament-right {
+  font-size: 28pt;
+}
+
+:is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) .supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .deed-ornament-left,
+.supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .deed-ornament-left {
   transform: scaleX(-1);
   transform-origin: center;
 }
 
-:is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) .supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .supplemental-faction-emblem,
-.supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .supplemental-faction-emblem {
-  display: none;
-}
-
-:is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) .supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .supplemental-type-line > span:last-child,
-.supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .supplemental-type-line > span:last-child {
-  display: block;
-  font-size: 0;
-  line-height: 1;
-}
-
-:is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) .supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .supplemental-type-line > span:last-child::after,
-.supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .supplemental-type-line > span:last-child::after {
-  display: block;
-  content: "•";
-  font-family: "poetica-std", "Poetica Std", serif;
+:is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) .supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .deed-ornament-center,
+.supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .deed-ornament-center {
   font-size: 18pt;
-  font-style: normal;
-  font-weight: 400;
-  font-feature-settings: "ornm" 44;
-  line-height: 1;
   transform: translateY(-0.01in);
   transform-origin: center;
-  white-space: nowrap;
 }
 
 /* The generic fit-warning diagnostic is a portrait-card fitting aid and does
