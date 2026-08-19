@@ -1,5 +1,4 @@
 (() => {
-  const TERRITORY_SOURCE = "../docs/Gauntlet_v0.6.1_Territory_Pool.md";
   const REQUIRED_TERRITORIES = 3;
   const MAX_ARENAS = 1;
 
@@ -47,9 +46,18 @@
 
   async function loadTerritories() {
     try {
-      const response = await fetch(TERRITORY_SOURCE, { cache: "no-store" });
-      if (!response.ok) throw new Error(`Failed to load ${TERRITORY_SOURCE}: ${response.status}`);
-      state.territoryPool = parseTerritoryPool(await response.text());
+      const { loadCurrentGame } = await import("../game-data/current-game.mjs");
+      const currentGame = await loadCurrentGame();
+      state.territoryPool = (currentGame.territories || []).map(territory => ({
+        id: territory.id,
+        name: territory.name,
+        arena: Boolean(territory.arena),
+        complexity: territory.complexity || "Current",
+        watchlist: territory.watchlist || "None",
+        status: territory.status || "Approved",
+        text: String(territory.text || territory.effects?.map(effect => effect.text).filter(Boolean).join("\n") || ""),
+        source: currentGame.authorityUrl
+      }));
 
       if (state.pendingTerritories) {
         state.territories = resolveTerritoryIds(state.pendingTerritories);
@@ -64,40 +72,9 @@
       console.error(error);
       if (territoryElements.territoryList) {
         territoryElements.territoryList.className = "compact-territory-list empty-state";
-        territoryElements.territoryList.textContent = "Unable to load the v0.6.1 Territory source.";
+        territoryElements.territoryList.textContent = "Unable to load Territories from the current-game authority.";
       }
     }
-  }
-
-  function parseTerritoryPool(markdown) {
-    const source = markdown.replace(/\r/g, "");
-    const headings = [...source.matchAll(/^##\s+(\d+)\.\s+(.+)$/gm)];
-
-    return headings.map((match, index) => {
-      const name = match[2].trim();
-      const start = match.index + match[0].length;
-      const end = index + 1 < headings.length ? headings[index + 1].index : source.length;
-      const block = source.slice(start, end);
-      const complexity = block.match(/\*\*Complexity:\*\*\s*([^\n]+)/i)?.[1].trim() || "Unspecified";
-      const watchlist = block.match(/\*\*Watchlist:\*\*\s*([^\n]+)/i)?.[1].trim() || "None";
-      const status = block.match(/\*\*Status:\*\*\s*([^\n]+)/i)?.[1].trim() || "Approved";
-      const text = block.split("\n")
-        .filter(line => line.trim().startsWith(">"))
-        .map(line => cleanInlineMarkdown(line.trim().replace(/^>\s?/, "")))
-        .filter(Boolean)
-        .join("\n");
-
-      return {
-        id: `territory-${slugify(name)}`,
-        name,
-        arena: name.startsWith("Arena:"),
-        complexity,
-        watchlist,
-        status,
-        text,
-        source: TERRITORY_SOURCE
-      };
-    });
   }
 
   function enhancedRenderAll() {
@@ -109,7 +86,7 @@
 
   function syncSourceStatus() {
     if (!state.territoryPool.length || !el.dataStatus) return;
-    el.dataStatus.textContent = `${state.cards.length} active cards + ${state.territoryPool.length} Territories loaded`;
+    el.dataStatus.textContent = `${state.currentGameDisplayVersion || "Current game"} · ${state.cards.length} active cards + ${state.territoryPool.length} Territories loaded`;
   }
 
   function filteredTerritories() {
@@ -192,7 +169,7 @@
 
     if (!territory) {
       preview.className = "territory-preview empty-state";
-      preview.textContent = "Select a Territory to view its active working text.";
+      preview.textContent = "Select a Territory to view its current text.";
       return;
     }
 
