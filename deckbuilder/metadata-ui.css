@@ -44,27 +44,32 @@
 }
 
 .deck-stat-strip {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(3.35rem, auto));
+  display: flex;
+  align-items: center;
+  gap: 0.32rem;
   width: max-content;
   max-width: 100%;
-  border: 1px solid var(--line);
-  border-radius: 2px;
-  overflow: hidden;
-  background: rgba(255, 250, 242, 0.76);
   font-family: var(--sans);
 }
 
 .deck-stat {
-  min-width: 0;
+  min-width: 3.35rem;
   padding: 0.26rem 0.46rem 0.3rem;
   display: grid;
   gap: 0.04rem;
-  border-right: 1px solid var(--line);
 }
 
-.deck-stat:last-of-type {
-  border-right: 0;
+.deck-stat-box {
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: rgba(255, 250, 242, 0.76);
+}
+
+.deck-stat-value {
+  min-width: 2.4rem;
+  padding: 0.08rem 0;
+  justify-items: center;
+  background: transparent;
 }
 
 .deck-stat-label {
@@ -83,6 +88,16 @@
   line-height: 1.1;
 }
 
+.deck-value-medallion {
+  display: grid;
+  place-items: center;
+  margin-top: 0.08rem;
+  border: 1px solid var(--line);
+  font-size: 0.76rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
 .deck-stat-total strong {
   color: var(--accent-dark);
 }
@@ -93,11 +108,13 @@
 }
 
 @media (max-width: 520px) {
-  .deck-stat-strip {
-    grid-template-columns: repeat(3, minmax(2.85rem, auto));
+  .deck-stat {
+    min-width: 2.85rem;
+    padding-inline: 0.36rem;
   }
 
-  .deck-stat {
-    padding-inline: 0.36rem;
+  .deck-stat-value {
+    min-width: 2.25rem;
+    padding-inline: 0;
   }
 }
