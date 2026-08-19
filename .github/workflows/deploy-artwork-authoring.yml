@@ -91,7 +91,7 @@ jobs:
           printf '%s' "$ARTWORK_SESSION_SECRET" |
             npx wrangler secret put ARTWORK_SESSION_SECRET --config workers/artwork-authoring/wrangler.toml
 
-      - name: Verify production health endpoint
+      - name: Verify production health and publish endpoint
         run: |
           curl --fail --retry 8 --retry-delay 4 --retry-all-errors \
             https://gauntlet-artwork-authoring.tymon-scott.workers.dev/health \
@@ -99,9 +99,30 @@ jobs:
           node -e '
             const fs = require("fs");
             const health = JSON.parse(fs.readFileSync("/tmp/artwork-authoring-health.json", "utf8"));
-            if (!health.ok || health.service !== "gauntlet-artwork-authoring" || !health.configured) {
+            if (
+              !health.ok ||
+              health.service !== "gauntlet-artwork-authoring" ||
+              !health.configured ||
+              health.batchPublishing !== true ||
+              health.publishEndpoint !== "/api/art-direction/publish"
+            ) {
               console.error(health);
               process.exit(1);
             }
-            console.log("Verified production artwork-authoring service.");
+            console.log("Verified production artwork-authoring publish capability.");
           '
+
+          curl --fail --silent --show-error \
+            -X OPTIONS \
+            -H 'Origin: https://gauntlet.run' \
+            -H 'Access-Control-Request-Method: POST' \
+            -H 'Access-Control-Request-Headers: authorization,content-type' \
+            -D /tmp/artwork-publish-options.headers \
+            -o /dev/null \
+            https://gauntlet-artwork-authoring.tymon-scott.workers.dev/api/art-direction/publish
+
+          grep -Eiq '^access-control-allow-origin:[[:space:]]*https://gauntlet\.run' /tmp/artwork-publish-options.headers || {
+            cat /tmp/artwork-publish-options.headers
+            echo 'Publish endpoint did not return the required CORS origin.' >&2
+            exit 1
+          }
