@@ -58,4 +58,4 @@ node --check ../../card-design/artwork-authoring-client.js
 
 ## Publication boundary
 
-`Save position` on the public page saves to the authoring PR, not directly to `main`. The composition becomes canonical/public when that PR is merged. The local `npm run artwork:compositor` workflow still writes the working-tree override file directly for local development.
+`Save position` on the public page saves to the authoring PR, not directly to `main`. The composition becomes canonical/public when that PR is merged. For local fallback authoring, `node scripts/card-design-server.mjs` still writes the working-tree override file directly.
