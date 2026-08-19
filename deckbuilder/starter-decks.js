@@ -1,5 +1,4 @@
 (() => {
-  const STARTER_DECK_SOURCE = "starter-decks.json";
   const STARTER_TIP_SOURCE = "starter-first-game-tips.json";
   let starterDecks = [];
   let loadError = null;
@@ -34,24 +33,20 @@
     installStarterPrintTips();
 
     try {
-      const [deckResponse, tipResponse] = await Promise.all([
-        fetch(STARTER_DECK_SOURCE, { cache: "no-store" }),
-        fetch(STARTER_TIP_SOURCE, { cache: "no-store" })
-      ]);
-      if (!deckResponse.ok) throw new Error(`Failed to load ${STARTER_DECK_SOURCE}: ${deckResponse.status}`);
+      const tipResponse = await fetch(STARTER_TIP_SOURCE, { cache: "no-store" });
       if (!tipResponse.ok) throw new Error(`Failed to load ${STARTER_TIP_SOURCE}: ${tipResponse.status}`);
-
-      const [data, tipData] = await Promise.all([
-        deckResponse.json(),
-        tipResponse.json()
-      ]);
+      const tipData = await tipResponse.json();
 
       await waitForCurrentGamePool();
       currentGameReady = true;
       document.body.dataset.currentGameCards = "ready";
 
+      const data = state.currentGameData?.starterDeckData;
+      if (!data || !Array.isArray(data.decks)) {
+        throw new Error("Current-game authority did not provide starter Deck data.");
+      }
       const tips = tipData?.tips && typeof tipData.tips === "object" ? tipData.tips : {};
-      starterDecks = (Array.isArray(data.decks) ? data.decks : []).map(deck => ({
+      starterDecks = data.decks.map(deck => ({
         ...deck,
         firstGameTip: deck.firstGameTip || tips[deck.id] || ""
       }));
@@ -66,10 +61,10 @@
   async function waitForCurrentGamePool() {
     const deadline = Date.now() + 10000;
     while (Date.now() < deadline) {
-      if (state.currentGameVersion && Array.isArray(state.cards) && state.cards.length && state.territoryPool?.length) return;
+      if (state.currentGameVersion && state.currentGameData?.starterDecks?.length && Array.isArray(state.cards) && state.cards.length && state.territoryPool?.length) return;
       await new Promise(resolve => window.setTimeout(resolve, 25));
     }
-    throw new Error("Timed out waiting for the shared current-game card and Territory pool.");
+    throw new Error("Timed out waiting for the shared current-game card, Territory, and starter Deck pool.");
   }
 
   function installResetDeckButton(starterButton) {
