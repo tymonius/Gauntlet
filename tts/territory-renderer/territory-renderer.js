@@ -5,7 +5,6 @@
   const ART_HEIGHT_STEP = 2;
   const EFFECT_STEP = 0.01;
   const MINIMUM_TITLE_SIZE = 8 * CSS_PIXELS_PER_POINT;
-  const DEFAULT_ART_MIN_HEIGHT = 1.42 * CSS_PIXELS_PER_INCH;
   const PREFERRED_MINIMUM_ART_HEIGHT = 0.78 * CSS_PIXELS_PER_INCH;
   const MINIMUM_ART_HEIGHT = 0.55 * CSS_PIXELS_PER_INCH;
   const MINIMUM_EFFECT_SCALE = 0.68;
@@ -124,7 +123,7 @@
     const art = card.querySelector('.territory-art');
     const effect = card.querySelector('.territory-effect');
     let titleSize = Number.parseFloat(getComputedStyle(title).fontSize);
-    let artHeight = Math.min(DEFAULT_ART_MIN_HEIGHT, art?.getBoundingClientRect().height || 0);
+    let artHeight = PREFERRED_MINIMUM_ART_HEIGHT;
     let effectScale = 1;
 
     while (textOverflows(title) && titleSize > MINIMUM_TITLE_SIZE) {
@@ -133,14 +132,9 @@
       forceLayout(card);
     }
 
-    /* Artwork expands to consume any unused body space. Dense Territories only
-       reduce its minimum reservation when the rules copy actually needs room. */
-    while (cardOverflows(card) && artHeight > PREFERRED_MINIMUM_ART_HEIGHT) {
-      artHeight = Math.max(PREFERRED_MINIMUM_ART_HEIGHT, artHeight - ART_HEIGHT_STEP);
-      card.style.setProperty('--art-height', `${artHeight}px`);
-      forceLayout(card);
-    }
-
+    /* The artwork track has no maximum: it expands to all space left after the
+       effect text. The preferred floor is already the normal grid minimum, so
+       fitting dense copy should compact spacing/type before reducing artwork. */
     if (cardOverflows(card)) {
       card.classList.add('compact');
       forceLayout(card);
