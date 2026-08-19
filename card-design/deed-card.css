@@ -1,0 +1,119 @@
+@import url(https://db.onlinewebfonts.com/c/15a5d188ed241eed33a9ec0360d0bd60?family=P22+Declaration+W01+Blackletter);
+
+/* Financier Deed
+   Landscape ownership marker placed beside a Territory. The face is composed
+   entirely from the existing Financiers frame, approved parchment, restrained
+   faction wash, and one centered Declaration Blackletter wordmark. No artwork,
+   emblem, watermark, rules, footer, or other ornament belongs on this component. */
+
+/* Catalog layout. These wrapper rules are intentionally separate from the
+   card-face rules below; inspection clones do not retain this outer wrapper. */
+#supplemental-financiers-deed {
+  grid-column: 1 / -1;
+}
+
+#supplemental-financiers-deed .supplemental-single-face-grid {
+  grid-template-columns: 3.5in;
+}
+
+#supplemental-financiers-deed .supplemental-face {
+  width: 3.5in;
+}
+
+/* Target the card itself so the same production face survives cloning into
+   the shared inspection dialog. The ID-prefixed forms match and supersede the
+   older supplemental-card.css prototype rules in the catalog. */
+#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "],
+.supplemental-placeholder-card[aria-label^="Deed "] {
+  width: 3.5in;
+  height: 2.5in;
+}
+
+#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .card-interior,
+.supplemental-placeholder-card[aria-label^="Deed "] .card-interior {
+  position: relative;
+  display: grid;
+  overflow: hidden;
+  place-items: center;
+  background-color: var(--card-parchment);
+  background-image: none;
+}
+
+#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .card-interior > *,
+.supplemental-placeholder-card[aria-label^="Deed "] .card-interior > * {
+  display: none;
+}
+
+/* The approved Financiers parchment source is portrait-oriented. Rotate that
+   exact source as one layer, then apply the same restrained Financiers wash
+   used by the other faction components. The shared component system normally
+   puts this wash on ::after, but Deed uses ::after for its wordmark, so the
+   wash is composed directly with the parchment layer here instead. */
+#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .card-interior::before,
+.supplemental-placeholder-card[aria-label^="Deed "] .card-interior::before {
+  position: absolute;
+  z-index: 0;
+  top: 50%;
+  left: 50%;
+  width: 70.15%;
+  height: 142.55%;
+  background-color: var(--card-parchment);
+  background-image:
+    linear-gradient(var(--component-parchment-tint), var(--component-parchment-tint)),
+    var(--parchment-image);
+  background-blend-mode: multiply;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  content: "";
+  transform: translate(-50%, -50%) rotate(90deg);
+  transform-origin: center;
+  pointer-events: none;
+}
+
+/* Grid centering deliberately avoids top/left + translate positioning. That
+   keeps the wordmark centered both in the catalog and in inspection clones. */
+#supplemental-financiers-deed .supplemental-placeholder-card[aria-label^="Deed "] .card-interior::after,
+.supplemental-placeholder-card[aria-label^="Deed "] .card-interior::after {
+  position: relative;
+  z-index: 2;
+  inset: auto;
+  margin: 0;
+  background: none;
+  color: var(--card-ink);
+  content: "Deed";
+  font-family:
+    "P22 Declaration W01 Blackletter",
+    "P22 Declaration Blackletter",
+    var(--font-flavor);
+  font-size: 42pt;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.015em;
+  line-height: 1;
+  text-align: center;
+  text-transform: none;
+  transform: none;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+@media screen and (max-width: 760px) {
+  #supplemental-financiers-deed {
+    grid-column: auto;
+  }
+}
+
+@media print {
+  #supplemental-financiers-deed {
+    grid-column: 1 / -1;
+  }
+
+  #supplemental-financiers-deed .supplemental-single-face-grid {
+    grid-template-columns: 3.5in;
+  }
+
+  .supplemental-placeholder-card[aria-label^="Deed "] .card-interior::before {
+    print-color-adjust: exact;
+  }
+}
