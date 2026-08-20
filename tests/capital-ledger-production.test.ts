@@ -34,6 +34,7 @@ describe('Financiers Capital Ledger production component', () => {
   it('uses the project Declaration Pro flavor face for the faint example entry', () => {
     expect(css).toContain('.capital-ledger-row--example');
     expect(css).toContain('font-family: var(--font-flavor, "p22-declaration-pro", Georgia, serif)');
+    expect(css).toContain('font-size: 8.4pt');
     expect(css).toContain('color: rgba(67, 42, 55, 0.34)');
     expect(css).toContain('font-weight: 400');
     expect(preview).toContain('https://use.typekit.net/vgm6nwi.css');
