@@ -4,39 +4,34 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex,nofollow" />
-  <title>Gauntlet Deed — Ornamental Rule Font Study</title>
+  <title>Gauntlet Deed — Horizontal Rule Study</title>
   <link rel="preconnect" href="https://use.typekit.net" />
   <link rel="preconnect" href="https://p.typekit.net" crossorigin />
   <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
   <link rel="stylesheet" href="../design-tokens.css?v=20260815-2" />
-  <link rel="stylesheet" href="deed-card.css" />
   <style>
     * { box-sizing: border-box; }
 
     :root {
-      --study-paper: #eee5d2;
-      --study-ink: #241c15;
-      --study-green: rgba(34, 112, 68, 0.18);
-      --study-border: #227044;
-      --study-rule: rgba(36, 28, 21, 0.18);
-      --study-muted: rgba(36, 28, 21, 0.66);
+      --paper: #eee5d2;
+      --ink: #241c15;
+      --green: rgba(34, 112, 68, 0.18);
+      --border: #227044;
+      --rule: rgba(36, 28, 21, 0.18);
+      --muted: rgba(36, 28, 21, 0.66);
     }
 
     body {
       margin: 0;
       padding: clamp(1rem, 3vw, 2.5rem);
       background: #d8d0c3;
-      color: var(--study-ink);
+      color: var(--ink);
       font-family: system-ui, sans-serif;
     }
 
     main {
-      width: min(100rem, 100%);
+      width: min(112rem, 100%);
       margin: 0 auto;
-    }
-
-    header {
-      margin-bottom: 1.5rem;
     }
 
     h1 {
@@ -47,51 +42,51 @@
     }
 
     header p {
-      max-width: 74rem;
+      max-width: 76rem;
       margin: 0.35rem 0;
-      color: var(--study-muted);
+      color: var(--muted);
       line-height: 1.5;
     }
 
     code {
-      color: var(--study-ink);
+      color: var(--ink);
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     }
 
     .target {
-      margin: 1rem 0 1.35rem;
-      padding: 0.75rem 0.9rem;
-      border-left: 0.2rem solid var(--study-border);
-      background: rgba(255, 255, 255, 0.34);
-      color: var(--study-muted);
+      margin: 1rem 0 1.25rem;
+      padding: 0.8rem 0.95rem;
+      border-left: 0.2rem solid var(--border);
+      background: rgba(255, 255, 255, 0.35);
+      color: var(--muted);
       line-height: 1.45;
     }
 
-    .font-status-grid {
+    .status-grid {
       display: flex;
       flex-wrap: wrap;
       gap: 0.55rem;
       margin-top: 0.8rem;
     }
 
-    .font-status {
+    .status {
       padding: 0.4rem 0.6rem;
-      border: 1px solid var(--study-rule);
+      border: 1px solid var(--rule);
       border-radius: 0.2rem;
       background: rgba(255, 255, 255, 0.45);
       font-size: 0.76rem;
       font-weight: 700;
     }
 
-    .font-status.missing {
+    .status.missing {
       border-style: dashed;
-      opacity: 0.72;
+      opacity: 0.7;
     }
 
     .face-section {
       margin-top: 2rem;
       padding-top: 1rem;
-      border-top: 1px solid var(--study-rule);
+      border-top: 1px solid var(--rule);
     }
 
     .face-heading {
@@ -100,26 +95,26 @@
       align-items: baseline;
       justify-content: space-between;
       gap: 0.4rem 1rem;
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.8rem;
     }
 
     .face-heading h2 {
       margin: 0;
       font-family: var(--font-display-web, Georgia, serif);
-      font-size: 1.5rem;
+      font-size: 1.55rem;
       font-weight: 600;
     }
 
     .face-heading p {
       margin: 0;
-      color: var(--study-muted);
+      color: var(--muted);
       font-size: 0.76rem;
     }
 
     .candidate-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr));
-      gap: 0.75rem;
+      grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+      gap: 0.8rem;
     }
 
     .candidate {
@@ -127,10 +122,10 @@
       grid-template-rows: 1fr auto;
       overflow: hidden;
       border: 1px solid rgba(18, 68, 41, 0.6);
-      border-radius: 0.26rem;
+      border-radius: 0.28rem;
       background:
-        linear-gradient(var(--study-green), var(--study-green)),
-        var(--study-paper);
+        linear-gradient(var(--green), var(--green)),
+        var(--paper);
       box-shadow: 0 0.14rem 0.35rem rgba(38, 28, 20, 0.12);
     }
 
@@ -139,19 +134,19 @@
       display: grid;
       place-content: center;
       justify-items: center;
-      gap: 0.28rem;
-      min-height: 8.5rem;
-      padding: 0.65rem;
+      gap: 0.24rem;
+      min-height: 10rem;
+      padding: 0.7rem;
     }
 
-    .candidate-wordmark {
+    .wordmark {
       overflow: visible;
-      color: var(--study-ink);
+      color: var(--ink);
       font-family:
         "P22 Declaration W01 Blackletter",
         "P22 Declaration Blackletter",
         var(--font-flavor, Georgia, serif);
-      font-size: 35pt;
+      font-size: 37pt;
       font-style: normal;
       font-weight: 400;
       letter-spacing: 0.015em;
@@ -159,17 +154,55 @@
       white-space: nowrap;
     }
 
-    .candidate-glyph {
-      min-width: 9.5rem;
-      min-height: 2.1rem;
+    .construction {
+      width: min(2.2in, 92%);
       display: grid;
-      place-items: center;
+      grid-template-columns: 4.2rem minmax(0, 1fr);
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .construction-label {
+      color: var(--muted);
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-align: right;
+      text-transform: uppercase;
+    }
+
+    .rule-sample {
+      min-width: 0;
+      min-height: 1.05rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       overflow: visible;
-      color: var(--study-ink);
-      font-size: 34pt;
-      line-height: 0.8;
-      text-align: center;
+      color: var(--ink);
+      font-size: 18pt;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 0.75;
       white-space: nowrap;
+    }
+
+    .rule-sample.repeat {
+      letter-spacing: -0.015em;
+    }
+
+    .mirror-pair {
+      display: inline-grid;
+      grid-auto-flow: column;
+      align-items: center;
+      justify-content: center;
+      column-gap: 0;
+      font-size: 28pt;
+    }
+
+    .mirror-left {
+      display: inline-block;
+      transform: scaleX(-1);
+      transform-origin: center;
     }
 
     .candidate-label {
@@ -178,9 +211,9 @@
       justify-content: space-between;
       gap: 0.55rem;
       padding: 0.38rem 0.48rem;
-      border-top: 1px solid var(--study-rule);
+      border-top: 1px solid var(--rule);
       background: rgba(255, 255, 255, 0.35);
-      color: var(--study-muted);
+      color: var(--muted);
       font-size: 0.7rem;
     }
 
@@ -190,56 +223,79 @@
     }
 
     .empty-state {
+      margin-top: 1rem;
       padding: 1rem;
-      border: 1px dashed var(--study-rule);
+      border: 1px dashed var(--rule);
       background: rgba(255, 255, 255, 0.28);
-      color: var(--study-muted);
+      color: var(--muted);
       line-height: 1.5;
     }
 
-    .study-note {
-      margin-top: 1.5rem;
-      padding-top: 1rem;
-      border-top: 1px solid var(--study-rule);
-      color: var(--study-muted);
-      font-size: 0.82rem;
-      line-height: 1.5;
+    details {
+      margin-top: 1rem;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    details code {
+      display: inline-block;
+      margin: 0.12rem 0.2rem 0.12rem 0;
     }
   </style>
 </head>
 <body>
   <main>
     <header>
-      <h1>Deed ornamental-rule font study</h1>
-      <p>This page searches the fonts actually loaded by the Gauntlet Adobe Fonts web project for <strong>Graveur Ornaments</strong> and <strong>LTC Fleurons</strong>, then renders every mapped ornament character beneath the Declaration Blackletter <strong>Deed</strong> wordmark.</p>
-      <p>No candidate on this page is applied to the production Deed. The goal is a single low, wide, symmetrical printer's rule: tapered or pointed ends, a compact geometric center, and substantially less visual weight than the title.</p>
-      <div class="target"><strong>Target:</strong> something closer to a formal engraved divider than a calligraphic flourish — approximately 1–1.35 inches wide on the final 3.5-inch card, shallow in height, and visually quiet.</div>
-      <div class="font-status-grid" id="fontStatusGrid" aria-live="polite"></div>
+      <h1>Deed horizontal ornamental-rule study</h1>
+      <p>This study is intentionally different from the earlier fleuron atlas. It searches the Adobe kit for <strong>P22 Morris</strong>, <strong>P22 Arts &amp; Crafts</strong>, and <strong>HWT Borders</strong>, then tests every source character as a <em>long construction</em> beneath the Declaration Blackletter <strong>Deed</strong> wordmark.</p>
+      <p>Each candidate shows the same glyph two ways: a seven-piece running band, and a mirrored left/right pair. The latter is meant to reveal half-rules or endpieces that look square in isolation but become a complete divider when reflected.</p>
+      <div class="target"><strong>Target:</strong> handmade/historical rather than mechanically perfect; low and wide; roughly 5–8× wider than tall; compatible with blackletter; tapered or pointed outer ends; a restrained central join; and clearly subordinate to the title.</div>
+      <div class="status-grid" id="statusGrid" aria-live="polite"></div>
     </header>
 
     <div id="studyRoot"></div>
-
-    <p class="study-note">Adobe Fonts currently lists Graveur Ornaments with mappings on comma, digits, semicolon, A–Z, and a–z; LTC Fleurons lists mappings on <code>! # $ % &amp; ( ) * 0–9 @ A–Z [ ] a–z ∏</code>. The labels below preserve those source characters so any promising glyph can be reproduced exactly.</p>
+    <details>
+      <summary>Show every Adobe-kit family detected by the browser</summary>
+      <div id="familyList"></div>
+    </details>
   </main>
 
   <script>
-    const CHARACTER_SETS = Object.freeze({
-      graveur: ',0123456789;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
-      fleurons: '!#$%&()*0123456789@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]abcdefghijklmnopqrstuvwxyz∏',
-    });
+    const SOURCE_CHARACTERS = Array.from(new Set([
+      ...Array.from({ length: 94 }, (_, index) => String.fromCharCode(index + 33)),
+      '§', '¶', '†', '‡', '•', '∏',
+    ])).join('');
+
+    const TARGETS = Object.freeze([
+      {
+        key: 'morris',
+        label: 'P22 Morris',
+        matches: family => family.toLowerCase().includes('morris'),
+      },
+      {
+        key: 'arts',
+        label: 'P22 Arts & Crafts',
+        matches: family => {
+          const lower = family.toLowerCase();
+          return lower.includes('arts') || lower.includes('craft') || lower.includes('roycroft');
+        },
+      },
+      {
+        key: 'borders',
+        label: 'HWT Borders',
+        matches: family => {
+          const lower = family.toLowerCase();
+          return lower.includes('border') || lower.includes('hwt');
+        },
+      },
+    ]);
 
     const studyRoot = document.querySelector('#studyRoot');
-    const statusRoot = document.querySelector('#fontStatusGrid');
+    const statusRoot = document.querySelector('#statusGrid');
+    const familyList = document.querySelector('#familyList');
 
     function cleanFamily(value) {
       return String(value || '').replace(/^['"]|['"]$/g, '');
-    }
-
-    function relevantKind(family) {
-      const lower = family.toLowerCase();
-      if (lower.includes('graveur') && lower.includes('ornament')) return 'graveur';
-      if (lower.includes('fleuron')) return 'fleurons';
-      return '';
     }
 
     function faceKey(face) {
@@ -247,19 +303,76 @@
     }
 
     function sourceLabel(character) {
-      if (character === ' ') return 'space';
       const codePoint = character.codePointAt(0).toString(16).toUpperCase().padStart(4, '0');
       return `${character} · U+${codePoint}`;
     }
 
     function statusPill(text, missing = false) {
       const pill = document.createElement('span');
-      pill.className = `font-status${missing ? ' missing' : ''}`;
+      pill.className = `status${missing ? ' missing' : ''}`;
       pill.textContent = text;
       return pill;
     }
 
-    function renderFace(face, kind) {
+    function applyFace(node, face, family) {
+      node.style.fontFamily = `"${family}"`;
+      node.style.fontStyle = face.style || 'normal';
+      node.style.fontWeight = face.weight || '400';
+      node.style.fontStretch = face.stretch || 'normal';
+    }
+
+    function renderCandidate(face, family, character) {
+      const article = document.createElement('article');
+      article.className = 'candidate';
+
+      const context = document.createElement('div');
+      context.className = 'candidate-context';
+
+      const wordmark = document.createElement('div');
+      wordmark.className = 'wordmark';
+      wordmark.textContent = 'Deed';
+
+      const repeatConstruction = document.createElement('div');
+      repeatConstruction.className = 'construction';
+      const repeatLabel = document.createElement('span');
+      repeatLabel.className = 'construction-label';
+      repeatLabel.textContent = 'repeat ×7';
+      const repeat = document.createElement('div');
+      repeat.className = 'rule-sample repeat';
+      repeat.textContent = character.repeat(7);
+      applyFace(repeat, face, family);
+      repeatConstruction.append(repeatLabel, repeat);
+
+      const mirrorConstruction = document.createElement('div');
+      mirrorConstruction.className = 'construction';
+      const mirrorLabel = document.createElement('span');
+      mirrorLabel.className = 'construction-label';
+      mirrorLabel.textContent = 'mirror pair';
+      const pair = document.createElement('div');
+      pair.className = 'rule-sample mirror-pair';
+      applyFace(pair, face, family);
+      const left = document.createElement('span');
+      left.className = 'mirror-left';
+      left.textContent = character;
+      const right = document.createElement('span');
+      right.textContent = character;
+      pair.append(left, right);
+      mirrorConstruction.append(mirrorLabel, pair);
+
+      const label = document.createElement('div');
+      label.className = 'candidate-label';
+      const descriptor = document.createElement('span');
+      descriptor.textContent = 'source character';
+      const code = document.createElement('code');
+      code.textContent = sourceLabel(character);
+      label.append(descriptor, code);
+
+      context.append(wordmark, repeatConstruction, mirrorConstruction);
+      article.append(context, label);
+      return article;
+    }
+
+    function renderFace(face, targetLabel) {
       const family = cleanFamily(face.family);
       const section = document.createElement('section');
       section.className = 'face-section';
@@ -269,43 +382,13 @@
       const title = document.createElement('h2');
       title.textContent = family;
       const details = document.createElement('p');
-      details.textContent = `style ${face.style || 'normal'} · weight ${face.weight || '400'} · ${face.status}`;
+      details.textContent = `${targetLabel} · style ${face.style || 'normal'} · weight ${face.weight || '400'} · ${face.status}`;
       heading.append(title, details);
 
       const grid = document.createElement('div');
       grid.className = 'candidate-grid';
-
-      for (const character of CHARACTER_SETS[kind]) {
-        const article = document.createElement('article');
-        article.className = 'candidate';
-
-        const context = document.createElement('div');
-        context.className = 'candidate-context';
-
-        const wordmark = document.createElement('div');
-        wordmark.className = 'candidate-wordmark';
-        wordmark.textContent = 'Deed';
-
-        const glyph = document.createElement('div');
-        glyph.className = 'candidate-glyph';
-        glyph.textContent = character;
-        glyph.style.fontFamily = `"${family}"`;
-        glyph.style.fontStyle = face.style || 'normal';
-        glyph.style.fontWeight = face.weight || '400';
-        glyph.style.fontStretch = face.stretch || 'normal';
-        glyph.setAttribute('aria-label', `${family} source ${sourceLabel(character)}`);
-
-        const label = document.createElement('div');
-        label.className = 'candidate-label';
-        const descriptor = document.createElement('span');
-        descriptor.textContent = 'source character';
-        const code = document.createElement('code');
-        code.textContent = sourceLabel(character);
-
-        label.append(descriptor, code);
-        context.append(wordmark, glyph);
-        article.append(context, label);
-        grid.append(article);
+      for (const character of SOURCE_CHARACTERS) {
+        grid.append(renderCandidate(face, family, character));
       }
 
       section.append(heading, grid);
@@ -315,40 +398,47 @@
     async function buildStudy() {
       await document.fonts.ready;
 
-      const relevantFaces = Array.from(document.fonts)
-        .map(face => ({ face, family: cleanFamily(face.family), kind: relevantKind(cleanFamily(face.family)) }))
-        .filter(entry => entry.kind);
+      const allFaces = Array.from(document.fonts);
+      const allFamilies = [...new Set(allFaces.map(face => cleanFamily(face.family)).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+      familyList.innerHTML = allFamilies.map(family => `<code>${family}</code>`).join(' ');
 
-      const unique = [];
+      const uniqueFaces = [];
       const seen = new Set();
-      for (const entry of relevantFaces) {
-        const key = faceKey(entry.face);
+      for (const face of allFaces) {
+        const family = cleanFamily(face.family);
+        const target = TARGETS.find(candidate => candidate.matches(family));
+        if (!target) continue;
+        const key = faceKey(face);
         if (seen.has(key)) continue;
         seen.add(key);
-        unique.push(entry);
+        uniqueFaces.push({ face, family, target });
       }
 
-      for (const entry of unique) {
-        try { await entry.face.load(); } catch (_) { /* status below will expose failure */ }
+      for (const entry of uniqueFaces) {
+        try { await entry.face.load(); } catch (_) { /* status text below exposes failures */ }
       }
 
-      const graveurFaces = unique.filter(entry => entry.kind === 'graveur');
-      const fleuronFaces = unique.filter(entry => entry.kind === 'fleurons');
+      for (const target of TARGETS) {
+        const matches = uniqueFaces.filter(entry => entry.target.key === target.key);
+        statusRoot.append(statusPill(
+          matches.length
+            ? `${target.label} detected · ${matches.length} face${matches.length === 1 ? '' : 's'}`
+            : `${target.label} not detected in Adobe kit`,
+          !matches.length,
+        ));
+      }
 
-      statusRoot.append(
-        statusPill(graveurFaces.length ? `Graveur Ornaments detected · ${graveurFaces.length} face${graveurFaces.length === 1 ? '' : 's'}` : 'Graveur Ornaments not detected in Adobe kit', !graveurFaces.length),
-        statusPill(fleuronFaces.length ? `LTC Fleurons detected · ${fleuronFaces.length} face${fleuronFaces.length === 1 ? '' : 's'}` : 'LTC Fleurons not detected in Adobe kit', !fleuronFaces.length),
-      );
-
-      if (!unique.length) {
+      if (!uniqueFaces.length) {
         const empty = document.createElement('div');
         empty.className = 'empty-state';
-        empty.textContent = 'Neither target ornament family is currently exposed by the Adobe Fonts web project. Add the desired family to project vgm6nwi and republish it, then reload this page.';
+        empty.textContent = 'None of the three target families is currently exposed by the Adobe Fonts project in this browser. Republish project vgm6nwi, then reload this page.';
         studyRoot.append(empty);
         return;
       }
 
-      [...graveurFaces, ...fleuronFaces].forEach(entry => renderFace(entry.face, entry.kind));
+      for (const entry of uniqueFaces) {
+        renderFace(entry.face, entry.target.label);
+      }
     }
 
     buildStudy();
