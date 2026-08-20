@@ -20,11 +20,11 @@ const FACTION_LABELS = Object.freeze({
 // identity, quantity, status, back policy, and tracked value all come from the
 // current-game component contract; only the drawn scale/layout lives here.
 const TRACKER_PRESENTATION = Object.freeze({
-  'military-command-tracker': { max: 4, cover: 'Leader Card', scaleHeight: 1.18, labelSize: 11.2 },
-  'diplomats-influence-tracker': { max: 10, cover: 'Leader Card', scaleHeight: 2.08, labelSize: 7.9 },
-  'intelligence-intel-tracker': { max: 12, cover: 'Operations Reference', scaleHeight: 2.08, labelSize: 7.2 },
-  'intelligence-operation-progress-tracker': { max: 8, cover: 'Mission Reference', scaleHeight: 1.84, labelSize: 6.8 },
-  'inquisition-conviction-tracker': { max: 4, cover: 'Leader Card', scaleHeight: 1.18, labelSize: 10.4 },
+  'military-command-tracker': { max: 4, labelSize: 11.2 },
+  'diplomats-influence-tracker': { max: 10, labelSize: 7.9 },
+  'intelligence-intel-tracker': { max: 12, labelSize: 7.2 },
+  'intelligence-operation-progress-tracker': { max: 8, labelSize: 6.8 },
+  'inquisition-conviction-tracker': { max: 4, labelSize: 10.4 },
 });
 
 const root = document.querySelector('#supplementalReviewSections');
@@ -74,6 +74,7 @@ function presentationComponent(component) {
     resourceName: component.family === 'tracker'
       ? (component.trackedValue?.name || component.name.replace(/\s+Tracker$/i, ''))
       : '',
+    resourceMaximum: component.family === 'tracker' ? (component.trackedValue?.maximum ?? null) : null,
     type: componentType(component),
     detail: componentDetail(component),
     quantity: Number(component.quantity) || 1,
@@ -124,9 +125,15 @@ function trackerMarks(component, resourceName) {
   }).join('');
 }
 
+function trackerCapLabel(component) {
+  return Number.isFinite(component.resourceMaximum)
+    ? `Rules cap · ${component.resourceMaximum}`
+    : 'Rules cap · none';
+}
+
 function trackerFace(component, faction, factionLabel) {
   if (!component.tracker) throw new Error(`Current tracker ${component.contractId} has no presentation geometry.`);
-  const { max, cover, scaleHeight, labelSize } = component.tracker;
+  const { max, labelSize } = component.tracker;
   const resourceName = component.resourceName || component.name.replace(/\s+Tracker$/i, '');
   return `<article class="gauntlet-card faction-component-card sliding-tracker-card ${esc(faction)}-card" data-faction="${esc(faction)}" data-component-id="${esc(component.id)}" data-contract-component-id="${esc(component.contractId)}" aria-label="${esc(component.name)} sliding tracker, physical scale 0 through ${max}">
     <div class="card-interior tracker-interior">
@@ -135,14 +142,10 @@ function trackerFace(component, faction, factionLabel) {
         <span class="tracker-faction-emblem" aria-hidden="true"></span>
         <span class="tracker-faction-name">${esc(factionLabel)}</span>
         <h3>${esc(resourceName)} Tracker</h3>
-        <p>Physical scale · 0–${max}</p>
+        <p class="tracker-cap">${esc(trackerCapLabel(component))}</p>
       </header>
-      <div class="tracker-scale" style="--tracker-scale-height:${Number(scaleHeight)}in;--tracker-max:${max};--tracker-label-size:${Number(labelSize)}pt" aria-label="Registration bands 1 through ${max}">
+      <div class="tracker-scale" style="--tracker-max:${max};--tracker-label-size:${Number(labelSize)}pt" aria-label="Registration bands 1 through ${max}">
         ${trackerMarks(component, resourceName)}
-      </div>
-      <div class="tracker-instructions">
-        <strong>0 = fully covered</strong>
-        <span>Place ${esc(cover)} over this card. Slide it upward until its bottom edge aligns with the line above the current value.</span>
       </div>
       <footer class="card-footer tracker-footer"><span>${esc(factionLabel)}</span><span>Tracker</span><span>${esc(currentDisplayVersion)}</span></footer>
     </div>
