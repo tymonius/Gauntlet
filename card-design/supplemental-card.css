@@ -313,11 +313,28 @@
   text-transform: uppercase;
 }
 
+.tracker-instructions {
+  top: 0.47in;
+  right: 0.12in;
+  left: 0.12in;
+  color: var(--card-muted-ink);
+  font-family: "adobe-caslon-pro", Georgia, serif;
+  font-size: 4.65pt;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.16;
+}
+
+.sliding-tracker-card[data-component-id="operation-progress-tracker"] .tracker-instructions {
+  top: 0.37in;
+}
+
 .tracker-scale {
   right: 0.09in;
   bottom: 0.18in;
   left: 0.09in;
-  height: 2.66in;
+  height: 2.56in;
 }
 
 .tracker-mark {

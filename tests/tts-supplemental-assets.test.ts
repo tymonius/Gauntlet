@@ -125,18 +125,19 @@ describe('TTS supplemental component exports', () => {
     expect(trackerHelper).not.toMatch(/command[^\n]*offset|influence[^\n]*offset|intel[^\n]*offset|conviction[^\n]*offset/i);
   });
 
-  it('declares each tracker cover generically and keeps the stacked Intelligence pair distinct', () => {
+  it('declares the nested Intelligence cover chain and distinct tracker layers', () => {
     const byId = new Map(contract.components.map((component: any) => [component.id, component]));
     expect(byId.get('military-command-tracker').cover).toEqual({ kind: 'leader' });
     expect(byId.get('diplomats-influence-tracker').cover).toEqual({ kind: 'leader' });
     expect(byId.get('inquisition-conviction-tracker').cover).toEqual({ kind: 'leader' });
-    expect(byId.get('intelligence-intel-tracker').cover).toEqual({ kind: 'component', componentId: 'intelligence-operations-reference' });
-    expect(byId.get('intelligence-operation-progress-tracker').cover).toEqual({ kind: 'component', componentId: 'intelligence-mission-reference' });
+    expect(byId.get('intelligence-intel-tracker').cover).toEqual({ kind: 'leader' });
+    expect(byId.get('intelligence-operation-progress-tracker').cover).toEqual({ kind: 'component', componentId: 'intelligence-intel-tracker' });
 
     const intelligenceTrackers = contract.components.filter((component: any) => component.tts?.assembly === 'intelligence-progress');
     expect(intelligenceTrackers).toHaveLength(2);
-    expect(new Set(intelligenceTrackers.map((component: any) => component.tts.layer)).size).toBe(2);
     expect(new Set(intelligenceTrackers.map((component: any) => component.tts.snapTag)).size).toBe(2);
+    expect(byId.get('intelligence-operation-progress-tracker').tts.layer).toBe(1);
+    expect(byId.get('intelligence-intel-tracker').tts.layer).toBe(2);
   });
 
   it('extracts reference content from declared current-guide headings instead of copied rules strings', () => {

@@ -20,11 +20,31 @@ const FACTION_LABELS = Object.freeze({
 // identity, quantity, status, back policy, and tracked value all come from the
 // current-game component contract; only the drawn scale/layout lives here.
 const TRACKER_PRESENTATION = Object.freeze({
-  'military-command-tracker': { max: 4, labelSize: 11.2 },
-  'diplomats-influence-tracker': { max: 10, labelSize: 7.9 },
-  'intelligence-intel-tracker': { max: 12, labelSize: 7.2 },
-  'intelligence-operation-progress-tracker': { max: 8, labelSize: 6.8 },
-  'inquisition-conviction-tracker': { max: 4, labelSize: 10.4 },
+  'military-command-tracker': {
+    max: 4,
+    labelSize: 11.2,
+    instruction: 'Place faction leader card on top of this tracker and slide it upward or downward to align the bottom edge with the line above your current Command value.',
+  },
+  'diplomats-influence-tracker': {
+    max: 10,
+    labelSize: 7.9,
+    instruction: 'Place faction leader card on top of this tracker and slide it upward or downward to align the bottom edge with the line above your current Influence value.',
+  },
+  'intelligence-intel-tracker': {
+    max: 12,
+    labelSize: 7.2,
+    instruction: 'Place faction leader card on top of this tracker and slide it upward or downward to align the bottom edge with the line above your current Intel value.',
+  },
+  'intelligence-operation-progress-tracker': {
+    max: 8,
+    labelSize: 6.8,
+    instruction: 'Place the Intel Tracker and faction leader card on top of this tracker. Slide them together upward or downward to align the bottom edge of the Intel Tracker with the line above your current Operation Progress value.',
+  },
+  'inquisition-conviction-tracker': {
+    max: 4,
+    labelSize: 10.4,
+    instruction: 'Place faction leader card on top of this tracker and slide it upward or downward to align the bottom edge with the line above your current Conviction value.',
+  },
 });
 
 const root = document.querySelector('#supplementalReviewSections');
@@ -125,16 +145,18 @@ function trackerMarks(component, resourceName) {
   }).join('');
 }
 
-function trackerCapLabel(component) {
+function trackerCapLabel(component, resourceName) {
+  if (component.contractId === 'intelligence-operation-progress-tracker') return '';
   return Number.isFinite(component.resourceMaximum)
-    ? `Rules cap · ${component.resourceMaximum}`
-    : 'Rules cap · none';
+    ? `Standard ${resourceName} cap · ${component.resourceMaximum}`
+    : `Standard ${resourceName} cap · none`;
 }
 
 function trackerFace(component, faction, factionLabel) {
   if (!component.tracker) throw new Error(`Current tracker ${component.contractId} has no presentation geometry.`);
-  const { max, labelSize } = component.tracker;
+  const { max, labelSize, instruction } = component.tracker;
   const resourceName = component.resourceName || component.name.replace(/\s+Tracker$/i, '');
+  const capLabel = trackerCapLabel(component, resourceName);
   return `<article class="gauntlet-card faction-component-card sliding-tracker-card ${esc(faction)}-card" data-faction="${esc(faction)}" data-component-id="${esc(component.id)}" data-contract-component-id="${esc(component.contractId)}" aria-label="${esc(component.name)} sliding tracker, physical scale 0 through ${max}">
     <div class="card-interior tracker-interior">
       <span class="tracker-watermark" aria-hidden="true"></span>
@@ -142,8 +164,9 @@ function trackerFace(component, faction, factionLabel) {
         <span class="tracker-faction-emblem" aria-hidden="true"></span>
         <span class="tracker-faction-name">${esc(factionLabel)}</span>
         <h3>${esc(resourceName)} Tracker</h3>
-        <p class="tracker-cap">${esc(trackerCapLabel(component))}</p>
+        ${capLabel ? `<p class="tracker-cap">${esc(capLabel)}</p>` : ''}
       </header>
+      <div class="tracker-instructions">${esc(instruction)}</div>
       <div class="tracker-scale" style="--tracker-max:${max};--tracker-label-size:${Number(labelSize)}pt" aria-label="Registration bands 1 through ${max}">
         ${trackerMarks(component, resourceName)}
       </div>

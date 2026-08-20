@@ -179,8 +179,11 @@ export async function validateTtsComponentContract(contract) {
   assert(intelligenceTrackers.every((component) => component.tts?.assembly === 'intelligence-progress'), 'Intelligence trackers must share the stacked intelligence-progress assembly.');
   assert(new Set(intelligenceTrackers.map((component) => component.tts.layer)).size === 2, 'Intelligence stacked trackers must occupy distinct layers.');
   assert(new Set(intelligenceTrackers.map((component) => component.tts.snapTag)).size === 2, 'Intelligence stacked trackers must use distinct snap tags.');
-  assert(map.get('intelligence-intel-tracker').cover?.componentId === 'intelligence-operations-reference', 'Intel Tracker must use the Operations Reference Card as its physical cover.');
-  assert(map.get('intelligence-operation-progress-tracker').cover?.componentId === 'intelligence-mission-reference', 'Operation Progress Tracker must use the Mission Reference Card as its physical cover.');
+  const intelTracker = map.get('intelligence-intel-tracker');
+  const operationProgressTracker = map.get('intelligence-operation-progress-tracker');
+  assert(intelTracker.cover?.kind === 'leader', 'Intel Tracker must use the selected Intelligence Leader as its physical cover.');
+  assert(operationProgressTracker.cover?.kind === 'component' && operationProgressTracker.cover?.componentId === 'intelligence-intel-tracker', 'Operation Progress Tracker must use the Intel Tracker as its physical cover.');
+  assert(operationProgressTracker.tts?.layer === 1 && intelTracker.tts?.layer === 2, 'Intelligence tracker layers must run Operation Progress bottom, Intel above it.');
 
   const rites = componentsFor(contract, 'mystics', 'rite-card');
   assert(rites.length === 3, `Mystics must contain exactly 3 Rite cards; found ${rites.length}.`);

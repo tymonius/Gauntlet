@@ -10,12 +10,22 @@ The current production components are:
 | --- | --- | --- |
 | Military Command Tracker | `command-tracker` | selected Military Leader |
 | Diplomat Influence Tracker | `influence-tracker` | selected Diplomat Leader |
-| Intelligence Intel Tracker | `intel-tracker` | Operations Reference Card |
-| Intelligence Operation Progress Tracker | `operation-progress-tracker` | Mission Reference Card |
+| Intelligence Intel Tracker | `intel-tracker` | selected Intelligence Leader |
+| Intelligence Operation Progress Tracker | `operation-progress-tracker` | Intel Tracker + selected Intelligence Leader |
 | Inquisition Conviction Tracker | `conviction-tracker` | selected Inquisition Leader |
 
 Rules maxima and physical tracker capacity remain deliberately separate. For example, Command currently has a rules maximum of 2 while the production tracker has physical headroom through 4; Intel and Operation Progress are rules-uncapped but have finite practical printed scales. TTS follows the rendered physical component rather than converting a rules maximum into tracker geometry.
 
-In the save, each tracker is a non-stackable `Custom_Tile` using its production raster as `ImageURL` and the starter's resolved standard card back as `ImageSecondaryURL`. Its measured registrations are written as object-attached snap points. Each snap set has a unique tag, and only the declared physical cover card receives that tag. This keeps the interaction physical and manual: dragging the cover card to a registration snaps it into place, while no Lua rule changes the resource automatically.
+In the save, each tracker is a non-stackable `Custom_Tile` using its production raster as `ImageURL` and the starter's resolved standard card back as `ImageSecondaryURL`. Its measured registrations are written as object-attached snap points. Each snap set has a unique tag, and only the declared physical cover receives that tag. This keeps the interaction physical and manual: dragging the cover card or cover tracker to a registration snaps it into place, while no Lua rule changes the resource automatically.
 
-The two Intelligence trackers retain the shared `intelligence-progress` assembly identifier, distinct layers, distinct snap tags, and distinct reference-card covers. The generic representation therefore supports the intended stacked physical arrangement without Intelligence-specific gameplay scripting.
+## Intelligence three-card stack
+
+The Intelligence tracking assembly is nested, bottom to top:
+
+1. **Operation Progress Tracker** — layer 1
+2. **Intel Tracker** — layer 2
+3. **selected Intelligence Leader Card** — cover
+
+The Intel Tracker receives the `intelligence-operation-progress` snap tag, so the **Intel Tracker and Leader move together** over the Operation Progress Tracker to show Operation Progress. The selected Leader receives the `intelligence-intel` snap tag, so the **Leader moves independently** over the Intel Tracker to show current Intel.
+
+This cover chain is encoded directly in the component contract: the Intel Tracker declares the selected Leader as its cover, while the Operation Progress Tracker declares the Intel Tracker as its cover. The Mission and Operations Reference Cards are not part of the sliding assembly.
