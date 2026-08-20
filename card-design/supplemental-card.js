@@ -71,6 +71,9 @@ function presentationComponent(component) {
     referenceId: component.family === 'reference-card' ? component.id : '',
     ledger,
     name: component.name,
+    resourceName: component.family === 'tracker'
+      ? (component.trackedValue?.name || component.name.replace(/\s+Tracker$/i, ''))
+      : '',
     type: componentType(component),
     detail: componentDetail(component),
     quantity: Number(component.quantity) || 1,
@@ -124,7 +127,7 @@ function trackerMarks(component, resourceName) {
 function trackerFace(component, faction, factionLabel) {
   if (!component.tracker) throw new Error(`Current tracker ${component.contractId} has no presentation geometry.`);
   const { max, cover, scaleHeight, labelSize } = component.tracker;
-  const resourceName = component.name.replace(/\s+Tracker$/i, '');
+  const resourceName = component.resourceName || component.name.replace(/\s+Tracker$/i, '');
   return `<article class="gauntlet-card faction-component-card sliding-tracker-card ${esc(faction)}-card" data-faction="${esc(faction)}" data-component-id="${esc(component.id)}" data-contract-component-id="${esc(component.contractId)}" aria-label="${esc(component.name)} sliding tracker, physical scale 0 through ${max}">
     <div class="card-interior tracker-interior">
       <span class="tracker-watermark" aria-hidden="true"></span>
