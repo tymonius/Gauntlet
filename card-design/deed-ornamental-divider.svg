@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 327 16"
+     role="img"
+     aria-label="Ornamental divider">
+  <path fill="currentColor"
+        d="M0 8
+           L132 16
+           L146 8
+           L157 9
+           L165 15
+           L177 8
+           L186 8
+           L198 15
+           L327 8
+           L200 0
+           L185 8
+           L177 8
+           L166 1
+           L154 8
+           L146 8
+           L132 0
+           Z"/>
+</svg>
