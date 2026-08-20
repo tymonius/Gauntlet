@@ -134,7 +134,7 @@ function trackerFace(component, faction, factionLabel) {
       <header class="tracker-heading">
         <span class="tracker-faction-emblem" aria-hidden="true"></span>
         <span class="tracker-faction-name">${esc(factionLabel)}</span>
-        <h3>${esc(resourceName)}</h3>
+        <h3>${esc(resourceName)} Tracker</h3>
         <p>Physical scale · 0–${max}</p>
       </header>
       <div class="tracker-scale" style="--tracker-scale-height:${Number(scaleHeight)}in;--tracker-max:${max};--tracker-label-size:${Number(labelSize)}pt" aria-label="Registration bands 1 through ${max}">
