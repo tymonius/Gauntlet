@@ -12,22 +12,24 @@ const trackerById = new Map(
 );
 
 describe('tracker card cap layout', () => {
-  it('uses authoritative rules caps rather than the printed physical endpoint', () => {
+  it('uses standard resource caps and omits a cap line for Operation Progress', () => {
     expect(trackerById.get('military-command-tracker')?.trackedValue?.maximum).toBe(2);
     expect(trackerById.get('diplomats-influence-tracker')?.trackedValue?.maximum).toBe(10);
     expect(trackerById.get('intelligence-intel-tracker')?.trackedValue?.maximum).toBeNull();
     expect(trackerById.get('intelligence-operation-progress-tracker')?.trackedValue?.maximum).toBeNull();
     expect(trackerById.get('inquisition-conviction-tracker')?.trackedValue?.maximum).toBe(4);
-    expect(renderer).toContain('component.trackedValue?.maximum');
-    expect(renderer).toContain('Rules cap · ${component.resourceMaximum}');
-    expect(renderer).toContain("'Rules cap · none'");
+    expect(renderer).toContain('Standard ${resourceName} cap · ${component.resourceMaximum}');
+    expect(renderer).toContain('Standard ${resourceName} cap · none');
+    expect(renderer).toContain("component.contractId === 'intelligence-operation-progress-tracker'");
   });
 
-  it('removes explanatory copy and gives the tracking field more vertical space', () => {
+  it('restores a full-width Caslon italic usage note without the old zero header', () => {
     expect(renderer).not.toContain('Physical scale ·');
-    expect(renderer).not.toContain('tracker-instructions');
     expect(renderer).not.toContain('0 = fully covered');
-    expect(styles).not.toContain('.tracker-instructions');
-    expect(styles).toContain('height: 2.66in;');
+    expect(renderer).toContain('tracker-instructions');
+    expect(renderer).toContain('slide it upward or downward to align the bottom edge with the line above your current ${esc(resourceName)} value');
+    expect(styles).toContain('font-family: "adobe-caslon-pro", Georgia, serif;');
+    expect(styles).toContain('font-style: italic;');
+    expect(styles).toContain('height: 2.56in;');
   });
 });
