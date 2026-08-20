@@ -207,7 +207,7 @@ async function main() {
   console.log(`TTS component contract passed through ${contract.currentGameAuthority}: ${contract.components.length} faction components, ${contract.sharedComponents.length} shared component types, ${trackers.length} sliding trackers, ${pending.length} components still pending artwork/design/export.`);
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(import.meta.url).href) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main().catch((error) => {
     console.error(error.stack || error.message || error);
     process.exitCode = 1;
