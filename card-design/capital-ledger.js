@@ -55,7 +55,7 @@ export function capitalLedgerMarkup(version = 'Current') {
           </div>
           <div class="capital-ledger-row capital-ledger-row--example" role="row" aria-label="Example entry">
             <span role="cell">Income</span>
-            <span role="cell">+1</span>
+            <span role="cell">+ 1</span>
             <span role="cell">3</span>
           </div>
           ${ledgerRows(11)}
