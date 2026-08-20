@@ -3,9 +3,9 @@
 /* Financier Deed
    Landscape ownership marker placed beside a Territory. The face is composed
    entirely from the existing Financiers frame, approved parchment, restrained
-   green wash, centered Declaration Blackletter wordmark, and an approved
-   Poetica ornament composition beneath it. No artwork, emblem, watermark,
-   rules, or footer belongs on this component. */
+   green wash, centered Declaration Blackletter wordmark, and the approved
+   traced ornamental divider beneath it. No artwork, emblem, watermark, rules,
+   or footer belongs on this component. */
 
 /* The supplemental renderer now derives its specimen id from the current-game
    component contract (`financiers-deed`). Keep the former wrapper id as a
@@ -79,8 +79,8 @@
   content: none;
 }
 
-/* Treat the wordmark and ornament row as one title block and center that
-   complete block on the physical card. */
+/* Treat the wordmark and divider as one title block and center that complete
+   block on the physical card. */
 :is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) .supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .card-heading,
 .supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .card-heading {
   position: absolute;
@@ -105,8 +105,10 @@
 .supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .card-title {
   display: block;
   width: auto;
+  max-width: none;
   margin: 0;
   padding: 0;
+  overflow: visible;
   color: var(--card-ink);
   font-size: 0;
   line-height: 0.92;
@@ -134,16 +136,12 @@
   white-space: nowrap;
 }
 
-/* deed-card.js replaces the generic type-line contents with three real Poetica
-   bullet characters and assigns their numeric `ornm` alternates inline, using
-   the same mechanism proven by deed-ornament-study.html. */
+/* deed-card.js replaces the generic type line with a single real element. The
+   approved traced SVG is used as a mask so the divider takes exactly the same
+   ink color as the Declaration wordmark while remaining resolution-independent. */
 :is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) .supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .supplemental-type-line,
 .supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .supplemental-type-line {
-  display: grid;
-  grid-template-columns: auto auto auto;
-  align-items: center;
-  justify-content: center;
-  column-gap: 0.055in;
+  display: block;
   width: max-content;
   min-height: 0;
   margin: 0;
@@ -154,35 +152,15 @@
   line-height: 1;
 }
 
-:is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) .supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .deed-ornament,
-.supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .deed-ornament {
+:is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) .supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .deed-divider,
+.supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .deed-divider {
   display: block;
-  color: var(--card-ink);
-  font-family: "poetica-std", "Poetica Std", serif;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 1;
-  white-space: nowrap;
-}
-
-:is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) .supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .deed-ornament-left,
-:is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) .supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .deed-ornament-right,
-.supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .deed-ornament-left,
-.supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .deed-ornament-right {
-  font-size: 28pt;
-}
-
-:is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) .supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .deed-ornament-left,
-.supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .deed-ornament-left {
-  transform: scaleX(-1);
-  transform-origin: center;
-}
-
-:is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) .supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .deed-ornament-center,
-.supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .deed-ornament-center {
-  font-size: 18pt;
+  width: 1.22in;
+  aspect-ratio: 327 / 16;
+  background-color: var(--card-ink);
+  -webkit-mask: url("./deed-ornamental-divider.svg") center / contain no-repeat;
+  mask: url("./deed-ornamental-divider.svg") center / contain no-repeat;
   transform: translateY(-0.01in);
-  transform-origin: center;
 }
 
 /* The generic fit-warning diagnostic is a portrait-card fitting aid and does
