@@ -16,7 +16,7 @@ describe('Financiers Capital Ledger production component', () => {
     expect(renderer).toContain('Opening Balance');
     expect(renderer).toContain('>2<');
     expect(renderer).toContain('>Income<');
-    expect(renderer).toContain('>+1<');
+    expect(renderer).toContain('>+ 1<');
     expect(renderer).toContain('>3<');
     expect(renderer).toContain('${ledgerRows(11)}');
     expect(css).toContain('repeat(11, 1fr)');
@@ -37,6 +37,8 @@ describe('Financiers Capital Ledger production component', () => {
     expect(css).toContain('font-size: 12pt');
     expect(css).toContain('color: rgba(67, 42, 55, 0.34)');
     expect(css).toContain('font-weight: 400');
+    expect(css).toContain('.capital-ledger-row--example > span');
+    expect(css).toContain('transform: translateY(0.012in)');
     expect(preview).toContain('https://use.typekit.net/vgm6nwi.css');
     expect(preview).toContain('../design-tokens.css');
   });
