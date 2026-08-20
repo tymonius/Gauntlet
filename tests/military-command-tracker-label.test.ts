@@ -6,11 +6,13 @@ const componentContract = JSON.parse(readFileSync('config/tts-component-contract
 const militaryTracker = componentContract.components.find((component: { id?: string }) => component.id === 'military-command-tracker');
 
 describe('Military Command tracker label', () => {
-  it('prints the tracked resource name rather than the component inventory name', () => {
+  it('prints the tracked resource as an X Tracker title while keeping bare resource labels on the scale', () => {
     expect(militaryTracker?.name).toBe('Military Command Tracker');
     expect(militaryTracker?.trackedValue?.name).toBe('Command');
     expect(supplementalRenderer).toContain("resourceName: component.family === 'tracker'");
     expect(supplementalRenderer).toContain('component.trackedValue?.name');
     expect(supplementalRenderer).toContain('const resourceName = component.resourceName ||');
+    expect(supplementalRenderer).toContain('<h3>${esc(resourceName)} Tracker</h3>');
+    expect(supplementalRenderer).toContain('${trackerMarks(component, resourceName)}');
   });
 });
