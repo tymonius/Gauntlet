@@ -8,7 +8,8 @@ The covering Leader or Reference Card is the pointer.
 - Trackers remain face-up and public.
 - Tracker cards retain the standard faction metadata footer for visual and production consistency with the rest of the card set: **FACTION · TRACKER · VERSION**. The footer occupies the card's existing lower metadata strip; the tracker scale begins immediately above it rather than adding a second reserved gap.
 - All tracker cards use the same full-size 2.5 × 3.5 inch supplemental-card geometry and faction parchment treatment.
-- Every tracker uses the same full 2.08-inch tracking field between the instruction area and metadata footer. Each resource range divides that field into equal-height value bands, so lower-range trackers use the available space instead of leaving a large blank area.
+- The tracker header states the current **rules cap** in one compact line. Capped values read **RULES CAP · N**; uncapped values read **RULES CAP · NONE**. The physical sliding instructions are documented here rather than repeated on every card.
+- Every tracker uses the same full 2.66-inch tracking field between the compact header and metadata footer. Each physical range divides that field into equal-height value bands, so the removed instruction block becomes additional registration-line spacing.
 
 ## Physical scales
 
