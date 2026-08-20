@@ -299,7 +299,7 @@
   letter-spacing: 0;
 }
 
-.tracker-heading p {
+.tracker-cap {
   grid-column: 1 / -1;
   margin: 0.04in 0 0;
   padding-top: 0.03in;
@@ -313,42 +313,11 @@
   text-transform: uppercase;
 }
 
-.tracker-instructions {
-  top: 0.56in;
-  right: 0.12in;
-  left: 0.12in;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0.065in;
-  align-items: start;
-  padding-top: 0.045in;
-  border-top: 0.65px solid rgba(61, 48, 36, 0.34);
-  color: var(--card-muted-ink);
-  font-family: var(--font-interface);
-  font-size: 4.35pt;
-  line-height: 1.16;
-}
-
-.tracker-instructions strong {
-  color: var(--component-accent-ink);
-  font-size: 4.45pt;
-  font-weight: 850;
-  letter-spacing: 0.035em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.tracker-instructions span {
-  font-family: "adobe-caslon-pro", Georgia, serif;
-  font-size: 5.05pt;
-  letter-spacing: 0;
-}
-
 .tracker-scale {
   right: 0.09in;
   bottom: 0.18in;
   left: 0.09in;
-  height: 2.08in;
+  height: 2.66in;
 }
 
 .tracker-mark {
