@@ -27,9 +27,22 @@ describe('tracker card cap layout', () => {
     expect(renderer).not.toContain('Physical scale ·');
     expect(renderer).not.toContain('0 = fully covered');
     expect(renderer).toContain('tracker-instructions');
-    expect(renderer).toContain('slide it upward or downward to align the bottom edge with the line above your current ${esc(resourceName)} value');
+    expect(renderer).toContain('Place faction leader card on top of this tracker and slide it upward or downward');
     expect(styles).toContain('font-family: "adobe-caslon-pro", Georgia, serif;');
     expect(styles).toContain('font-style: italic;');
     expect(styles).toContain('height: 2.56in;');
+  });
+
+  it('prints the Intelligence nested-stack instructions and contract order', () => {
+    expect(renderer).toContain('current Intel value.');
+    expect(renderer).toContain('Place the Intel Tracker and faction leader card on top of this tracker. Slide them together upward or downward');
+    expect(renderer).toContain('bottom edge of the Intel Tracker');
+
+    const intel = trackerById.get('intelligence-intel-tracker');
+    const progress = trackerById.get('intelligence-operation-progress-tracker');
+    expect(intel?.cover).toEqual({ kind: 'leader' });
+    expect(intel?.tts?.layer).toBe(2);
+    expect(progress?.cover).toEqual({ kind: 'component', componentId: 'intelligence-intel-tracker' });
+    expect(progress?.tts?.layer).toBe(1);
   });
 });
