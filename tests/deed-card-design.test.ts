@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 const reviewPage = readFileSync("card-design/index.html", "utf8");
 const ornamentStudy = readFileSync("card-design/deed-ornament-study.html", "utf8");
+const deedDivider = readFileSync("card-design/deed-ornamental-divider.svg", "utf8");
 const deedScript = readFileSync("card-design/deed-card.js", "utf8");
 const supplementalRenderer = readFileSync("card-design/supplemental-card.js", "utf8");
 const supplementalStyles = readFileSync("card-design/supplemental-card.css", "utf8");
@@ -40,13 +41,12 @@ describe("Financier Deed card", () => {
     expect(deedStyles).toContain("height: 2.5in");
   });
 
-  it("reuses the approved Financiers border and faction parchment rather than adding a new art asset", () => {
+  it("reuses the approved Financiers border and faction parchment", () => {
     expect(factionStyles).toContain("--faction-border: #227044");
     expect(factionStyles).toContain("--faction-border-outline: #124429");
     expect(deedStyles).toContain("var(--parchment-image)");
     expect(deedStyles).not.toContain("deed.png");
     expect(deedStyles).not.toContain("deed.webp");
-    expect(deedStyles).not.toContain("deed.svg");
   });
 
   it("applies a visibly green Financiers wash without multiplying the warm parchment into ochre", () => {
@@ -62,7 +62,7 @@ describe("Financier Deed card", () => {
     expect(deedStyles).toContain("linear-gradient(var(--deed-parchment-tint), var(--deed-parchment-tint)),\n    var(--parchment-image)");
   });
 
-  it("centers the approved Deed wordmark and flourish together as one title block", () => {
+  it("centers the approved Deed wordmark and divider together as one title block", () => {
     expect(proposalStyles).toContain('"P22 Declaration W01 Blackletter"');
     expect(deedStyles).toContain('content: "Deed"');
     expect(deedStyles).not.toContain('content: "DEED"');
@@ -79,21 +79,29 @@ describe("Financier Deed card", () => {
     expect(deedStyles).not.toContain("deed-footer");
   });
 
-  it("uses real Poetica elements for the selected mirror-11, 44, 11 ornament composition", () => {
+  it("uses the approved traced SVG as a single continuous ornamental divider", () => {
     expect(supplementalRenderer).toContain("import './deed-card.js';");
-    expect(deedScript).toContain("glyph.style.fontFeatureSettings = `\"ornm\" ${index}`");
-    expect(deedScript).toContain("ornamentGlyph('deed-ornament-left', 11)");
-    expect(deedScript).toContain("ornamentGlyph('deed-ornament-center', 44)");
-    expect(deedScript).toContain("ornamentGlyph('deed-ornament-right', 11)");
-    expect(deedStyles).toContain('font-family: "poetica-std", "Poetica Std", serif');
-    expect(deedStyles).toContain(".deed-ornament-left");
-    expect(deedStyles).toContain(".deed-ornament-center");
-    expect(deedStyles).toContain(".deed-ornament-right");
-    expect(deedStyles).toContain("font-size: 28pt");
-    expect(deedStyles).toContain("font-size: 18pt");
-    expect(deedStyles).toContain("transform: scaleX(-1)");
-    expect(deedStyles).not.toContain(".supplemental-type-line::before");
-    expect(deedStyles).not.toContain(".supplemental-type-line::after");
+    expect(deedScript).toContain("divider.className = 'deed-divider'");
+    expect(deedScript).toContain("row.replaceChildren(dividerElement())");
+    expect(deedStyles).toContain(".deed-divider");
+    expect(deedStyles).toContain("width: 1.22in");
+    expect(deedStyles).toContain("aspect-ratio: 327 / 16");
+    expect(deedStyles).toContain('url("./deed-ornamental-divider.svg")');
+    expect(deedStyles).toContain("background-color: var(--card-ink)");
+    expect(deedStyles).not.toContain("deed-ornament-left");
+    expect(deedStyles).not.toContain("deed-ornament-center");
+    expect(deedStyles).not.toContain("deed-ornament-right");
+    expect(deedScript).not.toContain("fontFeatureSettings");
+    expect(deedDivider).toContain('viewBox="0 0 327 16"');
+    expect(deedDivider).toContain('fill="currentColor"');
+    expect(deedDivider).toContain("L327 8");
+  });
+
+  it("keeps Declaration's overhanging D from being clipped", () => {
+    expect(deedStyles).toContain("max-width: none");
+    expect(deedStyles).toContain("overflow: visible");
+    expect(deedScript).toContain("title.style.overflow = 'visible'");
+    expect(deedScript).toContain("title.style.maxWidth = 'none'");
   });
 
   it("suppresses the irrelevant fit-warning dot without restoring the rejected CSS-built flourish", () => {
@@ -103,7 +111,7 @@ describe("Financier Deed card", () => {
     expect(deedStyles).not.toContain("linear-gradient(135deg, transparent 42%");
   });
 
-  it("retains the Poetica ornament index study that established the selected glyphs", () => {
+  it("retains the Poetica ornament index study as historical design exploration", () => {
     expect(ornamentStudy).toContain('https://use.typekit.net/vgm6nwi.css');
     expect(ornamentStudy).toContain('font-family: "poetica-std", "Poetica Std", serif');
     expect(ornamentStudy).toContain("const maxIndex = 64");
