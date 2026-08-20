@@ -8,8 +8,9 @@ The covering Leader or Reference Card is the pointer.
 - Trackers remain face-up and public.
 - Tracker cards retain the standard faction metadata footer for visual and production consistency with the rest of the card set: **FACTION · TRACKER · VERSION**. The footer occupies the card's existing lower metadata strip; the tracker scale begins immediately above it rather than adding a second reserved gap.
 - All tracker cards use the same full-size 2.5 × 3.5 inch supplemental-card geometry and faction parchment treatment.
-- The tracker header states the current **rules cap** in one compact line. Capped values read **RULES CAP · N**; uncapped values read **RULES CAP · NONE**. The physical sliding instructions are documented here rather than repeated on every card.
-- Every tracker uses the same full 2.66-inch tracking field between the compact header and metadata footer. Each physical range divides that field into equal-height value bands, so the removed instruction block becomes additional registration-line spacing.
+- Actual faction resources carry one compact **STANDARD [RESOURCE] CAP** line sourced from the authoritative tracked-value maximum. An uncapped resource such as Intel reads **STANDARD INTEL CAP · NONE**. Operation Progress is a progression value rather than a resource and therefore carries no cap line.
+- Each tracker includes a full-width Caslon italic usage sentence naming its actual covering card and instructing the player to slide that card until its bottom edge aligns with the line above the current tracked value.
+- Every tracker uses the same 2.56-inch tracking field above the metadata footer. Each physical range divides that field into equal-height value bands, retaining substantially more registration-line spacing than the earlier instruction-heavy layout.
 
 ## Physical scales
 
