@@ -1,6 +1,7 @@
 import baseWorker, { __test } from './index.js';
 
 const API_VERSION = '2022-11-28';
+const SAVE_PATH = '/api/art-direction';
 const PUBLISH_PATH = '/api/art-direction/publish';
 
 function config(env) {
@@ -44,6 +45,18 @@ function requireAllowedOrigin(request, env) {
   if (!origin || !config(env).allowedOrigins.has(origin)) {
     throw Object.assign(new Error('Origin is not allowed.'), { status: 403 });
   }
+}
+
+function responseWithCors(response, request, env) {
+  const url = new URL(request.url);
+  if (!url.pathname.startsWith('/api/')) return response;
+  const headers = new Headers(response.headers);
+  for (const [name, value] of Object.entries(corsHeaders(request, env))) headers.set(name, value);
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
 }
 
 async function authenticatedSession(request, env) {
@@ -111,6 +124,8 @@ async function handleHealth(request, env) {
   return json({
     ...baseHealth,
     batchPublishing: true,
+    apiCors: true,
+    saveEndpoint: SAVE_PATH,
     publishEndpoint: PUBLISH_PATH,
     authorBranch: config(env).authorBranch,
   }, baseResponse.status || 200, request, env);
@@ -181,7 +196,7 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    if (url.pathname === PUBLISH_PATH && request.method === 'OPTIONS') {
+    if (request.method === 'OPTIONS' && url.pathname.startsWith('/api/')) {
       try {
         requireAllowedOrigin(request, env);
         return new Response(null, { status: 204, headers: corsHeaders(request, env) });
@@ -194,7 +209,8 @@ export default {
       if (url.pathname === '/health' && request.method === 'GET') return handleHealth(request, env);
       if (url.pathname === PUBLISH_PATH && request.method === 'GET') return handleBatchStatus(request, env);
       if (url.pathname === PUBLISH_PATH && request.method === 'POST') return handlePublish(request, env);
-      return baseWorker.fetch(request, env);
+      const response = await baseWorker.fetch(request, env);
+      return responseWithCors(response, request, env);
     } catch (error) {
       console.error(error);
       return json({ error: error instanceof Error ? error.message : String(error) }, error?.status || 500, request, env);
