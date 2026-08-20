@@ -139,6 +139,10 @@
   line-height: 1;
 }
 
+.capital-ledger-row--example > span {
+  transform: translateY(0.012in);
+}
+
 .capital-ledger-row--opening {
   color: var(--card-ink, #241c15);
   font-family: var(--font-reading, "adobe-caslon-pro", Georgia, serif);
