@@ -4,67 +4,61 @@
 >
 > Audit authority: `artifacts/reconstruction/clean-v0.6.3/faction-guides/diplomat/Gauntlet_v0.6.3_Diplomat_Faction_Guide.md`
 >
-> Recheck against: Faction Actions; Influence; Offering Terms; Diplomat mirrors; Accepted Terms; Refused Terms; Leverage; Treaty Articles and Peace Treaty.
+> Recheck against: Influence; Offering Terms; Diplomat mirrors; Accepted Terms; Refused Terms; Leverage; Treaty Articles and Peace Treaty.
 
 ## Front — Terms
 
-### Influence
+### Offering Terms
 
-Staked Influence cannot be spent until Terms conclude.
-
-### Offer Terms
-
-Pending battle · **before Onset** · choose **1 eligible Proposal** → stake its Influence → opponent **accepts** or **refuses**.
-
-### Accepted
-
-1. **No battle.** Resolve Accepted.
-2. Return Stake.
-3. Newly ratified: **flip Proposal → +1 Influence.**
-
-Attacker withdraws unless the Proposal says otherwise.
-
-### Refused
-
-1. Resolve Refused.
-2. Continue to **Gambits**.
-3. Before dice: **Leverage** optional.
+During a pending battle, **before Onset**, choose an eligible Proposal and stake its required Influence by moving your tracker down the listed amount, then present the Proposal card to the opponent. They **accept** or **refuse**.
 
 ### Diplomat Mirror
 
-Attacker may offer first. If they pass, defender may offer. **One Terms offer per battle.**
+The attacker has the first opportunity to offer Terms. If the attacker passes, the defender may offer. Once either player offers Terms, the other may not offer Terms for that battle.
+
+### Accepted
+
+- No battle begins.
+- Apply the Proposal's **Accepted** effect.
+- Return the Stake.
+- Discard any previously imposed **Sanctions**.
+- If unratified, flip the Proposal to its **Treaty Article** side and gain **1 Influence**.
+
+### Refused
+
+- Apply the Proposal's **Refused** effect.
+- You may impose **Sanctions** *(once per refused Terms)*.
+- Continue to **Gambits**.
+- Before dice are rolled, the Diplomat may use **Leverage**.
 
 ## Reverse — Outcomes & Treaties
 
-### Refused Result
+### After Refused Terms
 
-| Result | Stake | Proposal | Reward |
-|---|---|---|---|
-| Win | Return | Ratify if new | +2 Influence* |
-| Lose | Lose | — | — |
-| No winner | Return | — | — |
+**Diplomat wins:** Return the Stake. If the Proposal is unratified, ratify it and gain **2 Influence** unless stated otherwise.
 
-*New ratification only. **Withdrawal = no winner.**
+**Diplomat loses:** Lose the Stake. The Proposal is not ratified.
+
+**No winner / Withdrawal:** Return the Stake. The Proposal is not ratified.
 
 ### Leverage
 
-After refused Terms · **before dice** · spend available Influence. Staked Influence cannot be spent.
+After Terms are refused, **before dice are rolled**, spend available Influence to increase the Diplomat's battle total.
 
-| Bonus | +1 | +2 | +3 | +4 |
-|---|---:|---:|---:|---:|
-| Cost | 1 | 3 | 6 | 10 |
+**+1:** 1 Influence
 
-Further +1 bonuses cost 5, then 6, then 7 Influence, and so on.
+**+2:** 3 Influence
+
+**+3:** 6 Influence
+
+**+4:** 10 Influence
+
+Staked Influence cannot be spent as Leverage.
 
 ### Treaty Articles
 
-Ratified Proposals may be offered again, but cannot be ratified or award Influence again.
+A ratified Proposal may be offered again, but cannot be ratified again and does not grant the normal ratification Influence reward again.
 
 ### Peace Treaty
 
-**CHECK** · start of turn · after Capture · before Draw  
-**WIN** · **5 different** Proposals ratified
-
-### Action Reminder
-
-**Terms + Leverage do not take an Action.**
+At the start of your turn, if **6 different Proposals** are ratified, you win.

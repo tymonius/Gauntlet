@@ -9,22 +9,10 @@ const FACTION_LABELS = Object.freeze({
   military: 'Military',
 });
 
-// Presentation-only selectors. Every rendered word still comes from the source
-// section declared by the component contract in the current-game authority.
+// Presentation-only selectors for guide-derived reference cards. Bespoke
+// player-aid copy already contains only printable material, so it renders its
+// face sections directly instead of re-filtering them through this map.
 const REFERENCE_PRESENTATION = Object.freeze({
-  'diplomats-reference': {
-    front: {
-      Influence: ['paragraph:0'],
-      'Offering Terms': ['paragraph:0', 'list:0', 'paragraph:2'],
-      'Accepted Terms': ['list:0', 'paragraph:1'],
-    },
-    reverse: {
-      'Refused Terms': ['list:0', 'table:0', 'paragraph:3'],
-      'Diplomat mirrors': ['list:0'],
-      Leverage: ['paragraph:0', 'table:0', 'paragraph:1'],
-      'Treaty Articles and Peace Treaty': ['paragraph:0', 'paragraph:1'],
-    },
-  },
   'financiers-reference': {
     front: {
       'Capital and Capital Ledger': ['paragraph:1', 'paragraph:2'],
@@ -97,6 +85,112 @@ const REFERENCE_PRESENTATION = Object.freeze({
     },
   },
 });
+
+const DIPLOMAT_REFERENCE_STYLE_ID = 'diplomat-reference-card-layout';
+
+function installDiplomatReferenceStyles() {
+  if (typeof document === 'undefined' || document.getElementById(DIPLOMAT_REFERENCE_STYLE_ID)) return;
+  const style = document.createElement('style');
+  style.id = DIPLOMAT_REFERENCE_STYLE_ID;
+  style.textContent = `
+.reference-card[data-component-id="diplomats-reference"] .reference-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--reference-section-gap);
+  padding: 0.026in 0.068in 0.022in;
+}
+.reference-card[data-component-id="diplomats-reference"][data-reference-side="front"] .reference-panel:first-child {
+  grid-column: auto;
+}
+.reference-card[data-component-id="diplomats-reference"] .reference-panel + .reference-panel {
+  padding-top: calc(0.014in * var(--reference-rules-scale));
+  border-top: 0.55px solid color-mix(in srgb, var(--component-accent-ink) 30%, transparent);
+}
+.reference-card[data-component-id="diplomats-reference"] .reference-panel-heading {
+  padding-bottom: calc(0.006in * var(--reference-rules-scale));
+}
+.reference-card[data-component-id="diplomats-reference"] .reference-panel-heading h4 {
+  color: var(--component-accent-ink);
+  font-size: calc(4.85pt * var(--reference-rules-scale));
+  letter-spacing: 0.055em;
+}
+.reference-card[data-component-id="diplomats-reference"] .reference-prose {
+  font-size: calc(6pt * var(--reference-rules-scale));
+  line-height: 1.075;
+}
+.reference-card[data-component-id="diplomats-reference"] .reference-option-list li {
+  grid-template-columns: 0.065in minmax(0, 1fr);
+  gap: 0.018in;
+  font-size: calc(5.85pt * var(--reference-rules-scale));
+  line-height: 1.06;
+}
+.reference-card[data-component-id="diplomats-reference"] .reference-option-mark {
+  width: 0.042in;
+  height: 0.042in;
+  margin-top: 0.024in;
+}
+.reference-card[data-component-id="diplomats-reference"] .reference-option-list li + li {
+  margin-top: calc(0.004in * var(--reference-rules-scale));
+  padding-top: 0;
+  border-top: 0;
+}
+.reference-card[data-component-id="diplomats-reference"] .reference-callout {
+  grid-template-columns: minmax(0.72in, 0.82in) minmax(0, 1fr);
+  column-gap: 0.025in;
+}
+.reference-card[data-component-id="diplomats-reference"] .reference-callout-label {
+  color: var(--component-accent-ink);
+  font-size: calc(4.4pt * var(--reference-rules-scale));
+  letter-spacing: 0.028em;
+}
+.reference-card[data-component-id="diplomats-reference"] .reference-callout p {
+  font-size: calc(5.8pt * var(--reference-rules-scale));
+  line-height: 1.06;
+}
+.reference-card[data-component-id="diplomats-reference"] .reference-callout + .reference-callout {
+  padding-top: calc(0.005in * var(--reference-rules-scale));
+  border-top: 0;
+}
+.reference-card[data-component-id="diplomats-reference"] [data-reference-section="leverage"] .reference-panel-content {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: 0.020in;
+  row-gap: calc(0.006in * var(--reference-rules-scale));
+  align-items: start;
+}
+.reference-card[data-component-id="diplomats-reference"] [data-reference-section="leverage"] .reference-prose {
+  grid-column: 1 / -1;
+}
+.reference-card[data-component-id="diplomats-reference"] [data-reference-section="leverage"] .reference-callout {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(0.002in * var(--reference-rules-scale));
+  padding: calc(0.006in * var(--reference-rules-scale)) 0;
+  border-top: 0;
+  border-left: 0.45px solid color-mix(in srgb, var(--component-accent-ink) 22%, transparent);
+  text-align: center;
+}
+.reference-card[data-component-id="diplomats-reference"] [data-reference-section="leverage"] .reference-callout:first-of-type {
+  border-left: 0;
+}
+.reference-card[data-component-id="diplomats-reference"] [data-reference-section="leverage"] .reference-callout-label {
+  font-size: calc(5.25pt * var(--reference-rules-scale));
+}
+.reference-card[data-component-id="diplomats-reference"] [data-reference-section="leverage"] .reference-callout p {
+  font-size: calc(5.55pt * var(--reference-rules-scale));
+  white-space: nowrap;
+}
+.reference-card[data-component-id="diplomats-reference"][data-reference-side="reverse"] .reference-face-title {
+  font-size: 10.9pt;
+  letter-spacing: 0.018em;
+}
+`;
+  document.head.append(style);
+}
+
+installDiplomatReferenceStyles();
 
 function esc(value) {
   return String(value ?? '').replace(/[&<>'"]/g, character => ({
@@ -267,6 +361,45 @@ function parseReferenceFace(markdown, face, componentName, side) {
   };
 }
 
+function parseBespokeReferenceFace(markdown, face, componentName, side) {
+  const title = String(face?.title || '').trim();
+  if (!title) throw new Error(`${componentName} bespoke reference ${side} face must declare a title.`);
+
+  const sideLabel = side === 'reverse' ? 'Reverse' : 'Front';
+  const faceHeading = `${sideLabel} — ${title}`;
+  const lines = headingLines(markdown, faceHeading, 2);
+  const sections = [];
+  let current = null;
+
+  const flushSection = () => {
+    if (!current) return;
+    sections.push({
+      heading: current.heading,
+      sourceHeading: current.heading,
+      blocks: parseMarkdownBlocks(current.lines, `${componentName} — ${current.heading}`),
+    });
+    current = null;
+  };
+
+  for (const line of lines) {
+    const heading = line.trim().match(/^###\s+(.+)$/);
+    if (heading) {
+      flushSection();
+      current = { heading: cleanInlineMarkdown(heading[1]), lines: [] };
+      continue;
+    }
+    if (!current) {
+      if (line.trim()) throw new Error(`${componentName} bespoke ${side} face has copy before its first section.`);
+      continue;
+    }
+    current.lines.push(line);
+  }
+  flushSection();
+
+  if (!sections.length) throw new Error(`${componentName} bespoke ${side} face has no printable sections.`);
+  return { title, sections };
+}
+
 export async function loadReferenceRecords() {
   const currentGame = await loadCurrentGame();
   const components = (currentGame.components || []).filter(component => component.family === 'reference-card');
@@ -288,6 +421,10 @@ export async function loadReferenceRecords() {
       sourceCache.set(sourceUrl, markdown);
     }
 
+    const parseFace = component.copyMode === 'bespoke'
+      ? (face, side) => parseBespokeReferenceFace(markdown, face, component.name, side)
+      : (face, side) => parseReferenceFace(markdown, face, component.name, side);
+
     records.push({
       id: component.id,
       name: component.name,
@@ -296,8 +433,8 @@ export async function loadReferenceRecords() {
       source: currentGame.authorityUrl,
       version: currentGame.displayVersion,
       faces: {
-        front: parseReferenceFace(markdown, component.referenceFaces.front, component.name, 'front'),
-        reverse: parseReferenceFace(markdown, component.referenceFaces.reverse, component.name, 'reverse'),
+        front: parseFace(component.referenceFaces.front, 'front'),
+        reverse: parseFace(component.referenceFaces.reverse, 'reverse'),
       },
     });
   }
@@ -373,9 +510,17 @@ function sectionKind(section) {
   return 'rules';
 }
 
+function sectionSlug(value) {
+  return String(value || '')
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
 function renderSection(section) {
   const kind = sectionKind(section);
-  return `<section class="reference-section reference-panel reference-panel--${kind}" data-reference-panel-kind="${kind}">
+  return `<section class="reference-section reference-panel reference-panel--${kind}" data-reference-panel-kind="${kind}" data-reference-section="${esc(sectionSlug(section.heading))}">
     <header class="reference-panel-heading"><h4>${esc(section.heading)}</h4></header>
     <div class="reference-panel-content">${section.blocks.map(renderBlock).join('')}</div>
   </section>`;
