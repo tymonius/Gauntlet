@@ -65,14 +65,15 @@
     tools.hidden = true;
     tools.style.marginTop = ".75rem";
     tools.innerHTML = `
-      <p class="muted">Financier-only: print full 9-up sheets of reusable Capital Ledgers.</p>
+      <p class="muted">Print full 9-up sheets of reusable Capital Ledgers.</p>
       <div class="button-row">
         <label>
-          Ledger pages
+          Pages
           <select id="capitalLedgerPageCount" aria-label="Number of Capital Ledger pages">
             ${Array.from({ length: MAX_PAGE_COUNT }, (_, index) => {
               const pageCount = index + 1;
-              return `<option value="${pageCount}"${pageCount === DEFAULT_PAGE_COUNT ? " selected" : ""}>${pageCount}</option>`;
+              const ledgerCount = pageCount * LEDGERS_PER_PAGE;
+              return `<option value="${pageCount}"${pageCount === DEFAULT_PAGE_COUNT ? " selected" : ""}>${pageCount} page${pageCount === 1 ? "" : "s"} (${ledgerCount} ledgers)</option>`;
             }).join("")}
           </select>
         </label>
@@ -91,6 +92,9 @@
     };
 
     factionSelect.addEventListener("change", updateVisibility);
+    for (const id of ["loadDeckButton", "importJsonButton"]) {
+      document.getElementById(id)?.addEventListener("click", () => window.setTimeout(updateVisibility, 0));
+    }
     updateVisibility();
 
     printButton.addEventListener("click", () => {
