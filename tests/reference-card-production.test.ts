@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 const contract = JSON.parse(readFileSync('config/tts-component-contract.json', 'utf8'));
 const catalogHtml = readFileSync('card-design/index.html', 'utf8');
 const supplemental = readFileSync('card-design/supplemental-card.js', 'utf8');
+const supplementalRefinements = readFileSync('card-design/supplemental-refinements.css', 'utf8');
 const referenceRenderer = readFileSync('card-design/reference-card.js', 'utf8');
 const referenceCss = readFileSync('card-design/reference-card.css', 'utf8');
 const ttsRenderer = readFileSync('tts/supplemental-renderer/supplemental-renderer.js', 'utf8');
@@ -22,10 +23,17 @@ describe('production faction reference cards', () => {
     expect(supplemental).toContain("for (const sideName of ['front', 'reverse'])");
   });
 
-  it('supports bespoke player-aid copy with a separate canonical audit source', () => {
+  it('supports bespoke player-aid copy with separate canonical audit sources', () => {
     const references = contract.components.filter((component: any) => component.family === 'reference-card');
     const diplomat = references.find((component: any) => component.id === 'diplomats-reference');
-    const inherited = references.filter((component: any) => component.id !== 'diplomats-reference');
+    const financier = references.find((component: any) => component.id === 'financiers-reference');
+    const bespoke = references.filter((component: any) => component.copyMode === 'bespoke');
+    const inherited = references.filter((component: any) => component.copyMode !== 'bespoke');
+
+    expect(bespoke.map((component: any) => component.id)).toEqual([
+      'diplomats-reference',
+      'financiers-reference',
+    ]);
 
     expect(diplomat.copyMode).toBe('bespoke');
     expect(diplomat.source).toBe('card-design/reference-copy/v0.6.3/diplomat-reference.md');
@@ -41,21 +49,43 @@ describe('production faction reference cards', () => {
       'Treaty Articles and Peace Treaty',
     ]);
 
-    const copy = readFileSync(diplomat.source, 'utf8');
-    const authority = readFileSync(diplomat.authoritySource, 'utf8');
-    expect(copy).toContain('Player-aid copy, not faction-rule authority.');
-    expect(copy).toContain('## Front — Terms');
-    expect(copy).toContain('### Offering Terms');
-    expect(copy).toContain('Discard any previously imposed **Sanctions**.');
-    expect(copy).toContain('You may impose **Sanctions** *(once per refused Terms)*.');
-    expect(copy).toContain('if **6 different Proposals** are ratified, you win.');
-    expect(copy).not.toContain('### Action Reminder');
+    const diplomatCopy = readFileSync(diplomat.source, 'utf8');
+    const diplomatAuthority = readFileSync(diplomat.authoritySource, 'utf8');
+    expect(diplomatCopy).toContain('Player-aid copy, not faction-rule authority.');
+    expect(diplomatCopy).toContain('## Front — Terms');
+    expect(diplomatCopy).toContain('### Offering Terms');
+    expect(diplomatCopy).toContain('Discard any previously imposed **Sanctions**.');
+    expect(diplomatCopy).toContain('You may impose **Sanctions** *(once per refused Terms)*.');
+    expect(diplomatCopy).toContain('if **6 different Proposals** are ratified, you win.');
+    expect(diplomatCopy).not.toContain('### Action Reminder');
+    for (const heading of diplomat.auditHeadings) expect(diplomatAuthority).toContain(heading);
+
+    expect(financier.copyMode).toBe('bespoke');
+    expect(financier.designStatus).toBe('final');
+    expect(financier.source).toBe('card-design/reference-copy/v0.6.3/financier-reference.md');
+    expect(financier.authoritySource).toBe('artifacts/reconstruction/clean-v0.6.3/faction-guides/financier/Gauntlet_v0.6.3_Financier_Faction_Guide.md');
+    expect(financier.referenceFaces.front.title).toBe('Capital & Capacity');
+    expect(financier.referenceFaces.reverse.title).toBe('Deeds & Spending');
+
+    const financierCopy = readFileSync(financier.source, 'utf8');
+    const financierAuthority = readFileSync(financier.authoritySource, 'utf8');
+    expect(financierCopy).toContain('## Front — Capital & Capacity');
+    expect(financierCopy).toContain('### Capital Limit');
+    expect(financierCopy).toContain('### Financial Capacity');
+    expect(financierCopy).toContain('## Reverse — Deeds & Spending');
+    expect(financierCopy).toContain('**Base cost:** min(Deeds you own + 1, 6)');
+    expect(financierCopy).toContain('### Play the Market');
+    expect(financierCopy).toContain('### Subsidize');
+    expect(financierCopy).toContain('### Controlling Interest');
+    expect(financierCopy).not.toContain('progression continues');
+    for (const heading of financier.auditHeadings) expect(financierAuthority).toContain(heading);
+
     expect(referenceRenderer).toContain("component.copyMode === 'bespoke'");
     expect(referenceRenderer).toContain('parseBespokeReferenceFace');
-    for (const heading of diplomat.auditHeadings) expect(authority).toContain(heading);
 
-    // The migration is intentionally incremental: Diplomat proves the bespoke-copy
-    // model while the other six cards remain on their existing guide-derived sources.
+    // Migration remains incremental: five reference cards still use their
+    // guide-derived sources until their own compact player-aid copy is approved.
+    expect(inherited).toHaveLength(5);
     expect(inherited.every((component: any) => component.source.includes('/faction-guides/'))).toBe(true);
   });
 
@@ -79,7 +109,7 @@ describe('production faction reference cards', () => {
     expect(supplemental).toContain('Designed · source-driven');
   });
 
-  it('uses the production faction shell, single-column Terms flow, compact Leverage row, and shared footer', () => {
+  it('uses the production faction shell, compact player-aid flow, lookup rows, and shared footer', () => {
     expect(referenceCss).toContain('padding: 0.075in');
     expect(referenceCss).toContain('font-family: var(--font-display-historical');
     expect(referenceCss).toContain('.reference-card[data-faction="diplomats"]');
@@ -93,6 +123,14 @@ describe('production faction reference cards', () => {
     expect(referenceRenderer).toContain('[data-reference-section="leverage"] .reference-panel-content');
     expect(referenceRenderer).toContain('grid-template-columns: repeat(4, minmax(0, 1fr))');
     expect(referenceRenderer).toContain('[data-reference-side="reverse"] .reference-face-title');
+
+    expect(supplementalRefinements).toContain('.reference-card[data-component-id="financiers-reference"] .reference-card-header');
+    expect(supplementalRefinements).toContain('content: "Financiers"');
+    expect(supplementalRefinements).toContain('.reference-card[data-component-id="financiers-reference"] .reference-body');
+    expect(supplementalRefinements).toContain('[data-reference-section="subsidize"] .reference-panel-content');
+    expect(supplementalRefinements).toContain('grid-template-columns: repeat(4, minmax(0, 1fr))');
+    expect(supplementalRefinements).toContain('.reference-card[data-component-id="financiers-reference"] .reference-matrix');
+
     expect(referenceRenderer).toContain('<footer class="card-footer"><span>${esc(factionLabel)}</span><span>Reference</span><span>${esc(version)}</span></footer>');
     expect(supplemental).toContain('<footer class="card-footer"><span>${esc(factionLabel)}</span><span>Reference</span><span>${esc(currentDisplayVersion)}</span></footer>');
     expect(referenceRenderer).not.toContain('reference-card-footer');
@@ -122,6 +160,7 @@ describe('production faction reference cards', () => {
     expect(ttsRenderer).toContain('fitReferenceCard(card)');
     expect(ttsRendererHtml).toContain('/card-design/card-design.css');
     expect(ttsRendererHtml).toContain('/card-design/reference-card.css');
+    expect(ttsRendererHtml).toContain('/card-design/supplemental-refinements.css');
     expect(ttsRendererHtml).toContain('https://use.typekit.net/vgm6nwi.css');
   });
 });

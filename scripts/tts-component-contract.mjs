@@ -223,9 +223,12 @@ export async function validateTtsComponentContract(contract) {
   const factionReferences = (contract.components || []).filter((component) => component.family === 'reference-card');
   assert(factionReferences.length === 7, `Current faction packages must contain exactly seven faction reference cards; found ${factionReferences.length}.`);
   const diplomatReference = map.get('diplomats-reference');
+  const financierReference = map.get('financiers-reference');
   assert(designStatusFor(diplomatReference) === 'final', 'The finalized Diplomat Reference Card must be marked final.');
-  const referencesAwaitingRefinement = factionReferences.filter((component) => component.id !== 'diplomats-reference');
-  assert(referencesAwaitingRefinement.length === 6 && referencesAwaitingRefinement.every((component) => designStatusFor(component) === 'refinement-pending'), 'The six remaining faction reference cards must remain refinement-pending until individually finalized.');
+  assert(designStatusFor(financierReference) === 'final', 'The finalized Financier Reference Card must be marked final.');
+  const finalizedReferenceIds = new Set(['diplomats-reference', 'financiers-reference']);
+  const referencesAwaitingRefinement = factionReferences.filter((component) => !finalizedReferenceIds.has(component.id));
+  assert(referencesAwaitingRefinement.length === 5 && referencesAwaitingRefinement.every((component) => designStatusFor(component) === 'refinement-pending'), 'The five remaining faction reference cards must remain refinement-pending until individually finalized.');
 
   const ledger = map.get('financiers-capital-ledger');
   assert(ledger?.productionStatus === 'export-pending' && designStatusFor(ledger) === 'final', 'Capital Ledger design is final and must be marked export-pending rather than design-pending.');
