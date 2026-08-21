@@ -51,10 +51,14 @@ async function renderProposal(currentGame, component) {
   document.documentElement.dataset.supplementalOrientation = 'portrait';
   target.innerHTML = proposalFace(proposal, ratified, currentGame.displayVersion || currentGame.version);
   const card = target.querySelector('.gauntlet-card');
+  if (!card) throw new Error(`Proposal production renderer returned no card for ${component.id}.`);
   card.dataset.componentId = component.id;
   card.dataset.contractComponentId = component.id;
   card.dataset.productionStatus = 'ready';
   await loadProposalArtwork(target);
+  if (!ratified && target.querySelector('.proposal-art-pending')) {
+    throw new Error(`Final Proposal artwork is missing for ${component.id}.`);
+  }
   await waitForVisuals();
 }
 
