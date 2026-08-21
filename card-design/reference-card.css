@@ -12,6 +12,7 @@
   --reference-border-outline: rgba(62, 52, 41, 0.52);
   --reference-border-rule: rgba(62, 52, 41, 0.24);
   --reference-symbol: none;
+  --reference-parchment-image: none;
   --reference-rules-scale: 1;
   --reference-section-gap: 0.038in;
   position: relative;
@@ -47,6 +48,7 @@
   --reference-border-outline: #17345f;
   --reference-border-rule: rgba(244, 248, 255, 0.38);
   --reference-symbol: url("../images/faction-symbols/diplomats.svg");
+  --reference-parchment-image: url("../images/artwork/card-backgrounds/diplomats-parchment-v2.png");
 }
 
 .reference-card[data-faction="financiers"] {
@@ -57,6 +59,7 @@
   --reference-border-outline: #124429;
   --reference-border-rule: rgba(242, 255, 246, 0.38);
   --reference-symbol: url("../images/faction-symbols/financiers.svg");
+  --reference-parchment-image: url("../images/artwork/card-backgrounds/financiers-parchment-v2.png");
 }
 
 .reference-card[data-faction="intelligence"] {
@@ -67,6 +70,7 @@
   --reference-border-outline: #111111;
   --reference-border-rule: rgba(255, 255, 250, 0.34);
   --reference-symbol: url("../images/faction-symbols/intelligence.svg");
+  --reference-parchment-image: url("../images/artwork/card-backgrounds/intelligence-parchment-v2.png");
 }
 
 .reference-card[data-faction="mystics"] {
@@ -77,6 +81,7 @@
   --reference-border-outline: #38204e;
   --reference-border-rule: rgba(251, 244, 255, 0.38);
   --reference-symbol: url("../images/faction-symbols/mystics.svg");
+  --reference-parchment-image: url("../images/artwork/card-backgrounds/mystics-parchment-v2.png");
 }
 
 .reference-card[data-faction="inquisition"] {
@@ -87,6 +92,7 @@
   --reference-border-outline: #66470e;
   --reference-border-rule: rgba(255, 249, 225, 0.42);
   --reference-symbol: url("../images/faction-symbols/inquisition.svg");
+  --reference-parchment-image: url("../images/artwork/card-backgrounds/inquisition-parchment-v2.png");
 }
 
 .reference-card-interior {
@@ -98,10 +104,14 @@
   overflow: hidden;
   border: 1px solid var(--card-keyline, #3d3024);
   border-radius: 0.055in;
-  background:
+  background-color: var(--card-parchment, #e6d4ae);
+  background-image:
     linear-gradient(var(--reference-accent-soft), var(--reference-accent-soft)),
     linear-gradient(rgba(255, 255, 255, 0.10), rgba(121, 88, 48, 0.035)),
-    var(--card-parchment, #e6d4ae);
+    var(--parchment-image, var(--reference-parchment-image));
+  background-position: center, center, center;
+  background-repeat: no-repeat, no-repeat, no-repeat;
+  background-size: cover, cover, cover;
 }
 
 .reference-card-interior::after {
@@ -437,24 +447,23 @@
   white-space: nowrap;
 }
 
-/* The Diplomat front has two procedures that players compare while resolving
-   Terms. Put them side by side rather than stacking two mini-rulebook sections. */
+/* The Diplomat front is a single vertical procedure. Each block gets the same
+   divider-and-heading rhythm rather than splitting the face into two columns. */
 .reference-card[data-component-id="diplomats-reference"][data-reference-side="front"] .reference-body {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  grid-auto-rows: max-content;
-  align-content: start;
-  column-gap: 0.045in;
-  row-gap: var(--reference-section-gap);
+  display: flex;
+  flex-direction: column;
+  align-content: normal;
+  gap: var(--reference-section-gap);
+  padding: 0.026in 0.070in 0.022in;
 }
 
 .reference-card[data-component-id="diplomats-reference"][data-reference-side="front"] .reference-panel:first-child {
-  grid-column: 1 / -1;
+  grid-column: auto;
 }
 
 .reference-card[data-component-id="diplomats-reference"][data-reference-side="front"] .reference-panel + .reference-panel {
-  padding-top: 0;
-  border-top: 0;
+  padding-top: calc(0.010in * var(--reference-rules-scale));
+  border-top: 0.55px solid color-mix(in srgb, var(--component-accent-ink) 30%, transparent);
 }
 
 .reference-card[data-component-id="diplomats-reference"][data-reference-side="front"] .reference-step-list li {
@@ -470,11 +479,11 @@
 /* Diplomat reference: use the same visual grammar as the Influence tracker and
    other blue faction components rather than a miniature rulesheet. */
 .reference-card[data-component-id="diplomats-reference"] .reference-card-interior {
-  grid-template-rows: 0.59in minmax(0, 1fr) 0.18in;
+  grid-template-rows: 0.56in minmax(0, 1fr) 0.18in;
   background-color: var(--card-parchment, #e6d4ae);
   background-image:
     linear-gradient(var(--component-parchment-tint), var(--component-parchment-tint)),
-    var(--parchment-image);
+    var(--parchment-image, var(--reference-parchment-image));
   background-position: center center, center center;
   background-repeat: no-repeat, no-repeat;
   background-size: cover, cover;
@@ -492,7 +501,7 @@
   align-content: center;
   column-gap: 0.055in;
   row-gap: 0;
-  padding: 0.026in 0.085in 0.020in;
+  padding: 0.024in 0.085in 0.018in;
   border-bottom: 0;
   background: transparent;
 }
@@ -514,7 +523,7 @@
   grid-column: 2;
   grid-row: 2;
   display: block;
-  margin: 0.010in 0 0;
+  margin: 0.008in 0 0;
   font-size: 12.2pt;
   letter-spacing: 0.035em;
   line-height: 0.9;
@@ -539,8 +548,8 @@
   grid-column: 1 / -1;
   grid-row: 3;
   min-width: 0;
-  margin-top: 0.038in;
-  padding-top: 0.027in;
+  margin-top: 0.030in;
+  padding-top: 0.022in;
   border-top: 0.65px solid color-mix(in srgb, var(--component-accent-ink) 38%, transparent);
   color: var(--component-accent-ink);
   font-family: var(--font-interface, Arial, sans-serif);
@@ -622,9 +631,112 @@
   text-transform: uppercase;
 }
 
+/* Final Diplomat rhythm overrides. The extra side selector deliberately beats
+   the legacy runtime layout shim so Card Design and TTS share the same result. */
+.reference-card[data-component-id="diplomats-reference"][data-reference-side] .reference-body {
+  padding: 0.026in 0.070in 0.022in;
+}
+
+.reference-card[data-component-id="diplomats-reference"][data-reference-side] .reference-panel + .reference-panel {
+  padding-top: calc(0.010in * var(--reference-rules-scale));
+  border-top: 0.55px solid color-mix(in srgb, var(--component-accent-ink) 30%, transparent);
+}
+
+.reference-card[data-component-id="diplomats-reference"][data-reference-side] .reference-panel-heading {
+  padding-bottom: calc(0.007in * var(--reference-rules-scale));
+}
+
+.reference-card[data-component-id="diplomats-reference"][data-reference-side] .reference-panel-heading h4 {
+  color: var(--component-accent-ink);
+  font-size: calc(4.85pt * var(--reference-rules-scale));
+  letter-spacing: 0.055em;
+}
+
+.reference-card[data-component-id="diplomats-reference"][data-reference-side] .reference-prose {
+  font-size: calc(5.95pt * var(--reference-rules-scale));
+  line-height: 1.08;
+}
+
+.reference-card[data-component-id="diplomats-reference"][data-reference-side] .reference-option-list li {
+  grid-template-columns: 0.065in minmax(0, 1fr);
+  gap: 0.018in;
+  font-size: calc(5.82pt * var(--reference-rules-scale));
+  line-height: 1.07;
+}
+
+.reference-card[data-component-id="diplomats-reference"][data-reference-side] .reference-option-mark {
+  width: 0.042in;
+  height: 0.042in;
+  margin-top: 0.024in;
+}
+
+.reference-card[data-component-id="diplomats-reference"][data-reference-side] .reference-option-list li + li {
+  margin-top: calc(0.006in * var(--reference-rules-scale));
+  padding-top: 0;
+  border-top: 0;
+}
+
+.reference-card[data-component-id="diplomats-reference"][data-reference-side] .reference-callout {
+  grid-template-columns: minmax(0.72in, 0.82in) minmax(0, 1fr);
+  column-gap: 0.026in;
+}
+
+.reference-card[data-component-id="diplomats-reference"][data-reference-side] .reference-callout-label {
+  color: var(--component-accent-ink);
+  font-size: calc(4.4pt * var(--reference-rules-scale));
+  letter-spacing: 0.028em;
+}
+
+.reference-card[data-component-id="diplomats-reference"][data-reference-side] .reference-callout p {
+  font-size: calc(5.78pt * var(--reference-rules-scale));
+  line-height: 1.07;
+}
+
+.reference-card[data-component-id="diplomats-reference"][data-reference-side] .reference-callout + .reference-callout {
+  padding-top: calc(0.010in * var(--reference-rules-scale));
+  border-top: 0;
+}
+
+.reference-card[data-component-id="diplomats-reference"][data-reference-side] [data-reference-section="leverage"] .reference-panel-content {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: 0.020in;
+  row-gap: calc(0.010in * var(--reference-rules-scale));
+  align-items: start;
+}
+
+.reference-card[data-component-id="diplomats-reference"][data-reference-side] [data-reference-section="leverage"] .reference-prose {
+  grid-column: 1 / -1;
+}
+
+.reference-card[data-component-id="diplomats-reference"][data-reference-side] [data-reference-section="leverage"] .reference-callout {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(0.003in * var(--reference-rules-scale));
+  padding: calc(0.004in * var(--reference-rules-scale)) 0;
+  border-top: 0;
+  border-left: 0.45px solid color-mix(in srgb, var(--component-accent-ink) 22%, transparent);
+  text-align: center;
+}
+
+.reference-card[data-component-id="diplomats-reference"][data-reference-side] [data-reference-section="leverage"] .reference-callout:first-of-type {
+  border-left: 0;
+}
+
+.reference-card[data-component-id="diplomats-reference"][data-reference-side] [data-reference-section="leverage"] .reference-callout-label {
+  font-size: calc(5.25pt * var(--reference-rules-scale));
+}
+
+.reference-card[data-component-id="diplomats-reference"][data-reference-side] [data-reference-section="leverage"] .reference-callout p {
+  font-size: calc(5.55pt * var(--reference-rules-scale));
+  white-space: nowrap;
+}
+
 .reference-card[data-component-id="diplomats-reference"] .card-footer {
   min-height: 0.18in;
-  padding: 0.032in 0.055in 0.018in;
+  padding: 0.028in 0.055in 0.016in;
   background: var(--component-footer-tint);
   line-height: 1.3;
 }
