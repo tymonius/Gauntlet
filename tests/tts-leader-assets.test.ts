@@ -40,15 +40,16 @@ describe('TTS Leader assets', () => {
     expect(exporter).toContain("boxShadow: 'none'");
   });
 
-  it('emits deterministic one-card TTS objects with resolved standard backs', () => {
+  it('emits deterministic one-card TTS objects with faction-color component backs', () => {
     expect(exporter).toContain('const FIRST_LEADER_DECK_ID = 100');
     expect(exporter).toContain('cardId: deckId * 100');
     expect(exporter).toContain('numWidth: 1');
     expect(exporter).toContain('numHeight: 1');
     expect(exporter).toContain('backIsHidden: true');
     expect(exporter).toContain('uniqueBack: false');
-    expect(exporter).toContain('resolveStandardBackFile(componentContract, leader.faction)');
-    expect(exporter).toContain("backPolicy: 'standardBack'");
+    expect(exporter).toContain('resolveFactionBackFile(componentContract, leader.faction)');
+    expect(exporter).toContain("backPolicy: 'factionComponentBack'");
+    expect(exporter).toContain("mode: 'faction'");
     expect(exporter).toContain("'leader-manifest.json'");
   });
 
