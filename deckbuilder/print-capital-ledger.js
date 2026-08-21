@@ -167,7 +167,7 @@ ${CAPITAL_LEDGER_CSS}
   <div class="print-toolbar">
     <div class="print-toolbar-copy">
       <strong>${sheetCount} duplex sheet${sheetCount === 1 ? "" : "s"} · ${ledgerCount} Capital Ledgers · ${printPageCount} print pages</strong>
-      <span class="print-toolbar-note">Enable two-sided printing and flip on the long edge. Each back page is mirrored to align with its front sheet.</span>
+      <span class="print-toolbar-note">Enable two-sided printing and flip on the long edge. Each reverse page uses the same long-edge pairing as the Deckbuilder's normal duplex print package.</span>
     </div>
     <button type="button" onclick="window.print()">Print / Save PDF</button>
   </div>
