@@ -56,7 +56,7 @@
     tools.hidden = true;
     tools.style.marginTop = ".75rem";
     tools.innerHTML = `
-      <p class="muted">Print full 9-up duplex sheets of finalized Capital Ledgers.</p>
+      <p class="muted">Print full 9-up duplex sheets of consumable Capital Ledgers.</p>
       <div class="button-row">
         <label>
           Sheets
