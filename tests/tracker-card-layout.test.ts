@@ -42,6 +42,14 @@ describe('tracker card cap layout', () => {
     expect(renderer).toContain("card.dataset.trackerLayout = 'measured'");
   });
 
+  it('shortens only the Operation Progress face title while retaining the normal tracker-title pattern elsewhere', () => {
+    expect(renderer).toContain('function trackerTitle(component, resourceName)');
+    expect(renderer).toContain("component.contractId === 'intelligence-operation-progress-tracker'");
+    expect(renderer).toContain('? resourceName');
+    expect(renderer).toContain(': `${resourceName} Tracker`');
+    expect(renderer).toContain('<h3>${esc(title)}</h3>');
+  });
+
   it('shrinks tracker titles when needed instead of clipping long names', () => {
     expect(renderer).toContain('TRACKER_TITLE_MIN_PT = 9.5');
     expect(renderer).toContain('title.scrollWidth > title.clientWidth + 0.5');

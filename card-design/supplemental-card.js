@@ -157,18 +157,25 @@ function trackerCapLabel(component, resourceName) {
     : `Standard ${resourceName} cap · none`;
 }
 
+function trackerTitle(component, resourceName) {
+  return component.contractId === 'intelligence-operation-progress-tracker'
+    ? resourceName
+    : `${resourceName} Tracker`;
+}
+
 function trackerFace(component, faction, factionLabel) {
   if (!component.tracker) throw new Error(`Current tracker ${component.contractId} has no presentation geometry.`);
   const { max, labelSize, instruction } = component.tracker;
   const resourceName = component.resourceName || component.name.replace(/\s+Tracker$/i, '');
   const capLabel = trackerCapLabel(component, resourceName);
+  const title = trackerTitle(component, resourceName);
   return `<article class="gauntlet-card faction-component-card sliding-tracker-card ${esc(faction)}-card" data-faction="${esc(faction)}" data-component-id="${esc(component.id)}" data-contract-component-id="${esc(component.contractId)}" aria-label="${esc(component.name)} sliding tracker, physical scale 0 through ${max}">
     <div class="card-interior tracker-interior">
       <span class="tracker-watermark" aria-hidden="true"></span>
       <header class="tracker-heading">
         <span class="tracker-faction-emblem" aria-hidden="true"></span>
         <span class="tracker-faction-name">${esc(factionLabel)}</span>
-        <h3>${esc(resourceName)} Tracker</h3>
+        <h3>${esc(title)}</h3>
         ${capLabel
           ? `<p class="tracker-cap">${esc(capLabel)}</p>`
           : '<p class="tracker-cap tracker-cap-empty" aria-hidden="true"></p>'}
