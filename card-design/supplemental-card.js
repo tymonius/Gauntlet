@@ -62,7 +62,7 @@ let currentDisplayVersion = 'Current';
 let supplementalGroups = [];
 
 function esc(value) {
-  return String(value ?? '').replace(/[&<>\'\"]/g, character => ({
+  return String(value ?? '').replace(/[&<>'"]/g, character => ({
     '&': '&amp;',
     '<': '&lt;',
     '>': '&gt;',
