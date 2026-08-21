@@ -1,7 +1,8 @@
 (() => {
-  const LEDGERS_PER_PAGE = 9;
-  const DEFAULT_PAGE_COUNT = 1;
-  const MAX_PAGE_COUNT = 10;
+  const COLUMNS = 3;
+  const LEDGERS_PER_SHEET = 9;
+  const DEFAULT_SHEET_COUNT = 1;
+  const MAX_SHEET_COUNT = 10;
   const CAPITAL_LEDGER_CSS = `
 .capital-ledger-card{display:grid!important;grid-template-rows:.42in 1fr .16in!important;background:#fffdf7!important;color:#191714!important;}
 .capital-ledger-card .supplemental-header{background:#d7d7d7!important;color:#111!important;box-shadow:inset 0 0 0 999px #d7d7d7!important;}
@@ -65,15 +66,15 @@
     tools.hidden = true;
     tools.style.marginTop = ".75rem";
     tools.innerHTML = `
-      <p class="muted">Print full 9-up sheets of reusable Capital Ledgers.</p>
+      <p class="muted">Print full 9-up duplex sheets of reusable Capital Ledgers.</p>
       <div class="button-row">
         <label>
-          Pages
-          <select id="capitalLedgerPageCount" aria-label="Number of Capital Ledger pages">
-            ${Array.from({ length: MAX_PAGE_COUNT }, (_, index) => {
-              const pageCount = index + 1;
-              const ledgerCount = pageCount * LEDGERS_PER_PAGE;
-              return `<option value="${pageCount}"${pageCount === DEFAULT_PAGE_COUNT ? " selected" : ""}>${pageCount} page${pageCount === 1 ? "" : "s"} (${ledgerCount} ledgers)</option>`;
+          Sheets
+          <select id="capitalLedgerSheetCount" aria-label="Number of duplex Capital Ledger sheets">
+            ${Array.from({ length: MAX_SHEET_COUNT }, (_, index) => {
+              const sheetCount = index + 1;
+              const ledgerCount = sheetCount * LEDGERS_PER_SHEET;
+              return `<option value="${sheetCount}"${sheetCount === DEFAULT_SHEET_COUNT ? " selected" : ""}>${sheetCount} sheet${sheetCount === 1 ? "" : "s"} (${ledgerCount} ledgers)</option>`;
             }).join("")}
           </select>
         </label>
@@ -84,7 +85,7 @@
     if (duplexOption?.parentElement === printSection) duplexOption.insertAdjacentElement("afterend", tools);
     else printSection.append(tools);
 
-    const pageCountSelect = tools.querySelector("#capitalLedgerPageCount");
+    const sheetCountSelect = tools.querySelector("#capitalLedgerSheetCount");
     const printButton = tools.querySelector("#printCapitalLedgersButton");
 
     const updateVisibility = () => {
@@ -98,43 +99,44 @@
     updateVisibility();
 
     printButton.addEventListener("click", () => {
-      const requestedPages = Number.parseInt(pageCountSelect.value, 10);
-      const pageCount = Number.isFinite(requestedPages)
-        ? Math.min(MAX_PAGE_COUNT, Math.max(1, requestedPages))
-        : DEFAULT_PAGE_COUNT;
-      openCapitalLedgerSheets(pageCount);
+      const requestedSheets = Number.parseInt(sheetCountSelect.value, 10);
+      const sheetCount = Number.isFinite(requestedSheets)
+        ? Math.min(MAX_SHEET_COUNT, Math.max(1, requestedSheets))
+        : DEFAULT_SHEET_COUNT;
+      openCapitalLedgerSheets(sheetCount);
     });
   }
 
-  function openCapitalLedgerSheets(pageCount) {
+  function openCapitalLedgerSheets(sheetCount) {
     const printWindow = window.open("", "_blank");
     if (!printWindow) {
       window.alert("Popup blocked. Allow popups to print Capital Ledger sheets.");
       return;
     }
 
-    printWindow.document.write(buildCapitalLedgerSheetDocument(pageCount));
+    printWindow.document.write(buildCapitalLedgerSheetDocument(sheetCount));
     printWindow.document.close();
     printWindow.focus();
   }
 
-  function buildCapitalLedgerSheetDocument(pageCount) {
-    const pages = Array.from({ length: pageCount }, (_, pageIndex) => {
-      const row = `<tr>${Array.from({ length: 3 }, () => `<td>${capitalLedgerCardHtml()}</td>`).join("")}</tr>`;
-      const rows = row.repeat(3);
-
-      return `
-        <section class="card-page${pageIndex === pageCount - 1 ? " last-page" : ""}">
-          <table class="card-table" role="presentation"><tbody>${rows}</tbody></table>
-        </section>`;
+  function buildCapitalLedgerSheetDocument(sheetCount) {
+    const pages = Array.from({ length: sheetCount }, (_, sheetIndex) => {
+      const pairName = `capital-ledger-sheet-${sheetIndex + 1}`;
+      return [
+        capitalLedgerPageHtml("front", pairName, false),
+        capitalLedgerPageHtml("back", pairName, sheetIndex === sheetCount - 1)
+      ].join("");
     }).join("");
+
+    const printPageCount = sheetCount * 2;
+    const ledgerCount = sheetCount * LEDGERS_PER_SHEET;
 
     return `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Gauntlet — Capital Ledger Sheets</title>
+<title>Gauntlet — Duplex Capital Ledger Sheets</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700;800;900&display=block" rel="stylesheet">
@@ -142,6 +144,8 @@
 *{box-sizing:border-box;font-synthesis:none;-webkit-print-color-adjust:exact;print-color-adjust:exact;color-adjust:exact}
 body{margin:0;background:#f3f3f3;color:#111;font-family:"Noto Sans",Arial,Helvetica,sans-serif}
 .print-toolbar{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.65rem 1rem;background:#fff;border-bottom:1px solid #ccc;font-size:14px}
+.print-toolbar-copy{display:grid;gap:.12rem}
+.print-toolbar-note{font-size:12px;color:#555}
 .print-toolbar button{padding:.45rem .8rem;border:1px solid #222;border-radius:.25rem;background:#222;color:#fff;font:inherit;font-weight:800;cursor:pointer}
 .card-page{width:7.5in;height:10.5in;margin:.25in auto;background:#fff;break-after:page;page-break-after:always;overflow:hidden}
 .card-page.last-page{break-after:auto;page-break-after:auto}
@@ -161,12 +165,37 @@ ${CAPITAL_LEDGER_CSS}
 </head>
 <body>
   <div class="print-toolbar">
-    <span>${pageCount} page${pageCount === 1 ? "" : "s"} · ${pageCount * LEDGERS_PER_PAGE} Capital Ledgers</span>
+    <div class="print-toolbar-copy">
+      <strong>${sheetCount} duplex sheet${sheetCount === 1 ? "" : "s"} · ${ledgerCount} Capital Ledgers · ${printPageCount} print pages</strong>
+      <span class="print-toolbar-note">Enable two-sided printing and flip on the long edge. Each back page is mirrored to align with its front sheet.</span>
+    </div>
     <button type="button" onclick="window.print()">Print / Save PDF</button>
   </div>
   ${pages}
 </body>
 </html>`;
+  }
+
+  function capitalLedgerPageHtml(side, pairName, isLastPage) {
+    const cells = Array.from({ length: LEDGERS_PER_SHEET }, (_, position) => {
+      const duplexSlot = side === "back" ? mirrorIndexForLongEdge(position) : position;
+      return `<td data-duplex-side="${side}" data-duplex-slot="${duplexSlot}">${capitalLedgerCardHtml()}</td>`;
+    });
+    const rows = Array.from({ length: 3 }, (_, rowIndex) => {
+      const start = rowIndex * COLUMNS;
+      return `<tr>${cells.slice(start, start + COLUMNS).join("")}</tr>`;
+    }).join("");
+
+    return `
+      <section class="card-page duplex-${side}-page${isLastPage ? " last-page" : ""}" data-duplex-pair="${pairName}">
+        <table class="card-table" role="presentation"><tbody>${rows}</tbody></table>
+      </section>`;
+  }
+
+  function mirrorIndexForLongEdge(index) {
+    const row = Math.floor(index / COLUMNS);
+    const column = index % COLUMNS;
+    return row * COLUMNS + (COLUMNS - 1 - column);
   }
 
   function capitalLedgerCardHtml() {
