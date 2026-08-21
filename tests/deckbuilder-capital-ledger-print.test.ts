@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const printer = readFileSync('deckbuilder/print-capital-ledger.js', 'utf8');
+const deckbuilder = readFileSync('deckbuilder/index.html', 'utf8');
 
 describe('Deckbuilder Capital Ledger printing', () => {
   it('uses the finalized production Capital Ledger instead of duplicating placeholder markup', () => {
@@ -14,6 +15,12 @@ describe('Deckbuilder Capital Ledger printing', () => {
     expect(printer).not.toContain('Reusable supplemental ledger — no marker required');
     expect(printer).not.toContain('capital-limit-field');
     expect(printer).not.toContain('capital-ledger-instructions');
+  });
+
+  it('describes Capital Ledgers as consumable and cache-busts the print integration', () => {
+    expect(printer).toContain('consumable Capital Ledgers');
+    expect(printer).not.toContain('reusable Capital Ledgers');
+    expect(deckbuilder).toContain('print-capital-ledger.js?v=20260821-1');
   });
 
   it('renders finalized Ledger faces in the normal deck print package', () => {
