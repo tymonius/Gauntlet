@@ -422,6 +422,39 @@
       }
     },
     {
+      "id": "financiers-capital-limit-tracker",
+      "name": "Capital Limit Tracker",
+      "faction": "financiers",
+      "family": "tracker",
+      "quantity": 1,
+      "cardLike": true,
+      "productionStatus": "ready",
+      "backPolicy": "standardBack",
+      "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/financier/Gauntlet_v0.6.3_Financier_Faction_Guide.md",
+      "trackedValue": {
+        "name": "Capital Limit",
+        "minimum": 0,
+        "maximum": null,
+        "starting": 3
+      },
+      "renderSource": {
+        "surface": "card-design/supplemental-card.js",
+        "componentId": "capital-limit-tracker"
+      },
+      "cover": {
+        "kind": "leader"
+      },
+      "tts": {
+        "representation": "sliding-tracker",
+        "stackable": false,
+        "assembly": "financiers-capital-limit",
+        "axis": "vertical",
+        "layer": 1,
+        "snapTag": "financiers-capital-limit",
+        "snapPositions": "renderer-derived"
+      }
+    },
+    {
       "id": "financiers-capital-ledger",
       "name": "Capital Ledger",
       "faction": "financiers",
