@@ -2,8 +2,9 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { buildSupplementalCatalog } from '../scripts/generate-tts-supplemental-assets.mjs';
+import { loadTtsComponentContract } from '../scripts/tts-component-contract.mjs';
 
-const contract = JSON.parse(readFileSync('config/tts-component-contract.json', 'utf8'));
+const contract = await loadTtsComponentContract();
 const generator = readFileSync('scripts/generate-tts-supplemental-assets.mjs', 'utf8');
 const trackerHelper = readFileSync('scripts/tts-sliding-trackers.mjs', 'utf8');
 const productionSupplementals = readFileSync('card-design/supplemental-card.js', 'utf8');
