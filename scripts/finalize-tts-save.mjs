@@ -4,6 +4,8 @@ import { pathToFileURL } from 'node:url';
 import { CURRENT_ALIAS_ROOT, resolveCurrentTtsRelease, ROOT } from './tts-current-catalog.mjs';
 
 const SUPPLEMENTAL_GUID_NOTE_PREFIX = 'gauntlet:supplemental:';
+const STALE_SCAFFOLD_NOTE = 'This scaffold intentionally does not yet include faction-specific supplemental trackers or secondary components. Rules remain manual.';
+const ASSEMBLED_SCAFFOLD_NOTE = 'Faction supplemental components with a production-ready TTS export are included in each matching starter kit. Rules remain manual.';
 
 function jsonText(value) {
   return `${JSON.stringify(value, null, 2)}\n`;
@@ -13,6 +15,13 @@ function walkObjects(objects, visit) {
   for (const object of objects || []) {
     visit(object);
     walkObjects(object?.ContainedObjects, visit);
+  }
+}
+
+function refreshSaveInstructions(save) {
+  for (const field of ['Note', 'Rules']) {
+    const value = String(save[field] || '');
+    if (value.includes(STALE_SCAFFOLD_NOTE)) save[field] = value.replace(STALE_SCAFFOLD_NOTE, ASSEMBLED_SCAFFOLD_NOTE);
   }
 }
 
@@ -50,6 +59,7 @@ export function finalizeSupplementalObjectPresentation(save, supplementalManifes
     }
   }
 
+  refreshSaveInstructions(save);
   return { save, sidewaysCount };
 }
 
