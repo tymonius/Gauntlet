@@ -93,6 +93,9 @@ async function applyLeaderCardCopy() {
       if (!Array.isArray(copy.sections) || !copy.sections.length) throw new Error(`Leader card copy for ${leaderId} has no sections.`);
       rules.innerHTML = copy.sections.map(renderSection).join('');
       leaderCard.classList.add('leader-card--standardized');
+      // Dense standardized cards may trade a small amount of portrait height for
+      // readable rules before the fitter ever crosses its typography floor.
+      leaderCard.dataset.artMin = '1.18';
       leaderCard.dataset.leaderCopyVersion = source.gameVersion || 'current';
       renderedIds.add(leaderId);
     }
