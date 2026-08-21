@@ -70,6 +70,10 @@ function rendererId(component) {
   return String(component.renderSource?.componentId || component.id || '').trim();
 }
 
+function designStatus(component) {
+  return component.designStatus || 'final';
+}
+
 function componentType(component) {
   if (component.family === 'tracker') return 'Sliding tracker card';
   if (component.family === 'reference-card') return 'Double-sided reference card';
@@ -79,6 +83,9 @@ function componentType(component) {
 }
 
 function componentDetail(component) {
+  if (component.deckInclusion === 'every-deck') {
+    return component.purpose || 'Shared reference card included in every deck.';
+  }
   if (component.family === 'tracker') {
     const tracked = component.trackedValue?.name || component.name;
     return `Physical tracker for ${tracked}. Production status: ${component.productionStatus}.`;
@@ -90,10 +97,11 @@ function componentDetail(component) {
 
 function presentationComponent(component) {
   const ledger = component.family === 'ledger';
+  const hasReferenceFaces = component.family === 'reference-card' && component.referenceFaces?.front && component.referenceFaces?.reverse;
   return {
     contractId: component.id,
     id: rendererId(component),
-    referenceId: component.family === 'reference-card' ? component.id : '',
+    referenceId: hasReferenceFaces ? component.id : '',
     ledger,
     name: component.name,
     resourceName: component.family === 'tracker'
@@ -102,26 +110,35 @@ function presentationComponent(component) {
     resourceMaximum: component.family === 'tracker' ? (component.trackedValue?.maximum ?? null) : null,
     type: componentType(component),
     detail: componentDetail(component),
-    quantity: Number(component.quantity) || 1,
+    quantity: Number(component.quantity ?? component.quantityPerPlayer) || 1,
     // The approved Capital Ledger is an identical-face duplex consumable. Until
     // the component contract is promoted from its legacy standardBack state,
     // the production catalog still presents the approved physical geometry.
     doubleSided: ledger || component.backPolicy === 'twoSided',
+    designStatus: designStatus(component),
     productionStatus: component.productionStatus,
     backPolicy: ledger ? 'twoSided' : component.backPolicy,
+    deckInclusion: component.deckInclusion || '',
     tracker: component.family === 'tracker' ? TRACKER_PRESENTATION[component.id] || null : null,
   };
 }
 
 function buildSupplementalGroups(currentGame) {
   const supportedFamilies = new Set(['tracker', 'reference-card', 'ledger', 'deed-card']);
-  return Object.entries(FACTION_LABELS).map(([faction, factionLabel]) => ({
+  const sharedCards = (currentGame.sharedComponents || [])
+    .filter(component => component.cardLike && supportedFamilies.has(component.family))
+    .map(presentationComponent);
+  const factionGroups = Object.entries(FACTION_LABELS).map(([faction, factionLabel]) => ({
     faction,
     factionLabel,
     cards: (currentGame.components || [])
       .filter(component => component.faction === faction && supportedFamilies.has(component.family))
       .map(presentationComponent),
-  })).filter(group => group.cards.length);
+  }));
+  return [
+    { faction: 'neutral', factionLabel: 'Universal', cards: sharedCards },
+    ...factionGroups,
+  ].filter(group => group.cards.length);
 }
 
 function supplementalTypeLine(component) {
@@ -240,7 +257,7 @@ async function layoutTrackerCards() {
 
 function placeholderFace(component, faction, factionLabel, faceLabel = '') {
   const faceText = faceLabel ? ` · ${faceLabel}` : '';
-  return `<article class="gauntlet-card faction-component-card supplemental-placeholder-card ${esc(faction)}-card" data-faction="${esc(faction)}" data-component-id="${esc(component.id)}" data-contract-component-id="${esc(component.contractId)}" data-production-status="${esc(component.productionStatus)}" data-art-max="1.52" data-art-min="1.18" data-title-min="8.5" aria-label="${esc(component.name)} ${esc(component.type)}${esc(faceText)}">
+  return `<article class="gauntlet-card faction-component-card supplemental-placeholder-card ${esc(faction)}-card" data-faction="${esc(faction)}" data-component-id="${esc(component.id)}" data-contract-component-id="${esc(component.contractId)}" data-production-status="${esc(component.productionStatus)}" data-design-status="${esc(component.designStatus)}" data-art-max="1.52" data-art-min="1.18" data-title-min="8.5" aria-label="${esc(component.name)} ${esc(component.type)}${esc(faceText)}">
     <div class="card-interior">
       <header class="card-heading">
         <h3 class="card-title">${esc(component.name)}</h3>
@@ -284,19 +301,31 @@ function componentFace(component, faction, factionLabel, faceLabel = '') {
   return placeholderFace(component, faction, factionLabel, faceLabel);
 }
 
+function designStatusText(component) {
+  if (component.designStatus === 'placeholder') return 'Placeholder · design pending';
+  if (component.designStatus === 'refinement-pending') return 'Initial design · refinement pending';
+  if (component.productionStatus === 'export-pending') return 'Final design · export pending';
+  return 'Final design';
+}
+
 function componentSpecimen(component, faction, factionLabel) {
   const quantity = Number(component.quantity) || 1;
   const quantityText = quantity > 1 ? `×${quantity} physical copies` : component.doubleSided ? '2 faces · 1 physical card' : '1 physical card';
+  const designLabel = designStatusText(component);
   const statusText = component.tracker
-    ? `Designed · physical 0–${component.tracker.max}`
+    ? `${designLabel} · physical 0–${component.tracker.max}`
     : component.referenceId
-      ? 'Designed · source-driven'
+      ? `${designLabel} · source-driven`
       : component.ledger
-        ? 'Designed · identical duplex ledger'
-        : quantityText;
+        ? `${designLabel} · identical duplex ledger`
+        : `${designLabel} · ${quantityText}`;
 
   if (component.doubleSided) {
-    const faceDescription = component.ledger ? 'Identical ledger face' : 'Loading current face';
+    const faceDescription = component.ledger
+      ? 'Identical ledger face'
+      : component.referenceId
+        ? 'Loading current face'
+        : 'Design placeholder';
     return `<section class="supplemental-review-item supplemental-review-pair" id="supplemental-${esc(faction)}-${esc(component.id)}" data-contract-component-id="${esc(component.contractId)}">
       <div class="supplemental-item-heading screen-only"><strong>${esc(component.name)}</strong><span>${esc(statusText)}</span></div>
       <div class="supplemental-face-grid">
