@@ -8,11 +8,12 @@ The covering card or card stack is the pointer.
 - Trackers remain face-up and public.
 - Tracker cards retain the standard faction metadata footer for visual and production consistency with the rest of the card set: **FACTION · TRACKER · VERSION**. The footer occupies the card's existing lower metadata strip; the tracker scale begins immediately above it rather than adding a second reserved gap.
 - All tracker cards use the same full-size 2.5 × 3.5 inch supplemental-card geometry and faction parchment treatment.
-- Actual faction resources carry one compact **STANDARD [RESOURCE] CAP** line sourced from the authoritative tracked-value maximum. An uncapped resource such as Intel reads **STANDARD INTEL CAP · NONE**. Operation Progress is a progression value rather than a resource and therefore carries no cap line.
+- Actual faction resources carry one compact **STANDARD [RESOURCE] CAP** line sourced from the authoritative tracked-value maximum. An uncapped resource such as Intel reads **STANDARD INTEL CAP · NONE**. Operation Progress is a progression value rather than a resource and therefore carries no cap text, but it retains the same horizontal divider below the title block.
 - Each tracker includes a full-width Caslon italic usage sentence naming its actual covering card or stack and explaining which bottom edge aligns to the registration line.
 - Tracker typography is locked to its authored physical point sizes with browser text autosizing held at 100%, so narrow mobile viewports cannot enlarge the instruction independently of the inch-based card geometry.
-- Resource-tracker instructions begin slightly lower than before, leaving a small deliberate gap after the **STANDARD [RESOURCE] CAP** line.
-- Every tracker uses the same 2.45-inch tracking field above the metadata footer. With mobile text autosizing disabled, this recovers most of the space lost in the overlap fix while still leaving a narrow safe gap between wrapped instruction copy and the top registration line.
+- The layout leaves a fixed **0.02-inch gap** between the cap/divider line and the instruction copy, then a fixed **0.05-inch gap** between the rendered bottom of the instruction block and the top registration line.
+- The tracker field no longer has a fixed authored height. After fonts render, the card measures the instruction block and extends the scale from that 0.05-inch clearance down to the metadata footer, so shorter instructions automatically yield more tracking space and longer instructions consume only the space they actually need.
+- Tracker titles begin at the standard display size and shrink only when their rendered width would clip. The fitting floor is 9.5pt.
 
 ## Intelligence nested stack
 
