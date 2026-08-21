@@ -19,9 +19,25 @@ const FACTIONS = Object.freeze([
 ]);
 const BACK_POLICIES = new Set(['standardBack', 'twoSided', 'specialBack']);
 const PRODUCTION_STATUSES = new Set(['ready', 'artwork-pending', 'export-pending', 'design-pending']);
+const DESIGN_STATUSES = new Set(['final', 'refinement-pending', 'placeholder']);
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
+}
+
+function designStatusFor(component) {
+  return component.designStatus || 'final';
+}
+
+function validateCardLikeMetadata(component) {
+  assert(BACK_POLICIES.has(component.backPolicy), `${component.id} must declare a valid backPolicy.`);
+  assert(DESIGN_STATUSES.has(designStatusFor(component)), `${component.id} has invalid designStatus ${component.designStatus}.`);
+  if (component.backPolicy === 'twoSided') {
+    assert(String(component.reverse || '').trim(), `${component.id} is two-sided but has no reverse definition.`);
+  }
+  if (component.backPolicy === 'specialBack') {
+    assert(String(component.specialBackFile || '').trim(), `${component.id} uses specialBack but has no specialBackFile.`);
+  }
 }
 
 function alignBespokeReferenceFaces(contract) {
@@ -138,6 +154,7 @@ export async function validateTtsComponentContract(contract) {
     assert(Number.isInteger(component.quantityPerPlayer) && component.quantityPerPlayer > 0, `${component.id} must declare a positive quantityPerPlayer.`);
     assert(PRODUCTION_STATUSES.has(component.productionStatus), `${component.id} has invalid productionStatus ${component.productionStatus}.`);
     assert(component.source, `${component.id} must cite its canonical source.`);
+    if (component.cardLike) validateCardLikeMetadata(component);
     await access(join(ROOT, component.source));
   }
 
@@ -148,15 +165,7 @@ export async function validateTtsComponentContract(contract) {
     assert(component.source, `${component.id} must cite its canonical source.`);
     await access(join(ROOT, component.source));
 
-    if (component.cardLike) {
-      assert(BACK_POLICIES.has(component.backPolicy), `${component.id} must declare a valid backPolicy.`);
-      if (component.backPolicy === 'twoSided') {
-        assert(String(component.reverse || '').trim(), `${component.id} is two-sided but has no reverse definition.`);
-      }
-      if (component.backPolicy === 'specialBack') {
-        assert(String(component.specialBackFile || '').trim(), `${component.id} uses specialBack but has no specialBackFile.`);
-      }
-    }
+    if (component.cardLike) validateCardLikeMetadata(component);
 
     if (component.productionStatus === 'ready' && component.reverseArtwork) {
       await access(join(ROOT, component.reverseArtwork));
@@ -183,6 +192,15 @@ export async function validateTtsComponentContract(contract) {
   for (const faction of FACTIONS) resolveFactionBackVariant(contract, faction);
 
   const map = componentMap(contract);
+  const sharedMap = new Map((contract.sharedComponents || []).map((component) => [component.id, component]));
+  const universalReference = sharedMap.get('universal-reference');
+  assert(universalReference, 'Every player package must contain the Universal Reference Card.');
+  assert(universalReference.family === 'reference-card', 'Universal Reference Card must use the reference-card family.');
+  assert(universalReference.quantityPerPlayer === 1, 'Every player package must contain exactly one Universal Reference Card.');
+  assert(universalReference.deckInclusion === 'every-deck', 'Universal Reference Card must be declared for every deck.');
+  assert(universalReference.cardLike === true && universalReference.backPolicy === 'twoSided', 'Universal Reference Card must be a two-sided card-like component.');
+  assert(designStatusFor(universalReference) === 'placeholder' && universalReference.productionStatus === 'design-pending', 'Universal Reference Card must remain a design-pending placeholder until its general-reference content is authored.');
+
   const trackers = (contract.components || []).filter((component) => component.tts?.representation === 'sliding-tracker');
   assert(trackers.length === 5, `Current physical package must contain exactly five sliding trackers; found ${trackers.length}.`);
   for (const tracker of trackers) {
@@ -195,15 +213,26 @@ export async function validateTtsComponentContract(contract) {
   }
 
   assert(map.has('military-command-tracker'), 'Military package must contain its Command Tracker.');
-  assert(!componentsFor(contract, 'military', 'reference-card').length, 'Military must not acquire a reference card that its guide does not specify.');
+  assert(!componentsFor(contract, 'military', 'reference-card').length, 'Military must not acquire a faction-specific reference card that its guide does not specify.');
 
   const proposals = componentsFor(contract, 'diplomats', 'proposal-treaty-card');
   assert(proposals.length === 9, `Diplomats must contain exactly 9 Proposal/Treaty cards; found ${proposals.length}.`);
   assert(proposals.every((component) => component.backPolicy === 'twoSided'), 'All Proposal/Treaty cards must be two-sided.');
-  assert(proposals.every((component) => component.productionStatus === 'artwork-pending'), 'Proposal/Treaty cards are complete except for artwork and must remain marked artwork-pending until that work lands.');
+  assert(proposals.every((component) => component.productionStatus === 'export-pending' && designStatusFor(component) === 'final'), 'Proposal/Treaty card designs and artwork are final; only their remaining export integration may be pending.');
+
+  const factionReferences = (contract.components || []).filter((component) => component.family === 'reference-card');
+  assert(factionReferences.length === 7, `Current faction packages must contain exactly seven faction reference cards; found ${factionReferences.length}.`);
+  const diplomatReference = map.get('diplomats-reference');
+  assert(designStatusFor(diplomatReference) === 'final', 'The finalized Diplomat Reference Card must be marked final.');
+  const referencesAwaitingRefinement = factionReferences.filter((component) => component.id !== 'diplomats-reference');
+  assert(referencesAwaitingRefinement.length === 6 && referencesAwaitingRefinement.every((component) => designStatusFor(component) === 'refinement-pending'), 'The six remaining faction reference cards must remain refinement-pending until individually finalized.');
+
+  const ledger = map.get('financiers-capital-ledger');
+  assert(ledger?.productionStatus === 'export-pending' && designStatusFor(ledger) === 'final', 'Capital Ledger design is final and must be marked export-pending rather than design-pending.');
 
   const deeds = map.get('financiers-deed');
   assert(deeds?.quantity === 8 && deeds?.identicalCopies === true, 'Financiers must have eight identical full-size Deed Cards.');
+  assert(deeds?.productionStatus === 'export-pending' && designStatusFor(deeds) === 'final', 'Deed design is final and must be marked export-pending rather than design-pending.');
 
   const intelligenceReferences = componentsFor(contract, 'intelligence', 'reference-card');
   assert(intelligenceReferences.length === 2, `Intelligence must contain Mission and Operations Reference Cards; found ${intelligenceReferences.length}.`);
@@ -239,9 +268,11 @@ export async function loadTtsComponentContract() {
 
 async function main() {
   const contract = await loadTtsComponentContract();
-  const pending = (contract.components || []).filter((component) => component.productionStatus !== 'ready');
+  const allComponents = [...(contract.sharedComponents || []), ...(contract.components || [])];
+  const pending = allComponents.filter((component) => component.productionStatus !== 'ready');
+  const designWork = allComponents.filter((component) => component.cardLike && designStatusFor(component) !== 'final');
   const trackers = (contract.components || []).filter((component) => component.tts?.representation === 'sliding-tracker');
-  console.log(`TTS component contract passed through ${contract.currentGameAuthority}: ${contract.components.length} faction components, ${contract.sharedComponents.length} shared component types, ${trackers.length} sliding trackers, ${pending.length} components still pending artwork/design/export; ordinary card backs are universal black and single-sided faction-component backs are faction-colored.`);
+  console.log(`TTS component contract passed through ${contract.currentGameAuthority}: ${contract.components.length} faction components, ${contract.sharedComponents.length} shared component types, ${trackers.length} sliding trackers, ${pending.length} components still pending production/export, ${designWork.length} card-like components still pending refinement/design; ordinary card backs are universal black and single-sided faction-component backs are faction-colored.`);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
