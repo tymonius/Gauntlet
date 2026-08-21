@@ -59,7 +59,8 @@ describe('Intelligence nested tracker stack', () => {
         name: 'Intelligence Starter',
         factionId: 'intelligence',
         leader: { name: 'Ranger', tts: { cardId: 10000 } },
-        back: { file: 'backs/intelligence.png' },
+        back: { file: 'backs/intelligence.png', policy: 'standardBack' },
+        factionComponentBack: { file: 'backs/intelligence.png', policy: 'factionComponentBack' },
       }],
     };
 
