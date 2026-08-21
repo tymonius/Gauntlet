@@ -9,11 +9,11 @@ const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 const readme = readFileSync('tts/README.md', 'utf8');
 
 describe('TTS Leader assets', () => {
-  it('derives the current Leader roster from release-driven canonical faction data', () => {
+  it('derives the current Leader roster from the current-game authority', () => {
     expect(catalogSource).toContain('export async function loadCurrentLeaders()');
     expect(catalogSource).toContain('resolveCurrentTtsRelease()');
-    expect(catalogSource).toContain('canonical.factions');
-    expect(catalogSource).toContain('faction.leaders');
+    expect(catalogSource).toContain('const sourceLeaders = Array.isArray(manifest.leaders)');
+    expect(catalogSource).toContain('for (const leader of sourceLeaders)');
     expect(exporter).toContain('loadCurrentLeaders');
     expect(exporter).not.toMatch(/v0\.6\.[0-9]+/);
   });
@@ -22,7 +22,7 @@ describe('TTS Leader assets', () => {
     expect(exporter).toContain("page.goto(`${baseUrl}/card-design/`");
     expect(exporter).toContain("#${leader.faction}-${leader.id} .gauntlet-card");
     expect(exporter).toContain("document.querySelectorAll('#leaderReviewSections .card-art img')");
-    expect(exporter).toContain("metrics.footer.at(-1) !== version");
+    expect(exporter).toContain("metrics.footer.at(-1) !== displayVersion");
     expect(exporter).toContain('fitWarning');
     expect(exporter).not.toContain('Materia Prima');
     expect(exporter).not.toContain('Guardians of the Circle');
@@ -64,7 +64,7 @@ describe('TTS Leader assets', () => {
     expect(readme).toContain('## Leader asset contract');
   });
 
-  it('accepts the current published Leader source end to end', () => {
+  it('accepts the current Leader source end to end', () => {
     const output = execFileSync(process.execPath, ['scripts/generate-tts-leader-assets.mjs', '--check'], {
       encoding: 'utf8',
     });
