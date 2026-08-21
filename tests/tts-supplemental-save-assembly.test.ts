@@ -36,7 +36,8 @@ function fixture() {
         name: 'Military Starter',
         factionId: 'military',
         leader: { name: 'General', tts: { cardId: 10000 } },
-        back: { file: 'backs/military.png' },
+        back: { file: 'backs/intelligence.png', policy: 'standardBack' },
+        factionComponentBack: { file: 'backs/military.png', policy: 'factionComponentBack' },
       },
     ],
   };
@@ -88,6 +89,7 @@ function fixture() {
       'supplementals/reverses/completed.png': 'https://example.invalid/completed.png',
       'supplementals/fronts/military.png': 'https://example.invalid/military.png',
       'supplementals/trackers/command.png': 'https://example.invalid/command.png',
+      'backs/intelligence.png': 'https://example.invalid/black-back.png',
       'backs/military.png': 'https://example.invalid/military-back.png',
     },
   };
@@ -127,7 +129,7 @@ describe('TTS ready supplemental save assembly', () => {
     expect(card.CustomDeck['200'].UniqueBack).toBe(false);
   });
 
-  it('creates non-stackable sliding tracker tiles with production snap points and tags the declared Leader cover', () => {
+  it('creates non-stackable sliding tracker tiles with faction-color backs, production snap points, and tagged Leader covers', () => {
     const { save, starters, supplementals, assets } = fixture();
     supplementals.ready.push({
       id: 'military-command-tracker',
@@ -168,6 +170,7 @@ describe('TTS ready supplemental save assembly', () => {
     expect(tracker.Name).toBe('Custom_Tile');
     expect(tracker.CustomImage.ImageURL).toBe('https://example.invalid/command.png');
     expect(tracker.CustomImage.ImageSecondaryURL).toBe('https://example.invalid/military-back.png');
+    expect(tracker.CustomImage.ImageSecondaryURL).not.toBe('https://example.invalid/black-back.png');
     expect(tracker.CustomImage.CustomTile.Stackable).toBe(false);
     expect(tracker.AttachedSnapPoints).toHaveLength(5);
     expect(tracker.AttachedSnapPoints[0].Position.z).toBe(0);
@@ -198,6 +201,7 @@ describe('TTS ready supplemental save assembly', () => {
     const result = assembleReadySupplementals(save, starters, supplementals, assets);
 
     expect(result.save.Note).toContain('marked ready are included automatically');
+    expect(result.save.Note).toContain('single-sided faction components use faction-color backs');
     expect(result.save.Note).toContain('production-derived snap registration');
     expect(result.save.Note).toContain('Rules remain manual');
     expect(result.save.Rules).toBe(result.save.Note);
