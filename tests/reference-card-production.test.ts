@@ -45,9 +45,13 @@ describe('production faction reference cards', () => {
     const authority = readFileSync(diplomat.authoritySource, 'utf8');
     expect(copy).toContain('Player-aid copy, not faction-rule authority.');
     expect(copy).toContain('## Front — Terms');
-    expect(copy).toContain('## Reverse — Outcomes & Treaties');
-    expect(copy).toContain('**No battle.** Resolve Accepted.');
-    expect(copy).toContain('**Terms + Leverage do not take an Action.**');
+    expect(copy).toContain('### Offering Terms');
+    expect(copy).toContain('Discard any previously imposed **Sanctions**.');
+    expect(copy).toContain('You may impose **Sanctions** *(once per refused Terms)*.');
+    expect(copy).toContain('if **6 different Proposals** are ratified, you win.');
+    expect(copy).not.toContain('### Action Reminder');
+    expect(referenceRenderer).toContain("component.copyMode === 'bespoke'");
+    expect(referenceRenderer).toContain('parseBespokeReferenceFace');
     for (const heading of diplomat.auditHeadings) expect(authority).toContain(heading);
 
     // The migration is intentionally incremental: Diplomat proves the bespoke-copy
@@ -75,7 +79,7 @@ describe('production faction reference cards', () => {
     expect(supplemental).toContain('Designed · source-driven');
   });
 
-  it('uses the production faction shell, parallel Terms procedures, and the shared standard footer', () => {
+  it('uses the production faction shell, single-column Terms flow, compact Leverage row, and shared footer', () => {
     expect(referenceCss).toContain('padding: 0.075in');
     expect(referenceCss).toContain('font-family: var(--font-display-historical');
     expect(referenceCss).toContain('.reference-card[data-faction="diplomats"]');
@@ -83,10 +87,14 @@ describe('production faction reference cards', () => {
     expect(referenceCss).toContain('.reference-card[data-faction="intelligence"]');
     expect(referenceCss).toContain('.reference-card[data-faction="mystics"]');
     expect(referenceCss).toContain('.reference-card[data-faction="inquisition"]');
-    expect(referenceCss).toContain('[data-component-id="diplomats-reference"][data-reference-side="front"] .reference-body');
-    expect(referenceCss).toContain('grid-template-columns: minmax(0, 1fr) minmax(0, 1fr)');
+    expect(referenceRenderer).toContain('DIPLOMAT_REFERENCE_STYLE_ID');
+    expect(referenceRenderer).toContain('.reference-card[data-component-id="diplomats-reference"] .reference-body');
+    expect(referenceRenderer).toContain('flex-direction: column');
+    expect(referenceRenderer).toContain('[data-reference-section="leverage"] .reference-panel-content');
+    expect(referenceRenderer).toContain('grid-template-columns: repeat(4, minmax(0, 1fr))');
+    expect(referenceRenderer).toContain('[data-reference-side="reverse"] .reference-face-title');
     expect(referenceRenderer).toContain('<footer class="card-footer"><span>${esc(factionLabel)}</span><span>Reference</span><span>${esc(version)}</span></footer>');
-    expect(supplemental).toContain('<footer class="card-footer"><span>${esc(factionLabel)}</span><span>Reference</span><span>v0.6.3</span></footer>');
+    expect(supplemental).toContain('<footer class="card-footer"><span>${esc(factionLabel)}</span><span>Reference</span><span>${esc(currentDisplayVersion)}</span></footer>');
     expect(referenceRenderer).not.toContain('reference-card-footer');
     expect(supplemental).not.toContain('reference-card-footer');
     expect(referenceCss).not.toContain('.reference-card-footer');
