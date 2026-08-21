@@ -17,7 +17,7 @@ describe('production faction reference cards', () => {
     expect(references.every((component: any) => component.backPolicy === 'twoSided')).toBe(true);
     expect(references.every((component: any) => component.referenceFaces?.front && component.referenceFaces?.reverse)).toBe(true);
 
-    expect(supplemental).toContain("referenceId: component.family === 'reference-card' ? component.id : ''");
+    expect(supplemental).toContain("referenceId: hasReferenceFaces ? component.id : ''");
     expect(supplemental).toContain("doubleSided: ledger || component.backPolicy === 'twoSided'");
     expect(supplemental).toContain("filter(component => component.faction === faction && supportedFamilies.has(component.family))");
     expect(supplemental).toContain("for (const sideName of ['front', 'reverse'])");
@@ -106,7 +106,7 @@ describe('production faction reference cards', () => {
     expect(referenceCss).toContain('.reference-option-mark');
     expect(referenceCss).toContain('.reference-table-key');
     expect(referenceCss).not.toContain('.reference-step-number');
-    expect(supplemental).toContain('Designed · source-driven');
+    expect(supplemental).toContain('· source-driven');
   });
 
   it('uses the production faction shell, compact player-aid flow, lookup rows, and shared footer', () => {
@@ -156,6 +156,8 @@ describe('production faction reference cards', () => {
 
   it('reuses the production renderer, standard card chrome, and production typefaces for TTS', () => {
     expect(ttsRenderer).toContain("from '/card-design/reference-card.js'");
+    expect(ttsRenderer).toContain("String(record.source || '').includes('/reference-copy/')");
+    expect(ttsRenderer).toContain("record.copyMode = 'bespoke'");
     expect(ttsRenderer).toContain('referenceCardMarkup(record, sideName');
     expect(ttsRenderer).toContain('fitReferenceCard(card)');
     expect(ttsRendererHtml).toContain('/card-design/card-design.css');
