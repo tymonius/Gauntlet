@@ -9,6 +9,14 @@
   --parchment-image: none;
 }
 
+/* Reference faces are hydrated asynchronously and may replace the temporary
+   loading card after card-design.js has already assigned its inline parchment
+   URL. Give hydrated reference cards a CSS-level source so the approved faction
+   parchment remains present even when that runtime assignment is lost. */
+.reference-card[data-faction] {
+  --parchment-image: var(--reference-parchment-image);
+}
+
 .card-interior {
   isolation: isolate;
   /* This color is visible only while the full-resolution source is loading or
