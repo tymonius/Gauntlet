@@ -23,14 +23,17 @@ describe('tracker card cap layout', () => {
     expect(renderer).toContain("component.contractId === 'intelligence-operation-progress-tracker'");
   });
 
-  it('restores a full-width Caslon italic usage note without the old zero header', () => {
+  it('keeps the full-width Caslon italic usage note clear of the tracker scale on mobile', () => {
     expect(renderer).not.toContain('Physical scale ·');
     expect(renderer).not.toContain('0 = fully covered');
     expect(renderer).toContain('tracker-instructions');
     expect(renderer).toContain('Place faction leader card on top of this tracker and slide it upward or downward');
     expect(styles).toContain('font-family: "adobe-caslon-pro", Georgia, serif;');
     expect(styles).toContain('font-style: italic;');
-    expect(styles).toContain('height: 2.56in;');
+    expect(styles).toContain('-webkit-text-size-adjust: 100%;');
+    expect(styles).toContain('text-size-adjust: 100%;');
+    expect(styles).toContain('height: 2.30in;');
+    expect(styles).not.toContain('height: 2.56in;');
   });
 
   it('prints the Intelligence nested-stack instructions and contract order', () => {

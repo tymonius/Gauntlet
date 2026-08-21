@@ -10,7 +10,8 @@ The covering card or card stack is the pointer.
 - All tracker cards use the same full-size 2.5 × 3.5 inch supplemental-card geometry and faction parchment treatment.
 - Actual faction resources carry one compact **STANDARD [RESOURCE] CAP** line sourced from the authoritative tracked-value maximum. An uncapped resource such as Intel reads **STANDARD INTEL CAP · NONE**. Operation Progress is a progression value rather than a resource and therefore carries no cap line.
 - Each tracker includes a full-width Caslon italic usage sentence naming its actual covering card or stack and explaining which bottom edge aligns to the registration line.
-- Every tracker uses the same 2.56-inch tracking field above the metadata footer. Each physical range divides that field into equal-height value bands, retaining substantially more registration-line spacing than the earlier instruction-heavy layout.
+- Tracker typography is locked to its authored physical point sizes with browser text autosizing held at 100%, so narrow mobile viewports cannot enlarge the instruction independently of the inch-based card geometry.
+- Every tracker uses the same 2.30-inch tracking field above the metadata footer. This remains larger than the original 2.08-inch field, while reserving enough fixed vertical clearance for wrapped usage copy inside the card's approximately 3.33-inch usable interior.
 
 ## Intelligence nested stack
 

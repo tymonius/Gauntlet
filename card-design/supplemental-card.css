@@ -219,6 +219,11 @@
 .sliding-tracker-card {
   --tracker-line: color-mix(in srgb, var(--component-accent-ink) 72%, #4b3c2f 28%);
   --tracker-line-soft: color-mix(in srgb, var(--component-accent-ink) 38%, transparent);
+  /* Mobile Chromium otherwise font-boosts the small instruction copy while
+     leaving the inch-based tracker geometry unchanged. Keep card typography
+     at its authored physical size at every viewport width. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 .sliding-tracker-card .tracker-interior {
@@ -334,7 +339,12 @@
   right: 0.09in;
   bottom: 0.18in;
   left: 0.09in;
-  height: 2.56in;
+  /* The card is border-box and has 0.075in outer padding, so the tracker
+     interior is only about 3.33in tall. A 2.56in scale put its top line near
+     0.59in and directly through the instruction block. 2.30in reserves a
+     stable instruction zone while still providing more scale space than the
+     original 2.08in layout. */
+  height: 2.30in;
 }
 
 .tracker-mark {
