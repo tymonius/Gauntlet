@@ -16,6 +16,11 @@ const FACTION_LABELS = Object.freeze({
   inquisition: 'Inquisition',
 });
 
+const CSS_PX_PER_IN = 96;
+const TRACKER_CAP_INSTRUCTION_GAP_IN = 0.02;
+const TRACKER_INSTRUCTION_SCALE_GAP_IN = 0.05;
+const TRACKER_TITLE_MIN_PT = 9.5;
+
 // Physical print geometry is presentation data, not gameplay authority. The
 // identity, quantity, status, back policy, and tracked value all come from the
 // current-game component contract; only the drawn scale/layout lives here.
@@ -164,7 +169,9 @@ function trackerFace(component, faction, factionLabel) {
         <span class="tracker-faction-emblem" aria-hidden="true"></span>
         <span class="tracker-faction-name">${esc(factionLabel)}</span>
         <h3>${esc(resourceName)} Tracker</h3>
-        ${capLabel ? `<p class="tracker-cap">${esc(capLabel)}</p>` : ''}
+        ${capLabel
+          ? `<p class="tracker-cap">${esc(capLabel)}</p>`
+          : '<p class="tracker-cap tracker-cap-empty" aria-hidden="true"></p>'}
       </header>
       <div class="tracker-instructions">${esc(instruction)}</div>
       <div class="tracker-scale" style="--tracker-max:${max};--tracker-label-size:${Number(labelSize)}pt" aria-label="Registration bands 1 through ${max}">
@@ -173,6 +180,55 @@ function trackerFace(component, faction, factionLabel) {
       <footer class="card-footer tracker-footer"><span>${esc(factionLabel)}</span><span>Tracker</span><span>${esc(currentDisplayVersion)}</span></footer>
     </div>
   </article>`;
+}
+
+function fitTrackerTitle(card) {
+  const title = card.querySelector('.tracker-heading h3');
+  if (!title) return;
+
+  title.style.fontSize = '';
+  const minimumPx = (TRACKER_TITLE_MIN_PT * CSS_PX_PER_IN) / 72;
+  let fontSize = Number.parseFloat(getComputedStyle(title).fontSize);
+  if (!Number.isFinite(fontSize)) return;
+
+  while (title.scrollWidth > title.clientWidth + 0.5 && fontSize > minimumPx) {
+    fontSize = Math.max(minimumPx, fontSize - 0.25);
+    title.style.fontSize = `${fontSize}px`;
+  }
+}
+
+function layoutTrackerCard(card) {
+  const interior = card.querySelector('.tracker-interior');
+  const heading = card.querySelector('.tracker-heading');
+  const instructions = card.querySelector('.tracker-instructions');
+  const scale = card.querySelector('.tracker-scale');
+  const footer = card.querySelector('.tracker-footer');
+  if (!interior || !heading || !instructions || !scale || !footer) return;
+
+  fitTrackerTitle(card);
+
+  const interiorRect = interior.getBoundingClientRect();
+  const headingRect = heading.getBoundingClientRect();
+  const instructionTop = headingRect.bottom - interiorRect.top + (TRACKER_CAP_INSTRUCTION_GAP_IN * CSS_PX_PER_IN);
+  instructions.style.top = `${instructionTop}px`;
+
+  const instructionRect = instructions.getBoundingClientRect();
+  const footerRect = footer.getBoundingClientRect();
+  const scaleTop = instructionRect.bottom - interiorRect.top + (TRACKER_INSTRUCTION_SCALE_GAP_IN * CSS_PX_PER_IN);
+  const scaleBottom = Math.max(0, interiorRect.bottom - footerRect.top);
+
+  scale.style.top = `${scaleTop}px`;
+  scale.style.bottom = `${scaleBottom}px`;
+  scale.style.height = 'auto';
+  card.dataset.trackerLayout = 'measured';
+}
+
+async function layoutTrackerCards() {
+  if (!root) return;
+  await new Promise(resolve => requestAnimationFrame(resolve));
+  if (document.fonts?.ready) await document.fonts.ready;
+  root.querySelectorAll('.sliding-tracker-card').forEach(layoutTrackerCard);
+  root.dataset.trackerLayoutsReady = 'true';
 }
 
 function placeholderFace(component, faction, factionLabel, faceLabel = '') {
@@ -327,6 +383,7 @@ async function renderCurrentSupplementals() {
     supplementalGroups = buildSupplementalGroups(currentGame);
     root.dataset.currentGameAuthority = currentGame.authorityUrl;
     renderSupplementalMarkup();
+    await layoutTrackerCards();
     await hydrateReferenceCards();
   } catch (error) {
     console.error(error);

@@ -12,7 +12,7 @@ const trackerById = new Map(
 );
 
 describe('tracker card cap layout', () => {
-  it('uses standard resource caps and omits a cap line for Operation Progress', () => {
+  it('uses standard resource caps and preserves only the divider line for Operation Progress', () => {
     expect(trackerById.get('military-command-tracker')?.trackedValue?.maximum).toBe(2);
     expect(trackerById.get('diplomats-influence-tracker')?.trackedValue?.maximum).toBe(10);
     expect(trackerById.get('intelligence-intel-tracker')?.trackedValue?.maximum).toBeNull();
@@ -21,9 +21,11 @@ describe('tracker card cap layout', () => {
     expect(renderer).toContain('Standard ${resourceName} cap · ${component.resourceMaximum}');
     expect(renderer).toContain('Standard ${resourceName} cap · none');
     expect(renderer).toContain("component.contractId === 'intelligence-operation-progress-tracker'");
+    expect(renderer).toContain('tracker-cap tracker-cap-empty');
+    expect(styles).toContain('border-top: 0.65px solid var(--tracker-line-soft);');
   });
 
-  it('keeps the full-width Caslon italic usage note clear of the tracker scale on mobile', () => {
+  it('measures the instruction block and fills the remaining tracker field with fixed gaps', () => {
     expect(renderer).not.toContain('Physical scale ·');
     expect(renderer).not.toContain('0 = fully covered');
     expect(renderer).toContain('tracker-instructions');
@@ -32,8 +34,19 @@ describe('tracker card cap layout', () => {
     expect(styles).toContain('font-style: italic;');
     expect(styles).toContain('-webkit-text-size-adjust: 100%;');
     expect(styles).toContain('text-size-adjust: 100%;');
-    expect(styles).toContain('height: 2.30in;');
-    expect(styles).not.toContain('height: 2.56in;');
+    expect(renderer).toContain('TRACKER_CAP_INSTRUCTION_GAP_IN = 0.02');
+    expect(renderer).toContain('TRACKER_INSTRUCTION_SCALE_GAP_IN = 0.05');
+    expect(renderer).toContain('instructionRect.bottom - interiorRect.top');
+    expect(renderer).toContain('interiorRect.bottom - footerRect.top');
+    expect(renderer).toContain("scale.style.height = 'auto'");
+    expect(renderer).toContain("card.dataset.trackerLayout = 'measured'");
+  });
+
+  it('shrinks tracker titles when needed instead of clipping long names', () => {
+    expect(renderer).toContain('TRACKER_TITLE_MIN_PT = 9.5');
+    expect(renderer).toContain('title.scrollWidth > title.clientWidth + 0.5');
+    expect(renderer).toContain('title.style.fontSize = `${fontSize}px`');
+    expect(renderer).toContain('fitTrackerTitle(card)');
   });
 
   it('prints the Intelligence nested-stack instructions and contract order', () => {
