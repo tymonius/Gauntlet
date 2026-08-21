@@ -24,9 +24,39 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+function alignBespokeReferenceFaces(contract) {
+  const diplomat = (contract.components || []).find((component) => component.id === 'diplomats-reference');
+  if (diplomat?.copyMode !== 'bespoke') return contract;
+
+  // Bespoke player-aid copy owns its printable section structure. Keep TTS on
+  // those authored headings instead of the historical guide-derived selectors
+  // still carried by the physical-component contract.
+  diplomat.referenceFaces = {
+    front: {
+      title: 'Terms',
+      sections: [
+        { heading: 'Offering Terms', depth: 3 },
+        { heading: 'Diplomat Mirror', depth: 3 },
+        { heading: 'Accepted', depth: 3 },
+        { heading: 'Refused', depth: 3 },
+      ],
+    },
+    reverse: {
+      title: 'Outcomes & Treaties',
+      sections: [
+        { heading: 'After Refused Terms', depth: 3 },
+        { heading: 'Leverage', depth: 3 },
+        { heading: 'Treaty Articles', depth: 3 },
+        { heading: 'Peace Treaty', depth: 3 },
+      ],
+    },
+  };
+  return contract;
+}
+
 async function readContract() {
   const { source, absolutePath } = await resolveCurrentSourcePath('componentContract');
-  const contract = JSON.parse(await readFile(absolutePath, 'utf8'));
+  const contract = alignBespokeReferenceFaces(JSON.parse(await readFile(absolutePath, 'utf8')));
   contract.currentGameAuthority = CURRENT_GAME_MANIFEST_SOURCE;
   contract.currentGameComponentSource = source;
   contract.effectiveBackPolicy = {
