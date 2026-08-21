@@ -378,6 +378,23 @@ function markupToElement(markup) {
   return element;
 }
 
+// card-design.js installs inspection directly on each physical card node. The
+// reference faces begin as loading shells, so replacing those nodes during
+// async hydration also discarded their click/keyboard inspection listeners.
+// Hydrate the existing node in place instead: whether inspection was installed
+// before or after hydration, every reference face remains inspectable.
+function hydrateReferenceElement(loadingCard, rendered) {
+  const inspectionReady = loadingCard.dataset.inspectionReady === 'true';
+  loadingCard.className = rendered.className;
+  for (const attribute of Array.from(rendered.attributes)) {
+    if (attribute.name === 'class') continue;
+    loadingCard.setAttribute(attribute.name, attribute.value);
+  }
+  loadingCard.replaceChildren(...Array.from(rendered.childNodes));
+  if (inspectionReady) loadingCard.classList.add('card-inspectable');
+  return loadingCard;
+}
+
 async function hydrateReferenceCards() {
   if (!root) return;
   const records = await loadReferenceRecords();
@@ -398,7 +415,7 @@ async function hydrateReferenceCards() {
       if (!loadingCard) throw new Error(`Missing ${sideName} loading card for ${component.id}.`);
       const rendered = markupToElement(referenceCardMarkup(record, sideName, { version: currentDisplayVersion }));
       rendered.dataset.contractComponentId = component.contractId;
-      loadingCard.replaceWith(rendered);
+      hydrateReferenceElement(loadingCard, rendered);
       const label = faceContainer.querySelector('.supplemental-face-label span');
       if (label) label.textContent = record.faces[sideName].title;
     }
