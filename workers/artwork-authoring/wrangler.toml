@@ -1,5 +1,5 @@
 name = "gauntlet-artwork-authoring"
-main = "src/index-publish.js"
+main = "src/index-session.js"
 compatibility_date = "2026-08-19"
 
 [vars]
