@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { __test } from './index.js';
+import { __sessionTest } from './index-session.js';
 import {
   normalizeArtDirection,
   parseArtDirectionSource,
@@ -46,4 +47,18 @@ test('return urls are limited to the public card-design surface', () => {
   assert.equal(__test.validateReturnTo('https://gauntlet.run/card-design/', env), 'https://gauntlet.run/card-design/');
   assert.throws(() => __test.validateReturnTo('https://evil.example/card-design/', env));
   assert.throws(() => __test.validateReturnTo('https://gauntlet.run/deckbuilder/', env));
+});
+
+test('idle authoring branch only syncs when main is strictly ahead', () => {
+  assert.equal(__sessionTest.canSyncIdleBranch({ ahead_by: 9, behind_by: 0 }), true);
+  assert.equal(__sessionTest.canSyncIdleBranch({ ahead_by: 0, behind_by: 0 }), false);
+  assert.equal(__sessionTest.canSyncIdleBranch({ ahead_by: 0, behind_by: 1 }), false);
+  assert.equal(__sessionTest.canSyncIdleBranch({ ahead_by: 4, behind_by: 2 }), false);
+});
+
+test('GitHub validation failure is a no-op only when branches are identical', () => {
+  assert.equal(__sessionTest.isNoOpValidation(422, 'Validation Failed', true), true);
+  assert.equal(__sessionTest.isNoOpValidation(422, 'Validation Failed', false), false);
+  assert.equal(__sessionTest.isNoOpValidation(409, 'Validation Failed', true), false);
+  assert.equal(__sessionTest.isNoOpValidation(422, 'Other failure', true), false);
 });

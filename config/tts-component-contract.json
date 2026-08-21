@@ -372,21 +372,33 @@
       "family": "reference-card",
       "quantity": 1,
       "cardLike": true,
-      "designStatus": "refinement-pending",
+      "designStatus": "final",
       "productionStatus": "ready",
       "backPolicy": "twoSided",
       "reverse": "Deeds & Spending",
-      "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/financier/Gauntlet_v0.6.3_Financier_Faction_Guide.md",
+      "copyMode": "bespoke",
+      "source": "card-design/reference-copy/v0.6.3/financier-reference.md",
+      "authoritySource": "artifacts/reconstruction/clean-v0.6.3/faction-guides/financier/Gauntlet_v0.6.3_Financier_Faction_Guide.md",
+      "auditHeadings": [
+        "Capital and Capital Ledger",
+        "Financial Capacity",
+        "Treasury",
+        "Income",
+        "Buying and buying out Deeds",
+        "Play the Market",
+        "Subsidize",
+        "Controlling Interest"
+      ],
       "referenceFaces": {
         "front": {
           "title": "Capital & Capacity",
           "sections": [
             {
-              "heading": "Capital and Capital Ledger",
+              "heading": "Capital Limit",
               "depth": 3
             },
             {
-              "heading": "Financial Capacity",
+              "heading": "Treasury",
               "depth": 3
             },
             {
@@ -394,7 +406,7 @@
               "depth": 3
             },
             {
-              "heading": "Controlling Interest",
+              "heading": "Financial Capacity",
               "depth": 3
             }
           ]
@@ -403,7 +415,7 @@
           "title": "Deeds & Spending",
           "sections": [
             {
-              "heading": "Buying and buying out Deeds",
+              "heading": "Buying Deeds",
               "depth": 3
             },
             {
@@ -413,12 +425,49 @@
             {
               "heading": "Subsidize",
               "depth": 3
+            },
+            {
+              "heading": "Controlling Interest",
+              "depth": 3
             }
           ]
         }
       },
       "tts": {
         "representation": "card"
+      }
+    },
+    {
+      "id": "financiers-capital-limit-tracker",
+      "name": "Capital Limit Tracker",
+      "faction": "financiers",
+      "family": "tracker",
+      "quantity": 1,
+      "cardLike": true,
+      "productionStatus": "ready",
+      "backPolicy": "standardBack",
+      "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/financier/Gauntlet_v0.6.3_Financier_Faction_Guide.md",
+      "trackedValue": {
+        "name": "Capital Limit",
+        "minimum": 0,
+        "maximum": null,
+        "starting": 3
+      },
+      "renderSource": {
+        "surface": "card-design/supplemental-card.js",
+        "componentId": "capital-limit-tracker"
+      },
+      "cover": {
+        "kind": "leader"
+      },
+      "tts": {
+        "representation": "sliding-tracker",
+        "stackable": false,
+        "assembly": "financiers-capital-limit",
+        "axis": "vertical",
+        "layer": 1,
+        "snapTag": "financiers-capital-limit",
+        "snapPositions": "renderer-derived"
       }
     },
     {

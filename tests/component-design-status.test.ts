@@ -32,15 +32,18 @@ describe('physical component design maturity', () => {
     expect(universal?.source).toContain('Rulebook.md');
   });
 
-  it('records the finalized Diplomat reference separately from the six references still awaiting refinement', () => {
+  it('records finalized Diplomat and Financier references separately from the five references still awaiting refinement', () => {
     const references = components.filter(item => item.family === 'reference-card');
     const diplomat = component('diplomats-reference');
-    const remaining = references.filter(item => item.id !== 'diplomats-reference');
+    const financier = component('financiers-reference');
+    const finalizedIds = new Set(['diplomats-reference', 'financiers-reference']);
+    const remaining = references.filter(item => !finalizedIds.has(item.id));
 
     expect(references).toHaveLength(7);
     expect(references.every(item => item.productionStatus === 'ready')).toBe(true);
     expect(diplomat?.designStatus).toBe('final');
-    expect(remaining).toHaveLength(6);
+    expect(financier?.designStatus).toBe('final');
+    expect(remaining).toHaveLength(5);
     expect(remaining.every(item => item.designStatus === 'refinement-pending')).toBe(true);
   });
 
@@ -77,6 +80,7 @@ describe('physical component design maturity', () => {
     expect(validator).toContain("sharedMap.get('universal-reference')");
     expect(validator).toContain("designStatusFor(universalReference) === 'placeholder'");
     expect(validator).toContain("designStatusFor(diplomatReference) === 'final'");
+    expect(validator).toContain("designStatusFor(financierReference) === 'final'");
     expect(validator).toContain("designStatusFor(component) === 'refinement-pending'");
   });
 
