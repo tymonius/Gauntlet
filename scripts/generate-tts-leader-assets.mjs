@@ -9,7 +9,7 @@ import {
 } from './tts-current-catalog.mjs';
 import {
   loadTtsComponentContract,
-  resolveStandardBackFile,
+  resolveFactionBackFile,
 } from './tts-component-contract.mjs';
 
 const CARD_WIDTH = 400;
@@ -188,7 +188,7 @@ async function renderLeaderAssets(release, leaders, componentContract) {
       await validateLeader(page, leader, release.displayVersion || release.version);
       const deckId = FIRST_LEADER_DECK_ID + index;
       const faceFile = `leaders/${leader.faction}-${leader.id}.png`;
-      const backFile = resolveStandardBackFile(componentContract, leader.faction);
+      const backFile = resolveFactionBackFile(componentContract, leader.faction);
       await captureLeader(page, leader, join(outputRoot, faceFile));
 
       records.push({
@@ -198,7 +198,7 @@ async function renderLeaderAssets(release, leaders, componentContract) {
         factionLabel: leader.factionLabel,
         canonicalImage: leader.canonicalImage,
         source: leader.source,
-        backPolicy: 'standardBack',
+        backPolicy: 'factionComponentBack',
         tts: {
           cardId: deckId * 100,
           deckId,
@@ -234,11 +234,12 @@ async function renderLeaderAssets(release, leaders, componentContract) {
         firstDeckId: FIRST_LEADER_DECK_ID,
       },
       backPolicy: {
-        policy: 'standardBack',
-        ...componentContract.standardBack,
+        policy: 'factionComponentBack',
+        mode: 'faction',
+        variants: componentContract.standardBack.variants,
         backIsHidden: true,
         uniqueBack: false,
-        note: 'Leader cards resolve the same standard-back policy used by playable cards and Territories.',
+        note: 'Leader cards are persistent public faction components and therefore use the matching faction-color Gauntlet back. Playable cards and Territories use the universal black standard back.',
       },
       leaderCount: records.length,
       leaders: records,
@@ -264,8 +265,8 @@ async function main() {
   const { release, leaders } = currentLeaders;
 
   if (checkOnly) {
-    for (const leader of leaders) resolveStandardBackFile(componentContract, leader.faction);
-    console.log(`Current TTS Leader source check passed for ${release.version}: ${leaders.length} Leaders across ${new Set(leaders.map((leader) => leader.faction)).size} factions using ${componentContract.standardBack.mode} standard backs.`);
+    for (const leader of leaders) resolveFactionBackFile(componentContract, leader.faction);
+    console.log(`Current TTS Leader source check passed for ${release.version}: ${leaders.length} Leaders across ${new Set(leaders.map((leader) => leader.faction)).size} factions using faction-color component backs.`);
     return;
   }
 
