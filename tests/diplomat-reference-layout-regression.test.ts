@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const css = readFileSync('card-design/reference-card.css', 'utf8');
+const parchmentCss = readFileSync('card-design/card-parchment.css', 'utf8');
 
 describe('Diplomat reference visual regressions', () => {
   it('keeps faction parchment available even when runtime parchment hydration races', () => {
@@ -11,6 +12,12 @@ describe('Diplomat reference visual regressions', () => {
     expect(css).toContain('--reference-parchment-image: url("../images/artwork/card-backgrounds/intelligence-parchment-v2.png")');
     expect(css).toContain('--reference-parchment-image: url("../images/artwork/card-backgrounds/mystics-parchment-v2.png")');
     expect(css).toContain('--reference-parchment-image: url("../images/artwork/card-backgrounds/inquisition-parchment-v2.png")');
+
+    // card-parchment.css deliberately initializes ordinary cards to `none` until
+    // card-design.js hydrates them. Reference faces are asynchronously replaced,
+    // so they must override that sentinel with their faction CSS source.
+    expect(parchmentCss).toContain('.gauntlet-card {\n  --parchment-image: none;');
+    expect(parchmentCss).toContain('.reference-card[data-faction] {\n  --parchment-image: var(--reference-parchment-image);');
   });
 
   it('renders the Diplomat front as one vertical flow rather than two columns', () => {
