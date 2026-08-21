@@ -1,4 +1,5 @@
 import { loadCurrentGame } from '../game-data/current-game.mjs';
+import './leader-card-copy.js';
 
 async function syncCurrentGameCatalogCopy() {
   try {
