@@ -87,30 +87,34 @@ describe('TTS supplemental component exports', () => {
     expect(rendererCss).toContain('.reference-table');
   });
 
-  it('exports all five production tracker designs without confusing physical capacity with rules maximum', async () => {
+  it('exports all six production tracker designs without confusing physical capacity with rules maximum', async () => {
     const trackers = contract.components.filter((component: any) => component.tts?.representation === 'sliding-tracker');
-    expect(trackers).toHaveLength(5);
+    expect(trackers).toHaveLength(6);
     expect(trackers.every((component: any) => component.productionStatus === 'ready')).toBe(true);
     expect(trackers.every((component: any) => component.backPolicy === 'standardBack')).toBe(true);
     expect(trackers.every((component: any) => component.tts.snapPositions === 'renderer-derived')).toBe(true);
     expect(trackers.every((component: any) => component.tts.stackable === false)).toBe(true);
 
     const command = trackers.find((component: any) => component.id === 'military-command-tracker');
+    const capitalLimit = trackers.find((component: any) => component.id === 'financiers-capital-limit-tracker');
     const intel = trackers.find((component: any) => component.id === 'intelligence-intel-tracker');
     const progress = trackers.find((component: any) => component.id === 'intelligence-operation-progress-tracker');
     expect(command.trackedValue.maximum).toBe(2);
+    expect(capitalLimit.trackedValue.maximum).toBeNull();
+    expect(capitalLimit.trackedValue.starting).toBe(3);
     expect(intel.trackedValue.maximum).toBeNull();
     expect(progress.trackedValue.maximum).toBeNull();
 
     expect(productionSupplementals).toMatch(/'military-command-tracker'\s*:\s*\{[\s\S]*?max:\s*4/);
     expect(productionSupplementals).toMatch(/'diplomats-influence-tracker'\s*:\s*\{[\s\S]*?max:\s*10/);
+    expect(productionSupplementals).toMatch(/'financiers-capital-limit-tracker'\s*:\s*\{[\s\S]*?max:\s*15/);
     expect(productionSupplementals).toMatch(/'intelligence-intel-tracker'\s*:\s*\{[\s\S]*?max:\s*12/);
     expect(productionSupplementals).toMatch(/'intelligence-operation-progress-tracker'\s*:\s*\{[\s\S]*?max:\s*8/);
     expect(productionSupplementals).toMatch(/'inquisition-conviction-tracker'\s*:\s*\{[\s\S]*?max:\s*4/);
 
     const { catalog } = await buildSupplementalCatalog(contract);
     const readyTrackers = catalog.ready.filter((component: any) => component.representation === 'sliding-tracker');
-    expect(readyTrackers).toHaveLength(5);
+    expect(readyTrackers).toHaveLength(6);
     expect(readyTrackers.every((component: any) => component.renderer === 'sliding-tracker')).toBe(true);
     expect(readyTrackers.every((component: any) => component.renderSource?.componentId)).toBe(true);
     expect(readyTrackers.every((component: any) => component.cover?.kind)).toBe(true);
@@ -123,13 +127,14 @@ describe('TTS supplemental component exports', () => {
     expect(trackerHelper).toContain('travelFraction * PHYSICAL_CARD_HEIGHT');
     expect(trackerHelper).toContain('{ value: 0, offset: 0 }');
     expect(trackerHelper).toContain('registration offsets are not strictly increasing');
-    expect(trackerHelper).not.toMatch(/command[^\n]*offset|influence[^\n]*offset|intel[^\n]*offset|conviction[^\n]*offset/i);
+    expect(trackerHelper).not.toMatch(/command[^\n]*offset|influence[^\n]*offset|capital[^\n]*offset|intel[^\n]*offset|conviction[^\n]*offset/i);
   });
 
   it('declares the nested Intelligence cover chain and distinct tracker layers', () => {
     const byId = new Map(contract.components.map((component: any) => [component.id, component]));
     expect(byId.get('military-command-tracker').cover).toEqual({ kind: 'leader' });
     expect(byId.get('diplomats-influence-tracker').cover).toEqual({ kind: 'leader' });
+    expect(byId.get('financiers-capital-limit-tracker').cover).toEqual({ kind: 'leader' });
     expect(byId.get('inquisition-conviction-tracker').cover).toEqual({ kind: 'leader' });
     expect(byId.get('intelligence-intel-tracker').cover).toEqual({ kind: 'leader' });
     expect(byId.get('intelligence-operation-progress-tracker').cover).toEqual({ kind: 'component', componentId: 'intelligence-intel-tracker' });

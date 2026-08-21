@@ -35,6 +35,11 @@ const TRACKER_PRESENTATION = Object.freeze({
     labelSize: 7.9,
     instruction: 'Place faction leader card on top of this tracker and slide it upward or downward to align the bottom edge with the line above your current Influence value.',
   },
+  'financiers-capital-limit-tracker': {
+    max: 15,
+    labelSize: 6.8,
+    instruction: 'Place faction leader card on top of this tracker and slide it upward or downward to align the bottom edge with the line above your current Capital Limit value.',
+  },
   'intelligence-intel-tracker': {
     max: 12,
     labelSize: 7.2,
@@ -169,6 +174,7 @@ function trackerMarks(component, resourceName) {
 
 function trackerCapLabel(component, resourceName) {
   if (component.contractId === 'intelligence-operation-progress-tracker') return '';
+  if (component.contractId === 'financiers-capital-limit-tracker') return 'Rules maximum · none';
   return Number.isFinite(component.resourceMaximum)
     ? `Standard ${resourceName} cap · ${component.resourceMaximum}`
     : `Standard ${resourceName} cap · none`;
