@@ -29,6 +29,11 @@ async function readContract() {
   const contract = JSON.parse(await readFile(absolutePath, 'utf8'));
   contract.currentGameAuthority = CURRENT_GAME_MANIFEST_SOURCE;
   contract.currentGameComponentSource = source;
+  contract.effectiveBackPolicy = {
+    standardBack: 'universal-black',
+    factionComponentBack: 'faction',
+    note: 'Playable cards and Territories use the universal black Gauntlet back. Leaders and other single-sided faction components use their faction-color Gauntlet back. Intrinsically two-sided components retain their reverse face.',
+  };
   return contract;
 }
 
@@ -42,25 +47,26 @@ function componentsFor(contract, faction, family = null) {
   ));
 }
 
-export function resolveStandardBackVariant(contract, faction) {
+export function resolveStandardBackVariant(contract) {
   const standardBack = contract?.standardBack || {};
-  const mode = standardBack.mode;
-  assert(standardBack.allowedModes?.includes(mode), `Unsupported standard-back mode: ${mode || 'missing'}.`);
+  const universal = standardBack.universalVariant;
+  assert(standardBack.variants?.includes(universal), `Universal standard-back variant is not available: ${universal || 'missing'}.`);
+  return universal;
+}
 
-  if (mode === 'universal-black') {
-    const universal = standardBack.universalVariant;
-    assert(standardBack.variants?.includes(universal), `Universal standard-back variant is not available: ${universal || 'missing'}.`);
-    return universal;
-  }
+export function resolveStandardBackFile(contract) {
+  return `backs/${resolveStandardBackVariant(contract)}.png`;
+}
 
-  assert(mode === 'faction', `Standard-back mode ${mode} has no resolver.`);
-  assert(FACTIONS.includes(faction), `Cannot resolve faction standard back for ${faction || 'missing faction'}.`);
-  assert(standardBack.variants?.includes(faction), `Standard-back variant is not available for ${faction}.`);
+export function resolveFactionBackVariant(contract, faction) {
+  const standardBack = contract?.standardBack || {};
+  assert(FACTIONS.includes(faction), `Cannot resolve faction component back for ${faction || 'missing faction'}.`);
+  assert(standardBack.variants?.includes(faction), `Faction back variant is not available for ${faction}.`);
   return faction;
 }
 
-export function resolveStandardBackFile(contract, faction) {
-  return `backs/${resolveStandardBackVariant(contract, faction)}.png`;
+export function resolveFactionBackFile(contract, faction) {
+  return `backs/${resolveFactionBackVariant(contract, faction)}.png`;
 }
 
 async function validateTrackerRenderSource(component) {
@@ -143,7 +149,8 @@ export async function validateTtsComponentContract(contract) {
     }
   }
 
-  for (const faction of FACTIONS) resolveStandardBackVariant(contract, faction);
+  resolveStandardBackVariant(contract);
+  for (const faction of FACTIONS) resolveFactionBackVariant(contract, faction);
 
   const map = componentMap(contract);
   const trackers = (contract.components || []).filter((component) => component.tts?.representation === 'sliding-tracker');
@@ -204,7 +211,7 @@ async function main() {
   const contract = await loadTtsComponentContract();
   const pending = (contract.components || []).filter((component) => component.productionStatus !== 'ready');
   const trackers = (contract.components || []).filter((component) => component.tts?.representation === 'sliding-tracker');
-  console.log(`TTS component contract passed through ${contract.currentGameAuthority}: ${contract.components.length} faction components, ${contract.sharedComponents.length} shared component types, ${trackers.length} sliding trackers, ${pending.length} components still pending artwork/design/export.`);
+  console.log(`TTS component contract passed through ${contract.currentGameAuthority}: ${contract.components.length} faction components, ${contract.sharedComponents.length} shared component types, ${trackers.length} sliding trackers, ${pending.length} components still pending artwork/design/export; ordinary card backs are universal black and single-sided faction-component backs are faction-colored.`);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
