@@ -1,5 +1,6 @@
 (() => {
   const mobileQuery = window.matchMedia("(max-width: 760px)");
+  const PREVIEW_HISTORY_KEY = "gauntletDeckbuilderMobilePreview";
   let preview = null;
   let backdrop = null;
   let open = false;
@@ -45,7 +46,8 @@
 
     document.addEventListener("click", handleDocumentClick);
     document.addEventListener("keydown", handleKeydown);
-    backdrop.addEventListener("click", closePreview);
+    backdrop.addEventListener("click", requestClosePreview);
+    window.addEventListener("popstate", handlePopState);
 
     if (typeof mobileQuery.addEventListener === "function") {
       mobileQuery.addEventListener("change", syncViewportMode);
@@ -54,6 +56,38 @@
     }
 
     syncViewportMode();
+  }
+
+  function currentHistoryState() {
+    return history.state && typeof history.state === "object" ? history.state : {};
+  }
+
+  function hasPreviewHistory(state = history.state) {
+    return Boolean(state && typeof state === "object" && state[PREVIEW_HISTORY_KEY]);
+  }
+
+  function pushPreviewHistory() {
+    if (hasPreviewHistory()) return;
+    history.pushState(
+      { ...currentHistoryState(), [PREVIEW_HISTORY_KEY]: true },
+      "",
+      window.location.href,
+    );
+  }
+
+  function clearPreviewHistory() {
+    if (!hasPreviewHistory()) return;
+    const nextState = { ...currentHistoryState() };
+    delete nextState[PREVIEW_HISTORY_KEY];
+    history.replaceState(nextState, "", window.location.href);
+  }
+
+  function handlePopState(event) {
+    if (hasPreviewHistory(event.state)) {
+      if (!open && mobileQuery.matches) openPreview(false);
+      return;
+    }
+    if (open) dismissPreview();
   }
 
   function handleDocumentClick(event) {
@@ -66,18 +100,19 @@
     }
 
     if (event.target.closest("#previewAddButton") && open) {
-      closePreview();
+      requestClosePreview();
     }
   }
 
   function handleKeydown(event) {
-    if (event.key === "Escape" && open) closePreview();
+    if (event.key === "Escape" && open) requestClosePreview();
   }
 
-  function openPreview() {
+  function openPreview(pushHistory = true) {
     if (!mobileQuery.matches || !preview || preview.classList.contains("empty-state")) return;
 
     ensureCloseButton();
+    if (pushHistory && !open) pushPreviewHistory();
     open = true;
     preview.classList.add("mobile-open");
     backdrop?.classList.add("mobile-open");
@@ -97,7 +132,16 @@
     preview.querySelector(".mobile-card-preview-close")?.focus({ preventScroll: true });
   }
 
-  function closePreview() {
+  function requestClosePreview() {
+    if (!open) return;
+    if (hasPreviewHistory()) {
+      history.back();
+      return;
+    }
+    dismissPreview();
+  }
+
+  function dismissPreview() {
     if (!preview) return;
 
     open = false;
@@ -122,7 +166,7 @@
     closeButton.className = "mobile-card-preview-close";
     closeButton.setAttribute("aria-label", "Close card preview");
     closeButton.textContent = "×";
-    closeButton.addEventListener("click", closePreview);
+    closeButton.addEventListener("click", requestClosePreview);
     preview.prepend(closeButton);
     return closeButton;
   }
@@ -131,7 +175,8 @@
     if (!preview) return;
 
     if (!mobileQuery.matches) {
-      closePreview();
+      dismissPreview();
+      clearPreviewHistory();
       preview.removeAttribute("role");
       preview.removeAttribute("aria-modal");
       preview.removeAttribute("aria-hidden");
