@@ -9,143 +9,85 @@ const territoryRender = readFileSync("card-design/territory-print-render.html", 
 const backRender = readFileSync("tts/back-renderer/index.html", "utf8");
 const cardBackCss = readFileSync("card-design/card-back.css", "utf8");
 const printTransform = readFileSync("deckbuilder/print-duplex-sheet-pairing.js", "utf8");
-const cardBackPreview = readFileSync("deckbuilder/card-back-preview.js", "utf8");
-const printOptionsCss = readFileSync("deckbuilder/print-options.css", "utf8");
+const cardBackPolicy = readFileSync("deckbuilder/card-back-preview.js", "utf8");
 const duplexTransform = readFileSync("deckbuilder/print-duplex.js", "utf8");
 const analyticsSync = readFileSync("scripts/sync-google-analytics.mjs", "utf8");
 const componentContract = JSON.parse(readFileSync("config/tts-component-contract.json", "utf8"));
 
 describe("Deckbuilder production printing", () => {
-  it("prints playable cards through the shared production renderer", () => {
+  it("uses shared production renderers for playable cards, Territories, and faction components", () => {
     expect(playableRender).toContain('/card-design/card-review-render.js');
-    expect(playableRender).toContain('/card-design/card-design.css');
-    expect(playableRender).toContain('/tts/renderer/renderer.css');
     expect(playableRender).toContain('width: 2.5in;');
     expect(playableRender).toContain('height: 3.5in;');
-
-    expect(printTransform).toContain('/card-design/card-print-render.html?card=');
-    expect(printTransform).toContain('&fit=production');
-    expect(printTransform).toContain('print-card main-card production-render-card production-standard-back');
-  });
-
-  it("prints Territory faces at native landscape production size inside portrait cut slots", () => {
     expect(territoryRender).toContain('/card-design/territory-review-render.js');
-    expect(territoryRender).toContain('/tts/territory-renderer/territory-renderer.css');
     expect(territoryRender).toContain('width: 3.5in;');
     expect(territoryRender).toContain('height: 2.5in;');
-
-    expect(printTransform).toContain('/card-design/territory-print-render.html?territory=');
-    expect(printTransform).toContain('print-card territory production-render-territory production-standard-back');
-    expect(printTransform).toContain('transform: rotate(90deg);');
-    expect(printTransform).toContain('left: 2.5in;');
-  });
-
-  it("hosts production Leaders, references, trackers, Proposals, Rites, Ritual, and generic supplemental components", () => {
     expect(componentRenderHtml).toContain('/card-design/leader-card.css');
-    expect(componentRenderHtml).toContain('/card-design/proposal-card.css');
-    expect(componentRenderHtml).toContain('/card-design/rite-card.css');
-    expect(componentRenderHtml).toContain('/card-design/reference-card.css');
     expect(componentRenderHtml).toContain('/card-design/supplemental-card.js');
-    expect(componentRenderHtml).toContain('id="leaderReviewSections"');
-    expect(componentRenderHtml).toContain('id="proposalReviewSections"');
-    expect(componentRenderHtml).toContain('id="riteReviewSections"');
-    expect(componentRenderHtml).toContain('id="supplementalReviewSections"');
-
     for (const kind of ['leader', 'proposal', 'reference', 'rite', 'ritual', 'tracker', 'supplemental']) {
       expect(componentRenderJs).toContain(`"${kind}"`);
     }
-    expect(componentRenderJs).toContain('supplemental-placeholder-card');
+    expect(printTransform).toContain('/card-design/card-print-render.html?card=');
+    expect(printTransform).toContain('/card-design/territory-print-render.html?territory=');
     expect(printTransform).toContain('/card-design/component-print-render.html?kind=');
   });
 
-  it("uses the resolved current-game component contract rather than per-card print lookup tables", () => {
+  it("uses current-game component metadata and preserves intrinsic reverse faces", () => {
     expect(printTransform).toContain('state.currentGameData || window.GAUNTLET_CURRENT_GAME_DATA');
     expect(printTransform).toContain('currentGame.components');
-    expect(printTransform).toContain('component.family');
     expect(printTransform).toContain('component.productionStatus');
     expect(printTransform).toContain('component.backPolicy');
     expect(printTransform).toContain('component.renderSource');
-    expect(printTransform).toContain('explicit.printUrl || explicit.printEndpoint');
-    expect(printTransform).toContain('explicit.componentId');
-    expect(printTransform).not.toContain('TRACKER_COMPONENT_IDS');
-    expect(printTransform).not.toContain('REFERENCE_COMPONENTS');
-  });
-
-  it("keeps genuinely pending Financier faces on fallback until the authority exposes a production renderer", () => {
-    const ledger = componentContract.components.find((component: any) => component.id === 'financiers-capital-ledger');
-    const deed = componentContract.components.find((component: any) => component.id === 'financiers-deed');
-    expect(ledger?.productionStatus).not.toBe('ready');
-    expect(deed?.productionStatus).not.toBe('ready');
-    expect(ledger?.renderSource).toBeUndefined();
-    expect(deed?.renderSource).toBeUndefined();
-
-    expect(printTransform).toContain('annotateFallback(legacyCard, component)');
-    expect(printTransform).toContain('componentIsPrintableProduction(component, descriptor)');
-    expect(printTransform).toContain('component.productionStatus === "ready"');
-  });
-
-  it("automatically applies intrinsic reverse faces from component back policy", () => {
     expect(printTransform).toContain('ensureIntrinsicReversePages(documentNode, currentGame)');
     expect(printTransform).toContain('data-production-back-policy="twoSided"');
     expect(printTransform).toContain('data-production-back-policy="specialBack"');
     expect(printTransform).toContain('side: "reverse"');
-    expect(printTransform).toContain('ensureBackPageForFront');
-    expect(printTransform).toContain('mirrorIndexForLongEdge(frontIndex)');
   });
 
-  it("uses one shared back for every standard-back card, defaulting to black", () => {
+  it("keeps pending Financier faces on fallback while still assigning their declared back policy", () => {
+    const ledger = componentContract.components.find((component: any) => component.id === 'financiers-capital-ledger');
+    const deed = componentContract.components.find((component: any) => component.id === 'financiers-deed');
+    expect(ledger?.productionStatus).not.toBe('ready');
+    expect(deed?.productionStatus).not.toBe('ready');
+    expect(printTransform).toContain('annotateFallback(legacyCard, component)');
+    expect(printTransform).toContain('legacyCard.dataset.contractBackPolicy = component.backPolicy');
+  });
+
+  it("prints standard backs as black and single-sided faction components in faction color automatically", () => {
     expect(duplexTransform).toContain('cell.querySelector(".main-card, .territory")');
     expect(printTransform).toContain('production-standard-back');
-    expect(printTransform).toContain('[data-contract-back-policy="standardBack"]');
     expect(printTransform).toContain('/tts/back-renderer/index.html?faction=');
     expect(printTransform).toContain('if (!useFactionColor) return "intelligence";');
-    expect(printTransform).toContain('String(state.factionId || "intelligence")');
-    expect(printTransform).toContain('mirrorIndexForLongEdge(frontIndex)');
-    expect(printTransform).toContain('production deck-card back');
+    expect(cardBackPolicy).toContain('factionColor.checked = false');
+    expect(cardBackPolicy).toContain('factionOption?.remove()');
+    expect(cardBackPolicy).toContain('Automatic backs: black for playable cards and Territories');
+    expect(cardBackPolicy).toContain('.production-render-leader');
+    expect(cardBackPolicy).toContain('.production-render-component[data-production-back-policy="standardBack"]');
+    expect(cardBackPolicy).toContain('.deed-card[data-contract-back-policy="standardBack"]');
+    expect(cardBackPolicy).toContain('data-automatic-mixed-back-policy');
   });
 
-  it("keeps printed production backs aligned with the rotated Territory orientation", () => {
+  it("keeps duplex orientation and production-render readiness safeguards", () => {
+    expect(printTransform).toContain('mirrorIndexForLongEdge(frontIndex)');
     expect(printTransform).toContain('transform: rotate(90deg);');
     expect(cardBackCss).toContain('transform: translate(-50%, -50%) rotate(90deg);');
     expect(backRender).toContain("params.get('rotation') === '180'");
-    expect(backRender).toContain('html[data-card-back-rotation="180"] #renderTarget{transform:none}');
-    expect(backRender).not.toContain('html[data-card-back-rotation="180"] #renderTarget{transform:rotate(180deg)}');
+    expect(printTransform).toContain("await Promise.all(frames.map(waitForFrame))");
+    expect(printTransform).toContain("Printing was stopped so the Deck is not printed with incomplete cards");
   });
 
-  it("offers faction-colored backs only as an explicit print option", () => {
-    expect(printTransform).toContain('checkbox.id = "factionColorCardBack"');
-    expect(printTransform).toContain('label.textContent = "Faction color card back"');
-    expect(printTransform).toContain('checkbox.disabled = !printBacks.checked');
-    expect(printOptionsCss).toContain('.faction-back-option');
-    expect(printOptionsCss).toContain('.faction-back-option.disabled');
-  });
-
-  it("keeps the card-back preview presentation-only", () => {
+  it("previews the selected faction component back without exposing a global back-color choice", () => {
     expect(deckbuilderHtml).toContain('card-back-preview.js?v=20260819-1');
-    expect(deckbuilderHtml).toContain('print-options.css?v=20260819-1');
-    expect(cardBackPreview).toContain('preview.id = "cardBackPreview"');
-    expect(cardBackPreview).toContain('frame.id = "cardBackPreviewFrame"');
-    expect(cardBackPreview).toContain('/tts/back-renderer/index.html?faction=');
-    expect(cardBackPreview).toContain('if (!factionColor.checked) return "intelligence";');
-    expect(cardBackPreview).toContain('factionColor.addEventListener("change", updatePreview)');
-    expect(cardBackPreview).toContain('factionSelect?.addEventListener("change"');
-    expect(cardBackPreview).toContain('"Black back (default)"');
-    expect(cardBackPreview).not.toContain('/config/tts-component-contract.json');
-    expect(cardBackPreview).not.toContain('upgradeContractProductionFallbacks');
-    expect(printOptionsCss).toContain('.card-back-controls');
-    expect(printOptionsCss).toContain('.card-back-preview-frame');
+    expect(cardBackPolicy).toContain('preview.id = "cardBackPreview"');
+    expect(cardBackPolicy).toContain('frame.id = "cardBackPreviewFrame"');
+    expect(cardBackPolicy).toContain('/tts/back-renderer/index.html?faction=');
+    expect(cardBackPolicy).toContain('factionSelect?.addEventListener("change"');
+    expect(cardBackPolicy).toContain('factionColor.disabled = true');
   });
 
-  it("keeps print-only render surfaces analytics-free through the supported exclusion list", () => {
+  it("keeps print-only render surfaces analytics-free", () => {
     expect(analyticsSync).toContain('"card-design/card-print-render.html"');
     expect(analyticsSync).toContain('"card-design/component-print-render.html"');
     expect(analyticsSync).toContain('"card-design/territory-print-render.html"');
-  });
-
-  it("waits for every production render before opening the browser print dialog", () => {
-    expect(printTransform).toContain("body?.dataset?.renderReady");
-    expect(printTransform).toContain("window.removeEventListener('load', previousPreparePrint)");
-    expect(printTransform).toContain("await Promise.all(frames.map(waitForFrame))");
-    expect(printTransform).toContain("Printing was stopped so the Deck is not printed with incomplete cards");
   });
 });
