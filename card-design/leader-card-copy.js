@@ -86,8 +86,6 @@ async function applyLeaderCardCopy() {
 
     const renderedIds = new Set();
     for (const [leaderId, copy] of entries) {
-      const card = root.querySelector(`#${CSS.escape(copy.faction || '')}`);
-      void card;
       const candidate = Array.from(root.querySelectorAll('.leader-specimen')).find(specimen => specimen.id.endsWith(`-${leaderId}`));
       const leaderCard = candidate?.querySelector('.leader-card');
       const rules = leaderCard?.querySelector('.card-rules');
@@ -104,14 +102,12 @@ async function applyLeaderCardCopy() {
       throw new Error(`Leader copy covers ${renderedIds.size} cards but the catalog renders ${cards.length}.`);
     }
 
-    window.dispatchEvent(new Event('resize'));
-    await new Promise(resolve => window.setTimeout(resolve, 180));
     root.dataset.leaderCopyReady = 'true';
+    window.dispatchEvent(new Event('resize'));
   } catch (error) {
     console.error(error);
     root.dataset.leaderCopyReady = 'error';
   }
 }
 
-if (document.readyState === 'complete') applyLeaderCardCopy();
-else window.addEventListener('load', applyLeaderCardCopy, { once: true });
+applyLeaderCardCopy();
