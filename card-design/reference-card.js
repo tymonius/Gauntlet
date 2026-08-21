@@ -172,7 +172,7 @@ function installDiplomatReferenceStyles() {
   border-left: 0.45px solid color-mix(in srgb, var(--component-accent-ink) 22%, transparent);
   text-align: center;
 }
-.reference-card[data-component-id="diplomats-reference"] [data-reference-section="leverage"] .reference-callout:nth-of-type(2) {
+.reference-card[data-component-id="diplomats-reference"] [data-reference-section="leverage"] .reference-callout:first-of-type {
   border-left: 0;
 }
 .reference-card[data-component-id="diplomats-reference"] [data-reference-section="leverage"] .reference-callout-label {
