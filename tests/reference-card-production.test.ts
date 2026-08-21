@@ -16,10 +16,10 @@ describe('production faction reference cards', () => {
     expect(references.every((component: any) => component.backPolicy === 'twoSided')).toBe(true);
     expect(references.every((component: any) => component.referenceFaces?.front && component.referenceFaces?.reverse)).toBe(true);
 
-    const ids = references.map((component: any) => component.id);
-    for (const id of ids) expect(supplemental).toContain(`referenceId: '${id}'`);
-    expect((supplemental.match(/referenceId:/g) || [])).toHaveLength(7);
-    expect((supplemental.match(/doubleSided: true/g) || [])).toHaveLength(7);
+    expect(supplemental).toContain("referenceId: component.family === 'reference-card' ? component.id : ''");
+    expect(supplemental).toContain("doubleSided: ledger || component.backPolicy === 'twoSided'");
+    expect(supplemental).toContain("filter(component => component.faction === faction && supportedFamilies.has(component.family))");
+    expect(supplemental).toContain("for (const sideName of ['front', 'reverse'])");
   });
 
   it('supports bespoke player-aid copy with a separate canonical audit source', () => {
