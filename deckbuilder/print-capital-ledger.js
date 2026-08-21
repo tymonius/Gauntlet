@@ -5,6 +5,7 @@
   const MAX_SHEET_COUNT = 10;
   const PRODUCTION_LEDGER_COMPONENT_ID = "financiers-capital-ledger";
   const PRODUCTION_LEDGER_KIND = "supplemental";
+  const PRODUCTION_RENDER_TIMEOUT_MS = 30000;
 
   document.addEventListener("DOMContentLoaded", () => {
     installCapitalLedgerProductionPrintTransform();
@@ -57,18 +58,16 @@
     tools.style.marginTop = ".75rem";
     tools.innerHTML = `
       <p class="muted">Print full 9-up duplex sheets of consumable Capital Ledgers.</p>
-      <div class="button-row">
-        <label>
-          Sheets
-          <select id="capitalLedgerSheetCount" aria-label="Number of duplex Capital Ledger sheets">
-            ${Array.from({ length: MAX_SHEET_COUNT }, (_, index) => {
-              const sheetCount = index + 1;
-              const ledgerCount = sheetCount * LEDGERS_PER_SHEET;
-              return `<option value="${sheetCount}"${sheetCount === DEFAULT_SHEET_COUNT ? " selected" : ""}>${sheetCount} sheet${sheetCount === 1 ? "" : "s"} (${ledgerCount} ledgers)</option>`;
-            }).join("")}
-          </select>
-        </label>
-        <button id="printCapitalLedgersButton" type="button" class="secondary">Print Capital Ledgers</button>
+      <div class="capital-ledger-print-controls" style="display:grid;grid-template-columns:minmax(0,11rem) max-content;grid-template-rows:auto auto;column-gap:.5rem;row-gap:.35rem;align-items:stretch;justify-content:start;max-width:100%">
+        <label for="capitalLedgerSheetCount" style="grid-column:1;grid-row:1;margin:0">Sheets</label>
+        <select id="capitalLedgerSheetCount" aria-label="Number of duplex Capital Ledger sheets" style="grid-column:1;grid-row:2;margin:0;width:100%">
+          ${Array.from({ length: MAX_SHEET_COUNT }, (_, index) => {
+            const sheetCount = index + 1;
+            const ledgerCount = sheetCount * LEDGERS_PER_SHEET;
+            return `<option value="${sheetCount}"${sheetCount === DEFAULT_SHEET_COUNT ? " selected" : ""}>${sheetCount} sheet${sheetCount === 1 ? "" : "s"} (${ledgerCount} ledgers)</option>`;
+          }).join("")}
+        </select>
+        <button id="printCapitalLedgersButton" type="button" class="secondary" style="grid-column:2;grid-row:2;margin:0;align-self:stretch;height:auto">Print Capital Ledgers</button>
       </div>`;
 
     const duplexOption = document.getElementById("printCardBacks")?.closest("label");
@@ -128,17 +127,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex,nofollow" />
 <title>Gauntlet — Duplex Capital Ledger Sheets</title>
-<link rel="preconnect" href="https://use.typekit.net" />
-<link rel="preconnect" href="https://p.typekit.net" crossorigin />
-<link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
-<link rel="stylesheet" href="/design-tokens.css" />
-<link rel="stylesheet" href="/card-design/card-design.css" />
-<link rel="stylesheet" href="/card-design/card-parchment.css" />
-<link rel="stylesheet" href="/card-design/reference-card.css" />
-<link rel="stylesheet" href="/card-design/capital-ledger.css" data-capital-ledger-style="true" />
 <style>
 *{box-sizing:border-box;font-synthesis:none;-webkit-print-color-adjust:exact;print-color-adjust:exact;color-adjust:exact}
-body{margin:0;background:#f3f3f3;color:#111;font-family:var(--font-interface,Arial,Helvetica,sans-serif)}
+body{margin:0;background:#f3f3f3;color:#111;font-family:Arial,Helvetica,sans-serif}
 .print-toolbar{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.65rem 1rem;background:#fff;border-bottom:1px solid #ccc;font-size:14px}
 .print-toolbar-copy{display:grid;gap:.12rem}
 .print-toolbar-note{font-size:12px;color:#555}
@@ -148,8 +139,7 @@ body{margin:0;background:#f3f3f3;color:#111;font-family:var(--font-interface,Ari
 .card-page.last-page{break-after:auto;page-break-after:auto}
 .card-table{width:7.5in;height:10.5in;border-collapse:collapse;border-spacing:0;table-layout:fixed}
 .card-table td{width:2.5in;height:3.5in;min-width:2.5in;max-width:2.5in;min-height:3.5in;max-height:3.5in;padding:0;border:0;vertical-align:top;overflow:hidden}
-.capital-ledger-slot,.capital-ledger-slot>.gauntlet-card{display:block;width:2.5in;height:3.5in;margin:0}
-.capital-ledger-slot>.gauntlet-card{box-shadow:none!important}
+.capital-ledger-slot,.capital-ledger-production-frame{display:block;width:2.5in;height:3.5in;margin:0;padding:0;border:0;background:transparent;overflow:hidden}
 @page{size:letter portrait;margin:.25in}
 @media print{
   body{background:#fff}
@@ -162,57 +152,85 @@ body{margin:0;background:#f3f3f3;color:#111;font-family:var(--font-interface,Ari
   <div class="print-toolbar">
     <div class="print-toolbar-copy">
       <strong>${sheetCount} duplex sheet${sheetCount === 1 ? "" : "s"} · ${ledgerCount} Capital Ledgers · ${printPageCount} print pages</strong>
-      <span id="capitalLedgerPrintStatus" class="print-toolbar-note">Loading finalized Capital Ledger design…</span>
+      <span id="capitalLedgerPrintStatus" class="print-toolbar-note">Loading finalized production Capital Ledger design…</span>
     </div>
     <button id="capitalLedgerPrintButton" type="button" disabled>Print / Save PDF</button>
   </div>
   ${pages}
-  <script type="module">
-    import { capitalLedgerMarkup } from "/card-design/capital-ledger.js";
-    import { loadCurrentGame } from "/game-data/current-game.mjs";
+  <script>
+    (() => {
+      const status = document.getElementById("capitalLedgerPrintStatus");
+      const printButton = document.getElementById("capitalLedgerPrintButton");
+      const frames = [...document.querySelectorAll("[data-capital-ledger-sheet-frame]")];
+      const timeoutMs = ${PRODUCTION_RENDER_TIMEOUT_MS};
+      const delay = ms => new Promise(resolve => window.setTimeout(resolve, ms));
 
-    const status = document.getElementById("capitalLedgerPrintStatus");
-    const printButton = document.getElementById("capitalLedgerPrintButton");
-
-    async function preloadRenderedBackgrounds() {
-      const urls = new Set();
-      document.querySelectorAll(".capital-ledger-card .reference-card-interior").forEach(interior => {
-        const background = getComputedStyle(interior).backgroundImage || "";
-        for (const match of background.matchAll(/url\\(["']?([^"')]+)["']?\\)/g)) {
-          urls.add(new URL(match[1], document.baseURI).href);
+      function frameRenderState(frame) {
+        try {
+          const body = frame.contentDocument?.body;
+          if (!body) return { ready: false, error: "" };
+          if (body.dataset.renderReady === "error") {
+            return {
+              ready: false,
+              error: body.dataset.renderErrorMessage || "A production Capital Ledger frame failed to render.",
+            };
+          }
+          return { ready: body.dataset.renderReady === "true", error: "" };
+        } catch (error) {
+          return { ready: false, error: error.message || String(error) };
         }
-      });
-      await Promise.all([...urls].map(src => new Promise(resolve => {
-        const image = new Image();
-        image.onload = resolve;
-        image.onerror = resolve;
-        image.src = src;
-      })));
-    }
+      }
 
-    try {
-      const currentGame = await loadCurrentGame();
-      const template = document.createElement("template");
-      template.innerHTML = capitalLedgerMarkup(currentGame.displayVersion || "Current").trim();
-      const ledger = template.content.firstElementChild;
-      if (!ledger) throw new Error("The finalized Capital Ledger renderer returned no card face.");
+      async function waitForProductionLedgerFrames() {
+        const deadline = performance.now() + timeoutMs;
+        while (performance.now() < deadline) {
+          const states = frames.map(frameRenderState);
+          const failed = states.find(state => state.error);
+          if (failed) throw new Error(failed.error);
+          if (states.every(state => state.ready)) return;
+          await delay(25);
+        }
+        throw new Error("Timed out waiting for finalized Capital Ledger production renders.");
+      }
 
-      document.querySelectorAll("[data-capital-ledger-slot]").forEach(slot => {
-        slot.replaceChildren(ledger.cloneNode(true));
-      });
+      async function preloadProductionLedgerFrameAssets() {
+        const backgroundUrls = new Set();
+        await Promise.all(frames.map(async frame => {
+          const frameDocument = frame.contentDocument;
+          if (frameDocument?.fonts?.ready) await frameDocument.fonts.ready;
+          const interior = frameDocument?.querySelector(".capital-ledger-card .reference-card-interior");
+          const background = interior && frame.contentWindow
+            ? frame.contentWindow.getComputedStyle(interior).backgroundImage || ""
+            : "";
+          for (const match of background.matchAll(/url\\(["']?([^"')]+)["']?\\)/g)) {
+            backgroundUrls.add(new URL(match[1], frameDocument.baseURI).href);
+          }
+        }));
 
-      if (document.fonts?.ready) await document.fonts.ready;
-      await preloadRenderedBackgrounds();
+        await Promise.all([...backgroundUrls].map(src => new Promise(resolve => {
+          const image = new Image();
+          image.onload = resolve;
+          image.onerror = resolve;
+          image.src = src;
+        })));
+      }
 
-      status.textContent = "Finalized design loaded. Enable two-sided printing and flip on the long edge.";
-      printButton.disabled = false;
-      printButton.addEventListener("click", () => window.print());
-      document.body.dataset.renderReady = "true";
-    } catch (error) {
-      console.error(error);
-      status.textContent = "Unable to load finalized Capital Ledger: " + error.message;
-      document.body.dataset.renderReady = "error";
-    }
+      (async () => {
+        try {
+          if (!frames.length) throw new Error("No Capital Ledger production frames were created.");
+          await waitForProductionLedgerFrames();
+          await preloadProductionLedgerFrameAssets();
+          status.textContent = "Finalized design loaded. Enable two-sided printing and flip on the long edge.";
+          printButton.disabled = false;
+          printButton.addEventListener("click", () => window.print());
+          document.body.dataset.renderReady = "true";
+        } catch (error) {
+          console.error(error);
+          status.textContent = "Unable to load finalized Capital Ledger: " + error.message;
+          document.body.dataset.renderReady = "error";
+        }
+      })();
+    })();
   <\/script>
 </body>
 </html>`;
@@ -221,7 +239,7 @@ body{margin:0;background:#f3f3f3;color:#111;font-family:var(--font-interface,Ari
   function capitalLedgerPageHtml(side, pairName, isLastPage) {
     const cells = Array.from({ length: LEDGERS_PER_SHEET }, (_, position) => {
       const duplexSlot = side === "back" ? mirrorIndexForLongEdge(position) : position;
-      return `<td data-duplex-side="${side}" data-duplex-slot="${duplexSlot}"><div class="capital-ledger-slot" data-capital-ledger-slot></div></td>`;
+      return `<td data-duplex-side="${side}" data-duplex-slot="${duplexSlot}"><div class="capital-ledger-slot">${capitalLedgerSheetFrameHtml(side)}</div></td>`;
     });
     const rows = Array.from({ length: 3 }, (_, rowIndex) => {
       const start = rowIndex * COLUMNS;
@@ -238,6 +256,15 @@ body{margin:0;background:#f3f3f3;color:#111;font-family:var(--font-interface,Ari
     const row = Math.floor(index / COLUMNS);
     const column = index % COLUMNS;
     return row * COLUMNS + (COLUMNS - 1 - column);
+  }
+
+  function productionLedgerFrameSource(side) {
+    return `/card-design/component-print-render.html?kind=${encodeURIComponent(PRODUCTION_LEDGER_KIND)}&id=${encodeURIComponent(PRODUCTION_LEDGER_COMPONENT_ID)}&side=${encodeURIComponent(side)}`;
+  }
+
+  function capitalLedgerSheetFrameHtml(side) {
+    const src = productionLedgerFrameSource(side);
+    return `<iframe class="capital-ledger-production-frame" data-capital-ledger-sheet-frame src="${src}" title="Capital Ledger finalized production render, ${side}" scrolling="no" loading="eager"></iframe>`;
   }
 
   function productionLedgerFrame(documentNode, side) {
@@ -257,7 +284,7 @@ body{margin:0;background:#f3f3f3;color:#111;font-family:var(--font-interface,Ari
     frame.className = "production-component-frame";
     frame.dataset.productionRenderFrame = "true";
     frame.dataset.productionRenderKind = "component";
-    frame.src = `/card-design/component-print-render.html?kind=${encodeURIComponent(PRODUCTION_LEDGER_KIND)}&id=${encodeURIComponent(PRODUCTION_LEDGER_COMPONENT_ID)}&side=${encodeURIComponent(side)}`;
+    frame.src = productionLedgerFrameSource(side);
     frame.title = `Capital Ledger finalized production render, ${side}`;
     frame.setAttribute("scrolling", "no");
     frame.setAttribute("loading", "eager");
