@@ -4,12 +4,16 @@ import { describe, expect, it } from 'vitest';
 const printer = readFileSync('deckbuilder/print-capital-ledger.js', 'utf8');
 
 describe('Deckbuilder Capital Ledger printing', () => {
-  it('uses the finalized production Capital Ledger instead of duplicating placeholder markup', () => {
+  it('uses the canonical production renderer for bulk Ledger sheets', () => {
     expect(printer).toContain('PRODUCTION_LEDGER_COMPONENT_ID = "financiers-capital-ledger"');
-    expect(printer).toContain('import { capitalLedgerMarkup } from "/card-design/capital-ledger.js";');
-    expect(printer).toContain('capitalLedgerMarkup(currentGame.displayVersion || "Current")');
-    expect(printer).toContain('/card-design/capital-ledger.css');
+    expect(printer).toContain('capitalLedgerSheetFrameHtml(side)');
+    expect(printer).toContain('data-capital-ledger-sheet-frame');
+    expect(printer).toContain('productionLedgerFrameSource(side)');
+    expect(printer).toContain('/card-design/component-print-render.html?kind=');
+    expect(printer).toContain('waitForProductionLedgerFrames');
+    expect(printer).toContain('preloadProductionLedgerFrameAssets');
 
+    expect(printer).not.toContain('import { capitalLedgerMarkup } from "/card-design/capital-ledger.js";');
     expect(printer).not.toContain('Current Capital limit');
     expect(printer).not.toContain('Reusable supplemental ledger — no marker required');
     expect(printer).not.toContain('capital-limit-field');
@@ -21,11 +25,19 @@ describe('Deckbuilder Capital Ledger printing', () => {
     expect(printer).not.toContain('reusable Capital Ledgers');
   });
 
+  it('aligns the Ledger sheet count and print button on one control row', () => {
+    expect(printer).toContain('class="capital-ledger-print-controls"');
+    expect(printer).toContain('grid-template-columns:minmax(0,11rem) max-content');
+    expect(printer).toContain('for="capitalLedgerSheetCount"');
+    expect(printer).toContain('style="grid-column:1;grid-row:2;margin:0;width:100%"');
+    expect(printer).toContain('style="grid-column:2;grid-row:2;margin:0;align-self:stretch;height:auto"');
+  });
+
   it('renders finalized Ledger faces in the normal deck print package', () => {
     expect(printer).toContain('formatCapitalLedgerForProduction');
     expect(printer).toContain('productionLedgerFrame(documentNode, "front")');
     expect(printer).toContain('productionLedgerFrame(documentNode, "reverse")');
-    expect(printer).toContain('component-print-render.html?kind=');
+    expect(printer).toContain('frame.src = productionLedgerFrameSource(side)');
     expect(printer).toContain('wrapper.dataset.productionBackPolicy = "ledgerDuplex"');
   });
 
