@@ -430,6 +430,7 @@ export async function loadReferenceRecords() {
       name: component.name,
       faction: component.faction,
       family: component.family,
+      copyMode: component.copyMode || 'guide-derived',
       source: currentGame.authorityUrl,
       version: currentGame.displayVersion,
       faces: {
@@ -449,6 +450,7 @@ function typedBlock(blocks, type, index, sourceName) {
 }
 
 function selectedSectionBlocks(record, sideName, section) {
+  if (record.copyMode === 'bespoke') return section.blocks;
   const selectors = REFERENCE_PRESENTATION[record.id]?.[sideName]?.[section.sourceHeading];
   if (!selectors) return section.blocks;
 

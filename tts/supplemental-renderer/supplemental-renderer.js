@@ -167,6 +167,13 @@ async function main() {
   const record = (catalog.ready || []).find(item => item.id === componentId);
   if (!record) throw new Error(`Unknown ready supplemental component: ${componentId || 'missing'}`);
 
+  // TTS supplemental records predate the bespoke-copy flag. Infer it from the
+  // dedicated player-aid source path so reference-card presentation selectors
+  // cannot re-filter approved bespoke copy through the old guide-derived map.
+  if (record.renderer === 'reference-card' && String(record.source || '').includes('/reference-copy/')) {
+    record.copyMode = 'bespoke';
+  }
+
   if (record.renderer === 'rite-card') {
     if (side === 'front') renderRiteFront(record);
     else if (side === 'reverse') renderRiteReverse(record);

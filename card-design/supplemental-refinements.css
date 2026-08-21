@@ -35,3 +35,245 @@
   .tracker-mark:nth-child(2) .tracker-band-label {
   font-weight: 500;
 }
+
+/* Financier reference: use the finalized Diplomat reference card as the shared
+   faction-reference grammar — tracker-style header, open parchment layout,
+   restrained section rules, open lookup rows, and the standard metadata footer. */
+.reference-card[data-component-id="financiers-reference"] .reference-card-interior {
+  grid-template-rows: 0.56in minmax(0, 1fr) 0.18in;
+  background-color: var(--card-parchment, #e6d4ae);
+  background-image:
+    linear-gradient(var(--component-parchment-tint), var(--component-parchment-tint)),
+    var(--parchment-image, var(--reference-parchment-image));
+  background-position: center center, center center;
+  background-repeat: no-repeat, no-repeat;
+  background-size: cover, cover;
+  background-blend-mode: multiply, normal;
+}
+
+.reference-card[data-component-id="financiers-reference"] .reference-card-interior::after {
+  content: none;
+}
+
+.reference-card[data-component-id="financiers-reference"] .reference-card-header {
+  display: grid;
+  grid-template-columns: 0.18in minmax(0, 1fr);
+  grid-template-rows: auto auto auto;
+  align-content: center;
+  column-gap: 0.055in;
+  row-gap: 0;
+  padding: 0.024in 0.085in 0.018in;
+  border-bottom: 0;
+  background: transparent;
+}
+
+.reference-card[data-component-id="financiers-reference"] .reference-card-header::before {
+  grid-column: 2;
+  grid-row: 1;
+  color: var(--component-accent-ink);
+  content: "Financiers";
+  font-family: var(--font-interface, Arial, sans-serif);
+  font-size: 5.2pt;
+  font-weight: 850;
+  letter-spacing: 0.105em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.reference-card[data-component-id="financiers-reference"] .reference-face-title {
+  grid-column: 2;
+  grid-row: 2;
+  display: block;
+  margin: 0.008in 0 0;
+  font-size: 12.2pt;
+  letter-spacing: 0.035em;
+  line-height: 0.9;
+  white-space: nowrap;
+  -webkit-line-clamp: unset;
+}
+
+.reference-card[data-component-id="financiers-reference"] .reference-type-line {
+  display: contents;
+}
+
+.reference-card[data-component-id="financiers-reference"] .reference-faction-emblem {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  width: 0.18in;
+  height: 0.18in;
+  align-self: center;
+  background: var(--component-accent-ink);
+}
+
+.reference-card[data-component-id="financiers-reference"] .reference-type-line span:last-child {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  min-width: 0;
+  margin-top: 0.030in;
+  padding-top: 0.022in;
+  border-top: 0.65px solid color-mix(in srgb, var(--component-accent-ink) 38%, transparent);
+  color: var(--component-accent-ink);
+  font-family: var(--font-interface, Arial, sans-serif);
+  font-size: 4.65pt;
+  font-weight: 750;
+  letter-spacing: 0.07em;
+  line-height: 1;
+  text-overflow: clip;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.reference-card[data-component-id="financiers-reference"] .reference-body {
+  display: flex;
+  flex-direction: column;
+  align-content: normal;
+  gap: var(--reference-section-gap);
+  padding: 0.026in 0.070in 0.022in;
+}
+
+.reference-card[data-component-id="financiers-reference"] .reference-panel {
+  padding-left: 0;
+  border-left: 0;
+}
+
+.reference-card[data-component-id="financiers-reference"] .reference-panel + .reference-panel {
+  padding-top: calc(0.010in * var(--reference-rules-scale));
+  border-top: 0.55px solid color-mix(in srgb, var(--component-accent-ink) 30%, transparent);
+}
+
+.reference-card[data-component-id="financiers-reference"] .reference-panel-heading {
+  padding-bottom: calc(0.007in * var(--reference-rules-scale));
+}
+
+.reference-card[data-component-id="financiers-reference"] .reference-panel-heading h4 {
+  color: var(--component-accent-ink);
+  font-size: calc(4.85pt * var(--reference-rules-scale));
+  letter-spacing: 0.055em;
+}
+
+.reference-card[data-component-id="financiers-reference"] .reference-prose {
+  font-size: calc(5.95pt * var(--reference-rules-scale));
+  line-height: 1.08;
+}
+
+.reference-card[data-component-id="financiers-reference"] .reference-callout {
+  grid-template-columns: minmax(0.72in, 0.82in) minmax(0, 1fr);
+  column-gap: 0.026in;
+}
+
+.reference-card[data-component-id="financiers-reference"] .reference-callout-label {
+  color: var(--component-accent-ink);
+  font-size: calc(4.4pt * var(--reference-rules-scale));
+  letter-spacing: 0.028em;
+}
+
+.reference-card[data-component-id="financiers-reference"] .reference-callout p {
+  font-size: calc(5.78pt * var(--reference-rules-scale));
+  line-height: 1.07;
+}
+
+.reference-card[data-component-id="financiers-reference"] .reference-callout + .reference-callout {
+  padding-top: calc(0.010in * var(--reference-rules-scale));
+  border-top: 0;
+}
+
+.reference-card[data-component-id="financiers-reference"] .reference-matrix {
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.reference-card[data-component-id="financiers-reference"] .reference-table {
+  font-family: var(--font-reading, "adobe-caslon-pro", Georgia, serif);
+  font-size: calc(4.75pt * var(--reference-rules-scale));
+  line-height: 1.02;
+}
+
+.reference-card[data-component-id="financiers-reference"] .reference-table th,
+.reference-card[data-component-id="financiers-reference"] .reference-table td {
+  padding:
+    calc(0.006in * var(--reference-rules-scale))
+    0.009in
+    calc(0.005in * var(--reference-rules-scale));
+}
+
+.reference-card[data-component-id="financiers-reference"] .reference-table th {
+  border-bottom: 0.55px solid color-mix(in srgb, var(--component-accent-ink) 42%, transparent);
+  background: transparent;
+  color: var(--component-accent-ink);
+  font-family: var(--font-interface, Arial, sans-serif);
+  font-size: calc(3.95pt * var(--reference-rules-scale));
+  font-weight: 850;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+.reference-card[data-component-id="financiers-reference"] .reference-table tbody tr + tr td {
+  border-top: 0;
+}
+
+.reference-card[data-component-id="financiers-reference"] .reference-table tbody tr:nth-child(even) td {
+  background: transparent;
+}
+
+.reference-card[data-component-id="financiers-reference"] .reference-table-key {
+  color: var(--component-accent-ink);
+  font-family: var(--font-interface, Arial, sans-serif);
+  font-size: calc(4.2pt * var(--reference-rules-scale));
+  font-weight: 850;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+}
+
+.reference-card[data-component-id="financiers-reference"] [data-reference-section="buying-deeds"] .reference-matrix + .reference-matrix {
+  margin-top: calc(0.006in * var(--reference-rules-scale));
+}
+
+.reference-card[data-component-id="financiers-reference"] [data-reference-section="subsidize"] .reference-panel-content {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: 0.020in;
+  row-gap: calc(0.010in * var(--reference-rules-scale));
+  align-items: start;
+}
+
+.reference-card[data-component-id="financiers-reference"] [data-reference-section="subsidize"] .reference-prose {
+  grid-column: 1 / -1;
+}
+
+.reference-card[data-component-id="financiers-reference"] [data-reference-section="subsidize"] .reference-callout {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(0.003in * var(--reference-rules-scale));
+  padding: calc(0.004in * var(--reference-rules-scale)) 0;
+  border-top: 0;
+  border-left: 0.45px solid color-mix(in srgb, var(--component-accent-ink) 22%, transparent);
+  text-align: center;
+}
+
+.reference-card[data-component-id="financiers-reference"] [data-reference-section="subsidize"] .reference-callout:first-of-type {
+  border-left: 0;
+}
+
+.reference-card[data-component-id="financiers-reference"] [data-reference-section="subsidize"] .reference-callout-label {
+  font-size: calc(5.25pt * var(--reference-rules-scale));
+}
+
+.reference-card[data-component-id="financiers-reference"] [data-reference-section="subsidize"] .reference-callout p {
+  font-size: calc(5.55pt * var(--reference-rules-scale));
+  white-space: nowrap;
+}
+
+.reference-card[data-component-id="financiers-reference"] .card-footer {
+  min-height: 0.18in;
+  padding: 0.028in 0.055in 0.016in;
+  background: var(--component-footer-tint);
+  line-height: 1.3;
+}
+
+.reference-card[data-component-id="financiers-reference"] .card-footer span:nth-child(2) {
+  color: var(--component-accent-ink);
+}
