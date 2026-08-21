@@ -210,7 +210,7 @@ body{margin:0;background:#f3f3f3;color:#111;font-family:var(--font-interface,Ari
       document.body.dataset.renderReady = "true";
     } catch (error) {
       console.error(error);
-      status.textContent = `Unable to load finalized Capital Ledger: ${error.message}`;
+      status.textContent = "Unable to load finalized Capital Ledger: " + error.message;
       document.body.dataset.renderReady = "error";
     }
   <\/script>
