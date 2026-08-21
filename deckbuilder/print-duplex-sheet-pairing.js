@@ -224,16 +224,20 @@
   function componentIsPrintableProduction(component, descriptor) {
     if (!descriptor) return false;
     if (component.productionStatus === "ready") return true;
-    // Proposal layouts are the canonical current physical surface even while
-    // individual artwork slots remain pending. Missing artwork stays visibly
-    // pending rather than falling back to the obsolete text-only compositor.
-    return component.family === "proposal-treaty-card" && component.productionStatus === "artwork-pending";
+    // Proposal faces already use their final physical design and artwork. They
+    // remain export-pending only because the separate supplemental/TTS export
+    // integration is not finalized; Deckbuilder printing should keep using the
+    // canonical production Proposal renderer in the meantime.
+    return component.family === "proposal-treaty-card"
+      && (component.designStatus || "final") === "final"
+      && component.productionStatus === "export-pending";
   }
 
   function annotateFallback(legacyCard, component) {
     if (!component) return;
     legacyCard.dataset.contractComponentId = component.id;
     legacyCard.dataset.contractFamily = component.family;
+    legacyCard.dataset.contractDesignStatus = component.designStatus || "final";
     legacyCard.dataset.contractProductionStatus = component.productionStatus;
     legacyCard.dataset.contractBackPolicy = component.backPolicy || "";
     if (component.backPolicy === "standardBack") legacyCard.classList.add("production-standard-back");

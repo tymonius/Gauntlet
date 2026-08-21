@@ -17,7 +17,7 @@
     if (territoryList && territoryDivider && !document.getElementById("deckFactionComponents")) {
       const divider = document.createElement("div");
       divider.className = "deck-section-divider";
-      divider.textContent = "Faction components";
+      divider.textContent = "Deck components";
 
       const container = document.createElement("div");
       container.id = "deckFactionComponents";
@@ -33,7 +33,7 @@
       state.currentFactionComponentsReady = true;
       document.body.dataset.currentFactionComponents = "ready";
     } catch (error) {
-      console.error("Unable to project faction components from current-game authority", error);
+      console.error("Unable to project deck components from current-game authority", error);
       document.body.dataset.currentFactionComponents = "error";
     }
 
@@ -90,6 +90,7 @@
       if (!contract) continue;
       legacy.contractId = contract.id;
       legacy.contractFamily = contract.family;
+      legacy.designStatus = contract.designStatus || "final";
       legacy.productionStatus = contract.productionStatus;
       legacy.backPolicy = contract.backPolicy;
       legacy.renderSource = contract.renderSource || null;
@@ -150,6 +151,7 @@
           ],
           footer: "Supplemental Ritual card — not a Playable Deck card",
           backPolicy: "specialBack",
+          designStatus: "final",
           productionStatus: "ready",
           renderSource: { surface: "card-design/rite-card.js", componentId: ritual.id },
         };
@@ -159,14 +161,23 @@
     }
   }
 
-  function componentMeta(component) {
+  function componentMeta(component, shared = false) {
+    if (shared && component.family === "reference-card") return "Shared reference · every deck";
     if (component.family === "proposal-treaty-card") return "Double-sided Proposal / Treaty Article";
     if (component.family === "rite-card") return "Double-sided incomplete / completed Rite";
     if (component.family === "tracker") return "Supplemental tracker";
     if (component.family === "reference-card") return "Supplemental reference";
     if (component.family === "ledger") return "Supplemental ledger";
     if (component.family === "deed-card") return "Shared supplemental cards";
-    return "Faction component";
+    return shared ? "Shared component" : "Faction component";
+  }
+
+  function designMeta(component) {
+    const status = component.designStatus || "final";
+    if (status === "placeholder") return "Placeholder · design pending";
+    if (status === "refinement-pending") return "Initial design · refinement pending";
+    if (component.productionStatus === "export-pending") return "Final design · export pending";
+    return "Final design";
   }
 
   function renderFactionComponents() {
@@ -179,26 +190,33 @@
 
     if (!faction || !leader || !currentGame || !state.currentFactionComponentsReady) {
       container.className = "deck-list empty-state";
-      container.textContent = "Loading current faction components…";
+      container.textContent = "Loading current deck components…";
       return;
     }
 
+    const sharedComponents = (currentGame.sharedComponents || []).filter(component => (
+      component.cardLike && component.deckInclusion === "every-deck"
+    ));
     const components = (currentGame.components || []).filter(component => component.faction === state.factionId);
     const items = [
+      ...sharedComponents.map(component => ({
+        name: component.quantityPerPlayer > 1 ? `${component.quantityPerPlayer} × ${component.name}` : component.name,
+        meta: `${componentMeta(component, true)} · ${designMeta(component)}`,
+      })),
       {
         name: `${leader.name} Leader Card`,
-        meta: `${faction.name} · Selected leader`
+        meta: `${faction.name} · Selected leader · Final design`
       },
       ...components.map(component => ({
         name: component.quantity > 1 ? `${component.quantity} × ${component.name}` : component.name,
-        meta: componentMeta(component),
+        meta: `${componentMeta(component)} · ${designMeta(component)}`,
       }))
     ];
 
     if (state.factionId === "mystics" && currentGame.mystics?.ritual) {
       items.push({
         name: currentGame.mystics.ritual.name,
-        meta: "Supplemental Ritual card",
+        meta: "Supplemental Ritual card · Final design",
       });
     }
 
