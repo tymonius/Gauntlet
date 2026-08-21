@@ -202,7 +202,7 @@ export async function validateTtsComponentContract(contract) {
   assert(designStatusFor(universalReference) === 'placeholder' && universalReference.productionStatus === 'design-pending', 'Universal Reference Card must remain a design-pending placeholder until its general-reference content is authored.');
 
   const trackers = (contract.components || []).filter((component) => component.tts?.representation === 'sliding-tracker');
-  assert(trackers.length === 5, `Current physical package must contain exactly five sliding trackers; found ${trackers.length}.`);
+  assert(trackers.length === 6, `Current physical package must contain exactly six sliding trackers; found ${trackers.length}.`);
   for (const tracker of trackers) {
     if (tracker.cover?.kind === 'component') {
       const cover = map.get(tracker.cover.componentId);
@@ -223,9 +223,17 @@ export async function validateTtsComponentContract(contract) {
   const factionReferences = (contract.components || []).filter((component) => component.family === 'reference-card');
   assert(factionReferences.length === 7, `Current faction packages must contain exactly seven faction reference cards; found ${factionReferences.length}.`);
   const diplomatReference = map.get('diplomats-reference');
+  const financierReference = map.get('financiers-reference');
   assert(designStatusFor(diplomatReference) === 'final', 'The finalized Diplomat Reference Card must be marked final.');
-  const referencesAwaitingRefinement = factionReferences.filter((component) => component.id !== 'diplomats-reference');
-  assert(referencesAwaitingRefinement.length === 6 && referencesAwaitingRefinement.every((component) => designStatusFor(component) === 'refinement-pending'), 'The six remaining faction reference cards must remain refinement-pending until individually finalized.');
+  assert(designStatusFor(financierReference) === 'final', 'The finalized Financier Reference Card must be marked final.');
+  const finalizedReferenceIds = new Set(['diplomats-reference', 'financiers-reference']);
+  const referencesAwaitingRefinement = factionReferences.filter((component) => !finalizedReferenceIds.has(component.id));
+  assert(referencesAwaitingRefinement.length === 5 && referencesAwaitingRefinement.every((component) => designStatusFor(component) === 'refinement-pending'), 'The five remaining faction reference cards must remain refinement-pending until individually finalized.');
+
+  const capitalLimitTracker = map.get('financiers-capital-limit-tracker');
+  assert(capitalLimitTracker, 'Financiers package must contain its Capital Limit Tracker.');
+  assert(capitalLimitTracker.trackedValue?.starting === 3 && capitalLimitTracker.trackedValue?.maximum === null, 'Capital Limit Tracker must begin at 3 in standard setup and must not define a rules maximum.');
+  assert(capitalLimitTracker.cover?.kind === 'leader', 'Capital Limit Tracker must use the selected Financier Leader as its physical cover.');
 
   const ledger = map.get('financiers-capital-ledger');
   assert(ledger?.productionStatus === 'export-pending' && designStatusFor(ledger) === 'final', 'Capital Ledger design is final and must be marked export-pending rather than design-pending.');

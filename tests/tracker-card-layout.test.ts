@@ -12,14 +12,18 @@ const trackerById = new Map(
 );
 
 describe('tracker card cap layout', () => {
-  it('uses standard resource caps and preserves only the divider line for Operation Progress', () => {
+  it('uses standard resource caps and preserves derived/uncapped tracker semantics', () => {
     expect(trackerById.get('military-command-tracker')?.trackedValue?.maximum).toBe(2);
     expect(trackerById.get('diplomats-influence-tracker')?.trackedValue?.maximum).toBe(10);
+    expect(trackerById.get('financiers-capital-limit-tracker')?.trackedValue?.maximum).toBeNull();
+    expect(trackerById.get('financiers-capital-limit-tracker')?.trackedValue?.starting).toBe(3);
     expect(trackerById.get('intelligence-intel-tracker')?.trackedValue?.maximum).toBeNull();
     expect(trackerById.get('intelligence-operation-progress-tracker')?.trackedValue?.maximum).toBeNull();
     expect(trackerById.get('inquisition-conviction-tracker')?.trackedValue?.maximum).toBe(4);
     expect(renderer).toContain('Standard ${resourceName} cap · ${component.resourceMaximum}');
     expect(renderer).toContain('Standard ${resourceName} cap · none');
+    expect(renderer).toContain("component.contractId === 'financiers-capital-limit-tracker'");
+    expect(renderer).toContain('Maximum Capital Limit · Uncapped');
     expect(renderer).toContain("component.contractId === 'intelligence-operation-progress-tracker'");
     expect(renderer).toContain('tracker-cap tracker-cap-empty');
     expect(styles).toContain('border-top: 0.65px solid var(--tracker-line-soft);');
@@ -30,6 +34,7 @@ describe('tracker card cap layout', () => {
     expect(renderer).not.toContain('0 = fully covered');
     expect(renderer).toContain('tracker-instructions');
     expect(renderer).toContain('Place faction leader card on top of this tracker and slide it upward or downward');
+    expect(renderer).toContain('current Capital Limit value.');
     expect(styles).toContain('font-family: "adobe-caslon-pro", Georgia, serif;');
     expect(styles).toContain('font-style: italic;');
     expect(styles).toContain('-webkit-text-size-adjust: 100%;');
@@ -40,6 +45,13 @@ describe('tracker card cap layout', () => {
     expect(renderer).toContain('interiorRect.bottom - footerRect.top');
     expect(renderer).toContain("scale.style.height = 'auto'");
     expect(renderer).toContain("card.dataset.trackerLayout = 'measured'");
+  });
+
+  it('uses a 1–15 visible Capital Limit scale with zero represented by full cover', () => {
+    expect(renderer).toMatch(/'financiers-capital-limit-tracker'\s*:\s*\{[\s\S]*?max:\s*15/);
+    expect(renderer).toContain('Array.from({ length: max }, (_, index) => index + 1)');
+    expect(renderer).toContain('Registration bands 1 through ${max}');
+    expect(renderer).toContain('physical scale 0 through ${max}');
   });
 
   it('shortens only the Operation Progress face title while retaining the normal tracker-title pattern elsewhere', () => {

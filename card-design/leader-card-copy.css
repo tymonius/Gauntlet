@@ -1,0 +1,132 @@
+.leader-card--standardized .card-rules {
+  gap: 0.028in;
+  padding: 0.034in 0.070in 0.030in;
+}
+
+.leader-card--standardized .leader-rule-section {
+  grid-template-columns: 0.72in minmax(0, 1fr);
+  align-items: start;
+  column-gap: 0.042in;
+}
+
+.leader-card--standardized .leader-rule-section + .leader-rule-section {
+  padding-top: calc(0.008in * var(--rules-scale));
+  border-top: 0.45px solid color-mix(in srgb, var(--component-accent-ink) 24%, transparent);
+}
+
+.leader-card--standardized .leader-rule-section h4 {
+  padding-top: 0.004in;
+  font-size: calc(4.45pt * var(--rules-scale));
+  letter-spacing: 0.050em;
+  line-height: 1.08;
+}
+
+.leader-rule-content {
+  min-width: 0;
+}
+
+.leader-feature-line,
+.leader-feature-group-name {
+  margin: 0;
+  font-family: "adobe-caslon-pro", Georgia, serif;
+  font-size: calc(5.55pt * var(--rules-scale));
+  line-height: 1.07;
+}
+
+.leader-feature-primary {
+  display: block;
+}
+
+.leader-feature-line strong,
+.leader-feature-group-name strong {
+  color: var(--component-accent-ink);
+  font-family: var(--font-interface);
+  font-size: calc(4.75pt * var(--rules-scale));
+  font-weight: 800;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+}
+
+.leader-feature-descriptor {
+  margin-left: 0.020in;
+  color: color-mix(in srgb, var(--card-ink) 76%, var(--component-accent-ink));
+  font-family: "adobe-caslon-pro", Georgia, serif;
+  font-size: calc(5.15pt * var(--rules-scale));
+  font-style: italic;
+  line-height: 1.05;
+}
+
+.leader-feature-text {
+  display: block;
+  margin-top: calc(0.006in * var(--rules-scale));
+  font-size: calc(5.5pt * var(--rules-scale));
+  line-height: 1.07;
+}
+
+.leader-rule-content--grouped {
+  display: grid;
+  gap: calc(0.014in * var(--rules-scale));
+}
+
+.leader-rule-content--grouped .leader-feature-group-name {
+  line-height: 1;
+}
+
+.leader-rule-content--grouped .leader-feature-line {
+  padding-left: 0.018in;
+}
+
+.leader-rule-content--grouped .leader-feature-line + .leader-feature-line {
+  padding-top: calc(0.007in * var(--rules-scale));
+  border-top: 0.35px solid color-mix(in srgb, var(--component-accent-ink) 16%, transparent);
+}
+
+.leader-card--standardized .leader-rule-section--resource .leader-feature-text,
+.leader-card--standardized .leader-rule-section--progression .leader-feature-text {
+  font-size: calc(5.32pt * var(--rules-scale));
+}
+
+/* Military is the one deliberately dense Leader family: three Orders live
+   inside the single Leader Ability section. Preserve the standardized type
+   sizes and recover space through geometry rather than microscopic text. */
+.leader-card--standardized[data-faction="military"] .card-rules {
+  gap: 0.020in;
+  padding: 0.026in 0.060in 0.024in;
+}
+
+.leader-card--standardized[data-faction="military"] .leader-rule-section {
+  grid-template-columns: 0.64in minmax(0, 1fr);
+  column-gap: 0.032in;
+}
+
+.leader-card--standardized[data-faction="military"] .leader-rule-section + .leader-rule-section {
+  padding-top: calc(0.004in * var(--rules-scale));
+}
+
+.leader-card--standardized[data-faction="military"] .leader-rule-content--grouped {
+  gap: calc(0.007in * var(--rules-scale));
+}
+
+.leader-card--standardized[data-faction="military"] .leader-rule-content--grouped .leader-feature-line {
+  padding-left: 0;
+  line-height: 1.04;
+}
+
+.leader-card--standardized[data-faction="military"] .leader-rule-content--grouped .leader-feature-line + .leader-feature-line {
+  padding-top: calc(0.003in * var(--rules-scale));
+}
+
+.leader-card--standardized[data-faction="military"] .leader-feature-descriptor {
+  margin-left: 0.014in;
+}
+
+.leader-card--standardized[data-faction="military"] .leader-feature-text {
+  margin-top: calc(0.003in * var(--rules-scale));
+}
+
+@media print {
+  .leader-card--standardized .leader-rule-section + .leader-rule-section,
+  .leader-rule-content--grouped .leader-feature-line + .leader-feature-line {
+    print-color-adjust: exact;
+  }
+}

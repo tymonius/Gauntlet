@@ -8,6 +8,13 @@
 
 ## Front — Terms
 
+### Faction Features
+
+| Feature | Use |
+|---|---|
+| Terms | No Action · Before Onset |
+| Leverage | No Action · Before dice after refused Terms |
+
 ### Offering Terms
 
 During a pending battle, **before Onset**, choose an eligible Proposal and stake its required Influence by moving your tracker down the listed amount, then present the Proposal card to the opponent. They **accept** or **refuse**.

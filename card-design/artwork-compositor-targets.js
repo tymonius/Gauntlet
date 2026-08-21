@@ -24,6 +24,9 @@
 
   let returnView = null;
   let hookedDialog = null;
+  let viewportLock = null;
+  const openingRetries = new WeakSet();
+  const nativeShowModal = HTMLDialogElement.prototype.showModal;
 
   function restoreViewport(view) {
     if (!view) return;
@@ -38,6 +41,74 @@
     if (body) body.style.scrollBehavior = bodyBehavior;
   }
 
+  function lockViewport() {
+    if (viewportLock) return;
+    const root = document.documentElement;
+    const body = document.body;
+    if (!body) return;
+
+    viewportLock = {
+      x: window.scrollX,
+      y: window.scrollY,
+      rootOverflow: root.style.overflow,
+      rootScrollBehavior: root.style.scrollBehavior,
+      bodyPosition: body.style.position,
+      bodyTop: body.style.top,
+      bodyLeft: body.style.left,
+      bodyWidth: body.style.width,
+      bodyScrollBehavior: body.style.scrollBehavior,
+      bodyWidthPx: body.getBoundingClientRect().width,
+    };
+
+    // Native <dialog> focus can scroll the document to the dialog's DOM
+    // position before our preventScroll focus runs. Freeze the catalog itself
+    // before showModal() so that focus has nothing to scroll underneath it.
+    root.style.scrollBehavior = 'auto';
+    root.style.overflow = 'hidden';
+    body.style.scrollBehavior = 'auto';
+    body.style.position = 'fixed';
+    body.style.top = `-${viewportLock.y}px`;
+    body.style.left = `-${viewportLock.x}px`;
+    body.style.width = `${viewportLock.bodyWidthPx}px`;
+  }
+
+  function unlockViewport() {
+    const view = viewportLock;
+    viewportLock = null;
+    if (!view) return;
+
+    const root = document.documentElement;
+    const body = document.body;
+    root.style.overflow = view.rootOverflow;
+    root.style.scrollBehavior = view.rootScrollBehavior;
+    if (body) {
+      body.style.position = view.bodyPosition;
+      body.style.top = view.bodyTop;
+      body.style.left = view.bodyLeft;
+      body.style.width = view.bodyWidth;
+      body.style.scrollBehavior = view.bodyScrollBehavior;
+    }
+    restoreViewport(view);
+  }
+
+  // Lock only the artwork compositor. Other dialogs on the developer site keep
+  // their native behavior. Doing this at showModal() time avoids the regression
+  // caused by moving the viewport after the compositor had already been laid out.
+  HTMLDialogElement.prototype.showModal = function gauntletCompositorShowModal(...args) {
+    if (!this.classList.contains('art-compositor-dialog')) {
+      return nativeShowModal.apply(this, args);
+    }
+
+    if (returnView?.opener) openingRetries.delete(returnView.opener);
+    lockViewport();
+    try {
+      return nativeShowModal.apply(this, args);
+    } catch (error) {
+      unlockViewport();
+      throw error;
+    }
+  };
+
   function hookDialog() {
     const dialog = document.querySelector('.art-compositor-dialog');
     if (!dialog || dialog === hookedDialog) return;
@@ -45,6 +116,7 @@
     dialog.addEventListener('close', () => {
       const view = returnView;
       returnView = null;
+      unlockViewport();
       if (!view) return;
       restoreViewport(view);
       view.opener?.focus?.({ preventScroll: true });
@@ -52,19 +124,45 @@
     });
   }
 
-  // Capture the exact catalog viewport before the compositor opens. Native
-  // dialog focus is allowed to manage the modal normally; when the compositor
-  // closes, return to the card the user was editing.
+  function retryLaunchUntilOpen(opener) {
+    if (openingRetries.has(opener)) return;
+    openingRetries.add(opener);
+    let attempts = 0;
+
+    const retry = () => {
+      if (!openingRetries.has(opener)) return;
+      const dialog = document.querySelector('.art-compositor-dialog');
+      if (dialog?.open || !opener.isConnected || attempts >= 30) {
+        openingRetries.delete(opener);
+        return;
+      }
+
+      attempts += 1;
+      opener.click();
+      window.setTimeout(retry, 80);
+    };
+
+    window.setTimeout(retry, 80);
+  }
+
+  // Capture the exact catalog viewport before the compositor opens. The core
+  // compositor sometimes installs its launcher just before an iframe/card has
+  // become measurable; if that first click races rendering, retry the same
+  // launch automatically rather than requiring the user to click repeatedly.
   document.addEventListener('click', (event) => {
     const opener = event.target instanceof Element
       ? event.target.closest('.art-compositor-launch')
       : null;
     if (!opener) return;
-    returnView = {
-      x: window.scrollX,
-      y: window.scrollY,
-      opener,
-    };
+
+    if (!openingRetries.has(opener)) {
+      returnView = {
+        x: window.scrollX,
+        y: window.scrollY,
+        opener,
+      };
+      retryLaunchUntilOpen(opener);
+    }
     queueMicrotask(hookDialog);
   }, true);
 

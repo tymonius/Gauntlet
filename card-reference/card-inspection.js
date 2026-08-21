@@ -1,6 +1,8 @@
 (() => {
-  const CARD_WIDTH = 240;
-  const CARD_HEIGHT = 336;
+  const CARD_FORMATS = Object.freeze({
+    portrait: Object.freeze({ width: 240, height: 336 }),
+    landscape: Object.freeze({ width: 336, height: 240 }),
+  });
   const MAX_SCALE = 2.35;
   const INSPECTION_HISTORY_KEY = 'gauntletCardInspection';
 
@@ -13,6 +15,7 @@
   let closeButton;
   let currentCardHref = '';
   let currentLabel = 'Gauntlet card';
+  let currentCardFormat = 'portrait';
   let initialized = false;
 
   if (document.readyState === 'loading') {
@@ -79,7 +82,8 @@
     if (data.type === 'gauntlet-card-inspect' || data.type === 'gauntlet-territory-inspect') {
       const href = sameOriginUrl(data.href);
       if (!href) return;
-      openCard(href, data.label);
+      const format = data.type === 'gauntlet-territory-inspect' ? 'landscape' : 'portrait';
+      openCard(href, data.label, true, format);
       return;
     }
 
@@ -126,6 +130,23 @@
     return history.state && typeof history.state === 'object' ? history.state : {};
   }
 
+  function normalizeCardFormat(format) {
+    return Object.hasOwn(CARD_FORMATS, format) ? format : 'portrait';
+  }
+
+  function currentCardDimensions() {
+    return CARD_FORMATS[normalizeCardFormat(currentCardFormat)];
+  }
+
+  function applyCardFormat(format) {
+    currentCardFormat = normalizeCardFormat(format);
+    const { width, height } = currentCardDimensions();
+    if (cardFrame) {
+      cardFrame.style.width = `${width}px`;
+      cardFrame.style.height = `${height}px`;
+    }
+  }
+
   function buildInspectionState() {
     if (!artStage.hidden && artImage.src) {
       return {
@@ -133,6 +154,7 @@
         source: artImage.src,
         cardHref: currentCardHref,
         label: currentLabel,
+        cardFormat: currentCardFormat,
       };
     }
 
@@ -140,6 +162,7 @@
       view: 'card',
       cardHref: currentCardHref,
       label: currentLabel,
+      cardFormat: currentCardFormat,
     };
   }
 
@@ -163,18 +186,20 @@
   function restoreInspectionState(inspectionState) {
     const label = String(inspectionState.label || 'Gauntlet card');
     const cardHref = sameOriginUrl(inspectionState.cardHref) || '';
+    const cardFormat = normalizeCardFormat(inspectionState.cardFormat);
 
     if (inspectionState.view === 'art') {
       const source = sameOriginUrl(inspectionState.source);
       if (source) {
         currentCardHref = cardHref;
+        applyCardFormat(cardFormat);
         showArtwork(source, label, false);
         return;
       }
     }
 
     if (cardHref) {
-      openCard(cardHref, label, false);
+      openCard(cardHref, label, false, cardFormat);
       return;
     }
 
@@ -187,8 +212,9 @@
     labelElement.textContent = currentLabel;
   }
 
-  function openCard(href, label, pushHistory = true) {
+  function openCard(href, label, pushHistory = true, cardFormat = 'portrait') {
     currentCardHref = href;
+    applyCardFormat(cardFormat);
     setLabel(label);
     const renderHref = inspectionRenderUrl(href);
     if (cardFrame.src !== renderHref) cardFrame.src = renderHref;
@@ -233,16 +259,17 @@
 
   function scaleCardStage() {
     if (!dialog?.open || cardStage?.hidden) return;
-    const availableWidth = Math.max(240, window.innerWidth - 72);
-    const availableHeight = Math.max(336, window.innerHeight - 132);
+    const { width, height } = currentCardDimensions();
+    const availableWidth = Math.max(width, window.innerWidth - 72);
+    const availableHeight = Math.max(height, window.innerHeight - 132);
     const scale = Math.min(
       MAX_SCALE,
-      availableWidth / CARD_WIDTH,
-      availableHeight / CARD_HEIGHT,
+      availableWidth / width,
+      availableHeight / height,
     );
 
-    cardStage.style.width = `${CARD_WIDTH * scale}px`;
-    cardStage.style.height = `${CARD_HEIGHT * scale}px`;
+    cardStage.style.width = `${width * scale}px`;
+    cardStage.style.height = `${height * scale}px`;
     cardFrame.style.transform = `scale(${scale})`;
   }
 
@@ -262,5 +289,6 @@
     artImage.removeAttribute('src');
     artImage.alt = '';
     currentCardHref = '';
+    applyCardFormat('portrait');
   }
 })();
