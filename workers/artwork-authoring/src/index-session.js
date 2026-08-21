@@ -31,6 +31,16 @@ function isArtworkSave(request) {
   return request.method === 'POST' && requestPath(request) === SAVE_PATH;
 }
 
+function canSyncIdleBranch(comparison) {
+  return Number(comparison?.ahead_by) > 0 && Number(comparison?.behind_by) === 0;
+}
+
+function isNoOpValidation(status, message, branchesEqual) {
+  return Number(status) === 422
+    && String(message || '').toLowerCase() === 'validation failed'
+    && branchesEqual === true;
+}
+
 async function github(path, token, init = {}) {
   const response = await fetch(`https://api.github.com${path}`, {
     ...init,
@@ -107,7 +117,7 @@ async function syncIdleAuthoringBranch(request, env) {
     `/repos/${cfg.owner}/${cfg.repo}/compare/${encodeURIComponent(cfg.authorBranch)}...${encodeURIComponent(cfg.defaultBranch)}`,
     session.githubToken,
   );
-  if (comparison?.ahead_by > 0 && comparison?.behind_by === 0) {
+  if (canSyncIdleBranch(comparison)) {
     const encodedRef = `heads/${cfg.authorBranch}`.split('/').map(encodeURIComponent).join('/');
     await github(`/repos/${cfg.owner}/${cfg.repo}/git/refs/${encodedRef}`, session.githubToken, {
       method: 'PATCH',
@@ -129,12 +139,11 @@ async function normalizeNoOpValidation(response, request, env, context, savePayl
 
   const copy = response.clone();
   const payload = await copy.json().catch(() => null);
-  if (String(payload?.error || '').toLowerCase() !== 'validation failed') return response;
+  const equalBranches = await branchesMatch(context.session.githubToken, context.cfg);
+  if (!isNoOpValidation(response.status, payload?.error, equalBranches)) return response;
 
   // GitHub rejects creation of a PR when the authoring branch has no commits
   // beyond main. That is a valid no-op save, not an authoring failure.
-  if (!(await branchesMatch(context.session.githubToken, context.cfg))) return response;
-
   const direction = savePayload?.direction && typeof savePayload.direction === 'object'
     && Object.keys(savePayload.direction).length
     ? savePayload.direction
@@ -200,4 +209,9 @@ export default {
     );
     return normalizeExpiredSession(response);
   },
+};
+
+export const __sessionTest = {
+  canSyncIdleBranch,
+  isNoOpValidation,
 };
