@@ -88,6 +88,44 @@
   font-size: calc(5.32pt * var(--rules-scale));
 }
 
+/* Military is the one deliberately dense Leader family: three Orders live
+   inside the single Leader Ability section. Preserve the standardized type
+   sizes and recover space through geometry rather than microscopic text. */
+.leader-card--standardized[data-faction="military"] .card-rules {
+  gap: 0.020in;
+  padding: 0.026in 0.060in 0.024in;
+}
+
+.leader-card--standardized[data-faction="military"] .leader-rule-section {
+  grid-template-columns: 0.64in minmax(0, 1fr);
+  column-gap: 0.032in;
+}
+
+.leader-card--standardized[data-faction="military"] .leader-rule-section + .leader-rule-section {
+  padding-top: calc(0.004in * var(--rules-scale));
+}
+
+.leader-card--standardized[data-faction="military"] .leader-rule-content--grouped {
+  gap: calc(0.007in * var(--rules-scale));
+}
+
+.leader-card--standardized[data-faction="military"] .leader-rule-content--grouped .leader-feature-line {
+  padding-left: 0;
+  line-height: 1.04;
+}
+
+.leader-card--standardized[data-faction="military"] .leader-rule-content--grouped .leader-feature-line + .leader-feature-line {
+  padding-top: calc(0.003in * var(--rules-scale));
+}
+
+.leader-card--standardized[data-faction="military"] .leader-feature-descriptor {
+  margin-left: 0.014in;
+}
+
+.leader-card--standardized[data-faction="military"] .leader-feature-divider {
+  margin: 0 0.014in;
+}
+
 @media print {
   .leader-card--standardized .leader-rule-section + .leader-rule-section,
   .leader-rule-content--grouped .leader-feature-line + .leader-feature-line {
