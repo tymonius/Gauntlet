@@ -62,7 +62,7 @@ let currentDisplayVersion = 'Current';
 let supplementalGroups = [];
 
 function esc(value) {
-  return String(value ?? '').replace(/[&<>'"]/g, character => ({
+  return String(value ?? '').replace(/[&<>\'\"]/g, character => ({
     '&': '&amp;',
     '<': '&lt;',
     '>': '&gt;',
@@ -174,7 +174,7 @@ function trackerMarks(component, resourceName) {
 
 function trackerCapLabel(component, resourceName) {
   if (component.contractId === 'intelligence-operation-progress-tracker') return '';
-  if (component.contractId === 'financiers-capital-limit-tracker') return 'Rules maximum · none';
+  if (component.contractId === 'financiers-capital-limit-tracker') return 'Maximum Capital Limit · Uncapped';
   return Number.isFinite(component.resourceMaximum)
     ? `Standard ${resourceName} cap · ${component.resourceMaximum}`
     : `Standard ${resourceName} cap · none`;
