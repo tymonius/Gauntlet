@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 const catalogHtml = readFileSync('card-design/index.html', 'utf8');
 const inspectionHistory = readFileSync('card-design/card-inspection-history.js', 'utf8');
+const supplemental = readFileSync('card-design/supplemental-card.js', 'utf8');
 const supplementalRefinements = readFileSync('card-design/supplemental-refinements.css', 'utf8');
 const supplementalCss = readFileSync('card-design/supplemental-card.css', 'utf8');
 const deckbuilderMobilePreview = readFileSync('deckbuilder/mobile-card-preview.js', 'utf8');
@@ -18,6 +19,15 @@ describe('Card Design inspection navigation', () => {
     expect(inspectionHistory).toContain('history.back()');
     expect(inspectionHistory).toContain("dialog.card-inspection-dialog[open]");
     expect(inspectionHistory).toContain(".card-inspection-close");
+  });
+
+  it('keeps every reference face inspectable when async hydration finishes', () => {
+    expect(supplemental).toContain('function hydrateReferenceElement(loadingCard, rendered)');
+    expect(supplemental).toContain("loadingCard.dataset.inspectionReady === 'true'");
+    expect(supplemental).toContain('loadingCard.replaceChildren(...Array.from(rendered.childNodes))');
+    expect(supplemental).toContain("if (inspectionReady) loadingCard.classList.add('card-inspectable')");
+    expect(supplemental).toContain("for (const sideName of ['front', 'reverse'])");
+    expect(supplemental).not.toContain('loadingCard.replaceWith(rendered)');
   });
 });
 
