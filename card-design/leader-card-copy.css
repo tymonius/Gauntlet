@@ -33,6 +33,10 @@
   line-height: 1.07;
 }
 
+.leader-feature-primary {
+  display: block;
+}
+
 .leader-feature-line strong,
 .leader-feature-group-name strong {
   color: var(--component-accent-ink);
@@ -52,15 +56,9 @@
   line-height: 1.05;
 }
 
-.leader-feature-divider {
-  margin: 0 0.024in;
-  color: color-mix(in srgb, var(--component-accent-ink) 56%, transparent);
-  font-family: var(--font-interface);
-  font-size: calc(4.4pt * var(--rules-scale));
-  font-weight: 700;
-}
-
 .leader-feature-text {
+  display: block;
+  margin-top: calc(0.006in * var(--rules-scale));
   font-size: calc(5.5pt * var(--rules-scale));
   line-height: 1.07;
 }
@@ -122,8 +120,8 @@
   margin-left: 0.014in;
 }
 
-.leader-card--standardized[data-faction="military"] .leader-feature-divider {
-  margin: 0 0.014in;
+.leader-card--standardized[data-faction="military"] .leader-feature-text {
+  margin-top: calc(0.003in * var(--rules-scale));
 }
 
 @media print {

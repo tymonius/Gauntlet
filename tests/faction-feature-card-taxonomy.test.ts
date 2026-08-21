@@ -103,16 +103,22 @@ describe('Faction Feature and Leader Ability component taxonomy', () => {
     expect(catalogOverlay).toContain("import './leader-card-copy.js';");
     expect(leaderRenderer).toContain("const COPY_URL = './leader-copy/v0.6.4/leader-card-copy.json';");
     expect(leaderRenderer).toContain('leader-rule-section--${slugify(section.heading)}');
+    expect(leaderRenderer).toContain('leader-feature-primary');
     expect(leaderRenderer).toContain('leader-feature-descriptor');
-    expect(leaderRenderer).toContain('leader-feature-divider');
+    expect(leaderRenderer).toContain('leader-feature-text');
+    expect(leaderRenderer).not.toContain('leader-feature-divider');
     expect(leaderRenderer).toContain('leader-feature-group-name');
-    expect(leaderRenderer).toContain("leaderCard.dataset.artMin = '1.18'");
+    expect(leaderRenderer).toContain("leaderCard.dataset.artMin = '0.98'");
     expect(leaderRenderer).toContain("root.dataset.leaderCopyReady = 'true'");
     expect(leaderStyles).toContain('.leader-card--standardized .leader-rule-section');
-    expect(leaderStyles).toContain('.leader-feature-descriptor');
+    expect(leaderStyles).toContain('.leader-feature-primary');
+    expect(leaderStyles).toContain('.leader-feature-text');
+    expect(leaderStyles).toContain('display: block');
     expect(leaderStyles).toContain('font-style: italic');
+    expect(leaderStyles).not.toContain('.leader-feature-divider');
     expect(leaderStyles).toContain('.leader-card--standardized[data-faction="military"] .card-rules');
     expect(leaderStyles).toContain('grid-template-columns: 0.64in minmax(0, 1fr)');
+    expect(taxonomy).toContain('The rules text is always set on a new line');
   });
 
   it('adds compact Faction Features inventories to the approved Diplomat and Financier references', () => {

@@ -46,9 +46,11 @@ Do not print an empty heading merely to preserve symmetry.
 
 Within a section, use this hierarchy:
 
-`SECTION HEADING   BOLD NAME: italic descriptor / plain rules text`
+`SECTION HEADING   BOLD NAME: italic descriptor`
 
-The descriptor uses centered dots to separate properties.
+`plain rules text on the following line`
+
+The descriptor uses centered dots to separate properties. The rules text is always set on a new line; a slash in design discussion is shorthand for this line break, not a printed character.
 
 ## Resource and progression distinction
 
@@ -56,7 +58,9 @@ A spendable quantity such as **Command**, **Influence**, **Capital**, **Intel**,
 
 **Operation Progress is not a Resource.** It is printed under **PROGRESSION** and described as:
 
-`OPERATION PROGRESS: Begin at 0 / Increment by 1 each time you complete a normal Mission.`
+`OPERATION PROGRESS: Begin at 0`
+
+`Increment by 1 each time you complete a normal Mission.`
 
 Mystics likewise use **PROGRESSION** for Rite advancement rather than printing a fictitious Resource heading.
 

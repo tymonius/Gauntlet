@@ -24,9 +24,9 @@ function renderFeatureLine(feature) {
     ? `<em class="leader-feature-descriptor">${esc(feature.descriptor)}</em>`
     : '';
   const text = feature.text
-    ? `<span class="leader-feature-divider" aria-hidden="true">/</span><span class="leader-feature-text">${esc(feature.text)}</span>`
+    ? `<span class="leader-feature-text">${esc(feature.text)}</span>`
     : '';
-  return `<p class="leader-feature-line"><strong>${esc(feature.name)}:</strong>${descriptor}${text}</p>`;
+  return `<p class="leader-feature-line"><span class="leader-feature-primary"><strong>${esc(feature.name)}:</strong>${descriptor}</span>${text}</p>`;
 }
 
 function renderSection(section) {
@@ -93,9 +93,10 @@ async function applyLeaderCardCopy() {
       if (!Array.isArray(copy.sections) || !copy.sections.length) throw new Error(`Leader card copy for ${leaderId} has no sections.`);
       rules.innerHTML = copy.sections.map(renderSection).join('');
       leaderCard.classList.add('leader-card--standardized');
-      // Dense standardized cards may trade a small amount of portrait height for
-      // readable rules before the fitter ever crosses its typography floor.
-      leaderCard.dataset.artMin = '1.18';
+      // Dense standardized cards may trade portrait height for rules space before
+      // the fitter ever crosses its typography floor. The fitter uses only as
+      // much of this allowance as each card actually needs.
+      leaderCard.dataset.artMin = '0.98';
       leaderCard.dataset.leaderCopyVersion = source.gameVersion || 'current';
       renderedIds.add(leaderId);
     }
