@@ -23,7 +23,7 @@ describe('tracker card cap layout', () => {
     expect(renderer).toContain('Standard ${resourceName} cap · ${component.resourceMaximum}');
     expect(renderer).toContain('Standard ${resourceName} cap · none');
     expect(renderer).toContain("component.contractId === 'financiers-capital-limit-tracker'");
-    expect(renderer).toContain('Rules maximum · none');
+    expect(renderer).toContain('Maximum Capital Limit · Uncapped');
     expect(renderer).toContain("component.contractId === 'intelligence-operation-progress-tracker'");
     expect(renderer).toContain('tracker-cap tracker-cap-empty');
     expect(styles).toContain('border-top: 0.65px solid var(--tracker-line-soft);');
