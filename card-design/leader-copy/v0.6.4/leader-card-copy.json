@@ -1,0 +1,297 @@
+{
+  "schemaVersion": 1,
+  "gameVersion": "v0.6.4-candidate",
+  "purpose": "Presentation copy for production Leader cards. Shared faction procedures remain on the faction Reference cards; Leader cards retain faction victory, Leader Ability, and headline resource or progression information.",
+  "leaders": {
+    "general": {
+      "sections": [
+        {
+          "heading": "Faction Victory",
+          "name": "Run the Gauntlet",
+          "text": "Capture the Territory at the opponent's end, or force a Last Stand and win the resulting battle."
+        },
+        {
+          "heading": "Leader Ability",
+          "name": "Orders",
+          "items": [
+            {
+              "name": "Onward",
+              "descriptor": "1 Command · No Action · During Movement",
+              "text": "Before a pending battle is created, move one additional Position. This movement may create a pending battle."
+            },
+            {
+              "name": "Rally",
+              "descriptor": "1 Command · No Action · Before dice · Attacking",
+              "text": "Add +1 to your battle total in a battle you initiated."
+            },
+            {
+              "name": "Rout",
+              "descriptor": "2 Command · No Action · End of Aftermath · Win as attacker",
+              "text": "Advance one Position. This movement may create a pending battle."
+            }
+          ]
+        },
+        {
+          "heading": "Resource",
+          "name": "Command",
+          "descriptor": "Maximum 2",
+          "text": "The first time each turn you win a battle, gain 1 Command."
+        }
+      ]
+    },
+    "commandant": {
+      "sections": [
+        {
+          "heading": "Faction Victory",
+          "name": "Run the Gauntlet",
+          "text": "Capture the Territory at the opponent's end, or force a Last Stand and win the resulting battle."
+        },
+        {
+          "heading": "Leader Ability",
+          "name": "Orders",
+          "items": [
+            {
+              "name": "Entrench",
+              "descriptor": "1 Command · No Action · Before dice · Defending",
+              "text": "Add +1 to your battle total in a battle you did not initiate."
+            },
+            {
+              "name": "Repel",
+              "descriptor": "1 Command · No Action · Aftermath · Win as defender",
+              "text": "After the opponent's normal retreat, they retreat one additional Position, if able."
+            },
+            {
+              "name": "Fortify",
+              "descriptor": "2 Command · No Action · Aftermath · Win while occupying enemy Territory",
+              "text": "Advance your Front Line by one Territory, if able."
+            }
+          ]
+        },
+        {
+          "heading": "Resource",
+          "name": "Command",
+          "descriptor": "Maximum 2",
+          "text": "The first time each turn you win a battle, gain 1 Command."
+        }
+      ]
+    },
+    "ambassador": {
+      "sections": [
+        {
+          "heading": "Faction Victory",
+          "name": "Peace Treaty",
+          "text": "At the start of your turn, if 6 different Proposals are ratified, you win."
+        },
+        {
+          "heading": "Leader Ability",
+          "name": "Cordiality",
+          "descriptor": "No Action · Once per turn · After accepted Terms",
+          "text": "After the opponent accepts your Terms, draw one card."
+        },
+        {
+          "heading": "Resource",
+          "name": "Influence",
+          "descriptor": "Begin with 1 · Maximum 10"
+        }
+      ]
+    },
+    "senator": {
+      "sections": [
+        {
+          "heading": "Faction Victory",
+          "name": "Peace Treaty",
+          "text": "At the start of your turn, if 6 different Proposals are ratified, you win."
+        },
+        {
+          "heading": "Leader Ability",
+          "name": "Political Capital",
+          "descriptor": "No Action · Once per turn · After losing following refused Terms",
+          "text": "When you would lose staked Influence, put up to that many cards from Hand in your Graveyard. Recover 1 staked Influence per card; lose the rest."
+        },
+        {
+          "heading": "Resource",
+          "name": "Influence",
+          "descriptor": "Begin with 1 · Maximum 10"
+        }
+      ]
+    },
+    "banker": {
+      "sections": [
+        {
+          "heading": "Faction Victory",
+          "name": "Controlling Interest",
+          "text": "If you own the Deeds to every Territory currently in the Gauntlet, you win immediately."
+        },
+        {
+          "heading": "Leader Ability",
+          "name": "Line of Credit",
+          "descriptor": "No Action · First Deed purchase each turn · Collateral",
+          "text": "Use one card from Hand or Treasury as collateral. It contributes up to half the purchase cost, rounded down; pay the rest with Capital, then discard the collateral."
+        },
+        {
+          "heading": "Resource",
+          "name": "Capital",
+          "descriptor": "Begin with 2 · Dynamic Capital Limit",
+          "text": "Capital Limit = Territories you control + total card value in Treasury."
+        }
+      ]
+    },
+    "executive": {
+      "sections": [
+        {
+          "heading": "Faction Victory",
+          "name": "Controlling Interest",
+          "text": "If you own the Deeds to every Territory currently in the Gauntlet, you win immediately."
+        },
+        {
+          "heading": "Leader Ability",
+          "name": "Hostile Takeover",
+          "descriptor": "1 Action · Denouement · After winning as attacker",
+          "text": "While occupying that enemy Territory, buy or buy out its Deed. Treat yourself as occupier for cost. If successful, advance your Front Line by one Territory, if able."
+        },
+        {
+          "heading": "Resource",
+          "name": "Capital",
+          "descriptor": "Begin with 2 · Dynamic Capital Limit",
+          "text": "Capital Limit = Territories you control + total card value in Treasury."
+        }
+      ]
+    },
+    "ranger": {
+      "sections": [
+        {
+          "heading": "Faction Victory",
+          "name": "Special Operation",
+          "text": "When Operation Progress exceeds opposing controlled Territories, complete a prepared Special Operation and pay its Intel cost to win."
+        },
+        {
+          "heading": "Leader Ability",
+          "name": "Fieldcraft",
+          "descriptor": "1 Intel · No Action · Once per turn · Territory effect",
+          "text": "When a printed Territory effect would affect you, your movement, or a battle involving you, ignore that effect until the end of the turn."
+        },
+        {
+          "heading": "Resource",
+          "name": "Intel",
+          "descriptor": "Begin at 0 · No maximum",
+          "text": "Spend Intel on Intelligence features and effects."
+        },
+        {
+          "heading": "Progression",
+          "name": "Operation Progress",
+          "descriptor": "Begin at 0",
+          "text": "Increment by 1 each time you complete a normal Mission."
+        }
+      ]
+    },
+    "spymaster": {
+      "sections": [
+        {
+          "heading": "Faction Victory",
+          "name": "Special Operation",
+          "text": "When Operation Progress exceeds opposing controlled Territories, complete a prepared Special Operation and pay its Intel cost to win."
+        },
+        {
+          "heading": "Leader Ability",
+          "name": "Mission Control",
+          "descriptor": "No Action · Once per turn · After completing a normal Mission",
+          "text": "Immediately start another eligible Mission from Hand. It cannot complete that turn and cannot be a Special Operation."
+        },
+        {
+          "heading": "Resource",
+          "name": "Intel",
+          "descriptor": "Begin at 0 · No maximum",
+          "text": "Spend Intel on Intelligence features and effects."
+        },
+        {
+          "heading": "Progression",
+          "name": "Operation Progress",
+          "descriptor": "Begin at 0",
+          "text": "Increment by 1 each time you complete a normal Mission."
+        }
+      ]
+    },
+    "alchemist": {
+      "sections": [
+        {
+          "heading": "Faction Victory",
+          "name": "Ritual of Ascension",
+          "text": "After completing all three Rites, begin the Ritual; initiate and win a battle while all three Ritual cards remain bound."
+        },
+        {
+          "heading": "Leader Ability",
+          "name": "Materia Prima",
+          "descriptor": "No Action · Once per turn · First qualifying sacrifice from Hand",
+          "text": "Draw one card the first time on your turn that a card from Hand enters your Graveyard for a Rite, Transmutation, or Arcane card effect. During battle, draw after the Aftermath."
+        },
+        {
+          "heading": "Progression",
+          "name": "Rites",
+          "descriptor": "1st — Invocation · 2nd — Transmutation · 3rd — Convergence + Ritual"
+        }
+      ]
+    },
+    "spirit-walker": {
+      "sections": [
+        {
+          "heading": "Faction Victory",
+          "name": "Ritual of Ascension",
+          "text": "After completing all three Rites, begin the Ritual; initiate and win a battle while all three Ritual cards remain bound."
+        },
+        {
+          "heading": "Leader Ability",
+          "name": "Guardians of the Circle",
+          "descriptor": "No Action · Once per turn · Battle loss would interrupt Rite or Ritual",
+          "text": "Put one Arcane card from Hand in your Graveyard whose value is at least 1 plus your completed Rites. If you do, prevent that interruption."
+        },
+        {
+          "heading": "Progression",
+          "name": "Rites",
+          "descriptor": "1st — Invocation · 2nd — Transmutation · 3rd — Convergence + Ritual"
+        }
+      ]
+    },
+    "grand-inquisitor": {
+      "sections": [
+        {
+          "heading": "Faction Victory",
+          "name": "Purification",
+          "text": "If the opponent's normal start-of-turn draw fails because both their Draw Pile and Discard Pile are empty, you win immediately."
+        },
+        {
+          "heading": "Leader Ability",
+          "name": "Final Judgment",
+          "descriptor": "No Action · Once per turn · After winning a battle",
+          "text": "After battle cards are cleared, immediately Purge. Reduce that Purge's Conviction cost by 1, to a minimum of 1."
+        },
+        {
+          "heading": "Resource",
+          "name": "Conviction",
+          "descriptor": "Begin at 0 · Maximum 4",
+          "text": "The first time each turn opposing cards enter the Graveyard during the Aftermath of a battle involving you, gain 1 Conviction."
+        }
+      ]
+    },
+    "witch-hunter": {
+      "sections": [
+        {
+          "heading": "Faction Victory",
+          "name": "Purification",
+          "text": "If the opponent's normal start-of-turn draw fails because both their Draw Pile and Discard Pile are empty, you win immediately."
+        },
+        {
+          "heading": "Leader Ability",
+          "name": "Relentless Pursuit",
+          "descriptor": "2 Conviction · No Action · Once per turn · After defeating an attacking opponent",
+          "text": "End their turn, then advance one Position toward their end. Any resulting pending battle uses you as attacker."
+        },
+        {
+          "heading": "Resource",
+          "name": "Conviction",
+          "descriptor": "Begin at 0 · Maximum 4",
+          "text": "The first time each turn opposing cards enter the Graveyard during the Aftermath of a battle involving you, gain 1 Conviction."
+        }
+      ]
+    }
+  }
+}
