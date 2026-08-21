@@ -14,6 +14,17 @@ Capital limit = Territories you control + total card value in your Treasury.
 
 Capital may exceed the limit temporarily. At the end of every turn, reduce Capital to the current limit if necessary.
 
+### Faction Features
+
+| Feature | Use |
+|---|---|
+| Treasury | 1 Action · Denouement |
+| Buy / Buy Out Deed | 1 Action · Denouement |
+| Play the Market | 1 Action · Denouement |
+| Subsidize | No Action · Before dice |
+| Financial Capacity | No Action · After Capture |
+| Income | Automatic · After Capture |
+
 ### Treasury
 
 During Denouement, spend **1 Action** to place a card from your Hand face up in your Treasury. Its value increases your Capital limit.
@@ -26,7 +37,7 @@ After Capture at the start of your turn, gain **1 Capital per Deed** you own.
 
 After Capture, if your Treasury value is greater than the number of Territories you control, you may take one Action in **Opening** and one Action in **Denouement** that turn.
 
-At least one Action must be a **Financier Faction Action**.
+At least one Action must be spent on a **Faction Feature marked 1 Action**.
 
 ## Reverse — Deeds & Spending
 
@@ -53,7 +64,7 @@ If making several purchases, recalculate after each purchase.
 
 ### Play the Market
 
-Discard **1 card from Hand** and roll:
+During Denouement, spend **1 Action**, discard **1 card from Hand**, and roll:
 
 | Roll | Result |
 |---:|---|
@@ -64,7 +75,7 @@ Discard **1 card from Hand** and roll:
 
 ### Subsidize
 
-Before dice are rolled:
+Before dice are rolled, spend Capital to increase your battle total. This uses **no Action**.
 
 **+1:** 1 Capital
 
