@@ -106,10 +106,13 @@ describe('Faction Feature and Leader Ability component taxonomy', () => {
     expect(leaderRenderer).toContain('leader-feature-descriptor');
     expect(leaderRenderer).toContain('leader-feature-divider');
     expect(leaderRenderer).toContain('leader-feature-group-name');
+    expect(leaderRenderer).toContain("leaderCard.dataset.artMin = '1.18'");
     expect(leaderRenderer).toContain("root.dataset.leaderCopyReady = 'true'");
     expect(leaderStyles).toContain('.leader-card--standardized .leader-rule-section');
     expect(leaderStyles).toContain('.leader-feature-descriptor');
     expect(leaderStyles).toContain('font-style: italic');
+    expect(leaderStyles).toContain('.leader-card--standardized[data-faction="military"] .card-rules');
+    expect(leaderStyles).toContain('grid-template-columns: 0.64in minmax(0, 1fr)');
   });
 
   it('adds compact Faction Features inventories to the approved Diplomat and Financier references', () => {
