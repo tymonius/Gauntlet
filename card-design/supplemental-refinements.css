@@ -1,0 +1,37 @@
+/* Small cross-component refinements that intentionally sit after the shared
+   supplemental and reference-card styles on the Card Design review surface. */
+
+/* Reference cards now use the same watermark geometry as the sliding trackers.
+   Keep the reference-card opacity itself unchanged so dense rules text remains
+   comfortably legible. */
+.reference-card .reference-watermark {
+  right: 0.20in;
+  bottom: 0.32in;
+  width: 1.72in;
+  height: 1.72in;
+}
+
+/* Command has a normal gameplay cap of 2 even though the physical tracker
+   provides headroom through 4. Treat 2 like the multiples-of-five landmarks on
+   the larger trackers, while retaining 4 as the physical endpoint landmark. */
+.sliding-tracker-card[data-contract-component-id="military-command-tracker"]
+  .tracker-mark:not(:nth-child(2)):not(:last-child) .tracker-registration-line {
+  border-top-width: 0.75px;
+  border-top-color: var(--tracker-line-soft);
+}
+
+.sliding-tracker-card[data-contract-component-id="military-command-tracker"]
+  .tracker-mark:not(:nth-child(2)):not(:last-child) .tracker-band-label {
+  font-weight: 400;
+}
+
+.sliding-tracker-card[data-contract-component-id="military-command-tracker"]
+  .tracker-mark:nth-child(2) .tracker-registration-line {
+  border-top-width: 1.15px;
+  border-top-color: var(--tracker-line);
+}
+
+.sliding-tracker-card[data-contract-component-id="military-command-tracker"]
+  .tracker-mark:nth-child(2) .tracker-band-label {
+  font-weight: 500;
+}
