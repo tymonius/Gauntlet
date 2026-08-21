@@ -32,8 +32,9 @@ describe('tracker card cap layout', () => {
     expect(styles).toContain('font-style: italic;');
     expect(styles).toContain('-webkit-text-size-adjust: 100%;');
     expect(styles).toContain('text-size-adjust: 100%;');
-    expect(styles).toContain('height: 2.30in;');
-    expect(styles).not.toContain('height: 2.56in;');
+    expect(styles).toContain('top: 0.49in;');
+    expect(styles).toContain('height: 2.45in;');
+    expect(styles).not.toContain('height: 2.30in;');
   });
 
   it('prints the Intelligence nested-stack instructions and contract order', () => {
