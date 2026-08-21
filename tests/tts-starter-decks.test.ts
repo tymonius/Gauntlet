@@ -40,14 +40,17 @@ describe('TTS starter-deck assembly', () => {
     expect(assembler).not.toContain('const FIRST_DECK_ID');
   });
 
-  it('emits publisher-ready Leader, card, Territory, sheet, and resolved standard-back references', () => {
+  it('emits black Deck/Territory backs and separate faction-color component backs', () => {
     expect(assembler).toContain('leader,');
     expect(assembler).toContain('makeLeaderReference');
     expect(assembler).toContain('deckCardIds');
     expect(assembler).toContain('faceSheets: [...faceSheetMap.values()]');
     expect(assembler).toContain('territories,');
-    expect(assembler).toContain('resolveStandardBackFile(componentContract, faction)');
+    expect(assembler).toContain('resolveStandardBackFile(componentContract)');
+    expect(assembler).toContain('resolveFactionBackFile(componentContract, faction)');
     expect(assembler).toContain("policy: 'standardBack'");
+    expect(assembler).toContain("mode: 'universal-black'");
+    expect(assembler).toContain("policy: 'factionComponentBack'");
     expect(assembler).toContain('neutralCardsUseSameStandardBack: true');
     expect(assembler).toContain('territoriesUseSameStandardBack: true');
     expect(assembler).toContain('schemaVersion: 3');

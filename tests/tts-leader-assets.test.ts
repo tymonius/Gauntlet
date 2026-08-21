@@ -9,11 +9,11 @@ const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 const readme = readFileSync('tts/README.md', 'utf8');
 
 describe('TTS Leader assets', () => {
-  it('derives the current Leader roster from release-driven canonical faction data', () => {
+  it('derives the current Leader roster from the current-game authority', () => {
     expect(catalogSource).toContain('export async function loadCurrentLeaders()');
     expect(catalogSource).toContain('resolveCurrentTtsRelease()');
-    expect(catalogSource).toContain('canonical.factions');
-    expect(catalogSource).toContain('faction.leaders');
+    expect(catalogSource).toContain('const sourceLeaders = Array.isArray(manifest.leaders)');
+    expect(catalogSource).toContain('for (const leader of sourceLeaders)');
     expect(exporter).toContain('loadCurrentLeaders');
     expect(exporter).not.toMatch(/v0\.6\.[0-9]+/);
   });
@@ -22,7 +22,7 @@ describe('TTS Leader assets', () => {
     expect(exporter).toContain("page.goto(`${baseUrl}/card-design/`");
     expect(exporter).toContain("#${leader.faction}-${leader.id} .gauntlet-card");
     expect(exporter).toContain("document.querySelectorAll('#leaderReviewSections .card-art img')");
-    expect(exporter).toContain("metrics.footer.at(-1) !== version");
+    expect(exporter).toContain("metrics.footer.at(-1) !== displayVersion");
     expect(exporter).toContain('fitWarning');
     expect(exporter).not.toContain('Materia Prima');
     expect(exporter).not.toContain('Guardians of the Circle');
@@ -40,15 +40,16 @@ describe('TTS Leader assets', () => {
     expect(exporter).toContain("boxShadow: 'none'");
   });
 
-  it('emits deterministic one-card TTS objects with resolved standard backs', () => {
+  it('emits deterministic one-card TTS objects with faction-color component backs', () => {
     expect(exporter).toContain('const FIRST_LEADER_DECK_ID = 100');
     expect(exporter).toContain('cardId: deckId * 100');
     expect(exporter).toContain('numWidth: 1');
     expect(exporter).toContain('numHeight: 1');
     expect(exporter).toContain('backIsHidden: true');
     expect(exporter).toContain('uniqueBack: false');
-    expect(exporter).toContain('resolveStandardBackFile(componentContract, leader.faction)');
-    expect(exporter).toContain("backPolicy: 'standardBack'");
+    expect(exporter).toContain('resolveFactionBackFile(componentContract, leader.faction)');
+    expect(exporter).toContain("backPolicy: 'factionComponentBack'");
+    expect(exporter).toContain("mode: 'faction'");
     expect(exporter).toContain("'leader-manifest.json'");
   });
 
@@ -63,7 +64,7 @@ describe('TTS Leader assets', () => {
     expect(readme).toContain('## Leader asset contract');
   });
 
-  it('accepts the current published Leader source end to end', () => {
+  it('accepts the current Leader source end to end', () => {
     const output = execFileSync(process.execPath, ['scripts/generate-tts-leader-assets.mjs', '--check'], {
       encoding: 'utf8',
     });

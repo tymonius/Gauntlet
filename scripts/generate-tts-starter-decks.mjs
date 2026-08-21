@@ -11,6 +11,7 @@ import {
 } from './tts-current-catalog.mjs';
 import {
   loadTtsComponentContract,
+  resolveFactionBackFile,
   resolveStandardBackFile,
 } from './tts-component-contract.mjs';
 
@@ -211,6 +212,7 @@ function makeLeaderReference(leader, render) {
     name: leader.name,
     faction: leader.faction,
     factionLabel: leader.factionLabel,
+    backPolicy: 'factionComponentBack',
     tts: { ...render.tts },
   };
 }
@@ -232,17 +234,20 @@ function buildStarterManifest(starterDecks, catalog, leaders, cardManifest, terr
   const decks = starterDecks.decks.map((deck) => {
     const faction = String(deck.factionId).trim().toLowerCase();
     const leaderId = String(deck.leaderId).trim().toLowerCase();
-    const backFile = resolveStandardBackFile(componentContract, faction);
-    const backVariant = backFile.replace(/^backs\//, '').replace(/\.png$/i, '');
-    if (!cardManifest.backVariants?.[backVariant] || cardManifest.backVariants[backVariant].file !== backFile) {
-      throw new Error(`Generated card manifest does not provide the standard back ${backFile} required by ${deck.id}.`);
+    const backFile = resolveStandardBackFile(componentContract);
+    const factionBackFile = resolveFactionBackFile(componentContract, faction);
+    for (const requiredBack of [backFile, factionBackFile]) {
+      const backVariant = requiredBack.replace(/^backs\//, '').replace(/\.png$/i, '');
+      if (!cardManifest.backVariants?.[backVariant] || cardManifest.backVariants[backVariant].file !== requiredBack) {
+        throw new Error(`Generated card manifest does not provide required back ${requiredBack} for ${deck.id}.`);
+      }
     }
 
     const canonicalLeader = leaderByKey.get(`${faction}:${leaderId}`);
     const renderedLeader = renderedLeaders.get(`${faction}:${leaderId}`);
     if (!renderedLeader) throw new Error(`Rendered Leader manifest is missing ${faction}:${leaderId} required by ${deck.id}.`);
-    if (renderedLeader.tts?.backFile !== backFile) {
-      throw new Error(`Rendered Leader ${faction}:${leaderId} does not use resolved standard back ${backFile} required by ${deck.id}.`);
+    if (renderedLeader.tts?.backFile !== factionBackFile) {
+      throw new Error(`Rendered Leader ${faction}:${leaderId} does not use faction-component back ${factionBackFile} required by ${deck.id}.`);
     }
     const leader = makeLeaderReference(canonicalLeader, renderedLeader);
 
@@ -293,12 +298,18 @@ function buildStarterManifest(starterDecks, catalog, leaders, cardManifest, terr
       cardCount: deckCardIds.length,
       deckbuildingValue: cards.reduce((sum, card) => sum + Number(card.cost || 0) * card.quantity, 0),
       back: {
-        faction,
+        faction: 'universal',
         file: backFile,
         policy: 'standardBack',
-        mode: componentContract.standardBack.mode,
+        mode: 'universal-black',
         neutralCardsUseSameStandardBack: true,
         territoriesUseSameStandardBack: true,
+      },
+      factionComponentBack: {
+        faction,
+        file: factionBackFile,
+        policy: 'factionComponentBack',
+        mode: 'faction',
       },
       cards,
       deckCardIds,
@@ -321,8 +332,9 @@ function buildStarterManifest(starterDecks, catalog, leaders, cardManifest, terr
     },
     construction: starterDecks.construction || {},
     backPolicy: {
-      policy: 'standardBack',
-      ...componentContract.standardBack,
+      standardBack: 'universal-black',
+      factionComponentBack: 'faction',
+      variants: componentContract.standardBack.variants,
     },
     deckCount: decks.length,
     decks,
@@ -356,8 +368,9 @@ async function main() {
   validateStarterDecks(starterDecks, catalog, leaders);
 
   if (checkOnly) {
-    for (const deck of starterDecks.decks) resolveStandardBackFile(componentContract, String(deck.factionId).trim().toLowerCase());
-    console.log(`Current TTS starter-deck source check passed for ${catalog.gameVersion}: ${starterDecks.decks.length} starter decks using ${componentContract.standardBack.mode} standard backs.`);
+    resolveStandardBackFile(componentContract);
+    for (const deck of starterDecks.decks) resolveFactionBackFile(componentContract, String(deck.factionId).trim().toLowerCase());
+    console.log(`Current TTS starter-deck source check passed for ${catalog.gameVersion}: ${starterDecks.decks.length} starter decks using universal-black Deck/Territory backs and faction-color component backs.`);
     return;
   }
 

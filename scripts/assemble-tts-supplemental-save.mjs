@@ -111,10 +111,12 @@ function makeSlidingTracker(component, starter, releaseAssets, guid) {
   if (!component.tts?.faceFile || component.tts?.stackable !== false) {
     throw new Error(`Ready sliding tracker ${component.id} is missing its production face or non-stackable metadata.`);
   }
-  if (!starter.back?.file) throw new Error(`Starter ${starter.id} has no standard back for tracker ${component.id}.`);
+  if (!starter.factionComponentBack?.file) {
+    throw new Error(`Starter ${starter.id} has no faction-component back for tracker ${component.id}.`);
+  }
 
   const faceUrl = requireHostedUrl(releaseAssets, component.tts.faceFile);
-  const backUrl = requireHostedUrl(releaseAssets, starter.back.file);
+  const backUrl = requireHostedUrl(releaseAssets, starter.factionComponentBack.file);
   const snapTag = String(component.tts.snapTag || '').trim();
 
   return {
@@ -277,7 +279,7 @@ export function assembleReadySupplementals(save, starterManifest, supplementalMa
   }
 
   const oldSentence = 'This scaffold intentionally does not yet include faction-specific supplemental trackers or secondary components. Rules remain manual.';
-  const newSentence = 'Faction supplemental components marked ready are included automatically in the matching starter kits; sliding trackers use production-derived snap registration and tagged physical cover cards. Rules remain manual.';
+  const newSentence = 'Faction supplemental components marked ready are included automatically in the matching starter kits; single-sided faction components use faction-color backs, and sliding trackers use production-derived snap registration and tagged physical cover cards. Rules remain manual.';
   for (const field of ['Note', 'Rules']) {
     const text = String(save[field] || '');
     save[field] = text.includes(oldSentence)
