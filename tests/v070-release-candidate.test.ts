@@ -8,20 +8,14 @@ const ttsQa = JSON.parse(readFileSync('tts/release-qa/v0.7.0.json', 'utf8'));
 const notes = readFileSync('docs/releases/github/v0.7.0.md', 'utf8');
 
 describe('v0.7.0 release candidate boundary', () => {
-  it('registers v0.7.0 as a candidate without changing the current published release', () => {
+  it('keeps v0.7.0 out of immutable publication history before cutover', () => {
     expect(lifecycle.current_release).toBe('v0.6.3');
     expect(lifecycle.releases['v0.6.3']).toEqual(expect.objectContaining({
       status: 'current',
       public_cutover: true,
     }));
-    expect(lifecycle.releases['v0.7.0']).toEqual(expect.objectContaining({
-      status: 'candidate',
-      public_cutover: false,
-      artifacts_preserved: false,
-      candidate_notes_path: 'docs/releases/github/v0.7.0.md',
-      tts_release_target: 'v0.7.0',
-      release_gate_issue: 851,
-    }));
+    expect(lifecycle.releases['v0.7.0']).toBeUndefined();
+    expect(githubRelease.historical_releases.some((release: { tag?: string }) => release.tag === 'v0.7.0')).toBe(false);
   });
 
   it('does not prematurely move the published GitHub Release contract', () => {
@@ -37,11 +31,12 @@ describe('v0.7.0 release candidate boundary', () => {
     expect(ttsQa.approvedForWorkshop).toBe(false);
   });
 
-  it('labels the release notes as candidate-only and preserves the publication boundary', () => {
+  it('uses draft notes as the pre-publication v0.7.0 release surface', () => {
     expect(notes).toContain('# Gauntlet v0.7.0 — Illustrated Cards & Tabletop Simulator');
     expect(notes).toContain('Release candidate — not yet published');
     expect(notes).toContain('v0.6.3 remains the current published playtest release');
     expect(notes).toContain('Final Workshop publication remains gated');
+    expect(notes).toContain('does not change the repository\'s current published release');
     expect(notes).not.toContain('Current canonical playtest edition');
   });
 });
