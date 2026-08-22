@@ -29,6 +29,7 @@
     try {
       const currentGame = state.currentGameData || await import("../game-data/current-game.mjs").then(module => module.loadCurrentGame());
       state.currentGameData ||= currentGame;
+      bridgeSharedReferencesIntoPrintAuthority(currentGame);
       hydrateLegacyPrintPackages(currentGame);
       state.currentFactionComponentsReady = true;
       document.body.dataset.currentFactionComponents = "ready";
@@ -38,6 +39,28 @@
     }
 
     renderFactionComponents();
+  }
+
+  function bridgeSharedReferencesIntoPrintAuthority(currentGame) {
+    const factionComponents = currentGame.components || [];
+    const knownIds = new Set(factionComponents.map(component => component.id));
+    const sharedReferences = (currentGame.sharedComponents || []).filter(component => (
+      component.family === "reference-card"
+      && component.cardLike
+      && component.deckInclusion === "every-deck"
+      && component.productionStatus === "ready"
+      && !knownIds.has(component.id)
+    ));
+    if (!sharedReferences.length) return;
+
+    // The production print replacement layer historically searches the resolved
+    // faction-component array. Give that browser-only print view the ready shared
+    // references as additional match candidates without changing canonical data.
+    state.currentGameData = Object.freeze({
+      ...currentGame,
+      components: Object.freeze([...factionComponents, ...sharedReferences]),
+    });
+    document.body.dataset.sharedReferencePrintBridge = "ready";
   }
 
   function normalize(value) {
@@ -97,7 +120,7 @@
     }
   }
 
-  function sharedReferencePlaceholder(component) {
+  function sharedReferenceProjection(component) {
     return {
       type: "reference",
       id: component.id,
@@ -125,7 +148,7 @@
       packageData.components ||= [];
       for (const shared of sharedReferences) {
         const existing = packageData.components.find(component => component.contractId === shared.id || component.id === shared.id);
-        const projected = sharedReferencePlaceholder(shared);
+        const projected = sharedReferenceProjection(shared);
         if (existing) Object.assign(existing, projected);
         else packageData.components.unshift(projected);
       }
