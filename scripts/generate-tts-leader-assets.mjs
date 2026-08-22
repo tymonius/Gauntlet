@@ -71,6 +71,19 @@ function pngDimensions(buffer) {
   return { width: buffer.readUInt32BE(16), height: buffer.readUInt32BE(20) };
 }
 
+async function applyReleaseVersion(page, displayVersion) {
+  const updated = await page.evaluate((version) => {
+    const cards = Array.from(document.querySelectorAll('#leaderReviewSections .leader-card'));
+    for (const card of cards) {
+      const footer = card.querySelectorAll('.card-footer span');
+      const versionNode = footer.item(footer.length - 1);
+      if (versionNode) versionNode.textContent = version;
+    }
+    return cards.length;
+  }, displayVersion);
+  if (!updated) throw new Error('Production Leader surface contained no cards to stamp with the TTS release version.');
+}
+
 async function validateLeader(page, leader, displayVersion) {
   const selector = leaderSelector(leader);
   const card = page.locator(selector);
@@ -101,7 +114,7 @@ async function validateLeader(page, leader, displayVersion) {
   if (metrics.fitWarning) throw new Error(`Leader content does not fit the approved frame: ${leader.faction}:${leader.id}.`);
   if (!metrics.imageLoaded) throw new Error(`Leader portrait failed to load: ${leader.faction}:${leader.id}.`);
   if (metrics.footer.at(-1) !== displayVersion) {
-    throw new Error(`Leader ${leader.faction}:${leader.id} renders ${metrics.footer.at(-1) || 'no version'} but current game displays ${displayVersion}.`);
+    throw new Error(`Leader ${leader.faction}:${leader.id} renders ${metrics.footer.at(-1) || 'no version'} but TTS package displays ${displayVersion}.`);
   }
 }
 
@@ -182,10 +195,13 @@ async function renderLeaderAssets(release, leaders, componentContract) {
     }));
     if (!fonts.title || !fonts.rules) throw new Error(`Required Leader fonts failed to load: ${JSON.stringify(fonts)}.`);
 
+    const displayVersion = release.displayVersion || release.version;
+    await applyReleaseVersion(page, displayVersion);
+
     const records = [];
     for (let index = 0; index < leaders.length; index += 1) {
       const leader = leaders[index];
-      await validateLeader(page, leader, release.displayVersion || release.version);
+      await validateLeader(page, leader, displayVersion);
       const deckId = FIRST_LEADER_DECK_ID + index;
       const faceFile = `leaders/${leader.faction}-${leader.id}.png`;
       const backFile = resolveFactionBackFile(componentContract, leader.faction);
@@ -216,12 +232,13 @@ async function renderLeaderAssets(release, leaders, componentContract) {
     const manifest = {
       schemaVersion: 3,
       gameVersion: release.version,
-      displayVersion: release.displayVersion || release.version,
+      displayVersion,
       authority: release.currentGameSource || release.canonicalDataSource,
       release: {
         lifecycleSource: release.lifecycleSource,
         githubReleaseContractSource: release.githubReleaseContractSource,
         canonicalDataSource: release.canonicalDataSource,
+        canonicalDataVersion: release.sourceVersion || release.version,
         releasePackageRoot: release.releasePackageRoot,
         publishedVersion: release.publishedVersion || release.version,
       },
@@ -281,4 +298,4 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   });
 }
 
-export { renderLeaderAssets };
+export { applyReleaseVersion, renderLeaderAssets };
