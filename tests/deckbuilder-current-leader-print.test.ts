@@ -15,6 +15,17 @@ describe("Deckbuilder current Leader printing", () => {
     expect(Object.keys(leaderCopy.leaders)).toHaveLength(12);
   });
 
+  it("standardizes only the requested Leader inside a component print iframe", () => {
+    expect(leaderCopyScript).toContain("PRINT_LEADER_SPECIMEN_ID");
+    expect(leaderCopyScript).toContain("params.get('kind')");
+    expect(leaderCopyScript).toContain("params.get('id')");
+    expect(leaderCopyScript).toContain("waitForLeaderSpecimen(root, PRINT_LEADER_SPECIMEN_ID)");
+    expect(leaderCopyScript).toContain("applyCopyToLeader(root, leaderId, copy, source, PRINT_LEADER_SPECIMEN_ID)");
+    expect(leaderCopyScript).toContain("if (PRINT_LEADER_SPECIMEN_ID)");
+    expect(leaderCopyScript).toContain("return;");
+    expect(leaderCopyScript).toContain("await waitForLeaderCards(root, entries.length)");
+  });
+
   it("does not detach a Leader into the print frame until current copy and fitting are complete", () => {
     expect(componentRenderJs).toContain('root?.dataset.leaderCopyReady === "true"');
     expect(componentRenderJs).toContain('card.dataset.leaderCopyVersion');
@@ -24,6 +35,8 @@ describe("Deckbuilder current Leader printing", () => {
     expect(componentRenderJs).toContain('Current Leader card copy failed to load.');
     expect(leaderCopyScript).toContain('delete leaderCard.dataset.titleFit');
     expect(leaderCopyScript).toContain("leaderCard.classList.remove('fit-warning', 'title-fit-warning', 'overlay-title-fit-warning')");
+    expect(leaderCopyScript).toContain("root.dataset.leaderCopyReady = 'true'");
+    expect(leaderCopyScript).toContain("root.dataset.leaderCopyError = error?.message || String(error)");
     expect(leaderCopyScript).toContain("window.dispatchEvent(new Event('resize'))");
   });
 
