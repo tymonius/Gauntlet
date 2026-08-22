@@ -11,6 +11,7 @@ on:
       - 'config/release-lifecycle.json'
       - 'config/github-release-contract.json'
       - 'config/tts-component-contract.json'
+      - 'config/tts-release-target.json'
       - 'scripts/current-game-authority.mjs'
       - 'scripts/generate-tts-card-assets.mjs'
       - 'scripts/generate-tts-territory-assets.mjs'
@@ -91,6 +92,7 @@ jobs:
             config/release-lifecycle.json
             config/github-release-contract.json
             config/tts-component-contract.json
+            config/tts-release-target.json
             scripts/current-game-authority.mjs
             scripts/generate-tts-card-assets.mjs
             scripts/generate-tts-territory-assets.mjs
