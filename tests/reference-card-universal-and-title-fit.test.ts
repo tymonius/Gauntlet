@@ -33,18 +33,20 @@ describe('final Universal Reference and reference-title fitting', () => {
     expect(copy).not.toMatch(/\bHeartlands?\b/i);
   });
 
-  it('wraps long reference-face titles before using the shrink fallback', () => {
+  it('shrinks long reference-face titles first, then restores normal size and wraps only after the floor still overflows', () => {
     expect(universalStyles).toContain('@import url("reference-title-wrap.css")');
-    expect(titleWrapStyles).toContain('white-space: normal');
-    expect(titleWrapStyles).toContain('-webkit-line-clamp: 2');
-    expect(titleWrapStyles).toContain('[data-component-id="intelligence-operations-reference"]');
-    expect(titleWrapStyles).toContain('[data-component-id="inquisition-doctrine-reference"]');
-
     expect(referenceRenderer).toContain('const REFERENCE_TITLE_MIN_PT = 8.4');
-    expect(referenceRenderer).toContain('function fitReferenceTitle');
-    expect(referenceRenderer).toContain('title.scrollWidth > title.clientWidth + 0.5');
+    expect(referenceRenderer).toContain('while (horizontallyOverflows() && fontSize > minimumPx');
+    expect(referenceRenderer).toContain("card.dataset.referenceTitleWrapped = 'false'");
+    expect(referenceRenderer).toContain("card.dataset.referenceTitleWrapped = 'true'");
+    expect(referenceRenderer).toContain("title.style.fontSize = ''");
+    expect(referenceRenderer).toContain('wrapped && title.scrollHeight > title.clientHeight + 0.5');
     expect(referenceRenderer).toContain("card.dataset.referenceTitleWarning = overflow ? 'true' : 'false'");
-    expect(referenceRenderer).toContain('const overflow = overflows() || titleFit.overflow');
+    expect(referenceRenderer).toContain('titleWrapped: titleFit.wrapped');
+
+    expect(titleWrapStyles).toContain('[data-reference-title-wrapped="true"]');
+    expect(titleWrapStyles).toContain('white-space: normal !important');
+    expect(titleWrapStyles).toContain('-webkit-line-clamp: 2');
   });
 
   it('loads the neutral Universal styling on both review and standalone TTS render surfaces', () => {
