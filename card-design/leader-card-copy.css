@@ -4,9 +4,9 @@
 }
 
 .leader-card--standardized .leader-rule-section {
-  grid-template-columns: 0.72in minmax(0, 1fr);
+  grid-template-columns: 0.76in minmax(0, 1fr);
   align-items: start;
-  column-gap: 0.042in;
+  column-gap: 0.044in;
 }
 
 .leader-card--standardized .leader-rule-section + .leader-rule-section {
@@ -14,46 +14,76 @@
   border-top: 0.45px solid color-mix(in srgb, var(--component-accent-ink) 24%, transparent);
 }
 
-.leader-card--standardized .leader-rule-section h4 {
-  padding-top: 0.004in;
-  font-size: calc(4.45pt * var(--rules-scale));
-  letter-spacing: 0.050em;
-  line-height: 1.08;
+.leader-section-label {
+  min-width: 0;
+}
+
+.leader-card--standardized .leader-section-name {
+  margin: 0;
+  color: var(--component-accent-ink);
+  font-family: var(--font-interface);
+  font-size: calc(4.8pt * var(--rules-scale));
+  font-weight: 800;
+  letter-spacing: 0.035em;
+  line-height: 1.02;
+  text-transform: uppercase;
+}
+
+.leader-section-kind {
+  display: block;
+  margin-top: calc(0.008in * var(--rules-scale));
+  color: color-mix(in srgb, var(--card-ink) 72%, transparent);
+  font-family: "adobe-caslon-pro", Georgia, serif;
+  font-size: calc(4.65pt * var(--rules-scale));
+  font-style: italic;
+  line-height: 1;
 }
 
 .leader-rule-content {
   min-width: 0;
 }
 
-.leader-feature-line,
-.leader-feature-group-name {
+.leader-feature-line {
   margin: 0;
   font-family: "adobe-caslon-pro", Georgia, serif;
   font-size: calc(5.55pt * var(--rules-scale));
   line-height: 1.07;
 }
 
-.leader-feature-primary {
+.leader-feature-meta {
   display: block;
+  line-height: 1.04;
 }
 
-.leader-feature-line strong,
-.leader-feature-group-name strong {
+.leader-feature-item-name {
   color: var(--component-accent-ink);
   font-family: var(--font-interface);
-  font-size: calc(4.75pt * var(--rules-scale));
+  font-size: calc(4.8pt * var(--rules-scale));
   font-weight: 800;
-  letter-spacing: 0.025em;
-  text-transform: uppercase;
+  letter-spacing: 0.015em;
+}
+
+.leader-feature-cost {
+  color: var(--card-ink);
+  font-family: "adobe-caslon-pro", Georgia, serif;
+  font-size: calc(5.2pt * var(--rules-scale));
+  font-weight: 700;
 }
 
 .leader-feature-descriptor {
-  margin-left: 0.020in;
-  color: color-mix(in srgb, var(--card-ink) 76%, var(--component-accent-ink));
+  color: var(--card-ink);
   font-family: "adobe-caslon-pro", Georgia, serif;
   font-size: calc(5.15pt * var(--rules-scale));
   font-style: italic;
   line-height: 1.05;
+}
+
+.leader-feature-separator {
+  margin: 0 0.022in;
+  color: color-mix(in srgb, var(--card-ink) 55%, transparent);
+  font-family: "adobe-caslon-pro", Georgia, serif;
+  font-size: calc(4.8pt * var(--rules-scale));
+  font-weight: 400;
 }
 
 .leader-feature-text {
@@ -63,17 +93,13 @@
   line-height: 1.07;
 }
 
+.leader-feature-line > .leader-feature-text:first-child {
+  margin-top: 0;
+}
+
 .leader-rule-content--grouped {
   display: grid;
   gap: calc(0.014in * var(--rules-scale));
-}
-
-.leader-rule-content--grouped .leader-feature-group-name {
-  line-height: 1;
-}
-
-.leader-rule-content--grouped .leader-feature-line {
-  padding-left: 0.018in;
 }
 
 .leader-rule-content--grouped .leader-feature-line + .leader-feature-line {
@@ -86,17 +112,17 @@
   font-size: calc(5.32pt * var(--rules-scale));
 }
 
-/* Military is the one deliberately dense Leader family: three Orders live
-   inside the single Leader Ability section. Preserve the standardized type
-   sizes and recover space through geometry rather than microscopic text. */
+/* Military is the deliberately dense Leader family: three resource-costed
+   Orders share one Leader Ability section. Preserve readable type and recover
+   space through geometry rather than microscopic text. */
 .leader-card--standardized[data-faction="military"] .card-rules {
   gap: 0.020in;
   padding: 0.026in 0.060in 0.024in;
 }
 
 .leader-card--standardized[data-faction="military"] .leader-rule-section {
-  grid-template-columns: 0.64in minmax(0, 1fr);
-  column-gap: 0.032in;
+  grid-template-columns: 0.66in minmax(0, 1fr);
+  column-gap: 0.034in;
 }
 
 .leader-card--standardized[data-faction="military"] .leader-rule-section + .leader-rule-section {
@@ -108,7 +134,6 @@
 }
 
 .leader-card--standardized[data-faction="military"] .leader-rule-content--grouped .leader-feature-line {
-  padding-left: 0;
   line-height: 1.04;
 }
 
@@ -116,8 +141,8 @@
   padding-top: calc(0.003in * var(--rules-scale));
 }
 
-.leader-card--standardized[data-faction="military"] .leader-feature-descriptor {
-  margin-left: 0.014in;
+.leader-card--standardized[data-faction="military"] .leader-feature-separator {
+  margin: 0 0.014in;
 }
 
 .leader-card--standardized[data-faction="military"] .leader-feature-text {
