@@ -29,54 +29,102 @@ describe('Faction Feature and Leader Ability component taxonomy', () => {
     expect(taxonomy).toContain('**Faction Feature** is the umbrella term');
     expect(taxonomy).toContain('The term does not imply that the feature uses an Action.');
     expect(taxonomy).toContain('Faction Reference cards are the primary table surface');
-    expect(taxonomy).toContain('A mechanic supplied specifically by the chosen Leader is printed under **LEADER ABILITY**');
+    expect(taxonomy).toContain('classified as a **LEADER ABILITY**');
   });
 
-  it('standardizes every Leader card as victory, Leader Ability, then applicable resource/progression sections', () => {
+  it('keeps the agreed Leader section order while making the named concept primary', () => {
+    expect(leaderCopy.schemaVersion).toBe(2);
     expect(Object.keys(leaderCopy.leaders).sort()).toEqual([...leaderIds].sort());
 
     for (const id of leaderIds) {
       const sections = leaderCopy.leaders[id].sections;
-      expect(sections[0].heading).toBe('Faction Victory');
-      expect(sections[1].heading).toBe('Leader Ability');
-      expect(sections.slice(2).every((section: any) => ['Resource', 'Progression'].includes(section.heading))).toBe(true);
-      expect(sections.some((section: any) => section.heading === 'Tracked Value')).toBe(false);
+      expect(sections[0].classification).toBe('Faction Victory');
+      expect(sections[1].classification).toBe('Leader Ability');
+      expect(sections.slice(2).every((section: any) => ['Resource', 'Progression'].includes(section.classification))).toBe(true);
+      expect(sections.some((section: any) => section.classification === 'Tracked Value')).toBe(false);
+      expect(sections.every((section: any) => typeof section.name === 'string' && section.name.length > 0)).toBe(true);
     }
 
     expect(leaderCopy.leaders.ambassador.sections[0]).toMatchObject({
-      heading: 'Faction Victory',
+      classification: 'Faction Victory',
       name: 'Peace Treaty',
       text: 'At the start of your turn, if 6 different Proposals are ratified, you win.',
     });
     expect(leaderCopy.leaders.ambassador.sections[1]).toMatchObject({
-      heading: 'Leader Ability',
+      classification: 'Leader Ability',
       name: 'Cordiality',
       descriptor: 'No Action · Once per turn · After accepted Terms',
     });
     expect(leaderCopy.leaders.ambassador.sections[2]).toMatchObject({
-      heading: 'Resource',
+      classification: 'Resource',
       name: 'Influence',
       descriptor: 'Begin with 1 · Maximum 10',
     });
   });
 
-  it('treats Military Orders as the named Leader Ability rather than separate top-level sections', () => {
+  it('renders the General in the approved Run the Gauntlet / Orders / Command hierarchy', () => {
+    const sections = leaderCopy.leaders.general.sections;
+    expect(sections.map((section: any) => [section.name, section.classification])).toEqual([
+      ['Run the Gauntlet', 'Faction Victory'],
+      ['Orders', 'Leader Ability'],
+      ['Command', 'Resource'],
+    ]);
+
+    expect(sections[1].items).toEqual([
+      {
+        name: 'Onward',
+        cost: '1 Command',
+        descriptor: 'No Action · During Movement',
+        text: 'During your Movement, move one additional Position. This may start a Battle.',
+      },
+      {
+        name: 'Rally',
+        cost: '1 Command',
+        descriptor: 'No Action · Before dice · Attacking',
+        text: 'Add +1 to your battle total in a battle you initiated.',
+      },
+      {
+        name: 'Rout',
+        cost: '2 Command',
+        descriptor: 'No Action · End of Aftermath · Win as attacker',
+        text: 'Advance one Position. This movement may create a pending battle.',
+      },
+    ]);
+    expect(sections[2]).toMatchObject({
+      name: 'Command',
+      classification: 'Resource',
+      descriptor: 'Begin with 0 · Maximum 2',
+      text: 'The first time each turn you win a battle, gain 1 Command.',
+    });
+  });
+
+  it('separates resource costs from italic timing descriptors', () => {
     for (const id of ['general', 'commandant']) {
-      const ability = leaderCopy.leaders[id].sections[1];
-      expect(ability.heading).toBe('Leader Ability');
-      expect(ability.name).toBe('Orders');
-      expect(ability.items).toHaveLength(3);
-      expect(ability.items.every((item: any) => item.descriptor.includes('Command · No Action'))).toBe(true);
+      const orders = leaderCopy.leaders[id].sections[1].items;
+      expect(orders).toHaveLength(3);
+      expect(orders.every((item: any) => /^\d Command$/.test(item.cost))).toBe(true);
+      expect(orders.every((item: any) => item.descriptor.startsWith('No Action'))).toBe(true);
+      expect(orders.every((item: any) => !item.descriptor.includes('Command'))).toBe(true);
     }
-    expect(leaderCopy.leaders.general.sections[1].items.map((item: any) => item.name)).toEqual(['Onward', 'Rally', 'Rout']);
-    expect(leaderCopy.leaders.commandant.sections[1].items.map((item: any) => item.name)).toEqual(['Entrench', 'Repel', 'Fortify']);
+
+    expect(leaderCopy.leaders.ranger.sections[1]).toMatchObject({
+      name: 'Fieldcraft',
+      cost: '1 Intel',
+      descriptor: 'No Action · Once per turn · Territory effect',
+    });
+    expect(leaderCopy.leaders['witch-hunter'].sections[1]).toMatchObject({
+      name: 'Relentless Pursuit',
+      cost: '2 Conviction',
+      descriptor: 'No Action · Once per turn · After defeating an attacking opponent',
+    });
+    expect(leaderCopy.leaders.ambassador.sections[1].cost).toBeUndefined();
   });
 
   it('keeps Intel as the Intelligence resource and Operation Progress as progression', () => {
     for (const id of ['ranger', 'spymaster']) {
       const sections = leaderCopy.leaders[id].sections;
-      const resource = sections.find((section: any) => section.heading === 'Resource');
-      const progression = sections.find((section: any) => section.heading === 'Progression');
+      const resource = sections.find((section: any) => section.classification === 'Resource');
+      const progression = sections.find((section: any) => section.classification === 'Progression');
       expect(resource).toMatchObject({ name: 'Intel', descriptor: 'Begin at 0 · No maximum' });
       expect(progression).toMatchObject({
         name: 'Operation Progress',
@@ -88,37 +136,43 @@ describe('Faction Feature and Leader Ability component taxonomy', () => {
     expect(taxonomy).toContain('Increment by 1 each time you complete a normal Mission.');
   });
 
-  it('omits meaningless Resource headings for Mystics and uses Progression for Rites', () => {
+  it('omits meaningless Resource classifications for Mystics and uses Progression for Rites', () => {
     for (const id of ['alchemist', 'spirit-walker']) {
       const sections = leaderCopy.leaders[id].sections;
-      expect(sections.some((section: any) => section.heading === 'Resource')).toBe(false);
-      expect(sections.find((section: any) => section.heading === 'Progression')).toMatchObject({
+      expect(sections.some((section: any) => section.classification === 'Resource')).toBe(false);
+      expect(sections.find((section: any) => section.classification === 'Progression')).toMatchObject({
         name: 'Rites',
         descriptor: '1st — Invocation · 2nd — Transmutation · 3rd — Convergence + Ritual',
       });
     }
   });
 
-  it('renders the standardized section/name/descriptor/text hierarchy on production Leader cards', () => {
+  it('renders named concepts in the left column and suppresses redundant right-column names', () => {
     expect(catalogOverlay).toContain("import './leader-card-copy.js';");
     expect(leaderRenderer).toContain("const COPY_URL = './leader-copy/v0.6.4/leader-card-copy.json';");
-    expect(leaderRenderer).toContain('leader-rule-section--${slugify(section.heading)}');
-    expect(leaderRenderer).toContain('leader-feature-primary');
+    expect(leaderRenderer).toContain('leader-section-name');
+    expect(leaderRenderer).toContain('leader-section-kind');
+    expect(leaderRenderer).toContain('leader-feature-item-name');
+    expect(leaderRenderer).toContain('leader-feature-cost');
     expect(leaderRenderer).toContain('leader-feature-descriptor');
     expect(leaderRenderer).toContain('leader-feature-text');
+    expect(leaderRenderer).toContain('if (showName && feature.cost)');
+    expect(leaderRenderer).not.toContain('leader-feature-group-name');
     expect(leaderRenderer).not.toContain('leader-feature-divider');
-    expect(leaderRenderer).toContain('leader-feature-group-name');
     expect(leaderRenderer).toContain("leaderCard.dataset.artMin = '0.98'");
     expect(leaderRenderer).toContain("root.dataset.leaderCopyReady = 'true'");
-    expect(leaderStyles).toContain('.leader-card--standardized .leader-rule-section');
-    expect(leaderStyles).toContain('.leader-feature-primary');
-    expect(leaderStyles).toContain('.leader-feature-text');
-    expect(leaderStyles).toContain('display: block');
+
+    expect(leaderStyles).toContain('.leader-section-name');
+    expect(leaderStyles).toContain('.leader-section-kind');
+    expect(leaderStyles).toContain('.leader-feature-item-name');
+    expect(leaderStyles).toContain('.leader-feature-cost');
+    expect(leaderStyles).toContain('font-family: var(--font-interface)');
     expect(leaderStyles).toContain('font-style: italic');
-    expect(leaderStyles).not.toContain('.leader-feature-divider');
     expect(leaderStyles).toContain('.leader-card--standardized[data-faction="military"] .card-rules');
-    expect(leaderStyles).toContain('grid-template-columns: 0.64in minmax(0, 1fr)');
-    expect(taxonomy).toContain('The rules text is always set on a new line');
+
+    expect(taxonomy).toContain('The **named game concept is the primary heading**');
+    expect(taxonomy).toContain('Do not repeat the left-column name');
+    expect(taxonomy).toContain('A bold/accent right-column subheading is reserved for a distinct resource-costed subfeature');
   });
 
   it('adds compact Faction Features inventories to the approved Diplomat and Financier references', () => {
