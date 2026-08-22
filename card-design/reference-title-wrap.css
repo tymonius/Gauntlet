@@ -1,0 +1,21 @@
+/* Long reference-face headings should preserve the established display size by
+   wrapping to a second line before the JavaScript fitter considers shrinking
+   them. The doubled .reference-card selector intentionally outranks the
+   production grammar's later single-line declaration on the Card Design page;
+   the same file is also imported by the standalone TTS reference renderer. */
+
+.reference-card.reference-card:is(
+  [data-component-id="intelligence-mission-reference"],
+  [data-component-id="intelligence-operations-reference"],
+  [data-component-id="mystics-reference"],
+  [data-component-id="inquisition-doctrine-reference"],
+  [data-component-id="inquisition-purge-reference"]
+) .reference-face-title {
+  display: -webkit-box;
+  overflow: hidden;
+  line-height: 0.86;
+  text-overflow: clip;
+  white-space: normal;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
