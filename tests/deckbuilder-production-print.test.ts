@@ -9,6 +9,7 @@ const territoryRender = readFileSync("card-design/territory-print-render.html", 
 const backRender = readFileSync("tts/back-renderer/index.html", "utf8");
 const cardBackCss = readFileSync("card-design/card-back.css", "utf8");
 const printTransform = readFileSync("deckbuilder/print-duplex-sheet-pairing.js", "utf8");
+const supplementalPrintTransform = readFileSync("deckbuilder/print-capital-ledger.js", "utf8");
 const cardBackPolicy = readFileSync("deckbuilder/card-back-preview.js", "utf8");
 const duplexTransform = readFileSync("deckbuilder/print-duplex.js", "utf8");
 const analyticsSync = readFileSync("scripts/sync-google-analytics.mjs", "utf8");
@@ -24,6 +25,8 @@ describe("Deckbuilder production printing", () => {
     expect(territoryRender).toContain('height: 2.5in;');
     expect(componentRenderHtml).toContain('/card-design/leader-card.css');
     expect(componentRenderHtml).toContain('/card-design/supplemental-card.js');
+    expect(componentRenderHtml).toContain('/card-design/capital-ledger.css');
+    expect(componentRenderHtml).toContain('/card-design/deed-card.css');
     for (const kind of ['leader', 'proposal', 'reference', 'rite', 'ritual', 'tracker', 'supplemental']) {
       expect(componentRenderJs).toContain(`"${kind}"`);
     }
@@ -44,11 +47,16 @@ describe("Deckbuilder production printing", () => {
     expect(printTransform).toContain('side: "reverse"');
   });
 
-  it("keeps pending Financier faces on fallback while still assigning their declared back policy", () => {
+  it("keeps final export-pending Financier faces canonical without promoting contract export status", () => {
     const ledger = componentContract.components.find((component: any) => component.id === 'financiers-capital-ledger');
     const deed = componentContract.components.find((component: any) => component.id === 'financiers-deed');
-    expect(ledger?.productionStatus).not.toBe('ready');
-    expect(deed?.productionStatus).not.toBe('ready');
+    expect(ledger?.productionStatus).toBe('export-pending');
+    expect(deed?.productionStatus).toBe('export-pending');
+    expect(ledger?.designStatus).toBe('final');
+    expect(deed?.designStatus).toBe('final');
+    expect(supplementalPrintTransform).toContain('PRODUCTION_LEDGER_COMPONENT_ID = "financiers-capital-ledger"');
+    expect(supplementalPrintTransform).toContain('PRODUCTION_DEED_COMPONENT_ID = "financiers-deed"');
+    expect(supplementalPrintTransform).toContain('deed.replaceWith(productionDeedFrame(documentNode))');
     expect(printTransform).toContain('annotateFallback(legacyCard, component)');
     expect(printTransform).toContain('legacyCard.dataset.contractBackPolicy = component.backPolicy');
   });
@@ -70,6 +78,9 @@ describe("Deckbuilder production printing", () => {
   it("keeps duplex orientation and production-render readiness safeguards", () => {
     expect(printTransform).toContain('mirrorIndexForLongEdge(frontIndex)');
     expect(printTransform).toContain('transform: rotate(90deg);');
+    expect(supplementalPrintTransform).toContain('production-component-landscape-rotate');
+    expect(supplementalPrintTransform).toContain('orientation=landscape');
+    expect(componentRenderJs).toContain('card.dataset.parchmentLoaded === "true" && dimensionsReady(card)');
     expect(cardBackCss).toContain('transform: translate(-50%, -50%) rotate(90deg);');
     expect(backRender).toContain("params.get('rotation') === '180'");
     expect(printTransform).toContain("await Promise.all(frames.map(waitForFrame))");
