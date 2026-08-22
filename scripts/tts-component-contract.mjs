@@ -102,7 +102,7 @@ export function resolveStandardBackVariant(contract) {
 }
 
 export function resolveStandardBackFile(contract) {
-  return `backs/${resolveStandardBackVariant(contract)}`;
+  return `backs/${resolveStandardBackVariant(contract)}.png`;
 }
 
 export function resolveFactionBackVariant(contract, faction) {
