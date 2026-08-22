@@ -19,21 +19,35 @@ function slugify(value) {
     .replace(/^-|-$/g, '');
 }
 
-function renderFeatureLine(feature) {
-  const descriptor = feature.descriptor
-    ? `<em class="leader-feature-descriptor">${esc(feature.descriptor)}</em>`
-    : '';
+function renderMeta(feature, { showName = false } = {}) {
+  const parts = [];
+  if (showName && feature.cost) {
+    parts.push(`<strong class="leader-feature-item-name">${esc(feature.name)}</strong>`);
+  }
+  if (feature.cost) {
+    parts.push(`<strong class="leader-feature-cost">${esc(feature.cost)}</strong>`);
+  }
+  if (feature.descriptor) {
+    parts.push(`<em class="leader-feature-descriptor">${esc(feature.descriptor)}</em>`);
+  }
+  if (!parts.length) return '';
+  return `<span class="leader-feature-meta">${parts.join('<span class="leader-feature-separator" aria-hidden="true">—</span>')}</span>`;
+}
+
+function renderFeatureLine(feature, options = {}) {
+  const meta = renderMeta(feature, options);
   const text = feature.text
     ? `<span class="leader-feature-text">${esc(feature.text)}</span>`
     : '';
-  return `<p class="leader-feature-line"><span class="leader-feature-primary"><strong>${esc(feature.name)}:</strong>${descriptor}</span>${text}</p>`;
+  return `<p class="leader-feature-line">${meta}${text}</p>`;
 }
 
 function renderSection(section) {
+  const classification = section.classification || section.heading;
   const content = Array.isArray(section.items) && section.items.length
-    ? `<div class="leader-rule-content leader-rule-content--grouped"><p class="leader-feature-group-name"><strong>${esc(section.name)}</strong></p>${section.items.map(renderFeatureLine).join('')}</div>`
+    ? `<div class="leader-rule-content leader-rule-content--grouped">${section.items.map(item => renderFeatureLine(item, { showName: true })).join('')}</div>`
     : `<div class="leader-rule-content">${renderFeatureLine(section)}</div>`;
-  return `<section class="leader-rule-section leader-rule-section--${slugify(section.heading)}"><h4>${esc(section.heading)}</h4>${content}</section>`;
+  return `<section class="leader-rule-section leader-rule-section--${slugify(classification)}"><div class="leader-section-label"><h4 class="leader-section-name">${esc(section.name)}</h4><span class="leader-section-kind">${esc(classification)}</span></div>${content}</section>`;
 }
 
 async function ensureStyles() {

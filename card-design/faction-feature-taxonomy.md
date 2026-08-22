@@ -19,38 +19,60 @@ Faction Reference cards are the primary table surface for listing and explaining
 
 ## Leader Ability
 
-A mechanic supplied specifically by the chosen Leader is printed under **LEADER ABILITY** on that Leader card.
+A mechanic supplied specifically by the chosen Leader is classified as a **LEADER ABILITY** on that Leader card.
 
-`Leader Ability` does not imply whether the ability uses an Action. The descriptor immediately following the ability name states Action use, timing, cost, and frequency as applicable.
+`Leader Ability` does not imply whether the ability uses an Action. Timing, Action use, resource cost, and frequency are stated directly with the ability.
 
-Examples:
-
-- `CORDIALITY: No Action · Once per turn · After accepted Terms`
-- `HOSTILE TAKEOVER: 1 Action · Denouement · After winning as attacker`
-- `RALLY: 1 Command · No Action · Before dice · Attacking`
-
-Military uses the singular section heading **LEADER ABILITY** with the named ability **ORDERS**, followed by the Leader's individual Orders and their Command costs/timings.
+Military uses the named ability **ORDERS**, followed by the Leader's individual Orders and their Command costs/timings.
 
 ## Leader card hierarchy
 
 Leader cards retain the faction's headline information instead of becoming ability-only cards.
 
-Print sections in this order:
+Keep sections in this order:
 
-1. **FACTION VICTORY** — named victory condition and compact reminder.
-2. **LEADER ABILITY** — the chosen Leader's unique mechanic, with descriptor and complete usable text.
-3. **RESOURCE** — only when the faction has a spendable faction resource worth keeping visible on the Leader card.
-4. **PROGRESSION** — only when the faction has a non-resource progress structure worth keeping visible on the Leader card.
+1. faction victory;
+2. Leader ability;
+3. resource, when applicable;
+4. progression, when applicable.
 
-Do not print an empty heading merely to preserve symmetry.
+Do not print an empty Resource or Progression section merely to preserve symmetry.
 
-Within a section, use this hierarchy:
+### Left column
 
-`SECTION HEADING   BOLD NAME: italic descriptor`
+The **named game concept is the primary heading**. Its generic rules classification is subordinate beneath it.
 
-`plain rules text on the following line`
+Examples:
 
-The descriptor uses centered dots to separate properties. The rules text is always set on a new line; a slash in design discussion is shorthand for this line break, not a printed character.
+- `RUN THE GAUNTLET` / *Faction Victory*
+- `ORDERS` / *Leader Ability*
+- `COMMAND` / *Resource*
+- `OPERATION PROGRESS` / *Progression*
+
+The slash above is layout shorthand for a line break, not a printed character.
+
+### Right column
+
+Do not repeat the left-column name for an ordinary single Leader Ability, victory condition, Resource, or Progression entry.
+
+Use this hierarchy instead:
+
+- optional resource cost in **bold Caslon**;
+- timing / Action / frequency descriptor in *italic Caslon*;
+- plain rules text on the following line.
+
+For example, **CORDIALITY** appears only in the left column. Its right column begins with *No Action · Once per turn · After accepted Terms*, followed by the rules text on the next line.
+
+A bold/accent right-column subheading is reserved for a distinct resource-costed subfeature beneath a broader named mechanic. Military Orders are the canonical example:
+
+`Onward — 1 Command — No Action · During Movement`
+
+- `Onward` is the accent Inter subheading;
+- `1 Command` is bold black Caslon;
+- `No Action · During Movement` is italic black Caslon;
+- the Order's rules text follows on the next line.
+
+Single Leader Abilities that themselves cost a faction Resource, such as **Fieldcraft** or **Relentless Pursuit**, do not repeat their names in the right column; only the Resource cost is bold before the italic descriptor.
 
 ## Resource and progression distinction
 
@@ -58,7 +80,9 @@ A spendable quantity such as **Command**, **Influence**, **Capital**, **Intel**,
 
 **Operation Progress is not a Resource.** It is printed under **PROGRESSION** and described as:
 
-`OPERATION PROGRESS: Begin at 0`
+`OPERATION PROGRESS` / *Progression*
+
+*Begin at 0*
 
 `Increment by 1 each time you complete a normal Mission.`
 
