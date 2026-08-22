@@ -5,7 +5,32 @@ import { CURRENT_ALIAS_ROOT, resolveCurrentTtsRelease, ROOT } from './tts-curren
 
 const REVIEW_SENTENCE = 'Tabletop Simulator review scaffold.';
 const FINAL_SENTENCE = 'Tabletop Simulator mod.';
-const REQUIRED_QA_CHECKS = Object.freeze(['tableSetup', 'factionComponents', 'fullGame']);
+const REQUIRED_QA_CHECKS = Object.freeze({
+  tableSetup: Object.freeze([
+    'cleanClientLoad',
+    'playerPerspectivesAndHandZones',
+    'gauntletSnapsAndTerritoryOrientation',
+    'playerTokensAndBattleDice',
+    'rulebookSetup',
+    'playAreasRemainDistinct',
+  ]),
+  factionComponents: Object.freeze([
+    'militaryCommandTracker',
+    'diplomatInfluenceTracker',
+    'diplomatProposalsAndTreaties',
+    'financierCapitalLedger',
+    'financierDeeds',
+    'intelligenceNestedOperationStack',
+    'mysticsRitesAndCompletedFaces',
+    'inquisitionConvictionDoctrineAndPurge',
+  ]),
+  fullGame: Object.freeze([
+    'completedRemoteTwoPlayerGame',
+    'coreHandlingExercised',
+    'focusedFactionDrillsComplete',
+    'frictionResolved',
+  ]),
+});
 
 function jsonText(value) {
   return `${JSON.stringify(value, null, 2)}\n`;
@@ -15,6 +40,24 @@ function requireVersion(value, expected, label) {
   if (String(value || '').trim() !== expected) {
     throw new Error(`${label} targets ${value || 'missing'}; expected ${expected}.`);
   }
+}
+
+function qaCheckEntries() {
+  return Object.entries(REQUIRED_QA_CHECKS).flatMap(([group, checks]) => checks.map((check) => [group, check]));
+}
+
+export function validateQaRecordShape(qa) {
+  if (qa?.schemaVersion !== 2) throw new Error('TTS manual-QA record has an unsupported schemaVersion.');
+  for (const [group, check] of qaCheckEntries()) {
+    if (typeof qa?.checks?.[group]?.[check] !== 'boolean') {
+      throw new Error(`TTS manual-QA record must declare boolean check ${group}.${check}.`);
+    }
+  }
+  if (typeof qa.approvedForWorkshop !== 'boolean') {
+    throw new Error('TTS manual-QA record must declare approvedForWorkshop as a boolean.');
+  }
+  if (!Array.isArray(qa.notes)) throw new Error('TTS manual-QA record must declare notes as an array.');
+  return qa;
 }
 
 export function validatePromotionGate({ release, readiness, qa }) {
@@ -28,14 +71,19 @@ export function validatePromotionGate({ release, readiness, qa }) {
     throw new Error(`TTS save cannot be promoted until machine readiness passes${details ? `; blockers: ${details}` : ''}.`);
   }
 
-  if (qa?.schemaVersion !== 1) throw new Error('TTS manual-QA record has an unsupported schemaVersion.');
+  validateQaRecordShape(qa);
   requireVersion(qa?.gameVersion, version, 'TTS manual-QA record');
-  for (const check of REQUIRED_QA_CHECKS) {
-    if (qa?.checks?.[check] !== true) throw new Error(`TTS manual-QA check is incomplete: ${check}.`);
+  for (const [group, check] of qaCheckEntries()) {
+    if (qa.checks[group][check] !== true) {
+      throw new Error(`TTS manual-QA check is incomplete: ${group}.${check}.`);
+    }
   }
   if (qa?.approvedForWorkshop !== true) throw new Error('TTS manual-QA record is not approved for Workshop promotion.');
 
-  return { version, checks: [...REQUIRED_QA_CHECKS] };
+  return {
+    version,
+    checks: Object.fromEntries(Object.entries(REQUIRED_QA_CHECKS).map(([group, checks]) => [group, [...checks]])),
+  };
 }
 
 export function promoteSaveIdentity(save, version) {
@@ -66,13 +114,9 @@ async function main() {
   const qa = await readJson(qaPath, 'Missing versioned TTS manual-QA record');
 
   if (checkOnly) {
-    if (qa.schemaVersion !== 1) throw new Error('TTS manual-QA record has an unsupported schemaVersion.');
+    validateQaRecordShape(qa);
     requireVersion(qa.gameVersion, release.version, 'TTS manual-QA record');
-    for (const check of REQUIRED_QA_CHECKS) {
-      if (typeof qa?.checks?.[check] !== 'boolean') throw new Error(`TTS manual-QA record must declare boolean check ${check}.`);
-    }
-    if (typeof qa.approvedForWorkshop !== 'boolean') throw new Error('TTS manual-QA record must declare approvedForWorkshop as a boolean.');
-    console.log(`TTS save-promotion source check passed for ${release.version}; manual QA status is ${qa.status || 'unspecified'}.`);
+    console.log(`TTS save-promotion source check passed for ${release.version}; ${qaCheckEntries().length} manual QA checks are declared and status is ${qa.status || 'unspecified'}.`);
     return;
   }
 
