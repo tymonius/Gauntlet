@@ -3,12 +3,25 @@
   const kind = String(params.get("kind") || "").trim().toLowerCase();
   const id = String(params.get("id") || "").trim();
   const side = String(params.get("side") || "front").trim().toLowerCase();
+  const orientation = String(params.get("orientation") || "portrait").trim().toLowerCase();
   const target = document.getElementById("renderTarget");
   const TIMEOUT_MS = 30000;
   const supportedKinds = new Set(["leader", "proposal", "reference", "rite", "ritual", "tracker", "supplemental"]);
+  const landscape = orientation === "landscape";
+  const renderWidth = landscape ? "3.5in" : "2.5in";
+  const renderHeight = landscape ? "2.5in" : "3.5in";
 
   const delay = ms => new Promise(resolve => window.setTimeout(resolve, ms));
   const reverseSide = () => side === "reverse" || side === "back" || side === "treaty" || side === "completed";
+
+  function applyRenderViewport() {
+    for (const node of [document.documentElement, document.body, target]) {
+      if (!node) continue;
+      node.style.width = renderWidth;
+      node.style.height = renderHeight;
+    }
+    if (document.body) document.body.dataset.renderOrientation = landscape ? "landscape" : "portrait";
+  }
 
   function reportError(error) {
     const message = error?.stack || error?.message || String(error);
@@ -110,6 +123,10 @@
       throw new Error(`Production ${kind} ${id} reports a fit warning.`);
     }
     if (card.classList.contains("supplemental-placeholder-card")) {
+      // The Deed catalog is hydrated from the historical supplemental shell.
+      // Wait for deed-card.js to normalize that shell into the finalized Deed
+      // instead of treating the transient pre-hydration class as a hard error.
+      if (kind === "supplemental" && id === "financiers-deed") return false;
       throw new Error(`Component ${id} still resolves to a production-layout placeholder.`);
     }
 
@@ -139,6 +156,9 @@
     if (!target) throw new Error("Missing component print render target.");
     if (!kind || !id) throw new Error("Component print renderer requires kind and id query parameters.");
     if (!supportedKinds.has(kind)) throw new Error(`Unsupported production component kind: ${kind}`);
+    if (!["portrait", "landscape"].includes(orientation)) throw new Error(`Unsupported production component orientation: ${orientation}`);
+
+    applyRenderViewport();
 
     if (document.readyState !== "complete") {
       await new Promise(resolve => window.addEventListener("load", resolve, { once: true }));
@@ -172,6 +192,8 @@
       throw new Error(`Timed out waiting for production ${kind} component ${id} to finish rendering.`);
     }
 
+    card.style.width = renderWidth;
+    card.style.height = renderHeight;
     target.replaceChildren(card);
     document.getElementById("leaderReviewSections")?.remove();
     document.getElementById("proposalReviewSections")?.remove();
