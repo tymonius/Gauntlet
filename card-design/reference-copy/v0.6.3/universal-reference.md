@@ -4,7 +4,7 @@
 >
 > Audit authority: `artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md`
 >
-> Recheck against: Your Turn; Pending Battles, Terms, and Onset; Battle Sequence and Outcome; The Aftermath; Withdrawal and Retreat; Front Line, Occupation, and Capture; Running the Gauntlet.
+> Recheck against: Your Turn; Movement and Position; Battle Sequence and Outcome; The Aftermath; Withdrawal and Retreat; Front Line, Occupation, and Capture; Running the Gauntlet.
 
 ## Front — Turn & Battle
 
@@ -23,13 +23,9 @@ You normally take **1 Action total per turn**, during either Opening or Denoueme
 
 Resolve movement **one Position at a time**. When movement creates a battle, that movement sequence ends and any unused movement from it is lost.
 
-### Before the Battle
-
-**Pending battle → Terms, if applicable → Onset**
-
-A pending battle is not yet a battle. If Terms or another effect ends it before Onset, no battle or Aftermath occurs. At Onset, the battle begins and attacker / defender roles become fixed.
-
 ### Battle Sequence
+
+At **Onset**, the battle begins and attacker / defender roles become fixed.
 
 1. **Onset**
 2. Set **Gambits**.
@@ -65,7 +61,7 @@ If the defender has **Defensive Edge**, the defender wins tied battle totals. Ot
 
 Withdrawal produces **no winner or loser**. Victory, loss, and retreat triggers do not occur.
 
-If a pending battle ends before Onset, no battle or Aftermath occurs. If an active battle ends by withdrawal after Onset, complete the remaining non-result steps of the Aftermath and clear committed battle cards normally.
+If an active battle ends by withdrawal after Onset, complete the remaining non-result steps of the Aftermath and clear committed battle cards normally.
 
 ### Front Line & Capture
 
