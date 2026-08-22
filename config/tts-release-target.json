@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "releaseTag": "v0.7.0",
+  "displayVersion": "v0.7.0",
+  "sourceVersion": "v0.6.4-candidate",
+  "currentGameAuthority": "game-data/current-game.json",
+  "status": "active-development"
+}
