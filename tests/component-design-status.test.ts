@@ -32,19 +32,25 @@ describe('physical component design maturity', () => {
     expect(universal?.source).toContain('Rulebook.md');
   });
 
-  it('records finalized Diplomat and Financier references separately from the five references still awaiting refinement', () => {
+  it('records all seven faction reference cards as final authored player aids', () => {
     const references = components.filter(item => item.family === 'reference-card');
-    const diplomat = component('diplomats-reference');
-    const financier = component('financiers-reference');
-    const finalizedIds = new Set(['diplomats-reference', 'financiers-reference']);
-    const remaining = references.filter(item => !finalizedIds.has(item.id));
 
     expect(references).toHaveLength(7);
     expect(references.every(item => item.productionStatus === 'ready')).toBe(true);
-    expect(diplomat?.designStatus).toBe('final');
-    expect(financier?.designStatus).toBe('final');
-    expect(remaining).toHaveLength(5);
-    expect(remaining.every(item => item.designStatus === 'refinement-pending')).toBe(true);
+    expect(references.every(item => item.designStatus === 'final')).toBe(true);
+    expect(references.every(item => item.copyMode === 'bespoke')).toBe(true);
+    expect(references.every(item => item.source.startsWith('card-design/reference-copy/'))).toBe(true);
+    expect(references.every(item => item.authoritySource?.includes('/faction-guides/'))).toBe(true);
+
+    expect(references.map(item => item.id).sort()).toEqual([
+      'diplomats-reference',
+      'financiers-reference',
+      'inquisition-doctrine-reference',
+      'inquisition-purge-reference',
+      'intelligence-mission-reference',
+      'intelligence-operations-reference',
+      'mystics-reference',
+    ]);
   });
 
   it('marks completed Proposal, Ledger, and Deed designs as export-pending rather than design/artwork-pending', () => {
@@ -75,13 +81,13 @@ describe('physical component design maturity', () => {
     });
   });
 
-  it('validates design status separately from production readiness', () => {
+  it('validates final faction-reference design status separately from the universal placeholder', () => {
     expect(validator).toContain("const DESIGN_STATUSES = new Set(['final', 'refinement-pending', 'placeholder'])");
     expect(validator).toContain("sharedMap.get('universal-reference')");
     expect(validator).toContain("designStatusFor(universalReference) === 'placeholder'");
-    expect(validator).toContain("designStatusFor(diplomatReference) === 'final'");
-    expect(validator).toContain("designStatusFor(financierReference) === 'final'");
-    expect(validator).toContain("designStatusFor(component) === 'refinement-pending'");
+    expect(validator).toContain("factionReferences.every((component) => designStatusFor(component) === 'final')");
+    expect(validator).toContain("factionReferences.every((component) => component.copyMode === 'bespoke')");
+    expect(validator).not.toContain('five remaining faction reference cards');
   });
 
   it('shows the universal placeholder in Card Design and every Deckbuilder package', () => {

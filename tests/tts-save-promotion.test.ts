@@ -1,0 +1,99 @@
+import { readFileSync } from 'node:fs';
+import { describe, expect, it } from 'vitest';
+import { REQUIRED_QA_CHECKS, promoteSaveIdentity, validatePromotionGate, validateQaRecordShape } from '../scripts/promote-tts-save.mjs';
+
+const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
+const qa = JSON.parse(readFileSync('tts/release-qa/v0.7.0.json', 'utf8'));
+const release = { version: 'v0.7.0' };
+
+function completedQa(overrides = {}) {
+  return {
+    ...qa,
+    status: 'passed',
+    checks: Object.fromEntries(Object.entries(REQUIRED_QA_CHECKS).map(([group, checks]) => [
+      group,
+      Object.fromEntries(checks.map((check) => [check, true])),
+    ])),
+    approvedForWorkshop: true,
+    ...overrides,
+  };
+}
+
+describe('TTS final save promotion', () => {
+  it('keeps promotion explicit and outside ordinary package generation', () => {
+    expect(packageJson.scripts['tts:save:promote']).toBe('node scripts/promote-tts-save.mjs');
+    expect(packageJson.scripts['tts:package']).not.toContain('tts:save:promote');
+    expect(packageJson.scripts['tts:check']).toContain('promote-tts-save.mjs --check');
+  });
+
+  it('ships a granular pending v0.7.0 manual-QA record rather than pre-approving Workshop publication', () => {
+    expect(qa).toEqual(expect.objectContaining({
+      schemaVersion: 2,
+      gameVersion: 'v0.7.0',
+      status: 'pending',
+      approvedForWorkshop: false,
+      notes: [],
+    }));
+    expect(() => validateQaRecordShape(qa)).not.toThrow();
+
+    const expectedGroups = Object.keys(REQUIRED_QA_CHECKS);
+    expect(Object.keys(qa.checks)).toEqual(expectedGroups);
+    for (const [group, checks] of Object.entries(REQUIRED_QA_CHECKS)) {
+      expect(Object.keys(qa.checks[group])).toEqual([...checks]);
+      expect(Object.values(qa.checks[group]).every((value) => value === false)).toBe(true);
+    }
+    expect(Object.values(REQUIRED_QA_CHECKS).flat()).toHaveLength(19);
+  });
+
+  it('refuses promotion while machine readiness still has blockers', () => {
+    expect(() => validatePromotionGate({
+      release,
+      readiness: { gameVersion: 'v0.7.0', machineReady: false, blockers: [{ id: 'universal-reference' }] },
+      qa: completedQa(),
+    })).toThrow(/universal-reference/);
+  });
+
+  it('refuses promotion at the first incomplete granular QA check', () => {
+    const readiness = { gameVersion: 'v0.7.0', machineReady: true, blockers: [] };
+    expect(() => validatePromotionGate({ release, readiness, qa })).toThrow(/tableSetup\.cleanClientLoad/);
+
+    const almostComplete = completedQa();
+    almostComplete.checks.factionComponents.intelligenceNestedOperationStack = false;
+    expect(() => validatePromotionGate({ release, readiness, qa: almostComplete }))
+      .toThrow(/factionComponents\.intelligenceNestedOperationStack/);
+  });
+
+  it('still requires explicit Workshop approval after all manual checks pass', () => {
+    const readiness = { gameVersion: 'v0.7.0', machineReady: true, blockers: [] };
+    expect(() => validatePromotionGate({
+      release,
+      readiness,
+      qa: completedQa({ approvedForWorkshop: false }),
+    })).toThrow(/not approved for Workshop/);
+  });
+
+  it('allows promotion only after machine readiness and every granular manual QA check pass', () => {
+    const result = validatePromotionGate({
+      release,
+      readiness: { gameVersion: 'v0.7.0', machineReady: true, blockers: [] },
+      qa: completedQa(),
+    });
+    expect(result.version).toBe('v0.7.0');
+    expect(result.checks).toEqual(Object.fromEntries(Object.entries(REQUIRED_QA_CHECKS).map(([group, checks]) => [group, [...checks]])));
+  });
+
+  it('creates final mod identity without mutating the preserved review scaffold', () => {
+    const review = {
+      SaveName: 'Gauntlet v0.7.0 — TTS Review Scaffold',
+      Note: 'Gauntlet v0.7.0 Tabletop Simulator review scaffold.\n\nReview scaffold instructions.',
+      Rules: 'Gauntlet v0.7.0 Tabletop Simulator review scaffold.',
+    };
+    const promoted = promoteSaveIdentity(review, 'v0.7.0');
+
+    expect(promoted.SaveName).toBe('Gauntlet v0.7.0');
+    expect(promoted.Note).toContain('Gauntlet v0.7.0 Tabletop Simulator mod.');
+    expect(promoted.Note).not.toMatch(/review scaffold/i);
+    expect(promoted.Rules).not.toMatch(/review scaffold/i);
+    expect(review.SaveName).toContain('Review Scaffold');
+  });
+});
