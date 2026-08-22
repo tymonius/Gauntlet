@@ -5,6 +5,9 @@
   const MAX_SHEET_COUNT = 10;
   const PRODUCTION_LEDGER_COMPONENT_ID = "financiers-capital-ledger";
   const PRODUCTION_LEDGER_KIND = "supplemental";
+  const PRODUCTION_DEED_COMPONENT_ID = "financiers-deed";
+  const PRODUCTION_DEED_KIND = "supplemental";
+  const PRODUCTION_DIPLOMAT_REFERENCE_ID = "diplomats-reference";
   const PRODUCTION_RENDER_TIMEOUT_MS = 30000;
 
   document.addEventListener("DOMContentLoaded", () => {
@@ -258,8 +261,13 @@ body{margin:0;background:#f3f3f3;color:#111;font-family:Arial,Helvetica,sans-ser
     return row * COLUMNS + (COLUMNS - 1 - column);
   }
 
+  function productionComponentFrameSource(kind, id, side, orientation = "portrait") {
+    const orientationParam = orientation === "landscape" ? "&orientation=landscape" : "";
+    return `/card-design/component-print-render.html?kind=${encodeURIComponent(kind)}&id=${encodeURIComponent(id)}&side=${encodeURIComponent(side)}${orientationParam}`;
+  }
+
   function productionLedgerFrameSource(side) {
-    return `/card-design/component-print-render.html?kind=${encodeURIComponent(PRODUCTION_LEDGER_KIND)}&id=${encodeURIComponent(PRODUCTION_LEDGER_COMPONENT_ID)}&side=${encodeURIComponent(side)}`;
+    return productionComponentFrameSource(PRODUCTION_LEDGER_KIND, PRODUCTION_LEDGER_COMPONENT_ID, side);
   }
 
   function capitalLedgerSheetFrameHtml(side) {
@@ -292,28 +300,135 @@ body{margin:0;background:#f3f3f3;color:#111;font-family:Arial,Helvetica,sans-ser
     return wrapper;
   }
 
-  function formatCapitalLedgerForProduction(html) {
-    const documentNode = new DOMParser().parseFromString(html, "text/html");
+  function productionDeedFrame(documentNode) {
+    const wrapper = documentNode.createElement("article");
+    wrapper.className = "print-card production-render-component production-render-supplemental production-render-landscape production-standard-back";
+    wrapper.dataset.productionComponentKind = PRODUCTION_DEED_KIND;
+    wrapper.dataset.productionComponentId = PRODUCTION_DEED_COMPONENT_ID;
+    wrapper.dataset.productionComponentRenderId = PRODUCTION_DEED_COMPONENT_ID;
+    wrapper.dataset.productionComponentSide = "front";
+    wrapper.dataset.productionBackPolicy = "standardBack";
+    wrapper.dataset.productionOrientation = "landscape";
+    wrapper.setAttribute("aria-label", "Deed Card finalized production render");
+
+    const rotate = documentNode.createElement("div");
+    rotate.className = "production-component-landscape-rotate";
+
+    const frame = documentNode.createElement("iframe");
+    frame.className = "production-component-frame production-component-frame-landscape";
+    frame.dataset.productionRenderFrame = "true";
+    frame.dataset.productionRenderKind = "component";
+    frame.src = productionComponentFrameSource(PRODUCTION_DEED_KIND, PRODUCTION_DEED_COMPONENT_ID, "front", "landscape");
+    frame.title = "Deed Card finalized production render";
+    frame.setAttribute("scrolling", "no");
+    frame.setAttribute("loading", "eager");
+
+    rotate.append(frame);
+    wrapper.append(rotate);
+    return wrapper;
+  }
+
+  function ensureLandscapeSupplementalPrintStyles(documentNode) {
+    if (documentNode.head.querySelector("style[data-production-landscape-supplemental]")) return;
+    const style = documentNode.createElement("style");
+    style.dataset.productionLandscapeSupplemental = "true";
+    style.textContent = `
+.print-card.production-render-component.production-render-landscape {
+  position: relative !important;
+}
+.production-component-landscape-rotate {
+  position: absolute;
+  top: 0;
+  left: 2.5in;
+  width: 3.5in;
+  height: 2.5in;
+  transform: rotate(90deg);
+  transform-origin: top left;
+}
+.production-render-landscape .production-component-frame {
+  display: block;
+  width: 3.5in;
+  height: 2.5in;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  background: transparent;
+  pointer-events: none;
+}`;
+    documentNode.head.append(style);
+  }
+
+  function removeLegacyDiplomatReverseReference(documentNode) {
+    const factionId = String(state.factionId || "").trim().toLowerCase();
+    if (factionId !== "diplomats") return false;
+
+    let changed = false;
+    documentNode.querySelectorAll(".print-card.reference-card").forEach(card => {
+      const title = card.querySelector(".supplemental-header")?.textContent || "";
+      const subtitle = card.querySelector(".supplemental-subtitle")?.textContent || "";
+      const isLegacyReverse = /\bside\s*b\b|\breverse\b/i.test(subtitle)
+        || /influence\s*(?:&|and)\s*treaty/i.test(title);
+      if (!isLegacyReverse) return;
+
+      const cell = card.closest("td");
+      if (cell) cell.replaceChildren();
+      else card.remove();
+      changed = true;
+    });
+
+    return changed;
+  }
+
+  function replaceLegacyDeeds(documentNode) {
+    const legacyDeeds = [...documentNode.querySelectorAll(".print-card.deed-card")];
+    if (!legacyDeeds.length) return false;
+
+    ensureLandscapeSupplementalPrintStyles(documentNode);
+    legacyDeeds.forEach(deed => deed.replaceWith(productionDeedFrame(documentNode)));
+    return true;
+  }
+
+  function replaceCapitalLedger(documentNode) {
     const ledger = [...documentNode.querySelectorAll(".capital-tracker-card")]
       .find(card => /capital ledger/i.test(card.textContent || ""));
-    if (!ledger) return html;
+    if (!ledger) return false;
 
     const frontPage = ledger.closest(".first-page, .card-page");
     const frontCell = ledger.closest("td");
     const frontTable = frontPage?.querySelector(".card-table");
-    if (!frontPage || !frontCell || !frontTable) return html;
+    if (!frontPage || !frontCell || !frontTable) return false;
 
     const frontCells = [...frontTable.querySelectorAll("td")];
     const frontIndex = frontCells.indexOf(frontCell);
-    if (frontIndex < 0) return html;
+    if (frontIndex < 0) return false;
 
     frontCell.replaceChildren(productionLedgerFrame(documentNode, "front"));
 
     const backPage = ensureCapitalLedgerBackPage(documentNode, frontPage);
     const backCells = [...backPage.querySelectorAll(".card-table td")];
     const backCell = backCells[mirrorIndexForLongEdge(frontIndex)];
-    if (!backCell) return html;
+    if (!backCell) return false;
     backCell.replaceChildren(productionLedgerFrame(documentNode, "reverse"));
+    return true;
+  }
+
+  function formatCapitalLedgerForProduction(html) {
+    const documentNode = new DOMParser().parseFromString(html, "text/html");
+    let changed = false;
+
+    // The historical Deckbuilder still emits Diplomat reference Side B as a
+    // second physical front card. Remove that obsolete face so the production
+    // duplex pass can place the finalized reverse behind Side A instead.
+    changed = removeLegacyDiplomatReverseReference(documentNode) || changed;
+
+    // The historical Deckbuilder also emits eight portrait Deed placeholders.
+    // Replace them before the general production pass with the finalized
+    // landscape Deed renderer so no placeholder card can survive into print.
+    changed = replaceLegacyDeeds(documentNode) || changed;
+
+    changed = replaceCapitalLedger(documentNode) || changed;
+    if (!changed) return html;
 
     return `<!doctype html>\n${documentNode.documentElement.outerHTML}`;
   }
