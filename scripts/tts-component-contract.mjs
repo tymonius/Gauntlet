@@ -44,9 +44,10 @@ function alignBespokeReferenceFaces(contract) {
   const diplomat = (contract.components || []).find((component) => component.id === 'diplomats-reference');
   if (diplomat?.copyMode !== 'bespoke') return contract;
 
-  // Bespoke player-aid copy owns its printable section structure. Keep TTS on
-  // those authored headings instead of the historical guide-derived selectors
-  // still carried by the physical-component contract.
+  // The Diplomat contract predates authored bespoke headings. Keep its effective
+  // TTS selectors aligned with the approved player-aid source without rewriting
+  // that older audit list. New bespoke references declare their authored faces
+  // directly in the component contract.
   diplomat.referenceFaces = {
     front: {
       title: 'Terms',
@@ -101,7 +102,7 @@ export function resolveStandardBackVariant(contract) {
 }
 
 export function resolveStandardBackFile(contract) {
-  return `backs/${resolveStandardBackVariant(contract)}.png`;
+  return `backs/${resolveStandardBackVariant(contract)}`;
 }
 
 export function resolveFactionBackVariant(contract, faction) {
@@ -222,13 +223,11 @@ export async function validateTtsComponentContract(contract) {
 
   const factionReferences = (contract.components || []).filter((component) => component.family === 'reference-card');
   assert(factionReferences.length === 7, `Current faction packages must contain exactly seven faction reference cards; found ${factionReferences.length}.`);
-  const diplomatReference = map.get('diplomats-reference');
-  const financierReference = map.get('financiers-reference');
-  assert(designStatusFor(diplomatReference) === 'final', 'The finalized Diplomat Reference Card must be marked final.');
-  assert(designStatusFor(financierReference) === 'final', 'The finalized Financier Reference Card must be marked final.');
-  const finalizedReferenceIds = new Set(['diplomats-reference', 'financiers-reference']);
-  const referencesAwaitingRefinement = factionReferences.filter((component) => !finalizedReferenceIds.has(component.id));
-  assert(referencesAwaitingRefinement.length === 5 && referencesAwaitingRefinement.every((component) => designStatusFor(component) === 'refinement-pending'), 'The five remaining faction reference cards must remain refinement-pending until individually finalized.');
+  assert(factionReferences.every((component) => component.productionStatus === 'ready'), 'Every faction reference card must be production-ready.');
+  assert(factionReferences.every((component) => designStatusFor(component) === 'final'), 'Every faction reference-card design must be final.');
+  assert(factionReferences.every((component) => component.copyMode === 'bespoke'), 'Every faction reference card must use authored bespoke player-aid copy.');
+  assert(factionReferences.every((component) => String(component.source || '').startsWith('card-design/reference-copy/')), 'Every faction reference card must source its compact player-aid copy from card-design/reference-copy.');
+  assert(factionReferences.every((component) => String(component.authoritySource || '').includes('/faction-guides/')), 'Every faction reference card must retain its canonical faction-guide audit authority.');
 
   const capitalLimitTracker = map.get('financiers-capital-limit-tracker');
   assert(capitalLimitTracker, 'Financiers package must contain its Capital Limit Tracker.');
