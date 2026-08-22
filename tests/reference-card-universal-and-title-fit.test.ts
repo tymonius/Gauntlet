@@ -33,14 +33,16 @@ describe('final Universal Reference and reference-title fitting', () => {
     expect(copy).not.toMatch(/\bHeartlands?\b/i);
   });
 
-  it('shrinks long reference-face titles first, then restores normal size and wraps only after the floor still overflows', () => {
+  it('shrinks, wraps, then shrinks the wrapped reference-face title before failing', () => {
     expect(universalStyles).toContain('@import url("reference-title-wrap.css")');
     expect(referenceRenderer).toContain('const REFERENCE_TITLE_MIN_PT = 8.4');
     expect(referenceRenderer).toContain('while (horizontallyOverflows() && fontSize > minimumPx');
     expect(referenceRenderer).toContain("card.dataset.referenceTitleWrapped = 'false'");
     expect(referenceRenderer).toContain("card.dataset.referenceTitleWrapped = 'true'");
     expect(referenceRenderer).toContain("title.style.fontSize = ''");
-    expect(referenceRenderer).toContain('wrapped && title.scrollHeight > title.clientHeight + 0.5');
+    expect(referenceRenderer).toContain('const wrappedOverflows = () => (');
+    expect(referenceRenderer).toContain('while (wrappedOverflows() && fontSize > minimumPx');
+    expect(referenceRenderer).toContain('title.scrollHeight > title.clientHeight + 0.5');
     expect(referenceRenderer).toContain("card.dataset.referenceTitleWarning = overflow ? 'true' : 'false'");
     expect(referenceRenderer).toContain('titleWrapped: titleFit.wrapped');
 
