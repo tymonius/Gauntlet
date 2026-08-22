@@ -42,7 +42,7 @@ describe('TTS final save promotion', () => {
       expect(Object.keys(qa.checks[group])).toEqual([...checks]);
       expect(Object.values(qa.checks[group]).every((value) => value === false)).toBe(true);
     }
-    expect(Object.values(REQUIRED_QA_CHECKS).flat()).toHaveLength(18);
+    expect(Object.values(REQUIRED_QA_CHECKS).flat()).toHaveLength(19);
   });
 
   it('refuses promotion while machine readiness still has blockers', () => {

@@ -18,6 +18,7 @@ const REQUIRED_QA_CHECKS = Object.freeze({
     'militaryCommandTracker',
     'diplomatInfluenceTracker',
     'diplomatProposalsAndTreaties',
+    'financierCapitalLimitTracker',
     'financierCapitalLedger',
     'financierDeeds',
     'intelligenceNestedOperationStack',
