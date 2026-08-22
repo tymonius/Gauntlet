@@ -4,6 +4,10 @@ import { describe, expect, it } from "vitest";
 const compatibilityPrint = readFileSync("deckbuilder/print-capital-ledger.js", "utf8");
 const productionPrint = readFileSync("deckbuilder/print-duplex-sheet-pairing.js", "utf8");
 const legacyPrint = readFileSync("deckbuilder/print.js", "utf8");
+const legacySupplementals = [
+  readFileSync("deckbuilder/supplemental-data.js", "utf8"),
+  readFileSync("deckbuilder/v061-supplementals.js", "utf8"),
+].join("\n");
 const componentPrintHtml = readFileSync("card-design/component-print-render.html", "utf8");
 const componentPrintJs = readFileSync("card-design/component-print-render.js", "utf8");
 const deedScript = readFileSync("card-design/deed-card.js", "utf8");
@@ -36,8 +40,8 @@ describe("Deckbuilder finalized supplemental printing", () => {
   });
 
   it("removes the obsolete Diplomat Side B front card and lets duplex production create the finalized reverse", () => {
-    expect(legacyPrint).toContain('Side B — Resource and Victory');
-    expect(legacyPrint).toContain('Influence & Treaty');
+    expect(legacySupplementals).toContain('Side B — Resource and Victory');
+    expect(legacySupplementals).toContain('Influence & Treaty');
 
     expect(compatibilityPrint).toContain('removeLegacyDiplomatReverseReference(documentNode)');
     expect(compatibilityPrint).toContain('/\\bside\\s*b\\b|\\breverse\\b/i');
