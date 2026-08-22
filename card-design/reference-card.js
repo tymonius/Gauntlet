@@ -1,6 +1,7 @@
 import { loadCurrentGame } from '../game-data/current-game.mjs';
 
 const FACTION_LABELS = Object.freeze({
+  neutral: 'Universal',
   diplomats: 'Diplomats',
   financiers: 'Financiers',
   intelligence: 'Intelligence',
@@ -8,6 +9,9 @@ const FACTION_LABELS = Object.freeze({
   inquisition: 'Inquisition',
   military: 'Military',
 });
+
+const REFERENCE_TITLE_MIN_PT = 8.4;
+const CSS_PX_PER_PT = 96 / 72;
 
 // Presentation-only selectors for guide-derived reference cards. Bespoke
 // player-aid copy already contains only printable material, so it renders its
@@ -402,7 +406,14 @@ function parseBespokeReferenceFace(markdown, face, componentName, side) {
 
 export async function loadReferenceRecords() {
   const currentGame = await loadCurrentGame();
-  const components = (currentGame.components || []).filter(component => component.family === 'reference-card');
+  const components = [
+    ...(currentGame.sharedComponents || []),
+    ...(currentGame.components || []),
+  ].filter(component => (
+    component.family === 'reference-card'
+    && component.referenceFaces?.front
+    && component.referenceFaces?.reverse
+  ));
   if (!components.length) throw new Error('Current-game authority declares no reference cards.');
 
   const sourceCache = new Map();
@@ -428,7 +439,7 @@ export async function loadReferenceRecords() {
     records.push({
       id: component.id,
       name: component.name,
-      faction: component.faction,
+      faction: component.faction || 'neutral',
       family: component.family,
       copyMode: component.copyMode || 'guide-derived',
       source: currentGame.authorityUrl,
@@ -555,11 +566,34 @@ export function referenceCardMarkup(record, sideName, options = {}) {
   </article>`;
 }
 
-export function fitReferenceCard(card, { minimumScale = 0.82, maximumScale = 1.40 } = {}) {
+function fitReferenceTitle(card, minimumTitlePt = REFERENCE_TITLE_MIN_PT) {
+  const title = card.querySelector('.reference-face-title');
+  if (!title) return { fontSize: 0, overflow: false };
+
+  title.style.fontSize = '';
+  const minimumPx = Number(minimumTitlePt) * CSS_PX_PER_PT;
+  let fontSize = Number.parseFloat(getComputedStyle(title).fontSize);
+  if (!Number.isFinite(fontSize)) return { fontSize: 0, overflow: false };
+
+  let attempts = 0;
+  while (title.scrollWidth > title.clientWidth + 0.5 && fontSize > minimumPx && attempts < 48) {
+    fontSize = Math.max(minimumPx, fontSize - 0.25);
+    title.style.fontSize = `${fontSize}px`;
+    attempts += 1;
+  }
+
+  const overflow = title.scrollWidth > title.clientWidth + 0.5;
+  card.dataset.referenceTitleSize = fontSize.toFixed(2);
+  card.dataset.referenceTitleWarning = overflow ? 'true' : 'false';
+  return { fontSize, overflow };
+}
+
+export function fitReferenceCard(card, { minimumScale = 0.82, maximumScale = 1.40, minimumTitlePt = REFERENCE_TITLE_MIN_PT } = {}) {
   if (!card) throw new Error('Reference card fitter received no card.');
   const body = card.querySelector('.reference-body');
   if (!body) throw new Error(`Reference card ${card.dataset.componentId || 'unknown'} has no body.`);
 
+  const titleFit = fitReferenceTitle(card, minimumTitlePt);
   let scale = maximumScale;
   let sectionGap = 0.038;
   let attempts = 0;
@@ -581,10 +615,10 @@ export function fitReferenceCard(card, { minimumScale = 0.82, maximumScale = 1.4
     attempts += 1;
   }
 
-  const overflow = overflows();
+  const overflow = overflows() || titleFit.overflow;
   card.dataset.referenceScale = scale.toFixed(3);
   card.dataset.fitWarning = overflow ? 'true' : 'false';
-  return { scale, overflow, sectionGap };
+  return { scale, overflow, sectionGap, titleFontSize: titleFit.fontSize };
 }
 
 export function fitAllReferenceCards(root = document) {
