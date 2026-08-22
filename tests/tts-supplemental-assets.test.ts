@@ -57,6 +57,8 @@ describe('TTS supplemental component exports', () => {
     const referenceCards = contract.components.filter((component: any) => component.family === 'reference-card');
     expect(referenceCards).toHaveLength(7);
     expect(referenceCards.every((component: any) => component.productionStatus === 'ready')).toBe(true);
+    expect(referenceCards.every((component: any) => component.designStatus === 'final')).toBe(true);
+    expect(referenceCards.every((component: any) => component.copyMode === 'bespoke')).toBe(true);
     expect(referenceCards.every((component: any) => component.backPolicy === 'twoSided')).toBe(true);
     expect(referenceCards.every((component: any) => component.tts?.representation === 'card')).toBe(true);
     expect(referenceCards.every((component: any) => component.referenceFaces?.front?.sections?.length)).toBe(true);
@@ -75,11 +77,13 @@ describe('TTS supplemental component exports', () => {
     expect(diplomatReference).toContain('Peace Treaty');
     expect(JSON.stringify(byId.get('financiers-reference'))).toContain('Play the Market');
     expect(JSON.stringify(byId.get('financiers-reference'))).toContain('Subsidize');
-    expect(JSON.stringify(byId.get('intelligence-mission-reference'))).toContain('Starting a Special Operation');
+    expect(JSON.stringify(byId.get('intelligence-mission-reference'))).toContain('Special Operations');
+    expect(JSON.stringify(byId.get('intelligence-mission-reference'))).toContain('Complete & Win');
     expect(JSON.stringify(byId.get('intelligence-operations-reference'))).toContain('Direct Interference');
     expect(JSON.stringify(byId.get('mystics-reference'))).toContain('Convergence');
     expect(JSON.stringify(byId.get('inquisition-doctrine-reference'))).toContain('Blasphemy');
-    expect(JSON.stringify(byId.get('inquisition-purge-reference'))).toContain('Final Judgment');
+    expect(JSON.stringify(byId.get('inquisition-purge-reference'))).toContain('Direct Purges');
+    expect(JSON.stringify(byId.get('inquisition-purge-reference'))).not.toContain('Final Judgment');
 
     expect(renderer).toContain("record.renderer === 'reference-card'");
     expect(renderer).toContain('Public supplemental reference · no card value · not part of the Deck');

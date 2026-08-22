@@ -277,3 +277,338 @@
 .reference-card[data-component-id="financiers-reference"] .card-footer span:nth-child(2) {
   color: var(--component-accent-ink);
 }
+
+/* The remaining finalized faction references use the same production grammar as
+   Diplomat and Financier: faction parchment, compact tracker-style header,
+   open lookup body, restrained rules, and the normal reference footer. */
+.reference-card:is(
+  [data-component-id="intelligence-mission-reference"],
+  [data-component-id="intelligence-operations-reference"],
+  [data-component-id="mystics-reference"],
+  [data-component-id="inquisition-doctrine-reference"],
+  [data-component-id="inquisition-purge-reference"]
+) .reference-card-interior {
+  grid-template-rows: 0.56in minmax(0, 1fr) 0.18in;
+  background-color: var(--card-parchment, #e6d4ae);
+  background-image:
+    linear-gradient(var(--component-parchment-tint), var(--component-parchment-tint)),
+    var(--parchment-image, var(--reference-parchment-image));
+  background-position: center center, center center;
+  background-repeat: no-repeat, no-repeat;
+  background-size: cover, cover;
+  background-blend-mode: multiply, normal;
+}
+
+.reference-card:is(
+  [data-component-id="intelligence-mission-reference"],
+  [data-component-id="intelligence-operations-reference"],
+  [data-component-id="mystics-reference"],
+  [data-component-id="inquisition-doctrine-reference"],
+  [data-component-id="inquisition-purge-reference"]
+) .reference-card-interior::after {
+  content: none;
+}
+
+.reference-card:is(
+  [data-component-id="intelligence-mission-reference"],
+  [data-component-id="intelligence-operations-reference"],
+  [data-component-id="mystics-reference"],
+  [data-component-id="inquisition-doctrine-reference"],
+  [data-component-id="inquisition-purge-reference"]
+) .reference-card-header {
+  display: grid;
+  grid-template-columns: 0.18in minmax(0, 1fr);
+  grid-template-rows: auto auto auto;
+  align-content: center;
+  column-gap: 0.055in;
+  row-gap: 0;
+  padding: 0.024in 0.085in 0.018in;
+  border-bottom: 0;
+  background: transparent;
+}
+
+.reference-card[data-faction="intelligence"] .reference-card-header::before,
+.reference-card[data-faction="mystics"] .reference-card-header::before,
+.reference-card[data-faction="inquisition"] .reference-card-header::before {
+  grid-column: 2;
+  grid-row: 1;
+  color: var(--component-accent-ink);
+  font-family: var(--font-interface, Arial, sans-serif);
+  font-size: 5.2pt;
+  font-weight: 850;
+  letter-spacing: 0.105em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.reference-card[data-faction="intelligence"] .reference-card-header::before { content: "Intelligence"; }
+.reference-card[data-faction="mystics"] .reference-card-header::before { content: "Mystics"; }
+.reference-card[data-faction="inquisition"] .reference-card-header::before { content: "Inquisition"; }
+
+.reference-card:is(
+  [data-component-id="intelligence-mission-reference"],
+  [data-component-id="intelligence-operations-reference"],
+  [data-component-id="mystics-reference"],
+  [data-component-id="inquisition-doctrine-reference"],
+  [data-component-id="inquisition-purge-reference"]
+) .reference-face-title {
+  grid-column: 2;
+  grid-row: 2;
+  display: block;
+  margin: 0.008in 0 0;
+  font-size: 11.4pt;
+  letter-spacing: 0.026em;
+  line-height: 0.92;
+  white-space: nowrap;
+  -webkit-line-clamp: unset;
+}
+
+.reference-card:is(
+  [data-component-id="intelligence-mission-reference"],
+  [data-component-id="intelligence-operations-reference"],
+  [data-component-id="mystics-reference"],
+  [data-component-id="inquisition-doctrine-reference"],
+  [data-component-id="inquisition-purge-reference"]
+) .reference-type-line {
+  display: contents;
+}
+
+.reference-card:is(
+  [data-component-id="intelligence-mission-reference"],
+  [data-component-id="intelligence-operations-reference"],
+  [data-component-id="mystics-reference"],
+  [data-component-id="inquisition-doctrine-reference"],
+  [data-component-id="inquisition-purge-reference"]
+) .reference-faction-emblem {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  width: 0.18in;
+  height: 0.18in;
+  align-self: center;
+  background: var(--component-accent-ink);
+}
+
+.reference-card:is(
+  [data-component-id="intelligence-mission-reference"],
+  [data-component-id="intelligence-operations-reference"],
+  [data-component-id="mystics-reference"],
+  [data-component-id="inquisition-doctrine-reference"],
+  [data-component-id="inquisition-purge-reference"]
+) .reference-type-line span:last-child {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  min-width: 0;
+  margin-top: 0.030in;
+  padding-top: 0.022in;
+  border-top: 0.65px solid color-mix(in srgb, var(--component-accent-ink) 38%, transparent);
+  color: var(--component-accent-ink);
+  font-family: var(--font-interface, Arial, sans-serif);
+  font-size: 4.65pt;
+  font-weight: 750;
+  letter-spacing: 0.07em;
+  line-height: 1;
+  text-overflow: clip;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.reference-card:is(
+  [data-component-id="intelligence-mission-reference"],
+  [data-component-id="intelligence-operations-reference"],
+  [data-component-id="mystics-reference"],
+  [data-component-id="inquisition-doctrine-reference"],
+  [data-component-id="inquisition-purge-reference"]
+) .reference-body {
+  display: flex;
+  flex-direction: column;
+  align-content: normal;
+  gap: var(--reference-section-gap);
+  padding: 0.026in 0.070in 0.022in;
+}
+
+.reference-card:is(
+  [data-component-id="intelligence-mission-reference"],
+  [data-component-id="intelligence-operations-reference"],
+  [data-component-id="mystics-reference"],
+  [data-component-id="inquisition-doctrine-reference"],
+  [data-component-id="inquisition-purge-reference"]
+) .reference-panel {
+  padding-left: 0;
+  border-left: 0;
+}
+
+.reference-card:is(
+  [data-component-id="intelligence-mission-reference"],
+  [data-component-id="intelligence-operations-reference"],
+  [data-component-id="mystics-reference"],
+  [data-component-id="inquisition-doctrine-reference"],
+  [data-component-id="inquisition-purge-reference"]
+) .reference-panel + .reference-panel {
+  padding-top: calc(0.010in * var(--reference-rules-scale));
+  border-top: 0.55px solid color-mix(in srgb, var(--component-accent-ink) 30%, transparent);
+}
+
+.reference-card:is(
+  [data-component-id="intelligence-mission-reference"],
+  [data-component-id="intelligence-operations-reference"],
+  [data-component-id="mystics-reference"],
+  [data-component-id="inquisition-doctrine-reference"],
+  [data-component-id="inquisition-purge-reference"]
+) .reference-panel-heading {
+  padding-bottom: calc(0.007in * var(--reference-rules-scale));
+}
+
+.reference-card:is(
+  [data-component-id="intelligence-mission-reference"],
+  [data-component-id="intelligence-operations-reference"],
+  [data-component-id="mystics-reference"],
+  [data-component-id="inquisition-doctrine-reference"],
+  [data-component-id="inquisition-purge-reference"]
+) .reference-panel-heading h4 {
+  color: var(--component-accent-ink);
+  font-size: calc(4.85pt * var(--reference-rules-scale));
+  letter-spacing: 0.055em;
+}
+
+.reference-card:is(
+  [data-component-id="intelligence-mission-reference"],
+  [data-component-id="intelligence-operations-reference"],
+  [data-component-id="mystics-reference"],
+  [data-component-id="inquisition-doctrine-reference"],
+  [data-component-id="inquisition-purge-reference"]
+) .reference-prose {
+  font-size: calc(5.9pt * var(--reference-rules-scale));
+  line-height: 1.075;
+}
+
+.reference-card:is(
+  [data-component-id="intelligence-mission-reference"],
+  [data-component-id="intelligence-operations-reference"],
+  [data-component-id="mystics-reference"],
+  [data-component-id="inquisition-doctrine-reference"],
+  [data-component-id="inquisition-purge-reference"]
+) .reference-option-list li,
+.reference-card:is(
+  [data-component-id="intelligence-mission-reference"],
+  [data-component-id="intelligence-operations-reference"],
+  [data-component-id="mystics-reference"],
+  [data-component-id="inquisition-doctrine-reference"],
+  [data-component-id="inquisition-purge-reference"]
+) .reference-step-list li {
+  font-size: calc(5.72pt * var(--reference-rules-scale));
+  line-height: 1.055;
+}
+
+.reference-card:is(
+  [data-component-id="intelligence-mission-reference"],
+  [data-component-id="intelligence-operations-reference"],
+  [data-component-id="mystics-reference"],
+  [data-component-id="inquisition-doctrine-reference"],
+  [data-component-id="inquisition-purge-reference"]
+) .reference-matrix {
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.reference-card:is(
+  [data-component-id="intelligence-mission-reference"],
+  [data-component-id="intelligence-operations-reference"],
+  [data-component-id="mystics-reference"],
+  [data-component-id="inquisition-doctrine-reference"],
+  [data-component-id="inquisition-purge-reference"]
+) .reference-table {
+  font-family: var(--font-reading, "adobe-caslon-pro", Georgia, serif);
+  font-size: calc(4.7pt * var(--reference-rules-scale));
+  line-height: 1.02;
+}
+
+.reference-card:is(
+  [data-component-id="intelligence-mission-reference"],
+  [data-component-id="intelligence-operations-reference"],
+  [data-component-id="mystics-reference"],
+  [data-component-id="inquisition-doctrine-reference"],
+  [data-component-id="inquisition-purge-reference"]
+) .reference-table th,
+.reference-card:is(
+  [data-component-id="intelligence-mission-reference"],
+  [data-component-id="intelligence-operations-reference"],
+  [data-component-id="mystics-reference"],
+  [data-component-id="inquisition-doctrine-reference"],
+  [data-component-id="inquisition-purge-reference"]
+) .reference-table td {
+  padding: calc(0.005in * var(--reference-rules-scale)) 0.008in;
+}
+
+.reference-card:is(
+  [data-component-id="intelligence-mission-reference"],
+  [data-component-id="intelligence-operations-reference"],
+  [data-component-id="mystics-reference"],
+  [data-component-id="inquisition-doctrine-reference"],
+  [data-component-id="inquisition-purge-reference"]
+) .reference-table th {
+  border-bottom: 0.55px solid color-mix(in srgb, var(--component-accent-ink) 42%, transparent);
+  background: transparent;
+  color: var(--component-accent-ink);
+  font-family: var(--font-interface, Arial, sans-serif);
+  font-size: calc(3.9pt * var(--reference-rules-scale));
+  font-weight: 850;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+.reference-card:is(
+  [data-component-id="intelligence-mission-reference"],
+  [data-component-id="intelligence-operations-reference"],
+  [data-component-id="mystics-reference"],
+  [data-component-id="inquisition-doctrine-reference"],
+  [data-component-id="inquisition-purge-reference"]
+) .reference-table tbody tr + tr td,
+.reference-card:is(
+  [data-component-id="intelligence-mission-reference"],
+  [data-component-id="intelligence-operations-reference"],
+  [data-component-id="mystics-reference"],
+  [data-component-id="inquisition-doctrine-reference"],
+  [data-component-id="inquisition-purge-reference"]
+) .reference-table tbody tr:nth-child(even) td {
+  border-top: 0;
+  background: transparent;
+}
+
+.reference-card:is(
+  [data-component-id="intelligence-mission-reference"],
+  [data-component-id="intelligence-operations-reference"],
+  [data-component-id="mystics-reference"],
+  [data-component-id="inquisition-doctrine-reference"],
+  [data-component-id="inquisition-purge-reference"]
+) .reference-table-key {
+  color: var(--component-accent-ink);
+  font-family: var(--font-interface, Arial, sans-serif);
+  font-size: calc(4.15pt * var(--reference-rules-scale));
+  font-weight: 850;
+  letter-spacing: 0.02em;
+}
+
+.reference-card:is(
+  [data-component-id="intelligence-mission-reference"],
+  [data-component-id="intelligence-operations-reference"],
+  [data-component-id="mystics-reference"],
+  [data-component-id="inquisition-doctrine-reference"],
+  [data-component-id="inquisition-purge-reference"]
+) .card-footer {
+  min-height: 0.18in;
+  padding: 0.028in 0.055in 0.016in;
+  background: var(--component-footer-tint);
+  line-height: 1.3;
+}
+
+.reference-card:is(
+  [data-component-id="intelligence-mission-reference"],
+  [data-component-id="intelligence-operations-reference"],
+  [data-component-id="mystics-reference"],
+  [data-component-id="inquisition-doctrine-reference"],
+  [data-component-id="inquisition-purge-reference"]
+) .card-footer span:nth-child(2) {
+  color: var(--component-accent-ink);
+}
