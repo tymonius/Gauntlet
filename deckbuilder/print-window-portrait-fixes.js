@@ -30,11 +30,6 @@
     const firstPage = summary?.closest(".first-page");
     if (!summary || !firstPage) return false;
 
-    const entryCount = summary.querySelectorAll(".deck-list-entry").length;
-    const sideItemCount = summary.querySelectorAll(".summary-side li").length;
-    if (entryCount > 16 || sideItemCount > 5) summary.classList.add("summary-dense");
-    if (entryCount > 24 || sideItemCount > 8) summary.classList.add("summary-very-dense");
-
     if (!documentNode.querySelector('link[data-gauntlet-print-typekit]')) {
       const preconnect = documentNode.createElement("link");
       preconnect.rel = "preconnect";
@@ -130,7 +125,7 @@
   font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
   font-size:6.45pt!important;
   font-weight:600!important;
-  line-height:1.2!important;
+  line-height:1.24!important;
   letter-spacing:.005em;
 }
 .first-page-summary .summary-line strong{
@@ -149,7 +144,7 @@
   font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
   font-size:5.25pt!important;
   font-weight:800!important;
-  line-height:1.1!important;
+  line-height:1.15!important;
   letter-spacing:.08em!important;
   text-transform:uppercase;
 }
@@ -177,7 +172,7 @@
   font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
   font-size:5.7pt!important;
   font-weight:800!important;
-  line-height:1.15!important;
+  line-height:1.2!important;
   letter-spacing:.14em!important;
   text-transform:uppercase!important;
 }
@@ -190,10 +185,10 @@
   color:var(--summary-ink)!important;
   font-family:"adobe-caslon-pro",Georgia,"Times New Roman",serif!important;
   font-size:7.05pt!important;
-  line-height:1.14!important;
+  line-height:1.28!important;
 }
 .first-page-summary .deck-list-entry{
-  margin:0 0 .004in!important;
+  margin:0 0 .012in!important;
   break-inside:avoid;
   page-break-inside:avoid;
 }
@@ -207,51 +202,44 @@
   color:#3f3a34!important;
   font-family:"adobe-caslon-pro",Georgia,"Times New Roman",serif!important;
   font-size:6.35pt!important;
-  line-height:1.18!important;
+  line-height:1.3!important;
 }
-.first-page-summary .summary-block+.summary-block{margin-top:.05in!important}
-.first-page-summary .summary-list{margin:.015in 0 0!important;padding-left:.13in!important}
-.first-page-summary .summary-list li+li{margin-top:.008in!important}
+.first-page-summary .summary-block+.summary-block{margin-top:.06in!important}
+.first-page-summary .summary-list{margin:.02in 0 0!important;padding-left:.13in!important}
+.first-page-summary .summary-list li+li{margin-top:.014in!important}
 .first-page-summary .summary-side strong{color:var(--summary-ink)!important;font-weight:700!important}
-.first-page-summary.summary-dense .deck-list,
-.first-page-summary.summary-auto-tight .deck-list{font-size:6.65pt!important;line-height:1.13!important}
-.first-page-summary.summary-dense .summary-side,
-.first-page-summary.summary-auto-tight .summary-side{font-size:6pt!important;line-height:1.16!important}
-.first-page-summary.summary-dense .summary-block+.summary-block,
-.first-page-summary.summary-auto-tight .summary-block+.summary-block{margin-top:.04in!important}
-.first-page-summary.summary-very-dense .deck-list,
-.first-page-summary.summary-auto-tightest .deck-list{font-size:6.25pt!important;line-height:1.12!important}
-.first-page-summary.summary-very-dense .summary-side,
-.first-page-summary.summary-auto-tightest .summary-side{font-size:5.7pt!important;line-height:1.14!important}
-.first-page-summary.summary-very-dense h2,
-.first-page-summary.summary-auto-tightest h2{margin-bottom:.024in!important;padding-bottom:.016in!important;font-size:5.35pt!important;line-height:1.12!important}
+.first-page-summary.summary-auto-tight .deck-list{font-size:6.65pt!important;line-height:1.24!important}
+.first-page-summary.summary-auto-tight .summary-side{font-size:6pt!important;line-height:1.25!important}
+.first-page-summary.summary-auto-tight .summary-block+.summary-block{margin-top:.045in!important}
+.first-page-summary.summary-auto-tightest .deck-list{font-size:6.25pt!important;line-height:1.2!important}
+.first-page-summary.summary-auto-tightest .summary-side{font-size:5.7pt!important;line-height:1.22!important}
+.first-page-summary.summary-auto-tightest h2{margin-bottom:.024in!important;padding-bottom:.016in!important;font-size:5.35pt!important;line-height:1.2!important}
 
 /* Starter decks insert a fourth direct child between the metrics line and the
-   deck/side grid. Give the guidance enough real vertical space and safe leading;
-   the previous sub-.7in cap forced text clipping while the lower summary area
-   remained visibly under-used. */
+   deck/side grid. Preserve comfortable leading first; only the measured overflow
+   fitter below is allowed to reduce type size. */
 .first-page-summary.has-starter-strategy{
   grid-template-rows:auto auto auto minmax(0,1fr)!important;
   row-gap:.035in!important;
 }
 .first-page-summary.has-starter-strategy .starter-print-strategy{
   min-height:0!important;
-  max-height:.82in!important;
+  max-height:.86in!important;
   margin:0!important;
   padding:.05in .07in!important;
   overflow:hidden!important;
   grid-template-columns:minmax(0,.9fr) minmax(0,1.45fr)!important;
-  gap:.035in .12in!important;
+  gap:.04in .12in!important;
   font-family:"adobe-caslon-pro",Georgia,"Times New Roman",serif!important;
   font-size:6.2pt!important;
-  line-height:1.17!important;
+  line-height:1.28!important;
 }
 .first-page-summary.has-starter-strategy .starter-print-strategy h2{
   margin:0 0 .018in!important;
   padding:0!important;
   border:0!important;
   font-size:5.35pt!important;
-  line-height:1.12!important;
+  line-height:1.2!important;
 }
 .first-page-summary.has-starter-strategy .starter-print-strategy p{margin:0!important}
 .first-page-summary.has-starter-strategy .starter-print-territories{
@@ -267,7 +255,7 @@
   white-space:nowrap!important;
   text-overflow:ellipsis!important;
   font-size:5.95pt!important;
-  line-height:1.15!important;
+  line-height:1.24!important;
 }
 .first-page-summary.has-starter-strategy .summary-grid{
   min-height:0!important;
@@ -277,25 +265,15 @@
 .first-page-summary.has-starter-strategy .deck-list{
   height:1.72in!important;
 }
-.first-page-summary.has-starter-strategy.summary-auto-tight .starter-print-strategy,
-.first-page-summary.has-starter-strategy.summary-dense .starter-print-strategy{
-  max-height:.76in!important;
+.first-page-summary.has-starter-strategy.summary-auto-tight .starter-print-strategy{
+  max-height:.82in!important;
   font-size:5.95pt!important;
-  line-height:1.15!important;
+  line-height:1.24!important;
 }
-.first-page-summary.has-starter-strategy.summary-auto-tightest .starter-print-strategy,
-.first-page-summary.has-starter-strategy.summary-very-dense .starter-print-strategy{
-  max-height:.72in!important;
+.first-page-summary.has-starter-strategy.summary-auto-tightest .starter-print-strategy{
+  max-height:.78in!important;
   font-size:5.65pt!important;
-  line-height:1.13!important;
-}
-.first-page-summary.has-starter-strategy.summary-auto-tight .deck-list,
-.first-page-summary.has-starter-strategy.summary-dense .deck-list{
-  height:1.66in!important;
-}
-.first-page-summary.has-starter-strategy.summary-auto-tightest .deck-list,
-.first-page-summary.has-starter-strategy.summary-very-dense .deck-list{
-  height:1.6in!important;
+  line-height:1.2!important;
 }
 .first-page>.card-table.two-row{
   grid-row:2;
