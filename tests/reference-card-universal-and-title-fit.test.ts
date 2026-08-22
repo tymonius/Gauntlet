@@ -6,6 +6,7 @@ const copy = readFileSync('card-design/reference-copy/v0.6.3/universal-reference
 const referenceRenderer = readFileSync('card-design/reference-card.js', 'utf8');
 const ruleColumns = readFileSync('card-design/card-rule-columns.css', 'utf8');
 const universalStyles = readFileSync('card-design/universal-reference.css', 'utf8');
+const titleWrapStyles = readFileSync('card-design/reference-title-wrap.css', 'utf8');
 const ttsRenderer = readFileSync('tts/supplemental-renderer/index.html', 'utf8');
 const supplementalGenerator = readFileSync('scripts/generate-tts-supplemental-assets.mjs', 'utf8');
 const deckbuilderComponents = readFileSync('deckbuilder/faction-components.js', 'utf8');
@@ -32,7 +33,13 @@ describe('final Universal Reference and reference-title fitting', () => {
     expect(copy).not.toMatch(/\bHeartlands?\b/i);
   });
 
-  it('shrinks only overlong reference-face titles and fails closed below the readability floor', () => {
+  it('wraps long reference-face titles before using the shrink fallback', () => {
+    expect(universalStyles).toContain('@import url("reference-title-wrap.css")');
+    expect(titleWrapStyles).toContain('white-space: normal');
+    expect(titleWrapStyles).toContain('-webkit-line-clamp: 2');
+    expect(titleWrapStyles).toContain('[data-component-id="intelligence-operations-reference"]');
+    expect(titleWrapStyles).toContain('[data-component-id="inquisition-doctrine-reference"]');
+
     expect(referenceRenderer).toContain('const REFERENCE_TITLE_MIN_PT = 8.4');
     expect(referenceRenderer).toContain('function fitReferenceTitle');
     expect(referenceRenderer).toContain('title.scrollWidth > title.clientWidth + 0.5');
