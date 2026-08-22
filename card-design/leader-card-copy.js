@@ -107,6 +107,12 @@ async function applyLeaderCardCopy() {
       if (!Array.isArray(copy.sections) || !copy.sections.length) throw new Error(`Leader card copy for ${leaderId} has no sections.`);
       rules.innerHTML = copy.sections.map(renderSection).join('');
       leaderCard.classList.add('leader-card--standardized');
+      // Any fitting state measured against the pre-standardized rules is stale.
+      // Clear it before marking the new copy ready so embedded production
+      // renderers cannot detach the card until card-design.js has refit it.
+      delete leaderCard.dataset.titleFit;
+      delete leaderCard.dataset.overlayTitleFit;
+      leaderCard.classList.remove('fit-warning', 'title-fit-warning', 'overlay-title-fit-warning');
       // Dense standardized cards may trade portrait height for rules space before
       // the fitter ever crosses its typography floor. The fitter uses only as
       // much of this allowance as each card actually needs.
