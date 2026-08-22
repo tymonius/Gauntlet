@@ -7,8 +7,19 @@ function dividerElement() {
   return divider;
 }
 
-function hydrateDeedDivider() {
-  document.querySelectorAll(DEED_SELECTOR).forEach(card => {
+export function deedCardMarkup() {
+  return `<article class="gauntlet-card faction-component-card supplemental-placeholder-card financiers-card" data-faction="financiers" data-component-id="financiers-deed" data-contract-component-id="financiers-deed" data-production-status="ready" data-design-status="final" aria-label="Financiers Deed Card">
+    <div class="card-interior">
+      <header class="card-heading">
+        <h3 class="card-title">Deed Card</h3>
+        <div class="supplemental-type-line" aria-hidden="true"><span class="deed-divider"></span></div>
+      </header>
+    </div>
+  </article>`;
+}
+
+export function hydrateDeedDivider(scope = document) {
+  scope.querySelectorAll(DEED_SELECTOR).forEach(card => {
     // The shared card-title rule clips overflow for ordinary card titles. P22
     // Declaration's capital D deliberately overhangs its advance box on the
     // top and left, so allow that ink to remain visible on this custom face.
@@ -32,10 +43,10 @@ const supplementalRoot = document.querySelector('#supplementalReviewSections');
 hydrateDeedDivider();
 
 if (supplementalRoot) {
-  const observer = new MutationObserver(hydrateDeedDivider);
+  const observer = new MutationObserver(() => hydrateDeedDivider(supplementalRoot));
   observer.observe(supplementalRoot, { childList: true, subtree: true });
 }
 
 if (document.fonts?.ready) {
-  document.fonts.ready.then(hydrateDeedDivider);
+  document.fonts.ready.then(() => hydrateDeedDivider());
 }

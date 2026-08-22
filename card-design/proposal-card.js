@@ -46,9 +46,9 @@ function imageExists(source) {
   });
 }
 
-async function loadProposalArtwork() {
-  if (!root) return;
-  const figures = Array.from(root.querySelectorAll('[data-proposal-artwork]'));
+export async function loadProposalArtwork(scope = root) {
+  if (!scope) return;
+  const figures = Array.from(scope.querySelectorAll('[data-proposal-artwork]'));
   await Promise.all(figures.map(async figure => {
     const source = figure.dataset.proposalArtwork;
     if (!source || !await imageExists(source)) return;
@@ -62,7 +62,7 @@ async function loadProposalArtwork() {
   }));
 }
 
-function proposalFace(proposal, ratified = false) {
+export function proposalFace(proposal, ratified = false, version = currentDisplayVersion) {
   const type = ratified ? 'Treaty Article' : 'Proposal';
   const longTitle = proposal.name.length >= 20 ? ' long-title' : '';
   const art = ratified
@@ -82,7 +82,7 @@ function proposalFace(proposal, ratified = false) {
         ${ruleSection('Accepted', proposal.accepted)}
         ${ruleSection('Refused', proposal.refused)}
       </div>
-      <footer class="card-footer"><span>Diplomats</span><span>${esc(type)}</span><span>${esc(currentDisplayVersion)}</span></footer>
+      <footer class="card-footer"><span>Diplomats</span><span>${esc(type)}</span><span>${esc(version)}</span></footer>
     </div>
   </article>`;
 }
@@ -123,7 +123,7 @@ async function renderProposalCatalog() {
     root.dataset.proposalCount = String(proposals.length);
     root.dataset.proposalAuthority = currentGame.authorityUrl;
     root.innerHTML = `<div class="proposal-review-block">${proposals.map(reviewPair).join('')}</div>`;
-    await loadProposalArtwork();
+    await loadProposalArtwork(root);
   } catch (error) {
     root.innerHTML = `<p class="review-note">Unable to load complete Proposal set: ${esc(error.message)}</p>`;
     console.error(error);

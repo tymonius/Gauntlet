@@ -17,9 +17,11 @@ on:
       - 'scripts/generate-tts-leader-assets.mjs'
       - 'scripts/generate-tts-starter-decks.mjs'
       - 'scripts/generate-tts-supplemental-assets.mjs'
+      - 'scripts/generate-tts-finalized-supplementals.mjs'
       - 'scripts/stage-tts-release-assets.mjs'
       - 'scripts/generate-tts-save.mjs'
       - 'scripts/assemble-tts-supplemental-save.mjs'
+      - 'scripts/finalize-tts-save.mjs'
       - 'scripts/tts-current-catalog.mjs'
       - 'scripts/tts-component-contract.mjs'
       - 'scripts/tts-sliding-trackers.mjs'
@@ -94,9 +96,11 @@ jobs:
             scripts/generate-tts-leader-assets.mjs
             scripts/generate-tts-starter-decks.mjs
             scripts/generate-tts-supplemental-assets.mjs
+            scripts/generate-tts-finalized-supplementals.mjs
             scripts/stage-tts-release-assets.mjs
             scripts/generate-tts-save.mjs
             scripts/assemble-tts-supplemental-save.mjs
+            scripts/finalize-tts-save.mjs
             scripts/tts-current-catalog.mjs
             scripts/tts-component-contract.mjs
             scripts/tts-sliding-trackers.mjs
@@ -161,12 +165,16 @@ jobs:
         run: npm run tts:starters
       - name: Generate ready supplemental components
         run: npm run tts:supplementals
+      - name: Generate finalized Proposal, Ledger, and Deed components
+        run: npm run tts:finalized-supplementals
       - name: Stage hosted TTS release assets
         run: npm run tts:release:stage
       - name: Generate TTS review scaffold
         run: npm run tts:save
       - name: Assemble ready supplemental components into review scaffold
         run: npm run tts:save:assemble
+      - name: Finalize supplemental object presentation
+        run: npm run tts:save:finalize
       - uses: actions/upload-artifact@v4
         with:
           name: gauntlet-current-tts-card-assets
