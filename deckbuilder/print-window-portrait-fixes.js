@@ -70,13 +70,13 @@
   grid-row:1;
   display:grid!important;
   grid-template-rows:auto auto minmax(0,1fr)!important;
-  row-gap:.065in;
+  row-gap:.05in;
   width:7.5in!important;
   height:3.5in!important;
   min-height:3.5in!important;
   max-height:3.5in!important;
   margin:0!important;
-  padding:.145in .18in .13in!important;
+  padding:.125in .18in .095in!important;
   overflow:hidden!important;
   position:relative;
   color:var(--summary-ink)!important;
@@ -91,7 +91,7 @@
 .first-page-summary::after{
   content:"";
   position:absolute;
-  top:.145in;
+  top:.125in;
   right:.18in;
   width:.42in;
   border-top:1px solid var(--summary-bronze);
@@ -104,7 +104,7 @@
   font-family:"p22-1722-pro",Georgia,"Times New Roman",serif!important;
   font-size:19pt!important;
   font-weight:400!important;
-  line-height:.93!important;
+  line-height:1.02!important;
   letter-spacing:0!important;
   white-space:nowrap;
   overflow:hidden;
@@ -113,24 +113,24 @@
 .first-page-summary h1::before{
   content:"GAUNTLET · DECK PACKAGE";
   display:block;
-  margin:0 0 .035in;
+  margin:0 0 .03in;
   color:var(--summary-crimson)!important;
   font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
   font-size:5.8pt!important;
   font-weight:800!important;
-  line-height:1!important;
+  line-height:1.15!important;
   letter-spacing:.15em!important;
   text-transform:uppercase;
 }
 .first-page-summary .summary-line{
   margin:0!important;
-  padding:0 0 .06in!important;
+  padding:0 0 .045in!important;
   border-bottom:1px solid var(--summary-line);
   color:var(--summary-muted)!important;
   font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
   font-size:6.45pt!important;
   font-weight:600!important;
-  line-height:1.12!important;
+  line-height:1.2!important;
   letter-spacing:.005em;
 }
 .first-page-summary .summary-line strong{
@@ -149,7 +149,7 @@
   font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
   font-size:5.25pt!important;
   font-weight:800!important;
-  line-height:1!important;
+  line-height:1.1!important;
   letter-spacing:.08em!important;
   text-transform:uppercase;
 }
@@ -170,19 +170,19 @@
   overflow:hidden!important;
 }
 .first-page-summary h2{
-  margin:0 0 .038in!important;
-  padding:0 0 .025in!important;
+  margin:0 0 .035in!important;
+  padding:0 0 .02in!important;
   color:var(--summary-crimson)!important;
   border-bottom:1px solid rgba(163,115,56,.38);
   font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
   font-size:5.7pt!important;
   font-weight:800!important;
-  line-height:1!important;
+  line-height:1.15!important;
   letter-spacing:.14em!important;
   text-transform:uppercase!important;
 }
 .first-page-summary .deck-list{
-  height:2.08in!important;
+  height:1.72in!important;
   columns:2!important;
   column-gap:.18in!important;
   column-rule:1px solid rgba(49,42,32,.12);
@@ -190,10 +190,10 @@
   color:var(--summary-ink)!important;
   font-family:"adobe-caslon-pro",Georgia,"Times New Roman",serif!important;
   font-size:7.05pt!important;
-  line-height:1.075!important;
+  line-height:1.14!important;
 }
 .first-page-summary .deck-list-entry{
-  margin:0 0 .018in!important;
+  margin:0 0 .004in!important;
   break-inside:avoid;
   page-break-inside:avoid;
 }
@@ -207,51 +207,51 @@
   color:#3f3a34!important;
   font-family:"adobe-caslon-pro",Georgia,"Times New Roman",serif!important;
   font-size:6.35pt!important;
-  line-height:1.12!important;
+  line-height:1.18!important;
 }
-.first-page-summary .summary-block+.summary-block{margin-top:.055in!important}
+.first-page-summary .summary-block+.summary-block{margin-top:.05in!important}
 .first-page-summary .summary-list{margin:.015in 0 0!important;padding-left:.13in!important}
 .first-page-summary .summary-list li+li{margin-top:.008in!important}
 .first-page-summary .summary-side strong{color:var(--summary-ink)!important;font-weight:700!important}
 .first-page-summary.summary-dense .deck-list,
-.first-page-summary.summary-auto-tight .deck-list{font-size:6.55pt!important;line-height:1.035!important}
+.first-page-summary.summary-auto-tight .deck-list{font-size:6.65pt!important;line-height:1.13!important}
 .first-page-summary.summary-dense .summary-side,
-.first-page-summary.summary-auto-tight .summary-side{font-size:5.95pt!important;line-height:1.07!important}
+.first-page-summary.summary-auto-tight .summary-side{font-size:6pt!important;line-height:1.16!important}
 .first-page-summary.summary-dense .summary-block+.summary-block,
 .first-page-summary.summary-auto-tight .summary-block+.summary-block{margin-top:.04in!important}
 .first-page-summary.summary-very-dense .deck-list,
-.first-page-summary.summary-auto-tightest .deck-list{font-size:6.1pt!important;line-height:1!important}
+.first-page-summary.summary-auto-tightest .deck-list{font-size:6.25pt!important;line-height:1.12!important}
 .first-page-summary.summary-very-dense .summary-side,
-.first-page-summary.summary-auto-tightest .summary-side{font-size:5.55pt!important;line-height:1.02!important}
+.first-page-summary.summary-auto-tightest .summary-side{font-size:5.7pt!important;line-height:1.14!important}
 .first-page-summary.summary-very-dense h2,
-.first-page-summary.summary-auto-tightest h2{margin-bottom:.026in!important;padding-bottom:.018in!important;font-size:5.35pt!important}
+.first-page-summary.summary-auto-tightest h2{margin-bottom:.024in!important;padding-bottom:.016in!important;font-size:5.35pt!important;line-height:1.12!important}
 
 /* Starter decks insert a fourth direct child between the metrics line and the
-   deck/side grid. Budget it explicitly inside the same fixed 3.5in region
-   instead of letting the browser create an implicit row that collides with the
-   card grid below. */
+   deck/side grid. Give the guidance enough real vertical space and safe leading;
+   the previous sub-.7in cap forced text clipping while the lower summary area
+   remained visibly under-used. */
 .first-page-summary.has-starter-strategy{
   grid-template-rows:auto auto auto minmax(0,1fr)!important;
-  row-gap:.04in!important;
+  row-gap:.035in!important;
 }
 .first-page-summary.has-starter-strategy .starter-print-strategy{
   min-height:0!important;
-  max-height:.66in!important;
+  max-height:.82in!important;
   margin:0!important;
-  padding:.045in .07in!important;
+  padding:.05in .07in!important;
   overflow:hidden!important;
   grid-template-columns:minmax(0,.9fr) minmax(0,1.45fr)!important;
-  gap:.03in .12in!important;
+  gap:.035in .12in!important;
   font-family:"adobe-caslon-pro",Georgia,"Times New Roman",serif!important;
-  font-size:6.05pt!important;
-  line-height:1.06!important;
+  font-size:6.2pt!important;
+  line-height:1.17!important;
 }
 .first-page-summary.has-starter-strategy .starter-print-strategy h2{
   margin:0 0 .018in!important;
   padding:0!important;
   border:0!important;
-  font-size:5.25pt!important;
-  line-height:1!important;
+  font-size:5.35pt!important;
+  line-height:1.12!important;
 }
 .first-page-summary.has-starter-strategy .starter-print-strategy p{margin:0!important}
 .first-page-summary.has-starter-strategy .starter-print-territories{
@@ -266,7 +266,8 @@
   overflow:hidden!important;
   white-space:nowrap!important;
   text-overflow:ellipsis!important;
-  font-size:5.8pt!important;
+  font-size:5.95pt!important;
+  line-height:1.15!important;
 }
 .first-page-summary.has-starter-strategy .summary-grid{
   min-height:0!important;
@@ -274,22 +275,27 @@
   overflow:hidden!important;
 }
 .first-page-summary.has-starter-strategy .deck-list{
-  height:1.36in!important;
+  height:1.72in!important;
 }
 .first-page-summary.has-starter-strategy.summary-auto-tight .starter-print-strategy,
 .first-page-summary.has-starter-strategy.summary-dense .starter-print-strategy{
-  max-height:.61in!important;
-  font-size:5.75pt!important;
+  max-height:.76in!important;
+  font-size:5.95pt!important;
+  line-height:1.15!important;
 }
 .first-page-summary.has-starter-strategy.summary-auto-tightest .starter-print-strategy,
 .first-page-summary.has-starter-strategy.summary-very-dense .starter-print-strategy{
-  max-height:.57in!important;
-  font-size:5.45pt!important;
-  line-height:1!important;
+  max-height:.72in!important;
+  font-size:5.65pt!important;
+  line-height:1.13!important;
+}
+.first-page-summary.has-starter-strategy.summary-auto-tight .deck-list,
+.first-page-summary.has-starter-strategy.summary-dense .deck-list{
+  height:1.66in!important;
 }
 .first-page-summary.has-starter-strategy.summary-auto-tightest .deck-list,
 .first-page-summary.has-starter-strategy.summary-very-dense .deck-list{
-  height:1.39in!important;
+  height:1.6in!important;
 }
 .first-page>.card-table.two-row{
   grid-row:2;
