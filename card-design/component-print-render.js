@@ -146,6 +146,9 @@
 
     if (kind === "supplemental") {
       if (card.classList.contains("reference-card-loading")) return false;
+      if (id === "financiers-deed") {
+        return card.dataset.parchmentLoaded === "true" && dimensionsReady(card);
+      }
       return dimensionsReady(card);
     }
 
