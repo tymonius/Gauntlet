@@ -87,6 +87,14 @@
   }
 
   function sourceError() {
+    if (kind === "leader") {
+      const root = document.getElementById("leaderReviewSections");
+      if (root?.dataset.leaderCopyReady === "error") {
+        return "Current Leader card copy failed to load.";
+      }
+      return root?.querySelector(".review-note")?.textContent?.trim() || "";
+    }
+
     if (kind === "proposal") {
       return document.querySelector("#proposalReviewSections .review-note")?.textContent?.trim() || "";
     }
@@ -118,6 +126,13 @@
     return card.dataset.parchmentLoaded === undefined || card.dataset.titleFit === undefined;
   }
 
+  function leaderCopyReady(card) {
+    const root = document.getElementById("leaderReviewSections");
+    return root?.dataset.leaderCopyReady === "true"
+      && Boolean(card.dataset.leaderCopyVersion)
+      && card.classList.contains("leader-card--standardized");
+  }
+
   function fitReady(card) {
     if (card.classList.contains("fit-warning")) {
       throw new Error(`Production ${kind} ${id} reports a fit warning.`);
@@ -130,7 +145,13 @@
       throw new Error(`Component ${id} still resolves to a production-layout placeholder.`);
     }
 
-    if (kind === "leader" || kind === "proposal" || kind === "rite" || (kind === "ritual" && !reverseSide())) {
+    if (kind === "leader") {
+      return leaderCopyReady(card)
+        && card.dataset.parchmentLoaded === "true"
+        && card.dataset.titleFit === "true";
+    }
+
+    if (kind === "proposal" || kind === "rite" || (kind === "ritual" && !reverseSide())) {
       return card.dataset.parchmentLoaded === "true" && card.dataset.titleFit === "true";
     }
 
