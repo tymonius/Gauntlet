@@ -4,7 +4,7 @@
 >
 > Audit authority: `artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md`
 >
-> Recheck against: Your Turn; Movement and Position; Battle Sequence and Outcome; The Aftermath; Withdrawal and Retreat; Front Line, Occupation, and Capture; Running the Gauntlet.
+> Recheck against: Your Turn; Movement and Position; Pending Battles and Onset; Battle Sequence and Outcome; The Aftermath; Withdrawal and Retreat; Front Line, Occupation, and Capture; Running the Gauntlet.
 
 ## Front — Turn & Battle
 
@@ -23,9 +23,11 @@ You normally take **1 Action total per turn**, during either Opening or Denoueme
 
 Resolve movement **one Position at a time**. When movement creates a battle, that movement sequence ends and any unused movement from it is lost.
 
-### Battle Sequence
+### Before the Battle
 
-At **Onset**, the battle begins and attacker / defender roles become fixed.
+When movement creates a pending battle, proceed to **Onset**. At Onset, the battle begins and attacker / defender roles become fixed.
+
+### Battle Sequence
 
 1. **Onset**
 2. Set **Gambits**.
