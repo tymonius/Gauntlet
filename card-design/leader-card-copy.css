@@ -4,14 +4,13 @@
 }
 
 .leader-card--standardized .leader-rule-section {
-  grid-template-columns: 0.76in minmax(0, 1fr);
+  grid-template-columns: 0.54in minmax(0, 1fr);
   align-items: start;
-  column-gap: 0.044in;
+  column-gap: 0.018in;
 }
 
 .leader-card--standardized .leader-rule-section + .leader-rule-section {
-  padding-top: calc(0.008in * var(--rules-scale));
-  border-top: 0.45px solid color-mix(in srgb, var(--component-accent-ink) 24%, transparent);
+  padding-top: calc(0.010in * var(--rules-scale));
 }
 
 .leader-section-label {
@@ -103,8 +102,7 @@
 }
 
 .leader-rule-content--grouped .leader-feature-line + .leader-feature-line {
-  padding-top: calc(0.007in * var(--rules-scale));
-  border-top: 0.35px solid color-mix(in srgb, var(--component-accent-ink) 16%, transparent);
+  padding-top: calc(0.009in * var(--rules-scale));
 }
 
 .leader-card--standardized .leader-rule-section--resource .leader-feature-text,
@@ -121,16 +119,16 @@
 }
 
 .leader-card--standardized[data-faction="military"] .leader-rule-section {
-  grid-template-columns: 0.66in minmax(0, 1fr);
-  column-gap: 0.034in;
+  grid-template-columns: 0.54in minmax(0, 1fr);
+  column-gap: 0.018in;
 }
 
 .leader-card--standardized[data-faction="military"] .leader-rule-section + .leader-rule-section {
-  padding-top: calc(0.004in * var(--rules-scale));
+  padding-top: calc(0.006in * var(--rules-scale));
 }
 
 .leader-card--standardized[data-faction="military"] .leader-rule-content--grouped {
-  gap: calc(0.007in * var(--rules-scale));
+  gap: calc(0.008in * var(--rules-scale));
 }
 
 .leader-card--standardized[data-faction="military"] .leader-rule-content--grouped .leader-feature-line {
@@ -138,7 +136,7 @@
 }
 
 .leader-card--standardized[data-faction="military"] .leader-rule-content--grouped .leader-feature-line + .leader-feature-line {
-  padding-top: calc(0.003in * var(--rules-scale));
+  padding-top: calc(0.004in * var(--rules-scale));
 }
 
 .leader-card--standardized[data-faction="military"] .leader-feature-separator {
@@ -147,11 +145,4 @@
 
 .leader-card--standardized[data-faction="military"] .leader-feature-text {
   margin-top: calc(0.003in * var(--rules-scale));
-}
-
-@media print {
-  .leader-card--standardized .leader-rule-section + .leader-rule-section,
-  .leader-rule-content--grouped .leader-feature-line + .leader-feature-line {
-    print-color-adjust: exact;
-  }
 }
