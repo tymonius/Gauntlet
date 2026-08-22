@@ -1,10 +1,23 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { promoteSaveIdentity, validatePromotionGate } from '../scripts/promote-tts-save.mjs';
+import { REQUIRED_QA_CHECKS, promoteSaveIdentity, validatePromotionGate, validateQaRecordShape } from '../scripts/promote-tts-save.mjs';
 
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 const qa = JSON.parse(readFileSync('tts/release-qa/v0.7.0.json', 'utf8'));
 const release = { version: 'v0.7.0' };
+
+function completedQa(overrides = {}) {
+  return {
+    ...qa,
+    status: 'passed',
+    checks: Object.fromEntries(Object.entries(REQUIRED_QA_CHECKS).map(([group, checks]) => [
+      group,
+      Object.fromEntries(checks.map((check) => [check, true])),
+    ])),
+    approvedForWorkshop: true,
+    ...overrides,
+  };
+}
 
 describe('TTS final save promotion', () => {
   it('keeps promotion explicit and outside ordinary package generation', () => {
@@ -13,44 +26,60 @@ describe('TTS final save promotion', () => {
     expect(packageJson.scripts['tts:check']).toContain('promote-tts-save.mjs --check');
   });
 
-  it('ships a pending v0.7.0 manual-QA record rather than pre-approving Workshop publication', () => {
+  it('ships a granular pending v0.7.0 manual-QA record rather than pre-approving Workshop publication', () => {
     expect(qa).toEqual(expect.objectContaining({
-      schemaVersion: 1,
+      schemaVersion: 2,
       gameVersion: 'v0.7.0',
       status: 'pending',
       approvedForWorkshop: false,
+      notes: [],
     }));
-    expect(qa.checks).toEqual({ tableSetup: false, factionComponents: false, fullGame: false });
+    expect(() => validateQaRecordShape(qa)).not.toThrow();
+
+    const expectedGroups = Object.keys(REQUIRED_QA_CHECKS);
+    expect(Object.keys(qa.checks)).toEqual(expectedGroups);
+    for (const [group, checks] of Object.entries(REQUIRED_QA_CHECKS)) {
+      expect(Object.keys(qa.checks[group])).toEqual([...checks]);
+      expect(Object.values(qa.checks[group]).every((value) => value === false)).toBe(true);
+    }
+    expect(Object.values(REQUIRED_QA_CHECKS).flat()).toHaveLength(18);
   });
 
   it('refuses promotion while machine readiness still has blockers', () => {
     expect(() => validatePromotionGate({
       release,
       readiness: { gameVersion: 'v0.7.0', machineReady: false, blockers: [{ id: 'universal-reference' }] },
-      qa: { ...qa, checks: { tableSetup: true, factionComponents: true, fullGame: true }, approvedForWorkshop: true },
+      qa: completedQa(),
     })).toThrow(/universal-reference/);
   });
 
-  it('refuses promotion until every manual QA category and Workshop approval are explicit', () => {
+  it('refuses promotion at the first incomplete granular QA check', () => {
     const readiness = { gameVersion: 'v0.7.0', machineReady: true, blockers: [] };
-    expect(() => validatePromotionGate({ release, readiness, qa })).toThrow(/tableSetup/);
+    expect(() => validatePromotionGate({ release, readiness, qa })).toThrow(/tableSetup\.cleanClientLoad/);
 
-    const completedChecks = { ...qa, checks: { tableSetup: true, factionComponents: true, fullGame: true } };
-    expect(() => validatePromotionGate({ release, readiness, qa: completedChecks })).toThrow(/not approved for Workshop/);
+    const almostComplete = completedQa();
+    almostComplete.checks.factionComponents.intelligenceNestedOperationStack = false;
+    expect(() => validatePromotionGate({ release, readiness, qa: almostComplete }))
+      .toThrow(/factionComponents\.intelligenceNestedOperationStack/);
   });
 
-  it('allows promotion only after machine readiness and manual QA both pass', () => {
+  it('still requires explicit Workshop approval after all manual checks pass', () => {
+    const readiness = { gameVersion: 'v0.7.0', machineReady: true, blockers: [] };
+    expect(() => validatePromotionGate({
+      release,
+      readiness,
+      qa: completedQa({ approvedForWorkshop: false }),
+    })).toThrow(/not approved for Workshop/);
+  });
+
+  it('allows promotion only after machine readiness and every granular manual QA check pass', () => {
     const result = validatePromotionGate({
       release,
       readiness: { gameVersion: 'v0.7.0', machineReady: true, blockers: [] },
-      qa: {
-        ...qa,
-        status: 'passed',
-        checks: { tableSetup: true, factionComponents: true, fullGame: true },
-        approvedForWorkshop: true,
-      },
+      qa: completedQa(),
     });
-    expect(result).toEqual({ version: 'v0.7.0', checks: ['tableSetup', 'factionComponents', 'fullGame'] });
+    expect(result.version).toBe('v0.7.0');
+    expect(result.checks).toEqual(Object.fromEntries(Object.entries(REQUIRED_QA_CHECKS).map(([group, checks]) => [group, [...checks]])));
   });
 
   it('creates final mod identity without mutating the preserved review scaffold', () => {
