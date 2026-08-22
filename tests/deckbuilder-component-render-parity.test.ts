@@ -8,6 +8,7 @@ const cardReviewRenderer = readFileSync("card-design/card-review-render.html", "
 const cardPrintRenderer = readFileSync("card-design/card-print-render.html", "utf8");
 const territoryReviewRenderer = readFileSync("card-design/territory-review-render.html", "utf8");
 const territoryPrintRenderer = readFileSync("card-design/territory-print-render.html", "utf8");
+const finalPrintGuard = readFileSync("deckbuilder/print-card-back-orientation.js", "utf8");
 
 describe("Deckbuilder production render shell parity", () => {
   it("loads every current component-specific style and refinement layer used by Card Design", () => {
@@ -70,5 +71,26 @@ describe("Deckbuilder production render shell parity", () => {
       expect(territoryReviewRenderer).toContain(dependency);
       expect(territoryPrintRenderer).toContain(dependency);
     }
+  });
+
+  it("stops the final print package if any legacy card face survives production replacement", () => {
+    for (const selector of [
+      ".print-card.leader-card",
+      ".print-card.main-card:not(.production-render-card)",
+      ".print-card.territory:not(.production-render-territory)",
+      ".print-card.tracker-card",
+      ".print-card.reference-card",
+      ".print-card.purge-card",
+      ".print-card.capital-tracker-card",
+      ".print-card.deed-card",
+      ".print-card.proposal-card",
+      ".print-card.rite-card",
+      ".supplemental-placeholder-card",
+    ]) {
+      expect(finalPrintGuard).toContain(`"${selector}"`);
+    }
+    expect(finalPrintGuard).toContain("installFinalProductionFaceGuard(printWindow)");
+    expect(finalPrintGuard).toContain("assertNoStalePrintFaces(printWindow.document)");
+    expect(finalPrintGuard).toContain("Printing was stopped because an outdated card face survived the production replacement pass");
   });
 });
