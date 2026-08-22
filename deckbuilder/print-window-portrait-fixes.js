@@ -247,7 +247,14 @@
   display:grid!important;
   grid-template-columns:1.38in minmax(0,1fr)!important;
   gap:.06in!important;
-  padding-top:.025in!important;
+  align-items:start!important;
+  padding-top:.04in!important;
+}
+.first-page-summary.has-starter-strategy .starter-print-territories h2{
+  margin:0!important;
+  min-height:.11in!important;
+  padding:.006in 0 0!important;
+  line-height:1.3!important;
 }
 .first-page-summary.has-starter-strategy .starter-print-territories p{
   min-width:0!important;
@@ -255,7 +262,7 @@
   white-space:nowrap!important;
   text-overflow:ellipsis!important;
   font-size:5.95pt!important;
-  line-height:1.24!important;
+  line-height:1.28!important;
 }
 .first-page-summary.has-starter-strategy .summary-grid{
   min-height:0!important;
