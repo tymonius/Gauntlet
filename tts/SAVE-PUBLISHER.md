@@ -117,14 +117,36 @@ The v0.7.0 manual release gate is recorded in:
 
 - `tts/release-qa/v0.7.0.json`
 
-The committed record remains `pending` until the corresponding in-game checks are actually completed. It separately records:
+The committed record remains `pending` until the corresponding in-game checks are actually completed. Schema version 2 records **18 individual checks**, grouped as follows.
 
-- table/setup QA;
-- faction-component QA;
-- a full-game validation pass; and
-- explicit Workshop approval.
+### Table and setup
 
-Do not mark a category complete merely because the JSON package generated successfully. These fields represent actual Tabletop Simulator testing.
+- clean-client load from hosted assets;
+- Red/Blue player perspectives and hand zones;
+- all six Gauntlet snaps and Territory orientation;
+- Player Tokens and battle dice;
+- opening setup from the current Rulebook; and
+- clear separation of Draw Pile, Discard Pile, Graveyard, Asset Bank, Leader/faction area, Reserve, Gambit, and Tactic during play.
+
+### Faction components
+
+- Military Command tracker;
+- Diplomat Influence tracker;
+- Diplomat Proposals and ratified Treaty reverse faces;
+- Financier Capital Ledger;
+- Financier Deeds;
+- Intelligence nested Operation stack;
+- Mystic Rites and Completed faces; and
+- Inquisition Conviction, Doctrine, and Purge components.
+
+### Full-game validation
+
+- complete remote two-player game;
+- core handling exercised during that game;
+- focused faction drills completed; and
+- any TTS-specific friction found during testing resolved before approval.
+
+Workshop approval is a separate explicit boolean after all 18 checks. Do not mark a check complete merely because the JSON package generated successfully; these fields represent actual Tabletop Simulator testing.
 
 ## Final save promotion
 
@@ -137,7 +159,7 @@ npm run tts:save:promote
 Promotion is deliberately excluded from `npm run tts:package`. The command refuses to run unless:
 
 1. the versioned machine-readiness report is `machineReady: true`;
-2. every required manual-QA category is complete; and
+2. all 18 required manual-QA checks are complete; and
 3. the QA record explicitly sets `approvedForWorkshop: true`.
 
 A successful promotion preserves the Review Scaffold and writes a separate final save:
@@ -155,16 +177,6 @@ The generated Review Scaffold is therefore allowed to exist while a component or
 
 ## In-game review checklist
 
-Before Workshop promotion, verify in Tabletop Simulator that:
-
-- the save loads from hosted assets without relying on a tester's local asset cache;
-- Red and Blue player perspectives and hand zones are usable;
-- all six Gauntlet Territory snap positions and landscape orientations behave correctly;
-- Player Tokens and battle dice behave normally;
-- every starter Bag unpacks into the correct Deck, Leader, Territories, and faction components;
-- playable cards in each Deck use that player's faction back, including Neutral cards;
-- all faction supplemental components can be manipulated as intended;
-- Draw Pile, Discard Pile, Graveyard, Asset Bank, Leader/faction area, Reserve, Gambit, and Tactic remain visibly distinct during ordinary play; and
-- at least one complete remote two-player game is finished with the generated mod before Workshop publication.
+The versioned QA record is the authoritative checklist. Before Workshop promotion, complete every table/setup, faction-component, and full-game check recorded there and add notes for any noteworthy friction or fixes.
 
 After promotion and publication, subscribe to/load the public Workshop item from a clean client and confirm every hosted asset resolves.
