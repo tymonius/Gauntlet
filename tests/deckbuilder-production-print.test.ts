@@ -64,7 +64,6 @@ describe("Deckbuilder production printing", () => {
   it("prints standard backs as black and single-sided faction components in faction color automatically", () => {
     expect(duplexTransform).toContain('cell.querySelector(".main-card, .territory")');
     expect(printTransform).toContain('production-standard-back');
-    expect('/tts/back-renderer/index.html?faction=').toBeTruthy();
     expect(printTransform).toContain('/tts/back-renderer/index.html?faction=');
     expect(printTransform).toContain('if (!useFactionColor) return "intelligence";');
     expect(cardBackPolicy).toContain('factionColor.checked = false');
