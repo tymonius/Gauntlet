@@ -15,6 +15,7 @@
       "militaryCommandTracker": false,
       "diplomatInfluenceTracker": false,
       "diplomatProposalsAndTreaties": false,
+      "financierCapitalLimitTracker": false,
       "financierCapitalLedger": false,
       "financierDeeds": false,
       "intelligenceNestedOperationStack": false,
