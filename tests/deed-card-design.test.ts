@@ -2,6 +2,8 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const reviewPage = readFileSync("card-design/index.html", "utf8");
+const componentPrintPage = readFileSync("card-design/component-print-render.html", "utf8");
+const componentPrintScript = readFileSync("card-design/component-print-render.js", "utf8");
 const ornamentStudy = readFileSync("card-design/deed-ornament-study.html", "utf8");
 const deedDivider = readFileSync("card-design/deed-ornamental-divider.svg", "utf8");
 const deedScript = readFileSync("card-design/deed-card.js", "utf8");
@@ -28,9 +30,19 @@ describe("Financier Deed card", () => {
     expect(supplementalRenderer).toContain("data-contract-component-id=\"${esc(component.contractId)}\"");
   });
 
-  it("loads dedicated Deed styles after the supplemental component stylesheet", () => {
+  it("normalizes the historical supplemental shell into a real finalized Deed component", () => {
+    expect(deedScript).toContain('class="gauntlet-card faction-component-card deed-card financiers-card"');
+    expect(deedScript).toContain("card.classList.remove('supplemental-placeholder-card')");
+    expect(deedScript).toContain("card.classList.add('deed-card')");
+    expect(deedScript).toContain("if (child !== heading) child.remove()");
+    expect(deedScript).toContain('const DEED_SELECTOR = \'[data-contract-component-id="financiers-deed"]\'');
+  });
+
+  it("loads dedicated Deed styles in both the review and shared production renderer", () => {
     expect(reviewPage).toContain('href="deed-card.css"');
     expect(reviewPage.indexOf('href="deed-card.css"')).toBeGreaterThan(reviewPage.indexOf('href="supplemental-card.css"'));
+    expect(componentPrintPage).toContain('href="/card-design/deed-card.css"');
+    expect(componentPrintPage.indexOf('/card-design/deed-card.css')).toBeGreaterThan(componentPrintPage.indexOf('/card-design/supplemental-card.css'));
   });
 
   it("renders the Deed in the same 3.5 by 2.5 inch landscape format as Territories", () => {
@@ -39,6 +51,9 @@ describe("Financier Deed card", () => {
     expect(deedStyles).toContain('data-contract-component-id="financiers-deed"');
     expect(deedStyles).toContain("width: 3.5in");
     expect(deedStyles).toContain("height: 2.5in");
+    expect(componentPrintScript).toContain('params.get("orientation") || "portrait"');
+    expect(componentPrintScript).toContain('const renderWidth = landscape ? "3.5in" : "2.5in"');
+    expect(componentPrintScript).toContain('const renderHeight = landscape ? "2.5in" : "3.5in"');
   });
 
   it("reuses the approved Financiers border and faction parchment", () => {
@@ -106,7 +121,7 @@ describe("Financier Deed card", () => {
 
   it("suppresses the irrelevant fit-warning dot without restoring the rejected CSS-built flourish", () => {
     expect(refinementStyles).toContain(".gauntlet-card.fit-warning::after");
-    expect(deedStyles).toContain('.supplemental-placeholder-card[data-contract-component-id="financiers-deed"].fit-warning::after');
+    expect(deedStyles).toContain(':is(.deed-card, .supplemental-placeholder-card)[data-contract-component-id="financiers-deed"].fit-warning::after');
     expect(deedStyles).not.toContain("radial-gradient(ellipse at 100% 100%");
     expect(deedStyles).not.toContain("linear-gradient(135deg, transparent 42%");
   });
@@ -120,11 +135,11 @@ describe("Financier Deed card", () => {
     expect(ornamentStudy).toContain("candidate-ornament");
   });
 
-  it("tracks the current data-driven specimen wrapper and keeps clone-safe card selectors", () => {
+  it("tracks the current data-driven specimen wrapper and keeps clone-safe compatibility selectors", () => {
     expect(deedStyles).toContain("#supplemental-financiers-financiers-deed");
-    expect(deedStyles).toContain('.supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .card-interior');
-    expect(deedStyles).toContain('.supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .card-interior::before');
-    expect(deedStyles).toContain('.supplemental-placeholder-card[data-contract-component-id="financiers-deed"] .card-heading');
+    expect(deedStyles).toContain(':is(.deed-card, .supplemental-placeholder-card)[data-contract-component-id="financiers-deed"] .card-interior');
+    expect(deedStyles).toContain(':is(.deed-card, .supplemental-placeholder-card)[data-contract-component-id="financiers-deed"] .card-interior::before');
+    expect(deedStyles).toContain(':is(.deed-card, .supplemental-placeholder-card)[data-contract-component-id="financiers-deed"] .card-heading');
     expect(supplementalStyles).toContain("#supplemental-financiers-deed");
   });
 });
