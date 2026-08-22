@@ -1,3 +1,5 @@
+@import url("universal-reference.css");
+
 /* Shared content-aware label/body column policy for portrait card rules.
    Fixed label tracks waste horizontal space on cards whose headings are short,
    while long headings can starve the rules body. Modern Grid subgrid lets each
