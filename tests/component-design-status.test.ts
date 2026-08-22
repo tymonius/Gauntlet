@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 const contract = JSON.parse(readFileSync('config/tts-component-contract.json', 'utf8'));
 const validator = readFileSync('scripts/tts-component-contract.mjs', 'utf8');
 const supplementalRenderer = readFileSync('card-design/supplemental-card.js', 'utf8');
+const referenceRenderer = readFileSync('card-design/reference-card.js', 'utf8');
 const deckbuilderComponents = readFileSync('deckbuilder/faction-components.js', 'utf8');
 const deckbuilderPrint = readFileSync('deckbuilder/print-duplex-sheet-pairing.js', 'utf8');
 
@@ -15,7 +16,7 @@ function component(id: string) {
 }
 
 describe('physical component design maturity', () => {
-  it('declares one design-pending Universal Reference Card for every deck', () => {
+  it('declares a final production-ready Universal Reference Card for every deck', () => {
     const universal = sharedComponents.find(item => item.id === 'universal-reference');
 
     expect(universal).toMatchObject({
@@ -24,12 +25,16 @@ describe('physical component design maturity', () => {
       quantityPerPlayer: 1,
       deckInclusion: 'every-deck',
       cardLike: true,
-      designStatus: 'placeholder',
-      productionStatus: 'design-pending',
+      designStatus: 'final',
+      productionStatus: 'ready',
       backPolicy: 'twoSided',
+      copyMode: 'bespoke',
+      source: 'card-design/reference-copy/v0.6.3/universal-reference.md',
+      authoritySource: 'artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md',
     });
+    expect(universal?.referenceFaces?.front?.title).toBe('Turn & Battle');
+    expect(universal?.referenceFaces?.reverse?.title).toBe('Results & Control');
     expect(universal?.purpose).toContain('turn procedure');
-    expect(universal?.source).toContain('Rulebook.md');
   });
 
   it('records all seven faction reference cards as final authored player aids', () => {
@@ -81,25 +86,27 @@ describe('physical component design maturity', () => {
     });
   });
 
-  it('validates final faction-reference design status separately from the universal placeholder', () => {
+  it('validates final shared and faction reference design status', () => {
     expect(validator).toContain("const DESIGN_STATUSES = new Set(['final', 'refinement-pending', 'placeholder'])");
     expect(validator).toContain("sharedMap.get('universal-reference')");
-    expect(validator).toContain("designStatusFor(universalReference) === 'placeholder'");
+    expect(validator).toContain("designStatusFor(universalReference) === 'final'");
+    expect(validator).toContain("universalReference.productionStatus === 'ready'");
     expect(validator).toContain("factionReferences.every((component) => designStatusFor(component) === 'final')");
     expect(validator).toContain("factionReferences.every((component) => component.copyMode === 'bespoke')");
-    expect(validator).not.toContain('five remaining faction reference cards');
+    expect(validator).not.toContain('must remain a design-pending placeholder');
   });
 
-  it('shows the universal placeholder in Card Design and every Deckbuilder package', () => {
+  it('shows the finished universal reference in Card Design and every Deckbuilder package', () => {
     expect(supplementalRenderer).toContain('currentGame.sharedComponents');
     expect(supplementalRenderer).toContain("{ faction: 'neutral', factionLabel: 'Universal', cards: sharedCards }");
     expect(supplementalRenderer).toContain("component.referenceFaces?.front && component.referenceFaces?.reverse");
-    expect(supplementalRenderer).toContain("component.designStatus === 'placeholder'");
+    expect(referenceRenderer).toContain("...(currentGame.sharedComponents || [])");
+    expect(referenceRenderer).toContain("faction: component.faction || 'neutral'");
 
     expect(deckbuilderComponents).toContain('currentGame.sharedComponents');
     expect(deckbuilderComponents).toContain('component.deckInclusion === "every-deck"');
     expect(deckbuilderComponents).toContain('divider.textContent = "Deck components"');
-    expect(deckbuilderComponents).toContain('"Placeholder · design pending"');
+    expect(deckbuilderComponents).toContain('return "Final design"');
   });
 
   it('keeps final Proposal faces on the production print path while their separate export remains pending', () => {
