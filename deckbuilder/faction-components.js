@@ -97,14 +97,45 @@
     }
   }
 
+  function sharedReferencePlaceholder(component) {
+    return {
+      type: "reference",
+      id: component.id,
+      contractId: component.id,
+      title: component.name,
+      subtitle: "Universal reference",
+      sections: [{ label: "Reference", text: "Production universal reference card." }],
+      footer: "Shared reference — included in every Deck",
+      designStatus: component.designStatus || "final",
+      productionStatus: component.productionStatus,
+      backPolicy: component.backPolicy,
+    };
+  }
+
   function hydrateLegacyPrintPackages(currentGame) {
     const packages = window.GAUNTLET_V06_SUPPLEMENTALS || (window.GAUNTLET_V06_SUPPLEMENTALS = {});
     const contractComponents = currentGame.components || [];
+    const sharedReferences = (currentGame.sharedComponents || []).filter(component => (
+      component.family === "reference-card"
+      && component.cardLike
+      && component.deckInclusion === "every-deck"
+    ));
 
     for (const [factionId, packageData] of Object.entries(packages)) {
+      packageData.components ||= [];
+      for (const shared of sharedReferences) {
+        const existing = packageData.components.find(component => component.contractId === shared.id || component.id === shared.id);
+        const projected = sharedReferencePlaceholder(shared);
+        if (existing) Object.assign(existing, projected);
+        else packageData.components.unshift(projected);
+      }
+
       annotateLegacyComponents(
         packageData,
-        contractComponents.filter(component => component.faction === factionId),
+        [
+          ...sharedReferences,
+          ...contractComponents.filter(component => component.faction === factionId),
+        ],
       );
     }
 
