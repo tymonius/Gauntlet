@@ -63,12 +63,46 @@
       "quantityPerPlayer": 1,
       "deckInclusion": "every-deck",
       "cardLike": true,
-      "designStatus": "placeholder",
-      "productionStatus": "design-pending",
+      "designStatus": "final",
+      "productionStatus": "ready",
       "backPolicy": "twoSided",
-      "reverse": "General Reference",
-      "source": "artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md",
-      "purpose": "Shared general-rules reference included in every deck; planned content includes turn procedure and other frequently consulted common rules.",
+      "reverse": "Results & Control",
+      "copyMode": "bespoke",
+      "source": "card-design/reference-copy/v0.6.3/universal-reference.md",
+      "authoritySource": "artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md",
+      "auditHeadings": [
+        "Your Turn",
+        "Pending Battles, Terms, and Onset",
+        "Battle Sequence and Outcome",
+        "The Aftermath",
+        "Withdrawal and Retreat",
+        "Front Line, Occupation, and Capture",
+        "Running the Gauntlet"
+      ],
+      "referenceFaces": {
+        "front": {
+          "title": "Turn & Battle",
+          "sections": [
+            { "heading": "Turn Sequence", "depth": 3 },
+            { "heading": "Movement", "depth": 3 },
+            { "heading": "Before the Battle", "depth": 3 },
+            { "heading": "Battle Sequence", "depth": 3 }
+          ]
+        },
+        "reverse": {
+          "title": "Results & Control",
+          "sections": [
+            { "heading": "Outcome", "depth": 3 },
+            { "heading": "Normal Result", "depth": 3 },
+            { "heading": "Battle Cards", "depth": 3 },
+            { "heading": "Withdrawal", "depth": 3 },
+            { "heading": "Front Line & Capture", "depth": 3 },
+            { "heading": "Run the Gauntlet", "depth": 3 },
+            { "heading": "Last Stand", "depth": 3 }
+          ]
+        }
+      },
+      "purpose": "Shared compact player aid for turn procedure, battle sequence, outcomes, control, Capture, and the two Run-the-Gauntlet victory routes.",
       "tts": {
         "representation": "card"
       }
