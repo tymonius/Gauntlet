@@ -568,24 +568,36 @@ export function referenceCardMarkup(record, sideName, options = {}) {
 
 function fitReferenceTitle(card, minimumTitlePt = REFERENCE_TITLE_MIN_PT) {
   const title = card.querySelector('.reference-face-title');
-  if (!title) return { fontSize: 0, overflow: false };
+  if (!title) return { fontSize: 0, overflow: false, wrapped: false };
 
+  card.dataset.referenceTitleWrapped = 'false';
   title.style.fontSize = '';
   const minimumPx = Number(minimumTitlePt) * CSS_PX_PER_PT;
-  let fontSize = Number.parseFloat(getComputedStyle(title).fontSize);
-  if (!Number.isFinite(fontSize)) return { fontSize: 0, overflow: false };
+  const naturalFontSize = Number.parseFloat(getComputedStyle(title).fontSize);
+  let fontSize = naturalFontSize;
+  if (!Number.isFinite(fontSize)) return { fontSize: 0, overflow: false, wrapped: false };
 
   let attempts = 0;
-  while (title.scrollWidth > title.clientWidth + 0.5 && fontSize > minimumPx && attempts < 48) {
+  const horizontallyOverflows = () => title.scrollWidth > title.clientWidth + 0.5;
+  while (horizontallyOverflows() && fontSize > minimumPx && attempts < 48) {
     fontSize = Math.max(minimumPx, fontSize - 0.25);
     title.style.fontSize = `${fontSize}px`;
     attempts += 1;
   }
 
-  const overflow = title.scrollWidth > title.clientWidth + 0.5;
-  card.dataset.referenceTitleSize = fontSize.toFixed(2);
+  let wrapped = false;
+  if (horizontallyOverflows()) {
+    title.style.fontSize = '';
+    card.dataset.referenceTitleWrapped = 'true';
+    wrapped = true;
+    fontSize = Number.parseFloat(getComputedStyle(title).fontSize);
+  }
+
+  const overflow = horizontallyOverflows()
+    || (wrapped && title.scrollHeight > title.clientHeight + 0.5);
+  card.dataset.referenceTitleSize = Number.isFinite(fontSize) ? fontSize.toFixed(2) : naturalFontSize.toFixed(2);
   card.dataset.referenceTitleWarning = overflow ? 'true' : 'false';
-  return { fontSize, overflow };
+  return { fontSize, overflow, wrapped };
 }
 
 export function fitReferenceCard(card, { minimumScale = 0.82, maximumScale = 1.40, minimumTitlePt = REFERENCE_TITLE_MIN_PT } = {}) {
@@ -618,7 +630,7 @@ export function fitReferenceCard(card, { minimumScale = 0.82, maximumScale = 1.4
   const overflow = overflows() || titleFit.overflow;
   card.dataset.referenceScale = scale.toFixed(3);
   card.dataset.fitWarning = overflow ? 'true' : 'false';
-  return { scale, overflow, sectionGap, titleFontSize: titleFit.fontSize };
+  return { scale, overflow, sectionGap, titleFontSize: titleFit.fontSize, titleWrapped: titleFit.wrapped };
 }
 
 export function fitAllReferenceCards(root = document) {
