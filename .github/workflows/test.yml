@@ -51,13 +51,53 @@ jobs:
             const under = (prefix) => names.some((file) => file.startsWith(prefix));
             const matches = (pattern) => names.some((file) => pattern.test(file));
 
+            let packageRuntimeChanged = false;
+            if (exact('package.json')) {
+              const baseRef = context.eventName === 'pull_request'
+                ? context.payload.pull_request.base.sha
+                : context.payload.before;
+              const headRef = context.eventName === 'pull_request'
+                ? context.payload.pull_request.head.sha
+                : context.sha;
+
+              try {
+                const readPackage = async (ref) => {
+                  const response = await github.rest.repos.getContent({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    path: 'package.json',
+                    ref,
+                  });
+                  if (Array.isArray(response.data) || response.data.type !== 'file' || !response.data.content) {
+                    throw new Error(`package.json at ${ref} was not a file`);
+                  }
+                  return JSON.parse(Buffer.from(response.data.content, response.data.encoding || 'base64').toString('utf8'));
+                };
+
+                const basePackage = await readPackage(baseRef);
+                const headPackage = await readPackage(headRef);
+                const { scripts: baseScripts = {}, ...baseRuntime } = basePackage;
+                const { scripts: headScripts = {}, ...headRuntime } = headPackage;
+                const runtimeChanged = JSON.stringify(baseRuntime) !== JSON.stringify(headRuntime);
+                const scriptKeys = new Set([...Object.keys(baseScripts), ...Object.keys(headScripts)]);
+                const testScriptChanged = [...scriptKeys].some((key) =>
+                  /^(?:test(?::|$)|typecheck$)/.test(key) && baseScripts[key] !== headScripts[key]
+                );
+                packageRuntimeChanged = runtimeChanged || testScriptChanged;
+              } catch (error) {
+                core.warning(`Unable to classify package.json change safely: ${error.message}`);
+                packageRuntimeChanged = true;
+              }
+            }
+
             const testPattern = /(?:^|\/)[^/]+\.(?:test|spec)\.(?:ts|tsx|js|mjs)$/;
             const sourcePattern = /\.(?:ts|tsx|js|mjs)$/;
             const changedTests = names.filter((file) => testPattern.test(file));
             const relatedSources = names.filter((file) => sourcePattern.test(file) && !testPattern.test(file));
+            const testWorkflowOnly = names.length === 1 && exact('.github/workflows/test.yml');
 
-            const fullTests = uncertain || exact('package.json') || exact('package-lock.json') || exact('vitest.config.ts') || exact('vitest.config.js') || exact('vitest.config.mjs') || exact('.github/workflows/test.yml');
-            const code = fullTests || changedTests.length > 0 || relatedSources.length > 0;
+            const fullTests = uncertain || packageRuntimeChanged || exact('package-lock.json') || exact('vitest.config.ts') || exact('vitest.config.js') || exact('vitest.config.mjs') || testWorkflowOnly;
+            const code = fullTests || exact('.github/workflows/test.yml') || changedTests.length > 0 || relatedSources.length > 0;
             const types = uncertain || exact('package.json') || exact('package-lock.json') || matches(/\.(?:ts|tsx)$/) || matches(/(?:^|\/)tsconfig[^/]*\.json$/);
             const analytics = uncertain || exact('scripts/sync-google-analytics.mjs') || exact('index.html') || matches(/^(?:start|rulebook|card-reference|deckbuilder|rules-arbiter)\/[^/]*\.html$/) || matches(/^factions\/(?:[^/]+\/)?[^/]*\.html$/);
             const tts = uncertain || matches(/^scripts\/generate-tts-/) || under('tts/') || under('artifacts/tts/') || under('data/cards/') || under('data/territories/');
