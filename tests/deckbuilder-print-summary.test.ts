@@ -35,6 +35,16 @@ describe("Deckbuilder print intro summary", () => {
     expect(printSummaryTransform).not.toContain("height:1.36in!important");
   });
 
+  it("keeps the recommended Territory row top-aligned with a safe heading line box", () => {
+    expect(printSummaryTransform).toContain(".first-page-summary.has-starter-strategy .starter-print-territories{");
+    expect(printSummaryTransform).toContain("align-items:start!important");
+    expect(printSummaryTransform).toContain("padding-top:.04in!important");
+    expect(printSummaryTransform).toContain(".first-page-summary.has-starter-strategy .starter-print-territories h2{");
+    expect(printSummaryTransform).toContain("min-height:.11in!important");
+    expect(printSummaryTransform).toContain("padding:.006in 0 0!important");
+    expect(printSummaryTransform).toContain("line-height:1.3!important");
+  });
+
   it("starts at readable spacing and tightens only when measured overflow requires it", () => {
     expect(printSummaryTransform).not.toContain('summary.classList.add("summary-dense")');
     expect(printSummaryTransform).not.toContain('summary.classList.add("summary-very-dense")');
