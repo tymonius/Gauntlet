@@ -23,6 +23,7 @@ on:
       - 'scripts/generate-tts-save.mjs'
       - 'scripts/assemble-tts-supplemental-save.mjs'
       - 'scripts/finalize-tts-save.mjs'
+      - 'scripts/promote-tts-save.mjs'
       - 'scripts/check-tts-release-readiness.mjs'
       - 'scripts/tts-current-catalog.mjs'
       - 'scripts/tts-component-contract.mjs'
@@ -104,6 +105,7 @@ jobs:
             scripts/generate-tts-save.mjs
             scripts/assemble-tts-supplemental-save.mjs
             scripts/finalize-tts-save.mjs
+            scripts/promote-tts-save.mjs
             scripts/check-tts-release-readiness.mjs
             scripts/tts-current-catalog.mjs
             scripts/tts-component-contract.mjs
