@@ -1,0 +1,139 @@
+/* Universal reference card: neutral counterpart to the finalized faction
+   references. It uses the approved Neutral parchment and the same compact
+   tracker-style header, open lookup body, and metadata footer without faction
+   iconography or a faction-colored wash. */
+
+.reference-card[data-component-id="universal-reference"] {
+  --reference-parchment-image: url("../images/artwork/card-backgrounds/neutral-parchment-v2.png");
+  --reference-accent: var(--card-muted-ink, #5c4d3e);
+  --reference-border: #4e4135;
+  --reference-border-outline: #2f2924;
+  --reference-border-rule: rgba(78, 65, 53, 0.56);
+  --component-parchment-tint: rgba(0, 0, 0, 0);
+  --component-footer-tint: rgba(177, 139, 83, 0.24);
+  --component-accent-ink: var(--card-muted-ink, #5c4d3e);
+}
+
+.reference-card[data-component-id="universal-reference"] .reference-card-interior {
+  grid-template-rows: 0.56in minmax(0, 1fr) 0.18in;
+  background-color: var(--card-parchment, #e6d4ae);
+  background-image: var(--parchment-image, var(--reference-parchment-image));
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.reference-card[data-component-id="universal-reference"] .reference-card-interior::after {
+  content: none;
+}
+
+.reference-card[data-component-id="universal-reference"] .reference-card-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto auto auto;
+  align-content: center;
+  row-gap: 0;
+  padding: 0.024in 0.085in 0.018in;
+  border-bottom: 0;
+  background: transparent;
+}
+
+.reference-card[data-component-id="universal-reference"] .reference-card-header::before {
+  grid-column: 1;
+  grid-row: 1;
+  color: var(--component-accent-ink);
+  content: "Gauntlet";
+  font-family: var(--font-interface, Arial, sans-serif);
+  font-size: 5.2pt;
+  font-weight: 850;
+  letter-spacing: 0.105em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.reference-card[data-component-id="universal-reference"] .reference-face-title {
+  grid-column: 1;
+  grid-row: 2;
+  display: block;
+  min-width: 0;
+  margin: 0.008in 0 0;
+  font-size: 11.4pt;
+  letter-spacing: 0.026em;
+  line-height: 0.92;
+  white-space: nowrap;
+  -webkit-line-clamp: unset;
+}
+
+.reference-card[data-component-id="universal-reference"] .reference-type-line {
+  display: contents;
+}
+
+.reference-card[data-component-id="universal-reference"] .reference-faction-emblem {
+  display: none;
+}
+
+.reference-card[data-component-id="universal-reference"] .reference-type-line span:last-child {
+  grid-column: 1;
+  grid-row: 3;
+  min-width: 0;
+  margin-top: 0.030in;
+  padding-top: 0.022in;
+  border-top: 0.65px solid color-mix(in srgb, var(--component-accent-ink) 38%, transparent);
+  color: var(--component-accent-ink);
+  font-family: var(--font-interface, Arial, sans-serif);
+  font-size: 4.65pt;
+  font-weight: 750;
+  letter-spacing: 0.07em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.reference-card[data-component-id="universal-reference"] .reference-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--reference-section-gap);
+  padding: 0.026in 0.070in 0.022in;
+}
+
+.reference-card[data-component-id="universal-reference"] .reference-panel {
+  padding-left: 0;
+  border-left: 0;
+}
+
+.reference-card[data-component-id="universal-reference"] .reference-panel + .reference-panel {
+  padding-top: calc(0.010in * var(--reference-rules-scale));
+  border-top: 0.55px solid color-mix(in srgb, var(--component-accent-ink) 30%, transparent);
+}
+
+.reference-card[data-component-id="universal-reference"] .reference-panel-heading {
+  padding-bottom: calc(0.007in * var(--reference-rules-scale));
+}
+
+.reference-card[data-component-id="universal-reference"] .reference-panel-heading h4 {
+  color: var(--component-accent-ink);
+  font-size: calc(4.85pt * var(--reference-rules-scale));
+  letter-spacing: 0.055em;
+}
+
+.reference-card[data-component-id="universal-reference"] .reference-prose {
+  font-size: calc(5.9pt * var(--reference-rules-scale));
+  line-height: 1.075;
+}
+
+.reference-card[data-component-id="universal-reference"] .reference-option-list li,
+.reference-card[data-component-id="universal-reference"] .reference-step-list li {
+  font-size: calc(5.72pt * var(--reference-rules-scale));
+  line-height: 1.055;
+}
+
+.reference-card[data-component-id="universal-reference"] .card-footer {
+  min-height: 0.18in;
+  padding: 0.028in 0.055in 0.016in;
+  background: var(--component-footer-tint);
+  line-height: 1.3;
+}
+
+.reference-card[data-component-id="universal-reference"] .card-footer span:nth-child(2) {
+  color: var(--component-accent-ink);
+}
