@@ -3,9 +3,13 @@ import { describe, expect, it } from "vitest";
 
 const catalog = readFileSync("card-design/index.html", "utf8");
 const catalogOverlay = readFileSync("card-design/v064-card-candidates.js", "utf8");
-const printRenderer = readFileSync("card-design/component-print-render.html", "utf8");
+const componentPrintRenderer = readFileSync("card-design/component-print-render.html", "utf8");
+const cardReviewRenderer = readFileSync("card-design/card-review-render.html", "utf8");
+const cardPrintRenderer = readFileSync("card-design/card-print-render.html", "utf8");
+const territoryReviewRenderer = readFileSync("card-design/territory-review-render.html", "utf8");
+const territoryPrintRenderer = readFileSync("card-design/territory-print-render.html", "utf8");
 
-describe("Deckbuilder component print renderer parity", () => {
+describe("Deckbuilder production render shell parity", () => {
   it("loads every current component-specific style and refinement layer used by Card Design", () => {
     for (const dependency of [
       "leader-card.css",
@@ -17,7 +21,7 @@ describe("Deckbuilder component print renderer parity", () => {
       "deed-card.css",
     ]) {
       expect(catalog).toContain(dependency);
-      expect(printRenderer).toContain(`/card-design/${dependency}`);
+      expect(componentPrintRenderer).toContain(`/card-design/${dependency}`);
     }
   });
 
@@ -28,17 +32,43 @@ describe("Deckbuilder component print renderer parity", () => {
       "supplemental-card.js",
     ]) {
       expect(catalog).toContain(dependency);
-      expect(printRenderer).toContain(`/card-design/${dependency}`);
+      expect(componentPrintRenderer).toContain(`/card-design/${dependency}`);
     }
 
     expect(catalogOverlay).toContain("./leader-card-copy.js");
-    expect(printRenderer).toContain("/card-design/leader-card-copy.js");
+    expect(componentPrintRenderer).toContain("/card-design/leader-card-copy.js");
   });
 
-  it("keeps the supplemental refinement layer on the production print surface", () => {
-    const refinementIndex = printRenderer.indexOf("/card-design/supplemental-refinements.css");
-    const supplementalBaseIndex = printRenderer.indexOf("/card-design/supplemental-card.css");
+  it("keeps the supplemental refinement layer after the supplemental base styles", () => {
+    const refinementIndex = componentPrintRenderer.indexOf("/card-design/supplemental-refinements.css");
+    const supplementalBaseIndex = componentPrintRenderer.indexOf("/card-design/supplemental-card.css");
 
     expect(refinementIndex).toBeGreaterThan(supplementalBaseIndex);
+  });
+
+  it("keeps playable-card print styling and renderer dependencies aligned with the Card Design review shell", () => {
+    for (const dependency of [
+      "/design-tokens.css",
+      "/card-design/card-design.css",
+      "/card-design/card-design-refinement.css",
+      "/card-design/faction-specimens.css",
+      "/tts/renderer/renderer.css",
+      "/card-design/card-review-render.js",
+    ]) {
+      expect(cardReviewRenderer).toContain(dependency);
+      expect(cardPrintRenderer).toContain(dependency);
+    }
+  });
+
+  it("keeps Territory print styling and renderer dependencies aligned with the Card Design review shell", () => {
+    for (const dependency of [
+      "/design-tokens.css",
+      "/card-design/card-design-refinement.css",
+      "/tts/territory-renderer/territory-renderer.css",
+      "/card-design/territory-review-render.js",
+    ]) {
+      expect(territoryReviewRenderer).toContain(dependency);
+      expect(territoryPrintRenderer).toContain(dependency);
+    }
   });
 });
