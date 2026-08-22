@@ -591,10 +591,22 @@ function fitReferenceTitle(card, minimumTitlePt = REFERENCE_TITLE_MIN_PT) {
     card.dataset.referenceTitleWrapped = 'true';
     wrapped = true;
     fontSize = Number.parseFloat(getComputedStyle(title).fontSize);
+
+    const wrappedOverflows = () => (
+      title.scrollWidth > title.clientWidth + 0.5
+      || title.scrollHeight > title.clientHeight + 0.5
+    );
+    attempts = 0;
+    while (wrappedOverflows() && fontSize > minimumPx && attempts < 48) {
+      fontSize = Math.max(minimumPx, fontSize - 0.25);
+      title.style.fontSize = `${fontSize}px`;
+      attempts += 1;
+    }
   }
 
-  const overflow = horizontallyOverflows()
-    || (wrapped && title.scrollHeight > title.clientHeight + 0.5);
+  const overflow = wrapped
+    ? title.scrollWidth > title.clientWidth + 0.5 || title.scrollHeight > title.clientHeight + 0.5
+    : horizontallyOverflows();
   card.dataset.referenceTitleSize = Number.isFinite(fontSize) ? fontSize.toFixed(2) : naturalFontSize.toFixed(2);
   card.dataset.referenceTitleWarning = overflow ? 'true' : 'false';
   return { fontSize, overflow, wrapped };
