@@ -22,6 +22,9 @@ describe("Deckbuilder current Leader printing", () => {
     expect(componentRenderJs).toContain('card.dataset.parchmentLoaded === "true"');
     expect(componentRenderJs).toContain('card.dataset.titleFit === "true"');
     expect(componentRenderJs).toContain('Current Leader card copy failed to load.');
+    expect(leaderCopyScript).toContain('delete leaderCard.dataset.titleFit');
+    expect(leaderCopyScript).toContain("leaderCard.classList.remove('fit-warning', 'title-fit-warning', 'overlay-title-fit-warning')");
+    expect(leaderCopyScript).toContain("window.dispatchEvent(new Event('resize'))");
   });
 
   it("keeps the Deckbuilder Leader shell only as a handoff to the current production component renderer", () => {
