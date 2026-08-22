@@ -166,7 +166,7 @@ function starterBagNickname(starter) {
 }
 
 function stripSupplementalDescription(description) {
-  return String(description || '').replace(/\n\nReady faction supplementals:[^\n]*$/u, '');
+  return String(description || '').replace(/\n\nReady (?:faction )?supplement(?:al components|als):[^\n]*$/u, '');
 }
 
 function findStarterBag(save, starter) {
@@ -245,8 +245,10 @@ export function assembleReadySupplementals(save, starterManifest, supplementalMa
 
   for (const starter of starters) {
     const bag = findStarterBag(save, starter);
-    const factionComponents = ready.filter((component) => component.faction === starter.factionId);
-    const factionTrackers = factionComponents.filter((component) => component.representation === 'sliding-tracker');
+    const starterComponents = ready.filter((component) => (
+      component.deckInclusion === 'every-deck' || component.faction === starter.factionId
+    ));
+    const factionTrackers = starterComponents.filter((component) => component.representation === 'sliding-tracker');
     const generatedTrackerTags = new Set(factionTrackers.map((component) => component.tts?.snapTag).filter(Boolean));
 
     bag.ContainedObjects = (bag.ContainedObjects || []).filter(
@@ -255,7 +257,7 @@ export function assembleReadySupplementals(save, starterManifest, supplementalMa
     for (const object of bag.ContainedObjects || []) removeGeneratedTrackerTags(object, generatedTrackerTags);
 
     const placedNames = [];
-    for (const component of factionComponents) {
+    for (const component of starterComponents) {
       const quantity = Number(component.quantity || 0);
       if (!Number.isInteger(quantity) || quantity <= 0) {
         throw new Error(`Ready supplemental component ${component.id} has invalid quantity ${component.quantity}.`);
@@ -274,12 +276,12 @@ export function assembleReadySupplementals(save, starterManifest, supplementalMa
 
     const baseDescription = stripSupplementalDescription(bag.Description);
     bag.Description = placedNames.length
-      ? `${baseDescription}\n\nReady faction supplementals: ${placedNames.join(', ')}`
+      ? `${baseDescription}\n\nReady supplemental components: ${placedNames.join(', ')}`
       : baseDescription;
   }
 
   const oldSentence = 'This scaffold intentionally does not yet include faction-specific supplemental trackers or secondary components. Rules remain manual.';
-  const newSentence = 'Faction supplemental components marked ready are included automatically in the matching starter kits; single-sided faction components use faction-color backs, and sliding trackers use production-derived snap registration and tagged physical cover cards. Rules remain manual.';
+  const newSentence = 'Shared components marked for every deck and faction supplemental components marked ready are included automatically in the appropriate starter kits; single-sided faction components use faction-color backs, and sliding trackers use production-derived snap registration and tagged physical cover cards. Rules remain manual.';
   for (const field of ['Note', 'Rules']) {
     const text = String(save[field] || '');
     save[field] = text.includes(oldSentence)
