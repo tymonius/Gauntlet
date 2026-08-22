@@ -200,7 +200,11 @@ export async function validateTtsComponentContract(contract) {
   assert(universalReference.quantityPerPlayer === 1, 'Every player package must contain exactly one Universal Reference Card.');
   assert(universalReference.deckInclusion === 'every-deck', 'Universal Reference Card must be declared for every deck.');
   assert(universalReference.cardLike === true && universalReference.backPolicy === 'twoSided', 'Universal Reference Card must be a two-sided card-like component.');
-  assert(designStatusFor(universalReference) === 'placeholder' && universalReference.productionStatus === 'design-pending', 'Universal Reference Card must remain a design-pending placeholder until its general-reference content is authored.');
+  assert(designStatusFor(universalReference) === 'final' && universalReference.productionStatus === 'ready', 'Universal Reference Card must be finalized and production-ready.');
+  assert(universalReference.copyMode === 'bespoke', 'Universal Reference Card must use authored bespoke player-aid copy.');
+  assert(String(universalReference.source || '').startsWith('card-design/reference-copy/'), 'Universal Reference Card must source its compact player-aid copy from card-design/reference-copy.');
+  assert(String(universalReference.authoritySource || '').includes('/rulebook/'), 'Universal Reference Card must retain the canonical shared Rulebook as audit authority.');
+  assert(universalReference.referenceFaces?.front?.sections?.length && universalReference.referenceFaces?.reverse?.sections?.length, 'Universal Reference Card must declare both production faces.');
 
   const trackers = (contract.components || []).filter((component) => component.tts?.representation === 'sliding-tracker');
   assert(trackers.length === 6, `Current physical package must contain exactly six sliding trackers; found ${trackers.length}.`);

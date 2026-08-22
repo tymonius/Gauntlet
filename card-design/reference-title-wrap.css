@@ -1,0 +1,15 @@
+/* Reference-face headings remain single-line while the JavaScript fitter tries
+   the established shrink range. Only a title that still overflows at the
+   readability floor is restored to its normal display size and allowed to wrap
+   to two lines. If that wrapped title still overflows, the fitter may then
+   shrink the wrapped title down through the same readability range. */
+
+.reference-card[data-reference-title-wrapped="true"] .reference-face-title {
+  display: -webkit-box;
+  overflow: hidden;
+  line-height: 0.86;
+  text-overflow: clip;
+  white-space: normal !important;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}

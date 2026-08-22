@@ -88,6 +88,8 @@ function fixture() {
       'supplementals/fronts/rite-a.png': 'https://example.invalid/rite-a.png',
       'supplementals/reverses/completed.png': 'https://example.invalid/completed.png',
       'supplementals/fronts/military.png': 'https://example.invalid/military.png',
+      'supplementals/fronts/universal.png': 'https://example.invalid/universal.png',
+      'supplementals/reverses/universal.png': 'https://example.invalid/universal-back.png',
       'supplementals/trackers/command.png': 'https://example.invalid/command.png',
       'backs/intelligence.png': 'https://example.invalid/black-back.png',
       'backs/military.png': 'https://example.invalid/military-back.png',
@@ -111,8 +113,41 @@ describe('TTS ready supplemental save assembly', () => {
     expect(mysticsSupplementals.every((object: any) => object.Nickname === 'Rite A')).toBe(true);
     expect(militarySupplementals).toHaveLength(1);
     expect(militarySupplementals[0].Nickname).toBe('Military Ready Card');
-    expect(mystics.Description).toContain('Ready faction supplementals: Rite A ×2');
-    expect(military.Description).toContain('Ready faction supplementals: Military Ready Card');
+    expect(mystics.Description).toContain('Ready supplemental components: Rite A ×2');
+    expect(military.Description).toContain('Ready supplemental components: Military Ready Card');
+  });
+
+  it('places an every-deck shared reference into every starter Bag', () => {
+    const { save, starters, supplementals, assets } = fixture();
+    supplementals.ready.push({
+      id: 'universal-reference',
+      name: 'Universal Reference Card',
+      faction: 'neutral',
+      family: 'reference-card',
+      quantity: 1,
+      deckInclusion: 'every-deck',
+      productionStatus: 'ready',
+      representation: 'card',
+      tts: {
+        cardId: 20200,
+        deckId: 202,
+        faceFile: 'supplementals/fronts/universal.png',
+        backFile: 'supplementals/reverses/universal.png',
+        numWidth: 1,
+        numHeight: 1,
+      },
+    } as any);
+    supplementals.readyCount = supplementals.ready.length;
+
+    const result = assembleReadySupplementals(save, starters, supplementals, assets);
+    expect(result.placedCount).toBe(5);
+
+    for (const starterBag of result.save.ObjectStates) {
+      const universal = starterBag.ContainedObjects.filter((object: any) => object.GMNotes === 'gauntlet:supplemental:universal-reference');
+      expect(universal).toHaveLength(1);
+      expect(universal[0].Nickname).toBe('Universal Reference Card');
+      expect(starterBag.Description).toContain('Universal Reference Card');
+    }
   });
 
   it('creates public supplemental cards with hosted face and reverse URLs', () => {
@@ -186,7 +221,7 @@ describe('TTS ready supplemental save assembly', () => {
 
     const mysticsSupplementals = second.ObjectStates[0].ContainedObjects.filter((object: any) => object.GMNotes?.startsWith('gauntlet:supplemental:'));
     expect(mysticsSupplementals).toHaveLength(2);
-    expect(second.ObjectStates[0].Description.match(/Ready faction supplementals:/g)).toHaveLength(1);
+    expect(second.ObjectStates[0].Description.match(/Ready supplemental components:/g)).toHaveLength(1);
   });
 
   it('fails closed when a ready component has an unsupported save representation', () => {

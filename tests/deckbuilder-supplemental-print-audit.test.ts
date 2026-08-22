@@ -21,23 +21,26 @@ function component(id: string) {
 }
 
 describe("Deckbuilder supplemental print audit", () => {
-  it("has exactly one intentional placeholder in the physical component contract", () => {
+  it("has no remaining intentional card-design placeholders in the physical component contract", () => {
     const placeholders = [...sharedComponents, ...components]
       .filter(item => (item.designStatus || "final") === "placeholder");
 
-    expect(placeholders).toHaveLength(1);
-    expect(placeholders[0]).toMatchObject({
-      id: "universal-reference",
-      designStatus: "placeholder",
-      productionStatus: "design-pending",
-    });
+    expect(placeholders).toHaveLength(0);
   });
 
-  it("does not emit the design-pending Universal Reference through the legacy print package", () => {
-    expect(legacyPrint).not.toContain("universal-reference");
+  it("projects the finished Universal Reference into every legacy print package and bridges it to production rendering", () => {
+    const universal = sharedComponents.find(item => item.id === "universal-reference");
+    expect(universal).toMatchObject({
+      designStatus: "final",
+      productionStatus: "ready",
+      deckInclusion: "every-deck",
+      family: "reference-card",
+    });
+
     expect(legacyPackages).toContain('component.deckInclusion === "every-deck"');
-    expect(legacyPackages).toContain('"Placeholder · design pending"');
-    expect(legacyPackages).not.toContain('type: "reference", id: "universal-reference"');
+    expect(legacyPackages).toContain('Production universal reference card.');
+    expect(legacyPackages).toContain('bridgeSharedReferencesIntoPrintAuthority(currentGame)');
+    expect(legacyPackages).toContain('components: Object.freeze([...factionComponents, ...sharedReferences])');
   });
 
   it("routes every legacy supplemental card class through production replacement", () => {
@@ -75,11 +78,14 @@ describe("Deckbuilder supplemental print audit", () => {
     expect(productionPrint).toContain('const isRitual = legacyCard.classList.contains("reference-card")');
   });
 
-  it("confirms every current faction reference, tracker, and Rite has a production-ready renderer", () => {
+  it("confirms every current shared/faction reference, tracker, and Rite has a production-ready renderer", () => {
+    const sharedReferences = sharedComponents.filter(item => item.family === "reference-card");
     const references = components.filter(item => item.family === "reference-card");
     const trackers = components.filter(item => item.family === "tracker");
     const rites = components.filter(item => item.family === "rite-card");
 
+    expect(sharedReferences).toHaveLength(1);
+    expect(sharedReferences.every(item => item.productionStatus === "ready")).toBe(true);
     expect(references).toHaveLength(7);
     expect(references.every(item => item.productionStatus === "ready")).toBe(true);
     expect(trackers).toHaveLength(6);
@@ -107,7 +113,7 @@ describe("Deckbuilder supplemental print audit", () => {
     expect(compatibilityPrint).toContain('PRODUCTION_DEED_COMPONENT_ID = "financiers-deed"');
   });
 
-  it("keeps the production component renderer fail-closed on an actual placeholder face", () => {
+  it("keeps the production component renderer fail-closed on any future placeholder face", () => {
     expect(componentRenderer).toContain('if (card.classList.contains("supplemental-placeholder-card"))');
     expect(componentRenderer).toContain('throw new Error(`Component ${id} still resolves to a production-layout placeholder.`)');
   });
