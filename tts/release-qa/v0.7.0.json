@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "gameVersion": "v0.7.0",
+  "status": "pending",
+  "checks": {
+    "tableSetup": false,
+    "factionComponents": false,
+    "fullGame": false
+  },
+  "approvedForWorkshop": false,
+  "notes": []
+}
