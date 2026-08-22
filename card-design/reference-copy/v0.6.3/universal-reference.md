@@ -42,48 +42,35 @@ When movement creates a pending battle, proceed to **Onset**. At Onset, the batt
 
 ### Outcome
 
-The higher battle total wins.
-
-If the defender has **Defensive Edge**, the defender wins tied battle totals. Otherwise, an unresolved tie uses a **Tiebreak Roll**: each player rolls 1 die with no modifiers; higher roll wins; reroll ties.
+Higher battle total wins. **Defensive Edge** wins ties. Otherwise, each player rolls 1 die with no modifiers; higher roll wins; reroll ties.
 
 ### Normal Result
 
-- Losing attacker → returns to the Position from which they entered.
+- Losing attacker → returns to the Position they entered from.
 - Losing defender → retreats 1 Position toward their own end.
-- Winning attacker → takes the contested Position and becomes its occupier if it is an opposing Territory they do not control.
-- Winning defender → remains in the contested Position.
+- Winning attacker → takes the contested Position.
+- Winning defender → remains there.
 
 ### Battle Cards
 
-- **Gambits → Graveyard**
-- **Tactics → Discard Pile**
-- **Cards remaining in Reserve → Discard Pile**
+**Gambits → Graveyard.** Tactics and cards remaining in Reserve → **Discard Pile**.
 
 ### Withdrawal
 
-Withdrawal produces **no winner or loser**. Victory, loss, and retreat triggers do not occur.
-
-If an active battle ends by withdrawal after Onset, complete the remaining non-result steps of the Aftermath and clear committed battle cards normally.
+No winner or loser; victory, loss, and retreat triggers do not occur. After Onset, finish remaining non-result Aftermath steps and clear battle cards normally.
 
 ### Front Line & Capture
 
-Your **Front Line** is your unbroken line of controlled Territories from your own end.
+**Front Line** = your unbroken line of controlled Territories from your own end. During Capture, if you are on or beyond the next opponent-controlled Territory beyond it, capture that Territory. Normal Capture advances at most **1 Territory per turn**.
 
-During Capture, if your token is on or beyond the next opponent-controlled Territory beyond your Front Line, capture that Territory. Normal Capture advances your Front Line by **at most 1 Territory per turn**.
-
-**Occupation** means your token is on an opposing Territory you do not control. Occupation alone does not change control.
+**Occupation** alone does not change control.
 
 ### Run the Gauntlet
 
-Win immediately by either:
-
-- capturing the Territory at the opponent's end; or
-- forcing the opponent to make a **Last Stand** beyond their end and winning the resulting battle.
+Win immediately by capturing the opponent's final Territory or winning a **Last Stand**.
 
 ### Last Stand
 
-The Last Stand route does **not** require prior control or capture of the final Territory.
+No prior control of the final Territory is required. After the opponent retreats beyond their end, initiate a Last Stand only with a **new legal Advance beyond the Gauntlet**; unused prior movement cannot carry over.
 
-After the opponent retreats beyond their own end, an attacker on the final Territory must **Advance beyond the Gauntlet during a new legal movement sequence** to initiate the Last Stand. Unused movement from the preceding battle cannot carry into it.
-
-The defender normally has **Defensive Edge** during a Last Stand.
+The defender normally has **Defensive Edge**.
