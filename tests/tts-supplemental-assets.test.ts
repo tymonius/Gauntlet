@@ -15,11 +15,22 @@ const assembler = readFileSync('scripts/assemble-tts-supplemental-save.mjs', 'ut
 const workflow = readFileSync('.github/workflows/generate-tts-card-assets.yml', 'utf8');
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 
+function allReferenceComponents() {
+  return [
+    ...contract.sharedComponents.filter((component: any) => component.family === 'reference-card'),
+    ...contract.components.filter((component: any) => component.family === 'reference-card'),
+  ];
+}
+
 describe('TTS supplemental component exports', () => {
   it('derives ready and pending supplemental inventory from the physical component contract', async () => {
     const { catalog } = await buildSupplementalCatalog(contract);
-    const expectedReady = contract.components.filter((component: any) => component.productionStatus === 'ready');
-    const expectedPending = contract.components.filter((component: any) => component.productionStatus !== 'ready');
+    const expectedSupplementals = [
+      ...contract.sharedComponents.filter((component: any) => component.family === 'reference-card'),
+      ...contract.components,
+    ];
+    const expectedReady = expectedSupplementals.filter((component: any) => component.productionStatus === 'ready');
+    const expectedPending = expectedSupplementals.filter((component: any) => component.productionStatus !== 'ready');
 
     expect(catalog.readyCount).toBe(expectedReady.length);
     expect(catalog.pendingCount).toBe(expectedPending.length);
@@ -54,8 +65,8 @@ describe('TTS supplemental component exports', () => {
   });
 
   it('treats every physical reference card as ready public two-sided material', async () => {
-    const referenceCards = contract.components.filter((component: any) => component.family === 'reference-card');
-    expect(referenceCards).toHaveLength(7);
+    const referenceCards = allReferenceComponents();
+    expect(referenceCards).toHaveLength(8);
     expect(referenceCards.every((component: any) => component.productionStatus === 'ready')).toBe(true);
     expect(referenceCards.every((component: any) => component.designStatus === 'final')).toBe(true);
     expect(referenceCards.every((component: any) => component.copyMode === 'bespoke')).toBe(true);
@@ -72,6 +83,9 @@ describe('TTS supplemental component exports', () => {
     expect(references.every((component: any) => component.faces?.reverse?.sections?.length)).toBe(true);
 
     const byId = new Map(references.map((component: any) => [component.id, component]));
+    expect(JSON.stringify(byId.get('universal-reference'))).toContain('Turn Sequence');
+    expect(JSON.stringify(byId.get('universal-reference'))).toContain('Battle Sequence');
+    expect(JSON.stringify(byId.get('universal-reference'))).not.toContain('Terms');
     const diplomatReference = JSON.stringify(byId.get('diplomats-reference'));
     expect(diplomatReference).toContain('Treaty Articles');
     expect(diplomatReference).toContain('Peace Treaty');
@@ -150,8 +164,8 @@ describe('TTS supplemental component exports', () => {
     expect(byId.get('intelligence-intel-tracker').tts.layer).toBe(2);
   });
 
-  it('extracts reference content from declared current-guide headings instead of copied rules strings', () => {
-    for (const component of contract.components.filter((item: any) => item.family === 'reference-card')) {
+  it('extracts reference content from declared current-reference headings instead of copied rules strings', () => {
+    for (const component of allReferenceComponents()) {
       expect(component.referenceFaces).toBeTruthy();
       expect(JSON.stringify(component.referenceFaces)).not.toMatch(/begin with \d+|maximum \d+|spend \d+|gain \d+/i);
     }
@@ -173,14 +187,14 @@ describe('TTS supplemental component exports', () => {
     expect(trackerHelper).toContain('expected exactly one');
   });
 
-  it('stages ready supplemental network assets and assembles cards and trackers by starter faction', () => {
+  it('stages ready supplemental network assets and assembles shared cards plus faction components into starter bags', () => {
     expect(stager).toContain("readJson(join(outputRoot, 'supplemental-manifest.json'))");
     expect(stager).toContain("'supplemental-front'");
     expect(stager).toContain("'supplemental-reverse'");
     expect(stager).toContain("'supplemental-tracker-face'");
     expect(stager).toContain('_Supplemental_Manifest.json');
     expect(assembler).toContain("readFile(join(release.outputRoot, 'supplemental-manifest.json')");
-    expect(assembler).toContain('component.faction === starter.factionId');
+    expect(assembler).toContain("component.deckInclusion === 'every-deck' || component.faction === starter.factionId");
     expect(assembler).toContain("component.productionStatus !== 'ready'");
     expect(assembler).toContain("object?.GMNotes || '').startsWith(SUPPLEMENTAL_GUID_NOTE_PREFIX");
     expect(assembler).toContain("Name: 'Custom_Tile'");
