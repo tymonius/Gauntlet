@@ -169,57 +169,25 @@
         "front": {
           "title": "Terms",
           "sections": [
-            {
-              "heading": "Influence",
-              "depth": 3
-            },
-            {
-              "heading": "Offer Terms",
-              "depth": 3
-            },
-            {
-              "heading": "Accepted",
-              "depth": 3
-            },
-            {
-              "heading": "Refused",
-              "depth": 3
-            },
-            {
-              "heading": "Diplomat Mirror",
-              "depth": 3
-            }
+            { "heading": "Influence", "depth": 3 },
+            { "heading": "Offer Terms", "depth": 3 },
+            { "heading": "Accepted", "depth": 3 },
+            { "heading": "Refused", "depth": 3 },
+            { "heading": "Diplomat Mirror", "depth": 3 }
           ]
         },
         "reverse": {
           "title": "Outcomes & Treaties",
           "sections": [
-            {
-              "heading": "Refused Result",
-              "depth": 3
-            },
-            {
-              "heading": "Leverage",
-              "depth": 3
-            },
-            {
-              "heading": "Treaty Articles",
-              "depth": 3
-            },
-            {
-              "heading": "Peace Treaty",
-              "depth": 3
-            },
-            {
-              "heading": "Action Reminder",
-              "depth": 3
-            }
+            { "heading": "Refused Result", "depth": 3 },
+            { "heading": "Leverage", "depth": 3 },
+            { "heading": "Treaty Articles", "depth": 3 },
+            { "heading": "Peace Treaty", "depth": 3 },
+            { "heading": "Action Reminder", "depth": 3 }
           ]
         }
       },
-      "tts": {
-        "representation": "card"
-      }
+      "tts": { "representation": "card" }
     },
     {
       "id": "diplomats-proposal-de-escalation",
@@ -233,9 +201,7 @@
       "backPolicy": "twoSided",
       "reverse": "Treaty Article",
       "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/diplomat/Gauntlet_v0.6.3_Diplomat_Faction_Guide.md",
-      "tts": {
-        "representation": "card"
-      }
+      "tts": { "representation": "card" }
     },
     {
       "id": "diplomats-proposal-orderly-withdrawal",
@@ -249,9 +215,7 @@
       "backPolicy": "twoSided",
       "reverse": "Treaty Article",
       "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/diplomat/Gauntlet_v0.6.3_Diplomat_Faction_Guide.md",
-      "tts": {
-        "representation": "card"
-      }
+      "tts": { "representation": "card" }
     },
     {
       "id": "diplomats-proposal-capitulation",
@@ -265,9 +229,7 @@
       "backPolicy": "twoSided",
       "reverse": "Treaty Article",
       "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/diplomat/Gauntlet_v0.6.3_Diplomat_Faction_Guide.md",
-      "tts": {
-        "representation": "card"
-      }
+      "tts": { "representation": "card" }
     },
     {
       "id": "diplomats-proposal-open-channels",
@@ -281,9 +243,7 @@
       "backPolicy": "twoSided",
       "reverse": "Treaty Article",
       "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/diplomat/Gauntlet_v0.6.3_Diplomat_Faction_Guide.md",
-      "tts": {
-        "representation": "card"
-      }
+      "tts": { "representation": "card" }
     },
     {
       "id": "diplomats-proposal-mutual-disarmament",
@@ -297,9 +257,7 @@
       "backPolicy": "twoSided",
       "reverse": "Treaty Article",
       "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/diplomat/Gauntlet_v0.6.3_Diplomat_Faction_Guide.md",
-      "tts": {
-        "representation": "card"
-      }
+      "tts": { "representation": "card" }
     },
     {
       "id": "diplomats-proposal-prisoner-exchange",
@@ -313,9 +271,7 @@
       "backPolicy": "twoSided",
       "reverse": "Treaty Article",
       "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/diplomat/Gauntlet_v0.6.3_Diplomat_Faction_Guide.md",
-      "tts": {
-        "representation": "card"
-      }
+      "tts": { "representation": "card" }
     },
     {
       "id": "diplomats-proposal-rebuilding-pact",
@@ -329,9 +285,7 @@
       "backPolicy": "twoSided",
       "reverse": "Treaty Article",
       "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/diplomat/Gauntlet_v0.6.3_Diplomat_Faction_Guide.md",
-      "tts": {
-        "representation": "card"
-      }
+      "tts": { "representation": "card" }
     },
     {
       "id": "diplomats-proposal-ultimatum",
@@ -345,9 +299,7 @@
       "backPolicy": "twoSided",
       "reverse": "Treaty Article",
       "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/diplomat/Gauntlet_v0.6.3_Diplomat_Faction_Guide.md",
-      "tts": {
-        "representation": "card"
-      }
+      "tts": { "representation": "card" }
     },
     {
       "id": "diplomats-proposal-diplomatic-recognition",
@@ -361,9 +313,7 @@
       "backPolicy": "twoSided",
       "reverse": "Treaty Article",
       "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/diplomat/Gauntlet_v0.6.3_Diplomat_Faction_Guide.md",
-      "tts": {
-        "representation": "card"
-      }
+      "tts": { "representation": "card" }
     },
     {
       "id": "financiers-reference",
@@ -393,49 +343,23 @@
         "front": {
           "title": "Capital & Capacity",
           "sections": [
-            {
-              "heading": "Capital Limit",
-              "depth": 3
-            },
-            {
-              "heading": "Treasury",
-              "depth": 3
-            },
-            {
-              "heading": "Income",
-              "depth": 3
-            },
-            {
-              "heading": "Financial Capacity",
-              "depth": 3
-            }
+            { "heading": "Capital Limit", "depth": 3 },
+            { "heading": "Treasury", "depth": 3 },
+            { "heading": "Income", "depth": 3 },
+            { "heading": "Financial Capacity", "depth": 3 }
           ]
         },
         "reverse": {
           "title": "Deeds & Spending",
           "sections": [
-            {
-              "heading": "Buying Deeds",
-              "depth": 3
-            },
-            {
-              "heading": "Play the Market",
-              "depth": 3
-            },
-            {
-              "heading": "Subsidize",
-              "depth": 3
-            },
-            {
-              "heading": "Controlling Interest",
-              "depth": 3
-            }
+            { "heading": "Buying Deeds", "depth": 3 },
+            { "heading": "Play the Market", "depth": 3 },
+            { "heading": "Subsidize", "depth": 3 },
+            { "heading": "Controlling Interest", "depth": 3 }
           ]
         }
       },
-      "tts": {
-        "representation": "card"
-      }
+      "tts": { "representation": "card" }
     },
     {
       "id": "financiers-capital-limit-tracker",
@@ -457,9 +381,7 @@
         "surface": "card-design/supplemental-card.js",
         "componentId": "capital-limit-tracker"
       },
-      "cover": {
-        "kind": "leader"
-      },
+      "cover": { "kind": "leader" },
       "tts": {
         "representation": "sliding-tracker",
         "stackable": false,
@@ -481,9 +403,7 @@
       "productionStatus": "export-pending",
       "backPolicy": "standardBack",
       "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/financier/Gauntlet_v0.6.3_Financier_Faction_Guide.md",
-      "tts": {
-        "representation": "ledger"
-      }
+      "tts": { "representation": "ledger" }
     },
     {
       "id": "financiers-deed",
@@ -497,9 +417,7 @@
       "productionStatus": "export-pending",
       "backPolicy": "standardBack",
       "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/financier/Gauntlet_v0.6.3_Financier_Faction_Guide.md",
-      "tts": {
-        "representation": "card"
-      }
+      "tts": { "representation": "card" }
     },
     {
       "id": "intelligence-mission-reference",
@@ -508,54 +426,43 @@
       "family": "reference-card",
       "quantity": 1,
       "cardLike": true,
-      "designStatus": "refinement-pending",
+      "designStatus": "final",
       "productionStatus": "ready",
       "backPolicy": "twoSided",
       "reverse": "Special Operations",
-      "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/intelligence/Gauntlet_v0.6.3_Intelligence_Faction_Guide.md",
+      "copyMode": "bespoke",
+      "source": "card-design/reference-copy/v0.6.3/intelligence-mission-reference.md",
+      "authoritySource": "artifacts/reconstruction/clean-v0.6.3/faction-guides/intelligence/Gauntlet_v0.6.3_Intelligence_Faction_Guide.md",
+      "auditHeadings": [
+        "Faction Actions",
+        "Intel",
+        "Operation Progress",
+        "Starting a Mission",
+        "Completing a Mission",
+        "Aborting and failing",
+        "Starting a Special Operation",
+        "Readiness and completion"
+      ],
       "referenceFaces": {
         "front": {
           "title": "Missions",
           "sections": [
-            {
-              "heading": "Intel",
-              "depth": 3
-            },
-            {
-              "heading": "Operation Progress",
-              "depth": 3
-            },
-            {
-              "heading": "Starting a Mission",
-              "depth": 3
-            },
-            {
-              "heading": "Completing a Mission",
-              "depth": 3
-            }
+            { "heading": "Faction Features", "depth": 3 },
+            { "heading": "Start a Mission", "depth": 3 },
+            { "heading": "Complete a Mission", "depth": 3 }
           ]
         },
         "reverse": {
-          "title": "Mission Endings & Special Operations",
+          "title": "Special Operations",
           "sections": [
-            {
-              "heading": "Aborting and failing",
-              "depth": 3
-            },
-            {
-              "heading": "Starting a Special Operation",
-              "depth": 3
-            },
-            {
-              "heading": "Readiness and completion",
-              "depth": 3
-            }
+            { "heading": "Abort / Fail", "depth": 3 },
+            { "heading": "Readiness", "depth": 3 },
+            { "heading": "Start", "depth": 3 },
+            { "heading": "Complete & Win", "depth": 3 }
           ]
         }
       },
-      "tts": {
-        "representation": "card"
-      }
+      "tts": { "representation": "card" }
     },
     {
       "id": "intelligence-operations-reference",
@@ -564,46 +471,41 @@
       "family": "reference-card",
       "quantity": 1,
       "cardLike": true,
-      "designStatus": "refinement-pending",
+      "designStatus": "final",
       "productionStatus": "ready",
       "backPolicy": "twoSided",
-      "reverse": "Direct Interference & Mirrors",
-      "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/intelligence/Gauntlet_v0.6.3_Intelligence_Faction_Guide.md",
+      "reverse": "Mirrors & Replacements",
+      "copyMode": "bespoke",
+      "source": "card-design/reference-copy/v0.6.3/intelligence-operations-reference.md",
+      "authoritySource": "artifacts/reconstruction/clean-v0.6.3/faction-guides/intelligence/Gauntlet_v0.6.3_Intelligence_Faction_Guide.md",
+      "auditHeadings": [
+        "Gambit Surveillance",
+        "Tactic Surveillance",
+        "Interference after Surveillance",
+        "Direct Interference",
+        "Intelligence mirrors"
+      ],
       "referenceFaces": {
         "front": {
           "title": "Surveillance & Interference",
           "sections": [
-            {
-              "heading": "Gambit Surveillance",
-              "depth": 3
-            },
-            {
-              "heading": "Tactic Surveillance",
-              "depth": 3
-            },
-            {
-              "heading": "Interference after Surveillance",
-              "depth": 3
-            }
+            { "heading": "Faction Features", "depth": 3 },
+            { "heading": "Gambit Surveillance", "depth": 3 },
+            { "heading": "Tactic Surveillance", "depth": 3 },
+            { "heading": "Interference", "depth": 3 }
           ]
         },
         "reverse": {
-          "title": "Direct Interference & Mirrors",
+          "title": "Mirrors & Replacements",
           "sections": [
-            {
-              "heading": "Direct Interference",
-              "depth": 3
-            },
-            {
-              "heading": "Intelligence mirrors",
-              "depth": 3
-            }
+            { "heading": "Replacement Window", "depth": 3 },
+            { "heading": "Direct Interference", "depth": 3 },
+            { "heading": "Intelligence Mirror", "depth": 3 },
+            { "heading": "Prevented Attempts", "depth": 3 }
           ]
         }
       },
-      "tts": {
-        "representation": "card"
-      }
+      "tts": { "representation": "card" }
     },
     {
       "id": "intelligence-intel-tracker",
@@ -625,9 +527,7 @@
         "surface": "card-design/supplemental-card.js",
         "componentId": "intel-tracker"
       },
-      "cover": {
-        "kind": "leader"
-      },
+      "cover": { "kind": "leader" },
       "tts": {
         "representation": "sliding-tracker",
         "stackable": false,
@@ -679,62 +579,48 @@
       "family": "reference-card",
       "quantity": 1,
       "cardLike": true,
-      "designStatus": "refinement-pending",
+      "designStatus": "final",
       "productionStatus": "ready",
       "backPolicy": "twoSided",
-      "reverse": "Ritual & Bound Cards",
-      "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/mystics/Gauntlet_v0.6.3_Mystics_Faction_Guide.md",
+      "reverse": "Ritual of Ascension",
+      "copyMode": "bespoke",
+      "source": "card-design/reference-copy/v0.6.3/mystics-reference.md",
+      "authoritySource": "artifacts/reconstruction/clean-v0.6.3/faction-guides/mystics/Gauntlet_v0.6.3_Mystics_Faction_Guide.md",
+      "auditHeadings": [
+        "Faction Actions",
+        "Beginning a Rite",
+        "Progression",
+        "Bound cards",
+        "Invocation",
+        "Transmutation",
+        "Beginning the Ritual",
+        "Convergence",
+        "Completion",
+        "Interruption"
+      ],
       "referenceFaces": {
         "front": {
           "title": "Rites & Progression",
           "sections": [
-            {
-              "heading": "Beginning a Rite",
-              "depth": 3
-            },
-            {
-              "heading": "Progression",
-              "depth": 3
-            },
-            {
-              "heading": "Invocation",
-              "depth": 3
-            },
-            {
-              "heading": "Transmutation",
-              "depth": 3
-            }
+            { "heading": "Faction Features", "depth": 3 },
+            { "heading": "Begin a Rite", "depth": 3 },
+            { "heading": "Progression", "depth": 3 },
+            { "heading": "Invocation", "depth": 3 },
+            { "heading": "Transmutation", "depth": 3 }
           ]
         },
         "reverse": {
-          "title": "Ritual & Bound Cards",
+          "title": "Ritual of Ascension",
           "sections": [
-            {
-              "heading": "Bound cards",
-              "depth": 3
-            },
-            {
-              "heading": "Beginning the Ritual",
-              "depth": 3
-            },
-            {
-              "heading": "Convergence",
-              "depth": 3
-            },
-            {
-              "heading": "Completion",
-              "depth": 3
-            },
-            {
-              "heading": "Interruption",
-              "depth": 3
-            }
+            { "heading": "Begin the Ritual", "depth": 3 },
+            { "heading": "Convergence", "depth": 3 },
+            { "heading": "Complete & Win", "depth": 3 },
+            { "heading": "Interruption", "depth": 3 },
+            { "heading": "Bound Cards", "depth": 3 }
           ]
         }
       },
-      "tts": {
-        "representation": "card"
-      }
+      "tts": { "representation": "card" }
     },
     {
       "id": "mystics-rite-echoes",
@@ -748,9 +634,7 @@
       "reverse": "Completed",
       "reverseArtwork": "images/artwork/supplemental/mystics/rite-completed.webp",
       "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/mystics/Gauntlet_v0.6.3_Mystics_Faction_Guide.md",
-      "tts": {
-        "representation": "card"
-      }
+      "tts": { "representation": "card" }
     },
     {
       "id": "mystics-rite-blood",
@@ -764,9 +648,7 @@
       "reverse": "Completed",
       "reverseArtwork": "images/artwork/supplemental/mystics/rite-completed.webp",
       "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/mystics/Gauntlet_v0.6.3_Mystics_Faction_Guide.md",
-      "tts": {
-        "representation": "card"
-      }
+      "tts": { "representation": "card" }
     },
     {
       "id": "mystics-rite-crossing",
@@ -780,9 +662,7 @@
       "reverse": "Completed",
       "reverseArtwork": "images/artwork/supplemental/mystics/rite-completed.webp",
       "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/mystics/Gauntlet_v0.6.3_Mystics_Faction_Guide.md",
-      "tts": {
-        "representation": "card"
-      }
+      "tts": { "representation": "card" }
     },
     {
       "id": "inquisition-doctrine-reference",
@@ -791,42 +671,37 @@
       "family": "reference-card",
       "quantity": 1,
       "cardLike": true,
-      "designStatus": "refinement-pending",
+      "designStatus": "final",
       "productionStatus": "ready",
       "backPolicy": "twoSided",
       "reverse": "Blasphemy & Purification",
-      "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/inquisition/Gauntlet_v0.6.3_Inquisition_Faction_Guide.md",
+      "copyMode": "bespoke",
+      "source": "card-design/reference-copy/v0.6.3/inquisition-doctrine-reference.md",
+      "authoritySource": "artifacts/reconstruction/clean-v0.6.3/faction-guides/inquisition/Gauntlet_v0.6.3_Inquisition_Faction_Guide.md",
+      "auditHeadings": [
+        "Conviction",
+        "Condemnation",
+        "Blasphemy",
+        "Purification"
+      ],
       "referenceFaces": {
         "front": {
           "title": "Conviction & Condemnation",
           "sections": [
-            {
-              "heading": "Conviction",
-              "depth": 3
-            },
-            {
-              "heading": "Condemnation",
-              "depth": 3
-            }
+            { "heading": "Faction Features", "depth": 3 },
+            { "heading": "Conviction", "depth": 3 },
+            { "heading": "Condemnation", "depth": 3 }
           ]
         },
         "reverse": {
           "title": "Blasphemy & Purification",
           "sections": [
-            {
-              "heading": "Blasphemy",
-              "depth": 3
-            },
-            {
-              "heading": "Purification",
-              "depth": 3
-            }
+            { "heading": "Blasphemy", "depth": 3 },
+            { "heading": "Purification", "depth": 3 }
           ]
         }
       },
-      "tts": {
-        "representation": "card"
-      }
+      "tts": { "representation": "card" }
     },
     {
       "id": "inquisition-purge-reference",
@@ -835,40 +710,39 @@
       "family": "reference-card",
       "quantity": 1,
       "cardLike": true,
-      "designStatus": "refinement-pending",
+      "designStatus": "final",
       "productionStatus": "ready",
       "backPolicy": "twoSided",
-      "reverse": "Purge Timing & Final Judgment",
-      "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/inquisition/Gauntlet_v0.6.3_Inquisition_Faction_Guide.md",
+      "reverse": "Purge Timing & Limits",
+      "copyMode": "bespoke",
+      "source": "card-design/reference-copy/v0.6.3/inquisition-purge-reference.md",
+      "authoritySource": "artifacts/reconstruction/clean-v0.6.3/faction-guides/inquisition/Gauntlet_v0.6.3_Inquisition_Faction_Guide.md",
+      "auditHeadings": [
+        "Faction Actions",
+        "Purge",
+        "Discard Pile order",
+        "Combined card value"
+      ],
       "referenceFaces": {
         "front": {
           "title": "Purge Menu",
           "sections": [
-            {
-              "heading": "Purge",
-              "depth": 3
-            }
+            { "heading": "Faction Features", "depth": 3 },
+            { "heading": "Purge", "depth": 3 }
           ]
         },
         "reverse": {
-          "title": "Purge Timing & Final Judgment",
+          "title": "Purge Timing & Limits",
           "sections": [
-            {
-              "heading": "Faction Actions",
-              "depth": 2
-            },
-            {
-              "heading": "Grand Inquisitor",
-              "depth": 2,
-              "ruleLabel": "Final Judgment",
-              "title": "Final Judgment — Grand Inquisitor"
-            }
+            { "heading": "Extra Action", "depth": 3 },
+            { "heading": "Once per Turn", "depth": 3 },
+            { "heading": "Direct Purges", "depth": 3 },
+            { "heading": "Discard Pile", "depth": 3 },
+            { "heading": "Combined Value", "depth": 3 }
           ]
         }
       },
-      "tts": {
-        "representation": "card"
-      }
+      "tts": { "representation": "card" }
     },
     {
       "id": "inquisition-conviction-tracker",
@@ -890,9 +764,7 @@
         "surface": "card-design/supplemental-card.js",
         "componentId": "conviction-tracker"
       },
-      "cover": {
-        "kind": "leader"
-      },
+      "cover": { "kind": "leader" },
       "tts": {
         "representation": "sliding-tracker",
         "stackable": false,

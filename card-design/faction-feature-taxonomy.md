@@ -51,6 +51,10 @@ Examples:
 
 The slash above is layout shorthand for a line break, not a printed character.
 
+The left label track is **content-aware and deliberately compact**. Long concept names wrap naturally instead of reserving a wide fixed column that steals space from rules text. Rows on the same card remain aligned to one shared label track.
+
+Use whitespace, not horizontal divider rules, to separate Leader-card sections and grouped abilities. The named headings, classifications, typography, and spacing provide the hierarchy; extra rules add visual clutter.
+
 ### Right column
 
 Do not repeat the left-column name for an ordinary single Leader Ability, victory condition, Resource, or Progression entry.
