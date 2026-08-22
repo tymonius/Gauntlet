@@ -248,6 +248,15 @@ function parseReferenceFace(markdown, face, componentName, side) {
   };
 }
 
+function normalizedSupplementalComponent(component, shared = false) {
+  return {
+    ...component,
+    faction: component.faction || 'neutral',
+    quantity: Number(component.quantity ?? component.quantityPerPlayer),
+    deckInclusion: component.deckInclusion || (shared ? 'every-deck' : ''),
+  };
+}
+
 function pendingRecord(component) {
   return {
     id: component.id,
@@ -255,6 +264,7 @@ function pendingRecord(component) {
     faction: component.faction,
     family: component.family,
     quantity: component.quantity,
+    deckInclusion: component.deckInclusion || '',
     productionStatus: component.productionStatus,
     representation: component.tts?.representation || null,
     source: component.source,
@@ -275,6 +285,7 @@ function readyCardBase(component, renderer) {
     faction: component.faction,
     family: component.family,
     quantity: component.quantity,
+    deckInclusion: component.deckInclusion || '',
     productionStatus: component.productionStatus,
     backPolicy: component.backPolicy,
     reverse: component.reverse,
@@ -338,8 +349,12 @@ export async function buildSupplementalCatalog(componentContract = null) {
   const sourceCache = new Map();
   const ready = [];
   const pending = [];
+  const sharedSupplementals = (contract.sharedComponents || [])
+    .filter((component) => SUPPORTED_RENDERERS.has(component.family))
+    .map((component) => normalizedSupplementalComponent(component, true));
+  const factionSupplementals = (contract.components || []).map((component) => normalizedSupplementalComponent(component));
 
-  for (const component of contract.components || []) {
+  for (const component of [...sharedSupplementals, ...factionSupplementals]) {
     if (component.productionStatus === 'ready') ready.push(await readyRecord(component, sourceCache));
     else pending.push(pendingRecord(component));
   }
@@ -350,7 +365,7 @@ export async function buildSupplementalCatalog(componentContract = null) {
       schemaVersion: 3,
       gameVersion: release.version,
       componentContract: 'config/tts-component-contract.json',
-      sourcePolicy: 'ready components export through their declared representation; pending components remain cataloged but produce no TTS objects',
+      sourcePolicy: 'ready shared and faction supplemental components export through their declared representation; pending components remain cataloged but produce no TTS objects',
       readyCount: ready.length,
       pendingCount: pending.length,
       ready,
@@ -512,7 +527,7 @@ export async function renderSupplementalAssets(release, catalog) {
       pending: catalog.pending,
       placement: {
         assembly: 'starter-faction',
-        note: 'Ready card and sliding-tracker supplementals are hosted here and assembled into matching starter Bags by the generic supplemental save-assembly layer.',
+        note: 'Ready shared and faction card and sliding-tracker supplementals are hosted here and assembled into the appropriate starter Bags by the generic supplemental save-assembly layer.',
       },
     };
 
