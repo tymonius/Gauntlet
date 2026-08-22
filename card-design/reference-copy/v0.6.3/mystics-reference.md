@@ -38,11 +38,11 @@ During Denouement, spend **1 Action** to begin one incomplete Rite and pay its b
 
 ### Invocation
 
-Once per turn, after applying the Action, Gambit, Tactic, or Gambit/Tactic effect of an **Arcane** card you played, set, or chose, move **1 card from your Graveyard to your Discard Pile**.
+Once per turn, after applying the Action, Gambit, Tactic, or Gambit/Tactic effect of an **Arcane** card you played, set, or chose, you may move **1 card from your Graveyard to your Discard Pile**.
 
 ### Transmutation
 
-Once per turn, **before dice are rolled** in a battle involving you, put **1 card from Hand in your Graveyard** and add its value to your battle total.
+Once per turn, **before dice are rolled** in a battle involving you, you may put **1 card from Hand in your Graveyard** and add its value to your battle total.
 
 The card is not played and none of its printed effects apply.
 
