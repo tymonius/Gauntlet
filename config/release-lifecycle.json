@@ -18,14 +18,6 @@
       "historical_package_path": "releases/v0.6.3-withdrawn/",
       "current_package_path": "releases/v0.6.3/",
       "authority_set_id": "64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49"
-    },
-    "v0.7.0": {
-      "status": "candidate",
-      "artifacts_preserved": false,
-      "public_cutover": false,
-      "candidate_notes_path": "docs/releases/github/v0.7.0.md",
-      "tts_release_target": "v0.7.0",
-      "release_gate_issue": 851
     }
   }
 }
