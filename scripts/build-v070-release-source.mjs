@@ -10,6 +10,8 @@ const SOURCE_VERSION = 'v0.6.4-candidate';
 const RELEASE_NAME = 'Illustrated Cards & Tabletop Simulator';
 const RELEASE_DIR = join(ROOT, 'releases', RELEASE_VERSION);
 const PUBLIC_DIR = join(ROOT, RELEASE_VERSION);
+const CHAPTER_11_START = '# 11. Detailed Card and Timing Rules';
+const CHAPTER_11_END = '# 12. Overlays and Other Shared Card Rules';
 
 const jsonText = value => `${JSON.stringify(value, null, 2)}\n`;
 const sha256 = value => crypto.createHash('sha256').update(value).digest('hex');
@@ -42,6 +44,25 @@ function resolveFactionRules(baseRules, manifest) {
   return rules;
 }
 
+function spliceReviewedChapter11(markdown, reviewedChapter) {
+  const source = String(markdown || '');
+  const start = source.indexOf(CHAPTER_11_START);
+  const end = source.indexOf(CHAPTER_11_END, start + CHAPTER_11_START.length);
+  if (start < 0 || end <= start) throw new Error('Promoted Rulebook is missing the Chapter 11 publication boundary.');
+  const reviewed = String(reviewedChapter || '').replace(/\r\n/g, '\n').trim();
+  if (!reviewed.startsWith(CHAPTER_11_START)) throw new Error('Reviewed Chapter 11 source has the wrong heading.');
+  for (const forbidden of [
+    '## Inherited interaction rules',
+    '## Adopted v0.6.3 card procedures',
+    'v0.6.3 no longer uses',
+    'Cards therefore do not need',
+    'Do not print `from Reserve`',
+  ]) {
+    if (reviewed.includes(forbidden)) throw new Error(`Reviewed Chapter 11 still contains internal language: ${forbidden}`);
+  }
+  return `${source.slice(0, start)}${reviewed}\n\n${source.slice(end)}`;
+}
+
 function promoteRulebookVersion(markdown) {
   let result = String(markdown || '');
   result = result.replace('**Version 0.6.4 — Release Candidate**', '**Version 0.7.0**');
@@ -65,7 +86,7 @@ if (manifest.version !== SOURCE_VERSION || manifest.baseVersion !== 'v0.6.3') {
   throw new Error(`v0.7.0 publication expected ${SOURCE_VERSION} over v0.6.3, found ${manifest.version}/${manifest.baseVersion}.`);
 }
 
-const [baseSource, cardChanges, territorySource, proposalSource, arcaneSource, rulesSource, componentContract, starterDeckSource] = await Promise.all([
+const [baseSource, cardChanges, territorySource, proposalSource, arcaneSource, rulesSource, componentContract, starterDeckSource, reviewedChapter11] = await Promise.all([
   readCurrentJsonSource('baseGameplay'),
   readCurrentJsonSource('cardChanges'),
   readCurrentJsonSource('territories'),
@@ -74,6 +95,7 @@ const [baseSource, cardChanges, territorySource, proposalSource, arcaneSource, r
   readCurrentJsonSource('rules'),
   readCurrentJsonSource('componentContract'),
   readCurrentJsonSource('starterDecks'),
+  readText('rulebook/player-facing/chapter-11.md'),
 ]);
 
 const baseGameplay = baseSource.data?.gameplay;
@@ -131,7 +153,8 @@ const rulebookGame = {
   arcaneSymbol: structuredClone(arcaneSource.data),
   ruleChanges: structuredClone(rulesSource.data),
 };
-const rulebook = promoteRulebookVersion(applyReleaseCandidateRulebook(baseRulebook, rulebookGame));
+const transformedRulebook = applyReleaseCandidateRulebook(baseRulebook, rulebookGame);
+const rulebook = spliceReviewedChapter11(promoteRulebookVersion(transformedRulebook), reviewedChapter11);
 
 const canonicalText = jsonText(canonicalData);
 const starterText = jsonText(starterDecks);
