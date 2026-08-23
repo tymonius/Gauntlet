@@ -84,6 +84,21 @@ async function applyReleaseVersion(page, displayVersion) {
   if (!updated) throw new Error('Production Leader surface contained no cards to stamp with the TTS release version.');
 }
 
+async function prepareLeaderSurface(page, expectedCount) {
+  await page.evaluate(() => window.dispatchEvent(new Event('load')));
+  await page.waitForFunction((count) => {
+    const cards = Array.from(document.querySelectorAll('#leaderReviewSections .leader-card'));
+    if (cards.length !== count) return false;
+    return cards.every(card => {
+      const interior = card.querySelector('.card-interior');
+      return card.dataset.parchmentLoaded === 'true'
+        && card.dataset.titleFit !== undefined
+        && Boolean(interior?.style.getPropertyValue('--art-height'));
+    });
+  }, expectedCount, { timeout: 10000 });
+  await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+}
+
 async function applyLeaderCrop(page, leader) {
   const result = await page.locator(leaderSelector(leader)).evaluate((element, payload) => {
     const image = element.querySelector('.card-art img');
@@ -121,15 +136,25 @@ async function validateLeader(page, leader, displayVersion) {
 
   const metrics = await card.evaluate((element) => {
     const rect = element.getBoundingClientRect();
-    const title = element.querySelector('.card-title')?.textContent?.trim() || '';
+    const titleNode = element.querySelector('.card-title');
+    const rulesNode = element.querySelector('.card-rules');
+    const interior = element.querySelector('.card-interior');
+    const footerNode = element.querySelector('.card-footer');
     const image = element.querySelector('.card-art img');
     const footer = Array.from(element.querySelectorAll('.card-footer span')).map((node) => node.textContent?.trim() || '');
+    const overflows = node => Boolean(node) && (
+      node.scrollWidth > node.clientWidth + 0.5 || node.scrollHeight > node.clientHeight + 0.5
+    );
     return {
       width: rect.width,
       height: rect.height,
       faction: element.dataset.faction,
-      title,
+      title: titleNode?.textContent?.trim() || '',
       fitWarning: element.classList.contains('fit-warning'),
+      titleOverflow: overflows(titleNode),
+      rulesOverflow: overflows(rulesNode),
+      interiorOverflow: overflows(interior),
+      footerOverflow: Boolean(interior && footerNode && footerNode.getBoundingClientRect().bottom > interior.getBoundingClientRect().bottom + 0.5),
       imageLoaded: Boolean(image?.complete && image?.naturalWidth > 0 && image?.naturalHeight > 0),
       artCrop: image?.dataset.artCrop || '',
       footer,
@@ -142,7 +167,9 @@ async function validateLeader(page, leader, displayVersion) {
   if (metrics.faction !== leader.faction || metrics.title !== leader.name) {
     throw new Error(`Production Leader surface does not match current-game ${leader.faction}:${leader.id}: ${JSON.stringify(metrics)}.`);
   }
-  if (metrics.fitWarning) throw new Error(`Leader content does not fit the approved frame: ${leader.faction}:${leader.id}.`);
+  if (metrics.fitWarning || metrics.titleOverflow || metrics.rulesOverflow || metrics.interiorOverflow || metrics.footerOverflow) {
+    throw new Error(`Leader content does not fit the approved frame: ${leader.faction}:${leader.id} ${JSON.stringify(metrics)}.`);
+  }
   if (!metrics.imageLoaded) throw new Error(`Leader portrait failed to load: ${leader.faction}:${leader.id}.`);
   if (!metrics.artCrop) throw new Error(`Leader portrait has no applied artwork crop: ${leader.faction}:${leader.id}.`);
   if (metrics.footer.at(-1) !== displayVersion) {
@@ -229,6 +256,7 @@ async function renderLeaderAssets(release, leaders, componentContract) {
 
     const displayVersion = release.displayVersion || release.version;
     await applyReleaseVersion(page, displayVersion);
+    await prepareLeaderSurface(page, leaders.length);
 
     const records = [];
     for (let index = 0; index < leaders.length; index += 1) {
@@ -331,4 +359,4 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   });
 }
 
-export { applyLeaderCrop, applyReleaseVersion, renderLeaderAssets };
+export { applyLeaderCrop, applyReleaseVersion, prepareLeaderSurface, renderLeaderAssets };
