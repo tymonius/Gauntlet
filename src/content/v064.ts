@@ -144,6 +144,14 @@ function assertRulesSource(value: unknown): asserts value is V064RulesSource {
   }
 }
 
+function effectAliasKey(label: string): string {
+  return label
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+}
+
 function applyRuleCardTextOverrides(cards: CleanV063Card[], rules: V064RulesSource): CleanV063Card[] {
   const byId = new Map(cards.map(card => [card.id, { ...card, effects: card.effects.map(effect => ({ ...effect })) }]));
   for (const override of rules.card_text_overrides) {
@@ -152,6 +160,11 @@ function applyRuleCardTextOverrides(cards: CleanV063Card[], rules: V064RulesSour
     const index = card.effects.findIndex(effect => effect.label === override.label);
     if (index < 0) throw new Error(`Digital rule wording override cannot resolve ${override.label} on ${override.id}.`);
     card.effects[index] = { ...card.effects[index], text: override.text };
+    const aliasKey = effectAliasKey(override.label);
+    const cardWithAliases = card as CleanV063Card & Record<string, unknown>;
+    if (aliasKey && Object.prototype.hasOwnProperty.call(cardWithAliases, aliasKey)) {
+      cardWithAliases[aliasKey] = override.text;
+    }
   }
   return cards.map(card => byId.get(card.id) as CleanV063Card);
 }
