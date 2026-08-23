@@ -25,6 +25,11 @@ const ANALYTICS_EXCLUDED_FILES = new Set([
   // Render-only TTS capture surfaces; they are not public navigation pages.
   "tts/back-renderer/index.html",
   "tts/supplemental-renderer/index.html",
+  "tts/finalized-supplemental-renderer/index.html",
+  // Internal card-design review/study surfaces; they are not public navigation pages.
+  "card-design/capital-ledger-preview.html",
+  "card-design/deed-ornament-study.html",
+  "card-design/deed-rule-font-study.html",
   // Print-only production render surfaces; they are embedded by Deckbuilder.
   "card-design/card-print-render.html",
   "card-design/component-print-render.html",

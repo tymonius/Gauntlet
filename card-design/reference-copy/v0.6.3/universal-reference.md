@@ -1,10 +1,12 @@
-# Gauntlet v0.6.3 — Universal Reference Copy
+# Gauntlet v0.6.4 Candidate — Universal Reference Copy
 
-> **Player-aid copy, not shared-rule authority.** This file is deliberately authored for compact table lookup. It is audited against the canonical shared Rulebook but is not generated from that Rulebook's prose.
+> **Player-aid copy, not shared-rule authority.** This file is deliberately authored for compact table lookup. It retains the published v0.6.3 Rulebook as its audit base and applies the current-game candidate rules where they differ.
 >
-> Audit authority: `artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md`
+> Audit base: `artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md`
 >
-> Recheck against: Your Turn; Movement and Position; Pending Battles and Onset; Battle Sequence and Outcome; The Aftermath; Withdrawal and Retreat; Front Line, Occupation, and Capture; Running the Gauntlet.
+> Current rules overlay: `docs/v0.6.4-rules.json`
+>
+> Recheck against: Your Turn; Movement and Position; Onset; Battle Sequence and Outcome; The Aftermath; Withdrawal and Retreat; Front Line, Occupation, and Capture; Running the Gauntlet.
 
 ## Front — Turn & Battle
 
@@ -21,11 +23,11 @@ You take **1 Action total per turn**, during either Opening or Denouement. Each 
 
 ### Movement
 
-Resolve movement **one Position at a time**. When movement creates a battle, that movement sequence ends and any unused movement from it is lost.
+Resolve movement **one Position at a time**. When movement initiates a battle, that movement sequence ends and any unused movement from it is lost.
 
 ### Before the Battle
 
-When movement creates a pending battle, proceed to **Onset**. At Onset, the battle begins and attacker / defender roles become fixed.
+When movement enters the opponent's Position, it initiates a battle and immediately enters **Onset**. Establish the attacker, defender, contested Position, and attacker's previous Position. If the battle proceeds, resolve remaining Onset effects before setting Gambits.
 
 ### Battle Sequence
 
@@ -57,7 +59,7 @@ Higher battle total wins. **Defensive Edge** wins ties. Otherwise, each player r
 
 ### Withdrawal
 
-Withdrawal ends the battle. Skip victory, loss, and retreat triggers. After Onset, finish remaining non-result Aftermath steps and clear battle cards.
+During Onset, withdrawal ends the battle sequence: no Gambits, battle result, or Aftermath. After Onset has completed and the battle proceeds to Gambits, a later withdrawal finishes the remaining non-result Aftermath steps and clears committed battle cards using their standard destinations.
 
 ### Front Line & Capture
 

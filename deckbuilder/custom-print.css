@@ -1,0 +1,114 @@
+.custom-print-toggle-card{
+  display:grid;
+  align-content:start;
+  gap:.55rem;
+}
+.custom-print-toggle-card p{margin:0}
+.custom-print-workspace{
+  margin-top:1rem;
+  padding:1.1rem;
+  border:1px solid var(--line);
+  background:rgba(255,252,244,.62);
+}
+.custom-print-workspace[hidden]{display:none!important}
+.custom-print-workspace-header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:1rem;
+  margin-bottom:1rem;
+}
+.custom-print-workspace-header h3{margin-bottom:.25rem}
+.custom-print-workspace-header p{margin:0;max-width:58rem}
+.custom-print-filters{
+  display:grid;
+  grid-template-columns:minmax(15rem,1.6fr) minmax(11rem,.8fr) minmax(11rem,.8fr);
+  gap:.65rem;
+  margin-bottom:.8rem;
+}
+.custom-print-layout{
+  display:grid;
+  grid-template-columns:minmax(0,1.2fr) minmax(19rem,.8fr);
+  gap:.8rem;
+  align-items:start;
+}
+.custom-print-pane{
+  min-width:0;
+  border:1px solid var(--line);
+  background:rgba(255,253,248,.78);
+}
+.custom-print-pane-heading{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.6rem;
+  padding:.65rem .75rem;
+  border-bottom:1px solid var(--line);
+}
+.custom-print-pane-heading h4{margin:0;font-family:var(--serif);font-size:1rem}
+.custom-print-catalog,
+.custom-print-selection{
+  max-height:32rem;
+  overflow:auto;
+  display:grid;
+  gap:0;
+}
+.custom-print-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:.6rem;
+  align-items:center;
+  min-height:3.2rem;
+  padding:.55rem .65rem;
+  border-bottom:1px solid rgba(49,42,32,.12);
+}
+.custom-print-row:last-child{border-bottom:0}
+.custom-print-row-title{min-width:0;display:grid;gap:.12rem}
+.custom-print-row-title strong{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-family:var(--historical);
+  font-weight:400;
+}
+.custom-print-row-meta{color:var(--muted);font-family:var(--sans);font-size:.68rem;font-weight:700}
+.custom-print-add{min-height:34px;padding:0 .7rem}
+.custom-print-quantity{
+  display:grid;
+  grid-template-columns:auto 4.2rem auto auto;
+  gap:.28rem;
+  align-items:center;
+}
+.custom-print-quantity button{min-width:34px;min-height:34px;padding:0 .45rem}
+.custom-print-quantity input{min-width:0;padding:.45rem .35rem;text-align:center}
+.custom-print-remove{color:var(--danger)!important}
+.custom-print-empty{padding:1rem;color:var(--muted);font-style:italic}
+.custom-print-options{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(13rem,.55fr) auto;
+  gap:.75rem;
+  align-items:end;
+  margin-top:.9rem;
+  padding-top:.9rem;
+  border-top:1px solid var(--line);
+}
+.custom-print-checkbox{
+  display:flex;
+  grid-template-columns:none;
+  align-items:center;
+  gap:.55rem;
+  min-height:44px;
+  padding:.55rem .7rem;
+  border:1px solid var(--line);
+  background:rgba(255,253,248,.78);
+  text-transform:none;
+  letter-spacing:0;
+}
+.custom-print-checkbox input{width:auto;margin:0}
+.custom-print-summary{margin:.65rem 0 0;color:var(--muted);font-family:var(--sans);font-size:.76rem;font-weight:650}
+.custom-print-status.error{color:var(--danger)}
+.custom-print-status.success{color:var(--success)}
+@media(max-width:900px){
+  .custom-print-filters,.custom-print-layout,.custom-print-options{grid-template-columns:1fr}
+  .custom-print-workspace-header{display:grid}
+}

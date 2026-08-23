@@ -1,4 +1,6 @@
 import { renderMarkdown } from './markdown.js';
+import { applyReleaseCandidateRulebook } from './release-candidate.js';
+import { loadCurrentGame } from '../game-data/current-game.mjs';
 import { normalizeV063LastStandText } from '../rules-assistant/v063-last-stand-language.js';
 
 const SOURCE_URL = '/artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md';
@@ -6,6 +8,8 @@ const SOURCE_SHA256 = '7cca20e8de2eee10332c4e3e82ca5e7abdae3a0af61837bf77caa79cc
 const CHAPTER_11_URL = './player-facing/chapter-11.md';
 const PUBLISHED_SOURCE_URL = '../releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md';
 const PDF_URL = '../releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.pdf';
+const RELEASED_MODE = 'released';
+const CANDIDATE_MODE = 'candidate';
 const content = document.querySelector('[data-rulebook-content]');
 const toc = document.querySelector('[data-rulebook-toc]');
 const status = document.querySelector('[data-rulebook-status]');
@@ -14,6 +18,18 @@ const searchInput = searchForm?.querySelector('input[type="search"]');
 const searchStatus = document.querySelector('[data-search-status]');
 const tocToggle = document.querySelector('[data-toc-toggle]');
 const sidebar = document.querySelector('[data-rulebook-sidebar]');
+const eyebrow = document.querySelector('[data-rulebook-eyebrow]');
+const candidateNote = document.querySelector('[data-candidate-rules-note]');
+const footerVersion = document.querySelector('[data-rulebook-footer-version]');
+const printHeading = document.querySelector('[data-rulebook-print-heading]');
+const printNote = document.querySelector('[data-rulebook-print-note]');
+const rulesAssistantButton = document.querySelector('[data-open-rules-assistant]');
+const rulesetButtons = [...document.querySelectorAll('[data-ruleset]')];
+const publishedBookletLinks = [...document.querySelectorAll('[data-published-booklet]')];
+
+let sourcePromise = null;
+let activeMode = RELEASED_MODE;
+let sectionObserver = null;
 
 const FACTIONS = new Map([
   ['Military', '#8f1f25'],
@@ -157,13 +173,15 @@ function decorateHeadings() {
 }
 
 function observeSections() {
+  sectionObserver?.disconnect();
+  sectionObserver = null;
   if (!('IntersectionObserver' in window)) return;
 
   const links = new Map(
     [...toc.querySelectorAll('[data-toc-id]')].map((link) => [link.dataset.tocId, link])
   );
 
-  const observer = new IntersectionObserver((entries) => {
+  sectionObserver = new IntersectionObserver((entries) => {
     const visible = entries
       .filter((entry) => entry.isIntersecting)
       .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
@@ -173,7 +191,7 @@ function observeSections() {
     links.get(visible.target.id)?.setAttribute('aria-current', 'location');
   }, { rootMargin: '-15% 0px -70% 0px', threshold: 0 });
 
-  content.querySelectorAll('h1[id], h2[id]').forEach((heading) => observer.observe(heading));
+  content.querySelectorAll('h1[id], h2[id]').forEach((heading) => sectionObserver.observe(heading));
 }
 
 function clearSearchMarks() {
@@ -239,10 +257,62 @@ function highlightSearch(query) {
   firstMatch?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
+function modeFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('rules') === CANDIDATE_MODE ? CANDIDATE_MODE : RELEASED_MODE;
+}
+
+function writeModeToUrl(mode, replace = false) {
+  const url = new URL(window.location.href);
+  if (mode === CANDIDATE_MODE) url.searchParams.set('rules', CANDIDATE_MODE);
+  else url.searchParams.delete('rules');
+  const method = replace ? 'replaceState' : 'pushState';
+  window.history[method]({ ruleset: mode }, '', url);
+}
+
+function setRulesetUi(mode, currentGame = null) {
+  const candidate = mode === CANDIDATE_MODE;
+  document.body.dataset.rulesetMode = mode;
+  rulesetButtons.forEach((button) => {
+    button.setAttribute('aria-pressed', String(button.dataset.ruleset === mode));
+  });
+  publishedBookletLinks.forEach((link) => { link.hidden = candidate; });
+  if (rulesAssistantButton) rulesAssistantButton.hidden = candidate;
+  if (candidateNote) {
+    candidateNote.hidden = !candidate;
+    candidateNote.textContent = candidate
+      ? 'Candidate view: current-development rules layered over the published v0.6.3 Rulebook. The Rules Arbiter currently follows released v0.6.3 and is hidden in this view.'
+      : '';
+  }
+
+  if (candidate) {
+    const label = currentGame?.displayVersion || 'v0.6.4 candidate';
+    if (eyebrow) eyebrow.textContent = `Release candidate rules · ${label}`;
+    if (footerVersion) footerVersion.innerHTML = '<strong>Gauntlet v0.6.4 candidate</strong> · Current release-candidate rules view.';
+    if (printHeading) printHeading.textContent = 'Release candidate rules';
+    if (printNote) printNote.textContent = 'No candidate booklet has been published. Switch to Released v0.6.3 for the official printable booklet.';
+    document.title = 'Gauntlet v0.6.4 Candidate Browser Rulebook';
+  } else {
+    if (eyebrow) eyebrow.textContent = 'Canonical rules · version 0.6.3';
+    if (footerVersion) footerVersion.innerHTML = '<strong>Gauntlet v0.6.3</strong> · Current canonical playtest edition.';
+    if (printHeading) printHeading.textContent = 'Print the released rulebook';
+    if (printNote) printNote.textContent = 'Print double-sided, flip on the short edge, then fold and saddle stitch.';
+    document.title = 'Gauntlet v0.6.3 Browser Rulebook';
+  }
+}
+
 function initializeControls() {
-  document.querySelector('[data-print-rulebook]')?.addEventListener('click', () => window.print());
-  document.querySelector('[data-open-rules-assistant]')?.addEventListener('click', () => {
+  rulesAssistantButton?.addEventListener('click', () => {
     document.querySelector('.ga-rules-launcher')?.click();
+  });
+
+  rulesetButtons.forEach((button) => {
+    button.addEventListener('click', async () => {
+      const mode = button.dataset.ruleset === CANDIDATE_MODE ? CANDIDATE_MODE : RELEASED_MODE;
+      if (mode === activeMode) return;
+      writeModeToUrl(mode);
+      await renderRulebook(mode);
+    });
   });
 
   searchForm?.addEventListener('submit', (event) => {
@@ -265,6 +335,10 @@ function initializeControls() {
       tocToggle?.setAttribute('aria-expanded', 'false');
       sidebar?.classList.remove('is-open');
     }
+  });
+
+  window.addEventListener('popstate', () => {
+    renderRulebook(modeFromUrl());
   });
 }
 
@@ -297,37 +371,67 @@ function publicRulebookSource(source, chapter11) {
   return replacePlayerFacingChapter11(normalized, chapter11);
 }
 
-async function loadRulebook() {
-  initializeControls();
+async function loadVerifiedReleasedSource() {
+  if (!sourcePromise) {
+    sourcePromise = (async () => {
+      const [response, chapter11Response] = await Promise.all([
+        fetch(SOURCE_URL, { cache: 'no-store' }),
+        fetch(CHAPTER_11_URL, { cache: 'no-store' }),
+      ]);
+      if (!response.ok) throw new Error(`Rulebook source returned ${response.status}`);
+      if (!chapter11Response.ok) throw new Error(`Player-facing Chapter 11 returned ${chapter11Response.status}`);
+
+      const bytes = await response.arrayBuffer();
+      const actualHash = await sha256(bytes);
+      if (actualHash !== SOURCE_SHA256) throw new Error(`Rulebook source hash mismatch: ${actualHash}`);
+
+      const chapter11 = await chapter11Response.text();
+      const markdown = publicRulebookSource(new TextDecoder().decode(bytes), chapter11);
+      return markdown;
+    })().catch((error) => {
+      sourcePromise = null;
+      throw error;
+    });
+  }
+  return sourcePromise;
+}
+
+async function renderRulebook(mode) {
+  activeMode = mode === CANDIDATE_MODE ? CANDIDATE_MODE : RELEASED_MODE;
+  content.setAttribute('aria-busy', 'true');
+  clearSearchMarks();
+  if (searchInput) searchInput.value = '';
+  if (searchStatus) searchStatus.textContent = '';
+  status.textContent = activeMode === CANDIDATE_MODE
+    ? 'Loading the release-candidate rules…'
+    : 'Loading the canonical rulebook…';
 
   try {
-    const [response, chapter11Response] = await Promise.all([
-      fetch(SOURCE_URL, { cache: 'no-store' }),
-      fetch(CHAPTER_11_URL, { cache: 'no-store' }),
-    ]);
-    if (!response.ok) throw new Error(`Rulebook source returned ${response.status}`);
-    if (!chapter11Response.ok) throw new Error(`Player-facing Chapter 11 returned ${chapter11Response.status}`);
+    const releasedMarkdown = await loadVerifiedReleasedSource();
+    let currentGame = null;
+    let markdown = releasedMarkdown;
+    if (activeMode === CANDIDATE_MODE) {
+      currentGame = await loadCurrentGame();
+      markdown = applyReleaseCandidateRulebook(releasedMarkdown, currentGame);
+    }
 
-    const bytes = await response.arrayBuffer();
-    const actualHash = await sha256(bytes);
-    if (actualHash !== SOURCE_SHA256) throw new Error(`Rulebook source hash mismatch: ${actualHash}`);
-
-    const chapter11 = await chapter11Response.text();
-    const markdown = publicRulebookSource(new TextDecoder().decode(bytes), chapter11);
     const rendered = renderMarkdown(markdown);
-
     content.innerHTML = rendered.html;
     content.removeAttribute('aria-busy');
     buildToc(rendered.headings);
     decoratePublication();
     decorateHeadings();
     observeSections();
+    setRulesetUi(activeMode, currentGame);
+    document.dispatchEvent(new CustomEvent('gauntlet:rulebook-rendered', { detail: { mode: activeMode } }));
 
     const sectionCount = Math.max(
       0,
       rendered.headings.filter(({ level, id }) => level === 1 && id !== 'gauntlet' && id !== 'official-rulebook').length
     );
-    status.textContent = `Canonical v0.6.3 · ${sectionCount} sections · rules loaded`;
+    status.textContent = activeMode === CANDIDATE_MODE
+      ? `Release candidate ${currentGame?.displayVersion || 'v0.6.4'} · based on v0.6.3 · ${sectionCount} sections · rules loaded`
+      : `Canonical v0.6.3 · ${sectionCount} sections · rules loaded`;
   } catch (error) {
     console.error(error);
     content.removeAttribute('aria-busy');
@@ -338,7 +442,15 @@ async function loadRulebook() {
       </section>
     `;
     status.textContent = 'Rulebook unavailable';
+    setRulesetUi(activeMode);
   }
+}
+
+async function loadRulebook() {
+  initializeControls();
+  activeMode = modeFromUrl();
+  writeModeToUrl(activeMode, true);
+  await renderRulebook(activeMode);
 }
 
 loadRulebook();

@@ -1,11 +1,12 @@
 @import url("universal-reference.css");
+@import url("reference-divider-rules.css");
 
 /* Shared content-aware label/body column policy for portrait card rules.
    Fixed label tracks waste horizontal space on cards whose headings are short,
    while long headings can starve the rules body. Modern Grid subgrid lets each
    card size one shared heading track from the headings it actually contains.
    The body therefore remains aligned from row to row, but different cards no
-   longer reserve the same arbitrary amount of horizontal space.
+   longer reserve the same arbitrary amount of space.
 
    Existing component-specific fixed tracks remain in their stylesheets as a
    fallback for browsers without subgrid support. */
