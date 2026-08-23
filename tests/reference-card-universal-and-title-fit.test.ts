@@ -25,11 +25,13 @@ describe('final Universal Reference and reference-title fitting', () => {
       deckInclusion: 'every-deck',
     });
 
+    expect(copy).toContain('# Gauntlet v0.6.4 Candidate — Universal Reference Copy');
     expect(copy).toContain('### Battle Sequence');
-    expect(copy).toContain('When movement creates a pending battle, proceed to **Onset**.');
+    expect(copy).toContain("When movement enters the opponent's Position, it initiates a battle and immediately enters **Onset**.");
     expect(copy).toContain('1. **Onset**');
     expect(copy).toContain('2. Set **Gambits**.');
     expect(copy).toContain('8. Resolve the **Aftermath**.');
+    expect(copy).not.toMatch(/\bpending(?:-|\s+)battle\b/i);
     expect(copy).not.toMatch(/\bTerms\b/);
     expect(copy).not.toMatch(/\bHeartlands?\b/i);
   });
@@ -46,7 +48,7 @@ describe('final Universal Reference and reference-title fitting', () => {
   it('states the baseline reference rules without normally/normal hedge wording', () => {
     expect(copy).toContain('You take **1 Action total per turn**, during either Opening or Denouement. Each phase permits at most **1 Action**, even when you gain Additional Actions.');
     expect(copy).toContain('### Battle Result');
-    expect(copy).toContain('Withdrawal ends the battle. Skip victory, loss, and retreat triggers.');
+    expect(copy).toContain('During Onset, withdrawal ends the battle sequence: no Gambits, battle result, or Aftermath.');
     expect(copy).toContain('The defender has **Defensive Edge**.');
     expect(copy).not.toMatch(/\bnormal(?:ly)?\b/i);
   });
