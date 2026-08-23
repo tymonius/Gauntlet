@@ -208,8 +208,8 @@ function applyOnsetMigration(source, currentGame) {
 
   result = replaceRequired(
     result,
-    '- Effect-granted movement may create a pending battle and may initiate a legal Last Stand unless expressly prohibited.',
-    '- Effect-granted movement may initiate a battle and may initiate a legal Last Stand unless expressly prohibited.',
+    '- Effect-granted movement may create a pending battle and may force the opponent to make a Last Stand unless expressly prohibited.',
+    '- Effect-granted movement may initiate a battle and may force the opponent to make a Last Stand unless expressly prohibited.',
     'effect-granted movement battle initiation',
   );
   result = replaceRequired(
