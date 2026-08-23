@@ -27,7 +27,7 @@ describe('v0.7.0 release candidate boundary', () => {
   it('keeps the TTS package and manual-QA records aligned to v0.7.0', () => {
     expect(ttsTarget.releaseTag).toBe('v0.7.0');
     expect(ttsTarget.displayVersion).toBe('v0.7.0');
-    expect(ttsTarget.status).toBe('active-development');
+    expect(ttsTarget.status).toBe('release-candidate');
     expect(ttsQa.gameVersion).toBe('v0.7.0');
     expect(ttsQa.status).toBe('pending');
     expect(ttsQa.approvedForWorkshop).toBe(false);
