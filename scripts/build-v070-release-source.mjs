@@ -44,17 +44,20 @@ function resolveFactionRules(baseRules, manifest) {
 
 function promoteRulebookVersion(markdown) {
   let result = String(markdown || '');
-  result = result.replace(/\*\*Version\s+0\.6\.4(?:\s+—?\s*)?(?:candidate|Candidate)?\*\*/u, '**Version 0.7.0**');
+  result = result.replace('**Version 0.6.4 — Release Candidate**', '**Version 0.7.0**');
+  result = result.replace(
+    /^>\s*\*\*Release candidate\.\*\* This view layers the current-development rules over the published v0\.6\.3 Rulebook\. Switch back to \*\*Released v0\.6\.3\*\* for the published ruleset\.\s*$/gmu,
+    '',
+  );
   result = result.replace(/\*\*Version\s+v?0\.6\.4(?:-candidate)?\*\*/u, '**Version 0.7.0**');
   result = result.replace(/\*\*Version\s+0\.6\.3\*\*/u, '**Version 0.7.0**');
-  result = result.replace(/^>\s*\*\*Release candidate[^\n]*\n?/gmu, '');
   if (!result.includes('**Version 0.7.0**')) {
     throw new Error('Promoted Rulebook is missing the v0.7.0 version marker.');
   }
-  if (/Version\s+0\.6\.4(?:-candidate|\s+candidate)/iu.test(result.slice(0, 1000))) {
+  if (/Version\s+0\.6\.4|Release candidate\.\*\* This view layers/iu.test(result.slice(0, 1400))) {
     throw new Error('Promoted Rulebook still exposes candidate identity in its publication header.');
   }
-  return result;
+  return result.replace(/\n{4,}/g, '\n\n\n');
 }
 
 const manifest = await loadCurrentGameManifest();
@@ -159,7 +162,7 @@ await Promise.all([
   writeText(join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Source_Provenance.json`), jsonText(sourceProvenance)),
 ]);
 
-const landing = `<!doctype html>\n<html lang="en">\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <title>Gauntlet ${RELEASE_VERSION}</title>\n  <meta name="description" content="Gauntlet ${RELEASE_VERSION} — ${RELEASE_NAME}">\n  <link rel="stylesheet" href="../styles.css">\n</head>\n<body>\n  <main class="page-shell">\n    <p class="eyebrow">Published playtest release</p>\n    <h1>Gauntlet ${RELEASE_VERSION}</h1>\n    <p><strong>${RELEASE_NAME}</strong></p>\n    <p>This release promotes the approved ${SOURCE_VERSION} source bundle into the v0.7.0 product line, with the fully illustrated production card set and the Tabletop Simulator package.</p>\n    <p><a href="../start/">Start playing</a> · <a href="../rulebook/">Rulebook</a> · <a href="../deckbuilder/">Deckbuilder</a> · <a href="../card-reference/">Card reference</a></p>\n    <p><a href="../releases/${RELEASE_VERSION}/Gauntlet_${RELEASE_VERSION}_Rulebook_Booklet.pdf">Download the printable Rulebook booklet</a></p>\n  </main>\n</body>\n</html>\n`;
+const landing = `<!doctype html>\n<html lang="en">\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <title>Gauntlet ${RELEASE_VERSION}</title>\n  <meta name="description" content="Gauntlet ${RELEASE_VERSION} — ${RELEASE_NAME}">\n  <link rel="stylesheet" href="../site.css">\n</head>\n<body>\n  <header class="site-header">\n    <a class="brand" href="/" aria-label="Gauntlet home"><span class="brand-mark" aria-hidden="true">G</span><span>Gauntlet</span></a>\n    <nav aria-label="Primary navigation">\n      <a href="/start/">Start</a><a href="/#game">Game</a><a href="/rulebook/">Rules</a><a href="/factions/">Factions</a><a href="/deckbuilder/">Deckbuilder</a><a href="/card-reference/">Card Reference</a><a href="/rules-arbiter/">Rules Arbiter</a>\n    </nav>\n  </header>\n  <main class="page-shell">\n    <p class="eyebrow">Published playtest release</p>\n    <h1>Gauntlet ${RELEASE_VERSION}</h1>\n    <p><strong>${RELEASE_NAME}</strong></p>\n    <p>This release promotes the approved ${SOURCE_VERSION} source bundle into the v0.7.0 product line, with the fully illustrated production card set and the Tabletop Simulator package.</p>\n    <p><a href="../start/">Start playing</a> · <a href="../rulebook/">Rulebook</a> · <a href="../deckbuilder/">Deckbuilder</a> · <a href="../card-reference/">Card reference</a></p>\n    <p><a href="../releases/${RELEASE_VERSION}/Gauntlet_${RELEASE_VERSION}_Rulebook_Booklet.pdf">Download the printable Rulebook booklet</a></p>\n  </main>\n</body>\n</html>\n`;
 await writeText(join(PUBLIC_DIR, 'index.html'), landing);
 
 console.log(`Materialized ${RELEASE_VERSION} source snapshot from ${SOURCE_VERSION}.`);
