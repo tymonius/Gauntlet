@@ -9,6 +9,8 @@ export const V064_PROPOSAL_SOURCE_ISSUE = 617;
 export const V064_ARCANE_SYMBOL_SOURCE_PATH = CURRENT_GAME_AUTHORITY_PATH;
 export const V064_TERRITORY_SOURCE_PATH = CURRENT_GAME_AUTHORITY_PATH;
 export const V064_TERRITORY_SOURCE_ISSUE = 738;
+export const V064_RULES_SOURCE_PATH = CURRENT_GAME_AUTHORITY_PATH;
+export const V064_CARD_SOURCE_PATH = CURRENT_GAME_AUTHORITY_PATH;
 
 export function defaultV064CandidateSourceUrls(origin = "https://gauntlet.run") {
   const base = String(origin || "https://gauntlet.run").replace(/\/$/, "");
@@ -17,7 +19,9 @@ export function defaultV064CandidateSourceUrls(origin = "https://gauntlet.run") 
     currentGameAuthorityUrl: authorityUrl,
     proposalSourceUrl: authorityUrl,
     arcaneSymbolSourceUrl: authorityUrl,
-    territorySourceUrl: authorityUrl
+    territorySourceUrl: authorityUrl,
+    rulesSourceUrl: authorityUrl,
+    cardSourceUrl: authorityUrl
   };
 }
 
@@ -56,15 +60,68 @@ export async function loadV064CandidateRulesCorpus({
     territories: currentGame.territories
   };
   const arcaneSource = currentGame.arcaneSymbol;
+  const rulesSource = currentGame.ruleChanges;
 
-  const proposalCorpus = applyV064ProposalOverride(baseCorpus, proposalSource, authorityUrl);
+  const rulesCorpus = applyV064SharedRulesOverride(baseCorpus, rulesSource, authorityUrl);
+  const cardCorpus = applyV064CardOverride(rulesCorpus, currentGame.cards, authorityUrl);
+  const proposalCorpus = applyV064ProposalOverride(cardCorpus, proposalSource, authorityUrl);
   const arcaneCorpus = applyV064ArcaneSymbolOverride(proposalCorpus, arcaneSource, authorityUrl);
   const resolved = applyV064TerritoryOverride(arcaneCorpus, territorySource, authorityUrl);
   return {
     ...resolved,
     currentGameAuthority: authorityUrl,
     currentGameVersion: currentGame.version,
-    currentGameSources: currentGame.sources
+    currentGameSources: currentGame.sources,
+    rulesSourcePath: V064_RULES_SOURCE_PATH,
+    rulesSourceUrl: authorityUrl,
+    rulesSource,
+    cardSourcePath: V064_CARD_SOURCE_PATH,
+    cardSourceUrl: authorityUrl
+  };
+}
+
+export function applyV064SharedRulesOverride(baseCorpus, rulesSource, sourceUrl) {
+  validateV064RulesSource(rulesSource);
+  const currentRuleDocuments = buildV064RuleDocuments(rulesSource, sourceUrl);
+  const retainedDocuments = (baseCorpus?.documents || []).filter((document) => {
+    if (document.kind !== "rulebook") return true;
+    return !/pending battle/i.test(`${document.heading || ""} ${document.body || ""}`);
+  });
+  const documents = [...retainedDocuments, ...currentRuleDocuments];
+
+  return {
+    ...baseCorpus,
+    version: V064_CANDIDATE_RULES_VERSION,
+    versionLabel: V064_CANDIDATE_VERSION_LABEL,
+    published: false,
+    currentPublicRelease: "v0.6.3",
+    candidateBaseVersion: "v0.6.3",
+    rulesSourcePath: V064_RULES_SOURCE_PATH,
+    rulesSourceUrl: sourceUrl,
+    rulesSource,
+    data: baseCorpus?.data
+      ? {
+          ...baseCorpus.data,
+          battle: applyBattleRuleOverride(baseCorpus.data.battle, rulesSource.battle)
+        }
+      : baseCorpus?.data,
+    documents,
+    byId: new Map(documents.map((document) => [document.id, document]))
+  };
+}
+
+export function applyV064CardOverride(baseCorpus, cards, sourceUrl) {
+  if (!Array.isArray(cards) || !cards.length) throw new Error("Current-game card pool is missing.");
+  const retainedDocuments = (baseCorpus?.documents || []).filter((document) => document.kind !== "card");
+  const cardDocuments = buildV064CardDocuments(cards, sourceUrl);
+  const documents = [...retainedDocuments, ...cardDocuments];
+
+  return {
+    ...baseCorpus,
+    cardSourcePath: V064_CARD_SOURCE_PATH,
+    cardSourceUrl: sourceUrl,
+    documents,
+    byId: new Map(documents.map((document) => [document.id, document]))
   };
 }
 
@@ -156,6 +213,44 @@ export function applyV064TerritoryOverride(baseCorpus, territorySource, sourceUr
   };
 }
 
+export function buildV064RuleDocuments(rulesSource, sourceUrl) {
+  validateV064RulesSource(rulesSource);
+  const resolvedUrl = sourceUrl || defaultV064CandidateSourceUrls().currentGameAuthorityUrl;
+  return rulesSource.rulebook_overrides.map((rule) => ({
+    id: `rulebook:v064-${rule.id}`,
+    kind: "rulebook",
+    title: `Current rules › ${rule.heading}`,
+    heading: rule.heading,
+    body: rule.body,
+    sourcePath: V064_RULES_SOURCE_PATH,
+    sourceUrl: resolvedUrl,
+    searchText: `${rule.heading} ${rule.body}`.toLowerCase()
+  }));
+}
+
+export function buildV064CardDocuments(cards, sourceUrl) {
+  const resolvedUrl = sourceUrl || defaultV064CandidateSourceUrls().currentGameAuthorityUrl;
+  return cards.map((card) => {
+    const body = [
+      card.allegiance && `Allegiance: ${card.allegiance}`,
+      Number.isFinite(Number(card.cost)) && `Deckbuilding Value: ${Number(card.cost)}`,
+      ...(Array.isArray(card.effects)
+        ? card.effects.map((effect) => `${effect.label}: ${effect.text}`)
+        : [])
+    ].filter(Boolean).join("\n");
+    return {
+      id: `card:${card.id}`,
+      kind: "card",
+      title: `Card: ${card.name}`,
+      heading: card.name,
+      body,
+      sourcePath: V064_CARD_SOURCE_PATH,
+      sourceUrl: resolvedUrl,
+      searchText: `${card.name} ${body}`.toLowerCase()
+    };
+  });
+}
+
 export function buildV064ProposalDocuments(proposalSource, sourceUrl) {
   validateV064ProposalSource(proposalSource);
   const resolvedUrl = sourceUrl || defaultV064CandidateSourceUrls().currentGameAuthorityUrl;
@@ -214,6 +309,28 @@ export function buildV064TerritoryDocuments(territorySource, sourceUrl) {
       searchText: `${territory.name} ${territory.text}`.toLowerCase()
     };
   });
+}
+
+export function validateV064RulesSource(source) {
+  if (!source || typeof source !== "object") {
+    throw new Error("v0.6.4 rules source is missing.");
+  }
+  if (source.schema_version !== 1 || source.version !== V064_CANDIDATE_RULES_VERSION) {
+    throw new Error(`Unexpected v0.6.4 rules source version: ${source.version || "missing"}.`);
+  }
+  if (source.base_version !== "v0.6.3") {
+    throw new Error("v0.6.4 rules source must remain based on v0.6.3.");
+  }
+  if (source.change_type !== "collapse-pending-battle-into-onset" || source.mechanics_changed !== true) {
+    throw new Error("v0.6.4 rules source must contain the accepted Onset migration.");
+  }
+  if (!source.battle || !Array.isArray(source.rulebook_overrides) || !source.rulebook_overrides.length) {
+    throw new Error("v0.6.4 rules source is missing battle or rulebook overrides.");
+  }
+  if (Array.isArray(source.battle.pending_sequence)) {
+    throw new Error("v0.6.4 current battle rules cannot retain a pending battle sequence.");
+  }
+  return true;
 }
 
 export function validateV064ProposalSource(source) {
@@ -325,4 +442,12 @@ export function validateV064TerritorySource(source) {
   }
   if (arenaCount !== 4) throw new Error(`Expected four Arenas, received ${arenaCount}.`);
   return true;
+}
+
+function applyBattleRuleOverride(base, override) {
+  const result = { ...(base || {}), ...(override || {}) };
+  const removeFields = Array.isArray(override?.remove_fields) ? override.remove_fields : [];
+  delete result.remove_fields;
+  for (const field of removeFields) delete result[field];
+  return result;
 }
