@@ -33,6 +33,11 @@ describe('final Universal Reference and reference-title fitting', () => {
     expect(copy).not.toMatch(/\bHeartlands?\b/i);
   });
 
+  it('explains the Capture step operationally instead of referring players back to the Capture step', () => {
+    expect(copy).toContain('1. **Capture** — If your token is on or beyond the next opponent-controlled Territory beyond your Front Line, capture that Territory; then resolve after-Capture effects and victory checks.');
+    expect(copy).not.toContain('Resolve your Capture step');
+  });
+
   it('shrinks, wraps, then shrinks the wrapped reference-face title before failing', () => {
     expect(universalStyles).toContain('@import url("reference-title-wrap.css")');
     expect(referenceRenderer).toContain('const REFERENCE_TITLE_MIN_PT = 8.4');
