@@ -33,8 +33,9 @@ describe('final Universal Reference and reference-title fitting', () => {
     expect(copy).not.toMatch(/\bHeartlands?\b/i);
   });
 
-  it('explains Capture as occupation first, with Front Line advancement only when direct capture would create a gap', () => {
-    expect(copy).toContain("1. **Capture** — If you occupy an opponent's Territory at the start of your turn, rotate that Territory card to face you to capture it.");
+  it('keeps the turn sequence compact and explains Capture only in the dedicated reverse-side section', () => {
+    expect(copy).toContain('1. **Capture** — Capture Territory / Advance Front Line, if applicable.');
+    expect(copy).toContain("At the start of your turn, if you occupy an opponent's Territory, rotate that Territory card to face you to capture it.");
     expect(copy).toContain('If doing so would create a non-continuous line of controlled Territories, instead capture the next Territory past your Front Line: **Advance Front Line 1**.');
     expect(copy).toContain('Normal Capture changes control of at most **1 Territory per turn**.');
     expect(copy).not.toContain('Resolve your Capture step');
