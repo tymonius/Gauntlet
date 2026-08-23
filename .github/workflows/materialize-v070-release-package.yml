@@ -17,17 +17,33 @@ on:
       - scripts/run-v063-rulebook-renderer.mjs
       - images/sketches/**
       - .github/workflows/materialize-v070-release-package.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - game-data/**
+      - docs/v0.6.4-*.json
+      - docs/v0.6.3-starter-decks.json
+      - rulebook/**
+      - rulebook-design/**
+      - rulebook-production/**
+      - scripts/build-v070-release-source.mjs
+      - scripts/render-v070-booklet.mjs
+      - scripts/build-v063-rulebook-production.py
+      - scripts/run-v063-rulebook-renderer.mjs
+      - images/sketches/**
+      - .github/workflows/materialize-v070-release-package.yml
 
 permissions:
   contents: write
 
 concurrency:
-  group: materialize-v070-release-package-${{ github.ref }}
+  group: materialize-v070-release-package-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   materialize:
-    if: ${{ !contains(github.event.head_commit.message, 'Materialize v0.7.0 release package') }}
+    if: ${{ github.event_name == 'pull_request' || !contains(github.event.head_commit.message, 'Materialize v0.7.0 release package') }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
