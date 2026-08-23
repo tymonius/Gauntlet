@@ -41,6 +41,21 @@
     renderFactionComponents();
   }
 
+  function sharedReferencePrintCandidate(component) {
+    const bridged = { ...component };
+    // The legacy production replacement matcher is faction-scoped. A shared
+    // every-deck reference has no canonical faction, so expose the currently
+    // selected faction only on this browser-side print candidate. The canonical
+    // shared component remains unchanged, while the getter stays correct if the
+    // player changes factions after the Deckbuilder has loaded.
+    Object.defineProperty(bridged, "faction", {
+      enumerable: true,
+      configurable: false,
+      get: () => String(state.factionId || "").trim().toLowerCase(),
+    });
+    return Object.freeze(bridged);
+  }
+
   function bridgeSharedReferencesIntoPrintAuthority(currentGame) {
     const factionComponents = currentGame.components || [];
     const knownIds = new Set(factionComponents.map(component => component.id));
@@ -54,11 +69,13 @@
     if (!sharedReferences.length) return;
 
     // The production print replacement layer historically searches the resolved
-    // faction-component array. Give that browser-only print view the ready shared
-    // references as additional match candidates without changing canonical data.
+    // faction-component array. Give that browser-only print view ready shared
+    // references as faction-compatible match candidates without changing the
+    // canonical shared-component definitions.
+    const printSharedReferences = sharedReferences.map(sharedReferencePrintCandidate);
     state.currentGameData = Object.freeze({
       ...currentGame,
-      components: Object.freeze([...factionComponents, ...sharedReferences]),
+      components: Object.freeze([...factionComponents, ...printSharedReferences]),
     });
     document.body.dataset.sharedReferencePrintBridge = "ready";
   }
@@ -251,7 +268,10 @@
     const sharedComponents = (currentGame.sharedComponents || []).filter(component => (
       component.cardLike && component.deckInclusion === "every-deck"
     ));
-    const components = (currentGame.components || []).filter(component => component.faction === state.factionId);
+    const components = (currentGame.components || []).filter(component => (
+      component.faction === state.factionId
+      && component.deckInclusion !== "every-deck"
+    ));
     const items = [
       ...sharedComponents.map(component => ({
         name: component.quantityPerPlayer > 1 ? `${component.quantityPerPlayer} × ${component.name}` : component.name,
