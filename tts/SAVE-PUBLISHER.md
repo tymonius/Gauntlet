@@ -146,7 +146,7 @@ The committed record remains `pending` until the corresponding in-game checks ar
 - focused faction drills completed; and
 - any TTS-specific friction found during testing resolved before approval.
 
-Workshop approval is a separate explicit boolean after all 18 checks. Do not mark a check complete merely because the JSON package generated successfully; these fields represent actual Tabletop Simulator testing.
+Workshop approval is a separate explicit boolean after all 19 checks. Do not mark a check complete merely because the JSON package generated successfully; these fields represent actual Tabletop Simulator testing.
 
 ## Final save promotion
 
