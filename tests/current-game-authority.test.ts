@@ -91,24 +91,28 @@ describe('single current-game authority', () => {
       {
         id: 'neutral-advance-guard',
         name: 'Advance Guard',
+        action: 'Old pending battle wording.',
         effects: [
-          { label: 'Action', text: 'Old pending-battle wording.' },
+          { label: 'Action', text: 'Old pending battle wording.' },
           { label: 'Gambit/Tactic', text: 'Attacker without a Gambit — gain Advantage.' },
         ],
       },
       {
         id: 'neutral-forced-march',
         name: 'Forced March',
+        action: 'Old pending battle wording.',
         effects: [
-          { label: 'Action', text: 'Old pending-battle wording.' },
+          { label: 'Action', text: 'Old pending battle wording.' },
         ],
       },
     ], rulesSource);
 
-    expect(cards.find(card => card.id === 'neutral-advance-guard')?.effects[0].text)
-      .toContain('initiates a battle');
-    expect(cards.find(card => card.id === 'neutral-forced-march')?.effects[0].text)
-      .toContain('cannot initiate a battle');
+    const advanceGuard = cards.find(card => card.id === 'neutral-advance-guard');
+    const forcedMarch = cards.find(card => card.id === 'neutral-forced-march');
+    expect(advanceGuard?.effects[0].text).toContain('initiates a battle');
+    expect(forcedMarch?.effects[0].text).toContain('cannot initiate a battle');
+    expect(advanceGuard?.action).toContain('initiates a battle');
+    expect(forcedMarch?.action).toContain('cannot initiate a battle');
     expect(JSON.stringify(cards)).not.toContain('pending battle');
   });
 
