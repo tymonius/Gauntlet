@@ -219,6 +219,25 @@ function applyOnsetMigration(source, currentGame) {
     'effect-granted movement ending',
   );
 
+  result = replaceMarkdownSection(
+    result,
+    'Battles ending without a winner',
+    2,
+    [
+      'When a rule or effect ends a battle sequence **without a winner**:',
+      '',
+      '- neither player wins or loses; withdrawal is not a loss;',
+      '- if the sequence ends during Onset, no Gambits are set, no battle result occurs, and no Aftermath is resolved;',
+      '- if Onset has completed and the battle has proceeded to Gambits, unresolved Gambit or Tactic effects do not apply after the battle-ending instruction unless that instruction expressly says otherwise;',
+      '- effects that already applied are not undone;',
+      '- after Onset, complete any remaining non-result Aftermath procedures that are still applicable;',
+      '- after Onset, clear committed cards and cards remaining in Reserve normally unless the ending effect gives them another destination; and',
+      '- apply normal positional consequences, including Occupation when applicable, based on the Player Tokens that remain after any instructed withdrawal.',
+      '',
+      'An effect conditioned on a player winning or losing does not apply when the battle sequence ends without a winner.',
+    ].join('\n'),
+  );
+
   const onward = leaderSection(currentGame, 'military', 'general', 'Onward');
   const rout = leaderSection(currentGame, 'military', 'general', 'Rout');
   result = replacePatternRequired(
