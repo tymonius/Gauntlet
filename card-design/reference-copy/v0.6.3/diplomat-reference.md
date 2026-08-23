@@ -1,8 +1,10 @@
-# Gauntlet v0.6.3 — Diplomat Reference Copy
+# Gauntlet v0.6.4 Candidate — Diplomat Reference Copy
 
-> **Player-aid copy, not faction-rule authority.** This file is deliberately authored for compact table lookup. It is audited against the canonical Diplomat faction guide but is not generated from that guide's prose.
+> **Player-aid copy, not faction-rule authority.** This file is deliberately authored for compact table lookup. It retains the published v0.6.3 Diplomat guide as its audit base and applies the current-game candidate rules where they differ.
 >
-> Audit authority: `artifacts/reconstruction/clean-v0.6.3/faction-guides/diplomat/Gauntlet_v0.6.3_Diplomat_Faction_Guide.md`
+> Audit base: `artifacts/reconstruction/clean-v0.6.3/faction-guides/diplomat/Gauntlet_v0.6.3_Diplomat_Faction_Guide.md`
+>
+> Current rules overlay: `docs/v0.6.4-rules.json`
 >
 > Recheck against: Influence; Offering Terms; Diplomat mirrors; Accepted Terms; Refused Terms; Leverage; Treaty Articles and Peace Treaty.
 
@@ -12,30 +14,30 @@
 
 | Feature | Use |
 |---|---|
-| Terms | No Action · Before Onset |
+| Terms | No Action · During Onset |
 | Leverage | No Action · Before dice after refused Terms |
 
 ### Offering Terms
 
-During a pending battle, **before Onset**, choose an eligible Proposal and stake its required Influence by moving your tracker down the listed amount, then present the Proposal card to the opponent. They **accept** or **refuse**.
+During **Onset**, after the attacker, defender, contested Position, and attacker's previous Position are established and before other pre-Gambit effects, choose an eligible Proposal and stake its required Influence by moving your tracker down the listed amount. Present the Proposal to the opponent. They **accept** or **refuse**.
 
 ### Diplomat Mirror
 
-The attacker has the first opportunity to offer Terms. If the attacker passes, the defender may offer. Once either player offers Terms, the other may not offer Terms for that battle.
+The attacker has the first opportunity to offer Terms. If the attacker passes, the defender may offer. Once either player offers Terms, the other may not offer Terms in that battle sequence.
 
 ### Accepted
 
-- No battle begins.
 - Apply the Proposal's **Accepted** effect.
 - Return the Stake.
 - Discard any previously imposed **Sanctions**.
 - If unratified, flip the Proposal to its **Treaty Article** side and gain **1 Influence**.
+- End the battle sequence during Onset: no battle is fought, no Gambits are set, and there is no winner, loser, or Aftermath.
 
 ### Refused
 
 - Apply the Proposal's **Refused** effect.
 - You may impose **Sanctions** *(once per refused Terms)*.
-- Continue to **Gambits**.
+- Continue **Onset**; if the battle proceeds, continue to **Gambits**.
 - Before dice are rolled, the Diplomat may use **Leverage**.
 
 ## Reverse — Outcomes & Treaties
@@ -68,4 +70,4 @@ A ratified Proposal may be offered again. Ratification and its **Influence rewar
 
 ### Peace Treaty
 
-At the start of your turn, if **6 different Proposals** are ratified, you win.
+After the Capture step at the start of your turn, if **6 different Proposals** are ratified, you win.
