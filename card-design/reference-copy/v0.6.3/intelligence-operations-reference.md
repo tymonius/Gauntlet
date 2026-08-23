@@ -32,21 +32,21 @@ Immediately after revealing a card through Surveillance, spend **2 additional In
 - Removed Gambit → owner's **Hand**.
 - Removed Tactic → owner's **Reserve**.
 - The owner may choose one eligible replacement from the same source or pass.
-- Replacements are face down unless stated otherwise.
+- Replacements enter **face down**.
 
 ## Reverse — Mirrors & Replacements
 
 ### Replacement Window
 
-A replacement creates **no new Surveillance, Interference, reveal, or response opportunity**.
+After a replacement, continue the current stage without another Surveillance, Interference, reveal, or response window.
 
-If you had already made your own choice at that stage, after the opponent replaces an interfered card you may revise your choice. Revision creates no new information window.
+If you had already made your own choice at that stage, after the opponent replaces an interfered card you may revise your choice using the information already revealed.
 
 ### Direct Interference
 
 If an opposing effect sets or chooses a card **face up**, spend **2 Intel** to Interfere at the same response timing.
 
-Direct Interference does not use Surveillance, but it does use that stage's Interference opportunity.
+Direct Interference spends that stage's Interference opportunity directly.
 
 ### Intelligence Mirror
 

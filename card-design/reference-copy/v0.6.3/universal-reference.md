@@ -1,31 +1,33 @@
-# Gauntlet v0.6.3 — Universal Reference Copy
+# Gauntlet v0.6.4 Candidate — Universal Reference Copy
 
-> **Player-aid copy, not shared-rule authority.** This file is deliberately authored for compact table lookup. It is audited against the canonical shared Rulebook but is not generated from that Rulebook's prose.
+> **Player-aid copy, not shared-rule authority.** This file is deliberately authored for compact table lookup. It retains the published v0.6.3 Rulebook as its audit base and applies the current-game candidate rules where they differ.
 >
-> Audit authority: `artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md`
+> Audit base: `artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md`
 >
-> Recheck against: Your Turn; Movement and Position; Pending Battles and Onset; Battle Sequence and Outcome; The Aftermath; Withdrawal and Retreat; Front Line, Occupation, and Capture; Running the Gauntlet.
+> Current rules overlay: `docs/v0.6.4-rules.json`
+>
+> Recheck against: Your Turn; Movement and Position; Onset; Battle Sequence and Outcome; The Aftermath; Withdrawal and Retreat; Front Line, Occupation, and Capture; Running the Gauntlet.
 
 ## Front — Turn & Battle
 
 ### Turn Sequence
 
-1. **Capture** — Resolve your Capture step, then after-Capture effects and victory checks.
+1. **Capture** — Capture a Territory / Advance Front Line, if applicable.
 2. **Draw** — Draw 1 card.
 3. **Opening** — You may take your Action here.
 4. **Movement** — Advance, Hold, or Fall Back. Resolve any battle immediately.
-5. **Denouement** — If you did not take your normal Action in Opening, you may take it here.
+5. **Denouement** — If you did not take your Action in Opening, you may take it here.
 6. **Cleanup** — Resolve end-of-turn effects and discard down to your Hand limit.
 
-You normally take **1 Action total per turn**, during either Opening or Denouement. Additional Actions do not normally permit more than one Action in the same phase.
+You take **1 Action total per turn**, during either Opening or Denouement. Each phase permits at most **1 Action**, even when you gain Additional Actions.
 
 ### Movement
 
-Resolve movement **one Position at a time**. When movement creates a battle, that movement sequence ends and any unused movement from it is lost.
+Resolve movement **one Position at a time**. When movement initiates a battle, that movement sequence ends and any unused movement from it is lost.
 
 ### Before the Battle
 
-When movement creates a pending battle, proceed to **Onset**. At Onset, the battle begins and attacker / defender roles become fixed.
+When movement enters the opponent's Position, it initiates a battle and immediately enters **Onset**. Establish the attacker, defender, contested Position, and attacker's previous Position. If the battle proceeds, resolve remaining Onset effects before setting Gambits.
 
 ### Battle Sequence
 
@@ -42,9 +44,9 @@ When movement creates a pending battle, proceed to **Onset**. At Onset, the batt
 
 ### Outcome
 
-Higher battle total wins. **Defensive Edge** wins ties. Otherwise, each player rolls 1 die with no modifiers; higher roll wins; reroll ties.
+Higher battle total wins. **Defensive Edge** wins ties. Otherwise, each player rolls 1 unmodified die; higher roll wins; reroll ties.
 
-### Normal Result
+### Battle Result
 
 - Losing attacker → returns to the Position they entered from.
 - Losing defender → retreats 1 Position toward their own end.
@@ -57,20 +59,22 @@ Higher battle total wins. **Defensive Edge** wins ties. Otherwise, each player r
 
 ### Withdrawal
 
-No winner or loser; victory, loss, and retreat triggers do not occur. After Onset, finish remaining non-result Aftermath steps and clear battle cards normally.
+During Onset, withdrawal ends the battle sequence: no Gambits, battle result, or Aftermath. After Onset has completed and the battle proceeds to Gambits, a later withdrawal finishes the remaining non-result Aftermath steps and clears committed battle cards using their standard destinations.
 
 ### Front Line & Capture
 
-**Front Line** = your unbroken line of controlled Territories from your own end. During Capture, if you are on or beyond the next opponent-controlled Territory beyond it, capture that Territory. Normal Capture advances at most **1 Territory per turn**.
+**Front Line** = your continuous line of controlled Territories from your own end.
 
-**Occupation** alone does not change control.
+At the start of your turn, if you occupy an opponent's Territory, rotate that Territory card to face you to capture it. If doing so would create a non-continuous line of controlled Territories, instead capture the next Territory past your Front Line: **Advance Front Line 1**.
+
+Capture changes control of at most **1 Territory per turn**. **Occupation** alone does not change control.
 
 ### Run the Gauntlet
 
-Win immediately by capturing the opponent's final Territory or winning a **Last Stand**.
+**Capture the Territory at the opponent's end**, or force the opponent to make a **Last Stand** and win the resulting battle.
 
 ### Last Stand
 
-No prior control of the final Territory is required. After the opponent retreats beyond their end, initiate a Last Stand only with a **new legal Advance beyond the Gauntlet**; unused prior movement cannot carry over.
+A Last Stand can be forced while you occupy the final Territory, before you capture it. After the opponent retreats beyond their end, force them to make a Last Stand with a **new legal Advance beyond the Gauntlet**.
 
-The defender normally has **Defensive Edge**.
+The defender has **Defensive Edge**.

@@ -87,4 +87,8 @@ if (content) {
   });
   observer.observe(content, { childList: true, subtree: true });
   if (injectLeaderPortraits()) observer.disconnect();
+
+  document.addEventListener('gauntlet:rulebook-rendered', () => {
+    injectLeaderPortraits();
+  });
 }

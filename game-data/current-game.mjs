@@ -83,6 +83,14 @@ export function slugify(value) {
     .replace(/^-|-$/g, '');
 }
 
+function effectAliasKey(label) {
+  return String(label || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+}
+
 export function resolveCards(baseCards, changes, manifest) {
   if (changes?.version !== manifest.version || changes?.base_version !== manifest.baseVersion) {
     throw new Error(`Current card changes do not match ${manifest.version} over ${manifest.baseVersion}.`);
@@ -124,6 +132,45 @@ export function resolveCards(baseCards, changes, manifest) {
     current_game_version: manifest.version,
     current_game_authority: CURRENT_GAME_AUTHORITY_URL,
   }));
+}
+
+export function resolveCardTextOverrides(cards, rulesSource) {
+  const overrides = requireArray(rulesSource?.card_text_overrides || [], 'current rule card-text overrides');
+  if (!overrides.length) return cards.map(card => clone(card));
+
+  const byId = new Map(cards.map(card => [card.id, clone(card)]));
+  for (const override of overrides) {
+    if (!override?.id || !override?.label || typeof override?.text !== 'string') {
+      throw new Error('A current rule card-text override is incomplete.');
+    }
+    const card = byId.get(override.id);
+    if (!card) throw new Error(`Current rule card-text override cannot resolve ${override.id}.`);
+    if (!Array.isArray(card.effects)) throw new Error(`Current rule card-text override found no effects on ${override.id}.`);
+    const effectIndex = card.effects.findIndex(effect => effect?.label === override.label);
+    if (effectIndex < 0) throw new Error(`Current rule card-text override cannot find ${override.label} on ${override.id}.`);
+    const effects = card.effects.map((effect, index) => index === effectIndex
+      ? { ...effect, text: override.text }
+      : effect);
+    const nextCard = { ...card, effects };
+    const aliasKey = effectAliasKey(override.label);
+    if (aliasKey && Object.prototype.hasOwnProperty.call(nextCard, aliasKey)) {
+      nextCard[aliasKey] = override.text;
+    }
+    byId.set(override.id, nextCard);
+  }
+
+  return cards.map(card => byId.get(card.id));
+}
+
+export function resolveRuleSection(baseSection, overrideSection) {
+  const result = clone(baseSection || {});
+  if (!overrideSection || typeof overrideSection !== 'object') return result;
+  const override = clone(overrideSection);
+  const removeFields = Array.isArray(override.remove_fields) ? override.remove_fields : [];
+  delete override.remove_fields;
+  Object.assign(result, override);
+  for (const field of removeFields) delete result[field];
+  return result;
 }
 
 function resolveFactions(baseFactions, manifest) {
@@ -170,8 +217,20 @@ function validateManifest(manifest) {
   if (!manifest.version || !manifest.baseVersion || !manifest.sources) {
     throw new Error('Current-game authority is missing version or source declarations.');
   }
-  for (const key of ['baseGameplay', 'cardChanges', 'territories', 'proposals', 'arcaneSymbol', 'componentContract', 'starterDecks']) {
+  for (const key of ['baseGameplay', 'cardChanges', 'territories', 'proposals', 'arcaneSymbol', 'rules', 'componentContract', 'starterDecks']) {
     if (!manifest.sources[key]) throw new Error(`Current-game authority is missing source ${key}.`);
+  }
+}
+
+function validateRulesSource(rulesSource, manifest) {
+  if (rulesSource?.version !== manifest.version || rulesSource?.base_version !== manifest.baseVersion) {
+    throw new Error(`Current rules source does not match ${manifest.version} over ${manifest.baseVersion}.`);
+  }
+  if (rulesSource?.schema_version !== 1 || rulesSource?.change_type !== 'collapse-pending-battle-into-onset') {
+    throw new Error('Current rules source is not the accepted Onset migration.');
+  }
+  if (!rulesSource?.battle || !Array.isArray(rulesSource?.rulebook_overrides)) {
+    throw new Error('Current rules source is missing battle or rulebook override data.');
   }
 }
 
@@ -179,12 +238,13 @@ async function resolveCurrentGame() {
   const manifest = await loadJson(CURRENT_GAME_AUTHORITY_URL);
   validateManifest(manifest);
 
-  const [base, cardChanges, territorySource, proposalSource, arcaneSymbolSource, componentContract, starterDeckSource, artDirectionSource] = await Promise.all([
+  const [base, cardChanges, territorySource, proposalSource, arcaneSymbolSource, rulesSource, componentContract, starterDeckSource, artDirectionSource] = await Promise.all([
     loadJson(manifest.sources.baseGameplay),
     loadJson(manifest.sources.cardChanges),
     loadJson(manifest.sources.territories),
     loadJson(manifest.sources.proposals),
     loadJson(manifest.sources.arcaneSymbol),
+    loadJson(manifest.sources.rules),
     loadJson(manifest.sources.componentContract),
     loadJson(manifest.sources.starterDecks),
     loadText(CURRENT_ART_DIRECTION_SOURCE_URL),
@@ -201,8 +261,9 @@ async function resolveCurrentGame() {
   if (arcaneSymbolSource?.version !== manifest.version || arcaneSymbolSource?.base_version !== manifest.baseVersion) {
     throw new Error(`Current Arcane-symbol source does not match ${manifest.version} over ${manifest.baseVersion}.`);
   }
+  validateRulesSource(rulesSource, manifest);
 
-  const cards = resolveCards(gameplay.cards, cardChanges, manifest);
+  const cards = resolveCardTextOverrides(resolveCards(gameplay.cards, cardChanges, manifest), rulesSource);
   const territories = requireArray(territorySource.territories, 'current Territories').map(territory => ({
     ...clone(territory),
     current_game_version: manifest.version,
@@ -212,6 +273,7 @@ async function resolveCurrentGame() {
   const starterDecks = requireArray(starterDeckSource.decks, 'current starter Decks').map(deck => clone(deck));
   const factions = resolveFactions(gameplay.factions, manifest);
   const factionRules = resolveFactionRules(gameplay.faction_rules, manifest);
+  const battle = resolveRuleSection(gameplay.battle, rulesSource.battle);
   const artDirection = parseArtDirectionSource(artDirectionSource);
 
   const ids = new Set();
@@ -246,10 +308,11 @@ async function resolveCurrentGame() {
     sources: Object.freeze(resolvedSources),
     deckConstruction: Object.freeze(clone(gameplay.deck_construction || {})),
     battlefield: Object.freeze(clone(gameplay.battlefield || {})),
-    battle: Object.freeze(clone(gameplay.battle || {})),
+    battle: Object.freeze(battle),
     turn: Object.freeze(clone(gameplay.turn || {})),
     setup: Object.freeze(clone(gameplay.setup || {})),
     cardRules: Object.freeze(clone(gameplay.card_rules || {})),
+    ruleChanges: Object.freeze(clone(rulesSource)),
     factionRules: Object.freeze(factionRules),
     factions: Object.freeze(factions),
     leaders: Object.freeze(clone(manifest.leaders)),
@@ -271,6 +334,7 @@ async function resolveCurrentGame() {
       proposals: Object.freeze({ status: proposalSource.status || null, sourceIssue: proposalSource.source_issue || null }),
       starterDecks: Object.freeze({ version: starterDeckSource.version || null, status: starterDeckSource.status || null }),
       arcaneSymbol: Object.freeze({ changeType: arcaneSymbolSource.change_type || null, mechanicsChanged: arcaneSymbolSource.mechanics_changed }),
+      rules: Object.freeze({ changeType: rulesSource.change_type || null, mechanicsChanged: rulesSource.mechanics_changed, status: rulesSource.status || null }),
       artDirection: Object.freeze({ source: CURRENT_ART_DIRECTION_SOURCE_URL, entries: Object.keys(artDirection).length }),
     }),
     findCard(id) { return cards.find(card => card.id === id) || null; },

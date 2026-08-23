@@ -87,6 +87,7 @@ jobs:
             game-data
             deckbuilder/starter-decks.json
             docs/v0.6.4-card-additions.json
+            docs/v0.6.4-rules.json
             docs/v0.6.4-territories.json
             docs/v0.6.4-diplomat-proposals.json
             docs/v0.6.4-arcane-symbol.json

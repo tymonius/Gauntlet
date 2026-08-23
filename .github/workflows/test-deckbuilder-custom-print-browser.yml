@@ -1,0 +1,129 @@
+name: Test Deckbuilder custom printing
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "deckbuilder/custom-print.*"
+      - "deckbuilder/print-card-back-orientation.js"
+      - "card-design/**"
+      - "config/tts-component-contract.json"
+      - "game-data/**"
+      - ".github/workflows/test-deckbuilder-custom-print-browser.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-deckbuilder-custom-print-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  journey:
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.62.1-noble
+    steps:
+      - name: Checkout source branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Install matching Playwright package
+        run: npm install --no-audit --no-fund --no-save playwright@1.62.1
+
+      - name: Serve repository
+        run: python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
+
+      - name: Exercise mixed custom print sheets
+        run: |
+          node --input-type=module <<'NODE'
+          import { chromium } from 'playwright';
+
+          const browser = await chromium.launch({ headless: true });
+          const context = await browser.newContext({ viewport: { width: 1440, height: 1100 } });
+          const page = await context.newPage();
+          const errors = [];
+          const collectPageErrors = target => {
+            target.on('pageerror', error => errors.push(error.message));
+            target.on('response', response => {
+              if (response.status() >= 400) errors.push(`HTTP ${response.status()} ${response.url()}`);
+            });
+            target.on('console', message => {
+              if (message.type() === 'error' && !message.text().startsWith('Failed to load resource:')) errors.push(message.text());
+            });
+            target.on('dialog', dialog => dialog.accept());
+          };
+          collectPageErrors(page);
+
+          const response = await page.goto('http://127.0.0.1:8000/deckbuilder/', { waitUntil: 'networkidle' });
+          if (!response?.ok()) throw new Error(`Deckbuilder returned ${response?.status()}`);
+          await page.locator('.advanced-tools').evaluate(details => { details.open = true; });
+          await page.waitForSelector('#customPrintModeToggle');
+          await page.click('#customPrintModeToggle');
+          await page.waitForSelector('#customPrintWorkspace:not([hidden])');
+          await page.waitForFunction(() => Number(document.querySelector('#customPrintCatalogCount')?.textContent || 0) > 0);
+
+          const typeOptions = await page.locator('#customPrintTypeFilter option').allTextContents();
+          for (const required of ['Playable card', 'Territory', 'Leader', 'Reference', 'Tracker', 'Capital Ledger', 'Deed', 'Proposal / Treaty', 'Rite', 'Ritual']) {
+            if (!typeOptions.includes(required)) throw new Error(`Custom print selector is missing card type: ${required}`);
+          }
+
+          async function addFirstOfType(type, expectedName = '') {
+            await page.selectOption('#customPrintTypeFilter', { label: type });
+            await page.selectOption('#customPrintFactionFilter', 'all');
+            await page.fill('#customPrintSearch', expectedName);
+            const rows = page.locator('#customPrintCatalog .custom-print-row');
+            if (await rows.count() < 1) throw new Error(`No custom-print catalog row found for ${type}${expectedName ? ` / ${expectedName}` : ''}`);
+            await rows.first().locator('[data-custom-print-add]').click();
+            await page.fill('#customPrintSearch', '');
+          }
+
+          await addFirstOfType('Leader', 'General');
+          await addFirstOfType('Territory');
+          await addFirstOfType('Proposal / Treaty');
+          await addFirstOfType('Rite');
+          await addFirstOfType('Capital Ledger');
+
+          const selectedRows = page.locator('#customPrintSelection .custom-print-row');
+          if (await selectedRows.count() !== 5) throw new Error(`Expected 5 selected physical cards, found ${await selectedRows.count()}`);
+          const summary = await page.locator('#customPrintSummary').textContent();
+          if (!summary?.includes('5 physical cards') || !summary.includes('1 front sheet') || !summary.includes('2 print pages')) {
+            throw new Error(`Unexpected custom print summary: ${summary}`);
+          }
+
+          await page.check('#customPrintStandardBacks');
+          const popupPromise = context.waitForEvent('page');
+          await page.click('#customPrintOpen');
+          const printPage = await popupPromise;
+          collectPageErrors(printPage);
+          await printPage.waitForLoadState('domcontentloaded');
+          await printPage.waitForFunction(() => document.body.dataset.renderReady === 'true', null, { timeout: 60000 });
+
+          if (await printPage.locator('.custom-front-page').count() !== 1) throw new Error('Expected one custom front sheet.');
+          if (await printPage.locator('.custom-back-page').count() !== 1) throw new Error('Expected one paired reverse sheet.');
+          const frontFrames = await printPage.locator('.custom-front-page [data-custom-render-frame]').count();
+          const backFrames = await printPage.locator('.custom-back-page [data-custom-render-frame]').count();
+          if (frontFrames !== 5 || backFrames !== 5) throw new Error(`Expected 5 front and 5 reverse/back frames, found ${frontFrames}/${backFrames}`);
+          if (await printPage.locator('.custom-landscape-rotate').count() < 1) throw new Error('Mixed custom sheet did not include a rotated landscape card.');
+          if (await printPage.locator('iframe[src*="kind=leader"]').count() < 1) throw new Error('Leader production renderer was not used.');
+          if (await printPage.locator('iframe[src*="kind=proposal"]').count() < 2) throw new Error('Proposal front/reverse renderers were not paired.');
+          if (await printPage.locator('iframe[src*="kind=rite"]').count() < 2) throw new Error('Rite front/reverse renderers were not paired.');
+          if (await printPage.locator('iframe[src*="financiers-capital-ledger"]').count() < 2) throw new Error('Capital Ledger identical-face duplex render was not paired.');
+          if (await printPage.locator('iframe[src*="back-renderer"]').count() < 2) throw new Error('Standard backs were not added for one-sided cards.');
+
+          await page.screenshot({ path: '/tmp/deckbuilder-custom-print-workspace.png', fullPage: true });
+          await printPage.screenshot({ path: '/tmp/deckbuilder-custom-print-sheet.png', fullPage: true });
+          if (errors.length) throw new Error(`Custom print browser errors:\n${errors.join('\n')}`);
+
+          await browser.close();
+          NODE
+
+      - name: Upload browser screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: deckbuilder-custom-print-browser-smoke
+          path: /tmp/deckbuilder-custom-print-*.png
+          if-no-files-found: error

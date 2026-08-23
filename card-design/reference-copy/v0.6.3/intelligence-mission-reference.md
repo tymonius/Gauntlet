@@ -22,10 +22,9 @@
 
 During Denouement, spend **1 Action** to place an eligible Intelligence card from Hand face down as your **Active Mission**.
 
-- It must have a printed **Mission** requirement.
-- You may have only one Active Mission.
-- You cannot have an Active Mission and Special Operation simultaneously.
-- It cannot complete during the turn it begins.
+- Choose a card with a printed **Mission** requirement.
+- The Mission / Special Operation slot holds **one card**.
+- A Mission becomes eligible to complete starting on a later turn.
 
 ### Complete a Mission
 
@@ -35,7 +34,7 @@ During Denouement, if its requirement is satisfied, spend **1 Action** to reveal
 - Gain **Intel equal to the card's value**.
 - Put the Mission in your **Discard Pile**.
 
-Satisfying the requirement does not complete it automatically.
+Completion still requires the Denouement Action above after the requirement is satisfied.
 
 ## Reverse — Special Operations
 
@@ -45,19 +44,17 @@ Satisfying the requirement does not complete it automatically.
 
 **Fail:** If a rule, effect, or continuing requirement causes failure, reveal the Mission and put it in your Graveyard.
 
-Aborting is not failure.
-
 ### Readiness
 
 A Special Operation is ready only while your **Operation Progress exceeds the number of Territories the opponent controls**.
 
-To start one, you must also have no Active Mission or Special Operation and have an eligible Intelligence card in Hand.
+To start one, the Mission / Special Operation slot must be empty and you must have an eligible Intelligence card in Hand.
 
 ### Start
 
 During Denouement, spend **1 Action** to place the eligible card face down as your Special Operation.
 
-It uses the card's printed Mission requirement, but is **not a normal Mission** and grants **no Mission reward**.
+It uses the card's printed Mission requirement. On completion, resolve only the Special Operation payment and win procedure below.
 
 ### Complete & Win
 

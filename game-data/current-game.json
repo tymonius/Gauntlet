@@ -12,14 +12,16 @@
     "territories": "/docs/v0.6.4-territories.json",
     "proposals": "/docs/v0.6.4-diplomat-proposals.json",
     "arcaneSymbol": "/docs/v0.6.4-arcane-symbol.json",
+    "rules": "/docs/v0.6.4-rules.json",
     "componentContract": "/config/tts-component-contract.json",
     "starterDecks": "/deckbuilder/starter-decks.json"
   },
   "resolution": {
-    "cards": "Start with baseGameplay.gameplay.cards; remove cardChanges.retired_cards; then replace an existing stable id with cardChanges.cards or add it when the id is new.",
+    "cards": "Start with baseGameplay.gameplay.cards; remove cardChanges.retired_cards; then replace an existing stable id with cardChanges.cards or add it when the id is new; finally apply rules.card_text_overrides by stable id and effect label.",
     "territories": "territories.territories is the complete current Territory pool.",
     "proposals": "proposals.proposals is the complete current Proposal pool.",
     "arcaneSymbol": "arcaneSymbol supplies the current Arcane-symbol and Arcane-trait clarification rules.",
+    "rules": "rules overrides active shared-rule fields from the immutable base release and supplies current rulebook wording.",
     "components": "componentContract is the current physical-component contract.",
     "starterDecks": "starterDecks.decks is the complete current recommended starter-deck set."
   },
@@ -41,9 +43,9 @@
       "note": "Movement and attack",
       "sections": [
         ["Command", "Maximum 2. The first time each turn you win a battle, gain 1 Command."],
-        ["Onward", "During your Movement, before a pending battle is created, move one additional Position. This movement may create a pending battle.", "1 Command"],
+        ["Onward", "During your Movement, before a battle is initiated, move one additional Position. This movement may initiate a battle.", "1 Command"],
         ["Rally", "Before dice are rolled in a battle you initiated, add +1 to your battle total.", "1 Command"],
-        ["Rout", "At the end of the Aftermath of a battle you initiated and won, advance one Position. This movement may create a pending battle.", "2 Command"]
+        ["Rout", "At the end of the Aftermath of a battle you initiated and won, advance one Position. This movement may initiate a battle.", "2 Command"]
       ]
     },
     {
@@ -186,7 +188,7 @@
       "note": "Defense, retaliation, and pursuit",
       "sections": [
         ["Conviction", "Gain Conviction from qualifying opposing post-battle Graveyard entries, up to 4."],
-        ["Relentless Pursuit", "Once per turn, at the end of the Aftermath of a battle an opponent initiated against you and lost, spend 2 Conviction to end their turn and advance one Position toward their end. Any resulting pending battle uses you as attacker.", "2 Conviction"],
+        ["Relentless Pursuit", "Once per turn, at the end of the Aftermath of a battle an opponent initiated against you and lost, spend 2 Conviction to end their turn and advance one Position toward their end. If this movement initiates a battle, you are the attacker.", "2 Conviction"],
         ["Purification", "If the opponent's normal Draw produces nothing because both Draw Pile and Discard Pile are empty, win immediately."]
       ]
     }
