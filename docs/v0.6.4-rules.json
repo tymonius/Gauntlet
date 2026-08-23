@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "version": "v0.6.4-candidate",
+  "base_version": "v0.6.3",
+  "status": "accepted current-development rules migration",
+  "change_type": "collapse-pending-battle-into-onset",
+  "mechanics_changed": true,
+  "summary": "Onset replaces Pending Battle as the first phase of the battle sequence. During Onset, establish the battle context, resolve Terms when applicable, determine whether the battle proceeds, and resolve other pre-Gambit effects before setting Gambits.",
+  "battle": {
+    "sequence": [
+      "onset",
+      "set_gambits",
+      "form_reserves",
+      "reveal_gambits",
+      "choose_tactics",
+      "reveal_tactics",
+      "outcome",
+      "aftermath"
+    ],
+    "remove_fields": [
+      "pending_sequence"
+    ],
+    "onset": "When movement initiates a battle, enter Onset. Establish the attacker, defender, contested Position, and attacker's previous Position. Resolve Terms first when applicable. If the battle is prevented or a player withdraws during Onset, end the battle sequence without setting Gambits and without a battle result. Otherwise resolve other effects that apply during Onset or before Gambits are set, then proceed to Gambits.",
+    "onset_steps": [
+      "Establish the attacker, defender, contested Position, and attacker's previous Position.",
+      "Resolve Terms first when applicable.",
+      "If the battle has been prevented or a player withdraws, end the battle sequence.",
+      "Resolve other effects that apply during Onset or before Gambits are set.",
+      "If the battle still proceeds, continue to Gambits."
+    ],
+    "withdrawal": "Withdrawal during Onset ends the battle sequence without a winner or battle result. No Gambits are set and no Aftermath occurs. After Onset has completed and the battle has proceeded to Gambits, a later withdrawal completes the remaining non-result Aftermath steps and clears committed battle cards normally.",
+    "battle_fought": "A battle sequence that ends during Onset is not a battle fought, won, or lost. Once Onset completes and the sequence proceeds to Gambits, the battle has proceeded for effects that care whether a battle occurred.",
+    "movement": "Entering the opponent's Position initiates a battle and ends that movement sequence. Effects that grant movement may initiate a battle unless they say otherwise.",
+    "terms": "Terms are resolved during Onset before other pre-Gambit effects. Accepted Terms end the battle sequence during Onset. Refused Terms apply their Refused effect, then Onset continues unless that effect ends the sequence."
+  },
+  "terminology": {
+    "removed_term": "Pending Battle",
+    "replacement": "Onset",
+    "movement_wording": "Movement initiates a battle; it does not create a pending battle.",
+    "timing_wording": "Effects formerly keyed to when a battle would begin resolve during Onset unless their text gives another timing."
+  },
+  "card_text_overrides": [
+    {
+      "id": "neutral-advance-guard",
+      "label": "Action",
+      "text": "During Opening, during your Movement this turn, you may move one additional Position. If that additional movement initiates a battle, you cannot set a Gambit in that battle."
+    },
+    {
+      "id": "neutral-forced-march",
+      "label": "Action",
+      "text": "During Opening, during your Movement this turn, you may move one additional Position. This additional movement cannot initiate a battle."
+    }
+  ],
+  "rulebook_overrides": [
+    {
+      "id": "battle-onset",
+      "heading": "Onset",
+      "body": "Onset is the first phase of the battle sequence. When movement initiates a battle, establish the attacker, defender, contested Position, and attacker's previous Position. Resolve Terms first when applicable. If the battle is prevented or a player withdraws during Onset, end the battle sequence without setting Gambits, without a battle result, and without an Aftermath. Otherwise resolve other effects that apply during Onset or before Gambits are set, then proceed to Gambits. A battle sequence that ends during Onset is not a battle fought, won, or lost."
+    },
+    {
+      "id": "battle-withdrawal",
+      "heading": "Withdrawal",
+      "body": "Withdrawal during Onset ends the battle sequence without a winner or battle result. No Gambits are set and no Aftermath occurs. After Onset has completed and the battle has proceeded to Gambits, a later withdrawal completes the remaining non-result Aftermath steps and clears committed battle cards normally."
+    },
+    {
+      "id": "battle-movement",
+      "heading": "Movement and battles",
+      "body": "Entering the opponent's Position initiates a battle and ends that movement sequence. Effects that grant movement may initiate a battle unless they say otherwise."
+    }
+  ]
+}
