@@ -2,35 +2,29 @@ import { describe, expect, test } from 'vitest';
 import * as current from './current';
 
 describe('current digital rules surface', () => {
-  test('binds current content to the published v0.6.3 release adapter', () => {
-    expect(current.CURRENT_RULES_VERSION).toBe('v0.6.3');
-    expect(current.V063_RULES_VERSION).toBe('v0.6.3');
-    expect(current.v063CanonicalContent.rulesVersion).toBe('v0.6.3');
-    expect(current.v063CanonicalContent.canonicalDataSource).toBe(
-      'releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json',
-    );
-    expect(current.v063CanonicalContent.releaseManifestSource).toBe(
-      'releases/v0.6.3/Gauntlet_v0.6.3_Manifest.json',
-    );
+  test('binds current content to the v0.6.4 candidate authority', () => {
+    expect(current.CURRENT_RULES_VERSION).toBe('v0.6.4-candidate');
+    expect(current.V064_CANDIDATE_RULES_VERSION).toBe('v0.6.4-candidate');
+    expect(current.v064CandidateContent.rulesVersion).toBe('v0.6.4-candidate');
+    expect(current.v064CandidateContent.authorityPath).toBe('game-data/current-game.json');
+    expect(current.v064CandidateContent.rulesSource.change_type).toBe('collapse-pending-battle-into-onset');
+    expect(current.v064CandidateContent.battle).not.toHaveProperty('pending_sequence');
   });
 
-  test('does not expose the reconstruction adapter as the current content contract', () => {
-    expect('cleanV063Content' in current).toBe(false);
-    expect('CLEAN_V063_AUTHORITY_TARGET' in current).toBe(false);
-    expect('createCleanV063TurnState' in current).toBe(false);
-  });
-
-  test('exposes migrated v0.6.3 gameplay procedures rather than stale rule-runtime names', () => {
+  test('exposes the Onset-first battle API instead of the v0.6.3 pending-battle API', () => {
     for (const name of [
-      'createV063TurnState',
-      'advanceV063TurnPhase',
-      'applyV063Capture',
-      'createV063PendingBattle',
-      'createV063LastStandBattle',
-      'resolveV063BattleOutcome',
-      'applyV063BattleOutcome',
-      'resolveV063Withdrawal',
-      'retreatV063Position',
+      'createV064TurnState',
+      'advanceV064TurnPhase',
+      'createV064BattleOnset',
+      'createV064LastStandOnset',
+      'proceedV064ToGambits',
+      'endV064OnsetWithoutBattle',
+      'resolveV064BattleOutcome',
+      'applyV064BattleOutcome',
+      'resolveV064Withdrawal',
+      'beginNormalV064Movement',
+      'beginEffectGrantedV064Movement',
+      'applyV064MovementChoice',
       'hasInherentBankAction',
       'activateInvasionAction',
       'resolveLandslideRetreatChain',
@@ -98,16 +92,20 @@ describe('current digital rules surface', () => {
     }
 
     for (const name of [
-      'createTurnState',
-      'advanceTurnPhase',
-      'applyNormalCapture',
+      'createV063PendingBattle',
+      'beginV063Onset',
+      'beginV063ActiveBattle',
       'createPendingBattle',
-      'resolveBattleOutcome',
-      'applyBattleOutcome',
-      'resolveWithdrawal',
-      'retreatPosition',
     ]) {
       expect(current).not.toHaveProperty(name);
     }
+  });
+
+  test('uses current card wording for battle initiation', () => {
+    const advanceGuard = current.v064CandidateContent.cardsById.get('neutral-advance-guard');
+    const forcedMarch = current.v064CandidateContent.cardsById.get('neutral-forced-march');
+    expect(advanceGuard?.effects.find(effect => effect.label === 'Action')?.text).toContain('initiates a battle');
+    expect(forcedMarch?.effects.find(effect => effect.label === 'Action')?.text).toContain('cannot initiate a battle');
+    expect(JSON.stringify([advanceGuard, forcedMarch])).not.toContain('pending battle');
   });
 });
