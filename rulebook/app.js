@@ -391,7 +391,8 @@ async function loadVerifiedReleasedSource() {
       if (actualHash !== SOURCE_SHA256) throw new Error(`Rulebook source hash mismatch: ${actualHash}`);
 
       const chapter11 = await chapter11Response.text();
-      return publicRulebookSource(new TextDecoder().decode(bytes), chapter11);
+      const markdown = publicRulebookSource(new TextDecoder().decode(bytes), chapter11);
+      return markdown;
     })().catch((error) => {
       sourcePromise = null;
       throw error;
