@@ -4,7 +4,7 @@ import {
   buildTableSnapPoints,
   buildTableTextObjects,
   buildTableVectorLines,
-} from '../scripts/apply-tts-table-layout.mjs';
+} from '../tts/apply-table-layout.mjs';
 
 describe('TTS table layout', () => {
   it('marks the canonical player zones without inventing battle or Front Line zones', () => {
