@@ -1,3 +1,4 @@
+# Temporary pre-release QA host for the exact generated v0.7.0 TTS artifact.
 name: Publish v0.7.0 TTS QA assets
 
 on:
