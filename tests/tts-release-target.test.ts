@@ -6,14 +6,14 @@ const target = JSON.parse(readFileSync('config/tts-release-target.json', 'utf8')
 const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
 
 describe('TTS release target identity', () => {
-  it('targets v0.7.0 while retaining the approved current-game source provenance', () => {
+  it('targets the v0.7.0 release candidate while retaining approved current-game source provenance', () => {
     expect(target).toEqual(expect.objectContaining({
       schemaVersion: 1,
       releaseTag: 'v0.7.0',
       displayVersion: 'v0.7.0',
       sourceVersion: currentGame.version,
       currentGameAuthority: 'game-data/current-game.json',
-      status: 'active-development',
+      status: 'release-candidate',
     }));
     expect(currentGame.version).toBe('v0.6.4-candidate');
   });
@@ -23,6 +23,7 @@ describe('TTS release target identity', () => {
     expect(release.version).toBe('v0.7.0');
     expect(release.displayVersion).toBe('v0.7.0');
     expect(release.sourceVersion).toBe(currentGame.version);
+    expect(release.targetStatus).toBe('release-candidate');
     expect(release.outputRoot.replaceAll('\\', '/')).toMatch(/\/tts\/generated\/v0\.7\.0$/);
   });
 
