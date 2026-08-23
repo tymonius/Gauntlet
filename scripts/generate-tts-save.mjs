@@ -131,8 +131,8 @@ function buildStarterKit(starter, releaseAssets, kitTransform, guid) {
   const deck = {
     ...objectBase(
       'DeckCustom',
-      `${starter.name} Deck`,
-      `${starter.cardCount} cards · ${starter.deckbuildingValue} deckbuilding value`,
+      `${starter.name} Deck — ${starter.cardCount} cards`,
+      `Complete ${starter.cardCount}-card starter Deck · ${starter.deckbuildingValue} deckbuilding value`,
       transform(),
       guid(),
     ),
@@ -141,6 +141,9 @@ function buildStarterKit(starter, releaseAssets, kitTransform, guid) {
     CustomDeck: deckStates,
     ContainedObjects: containedCards,
   };
+  if (deck.DeckIDs.length !== Number(starter.cardCount) || deck.ContainedObjects.length !== Number(starter.cardCount)) {
+    throw new Error(`Starter ${starter.id} generated an incomplete DeckCustom stack: ${deck.DeckIDs.length} DeckIDs / ${deck.ContainedObjects.length} card objects; expected ${starter.cardCount}.`);
+  }
 
   const leaderTts = starter.leader.tts;
   const leaderBackFile = leaderTts.backFile || starter.back.file;
@@ -183,7 +186,7 @@ function buildStarterKit(starter, releaseAssets, kitTransform, guid) {
     `${starter.leader.name} · ${starter.factionId}`,
     starter.summary || starter.strategy || '',
     territoryOrder ? `Recommended Territories: ${territoryOrder}` : '',
-    'Contains the playable Deck, Leader Card, and three selected Territories.',
+    `Contains the complete ${starter.cardCount}-card playable Deck, Leader Card, and three selected Territories.`,
   ].filter(Boolean).join('\n\n');
 
   return {
