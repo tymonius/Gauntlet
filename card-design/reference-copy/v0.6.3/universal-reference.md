@@ -14,10 +14,10 @@
 2. **Draw** — Draw 1 card.
 3. **Opening** — You may take your Action here.
 4. **Movement** — Advance, Hold, or Fall Back. Resolve any battle immediately.
-5. **Denouement** — If you did not take your normal Action in Opening, you may take it here.
+5. **Denouement** — If you did not take your Action in Opening, you may take it here.
 6. **Cleanup** — Resolve end-of-turn effects and discard down to your Hand limit.
 
-You normally take **1 Action total per turn**, during either Opening or Denouement. Additional Actions do not normally permit more than one Action in the same phase.
+You take **1 Action total per turn**, during either Opening or Denouement. Additional Actions do not permit more than one Action in the same phase.
 
 ### Movement
 
@@ -44,7 +44,7 @@ When movement creates a pending battle, proceed to **Onset**. At Onset, the batt
 
 Higher battle total wins. **Defensive Edge** wins ties. Otherwise, each player rolls 1 die with no modifiers; higher roll wins; reroll ties.
 
-### Normal Result
+### Battle Result
 
 - Losing attacker → returns to the Position they entered from.
 - Losing defender → retreats 1 Position toward their own end.
@@ -57,7 +57,7 @@ Higher battle total wins. **Defensive Edge** wins ties. Otherwise, each player r
 
 ### Withdrawal
 
-No winner or loser; victory, loss, and retreat triggers do not occur. After Onset, finish remaining non-result Aftermath steps and clear battle cards normally.
+No winner or loser; victory, loss, and retreat triggers do not occur. After Onset, finish remaining non-result Aftermath steps and clear battle cards.
 
 ### Front Line & Capture
 
@@ -65,7 +65,7 @@ No winner or loser; victory, loss, and retreat triggers do not occur. After Onse
 
 At the start of your turn, if you occupy an opponent's Territory, rotate that Territory card to face you to capture it. If doing so would create a non-continuous line of controlled Territories, instead capture the next Territory past your Front Line: **Advance Front Line 1**.
 
-Normal Capture changes control of at most **1 Territory per turn**. **Occupation** alone does not change control.
+Capture changes control of at most **1 Territory per turn**. **Occupation** alone does not change control.
 
 ### Run the Gauntlet
 
@@ -75,4 +75,4 @@ Normal Capture changes control of at most **1 Territory per turn**. **Occupation
 
 No prior control of the final Territory is required. After the opponent retreats beyond their end, force them to make a Last Stand only with a **new legal Advance beyond the Gauntlet**; unused prior movement cannot carry over.
 
-The defender normally has **Defensive Edge**.
+The defender has **Defensive Edge**.
