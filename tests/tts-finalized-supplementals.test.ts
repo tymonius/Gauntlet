@@ -21,14 +21,26 @@ describe('finalized TTS supplemental exports', () => {
     expect(deeds[0].backPolicy).toBe('standardBack');
   });
 
-  it('reuses the production Proposal, Ledger, and Deed renderers instead of defining second visual systems', () => {
+  it('reuses the complete production rendering lifecycle instead of defining a second visual system', () => {
+    const shell = readFileSync('tts/finalized-supplemental-renderer/index.html', 'utf8');
     const renderer = readFileSync('tts/finalized-supplemental-renderer/renderer.js', 'utf8');
+
     expect(renderer).toContain("from '/card-design/proposal-card.js'");
     expect(renderer).toContain("from '/card-design/capital-ledger.js'");
     expect(renderer).toContain("from '/card-design/deed-card.js'");
     expect(renderer).toContain('proposalFace(');
     expect(renderer).toContain('capitalLedgerMarkup(');
     expect(renderer).toContain('deedCardMarkup(');
+
+    expect(shell).toContain('/card-design/card-design-refinement.css');
+    expect(shell).toContain('/card-design/supplemental-refinements.css');
+    expect(shell).toContain('/tts/artwork-direction-overrides.js');
+    expect(shell).toContain('/tts/artwork-crop.js');
+    expect(shell).toContain('/card-design/card-design.js');
+    expect(renderer).toContain('prepareProductionCard(');
+    expect(renderer).toContain('GauntletArtworkCrop.apply(');
+    expect(renderer).toContain('title is clipped');
+    expect(renderer).toContain('rules are clipped');
   });
 
   it('orients landscape supplemental cards generically from manifest metadata', () => {
