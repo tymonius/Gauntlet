@@ -90,7 +90,13 @@ describe("Deckbuilder custom printing", () => {
     expect(customPrint).toContain('entry.backPolicy === "standardBack"');
     expect(customPrint).toContain("mirrorIndexForLongEdge(frontIndex)");
     expect(customPrint).toContain("flip on the long edge");
-    expect(customPrint).toContain("Match each card's faction");
+    expect(customPrint).toContain("Use canonical card backs");
+  });
+
+  it("keeps playable cards and Territories black while using faction backs for standard-backed components", () => {
+    expect(customPrint).toContain('entry.render.surface === "card" || entry.render.surface === "territory"');
+    expect(customPrint).toContain('return "intelligence";');
+    expect(customPrint).toContain('BACK_VARIANTS.has(entry.faction) ? entry.faction : "intelligence"');
   });
 
   it("waits for every production iframe and fails closed instead of printing incomplete cards", () => {
