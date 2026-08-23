@@ -10,7 +10,7 @@
 
 ### Turn Sequence
 
-1. **Capture** — If your token is on or beyond the next opponent-controlled Territory beyond your Front Line, capture that Territory; then resolve after-Capture effects and victory checks.
+1. **Capture** — If you occupy an opponent's Territory at the start of your turn, rotate that Territory card to face you to capture it. If doing so would create a non-continuous line of controlled Territories, instead capture the next Territory past your Front Line: **Advance Front Line 1**. Then resolve after-Capture effects and victory checks.
 2. **Draw** — Draw 1 card.
 3. **Opening** — You may take your Action here.
 4. **Movement** — Advance, Hold, or Fall Back. Resolve any battle immediately.
@@ -61,9 +61,11 @@ No winner or loser; victory, loss, and retreat triggers do not occur. After Onse
 
 ### Front Line & Capture
 
-**Front Line** = your unbroken line of controlled Territories from your own end. During Capture, if you are on or beyond the next opponent-controlled Territory beyond it, capture that Territory. Normal Capture advances at most **1 Territory per turn**.
+**Front Line** = your continuous line of controlled Territories from your own end.
 
-**Occupation** alone does not change control.
+At the start of your turn, if you occupy an opponent's Territory, rotate that Territory card to face you to capture it. If doing so would create a non-continuous line of controlled Territories, instead capture the next Territory past your Front Line: **Advance Front Line 1**.
+
+Normal Capture changes control of at most **1 Territory per turn**. **Occupation** alone does not change control.
 
 ### Run the Gauntlet
 
