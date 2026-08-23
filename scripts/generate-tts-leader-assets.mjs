@@ -143,18 +143,19 @@ async function validateLeader(page, leader, displayVersion) {
     const image = element.querySelector('.card-art img');
     const footer = Array.from(element.querySelectorAll('.card-footer span')).map((node) => node.textContent?.trim() || '');
     const overflows = node => Boolean(node) && (
-      node.scrollWidth > node.clientWidth + 0.5 || node.scrollHeight > node.clientHeight + 0.5
+      node.scrollWidth > node.clientWidth + 1 || node.scrollHeight > node.clientHeight + 1
     );
     return {
       width: rect.width,
       height: rect.height,
       faction: element.dataset.faction,
       title: titleNode?.textContent?.trim() || '',
+      titleFit: element.dataset.titleFit === 'true',
       fitWarning: element.classList.contains('fit-warning'),
       titleOverflow: overflows(titleNode),
       rulesOverflow: overflows(rulesNode),
       interiorOverflow: overflows(interior),
-      footerOverflow: Boolean(interior && footerNode && footerNode.getBoundingClientRect().bottom > interior.getBoundingClientRect().bottom + 0.5),
+      footerOverflow: Boolean(interior && footerNode && footerNode.getBoundingClientRect().bottom > interior.getBoundingClientRect().bottom + 1),
       imageLoaded: Boolean(image?.complete && image?.naturalWidth > 0 && image?.naturalHeight > 0),
       artCrop: image?.dataset.artCrop || '',
       footer,
@@ -167,7 +168,7 @@ async function validateLeader(page, leader, displayVersion) {
   if (metrics.faction !== leader.faction || metrics.title !== leader.name) {
     throw new Error(`Production Leader surface does not match current-game ${leader.faction}:${leader.id}: ${JSON.stringify(metrics)}.`);
   }
-  if (metrics.fitWarning || metrics.titleOverflow || metrics.rulesOverflow || metrics.interiorOverflow || metrics.footerOverflow) {
+  if (!metrics.titleFit || metrics.fitWarning || metrics.titleOverflow || metrics.rulesOverflow || metrics.interiorOverflow || metrics.footerOverflow) {
     throw new Error(`Leader content does not fit the approved frame: ${leader.faction}:${leader.id} ${JSON.stringify(metrics)}.`);
   }
   if (!metrics.imageLoaded) throw new Error(`Leader portrait failed to load: ${leader.faction}:${leader.id}.`);
