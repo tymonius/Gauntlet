@@ -42,6 +42,11 @@ describe('final Universal Reference and reference-title fitting', () => {
     expect(copy).not.toContain('If your token is on or beyond the next opponent-controlled Territory beyond your Front Line');
   });
 
+  it('makes Last Stand victory explicitly offensive rather than implying the defender could win by repelling an attack', () => {
+    expect(copy).toContain("Win immediately by capturing the opponent's final Territory or by forcing the opponent's **Last Stand** and winning the resulting battle.");
+    expect(copy).not.toContain('or winning a **Last Stand**');
+  });
+
   it('shrinks, wraps, then shrinks the wrapped reference-face title before failing', () => {
     expect(universalStyles).toContain('@import url("reference-title-wrap.css")');
     expect(referenceRenderer).toContain('const REFERENCE_TITLE_MIN_PT = 8.4');
