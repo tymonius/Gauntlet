@@ -17,7 +17,7 @@
 }
 
 .reference-card[data-component-id="universal-reference"] .reference-card-interior {
-  grid-template-rows: 0.56in minmax(0, 1fr) 0.18in;
+  grid-template-rows: 0.50in minmax(0, 1fr) 0.18in;
   background-color: var(--card-parchment, #e6d4ae);
   background-image: var(--parchment-image, var(--reference-parchment-image));
   background-position: center center;
@@ -31,17 +31,18 @@
 
 .reference-card[data-component-id="universal-reference"] .reference-card-header {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: 0.17in minmax(0, 1fr);
   grid-template-rows: auto auto auto;
   align-content: center;
+  column-gap: 0.043in;
   row-gap: 0;
-  padding: 0.024in 0.085in 0.018in;
+  padding: 0.022in 0.085in 0.016in;
   border-bottom: 0;
   background: transparent;
 }
 
 .reference-card[data-component-id="universal-reference"] .reference-card-header::before {
-  grid-column: 1;
+  grid-column: 2;
   grid-row: 1;
   color: var(--component-accent-ink);
   content: "Gauntlet";
@@ -54,7 +55,7 @@
 }
 
 .reference-card[data-component-id="universal-reference"] .reference-face-title {
-  grid-column: 1;
+  grid-column: 2;
   grid-row: 2;
   display: block;
   min-width: 0;
@@ -67,22 +68,17 @@
 }
 
 .reference-card[data-component-id="universal-reference"] .reference-type-line {
-  grid-column: 1;
-  grid-row: 3;
-  display: flex;
-  align-items: center;
-  gap: 0.043in;
-  min-width: 0;
-  margin-top: 0.028in;
-  color: var(--component-accent-ink);
+  display: contents;
 }
 
 .reference-card[data-component-id="universal-reference"] .reference-faction-emblem {
+  grid-column: 1;
+  grid-row: 1 / span 2;
   display: block;
+  align-self: center;
   width: 0.17in;
   height: 0.17in;
-  flex: 0 0 0.17in;
-  background: currentColor;
+  background: var(--component-accent-ink);
   -webkit-mask-image: url("../images/Gauntlet.svg");
   -webkit-mask-position: left center;
   -webkit-mask-repeat: no-repeat;
@@ -94,8 +90,10 @@
 }
 
 .reference-card[data-component-id="universal-reference"] .reference-type-line span:last-child {
+  grid-column: 1 / -1;
+  grid-row: 3;
   min-width: 0;
-  margin: 0;
+  margin-top: 0.018in;
   padding: 0;
   border: 0;
   color: var(--component-accent-ink);
@@ -112,7 +110,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--reference-section-gap);
-  padding: 0.026in 0.070in 0.022in;
+  padding: 0.028in 0.070in 0.024in;
 }
 
 .reference-card[data-component-id="universal-reference"] .reference-panel {
@@ -126,24 +124,25 @@
 }
 
 .reference-card[data-component-id="universal-reference"] .reference-panel-heading {
-  padding-bottom: calc(0.007in * var(--reference-rules-scale));
+  padding-bottom: calc(0.012in * var(--reference-rules-scale));
 }
 
 .reference-card[data-component-id="universal-reference"] .reference-panel-heading h4 {
   color: var(--component-accent-ink);
   font-size: calc(4.85pt * var(--reference-rules-scale));
   letter-spacing: 0.055em;
+  line-height: 1.08;
 }
 
 .reference-card[data-component-id="universal-reference"] .reference-prose {
   font-size: calc(5.9pt * var(--reference-rules-scale));
-  line-height: 1.075;
+  line-height: 1.085;
 }
 
 .reference-card[data-component-id="universal-reference"] .reference-option-list li,
 .reference-card[data-component-id="universal-reference"] .reference-step-list li {
   font-size: calc(5.72pt * var(--reference-rules-scale));
-  line-height: 1.055;
+  line-height: 1.07;
 }
 
 .reference-card[data-component-id="universal-reference"] .reference-step-list li {
