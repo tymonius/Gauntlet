@@ -6,7 +6,7 @@ This guide governs player-facing card wording. It favors natural English, define
 
 - Preserve timing, optionality, costs, sources, targets, quantities, duration, order, and card movement exactly.
 - Prefer ordinary verbs such as **occupy**, **defend**, **discard**, **bank**, **return**, and **capture**.
-- Use defined terms when they are more precise, especially **Counterattack**, **Aftermath**, **Gambit**, **Tactic**, **Reserve**, **Asset**, and **Overlay**.
+- Use defined terms when they are more precise, especially **Onset**, **Counterattack**, **Aftermath**, **Gambit**, **Tactic**, **Reserve**, **Asset**, and **Overlay**.
 - Do not force glossary nouns into sentences when a natural verb is clearer.
 - State where a card goes. Do not refer to a card's “destination.”
 - Use **this card** for self-reference unless the title matters because of copies, title matching, or another explicit rule.
@@ -26,6 +26,8 @@ Use **Action: Bank this card.** rather than repeating the title and “as an Ass
 
 ## Preferred templates
 
+- **Battle initiation:** “initiate a battle”; “if this movement initiates a battle”
+- **Onset timing:** “During Onset, …” or a narrower instruction such as “During Onset, after Terms are resolved, …” when order matters
 - **Occupation:** “while you occupy a Territory”
 - **Counterattack:** “while defending against a Counterattack”; “when you initiate a Counterattack”; “if this battle is a Counterattack”
 - **Aftermath:** “In the Aftermath, …”
@@ -43,6 +45,8 @@ Use **Action: Bank this card.** rather than repeating the title and “as an Ass
 - **Reveal priority:** “When revealed, before other effects at this stage, …”
 - **Direct cost:** “You may discard this card to draw two cards.”
 
+Use **initiate a battle** rather than **create a pending battle**. **Pending Battle is not a current game term.** Onset is the first phase of the battle sequence and contains the determination of whether the battle proceeds before Gambits are set.
+
 Use **Action Opportunity** only for timing. State any Action spent, gained, or bypassed separately.
 
 ## Terms that must remain distinct
@@ -50,6 +54,7 @@ Use **Action Opportunity** only for timing. State any Action spent, gained, or b
 - **Action** and **Action Opportunity**
 - **May** and **must**
 - **Retreat** and **withdraw**
+- **Onset** and **Aftermath**
 - **Attacker**, **defender**, and “a battle you initiated”
 - **After Tactics are revealed**, **before dice are rolled**, and other distinct timing windows
 - **Hand**, **Reserve**, **Discard Pile**, **Graveyard**, **Asset Bank**, and **Treasury**
