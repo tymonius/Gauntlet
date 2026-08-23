@@ -130,6 +130,7 @@ describe('final Universal Reference and reference-title fitting', () => {
     expect(supplementalGenerator).toContain("faction: component.faction || 'neutral'");
     expect(deckbuilderComponents).toContain('bridgeSharedReferencesIntoPrintAuthority(currentGame)');
     expect(deckbuilderComponents).toContain('component.productionStatus === "ready"');
-    expect(deckbuilderComponents).toContain('components: Object.freeze([...factionComponents, ...sharedReferences])');
+    expect(deckbuilderComponents).toContain('const printSharedReferences = sharedReferences.map(sharedReferencePrintCandidate)');
+    expect(deckbuilderComponents).toContain('components: Object.freeze([...factionComponents, ...printSharedReferences])');
   });
 });
