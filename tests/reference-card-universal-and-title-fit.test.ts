@@ -7,6 +7,7 @@ const referenceRenderer = readFileSync('card-design/reference-card.js', 'utf8');
 const ruleColumns = readFileSync('card-design/card-rule-columns.css', 'utf8');
 const universalStyles = readFileSync('card-design/universal-reference.css', 'utf8');
 const titleWrapStyles = readFileSync('card-design/reference-title-wrap.css', 'utf8');
+const gauntletMark = readFileSync('images/Gauntlet.svg', 'utf8');
 const ttsRenderer = readFileSync('tts/supplemental-renderer/index.html', 'utf8');
 const supplementalGenerator = readFileSync('scripts/generate-tts-supplemental-assets.mjs', 'utf8');
 const deckbuilderComponents = readFileSync('deckbuilder/faction-components.js', 'utf8');
@@ -72,6 +73,19 @@ describe('final Universal Reference and reference-title fitting', () => {
     expect(universalStyles).toContain('.reference-card[data-component-id="universal-reference"]');
     expect(universalStyles).toContain('neutral-parchment-v2.png');
     expect(ttsRenderer).toContain('/card-design/universal-reference.css');
+  });
+
+  it('uses the Gauntlet G in the emblem slot and removes list/section divider chrome', () => {
+    expect(gauntletMark).toContain('viewBox="0 0 1871.79 493.58"');
+    expect(universalStyles).toContain('-webkit-mask-image: url("../images/Gauntlet.svg")');
+    expect(universalStyles).toContain('-webkit-mask-position: left center');
+    expect(universalStyles).toContain('-webkit-mask-size: auto 100%');
+    expect(universalStyles).toContain('grid-template-columns: 0.10in minmax(0, 1fr)');
+    expect(universalStyles).toContain('text-align: left');
+    expect(universalStyles).toContain('grid-template-columns: 0.045in minmax(0, 1fr)');
+    expect(universalStyles).toContain('margin-top: 0.019in');
+    expect(universalStyles).toContain('.reference-panel + .reference-panel {\n  padding-top: 0;\n  border-top: 0;');
+    expect(universalStyles).toContain('.reference-option-list li + li {\n  margin-top: calc(0.008in * var(--reference-rules-scale));\n  padding-top: 0;\n  border-top: 0;');
   });
 
   it('exports and production-prints the ready shared reference instead of leaving it as a placeholder', () => {
