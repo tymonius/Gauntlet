@@ -2,9 +2,9 @@
 name: Publish v0.7.0 TTS QA assets
 
 on:
-  push:
+  pull_request:
     branches:
-      - release/v0.7.0-cutover
+      - main
     paths:
       - .github/workflows/publish-v070-tts-qa-assets.yml
   workflow_dispatch:
@@ -14,11 +14,12 @@ permissions:
   contents: write
 
 concurrency:
-  group: publish-v070-tts-qa-assets
+  group: publish-v070-tts-qa-assets-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: true
 
 jobs:
   publish-qa-assets:
+    if: github.event_name == 'workflow_dispatch' || github.head_ref == 'release/v0.7.0-cutover'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -94,6 +95,8 @@ jobs:
           EOF
 
       - name: Publish isolated QA branch
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           cd /tmp/qa-publish
@@ -103,7 +106,7 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add .
           git commit -m 'Publish v0.7.0 TTS QA assets'
-          git remote add origin "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git"
+          git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git push --force origin "HEAD:refs/heads/${QA_BRANCH}"
 
       - name: Verify QA-hosted URLs
