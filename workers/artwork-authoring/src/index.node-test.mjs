@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { __test } from './index.js';
 import { __sessionTest } from './index-session.js';
+import { __testReady } from './index-publish-ready.js';
 import {
   normalizeArtDirection,
   parseArtDirectionSource,
@@ -61,4 +62,12 @@ test('GitHub validation failure is a no-op only when branches are identical', ()
   assert.equal(__sessionTest.isNoOpValidation(422, 'Validation Failed', false), false);
   assert.equal(__sessionTest.isNoOpValidation(409, 'Validation Failed', true), false);
   assert.equal(__sessionTest.isNoOpValidation(422, 'Other failure', true), false);
+});
+
+test('publish readiness waits only while GitHub mergeability is unresolved', () => {
+  assert.equal(__testReady.mergeabilityPending({ state: 'open', mergeable: null, mergeable_state: 'unknown' }), true);
+  assert.equal(__testReady.mergeabilityPending({ state: 'open', mergeable: undefined, mergeable_state: 'unknown' }), true);
+  assert.equal(__testReady.mergeabilityPending({ state: 'open', mergeable: true, mergeable_state: 'clean' }), false);
+  assert.equal(__testReady.mergeabilityPending({ state: 'open', mergeable: false, mergeable_state: 'dirty' }), false);
+  assert.equal(__testReady.mergeabilityPending({ state: 'closed', mergeable: null, mergeable_state: 'unknown' }), false);
 });

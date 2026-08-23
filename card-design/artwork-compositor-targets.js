@@ -17,6 +17,13 @@
   authoringClient.src = 'artwork-authoring-client.js?v=20260819-7';
   document.head.append(authoringClient);
 
+  // Publish runs through a separate reliability shim so a transient Worker or
+  // GitHub mergeability race cannot strand an otherwise valid artwork batch.
+  const publishRecovery = document.createElement('script');
+  publishRecovery.async = false;
+  publishRecovery.src = 'artwork-publish-fetch-recovery.js?v=20260823-1';
+  document.head.append(publishRecovery);
+
   const batchPublishControl = document.createElement('script');
   batchPublishControl.async = false;
   batchPublishControl.src = 'artwork-batch-publish-control.js?v=20260819-2';

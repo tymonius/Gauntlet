@@ -6,6 +6,7 @@ on:
       - "workers/artwork-authoring/**"
       - "card-design/artwork-authoring-client.js"
       - "card-design/artwork-batch-publish-control.js"
+      - "card-design/artwork-publish-fetch-recovery.js"
       - "card-design/artwork-compositor-targets.js"
       - ".github/workflows/deploy-artwork-authoring.yml"
   push:
@@ -15,6 +16,7 @@ on:
       - "workers/artwork-authoring/**"
       - "card-design/artwork-authoring-client.js"
       - "card-design/artwork-batch-publish-control.js"
+      - "card-design/artwork-publish-fetch-recovery.js"
       - "card-design/artwork-compositor-targets.js"
       - ".github/workflows/deploy-artwork-authoring.yml"
   workflow_dispatch:
@@ -42,9 +44,12 @@ jobs:
         run: |
           node --check workers/artwork-authoring/src/index.js
           node --check workers/artwork-authoring/src/index-publish.js
+          node --check workers/artwork-authoring/src/index-session.js
+          node --check workers/artwork-authoring/src/index-publish-ready.js
           node --check workers/artwork-authoring/src/format.js
           node --check card-design/artwork-authoring-client.js
           node --check card-design/artwork-batch-publish-control.js
+          node --check card-design/artwork-publish-fetch-recovery.js
           node --check card-design/artwork-compositor-targets.js
           node --test workers/artwork-authoring/src/index.node-test.mjs
 
