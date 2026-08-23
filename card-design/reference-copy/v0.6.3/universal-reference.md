@@ -69,10 +69,10 @@ Normal Capture changes control of at most **1 Territory per turn**. **Occupation
 
 ### Run the Gauntlet
 
-Win immediately by capturing the opponent's final Territory or by forcing the opponent's **Last Stand** and winning the resulting battle.
+Win immediately by capturing the Territory at the opponent's end or by forcing the opponent to make a **Last Stand** and winning the resulting battle.
 
 ### Last Stand
 
-No prior control of the final Territory is required. After the opponent retreats beyond their end, initiate a Last Stand only with a **new legal Advance beyond the Gauntlet**; unused prior movement cannot carry over.
+No prior control of the final Territory is required. After the opponent retreats beyond their end, force them to make a Last Stand only with a **new legal Advance beyond the Gauntlet**; unused prior movement cannot carry over.
 
 The defender normally has **Defensive Edge**.
