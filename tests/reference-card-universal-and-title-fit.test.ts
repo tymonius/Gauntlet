@@ -42,8 +42,9 @@ describe('final Universal Reference and reference-title fitting', () => {
     expect(copy).not.toContain('If your token is on or beyond the next opponent-controlled Territory beyond your Front Line');
   });
 
-  it('states both Run the Gauntlet routes with the canonical capture target and an explicitly offensive Last Stand', () => {
-    expect(copy).toContain("Win immediately by capturing the Territory at the opponent's end or by forcing the opponent to make a **Last Stand** and winning the resulting battle.");
+  it('states both Run the Gauntlet routes as direct victory instructions', () => {
+    expect(copy).toContain("Capture the Territory at the opponent's end, or force the opponent to make a **Last Stand** and win the resulting battle.");
+    expect(copy).not.toContain("Win immediately by capturing the Territory at the opponent's end");
     expect(copy).not.toContain("capturing the opponent's final Territory");
     expect(copy).not.toContain("forcing the opponent's **Last Stand**");
     expect(copy).not.toContain('or winning a **Last Stand**');
