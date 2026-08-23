@@ -35,6 +35,15 @@ describe("Deckbuilder custom printing", () => {
     expect(customPrint).not.toContain("deckEntries(");
   });
 
+  it("adds every currently visible catalog card without disturbing existing quantities", () => {
+    expect(customPrint).toContain('id="customPrintAddAll"');
+    expect(customPrint).toContain('title="Add all currently visible cards"');
+    expect(customPrint).toContain("const visible = visibleCatalogEntries()");
+    expect(customPrint).toContain("if (queue.has(entry.key)) continue");
+    expect(customPrint).toContain("queue.set(entry.key, 1)");
+    expect(customPrint).toContain("visible.every(entry => queue.has(entry.key))");
+  });
+
   it("covers every current card-like supplemental family", () => {
     expect(cardLikeFamilies).toEqual(new Set([
       "reference-card",
