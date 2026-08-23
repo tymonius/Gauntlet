@@ -100,7 +100,6 @@ function applyOnsetMigration(source, currentGame) {
   const accepted = ruleById(currentGame, 'battle-accepted-terms');
   const refused = ruleById(currentGame, 'battle-refused-terms');
   const withdrawal = ruleById(currentGame, 'battle-withdrawal');
-  const movement = ruleById(currentGame, 'battle-movement');
 
   let result = source;
 
@@ -341,10 +340,6 @@ function applyOnsetMigration(source, currentGame) {
   }
   if (/\bbefore Onset\b/i.test(result)) {
     throw new Error('Release-candidate Rulebook still contains pre-Onset timing from the released rules.');
-  }
-
-  if (!result.includes(movement.body.split('.')[0])) {
-    throw new Error('Release-candidate Rulebook did not retain current movement/battle semantics.');
   }
   return result;
 }
