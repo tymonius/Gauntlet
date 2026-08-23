@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const controller = readFileSync('card-design/artwork-batch-publish-control.js', 'utf8');
+const recovery = readFileSync('card-design/artwork-publish-fetch-recovery.js', 'utf8');
 const targets = readFileSync('card-design/artwork-compositor-targets.js', 'utf8');
 
 describe('artwork batch publish controller', () => {
@@ -12,8 +13,18 @@ describe('artwork batch publish controller', () => {
     expect(controller).toContain('requestAnimationFrame(renderPanel);');
   });
 
-  it('cache-busts the fixed controller', () => {
+  it('loads publish recovery before the persistent batch controller', () => {
+    expect(targets).toContain("artwork-publish-fetch-recovery.js?v=20260823-1");
     expect(targets).toContain("artwork-batch-publish-control.js?v=20260819-2");
-    expect(targets).not.toContain("artwork-batch-publish-control.js?v=20260819-1");
+    expect(targets.indexOf('artwork-publish-fetch-recovery.js')).toBeLessThan(
+      targets.indexOf('artwork-batch-publish-control.js'),
+    );
+  });
+
+  it('retries dropped publish requests and verifies GitHub before reporting failure', () => {
+    expect(recovery).toContain('RETRY_DELAYS_MS');
+    expect(recovery).toContain('recoverPublishedPr');
+    expect(recovery).toContain('pr?.merged === true || pr?.merged_at');
+    expect(recovery).toContain('PR #${prNumber} is still open.');
   });
 });
