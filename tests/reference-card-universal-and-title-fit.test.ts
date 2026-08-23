@@ -44,11 +44,21 @@ describe('final Universal Reference and reference-title fitting', () => {
   });
 
   it('states the baseline reference rules without normally/normal hedge wording', () => {
-    expect(copy).toContain('You take **1 Action total per turn**, during either Opening or Denouement. Additional Actions do not permit more than one Action in the same phase.');
+    expect(copy).toContain('You take **1 Action total per turn**, during either Opening or Denouement. Each phase permits at most **1 Action**, even when you gain Additional Actions.');
     expect(copy).toContain('### Battle Result');
-    expect(copy).toContain('After Onset, finish remaining non-result Aftermath steps and clear battle cards.');
+    expect(copy).toContain('Withdrawal ends the battle. Skip victory, loss, and retreat triggers.');
     expect(copy).toContain('The defender has **Defensive Edge**.');
     expect(copy).not.toMatch(/\bnormal(?:ly)?\b/i);
+  });
+
+  it('states surprising exceptions directly instead of narrating obvious non-events', () => {
+    expect(copy).toContain('A Last Stand can be forced while you occupy the final Territory, before you capture it.');
+    expect(copy).toContain('force them to make a Last Stand with a **new legal Advance beyond the Gauntlet**.');
+    expect(copy).toContain('**Occupation** alone does not change control.');
+    expect(copy).not.toContain('Additional Actions do not permit');
+    expect(copy).not.toContain('No winner or loser');
+    expect(copy).not.toContain('No prior control of the final Territory is required');
+    expect(copy).not.toContain('unused prior movement cannot carry over');
   });
 
   it('states both Run the Gauntlet routes with the canonical capture target and an explicitly offensive Last Stand', () => {
