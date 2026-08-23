@@ -69,7 +69,7 @@ Normal Capture changes control of at most **1 Territory per turn**. **Occupation
 
 ### Run the Gauntlet
 
-Win immediately by capturing the opponent's final Territory or winning a **Last Stand**.
+Win immediately by capturing the opponent's final Territory or by forcing the opponent's **Last Stand** and winning the resulting battle.
 
 ### Last Stand
 
