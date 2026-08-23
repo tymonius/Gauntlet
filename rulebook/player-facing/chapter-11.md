@@ -2,7 +2,7 @@
 
 ## How it works
 
-Use this chapter when card effects interact with one another or with the normal game procedures. It gives the exact shared rules for simultaneous effects, replacements and revised choices, reveals and negation, additional Gambits and Tactics, banking and bound cards, movement granted by effects, card shorthand, copied or repeated effects, and battle sequences that end without a winner.
+Use this chapter when card effects interact with one another or with the normal game procedures. It gives the exact shared rules for simultaneous effects, replacements and revised choices, reveals and negation, additional Gambits and Tactics, banking and bound cards, movement granted by effects, card shorthand, copied or repeated effects, and battles that end without a winner.
 
 ## Complete rules
 
@@ -134,8 +134,8 @@ When an effect grants movement, use the normal movement rules unless the effect 
 
 - If the effect modifies a movement sequence already in progress, the granted movement remains part of that sequence.
 - If the effect grants movement while no movement sequence is in progress, it begins a new movement sequence.
-- Effect-granted movement may initiate a battle and may force the opponent to make a Last Stand unless expressly prohibited.
-- When movement initiates a battle, that movement sequence ends and unused movement from it is lost normally.
+- Effect-granted movement may create a pending battle and may force the opponent to make a Last Stand unless expressly prohibited.
+- When movement creates a pending battle, that movement sequence ends and unused movement from it is lost normally.
 
 ## Additional Tactics
 
@@ -256,23 +256,9 @@ When an effect tells you to **apply** another card's effect or **repeat** an eff
 - Because the source card was not played, set, or chosen again, triggers that care about those events do not occur merely because its effect was applied or repeated.
 - A copied or repeated effect may create one further application if its own printed text instructs it to do so. That further application cannot create another copied or repeated effect in the same chain.
 
-## Battle sequences ending without a winner
+## Battles ending without a winner
 
-A battle sequence can end without a winner either during Onset or after the battle has proceeded to Gambits. The timing determines what cleanup occurs.
-
-### During Onset
-
-If Terms, withdrawal, or another effect ends the sequence during Onset:
-
-- the sequence ends before a battle is fought;
-- neither player wins or loses a battle;
-- no Gambits are set and no Reserve or Tactic is formed because the sequence does not reach those steps;
-- no Aftermath occurs; and
-- apply only the positional or other consequences instructed by the effect that ended the sequence.
-
-### After Onset
-
-Once Onset is complete and the sequence proceeds to Gambits, an effect that ends the battle without a winner follows the normal non-result cleanup:
+When a rule or effect ends a battle **without a winner**:
 
 - neither player wins or loses that battle; withdrawal is not a loss;
 - after the battle-ending instruction resolves, unresolved Gambit or Tactic effects from that battle do not apply unless the ending effect expressly says otherwise;
@@ -281,4 +267,4 @@ Once Onset is complete and the sequence proceeds to Gambits, an effect that ends
 - clear committed cards and cards remaining in Reserve normally unless the ending effect gives them another destination; and
 - apply normal positional consequences, including Occupation when applicable, based on the Player Tokens that remain after any instructed withdrawal.
 
-An effect conditioned on a player winning or losing does not apply when the battle sequence ends without a winner.
+An effect conditioned on a player winning or losing does not apply when the battle ends without a winner.
