@@ -1,0 +1,24 @@
+/* Shared reference-card divider policy.
+   Keep the single header rule that separates the component label from the
+   faction / face-title block, but let the rules body breathe without decorative
+   horizontal separators. Tables retain their own structural rules. */
+
+.reference-card .reference-panel + .reference-panel,
+.reference-card .reference-callout + .reference-callout,
+.reference-card .reference-step-list li + li,
+.reference-card .reference-option-list li + li {
+  border-top: 0 !important;
+}
+
+.reference-card .reference-inline-banner {
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+}
+
+/* The Universal card originally suppressed this rule while its body dividers
+   were being removed. Restore the header rule so it matches the faction
+   references without bringing any of the body dividers back. */
+.reference-card[data-component-id="universal-reference"] .reference-type-line span:last-child {
+  padding-top: 0.022in !important;
+  border-top: 0.65px solid color-mix(in srgb, var(--component-accent-ink) 38%, transparent) !important;
+}
