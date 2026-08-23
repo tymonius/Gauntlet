@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { finalizeSupplementalObjectPresentation } from '../scripts/finalize-tts-save.mjs';
 
-const LANDSCAPE_SCALE = 2.5 / 3.5;
+const TRACKER_TABLETOP_SCALE = 1.5;
 
 function card(nickname: string, sideways: boolean, gmNotes = '') {
   return {
@@ -24,7 +24,7 @@ function card(nickname: string, sideways: boolean, gmNotes = '') {
 }
 
 describe('TTS physical card sizing', () => {
-  it('keeps every landscape card the same physical size as a normal card rotated 90 degrees', () => {
+  it('keeps landscape cards at ordinary CardCustom scale and enlarges trackers without changing their aspect behavior', () => {
     const territory = card('Supply Depot', true);
     const deed = card('Deed Card', false, 'gauntlet:supplemental:financiers-deed');
     const portrait = card('Ambassador', false);
@@ -32,6 +32,17 @@ describe('TTS physical card sizing', () => {
       Name: 'Custom_Tile',
       Nickname: 'Influence Tracker',
       GMNotes: 'gauntlet:supplemental:diplomats-influence-tracker',
+      Transform: {
+        posX: 0,
+        posY: 1,
+        posZ: 0,
+        rotX: 0,
+        rotY: 0,
+        rotZ: 0,
+        scaleX: 1,
+        scaleY: 1,
+        scaleZ: 1,
+      },
       CustomImage: {
         WidthScale: 2.5,
         CustomTile: {
@@ -71,19 +82,24 @@ describe('TTS physical card sizing', () => {
     expect(result.landscapeCardCount).toBe(2);
     expect(result.trackerCount).toBe(1);
 
-    expect(territory.Transform.scaleX).toBeCloseTo(LANDSCAPE_SCALE, 8);
-    expect(territory.Transform.scaleY).toBe(1);
-    expect(territory.Transform.scaleZ).toBeCloseTo(LANDSCAPE_SCALE, 8);
-
-    expect(deed.SidewaysCard).toBe(true);
-    expect(deed.Transform.scaleX).toBeCloseTo(LANDSCAPE_SCALE, 8);
-    expect(deed.Transform.scaleZ).toBeCloseTo(LANDSCAPE_SCALE, 8);
+    for (const landscape of [territory, deed]) {
+      expect(landscape.SidewaysCard).toBe(true);
+      expect(landscape.Transform.scaleX).toBe(1);
+      expect(landscape.Transform.scaleY).toBe(1);
+      expect(landscape.Transform.scaleZ).toBe(1);
+      expect(landscape.Transform.rotY).toBe(90);
+    }
 
     expect(portrait.Transform.scaleX).toBe(1);
     expect(portrait.Transform.scaleY).toBe(1);
     expect(portrait.Transform.scaleZ).toBe(1);
+    expect(portrait.Transform.rotY).toBe(0);
 
     expect(tracker.CustomImage.WidthScale).toBe(2.5);
-    expect(tracker.CustomImage.CustomTile.Stretch).toBe(false);
+    expect(tracker.CustomImage.CustomTile.Type).toBe(3);
+    expect(tracker.CustomImage.CustomTile.Stretch).toBe(true);
+    expect(tracker.Transform.scaleX).toBe(TRACKER_TABLETOP_SCALE);
+    expect(tracker.Transform.scaleY).toBe(1);
+    expect(tracker.Transform.scaleZ).toBe(TRACKER_TABLETOP_SCALE);
   });
 });
