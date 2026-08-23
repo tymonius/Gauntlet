@@ -120,7 +120,7 @@ jobs:
               let ok = false;
               let status = 0;
               for (let attempt = 1; attempt <= 6; attempt += 1) {
-                const response = await fetch(asset.url, { redirect: 'follow' });
+                const response = await fetch(asset.url, { method: 'HEAD', redirect: 'follow' });
                 status = response.status;
                 if (response.ok) { ok = true; break; }
                 await sleep(1500 * attempt);
