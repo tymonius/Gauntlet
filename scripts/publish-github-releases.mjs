@@ -120,6 +120,11 @@ for (const record of contract.historical_releases) {
 }
 
 const current = contract.current_release;
+if (current.tag === 'v0.7.0') {
+  console.log('Checking the mandatory v0.7.0 TTS manual-QA gate before Git tag or GitHub Release publication.');
+  run(process.execPath, ['scripts/validate-v070-tts-manual-qa.mjs']);
+}
+
 let currentTarget = tagTarget(current.tag);
 let currentRelease = releaseView(current.tag);
 
