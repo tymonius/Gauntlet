@@ -42,6 +42,7 @@ describe('Browser Rulebook ruleset selector', () => {
     expect(index).toContain('data-ruleset="candidate" aria-pressed="false"');
     expect(index).toContain('Release candidate');
     expect(index).toContain('ruleset-toggle.css');
+    expect(index).not.toContain('data-print-rulebook');
     expect(app).toContain("params.get('rules') === CANDIDATE_MODE");
     expect(app).toContain("url.searchParams.set('rules', CANDIDATE_MODE)");
     expect(app).toContain("url.searchParams.delete('rules')");
@@ -58,6 +59,7 @@ describe('Browser Rulebook ruleset selector', () => {
     expect(candidate).toContain('Onset is the first phase of the battle sequence.');
     expect(candidate).toContain('Terms occur during Onset');
     expect(candidate).toContain('Withdrawal during Onset ends the battle sequence');
+    expect(candidate).toContain('if the sequence ends during Onset, no Gambits are set, no battle result occurs, and no Aftermath is resolved');
     expect(candidate).toContain('Accepting player: +1 Card.');
     expect(candidate).toContain("The symbol's shape identifies the Arcane trait; its color reflects the card's allegiance.");
     expect(candidate).toContain('During your Movement, before a battle is initiated, move one additional Position. This movement may initiate a battle.');
