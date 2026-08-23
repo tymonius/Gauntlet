@@ -100,7 +100,7 @@ async function renderProposal(currentGame, component) {
   const proposal = (currentGame.proposals || []).find(item => item.id === proposalId);
   if (!proposal) throw new Error(`No current Proposal data matches ${component.id}.`);
   if (proposal.name !== component.name) {
-    throw new Error(`Proposal contract mismatch for ${component.id}: ${component.name} != ${component.name}.`);
+    throw new Error(`Proposal contract mismatch for ${component.id}: ${proposal.name} != ${component.name}.`);
   }
 
   const ratified = side === 'reverse';
