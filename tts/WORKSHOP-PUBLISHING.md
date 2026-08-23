@@ -10,7 +10,7 @@ This file prepares the text and final publication checklist for the v0.7.0 Table
 
 Gauntlet is a two-player tactical card-and-territory game about deck construction, hidden battle commitments, territorial control, faction asymmetry, and running the Gauntlet.
 
-This Tabletop Simulator implementation provides the physical play surface for Gauntlet v0.7.0: playable Decks, Leader Cards, Territories, faction-specific supplemental components, Player Tokens, battle dice, hand zones, and the six-position Gauntlet.
+This Tabletop Simulator implementation provides the physical play surface for Gauntlet v0.7.0: playable Decks, Leader Cards, Territories, the shared Universal Reference, faction-specific supplemental components, Player Tokens, battle dice, hand zones, and the six-position Gauntlet.
 
 Choose a faction and Leader through one of the included starter Bags, unpack one starter per player, arrange the six selected Territories into the Gauntlet, and complete normal opening setup from the current Gauntlet Rulebook.
 
@@ -19,7 +19,7 @@ Rules are player-operated. The v0.7.0 mod is intended to reproduce the physical 
 ## Controls and setup notes
 
 1. Seat the two players as **Red** and **Blue**.
-2. Each player chooses one starter Bag. The Bag contains that starter's playable Deck, Leader Card, three Territories, and the production-ready supplemental components required by its faction.
+2. Each player chooses one starter Bag. The Bag contains that starter's playable Deck, Leader Card, three Territories, shared Universal Reference Card, and the production-ready supplemental components required by its faction.
 3. Unpack both starter Bags.
 4. Arrange the six chosen Territories on the six center snap points in the order determined by normal Gauntlet setup.
 5. Place each Player Token at the appropriate starting end after setup.
@@ -34,9 +34,10 @@ Rules are player-operated. The v0.7.0 mod is intended to reproduce the physical 
 - Red and Blue Player Tokens;
 - one battle d6 per player;
 - generated starter Bags for the current Leader/starter catalog;
-- playable card Decks with faction backs;
-- Leader Cards;
-- landscape Territories;
+- playable card Decks with the universal black standard back;
+- Leader Cards with faction-color component backs;
+- landscape Territories with the universal black standard back;
+- one shared two-sided Universal Reference Card in every starter Bag;
 - production-ready faction supplemental components assembled at their declared starter quantities.
 
 The exact generated inventory is governed by the v0.7.0 TTS manifests and release-readiness report rather than this prose list.
