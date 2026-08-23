@@ -14,6 +14,8 @@ describe('v0.6.4 candidate Rules Arbiter Onset corpus', () => {
     expect(validateV064RulesSource(source)).toBe(true);
     expect(source.battle.sequence[0]).toBe('onset');
     expect(source.battle.remove_fields).toContain('pending_sequence');
+    expect(source.battle.terms).toContain('during Onset');
+    expect(source.battle.terms).toContain('attacker has the first opportunity');
   });
 
   it('replaces stale rulebook sections that describe a pending battle', () => {
@@ -37,6 +39,13 @@ describe('v0.6.4 candidate Rules Arbiter Onset corpus', () => {
           body: 'A pending battle exists before Onset.',
         },
         {
+          id: 'rulebook:old-terms',
+          kind: 'rulebook',
+          title: 'Diplomats › Offering Terms',
+          heading: 'Offering Terms',
+          body: 'Terms occur during a pending battle before Onset.',
+        },
+        {
           id: 'rulebook:unrelated',
           kind: 'rulebook',
           title: 'Assets',
@@ -53,9 +62,11 @@ describe('v0.6.4 candidate Rules Arbiter Onset corpus', () => {
     );
 
     expect(result.documents.some(document => document.id === 'rulebook:pending')).toBe(false);
+    expect(result.documents.some(document => document.id === 'rulebook:old-terms')).toBe(false);
     expect(result.documents.find(document => document.id === 'rulebook:unrelated')?.body)
       .toBe('Unrelated rule remains unchanged.');
     expect(result.byId.get('rulebook:v064-battle-onset')?.body).toContain('first phase of the battle sequence');
+    expect(result.byId.get('rulebook:v064-battle-terms')?.body).toContain('resolved during Onset');
     expect(result.data.battle).not.toHaveProperty('pending_sequence');
   });
 
@@ -89,10 +100,20 @@ describe('v0.6.4 candidate Rules Arbiter Onset corpus', () => {
     expect(result.byId.get('rulebook:keep')?.body).toBe('Keep me.');
   });
 
-  it('builds only current Onset terminology into the replacement rule documents', () => {
+  it('builds complete current Terms and Onset replacement documents', () => {
     const documents = buildV064RuleDocuments(source, 'https://example.invalid/game-data/current-game.json');
-    expect(documents.length).toBeGreaterThanOrEqual(3);
+    expect(documents.length).toBeGreaterThanOrEqual(6);
     expect(documents.find(document => document.heading === 'Onset')?.body).toContain('Resolve Terms first');
+    expect(documents.find(document => document.heading === 'Offering Terms during Onset')?.body)
+      .toContain('attacker has the first opportunity');
+    expect(documents.find(document => document.heading === 'Accepted Terms')?.body)
+      .toContain('battle sequence ends during Onset');
+    expect(documents.find(document => document.heading === 'Accepted Terms')?.body)
+      .toContain('no winner, loser, or Aftermath');
+    expect(documents.find(document => document.heading === 'Refused Terms')?.body)
+      .toContain('continue Onset');
+    expect(documents.find(document => document.heading === 'Refused Terms')?.body)
+      .toContain('Leverage');
     expect(documents.find(document => document.heading === 'Withdrawal')?.body).toContain('during Onset');
   });
 });
