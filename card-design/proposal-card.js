@@ -64,7 +64,12 @@ export async function loadProposalArtwork(scope = root) {
 
 export function proposalFace(proposal, ratified = false, version = currentDisplayVersion) {
   const type = ratified ? 'Treaty Article' : 'Proposal';
-  const longTitle = proposal.name.length >= 20 ? ' long-title' : '';
+  // The Proposal heading is narrower than an ordinary card heading because the
+  // Influence stake medallion reserves the right edge. Titles of 17+ characters
+  // need the compact tracking treatment before the generic production fitter
+  // runs; otherwise names such as Prisoner Exchange can remain clipped even at
+  // the title-size floor.
+  const longTitle = proposal.name.length >= 17 ? ' long-title' : '';
   const art = ratified
     ? `<figure class="card-art proposal-ratified-panel" aria-label="Ratified treaty article"><div class="proposal-ratified-word">Ratified</div><img class="proposal-wax-seal" src="${RATIFIED_SEAL_SOURCE}" alt="" aria-hidden="true" /></figure>`
     : proposalArtwork(proposal);
