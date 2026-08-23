@@ -30,7 +30,7 @@
               "name": "Rout",
               "cost": "2 Command",
               "descriptor": "No Action · End of Aftermath · Win as attacker",
-              "text": "Advance one Position. This movement may create a pending battle."
+              "text": "Advance one Position. This movement may initiate a battle."
             }
           ]
         },
@@ -291,7 +291,7 @@
           "name": "Relentless Pursuit",
           "cost": "2 Conviction",
           "descriptor": "No Action · Once per turn · After defeating an attacking opponent",
-          "text": "End their turn, then advance one Position toward their end. Any resulting pending battle uses you as attacker."
+          "text": "End their turn, then advance one Position toward their end. If this movement initiates a battle, you are the attacker."
         },
         {
           "classification": "Resource",
