@@ -16,17 +16,18 @@
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
   <meta name="theme-color" content="#8f1f25" />
-  <meta name="description" content="Read the complete canonical Gauntlet v0.6.3 rulebook in a searchable, responsive browser format." />
+  <meta name="description" content="Read the complete canonical Gauntlet v0.6.3 rulebook or switch to the current release-candidate rules." />
   <title>Gauntlet v0.6.3 Browser Rulebook</title>
   <link rel="preconnect" href="https://use.typekit.net" />
   <link rel="preconnect" href="https://p.typekit.net" crossorigin />
   <link rel="stylesheet" href="../brand.css" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="ruleset-toggle.css" />
   <link rel="stylesheet" href="publication.css" />
   <link rel="stylesheet" href="leader-portraits.css" />
   <link rel="stylesheet" href="../rules-assistant/widget.css" />
 </head>
-<body>
+<body data-ruleset-mode="released">
   <header class="rulebook-header">
     <a class="brand" href="/" aria-label="Gauntlet home">
       <span class="brand-mark" aria-hidden="true">G</span>
@@ -45,9 +46,20 @@
 
   <section class="rulebook-hero">
     <div class="hero-copy">
-      <p class="eyebrow">Canonical rules · version 0.6.3</p>
+      <p class="eyebrow" data-rulebook-eyebrow>Canonical rules · version 0.6.3</p>
       <h1>Official Browser Rulebook</h1>
       <p class="hero-lede">The complete shared rules and faction systems, presented for comfortable reading at the table or on the go.</p>
+      <div class="ruleset-switch" role="group" aria-label="Rulebook ruleset">
+        <button type="button" data-ruleset="released" aria-pressed="true">
+          <span>Released</span>
+          <strong>v0.6.3</strong>
+        </button>
+        <button type="button" data-ruleset="candidate" aria-pressed="false">
+          <span>Release candidate</span>
+          <strong>v0.6.4</strong>
+        </button>
+      </div>
+      <p class="ruleset-note" data-candidate-rules-note hidden>Candidate view: current-development rules layered over the published v0.6.3 Rulebook.</p>
       <p class="source-status" data-rulebook-status aria-live="polite">Loading the canonical rulebook…</p>
     </div>
     <div class="hero-art" aria-hidden="true">
@@ -55,7 +67,8 @@
     </div>
     <div class="hero-actions" aria-label="Rulebook actions">
       <button type="button" data-open-rules-assistant>Ask the Rules Arbiter</button>
-      <a href="../releases/v0.6.3/Gauntlet_v0.6.3_Rulebook_Booklet.pdf">Printable booklet</a>
+      <a data-published-booklet href="../releases/v0.6.3/Gauntlet_v0.6.3_Rulebook_Booklet.pdf">Printable booklet</a>
+      <button type="button" data-candidate-print data-print-rulebook hidden>Print candidate view</button>
     </div>
   </section>
 
@@ -79,9 +92,10 @@
       </nav>
 
       <div class="source-links">
-        <strong>Print the rulebook</strong>
-        <a href="../releases/v0.6.3/Gauntlet_v0.6.3_Rulebook_Booklet.pdf">Printable booklet</a>
-        <span>Print double-sided, flip on the short edge, then fold and saddle stitch.</span>
+        <strong data-rulebook-print-heading>Print the released rulebook</strong>
+        <a data-published-booklet href="../releases/v0.6.3/Gauntlet_v0.6.3_Rulebook_Booklet.pdf">Printable booklet</a>
+        <button type="button" class="source-print-button" data-candidate-print data-print-rulebook hidden>Print this candidate view</button>
+        <span data-rulebook-print-note>Print double-sided, flip on the short edge, then fold and saddle stitch.</span>
       </div>
     </aside>
 
@@ -102,7 +116,7 @@
       <span>Gauntlet</span>
     </a>
     <div>
-      <p><strong>Gauntlet v0.6.3</strong> · Current canonical playtest edition.</p>
+      <p data-rulebook-footer-version><strong>Gauntlet v0.6.3</strong> · Current canonical playtest edition.</p>
       <p>Copyright © 2026 Tymon Scott. All rights reserved.</p>
     </div>
   </footer>
