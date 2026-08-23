@@ -10,7 +10,7 @@
 
 ### Turn Sequence
 
-1. **Capture** — If you occupy an opponent's Territory at the start of your turn, rotate that Territory card to face you to capture it. If doing so would create a non-continuous line of controlled Territories, instead capture the next Territory past your Front Line: **Advance Front Line 1**. Then resolve after-Capture effects and victory checks.
+1. **Capture** — Capture Territory / Advance Front Line, if applicable.
 2. **Draw** — Draw 1 card.
 3. **Opening** — You may take your Action here.
 4. **Movement** — Advance, Hold, or Fall Back. Resolve any battle immediately.
