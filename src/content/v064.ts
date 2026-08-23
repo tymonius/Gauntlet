@@ -1,5 +1,6 @@
 import currentGameAuthorityJson from '../../game-data/current-game.json';
 import cardChangesJson from '../../docs/v0.6.4-card-additions.json';
+import rulesSourceJson from '../../docs/v0.6.4-rules.json';
 import territorySourceJson from '../../docs/v0.6.4-territories.json';
 import {
   cleanV063Content,
@@ -13,13 +14,14 @@ const currentGameAuthority = currentGameAuthorityJson as {
   version: string;
   baseVersion: string;
   leaders: Array<{ id: string; faction: string; name: string; image: string }>;
-  sources: { cardChanges?: string; territories?: string };
+  sources: { cardChanges?: string; rules?: string; territories?: string };
 };
 
 export const CURRENT_GAME_AUTHORITY_PATH = 'game-data/current-game.json' as const;
 export const V064_CANDIDATE_RULES_VERSION = 'v0.6.4-candidate' as const;
 export const V064_TERRITORY_SOURCE_ISSUE = 738 as const;
 const BUNDLED_CARD_CHANGES_SOURCE = '/docs/v0.6.4-card-additions.json' as const;
+const BUNDLED_RULES_SOURCE = '/docs/v0.6.4-rules.json' as const;
 const BUNDLED_TERRITORY_SOURCE = '/docs/v0.6.4-territories.json' as const;
 
 interface CurrentCardChangesSource {
@@ -27,6 +29,26 @@ interface CurrentCardChangesSource {
   base_version: 'v0.6.3';
   cards: Array<CleanV063Card & Record<string, unknown>>;
   retired_cards: Array<{ id?: string; name?: string }>;
+}
+
+interface CurrentRuleCardTextOverride {
+  id: string;
+  label: string;
+  text: string;
+}
+
+export interface V064RulesSource {
+  schema_version: 1;
+  version: typeof V064_CANDIDATE_RULES_VERSION;
+  base_version: 'v0.6.3';
+  status: string;
+  change_type: 'collapse-pending-battle-into-onset';
+  mechanics_changed: true;
+  summary: string;
+  battle: Record<string, unknown> & { remove_fields: string[]; sequence: string[] };
+  terminology: Record<string, string>;
+  card_text_overrides: CurrentRuleCardTextOverride[];
+  rulebook_overrides: Array<{ id: string; heading: string; body: string }>;
 }
 
 export interface V064TerritorySourceEntry extends CleanV063Territory {
@@ -53,6 +75,8 @@ export interface V064CandidateContentIndex {
   baseVersion: 'v0.6.3';
   territorySourceIssue: typeof V064_TERRITORY_SOURCE_ISSUE;
   territorySource: V064TerritorySource;
+  rulesSource: V064RulesSource;
+  battle: Readonly<Record<string, unknown>>;
   content: CleanV063Gameplay;
   cardsById: ReadonlyMap<string, CleanV063Card>;
   territoriesById: ReadonlyMap<string, V064TerritorySourceEntry>;
@@ -67,6 +91,9 @@ function assertCurrentGameAuthority(): void {
   }
   if (currentGameAuthority.sources.cardChanges !== BUNDLED_CARD_CHANGES_SOURCE) {
     throw new Error(`Digital candidate card-change bundle ${BUNDLED_CARD_CHANGES_SOURCE} drifted from current-game authority ${currentGameAuthority.sources.cardChanges || 'missing'}.`);
+  }
+  if (currentGameAuthority.sources.rules !== BUNDLED_RULES_SOURCE) {
+    throw new Error(`Digital candidate rules bundle ${BUNDLED_RULES_SOURCE} drifted from current-game authority ${currentGameAuthority.sources.rules || 'missing'}.`);
   }
   if (currentGameAuthority.sources.territories !== BUNDLED_TERRITORY_SOURCE) {
     throw new Error(`Digital candidate Territory bundle ${BUNDLED_TERRITORY_SOURCE} drifted from current-game authority ${currentGameAuthority.sources.territories || 'missing'}.`);
@@ -84,7 +111,33 @@ function assertCardChangesSource(value: unknown): asserts value is CurrentCardCh
   }
 }
 
-function resolveCurrentCards(): CleanV063Card[] {
+function assertRulesSource(value: unknown): asserts value is V064RulesSource {
+  if (!value || typeof value !== 'object') throw new Error('Current rules source must be an object.');
+  const source = value as Partial<V064RulesSource>;
+  if (source.schema_version !== 1 || source.version !== currentGameAuthority.version || source.base_version !== currentGameAuthority.baseVersion) {
+    throw new Error('Digital rules source version metadata does not match the current-game authority.');
+  }
+  if (source.change_type !== 'collapse-pending-battle-into-onset' || source.mechanics_changed !== true) {
+    throw new Error('Digital rules source must contain the accepted Onset migration.');
+  }
+  if (!source.battle || !Array.isArray(source.card_text_overrides) || !Array.isArray(source.rulebook_overrides)) {
+    throw new Error('Digital rules source is missing battle or wording overrides.');
+  }
+}
+
+function applyRuleCardTextOverrides(cards: CleanV063Card[], rules: V064RulesSource): CleanV063Card[] {
+  const byId = new Map(cards.map(card => [card.id, { ...card, effects: card.effects.map(effect => ({ ...effect })) }]));
+  for (const override of rules.card_text_overrides) {
+    const card = byId.get(override.id);
+    if (!card) throw new Error(`Digital rule wording override cannot resolve ${override.id}.`);
+    const index = card.effects.findIndex(effect => effect.label === override.label);
+    if (index < 0) throw new Error(`Digital rule wording override cannot resolve ${override.label} on ${override.id}.`);
+    card.effects[index] = { ...card.effects[index], text: override.text };
+  }
+  return cards.map(card => byId.get(card.id) as CleanV063Card);
+}
+
+function resolveCurrentCards(rules: V064RulesSource): CleanV063Card[] {
   const raw: unknown = cardChangesJson;
   assertCardChangesSource(raw);
 
@@ -118,7 +171,7 @@ function resolveCurrentCards(): CleanV063Card[] {
     byName.set(candidate.name, candidate.id);
   }
 
-  return [...byId.values()];
+  return applyRuleCardTextOverrides([...byId.values()], rules);
 }
 
 function assertV064TerritorySource(value: unknown): asserts value is V064TerritorySource {
@@ -157,27 +210,38 @@ function resolveCurrentFactions(): CleanV063Gameplay['factions'] {
   }));
 }
 
+function resolveBattleRules(rules: V064RulesSource): Readonly<Record<string, unknown>> {
+  const source = cleanV063Content.content as CleanV063Gameplay & { battle?: Record<string, unknown> };
+  const result: Record<string, unknown> = { ...(source.battle || {}), ...rules.battle };
+  const removeFields = Array.isArray(rules.battle.remove_fields) ? rules.battle.remove_fields : [];
+  delete result.remove_fields;
+  for (const field of removeFields) delete result[field];
+  return Object.freeze(result);
+}
+
 export function loadV064CandidateContent(): V064CandidateContentIndex {
   assertCurrentGameAuthority();
-  const raw: unknown = territorySourceJson;
-  assertV064TerritorySource(raw);
+  const territoryRaw: unknown = territorySourceJson;
+  const rulesRaw: unknown = rulesSourceJson;
+  assertV064TerritorySource(territoryRaw);
+  assertRulesSource(rulesRaw);
 
   const baseIds = new Set(cleanV063Content.content.territories.map((territory) => territory.id));
-  const candidateIds = new Set(raw.territories.map((territory) => territory.id));
+  const candidateIds = new Set(territoryRaw.territories.map((territory) => territory.id));
   if (baseIds.size !== candidateIds.size || [...baseIds].some((id) => !candidateIds.has(id))) {
     throw new Error('v0.6.4 Territory candidate must preserve the complete v0.6.3 Territory identity set.');
   }
 
-  const cards = resolveCurrentCards();
+  const cards = resolveCurrentCards(rulesRaw);
   const cardsById = new Map(cards.map(card => [card.id, card]));
   const territoriesById = new Map<string, V064TerritorySourceEntry>();
-  for (const territory of raw.territories) territoriesById.set(territory.id, territory);
+  for (const territory of territoryRaw.territories) territoriesById.set(territory.id, territory);
 
   const content: CleanV063Gameplay = {
     ...cleanV063Content.content,
     factions: resolveCurrentFactions(),
     cards,
-    territories: raw.territories.map(({ id, name, text }) => ({ id, name, text })),
+    territories: territoryRaw.territories.map(({ id, name, text }) => ({ id, name, text })),
   };
 
   return {
@@ -185,7 +249,9 @@ export function loadV064CandidateContent(): V064CandidateContentIndex {
     rulesVersion: V064_CANDIDATE_RULES_VERSION,
     baseVersion: 'v0.6.3',
     territorySourceIssue: V064_TERRITORY_SOURCE_ISSUE,
-    territorySource: raw,
+    territorySource: territoryRaw,
+    rulesSource: rulesRaw,
+    battle: resolveBattleRules(rulesRaw),
     content,
     cardsById,
     territoriesById,
