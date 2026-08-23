@@ -6,7 +6,23 @@ on:
     branches:
       - main
     paths:
-      - .github/workflows/publish-v070-tts-qa-assets.yml
+      - '.github/workflows/publish-v070-tts-qa-assets.yml'
+      - '.github/workflows/generate-tts-card-assets.yml'
+      - 'package.json'
+      - 'game-data/**'
+      - 'deckbuilder/starter-decks.json'
+      - 'docs/v0.6.4-*.json'
+      - 'config/tts-component-contract.json'
+      - 'config/tts-release-target.json'
+      - 'scripts/generate-tts-*.mjs'
+      - 'scripts/assemble-tts-supplemental-save.mjs'
+      - 'scripts/finalize-tts-save.mjs'
+      - 'scripts/stage-tts-release-assets.mjs'
+      - 'scripts/check-tts-release-readiness.mjs'
+      - 'scripts/tts-*.mjs'
+      - 'tts/**'
+      - 'card-design/**'
+      - 'images/artwork/**'
   workflow_dispatch:
 
 permissions:
@@ -21,9 +37,11 @@ jobs:
   publish-qa-assets:
     if: github.event_name == 'workflow_dispatch' || github.head_ref == 'release/v0.7.0-cutover'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 35
     env:
-      SOURCE_ARTIFACT_ID: '9493788206'
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      SOURCE_WORKFLOW: 'generate-tts-card-assets.yml'
+      SOURCE_ARTIFACT_NAME: 'gauntlet-current-tts-card-assets'
       QA_BRANCH: 'tts-v0.7.0-qa-assets'
       FINAL_URL_PREFIX: 'https://github.com/tymonius/Gauntlet/releases/download/v0.7.0/'
       QA_URL_PREFIX: 'https://raw.githubusercontent.com/tymonius/Gauntlet/tts-v0.7.0-qa-assets/'
@@ -33,9 +51,57 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Download exact generated TTS artifact
+      - name: Wait for matching generated TTS artifact
+        id: source
         env:
           GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Waiting for ${SOURCE_WORKFLOW} at ${SOURCE_SHA}..."
+          run_id=""
+          artifact_id=""
+
+          for attempt in $(seq 1 90); do
+            runs_json="$(gh api "/repos/${GITHUB_REPOSITORY}/actions/workflows/${SOURCE_WORKFLOW}/runs?event=pull_request&branch=release/v0.7.0-cutover&per_page=100")"
+            run_id="$(jq -r --arg sha "$SOURCE_SHA" '[.workflow_runs[] | select(.head_sha == $sha)] | sort_by(.run_number) | last | .id // empty' <<<"$runs_json")"
+
+            if [[ -n "$run_id" ]]; then
+              run_json="$(gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}")"
+              status="$(jq -r '.status' <<<"$run_json")"
+              conclusion="$(jq -r '.conclusion // empty' <<<"$run_json")"
+              echo "Source run ${run_id}: ${status}${conclusion:+ / ${conclusion}}"
+
+              if [[ "$status" == "completed" ]]; then
+                if [[ "$conclusion" != "success" ]]; then
+                  echo "Matching TTS generation run ${run_id} did not succeed." >&2
+                  exit 1
+                fi
+                artifacts_json="$(gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/artifacts?per_page=100")"
+                artifact_id="$(jq -r --arg name "$SOURCE_ARTIFACT_NAME" '.artifacts[] | select(.name == $name and .expired == false) | .id' <<<"$artifacts_json" | head -n1)"
+                if [[ -z "$artifact_id" ]]; then
+                  echo "Successful source run ${run_id} has no non-expired ${SOURCE_ARTIFACT_NAME} artifact." >&2
+                  exit 1
+                fi
+                break
+              fi
+            fi
+
+            if [[ "$attempt" -eq 90 ]]; then
+              echo "Timed out waiting for a successful ${SOURCE_WORKFLOW} run at ${SOURCE_SHA}." >&2
+              exit 1
+            fi
+            sleep 15
+          done
+
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+          echo "artifact_id=$artifact_id" >> "$GITHUB_OUTPUT"
+          echo "Using TTS artifact ${artifact_id} from source run ${run_id}."
+
+      - name: Download matching generated TTS artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_ARTIFACT_ID: ${{ steps.source.outputs.artifact_id }}
         run: |
           set -euo pipefail
           gh api "/repos/${GITHUB_REPOSITORY}/actions/artifacts/${SOURCE_ARTIFACT_ID}/zip" > /tmp/tts-assets.zip
@@ -57,6 +123,9 @@ jobs:
           NODE
 
       - name: Build QA-hosted scaffold
+        env:
+          SOURCE_RUN_ID: ${{ steps.source.outputs.run_id }}
+          SOURCE_ARTIFACT_ID: ${{ steps.source.outputs.artifact_id }}
         run: |
           set -euo pipefail
           mkdir -p /tmp/qa-publish
@@ -79,6 +148,9 @@ jobs:
           manifest['publication'] = {
               'host': 'raw-github-qa-branch',
               'branch': os.environ['QA_BRANCH'],
+              'sourceCommit': os.environ['SOURCE_SHA'],
+              'sourceWorkflowRun': int(os.environ['SOURCE_RUN_ID']),
+              'sourceArtifactId': int(os.environ['SOURCE_ARTIFACT_ID']),
               'purpose': 'Temporary clean-client Tabletop Simulator QA only; not a published Gauntlet release.'
           }
           (root / 'Gauntlet_v0.7.0_TTS_Release_Assets.json').write_text(json.dumps(manifest, indent=2) + '\n')
@@ -86,7 +158,7 @@ jobs:
           cat > /tmp/qa-publish/README.md <<EOF
           # Gauntlet v0.7.0 TTS QA assets
 
-          Temporary pre-publication host for the exact machine-ready asset bundle generated by Actions artifact ${SOURCE_ARTIFACT_ID}.
+          Temporary pre-publication host for the exact machine-ready asset bundle generated for commit ${SOURCE_SHA} by Actions run ${{ steps.source.outputs.run_id }} / artifact ${{ steps.source.outputs.artifact_id }}.
 
           - This branch is **not** a Gauntlet release.
           - It exists only so Tabletop Simulator can perform clean-client manual QA before v0.7.0 publication.
@@ -105,7 +177,7 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add .
-          git commit -m 'Publish v0.7.0 TTS QA assets'
+          git commit -m "Publish v0.7.0 TTS QA assets for ${SOURCE_SHA}"
           git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git push --force origin "HEAD:refs/heads/${QA_BRANCH}"
 
