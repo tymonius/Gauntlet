@@ -7,8 +7,8 @@ const ttsTarget = JSON.parse(readFileSync('config/tts-release-target.json', 'utf
 const ttsQa = JSON.parse(readFileSync('tts/release-qa/v0.7.0.json', 'utf8'));
 const notes = readFileSync('docs/releases/github/v0.7.0.md', 'utf8');
 
-describe('v0.7.0 release candidate boundary', () => {
-  it('keeps v0.7.0 out of immutable publication history before cutover', () => {
+describe('v0.7.0 TTS-hosting prerelease boundary', () => {
+  it('keeps the hosting prerelease out of canonical public-cutover history', () => {
     expect(lifecycle.current_release).toBe('v0.6.3');
     expect(lifecycle.releases['v0.6.3']).toEqual(expect.objectContaining({
       status: 'current',
@@ -33,12 +33,13 @@ describe('v0.7.0 release candidate boundary', () => {
     expect(ttsQa.approvedForWorkshop).toBe(false);
   });
 
-  it('uses draft notes as the pre-publication v0.7.0 release surface', () => {
+  it('documents the hosting prerelease without declaring public cutover', () => {
     expect(notes).toContain('# Gauntlet v0.7.0 — Illustrated Cards & Tabletop Simulator');
-    expect(notes).toContain('Release candidate — not yet published');
+    expect(notes).toContain('TTS-hosting prerelease — Workshop QA pending');
+    expect(notes).toContain('75 assets are hosted by the');
     expect(notes).toContain('v0.6.3 remains the current published playtest release');
     expect(notes).toContain('Final Workshop publication remains gated');
-    expect(notes).toContain('does not change the repository\'s current published release');
+    expect(notes).toContain('does not change the repository\'s current published release contract');
     expect(notes).not.toContain('Current canonical playtest edition');
   });
 });
