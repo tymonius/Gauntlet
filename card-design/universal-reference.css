@@ -36,7 +36,7 @@
   align-content: center;
   column-gap: 0.043in;
   row-gap: 0;
-  padding: 0.022in 0.085in 0.016in;
+  padding: 0.024in 0.085in 0.018in;
   border-bottom: 0;
   background: transparent;
 }
@@ -72,13 +72,13 @@
 }
 
 .reference-card[data-component-id="universal-reference"] .reference-faction-emblem {
+  display: block;
   grid-column: 1;
   grid-row: 1 / span 2;
-  display: block;
   align-self: center;
   width: 0.17in;
   height: 0.17in;
-  background: var(--component-accent-ink);
+  background: currentColor;
   -webkit-mask-image: url("../images/Gauntlet.svg");
   -webkit-mask-position: left center;
   -webkit-mask-repeat: no-repeat;
@@ -93,7 +93,7 @@
   grid-column: 1 / -1;
   grid-row: 3;
   min-width: 0;
-  margin-top: 0.018in;
+  margin-top: 0.022in;
   padding: 0;
   border: 0;
   color: var(--component-accent-ink);
@@ -110,7 +110,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--reference-section-gap);
-  padding: 0.028in 0.070in 0.024in;
+  padding: 0.026in 0.070in 0.022in;
 }
 
 .reference-card[data-component-id="universal-reference"] .reference-panel {
@@ -136,13 +136,13 @@
 
 .reference-card[data-component-id="universal-reference"] .reference-prose {
   font-size: calc(5.9pt * var(--reference-rules-scale));
-  line-height: 1.085;
+  line-height: 1.105;
 }
 
 .reference-card[data-component-id="universal-reference"] .reference-option-list li,
 .reference-card[data-component-id="universal-reference"] .reference-step-list li {
   font-size: calc(5.72pt * var(--reference-rules-scale));
-  line-height: 1.07;
+  line-height: 1.08;
 }
 
 .reference-card[data-component-id="universal-reference"] .reference-step-list li {
