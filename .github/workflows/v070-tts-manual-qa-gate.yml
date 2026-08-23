@@ -1,0 +1,34 @@
+name: v0.7.0 TTS manual QA gate
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - tts/release-qa/v0.7.0.json
+      - scripts/validate-v070-tts-manual-qa.mjs
+      - scripts/finalize-v070-publication.mjs
+      - scripts/publish-github-releases.mjs
+      - .github/workflows/v070-tts-manual-qa-gate.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  manual-qa-release-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout release candidate
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Require completed v0.7.0 TTS manual QA
+        run: node scripts/validate-v070-tts-manual-qa.mjs
