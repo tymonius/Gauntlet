@@ -134,8 +134,8 @@ When an effect grants movement, use the normal movement rules unless the effect 
 
 - If the effect modifies a movement sequence already in progress, the granted movement remains part of that sequence.
 - If the effect grants movement while no movement sequence is in progress, it begins a new movement sequence.
-- Effect-granted movement may create a pending battle and may force the opponent to make a Last Stand unless expressly prohibited.
-- When movement creates a pending battle, that movement sequence ends and unused movement from it is lost normally.
+- Effect-granted movement may initiate a battle and may force the opponent to make a Last Stand unless expressly prohibited.
+- When movement initiates a battle, that movement sequence ends and unused movement from it is lost normally.
 
 ## Additional Tactics
 
