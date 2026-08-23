@@ -48,7 +48,7 @@ export function installCustomPrintMode() {
     </div>
     <div class="custom-print-layout">
       <section class="custom-print-pane">
-        <div class="custom-print-pane-heading"><h4>Card selector</h4><span id="customPrintCatalogCount" class="pill">0</span></div>
+        <div class="custom-print-pane-heading"><h4>Card selector</h4><span><span id="customPrintCatalogCount" class="pill">0</span> <button id="customPrintAddAll" type="button" class="text-button" title="Add all currently visible cards">Add all</button></span></div>
         <div id="customPrintCatalog" class="custom-print-catalog"><div class="custom-print-empty">Enable custom printing to load the current card catalog.</div></div>
       </section>
       <section class="custom-print-pane">
@@ -75,7 +75,7 @@ export function installCustomPrintMode() {
     <p id="customPrintStatus" class="custom-print-summary custom-print-status" aria-live="polite"></p>`;
   details.append(workspace);
 
-  for (const id of ["customPrintModeToggle", "customPrintDisable", "customPrintWorkspace", "customPrintSearch", "customPrintTypeFilter", "customPrintFactionFilter", "customPrintCatalogCount", "customPrintCatalog", "customPrintSelection", "customPrintClear", "customPrintStandardBacks", "customPrintBackStyle", "customPrintOpen", "customPrintSummary", "customPrintStatus"]) {
+  for (const id of ["customPrintModeToggle", "customPrintDisable", "customPrintWorkspace", "customPrintSearch", "customPrintTypeFilter", "customPrintFactionFilter", "customPrintCatalogCount", "customPrintAddAll", "customPrintCatalog", "customPrintSelection", "customPrintClear", "customPrintStandardBacks", "customPrintBackStyle", "customPrintOpen", "customPrintSummary", "customPrintStatus"]) {
     ui[id] = document.getElementById(id);
   }
 
@@ -84,6 +84,7 @@ export function installCustomPrintMode() {
   ui.customPrintSearch.addEventListener("input", renderCatalog);
   ui.customPrintTypeFilter.addEventListener("change", renderCatalog);
   ui.customPrintFactionFilter.addEventListener("change", renderCatalog);
+  ui.customPrintAddAll.addEventListener("click", addVisibleCards);
   ui.customPrintCatalog.addEventListener("click", handleCatalogClick);
   ui.customPrintSelection.addEventListener("click", handleSelectionClick);
   ui.customPrintSelection.addEventListener("change", handleSelectionChange);
@@ -239,18 +240,28 @@ function populateFilters() {
   ui.customPrintFactionFilter.innerHTML = `<option value="all">All factions</option>${factions.map(([value, label]) => `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`).join("")}`;
 }
 
-function renderCatalog() {
-  if (!catalog.length) return;
+function visibleCatalogEntries() {
   const search = normalize(ui.customPrintSearch.value);
   const type = ui.customPrintTypeFilter.value;
   const faction = ui.customPrintFactionFilter.value;
-  const visible = catalog.filter(entry => (type === "all" || entry.category === type) && (faction === "all" || entry.faction === faction) && (!search || normalize(`${entry.name} ${entry.category} ${entry.factionLabel}`).includes(search)));
+  return catalog.filter(entry => (type === "all" || entry.category === type) && (faction === "all" || entry.faction === faction) && (!search || normalize(`${entry.name} ${entry.category} ${entry.factionLabel}`).includes(search)));
+}
+
+function updateAddAllButton(visible = visibleCatalogEntries()) {
+  if (!ui.customPrintAddAll) return;
+  ui.customPrintAddAll.disabled = !visible.length || visible.every(entry => queue.has(entry.key));
+}
+
+function renderCatalog() {
+  if (!catalog.length) return;
+  const visible = visibleCatalogEntries();
   ui.customPrintCatalogCount.textContent = String(visible.length);
   ui.customPrintCatalog.innerHTML = visible.length ? visible.map(entry => `
     <article class="custom-print-row">
       <div class="custom-print-row-title"><strong>${escapeHtml(entry.name)}</strong><span class="custom-print-row-meta">${escapeHtml(entry.category)} · ${escapeHtml(entry.factionLabel)}${entry.orientation === "landscape" ? " · Landscape" : ""}${intrinsicReverse(entry) ? " · Double-sided" : ""}</span></div>
       <button type="button" class="secondary custom-print-add" data-custom-print-add="${escapeHtml(entry.key)}">Add</button>
     </article>`).join("") : `<div class="custom-print-empty">No current cards match these filters.</div>`;
+  updateAddAllButton(visible);
 }
 
 function renderSelection() {
@@ -265,7 +276,19 @@ function renderSelection() {
         <button type="button" class="text-button custom-print-remove" data-custom-print-remove="${escapeHtml(entry.key)}">Remove</button>
       </div>
     </article>`).join("") : `<div class="custom-print-empty">No cards selected yet.</div>`;
+  updateAddAllButton();
   updateSummary();
+}
+
+function addVisibleCards() {
+  const visible = visibleCatalogEntries();
+  let changed = false;
+  for (const entry of visible) {
+    if (queue.has(entry.key)) continue;
+    queue.set(entry.key, 1);
+    changed = true;
+  }
+  if (changed) renderSelection(); else updateAddAllButton(visible);
 }
 
 function handleCatalogClick(event) {
