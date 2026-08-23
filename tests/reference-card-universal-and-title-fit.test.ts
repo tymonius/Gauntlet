@@ -85,7 +85,7 @@ describe('final Universal Reference and reference-title fitting', () => {
     expect(universalStyles).toContain('grid-template-columns: 0.045in minmax(0, 1fr)');
     expect(universalStyles).toContain('margin-top: 0.019in');
     expect(universalStyles).toContain('.reference-panel + .reference-panel {\n  padding-top: 0;\n  border-top: 0;');
-    expect(universalStyles).toContain('.reference-option-list li + li {\n  margin-top: calc(0.008in * var(--reference-rules-scale));\n  padding-top: 0;\n  border-top: 0;');
+    expect(universalStyles).toContain('.reference-step-list li + li,\n.reference-card[data-component-id="universal-reference"] .reference-option-list li + li {\n  margin-top: calc(0.008in * var(--reference-rules-scale));\n  padding-top: 0;\n  border-top: 0;');
   });
 
   it('exports and production-prints the ready shared reference instead of leaving it as a placeholder', () => {
