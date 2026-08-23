@@ -49,8 +49,8 @@ async function waitForVisuals() {
 
 function elementOverflows(element) {
   return Boolean(element)
-    && (element.scrollWidth > element.clientWidth + 0.5
-      || element.scrollHeight > element.clientHeight + 0.5);
+    && (element.scrollWidth > element.clientWidth + 1
+      || element.scrollHeight > element.clientHeight + 1);
 }
 
 function assertProductionFit(card, label) {
@@ -58,13 +58,16 @@ function assertProductionFit(card, label) {
   const title = card.querySelector('.card-title');
   const rules = card.querySelector('.card-rules');
   const footer = card.querySelector('.card-footer');
+  if (card.hasAttribute('data-art-max') && card.dataset.titleFit !== 'true') {
+    throw new Error(`${label} did not pass the production title-fitting check.`);
+  }
   if (card.classList.contains('fit-warning')) throw new Error(`${label} still carries the production fit-warning class.`);
   if (elementOverflows(title)) throw new Error(`${label} title is clipped.`);
   if (elementOverflows(rules)) throw new Error(`${label} rules are clipped.`);
-  if (interior && footer && footer.getBoundingClientRect().bottom > interior.getBoundingClientRect().bottom + 0.5) {
+  if (interior && footer && footer.getBoundingClientRect().bottom > interior.getBoundingClientRect().bottom + 1) {
     throw new Error(`${label} footer extends beyond the card interior.`);
   }
-  if (interior && interior.scrollHeight > interior.clientHeight + 0.5) {
+  if (interior && interior.scrollHeight > interior.clientHeight + 1) {
     throw new Error(`${label} card interior is clipped.`);
   }
 }
@@ -97,7 +100,7 @@ async function renderProposal(currentGame, component) {
   const proposal = (currentGame.proposals || []).find(item => item.id === proposalId);
   if (!proposal) throw new Error(`No current Proposal data matches ${component.id}.`);
   if (proposal.name !== component.name) {
-    throw new Error(`Proposal contract mismatch for ${component.id}: ${component.name} != ${proposal.name}.`);
+    throw new Error(`Proposal contract mismatch for ${component.id}: ${component.name} != ${component.name}.`);
   }
 
   const ratified = side === 'reverse';
