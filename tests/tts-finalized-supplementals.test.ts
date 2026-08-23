@@ -3,6 +3,20 @@ import { describe, expect, it } from 'vitest';
 import { buildFinalizedExportPlan } from '../scripts/generate-tts-finalized-supplementals.mjs';
 import { finalizeSupplementalObjectPresentation } from '../scripts/finalize-tts-save.mjs';
 
+function defaultTransform() {
+  return {
+    posX: 0,
+    posY: 1,
+    posZ: 0,
+    rotX: 0,
+    rotY: 0,
+    rotZ: 0,
+    scaleX: 1,
+    scaleY: 1,
+    scaleZ: 1,
+  };
+}
+
 describe('finalized TTS supplemental exports', () => {
   it('covers all final export-pending Proposal, Ledger, and Deed components from current authority', async () => {
     const plan = await buildFinalizedExportPlan();
@@ -49,8 +63,18 @@ describe('finalized TTS supplemental exports', () => {
         {
           Name: 'Bag',
           ContainedObjects: [
-            { Name: 'CardCustom', GMNotes: 'gauntlet:supplemental:financiers-deed', SidewaysCard: false },
-            { Name: 'CardCustom', GMNotes: 'gauntlet:supplemental:financiers-deed', SidewaysCard: false },
+            {
+              Name: 'CardCustom',
+              GMNotes: 'gauntlet:supplemental:financiers-deed',
+              SidewaysCard: false,
+              Transform: defaultTransform(),
+            },
+            {
+              Name: 'CardCustom',
+              GMNotes: 'gauntlet:supplemental:financiers-deed',
+              SidewaysCard: false,
+              Transform: defaultTransform(),
+            },
           ],
         },
       ],
@@ -69,6 +93,7 @@ describe('finalized TTS supplemental exports', () => {
     const result = finalizeSupplementalObjectPresentation(save, manifest);
     expect(result.sidewaysCount).toBe(2);
     expect(save.ObjectStates[0].ContainedObjects.every(object => object.SidewaysCard === true)).toBe(true);
+    expect(save.ObjectStates[0].ContainedObjects.every(object => object.Transform.rotY === 90)).toBe(true);
   });
 
   it('wires finalized exports into checks, packaging, and TTS CI', () => {
