@@ -116,6 +116,13 @@ describe('final Universal Reference and reference-title fitting', () => {
     expect(universalStyles).toContain('.reference-step-list li + li,\n.reference-card[data-component-id="universal-reference"] .reference-option-list li + li {\n  margin-top: calc(0.008in * var(--reference-rules-scale));\n  padding-top: 0;\n  border-top: 0;');
   });
 
+  it('exports bespoke reference faces from their authored headings rather than stale selector lists', () => {
+    expect(supplementalGenerator).toContain('function parseBespokeReferenceFace');
+    expect(supplementalGenerator).toContain("const parseFace = component.copyMode === 'bespoke' ? parseBespokeReferenceFace : parseReferenceFace;");
+    expect(supplementalGenerator).toContain("const faceHeading = `${sideLabel} — ${title}`;");
+    expect(supplementalGenerator).toContain("const heading = line.trim().match(/^###\\s+(.+)$/);");
+  });
+
   it('exports and production-prints the ready shared reference instead of leaving it as a placeholder', () => {
     expect(supplementalGenerator).toContain('const sharedSupplementals = (contract.sharedComponents || [])');
     expect(supplementalGenerator).toContain("faction: component.faction || 'neutral'");
