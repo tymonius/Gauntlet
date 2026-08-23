@@ -83,6 +83,14 @@ export function slugify(value) {
     .replace(/^-|-$/g, '');
 }
 
+function effectAliasKey(label) {
+  return String(label || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+}
+
 export function resolveCards(baseCards, changes, manifest) {
   if (changes?.version !== manifest.version || changes?.base_version !== manifest.baseVersion) {
     throw new Error(`Current card changes do not match ${manifest.version} over ${manifest.baseVersion}.`);
@@ -143,7 +151,12 @@ export function resolveCardTextOverrides(cards, rulesSource) {
     const effects = card.effects.map((effect, index) => index === effectIndex
       ? { ...effect, text: override.text }
       : effect);
-    byId.set(override.id, { ...card, effects });
+    const nextCard = { ...card, effects };
+    const aliasKey = effectAliasKey(override.label);
+    if (aliasKey && Object.prototype.hasOwnProperty.call(nextCard, aliasKey)) {
+      nextCard[aliasKey] = override.text;
+    }
+    byId.set(override.id, nextCard);
   }
 
   return cards.map(card => byId.get(card.id));
