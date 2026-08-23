@@ -1,3 +1,4 @@
+import baseGameplayJson from '../../artifacts/reconstruction/clean-v0.6.3/complete-authority/canonical-structured-data.json';
 import currentGameAuthorityJson from '../../game-data/current-game.json';
 import cardChangesJson from '../../docs/v0.6.4-card-additions.json';
 import rulesSourceJson from '../../docs/v0.6.4-rules.json';
@@ -14,15 +15,22 @@ const currentGameAuthority = currentGameAuthorityJson as {
   version: string;
   baseVersion: string;
   leaders: Array<{ id: string; faction: string; name: string; image: string }>;
-  sources: { cardChanges?: string; rules?: string; territories?: string };
+  sources: { baseGameplay?: string; cardChanges?: string; rules?: string; territories?: string };
 };
 
 export const CURRENT_GAME_AUTHORITY_PATH = 'game-data/current-game.json' as const;
 export const V064_CANDIDATE_RULES_VERSION = 'v0.6.4-candidate' as const;
 export const V064_TERRITORY_SOURCE_ISSUE = 738 as const;
+const BUNDLED_BASE_GAMEPLAY_SOURCE = '/artifacts/reconstruction/clean-v0.6.3/complete-authority/canonical-structured-data.json' as const;
 const BUNDLED_CARD_CHANGES_SOURCE = '/docs/v0.6.4-card-additions.json' as const;
 const BUNDLED_RULES_SOURCE = '/docs/v0.6.4-rules.json' as const;
 const BUNDLED_TERRITORY_SOURCE = '/docs/v0.6.4-territories.json' as const;
+
+interface CurrentBaseGameplaySource {
+  gameplay: {
+    battle: Record<string, unknown>;
+  } & Record<string, unknown>;
+}
 
 interface CurrentCardChangesSource {
   version: typeof V064_CANDIDATE_RULES_VERSION;
@@ -89,6 +97,9 @@ function assertCurrentGameAuthority(): void {
   if (currentGameAuthority.version !== V064_CANDIDATE_RULES_VERSION || currentGameAuthority.baseVersion !== 'v0.6.3') {
     throw new Error(`Digital candidate adapter does not match current-game version ${currentGameAuthority.version}/${currentGameAuthority.baseVersion}.`);
   }
+  if (currentGameAuthority.sources.baseGameplay !== BUNDLED_BASE_GAMEPLAY_SOURCE) {
+    throw new Error(`Digital candidate base gameplay bundle ${BUNDLED_BASE_GAMEPLAY_SOURCE} drifted from current-game authority ${currentGameAuthority.sources.baseGameplay || 'missing'}.`);
+  }
   if (currentGameAuthority.sources.cardChanges !== BUNDLED_CARD_CHANGES_SOURCE) {
     throw new Error(`Digital candidate card-change bundle ${BUNDLED_CARD_CHANGES_SOURCE} drifted from current-game authority ${currentGameAuthority.sources.cardChanges || 'missing'}.`);
   }
@@ -97,6 +108,14 @@ function assertCurrentGameAuthority(): void {
   }
   if (currentGameAuthority.sources.territories !== BUNDLED_TERRITORY_SOURCE) {
     throw new Error(`Digital candidate Territory bundle ${BUNDLED_TERRITORY_SOURCE} drifted from current-game authority ${currentGameAuthority.sources.territories || 'missing'}.`);
+  }
+}
+
+function assertBaseGameplaySource(value: unknown): asserts value is CurrentBaseGameplaySource {
+  if (!value || typeof value !== 'object') throw new Error('Current base gameplay source must be an object.');
+  const source = value as Partial<CurrentBaseGameplaySource>;
+  if (!source.gameplay || typeof source.gameplay !== 'object' || !source.gameplay.battle || typeof source.gameplay.battle !== 'object') {
+    throw new Error('Current base gameplay source must declare battle rules.');
   }
 }
 
@@ -210,9 +229,8 @@ function resolveCurrentFactions(): CleanV063Gameplay['factions'] {
   }));
 }
 
-function resolveBattleRules(rules: V064RulesSource): Readonly<Record<string, unknown>> {
-  const source = cleanV063Content.content as CleanV063Gameplay & { battle?: Record<string, unknown> };
-  const result: Record<string, unknown> = { ...(source.battle || {}), ...rules.battle };
+function resolveBattleRules(baseSource: CurrentBaseGameplaySource, rules: V064RulesSource): Readonly<Record<string, unknown>> {
+  const result: Record<string, unknown> = { ...baseSource.gameplay.battle, ...rules.battle };
   const removeFields = Array.isArray(rules.battle.remove_fields) ? rules.battle.remove_fields : [];
   delete result.remove_fields;
   for (const field of removeFields) delete result[field];
@@ -221,8 +239,10 @@ function resolveBattleRules(rules: V064RulesSource): Readonly<Record<string, unk
 
 export function loadV064CandidateContent(): V064CandidateContentIndex {
   assertCurrentGameAuthority();
+  const baseRaw: unknown = baseGameplayJson;
   const territoryRaw: unknown = territorySourceJson;
   const rulesRaw: unknown = rulesSourceJson;
+  assertBaseGameplaySource(baseRaw);
   assertV064TerritorySource(territoryRaw);
   assertRulesSource(rulesRaw);
 
@@ -251,7 +271,7 @@ export function loadV064CandidateContent(): V064CandidateContentIndex {
     territorySourceIssue: V064_TERRITORY_SOURCE_ISSUE,
     territorySource: territoryRaw,
     rulesSource: rulesRaw,
-    battle: resolveBattleRules(rulesRaw),
+    battle: resolveBattleRules(baseRaw, rulesRaw),
     content,
     cardsById,
     territoriesById,
