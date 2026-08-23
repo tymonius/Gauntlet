@@ -303,7 +303,7 @@ function handleCatalogClick(event) {
 function handleSelectionClick(event) {
   const remove = event.target.closest("[data-custom-print-remove]");
   if (remove) {
-    queue.delete(remove.dataset.customPrintRemove;
+    queue.delete(remove.dataset.customPrintRemove);
     renderSelection();
     return;
   }
