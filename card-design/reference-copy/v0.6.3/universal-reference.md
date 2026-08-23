@@ -10,7 +10,7 @@
 
 ### Turn Sequence
 
-1. **Capture** — Capture Territory / Advance Front Line, if applicable.
+1. **Capture** — Capture a Territory / Advance Front Line, if applicable.
 2. **Draw** — Draw 1 card.
 3. **Opening** — You may take your Action here.
 4. **Movement** — Advance, Hold, or Fall Back. Resolve any battle immediately.
@@ -69,7 +69,7 @@ Normal Capture changes control of at most **1 Territory per turn**. **Occupation
 
 ### Run the Gauntlet
 
-Capture the Territory at the opponent's end, or force the opponent to make a **Last Stand** and win the resulting battle.
+**Capture the Territory at the opponent's end**, or force the opponent to make a **Last Stand** and win the resulting battle.
 
 ### Last Stand
 
