@@ -6,6 +6,7 @@ import { CURRENT_ALIAS_ROOT, resolveCurrentTtsRelease, ROOT } from './tts-curren
 
 const GENERATED_READY_FAMILIES = new Set(['proposal-treaty-card', 'ledger', 'deed-card']);
 const SUPPLEMENTAL_NOTE_PREFIX = 'gauntlet:supplemental:';
+const STRICT_TARGET_STATUSES = new Set(['release-candidate']);
 
 function walkObjects(objects, visit) {
   for (const object of objects || []) {
@@ -203,6 +204,10 @@ export function buildReadinessReport({ release, contract, supplementalManifest, 
   };
 }
 
+export function shouldEnforceStrictReadiness(release, argv = process.argv) {
+  return argv.includes('--strict') || STRICT_TARGET_STATUSES.has(String(release?.targetStatus || '').trim());
+}
+
 async function readGeneratedJson(path, hint) {
   return JSON.parse(await readFile(path, 'utf8').catch(error => {
     if (error.code === 'ENOENT') throw new Error(`${hint}: ${relative(ROOT, path)}`);
@@ -211,8 +216,8 @@ async function readGeneratedJson(path, hint) {
 }
 
 async function main() {
-  const strict = process.argv.includes('--strict');
   const release = await resolveCurrentTtsRelease();
+  const strict = shouldEnforceStrictReadiness(release);
   const contract = await loadTtsComponentContract();
   const [supplementalManifest, starterManifest, save] = await Promise.all([
     readGeneratedJson(join(release.outputRoot, 'supplemental-manifest.json'), 'Run npm run tts:package before checking TTS release readiness'),
@@ -228,6 +233,9 @@ async function main() {
   ]);
 
   console.log(`TTS release readiness for ${release.version}: ${report.machineReady ? 'machine-ready' : `${report.blockers.length} blocker(s)`}.`);
+  if (strict && release.targetStatus === 'release-candidate') {
+    console.log('Release-candidate target: machine readiness is enforced as a blocking gate.');
+  }
   for (const blocker of report.blockers) console.log(`BLOCKER ${blocker.id}: ${blocker.reason}`);
   for (const warning of report.warnings) console.log(`WARNING ${warning.id}: ${warning.reason}`);
   console.log(`Machine report: ${relative(ROOT, join(release.outputRoot, 'tts-release-readiness.json'))}`);
