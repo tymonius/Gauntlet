@@ -60,7 +60,7 @@ export function installCustomPrintMode() {
       <label class="custom-print-checkbox"><input id="customPrintStandardBacks" type="checkbox" /><span>Include standard card backs for duplex printing</span></label>
       <label>Standard back style
         <select id="customPrintBackStyle" disabled>
-          <option value="per-card">Match each card's faction</option>
+          <option value="per-card">Use canonical card backs</option>
           <option value="intelligence">Black / Intelligence</option>
           <option value="military">Military</option>
           <option value="diplomats">Diplomats</option>
@@ -303,7 +303,7 @@ function handleCatalogClick(event) {
 function handleSelectionClick(event) {
   const remove = event.target.closest("[data-custom-print-remove]");
   if (remove) {
-    queue.delete(remove.dataset.customPrintRemove);
+    queue.delete(remove.dataset.customPrintRemove;
     renderSelection();
     return;
   }
@@ -418,7 +418,14 @@ function backFrameHtml(faction) {
   const safeFaction = BACK_VARIANTS.has(faction) ? faction : "intelligence";
   return `<iframe class="custom-back-frame" data-custom-render-frame data-custom-render-kind="back" src="/tts/back-renderer/index.html?faction=${encodeURIComponent(safeFaction)}&rotation=180" title="${escapeHtml(safeFaction)} card back" scrolling="no" loading="eager"></iframe>`;
 }
-function backFactionForEntry(entry, selected) { return selected && selected !== "per-card" && BACK_VARIANTS.has(selected) ? selected : (BACK_VARIANTS.has(entry.faction) ? entry.faction : "intelligence"); }
+function canonicalBackFactionForEntry(entry) {
+  if (entry.render.surface === "card" || entry.render.surface === "territory") return "intelligence";
+  return BACK_VARIANTS.has(entry.faction) ? entry.faction : "intelligence";
+}
+function backFactionForEntry(entry, selected) {
+  if (selected && selected !== "per-card" && BACK_VARIANTS.has(selected)) return selected;
+  return canonicalBackFactionForEntry(entry);
+}
 function intrinsicReverse(entry) { return entry.backPolicy === "twoSided" || entry.backPolicy === "specialBack" || entry.backPolicy === "ledgerDuplex"; }
 function mirrorIndexForLongEdge(index) { const row = Math.floor(index / COLUMNS); const column = index % COLUMNS; return row * COLUMNS + (COLUMNS - 1 - column); }
 function setStatus(message, kind = "") { if (!ui.customPrintStatus) return; ui.customPrintStatus.textContent = message; ui.customPrintStatus.className = `custom-print-summary custom-print-status${kind ? ` ${kind}` : ""}`; }
