@@ -11,12 +11,13 @@ The current-game authority declares or centrally resolves:
 - the active development version and base release;
 - the provenance inputs that define the current playable-card pool;
 - the complete current Territory and Proposal sources;
+- current shared-rule overrides, including battle-sequence terminology and timing;
 - current Arcane-symbol clarification rules;
 - current Leader definitions;
 - current Mystics Rite/Ritual definitions;
 - the current physical-component contract;
 - canonical manual artwork positioning saved by the Card Design compositor;
-- explicit resolution semantics for additions, revisions, and retirements.
+- explicit resolution semantics for additions, revisions, retirements, and rule-driven wording migrations.
 
 The resolver turns those inputs into one current-game object. A consumer receives that resolved object; it does not decide source precedence itself.
 
@@ -25,9 +26,18 @@ For playable cards, stable IDs are authoritative. Resolution is:
 1. begin with the immutable base-release card pool;
 2. remove declared retirements;
 3. replace any existing stable ID supplied by the current card-change source;
-4. add any new stable ID supplied by the current card-change source.
+4. add any new stable ID supplied by the current card-change source;
+5. apply any card-text overrides required by the current shared rules.
 
-This makes an update to an existing card propagate exactly like a new card: once the authority's current change record is updated, every current consumer sees the same resolved card.
+This makes an update to an existing card propagate exactly like a new card: once the authority's current change record is updated, every current consumer sees the same resolved card. Rule migrations that require mechanical terminology changes can likewise update inherited cards without modifying the immutable base release.
+
+## Shared rules
+
+The active shared-rules source is selected by `current-game.json` and resolved over the immutable base release. Current rules may replace or remove fields inherited from the base release; published release snapshots are never rewritten to simulate the new rule.
+
+The v0.6.4 candidate currently uses this mechanism for the Onset migration: **Onset is the first phase of the battle sequence and replaces Pending Battle as a separate game state.** The current rules source also supplies the corresponding card wording and Rules Arbiter text.
+
+Current digital rules implementations must model the resolved current rule rather than expose obsolete base-release states merely because the base release remains available for provenance.
 
 ## Artwork positioning
 
@@ -62,6 +72,6 @@ Some TypeScript build surfaces cannot dynamically import an arbitrary JSON path 
 
 ## Guardrails
 
-`tests/current-game-authority.test.ts` prevents active runtime surfaces from directly selecting the raw v0.6.4 source files, verifies stable-ID replacement/retirement semantics, and verifies that compositor-authored artwork direction is resolved through current-game before production rendering. `tests/deckbuilder-territory-preview.test.ts` guards the Deckbuilder Territory pane so it continues to use the actual 3.5 × 2.5 production Territory renderer rather than reconstructing Territory text locally.
+`tests/current-game-authority.test.ts` prevents active runtime surfaces from directly selecting the raw v0.6.4 source files, verifies stable-ID replacement/retirement semantics and current rule-driven card wording, and verifies that compositor-authored artwork direction is resolved through current-game before production rendering. `tests/deckbuilder-territory-preview.test.ts` guards the Deckbuilder Territory pane so it continues to use the actual 3.5 × 2.5 production Territory renderer rather than reconstructing Territory text locally.
 
-If a future current-development tool needs game data, the default answer is: **load the current-game authority, not another versioned file.**
+If a future current-development tool needs game data or shared rules, the default answer is: **load the current-game authority, not another versioned file.**
