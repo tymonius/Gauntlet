@@ -84,6 +84,36 @@ async function applyReleaseVersion(page, displayVersion) {
   if (!updated) throw new Error('Production Leader surface contained no cards to stamp with the TTS release version.');
 }
 
+async function applyLeaderCrop(page, leader) {
+  const result = await page.locator(leaderSelector(leader)).evaluate((element, payload) => {
+    const image = element.querySelector('.card-art img');
+    if (!image?.complete || image.naturalWidth <= 0 || image.naturalHeight <= 0) {
+      throw new Error(`Leader portrait is not loaded for ${payload.label}.`);
+    }
+    if (!window.GauntletArtworkCrop?.apply) throw new Error('Shared artwork crop engine is unavailable on the Leader production surface.');
+    const applied = window.GauntletArtworkCrop.apply(
+      image,
+      payload.direction || null,
+      { id: payload.key, label: payload.label },
+    );
+    return {
+      applied: Boolean(applied),
+      mode: image.dataset.artCrop || '',
+      focusX: image.dataset.artFocusX || '',
+      focusY: image.dataset.artFocusY || '',
+    };
+  }, {
+    key: `${leader.faction}-${leader.id}`,
+    label: leader.name,
+    direction: leader.artDirection || null,
+  });
+  if (!result.applied || !result.mode) {
+    throw new Error(`Production Leader artwork crop was not applied for ${leader.faction}:${leader.id}.`);
+  }
+  await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  return result;
+}
+
 async function validateLeader(page, leader, displayVersion) {
   const selector = leaderSelector(leader);
   const card = page.locator(selector);
@@ -101,6 +131,7 @@ async function validateLeader(page, leader, displayVersion) {
       title,
       fitWarning: element.classList.contains('fit-warning'),
       imageLoaded: Boolean(image?.complete && image?.naturalWidth > 0 && image?.naturalHeight > 0),
+      artCrop: image?.dataset.artCrop || '',
       footer,
     };
   });
@@ -113,6 +144,7 @@ async function validateLeader(page, leader, displayVersion) {
   }
   if (metrics.fitWarning) throw new Error(`Leader content does not fit the approved frame: ${leader.faction}:${leader.id}.`);
   if (!metrics.imageLoaded) throw new Error(`Leader portrait failed to load: ${leader.faction}:${leader.id}.`);
+  if (!metrics.artCrop) throw new Error(`Leader portrait has no applied artwork crop: ${leader.faction}:${leader.id}.`);
   if (metrics.footer.at(-1) !== displayVersion) {
     throw new Error(`Leader ${leader.faction}:${leader.id} renders ${metrics.footer.at(-1) || 'no version'} but TTS package displays ${displayVersion}.`);
   }
@@ -201,6 +233,7 @@ async function renderLeaderAssets(release, leaders, componentContract) {
     const records = [];
     for (let index = 0; index < leaders.length; index += 1) {
       const leader = leaders[index];
+      await applyLeaderCrop(page, leader);
       await validateLeader(page, leader, displayVersion);
       const deckId = FIRST_LEADER_DECK_ID + index;
       const faceFile = `leaders/${leader.faction}-${leader.id}.png`;
@@ -298,4 +331,4 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   });
 }
 
-export { applyReleaseVersion, renderLeaderAssets };
+export { applyLeaderCrop, applyReleaseVersion, renderLeaderAssets };
