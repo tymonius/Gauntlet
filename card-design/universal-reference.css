@@ -89,6 +89,17 @@
   mask-size: auto 100%;
 }
 
+.reference-card[data-component-id="universal-reference"] .reference-watermark {
+  -webkit-mask-image: url("../images/Gauntlet.svg");
+  -webkit-mask-position: left center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: auto 100%;
+  mask-image: url("../images/Gauntlet.svg");
+  mask-position: left center;
+  mask-repeat: no-repeat;
+  mask-size: auto 100%;
+}
+
 .reference-card[data-component-id="universal-reference"] .reference-type-line span:last-child {
   grid-column: 1 / -1;
   grid-row: 3;
