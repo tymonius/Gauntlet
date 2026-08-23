@@ -33,6 +33,22 @@ describe('final Universal Reference and reference-title fitting', () => {
     expect(copy).not.toMatch(/\bHeartlands?\b/i);
   });
 
+  it('keeps the turn sequence compact and explains Capture only in the dedicated reverse-side section', () => {
+    expect(copy).toContain('1. **Capture** — Capture a Territory / Advance Front Line, if applicable.');
+    expect(copy).toContain("At the start of your turn, if you occupy an opponent's Territory, rotate that Territory card to face you to capture it.");
+    expect(copy).toContain('If doing so would create a non-continuous line of controlled Territories, instead capture the next Territory past your Front Line: **Advance Front Line 1**.');
+    expect(copy).toContain('Normal Capture changes control of at most **1 Territory per turn**.');
+    expect(copy).not.toContain('Resolve your Capture step');
+    expect(copy).not.toContain('If your token is on or beyond the next opponent-controlled Territory beyond your Front Line');
+  });
+
+  it('states both Run the Gauntlet routes with the canonical capture target and an explicitly offensive Last Stand', () => {
+    expect(copy).toContain("**Capture the Territory at the opponent's end**, or force the opponent to make a **Last Stand** and win the resulting battle.");
+    expect(copy).not.toContain("capturing the opponent's final Territory");
+    expect(copy).not.toContain("forcing the opponent's **Last Stand**");
+    expect(copy).not.toContain('or winning a **Last Stand**');
+  });
+
   it('shrinks, wraps, then shrinks the wrapped reference-face title before failing', () => {
     expect(universalStyles).toContain('@import url("reference-title-wrap.css")');
     expect(referenceRenderer).toContain('const REFERENCE_TITLE_MIN_PT = 8.4');

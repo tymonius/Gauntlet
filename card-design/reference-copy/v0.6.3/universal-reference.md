@@ -10,7 +10,7 @@
 
 ### Turn Sequence
 
-1. **Capture** — Resolve your Capture step, then after-Capture effects and victory checks.
+1. **Capture** — Capture a Territory / Advance Front Line, if applicable.
 2. **Draw** — Draw 1 card.
 3. **Opening** — You may take your Action here.
 4. **Movement** — Advance, Hold, or Fall Back. Resolve any battle immediately.
@@ -61,16 +61,18 @@ No winner or loser; victory, loss, and retreat triggers do not occur. After Onse
 
 ### Front Line & Capture
 
-**Front Line** = your unbroken line of controlled Territories from your own end. During Capture, if you are on or beyond the next opponent-controlled Territory beyond it, capture that Territory. Normal Capture advances at most **1 Territory per turn**.
+**Front Line** = your continuous line of controlled Territories from your own end.
 
-**Occupation** alone does not change control.
+At the start of your turn, if you occupy an opponent's Territory, rotate that Territory card to face you to capture it. If doing so would create a non-continuous line of controlled Territories, instead capture the next Territory past your Front Line: **Advance Front Line 1**.
+
+Normal Capture changes control of at most **1 Territory per turn**. **Occupation** alone does not change control.
 
 ### Run the Gauntlet
 
-Win immediately by capturing the opponent's final Territory or winning a **Last Stand**.
+**Capture the Territory at the opponent's end**, or force the opponent to make a **Last Stand** and win the resulting battle.
 
 ### Last Stand
 
-No prior control of the final Territory is required. After the opponent retreats beyond their end, initiate a Last Stand only with a **new legal Advance beyond the Gauntlet**; unused prior movement cannot carry over.
+No prior control of the final Territory is required. After the opponent retreats beyond their end, force them to make a Last Stand only with a **new legal Advance beyond the Gauntlet**; unused prior movement cannot carry over.
 
 The defender normally has **Defensive Edge**.
