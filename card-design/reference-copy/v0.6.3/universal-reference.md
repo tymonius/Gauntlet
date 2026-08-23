@@ -10,7 +10,7 @@
 
 ### Turn Sequence
 
-1. **Capture** — Resolve your Capture step, then after-Capture effects and victory checks.
+1. **Capture** — If your token is on or beyond the next opponent-controlled Territory beyond your Front Line, capture that Territory; then resolve after-Capture effects and victory checks.
 2. **Draw** — Draw 1 card.
 3. **Opening** — You may take your Action here.
 4. **Movement** — Advance, Hold, or Fall Back. Resolve any battle immediately.
