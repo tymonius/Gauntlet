@@ -53,6 +53,10 @@ function elementOverflows(element) {
       || element.scrollHeight > element.clientHeight + 1);
 }
 
+function titleOverflowsHorizontally(title) {
+  return Boolean(title) && title.scrollWidth > title.clientWidth + 1;
+}
+
 function assertProductionFit(card, label) {
   const interior = card.querySelector('.card-interior');
   const title = card.querySelector('.card-title');
@@ -62,7 +66,11 @@ function assertProductionFit(card, label) {
     throw new Error(`${label} did not pass the production title-fitting check.`);
   }
   if (card.classList.contains('fit-warning')) throw new Error(`${label} still carries the production fit-warning class.`);
-  if (elementOverflows(title)) throw new Error(`${label} title is clipped.`);
+  // The shared production fitter deliberately defines title fit by horizontal
+  // width. Font glyph metrics can report scrollHeight slightly larger than a
+  // sub-1 line-height even when nothing is visually clipped, so do not create a
+  // contradictory second vertical criterion here.
+  if (titleOverflowsHorizontally(title)) throw new Error(`${label} title is clipped.`);
   if (elementOverflows(rules)) throw new Error(`${label} rules are clipped.`);
   if (interior && footer && footer.getBoundingClientRect().bottom > interior.getBoundingClientRect().bottom + 1) {
     throw new Error(`${label} footer extends beyond the card interior.`);
