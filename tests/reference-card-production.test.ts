@@ -68,14 +68,14 @@ describe('production faction reference cards', () => {
     expect(operations.referenceFaces.reverse.title).toBe('Mirrors & Replacements');
     expect(operationsCopy).toContain('| Gambit Surveillance | No Action · 1 Intel · Once per battle |');
     expect(operationsCopy).toContain('### Intelligence Mirror');
-    expect(operationsCopy).toContain('creates **no new Surveillance, Interference, reveal, or response opportunity**');
+    expect(operationsCopy).toContain('After a replacement, continue the current stage without another Surveillance, Interference, reveal, or response window.');
 
     const mysticsCopy = readFileSync(mystics.source, 'utf8');
     expect(mystics.referenceFaces.reverse.title).toBe('Ritual of Ascension');
     expect(mysticsCopy).toContain('| Begin a Rite | 1 Action · Denouement |');
     expect(mysticsCopy).toContain('**1st Rite:** Unlock **Invocation**.');
     expect(mysticsCopy).toContain('you may move **1 card from your Graveyard to your Discard Pile**');
-    expect(mysticsCopy).toContain('**Withdrawal** neither completes nor interrupts the Ritual.');
+    expect(mysticsCopy).toContain('After a **Withdrawal**, the Ritual remains underway.');
 
     const doctrineCopy = readFileSync(doctrine.source, 'utf8');
     expect(doctrineCopy).toContain('| Condemnation | Automatic · Aftermath |');

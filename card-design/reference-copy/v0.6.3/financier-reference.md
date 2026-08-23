@@ -75,7 +75,7 @@ During Denouement, spend **1 Action**, discard **1 card from Hand**, and roll:
 
 ### Subsidize
 
-Before dice are rolled, spend Capital to increase your battle total. This uses **no Action**.
+Before dice are rolled, spend Capital to increase your battle total.
 
 **+1:** 1 Capital
 

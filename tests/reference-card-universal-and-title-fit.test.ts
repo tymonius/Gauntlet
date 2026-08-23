@@ -38,9 +38,27 @@ describe('final Universal Reference and reference-title fitting', () => {
     expect(copy).toContain('1. **Capture** — Capture a Territory / Advance Front Line, if applicable.');
     expect(copy).toContain("At the start of your turn, if you occupy an opponent's Territory, rotate that Territory card to face you to capture it.");
     expect(copy).toContain('If doing so would create a non-continuous line of controlled Territories, instead capture the next Territory past your Front Line: **Advance Front Line 1**.');
-    expect(copy).toContain('Normal Capture changes control of at most **1 Territory per turn**.');
+    expect(copy).toContain('Capture changes control of at most **1 Territory per turn**.');
     expect(copy).not.toContain('Resolve your Capture step');
     expect(copy).not.toContain('If your token is on or beyond the next opponent-controlled Territory beyond your Front Line');
+  });
+
+  it('states the baseline reference rules without normally/normal hedge wording', () => {
+    expect(copy).toContain('You take **1 Action total per turn**, during either Opening or Denouement. Each phase permits at most **1 Action**, even when you gain Additional Actions.');
+    expect(copy).toContain('### Battle Result');
+    expect(copy).toContain('Withdrawal ends the battle. Skip victory, loss, and retreat triggers.');
+    expect(copy).toContain('The defender has **Defensive Edge**.');
+    expect(copy).not.toMatch(/\bnormal(?:ly)?\b/i);
+  });
+
+  it('states surprising exceptions directly instead of narrating obvious non-events', () => {
+    expect(copy).toContain('A Last Stand can be forced while you occupy the final Territory, before you capture it.');
+    expect(copy).toContain('force them to make a Last Stand with a **new legal Advance beyond the Gauntlet**.');
+    expect(copy).toContain('**Occupation** alone does not change control.');
+    expect(copy).not.toContain('Additional Actions do not permit');
+    expect(copy).not.toContain('No winner or loser');
+    expect(copy).not.toContain('No prior control of the final Territory is required');
+    expect(copy).not.toContain('unused prior movement cannot carry over');
   });
 
   it('states both Run the Gauntlet routes with the canonical capture target and an explicitly offensive Last Stand', () => {
@@ -75,17 +93,34 @@ describe('final Universal Reference and reference-title fitting', () => {
     expect(ttsRenderer).toContain('/card-design/universal-reference.css');
   });
 
-  it('uses the Gauntlet G in the emblem slot and removes list/section divider chrome', () => {
+  it('places the Gauntlet G beside the overline/title like faction emblems and leaves more vertical room for copy', () => {
     expect(gauntletMark).toContain('viewBox="0 0 1871.79 493.58"');
+    expect(universalStyles).toContain('grid-template-rows: 0.50in minmax(0, 1fr) 0.18in');
+    expect(universalStyles).toContain('grid-template-columns: 0.17in minmax(0, 1fr)');
+    expect(universalStyles).toContain('.reference-card[data-component-id="universal-reference"] .reference-card-header::before {\n  grid-column: 2;\n  grid-row: 1;');
+    expect(universalStyles).toContain('.reference-card[data-component-id="universal-reference"] .reference-face-title {\n  grid-column: 2;\n  grid-row: 2;');
+    expect(universalStyles).toContain('.reference-card[data-component-id="universal-reference"] .reference-type-line {\n  display: contents;');
+    expect(universalStyles).toContain('grid-row: 1 / span 2');
     expect(universalStyles).toContain('-webkit-mask-image: url("../images/Gauntlet.svg")');
-    expect(universalStyles).toContain('-webkit-mask-position: left center');
-    expect(universalStyles).toContain('-webkit-mask-size: auto 100%');
+    expect(universalStyles).toContain('grid-column: 1 / -1');
+    expect(universalStyles).toContain('padding-bottom: calc(0.012in * var(--reference-rules-scale))');
+    expect(universalStyles).toContain('line-height: 1.08');
+  });
+
+  it('keeps the improved list alignment and divider-free Universal body', () => {
     expect(universalStyles).toContain('grid-template-columns: 0.10in minmax(0, 1fr)');
     expect(universalStyles).toContain('text-align: left');
     expect(universalStyles).toContain('grid-template-columns: 0.045in minmax(0, 1fr)');
     expect(universalStyles).toContain('margin-top: 0.019in');
     expect(universalStyles).toContain('.reference-panel + .reference-panel {\n  padding-top: 0;\n  border-top: 0;');
     expect(universalStyles).toContain('.reference-step-list li + li,\n.reference-card[data-component-id="universal-reference"] .reference-option-list li + li {\n  margin-top: calc(0.008in * var(--reference-rules-scale));\n  padding-top: 0;\n  border-top: 0;');
+  });
+
+  it('exports bespoke reference faces from their authored headings rather than stale selector lists', () => {
+    expect(supplementalGenerator).toContain('function parseBespokeReferenceFace');
+    expect(supplementalGenerator).toContain("const parseFace = component.copyMode === 'bespoke' ? parseBespokeReferenceFace : parseReferenceFace;");
+    expect(supplementalGenerator).toContain("const faceHeading = `${sideLabel} — ${title}`;");
+    expect(supplementalGenerator).toContain("const heading = line.trim().match(/^###\\s+(.+)$/);");
   });
 
   it('exports and production-prints the ready shared reference instead of leaving it as a placeholder', () => {

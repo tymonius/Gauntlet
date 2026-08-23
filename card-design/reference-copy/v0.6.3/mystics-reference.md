@@ -22,11 +22,11 @@
 
 During Denouement, spend **1 Action** to begin one incomplete Rite and pay its beginning cost.
 
-- Only one Rite may be begun but incomplete at a time.
-- You may begin the Rites in any order.
-- A Rite cannot complete on the turn it begins.
+- Have at most one incomplete Rite at a time.
+- Begin the Rites in any order.
+- A Rite becomes eligible to complete starting on a later turn.
 - Complete at most one Rite per turn.
-- If interrupted, reset it; paid costs are not returned unless stated.
+- If interrupted, reset it; paid costs remain spent.
 
 ### Progression
 
@@ -44,7 +44,7 @@ Once per turn, after applying the Action, Gambit, Tactic, or Gambit/Tactic effec
 
 Once per turn, **before dice are rolled** in a battle involving you, you may put **1 card from Hand in your Graveyard** and add its value to your battle total.
 
-The card is not played and none of its printed effects apply.
+Move the card directly from Hand to Graveyard for its value; only its value applies.
 
 ## Reverse — Ritual of Ascension
 
@@ -60,7 +60,7 @@ After completing all three Rites, during Denouement spend **1 Action** to bind:
 
 While the Ritual is underway, during a battle **you initiated**, add **+1 to your battle total per card bound to the Ritual**.
 
-With all three cards bound, Convergence normally gives **+3**.
+With all three cards bound, Convergence gives **+3**.
 
 ### Complete & Win
 
@@ -70,8 +70,8 @@ Initiate a battle while all three Ritual cards remain bound. If you win that bat
 
 If you lose any battle before Ritual completion, put all three Ritual-bound cards in your Graveyard. Completed Rites remain complete, and you may begin the Ritual again later.
 
-**Withdrawal** neither completes nor interrupts the Ritual.
+After a **Withdrawal**, the Ritual remains underway.
 
 ### Bound Cards
 
-If a Rite or Ritual binding ends without another instruction, put its bound cards in their owners' Graveyards.
+When a Rite or Ritual binding ends, put its bound cards in their owners' Graveyards.

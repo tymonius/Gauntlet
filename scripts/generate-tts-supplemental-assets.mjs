@@ -248,6 +248,45 @@ function parseReferenceFace(markdown, face, componentName, side) {
   };
 }
 
+function parseBespokeReferenceFace(markdown, face, componentName, side) {
+  const title = String(face?.title || '').trim();
+  if (!title) throw new Error(`${componentName} bespoke reference ${side} face must declare a title.`);
+
+  const sideLabel = side === 'reverse' ? 'Reverse' : 'Front';
+  const faceHeading = `${sideLabel} — ${title}`;
+  const lines = headingLines(markdown, faceHeading, 2);
+  const sections = [];
+  let current = null;
+
+  const flushSection = () => {
+    if (!current) return;
+    sections.push({
+      heading: current.heading,
+      sourceHeading: current.heading,
+      blocks: parseMarkdownBlocks(current.lines, `${componentName} — ${current.heading}`),
+    });
+    current = null;
+  };
+
+  for (const line of lines) {
+    const heading = line.trim().match(/^###\s+(.+)$/);
+    if (heading) {
+      flushSection();
+      current = { heading: cleanInlineMarkdown(heading[1]), lines: [] };
+      continue;
+    }
+    if (!current) {
+      if (line.trim()) throw new Error(`${componentName} bespoke ${side} face has copy before its first section.`);
+      continue;
+    }
+    current.lines.push(line);
+  }
+  flushSection();
+
+  if (!sections.length) throw new Error(`${componentName} bespoke ${side} face has no printable sections.`);
+  return { title, sections };
+}
+
 function normalizedSupplementalComponent(component, shared = false) {
   return {
     ...component,
@@ -315,11 +354,12 @@ async function readyReferenceRecord(component, renderer, markdown) {
   if (!faces?.front || !faces?.reverse) {
     throw new Error(`Ready reference card ${component.id} must declare referenceFaces.front and referenceFaces.reverse.`);
   }
+  const parseFace = component.copyMode === 'bespoke' ? parseBespokeReferenceFace : parseReferenceFace;
   return {
     ...readyCardBase(component, renderer),
     faces: {
-      front: parseReferenceFace(markdown, faces.front, component.name, 'front'),
-      reverse: parseReferenceFace(markdown, faces.reverse, component.name, 'reverse'),
+      front: parseFace(markdown, faces.front, component.name, 'front'),
+      reverse: parseFace(markdown, faces.reverse, component.name, 'reverse'),
     },
   };
 }

@@ -42,7 +42,7 @@ The attacker has the first opportunity to offer Terms. If the attacker passes, t
 
 ### After Refused Terms
 
-**Diplomat wins:** Return the Stake. If the Proposal is unratified, ratify it and gain **2 Influence** unless stated otherwise.
+**Diplomat wins:** Return the Stake. If the Proposal is unratified, ratify it and gain **2 Influence**.
 
 **Diplomat loses:** Lose the Stake. The Proposal is not ratified.
 
@@ -64,7 +64,7 @@ Staked Influence cannot be spent as Leverage.
 
 ### Treaty Articles
 
-A ratified Proposal may be offered again, but cannot be ratified again and does not grant the normal ratification Influence reward again.
+A ratified Proposal may be offered again. Ratification and its **Influence reward** occur only once.
 
 ### Peace Treaty
 
