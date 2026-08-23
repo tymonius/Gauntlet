@@ -25,7 +25,7 @@ During Opening or Denouement, spend **1 Action** and the listed Conviction.
 | 3 | The opponent chooses one card from Hand and puts it in their Graveyard. |
 | 4 | Reveal the opponent's Hand. Choose one card and put it in their Graveyard. |
 
-A Purge is not playing a card.
+**Purge is a Faction Feature, not a card play.**
 
 ## Reverse — Purge Timing & Limits
 
@@ -33,25 +33,22 @@ A Purge is not playing a card.
 
 If one Action that turn is Purge, you may also take **one Action in the other Action phase** that turn.
 
-This never permits two Actions in one phase.
+Take at most **1 Action in each phase**.
 
 ### Once per Turn
 
-You may spend an Action on Purge **no more than once per turn**.
+You may spend an Action on Purge **once per turn**.
 
 ### Direct Purges
 
-A Purge directly permitted without taking an Action is separate:
-
-- It does not consume the once-per-turn Action-Purge.
-- It does not activate the two-phase Action permission.
+Only a Purge taken as an Action uses the once-per-turn Action-Purge and enables the two-phase Action permission.
 
 ### Discard Pile
 
-The top card is the **most recently placed card** unless a rule changes the order.
+The top card is the **most recently placed card**.
 
-Choosing cards from a Discard Pile does not reorder the rest.
+After choosing cards from a Discard Pile, keep the remaining cards in the same order.
 
 ### Combined Value
 
-When an effect allows several cards within a combined value limit, add their **printed values**. The total cannot exceed the limit.
+When an effect allows several cards within a combined value limit, add their **printed values** and choose a set whose total is within the limit.
