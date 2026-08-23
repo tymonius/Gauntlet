@@ -59,7 +59,7 @@ Higher battle total wins. **Defensive Edge** wins ties. Otherwise, each player r
 
 ### Withdrawal
 
-During Onset, withdrawal ends the battle sequence: no Gambits, battle result, or Aftermath. After Onset has completed and the battle proceeds to Gambits, a later withdrawal finishes the remaining non-result Aftermath steps and clears committed battle cards normally.
+During Onset, withdrawal ends the battle sequence: no Gambits, battle result, or Aftermath. After Onset has completed and the battle proceeds to Gambits, a later withdrawal finishes the remaining non-result Aftermath steps and clears committed battle cards using their standard destinations.
 
 ### Front Line & Capture
 
