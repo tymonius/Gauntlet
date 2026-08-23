@@ -17,7 +17,7 @@
 5. **Denouement** — If you did not take your Action in Opening, you may take it here.
 6. **Cleanup** — Resolve end-of-turn effects and discard down to your Hand limit.
 
-You take **1 Action total per turn**, during either Opening or Denouement. Additional Actions do not permit more than one Action in the same phase.
+You take **1 Action total per turn**, during either Opening or Denouement. Each phase permits at most **1 Action**, even when you gain Additional Actions.
 
 ### Movement
 
@@ -42,7 +42,7 @@ When movement creates a pending battle, proceed to **Onset**. At Onset, the batt
 
 ### Outcome
 
-Higher battle total wins. **Defensive Edge** wins ties. Otherwise, each player rolls 1 die with no modifiers; higher roll wins; reroll ties.
+Higher battle total wins. **Defensive Edge** wins ties. Otherwise, each player rolls 1 unmodified die; higher roll wins; reroll ties.
 
 ### Battle Result
 
@@ -57,7 +57,7 @@ Higher battle total wins. **Defensive Edge** wins ties. Otherwise, each player r
 
 ### Withdrawal
 
-No winner or loser; victory, loss, and retreat triggers do not occur. After Onset, finish remaining non-result Aftermath steps and clear battle cards.
+Withdrawal ends the battle. Skip victory, loss, and retreat triggers. After Onset, finish remaining non-result Aftermath steps and clear battle cards.
 
 ### Front Line & Capture
 
@@ -73,6 +73,6 @@ Capture changes control of at most **1 Territory per turn**. **Occupation** alon
 
 ### Last Stand
 
-No prior control of the final Territory is required. After the opponent retreats beyond their end, force them to make a Last Stand only with a **new legal Advance beyond the Gauntlet**; unused prior movement cannot carry over.
+A Last Stand can be forced while you occupy the final Territory, before you capture it. After the opponent retreats beyond their end, force them to make a Last Stand with a **new legal Advance beyond the Gauntlet**.
 
 The defender has **Defensive Edge**.
