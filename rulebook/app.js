@@ -26,7 +26,6 @@ const printNote = document.querySelector('[data-rulebook-print-note]');
 const rulesAssistantButton = document.querySelector('[data-open-rules-assistant]');
 const rulesetButtons = [...document.querySelectorAll('[data-ruleset]')];
 const publishedBookletLinks = [...document.querySelectorAll('[data-published-booklet]')];
-const candidatePrintButtons = [...document.querySelectorAll('[data-candidate-print]')];
 
 let sourcePromise = null;
 let activeMode = RELEASED_MODE;
@@ -278,7 +277,6 @@ function setRulesetUi(mode, currentGame = null) {
     button.setAttribute('aria-pressed', String(button.dataset.ruleset === mode));
   });
   publishedBookletLinks.forEach((link) => { link.hidden = candidate; });
-  candidatePrintButtons.forEach((button) => { button.hidden = !candidate; });
   if (rulesAssistantButton) rulesAssistantButton.hidden = candidate;
   if (candidateNote) {
     candidateNote.hidden = !candidate;
@@ -291,8 +289,8 @@ function setRulesetUi(mode, currentGame = null) {
     const label = currentGame?.displayVersion || 'v0.6.4 candidate';
     if (eyebrow) eyebrow.textContent = `Release candidate rules · ${label}`;
     if (footerVersion) footerVersion.innerHTML = '<strong>Gauntlet v0.6.4 candidate</strong> · Current release-candidate rules view.';
-    if (printHeading) printHeading.textContent = 'Print the candidate view';
-    if (printNote) printNote.textContent = 'This browser print reflects the candidate overlay; there is no published candidate booklet.';
+    if (printHeading) printHeading.textContent = 'Release candidate rules';
+    if (printNote) printNote.textContent = 'No candidate booklet has been published. Switch to Released v0.6.3 for the official printable booklet.';
     document.title = 'Gauntlet v0.6.4 Candidate Browser Rulebook';
   } else {
     if (eyebrow) eyebrow.textContent = 'Canonical rules · version 0.6.3';
@@ -304,9 +302,6 @@ function setRulesetUi(mode, currentGame = null) {
 }
 
 function initializeControls() {
-  document.querySelectorAll('[data-print-rulebook]').forEach((button) => {
-    button.addEventListener('click', () => window.print());
-  });
   rulesAssistantButton?.addEventListener('click', () => {
     document.querySelector('.ga-rules-launcher')?.click();
   });
