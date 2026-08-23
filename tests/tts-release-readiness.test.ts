@@ -4,14 +4,15 @@ import {
   buildReadinessReport,
   evaluateComponentReadiness,
   evaluateStarterAssembly,
+  shouldEnforceStrictReadiness,
 } from '../scripts/check-tts-release-readiness.mjs';
 
 describe('TTS release readiness reporting', () => {
-  it('treats the Universal Reference as the remaining shared-component blocker while accepting finalized export bridges', () => {
+  it('blocks any non-ready shared component while accepting finalized export bridges', () => {
     const contract = {
       sharedComponents: [
         { id: 'player-token', name: 'Player Token', productionStatus: 'ready' },
-        { id: 'universal-reference', name: 'Universal Reference Card', productionStatus: 'design-pending' },
+        { id: 'unfinished-reference', name: 'Unfinished Reference Card', productionStatus: 'design-pending' },
       ],
       components: [
         { id: 'diplomats-proposal-test', name: 'Test Proposal', family: 'proposal-treaty-card', designStatus: 'final', productionStatus: 'export-pending' },
@@ -27,7 +28,7 @@ describe('TTS release readiness reporting', () => {
 
     const result = evaluateComponentReadiness(contract, manifest);
     expect(result.blockers).toHaveLength(1);
-    expect(result.blockers[0].id).toBe('universal-reference');
+    expect(result.blockers[0].id).toBe('unfinished-reference');
     expect(result.expectedGenerated).toEqual(['diplomats-proposal-test', 'financiers-deed']);
   });
 
@@ -84,10 +85,14 @@ describe('TTS release readiness reporting', () => {
     expect(report.manualReleaseChecks.some(item => /full remote two-player game/i.test(item))).toBe(true);
   });
 
-  it('wires non-strict readiness reporting into packaging while reserving strict mode for release closeout', () => {
+  it('keeps explicit strict mode and automatically enforces it for release-candidate targets', () => {
     const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
     expect(packageJson.scripts['tts:release:status']).toBe('node scripts/check-tts-release-readiness.mjs');
     expect(packageJson.scripts['tts:release:strict']).toContain('--strict');
     expect(packageJson.scripts['tts:package']).toContain('tts:release:status');
+
+    expect(shouldEnforceStrictReadiness({ targetStatus: 'active-development' }, [])).toBe(false);
+    expect(shouldEnforceStrictReadiness({ targetStatus: 'active-development' }, ['--strict'])).toBe(true);
+    expect(shouldEnforceStrictReadiness({ targetStatus: 'release-candidate' }, [])).toBe(true);
   });
 });
