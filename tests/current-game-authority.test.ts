@@ -4,9 +4,12 @@ import {
   CURRENT_ART_DIRECTION_SOURCE_URL,
   parseArtDirectionSource,
   resolveCards,
+  resolveCardTextOverrides,
+  resolveRuleSection,
 } from '../game-data/current-game.mjs';
 
 const manifest = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
+const rulesSource = JSON.parse(readFileSync('docs/v0.6.4-rules.json', 'utf8'));
 
 const CURRENT_RUNTIME_SURFACES = [
   'card-reference/app.js',
@@ -31,6 +34,7 @@ const RAW_CURRENT_SOURCE_MARKERS = [
   'v0.6.4-territories.json',
   'v0.6.4-diplomat-proposals.json',
   'v0.6.4-arcane-symbol.json',
+  'v0.6.4-rules.json',
   'clean-v0.6.3/complete-authority/canonical-structured-data.json',
   'clean-v0.6.3/downstream/canonical-data.json',
   '/config/tts-component-contract.json',
@@ -50,6 +54,7 @@ describe('single current-game authority', () => {
       territories: expect.any(String),
       proposals: expect.any(String),
       arcaneSymbol: expect.any(String),
+      rules: '/docs/v0.6.4-rules.json',
       componentContract: expect.any(String),
       starterDecks: '/deckbuilder/starter-decks.json',
     }));
@@ -81,6 +86,54 @@ describe('single current-game authority', () => {
     expect(resolved.every(card => card.current_game_authority === '/game-data/current-game.json')).toBe(true);
   });
 
+  it('applies rule-driven card wording after the playable-card pool is resolved', () => {
+    const cards = resolveCardTextOverrides([
+      {
+        id: 'neutral-advance-guard',
+        name: 'Advance Guard',
+        effects: [
+          { label: 'Action', text: 'Old pending-battle wording.' },
+          { label: 'Gambit/Tactic', text: 'Attacker without a Gambit — gain Advantage.' },
+        ],
+      },
+      {
+        id: 'neutral-forced-march',
+        name: 'Forced March',
+        effects: [
+          { label: 'Action', text: 'Old pending-battle wording.' },
+        ],
+      },
+    ], rulesSource);
+
+    expect(cards.find(card => card.id === 'neutral-advance-guard')?.effects[0].text)
+      .toContain('initiates a battle');
+    expect(cards.find(card => card.id === 'neutral-forced-march')?.effects[0].text)
+      .toContain('cannot initiate a battle');
+    expect(JSON.stringify(cards)).not.toContain('pending battle');
+  });
+
+  it('removes the inherited pending-battle sequence from current shared rules', () => {
+    const battle = resolveRuleSection({
+      sequence: ['onset', 'gambits'],
+      pending_sequence: ['pending_battle', 'terms', 'onset', 'gambits'],
+      withdrawal: 'old withdrawal rule',
+    }, rulesSource.battle);
+
+    expect(battle).not.toHaveProperty('pending_sequence');
+    expect(battle.sequence).toEqual([
+      'onset',
+      'set_gambits',
+      'form_reserves',
+      'reveal_gambits',
+      'choose_tactics',
+      'reveal_tactics',
+      'outcome',
+      'aftermath',
+    ]);
+    expect(String(battle.onset)).toContain('Resolve Terms first');
+    expect(String(battle.withdrawal)).toContain('Withdrawal during Onset');
+  });
+
   it('resolves compositor artwork positioning into the current-game object', () => {
     expect(CURRENT_ART_DIRECTION_SOURCE_URL).toBe('/tts/artwork-direction-overrides.js');
     const source = readFileSync(`.${CURRENT_ART_DIRECTION_SOURCE_URL}`, 'utf8');
@@ -110,8 +163,10 @@ describe('single current-game authority', () => {
     const digital = readFileSync('src/content/v064.ts', 'utf8');
     expect(digital).toContain("import currentGameAuthorityJson from '../../game-data/current-game.json'");
     expect(digital).toContain('currentGameAuthority.sources.territories !== BUNDLED_TERRITORY_SOURCE');
+    expect(digital).toContain('currentGameAuthority.sources.rules !== BUNDLED_RULES_SOURCE');
     expect(digital).toContain("currentGameAuthority.authority !== 'current-game'");
     expect(digital).toContain('rulesVersion: V064_CANDIDATE_RULES_VERSION');
+    expect(digital).toContain('applyRuleCardTextOverrides');
   });
 
   it('keeps source precedence out of the Deckbuilder starter and faction-component layers', () => {
@@ -139,6 +194,8 @@ describe('single current-game authority', () => {
   it('makes the Rules Arbiter consume the resolved current-game corpus inputs', () => {
     const rules = readFileSync('rules-assistant/v064-candidate-corpus.js', 'utf8');
     expect(rules).toContain('loadCurrentGame');
+    expect(rules).toContain('currentGame.ruleChanges');
+    expect(rules).toContain('currentGame.cards');
     expect(rules).toContain('currentGame.proposals');
     expect(rules).toContain('currentGame.territories');
     expect(rules).toContain('currentGame.arcaneSymbol');
