@@ -46,14 +46,133 @@
       <div>
         <p class="eyebrow">Playtest release history</p>
         <h1 id="changelog-title">Changelog</h1>
-        <p class="release-lede">Player-facing changes between Gauntlet playtest editions, focused on rules, card language, and table play rather than repository implementation details.</p>
+        <p class="release-lede">Player-facing changes between Gauntlet playtest editions, focused on rules, cards, components, and table play rather than repository implementation details.</p>
       </div>
       <dl class="release-status" aria-label="Current release">
         <div><dt>Current release</dt><dd>v0.6.3</dd></div>
         <div><dt>Published</dt><dd>August 14, 2026</dd></div>
-        <div><dt>Baseline</dt><dd>v0.6.2 rules</dd></div>
+        <div><dt>Next release</dt><dd>v0.7.0 candidate</dd></div>
       </dl>
     </section>
+
+    <article class="changelog-entry" id="v0-7-0">
+      <p class="changelog-meta">Release candidate · upcoming</p>
+      <h2>v0.7.0 — Illustrated Cards &amp; Tabletop Simulator</h2>
+      <p class="changelog-summary">v0.7.0 promotes the approved v0.6.4-candidate development bundle into the next public playtest edition. It combines the gameplay changes developed since v0.6.3 with the fully illustrated production card set, finalized physical player aids, expanded printing, and the first complete Tabletop Simulator package.</p>
+      <div class="release-actions">
+        <a class="button primary" href="/v0.7.0/">Preview v0.7.0 release</a>
+        <a class="button secondary" href="/rulebook/?rules=candidate">Read candidate rules</a>
+      </div>
+
+      <h3>At a glance</h3>
+      <ol>
+        <li><strong>The playable pool grows from 128 to 142 cards.</strong> Fifteen new cards enter the pool and <strong>No Martyrs</strong> is retired.</li>
+        <li><strong>Battle now begins with Onset.</strong> The separate Pending Battle state is removed; Terms and other pre-Gambit effects resolve inside the first battle phase.</li>
+        <li><strong>The complete 25-Territory set received a current-rules pass.</strong> Several difficult Capture, movement, and timing interactions are now explicit.</li>
+        <li><strong>Diplomat Proposals and Treaty Articles are finalized physical components.</strong> Nine Proposal / Treaty pairs support the Peace Treaty game plan, which now requires six different ratified Proposals.</li>
+        <li><strong>Arcane is standardized as a trait.</strong> The Arcane symbol is not a Resource.</li>
+        <li><strong>All 142 playable cards are fully illustrated.</strong> The current production layouts and Territory artwork form the release card set.</li>
+        <li><strong>Reference cards and faction components are now a finished physical system.</strong> The release includes the Universal Reference, faction references, trackers, Proposals, Treaty Articles, Capital Ledgers, Deeds, Rites, and other current components.</li>
+        <li><strong>Deckbuilder printing is substantially expanded.</strong> Current production cards/components print through shared renderers, and Advanced → Custom printing can assemble arbitrary mixed card sheets.</li>
+        <li><strong>Tabletop Simulator becomes a release feature.</strong> All twelve starter kits and their required physical components are assembled into the v0.7.0 TTS package.</li>
+      </ol>
+
+      <h3>Returning from v0.6.3?</h3>
+      <p>The core turn structure, six factions, twelve Leaders, Front Line, Run-the-Gauntlet victory routes, and Gambit / Reserves / Tactics battle core remain recognizable. The main things to relearn are the new Onset model, the larger playable-card pool, the finalized Diplomat Proposal system and six-ratification Peace Treaty threshold, Arcane as a trait rather than a Resource, and the clarified Territory interactions below.</p>
+
+      <h3>Battle begins with Onset</h3>
+      <p>v0.7.0 removes <strong>Pending Battle</strong> as a separate pre-battle state. A battle now begins with <strong>Onset</strong>, followed by Gambits, Reserves, Tactics, Outcome, and Aftermath.</p>
+      <p>During Onset, establish the attacker, defender, contested Position, and attacker origin. If Terms are applicable, resolve them first. Then determine whether the battle proceeds and, if it does, resolve other eligible Onset / pre-Gambit effects before continuing to Gambits.</p>
+      <p>If accepted Terms or another effect ends the sequence during Onset, no battle was fought, won, or lost, and there is no Aftermath. Refused Terms continue the same Onset and may trigger Sanctions. Withdrawal during Onset likewise ends the sequence before a battle is fought. Once Onset completes and the sequence proceeds to Gambits, later withdrawal follows the normal started-battle, no-result cleanup path.</p>
+      <p>Movement wording and affected card / Leader text are updated around the same model. Moving into an opponent's Position initiates the battle and ends that movement unless an effect expressly permits otherwise.</p>
+
+      <h3>Playable-card pool: 128 → 142</h3>
+      <p>v0.7.0 adds <strong>15 new playable cards</strong> and retires <strong>one</strong> existing card.</p>
+      <ul>
+        <li><strong>Neutral:</strong> Echoes of Victory; Heroic Defender.</li>
+        <li><strong>Military:</strong> Decisive Push; Honorable Surrender.</li>
+        <li><strong>Diplomats:</strong> Quiet Conversation; Discreet Reception.</li>
+        <li><strong>Financiers:</strong> Black Monday; White Knight.</li>
+        <li><strong>Intelligence:</strong> Cipher; Intelligence Briefing.</li>
+        <li><strong>Mystics:</strong> Leyline Confluence; Consecrated Ground.</li>
+        <li><strong>Inquisition:</strong> Wafer of Dimethylated Spirit; Seeking of Conjurations; Faith.</li>
+        <li><strong>Retired:</strong> No Martyrs.</li>
+      </ul>
+      <p>The resulting v0.7.0 pool contains <strong>142 playable cards</strong>. Existing cards also receive the current rules-language and interaction updates carried by the promoted candidate authority; the finalized v0.7.0 card faces govern their individual wording.</p>
+
+      <h3>Territory and Arena pass</h3>
+      <p>The current set remains <strong>25 Territories: 20 standard Territories and 5 Arenas</strong>. The complete set received a current-rules pass, with several previously difficult interactions made explicit.</p>
+      <ul>
+        <li><strong>Elysian Fields:</strong> progress Resources are spent and returned according to their faction rules.</li>
+        <li><strong>Quick Sand:</strong> its saving-roll timing is integrated into the initial retreat movement; Terrain modifies movement only when an effect explicitly says it does.</li>
+        <li><strong>Gaes of Wrath:</strong> its end-of-movement Action lock is temporary; other game effects continue normally.</li>
+        <li><strong>Judgement Seat:</strong> its direct Capture attempt is a specific exception to normal Capture procedure, including continuity restrictions; Resolution Waterway remains protected.</li>
+        <li><strong>Hidden Archway:</strong> “may not be Passed” prevents movement into, through, or beyond the Position while the restriction is active.</li>
+        <li><strong>Smugglers Tunnel:</strong> traversal uses its special two-entry permission; end-of-Movement effects do not resolve in the middle of the passage, and normal Movement completion occurs only at the final destination.</li>
+      </ul>
+
+      <h3>Diplomats: Proposals, Treaty Articles, and Peace Treaty</h3>
+      <p>The Diplomat system now uses <strong>nine physical Proposal cards</strong>, each with its ratified <strong>Treaty Article</strong> on the reverse:</p>
+      <ol>
+        <li>Mutual Non-aggression Pact</li>
+        <li>Commercial Pact</li>
+        <li>Open Borders Agreement</li>
+        <li>Resource Sharing Accord</li>
+        <li>Arms Limitation Agreement</li>
+        <li>Shared Assets Agreement</li>
+        <li>Strategic Arms Treaty</li>
+        <li>Weapons Restriction Accord</li>
+        <li>Conflict Resolution Treaty</li>
+      </ol>
+      <p>Proposals are Pressed as Terms during Onset. Accepted Terms are ratified and end the sequence during Onset; the Treaty Article remains in play as applicable. Refused Terms are discarded, the battle continues, and the refusal can create the normal Sanctions opportunity.</p>
+      <p>The Diplomat <strong>Peace Treaty</strong> victory condition now requires <strong>six different ratified Proposals</strong>.</p>
+
+      <h3>Arcane is a trait</h3>
+      <p>A card showing the Arcane symbol on its Front or Reverse has the <strong>Arcane trait</strong>. Arcane is <strong>not a Resource</strong>: players do not gain, spend, or track an Arcane value. Cards and effects may instead check whether a card has the trait, including effects such as <strong>Leyline Confluence</strong>.</p>
+
+      <h3>Faction Features and Leader cards</h3>
+      <p><strong>Faction Feature</strong> is now the umbrella term for shared faction-specific actions, abilities, procedures, passive effects, and other named faction mechanics without implying that each one consumes an Action. <strong>Leader Ability</strong> remains the Leader-specific heading.</p>
+      <p>Leader cards use a consistent hierarchy for Faction Victory, Leader Ability, and Resource or Progression where applicable, with Action use, timing, costs, and frequency stated with the relevant feature. Military Orders remain a Leader Ability family; Intelligence keeps Intel as a Resource and Operation Progress as Progression; Mystics use Progression — Rites rather than presenting Rites as a Resource.</p>
+      <p>These taxonomy and component-layout changes are primarily readability improvements. They do not create new gameplay rules unless the current rule or card text expressly changes an effect.</p>
+
+      <h3>Fully illustrated production set</h3>
+      <p>v0.7.0 is the first release built around the <strong>fully illustrated current playable-card set</strong>. All 142 playable cards use their current production layouts and approved artwork, and the Territory set uses its current artwork and landscape production treatment.</p>
+
+      <h3>Reference cards and faction components</h3>
+      <p>Every Deck receives the shared, two-sided <strong>Universal Reference Card</strong>. The finalized faction-specific reference set includes the Diplomat Reference, Financier Reference, Intelligence Mission Reference, Intelligence Operations Reference, Mystics Reference, Inquisition Doctrine Reference, and Inquisition Purge Reference. Military intentionally has no separate faction reference card.</p>
+      <p>The current sliding-tracker system covers <strong>Command, Influence, Capital Limit, Intel, Operation Progress,</strong> and <strong>Conviction</strong>. The Financier Capital Limit tracker has physical capacity through 15, but Capital Limit remains rules-uncapped; 15 is a component limit rather than a game-rule maximum.</p>
+      <p>Other production supplemental components include the Diplomat Proposal / Treaty pairs, Financier Capital Ledgers and landscape Deeds, Mystics Rites and Ritual material, and the Inquisition doctrine / Purge support.</p>
+
+      <h3>Canonical card backs</h3>
+      <ul>
+        <li>Playable cards use the universal black Gauntlet back.</li>
+        <li>Territories use the universal black Gauntlet back.</li>
+        <li>Leaders use their faction-colored Gauntlet back.</li>
+        <li>One-sided faction supplemental cards use their faction-colored back.</li>
+        <li>Intrinsically two-sided components use their actual reverse face.</li>
+      </ul>
+      <p>Advanced custom printing can still force a different standard back as a deliberate override, but <strong>Use canonical card backs</strong> is the default policy.</p>
+
+      <h3>Deckbuilder and printing</h3>
+      <p>Deckbuilder printing now uses the same current production renderers as the rest of Gauntlet for playable cards, Territories, Leaders, and finalized supplemental components. Starter print packages use the current cards/components and improved first-page starter guidance. Financiers also have a dedicated bulk-print path for consumable Capital Ledgers.</p>
+      <p><strong>Advanced → Custom printing</strong> can build physical print sheets independently of legal Deck construction. It supports search and filters, arbitrary quantities, Add all for the currently visible filtered cards, mixed portrait / landscape 9-up Letter sheets, current playable cards and supplemental components, intrinsic reverse faces, and canonical standard backs. The print path fails closed rather than substituting stale placeholder faces when a production render is not ready.</p>
+
+      <h3>Tabletop Simulator</h3>
+      <p>v0.7.0 introduces the complete <strong>Tabletop Simulator</strong> package as a release feature. The current release-candidate build is machine-ready with <strong>28 ready supplemental component definitions, 80 assembled supplemental objects, 75 staged network assets,</strong> and no machine-readiness blockers.</p>
+      <p>The generated table includes Red and Blue hand zones, six Gauntlet snap positions, battle dice and Player Tokens, and all twelve starter Bags. Each starter package contains its playable Deck, Leader, three Territories, the shared Universal Reference, and the faction components required by that starter.</p>
+      <p>TTS intentionally remains a <strong>digital tabletop, not a rules engine</strong>. Players perform setup, movement, battle resolution, card handling, and faction procedures themselves.</p>
+      <p>Workshop publication remains gated on the versioned <strong>19-check manual TTS QA record</strong>, explicit Workshop approval, and the required in-game / remote two-player validation. The release machinery cannot promote the Review Scaffold or publish v0.7.0 while that gate is incomplete.</p>
+
+      <h3>Printable Rulebook</h3>
+      <p>The v0.7.0 package carries the current designed Rulebook as a <strong>96-page half-letter booklet</strong>, imposed as 48 Letter-landscape sides on 24 physical sheets for duplex short-edge printing and saddle stitching.</p>
+
+      <h3>What remains familiar</h3>
+      <p>v0.7.0 is a substantial product milestone rather than a ground-up replacement for v0.6.3. The six factions, twelve Leaders, turn structure, Front Line, two normal Run-the-Gauntlet victory routes, faction identities, starter-Deck model, and Gambit / Reserves / Tactics battle core remain the foundation of play except where the changes above or a current card/component expressly say otherwise.</p>
+
+      <h3>Publication boundary</h3>
+      <p><strong>v0.6.3 remains the current published playtest release until the final v0.7.0 cutover.</strong> The v0.6.4-candidate source bundle is preserved as a never-published provenance snapshot; it is being promoted into v0.7.0 rather than released separately as v0.6.4.</p>
+      <p>This candidate changelog does not itself publish v0.7.0 or the TTS Workshop item. Final publication remains subject to the release QA gate.</p>
+    </article>
 
     <article class="changelog-entry" id="v0-6-3">
       <p class="changelog-meta">Current release · August 14, 2026</p>
