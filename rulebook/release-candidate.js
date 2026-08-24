@@ -54,21 +54,9 @@ function ruleById(currentGame, id) {
 
 function leaderSection(currentGame, faction, leaderId, sectionName) {
   const leader = currentGame?.leaders?.find((entry) => entry.faction === faction && entry.id === leaderId);
-  const section = leader?.sections?.find((entry) => {
-    if (Array.isArray(entry)) return entry[0] === sectionName;
-    if (entry?.name === sectionName) return true;
-    return Array.isArray(entry?.items) && entry.items.some((item) => item?.name === sectionName);
-  });
-  if (!section) throw new Error(`Release-candidate Rulebook is missing ${leaderId}/${sectionName}.`);
-  if (Array.isArray(section)) {
-    if (!section[1]) throw new Error(`Release-candidate Rulebook is missing ${leaderId}/${sectionName} text.`);
-    return { text: section[1], cost: section[2] || '' };
-  }
-  const feature = section.name === sectionName
-    ? section
-    : section.items?.find((item) => item?.name === sectionName);
-  if (!feature?.text) throw new Error(`Release-candidate Rulebook is missing ${leaderId}/${sectionName} text.`);
-  return { text: feature.text, cost: feature.cost || '' };
+  const section = leader?.sections?.find((entry) => entry?.[0] === sectionName);
+  if (!section?.[1]) throw new Error(`Release-candidate Rulebook is missing ${leaderId}/${sectionName}.`);
+  return { text: section[1], cost: section[2] || '' };
 }
 
 function applyProposalWording(source, currentGame) {
