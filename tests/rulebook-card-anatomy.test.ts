@@ -43,7 +43,7 @@ describe('Browser Rulebook card anatomy guide', () => {
     expect(anatomy).toContain('data-marker-target="footer" aria-hidden="true">7</span>');
   });
 
-  it('uses a readable two-column card-and-key layout rather than splitting the key into narrow columns', () => {
+  it('uses a card-plus-single-key-column layout instead of splitting the key into narrow columns', () => {
     expect(styles).toContain('grid-template-columns: 19rem minmax(0, 1fr);');
     expect(styles).toContain('.card-anatomy-key');
     expect(styles).toContain('grid-template-columns: minmax(0, 1fr);');
