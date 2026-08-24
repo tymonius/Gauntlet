@@ -1,3 +1,5 @@
+import './homepage-tts.js';
+
 const CARD_RENDER_WIDTH = 240;
 const CARD_RENDER_HEIGHT = 336;
 const CARD_ASPECT_RATIO = 5 / 7;
