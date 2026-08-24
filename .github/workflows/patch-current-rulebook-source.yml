@@ -54,9 +54,6 @@ jobs:
                   "The opponent may accept, preventing the battle, or refuse and fight under the Proposal's refusal effect.",
                   "The opponent may accept, ending the battle sequence during Onset before Gambits are set, or refuse and fight under the Proposal's refusal effect.",
               ),
-              ('- a Leader ability;', '- a Leader Ability;'),
-              ('- a faction ability;', '- a Faction Feature;'),
-              ('Territory, Leader ability, or card from another source', 'Territory, Leader Ability, or card from another source'),
               (
                   '**Withdrawal:** Leaving a pending or active battle without determining a winner. Withdrawal is not Fall Back or retreat.',
                   '**Withdrawal:** Leaving a battle sequence without determining a winner. Withdrawal is not Fall Back or retreat.',
@@ -68,6 +65,11 @@ jobs:
                   text = text.replace(old, new)
               elif new not in text:
                   raise SystemExit(f'Neither old nor accepted replacement text found: {old}')
+
+          text = re.sub(r'\bfaction abilities\b', 'Faction Features', text, flags=re.IGNORECASE)
+          text = re.sub(r'\bfaction ability\b', 'Faction Feature', text, flags=re.IGNORECASE)
+          text = re.sub(r'\bleader abilities\b', 'Leader Abilities', text, flags=re.IGNORECASE)
+          text = re.sub(r'\bleader ability\b', 'Leader Ability', text, flags=re.IGNORECASE)
 
           figure = '![Card anatomy diagram](/images/rulebook/card-anatomy.png)'
           if figure not in text:
