@@ -1,6 +1,9 @@
 a.faction-card {
   display: flex;
   flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
   color: inherit;
   text-decoration: none;
   transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background .18s ease;
@@ -12,6 +15,30 @@ a.faction-card:focus-visible {
   background: rgba(255, 252, 244, .88);
   box-shadow: 0 22px 52px rgba(55, 38, 18, .14);
 }
+.faction-card > * {
+  position: relative;
+  z-index: 1;
+}
+.faction-card::after {
+  content: "";
+  width: clamp(170px, 46%, 220px);
+  aspect-ratio: 1;
+  position: absolute;
+  right: -24px;
+  bottom: -42px;
+  z-index: 0;
+  background: var(--faction);
+  opacity: .075;
+  -webkit-mask: var(--faction-symbol) center / contain no-repeat;
+  mask: var(--faction-symbol) center / contain no-repeat;
+  pointer-events: none;
+}
+.faction-card.military { --faction-symbol: url('/images/faction-symbols/military.svg'); }
+.faction-card.diplomats { --faction-symbol: url('/images/faction-symbols/diplomats.svg'); }
+.faction-card.financiers { --faction-symbol: url('/images/faction-symbols/financiers.svg'); }
+.faction-card.intelligence { --faction-symbol: url('/images/faction-symbols/intelligence.svg'); }
+.faction-card.mystics { --faction-symbol: url('/images/faction-symbols/mystics.svg'); }
+.faction-card.inquisition { --faction-symbol: url('/images/faction-symbols/inquisition.svg'); }
 .faction-card small { display: block; }
 .faction-card-link {
   margin-top: auto;
@@ -59,11 +86,20 @@ a.faction-card:focus-visible {
     max-width: none;
     margin-top: 4px;
   }
+  .faction-card::after {
+    width: 190px;
+    right: -22px;
+    bottom: -34px;
+  }
 }
 
 /* Asset-backed public faction symbols. */
-.faction-symbol.faction-symbol-asset{
-  background:currentColor;
-  -webkit-mask:var(--faction-symbol) center/72% 72% no-repeat;
-  mask:var(--faction-symbol) center/72% 72% no-repeat;
+.faction-symbol.faction-symbol-asset {
+  width: 34px;
+  height: 34px;
+  display: block;
+  flex: 0 0 34px;
+  background: currentColor;
+  -webkit-mask: var(--faction-symbol) center / contain no-repeat;
+  mask: var(--faction-symbol) center / contain no-repeat;
 }
