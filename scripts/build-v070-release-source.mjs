@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { applyReleaseCandidateRulebook } from '../rulebook/release-candidate.js';
+import { applyFactionFeatureTerminology } from '../rulebook/faction-feature-terminology.js';
 import { resolveCards, resolveCardTextOverrides, resolveRuleSection } from '../game-data/current-game.mjs';
 import { ROOT, loadCurrentGameManifest, readCurrentJsonSource } from './current-game-authority.mjs';
 
@@ -154,7 +155,8 @@ const rulebookGame = {
   ruleChanges: structuredClone(rulesSource.data),
 };
 const transformedRulebook = applyReleaseCandidateRulebook(baseRulebook, rulebookGame);
-const rulebook = spliceReviewedChapter11(promoteRulebookVersion(transformedRulebook), reviewedChapter11);
+const terminologyAlignedRulebook = applyFactionFeatureTerminology(transformedRulebook);
+const rulebook = spliceReviewedChapter11(promoteRulebookVersion(terminologyAlignedRulebook), reviewedChapter11);
 
 const canonicalText = jsonText(canonicalData);
 const starterText = jsonText(starterDecks);
