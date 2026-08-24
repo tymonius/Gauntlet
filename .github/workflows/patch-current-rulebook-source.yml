@@ -1,0 +1,81 @@
+name: Patch current Rulebook source
+
+on:
+  push:
+    branches:
+      - fix/current-authority-rulebook-source
+    paths:
+      - .github/workflows/patch-current-rulebook-source.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/current-authority-rulebook-source
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Patch maintained Rulebook source
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path('rulebook/player-facing/current-rulebook.md')
+          text = path.read_text()
+          replacements = [
+              (
+                  '> **Release candidate.** This view layers the current-development rules over the published v0.6.3 Rulebook. Switch back to **Released v0.6.3** for the published ruleset.',
+                  '> **Release candidate.** This is the maintained current-development Rulebook source. Switch back to **Released v0.6.3** for the published ruleset.',
+              ),
+              ('## Pending Battles, Terms, and Onset', '## Terms and Onset'),
+              ('Before a battle begins, a Diplomat may offer **Terms**.', 'During Onset, a Diplomat may offer **Terms**.'),
+              (
+                  "The opponent may accept, preventing the battle, or refuse and fight under the Proposal's refusal effect.",
+                  "The opponent may accept, ending the battle sequence during Onset before Gambits are set, or refuse and fight under the Proposal's refusal effect.",
+              ),
+              ('- a Leader ability;', '- a Leader Ability;'),
+              ('- a faction ability;', '- a Faction Feature;'),
+              ('Territory, Leader ability, or card from another source', 'Territory, Leader Ability, or card from another source'),
+              (
+                  '**Withdrawal:** Leaving a pending or active battle without determining a winner. Withdrawal is not Fall Back or retreat.',
+                  '**Withdrawal:** Leaving a battle sequence without determining a winner. Withdrawal is not Fall Back or retreat.',
+              ),
+          ]
+
+          for old, new in replacements:
+              if old not in text:
+                  raise SystemExit(f'Expected current Rulebook text not found: {old}')
+              text = text.replace(old, new)
+
+          forbidden = [
+              r'\bpending\b',
+              r'\bFaction Actions?\b',
+              r'\bFaction Abilit(?:y|ies)\b',
+              r'\bfaction procedure\b',
+              r'This view layers the current-development rules over the published v0\.6\.3 Rulebook\.',
+          ]
+          for pattern in forbidden:
+              match = re.search(pattern, text, re.IGNORECASE)
+              if match:
+                  raise SystemExit(f'Retired current Rulebook text remains: {match.group(0)}')
+
+          path.write_text(text)
+          PY
+
+      - name: Commit source cleanup
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add rulebook/player-facing/current-rulebook.md
+          git commit -m "Clean retired terminology from current Rulebook source"
+          git push origin HEAD:fix/current-authority-rulebook-source
