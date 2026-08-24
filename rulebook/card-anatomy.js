@@ -1,5 +1,6 @@
 const CANDIDATE_MODE = 'candidate';
 const CARD_ID = 'military-unbroken-ranks';
+const ARCANE_CARD_ID = 'mystics-witchcraft';
 
 function anatomyMarkup() {
   const section = document.createElement('section');
@@ -48,8 +49,20 @@ function anatomyMarkup() {
       </ol>
     </div>
 
-    <aside class="card-anatomy-note">
-      <strong>Arcane trait:</strong> some playable cards show the Mystics sigil immediately before the card name. The symbol marks the <strong>Arcane</strong> trait; its color follows the card's faction identity.
+    <aside class="card-anatomy-arcane">
+      <div class="card-anatomy-arcane-crop" aria-hidden="true">
+        <iframe
+          class="card-anatomy-arcane-card"
+          src="../card-design/card-print-render.html?fit=production&amp;card=${ARCANE_CARD_ID}"
+          title="Cropped current production render of the Witchcraft card header"
+          loading="lazy"
+          tabindex="-1"
+        ></iframe>
+      </div>
+      <div class="card-anatomy-arcane-copy">
+        <strong>Arcane trait mark</strong>
+        <p>Some playable cards show the Mystics sigil immediately before the card name. The symbol marks the <strong>Arcane</strong> trait; its color follows the card's faction identity.</p>
+      </div>
     </aside>
     <p class="card-anatomy-scope">Territories and faction supplemental components use specialized layouts and are explained with their own rules.</p>
   `;
