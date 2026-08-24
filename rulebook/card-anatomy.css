@@ -78,12 +78,17 @@
   place-items: center;
   border: 2px solid #fff8ea;
   border-radius: 999px;
+  opacity: 0;
   color: #fff8ea;
   background: var(--crimson-dark);
   box-shadow: 0 3px 10px rgba(41, 30, 16, 0.2);
   font-size: 0.76rem;
   font-weight: 850;
   line-height: 1;
+}
+
+.card-anatomy-guide.markers-positioned .card-anatomy-marker {
+  opacity: 1;
 }
 
 .card-anatomy-marker::after {
@@ -110,14 +115,9 @@
   right: 100%;
 }
 
-.marker-name { top: 0.5rem; }
-.marker-value { top: 0.5rem; }
-.marker-faction { top: 5.25rem; }
-.marker-art { top: 7rem; }
-.marker-heading { top: 12.3rem; }
-.marker-text { top: 14.2rem; }
-.marker-reminder { bottom: 2rem; }
-.marker-footer { bottom: 0.25rem; }
+.card-anatomy-marker.marker-faction-edge::after {
+  width: 0.35rem;
+}
 
 .card-anatomy-figure figcaption {
   max-width: 19rem;
