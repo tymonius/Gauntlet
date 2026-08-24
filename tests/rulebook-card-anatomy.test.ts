@@ -16,7 +16,7 @@ describe('Browser Rulebook card anatomy guide', () => {
     expect(anatomy).toContain("const CARD_ID = 'military-unbroken-ranks';");
     expect(anatomy).toContain('card-print-render.html?fit=production&amp;card=${CARD_ID}');
     expect(anatomy).toContain("content.querySelector('#printed-card-effects')");
-    expect(anatomy).toContain('heading.before(anatomyMarkup())');
+    expect(anatomy).toContain('heading.before(section)');
   });
 
   it('keeps the immutable released v0.6.3 view unchanged', () => {
@@ -25,7 +25,7 @@ describe('Browser Rulebook card anatomy guide', () => {
     expect(anatomy).toContain('removeAnatomy();');
   });
 
-  it('documents the full standard playable-card frame and shows the Arcane trait on a real card', () => {
+  it('documents only current standard playable-card elements', () => {
     for (const label of [
       'Card name',
       'Card value',
@@ -33,16 +33,37 @@ describe('Browser Rulebook card anatomy guide', () => {
       'Artwork',
       'Effect heading',
       'Effect text',
-      'Reminder',
       'Metadata footer',
       'Arcane trait mark',
     ]) {
       expect(anatomy).toContain(label);
     }
+    expect(anatomy).not.toContain('<strong>Reminder</strong>');
+    expect(anatomy).not.toContain('marker-reminder');
+    expect(anatomy).toContain('data-marker-target="footer" aria-hidden="true">7</span>');
+  });
+
+  it('positions callouts from the actual rendered card elements instead of hard-coded vertical guesses', () => {
+    expect(anatomy).toContain("name: { selector: '.card-title' }");
+    expect(anatomy).toContain("value: { selector: '.value-medallion' }");
+    expect(anatomy).toContain("faction: { selector: '.gauntlet-card', ratio: 0.23 }");
+    expect(anatomy).toContain("art: { selector: '.card-art' }");
+    expect(anatomy).toContain("heading: { selector: '.rule-section h4' }");
+    expect(anatomy).toContain("text: { selector: '.rule-section p' }");
+    expect(anatomy).toContain("footer: { selector: '.card-footer' }");
+    expect(anatomy).toContain('target.getBoundingClientRect()');
+    expect(anatomy).toContain("frameDocument.body?.dataset.renderReady !== 'true'");
+    expect(anatomy).toContain("section.classList.add('markers-positioned')");
+    expect(styles).toContain('.card-anatomy-guide.markers-positioned .card-anatomy-marker');
+    expect(styles).toContain('.card-anatomy-marker.marker-faction-edge::after');
+    expect(styles).not.toContain('.marker-heading { top:');
+    expect(styles).not.toContain('.marker-text { top:');
+  });
+
+  it('shows the Arcane trait on a real card with only the cropped bottom edge feathered', () => {
     expect(anatomy).toContain("const ARCANE_CARD_ID = 'mystics-witchcraft';");
     expect(anatomy).toContain('card-print-render.html?fit=production&amp;card=${ARCANE_CARD_ID}');
     expect(anatomy).toContain("its color follows the card's faction identity");
-    expect(styles).toContain('.card-anatomy-marker');
     expect(styles).toContain('.card-anatomy-arcane-crop');
     expect(styles).toContain('#000 calc(100% - 0.8rem)');
     expect(styles).toContain('transparent 100%');
