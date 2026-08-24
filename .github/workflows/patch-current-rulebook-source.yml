@@ -77,31 +77,55 @@ jobs:
           def detail_suffix(source):
               return ' · '.join(str(source.get(key, '')).strip() for key in ('cost', 'descriptor') if str(source.get(key, '')).strip())
 
-          def leader_markdown(leader):
-              lines = [f"### {leader['name']}", '']
-              for section in leader['sections']:
-                  suffix = detail_suffix(section)
-                  heading = f"**{section['classification']} — {section['name']}{' · ' + suffix if suffix else ''}:**"
-                  items = section.get('items') or []
-                  if items:
-                      lines.extend([heading, ''])
-                      for item in items:
-                          item_suffix = detail_suffix(item)
-                          item_heading = f"**{item['name']}{' — ' + item_suffix if item_suffix else ''}:**"
-                          lines.append(f"- {item_heading} {item['text']}")
-                      lines.append('')
-                  else:
-                      body = str(section.get('text', '')).strip()
-                      lines.extend([f"{heading}{' ' + body if body else ''}", ''])
-              return '\n'.join(lines).rstrip() + '\n'
+          def ability_lines(leader):
+              ability_sections = [section for section in leader.get('sections', []) if section.get('classification') == 'Leader Ability']
+              if len(ability_sections) != 1:
+                  raise SystemExit(f"Expected one Leader Ability section for {leader['name']}; found {len(ability_sections)}.")
+              section = ability_sections[0]
+              items = section.get('items') or []
+              if items:
+                  lines = []
+                  for item in items:
+                      suffix = detail_suffix(item)
+                      label = f"{item['name']}{' — ' + suffix if suffix else ''}"
+                      lines.append(f"> **{label}:** {item['text']}")
+                  return section['name'], lines
+              suffix = detail_suffix(section)
+              label = f"{section['name']}{' — ' + suffix if suffix else ''}"
+              return None, [f"> **{label}:** {section.get('text', '').strip()}"]
 
           for leader in manifest.get('leaders', []):
-              name = re.escape(leader['name'])
-              pattern = re.compile(rf'^### {name}\s*$.*?(?=^#{{1,3}}\s+|\Z)', re.MULTILINE | re.DOTALL)
-              replacement = leader_markdown(leader) + '\n'
-              text, count = pattern.subn(lambda _match, replacement=replacement: replacement, text, count=1)
-              if count != 1:
-                  raise SystemExit(f"Expected exactly one Rulebook Leader section for {leader['name']}; found {count}.")
+              section_pattern = re.compile(
+                  rf'(^### {re.escape(leader["name"])}\s*$)(.*?)(?=^###\s+|^##\s+|^#\s+|\Z)',
+                  re.MULTILINE | re.DOTALL,
+              )
+              match = section_pattern.search(text)
+              if not match:
+                  raise SystemExit(f"Rulebook Leader section not found: {leader['name']}")
+              body = match.group(2)
+              ability_heading, lines = ability_lines(leader)
+              quote_block = '\n\n'.join(lines)
+
+              if ability_heading:
+                  heading_pattern = re.compile(
+                      rf'(^#### {re.escape(ability_heading)}\s*$)(.*?)(?=^####\s+|^###\s+|^##\s+|^#\s+|\Z)',
+                      re.MULTILINE | re.DOTALL,
+                  )
+                  heading_match = heading_pattern.search(body)
+                  if not heading_match:
+                      raise SystemExit(f"Rulebook grouped Leader Ability heading not found for {leader['name']}: {ability_heading}")
+                  trailing = heading_match.group(2)
+                  after_quotes = re.sub(r'^(?:\s*>[^\n]*(?:\n|$))+', '', trailing.lstrip(), count=1, flags=re.MULTILINE)
+                  replacement = f"{heading_match.group(1)}\n\n{quote_block}\n\n{after_quotes.lstrip()}"
+                  body = body[:heading_match.start()] + replacement + body[heading_match.end():]
+              else:
+                  quote_pattern = re.compile(r'^>\s*\*\*[^\n]+(?:\n(?!\s*$|#{1,4}\s).*)*', re.MULTILINE)
+                  quote_match = quote_pattern.search(body)
+                  if not quote_match:
+                      raise SystemExit(f"Rulebook Leader Ability quote not found for {leader['name']}")
+                  body = body[:quote_match.start()] + quote_block + body[quote_match.end():]
+
+              text = text[:match.start()] + match.group(1) + body + text[match.end():]
 
           figure = '![Card anatomy diagram](/images/rulebook/card-anatomy.png)'
           if figure not in text:
