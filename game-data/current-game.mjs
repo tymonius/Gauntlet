@@ -200,6 +200,32 @@ function validateLeader(leader) {
   }
 }
 
+function legacySectionText(section) {
+  if (section?.text) return section.text;
+  if (Array.isArray(section?.items)) {
+    return section.items.map(item => `${item.name}: ${item.text}`).join(' ');
+  }
+  return '';
+}
+
+function runtimeLeader(source) {
+  const leader = clone(source);
+  leader.sections = requireArray(leader.sections, `${leader.id} Leader sections`).map(section => {
+    const resolved = { ...section };
+    Object.defineProperty(resolved, Symbol.iterator, {
+      enumerable: false,
+      configurable: false,
+      value: function* legacyLeaderSectionTuple() {
+        yield resolved.name;
+        yield legacySectionText(resolved);
+        yield resolved.cost || '';
+      },
+    });
+    return resolved;
+  });
+  return leader;
+}
+
 function validateFactionFeatureAuthority(manifest) {
   const taxonomy = manifest.factionFeatureTaxonomy;
   if (!taxonomy?.factionFeature || !taxonomy?.leaderAbility || !taxonomy?.actionProfiles) {
@@ -250,7 +276,7 @@ function resolveFactions(baseFactions, manifest) {
     const override = manifest.factionOverrides?.[faction.id] || {};
     const currentLeaders = leaders
       .filter(leader => leader.faction === faction.id)
-      .map(leader => clone(leader));
+      .map(runtimeLeader);
     if (!currentLeaders.length) throw new Error(`Current-game authority has no Leaders for ${faction.id}.`);
     return {
       ...faction,
@@ -338,6 +364,7 @@ async function resolveCurrentGame() {
   const proposals = requireArray(proposalSource.proposals, 'current Proposals').map(proposal => clone(proposal));
   const starterDecks = requireArray(starterDeckSource.decks, 'current starter Decks').map(deck => clone(deck));
   const factions = resolveFactions(gameplay.factions, manifest);
+  const leaders = requireArray(manifest.leaders, 'Leader definitions').map(runtimeLeader);
   const factionRules = resolveFactionRules(gameplay.faction_rules, manifest);
   const battle = resolveRuleSection(gameplay.battle, rulesSource.battle);
   const artDirection = parseArtDirectionSource(artDirectionSource);
@@ -385,7 +412,7 @@ async function resolveCurrentGame() {
     factionFeatureTaxonomy: Object.freeze(clone(manifest.factionFeatureTaxonomy)),
     factionFeatures: Object.freeze(clone(manifest.factionFeatures)),
     factions: Object.freeze(factions),
-    leaders: Object.freeze(clone(manifest.leaders)),
+    leaders: Object.freeze(leaders),
     cards: Object.freeze(cards),
     territories: Object.freeze(territories),
     proposals: Object.freeze(proposals),
