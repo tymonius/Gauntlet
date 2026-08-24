@@ -1,0 +1,268 @@
+.card-anatomy-guide {
+  margin: 2.25rem 0 2.75rem;
+  padding: clamp(1.15rem, 3vw, 2rem);
+  border: 1px solid var(--line);
+  background: rgba(255, 250, 240, 0.72);
+}
+
+.card-anatomy-intro {
+  max-width: 52rem;
+  margin-bottom: 1.5rem;
+}
+
+.card-anatomy-kicker {
+  margin: 0 0 0.35rem;
+  color: var(--crimson);
+  font-size: 0.72rem;
+  font-weight: 850;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.card-anatomy-guide h3 {
+  margin: 0 0 0.55rem;
+  font: 500 clamp(1.7rem, 3vw, 2.35rem)/1 var(--serif);
+  letter-spacing: -0.025em;
+}
+
+.card-anatomy-intro > p:last-child,
+.card-anatomy-scope,
+.card-anatomy-figure figcaption {
+  color: var(--muted);
+}
+
+.card-anatomy-intro > p:last-child {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.card-anatomy-layout {
+  display: grid;
+  grid-template-columns: minmax(18rem, 0.82fr) minmax(18rem, 1.18fr);
+  gap: clamp(1.5rem, 5vw, 3.5rem);
+  align-items: center;
+}
+
+.card-anatomy-figure {
+  margin: 0;
+  display: grid;
+  justify-items: center;
+  gap: 0.8rem;
+}
+
+.card-anatomy-card-wrap {
+  position: relative;
+  width: 19rem;
+  min-height: 21rem;
+  display: grid;
+  place-items: center;
+}
+
+.card-anatomy-card {
+  width: 15rem;
+  height: 21rem;
+  display: block;
+  border: 0;
+  border-radius: 0.12in;
+  background: transparent;
+  box-shadow: 0 0.16in 0.36in rgba(41, 30, 16, 0.18);
+  pointer-events: none;
+}
+
+.card-anatomy-marker {
+  position: absolute;
+  z-index: 2;
+  width: 1.7rem;
+  height: 1.7rem;
+  display: grid;
+  place-items: center;
+  border: 2px solid #fff8ea;
+  border-radius: 999px;
+  color: #fff8ea;
+  background: var(--crimson-dark);
+  box-shadow: 0 3px 10px rgba(41, 30, 16, 0.2);
+  font-size: 0.76rem;
+  font-weight: 850;
+  line-height: 1;
+}
+
+.card-anatomy-marker::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 1.15rem;
+  border-top: 1px solid rgba(95, 20, 24, 0.72);
+}
+
+.card-anatomy-marker.marker-left {
+  left: 0.2rem;
+}
+
+.card-anatomy-marker.marker-left::after {
+  left: 100%;
+}
+
+.card-anatomy-marker.marker-right {
+  right: 0.2rem;
+}
+
+.card-anatomy-marker.marker-right::after {
+  right: 100%;
+}
+
+.marker-name { top: 0.5rem; }
+.marker-value { top: 0.5rem; }
+.marker-faction { top: 5.25rem; }
+.marker-art { top: 7rem; }
+.marker-heading { top: 12.3rem; }
+.marker-text { top: 14.2rem; }
+.marker-reminder { bottom: 2rem; }
+.marker-footer { bottom: 0.25rem; }
+
+.card-anatomy-figure figcaption {
+  max-width: 19rem;
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.card-anatomy-key {
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem 1.25rem;
+  list-style: none;
+}
+
+.card-anatomy-key li {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 1.75rem minmax(0, 1fr);
+  gap: 0.65rem;
+  align-items: start;
+}
+
+.card-anatomy-key li > span {
+  width: 1.65rem;
+  height: 1.65rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--crimson-dark);
+  border-radius: 999px;
+  color: var(--crimson-dark);
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
+.card-anatomy-key strong {
+  font-family: var(--serif);
+  font-size: 1rem;
+}
+
+.card-anatomy-key p {
+  margin: 0.18rem 0 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.card-anatomy-arcane {
+  margin-top: 1.5rem;
+  padding: 0.9rem 0.95rem 0.85rem;
+  display: grid;
+  grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+  gap: 1.15rem;
+  align-items: center;
+  border-left: 3px solid var(--bronze);
+  color: #413b34;
+  background: rgba(235, 224, 203, 0.46);
+}
+
+.card-anatomy-arcane-crop {
+  width: 15rem;
+  height: 4.5rem;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    #000 0,
+    #000 calc(100% - 0.8rem),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    #000 0,
+    #000 calc(100% - 0.8rem),
+    transparent 100%
+  );
+}
+
+.card-anatomy-arcane-card {
+  width: 15rem;
+  height: 21rem;
+  display: block;
+  border: 0;
+  background: transparent;
+  pointer-events: none;
+}
+
+.card-anatomy-arcane-copy > strong {
+  font-family: var(--serif);
+  font-size: 1rem;
+}
+
+.card-anatomy-arcane-copy p {
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.card-anatomy-scope {
+  margin: 0.85rem 0 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 760px) {
+  .card-anatomy-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .card-anatomy-key {
+    grid-template-columns: 1fr;
+  }
+
+  .card-anatomy-arcane {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 390px) {
+  .card-anatomy-guide {
+    padding-inline: 0.85rem;
+  }
+
+  .card-anatomy-card-wrap {
+    width: 17.5rem;
+  }
+
+  .card-anatomy-marker.marker-left { left: 0; }
+  .card-anatomy-marker.marker-right { right: 0; }
+
+  .card-anatomy-arcane-crop,
+  .card-anatomy-arcane-card {
+    width: 13.75rem;
+  }
+}
+
+@media print {
+  .card-anatomy-guide {
+    break-inside: avoid;
+    background: transparent;
+  }
+
+  .card-anatomy-card {
+    box-shadow: none;
+  }
+}
