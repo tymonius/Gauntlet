@@ -26,7 +26,100 @@ function insertCardAnatomy(source, anatomy) {
   return source.replace(marker, `${anatomy.trim()}\n\n${marker}`);
 }
 
-const [baseRulebook, manifest, proposals, arcaneSymbol, ruleChanges, chapter11, cardAnatomy] = await Promise.all([
+function replaceRequired(source, search, replacement, label) {
+  if (!source.includes(search)) throw new Error(`Current Rulebook bootstrap could not locate ${label}.`);
+  return source.replace(search, replacement);
+}
+
+function adoptCommittedCurrentSource(appSource) {
+  if (appSource.includes("const CURRENT_SOURCE_URL = './player-facing/current-rulebook.md';")) return appSource;
+  let app = appSource;
+  app = replaceRequired(
+    app,
+    "import { applyReleaseCandidateRulebook } from './release-candidate.js';\n",
+    '',
+    'runtime release-candidate import',
+  );
+  app = replaceRequired(
+    app,
+    "const CHAPTER_11_URL = './player-facing/chapter-11.md';",
+    "const CHAPTER_11_URL = './player-facing/chapter-11.md';\nconst CURRENT_SOURCE_URL = './player-facing/current-rulebook.md';",
+    'current Rulebook source declaration',
+  );
+  app = replaceRequired(
+    app,
+    'let sourcePromise = null;',
+    'let sourcePromise = null;\nlet currentSourcePromise = null;',
+    'Rulebook source promise',
+  );
+  app = replaceRequired(
+    app,
+    "Candidate view: current-development rules layered over the published v0.6.3 Rulebook. The Rules Arbiter currently follows released v0.6.3 and is hidden in this view.",
+    'Candidate view: current-development rules from the maintained current Rulebook source. The Rules Arbiter currently follows released v0.6.3 and is hidden in this view.',
+    'candidate source note',
+  );
+  app = replaceRequired(
+    app,
+    "No candidate booklet has been published. Switch to Released v0.6.3 for the official printable booklet.",
+    'The current-development Rulebook source is loaded directly. Switch to Released v0.6.3 for the currently published printable booklet.',
+    'candidate print note',
+  );
+
+  const loader = `async function loadCurrentRulebookSource() {
+  if (!currentSourcePromise) {
+    currentSourcePromise = fetch(CURRENT_SOURCE_URL, { cache: 'no-store' })
+      .then(async (response) => {
+        if (!response.ok) throw new Error(\`Current Rulebook source returned \${response.status}\`);
+        const markdown = await response.text();
+        if (!markdown.includes('**Version 0.6.4 — Release Candidate**')) throw new Error('Current Rulebook source has the wrong version marker.');
+        if (!markdown.includes('# 5. Actions, Faction Features, Leader Abilities, and Assets')) throw new Error('Current Rulebook source is missing the Faction Feature chapter.');
+        if (!markdown.includes('## Card anatomy')) throw new Error('Current Rulebook source is missing Card anatomy.');
+        if (/\\bFaction Actions?\\b|\\bFaction Abilit(?:y|ies)\\b|\\bfaction procedure\\b/iu.test(markdown)) {
+          throw new Error('Current Rulebook source contains retired faction terminology.');
+        }
+        return markdown;
+      })
+      .catch((error) => {
+        currentSourcePromise = null;
+        throw error;
+      });
+  }
+  return currentSourcePromise;
+}
+
+`;
+  app = replaceRequired(
+    app,
+    'async function renderRulebook(mode) {',
+    `${loader}async function renderRulebook(mode) {`,
+    'renderRulebook boundary',
+  );
+
+  app = replaceRequired(
+    app,
+    `    const releasedMarkdown = await loadVerifiedReleasedSource();
+    let currentGame = null;
+    let markdown = releasedMarkdown;
+    if (activeMode === CANDIDATE_MODE) {
+      currentGame = await loadCurrentGame();
+      markdown = applyReleaseCandidateRulebook(releasedMarkdown, currentGame);
+    }`,
+    `    let currentGame = null;
+    let markdown = null;
+    if (activeMode === CANDIDATE_MODE) {
+      [currentGame, markdown] = await Promise.all([
+        loadCurrentGame(),
+        loadCurrentRulebookSource(),
+      ]);
+    } else {
+      markdown = await loadVerifiedReleasedSource();
+    }`,
+    'runtime Rulebook projection',
+  );
+  return app;
+}
+
+const [baseRulebook, manifest, proposals, arcaneSymbol, ruleChanges, chapter11, cardAnatomy, rulebookApp] = await Promise.all([
   readText('releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md'),
   readJson('game-data/current-game.json'),
   readJson('docs/v0.6.4-diplomat-proposals.json'),
@@ -34,6 +127,7 @@ const [baseRulebook, manifest, proposals, arcaneSymbol, ruleChanges, chapter11, 
   readJson('docs/v0.6.4-rules.json'),
   readText('rulebook/player-facing/chapter-11.md'),
   readText('rulebook/player-facing/card-anatomy.md'),
+  readText('rulebook/app.js'),
 ]);
 
 const currentGame = {
@@ -72,5 +166,8 @@ if (!currentRulebook.includes('## Card anatomy')) {
   throw new Error('Current Rulebook bootstrap did not install Card anatomy.');
 }
 
-await writeFile(resolve(ROOT, 'rulebook/player-facing/current-rulebook.md'), `${currentRulebook.trim()}\n`);
-console.log('Materialized rulebook/player-facing/current-rulebook.md from the accepted current-development rules.');
+await Promise.all([
+  writeFile(resolve(ROOT, 'rulebook/player-facing/current-rulebook.md'), `${currentRulebook.trim()}\n`),
+  writeFile(resolve(ROOT, 'rulebook/app.js'), adoptCommittedCurrentSource(rulebookApp)),
+]);
+console.log('Materialized the maintained current Rulebook source and pointed the browser Rulebook at it.');
