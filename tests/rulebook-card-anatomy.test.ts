@@ -43,6 +43,14 @@ describe('Browser Rulebook card anatomy guide', () => {
     expect(anatomy).toContain('data-marker-target="footer" aria-hidden="true">7</span>');
   });
 
+  it('uses a readable two-column card-and-key layout rather than splitting the key into narrow columns', () => {
+    expect(styles).toContain('grid-template-columns: 19rem minmax(0, 1fr);');
+    expect(styles).toContain('.card-anatomy-key');
+    expect(styles).toContain('grid-template-columns: minmax(0, 1fr);');
+    expect(styles).not.toContain('grid-template-columns: repeat(2, minmax(0, 1fr));');
+    expect(styles).toContain('align-items: start;');
+  });
+
   it('positions callouts from the actual rendered card elements instead of hard-coded vertical guesses', () => {
     expect(anatomy).toContain("name: { selector: '.card-title' }");
     expect(anatomy).toContain("value: { selector: '.value-medallion' }");
