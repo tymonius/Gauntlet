@@ -15,12 +15,27 @@ on:
       - docs/v0.6.4-diplomat-proposals.json
       - docs/v0.6.4-arcane-symbol.json
       - releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md
+  pull_request:
+    branches:
+      - main
+    paths:
+      - scripts/bootstrap-current-rulebook.mjs
+      - rulebook/release-candidate.js
+      - rulebook/faction-feature-terminology.js
+      - rulebook/player-facing/chapter-11.md
+      - rulebook/player-facing/card-anatomy.md
+      - game-data/current-game.json
+      - docs/v0.6.4-rules.json
+      - docs/v0.6.4-diplomat-proposals.json
+      - docs/v0.6.4-arcane-symbol.json
+      - releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md
 
 permissions:
   contents: write
 
 jobs:
   materialize:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -46,4 +61,4 @@ jobs:
             exit 0
           fi
           git commit -m "Materialize current player-facing Rulebook source"
-          git push
+          git push origin HEAD:fix/current-authority-rulebook-source
