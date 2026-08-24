@@ -2,6 +2,16 @@ const CANDIDATE_MODE = 'candidate';
 const CARD_ID = 'military-unbroken-ranks';
 const ARCANE_CARD_ID = 'mystics-witchcraft';
 
+const MARKER_TARGETS = {
+  name: { selector: '.card-title' },
+  value: { selector: '.value-medallion' },
+  faction: { selector: '.gauntlet-card', ratio: 0.23 },
+  art: { selector: '.card-art' },
+  heading: { selector: '.rule-section h4' },
+  text: { selector: '.rule-section p' },
+  footer: { selector: '.card-footer' },
+};
+
 function anatomyMarkup() {
   const section = document.createElement('section');
   section.className = 'card-anatomy-guide';
@@ -25,14 +35,13 @@ function anatomyMarkup() {
             tabindex="-1"
             aria-hidden="true"
           ></iframe>
-          <span class="card-anatomy-marker marker-left marker-name" aria-hidden="true">1</span>
-          <span class="card-anatomy-marker marker-right marker-value" aria-hidden="true">2</span>
-          <span class="card-anatomy-marker marker-left marker-faction" aria-hidden="true">3</span>
-          <span class="card-anatomy-marker marker-right marker-art" aria-hidden="true">4</span>
-          <span class="card-anatomy-marker marker-left marker-heading" aria-hidden="true">5</span>
-          <span class="card-anatomy-marker marker-right marker-text" aria-hidden="true">6</span>
-          <span class="card-anatomy-marker marker-left marker-reminder" aria-hidden="true">7</span>
-          <span class="card-anatomy-marker marker-right marker-footer" aria-hidden="true">8</span>
+          <span class="card-anatomy-marker marker-left" data-marker-target="name" aria-hidden="true">1</span>
+          <span class="card-anatomy-marker marker-right" data-marker-target="value" aria-hidden="true">2</span>
+          <span class="card-anatomy-marker marker-left marker-faction-edge" data-marker-target="faction" aria-hidden="true">3</span>
+          <span class="card-anatomy-marker marker-right" data-marker-target="art" aria-hidden="true">4</span>
+          <span class="card-anatomy-marker marker-left" data-marker-target="heading" aria-hidden="true">5</span>
+          <span class="card-anatomy-marker marker-right" data-marker-target="text" aria-hidden="true">6</span>
+          <span class="card-anatomy-marker marker-right" data-marker-target="footer" aria-hidden="true">7</span>
         </div>
         <figcaption><strong>Unbroken Ranks</strong> shown with the current production card renderer.</figcaption>
       </figure>
@@ -42,10 +51,9 @@ function anatomyMarkup() {
         <li><span>2</span><div><strong>Card value</strong><p>Used for Deck construction and whenever an effect refers to a card's value.</p></div></li>
         <li><span>3</span><div><strong>Faction identity</strong><p>The border and parchment treatment identify the card's faction. Neutral cards use ivory.</p></div></li>
         <li><span>4</span><div><strong>Artwork</strong><p>The card's illustration.</p></div></li>
-        <li><span>5</span><div><strong>Effect heading</strong><p>Shows how that printed effect is used: Action, Gambit, Tactic, Gambit/Tactic, or a faction-specific procedure.</p></div></li>
+        <li><span>5</span><div><strong>Effect heading</strong><p>Names the effect's role or timing, such as Action, Asset, Gambit, Tactic, Gambit/Tactic, Overlay, Mission, or another faction-specific procedure.</p></div></li>
         <li><span>6</span><div><strong>Effect text</strong><p>Resolve only the printed effect being used unless a rule says otherwise.</p></div></li>
-        <li><span>7</span><div><strong>Reminder</strong><p>Optional reminder text may appear beneath the card's effects.</p></div></li>
-        <li><span>8</span><div><strong>Metadata footer</strong><p>Shows faction at left, <em>Unique</em> in the center when applicable, and the rules version at right.</p></div></li>
+        <li><span>7</span><div><strong>Metadata footer</strong><p>Shows faction at left, <em>Unique</em> in the center when applicable, and the rules version at right.</p></div></li>
       </ol>
     </div>
 
@@ -69,6 +77,55 @@ function anatomyMarkup() {
   return section;
 }
 
+function markerAnchorY(frame, wrap, target, config) {
+  const frameWindow = frame.contentWindow;
+  const frameRect = frame.getBoundingClientRect();
+  const wrapRect = wrap.getBoundingClientRect();
+  const viewportHeight = frameWindow?.innerHeight || frame.clientHeight || frameRect.height;
+  const scaleY = frameRect.height / viewportHeight;
+  const targetRect = target.getBoundingClientRect();
+  const ratio = config.ratio ?? 0.5;
+  const targetY = targetRect.top + (targetRect.height * ratio);
+  return (frameRect.top - wrapRect.top) + (targetY * scaleY);
+}
+
+function positionCardMarkers(section) {
+  const frame = section.querySelector('.card-anatomy-card');
+  const wrap = section.querySelector('.card-anatomy-card-wrap');
+  const frameDocument = frame?.contentDocument;
+  if (!frame || !wrap || !frameDocument) return false;
+  if (frameDocument.body?.dataset.renderReady !== 'true') return false;
+
+  const positions = new Map();
+  for (const [name, config] of Object.entries(MARKER_TARGETS)) {
+    const target = frameDocument.querySelector(config.selector);
+    if (!target) return false;
+    positions.set(name, markerAnchorY(frame, wrap, target, config));
+  }
+
+  for (const marker of wrap.querySelectorAll('[data-marker-target]')) {
+    const anchorY = positions.get(marker.dataset.markerTarget);
+    if (anchorY === undefined) continue;
+    marker.style.top = `${anchorY - (marker.offsetHeight / 2)}px`;
+  }
+
+  section.classList.add('markers-positioned');
+  return true;
+}
+
+function scheduleMarkerPositioning(section, attempts = 0) {
+  if (!section.isConnected) return;
+  if (positionCardMarkers(section)) return;
+  if (attempts >= 120) return;
+  setTimeout(() => scheduleMarkerPositioning(section, attempts + 1), 25);
+}
+
+function wireMarkerPositioning(section) {
+  const frame = section.querySelector('.card-anatomy-card');
+  frame?.addEventListener('load', () => scheduleMarkerPositioning(section), { once: true });
+  scheduleMarkerPositioning(section);
+}
+
 function printedCardEffectsHeading() {
   const content = document.querySelector('[data-rulebook-content]');
   if (!content) return null;
@@ -88,11 +145,18 @@ function injectAnatomy(mode) {
 
   const heading = printedCardEffectsHeading();
   if (!heading) return;
-  heading.before(anatomyMarkup());
+  const section = anatomyMarkup();
+  heading.before(section);
+  wireMarkerPositioning(section);
 }
 
 document.addEventListener('gauntlet:rulebook-rendered', (event) => {
   injectAnatomy(event.detail?.mode);
+});
+
+window.addEventListener('resize', () => {
+  const section = document.querySelector('[data-card-anatomy]');
+  if (section) scheduleMarkerPositioning(section);
 });
 
 // The rulebook loader is asynchronous, but this also handles cases where the
