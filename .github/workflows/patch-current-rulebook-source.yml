@@ -19,17 +19,23 @@ jobs:
   patch:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
         with:
           ref: fix/current-authority-rulebook-source
           fetch-depth: 1
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-node@v4
         with:
-          python-version: '3.13'
+          node-version: 22
 
-      - name: Patch maintained Rulebook source
+      - name: Install renderer dependencies
+        run: |
+          npm install
+          npx playwright install --with-deps chromium
+
+      - name: Clean maintained Rulebook source and add print fallback
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -58,9 +64,17 @@ jobs:
           ]
 
           for old, new in replacements:
-              if old not in text:
-                  raise SystemExit(f'Expected current Rulebook text not found: {old}')
-              text = text.replace(old, new)
+              if old in text:
+                  text = text.replace(old, new)
+              elif new not in text:
+                  raise SystemExit(f'Neither old nor accepted replacement text found: {old}')
+
+          figure = '![Card anatomy diagram](/images/rulebook/card-anatomy.png)'
+          if figure not in text:
+              marker = 'Most ordinary playable cards use the same frame. Read these elements when constructing a Deck and resolving a card in play:\n\n'
+              if marker not in text:
+                  raise SystemExit('Card Anatomy introduction marker not found.')
+              text = text.replace(marker, marker + figure + '\n\n', 1)
 
           forbidden = [
               r'\bpending\b',
@@ -77,11 +91,15 @@ jobs:
           path.write_text(text)
           PY
 
-      - name: Commit source cleanup
+      - name: Render deterministic Card Anatomy figure
+        run: node scripts/render-current-card-anatomy.mjs
+
+      - name: Commit maintained source and remove one-time workflow
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add rulebook/player-facing/current-rulebook.md
-          git commit -m "Clean retired terminology from current Rulebook source"
+          git add rulebook/player-facing/current-rulebook.md images/rulebook/card-anatomy.png
+          git rm .github/workflows/patch-current-rulebook-source.yml
+          git commit -m "Finalize maintained current Rulebook source"
           git push origin HEAD:fix/current-authority-rulebook-source
