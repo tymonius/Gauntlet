@@ -1,5 +1,7 @@
 const CARD_RENDER_WIDTH = 240;
 const CARD_RENDER_HEIGHT = 336;
+const CARD_ASPECT_RATIO = 5 / 7;
+const STAGE_BOTTOM_PADDING = 110;
 
 const showcase = document.querySelector('[data-card-showcase]');
 
@@ -30,8 +32,11 @@ async function initializeShowcase(root) {
 
   const currentGame = await currentGameModule.loadCurrentGame();
   const cardNames = new Map(currentGame.cards.map((card) => [card.id, card.name]));
+  const visibleHeight = Math.min(
+    composition.canvas.height,
+    Math.ceil(Math.max(...composition.cards.map((placement) => placementBottom(placement))) + STAGE_BOTTOM_PADDING),
+  );
 
-  stage.style.aspectRatio = `${composition.canvas.width} / ${composition.canvas.height}`;
   stage.replaceChildren();
 
   const cardElements = composition.cards
@@ -43,16 +48,13 @@ async function initializeShowcase(root) {
       link.className = 'card-showcase-card';
       link.href = `/card-reference/#${encodeURIComponent(placement.id)}`;
       link.setAttribute('aria-label', `View ${name} in the Card Reference`);
-      link.style.left = `${placement.x / composition.canvas.width * 100}%`;
-      link.style.top = `${placement.y / composition.canvas.height * 100}%`;
-      link.style.width = `${placement.width / composition.canvas.width * 100}%`;
       link.style.zIndex = String(placement.z);
       link.style.transform = `rotate(${placement.rotation}deg)`;
 
       const frame = document.createElement('iframe');
       frame.className = 'card-showcase-frame';
-      frame.src = `/card-design/card-showcase-embed.html?card=${encodeURIComponent(placement.id)}&fit=production`;
-      frame.title = '';
+      frame.src = `/card-design/card-showcase-embed.html?card=${encodeURIComponent(placement.id)}&fit=production&releaseTarget=tts`;
+      frame.title = `${name} card render`;
       frame.tabIndex = -1;
       frame.loading = 'lazy';
       frame.scrolling = 'no';
@@ -60,15 +62,23 @@ async function initializeShowcase(root) {
 
       link.append(frame);
       stage.append(link);
-      return { link, frame };
+      return { placement, link, frame };
     });
 
   const scaleFrames = () => {
-    for (const { link, frame } of cardElements) {
-      const scale = link.clientWidth / CARD_RENDER_WIDTH;
+    const scale = stage.clientWidth / composition.canvas.width;
+    stage.style.height = `${visibleHeight * scale}px`;
+
+    for (const { placement, link, frame } of cardElements) {
+      const cardWidth = placement.width * scale;
+      link.style.left = `${placement.x * scale}px`;
+      link.style.top = `${placement.y * scale}px`;
+      link.style.width = `${cardWidth}px`;
+
+      const cardScale = cardWidth / CARD_RENDER_WIDTH;
       frame.style.width = `${CARD_RENDER_WIDTH}px`;
       frame.style.height = `${CARD_RENDER_HEIGHT}px`;
-      frame.style.transform = `scale(${scale})`;
+      frame.style.transform = `scale(${cardScale})`;
     }
   };
 
@@ -79,4 +89,22 @@ async function initializeShowcase(root) {
   window.addEventListener('resize', scaleFrames, { passive: true });
   requestAnimationFrame(scaleFrames);
   stage.dataset.ready = 'true';
+}
+
+function placementBottom(placement) {
+  const width = placement.width;
+  const height = width / CARD_ASPECT_RATIO;
+  const originX = placement.x + width / 2;
+  const originY = placement.y + height;
+  const radians = placement.rotation * Math.PI / 180;
+  const cosine = Math.cos(radians);
+  const sine = Math.sin(radians);
+  const corners = [
+    [-width / 2, -height],
+    [width / 2, -height],
+    [width / 2, 0],
+    [-width / 2, 0],
+  ];
+
+  return Math.max(...corners.map(([x, y]) => originY + x * sine + y * cosine));
 }
