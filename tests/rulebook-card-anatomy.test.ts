@@ -25,7 +25,7 @@ describe('Browser Rulebook card anatomy guide', () => {
     expect(anatomy).toContain('removeAnatomy();');
   });
 
-  it('documents the full standard playable-card frame and the Arcane trait mark', () => {
+  it('documents the full standard playable-card frame and shows the Arcane trait on a real card', () => {
     for (const label of [
       'Card name',
       'Card value',
@@ -35,12 +35,17 @@ describe('Browser Rulebook card anatomy guide', () => {
       'Effect text',
       'Reminder',
       'Metadata footer',
-      'Arcane trait',
+      'Arcane trait mark',
     ]) {
       expect(anatomy).toContain(label);
     }
+    expect(anatomy).toContain("const ARCANE_CARD_ID = 'mystics-witchcraft';");
+    expect(anatomy).toContain('card-print-render.html?fit=production&amp;card=${ARCANE_CARD_ID}');
     expect(anatomy).toContain("its color follows the card's faction identity");
     expect(styles).toContain('.card-anatomy-marker');
+    expect(styles).toContain('.card-anatomy-arcane-crop');
+    expect(styles).toContain('#000 calc(100% - 0.8rem)');
+    expect(styles).toContain('transparent 100%');
     expect(styles).toContain('@media (max-width: 760px)');
   });
 });
