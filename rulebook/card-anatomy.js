@@ -143,6 +143,10 @@ function wrapAuthoredAnatomy() {
     node = following;
   }
 
+  // The Markdown source carries a deterministic static figure for print/PDF.
+  // Candidate browser mode replaces that fallback with the live production renderer.
+  section.querySelector('img[alt="Card anatomy diagram"]')?.remove();
+
   const introParagraph = heading.nextElementSibling?.tagName === 'P' ? heading.nextElementSibling : null;
   const intro = document.createElement('div');
   intro.className = 'card-anatomy-intro';
