@@ -44,6 +44,7 @@
   <link rel="stylesheet" href="newsletter.css" />
   <link rel="stylesheet" href="factions/homepage.css" />
   <link rel="stylesheet" href="gameplay-showcase.css" />
+  <link rel="stylesheet" href="homepage-card-showcase.css" />
   <link rel="stylesheet" href="declaration-typography.css" />
   <link rel="stylesheet" href="rules-assistant/widget.css" />
 </head>
@@ -175,6 +176,28 @@
           <p>Run the Gauntlet by capturing the Territory at the opponent's end or by forcing the opponent to make a Last Stand and winning the resulting battle.</p>
         </article>
       </div>
+    </section>
+
+    <section id="cards" class="section card-showcase-section" aria-labelledby="card-showcase-title">
+      <div class="section-heading split-heading card-showcase-heading">
+        <div>
+          <p class="eyebrow declaration-overline">One contest · seven allegiances</p>
+          <h2 id="card-showcase-title">The game in seven cards.</h2>
+        </div>
+        <div class="card-showcase-copy">
+          <p>Every faction brings its own tools to the same battlefield, while Neutral cards remain available to everyone. This spread draws directly from the current canonical card renderer.</p>
+          <a class="button secondary" href="card-reference/">Browse all 128 cards</a>
+        </div>
+      </div>
+      <figure class="card-showcase-figure" data-card-showcase="all-factions-promotional-showcase">
+        <div
+          class="card-showcase-stage"
+          data-card-showcase-stage
+          role="img"
+          aria-label="Seven-card promotional spread showing Invasion, Gunboat Diplomacy, Corner the Market, Valor, Rend the Veil, Burning at the Stake, and Assassins."
+        ></div>
+        <figcaption>Military · Diplomats · Financiers · Neutral · Mystics · Inquisition · Intelligence</figcaption>
+      </figure>
     </section>
 
     <section id="factions" class="section factions-section">
@@ -340,6 +363,7 @@
   <noscript>
     <p class="noscript">JavaScript is required for the Rules Arbiter and interactive browser tools.</p>
   </noscript>
+  <script type="module" src="homepage-card-showcase.js"></script>
   <script type="module" src="rules-assistant/widget.js"></script>
   <script>
     document.addEventListener("click", (event) => {
