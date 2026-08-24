@@ -41,6 +41,7 @@
 
 .card-showcase-card:hover,
 .card-showcase-card:focus-visible {
+  z-index: 1000 !important;
   translate: 0 -6px;
   filter: drop-shadow(0 20px 22px rgba(41, 30, 16, .3));
 }
