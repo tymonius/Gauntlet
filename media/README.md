@@ -8,7 +8,7 @@ The media exporter does not maintain an independent card design. It reads the cu
 
 Promotional compositions follow the same rule. They are assembled from generated canonical card renders through `media/compositions.json`; they do not redraw, approximate, or regenerate card faces. Card IDs, placement, scale, rotation, stacking, canvas dimensions, and output profiles remain explicit and reproducible.
 
-The generated raster files are derivatives and are not committed to Git. GitHub Actions uploads them as downloadable artifacts.
+The generated raster files are derivatives and are not committed to Git. GitHub Actions uploads them as downloadable artifacts. Selected public derivatives can also be published directly from the renderer to the production media endpoint without adding the raster to source control.
 
 ## Card profiles
 
@@ -45,6 +45,18 @@ Every composition exports with a transparent background in three profiles:
 | `publication` | 3000 × 1800 | PNG |
 
 The composition renderer validates that every referenced card exists in the current card authority and has canonical artwork before rendering. It records the exact cards and transforms in a separate compositions manifest.
+
+## Public media
+
+The canonical website-profile PNG for `all-factions-promotional-showcase` is published directly from the media renderer at:
+
+```text
+https://gauntlet.run/images/media/all-factions-promotional-showcase.png
+```
+
+`.github/workflows/deploy-public-media.yml` rebuilds the website profile with strict artwork validation, stages that generated PNG into the Cloudflare Worker asset bundle, and deploys only the `/images/media/*` route. The normal website remains on its existing publication path. `workers/public-media/` contains the route and cache behavior; its generated `public/` payload exists only in CI and is not checked into Git.
+
+This stable URL is suitable for the HTML announcement email and other external promotional surfaces that require a conventional static image URL rather than the live browser compositor.
 
 ## Commands
 
