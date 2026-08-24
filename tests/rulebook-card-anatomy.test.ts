@@ -4,15 +4,15 @@ import { describe, expect, it } from 'vitest';
 const read = (path: string) => readFileSync(path, 'utf8');
 const index = read('rulebook/index.html');
 const anatomy = read('rulebook/card-anatomy.js');
-const anatomySource = read('rulebook/player-facing/card-anatomy.md');
+const currentRulebook = read('rulebook/player-facing/current-rulebook.md');
 const styles = read('rulebook/card-anatomy.css');
 
 describe('Browser Rulebook card anatomy guide', () => {
-  it('loads the browser enhancement assets while keeping the content in player-facing Markdown', () => {
+  it('loads the browser enhancement assets while keeping the content in the maintained current Rulebook', () => {
     expect(index).toContain('href="card-anatomy.css"');
     expect(index).toContain('src="card-anatomy.js"');
-    expect(anatomySource).toContain('## Card anatomy');
-    expect(anatomySource).toContain('### Arcane trait mark');
+    expect(currentRulebook).toContain('## Card anatomy');
+    expect(currentRulebook).toContain('### Arcane trait mark');
   });
 
   it('enhances the authored Card Anatomy section with a current production card render', () => {
@@ -30,7 +30,7 @@ describe('Browser Rulebook card anatomy guide', () => {
     expect(anatomy).toContain('removeEnhancement();');
   });
 
-  it('authors all current standard playable-card elements in the source itself', () => {
+  it('authors all current standard playable-card elements in the Rulebook source itself', () => {
     for (const label of [
       'Card name',
       'Card value',
@@ -41,10 +41,10 @@ describe('Browser Rulebook card anatomy guide', () => {
       'Metadata footer',
       'Arcane trait mark',
     ]) {
-      expect(anatomySource).toContain(label);
+      expect(currentRulebook).toContain(label);
     }
-    expect(anatomySource).not.toContain('Reminder');
-    expect(anatomySource).not.toContain('faction-specific procedure');
+    expect(currentRulebook).not.toContain('**Reminder**');
+    expect(currentRulebook).not.toContain('faction-specific procedure');
     expect(anatomy).not.toContain('marker-reminder');
     expect(anatomy).toContain('data-marker-target="footer" aria-hidden="true">7</span>');
   });
@@ -77,7 +77,7 @@ describe('Browser Rulebook card anatomy guide', () => {
   it('shows the Arcane trait on a real card with only the cropped bottom edge feathered', () => {
     expect(anatomy).toContain("const ARCANE_CARD_ID = 'mystics-witchcraft';");
     expect(anatomy).toContain('card-print-render.html?fit=production&amp;card=${ARCANE_CARD_ID}');
-    expect(anatomySource).toContain("its color follows the card's faction identity");
+    expect(currentRulebook).toContain("its color follows the card's faction identity");
     expect(styles).toContain('.card-anatomy-arcane-crop');
     expect(styles).toContain('#000 calc(100% - 0.8rem)');
     expect(styles).toContain('transparent 100%');
