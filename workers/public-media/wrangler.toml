@@ -1,0 +1,10 @@
+name = "gauntlet-public-media"
+main = "src/index.js"
+compatibility_date = "2026-08-24"
+workers_dev = false
+route = "gauntlet.run/images/media/*"
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+run_worker_first = true
