@@ -134,8 +134,8 @@ When an effect grants movement, use the normal movement rules unless the effect 
 
 - If the effect modifies a movement sequence already in progress, the granted movement remains part of that sequence.
 - If the effect grants movement while no movement sequence is in progress, it begins a new movement sequence.
-- Effect-granted movement may create a pending battle and may force the opponent to make a Last Stand unless expressly prohibited.
-- When movement creates a pending battle, that movement sequence ends and unused movement from it is lost normally.
+- Effect-granted movement may initiate a battle and may force the opponent to make a Last Stand unless expressly prohibited.
+- When movement initiates a battle, that movement sequence ends and unused movement from it is lost normally.
 
 ## Additional Tactics
 
@@ -213,7 +213,7 @@ Instructions to **spend**, **pay**, **lose**, or otherwise reduce a resource use
 - `gain double advantage` means gain **two instances of advantage**.
 - `gain disadvantage` means gain **one instance of disadvantage**.
 
-These are additive instructions, not binary statuses. Instances from separate cards, Territory effects, faction abilities, and other effects **stack**. No later source replaces an earlier one unless an effect expressly says so.
+These are additive instructions, not binary statuses. Instances from separate cards, Territory effects, Faction Features, Leader Abilities, and other effects **stack**. No later source replaces an earlier one unless an effect expressly says so.
 
 Before rolling battle dice, combine all advantage and disadvantage affecting each player and cancel opposing instances one-for-one.
 
@@ -258,13 +258,14 @@ When an effect tells you to **apply** another card's effect or **repeat** an eff
 
 ## Battles ending without a winner
 
-When a rule or effect ends a battle **without a winner**:
+When a rule or effect ends a battle sequence **without a winner**:
 
-- neither player wins or loses that battle; withdrawal is not a loss;
-- after the battle-ending instruction resolves, unresolved Gambit or Tactic effects from that battle do not apply unless the ending effect expressly says otherwise;
+- neither player wins or loses; withdrawal is not a loss;
+- if the sequence ends during Onset, no Gambits are set, no battle result occurs, and no Aftermath is resolved;
+- if Onset has completed and the battle has proceeded to Gambits, unresolved Gambit or Tactic effects do not apply after the battle-ending instruction unless that instruction expressly says otherwise;
 - effects that already applied are not undone;
-- complete any remaining non-result Aftermath procedures that are still applicable;
-- clear committed cards and cards remaining in Reserve normally unless the ending effect gives them another destination; and
+- after Onset, complete any remaining non-result Aftermath procedures that are still applicable;
+- after Onset, clear committed cards and cards remaining in Reserve normally unless the ending effect gives them another destination; and
 - apply normal positional consequences, including Occupation when applicable, based on the Player Tokens that remain after any instructed withdrawal.
 
-An effect conditioned on a player winning or losing does not apply when the battle ends without a winner.
+An effect conditioned on a player winning or losing does not apply when the battle sequence ends without a winner.
