@@ -151,13 +151,13 @@ describe('TTS ready supplemental save assembly', () => {
     }
   });
 
-  it('creates public supplemental cards with hosted face and reverse URLs', () => {
+  it('creates hand-compatible supplemental cards with hosted face and reverse URLs', () => {
     const { save, starters, supplementals, assets } = fixture();
     const result = assembleReadySupplementals(save, starters, supplementals, assets);
     const card = result.save.ObjectStates[0].ContainedObjects.find((object: any) => object.GMNotes === 'gauntlet:supplemental:mystics-reference-a');
 
     expect(card.Name).toBe('CardCustom');
-    expect(card.Hands).toBe(false);
+    expect(card.Hands).toBe(true);
     expect(card.CardID).toBe(20000);
     expect(card.CustomDeck['200'].FaceURL).toBe('https://example.invalid/rite-a.png');
     expect(card.CustomDeck['200'].BackURL).toBe('https://example.invalid/completed.png');
