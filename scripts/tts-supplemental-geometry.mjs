@@ -70,7 +70,7 @@ export function makeTrackerLuaScript(component) {
     'end',
     '',
     'function onLoad()',
-    '  Wait.frames(registerGauntletTrackerSnaps, 2)',
+    '  registerGauntletTrackerSnaps()',
     'end',
   );
   return lines.join('\n');
