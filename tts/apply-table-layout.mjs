@@ -6,7 +6,6 @@ import { CURRENT_ALIAS_ROOT, resolveCurrentTtsRelease, ROOT } from '../scripts/t
 const TABLE_LAYOUT_NOTE = 'Table markings: each player has a compact Leader + Tracker(s) workspace, Draw Pile, Discard Pile, Graveyard, a temporary Hand set-down area, an eight-slot Asset Bank, and a flexible twelve-snap Faction Zone. The Faction Zone is intentionally generic: it can hold Financier Treasury cards, ratified Diplomat Treaty Articles, Mystic Rites and Ritual material, Intelligence Operation components, Inquisition Doctrine/Purge components, or other public faction state. The hidden TTS hand zone remains the private Reserve area during battle. The Gauntlet has six primary Territory snaps plus two faint end positions for the eight-Territory Manifest Destiny configuration. Deed snaps remain intentionally unmarked beside every possible Territory position.';
 const TABLE_TEXT_NOTE_PREFIX = 'gauntlet:table-layout:';
 const TERRITORY_TAG = 'gauntlet-territory';
-const DEED_TAG = 'gauntlet-deed';
 
 const PRIMARY_TERRITORY_Z = Object.freeze([-7.5, -4.5, -1.5, 1.5, 4.5, 7.5]);
 const EXPANSION_TERRITORY_Z = Object.freeze([-10.5, 10.5]);
@@ -173,7 +172,7 @@ function playerFacingCardRotation(side) {
 function pointInPlayerZone(side, zone, offsetX = 0, offsetZ = 0) {
   const north = side === 'Blue';
   const sign = north ? -1 : 1;
-  return vector((zone.x + offsetX) * sign, 1, (zone.z + offsetZ) * sign);
+  return vector((zone.x + offsetX) * sign, 0, (zone.z + offsetZ) * sign);
 }
 
 function snap(position, rotationY, tags = null) {
@@ -238,14 +237,14 @@ export function buildTableSnapPoints() {
   const snaps = [];
 
   for (const z of ALL_TERRITORY_Z) {
-    snaps.push(snap(vector(0, 1, z), 90, [TERRITORY_TAG]));
+    snaps.push(snap(vector(0, 0, z), 90, [TERRITORY_TAG]));
   }
 
-  // Deed positions are intentionally invisible. They are tagged so ordinary
-  // cards and player pieces do not compete with the Deed magnets beside the
-  // Territory row.
+  // Deed positions are intentionally invisible. They sit beside every possible
+  // Territory position and remain untagged so the current Deed card objects can
+  // use them without a separate scripting dependency.
   for (const z of ALL_TERRITORY_Z) {
-    for (const x of DEED_X) snaps.push(snap(vector(x, 1, z), 90, [DEED_TAG]));
+    for (const x of DEED_X) snaps.push(snap(vector(x, 0, z), 90));
   }
 
   for (const side of ['Red', 'Blue']) {
