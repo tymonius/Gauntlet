@@ -99,16 +99,43 @@ async function prepareLeaderSurface(page, expectedCount) {
   await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
 }
 
+/* The Leader catalog is itself the production visual authority. Historically the
+   TTS exporter called the smart crop engine for every Leader, including Leaders
+   with no authored art-direction override. The catalog does not do that: it
+   leaves those Leaders on the approved CSS composition. That extra TTS-only
+   smart-crop pass is what made General (and any other no-override Leader)
+   diverge from the Card Review catalog. Only replay an explicit saved override;
+   otherwise preserve the catalog's computed composition byte-for-byte. */
 async function applyLeaderCrop(page, leader) {
   const result = await page.locator(leaderSelector(leader)).evaluate((element, payload) => {
     const image = element.querySelector('.card-art img');
     if (!image?.complete || image.naturalWidth <= 0 || image.naturalHeight <= 0) {
       throw new Error(`Leader portrait is not loaded for ${payload.label}.`);
     }
-    if (!window.GauntletArtworkCrop?.apply) throw new Error('Shared artwork crop engine is unavailable on the Leader production surface.');
+
+    const authored = payload.direction
+      || window.GAUNTLET_ART_DIRECTION?.[payload.key]
+      || null;
+    if (!authored || !Object.keys(authored).length) {
+      const style = window.getComputedStyle(image);
+      image.dataset.artCrop = 'catalog-css';
+      image.dataset.artFocusX = style.objectPosition.split(/\s+/)[0] || '';
+      image.dataset.artFocusY = style.objectPosition.split(/\s+/)[1] || '';
+      return {
+        applied: false,
+        mode: 'catalog-css',
+        focusX: image.dataset.artFocusX,
+        focusY: image.dataset.artFocusY,
+        objectPosition: style.objectPosition,
+      };
+    }
+
+    if (!window.GauntletArtworkCrop?.apply) {
+      throw new Error('Shared artwork crop engine is unavailable on the Leader production surface.');
+    }
     const applied = window.GauntletArtworkCrop.apply(
       image,
-      payload.direction || null,
+      authored,
       { id: payload.key, label: payload.label },
     );
     return {
@@ -116,14 +143,15 @@ async function applyLeaderCrop(page, leader) {
       mode: image.dataset.artCrop || '',
       focusX: image.dataset.artFocusX || '',
       focusY: image.dataset.artFocusY || '',
+      objectPosition: window.getComputedStyle(image).objectPosition,
     };
   }, {
     key: `${leader.faction}-${leader.id}`,
     label: leader.name,
     direction: leader.artDirection || null,
   });
-  if (!result.applied || !result.mode) {
-    throw new Error(`Production Leader artwork crop was not applied for ${leader.faction}:${leader.id}.`);
+  if (!result.mode) {
+    throw new Error(`Production Leader artwork composition could not be resolved for ${leader.faction}:${leader.id}.`);
   }
   await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
   return result;
@@ -158,6 +186,7 @@ async function validateLeader(page, leader, displayVersion) {
       footerOverflow: Boolean(interior && footerNode && footerNode.getBoundingClientRect().bottom > interior.getBoundingClientRect().bottom + 1),
       imageLoaded: Boolean(image?.complete && image?.naturalWidth > 0 && image?.naturalHeight > 0),
       artCrop: image?.dataset.artCrop || '',
+      artPosition: image ? window.getComputedStyle(image).objectPosition : '',
       footer,
     };
   });
@@ -172,7 +201,9 @@ async function validateLeader(page, leader, displayVersion) {
     throw new Error(`Leader content does not fit the approved frame: ${leader.faction}:${leader.id} ${JSON.stringify(metrics)}.`);
   }
   if (!metrics.imageLoaded) throw new Error(`Leader portrait failed to load: ${leader.faction}:${leader.id}.`);
-  if (!metrics.artCrop) throw new Error(`Leader portrait has no applied artwork crop: ${leader.faction}:${leader.id}.`);
+  if (!metrics.artCrop || !metrics.artPosition) {
+    throw new Error(`Leader portrait has no resolved catalog artwork composition: ${leader.faction}:${leader.id}.`);
+  }
   if (metrics.footer.at(-1) !== displayVersion) {
     throw new Error(`Leader ${leader.faction}:${leader.id} renders ${metrics.footer.at(-1) || 'no version'} but TTS package displays ${displayVersion}.`);
   }
