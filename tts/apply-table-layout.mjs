@@ -3,46 +3,118 @@ import { join, relative } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { CURRENT_ALIAS_ROOT, resolveCurrentTtsRelease, ROOT } from '../scripts/tts-current-catalog.mjs';
 
-const TABLE_LAYOUT_NOTE = 'Table markings: each player has a compact Leader + Tracker(s) workspace, Draw Pile, Discard Pile, Graveyard, a temporary Hand set-down area, an eight-slot Asset Bank, and a flexible twelve-snap Faction Zone. The Faction Zone is intentionally generic: it can hold Financier Treasury cards, ratified Diplomat Treaty Articles, Mystic Rites and Ritual material, Intelligence Operation components, Inquisition Doctrine/Purge components, or other public faction state. The hidden TTS hand zone remains the private Reserve area during battle. The Gauntlet has six primary Territory snaps plus two faint end positions for the eight-Territory Manifest Destiny configuration. Deed snaps remain intentionally unmarked beside every possible Territory position.';
+const TABLE_URL = 'https://raw.githubusercontent.com/tymonius/Gauntlet/release/v0.7.0-cutover/tts/assets/environment/campaign-map-table.jpg';
+const SKY_URL = 'https://raw.githubusercontent.com/tymonius/Gauntlet/release/v0.7.0-cutover/tts/assets/environment/command-tent-panorama.jpg';
+
+const TABLE_LAYOUT_NOTE = 'Gauntlet TTS table layout: Red sits south and Blue north. Each player has Leader & References, Draw, Discard, Graveyard, Asset Bank, Faction Zone, and a one-card Hand parking position. The actual TTS hand zone sits farther behind the player inside a broad player-colored Hidden Zone. Asset Bank provides seven portrait positions; Faction Zone provides twelve compact portrait positions. The Gauntlet visibly marks six primary Territory positions; two Manifest Destiny extension snaps remain invisible. Deed snaps are invisible landscape positions beside every possible Territory.';
 const TABLE_TEXT_NOTE_PREFIX = 'gauntlet:table-layout:';
+const PRIVATE_ZONE_NOTE_PREFIX = 'gauntlet:private-zone:';
 const TERRITORY_TAG = 'gauntlet-territory';
 const DEED_TAG = 'gauntlet-deed';
+const DEED_STACK_TAG = 'gauntlet-deed-stack';
+const FACTION_ZONE_TAG = 'gauntlet-faction-zone';
 
 const PRIMARY_TERRITORY_Z = Object.freeze([-7.5, -4.5, -1.5, 1.5, 4.5, 7.5]);
 const EXPANSION_TERRITORY_Z = Object.freeze([-10.5, 10.5]);
-const ALL_TERRITORY_Z = Object.freeze([...EXPANSION_TERRITORY_Z.slice(0, 1), ...PRIMARY_TERRITORY_Z, ...EXPANSION_TERRITORY_Z.slice(1)]);
-const DEED_X = Object.freeze([-4.1, 4.1]);
+const ALL_TERRITORY_Z = Object.freeze([EXPANSION_TERRITORY_Z[0], ...PRIMARY_TERRITORY_Z, EXPANSION_TERRITORY_Z[1]]);
+const DEED_X = Object.freeze([-3.8, 3.8]);
 
 const TABLE_MARK_Y = 1.01;
-const TERRITORY_SLOT_WIDTH = 3.8;
-const TERRITORY_SLOT_DEPTH = 2.75;
-const LABEL_GAP = 0.30;
+const TERRITORY_SLOT_WIDTH = 3.7;
+const TERRITORY_SLOT_DEPTH = 2.7;
+const LABEL_GAP = 0.34;
 
 const OUTLINE_SHADOW_COLOR = Object.freeze({ r: 0.12, g: 0.085, b: 0.055 });
-const OUTLINE_COLOR = Object.freeze({ r: 0.79, g: 0.65, b: 0.38 });
-const SECONDARY_OUTLINE_COLOR = Object.freeze({ r: 0.48, g: 0.40, b: 0.27 });
-const LABEL_SHADOW_COLOR = Object.freeze({ r: 0.10, g: 0.07, b: 0.045 });
-const LABEL_COLOR = Object.freeze({ r: 0.96, g: 0.88, b: 0.68 });
+const OUTLINE_COLOR = Object.freeze({ r: 0.83, g: 0.69, b: 0.40 });
+const LABEL_SHADOW_COLOR = Object.freeze({ r: 0.08, g: 0.055, b: 0.035 });
+const LABEL_COLOR = Object.freeze({ r: 0.99, g: 0.91, b: 0.70 });
+const TTS_PLAYER_COLORS = Object.freeze({
+  Red: { r: 0.856, g: 0.100, b: 0.094, a: 0.25 },
+  Blue: { r: 0.118, g: 0.530, b: 1.000, a: 0.25 },
+});
 
-// Coordinates are authored from the Red player's perspective, then rotated
-// 180 degrees for Blue. Zones are sized around actual card footprints instead
-// of equal-width decorative boxes.
 const PLAYER_ZONES = Object.freeze([
-  { id: 'leader-trackers', label: 'Leader + Tracker(s)', x: -11.2, z: -14.1, width: 7.6, depth: 4.2, fontSize: 27, textScale: 0.25, snapLayout: 'leader' },
-  { id: 'draw', label: 'Draw Pile', x: -5.3, z: -14.1, width: 2.9, depth: 4.2, fontSize: 28, textScale: 0.25, snapLayout: 'pile' },
-  { id: 'discard', label: 'Discard Pile', x: -2.1, z: -14.1, width: 2.9, depth: 4.2, fontSize: 27, textScale: 0.24, snapLayout: 'pile' },
-  { id: 'graveyard', label: 'Graveyard', x: 1.1, z: -14.1, width: 2.9, depth: 4.2, fontSize: 27, textScale: 0.24, snapLayout: 'pile' },
-  { id: 'hand', label: 'Hand', x: 7.7, z: -14.1, width: 9.6, depth: 4.2, fontSize: 30, textScale: 0.27, snapLayout: 'hand' },
-  { id: 'asset-bank', label: 'Asset Bank', x: -10.2, z: -8.0, width: 8.6, depth: 7.2, fontSize: 29, textScale: 0.26, snapLayout: 'assets' },
-  { id: 'faction-zone', label: 'Faction Zone', x: 10.0, z: -7.2, width: 8.6, depth: 9.0, fontSize: 29, textScale: 0.26, snapLayout: 'faction' },
+  { id: 'leader-references', label: 'Leader & References', x: -12.2, z: -13.0, width: 10.8, depth: 7.4, fontSize: 29, textScale: 0.26, snapLayout: 'leader' },
+  { id: 'draw', label: 'Draw Pile', x: -1.6, z: -13.3, width: 2.8, depth: 4.1, fontSize: 28, textScale: 0.25, snapLayout: 'pile' },
+  { id: 'discard', label: 'Discard Pile', x: 1.6, z: -13.3, width: 2.8, depth: 4.1, fontSize: 27, textScale: 0.24, snapLayout: 'pile' },
+  { id: 'hand', label: 'Hand', x: 0, z: -17.0, width: 2.8, depth: 4.0, fontSize: 29, textScale: 0.26, snapLayout: 'hand' },
+  { id: 'graveyard', label: 'Graveyard', x: 17.2, z: -16.2, width: 2.8, depth: 4.1, fontSize: 27, textScale: 0.24, snapLayout: 'pile' },
+  { id: 'asset-bank', label: 'Asset Bank', x: -12.2, z: -5.4, width: 10.7, depth: 7.1, fontSize: 29, textScale: 0.26, snapLayout: 'assets' },
+  { id: 'faction-zone', label: 'Faction Zone', x: 12.0, z: -5.4, width: 10.7, depth: 10.0, fontSize: 29, textScale: 0.26, snapLayout: 'faction' },
 ]);
 
-function color(r = 1, g = 1, b = 1) {
-  return { r, g, b };
+const HAND_ZONE = Object.freeze({ x: 0, z: -20.15, scaleX: 7.0, scaleY: 2.5, scaleZ: 3.0 });
+const PRIVATE_ZONE = Object.freeze({ x: 0, z: -18.8, scaleX: 40.0, scaleY: 4.0, scaleZ: 7.2 });
+
+function jsonText(value) {
+  return `${JSON.stringify(value, null, 2)}\n`;
+}
+
+function color(r = 1, g = 1, b = 1, a = undefined) {
+  const result = { r, g, b };
+  if (a !== undefined) result.a = a;
+  return result;
 }
 
 function vector(x = 0, y = 0, z = 0) {
   return { x, y, z };
+}
+
+function transform(posX = 0, posY = 1, posZ = 0, rotY = 0, scaleX = 1, scaleY = 1, scaleZ = 1) {
+  return { posX, posY, posZ, rotX: 0, rotY, rotZ: 0, scaleX, scaleY, scaleZ };
+}
+
+function collectGuids(objects, guids = new Set()) {
+  for (const object of objects || []) {
+    if (typeof object?.GUID === 'string' && object.GUID) guids.add(object.GUID.toLowerCase());
+    collectGuids(object?.ContainedObjects, guids);
+  }
+  return guids;
+}
+
+function makeContinuationGuidFactory(save) {
+  const used = collectGuids(save.ObjectStates || []);
+  let value = 1;
+  for (const guid of used) {
+    if (/^[0-9a-z]{6}$/i.test(guid)) value = Math.max(value, Number.parseInt(guid, 36) + 1);
+  }
+  return () => {
+    while (value < 36 ** 6) {
+      const candidate = value.toString(36).padStart(6, '0').slice(-6);
+      value += 1;
+      if (used.has(candidate)) continue;
+      used.add(candidate);
+      return candidate;
+    }
+    throw new Error('Unable to allocate another deterministic six-character TTS GUID.');
+  };
+}
+
+function addTag(object, tag) {
+  const tags = new Set(Array.isArray(object?.Tags) ? object.Tags : []);
+  tags.add(tag);
+  object.Tags = [...tags].sort();
+}
+
+function walkObjects(objects, visit) {
+  for (const object of objects || []) {
+    visit(object);
+    walkObjects(object?.ContainedObjects, visit);
+  }
+}
+
+function tagTerritories(objects) {
+  walkObjects(objects, object => {
+    if (object?.Name === 'CardCustom' && /(?:Arena )?Territory$/u.test(String(object.Description || ''))) {
+      addTag(object, TERRITORY_TAG);
+      object.SidewaysCard = true;
+      object.Transform ||= transform();
+      object.Transform.rotY = 90;
+      object.Transform.scaleX = 1;
+      object.Transform.scaleY = 1;
+      object.Transform.scaleZ = 1;
+    }
+  });
 }
 
 function flatTextTransform(x, z, rotationY, scale, y = TABLE_MARK_Y) {
@@ -77,55 +149,119 @@ function rectangleLine(x, z, width, depth, lineColor, thickness, y) {
   };
 }
 
-function outlinedRectangle(x, z, width, depth, foreground = OUTLINE_COLOR, secondary = false) {
-  const shadowThickness = secondary ? 0.075 : 0.105;
-  const foregroundThickness = secondary ? 0.032 : 0.048;
+function outlinedRectangle(x, z, width, depth) {
   return [
-    rectangleLine(x, z, width, depth, OUTLINE_SHADOW_COLOR, shadowThickness, TABLE_MARK_Y - 0.006),
-    rectangleLine(x, z, width, depth, foreground, foregroundThickness, TABLE_MARK_Y + 0.006),
+    rectangleLine(x, z, width, depth, OUTLINE_SHADOW_COLOR, 0.105, TABLE_MARK_Y - 0.006),
+    rectangleLine(x, z, width, depth, OUTLINE_COLOR, 0.048, TABLE_MARK_Y + 0.006),
   ];
 }
 
+function playerZone(side, zone) {
+  const mirror = side === 'Blue' ? -1 : 1;
+  const x = zone.x * mirror;
+  const z = zone.z * mirror;
+  return {
+    ...zone,
+    id: `${side.toLowerCase()}-${zone.id}`,
+    x,
+    z,
+    rotationY: side === 'Blue' ? 180 : 0,
+    labelX: x,
+    labelZ: z + (side === 'Blue' ? 1 : -1) * (zone.depth / 2 + LABEL_GAP),
+  };
+}
+
+function playerFacingRotation(side) {
+  return side === 'Blue' ? 180 : 0;
+}
+
+function pointInPlayerZone(side, zone, offsetX = 0, offsetZ = 0) {
+  const mirror = side === 'Blue' ? -1 : 1;
+  return vector((zone.x + offsetX) * mirror, 0, (zone.z + offsetZ) * mirror);
+}
+
+function snap(position, rotationY = null, tags = null) {
+  const point = { Position: position };
+  if (rotationY !== null) point.Rotation = vector(0, rotationY, 0);
+  if (tags?.length) point.Tags = tags;
+  return point;
+}
+
+function leaderOffsets() {
+  return [[-3.9, -1.85], [-1.3, -1.85], [1.3, -1.85], [3.9, -1.85]];
+}
+
+function assetOffsets() {
+  return [
+    [-3.9, -1.8], [-1.3, -1.8], [1.3, -1.8], [3.9, -1.8],
+    [-2.6, 1.8], [0, 1.8], [2.6, 1.8],
+  ];
+}
+
+function factionOffsets() {
+  const offsets = [];
+  for (const z of [-3.6, 0, 3.6]) {
+    for (const x of [-3.9, -1.3, 1.3, 3.9]) offsets.push([x, z]);
+  }
+  return offsets;
+}
+
+export function buildTableVectorLines() {
+  const lines = [];
+  for (const side of ['Red', 'Blue']) {
+    for (const zone of PLAYER_ZONES) {
+      const placed = playerZone(side, zone);
+      lines.push(...outlinedRectangle(placed.x, placed.z, placed.width, placed.depth));
+    }
+  }
+  for (const z of PRIMARY_TERRITORY_Z) lines.push(...outlinedRectangle(0, z, TERRITORY_SLOT_WIDTH, TERRITORY_SLOT_DEPTH));
+  return lines;
+}
+
+export function buildTableSnapPoints() {
+  const points = [];
+  for (const z of ALL_TERRITORY_Z) points.push(snap(vector(0, 0, z), 90, [TERRITORY_TAG]));
+  for (const z of ALL_TERRITORY_Z) {
+    for (const x of DEED_X) points.push(snap(vector(x, 0, z), 90, [DEED_TAG]));
+  }
+
+  for (const side of ['Red', 'Blue']) {
+    const rotation = playerFacingRotation(side);
+    for (const zone of PLAYER_ZONES) {
+      if (zone.snapLayout === 'leader') {
+        for (const [x, z] of leaderOffsets()) points.push(snap(pointInPlayerZone(side, zone, x, z), rotation));
+      } else if (zone.snapLayout === 'assets') {
+        for (const [x, z] of assetOffsets()) points.push(snap(pointInPlayerZone(side, zone, x, z), rotation));
+      } else if (zone.snapLayout === 'faction') {
+        for (const [x, z] of factionOffsets()) points.push(snap(pointInPlayerZone(side, zone, x, z), rotation, [FACTION_ZONE_TAG]));
+        points.push(snap(pointInPlayerZone(side, zone, -3.9, -3.6), (rotation + 90) % 360, [DEED_STACK_TAG]));
+      } else if (zone.snapLayout === 'pile' || zone.snapLayout === 'hand') {
+        points.push(snap(pointInPlayerZone(side, zone), rotation));
+      }
+    }
+  }
+  return points;
+}
+
 function generatedTextGuid(index) {
-  return `zt${index.toString(36).padStart(4, '0')}`.slice(-6);
+  return `tl${index.toString(36).padStart(4, '0')}`.slice(-6);
 }
 
-function collectGuids(objects, guids = new Set()) {
-  for (const object of objects || []) {
-    if (typeof object?.GUID === 'string' && object.GUID) guids.add(object.GUID.toLowerCase());
-    collectGuids(object?.ContainedObjects, guids);
-  }
-  return guids;
-}
-
-function addTag(object, tag) {
-  const tags = new Set(Array.isArray(object?.Tags) ? object.Tags : []);
-  tags.add(tag);
-  object.Tags = [...tags].sort();
-}
-
-function tagTerritories(objects) {
-  for (const object of objects || []) {
-    const description = String(object?.Description || '');
-    if (object?.Name === 'CardCustom' && /Territory$/u.test(description)) addTag(object, TERRITORY_TAG);
-    tagTerritories(object?.ContainedObjects);
-  }
-}
-
-function makeTableText({ id, label, x, z, rotationY, fontSize, scale, shadow = false }, guid) {
-  const sideOffset = rotationY === 180 ? -0.035 : 0.035;
+function makeTableText(definition, guid) {
+  const shadow = definition.shadow;
+  const sideOffset = definition.rotationY === 180 ? -0.035 : 0.035;
   return {
     Name: '3DText',
     Transform: flatTextTransform(
-      x + (shadow ? sideOffset : 0),
-      z + (shadow ? sideOffset : 0),
-      rotationY,
-      scale,
+      definition.x + (shadow ? sideOffset : 0),
+      definition.z + (shadow ? sideOffset : 0),
+      definition.rotationY,
+      definition.scale,
       TABLE_MARK_Y + (shadow ? -0.003 : 0.003),
     ),
     Nickname: '',
     Description: '',
-    GMNotes: `${TABLE_TEXT_NOTE_PREFIX}${id}:${shadow ? 'shadow' : 'label'}`,
+    GMNotes: `${TABLE_TEXT_NOTE_PREFIX}${definition.id}:${shadow ? 'shadow' : 'label'}`,
     ColorDiffuse: color(),
     Locked: true,
     Grid: false,
@@ -137,9 +273,9 @@ function makeTableText({ id, label, x, z, rotationY, fontSize, scale, shadow = f
     HideWhenFaceDown: false,
     Hands: false,
     Text: {
-      Text: label,
+      Text: definition.label,
       colorstate: { ...(shadow ? LABEL_SHADOW_COLOR : LABEL_COLOR) },
-      fontSize: shadow ? fontSize + 1 : fontSize,
+      fontSize: shadow ? definition.fontSize + 1 : definition.fontSize,
     },
     LuaScript: '',
     LuaScriptState: '',
@@ -148,144 +284,17 @@ function makeTableText({ id, label, x, z, rotationY, fontSize, scale, shadow = f
   };
 }
 
-function playerZone(side, zone) {
-  const north = side === 'Blue';
-  const sign = north ? -1 : 1;
-  const x = zone.x * sign;
-  const z = zone.z * sign;
-  return {
-    ...zone,
-    id: `${side.toLowerCase()}-${zone.id}`,
-    x,
-    z,
-    rotationY: north ? 180 : 0,
-    labelX: x,
-    labelZ: z + (north ? 1 : -1) * (zone.depth / 2 + LABEL_GAP),
-  };
-}
-
-function playerFacingCardRotation(side) {
-  // CardCustom's zero-degree image orientation is opposite the table-text
-  // convention used by the zone labels.
-  return side === 'Blue' ? 0 : 180;
-}
-
-function pointInPlayerZone(side, zone, offsetX = 0, offsetZ = 0) {
-  const north = side === 'Blue';
-  const sign = north ? -1 : 1;
-  return vector((zone.x + offsetX) * sign, 0, (zone.z + offsetZ) * sign);
-}
-
-function snap(position, rotationY, tags = null) {
-  const point = {
-    Position: position,
-    Rotation: vector(0, rotationY, 0),
-  };
-  if (tags?.length) point.Tags = tags;
-  return point;
-}
-
-function zoneSnapOffsets(layout) {
-  // Tracker factions place their bottom tracker on the center point and use its
-  // attached registration points for the covering Leader. Intelligence nests
-  // both trackers at that same center; the side points hold reference cards.
-  // A trackerless faction may simply place its Leader at center.
-  if (layout === 'leader') return [
-    [-2.55, 0],
-    [0, 0],
-    [2.55, 0],
-  ];
-  if (layout === 'pile') return [[0, 0]];
-  if (layout === 'hand') return [
-    [-3.40, 0],
-    [-1.70, 0],
-    [0, 0],
-    [1.70, 0],
-    [3.40, 0],
-  ];
-  if (layout === 'assets') {
-    const offsets = [];
-    for (const z of [-1.65, 1.65]) {
-      for (const x of [-2.90, -0.97, 0.97, 2.90]) offsets.push([x, z]);
-    }
-    return offsets;
-  }
-  if (layout === 'faction') {
-    const offsets = [];
-    for (const z of [-2.80, 0, 2.80]) {
-      for (const x of [-2.90, -0.97, 0.97, 2.90]) offsets.push([x, z]);
-    }
-    return offsets;
-  }
-  return [];
-}
-
-export function buildTableVectorLines() {
-  const lines = [];
-  for (const side of ['Red', 'Blue']) {
-    for (const zone of PLAYER_ZONES) {
-      const placed = playerZone(side, zone);
-      lines.push(...outlinedRectangle(placed.x, placed.z, placed.width, placed.depth));
-    }
-  }
-
-  for (const z of PRIMARY_TERRITORY_Z) {
-    lines.push(...outlinedRectangle(0, z, TERRITORY_SLOT_WIDTH, TERRITORY_SLOT_DEPTH));
-  }
-  for (const z of EXPANSION_TERRITORY_Z) {
-    lines.push(...outlinedRectangle(0, z, TERRITORY_SLOT_WIDTH, TERRITORY_SLOT_DEPTH, SECONDARY_OUTLINE_COLOR, true));
-  }
-  return lines;
-}
-
-export function buildTableSnapPoints() {
-  const snaps = [];
-
-  for (const z of ALL_TERRITORY_Z) {
-    snaps.push(snap(vector(0, 0, z), 90, [TERRITORY_TAG]));
-  }
-
-  // Deed positions are intentionally invisible but tagged so an ordinary card
-  // crossing the center cannot steal a Deed magnet.
-  for (const z of ALL_TERRITORY_Z) {
-    for (const x of DEED_X) snaps.push(snap(vector(x, 0, z), 90, [DEED_TAG]));
-  }
-
-  for (const side of ['Red', 'Blue']) {
-    const rotation = playerFacingCardRotation(side);
-    for (const zone of PLAYER_ZONES) {
-      for (const [offsetX, offsetZ] of zoneSnapOffsets(zone.snapLayout)) {
-        snaps.push(snap(pointInPlayerZone(side, zone, offsetX, offsetZ), rotation));
-      }
-    }
-  }
-
-  return snaps;
-}
-
 export function buildTableTextObjects(existingObjects = []) {
   const used = collectGuids(existingObjects);
   const definitions = [];
   for (const side of ['Red', 'Blue']) {
     for (const zone of PLAYER_ZONES) {
       const placed = playerZone(side, zone);
-      definitions.push({
-        ...placed,
-        x: placed.labelX,
-        z: placed.labelZ,
-        scale: placed.textScale,
-        shadow: true,
-      });
-      definitions.push({
-        ...placed,
-        x: placed.labelX,
-        z: placed.labelZ,
-        scale: placed.textScale,
-        shadow: false,
-      });
+      for (const shadow of [true, false]) {
+        definitions.push({ ...placed, x: placed.labelX, z: placed.labelZ, scale: placed.textScale, shadow });
+      }
     }
   }
-
   return definitions.map((definition, index) => {
     const guid = generatedTextGuid(index + 1);
     if (used.has(guid.toLowerCase())) throw new Error(`TTS table-layout text GUID collision: ${guid}.`);
@@ -294,36 +303,79 @@ export function buildTableTextObjects(existingObjects = []) {
   });
 }
 
-function repositionUtilityObjects(save) {
-  // Keep the pre-setup die/token parking positions outside all card workspaces
-  // and away from the Manifest Destiny / Deed extension snaps.
-  const positions = new Map([
-    ['Red Battle Die', { x: -16.2, z: -10.0, rotation: 0 }],
-    ['Red Player Token', { x: -17.4, z: -10.0, rotation: 0 }],
-    ['Blue Battle Die', { x: 16.2, z: 10.0, rotation: 180 }],
-    ['Blue Player Token', { x: 17.4, z: 10.0, rotation: 180 }],
-  ]);
+function makePrivateZone(side, guid) {
+  const mirror = side === 'Blue' ? -1 : 1;
+  const tint = TTS_PLAYER_COLORS[side];
+  return {
+    Name: 'FogOfWarTrigger',
+    Transform: transform(PRIVATE_ZONE.x * mirror, 2.0, PRIVATE_ZONE.z * mirror, playerFacingRotation(side), PRIVATE_ZONE.scaleX, PRIVATE_ZONE.scaleY, PRIVATE_ZONE.scaleZ),
+    Nickname: `${side} Private Area`,
+    Description: 'Private player-side area for hand and Reserve handling',
+    GMNotes: `${PRIVATE_ZONE_NOTE_PREFIX}${side.toLowerCase()}`,
+    ColorDiffuse: { ...tint },
+    Locked: true,
+    Grid: false,
+    Snap: false,
+    Autoraise: false,
+    Sticky: false,
+    Tooltip: false,
+    GridProjection: false,
+    HideWhenFaceDown: false,
+    Hands: false,
+    FogColor: side,
+    FogHidePointers: true,
+    FogReverseHiding: false,
+    FogSeethrough: true,
+    LuaScript: '',
+    LuaScriptState: '',
+    XmlUI: '',
+    GUID: guid(),
+  };
+}
 
-  for (const object of save.ObjectStates || []) {
-    const target = positions.get(object?.Nickname);
-    if (!target || !object.Transform) continue;
-    object.Transform.posX = target.x;
-    object.Transform.posZ = target.z;
-    object.Transform.rotY = target.rotation;
-  }
+function applyHandsAndPrivateZones(save, guid) {
+  save.ObjectStates = (save.ObjectStates || []).filter(object => (
+    object?.Name !== 'HandTrigger'
+    && !String(object?.GMNotes || '').startsWith(PRIVATE_ZONE_NOTE_PREFIX)
+  ));
+
+  save.Hands = {
+    Enable: true,
+    DisableUnused: true,
+    Hiding: 0,
+    HandTransforms: ['Red', 'Blue'].map(side => {
+      const mirror = side === 'Blue' ? -1 : 1;
+      return {
+        Color: side,
+        Transform: transform(HAND_ZONE.x * mirror, 1.5, HAND_ZONE.z * mirror, playerFacingRotation(side), HAND_ZONE.scaleX, HAND_ZONE.scaleY, HAND_ZONE.scaleZ),
+      };
+    }),
+  };
+
+  save.ObjectStates.push(makePrivateZone('Red', guid), makePrivateZone('Blue', guid));
+}
+
+function applyEnvironment(save) {
+  save.Table = 'Table_Custom';
+  save.TableURL = TABLE_URL;
+  save.Sky = 'Sky_Museum';
+  save.SkyURL = SKY_URL;
 }
 
 export function applyTableLayout(save) {
   if (!save || !Array.isArray(save.ObjectStates)) throw new Error('TTS table layout requires a save with ObjectStates.');
 
-  save.ObjectStates = save.ObjectStates.filter(
-    object => !String(object?.GMNotes || '').startsWith(TABLE_TEXT_NOTE_PREFIX),
-  );
+  const guid = makeContinuationGuidFactory(save);
+  save.ObjectStates = save.ObjectStates.filter(object => !String(object?.GMNotes || '').startsWith(TABLE_TEXT_NOTE_PREFIX));
   tagTerritories(save.ObjectStates);
   save.VectorLines = buildTableVectorLines();
   save.SnapPoints = buildTableSnapPoints();
   save.ObjectStates.push(...buildTableTextObjects(save.ObjectStates));
-  repositionUtilityObjects(save);
+  applyHandsAndPrivateZones(save, guid);
+  applyEnvironment(save);
+
+  save.Turns ||= {};
+  save.Turns.TurnColor = 'Red';
 
   for (const field of ['Note', 'Rules']) {
     const current = String(save[field] || '').trim();
@@ -334,9 +386,8 @@ export function applyTableLayout(save) {
     save,
     vectorLineCount: save.VectorLines.length,
     snapPointCount: save.SnapPoints.length,
-    textObjectCount: save.ObjectStates.filter(
-      object => String(object?.GMNotes || '').startsWith(TABLE_TEXT_NOTE_PREFIX),
-    ).length,
+    textObjectCount: save.ObjectStates.filter(object => String(object?.GMNotes || '').startsWith(TABLE_TEXT_NOTE_PREFIX)).length,
+    privateZoneCount: save.ObjectStates.filter(object => String(object?.GMNotes || '').startsWith(PRIVATE_ZONE_NOTE_PREFIX)).length,
   };
 }
 
@@ -346,14 +397,13 @@ async function main() {
   if (checkOnly) {
     const lines = buildTableVectorLines();
     const snaps = buildTableSnapPoints();
-    if (lines.length !== 44) throw new Error(`Expected 44 generated table-marking vector lines; found ${lines.length}.`);
-    if (snaps.length !== 86) throw new Error(`Expected 86 generated table snap points; found ${snaps.length}.`);
-    if (snaps.some(point => Number(point.Position?.y) !== 0)) throw new Error('Global TTS table snap points must remain on the y=0 table plane.');
-    const territorySnaps = snaps.filter(point => point.Tags?.includes(TERRITORY_TAG));
-    const deedSnaps = snaps.filter(point => point.Tags?.includes(DEED_TAG));
-    if (territorySnaps.length !== 8) throw new Error(`Expected 8 tagged Territory snaps; found ${territorySnaps.length}.`);
-    if (deedSnaps.length !== 16) throw new Error(`Expected 16 tagged Deed snaps; found ${deedSnaps.length}.`);
-    console.log(`Current TTS table-layout source check passed for ${release.version}: ${lines.length} high-contrast outline lines and ${snaps.length} functional snap points.`);
+    if (lines.length !== 40) throw new Error(`Expected 40 table-marking vector lines; found ${lines.length}.`);
+    if (snaps.some(point => Number(point.Position?.y) !== 0)) throw new Error('Global table snap points must remain on the y=0 plane.');
+    const territory = snaps.filter(point => point.Tags?.includes(TERRITORY_TAG));
+    const deeds = snaps.filter(point => point.Tags?.includes(DEED_TAG));
+    if (territory.length !== 8) throw new Error(`Expected 8 Territory snaps; found ${territory.length}.`);
+    if (deeds.length !== 16) throw new Error(`Expected 16 Deed snaps; found ${deeds.length}.`);
+    console.log(`Current TTS table-layout source check passed for ${release.version}: ${lines.length} outline lines and ${snaps.length} functional snaps.`);
     return;
   }
 
@@ -365,10 +415,10 @@ async function main() {
   }));
 
   const result = applyTableLayout(save);
-  const text = `${JSON.stringify(result.save, null, 2)}\n`;
+  const text = jsonText(result.save);
   await writeFile(versionedPath, text);
   await writeFile(join(CURRENT_ALIAS_ROOT, 'Gauntlet_TTS_Review_Scaffold.json'), text);
-  console.log(`Applied ${result.vectorLineCount} table-outline lines, ${result.snapPointCount} snap points, and ${result.textObjectCount} locked edge labels to ${relative(ROOT, versionedPath)}.`);
+  console.log(`Applied authoritative table layout to ${relative(ROOT, versionedPath)}: ${result.vectorLineCount} outline lines, ${result.snapPointCount} snaps, ${result.textObjectCount} labels, ${result.privateZoneCount} private zones.`);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
