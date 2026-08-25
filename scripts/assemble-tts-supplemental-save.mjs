@@ -63,9 +63,13 @@ function makeSupplementalCard(component, releaseAssets, guid) {
     component.tts.numHeight || 1,
   );
   const sideways = component.tts?.sidewaysCard === true;
+  // Landscape Deeds are normalized into ordinary portrait TTS image cells.
+  // SidewaysCard supplies the physical landscape footprint; the cumulative
+  // post-round-four tested tabletop rotation for the individual card is 0.
+  const tabletopRotation = component.family === 'deed-card' ? 0 : (sideways ? 90 : 0);
   return {
     Name: 'CardCustom',
-    Transform: transform(0, 1, 0, sideways ? 90 : 0),
+    Transform: transform(0, 1, 0, tabletopRotation),
     Nickname: component.name || component.id,
     Description: `${component.faction || 'Faction'} supplemental · ${component.family || 'component'}`,
     GMNotes: `${SUPPLEMENTAL_GUID_NOTE_PREFIX}${component.id}`,
@@ -78,7 +82,7 @@ function makeSupplementalCard(component, releaseAssets, guid) {
     Tooltip: true,
     GridProjection: false,
     HideWhenFaceDown: false,
-    Hands: false,
+    Hands: true,
     LuaScript: '',
     LuaScriptState: '',
     XmlUI: '',
@@ -143,7 +147,7 @@ function makeSupplementalObject(component, starter, releaseAssets, guid) {
   throw new Error(`Ready supplemental component ${component.id} uses unsupported save representation ${component.representation || 'missing'}.`);
 }
 
-function makeSupplementalStack(cards, { key, nickname, description, stackRotation = 0, tags = [] }, guid) {
+function makeSupplementalStack(cards, { key, nickname, description, stackRotation = 0, sidewaysCard = false, tags = [] }, guid) {
   if (!Array.isArray(cards) || cards.length < 2) throw new Error(`Supplemental stack ${key} needs at least two cards.`);
   const customDeck = {};
   for (const card of cards) {
@@ -165,13 +169,13 @@ function makeSupplementalStack(cards, { key, nickname, description, stackRotatio
     Tooltip: true,
     GridProjection: false,
     HideWhenFaceDown: false,
-    Hands: false,
+    Hands: true,
     LuaScript: '',
     LuaScriptState: '',
     XmlUI: '',
     GUID: guid(),
     DeckIDs: cards.map(card => Number(card.CardID)),
-    SidewaysCard: false,
+    SidewaysCard: sidewaysCard,
     ...(tags.length ? { Tags: [...tags] } : {}),
     CustomDeck: customDeck,
     ContainedObjects: cards,
@@ -184,7 +188,7 @@ const FAMILY_STACKS = Object.freeze([
     predicate: object => object?.Name === 'CardCustom' && /· proposal-treaty-card$/u.test(String(object.Description || '')),
   },
   {
-    key: 'deeds', nickname: 'Deeds', description: 'Financier Deed cards', expectedCount: 8, stackRotation: 90, tags: [DEED_STACK_TAG],
+    key: 'deeds', nickname: 'Deeds', description: 'Financier Deed cards', expectedCount: 8, stackRotation: 90, sidewaysCard: true, tags: [DEED_STACK_TAG],
     predicate: object => object?.Name === 'CardCustom' && /· deed-card$/u.test(String(object.Description || '')),
   },
   {
