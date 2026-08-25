@@ -40,14 +40,14 @@ npm run tts:finalized-supplementals
 npm run tts:release:stage
 npm run tts:save
 npm run tts:save:assemble
-npm run tts:save:finalize
+node tts/validate-v070-authoritative-save.mjs
 npm run tts:release:status
 npm run tts:release:strict
 npm run tts:package
 npm run tts:save:promote
 ```
 
-`tts:package` is the complete **Review Scaffold** build. It renders and assembles the package and writes a non-strict readiness report, but it deliberately does not promote the save to final Workshop identity.
+`tts:package` is the complete **Review Scaffold** build. It renders and assembles the package, validates the authoritative save contract, and writes a non-strict readiness report, but it deliberately does not promote the save to final Workshop identity.
 
 `tts:save:promote` is a separate guarded action. It is documented in `tts/SAVE-PUBLISHER.md` and requires clean machine readiness plus the versioned manual-QA gate.
 
@@ -111,7 +111,7 @@ Territories and Arenas use the current landscape production surface.
 - 560 × 400 pixels per Territory;
 - 7 × 4 sheet geometry;
 - deterministic Territory deck IDs beginning in their reserved range;
-- landscape presentation in the generated save; and
+- standard `CardCustom` scale with landscape presentation in the generated save; and
 - universal black hidden back in starter packages.
 
 There is no separate Territory-specific back asset.
@@ -165,7 +165,7 @@ The generated package currently includes six sliding trackers:
 - Intelligence Operation Progress; and
 - Inquisition Conviction.
 
-Tracker snap positions are derived from registration lines on the production component surface rather than maintained in a second faction-specific coordinate table. Their TTS objects are non-stackable and retain the declared cover/pointer relationship.
+Tracker snap positions are derived from registration lines on the production component surface rather than maintained in a second faction-specific coordinate table. `scripts/tts-supplemental-geometry.mjs` owns the single conversion from printed-card geometry to TTS `Custom_Tile` geometry, including the card-sized tile footprint, rounded-rectangle tile type, and local snap coordinates. The assembler writes that final geometry directly into each tracker object; no post-generation physical correction pass exists.
 
 The Intelligence trackers share a nested assembly while remaining independently draggable through separate layers/tags.
 
@@ -177,9 +177,7 @@ See `docs/tts-sliding-trackers.md` for the implementation contract.
 
 Assembly is idempotent. Generated supplemental objects carry a `gauntlet:supplemental:<component-id>` marker, so a rebuild removes prior generated supplementals before inserting the current set while leaving the base Deck, Leader, and Territories intact.
 
-The current package assembles 68 expected supplemental copies across the 12 starter Bags.
-
-`scripts/finalize-tts-save.mjs` then applies final object-presentation adjustments, including the sideways orientation for landscape supplemental cards.
+The current package assembles 68 expected supplemental copies across the 12 starter Bags. Landscape supplemental cards are created at standard `CardCustom` scale and final landscape orientation. Sliding trackers are created at their final `Custom_Tile` geometry and snap registration from the shared geometry contract.
 
 ## Review Scaffold contract
 
@@ -191,9 +189,9 @@ The current package assembles 68 expected supplemental copies across the 12 star
 - one Player Token per player; and
 - one selectable starter Bag for every current starter.
 
-The base scaffold is assembled with faction supplementals and finalized before readiness reporting.
+The base scaffold receives the authoritative table layout, is assembled with faction supplementals, and is then validated by `tts/validate-v070-authoritative-save.mjs`. Validation is fail-closed: it checks the generated save as written and does not repair object geometry.
 
-Behavioral tests construct the returned save JSON and verify the core table structure, starter core contents, landscape Territory presentation, and HTTPS custom-object URLs. Actual TTS usability still requires in-game QA.
+Behavioral tests construct the returned save JSON and verify the core table structure, starter core contents, landscape Territory presentation, supplemental packaging, tracker geometry, and HTTPS custom-object URLs. Actual TTS usability still requires in-game QA.
 
 ## Machine readiness
 
