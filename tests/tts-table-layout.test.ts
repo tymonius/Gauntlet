@@ -7,7 +7,7 @@ import {
 } from '../tts/apply-table-layout.mjs';
 
 describe('TTS table layout', () => {
-  it('marks the canonical player zones without inventing battle or Front Line zones', () => {
+  it('marks the current player workspaces without inventing battle or Front Line zones', () => {
     const text = buildTableTextObjects([]);
     const labels = text.map(object => object.Text.Text);
 
@@ -18,20 +18,22 @@ describe('TTS table layout', () => {
       'Graveyard',
       'Hand',
       'Asset Bank',
-      'Treasury',
+      'Faction Zone',
     ]) {
-      expect(labels.filter(value => value === label)).toHaveLength(2);
+      // Each side gets a visible label plus a shadow object for map contrast.
+      expect(labels.filter(value => value === label)).toHaveLength(4);
     }
+    expect(labels).not.toContain('Treasury');
     expect(labels).not.toContain('Battle');
     expect(labels).not.toContain('Front Line');
-    expect(text.filter(object => object.Transform.rotY === 0)).toHaveLength(7);
-    expect(text.filter(object => object.Transform.rotY === 180)).toHaveLength(7);
+    expect(text.filter(object => object.Transform.rotY === 0)).toHaveLength(14);
+    expect(text.filter(object => object.Transform.rotY === 180)).toHaveLength(14);
   });
 
-  it('supports six normal Territories plus two Manifest Destiny extensions and unmarked Deed snaps', () => {
+  it('supports six normal Territories plus two Manifest Destiny extensions and unmarked tagged Deed snaps', () => {
     const snaps = buildTableSnapPoints();
-    const territory = snaps.filter(point => point.Position.x === 0);
-    const deeds = snaps.filter(point => Math.abs(point.Position.x) === 4.1);
+    const territory = snaps.filter(point => point.Tags?.includes('gauntlet-territory'));
+    const deeds = snaps.filter(point => point.Tags?.includes('gauntlet-deed'));
 
     expect(territory.map(point => point.Position.z)).toEqual([
       -10.5, -7.5, -4.5, -1.5, 1.5, 4.5, 7.5, 10.5,
@@ -41,23 +43,25 @@ describe('TTS table layout', () => {
     for (const z of territory.map(point => point.Position.z)) {
       expect(deeds.filter(point => point.Position.z === z)).toHaveLength(2);
     }
-    expect(snaps).toHaveLength(30);
+    expect(snaps).toHaveLength(86);
   });
 
-  it('draws only the six primary Gauntlet slots strongly and keeps the two extension slots secondary', () => {
+  it('draws outlined player zones and all eight intermediate Gauntlet slot guides', () => {
     const lines = buildTableVectorLines();
-    expect(lines).toHaveLength(22);
+    expect(lines).toHaveLength(44);
 
     const territoryLines = lines.filter(line => {
       const xs = line.points3.map(point => point.x);
       return Math.min(...xs) === -1.9 && Math.max(...xs) === 1.9;
     });
-    expect(territoryLines).toHaveLength(8);
-    expect(territoryLines.filter(line => line.thickness === 0.065)).toHaveLength(6);
-    expect(territoryLines.filter(line => line.thickness === 0.04)).toHaveLength(2);
+    expect(territoryLines).toHaveLength(16);
+    expect(territoryLines.filter(line => line.thickness === 0.105)).toHaveLength(6);
+    expect(territoryLines.filter(line => line.thickness === 0.048)).toHaveLength(6);
+    expect(territoryLines.filter(line => line.thickness === 0.075)).toHaveLength(2);
+    expect(territoryLines.filter(line => line.thickness === 0.032)).toHaveLength(2);
   });
 
-  it('repositions the initial pawns away from the extension Territory snaps', () => {
+  it('applies the complete intermediate map layout before the later QA interaction pass', () => {
     const save = {
       ObjectStates: [
         { Name: 'Die_6', Nickname: 'Red Battle Die', Transform: { posX: -4.5, posZ: -12.5, rotY: 0 }, GUID: '000001' },
@@ -70,14 +74,14 @@ describe('TTS table layout', () => {
     };
 
     const result = applyTableLayout(save);
-    expect(result.textObjectCount).toBe(14);
-    expect(result.vectorLineCount).toBe(22);
-    expect(result.snapPointCount).toBe(30);
+    expect(result.textObjectCount).toBe(28);
+    expect(result.vectorLineCount).toBe(44);
+    expect(result.snapPointCount).toBe(86);
 
     const redPawn = save.ObjectStates.find(object => object.Nickname === 'Red Player Token');
     const bluePawn = save.ObjectStates.find(object => object.Nickname === 'Blue Player Token');
-    expect([redPawn?.Transform.posX, redPawn?.Transform.posZ]).toEqual([-5, -10.4]);
-    expect([bluePawn?.Transform.posX, bluePawn?.Transform.posZ]).toEqual([5, 10.4]);
-    expect(save.Note).toContain('hidden TTS hand zone remains the private Reserve area');
+    expect([redPawn?.Transform.posX, redPawn?.Transform.posZ]).toEqual([-17.4, -10]);
+    expect([bluePawn?.Transform.posX, bluePawn?.Transform.posZ]).toEqual([17.4, 10]);
+    expect(save.Note).toContain('flexible twelve-snap Faction Zone');
   });
 });
