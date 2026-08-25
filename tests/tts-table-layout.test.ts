@@ -37,7 +37,7 @@ describe('authoritative TTS table layout', () => {
     expect(redGraveyardLabel?.Transform.posX).toBe(17.15);
   });
 
-  it('keeps six visible Gauntlet slots plus two invisible Manifest Destiny extensions and sixteen recovered Deed snaps', () => {
+  it('keeps six visible Gauntlet slots plus two invisible Manifest Destiny extensions and sixteen landscape Deed snaps', () => {
     const snaps = buildTableSnapPoints();
     const territory = snaps.filter(point => point.Tags?.includes('gauntlet-territory'));
     const deeds = snaps.filter(point => point.Tags?.includes('gauntlet-deed'));
@@ -48,7 +48,7 @@ describe('authoritative TTS table layout', () => {
     expect(territory.every(point => point.Rotation.y === 90)).toBe(true);
     expect(deeds).toHaveLength(16);
     expect(deeds.every(point => Math.abs(point.Position.x) === 4.35)).toBe(true);
-    expect(deeds.every(point => point.Rotation.y === 0)).toBe(true);
+    expect(deeds.every(point => point.Rotation.y === 90)).toBe(true);
     expect(snaps).toHaveLength(80);
   });
 
@@ -69,7 +69,6 @@ describe('authoritative TTS table layout', () => {
     expect(redDeedStack?.Rotation.y).toBe(270);
     expect(blueDeedStack?.Rotation.y).toBe(90);
 
-    // Untagged pile/parking points from the recovered layout.
     const redDraw = snaps.find(point => point.Position.x === -1.55 && point.Position.z === -13.55);
     const redDiscard = snaps.find(point => point.Position.x === 1.55 && point.Position.z === -13.55);
     const redHandParking = snaps.find(point => point.Position.x === 0 && point.Position.z === -18.25);
@@ -96,7 +95,7 @@ describe('authoritative TTS table layout', () => {
     expect(territoryLines.filter(line => line.thickness === 0.048)).toHaveLength(6);
   });
 
-  it('owns the environment, recovered seat orientation, and broad real hand zones without visible trigger volumes', () => {
+  it('owns the environment, seat orientation, and two broad real player HandTrigger zones without Fog of War volumes', () => {
     const save: any = {
       ObjectStates: [
         { Name: 'HandTrigger', GUID: 'legacy-hand' },
@@ -128,11 +127,18 @@ describe('authoritative TTS table layout', () => {
 
     const red = save.Hands.HandTransforms.find((hand: any) => hand.Color === 'Red');
     const blue = save.Hands.HandTransforms.find((hand: any) => hand.Color === 'Blue');
+    expect(save.Hands.DisableUnused).toBe(false);
     expect(red.Transform).toMatchObject({ posZ: -23, rotY: 180, scaleX: 34, scaleY: 2, scaleZ: 5.5 });
     expect(blue.Transform).toMatchObject({ posZ: 23, rotY: 0, scaleX: 34, scaleY: 2, scaleZ: 5.5 });
-    expect(save.ObjectStates.filter((object: any) => object.Name === 'HandTrigger')).toHaveLength(0);
+
+    const handTriggers = save.ObjectStates.filter((object: any) => object.Name === 'HandTrigger');
+    expect(handTriggers).toHaveLength(2);
+    expect(handTriggers.find((object: any) => object.Nickname === 'Red Hand')?.Transform).toEqual(red.Transform);
+    expect(handTriggers.find((object: any) => object.Nickname === 'Blue Hand')?.Transform).toEqual(blue.Transform);
+    expect(handTriggers.find((object: any) => object.Nickname === 'Red Hand')?.ColorDiffuse).toMatchObject({ r: 0.856, g: 0.1, b: 0.094 });
+    expect(handTriggers.find((object: any) => object.Nickname === 'Blue Hand')?.ColorDiffuse).toMatchObject({ r: 0.118, g: 0.53, b: 1 });
     expect(save.ObjectStates.filter((object: any) => object.Name === 'FogOfWarTrigger')).toHaveLength(0);
-    expect(save.Note).toContain('normal TTS hand privacy');
+    expect(save.Note).toContain('actual Red/Blue TTS Hand Zones');
     expect(save.LuaScript).toContain('function gauntletSeatCamera(color)');
     expect(save.LuaScript).toContain('pitch = 55, yaw = 0, distance = 38');
     expect(save.LuaScript).toContain('pitch = 55, yaw = 180, distance = 38');
