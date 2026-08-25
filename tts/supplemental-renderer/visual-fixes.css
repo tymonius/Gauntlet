@@ -96,8 +96,10 @@
   background-image: var(--reference-parchment-image) !important;
 }
 
+/* The neutral emblem is the approved stylized G, not the full Gauntlet
+   wordmark. Keep this absolute for the standalone TTS screenshot renderer. */
 .reference-card[data-component-id="universal-reference"] .reference-faction-emblem,
 .reference-card[data-component-id="universal-reference"] .reference-watermark {
-  -webkit-mask-image: url("/images/Gauntlet.svg") !important;
-  mask-image: url("/images/Gauntlet.svg") !important;
+  -webkit-mask-image: url("/images/Gauntlet-G.svg") !important;
+  mask-image: url("/images/Gauntlet-G.svg") !important;
 }
