@@ -57,6 +57,34 @@ function trackerComponents(supplementalManifest) {
     .map(component => [component.id, component]));
 }
 
+function trackerSnapLua(component) {
+  const tag = String(component.tts?.snapTag || '').trim();
+  const points = component.tts?.snapPoints;
+  if (!tag || !Array.isArray(points) || points.length < 2) {
+    throw new Error(`Sliding tracker ${component.id} cannot register TTS snap points without a snap tag and at least two renderer-derived positions.`);
+  }
+
+  const definitions = points.map((point) => {
+    const offset = Number(point.offset);
+    if (!Number.isFinite(offset) || offset < 0) {
+      throw new Error(`Sliding tracker ${component.id} has invalid snap offset ${point.offset}.`);
+    }
+    return `    { position = {0, 0.12, ${offset}}, rotation = {0, 0, 0}, rotation_snap = true, tags = {${JSON.stringify(tag)}} }`;
+  });
+
+  return [
+    'function onLoad()',
+    '  -- Re-register every renderer-derived value position through the live TTS',
+    '  -- API. Some clients do not reliably activate all serialized attached',
+    '  -- snap points on a spawned Custom_Tile, while setSnapPoints() does.',
+    '  self.setSnapPoints({',
+    definitions.join(',\n'),
+    '  })',
+    'end',
+    '',
+  ].join('\n');
+}
+
 function normalizeTrackerTilePresentation(object, trackers) {
   const notes = String(object?.GMNotes || '');
   if (!notes.startsWith(SUPPLEMENTAL_GUID_NOTE_PREFIX)) return false;
@@ -89,6 +117,12 @@ function normalizeTrackerTilePresentation(object, trackers) {
   object.Transform.scaleX = TRACKER_TABLETOP_SCALE;
   object.Transform.scaleY = 1;
   object.Transform.scaleZ = TRACKER_TABLETOP_SCALE;
+
+  // Keep the serialized attached points for save-file inspection, but also
+  // register the same positions at runtime. This makes every printed tracker
+  // value an active rotation snap for the tagged Leader/reference cover.
+  object.LuaScript = trackerSnapLua(component);
+  object.LuaScriptState = '';
   return true;
 }
 
