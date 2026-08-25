@@ -137,12 +137,29 @@ jobs:
           root = pathlib.Path('/tmp/qa-publish')
           old = os.environ['FINAL_URL_PREFIX']
           new = os.environ['QA_URL_PREFIX']
+          revision = os.environ['SOURCE_SHA'][:12]
+
+          def rewrite(value):
+              if isinstance(value, dict):
+                  return {key: rewrite(item) for key, item in value.items()}
+              if isinstance(value, list):
+                  return [rewrite(item) for item in value]
+              if not isinstance(value, str):
+                  return value
+              rewritten = value.replace(old, new)
+              if rewritten.startswith(new):
+                  separator = '&' if '?' in rewritten else '?'
+                  rewritten = f'{rewritten}{separator}qa={revision}'
+              return rewritten
+
           for name in ['Gauntlet_v0.7.0_TTS_QA_Scaffold.json', 'Gauntlet_v0.7.0_TTS_Release_Assets.json']:
               p = root / name
-              text = p.read_text(encoding='utf-8')
-              if old not in text:
+              source = p.read_text(encoding='utf-8')
+              if old not in source:
                   raise SystemExit(f'Expected final URL prefix not found in {name}')
-              p.write_text(text.replace(old, new), encoding='utf-8')
+              data = rewrite(json.loads(source))
+              p.write_text(json.dumps(data, indent=2) + '\n', encoding='utf-8')
+
           manifest = json.loads((root / 'Gauntlet_v0.7.0_TTS_Release_Assets.json').read_text())
           manifest['releasePage'] = None
           manifest['publication'] = {
@@ -151,6 +168,7 @@ jobs:
               'sourceCommit': os.environ['SOURCE_SHA'],
               'sourceWorkflowRun': int(os.environ['SOURCE_RUN_ID']),
               'sourceArtifactId': int(os.environ['SOURCE_ARTIFACT_ID']),
+              'cacheRevision': revision,
               'purpose': 'Temporary clean-client Tabletop Simulator QA only; not a published Gauntlet release.'
           }
           (root / 'Gauntlet_v0.7.0_TTS_Release_Assets.json').write_text(json.dumps(manifest, indent=2) + '\n')
@@ -162,8 +180,8 @@ jobs:
 
           - This branch is **not** a Gauntlet release.
           - It exists only so Tabletop Simulator can perform clean-client manual QA before v0.7.0 publication.
-          - The QA scaffold rewrites only the network host prefix; deterministic asset filenames are unchanged.
-          - After QA approval, the final release pipeline will upload those filenames to the v0.7.0 GitHub Release.
+          - The QA scaffold rewrites the network host prefix and appends the source commit as a cache key so TTS cannot silently reuse an older rendered asset at the same deterministic filename.
+          - After QA approval, the final release pipeline will upload those deterministic filenames to the v0.7.0 GitHub Release.
           EOF
 
       - name: Publish isolated QA branch
