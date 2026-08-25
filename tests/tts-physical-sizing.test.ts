@@ -109,6 +109,7 @@ describe('TTS physical card sizing', () => {
     expect(tracker.Transform.scaleX).toBe(TRACKER_TABLETOP_SCALE);
     expect(tracker.Transform.scaleY).toBe(1);
     expect(tracker.Transform.scaleZ).toBe(TRACKER_TABLETOP_SCALE);
-    expect(tracker.AttachedSnapPoints).toHaveLength(2);
+    expect(tracker.LuaScript).toContain('self.setSnapPoints({');
+    expect(tracker.LuaScript).toContain('gauntlet-tracker-influence');
   });
 });
