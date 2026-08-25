@@ -57,9 +57,12 @@ describe('authoritative TTS table layout', () => {
     expect(territoryLines.filter(line => line.thickness === 0.048)).toHaveLength(6);
   });
 
-  it('owns the environment, seats, hands, and player-side private zones without duplicate HandTrigger objects', () => {
+  it('owns the environment, seats, and actual hand zones without duplicate trigger volumes', () => {
     const save: any = {
-      ObjectStates: [],
+      ObjectStates: [
+        { Name: 'HandTrigger', GUID: 'legacy-hand' },
+        { Name: 'FogOfWarTrigger', GMNotes: 'gauntlet:private-zone:red', GUID: 'legacy-fog' },
+      ],
       Note: 'base note',
       Rules: 'base rules',
       Turns: { TurnColor: 'Blue' },
@@ -69,7 +72,6 @@ describe('authoritative TTS table layout', () => {
     expect(result.textObjectCount).toBe(28);
     expect(result.vectorLineCount).toBe(40);
     expect(result.snapPointCount).toBe(80);
-    expect(result.privateZoneCount).toBe(2);
 
     expect(save.Table).toBe('Table_Custom');
     expect(save.TableURL).toContain('campaign-map-table');
@@ -83,11 +85,7 @@ describe('authoritative TTS table layout', () => {
     expect(blue.Transform.posZ).toBeGreaterThan(0);
     expect(blue.Transform.rotY).toBe(180);
     expect(save.ObjectStates.filter((object: any) => object.Name === 'HandTrigger')).toHaveLength(0);
-
-    const privateZones = save.ObjectStates.filter((object: any) => object.Name === 'FogOfWarTrigger');
-    expect(privateZones).toHaveLength(2);
-    expect(privateZones.map((zone: any) => zone.FogColor).sort()).toEqual(['Blue', 'Red']);
-    expect(privateZones.every((zone: any) => zone.FogReverseHiding === false)).toBe(true);
-    expect(privateZones.every((zone: any) => zone.FogSeethrough === true)).toBe(true);
+    expect(save.ObjectStates.filter((object: any) => object.Name === 'FogOfWarTrigger')).toHaveLength(0);
+    expect(save.Note).toContain('normal TTS hand privacy');
   });
 });
