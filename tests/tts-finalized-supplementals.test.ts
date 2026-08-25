@@ -1,21 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { buildFinalizedExportPlan } from '../scripts/generate-tts-finalized-supplementals.mjs';
-import { finalizeSupplementalObjectPresentation } from '../scripts/finalize-tts-save.mjs';
-
-function defaultTransform() {
-  return {
-    posX: 0,
-    posY: 1,
-    posZ: 0,
-    rotX: 0,
-    rotY: 0,
-    rotZ: 0,
-    scaleX: 1,
-    scaleY: 1,
-    scaleZ: 1,
-  };
-}
 
 describe('finalized TTS supplemental exports', () => {
   it('covers all final export-pending Proposal, Ledger, and Deed components from current authority', async () => {
@@ -62,58 +47,29 @@ describe('finalized TTS supplemental exports', () => {
     expect(generator).toContain("wrapper.id = 'tts-portrait-card-cell'");
     expect(generator).toContain("width: '240px'");
     expect(generator).toContain("height: '336px'");
-    expect(generator).toContain("rotate(-90deg)");
+    expect(generator).toContain('rotate(-90deg)');
     expect(generator).toContain("cellOrientation: 'portrait'");
     expect(generator).toContain("sidewaysCard: item.orientation === 'landscape'");
   });
 
-  it('orients landscape supplemental cards generically from manifest metadata', () => {
-    const save = {
-      ObjectStates: [
-        {
-          Name: 'Bag',
-          ContainedObjects: [
-            {
-              Name: 'CardCustom',
-              GMNotes: 'gauntlet:supplemental:financiers-deed',
-              SidewaysCard: false,
-              Transform: defaultTransform(),
-            },
-            {
-              Name: 'CardCustom',
-              GMNotes: 'gauntlet:supplemental:financiers-deed',
-              SidewaysCard: false,
-              Transform: defaultTransform(),
-            },
-          ],
-        },
-      ],
-    };
-    const manifest = {
-      ready: [
-        {
-          id: 'financiers-deed',
-          quantity: 2,
-          representation: 'card',
-          tts: { sidewaysCard: true },
-        },
-      ],
-    };
-
-    const result = finalizeSupplementalObjectPresentation(save, manifest);
-    expect(result.sidewaysCount).toBe(2);
-    expect(save.ObjectStates[0].ContainedObjects.every(object => object.SidewaysCard === true)).toBe(true);
-    expect(save.ObjectStates[0].ContainedObjects.every(object => object.Transform.rotY === 90)).toBe(true);
+  it('assembles landscape supplementals directly at final CardCustom orientation', () => {
+    const assembler = readFileSync('scripts/assemble-tts-supplemental-save.mjs', 'utf8');
+    expect(assembler).toContain('const sideways = component.tts?.sidewaysCard === true');
+    expect(assembler).toContain('Transform: transform(0, 1, 0, sideways ? 90 : 0)');
+    expect(assembler).toContain('SidewaysCard: sideways');
+    expect(assembler).not.toContain('finalizeSupplementalObjectPresentation');
   });
 
-  it('wires finalized exports into checks, packaging, and TTS CI', () => {
+  it('wires finalized exports into generation followed by authoritative save validation', () => {
     const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
     const workflow = readFileSync('.github/workflows/generate-tts-card-assets.yml', 'utf8');
 
     expect(packageJson.scripts['tts:finalized-supplementals:check']).toContain('--check');
     expect(packageJson.scripts['tts:package']).toContain('tts:finalized-supplementals');
-    expect(packageJson.scripts['tts:package']).toContain('tts:save:finalize');
+    expect(packageJson.scripts['tts:package']).toContain('validate-v070-authoritative-save.mjs');
+    expect(packageJson.scripts['tts:save:finalize']).toBeUndefined();
     expect(workflow).toContain('Generate finalized Proposal, Ledger, and Deed components');
-    expect(workflow).toContain('Finalize supplemental object presentation');
+    expect(workflow).toContain('Validate authoritative v0.7.0 save contract');
+    expect(workflow).not.toContain('Finaliz');
   });
 });
