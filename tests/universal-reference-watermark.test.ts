@@ -2,16 +2,15 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const universalStyles = readFileSync('card-design/universal-reference.css', 'utf8');
-const gAsset = readFileSync('images/Gauntlet-G.svg', 'utf8');
 
 describe('Universal Reference neutral emblem', () => {
-  it('uses a dedicated stylized G asset rather than relying on CSS clipping of the full wordmark', () => {
+  it('crops the stylized G directly from the self-contained canonical wordmark', () => {
     expect(universalStyles).toContain('.reference-card[data-component-id="universal-reference"] .reference-faction-emblem {');
-    expect(universalStyles).toContain('-webkit-mask-image: url("../images/Gauntlet-G.svg")');
-    expect(universalStyles).toContain('mask-image: url("../images/Gauntlet-G.svg")');
-    expect(universalStyles).not.toContain('mask-image: url("../images/Gauntlet.svg")');
-    expect(gAsset).toContain('viewBox="0 0 430 493.58"');
-    expect(gAsset).toContain('href="Gauntlet.svg"');
+    expect(universalStyles).toContain('-webkit-mask-image: url("../images/Gauntlet.svg")');
+    expect(universalStyles).toContain('mask-image: url("../images/Gauntlet.svg")');
+    expect(universalStyles).toContain('-webkit-mask-position: left center');
+    expect(universalStyles).toContain('-webkit-mask-size: auto 100%');
+    expect(universalStyles).not.toContain('mask-image: url("../images/Gauntlet-G.svg")');
   });
 
   it('keeps the approved neutral ivory border treatment', () => {
