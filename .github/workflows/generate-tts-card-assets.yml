@@ -34,6 +34,7 @@ on:
       - 'artifacts/reconstruction/**/rulebook/**'
       - 'artifacts/reconstruction/**/faction-guides/**'
       - 'images/Gauntlet.svg'
+      - 'images/Gauntlet-G.svg'
       - 'images/faction-symbols/**'
       - 'images/artwork/manifest.json'
       - 'images/artwork/cards/**'
@@ -117,6 +118,7 @@ jobs:
             releases
             artifacts/reconstruction
             images/Gauntlet.svg
+            images/Gauntlet-G.svg
             images/faction-symbols
             images/artwork/manifest.json
             images/artwork/cards
@@ -180,20 +182,14 @@ jobs:
         run: node tts/render-current-mystics-assets.mjs
       - name: Stage hosted TTS release assets
         run: npm run tts:release:stage
-      - name: Generate TTS review scaffold
+      - name: Generate authoritative TTS review scaffold
         run: npm run tts:save
-      - name: Assemble ready supplemental components into review scaffold
+      - name: Assemble supplemental starter-kit contents
         run: npm run tts:save:assemble
-      - name: Finalize supplemental object presentation
+      - name: Finalize card and tracker physical presentation
         run: npm run tts:save:finalize
-      - name: Apply v0.7.0 TTS QA corrections
-        run: node tts/apply-v070-qa-corrections.mjs
-      - name: Apply table interaction corrections
-        run: node tts/apply-v070-table-interaction-corrections.mjs
-      - name: Apply QA round-three corrections
-        run: node tts/apply-v070-qa-round3.mjs
-      - name: Validate QA round-three save
-        run: node tts/validate-v070-qa-round3-save.mjs
+      - name: Validate authoritative v0.7.0 save contract
+        run: node tts/validate-v070-authoritative-save.mjs
       - name: Report TTS release readiness
         run: npm run tts:release:status
       - uses: actions/upload-artifact@v4
