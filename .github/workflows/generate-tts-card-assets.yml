@@ -68,6 +68,7 @@ on:
         type: boolean
 
 permissions:
+  actions: read
   contents: read
 
 concurrency:
@@ -138,9 +139,155 @@ jobs:
             images/spirit walker.png
             images/grand inquisitor.png
             images/witch hunter.png
+
+      - name: Determine incremental TTS build scope
+        id: scope
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          SOURCE_BRANCH: ${{ github.head_ref || github.ref_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          seed_run_id=""
+          seed_artifact_id=""
+          seed_sha=""
+          render_cards=false
+          render_territories=false
+          render_leaders=false
+          render_starters=false
+          render_supplementals=false
+          render_finalized=false
+          render_mystics=false
+          stage_assets=false
+          full_render=false
+
+          if [[ "${GITHUB_EVENT_NAME}" != "pull_request" ]]; then
+            full_render=true
+          else
+            runs_json="$(gh api "/repos/${GITHUB_REPOSITORY}/actions/workflows/generate-tts-card-assets.yml/runs?event=pull_request&branch=${SOURCE_BRANCH}&per_page=100")"
+            seed_run_id="$(jq -r --arg sha "$SOURCE_SHA" '[.workflow_runs[] | select(.head_sha != $sha and .conclusion == "success")] | sort_by(.run_number) | last | .id // empty' <<<"$runs_json")"
+
+            if [[ -n "$seed_run_id" ]]; then
+              seed_run_json="$(gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${seed_run_id}")"
+              seed_sha="$(jq -r '.head_sha' <<<"$seed_run_json")"
+              artifacts_json="$(gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${seed_run_id}/artifacts?per_page=100")"
+              seed_artifact_id="$(jq -r '.artifacts[] | select(.name == "gauntlet-current-tts-card-assets" and .expired == false) | .id' <<<"$artifacts_json" | head -n1)"
+            fi
+
+            if [[ -z "$seed_artifact_id" || -z "$seed_sha" ]]; then
+              echo "No reusable prior TTS artifact exists; running a full render."
+              full_render=true
+            else
+              compare_json="$(gh api "/repos/${GITHUB_REPOSITORY}/compare/${seed_sha}...${SOURCE_SHA}")"
+              compare_status="$(jq -r '.status' <<<"$compare_json")"
+              if [[ "$compare_status" != "ahead" && "$compare_status" != "identical" ]]; then
+                echo "Prior successful TTS head ${seed_sha} is not an ancestor-compatible seed (${compare_status}); running a full render."
+                full_render=true
+              else
+                mapfile -t changed_files < <(jq -r '.files[].filename' <<<"$compare_json")
+                echo "Incremental TTS scope since successful head ${seed_sha}:"
+                printf '  %s\n' "${changed_files[@]:-<none>}"
+
+                for file in "${changed_files[@]}"; do
+                  case "$file" in
+                    .github/workflows/generate-tts-card-assets.yml|scripts/generate-tts-save.mjs|scripts/assemble-tts-supplemental-save.mjs|scripts/tts-supplemental-geometry.mjs|tts/apply-table-layout.mjs|tts/validate-v070-authoritative-save.mjs)
+                      ;;
+                    scripts/generate-tts-finalized-supplementals.mjs|tts/finalized-supplemental-renderer/*)
+                      render_finalized=true
+                      ;;
+                    scripts/generate-tts-supplemental-assets.mjs|scripts/tts-sliding-trackers.mjs|tts/supplemental-renderer/*|images/Gauntlet-G.svg|images/artwork/supplemental/*)
+                      render_supplementals=true
+                      ;;
+                    tts/render-current-mystics-assets.mjs)
+                      render_mystics=true
+                      ;;
+                    scripts/generate-tts-card-assets.mjs|images/artwork/cards/*)
+                      render_cards=true
+                      ;;
+                    scripts/generate-tts-territory-assets.mjs|images/artwork/territories/*)
+                      render_territories=true
+                      ;;
+                    scripts/generate-tts-leader-assets.mjs|images/general.png|images/commandant.png|images/ambassador.png|images/senator.png|images/banker.png|images/executive.png|images/ranger.png|images/spymaster.png|images/alchemist.png|images/spirit\ walker.png|images/grand\ inquisitor.png|images/witch\ hunter.png)
+                      render_leaders=true
+                      ;;
+                    scripts/generate-tts-starter-decks.mjs|deckbuilder/starter-decks.json)
+                      render_starters=true
+                      ;;
+                    scripts/stage-tts-release-assets.mjs|config/tts-release-target.json|config/release-lifecycle.json|config/github-release-contract.json)
+                      stage_assets=true
+                      ;;
+                    scripts/check-tts-release-readiness.mjs|scripts/promote-tts-save.mjs)
+                      ;;
+                    *)
+                      # Broad game/card/component changes can fan out across multiple renderers.
+                      full_render=true
+                      ;;
+                  esac
+                done
+              fi
+            fi
+          fi
+
+          if [[ "$full_render" == "true" ]]; then
+            render_cards=true
+            render_territories=true
+            render_leaders=true
+            render_starters=true
+            render_supplementals=true
+            render_finalized=true
+            render_mystics=true
+            stage_assets=true
+            seed_artifact_id=""
+          else
+            if [[ "$render_cards" == "true" || "$render_territories" == "true" || "$render_leaders" == "true" ]]; then
+              render_starters=true
+            fi
+            if [[ "$render_cards" == "true" || "$render_territories" == "true" || "$render_leaders" == "true" || "$render_starters" == "true" || "$render_supplementals" == "true" || "$render_finalized" == "true" || "$render_mystics" == "true" ]]; then
+              stage_assets=true
+            fi
+          fi
+
+          if [[ "$render_cards" == "true" || "$render_territories" == "true" || "$render_leaders" == "true" || "$render_supplementals" == "true" || "$render_finalized" == "true" || "$render_mystics" == "true" ]]; then
+            any_render=true
+          else
+            any_render=false
+          fi
+
+          echo "seed_run_id=$seed_run_id" >> "$GITHUB_OUTPUT"
+          echo "seed_artifact_id=$seed_artifact_id" >> "$GITHUB_OUTPUT"
+          echo "seed_sha=$seed_sha" >> "$GITHUB_OUTPUT"
+          echo "render_cards=$render_cards" >> "$GITHUB_OUTPUT"
+          echo "render_territories=$render_territories" >> "$GITHUB_OUTPUT"
+          echo "render_leaders=$render_leaders" >> "$GITHUB_OUTPUT"
+          echo "render_starters=$render_starters" >> "$GITHUB_OUTPUT"
+          echo "render_supplementals=$render_supplementals" >> "$GITHUB_OUTPUT"
+          echo "render_finalized=$render_finalized" >> "$GITHUB_OUTPUT"
+          echo "render_mystics=$render_mystics" >> "$GITHUB_OUTPUT"
+          echo "stage_assets=$stage_assets" >> "$GITHUB_OUTPUT"
+          echo "any_render=$any_render" >> "$GITHUB_OUTPUT"
+          echo "full_render=$full_render" >> "$GITHUB_OUTPUT"
+
+          echo "TTS build scope: full=${full_render}, cards=${render_cards}, territories=${render_territories}, leaders=${render_leaders}, starters=${render_starters}, supplementals=${render_supplementals}, finalized=${render_finalized}, mystics=${render_mystics}, stage=${stage_assets}."
+
+      - name: Seed unchanged generated TTS outputs
+        if: steps.scope.outputs.seed_artifact_id != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SEED_ARTIFACT_ID: ${{ steps.scope.outputs.seed_artifact_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Reusing unchanged TTS outputs from artifact ${SEED_ARTIFACT_ID} / head ${{ steps.scope.outputs.seed_sha }}."
+          gh api "/repos/${GITHUB_REPOSITORY}/actions/artifacts/${SEED_ARTIFACT_ID}/zip" > /tmp/tts-seed.zip
+          mkdir -p tts/generated
+          unzip -q /tmp/tts-seed.zip -d tts/generated
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+
       - name: Restore npm cache
         uses: actions/cache@v4
         with:
@@ -148,48 +295,76 @@ jobs:
           key: ${{ runner.os }}-npm-${{ hashFiles('package.json') }}
           restore-keys: |
             ${{ runner.os }}-npm-
+
       - name: Install Node dependencies
         run: npm install --no-audit --no-fund
+
       - name: Resolve Playwright version
+        if: steps.scope.outputs.any_render == 'true'
         id: playwright-version
         shell: bash
         run: |
           echo "version=$(node -p "require('playwright/package.json').version")" >> "$GITHUB_OUTPUT"
+
       - name: Restore Playwright Chromium cache
+        if: steps.scope.outputs.any_render == 'true'
         id: playwright-cache
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
+
       - name: Install Playwright Chromium
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        if: steps.scope.outputs.any_render == 'true' && steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install chromium
+
       - name: Validate current TTS sources
         run: npm run tts:check
+
       - name: Generate playable card sheets and production backs
+        if: steps.scope.outputs.render_cards == 'true'
         run: npm run tts:cards -- ${{ github.event_name == 'workflow_dispatch' && inputs.strict_artwork && '--strict-art' || '' }}
+
       - name: Generate Territory sheets
+        if: steps.scope.outputs.render_territories == 'true'
         run: npm run tts:territories
+
       - name: Generate Leader cards
+        if: steps.scope.outputs.render_leaders == 'true'
         run: npm run tts:leaders
+
       - name: Assemble current starter decks
+        if: steps.scope.outputs.render_starters == 'true'
         run: npm run tts:starters
+
       - name: Generate ready supplemental components
+        if: steps.scope.outputs.render_supplementals == 'true'
         run: npm run tts:supplementals
+
       - name: Generate finalized Proposal, Ledger, and Deed components
+        if: steps.scope.outputs.render_finalized == 'true'
         run: npm run tts:finalized-supplementals
+
       - name: Refresh current Mystics Rite and Ritual components
+        if: steps.scope.outputs.render_mystics == 'true'
         run: node tts/render-current-mystics-assets.mjs
+
       - name: Stage hosted TTS release assets
+        if: steps.scope.outputs.stage_assets == 'true'
         run: npm run tts:release:stage
+
       - name: Generate authoritative TTS review scaffold
         run: npm run tts:save
+
       - name: Assemble supplemental starter-kit contents
         run: npm run tts:save:assemble
+
       - name: Validate authoritative v0.7.0 save contract
         run: node tts/validate-v070-authoritative-save.mjs
+
       - name: Report TTS release readiness
         run: npm run tts:release:status
+
       - uses: actions/upload-artifact@v4
         with:
           name: gauntlet-current-tts-card-assets
