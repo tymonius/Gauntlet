@@ -188,6 +188,8 @@ jobs:
         run: npm run tts:save:finalize
       - name: Apply v0.7.0 TTS QA corrections
         run: node tts/apply-v070-qa-corrections.mjs
+      - name: Apply table interaction corrections
+        run: node tts/apply-v070-table-interaction-corrections.mjs
       - name: Report TTS release readiness
         run: npm run tts:release:status
       - uses: actions/upload-artifact@v4
