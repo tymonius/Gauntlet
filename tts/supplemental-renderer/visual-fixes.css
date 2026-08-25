@@ -1,0 +1,61 @@
+/* TTS-only production-render bridge fixes.
+   These rules keep standalone supplemental screenshots visually identical to
+   the approved card-design surfaces instead of inheriting placeholder/default
+   card variables from the stripped-down renderer shell. */
+
+/* The production faction references use their faction parchment and sigil.
+   card-design.css defines a generic --parchment-image, so reference-card.css's
+   fallback never fires in the standalone TTS renderer unless we explicitly use
+   the reference-specific image here. */
+.reference-card[data-faction="diplomats"] .reference-card-interior,
+.reference-card[data-faction="financiers"] .reference-card-interior,
+.reference-card[data-faction="intelligence"] .reference-card-interior,
+.reference-card[data-faction="mystics"] .reference-card-interior,
+.reference-card[data-faction="inquisition"] .reference-card-interior {
+  background-image:
+    linear-gradient(var(--reference-accent-soft), var(--reference-accent-soft)),
+    linear-gradient(rgba(255, 255, 255, 0.10), rgba(121, 88, 48, 0.035)),
+    var(--reference-parchment-image) !important;
+}
+
+/* Use absolute asset URLs for the mask variables so the screenshot renderer is
+   not dependent on CSS-relative URL resolution. */
+.reference-card[data-faction="diplomats"] {
+  --reference-symbol: url("/images/faction-symbols/diplomats.svg");
+  --reference-parchment-image: url("/images/artwork/card-backgrounds/diplomats-parchment-v2.png");
+}
+.reference-card[data-faction="financiers"] {
+  --reference-symbol: url("/images/faction-symbols/financiers.svg");
+  --reference-parchment-image: url("/images/artwork/card-backgrounds/financiers-parchment-v2.png");
+}
+.reference-card[data-faction="intelligence"] {
+  --reference-symbol: url("/images/faction-symbols/intelligence.svg");
+  --reference-parchment-image: url("/images/artwork/card-backgrounds/intelligence-parchment-v2.png");
+}
+.reference-card[data-faction="mystics"] {
+  --reference-symbol: url("/images/faction-symbols/mystics.svg");
+  --reference-parchment-image: url("/images/artwork/card-backgrounds/mystics-parchment-v2.png");
+}
+.reference-card[data-faction="inquisition"] {
+  --reference-symbol: url("/images/faction-symbols/inquisition.svg");
+  --reference-parchment-image: url("/images/artwork/card-backgrounds/inquisition-parchment-v2.png");
+}
+
+/* Universal Reference is neutral. Its approved frame is the same ivory used by
+   Neutral playable cards, not the dark-brown prototype frame. */
+.reference-card[data-component-id="universal-reference"] {
+  --reference-border: #eee7d5;
+  --reference-border-outline: rgba(62, 52, 41, 0.52);
+  --reference-border-rule: rgba(62, 52, 41, 0.24);
+  --reference-parchment-image: url("/images/artwork/card-backgrounds/neutral-parchment-v2.png");
+}
+
+.reference-card[data-component-id="universal-reference"] .reference-card-interior {
+  background-image: var(--reference-parchment-image) !important;
+}
+
+.reference-card[data-component-id="universal-reference"] .reference-faction-emblem,
+.reference-card[data-component-id="universal-reference"] .reference-watermark {
+  -webkit-mask-image: url("/images/Gauntlet.svg");
+  mask-image: url("/images/Gauntlet.svg");
+}
