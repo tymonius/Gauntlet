@@ -12,69 +12,46 @@ const MARKER_TARGETS = {
   footer: { selector: '.card-footer' },
 };
 
-function anatomyMarkup() {
-  const section = document.createElement('section');
-  section.className = 'card-anatomy-guide';
-  section.dataset.cardAnatomy = '';
-  section.setAttribute('aria-labelledby', 'card-anatomy-title');
-  section.innerHTML = `
-    <div class="card-anatomy-intro">
-      <p class="card-anatomy-kicker">Reading a playable card</p>
-      <h3 id="card-anatomy-title">Card anatomy</h3>
-      <p>Most ordinary playable cards use the same frame. The labels below show where to find the information that matters during deck construction and play.</p>
+function cardFigureMarkup() {
+  const figure = document.createElement('figure');
+  figure.className = 'card-anatomy-figure';
+  figure.innerHTML = `
+    <div class="card-anatomy-card-wrap">
+      <iframe
+        class="card-anatomy-card"
+        src="../card-design/card-print-render.html?fit=production&amp;card=${CARD_ID}"
+        title="Current production render of Unbroken Ranks"
+        loading="lazy"
+        tabindex="-1"
+        aria-hidden="true"
+      ></iframe>
+      <span class="card-anatomy-marker marker-left" data-marker-target="name" aria-hidden="true">1</span>
+      <span class="card-anatomy-marker marker-right" data-marker-target="value" aria-hidden="true">2</span>
+      <span class="card-anatomy-marker marker-left marker-faction-edge" data-marker-target="faction" aria-hidden="true">3</span>
+      <span class="card-anatomy-marker marker-right" data-marker-target="art" aria-hidden="true">4</span>
+      <span class="card-anatomy-marker marker-left" data-marker-target="heading" aria-hidden="true">5</span>
+      <span class="card-anatomy-marker marker-right" data-marker-target="text" aria-hidden="true">6</span>
+      <span class="card-anatomy-marker marker-right" data-marker-target="footer" aria-hidden="true">7</span>
     </div>
-
-    <div class="card-anatomy-layout">
-      <figure class="card-anatomy-figure">
-        <div class="card-anatomy-card-wrap">
-          <iframe
-            class="card-anatomy-card"
-            src="../card-design/card-print-render.html?fit=production&amp;card=${CARD_ID}"
-            title="Current production render of Unbroken Ranks"
-            loading="lazy"
-            tabindex="-1"
-            aria-hidden="true"
-          ></iframe>
-          <span class="card-anatomy-marker marker-left" data-marker-target="name" aria-hidden="true">1</span>
-          <span class="card-anatomy-marker marker-right" data-marker-target="value" aria-hidden="true">2</span>
-          <span class="card-anatomy-marker marker-left marker-faction-edge" data-marker-target="faction" aria-hidden="true">3</span>
-          <span class="card-anatomy-marker marker-right" data-marker-target="art" aria-hidden="true">4</span>
-          <span class="card-anatomy-marker marker-left" data-marker-target="heading" aria-hidden="true">5</span>
-          <span class="card-anatomy-marker marker-right" data-marker-target="text" aria-hidden="true">6</span>
-          <span class="card-anatomy-marker marker-right" data-marker-target="footer" aria-hidden="true">7</span>
-        </div>
-        <figcaption><strong>Unbroken Ranks</strong> shown with the current production card renderer.</figcaption>
-      </figure>
-
-      <ol class="card-anatomy-key">
-        <li><span>1</span><div><strong>Card name</strong><p>The card's title.</p></div></li>
-        <li><span>2</span><div><strong>Card value</strong><p>Used for Deck construction and whenever an effect refers to a card's value.</p></div></li>
-        <li><span>3</span><div><strong>Faction identity</strong><p>The border and parchment treatment identify the card's faction. Neutral cards use ivory.</p></div></li>
-        <li><span>4</span><div><strong>Artwork</strong><p>The card's illustration.</p></div></li>
-        <li><span>5</span><div><strong>Effect heading</strong><p>Names the effect's role or timing, such as Action, Asset, Gambit, Tactic, Gambit/Tactic, Overlay, Mission, or another faction-specific procedure.</p></div></li>
-        <li><span>6</span><div><strong>Effect text</strong><p>Resolve only the printed effect being used unless a rule says otherwise.</p></div></li>
-        <li><span>7</span><div><strong>Metadata footer</strong><p>Shows faction at left, <em>Unique</em> in the center when applicable, and the rules version at right.</p></div></li>
-      </ol>
-    </div>
-
-    <aside class="card-anatomy-arcane">
-      <div class="card-anatomy-arcane-crop" aria-hidden="true">
-        <iframe
-          class="card-anatomy-arcane-card"
-          src="../card-design/card-print-render.html?fit=production&amp;card=${ARCANE_CARD_ID}"
-          title="Cropped current production render of the Witchcraft card header"
-          loading="lazy"
-          tabindex="-1"
-        ></iframe>
-      </div>
-      <div class="card-anatomy-arcane-copy">
-        <strong>Arcane trait mark</strong>
-        <p>Some playable cards show the Mystics sigil immediately before the card name. The symbol marks the <strong>Arcane</strong> trait; its color follows the card's faction identity.</p>
-      </div>
-    </aside>
-    <p class="card-anatomy-scope">Territories and faction supplemental components use specialized layouts and are explained with their own rules.</p>
+    <figcaption><strong>Unbroken Ranks</strong> shown with the current production card renderer.</figcaption>
   `;
-  return section;
+  return figure;
+}
+
+function arcaneCropMarkup() {
+  const crop = document.createElement('div');
+  crop.className = 'card-anatomy-arcane-crop';
+  crop.setAttribute('aria-hidden', 'true');
+  crop.innerHTML = `
+    <iframe
+      class="card-anatomy-arcane-card"
+      src="../card-design/card-print-render.html?fit=production&amp;card=${ARCANE_CARD_ID}"
+      title="Cropped current production render of the Witchcraft card header"
+      loading="lazy"
+      tabindex="-1"
+    ></iframe>
+  `;
+  return crop;
 }
 
 function markerAnchorY(frame, wrap, target, config) {
@@ -126,32 +103,107 @@ function wireMarkerPositioning(section) {
   scheduleMarkerPositioning(section);
 }
 
-function printedCardEffectsHeading() {
+function transformKey(list) {
+  list.classList.add('card-anatomy-key');
+  [...list.children].forEach((item, index) => {
+    const label = item.querySelector('strong')?.textContent?.trim() || `Item ${index + 1}`;
+    const text = item.textContent
+      .replace(item.querySelector('strong')?.textContent || '', '')
+      .replace(/^\s*[—-]\s*/, '')
+      .trim();
+    item.replaceChildren();
+    const number = document.createElement('span');
+    number.textContent = String(index + 1);
+    const copy = document.createElement('div');
+    const strong = document.createElement('strong');
+    strong.textContent = label;
+    const paragraph = document.createElement('p');
+    paragraph.textContent = text;
+    copy.append(strong, paragraph);
+    item.append(number, copy);
+  });
+}
+
+function wrapAuthoredAnatomy() {
   const content = document.querySelector('[data-rulebook-content]');
-  if (!content) return null;
-  return content.querySelector('#printed-card-effects')
-    || [...content.querySelectorAll('h2')].find((heading) =>
-      heading.textContent.replace(/#\s*$/, '').trim() === 'Printed card effects'
-    );
-}
+  const heading = content?.querySelector('#card-anatomy');
+  const nextHeading = content?.querySelector('#printed-card-effects');
+  if (!content || !heading || !nextHeading || heading.compareDocumentPosition(nextHeading) & Node.DOCUMENT_POSITION_PRECEDING) return null;
 
-function removeAnatomy() {
-  document.querySelector('[data-card-anatomy]')?.remove();
-}
-
-function injectAnatomy(mode) {
-  removeAnatomy();
-  if (mode !== CANDIDATE_MODE) return;
-
-  const heading = printedCardEffectsHeading();
-  if (!heading) return;
-  const section = anatomyMarkup();
+  const section = document.createElement('section');
+  section.className = 'card-anatomy-guide';
+  section.dataset.cardAnatomy = '';
+  section.setAttribute('aria-labelledby', heading.id);
   heading.before(section);
+
+  let node = heading;
+  while (node && node !== nextHeading) {
+    const following = node.nextSibling;
+    section.append(node);
+    node = following;
+  }
+
+  // The Markdown source carries a deterministic static figure for print/PDF.
+  // Candidate browser mode replaces that fallback with the live production renderer.
+  section.querySelector('img[alt="Card anatomy diagram"]')?.remove();
+
+  const introParagraph = heading.nextElementSibling?.tagName === 'P' ? heading.nextElementSibling : null;
+  const intro = document.createElement('div');
+  intro.className = 'card-anatomy-intro';
+  const kicker = document.createElement('p');
+  kicker.className = 'card-anatomy-kicker';
+  kicker.textContent = 'Reading a playable card';
+  heading.before(kicker);
+  if (introParagraph) {
+    kicker.before(intro);
+    intro.append(kicker, heading, introParagraph);
+  }
+
+  const list = section.querySelector('ol');
+  if (list) {
+    transformKey(list);
+    const layout = document.createElement('div');
+    layout.className = 'card-anatomy-layout';
+    list.before(layout);
+    layout.append(cardFigureMarkup(), list);
+  }
+
+  const arcaneHeading = section.querySelector('#arcane-trait-mark');
+  if (arcaneHeading) {
+    const arcaneParagraph = arcaneHeading.nextElementSibling?.tagName === 'P' ? arcaneHeading.nextElementSibling : null;
+    const aside = document.createElement('aside');
+    aside.className = 'card-anatomy-arcane';
+    arcaneHeading.before(aside);
+    const copy = document.createElement('div');
+    copy.className = 'card-anatomy-arcane-copy';
+    copy.append(arcaneHeading);
+    if (arcaneParagraph) copy.append(arcaneParagraph);
+    aside.append(arcaneCropMarkup(), copy);
+  }
+
+  const trailingParagraphs = [...section.querySelectorAll(':scope > p')];
+  trailingParagraphs.at(-1)?.classList.add('card-anatomy-scope');
+  return section;
+}
+
+function removeEnhancement() {
+  const section = document.querySelector('[data-card-anatomy]');
+  if (!section) return;
+  const content = document.querySelector('[data-rulebook-content]');
+  while (section.firstChild) content.insertBefore(section.firstChild, section);
+  section.remove();
+}
+
+function enhanceAnatomy(mode) {
+  removeEnhancement();
+  if (mode !== CANDIDATE_MODE) return;
+  const section = wrapAuthoredAnatomy();
+  if (!section) return;
   wireMarkerPositioning(section);
 }
 
 document.addEventListener('gauntlet:rulebook-rendered', (event) => {
-  injectAnatomy(event.detail?.mode);
+  enhanceAnatomy(event.detail?.mode);
 });
 
 window.addEventListener('resize', () => {
@@ -159,6 +211,4 @@ window.addEventListener('resize', () => {
   if (section) scheduleMarkerPositioning(section);
 });
 
-// The rulebook loader is asynchronous, but this also handles cases where the
-// module is evaluated after a rendered candidate view is already present.
-queueMicrotask(() => injectAnatomy(document.body.dataset.rulesetMode));
+queueMicrotask(() => enhanceAnatomy(document.body.dataset.rulesetMode));

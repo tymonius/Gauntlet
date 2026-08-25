@@ -22,6 +22,8 @@
     "proposals": "proposals.proposals is the complete current Proposal pool.",
     "arcaneSymbol": "arcaneSymbol supplies the current Arcane-symbol and Arcane-trait clarification rules.",
     "rules": "rules overrides active shared-rule fields from the immutable base release and supplies current rulebook wording.",
+    "leaders": "leaders is the complete current Leader rules authority consumed by production Leader cards and release data.",
+    "factionFeatures": "factionFeatureTaxonomy defines the shared terminology; factionFeatures supplies each faction's shared named mechanics and Action profile.",
     "components": "componentContract is the current physical-component contract.",
     "starterDecks": "starterDecks.decks is the complete current recommended starter-deck set."
   },
@@ -31,7 +33,64 @@
       "factionRules": {
         "peace_treaty_threshold": 6
       }
+    },
+    "intelligence": {
+      "resource": "Intel (no maximum)",
+      "progression": "Operation Progress"
+    },
+    "mystics": {
+      "resource": null,
+      "progression": "Rites"
     }
+  },
+  "factionFeatureTaxonomy": {
+    "factionFeature": "A named faction-specific rule, option, procedure, passive effect, or special mechanic shared by the faction. The term does not imply Action use.",
+    "leaderAbility": "A mechanic supplied by the chosen Leader rather than shared by the faction.",
+    "actionProfiles": {
+      "1 Action": "Using the Feature or Ability spends one Action at its stated legal phase or timing.",
+      "No Action": "Use at the stated timing without spending an Action. This does not grant another Action.",
+      "Automatic": "Apply automatically when its stated condition and timing occur; no Action is spent."
+    }
+  },
+  "factionFeatures": {
+    "military": [],
+    "diplomats": [
+      { "name": "Terms", "profile": "No Action", "timing": "During Onset" },
+      { "name": "Leverage", "profile": "No Action", "timing": "Before dice after refused Terms" }
+    ],
+    "financiers": [
+      { "name": "Treasury", "profile": "1 Action", "timing": "Denouement" },
+      { "name": "Buy / Buy Out Deed", "profile": "1 Action", "timing": "Denouement" },
+      { "name": "Play the Market", "profile": "1 Action", "timing": "Denouement" },
+      { "name": "Subsidize", "profile": "No Action", "timing": "Before dice" },
+      { "name": "Financial Capacity", "profile": "No Action", "timing": "After Capture" },
+      { "name": "Income", "profile": "Automatic", "timing": "After Capture" }
+    ],
+    "intelligence": [
+      { "name": "Start Mission", "profile": "1 Action", "timing": "Denouement" },
+      { "name": "Complete Mission", "profile": "1 Action", "timing": "Denouement" },
+      { "name": "Abort Mission", "profile": "1 Action", "timing": "Denouement" },
+      { "name": "Start Special Operation", "profile": "1 Action", "timing": "Denouement" },
+      { "name": "Complete Special Operation", "profile": "1 Action", "timing": "Denouement" },
+      { "name": "Gambit Surveillance", "profile": "No Action", "timing": "During battle", "cost": "1 Intel", "limit": "Once per battle" },
+      { "name": "Tactic Surveillance", "profile": "No Action", "timing": "During battle", "cost": "1 Intel per card", "limit": "Once per battle" },
+      { "name": "Interference", "profile": "No Action", "timing": "Immediately after reveal", "cost": "+2 Intel per removed card" },
+      { "name": "Direct Interference", "profile": "No Action", "timing": "Face-up opposing card", "cost": "2 Intel" }
+    ],
+    "mystics": [
+      { "name": "Begin a Rite", "profile": "1 Action", "timing": "Denouement" },
+      { "name": "Invocation", "profile": "No Action", "timing": "After applying an Arcane card effect", "limit": "Once per turn" },
+      { "name": "Transmutation", "profile": "No Action", "timing": "Before dice", "limit": "Once per turn" },
+      { "name": "Begin Ritual", "profile": "1 Action", "timing": "Denouement after 3 Rites" },
+      { "name": "Convergence", "profile": "Automatic", "timing": "During a Ritual battle you initiated" }
+    ],
+    "inquisition": [
+      { "name": "Purge", "profile": "1 Action", "timing": "Opening or Denouement", "limit": "Once per turn" },
+      { "name": "Conviction", "profile": "Automatic", "timing": "First qualifying Aftermath each turn" },
+      { "name": "Condemnation", "profile": "Automatic", "timing": "Aftermath" },
+      { "name": "Blasphemy", "profile": "Automatic", "timing": "Opposing Arcane Action or reveal" },
+      { "name": "Purification", "profile": "Automatic", "timing": "Opponent's start-of-turn Draw" }
+    ]
   },
   "leaders": [
     {
@@ -42,10 +101,17 @@
       "image": "/images/general.png",
       "note": "Movement and attack",
       "sections": [
-        ["Command", "Maximum 2. The first time each turn you win a battle, gain 1 Command."],
-        ["Onward", "During your Movement, before a battle is initiated, move one additional Position. This movement may initiate a battle.", "1 Command"],
-        ["Rally", "Before dice are rolled in a battle you initiated, add +1 to your battle total.", "1 Command"],
-        ["Rout", "At the end of the Aftermath of a battle you initiated and won, advance one Position. This movement may initiate a battle.", "2 Command"]
+        { "classification": "Faction Victory", "name": "Run the Gauntlet", "text": "Capture the Territory at the opponent's end, or force a Last Stand and win the resulting battle." },
+        {
+          "classification": "Leader Ability",
+          "name": "Orders",
+          "items": [
+            { "name": "Onward", "cost": "1 Command", "descriptor": "No Action · During Movement", "text": "During your Movement, move one additional Position. This may start a Battle." },
+            { "name": "Rally", "cost": "1 Command", "descriptor": "No Action · Before dice · Attacking", "text": "Add +1 to your battle total in a battle you initiated." },
+            { "name": "Rout", "cost": "2 Command", "descriptor": "No Action · End of Aftermath · Win as attacker", "text": "Advance one Position. This movement may initiate a battle." }
+          ]
+        },
+        { "classification": "Resource", "name": "Command", "descriptor": "Begin with 0 · Maximum 2", "text": "The first time each turn you win a battle, gain 1 Command." }
       ]
     },
     {
@@ -56,10 +122,17 @@
       "image": "/images/commandant.png",
       "note": "Defense and control",
       "sections": [
-        ["Command", "Maximum 2. The first time each turn you win a battle, gain 1 Command."],
-        ["Entrench", "Before dice are rolled in a battle you did not initiate, add +1 to your battle total.", "1 Command"],
-        ["Repel", "During the Aftermath of a battle you did not initiate and won, after the opponent's normal retreat, they retreat one additional Position, if able.", "1 Command"],
-        ["Fortify", "During the Aftermath of a battle you won while occupying an enemy-controlled Territory, advance your Front Line by one Territory, if able.", "2 Command"]
+        { "classification": "Faction Victory", "name": "Run the Gauntlet", "text": "Capture the Territory at the opponent's end, or force a Last Stand and win the resulting battle." },
+        {
+          "classification": "Leader Ability",
+          "name": "Orders",
+          "items": [
+            { "name": "Entrench", "cost": "1 Command", "descriptor": "No Action · Before dice · Defending", "text": "Add +1 to your battle total in a battle you did not initiate." },
+            { "name": "Repel", "cost": "1 Command", "descriptor": "No Action · Aftermath · Win as defender", "text": "After the opponent's normal retreat, they retreat one additional Position, if able." },
+            { "name": "Fortify", "cost": "2 Command", "descriptor": "No Action · Aftermath · Win while occupying enemy Territory", "text": "Advance your Front Line by one Territory, if able." }
+          ]
+        },
+        { "classification": "Resource", "name": "Command", "descriptor": "Begin with 0 · Maximum 2", "text": "The first time each turn you win a battle, gain 1 Command." }
       ]
     },
     {
@@ -70,9 +143,9 @@
       "image": "/images/ambassador.png",
       "note": "Agreement and card flow",
       "sections": [
-        ["Influence", "Begin with 1 Influence and build toward a maximum of 10."],
-        ["Cordiality", "Once per turn, after the opponent accepts your Terms, draw one card."],
-        ["Peace Treaty", "After the Capture step at the start of your turn, six different ratified Proposals win the game."]
+        { "classification": "Faction Victory", "name": "Peace Treaty", "text": "At the start of your turn, if 6 different Proposals are ratified, you win." },
+        { "classification": "Leader Ability", "name": "Cordiality", "descriptor": "No Action · Once per turn · After accepted Terms", "text": "After the opponent accepts your Terms, draw one card." },
+        { "classification": "Resource", "name": "Influence", "descriptor": "Begin with 1 · Maximum 10" }
       ]
     },
     {
@@ -83,9 +156,9 @@
       "image": "/images/senator.png",
       "note": "Risk management and resilience",
       "sections": [
-        ["Influence", "Begin with 1 Influence and build toward a maximum of 10."],
-        ["Political Capital", "Once per turn, sacrifice cards from Hand to recover an equal amount of Influence that would otherwise be lost after refused Terms."],
-        ["Peace Treaty", "After the Capture step at the start of your turn, six different ratified Proposals win the game."]
+        { "classification": "Faction Victory", "name": "Peace Treaty", "text": "At the start of your turn, if 6 different Proposals are ratified, you win." },
+        { "classification": "Leader Ability", "name": "Political Capital", "descriptor": "No Action · Once per turn · After losing following refused Terms", "text": "When you would lose staked Influence, put up to that many cards from Hand in your Graveyard. Recover 1 staked Influence per card; lose the rest." },
+        { "classification": "Resource", "name": "Influence", "descriptor": "Begin with 1 · Maximum 10" }
       ]
     },
     {
@@ -96,9 +169,9 @@
       "image": "/images/banker.png",
       "note": "Collateral and flexible financing",
       "sections": [
-        ["Capital", "Begin with 2 Capital. Cards in Treasury raise the amount of Capital you can retain."],
-        ["Line of Credit", "On the first Deed purchase of your turn, one card may contribute part of the price as collateral; pay the remainder with Capital."],
-        ["Controlling Interest", "Own the Deed to every Territory currently in the Gauntlet and win immediately."]
+        { "classification": "Faction Victory", "name": "Controlling Interest", "text": "If you own the Deeds to every Territory currently in the Gauntlet, you win immediately." },
+        { "classification": "Leader Ability", "name": "Line of Credit", "descriptor": "No Action · First Deed purchase each turn · Collateral", "text": "Use one card from Hand or Treasury as collateral. It contributes up to half the purchase cost, rounded down; pay the rest with Capital, then discard the collateral." },
+        { "classification": "Resource", "name": "Capital", "descriptor": "Begin with 2 · Dynamic Capital Limit", "text": "Capital Limit = Territories you control + total card value in Treasury." }
       ]
     },
     {
@@ -109,9 +182,9 @@
       "image": "/images/executive.png",
       "note": "Offensive acquisition and control",
       "sections": [
-        ["Capital", "Begin with 2 Capital. Cards in Treasury raise the amount of Capital you can retain."],
-        ["Hostile Takeover", "During Denouement, after winning as attacker and becoming the occupier of an enemy Territory, take the Faction Action to buy or buy out its Deed. A successful purchase advances your Front Line by one Territory, if able; it never creates isolated control."],
-        ["Controlling Interest", "Own the Deed to every Territory currently in the Gauntlet and win immediately."]
+        { "classification": "Faction Victory", "name": "Controlling Interest", "text": "If you own the Deeds to every Territory currently in the Gauntlet, you win immediately." },
+        { "classification": "Leader Ability", "name": "Hostile Takeover", "descriptor": "1 Action · Denouement · After winning as attacker", "text": "While occupying that enemy Territory, buy or buy out its Deed. Treat yourself as occupier for cost. If successful, advance your Front Line by one Territory, if able." },
+        { "classification": "Resource", "name": "Capital", "descriptor": "Begin with 2 · Dynamic Capital Limit", "text": "Capital Limit = Territories you control + total card value in Treasury." }
       ]
     },
     {
@@ -122,9 +195,10 @@
       "image": "/images/ranger.png",
       "note": "Terrain and field operations",
       "sections": [
-        ["Missions", "Completed normal Missions grant 1 Operation Progress and Intel equal to the card's value."],
-        ["Fieldcraft", "Once per turn, spend 1 Intel to ignore a Territory's printed effect when it would affect you, your movement, or a battle involving you.", "1 Intel"],
-        ["Special Operation", "When Operation Progress exceeds opposing controlled Territories, prepare and complete a Special Operation to win."]
+        { "classification": "Faction Victory", "name": "Special Operation", "text": "When Operation Progress exceeds opposing controlled Territories, complete a prepared Special Operation and pay its Intel cost to win." },
+        { "classification": "Leader Ability", "name": "Fieldcraft", "cost": "1 Intel", "descriptor": "No Action · Once per turn · Territory effect", "text": "When a printed Territory effect would affect you, your movement, or a battle involving you, ignore that effect until the end of the turn." },
+        { "classification": "Resource", "name": "Intel", "descriptor": "Begin at 0 · No maximum", "text": "Spend Intel on Intelligence features and effects." },
+        { "classification": "Progression", "name": "Operation Progress", "descriptor": "Begin at 0", "text": "Increment by 1 each time you complete a normal Mission." }
       ]
     },
     {
@@ -135,9 +209,10 @@
       "image": "/images/spymaster.png",
       "note": "Mission tempo and coordination",
       "sections": [
-        ["Missions", "Completed normal Missions grant 1 Operation Progress and Intel equal to the card's value."],
-        ["Mission Control", "Once per turn, after completing a normal Mission, immediately start another eligible Mission from Hand without spending an Action. It cannot complete that turn and cannot be a Special Operation."],
-        ["Special Operation", "When Operation Progress exceeds opposing controlled Territories, prepare and complete a Special Operation to win."]
+        { "classification": "Faction Victory", "name": "Special Operation", "text": "When Operation Progress exceeds opposing controlled Territories, complete a prepared Special Operation and pay its Intel cost to win." },
+        { "classification": "Leader Ability", "name": "Mission Control", "descriptor": "No Action · Once per turn · After completing a normal Mission", "text": "Immediately start another eligible Mission from Hand. It cannot complete that turn and cannot be a Special Operation." },
+        { "classification": "Resource", "name": "Intel", "descriptor": "Begin at 0 · No maximum", "text": "Spend Intel on Intelligence features and effects." },
+        { "classification": "Progression", "name": "Operation Progress", "descriptor": "Begin at 0", "text": "Increment by 1 each time you complete a normal Mission." }
       ]
     },
     {
@@ -148,9 +223,9 @@
       "image": "/images/alchemist.png",
       "note": "Sacrifice sequencing and conversion",
       "sections": [
-        ["Rites", "The first completed Rite unlocks Invocation; the second unlocks Transmutation; the third unlocks Convergence and the Ritual of Ascendance."],
-        ["Materia Prima", "The first qualifying sacrifice from Hand on your turn draws one replacement card; during battle, draw after the battle resolves."],
-        ["Ascendance", "Complete all three Rites, then complete the Ritual of Ascendance to win."]
+        { "classification": "Faction Victory", "name": "Ritual of Ascension", "text": "After completing all three Rites, begin the Ritual; initiate and win a battle while all three Ritual cards remain bound." },
+        { "classification": "Leader Ability", "name": "Materia Prima", "descriptor": "No Action · Once per turn · First qualifying sacrifice from Hand", "text": "Draw one card the first time on your turn that a card from Hand enters your Graveyard for a Rite, Transmutation, or Arcane card effect. During battle, draw after the Aftermath." },
+        { "classification": "Progression", "name": "Rites", "descriptor": "1st — Invocation · 2nd — Transmutation · 3rd — Convergence + Ritual" }
       ]
     },
     {
@@ -161,9 +236,9 @@
       "image": "/images/spirit%20walker.png",
       "note": "Ritual endurance and protection",
       "sections": [
-        ["Rites", "The first completed Rite unlocks Invocation; the second unlocks Transmutation; the third unlocks Convergence and the Ritual of Ascendance."],
-        ["Guardians of the Circle", "The first time on your turn a battle loss would interrupt a begun Rite or Ritual, put an Arcane card from Hand in your Graveyard of the required value to prevent that interruption."],
-        ["Ascendance", "Complete all three Rites, then complete the Ritual of Ascendance to win."]
+        { "classification": "Faction Victory", "name": "Ritual of Ascension", "text": "After completing all three Rites, begin the Ritual; initiate and win a battle while all three Ritual cards remain bound." },
+        { "classification": "Leader Ability", "name": "Guardians of the Circle", "descriptor": "No Action · Once per turn · Battle loss would interrupt Rite or Ritual", "text": "Put one Arcane card from Hand in your Graveyard whose value is at least 1 plus your completed Rites. If you do, prevent that interruption." },
+        { "classification": "Progression", "name": "Rites", "descriptor": "1st — Invocation · 2nd — Transmutation · 3rd — Convergence + Ritual" }
       ]
     },
     {
@@ -174,9 +249,9 @@
       "image": "/images/grand%20inquisitor.png",
       "note": "Judgment and efficient Purges",
       "sections": [
-        ["Conviction", "Gain Conviction from qualifying opposing post-battle Graveyard entries, up to 4."],
-        ["Final Judgment", "Once per turn during the Aftermath of a battle you won, after battle cards are cleared, immediately Purge without spending an Action and reduce its Conviction cost by 1, minimum 1."],
-        ["Purification", "If the opponent's normal Draw produces nothing because both Draw Pile and Discard Pile are empty, win immediately."]
+        { "classification": "Faction Victory", "name": "Purification", "text": "If the opponent's normal start-of-turn draw fails because both their Draw Pile and Discard Pile are empty, you win immediately." },
+        { "classification": "Leader Ability", "name": "Final Judgment", "descriptor": "No Action · Once per turn · After winning a battle", "text": "After battle cards are cleared, immediately Purge. Reduce that Purge's Conviction cost by 1, to a minimum of 1." },
+        { "classification": "Resource", "name": "Conviction", "descriptor": "Begin at 0 · Maximum 4", "text": "The first time each turn opposing cards enter the Graveyard during the Aftermath of a battle involving you, gain 1 Conviction." }
       ]
     },
     {
@@ -187,9 +262,9 @@
       "image": "/images/witch%20hunter.png",
       "note": "Defense, retaliation, and pursuit",
       "sections": [
-        ["Conviction", "Gain Conviction from qualifying opposing post-battle Graveyard entries, up to 4."],
-        ["Relentless Pursuit", "Once per turn, at the end of the Aftermath of a battle an opponent initiated against you and lost, spend 2 Conviction to end their turn and advance one Position toward their end. If this movement initiates a battle, you are the attacker.", "2 Conviction"],
-        ["Purification", "If the opponent's normal Draw produces nothing because both Draw Pile and Discard Pile are empty, win immediately."]
+        { "classification": "Faction Victory", "name": "Purification", "text": "If the opponent's normal start-of-turn draw fails because both their Draw Pile and Discard Pile are empty, you win immediately." },
+        { "classification": "Leader Ability", "name": "Relentless Pursuit", "cost": "2 Conviction", "descriptor": "No Action · Once per turn · After defeating an attacking opponent", "text": "End their turn, then advance one Position toward their end. If this movement initiates a battle, you are the attacker." },
+        { "classification": "Resource", "name": "Conviction", "descriptor": "Begin at 0 · Maximum 4", "text": "The first time each turn opposing cards enter the Graveyard during the Aftermath of a battle involving you, gain 1 Conviction." }
       ]
     }
   ],
@@ -208,14 +283,14 @@
         "name": "Rite of Blood",
         "artwork": "/images/artwork/cards/mystics/rites-and-rituals/rite-of-blood.png",
         "begin": "Put one card from your Hand in your Graveyard.",
-        "complete": "On a later turn, complete this Rite when you win a battle without setting a Gambit or choosing a Tactic. Using Transmutation, an Asset, Overlay, Territory, Leader ability, or card from another source does not by itself prevent completion.",
+        "complete": "On a later turn, complete this Rite when you win a battle without setting a Gambit or choosing a Tactic. Using Transmutation, an Asset, Overlay, Territory, Leader Ability, or card from another source does not by itself prevent completion.",
         "interrupted": "If you lose a battle before completion, reset the Rite."
       },
       {
         "id": "crossing",
         "name": "Rite of Crossing",
         "artwork": "/images/artwork/cards/mystics/rites-and-rituals/rite-of-crossing.png",
-        "begin": "You may take the Begin a Rite Faction Action for Rite of Crossing during Denouement only after winning a battle that turn that made you the occupier of a Territory the opponent controlled immediately before that battle. Put one Arcane card from your Hand in your Graveyard. If you have none, reveal your Hand and move one Arcane card from your Discard Pile to your Graveyard instead.",
+        "begin": "You may use the Begin a Rite Faction Feature for Rite of Crossing during Denouement only after winning a battle that turn that made you the occupier of a Territory the opponent controlled immediately before that battle. Put one Arcane card from your Hand in your Graveyard. If you have none, reveal your Hand and move one Arcane card from your Discard Pile to your Graveyard instead.",
         "complete": "At the start of your next turn, after the Capture step, complete this Rite if you are still the occupier or now control that Territory. Otherwise, the Rite is interrupted and resets.",
         "interrupted": ""
       }
