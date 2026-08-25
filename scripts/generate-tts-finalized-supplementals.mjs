@@ -142,8 +142,9 @@ async function captureComponent(page, baseUrl, item, side, outputPath) {
   }));
   if (state.error) throw new Error(`Finalized supplemental renderer failed for ${item.component.id} (${side}): ${state.message || 'unspecified renderer error'}`);
 
+  const card = page.locator('.gauntlet-card');
   const expected = item.orientation === 'landscape' ? LANDSCAPE_CSS : PORTRAIT_CSS;
-  const metrics = await page.locator('.gauntlet-card').evaluate(element => {
+  const metrics = await card.evaluate(element => {
     const rect = element.getBoundingClientRect();
     return {
       width: rect.width,
@@ -161,7 +162,48 @@ async function captureComponent(page, baseUrl, item, side, outputPath) {
     throw new Error(`Finalized supplemental content overflows ${item.component.id} (${side}).`);
   }
 
-  await page.locator('.gauntlet-card').screenshot({ path: outputPath, omitBackground: true });
+  if (item.orientation === 'landscape') {
+    // TTS derives a Custom Card's physical aspect ratio from its image cell.
+    // Landscape Gauntlet cards therefore use the same 400x560 portrait cell as
+    // ordinary cards and Territories; the 560x400 artwork is quarter-turned
+    // *inside* that cell, then SidewaysCard rotates the physical card in play.
+    // Exporting a raw 560x400 cell and also setting SidewaysCard double-applies
+    // landscape geometry and creates an oversized physical card.
+    await card.evaluate(element => {
+      const wrapper = document.createElement('div');
+      wrapper.id = 'tts-portrait-card-cell';
+      Object.assign(wrapper.style, {
+        position: 'fixed',
+        left: '0',
+        top: '0',
+        width: '240px',
+        height: '336px',
+        overflow: 'hidden',
+        background: 'transparent',
+      });
+      element.parentNode.insertBefore(wrapper, element);
+      wrapper.appendChild(element);
+      Object.assign(element.style, {
+        position: 'absolute',
+        left: '50%',
+        top: '50%',
+        margin: '0',
+        transform: 'translate(-50%, -50%) rotate(-90deg)',
+        transformOrigin: 'center center',
+      });
+      document.documentElement.style.width = '240px';
+      document.documentElement.style.height = '336px';
+      document.documentElement.style.background = 'transparent';
+      document.body.style.width = '240px';
+      document.body.style.height = '336px';
+      document.body.style.margin = '0';
+      document.body.style.background = 'transparent';
+    });
+    await page.locator('#tts-portrait-card-cell').screenshot({ path: outputPath, omitBackground: true });
+    return;
+  }
+
+  await card.screenshot({ path: outputPath, omitBackground: true });
 }
 
 function manifestRecord(item, deckId, frontFile, reverseFile) {
@@ -194,6 +236,7 @@ function manifestRecord(item, deckId, frontFile, reverseFile) {
       numHeight: 1,
       backIsHidden: true,
       uniqueBack: false,
+      cellOrientation: 'portrait',
       sidewaysCard: item.orientation === 'landscape',
     },
   };
@@ -265,7 +308,7 @@ export async function renderFinalizedSupplementals(plan) {
     manifest.finalizedExportBridge = {
       componentCount: additions.length,
       families: [...new Set(additions.map(record => record.family))],
-      note: 'Final physical designs still marked export-pending in the component contract are rendered through their production surfaces and promoted to ready in the generated TTS manifest.',
+      note: 'Final physical designs still marked export-pending in the component contract are rendered through their production surfaces and promoted to ready in the generated TTS manifest. Landscape cards are normalized into standard portrait TTS image cells before SidewaysCard presentation.',
     };
 
     catalog.ready = replaceRecords(catalog.ready, additions);
