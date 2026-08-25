@@ -6,7 +6,10 @@ import { makeCustomDeckState, requireHostedUrl } from './generate-tts-save.mjs';
 import { STAGING_ROOT } from './stage-tts-release-assets.mjs';
 
 const SUPPLEMENTAL_GUID_NOTE_PREFIX = 'gauntlet:supplemental:';
+const SUPPLEMENTAL_STACK_NOTE_PREFIX = 'gauntlet:supplemental-stack:';
 const DEED_TAG = 'gauntlet-deed';
+const DEED_STACK_TAG = 'gauntlet-deed-stack';
+const TRACKER_TABLETOP_SCALE = 1.5;
 
 function jsonText(value) {
   return `${JSON.stringify(value, null, 2)}\n`;
@@ -54,7 +57,6 @@ function makeSupplementalCard(component, releaseAssets, guid) {
   if (!component.tts?.faceFile || !component.tts?.backFile || !component.tts?.deckId) {
     throw new Error(`Ready supplemental card ${component.id} is missing rendered TTS metadata.`);
   }
-
   const deckId = String(component.tts.deckId);
   const state = makeCustomDeckState(
     requireHostedUrl(releaseAssets, component.tts.faceFile),
@@ -62,10 +64,10 @@ function makeSupplementalCard(component, releaseAssets, guid) {
     component.tts.numWidth || 1,
     component.tts.numHeight || 1,
   );
-
+  const sideways = component.tts?.sidewaysCard === true;
   return {
     Name: 'CardCustom',
-    Transform: transform(),
+    Transform: transform(0, 1, 0, sideways ? 90 : 0),
     Nickname: component.name || component.id,
     Description: `${component.faction || 'Faction'} supplemental · ${component.family || 'component'}`,
     GMNotes: `${SUPPLEMENTAL_GUID_NOTE_PREFIX}${component.id}`,
@@ -84,11 +86,9 @@ function makeSupplementalCard(component, releaseAssets, guid) {
     XmlUI: '',
     GUID: guid(),
     CardID: Number(component.tts.cardId),
-    SidewaysCard: false,
+    SidewaysCard: sideways,
     ...(component.family === 'deed-card' ? { Tags: [DEED_TAG] } : {}),
-    CustomDeck: {
-      [deckId]: state,
-    },
+    CustomDeck: { [deckId]: state },
   };
 }
 
@@ -98,40 +98,30 @@ function makeTrackerSnapPoints(component) {
   if (!tag || !Array.isArray(points) || points.length < 2) {
     throw new Error(`Ready sliding tracker ${component.id} is missing snap tag or renderer-derived snap points.`);
   }
-  if (points[0]?.value !== 0 || Number(points[0]?.offset) !== 0) {
+  if (Number(points[0]?.value) !== 0 || Number(points[0]?.offset) !== 0) {
     throw new Error(`Ready sliding tracker ${component.id} must begin with its fully covered 0 registration.`);
   }
-
-  return points.map((point) => ({
-    Position: vector(0, 0.12, Number(point.offset)),
-    Rotation: vector(0, 0, 0),
-    RotationSnap: true,
-    Tags: [tag],
-  }));
-}
-
-function luaNumber(value) {
-  const number = Number(value);
-  if (!Number.isFinite(number)) throw new Error(`Cannot serialize non-finite tracker snap coordinate ${value}.`);
-  return Number(number.toFixed(5)).toString();
+  return points.map(point => {
+    const physicalTravel = Number(point.offset);
+    if (!Number.isFinite(physicalTravel) || physicalTravel < 0) {
+      throw new Error(`Ready sliding tracker ${component.id} has invalid renderer travel ${point.offset}.`);
+    }
+    return {
+      Position: vector(0, 0.12, Number((-(physicalTravel / TRACKER_TABLETOP_SCALE)).toFixed(6))),
+      Rotation: vector(0, 0, 0),
+      RotationSnap: true,
+      Tags: [tag],
+    };
+  });
 }
 
 function makeTrackerLuaScript(component) {
-  const tag = String(component.tts?.snapTag || '').trim();
   const points = makeTrackerSnapPoints(component);
-  const lines = [
-    '-- Re-register production-derived slide positions on load. TTS has not',
-    '-- consistently restored every serialized Custom_Tile snap after a tracker',
-    '-- is removed from a starter Bag, so the object API is the runtime authority.',
-    'function onLoad()',
-    '  self.setSnapPoints({',
-  ];
+  const lines = ['function registerGauntletTrackerSnaps()', '  self.setSnapPoints({'];
   for (const point of points) {
-    lines.push(
-      `    { position = { ${luaNumber(point.Position.x)}, ${luaNumber(point.Position.y)}, ${luaNumber(point.Position.z)} }, rotation = { 0, 0, 0 }, rotation_snap = true, tags = { ${JSON.stringify(tag)} } },`,
-    );
+    lines.push(`    { position = {${point.Position.x}, ${point.Position.y}, ${point.Position.z}}, rotation = {0, 0, 0}, rotation_snap = true, tags = {${JSON.stringify(point.Tags[0])}} },`);
   }
-  lines.push('  })', 'end');
+  lines.push('  })', 'end', '', 'function onLoad()', '  Wait.frames(registerGauntletTrackerSnaps, 2)', 'end');
   return lines.join('\n');
 }
 
@@ -142,11 +132,9 @@ function makeSlidingTracker(component, starter, releaseAssets, guid) {
   if (!starter.factionComponentBack?.file) {
     throw new Error(`Starter ${starter.id} has no faction-component back for tracker ${component.id}.`);
   }
-
   const faceUrl = requireHostedUrl(releaseAssets, component.tts.faceFile);
   const backUrl = requireHostedUrl(releaseAssets, starter.factionComponentBack.file);
   const snapTag = String(component.tts.snapTag || '').trim();
-
   return {
     Name: 'Custom_Tile',
     Transform: transform(),
@@ -189,6 +177,73 @@ function makeSupplementalObject(component, starter, releaseAssets, guid) {
   throw new Error(`Ready supplemental component ${component.id} uses unsupported save representation ${component.representation || 'missing'}.`);
 }
 
+function makeSupplementalStack(cards, { key, nickname, description, stackRotation = 0, tags = [] }, guid) {
+  if (!Array.isArray(cards) || cards.length < 2) throw new Error(`Supplemental stack ${key} needs at least two cards.`);
+  const customDeck = {};
+  for (const card of cards) {
+    if (card?.Name !== 'CardCustom' || !Number.isFinite(Number(card.CardID))) throw new Error(`Supplemental stack ${key} contains a non-card object.`);
+    Object.assign(customDeck, card.CustomDeck || {});
+  }
+  return {
+    Name: 'DeckCustom',
+    Transform: transform(0, 1, 0, stackRotation),
+    Nickname: nickname,
+    Description: description,
+    GMNotes: `${SUPPLEMENTAL_STACK_NOTE_PREFIX}${key}`,
+    ColorDiffuse: color(),
+    Locked: false,
+    Grid: true,
+    Snap: true,
+    Autoraise: true,
+    Sticky: true,
+    Tooltip: true,
+    GridProjection: false,
+    HideWhenFaceDown: false,
+    Hands: false,
+    LuaScript: '',
+    LuaScriptState: '',
+    XmlUI: '',
+    GUID: guid(),
+    DeckIDs: cards.map(card => Number(card.CardID)),
+    SidewaysCard: false,
+    ...(tags.length ? { Tags: [...tags] } : {}),
+    CustomDeck: customDeck,
+    ContainedObjects: cards,
+  };
+}
+
+const FAMILY_STACKS = Object.freeze([
+  {
+    key: 'proposals', nickname: 'Proposals', description: 'Diplomat Proposal / ratified Treaty Article cards', expectedCount: 9,
+    predicate: object => object?.Name === 'CardCustom' && /· proposal-treaty-card$/u.test(String(object.Description || '')),
+  },
+  {
+    key: 'deeds', nickname: 'Deeds', description: 'Financier Deed cards', expectedCount: 8, stackRotation: 90, tags: [DEED_STACK_TAG],
+    predicate: object => object?.Name === 'CardCustom' && /· deed-card$/u.test(String(object.Description || '')),
+  },
+  {
+    key: 'rites-rituals', nickname: 'Rites + Ritual', description: 'Mystics Rites and Ritual of Ascension', expectedCount: 4,
+    predicate: object => object?.Name === 'CardCustom' && /· (?:rite-card|ritual-card)$/u.test(String(object.Description || '')),
+  },
+]);
+
+function stackFamilyInBag(bag, definition, guid) {
+  const objects = bag.ContainedObjects || [];
+  const matching = objects.filter(definition.predicate);
+  if (!matching.length) return false;
+  if (matching.length !== definition.expectedCount) throw new Error(`${bag.Nickname} has ${matching.length} ${definition.key} cards; expected ${definition.expectedCount}.`);
+  const firstIndex = objects.findIndex(definition.predicate);
+  bag.ContainedObjects = objects.filter(object => !definition.predicate(object));
+  bag.ContainedObjects.splice(firstIndex, 0, makeSupplementalStack(matching, definition, guid));
+  return true;
+}
+
+function stackStarterFamilies(bag, guid) {
+  const stacked = [];
+  for (const definition of FAMILY_STACKS) if (stackFamilyInBag(bag, definition, guid)) stacked.push(definition.key);
+  return stacked;
+}
+
 function starterBagNickname(starter) {
   return `${starter.name} — ${starter.leader.name}`;
 }
@@ -199,26 +254,16 @@ function stripSupplementalDescription(description) {
 
 function findStarterBag(save, starter) {
   const nickname = starterBagNickname(starter);
-  const matches = (save.ObjectStates || []).filter((object) => object?.Name === 'Bag' && object?.Nickname === nickname);
-  if (matches.length !== 1) {
-    throw new Error(`Expected exactly one starter Bag named ${JSON.stringify(nickname)}; found ${matches.length}.`);
-  }
+  const matches = (save.ObjectStates || []).filter(object => object?.Name === 'Bag' && object?.Nickname === nickname);
+  if (matches.length !== 1) throw new Error(`Expected exactly one starter Bag named ${JSON.stringify(nickname)}; found ${matches.length}.`);
   return matches[0];
 }
 
 function validateSupplementalManifest(supplementalManifest, version) {
-  if (supplementalManifest?.gameVersion !== version) {
-    throw new Error(`Supplemental manifest targets ${supplementalManifest?.gameVersion || 'no version'}; expected ${version}.`);
-  }
+  if (supplementalManifest?.gameVersion !== version) throw new Error(`Supplemental manifest targets ${supplementalManifest?.gameVersion || 'no version'}; expected ${version}.`);
   const ready = supplementalManifest.ready || [];
-  if (Number(supplementalManifest.readyCount) !== ready.length) {
-    throw new Error(`Supplemental manifest readyCount ${supplementalManifest.readyCount} does not match ${ready.length} ready records.`);
-  }
-  for (const component of ready) {
-    if (component.productionStatus !== 'ready') {
-      throw new Error(`Supplemental manifest includes non-ready component ${component.id || 'unknown'} in ready records.`);
-    }
-  }
+  if (Number(supplementalManifest.readyCount) !== ready.length) throw new Error(`Supplemental manifest readyCount ${supplementalManifest.readyCount} does not match ${ready.length} ready records.`);
+  for (const component of ready) if (component.productionStatus !== 'ready') throw new Error(`Supplemental manifest includes non-ready component ${component.id || 'unknown'} in ready records.`);
   return ready;
 }
 
@@ -231,7 +276,7 @@ function addObjectTag(object, tag) {
 
 function removeGeneratedTrackerTags(object, generatedTags) {
   if (!Array.isArray(object?.Tags)) return;
-  object.Tags = object.Tags.filter((tag) => !generatedTags.has(tag));
+  object.Tags = object.Tags.filter(tag => !generatedTags.has(tag));
   if (!object.Tags.length) delete object.Tags;
 }
 
@@ -239,57 +284,44 @@ function resolveTrackerCover(bag, starter, tracker) {
   const cover = tracker.cover;
   if (cover?.kind === 'leader') {
     const leaderCardId = Number(starter.leader?.tts?.cardId);
-    const matches = (bag.ContainedObjects || []).filter((object) => object?.Name === 'CardCustom' && Number(object.CardID) === leaderCardId);
-    if (matches.length !== 1) {
-      throw new Error(`Tracker ${tracker.id} expected exactly one selected Leader cover in starter ${starter.id}; found ${matches.length}.`);
-    }
+    const matches = (bag.ContainedObjects || []).filter(object => object?.Name === 'CardCustom' && Number(object.CardID) === leaderCardId);
+    if (matches.length !== 1) throw new Error(`Tracker ${tracker.id} expected exactly one selected Leader cover in starter ${starter.id}; found ${matches.length}.`);
     return matches[0];
   }
-
   if (cover?.kind === 'component') {
     const marker = `${SUPPLEMENTAL_GUID_NOTE_PREFIX}${cover.componentId}`;
-    const matches = (bag.ContainedObjects || []).filter((object) => object?.GMNotes === marker);
-    if (matches.length !== 1) {
-      throw new Error(`Tracker ${tracker.id} expected exactly one supplemental cover ${cover.componentId} in starter ${starter.id}; found ${matches.length}.`);
-    }
+    const matches = (bag.ContainedObjects || []).filter(object => object?.GMNotes === marker);
+    if (matches.length !== 1) throw new Error(`Tracker ${tracker.id} expected exactly one supplemental cover ${cover.componentId} in starter ${starter.id}; found ${matches.length}.`);
     return matches[0];
   }
-
   throw new Error(`Tracker ${tracker.id} has unsupported cover definition ${JSON.stringify(cover || null)}.`);
 }
 
 export function assembleReadySupplementals(save, starterManifest, supplementalManifest, releaseAssets) {
   const version = String(starterManifest?.gameVersion || '').trim();
   if (!version) throw new Error('Starter manifest does not declare gameVersion.');
-  if (releaseAssets?.gameVersion !== version || releaseAssets?.releaseTag !== version) {
-    throw new Error(`Hosted TTS release assets do not match starter manifest ${version}.`);
-  }
+  if (releaseAssets?.gameVersion !== version || releaseAssets?.releaseTag !== version) throw new Error(`Hosted TTS release assets do not match starter manifest ${version}.`);
 
   const ready = validateSupplementalManifest(supplementalManifest, version);
   const starters = starterManifest.decks || [];
   if (!starters.length) throw new Error('Starter manifest contains no starter decks.');
   const guid = makeContinuationGuidFactory(save);
   let placedCount = 0;
+  const stackCounts = { proposals: 0, deeds: 0, 'rites-rituals': 0 };
 
   for (const starter of starters) {
     const bag = findStarterBag(save, starter);
-    const starterComponents = ready.filter((component) => (
-      component.deckInclusion === 'every-deck' || component.faction === starter.factionId
-    ));
-    const factionTrackers = starterComponents.filter((component) => component.representation === 'sliding-tracker');
-    const generatedTrackerTags = new Set(factionTrackers.map((component) => component.tts?.snapTag).filter(Boolean));
+    const starterComponents = ready.filter(component => component.deckInclusion === 'every-deck' || component.faction === starter.factionId);
+    const factionTrackers = starterComponents.filter(component => component.representation === 'sliding-tracker');
+    const generatedTrackerTags = new Set(factionTrackers.map(component => component.tts?.snapTag).filter(Boolean));
 
-    bag.ContainedObjects = (bag.ContainedObjects || []).filter(
-      (object) => !String(object?.GMNotes || '').startsWith(SUPPLEMENTAL_GUID_NOTE_PREFIX),
-    );
+    bag.ContainedObjects = (bag.ContainedObjects || []).filter(object => !String(object?.GMNotes || '').startsWith(SUPPLEMENTAL_GUID_NOTE_PREFIX) && !String(object?.GMNotes || '').startsWith(SUPPLEMENTAL_STACK_NOTE_PREFIX));
     for (const object of bag.ContainedObjects || []) removeGeneratedTrackerTags(object, generatedTrackerTags);
 
     const placedNames = [];
     for (const component of starterComponents) {
       const quantity = Number(component.quantity || 0);
-      if (!Number.isInteger(quantity) || quantity <= 0) {
-        throw new Error(`Ready supplemental component ${component.id} has invalid quantity ${component.quantity}.`);
-      }
+      if (!Number.isInteger(quantity) || quantity <= 0) throw new Error(`Ready supplemental component ${component.id} has invalid quantity ${component.quantity}.`);
       for (let copy = 0; copy < quantity; copy += 1) {
         bag.ContainedObjects.push(makeSupplementalObject(component, starter, releaseAssets, guid));
         placedCount += 1;
@@ -297,50 +329,34 @@ export function assembleReadySupplementals(save, starterManifest, supplementalMa
       placedNames.push(quantity === 1 ? component.name : `${component.name} ×${quantity}`);
     }
 
-    for (const tracker of factionTrackers) {
-      const cover = resolveTrackerCover(bag, starter, tracker);
-      addObjectTag(cover, tracker.tts.snapTag);
-    }
+    for (const tracker of factionTrackers) addObjectTag(resolveTrackerCover(bag, starter, tracker), tracker.tts.snapTag);
+    for (const key of stackStarterFamilies(bag, guid)) stackCounts[key] += 1;
 
     const baseDescription = stripSupplementalDescription(bag.Description);
-    bag.Description = placedNames.length
-      ? `${baseDescription}\n\nReady supplemental components: ${placedNames.join(', ')}`
-      : baseDescription;
+    bag.Description = placedNames.length ? `${baseDescription}\n\nReady supplemental components: ${placedNames.join(', ')}` : baseDescription;
   }
+
+  const expectedStacks = { proposals: 2, deeds: 2, 'rites-rituals': 2 };
+  for (const [key, expected] of Object.entries(expectedStacks)) if (stackCounts[key] !== expected) throw new Error(`Generated starter kits contain ${stackCounts[key]} ${key} stacks; expected ${expected}.`);
 
   const oldSentence = 'This scaffold intentionally does not yet include faction-specific supplemental trackers or secondary components. Rules remain manual.';
-  const newSentence = 'Shared components marked for every deck and faction supplemental components marked ready are included automatically in the appropriate starter kits; single-sided faction components use faction-color backs, and sliding trackers use production-derived snap registration and tagged physical cover cards. Rules remain manual.';
+  const newSentence = 'Shared components and production-ready faction components are included automatically in the matching starter kits. Proposals, Deeds, and Mystics Rites/Ritual are packaged as family stacks; sliding trackers use renderer-derived registration points. Rules remain manual.';
   for (const field of ['Note', 'Rules']) {
     const text = String(save[field] || '');
-    save[field] = text.includes(oldSentence)
-      ? text.replace(oldSentence, newSentence)
-      : text.includes(newSentence)
-        ? text
-        : `${text}\n\n${newSentence}`.trim();
+    save[field] = text.includes(oldSentence) ? text.replace(oldSentence, newSentence) : text.includes(newSentence) ? text : `${text}\n\n${newSentence}`.trim();
   }
-
-  return {
-    save,
-    placedCount,
-    readyComponentCount: ready.length,
-  };
+  return { save, placedCount, readyComponentCount: ready.length, stackCounts };
 }
 
 async function readReleaseAssetManifest(version) {
-  const names = await readdir(STAGING_ROOT).catch((error) => {
-    if (error.code === 'ENOENT') {
-      throw new Error('TTS supplemental save assembly requires staged hosted assets. Run npm run tts:release:stage first.');
-    }
+  const names = await readdir(STAGING_ROOT).catch(error => {
+    if (error.code === 'ENOENT') throw new Error('TTS supplemental save assembly requires staged hosted assets. Run npm run tts:release:stage first.');
     throw error;
   });
-  const candidates = names.filter((name) => /^Gauntlet_.*_TTS_Release_Assets\.json$/i.test(name));
-  if (candidates.length !== 1) {
-    throw new Error(`Expected exactly one staged TTS release-asset manifest; found ${candidates.length}.`);
-  }
+  const candidates = names.filter(name => /^Gauntlet_.*_TTS_Release_Assets\.json$/i.test(name));
+  if (candidates.length !== 1) throw new Error(`Expected exactly one staged TTS release-asset manifest; found ${candidates.length}.`);
   const manifest = JSON.parse(await readFile(join(STAGING_ROOT, candidates[0]), 'utf8'));
-  if (manifest.gameVersion !== version || manifest.releaseTag !== version) {
-    throw new Error(`Staged TTS release-asset manifest targets ${manifest.gameVersion || manifest.releaseTag || 'unknown'}; expected ${version}.`);
-  }
+  if (manifest.gameVersion !== version || manifest.releaseTag !== version) throw new Error(`Staged TTS release-asset manifest targets ${manifest.gameVersion || manifest.releaseTag || 'unknown'}; expected ${version}.`);
   return manifest;
 }
 
@@ -352,18 +368,18 @@ async function main() {
     return;
   }
 
-  const starterManifest = JSON.parse(await readFile(join(release.outputRoot, 'starter-deck-manifest.json'), 'utf8').catch((error) => {
+  const starterManifest = JSON.parse(await readFile(join(release.outputRoot, 'starter-deck-manifest.json'), 'utf8').catch(error => {
     if (error.code === 'ENOENT') throw new Error('TTS supplemental save assembly requires the current starter manifest. Run npm run tts:build first.');
     throw error;
   }));
-  const supplementalManifest = JSON.parse(await readFile(join(release.outputRoot, 'supplemental-manifest.json'), 'utf8').catch((error) => {
+  const supplementalManifest = JSON.parse(await readFile(join(release.outputRoot, 'supplemental-manifest.json'), 'utf8').catch(error => {
     if (error.code === 'ENOENT') throw new Error('TTS supplemental save assembly requires the supplemental manifest. Run npm run tts:supplementals first.');
     throw error;
   }));
   const releaseAssets = await readReleaseAssetManifest(release.version);
   const versionedName = `Gauntlet_${release.version}_TTS_Review_Scaffold.json`;
   const versionedPath = join(release.outputRoot, versionedName);
-  const save = JSON.parse(await readFile(versionedPath, 'utf8').catch((error) => {
+  const save = JSON.parse(await readFile(versionedPath, 'utf8').catch(error => {
     if (error.code === 'ENOENT') throw new Error('TTS supplemental save assembly requires the generated review scaffold. Run npm run tts:save first.');
     throw error;
   }));
@@ -372,12 +388,12 @@ async function main() {
   const aliasPath = join(CURRENT_ALIAS_ROOT, 'Gauntlet_TTS_Review_Scaffold.json');
   await writeFile(versionedPath, jsonText(result.save));
   await writeFile(aliasPath, jsonText(result.save));
-  console.log(`Assembled ${result.placedCount} ready supplemental objects from ${result.readyComponentCount} ready component definitions into ${relative(ROOT, versionedPath)}.`);
+  console.log(`Assembled ${result.placedCount} ready supplemental objects from ${result.readyComponentCount} component definitions into ${relative(ROOT, versionedPath)}; stacks=${JSON.stringify(result.stackCounts)}.`);
   console.log(`Hosted supplemental assets are resolved from ${basename(releaseAssets.sourceOutput || STAGING_ROOT)} release staging.`);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  main().catch((error) => {
+  main().catch(error => {
     console.error(error.stack || error.message || error);
     process.exitCode = 1;
   });
