@@ -38,12 +38,55 @@ try {
       deviceScaleFactor: 2,
     });
     const page = await context.newPage();
-    await page.goto(`${BASE_URL}/rulebook/?rules=candidate#card-anatomy`, { waitUntil: 'networkidle' });
-    const anatomy = page.locator('[data-card-anatomy].markers-positioned');
+    page.on('console', message => console.log(`[browser:${message.type()}] ${message.text()}`));
+    page.on('pageerror', error => console.error(`[browser:pageerror] ${error.message}`));
+
+    await page.goto(`${BASE_URL}/rulebook/?rules=candidate#card-anatomy`, { waitUntil: 'load' });
+    await page.waitForSelector('#card-anatomy', { timeout: 20000 });
+
+    // The Rulebook and Card Anatomy enhancement are separate modules. Replaying
+    // the render event here makes the publication renderer deterministic even
+    // if the browser delivered the first event before the enhancement module
+    // had registered its listener.
+    await page.evaluate(() => {
+      document.dispatchEvent(new CustomEvent('gauntlet:rulebook-rendered', {
+        detail: { mode: 'candidate' },
+      }));
+    });
+
+    const anatomy = page.locator('[data-card-anatomy]');
     await anatomy.waitFor({ state: 'visible', timeout: 20000 });
+
+    await page.waitForFunction(() => {
+      const frame = document.querySelector('.card-anatomy-card');
+      const status = frame?.contentDocument?.body?.dataset.renderReady;
+      return status === 'true' || status === 'error';
+    }, undefined, { timeout: 30000 });
+
+    const renderState = await page.evaluate(() => {
+      const frame = document.querySelector('.card-anatomy-card');
+      const body = frame?.contentDocument?.body;
+      return {
+        status: body?.dataset.renderReady || '',
+        message: body?.textContent?.trim() || '',
+      };
+    });
+    if (renderState.status !== 'true') {
+      throw new Error(`Production card renderer failed: ${renderState.message || 'unknown renderer error'}`);
+    }
+
+    // Marker positions are derived from live card DOM geometry. Trigger one
+    // final positioning pass only after the production iframe reports ready.
+    await page.evaluate(() => window.dispatchEvent(new Event('resize')));
+    await page.waitForFunction(() => document.querySelector('[data-card-anatomy]')?.classList.contains('markers-positioned'), undefined, {
+      timeout: 10000,
+    });
+
     const figure = anatomy.locator('.card-anatomy-figure');
     await figure.waitFor({ state: 'visible' });
-    await page.evaluate(() => document.fonts?.ready);
+    await page.evaluate(async () => {
+      if (document.fonts?.ready) await document.fonts.ready;
+    });
 
     fs.mkdirSync(path.dirname(OUTPUT), { recursive: true });
     const bytes = await figure.screenshot({ type: 'png' });
