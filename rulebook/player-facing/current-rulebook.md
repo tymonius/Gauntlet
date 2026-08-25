@@ -4,7 +4,7 @@
 
 **Version 0.6.4 — Release Candidate**
 
-> **Release candidate.** This view layers the current-development rules over the published v0.6.3 Rulebook. Switch back to **Released v0.6.3** for the published ruleset.
+> **Release candidate.** This is the maintained current-development Rulebook source. Switch back to **Released v0.6.3** for the published ruleset.
 
 ---
 
@@ -450,7 +450,7 @@ A player moves again after a battle only when a rule or effect directly permits 
 >
 > This is a memory cue only; it does not alter timing or permission.
 
-## Pending Battles, Terms, and Onset
+## Terms and Onset
 
 ### How it works
 
@@ -720,8 +720,8 @@ This victory check occurs as part of resolving the legal capture. It does not wa
 The capture may occur through:
 
 - the normal Capture step;
-- a Leader ability;
-- a faction ability;
+- a Leader Ability;
+- a Faction Feature;
 - a playable-card effect;
 - a Territory effect; or
 - any other rule that legally captures that Territory or advances the player's Front Line to include it.
@@ -1221,11 +1221,12 @@ Determine the winner, then gain normal Command before applying other effects cau
 
 #### Orders
 
-> **Onward — 1 Command:** During your Movement, move one additional Position. This may start a Battle.
 
-> **Rally — 1 Command:** Before dice are rolled in a battle you initiated, add +1 to your battle total.
+> **Onward — 1 Command · No Action · During Movement:** During your Movement, move one additional Position. This may start a Battle.
 
-> **Rout — 2 Command:** Advance one Position. This movement may initiate a battle.
+> **Rally — 1 Command · No Action · Before dice · Attacking:** Add +1 to your battle total in a battle you initiated.
+
+> **Rout — 2 Command · No Action · End of Aftermath · Win as attacker:** Advance one Position. This movement may initiate a battle.
 
 Onward cannot be used after a battle. Rout creates a new movement sequence after the completed Aftermath.
 
@@ -1236,11 +1237,12 @@ Onward cannot be used after a battle. Rout creates a new movement sequence after
 
 #### Orders
 
-> **Entrench — 1 Command:** Before dice are rolled in a battle you did not initiate, add +1 to your battle total.
 
-> **Repel — 1 Command:** During the Aftermath of a battle you did not initiate and won, after the opponent's normal retreat, they retreat one additional position, if able.
+> **Entrench — 1 Command · No Action · Before dice · Defending:** Add +1 to your battle total in a battle you did not initiate.
 
-> **Fortify — 2 Command:** During the Aftermath of a battle you won while occupying an enemy-controlled Territory, advance your Front Line by one Territory, if able.
+> **Repel — 1 Command · No Action · Aftermath · Win as defender:** After the opponent's normal retreat, they retreat one additional Position, if able.
+
+> **Fortify — 2 Command · No Action · Aftermath · Win while occupying enemy Territory:** Advance your Front Line by one Territory, if able.
 
 ## Military-specific rules
 
@@ -1262,7 +1264,7 @@ War Crimes and Shock and Awe may prohibit movement, capture, or Orders resulting
 
 ## How it works
 
-Before a battle begins, a Diplomat may offer **Terms**. The Diplomat stakes Influence and presents a Proposal. The opponent may accept, preventing the battle, or refuse and fight under the Proposal's refusal effect.
+During Onset, a Diplomat may offer **Terms**. The Diplomat stakes Influence and presents a Proposal. The opponent may accept, ending the battle sequence during Onset before Gambits are set, or refuse and fight under the Proposal's refusal effect.
 
 Accepted or successfully imposed Proposals become Treaty Articles. Ratify five different Proposals and survive until the start of your next turn to win through the **Peace Treaty**.
 
@@ -1394,14 +1396,14 @@ At the start of the Diplomat's turn, after the Capture step and before the Draw 
 **Archetype:** Agreement, card flow, and settlement
 **Motto:** *Words first. War last.*
 
-> **Cordiality:** Once per turn, after the opponent accepts your Terms, draw one card.
+> **Cordiality — No Action · Once per turn · After accepted Terms:** After the opponent accepts your Terms, draw one card.
 
 ### Senator
 
 **Archetype:** Risk management, resilience, and imposition
 **Motto:** *Procedure endures.*
 
-> **Political Capital:** Once per turn, when you would lose staked Influence after losing a battle following refused Terms, you may put up to that many cards from your Hand in your Graveyard. Recover 1 staked Influence for each card put there; lose the rest.
+> **Political Capital — No Action · Once per turn · After losing following refused Terms:** When you would lose staked Influence, put up to that many cards from Hand in your Graveyard. Recover 1 staked Influence per card; lose the rest.
 
 ## Proposal set
 
@@ -1664,21 +1666,14 @@ The progression continues without a fixed maximum. Each additional +1 costs one 
 **Archetype:** Collateral, planned purchases, and flexible financing
 **Motto:** *Credit closes the distance.*
 
-> **Line of Credit:** The first time on your turn that you would buy or buy out a Deed, you may use one card from your Hand or Treasury as collateral.
->
-> - It contributes payment equal to its value.
-> - It cannot contribute more than half the purchase cost, rounded down.
-> - Pay the remaining cost with Capital.
-> - Put the collateral in your Discard Pile after the purchase.
-> - Unused collateral value is lost.
-> - Line of Credit applies only to Deed purchases and buyouts.
+> **Line of Credit — No Action · First Deed purchase each turn · Collateral:** Use one card from Hand or Treasury as collateral. It contributes up to half the purchase cost, rounded down; pay the rest with Capital, then discard the collateral.
 
 ### Executive
 
 **Archetype:** Offensive acquisition, Occupation, and immediate control
 **Motto:** *Take the ground. Close the deal.*
 
-> **Hostile Takeover:** During Denouement, if you won a battle as the attacker this turn and are now the occupier of that enemy Territory, you may take an Action to buy or buy out its Deed. Treat yourself as the occupier, but not the controller, for the cost calculation. If the purchase succeeds, advance your Front Line by one Territory, if able.
+> **Hostile Takeover — 1 Action · Denouement · After winning as attacker:** While occupying that enemy Territory, buy or buy out its Deed. Treat yourself as occupier for cost. If successful, advance your Front Line by one Territory, if able.
 
 ## Financier-specific rules
 
@@ -1885,7 +1880,7 @@ At each choice stage:
 **Archetype:** Territory effects, reconnaissance, and field operations
 **Motto:** *Know the land before the battle begins.*
 
-> **Fieldcraft:** Once per turn, when a printed Territory effect would affect you, your movement, or a battle involving you, you may spend 1 Intel to ignore that Territory effect until the end of the turn.
+> **Fieldcraft — 1 Intel · No Action · Once per turn · Territory effect:** When a printed Territory effect would affect you, your movement, or a battle involving you, ignore that effect until the end of the turn.
 
 Fieldcraft does not alter Territory control, Occupation, Capture, Defensive Edge, Last Stand battle bonuses, or limits calculated from Territories.
 
@@ -1894,7 +1889,7 @@ Fieldcraft does not alter Territory control, Occupation, Capture, Defensive Edge
 **Archetype:** Mission tempo and operational coordination
 **Motto:** *Information never rests. Momentum is the weapon.*
 
-> **Mission Control:** Once per turn, after completing a normal Mission, you may immediately start another eligible Mission from your Hand without spending an Action. It cannot complete that turn. Mission Control cannot start a Special Operation.
+> **Mission Control — No Action · Once per turn · After completing a normal Mission:** Immediately start another eligible Mission from Hand. It cannot complete that turn and cannot be a Special Operation.
 
 ## Intelligence-specific rules
 
@@ -1955,7 +1950,7 @@ Place all three Rite cards incomplete side up. Mystics use no resource tracker.
 
 During Denouement, take an Action and pay a Rite's beginning cost to begin it. You may have only one begun but incomplete Rite at a time, and a Rite cannot complete on the turn it begins.
 
-Once its condition is met on a later turn, complete it and unlock the next faction ability. Completed Rites remain complete.
+Once its condition is met on a later turn, complete it and unlock the next Faction Feature. Completed Rites remain complete.
 
 ### Complete rules
 
@@ -2014,7 +2009,7 @@ If you lose a battle before completion, put both bound cards in your Graveyard a
 
 > **Completion:** On a later turn, complete this Rite when you win a battle without setting a Gambit or choosing a Tactic.
 
-Using Transmutation, an Asset, Overlay, Territory, Leader ability, or card from another source does not by itself prevent completion.
+Using Transmutation, an Asset, Overlay, Territory, Leader Ability, or card from another source does not by itself prevent completion.
 
 If you lose a battle before completion, reset the Rite.
 
@@ -2073,7 +2068,7 @@ Withdrawal neither completes nor interrupts the Ritual because it has no winner 
 **Archetype:** Sacrifice sequencing and card conversion
 **Motto:** *Nothing is fixed. Everything can be transformed.*
 
-> **Materia Prima:** The first time on your turn that you put a card from your Hand in your Graveyard as part of a Rite, Transmutation, or an Arcane card effect, draw one card. If this occurs during a battle, draw after the Aftermath of the battle.
+> **Materia Prima — No Action · Once per turn · First qualifying sacrifice from Hand:** Draw one card the first time on your turn that a card from Hand enters your Graveyard for a Rite, Transmutation, or Arcane card effect. During battle, draw after the Aftermath.
 
 A Gambit does not trigger Materia Prima merely because it moves from battle to your Graveyard during the Aftermath.
 
@@ -2082,7 +2077,7 @@ A Gambit does not trigger Materia Prima merely because it moves from battle to y
 **Archetype:** Rite endurance and protective sacrifice
 **Motto:** *The spirits remember what the living abandon.*
 
-> **Guardians of the Circle:** The first time on your turn that you lose a battle and that loss would interrupt a begun Rite or your Ritual of Ascendance, you may put one Arcane card from your Hand in your Graveyard whose value is at least 1 plus the number of Rites you have completed. If you do, prevent that interruption.
+> **Guardians of the Circle — No Action · Once per turn · Battle loss would interrupt Rite or Ritual:** Put one Arcane card from Hand in your Graveyard whose value is at least 1 plus your completed Rites. If you do, prevent that interruption.
 
 Guardians of the Circle cannot preserve a continuing position requirement.
 
@@ -2210,7 +2205,7 @@ A failed Reserve draw or effect-generated draw does not trigger Purification.
 **Archetype:** Judgment, Purge, and permanent removal
 **Motto:** *We judge. We purge.*
 
-> **Final Judgment:** Once per turn, during the Aftermath of a battle you won, after battle cards are cleared and effects triggered by those moves are applied, you may immediately Purge without taking an Action. Reduce that Purge's Conviction cost by 1, to a minimum of 1.
+> **Final Judgment — No Action · Once per turn · After winning a battle:** After battle cards are cleared, immediately Purge. Reduce that Purge's Conviction cost by 1, to a minimum of 1.
 
 The normal Conviction gain from that battle may occur before Final Judgment. Final Judgment is the Grand Inquisitor's Leader Ability. It does not consume the once-per-turn permission to spend an Action on Purge and does not activate the two-phase Purge permission.
 
@@ -2219,11 +2214,11 @@ The normal Conviction gain from that battle may occur before Final Judgment. Fin
 **Archetype:** Defense, retaliation, and pursuit
 **Motto:** *You ran. I followed.*
 
-> **Relentless Pursuit:** End their turn, then advance one Position toward their end. If this movement initiates a battle, you are the attacker.
+> **Relentless Pursuit — 2 Conviction · No Action · Once per turn · After defeating an attacking opponent:** End their turn, then advance one Position toward their end. If this movement initiates a battle, you are the attacker.
 
 Accepted Terms may still end the resulting battle sequence during Onset before Gambits are set.
 
-Withdrawal has no loser, so neither Leader ability triggers from it.
+Withdrawal has no loser, so neither Leader Ability triggers from it.
 
 ## Inquisition-specific rules
 
@@ -2328,7 +2323,7 @@ Heresy follows the shared copied-effect rule but retains permission for one addi
 
 **Tiebreak Roll:** A separate sudden-death roll used when a tied battle total is not otherwise resolved. Each player rolls one unmodified die; reroll further ties.
 
-**Withdrawal:** Leaving a pending or active battle without determining a winner. Withdrawal is not Fall Back or retreat.
+**Withdrawal:** Leaving a battle sequence without determining a winner. Withdrawal is not Fall Back or retreat.
 
 ---
 
