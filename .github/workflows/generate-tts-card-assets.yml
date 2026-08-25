@@ -192,12 +192,12 @@ jobs:
 
                 for file in "${changed_files[@]}"; do
                   case "$file" in
-                    .github/workflows/generate-tts-card-assets.yml|scripts/generate-tts-save.mjs|scripts/assemble-tts-supplemental-save.mjs|scripts/tts-supplemental-geometry.mjs|tts/apply-table-layout.mjs|tts/validate-v070-authoritative-save.mjs)
+                    .github/workflows/generate-tts-card-assets.yml|scripts/generate-tts-save.mjs|scripts/assemble-tts-supplemental-save.mjs|scripts/tts-supplemental-geometry.mjs|tts/apply-table-layout.mjs|tts/validate-v070-authoritative-save.mjs|tests/tts-*|tests/universal-reference-watermark.test.ts)
                       ;;
                     scripts/generate-tts-finalized-supplementals.mjs|tts/finalized-supplemental-renderer/*)
                       render_finalized=true
                       ;;
-                    scripts/generate-tts-supplemental-assets.mjs|scripts/tts-sliding-trackers.mjs|tts/supplemental-renderer/*|images/Gauntlet-G.svg|images/artwork/supplemental/*)
+                    scripts/generate-tts-supplemental-assets.mjs|scripts/tts-sliding-trackers.mjs|tts/supplemental-renderer/*|card-design/universal-reference.css|card-design/reference-card.js|card-design/reference-card.css|card-design/supplemental-refinements.css|images/Gauntlet-G.svg|images/artwork/supplemental/*)
                       render_supplementals=true
                       ;;
                     tts/render-current-mystics-assets.mjs)
