@@ -1,10 +1,20 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
+const rendererPage = readFileSync('tts/supplemental-renderer/index.html', 'utf8');
 const bridge = readFileSync('tts/supplemental-renderer/visual-fixes.css', 'utf8');
+const componentChrome = readFileSync('card-design/leader-card.css', 'utf8');
 const production = readFileSync('card-design/supplemental-refinements.css', 'utf8');
 
 describe('TTS faction-reference render bridge', () => {
+  it('loads the shared faction-component variables used by the Card Review catalog', () => {
+    expect(rendererPage).toContain('/card-design/leader-card.css');
+    expect(componentChrome).toContain('.faction-component-card[data-faction="financiers"]');
+    expect(componentChrome).toContain('--component-parchment-tint');
+    expect(componentChrome).toContain('--component-footer-tint');
+    expect(componentChrome).toContain('--faction-symbol');
+  });
+
   it('leaves faction-reference parchment treatment to the production supplemental stylesheet', () => {
     expect(production).toContain('.reference-card[data-component-id="financiers-reference"] .reference-card-interior');
     expect(production).toContain('linear-gradient(var(--component-parchment-tint), var(--component-parchment-tint))');
