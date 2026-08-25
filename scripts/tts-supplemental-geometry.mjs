@@ -3,11 +3,19 @@ const SNAP_Y = 0.12;
 export const STANDARD_CARD_SHORT_EDGE = 2.5;
 export const STANDARD_CARD_LONG_EDGE = 3.5;
 
+// TTS' stock card object is not 3.5 world/grid units tall even when the source
+// artwork is authored as a 2.5 x 3.5 inch card. Its measured tabletop height is
+// about 3.06 world units. Tracker registrations are authored as physical-card
+// offsets, so convert them by fraction of card height rather than treating CSS
+// inches as TTS world units.
+export const TTS_STANDARD_CARD_WORLD_LONG_EDGE = 3.06;
+
 // Tabletop Simulator's Custom_Tile and CardCustom objects use different native
 // tabletop footprints. This is the single physical conversion used when a
 // card-sized printed tracker is represented as a Custom_Tile. It is part of the
 // object representation contract, not a post-generation correction.
 export const CUSTOM_TILE_CARD_LINEAR_SCALE = 1.5;
+export const TRACKER_LOCAL_LONG_EDGE = TTS_STANDARD_CARD_WORLD_LONG_EDGE / CUSTOM_TILE_CARD_LINEAR_SCALE;
 export const ROUNDED_RECTANGLE_TILE_TYPE = 3;
 
 function vector(x = 0, y = 0, z = 0) {
@@ -43,10 +51,11 @@ export function makeTrackerSnapPoints(component) {
     }
     previous = physicalTravel;
 
-    // Renderer offsets are physical-card inches measured upward from the fully
-    // covered position. Attached snap positions are local to the uniformly
-    // enlarged Custom_Tile, so convert physical travel exactly once here.
-    const localZ = -(physicalTravel / CUSTOM_TILE_CARD_LINEAR_SCALE);
+    // The printed line location is a fraction of the authored 3.5-inch card.
+    // Apply that same fraction to the actual TTS card-sized tracker length. This
+    // is what makes the Leader card's bottom edge land on the printed value line.
+    const lineFraction = physicalTravel / STANDARD_CARD_LONG_EDGE;
+    const localZ = -(lineFraction * TRACKER_LOCAL_LONG_EDGE);
     return {
       Position: vector(0, SNAP_Y, Number(localZ.toFixed(6))),
       Rotation: vector(0, 0, 0),
