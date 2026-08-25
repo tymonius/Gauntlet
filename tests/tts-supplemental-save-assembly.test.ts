@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { assembleReadySupplementals } from '../scripts/assemble-tts-supplemental-save.mjs';
-import { CUSTOM_TILE_CARD_LINEAR_SCALE, ROUNDED_RECTANGLE_TILE_TYPE } from '../scripts/tts-supplemental-geometry.mjs';
+import {
+  CUSTOM_TILE_CARD_LINEAR_SCALE,
+  ROUNDED_RECTANGLE_TILE_TYPE,
+  STANDARD_CARD_LONG_EDGE,
+  TTS_STANDARD_CARD_WORLD_LONG_EDGE,
+} from '../scripts/tts-supplemental-geometry.mjs';
 
 const PENDING_NOTE = 'Ready shared and faction supplemental components are assembled into the same starter kit later in the TTS package pipeline. Rules remain manual.';
 
@@ -165,7 +170,7 @@ describe('TTS ready supplemental save assembly', () => {
     expect(card.CustomDeck['200'].UniqueBack).toBe(false);
   });
 
-  it('creates sliding trackers at final card-sized geometry with canonical static snap points', () => {
+  it('creates sliding trackers at final card-sized geometry with line-fraction snap points', () => {
     const { save, starters, supplementals, assets } = fixture();
     supplementals.ready.push({
       id: 'military-command-tracker',
@@ -176,7 +181,7 @@ describe('TTS ready supplemental save assembly', () => {
       productionStatus: 'ready',
       representation: 'sliding-tracker',
       cover: { kind: 'leader' },
-      physicalScale: { minimum: 0, maximum: 4 },
+      physicalScale: { cardWidth: 2.5, cardHeight: 3.5, minimum: 0, maximum: 4 },
       tts: {
         faceFile: 'supplementals/trackers/command.png',
         widthScale: 2.5,
@@ -215,10 +220,14 @@ describe('TTS ready supplemental save assembly', () => {
     expect(tracker.Transform.scaleZ).toBe(CUSTOM_TILE_CARD_LINEAR_SCALE);
     expect(tracker.AttachedSnapPoints).toHaveLength(5);
     expect(tracker.AttachedSnapPoints[0].Position.z).toBe(0);
-    expect(tracker.AttachedSnapPoints[4].Position.z).toBeCloseTo(-(2.3 / CUSTOM_TILE_CARD_LINEAR_SCALE), 6);
+    expect(tracker.AttachedSnapPoints[4].Position.z)
+      .toBeCloseTo(-(2.3 / STANDARD_CARD_LONG_EDGE) * (TTS_STANDARD_CARD_WORLD_LONG_EDGE / CUSTOM_TILE_CARD_LINEAR_SCALE), 6);
+    expect(Math.abs(tracker.AttachedSnapPoints[4].Position.z) * tracker.Transform.scaleZ)
+      .toBeCloseTo((2.3 / STANDARD_CARD_LONG_EDGE) * TTS_STANDARD_CARD_WORLD_LONG_EDGE, 6);
     expect(tracker.AttachedSnapPoints.every((point: any) => point.Tags.includes('military-command'))).toBe(true);
     expect(tracker.LuaScript).toContain('self.setSnapPoints({');
     expect(tracker.LuaScript).not.toContain('getBoundsNormalized');
+    expect(tracker.LuaScript).not.toContain('Wait.frames');
     expect(leader.Tags).toContain('military-command');
   });
 

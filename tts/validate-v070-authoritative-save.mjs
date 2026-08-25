@@ -1,7 +1,11 @@
 import { readFile } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 import { resolveCurrentTtsRelease, ROOT } from '../scripts/tts-current-catalog.mjs';
-import { trackerPresentation } from '../scripts/tts-supplemental-geometry.mjs';
+import {
+  STANDARD_CARD_LONG_EDGE,
+  TTS_STANDARD_CARD_WORLD_LONG_EDGE,
+  trackerPresentation,
+} from '../scripts/tts-supplemental-geometry.mjs';
 
 const SUPPLEMENTAL_GUID_NOTE_PREFIX = 'gauntlet:supplemental:';
 const SUPPLEMENTAL_STACK_NOTE_PREFIX = 'gauntlet:supplemental-stack:';
@@ -11,6 +15,7 @@ const TERRITORY_TAG = 'gauntlet-territory';
 const DEED_TAG = 'gauntlet-deed';
 const DEED_STACK_TAG = 'gauntlet-deed-stack';
 const FACTION_ZONE_TAG = 'gauntlet-faction-zone';
+const HAND_TRIGGER_NOTE_PREFIX = 'gauntlet:hand-trigger:';
 
 const FACTION_ROW_Z = Object.freeze({
   military: -12,
@@ -72,8 +77,8 @@ function validateTableWorkspace(save) {
   if (territory.length !== 8 || territory.some(point => !close(point.Rotation?.y, 90))) {
     throw new Error('Territory table snaps do not match the recovered eight-position landscape contract.');
   }
-  if (deeds.length !== 16 || deeds.some(point => !close(Math.abs(point.Position?.x), 4.35) || !close(point.Rotation?.y, 0))) {
-    throw new Error('Deed table snaps do not match the recovered ±4.35 / rotation-0 contract.');
+  if (deeds.length !== 16 || deeds.some(point => !close(Math.abs(point.Position?.x), 4.35) || !close(point.Rotation?.y, 90))) {
+    throw new Error('Deed table snaps must keep SidewaysCard Deeds landscape at ±4.35 / rotation 90.');
   }
   if (faction.length !== 24) throw new Error(`Expected 24 Faction Zone card snaps; found ${faction.length}.`);
   if (faction.filter(point => Number(point.Position?.z) < 0).some(point => !close(point.Rotation?.y, 180))) {
@@ -116,8 +121,8 @@ function validateTableWorkspace(save) {
 }
 
 function validateHandsAndSeats(save) {
-  if (save.Hands?.Enable !== true || save.Hands?.HandTransforms?.length !== 2) {
-    throw new Error('Expected exactly two enabled top-level TTS hand transforms.');
+  if (save.Hands?.Enable !== true || save.Hands?.DisableUnused !== false || save.Hands?.HandTransforms?.length !== 2) {
+    throw new Error('Expected exactly two always-enabled top-level TTS hand transforms.');
   }
   const red = save.Hands.HandTransforms.find(hand => hand.Color === 'Red');
   const blue = save.Hands.HandTransforms.find(hand => hand.Color === 'Blue');
@@ -130,17 +135,30 @@ function validateHandsAndSeats(save) {
   for (const [hand, side, z, rotY] of expectedHands) {
     if (!close(hand.Transform?.posZ, z) || !close(hand.Transform?.rotY, rotY)
       || !close(hand.Transform?.scaleX, 34) || !close(hand.Transform?.scaleY, 2) || !close(hand.Transform?.scaleZ, 5.5)) {
-      throw new Error(`${side} hand transform does not match the recovered post-round-four rear-edge hand geometry.`);
+      throw new Error(`${side} hand transform does not match the recovered rear-edge hand geometry.`);
     }
   }
 
   const objects = allObjects(save);
-  const pseudoHands = objects.filter(object => object?.Name === 'HandTrigger');
-  if (pseudoHands.length) throw new Error(`Found ${pseudoHands.length} duplicate HandTrigger ObjectStates; hand zones must live only under Hands.HandTransforms.`);
+  const handTriggers = objects.filter(object => object?.Name === 'HandTrigger');
+  if (handTriggers.length !== 2) throw new Error(`Expected exactly two real HandTrigger ObjectStates; found ${handTriggers.length}.`);
+  for (const [hand, side, z, rotY] of expectedHands) {
+    const trigger = handTriggers.find(object => object.GMNotes === `${HAND_TRIGGER_NOTE_PREFIX}${side.toLowerCase()}`);
+    if (!trigger || trigger.Nickname !== `${side} Hand`
+      || !close(trigger.Transform?.posZ, z) || !close(trigger.Transform?.rotY, rotY)
+      || !close(trigger.Transform?.scaleX, 34) || !close(trigger.Transform?.scaleY, 2) || !close(trigger.Transform?.scaleZ, 5.5)) {
+      throw new Error(`${side} real HandTrigger is missing or does not match the serialized HandTransform.`);
+    }
+    for (const key of ['posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ', 'scaleX', 'scaleY', 'scaleZ']) {
+      if (!close(trigger.Transform?.[key], hand.Transform?.[key], 0.00001)) {
+        throw new Error(`${side} HandTrigger and Hands.HandTransforms disagree at ${key}.`);
+      }
+    }
+  }
 
   const fogVolumes = objects.filter(object => object?.Name === 'FogOfWarTrigger');
   if (fogVolumes.length) {
-    throw new Error(`Found ${fogVolumes.length} FogOfWarTrigger objects. Player privacy must use actual TTS hand zones without visible table-spanning fog volumes.`);
+    throw new Error(`Found ${fogVolumes.length} FogOfWarTrigger objects. Player privacy must use real HandTrigger zones without table-spanning fog volumes.`);
   }
 
   const handEligible = objects.filter(object => object?.Name === 'CardCustom' || object?.Name === 'DeckCustom');
@@ -253,12 +271,14 @@ function validateTerritoriesDeedsAndFactionEligibility(save, manifest) {
   if (deeds.length !== 16) throw new Error(`Expected 16 packaged Deed card objects across two starters; found ${deeds.length}.`);
   for (const card of deeds) {
     if (card.SidewaysCard !== true || !close(card.Transform?.rotY, 0)) {
-      throw new Error(`Deed ${card.Nickname || card.GUID} does not use the recovered landscape presentation at rotY 0.`);
+      throw new Error(`Deed ${card.Nickname || card.GUID} does not use the standard landscape SidewaysCard presentation.`);
     }
     if (!close(card.Transform?.scaleX, 1) || !close(card.Transform?.scaleY, 1) || !close(card.Transform?.scaleZ, 1)) {
       throw new Error(`Deed ${card.Nickname || card.GUID} has nonstandard physical scale.`);
     }
-    if (hasTag(card, FACTION_ZONE_TAG)) throw new Error(`Deed ${card.Nickname || card.GUID} must use dedicated Deed magnets, not generic Faction Zone snaps.`);
+    if (!hasTag(card, FACTION_ZONE_TAG)) {
+      throw new Error(`Deed ${card.Nickname || card.GUID} must snap both to dedicated Deed slots and to generic Faction Zone positions.`);
+    }
   }
 
   const ordinaryCards = objects.filter(object => object?.Name === 'CardCustom' && !hasTag(object, TERRITORY_TAG) && !hasTag(object, DEED_TAG));
@@ -295,19 +315,25 @@ function validateTrackers(save, manifest) {
     }
 
     const actual = object.AttachedSnapPoints || [];
-    if (actual.length !== expected.snapPoints.length || actual.some((point, index) => {
+    const authored = record.tts?.snapPoints || [];
+    if (actual.length !== expected.snapPoints.length || actual.length !== authored.length || actual.some((point, index) => {
       const expectedPoint = expected.snapPoints[index];
+      const authoredPoint = authored[index];
+      const expectedWorldTravel = (Number(authoredPoint.offset) / STANDARD_CARD_LONG_EDGE) * TTS_STANDARD_CARD_WORLD_LONG_EDGE;
+      const actualWorldTravel = Math.abs(Number(point.Position?.z)) * Number(object.Transform?.scaleZ);
       return !close(point.Position?.x, expectedPoint.Position.x, 0.00001)
         || !close(point.Position?.y, expectedPoint.Position.y, 0.00001)
         || !close(point.Position?.z, expectedPoint.Position.z, 0.00001)
+        || !close(actualWorldTravel, expectedWorldTravel, 0.00001)
         || point.RotationSnap !== true
         || !Array.isArray(point.Tags)
         || point.Tags[0] !== expectedPoint.Tags[0];
     })) {
-      throw new Error(`Tracker ${id} serialized snap geometry does not match the shared renderer-to-TTS geometry contract.`);
+      throw new Error(`Tracker ${id} snap geometry does not map each renderer value line to the same fraction of a real TTS card length.`);
     }
     const lua = String(object.LuaScript || '');
-    if (lua !== expected.luaScript || !lua.includes('setSnapPoints') || lua.includes('getBoundsNormalized')) {
+    if (lua !== expected.luaScript || !lua.includes('setSnapPoints')
+      || lua.includes('getBoundsNormalized') || lua.includes('Wait.frames')) {
       throw new Error(`Tracker ${id} runtime snap registration does not match the canonical static renderer mapping.`);
     }
     counts.set(id, counts.get(id) + 1);

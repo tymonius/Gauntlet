@@ -4,6 +4,8 @@ import {
   ROUNDED_RECTANGLE_TILE_TYPE,
   STANDARD_CARD_LONG_EDGE,
   STANDARD_CARD_SHORT_EDGE,
+  TRACKER_LOCAL_LONG_EDGE,
+  TTS_STANDARD_CARD_WORLD_LONG_EDGE,
   trackerPresentation,
 } from '../scripts/tts-supplemental-geometry.mjs';
 
@@ -25,12 +27,14 @@ function trackerComponent() {
 }
 
 describe('TTS physical component sizing', () => {
-  it('defines card-sized tracker presentation once for generation and validation', () => {
+  it('maps renderer line fractions onto the actual TTS card-sized tracker length', () => {
     const presentation = trackerPresentation(trackerComponent());
 
     expect(STANDARD_CARD_SHORT_EDGE).toBe(2.5);
     expect(STANDARD_CARD_LONG_EDGE).toBe(3.5);
+    expect(TTS_STANDARD_CARD_WORLD_LONG_EDGE).toBe(3.06);
     expect(CUSTOM_TILE_CARD_LINEAR_SCALE).toBe(1.5);
+    expect(TRACKER_LOCAL_LONG_EDGE).toBeCloseTo(3.06 / 1.5, 8);
     expect(ROUNDED_RECTANGLE_TILE_TYPE).toBe(3);
 
     expect(presentation.widthScale).toBe(STANDARD_CARD_SHORT_EDGE);
@@ -39,8 +43,15 @@ describe('TTS physical component sizing', () => {
     expect(presentation.stretch).toBe(true);
     expect(presentation.snapPoints).toHaveLength(3);
     expect(presentation.snapPoints[0].Position.z).toBe(0);
-    expect(presentation.snapPoints[1].Position.z).toBeCloseTo(-(0.35 / CUSTOM_TILE_CARD_LINEAR_SCALE), 6);
-    expect(presentation.snapPoints[2].Position.z).toBeCloseTo(-(1.05 / CUSTOM_TILE_CARD_LINEAR_SCALE), 6);
+    expect(presentation.snapPoints[1].Position.z).toBeCloseTo(-(0.35 / 3.5) * (3.06 / 1.5), 6);
+    expect(presentation.snapPoints[2].Position.z).toBeCloseTo(-(1.05 / 3.5) * (3.06 / 1.5), 6);
+
+    // World travel must preserve the printed line's fraction of the card height.
+    expect(Math.abs(presentation.snapPoints[1].Position.z) * presentation.transformScale)
+      .toBeCloseTo((0.35 / 3.5) * 3.06, 6);
+    expect(Math.abs(presentation.snapPoints[2].Position.z) * presentation.transformScale)
+      .toBeCloseTo((1.05 / 3.5) * 3.06, 6);
+
     expect(presentation.luaScript).toContain('self.setSnapPoints({');
     expect(presentation.luaScript).toContain('gauntlet-tracker-influence');
     expect(presentation.luaScript).toContain('registerGauntletTrackerSnaps()');
