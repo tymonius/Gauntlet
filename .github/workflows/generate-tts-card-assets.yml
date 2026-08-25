@@ -190,6 +190,10 @@ jobs:
         run: node tts/apply-v070-qa-corrections.mjs
       - name: Apply table interaction corrections
         run: node tts/apply-v070-table-interaction-corrections.mjs
+      - name: Apply QA round-three corrections
+        run: node tts/apply-v070-qa-round3.mjs
+      - name: Validate QA round-three save
+        run: node tts/validate-v070-qa-round3-save.mjs
       - name: Report TTS release readiness
         run: npm run tts:release:status
       - uses: actions/upload-artifact@v4
