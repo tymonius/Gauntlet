@@ -7,7 +7,7 @@ const workflow = readFileSync('.github/workflows/generate-tts-card-assets.yml', 
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 
 describe('TTS save publisher', () => {
-  it('builds a normal TTS save from the current starter and hosted-asset manifests', () => {
+  it('builds a normal TTS base save from the current starter and hosted-asset manifests', () => {
     expect(publisher).toContain('resolveCurrentTtsRelease');
     expect(publisher).toContain("join(release.outputRoot, 'starter-deck-manifest.json')");
     expect(publisher).toContain('STAGING_ROOT');
@@ -25,16 +25,16 @@ describe('TTS save publisher', () => {
     expect(publisher).toContain('const backUrl = requireHostedUrl(releaseAssets, starter.back.file)');
   });
 
-  it('packages each current starter as a selectable kit with Deck, Leader, and Territories', () => {
+  it('packages each current starter as a selectable kit with Deck, Leader, Territories, token, and die', () => {
     expect(publisher).toContain("objectBase('Bag', `${starter.name} — ${starter.leader.name}`");
     expect(publisher).toContain("objectBase(\n      'DeckCustom'");
     expect(publisher).toContain("objectBase('CardCustom'");
-    expect(publisher).toContain('ContainedObjects: [leader, ...territories, deck]');
+    expect(publisher).toContain('ContainedObjects: [leader, ...territories, deck, playerToken, battleDie]');
     expect(publisher).toContain('starters.map((starter, index) => buildStarterKit');
     expect(publisher).not.toMatch(/Expected 12|=== 12|!== 12/);
   });
 
-  it('provides a two-player manual-play table scaffold using only supported built-in objects', () => {
+  it('creates the base two-player scaffold before authoritative table layout is applied', () => {
     expect(publisher).toContain("Table: 'Table_RPG'");
     expect(publisher).toContain("Sky: 'Sky_Field'");
     expect(publisher).toContain("Color: 'Red'");
@@ -43,12 +43,24 @@ describe('TTS save publisher', () => {
     expect(publisher).toContain("objectBase('PlayerPawn'");
     expect(publisher).toContain('const territoryZ = [-7.5, -4.5, -1.5, 1.5, 4.5, 7.5]');
     expect(publisher).toContain('Rules remain manual.');
+    expect(packageJson.scripts['tts:save']).toContain('tts:save:base');
+    expect(packageJson.scripts['tts:save']).toContain('tts:save:layout');
   });
 
-  it('is wired after release-asset staging so the save resolves public hosted URLs', () => {
-    expect(packageJson.scripts['tts:save']).toBe('node scripts/generate-tts-save.mjs');
+  it('runs staged assets -> save/layout -> supplemental assembly -> validation in that order', () => {
     expect(packageJson.scripts['tts:check']).toContain('generate-tts-save.mjs --check');
-    expect(workflow.indexOf('Stage hosted TTS release assets')).toBeLessThan(workflow.indexOf('Generate TTS review scaffold'));
+    expect(packageJson.scripts['tts:package']).toContain('tts:save:assemble');
+    expect(packageJson.scripts['tts:package']).toContain('validate-v070-authoritative-save.mjs');
+    expect(packageJson.scripts['tts:save:finalize']).toBeUndefined();
+
+    const stage = workflow.indexOf('Stage hosted TTS release assets');
+    const save = workflow.indexOf('Generate authoritative TTS review scaffold');
+    const assemble = workflow.indexOf('Assemble supplemental starter-kit contents');
+    const validate = workflow.indexOf('Validate authoritative v0.7.0 save contract');
+    expect(stage).toBeGreaterThan(-1);
+    expect(stage).toBeLessThan(save);
+    expect(save).toBeLessThan(assemble);
+    expect(assemble).toBeLessThan(validate);
     expect(workflow).toContain('run: npm run tts:save');
   });
 
