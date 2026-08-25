@@ -19,21 +19,12 @@ jobs:
   patch:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
           ref: fix/current-authority-rulebook-source
           fetch-depth: 1
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install renderer dependencies
-        run: |
-          npm install
-          npx playwright install --with-deps chromium
 
       - name: Finalize maintained Rulebook source
         run: |
@@ -127,12 +118,11 @@ jobs:
 
               text = text[:match.start()] + match.group(1) + body + text[match.end():]
 
-          figure = '![Card anatomy diagram](/images/rulebook/card-anatomy.png)'
-          if figure not in text:
-              marker = 'Most ordinary playable cards use the same frame. Read these elements when constructing a Deck and resolving a card in play:\n\n'
-              if marker not in text:
-                  raise SystemExit('Card Anatomy introduction marker not found.')
-              text = text.replace(marker, marker + figure + '\n\n', 1)
+          # The browser supplies the live Card Anatomy production render. The
+          # maintained Markdown remains the semantic print/PDF source; a static
+          # figure belongs in the release publication pipeline, not in this
+          # authority migration workflow.
+          text = text.replace('![Card anatomy diagram](/images/rulebook/card-anatomy.png)\n\n', '')
 
           forbidden = [
               r'\bpending\b',
@@ -149,15 +139,15 @@ jobs:
           path.write_text(text)
           PY
 
-      - name: Render deterministic Card Anatomy figure
-        run: node scripts/render-current-card-anatomy.mjs
-
-      - name: Commit maintained source and remove one-time workflow
+      - name: Commit maintained source and remove one-time migration tooling
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add rulebook/player-facing/current-rulebook.md images/rulebook/card-anatomy.png
+          git add rulebook/player-facing/current-rulebook.md
           git rm .github/workflows/patch-current-rulebook-source.yml
+          if [[ -f scripts/render-current-card-anatomy.mjs ]]; then
+            git rm scripts/render-current-card-anatomy.mjs
+          fi
           git commit -m "Finalize maintained current Rulebook source"
           git push origin HEAD:fix/current-authority-rulebook-source
