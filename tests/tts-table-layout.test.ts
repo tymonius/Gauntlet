@@ -6,13 +6,13 @@ import {
   buildTableVectorLines,
 } from '../tts/apply-table-layout.mjs';
 
-describe('TTS table layout', () => {
-  it('marks the current player workspaces without inventing battle or Front Line zones', () => {
+describe('authoritative TTS table layout', () => {
+  it('marks the actual Gauntlet player workspaces', () => {
     const text = buildTableTextObjects([]);
     const labels = text.map(object => object.Text.Text);
 
     for (const label of [
-      'Leader + Tracker(s)',
+      'Leader & References',
       'Draw Pile',
       'Discard Pile',
       'Graveyard',
@@ -20,9 +20,9 @@ describe('TTS table layout', () => {
       'Asset Bank',
       'Faction Zone',
     ]) {
-      // Each side gets a visible label plus a shadow object for map contrast.
       expect(labels.filter(value => value === label)).toHaveLength(4);
     }
+    expect(labels).not.toContain('Leader + Tracker(s)');
     expect(labels).not.toContain('Treasury');
     expect(labels).not.toContain('Battle');
     expect(labels).not.toContain('Front Line');
@@ -30,7 +30,7 @@ describe('TTS table layout', () => {
     expect(text.filter(object => object.Transform.rotY === 180)).toHaveLength(14);
   });
 
-  it('supports six normal Territories plus two Manifest Destiny extensions and unmarked tagged Deed snaps', () => {
+  it('keeps six visible Gauntlet slots plus two invisible Manifest Destiny extensions and sixteen landscape Deed snaps', () => {
     const snaps = buildTableSnapPoints();
     const territory = snaps.filter(point => point.Tags?.includes('gauntlet-territory'));
     const deeds = snaps.filter(point => point.Tags?.includes('gauntlet-deed'));
@@ -40,48 +40,54 @@ describe('TTS table layout', () => {
     ]);
     expect(territory.every(point => point.Rotation.y === 90)).toBe(true);
     expect(deeds).toHaveLength(16);
-    for (const z of territory.map(point => point.Position.z)) {
-      expect(deeds.filter(point => point.Position.z === z)).toHaveLength(2);
-    }
-    expect(snaps).toHaveLength(86);
+    expect(deeds.every(point => point.Rotation.y === 90)).toBe(true);
+    expect(snaps).toHaveLength(80);
   });
 
-  it('draws outlined player zones and all eight intermediate Gauntlet slot guides', () => {
+  it('draws only the six primary Territory guides', () => {
     const lines = buildTableVectorLines();
-    expect(lines).toHaveLength(44);
+    expect(lines).toHaveLength(40);
 
     const territoryLines = lines.filter(line => {
       const xs = line.points3.map(point => point.x);
-      return Math.min(...xs) === -1.9 && Math.max(...xs) === 1.9;
+      return Math.min(...xs) === -1.85 && Math.max(...xs) === 1.85;
     });
-    expect(territoryLines).toHaveLength(16);
+    expect(territoryLines).toHaveLength(12);
     expect(territoryLines.filter(line => line.thickness === 0.105)).toHaveLength(6);
     expect(territoryLines.filter(line => line.thickness === 0.048)).toHaveLength(6);
-    expect(territoryLines.filter(line => line.thickness === 0.075)).toHaveLength(2);
-    expect(territoryLines.filter(line => line.thickness === 0.032)).toHaveLength(2);
   });
 
-  it('applies the complete intermediate map layout before the later QA interaction pass', () => {
-    const save = {
-      ObjectStates: [
-        { Name: 'Die_6', Nickname: 'Red Battle Die', Transform: { posX: -4.5, posZ: -12.5, rotY: 0 }, GUID: '000001' },
-        { Name: 'Die_6', Nickname: 'Blue Battle Die', Transform: { posX: 4.5, posZ: 12.5, rotY: 0 }, GUID: '000002' },
-        { Name: 'PlayerPawn', Nickname: 'Red Player Token', Transform: { posX: 0, posZ: -10.5, rotY: 0 }, GUID: '000003' },
-        { Name: 'PlayerPawn', Nickname: 'Blue Player Token', Transform: { posX: 0, posZ: 10.5, rotY: 180 }, GUID: '000004' },
-      ],
+  it('owns the environment, seats, hands, and player-side private zones without duplicate HandTrigger objects', () => {
+    const save: any = {
+      ObjectStates: [],
       Note: 'base note',
       Rules: 'base rules',
+      Turns: { TurnColor: 'Blue' },
     };
 
     const result = applyTableLayout(save);
     expect(result.textObjectCount).toBe(28);
-    expect(result.vectorLineCount).toBe(44);
-    expect(result.snapPointCount).toBe(86);
+    expect(result.vectorLineCount).toBe(40);
+    expect(result.snapPointCount).toBe(80);
+    expect(result.privateZoneCount).toBe(2);
 
-    const redPawn = save.ObjectStates.find(object => object.Nickname === 'Red Player Token');
-    const bluePawn = save.ObjectStates.find(object => object.Nickname === 'Blue Player Token');
-    expect([redPawn?.Transform.posX, redPawn?.Transform.posZ]).toEqual([-17.4, -10]);
-    expect([bluePawn?.Transform.posX, bluePawn?.Transform.posZ]).toEqual([17.4, 10]);
-    expect(save.Note).toContain('flexible twelve-snap Faction Zone');
+    expect(save.Table).toBe('Table_Custom');
+    expect(save.TableURL).toContain('campaign-map-table');
+    expect(save.SkyURL).toContain('command-tent-panorama');
+    expect(save.Turns.TurnColor).toBe('Red');
+
+    const red = save.Hands.HandTransforms.find((hand: any) => hand.Color === 'Red');
+    const blue = save.Hands.HandTransforms.find((hand: any) => hand.Color === 'Blue');
+    expect(red.Transform.posZ).toBeLessThan(0);
+    expect(red.Transform.rotY).toBe(0);
+    expect(blue.Transform.posZ).toBeGreaterThan(0);
+    expect(blue.Transform.rotY).toBe(180);
+    expect(save.ObjectStates.filter((object: any) => object.Name === 'HandTrigger')).toHaveLength(0);
+
+    const privateZones = save.ObjectStates.filter((object: any) => object.Name === 'FogOfWarTrigger');
+    expect(privateZones).toHaveLength(2);
+    expect(privateZones.map((zone: any) => zone.FogColor).sort()).toEqual(['Blue', 'Red']);
+    expect(privateZones.every((zone: any) => zone.FogReverseHiding === false)).toBe(true);
+    expect(privateZones.every((zone: any) => zone.FogSeethrough === true)).toBe(true);
   });
 });
