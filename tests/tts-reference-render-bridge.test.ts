@@ -32,9 +32,11 @@ describe('TTS faction-reference render bridge', () => {
     expect(bridge).toContain('background: var(--reference-accent) !important');
   });
 
-  it('retains the neutral ivory treatment for Universal Reference', () => {
+  it('retains the neutral ivory treatment and stylized G for Universal Reference', () => {
     expect(bridge).toContain('.reference-card[data-component-id="universal-reference"]');
     expect(bridge).toContain('--reference-border: #eee7d5');
     expect(bridge).toContain('/images/artwork/card-backgrounds/neutral-parchment-v2.png');
+    expect(bridge).toContain('-webkit-mask-image: url("/images/Gauntlet-G.svg") !important');
+    expect(bridge).not.toContain('-webkit-mask-image: url("/images/Gauntlet.svg") !important');
   });
 });
