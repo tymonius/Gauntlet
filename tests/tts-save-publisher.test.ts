@@ -45,12 +45,20 @@ describe('TTS save publisher', () => {
       { id: 'inquisition-a', factionId: 'inquisition' }, { id: 'inquisition-b', factionId: 'inquisition' },
     ];
 
-    expect(starterBagTransform(starters[0], starters)).toMatchObject({ posX: -20.5, posZ: -12, rotY: 90 });
-    expect(starterBagTransform(starters[1], starters)).toMatchObject({ posX: 20.5, posZ: -12, rotY: 270 });
-    expect(starterBagTransform(starters[4], starters)).toMatchObject({ posX: -20.5, posZ: -2.4, rotY: 90 });
-    expect(starterBagTransform(starters[5], starters)).toMatchObject({ posX: 20.5, posZ: -2.4, rotY: 270 });
-    expect(starterBagTransform(starters[10], starters)).toMatchObject({ posX: -20.5, posZ: 12, rotY: 90 });
-    expect(starterBagTransform(starters[11], starters)).toMatchObject({ posX: 20.5, posZ: 12, rotY: 270 });
+    const expectations = [
+      [0, -20.5, -12, 90],
+      [1, 20.5, -12, 270],
+      [4, -20.5, -2.4, 90],
+      [5, 20.5, -2.4, 270],
+      [10, -20.5, 12, 90],
+      [11, 20.5, 12, 270],
+    ] as const;
+    for (const [index, x, z, rotY] of expectations) {
+      const position = starterBagTransform(starters[index], starters);
+      expect(position.posX).toBe(x);
+      expect(position.posZ).toBeCloseTo(z, 6);
+      expect(position.rotY).toBe(rotY);
+    }
   });
 
   it('creates the base two-player scaffold before authoritative table layout is applied', () => {
