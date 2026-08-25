@@ -3,7 +3,8 @@
 /* Universal reference card: neutral counterpart to the finalized faction
    references. It uses the approved Neutral parchment and the same compact
    tracker-style header, open lookup body, and metadata footer, with the
-   dedicated stylized Gauntlet G occupying the faction-emblem position. */
+   stylized G at the left edge of the canonical self-contained wordmark
+   occupying the faction-emblem position. */
 
 .reference-card[data-component-id="universal-reference"] {
   --reference-parchment-image: url("../images/artwork/card-backgrounds/neutral-parchment-v2.png");
@@ -79,25 +80,27 @@
   width: 0.17in;
   height: 0.17in;
   background: currentColor;
-  -webkit-mask-image: url("../images/Gauntlet-G.svg");
-  -webkit-mask-position: center;
+  /* Use the self-contained canonical SVG directly. Gauntlet-G.svg depended on
+     a nested relative <image>, which Chromium did not resolve inside a mask. */
+  -webkit-mask-image: url("../images/Gauntlet.svg");
+  -webkit-mask-position: left center;
   -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: contain;
-  mask-image: url("../images/Gauntlet-G.svg");
-  mask-position: center;
+  -webkit-mask-size: auto 100%;
+  mask-image: url("../images/Gauntlet.svg");
+  mask-position: left center;
   mask-repeat: no-repeat;
-  mask-size: contain;
+  mask-size: auto 100%;
 }
 
 .reference-card[data-component-id="universal-reference"] .reference-watermark {
-  -webkit-mask-image: url("../images/Gauntlet-G.svg");
-  -webkit-mask-position: center;
+  -webkit-mask-image: url("../images/Gauntlet.svg");
+  -webkit-mask-position: left center;
   -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: contain;
-  mask-image: url("../images/Gauntlet-G.svg");
-  mask-position: center;
+  -webkit-mask-size: auto 100%;
+  mask-image: url("../images/Gauntlet.svg");
+  mask-position: left center;
   mask-repeat: no-repeat;
-  mask-size: contain;
+  mask-size: auto 100%;
 }
 
 .reference-card[data-component-id="universal-reference"] .reference-type-line span:last-child {
