@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import { readFile, writeFile } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 import { CURRENT_ALIAS_ROOT, resolveCurrentTtsRelease, ROOT } from '../scripts/tts-current-catalog.mjs';
@@ -179,6 +180,12 @@ async function main() {
     + `${utilities.tokens} faction tokens/${utilities.dice} faction dice, ${deeds.cards} landscape Deeds, `
     + `${deeds.stacks} portrait Deed stacks, ${trackers} live-bounds trackers; removed ${removedFactionTags} invalid faction-zone tags.`,
   );
+
+  // Round three intentionally validates the state it produced. Immediately
+  // afterward, apply the cumulative regression correction that restores the
+  // working landscape-card, tracker, and hand behavior without weakening the
+  // round-three structural checks above.
+  execFileSync(process.execPath, ['tts/apply-v070-qa-round4.mjs'], { stdio: 'inherit' });
 }
 
 main().catch(error => {
