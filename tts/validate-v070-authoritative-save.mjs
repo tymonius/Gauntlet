@@ -3,7 +3,6 @@ import { join, relative } from 'node:path';
 import { resolveCurrentTtsRelease, ROOT } from '../scripts/tts-current-catalog.mjs';
 import { trackerPresentation } from '../scripts/tts-supplemental-geometry.mjs';
 
-const PRIVATE_ZONE_NOTE_PREFIX = 'gauntlet:private-zone:';
 const SUPPLEMENTAL_GUID_NOTE_PREFIX = 'gauntlet:supplemental:';
 const SUPPLEMENTAL_STACK_NOTE_PREFIX = 'gauntlet:supplemental-stack:';
 const PLAYER_TOKEN_NOTE_PREFIX = 'gauntlet:starter-utility:player-token:';
@@ -65,20 +64,9 @@ function validateHandsAndSeats(save) {
   const pseudoHands = (save.ObjectStates || []).filter(object => object?.Name === 'HandTrigger');
   if (pseudoHands.length) throw new Error(`Found ${pseudoHands.length} duplicate HandTrigger ObjectStates; hand zones must live only under Hands.HandTransforms.`);
 
-  const privateZones = (save.ObjectStates || []).filter(object => (
-    object?.Name === 'FogOfWarTrigger'
-    && String(object.GMNotes || '').startsWith(PRIVATE_ZONE_NOTE_PREFIX)
-  ));
-  if (privateZones.length !== 2) throw new Error(`Expected two player-side private zones; found ${privateZones.length}.`);
-  for (const side of ['Red', 'Blue']) {
-    const zone = privateZones.find(object => object.FogColor === side);
-    if (!zone) throw new Error(`${side} private zone is missing its FogColor owner.`);
-    if (zone.FogReverseHiding !== false || zone.FogSeethrough !== true) {
-      throw new Error(`${side} private zone hiding semantics are incorrect.`);
-    }
-    if (Number(zone.Transform?.scaleX) < 30 || Number(zone.Transform?.scaleZ) < 6) {
-      throw new Error(`${side} private zone does not cover enough of the player's side of the table.`);
-    }
+  const fogVolumes = (save.ObjectStates || []).filter(object => object?.Name === 'FogOfWarTrigger');
+  if (fogVolumes.length) {
+    throw new Error(`Found ${fogVolumes.length} FogOfWarTrigger objects. Player privacy must use actual TTS hand zones without visible table-spanning fog volumes.`);
   }
 }
 
