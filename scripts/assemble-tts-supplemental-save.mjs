@@ -10,6 +10,7 @@ const SUPPLEMENTAL_GUID_NOTE_PREFIX = 'gauntlet:supplemental:';
 const SUPPLEMENTAL_STACK_NOTE_PREFIX = 'gauntlet:supplemental-stack:';
 const DEED_TAG = 'gauntlet-deed';
 const DEED_STACK_TAG = 'gauntlet-deed-stack';
+const FACTION_ZONE_TAG = 'gauntlet-faction-zone';
 const PENDING_SUPPLEMENTAL_NOTE = 'Ready shared and faction supplemental components are assembled into the same starter kit later in the TTS package pipeline. Rules remain manual.';
 const ASSEMBLED_SUPPLEMENTAL_NOTE = 'Shared components and production-ready faction components are included automatically in the matching starter kits. Proposals, Deeds, and Mystics Rites/Ritual are packaged as family stacks; sliding trackers use renderer-derived registration points. Rules remain manual.';
 
@@ -89,7 +90,10 @@ function makeSupplementalCard(component, releaseAssets, guid) {
     GUID: guid(),
     CardID: Number(component.tts.cardId),
     SidewaysCard: sideways,
-    ...(component.family === 'deed-card' ? { Tags: [DEED_TAG] } : {}),
+    // Round-3 established that any ordinary card can become public faction
+    // state (most importantly Financier Treasury material). Deeds use their
+    // dedicated landscape magnets instead.
+    Tags: [component.family === 'deed-card' ? DEED_TAG : FACTION_ZONE_TAG],
     CustomDeck: { [deckId]: state },
   };
 }
@@ -185,6 +189,7 @@ function makeSupplementalStack(cards, { key, nickname, description, stackRotatio
 const FAMILY_STACKS = Object.freeze([
   {
     key: 'proposals', nickname: 'Proposals', description: 'Diplomat Proposal / ratified Treaty Article cards', expectedCount: 9,
+    tags: [FACTION_ZONE_TAG],
     predicate: object => object?.Name === 'CardCustom' && /· proposal-treaty-card$/u.test(String(object.Description || '')),
   },
   {
@@ -193,6 +198,7 @@ const FAMILY_STACKS = Object.freeze([
   },
   {
     key: 'rites-rituals', nickname: 'Rites + Ritual', description: 'Mystics Rites and Ritual of Ascension', expectedCount: 4,
+    tags: [FACTION_ZONE_TAG],
     predicate: object => object?.Name === 'CardCustom' && /· (?:rite-card|ritual-card)$/u.test(String(object.Description || '')),
   },
 ]);
