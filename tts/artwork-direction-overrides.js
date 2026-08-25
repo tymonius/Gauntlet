@@ -22,6 +22,7 @@ window.GAUNTLET_ART_DIRECTION = Object.freeze({
   "intelligence-sleeper-network": {"focusY":0.763},
   "intelligence-spymaster": {"focusY":0.126},
   "military-commandant": {"focusY":0.099},
+  "military-general": {"focusY":0.08},
   "mystics-alchemist": {"focusY":0.095},
   "mystics-necromancy": {"focusY":0.398},
   "rite-blood": {"focusY":0.32},
