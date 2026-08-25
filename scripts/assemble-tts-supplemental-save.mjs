@@ -10,6 +10,8 @@ const SUPPLEMENTAL_GUID_NOTE_PREFIX = 'gauntlet:supplemental:';
 const SUPPLEMENTAL_STACK_NOTE_PREFIX = 'gauntlet:supplemental-stack:';
 const DEED_TAG = 'gauntlet-deed';
 const DEED_STACK_TAG = 'gauntlet-deed-stack';
+const PENDING_SUPPLEMENTAL_NOTE = 'Ready shared and faction supplemental components are assembled into the same starter kit later in the TTS package pipeline. Rules remain manual.';
+const ASSEMBLED_SUPPLEMENTAL_NOTE = 'Shared components and production-ready faction components are included automatically in the matching starter kits. Proposals, Deeds, and Mystics Rites/Ritual are packaged as family stacks; sliding trackers use renderer-derived registration points. Rules remain manual.';
 
 function jsonText(value) {
   return `${JSON.stringify(value, null, 2)}\n`;
@@ -261,6 +263,17 @@ function resolveTrackerCover(bag, starter, tracker) {
   throw new Error(`Tracker ${tracker.id} has unsupported cover definition ${JSON.stringify(cover || null)}.`);
 }
 
+function markSupplementalsAsAssembled(save) {
+  for (const field of ['Note', 'Rules']) {
+    const text = String(save[field] || '');
+    if (text.includes(ASSEMBLED_SUPPLEMENTAL_NOTE)) continue;
+    if (!text.includes(PENDING_SUPPLEMENTAL_NOTE)) {
+      throw new Error(`TTS save ${field} does not contain the expected pre-assembly supplemental instruction.`);
+    }
+    save[field] = text.replace(PENDING_SUPPLEMENTAL_NOTE, ASSEMBLED_SUPPLEMENTAL_NOTE);
+  }
+}
+
 export function assembleReadySupplementals(save, starterManifest, supplementalManifest, releaseAssets) {
   const version = String(starterManifest?.gameVersion || '').trim();
   if (!version) throw new Error('Starter manifest does not declare gameVersion.');
@@ -300,9 +313,7 @@ export function assembleReadySupplementals(save, starterManifest, supplementalMa
     bag.Description = placedNames.length ? `${baseDescription}\n\nReady supplemental components: ${placedNames.join(', ')}` : baseDescription;
   }
 
-  const expectedStacks = { proposals: 2, deeds: 2, 'rites-rituals': 2 };
-  for (const [key, expected] of Object.entries(expectedStacks)) if (stackCounts[key] !== expected) throw new Error(`Generated starter kits contain ${stackCounts[key]} ${key} stacks; expected ${expected}.`);
-
+  markSupplementalsAsAssembled(save);
   return { save, placedCount, readyComponentCount: ready.length, stackCounts };
 }
 
