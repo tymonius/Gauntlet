@@ -65,9 +65,12 @@ function makeSupplementalCard(component, releaseAssets, guid) {
   );
   const sideways = component.tts?.sidewaysCard === true;
   // Landscape Deeds are normalized into ordinary portrait TTS image cells.
-  // SidewaysCard supplies the physical landscape footprint; the cumulative
-  // post-round-four tested tabletop rotation for the individual card is 0.
+  // SidewaysCard supplies the physical landscape footprint while the card's
+  // free tabletop transform remains 0; tagged table snaps own its parked angle.
   const tabletopRotation = component.family === 'deed-card' ? 0 : (sideways ? 90 : 0);
+  const tags = component.family === 'deed-card'
+    ? [DEED_TAG, FACTION_ZONE_TAG]
+    : [FACTION_ZONE_TAG];
   return {
     Name: 'CardCustom',
     Transform: transform(0, 1, 0, tabletopRotation),
@@ -90,10 +93,9 @@ function makeSupplementalCard(component, releaseAssets, guid) {
     GUID: guid(),
     CardID: Number(component.tts.cardId),
     SidewaysCard: sideways,
-    // Round-3 established that any ordinary card can become public faction
-    // state (most importantly Financier Treasury material). Deeds use their
-    // dedicated landscape magnets instead.
-    Tags: [component.family === 'deed-card' ? DEED_TAG : FACTION_ZONE_TAG],
+    // Deeds must use their dedicated battlefield slots and also remain legal
+    // Faction Zone cards; TTS tag matching permits both without changing size.
+    Tags: tags,
     CustomDeck: { [deckId]: state },
   };
 }
