@@ -4,6 +4,15 @@ import { pathToFileURL } from 'node:url';
 import { CURRENT_ALIAS_ROOT, resolveCurrentTtsRelease, ROOT } from './tts-current-catalog.mjs';
 import { STAGING_ROOT } from './stage-tts-release-assets.mjs';
 
+const FACTION_COLORS = Object.freeze({
+  military: { r: 0.620, g: 0.149, b: 0.173 },
+  diplomats: { r: 0.149, g: 0.310, b: 0.569 },
+  financiers: { r: 0.133, g: 0.439, b: 0.267 },
+  intelligence: { r: 0.157, g: 0.157, b: 0.153 },
+  mystics: { r: 0.365, g: 0.204, b: 0.494 },
+  inquisition: { r: 0.651, g: 0.478, b: 0.153 },
+});
+
 function jsonText(value) {
   return `${JSON.stringify(value, null, 2)}\n`;
 }
@@ -85,6 +94,27 @@ function starterBagTransform(index, total) {
   const spacing = rows <= 1 ? 0 : Math.min(4, 20 / (rows - 1));
   const start = -((rows - 1) * spacing) / 2;
   return transform(column === 0 ? -15 : 15, 1.4, start + row * spacing, column === 0 ? 90 : 270);
+}
+
+function factionColor(factionId) {
+  const tint = FACTION_COLORS[factionId];
+  if (!tint) throw new Error(`No TTS component color is defined for faction ${factionId || 'missing'}.`);
+  return color(tint.r, tint.g, tint.b);
+}
+
+function makeDie(nickname, x, z, tint, guid) {
+  return {
+    ...objectBase('Die_6', nickname, '', transform(x, 1.5, z), guid),
+    ColorDiffuse: { ...tint },
+    MaterialIndex: 0,
+  };
+}
+
+function makePawn(nickname, x, z, tint, rotation, guid) {
+  return {
+    ...objectBase('PlayerPawn', nickname, '', transform(x, 1.1, z, rotation), guid),
+    ColorDiffuse: { ...tint },
+  };
 }
 
 function buildStarterKit(starter, releaseAssets, kitTransform, guid) {
@@ -180,34 +210,30 @@ function buildStarterKit(starter, releaseAssets, kitTransform, guid) {
     });
   });
 
+  const factionLabel = starter.leader.factionLabel || starter.factionId;
+  const tint = factionColor(starter.factionId);
+  const playerToken = makePawn(`${factionLabel} Player Token`, 0, 0, tint, 0, guid());
+  playerToken.Description = `${factionLabel} faction-colored player token`;
+  playerToken.GMNotes = `gauntlet:starter-utility:player-token:${starter.factionId}`;
+  const battleDie = makeDie(`${factionLabel} Battle Die`, 0, 0, tint, guid());
+  battleDie.Description = `${factionLabel} faction-colored battle die`;
+  battleDie.GMNotes = `gauntlet:starter-utility:battle-die:${starter.factionId}`;
+
   const orderById = new Map(starter.territories.map((territory) => [territory.id, territory.name]));
   const territoryOrder = (starter.recommendedTerritoryOrder || []).map((id) => orderById.get(id) || id).join(' → ');
   const kitDescription = [
     `${starter.leader.name} · ${starter.factionId}`,
     starter.summary || starter.strategy || '',
     territoryOrder ? `Recommended Territories: ${territoryOrder}` : '',
-    `Contains the complete ${starter.cardCount}-card playable Deck, Leader Card, and three selected Territories.`,
+    `Contains the complete ${starter.cardCount}-card playable Deck, Leader Card, three selected Territories, faction-colored Player Token, and faction-colored Battle Die.`,
   ].filter(Boolean).join('\n\n');
 
-  return {
+  const bag = {
     ...objectBase('Bag', `${starter.name} — ${starter.leader.name}`, kitDescription, kitTransform, guid()),
-    ContainedObjects: [leader, ...territories, deck],
+    ColorDiffuse: { ...tint },
+    ContainedObjects: [leader, ...territories, deck, playerToken, battleDie],
   };
-}
-
-function makeDie(nickname, x, z, tint, guid) {
-  return {
-    ...objectBase('Die_6', nickname, '', transform(x, 1.5, z), guid),
-    ColorDiffuse: tint,
-    MaterialIndex: 0,
-  };
-}
-
-function makePawn(nickname, x, z, tint, rotation, guid) {
-  return {
-    ...objectBase('PlayerPawn', nickname, '', transform(x, 1.1, z, rotation), guid),
-    ColorDiffuse: tint,
-  };
+  return bag;
 }
 
 function buildTtsSave(starterManifest, releaseAssets) {
@@ -220,8 +246,6 @@ function buildTtsSave(starterManifest, releaseAssets) {
   if (!starters.length) throw new Error('Starter manifest contains no starter decks.');
 
   const guid = makeGuidFactory();
-  const red = color(0.856, 0.1, 0.094);
-  const blue = color(0.118, 0.53, 1);
   const starterKits = starters.map((starter, index) => buildStarterKit(
     starter,
     releaseAssets,
@@ -234,9 +258,9 @@ function buildTtsSave(starterManifest, releaseAssets) {
 
   const note = [
     `Gauntlet ${version} Tabletop Simulator review scaffold.`,
-    'Choose one starter kit per player. Each kit contains its Deck, Leader Card, and three Territories. Arrange the six chosen Territories on the center snap points, then complete normal opening setup from the current Rulebook.',
-    'Red sits at the south end; Blue sits at the north end. Player pawns begin on the Territory at their own end after setup.',
-    'This scaffold intentionally does not yet include faction-specific supplemental trackers or secondary components. Rules remain manual.',
+    'Choose one starter kit per player. Each kit contains its Deck, Leader Card, three Territories, faction-colored Player Token, and faction-colored Battle Die. Arrange the six chosen Territories on the center snap points, then complete normal opening setup from the current Rulebook.',
+    'Red sits at the south end; Blue sits at the north end. Each player uses the faction-colored token and die from the chosen starter kit; the Player Token begins on the Territory at that player\'s own end after setup.',
+    'Ready shared and faction supplemental components are assembled into the same starter kit later in the TTS package pipeline. Rules remain manual.',
   ].join('\n\n');
 
   return {
@@ -285,13 +309,7 @@ function buildTtsSave(starterManifest, releaseAssets) {
       TurnColor: 'Red',
     },
     SnapPoints: snapPoints,
-    ObjectStates: [
-      ...starterKits,
-      makeDie('Red Battle Die', -4.5, -12.5, red, guid()),
-      makeDie('Blue Battle Die', 4.5, 12.5, blue, guid()),
-      makePawn('Red Player Token', 0, -10.5, red, 0, guid()),
-      makePawn('Blue Player Token', 0, 10.5, blue, 180, guid()),
-    ],
+    ObjectStates: starterKits,
   };
 }
 
