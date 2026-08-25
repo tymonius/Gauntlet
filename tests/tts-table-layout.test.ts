@@ -7,7 +7,7 @@ import {
 } from '../tts/apply-table-layout.mjs';
 
 describe('authoritative TTS table layout', () => {
-  it('marks the actual Gauntlet player workspaces', () => {
+  it('marks the final tested Gauntlet player workspaces', () => {
     const text = buildTableTextObjects([]);
     const labels = text.map(object => object.Text.Text);
 
@@ -28,6 +28,13 @@ describe('authoritative TTS table layout', () => {
     expect(labels).not.toContain('Front Line');
     expect(text.filter(object => object.Transform.rotY === 0)).toHaveLength(14);
     expect(text.filter(object => object.Transform.rotY === 180)).toHaveLength(14);
+
+    const redLeaderLabel = text.find(object => object.GMNotes === 'gauntlet:table-layout:red-leader-references:label');
+    const redHandLabel = text.find(object => object.GMNotes === 'gauntlet:table-layout:red-hand:label');
+    const redGraveyardLabel = text.find(object => object.GMNotes === 'gauntlet:table-layout:red-graveyard:label');
+    expect(redLeaderLabel?.Transform.posX).toBe(-12.25);
+    expect(redHandLabel?.Transform.posZ).toBeLessThan(-20);
+    expect(redGraveyardLabel?.Transform.posX).toBe(17.15);
   });
 
   it('keeps six visible Gauntlet slots plus two invisible Manifest Destiny extensions and sixteen recovered Deed snaps', () => {
@@ -40,17 +47,49 @@ describe('authoritative TTS table layout', () => {
     ]);
     expect(territory.every(point => point.Rotation.y === 90)).toBe(true);
     expect(deeds).toHaveLength(16);
+    expect(deeds.every(point => Math.abs(point.Position.x) === 4.35)).toBe(true);
     expect(deeds.every(point => point.Rotation.y === 0)).toBe(true);
     expect(snaps).toHaveLength(80);
   });
 
-  it('draws only the six primary Territory guides', () => {
+  it('faces every player workspace card toward its player instead of using label orientation', () => {
+    const snaps = buildTableSnapPoints();
+    const faction = snaps.filter(point => point.Tags?.includes('gauntlet-faction-zone'));
+    const deedStacks = snaps.filter(point => point.Tags?.includes('gauntlet-deed-stack'));
+
+    const redFaction = faction.filter(point => point.Position.z < 0);
+    const blueFaction = faction.filter(point => point.Position.z > 0);
+    expect(redFaction).toHaveLength(12);
+    expect(blueFaction).toHaveLength(12);
+    expect(redFaction.every(point => point.Rotation.y === 180)).toBe(true);
+    expect(blueFaction.every(point => point.Rotation.y === 0)).toBe(true);
+
+    const redDeedStack = deedStacks.find(point => point.Position.z < 0);
+    const blueDeedStack = deedStacks.find(point => point.Position.z > 0);
+    expect(redDeedStack?.Rotation.y).toBe(270);
+    expect(blueDeedStack?.Rotation.y).toBe(90);
+
+    // Untagged pile/parking points from the recovered layout.
+    const redDraw = snaps.find(point => point.Position.x === -1.55 && point.Position.z === -13.55);
+    const redDiscard = snaps.find(point => point.Position.x === 1.55 && point.Position.z === -13.55);
+    const redHandParking = snaps.find(point => point.Position.x === 0 && point.Position.z === -18.25);
+    const redGraveyard = snaps.find(point => point.Position.x === 17.15 && point.Position.z === -17.75);
+    for (const point of [redDraw, redDiscard, redHandParking, redGraveyard]) expect(point?.Rotation.y).toBe(180);
+
+    const blueDraw = snaps.find(point => point.Position.x === 1.55 && point.Position.z === 13.55);
+    const blueDiscard = snaps.find(point => point.Position.x === -1.55 && point.Position.z === 13.55);
+    const blueHandParking = snaps.find(point => point.Position.x === 0 && point.Position.z === 18.25);
+    const blueGraveyard = snaps.find(point => point.Position.x === -17.15 && point.Position.z === 17.75);
+    for (const point of [blueDraw, blueDiscard, blueHandParking, blueGraveyard]) expect(point?.Rotation.y).toBe(0);
+  });
+
+  it('draws only the six primary Territory guides at the recovered slot size', () => {
     const lines = buildTableVectorLines();
     expect(lines).toHaveLength(40);
 
     const territoryLines = lines.filter(line => {
       const xs = line.points3.map(point => point.x);
-      return Math.min(...xs) === -1.85 && Math.max(...xs) === 1.85;
+      return Math.min(...xs) === -1.9 && Math.max(...xs) === 1.9;
     });
     expect(territoryLines).toHaveLength(12);
     expect(territoryLines.filter(line => line.thickness === 0.105)).toHaveLength(6);
