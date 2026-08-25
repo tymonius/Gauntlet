@@ -17,11 +17,11 @@ const FACTION_ZONE_TAG = 'gauntlet-faction-zone';
 const PRIMARY_TERRITORY_Z = Object.freeze([-7.5, -4.5, -1.5, 1.5, 4.5, 7.5]);
 const EXPANSION_TERRITORY_Z = Object.freeze([-10.5, 10.5]);
 const ALL_TERRITORY_Z = Object.freeze([EXPANSION_TERRITORY_Z[0], ...PRIMARY_TERRITORY_Z, EXPANSION_TERRITORY_Z[1]]);
-const DEED_X = Object.freeze([-3.8, 3.8]);
+const DEED_X = Object.freeze([-4.35, 4.35]);
 
 const TABLE_MARK_Y = 1.01;
-const TERRITORY_SLOT_WIDTH = 3.7;
-const TERRITORY_SLOT_DEPTH = 2.7;
+const TERRITORY_SLOT_WIDTH = 3.8;
+const TERRITORY_SLOT_DEPTH = 2.75;
 const LABEL_GAP = 0.34;
 
 const OUTLINE_SHADOW_COLOR = Object.freeze({ r: 0.12, g: 0.085, b: 0.055 });
@@ -29,19 +29,92 @@ const OUTLINE_COLOR = Object.freeze({ r: 0.83, g: 0.69, b: 0.40 });
 const LABEL_SHADOW_COLOR = Object.freeze({ r: 0.08, g: 0.055, b: 0.035 });
 const LABEL_COLOR = Object.freeze({ r: 0.99, g: 0.91, b: 0.70 });
 
+// This is the final Round-3 workspace geometry. Round 4 and the later
+// post-Round-4 fixes changed hand routing, Deed geometry, tracker registration,
+// and seat cameras, but did not replace these tested table workspaces.
 const PLAYER_ZONES = Object.freeze([
-  { id: 'leader-references', label: 'Leader & References', x: -12.2, z: -13.0, width: 10.8, depth: 7.4, fontSize: 29, textScale: 0.26, snapLayout: 'leader' },
-  { id: 'draw', label: 'Draw Pile', x: -1.6, z: -13.3, width: 2.8, depth: 4.1, fontSize: 28, textScale: 0.25, snapLayout: 'pile' },
-  { id: 'discard', label: 'Discard Pile', x: 1.6, z: -13.3, width: 2.8, depth: 4.1, fontSize: 27, textScale: 0.24, snapLayout: 'pile' },
-  { id: 'hand', label: 'Hand', x: 0, z: -17.0, width: 2.8, depth: 4.0, fontSize: 29, textScale: 0.26, snapLayout: 'hand' },
-  { id: 'graveyard', label: 'Graveyard', x: 17.2, z: -16.2, width: 2.8, depth: 4.1, fontSize: 27, textScale: 0.24, snapLayout: 'pile' },
-  { id: 'asset-bank', label: 'Asset Bank', x: -12.2, z: -5.4, width: 10.7, depth: 7.1, fontSize: 29, textScale: 0.26, snapLayout: 'assets' },
-  { id: 'faction-zone', label: 'Faction Zone', x: 12.0, z: -5.4, width: 10.7, depth: 10.0, fontSize: 29, textScale: 0.26, snapLayout: 'faction' },
+  {
+    id: 'leader-references',
+    label: 'Leader & References',
+    x: -12.25,
+    z: -14.2,
+    width: 11.1,
+    depth: 9.2,
+    fontSize: 29,
+    textScale: 0.26,
+    snapLayout: 'leader',
+  },
+  {
+    id: 'draw',
+    label: 'Draw Pile',
+    x: -1.55,
+    z: -13.55,
+    width: 2.85,
+    depth: 4.15,
+    fontSize: 28,
+    textScale: 0.25,
+    snapLayout: 'pile',
+  },
+  {
+    id: 'discard',
+    label: 'Discard Pile',
+    x: 1.55,
+    z: -13.55,
+    width: 2.85,
+    depth: 4.15,
+    fontSize: 27,
+    textScale: 0.24,
+    snapLayout: 'pile',
+  },
+  {
+    id: 'hand',
+    label: 'Hand',
+    x: 0,
+    z: -18.25,
+    width: 2.85,
+    depth: 4.0,
+    fontSize: 30,
+    textScale: 0.27,
+    snapLayout: 'hand',
+  },
+  {
+    id: 'graveyard',
+    label: 'Graveyard',
+    x: 17.15,
+    z: -17.75,
+    width: 2.85,
+    depth: 4.15,
+    fontSize: 27,
+    textScale: 0.24,
+    snapLayout: 'pile',
+  },
+  {
+    id: 'asset-bank',
+    label: 'Asset Bank',
+    x: -12.3,
+    z: -5.15,
+    width: 10.9,
+    depth: 7.15,
+    fontSize: 29,
+    textScale: 0.26,
+    snapLayout: 'assets',
+  },
+  {
+    id: 'faction-zone',
+    label: 'Faction Zone',
+    x: 12.0,
+    z: -5.55,
+    width: 10.8,
+    depth: 10.35,
+    fontSize: 29,
+    textScale: 0.26,
+    snapLayout: 'faction',
+  },
 ]);
 
-// This is the cumulative post-round-four hand geometry that was actually used
-// during QA: a broad real TTS hand zone across each player's rear edge. Keep it
-// as a Hands.HandTransform, not a HandTrigger/FogOfWarTrigger ObjectState.
+// This is the later post-Round-4 hand geometry: a broad real TTS hand zone
+// across each player's rear edge. It replaces the conflicting generated
+// HandTrigger/FogOfWar volumes while preserving the tested deal/draw routing.
 const HAND_ZONE = Object.freeze({ x: 0, z: -23.0, scaleX: 34.0, scaleY: 2.0, scaleZ: 5.5 });
 
 function jsonText(value) {
@@ -145,19 +218,17 @@ function playerZone(side, zone) {
     id: `${side.toLowerCase()}-${zone.id}`,
     x,
     z,
+    // Labels face inward visually. Card snaps use playerFacingCardRotation()
+    // below; the two rotations are intentionally not the same.
     rotationY: side === 'Blue' ? 180 : 0,
     labelX: x,
     labelZ: z + (side === 'Blue' ? 1 : -1) * (zone.depth / 2 + LABEL_GAP),
   };
 }
 
-function playerFacingRotation(side) {
-  return side === 'Blue' ? 180 : 0;
-}
-
-function handFacingRotation(side) {
-  // Hand transforms face into the seated player's camera, opposite the flat
-  // table-label orientation. This is the post-round-four tested orientation.
+function playerFacingCardRotation(side) {
+  // This is the tested orientation for Draw/Discard/Graveyard, Leader,
+  // Asset, Faction, and one-card Hand parking snaps: Red 180, Blue 0.
   return side === 'Blue' ? 0 : 180;
 }
 
@@ -174,19 +245,29 @@ function snap(position, rotationY = null, tags = null) {
 }
 
 function leaderOffsets() {
-  return [[-3.9, -1.85], [-1.3, -1.85], [1.3, -1.85], [3.9, -1.85]];
+  return [
+    [-4.05, -2.25],
+    [-1.35, -2.25],
+    [1.35, -2.25],
+    [4.05, -2.25],
+  ];
 }
 
 function assetOffsets() {
   return [
-    [-3.9, -1.8], [-1.3, -1.8], [1.3, -1.8], [3.9, -1.8],
-    [-2.6, 1.8], [0, 1.8], [2.6, 1.8],
+    [-3.975, -1.82],
+    [-1.325, -1.82],
+    [1.325, -1.82],
+    [3.975, -1.82],
+    [-2.65, 1.82],
+    [0, 1.82],
+    [2.65, 1.82],
   ];
 }
 
 function factionOffsets() {
   const offsets = [];
-  for (const z of [-3.6, 0, 3.6]) {
+  for (const z of [-3.55, 0, 3.55]) {
     for (const x of [-3.9, -1.3, 1.3, 3.9]) offsets.push([x, z]);
   }
   return offsets;
@@ -200,6 +281,7 @@ export function buildTableVectorLines() {
       lines.push(...outlinedRectangle(placed.x, placed.z, placed.width, placed.depth));
     }
   }
+  // Manifest Destiny positions remain functional but invisible until needed.
   for (const z of PRIMARY_TERRITORY_Z) lines.push(...outlinedRectangle(0, z, TERRITORY_SLOT_WIDTH, TERRITORY_SLOT_DEPTH));
   return lines;
 }
@@ -207,24 +289,32 @@ export function buildTableVectorLines() {
 export function buildTableSnapPoints() {
   const points = [];
   for (const z of ALL_TERRITORY_Z) points.push(snap(vector(0, 0, z), 90, [TERRITORY_TAG]));
-  // Deeds are portrait-cell CardCustom objects presented with SidewaysCard.
-  // Their tested tabletop rotation is 0; a 90-degree magnet turns them wrong.
+
+  // The final Round-4 Deed contract uses SidewaysCard with table rotation 0.
   for (const z of ALL_TERRITORY_Z) {
     for (const x of DEED_X) points.push(snap(vector(x, 0, z), 0, [DEED_TAG]));
   }
 
   for (const side of ['Red', 'Blue']) {
-    const rotation = playerFacingRotation(side);
+    const faceRotation = playerFacingCardRotation(side);
     for (const zone of PLAYER_ZONES) {
       if (zone.snapLayout === 'leader') {
-        for (const [x, z] of leaderOffsets()) points.push(snap(pointInPlayerZone(side, zone, x, z), rotation));
+        for (const [x, z] of leaderOffsets()) points.push(snap(pointInPlayerZone(side, zone, x, z), faceRotation));
       } else if (zone.snapLayout === 'assets') {
-        for (const [x, z] of assetOffsets()) points.push(snap(pointInPlayerZone(side, zone, x, z), rotation));
+        for (const [x, z] of assetOffsets()) points.push(snap(pointInPlayerZone(side, zone, x, z), faceRotation));
       } else if (zone.snapLayout === 'faction') {
-        for (const [x, z] of factionOffsets()) points.push(snap(pointInPlayerZone(side, zone, x, z), rotation, [FACTION_ZONE_TAG]));
-        points.push(snap(pointInPlayerZone(side, zone, -3.9, -3.6), (rotation + 90) % 360, [DEED_STACK_TAG]));
+        for (const [x, z] of factionOffsets()) {
+          points.push(snap(pointInPlayerZone(side, zone, x, z), faceRotation, [FACTION_ZONE_TAG]));
+        }
+        // Deeds leave the bag as a landscape stack, then park portrait in the
+        // Faction Zone on this dedicated perpendicular magnet.
+        points.push(snap(
+          pointInPlayerZone(side, zone, -3.9, -3.55),
+          (faceRotation + 90) % 360,
+          [DEED_STACK_TAG],
+        ));
       } else if (zone.snapLayout === 'pile' || zone.snapLayout === 'hand') {
-        points.push(snap(pointInPlayerZone(side, zone), rotation));
+        points.push(snap(pointInPlayerZone(side, zone), faceRotation));
       }
     }
   }
@@ -321,9 +411,8 @@ function makeSeatCameraLua() {
 
 function applyHandsAndSeatCameras(save) {
   // Remove legacy generated HandTrigger/FogOfWarTrigger objects from older
-  // review saves. TTS already gives actual hand zones per-player visibility;
-  // adding table-spanning FogOfWarTrigger volumes makes those volumes visible
-  // in normal play and obscures the board.
+  // review saves. Real top-level TTS hand transforms provide privacy without
+  // visible table-spanning volumes or competing auto-layout zones.
   save.ObjectStates = (save.ObjectStates || []).filter(object => (
     object?.Name !== 'HandTrigger'
     && !String(object?.GMNotes || '').startsWith(PRIVATE_ZONE_NOTE_PREFIX)
@@ -337,14 +426,22 @@ function applyHandsAndSeatCameras(save) {
       const mirror = side === 'Blue' ? -1 : 1;
       return {
         Color: side,
-        Transform: transform(HAND_ZONE.x * mirror, 1.5, HAND_ZONE.z * mirror, handFacingRotation(side), HAND_ZONE.scaleX, HAND_ZONE.scaleY, HAND_ZONE.scaleZ),
+        Transform: transform(
+          HAND_ZONE.x * mirror,
+          1.5,
+          HAND_ZONE.z * mirror,
+          playerFacingCardRotation(side),
+          HAND_ZONE.scaleX,
+          HAND_ZONE.scaleY,
+          HAND_ZONE.scaleZ,
+        ),
       };
     }),
   };
 
   // The base save has no global game script; table layout owns the camera
-  // orientation contract. This restores the cumulative post-round-four seat
-  // alignment without a later mutation pass.
+  // orientation contract. This restores the post-Round-4 seat alignment without
+  // a later mutation pass.
   save.LuaScript = makeSeatCameraLua();
   save.LuaScriptState = '';
 
@@ -397,9 +494,13 @@ async function main() {
     if (snaps.some(point => Number(point.Position?.y) !== 0)) throw new Error('Global table snap points must remain on the y=0 plane.');
     const territory = snaps.filter(point => point.Tags?.includes(TERRITORY_TAG));
     const deeds = snaps.filter(point => point.Tags?.includes(DEED_TAG));
+    const faction = snaps.filter(point => point.Tags?.includes(FACTION_ZONE_TAG));
+    const deedStacks = snaps.filter(point => point.Tags?.includes(DEED_STACK_TAG));
     if (territory.length !== 8) throw new Error(`Expected 8 Territory snaps; found ${territory.length}.`);
     if (deeds.length !== 16) throw new Error(`Expected 16 Deed snaps; found ${deeds.length}.`);
     if (deeds.some(point => Number(point.Rotation?.y) !== 0)) throw new Error('Deed snap rotations must remain at the recovered tabletop rotation 0.');
+    if (faction.length !== 24) throw new Error(`Expected 24 faction-zone card snaps; found ${faction.length}.`);
+    if (deedStacks.length !== 2) throw new Error(`Expected 2 Deed-stack parking snaps; found ${deedStacks.length}.`);
     console.log(`Current TTS table-layout source check passed for ${release.version}: ${lines.length} outline lines and ${snaps.length} functional snaps.`);
     return;
   }
