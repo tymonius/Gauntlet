@@ -181,13 +181,15 @@ export function buildTableSnapPoints() {
     }
   }
 
-  // Draw, Discard, and Graveyard are stack zones; snapping helps keep them tidy.
+  // Draw, Discard, and Graveyard are stack zones. CardCustom's zero-degree
+  // image orientation is opposite the player-facing 3DText convention, so the
+  // pile rotation snaps deliberately use the inverse angle of the zone label.
   for (const side of ['Red', 'Blue']) {
     for (const zone of PLAYER_ZONES.filter(item => item.snap)) {
       const placed = playerZone(side, zone);
       snaps.push({
         Position: vector(placed.x, 1, placed.z),
-        Rotation: vector(0, side === 'Blue' ? 180 : 0, 0),
+        Rotation: vector(0, side === 'Blue' ? 0 : 180, 0),
       });
     }
   }
