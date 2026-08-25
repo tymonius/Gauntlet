@@ -49,10 +49,10 @@ function fixture() {
     readyCount: 2,
     ready: [
       {
-        id: 'mystics-rite-a',
-        name: 'Rite A',
+        id: 'mystics-reference-a',
+        name: 'Mystics Reference A',
         faction: 'mystics',
-        family: 'rite-card',
+        family: 'reference-card',
         quantity: 2,
         productionStatus: 'ready',
         representation: 'card',
@@ -113,10 +113,10 @@ describe('TTS ready supplemental save assembly', () => {
     const militarySupplementals = military.ContainedObjects.filter((object: any) => object.GMNotes?.startsWith('gauntlet:supplemental:'));
 
     expect(mysticsSupplementals).toHaveLength(2);
-    expect(mysticsSupplementals.every((object: any) => object.Nickname === 'Rite A')).toBe(true);
+    expect(mysticsSupplementals.every((object: any) => object.Nickname === 'Mystics Reference A')).toBe(true);
     expect(militarySupplementals).toHaveLength(1);
     expect(militarySupplementals[0].Nickname).toBe('Military Ready Card');
-    expect(mystics.Description).toContain('Ready supplemental components: Rite A ×2');
+    expect(mystics.Description).toContain('Ready supplemental components: Mystics Reference A ×2');
     expect(military.Description).toContain('Ready supplemental components: Military Ready Card');
   });
 
@@ -154,7 +154,7 @@ describe('TTS ready supplemental save assembly', () => {
   it('creates public supplemental cards with hosted face and reverse URLs', () => {
     const { save, starters, supplementals, assets } = fixture();
     const result = assembleReadySupplementals(save, starters, supplementals, assets);
-    const card = result.save.ObjectStates[0].ContainedObjects.find((object: any) => object.GMNotes === 'gauntlet:supplemental:mystics-rite-a');
+    const card = result.save.ObjectStates[0].ContainedObjects.find((object: any) => object.GMNotes === 'gauntlet:supplemental:mystics-reference-a');
 
     expect(card.Name).toBe('CardCustom');
     expect(card.Hands).toBe(false);
