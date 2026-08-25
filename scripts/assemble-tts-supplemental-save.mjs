@@ -6,6 +6,7 @@ import { makeCustomDeckState, requireHostedUrl } from './generate-tts-save.mjs';
 import { STAGING_ROOT } from './stage-tts-release-assets.mjs';
 
 const SUPPLEMENTAL_GUID_NOTE_PREFIX = 'gauntlet:supplemental:';
+const DEED_TAG = 'gauntlet-deed';
 
 function jsonText(value) {
   return `${JSON.stringify(value, null, 2)}\n`;
@@ -84,6 +85,7 @@ function makeSupplementalCard(component, releaseAssets, guid) {
     GUID: guid(),
     CardID: Number(component.tts.cardId),
     SidewaysCard: false,
+    ...(component.family === 'deed-card' ? { Tags: [DEED_TAG] } : {}),
     CustomDeck: {
       [deckId]: state,
     },
@@ -103,8 +105,34 @@ function makeTrackerSnapPoints(component) {
   return points.map((point) => ({
     Position: vector(0, 0.12, Number(point.offset)),
     Rotation: vector(0, 0, 0),
+    RotationSnap: true,
     Tags: [tag],
   }));
+}
+
+function luaNumber(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) throw new Error(`Cannot serialize non-finite tracker snap coordinate ${value}.`);
+  return Number(number.toFixed(5)).toString();
+}
+
+function makeTrackerLuaScript(component) {
+  const tag = String(component.tts?.snapTag || '').trim();
+  const points = makeTrackerSnapPoints(component);
+  const lines = [
+    '-- Re-register production-derived slide positions on load. TTS has not',
+    '-- consistently restored every serialized Custom_Tile snap after a tracker',
+    '-- is removed from a starter Bag, so the object API is the runtime authority.',
+    'function onLoad()',
+    '  self.setSnapPoints({',
+  ];
+  for (const point of points) {
+    lines.push(
+      `    { position = { ${luaNumber(point.Position.x)}, ${luaNumber(point.Position.y)}, ${luaNumber(point.Position.z)} }, rotation = { 0, 0, 0 }, rotation_snap = true, tags = { ${JSON.stringify(tag)} } },`,
+    );
+  }
+  lines.push('  })', 'end');
+  return lines.join('\n');
 }
 
 function makeSlidingTracker(component, starter, releaseAssets, guid) {
@@ -135,7 +163,7 @@ function makeSlidingTracker(component, starter, releaseAssets, guid) {
     GridProjection: false,
     HideWhenFaceDown: false,
     Hands: false,
-    LuaScript: '',
+    LuaScript: makeTrackerLuaScript(component),
     LuaScriptState: '',
     XmlUI: '',
     GUID: guid(),
