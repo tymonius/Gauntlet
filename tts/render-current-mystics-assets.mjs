@@ -56,10 +56,20 @@ async function settleCard(locator, label) {
     if (document.fonts?.ready) await document.fonts.ready;
     const images = [...card.querySelectorAll('img')];
     await Promise.all(images.map(image => {
-      if (image.complete && image.naturalWidth > 0) return Promise.resolve();
+      if (image.complete) {
+        if (image.naturalWidth > 0) return Promise.resolve();
+        return Promise.reject(new Error(`Failed to load ${image.currentSrc || image.src}`));
+      }
       return new Promise((resolveImage, rejectImage) => {
-        image.addEventListener('load', resolveImage, { once: true });
-        image.addEventListener('error', () => rejectImage(new Error(`Failed to load ${image.src}`)), { once: true });
+        const timeout = setTimeout(() => rejectImage(new Error(`Timed out loading ${image.currentSrc || image.src}`)), 15000);
+        image.addEventListener('load', () => {
+          clearTimeout(timeout);
+          resolveImage();
+        }, { once: true });
+        image.addEventListener('error', () => {
+          clearTimeout(timeout);
+          rejectImage(new Error(`Failed to load ${image.currentSrc || image.src}`));
+        }, { once: true });
       });
     }));
     await new Promise(resolveFrame => requestAnimationFrame(() => requestAnimationFrame(resolveFrame)));
@@ -178,7 +188,7 @@ async function main() {
 
   try {
     await page.goto(`${baseUrl}/card-design/`, { waitUntil: 'load' });
-    await page.waitForSelector('#riteReviewSections[data-rite-count="3"][data-ritual-count="1"]');
+    await page.waitForSelector('#riteReviewSections[data-rite-count="3"][data-ritual-count="1"]', { timeout: 15000 });
 
     for (const rite of rites) {
       const componentId = `mystics-rite-${rite.id}`;
