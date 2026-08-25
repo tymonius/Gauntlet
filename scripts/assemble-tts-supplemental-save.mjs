@@ -3,13 +3,13 @@ import { basename, join, relative } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { CURRENT_ALIAS_ROOT, resolveCurrentTtsRelease, ROOT } from './tts-current-catalog.mjs';
 import { makeCustomDeckState, requireHostedUrl } from './generate-tts-save.mjs';
+import { trackerPresentation } from './tts-supplemental-geometry.mjs';
 import { STAGING_ROOT } from './stage-tts-release-assets.mjs';
 
 const SUPPLEMENTAL_GUID_NOTE_PREFIX = 'gauntlet:supplemental:';
 const SUPPLEMENTAL_STACK_NOTE_PREFIX = 'gauntlet:supplemental-stack:';
 const DEED_TAG = 'gauntlet-deed';
 const DEED_STACK_TAG = 'gauntlet-deed-stack';
-const TRACKER_TABLETOP_SCALE = 1.5;
 
 function jsonText(value) {
   return `${JSON.stringify(value, null, 2)}\n`;
@@ -17,10 +17,6 @@ function jsonText(value) {
 
 function color(r = 1, g = 1, b = 1) {
   return { r, g, b };
-}
-
-function vector(x = 0, y = 0, z = 0) {
-  return { x, y, z };
 }
 
 function transform(posX = 0, posY = 1, posZ = 0, rotY = 0, scaleX = 1, scaleY = 1, scaleZ = 1) {
@@ -92,39 +88,6 @@ function makeSupplementalCard(component, releaseAssets, guid) {
   };
 }
 
-function makeTrackerSnapPoints(component) {
-  const tag = String(component.tts?.snapTag || '').trim();
-  const points = component.tts?.snapPoints;
-  if (!tag || !Array.isArray(points) || points.length < 2) {
-    throw new Error(`Ready sliding tracker ${component.id} is missing snap tag or renderer-derived snap points.`);
-  }
-  if (Number(points[0]?.value) !== 0 || Number(points[0]?.offset) !== 0) {
-    throw new Error(`Ready sliding tracker ${component.id} must begin with its fully covered 0 registration.`);
-  }
-  return points.map(point => {
-    const physicalTravel = Number(point.offset);
-    if (!Number.isFinite(physicalTravel) || physicalTravel < 0) {
-      throw new Error(`Ready sliding tracker ${component.id} has invalid renderer travel ${point.offset}.`);
-    }
-    return {
-      Position: vector(0, 0.12, Number((-(physicalTravel / TRACKER_TABLETOP_SCALE)).toFixed(6))),
-      Rotation: vector(0, 0, 0),
-      RotationSnap: true,
-      Tags: [tag],
-    };
-  });
-}
-
-function makeTrackerLuaScript(component) {
-  const points = makeTrackerSnapPoints(component);
-  const lines = ['function registerGauntletTrackerSnaps()', '  self.setSnapPoints({'];
-  for (const point of points) {
-    lines.push(`    { position = {${point.Position.x}, ${point.Position.y}, ${point.Position.z}}, rotation = {0, 0, 0}, rotation_snap = true, tags = {${JSON.stringify(point.Tags[0])}} },`);
-  }
-  lines.push('  })', 'end', '', 'function onLoad()', '  Wait.frames(registerGauntletTrackerSnaps, 2)', 'end');
-  return lines.join('\n');
-}
-
 function makeSlidingTracker(component, starter, releaseAssets, guid) {
   if (!component.tts?.faceFile || component.tts?.stackable !== false) {
     throw new Error(`Ready sliding tracker ${component.id} is missing its production face or non-stackable metadata.`);
@@ -135,9 +98,10 @@ function makeSlidingTracker(component, starter, releaseAssets, guid) {
   const faceUrl = requireHostedUrl(releaseAssets, component.tts.faceFile);
   const backUrl = requireHostedUrl(releaseAssets, starter.factionComponentBack.file);
   const snapTag = String(component.tts.snapTag || '').trim();
+  const presentation = trackerPresentation(component);
   return {
     Name: 'Custom_Tile',
-    Transform: transform(),
+    Transform: transform(0, 1, 0, 0, presentation.transformScale, 1, presentation.transformScale),
     Nickname: component.name || component.id,
     Description: `${component.faction || 'Faction'} sliding tracker · ${component.physicalScale?.minimum ?? 0}–${component.physicalScale?.maximum ?? '?'}`,
     GMNotes: `${SUPPLEMENTAL_GUID_NOTE_PREFIX}${component.id}`,
@@ -151,21 +115,21 @@ function makeSlidingTracker(component, starter, releaseAssets, guid) {
     GridProjection: false,
     HideWhenFaceDown: false,
     Hands: false,
-    LuaScript: makeTrackerLuaScript(component),
+    LuaScript: presentation.luaScript,
     LuaScriptState: '',
     XmlUI: '',
     GUID: guid(),
     Tags: [snapTag],
-    AttachedSnapPoints: makeTrackerSnapPoints(component),
+    AttachedSnapPoints: presentation.snapPoints,
     CustomImage: {
       ImageURL: faceUrl,
       ImageSecondaryURL: backUrl,
-      WidthScale: Number(component.tts.widthScale || 2.5),
+      WidthScale: presentation.widthScale,
       CustomTile: {
-        Type: 0,
+        Type: presentation.tileType,
         Thickness: Number(component.tts.thickness || 0.05),
         Stackable: false,
-        Stretch: true,
+        Stretch: presentation.stretch,
       },
     },
   };
@@ -339,12 +303,6 @@ export function assembleReadySupplementals(save, starterManifest, supplementalMa
   const expectedStacks = { proposals: 2, deeds: 2, 'rites-rituals': 2 };
   for (const [key, expected] of Object.entries(expectedStacks)) if (stackCounts[key] !== expected) throw new Error(`Generated starter kits contain ${stackCounts[key]} ${key} stacks; expected ${expected}.`);
 
-  const oldSentence = 'This scaffold intentionally does not yet include faction-specific supplemental trackers or secondary components. Rules remain manual.';
-  const newSentence = 'Shared components and production-ready faction components are included automatically in the matching starter kits. Proposals, Deeds, and Mystics Rites/Ritual are packaged as family stacks; sliding trackers use renderer-derived registration points. Rules remain manual.';
-  for (const field of ['Note', 'Rules']) {
-    const text = String(save[field] || '');
-    save[field] = text.includes(oldSentence) ? text.replace(oldSentence, newSentence) : text.includes(newSentence) ? text : `${text}\n\n${newSentence}`.trim();
-  }
   return { save, placedCount, readyComponentCount: ready.length, stackCounts };
 }
 
