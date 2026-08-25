@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const read = (path: string) => readFileSync(path, 'utf8');
@@ -26,6 +26,11 @@ describe('Maintained current Rulebook source', () => {
 
   it('does not describe the maintained source as a runtime layer over v0.6.3', () => {
     expect(currentRulebook).not.toContain('This view layers the current-development rules over the published v0.6.3 Rulebook.');
+  });
+
+  it('does not retain one-time authority-migration tooling as production source', () => {
+    expect(existsSync('.github/workflows/patch-current-rulebook-source.yml')).toBe(false);
+    expect(existsSync('scripts/render-current-card-anatomy.mjs')).toBe(false);
   });
 
   it('leaves the immutable v0.6.3 player-facing Chapter 11 on its released terminology', () => {
