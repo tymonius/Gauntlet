@@ -57,6 +57,16 @@ describe('finalized TTS supplemental exports', () => {
     expect(renderer).toContain('rules are clipped');
   });
 
+  it('normalizes landscape Deed artwork into a standard portrait TTS image cell', () => {
+    const generator = readFileSync('scripts/generate-tts-finalized-supplementals.mjs', 'utf8');
+    expect(generator).toContain("wrapper.id = 'tts-portrait-card-cell'");
+    expect(generator).toContain("width: '240px'");
+    expect(generator).toContain("height: '336px'");
+    expect(generator).toContain("rotate(-90deg)");
+    expect(generator).toContain("cellOrientation: 'portrait'");
+    expect(generator).toContain("sidewaysCard: item.orientation === 'landscape'");
+  });
+
   it('orients landscape supplemental cards generically from manifest metadata', () => {
     const save = {
       ObjectStates: [
