@@ -70,6 +70,7 @@ describe('finalized TTS supplemental exports', () => {
     expect(packageJson.scripts['tts:save:finalize']).toBeUndefined();
     expect(workflow).toContain('Generate finalized Proposal, Ledger, and Deed components');
     expect(workflow).toContain('Validate authoritative v0.7.0 save contract');
-    expect(workflow).not.toContain('Finaliz');
+    expect(workflow).not.toContain('Finalize card and tracker physical presentation');
+    expect(workflow).not.toContain('scripts/finalize-tts-save.mjs');
   });
 });
