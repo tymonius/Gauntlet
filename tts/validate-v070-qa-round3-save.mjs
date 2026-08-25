@@ -8,6 +8,8 @@ const FACTION_ZONE_TAG = 'gauntlet-faction-zone';
 const DEED_STACK_TAG = 'gauntlet-deed-stack';
 const HAND_TRIGGER_NOTE_PREFIX = 'gauntlet:hand-trigger:';
 const SUPPLEMENTAL_STACK_NOTE_PREFIX = 'gauntlet:supplemental-stack:';
+const PLAYER_TOKEN_NOTE_PREFIX = 'gauntlet:starter-utility:player-token:';
+const BATTLE_DIE_NOTE_PREFIX = 'gauntlet:starter-utility:battle-die:';
 
 function walk(objects, visit) {
   for (const object of objects || []) {
@@ -24,6 +26,10 @@ function removeTag(object, tag) {
   if (!Array.isArray(object?.Tags)) return;
   object.Tags = object.Tags.filter(value => value !== tag);
   if (!object.Tags.length) delete object.Tags;
+}
+
+function sameColor(a, b) {
+  return ['r', 'g', 'b'].every(channel => Math.abs(Number(a?.[channel]) - Number(b?.[channel])) < 0.0001);
 }
 
 function cleanFactionEligibility(save) {
@@ -51,6 +57,46 @@ function validateHands(save) {
     throw new Error('Top-level TTS Hands configuration does not match the two live HandTrigger objects.');
   }
   return triggers.length;
+}
+
+function validateStarterUtilities(save) {
+  const topLevelUtilities = (save.ObjectStates || []).filter(object => (
+    object?.Name === 'Die_6' || object?.Name === 'PlayerPawn'
+  ));
+  if (topLevelUtilities.length) {
+    throw new Error(`Faction utilities must live inside starter Bags; found ${topLevelUtilities.length} loose table utilities.`);
+  }
+
+  const bags = (save.ObjectStates || []).filter(object => object?.Name === 'Bag');
+  if (bags.length !== 12) throw new Error(`Expected 12 starter Bags; found ${bags.length}.`);
+
+  let tokens = 0;
+  let dice = 0;
+  for (const bag of bags) {
+    const contained = bag.ContainedObjects || [];
+    const token = contained.filter(object => (
+      object?.Name === 'PlayerPawn'
+      && String(object.GMNotes || '').startsWith(PLAYER_TOKEN_NOTE_PREFIX)
+    ));
+    const die = contained.filter(object => (
+      object?.Name === 'Die_6'
+      && String(object.GMNotes || '').startsWith(BATTLE_DIE_NOTE_PREFIX)
+    ));
+    if (token.length !== 1 || die.length !== 1) {
+      throw new Error(`${bag.Nickname || bag.GUID} must contain exactly one faction Player Token and one faction Battle Die.`);
+    }
+    if (!sameColor(token[0].ColorDiffuse, bag.ColorDiffuse) || !sameColor(die[0].ColorDiffuse, bag.ColorDiffuse)) {
+      throw new Error(`${bag.Nickname || bag.GUID} utility colors do not match the starter Bag faction color.`);
+    }
+    const tokenFaction = String(token[0].GMNotes).slice(PLAYER_TOKEN_NOTE_PREFIX.length);
+    const dieFaction = String(die[0].GMNotes).slice(BATTLE_DIE_NOTE_PREFIX.length);
+    if (!tokenFaction || tokenFaction !== dieFaction) {
+      throw new Error(`${bag.Nickname || bag.GUID} token/die faction metadata disagree.`);
+    }
+    tokens += token.length;
+    dice += die.length;
+  }
+  return { bags: bags.length, tokens, dice };
 }
 
 function validateDeeds(save) {
@@ -91,8 +137,6 @@ function validateLayout(save) {
   if (!labels.includes('Leader & References')) throw new Error('Round-three Leader & References label is missing.');
   if (labels.includes('Leader + Tracker(s)')) throw new Error('Stale Leader + Tracker(s) label survived round-three layout.');
 
-  // Seven Asset snaps live on the two mirrored 7-card tables. They are the only
-  // untagged multi-card zones with this 4+3 geometry; assert their coordinates.
   const expectedAssetXs = new Set(['-16.275','-13.625','-10.975','-8.325','-14.950','-12.300','-9.650']);
   const redAssetSnaps = (save.SnapPoints || []).filter(point => (
     expectedAssetXs.has(Number(point.Position?.x).toFixed(3))
@@ -122,6 +166,7 @@ async function main() {
 
   const removedFactionTags = cleanFactionEligibility(save);
   const hands = validateHands(save);
+  const utilities = validateStarterUtilities(save);
   const deeds = validateDeeds(save);
   validateLayout(save);
   const trackers = validateTrackers(save);
@@ -130,7 +175,8 @@ async function main() {
   await writeFile(path, text);
   await writeFile(join(CURRENT_ALIAS_ROOT, 'Gauntlet_TTS_Review_Scaffold.json'), text);
   console.log(
-    `Validated ${relative(ROOT, path)}: ${hands} HandTriggers, ${deeds.cards} landscape Deeds, `
+    `Validated ${relative(ROOT, path)}: ${hands} HandTriggers, ${utilities.bags} starter Bags with `
+    + `${utilities.tokens} faction tokens/${utilities.dice} faction dice, ${deeds.cards} landscape Deeds, `
     + `${deeds.stacks} portrait Deed stacks, ${trackers} live-bounds trackers; removed ${removedFactionTags} invalid faction-zone tags.`,
   );
 }
