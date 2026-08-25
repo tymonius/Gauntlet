@@ -6,6 +6,7 @@ import { CURRENT_ALIAS_ROOT, resolveCurrentTtsRelease, ROOT } from '../scripts/t
 const TABLE_LAYOUT_NOTE = 'Table markings: each player has a compact Leader + Tracker(s) workspace, Draw Pile, Discard Pile, Graveyard, a temporary Hand set-down area, an eight-slot Asset Bank, and a flexible twelve-snap Faction Zone. The Faction Zone is intentionally generic: it can hold Financier Treasury cards, ratified Diplomat Treaty Articles, Mystic Rites and Ritual material, Intelligence Operation components, Inquisition Doctrine/Purge components, or other public faction state. The hidden TTS hand zone remains the private Reserve area during battle. The Gauntlet has six primary Territory snaps plus two faint end positions for the eight-Territory Manifest Destiny configuration. Deed snaps remain intentionally unmarked beside every possible Territory position.';
 const TABLE_TEXT_NOTE_PREFIX = 'gauntlet:table-layout:';
 const TERRITORY_TAG = 'gauntlet-territory';
+const DEED_TAG = 'gauntlet-deed';
 
 const PRIMARY_TERRITORY_Z = Object.freeze([-7.5, -4.5, -1.5, 1.5, 4.5, 7.5]);
 const EXPANSION_TERRITORY_Z = Object.freeze([-10.5, 10.5]);
@@ -185,6 +186,10 @@ function snap(position, rotationY, tags = null) {
 }
 
 function zoneSnapOffsets(layout) {
+  // Tracker factions place their bottom tracker on the center point and use its
+  // attached registration points for the covering Leader. Intelligence nests
+  // both trackers at that same center; the side points hold reference cards.
+  // A trackerless faction may simply place its Leader at center.
   if (layout === 'leader') return [
     [-2.55, 0],
     [0, 0],
@@ -240,11 +245,10 @@ export function buildTableSnapPoints() {
     snaps.push(snap(vector(0, 0, z), 90, [TERRITORY_TAG]));
   }
 
-  // Deed positions are intentionally invisible. They sit beside every possible
-  // Territory position and remain untagged so the current Deed card objects can
-  // use them without a separate scripting dependency.
+  // Deed positions are intentionally invisible but tagged so an ordinary card
+  // crossing the center cannot steal a Deed magnet.
   for (const z of ALL_TERRITORY_Z) {
-    for (const x of DEED_X) snaps.push(snap(vector(x, 0, z), 90));
+    for (const x of DEED_X) snaps.push(snap(vector(x, 0, z), 90, [DEED_TAG]));
   }
 
   for (const side of ['Red', 'Blue']) {
@@ -291,11 +295,13 @@ export function buildTableTextObjects(existingObjects = []) {
 }
 
 function repositionUtilityObjects(save) {
+  // Keep the pre-setup die/token parking positions outside all card workspaces
+  // and away from the Manifest Destiny / Deed extension snaps.
   const positions = new Map([
-    ['Red Battle Die', { x: -5.2, z: -10.4, rotation: 0 }],
-    ['Red Player Token', { x: -6.8, z: -10.4, rotation: 0 }],
-    ['Blue Battle Die', { x: 5.2, z: 10.4, rotation: 180 }],
-    ['Blue Player Token', { x: 6.8, z: 10.4, rotation: 180 }],
+    ['Red Battle Die', { x: -16.2, z: -10.0, rotation: 0 }],
+    ['Red Player Token', { x: -17.4, z: -10.0, rotation: 0 }],
+    ['Blue Battle Die', { x: 16.2, z: 10.0, rotation: 180 }],
+    ['Blue Player Token', { x: 17.4, z: 10.0, rotation: 180 }],
   ]);
 
   for (const object of save.ObjectStates || []) {
@@ -342,6 +348,11 @@ async function main() {
     const snaps = buildTableSnapPoints();
     if (lines.length !== 44) throw new Error(`Expected 44 generated table-marking vector lines; found ${lines.length}.`);
     if (snaps.length !== 86) throw new Error(`Expected 86 generated table snap points; found ${snaps.length}.`);
+    if (snaps.some(point => Number(point.Position?.y) !== 0)) throw new Error('Global TTS table snap points must remain on the y=0 table plane.');
+    const territorySnaps = snaps.filter(point => point.Tags?.includes(TERRITORY_TAG));
+    const deedSnaps = snaps.filter(point => point.Tags?.includes(DEED_TAG));
+    if (territorySnaps.length !== 8) throw new Error(`Expected 8 tagged Territory snaps; found ${territorySnaps.length}.`);
+    if (deedSnaps.length !== 16) throw new Error(`Expected 16 tagged Deed snaps; found ${deedSnaps.length}.`);
     console.log(`Current TTS table-layout source check passed for ${release.version}: ${lines.length} high-contrast outline lines and ${snaps.length} functional snap points.`);
     return;
   }
