@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { join, relative } from 'node:path';
-import { CURRENT_ALIAS_ROOT, resolveCurrentTtsRelease, ROOT } from '../scripts/tts-current-catalog.mjs';
+import { resolveCurrentTtsRelease, ROOT } from '../scripts/tts-current-catalog.mjs';
+import { trackerPresentation } from '../scripts/tts-supplemental-geometry.mjs';
 
 const PRIVATE_ZONE_NOTE_PREFIX = 'gauntlet:private-zone:';
 const SUPPLEMENTAL_GUID_NOTE_PREFIX = 'gauntlet:supplemental:';
@@ -9,7 +10,6 @@ const PLAYER_TOKEN_NOTE_PREFIX = 'gauntlet:starter-utility:player-token:';
 const BATTLE_DIE_NOTE_PREFIX = 'gauntlet:starter-utility:battle-die:';
 const TERRITORY_TAG = 'gauntlet-territory';
 const DEED_TAG = 'gauntlet-deed';
-const TRACKER_TABLETOP_SCALE = 1.5;
 
 function walk(objects, visit) {
   for (const object of objects || []) {
@@ -146,7 +146,7 @@ function validateTerritoriesAndDeeds(save, manifest) {
     if (card.SidewaysCard !== true || !close(card.Transform?.rotY, 90)) {
       throw new Error(`Territory ${card.Nickname || card.GUID} is not a standard-size landscape card.`);
     }
-    if (!close(card.Transform?.scaleX, 1) || !close(card.Transform?.scaleZ, 1)) {
+    if (!close(card.Transform?.scaleX, 1) || !close(card.Transform?.scaleY, 1) || !close(card.Transform?.scaleZ, 1)) {
       throw new Error(`Territory ${card.Nickname || card.GUID} has nonstandard physical scale.`);
     }
   }
@@ -163,7 +163,7 @@ function validateTerritoriesAndDeeds(save, manifest) {
     if (card.SidewaysCard !== true || !close(card.Transform?.rotY, 90)) {
       throw new Error(`Deed ${card.Nickname || card.GUID} is not landscape in play.`);
     }
-    if (!close(card.Transform?.scaleX, 1) || !close(card.Transform?.scaleZ, 1)) {
+    if (!close(card.Transform?.scaleX, 1) || !close(card.Transform?.scaleY, 1) || !close(card.Transform?.scaleZ, 1)) {
       throw new Error(`Deed ${card.Nickname || card.GUID} has nonstandard physical scale.`);
     }
   }
@@ -190,14 +190,34 @@ function validateTrackers(save, manifest) {
     const record = trackerRecords.get(id);
     if (!record) return;
 
-    const expected = (record.tts?.snapPoints || []).map(point => Number((-(Number(point.offset) / TRACKER_TABLETOP_SCALE)).toFixed(6)));
-    const actual = (object.AttachedSnapPoints || []).map(point => Number(point.Position?.z));
-    if (actual.length !== expected.length || actual.some((value, index) => !close(value, expected[index], 0.00001))) {
-      throw new Error(`Tracker ${id} serialized snap geometry does not match renderer-derived local travel.`);
+    const expected = trackerPresentation(record);
+    if (!close(object.Transform?.scaleX, expected.transformScale)
+      || !close(object.Transform?.scaleY, 1)
+      || !close(object.Transform?.scaleZ, expected.transformScale)) {
+      throw new Error(`Tracker ${id} does not use the canonical card-sized Custom_Tile transform.`);
+    }
+    if (!close(object.CustomImage?.WidthScale, expected.widthScale)
+      || object.CustomImage?.CustomTile?.Type !== expected.tileType
+      || object.CustomImage?.CustomTile?.Stretch !== expected.stretch
+      || object.CustomImage?.CustomTile?.Stackable !== false) {
+      throw new Error(`Tracker ${id} does not use the canonical Custom_Tile presentation.`);
+    }
+
+    const actual = object.AttachedSnapPoints || [];
+    if (actual.length !== expected.snapPoints.length || actual.some((point, index) => {
+      const expectedPoint = expected.snapPoints[index];
+      return !close(point.Position?.x, expectedPoint.Position.x, 0.00001)
+        || !close(point.Position?.y, expectedPoint.Position.y, 0.00001)
+        || !close(point.Position?.z, expectedPoint.Position.z, 0.00001)
+        || point.RotationSnap !== true
+        || !Array.isArray(point.Tags)
+        || point.Tags[0] !== expectedPoint.Tags[0];
+    })) {
+      throw new Error(`Tracker ${id} serialized snap geometry does not match the shared renderer-to-TTS geometry contract.`);
     }
     const lua = String(object.LuaScript || '');
-    if (!lua.includes('setSnapPoints') || lua.includes('getBoundsNormalized')) {
-      throw new Error(`Tracker ${id} runtime snap registration is not the canonical static renderer mapping.`);
+    if (lua !== expected.luaScript || !lua.includes('setSnapPoints') || lua.includes('getBoundsNormalized')) {
+      throw new Error(`Tracker ${id} runtime snap registration does not match the canonical static renderer mapping.`);
     }
     counts.set(id, counts.get(id) + 1);
   });
