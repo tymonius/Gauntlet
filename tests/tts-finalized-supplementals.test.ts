@@ -52,11 +52,13 @@ describe('finalized TTS supplemental exports', () => {
     expect(generator).toContain("sidewaysCard: item.orientation === 'landscape'");
   });
 
-  it('assembles landscape supplementals directly at final CardCustom orientation', () => {
+  it('assembles landscape supplementals directly at their recovered final CardCustom orientation', () => {
     const assembler = readFileSync('scripts/assemble-tts-supplemental-save.mjs', 'utf8');
     expect(assembler).toContain('const sideways = component.tts?.sidewaysCard === true');
-    expect(assembler).toContain('Transform: transform(0, 1, 0, sideways ? 90 : 0)');
+    expect(assembler).toContain("const tabletopRotation = component.family === 'deed-card' ? 0 : (sideways ? 90 : 0)");
+    expect(assembler).toContain('Transform: transform(0, 1, 0, tabletopRotation)');
     expect(assembler).toContain('SidewaysCard: sideways');
+    expect(assembler).toContain("sidewaysCard: true, tags: [DEED_STACK_TAG]");
     expect(assembler).not.toContain('finalizeSupplementalObjectPresentation');
   });
 
