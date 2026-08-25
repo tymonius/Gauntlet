@@ -6,7 +6,7 @@ import { CURRENT_ALIAS_ROOT, resolveCurrentTtsRelease, ROOT } from '../scripts/t
 const TABLE_URL = 'https://raw.githubusercontent.com/tymonius/Gauntlet/release/v0.7.0-cutover/tts/assets/environment/campaign-map-table.jpg';
 const SKY_URL = 'https://raw.githubusercontent.com/tymonius/Gauntlet/release/v0.7.0-cutover/tts/assets/environment/command-tent-panorama.jpg';
 
-const TABLE_LAYOUT_NOTE = 'Gauntlet TTS table layout: Red sits south and Blue north. Each player has Leader & References, Draw, Discard, Graveyard, Asset Bank, Faction Zone, and a one-card Hand parking position. The actual TTS hand zone sits farther behind the player and provides normal TTS hand privacy without covering the tabletop in hidden-zone volumes. Asset Bank provides seven portrait positions; Faction Zone provides twelve compact portrait positions. The Gauntlet visibly marks six primary Territory positions; two Manifest Destiny extension snaps remain invisible. Deed snaps are invisible landscape positions beside every possible Territory.';
+const TABLE_LAYOUT_NOTE = 'Gauntlet TTS table layout: Red sits south and Blue north. Each player has Leader & References, Draw, Discard, Graveyard, Asset Bank, Faction Zone, and a one-card Hand parking position. The actual TTS hand zone spans the rear edge of that player side and provides normal TTS hand privacy without covering the tabletop in hidden-zone volumes. Asset Bank provides seven portrait positions; Faction Zone provides twelve compact portrait positions. The Gauntlet visibly marks six primary Territory positions; two Manifest Destiny extension snaps remain invisible. Deed snaps are invisible landscape positions beside every possible Territory.';
 const TABLE_TEXT_NOTE_PREFIX = 'gauntlet:table-layout:';
 const PRIVATE_ZONE_NOTE_PREFIX = 'gauntlet:private-zone:';
 const TERRITORY_TAG = 'gauntlet-territory';
@@ -39,7 +39,10 @@ const PLAYER_ZONES = Object.freeze([
   { id: 'faction-zone', label: 'Faction Zone', x: 12.0, z: -5.4, width: 10.7, depth: 10.0, fontSize: 29, textScale: 0.26, snapLayout: 'faction' },
 ]);
 
-const HAND_ZONE = Object.freeze({ x: 0, z: -20.15, scaleX: 7.0, scaleY: 2.5, scaleZ: 3.0 });
+// This is the cumulative post-round-four hand geometry that was actually used
+// during QA: a broad real TTS hand zone across each player's rear edge. Keep it
+// as a Hands.HandTransform, not a HandTrigger/FogOfWarTrigger ObjectState.
+const HAND_ZONE = Object.freeze({ x: 0, z: -23.0, scaleX: 34.0, scaleY: 2.0, scaleZ: 5.5 });
 
 function jsonText(value) {
   return `${JSON.stringify(value, null, 2)}\n`;
@@ -152,6 +155,12 @@ function playerFacingRotation(side) {
   return side === 'Blue' ? 180 : 0;
 }
 
+function handFacingRotation(side) {
+  // Hand transforms face into the seated player's camera, opposite the flat
+  // table-label orientation. This is the post-round-four tested orientation.
+  return side === 'Blue' ? 0 : 180;
+}
+
 function pointInPlayerZone(side, zone, offsetX = 0, offsetZ = 0) {
   const mirror = side === 'Blue' ? -1 : 1;
   return vector((zone.x + offsetX) * mirror, 0, (zone.z + offsetZ) * mirror);
@@ -198,8 +207,10 @@ export function buildTableVectorLines() {
 export function buildTableSnapPoints() {
   const points = [];
   for (const z of ALL_TERRITORY_Z) points.push(snap(vector(0, 0, z), 90, [TERRITORY_TAG]));
+  // Deeds are portrait-cell CardCustom objects presented with SidewaysCard.
+  // Their tested tabletop rotation is 0; a 90-degree magnet turns them wrong.
   for (const z of ALL_TERRITORY_Z) {
-    for (const x of DEED_X) points.push(snap(vector(x, 0, z), 90, [DEED_TAG]));
+    for (const x of DEED_X) points.push(snap(vector(x, 0, z), 0, [DEED_TAG]));
   }
 
   for (const side of ['Red', 'Blue']) {
@@ -280,7 +291,35 @@ export function buildTableTextObjects(existingObjects = []) {
   });
 }
 
-function applyHands(save) {
+function makeSeatCameraLua() {
+  return [
+    '-- Gauntlet seat cameras: keep the physical player end and camera end aligned.',
+    'function gauntletSeatCamera(color)',
+    '  if color == "Red" then',
+    '    Player[color].lookAt({ position = {0, 0, 0}, pitch = 55, yaw = 0, distance = 38 })',
+    '  elseif color == "Blue" then',
+    '    Player[color].lookAt({ position = {0, 0, 0}, pitch = 55, yaw = 180, distance = 38 })',
+    '  end',
+    'end',
+    '',
+    'function onLoad()',
+    '  Wait.frames(function()',
+    '    for _, color in ipairs(getSeatedPlayers()) do',
+    '      gauntletSeatCamera(color)',
+    '    end',
+    '  end, 3)',
+    'end',
+    '',
+    'function onPlayerChangeColor(color)',
+    '  if color == "Red" or color == "Blue" then',
+    '    Wait.frames(function() gauntletSeatCamera(color) end, 2)',
+    '  end',
+    'end',
+    '',
+  ].join('\n');
+}
+
+function applyHandsAndSeatCameras(save) {
   // Remove legacy generated HandTrigger/FogOfWarTrigger objects from older
   // review saves. TTS already gives actual hand zones per-player visibility;
   // adding table-spanning FogOfWarTrigger volumes makes those volumes visible
@@ -298,10 +337,20 @@ function applyHands(save) {
       const mirror = side === 'Blue' ? -1 : 1;
       return {
         Color: side,
-        Transform: transform(HAND_ZONE.x * mirror, 1.5, HAND_ZONE.z * mirror, playerFacingRotation(side), HAND_ZONE.scaleX, HAND_ZONE.scaleY, HAND_ZONE.scaleZ),
+        Transform: transform(HAND_ZONE.x * mirror, 1.5, HAND_ZONE.z * mirror, handFacingRotation(side), HAND_ZONE.scaleX, HAND_ZONE.scaleY, HAND_ZONE.scaleZ),
       };
     }),
   };
+
+  // The base save has no global game script; table layout owns the camera
+  // orientation contract. This restores the cumulative post-round-four seat
+  // alignment without a later mutation pass.
+  save.LuaScript = makeSeatCameraLua();
+  save.LuaScriptState = '';
+
+  walkObjects(save.ObjectStates, object => {
+    if (object?.Name === 'CardCustom' || object?.Name === 'DeckCustom') object.Hands = true;
+  });
 }
 
 function applyEnvironment(save) {
@@ -319,7 +368,7 @@ export function applyTableLayout(save) {
   save.VectorLines = buildTableVectorLines();
   save.SnapPoints = buildTableSnapPoints();
   save.ObjectStates.push(...buildTableTextObjects(save.ObjectStates));
-  applyHands(save);
+  applyHandsAndSeatCameras(save);
   applyEnvironment(save);
 
   save.Turns ||= {};
@@ -350,6 +399,7 @@ async function main() {
     const deeds = snaps.filter(point => point.Tags?.includes(DEED_TAG));
     if (territory.length !== 8) throw new Error(`Expected 8 Territory snaps; found ${territory.length}.`);
     if (deeds.length !== 16) throw new Error(`Expected 16 Deed snaps; found ${deeds.length}.`);
+    if (deeds.some(point => Number(point.Rotation?.y) !== 0)) throw new Error('Deed snap rotations must remain at the recovered tabletop rotation 0.');
     console.log(`Current TTS table-layout source check passed for ${release.version}: ${lines.length} outline lines and ${snaps.length} functional snaps.`);
     return;
   }
