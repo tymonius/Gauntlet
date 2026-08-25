@@ -43,7 +43,9 @@ describe('TTS physical component sizing', () => {
     expect(presentation.snapPoints[2].Position.z).toBeCloseTo(-(1.05 / CUSTOM_TILE_CARD_LINEAR_SCALE), 6);
     expect(presentation.luaScript).toContain('self.setSnapPoints({');
     expect(presentation.luaScript).toContain('gauntlet-tracker-influence');
+    expect(presentation.luaScript).toContain('registerGauntletTrackerSnaps()');
     expect(presentation.luaScript).not.toContain('getBoundsNormalized');
+    expect(presentation.luaScript).not.toContain('Wait.frames');
   });
 
   it('fails closed when tracker metadata drifts away from standard card dimensions', () => {
