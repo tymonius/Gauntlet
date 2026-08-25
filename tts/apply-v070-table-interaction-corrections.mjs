@@ -171,15 +171,19 @@ function zoneSnapOffsets(layout) {
   ];
   if (layout === 'pile') return [[0, 0]];
 
-  // Asset Bank cards are landscape Territories/Assets (3.5 x 2.5 tabletop
-  // footprint), so use a 3 x 3 grid with deliberate air between cards.
-  if (layout === 'assets') {
-    const offsets = [];
-    for (const z of [-2.8, 0, 2.8]) {
-      for (const x of [-3.7, 0, 3.7]) offsets.push([x, z]);
-    }
-    return offsets;
-  }
+  // Assets are ordinary portrait cards. Seven is the maximum live-game Asset
+  // Bank capacity: with eight Territories available, controlling the eighth
+  // ends the game rather than creating a continuing eight-Asset board state.
+  // Use a 4+3 portrait layout with enough air that cards never overlap.
+  if (layout === 'assets') return [
+    [-4.2, -1.95],
+    [-1.4, -1.95],
+    [1.4, -1.95],
+    [4.2, -1.95],
+    [-2.8, 1.95],
+    [0, 1.95],
+    [2.8, 1.95],
+  ];
 
   // Faction components are overwhelmingly portrait cards (2.5 x 3.5). Four
   // columns by three rows fit without the overlap visible in the first QA save.
@@ -466,7 +470,7 @@ function faceDownPlayableDecks(save) {
 }
 
 function appendCorrectionNote(save) {
-  const note = 'TTS interaction corrections: Asset Bank snaps use a non-overlapping 3x3 landscape grid; Faction Zone snaps use a non-overlapping 4x3 portrait grid; each player Hand is a one-card owner-hidden TTS hand zone; starter Deck stacks emerge face down; Proposals, Deeds, and Mystics Rites/Ritual are bagged as family stacks; Territory flipping uses the normal card axis; Graveyards are isolated at the outer edge; Manifest Destiny expansion positions retain invisible snaps but no permanent slot markings.';
+  const note = 'TTS interaction corrections: Asset Bank snaps provide seven non-overlapping portrait-card positions, matching the maximum live-game Asset capacity; Faction Zone snaps use a non-overlapping 4x3 portrait grid; each player Hand is a one-card owner-hidden TTS hand zone; starter Deck stacks emerge face down; Proposals, Deeds, and Mystics Rites/Ritual are bagged as family stacks; Territory flipping uses the normal card axis; Graveyards are isolated at the outer edge; Manifest Destiny expansion positions retain invisible snaps but no permanent slot markings.';
   for (const field of ['Note', 'Rules']) {
     const current = String(save[field] || '').trim();
     if (!current.includes(note)) save[field] = `${current}\n\n${note}`.trim();
