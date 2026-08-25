@@ -1,6 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { starterBagTransform } from '../scripts/generate-tts-save.mjs';
 
 const publisher = readFileSync('scripts/generate-tts-save.mjs', 'utf8');
 const workflow = readFileSync('.github/workflows/generate-tts-card-assets.yml', 'utf8');
@@ -30,8 +31,26 @@ describe('TTS save publisher', () => {
     expect(publisher).toContain("objectBase(\n      'DeckCustom'");
     expect(publisher).toContain("objectBase('CardCustom'");
     expect(publisher).toContain('ContainedObjects: [leader, ...territories, deck, playerToken, battleDie]');
-    expect(publisher).toContain('starters.map((starter, index) => buildStarterKit');
+    expect(publisher).toContain('starters.map(starter => buildStarterKit');
     expect(publisher).not.toMatch(/Expected 12|=== 12|!== 12/);
+  });
+
+  it('parks each faction pair together outside the active board at the recovered positions', () => {
+    const starters = [
+      { id: 'military-a', factionId: 'military' }, { id: 'military-b', factionId: 'military' },
+      { id: 'diplomats-a', factionId: 'diplomats' }, { id: 'diplomats-b', factionId: 'diplomats' },
+      { id: 'financiers-a', factionId: 'financiers' }, { id: 'financiers-b', factionId: 'financiers' },
+      { id: 'intelligence-a', factionId: 'intelligence' }, { id: 'intelligence-b', factionId: 'intelligence' },
+      { id: 'mystics-a', factionId: 'mystics' }, { id: 'mystics-b', factionId: 'mystics' },
+      { id: 'inquisition-a', factionId: 'inquisition' }, { id: 'inquisition-b', factionId: 'inquisition' },
+    ];
+
+    expect(starterBagTransform(starters[0], starters)).toMatchObject({ posX: -20.5, posZ: -12, rotY: 90 });
+    expect(starterBagTransform(starters[1], starters)).toMatchObject({ posX: 20.5, posZ: -12, rotY: 270 });
+    expect(starterBagTransform(starters[4], starters)).toMatchObject({ posX: -20.5, posZ: -2.4, rotY: 90 });
+    expect(starterBagTransform(starters[5], starters)).toMatchObject({ posX: 20.5, posZ: -2.4, rotY: 270 });
+    expect(starterBagTransform(starters[10], starters)).toMatchObject({ posX: -20.5, posZ: 12, rotY: 90 });
+    expect(starterBagTransform(starters[11], starters)).toMatchObject({ posX: 20.5, posZ: 12, rotY: 270 });
   });
 
   it('creates the base two-player scaffold before authoritative table layout is applied', () => {
