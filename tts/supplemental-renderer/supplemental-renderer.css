@@ -228,6 +228,11 @@ body {
   text-transform: uppercase;
 }
 
+.reference-card[data-component-id="diplomats-reference"][data-reference-side="reverse"] .reference-face-title {
+  font-size: 10.9pt;
+  letter-spacing: 0.018em;
+}
+
 .reference-body {
   display: flex;
   flex-direction: column;
@@ -332,4 +337,96 @@ body {
   color: white;
   font: 12px/1.35 sans-serif;
   background: #5b1313;
+}
+
+/* Standalone-renderer asset resolution. Production reference-card styling is
+   authoritative; these declarations only make its relative artwork and masks
+   explicit when Chromium renders the TTS screenshot surface at /tts/. */
+#renderTarget .reference-card[data-faction="diplomats"] {
+  --reference-symbol: url("/images/faction-symbols/diplomats.svg");
+  --faction-symbol: url("/images/faction-symbols/diplomats.svg");
+  --reference-parchment-image: url("/images/artwork/card-backgrounds/diplomats-parchment-v2.png");
+  --parchment-image: var(--reference-parchment-image);
+}
+#renderTarget .reference-card[data-faction="financiers"] {
+  --reference-symbol: url("/images/faction-symbols/financiers.svg");
+  --faction-symbol: url("/images/faction-symbols/financiers.svg");
+  --reference-parchment-image: url("/images/artwork/card-backgrounds/financiers-parchment-v2.png");
+  --parchment-image: var(--reference-parchment-image);
+}
+#renderTarget .reference-card[data-faction="intelligence"] {
+  --reference-symbol: url("/images/faction-symbols/intelligence.svg");
+  --faction-symbol: url("/images/faction-symbols/intelligence.svg");
+  --reference-parchment-image: url("/images/artwork/card-backgrounds/intelligence-parchment-v2.png");
+  --parchment-image: var(--reference-parchment-image);
+}
+#renderTarget .reference-card[data-faction="mystics"] {
+  --reference-symbol: url("/images/faction-symbols/mystics.svg");
+  --faction-symbol: url("/images/faction-symbols/mystics.svg");
+  --reference-parchment-image: url("/images/artwork/card-backgrounds/mystics-parchment-v2.png");
+  --parchment-image: var(--reference-parchment-image);
+}
+#renderTarget .reference-card[data-faction="inquisition"] {
+  --reference-symbol: url("/images/faction-symbols/inquisition.svg");
+  --faction-symbol: url("/images/faction-symbols/inquisition.svg");
+  --reference-parchment-image: url("/images/artwork/card-backgrounds/inquisition-parchment-v2.png");
+  --parchment-image: var(--reference-parchment-image);
+}
+
+.reference-card[data-faction="diplomats"] .reference-faction-emblem,
+.reference-card[data-faction="diplomats"] .reference-watermark {
+  -webkit-mask-image: url("/images/faction-symbols/diplomats.svg") !important;
+  mask-image: url("/images/faction-symbols/diplomats.svg") !important;
+}
+.reference-card[data-faction="financiers"] .reference-faction-emblem,
+.reference-card[data-faction="financiers"] .reference-watermark {
+  -webkit-mask-image: url("/images/faction-symbols/financiers.svg") !important;
+  mask-image: url("/images/faction-symbols/financiers.svg") !important;
+}
+.reference-card[data-faction="intelligence"] .reference-faction-emblem,
+.reference-card[data-faction="intelligence"] .reference-watermark {
+  -webkit-mask-image: url("/images/faction-symbols/intelligence.svg") !important;
+  mask-image: url("/images/faction-symbols/intelligence.svg") !important;
+}
+.reference-card[data-faction="mystics"] .reference-faction-emblem,
+.reference-card[data-faction="mystics"] .reference-watermark {
+  -webkit-mask-image: url("/images/faction-symbols/mystics.svg") !important;
+  mask-image: url("/images/faction-symbols/mystics.svg") !important;
+}
+.reference-card[data-faction="inquisition"] .reference-faction-emblem,
+.reference-card[data-faction="inquisition"] .reference-watermark {
+  -webkit-mask-image: url("/images/faction-symbols/inquisition.svg") !important;
+  mask-image: url("/images/faction-symbols/inquisition.svg") !important;
+}
+
+.reference-card[data-faction] .reference-faction-emblem,
+.reference-card[data-faction] .reference-watermark {
+  -webkit-mask-position: center !important;
+  mask-position: center !important;
+  -webkit-mask-repeat: no-repeat !important;
+  mask-repeat: no-repeat !important;
+  -webkit-mask-size: contain !important;
+  mask-size: contain !important;
+}
+
+.reference-card[data-faction] .reference-faction-emblem {
+  background: var(--reference-accent) !important;
+}
+
+#renderTarget .reference-card[data-component-id="universal-reference"] {
+  --reference-border: #eee7d5;
+  --reference-border-outline: rgba(62, 52, 41, 0.52);
+  --reference-border-rule: rgba(62, 52, 41, 0.24);
+  --reference-parchment-image: url("/images/artwork/card-backgrounds/neutral-parchment-v2.png");
+  --parchment-image: var(--reference-parchment-image);
+}
+
+.reference-card[data-component-id="universal-reference"] .reference-card-interior {
+  background-image: var(--reference-parchment-image) !important;
+}
+
+.reference-card[data-component-id="universal-reference"] .reference-faction-emblem,
+.reference-card[data-component-id="universal-reference"] .reference-watermark {
+  -webkit-mask-image: url("/images/Gauntlet-G.svg") !important;
+  mask-image: url("/images/Gauntlet-G.svg") !important;
 }
