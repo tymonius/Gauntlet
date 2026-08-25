@@ -71,7 +71,15 @@ describe('TTS physical card sizing', () => {
           quantity: 1,
           representation: 'sliding-tracker',
           physicalScale: { cardWidth: 2.5, cardHeight: 3.5 },
-          tts: { widthScale: 2.5, heightScale: 3.5 },
+          tts: {
+            widthScale: 2.5,
+            heightScale: 3.5,
+            snapTag: 'gauntlet-tracker-influence',
+            snapPoints: [
+              { value: 0, offset: 0 },
+              { value: 1, offset: 0.35 },
+            ],
+          },
         },
       ],
     };
@@ -101,5 +109,6 @@ describe('TTS physical card sizing', () => {
     expect(tracker.Transform.scaleX).toBe(TRACKER_TABLETOP_SCALE);
     expect(tracker.Transform.scaleY).toBe(1);
     expect(tracker.Transform.scaleZ).toBe(TRACKER_TABLETOP_SCALE);
+    expect(tracker.AttachedSnapPoints).toHaveLength(2);
   });
 });
