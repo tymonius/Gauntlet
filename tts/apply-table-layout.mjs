@@ -6,7 +6,7 @@ import { CURRENT_ALIAS_ROOT, resolveCurrentTtsRelease, ROOT } from '../scripts/t
 const TABLE_URL = 'https://raw.githubusercontent.com/tymonius/Gauntlet/release/v0.7.0-cutover/tts/assets/environment/campaign-map-table.jpg';
 const SKY_URL = 'https://raw.githubusercontent.com/tymonius/Gauntlet/release/v0.7.0-cutover/tts/assets/environment/command-tent-panorama.jpg';
 
-const TABLE_LAYOUT_NOTE = 'Gauntlet TTS table layout: Red sits south and Blue north. Each player has Leader & References, Draw, Discard, Graveyard, Asset Bank, Faction Zone, and a one-card Hand parking position. The actual TTS hand zone sits farther behind the player inside a broad player-colored Hidden Zone. Asset Bank provides seven portrait positions; Faction Zone provides twelve compact portrait positions. The Gauntlet visibly marks six primary Territory positions; two Manifest Destiny extension snaps remain invisible. Deed snaps are invisible landscape positions beside every possible Territory.';
+const TABLE_LAYOUT_NOTE = 'Gauntlet TTS table layout: Red sits south and Blue north. Each player has Leader & References, Draw, Discard, Graveyard, Asset Bank, Faction Zone, and a one-card Hand parking position. The actual TTS hand zone sits farther behind the player and provides normal TTS hand privacy without covering the tabletop in hidden-zone volumes. Asset Bank provides seven portrait positions; Faction Zone provides twelve compact portrait positions. The Gauntlet visibly marks six primary Territory positions; two Manifest Destiny extension snaps remain invisible. Deed snaps are invisible landscape positions beside every possible Territory.';
 const TABLE_TEXT_NOTE_PREFIX = 'gauntlet:table-layout:';
 const PRIVATE_ZONE_NOTE_PREFIX = 'gauntlet:private-zone:';
 const TERRITORY_TAG = 'gauntlet-territory';
@@ -28,10 +28,6 @@ const OUTLINE_SHADOW_COLOR = Object.freeze({ r: 0.12, g: 0.085, b: 0.055 });
 const OUTLINE_COLOR = Object.freeze({ r: 0.83, g: 0.69, b: 0.40 });
 const LABEL_SHADOW_COLOR = Object.freeze({ r: 0.08, g: 0.055, b: 0.035 });
 const LABEL_COLOR = Object.freeze({ r: 0.99, g: 0.91, b: 0.70 });
-const TTS_PLAYER_COLORS = Object.freeze({
-  Red: { r: 0.856, g: 0.100, b: 0.094, a: 0.25 },
-  Blue: { r: 0.118, g: 0.530, b: 1.000, a: 0.25 },
-});
 
 const PLAYER_ZONES = Object.freeze([
   { id: 'leader-references', label: 'Leader & References', x: -12.2, z: -13.0, width: 10.8, depth: 7.4, fontSize: 29, textScale: 0.26, snapLayout: 'leader' },
@@ -44,7 +40,6 @@ const PLAYER_ZONES = Object.freeze([
 ]);
 
 const HAND_ZONE = Object.freeze({ x: 0, z: -20.15, scaleX: 7.0, scaleY: 2.5, scaleZ: 3.0 });
-const PRIVATE_ZONE = Object.freeze({ x: 0, z: -18.8, scaleX: 40.0, scaleY: 4.0, scaleZ: 7.2 });
 
 function jsonText(value) {
   return `${JSON.stringify(value, null, 2)}\n`;
@@ -70,24 +65,6 @@ function collectGuids(objects, guids = new Set()) {
     collectGuids(object?.ContainedObjects, guids);
   }
   return guids;
-}
-
-function makeContinuationGuidFactory(save) {
-  const used = collectGuids(save.ObjectStates || []);
-  let value = 1;
-  for (const guid of used) {
-    if (/^[0-9a-z]{6}$/i.test(guid)) value = Math.max(value, Number.parseInt(guid, 36) + 1);
-  }
-  return () => {
-    while (value < 36 ** 6) {
-      const candidate = value.toString(36).padStart(6, '0').slice(-6);
-      value += 1;
-      if (used.has(candidate)) continue;
-      used.add(candidate);
-      return candidate;
-    }
-    throw new Error('Unable to allocate another deterministic six-character TTS GUID.');
-  };
 }
 
 function addTag(object, tag) {
@@ -303,37 +280,11 @@ export function buildTableTextObjects(existingObjects = []) {
   });
 }
 
-function makePrivateZone(side, guid) {
-  const mirror = side === 'Blue' ? -1 : 1;
-  const tint = TTS_PLAYER_COLORS[side];
-  return {
-    Name: 'FogOfWarTrigger',
-    Transform: transform(PRIVATE_ZONE.x * mirror, 2.0, PRIVATE_ZONE.z * mirror, playerFacingRotation(side), PRIVATE_ZONE.scaleX, PRIVATE_ZONE.scaleY, PRIVATE_ZONE.scaleZ),
-    Nickname: `${side} Private Area`,
-    Description: 'Private player-side area for hand and Reserve handling',
-    GMNotes: `${PRIVATE_ZONE_NOTE_PREFIX}${side.toLowerCase()}`,
-    ColorDiffuse: { ...tint },
-    Locked: true,
-    Grid: false,
-    Snap: false,
-    Autoraise: false,
-    Sticky: false,
-    Tooltip: false,
-    GridProjection: false,
-    HideWhenFaceDown: false,
-    Hands: false,
-    FogColor: side,
-    FogHidePointers: true,
-    FogReverseHiding: false,
-    FogSeethrough: true,
-    LuaScript: '',
-    LuaScriptState: '',
-    XmlUI: '',
-    GUID: guid(),
-  };
-}
-
-function applyHandsAndPrivateZones(save, guid) {
+function applyHands(save) {
+  // Remove legacy generated HandTrigger/FogOfWarTrigger objects from older
+  // review saves. TTS already gives actual hand zones per-player visibility;
+  // adding table-spanning FogOfWarTrigger volumes makes those volumes visible
+  // in normal play and obscures the board.
   save.ObjectStates = (save.ObjectStates || []).filter(object => (
     object?.Name !== 'HandTrigger'
     && !String(object?.GMNotes || '').startsWith(PRIVATE_ZONE_NOTE_PREFIX)
@@ -351,8 +302,6 @@ function applyHandsAndPrivateZones(save, guid) {
       };
     }),
   };
-
-  save.ObjectStates.push(makePrivateZone('Red', guid), makePrivateZone('Blue', guid));
 }
 
 function applyEnvironment(save) {
@@ -365,13 +314,12 @@ function applyEnvironment(save) {
 export function applyTableLayout(save) {
   if (!save || !Array.isArray(save.ObjectStates)) throw new Error('TTS table layout requires a save with ObjectStates.');
 
-  const guid = makeContinuationGuidFactory(save);
   save.ObjectStates = save.ObjectStates.filter(object => !String(object?.GMNotes || '').startsWith(TABLE_TEXT_NOTE_PREFIX));
   tagTerritories(save.ObjectStates);
   save.VectorLines = buildTableVectorLines();
   save.SnapPoints = buildTableSnapPoints();
   save.ObjectStates.push(...buildTableTextObjects(save.ObjectStates));
-  applyHandsAndPrivateZones(save, guid);
+  applyHands(save);
   applyEnvironment(save);
 
   save.Turns ||= {};
@@ -387,7 +335,6 @@ export function applyTableLayout(save) {
     vectorLineCount: save.VectorLines.length,
     snapPointCount: save.SnapPoints.length,
     textObjectCount: save.ObjectStates.filter(object => String(object?.GMNotes || '').startsWith(TABLE_TEXT_NOTE_PREFIX)).length,
-    privateZoneCount: save.ObjectStates.filter(object => String(object?.GMNotes || '').startsWith(PRIVATE_ZONE_NOTE_PREFIX)).length,
   };
 }
 
@@ -418,7 +365,7 @@ async function main() {
   const text = jsonText(result.save);
   await writeFile(versionedPath, text);
   await writeFile(join(CURRENT_ALIAS_ROOT, 'Gauntlet_TTS_Review_Scaffold.json'), text);
-  console.log(`Applied authoritative table layout to ${relative(ROOT, versionedPath)}: ${result.vectorLineCount} outline lines, ${result.snapPointCount} snaps, ${result.textObjectCount} labels, ${result.privateZoneCount} private zones.`);
+  console.log(`Applied authoritative table layout to ${relative(ROOT, versionedPath)}: ${result.vectorLineCount} outline lines, ${result.snapPointCount} snaps, ${result.textObjectCount} labels.`);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
