@@ -85,15 +85,27 @@ function makeCardObject({ nickname, description, cardId, deckId, customDeckState
   };
 }
 
-function starterBagTransform(index, total) {
-  // Starter kits are setup containers, not play-area objects. Keep them well
-  // outside the functional board so choosing a kit never obscures zones/cards.
-  const rows = Math.ceil(total / 2);
-  const column = index < rows ? 0 : 1;
-  const row = index % rows;
-  const spacing = rows <= 1 ? 0 : Math.min(4, 20 / (rows - 1));
-  const start = -((rows - 1) * spacing) / 2;
-  return transform(column === 0 ? -22.5 : 22.5, 1.4, start + row * spacing, column === 0 ? 90 : 270);
+function starterBagTransform(starter, starters) {
+  // Preserve the tested setup presentation without hard-coding the starter
+  // count: each faction occupies one Z row and its Leaders sit as a left/right
+  // pair outside the active board. Faction rows are derived from manifest order.
+  const factionIds = [...new Set(starters.map(candidate => candidate.factionId))];
+  const factionIndex = factionIds.indexOf(starter.factionId);
+  if (factionIndex < 0) throw new Error(`Starter ${starter.id || 'unknown'} has no faction row.`);
+  const factionStarters = starters.filter(candidate => candidate.factionId === starter.factionId);
+  const leaderIndex = factionStarters.findIndex(candidate => candidate.id === starter.id);
+  if (leaderIndex < 0) throw new Error(`Starter ${starter.id || 'unknown'} cannot be located inside faction ${starter.factionId}.`);
+
+  const rowSpacing = factionIds.length <= 1 ? 0 : 24 / (factionIds.length - 1);
+  const z = -((factionIds.length - 1) * rowSpacing) / 2 + factionIndex * rowSpacing;
+  if (factionStarters.length === 1) return transform(-20.5, 1.4, z, 90);
+
+  // The current package has two Leaders per faction. Keep that tested pairing
+  // exact while remaining deterministic if the source later contains more.
+  const fraction = leaderIndex / (factionStarters.length - 1);
+  const x = -20.5 + fraction * 41;
+  const rotY = fraction < 0.5 ? 90 : 270;
+  return transform(x, 1.4, z, rotY);
 }
 
 function factionColor(factionId) {
@@ -247,7 +259,7 @@ function buildTtsSave(starterManifest, releaseAssets) {
   if (!starters.length) throw new Error('Starter manifest contains no starter decks.');
 
   const guid = makeGuidFactory();
-  const starterKits = starters.map((starter, index) => buildStarterKit(starter, releaseAssets, starterBagTransform(index, starters.length), guid));
+  const starterKits = starters.map(starter => buildStarterKit(starter, releaseAssets, starterBagTransform(starter, starters), guid));
   const territoryZ = [-7.5, -4.5, -1.5, 1.5, 4.5, 7.5];
   const snapPoints = territoryZ.map(z => ({ Position: vector(0, 0, z), Rotation: vector(0, 90, 0) }));
 
