@@ -79,7 +79,7 @@ const starterManifest = {
 describe('generated TTS table structure', () => {
   const save = buildTtsSave(starterManifest, releaseAssets);
 
-  it('creates exactly the Red and Blue player hand zones', () => {
+  it('creates exactly the Red and Blue player hand configurations', () => {
     expect(save.Hands.Enable).toBe(true);
     expect(save.Hands.DisableUnused).toBe(true);
     expect(save.Hands.HandTransforms.map((hand) => hand.Color)).toEqual(['Red', 'Blue']);
@@ -93,18 +93,29 @@ describe('generated TTS table structure', () => {
     expect(save.SnapPoints.map((point) => point.Position.z)).toEqual([-7.5, -4.5, -1.5, 1.5, 4.5, 7.5]);
   });
 
-  it('provides one battle die and one Player Token for each player', () => {
-    const objects = save.ObjectStates;
-    expect(objects.filter((object) => object.Name === 'Die_6').map((object) => object.Nickname).sort())
-      .toEqual(['Blue Battle Die', 'Red Battle Die']);
-    expect(objects.filter((object) => object.Name === 'PlayerPawn').map((object) => object.Nickname).sort())
-      .toEqual(['Blue Player Token', 'Red Player Token']);
+  it('keeps player utilities inside the selected faction starter Bag rather than on the table', () => {
+    const topLevel = save.ObjectStates;
+    expect(topLevel.filter((object) => object.Name === 'Die_6')).toHaveLength(0);
+    expect(topLevel.filter((object) => object.Name === 'PlayerPawn')).toHaveLength(0);
+
+    const bag = topLevel.find((object) => object.Name === 'Bag');
+    expect(bag).toBeTruthy();
+    const die = bag.ContainedObjects.filter((object) => object.Name === 'Die_6');
+    const token = bag.ContainedObjects.filter((object) => object.Name === 'PlayerPawn');
+    expect(die).toHaveLength(1);
+    expect(token).toHaveLength(1);
+    expect(die[0].Nickname).toBe('Military Battle Die');
+    expect(token[0].Nickname).toBe('Military Player Token');
+    expect(die[0].GMNotes).toBe('gauntlet:starter-utility:battle-die:military');
+    expect(token[0].GMNotes).toBe('gauntlet:starter-utility:player-token:military');
+    expect(die[0].ColorDiffuse).toEqual(bag.ColorDiffuse);
+    expect(token[0].ColorDiffuse).toEqual(bag.ColorDiffuse);
   });
 
-  it('builds each starter Bag with one Leader, three sideways Territories, and one Deck', () => {
+  it('builds each starter Bag with one Leader, three sideways Territories, one Deck, one token, and one die', () => {
     const bag = save.ObjectStates.find((object) => object.Name === 'Bag');
     expect(bag).toBeTruthy();
-    expect(bag.ContainedObjects).toHaveLength(5);
+    expect(bag.ContainedObjects).toHaveLength(7);
 
     const deck = bag.ContainedObjects.filter((object) => object.Name === 'DeckCustom');
     const cards = bag.ContainedObjects.filter((object) => object.Name === 'CardCustom');
@@ -117,6 +128,8 @@ describe('generated TTS table structure', () => {
     expect(leader[0].CardID).toBe(10000);
     expect(territories).toHaveLength(3);
     expect(territories.every((territory) => territory.SidewaysCard === true)).toBe(true);
+    expect(bag.ContainedObjects.filter((object) => object.Name === 'PlayerPawn')).toHaveLength(1);
+    expect(bag.ContainedObjects.filter((object) => object.Name === 'Die_6')).toHaveLength(1);
   });
 
   it('uses only HTTPS hosted URLs for every custom face and back in the save', () => {
