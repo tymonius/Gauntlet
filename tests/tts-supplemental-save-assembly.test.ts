@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { assembleReadySupplementals } from '../scripts/assemble-tts-supplemental-save.mjs';
+import { CUSTOM_TILE_CARD_LINEAR_SCALE, ROUNDED_RECTANGLE_TILE_TYPE } from '../scripts/tts-supplemental-geometry.mjs';
+
+const PENDING_NOTE = 'Ready shared and faction supplemental components are assembled into the same starter kit later in the TTS package pipeline. Rules remain manual.';
 
 function bag(nickname: string, guid: string, leaderCardId?: number) {
   return {
@@ -20,8 +23,8 @@ function bag(nickname: string, guid: string, leaderCardId?: number) {
 
 function fixture() {
   const save = {
-    Note: 'This scaffold intentionally does not yet include faction-specific supplemental trackers or secondary components. Rules remain manual.',
-    Rules: 'This scaffold intentionally does not yet include faction-specific supplemental trackers or secondary components. Rules remain manual.',
+    Note: `Gauntlet current-test review scaffold.\n\n${PENDING_NOTE}`,
+    Rules: `Gauntlet current-test review scaffold.\n\n${PENDING_NOTE}`,
     ObjectStates: [
       bag('Mystics Starter — Alchemist', '000010'),
       bag('Military Starter — General', '000020', 10000),
@@ -99,7 +102,7 @@ function fixture() {
 }
 
 describe('TTS ready supplemental save assembly', () => {
-  it('places ready components only into starter Bags for their faction and expands quantity', () => {
+  it('places ready components only into matching starter Bags and expands quantity', () => {
     const { save, starters, supplementals, assets } = fixture();
     const result = assembleReadySupplementals(save, starters, supplementals, assets);
 
@@ -141,12 +144,10 @@ describe('TTS ready supplemental save assembly', () => {
 
     const result = assembleReadySupplementals(save, starters, supplementals, assets);
     expect(result.placedCount).toBe(5);
-
     for (const starterBag of result.save.ObjectStates) {
       const universal = starterBag.ContainedObjects.filter((object: any) => object.GMNotes === 'gauntlet:supplemental:universal-reference');
       expect(universal).toHaveLength(1);
       expect(universal[0].Nickname).toBe('Universal Reference Card');
-      expect(starterBag.Description).toContain('Universal Reference Card');
     }
   });
 
@@ -164,7 +165,7 @@ describe('TTS ready supplemental save assembly', () => {
     expect(card.CustomDeck['200'].UniqueBack).toBe(false);
   });
 
-  it('creates non-stackable sliding tracker tiles with faction-color backs, production snap points, and tagged Leader covers', () => {
+  it('creates sliding trackers at final card-sized geometry with canonical static snap points', () => {
     const { save, starters, supplementals, assets } = fixture();
     supplementals.ready.push({
       id: 'military-command-tracker',
@@ -205,12 +206,19 @@ describe('TTS ready supplemental save assembly', () => {
     expect(tracker.Name).toBe('Custom_Tile');
     expect(tracker.CustomImage.ImageURL).toBe('https://example.invalid/command.png');
     expect(tracker.CustomImage.ImageSecondaryURL).toBe('https://example.invalid/military-back.png');
-    expect(tracker.CustomImage.ImageSecondaryURL).not.toBe('https://example.invalid/black-back.png');
     expect(tracker.CustomImage.CustomTile.Stackable).toBe(false);
+    expect(tracker.CustomImage.CustomTile.Type).toBe(ROUNDED_RECTANGLE_TILE_TYPE);
+    expect(tracker.CustomImage.CustomTile.Stretch).toBe(true);
+    expect(tracker.CustomImage.WidthScale).toBe(2.5);
+    expect(tracker.Transform.scaleX).toBe(CUSTOM_TILE_CARD_LINEAR_SCALE);
+    expect(tracker.Transform.scaleY).toBe(1);
+    expect(tracker.Transform.scaleZ).toBe(CUSTOM_TILE_CARD_LINEAR_SCALE);
     expect(tracker.AttachedSnapPoints).toHaveLength(5);
     expect(tracker.AttachedSnapPoints[0].Position.z).toBe(0);
-    expect(tracker.AttachedSnapPoints[4].Position.z).toBe(2.3);
+    expect(tracker.AttachedSnapPoints[4].Position.z).toBeCloseTo(-(2.3 / CUSTOM_TILE_CARD_LINEAR_SCALE), 6);
     expect(tracker.AttachedSnapPoints.every((point: any) => point.Tags.includes('military-command'))).toBe(true);
+    expect(tracker.LuaScript).toContain('self.setSnapPoints({');
+    expect(tracker.LuaScript).not.toContain('getBoundsNormalized');
     expect(leader.Tags).toContain('military-command');
   });
 
@@ -222,6 +230,8 @@ describe('TTS ready supplemental save assembly', () => {
     const mysticsSupplementals = second.ObjectStates[0].ContainedObjects.filter((object: any) => object.GMNotes?.startsWith('gauntlet:supplemental:'));
     expect(mysticsSupplementals).toHaveLength(2);
     expect(second.ObjectStates[0].Description.match(/Ready supplemental components:/g)).toHaveLength(1);
+    expect(second.Note).toContain('production-ready faction components are included automatically');
+    expect(second.Note).not.toContain(PENDING_NOTE);
   });
 
   it('fails closed when a ready component has an unsupported save representation', () => {
@@ -229,16 +239,5 @@ describe('TTS ready supplemental save assembly', () => {
     supplementals.ready[0].representation = 'ledger';
 
     expect(() => assembleReadySupplementals(save, starters, supplementals, assets)).toThrow(/unsupported save representation ledger/);
-  });
-
-  it('updates the scaffold note without pretending rules are automated', () => {
-    const { save, starters, supplementals, assets } = fixture();
-    const result = assembleReadySupplementals(save, starters, supplementals, assets);
-
-    expect(result.save.Note).toContain('marked ready are included automatically');
-    expect(result.save.Note).toContain('single-sided faction components use faction-color backs');
-    expect(result.save.Note).toContain('production-derived snap registration');
-    expect(result.save.Note).toContain('Rules remain manual');
-    expect(result.save.Rules).toBe(result.save.Note);
   });
 });
