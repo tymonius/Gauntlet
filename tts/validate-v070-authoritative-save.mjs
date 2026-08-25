@@ -9,6 +9,7 @@ const PLAYER_TOKEN_NOTE_PREFIX = 'gauntlet:starter-utility:player-token:';
 const BATTLE_DIE_NOTE_PREFIX = 'gauntlet:starter-utility:battle-die:';
 const TERRITORY_TAG = 'gauntlet-territory';
 const DEED_TAG = 'gauntlet-deed';
+const DEED_STACK_TAG = 'gauntlet-deed-stack';
 
 function walk(objects, visit) {
   for (const object of objects || []) {
@@ -51,22 +52,38 @@ function validateHandsAndSeats(save) {
   const red = save.Hands.HandTransforms.find(hand => hand.Color === 'Red');
   const blue = save.Hands.HandTransforms.find(hand => hand.Color === 'Blue');
   if (!red || !blue) throw new Error('Missing Red or Blue hand transform.');
-  if (!(Number(red.Transform?.posZ) < 0) || !close(red.Transform?.rotY, 0)) {
-    throw new Error(`Red must own the south hand zone at rotY 0; got z=${red.Transform?.posZ}, rotY=${red.Transform?.rotY}.`);
-  }
-  if (!(Number(blue.Transform?.posZ) > 0) || !close(blue.Transform?.rotY, 180)) {
-    throw new Error(`Blue must own the north hand zone at rotY 180; got z=${blue.Transform?.posZ}, rotY=${blue.Transform?.rotY}.`);
-  }
-  if (Number(red.Transform?.scaleX) < 6 || Number(blue.Transform?.scaleX) < 6) {
-    throw new Error('Actual TTS hand zones are too narrow for stable card handling.');
+
+  const expectedHands = [
+    [red, 'Red', -23, 180],
+    [blue, 'Blue', 23, 0],
+  ];
+  for (const [hand, side, z, rotY] of expectedHands) {
+    if (!close(hand.Transform?.posZ, z) || !close(hand.Transform?.rotY, rotY)
+      || !close(hand.Transform?.scaleX, 34) || !close(hand.Transform?.scaleY, 2) || !close(hand.Transform?.scaleZ, 5.5)) {
+      throw new Error(`${side} hand transform does not match the recovered post-round-four rear-edge hand geometry.`);
+    }
   }
 
-  const pseudoHands = (save.ObjectStates || []).filter(object => object?.Name === 'HandTrigger');
+  const objects = allObjects(save);
+  const pseudoHands = objects.filter(object => object?.Name === 'HandTrigger');
   if (pseudoHands.length) throw new Error(`Found ${pseudoHands.length} duplicate HandTrigger ObjectStates; hand zones must live only under Hands.HandTransforms.`);
 
-  const fogVolumes = (save.ObjectStates || []).filter(object => object?.Name === 'FogOfWarTrigger');
+  const fogVolumes = objects.filter(object => object?.Name === 'FogOfWarTrigger');
   if (fogVolumes.length) {
     throw new Error(`Found ${fogVolumes.length} FogOfWarTrigger objects. Player privacy must use actual TTS hand zones without visible table-spanning fog volumes.`);
+  }
+
+  const handEligible = objects.filter(object => object?.Name === 'CardCustom' || object?.Name === 'DeckCustom');
+  if (!handEligible.length || handEligible.some(object => object.Hands !== true)) {
+    throw new Error('Every CardCustom and DeckCustom must participate in the real TTS hand system.');
+  }
+
+  const lua = String(save.LuaScript || '');
+  if (!lua.includes('function gauntletSeatCamera(color)')
+    || !lua.includes('pitch = 55, yaw = 0, distance = 38')
+    || !lua.includes('pitch = 55, yaw = 180, distance = 38')
+    || !lua.includes('function onPlayerChangeColor(color)')) {
+    throw new Error('Authoritative save is missing the recovered Red/Blue seat-camera alignment script.');
   }
 }
 
@@ -99,9 +116,9 @@ function validateBagsAndUtilities(save) {
 
 function validateFamilyStacks(bags) {
   const expectations = new Map([
-    ['proposals', { count: 2, cards: 9, sideways: false }],
-    ['deeds', { count: 2, cards: 8, sideways: false }],
-    ['rites-rituals', { count: 2, cards: 4, sideways: false }],
+    ['proposals', { count: 2, cards: 9, sideways: false, rotY: 0 }],
+    ['deeds', { count: 2, cards: 8, sideways: true, rotY: 90, tag: DEED_STACK_TAG }],
+    ['rites-rituals', { count: 2, cards: 4, sideways: false, rotY: 0 }],
   ]);
   const found = new Map([...expectations.keys()].map(key => [key, []]));
 
@@ -121,7 +138,10 @@ function validateFamilyStacks(bags) {
       if (stack.Name !== 'DeckCustom' || stack.ContainedObjects?.length !== expected.cards) {
         throw new Error(`${key} stack has incorrect package size.`);
       }
-      if (stack.SidewaysCard !== expected.sideways) throw new Error(`${key} stack has incorrect physical stack orientation.`);
+      if (stack.SidewaysCard !== expected.sideways || !close(stack.Transform?.rotY, expected.rotY)) {
+        throw new Error(`${key} stack has incorrect physical stack orientation.`);
+      }
+      if (expected.tag && !hasTag(stack, expected.tag)) throw new Error(`${key} stack is missing tag ${expected.tag}.`);
     }
   }
 }
@@ -148,8 +168,8 @@ function validateTerritoriesAndDeeds(save, manifest) {
   const deeds = objects.filter(object => object?.Name === 'CardCustom' && hasTag(object, DEED_TAG));
   if (deeds.length !== 16) throw new Error(`Expected 16 packaged Deed card objects across two starters; found ${deeds.length}.`);
   for (const card of deeds) {
-    if (card.SidewaysCard !== true || !close(card.Transform?.rotY, 90)) {
-      throw new Error(`Deed ${card.Nickname || card.GUID} is not landscape in play.`);
+    if (card.SidewaysCard !== true || !close(card.Transform?.rotY, 0)) {
+      throw new Error(`Deed ${card.Nickname || card.GUID} does not use the recovered landscape presentation at rotY 0.`);
     }
     if (!close(card.Transform?.scaleX, 1) || !close(card.Transform?.scaleY, 1) || !close(card.Transform?.scaleZ, 1)) {
       throw new Error(`Deed ${card.Nickname || card.GUID} has nonstandard physical scale.`);
@@ -160,7 +180,7 @@ function validateTerritoriesAndDeeds(save, manifest) {
   const deedSnaps = (save.SnapPoints || []).filter(point => point.Tags?.includes(DEED_TAG));
   if (territorySnaps.length !== 8) throw new Error(`Expected 8 Territory snaps; found ${territorySnaps.length}.`);
   if (deedSnaps.length !== 16) throw new Error(`Expected 16 Deed snaps; found ${deedSnaps.length}.`);
-  if (deedSnaps.some(point => !close(point.Rotation?.y, 90))) throw new Error('Deed snaps must orient individual Deeds landscape.');
+  if (deedSnaps.some(point => !close(point.Rotation?.y, 0))) throw new Error('Deed snaps must preserve the recovered individual-Deed rotation 0.');
   if ((save.VectorLines || []).length !== 40) throw new Error(`Expected only six visibly marked Territory positions; vector line count is ${save.VectorLines?.length}.`);
 }
 
