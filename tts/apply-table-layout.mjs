@@ -446,7 +446,16 @@ function applyHandsAndSeatCameras(save) {
   save.LuaScriptState = '';
 
   walkObjects(save.ObjectStates, object => {
-    if (object?.Name === 'CardCustom' || object?.Name === 'DeckCustom') object.Hands = true;
+    if (object?.Name === 'CardCustom') {
+      object.Hands = true;
+      const tags = Array.isArray(object.Tags) ? object.Tags : [];
+      // Round-3 made ordinary cards eligible for the generic Faction Zone so
+      // Financier Treasury and other public faction state can use its snaps.
+      // Territories and Deeds keep their dedicated tagged magnets instead.
+      if (!tags.includes(TERRITORY_TAG) && !tags.includes(DEED_TAG)) addTag(object, FACTION_ZONE_TAG);
+    } else if (object?.Name === 'DeckCustom') {
+      object.Hands = true;
+    }
   });
 }
 
