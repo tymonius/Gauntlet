@@ -30,7 +30,7 @@ describe('authoritative TTS table layout', () => {
     expect(text.filter(object => object.Transform.rotY === 180)).toHaveLength(14);
   });
 
-  it('keeps six visible Gauntlet slots plus two invisible Manifest Destiny extensions and sixteen landscape Deed snaps', () => {
+  it('keeps six visible Gauntlet slots plus two invisible Manifest Destiny extensions and sixteen recovered Deed snaps', () => {
     const snaps = buildTableSnapPoints();
     const territory = snaps.filter(point => point.Tags?.includes('gauntlet-territory'));
     const deeds = snaps.filter(point => point.Tags?.includes('gauntlet-deed'));
@@ -40,7 +40,7 @@ describe('authoritative TTS table layout', () => {
     ]);
     expect(territory.every(point => point.Rotation.y === 90)).toBe(true);
     expect(deeds).toHaveLength(16);
-    expect(deeds.every(point => point.Rotation.y === 90)).toBe(true);
+    expect(deeds.every(point => point.Rotation.y === 0)).toBe(true);
     expect(snaps).toHaveLength(80);
   });
 
@@ -57,14 +57,23 @@ describe('authoritative TTS table layout', () => {
     expect(territoryLines.filter(line => line.thickness === 0.048)).toHaveLength(6);
   });
 
-  it('owns the environment, seats, and actual hand zones without duplicate trigger volumes', () => {
+  it('owns the environment, recovered seat orientation, and broad real hand zones without visible trigger volumes', () => {
     const save: any = {
       ObjectStates: [
         { Name: 'HandTrigger', GUID: 'legacy-hand' },
         { Name: 'FogOfWarTrigger', GMNotes: 'gauntlet:private-zone:red', GUID: 'legacy-fog' },
+        {
+          Name: 'Bag',
+          GUID: 'starter',
+          ContainedObjects: [
+            { Name: 'CardCustom', GUID: 'card', Hands: false },
+            { Name: 'DeckCustom', GUID: 'deck', Hands: false, ContainedObjects: [{ Name: 'CardCustom', GUID: 'inside', Hands: false }] },
+          ],
+        },
       ],
       Note: 'base note',
       Rules: 'base rules',
+      LuaScript: '',
       Turns: { TurnColor: 'Blue' },
     };
 
@@ -80,12 +89,17 @@ describe('authoritative TTS table layout', () => {
 
     const red = save.Hands.HandTransforms.find((hand: any) => hand.Color === 'Red');
     const blue = save.Hands.HandTransforms.find((hand: any) => hand.Color === 'Blue');
-    expect(red.Transform.posZ).toBeLessThan(0);
-    expect(red.Transform.rotY).toBe(0);
-    expect(blue.Transform.posZ).toBeGreaterThan(0);
-    expect(blue.Transform.rotY).toBe(180);
+    expect(red.Transform).toMatchObject({ posZ: -23, rotY: 180, scaleX: 34, scaleY: 2, scaleZ: 5.5 });
+    expect(blue.Transform).toMatchObject({ posZ: 23, rotY: 0, scaleX: 34, scaleY: 2, scaleZ: 5.5 });
     expect(save.ObjectStates.filter((object: any) => object.Name === 'HandTrigger')).toHaveLength(0);
     expect(save.ObjectStates.filter((object: any) => object.Name === 'FogOfWarTrigger')).toHaveLength(0);
     expect(save.Note).toContain('normal TTS hand privacy');
+    expect(save.LuaScript).toContain('function gauntletSeatCamera(color)');
+    expect(save.LuaScript).toContain('pitch = 55, yaw = 0, distance = 38');
+    expect(save.LuaScript).toContain('pitch = 55, yaw = 180, distance = 38');
+
+    const starter = save.ObjectStates.find((object: any) => object.GUID === 'starter');
+    const handEligible = [starter.ContainedObjects[0], starter.ContainedObjects[1], starter.ContainedObjects[1].ContainedObjects[0]];
+    expect(handEligible.every((object: any) => object.Hands === true)).toBe(true);
   });
 });
