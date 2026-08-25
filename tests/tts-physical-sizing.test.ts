@@ -1,115 +1,55 @@
 import { describe, expect, it } from 'vitest';
-import { finalizeSupplementalObjectPresentation } from '../scripts/finalize-tts-save.mjs';
+import {
+  CUSTOM_TILE_CARD_LINEAR_SCALE,
+  ROUNDED_RECTANGLE_TILE_TYPE,
+  STANDARD_CARD_LONG_EDGE,
+  STANDARD_CARD_SHORT_EDGE,
+  trackerPresentation,
+} from '../scripts/tts-supplemental-geometry.mjs';
 
-const TRACKER_TABLETOP_SCALE = 1.5;
-
-function card(nickname: string, sideways: boolean, gmNotes = '') {
+function trackerComponent() {
   return {
-    Name: 'CardCustom',
-    Nickname: nickname,
-    GMNotes: gmNotes,
-    SidewaysCard: sideways,
-    Transform: {
-      posX: 0,
-      posY: 1,
-      posZ: 0,
-      rotX: 0,
-      rotY: 0,
-      rotZ: 0,
-      scaleX: 1,
-      scaleY: 1,
-      scaleZ: 1,
+    id: 'diplomats-influence-tracker',
+    physicalScale: { cardWidth: 2.5, cardHeight: 3.5 },
+    tts: {
+      widthScale: 2.5,
+      heightScale: 3.5,
+      snapTag: 'gauntlet-tracker-influence',
+      snapPoints: [
+        { value: 0, offset: 0 },
+        { value: 1, offset: 0.35 },
+        { value: 2, offset: 1.05 },
+      ],
     },
   };
 }
 
-describe('TTS physical card sizing', () => {
-  it('keeps landscape cards at ordinary CardCustom scale and enlarges trackers without changing their aspect behavior', () => {
-    const territory = card('Supply Depot', true);
-    const deed = card('Deed Card', false, 'gauntlet:supplemental:financiers-deed');
-    const portrait = card('Ambassador', false);
-    const tracker = {
-      Name: 'Custom_Tile',
-      Nickname: 'Influence Tracker',
-      GMNotes: 'gauntlet:supplemental:diplomats-influence-tracker',
-      Transform: {
-        posX: 0,
-        posY: 1,
-        posZ: 0,
-        rotX: 0,
-        rotY: 0,
-        rotZ: 0,
-        scaleX: 1,
-        scaleY: 1,
-        scaleZ: 1,
-      },
-      CustomImage: {
-        WidthScale: 2.5,
-        CustomTile: {
-          Type: 0,
-          Thickness: 0.05,
-          Stackable: false,
-          Stretch: true,
-        },
-      },
-    };
-    const save = {
-      ObjectStates: [
-        { Name: 'Bag', ContainedObjects: [territory, deed, portrait, tracker] },
-      ],
-    };
-    const supplementalManifest = {
-      ready: [
-        {
-          id: 'financiers-deed',
-          quantity: 1,
-          representation: 'card',
-          tts: { sidewaysCard: true },
-        },
-        {
-          id: 'diplomats-influence-tracker',
-          quantity: 1,
-          representation: 'sliding-tracker',
-          physicalScale: { cardWidth: 2.5, cardHeight: 3.5 },
-          tts: {
-            widthScale: 2.5,
-            heightScale: 3.5,
-            snapTag: 'gauntlet-tracker-influence',
-            snapPoints: [
-              { value: 0, offset: 0 },
-              { value: 1, offset: 0.35 },
-            ],
-          },
-        },
-      ],
-    };
+describe('TTS physical component sizing', () => {
+  it('defines card-sized tracker presentation once for generation and validation', () => {
+    const presentation = trackerPresentation(trackerComponent());
 
-    const result = finalizeSupplementalObjectPresentation(save, supplementalManifest);
+    expect(STANDARD_CARD_SHORT_EDGE).toBe(2.5);
+    expect(STANDARD_CARD_LONG_EDGE).toBe(3.5);
+    expect(CUSTOM_TILE_CARD_LINEAR_SCALE).toBe(1.5);
+    expect(ROUNDED_RECTANGLE_TILE_TYPE).toBe(3);
 
-    expect(result.sidewaysCount).toBe(1);
-    expect(result.landscapeCardCount).toBe(2);
-    expect(result.trackerCount).toBe(1);
+    expect(presentation.widthScale).toBe(STANDARD_CARD_SHORT_EDGE);
+    expect(presentation.transformScale).toBe(CUSTOM_TILE_CARD_LINEAR_SCALE);
+    expect(presentation.tileType).toBe(ROUNDED_RECTANGLE_TILE_TYPE);
+    expect(presentation.stretch).toBe(true);
+    expect(presentation.snapPoints).toHaveLength(3);
+    expect(presentation.snapPoints[0].Position.z).toBe(0);
+    expect(presentation.snapPoints[1].Position.z).toBeCloseTo(-(0.35 / CUSTOM_TILE_CARD_LINEAR_SCALE), 6);
+    expect(presentation.snapPoints[2].Position.z).toBeCloseTo(-(1.05 / CUSTOM_TILE_CARD_LINEAR_SCALE), 6);
+    expect(presentation.luaScript).toContain('self.setSnapPoints({');
+    expect(presentation.luaScript).toContain('gauntlet-tracker-influence');
+    expect(presentation.luaScript).not.toContain('getBoundsNormalized');
+  });
 
-    for (const landscape of [territory, deed]) {
-      expect(landscape.SidewaysCard).toBe(true);
-      expect(landscape.Transform.scaleX).toBe(1);
-      expect(landscape.Transform.scaleY).toBe(1);
-      expect(landscape.Transform.scaleZ).toBe(1);
-      expect(landscape.Transform.rotY).toBe(90);
-    }
+  it('fails closed when tracker metadata drifts away from standard card dimensions', () => {
+    const component = trackerComponent();
+    component.tts.widthScale = 2.2;
 
-    expect(portrait.Transform.scaleX).toBe(1);
-    expect(portrait.Transform.scaleY).toBe(1);
-    expect(portrait.Transform.scaleZ).toBe(1);
-    expect(portrait.Transform.rotY).toBe(0);
-
-    expect(tracker.CustomImage.WidthScale).toBe(2.5);
-    expect(tracker.CustomImage.CustomTile.Type).toBe(3);
-    expect(tracker.CustomImage.CustomTile.Stretch).toBe(true);
-    expect(tracker.Transform.scaleX).toBe(TRACKER_TABLETOP_SCALE);
-    expect(tracker.Transform.scaleY).toBe(1);
-    expect(tracker.Transform.scaleZ).toBe(TRACKER_TABLETOP_SCALE);
-    expect(tracker.LuaScript).toContain('self.setSnapPoints({');
-    expect(tracker.LuaScript).toContain('gauntlet-tracker-influence');
+    expect(() => trackerPresentation(component)).toThrow(/expected 2\.5 x 3\.5/);
   });
 });
