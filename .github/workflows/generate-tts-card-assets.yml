@@ -174,6 +174,8 @@ jobs:
         run: npm run tts:supplementals
       - name: Generate finalized Proposal, Ledger, and Deed components
         run: npm run tts:finalized-supplementals
+      - name: Refresh current Mystics Rite and Ritual components
+        run: node tts/render-current-mystics-assets.mjs
       - name: Stage hosted TTS release assets
         run: npm run tts:release:stage
       - name: Generate TTS review scaffold
@@ -182,6 +184,8 @@ jobs:
         run: npm run tts:save:assemble
       - name: Finalize supplemental object presentation
         run: npm run tts:save:finalize
+      - name: Apply v0.7.0 TTS QA corrections
+        run: node tts/apply-v070-qa-corrections.mjs
       - name: Report TTS release readiness
         run: npm run tts:release:status
       - uses: actions/upload-artifact@v4
