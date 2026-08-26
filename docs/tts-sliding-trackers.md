@@ -29,4 +29,6 @@ The Intelligence tracking assembly is nested, bottom to top:
 
 The Intel Tracker receives the `intelligence-operation-progress` snap tag, so the **Intel Tracker and Leader move together** over the Operation Progress Tracker to show Operation Progress. The selected Leader receives the `intelligence-intel` snap tag, so the **Leader moves independently** over the Intel Tracker to show current Intel.
 
+Every tracker tile is also authored with TTS `Sticky` enabled. That makes the lower object the physical carrier for whatever is resting on it: lifting a normal tracker carries its snapped Leader, lifting the Intel Tracker carries its snapped Leader, and lifting the Operation Progress Tracker carries the complete Intel Tracker + Leader assembly without changing either relative snap position.
+
 This cover chain is encoded directly in the component contract: the Intel Tracker declares the selected Leader as its cover, while the Operation Progress Tracker declares the Intel Tracker as its cover. The Mission and Operations Reference Cards are not part of the sliding assembly.
