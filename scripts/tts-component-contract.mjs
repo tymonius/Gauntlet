@@ -3,11 +3,11 @@ import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import {
   ROOT,
-  CURRENT_GAME_MANIFEST_SOURCE,
-  resolveCurrentSourcePath,
+  CURRENT_GAME_AUTHORITY_SOURCE,
+  loadCurrentGameAuthority,
 } from './current-game-authority.mjs';
 
-export const TTS_COMPONENT_CONTRACT_AUTHORITY = CURRENT_GAME_MANIFEST_SOURCE;
+export const TTS_COMPONENT_CONTRACT_AUTHORITY = `${CURRENT_GAME_AUTHORITY_SOURCE}#componentContract`;
 
 const FACTIONS = Object.freeze([
   'military',
@@ -72,10 +72,14 @@ function alignBespokeReferenceFaces(contract) {
 }
 
 async function readContract() {
-  const { source, absolutePath } = await resolveCurrentSourcePath('componentContract');
-  const contract = alignBespokeReferenceFaces(JSON.parse(await readFile(absolutePath, 'utf8')));
-  contract.currentGameAuthority = CURRENT_GAME_MANIFEST_SOURCE;
-  contract.currentGameComponentSource = source;
+  const authority = await loadCurrentGameAuthority();
+  const embedded = authority.componentContract;
+  if (!embedded || typeof embedded !== 'object') {
+    throw new Error(`${CURRENT_GAME_AUTHORITY_SOURCE} is missing componentContract.`);
+  }
+  const contract = alignBespokeReferenceFaces(JSON.parse(JSON.stringify(embedded)));
+  contract.currentGameAuthority = CURRENT_GAME_AUTHORITY_SOURCE;
+  contract.currentGameComponentSource = TTS_COMPONENT_CONTRACT_AUTHORITY;
   contract.effectiveBackPolicy = {
     standardBack: 'universal-black',
     factionComponentBack: 'faction',
