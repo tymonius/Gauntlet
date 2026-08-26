@@ -14,8 +14,14 @@ const FACTION_COLORS = Object.freeze({
 });
 
 const LANDSCAPE_CARD_FLIP_SCRIPT = [
-  'function onLoad()',
-  '  self.use_rotation_value_flip = true',
+  '-- Territory cards rotate around Y to show control, so their face/back flip',
+  '-- must use the orthogonal local X axis without changing that control spin.',
+  'function tryRotate(spin, flip, player_color, old_spin, old_flip)',
+  '  if flip ~= old_flip then',
+  '    self.setRotationSmooth({x = flip, y = spin, z = 0}, false, false)',
+  '    return false',
+  '  end',
+  '  return true',
   'end',
 ].join('\n');
 
@@ -104,14 +110,14 @@ function starterBagTransform(starter, starters) {
 
   const rowSpacing = factionIds.length <= 1 ? 0 : 24 / (factionIds.length - 1);
   const z = -((factionIds.length - 1) * rowSpacing) / 2 + factionIndex * rowSpacing;
-  if (factionStarters.length === 1) return transform(-20.5, 1.4, z, 90);
+  if (factionStarters.length === 1) return transform(-20.5, 1.4, z, 0);
 
-  // The current package has two Leaders per faction. Keep that tested pairing
-  // exact while remaining deterministic if the source later contains more.
+  // Starter bags flank the table, but they all share the host/White orientation
+  // so manually pulling setup components from any bag does not turn them toward
+  // the opposite player.
   const fraction = leaderIndex / (factionStarters.length - 1);
   const x = -20.5 + fraction * 41;
-  const rotY = fraction < 0.5 ? 90 : 270;
-  return transform(x, 1.4, z, rotY);
+  return transform(x, 1.4, z, 0);
 }
 
 function factionColor(factionId) {
@@ -267,7 +273,7 @@ function buildTtsSave(starterManifest, releaseAssets) {
   const guid = makeGuidFactory();
   const starterKits = starters.map(starter => buildStarterKit(starter, releaseAssets, starterBagTransform(starter, starters), guid));
   const territoryZ = [-7.5, -4.5, -1.5, 1.5, 4.5, 7.5];
-  const snapPoints = territoryZ.map(z => ({ Position: vector(0, 0, z), Rotation: vector(0, 90, 0) }));
+  const snapPoints = territoryZ.map(z => ({ Position: vector(0, 0, z) }));
 
   const note = [
     `Gauntlet ${version} Tabletop Simulator review scaffold.`,
@@ -304,11 +310,11 @@ function buildTtsSave(starterManifest, releaseAssets) {
     },
     Hands: {
       Enable: true,
-      DisableUnused: true,
+      DisableUnused: false,
       Hiding: 0,
       HandTransforms: [
-        { Color: 'White', Transform: transform(0, 4, -20.15, 0, 7, 6, 3) },
-        { Color: 'Green', Transform: transform(0, 4, 20.15, 180, 7, 6, 3) },
+        { Color: 'White', Transform: transform(0, 4, -22.5, 0, 7, 6, 4) },
+        { Color: 'Green', Transform: transform(0, 4, 22.5, 180, 7, 6, 4) },
       ],
     },
     Turns: {
