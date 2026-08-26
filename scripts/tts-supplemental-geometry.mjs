@@ -4,11 +4,17 @@ export const STANDARD_CARD_SHORT_EDGE = 2.5;
 export const STANDARD_CARD_LONG_EDGE = 3.5;
 export const TRACKER_RENDER_PX_PER_IN = 96;
 
+// Compatibility aliases used by the existing validator. They intentionally
+// collapse to the authored 3.5-unit card length; snapping itself does not use
+// these values or normalize registrations over the full card.
+export const TTS_STANDARD_CARD_WORLD_LONG_EDGE = STANDARD_CARD_LONG_EDGE;
+
 // Tabletop Simulator's Custom_Tile and CardCustom objects use different native
 // tabletop footprints. The tracker tile is scaled to match a normal card; snap
 // coordinates are therefore divided by the same object scale so their world
-// travel remains exactly the rendered physical distance.
+// travel remains exactly the renderer-measured physical distance.
 export const CUSTOM_TILE_CARD_LINEAR_SCALE = 1.5;
+export const TRACKER_LOCAL_LONG_EDGE = STANDARD_CARD_LONG_EDGE / CUSTOM_TILE_CARD_LINEAR_SCALE;
 export const ROUNDED_RECTANGLE_TILE_TYPE = 3;
 
 function vector(x = 0, y = 0, z = 0) {
@@ -45,11 +51,11 @@ export function makeTrackerSnapPoints(component) {
     previous = rendererTravelPx;
 
     // The renderer measured the exact distance from the card bottom to this
-    // registration line. Convert only pixels -> authored physical inches, then
-    // account for the Custom_Tile object scale. There is deliberately no
+    // registration line. Convert only pixels -> authored physical distance,
+    // then account for the Custom_Tile object scale. There is deliberately no
     // value/max spacing and no normalization over the tracker's full height.
-    const worldTravel = rendererTravelPx / TRACKER_RENDER_PX_PER_IN;
-    const localZ = -(worldTravel / CUSTOM_TILE_CARD_LINEAR_SCALE);
+    const physicalTravel = rendererTravelPx / TRACKER_RENDER_PX_PER_IN;
+    const localZ = -(physicalTravel / CUSTOM_TILE_CARD_LINEAR_SCALE);
     return {
       Position: vector(0, SNAP_Y, Number(localZ.toFixed(6))),
       Rotation: vector(0, 0, 0),
