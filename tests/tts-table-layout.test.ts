@@ -96,8 +96,8 @@ describe('authoritative TTS table layout', () => {
     const red = handZoneTransform('Red');
     const blue = handZoneTransform('Blue');
 
-    expect(red).toMatchObject({ posX: 0, posZ: -20.25, rotY: 180, scaleX: 7, scaleY: 2, scaleZ: 8 });
-    expect(blue).toMatchObject({ posX: 0, posZ: 20.25, rotY: 0, scaleX: 7, scaleY: 2, scaleZ: 8 });
+    expect(red).toMatchObject({ posX: 0, posZ: -20.25, rotY: 0, scaleX: 7, scaleY: 2, scaleZ: 8 });
+    expect(blue).toMatchObject({ posX: 0, posZ: 20.25, rotY: 180, scaleX: 7, scaleY: 2, scaleZ: 8 });
 
     // The visible parking snap sits inside the same private zone as the Reserve.
     expect(zoneContainsPoint(red, 0, -18.25)).toBe(true);
@@ -111,7 +111,7 @@ describe('authoritative TTS table layout', () => {
     expect(zoneContainsPoint(blue, -17.15, 17.75)).toBe(false);
   });
 
-  it('serializes exactly two functional HandTrigger zones and does not commandeer the camera', () => {
+  it('serializes only TTS-native hand transforms and does not commandeer the camera', () => {
     const save: any = {
       ObjectStates: [
         { Name: 'HandTrigger', GUID: 'legacy-hand' },
@@ -143,11 +143,9 @@ describe('authoritative TTS table layout', () => {
     expect(red.Transform).toEqual(handZoneTransform('Red'));
     expect(blue.Transform).toEqual(handZoneTransform('Blue'));
 
-    const handTriggers = save.ObjectStates.filter((object: any) => object.Name === 'HandTrigger');
-    expect(handTriggers).toHaveLength(2);
-    expect(handTriggers.map((object: any) => object.Nickname).sort()).toEqual(['Blue Hand', 'Red Hand']);
-    expect(handTriggers.find((object: any) => object.Nickname === 'Red Hand')?.Transform).toEqual(handZoneTransform('Red'));
-    expect(handTriggers.find((object: any) => object.Nickname === 'Blue Hand')?.Transform).toEqual(handZoneTransform('Blue'));
+    // Normal TTS saves serialize hands through Hands.HandTransforms, not duplicate
+    // HandTrigger ObjectStates.
+    expect(save.ObjectStates.filter((object: any) => object.Name === 'HandTrigger')).toHaveLength(0);
     expect(save.ObjectStates.filter((object: any) => object.Name === 'FogOfWarTrigger')).toHaveLength(0);
     expect(save.Note).toContain('one canonical private TTS Hand zone');
     expect(save.LuaScript).toBe('-- unrelated global script');
@@ -193,7 +191,7 @@ describe('authoritative TTS table layout', () => {
     const territory = save.ObjectStates.find((object: any) => object.GUID === 'starter').ContainedObjects[0];
     expect(territory.CustomDeck).toEqual(originalCustomDeck);
     expect(territory.SidewaysCard).toBe(true);
-    expect(territory.Transform.rotY).toBe(90);
-    expect(territory.LuaScript).toContain('self.use_rotation_value_flip = false');
+    expect(territory.Transform.rotY).toBe(0);
+    expect(String(territory.LuaScript || '')).not.toContain('use_rotation_value_flip');
   });
 });
