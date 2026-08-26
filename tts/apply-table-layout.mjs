@@ -57,18 +57,7 @@ const OUTLINE_COLOR = Object.freeze({ r: 0.83, g: 0.69, b: 0.40 });
 const LABEL_SHADOW_COLOR = Object.freeze({ r: 0.08, g: 0.055, b: 0.035 });
 const LABEL_COLOR = Object.freeze({ r: 0.99, g: 0.91, b: 0.70 });
 
-const TERRITORY_FLIP_SCRIPT = [
-  '-- Territory cards rotate around Y to show control. Intercept only a player',
-  '-- flip and apply a relative 180-degree X rotation; relative rotation avoids',
-  '-- reinterpreting an accumulated Euler target on each successive flip.',
-  'function tryRotate(spin, flip, player_color, old_spin, old_flip)',
-  '  if flip ~= old_flip then',
-  '    self.rotate({x = 180, y = 0, z = 0})',
-  '    return false',
-  '  end',
-  '  return true',
-  'end',
-].join('\\n');
+
 // Player workspaces are mirrored across the center line. These definitions own
 // both the visible guides and their functional snap positions.
 const PLAYER_ZONES = Object.freeze([
@@ -232,15 +221,20 @@ function tagTerritories(objects) {
     object.SidewaysCard = true;
     object.Transform ||= transform();
     // The board snap constrains only position; Y rotation remains free for
-    // control. Successive flips use one relative local-X half-turn.
+    // control. Territory face orientation is corrected in the generated sheet,
+    // so TTS's native sideways-card flip behavior is authoritative.
     object.Transform.rotX = 0;
     object.Transform.rotY = 0;
     object.Transform.rotZ = 0;
     object.Transform.scaleX = 1;
     object.Transform.scaleY = 1;
     object.Transform.scaleZ = 1;
-    object.LuaScript = TERRITORY_FLIP_SCRIPT;
-    object.LuaScriptState = '';
+    const territoryLua = String(object.LuaScript || '');
+    if (territoryLua.includes('function tryRotate(spin, flip')
+      || territoryLua.includes('use_rotation_value_flip')) {
+      object.LuaScript = '';
+      object.LuaScriptState = '';
+    }
 
     // Attached snap points are local to the Territory object. An overlay placed
     // here therefore follows the Territory's current world orientation instead
