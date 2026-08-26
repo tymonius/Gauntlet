@@ -68,6 +68,9 @@ async function renderCardAnatomyFigure() {
       timeout: 60000,
     });
     if (!response?.ok()) throw new Error('Card Anatomy Rulebook view returned ' + response?.status() + '.');
+    const guide = page.locator('.card-anatomy-guide').first();
+    await guide.waitFor({ state: 'attached', timeout: 60000 });
+    await guide.scrollIntoViewIfNeeded();
     await page.waitForSelector('.card-anatomy-guide.markers-positioned .card-anatomy-figure', {
       state: 'visible',
       timeout: 60000,
