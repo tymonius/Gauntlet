@@ -1,0 +1,53 @@
+name: Flatten v0.7.0 current authority
+
+on:
+  push:
+    branches:
+      - release/v0.7.0-refresh-prep
+    paths:
+      - scripts/flatten-v070-current-game.mjs
+      - .github/workflows/flatten-v070-current-authority.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  flatten:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout shadow release-prep branch
+        uses: actions/checkout@v4
+        with:
+          ref: release/v0.7.0-refresh-prep
+          fetch-depth: 0
+
+      - name: Flatten current gameplay authority
+        run: node scripts/flatten-v070-current-game.mjs
+
+      - name: Validate single-source authority shape
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const authority = JSON.parse(fs.readFileSync('game-data/current-game.json', 'utf8'));
+          if (authority.schemaVersion !== 2 || authority.version !== 'v0.7.0') throw new Error('v0.7.0 authority identity is not flattened.');
+          for (const forbidden of ['sources', 'resolution', 'baseVersion', 'factionOverrides']) {
+            if (Object.prototype.hasOwnProperty.call(authority, forbidden)) throw new Error(`Transitional field remains: ${forbidden}`);
+          }
+          if (authority.gameplay.cards.length !== 142) throw new Error('Expected 142 cards.');
+          if (authority.gameplay.territories.length !== 25) throw new Error('Expected 25 Territories.');
+          if (authority.leaders.length !== 12) throw new Error('Expected 12 Leaders.');
+          console.log('Flattened v0.7.0 current-game authority validated.');
+          NODE
+
+      - name: Commit flattened authority
+        run: |
+          if git diff --quiet -- game-data/current-game.json; then
+            echo "Authority already flattened."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add game-data/current-game.json
+          git commit -m "Materialize flattened v0.7.0 current-game authority"
+          git push origin HEAD:release/v0.7.0-refresh-prep
