@@ -117,7 +117,9 @@ function makeSlidingTracker(component, starter, releaseAssets, guid) {
     Grid: false,
     Snap: true,
     Autoraise: true,
-    Sticky: false,
+    // Trackers are physical carriers: a snapped Leader (or the Intelligence
+    // Intel Tracker + Leader chain) must move with the tracker beneath it.
+    Sticky: true,
     Tooltip: true,
     GridProjection: false,
     HideWhenFaceDown: false,
