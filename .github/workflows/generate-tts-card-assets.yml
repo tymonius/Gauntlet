@@ -241,6 +241,15 @@ jobs:
             stage_assets=true
             seed_artifact_id=""
           else
+            # Base supplemental rendering recreates the supplemental output and
+            # manifest. Finalized Proposal/Ledger/Deed assets and the current
+            # Mystics bridge are additive descendants, so they must be rebuilt
+            # whenever their base is rebuilt. This is a dependency edge, not a
+            # recovery step after staging notices missing files.
+            if [[ "$render_supplementals" == "true" ]]; then
+              render_finalized=true
+              render_mystics=true
+            fi
             if [[ "$render_cards" == "true" || "$render_territories" == "true" || "$render_leaders" == "true" ]]; then
               render_starters=true
             fi
