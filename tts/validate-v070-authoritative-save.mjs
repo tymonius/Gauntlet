@@ -83,30 +83,30 @@ function validateTableWorkspace(save) {
   }
   if (faction.length !== 24) throw new Error(`Expected 24 Faction Zone card snaps; found ${faction.length}.`);
   if (deedStackMagnets.length) throw new Error('Deed stacks must use ordinary Faction Zone magnets; dedicated Deed-stack magnets are forbidden.');
-  if (faction.filter(point => Number(point.Position?.z) < 0).some(point => !close(point.Rotation?.y, 180))) {
-    throw new Error('Red Faction Zone card snaps are not facing Red.');
+  if (faction.filter(point => Number(point.Position?.z) < 0).some(point => !close(point.Rotation?.y, 0))) {
+    throw new Error('White/south Faction Zone card snaps are not facing the White seat.');
   }
-  if (faction.filter(point => Number(point.Position?.z) > 0).some(point => !close(point.Rotation?.y, 0))) {
-    throw new Error('Blue Faction Zone card snaps are not facing Blue.');
+  if (faction.filter(point => Number(point.Position?.z) > 0).some(point => !close(point.Rotation?.y, 180))) {
+    throw new Error('Green/north Faction Zone card snaps are not facing the Green seat.');
   }
 
-  const redWorkspace = [[-1.55, -13.55], [1.55, -13.55], [0, -18.25], [17.15, -17.75]];
-  const blueWorkspace = redWorkspace.map(([x, z]) => [-x, -z]);
-  if (redWorkspace.some(([x, z]) => !close(findSnap(save, x, z)?.Rotation?.y, 180))) {
-    throw new Error('One or more Red Draw/Discard/Hand/Graveyard snaps are not facing Red.');
+  const whiteWorkspace = [[-1.55, -13.55], [1.55, -13.55], [0, -18.25], [17.15, -17.75]];
+  const greenWorkspace = whiteWorkspace.map(([x, z]) => [-x, -z]);
+  if (whiteWorkspace.some(([x, z]) => !close(findSnap(save, x, z)?.Rotation?.y, 0))) {
+    throw new Error('One or more White/south Draw/Discard/Hand/Graveyard snaps are not facing the White seat.');
   }
-  if (blueWorkspace.some(([x, z]) => !close(findSnap(save, x, z)?.Rotation?.y, 0))) {
-    throw new Error('One or more Blue Draw/Discard/Hand/Graveyard snaps are not facing Blue.');
+  if (greenWorkspace.some(([x, z]) => !close(findSnap(save, x, z)?.Rotation?.y, 180))) {
+    throw new Error('One or more Green/north Draw/Discard/Hand/Graveyard snaps are not facing the Green seat.');
   }
 
   const labels = (save.ObjectStates || []).filter(object => String(object?.GMNotes || '').startsWith('gauntlet:table-layout:'));
   if (labels.length !== 28) throw new Error(`Expected 28 visible table-label objects; found ${labels.length}.`);
   const handLabels = labels.filter(object => object.Text?.Text === 'Hand');
   if (handLabels.length !== 4) throw new Error(`Expected visible Hand parking labels/shadows for both players; found ${handLabels.length}.`);
-  const redHandLabel = labels.find(object => object.GMNotes === 'gauntlet:table-layout:red-hand:label');
-  const blueHandLabel = labels.find(object => object.GMNotes === 'gauntlet:table-layout:blue-hand:label');
-  if (!redHandLabel || !close(redHandLabel.Transform?.posZ, -20.59, 0.01)
-    || !blueHandLabel || !close(blueHandLabel.Transform?.posZ, 20.59, 0.01)) {
+  const whiteHandLabel = labels.find(object => object.GMNotes === 'gauntlet:table-layout:white-hand:label');
+  const greenHandLabel = labels.find(object => object.GMNotes === 'gauntlet:table-layout:green-hand:label');
+  if (!whiteHandLabel || !close(whiteHandLabel.Transform?.posZ, -20.59, 0.01)
+    || !greenHandLabel || !close(greenHandLabel.Transform?.posZ, 20.59, 0.01)) {
     throw new Error('Visible Hand parking labels are not in the expected player workspaces.');
   }
 }
