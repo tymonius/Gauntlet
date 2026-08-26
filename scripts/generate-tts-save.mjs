@@ -14,11 +14,12 @@ const FACTION_COLORS = Object.freeze({
 });
 
 const LANDSCAPE_CARD_FLIP_SCRIPT = [
-  '-- Territory cards rotate around Y to show control, so their face/back flip',
-  '-- must use the orthogonal local X axis without changing that control spin.',
+  '-- Territory cards rotate around Y to show control. Intercept only a player',
+  '-- flip and apply a relative 180-degree X rotation so successive flips use',
+  '-- the same physical axis instead of accumulating Euler-axis changes.',
   'function tryRotate(spin, flip, player_color, old_spin, old_flip)',
   '  if flip ~= old_flip then',
-  '    self.setRotationSmooth({x = flip, y = spin, z = 0}, false, false)',
+  '    self.rotate({x = 180, y = 0, z = 0})',
   '    return false',
   '  end',
   '  return true',
@@ -165,14 +166,16 @@ function buildStarterKit(starter, releaseAssets, kitTransform, guid) {
     if (!customDeckState) throw new Error(`Starter ${starter.id} card ${card.id} references unmapped deck ${deckId}.`);
     for (let copy = 0; copy < Number(card.quantity); copy += 1) {
       deckIds.push(Number(card.tts.cardId));
-      containedCards.push(makeCardObject({
+      const playable = makeCardObject({
         nickname: card.name,
         description: `${card.faction === 'neutral' ? 'Neutral' : starter.factionId} · Cost ${card.cost}`,
         cardId: card.tts.cardId,
         deckId,
         customDeckState,
         guid: guid(),
-      }));
+      });
+      playable.GMNotes = `gauntlet:playable-card:${card.id}`;
+      containedCards.push(playable);
     }
   }
 
