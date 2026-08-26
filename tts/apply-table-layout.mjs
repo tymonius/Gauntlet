@@ -282,7 +282,7 @@ export function handZoneTransform(side) {
     0,
     1.5,
     north ? center : -center,
-    north ? 180 : 0,
+    playerFacingCardRotation(side),
     HAND_ZONE_WIDTH,
     HAND_ZONE_HEIGHT,
     depth,
