@@ -238,3 +238,5 @@ Derived output is ignored by Git and written under:
 - `tts/generated/release-assets/` for deterministic hosted assets.
 
 Pull-request CI uploads the generated tree as the `gauntlet-current-tts-card-assets` artifact rather than committing derived PNGs and save JSON.
+
+For TTS-affecting pull requests, the workflow also publishes those staged network assets to an ephemeral prerelease named `tts-<version>-qa-pr-<number>` and uploads a rewritten `Gauntlet_<version>_TTS_PR<number>_Preview.json`. That preview save points only at the prerelease assets, so live TTS QA does not depend on unpublished production-release files or manual local image loading.
