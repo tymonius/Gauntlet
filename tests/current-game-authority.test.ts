@@ -44,6 +44,7 @@ const RAW_CURRENT_SOURCE_MARKERS = [
   '/deckbuilder/starter-decks.json',
 ];
 
+// Current resolved taxonomy is asserted here so release packaging never has to repair playable data.
 describe('single current-game authority', () => {
   it('declares one current-development authority and its provenance inputs', () => {
     expect(manifest.schemaVersion).toBe(1);
