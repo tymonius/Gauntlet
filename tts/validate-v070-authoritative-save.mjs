@@ -123,8 +123,8 @@ function validateHandsAndSeats(save) {
   if (!red || !blue) throw new Error('Missing Red or Blue hand transform.');
 
   const expectedHands = [
-    [red, 'Red', -20.25, 0, -18.25],
-    [blue, 'Blue', 20.25, 180, 18.25],
+    [red, 'Red', -20.25, 180, -18.25],
+    [blue, 'Blue', 20.25, 0, 18.25],
   ];
   for (const [hand, side, z, rotY, parkingZ] of expectedHands) {
     if (!close(hand.Transform?.posX, 0) || !close(hand.Transform?.posZ, z) || !close(hand.Transform?.rotY, rotY)
