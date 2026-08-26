@@ -30,7 +30,7 @@ describe('TTS save publisher', () => {
     expect(publisher).toContain("objectBase('Bag', `${starter.name} — ${starter.leader.name}`");
     expect(publisher).toContain("objectBase(\n      'DeckCustom'");
     expect(publisher).toContain("objectBase('CardCustom'");
-    expect(publisher).toContain('ContainedObjects: [leader, ...territories, deck, playerToken, battleDie]');
+    expect(publisher).toContain('const containedObjects = [leader, ...territories, deck, playerToken, battleDie]');
     expect(publisher).toContain('starters.map(starter => buildStarterKit');
     expect(publisher).not.toMatch(/Expected 12|=== 12|!== 12/);
   });
@@ -46,12 +46,12 @@ describe('TTS save publisher', () => {
     ];
 
     const expectations = [
-      [0, -20.5, -12, 90],
-      [1, 20.5, -12, 270],
-      [4, -20.5, -2.4, 90],
-      [5, 20.5, -2.4, 270],
-      [10, -20.5, 12, 90],
-      [11, 20.5, 12, 270],
+      [0, -20.5, -12, 180],
+      [1, 20.5, -12, 180],
+      [4, -20.5, -2.4, 180],
+      [5, 20.5, -2.4, 180],
+      [10, -20.5, 12, 180],
+      [11, 20.5, 12, 180],
     ] as const;
     for (const [index, x, z, rotY] of expectations) {
       const position = starterBagTransform(starters[index], starters);
@@ -62,10 +62,12 @@ describe('TTS save publisher', () => {
   });
 
   it('creates the base two-player scaffold before authoritative table layout is applied', () => {
-    expect(publisher).toContain("Table: 'Table_RPG'");
-    expect(publisher).toContain("Sky: 'Sky_Field'");
-    expect(publisher).toContain("Color: 'Red'");
-    expect(publisher).toContain("Color: 'Blue'");
+    expect(publisher).toContain("Table: 'Table_Custom'");
+    expect(publisher).toContain('TableURL: tableUrl');
+    expect(publisher).toContain("Sky: 'Sky_Museum'");
+    expect(publisher).toContain('SkyURL: panoramaUrl');
+    expect(publisher).toContain("Color: 'White'");
+    expect(publisher).toContain("Color: 'Green'");
     expect(publisher).toContain("objectBase('Die_6'");
     expect(publisher).toContain("objectBase('PlayerPawn'");
     expect(publisher).toContain('const territoryZ = [-7.5, -4.5, -1.5, 1.5, 4.5, 7.5]');
