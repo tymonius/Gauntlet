@@ -6,6 +6,18 @@ import { resolveCurrentTtsRelease, ROOT } from './tts-current-catalog.mjs';
 
 const DEFAULT_REPOSITORY = 'tymonius/Gauntlet';
 const STAGING_ROOT = join(ROOT, 'tts', 'generated', 'release-assets');
+const ENVIRONMENT_ASSETS = Object.freeze([
+  {
+    sourceFile: 'tts/assets/environment/campaign-map-table.jpg',
+    releaseSuffix: 'Environment_Table.jpg',
+    kind: 'environment-table',
+  },
+  {
+    sourceFile: 'tts/assets/environment/command-tent-panorama.jpg',
+    releaseSuffix: 'Environment_Panorama.jpg',
+    kind: 'environment-panorama',
+  },
+]);
 
 function jsonText(value) {
   return `${JSON.stringify(value, null, 2)}\n`;
@@ -91,6 +103,17 @@ async function stageReleaseAssets() {
   const prefix = assetPrefix(release.version);
   const records = [];
   const seenNames = new Set();
+
+  for (const environment of ENVIRONMENT_ASSETS) {
+    addAsset(
+      records,
+      seenNames,
+      environment.sourceFile,
+      `${prefix}_${environment.releaseSuffix}`,
+      environment.kind,
+      { sourceScope: 'repository' },
+    );
+  }
 
   for (const sheet of cardManifest.sheets || []) {
     addAsset(
@@ -208,7 +231,9 @@ async function stageReleaseAssets() {
   const staged = [];
   for (const record of records) {
     if (!record.sourceFile) throw new Error(`TTS release asset ${record.releaseAsset} has no source file.`);
-    const sourcePath = join(outputRoot, record.sourceFile);
+    const sourcePath = record.sourceScope === 'repository'
+      ? join(ROOT, record.sourceFile)
+      : join(outputRoot, record.sourceFile);
     const info = await ensureFile(sourcePath);
     const targetPath = join(STAGING_ROOT, record.releaseAsset);
     await copyFile(sourcePath, targetPath);
