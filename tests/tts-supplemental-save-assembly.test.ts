@@ -110,6 +110,7 @@ describe('TTS ready supplemental save assembly', () => {
     expect(tracker.Name).toBe('Custom_Tile');
     expect(tracker.CustomImage.CustomTile.Stackable).toBe(false);
     expect(tracker.Sticky).toBe(true);
+    expect(tracker.Transform.rotY).toBe(180);
     expect(tracker.CustomImage.CustomTile.Type).toBe(ROUNDED_RECTANGLE_TILE_TYPE);
     expect(tracker.Transform.scaleZ).toBe(CUSTOM_TILE_CARD_LINEAR_SCALE);
     expect(tracker.AttachedSnapPoints).toBeUndefined();
@@ -134,6 +135,7 @@ describe('TTS ready supplemental save assembly', () => {
     expect(stack.Transform.rotY).toBe(90);
     expect(stack.Tags).toContain('gauntlet-deed-stack');
     expect(stack.Tags).toContain('gauntlet-faction-zone');
+    expect(stack.Transform.rotY).toBe(270);
     expect(stack.ContainedObjects.every((deed: any) => deed.Tags.includes('gauntlet-deed'))).toBe(true);
     expect(stack.ContainedObjects.every((deed: any) => deed.Tags.includes('gauntlet-faction-zone'))).toBe(true);
   });
