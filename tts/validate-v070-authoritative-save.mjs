@@ -7,6 +7,7 @@ const SUPPLEMENTAL_GUID_NOTE_PREFIX = 'gauntlet:supplemental:';
 const SUPPLEMENTAL_STACK_NOTE_PREFIX = 'gauntlet:supplemental-stack:';
 const PLAYER_TOKEN_NOTE_PREFIX = 'gauntlet:starter-utility:player-token:';
 const BATTLE_DIE_NOTE_PREFIX = 'gauntlet:starter-utility:battle-die:';
+const HAND_TRIGGER_NOTE_PREFIX = 'gauntlet:hand-trigger:';
 const TERRITORY_TAG = 'gauntlet-territory';
 const DEED_TAG = 'gauntlet-deed';
 const DEED_STACK_TAG = 'gauntlet-deed-stack';
@@ -115,6 +116,8 @@ function validateHandsAndSeats(save) {
   if (save.Hands?.Enable !== true || save.Hands?.DisableUnused !== false || save.Hands?.HandTransforms?.length !== 2) {
     throw new Error('Expected exactly two enabled serialized TTS hand transforms.');
   }
+  if (save.Hands?.Hiding !== 0) throw new Error('TTS Hand hiding must remain at the default player-private setting.');
+
   const red = save.Hands.HandTransforms.find(hand => hand.Color === 'Red');
   const blue = save.Hands.HandTransforms.find(hand => hand.Color === 'Blue');
   if (!red || !blue) throw new Error('Missing Red or Blue hand transform.');
@@ -144,10 +147,20 @@ function validateHandsAndSeats(save) {
   }
 
   const objects = allObjects(save);
-  const explicitHandVolumes = objects.filter(object => object?.Name === 'HandTrigger');
-  if (explicitHandVolumes.length) {
-    throw new Error(`Found ${explicitHandVolumes.length} explicit HandTrigger ObjectStates. Hands.HandTransforms must be the single hand-zone authority.`);
+  const handTriggers = objects.filter(object => object?.Name === 'HandTrigger');
+  if (handTriggers.length !== 2) throw new Error(`Expected exactly two real HandTrigger ObjectStates; found ${handTriggers.length}.`);
+  for (const [hand, side] of expectedHands) {
+    const trigger = handTriggers.find(object => object.GMNotes === `${HAND_TRIGGER_NOTE_PREFIX}${side.toLowerCase()}`);
+    if (!trigger || trigger.Nickname !== `${side} Hand`) {
+      throw new Error(`${side} real HandTrigger is missing.`);
+    }
+    for (const key of ['posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ', 'scaleX', 'scaleY', 'scaleZ']) {
+      if (!close(trigger.Transform?.[key], hand.Transform?.[key], 0.00001)) {
+        throw new Error(`${side} HandTrigger and Hands.HandTransforms disagree at ${key}.`);
+      }
+    }
   }
+
   const fogVolumes = objects.filter(object => object?.Name === 'FogOfWarTrigger');
   if (fogVolumes.length) throw new Error(`Found ${fogVolumes.length} obsolete FogOfWarTrigger objects.`);
 
@@ -157,10 +170,8 @@ function validateHandsAndSeats(save) {
   }
 
   const lua = String(save.LuaScript || '');
-  if (!lua.includes('function gauntletSeatCamera(color)')
-    || !lua.includes('pitch = 55, yaw = 0, distance = 38')
-    || !lua.includes('pitch = 55, yaw = 180, distance = 38')) {
-    throw new Error('Authoritative save is missing Red/Blue seat-camera alignment.');
+  if (lua.includes('gauntletSeatCamera') || lua.includes('Player[color].lookAt(')) {
+    throw new Error('Authoritative save must not rotate or commandeer a seated player camera.');
   }
 }
 
@@ -233,8 +244,8 @@ function validateTerritoriesDeedsAndFactionEligibility(save, manifest) {
   if (!territories.length) throw new Error('No tagged Territory cards found.');
   for (const card of territories) {
     if (card.SidewaysCard !== true || !close(card.Transform?.rotY, 90)) throw new Error(`Territory ${card.Nickname || card.GUID} is not landscape.`);
-    if (!String(card.LuaScript || '').includes('self.use_rotation_value_flip = true')) {
-      throw new Error(`Territory ${card.Nickname || card.GUID} does not switch TTS to the landscape flip axis.`);
+    if (!String(card.LuaScript || '').includes('self.use_rotation_value_flip = false')) {
+      throw new Error(`Territory ${card.Nickname || card.GUID} does not use the alternate TTS flip axis.`);
     }
   }
 
