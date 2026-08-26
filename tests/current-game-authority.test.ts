@@ -109,15 +109,26 @@ describe('single current-game authority', () => {
           { label: 'Action', text: 'Old pending battle wording.' },
         ],
       },
+      {
+        id: 'mystics-nature-s-altar',
+        name: "Nature's Altar",
+        overlay: 'Old Faction Action wording.',
+        effects: [
+          { label: 'Overlay', text: 'Old Faction Action wording.' },
+        ],
+      },
     ], rulesSource);
 
     const advanceGuard = cards.find(card => card.id === 'neutral-advance-guard');
     const forcedMarch = cards.find(card => card.id === 'neutral-forced-march');
+    const natureAltar = cards.find(card => card.id === 'mystics-nature-s-altar');
     expect(advanceGuard?.effects[0].text).toContain('initiates a battle');
     expect(forcedMarch?.effects[0].text).toContain('cannot initiate a battle');
     expect(advanceGuard?.action).toContain('initiates a battle');
     expect(forcedMarch?.action).toContain('cannot initiate a battle');
-    expect(JSON.stringify(cards)).not.toContain('pending battle');
+    expect(natureAltar?.effects[0].text).toContain('Begin a Rite Faction Feature');
+    expect(natureAltar?.overlay).toContain('Begin a Rite Faction Feature');
+    expect(JSON.stringify(cards)).not.toMatch(/pending battle|Faction Action/i);
   });
 
   it('resolves all current playable card text and faction-rule taxonomy without retired terms', () => {
