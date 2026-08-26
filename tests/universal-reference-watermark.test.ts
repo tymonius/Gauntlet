@@ -10,7 +10,7 @@ describe('Universal Reference neutral emblem', () => {
   it('extracts the canonical G vector layer instead of cropping the complete wordmark image', () => {
     expect(renderer).toContain("import { materializeGauntletEmblem } from './gauntlet-emblem.js'");
     expect(renderer).toContain('await materializeGauntletEmblem(slot)');
-    expect(renderer).not.toContain("document.createElement('img')");
+    expect(emblem).not.toContain("document.createElement('img')");
     expect(emblem).toContain("const GAUNTLET_WORDMARK_SOURCE = '/images/Gauntlet.svg'");
     expect(emblem).toContain("sourceSvg.querySelectorAll(':scope > path')");
     expect(emblem).toContain("document.importNode(paths[0], true)");
