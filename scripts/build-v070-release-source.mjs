@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
-import { resolveCards, resolveCardTextOverrides, resolveRuleSection } from '../game-data/current-game.mjs';
+import { resolveCards, resolveCardTextOverrides, resolveFactionRules, resolveRuleSection } from '../game-data/current-game.mjs';
 import { ROOT, loadCurrentGameManifest, readCurrentJsonSource } from './current-game-authority.mjs';
 
 const RELEASE_VERSION = 'v0.7.0';
@@ -31,52 +31,6 @@ function resolveFactions(baseFactions, manifest) {
         .map(leader => structuredClone(leader)),
     };
   });
-}
-
-function resolveFactionRules(baseRules, manifest) {
-  const rules = structuredClone(baseRules || {});
-  for (const [factionId, source] of Object.entries(rules)) {
-    const current = { ...(source || {}) };
-    if (Object.prototype.hasOwnProperty.call(current, 'faction_action_phase')) {
-      current.faction_feature_action_phase = current.faction_action_phase;
-      delete current.faction_action_phase;
-    }
-    if (Object.prototype.hasOwnProperty.call(current, 'faction_actions')) {
-      current.faction_features_1_action = (manifest.factionFeatures?.[factionId] || [])
-        .filter(feature => feature.profile === '1 Action')
-        .map(feature => feature.name);
-      delete current.faction_actions;
-    }
-    if (Object.prototype.hasOwnProperty.call(current, 'faction_abilities')) {
-      current.leader_abilities = structuredClone(current.faction_abilities);
-      delete current.faction_abilities;
-    }
-    if (Object.prototype.hasOwnProperty.call(current, 'mission_control_type')) {
-      current.mission_control_classification = 'Leader Ability';
-      delete current.mission_control_type;
-    }
-    if (Object.prototype.hasOwnProperty.call(current, 'final_judgment_type')) {
-      current.final_judgment_classification = 'Leader Ability';
-      delete current.final_judgment_type;
-    }
-    rules[factionId] = current;
-  }
-
-  for (const [factionId, override] of Object.entries(manifest.factionOverrides || {})) {
-    if (!override?.factionRules) continue;
-    rules[factionId] = { ...(rules[factionId] || {}), ...structuredClone(override.factionRules) };
-  }
-
-  if (rules.diplomats) {
-    const terms = manifest.factionFeatures?.diplomats?.find(feature => feature.name === 'Terms');
-    if (terms?.timing) rules.diplomats.terms_timing = terms.timing;
-  }
-  if (rules.financiers?.financial_capacity) {
-    rules.financiers.financial_capacity = rules.financiers.financial_capacity
-      .replace('provided at least one is a Financier Faction Action.',
-        'provided at least one Action is spent on a Financier Faction Feature marked 1 Action.');
-  }
-  return rules;
 }
 
 function stripInternalAuditMetadata(value) {
