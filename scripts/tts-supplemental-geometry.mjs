@@ -2,20 +2,13 @@ const SNAP_Y = 0.12;
 
 export const STANDARD_CARD_SHORT_EDGE = 2.5;
 export const STANDARD_CARD_LONG_EDGE = 3.5;
-
-// TTS' stock card object is not 3.5 world/grid units tall even when the source
-// artwork is authored as a 2.5 x 3.5 inch card. Its measured tabletop height is
-// about 3.06 world units. Tracker registrations are authored as physical-card
-// offsets, so convert them by fraction of card height rather than treating CSS
-// inches as TTS world units.
-export const TTS_STANDARD_CARD_WORLD_LONG_EDGE = 3.06;
+export const TRACKER_RENDER_PX_PER_IN = 96;
 
 // Tabletop Simulator's Custom_Tile and CardCustom objects use different native
-// tabletop footprints. This is the single physical conversion used when a
-// card-sized printed tracker is represented as a Custom_Tile. It is part of the
-// object representation contract, not a post-generation correction.
+// tabletop footprints. The tracker tile is scaled to match a normal card; snap
+// coordinates are therefore divided by the same object scale so their world
+// travel remains exactly the rendered physical distance.
 export const CUSTOM_TILE_CARD_LINEAR_SCALE = 1.5;
-export const TRACKER_LOCAL_LONG_EDGE = TTS_STANDARD_CARD_WORLD_LONG_EDGE / CUSTOM_TILE_CARD_LINEAR_SCALE;
 export const ROUNDED_RECTANGLE_TILE_TYPE = 3;
 
 function vector(x = 0, y = 0, z = 0) {
@@ -39,23 +32,24 @@ export function makeTrackerSnapPoints(component) {
   if (!tag || !Array.isArray(points) || points.length < 2) {
     throw new Error(`Sliding tracker ${component.id} cannot register snaps without a snap tag and renderer-derived positions.`);
   }
-  if (Number(points[0]?.value) !== 0 || Number(points[0]?.offset) !== 0) {
-    throw new Error(`Sliding tracker ${component.id} must begin with the fully covered value-0 registration.`);
+  if (Number(points[0]?.value) !== 0 || Number(points[0]?.rendererTravelPx) !== 0) {
+    throw new Error(`Sliding tracker ${component.id} must begin with the fully covered value-0 renderer registration.`);
   }
 
   let previous = -Infinity;
   return points.map(point => {
-    const physicalTravel = Number(point.offset);
-    if (!Number.isFinite(physicalTravel) || physicalTravel < 0 || physicalTravel < previous) {
-      throw new Error(`Sliding tracker ${component.id} has invalid renderer travel ${point.offset}.`);
+    const rendererTravelPx = Number(point.rendererTravelPx);
+    if (!Number.isFinite(rendererTravelPx) || rendererTravelPx < 0 || rendererTravelPx < previous) {
+      throw new Error(`Sliding tracker ${component.id} has invalid renderer travel ${point.rendererTravelPx}.`);
     }
-    previous = physicalTravel;
+    previous = rendererTravelPx;
 
-    // The printed line location is a fraction of the authored 3.5-inch card.
-    // Apply that same fraction to the actual TTS card-sized tracker length. This
-    // is what makes the Leader card's bottom edge land on the printed value line.
-    const lineFraction = physicalTravel / STANDARD_CARD_LONG_EDGE;
-    const localZ = -(lineFraction * TRACKER_LOCAL_LONG_EDGE);
+    // The renderer measured the exact distance from the card bottom to this
+    // registration line. Convert only pixels -> authored physical inches, then
+    // account for the Custom_Tile object scale. There is deliberately no
+    // value/max spacing and no normalization over the tracker's full height.
+    const worldTravel = rendererTravelPx / TRACKER_RENDER_PX_PER_IN;
+    const localZ = -(worldTravel / CUSTOM_TILE_CARD_LINEAR_SCALE);
     return {
       Position: vector(0, SNAP_Y, Number(localZ.toFixed(6))),
       Rotation: vector(0, 0, 0),
