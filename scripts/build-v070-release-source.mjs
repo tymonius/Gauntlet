@@ -1,8 +1,6 @@
 import crypto from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
-import { applyReleaseCandidateRulebook } from '../rulebook/release-candidate.js';
-import { applyFactionFeatureTerminology } from '../rulebook/faction-feature-terminology.js';
 import { resolveCards, resolveCardTextOverrides, resolveRuleSection } from '../game-data/current-game.mjs';
 import { ROOT, loadCurrentGameManifest, readCurrentJsonSource } from './current-game-authority.mjs';
 
@@ -11,8 +9,6 @@ const SOURCE_VERSION = 'v0.6.4-candidate';
 const RELEASE_NAME = 'Illustrated Cards & Tabletop Simulator';
 const RELEASE_DIR = join(ROOT, 'releases', RELEASE_VERSION);
 const PUBLIC_DIR = join(ROOT, RELEASE_VERSION);
-const CHAPTER_11_START = '# 11. Detailed Card and Timing Rules';
-const CHAPTER_11_END = '# 12. Overlays and Other Shared Card Rules';
 
 const jsonText = value => `${JSON.stringify(value, null, 2)}\n`;
 const sha256 = value => crypto.createHash('sha256').update(value).digest('hex');
@@ -45,49 +41,49 @@ function resolveFactionRules(baseRules, manifest) {
   return rules;
 }
 
-function spliceReviewedChapter11(markdown, reviewedChapter) {
-  const source = String(markdown || '');
-  const start = source.indexOf(CHAPTER_11_START);
-  const end = source.indexOf(CHAPTER_11_END, start + CHAPTER_11_START.length);
-  if (start < 0 || end <= start) throw new Error('Promoted Rulebook is missing the Chapter 11 publication boundary.');
-  const reviewed = String(reviewedChapter || '').replace(/\r\n/g, '\n').trim();
-  if (!reviewed.startsWith(CHAPTER_11_START)) throw new Error('Reviewed Chapter 11 source has the wrong heading.');
-  for (const forbidden of [
-    '## Inherited interaction rules',
-    '## Adopted v0.6.3 card procedures',
-    'v0.6.3 no longer uses',
-    'Cards therefore do not need',
-    'Do not print `from Reserve`',
+function promoteRulebookVersion(markdown) {
+  let result = String(markdown || '').replace(/\r\n/g, '\n');
+  result = result.replace('**Version 0.6.4 — Release Candidate**', '**Version 0.7.0**');
+  result = result.replace(/\*\*Version\s+v?0\.6\.4(?:-candidate)?\*\*/u, '**Version 0.7.0**');
+  for (const notice of [
+    /^>\s*\*\*Release candidate\.\*\* This is the maintained current-development Rulebook source\. Switch back to \*\*Released v0\.6\.3\*\* for the published ruleset\.\s*$/gmu,
+    /^>\s*\*\*Release candidate\.\*\* This view layers the current-development rules over the published v0\.6\.3 Rulebook\. Switch back to \*\*Released v0\.6\.3\*\* for the published ruleset\.\s*$/gmu,
+  ]) result = result.replace(notice, '');
+  if (!result.includes('**Version 0.7.0**')) throw new Error('Promoted Rulebook is missing the v0.7.0 version marker.');
+  for (const [label, pattern] of [
+    ['pending-battle terminology', /\bpending(?:-|\s+)battles?\b/iu],
+    ['Faction Action terminology', /\bFaction Actions?\b/iu],
+    ['Faction Ability terminology', /\bFaction Abilit(?:y|ies)\b/iu],
+    ['faction procedure terminology', /\bfaction procedure\b/iu],
   ]) {
-    if (reviewed.includes(forbidden)) throw new Error(`Reviewed Chapter 11 still contains internal language: ${forbidden}`);
+    if (pattern.test(result)) throw new Error('Promoted Rulebook still contains retired ' + label + '.');
   }
-  return `${source.slice(0, start)}${reviewed}\n\n${source.slice(end)}`;
+  if (!result.includes('## Card anatomy')) throw new Error('Promoted Rulebook is missing Card Anatomy.');
+  if (!result.includes('Terms occur during Onset')) throw new Error('Promoted Rulebook is missing current Onset timing.');
+  return result.replace(/\n{4,}/g, '\n\n\n');
 }
 
-function promoteRulebookVersion(markdown) {
-  let result = String(markdown || '');
-  result = result.replace('**Version 0.6.4 — Release Candidate**', '**Version 0.7.0**');
-  result = result.replace(
-    /^>\s*\*\*Release candidate\.\*\* This view layers the current-development rules over the published v0\.6\.3 Rulebook\. Switch back to \*\*Released v0\.6\.3\*\* for the published ruleset\.\s*$/gmu,
-    '',
-  );
-  result = result.replace(/\*\*Version\s+v?0\.6\.4(?:-candidate)?\*\*/u, '**Version 0.7.0**');
-  result = result.replace(/\*\*Version\s+0\.6\.3\*\*/u, '**Version 0.7.0**');
-  if (!result.includes('**Version 0.7.0**')) {
-    throw new Error('Promoted Rulebook is missing the v0.7.0 version marker.');
-  }
-  if (/Version\s+0\.6\.4|Release candidate\.\*\* This view layers/iu.test(result.slice(0, 1400))) {
-    throw new Error('Promoted Rulebook still exposes candidate identity in its publication header.');
-  }
-  return result.replace(/\n{4,}/g, '\n\n\n');
+function addCardAnatomyFigure(markdown) {
+  const marker = "Most ordinary playable cards use the same frame. Read these elements when constructing a Deck and resolving a card in play:\n\n";
+  if (!markdown.includes(marker)) throw new Error('Card Anatomy introduction marker is missing from the maintained Rulebook.');
+  const figure = '![Card anatomy diagram](<releases/v0.7.0/Gauntlet_v0.7.0_Card_Anatomy.png>)\n\n';
+  return markdown.replace(marker, marker + figure);
 }
 
 const manifest = await loadCurrentGameManifest();
 if (manifest.version !== SOURCE_VERSION || manifest.baseVersion !== 'v0.6.3') {
   throw new Error(`v0.7.0 publication expected ${SOURCE_VERSION} over v0.6.3, found ${manifest.version}/${manifest.baseVersion}.`);
 }
+if (!manifest.factionFeatureTaxonomy || !manifest.factionFeatures || !Array.isArray(manifest.leaders) || manifest.leaders.length !== 12) {
+  throw new Error('v0.7.0 publication requires the current Faction Feature taxonomy and all 12 structured Leaders.');
+}
+for (const leader of manifest.leaders) {
+  if (!Array.isArray(leader.sections) || !leader.sections.length || leader.sections.some(section => Array.isArray(section) || !section?.classification || !section?.name)) {
+    throw new Error('Leader ' + (leader.id || leader.name || 'unknown') + ' is not using structured current-game sections.');
+  }
+}
 
-const [baseSource, cardChanges, territorySource, proposalSource, arcaneSource, rulesSource, componentContract, starterDeckSource, reviewedChapter11] = await Promise.all([
+const [baseSource, cardChanges, territorySource, proposalSource, arcaneSource, rulesSource, componentContract, starterDeckSource, currentRulebookSource] = await Promise.all([
   readCurrentJsonSource('baseGameplay'),
   readCurrentJsonSource('cardChanges'),
   readCurrentJsonSource('territories'),
@@ -96,7 +92,7 @@ const [baseSource, cardChanges, territorySource, proposalSource, arcaneSource, r
   readCurrentJsonSource('rules'),
   readCurrentJsonSource('componentContract'),
   readCurrentJsonSource('starterDecks'),
-  readText('rulebook/player-facing/chapter-11.md'),
+  readText('rulebook/player-facing/current-rulebook.md'),
 ]);
 
 const baseGameplay = baseSource.data?.gameplay;
@@ -137,6 +133,9 @@ const canonicalData = {
   proposals: structuredClone(proposalSource.data.proposals || []),
   arcane_symbol: structuredClone(arcaneSource.data),
   component_contract: structuredClone(componentContract.data),
+  faction_feature_taxonomy: structuredClone(manifest.factionFeatureTaxonomy),
+  faction_features: structuredClone(manifest.factionFeatures),
+  leaders: structuredClone(manifest.leaders),
 };
 
 const starterDecks = {
@@ -147,16 +146,7 @@ const starterDecks = {
   source_authority: '/game-data/current-game.json',
 };
 
-const baseRulebook = await readText('releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md');
-const rulebookGame = {
-  ...structuredClone(manifest),
-  proposals: structuredClone(proposalSource.data.proposals || []),
-  arcaneSymbol: structuredClone(arcaneSource.data),
-  ruleChanges: structuredClone(rulesSource.data),
-};
-const transformedRulebook = applyReleaseCandidateRulebook(baseRulebook, rulebookGame);
-const terminologyAlignedRulebook = applyFactionFeatureTerminology(transformedRulebook);
-const rulebook = spliceReviewedChapter11(promoteRulebookVersion(terminologyAlignedRulebook), reviewedChapter11);
+const rulebook = addCardAnatomyFigure(promoteRulebookVersion(currentRulebookSource));
 
 const canonicalText = jsonText(canonicalData);
 const starterText = jsonText(starterDecks);
@@ -168,6 +158,10 @@ const sourceProvenance = {
   base_version: manifest.baseVersion,
   authority_set_id: authoritySetId,
   current_game_authority: 'game-data/current-game.json',
+  current_rulebook_authority: 'rulebook/player-facing/current-rulebook.md',
+  publication_derived_assets: {
+    card_anatomy_figure: 'releases/v0.7.0/Gauntlet_v0.7.0_Card_Anatomy.png',
+  },
   source_inputs: structuredClone(manifest.sources),
   counts: {
     playable_cards: cards.length,
