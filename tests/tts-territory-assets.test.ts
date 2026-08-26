@@ -93,7 +93,7 @@ describe("TTS Territory assets", () => {
     expect(sharedStyles).not.toContain("line-height: 1.18");
   });
 
-  it("keeps the current catalog index stable while candidate review frames use v0.6.4 Territory text", () => {
+  it("keeps Territory review frames on the complete v0.7.0 current-game authority", () => {
     expect(specimenPage).toContain('id="territory-title"');
     expect(specimenPage).toContain('class="card-section territory-specimen-section"');
     expect(specimenPage).toContain('id="territoryReviewSections"');
@@ -104,12 +104,12 @@ describe("TTS Territory assets", () => {
     expect(reviewScript).toContain("territoryGroup('arenas','Arenas',arenas)");
     expect(reviewScript).toContain('class="territory-review-frame"');
     expect(reviewScript).toContain("territory-review-render.html?territory=");
-    expect(territoryReviewScript).toContain("const CANDIDATE_SOURCE = '/docs/v0.6.4-territories.json'");
-    expect(territoryReviewScript).toContain("const EXPECTED_SOURCE_ISSUE = 738");
-    expect(territoryReviewScript).toContain("const EXPECTED_VERSION = 'v0.6.4-candidate'");
-    expect(territoryReviewScript).toContain("source.territories || []");
-    expect(territoryReviewScript).not.toContain("Gauntlet_v0.6.3_Canonical_Data.json");
-    expect(territoryReviewPage).toContain("Gauntlet v0.6.4 Candidate Territory Review Render");
+    expect(territoryReviewScript).toContain("loadCurrentGame");
+    expect(territoryReviewScript).toContain("currentGame.findTerritory(territoryId)");
+    expect(territoryReviewScript).toContain("source: currentGame.authorityUrl");
+    expect(territoryReviewScript).not.toContain("v0.6.4-territories.json");
+    expect(territoryReviewScript).not.toContain("EXPECTED_SOURCE_ISSUE");
+    expect(territoryReviewPage).toContain("Gauntlet v0.7.0 Territory Review Render");
     expect(dedicatedSpecimenPage).toContain("Gauntlet Territory Card Mockup");
     expect(dedicatedSpecimenPage).toContain('aria-label="High Ground Territory card-front prototype"');
   });
