@@ -7,7 +7,7 @@ import {
   resolveCurrentTtsRelease,
   ROOT,
 } from './tts-current-catalog.mjs';
-import { readCurrentJsonSource } from './current-game-authority.mjs';
+import { loadCurrentGameAuthority } from './current-game-authority.mjs';
 import {
   loadTtsComponentContract,
   resolveFactionBackFile,
@@ -66,8 +66,8 @@ function proposalIdForComponent(component) {
 export async function buildFinalizedExportPlan(componentContract = null) {
   const contract = componentContract || await loadTtsComponentContract();
   const release = await resolveCurrentTtsRelease();
-  const proposalSource = await readCurrentJsonSource('proposals');
-  const proposals = new Map((proposalSource.data?.proposals || []).map(proposal => [proposal.id, proposal]));
+  const authority = await loadCurrentGameAuthority();
+  const proposals = new Map((authority.proposals || []).map(proposal => [proposal.id, proposal]));
   const components = [];
 
   for (const component of contract.components || []) {
