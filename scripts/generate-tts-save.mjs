@@ -13,6 +13,12 @@ const FACTION_COLORS = Object.freeze({
   inquisition: { r: 0.651, g: 0.478, b: 0.153 },
 });
 
+const LANDSCAPE_CARD_FLIP_SCRIPT = [
+  'function onLoad()',
+  '  self.use_rotation_value_flip = true',
+  'end',
+].join('\n');
+
 function jsonText(value) {
   return `${JSON.stringify(value, null, 2)}\n`;
 }
@@ -213,7 +219,7 @@ function buildStarterKit(starter, releaseAssets, kitTransform, guid) {
       territory.tts.numWidth,
       territory.tts.numHeight,
     );
-    return makeCardObject({
+    const card = makeCardObject({
       nickname: territory.name,
       description: territory.arena ? 'Arena Territory' : 'Territory',
       cardId: territory.tts.cardId,
@@ -222,6 +228,8 @@ function buildStarterKit(starter, releaseAssets, kitTransform, guid) {
       sideways: true,
       guid: guid(),
     });
+    card.LuaScript = LANDSCAPE_CARD_FLIP_SCRIPT;
+    return card;
   });
 
   const factionLabel = starter.leader.factionLabel || starter.factionId;
@@ -264,7 +272,7 @@ function buildTtsSave(starterManifest, releaseAssets) {
   const note = [
     `Gauntlet ${version} Tabletop Simulator review scaffold.`,
     'Choose one starter kit per player. Each kit contains its face-down Deck, Leader Card, three Territories, faction-colored Player Token, and faction-colored Battle Die. Arrange the six chosen Territories on the center snap points, then complete normal opening setup from the current Rulebook.',
-    'Red sits at the south end; Blue sits at the north end. Each player uses the faction-colored token and die from the chosen starter kit.',
+    'White sits at the south end; Green sits at the north end. Each player uses the faction-colored token and die from the chosen starter kit.',
     'Ready shared and faction supplemental components are assembled into the same starter kit later in the TTS package pipeline. Rules remain manual.',
   ].join('\n\n');
 
@@ -299,19 +307,19 @@ function buildTtsSave(starterManifest, releaseAssets) {
       DisableUnused: true,
       Hiding: 0,
       HandTransforms: [
-        { Color: 'Red', Transform: transform(0, 4, -20.15, 0, 7, 6, 3) },
-        { Color: 'Blue', Transform: transform(0, 4, 20.15, 180, 7, 6, 3) },
+        { Color: 'White', Transform: transform(0, 4, -20.15, 0, 7, 6, 3) },
+        { Color: 'Green', Transform: transform(0, 4, 20.15, 180, 7, 6, 3) },
       ],
     },
     Turns: {
       Enable: false,
       Type: 0,
-      TurnOrder: ['Red', 'Blue'],
+      TurnOrder: ['White', 'Green'],
       Reverse: false,
       SkipEmpty: true,
       DisableInteractions: false,
       PassTurns: true,
-      TurnColor: 'Red',
+      TurnColor: 'White',
     },
     SnapPoints: snapPoints,
     ObjectStates: starterKits,
