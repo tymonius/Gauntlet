@@ -5,6 +5,7 @@ import {
   buildTableTextObjects,
   buildTableVectorLines,
   handZoneTransform,
+  parkingHiddenZoneTransform,
 } from '../tts/apply-table-layout.mjs';
 
 function zoneContainsPoint(zone: any, x: number, z: number) {
@@ -44,7 +45,7 @@ describe('authoritative TTS table layout', () => {
     expect(territory.map(point => point.Position.z)).toEqual([
       -10.5, -7.5, -4.5, -1.5, 1.5, 4.5, 7.5, 10.5,
     ]);
-    expect(territory.every(point => point.Rotation.y === 90)).toBe(true);
+    expect(territory.every(point => point.Rotation === undefined)).toBe(true);
     expect(deeds).toHaveLength(16);
     expect(deeds.every(point => Math.abs(point.Position.x) === 4.35)).toBe(true);
     expect(deeds.every(point => point.Rotation.y === 90)).toBe(true);
@@ -92,16 +93,24 @@ describe('authoritative TTS table layout', () => {
     expect(greenHandLines).toHaveLength(2);
   });
 
-  it('uses one private Hand zone per player that contains both parking and Reserve space', () => {
+  it('keeps Reserve hand zones outside the tabletop parking areas', () => {
     const white = handZoneTransform('White');
     const green = handZoneTransform('Green');
+    const whiteParking = parkingHiddenZoneTransform('White');
+    const greenParking = parkingHiddenZoneTransform('Green');
 
-    expect(white).toMatchObject({ posX: 0, posY: 4, posZ: -20.25, rotY: 0, scaleX: 7, scaleY: 6, scaleZ: 8 });
-    expect(green).toMatchObject({ posX: 0, posY: 4, posZ: 20.25, rotY: 180, scaleX: 7, scaleY: 6, scaleZ: 8 });
+    expect(white).toMatchObject({ posX: 0, posY: 4, posZ: -22.5, rotY: 0, scaleX: 7, scaleY: 6, scaleZ: 4 });
+    expect(green).toMatchObject({ posX: 0, posY: 4, posZ: 22.5, rotY: 180, scaleX: 7, scaleY: 6, scaleZ: 4 });
+    expect(whiteParking).toMatchObject({ posX: 0, posY: 2.5, posZ: -18.25, scaleX: 2.85, scaleY: 5, scaleZ: 4 });
+    expect(greenParking).toMatchObject({ posX: 0, posY: 2.5, posZ: 18.25, scaleX: 2.85, scaleY: 5, scaleZ: 4 });
 
-    // The visible parking snap sits inside the same private zone as the Reserve.
-    expect(zoneContainsPoint(white, 0, -18.25)).toBe(true);
-    expect(zoneContainsPoint(green, 0, 18.25)).toBe(true);
+    // Parking is deliberately outside the actual Hand zone, so a card placed
+    // on the tabletop stays parked instead of being swallowed back into Reserve.
+    expect(zoneContainsPoint(white, 0, -18.25)).toBe(false);
+    expect(zoneContainsPoint(green, 0, 18.25)).toBe(false);
+    expect(zoneContainsPoint(whiteParking, 0, -18.25)).toBe(true);
+    expect(zoneContainsPoint(greenParking, 0, 18.25)).toBe(true);
+
     // Draw/Discard and Graveyard remain ordinary public table workspaces.
     expect(zoneContainsPoint(white, -1.55, -13.55)).toBe(false);
     expect(zoneContainsPoint(white, 1.55, -13.55)).toBe(false);
@@ -116,6 +125,7 @@ describe('authoritative TTS table layout', () => {
       ObjectStates: [
         { Name: 'HandTrigger', GUID: 'legacy-hand' },
         { Name: 'FogOfWarTrigger', GMNotes: 'gauntlet:private-zone:red', GUID: 'legacy-fog' },
+        { Name: 'FogOfWarTrigger', GMNotes: 'unrelated-hidden-zone', GUID: 'other-fog' },
         {
           Name: 'Bag',
           GUID: 'starter',
@@ -143,11 +153,17 @@ describe('authoritative TTS table layout', () => {
     expect(white.Transform).toEqual(handZoneTransform('White'));
     expect(green.Transform).toEqual(handZoneTransform('Green'));
 
-    // Normal TTS saves serialize hands through Hands.HandTransforms, not duplicate
-    // HandTrigger ObjectStates.
+    // Reserve is serialized through Hands.HandTransforms. Parking uses exactly
+    // one color-owned Hidden Zone per player and does not count as a hand.
     expect(save.ObjectStates.filter((object: any) => object.Name === 'HandTrigger')).toHaveLength(0);
-    expect(save.ObjectStates.filter((object: any) => object.Name === 'FogOfWarTrigger')).toHaveLength(0);
-    expect(save.Note).toContain('one canonical private TTS Hand zone');
+    const fogZones = save.ObjectStates.filter((object: any) => object.Name === 'FogOfWarTrigger');
+    const parkingZones = fogZones.filter((object: any) => String(object.GMNotes || '').startsWith('gauntlet:private-parking:'));
+    expect(parkingZones).toHaveLength(2);
+    expect(parkingZones.map((object: any) => object.FogColor).sort()).toEqual(['Green', 'White']);
+    expect(parkingZones.every((object: any) => object.FogReverseHiding === false)).toBe(true);
+    expect(parkingZones.every((object: any) => object.Hands === false)).toBe(true);
+    expect(fogZones.some((object: any) => object.GUID === 'other-fog')).toBe(true);
+    expect(save.Note).toContain('tabletop Hand parking area is a separate player-private Hidden Zone');
     expect(save.LuaScript).toBe('-- unrelated global script');
     expect(save.LuaScript).not.toContain('gauntletSeatCamera');
 
@@ -192,6 +208,8 @@ describe('authoritative TTS table layout', () => {
     expect(territory.CustomDeck).toEqual(originalCustomDeck);
     expect(territory.SidewaysCard).toBe(true);
     expect(territory.Transform.rotY).toBe(0);
-    expect(String(territory.LuaScript || '')).toContain('self.use_rotation_value_flip = true');
+    expect(String(territory.LuaScript || '')).toContain('function tryRotate(spin, flip, player_color, old_spin, old_flip)');
+    expect(String(territory.LuaScript || '')).toContain('self.setRotationSmooth({x = flip, y = spin, z = 0}, false, false)');
+    expect(String(territory.LuaScript || '')).not.toContain('use_rotation_value_flip');
   });
 });
