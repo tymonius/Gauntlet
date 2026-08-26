@@ -13,6 +13,12 @@ const FACTION_COLORS = Object.freeze({
   inquisition: { r: 0.651, g: 0.478, b: 0.153 },
 });
 
+const LANDSCAPE_CARD_FLIP_SCRIPT = [
+  'function onLoad()',
+  '  self.use_rotation_value_flip = true',
+  'end',
+].join('\n');
+
 function jsonText(value) {
   return `${JSON.stringify(value, null, 2)}\n`;
 }
@@ -223,6 +229,10 @@ function buildStarterKit(starter, releaseAssets, kitTransform, guid) {
       guid: guid(),
     });
     card.Transform.rotY = 90;
+    // SidewaysCard controls the landscape card presentation; this TTS object
+    // property controls only which physical axis the card rotates around when
+    // flipped. Keep the existing face/back images untouched.
+    card.LuaScript = LANDSCAPE_CARD_FLIP_SCRIPT;
     return card;
   });
 
