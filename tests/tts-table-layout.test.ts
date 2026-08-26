@@ -4,10 +4,16 @@ import {
   buildTableSnapPoints,
   buildTableTextObjects,
   buildTableVectorLines,
+  handZoneTransform,
 } from '../tts/apply-table-layout.mjs';
 
+function zoneContainsPoint(zone: any, x: number, z: number) {
+  return Math.abs(x - zone.posX) <= zone.scaleX / 2
+    && Math.abs(z - zone.posZ) <= zone.scaleZ / 2;
+}
+
 describe('authoritative TTS table layout', () => {
-  it('keeps the player workspaces while leaving the one-card Hand parking snap unmarked', () => {
+  it('keeps every player workspace visible, including the one-card Hand parking area', () => {
     const text = buildTableTextObjects([]);
     const labels = text.map(object => object.Text.Text);
 
@@ -16,13 +22,13 @@ describe('authoritative TTS table layout', () => {
       'Draw Pile',
       'Discard Pile',
       'Graveyard',
+      'Hand',
       'Asset Bank',
       'Faction Zone',
     ]) {
       expect(labels.filter(value => value === label)).toHaveLength(4);
     }
-    expect(labels).not.toContain('Hand');
-    expect(text).toHaveLength(24);
+    expect(text).toHaveLength(28);
 
     const redHandSnap = buildTableSnapPoints().find(point => point.Position.x === 0 && point.Position.z === -18.25);
     const blueHandSnap = buildTableSnapPoints().find(point => point.Position.x === 0 && point.Position.z === 18.25);
@@ -58,9 +64,9 @@ describe('authoritative TTS table layout', () => {
     expect(blueFaction.every(point => point.Rotation.y === 0)).toBe(true);
   });
 
-  it('draws no Hand parking rectangle and only the six primary Territory guides', () => {
+  it('draws the visible Hand parking rectangles and only the six primary Territory guides', () => {
     const lines = buildTableVectorLines();
-    expect(lines).toHaveLength(36);
+    expect(lines).toHaveLength(40);
 
     const territoryLines = lines.filter(line => {
       const xs = line.points3.map(point => point.x);
@@ -70,16 +76,42 @@ describe('authoritative TTS table layout', () => {
     expect(territoryLines.filter(line => line.thickness === 0.105)).toHaveLength(6);
     expect(territoryLines.filter(line => line.thickness === 0.048)).toHaveLength(6);
 
-    const redHandRectangle = lines.find(line => {
+    const redHandLines = lines.filter(line => {
       const zs = line.points3.map(point => point.z);
       const xs = line.points3.map(point => point.x);
       return Math.min(...xs) === -1.425 && Math.max(...xs) === 1.425
         && Math.min(...zs) === -20.25 && Math.max(...zs) === -16.25;
     });
-    expect(redHandRectangle).toBeUndefined();
+    const blueHandLines = lines.filter(line => {
+      const zs = line.points3.map(point => point.z);
+      const xs = line.points3.map(point => point.x);
+      return Math.min(...xs) === -1.425 && Math.max(...xs) === 1.425
+        && Math.min(...zs) === 16.25 && Math.max(...zs) === 20.25;
+    });
+    expect(redHandLines).toHaveLength(2);
+    expect(blueHandLines).toHaveLength(2);
   });
 
-  it('uses one canonical serialized hand-zone system aligned with the seat cameras', () => {
+  it('uses one private Hand zone per player that contains both parking and Reserve space', () => {
+    const red = handZoneTransform('Red');
+    const blue = handZoneTransform('Blue');
+
+    expect(red).toMatchObject({ posX: 0, posZ: -20.25, rotY: 0, scaleX: 7, scaleY: 2, scaleZ: 8 });
+    expect(blue).toMatchObject({ posX: 0, posZ: 20.25, rotY: 180, scaleX: 7, scaleY: 2, scaleZ: 8 });
+
+    // The visible parking snap sits inside the same private zone as the Reserve.
+    expect(zoneContainsPoint(red, 0, -18.25)).toBe(true);
+    expect(zoneContainsPoint(blue, 0, 18.25)).toBe(true);
+    // Draw/Discard and Graveyard remain ordinary public table workspaces.
+    expect(zoneContainsPoint(red, -1.55, -13.55)).toBe(false);
+    expect(zoneContainsPoint(red, 1.55, -13.55)).toBe(false);
+    expect(zoneContainsPoint(red, 17.15, -17.75)).toBe(false);
+    expect(zoneContainsPoint(blue, 1.55, 13.55)).toBe(false);
+    expect(zoneContainsPoint(blue, -1.55, 13.55)).toBe(false);
+    expect(zoneContainsPoint(blue, -17.15, 17.75)).toBe(false);
+  });
+
+  it('serializes only those two canonical Hand zones and aligns them with the seat cameras', () => {
     const save: any = {
       ObjectStates: [
         { Name: 'HandTrigger', GUID: 'legacy-hand' },
@@ -100,18 +132,19 @@ describe('authoritative TTS table layout', () => {
     };
 
     const result = applyTableLayout(save);
-    expect(result.textObjectCount).toBe(24);
-    expect(result.vectorLineCount).toBe(36);
+    expect(result.textObjectCount).toBe(28);
+    expect(result.vectorLineCount).toBe(40);
     expect(result.snapPointCount).toBe(78);
 
     const red = save.Hands.HandTransforms.find((hand: any) => hand.Color === 'Red');
     const blue = save.Hands.HandTransforms.find((hand: any) => hand.Color === 'Blue');
     expect(save.Hands.DisableUnused).toBe(false);
-    expect(red.Transform).toMatchObject({ posZ: -23, rotY: 0, scaleX: 7, scaleY: 2.5, scaleZ: 3 });
-    expect(blue.Transform).toMatchObject({ posZ: 23, rotY: 180, scaleX: 7, scaleY: 2.5, scaleZ: 3 });
+    expect(red.Transform).toEqual(handZoneTransform('Red'));
+    expect(blue.Transform).toEqual(handZoneTransform('Blue'));
 
     expect(save.ObjectStates.filter((object: any) => object.Name === 'HandTrigger')).toHaveLength(0);
     expect(save.ObjectStates.filter((object: any) => object.Name === 'FogOfWarTrigger')).toHaveLength(0);
+    expect(save.Note).toContain('one canonical private TTS Hand zone');
     expect(save.LuaScript).toContain('pitch = 55, yaw = 0, distance = 38');
     expect(save.LuaScript).toContain('pitch = 55, yaw = 180, distance = 38');
 
