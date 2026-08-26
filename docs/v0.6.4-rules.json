@@ -60,7 +60,7 @@
     {
       "id": "battle-terms",
       "heading": "Offering Terms during Onset",
-      "body": "Terms are a Diplomat faction procedure resolved during Onset after the attacker, defender, contested Position, and attacker's previous Position are established, and before other pre-Gambit effects. To offer Terms, choose one eligible Proposal, confirm its Requirement, confirm enough available Influence for its Stake, lower available Influence by the Stake, then the opponent accepts or refuses. A Diplomat may normally offer one Proposal in a battle sequence. In a Diplomat mirror, the attacker has the first opportunity to offer Terms; if the attacker passes, the defender may offer. Once either player offers Terms, the other cannot offer Terms in that battle sequence even if the Proposal is refused."
+      "body": "Terms are a Diplomat Faction Feature marked No Action, resolved during Onset after the attacker, defender, contested Position, and attacker's previous Position are established, and before other pre-Gambit effects. To offer Terms, choose one eligible Proposal, confirm its Requirement, confirm enough available Influence for its Stake, lower available Influence by the Stake, then the opponent accepts or refuses. A Diplomat may normally offer one Proposal in a battle sequence. In a Diplomat mirror, the attacker has the first opportunity to offer Terms; if the attacker passes, the defender may offer. Once either player offers Terms, the other cannot offer Terms in that battle sequence even if the Proposal is refused."
     },
     {
       "id": "battle-accepted-terms",
