@@ -85,11 +85,25 @@
   background-position: left center;
   background-repeat: no-repeat;
   background-size: auto 100%;
-  /* Do not mask the wordmark. Chromium's screenshot renderer was dropping the
-     SVG when it was used as a CSS mask; direct image paint reliably renders
-     the left-hand stylized G and the 0.17in box clips the remaining letters. */
+  /* Browser preview fallback. The TTS renderer replaces this paint-only
+     fallback with a literal <img> and validates its rendered pixels before
+     allowing the screenshot to proceed. */
   -webkit-mask-image: none;
   mask-image: none;
+}
+
+.reference-card[data-component-id="universal-reference"] .reference-faction-emblem--image {
+  overflow: hidden;
+  background: none !important;
+  -webkit-mask: none !important;
+  mask: none !important;
+}
+
+.reference-card[data-component-id="universal-reference"] .reference-faction-emblem-image {
+  display: block;
+  width: auto;
+  max-width: none;
+  height: 100%;
 }
 
 .reference-card[data-component-id="universal-reference"] .reference-watermark {
