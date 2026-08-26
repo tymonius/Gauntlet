@@ -2,7 +2,7 @@ import { buildRulesCorpus } from './local-search.js';
 
 export const V070_RULES_VERSION = 'v0.7.0';
 export const V070_VERSION_LABEL = 'Gauntlet v0.7.0';
-export const V070_SOURCE_VERSION = 'v0.6.4-candidate';
+export const V070_SOURCE_VERSION = 'v0.7.0';
 export const V070_RULEBOOK_SOURCE_PATH = 'releases/v0.7.0/Gauntlet_v0.7.0_Rulebook.md';
 export const V070_CANONICAL_SOURCE_PATH = 'releases/v0.7.0/Gauntlet_v0.7.0_Canonical_Data.json';
 export const V070_MANIFEST_SOURCE_PATH = 'releases/v0.7.0/Gauntlet_v0.7.0_Manifest.json';
