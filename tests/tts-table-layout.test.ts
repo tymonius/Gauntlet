@@ -30,10 +30,10 @@ describe('authoritative TTS table layout', () => {
     }
     expect(text).toHaveLength(28);
 
-    const redHandSnap = buildTableSnapPoints().find(point => point.Position.x === 0 && point.Position.z === -18.25);
-    const blueHandSnap = buildTableSnapPoints().find(point => point.Position.x === 0 && point.Position.z === 18.25);
-    expect(redHandSnap?.Rotation.y).toBe(180);
-    expect(blueHandSnap?.Rotation.y).toBe(0);
+    const whiteHandSnap = buildTableSnapPoints().find(point => point.Position.x === 0 && point.Position.z === -18.25);
+    const greenHandSnap = buildTableSnapPoints().find(point => point.Position.x === 0 && point.Position.z === 18.25);
+    expect(whiteHandSnap?.Rotation.y).toBe(0);
+    expect(greenHandSnap?.Rotation.y).toBe(180);
   });
 
   it('keeps six visible Gauntlet slots plus two invisible Manifest Destiny extensions and sixteen landscape Deed snaps', () => {
@@ -55,13 +55,13 @@ describe('authoritative TTS table layout', () => {
   it('uses normal Faction Zone magnets without a second Deed-stack magnet system', () => {
     const snaps = buildTableSnapPoints();
     const faction = snaps.filter(point => point.Tags?.includes('gauntlet-faction-zone'));
-    const redFaction = faction.filter(point => point.Position.z < 0);
-    const blueFaction = faction.filter(point => point.Position.z > 0);
+    const whiteFaction = faction.filter(point => point.Position.z < 0);
+    const greenFaction = faction.filter(point => point.Position.z > 0);
 
-    expect(redFaction).toHaveLength(12);
-    expect(blueFaction).toHaveLength(12);
-    expect(redFaction.every(point => point.Rotation.y === 180)).toBe(true);
-    expect(blueFaction.every(point => point.Rotation.y === 0)).toBe(true);
+    expect(whiteFaction).toHaveLength(12);
+    expect(greenFaction).toHaveLength(12);
+    expect(whiteFaction.every(point => point.Rotation.y === 0)).toBe(true);
+    expect(greenFaction.every(point => point.Rotation.y === 180)).toBe(true);
   });
 
   it('draws the visible Hand parking rectangles and only the six primary Territory guides', () => {
@@ -76,20 +76,20 @@ describe('authoritative TTS table layout', () => {
     expect(territoryLines.filter(line => line.thickness === 0.105)).toHaveLength(6);
     expect(territoryLines.filter(line => line.thickness === 0.048)).toHaveLength(6);
 
-    const redHandLines = lines.filter(line => {
+    const whiteHandLines = lines.filter(line => {
       const zs = line.points3.map(point => point.z);
       const xs = line.points3.map(point => point.x);
       return Math.min(...xs) === -1.425 && Math.max(...xs) === 1.425
         && Math.min(...zs) === -20.25 && Math.max(...zs) === -16.25;
     });
-    const blueHandLines = lines.filter(line => {
+    const greenHandLines = lines.filter(line => {
       const zs = line.points3.map(point => point.z);
       const xs = line.points3.map(point => point.x);
       return Math.min(...xs) === -1.425 && Math.max(...xs) === 1.425
         && Math.min(...zs) === 16.25 && Math.max(...zs) === 20.25;
     });
-    expect(redHandLines).toHaveLength(2);
-    expect(blueHandLines).toHaveLength(2);
+    expect(whiteHandLines).toHaveLength(2);
+    expect(greenHandLines).toHaveLength(2);
   });
 
   it('uses one private Hand zone per player that contains both parking and Reserve space', () => {
