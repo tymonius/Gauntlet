@@ -2,8 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 import { resolveCurrentTtsRelease, ROOT } from '../scripts/tts-current-catalog.mjs';
 import {
-  STANDARD_CARD_LONG_EDGE,
-  TTS_STANDARD_CARD_WORLD_LONG_EDGE,
+  CARD_MATCHED_TRACKER_WORLD_LONG_EDGE,
   trackerPresentation,
 } from '../scripts/tts-supplemental-geometry.mjs';
 
@@ -259,6 +258,9 @@ function validateTerritoriesDeedsAndFactionEligibility(save, manifest) {
     if (!close(card.Transform?.scaleX, 1) || !close(card.Transform?.scaleY, 1) || !close(card.Transform?.scaleZ, 1)) {
       throw new Error(`Territory ${card.Nickname || card.GUID} has nonstandard physical scale.`);
     }
+    if (!String(card.LuaScript || '').includes('self.use_rotation_value_flip = true')) {
+      throw new Error(`Territory ${card.Nickname || card.GUID} is not configured to flip around the landscape-safe axis.`);
+    }
   }
 
   const deedRecord = (manifest.ready || []).find(record => record.family === 'deed-card');
@@ -319,9 +321,11 @@ function validateTrackers(save, manifest) {
     if (actual.length !== expected.snapPoints.length || actual.length !== authored.length || actual.some((point, index) => {
       const expectedPoint = expected.snapPoints[index];
       const authoredPoint = authored[index];
-      const expectedWorldTravel = (Number(authoredPoint.offset) / STANDARD_CARD_LONG_EDGE) * TTS_STANDARD_CARD_WORLD_LONG_EDGE;
+      const registrationFraction = Number(authoredPoint.registrationFraction);
+      const expectedWorldTravel = registrationFraction * CARD_MATCHED_TRACKER_WORLD_LONG_EDGE;
       const actualWorldTravel = Math.abs(Number(point.Position?.z)) * Number(object.Transform?.scaleZ);
-      return !close(point.Position?.x, expectedPoint.Position.x, 0.00001)
+      return !Number.isFinite(registrationFraction)
+        || !close(point.Position?.x, expectedPoint.Position.x, 0.00001)
         || !close(point.Position?.y, expectedPoint.Position.y, 0.00001)
         || !close(point.Position?.z, expectedPoint.Position.z, 0.00001)
         || !close(actualWorldTravel, expectedWorldTravel, 0.00001)
@@ -329,7 +333,7 @@ function validateTrackers(save, manifest) {
         || !Array.isArray(point.Tags)
         || point.Tags[0] !== expectedPoint.Tags[0];
     })) {
-      throw new Error(`Tracker ${id} snap geometry does not map each renderer value line to the same fraction of a real TTS card length.`);
+      throw new Error(`Tracker ${id} snap geometry does not place the cover bottom edge on each actual rendered registration line.`);
     }
     const lua = String(object.LuaScript || '');
     if (lua !== expected.luaScript || !lua.includes('setSnapPoints')
