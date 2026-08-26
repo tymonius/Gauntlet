@@ -50,6 +50,11 @@ function findSnap(save, x, z) {
   return (save.SnapPoints || []).find(point => close(point.Position?.x, x) && close(point.Position?.z, z));
 }
 
+function zoneContainsPoint(zone, x, z) {
+  return Math.abs(Number(x) - Number(zone?.posX)) <= Number(zone?.scaleX) / 2
+    && Math.abs(Number(z) - Number(zone?.posZ)) <= Number(zone?.scaleZ) / 2;
+}
+
 function validateEnvironment(save) {
   if (save.Table !== 'Table_Custom' || !String(save.TableURL || '').includes('campaign-map-table')) {
     throw new Error('Authoritative TTS save is not using the campaign-map custom table.');
@@ -60,8 +65,8 @@ function validateEnvironment(save) {
 }
 
 function validateTableWorkspace(save) {
-  if ((save.VectorLines || []).length !== 36) {
-    throw new Error(`Expected 36 visible table outline lines; found ${save.VectorLines?.length || 0}. Hand parking and Manifest Destiny guides must remain invisible.`);
+  if ((save.VectorLines || []).length !== 40) {
+    throw new Error(`Expected 40 visible table outline lines; found ${save.VectorLines?.length || 0}. Both visible Hand parking guides must remain present; only Manifest Destiny extensions are invisible.`);
   }
   if ((save.SnapPoints || []).length !== 78) throw new Error(`Expected 78 final table snaps; found ${save.SnapPoints?.length || 0}.`);
 
@@ -95,9 +100,14 @@ function validateTableWorkspace(save) {
   }
 
   const labels = (save.ObjectStates || []).filter(object => String(object?.GMNotes || '').startsWith('gauntlet:table-layout:'));
-  if (labels.length !== 24) throw new Error(`Expected 24 visible table-label objects; found ${labels.length}.`);
-  if (labels.some(object => /-hand:/u.test(String(object.GMNotes || '')) || object.Text?.Text === 'Hand')) {
-    throw new Error('The one-card Hand parking snap must not have a visible table guide or label.');
+  if (labels.length !== 28) throw new Error(`Expected 28 visible table-label objects; found ${labels.length}.`);
+  const handLabels = labels.filter(object => object.Text?.Text === 'Hand');
+  if (handLabels.length !== 4) throw new Error(`Expected visible Hand parking labels/shadows for both players; found ${handLabels.length}.`);
+  const redHandLabel = labels.find(object => object.GMNotes === 'gauntlet:table-layout:red-hand:label');
+  const blueHandLabel = labels.find(object => object.GMNotes === 'gauntlet:table-layout:blue-hand:label');
+  if (!redHandLabel || !close(redHandLabel.Transform?.posZ, -20.59, 0.01)
+    || !blueHandLabel || !close(blueHandLabel.Transform?.posZ, 20.59, 0.01)) {
+    throw new Error('Visible Hand parking labels are not in the expected player workspaces.');
   }
 }
 
@@ -110,13 +120,26 @@ function validateHandsAndSeats(save) {
   if (!red || !blue) throw new Error('Missing Red or Blue hand transform.');
 
   const expectedHands = [
-    [red, 'Red', -23, 0],
-    [blue, 'Blue', 23, 180],
+    [red, 'Red', -20.25, 0, -18.25],
+    [blue, 'Blue', 20.25, 180, 18.25],
   ];
-  for (const [hand, side, z, rotY] of expectedHands) {
-    if (!close(hand.Transform?.posZ, z) || !close(hand.Transform?.rotY, rotY)
-      || !close(hand.Transform?.scaleX, 7) || !close(hand.Transform?.scaleY, 2.5) || !close(hand.Transform?.scaleZ, 3)) {
-      throw new Error(`${side} hand transform does not match the canonical rear-edge hand geometry.`);
+  for (const [hand, side, z, rotY, parkingZ] of expectedHands) {
+    if (!close(hand.Transform?.posX, 0) || !close(hand.Transform?.posZ, z) || !close(hand.Transform?.rotY, rotY)
+      || !close(hand.Transform?.scaleX, 7) || !close(hand.Transform?.scaleY, 2) || !close(hand.Transform?.scaleZ, 8)) {
+      throw new Error(`${side} hand transform does not match the unified parking-plus-Reserve geometry.`);
+    }
+    if (!zoneContainsPoint(hand.Transform, 0, parkingZ)) {
+      throw new Error(`${side} visible Hand parking snap is not inside the same private Hand zone as the Reserve.`);
+    }
+  }
+
+  // The unified private zone must not swallow ordinary public workspaces.
+  for (const [hand, side, publicPoints] of [
+    [red, 'Red', [[-1.55, -13.55], [1.55, -13.55], [17.15, -17.75]]],
+    [blue, 'Blue', [[1.55, 13.55], [-1.55, 13.55], [-17.15, 17.75]]],
+  ]) {
+    if (publicPoints.some(([x, z]) => zoneContainsPoint(hand.Transform, x, z))) {
+      throw new Error(`${side} private Hand zone overlaps Draw, Discard, or Graveyard.`);
     }
   }
 
