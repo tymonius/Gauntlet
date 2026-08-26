@@ -14,13 +14,11 @@ const riteSymbols = Object.freeze({
   'mystics-rite-crossing': '✦',
 });
 
-// Reference components that need a literal image instead of the ordinary
-// faction-symbol mask declare that image here. The Universal Reference uses the
-// canonical Gauntlet wordmark itself and clips its left-hand G inside the
-// standard emblem slot. This keeps the generated pixels dependent on an actual
-// loaded <img>, not CSS masking/background behavior.
+// Components that use literal artwork in the emblem slot declare a dedicated
+// emblem asset here. Never crop a larger logo at render time: the asset itself
+// owns the emblem's composition.
 const referenceEmblemImages = Object.freeze({
-  'universal-reference': '/images/Gauntlet.svg',
+  'universal-reference': '/images/Gauntlet-G.svg',
 });
 
 function element(tag, className, text = '') {
@@ -164,35 +162,21 @@ function waitForImage(image, label) {
   });
 }
 
-function assertLeftCropHasPixels(image, label) {
+function assertImageHasPixels(image, label) {
   const canvas = document.createElement('canvas');
   canvas.width = 64;
   canvas.height = 64;
   const context = canvas.getContext('2d', { willReadFrequently: true });
   if (!context) throw new Error(`${label} could not create a pixel-validation canvas.`);
 
-  // The stylized G occupies the leftmost portion of the canonical wordmark.
-  // Validate that the exact source region being clipped into the emblem slot
-  // actually contains rendered pixels before the screenshot is declared ready.
-  const cropWidth = Math.max(1, image.naturalWidth * 0.25);
   context.clearRect(0, 0, canvas.width, canvas.height);
-  context.drawImage(
-    image,
-    0,
-    0,
-    cropWidth,
-    image.naturalHeight,
-    0,
-    0,
-    canvas.width,
-    canvas.height,
-  );
+  context.drawImage(image, 0, 0, canvas.width, canvas.height);
   const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
   let visiblePixels = 0;
   for (let index = 3; index < pixels.length; index += 4) {
     if (pixels[index] > 8) visiblePixels += 1;
   }
-  if (visiblePixels < 16) throw new Error(`${label} loaded but its clipped source region contains no visible emblem pixels.`);
+  if (visiblePixels < 16) throw new Error(`${label} loaded but contains no visible emblem pixels.`);
 }
 
 async function materializeReferenceEmblem(card, record) {
@@ -212,12 +196,12 @@ async function materializeReferenceEmblem(card, record) {
   slot.append(image);
 
   await waitForImage(image, `${record.id} emblem`);
-  assertLeftCropHasPixels(image, `${record.id} emblem`);
+  assertImageHasPixels(image, `${record.id} emblem`);
 
   const slotRect = slot.getBoundingClientRect();
   const imageRect = image.getBoundingClientRect();
-  if (!(slotRect.width > 0 && slotRect.height > 0 && imageRect.width > slotRect.width && imageRect.height > 0)) {
-    throw new Error(`Reference card ${record.id} emblem image does not occupy the clipped emblem slot.`);
+  if (!(slotRect.width > 0 && slotRect.height > 0 && imageRect.width > 0 && imageRect.height > 0)) {
+    throw new Error(`Reference card ${record.id} emblem image has no rendered geometry.`);
   }
 }
 
