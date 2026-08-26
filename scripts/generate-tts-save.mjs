@@ -13,18 +13,6 @@ const FACTION_COLORS = Object.freeze({
   inquisition: { r: 0.651, g: 0.478, b: 0.153 },
 });
 
-const LANDSCAPE_CARD_FLIP_SCRIPT = [
-  '-- Territory cards rotate around Y to show control. Intercept only a player',
-  '-- flip and apply a relative 180-degree X rotation so successive flips use',
-  '-- the same physical axis instead of accumulating Euler-axis changes.',
-  'function tryRotate(spin, flip, player_color, old_spin, old_flip)',
-  '  if flip ~= old_flip then',
-  '    self.rotate({x = 180, y = 0, z = 0})',
-  '    return false',
-  '  end',
-  '  return true',
-  'end',
-].join('\n');
 
 function jsonText(value) {
   return `${JSON.stringify(value, null, 2)}\n`;
@@ -236,7 +224,6 @@ function buildStarterKit(starter, releaseAssets, kitTransform, guid) {
       sideways: true,
       guid: guid(),
     });
-    card.LuaScript = LANDSCAPE_CARD_FLIP_SCRIPT;
     return card;
   });
 
