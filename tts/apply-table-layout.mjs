@@ -128,7 +128,7 @@ const PLAYER_ZONES = Object.freeze([
 // physical tabletop objects while concealed from the opponent.
 const HAND_RESERVE_EXTENSION = 4.0;
 const HAND_RESERVE_GAP = 1.0;
-const HAND_ZONE_WIDTH = 7.0;
+const HAND_ZONE_WIDTH = 12.0;
 const HAND_ZONE_HEIGHT = 6.0;
 const PARKING_ZONE_WIDTH = 7.0;
 const PARKING_ZONE_HEIGHT = 6.0;
