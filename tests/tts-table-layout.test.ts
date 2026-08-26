@@ -53,6 +53,22 @@ describe('authoritative TTS table layout', () => {
     expect(snaps.filter(point => point.Tags?.includes('gauntlet-deed-stack'))).toHaveLength(0);
   });
 
+  it('shrinks Leader & References around the tested snap row without moving the snaps', () => {
+    const snaps = buildTableSnapPoints();
+    const whiteLeaderSnaps = snaps.filter(point =>
+      point.Position.z === -16.45 && [-16.3, -13.6, -10.9, -8.2].includes(point.Position.x));
+    expect(whiteLeaderSnaps).toHaveLength(4);
+
+    const lines = buildTableVectorLines();
+    const whiteLeaderLines = lines.filter(line => {
+      const xs = line.points3.map(point => point.x);
+      const zs = line.points3.map(point => point.z);
+      return Math.min(...xs) === -17.8 && Math.max(...xs) === -6.7
+        && Math.min(...zs) === -18.95 && Math.max(...zs) === -13.95;
+    });
+    expect(whiteLeaderLines).toHaveLength(2);
+  });
+
   it('uses normal Faction Zone magnets without a second Deed-stack magnet system', () => {
     const snaps = buildTableSnapPoints();
     const faction = snaps.filter(point => point.Tags?.includes('gauntlet-faction-zone'));
@@ -99,10 +115,10 @@ describe('authoritative TTS table layout', () => {
     const whiteParking = parkingHiddenZoneTransform('White');
     const greenParking = parkingHiddenZoneTransform('Green');
 
-    expect(white).toMatchObject({ posX: 0, posY: 4, posZ: -22.5, rotY: 0, scaleX: 7, scaleY: 6, scaleZ: 4 });
-    expect(green).toMatchObject({ posX: 0, posY: 4, posZ: 22.5, rotY: 180, scaleX: 7, scaleY: 6, scaleZ: 4 });
-    expect(whiteParking).toMatchObject({ posX: 0, posY: 2.5, posZ: -18.25, scaleX: 2.85, scaleY: 5, scaleZ: 4 });
-    expect(greenParking).toMatchObject({ posX: 0, posY: 2.5, posZ: 18.25, scaleX: 2.85, scaleY: 5, scaleZ: 4 });
+    expect(white).toMatchObject({ posX: 0, posY: 4, posZ: -23.25, rotY: 0, scaleX: 7, scaleY: 6, scaleZ: 4 });
+    expect(green).toMatchObject({ posX: 0, posY: 4, posZ: 23.25, rotY: 180, scaleX: 7, scaleY: 6, scaleZ: 4 });
+    expect(whiteParking).toMatchObject({ posX: 0, posY: 3, posZ: -19, scaleX: 7, scaleY: 6, scaleZ: 6.5 });
+    expect(greenParking).toMatchObject({ posX: 0, posY: 3, posZ: 19, scaleX: 7, scaleY: 6, scaleZ: 6.5 });
 
     // Parking is deliberately outside the actual Hand zone, so a card placed
     // on the tabletop stays parked instead of being swallowed back into Reserve.
@@ -110,6 +126,10 @@ describe('authoritative TTS table layout', () => {
     expect(zoneContainsPoint(green, 0, 18.25)).toBe(false);
     expect(zoneContainsPoint(whiteParking, 0, -18.25)).toBe(true);
     expect(zoneContainsPoint(greenParking, 0, 18.25)).toBe(true);
+    // Hidden parking deliberately overlaps the inward edge of Reserve so a card
+    // never becomes public while crossing between the two private areas.
+    expect(zoneContainsPoint(whiteParking, 0, -21.25)).toBe(true);
+    expect(zoneContainsPoint(greenParking, 0, 21.25)).toBe(true);
 
     // Draw/Discard and Graveyard remain ordinary public table workspaces.
     expect(zoneContainsPoint(white, -1.55, -13.55)).toBe(false);
@@ -132,6 +152,7 @@ describe('authoritative TTS table layout', () => {
           ContainedObjects: [
             { Name: 'CardCustom', GUID: 'card', Hands: false },
             { Name: 'DeckCustom', GUID: 'deck', Hands: false, ContainedObjects: [{ Name: 'CardCustom', GUID: 'inside', Hands: false }] },
+            { Name: 'Custom_Tile', GUID: 'tracker', LuaScript: 'local gauntletTrackerRegistrations = {}', Tags: ['tracker-specific'] },
           ],
         },
       ],
@@ -170,6 +191,9 @@ describe('authoritative TTS table layout', () => {
     const starter = save.ObjectStates.find((object: any) => object.GUID === 'starter');
     const handEligible = [starter.ContainedObjects[0], starter.ContainedObjects[1], starter.ContainedObjects[1].ContainedObjects[0]];
     expect(handEligible.every((object: any) => object.Hands === true)).toBe(true);
+    const tracker = starter.ContainedObjects.find((object: any) => object.GUID === 'tracker');
+    expect(tracker.Tags).toContain('tracker-specific');
+    expect(tracker.Tags).toContain('gauntlet-faction-zone');
   });
 
   it('removes the obsolete generated seat-camera script when reapplying the layout', () => {
@@ -207,7 +231,7 @@ describe('authoritative TTS table layout', () => {
     const territory = save.ObjectStates.find((object: any) => object.GUID === 'starter').ContainedObjects[0];
     expect(territory.CustomDeck).toEqual(originalCustomDeck);
     expect(territory.SidewaysCard).toBe(true);
-    expect(territory.Transform.rotY).toBe(0);
+    expect(territory.Transform.rotY).toBe(180);
     expect(String(territory.LuaScript || '')).toContain('function tryRotate(spin, flip, player_color, old_spin, old_flip)');
     expect(String(territory.LuaScript || '')).toContain('self.setRotationSmooth({x = flip, y = spin, z = 0}, false, false)');
     expect(String(territory.LuaScript || '')).not.toContain('use_rotation_value_flip');
