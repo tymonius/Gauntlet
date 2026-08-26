@@ -111,7 +111,7 @@ describe('authoritative TTS table layout', () => {
     expect(zoneContainsPoint(blue, -17.15, 17.75)).toBe(false);
   });
 
-  it('serializes only those two canonical Hand zones and aligns them with the seat cameras', () => {
+  it('serializes exactly two functional HandTrigger zones and does not commandeer the camera', () => {
     const save: any = {
       ObjectStates: [
         { Name: 'HandTrigger', GUID: 'legacy-hand' },
@@ -127,7 +127,7 @@ describe('authoritative TTS table layout', () => {
       ],
       Note: 'base note',
       Rules: 'base rules',
-      LuaScript: '',
+      LuaScript: '-- unrelated global script',
       Turns: { TurnColor: 'Blue' },
     };
 
@@ -139,18 +139,38 @@ describe('authoritative TTS table layout', () => {
     const red = save.Hands.HandTransforms.find((hand: any) => hand.Color === 'Red');
     const blue = save.Hands.HandTransforms.find((hand: any) => hand.Color === 'Blue');
     expect(save.Hands.DisableUnused).toBe(false);
+    expect(save.Hands.Hiding).toBe(0);
     expect(red.Transform).toEqual(handZoneTransform('Red'));
     expect(blue.Transform).toEqual(handZoneTransform('Blue'));
 
-    expect(save.ObjectStates.filter((object: any) => object.Name === 'HandTrigger')).toHaveLength(0);
+    const handTriggers = save.ObjectStates.filter((object: any) => object.Name === 'HandTrigger');
+    expect(handTriggers).toHaveLength(2);
+    expect(handTriggers.map((object: any) => object.Nickname).sort()).toEqual(['Blue Hand', 'Red Hand']);
+    expect(handTriggers.find((object: any) => object.Nickname === 'Red Hand')?.Transform).toEqual(handZoneTransform('Red'));
+    expect(handTriggers.find((object: any) => object.Nickname === 'Blue Hand')?.Transform).toEqual(handZoneTransform('Blue'));
     expect(save.ObjectStates.filter((object: any) => object.Name === 'FogOfWarTrigger')).toHaveLength(0);
     expect(save.Note).toContain('one canonical private TTS Hand zone');
-    expect(save.LuaScript).toContain('pitch = 55, yaw = 0, distance = 38');
-    expect(save.LuaScript).toContain('pitch = 55, yaw = 180, distance = 38');
+    expect(save.LuaScript).toBe('-- unrelated global script');
+    expect(save.LuaScript).not.toContain('gauntletSeatCamera');
 
     const starter = save.ObjectStates.find((object: any) => object.GUID === 'starter');
     const handEligible = [starter.ContainedObjects[0], starter.ContainedObjects[1], starter.ContainedObjects[1].ContainedObjects[0]];
     expect(handEligible.every((object: any) => object.Hands === true)).toBe(true);
+  });
+
+  it('removes the obsolete generated seat-camera script when reapplying the layout', () => {
+    const save: any = {
+      ObjectStates: [],
+      Note: '',
+      Rules: '',
+      LuaScript: 'function gauntletSeatCamera(color)\nend',
+      LuaScriptState: 'old camera state',
+      Turns: {},
+    };
+
+    applyTableLayout(save);
+    expect(save.LuaScript).toBe('');
+    expect(save.LuaScriptState).toBe('');
   });
 
   it('changes Territory flip behavior without altering its cardback data', () => {
@@ -174,6 +194,6 @@ describe('authoritative TTS table layout', () => {
     expect(territory.CustomDeck).toEqual(originalCustomDeck);
     expect(territory.SidewaysCard).toBe(true);
     expect(territory.Transform.rotY).toBe(90);
-    expect(territory.LuaScript).toContain('self.use_rotation_value_flip = true');
+    expect(territory.LuaScript).toContain('self.use_rotation_value_flip = false');
   });
 });
