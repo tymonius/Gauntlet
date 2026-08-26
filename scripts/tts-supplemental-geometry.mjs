@@ -2,19 +2,14 @@ const SNAP_Y = 0.12;
 
 export const STANDARD_CARD_SHORT_EDGE = 2.5;
 export const STANDARD_CARD_LONG_EDGE = 3.5;
-export const TRACKER_RENDER_PX_PER_IN = 96;
 
-// Compatibility aliases used by the existing validator. They intentionally
-// collapse to the authored 3.5-unit card length; snapping itself does not use
-// these values or normalize registrations over the full card.
-export const TTS_STANDARD_CARD_WORLD_LONG_EDGE = STANDARD_CARD_LONG_EDGE;
-
-// Tabletop Simulator's Custom_Tile and CardCustom objects use different native
-// tabletop footprints. The tracker tile is scaled to match a normal card; snap
-// coordinates are therefore divided by the same object scale so their world
-// travel remains exactly the renderer-measured physical distance.
+// Representation geometry only. The card-matched Custom_Tile is deliberately
+// scaled to the same tabletop footprint as a normal TTS card. Registration
+// spacing does NOT come from this number; every snap fraction comes directly
+// from the actual rendered line on the tracker face.
+export const CARD_MATCHED_TRACKER_WORLD_LONG_EDGE = 3.06;
 export const CUSTOM_TILE_CARD_LINEAR_SCALE = 1.5;
-export const TRACKER_LOCAL_LONG_EDGE = STANDARD_CARD_LONG_EDGE / CUSTOM_TILE_CARD_LINEAR_SCALE;
+export const TRACKER_LOCAL_LONG_EDGE = CARD_MATCHED_TRACKER_WORLD_LONG_EDGE / CUSTOM_TILE_CARD_LINEAR_SCALE;
 export const ROUNDED_RECTANGLE_TILE_TYPE = 3;
 
 function vector(x = 0, y = 0, z = 0) {
@@ -38,24 +33,25 @@ export function makeTrackerSnapPoints(component) {
   if (!tag || !Array.isArray(points) || points.length < 2) {
     throw new Error(`Sliding tracker ${component.id} cannot register snaps without a snap tag and renderer-derived positions.`);
   }
-  if (Number(points[0]?.value) !== 0 || Number(points[0]?.rendererTravelPx) !== 0) {
+  if (Number(points[0]?.value) !== 0 || Number(points[0]?.registrationFraction) !== 0) {
     throw new Error(`Sliding tracker ${component.id} must begin with the fully covered value-0 renderer registration.`);
   }
 
   let previous = -Infinity;
   return points.map(point => {
-    const rendererTravelPx = Number(point.rendererTravelPx);
-    if (!Number.isFinite(rendererTravelPx) || rendererTravelPx < 0 || rendererTravelPx < previous) {
-      throw new Error(`Sliding tracker ${component.id} has invalid renderer travel ${point.rendererTravelPx}.`);
+    const registrationFraction = Number(point.registrationFraction);
+    if (!Number.isFinite(registrationFraction)
+      || registrationFraction < 0
+      || registrationFraction >= 1
+      || registrationFraction < previous) {
+      throw new Error(`Sliding tracker ${component.id} has invalid renderer line fraction ${point.registrationFraction}.`);
     }
-    previous = rendererTravelPx;
+    previous = registrationFraction;
 
-    // The renderer measured the exact distance from the card bottom to this
-    // registration line. Convert only pixels -> authored physical distance,
-    // then account for the Custom_Tile object scale. There is deliberately no
-    // value/max spacing and no normalization over the tracker's full height.
-    const physicalTravel = rendererTravelPx / TRACKER_RENDER_PX_PER_IN;
-    const localZ = -(physicalTravel / CUSTOM_TILE_CARD_LINEAR_SCALE);
+    // The cover card begins centered on the tracker at value 0. Moving that
+    // center by the exact bottom-to-line fraction moves the cover's bottom edge
+    // by the same fraction, landing it on the printed registration line.
+    const localZ = -(registrationFraction * TRACKER_LOCAL_LONG_EDGE);
     return {
       Position: vector(0, SNAP_Y, Number(localZ.toFixed(6))),
       Rotation: vector(0, 0, 0),
