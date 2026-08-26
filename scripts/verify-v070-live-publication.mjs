@@ -128,7 +128,7 @@ for (const key of ['website', 'rulebook', 'browser_tools', 'rules_arbiter', 'dig
 }
 if (
   provenance.release_version !== 'v0.7.0'
-  || provenance.source_version !== 'v0.6.4-candidate'
+  || provenance.source_version !== 'v0.7.0'
   || provenance.authority_set_id !== manifest.authority_set_id
   || provenance.current_game_authority !== 'game-data/current-game.json'
   || provenance.current_rulebook_authority !== 'rulebook/player-facing/current-rulebook.md'
@@ -137,7 +137,7 @@ if (
 }
 if (
   canonical.release_version !== 'v0.7.0'
-  || canonical.source_version !== 'v0.6.4-candidate'
+  || canonical.source_version !== 'v0.7.0'
   || canonical.gameplay?.cards?.length !== 142
   || canonical.gameplay?.territories?.length !== 25
   || canonical.gameplay?.factions?.length !== 6
