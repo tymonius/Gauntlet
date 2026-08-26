@@ -61,7 +61,7 @@ The current generated package contains:
 - 12 starter Bags;
 - 27 ready faction supplemental component definitions;
 - 68 supplemental object copies assembled across the starter Bags; and
-- 73 staged network assets.
+- 75 staged network assets.
 
 Those counts are observations from the current generated manifests, not constants embedded in the runtime.
 
@@ -215,7 +215,7 @@ The committed record remains pending. `npm run tts:save:promote` refuses to crea
 
 `scripts/stage-tts-release-assets.mjs` copies only network assets required by TTS into `tts/generated/release-assets/`, assigns deterministic `Gauntlet_v0.7.0_TTS_*` names, records byte sizes and SHA-256 digests, and generates public GitHub Release download URLs.
 
-The current package stages 73 network assets under the v0.7.0 target. Generated TTS saves reference those staged HTTPS URLs rather than local paths.
+The current package stages 75 network assets under the v0.7.0 target, including the custom campaign-table image and command-tent panorama. Generated TTS saves reference those staged HTTPS release URLs rather than local paths or raw branch URLs.
 
 Publication remains explicit. The **Generate TTS card assets** workflow can be dispatched from `main` with `publish_release_assets` enabled only after the matching GitHub Release exists. The workflow uploads the deterministic assets without moving the release tag and then verifies every published URL with live HTTP requests.
 
