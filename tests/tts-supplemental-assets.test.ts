@@ -139,17 +139,17 @@ describe('TTS supplemental component exports', () => {
     expect(readyTrackers.every((component: any) => component.cover?.kind)).toBe(true);
   });
 
-  it('derives TTS snap travel from the rendered registration lines instead of faction-specific coordinates', () => {
+  it('derives TTS snap travel from the actual rendered registration lines', () => {
     expect(generator).toContain('captureProductionTracker');
     expect(trackerHelper).toContain(".tracker-registration-line");
-    expect(trackerHelper).toContain('travelFraction: (rect.bottom - lineRect.top) / rect.height');
-    expect(trackerHelper).toContain('travelFraction * PHYSICAL_CARD_HEIGHT');
-    expect(trackerHelper).toContain('{ value: 0, offset: 0 }');
-    expect(trackerHelper).toContain('registration offsets are not strictly increasing');
-    expect(trackerHelper).not.toMatch(/command[^\n]*offset|influence[^\n]*offset|capital[^\n]*offset|intel[^\n]*offset|conviction[^\n]*offset/i);
-    expect(geometry).toContain('CUSTOM_TILE_CARD_LINEAR_SCALE');
-    expect(geometry).toContain('physicalTravel / CUSTOM_TILE_CARD_LINEAR_SCALE');
-    expect(geometry).not.toMatch(/command[^\n]*offset|influence[^\n]*offset|capital[^\n]*offset|intel[^\n]*offset|conviction[^\n]*offset/i);
+    expect(trackerHelper).toContain('registrationFraction: rendererTravelPx / rect.height');
+    expect(trackerHelper).toContain('{ value: 0, rendererTravelPx: 0, registrationFraction: 0 }');
+    expect(trackerHelper).toContain('registration lines are not strictly increasing from the covered position');
+    expect(trackerHelper).not.toContain('value / max');
+    expect(trackerHelper).not.toContain('PHYSICAL_CARD_HEIGHT /');
+    expect(geometry).toContain('registrationFraction * TRACKER_LOCAL_LONG_EDGE');
+    expect(geometry).not.toContain('rendererTravelPx /');
+    expect(geometry).not.toContain('physicalTravel');
   });
 
   it('declares the nested Intelligence cover chain and distinct tracker layers', () => {

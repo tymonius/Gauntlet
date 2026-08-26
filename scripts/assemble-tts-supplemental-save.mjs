@@ -64,9 +64,6 @@ function makeSupplementalCard(component, releaseAssets, guid) {
     component.tts.numHeight || 1,
   );
   const sideways = component.tts?.sidewaysCard === true;
-  // Landscape Deeds are normalized into ordinary portrait TTS image cells.
-  // SidewaysCard supplies the physical landscape footprint while the card's
-  // free tabletop transform remains 0; tagged table snaps own its parked angle.
   const tabletopRotation = component.family === 'deed-card' ? 0 : (sideways ? 90 : 0);
   const tags = component.family === 'deed-card'
     ? [DEED_TAG, FACTION_ZONE_TAG]
@@ -93,8 +90,6 @@ function makeSupplementalCard(component, releaseAssets, guid) {
     GUID: guid(),
     CardID: Number(component.tts.cardId),
     SidewaysCard: sideways,
-    // Deeds must use their dedicated battlefield slots and also remain legal
-    // Faction Zone cards; TTS tag matching permits both without changing size.
     Tags: tags,
     CustomDeck: { [deckId]: state },
   };
@@ -195,7 +190,11 @@ const FAMILY_STACKS = Object.freeze([
     predicate: object => object?.Name === 'CardCustom' && /· proposal-treaty-card$/u.test(String(object.Description || '')),
   },
   {
-    key: 'deeds', nickname: 'Deeds', description: 'Financier Deed cards', expectedCount: 8, stackRotation: 90, sidewaysCard: true, tags: [DEED_STACK_TAG],
+    key: 'deeds', nickname: 'Deeds', description: 'Financier Deed cards', expectedCount: 8, stackRotation: 90, sidewaysCard: true,
+    // The assembled Deed deck is still semantically identifiable as a Deed
+    // stack, but functionally it uses the same Faction Zone magnets as every
+    // other public faction card. There is no second Deed-stack snap system.
+    tags: [DEED_STACK_TAG, FACTION_ZONE_TAG],
     predicate: object => object?.Name === 'CardCustom' && /· deed-card$/u.test(String(object.Description || '')),
   },
   {
@@ -258,80 +257,109 @@ function removeGeneratedTrackerTags(object, generatedTags) {
   if (!object.Tags.length) delete object.Tags;
 }
 
-function resolveTrackerCover(bag, starter, tracker) {
-  const cover = tracker.cover;
-  if (cover?.kind === 'leader') {
-    const leaderCardId = Number(starter.leader?.tts?.cardId);
-    const matches = (bag.ContainedObjects || []).filter(object => object?.Name === 'CardCustom' && Number(object.CardID) === leaderCardId);
-    if (matches.length !== 1) throw new Error(`Tracker ${tracker.id} expected exactly one selected Leader cover in starter ${starter.id}; found ${matches.length}.`);
-    return matches[0];
-  }
-  if (cover?.kind === 'component') {
-    const marker = `${SUPPLEMENTAL_GUID_NOTE_PREFIX}${cover.componentId}`;
-    const matches = (bag.ContainedObjects || []).filter(object => object?.GMNotes === marker);
-    if (matches.length !== 1) throw new Error(`Tracker ${tracker.id} expected exactly one supplemental cover ${cover.componentId} in starter ${starter.id}; found ${matches.length}.`);
-    return matches[0];
-  }
-  throw new Error(`Tracker ${tracker.id} has unsupported cover definition ${JSON.stringify(cover || null)}.`);
+function findLeaderObject(bag, starter) {
+  const matches = (bag.ContainedObjects || []).filter(object => object?.Name === 'CardCustom' && object?.Nickname === starter.leader.name);
+  if (matches.length !== 1) throw new Error(`Starter ${starter.id} expected exactly one Leader card ${JSON.stringify(starter.leader.name)}; found ${matches.length}.`);
+  return matches[0];
 }
 
-function markSupplementalsAsAssembled(save) {
-  for (const field of ['Note', 'Rules']) {
-    const text = String(save[field] || '');
-    if (text.includes(ASSEMBLED_SUPPLEMENTAL_NOTE)) continue;
-    if (!text.includes(PENDING_SUPPLEMENTAL_NOTE)) {
-      throw new Error(`TTS save ${field} does not contain the expected pre-assembly supplemental instruction.`);
+function findSupplementalObject(bag, componentId) {
+  const note = `${SUPPLEMENTAL_GUID_NOTE_PREFIX}${componentId}`;
+  let match = null;
+  const visit = objects => {
+    for (const object of objects || []) {
+      if (object?.GMNotes === note) {
+        if (match) throw new Error(`Starter bag contains duplicate supplemental object ${componentId}.`);
+        match = object;
+      }
+      visit(object?.ContainedObjects);
     }
-    save[field] = text.replace(PENDING_SUPPLEMENTAL_NOTE, ASSEMBLED_SUPPLEMENTAL_NOTE);
+  };
+  visit(bag.ContainedObjects);
+  if (!match) throw new Error(`Starter bag is missing supplemental object ${componentId}.`);
+  return match;
+}
+
+function resolveTrackerCover(bag, starter, tracker) {
+  if (tracker.cover?.kind === 'leader') return findLeaderObject(bag, starter);
+  if (tracker.cover?.kind === 'component' && tracker.cover.componentId) return findSupplementalObject(bag, tracker.cover.componentId);
+  throw new Error(`Sliding tracker ${tracker.id} has unsupported cover declaration ${JSON.stringify(tracker.cover || null)}.`);
+}
+
+function wireTrackerCovers(bag, starter, trackers, generatedTags) {
+  for (const tracker of trackers) {
+    const tag = String(tracker.tts?.snapTag || '').trim();
+    if (!tag) throw new Error(`Sliding tracker ${tracker.id} has no snap tag.`);
+    generatedTags.add(tag);
+    addObjectTag(resolveTrackerCover(bag, starter, tracker), tag);
   }
+}
+
+function cleanPriorAssembly(save, generatedTags) {
+  const visit = objects => {
+    for (const object of objects || []) {
+      if (object?.Name === 'Bag') {
+        const flattened = [];
+        for (const child of object.ContainedObjects || []) {
+          if (String(child?.GMNotes || '').startsWith(SUPPLEMENTAL_STACK_NOTE_PREFIX)) {
+            flattened.push(...(child.ContainedObjects || []));
+          } else if (!String(child?.GMNotes || '').startsWith(SUPPLEMENTAL_GUID_NOTE_PREFIX)) {
+            flattened.push(child);
+          }
+        }
+        object.ContainedObjects = flattened;
+      }
+      removeGeneratedTrackerTags(object, generatedTags);
+      visit(object?.ContainedObjects);
+    }
+  };
+  visit(save.ObjectStates || []);
 }
 
 export function assembleReadySupplementals(save, starterManifest, supplementalManifest, releaseAssets) {
   const version = String(starterManifest?.gameVersion || '').trim();
-  if (!version) throw new Error('Starter manifest does not declare gameVersion.');
-  if (releaseAssets?.gameVersion !== version || releaseAssets?.releaseTag !== version) throw new Error(`Hosted TTS release assets do not match starter manifest ${version}.`);
-
+  if (!version || supplementalManifest?.gameVersion !== version || releaseAssets?.gameVersion !== version) {
+    throw new Error('TTS supplemental assembly requires matching starter, supplemental, and hosted-asset versions.');
+  }
   const ready = validateSupplementalManifest(supplementalManifest, version);
-  const starters = starterManifest.decks || [];
-  if (!starters.length) throw new Error('Starter manifest contains no starter decks.');
+  const trackerTags = new Set(ready.filter(component => component.representation === 'sliding-tracker').map(component => component.tts?.snapTag).filter(Boolean));
+  cleanPriorAssembly(save, trackerTags);
+
   const guid = makeContinuationGuidFactory(save);
-  let placedCount = 0;
-  const stackCounts = { proposals: 0, deeds: 0, 'rites-rituals': 0 };
-
-  for (const starter of starters) {
+  const assembledIds = new Set();
+  const starterSummaries = [];
+  for (const starter of starterManifest.decks || []) {
     const bag = findStarterBag(save, starter);
-    const starterComponents = ready.filter(component => component.deckInclusion === 'every-deck' || component.faction === starter.factionId);
-    const factionTrackers = starterComponents.filter(component => component.representation === 'sliding-tracker');
-    const generatedTrackerTags = new Set(factionTrackers.map(component => component.tts?.snapTag).filter(Boolean));
+    const applicable = ready.filter(component => component.deckInclusion === 'every-deck' || component.faction === starter.factionId);
+    const trackers = applicable.filter(component => component.representation === 'sliding-tracker');
+    const looseObjects = applicable.map(component => makeSupplementalObject(component, starter, releaseAssets, guid));
+    bag.ContainedObjects ||= [];
+    bag.ContainedObjects.push(...looseObjects);
+    wireTrackerCovers(bag, starter, trackers, trackerTags);
+    const stackedFamilies = stackStarterFamilies(bag, guid);
+    for (const component of applicable) assembledIds.add(component.id);
 
-    bag.ContainedObjects = (bag.ContainedObjects || []).filter(object => !String(object?.GMNotes || '').startsWith(SUPPLEMENTAL_GUID_NOTE_PREFIX) && !String(object?.GMNotes || '').startsWith(SUPPLEMENTAL_STACK_NOTE_PREFIX));
-    for (const object of bag.ContainedObjects || []) removeGeneratedTrackerTags(object, generatedTrackerTags);
-
-    const placedNames = [];
-    for (const component of starterComponents) {
-      const quantity = Number(component.quantity || 0);
-      if (!Number.isInteger(quantity) || quantity <= 0) throw new Error(`Ready supplemental component ${component.id} has invalid quantity ${component.quantity}.`);
-      for (let copy = 0; copy < quantity; copy += 1) {
-        bag.ContainedObjects.push(makeSupplementalObject(component, starter, releaseAssets, guid));
-        placedCount += 1;
-      }
-      placedNames.push(quantity === 1 ? component.name : `${component.name} ×${quantity}`);
-    }
-
-    for (const tracker of factionTrackers) addObjectTag(resolveTrackerCover(bag, starter, tracker), tracker.tts.snapTag);
-    for (const key of stackStarterFamilies(bag, guid)) stackCounts[key] += 1;
-
+    const names = applicable.map(component => component.name || component.id);
     const baseDescription = stripSupplementalDescription(bag.Description);
-    bag.Description = placedNames.length ? `${baseDescription}\n\nReady supplemental components: ${placedNames.join(', ')}` : baseDescription;
+    bag.Description = `${baseDescription}\n\nReady faction supplementals: ${names.join(', ')}`;
+    starterSummaries.push({ starterId: starter.id, supplementalIds: applicable.map(component => component.id), stackedFamilies });
   }
 
-  markSupplementalsAsAssembled(save);
-  return { save, placedCount, readyComponentCount: ready.length, stackCounts };
+  const missingReadyIds = ready.filter(component => !assembledIds.has(component.id)).map(component => component.id);
+  if (missingReadyIds.length) throw new Error(`Ready supplemental components were not assembled into any starter kit: ${missingReadyIds.join(', ')}.`);
+
+  for (const field of ['Note', 'Rules']) {
+    const existing = String(save[field] || '');
+    save[field] = existing.includes(PENDING_SUPPLEMENTAL_NOTE)
+      ? existing.replace(PENDING_SUPPLEMENTAL_NOTE, ASSEMBLED_SUPPLEMENTAL_NOTE)
+      : `${existing.trim()}\n\n${ASSEMBLED_SUPPLEMENTAL_NOTE}`.trim();
+  }
+  return { save, starterSummaries, assembledIds: [...assembledIds] };
 }
 
 async function readReleaseAssetManifest(version) {
   const names = await readdir(STAGING_ROOT).catch(error => {
-    if (error.code === 'ENOENT') throw new Error('TTS supplemental save assembly requires staged hosted assets. Run npm run tts:release:stage first.');
+    if (error.code === 'ENOENT') throw new Error('TTS supplemental assembly requires staged hosted assets. Run npm run tts:release:stage first.');
     throw error;
   });
   const candidates = names.filter(name => /^Gauntlet_.*_TTS_Release_Assets\.json$/i.test(name));
@@ -345,32 +373,22 @@ async function main() {
   const checkOnly = process.argv.includes('--check');
   const release = await resolveCurrentTtsRelease();
   if (checkOnly) {
-    console.log(`Current TTS supplemental save assembler source check passed for ${release.version}.`);
+    console.log(`Current TTS supplemental save assembly source check passed for ${release.version}.`);
     return;
   }
-
-  const starterManifest = JSON.parse(await readFile(join(release.outputRoot, 'starter-deck-manifest.json'), 'utf8').catch(error => {
-    if (error.code === 'ENOENT') throw new Error('TTS supplemental save assembly requires the current starter manifest. Run npm run tts:build first.');
-    throw error;
-  }));
-  const supplementalManifest = JSON.parse(await readFile(join(release.outputRoot, 'supplemental-manifest.json'), 'utf8').catch(error => {
-    if (error.code === 'ENOENT') throw new Error('TTS supplemental save assembly requires the supplemental manifest. Run npm run tts:supplementals first.');
-    throw error;
-  }));
-  const releaseAssets = await readReleaseAssetManifest(release.version);
   const versionedName = `Gauntlet_${release.version}_TTS_Review_Scaffold.json`;
   const versionedPath = join(release.outputRoot, versionedName);
-  const save = JSON.parse(await readFile(versionedPath, 'utf8').catch(error => {
-    if (error.code === 'ENOENT') throw new Error('TTS supplemental save assembly requires the generated review scaffold. Run npm run tts:save first.');
-    throw error;
-  }));
-
+  const [save, starterManifest, supplementalManifest, releaseAssets] = await Promise.all([
+    readFile(versionedPath, 'utf8').then(JSON.parse),
+    readFile(join(release.outputRoot, 'starter-deck-manifest.json'), 'utf8').then(JSON.parse),
+    readFile(join(release.outputRoot, 'supplemental-manifest.json'), 'utf8').then(JSON.parse),
+    readReleaseAssetManifest(release.version),
+  ]);
   const result = assembleReadySupplementals(save, starterManifest, supplementalManifest, releaseAssets);
-  const aliasPath = join(CURRENT_ALIAS_ROOT, 'Gauntlet_TTS_Review_Scaffold.json');
-  await writeFile(versionedPath, jsonText(result.save));
-  await writeFile(aliasPath, jsonText(result.save));
-  console.log(`Assembled ${result.placedCount} ready supplemental objects from ${result.readyComponentCount} component definitions into ${relative(ROOT, versionedPath)}; stacks=${JSON.stringify(result.stackCounts)}.`);
-  console.log(`Hosted supplemental assets are resolved from ${basename(releaseAssets.sourceOutput || STAGING_ROOT)} release staging.`);
+  const text = jsonText(result.save);
+  await writeFile(versionedPath, text);
+  await writeFile(join(CURRENT_ALIAS_ROOT, 'Gauntlet_TTS_Review_Scaffold.json'), text);
+  console.log(`Assembled ${result.assembledIds.length} ready supplemental component ids into ${result.starterSummaries.length} starter kits in ${relative(ROOT, versionedPath)}.`);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

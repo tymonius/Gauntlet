@@ -2,23 +2,35 @@ const SNAP_Y = 0.12;
 
 export const STANDARD_CARD_SHORT_EDGE = 2.5;
 export const STANDARD_CARD_LONG_EDGE = 3.5;
-export const TRACKER_RENDER_PX_PER_IN = 96;
-
-// Compatibility aliases used by the existing validator. They intentionally
-// collapse to the authored 3.5-unit card length; snapping itself does not use
-// these values or normalize registrations over the full card.
-export const TTS_STANDARD_CARD_WORLD_LONG_EDGE = STANDARD_CARD_LONG_EDGE;
-
-// Tabletop Simulator's Custom_Tile and CardCustom objects use different native
-// tabletop footprints. The tracker tile is scaled to match a normal card; snap
-// coordinates are therefore divided by the same object scale so their world
-// travel remains exactly the renderer-measured physical distance.
 export const CUSTOM_TILE_CARD_LINEAR_SCALE = 1.5;
-export const TRACKER_LOCAL_LONG_EDGE = STANDARD_CARD_LONG_EDGE / CUSTOM_TILE_CARD_LINEAR_SCALE;
 export const ROUNDED_RECTANGLE_TILE_TYPE = 3;
 
-function vector(x = 0, y = 0, z = 0) {
-  return { x, y, z };
+function validateRegistrationPoints(component) {
+  const tag = String(component.tts?.snapTag || '').trim();
+  const points = component.tts?.snapPoints;
+  if (!tag || !Array.isArray(points) || points.length < 2) {
+    throw new Error(`Sliding tracker ${component.id} cannot register snaps without a snap tag and renderer-derived positions.`);
+  }
+  if (Number(points[0]?.value) !== 0 || Number(points[0]?.registrationFraction) !== 0) {
+    throw new Error(`Sliding tracker ${component.id} must begin with the fully covered value-0 renderer registration.`);
+  }
+
+  let previous = -Infinity;
+  return points.map(point => {
+    const registrationFraction = Number(point.registrationFraction);
+    if (!Number.isFinite(registrationFraction)
+      || registrationFraction < 0
+      || registrationFraction >= 1
+      || registrationFraction < previous) {
+      throw new Error(`Sliding tracker ${component.id} has invalid renderer line fraction ${point.registrationFraction}.`);
+    }
+    previous = registrationFraction;
+    return {
+      value: Number(point.value),
+      registrationFraction,
+      tag,
+    };
+  });
 }
 
 export function assertCardSizedTracker(component) {
@@ -32,67 +44,74 @@ export function assertCardSizedTracker(component) {
   }
 }
 
-export function makeTrackerSnapPoints(component) {
-  const tag = String(component.tts?.snapTag || '').trim();
-  const points = component.tts?.snapPoints;
-  if (!tag || !Array.isArray(points) || points.length < 2) {
-    throw new Error(`Sliding tracker ${component.id} cannot register snaps without a snap tag and renderer-derived positions.`);
-  }
-  if (Number(points[0]?.value) !== 0 || Number(points[0]?.rendererTravelPx) !== 0) {
-    throw new Error(`Sliding tracker ${component.id} must begin with the fully covered value-0 renderer registration.`);
-  }
-
-  let previous = -Infinity;
-  return points.map(point => {
-    const rendererTravelPx = Number(point.rendererTravelPx);
-    if (!Number.isFinite(rendererTravelPx) || rendererTravelPx < 0 || rendererTravelPx < previous) {
-      throw new Error(`Sliding tracker ${component.id} has invalid renderer travel ${point.rendererTravelPx}.`);
-    }
-    previous = rendererTravelPx;
-
-    // The renderer measured the exact distance from the card bottom to this
-    // registration line. Convert only pixels -> authored physical distance,
-    // then account for the Custom_Tile object scale. There is deliberately no
-    // value/max spacing and no normalization over the tracker's full height.
-    const physicalTravel = rendererTravelPx / TRACKER_RENDER_PX_PER_IN;
-    const localZ = -(physicalTravel / CUSTOM_TILE_CARD_LINEAR_SCALE);
-    return {
-      Position: vector(0, SNAP_Y, Number(localZ.toFixed(6))),
-      Rotation: vector(0, 0, 0),
-      RotationSnap: true,
-      Tags: [tag],
-    };
-  });
+export function trackerRegistrations(component) {
+  return validateRegistrationPoints(component);
 }
 
 export function makeTrackerLuaScript(component) {
-  const points = makeTrackerSnapPoints(component);
-  const lines = ['function registerGauntletTrackerSnaps()', '  self.setSnapPoints({'];
-  for (const point of points) {
-    lines.push(
-      `    { position = {${point.Position.x}, ${point.Position.y}, ${point.Position.z}}, `
-      + `rotation = {0, 0, 0}, rotation_snap = true, tags = {${JSON.stringify(point.Tags[0])}} },`,
-    );
-  }
-  lines.push(
-    '  })',
+  const registrations = validateRegistrationPoints(component);
+  const tag = registrations[0].tag;
+  const fractions = registrations.map(({ value, registrationFraction }) => (
+    `  { value = ${value}, fraction = ${registrationFraction} },`
+  ));
+
+  return [
+    '-- Printed registration lines are the geometry authority.',
+    '-- At load, map each rendered bottom-to-line fraction onto this tile\'s',
+    '-- actual TTS collider length. No card-length calibration or value/max',
+    '-- distribution is involved.',
+    'local gauntletTrackerRegistrations = {',
+    ...fractions,
+    '}',
+    '',
+    'local function gauntletTrackerBounds()',
+    '  local bounds = self.getBoundsNormalized()',
+    '  local scale = self.getScale()',
+    '  if bounds == nil or bounds.size == nil or scale == nil then return nil end',
+    '  local scaleZ = math.abs(scale.z)',
+    '  if scaleZ < 0.0001 or math.abs(bounds.size.z) < 0.0001 then return nil end',
+    '  return bounds, scaleZ',
+    'end',
+    '',
+    'function gauntletTrackerBoundsReady()',
+    '  return gauntletTrackerBounds() ~= nil',
+    'end',
+    '',
+    'function registerGauntletTrackerSnaps()',
+    '  local bounds, scaleZ = gauntletTrackerBounds()',
+    '  if bounds == nil then return end',
+    '  local localLength = bounds.size.z / scaleZ',
+    '  local points = {}',
+    '  for _, registration in ipairs(gauntletTrackerRegistrations) do',
+    '    table.insert(points, {',
+    '      position = {0, ' + SNAP_Y + ', -localLength * registration.fraction},',
+    '      rotation = {0, 0, 0},',
+    '      rotation_snap = true,',
+    `      tags = {${JSON.stringify(tag)}}`,
+    '    })',
+    '  end',
+    '  self.setSnapPoints(points)',
     'end',
     '',
     'function onLoad()',
-    '  registerGauntletTrackerSnaps()',
+    '  Wait.condition(',
+    '    registerGauntletTrackerSnaps,',
+    '    gauntletTrackerBoundsReady,',
+    '    3',
+    '  )',
     'end',
-  );
-  return lines.join('\n');
+  ].join('\n');
 }
 
 export function trackerPresentation(component) {
   assertCardSizedTracker(component);
+  const registrations = trackerRegistrations(component);
   return {
     widthScale: STANDARD_CARD_SHORT_EDGE,
     transformScale: CUSTOM_TILE_CARD_LINEAR_SCALE,
     tileType: ROUNDED_RECTANGLE_TILE_TYPE,
     stretch: true,
-    snapPoints: makeTrackerSnapPoints(component),
+    registrations,
     luaScript: makeTrackerLuaScript(component),
   };
 }
