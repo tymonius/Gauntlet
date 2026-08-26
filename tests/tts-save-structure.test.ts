@@ -83,8 +83,8 @@ describe('generated TTS table structure', () => {
     expect(save.Hands.Enable).toBe(true);
     expect(save.Hands.DisableUnused).toBe(false);
     expect(save.Hands.HandTransforms.map((hand) => hand.Color)).toEqual(['White', 'Green']);
-    expect(save.Hands.HandTransforms[0].Transform).toMatchObject({ posY: 4, posZ: -23.25, rotY: 0, scaleX: 7, scaleY: 6, scaleZ: 4 });
-    expect(save.Hands.HandTransforms[1].Transform).toMatchObject({ posY: 4, posZ: 23.25, rotY: 180, scaleX: 7, scaleY: 6, scaleZ: 4 });
+    expect(save.Hands.HandTransforms[0].Transform).toMatchObject({ posY: 4, posZ: -23.25, rotY: 0, scaleX: 12, scaleY: 6, scaleZ: 4 });
+    expect(save.Hands.HandTransforms[1].Transform).toMatchObject({ posY: 4, posZ: 23.25, rotY: 180, scaleX: 12, scaleY: 6, scaleZ: 4 });
   });
 
   it('creates the six center-line Gauntlet snap positions in order', () => {
