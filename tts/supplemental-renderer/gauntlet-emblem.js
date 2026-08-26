@@ -1,31 +1,35 @@
-const GAUNTLET_G_SOURCE = '/assets/wordmark/gauntlet-wordmark-layer-1.svg';
+const GAUNTLET_WORDMARK_SOURCE = '/images/Gauntlet.svg';
 const GAUNTLET_G_VIEWBOX = '0 0 470 493.58';
+const SVG_NS = 'http://www.w3.org/2000/svg';
 
 export async function materializeGauntletEmblem(slot) {
   if (!(slot instanceof Element)) throw new Error('Universal Reference emblem slot is missing.');
 
-  const response = await fetch(GAUNTLET_G_SOURCE, { cache: 'no-store' });
-  if (!response.ok) throw new Error(`Gauntlet G vector request failed: ${response.status}.`);
+  const response = await fetch(GAUNTLET_WORDMARK_SOURCE, { cache: 'no-store' });
+  if (!response.ok) throw new Error(`Canonical Gauntlet wordmark request failed: ${response.status}.`);
   const source = await response.text();
   const parsed = new DOMParser().parseFromString(source, 'image/svg+xml');
-  if (parsed.querySelector('parsererror')) throw new Error('Canonical Gauntlet G layer is not valid SVG.');
+  if (parsed.querySelector('parsererror')) throw new Error('Canonical Gauntlet wordmark is not valid SVG.');
 
   const sourceSvg = parsed.documentElement;
-  const paths = sourceSvg.querySelectorAll('path');
-  if (sourceSvg.localName !== 'svg' || paths.length !== 1 || sourceSvg.querySelector('image, use')) {
-    throw new Error('Canonical Gauntlet G layer must contain exactly one direct vector path.');
+  const paths = [...sourceSvg.querySelectorAll(':scope > path')];
+  if (sourceSvg.localName !== 'svg' || paths.length < 2 || sourceSvg.querySelector('image, use')) {
+    throw new Error('Canonical Gauntlet wordmark no longer exposes direct vector layers.');
   }
 
-  // Layer 1 is the canonical isolated G vector. Give that vector its own
-  // composition box instead of clipping pixels from the complete wordmark.
-  sourceSvg.setAttribute('viewBox', GAUNTLET_G_VIEWBOX);
-  sourceSvg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-  sourceSvg.removeAttribute('width');
-  sourceSvg.removeAttribute('height');
-  sourceSvg.classList.add('reference-gauntlet-g');
-  paths[0].setAttribute('fill', 'currentColor');
+  // The canonical wordmark's first vector layer is the stylized G. Clone that
+  // path into a new SVG with its own viewBox; never crop a rasterized/full
+  // wordmark image to manufacture the emblem.
+  const svg = document.createElementNS(SVG_NS, 'svg');
+  svg.setAttribute('viewBox', GAUNTLET_G_VIEWBOX);
+  svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+  svg.setAttribute('aria-hidden', 'true');
+  svg.classList.add('reference-gauntlet-g');
 
-  const svg = document.importNode(sourceSvg, true);
+  const path = document.importNode(paths[0], true);
+  path.setAttribute('fill', 'currentColor');
+  svg.append(path);
+
   slot.replaceChildren(svg);
   slot.classList.add('reference-faction-emblem--gauntlet-g');
 
