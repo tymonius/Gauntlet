@@ -56,17 +56,23 @@ describe('v0.7.0 release candidate boundary', () => {
     expect(notes).not.toContain('Current canonical playtest edition');
   });
   it('materializes v0.7.0 directly from maintained current authorities', () => {
-    expect(releaseBuilder).toContain("readText('rulebook/player-facing/current-rulebook.md')");
-    expect(releaseBuilder).toContain('resolveFactionRules(baseGameplay.faction_rules, manifest)');
-    expect(releaseBuilder).toContain('resolveFactionRules, resolveRuleSection');
-    expect(releaseBuilder).not.toContain('function resolveFactionRules(');
+    expect(releaseBuilder).toContain("CURRENT_RULEBOOK_SOURCE = 'rulebook/player-facing/current-rulebook.md'");
+    expect(releaseBuilder).toContain('loadCurrentGameAuthority()');
+    expect(releaseBuilder).toContain('gameplay: clone(authority.gameplay)');
+    expect(releaseBuilder).toContain('faction_feature_taxonomy: clone(authority.factionFeatureTaxonomy)');
+    expect(releaseBuilder).toContain('faction_features: clone(authority.factionFeatures)');
+    expect(releaseBuilder).toContain('leaders: clone(authority.leaders)');
+    expect(releaseBuilder).toContain("source_version: authority.version");
+    expect(releaseBuilder).toContain('![Card anatomy diagram]');
+    expect(releaseBuilder).not.toContain('readCurrentJsonSource');
+    expect(releaseBuilder).not.toContain('baseGameplay');
+    expect(releaseBuilder).not.toContain('cardChanges');
+    expect(releaseBuilder).not.toContain('resolveFactionRules(');
+    expect(releaseBuilder).not.toContain('resolveCards(');
+    expect(releaseBuilder).not.toContain('card_text_overrides');
     expect(releaseBuilder).not.toContain('applyReleaseCandidateRulebook');
     expect(releaseBuilder).not.toContain('applyFactionFeatureTerminology');
     expect(releaseBuilder).not.toContain('spliceReviewedChapter11');
-    expect(releaseBuilder).toContain('faction_feature_taxonomy: structuredClone(manifest.factionFeatureTaxonomy)');
-    expect(releaseBuilder).toContain('faction_features: structuredClone(manifest.factionFeatures)');
-    expect(releaseBuilder).toContain('leaders: structuredClone(manifest.leaders)');
-    expect(releaseBuilder).toContain('![Card anatomy diagram]');
   });
 
   it('renders the printable Card Anatomy fallback from the live production-card guide', () => {
