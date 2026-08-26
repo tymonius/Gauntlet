@@ -67,7 +67,9 @@ const PLAYER_ZONES = Object.freeze([
     x: -12.25,
     z: -16.45,
     width: 11.1,
-    depth: 5.0,
+    // Two card-length trackers can be nested under an Intelligence Leader.
+    // 10 units covers both maximum tracker travels plus the Leader footprint.
+    depth: 10.0,
     fontSize: 29,
     textScale: 0.26,
     snapLayout: 'leader',
