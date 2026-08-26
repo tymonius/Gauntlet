@@ -71,11 +71,21 @@ function zoneContainsPoint(zone, x, z) {
 }
 
 function validateEnvironment(save) {
-  if (save.Table !== 'Table_Custom' || !String(save.TableURL || '').includes('campaign-map-table')) {
-    throw new Error('Authoritative TTS save is not using the campaign-map custom table.');
+  const tableUrl = String(save.TableURL || '');
+  const skyUrl = String(save.SkyURL || '');
+  if (save.Table !== 'Table_Custom' || save.Sky !== 'Sky_Museum') {
+    throw new Error('Authoritative TTS save is not using the custom campaign table / museum-lit panorama environment.');
   }
-  if (!String(save.SkyURL || '').includes('command-tent-panorama')) {
-    throw new Error('Authoritative TTS save is not using the command-tent panorama.');
+  if (!/^https:\/\/github\.com\/tymonius\/Gauntlet\/releases\/download\//i.test(tableUrl)
+    || !tableUrl.endsWith('_TTS_Environment_Table.jpg')) {
+    throw new Error('Campaign table image must use the published GitHub Release environment asset.');
+  }
+  if (!/^https:\/\/github\.com\/tymonius\/Gauntlet\/releases\/download\//i.test(skyUrl)
+    || !skyUrl.endsWith('_TTS_Environment_Panorama.jpg')) {
+    throw new Error('Command-tent panorama must use the published GitHub Release environment asset.');
+  }
+  if (tableUrl.includes('raw.githubusercontent.com') || skyUrl.includes('raw.githubusercontent.com')) {
+    throw new Error('Raw branch URLs are forbidden for TTS environment images.');
   }
 }
 
@@ -84,6 +94,24 @@ function validateTableWorkspace(save) {
     throw new Error(`Expected 40 visible table outline lines; found ${save.VectorLines?.length || 0}. Both visible Hand parking guides must remain present; only Manifest Destiny extensions are invisible.`);
   }
   if ((save.SnapPoints || []).length !== 78) throw new Error(`Expected 78 final table snaps; found ${save.SnapPoints?.length || 0}.`);
+
+  const whiteLeaderOutlines = (save.VectorLines || []).filter(line => {
+    const xs = (line.points3 || []).map(point => Number(point.x));
+    const zs = (line.points3 || []).map(point => Number(point.z));
+    return xs.length === 4 && zs.length === 4
+      && close(Math.min(...xs), -17.8) && close(Math.max(...xs), -6.7)
+      && close(Math.min(...zs), -21.45) && close(Math.max(...zs), -11.45);
+  });
+  const greenLeaderOutlines = (save.VectorLines || []).filter(line => {
+    const xs = (line.points3 || []).map(point => Number(point.x));
+    const zs = (line.points3 || []).map(point => Number(point.z));
+    return xs.length === 4 && zs.length === 4
+      && close(Math.min(...xs), 6.7) && close(Math.max(...xs), 17.8)
+      && close(Math.min(...zs), 11.45) && close(Math.max(...zs), 21.45);
+  });
+  if (whiteLeaderOutlines.length !== 2 || greenLeaderOutlines.length !== 2) {
+    throw new Error('Leader & References outlines must fit the fully extended nested tracker assembly for both players.');
+  }
 
   const territory = save.SnapPoints.filter(point => point.Tags?.includes(TERRITORY_TAG));
   const deeds = save.SnapPoints.filter(point => point.Tags?.includes(DEED_TAG));
@@ -332,6 +360,9 @@ function validateTrackers(save, manifest) {
 
     if (!hasTag(object, FACTION_ZONE_TAG)) {
       throw new Error(`Tracker ${id} is missing generic Faction Zone snap eligibility.`);
+    }
+    if (object.Sticky !== true) {
+      throw new Error(`Tracker ${id} must be Sticky so covers snapped above it move with the tracker.`);
     }
 
     const expected = trackerPresentation(record);
