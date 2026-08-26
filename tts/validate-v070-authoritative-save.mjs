@@ -128,7 +128,7 @@ function validateHandsAndSeats(save) {
   ];
   for (const [hand, side, z, rotY, parkingZ] of expectedHands) {
     if (!close(hand.Transform?.posX, 0) || !close(hand.Transform?.posY, 4) || !close(hand.Transform?.posZ, z) || !close(hand.Transform?.rotY, rotY)
-      || !close(hand.Transform?.scaleX, 7) || !close(hand.Transform?.scaleY, 6) || !close(hand.Transform?.scaleZ, 4)) {
+      || !close(hand.Transform?.scaleX, 12) || !close(hand.Transform?.scaleY, 6) || !close(hand.Transform?.scaleZ, 4)) {
       throw new Error(`${side} Reserve hand transform does not match the outward-only geometry.`);
     }
     if (zoneContainsPoint(hand.Transform, 0, parkingZ)) {
