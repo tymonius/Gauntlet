@@ -67,7 +67,7 @@ function promoteRulebookVersion(markdown) {
 function addCardAnatomyFigure(markdown) {
   const marker = "Most ordinary playable cards use the same frame. Read these elements when constructing a Deck and resolving a card in play:\n\n";
   if (!markdown.includes(marker)) throw new Error('Card Anatomy introduction marker is missing from the maintained Rulebook.');
-  const figure = '![Card anatomy diagram](<releases/v0.7.0/Gauntlet_v0.7.0_Card_Anatomy.png>)\n\n';
+  const figure = '![Card anatomy diagram](</releases/v0.7.0/Gauntlet_v0.7.0_Card_Anatomy.png>)\n\n';
   return markdown.replace(marker, marker + figure);
 }
 
