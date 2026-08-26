@@ -6,7 +6,7 @@ import { CURRENT_ALIAS_ROOT, resolveCurrentTtsRelease, ROOT } from '../scripts/t
 const TABLE_URL = 'https://raw.githubusercontent.com/tymonius/Gauntlet/release/v0.7.0-cutover/tts/assets/environment/campaign-map-table.jpg';
 const SKY_URL = 'https://raw.githubusercontent.com/tymonius/Gauntlet/release/v0.7.0-cutover/tts/assets/environment/command-tent-panorama.jpg';
 
-const TABLE_LAYOUT_NOTE = 'Gauntlet TTS table layout: Red sits south and Blue north. Each player has Leader & References, Draw, Discard, Graveyard, Asset Bank, Faction Zone, and a visible one-card Hand parking area. Each player has one canonical private TTS Hand zone: it includes that tabletop Hand parking area and extends outward behind it to provide Reserve capacity, so parked and Reserved cards share the same player-only privacy behavior. Asset Bank provides seven portrait positions; Faction Zone provides twelve compact portrait positions. The Gauntlet visibly marks six primary Territory positions; two Manifest Destiny extension snaps remain invisible. Deed snaps are invisible landscape positions beside every possible Territory.';
+const TABLE_LAYOUT_NOTE = 'Gauntlet TTS table layout: White sits south and Green north. Each player has Leader & References, Draw, Discard, Graveyard, Asset Bank, Faction Zone, and a visible one-card Hand parking area. Each player has one canonical private TTS Hand zone: it includes that tabletop Hand parking area and extends outward behind it to provide Reserve capacity, so parked and Reserved cards share the same player-only privacy behavior. Asset Bank provides seven portrait positions; Faction Zone provides twelve compact portrait positions. The Gauntlet visibly marks six primary Territory positions; two Manifest Destiny extension snaps remain invisible. Deed snaps are invisible landscape positions beside every possible Territory.';
 const TABLE_TEXT_NOTE_PREFIX = 'gauntlet:table-layout:';
 const LEGACY_PRIVATE_ZONE_NOTE_PREFIX = 'gauntlet:private-zone:';
 const LEGACY_HAND_TRIGGER_NOTE_PREFIX = 'gauntlet:hand-trigger:';
@@ -28,6 +28,12 @@ const OUTLINE_SHADOW_COLOR = Object.freeze({ r: 0.12, g: 0.085, b: 0.055 });
 const OUTLINE_COLOR = Object.freeze({ r: 0.83, g: 0.69, b: 0.40 });
 const LABEL_SHADOW_COLOR = Object.freeze({ r: 0.08, g: 0.055, b: 0.035 });
 const LABEL_COLOR = Object.freeze({ r: 0.99, g: 0.91, b: 0.70 });
+
+const TERRITORY_FLIP_SCRIPT = [
+  'function onLoad()',
+  '  self.use_rotation_value_flip = true',
+  'end',
+].join('\\n');
 // Player workspaces are mirrored across the center line. These definitions own
 // both the visible guides and their functional snap positions.
 const PLAYER_ZONES = Object.freeze([
@@ -166,16 +172,14 @@ function tagTerritories(objects) {
     object.Transform ||= transform();
     // Keep Territories at their natural local card rotation while they are in
     // bags. The table's Territory snap points own the 90-degree placement.
-    // SidewaysCard already gives TTS the correct native landscape flip
-    // behavior; custom flip-axis Lua caused the wrong-axis regressions.
+    // SidewaysCard defines the landscape presentation; the flip override changes
+    // only the physical flip axis while the card is still at native rotation.
     object.Transform.rotY = 0;
     object.Transform.scaleX = 1;
     object.Transform.scaleY = 1;
     object.Transform.scaleZ = 1;
-    if (String(object.LuaScript || '').includes('use_rotation_value_flip')) {
-      object.LuaScript = '';
-      object.LuaScriptState = '';
-    }
+    object.LuaScript = TERRITORY_FLIP_SCRIPT;
+    object.LuaScriptState = '';
   });
 }
 
@@ -219,7 +223,7 @@ function outlinedRectangle(x, z, width, depth) {
 }
 
 function playerZone(side, zone) {
-  const mirror = side === 'Blue' ? -1 : 1;
+  const mirror = side === 'Green' ? -1 : 1;
   const x = zone.x * mirror;
   const z = zone.z * mirror;
   return {
@@ -227,16 +231,16 @@ function playerZone(side, zone) {
     id: `${side.toLowerCase()}-${zone.id}`,
     x,
     z,
-    rotationY: side === 'Blue' ? 180 : 0,
+    rotationY: side === 'Green' ? 180 : 0,
     labelX: x,
-    labelZ: z + (side === 'Blue' ? 1 : -1) * (zone.depth / 2 + LABEL_GAP),
+    labelZ: z + (side === 'Green' ? 1 : -1) * (zone.depth / 2 + LABEL_GAP),
   };
 }
 
 function playerFacingCardRotation(side) {
   // Native TTS convention: the south seat faces north at 0 degrees; the
   // mirrored north seat faces south at 180 degrees.
-  return side === 'Blue' ? 180 : 0;
+  return side === 'Green' ? 180 : 0;
 }
 
 function handParkingDefinition() {
@@ -252,7 +256,7 @@ export function handZoneTransform(side) {
   const outwardEdge = parkingCenter + parking.depth / 2 + HAND_RESERVE_EXTENSION;
   const center = (inwardEdge + outwardEdge) / 2;
   const depth = outwardEdge - inwardEdge;
-  const north = side === 'Blue';
+  const north = side === 'Green';
 
   return transform(
     0,
@@ -266,7 +270,7 @@ export function handZoneTransform(side) {
 }
 
 function pointInPlayerZone(side, zone, offsetX = 0, offsetZ = 0) {
-  const mirror = side === 'Blue' ? -1 : 1;
+  const mirror = side === 'Green' ? -1 : 1;
   return vector((zone.x + offsetX) * mirror, 0, (zone.z + offsetZ) * mirror);
 }
 
@@ -308,7 +312,7 @@ function factionOffsets() {
 
 export function buildTableVectorLines() {
   const lines = [];
-  for (const side of ['Red', 'Blue']) {
+  for (const side of ['White', 'Green']) {
     for (const zone of PLAYER_ZONES) {
       const placed = playerZone(side, zone);
       lines.push(...outlinedRectangle(placed.x, placed.z, placed.width, placed.depth));
@@ -327,7 +331,7 @@ export function buildTableSnapPoints() {
     for (const x of DEED_X) points.push(snap(vector(x, 0, z), 90, [DEED_TAG]));
   }
 
-  for (const side of ['Red', 'Blue']) {
+  for (const side of ['White', 'Green']) {
     const faceRotation = playerFacingCardRotation(side);
     for (const zone of PLAYER_ZONES) {
       if (zone.snapLayout === 'leader') {
@@ -390,7 +394,7 @@ function makeTableText(definition, guid) {
 export function buildTableTextObjects(existingObjects = []) {
   const used = collectGuids(existingObjects);
   const definitions = [];
-  for (const side of ['Red', 'Blue']) {
+  for (const side of ['White', 'Green']) {
     for (const zone of PLAYER_ZONES) {
       const placed = playerZone(side, zone);
       for (const shadow of [true, false]) {
@@ -421,7 +425,7 @@ function applyHands(save) {
     Enable: true,
     DisableUnused: false,
     Hiding: 0,
-    HandTransforms: ['Red', 'Blue'].map(side => ({
+    HandTransforms: ['White', 'Green'].map(side => ({
       Color: side,
       Transform: handZoneTransform(side),
     })),
