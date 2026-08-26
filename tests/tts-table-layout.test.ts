@@ -93,22 +93,22 @@ describe('authoritative TTS table layout', () => {
   });
 
   it('uses one private Hand zone per player that contains both parking and Reserve space', () => {
-    const red = handZoneTransform('Red');
-    const blue = handZoneTransform('Blue');
+    const white = handZoneTransform('White');
+    const green = handZoneTransform('Green');
 
-    expect(red).toMatchObject({ posX: 0, posY: 4, posZ: -20.25, rotY: 0, scaleX: 7, scaleY: 6, scaleZ: 8 });
-    expect(blue).toMatchObject({ posX: 0, posY: 4, posZ: 20.25, rotY: 180, scaleX: 7, scaleY: 6, scaleZ: 8 });
+    expect(white).toMatchObject({ posX: 0, posY: 4, posZ: -20.25, rotY: 0, scaleX: 7, scaleY: 6, scaleZ: 8 });
+    expect(green).toMatchObject({ posX: 0, posY: 4, posZ: 20.25, rotY: 180, scaleX: 7, scaleY: 6, scaleZ: 8 });
 
     // The visible parking snap sits inside the same private zone as the Reserve.
-    expect(zoneContainsPoint(red, 0, -18.25)).toBe(true);
-    expect(zoneContainsPoint(blue, 0, 18.25)).toBe(true);
+    expect(zoneContainsPoint(white, 0, -18.25)).toBe(true);
+    expect(zoneContainsPoint(green, 0, 18.25)).toBe(true);
     // Draw/Discard and Graveyard remain ordinary public table workspaces.
-    expect(zoneContainsPoint(red, -1.55, -13.55)).toBe(false);
-    expect(zoneContainsPoint(red, 1.55, -13.55)).toBe(false);
-    expect(zoneContainsPoint(red, 17.15, -17.75)).toBe(false);
-    expect(zoneContainsPoint(blue, 1.55, 13.55)).toBe(false);
-    expect(zoneContainsPoint(blue, -1.55, 13.55)).toBe(false);
-    expect(zoneContainsPoint(blue, -17.15, 17.75)).toBe(false);
+    expect(zoneContainsPoint(white, -1.55, -13.55)).toBe(false);
+    expect(zoneContainsPoint(white, 1.55, -13.55)).toBe(false);
+    expect(zoneContainsPoint(white, 17.15, -17.75)).toBe(false);
+    expect(zoneContainsPoint(green, 1.55, 13.55)).toBe(false);
+    expect(zoneContainsPoint(green, -1.55, 13.55)).toBe(false);
+    expect(zoneContainsPoint(green, -17.15, 17.75)).toBe(false);
   });
 
   it('serializes only TTS-native hand transforms and does not commandeer the camera', () => {
@@ -128,7 +128,7 @@ describe('authoritative TTS table layout', () => {
       Note: 'base note',
       Rules: 'base rules',
       LuaScript: '-- unrelated global script',
-      Turns: { TurnColor: 'Blue' },
+      Turns: { TurnColor: 'Green' },
     };
 
     const result = applyTableLayout(save);
@@ -136,12 +136,12 @@ describe('authoritative TTS table layout', () => {
     expect(result.vectorLineCount).toBe(40);
     expect(result.snapPointCount).toBe(78);
 
-    const red = save.Hands.HandTransforms.find((hand: any) => hand.Color === 'Red');
-    const blue = save.Hands.HandTransforms.find((hand: any) => hand.Color === 'Blue');
+    const white = save.Hands.HandTransforms.find((hand: any) => hand.Color === 'White');
+    const green = save.Hands.HandTransforms.find((hand: any) => hand.Color === 'Green');
     expect(save.Hands.DisableUnused).toBe(false);
     expect(save.Hands.Hiding).toBe(0);
-    expect(red.Transform).toEqual(handZoneTransform('Red'));
-    expect(blue.Transform).toEqual(handZoneTransform('Blue'));
+    expect(white.Transform).toEqual(handZoneTransform('White'));
+    expect(green.Transform).toEqual(handZoneTransform('Green'));
 
     // Normal TTS saves serialize hands through Hands.HandTransforms, not duplicate
     // HandTrigger ObjectStates.
@@ -192,6 +192,6 @@ describe('authoritative TTS table layout', () => {
     expect(territory.CustomDeck).toEqual(originalCustomDeck);
     expect(territory.SidewaysCard).toBe(true);
     expect(territory.Transform.rotY).toBe(0);
-    expect(String(territory.LuaScript || '')).not.toContain('use_rotation_value_flip');
+    expect(String(territory.LuaScript || '')).toContain('self.use_rotation_value_flip = true');
   });
 });
