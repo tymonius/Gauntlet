@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { assembleReadySupplementals } from '../scripts/assemble-tts-supplemental-save.mjs';
 import {
-  CARD_MATCHED_TRACKER_WORLD_LONG_EDGE,
   CUSTOM_TILE_CARD_LINEAR_SCALE,
   ROUNDED_RECTANGLE_TILE_TYPE,
 } from '../scripts/tts-supplemental-geometry.mjs';
@@ -101,7 +100,7 @@ describe('TTS ready supplemental save assembly', () => {
     expect(JSON.stringify(result.save.ObjectStates[1])).toContain('military-command-tracker');
   });
 
-  it('maps tracker snaps from the actual irregular rendered line fractions', () => {
+  it('makes live TTS bounds the sole authority for tracker snap coordinates', () => {
     const { save, starters, supplementals, assets } = fixture();
     const result = assembleReadySupplementals(save, starters, supplementals, assets);
     const military = result.save.ObjectStates[1];
@@ -112,14 +111,13 @@ describe('TTS ready supplemental save assembly', () => {
     expect(tracker.CustomImage.CustomTile.Stackable).toBe(false);
     expect(tracker.CustomImage.CustomTile.Type).toBe(ROUNDED_RECTANGLE_TILE_TYPE);
     expect(tracker.Transform.scaleZ).toBe(CUSTOM_TILE_CARD_LINEAR_SCALE);
-    expect(tracker.AttachedSnapPoints).toHaveLength(5);
-
-    const authored = supplementals.ready.find((item: any) => item.id === 'military-command-tracker').tts.snapPoints;
-    const worldTravel = tracker.AttachedSnapPoints.map((point: any) => Math.abs(point.Position.z) * tracker.Transform.scaleZ);
-    authored.forEach((point: any, index: number) => {
-      expect(worldTravel[index]).toBeCloseTo(point.registrationFraction * CARD_MATCHED_TRACKER_WORLD_LONG_EDGE, 6);
-    });
-    expect(worldTravel[1] - worldTravel[0]).toBeGreaterThan(worldTravel[2] - worldTravel[1]);
+    expect(tracker.AttachedSnapPoints).toBeUndefined();
+    expect(tracker.LuaScript).toContain('self.getBoundsNormalized()');
+    expect(tracker.LuaScript).toContain('local localLength = bounds.size.z / scaleZ');
+    expect(tracker.LuaScript).toContain('-localLength * registration.fraction');
+    expect(tracker.LuaScript).toContain(`fraction = ${51.54688 / 336}`);
+    expect(tracker.LuaScript).toContain(`fraction = ${74.65625 / 336}`);
+    expect(tracker.LuaScript).not.toContain('3.06');
     expect(leader.Tags).toContain('military-command');
   });
 
