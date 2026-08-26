@@ -123,8 +123,8 @@ function validateHandsAndSeats(save) {
   if (!white || !green) throw new Error('Missing White or Green hand transform.');
 
   const expectedHands = [
-    [white, 'White', -22.5, 0, -18.25],
-    [green, 'Green', 22.5, 180, 18.25],
+    [white, 'White', -23.25, 0, -18.25],
+    [green, 'Green', 23.25, 180, 18.25],
   ];
   for (const [hand, side, z, rotY, parkingZ] of expectedHands) {
     if (!close(hand.Transform?.posX, 0) || !close(hand.Transform?.posY, 4) || !close(hand.Transform?.posZ, z) || !close(hand.Transform?.rotY, rotY)
@@ -156,13 +156,13 @@ function validateHandsAndSeats(save) {
   if (parkingZones.length !== 2 || fogVolumes.length !== 2) {
     throw new Error(`Expected exactly two player-private tabletop parking Hidden Zones; found ${parkingZones.length} parking / ${fogVolumes.length} total hidden zones.`);
   }
-  for (const [side, z, rotY] of [['White', -18.25, 0], ['Green', 18.25, 180]]) {
+  for (const [side, z, rotY] of [['White', -19, 0], ['Green', 19, 180]]) {
     const zone = parkingZones.find(object => object.FogColor === side);
     if (!zone || zone.GMNotes !== `${PRIVATE_PARKING_NOTE_PREFIX}${side.toLowerCase()}`
       || zone.FogReverseHiding !== false || zone.FogSeethrough !== true || zone.FogHidePointers !== true || zone.Hands !== false
-      || !close(zone.Transform?.posX, 0) || !close(zone.Transform?.posY, 2.5) || !close(zone.Transform?.posZ, z)
-      || !close(zone.Transform?.rotY, rotY) || !close(zone.Transform?.scaleX, 2.85)
-      || !close(zone.Transform?.scaleY, 5) || !close(zone.Transform?.scaleZ, 4)) {
+      || !close(zone.Transform?.posX, 0) || !close(zone.Transform?.posY, 3) || !close(zone.Transform?.posZ, z)
+      || !close(zone.Transform?.rotY, rotY) || !close(zone.Transform?.scaleX, 7)
+      || !close(zone.Transform?.scaleY, 6) || !close(zone.Transform?.scaleZ, 6.5)) {
       throw new Error(`${side} tabletop parking Hidden Zone is missing or malformed.`);
     }
   }
@@ -187,7 +187,14 @@ function validateBagsAndUtilities(save) {
 
   const byFaction = new Map();
   for (const bag of bags) {
-    if (!close(bag.Transform?.rotY, 0)) throw new Error(`${bag.Nickname} starter Bag is not oriented toward the White/host side.`);
+    if (!close(bag.Transform?.rotY, 180)) throw new Error(`${bag.Nickname} starter Bag does not use the host-facing stored orientation established by TTS testing.`);
+    for (const object of bag.ContainedObjects || []) {
+      const stackKind = String(object.GMNotes || '').replace(SUPPLEMENTAL_STACK_NOTE_PREFIX, '');
+      const expectedRotation = stackKind === 'deeds' ? 270 : 180;
+      if (object?.Transform && !close(object.Transform.rotY, expectedRotation)) {
+        throw new Error(`${bag.Nickname} contains ${object.Nickname || object.GUID} at stored rotation ${object.Transform.rotY}; expected host-facing ${expectedRotation}.`);
+      }
+    }
     const objects = bag.ContainedObjects || [];
     const token = objects.filter(object => object?.Name === 'PlayerPawn' && String(object.GMNotes || '').startsWith(PLAYER_TOKEN_NOTE_PREFIX));
     const die = objects.filter(object => object?.Name === 'Die_6' && String(object.GMNotes || '').startsWith(BATTLE_DIE_NOTE_PREFIX));
@@ -216,9 +223,9 @@ function validateBagsAndUtilities(save) {
 
 function validateFamilyStacks(bags) {
   const expectations = new Map([
-    ['proposals', { count: 2, cards: 9, sideways: false, rotY: 0, tags: [FACTION_ZONE_TAG] }],
-    ['deeds', { count: 2, cards: 8, sideways: true, rotY: 90, tags: [DEED_STACK_TAG, FACTION_ZONE_TAG] }],
-    ['rites-rituals', { count: 2, cards: 4, sideways: false, rotY: 0, tags: [FACTION_ZONE_TAG] }],
+    ['proposals', { count: 2, cards: 9, sideways: false, rotY: 180, tags: [FACTION_ZONE_TAG] }],
+    ['deeds', { count: 2, cards: 8, sideways: true, rotY: 270, tags: [DEED_STACK_TAG, FACTION_ZONE_TAG] }],
+    ['rites-rituals', { count: 2, cards: 4, sideways: false, rotY: 180, tags: [FACTION_ZONE_TAG] }],
   ]);
   const found = new Map([...expectations.keys()].map(key => [key, []]));
 
@@ -248,7 +255,7 @@ function validateTerritoriesDeedsAndFactionEligibility(save, manifest) {
   if (!territories.length) throw new Error('No tagged Territory cards found.');
   for (const card of territories) {
     if (card.SidewaysCard !== true) throw new Error(`Territory ${card.Nickname || card.GUID} is not marked SidewaysCard.`);
-    if (!close(card.Transform?.rotX, 0) || !close(card.Transform?.rotY, 0) || !close(card.Transform?.rotZ, 0)) {
+    if (!close(card.Transform?.rotX, 0) || !close(card.Transform?.rotY, 180) || !close(card.Transform?.rotZ, 0)) {
       throw new Error(`Territory ${card.Nickname || card.GUID} must begin at native local rotation so board snaps do not encode control.`);
     }
     const lua = String(card.LuaScript || '');
@@ -287,6 +294,10 @@ function validateTrackers(save, manifest) {
     const id = notes.slice(SUPPLEMENTAL_GUID_NOTE_PREFIX.length);
     const record = trackerRecords.get(id);
     if (!record) return;
+
+    if (!hasTag(object, FACTION_ZONE_TAG)) {
+      throw new Error(`Tracker ${id} is missing generic Faction Zone snap eligibility.`);
+    }
 
     const expected = trackerPresentation(record);
     const authored = record.tts?.snapPoints || [];
