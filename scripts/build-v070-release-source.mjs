@@ -42,6 +42,14 @@ function resolveFactionRules(baseRules, manifest) {
   return rules;
 }
 
+function stripInternalAuditMetadata(value) {
+  if (Array.isArray(value)) return value.map(stripInternalAuditMetadata);
+  if (!value || typeof value !== 'object') return value;
+  return Object.fromEntries(Object.entries(value)
+    .filter(([key]) => key !== 'auditHeadings')
+    .map(([key, child]) => [key, stripInternalAuditMetadata(child)]));
+}
+
 function promoteRulebookVersion(markdown) {
   let result = String(markdown || '').replace(/\r\n/g, '\n');
   result = result.replace('**Version 0.6.4 — Release Candidate**', '**Version 0.7.0**');
@@ -133,7 +141,7 @@ const canonicalData = {
   gameplay,
   proposals: structuredClone(proposalSource.data.proposals || []),
   arcane_symbol: structuredClone(arcaneSource.data),
-  component_contract: structuredClone(componentContract.data),
+  component_contract: stripInternalAuditMetadata(componentContract.data),
   faction_feature_taxonomy: structuredClone(manifest.factionFeatureTaxonomy),
   faction_features: structuredClone(manifest.factionFeatures),
   leaders: structuredClone(manifest.leaders),
@@ -149,6 +157,15 @@ const starterDecks = {
 
 const rulebook = addCardAnatomyFigure(promoteRulebookVersion(currentRulebookSource));
 
+const canonicalPayload = JSON.stringify(canonicalData);
+for (const [label, pattern] of [
+  ['pending-battle terminology', /\bpending(?:-|\s+)battles?\b/iu],
+  ['Faction Action terminology', /\bFaction Actions?\b/iu],
+  ['Faction Ability terminology', /\bFaction Abilit(?:y|ies)\b/iu],
+  ['faction procedure terminology', /\bfaction procedure\b/iu],
+]) {
+  if (pattern.test(canonicalPayload)) throw new Error('Published canonical data still contains retired ' + label + '.');
+}
 const canonicalText = jsonText(canonicalData);
 const starterText = jsonText(starterDecks);
 const authoritySetId = sha256(Buffer.from(`${rulebook}\n${canonicalText}\n${starterText}`, 'utf8'));
