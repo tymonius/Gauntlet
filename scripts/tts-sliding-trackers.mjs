@@ -2,6 +2,7 @@ const CSS_CARD_WIDTH = 240;
 const CSS_CARD_HEIGHT = 336;
 const PHYSICAL_CARD_WIDTH = 2.5;
 const PHYSICAL_CARD_HEIGHT = 3.5;
+const CSS_PX_PER_IN = CSS_CARD_HEIGHT / PHYSICAL_CARD_HEIGHT;
 
 function round(value, places = 5) {
   const factor = 10 ** places;
@@ -75,6 +76,9 @@ export async function captureProductionTracker(page, baseUrl, record, outputPath
       const value = Number.parseInt(String(label.textContent || '').trim(), 10);
       return {
         value,
+        rendererTravelPx: rect.bottom - lineRect.top,
+        // Keep this only as a renderer self-check. Snap generation does not use
+        // the fraction or infer any value/max distribution from it.
         travelFraction: (rect.bottom - lineRect.top) / rect.height,
       };
     }).filter(Boolean);
@@ -88,8 +92,15 @@ export async function captureProductionTracker(page, baseUrl, record, outputPath
   if (Math.abs(geometry.width - CSS_CARD_WIDTH) > 0.25 || Math.abs(geometry.height - CSS_CARD_HEIGHT) > 0.25) {
     throw new Error(`Unexpected production tracker geometry for ${record.id}: ${geometry.width} × ${geometry.height}.`);
   }
-  if (!geometry.marks.length || geometry.marks.some((mark) => !Number.isInteger(mark.value) || !(mark.travelFraction > 0))) {
+  if (!geometry.marks.length || geometry.marks.some((mark) => !Number.isInteger(mark.value) || !(mark.rendererTravelPx > 0))) {
     throw new Error(`Production tracker ${record.id} did not expose valid registration lines.`);
+  }
+  for (const mark of geometry.marks) {
+    const fractionDerivedPhysicalTravel = mark.travelFraction * PHYSICAL_CARD_HEIGHT;
+    const pixelDerivedPhysicalTravel = mark.rendererTravelPx / CSS_PX_PER_IN;
+    if (Math.abs(fractionDerivedPhysicalTravel - pixelDerivedPhysicalTravel) > 0.001) {
+      throw new Error(`Production tracker ${record.id} renderer pixel/fraction geometry disagrees at value ${mark.value}.`);
+    }
   }
 
   const values = geometry.marks.map((mark) => mark.value);
@@ -98,15 +109,18 @@ export async function captureProductionTracker(page, baseUrl, record, outputPath
     throw new Error(`Production tracker ${record.id} registration values are not consecutive from 1: ${values.join(', ')}.`);
   }
 
+  const zeroRegistration = { value: 0, offset: 0 };
   const snapPoints = [
-    { value: 0, offset: 0 },
+    { ...zeroRegistration, rendererTravelPx: 0 },
     ...geometry.marks.map((mark) => ({
       value: mark.value,
-      offset: round(mark.travelFraction * PHYSICAL_CARD_HEIGHT),
+      rendererTravelPx: round(mark.rendererTravelPx),
+      // Diagnostic only; exact TTS snaps consume rendererTravelPx directly.
+      offset: round(mark.rendererTravelPx / CSS_PX_PER_IN),
     })),
   ];
   for (let index = 1; index < snapPoints.length; index += 1) {
-    if (!(snapPoints[index].offset > snapPoints[index - 1].offset)) {
+    if (!(snapPoints[index].rendererTravelPx > snapPoints[index - 1].rendererTravelPx)) {
       throw new Error(`Production tracker ${record.id} registration offsets are not strictly increasing.`);
     }
   }
