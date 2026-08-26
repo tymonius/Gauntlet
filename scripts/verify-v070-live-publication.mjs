@@ -49,6 +49,10 @@ const sha256 = value => crypto.createHash('sha256').update(value).digest('hex');
 const urls = {
   home: 'https://gauntlet.run/',
   release: 'https://gauntlet.run/v0.7.0/',
+  start: 'https://gauntlet.run/start/',
+  cardReference: 'https://gauntlet.run/card-reference/',
+  deckbuilder: 'https://gauntlet.run/deckbuilder/',
+  arbiter: 'https://gauntlet.run/rules-arbiter/',
   browser: 'https://gauntlet.run/rulebook/',
   rulebook: 'https://gauntlet.run/releases/v0.7.0/Gauntlet_v0.7.0_Rulebook.md',
   manifest: 'https://gauntlet.run/releases/v0.7.0/Gauntlet_v0.7.0_Manifest.json',
@@ -59,9 +63,26 @@ const urls = {
   booklet: 'https://gauntlet.run/releases/v0.7.0/Gauntlet_v0.7.0_Rulebook_Booklet.pdf',
 };
 
-const [home, releaseLanding, browserRulebook, rulebookText, manifestText, canonicalText, startersText, provenanceText] = await Promise.all([
+const [
+  home,
+  releaseLanding,
+  startPage,
+  cardReferencePage,
+  deckbuilderPage,
+  arbiterPage,
+  browserRulebook,
+  rulebookText,
+  manifestText,
+  canonicalText,
+  startersText,
+  provenanceText,
+] = await Promise.all([
   readText(urls.home),
   readText(urls.release),
+  readText(urls.start),
+  readText(urls.cardReference),
+  readText(urls.deckbuilder),
+  readText(urls.arbiter),
   readText(urls.browser),
   readText(urls.rulebook),
   readText(urls.manifest),
@@ -80,6 +101,16 @@ if (!home.includes('Current canonical playtest edition · v0.7.0') || !home.incl
 }
 if (!releaseLanding.includes('Gauntlet v0.7.0') || !releaseLanding.includes('Illustrated Cards &amp; Tabletop Simulator') && !releaseLanding.includes('Illustrated Cards & Tabletop Simulator')) {
   throw new Error('v0.7.0 release landing page is not deployed.');
+}
+for (const [label, source, required] of [
+  ['Start Playing', startPage, ['canonical v0.7.0', 'Current playtest edition: v0.7.0']],
+  ['Card Reference', cardReferencePage, ['Current v0.7.0 production card reference.', 'v0.7.0 Release']],
+  ['Deckbuilder', deckbuilderPage, ['Gauntlet v0.7.0 Deckbuilder', 'canonical v0.7.0', 'v0.7.0 release']],
+  ['Rules Arbiter', arbiterPage, ['Gauntlet v0.7.0 Rules Arbiter', 'Rules support · v0.7.0']],
+]) {
+  for (const value of required) {
+    if (!source.includes(value)) throw new Error(`${label} is missing v0.7.0 identity: ${value}`);
+  }
 }
 if (!/Gauntlet v0\.7\.0 Browser Rulebook/.test(browserRulebook)) {
   throw new Error('Public Browser Rulebook is not v0.7.0.');
@@ -174,4 +205,31 @@ if (sha256(bookletBytes) !== manifest.pdf_outputs?.[0]?.sha256) {
 if (!browserRulebook.includes('data-ruleset="candidate" aria-pressed="false" hidden disabled')) {
   throw new Error('Public Browser Rulebook still exposes the archived candidate selector.');
 }
-console.log('gauntlet.run live verification passed for v0.7.0 publication with bound Rulebook, canonical data, provenance, Card Anatomy, and booklet assets.');
+const workerHealth = await fetchRetry(
+  'https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/health',
+  {},
+  30,
+  3000,
+);
+const workerPayload = await workerHealth.json();
+if (
+  workerPayload?.ok !== true
+  || workerPayload?.version !== 'v0.7.0'
+  || workerPayload?.currentPublicRelease !== 'v0.7.0'
+  || workerPayload?.published !== true
+) {
+  throw new Error(`Current Rules Arbiter Worker is not v0.7.0: ${JSON.stringify(workerPayload)}`);
+}
+
+const historicalWorkerHealth = await fetchRetry(
+  'https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/v063/health',
+  {},
+  12,
+  3000,
+);
+const historicalPayload = await historicalWorkerHealth.json();
+if (historicalPayload?.version !== 'v0.6.3' || historicalPayload?.currentPublicRelease !== 'v0.6.3') {
+  throw new Error(`Historical v0.6.3 Rules Arbiter route is not preserved: ${JSON.stringify(historicalPayload)}`);
+}
+
+console.log('gauntlet.run live verification passed for v0.7.0 publication with bound Rulebook, canonical data, provenance, Card Anatomy, booklet, and Rules Arbiter assets.');
