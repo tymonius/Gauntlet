@@ -277,11 +277,10 @@ function validateTerritoriesDeedsAndFactionEligibility(save, manifest) {
       throw new Error(`Territory ${card.Nickname || card.GUID} must begin at the host-facing stored rotation while board snaps leave control rotation free.`);
     }
     const lua = String(card.LuaScript || '');
-    if (!lua.includes('function tryRotate(spin, flip, player_color, old_spin, old_flip)')
-      || !lua.includes('self.rotate({x = 180, y = 0, z = 0})')
+    if (lua.includes('function tryRotate(spin, flip')
       || lua.includes('setRotationSmooth({x = flip')
       || lua.includes('use_rotation_value_flip')) {
-      throw new Error(`Territory ${card.Nickname || card.GUID} is missing the relative local-X flip behavior.`);
+      throw new Error(`Territory ${card.Nickname || card.GUID} still carries an obsolete flip-axis override; native TTS flipping must remain authoritative.`);
     }
     const overlaySnaps = (card.AttachedSnapPoints || []).filter(point => point?.Tags?.includes(TERRITORY_OVERLAY_TAG));
     if (overlaySnaps.length !== 1
