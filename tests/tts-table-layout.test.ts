@@ -13,6 +13,11 @@ function zoneContainsPoint(zone: any, x: number, z: number) {
     && Math.abs(z - zone.posZ) <= zone.scaleZ / 2;
 }
 
+const TEST_ENVIRONMENT = {
+  TableURL: 'https://github.com/tymonius/Gauntlet/releases/download/v0.7.0/Gauntlet_v0.7.0_TTS_Environment_Table.jpg',
+  SkyURL: 'https://github.com/tymonius/Gauntlet/releases/download/v0.7.0/Gauntlet_v0.7.0_TTS_Environment_Panorama.jpg',
+};
+
 describe('authoritative TTS table layout', () => {
   it('keeps every player workspace visible, including the one-card Hand parking area', () => {
     const text = buildTableTextObjects([]);
@@ -162,7 +167,7 @@ describe('authoritative TTS table layout', () => {
       Turns: { TurnColor: 'Green' },
     };
 
-    const result = applyTableLayout(save);
+    const result = applyTableLayout(Object.assign(save, TEST_ENVIRONMENT));
     expect(result.textObjectCount).toBe(28);
     expect(result.vectorLineCount).toBe(40);
     expect(result.snapPointCount).toBe(78);
@@ -209,7 +214,7 @@ describe('authoritative TTS table layout', () => {
       Note: '', Rules: '', Turns: {},
     };
 
-    applyTableLayout(save);
+    applyTableLayout(Object.assign(save, TEST_ENVIRONMENT));
     const [manifest, bombardment] = save.ObjectStates.find((object: any) => object.GUID === 'starter').ContainedObjects;
     expect(manifest.Tags).toContain('gauntlet-territory');
     expect(manifest.Tags).toContain('gauntlet-faction-zone');
@@ -227,7 +232,7 @@ describe('authoritative TTS table layout', () => {
       Turns: {},
     };
 
-    applyTableLayout(save);
+    applyTableLayout(Object.assign(save, TEST_ENVIRONMENT));
     expect(save.LuaScript).toBe('');
     expect(save.LuaScriptState).toBe('');
   });
@@ -248,7 +253,7 @@ describe('authoritative TTS table layout', () => {
       Note: '', Rules: '', Turns: {},
     };
 
-    applyTableLayout(save);
+    applyTableLayout(Object.assign(save, TEST_ENVIRONMENT));
     const territory = save.ObjectStates.find((object: any) => object.GUID === 'starter').ContainedObjects[0];
     expect(territory.CustomDeck).toEqual(originalCustomDeck);
     expect(territory.SidewaysCard).toBe(true);
