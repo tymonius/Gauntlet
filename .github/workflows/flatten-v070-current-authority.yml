@@ -50,4 +50,6 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add game-data/current-game.json
           git commit -m "Materialize flattened v0.7.0 current-game authority"
+          git fetch origin release/v0.7.0-refresh-prep
+          git rebase origin/release/v0.7.0-refresh-prep
           git push origin HEAD:release/v0.7.0-refresh-prep
