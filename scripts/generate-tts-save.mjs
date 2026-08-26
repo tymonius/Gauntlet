@@ -15,7 +15,7 @@ const FACTION_COLORS = Object.freeze({
 
 const LANDSCAPE_CARD_FLIP_SCRIPT = [
   'function onLoad()',
-  '  self.use_rotation_value_flip = true',
+  '  self.use_rotation_value_flip = false',
   'end',
 ].join('\n');
 
