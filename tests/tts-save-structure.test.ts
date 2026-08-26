@@ -81,16 +81,17 @@ describe('generated TTS table structure', () => {
 
   it('creates exactly the White and Green native TTS player hand configurations', () => {
     expect(save.Hands.Enable).toBe(true);
-    expect(save.Hands.DisableUnused).toBe(true);
+    expect(save.Hands.DisableUnused).toBe(false);
     expect(save.Hands.HandTransforms.map((hand) => hand.Color)).toEqual(['White', 'Green']);
-    expect(save.Hands.HandTransforms[0].Transform.posZ).toBeLessThan(0);
-    expect(save.Hands.HandTransforms[1].Transform.posZ).toBeGreaterThan(0);
+    expect(save.Hands.HandTransforms[0].Transform).toMatchObject({ posY: 4, posZ: -22.5, rotY: 0, scaleX: 7, scaleY: 6, scaleZ: 4 });
+    expect(save.Hands.HandTransforms[1].Transform).toMatchObject({ posY: 4, posZ: 22.5, rotY: 180, scaleX: 7, scaleY: 6, scaleZ: 4 });
   });
 
   it('creates the six center-line Gauntlet snap positions in order', () => {
     expect(save.SnapPoints).toHaveLength(6);
     expect(save.SnapPoints.map((point) => point.Position.x)).toEqual([0, 0, 0, 0, 0, 0]);
     expect(save.SnapPoints.map((point) => point.Position.z)).toEqual([-7.5, -4.5, -1.5, 1.5, 4.5, 7.5]);
+    expect(save.SnapPoints.every((point) => point.Rotation === undefined)).toBe(true);
   });
 
   it('keeps player utilities inside the selected faction starter Bag rather than on the table', () => {
@@ -100,6 +101,7 @@ describe('generated TTS table structure', () => {
 
     const bag = topLevel.find((object) => object.Name === 'Bag');
     expect(bag).toBeTruthy();
+    expect(bag.Transform.rotY).toBe(0);
     const die = bag.ContainedObjects.filter((object) => object.Name === 'Die_6');
     const token = bag.ContainedObjects.filter((object) => object.Name === 'PlayerPawn');
     expect(die).toHaveLength(1);
@@ -129,7 +131,9 @@ describe('generated TTS table structure', () => {
     expect(territories).toHaveLength(3);
     expect(territories.every((territory) => territory.SidewaysCard === true)).toBe(true);
     expect(territories.every((territory) => territory.Transform.rotY === 0)).toBe(true);
-    expect(territories.every((territory) => String(territory.LuaScript || '').includes('self.use_rotation_value_flip = true'))).toBe(true);
+    expect(territories.every((territory) => String(territory.LuaScript || '').includes('function tryRotate(spin, flip, player_color, old_spin, old_flip)'))).toBe(true);
+    expect(territories.every((territory) => String(territory.LuaScript || '').includes('self.setRotationSmooth({x = flip, y = spin, z = 0}, false, false)'))).toBe(true);
+    expect(territories.every((territory) => !String(territory.LuaScript || '').includes('use_rotation_value_flip'))).toBe(true);
     expect(territories.every((territory) => Object.values(territory.CustomDeck)
       .every((state) => state.BackURL === `https://example.invalid/${version}/${files.standardBack}`))).toBe(true);
     expect(bag.ContainedObjects.filter((object) => object.Name === 'PlayerPawn')).toHaveLength(1);
