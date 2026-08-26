@@ -1,44 +1,36 @@
 import { readFile } from 'node:fs/promises';
-import { join, resolve } from 'node:path';
+import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 export const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
-export const CURRENT_GAME_MANIFEST_SOURCE = 'game-data/current-game.json';
+export const CURRENT_GAME_AUTHORITY_SOURCE = 'game-data/current-game.json';
 
-let manifestPromise = null;
+let authorityPromise = null;
 
-function repositoryPath(source) {
-  const value = String(source || '').trim().replace(/^\/+/, '');
-  if (!value) throw new Error('Current-game authority declared an empty source path.');
-  return value;
+function validateAuthority(authority) {
+  if (authority?.schemaVersion !== 2 || authority?.authority !== 'current-game') {
+    throw new Error('Invalid complete current-game authority.');
+  }
+  if (!authority.version || !authority.gameplay || !authority.provenance) {
+    throw new Error('Current-game authority is missing version, gameplay, or provenance.');
+  }
+  for (const forbidden of ['sources', 'resolution', 'baseVersion', 'factionOverrides']) {
+    if (Object.prototype.hasOwnProperty.call(authority, forbidden)) {
+      throw new Error(`Current-game authority still exposes transitional field ${forbidden}.`);
+    }
+  }
+  return authority;
 }
 
-export async function loadCurrentGameManifest() {
-  if (!manifestPromise) {
-    manifestPromise = readFile(join(ROOT, CURRENT_GAME_MANIFEST_SOURCE), 'utf8')
+export async function loadCurrentGameAuthority() {
+  if (!authorityPromise) {
+    authorityPromise = readFile(resolve(ROOT, CURRENT_GAME_AUTHORITY_SOURCE), 'utf8')
       .then(JSON.parse)
-      .then(manifest => {
-        if (manifest?.schemaVersion !== 1 || manifest?.authority !== 'current-game') {
-          throw new Error('Invalid current-game authority manifest.');
-        }
-        return manifest;
-      })
+      .then(validateAuthority)
       .catch(error => {
-        manifestPromise = null;
+        authorityPromise = null;
         throw error;
       });
   }
-  return manifestPromise;
-}
-
-export async function resolveCurrentSourcePath(key) {
-  const manifest = await loadCurrentGameManifest();
-  const source = repositoryPath(manifest.sources?.[key]);
-  return { manifest, source, absolutePath: join(ROOT, source) };
-}
-
-export async function readCurrentJsonSource(key) {
-  const { manifest, source, absolutePath } = await resolveCurrentSourcePath(key);
-  const data = JSON.parse(await readFile(absolutePath, 'utf8'));
-  return { manifest, source, data };
+  return authorityPromise;
 }
