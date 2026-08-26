@@ -57,6 +57,9 @@ describe('v0.7.0 release candidate boundary', () => {
   });
   it('materializes v0.7.0 directly from maintained current authorities', () => {
     expect(releaseBuilder).toContain("readText('rulebook/player-facing/current-rulebook.md')");
+    expect(releaseBuilder).toContain('resolveFactionRules(baseGameplay.faction_rules, manifest)');
+    expect(releaseBuilder).toContain('resolveFactionRules, resolveRuleSection');
+    expect(releaseBuilder).not.toContain('function resolveFactionRules(');
     expect(releaseBuilder).not.toContain('applyReleaseCandidateRulebook');
     expect(releaseBuilder).not.toContain('applyFactionFeatureTerminology');
     expect(releaseBuilder).not.toContain('spliceReviewedChapter11');
@@ -71,6 +74,8 @@ describe('v0.7.0 release candidate boundary', () => {
     expect(bookletRenderer).toContain("page.goto('http://127.0.0.1:8000/rulebook/?rules=candidate'");
     expect(bookletRenderer).toContain(".card-anatomy-guide.markers-positioned .card-anatomy-figure");
     expect(bookletRenderer).toContain('figure.screenshot({ path: CARD_ANATOMY_PATH })');
+    expect(bookletRenderer).not.toContain('Promise.all([...document.images]');
+    expect(bookletRenderer).toContain("publication_date: null");
     expect(bookletRenderer).toContain("source_card: 'military-unbroken-ranks'");
     expect(materializer).toContain('Gauntlet_v0.7.0_Card_Anatomy.png');
   });
@@ -102,6 +107,7 @@ describe('v0.7.0 release candidate boundary', () => {
     expect(workerEntry).toContain('import v063Worker from "./worker-v063.js";');
     expect(workerEntry).toContain('requestedVersion === "v0.6.3"');
     expect(workerEntry).toContain('url.pathname === "/api/v063/rules"');
+    expect(workerEntry).toContain('url.pathname === "/api/v070/rules"');
     expect(arbiterApp).toContain('../rules-assistant/v070-public-corpus.js');
     expect(arbiterApp).toContain('const CURRENT_PUBLIC_RELEASE = "v0.7.0";');
   });
