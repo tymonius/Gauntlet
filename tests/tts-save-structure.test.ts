@@ -79,10 +79,10 @@ const starterManifest = {
 describe('generated TTS table structure', () => {
   const save = buildTtsSave(starterManifest, releaseAssets);
 
-  it('creates exactly the Red and Blue player hand configurations', () => {
+  it('creates exactly the White and Green native TTS player hand configurations', () => {
     expect(save.Hands.Enable).toBe(true);
     expect(save.Hands.DisableUnused).toBe(true);
-    expect(save.Hands.HandTransforms.map((hand) => hand.Color)).toEqual(['Red', 'Blue']);
+    expect(save.Hands.HandTransforms.map((hand) => hand.Color)).toEqual(['White', 'Green']);
     expect(save.Hands.HandTransforms[0].Transform.posZ).toBeLessThan(0);
     expect(save.Hands.HandTransforms[1].Transform.posZ).toBeGreaterThan(0);
   });
@@ -129,7 +129,7 @@ describe('generated TTS table structure', () => {
     expect(territories).toHaveLength(3);
     expect(territories.every((territory) => territory.SidewaysCard === true)).toBe(true);
     expect(territories.every((territory) => territory.Transform.rotY === 0)).toBe(true);
-    expect(territories.every((territory) => !String(territory.LuaScript || '').includes('use_rotation_value_flip'))).toBe(true);
+    expect(territories.every((territory) => String(territory.LuaScript || '').includes('self.use_rotation_value_flip = true'))).toBe(true);
     expect(territories.every((territory) => Object.values(territory.CustomDeck)
       .every((state) => state.BackURL === `https://example.invalid/${version}/${files.standardBack}`))).toBe(true);
     expect(bag.ContainedObjects.filter((object) => object.Name === 'PlayerPawn')).toHaveLength(1);
