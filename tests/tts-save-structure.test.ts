@@ -7,6 +7,8 @@ const files = {
   standardBack: 'backs/standard.png',
   factionBack: 'backs/military.png',
   leader: 'leaders/military-general.png',
+  table: 'tts/assets/environment/campaign-map-table.jpg',
+  panorama: 'tts/assets/environment/command-tent-panorama.jpg',
   territories: ['territories/one.png', 'territories/two.png', 'territories/three.png'],
 };
 
@@ -18,6 +20,8 @@ const releaseAssets = {
     files.standardBack,
     files.factionBack,
     files.leader,
+    files.table,
+    files.panorama,
     ...files.territories,
   ].map((file) => [file, `https://example.invalid/${version}/${file}`])),
 };
@@ -78,6 +82,13 @@ const starterManifest = {
 
 describe('generated TTS table structure', () => {
   const save = buildTtsSave(starterManifest, releaseAssets);
+
+  it('uses hosted environment assets instead of branch-local raw URLs', () => {
+    expect(save.Table).toBe('Table_Custom');
+    expect(save.Sky).toBe('Sky_Museum');
+    expect(save.TableURL).toBe(`https://example.invalid/${version}/${files.table}`);
+    expect(save.SkyURL).toBe(`https://example.invalid/${version}/${files.panorama}`);
+  });
 
   it('creates exactly the White and Green native TTS player hand configurations', () => {
     expect(save.Hands.Enable).toBe(true);
