@@ -64,7 +64,7 @@ describe('authoritative TTS table layout', () => {
       const xs = line.points3.map(point => point.x);
       const zs = line.points3.map(point => point.z);
       return Math.min(...xs) === -17.8 && Math.max(...xs) === -6.7
-        && Math.min(...zs) === -18.95 && Math.max(...zs) === -13.95;
+        && Math.min(...zs) === -21.45 && Math.max(...zs) === -11.45;
     });
     expect(whiteLeaderLines).toHaveLength(2);
   });
