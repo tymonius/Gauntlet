@@ -9,6 +9,7 @@ const SOURCE_VERSION = 'v0.6.4-candidate';
 const RELEASE_NAME = 'Illustrated Cards & Tabletop Simulator';
 const RELEASE_DIR = join(ROOT, 'releases', RELEASE_VERSION);
 const PUBLIC_DIR = join(ROOT, RELEASE_VERSION);
+// Publication consumes the maintained current Rulebook and current-game authorities directly.
 
 const jsonText = value => `${JSON.stringify(value, null, 2)}\n`;
 const sha256 = value => crypto.createHash('sha256').update(value).digest('hex');
