@@ -2,6 +2,7 @@ import {
   fitReferenceCard,
   referenceCardMarkup,
 } from '/card-design/reference-card.js';
+import { materializeGauntletEmblem } from './gauntlet-emblem.js';
 
 const params = new URLSearchParams(window.location.search);
 const componentId = params.get('component') || '';
@@ -12,15 +13,6 @@ const riteSymbols = Object.freeze({
   'mystics-rite-echoes': '◉',
   'mystics-rite-blood': '◆',
   'mystics-rite-crossing': '✦',
-});
-
-// Reference components that need a literal image instead of the ordinary
-// faction-symbol mask declare that image here. The Universal Reference uses the
-// canonical Gauntlet wordmark itself and clips its left-hand G inside the
-// standard emblem slot. This keeps the generated pixels dependent on an actual
-// loaded <img>, not CSS masking/background behavior.
-const referenceEmblemImages = Object.freeze({
-  'universal-reference': '/images/Gauntlet.svg',
 });
 
 function element(tag, className, text = '') {
@@ -146,79 +138,11 @@ function referenceFitDiagnostics(card, result) {
   return `scale=${Number(result.scale).toFixed(3)} gap=${Number(result.sectionGap).toFixed(3)}in body=${bodyMetrics} panels=[${panelMetrics}]`;
 }
 
-function waitForImage(image, label) {
-  if (image.complete) {
-    if (image.naturalWidth > 0 && image.naturalHeight > 0) return Promise.resolve();
-    return Promise.reject(new Error(`${label} completed without drawable image data.`));
-  }
-  return new Promise((resolve, reject) => {
-    const timeout = setTimeout(() => reject(new Error(`${label} timed out while loading.`)), 15000);
-    image.addEventListener('load', () => {
-      clearTimeout(timeout);
-      resolve();
-    }, { once: true });
-    image.addEventListener('error', () => {
-      clearTimeout(timeout);
-      reject(new Error(`${label} failed to load.`));
-    }, { once: true });
-  });
-}
-
-function assertLeftCropHasPixels(image, label) {
-  const canvas = document.createElement('canvas');
-  canvas.width = 64;
-  canvas.height = 64;
-  const context = canvas.getContext('2d', { willReadFrequently: true });
-  if (!context) throw new Error(`${label} could not create a pixel-validation canvas.`);
-
-  // The stylized G occupies the leftmost portion of the canonical wordmark.
-  // Validate that the exact source region being clipped into the emblem slot
-  // actually contains rendered pixels before the screenshot is declared ready.
-  const cropWidth = Math.max(1, image.naturalWidth * 0.25);
-  context.clearRect(0, 0, canvas.width, canvas.height);
-  context.drawImage(
-    image,
-    0,
-    0,
-    cropWidth,
-    image.naturalHeight,
-    0,
-    0,
-    canvas.width,
-    canvas.height,
-  );
-  const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
-  let visiblePixels = 0;
-  for (let index = 3; index < pixels.length; index += 4) {
-    if (pixels[index] > 8) visiblePixels += 1;
-  }
-  if (visiblePixels < 16) throw new Error(`${label} loaded but its clipped source region contains no visible emblem pixels.`);
-}
-
 async function materializeReferenceEmblem(card, record) {
-  const src = referenceEmblemImages[record.id];
-  if (!src) return;
-
+  if (record.id !== 'universal-reference') return;
   const slot = card.querySelector('.reference-faction-emblem');
   if (!slot) throw new Error(`Reference card ${record.id} has no emblem slot.`);
-
-  slot.replaceChildren();
-  slot.classList.add('reference-faction-emblem--image');
-  const image = document.createElement('img');
-  image.className = 'reference-faction-emblem-image';
-  image.alt = '';
-  image.setAttribute('aria-hidden', 'true');
-  image.src = src;
-  slot.append(image);
-
-  await waitForImage(image, `${record.id} emblem`);
-  assertLeftCropHasPixels(image, `${record.id} emblem`);
-
-  const slotRect = slot.getBoundingClientRect();
-  const imageRect = image.getBoundingClientRect();
-  if (!(slotRect.width > 0 && slotRect.height > 0 && imageRect.width > slotRect.width && imageRect.height > 0)) {
-    throw new Error(`Reference card ${record.id} emblem image does not occupy the clipped emblem slot.`);
-  }
+  await materializeGauntletEmblem(slot);
 }
 
 function renderReference(record, sideName, gameVersion) {
@@ -252,9 +176,6 @@ async function main() {
   const record = (catalog.ready || []).find(item => item.id === componentId);
   if (!record) throw new Error(`Unknown ready supplemental component: ${componentId || 'missing'}`);
 
-  // TTS supplemental records predate the bespoke-copy flag. Infer it from the
-  // dedicated player-aid source path so reference-card presentation selectors
-  // cannot re-filter approved bespoke copy through the old guide-derived map.
   if (record.renderer === 'reference-card' && String(record.source || '').includes('/reference-copy/')) {
     record.copyMode = 'bespoke';
   }
