@@ -126,8 +126,8 @@ function validateHandsAndSeats(save) {
     [blue, 'Blue', 20.25, 180, 18.25],
   ];
   for (const [hand, side, z, rotY, parkingZ] of expectedHands) {
-    if (!close(hand.Transform?.posX, 0) || !close(hand.Transform?.posZ, z) || !close(hand.Transform?.rotY, rotY)
-      || !close(hand.Transform?.scaleX, 7) || !close(hand.Transform?.scaleY, 2) || !close(hand.Transform?.scaleZ, 8)) {
+    if (!close(hand.Transform?.posX, 0) || !close(hand.Transform?.posY, 4) || !close(hand.Transform?.posZ, z) || !close(hand.Transform?.rotY, rotY)
+      || !close(hand.Transform?.scaleX, 7) || !close(hand.Transform?.scaleY, 6) || !close(hand.Transform?.scaleZ, 8)) {
       throw new Error(`${side} hand transform does not match the unified parking-plus-Reserve geometry.`);
     }
     if (!zoneContainsPoint(hand.Transform, 0, parkingZ)) {
