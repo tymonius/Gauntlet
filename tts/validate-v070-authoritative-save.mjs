@@ -7,6 +7,7 @@ const SUPPLEMENTAL_GUID_NOTE_PREFIX = 'gauntlet:supplemental:';
 const SUPPLEMENTAL_STACK_NOTE_PREFIX = 'gauntlet:supplemental-stack:';
 const PLAYER_TOKEN_NOTE_PREFIX = 'gauntlet:starter-utility:player-token:';
 const BATTLE_DIE_NOTE_PREFIX = 'gauntlet:starter-utility:battle-die:';
+const PRIVATE_PARKING_NOTE_PREFIX = 'gauntlet:private-parking:';
 const TERRITORY_TAG = 'gauntlet-territory';
 const DEED_TAG = 'gauntlet-deed';
 const DEED_STACK_TAG = 'gauntlet-deed-stack';
@@ -75,8 +76,8 @@ function validateTableWorkspace(save) {
   const faction = save.SnapPoints.filter(point => point.Tags?.includes(FACTION_ZONE_TAG));
   const deedStackMagnets = save.SnapPoints.filter(point => point.Tags?.includes(DEED_STACK_TAG));
 
-  if (territory.length !== 8 || territory.some(point => !close(point.Rotation?.y, 90))) {
-    throw new Error('Territory table snaps do not match the eight-position landscape contract.');
+  if (territory.length !== 8 || territory.some(point => point.Rotation !== undefined)) {
+    throw new Error('Territory table snaps must constrain position only so Y rotation remains available to indicate control.');
   }
   if (deeds.length !== 16 || deeds.some(point => !close(Math.abs(point.Position?.x), 4.35) || !close(point.Rotation?.y, 90))) {
     throw new Error('Deed table snaps must remain landscape at ±4.35 / rotation 90.');
@@ -122,20 +123,20 @@ function validateHandsAndSeats(save) {
   if (!white || !green) throw new Error('Missing White or Green hand transform.');
 
   const expectedHands = [
-    [white, 'White', -20.25, 0, -18.25],
-    [green, 'Green', 20.25, 180, 18.25],
+    [white, 'White', -22.5, 0, -18.25],
+    [green, 'Green', 22.5, 180, 18.25],
   ];
   for (const [hand, side, z, rotY, parkingZ] of expectedHands) {
     if (!close(hand.Transform?.posX, 0) || !close(hand.Transform?.posY, 4) || !close(hand.Transform?.posZ, z) || !close(hand.Transform?.rotY, rotY)
-      || !close(hand.Transform?.scaleX, 7) || !close(hand.Transform?.scaleY, 6) || !close(hand.Transform?.scaleZ, 8)) {
-      throw new Error(`${side} hand transform does not match the unified parking-plus-Reserve geometry.`);
+      || !close(hand.Transform?.scaleX, 7) || !close(hand.Transform?.scaleY, 6) || !close(hand.Transform?.scaleZ, 4)) {
+      throw new Error(`${side} Reserve hand transform does not match the outward-only geometry.`);
     }
-    if (!zoneContainsPoint(hand.Transform, 0, parkingZ)) {
-      throw new Error(`${side} visible Hand parking snap is not inside the same private Hand zone as the Reserve.`);
+    if (zoneContainsPoint(hand.Transform, 0, parkingZ)) {
+      throw new Error(`${side} Reserve Hand zone overlaps the tabletop parking snap.`);
     }
   }
 
-  // The unified private zone must not swallow ordinary public workspaces.
+  // Reserve must not swallow ordinary public workspaces.
   for (const [hand, side, publicPoints] of [
     [white, 'White', [[-1.55, -13.55], [1.55, -13.55], [17.15, -17.75]]],
     [green, 'Green', [[1.55, 13.55], [-1.55, 13.55], [-17.15, 17.75]]],
@@ -151,7 +152,20 @@ function validateHandsAndSeats(save) {
     throw new Error(`Found ${handTriggers.length} duplicate HandTrigger ObjectStates. Hands.HandTransforms is the serialized TTS hand-zone authority.`);
   }
   const fogVolumes = objects.filter(object => object?.Name === 'FogOfWarTrigger');
-  if (fogVolumes.length) throw new Error(`Found ${fogVolumes.length} obsolete FogOfWarTrigger objects.`);
+  const parkingZones = fogVolumes.filter(object => String(object.GMNotes || '').startsWith(PRIVATE_PARKING_NOTE_PREFIX));
+  if (parkingZones.length !== 2 || fogVolumes.length !== 2) {
+    throw new Error(`Expected exactly two player-private tabletop parking Hidden Zones; found ${parkingZones.length} parking / ${fogVolumes.length} total hidden zones.`);
+  }
+  for (const [side, z, rotY] of [['White', -18.25, 0], ['Green', 18.25, 180]]) {
+    const zone = parkingZones.find(object => object.FogColor === side);
+    if (!zone || zone.GMNotes !== `${PRIVATE_PARKING_NOTE_PREFIX}${side.toLowerCase()}`
+      || zone.FogReverseHiding !== false || zone.FogSeethrough !== true || zone.FogHidePointers !== true || zone.Hands !== false
+      || !close(zone.Transform?.posX, 0) || !close(zone.Transform?.posY, 2.5) || !close(zone.Transform?.posZ, z)
+      || !close(zone.Transform?.rotY, rotY) || !close(zone.Transform?.scaleX, 2.85)
+      || !close(zone.Transform?.scaleY, 5) || !close(zone.Transform?.scaleZ, 4)) {
+      throw new Error(`${side} tabletop parking Hidden Zone is missing or malformed.`);
+    }
+  }
 
   const handEligible = objects.filter(object => object?.Name === 'CardCustom' || object?.Name === 'DeckCustom');
   if (!handEligible.length || handEligible.some(object => object.Hands !== true)) {
@@ -173,6 +187,7 @@ function validateBagsAndUtilities(save) {
 
   const byFaction = new Map();
   for (const bag of bags) {
+    if (!close(bag.Transform?.rotY, 0)) throw new Error(`${bag.Nickname} starter Bag is not oriented toward the White/host side.`);
     const objects = bag.ContainedObjects || [];
     const token = objects.filter(object => object?.Name === 'PlayerPawn' && String(object.GMNotes || '').startsWith(PLAYER_TOKEN_NOTE_PREFIX));
     const die = objects.filter(object => object?.Name === 'Die_6' && String(object.GMNotes || '').startsWith(BATTLE_DIE_NOTE_PREFIX));
@@ -233,11 +248,14 @@ function validateTerritoriesDeedsAndFactionEligibility(save, manifest) {
   if (!territories.length) throw new Error('No tagged Territory cards found.');
   for (const card of territories) {
     if (card.SidewaysCard !== true) throw new Error(`Territory ${card.Nickname || card.GUID} is not marked SidewaysCard.`);
-    if (!close(card.Transform?.rotY, 0)) {
-      throw new Error(`Territory ${card.Nickname || card.GUID} must keep its native local rotation until the table snap point places it.`);
+    if (!close(card.Transform?.rotX, 0) || !close(card.Transform?.rotY, 0) || !close(card.Transform?.rotZ, 0)) {
+      throw new Error(`Territory ${card.Nickname || card.GUID} must begin at native local rotation so board snaps do not encode control.`);
     }
-    if (!String(card.LuaScript || '').includes('self.use_rotation_value_flip = true')) {
-      throw new Error(`Territory ${card.Nickname || card.GUID} must use the alternate flip axis at native local rotation.`);
+    const lua = String(card.LuaScript || '');
+    if (!lua.includes('function tryRotate(spin, flip, player_color, old_spin, old_flip)')
+      || !lua.includes('self.setRotationSmooth({x = flip, y = spin, z = 0}, false, false)')
+      || lua.includes('use_rotation_value_flip')) {
+      throw new Error(`Territory ${card.Nickname || card.GUID} is missing the control-preserving local-X flip behavior.`);
     }
   }
 
