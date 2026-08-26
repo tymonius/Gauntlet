@@ -128,6 +128,10 @@ describe('generated TTS table structure', () => {
     expect(leader[0].CardID).toBe(10000);
     expect(territories).toHaveLength(3);
     expect(territories.every((territory) => territory.SidewaysCard === true)).toBe(true);
+    expect(territories.every((territory) => territory.Transform.rotY === 90)).toBe(true);
+    expect(territories.every((territory) => territory.LuaScript.includes('self.use_rotation_value_flip = true'))).toBe(true);
+    expect(territories.every((territory) => Object.values(territory.CustomDeck)
+      .every((state) => state.BackURL === `https://example.invalid/${version}/${files.standardBack}`))).toBe(true);
     expect(bag.ContainedObjects.filter((object) => object.Name === 'PlayerPawn')).toHaveLength(1);
     expect(bag.ContainedObjects.filter((object) => object.Name === 'Die_6')).toHaveLength(1);
   });
