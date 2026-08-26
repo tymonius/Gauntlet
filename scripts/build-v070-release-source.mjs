@@ -83,7 +83,7 @@ function stripInternalAuditMetadata(value) {
   if (Array.isArray(value)) return value.map(stripInternalAuditMetadata);
   if (!value || typeof value !== 'object') return value;
   return Object.fromEntries(Object.entries(value)
-    .filter(([key]) => !['auditHeadings', 'audit_notes', 'v063_language_review'].includes(key))
+    .filter(([key]) => !['auditHeadings', 'audit_notes', 'language_review', 'v063_language_review'].includes(key))
     .map(([key, child]) => [key, stripInternalAuditMetadata(child)]));
 }
 
