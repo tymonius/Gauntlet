@@ -44,7 +44,6 @@ if (!built) throw new Error(`GitHub Pages did not report ${publishedSha} built w
 const cacheBust = `publication=${encodeURIComponent(publishedSha)}`;
 const fetchPublic = url => fetchRetry(`${url}${url.includes('?') ? '&' : '?'}${cacheBust}`);
 const readText = async url => (await fetchPublic(url)).text();
-const readBytes = async url => Buffer.from(await (await fetchPublic(url)).arrayBuffer());
 const sha256 = value => crypto.createHash('sha256').update(value).digest('hex');
 
 const urls = {
@@ -64,7 +63,7 @@ const [home, releaseLanding, browserRulebook, rulebookText, manifestText, canoni
   readText(urls.home),
   readText(urls.release),
   readText(urls.browser),
-  readText(urls.browserRulebook),
+  readText(urls.rulebook),
   readText(urls.manifest),
   readText(urls.canonical),
   readText(urls.starters),
@@ -89,7 +88,7 @@ if (
   manifest.release_version !== 'v0.7.0'
   || manifest.status !== 'current'
   || !manifest.authority_set_id
-  || !/^\\d{4}-\\d{2}-\\d{2}$/.test(manifest.publication_date || '')
+  || !/^\d{4}-\d{2}-\d{2}$/.test(manifest.publication_date || '')
 ) {
   throw new Error(`Unexpected public v0.7.0 manifest: ${JSON.stringify(manifest)}`);
 }
@@ -129,7 +128,7 @@ const mystics = canonical.gameplay.factions.find(faction => faction.id === 'myst
 if (mystics?.resource !== null || mystics?.progression !== 'Rites') {
   throw new Error('Public Mystics Resource/Progression classifications are stale.');
 }
-const retired = /\\bpending(?:-|\\s+)battles?\\b|\\bFaction Actions?\\b|\\bFaction Abilit(?:y|ies)\\b|\\bfaction procedure\\b/i;
+const retired = /\bpending(?:-|\s+)battles?\b|\bFaction Actions?\b|\bFaction Abilit(?:y|ies)\b|\bfaction procedure\b/i;
 if (retired.test(rulebookText)) throw new Error('Public v0.7.0 Rulebook contains retired terminology.');
 if (retired.test(JSON.stringify(canonical))) throw new Error('Public v0.7.0 canonical data contains retired terminology.');
 if (!rulebookText.includes('## Card anatomy') || !rulebookText.includes('![Card anatomy diagram]') || !rulebookText.includes('Terms occur during Onset')) {
