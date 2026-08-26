@@ -76,10 +76,10 @@ export async function captureProductionTracker(page, baseUrl, record, outputPath
       const value = Number.parseInt(String(label.textContent || '').trim(), 10);
       return {
         value,
-        // This is the actual rendered distance the covering card must move so
-        // its bottom edge lands on this line. Do not reconstruct it from
-        // value/max or spread registrations over the card height later.
         rendererTravelPx: rect.bottom - lineRect.top,
+        // Keep this only as a renderer self-check. Snap generation does not use
+        // the fraction or infer any value/max distribution from it.
+        travelFraction: (rect.bottom - lineRect.top) / rect.height,
       };
     }).filter(Boolean);
     return {
@@ -95,6 +95,13 @@ export async function captureProductionTracker(page, baseUrl, record, outputPath
   if (!geometry.marks.length || geometry.marks.some((mark) => !Number.isInteger(mark.value) || !(mark.rendererTravelPx > 0))) {
     throw new Error(`Production tracker ${record.id} did not expose valid registration lines.`);
   }
+  for (const mark of geometry.marks) {
+    const fractionDerivedPhysicalTravel = mark.travelFraction * PHYSICAL_CARD_HEIGHT;
+    const pixelDerivedPhysicalTravel = mark.rendererTravelPx / CSS_PX_PER_IN;
+    if (Math.abs(fractionDerivedPhysicalTravel - pixelDerivedPhysicalTravel) > 0.001) {
+      throw new Error(`Production tracker ${record.id} renderer pixel/fraction geometry disagrees at value ${mark.value}.`);
+    }
+  }
 
   const values = geometry.marks.map((mark) => mark.value);
   const expectedValues = Array.from({ length: Math.max(...values) }, (_, index) => index + 1);
@@ -102,20 +109,19 @@ export async function captureProductionTracker(page, baseUrl, record, outputPath
     throw new Error(`Production tracker ${record.id} registration values are not consecutive from 1: ${values.join(', ')}.`);
   }
 
+  const zeroRegistration = { value: 0, offset: 0 };
   const snapPoints = [
-    { value: 0, rendererTravelPx: 0, offset: 0 },
+    { ...zeroRegistration, rendererTravelPx: 0 },
     ...geometry.marks.map((mark) => ({
       value: mark.value,
       rendererTravelPx: round(mark.rendererTravelPx),
-      // Retain the physical offset as diagnostic manifest data, but TTS snap
-      // generation consumes rendererTravelPx directly so no later code can
-      // redistribute the registrations across the whole card.
+      // Diagnostic only; exact TTS snaps consume rendererTravelPx directly.
       offset: round(mark.rendererTravelPx / CSS_PX_PER_IN),
     })),
   ];
   for (let index = 1; index < snapPoints.length; index += 1) {
     if (!(snapPoints[index].rendererTravelPx > snapPoints[index - 1].rendererTravelPx)) {
-      throw new Error(`Production tracker ${record.id} renderer registration positions are not strictly increasing.`);
+      throw new Error(`Production tracker ${record.id} registration offsets are not strictly increasing.`);
     }
   }
 
