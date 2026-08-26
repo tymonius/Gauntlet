@@ -12,6 +12,8 @@ const FACTION_COLORS = Object.freeze({
   mystics: { r: 0.365, g: 0.204, b: 0.494 },
   inquisition: { r: 0.651, g: 0.478, b: 0.153 },
 });
+const TABLE_IMAGE_SOURCE = 'tts/assets/environment/campaign-map-table.jpg';
+const PANORAMA_IMAGE_SOURCE = 'tts/assets/environment/command-tent-panorama.jpg';
 
 
 function jsonText(value) {
@@ -264,6 +266,9 @@ function buildTtsSave(starterManifest, releaseAssets) {
   const starters = starterManifest.decks || [];
   if (!starters.length) throw new Error('Starter manifest contains no starter decks.');
 
+  const tableUrl = requireHostedUrl(releaseAssets, TABLE_IMAGE_SOURCE);
+  const panoramaUrl = requireHostedUrl(releaseAssets, PANORAMA_IMAGE_SOURCE);
+
   const guid = makeGuidFactory();
   const starterKits = starters.map(starter => buildStarterKit(starter, releaseAssets, starterBagTransform(starter, starters), guid));
   const territoryZ = [-7.5, -4.5, -1.5, 1.5, 4.5, 7.5];
@@ -282,8 +287,10 @@ function buildTtsSave(starterManifest, releaseAssets) {
     Gravity: 0.5,
     PlayArea: 0.5,
     Date: '',
-    Table: 'Table_RPG',
-    Sky: 'Sky_Field',
+    Table: 'Table_Custom',
+    TableURL: tableUrl,
+    Sky: 'Sky_Museum',
+    SkyURL: panoramaUrl,
     Note: note,
     Rules: note,
     XmlUI: '',
