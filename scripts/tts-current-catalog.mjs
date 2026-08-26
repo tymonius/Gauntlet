@@ -163,6 +163,7 @@ export async function loadCurrentLeaders() {
       faction: factionId,
       factionLabel: leader.factionLabel || factionId,
       canonicalImage: leader.image || null,
+      artDirection: authority.artDirection?.[`${factionId}-${id}`] || authority.artDirection?.[id] || leader.artDirection || null,
       source: CURRENT_GAME_SOURCE,
     }));
   }
