@@ -1,77 +1,98 @@
 # Current Gauntlet game data
 
-`game-data/current-game.json` is the root authority for the active Gauntlet development build, with `game-data/current-game.mjs` responsible for resolving the full current-game object consumed by runtime surfaces.
+`game-data/current-game.json` is the **complete current gameplay authority** for Gauntlet v0.7.0.
 
-Current-development tools and render surfaces must **not** choose versioned source files independently. They consume the resolved current-game service in `game-data/current-game.mjs` (browser/runtime) or the corresponding Node authority helpers under `scripts/`.
+It is not a manifest, patch list, overlay, or source-precedence declaration. Current browser tools, TTS generation, card/component renderers, Deckbuilder, Card Reference, and release publication load this document directly.
 
-## Authority model
+`rulebook/player-facing/current-rulebook.md` is the corresponding complete current Rulebook authority.
 
-The current-game authority declares or centrally resolves:
+## Single-source model
 
-- the active development version and base release;
-- the provenance inputs that define the current playable-card pool;
-- the complete current Territory and Proposal sources;
-- current shared-rule overrides, including battle-sequence terminology and timing;
-- current Arcane-symbol clarification rules;
-- current Leader definitions;
-- current Mystics Rite/Ritual definitions;
-- the current physical-component contract;
-- canonical manual artwork positioning saved by the Card Design compositor;
-- explicit resolution semantics for additions, revisions, retirements, and rule-driven wording migrations.
+The current gameplay authority directly contains:
 
-The resolver turns those inputs into one current-game object. A consumer receives that resolved object; it does not decide source precedence itself.
+- all 142 playable cards;
+- all 25 Territories and Arenas;
+- all six faction records and resolved faction rules;
+- all 12 structured Leader definitions;
+- the Faction Feature taxonomy and each faction's shared Features;
+- all nine Diplomat Proposals;
+- Mystics Rite/Ritual data;
+- Arcane-symbol rules;
+- the physical-component contract;
+- all 12 recommended starter Decks;
+- canonical artwork-direction data used by production renderers.
 
-For playable cards, stable IDs are authoritative. Resolution is:
+No current consumer should merge v0.6.3 data with v0.6.4 change documents to reconstruct the game.
 
-1. begin with the immutable base-release card pool;
-2. remove declared retirements;
-3. replace any existing stable ID supplied by the current card-change source;
-4. add any new stable ID supplied by the current card-change source;
-5. apply any card-text overrides required by the current shared rules.
+## Historical derivation
 
-This makes an update to an existing card propagate exactly like a new card: once the authority's current change record is updated, every current consumer sees the same resolved card. Rule migrations that require mechanical terminology changes can likewise update inherited cards without modifying the immutable base release.
+The authority's `provenance` object records the historical v0.6.3 and v0.6.4 documents from which v0.7.0 was derived.
 
-## Shared rules
+Those paths are **history only**. They may be used by archival tests, historical-release reproduction, or explicit migration/provenance tooling. They are not runtime inputs, override layers, or alternate current authorities.
 
-The active shared-rules source is selected by `current-game.json` and resolved over the immutable base release. Current rules may replace or remove fields inherited from the base release; published release snapshots are never rewritten to simulate the new rule.
+In particular, these historical files do not participate in current resolution:
 
-The v0.6.4 candidate currently uses this mechanism for the Onset migration: **Onset is the first phase of the battle sequence and replaces Pending Battle as a separate game state.** The current rules source also supplies the corresponding card wording and Rules Arbiter text.
+- `docs/v0.6.4-card-additions.json`
+- `docs/v0.6.4-territories.json`
+- `docs/v0.6.4-diplomat-proposals.json`
+- `docs/v0.6.4-arcane-symbol.json`
+- `docs/v0.6.4-rules.json`
+- reconstructed v0.6.3 canonical gameplay data.
 
-Current digital rules implementations must model the resolved current rule rather than expose obsolete base-release states merely because the base release remains available for provenance.
+## Runtime adapter
+
+`game-data/current-game.mjs` loads only `game-data/current-game.json`.
+
+Its responsibilities are limited to:
+
+- validating the complete authority;
+- exposing convenient lookup methods such as `findCard()`, `findTerritory()`, and `findLeader()`;
+- supplying harmless runtime compatibility views such as iterable Leader sections;
+- cloning/freezing data so consumers cannot mutate shared authority state.
+
+It must not add, retire, replace, merge, or rewrite game mechanics.
+
+Node tooling uses `scripts/current-game-authority.mjs`, which likewise reads only the complete authority.
+
+## Rulebook authority
+
+`rulebook/player-facing/current-rulebook.md` is natively **Version 0.7.0**.
+
+It contains the complete current rules and is not reconstructed from the v0.6.3 Rulebook, chapter patches, terminology transformations, or candidate overlays.
+
+Publication may derive presentation-only artifacts from it—such as the printable Card Anatomy figure and booklet PDF—but may not change gameplay rules.
 
 ## Artwork positioning
 
-The Card Design compositor remains the authoring surface for manual artwork composition. Its canonical save file is `tts/artwork-direction-overrides.js`, keyed by the same stable card/Territory IDs used by current-game data.
+Canonical artwork direction is embedded in `current-game.json` under `artDirection`.
 
-`game-data/current-game.mjs` resolves that canonical input into `currentGame.artDirection` and `currentGame.artDirectionFor(id)`. Current production card and Territory renderers consume those resolved values rather than independently loading an artwork-position source. Because Card Reference, Deckbuilder previews, and Deckbuilder printing reuse those production renderers, an approved compositor save propagates to all of them.
+The Card Design compositor may continue using its authoring file while artwork is being adjusted, but an approved current authority must contain the resulting resolved positions. Production consumers read the authority, not a second artwork-position source.
 
-The existing artwork-authoring GitHub App does not need additional repository permissions, OAuth changes, new secrets, or a different save path for this arrangement: it continues to update the same canonical file on the same authoring branch and open/reuse the same pull request. The authority change is downstream consumption, not a new privileged operation.
+## Published releases
 
-## What may remain version-pinned
+Published release snapshots remain immutable.
 
-Published release snapshots are immutable historical artifacts. Release-generation and release-verification code may intentionally target a named published release when its job is explicitly to reproduce that release.
+The v0.7.0 publication pipeline copies the complete gameplay and Rulebook authorities, generates publication-only assets, hashes the result, and freezes the package. It does not replay historical migrations.
 
-That is different from a current-development consumer. Card Reference, Deckbuilder, Card Design, production review/print renderers, Rules Arbiter candidate corpus, and current digital-game adapters must resolve through the current-game authority.
+Historical release tooling may intentionally load historical files when its explicit purpose is to reproduce or inspect that historical version. Such code must not be used by unversioned or current v0.7.0 runtime surfaces.
 
-## Adding or changing current content
+## Changing current gameplay
 
-Do **not** add a new source URL or merge rule to an individual UI, renderer, or tool.
+For v0.7.0 release preparation, edit the complete current authority—not an old change document.
 
-Instead:
+After v0.7.0 is frozen, future development should create the next complete current authority as its own versioned development state. Migration tools may help construct that state, but the resulting authority must again be self-contained before it becomes the current source.
 
-1. update the appropriate authority input, or add a new input declaration to `current-game.json` if a genuinely new content family is introduced;
-2. teach the central resolver how that family resolves, if necessary;
-3. consume the resolved field from downstream tools;
-4. add or update authority tests so direct source selection cannot creep back into downstream code.
-
-Physical card components follow the same rule. Their identity, quantity, production status, renderer declaration, and back policy come from the component contract selected by the current-game authority. Presentation geometry may remain local to a renderer because it is layout, not game data.
-
-## Static build adapters
-
-Some TypeScript build surfaces cannot dynamically import an arbitrary JSON path at runtime. Those adapters must import `current-game.json`, verify that any statically bundled input is the exact source declared by the authority, and fail the build on a mismatch. They must not define their own precedence or version selection.
+Do **not** introduce a new current UI or tool that selects its own versioned gameplay file or layers corrections over an older release.
 
 ## Guardrails
 
-`tests/current-game-authority.test.ts` prevents active runtime surfaces from directly selecting the raw v0.6.4 source files, verifies stable-ID replacement/retirement semantics and current rule-driven card wording, and verifies that compositor-authored artwork direction is resolved through current-game before production rendering. `tests/deckbuilder-territory-preview.test.ts` guards the Deckbuilder Territory pane so it continues to use the actual 3.5 × 2.5 production Territory renderer rather than reconstructing Territory text locally.
+`tests/current-game-authority.test.ts` enforces the single-source architecture. It fails if current runtime, TTS, or release publication reintroduces:
 
-If a future current-development tool needs game data or shared rules, the default answer is: **load the current-game authority, not another versioned file.**
+- base-game source selection;
+- card-change resolution;
+- rule override resolution;
+- separate current Territory/Proposal/starter sources;
+- transitional `sources`, `resolution`, `baseVersion`, or `factionOverrides` fields;
+- retired current terminology.
+
+The default rule is simple: **current gameplay comes from `game-data/current-game.json`; current rules come from `rulebook/player-facing/current-rulebook.md`.**
