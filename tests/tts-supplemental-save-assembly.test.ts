@@ -132,10 +132,9 @@ describe('TTS ready supplemental save assembly', () => {
     expect(stack.Name).toBe('DeckCustom');
     expect(stack.ContainedObjects).toHaveLength(8);
     expect(stack.SidewaysCard).toBe(true);
-    expect(stack.Transform.rotY).toBe(90);
+    expect(stack.Transform.rotY).toBe(270);
     expect(stack.Tags).toContain('gauntlet-deed-stack');
     expect(stack.Tags).toContain('gauntlet-faction-zone');
-    expect(stack.Transform.rotY).toBe(270);
     expect(stack.ContainedObjects.every((deed: any) => deed.Tags.includes('gauntlet-deed'))).toBe(true);
     expect(stack.ContainedObjects.every((deed: any) => deed.Tags.includes('gauntlet-faction-zone'))).toBe(true);
   });
