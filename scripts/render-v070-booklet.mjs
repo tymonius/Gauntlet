@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
+import { chromium } from 'playwright';
 
 const ROOT = process.cwd();
 const RELEASE_VERSION = 'v0.7.0';
@@ -13,6 +14,7 @@ const STARTERS_PATH = path.join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Starte
 const PROVENANCE_PATH = path.join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Source_Provenance.json`);
 const BOOKLET_PATH = path.join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Rulebook_Booklet.pdf`);
 const MANIFEST_PATH = path.join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Manifest.json`);
+const CARD_ANATOMY_PATH = path.join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Card_Anatomy.png`);
 const PLAYER_CHAPTER_11_PATH = path.join(ROOT, 'rulebook', 'player-facing', 'chapter-11.md');
 const TRANSIENT_RULEBOOK_PATH = path.join(ROOT, 'rulebook-production', '.v063-player-facing-input.md');
 const PRODUCTION_DIR = '/tmp/rulebook-production';
@@ -51,6 +53,40 @@ async function waitForServer(url) {
   throw new Error(`Rulebook production server did not become ready: ${lastError?.message || 'unknown error'}`);
 }
 
+async function renderCardAnatomyFigure() {
+  fs.mkdirSync(RELEASE_DIR, { recursive: true });
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const pageErrors = [];
+    const page = await browser.newPage({
+      viewport: { width: 1280, height: 1800 },
+      deviceScaleFactor: 3,
+    });
+    page.on('pageerror', error => pageErrors.push(error.message));
+    const response = await page.goto('http://127.0.0.1:8000/rulebook/?rules=candidate', {
+      waitUntil: 'domcontentloaded',
+      timeout: 60000,
+    });
+    if (!response?.ok()) throw new Error('Card Anatomy Rulebook view returned ' + response?.status() + '.');
+    await page.waitForSelector('.card-anatomy-guide.markers-positioned .card-anatomy-figure', {
+      state: 'visible',
+      timeout: 60000,
+    });
+    await page.evaluate(async () => {
+      await document.fonts?.ready;
+      await Promise.all([...document.images].map(image => image.decode?.().catch(() => undefined)));
+    });
+    const figure = page.locator('.card-anatomy-guide .card-anatomy-figure').first();
+    if (await figure.count() !== 1) throw new Error('Expected exactly one live Card Anatomy figure.');
+    await figure.screenshot({ path: CARD_ANATOMY_PATH });
+    if (pageErrors.length) throw new Error('Card Anatomy render raised page errors:\n' + pageErrors.join('\n'));
+  } finally {
+    await browser.close();
+  }
+  const bytes = fs.statSync(CARD_ANATOMY_PATH).size;
+  if (bytes < 10000) throw new Error('Generated Card Anatomy figure is unexpectedly small: ' + bytes + ' bytes.');
+  console.log('Rendered deterministic Card Anatomy figure: ' + relative(CARD_ANATOMY_PATH) + ' (' + bytes + ' bytes).');
+}
 function extractChapter11(rulebook) {
   const startMarker = '# 11. Detailed Card and Timing Rules';
   const endMarker = '# 12. Overlays and Other Shared Card Rules';
@@ -71,23 +107,26 @@ const originalChapter11 = fs.readFileSync(PLAYER_CHAPTER_11_PATH);
 fs.rmSync(PRODUCTION_DIR, { recursive: true, force: true });
 fs.mkdirSync(path.dirname(TRANSIENT_RULEBOOK_PATH), { recursive: true });
 
-try {
-  run('python', ['rulebook-design/build_proofs.py']);
-  run('python', ['rulebook-production/build_fidelity_gate.py']);
-  fs.writeFileSync(TRANSIENT_RULEBOOK_PATH, rulebook);
-  fs.writeFileSync(PLAYER_CHAPTER_11_PATH, `${chapter11}\n`);
-  run('python', ['scripts/build-v063-rulebook-production.py']);
-} finally {
-  fs.writeFileSync(PLAYER_CHAPTER_11_PATH, originalChapter11);
-  fs.rmSync(TRANSIENT_RULEBOOK_PATH, { force: true });
-}
-
 const server = spawn('python', ['-m', 'http.server', '8000'], {
   cwd: ROOT,
   env: process.env,
   stdio: ['ignore', 'ignore', 'inherit'],
 });
 try {
+  await waitForServer('http://127.0.0.1:8000/rulebook/');
+  await renderCardAnatomyFigure();
+
+  run('python', ['rulebook-design/build_proofs.py']);
+  run('python', ['rulebook-production/build_fidelity_gate.py']);
+  try {
+    fs.writeFileSync(TRANSIENT_RULEBOOK_PATH, rulebook);
+    fs.writeFileSync(PLAYER_CHAPTER_11_PATH, chapter11 + '\n');
+    run('python', ['scripts/build-v063-rulebook-production.py']);
+  } finally {
+    fs.writeFileSync(PLAYER_CHAPTER_11_PATH, originalChapter11);
+    fs.rmSync(TRANSIENT_RULEBOOK_PATH, { force: true });
+  }
+
   await waitForServer('http://127.0.0.1:8000/rulebook-production/full-rulebook.html');
   run('node', ['rulebook-production/render_fidelity_gate.mjs']);
   run('node', ['scripts/run-v063-rulebook-renderer.mjs']);
@@ -132,7 +171,7 @@ const publicRoutes = {
   rules_arbiter: '/rules-arbiter/',
 };
 
-const payloadFiles = [RULEBOOK_PATH, BOOKLET_PATH, CANONICAL_PATH, STARTERS_PATH, PROVENANCE_PATH].map(file => {
+const payloadFiles = [RULEBOOK_PATH, BOOKLET_PATH, CARD_ANATOMY_PATH, CANONICAL_PATH, STARTERS_PATH, PROVENANCE_PATH].map(file => {
   const bytes = fs.readFileSync(file);
   return { path: path.basename(file), sha256: hash(bytes), bytes: bytes.length };
 });
@@ -156,6 +195,7 @@ const manifest = {
     canonical_data: { path: relative(CANONICAL_PATH), sha256: hashFile(CANONICAL_PATH) },
     approved_starters: { path: relative(STARTERS_PATH), sha256: hashFile(STARTERS_PATH) },
     source_provenance: { path: relative(PROVENANCE_PATH), sha256: hashFile(PROVENANCE_PATH) },
+    card_anatomy_figure: { path: relative(CARD_ANATOMY_PATH), sha256: hashFile(CARD_ANATOMY_PATH) },
   },
   counts: {
     playable_cards: canonical?.gameplay?.cards?.length ?? provenance.counts?.playable_cards,
@@ -165,6 +205,7 @@ const manifest = {
     starter_decks: starters?.decks?.length ?? provenance.counts?.starter_decks,
     print_pdfs: 1,
     json_exports: 3,
+    static_figures: 1,
   },
   public_defaults: {
     website: RELEASE_VERSION,
@@ -196,6 +237,12 @@ const manifest = {
     padding_pages: Number(report.reader?.report?.intentionalBlanks || 0),
     duplex_flip: 'short-edge',
     approved_v063_production_adapter_reused: true,
+    card_anatomy_figure: {
+      path: relative(CARD_ANATOMY_PATH),
+      sha256: hashFile(CARD_ANATOMY_PATH),
+      source_card: 'military-unbroken-ranks',
+      renderer: 'rulebook/card-anatomy.js + card-design/card-print-render.html?fit=production&card=military-unbroken-ranks',
+    },
   },
 };
 
