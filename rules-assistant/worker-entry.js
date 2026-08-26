@@ -169,6 +169,13 @@ export default {
       return v063Worker.fetch(rewriteVersionedPath(request), env, context);
     }
 
+    if (
+      url.pathname === "/api/v070/rules" || url.pathname === "/v070/rules" ||
+      url.pathname === "/api/v070/health" || url.pathname === "/v070/health"
+    ) {
+      return worker.fetch(rewriteVersionedPath(request), env, context);
+    }
+
     // The unversioned public Rules Arbiter follows the current canonical release.
     if (url.pathname === "/api/health" || url.pathname === "/health") return worker.fetch(request, env, context);
 
