@@ -77,7 +77,7 @@ async function renderCardAnatomyFigure() {
     });
     await page.evaluate(async () => {
       await document.fonts?.ready;
-      await Promise.all([...document.images].map(image => image.decode?.().catch(() => undefined)));
+      document.querySelector('.card-anatomy-arcane')?.remove();
     });
     const figure = page.locator('.card-anatomy-guide .card-anatomy-figure').first();
     if (await figure.count() !== 1) throw new Error('Expected exactly one live Card Anatomy figure.');
@@ -185,7 +185,7 @@ const manifest = {
   name: 'Illustrated Cards & Tabletop Simulator',
   status: 'current',
   authority_set_id: provenance.authority_set_id,
-  publication_date: '2026-08-23',
+  publication_date: null,
   current_package_path: `releases/${RELEASE_VERSION}/`,
   source_provenance: {
     source_version: SOURCE_VERSION,
