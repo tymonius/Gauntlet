@@ -83,8 +83,8 @@ describe('generated TTS table structure', () => {
     expect(save.Hands.Enable).toBe(true);
     expect(save.Hands.DisableUnused).toBe(false);
     expect(save.Hands.HandTransforms.map((hand) => hand.Color)).toEqual(['White', 'Green']);
-    expect(save.Hands.HandTransforms[0].Transform).toMatchObject({ posY: 4, posZ: -22.5, rotY: 0, scaleX: 7, scaleY: 6, scaleZ: 4 });
-    expect(save.Hands.HandTransforms[1].Transform).toMatchObject({ posY: 4, posZ: 22.5, rotY: 180, scaleX: 7, scaleY: 6, scaleZ: 4 });
+    expect(save.Hands.HandTransforms[0].Transform).toMatchObject({ posY: 4, posZ: -23.25, rotY: 0, scaleX: 7, scaleY: 6, scaleZ: 4 });
+    expect(save.Hands.HandTransforms[1].Transform).toMatchObject({ posY: 4, posZ: 23.25, rotY: 180, scaleX: 7, scaleY: 6, scaleZ: 4 });
   });
 
   it('creates the six center-line Gauntlet snap positions in order', () => {
@@ -101,7 +101,8 @@ describe('generated TTS table structure', () => {
 
     const bag = topLevel.find((object) => object.Name === 'Bag');
     expect(bag).toBeTruthy();
-    expect(bag.Transform.rotY).toBe(0);
+    expect(bag.Transform.rotY).toBe(180);
+    expect(bag.ContainedObjects.every((object) => object.Transform?.rotY === 180)).toBe(true);
     const die = bag.ContainedObjects.filter((object) => object.Name === 'Die_6');
     const token = bag.ContainedObjects.filter((object) => object.Name === 'PlayerPawn');
     expect(die).toHaveLength(1);
@@ -130,7 +131,7 @@ describe('generated TTS table structure', () => {
     expect(leader[0].CardID).toBe(10000);
     expect(territories).toHaveLength(3);
     expect(territories.every((territory) => territory.SidewaysCard === true)).toBe(true);
-    expect(territories.every((territory) => territory.Transform.rotY === 0)).toBe(true);
+    expect(territories.every((territory) => territory.Transform.rotY === 180)).toBe(true);
     expect(territories.every((territory) => String(territory.LuaScript || '').includes('function tryRotate(spin, flip, player_color, old_spin, old_flip)'))).toBe(true);
     expect(territories.every((territory) => String(territory.LuaScript || '').includes('self.setRotationSmooth({x = flip, y = spin, z = 0}, false, false)'))).toBe(true);
     expect(territories.every((territory) => !String(territory.LuaScript || '').includes('use_rotation_value_flip'))).toBe(true);
