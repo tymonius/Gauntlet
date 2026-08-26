@@ -11,6 +11,7 @@ const bookletRenderer = readFileSync('scripts/render-v070-booklet.mjs', 'utf8');
 const releasePublisher = readFileSync('scripts/publish-github-releases.mjs', 'utf8');
 const materializer = readFileSync('.github/workflows/materialize-v070-release-package.yml', 'utf8');
 
+// Shadow validation keeps the real #894 cutover frozen while exercising the same publication machinery.
 describe('v0.7.0 release candidate boundary', () => {
   it('keeps v0.7.0 out of immutable publication history before cutover', () => {
     expect(lifecycle.current_release).toBe('v0.6.3');
