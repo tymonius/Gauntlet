@@ -10,6 +10,15 @@ const releaseBuilder = readFileSync('scripts/build-v070-release-source.mjs', 'ut
 const bookletRenderer = readFileSync('scripts/render-v070-booklet.mjs', 'utf8');
 const releasePublisher = readFileSync('scripts/publish-github-releases.mjs', 'utf8');
 const materializer = readFileSync('.github/workflows/materialize-v070-release-package.yml', 'utf8');
+const v070Corpus = readFileSync('rules-assistant/v070-public-corpus.js', 'utf8');
+const v070Worker = readFileSync('rules-assistant/worker-v070.js', 'utf8');
+const workerEntry = readFileSync('rules-assistant/worker-entry.js', 'utf8');
+const arbiterApp = readFileSync('rules-arbiter/app.js', 'utf8');
+const arbiterIndex = readFileSync('rules-arbiter/index.html', 'utf8');
+const startPage = readFileSync('start/index.html', 'utf8');
+const cardReferencePage = readFileSync('card-reference/index.html', 'utf8');
+const deckbuilderPage = readFileSync('deckbuilder/index.html', 'utf8');
+const homepage = readFileSync('index.html', 'utf8');
 
 // Shadow validation keeps the real #894 cutover frozen while exercising the same publication machinery.
 describe('v0.7.0 release candidate boundary', () => {
@@ -72,6 +81,42 @@ describe('v0.7.0 release candidate boundary', () => {
     expect(releasePublisher).toContain("'release', 'edit', current.tag");
     expect(releasePublisher).toContain("'--notes-file', current.notes_file");
     expect(releasePublisher).toContain('the immutable tag target is unchanged');
+  });
+
+
+  it('pins the published v0.7.0 Rules Arbiter to immutable release artifacts', () => {
+    expect(v070Corpus).toContain("V070_RULEBOOK_SOURCE_PATH = 'releases/v0.7.0/Gauntlet_v0.7.0_Rulebook.md'");
+    expect(v070Corpus).toContain("V070_CANONICAL_SOURCE_PATH = 'releases/v0.7.0/Gauntlet_v0.7.0_Canonical_Data.json'");
+    expect(v070Corpus).toContain("V070_MANIFEST_SOURCE_PATH = 'releases/v0.7.0/Gauntlet_v0.7.0_Manifest.json'");
+    expect(v070Corpus).toContain("requireBinding(manifest, 'rulebook'");
+    expect(v070Corpus).toContain("requireBinding(manifest, 'canonical_data'");
+    expect(v070Corpus).not.toContain('loadV064CandidateRulesCorpus');
+    expect(v070Corpus).not.toContain('game-data/current-game.json');
+  });
+
+  it('routes the unversioned Rules Arbiter to v0.7.0 and preserves historical routes', () => {
+    expect(v070Worker).toContain('export const RULES_VERSION = V070_RULES_VERSION');
+    expect(v070Worker).toContain('current canonical v0.7.0 playtest edition');
+    expect(v070Worker).toContain('currentPublicRelease: "v0.7.0"');
+    expect(workerEntry).toContain('import worker from "./worker-v070.js";');
+    expect(workerEntry).toContain('import v063Worker from "./worker-v063.js";');
+    expect(workerEntry).toContain('requestedVersion === "v0.6.3"');
+    expect(workerEntry).toContain('url.pathname === "/api/v063/rules"');
+    expect(arbiterApp).toContain('../rules-assistant/v070-public-corpus.js');
+    expect(arbiterApp).toContain('const CURRENT_PUBLIC_RELEASE = "v0.7.0";');
+  });
+
+  it('prepares the public player surfaces for v0.7.0 identity', () => {
+    expect(homepage).toContain('Current canonical playtest edition · v0.7.0');
+    expect(homepage).toContain('<dt>142</dt><dd>Playable cards</dd>');
+    expect(homepage).toContain('<h3>v0.7.0 Release</h3>');
+    expect(startPage).toContain('canonical v0.7.0');
+    expect(cardReferencePage).toContain('Current v0.7.0 production card reference.');
+    expect(cardReferencePage).toContain('v0.7.0 Release');
+    expect(deckbuilderPage).toContain('Gauntlet v0.7.0 Deckbuilder');
+    expect(deckbuilderPage).toContain('canonical v0.7.0');
+    expect(arbiterIndex).toContain('Gauntlet v0.7.0 Rules Arbiter');
+    expect(arbiterIndex).toContain('Rules support · v0.7.0');
   });
 
 });
