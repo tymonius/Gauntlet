@@ -2,11 +2,11 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const source = JSON.parse(readFileSync("docs/v0.6.4-card-additions.json", "utf8"));
-const starterDecks = JSON.parse(readFileSync("deckbuilder/starter-decks.json", "utf8"));
 const catalogPage = readFileSync("card-design/index.html", "utf8");
 const catalogOverlay = readFileSync("card-design/v064-card-candidates.js", "utf8");
 const cardRenderer = readFileSync("card-design/card-review-render.js", "utf8");
 const currentAuthority = JSON.parse(readFileSync("game-data/current-game.json", "utf8"));
+const starterDecks = currentAuthority.starterDecks;
 
 const expectedByAllegiance: Record<string, string[]> = {
   Neutral: ["Phantom Passage", "Battlefield Plunder"],
