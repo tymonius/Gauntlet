@@ -22,6 +22,13 @@ const replacePatternRequired = (source, pattern, newValue, label) => {
   pattern.lastIndex = 0;
   return source.replace(pattern, newValue);
 };
+const replaceOrConfirm = (source, oldValue, newValue, label) => {
+  if (source.includes(newValue)) return source;
+  return replaceRequired(source, oldValue, newValue, label);
+};
+const requireContains = (source, value, label) => {
+  if (!source.includes(value)) throw new Error(`Missing ${label}: ${value}`);
+};
 
 const qaGate = loadAndValidateV070TtsManualQa();
 console.log(`TTS manual-QA publication prerequisite satisfied: ${qaGate.checkCount} checks complete.`);
@@ -101,10 +108,36 @@ const releaseNotes = `# ${RELEASE_TITLE}\n\nGauntlet v0.7.0 is the first publish
 await writeFile('docs/releases/github/v0.7.0.md', releaseNotes);
 
 let homepage = await readText('index.html');
-homepage = replaceRequired(homepage, 'Current canonical playtest edition · v0.6.3', 'Current canonical playtest edition · v0.7.0', 'homepage current release label');
-homepage = replaceRequired(homepage, '<dt>128</dt><dd>Playable cards</dd>', '<dt>142</dt><dd>Playable cards</dd>', 'homepage playable-card count');
-homepage = replaceRequired(homepage, 'href="releases/v0.6.3/"', 'href="v0.7.0/"', 'homepage release link');
+homepage = replaceOrConfirm(homepage, 'Current canonical playtest edition · v0.6.3', 'Current canonical playtest edition · v0.7.0', 'homepage current release label');
+homepage = replaceOrConfirm(homepage, '<dt>128</dt><dd>Playable cards</dd>', '<dt>142</dt><dd>Playable cards</dd>', 'homepage playable-card count');
+homepage = replaceOrConfirm(homepage, 'href="releases/v0.6.3/"', 'href="v0.7.0/"', 'homepage release link');
+homepage = replaceOrConfirm(homepage, '<h3>v0.6.3 Release</h3>', '<h3>v0.7.0 Release</h3>', 'homepage release card title');
 await writeFile('index.html', homepage);
+
+for (const [surface, path, required] of [
+  ['Start Playing', 'start/index.html', ['canonical v0.7.0', 'Current playtest edition: v0.7.0']],
+  ['Card Reference', 'card-reference/index.html', ['Current v0.7.0 production card reference.', 'v0.7.0 Release']],
+  ['Deckbuilder', 'deckbuilder/index.html', ['Gauntlet v0.7.0 Deckbuilder', 'canonical v0.7.0', 'v0.7.0 release']],
+  ['Military faction guide', 'factions/military/index.html', ['Current playtest edition · v0.7.0']],
+  ['Rules Arbiter', 'rules-arbiter/index.html', ['Gauntlet v0.7.0 Rules Arbiter', 'Rules support · v0.7.0']],
+]) {
+  const source = await readText(path);
+  for (const value of required) requireContains(source, value, `${surface} v0.7.0 identity`);
+}
+
+const rulesArbiterApp = await readText('rules-arbiter/app.js');
+for (const value of [
+  '../rules-assistant/v070-public-corpus.js',
+  'V070_RULES_VERSION as RULES_VERSION',
+  'const CURRENT_PUBLIC_RELEASE = "v0.7.0";',
+]) requireContains(rulesArbiterApp, value, 'Rules Arbiter v0.7.0 client binding');
+
+const workerEntry = await readText('rules-assistant/worker-entry.js');
+for (const value of [
+  'import worker from "./worker-v070.js";',
+  'import v063Worker from "./worker-v063.js";',
+  'requestedVersion === "v0.6.3"',
+]) requireContains(workerEntry, value, 'Rules Arbiter Worker v0.7.0 routing');
 
 let rulebookIndex = await readText('rulebook/index.html');
 rulebookIndex = rulebookIndex.replaceAll('v0.6.3', RELEASE_VERSION);
