@@ -127,13 +127,15 @@ describe('generated TTS table structure', () => {
 
     expect(deck).toHaveLength(1);
     expect(deck[0].DeckIDs).toEqual([101, 101]);
+    expect(deck[0].ContainedObjects.every((card) => card.GMNotes === 'gauntlet:playable-card:test-card')).toBe(true);
     expect(leader).toHaveLength(1);
     expect(leader[0].CardID).toBe(10000);
     expect(territories).toHaveLength(3);
     expect(territories.every((territory) => territory.SidewaysCard === true)).toBe(true);
     expect(territories.every((territory) => territory.Transform.rotY === 180)).toBe(true);
     expect(territories.every((territory) => String(territory.LuaScript || '').includes('function tryRotate(spin, flip, player_color, old_spin, old_flip)'))).toBe(true);
-    expect(territories.every((territory) => String(territory.LuaScript || '').includes('self.setRotationSmooth({x = flip, y = spin, z = 0}, false, false)'))).toBe(true);
+    expect(territories.every((territory) => String(territory.LuaScript || '').includes('self.rotate({x = 180, y = 0, z = 0})'))).toBe(true);
+    expect(territories.every((territory) => !String(territory.LuaScript || '').includes('setRotationSmooth({x = flip'))).toBe(true);
     expect(territories.every((territory) => !String(territory.LuaScript || '').includes('use_rotation_value_flip'))).toBe(true);
     expect(territories.every((territory) => Object.values(territory.CustomDeck)
       .every((state) => state.BackURL === `https://example.invalid/${version}/${files.standardBack}`))).toBe(true);
