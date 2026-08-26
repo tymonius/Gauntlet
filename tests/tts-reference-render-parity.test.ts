@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 const rendererPage = readFileSync('tts/supplemental-renderer/index.html', 'utf8');
 const rendererStyle = readFileSync('tts/supplemental-renderer/supplemental-renderer.css', 'utf8');
+const emblemStyle = readFileSync('tts/supplemental-renderer/gauntlet-emblem.css', 'utf8');
 const componentChrome = readFileSync('card-design/leader-card.css', 'utf8');
 const production = readFileSync('card-design/supplemental-refinements.css', 'utf8');
 
@@ -32,12 +33,16 @@ describe('TTS faction-reference renderer parity', () => {
     }
   });
 
-  it('retains the neutral ivory treatment and stylized G for Universal Reference', () => {
+  it('retains the neutral ivory treatment while giving Universal Reference an inline stylized G', () => {
     expect(rendererStyle).toContain('.reference-card[data-component-id="universal-reference"]');
     expect(rendererStyle).toContain('--reference-border: #eee7d5');
     expect(rendererStyle).toContain('/images/artwork/card-backgrounds/neutral-parchment-v2.png');
-    expect(rendererStyle).toContain('-webkit-mask-image: url("/images/Gauntlet-G.svg") !important');
+    expect(emblemStyle).toContain('.reference-gauntlet-g');
+    expect(emblemStyle).toContain('background: none !important');
+    expect(emblemStyle).toContain('-webkit-mask: none !important');
+    expect(emblemStyle).toContain('mask: none !important');
     expect(rendererStyle).not.toContain('-webkit-mask-image: url("/images/Gauntlet.svg") !important');
+    expect(rendererStyle).not.toContain('-webkit-mask-image: url("/images/Gauntlet-G.svg") !important');
   });
 
   it('keeps the Diplomat reverse title fitting rule in the renderer stylesheet', () => {
