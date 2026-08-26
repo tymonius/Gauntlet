@@ -6,14 +6,41 @@ import { CURRENT_ALIAS_ROOT, resolveCurrentTtsRelease, ROOT } from '../scripts/t
 const TABLE_URL = 'https://raw.githubusercontent.com/tymonius/Gauntlet/release/v0.7.0-cutover/tts/assets/environment/campaign-map-table.jpg';
 const SKY_URL = 'https://raw.githubusercontent.com/tymonius/Gauntlet/release/v0.7.0-cutover/tts/assets/environment/command-tent-panorama.jpg';
 
-const TABLE_LAYOUT_NOTE = 'Gauntlet TTS table layout: White sits south and Green north. Each player has Leader & References, Draw, Discard, Graveyard, Asset Bank, Faction Zone, and a visible one-card Hand parking area. The outward Reserve is the player\'s actual TTS Hand zone. The tabletop Hand parking area is a separate player-private Hidden Zone so a card can be parked physically on the table without returning to the Reserve hand. Asset Bank provides seven portrait positions; Faction Zone provides twelve compact portrait positions. Territory snaps constrain position only so players can rotate Territories freely to show control; Deed snaps remain landscape rotation snaps beside every possible Territory.';
+const TABLE_LAYOUT_NOTE = 'Gauntlet TTS table layout: White sits south and Green north. Each player has Leader & References, Draw, Discard, Graveyard, Asset Bank, Faction Zone, and a visible one-card Hand parking area. The outward Reserve is the player\'s actual TTS Hand zone. The tabletop Hand parking area is a separate player-private Hidden Zone so a card can be parked physically on the table without returning to the Reserve hand. Asset Bank provides seven portrait positions; Faction Zone provides twelve compact portrait positions. Territory and Deed snaps constrain position only so their Y rotation can show control or ownership. Manifest Destiny is explicitly Territory-slot eligible. Territory cards carry an attached overlay-only snap so physical Overlays inherit the Territory\'s current orientation.';
 const TABLE_TEXT_NOTE_PREFIX = 'gauntlet:table-layout:';
 const LEGACY_PRIVATE_ZONE_NOTE_PREFIX = 'gauntlet:private-zone:';
 const LEGACY_HAND_TRIGGER_NOTE_PREFIX = 'gauntlet:hand-trigger:';
 const PRIVATE_PARKING_NOTE_PREFIX = 'gauntlet:private-parking:';
 const TERRITORY_TAG = 'gauntlet-territory';
+const TERRITORY_OVERLAY_TAG = 'gauntlet-territory-overlay';
 const DEED_TAG = 'gauntlet-deed';
 const FACTION_ZONE_TAG = 'gauntlet-faction-zone';
+const PLAYABLE_CARD_NOTE_PREFIX = 'gauntlet:playable-card:';
+
+const TERRITORY_SLOT_CARD_IDS = new Set(['neutral-manifest-destiny']);
+const TERRITORY_SLOT_CARD_NAMES = new Set(['Manifest Destiny']);
+const TERRITORY_OVERLAY_CARD_IDS = new Set([
+  'military-encampment',
+  'diplomats-demilitarized-zone',
+  'diplomats-sanctions-blockade',
+  'intelligence-fog-of-war',
+  'neutral-bombardment',
+  'neutral-scorched-earth',
+  'neutral-protracted-siege',
+  'mystics-circle-of-bones',
+  'mystics-spirit-hollow',
+]);
+const TERRITORY_OVERLAY_CARD_NAMES = new Set([
+  'Encampment',
+  'Demilitarized Zone',
+  'Sanctions: Blockade',
+  'Fog of War',
+  'Bombardment',
+  'Scorched Earth',
+  'Protracted Siege',
+  'Circle of Bones',
+  'Spirit Hollow',
+]);
 
 const PRIMARY_TERRITORY_Z = Object.freeze([-7.5, -4.5, -1.5, 1.5, 4.5, 7.5]);
 const EXPANSION_TERRITORY_Z = Object.freeze([-10.5, 10.5]);
@@ -31,11 +58,12 @@ const LABEL_SHADOW_COLOR = Object.freeze({ r: 0.08, g: 0.055, b: 0.035 });
 const LABEL_COLOR = Object.freeze({ r: 0.99, g: 0.91, b: 0.70 });
 
 const TERRITORY_FLIP_SCRIPT = [
-  '-- Territory cards rotate around Y to show control, so their face/back flip',
-  '-- must use the orthogonal local X axis without changing that control spin.',
+  '-- Territory cards rotate around Y to show control. Intercept only a player',
+  '-- flip and apply a relative 180-degree X rotation; relative rotation avoids',
+  '-- reinterpreting an accumulated Euler target on each successive flip.',
   'function tryRotate(spin, flip, player_color, old_spin, old_flip)',
   '  if flip ~= old_flip then',
-  '    self.setRotationSmooth({x = flip, y = spin, z = 0}, false, false)',
+  '    self.rotate({x = 180, y = 0, z = 0})',
   '    return false',
   '  end',
   '  return true',
@@ -203,10 +231,8 @@ function tagTerritories(objects) {
     addTag(object, TERRITORY_TAG);
     object.SidewaysCard = true;
     object.Transform ||= transform();
-    // Keep Territories at their natural local rotation in starter bags. The
-    // board snap constrains only position; players retain Y rotation to show
-    // control. A small object script intercepts only face/back flips and rotates
-    // around local X, leaving the control spin untouched.
+    // The board snap constrains only position; Y rotation remains free for
+    // control. Successive flips use one relative local-X half-turn.
     object.Transform.rotX = 0;
     object.Transform.rotY = 0;
     object.Transform.rotZ = 0;
@@ -215,6 +241,43 @@ function tagTerritories(objects) {
     object.Transform.scaleZ = 1;
     object.LuaScript = TERRITORY_FLIP_SCRIPT;
     object.LuaScriptState = '';
+
+    // Attached snap points are local to the Territory object. An overlay placed
+    // here therefore follows the Territory's current world orientation instead
+    // of inheriting a fixed table rotation.
+    const retained = (object.AttachedSnapPoints || []).filter(point => !point?.Tags?.includes(TERRITORY_OVERLAY_TAG));
+    object.AttachedSnapPoints = [
+      ...retained,
+      {
+        Position: vector(0, 0.25, 0),
+        Rotation: vector(0, 0, 0),
+        Tags: [TERRITORY_OVERLAY_TAG],
+      },
+    ];
+  });
+}
+
+function playableCardId(object) {
+  const notes = String(object?.GMNotes || '');
+  return notes.startsWith(PLAYABLE_CARD_NOTE_PREFIX)
+    ? notes.slice(PLAYABLE_CARD_NOTE_PREFIX.length)
+    : null;
+}
+
+function tagTerritoryInteractions(objects) {
+  walkObjects(objects, object => {
+    if (object?.Name !== 'CardCustom') return;
+    const id = playableCardId(object);
+    const name = String(object.Nickname || '');
+
+    if (TERRITORY_SLOT_CARD_IDS.has(id) || TERRITORY_SLOT_CARD_NAMES.has(name)) {
+      addTag(object, TERRITORY_TAG);
+      addTag(object, FACTION_ZONE_TAG);
+    }
+    if (TERRITORY_OVERLAY_CARD_IDS.has(id) || TERRITORY_OVERLAY_CARD_NAMES.has(name)) {
+      addTag(object, TERRITORY_OVERLAY_TAG);
+      addTag(object, FACTION_ZONE_TAG);
+    }
   });
 }
 
@@ -395,7 +458,7 @@ export function buildTableSnapPoints() {
   for (const z of ALL_TERRITORY_Z) points.push(snap(vector(0, 0, z), null, [TERRITORY_TAG]));
 
   for (const z of ALL_TERRITORY_Z) {
-    for (const x of DEED_X) points.push(snap(vector(x, 0, z), 90, [DEED_TAG]));
+    for (const x of DEED_X) points.push(snap(vector(x, 0, z), null, [DEED_TAG]));
   }
 
   for (const side of ['White', 'Green']) {
@@ -567,6 +630,7 @@ export function applyTableLayout(save) {
 
   save.ObjectStates = save.ObjectStates.filter(object => !String(object?.GMNotes || '').startsWith(TABLE_TEXT_NOTE_PREFIX));
   tagTerritories(save.ObjectStates);
+  tagTerritoryInteractions(save.ObjectStates);
   orientStarterBagsForHost(save);
   save.VectorLines = buildTableVectorLines();
   save.SnapPoints = buildTableSnapPoints();
@@ -612,7 +676,7 @@ async function main() {
     if (territory.length !== 8) throw new Error(`Expected 8 Territory snaps; found ${territory.length}.`);
     if (territory.some(point => point.Rotation !== undefined)) throw new Error('Territory snaps must constrain position only; rotation indicates control.');
     if (deeds.length !== 16) throw new Error(`Expected 16 Deed snaps; found ${deeds.length}.`);
-    if (deeds.some(point => Number(point.Rotation?.y) !== 90)) throw new Error('Deed snap rotations must keep SidewaysCard Deeds landscape at 90 degrees.');
+    if (deeds.some(point => point.Rotation !== undefined)) throw new Error('Deed snaps must constrain position only; rotation indicates ownership.');
     if (faction.length !== 24) throw new Error(`Expected 24 faction-zone card snaps; found ${faction.length}.`);
     console.log(`Current TTS table-layout source check passed for ${release.version}: ${lines.length} visible outline lines, ${snaps.length} functional snaps, ${text.length} labels/shadows.`);
     return;
