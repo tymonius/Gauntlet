@@ -554,7 +554,10 @@ export function applyTableLayout(save) {
 
   for (const field of ['Note', 'Rules']) {
     const current = String(save[field] || '').trim();
-    if (!current.includes(TABLE_LAYOUT_NOTE)) save[field] = `${current}\n\n${TABLE_LAYOUT_NOTE}`.trim();
+    const paragraphs = current
+      .split(/\n\s*\n/u)
+      .filter(paragraph => !paragraph.startsWith('Gauntlet TTS table layout:'));
+    save[field] = [...paragraphs, TABLE_LAYOUT_NOTE].filter(Boolean).join('\n\n').trim();
   }
 
   return {
