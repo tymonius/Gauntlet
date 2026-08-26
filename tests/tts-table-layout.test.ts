@@ -48,7 +48,7 @@ describe('authoritative TTS table layout', () => {
     expect(territory.every(point => point.Rotation === undefined)).toBe(true);
     expect(deeds).toHaveLength(16);
     expect(deeds.every(point => Math.abs(point.Position.x) === 4.35)).toBe(true);
-    expect(deeds.every(point => point.Rotation.y === 90)).toBe(true);
+    expect(deeds.every(point => point.Rotation === undefined)).toBe(true);
     expect(snaps).toHaveLength(78);
     expect(snaps.filter(point => point.Tags?.includes('gauntlet-deed-stack'))).toHaveLength(0);
   });
@@ -196,6 +196,27 @@ describe('authoritative TTS table layout', () => {
     expect(tracker.Tags).toContain('gauntlet-faction-zone');
   });
 
+  it('gives Manifest Destiny Territory-slot eligibility and physical Overlay cards attached-snap eligibility', () => {
+    const save: any = {
+      ObjectStates: [{
+        Name: 'Bag',
+        GUID: 'starter',
+        ContainedObjects: [
+          { Name: 'CardCustom', Nickname: 'Manifest Destiny', GMNotes: 'gauntlet:playable-card:neutral-manifest-destiny', GUID: 'manifest', Transform: {} },
+          { Name: 'CardCustom', Nickname: 'Bombardment', GMNotes: 'gauntlet:playable-card:neutral-bombardment', GUID: 'bombardment', Transform: {} },
+        ],
+      }],
+      Note: '', Rules: '', Turns: {},
+    };
+
+    applyTableLayout(save);
+    const [manifest, bombardment] = save.ObjectStates.find((object: any) => object.GUID === 'starter').ContainedObjects;
+    expect(manifest.Tags).toContain('gauntlet-territory');
+    expect(manifest.Tags).toContain('gauntlet-faction-zone');
+    expect(bombardment.Tags).toContain('gauntlet-territory-overlay');
+    expect(bombardment.Tags).toContain('gauntlet-faction-zone');
+  });
+
   it('removes the obsolete generated seat-camera script when reapplying the layout', () => {
     const save: any = {
       ObjectStates: [],
@@ -233,7 +254,13 @@ describe('authoritative TTS table layout', () => {
     expect(territory.SidewaysCard).toBe(true);
     expect(territory.Transform.rotY).toBe(180);
     expect(String(territory.LuaScript || '')).toContain('function tryRotate(spin, flip, player_color, old_spin, old_flip)');
-    expect(String(territory.LuaScript || '')).toContain('self.setRotationSmooth({x = flip, y = spin, z = 0}, false, false)');
+    expect(String(territory.LuaScript || '')).toContain('self.rotate({x = 180, y = 0, z = 0})');
+    expect(String(territory.LuaScript || '')).not.toContain('setRotationSmooth({x = flip');
     expect(String(territory.LuaScript || '')).not.toContain('use_rotation_value_flip');
+    expect(territory.AttachedSnapPoints).toEqual([{
+      Position: { x: 0, y: 0.25, z: 0 },
+      Rotation: { x: 0, y: 0, z: 0 },
+      Tags: ['gauntlet-territory-overlay'],
+    }]);
   });
 });
