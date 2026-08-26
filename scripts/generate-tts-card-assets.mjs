@@ -265,7 +265,7 @@ async function renderAssets(catalog, componentContract) {
         hiddenSlotIndex: HIDDEN_SLOT,
       },
       prototypeBack: false,
-      componentContract: 'config/tts-component-contract.json',
+      componentContract: 'game-data/current-game.json#componentContract',
       backPolicy: {
         policy: 'standardBack',
         ...componentContract.standardBack,
