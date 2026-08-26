@@ -299,8 +299,8 @@ function buildTtsSave(starterManifest, releaseAssets) {
       DisableUnused: true,
       Hiding: 0,
       HandTransforms: [
-        { Color: 'Red', Transform: transform(0, 1.5, -20.15, 0, 7, 2.5, 3) },
-        { Color: 'Blue', Transform: transform(0, 1.5, 20.15, 180, 7, 2.5, 3) },
+        { Color: 'Red', Transform: transform(0, 4, -20.15, 0, 7, 6, 3) },
+        { Color: 'Blue', Transform: transform(0, 4, 20.15, 180, 7, 6, 3) },
       ],
     },
     Turns: {
