@@ -1,11 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
-  CARD_MATCHED_TRACKER_WORLD_LONG_EDGE,
   CUSTOM_TILE_CARD_LINEAR_SCALE,
   ROUNDED_RECTANGLE_TILE_TYPE,
   STANDARD_CARD_LONG_EDGE,
   STANDARD_CARD_SHORT_EDGE,
-  TRACKER_LOCAL_LONG_EDGE,
   trackerPresentation,
 } from '../scripts/tts-supplemental-geometry.mjs';
 
@@ -17,9 +15,8 @@ function trackerComponent() {
       widthScale: 2.5,
       heightScale: 3.5,
       snapTag: 'gauntlet-tracker-influence',
-      // Fractions are measured from the fully-covered card bottom to the
-      // actual rendered registration lines. The first gap is intentionally
-      // much larger than the later scale spacing.
+      // These are actual bottom-to-line fractions from the rendered tracker.
+      // The first gap is intentionally larger than subsequent scale spacing.
       snapPoints: [
         { value: 0, rendererTravelPx: 0, registrationFraction: 0 },
         { value: 1, rendererTravelPx: 51.54688, registrationFraction: 51.54688 / 336 },
@@ -31,44 +28,35 @@ function trackerComponent() {
 }
 
 describe('TTS physical component sizing', () => {
-  it('moves the cover card by each actual rendered bottom-to-line fraction', () => {
+  it('carries actual rendered line fractions directly into live TTS bounds mapping', () => {
     const component = trackerComponent();
     const presentation = trackerPresentation(component);
 
     expect(STANDARD_CARD_SHORT_EDGE).toBe(2.5);
     expect(STANDARD_CARD_LONG_EDGE).toBe(3.5);
-    expect(CARD_MATCHED_TRACKER_WORLD_LONG_EDGE).toBe(3.06);
     expect(CUSTOM_TILE_CARD_LINEAR_SCALE).toBe(1.5);
-    expect(TRACKER_LOCAL_LONG_EDGE).toBeCloseTo(3.06 / 1.5, 8);
     expect(ROUNDED_RECTANGLE_TILE_TYPE).toBe(3);
 
     expect(presentation.widthScale).toBe(STANDARD_CARD_SHORT_EDGE);
     expect(presentation.transformScale).toBe(CUSTOM_TILE_CARD_LINEAR_SCALE);
     expect(presentation.tileType).toBe(ROUNDED_RECTANGLE_TILE_TYPE);
     expect(presentation.stretch).toBe(true);
-    expect(presentation.snapPoints).toHaveLength(4);
-    expect(presentation.snapPoints[0].Position.z).toBe(0);
+    expect(presentation.registrations.map(point => point.registrationFraction)).toEqual(
+      component.tts.snapPoints.map(point => point.registrationFraction),
+    );
 
-    const fractions = component.tts.snapPoints.map(point => point.registrationFraction);
-    const worldTravel = presentation.snapPoints.map(point => Math.abs(point.Position.z) * presentation.transformScale);
-    worldTravel.forEach((travel, index) => {
-      expect(travel).toBeCloseTo(fractions[index] * CARD_MATCHED_TRACKER_WORLD_LONG_EDGE, 6);
-      // Starting from full coverage, moving both card centers by this fraction
-      // moves the Leader card's bottom edge to the same fraction measured from
-      // the tracker bottom — i.e. exactly onto the rendered line.
-      const bottomEdgeFromTrackerTop = CARD_MATCHED_TRACKER_WORLD_LONG_EDGE - travel;
-      expect(bottomEdgeFromTrackerTop / CARD_MATCHED_TRACKER_WORLD_LONG_EDGE)
-        .toBeCloseTo(1 - fractions[index], 6);
-    });
+    const gaps = presentation.registrations.slice(1).map((point, index) => (
+      point.registrationFraction - presentation.registrations[index].registrationFraction
+    ));
+    expect(gaps[0]).toBeGreaterThan(gaps[1]);
+    expect(gaps[1]).toBeCloseTo(gaps[2], 5);
 
-    expect(worldTravel[1] - worldTravel[0]).toBeGreaterThan(worldTravel[2] - worldTravel[1]);
-    expect(worldTravel[2] - worldTravel[1]).toBeCloseTo(worldTravel[3] - worldTravel[2], 5);
-
-    expect(presentation.luaScript).toContain('self.setSnapPoints({');
-    expect(presentation.luaScript).toContain('gauntlet-tracker-influence');
-    expect(presentation.luaScript).toContain('registerGauntletTrackerSnaps()');
-    expect(presentation.luaScript).not.toContain('getBoundsNormalized');
-    expect(presentation.luaScript).not.toContain('Wait.frames');
+    expect(presentation.luaScript).toContain('self.getBoundsNormalized()');
+    expect(presentation.luaScript).toContain('local localLength = bounds.size.z / scaleZ');
+    expect(presentation.luaScript).toContain('-localLength * registration.fraction');
+    expect(presentation.luaScript).toContain('Wait.condition(');
+    expect(presentation.luaScript).not.toContain('3.06');
+    expect(presentation.luaScript).not.toContain('value / max');
   });
 
   it('fails closed if manifests do not contain actual rendered line fractions', () => {
