@@ -96,8 +96,8 @@ describe('authoritative TTS table layout', () => {
     const red = handZoneTransform('Red');
     const blue = handZoneTransform('Blue');
 
-    expect(red).toMatchObject({ posX: 0, posZ: -20.25, rotY: 0, scaleX: 7, scaleY: 2, scaleZ: 8 });
-    expect(blue).toMatchObject({ posX: 0, posZ: 20.25, rotY: 180, scaleX: 7, scaleY: 2, scaleZ: 8 });
+    expect(red).toMatchObject({ posX: 0, posZ: -20.25, rotY: 180, scaleX: 7, scaleY: 2, scaleZ: 8 });
+    expect(blue).toMatchObject({ posX: 0, posZ: 20.25, rotY: 0, scaleX: 7, scaleY: 2, scaleZ: 8 });
 
     // The visible parking snap sits inside the same private zone as the Reserve.
     expect(zoneContainsPoint(red, 0, -18.25)).toBe(true);
