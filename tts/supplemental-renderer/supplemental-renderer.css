@@ -340,8 +340,8 @@ body {
 }
 
 /* Standalone-renderer asset resolution. Production reference-card styling is
-   authoritative; these declarations only make its relative artwork and masks
-   explicit when Chromium renders the TTS screenshot surface at /tts/. */
+   authoritative; these declarations only make its relative faction artwork and
+   masks explicit when Chromium renders the TTS screenshot surface at /tts/. */
 #renderTarget .reference-card[data-faction="diplomats"] {
   --reference-symbol: url("/images/faction-symbols/diplomats.svg");
   --faction-symbol: url("/images/faction-symbols/diplomats.svg");
@@ -423,10 +423,4 @@ body {
 
 .reference-card[data-component-id="universal-reference"] .reference-card-interior {
   background-image: var(--reference-parchment-image) !important;
-}
-
-.reference-card[data-component-id="universal-reference"] .reference-faction-emblem,
-.reference-card[data-component-id="universal-reference"] .reference-watermark {
-  -webkit-mask-image: url("/images/Gauntlet-G.svg") !important;
-  mask-image: url("/images/Gauntlet-G.svg") !important;
 }
