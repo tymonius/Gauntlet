@@ -7,7 +7,6 @@ const SUPPLEMENTAL_GUID_NOTE_PREFIX = 'gauntlet:supplemental:';
 const SUPPLEMENTAL_STACK_NOTE_PREFIX = 'gauntlet:supplemental-stack:';
 const PLAYER_TOKEN_NOTE_PREFIX = 'gauntlet:starter-utility:player-token:';
 const BATTLE_DIE_NOTE_PREFIX = 'gauntlet:starter-utility:battle-die:';
-const HAND_TRIGGER_NOTE_PREFIX = 'gauntlet:hand-trigger:';
 const TERRITORY_TAG = 'gauntlet-territory';
 const DEED_TAG = 'gauntlet-deed';
 const DEED_STACK_TAG = 'gauntlet-deed-stack';
@@ -123,8 +122,8 @@ function validateHandsAndSeats(save) {
   if (!red || !blue) throw new Error('Missing Red or Blue hand transform.');
 
   const expectedHands = [
-    [red, 'Red', -20.25, 180, -18.25],
-    [blue, 'Blue', 20.25, 0, 18.25],
+    [red, 'Red', -20.25, 0, -18.25],
+    [blue, 'Blue', 20.25, 180, 18.25],
   ];
   for (const [hand, side, z, rotY, parkingZ] of expectedHands) {
     if (!close(hand.Transform?.posX, 0) || !close(hand.Transform?.posZ, z) || !close(hand.Transform?.rotY, rotY)
@@ -148,19 +147,9 @@ function validateHandsAndSeats(save) {
 
   const objects = allObjects(save);
   const handTriggers = objects.filter(object => object?.Name === 'HandTrigger');
-  if (handTriggers.length !== 2) throw new Error(`Expected exactly two real HandTrigger ObjectStates; found ${handTriggers.length}.`);
-  for (const [hand, side] of expectedHands) {
-    const trigger = handTriggers.find(object => object.GMNotes === `${HAND_TRIGGER_NOTE_PREFIX}${side.toLowerCase()}`);
-    if (!trigger || trigger.Nickname !== `${side} Hand`) {
-      throw new Error(`${side} real HandTrigger is missing.`);
-    }
-    for (const key of ['posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ', 'scaleX', 'scaleY', 'scaleZ']) {
-      if (!close(trigger.Transform?.[key], hand.Transform?.[key], 0.00001)) {
-        throw new Error(`${side} HandTrigger and Hands.HandTransforms disagree at ${key}.`);
-      }
-    }
+  if (handTriggers.length) {
+    throw new Error(`Found ${handTriggers.length} duplicate HandTrigger ObjectStates. Hands.HandTransforms is the serialized TTS hand-zone authority.`);
   }
-
   const fogVolumes = objects.filter(object => object?.Name === 'FogOfWarTrigger');
   if (fogVolumes.length) throw new Error(`Found ${fogVolumes.length} obsolete FogOfWarTrigger objects.`);
 
@@ -243,9 +232,12 @@ function validateTerritoriesDeedsAndFactionEligibility(save, manifest) {
   const territories = objects.filter(object => object?.Name === 'CardCustom' && hasTag(object, TERRITORY_TAG));
   if (!territories.length) throw new Error('No tagged Territory cards found.');
   for (const card of territories) {
-    if (card.SidewaysCard !== true || !close(card.Transform?.rotY, 90)) throw new Error(`Territory ${card.Nickname || card.GUID} is not landscape.`);
-    if (!String(card.LuaScript || '').includes('self.use_rotation_value_flip = false')) {
-      throw new Error(`Territory ${card.Nickname || card.GUID} does not use the alternate TTS flip axis.`);
+    if (card.SidewaysCard !== true) throw new Error(`Territory ${card.Nickname || card.GUID} is not marked SidewaysCard.`);
+    if (!close(card.Transform?.rotY, 0)) {
+      throw new Error(`Territory ${card.Nickname || card.GUID} must keep its native local rotation until the table snap point places it.`);
+    }
+    if (String(card.LuaScript || '').includes('use_rotation_value_flip')) {
+      throw new Error(`Territory ${card.Nickname || card.GUID} must use native SidewaysCard flipping without a custom flip-axis override.`);
     }
   }
 
