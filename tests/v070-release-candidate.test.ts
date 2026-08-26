@@ -6,6 +6,10 @@ const githubRelease = JSON.parse(readFileSync('config/github-release-contract.js
 const ttsTarget = JSON.parse(readFileSync('config/tts-release-target.json', 'utf8'));
 const ttsQa = JSON.parse(readFileSync('tts/release-qa/v0.7.0.json', 'utf8'));
 const notes = readFileSync('docs/releases/github/v0.7.0.md', 'utf8');
+const releaseBuilder = readFileSync('scripts/build-v070-release-source.mjs', 'utf8');
+const bookletRenderer = readFileSync('scripts/render-v070-booklet.mjs', 'utf8');
+const releasePublisher = readFileSync('scripts/publish-github-releases.mjs', 'utf8');
+const materializer = readFileSync('.github/workflows/materialize-v070-release-package.yml', 'utf8');
 
 describe('v0.7.0 release candidate boundary', () => {
   it('keeps v0.7.0 out of immutable publication history before cutover', () => {
@@ -41,4 +45,32 @@ describe('v0.7.0 release candidate boundary', () => {
     expect(notes).toContain('does not change the repository\'s current published release');
     expect(notes).not.toContain('Current canonical playtest edition');
   });
+  it('materializes v0.7.0 directly from maintained current authorities', () => {
+    expect(releaseBuilder).toContain("readText('rulebook/player-facing/current-rulebook.md')");
+    expect(releaseBuilder).not.toContain('applyReleaseCandidateRulebook');
+    expect(releaseBuilder).not.toContain('applyFactionFeatureTerminology');
+    expect(releaseBuilder).not.toContain('spliceReviewedChapter11');
+    expect(releaseBuilder).toContain('faction_feature_taxonomy: structuredClone(manifest.factionFeatureTaxonomy)');
+    expect(releaseBuilder).toContain('faction_features: structuredClone(manifest.factionFeatures)');
+    expect(releaseBuilder).toContain('leaders: structuredClone(manifest.leaders)');
+    expect(releaseBuilder).toContain('![Card anatomy diagram]');
+  });
+
+  it('renders the printable Card Anatomy fallback from the live production-card guide', () => {
+    expect(bookletRenderer).toContain("import { chromium } from 'playwright'");
+    expect(bookletRenderer).toContain("page.goto('http://127.0.0.1:8000/rulebook/?rules=candidate'");
+    expect(bookletRenderer).toContain(".card-anatomy-guide.markers-positioned .card-anatomy-figure");
+    expect(bookletRenderer).toContain('figure.screenshot({ path: CARD_ANATOMY_PATH })');
+    expect(bookletRenderer).toContain("source_card: 'military-unbroken-ranks'");
+    expect(materializer).toContain('Gauntlet_v0.7.0_Card_Anatomy.png');
+  });
+
+  it('promotes the existing v0.7.0 hosting prerelease only after live verification', () => {
+    expect(releasePublisher).toContain("current.tag === 'v0.7.0' && hadCurrentReleaseAtStart");
+    expect(releasePublisher).toContain('verifyLive()');
+    expect(releasePublisher).toContain("'release', 'edit', current.tag");
+    expect(releasePublisher).toContain("'--notes-file', current.notes_file");
+    expect(releasePublisher).toContain('the immutable tag target is unchanged');
+  });
+
 });
