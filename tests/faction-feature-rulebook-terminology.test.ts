@@ -53,7 +53,7 @@ describe('Faction Feature Rulebook terminology', () => {
       name: 'Purge',
       profile: '1 Action',
       timing: 'Opening or Denouement',
-      frequency: 'Once per turn',
+      limit: 'Once per turn',
     });
 
     expect(currentGame.leaders).toHaveLength(12);
