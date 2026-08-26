@@ -283,11 +283,18 @@ export async function buildCatalog() {
     throw new Error(`${CURRENT_GAME_SOURCE} is missing gameplay.territories.`);
   }
 
+  const artDirection = authority.artDirection || {};
   const playableCards = gameplay.cards
-    .map((card) => playableCardFromCanonical(card, CURRENT_GAME_SOURCE))
+    .map((card) => ({
+      ...playableCardFromCanonical(card, CURRENT_GAME_SOURCE),
+      artDirection: artDirection[card.id] || card.artDirection || null,
+    }))
     .sort(stableCardSort);
   const territories = gameplay.territories
-    .map((territory) => territoryFromCanonical(territory, CURRENT_GAME_SOURCE))
+    .map((territory) => ({
+      ...territoryFromCanonical(territory, CURRENT_GAME_SOURCE),
+      artDirection: artDirection[territory.id] || territory.artDirection || null,
+    }))
     .sort((a, b) => a.name.localeCompare(b.name, 'en-US'));
 
   const artworkIndex = await buildArtworkIndex();
