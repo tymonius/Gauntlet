@@ -110,14 +110,13 @@ function starterBagTransform(starter, starters) {
 
   const rowSpacing = factionIds.length <= 1 ? 0 : 24 / (factionIds.length - 1);
   const z = -((factionIds.length - 1) * rowSpacing) / 2 + factionIndex * rowSpacing;
-  if (factionStarters.length === 1) return transform(-20.5, 1.4, z, 0);
+  if (factionStarters.length === 1) return transform(-20.5, 1.4, z, 180);
 
-  // Starter bags flank the table, but they all share the host/White orientation
-  // so manually pulling setup components from any bag does not turn them toward
-  // the opposite player.
+  // TTS testing establishes that the former stored orientation emerges facing
+  // the opposite seat. Store starter Bags at the 180°-reversed orientation.
   const fraction = leaderIndex / (factionStarters.length - 1);
   const x = -20.5 + fraction * 41;
-  return transform(x, 1.4, z, 0);
+  return transform(x, 1.4, z, 180);
 }
 
 function factionColor(factionId) {
@@ -256,10 +255,15 @@ function buildStarterKit(starter, releaseAssets, kitTransform, guid) {
     `Contains the complete ${starter.cardCount}-card face-down playable Deck, Leader Card, three selected Territories, faction-colored Player Token, and faction-colored Battle Die.`,
   ].filter(Boolean).join('\n\n');
 
+  const containedObjects = [leader, ...territories, deck, playerToken, battleDie];
+  for (const object of containedObjects) {
+    if (object?.Transform) object.Transform.rotY = 180;
+  }
+
   return {
     ...objectBase('Bag', `${starter.name} — ${starter.leader.name}`, kitDescription, kitTransform, guid()),
     ColorDiffuse: { ...tint },
-    ContainedObjects: [leader, ...territories, deck, playerToken, battleDie],
+    ContainedObjects: containedObjects,
   };
 }
 
@@ -313,8 +317,8 @@ function buildTtsSave(starterManifest, releaseAssets) {
       DisableUnused: false,
       Hiding: 0,
       HandTransforms: [
-        { Color: 'White', Transform: transform(0, 4, -22.5, 0, 7, 6, 4) },
-        { Color: 'Green', Transform: transform(0, 4, 22.5, 180, 7, 6, 4) },
+        { Color: 'White', Transform: transform(0, 4, -23.25, 0, 7, 6, 4) },
+        { Color: 'Green', Transform: transform(0, 4, 23.25, 180, 7, 6, 4) },
       ],
     },
     Turns: {
