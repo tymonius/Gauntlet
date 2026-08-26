@@ -336,7 +336,7 @@ async function renderLeaderAssets(release, leaders, componentContract) {
         publishedVersion: release.publishedVersion || release.version,
       },
       sourceSurface: 'card-design/',
-      componentContract: 'config/tts-component-contract.json',
+      componentContract: 'game-data/current-game.json#componentContract',
       output: {
         cardPixels: { width: CARD_WIDTH, height: CARD_HEIGHT },
         numWidth: 1,
