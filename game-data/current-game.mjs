@@ -286,8 +286,39 @@ function resolveFactions(baseFactions, manifest) {
   });
 }
 
-function resolveFactionRules(baseRules, manifest) {
+export function resolveFactionRules(baseRules, manifest) {
   const rules = clone(baseRules || {});
+  for (const [factionId, source] of Object.entries(rules)) {
+    const current = { ...(source || {}) };
+
+    if (Object.prototype.hasOwnProperty.call(current, 'faction_action_phase')) {
+      current.faction_feature_action_phase = current.faction_action_phase;
+      delete current.faction_action_phase;
+    }
+    if (Object.prototype.hasOwnProperty.call(current, 'faction_actions')) {
+      current.faction_features_1_action = requireArray(
+        manifest.factionFeatures?.[factionId] || [],
+        `${factionId} Faction Features`,
+      )
+        .filter(feature => feature.profile === '1 Action')
+        .map(feature => feature.name);
+      delete current.faction_actions;
+    }
+    if (Object.prototype.hasOwnProperty.call(current, 'faction_abilities')) {
+      current.leader_abilities = clone(current.faction_abilities);
+      delete current.faction_abilities;
+    }
+    if (Object.prototype.hasOwnProperty.call(current, 'mission_control_type')) {
+      current.mission_control_classification = 'Leader Ability';
+      delete current.mission_control_type;
+    }
+    if (Object.prototype.hasOwnProperty.call(current, 'final_judgment_type')) {
+      current.final_judgment_classification = 'Leader Ability';
+      delete current.final_judgment_type;
+    }
+    rules[factionId] = current;
+  }
+
   for (const [factionId, override] of Object.entries(manifest.factionOverrides || {})) {
     if (!override?.factionRules) continue;
     rules[factionId] = {
@@ -295,6 +326,21 @@ function resolveFactionRules(baseRules, manifest) {
       ...clone(override.factionRules),
     };
   }
+
+  const terms = manifest.factionFeatures?.diplomats?.find(feature => feature.name === 'Terms');
+  if (rules.diplomats && terms?.timing) rules.diplomats.terms_timing = terms.timing;
+
+  if (rules.financiers?.financial_capacity) {
+    rules.financiers.financial_capacity = rules.financiers.financial_capacity.replace(
+      'provided at least one is a Financier Faction Action.',
+      'provided at least one Action is spent on a Financier Faction Feature marked 1 Action.',
+    );
+  }
+
+  const payload = JSON.stringify(rules);
+  const retired = payload.match(/Faction Actions?|Faction Abilit(?:y|ies)|faction procedure|pending(?:-|\s+)battles?/iu);
+  if (retired) throw new Error(`Resolved current faction rules still contain retired terminology: ${retired[0]}.`);
+
   return rules;
 }
 
