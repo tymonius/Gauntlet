@@ -6,10 +6,11 @@ import { CURRENT_ALIAS_ROOT, resolveCurrentTtsRelease, ROOT } from '../scripts/t
 const TABLE_URL = 'https://raw.githubusercontent.com/tymonius/Gauntlet/release/v0.7.0-cutover/tts/assets/environment/campaign-map-table.jpg';
 const SKY_URL = 'https://raw.githubusercontent.com/tymonius/Gauntlet/release/v0.7.0-cutover/tts/assets/environment/command-tent-panorama.jpg';
 
-const TABLE_LAYOUT_NOTE = 'Gauntlet TTS table layout: White sits south and Green north. Each player has Leader & References, Draw, Discard, Graveyard, Asset Bank, Faction Zone, and a visible one-card Hand parking area. Each player has one canonical private TTS Hand zone: it includes that tabletop Hand parking area and extends outward behind it to provide Reserve capacity, so parked and Reserved cards share the same player-only privacy behavior. Asset Bank provides seven portrait positions; Faction Zone provides twelve compact portrait positions. The Gauntlet visibly marks six primary Territory positions; two Manifest Destiny extension snaps remain invisible. Deed snaps are invisible landscape positions beside every possible Territory.';
+const TABLE_LAYOUT_NOTE = 'Gauntlet TTS table layout: White sits south and Green north. Each player has Leader & References, Draw, Discard, Graveyard, Asset Bank, Faction Zone, and a visible one-card Hand parking area. The outward Reserve is the player\'s actual TTS Hand zone. The tabletop Hand parking area is a separate player-private Hidden Zone so a card can be parked physically on the table without returning to the Reserve hand. Asset Bank provides seven portrait positions; Faction Zone provides twelve compact portrait positions. Territory snaps constrain position only so players can rotate Territories freely to show control; Deed snaps remain landscape rotation snaps beside every possible Territory.';
 const TABLE_TEXT_NOTE_PREFIX = 'gauntlet:table-layout:';
 const LEGACY_PRIVATE_ZONE_NOTE_PREFIX = 'gauntlet:private-zone:';
 const LEGACY_HAND_TRIGGER_NOTE_PREFIX = 'gauntlet:hand-trigger:';
+const PRIVATE_PARKING_NOTE_PREFIX = 'gauntlet:private-parking:';
 const TERRITORY_TAG = 'gauntlet-territory';
 const DEED_TAG = 'gauntlet-deed';
 const FACTION_ZONE_TAG = 'gauntlet-faction-zone';
@@ -30,8 +31,14 @@ const LABEL_SHADOW_COLOR = Object.freeze({ r: 0.08, g: 0.055, b: 0.035 });
 const LABEL_COLOR = Object.freeze({ r: 0.99, g: 0.91, b: 0.70 });
 
 const TERRITORY_FLIP_SCRIPT = [
-  'function onLoad()',
-  '  self.use_rotation_value_flip = true',
+  '-- Territory cards rotate around Y to show control, so their face/back flip',
+  '-- must use the orthogonal local X axis without changing that control spin.',
+  'function tryRotate(spin, flip, player_color, old_spin, old_flip)',
+  '  if flip ~= old_flip then',
+  '    self.setRotationSmooth({x = flip, y = spin, z = 0}, false, false)',
+  '    return false',
+  '  end',
+  '  return true',
   'end',
 ].join('\\n');
 // Player workspaces are mirrored across the center line. These definitions own
@@ -116,13 +123,18 @@ const PLAYER_ZONES = Object.freeze([
   },
 ]);
 
-// A player's private Hand is one continuous zone, not a visible tabletop zone
-// plus a second Reserve zone. Its inward edge is exactly the inward edge of the
-// visible Hand parking rectangle; it contains the full parking rectangle and
-// then extends four world units farther outward to create Reserve capacity.
+// The Reserve is the actual TTS Hand zone and sits fully outside the visible
+// tabletop parking rectangle. Parking itself is a Hidden Zone so cards remain
+// physical tabletop objects while concealed from the opponent.
 const HAND_RESERVE_EXTENSION = 4.0;
+const HAND_RESERVE_GAP = 0.25;
 const HAND_ZONE_WIDTH = 7.0;
 const HAND_ZONE_HEIGHT = 6.0;
+const PARKING_ZONE_HEIGHT = 5.0;
+const TTS_ZONE_COLORS = Object.freeze({
+  White: { r: 1.0, g: 1.0, b: 1.0, a: 0.22 },
+  Green: { r: 0.192, g: 0.701, b: 0.168, a: 0.22 },
+});
 
 function jsonText(value) {
   return `${JSON.stringify(value, null, 2)}\n`;
@@ -150,6 +162,24 @@ function collectGuids(objects, guids = new Set()) {
   return guids;
 }
 
+function makeContinuationGuidFactory(save) {
+  const used = collectGuids(save?.ObjectStates);
+  let value = 1;
+  for (const guid of used) {
+    if (/^[0-9a-z]{6}$/i.test(guid)) value = Math.max(value, Number.parseInt(guid, 36) + 1);
+  }
+  return () => {
+    while (value < 36 ** 6) {
+      const candidate = value.toString(36).padStart(6, '0').slice(-6);
+      value += 1;
+      if (used.has(candidate)) continue;
+      used.add(candidate);
+      return candidate;
+    }
+    throw new Error('Unable to allocate another deterministic six-character TTS GUID.');
+  };
+}
+
 function addTag(object, tag) {
   const tags = new Set(Array.isArray(object?.Tags) ? object.Tags : []);
   tags.add(tag);
@@ -170,11 +200,13 @@ function tagTerritories(objects) {
     addTag(object, TERRITORY_TAG);
     object.SidewaysCard = true;
     object.Transform ||= transform();
-    // Keep Territories at their natural local card rotation while they are in
-    // bags. The table's Territory snap points own the 90-degree placement.
-    // SidewaysCard defines the landscape presentation; the flip override changes
-    // only the physical flip axis while the card is still at native rotation.
+    // Keep Territories at their natural local rotation in starter bags. The
+    // board snap constrains only position; players retain Y rotation to show
+    // control. A small object script intercepts only face/back flips and rotates
+    // around local X, leaving the control spin untouched.
+    object.Transform.rotX = 0;
     object.Transform.rotY = 0;
+    object.Transform.rotZ = 0;
     object.Transform.scaleX = 1;
     object.Transform.scaleY = 1;
     object.Transform.scaleZ = 1;
@@ -252,10 +284,9 @@ function handParkingDefinition() {
 export function handZoneTransform(side) {
   const parking = handParkingDefinition();
   const parkingCenter = Math.abs(parking.z);
-  const inwardEdge = parkingCenter - parking.depth / 2;
-  const outwardEdge = parkingCenter + parking.depth / 2 + HAND_RESERVE_EXTENSION;
+  const inwardEdge = parkingCenter + parking.depth / 2 + HAND_RESERVE_GAP;
+  const outwardEdge = inwardEdge + HAND_RESERVE_EXTENSION;
   const center = (inwardEdge + outwardEdge) / 2;
-  const depth = outwardEdge - inwardEdge;
   const north = side === 'Green';
 
   return transform(
@@ -265,7 +296,21 @@ export function handZoneTransform(side) {
     playerFacingCardRotation(side),
     HAND_ZONE_WIDTH,
     HAND_ZONE_HEIGHT,
-    depth,
+    HAND_RESERVE_EXTENSION,
+  );
+}
+
+export function parkingHiddenZoneTransform(side) {
+  const parking = handParkingDefinition();
+  const north = side === 'Green';
+  return transform(
+    0,
+    2.5,
+    north ? Math.abs(parking.z) : -Math.abs(parking.z),
+    playerFacingCardRotation(side),
+    parking.width,
+    PARKING_ZONE_HEIGHT,
+    parking.depth,
   );
 }
 
@@ -325,7 +370,7 @@ export function buildTableVectorLines() {
 
 export function buildTableSnapPoints() {
   const points = [];
-  for (const z of ALL_TERRITORY_Z) points.push(snap(vector(0, 0, z), 90, [TERRITORY_TAG]));
+  for (const z of ALL_TERRITORY_Z) points.push(snap(vector(0, 0, z), null, [TERRITORY_TAG]));
 
   for (const z of ALL_TERRITORY_Z) {
     for (const x of DEED_X) points.push(snap(vector(x, 0, z), 90, [DEED_TAG]));
@@ -410,15 +455,46 @@ export function buildTableTextObjects(existingObjects = []) {
   });
 }
 
-function applyHands(save) {
-  // Hands.HandTransforms is TTS's serialized hand-zone authority. Do not also
-  // serialize HandTrigger ObjectStates: that creates competing overlapping
-  // hand volumes and can make drawn cards oscillate between them.
+function makePrivateParkingZone(side, guid) {
+  return {
+    Name: 'FogOfWarTrigger',
+    Transform: parkingHiddenZoneTransform(side),
+    Nickname: `${side} Private Hand Parking`,
+    Description: 'Private tabletop parking for cards moved out of the Reserve hand',
+    GMNotes: `${PRIVATE_PARKING_NOTE_PREFIX}${side.toLowerCase()}`,
+    ColorDiffuse: { ...TTS_ZONE_COLORS[side] },
+    Locked: true,
+    Grid: false,
+    Snap: false,
+    IgnoreFoW: false,
+    MeasureMovement: false,
+    DragSelectable: true,
+    Autoraise: true,
+    Sticky: true,
+    Tooltip: true,
+    GridProjection: false,
+    HideWhenFaceDown: false,
+    Hands: false,
+    FogColor: side,
+    FogHidePointers: true,
+    FogReverseHiding: false,
+    FogSeethrough: true,
+    LuaScript: '',
+    LuaScriptState: '',
+    XmlUI: '',
+    GUID: guid(),
+  };
+}
+
+function applyHands(save, guid) {
+  // Reserve uses TTS's serialized hand-zone authority. The tabletop parking
+  // area is deliberately NOT a Hand zone: it is a color-owned Hidden Zone so
+  // parked cards stay on the table instead of being pulled back into Reserve.
   save.ObjectStates = (save.ObjectStates || []).filter(object => (
     object?.Name !== 'HandTrigger'
-    && object?.Name !== 'FogOfWarTrigger'
     && !String(object?.GMNotes || '').startsWith(LEGACY_PRIVATE_ZONE_NOTE_PREFIX)
     && !String(object?.GMNotes || '').startsWith(LEGACY_HAND_TRIGGER_NOTE_PREFIX)
+    && !String(object?.GMNotes || '').startsWith(PRIVATE_PARKING_NOTE_PREFIX)
   ));
 
   save.Hands = {
@@ -430,6 +506,11 @@ function applyHands(save) {
       Transform: handZoneTransform(side),
     })),
   };
+
+  save.ObjectStates.push(
+    makePrivateParkingZone('White', guid),
+    makePrivateParkingZone('Green', guid),
+  );
 
   // Do not commandeer a player's camera when the save opens or when they sit.
   // Remove only the obsolete Gauntlet-generated seat-camera script if this
@@ -464,7 +545,8 @@ export function applyTableLayout(save) {
   save.VectorLines = buildTableVectorLines();
   save.SnapPoints = buildTableSnapPoints();
   save.ObjectStates.push(...buildTableTextObjects(save.ObjectStates));
-  applyHands(save);
+  const guid = makeContinuationGuidFactory(save);
+  applyHands(save, guid);
   applyEnvironment(save);
 
   save.Turns ||= {};
@@ -499,6 +581,7 @@ async function main() {
     const deeds = snaps.filter(point => point.Tags?.includes(DEED_TAG));
     const faction = snaps.filter(point => point.Tags?.includes(FACTION_ZONE_TAG));
     if (territory.length !== 8) throw new Error(`Expected 8 Territory snaps; found ${territory.length}.`);
+    if (territory.some(point => point.Rotation !== undefined)) throw new Error('Territory snaps must constrain position only; rotation indicates control.');
     if (deeds.length !== 16) throw new Error(`Expected 16 Deed snaps; found ${deeds.length}.`);
     if (deeds.some(point => Number(point.Rotation?.y) !== 90)) throw new Error('Deed snap rotations must keep SidewaysCard Deeds landscape at 90 degrees.');
     if (faction.length !== 24) throw new Error(`Expected 24 faction-zone card snaps; found ${faction.length}.`);
