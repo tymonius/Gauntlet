@@ -106,6 +106,8 @@ describe('Intelligence nested tracker stack', () => {
     expect(leader.Tags).not.toContain('intelligence-operation-progress');
     expect(intelTile.Tags).toContain('intelligence-operation-progress');
     expect(intelTile.Tags).toContain('intelligence-intel');
+    expect(intelTile.Sticky).toBe(true);
     expect(progressTile.Tags).toContain('intelligence-operation-progress');
+    expect(progressTile.Sticky).toBe(true);
   });
 });
