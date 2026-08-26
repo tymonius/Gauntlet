@@ -9,7 +9,21 @@ const PLAYER_TOKEN_NOTE_PREFIX = 'gauntlet:starter-utility:player-token:';
 const BATTLE_DIE_NOTE_PREFIX = 'gauntlet:starter-utility:battle-die:';
 const PRIVATE_PARKING_NOTE_PREFIX = 'gauntlet:private-parking:';
 const TERRITORY_TAG = 'gauntlet-territory';
+const TERRITORY_OVERLAY_TAG = 'gauntlet-territory-overlay';
 const DEED_TAG = 'gauntlet-deed';
+const PLAYABLE_CARD_NOTE_PREFIX = 'gauntlet:playable-card:';
+const TERRITORY_SLOT_CARD_IDS = new Set(['neutral-manifest-destiny']);
+const TERRITORY_OVERLAY_CARD_IDS = new Set([
+  'military-encampment',
+  'diplomats-demilitarized-zone',
+  'diplomats-sanctions-blockade',
+  'intelligence-fog-of-war',
+  'neutral-bombardment',
+  'neutral-scorched-earth',
+  'neutral-protracted-siege',
+  'mystics-circle-of-bones',
+  'mystics-spirit-hollow',
+]);
 const DEED_STACK_TAG = 'gauntlet-deed-stack';
 const FACTION_ZONE_TAG = 'gauntlet-faction-zone';
 
@@ -79,8 +93,8 @@ function validateTableWorkspace(save) {
   if (territory.length !== 8 || territory.some(point => point.Rotation !== undefined)) {
     throw new Error('Territory table snaps must constrain position only so Y rotation remains available to indicate control.');
   }
-  if (deeds.length !== 16 || deeds.some(point => !close(Math.abs(point.Position?.x), 4.35) || !close(point.Rotation?.y, 90))) {
-    throw new Error('Deed table snaps must remain landscape at ±4.35 / rotation 90.');
+  if (deeds.length !== 16 || deeds.some(point => !close(Math.abs(point.Position?.x), 4.35) || point.Rotation !== undefined)) {
+    throw new Error('Deed table snaps must constrain position only at ±4.35 so Y rotation remains available to indicate ownership.');
   }
   if (faction.length !== 24) throw new Error(`Expected 24 Faction Zone card snaps; found ${faction.length}.`);
   if (deedStackMagnets.length) throw new Error('Deed stacks must use ordinary Faction Zone magnets; dedicated Deed-stack magnets are forbidden.');
@@ -251,18 +265,40 @@ function validateFamilyStacks(bags) {
 
 function validateTerritoriesDeedsAndFactionEligibility(save, manifest) {
   const objects = allObjects(save);
-  const territories = objects.filter(object => object?.Name === 'CardCustom' && hasTag(object, TERRITORY_TAG));
+  const territories = objects.filter(object => (
+    object?.Name === 'CardCustom'
+    && hasTag(object, TERRITORY_TAG)
+    && /(?:Arena )?Territory$/u.test(String(object.Description || ''))
+  ));
   if (!territories.length) throw new Error('No tagged Territory cards found.');
   for (const card of territories) {
     if (card.SidewaysCard !== true) throw new Error(`Territory ${card.Nickname || card.GUID} is not marked SidewaysCard.`);
     if (!close(card.Transform?.rotX, 0) || !close(card.Transform?.rotY, 180) || !close(card.Transform?.rotZ, 0)) {
-      throw new Error(`Territory ${card.Nickname || card.GUID} must begin at native local rotation so board snaps do not encode control.`);
+      throw new Error(`Territory ${card.Nickname || card.GUID} must begin at the host-facing stored rotation while board snaps leave control rotation free.`);
     }
     const lua = String(card.LuaScript || '');
     if (!lua.includes('function tryRotate(spin, flip, player_color, old_spin, old_flip)')
-      || !lua.includes('self.setRotationSmooth({x = flip, y = spin, z = 0}, false, false)')
+      || !lua.includes('self.rotate({x = 180, y = 0, z = 0})')
+      || lua.includes('setRotationSmooth({x = flip')
       || lua.includes('use_rotation_value_flip')) {
-      throw new Error(`Territory ${card.Nickname || card.GUID} is missing the control-preserving local-X flip behavior.`);
+      throw new Error(`Territory ${card.Nickname || card.GUID} is missing the relative local-X flip behavior.`);
+    }
+    const overlaySnaps = (card.AttachedSnapPoints || []).filter(point => point?.Tags?.includes(TERRITORY_OVERLAY_TAG));
+    if (overlaySnaps.length !== 1
+      || !close(overlaySnaps[0].Position?.x, 0) || !close(overlaySnaps[0].Position?.y, 0.25) || !close(overlaySnaps[0].Position?.z, 0)
+      || !close(overlaySnaps[0].Rotation?.x, 0) || !close(overlaySnaps[0].Rotation?.y, 0) || !close(overlaySnaps[0].Rotation?.z, 0)) {
+      throw new Error(`Territory ${card.Nickname || card.GUID} is missing its orientation-following Overlay snap.`);
+    }
+  }
+
+  for (const card of objects.filter(object => object?.Name === 'CardCustom')) {
+    const notes = String(card.GMNotes || '');
+    const id = notes.startsWith(PLAYABLE_CARD_NOTE_PREFIX) ? notes.slice(PLAYABLE_CARD_NOTE_PREFIX.length) : null;
+    if (TERRITORY_SLOT_CARD_IDS.has(id) && !hasTag(card, TERRITORY_TAG)) {
+      throw new Error(`${id} must be eligible for Territory table snaps when it becomes a Territory.`);
+    }
+    if (TERRITORY_OVERLAY_CARD_IDS.has(id) && !hasTag(card, TERRITORY_OVERLAY_TAG)) {
+      throw new Error(`${id} must be eligible for attached Territory Overlay snaps.`);
     }
   }
 
