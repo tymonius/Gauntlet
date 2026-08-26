@@ -3,9 +3,6 @@ import { join, relative } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { CURRENT_ALIAS_ROOT, resolveCurrentTtsRelease, ROOT } from '../scripts/tts-current-catalog.mjs';
 
-const TABLE_URL = 'https://raw.githubusercontent.com/tymonius/Gauntlet/release/v0.7.0-cutover/tts/assets/environment/campaign-map-table.jpg';
-const SKY_URL = 'https://raw.githubusercontent.com/tymonius/Gauntlet/release/v0.7.0-cutover/tts/assets/environment/command-tent-panorama.jpg';
-
 const TABLE_LAYOUT_NOTE = 'Gauntlet TTS table layout: White sits south and Green north. Each player has Leader & References, Draw, Discard, Graveyard, Asset Bank, Faction Zone, and a visible one-card Hand parking area. The outward Reserve is the player\'s actual TTS Hand zone. The tabletop Hand parking area is a separate player-private Hidden Zone so a card can be parked physically on the table without returning to the Reserve hand. Asset Bank provides seven portrait positions; Faction Zone provides twelve compact portrait positions. Territory and Deed snaps constrain position only so their Y rotation can show control or ownership. Manifest Destiny is explicitly Territory-slot eligible. Territory cards carry an attached overlay-only snap so physical Overlays inherit the Territory\'s current orientation.';
 const TABLE_TEXT_NOTE_PREFIX = 'gauntlet:table-layout:';
 const LEGACY_PRIVATE_ZONE_NOTE_PREFIX = 'gauntlet:private-zone:';
@@ -615,10 +612,16 @@ function applyHands(save, guid) {
   });
 }
 function applyEnvironment(save) {
+  const tableUrl = String(save.TableURL || '');
+  const skyUrl = String(save.SkyURL || '');
+  if (!/^https:\/\//i.test(tableUrl) || !/^https:\/\//i.test(skyUrl)) {
+    throw new Error('TTS environment images must already be resolved to hosted HTTPS assets by base save generation.');
+  }
+  if (tableUrl.includes('raw.githubusercontent.com') || skyUrl.includes('raw.githubusercontent.com')) {
+    throw new Error('TTS environment images must use published release hosting, not raw branch URLs.');
+  }
   save.Table = 'Table_Custom';
-  save.TableURL = TABLE_URL;
   save.Sky = 'Sky_Museum';
-  save.SkyURL = SKY_URL;
 }
 
 export function applyTableLayout(save) {
