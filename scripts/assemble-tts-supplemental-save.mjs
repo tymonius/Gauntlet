@@ -127,7 +127,6 @@ function makeSlidingTracker(component, starter, releaseAssets, guid) {
     XmlUI: '',
     GUID: guid(),
     Tags: [snapTag],
-    AttachedSnapPoints: presentation.snapPoints,
     CustomImage: {
       ImageURL: faceUrl,
       ImageSecondaryURL: backUrl,
@@ -185,39 +184,62 @@ function makeSupplementalStack(cards, { key, nickname, description, stackRotatio
 
 const FAMILY_STACKS = Object.freeze([
   {
-    key: 'proposals', nickname: 'Proposals', description: 'Diplomat Proposal / ratified Treaty Article cards', expectedCount: 9,
-    tags: [FACTION_ZONE_TAG],
-    predicate: object => object?.Name === 'CardCustom' && /· proposal-treaty-card$/u.test(String(object.Description || '')),
+    key: 'proposals',
+    nickname: 'Proposals',
+    description: 'Diplomat Proposal / ratified Treaty Article cards',
+    expectedCount: 9,
+    families: Object.freeze(['proposal-treaty-card']),
+    tags: Object.freeze([FACTION_ZONE_TAG]),
   },
   {
-    key: 'deeds', nickname: 'Deeds', description: 'Financier Deed cards', expectedCount: 8, stackRotation: 90, sidewaysCard: true,
-    // The assembled Deed deck is still semantically identifiable as a Deed
-    // stack, but functionally it uses the same Faction Zone magnets as every
-    // other public faction card. There is no second Deed-stack snap system.
-    tags: [DEED_STACK_TAG, FACTION_ZONE_TAG],
-    predicate: object => object?.Name === 'CardCustom' && /· deed-card$/u.test(String(object.Description || '')),
+    key: 'deeds',
+    nickname: 'Deeds',
+    description: 'Financier Deed cards',
+    expectedCount: 8,
+    families: Object.freeze(['deed-card']),
+    stackRotation: 90,
+    sidewaysCard: true,
+    tags: Object.freeze([DEED_STACK_TAG, FACTION_ZONE_TAG]),
   },
   {
-    key: 'rites-rituals', nickname: 'Rites + Ritual', description: 'Mystics Rites and Ritual of Ascension', expectedCount: 4,
-    tags: [FACTION_ZONE_TAG],
-    predicate: object => object?.Name === 'CardCustom' && /· (?:rite-card|ritual-card)$/u.test(String(object.Description || '')),
+    key: 'rites-rituals',
+    nickname: 'Rites + Ritual',
+    description: 'Mystics Rites and Ritual of Ascension',
+    expectedCount: 4,
+    families: Object.freeze(['rite-card', 'ritual-card']),
+    tags: Object.freeze([FACTION_ZONE_TAG]),
   },
 ]);
 
-function stackFamilyInBag(bag, definition, guid) {
-  const objects = bag.ContainedObjects || [];
-  const matching = objects.filter(definition.predicate);
-  if (!matching.length) return false;
-  if (matching.length !== definition.expectedCount) throw new Error(`${bag.Nickname} has ${matching.length} ${definition.key} cards; expected ${definition.expectedCount}.`);
-  const firstIndex = objects.findIndex(definition.predicate);
-  bag.ContainedObjects = objects.filter(object => !definition.predicate(object));
-  bag.ContainedObjects.splice(firstIndex, 0, makeSupplementalStack(matching, definition, guid));
-  return true;
+function componentIdFromObject(object) {
+  const note = String(object?.GMNotes || '');
+  return note.startsWith(SUPPLEMENTAL_GUID_NOTE_PREFIX)
+    ? note.slice(SUPPLEMENTAL_GUID_NOTE_PREFIX.length)
+    : null;
 }
 
-function stackStarterFamilies(bag, guid) {
+function familyDefinitionForComponent(component) {
+  return FAMILY_STACKS.find(definition => definition.families.includes(component.family)) || null;
+}
+
+function stackGeneratedFamilies(bag, generatedEntries, guid) {
   const stacked = [];
-  for (const definition of FAMILY_STACKS) if (stackFamilyInBag(bag, definition, guid)) stacked.push(definition.key);
+  for (const definition of FAMILY_STACKS) {
+    const matching = generatedEntries.filter(({ component, object }) => (
+      object?.Name === 'CardCustom' && definition.families.includes(component.family)
+    ));
+    if (!matching.length) continue;
+    if (matching.length !== definition.expectedCount) {
+      throw new Error(`${bag.Nickname} has ${matching.length} ${definition.key} cards; expected ${definition.expectedCount}.`);
+    }
+
+    const members = new Set(matching.map(({ object }) => object));
+    const firstIndex = bag.ContainedObjects.findIndex(object => members.has(object));
+    const cards = matching.map(({ object }) => object);
+    bag.ContainedObjects = bag.ContainedObjects.filter(object => !members.has(object));
+    bag.ContainedObjects.splice(firstIndex, 0, makeSupplementalStack(cards, definition, guid));
+    stacked.push(definition.key);
+  }
   return stacked;
 }
 
@@ -240,7 +262,14 @@ function validateSupplementalManifest(supplementalManifest, version) {
   if (supplementalManifest?.gameVersion !== version) throw new Error(`Supplemental manifest targets ${supplementalManifest?.gameVersion || 'no version'}; expected ${version}.`);
   const ready = supplementalManifest.ready || [];
   if (Number(supplementalManifest.readyCount) !== ready.length) throw new Error(`Supplemental manifest readyCount ${supplementalManifest.readyCount} does not match ${ready.length} ready records.`);
-  for (const component of ready) if (component.productionStatus !== 'ready') throw new Error(`Supplemental manifest includes non-ready component ${component.id || 'unknown'} in ready records.`);
+  const ids = new Set();
+  for (const component of ready) {
+    if (component.productionStatus !== 'ready') throw new Error(`Supplemental manifest includes non-ready component ${component.id || 'unknown'} in ready records.`);
+    if (!component.id || ids.has(component.id)) throw new Error(`Supplemental manifest contains duplicate or missing component id ${component.id || 'unknown'}.`);
+    ids.add(component.id);
+    const quantity = Number(component.quantity || 0);
+    if (!Number.isInteger(quantity) || quantity <= 0) throw new Error(`Ready supplemental component ${component.id} has invalid quantity ${component.quantity}.`);
+  }
   return ready;
 }
 
@@ -265,19 +294,16 @@ function findLeaderObject(bag, starter) {
 
 function findSupplementalObject(bag, componentId) {
   const note = `${SUPPLEMENTAL_GUID_NOTE_PREFIX}${componentId}`;
-  let match = null;
+  const matches = [];
   const visit = objects => {
     for (const object of objects || []) {
-      if (object?.GMNotes === note) {
-        if (match) throw new Error(`Starter bag contains duplicate supplemental object ${componentId}.`);
-        match = object;
-      }
+      if (object?.GMNotes === note) matches.push(object);
       visit(object?.ContainedObjects);
     }
   };
   visit(bag.ContainedObjects);
-  if (!match) throw new Error(`Starter bag is missing supplemental object ${componentId}.`);
-  return match;
+  if (matches.length !== 1) throw new Error(`Starter bag expected exactly one supplemental object ${componentId}; found ${matches.length}.`);
+  return matches[0];
 }
 
 function resolveTrackerCover(bag, starter, tracker) {
@@ -299,15 +325,11 @@ function cleanPriorAssembly(save, generatedTags) {
   const visit = objects => {
     for (const object of objects || []) {
       if (object?.Name === 'Bag') {
-        const flattened = [];
-        for (const child of object.ContainedObjects || []) {
-          if (String(child?.GMNotes || '').startsWith(SUPPLEMENTAL_STACK_NOTE_PREFIX)) {
-            flattened.push(...(child.ContainedObjects || []));
-          } else if (!String(child?.GMNotes || '').startsWith(SUPPLEMENTAL_GUID_NOTE_PREFIX)) {
-            flattened.push(child);
-          }
-        }
-        object.ContainedObjects = flattened;
+        object.ContainedObjects = (object.ContainedObjects || []).filter(child => {
+          const note = String(child?.GMNotes || '');
+          return !note.startsWith(SUPPLEMENTAL_GUID_NOTE_PREFIX)
+            && !note.startsWith(SUPPLEMENTAL_STACK_NOTE_PREFIX);
+        });
       }
       removeGeneratedTrackerTags(object, generatedTags);
       visit(object?.ContainedObjects);
@@ -316,13 +338,27 @@ function cleanPriorAssembly(save, generatedTags) {
   visit(save.ObjectStates || []);
 }
 
+function instantiateApplicableComponents(applicable, starter, releaseAssets, guid) {
+  const entries = [];
+  for (const component of applicable) {
+    const quantity = Number(component.quantity);
+    for (let copy = 0; copy < quantity; copy += 1) {
+      entries.push({ component, object: makeSupplementalObject(component, starter, releaseAssets, guid) });
+    }
+  }
+  return entries;
+}
+
 export function assembleReadySupplementals(save, starterManifest, supplementalManifest, releaseAssets) {
   const version = String(starterManifest?.gameVersion || '').trim();
-  if (!version || supplementalManifest?.gameVersion !== version || releaseAssets?.gameVersion !== version) {
+  if (!version || supplementalManifest?.gameVersion !== version || releaseAssets?.gameVersion !== version || releaseAssets?.releaseTag !== version) {
     throw new Error('TTS supplemental assembly requires matching starter, supplemental, and hosted-asset versions.');
   }
   const ready = validateSupplementalManifest(supplementalManifest, version);
-  const trackerTags = new Set(ready.filter(component => component.representation === 'sliding-tracker').map(component => component.tts?.snapTag).filter(Boolean));
+  const trackerTags = new Set(ready
+    .filter(component => component.representation === 'sliding-tracker')
+    .map(component => component.tts?.snapTag)
+    .filter(Boolean));
   cleanPriorAssembly(save, trackerTags);
 
   const guid = makeContinuationGuidFactory(save);
@@ -332,17 +368,22 @@ export function assembleReadySupplementals(save, starterManifest, supplementalMa
     const bag = findStarterBag(save, starter);
     const applicable = ready.filter(component => component.deckInclusion === 'every-deck' || component.faction === starter.factionId);
     const trackers = applicable.filter(component => component.representation === 'sliding-tracker');
-    const looseObjects = applicable.map(component => makeSupplementalObject(component, starter, releaseAssets, guid));
+    const generatedEntries = instantiateApplicableComponents(applicable, starter, releaseAssets, guid);
+
     bag.ContainedObjects ||= [];
-    bag.ContainedObjects.push(...looseObjects);
+    bag.ContainedObjects.push(...generatedEntries.map(({ object }) => object));
     wireTrackerCovers(bag, starter, trackers, trackerTags);
-    const stackedFamilies = stackStarterFamilies(bag, guid);
+    const stackedFamilies = stackGeneratedFamilies(bag, generatedEntries, guid);
     for (const component of applicable) assembledIds.add(component.id);
 
     const names = applicable.map(component => component.name || component.id);
     const baseDescription = stripSupplementalDescription(bag.Description);
     bag.Description = `${baseDescription}\n\nReady faction supplementals: ${names.join(', ')}`;
-    starterSummaries.push({ starterId: starter.id, supplementalIds: applicable.map(component => component.id), stackedFamilies });
+    starterSummaries.push({
+      starterId: starter.id,
+      supplementalIds: applicable.map(component => component.id),
+      stackedFamilies,
+    });
   }
 
   const missingReadyIds = ready.filter(component => !assembledIds.has(component.id)).map(component => component.id);
@@ -352,7 +393,9 @@ export function assembleReadySupplementals(save, starterManifest, supplementalMa
     const existing = String(save[field] || '');
     save[field] = existing.includes(PENDING_SUPPLEMENTAL_NOTE)
       ? existing.replace(PENDING_SUPPLEMENTAL_NOTE, ASSEMBLED_SUPPLEMENTAL_NOTE)
-      : `${existing.trim()}\n\n${ASSEMBLED_SUPPLEMENTAL_NOTE}`.trim();
+      : existing.includes(ASSEMBLED_SUPPLEMENTAL_NOTE)
+        ? existing
+        : `${existing.trim()}\n\n${ASSEMBLED_SUPPLEMENTAL_NOTE}`.trim();
   }
   return { save, starterSummaries, assembledIds: [...assembledIds] };
 }
