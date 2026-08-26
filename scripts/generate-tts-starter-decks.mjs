@@ -328,7 +328,7 @@ function buildStarterManifest(starterDecks, catalog, leaders, cardManifest, terr
       starterDecks: catalog.release.starterDecksSource,
       starterDeckDataVersion: starterDecks.version || null,
       starterDeckDataStatus: starterDecks.status || null,
-      componentContract: 'config/tts-component-contract.json',
+      componentContract: 'game-data/current-game.json#componentContract',
     },
     construction: starterDecks.construction || {},
     backPolicy: {
