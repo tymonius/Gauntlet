@@ -7,12 +7,15 @@ const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 const readme = readFileSync('tts/README.md', 'utf8');
 
 describe('TTS GitHub Release asset hosting', () => {
-  it('stages only the network assets referenced by the generated TTS manifests', () => {
+  it('stages generated network assets plus the two static TTS environment images', () => {
     expect(stager).toContain('resolveCurrentTtsRelease');
     expect(stager).toContain("readJson(join(outputRoot, 'manifest.json'))");
     expect(stager).toContain("readJson(join(outputRoot, 'territory-manifest.json'))");
     expect(stager).toContain("readJson(join(outputRoot, 'leader-manifest.json'))");
     expect(stager).toContain("readJson(join(outputRoot, 'starter-deck-manifest.json'))");
+    expect(stager).toContain("'tts/assets/environment/campaign-map-table.jpg'");
+    expect(stager).toContain("'tts/assets/environment/command-tent-panorama.jpg'");
+    expect(stager).toContain("sourceScope: 'repository'");
     expect(stager).toContain('for (const sheet of cardManifest.sheets || [])');
     expect(stager).toContain('Object.entries(cardManifest.backVariants || {})');
     expect(stager).toContain('for (const sheet of territoryManifest.sheets || [])');
@@ -35,6 +38,8 @@ describe('TTS GitHub Release asset hosting', () => {
     expect(stager).toContain('_Playable_Sheet_');
     expect(stager).toContain('_Back_');
     expect(stager).toContain('_Territory_Sheet_');
+    expect(stager).toContain('Environment_Table.jpg');
+    expect(stager).toContain('Environment_Panorama.jpg');
     expect(stager).not.toContain('_Territory_Back.png');
     expect(stager).toContain("if (territoryManifest.backPolicy !== 'standardBack')");
     expect(stager).toContain('_Leader_');
