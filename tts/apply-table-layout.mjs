@@ -8,8 +8,8 @@ const SKY_URL = 'https://raw.githubusercontent.com/tymonius/Gauntlet/release/v0.
 
 const TABLE_LAYOUT_NOTE = 'Gauntlet TTS table layout: Red sits south and Blue north. Each player has Leader & References, Draw, Discard, Graveyard, Asset Bank, Faction Zone, and a visible one-card Hand parking area. Each player has one canonical private TTS Hand zone: it includes that tabletop Hand parking area and extends outward behind it to provide Reserve capacity, so parked and Reserved cards share the same player-only privacy behavior. Asset Bank provides seven portrait positions; Faction Zone provides twelve compact portrait positions. The Gauntlet visibly marks six primary Territory positions; two Manifest Destiny extension snaps remain invisible. Deed snaps are invisible landscape positions beside every possible Territory.';
 const TABLE_TEXT_NOTE_PREFIX = 'gauntlet:table-layout:';
-const LEGACY_PRIVATE_ZONE_NOTE_PREFIX = 'gauntlet:private-zone:';
-const LEGACY_HAND_TRIGGER_NOTE_PREFIX = 'gauntlet:hand-trigger:';
+const PRIVATE_ZONE_NOTE_PREFIX = 'gauntlet:private-zone:';
+const HAND_TRIGGER_NOTE_PREFIX = 'gauntlet:hand-trigger:';
 const TERRITORY_TAG = 'gauntlet-territory';
 const DEED_TAG = 'gauntlet-deed';
 const FACTION_ZONE_TAG = 'gauntlet-faction-zone';
@@ -28,10 +28,14 @@ const OUTLINE_SHADOW_COLOR = Object.freeze({ r: 0.12, g: 0.085, b: 0.055 });
 const OUTLINE_COLOR = Object.freeze({ r: 0.83, g: 0.69, b: 0.40 });
 const LABEL_SHADOW_COLOR = Object.freeze({ r: 0.08, g: 0.055, b: 0.035 });
 const LABEL_COLOR = Object.freeze({ r: 0.99, g: 0.91, b: 0.70 });
+const TTS_PLAYER_COLORS = Object.freeze({
+  Red: { r: 0.856, g: 0.100, b: 0.094 },
+  Blue: { r: 0.118, g: 0.530, b: 1.000 },
+});
 
 const TERRITORY_FLIP_SCRIPT = [
   'function onLoad()',
-  '  self.use_rotation_value_flip = true',
+  '  self.use_rotation_value_flip = false',
   'end',
 ].join('\n');
 
@@ -151,6 +155,24 @@ function collectGuids(objects, guids = new Set()) {
   return guids;
 }
 
+function makeContinuationGuidFactory(save) {
+  const used = collectGuids(save?.ObjectStates);
+  let value = 1;
+  for (const guid of used) {
+    if (/^[0-9a-z]{6}$/i.test(guid)) value = Math.max(value, Number.parseInt(guid, 36) + 1);
+  }
+  return () => {
+    while (value < 36 ** 6) {
+      const candidate = value.toString(36).padStart(6, '0').slice(-6);
+      value += 1;
+      if (used.has(candidate)) continue;
+      used.add(candidate);
+      return candidate;
+    }
+    throw new Error('Unable to allocate another deterministic six-character TTS GUID.');
+  };
+}
+
 function addTag(object, tag) {
   const tags = new Set(Array.isArray(object?.Tags) ? object.Tags : []);
   tags.add(tag);
@@ -177,7 +199,7 @@ function tagTerritories(objects) {
     object.Transform.scaleZ = 1;
 
     // Keep the existing face/back assets unchanged. Territory cards are
-    // landscape objects, so tell TTS to flip them around their rotated axis.
+    // landscape objects, so switch TTS to the alternate physical flip axis.
     object.LuaScript = TERRITORY_FLIP_SCRIPT;
     object.LuaScriptState = '';
   });
@@ -408,57 +430,61 @@ export function buildTableTextObjects(existingObjects = []) {
   });
 }
 
-function makeSeatCameraLua() {
-  return [
-    '-- Gauntlet seat cameras: each player loads from the same end as their unified private Hand zone.',
-    'function gauntletSeatCamera(color)',
-    '  if color == "Red" then',
-    '    Player[color].lookAt({ position = {0, 0, 0}, pitch = 55, yaw = 0, distance = 38 })',
-    '  elseif color == "Blue" then',
-    '    Player[color].lookAt({ position = {0, 0, 0}, pitch = 55, yaw = 180, distance = 38 })',
-    '  end',
-    'end',
-    '',
-    'function onLoad()',
-    '  Wait.frames(function()',
-    '    for _, color in ipairs(getSeatedPlayers()) do',
-    '      gauntletSeatCamera(color)',
-    '    end',
-    '  end, 3)',
-    'end',
-    '',
-    'function onPlayerChangeColor(color)',
-    '  if color == "Red" or color == "Blue" then',
-    '    Wait.frames(function() gauntletSeatCamera(color) end, 2)',
-    '  end',
-    'end',
-    '',
-  ].join('\n');
+function makeHandTrigger(side, guid) {
+  return {
+    Name: 'HandTrigger',
+    Transform: handZoneTransform(side),
+    Nickname: `${side} Hand`,
+    Description: 'Unified private Hand Zone containing tabletop Hand parking and Reserve space',
+    GMNotes: `${HAND_TRIGGER_NOTE_PREFIX}${side.toLowerCase()}`,
+    ColorDiffuse: { ...TTS_PLAYER_COLORS[side] },
+    Locked: true,
+    Grid: false,
+    Snap: false,
+    Autoraise: false,
+    Sticky: false,
+    Tooltip: false,
+    GridProjection: false,
+    HideWhenFaceDown: false,
+    Hands: false,
+    LuaScript: '',
+    LuaScriptState: '',
+    XmlUI: '',
+    GUID: guid(),
+  };
 }
 
-function applyHandsAndSeatCameras(save) {
-  // Hands.HandTransforms is the one canonical hand/private-zone authority.
-  // Remove legacy object-form zones so a save can never contain overlapping
-  // competing hand systems.
+function applyHands(save, guid) {
+  // TTS requires real HandTrigger objects for functional hand zones. Keep one
+  // unified private Hand zone per player and serialize the same transform in
+  // Hands.HandTransforms so drawing/dealing and player-only privacy agree.
   save.ObjectStates = (save.ObjectStates || []).filter(object => (
     object?.Name !== 'HandTrigger'
     && object?.Name !== 'FogOfWarTrigger'
-    && !String(object?.GMNotes || '').startsWith(LEGACY_PRIVATE_ZONE_NOTE_PREFIX)
-    && !String(object?.GMNotes || '').startsWith(LEGACY_HAND_TRIGGER_NOTE_PREFIX)
+    && !String(object?.GMNotes || '').startsWith(PRIVATE_ZONE_NOTE_PREFIX)
+    && !String(object?.GMNotes || '').startsWith(HAND_TRIGGER_NOTE_PREFIX)
   ));
 
+  const sides = ['Red', 'Blue'];
+  const triggers = sides.map(side => makeHandTrigger(side, guid));
+  save.ObjectStates.push(...triggers);
   save.Hands = {
     Enable: true,
     DisableUnused: false,
     Hiding: 0,
-    HandTransforms: ['Red', 'Blue'].map(side => ({
-      Color: side,
-      Transform: handZoneTransform(side),
+    HandTransforms: triggers.map((trigger, index) => ({
+      Color: sides[index],
+      Transform: { ...trigger.Transform },
     })),
   };
 
-  save.LuaScript = makeSeatCameraLua();
-  save.LuaScriptState = '';
+  // Do not commandeer a player's camera when the save opens or when they sit.
+  // Remove only the obsolete Gauntlet-generated seat-camera script if this
+  // function is applied to a scaffold produced by the previous interaction model.
+  if (String(save.LuaScript || '').includes('function gauntletSeatCamera(color)')) {
+    save.LuaScript = '';
+    save.LuaScriptState = '';
+  }
 
   walkObjects(save.ObjectStates, object => {
     if (object?.Name === 'CardCustom') {
@@ -486,7 +512,8 @@ export function applyTableLayout(save) {
   save.VectorLines = buildTableVectorLines();
   save.SnapPoints = buildTableSnapPoints();
   save.ObjectStates.push(...buildTableTextObjects(save.ObjectStates));
-  applyHandsAndSeatCameras(save);
+  const guid = makeContinuationGuidFactory(save);
+  applyHands(save, guid);
   applyEnvironment(save);
 
   save.Turns ||= {};
