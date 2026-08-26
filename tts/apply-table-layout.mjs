@@ -468,7 +468,7 @@ export function applyTableLayout(save) {
   applyEnvironment(save);
 
   save.Turns ||= {};
-  save.Turns.TurnColor = 'Red';
+  save.Turns.TurnColor = 'White';
 
   for (const field of ['Note', 'Rules']) {
     const current = String(save[field] || '').trim();
