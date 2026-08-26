@@ -48,9 +48,9 @@ const PLAYER_ZONES = Object.freeze([
     id: 'leader-references',
     label: 'Leader & References',
     x: -12.25,
-    z: -14.2,
+    z: -16.45,
     width: 11.1,
-    depth: 9.2,
+    depth: 5.0,
     fontSize: 29,
     textScale: 0.26,
     snapLayout: 'leader',
@@ -127,10 +127,13 @@ const PLAYER_ZONES = Object.freeze([
 // tabletop parking rectangle. Parking itself is a Hidden Zone so cards remain
 // physical tabletop objects while concealed from the opponent.
 const HAND_RESERVE_EXTENSION = 4.0;
-const HAND_RESERVE_GAP = 0.25;
+const HAND_RESERVE_GAP = 1.0;
 const HAND_ZONE_WIDTH = 7.0;
 const HAND_ZONE_HEIGHT = 6.0;
-const PARKING_ZONE_HEIGHT = 5.0;
+const PARKING_ZONE_WIDTH = 7.0;
+const PARKING_ZONE_HEIGHT = 6.0;
+const PARKING_ZONE_DEPTH = 6.5;
+const PARKING_ZONE_CENTER_OFFSET = 0.75;
 const TTS_ZONE_COLORS = Object.freeze({
   White: { r: 1.0, g: 1.0, b: 1.0, a: 0.22 },
   Green: { r: 0.192, g: 0.701, b: 0.168, a: 0.22 },
@@ -213,6 +216,21 @@ function tagTerritories(objects) {
     object.LuaScript = TERRITORY_FLIP_SCRIPT;
     object.LuaScriptState = '';
   });
+}
+
+function orientStarterBagsForHost(save) {
+  for (const bag of save.ObjectStates || []) {
+    if (bag?.Name !== 'Bag') continue;
+    bag.Transform ||= transform();
+    // Actual TTS testing establishes that stored 0° container/component
+    // orientation emerges facing the opposite seat. Store the starter packages
+    // at 180° so manually extracted setup pieces face the White/host player.
+    bag.Transform.rotY = 180;
+    for (const object of bag.ContainedObjects || []) {
+      if (!object?.Transform) continue;
+      object.Transform.rotY = 180;
+    }
+  }
 }
 
 function flatTextTransform(x, z, rotationY, scale, y = TABLE_MARK_Y) {
@@ -303,14 +321,15 @@ export function handZoneTransform(side) {
 export function parkingHiddenZoneTransform(side) {
   const parking = handParkingDefinition();
   const north = side === 'Green';
+  const center = Math.abs(parking.z) + PARKING_ZONE_CENTER_OFFSET;
   return transform(
     0,
-    2.5,
-    north ? Math.abs(parking.z) : -Math.abs(parking.z),
+    3.0,
+    north ? center : -center,
     playerFacingCardRotation(side),
-    parking.width,
+    PARKING_ZONE_WIDTH,
     PARKING_ZONE_HEIGHT,
-    parking.depth,
+    PARKING_ZONE_DEPTH,
   );
 }
 
@@ -327,11 +346,13 @@ function snap(position, rotationY = null, tags = null) {
 }
 
 function leaderOffsets() {
+  // Keep the tested absolute snap row at z=-16.45 while tightening the visible
+  // Leader & References outline around the actual card/tracker footprint.
   return [
-    [-4.05, -2.25],
-    [-1.35, -2.25],
-    [1.35, -2.25],
-    [4.05, -2.25],
+    [-4.05, 0],
+    [-1.35, 0],
+    [1.35, 0],
+    [4.05, 0],
   ];
 }
 
@@ -527,6 +548,9 @@ function applyHands(save, guid) {
       if (!tags.includes(TERRITORY_TAG) && !tags.includes(DEED_TAG)) addTag(object, FACTION_ZONE_TAG);
     } else if (object?.Name === 'DeckCustom') {
       object.Hands = true;
+    } else if (object?.Name === 'Custom_Tile'
+      && String(object.LuaScript || '').includes('gauntletTrackerRegistrations')) {
+      addTag(object, FACTION_ZONE_TAG);
     }
   });
 }
@@ -542,6 +566,7 @@ export function applyTableLayout(save) {
 
   save.ObjectStates = save.ObjectStates.filter(object => !String(object?.GMNotes || '').startsWith(TABLE_TEXT_NOTE_PREFIX));
   tagTerritories(save.ObjectStates);
+  orientStarterBagsForHost(save);
   save.VectorLines = buildTableVectorLines();
   save.SnapPoints = buildTableSnapPoints();
   save.ObjectStates.push(...buildTableTextObjects(save.ObjectStates));
