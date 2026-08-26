@@ -35,9 +35,46 @@ function resolveFactions(baseFactions, manifest) {
 
 function resolveFactionRules(baseRules, manifest) {
   const rules = structuredClone(baseRules || {});
+  for (const [factionId, source] of Object.entries(rules)) {
+    const current = { ...(source || {}) };
+    if (Object.prototype.hasOwnProperty.call(current, 'faction_action_phase')) {
+      current.faction_feature_action_phase = current.faction_action_phase;
+      delete current.faction_action_phase;
+    }
+    if (Object.prototype.hasOwnProperty.call(current, 'faction_actions')) {
+      current.faction_features_1_action = (manifest.factionFeatures?.[factionId] || [])
+        .filter(feature => feature.profile === '1 Action')
+        .map(feature => feature.name);
+      delete current.faction_actions;
+    }
+    if (Object.prototype.hasOwnProperty.call(current, 'faction_abilities')) {
+      current.leader_abilities = structuredClone(current.faction_abilities);
+      delete current.faction_abilities;
+    }
+    if (Object.prototype.hasOwnProperty.call(current, 'mission_control_type')) {
+      current.mission_control_classification = 'Leader Ability';
+      delete current.mission_control_type;
+    }
+    if (Object.prototype.hasOwnProperty.call(current, 'final_judgment_type')) {
+      current.final_judgment_classification = 'Leader Ability';
+      delete current.final_judgment_type;
+    }
+    rules[factionId] = current;
+  }
+
   for (const [factionId, override] of Object.entries(manifest.factionOverrides || {})) {
     if (!override?.factionRules) continue;
     rules[factionId] = { ...(rules[factionId] || {}), ...structuredClone(override.factionRules) };
+  }
+
+  if (rules.diplomats) {
+    const terms = manifest.factionFeatures?.diplomats?.find(feature => feature.name === 'Terms');
+    if (terms?.timing) rules.diplomats.terms_timing = terms.timing;
+  }
+  if (rules.financiers?.financial_capacity) {
+    rules.financiers.financial_capacity = rules.financiers.financial_capacity
+      .replace('provided at least one is a Financier Faction Action.',
+        'provided at least one Action is spent on a Financier Faction Feature marked 1 Action.');
   }
   return rules;
 }
@@ -46,7 +83,7 @@ function stripInternalAuditMetadata(value) {
   if (Array.isArray(value)) return value.map(stripInternalAuditMetadata);
   if (!value || typeof value !== 'object') return value;
   return Object.fromEntries(Object.entries(value)
-    .filter(([key]) => key !== 'auditHeadings')
+    .filter(([key]) => !['auditHeadings', 'audit_notes', 'v063_language_review'].includes(key))
     .map(([key, child]) => [key, stripInternalAuditMetadata(child)]));
 }
 
@@ -157,7 +194,8 @@ const starterDecks = {
 
 const rulebook = addCardAnatomyFigure(promoteRulebookVersion(currentRulebookSource));
 
-const canonicalPayload = JSON.stringify(canonicalData);
+const publishedCanonicalData = stripInternalAuditMetadata(canonicalData);
+const canonicalPayload = JSON.stringify(publishedCanonicalData);
 for (const [label, pattern] of [
   ['pending-battle terminology', /\bpending(?:-|\s+)battles?\b/iu],
   ['Faction Action terminology', /\bFaction Actions?\b/iu],
@@ -166,7 +204,7 @@ for (const [label, pattern] of [
 ]) {
   if (pattern.test(canonicalPayload)) throw new Error('Published canonical data still contains retired ' + label + '.');
 }
-const canonicalText = jsonText(canonicalData);
+const canonicalText = jsonText(publishedCanonicalData);
 const starterText = jsonText(starterDecks);
 const authoritySetId = sha256(Buffer.from(`${rulebook}\n${canonicalText}\n${starterText}`, 'utf8'));
 const sourceProvenance = {
