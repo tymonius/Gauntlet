@@ -4,13 +4,14 @@ import { describe, expect, it } from 'vitest';
 const universalStyles = readFileSync('card-design/universal-reference.css', 'utf8');
 
 describe('Universal Reference neutral emblem', () => {
-  it('crops the stylized G directly from the self-contained canonical wordmark', () => {
+  it('paints the stylized G directly from the canonical wordmark instead of relying on an SVG mask', () => {
     expect(universalStyles).toContain('.reference-card[data-component-id="universal-reference"] .reference-faction-emblem {');
-    expect(universalStyles).toContain('-webkit-mask-image: url("../images/Gauntlet.svg")');
-    expect(universalStyles).toContain('mask-image: url("../images/Gauntlet.svg")');
-    expect(universalStyles).toContain('-webkit-mask-position: left center');
-    expect(universalStyles).toContain('-webkit-mask-size: auto 100%');
-    expect(universalStyles).not.toContain('mask-image: url("../images/Gauntlet-G.svg")');
+    expect(universalStyles).toContain('background-image: url("../images/Gauntlet.svg")');
+    expect(universalStyles).toContain('background-position: left center');
+    expect(universalStyles).toContain('background-size: auto 100%');
+    expect(universalStyles).toContain('-webkit-mask-image: none');
+    expect(universalStyles).toContain('mask-image: none');
+    expect(universalStyles).not.toContain('background-image: url("../images/Gauntlet-G.svg")');
   });
 
   it('keeps the approved neutral ivory border treatment', () => {
