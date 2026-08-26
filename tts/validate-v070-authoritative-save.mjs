@@ -1,10 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 import { resolveCurrentTtsRelease, ROOT } from '../scripts/tts-current-catalog.mjs';
-import {
-  CARD_MATCHED_TRACKER_WORLD_LONG_EDGE,
-  trackerPresentation,
-} from '../scripts/tts-supplemental-geometry.mjs';
+import { trackerPresentation } from '../scripts/tts-supplemental-geometry.mjs';
 
 const SUPPLEMENTAL_GUID_NOTE_PREFIX = 'gauntlet:supplemental:';
 const SUPPLEMENTAL_STACK_NOTE_PREFIX = 'gauntlet:supplemental-stack:';
@@ -248,33 +245,29 @@ function validateTrackers(save, manifest) {
     if (!record) return;
 
     const expected = trackerPresentation(record);
-    const actual = object.AttachedSnapPoints || [];
     const authored = record.tts?.snapPoints || [];
-    if (actual.length !== expected.snapPoints.length || actual.length !== authored.length) {
-      throw new Error(`Tracker ${id} does not contain one snap for every rendered registration line.`);
+    if (expected.registrations.length !== authored.length) {
+      throw new Error(`Tracker ${id} does not preserve one registration for every rendered value line.`);
+    }
+    if (Array.isArray(object.AttachedSnapPoints) && object.AttachedSnapPoints.length) {
+      throw new Error(`Tracker ${id} has serialized snap coordinates competing with its live-bounds authority.`);
     }
 
-    let previousFraction = -Infinity;
-    for (let index = 0; index < actual.length; index += 1) {
-      const point = actual[index];
-      const expectedPoint = expected.snapPoints[index];
-      const fraction = Number(authored[index]?.registrationFraction);
-      if (!Number.isFinite(fraction) || fraction < previousFraction) throw new Error(`Tracker ${id} has invalid rendered registration fractions.`);
-      previousFraction = fraction;
-
-      const actualWorldTravel = Math.abs(Number(point.Position?.z)) * Number(object.Transform?.scaleZ);
-      const expectedWorldTravel = fraction * CARD_MATCHED_TRACKER_WORLD_LONG_EDGE;
-      if (!close(point.Position?.z, expectedPoint.Position.z, 0.00001)
-        || !close(actualWorldTravel, expectedWorldTravel, 0.00001)
-        || point.RotationSnap !== true
-        || point.Tags?.[0] !== expectedPoint.Tags[0]) {
-        throw new Error(`Tracker ${id} does not map its actual rendered registration lines directly to cover-card travel.`);
+    expected.registrations.forEach((registration, index) => {
+      if (!close(registration.registrationFraction, authored[index]?.registrationFraction, 0.0000001)) {
+        throw new Error(`Tracker ${id} altered rendered registration fraction ${index}.`);
       }
-    }
+    });
 
     const lua = String(object.LuaScript || '');
-    if (lua !== expected.luaScript || lua.includes('getBoundsNormalized') || lua.includes('Wait.frames')) {
-      throw new Error(`Tracker ${id} runtime snap registration does not match the static rendered-line mapping.`);
+    if (lua !== expected.luaScript
+      || !lua.includes('self.getBoundsNormalized()')
+      || !lua.includes('local localLength = bounds.size.z / scaleZ')
+      || !lua.includes('-localLength * registration.fraction')
+      || !lua.includes('Wait.condition(')
+      || lua.includes('3.06')
+      || lua.includes('value / max')) {
+      throw new Error(`Tracker ${id} runtime snap registration is not the canonical rendered-line/live-bounds mapping.`);
     }
     counts.set(id, counts.get(id) + 1);
   });
