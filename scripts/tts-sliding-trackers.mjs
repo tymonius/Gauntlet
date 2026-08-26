@@ -2,6 +2,7 @@ const CSS_CARD_WIDTH = 240;
 const CSS_CARD_HEIGHT = 336;
 const PHYSICAL_CARD_WIDTH = 2.5;
 const PHYSICAL_CARD_HEIGHT = 3.5;
+const CSS_PX_PER_IN = CSS_CARD_HEIGHT / PHYSICAL_CARD_HEIGHT;
 
 function round(value, places = 5) {
   const factor = 10 ** places;
@@ -75,7 +76,10 @@ export async function captureProductionTracker(page, baseUrl, record, outputPath
       const value = Number.parseInt(String(label.textContent || '').trim(), 10);
       return {
         value,
-        travelFraction: (rect.bottom - lineRect.top) / rect.height,
+        // This is the actual rendered distance the covering card must move so
+        // its bottom edge lands on this line. Do not reconstruct it from
+        // value/max or spread registrations over the card height later.
+        rendererTravelPx: rect.bottom - lineRect.top,
       };
     }).filter(Boolean);
     return {
@@ -88,7 +92,7 @@ export async function captureProductionTracker(page, baseUrl, record, outputPath
   if (Math.abs(geometry.width - CSS_CARD_WIDTH) > 0.25 || Math.abs(geometry.height - CSS_CARD_HEIGHT) > 0.25) {
     throw new Error(`Unexpected production tracker geometry for ${record.id}: ${geometry.width} × ${geometry.height}.`);
   }
-  if (!geometry.marks.length || geometry.marks.some((mark) => !Number.isInteger(mark.value) || !(mark.travelFraction > 0))) {
+  if (!geometry.marks.length || geometry.marks.some((mark) => !Number.isInteger(mark.value) || !(mark.rendererTravelPx > 0))) {
     throw new Error(`Production tracker ${record.id} did not expose valid registration lines.`);
   }
 
@@ -99,15 +103,19 @@ export async function captureProductionTracker(page, baseUrl, record, outputPath
   }
 
   const snapPoints = [
-    { value: 0, offset: 0 },
+    { value: 0, rendererTravelPx: 0, offset: 0 },
     ...geometry.marks.map((mark) => ({
       value: mark.value,
-      offset: round(mark.travelFraction * PHYSICAL_CARD_HEIGHT),
+      rendererTravelPx: round(mark.rendererTravelPx),
+      // Retain the physical offset as diagnostic manifest data, but TTS snap
+      // generation consumes rendererTravelPx directly so no later code can
+      // redistribute the registrations across the whole card.
+      offset: round(mark.rendererTravelPx / CSS_PX_PER_IN),
     })),
   ];
   for (let index = 1; index < snapPoints.length; index += 1) {
-    if (!(snapPoints[index].offset > snapPoints[index - 1].offset)) {
-      throw new Error(`Production tracker ${record.id} registration offsets are not strictly increasing.`);
+    if (!(snapPoints[index].rendererTravelPx > snapPoints[index - 1].rendererTravelPx)) {
+      throw new Error(`Production tracker ${record.id} renderer registration positions are not strictly increasing.`);
     }
   }
 
