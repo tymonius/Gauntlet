@@ -117,13 +117,13 @@ function validateHandsAndSeats(save) {
   }
   if (save.Hands?.Hiding !== 0) throw new Error('TTS Hand hiding must remain at the default player-private setting.');
 
-  const red = save.Hands.HandTransforms.find(hand => hand.Color === 'Red');
-  const blue = save.Hands.HandTransforms.find(hand => hand.Color === 'Blue');
-  if (!red || !blue) throw new Error('Missing Red or Blue hand transform.');
+  const white = save.Hands.HandTransforms.find(hand => hand.Color === 'White');
+  const green = save.Hands.HandTransforms.find(hand => hand.Color === 'Green');
+  if (!white || !green) throw new Error('Missing White or Green hand transform.');
 
   const expectedHands = [
-    [red, 'Red', -20.25, 0, -18.25],
-    [blue, 'Blue', 20.25, 180, 18.25],
+    [white, 'White', -20.25, 0, -18.25],
+    [green, 'Green', 20.25, 180, 18.25],
   ];
   for (const [hand, side, z, rotY, parkingZ] of expectedHands) {
     if (!close(hand.Transform?.posX, 0) || !close(hand.Transform?.posY, 4) || !close(hand.Transform?.posZ, z) || !close(hand.Transform?.rotY, rotY)
@@ -137,8 +137,8 @@ function validateHandsAndSeats(save) {
 
   // The unified private zone must not swallow ordinary public workspaces.
   for (const [hand, side, publicPoints] of [
-    [red, 'Red', [[-1.55, -13.55], [1.55, -13.55], [17.15, -17.75]]],
-    [blue, 'Blue', [[1.55, 13.55], [-1.55, 13.55], [-17.15, 17.75]]],
+    [white, 'White', [[-1.55, -13.55], [1.55, -13.55], [17.15, -17.75]]],
+    [green, 'Green', [[1.55, 13.55], [-1.55, 13.55], [-17.15, 17.75]]],
   ]) {
     if (publicPoints.some(([x, z]) => zoneContainsPoint(hand.Transform, x, z))) {
       throw new Error(`${side} private Hand zone overlaps Draw, Discard, or Graveyard.`);
@@ -236,8 +236,8 @@ function validateTerritoriesDeedsAndFactionEligibility(save, manifest) {
     if (!close(card.Transform?.rotY, 0)) {
       throw new Error(`Territory ${card.Nickname || card.GUID} must keep its native local rotation until the table snap point places it.`);
     }
-    if (String(card.LuaScript || '').includes('use_rotation_value_flip')) {
-      throw new Error(`Territory ${card.Nickname || card.GUID} must use native SidewaysCard flipping without a custom flip-axis override.`);
+    if (!String(card.LuaScript || '').includes('self.use_rotation_value_flip = true')) {
+      throw new Error(`Territory ${card.Nickname || card.GUID} must use the alternate flip axis at native local rotation.`);
     }
   }
 
