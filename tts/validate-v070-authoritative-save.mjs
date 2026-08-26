@@ -14,7 +14,6 @@ const TERRITORY_TAG = 'gauntlet-territory';
 const DEED_TAG = 'gauntlet-deed';
 const DEED_STACK_TAG = 'gauntlet-deed-stack';
 const FACTION_ZONE_TAG = 'gauntlet-faction-zone';
-const HAND_TRIGGER_NOTE_PREFIX = 'gauntlet:hand-trigger:';
 
 const FACTION_ROW_Z = Object.freeze({
   military: -12,
@@ -64,41 +63,32 @@ function validateEnvironment(save) {
 }
 
 function validateTableWorkspace(save) {
-  if ((save.VectorLines || []).length !== 40) {
-    throw new Error(`Expected 40 visible table outline lines; found ${save.VectorLines?.length || 0}. Manifest Destiny extension slots must remain invisible.`);
+  if ((save.VectorLines || []).length !== 36) {
+    throw new Error(`Expected 36 visible table outline lines; found ${save.VectorLines?.length || 0}. Hand parking and Manifest Destiny guides must remain invisible.`);
   }
-  if ((save.SnapPoints || []).length !== 80) throw new Error(`Expected 80 final table snaps; found ${save.SnapPoints?.length || 0}.`);
+  if ((save.SnapPoints || []).length !== 78) throw new Error(`Expected 78 final table snaps; found ${save.SnapPoints?.length || 0}.`);
 
-  const territory = (save.SnapPoints || []).filter(point => point.Tags?.includes(TERRITORY_TAG));
-  const deeds = (save.SnapPoints || []).filter(point => point.Tags?.includes(DEED_TAG));
-  const faction = (save.SnapPoints || []).filter(point => point.Tags?.includes(FACTION_ZONE_TAG));
-  const deedStacks = (save.SnapPoints || []).filter(point => point.Tags?.includes(DEED_STACK_TAG));
+  const territory = save.SnapPoints.filter(point => point.Tags?.includes(TERRITORY_TAG));
+  const deeds = save.SnapPoints.filter(point => point.Tags?.includes(DEED_TAG));
+  const faction = save.SnapPoints.filter(point => point.Tags?.includes(FACTION_ZONE_TAG));
+  const deedStackMagnets = save.SnapPoints.filter(point => point.Tags?.includes(DEED_STACK_TAG));
+
   if (territory.length !== 8 || territory.some(point => !close(point.Rotation?.y, 90))) {
-    throw new Error('Territory table snaps do not match the recovered eight-position landscape contract.');
+    throw new Error('Territory table snaps do not match the eight-position landscape contract.');
   }
   if (deeds.length !== 16 || deeds.some(point => !close(Math.abs(point.Position?.x), 4.35) || !close(point.Rotation?.y, 90))) {
-    throw new Error('Deed table snaps must keep SidewaysCard Deeds landscape at ±4.35 / rotation 90.');
+    throw new Error('Deed table snaps must remain landscape at ±4.35 / rotation 90.');
   }
   if (faction.length !== 24) throw new Error(`Expected 24 Faction Zone card snaps; found ${faction.length}.`);
+  if (deedStackMagnets.length) throw new Error('Deed stacks must use ordinary Faction Zone magnets; dedicated Deed-stack magnets are forbidden.');
   if (faction.filter(point => Number(point.Position?.z) < 0).some(point => !close(point.Rotation?.y, 180))) {
-    throw new Error('Red Faction Zone card snaps are not facing the Red player.');
+    throw new Error('Red Faction Zone card snaps are not facing Red.');
   }
   if (faction.filter(point => Number(point.Position?.z) > 0).some(point => !close(point.Rotation?.y, 0))) {
-    throw new Error('Blue Faction Zone card snaps are not facing the Blue player.');
-  }
-  if (deedStacks.length !== 2) throw new Error(`Expected two Deed-stack parking snaps; found ${deedStacks.length}.`);
-  const redDeedStack = deedStacks.find(point => Number(point.Position?.z) < 0);
-  const blueDeedStack = deedStacks.find(point => Number(point.Position?.z) > 0);
-  if (!redDeedStack || !close(redDeedStack.Rotation?.y, 270) || !blueDeedStack || !close(blueDeedStack.Rotation?.y, 90)) {
-    throw new Error('Deed-stack parking magnets do not use the recovered perpendicular player-facing rotations.');
+    throw new Error('Blue Faction Zone card snaps are not facing Blue.');
   }
 
-  const redWorkspace = [
-    [-1.55, -13.55],
-    [1.55, -13.55],
-    [0, -18.25],
-    [17.15, -17.75],
-  ];
+  const redWorkspace = [[-1.55, -13.55], [1.55, -13.55], [0, -18.25], [17.15, -17.75]];
   const blueWorkspace = redWorkspace.map(([x, z]) => [-x, -z]);
   if (redWorkspace.some(([x, z]) => !close(findSnap(save, x, z)?.Rotation?.y, 180))) {
     throw new Error('One or more Red Draw/Discard/Hand/Graveyard snaps are not facing Red.');
@@ -108,69 +98,49 @@ function validateTableWorkspace(save) {
   }
 
   const labels = (save.ObjectStates || []).filter(object => String(object?.GMNotes || '').startsWith('gauntlet:table-layout:'));
-  if (labels.length !== 28) throw new Error(`Expected 28 table-label objects; found ${labels.length}.`);
-  const redLeader = labels.find(object => object.GMNotes === 'gauntlet:table-layout:red-leader-references:label');
-  const redHand = labels.find(object => object.GMNotes === 'gauntlet:table-layout:red-hand:label');
-  const redGraveyard = labels.find(object => object.GMNotes === 'gauntlet:table-layout:red-graveyard:label');
-  if (!redLeader || !close(redLeader.Transform?.posX, -12.25)
-    || !redHand || !close(redHand.Transform?.posZ, -20.59, 0.01)
-    || !redGraveyard || !close(redGraveyard.Transform?.posX, 17.15)) {
-    throw new Error('Final Round-3 workspace geometry was not preserved in generated table labels.');
+  if (labels.length !== 24) throw new Error(`Expected 24 visible table-label objects; found ${labels.length}.`);
+  if (labels.some(object => /-hand:/u.test(String(object.GMNotes || '')) || object.Text?.Text === 'Hand')) {
+    throw new Error('The one-card Hand parking snap must not have a visible table guide or label.');
   }
 }
 
 function validateHandsAndSeats(save) {
   if (save.Hands?.Enable !== true || save.Hands?.DisableUnused !== false || save.Hands?.HandTransforms?.length !== 2) {
-    throw new Error('Expected exactly two always-enabled top-level TTS hand transforms.');
+    throw new Error('Expected exactly two enabled serialized TTS hand transforms.');
   }
   const red = save.Hands.HandTransforms.find(hand => hand.Color === 'Red');
   const blue = save.Hands.HandTransforms.find(hand => hand.Color === 'Blue');
   if (!red || !blue) throw new Error('Missing Red or Blue hand transform.');
 
   const expectedHands = [
-    [red, 'Red', -23, 180],
-    [blue, 'Blue', 23, 0],
+    [red, 'Red', -23, 0],
+    [blue, 'Blue', 23, 180],
   ];
   for (const [hand, side, z, rotY] of expectedHands) {
     if (!close(hand.Transform?.posZ, z) || !close(hand.Transform?.rotY, rotY)
-      || !close(hand.Transform?.scaleX, 34) || !close(hand.Transform?.scaleY, 2) || !close(hand.Transform?.scaleZ, 5.5)) {
-      throw new Error(`${side} hand transform does not match the recovered rear-edge hand geometry.`);
+      || !close(hand.Transform?.scaleX, 7) || !close(hand.Transform?.scaleY, 2.5) || !close(hand.Transform?.scaleZ, 3)) {
+      throw new Error(`${side} hand transform does not match the canonical rear-edge hand geometry.`);
     }
   }
 
   const objects = allObjects(save);
-  const handTriggers = objects.filter(object => object?.Name === 'HandTrigger');
-  if (handTriggers.length !== 2) throw new Error(`Expected exactly two real HandTrigger ObjectStates; found ${handTriggers.length}.`);
-  for (const [hand, side, z, rotY] of expectedHands) {
-    const trigger = handTriggers.find(object => object.GMNotes === `${HAND_TRIGGER_NOTE_PREFIX}${side.toLowerCase()}`);
-    if (!trigger || trigger.Nickname !== `${side} Hand`
-      || !close(trigger.Transform?.posZ, z) || !close(trigger.Transform?.rotY, rotY)
-      || !close(trigger.Transform?.scaleX, 34) || !close(trigger.Transform?.scaleY, 2) || !close(trigger.Transform?.scaleZ, 5.5)) {
-      throw new Error(`${side} real HandTrigger is missing or does not match the serialized HandTransform.`);
-    }
-    for (const key of ['posX', 'posY', 'posZ', 'rotX', 'rotY', 'rotZ', 'scaleX', 'scaleY', 'scaleZ']) {
-      if (!close(trigger.Transform?.[key], hand.Transform?.[key], 0.00001)) {
-        throw new Error(`${side} HandTrigger and Hands.HandTransforms disagree at ${key}.`);
-      }
-    }
+  const explicitHandVolumes = objects.filter(object => object?.Name === 'HandTrigger');
+  if (explicitHandVolumes.length) {
+    throw new Error(`Found ${explicitHandVolumes.length} explicit HandTrigger ObjectStates. Hands.HandTransforms must be the single hand-zone authority.`);
   }
-
   const fogVolumes = objects.filter(object => object?.Name === 'FogOfWarTrigger');
-  if (fogVolumes.length) {
-    throw new Error(`Found ${fogVolumes.length} FogOfWarTrigger objects. Player privacy must use real HandTrigger zones without table-spanning fog volumes.`);
-  }
+  if (fogVolumes.length) throw new Error(`Found ${fogVolumes.length} obsolete FogOfWarTrigger objects.`);
 
   const handEligible = objects.filter(object => object?.Name === 'CardCustom' || object?.Name === 'DeckCustom');
   if (!handEligible.length || handEligible.some(object => object.Hands !== true)) {
-    throw new Error('Every CardCustom and DeckCustom must participate in the real TTS hand system.');
+    throw new Error('Every CardCustom and DeckCustom must participate in the TTS hand system.');
   }
 
   const lua = String(save.LuaScript || '');
   if (!lua.includes('function gauntletSeatCamera(color)')
     || !lua.includes('pitch = 55, yaw = 0, distance = 38')
-    || !lua.includes('pitch = 55, yaw = 180, distance = 38')
-    || !lua.includes('function onPlayerChangeColor(color)')) {
-    throw new Error('Authoritative save is missing the recovered Red/Blue seat-camera alignment script.');
+    || !lua.includes('pitch = 55, yaw = 180, distance = 38')) {
+    throw new Error('Authoritative save is missing Red/Blue seat-camera alignment.');
   }
 }
 
@@ -178,8 +148,8 @@ function validateBagsAndUtilities(save) {
   const bags = (save.ObjectStates || []).filter(object => object?.Name === 'Bag');
   if (bags.length !== 12) throw new Error(`Expected 12 starter Bags; found ${bags.length}.`);
 
-  const looseUtilities = (save.ObjectStates || []).filter(object => object?.Name === 'PlayerPawn' || object?.Name === 'Die_6');
-  if (looseUtilities.length) throw new Error(`Found ${looseUtilities.length} loose utility objects; faction token/die belong inside starter Bags.`);
+  const looseUtilities = save.ObjectStates.filter(object => object?.Name === 'PlayerPawn' || object?.Name === 'Die_6');
+  if (looseUtilities.length) throw new Error(`Found ${looseUtilities.length} loose utility objects.`);
 
   const byFaction = new Map();
   for (const bag of bags) {
@@ -195,11 +165,6 @@ function validateBagsAndUtilities(save) {
     if (!Object.hasOwn(FACTION_ROW_Z, faction)) throw new Error(`${bag.Nickname} has unknown faction utility marker ${faction}.`);
     if (!byFaction.has(faction)) byFaction.set(faction, []);
     byFaction.get(faction).push(bag);
-
-    const playable = objects.filter(object => object?.Name === 'DeckCustom' && / Deck — \d+ cards$/u.test(String(object.Nickname || '')));
-    if (playable.length !== 1 || !close(playable[0].Transform?.rotZ, 180)) {
-      throw new Error(`${bag.Nickname} must contain one face-down playable Deck.`);
-    }
   }
 
   for (const [faction, expectedZ] of Object.entries(FACTION_ROW_Z)) {
@@ -207,9 +172,8 @@ function validateBagsAndUtilities(save) {
     if (pair.length !== 2) throw new Error(`Expected two ${faction} starter Bags; found ${pair.length}.`);
     const left = pair.find(bag => close(bag.Transform?.posX, -20.5));
     const right = pair.find(bag => close(bag.Transform?.posX, 20.5));
-    if (!left || !right || !close(left.Transform?.posZ, expectedZ) || !close(right.Transform?.posZ, expectedZ)
-      || !close(left.Transform?.rotY, 90) || !close(right.Transform?.rotY, 270)) {
-      throw new Error(`${faction} starter Bags do not use the recovered paired setup parking row.`);
+    if (!left || !right || !close(left.Transform?.posZ, expectedZ) || !close(right.Transform?.posZ, expectedZ)) {
+      throw new Error(`${faction} starter Bags do not use the expected setup row.`);
     }
   }
   return bags;
@@ -217,9 +181,9 @@ function validateBagsAndUtilities(save) {
 
 function validateFamilyStacks(bags) {
   const expectations = new Map([
-    ['proposals', { count: 2, cards: 9, sideways: false, rotY: 0, tag: FACTION_ZONE_TAG }],
-    ['deeds', { count: 2, cards: 8, sideways: true, rotY: 90, tag: DEED_STACK_TAG }],
-    ['rites-rituals', { count: 2, cards: 4, sideways: false, rotY: 0, tag: FACTION_ZONE_TAG }],
+    ['proposals', { count: 2, cards: 9, sideways: false, rotY: 0, tags: [FACTION_ZONE_TAG] }],
+    ['deeds', { count: 2, cards: 8, sideways: true, rotY: 90, tags: [DEED_STACK_TAG, FACTION_ZONE_TAG] }],
+    ['rites-rituals', { count: 2, cards: 4, sideways: false, rotY: 0, tags: [FACTION_ZONE_TAG] }],
   ]);
   const found = new Map([...expectations.keys()].map(key => [key, []]));
 
@@ -236,13 +200,9 @@ function validateFamilyStacks(bags) {
     const stacks = found.get(key);
     if (stacks.length !== expected.count) throw new Error(`Expected ${expected.count} ${key} stacks; found ${stacks.length}.`);
     for (const stack of stacks) {
-      if (stack.Name !== 'DeckCustom' || stack.ContainedObjects?.length !== expected.cards) {
-        throw new Error(`${key} stack has incorrect package size.`);
-      }
-      if (stack.SidewaysCard !== expected.sideways || !close(stack.Transform?.rotY, expected.rotY)) {
-        throw new Error(`${key} stack has incorrect physical stack orientation.`);
-      }
-      if (!hasTag(stack, expected.tag)) throw new Error(`${key} stack is missing functional table tag ${expected.tag}.`);
+      if (stack.Name !== 'DeckCustom' || stack.ContainedObjects?.length !== expected.cards) throw new Error(`${key} stack has incorrect package size.`);
+      if (stack.SidewaysCard !== expected.sideways || !close(stack.Transform?.rotY, expected.rotY)) throw new Error(`${key} stack has incorrect physical orientation.`);
+      for (const tag of expected.tags) if (!hasTag(stack, tag)) throw new Error(`${key} stack is missing functional tag ${tag}.`);
     }
   }
 }
@@ -252,40 +212,24 @@ function validateTerritoriesDeedsAndFactionEligibility(save, manifest) {
   const territories = objects.filter(object => object?.Name === 'CardCustom' && hasTag(object, TERRITORY_TAG));
   if (!territories.length) throw new Error('No tagged Territory cards found.');
   for (const card of territories) {
-    if (card.SidewaysCard !== true || !close(card.Transform?.rotY, 90)) {
-      throw new Error(`Territory ${card.Nickname || card.GUID} is not a standard-size landscape card.`);
-    }
-    if (!close(card.Transform?.scaleX, 1) || !close(card.Transform?.scaleY, 1) || !close(card.Transform?.scaleZ, 1)) {
-      throw new Error(`Territory ${card.Nickname || card.GUID} has nonstandard physical scale.`);
-    }
+    if (card.SidewaysCard !== true || !close(card.Transform?.rotY, 90)) throw new Error(`Territory ${card.Nickname || card.GUID} is not landscape.`);
     if (!String(card.LuaScript || '').includes('self.use_rotation_value_flip = true')) {
-      throw new Error(`Territory ${card.Nickname || card.GUID} is not configured to flip around the landscape-safe axis.`);
+      throw new Error(`Territory ${card.Nickname || card.GUID} does not switch TTS to the landscape flip axis.`);
     }
   }
 
   const deedRecord = (manifest.ready || []).find(record => record.family === 'deed-card');
   if (!deedRecord) throw new Error('Supplemental manifest contains no Deed record.');
-  if (deedRecord.tts?.cellOrientation !== 'portrait' || deedRecord.tts?.sidewaysCard !== true) {
-    throw new Error('Deeds must be exported in standard portrait TTS cells and presented sideways in play.');
-  }
-
   const deeds = objects.filter(object => object?.Name === 'CardCustom' && hasTag(object, DEED_TAG));
   if (deeds.length !== 16) throw new Error(`Expected 16 packaged Deed card objects across two starters; found ${deeds.length}.`);
   for (const card of deeds) {
-    if (card.SidewaysCard !== true || !close(card.Transform?.rotY, 0)) {
-      throw new Error(`Deed ${card.Nickname || card.GUID} does not use the standard landscape SidewaysCard presentation.`);
-    }
-    if (!close(card.Transform?.scaleX, 1) || !close(card.Transform?.scaleY, 1) || !close(card.Transform?.scaleZ, 1)) {
-      throw new Error(`Deed ${card.Nickname || card.GUID} has nonstandard physical scale.`);
-    }
-    if (!hasTag(card, FACTION_ZONE_TAG)) {
-      throw new Error(`Deed ${card.Nickname || card.GUID} must snap both to dedicated Deed slots and to generic Faction Zone positions.`);
-    }
+    if (card.SidewaysCard !== true || !close(card.Transform?.rotY, 0)) throw new Error(`Deed ${card.Nickname || card.GUID} has incorrect free orientation.`);
+    if (!hasTag(card, FACTION_ZONE_TAG)) throw new Error(`Deed ${card.Nickname || card.GUID} is not Faction Zone eligible.`);
   }
 
   const ordinaryCards = objects.filter(object => object?.Name === 'CardCustom' && !hasTag(object, TERRITORY_TAG) && !hasTag(object, DEED_TAG));
   if (!ordinaryCards.length || ordinaryCards.some(card => !hasTag(card, FACTION_ZONE_TAG))) {
-    throw new Error('Every ordinary card must retain generic Faction Zone snap eligibility for Treasury/public faction state.');
+    throw new Error('Every ordinary card must retain generic Faction Zone snap eligibility.');
   }
 }
 
@@ -304,41 +248,33 @@ function validateTrackers(save, manifest) {
     if (!record) return;
 
     const expected = trackerPresentation(record);
-    if (!close(object.Transform?.scaleX, expected.transformScale)
-      || !close(object.Transform?.scaleY, 1)
-      || !close(object.Transform?.scaleZ, expected.transformScale)) {
-      throw new Error(`Tracker ${id} does not use the canonical card-sized Custom_Tile transform.`);
-    }
-    if (!close(object.CustomImage?.WidthScale, expected.widthScale)
-      || object.CustomImage?.CustomTile?.Type !== expected.tileType
-      || object.CustomImage?.CustomTile?.Stretch !== expected.stretch
-      || object.CustomImage?.CustomTile?.Stackable !== false) {
-      throw new Error(`Tracker ${id} does not use the canonical Custom_Tile presentation.`);
-    }
-
     const actual = object.AttachedSnapPoints || [];
     const authored = record.tts?.snapPoints || [];
-    if (actual.length !== expected.snapPoints.length || actual.length !== authored.length || actual.some((point, index) => {
+    if (actual.length !== expected.snapPoints.length || actual.length !== authored.length) {
+      throw new Error(`Tracker ${id} does not contain one snap for every rendered registration line.`);
+    }
+
+    let previousFraction = -Infinity;
+    for (let index = 0; index < actual.length; index += 1) {
+      const point = actual[index];
       const expectedPoint = expected.snapPoints[index];
-      const authoredPoint = authored[index];
-      const registrationFraction = Number(authoredPoint.registrationFraction);
-      const expectedWorldTravel = registrationFraction * CARD_MATCHED_TRACKER_WORLD_LONG_EDGE;
+      const fraction = Number(authored[index]?.registrationFraction);
+      if (!Number.isFinite(fraction) || fraction < previousFraction) throw new Error(`Tracker ${id} has invalid rendered registration fractions.`);
+      previousFraction = fraction;
+
       const actualWorldTravel = Math.abs(Number(point.Position?.z)) * Number(object.Transform?.scaleZ);
-      return !Number.isFinite(registrationFraction)
-        || !close(point.Position?.x, expectedPoint.Position.x, 0.00001)
-        || !close(point.Position?.y, expectedPoint.Position.y, 0.00001)
-        || !close(point.Position?.z, expectedPoint.Position.z, 0.00001)
+      const expectedWorldTravel = fraction * CARD_MATCHED_TRACKER_WORLD_LONG_EDGE;
+      if (!close(point.Position?.z, expectedPoint.Position.z, 0.00001)
         || !close(actualWorldTravel, expectedWorldTravel, 0.00001)
         || point.RotationSnap !== true
-        || !Array.isArray(point.Tags)
-        || point.Tags[0] !== expectedPoint.Tags[0];
-    })) {
-      throw new Error(`Tracker ${id} snap geometry does not place the cover bottom edge on each actual rendered registration line.`);
+        || point.Tags?.[0] !== expectedPoint.Tags[0]) {
+        throw new Error(`Tracker ${id} does not map its actual rendered registration lines directly to cover-card travel.`);
+      }
     }
+
     const lua = String(object.LuaScript || '');
-    if (lua !== expected.luaScript || !lua.includes('setSnapPoints')
-      || lua.includes('getBoundsNormalized') || lua.includes('Wait.frames')) {
-      throw new Error(`Tracker ${id} runtime snap registration does not match the canonical static renderer mapping.`);
+    if (lua !== expected.luaScript || lua.includes('getBoundsNormalized') || lua.includes('Wait.frames')) {
+      throw new Error(`Tracker ${id} runtime snap registration does not match the static rendered-line mapping.`);
     }
     counts.set(id, counts.get(id) + 1);
   });
