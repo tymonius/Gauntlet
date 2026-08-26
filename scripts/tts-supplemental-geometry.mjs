@@ -4,21 +4,29 @@ export const STANDARD_CARD_SHORT_EDGE = 2.5;
 export const STANDARD_CARD_LONG_EDGE = 3.5;
 export const TRACKER_RENDER_PX_PER_IN = 96;
 
-// Compatibility aliases used by the existing validator. They intentionally
-// collapse to the authored 3.5-unit card length; snapping itself does not use
-// these values or normalize registrations over the full card.
-export const TTS_STANDARD_CARD_WORLD_LONG_EDGE = STANDARD_CARD_LONG_EDGE;
+// A standard TTS card's 3.5-inch long edge occupies 3.06 world units. Keep
+// this calibration explicit: authored print geometry and TTS world geometry
+// are different coordinate systems and must not be conflated.
+export const TTS_STANDARD_CARD_WORLD_LONG_EDGE = 3.06;
 
-// Tabletop Simulator's Custom_Tile and CardCustom objects use different native
-// tabletop footprints. The tracker tile is scaled to match a normal card; snap
-// coordinates are therefore divided by the same object scale so their world
-// travel remains exactly the renderer-measured physical distance.
+// The Custom_Tile is scaled until its tabletop footprint matches a normal
+// card. Attached snap coordinates are local to that scaled tile.
 export const CUSTOM_TILE_CARD_LINEAR_SCALE = 1.5;
-export const TRACKER_LOCAL_LONG_EDGE = STANDARD_CARD_LONG_EDGE / CUSTOM_TILE_CARD_LINEAR_SCALE;
+export const TRACKER_LOCAL_LONG_EDGE = TTS_STANDARD_CARD_WORLD_LONG_EDGE / CUSTOM_TILE_CARD_LINEAR_SCALE;
 export const ROUNDED_RECTANGLE_TILE_TYPE = 3;
 
 function vector(x = 0, y = 0, z = 0) {
   return { x, y, z };
+}
+
+export function rendererTravelToWorldTravel(rendererTravelPx) {
+  const pixels = Number(rendererTravelPx);
+  if (!Number.isFinite(pixels) || pixels < 0) {
+    throw new Error(`Invalid tracker renderer travel ${rendererTravelPx}.`);
+  }
+  const physicalTravel = pixels / TRACKER_RENDER_PX_PER_IN;
+  const travelFraction = physicalTravel / STANDARD_CARD_LONG_EDGE;
+  return travelFraction * TTS_STANDARD_CARD_WORLD_LONG_EDGE;
 }
 
 export function assertCardSizedTracker(component) {
@@ -50,12 +58,11 @@ export function makeTrackerSnapPoints(component) {
     }
     previous = rendererTravelPx;
 
-    // The renderer measured the exact distance from the card bottom to this
-    // registration line. Convert only pixels -> authored physical distance,
-    // then account for the Custom_Tile object scale. There is deliberately no
-    // value/max spacing and no normalization over the tracker's full height.
-    const physicalTravel = rendererTravelPx / TRACKER_RENDER_PX_PER_IN;
-    const localZ = -(physicalTravel / CUSTOM_TILE_CARD_LINEAR_SCALE);
+    // Preserve the exact irregular registration geometry measured from the
+    // rendered card, then map that physical distance into TTS's calibrated
+    // standard-card footprint. No value/max distribution occurs here.
+    const worldTravel = rendererTravelToWorldTravel(rendererTravelPx);
+    const localZ = -(worldTravel / CUSTOM_TILE_CARD_LINEAR_SCALE);
     return {
       Position: vector(0, SNAP_Y, Number(localZ.toFixed(6))),
       Rotation: vector(0, 0, 0),
