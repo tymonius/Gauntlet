@@ -128,7 +128,7 @@ function makeSlidingTracker(component, starter, releaseAssets, guid) {
     LuaScriptState: '',
     XmlUI: '',
     GUID: guid(),
-    Tags: [snapTag],
+    Tags: [snapTag, FACTION_ZONE_TAG],
     CustomImage: {
       ImageURL: faceUrl,
       ImageSecondaryURL: backUrl,
