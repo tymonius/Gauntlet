@@ -253,9 +253,8 @@ describe('authoritative TTS table layout', () => {
     expect(territory.CustomDeck).toEqual(originalCustomDeck);
     expect(territory.SidewaysCard).toBe(true);
     expect(territory.Transform.rotY).toBe(180);
-    expect(String(territory.LuaScript || '')).toContain('function tryRotate(spin, flip, player_color, old_spin, old_flip)');
-    expect(String(territory.LuaScript || '')).toContain('self.rotate({x = 180, y = 0, z = 0})');
-    expect(String(territory.LuaScript || '')).not.toContain('setRotationSmooth({x = flip');
+    expect(String(territory.LuaScript || '')).toBe('');
+    expect(String(territory.LuaScript || '')).not.toContain('tryRotate');
     expect(String(territory.LuaScript || '')).not.toContain('use_rotation_value_flip');
     expect(territory.AttachedSnapPoints).toEqual([{
       Position: { x: 0, y: 0.25, z: 0 },
