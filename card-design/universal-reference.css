@@ -79,17 +79,17 @@
   align-self: center;
   width: 0.17in;
   height: 0.17in;
-  background: currentColor;
-  /* Use the self-contained canonical SVG directly. Gauntlet-G.svg depended on
-     a nested relative <image>, which Chromium did not resolve inside a mask. */
-  -webkit-mask-image: url("../images/Gauntlet.svg");
-  -webkit-mask-position: left center;
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: auto 100%;
-  mask-image: url("../images/Gauntlet.svg");
-  mask-position: left center;
-  mask-repeat: no-repeat;
-  mask-size: auto 100%;
+  overflow: hidden;
+  background-color: transparent;
+  background-image: url("../images/Gauntlet.svg");
+  background-position: left center;
+  background-repeat: no-repeat;
+  background-size: auto 100%;
+  /* Do not mask the wordmark. Chromium's screenshot renderer was dropping the
+     SVG when it was used as a CSS mask; direct image paint reliably renders
+     the left-hand stylized G and the 0.17in box clips the remaining letters. */
+  -webkit-mask-image: none;
+  mask-image: none;
 }
 
 .reference-card[data-component-id="universal-reference"] .reference-watermark {
