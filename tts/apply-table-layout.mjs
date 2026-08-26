@@ -116,7 +116,7 @@ const PLAYER_ZONES = Object.freeze([
 // then extends four world units farther outward to create Reserve capacity.
 const HAND_RESERVE_EXTENSION = 4.0;
 const HAND_ZONE_WIDTH = 7.0;
-const HAND_ZONE_HEIGHT = 2.0;
+const HAND_ZONE_HEIGHT = 6.0;
 
 function jsonText(value) {
   return `${JSON.stringify(value, null, 2)}\n`;
@@ -256,7 +256,7 @@ export function handZoneTransform(side) {
 
   return transform(
     0,
-    1.5,
+    4.0,
     north ? center : -center,
     playerFacingCardRotation(side),
     HAND_ZONE_WIDTH,
