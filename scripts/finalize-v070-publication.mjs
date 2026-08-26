@@ -6,7 +6,9 @@ const SOURCE_VERSION = 'v0.6.4-candidate';
 const HISTORICAL_V063_TARGET = '4f475ffb3649da8ed240b94a702c8b3320b91ff6';
 const RELEASE_TITLE = 'Gauntlet v0.7.0 — Illustrated Cards & Tabletop Simulator';
 const PACKAGE = 'releases/v0.7.0';
-const publicationDate = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+const publicationInstant = new Date();
+const publicationDateIso = publicationInstant.toISOString().slice(0, 10);
+const publicationDate = publicationInstant.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 
 const readText = path => readFile(path, 'utf8').then(value => value.replace(/\r\n/g, '\n'));
 const readJson = path => readText(path).then(JSON.parse);
@@ -31,9 +33,14 @@ if (manifest.release_version !== RELEASE_VERSION || manifest.status !== 'current
 if (provenance.release_version !== RELEASE_VERSION || provenance.source_version !== SOURCE_VERSION) throw new Error('Materialized v0.7.0 provenance is invalid.');
 if (!provenance.authority_set_id || provenance.authority_set_id !== manifest.authority_set_id) throw new Error('Materialized v0.7.0 authority identity is inconsistent.');
 
+manifest.publication_date = publicationDateIso;
 manifest.public_defaults = {
+  ...(manifest.public_defaults || {}),
   website: RELEASE_VERSION,
   rulebook: RELEASE_VERSION,
+  browser_tools: RELEASE_VERSION,
+  rules_arbiter: RELEASE_VERSION,
+  digital_rules: RELEASE_VERSION,
 };
 await writeJson(manifestPath, manifest);
 
@@ -46,6 +53,7 @@ lifecycle.releases['v0.6.3'] = {
   status: 'historical',
   artifacts_preserved: true,
   public_cutover: false,
+  historical_package_path: 'releases/v0.6.3/',
 };
 delete lifecycle.releases['v0.6.3'].current_package_path;
 lifecycle.releases[RELEASE_VERSION] = {
@@ -54,6 +62,7 @@ lifecycle.releases[RELEASE_VERSION] = {
   public_cutover: true,
   current_package_path: `${PACKAGE}/`,
   authority_set_id: provenance.authority_set_id,
+  publication_date: publicationDateIso,
 };
 await writeJson('config/release-lifecycle.json', lifecycle);
 
@@ -73,6 +82,7 @@ releaseContract.current_release = {
     `${PACKAGE}/Gauntlet_v0.7.0_Canonical_Data.json`,
     `${PACKAGE}/Gauntlet_v0.7.0_Starter_Decks.json`,
     `${PACKAGE}/Gauntlet_v0.7.0_Source_Provenance.json`,
+    `${PACKAGE}/Gauntlet_v0.7.0_Manifest.json`,
   ],
 };
 releaseContract.historical_releases = (releaseContract.historical_releases || [])
@@ -99,6 +109,18 @@ await writeFile('index.html', homepage);
 let rulebookIndex = await readText('rulebook/index.html');
 rulebookIndex = rulebookIndex.replaceAll('v0.6.3', RELEASE_VERSION);
 rulebookIndex = rulebookIndex.replaceAll('version 0.6.3', 'version 0.7.0');
+rulebookIndex = replaceRequired(
+  rulebookIndex,
+  'Read the complete canonical Gauntlet v0.7.0 rulebook or switch to the current release-candidate rules.',
+  'Read the complete canonical Gauntlet v0.7.0 Rulebook.',
+  'Rulebook meta description',
+);
+rulebookIndex = replaceRequired(
+  rulebookIndex,
+  'Candidate view: current-development rules layered over the published v0.7.0 Rulebook.',
+  'Archived source candidate: retained for provenance; the published v0.7.0 Rulebook is current.',
+  'candidate ruleset note',
+);
 rulebookIndex = replaceRequired(
   rulebookIndex,
   'data-ruleset="candidate" aria-pressed="false"',
