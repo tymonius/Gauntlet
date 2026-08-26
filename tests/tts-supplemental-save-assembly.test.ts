@@ -109,6 +109,7 @@ describe('TTS ready supplemental save assembly', () => {
 
     expect(tracker.Name).toBe('Custom_Tile');
     expect(tracker.CustomImage.CustomTile.Stackable).toBe(false);
+    expect(tracker.Sticky).toBe(true);
     expect(tracker.CustomImage.CustomTile.Type).toBe(ROUNDED_RECTANGLE_TILE_TYPE);
     expect(tracker.Transform.scaleZ).toBe(CUSTOM_TILE_CARD_LINEAR_SCALE);
     expect(tracker.AttachedSnapPoints).toBeUndefined();
