@@ -222,13 +222,14 @@ function orientStarterBagsForHost(save) {
   for (const bag of save.ObjectStates || []) {
     if (bag?.Name !== 'Bag') continue;
     bag.Transform ||= transform();
-    // Actual TTS testing establishes that stored 0° container/component
-    // orientation emerges facing the opposite seat. Store the starter packages
-    // at 180° so manually extracted setup pieces face the White/host player.
+    // Actual TTS testing establishes that the previous stored orientations
+    // emerge facing the opposite seat. Canonicalize every starter package to
+    // the 180°-reversed equivalent rather than relying on the Bag transform.
     bag.Transform.rotY = 180;
     for (const object of bag.ContainedObjects || []) {
       if (!object?.Transform) continue;
-      object.Transform.rotY = 180;
+      const stackKind = String(object.GMNotes || '').replace('gauntlet:supplemental-stack:', '');
+      object.Transform.rotY = stackKind === 'deeds' ? 270 : 180;
     }
   }
 }
