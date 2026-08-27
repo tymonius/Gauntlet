@@ -26,11 +26,15 @@ describe('TTS save publisher', () => {
     expect(publisher).toContain('const backUrl = requireHostedUrl(releaseAssets, starter.back.file)');
   });
 
-  it('packages each current starter as a selectable kit with Deck, Leader, Territories, token, and die', () => {
+  it('packages each current starter with one three-card Territory stack and a deterministic setup backbone', () => {
     expect(publisher).toContain("objectBase('Bag', `${starter.name} — ${starter.leader.name}`");
     expect(publisher).toContain("objectBase(\n      'DeckCustom'");
     expect(publisher).toContain("objectBase('CardCustom'");
-    expect(publisher).toContain('const containedObjects = [leader, ...territories, deck, playerToken, battleDie]');
+    expect(publisher).toContain("const STARTER_DECK_NOTE_PREFIX = 'gauntlet:starter-deck:'");
+    expect(publisher).toContain("const STARTER_TERRITORY_STACK_NOTE_PREFIX = 'gauntlet:starter-territories:'");
+    expect(publisher).toContain('const containedObjects = [leader, deck, territoryStack, playerToken, battleDie]');
+    expect(publisher).toContain('starter.territories.length !== 3');
+    expect(publisher).toContain('ContainedObjects: territories');
     expect(publisher).toContain('starters.map(starter => buildStarterKit');
     expect(publisher).not.toMatch(/Expected 12|=== 12|!== 12/);
   });
