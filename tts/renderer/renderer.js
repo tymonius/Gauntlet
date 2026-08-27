@@ -78,11 +78,13 @@
     await waitFor(() => Boolean(interior?.style.getPropertyValue('--art-height')), RENDER_TIMEOUT_MS);
     await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     fitForTts(element);
-    window.GauntletArtworkCrop?.apply(
-      artImage,
-      card.artDirection,
-      { id: card.id, label: card.name },
-    );
+    if (card.artDirection && Object.keys(card.artDirection).length) {
+      window.GauntletArtworkCrop?.apply(
+        artImage,
+        card.artDirection,
+        { id: card.id, label: card.name },
+      );
+    }
     document.body.dataset.renderReady = 'true';
   }, { once: true });
 
