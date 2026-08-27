@@ -120,10 +120,10 @@ describe('authoritative TTS table layout', () => {
     const whiteParking = parkingHiddenZoneTransform('White');
     const greenParking = parkingHiddenZoneTransform('Green');
 
-    expect(white).toMatchObject({ posX: 0, posY: 4, posZ: -23.25, rotY: 180, scaleX: 12, scaleY: 6, scaleZ: 4 });
-    expect(green).toMatchObject({ posX: 0, posY: 4, posZ: 23.25, rotY: 0, scaleX: 12, scaleY: 6, scaleZ: 4 });
-    expect(whiteParking).toMatchObject({ posX: 0, posY: 3, posZ: -19, scaleX: 7, scaleY: 6, scaleZ: 6.5 });
-    expect(greenParking).toMatchObject({ posX: 0, posY: 3, posZ: 19, scaleX: 7, scaleY: 6, scaleZ: 6.5 });
+    expect(white).toMatchObject({ posX: 0, posY: 4, posZ: -23.25, rotY: 0, scaleX: 12, scaleY: 6, scaleZ: 4 });
+    expect(green).toMatchObject({ posX: 0, posY: 4, posZ: 23.25, rotY: 180, scaleX: 12, scaleY: 6, scaleZ: 4 });
+    expect(whiteParking).toMatchObject({ posX: 0, posY: 3, posZ: -19, rotY: 0, scaleX: 7, scaleY: 6, scaleZ: 6.5 });
+    expect(greenParking).toMatchObject({ posX: 0, posY: 3, posZ: 19, rotY: 180, scaleX: 7, scaleY: 6, scaleZ: 6.5 });
 
     // Parking is deliberately outside the actual Hand zone, so a card placed
     // on the tabletop stays parked instead of being swallowed back into Reserve.
@@ -178,6 +178,15 @@ describe('authoritative TTS table layout', () => {
     expect(save.Hands.Hiding).toBe(0);
     expect(white.Transform).toEqual(handZoneTransform('White'));
     expect(green.Transform).toEqual(handZoneTransform('Green'));
+    expect(white.Transform.rotY).toBe(0);
+    expect(green.Transform.rotY).toBe(180);
+
+    // Native Hand rotations own TTS seat/camera orientation. Tabletop card
+    // snaps deliberately use the opposite rotations so cards face each player.
+    const whiteTableCard = buildTableSnapPoints().find(point => point.Position.x === 0 && point.Position.z === -18.25);
+    const greenTableCard = buildTableSnapPoints().find(point => point.Position.x === 0 && point.Position.z === 18.25);
+    expect(whiteTableCard?.Rotation.y).toBe(180);
+    expect(greenTableCard?.Rotation.y).toBe(0);
 
     // Reserve is serialized through Hands.HandTransforms. Parking uses exactly
     // one color-owned Hidden Zone per player and does not count as a hand.
