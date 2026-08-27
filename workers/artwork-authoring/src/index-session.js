@@ -11,7 +11,7 @@ function config(env) {
     repo,
     defaultBranch: String(env.GITHUB_DEFAULT_BRANCH || 'main'),
     authorBranch: String(env.GITHUB_AUTHOR_BRANCH || 'artwork/compositor-authoring'),
-    overridePath: String(env.GITHUB_OVERRIDE_PATH || 'tts/artwork-direction-overrides.js'),
+    authorityPath: String(env.GITHUB_AUTHORITY_PATH || env.GITHUB_OVERRIDE_PATH || 'game-data/current-game.json'),
   };
 }
 
@@ -156,7 +156,7 @@ async function normalizeNoOpValidation(response, request, env, context, savePayl
     unchanged: true,
     id: String(savePayload?.id || ''),
     direction,
-    file: context.cfg.overridePath,
+    file: context.cfg.authorityPath,
     branch: context.cfg.authorBranch,
     pr: null,
   }), {
