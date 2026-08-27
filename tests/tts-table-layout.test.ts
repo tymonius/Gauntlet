@@ -73,8 +73,10 @@ describe('authoritative TTS table layout', () => {
     const whiteLeaderLines = lines.filter(line => {
       const xs = line.points3.map(point => point.x);
       const zs = line.points3.map(point => point.z);
-      return Math.min(...xs) === -17.55 && Math.max(...xs) === -6.95
-        && Math.min(...zs) === -20.35 && Math.max(...zs) === -11.45;
+      return Math.abs(Math.min(...xs) - (-17.55)) < 0.001
+        && Math.abs(Math.max(...xs) - (-6.95)) < 0.001
+        && Math.abs(Math.min(...zs) - (-20.35)) < 0.001
+        && Math.abs(Math.max(...zs) - (-11.45)) < 0.001;
     });
     expect(whiteLeaderLines).toHaveLength(2);
 
