@@ -29,6 +29,7 @@ jobs:
             /scripts/validate-github-release-contract.mjs
             /scripts/publication-utils.mjs
             /scripts/verify-clean-v063-live-publication.mjs
+            /scripts/verify-v070-live-publication.mjs
             /docs/releases/github/*.md
             /rules-assistant/v063-last-stand-language.js
             /rulebook/player-facing/chapter-11.md
