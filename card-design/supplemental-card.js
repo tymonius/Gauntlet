@@ -266,7 +266,25 @@ async function layoutTrackerCards() {
   cards.forEach(layoutTrackerCard);
   const titleFailures = cards.filter(card => card.dataset.trackerTitleFit !== 'true');
   if (titleFailures.length) {
-    throw new Error(`Tracker titles cannot fit at the readability floor: ${titleFailures.map(card => card.dataset.contractComponentId || card.dataset.componentId).join(', ')}`);
+    // The standalone Card Design catalog validates every tracker specimen.
+    // component-print-render.html, however, keeps the entire supplemental
+    // catalog off-screen only as a source pool for one requested component.
+    // Do not let an unrelated hidden tracker abort a Proposal/Rite/Ledger
+    // render. If the requested component is itself a tracker, enforce that
+    // tracker's fit here and component-print-render.js validates it again
+    // before exposing the production face.
+    const params = new URLSearchParams(window.location.search);
+    const isolatedComponentRender = /\/component-print-render\.html$/.test(window.location.pathname);
+    const requestedKind = String(params.get('kind') || '').trim().toLowerCase();
+    const requestedId = String(params.get('id') || '').trim();
+    const enforcedFailures = isolatedComponentRender
+      ? (requestedKind === 'tracker'
+        ? titleFailures.filter(card => card.dataset.componentId === requestedId)
+        : [])
+      : titleFailures;
+    if (enforcedFailures.length) {
+      throw new Error(`Tracker titles cannot fit at the readability floor: ${enforcedFailures.map(card => card.dataset.contractComponentId || card.dataset.componentId).join(', ')}`);
+    }
   }
   root.dataset.trackerLayoutsReady = 'true';
 }

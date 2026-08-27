@@ -71,6 +71,11 @@ describe('tracker card cap layout', () => {
     expect(renderer).toContain("card.dataset.trackerTitleFit = fits ? 'true' : 'false'");
     expect(renderer).toContain('Tracker titles cannot fit at the readability floor');
     expect(renderer).toContain('fitTrackerTitle(card)');
+    expect(renderer).toContain('isolatedComponentRender');
+    expect(renderer).toContain("requestedKind === 'tracker'");
+    expect(renderer).toContain('titleFailures.filter(card => card.dataset.componentId === requestedId)');
+    expect(renderer).toContain(': []');
+    expect(renderer).toContain('enforcedFailures.length');
   });
 
   it('prints the Intelligence nested-stack instructions and contract order', () => {
