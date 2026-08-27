@@ -11,8 +11,10 @@ on:
       - rulebook/**
       - rulebook-design/**
       - rulebook-production/**
+      - images/rulebook/card-anatomy.png
       - scripts/build-v070-release-source.mjs
       - scripts/render-v070-booklet.mjs
+      - scripts/render-current-card-anatomy.mjs
       - scripts/build-v063-rulebook-production.py
       - scripts/run-v063-rulebook-renderer.mjs
       - images/sketches/**
@@ -20,6 +22,7 @@ on:
   pull_request:
     branches:
       - main
+      - release/v0.7.0-cutover
     paths:
       - game-data/**
       - docs/v0.6.4-*.json
@@ -27,8 +30,10 @@ on:
       - rulebook/**
       - rulebook-design/**
       - rulebook-production/**
+      - images/rulebook/card-anatomy.png
       - scripts/build-v070-release-source.mjs
       - scripts/render-v070-booklet.mjs
+      - scripts/render-current-card-anatomy.mjs
       - scripts/build-v063-rulebook-production.py
       - scripts/run-v063-rulebook-renderer.mjs
       - images/sketches/**
@@ -69,6 +74,9 @@ jobs:
           sudo apt-get install -y fonts-inter
           fc-match Inter
 
+      - name: Verify deterministic Card Anatomy figure
+        run: node scripts/render-current-card-anatomy.mjs --check
+
       - name: Build v0.7.0 source snapshot
         run: |
           node --check scripts/build-v070-release-source.mjs
@@ -99,6 +107,15 @@ jobs:
           ];
           for (const name of names) assert(fs.existsSync(`${root}/${name}`), `Missing ${name}`);
           assert(fs.existsSync('v0.7.0/index.html'), 'Missing v0.7.0 release landing page');
+          assert(fs.existsSync('images/rulebook/card-anatomy.png'), 'Missing deterministic Card Anatomy figure');
+
+          const rulebook = fs.readFileSync(`${root}/Gauntlet_v0.7.0_Rulebook.md`, 'utf8');
+          assert(rulebook.includes('**Version 0.7.0**'));
+          assert(rulebook.includes('# 5. Actions, Faction Features, Leader Abilities, and Assets'));
+          assert(rulebook.includes('## Card anatomy'));
+          assert(rulebook.includes('![Card anatomy diagram](/images/rulebook/card-anatomy.png)'));
+          assert(!/\bpending\b/i.test(rulebook), 'Published Rulebook contains retired Pending terminology');
+          assert(!/\bFaction Actions?\b|\bFaction Abilit(?:y|ies)\b|\bfaction procedure\b/i.test(rulebook), 'Published Rulebook contains retired faction terminology');
 
           const manifest = JSON.parse(fs.readFileSync(`${root}/Gauntlet_v0.7.0_Manifest.json`, 'utf8'));
           const canonical = JSON.parse(fs.readFileSync(`${root}/Gauntlet_v0.7.0_Canonical_Data.json`, 'utf8'));
@@ -107,15 +124,29 @@ jobs:
           assert.equal(manifest.release_version, 'v0.7.0');
           assert.equal(manifest.status, 'current');
           assert.equal(provenance.source_version, 'v0.6.4-candidate');
+          assert.equal(provenance.current_rulebook_authority, 'rulebook/player-facing/current-rulebook.md');
           assert.equal(manifest.authority_set_id, provenance.authority_set_id);
           assert.equal(canonical.gameplay.cards.length, 142);
           assert.equal(canonical.gameplay.territories.length, 25);
           assert.equal(canonical.gameplay.factions.length, 6);
           assert.equal(starters.decks.length, 12);
+          assert(canonical.gameplay.faction_feature_taxonomy, 'Missing Faction Feature taxonomy in canonical data');
+          assert.equal(Object.keys(canonical.gameplay.faction_features || {}).length, 6);
+
+          const intelligence = canonical.gameplay.factions.find(faction => faction.id === 'intelligence');
+          assert.equal(intelligence.resource, 'Intel');
+          assert(!String(intelligence.resource).includes('Operation Progress'));
+          const mystics = canonical.gameplay.factions.find(faction => faction.id === 'mystics');
+          assert(!mystics.resource, 'Mystics must not expose a generic Resource');
+          const leaders = canonical.gameplay.factions.flatMap(faction => faction.leaders || []);
+          assert.equal(leaders.length, 12);
+          const banker = leaders.find(leader => leader.id === 'banker');
+          assert(banker?.sections?.some(section => section.name === 'Line of Credit' && /half the purchase cost, rounded down/i.test(section.text)), 'Canonical Banker mechanics are not the finalized authoritative wording');
 
           const pdf = await PDFDocument.load(fs.readFileSync(`${root}/Gauntlet_v0.7.0_Rulebook_Booklet.pdf`));
           assert.equal(pdf.getPageCount(), manifest.pdf_outputs[0].pages);
-          console.log(`Validated v0.7.0 package with ${pdf.getPageCount()} booklet sides.`);
+          assert.equal(manifest.rulebook_booklet_provenance.card_anatomy_figure_included, true);
+          console.log(`Validated maintained-authority v0.7.0 package with ${pdf.getPageCount()} booklet sides.`);
           NODE
 
       - name: Commit materialized release package

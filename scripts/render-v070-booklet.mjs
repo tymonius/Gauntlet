@@ -14,8 +14,11 @@ const PROVENANCE_PATH = path.join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Sour
 const BOOKLET_PATH = path.join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Rulebook_Booklet.pdf`);
 const MANIFEST_PATH = path.join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Manifest.json`);
 const PLAYER_CHAPTER_11_PATH = path.join(ROOT, 'rulebook', 'player-facing', 'chapter-11.md');
+const CARD_ANATOMY_IMAGE_PATH = path.join(ROOT, 'images', 'rulebook', 'card-anatomy.png');
 const TRANSIENT_RULEBOOK_PATH = path.join(ROOT, 'rulebook-production', '.v063-player-facing-input.md');
 const PRODUCTION_DIR = '/tmp/rulebook-production';
+const PRODUCTION_HTML = path.join(ROOT, 'rulebook-production', 'full-rulebook.html');
+const PRODUCTION_PAGINATOR = path.join(ROOT, 'rulebook-production', '.paginate_rulebook_runtime.mjs');
 
 const hash = data => crypto.createHash('sha256').update(data).digest('hex');
 const hashFile = file => hash(fs.readFileSync(file));
@@ -60,11 +63,26 @@ function extractChapter11(rulebook) {
   return rulebook.slice(start, end).trim();
 }
 
-for (const required of [RULEBOOK_PATH, CANONICAL_PATH, STARTERS_PATH, PROVENANCE_PATH]) {
+function promoteProductionVersion(file) {
+  let text = fs.readFileSync(file, 'utf8');
+  text = text
+    .replaceAll('Gauntlet v0.6.3', 'Gauntlet v0.7.0')
+    .replaceAll('GAUNTLET V0.6.3', 'GAUNTLET V0.7.0')
+    .replaceAll('Version 0.6.3', 'Version 0.7.0');
+  if (/v0\.6\.3|V0\.6\.3|Version 0\.6\.3/u.test(text)) {
+    throw new Error(`v0.7.0 production adapter left v0.6.3 identity in ${relative(file)}.`);
+  }
+  fs.writeFileSync(file, text);
+}
+
+for (const required of [RULEBOOK_PATH, CANONICAL_PATH, STARTERS_PATH, PROVENANCE_PATH, CARD_ANATOMY_IMAGE_PATH]) {
   if (!fs.existsSync(required)) throw new Error(`Missing v0.7.0 source artifact: ${relative(required)}.`);
 }
 
 const rulebook = fs.readFileSync(RULEBOOK_PATH, 'utf8').replace(/\r\n/g, '\n');
+if (!rulebook.includes('![Card anatomy diagram](/images/rulebook/card-anatomy.png)')) {
+  throw new Error('v0.7.0 Rulebook source is missing the Card Anatomy diagram reference.');
+}
 const chapter11 = extractChapter11(rulebook);
 const originalChapter11 = fs.readFileSync(PLAYER_CHAPTER_11_PATH);
 
@@ -75,11 +93,23 @@ try {
   run('python', ['rulebook-design/build_proofs.py']);
   run('python', ['rulebook-production/build_fidelity_gate.py']);
   fs.writeFileSync(TRANSIENT_RULEBOOK_PATH, rulebook);
+
+  // The approved v0.6.3 production adapter verifies Chapter 11 against the
+  // released chapter file. Supply the v0.7.0 chapter only for that adapter run;
+  // the maintained Rulebook remains the sole source and the released file is
+  // restored immediately afterward.
   fs.writeFileSync(PLAYER_CHAPTER_11_PATH, `${chapter11}\n`);
   run('python', ['scripts/build-v063-rulebook-production.py']);
 } finally {
   fs.writeFileSync(PLAYER_CHAPTER_11_PATH, originalChapter11);
   fs.rmSync(TRANSIENT_RULEBOOK_PATH, { force: true });
+}
+
+promoteProductionVersion(PRODUCTION_HTML);
+promoteProductionVersion(PRODUCTION_PAGINATOR);
+const productionHtml = fs.readFileSync(PRODUCTION_HTML, 'utf8');
+if (!productionHtml.includes('card-anatomy.png') || !productionHtml.includes('Card anatomy diagram')) {
+  throw new Error('Approved Rulebook production HTML omitted the Card Anatomy figure token.');
 }
 
 const server = spawn('python', ['-m', 'http.server', '8000'], {
@@ -120,6 +150,9 @@ const provenance = JSON.parse(fs.readFileSync(PROVENANCE_PATH, 'utf8'));
 if (provenance.release_version !== RELEASE_VERSION || provenance.source_version !== SOURCE_VERSION || !provenance.authority_set_id) {
   throw new Error('v0.7.0 source provenance is incomplete.');
 }
+if (provenance.current_rulebook_authority !== 'rulebook/player-facing/current-rulebook.md') {
+  throw new Error('v0.7.0 source provenance does not identify the maintained current Rulebook.');
+}
 
 const canonical = JSON.parse(fs.readFileSync(CANONICAL_PATH, 'utf8'));
 const starters = JSON.parse(fs.readFileSync(STARTERS_PATH, 'utf8'));
@@ -149,6 +182,8 @@ const manifest = {
     source_version: SOURCE_VERSION,
     base_version: 'v0.6.3',
     current_game_authority: 'game-data/current-game.json',
+    current_rulebook_authority: 'rulebook/player-facing/current-rulebook.md',
+    card_anatomy_figure: 'images/rulebook/card-anatomy.png',
     source_inputs: provenance.source_inputs,
   },
   binding_sources: {
@@ -156,6 +191,7 @@ const manifest = {
     canonical_data: { path: relative(CANONICAL_PATH), sha256: hashFile(CANONICAL_PATH) },
     approved_starters: { path: relative(STARTERS_PATH), sha256: hashFile(STARTERS_PATH) },
     source_provenance: { path: relative(PROVENANCE_PATH), sha256: hashFile(PROVENANCE_PATH) },
+    card_anatomy_figure: { path: relative(CARD_ANATOMY_IMAGE_PATH), sha256: hashFile(CARD_ANATOMY_IMAGE_PATH) },
   },
   counts: {
     playable_cards: canonical?.gameplay?.cards?.length ?? provenance.counts?.playable_cards,
@@ -196,6 +232,7 @@ const manifest = {
     padding_pages: Number(report.reader?.report?.intentionalBlanks || 0),
     duplex_flip: 'short-edge',
     approved_v063_production_adapter_reused: true,
+    card_anatomy_figure_included: true,
   },
 };
 
