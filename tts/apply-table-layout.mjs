@@ -278,18 +278,15 @@ function orientStarterBagsForHost(save) {
   for (const bag of save.ObjectStates || []) {
     if (bag?.Name !== 'Bag') continue;
     bag.Transform ||= transform();
-    // The package itself faces the host/south seat. Contents retain the
-    // orientation authored for their own physical format. Territory faces are
-    // the one deliberate exception: their sheet artwork is rotated 180° inside
-    // the portrait TTS cell so native SidewaysCard handling is correct.
+    // TTS testing established that direct starter-package contents need the
+    // host-facing stored orientation before extraction. Keep that package-level
+    // orientation instead of trying to make every component use its nominal
+    // authored 0° rotation. Landscape Deed stacks are the perpendicular case.
     bag.Transform.rotY = 180;
     for (const object of bag.ContainedObjects || []) {
       if (!object?.Transform) continue;
-      const isPhysicalTerritory = object.Name === 'CardCustom'
-        && /(?:Arena )?Territory$/u.test(String(object.Description || ''));
-      object.Transform.rotY = isPhysicalTerritory
-        ? 180
-        : (object.SidewaysCard === true ? 90 : 0);
+      const stackKind = String(object.GMNotes || '').replace('gauntlet:supplemental-stack:', '');
+      object.Transform.rotY = stackKind === 'deeds' ? 270 : 180;
     }
   }
 }
@@ -349,9 +346,10 @@ function playerZone(side, zone) {
 }
 
 function playerFacingCardRotation(side) {
-  // Native TTS convention: the south seat faces north at 0 degrees; the
-  // mirrored north seat faces south at 180 degrees.
-  return side === 'Green' ? 180 : 0;
+  // TTS-tested card-facing contract: the south/White player's cards face the
+  // player at 180 degrees; the mirrored north/Green player's cards face the
+  // player at 0 degrees. Table labels use their own visual rotation.
+  return side === 'Green' ? 0 : 180;
 }
 
 function handParkingDefinition() {
