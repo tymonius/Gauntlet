@@ -296,10 +296,12 @@ function reorderStarterBagContents(bag, starter, applicable) {
     return [6, originalIndex.get(object) ?? Number.MAX_SAFE_INTEGER];
   };
 
+  // TTS Bags extract from the END of ContainedObjects. Therefore the serialized
+  // order must be the exact reverse of the intended setup sequence.
   bag.ContainedObjects = original.sort((left, right) => {
     const a = orderKey(left);
     const b = orderKey(right);
-    return a[0] - b[0] || a[1] - b[1];
+    return b[0] - a[0] || b[1] - a[1];
   });
 }
 
