@@ -52,7 +52,17 @@ describe('finalized TTS supplemental exports', () => {
     expect(assembler).toContain('Transform: transform(0, 1, 0, tabletopRotation)');
     expect(assembler).toContain('SidewaysCard: sideways');
     expect(assembler).toContain("tags: Object.freeze([DEED_STACK_TAG, FACTION_ZONE_TAG])");
+    expect(assembler).toContain("object.Transform.rotY = stackKind === 'deeds' ? 90 : 180");
+    expect(assembler).not.toContain("stackKind === 'deeds' ? 270");
     expect(assembler).not.toContain('finalizeSupplementalObjectPresentation');
+  });
+
+  it('keeps the Capital Ledger popout above ordinary tabletop cards', () => {
+    const assembler = readFileSync('scripts/assemble-tts-supplemental-save.mjs', 'utf8');
+    expect(assembler).toContain('id="ledger-window"');
+    expect(assembler).toContain('position="0 0 -150"');
+    expect(assembler).toContain('rotation="0 0 180"');
+    expect(assembler).not.toContain('position="0 0 -50"');
   });
 
   it('wires finalized exports into generation followed by authoritative save validation', () => {
