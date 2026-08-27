@@ -148,7 +148,7 @@ jobs:
           visit(save);
           const ttsUrls = [...urls].filter(url => url.includes('/tts/v0.7.0/'));
           if (!ttsUrls.length) throw new Error('Clean TTS save contains no Worker-hosted TTS asset URLs.');
-          if ([...urls].some(url => url.includes('tts-v0.7.0-qa-pr-909-'))) {
+          if ([...urls].some(url => url.includes('/releases/download/tts-v0.7.0-qa-pr-'))) {
             throw new Error('Clean TTS save exposes a PR-preview asset URL.');
           }
           if (ttsUrls.some(url => !url.startsWith('https://gauntlet-public-media.tymon-scott.workers.dev/tts/v0.7.0/'))) {
