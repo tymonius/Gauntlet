@@ -134,7 +134,8 @@ describe('TTS ready supplemental save assembly', () => {
     const result = assembleReadySupplementals(save, starters, supplementals, assets);
     const military = result.save.ObjectStates[1];
 
-    expect(military.ContainedObjects.map((object: any) => object.GMNotes || object.Nickname)).toEqual([
+    // Native TTS Bag extraction pops from the end of ContainedObjects.
+    expect([...military.ContainedObjects].reverse().map((object: any) => object.GMNotes || object.Nickname)).toEqual([
       'General',
       'gauntlet:supplemental:military-command-tracker',
       'gauntlet:supplemental:universal-reference',
