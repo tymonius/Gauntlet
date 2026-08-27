@@ -6,20 +6,19 @@
     "release_tags_are_immutable": true
   },
   "current_release": {
-    "tag": "v0.6.3",
-    "title": "Gauntlet v0.6.3 — Third Playtest Revision",
+    "tag": "v0.7.0",
+    "title": "Gauntlet v0.7.0 — Illustrated Cards & Tabletop Simulator",
     "status": "current",
     "prerelease": true,
     "target_strategy": "verified_main_push",
-    "notes_file": "docs/releases/github/v0.6.3.md",
-    "live_verification_script": "scripts/verify-clean-v063-live-publication.mjs",
+    "notes_file": "docs/releases/github/v0.7.0.md",
+    "live_verification_script": "scripts/verify-v070-live-publication.mjs",
     "assets": [
-      "releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.pdf",
-      "releases/v0.6.3/Gauntlet_v0.6.3_Rulebook_Booklet.pdf",
-      "releases/v0.6.3/Gauntlet_v0.6.3_Card_and_Territory_Reference.pdf",
-      "releases/v0.6.3/Gauntlet_v0.6.3_Starter_Deck_Catalog.pdf",
-      "releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json",
-      "releases/v0.6.3/Gauntlet_v0.6.3_Starter_Decks.json"
+      "releases/v0.7.0/Gauntlet_v0.7.0_Rulebook_Booklet.pdf",
+      "releases/v0.7.0/Gauntlet_v0.7.0_Canonical_Data.json",
+      "releases/v0.7.0/Gauntlet_v0.7.0_Starter_Decks.json",
+      "releases/v0.7.0/Gauntlet_v0.7.0_Source_Provenance.json",
+      "releases/v0.7.0/Gauntlet_v0.7.0_Manifest.json"
     ]
   },
   "historical_releases": [
@@ -52,6 +51,14 @@
       "publish_if_missing": true,
       "notes_at_target": "releases/v0.6.2/Gauntlet_v0.6.2_Release_Notes.md",
       "backfill_notice": "Withdrawn historical GitHub Release record backfilled on August 15, 2026. v0.6.2 was originally published on August 5, 2026 at this publication merge commit, but was later withdrawn after release-authority and Rulebook-completeness defects were discovered. It is preserved for historical reproducibility and should not be used as the current playtest edition."
+    },
+    {
+      "tag": "v0.6.3",
+      "title": "Gauntlet v0.6.3 — Third Playtest Revision",
+      "status": "historical",
+      "prerelease": true,
+      "target": "4f475ffb3649da8ed240b94a702c8b3320b91ff6",
+      "publish_if_missing": false
     }
   ]
 }
