@@ -4,8 +4,8 @@ compatibility_date = "2026-08-24"
 workers_dev = false
 
 routes = [
-  { pattern = "gauntlet.run/images/media/*", zone_name = "gauntlet.run" },
-  { pattern = "gauntlet.run/tts/v0.7.0/*", zone_name = "gauntlet.run" }
+  "gauntlet.run/images/media/*",
+  "gauntlet.run/tts/v0.7.0/*"
 ]
 
 [assets]
