@@ -110,7 +110,12 @@ export async function resolveCurrentTtsRelease() {
 
   return Object.freeze({
     version,
+    // Package/release label may lead the source catalog during a cutover.
     displayVersion: String(target.displayVersion || version),
+    // Card-face metadata always comes from the same current-game authority as
+    // /card-design. TTS packaging must never stamp its release label onto the
+    // rendered face.
+    cardDisplayVersion: String(manifest.displayVersion || sourceVersion),
     sourceVersion,
     baseVersion: String(manifest.baseVersion || ''),
     canonicalDataSource: CURRENT_GAME_SOURCE,
