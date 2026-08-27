@@ -1,9 +1,11 @@
 const TTS_PUBLIC_PREFIX = '/tts/v0.7.0/';
+const TTS_PUBLIC_ASSET_PREFIX = '/tts/v0.7.0/assets/917/';
 const TTS_PUBLIC_ORIGIN = 'https://gauntlet.run';
 const TTS_APPROVED_RELEASE_PREFIX =
-  'https://github.com/tymonius/Gauntlet/releases/download/tts-v0.7.0-qa-pr-909-fe5940376a74/';
-const TTS_APPROVED_PREVIEW_SAVE = 'Gauntlet_v0.7.0_TTS_PR909_Preview.json';
+  'https://github.com/tymonius/Gauntlet/releases/download/tts-v0.7.0-qa-pr-917-68247f095969/';
+const TTS_APPROVED_PREVIEW_SAVE = 'Gauntlet_v0.7.0_TTS_PR917_Preview.json';
 const TTS_PUBLIC_SAVE = 'Gauntlet_v0.7.0_TTS_Mod.json';
+const TTS_APPROVED_SOURCE_LABEL = 'pr-917-68247f095969';
 
 export default {
   async fetch(request, env) {
@@ -20,7 +22,11 @@ export default {
       return servePublicMedia(request, env);
     }
 
-    if (url.pathname.startsWith(TTS_PUBLIC_PREFIX)) {
+    if (url.pathname === `${TTS_PUBLIC_PREFIX}${TTS_PUBLIC_SAVE}`) {
+      return serveApprovedTtsSave(request);
+    }
+
+    if (url.pathname.startsWith(TTS_PUBLIC_ASSET_PREFIX)) {
       return serveApprovedTtsAsset(request, url);
     }
 
@@ -44,13 +50,9 @@ async function servePublicMedia(request, env) {
 }
 
 async function serveApprovedTtsAsset(request, url) {
-  const assetName = decodeURIComponent(url.pathname.slice(TTS_PUBLIC_PREFIX.length));
+  const assetName = decodeURIComponent(url.pathname.slice(TTS_PUBLIC_ASSET_PREFIX.length));
   if (!assetName || assetName.includes('/') || assetName.includes('\\') || assetName === '.' || assetName === '..') {
     return new Response('Not found', { status: 404 });
-  }
-
-  if (assetName === TTS_PUBLIC_SAVE) {
-    return serveApprovedTtsSave(request);
   }
 
   const upstream = new URL(encodeURIComponent(assetName), TTS_APPROVED_RELEASE_PREFIX);
@@ -66,7 +68,7 @@ async function serveApprovedTtsAsset(request, url) {
   headers.delete('Content-Disposition');
   headers.set('Cache-Control', 'public, max-age=31536000, immutable');
   headers.set('X-Content-Type-Options', 'nosniff');
-  headers.set('X-Gauntlet-TTS-Source', 'pr-909-fe5940376a74');
+  headers.set('X-Gauntlet-TTS-Source', TTS_APPROVED_SOURCE_LABEL);
 
   return new Response(request.method === 'HEAD' ? null : response.body, {
     status: response.status,
@@ -89,7 +91,7 @@ async function serveApprovedTtsSave(request) {
         'Content-Type': 'application/json; charset=utf-8',
         'Cache-Control': 'public, max-age=31536000, immutable',
         'X-Content-Type-Options': 'nosniff',
-        'X-Gauntlet-TTS-Source': 'pr-909-fe5940376a74',
+        'X-Gauntlet-TTS-Source': TTS_APPROVED_SOURCE_LABEL,
       },
     });
   }
@@ -99,7 +101,7 @@ async function serveApprovedTtsSave(request) {
     return new Response('Approved TTS save has unexpected asset URLs', { status: 502 });
   }
 
-  const publicPrefix = `${TTS_PUBLIC_ORIGIN}${TTS_PUBLIC_PREFIX}`;
+  const publicPrefix = `${TTS_PUBLIC_ORIGIN}${TTS_PUBLIC_ASSET_PREFIX}`;
   const rewritten = source.split(TTS_APPROVED_RELEASE_PREFIX).join(publicPrefix);
 
   try {
@@ -114,7 +116,7 @@ async function serveApprovedTtsSave(request) {
       'Content-Type': 'application/json; charset=utf-8',
       'Cache-Control': 'public, max-age=31536000, immutable',
       'X-Content-Type-Options': 'nosniff',
-      'X-Gauntlet-TTS-Source': 'pr-909-fe5940376a74',
+      'X-Gauntlet-TTS-Source': TTS_APPROVED_SOURCE_LABEL,
     },
   });
 }
