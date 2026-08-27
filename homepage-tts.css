@@ -129,6 +129,33 @@
   line-height: 1.58;
 }
 
+.tts-screenshot {
+  position: relative;
+  z-index: 1;
+  grid-column: 1 / -1;
+  margin: 0;
+  border: 1px solid rgba(70, 55, 38, .18);
+  background: #211810;
+  box-shadow: 0 16px 36px rgba(55, 38, 18, .12);
+  overflow: hidden;
+}
+
+.tts-screenshot img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.tts-screenshot figcaption {
+  margin: 0;
+  padding: 12px 15px 13px;
+  color: rgba(255, 248, 237, .8);
+  background: linear-gradient(90deg, #211810, #332319);
+  font-family: var(--reading);
+  font-size: .84rem;
+  font-style: italic;
+}
+
 @media (max-width: 900px) {
   .tts-shell {
     grid-template-columns: 1fr;

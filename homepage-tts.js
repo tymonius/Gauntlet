@@ -42,6 +42,18 @@ if (factionsSection && !document.querySelector('#tabletop-simulator')) {
           <p>The mod reproduces the tabletop game instead of replacing it with rules scripting, so the same Rulebook and card interactions govern play online.</p>
         </article>
       </div>
+
+      <figure class="tts-screenshot">
+        <img
+          src="/images/artwork/site/gauntlet-tts-playtest-table.webp"
+          alt="Tabletop Simulator screenshot of a Gauntlet playtest table with cards, Territory positions, player areas, faction Bags, tokens, and dice."
+          width="640"
+          height="326"
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption>Gauntlet set up for remote playtesting in Tabletop Simulator.</figcaption>
+      </figure>
     </div>
   `;
 
