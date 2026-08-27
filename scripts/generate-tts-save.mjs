@@ -248,9 +248,6 @@ function buildStarterKit(starter, releaseAssets, kitTransform, guid) {
   ].filter(Boolean).join('\n\n');
 
   const containedObjects = [leader, ...territories, deck, playerToken, battleDie];
-  for (const object of containedObjects) {
-    if (object?.Transform) object.Transform.rotY = 180;
-  }
 
   return {
     ...objectBase('Bag', `${starter.name} — ${starter.leader.name}`, kitDescription, kitTransform, guid()),
