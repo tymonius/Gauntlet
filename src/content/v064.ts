@@ -10,13 +10,33 @@ import {
   type CleanV063Territory,
 } from '../reconstruction/clean-v063/content';
 
-const currentGameAuthority = currentGameAuthorityJson as {
+interface CurrentGameAuthorityCompatibility {
   authority: string;
   version: string;
-  baseVersion: string;
+  baseVersion?: string;
   leaders: Array<{ id: string; faction: string; name: string; image: string }>;
-  sources: { baseGameplay?: string; cardChanges?: string; rules?: string; territories?: string };
-};
+  sources?: { baseGameplay?: string; cardChanges?: string; rules?: string; territories?: string };
+  provenance?: {
+    historicalBaseVersion?: string;
+    transitionalSourceVersion?: string;
+    historicalInputs?: { baseGameplay?: string; cardChanges?: string; rules?: string; territories?: string };
+  };
+}
+
+const currentGameAuthority = currentGameAuthorityJson as unknown as CurrentGameAuthorityCompatibility;
+
+function candidateAuthorityMetadata() {
+  return {
+    version: currentGameAuthority.version === V064_CANDIDATE_RULES_VERSION
+      ? currentGameAuthority.version
+      : currentGameAuthority.provenance?.transitionalSourceVersion,
+    baseVersion: currentGameAuthority.baseVersion
+      ?? currentGameAuthority.provenance?.historicalBaseVersion,
+    sources: currentGameAuthority.sources
+      ?? currentGameAuthority.provenance?.historicalInputs
+      ?? {},
+  };
+}
 
 export const CURRENT_GAME_AUTHORITY_PATH = 'game-data/current-game.json' as const;
 export const V064_CANDIDATE_RULES_VERSION = 'v0.6.4-candidate' as const;
@@ -94,20 +114,21 @@ function assertCurrentGameAuthority(): void {
   if (currentGameAuthority.authority !== 'current-game') {
     throw new Error('Digital v0.6.4 content must be governed by the current-game authority.');
   }
-  if (currentGameAuthority.version !== V064_CANDIDATE_RULES_VERSION || currentGameAuthority.baseVersion !== 'v0.6.3') {
-    throw new Error(`Digital candidate adapter does not match current-game version ${currentGameAuthority.version}/${currentGameAuthority.baseVersion}.`);
+  const metadata = candidateAuthorityMetadata();
+  if (metadata.version !== V064_CANDIDATE_RULES_VERSION || metadata.baseVersion !== 'v0.6.3') {
+    throw new Error(`Digital candidate adapter cannot resolve the historical v0.6.4-candidate/v0.6.3 provenance from current-game authority ${currentGameAuthority.version}.`);
   }
-  if (currentGameAuthority.sources.baseGameplay !== BUNDLED_BASE_GAMEPLAY_SOURCE) {
-    throw new Error(`Digital candidate base gameplay bundle ${BUNDLED_BASE_GAMEPLAY_SOURCE} drifted from current-game authority ${currentGameAuthority.sources.baseGameplay || 'missing'}.`);
+  if (metadata.sources.baseGameplay !== BUNDLED_BASE_GAMEPLAY_SOURCE) {
+    throw new Error(`Digital candidate base gameplay bundle ${BUNDLED_BASE_GAMEPLAY_SOURCE} drifted from current-game provenance ${metadata.sources.baseGameplay || 'missing'}.`);
   }
-  if (currentGameAuthority.sources.cardChanges !== BUNDLED_CARD_CHANGES_SOURCE) {
-    throw new Error(`Digital candidate card-change bundle ${BUNDLED_CARD_CHANGES_SOURCE} drifted from current-game authority ${currentGameAuthority.sources.cardChanges || 'missing'}.`);
+  if (metadata.sources.cardChanges !== BUNDLED_CARD_CHANGES_SOURCE) {
+    throw new Error(`Digital candidate card-change bundle ${BUNDLED_CARD_CHANGES_SOURCE} drifted from current-game provenance ${metadata.sources.cardChanges || 'missing'}.`);
   }
-  if (currentGameAuthority.sources.rules !== BUNDLED_RULES_SOURCE) {
-    throw new Error(`Digital candidate rules bundle ${BUNDLED_RULES_SOURCE} drifted from current-game authority ${currentGameAuthority.sources.rules || 'missing'}.`);
+  if (metadata.sources.rules !== BUNDLED_RULES_SOURCE) {
+    throw new Error(`Digital candidate rules bundle ${BUNDLED_RULES_SOURCE} drifted from current-game provenance ${metadata.sources.rules || 'missing'}.`);
   }
-  if (currentGameAuthority.sources.territories !== BUNDLED_TERRITORY_SOURCE) {
-    throw new Error(`Digital candidate Territory bundle ${BUNDLED_TERRITORY_SOURCE} drifted from current-game authority ${currentGameAuthority.sources.territories || 'missing'}.`);
+  if (metadata.sources.territories !== BUNDLED_TERRITORY_SOURCE) {
+    throw new Error(`Digital candidate Territory bundle ${BUNDLED_TERRITORY_SOURCE} drifted from current-game provenance ${metadata.sources.territories || 'missing'}.`);
   }
 }
 
@@ -122,8 +143,8 @@ function assertBaseGameplaySource(value: unknown): asserts value is CurrentBaseG
 function assertCardChangesSource(value: unknown): asserts value is CurrentCardChangesSource {
   if (!value || typeof value !== 'object') throw new Error('Current card-change source must be an object.');
   const source = value as Partial<CurrentCardChangesSource>;
-  if (source.version !== currentGameAuthority.version || source.base_version !== currentGameAuthority.baseVersion) {
-    throw new Error('Digital card-change source version metadata does not match the current-game authority.');
+  if (source.version !== V064_CANDIDATE_RULES_VERSION || source.base_version !== 'v0.6.3') {
+    throw new Error('Digital card-change source version metadata does not match the v0.6.4 candidate provenance.');
   }
   if (!Array.isArray(source.cards) || !Array.isArray(source.retired_cards)) {
     throw new Error('Current card-change source must declare cards and retired_cards.');
@@ -133,8 +154,8 @@ function assertCardChangesSource(value: unknown): asserts value is CurrentCardCh
 function assertRulesSource(value: unknown): asserts value is V064RulesSource {
   if (!value || typeof value !== 'object') throw new Error('Current rules source must be an object.');
   const source = value as Partial<V064RulesSource>;
-  if (source.schema_version !== 1 || source.version !== currentGameAuthority.version || source.base_version !== currentGameAuthority.baseVersion) {
-    throw new Error('Digital rules source version metadata does not match the current-game authority.');
+  if (source.schema_version !== 1 || source.version !== V064_CANDIDATE_RULES_VERSION || source.base_version !== 'v0.6.3') {
+    throw new Error('Digital rules source version metadata does not match the v0.6.4 candidate provenance.');
   }
   if (source.change_type !== 'collapse-pending-battle-into-onset' || source.mechanics_changed !== true) {
     throw new Error('Digital rules source must contain the accepted Onset migration.');
@@ -209,8 +230,8 @@ function resolveCurrentCards(rules: V064RulesSource): CleanV063Card[] {
 function assertV064TerritorySource(value: unknown): asserts value is V064TerritorySource {
   if (!value || typeof value !== 'object') throw new Error('v0.6.4 Territory source must be an object.');
   const source = value as Partial<V064TerritorySource>;
-  if (source.version !== currentGameAuthority.version || source.base_version !== currentGameAuthority.baseVersion) {
-    throw new Error('Digital Territory source version metadata does not match the current-game authority.');
+  if (source.version !== V064_CANDIDATE_RULES_VERSION || source.base_version !== 'v0.6.3') {
+    throw new Error('Digital Territory source version metadata does not match the v0.6.4 candidate provenance.');
   }
   if (source.source_issue !== V064_TERRITORY_SOURCE_ISSUE || source.mechanics_changed !== true) {
     throw new Error('v0.6.4 Territory source must remain pinned to the approved issue #738 clarification set.');

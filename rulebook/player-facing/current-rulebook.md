@@ -2,9 +2,7 @@
 
 ## Official Rulebook
 
-**Version 0.6.4 — Release Candidate**
-
-> **Release candidate.** This is the maintained current-development Rulebook source. Switch back to **Released v0.6.3** for the published ruleset.
+**Version 0.7.0**
 
 ---
 
@@ -1156,7 +1154,6 @@ Reference cards summarize procedures but do not replace the Rulebook or the clea
 - Supplemental components have no card value and are not eligible as Gambits, Tactics, costs, or other playable cards unless a rule explicitly says otherwise.
 - Each player supplies and controls their own faction package unless a faction rule identifies a shared supply. In a mirror match, keep the two players' components separated and oriented toward their owners.
 
-<!-- GENERATED CLEAN V0.6.3 FACTION CONTENT START -->
 
 # 13. Military
 
@@ -2238,7 +2235,6 @@ No Martyrs prevents the losing opponent from benefiting from effects they contro
 
 Heresy follows the shared copied-effect rule but retains permission for one additional copied-effect layer. That additional effect cannot create another layer. The selected Graveyard card remains there.
 
-<!-- GENERATED CLEAN V0.6.3 FACTION CONTENT END -->
 
 ---
 

@@ -3,6 +3,7 @@ name: Render Leader card specimens
 on:
   pull_request:
     paths:
+      - "game-data/**"
       - "card-design/index.html"
       - "card-design/leaders.html"
       - "card-design/card-back.css"
@@ -27,9 +28,6 @@ on:
       - "card-design/card-parchment.css"
       - "card-design/card-rule-columns.css"
       - "card-design/faction-specimens.css"
-      - "docs/v0.6.4-diplomat-proposals.json"
-      - "docs/v0.6.4-card-additions.json"
-      - "docs/v0.6.4-territories.json"
       - "tts/territory-renderer/**"
       - "design-tokens.css"
       - "images/*.png"

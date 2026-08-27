@@ -46,7 +46,7 @@ describe('Browser Rulebook ruleset selector', () => {
     expect(app).not.toContain("import { applyReleaseCandidateRulebook } from './release-candidate.js';");
     expect(app).not.toContain('applyReleaseCandidateRulebook(releasedMarkdown, currentGame)');
 
-    expect(currentRulebook).toContain('**Version 0.6.4 — Release Candidate**');
+    expect(currentRulebook).toContain('**Version 0.7.0**');
     expect(currentRulebook).toContain('# 5. Actions, Faction Features, Leader Abilities, and Assets');
     expect(currentRulebook).toContain('## Card anatomy');
     expect(currentRulebook).toContain('Onset is the first phase of the battle sequence.');

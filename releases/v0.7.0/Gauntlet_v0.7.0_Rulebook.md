@@ -4,7 +4,6 @@
 
 **Version 0.7.0**
 
-
 ---
 
 # Welcome to Gauntlet
@@ -91,6 +90,26 @@ Together, both players' Territory Cards form the **Gauntlet**, a single six-Terr
 Keep every group of cards visibly separate. Your Hand is the permanent private set of cards you hold between turns. Your Draw Pile supplies cards; the Discard Pile is recyclable; the Graveyard normally is not. Assets remain face up in your Asset Bank.
 
 A battle creates three temporary areas: a Gambit set from Hand, a three-card Reserve drawn from the Draw Pile, and a Tactic chosen from that Reserve.
+
+## Card anatomy
+
+Most ordinary playable cards use the same frame. Read these elements when constructing a Deck and resolving a card in play:
+
+![Card anatomy diagram](</releases/v0.7.0/Gauntlet_v0.7.0_Card_Anatomy.png>)
+
+1. **Card name** — The card's title.
+2. **Card value** — Used for Deck construction and whenever an effect refers to a card's value.
+3. **Faction identity** — The border and parchment treatment identify the card's faction. Neutral cards use ivory.
+4. **Artwork** — The card's illustration.
+5. **Effect heading** — Names the effect's role or timing, such as **Action**, **Asset**, **Gambit**, **Tactic**, **Gambit/Tactic**, **Overlay**, **Mission**, or another faction-specific heading.
+6. **Effect text** — Resolve only the printed effect being used unless a rule says otherwise.
+7. **Metadata footer** — Shows faction at left, **Unique** in the center when applicable, and the rules version at right.
+
+### Arcane trait mark
+
+Some playable cards show the Mystics sigil immediately before the card name. The symbol marks the **Arcane** trait; its color follows the card's faction identity.
+
+Territories and faction supplemental components use specialized layouts and are explained with their own rules.
 
 ## Printed card effects
 
@@ -264,7 +283,7 @@ Pass the shared active-player marker after Cleanup when that component is in use
 
 ---
 
-# 5. Actions, Faction Actions, Faction Abilities, and Assets
+# 5. Actions, Faction Features, Leader Abilities, and Assets
 
 ## How it works
 
@@ -273,10 +292,12 @@ Each turn, take one Action during either your Opening or your Denouement.
 An Action may be used to:
 
 - play one card from Hand for its **Action** effect;
-- take one legal **Faction Action**; or
+- use one **Faction Feature** or **Leader Ability** marked **1 Action**, when its timing permits; or
 - discard one Asset you control.
 
-A **Faction Ability** occurs at its stated timing and does not use your Action unless it expressly says otherwise.
+A **Faction Feature** is a named rule, option, procedure, passive effect, or special mechanic shared by a faction. A **Leader Ability** is supplied specifically by your chosen Leader.
+
+Neither term implies whether an Action is spent. Each Feature or Ability states the properties that matter in play: **1 Action**, **No Action**, or **Automatic**, together with its timing, resource cost, frequency, and other limits as applicable.
 
 ## Complete rules
 
@@ -303,18 +324,28 @@ An effect intended to permit more than one Action during the same phase must say
 
 Permission to take more Actions during a phase does not itself grant an additional Action unless the effect also says that it does.
 
-### Directly permitted procedures
+### Action profiles
 
-A rule or effect may directly permit a card play, faction procedure, or other operation at a stated timing outside Opening or Denouement.
+Faction Features and Leader Abilities state how they interact with the Action system.
 
-A directly permitted procedure:
+- **1 Action:** Using the Feature or Ability spends one Action. Its entry states the legal phase or timing.
+- **No Action:** The Feature or Ability may be used at its stated timing without spending an Action. It does not grant another Action.
+- **Automatic:** The Feature or Ability applies when its stated condition or timing occurs. It does not spend an Action.
+
+Resource costs, frequency limits, requirements, and other restrictions are separate from Action use and still apply.
+
+### Directly permitted effects
+
+A rule or effect may directly permit a card play, Faction Feature, Leader Ability, or other operation at a stated timing.
+
+A directly permitted effect:
 
 - occurs at the stated timing;
-- does not count as taking an Action unless the effect expressly says it does;
-- does not consume the player's normal Action; and
-- does not create another Action phase.
+- spends an Action only if it says **1 Action** or expressly instructs the player to spend or take an Action;
+- does not create another Action phase; and
+- does not create implicit permission to take multiple Actions in one phase.
 
-State these effects in terms of the procedure the player may perform. Do not create additional Action phases or implicit same-phase Action permissions.
+When an effect expressly permits something **without taking an Action**, follow that permission even if the ordinary use of the Feature or Ability is marked **1 Action**.
 
 ### Playing a card for its Action effect
 
@@ -326,25 +357,21 @@ To play a card for its Action effect:
 4. resolve the Action effect; and
 5. put the card in the Discard Pile unless it becomes an Asset, becomes an Overlay, or its effect gives another destination.
 
-### Faction Action
+### Faction Features
 
-A **Faction Action** is a faction-specific option a player may choose when taking an Action.
+A **Faction Feature** is a named faction-specific rule, option, procedure, passive effect, or special mechanic shared by the faction.
 
-Every Faction Action entry states whether it is legal during:
+Names such as **Terms**, **Purge**, **Mission**, **Rite**, **Surveillance**, and similar faction mechanics remain the names of those Features; they are not separate top-level rules categories.
 
-- Opening;
-- Denouement; or
-- either phase.
+The faction chapter and Faction Reference state each Feature's Action profile, timing, resource cost, frequency, and other limits. A Feature marked **1 Action** may be used only by spending an Action at a legal timing. A Feature marked **No Action** or **Automatic** does not consume the player's normal Action.
 
-Taking a Faction Action counts as the player's Action for the turn unless a rule expressly permits another Action.
+### Leader Abilities
 
-### Faction Ability
+A **Leader Ability** is a mechanic supplied specifically by the chosen Leader.
 
-A **Faction Ability** is a faction-specific effect used or triggered at its stated timing.
+Leader Abilities use the same **1 Action**, **No Action**, and **Automatic** profiles as Faction Features. Their timing, resource costs, frequency, and other limits are stated on the Leader Card and in the relevant faction chapter.
 
-A Faction Ability does not count as taking an Action unless it expressly says otherwise.
-
-Faction references must group Faction Actions separately from Faction Abilities and print the legal phase beside every Faction Action.
+Military **Orders** are the named Leader Ability for the General and Commandant. Each individual Order states its Command cost and timing.
 
 ### Discarding an Asset as an Action
 
@@ -362,11 +389,11 @@ This replacement is not a separate Action. An effect that prevents an Asset from
 
 The shared Action rules support this faction-specific exception:
 
-> **Purge — Faction Action, Opening or Denouement:** Spend the listed Conviction to perform one Purge. You may take one Action during both your Opening and your Denouement, provided that one of those Actions is Purge.
+> **Purge — Faction Feature · 1 Action · Opening or Denouement · Once per turn:** Spend the listed Conviction to perform one Purge. If one Action that turn is Purge, you may also take one Action in the other Action phase that turn.
 
-Purge may be taken as a Faction Action no more than once per turn. It never permits two Actions during the same phase.
+Purge never permits two Actions during the same phase.
 
-A Purge directly permitted by Final Judgment during the Aftermath is a Faction Ability. It does not count as taking the Purge Faction Action and does not activate or consume the two-phase permission above.
+A Purge performed through the Grand Inquisitor's **Final Judgment** Leader Ability does not spend an Action. It does not use the once-per-turn permission to spend an Action on Purge and does not activate the two-phase permission above.
 
 ### Assets and the Asset Bank
 
@@ -374,7 +401,7 @@ A card with an **Asset** effect has an inherent banking Action:
 
 > **Bank:** As an Action, play this card from your Hand and bank it.
 
-**Asset is the only banked-card effect heading in v0.6.3.** A printed special banking Action overrides the inherent Bank procedure.
+**Asset is the only banked-card effect heading.** A printed special banking Action overrides the inherent Bank procedure.
 
 A player's Asset limit equals the number of Territories they control. If that limit falls below the number of banked Assets, immediately discard Assets until within the limit; each Asset forced to leave this way is **Removed**. Voluntary use/discard and normal self-expiration are not Removal unless expressly stated.
 
@@ -423,7 +450,7 @@ A player moves again after a battle only when a rule or effect directly permits 
 >
 > This is a memory cue only; it does not alter timing or permission.
 
-## Pending Battles, Terms, and Onset
+## Terms and Onset
 
 ### How it works
 
@@ -445,7 +472,7 @@ Onset is the first phase of the battle sequence. When movement initiates a battl
 
 #### Terms
 
-Terms are a Diplomat faction procedure resolved during Onset after the attacker, defender, contested Position, and attacker's previous Position are established, and before other pre-Gambit effects. To offer Terms, choose one eligible Proposal, confirm its Requirement, confirm enough available Influence for its Stake, lower available Influence by the Stake, then the opponent accepts or refuses. A Diplomat may normally offer one Proposal in a battle sequence. In a Diplomat mirror, the attacker has the first opportunity to offer Terms; if the attacker passes, the defender may offer. Once either player offers Terms, the other cannot offer Terms in that battle sequence even if the Proposal is refused.
+Terms are a Diplomat Faction Feature used during Onset after the attacker, defender, contested Position, and attacker's previous Position are established, and before other pre-Gambit effects. To offer Terms, choose one eligible Proposal, confirm its Requirement, confirm enough available Influence for its Stake, lower available Influence by the Stake, then the opponent accepts or refuses. A Diplomat may normally offer one Proposal in a battle sequence. In a Diplomat mirror, the attacker has the first opportunity to offer Terms; if the attacker passes, the defender may offer. Once either player offers Terms, the other cannot offer Terms in that battle sequence even if the Proposal is refused.
 
 ##### Accepted Terms
 
@@ -693,8 +720,8 @@ This victory check occurs as part of resolving the legal capture. It does not wa
 The capture may occur through:
 
 - the normal Capture step;
-- a Leader ability;
-- a faction ability;
+- a Leader Ability;
+- a Faction Feature;
 - a playable-card effect;
 - a Territory effect; or
 - any other rule that legally captures that Territory or advances the player's Front Line to include it.
@@ -920,8 +947,8 @@ When an effect grants movement, use the normal movement rules unless the effect 
 
 - If the effect modifies a movement sequence already in progress, the granted movement remains part of that sequence.
 - If the effect grants movement while no movement sequence is in progress, it begins a new movement sequence.
-- Effect-granted movement may create a pending battle and may force the opponent to make a Last Stand unless expressly prohibited.
-- When movement creates a pending battle, that movement sequence ends and unused movement from it is lost normally.
+- Effect-granted movement may initiate a battle and may force the opponent to make a Last Stand unless expressly prohibited.
+- When movement initiates a battle, that movement sequence ends and unused movement from it is lost normally.
 
 ## Additional Tactics
 
@@ -999,7 +1026,7 @@ Instructions to **spend**, **pay**, **lose**, or otherwise reduce a resource use
 - `gain double advantage` means gain **two instances of advantage**.
 - `gain disadvantage` means gain **one instance of disadvantage**.
 
-These are additive instructions, not binary statuses. Instances from separate cards, Territory effects, faction abilities, and other effects **stack**. No later source replaces an earlier one unless an effect expressly says so.
+These are additive instructions, not binary statuses. Instances from separate cards, Territory effects, Faction Features, Leader Abilities, and other effects **stack**. No later source replaces an earlier one unless an effect expressly says so.
 
 Before rolling battle dice, combine all advantage and disadvantage affecting each player and cancel opposing instances one-for-one.
 
@@ -1044,16 +1071,17 @@ When an effect tells you to **apply** another card's effect or **repeat** an eff
 
 ## Battles ending without a winner
 
-When a rule or effect ends a battle **without a winner**:
+When a rule or effect ends a battle sequence **without a winner**:
 
-- neither player wins or loses that battle; withdrawal is not a loss;
-- after the battle-ending instruction resolves, unresolved Gambit or Tactic effects from that battle do not apply unless the ending effect expressly says otherwise;
+- neither player wins or loses; withdrawal is not a loss;
+- if the sequence ends during Onset, no Gambits are set, no battle result occurs, and no Aftermath is resolved;
+- if Onset has completed and the battle has proceeded to Gambits, unresolved Gambit or Tactic effects do not apply after the battle-ending instruction unless that instruction expressly says otherwise;
 - effects that already applied are not undone;
-- complete any remaining non-result Aftermath procedures that are still applicable;
-- clear committed cards and cards remaining in Reserve normally unless the ending effect gives them another destination; and
+- after Onset, complete any remaining non-result Aftermath procedures that are still applicable;
+- after Onset, clear committed cards and cards remaining in Reserve normally unless the ending effect gives them another destination; and
 - apply normal positional consequences, including Occupation when applicable, based on the Player Tokens that remain after any instructed withdrawal.
 
-An effect conditioned on a player winning or losing does not apply when the battle ends without a winner.
+An effect conditioned on a player winning or losing does not apply when the battle sequence ends without a winner.
 
 # 12. Overlays and Other Shared Card Rules
 
@@ -1094,9 +1122,18 @@ Whenever **Manifest Destiny** enters the Gauntlet as a Territory, it is a normal
 
 ## How Factions Work
 
-Each player chooses one faction and one of that faction's two Leaders. The faction determines which faction cards may be included in that player's Deck, which supplemental components are prepared, which public resources or progress are tracked, and which faction-specific Actions, abilities, and procedures are available.
+Each player chooses one faction and one of that faction's two Leaders. The faction determines which faction cards may be included in that player's Deck, which supplemental components are prepared, which public resources or progress are tracked, and which shared **Faction Features** are available. The chosen Leader adds that Leader's **Leader Ability**.
 
-A **Faction Action** is a faction-specific option chosen when taking an Action. Its faction rules state whether it is legal during Opening, Denouement, or either phase. A **Faction Ability** occurs at its stated timing and does not take an Action unless it expressly says otherwise. These are distinct rule categories.
+A **Faction Feature** is the umbrella term for a named rule, option, procedure, passive effect, or special mechanic shared by the faction. A **Leader Ability** is supplied specifically by the chosen Leader. Neither term implies Action use.
+
+Every Feature or Ability states the properties that matter in play:
+
+- **1 Action** when using it spends an Action;
+- **No Action** when it is used at its stated timing without spending an Action; or
+- **Automatic** when it applies at its stated condition or timing;
+- plus any legal timing, resource cost, frequency, requirements, or other limits.
+
+Names such as **Terms**, **Purge**, **Mission**, **Rite**, and **Surveillance** remain the names of faction mechanics. They are Faction Features rather than separate top-level rules categories. Military **Orders** are Leader Abilities.
 
 Every faction may still win by running the Gauntlet. Some factions also have an alternate victory condition. An alternate victory applies only when its complete faction rules are satisfied.
 
@@ -1119,7 +1156,6 @@ Reference cards summarize procedures but do not replace the Rulebook or the clea
 - Supplemental components have no card value and are not eligible as Gambits, Tactics, costs, or other playable cards unless a rule explicitly says otherwise.
 - Each player supplies and controls their own faction package unless a faction rule identifies a shared supply. In a mirror match, keep the two players' components separated and oriented toward their owners.
 
-<!-- GENERATED CLEAN V0.6.3 FACTION CONTENT START -->
 
 # 13. Military
 
@@ -1136,14 +1172,15 @@ Military has no alternate victory condition. It wins by running the Gauntlet.
 | Victory | Run the Gauntlet. |
 | Resource | Command, maximum 2. |
 | Resource gain | The first time each turn you win a battle, gain 1 Command. |
-| Faction Actions | None. Orders use their printed timings and do not spend Actions. |
+| Faction Features | None. |
+| Leader Ability | Orders; each Leader has their own Orders with printed Command costs and timings. |
 | Leaders | General and Commandant. |
 | Faction pool | 13 Military card titles. |
 | Unique card | Shock and Awe, cost 5; maximum one copy per Deck. |
 
-## Faction Actions
+## Faction Features
 
-Military has **no Faction Actions**. Orders are Faction Abilities used at their printed timings; they do not use an Action. Playing a Military card for its Action effect still uses the normal Action rules.
+Military has no shared Faction Feature that spends an Action. **Orders** are Leader Abilities, not Faction Features. Each Order states its Command cost and timing and does not spend an Action. Playing a Military card for its Action effect still uses the normal Action rules.
 
 ## Components and setup
 
@@ -1183,11 +1220,12 @@ Determine the winner, then gain normal Command before applying other effects cau
 
 #### Orders
 
-> **Onward — 1 Command:** During your Movement, before a battle is initiated, move one additional Position. This movement may initiate a battle.
 
-> **Rally — 1 Command:** Before dice are rolled in a battle you initiated, add +1 to your battle total.
+> **Onward — 1 Command · No Action · During Movement:** During your Movement, move one additional Position. This may start a Battle.
 
-> **Rout — 2 Command:** At the end of the Aftermath of a battle you initiated and won, advance one Position. This movement may initiate a battle.
+> **Rally — 1 Command · No Action · Before dice · Attacking:** Add +1 to your battle total in a battle you initiated.
+
+> **Rout — 2 Command · No Action · End of Aftermath · Win as attacker:** Advance one Position. This movement may initiate a battle.
 
 Onward cannot be used after a battle. Rout creates a new movement sequence after the completed Aftermath.
 
@@ -1198,11 +1236,12 @@ Onward cannot be used after a battle. Rout creates a new movement sequence after
 
 #### Orders
 
-> **Entrench — 1 Command:** Before dice are rolled in a battle you did not initiate, add +1 to your battle total.
 
-> **Repel — 1 Command:** During the Aftermath of a battle you did not initiate and won, after the opponent's normal retreat, they retreat one additional position, if able.
+> **Entrench — 1 Command · No Action · Before dice · Defending:** Add +1 to your battle total in a battle you did not initiate.
 
-> **Fortify — 2 Command:** During the Aftermath of a battle you won while occupying an enemy-controlled Territory, advance your Front Line by one Territory, if able.
+> **Repel — 1 Command · No Action · Aftermath · Win as defender:** After the opponent's normal retreat, they retreat one additional Position, if able.
+
+> **Fortify — 2 Command · No Action · Aftermath · Win while occupying enemy Territory:** Advance your Front Line by one Territory, if able.
 
 ## Military-specific rules
 
@@ -1224,7 +1263,7 @@ War Crimes and Shock and Awe may prohibit movement, capture, or Orders resulting
 
 ## How it works
 
-Before a battle begins, a Diplomat may offer **Terms**. The Diplomat stakes Influence and presents a Proposal. The opponent may accept, preventing the battle, or refuse and fight under the Proposal's refusal effect.
+During Onset, a Diplomat may offer **Terms**. The Diplomat stakes Influence and presents a Proposal. The opponent may accept, ending the battle sequence during Onset before Gambits are set, or refuse and fight under the Proposal's refusal effect.
 
 Accepted or successfully imposed Proposals become Treaty Articles. Ratify five different Proposals and survive until the start of your next turn to win through the **Peace Treaty**.
 
@@ -1235,15 +1274,14 @@ Accepted or successfully imposed Proposals become Treaty Articles. Ratify five d
 | Victory | Run the Gauntlet or complete the Peace Treaty. |
 | Resource | Influence, minimum 0 and maximum 10. |
 | Starting value | 1 Influence. |
-| Faction procedure | Offer Terms during Onset before other pre-Gambit effects. |
-| Faction Actions | None. Terms and Leverage do not spend Actions. |
+| Faction Features | Terms — No Action · During Onset; Leverage — No Action · Before dice after refused Terms. |
 | Leaders | Ambassador and Senator. |
 | Proposal set | Nine double-sided Proposal / Treaty Article cards. |
 | Faction pool | 13 Diplomat card titles. |
 
-## Faction Actions
+## Faction Features
 
-Diplomats have **no Faction Actions**. Offering Terms is a faction procedure during Onset before other pre-Gambit effects, and Leverage is a Faction Ability used before dice are rolled after refused Terms. Neither takes an Action. Playing a Diplomat card for its Action effect still uses the normal Action rules.
+**Terms** and **Leverage** are Diplomat Faction Features marked **No Action**. Terms is used during Onset before other pre-Gambit effects, and Leverage is used before dice are rolled after refused Terms. Playing a Diplomat card for its Action effect still uses the normal Action rules.
 
 ## Components and setup
 
@@ -1357,14 +1395,14 @@ At the start of the Diplomat's turn, after the Capture step and before the Draw 
 **Archetype:** Agreement, card flow, and settlement
 **Motto:** *Words first. War last.*
 
-> **Cordiality:** Once per turn, after the opponent accepts your Terms, draw one card.
+> **Cordiality — No Action · Once per turn · After accepted Terms:** After the opponent accepts your Terms, draw one card.
 
 ### Senator
 
 **Archetype:** Risk management, resilience, and imposition
 **Motto:** *Procedure endures.*
 
-> **Political Capital:** Once per turn, when you would lose staked Influence after losing a battle following refused Terms, you may put up to that many cards from your Hand in your Graveyard. Recover 1 staked Influence for each card put there; lose the rest.
+> **Political Capital — No Action · Once per turn · After losing following refused Terms:** When you would lose staked Influence, put up to that many cards from Hand in your Graveyard. Recover 1 staked Influence per card; lose the rest.
 
 ## Proposal set
 
@@ -1485,23 +1523,23 @@ Deed ownership is independent of token position and Territory control. Own the D
 | Victory | Run the Gauntlet or achieve Controlling Interest. |
 | Resource | Capital, minimum 0; maximum determined by the Capital limit. |
 | Capital limit | Territories you control plus total card value in Treasury. |
-| Financial Capacity | If Treasury value exceeds Territories controlled at the start of your turn, gain 1 additional Action that turn; at least one Action must be spent on a Financier Faction Action. |
-| Faction Actions | Place a card in Treasury, buy or buy out a Deed, Play the Market, or use Hostile Takeover; each is taken during Denouement. |
+| Financial Capacity | If Treasury value exceeds Territories controlled at the start of your turn, gain 1 additional Action that turn; at least one Action must be spent on a Financier Faction Feature marked 1 Action. |
+| Faction Features | Treasury, Buy / Buy Out Deed, and Play the Market — 1 Action · Denouement; Subsidize — No Action · Before dice; Financial Capacity — No Action · After Capture; Income — Automatic · After Capture. |
 | Income | After the Capture step, gain 1 Capital per Deed you own. |
 | Leaders | Banker and Executive. |
 | Faction pool | 13 Financier card titles. |
 | Unique card | Corner the Market, cost 5; maximum one copy per Deck. |
 
-## Faction Actions
+## Faction Features
 
-Financiers have the following Faction Actions. Each costs 1 Action and may be used only during an Denouement:
+Financiers have the following shared Faction Features marked **1 Action · Denouement**:
 
 - **Place a card in Treasury:** Place one card from your Hand face up in your Treasury.
 - **Buy or buy out a Deed:** Pay the full current cost to acquire one unowned Deed or buy out one opposing Financier's Deed.
 - **Play the Market:** Discard one card from Hand, roll one die, and gain Capital according to the result.
-- **Hostile Takeover — Executive only:** After winning a battle as the attacker that turn and becoming the occupier of the enemy Territory, buy or buy out its Deed; a successful purchase also gives you control of that Territory.
+**Hostile Takeover — Executive Leader Ability:** After winning a battle as the attacker that turn and becoming the occupier of the enemy Territory, spend 1 Action during Denouement to buy or buy out its Deed; a successful purchase also gives you control of that Territory.
 
-When Financial Capacity grants an additional Action, at least one Action spent that turn must be spent on one of these Faction Actions. Line of Credit modifies a Deed purchase, and Subsidize modifies a battle; neither is a separate Faction Action.
+When Financial Capacity grants an additional Action, at least one Action spent that turn must be spent on a Financier Faction Feature marked **1 Action**. **Line of Credit** is the Banker's Leader Ability. **Subsidize** is a shared Faction Feature marked **No Action**; neither is part of the 1-Action feature list above.
 
 ## Components and setup
 
@@ -1521,7 +1559,7 @@ Begin with 2 Capital and an empty Treasury. Place Deed Cards in the shared unown
 
 Capital is public and pays for Deeds, Subsidize, and card effects. Your Capital limit rises when you control Territories or place valuable cards in Treasury. You may temporarily exceed the limit, but excess Capital is lost at the end of each turn.
 
-At the start of your turn, if the total card value in your Treasury is greater than the number of Territories you control, gain 1 additional Action that turn. At least one Action spent that turn must be spent on a Financier Faction Action.
+At the start of your turn, if the total card value in your Treasury is greater than the number of Territories you control, gain 1 additional Action that turn. At least one Action spent that turn must be spent on a Financier Faction Feature marked 1 Action.
 
 During an Denouement, you may spend 1 Action to place a card in Treasury, buy a Deed, or Play the Market.
 
@@ -1539,7 +1577,7 @@ Capital may exceed the limit temporarily. At the end of every turn, including an
 
 After completing the Capture step and applying all effects that occur after it, but before Draw, compare the total card value in your Treasury with the number of Territories you control.
 
-If Treasury value is greater, you may take one Action during both Opening and Denouement that turn, provided at least one of those Actions is a Financier Faction Action. A Financier Faction Action is normally legal only during Denouement.
+If Treasury value is greater, you may take one Action during both Opening and Denouement that turn, provided at least one of those Actions is a Financier Faction Feature marked 1 Action. A Financier Faction Feature marked 1 Action is normally legal only during Denouement.
 
 Financial Capacity does not permit two Actions in one phase. Determine eligibility once at this timing; later Treasury or control changes do not grant or remove the permission that turn.
 
@@ -1627,21 +1665,14 @@ The progression continues without a fixed maximum. Each additional +1 costs one 
 **Archetype:** Collateral, planned purchases, and flexible financing
 **Motto:** *Credit closes the distance.*
 
-> **Line of Credit:** The first time on your turn that you would buy or buy out a Deed, you may use one card from your Hand or Treasury as collateral.
->
-> - It contributes payment equal to its value.
-> - It cannot contribute more than half the purchase cost, rounded down.
-> - Pay the remaining cost with Capital.
-> - Put the collateral in your Discard Pile after the purchase.
-> - Unused collateral value is lost.
-> - Line of Credit applies only to Deed purchases and buyouts.
+> **Line of Credit — No Action · First Deed purchase each turn · Collateral:** Use one card from Hand or Treasury as collateral. It contributes up to half the purchase cost, rounded down; pay the rest with Capital, then discard the collateral.
 
 ### Executive
 
 **Archetype:** Offensive acquisition, Occupation, and immediate control
 **Motto:** *Take the ground. Close the deal.*
 
-> **Hostile Takeover:** During Denouement, if you won a battle as the attacker this turn and are now the occupier of that enemy Territory, you may take an Action to buy or buy out its Deed. Treat yourself as the occupier, but not the controller, for the cost calculation. If the purchase succeeds, advance your Front Line by one Territory, if able.
+> **Hostile Takeover — 1 Action · Denouement · After winning as attacker:** While occupying that enemy Territory, buy or buy out its Deed. Treat yourself as occupier for cost. If successful, advance your Front Line by one Territory, if able.
 
 ## Financier-specific rules
 
@@ -1695,14 +1726,14 @@ Complete enough Missions to make a **Special Operation** ready, satisfy its hidd
 | Tracked values | Intel and Operation Progress; both begin at 0. |
 | Mission reward | 1 Operation Progress and Intel equal to the Mission card's value. |
 | Battle tools | Surveillance and Interference. |
-| Faction Actions | Start, complete, or abort a Mission; start or complete a Special Operation; all are Denouement Actions. |
+| Faction Features | Start / Complete / Abort Mission and Start / Complete Special Operation — 1 Action · Denouement; Surveillance and Interference — No Action at their stated battle timings. |
 | Leaders | Ranger and Spymaster. |
 | Faction pool | 13 Intelligence card titles. |
 | Unique card | Sleeper Network, cost 5; maximum one copy per Deck. |
 
-## Faction Actions
+## Faction Features
 
-Intelligence has the following Faction Actions. Each costs one Action and is legal only during Denouement:
+Intelligence has the following Faction Features marked **1 Action · Denouement**:
 
 - **Start a Mission:** Place one eligible Intelligence card from Hand face down as your Active Mission.
 - **Complete a Mission:** Reveal a satisfied Active Mission, gain its Mission reward, and put it in your Discard Pile.
@@ -1710,7 +1741,7 @@ Intelligence has the following Faction Actions. Each costs one Action and is leg
 - **Start a Special Operation:** When ready, place one eligible Intelligence card from Hand face down as your Special Operation.
 - **Complete a Special Operation:** Reveal a satisfied, ready Special Operation, pay its Intel cost, and win the game.
 
-Surveillance, Interference, Fieldcraft, and Mission Control are Faction Abilities, not Faction Actions. Mission Control may start a Mission without spending an Action only because its text expressly permits it.
+**Surveillance** and **Interference** are shared Faction Features marked **No Action**. **Fieldcraft** and **Mission Control** are Leader Abilities. Mission Control may start a Mission without spending an Action because that Leader Ability expressly permits it.
 
 ## Components and setup
 
@@ -1848,7 +1879,7 @@ At each choice stage:
 **Archetype:** Territory effects, reconnaissance, and field operations
 **Motto:** *Know the land before the battle begins.*
 
-> **Fieldcraft:** Once per turn, when a printed Territory effect would affect you, your movement, or a battle involving you, you may spend 1 Intel to ignore that Territory effect until the end of the turn.
+> **Fieldcraft — 1 Intel · No Action · Once per turn · Territory effect:** When a printed Territory effect would affect you, your movement, or a battle involving you, ignore that effect until the end of the turn.
 
 Fieldcraft does not alter Territory control, Occupation, Capture, Defensive Edge, Last Stand battle bonuses, or limits calculated from Territories.
 
@@ -1857,7 +1888,7 @@ Fieldcraft does not alter Territory control, Occupation, Capture, Defensive Edge
 **Archetype:** Mission tempo and operational coordination
 **Motto:** *Information never rests. Momentum is the weapon.*
 
-> **Mission Control:** Once per turn, after completing a normal Mission, you may immediately start another eligible Mission from your Hand without spending an Action. It cannot complete that turn. Mission Control cannot start a Special Operation.
+> **Mission Control — No Action · Once per turn · After completing a normal Mission:** Immediately start another eligible Mission from Hand. It cannot complete that turn and cannot be a Special Operation.
 
 ## Intelligence-specific rules
 
@@ -1887,19 +1918,19 @@ To win through Ritual, bind three cards from three different zones, initiate a b
 | Resource | None. |
 | Trait | All thirteen Mystics cards have the Arcane trait. |
 | Progression | First Rite: Invocation; second: Transmutation; third: Convergence and Ritual. |
-| Faction Actions | Begin a Rite or, after all three Rites are complete, begin the Ritual of Ascendance; both are normally Denouement Actions. |
+| Faction Features | Begin a Rite and Begin the Ritual of Ascendance — 1 Action · Denouement; Invocation and Transmutation — No Action; Convergence — Automatic. |
 | Leaders | Alchemist and Spirit Walker. |
 | Faction pool | 13 Mystics card titles. |
 | Unique card | Necromancy, cost 5; maximum one copy per Deck. |
 
-## Faction Actions
+## Faction Features
 
-Mystics have the following Faction Actions. Each costs one Action and is normally legal only during Denouement:
+Mystics have the following Faction Features marked **1 Action · Denouement**:
 
 - **Begin a Rite:** Choose one incomplete Rite you may legally begin and pay its beginning cost.
 - **Begin the Ritual of Ascendance:** After completing all three Rites, bind the required Arcane cards from Hand, Discard Pile, and Graveyard.
 
-Completing a Rite is not a Faction Action; it occurs when that Rite's completion condition and timing are satisfied. Invocation, Transmutation, Convergence, and the Leader abilities are Faction Abilities, not Faction Actions.
+Completing a Rite is automatic when that Rite's completion condition and timing are satisfied. **Invocation** and **Transmutation** are Faction Features marked **No Action**; **Convergence** is **Automatic**. The Alchemist and Spirit Walker mechanics are Leader Abilities.
 
 ## Components and setup
 
@@ -1918,7 +1949,7 @@ Place all three Rite cards incomplete side up. Mystics use no resource tracker.
 
 During Denouement, take an Action and pay a Rite's beginning cost to begin it. You may have only one begun but incomplete Rite at a time, and a Rite cannot complete on the turn it begins.
 
-Once its condition is met on a later turn, complete it and unlock the next faction ability. Completed Rites remain complete.
+Once its condition is met on a later turn, complete it and unlock the next Faction Feature. Completed Rites remain complete.
 
 ### Complete rules
 
@@ -1977,13 +2008,13 @@ If you lose a battle before completion, put both bound cards in your Graveyard a
 
 > **Completion:** On a later turn, complete this Rite when you win a battle without setting a Gambit or choosing a Tactic.
 
-Using Transmutation, an Asset, Overlay, Territory, Leader ability, or card from another source does not by itself prevent completion.
+Using Transmutation, an Asset, Overlay, Territory, Leader Ability, or card from another source does not by itself prevent completion.
 
 If you lose a battle before completion, reset the Rite.
 
 ### Rite of Crossing
 
-You may take the Begin a Rite Faction Action for Rite of Crossing during Denouement only after winning a battle that turn that made you the occupier of a Territory the opponent controlled immediately before that battle.
+You may use the **Begin a Rite** Faction Feature for Rite of Crossing during Denouement only after winning a battle that turn that made you the occupier of a Territory the opponent controlled immediately before that battle.
 
 **Beginning cost:** Put one Arcane card from your Hand in your Graveyard. If you have none, reveal your Hand and move one Arcane card from your Discard Pile to your Graveyard instead.
 
@@ -2036,7 +2067,7 @@ Withdrawal neither completes nor interrupts the Ritual because it has no winner 
 **Archetype:** Sacrifice sequencing and card conversion
 **Motto:** *Nothing is fixed. Everything can be transformed.*
 
-> **Materia Prima:** The first time on your turn that you put a card from your Hand in your Graveyard as part of a Rite, Transmutation, or an Arcane card effect, draw one card. If this occurs during a battle, draw after the Aftermath of the battle.
+> **Materia Prima — No Action · Once per turn · First qualifying sacrifice from Hand:** Draw one card the first time on your turn that a card from Hand enters your Graveyard for a Rite, Transmutation, or Arcane card effect. During battle, draw after the Aftermath.
 
 A Gambit does not trigger Materia Prima merely because it moves from battle to your Graveyard during the Aftermath.
 
@@ -2045,7 +2076,7 @@ A Gambit does not trigger Materia Prima merely because it moves from battle to y
 **Archetype:** Rite endurance and protective sacrifice
 **Motto:** *The spirits remember what the living abandon.*
 
-> **Guardians of the Circle:** The first time on your turn that you lose a battle and that loss would interrupt a begun Rite or your Ritual of Ascendance, you may put one Arcane card from your Hand in your Graveyard whose value is at least 1 plus the number of Rites you have completed. If you do, prevent that interruption.
+> **Guardians of the Circle — No Action · Once per turn · Battle loss would interrupt Rite or Ritual:** Put one Arcane card from Hand in your Graveyard whose value is at least 1 plus your completed Rites. If you do, prevent that interruption.
 
 Guardians of the Circle cannot preserve a continuing position requirement.
 
@@ -2085,22 +2116,22 @@ Spend Conviction on **Purges** that remove cards and Assets. The first time on y
 | Resource | Conviction, maximum 4. |
 | Normal gain | First time each turn opposing cards enter the Graveyard during the Aftermath of a battle involving you. |
 | Doctrine | Condemnation and Blasphemy. |
-| Faction Actions | Purge — Opening or Denouement. If one phase Action is Purge, the Inquisition may take one Action in the other phase as well. |
+| Faction Features | Purge — 1 Action · Opening or Denouement · Once per turn; Conviction, Condemnation, Blasphemy, and Purification — Automatic at their stated timings. |
 | Leaders | Grand Inquisitor and Witch Hunter. |
 | Faction pool | 13 Inquisition card titles. |
 | Arcane card | Heresy. |
 
-## Faction Actions
+## Faction Features
 
-**Purge is the Inquisition's only Faction Action.**
+**Purge is an Inquisition Faction Feature marked 1 Action · Opening or Denouement · Once per turn.**
 
-> **Purge — Opening or Denouement:** Spend one Action and the listed Conviction to perform one Purge. You may take one Action during both Opening and Denouement that turn, provided one of those Actions is Purge.
+> **Purge — Faction Feature · 1 Action · Opening or Denouement · Once per turn:** Spend the listed Conviction to perform one Purge. If one Action that turn is Purge, you may also take one Action in the other Action phase that turn.
 
 - Purge may occupy either Action phase.
 - The other Action must occupy the other phase.
 - Purge never permits two Actions in one phase.
-- Purge may be taken as a Faction Action no more than once per turn.
-- A Purge directly permitted without taking an Action, such as Final Judgment, is separate and does not consume the once-per-turn Purge Faction Action or activate the two-phase permission.
+- You may spend an Action on Purge no more than once per turn.
+- A Purge directly permitted without taking an Action, such as Final Judgment, is separate and does not consume the once-per-turn permission to spend an Action on Purge or activate the two-phase permission.
 
 ## Components and setup
 
@@ -2120,7 +2151,7 @@ Begin with 0 Conviction. Slide the Leader over the tracker to show 0–4.
 
 The first time opposing cards enter the Graveyard during the Aftermath of a battle involving you each turn, gain 1 Conviction. Opposing Tactics go there instead of the Discard Pile, making battle choices more costly against the Inquisition.
 
-During Opening or Denouement, take an Action and spend Conviction to Purge. If one phase Action is Purge, you may also take one Action in the other phase that turn. You may take the Purge Faction Action no more than once per turn.
+During Opening or Denouement, take an Action and spend Conviction to Purge. If one phase Action is Purge, you may also take one Action in the other phase that turn. You may spend an Action on Purge no more than once per turn.
 
 ### Complete rules
 
@@ -2156,7 +2187,7 @@ During Opening or Denouement, take an Action and spend Conviction to Purge:
 | 3 | The opponent chooses one card from their Hand and puts it in their Graveyard. |
 | 4 | Reveal the opponent's Hand. Choose one card and put it in their Graveyard. |
 
-If one Action that turn is Purge, you may take one Action in the other Action phase as well. This never permits two Actions in one phase. You may take the Purge Faction Action no more than once per turn. A directly permitted Purge is separate.
+If one Action that turn is Purge, you may take one Action in the other Action phase as well. This never permits two Actions in one phase. You may spend an Action on Purge no more than once per turn. A directly permitted Purge is separate.
 
 A Purge is not playing a card.
 
@@ -2173,20 +2204,20 @@ A failed Reserve draw or effect-generated draw does not trigger Purification.
 **Archetype:** Judgment, Purge, and permanent removal
 **Motto:** *We judge. We purge.*
 
-> **Final Judgment:** Once per turn, during the Aftermath of a battle you won, after battle cards are cleared and effects triggered by those moves are applied, you may immediately Purge without taking an Action. Reduce that Purge's Conviction cost by 1, to a minimum of 1.
+> **Final Judgment — No Action · Once per turn · After winning a battle:** After battle cards are cleared, immediately Purge. Reduce that Purge's Conviction cost by 1, to a minimum of 1.
 
-The normal Conviction gain from that battle may occur before Final Judgment. Final Judgment is a Faction Ability. It does not consume the once-per-turn Purge Faction Action and does not activate the two-phase Purge permission.
+The normal Conviction gain from that battle may occur before Final Judgment. Final Judgment is the Grand Inquisitor's Leader Ability. It does not consume the once-per-turn permission to spend an Action on Purge and does not activate the two-phase Purge permission.
 
 ### Witch Hunter
 
 **Archetype:** Defense, retaliation, and pursuit
 **Motto:** *You ran. I followed.*
 
-> **Relentless Pursuit:** Once per turn, at the end of the Aftermath of a battle an opponent initiated against you and lost, spend 2 Conviction to end their turn and advance one Position toward their end. If this movement initiates a battle, you are the attacker.
+> **Relentless Pursuit — 2 Conviction · No Action · Once per turn · After defeating an attacking opponent:** End their turn, then advance one Position toward their end. If this movement initiates a battle, you are the attacker.
 
 Accepted Terms may still end the resulting battle sequence during Onset before Gambits are set.
 
-Withdrawal has no loser, so neither Leader ability triggers from it.
+Withdrawal has no loser, so neither Leader Ability triggers from it.
 
 ## Inquisition-specific rules
 
@@ -2206,7 +2237,6 @@ No Martyrs prevents the losing opponent from benefiting from effects they contro
 
 Heresy follows the shared copied-effect rule but retains permission for one additional copied-effect layer. That additional effect cannot create another layer. The selected Graveyard card remains there.
 
-<!-- GENERATED CLEAN V0.6.3 FACTION CONTENT END -->
 
 ---
 
@@ -2253,9 +2283,9 @@ Heresy follows the shared copied-effect rule but retains permission for one addi
 
 **Denouement:** The Action phase after Movement and any battle caused by it.
 
-**Faction Action:** A faction-specific option chosen when taking an Action. Its rules state its legal phase.
+**Faction Feature:** A named faction-specific rule, option, procedure, passive effect, or special mechanic shared by a faction. Its rules state whether it uses **1 Action**, **No Action**, or is **Automatic**, plus any timing, resource cost, frequency, requirements, or other limits.
 
-**Faction Ability:** A faction-specific effect used or triggered at its stated timing. It does not take an Action unless it expressly says otherwise.
+**Leader Ability:** A mechanic supplied specifically by the chosen Leader. Its rules state Action use, timing, resource cost, frequency, and other limits as applicable.
 
 **Aftermath:** The closing part of an active battle, including result or no-winner handling, retreat or withdrawal, Occupation, battle-card clearing, and follow-up effects.
 
@@ -2291,7 +2321,7 @@ Heresy follows the shared copied-effect rule but retains permission for one addi
 
 **Tiebreak Roll:** A separate sudden-death roll used when a tied battle total is not otherwise resolved. Each player rolls one unmodified die; reroll further ties.
 
-**Withdrawal:** Leaving a pending or active battle without determining a winner. Withdrawal is not Fall Back or retreat.
+**Withdrawal:** Leaving a battle sequence without determining a winner. Withdrawal is not Fall Back or retreat.
 
 ---
 
