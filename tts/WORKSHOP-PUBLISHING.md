@@ -1,23 +1,25 @@
 # Gauntlet v0.7.0 — Tabletop Simulator Workshop publication
 
-This file prepares the text and final publication checklist for the v0.7.0 Tabletop Simulator Workshop item. It does **not** indicate that the mod has passed QA or is ready to publish.
+This file records the published v0.7.0 Tabletop Simulator Workshop item, its player-facing copy, publication gate, and post-publication verification.
 
 ## Workshop item
 
 - **Steam Workshop ID:** `3790840635`
 - **Workshop URL:** https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635
-- **Current visibility:** hidden / pre-publication smoke-test item
+- **Current visibility:** public
 - **Created:** 2026-08-27
-- **Permanent Workshop candidate:** https://github.com/tymonius/Gauntlet/releases/download/v0.7.0/Gauntlet_v0.7.0_TTS_Workshop_Candidate.json
-- **Permanent hosted asset set:** refreshed from the approved PR #909 build on 2026-08-27; 83 TTS network assets plus the Workshop candidate are present on the `v0.7.0` release.
+- **Published:** 2026-08-27
+- **Final hosted save:** https://gauntlet.run/tts/v0.7.0/Gauntlet_v0.7.0_TTS_Mod.json
+- **Primary listing image:** production CSS-composited universal black Gauntlet card back
+- **Secondary listing image:** approved Tabletop Simulator gameplay screenshot
 
-The permanent host refresh is complete. Keep the Workshop item hidden until the subscribed Workshop copy has been loaded once from Steam and confirmed to resolve the permanent `v0.7.0` asset URLs.
+The public subscribed Workshop copy was loaded and smoke-tested successfully after publication; hosted assets resolved and no publication-specific breakage was found.
 
-## Draft Workshop title
+## Workshop title
 
 **Gauntlet — v0.7.0**
 
-## Draft Workshop description
+## Workshop description
 
 Gauntlet is a two-player tactical card-and-territory game about deck construction, hidden battle commitments, territorial control, faction asymmetry, and running the Gauntlet.
 
@@ -53,9 +55,9 @@ Rules are player-operated. The v0.7.0 mod is intended to reproduce the physical 
 
 The exact generated inventory is governed by the v0.7.0 TTS manifests and release-readiness report rather than this prose list.
 
-## Before publishing
+## Publication gate — completed
 
-The final Workshop item must not be published until all of the following are true:
+The v0.7.0 Workshop item was published only after all of the following were true:
 
 - `npm run tts:release:strict` passes for the v0.7.0 package;
 - `tts/release-qa/v0.7.0.json` records completed table/setup, faction-component, and focused handling QA;
@@ -64,14 +66,14 @@ The final Workshop item must not be published until all of the following are tru
 - all v0.7.0 custom-object network assets have been uploaded to their public host;
 - the final save is loaded successfully from a clean TTS client without relying on locally cached custom assets.
 
-## Preview image
+## Listing images
 
-Use the already approved public Tabletop Simulator gameplay screenshot from the website: `website/public/images/tts-gameplay.png`. Do not generate a replacement solely for Workshop publication.
+The Workshop listing uses the production CSS-composited **universal black Gauntlet card back** as its primary image. The approved Tabletop Simulator gameplay screenshot remains as a secondary gallery image. The production card-back image comes from the same browser-rendered CSS composition used by the TTS card-asset exporter; it is not an image-generation mockup.
 
-## After publishing
+## Post-publication verification
 
-1. Subscribe to the public Workshop item from a clean client.
-2. Load the subscribed item and verify every hosted face/back/image resolves.
-3. Recheck player perspectives, Territory orientation, supplemental manipulation, and starter Bag contents in the public copy.
-4. Record the public Workshop URL in the v0.7.0 release/site documentation.
-5. Only then treat the Workshop publication item in issue #851 as complete.
+1. Public Workshop item published at the permanent URL above. — **Complete**
+2. Subscribed public Workshop copy loaded from Tabletop Simulator. — **Complete**
+3. Hosted faces, backs, environment art, Leaders, Territories, and faction components resolved in the subscribed copy. — **Complete**
+4. Public-copy smoke test found no publication-specific breakage. — **Complete**
+5. Workshop URL linked from the public site/release documentation. — **Tracked in the final site/documentation closeout.**

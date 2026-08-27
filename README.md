@@ -54,6 +54,7 @@ To run the Gauntlet, a player must defeat the opponent on their final Territory,
 - [Gauntlet v0.6.3 Rules Arbiter](https://gauntlet.run/rules-arbiter/) — ask about rules, cards, Leaders, faction systems, Territories, timing, and victory conditions using canonical v0.6.3 sources.
 - [Gauntlet v0.6.3 Deckbuilder](https://gauntlet.run/deckbuilder/) — load a recommended Leader Deck or build, validate, save, export, randomize, and print a complete package containing its Leader, Territories, playable cards, and required faction components.
 - [Playtest browser tools](https://gauntlet.run/playtest/) — current v0.6.3 tracked/formal playtest workflows and feedback tools.
+- [Gauntlet v0.7.0 on Tabletop Simulator](https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635) — public Steam Workshop mod for online play.
 
 Scan to open the v0.6 Deckbuilder:
 
@@ -163,6 +164,7 @@ npm run dev:gui
 - [Start Playing](https://gauntlet.run/start/) — current guided faction/Leader selection and starter-Deck handoff.
 - [Faction guides](releases/v0.6.3/faction-guides/) — current faction-specific rules and Leader references.
 - [Playtest tools](playtest/) — current tracked/formal session and feedback workflows.
+- [Tabletop Simulator](https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635) — public v0.7.0 Workshop mod for online play.
 - [Player Mat and Zone Reference](playtest/player-mat/)
 
 ## Copyright and use

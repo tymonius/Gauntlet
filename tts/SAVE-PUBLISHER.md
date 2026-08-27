@@ -116,7 +116,7 @@ The v0.7.0 manual release gate is recorded in:
 
 - `tts/release-qa/v0.7.0.json`
 
-The committed record remains `in-progress` until the corresponding in-game checks are actually completed. Schema version 3 records **18 required checks**, grouped as follows.
+A release QA record remains `in-progress` until the corresponding in-game checks are actually completed. For v0.7.0, the committed record is now `passed`, all 18 required checks are true, and Workshop approval is explicit. Schema version 3 records the **18 required checks**, grouped as follows.
 
 ### Table and setup
 
@@ -166,7 +166,7 @@ A successful promotion preserves the Review Scaffold and writes a separate final
 - `tts/generated/v0.7.0/Gauntlet_v0.7.0_TTS_Mod.json`
 - `tts/generated/current/Gauntlet_TTS_Mod.json`
 
-Only the promoted copy loses the `Review Scaffold` identity.
+Only the promoted copy loses the `Review Scaffold` identity. For v0.7.0 this promotion has completed; the final hosted save is `https://gauntlet.run/tts/v0.7.0/Gauntlet_v0.7.0_TTS_Mod.json` and the public Workshop item is `https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635`.
 
 ## Review boundary
 
@@ -178,4 +178,4 @@ The generated Review Scaffold is therefore allowed to exist while a component or
 
 The versioned QA record is the authoritative checklist. Before Workshop promotion, complete every table/setup, faction-component, and handling-validation check recorded there and add notes for any noteworthy friction or fixes.
 
-After promotion and publication, subscribe to/load the public Workshop item from a clean client and confirm every hosted asset resolves.
+After promotion and publication, subscribe to/load the public Workshop item from a clean client and confirm every hosted asset resolves. The v0.7.0 public Workshop copy completed that smoke test successfully on 2026-08-27.
