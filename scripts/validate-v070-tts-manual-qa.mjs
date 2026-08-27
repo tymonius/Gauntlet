@@ -5,6 +5,8 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const VERSION = 'v0.7.0';
 const QA_PATH = path.join(root, 'tts', 'release-qa', `${VERSION}.json`);
+const CURRENT_SCHEMA_VERSION = 3;
+const REQUIRED_CHECK_COUNT = 18;
 
 function fail(message) {
   throw new Error(`v0.7.0 TTS manual-QA gate: ${message}`);
@@ -29,11 +31,16 @@ function collectChecks(checks) {
 }
 
 export function validateV070TtsManualQa(qa) {
-  if (qa?.schemaVersion !== 2) fail(`unsupported schemaVersion ${qa?.schemaVersion ?? 'missing'}.`);
+  if (qa?.schemaVersion !== CURRENT_SCHEMA_VERSION) {
+    fail(`unsupported schemaVersion ${qa?.schemaVersion ?? 'missing'}; expected ${CURRENT_SCHEMA_VERSION}.`);
+  }
   if (qa?.gameVersion !== VERSION) fail(`gameVersion is ${qa?.gameVersion || 'missing'}; expected ${VERSION}.`);
+  if (qa?.status !== 'passed') fail(`status is ${qa?.status || 'missing'}; expected passed.`);
 
   const checks = collectChecks(qa.checks);
-  if (checks.length < 19) fail(`only ${checks.length} manual checks are declared; expected the complete 19-check v0.7.0 record.`);
+  if (checks.length !== REQUIRED_CHECK_COUNT) {
+    fail(`${checks.length} manual checks are declared; expected the complete ${REQUIRED_CHECK_COUNT}-check v0.7.0 record.`);
+  }
 
   const incomplete = checks.filter(entry => entry.value !== true);
   if (incomplete.length) {
@@ -41,7 +48,7 @@ export function validateV070TtsManualQa(qa) {
   }
 
   if (qa.approvedForWorkshop !== true) {
-    fail('approvedForWorkshop must be true after successful in-game and remote-player QA.');
+    fail('approvedForWorkshop must be true after successful in-game QA.');
   }
 
   if (!Array.isArray(qa.notes)) fail('notes must be an array.');
