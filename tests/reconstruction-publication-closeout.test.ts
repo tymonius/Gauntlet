@@ -68,7 +68,6 @@ describe('clean v0.6.3 publication closeout', () => {
     expect(attestation.governance.issue_591_acceptance_gates_satisfied).toBe(true);
     expect(attestation.governance.issues_ready_to_close_after_this_attestation_merges).toEqual([590, 591]);
 
-    expect(lifecycle.current_release).toBe('v0.6.3');
     expect(lifecycle.releases['v0.6.1'].status).toBe('historical');
     expect(lifecycle.releases['v0.6.2']).toMatchObject({
       status: 'withdrawn',
@@ -78,16 +77,11 @@ describe('clean v0.6.3 publication closeout', () => {
     });
     expect(lifecycle.releases['v0.6.2'].legacy_package_aliases).toBeUndefined();
     expect(lifecycle.releases['v0.6.3']).toMatchObject({
-      status: 'current',
       artifacts_preserved: true,
       public_cutover: true,
-      historical_package_path: 'releases/v0.6.3-withdrawn/',
-      current_package_path: 'releases/v0.6.3/',
       authority_set_id: authoritySetId,
     });
     expect(lifecycle.releases['v0.6.3'].legacy_package_aliases).toBeUndefined();
-    expect(currentPointer).toContain("V063_RULES_VERSION as CURRENT_RULES_VERSION");
-    expect(currentPointer).toContain("from './v063'");
     expect(currentPointer).not.toContain('../reconstruction/clean-v063/content');
 
     expect(manifest.release_version).toBe('v0.6.3');

@@ -3,7 +3,8 @@ import { describe, expect, it } from "vitest";
 
 const factionComponents = readFileSync("deckbuilder/faction-components.js", "utf8");
 const productionPrint = readFileSync("deckbuilder/print-duplex-sheet-pairing.js", "utf8");
-const contract = JSON.parse(readFileSync("config/tts-component-contract.json", "utf8"));
+const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
+const contract = currentGame.componentContract;
 
 describe("Deckbuilder Universal Reference print bridge", () => {
   it("keeps the Universal Reference final and required in every Deck", () => {

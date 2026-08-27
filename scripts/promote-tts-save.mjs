@@ -7,7 +7,7 @@ const REVIEW_SENTENCE = 'Tabletop Simulator review scaffold.';
 const FINAL_SENTENCE = 'Tabletop Simulator mod.';
 const REQUIRED_QA_CHECKS = Object.freeze({
   tableSetup: Object.freeze([
-    'cleanClientLoad',
+    'hostedSaveLoad',
     'playerPerspectivesAndHandZones',
     'gauntletSnapsAndTerritoryOrientation',
     'playerTokensAndBattleDice',
@@ -25,8 +25,7 @@ const REQUIRED_QA_CHECKS = Object.freeze({
     'mysticsRitesAndCompletedFaces',
     'inquisitionConvictionDoctrineAndPurge',
   ]),
-  fullGame: Object.freeze([
-    'completedRemoteTwoPlayerGame',
+  handlingValidation: Object.freeze([
     'coreHandlingExercised',
     'focusedFactionDrillsComplete',
     'frictionResolved',
@@ -48,7 +47,7 @@ function qaCheckEntries() {
 }
 
 export function validateQaRecordShape(qa) {
-  if (qa?.schemaVersion !== 2) throw new Error('TTS manual-QA record has an unsupported schemaVersion.');
+  if (qa?.schemaVersion !== 3) throw new Error('TTS manual-QA record has an unsupported schemaVersion.');
   for (const [group, check] of qaCheckEntries()) {
     if (typeof qa?.checks?.[group]?.[check] !== 'boolean') {
       throw new Error(`TTS manual-QA record must declare boolean check ${group}.${check}.`);

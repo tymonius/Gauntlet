@@ -2,14 +2,13 @@ import { createServer } from 'node:http';
 import { mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { extname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { readCurrentJsonSource, CURRENT_GAME_MANIFEST_SOURCE } from './current-game-authority.mjs';
+import { loadCurrentGameAuthority, CURRENT_GAME_AUTHORITY_SOURCE } from './current-game-authority.mjs';
+import { normalizeV063CardForPresentation } from '../card-design/v063-card-heading-normalizer.js';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const OUTPUT = join(ROOT, 'card-design', 'generated', 'v064-card-candidates');
 const CARD_WIDTH = 240;
 const CARD_HEIGHT = 336;
-const EXPECTED_CANDIDATE_COUNT = 15;
-const EXPECTED_RETIREMENT_COUNT = 1;
 const EXPECTED_CATALOG_COUNT = 142;
 
 function slugify(value) {
@@ -48,21 +47,16 @@ async function startStaticServer() {
   return { server, baseUrl: `http://127.0.0.1:${server.address().port}` };
 }
 
-function validateSource(source, manifest) {
-  if (source.version !== manifest.version || source.base_version !== manifest.baseVersion) {
-    throw new Error('Card render validation source does not match the current-game authority.');
+function validateAuthority(authority) {
+  const cards = authority.gameplay?.cards;
+  if (authority.version !== 'v0.7.0' || !Array.isArray(cards) || cards.length !== EXPECTED_CATALOG_COUNT) {
+    throw new Error('Card render validation requires the complete v0.7.0 current-game authority.');
   }
-  if (!Array.isArray(source.cards) || source.cards.length !== EXPECTED_CANDIDATE_COUNT) {
-    throw new Error(`Expected ${EXPECTED_CANDIDATE_COUNT} current card changes.`);
+  if (cards.some(card => card.id === 'inquisition-no-martyrs')) {
+    throw new Error('Retired No Martyrs remains in the current playable-card pool.');
   }
-  if (!Array.isArray(source.retired_cards) || source.retired_cards.length !== EXPECTED_RETIREMENT_COUNT) {
-    throw new Error(`Expected ${EXPECTED_RETIREMENT_COUNT} retired base card.`);
-  }
-  if (source.retired_cards[0]?.id !== 'inquisition-no-martyrs') {
-    throw new Error('Current card resolution validation expects No Martyrs to be the retired base card.');
-  }
-  if (source.target_pool_sizes?.total_playable_cards !== EXPECTED_CATALOG_COUNT) {
-    throw new Error(`Expected current catalog target ${EXPECTED_CATALOG_COUNT}.`);
+  if (!cards.some(card => card.id === 'inquisition-malleus-maleficarum')) {
+    throw new Error('Malleus Maleficarum is missing from the current playable-card pool.');
   }
 }
 
@@ -71,8 +65,10 @@ async function main() {
   try { ({ chromium } = await import('playwright')); }
   catch { throw new Error('Playwright is required.'); }
 
-  const { manifest, source: sourcePath, data: source } = await readCurrentJsonSource('cardChanges');
-  validateSource(source, manifest);
+  const authority = await loadCurrentGameAuthority();
+  validateAuthority(authority);
+  const sourcePath = CURRENT_GAME_AUTHORITY_SOURCE;
+  const source = { cards: authority.gameplay.cards };
   await rm(OUTPUT, { recursive: true, force: true });
   await mkdir(OUTPUT, { recursive: true });
 
@@ -148,7 +144,7 @@ async function main() {
       if (!Number.isFinite(metric.rulesScale) || metric.rulesScale <= 0) {
         throw new Error(`Invalid rules scale for ${sourceCard.name}: ${JSON.stringify(metric)}.`);
       }
-      if (metric.gameVersion !== manifest.displayVersion
+      if (metric.gameVersion !== authority.displayVersion
         || metric.sourceHierarchy?.[0] !== '/game-data/current-game.json') {
         throw new Error(`Current card render is not using the current-game authority: ${JSON.stringify(metric)}.`);
       }
@@ -156,7 +152,7 @@ async function main() {
         throw new Error(`Arcane title marker mismatch for ${sourceCard.name}: ${JSON.stringify(metric)}.`);
       }
 
-      const expectedLabels = sourceCard.effects.map(effect => effect.label);
+      const expectedLabels = normalizeV063CardForPresentation(sourceCard).effects.map(effect => effect.label);
       if (JSON.stringify(metric.labels) !== JSON.stringify(expectedLabels)) {
         throw new Error(`Current card effect headings drifted for ${sourceCard.name}: ${JSON.stringify(metric.labels)}.`);
       }
@@ -170,10 +166,8 @@ async function main() {
     }
 
     await writeFile(join(OUTPUT, 'metrics.json'), `${JSON.stringify({
-      authority: CURRENT_GAME_MANIFEST_SOURCE,
+      authority: CURRENT_GAME_AUTHORITY_SOURCE,
       source: sourcePath,
-      candidateCount: EXPECTED_CANDIDATE_COUNT,
-      retirementCount: EXPECTED_RETIREMENT_COUNT,
       catalogCount: EXPECTED_CATALOG_COUNT,
       cards: metrics,
     }, null, 2)}\n`);

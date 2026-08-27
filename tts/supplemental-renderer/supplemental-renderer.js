@@ -2,6 +2,7 @@ import {
   fitReferenceCard,
   referenceCardMarkup,
 } from '/card-design/reference-card.js';
+import { materializeGauntletEmblem } from './gauntlet-emblem.js';
 
 const params = new URLSearchParams(window.location.search);
 const componentId = params.get('component') || '';
@@ -137,6 +138,13 @@ function referenceFitDiagnostics(card, result) {
   return `scale=${Number(result.scale).toFixed(3)} gap=${Number(result.sectionGap).toFixed(3)}in body=${bodyMetrics} panels=[${panelMetrics}]`;
 }
 
+async function materializeReferenceEmblem(card, record) {
+  if (record.id !== 'universal-reference') return;
+  const slot = card.querySelector('.reference-faction-emblem');
+  if (!slot) throw new Error(`Reference card ${record.id} has no emblem slot.`);
+  await materializeGauntletEmblem(slot);
+}
+
 function renderReference(record, sideName, gameVersion) {
   if (!record.faces?.[sideName]) throw new Error(`Reference card ${record.id} has no ${sideName} face.`);
   target.innerHTML = referenceCardMarkup(record, sideName, { version: gameVersion });
@@ -148,6 +156,7 @@ function renderReference(record, sideName, gameVersion) {
 
   requestAnimationFrame(async () => {
     try {
+      await materializeReferenceEmblem(card, record);
       if (document.fonts?.ready) await document.fonts.ready;
       const result = fitReferenceCard(card);
       if (result.overflow) {
@@ -167,9 +176,6 @@ async function main() {
   const record = (catalog.ready || []).find(item => item.id === componentId);
   if (!record) throw new Error(`Unknown ready supplemental component: ${componentId || 'missing'}`);
 
-  // TTS supplemental records predate the bespoke-copy flag. Infer it from the
-  // dedicated player-aid source path so reference-card presentation selectors
-  // cannot re-filter approved bespoke copy through the old guide-derived map.
   if (record.renderer === 'reference-card' && String(record.source || '').includes('/reference-copy/')) {
     record.copyMode = 'bespoke';
   }

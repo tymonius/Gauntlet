@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 const leaderRedirect = readFileSync("card-design/leaders.html", "utf8");
 const leaderCatalog = readFileSync("card-design/card-review.js", "utf8");
+const currentGame = JSON.parse(readFileSync("game-data/current-game.json", "utf8"));
 const reviewPage = readFileSync("card-design/index.html", "utf8");
 const leaderStyles = readFileSync("card-design/leader-card.css", "utf8");
 const refinementStyles = readFileSync("card-design/card-design-refinement.css", "utf8");
@@ -34,8 +35,9 @@ const leaderNames = [
 
 describe("Leader card design", () => {
   it("uses the shared poker-card shell and mounted portrait frame for all twelve Leaders", () => {
-    for (const name of leaderNames) expect(leaderCatalog).toContain(`name:'${name}'`);
-    expect([...leaderCatalog.matchAll(/name:'(?:General|Commandant|Ambassador|Senator|Banker|Executive|Ranger|Spymaster|Alchemist|Spirit Walker|Grand Inquisitor|Witch Hunter)'/g)]).toHaveLength(12);
+    expect(currentGame.leaders.map((item: any) => item.name)).toEqual(leaderNames);
+    expect(currentGame.leaders).toHaveLength(12);
+    expect(leaderCatalog).toContain("const leaders = current.leaders.filter");
     expect(leaderCatalog).toContain('class="gauntlet-card faction-component-card leader-card');
     expect(leaderCatalog).toContain('class="card-art has-image"');
     expect(leaderStyles).toContain("grid-template-rows: var(--component-heading-height) var(--art-height) auto 0.18in");
@@ -63,19 +65,13 @@ describe("Leader card design", () => {
   });
 
   it("identifies faction, component type, and version in the metadata footer", () => {
-    expect(leaderCatalog).toContain("<span>${esc(l.factionLabel)}</span><span>Leader</span><span>v0.6.3</span>");
+    expect(leaderCatalog).toContain('<span>${esc(leader.factionLabel)}</span><span>Leader</span><span>${esc(version)}</span>');
     expect(leaderCatalog).not.toContain("<span>Command</span>");
   });
 
   it("uses full-color production portraits from the main image directory", () => {
-    const portraits = [
-      "general", "commandant", "ambassador", "senator", "banker", "executive",
-      "ranger", "spymaster", "alchemist", "spirit walker", "grand inquisitor", "witch hunter",
-    ];
-    for (const portrait of portraits) {
-      expect(leaderCatalog).toContain(`../images/${portrait}.png`);
-      expect(leaderCatalog).not.toContain(`../images/sketches/${portrait}.png`);
-    }
+    expect(currentGame.leaders.every((item: any) => /^\/images\//.test(item.image))).toBe(true);
+    expect(JSON.stringify(currentGame.leaders)).not.toContain("/images/sketches/");
     expect(leaderStyles).toContain("filter: none");
     expect(leaderStyles).toContain("mix-blend-mode: normal");
   });
@@ -86,7 +82,7 @@ describe("Leader card design", () => {
       expect(symbol.source).toContain('<svg');
       expect(symbol.source).toMatch(/viewBox="[^"]+"/);
       expect(leaderStyles).toContain(`url("../images/faction-symbols/${symbol.name}.svg")`);
-      expect(leaderCatalog).toContain(`faction:'${symbol.name}'`);
+      expect(currentGame.leaders.some((item: any) => item.faction === symbol.name)).toBe(true);
     }
     expect(leaderCatalog).toContain('class="leader-faction-emblem"');
     expect(leaderStyles).toContain("-webkit-mask: var(--faction-symbol)");
@@ -112,14 +108,15 @@ describe("Leader card design", () => {
   });
 
   it("preserves the exact current Military Orders", () => {
-    expect(leaderCatalog).toContain("Onward");
-    expect(leaderCatalog).toContain("before a pending battle is created");
-    expect(leaderCatalog).toContain("Rally");
-    expect(leaderCatalog).toContain("Rout");
-    expect(leaderCatalog).toContain("Entrench");
-    expect(leaderCatalog).toContain("Repel");
-    expect(leaderCatalog).toContain("Fortify");
-    expect(leaderCatalog).toContain("advance your Front Line by one Territory, if able");
+    const military = currentGame.leaders.filter((item: any) => item.faction === "military");
+    const generalOrders = military.find((item: any) => item.id === "general")?.sections
+      .find((section: any) => section.name === "Orders")?.items || [];
+    const commandantOrders = military.find((item: any) => item.id === "commandant")?.sections
+      .find((section: any) => section.name === "Orders")?.items || [];
+    expect(generalOrders.map((item: any) => item.name)).toEqual(["Onward", "Rally", "Rout"]);
+    expect(commandantOrders.map((item: any) => item.name)).toEqual(["Entrench", "Repel", "Fortify"]);
+    expect(JSON.stringify(military)).not.toMatch(/pending battle/i);
+    expect(JSON.stringify(commandantOrders)).toContain("Advance your Front Line by one Territory, if able");
     expect(leaderStyles).toContain("grid-template-columns: 0.63in minmax(0, 1fr)");
   });
 

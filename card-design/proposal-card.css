@@ -29,6 +29,11 @@
   font-size: 13.4pt;
   letter-spacing: 0.035em;
   line-height: 0.88;
+  /* The shared production fitter detects horizontal title overflow and reduces
+     type to the declared title floor. Keep Proposal titles on one line so a
+     long name cannot wrap into the fixed component-heading band and clip
+     vertically without triggering that fitter. */
+  white-space: nowrap;
 }
 
 .proposal-card.long-title .card-title {

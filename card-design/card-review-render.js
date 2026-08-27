@@ -6,6 +6,7 @@ await (async () => {
   const params = new URLSearchParams(window.location.search);
   const cardId = params.get('card');
   const productionFit = params.get('fit') === 'production';
+  const versionOverride = String(params.get('version') || '').trim();
   const target = document.getElementById('renderTarget');
 
   function sectionsFromEffects(effects) {
@@ -97,7 +98,7 @@ await (async () => {
     const sourceCard = currentGame.findCard(cardId);
     if (!sourceCard) throw new Error(`Unknown current card: ${cardId}`);
 
-    const displayVersion = await resolveDisplayVersion(currentGame);
+    const displayVersion = versionOverride || await resolveDisplayVersion(currentGame);
     const card = normalizeV063CardForPresentation(sourceCard);
     const faction = slugify(card.allegiance);
     const artwork = await resolveFirstArtwork(card, faction, imageExists);

@@ -60,8 +60,8 @@ async function startStaticServer() {
   return { server, baseUrl: `http://127.0.0.1:${server.address().port}` };
 }
 
-function leaderSelector(leader) {
-  return `#${leader.faction}-${leader.id} .gauntlet-card`;
+function leaderSelector() {
+  return '#renderTarget > .leader-card';
 }
 
 function pngDimensions(buffer) {
@@ -71,19 +71,6 @@ function pngDimensions(buffer) {
   return { width: buffer.readUInt32BE(16), height: buffer.readUInt32BE(20) };
 }
 
-async function applyReleaseVersion(page, displayVersion) {
-  const updated = await page.evaluate((version) => {
-    const cards = Array.from(document.querySelectorAll('#leaderReviewSections .leader-card'));
-    for (const card of cards) {
-      const footer = card.querySelectorAll('.card-footer span');
-      const versionNode = footer.item(footer.length - 1);
-      if (versionNode) versionNode.textContent = version;
-    }
-    return cards.length;
-  }, displayVersion);
-  if (!updated) throw new Error('Production Leader surface contained no cards to stamp with the TTS release version.');
-}
-
 async function validateLeader(page, leader, displayVersion) {
   const selector = leaderSelector(leader);
   const card = page.locator(selector);
@@ -91,16 +78,28 @@ async function validateLeader(page, leader, displayVersion) {
 
   const metrics = await card.evaluate((element) => {
     const rect = element.getBoundingClientRect();
-    const title = element.querySelector('.card-title')?.textContent?.trim() || '';
+    const titleNode = element.querySelector('.card-title');
+    const rulesNode = element.querySelector('.card-rules');
+    const interior = element.querySelector('.card-interior');
+    const footerNode = element.querySelector('.card-footer');
     const image = element.querySelector('.card-art img');
     const footer = Array.from(element.querySelectorAll('.card-footer span')).map((node) => node.textContent?.trim() || '');
+    const overflows = node => Boolean(node) && (
+      node.scrollWidth > node.clientWidth + 1 || node.scrollHeight > node.clientHeight + 1
+    );
     return {
       width: rect.width,
       height: rect.height,
       faction: element.dataset.faction,
-      title,
+      title: titleNode?.textContent?.trim() || '',
+      titleFit: element.dataset.titleFit === 'true',
       fitWarning: element.classList.contains('fit-warning'),
+      titleOverflow: overflows(titleNode),
+      rulesOverflow: overflows(rulesNode),
+      interiorOverflow: overflows(interior),
+      footerOverflow: Boolean(interior && footerNode && footerNode.getBoundingClientRect().bottom > interior.getBoundingClientRect().bottom + 1),
       imageLoaded: Boolean(image?.complete && image?.naturalWidth > 0 && image?.naturalHeight > 0),
+      artPosition: image ? window.getComputedStyle(image).objectPosition : '',
       footer,
     };
   });
@@ -111,8 +110,13 @@ async function validateLeader(page, leader, displayVersion) {
   if (metrics.faction !== leader.faction || metrics.title !== leader.name) {
     throw new Error(`Production Leader surface does not match current-game ${leader.faction}:${leader.id}: ${JSON.stringify(metrics)}.`);
   }
-  if (metrics.fitWarning) throw new Error(`Leader content does not fit the approved frame: ${leader.faction}:${leader.id}.`);
+  if (!metrics.titleFit || metrics.fitWarning || metrics.titleOverflow || metrics.rulesOverflow || metrics.interiorOverflow || metrics.footerOverflow) {
+    throw new Error(`Leader content does not fit the approved frame: ${leader.faction}:${leader.id} ${JSON.stringify(metrics)}.`);
+  }
   if (!metrics.imageLoaded) throw new Error(`Leader portrait failed to load: ${leader.faction}:${leader.id}.`);
+  if (!metrics.artPosition) {
+    throw new Error(`Leader portrait has no Card Design artwork composition: ${leader.faction}:${leader.id}.`);
+  }
   if (metrics.footer.at(-1) !== displayVersion) {
     throw new Error(`Leader ${leader.faction}:${leader.id} renders ${metrics.footer.at(-1) || 'no version'} but TTS package displays ${displayVersion}.`);
   }
@@ -181,26 +185,47 @@ async function renderLeaderAssets(release, leaders, componentContract) {
   const page = await context.newPage();
 
   try {
-    await page.goto(`${baseUrl}/card-design/`, { waitUntil: 'load' });
-    await page.waitForSelector('#leaderReviewSections .leader-card');
-    await page.evaluate(async () => document.fonts.ready);
-    await page.waitForFunction(() => Array.from(document.querySelectorAll('#leaderReviewSections .card-art img')).every(
-      (image) => image.complete && image.naturalWidth > 0,
-    ));
-    await page.waitForTimeout(100);
-
-    const fonts = await page.evaluate(() => ({
-      title: document.fonts.check('12px "p22-1722-pro"'),
-      rules: document.fonts.check('12px "adobe-caslon-pro"'),
-    }));
-    if (!fonts.title || !fonts.rules) throw new Error(`Required Leader fonts failed to load: ${JSON.stringify(fonts)}.`);
-
     const displayVersion = release.displayVersion || release.version;
-    await applyReleaseVersion(page, displayVersion);
-
+    let fontsValidated = false;
     const records = [];
+
     for (let index = 0; index < leaders.length; index += 1) {
       const leader = leaders[index];
+      const url = new URL('/card-design/component-print-render.html', baseUrl);
+      url.searchParams.set('kind', 'leader');
+      url.searchParams.set('id', `${leader.faction}-${leader.id}`);
+      url.searchParams.set('side', 'front');
+      url.searchParams.set('orientation', 'portrait');
+      url.searchParams.set('version', displayVersion);
+
+      await page.goto(url.toString(), { waitUntil: 'load' });
+      await page.waitForFunction(() => (
+        document.body.dataset.renderReady === 'true'
+        || document.body.dataset.renderError === 'true'
+      ));
+
+      const state = await page.evaluate(() => ({
+        error: document.body.dataset.renderError === 'true',
+        message: document.body.dataset.renderErrorMessage || '',
+      }));
+      if (state.error) {
+        throw new Error(`Card-design production renderer failed for Leader ${leader.faction}:${leader.id}: ${state.message || 'unspecified renderer error'}`);
+      }
+
+      if (!fontsValidated) {
+        const fonts = await page.evaluate(async () => {
+          await document.fonts.ready;
+          return {
+            title: document.fonts.check('12px "p22-1722-pro"'),
+            rules: document.fonts.check('12px "adobe-caslon-pro"'),
+          };
+        });
+        if (!fonts.title || !fonts.rules) {
+          throw new Error(`Required Leader fonts failed to load: ${JSON.stringify(fonts)}.`);
+        }
+        fontsValidated = true;
+      }
+
       await validateLeader(page, leader, displayVersion);
       const deckId = FIRST_LEADER_DECK_ID + index;
       const faceFile = `leaders/${leader.faction}-${leader.id}.png`;
@@ -242,7 +267,7 @@ async function renderLeaderAssets(release, leaders, componentContract) {
         releasePackageRoot: release.releasePackageRoot,
         publishedVersion: release.publishedVersion || release.version,
       },
-      sourceSurface: 'card-design/',
+      sourceSurface: 'card-design/component-print-render.html',
       componentContract: 'config/tts-component-contract.json',
       output: {
         cardPixels: { width: CARD_WIDTH, height: CARD_HEIGHT },
@@ -298,4 +323,4 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   });
 }
 
-export { applyReleaseVersion, renderLeaderAssets };
+export { renderLeaderAssets };

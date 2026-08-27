@@ -14,7 +14,8 @@ const refinementStyles = readFileSync("card-design/card-design-refinement.css", 
 const factionStyles = readFileSync("card-design/faction-specimens.css", "utf8");
 const territoryStyles = readFileSync("card-design/territory-card.css", "utf8");
 const proposalStyles = readFileSync("card-design/proposal-card.css", "utf8");
-const componentContract = JSON.parse(readFileSync("config/tts-component-contract.json", "utf8"));
+const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
+const componentContract = currentGame.componentContract;
 const deedComponent = componentContract.components.find((component: { id?: string }) => component.id === "financiers-deed");
 
 describe("Financier Deed card", () => {

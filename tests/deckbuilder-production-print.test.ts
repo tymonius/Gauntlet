@@ -13,7 +13,8 @@ const supplementalPrintTransform = readFileSync("deckbuilder/print-capital-ledge
 const cardBackPolicy = readFileSync("deckbuilder/card-back-preview.js", "utf8");
 const duplexTransform = readFileSync("deckbuilder/print-duplex.js", "utf8");
 const analyticsSync = readFileSync("scripts/sync-google-analytics.mjs", "utf8");
-const componentContract = JSON.parse(readFileSync("config/tts-component-contract.json", "utf8"));
+const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
+const componentContract = currentGame.componentContract;
 
 describe("Deckbuilder production printing", () => {
   it("uses shared production renderers for playable cards, Territories, and faction components", () => {

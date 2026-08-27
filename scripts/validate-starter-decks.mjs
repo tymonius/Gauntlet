@@ -3,21 +3,23 @@ import path from "node:path";
 import process from "node:process";
 
 const root = process.cwd();
-const canonicalPath = path.join(root, "releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json");
-const starterPath = path.join(root, "deckbuilder/starter-decks.json");
+const authorityPath = path.join(root, "game-data/current-game.json");
+const authority = JSON.parse(fs.readFileSync(authorityPath, "utf8"));
 
-const canonical = JSON.parse(fs.readFileSync(canonicalPath, "utf8"));
-const starterData = JSON.parse(fs.readFileSync(starterPath, "utf8"));
-const decks = starterData.decks || [];
+if (authority.schemaVersion !== 2 || authority.authority !== "current-game" || authority.version !== "v0.7.0") {
+  throw new Error("Starter Deck validation requires the complete v0.7.0 current-game authority.");
+}
 
-const cardsByName = new Map(canonical.cards.map(card => [card.name, card]));
-const territoriesByName = new Map(canonical.territories.map(territory => [territory.name, territory]));
-const factionsById = new Map(canonical.factions.map(faction => [faction.id, faction]));
-const expectedLeaderPairs = new Set(
-  canonical.factions.flatMap(faction =>
-    faction.leaders.map(leader => `${faction.id}/${slugify(leader.name)}`)
-  )
-);
+const cards = authority.gameplay?.cards || [];
+const territories = authority.gameplay?.territories || [];
+const factions = authority.gameplay?.factions || [];
+const leaders = authority.leaders || [];
+const decks = authority.starterDecks?.decks || [];
+
+const cardsByName = new Map(cards.map(card => [card.name, card]));
+const territoriesByName = new Map(territories.map(territory => [territory.name, territory]));
+const factionsById = new Map(factions.map(faction => [faction.id, faction]));
+const expectedLeaderPairs = new Set(leaders.map(leader => `${leader.faction}/${leader.id}`));
 
 const errors = [];
 const seenIds = new Set();
@@ -34,7 +36,7 @@ for (const deck of decks) {
   if (seenPairs.has(pair)) errors.push(`${label}: duplicate faction/Leader preset.`);
   seenPairs.add(pair);
 
-  if (!expectedLeaderPairs.has(pair)) errors.push(`${label}: does not match a canonical faction Leader.`);
+  if (!expectedLeaderPairs.has(pair)) errors.push(`${label}: does not match a current faction Leader.`);
   if (!faction) {
     errors.push(`${label}: unknown faction.`);
     continue;
@@ -117,13 +119,5 @@ if (errors.length) {
   process.exit(1);
 }
 
-console.log(`\nValidated ${decks.length} recommended v0.6.0 starter Decks.`);
+console.log(`\nValidated ${decks.length} recommended ${authority.version} starter Decks from ${authorityPath}.`);
 console.log("Each preset has 30 cards, 60 value, Basic Neutral cards, and three Basic Territories.");
-
-function slugify(value) {
-  return value
-    .toLowerCase()
-    .normalize("NFKD")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-}

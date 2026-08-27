@@ -21,7 +21,7 @@ describe('Diplomat Proposal artwork resolution', () => {
   it('keeps missing Proposal art as an explicit pending frame', () => {
     expect(renderer).toContain('data-proposal-artwork');
     expect(renderer).toContain('Artwork pending');
-    expect(renderer).toContain('await loadProposalArtwork()');
+    expect(renderer).toContain('await loadProposalArtwork(root)');
     expect(renderer).toContain("figure.classList.add('has-image')");
     expect(renderer).toContain("figure.classList.remove('proposal-art-pending')");
   });

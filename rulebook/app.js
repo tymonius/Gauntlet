@@ -287,12 +287,12 @@ function setRulesetUi(mode, currentGame = null) {
   }
 
   if (candidate) {
-    const label = currentGame?.displayVersion || 'v0.6.4 candidate';
+    const label = currentGame?.displayVersion || 'v0.7.0';
     if (eyebrow) eyebrow.textContent = `Release candidate rules · ${label}`;
-    if (footerVersion) footerVersion.innerHTML = '<strong>Gauntlet v0.6.4 candidate</strong> · Current release-candidate rules view.';
+    if (footerVersion) footerVersion.innerHTML = '<strong>Gauntlet v0.7.0</strong> · Current release-candidate rules view.';
     if (printHeading) printHeading.textContent = 'Release candidate rules';
-    if (printNote) printNote.textContent = 'The current-development Rulebook source is loaded directly. Switch to Released v0.6.3 for the currently published printable booklet.';
-    document.title = 'Gauntlet v0.6.4 Candidate Browser Rulebook';
+    if (printNote) printNote.textContent = 'The complete v0.7.0 Rulebook authority is loaded directly. Switch to Released v0.6.3 for the currently published printable booklet.';
+    document.title = 'Gauntlet v0.7.0 Release Candidate Browser Rulebook';
   } else {
     if (eyebrow) eyebrow.textContent = 'Canonical rules · version 0.6.3';
     if (footerVersion) footerVersion.innerHTML = '<strong>Gauntlet v0.6.3</strong> · Current canonical playtest edition.';
@@ -403,7 +403,7 @@ async function loadCurrentRulebookSource() {
       .then(async (response) => {
         if (!response.ok) throw new Error(`Current Rulebook source returned ${response.status}`);
         const markdown = await response.text();
-        if (!markdown.includes('**Version 0.6.4 — Release Candidate**')) throw new Error('Current Rulebook source has the wrong version marker.');
+        if (!markdown.includes('**Version 0.7.0**')) throw new Error('Current Rulebook source has the wrong version marker.');
         if (!markdown.includes('# 5. Actions, Faction Features, Leader Abilities, and Assets')) throw new Error('Current Rulebook source is missing the Faction Feature chapter.');
         if (!markdown.includes('## Card anatomy')) throw new Error('Current Rulebook source is missing Card anatomy.');
         if (/\bFaction Actions?\b|\bFaction Abilit(?:y|ies)\b|\bfaction procedure\b/iu.test(markdown)) {
@@ -456,7 +456,7 @@ async function renderRulebook(mode) {
       rendered.headings.filter(({ level, id }) => level === 1 && id !== 'gauntlet' && id !== 'official-rulebook').length
     );
     status.textContent = activeMode === CANDIDATE_MODE
-      ? `Release candidate ${currentGame?.displayVersion || 'v0.6.4'} · based on v0.6.3 · ${sectionCount} sections · rules loaded`
+      ? `Release candidate ${currentGame?.displayVersion || 'v0.7.0'} · ${sectionCount} sections · rules loaded`
       : `Canonical v0.6.3 · ${sectionCount} sections · rules loaded`;
   } catch (error) {
     console.error(error);

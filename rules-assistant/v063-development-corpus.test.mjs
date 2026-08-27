@@ -15,7 +15,25 @@ const rulebookMarkdown = await fs.readFile(
   path.join(root, "artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md"),
   "utf8"
 );
-const canonicalJson = await fs.readFile(path.join(root, "v0.6.3/data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json"), "utf8");
+const publishedCanonical = JSON.parse(await fs.readFile(
+  path.join(root, "releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json"),
+  "utf8"
+));
+// The historical candidate route no longer ships a duplicate candidate JSON.
+// Reconstruct the old candidate response from the immutable published v0.6.3
+// payload while restoring only the version marker that the development-corpus
+// validator used during that phase.
+const canonicalJson = JSON.stringify({
+  ...publishedCanonical,
+  version: "v0.6.3-candidate",
+  normalization: {
+    ...(publishedCanonical.normalization || {}),
+    canonical_data_integration: {
+      ...(publishedCanonical.normalization?.canonical_data_integration || {}),
+      published_release: false,
+    },
+  },
+});
 
 // The old /v0.6.3/rulebook/ review route now redirects to the published current
 // Rulebook. Keep this historical candidate parser covered by a deterministic

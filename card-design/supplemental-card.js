@@ -224,7 +224,12 @@ function fitTrackerTitle(card) {
   while (title.scrollWidth > title.clientWidth + 0.5 && fontSize > minimumPx) {
     fontSize = Math.max(minimumPx, fontSize - 0.25);
     title.style.fontSize = `${fontSize}px`;
+    void title.offsetWidth;
   }
+
+  const fits = title.scrollWidth <= title.clientWidth + 0.5;
+  card.dataset.trackerTitleFit = fits ? 'true' : 'false';
+  return fits;
 }
 
 function layoutTrackerCard(card) {
@@ -257,7 +262,30 @@ async function layoutTrackerCards() {
   if (!root) return;
   await new Promise(resolve => requestAnimationFrame(resolve));
   if (document.fonts?.ready) await document.fonts.ready;
-  root.querySelectorAll('.sliding-tracker-card').forEach(layoutTrackerCard);
+  const cards = [...root.querySelectorAll('.sliding-tracker-card')];
+  cards.forEach(layoutTrackerCard);
+  const titleFailures = cards.filter(card => card.dataset.trackerTitleFit !== 'true');
+  if (titleFailures.length) {
+    // The standalone Card Design catalog validates every tracker specimen.
+    // component-print-render.html, however, keeps the entire supplemental
+    // catalog off-screen only as a source pool for one requested component.
+    // Do not let an unrelated hidden tracker abort a Proposal/Rite/Ledger
+    // render. If the requested component is itself a tracker, enforce that
+    // tracker's fit here and component-print-render.js validates it again
+    // before exposing the production face.
+    const params = new URLSearchParams(window.location.search);
+    const isolatedComponentRender = /\/component-print-render\.html$/.test(window.location.pathname);
+    const requestedKind = String(params.get('kind') || '').trim().toLowerCase();
+    const requestedId = String(params.get('id') || '').trim();
+    const enforcedFailures = isolatedComponentRender
+      ? (requestedKind === 'tracker'
+        ? titleFailures.filter(card => card.dataset.componentId === requestedId)
+        : [])
+      : titleFailures;
+    if (enforcedFailures.length) {
+      throw new Error(`Tracker titles cannot fit at the readability floor: ${enforcedFailures.map(card => card.dataset.contractComponentId || card.dataset.componentId).join(', ')}`);
+    }
+  }
   root.dataset.trackerLayoutsReady = 'true';
 }
 

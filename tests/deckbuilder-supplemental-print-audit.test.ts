@@ -1,7 +1,8 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const contract = JSON.parse(readFileSync("config/tts-component-contract.json", "utf8"));
+const currentGame = JSON.parse(readFileSync("game-data/current-game.json", "utf8"));
+const contract = currentGame.componentContract;
 const productionPrint = readFileSync("deckbuilder/print-duplex-sheet-pairing.js", "utf8");
 const compatibilityPrint = readFileSync("deckbuilder/print-capital-ledger.js", "utf8");
 const legacyPrint = readFileSync("deckbuilder/print.js", "utf8");
@@ -40,7 +41,7 @@ describe("Deckbuilder supplemental print audit", () => {
     expect(legacyPackages).toContain('component.deckInclusion === "every-deck"');
     expect(legacyPackages).toContain('Production universal reference card.');
     expect(legacyPackages).toContain('bridgeSharedReferencesIntoPrintAuthority(currentGame)');
-    expect(legacyPackages).toContain('components: Object.freeze([...factionComponents, ...sharedReferences])');
+    expect(legacyPackages).toContain('components: Object.freeze([...factionComponents, ...printSharedReferences])');
   });
 
   it("routes every legacy supplemental card class through production replacement", () => {

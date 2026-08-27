@@ -22,6 +22,20 @@ Generated metadata records both the TTS package version and source/canonical-dat
 
 The runtime does not hard-code starter, card, Leader, or Territory counts.
 
+## Single card-face render authority
+
+All TTS card faces are captured from the production **Card Design** surfaces. TTS owns packaging, not a second visual system:
+
+- playable cards: `card-design/card-review-render.html`;
+- Territories: `card-design/territory-review-render.html`;
+- Leaders, trackers, references, Rites, Proposals/Treaties, Capital Ledger, and Deeds: `card-design/component-print-render.html`.
+
+This means parchment, faction symbols, border colors, artwork framing, reference-card divider policy, the Universal Reference G watermark, typography, and component geometry come from the same CSS/markup that powers `/card-design`. The older standalone TTS render pages are not valid card-face authorities.
+
+The deliberate exception is the printed version footer during a pre-cutover TTS build. Card Design may still identify the source catalog as `v0.6.4 candidate`, while `config/tts-release-target.json` stamps exported TTS faces as `v0.7.0`. No other visual or rules content is overridden during TTS capture.
+
+Landscape presentation is also centralized: Territories and landscape supplementals use the same +90° quarter-turn when their approved 3.5 × 2.5 face is packed into TTS's standard portrait Custom Card cell. Native `SidewaysCard` then supplies the landscape physical orientation in play.
+
 ## Commands
 
 ```bash
@@ -40,14 +54,14 @@ npm run tts:finalized-supplementals
 npm run tts:release:stage
 npm run tts:save
 npm run tts:save:assemble
-npm run tts:save:finalize
+node tts/validate-v070-authoritative-save.mjs
 npm run tts:release:status
 npm run tts:release:strict
 npm run tts:package
 npm run tts:save:promote
 ```
 
-`tts:package` is the complete **Review Scaffold** build. It renders and assembles the package and writes a non-strict readiness report, but it deliberately does not promote the save to final Workshop identity.
+`tts:package` is the complete **Review Scaffold** build. It renders and assembles the package, validates the authoritative save contract, and writes a non-strict readiness report, but it deliberately does not promote the save to final Workshop identity.
 
 `tts:save:promote` is a separate guarded action. It is documented in `tts/SAVE-PUBLISHER.md` and requires clean machine readiness plus the versioned manual-QA gate.
 
@@ -61,7 +75,7 @@ The current generated package contains:
 - 12 starter Bags;
 - 27 ready faction supplemental component definitions;
 - 68 supplemental object copies assembled across the starter Bags; and
-- 73 staged network assets.
+- 75 staged network assets.
 
 Those counts are observations from the current generated manifests, not constants embedded in the runtime.
 
@@ -111,7 +125,7 @@ Territories and Arenas use the current landscape production surface.
 - 560 × 400 pixels per Territory;
 - 7 × 4 sheet geometry;
 - deterministic Territory deck IDs beginning in their reserved range;
-- landscape presentation in the generated save; and
+- standard `CardCustom` scale with landscape presentation in the generated save; and
 - universal black hidden back in starter packages.
 
 There is no separate Territory-specific back asset.
@@ -165,11 +179,28 @@ The generated package currently includes six sliding trackers:
 - Intelligence Operation Progress; and
 - Inquisition Conviction.
 
-Tracker snap positions are derived from registration lines on the production component surface rather than maintained in a second faction-specific coordinate table. Their TTS objects are non-stackable and retain the declared cover/pointer relationship.
+Tracker snap positions are derived from registration lines on the production component surface rather than maintained in a second faction-specific coordinate table. `scripts/tts-supplemental-geometry.mjs` owns the single conversion from printed-card geometry to TTS `Custom_Tile` geometry, including the card-sized tile footprint, rounded-rectangle tile type, and local snap coordinates. The assembler writes that final geometry directly into each tracker object; no post-generation physical correction pass exists.
 
 The Intelligence trackers share a nested assembly while remaining independently draggable through separate layers/tags.
 
 See `docs/tts-sliding-trackers.md` for the implementation contract.
+
+## Financiers Capital Ledger in TTS
+
+The Financiers' physical Capital Ledger remains the visible component in TTS; there is no separate Capital Counter. When the Ledger is removed from the starter Bag it exposes an **OPEN LEDGER** interaction and a public parchment-style transaction window.
+
+The TTS Ledger:
+
+- begins at the rules-authoritative Opening Capital of **2**;
+- records transaction description, signed change, and running Balance;
+- calculates the running balance automatically while allowing Capital to exceed the separate Capital Limit temporarily;
+- prevents a posted transaction from taking Capital below 0;
+- provides 11 transaction rows per page, matching the physical ledger;
+- can turn to additional pages without discarding prior history;
+- supports Previous/Next page navigation and Undo Last Entry; and
+- persists the ledger pages, current page, and draft fields through the object's native TTS save state.
+
+The existing Capital Limit sliding tracker remains independent and continues to show the derived limit. The Ledger is the authoritative current-Capital record and audit trail; the script performs bookkeeping arithmetic but does not automate income, spending, purchases, or other game rules.
 
 ## Supplemental save assembly contract
 
@@ -177,23 +208,21 @@ See `docs/tts-sliding-trackers.md` for the implementation contract.
 
 Assembly is idempotent. Generated supplemental objects carry a `gauntlet:supplemental:<component-id>` marker, so a rebuild removes prior generated supplementals before inserting the current set while leaving the base Deck, Leader, and Territories intact.
 
-The current package assembles 68 expected supplemental copies across the 12 starter Bags.
-
-`scripts/finalize-tts-save.mjs` then applies final object-presentation adjustments, including the sideways orientation for landscape supplemental cards.
+The current package assembles 68 expected supplemental copies across the 12 starter Bags. Landscape supplemental cards are created at standard `CardCustom` scale and final landscape orientation. Sliding trackers are created at their final `Custom_Tile` geometry and snap registration from the shared geometry contract.
 
 ## Review Scaffold contract
 
 `scripts/generate-tts-save.mjs` creates a two-player Review Scaffold with:
 
-- Red and Blue hand zones;
+- White and Green hand/reserve zones;
 - six center-line Gauntlet snap points;
 - one battle d6 per player;
 - one Player Token per player; and
 - one selectable starter Bag for every current starter.
 
-The base scaffold is assembled with faction supplementals and finalized before readiness reporting.
+The base scaffold receives the authoritative table layout, is assembled with faction supplementals, and is then validated by `tts/validate-v070-authoritative-save.mjs`. Validation is fail-closed: it checks the generated save as written and does not repair object geometry.
 
-Behavioral tests construct the returned save JSON and verify the core table structure, starter core contents, landscape Territory presentation, and HTTPS custom-object URLs. Actual TTS usability still requires in-game QA.
+Behavioral tests construct the returned save JSON and verify the core table structure, starter core contents, landscape Territory presentation, supplemental packaging, tracker geometry, and HTTPS custom-object URLs. Actual TTS usability still requires in-game QA.
 
 ## Machine readiness
 
@@ -201,7 +230,7 @@ Behavioral tests construct the returned save JSON and verify the core table stru
 
 The readiness pass verifies generated component coverage, starter supplemental quantities, and hosted object URL structure. For the current v0.7.0 package it reports 27/27 ready component definitions and 68/68 expected assembled supplemental copies.
 
-The Review Scaffold name remains an intentional warning until manual QA and final promotion.
+The generator still emits a Review Scaffold by default so future builds remain fail-closed. For v0.7.0, manual QA and explicit approval completed and the approved hosted save was promoted to final mod identity.
 
 ## Manual QA and final promotion
 
@@ -209,15 +238,15 @@ The versioned manual QA record is:
 
 - `tts/release-qa/v0.7.0.json`
 
-It contains explicit checks for table/setup behavior, each faction component family, and full-game validation. See `tts/SAVE-PUBLISHER.md` for the complete gate.
+It contains explicit checks for table/setup behavior, each faction component family, and focused handling validation; a remote two-player game is not required for v0.7.0. See `tts/SAVE-PUBLISHER.md` for the complete gate.
 
-The committed record remains pending. `npm run tts:save:promote` refuses to create final Workshop identity unless machine readiness is clean, every required manual check is true, and `approvedForWorkshop` is explicitly true.
+For v0.7.0, all 18 required manual checks passed, the QA record is `passed`, and `approvedForWorkshop` is explicitly `true`. `npm run tts:save:promote` remains the guarded mechanism for producing final Workshop identity and continues to refuse promotion unless machine readiness and approval are complete.
 
 ## GitHub Release asset hosting
 
 `scripts/stage-tts-release-assets.mjs` copies only network assets required by TTS into `tts/generated/release-assets/`, assigns deterministic `Gauntlet_v0.7.0_TTS_*` names, records byte sizes and SHA-256 digests, and generates public GitHub Release download URLs.
 
-The current package stages 73 network assets under the v0.7.0 target. Generated TTS saves reference those staged HTTPS URLs rather than local paths.
+The current package stages 75 network assets under the v0.7.0 target, including the custom campaign-table image and command-tent panorama. Development/QA builds use staged immutable HTTPS assets; the published v0.7.0 Workshop save uses the approved `gauntlet.run/tts/v0.7.0/` Pages-hosted asset set.
 
 Publication remains explicit. The **Generate TTS card assets** workflow can be dispatched from `main` with `publish_release_assets` enabled only after the matching GitHub Release exists. The workflow uploads the deterministic assets without moving the release tag and then verifies every published URL with live HTTP requests.
 
@@ -225,11 +254,11 @@ The workflow intentionally does not create a GitHub Release itself.
 
 ## Workshop publication
 
-Draft Workshop copy, setup notes, pre-publication gates, and post-publication clean-client verification are maintained in:
+Workshop copy, setup notes, publication-gate history, listing images, and post-publication verification are maintained in:
 
 - `tts/WORKSHOP-PUBLISHING.md`
 
-The Workshop preview image remains a separate explicit visual task and is not generated by the packaging pipeline.
+The v0.7.0 mod is public at https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635. Its primary listing image is the production CSS-composited universal black card back, with the gameplay screenshot retained as a secondary image. The subscribed public copy has passed its post-publication smoke test.
 
 ## Generated output
 
@@ -240,3 +269,5 @@ Derived output is ignored by Git and written under:
 - `tts/generated/release-assets/` for deterministic hosted assets.
 
 Pull-request CI uploads the generated tree as the `gauntlet-current-tts-card-assets` artifact rather than committing derived PNGs and save JSON.
+
+For TTS-affecting pull requests, the workflow also publishes those staged network assets to an ephemeral prerelease named `tts-<version>-qa-pr-<number>` and uploads a rewritten `Gauntlet_<version>_TTS_PR<number>_Preview.json`. That preview save points only at the prerelease assets, so live TTS QA does not depend on unpublished production-release files or manual local image loading.

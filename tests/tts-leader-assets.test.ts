@@ -12,18 +12,21 @@ describe('TTS Leader assets', () => {
   it('derives the current Leader roster from the current-game authority', () => {
     expect(catalogSource).toContain('export async function loadCurrentLeaders()');
     expect(catalogSource).toContain('resolveCurrentTtsRelease()');
-    expect(catalogSource).toContain('const sourceLeaders = Array.isArray(manifest.leaders)');
+    expect(catalogSource).toContain('const sourceLeaders = Array.isArray(authority.leaders)');
     expect(catalogSource).toContain('for (const leader of sourceLeaders)');
     expect(exporter).toContain('loadCurrentLeaders');
     expect(exporter).not.toMatch(/v0\.6\.[0-9]+/);
   });
 
-  it('renders the shared production Leader surface instead of duplicating Leader rules', () => {
-    expect(exporter).toContain("page.goto(`${baseUrl}/card-design/`");
-    expect(exporter).toContain("#${leader.faction}-${leader.id} .gauntlet-card");
-    expect(exporter).toContain("document.querySelectorAll('#leaderReviewSections .card-art img')");
+  it('captures the shared Card Design Leader surface instead of duplicating Leader rules or crop logic', () => {
+    expect(exporter).toContain('/card-design/component-print-render.html');
+    expect(exporter).toContain("url.searchParams.set('kind', 'leader')");
+    expect(exporter).toContain("url.searchParams.set('version', displayVersion)");
+    expect(exporter).toContain("return '#renderTarget > .leader-card'");
     expect(exporter).toContain("metrics.footer.at(-1) !== displayVersion");
     expect(exporter).toContain('fitWarning');
+    expect(exporter).not.toContain('GauntletArtworkCrop.apply');
+    expect(exporter).not.toContain('GAUNTLET_ART_DIRECTION');
     expect(exporter).not.toContain('Materia Prima');
     expect(exporter).not.toContain('Guardians of the Circle');
     expect(readme).toContain('does not maintain a second copy of Leader rules or layout');

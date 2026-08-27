@@ -78,7 +78,7 @@ function expectNavigationTargets(file: string, expectedTargets: string[]) {
   }
 }
 
-describe("current v0.6.3 player-site closeout", () => {
+describe("v0.7.0 player-site release preparation", () => {
   it("keeps every static internal link and asset reference on core player pages resolvable", () => {
     for (const file of CORE_PLAYER_HTML) {
       const html = read(file);
@@ -98,7 +98,6 @@ describe("current v0.6.3 player-site closeout", () => {
       expect(text, `${file} exposes an authority-set identifier`).not.toMatch(/authority\s+set/i);
       expect(text, `${file} exposes a raw SHA/hash-like identifier`).not.toMatch(/\b[a-f0-9]{64}\b/i);
       expect(text, `${file} claims publication is still locked`).not.toMatch(/publication\s+(?:remains\s+)?locked/i);
-      expect(text, `${file} still claims v0.6.1 is current`).not.toMatch(/current(?:\s+public)?\s+release(?:\s+remains|:)\s+v0\.6\.1/i);
       expect(text, `${file} exposes downstream-review language`).not.toMatch(/downstream\s+review\s+only/i);
     }
   });
@@ -124,59 +123,74 @@ describe("current v0.6.3 player-site closeout", () => {
     ]);
   });
 
-  it("keeps the Card Reference on current v0.6.3 data without exposing reconstruction UI", () => {
+  it("keeps the Card Reference on current-game authority with v0.7.0 publication identity", () => {
     const html = read("card-reference/index.html");
     const app = read("card-reference/app.js");
 
-    expect(html).toContain("Quick rules lookup · v0.6.3");
-    expect(html).toContain("128 playable cards and 25 Territories");
-    expect(app).toContain("/artifacts/reconstruction/clean-v0.6.3/complete-authority/canonical-structured-data.json");
-    expect(app).toContain("gameplay.cards.length !== 128");
-    expect(app).toContain("gameplay.territories.length !== 25");
-    expect(app).toContain('secondLine?.name !== "Second Line"');
-    expect(app).toContain('smugglersRun?.name !== "Smuggler\'s Run"');
-    expect(app).toContain("const RULEBOOK_URL = '../rulebook/';");
-    expect(app).toContain("const PUBLIC_DATA_EXPORT = '../releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json';");
-    expect(app).not.toContain("../browser-rulebook/");
+    expect(html).toContain("Quick rules lookup · v0.7.0 production");
+    expect(html).toContain("Current v0.7.0 production card reference.");
+    expect(html).toContain("v0.7.0 Release");
+    expect(app).toContain("loadCurrentGame");
+    expect(app).toContain("currentGame.cards");
+    expect(app).toContain("currentGame.territories");
+    expect(app).toContain("loaded from current-game authority");
+    expect(app).not.toContain("/artifacts/reconstruction/clean-v0.6.3/complete-authority/canonical-structured-data.json");
     expect(app).not.toContain("View clean canonical authority");
-    expect(app).not.toContain("This reconstruction");
     expect(app).not.toContain("publication remains locked");
     expect(app).not.toContain("Authority set");
   });
 
-  it("uses the published v0.6.3 Rules Arbiter remotely and preserves local fallback", () => {
+  it("uses the published v0.7.0 Rules Arbiter remotely and preserves immutable local fallback", () => {
     const html = read("rules-arbiter/index.html");
     const app = read("rules-arbiter/app.js");
+    const corpus = read("rules-assistant/v070-public-corpus.js");
+    const workerEntry = read("rules-assistant/worker-entry.js");
 
-    expect(html).toContain("Rules support · v0.6.3");
+    expect(html).toContain("Rules support · v0.7.0");
     expect(html).toContain("Answers include the relevant current Rulebook sources");
-    expect(app).toContain('const CURRENT_PUBLIC_RELEASE = "v0.6.3";');
+    expect(app).toContain('const CURRENT_PUBLIC_RELEASE = "v0.7.0";');
+    expect(app).toContain("../rules-assistant/v070-public-corpus.js");
     expect(app).toContain("payload.published !== true");
     expect(app).toContain("payload.reconstruction !== false");
     expect(app).toContain("payload.currentPublicRelease !== CURRENT_PUBLIC_RELEASE");
     expect(app).toContain("return askLocal(question);");
-    expect(app).toContain('const href = source.sourceUrl || "../rulebook/";');
-    expect(app).not.toContain("Reconstruction worker returned");
-    expect(app).not.toContain("Clean sources");
-    expect(app).not.toContain("certified v0.6.3 authority");
-    expect(app).not.toContain("../browser-rulebook/");
+    expect(corpus).toContain("releases/v0.7.0/Gauntlet_v0.7.0_Rulebook.md");
+    expect(corpus).toContain("releases/v0.7.0/Gauntlet_v0.7.0_Canonical_Data.json");
+    expect(corpus).not.toContain("loadV064CandidateRulesCorpus");
+    expect(workerEntry).toContain('import worker from "./worker-v070.js";');
+    expect(workerEntry).toContain('import v063Worker from "./worker-v063.js";');
   });
 
-  it("keeps the restored Deckbuilder natively identified as current v0.6.3 and bound to current runtime data", () => {
+  it("keeps the Deckbuilder identified as v0.7.0 while runtime data remains current-game authoritative", () => {
     const html = read("deckbuilder/index.html");
     const runtime = read("deckbuilder/v061-runtime.js");
 
-    expect(html).toContain("Gauntlet v0.6.3 Deckbuilder");
-    expect(html).toContain("Playtest tool · canonical v0.6.3");
+    expect(html).toContain("Gauntlet v0.7.0 Deckbuilder");
+    expect(html).toContain("Playtest tool · canonical v0.7.0");
     expect(visibleText(html)).not.toContain("v0.6.1");
-    expect(html).toContain('href="../releases/v0.6.3/"');
+    expect(html).toContain('href="../v0.7.0/"');
     expect(html).not.toContain(`href="${LEGACY_RELEASE_ALIAS}"`);
     expect(html).not.toContain('href="../releases/v0.6.1/"');
-    expect(html).toMatch(/src="v061-runtime\.js(?:\?[^\"]*)?"/);
-    expect(runtime).toContain('const VERSION = "v0.6.3";');
-    expect(runtime).toContain('const CANONICAL_URL = "../releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json";');
-    expect(runtime).toContain('document.title = "Gauntlet v0.6.3 Deckbuilder"');
-    expect(runtime).toContain('.replaceAll("v0.6.1", "v0.6.3")');
-    expect(runtime).toContain('data.gameVersion = VERSION');
+    expect(runtime).toContain('import("../game-data/current-game.mjs")');
+    expect(runtime).toContain("state.currentGameVersion = data.version");
+    expect(runtime).toContain("state.currentGameDisplayVersion = data.displayVersion");
+    expect(runtime).toContain('data.gameVersion = state.currentGameVersion || "current-game"');
+    expect(runtime).toContain('document.title = `Gauntlet ${data.displayVersion} Deckbuilder`');
+    expect(runtime).not.toContain('const CANONICAL_URL = "../releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json";');
+  });
+
+  it("removes stale player-facing v0.6.3/v0.6.4 identity from the promoted surfaces", () => {
+    for (const file of [
+      "index.html",
+      "start/index.html",
+      "card-reference/index.html",
+      "deckbuilder/index.html",
+      "rules-arbiter/index.html",
+      "factions/military/index.html",
+    ]) {
+      const text = visibleText(read(file));
+      expect(text, `${file} still advertises v0.6.3 as current`).not.toMatch(/(?:current|canonical|rules support|playtest tool)[^\n]{0,40}v0\.6\.3/i);
+      expect(text, `${file} still advertises v0.6.4 development identity`).not.toMatch(/v0\.6\.4\s+development/i);
+    }
   });
 });
