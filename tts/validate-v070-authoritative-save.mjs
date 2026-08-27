@@ -165,8 +165,8 @@ function validateHandsAndSeats(save) {
   if (!white || !green) throw new Error('Missing White or Green hand transform.');
 
   const expectedHands = [
-    [white, 'White', -23.25, 180, -18.25],
-    [green, 'Green', 23.25, 0, 18.25],
+    [white, 'White', -23.25, 0, -18.25],
+    [green, 'Green', 23.25, 180, 18.25],
   ];
   for (const [hand, side, z, rotY, parkingZ] of expectedHands) {
     if (!close(hand.Transform?.posX, 0) || !close(hand.Transform?.posY, 4) || !close(hand.Transform?.posZ, z) || !close(hand.Transform?.rotY, rotY)
@@ -198,7 +198,7 @@ function validateHandsAndSeats(save) {
   if (parkingZones.length !== 2 || fogVolumes.length !== 2) {
     throw new Error(`Expected exactly two player-private tabletop parking Hidden Zones; found ${parkingZones.length} parking / ${fogVolumes.length} total hidden zones.`);
   }
-  for (const [side, z, rotY] of [['White', -19, 180], ['Green', 19, 0]]) {
+  for (const [side, z, rotY] of [['White', -19, 0], ['Green', 19, 180]]) {
     const zone = parkingZones.find(object => object.FogColor === side);
     if (!zone || zone.GMNotes !== `${PRIVATE_PARKING_NOTE_PREFIX}${side.toLowerCase()}`
       || zone.FogReverseHiding !== false || zone.FogSeethrough !== true || zone.FogHidePointers !== true || zone.Hands !== false
