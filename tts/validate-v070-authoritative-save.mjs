@@ -77,11 +77,11 @@ function validateEnvironment(save) {
     throw new Error('Authoritative TTS save is not using the custom campaign table / museum-lit panorama environment.');
   }
   if (!/^https:\/\/github\.com\/tymonius\/Gauntlet\/releases\/download\//i.test(tableUrl)
-    || !tableUrl.endsWith('_TTS_Environment_Table.jpg')) {
+    || !tableUrl.endsWith('_TTS_Environment_Table.png')) {
     throw new Error('Campaign table image must use the published GitHub Release environment asset.');
   }
   if (!/^https:\/\/github\.com\/tymonius\/Gauntlet\/releases\/download\//i.test(skyUrl)
-    || !skyUrl.endsWith('_TTS_Environment_Panorama.jpg')) {
+    || !skyUrl.endsWith('_TTS_Environment_Panorama.png')) {
     throw new Error('Command-tent panorama must use the published GitHub Release environment asset.');
   }
   if (tableUrl.includes('raw.githubusercontent.com') || skyUrl.includes('raw.githubusercontent.com')) {
