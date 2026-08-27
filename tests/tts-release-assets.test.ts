@@ -1,7 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-const stager = readFileSync('scripts/stage-tts-release-assets.mjs', 'utf8');\nconst environmentGenerator = readFileSync('scripts/generate-tts-environment-assets.mjs', 'utf8');
+const stager = readFileSync('scripts/stage-tts-release-assets.mjs', 'utf8');
+const environmentGenerator = readFileSync('scripts/generate-tts-environment-assets.mjs', 'utf8');
 const workflow = readFileSync('.github/workflows/generate-tts-card-assets.yml', 'utf8');
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 const readme = readFileSync('tts/README.md', 'utf8');
@@ -73,6 +74,8 @@ describe('TTS GitHub Release asset hosting', () => {
     const productionPublish = workflow.slice(workflow.indexOf('  publish:'));
     expect(productionPublish).not.toContain('gh release create');
     expect(workflow).toContain('name: Publish TTS PR preview assets');
+    expect(workflow).toContain('Prepare immutable PR-preview asset URLs');
+    expect(workflow).toContain('preview_tag="tts-${version}-qa-pr-${PR_NUMBER}-${HEAD_SHA:0:12}"');
     expect(workflow).toContain('gh release create "$PREVIEW_TAG"');
   });
 
