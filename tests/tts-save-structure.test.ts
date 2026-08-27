@@ -113,7 +113,10 @@ describe('generated TTS table structure', () => {
     const bag = topLevel.find((object) => object.Name === 'Bag');
     expect(bag).toBeTruthy();
     expect(bag.Transform.rotY).toBe(180);
-    expect(bag.ContainedObjects.every((object) => object.Transform?.rotY === 180)).toBe(true);
+    const physicalTerritories = bag.ContainedObjects.filter((object) => /(?:Arena )?Territory$/.test(String(object.Description || '')));
+    const otherObjects = bag.ContainedObjects.filter((object) => !physicalTerritories.includes(object));
+    expect(physicalTerritories.every((object) => object.Transform?.rotY === 180)).toBe(true);
+    expect(otherObjects.every((object) => object.Transform?.rotY === (object.SidewaysCard === true ? 90 : 0))).toBe(true);
     const die = bag.ContainedObjects.filter((object) => object.Name === 'Die_6');
     const token = bag.ContainedObjects.filter((object) => object.Name === 'PlayerPawn');
     expect(die).toHaveLength(1);
