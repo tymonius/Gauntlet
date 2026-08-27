@@ -26,11 +26,11 @@ describe('TTS final save promotion', () => {
     expect(packageJson.scripts['tts:check']).toContain('promote-tts-save.mjs --check');
   });
 
-  it('ships a granular pending v0.7.0 manual-QA record rather than pre-approving Workshop publication', () => {
+  it('tracks the passed v0.7.0 manual-QA record without pre-approving Workshop publication', () => {
     expect(qa).toEqual(expect.objectContaining({
       schemaVersion: 3,
       gameVersion: 'v0.7.0',
-      status: 'in-progress',
+      status: 'passed',
       approvedForWorkshop: false,
     }));
     expect(() => validateQaRecordShape(qa)).not.toThrow();
@@ -39,14 +39,16 @@ describe('TTS final save promotion', () => {
     expect(Object.keys(qa.checks)).toEqual(expectedGroups);
     for (const [group, checks] of Object.entries(REQUIRED_QA_CHECKS)) {
       expect(Object.keys(qa.checks[group])).toEqual([...checks]);
-      for (const check of checks) {
-        const expected = group === 'tableSetup' && check === 'hostedSaveLoad';
-        expect(qa.checks[group][check]).toBe(expected);
-      }
     }
     expect(Object.values(REQUIRED_QA_CHECKS).flat()).toHaveLength(18);
     expect(qa.checks.fullGame).toBeUndefined();
+    expect(Object.values(qa.checks.tableSetup).every((value) => value === true)).toBe(true);
+    expect(Object.values(qa.checks.factionComponents).every((value) => value === true)).toBe(true);
+    expect(Object.values(qa.checks.handlingValidation).every((value) => value === true)).toBe(true);
     expect(qa.notes.some((note) => /hosted gauntlet\.run/i.test(note))).toBe(true);
+    expect(qa.notes.some((note) => /White\/Green perspectives/i.test(note))).toBe(true);
+    expect(qa.notes.some((note) => /All nine faction-component QA checks passed/i.test(note))).toBe(true);
+    expect(qa.notes.some((note) => /Focused handling validation passed/i.test(note))).toBe(true);
     expect(qa.notes.some((note) => /remote two-player game is not required/i.test(note))).toBe(true);
   });
 
@@ -60,9 +62,13 @@ describe('TTS final save promotion', () => {
 
   it('refuses promotion at the first incomplete granular QA check', () => {
     const readiness = { gameVersion: 'v0.7.0', machineReady: true, blockers: [] };
-    expect(() => validatePromotionGate({ release, readiness, qa })).toThrow(/tableSetup\.playerPerspectivesAndHandZones/);
 
     const almostComplete = completedQa();
+    almostComplete.checks.handlingValidation.coreHandlingExercised = false;
+    expect(() => validatePromotionGate({ release, readiness, qa: almostComplete }))
+      .toThrow(/handlingValidation\.coreHandlingExercised/);
+
+    almostComplete.checks.handlingValidation.coreHandlingExercised = true;
     almostComplete.checks.factionComponents.intelligenceNestedOperationStack = false;
     expect(() => validatePromotionGate({ release, readiness, qa: almostComplete }))
       .toThrow(/factionComponents\.intelligenceNestedOperationStack/);
