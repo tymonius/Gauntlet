@@ -2,7 +2,7 @@
   "schema_version": 2,
   "release_version": "v0.7.0",
   "source_version": "v0.7.0",
-  "authority_set_id": "27710ad754929498a9bb1b94c0f63d11c3d778d4a5d9b42ff340f4aa8764b09b",
+  "authority_set_id": "31156f29d3f4aef875c51d9f591ff9606db9a0540e74f090b512be662fdc907b",
   "current_game_authority": "game-data/current-game.json",
   "current_rulebook_authority": "rulebook/player-facing/current-rulebook.md",
   "historical_derivation": {

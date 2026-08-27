@@ -4605,7 +4605,7 @@
   "component_contract": {
     "schemaVersion": 1,
     "standardBack": {
-      "mode": "faction",
+      "mode": "universal-black",
       "allowedModes": [
         "faction",
         "universal-black"
@@ -4619,7 +4619,7 @@
         "inquisition"
       ],
       "universalVariant": "intelligence",
-      "note": "The current package preserves faction-colored backs. Changing mode to universal-black makes every standardBack component use the existing black Intelligence back without changing component definitions."
+      "note": "The current package uses the universal black Gauntlet back for playable cards and Territories. Leaders and other single-sided faction components use their faction-color Gauntlet backs according to their component policy."
     },
     "canonicalFamilies": {
       "playable-card": {
@@ -4672,8 +4672,8 @@
         "backPolicy": "twoSided",
         "reverse": "Results & Control",
         "copyMode": "bespoke",
-        "source": "card-design/reference-copy/v0.6.3/universal-reference.md",
-        "authoritySource": "artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md",
+        "source": "card-design/reference-copy/v0.7.0/universal-reference.md",
+        "authoritySource": "rulebook/player-facing/current-rulebook.md",
         "referenceFaces": {
           "front": {
             "title": "Turn & Battle",
@@ -4815,18 +4815,18 @@
         "backPolicy": "twoSided",
         "reverse": "Outcomes & Treaties",
         "copyMode": "bespoke",
-        "source": "card-design/reference-copy/v0.6.3/diplomat-reference.md",
-        "authoritySource": "artifacts/reconstruction/clean-v0.6.3/faction-guides/diplomat/Gauntlet_v0.6.3_Diplomat_Faction_Guide.md",
+        "source": "card-design/reference-copy/v0.7.0/diplomat-reference.md",
+        "authoritySource": "game-data/current-game.json",
         "referenceFaces": {
           "front": {
             "title": "Terms",
             "sections": [
               {
-                "heading": "Influence",
+                "heading": "Offering Terms",
                 "depth": 3
               },
               {
-                "heading": "Offer Terms",
+                "heading": "Diplomat Mirror",
                 "depth": 3
               },
               {
@@ -4836,10 +4836,6 @@
               {
                 "heading": "Refused",
                 "depth": 3
-              },
-              {
-                "heading": "Diplomat Mirror",
-                "depth": 3
               }
             ]
           },
@@ -4847,7 +4843,7 @@
             "title": "Outcomes & Treaties",
             "sections": [
               {
-                "heading": "Refused Result",
+                "heading": "After Refused Terms",
                 "depth": 3
               },
               {
@@ -4860,10 +4856,6 @@
               },
               {
                 "heading": "Peace Treaty",
-                "depth": 3
-              },
-              {
-                "heading": "Action Reminder",
                 "depth": 3
               }
             ]
@@ -5029,8 +5021,8 @@
         "backPolicy": "twoSided",
         "reverse": "Deeds & Spending",
         "copyMode": "bespoke",
-        "source": "card-design/reference-copy/v0.6.3/financier-reference.md",
-        "authoritySource": "artifacts/reconstruction/clean-v0.6.3/faction-guides/financier/Gauntlet_v0.6.3_Financier_Faction_Guide.md",
+        "source": "card-design/reference-copy/v0.7.0/financier-reference.md",
+        "authoritySource": "game-data/current-game.json",
         "referenceFaces": {
           "front": {
             "title": "Capital & Capacity",
@@ -5155,8 +5147,8 @@
         "backPolicy": "twoSided",
         "reverse": "Special Operations",
         "copyMode": "bespoke",
-        "source": "card-design/reference-copy/v0.6.3/intelligence-mission-reference.md",
-        "authoritySource": "artifacts/reconstruction/clean-v0.6.3/faction-guides/intelligence/Gauntlet_v0.6.3_Intelligence_Faction_Guide.md",
+        "source": "card-design/reference-copy/v0.7.0/intelligence-mission-reference.md",
+        "authoritySource": "game-data/current-game.json",
         "referenceFaces": {
           "front": {
             "title": "Missions",
@@ -5213,8 +5205,8 @@
         "backPolicy": "twoSided",
         "reverse": "Mirrors & Replacements",
         "copyMode": "bespoke",
-        "source": "card-design/reference-copy/v0.6.3/intelligence-operations-reference.md",
-        "authoritySource": "artifacts/reconstruction/clean-v0.6.3/faction-guides/intelligence/Gauntlet_v0.6.3_Intelligence_Faction_Guide.md",
+        "source": "card-design/reference-copy/v0.7.0/intelligence-operations-reference.md",
+        "authoritySource": "game-data/current-game.json",
         "referenceFaces": {
           "front": {
             "title": "Surveillance & Interference",
@@ -5342,8 +5334,8 @@
         "backPolicy": "twoSided",
         "reverse": "Ritual of Ascension",
         "copyMode": "bespoke",
-        "source": "card-design/reference-copy/v0.6.3/mystics-reference.md",
-        "authoritySource": "artifacts/reconstruction/clean-v0.6.3/faction-guides/mystics/Gauntlet_v0.6.3_Mystics_Faction_Guide.md",
+        "source": "card-design/reference-copy/v0.7.0/mystics-reference.md",
+        "authoritySource": "game-data/current-game.json",
         "referenceFaces": {
           "front": {
             "title": "Rites & Progression",
@@ -5460,8 +5452,8 @@
         "backPolicy": "twoSided",
         "reverse": "Blasphemy & Purification",
         "copyMode": "bespoke",
-        "source": "card-design/reference-copy/v0.6.3/inquisition-doctrine-reference.md",
-        "authoritySource": "artifacts/reconstruction/clean-v0.6.3/faction-guides/inquisition/Gauntlet_v0.6.3_Inquisition_Faction_Guide.md",
+        "source": "card-design/reference-copy/v0.7.0/inquisition-doctrine-reference.md",
+        "authoritySource": "game-data/current-game.json",
         "referenceFaces": {
           "front": {
             "title": "Conviction & Condemnation",
@@ -5510,8 +5502,8 @@
         "backPolicy": "twoSided",
         "reverse": "Purge Timing & Limits",
         "copyMode": "bespoke",
-        "source": "card-design/reference-copy/v0.6.3/inquisition-purge-reference.md",
-        "authoritySource": "artifacts/reconstruction/clean-v0.6.3/faction-guides/inquisition/Gauntlet_v0.6.3_Inquisition_Faction_Guide.md",
+        "source": "card-design/reference-copy/v0.7.0/inquisition-purge-reference.md",
+        "authoritySource": "game-data/current-game.json",
         "referenceFaces": {
           "front": {
             "title": "Purge Menu",
@@ -5589,7 +5581,12 @@
           "snapPositions": "renderer-derived"
         }
       }
-    ]
+    ],
+    "effectiveBackPolicy": {
+      "standardBack": "universal-black",
+      "factionComponentBack": "faction",
+      "note": "Playable cards and Territories use the universal black Gauntlet back. Leaders and other single-sided faction components use their faction-color Gauntlet back. Intrinsically two-sided components retain their reverse face."
+    }
   },
   "faction_feature_taxonomy": {
     "factionFeature": "A named faction-specific rule, option, procedure, passive effect, or special mechanic shared by the faction. The term does not imply Action use.",
