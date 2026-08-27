@@ -24,21 +24,29 @@ const finalizerWorkflow = readFileSync('.github/workflows/finalize-v070-publicat
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 
 // Shadow validation keeps the real #894 cutover frozen while exercising the same publication machinery.
-describe('v0.7.0 release candidate boundary', () => {
-  it('keeps v0.7.0 out of immutable publication history before cutover', () => {
-    expect(lifecycle.current_release).toBe('v0.6.3');
-    expect(lifecycle.releases['v0.6.3']).toEqual(expect.objectContaining({
+describe('v0.7.0 publication boundary', () => {
+  it('records v0.7.0 as current and v0.6.3 as historical after cutover', () => {
+    expect(lifecycle.current_release).toBe('v0.7.0');
+    expect(lifecycle.releases['v0.7.0']).toEqual(expect.objectContaining({
       status: 'current',
       public_cutover: true,
+      current_package_path: 'releases/v0.7.0/',
+      publication_date: '2026-08-27',
     }));
-    expect(lifecycle.releases['v0.7.0']).toBeUndefined();
-    expect(githubRelease.historical_releases.some((release: { tag?: string }) => release.tag === 'v0.7.0')).toBe(false);
+    expect(lifecycle.releases['v0.6.3']).toEqual(expect.objectContaining({
+      status: 'historical',
+      public_cutover: false,
+      historical_package_path: 'releases/v0.6.3/',
+    }));
   });
 
-  it('does not prematurely move the published GitHub Release contract', () => {
-    expect(githubRelease.current_release.tag).toBe('v0.6.3');
+  it('moves the published GitHub Release contract to v0.7.0', () => {
+    expect(githubRelease.current_release.tag).toBe('v0.7.0');
     expect(githubRelease.current_release.status).toBe('current');
-    expect(githubRelease.current_release.notes_file).toBe('docs/releases/github/v0.6.3.md');
+    expect(githubRelease.current_release.notes_file).toBe('docs/releases/github/v0.7.0.md');
+    expect(githubRelease.historical_releases.some((release: { tag?: string; status?: string }) =>
+      release.tag === 'v0.6.3' && release.status === 'historical'
+    )).toBe(true);
   });
 
   it('keeps the TTS package and manual-QA records aligned to v0.7.0', () => {
@@ -50,18 +58,17 @@ describe('v0.7.0 release candidate boundary', () => {
     expect(ttsQa.approvedForWorkshop).toBe(true);
   });
 
-  it('uses draft notes as the pre-publication v0.7.0 release surface', () => {
+  it('publishes final v0.7.0 release notes rather than candidate-boundary notes', () => {
     expect(notes).toContain('# Gauntlet v0.7.0 — Illustrated Cards & Tabletop Simulator');
-    expect(notes).toContain('Repository/web cutover in progress · Tabletop Simulator Workshop public');
-    expect(notes).toContain('v0.6.3 remains the current published playtest release');
-    expect(notes).toContain('The Tabletop Simulator publication gate is complete');
+    expect(notes).toContain('Current playtest release · August 27, 2026');
+    expect(notes).toContain('Gauntlet v0.7.0 is the current public playtest edition');
+    expect(notes).toContain('The Browser Rulebook now loads the maintained complete v0.7.0 Rulebook authority directly from the published v0.7.0 release package.');
+    expect(notes).toContain('Gauntlet v0.7.0 is the **current published playtest release**');
     expect(notes).toContain('steamcommunity.com/sharedfiles/filedetails/?id=3790840635');
-    expect(notes).toContain('does not change the repository\'s current published release');
-    expect(notes).not.toContain('Current canonical playtest edition');
+    expect(notes).not.toContain('Repository/web cutover in progress');
+    expect(notes).not.toContain('v0.6.3 remains the current published playtest release');
     expect(notes).toContain('100-page half-letter booklet');
     expect(notes).toContain('50 Letter-landscape sides on 25 physical sheets');
-    expect(notes).toContain('loads the maintained complete v0.7.0 Rulebook authority directly');
-    expect(notes).not.toContain('candidate view is derived from the verified released Rulebook');
   });
   it('materializes v0.7.0 directly from maintained current authorities', () => {
     expect(releaseBuilder).toContain("CURRENT_RULEBOOK_SOURCE = 'rulebook/player-facing/current-rulebook.md'");
@@ -85,7 +92,7 @@ describe('v0.7.0 release candidate boundary', () => {
 
   it('renders the printable Card Anatomy fallback from the live production-card guide', () => {
     expect(bookletRenderer).toContain("import { chromium } from 'playwright'");
-    expect(bookletRenderer).toContain("page.goto('http://127.0.0.1:8000/rulebook/?rules=candidate'");
+    expect(bookletRenderer).toContain("page.goto('http://127.0.0.1:8000/rulebook/'");
     expect(bookletRenderer).toContain(".card-anatomy-guide.markers-positioned .card-anatomy-figure");
     expect(bookletRenderer).toContain('figure.screenshot({ path: CARD_ANATOMY_PATH })');
     expect(bookletRenderer).not.toContain('Promise.all([...document.images]');

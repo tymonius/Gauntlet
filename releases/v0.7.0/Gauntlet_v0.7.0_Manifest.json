@@ -4,7 +4,7 @@
   "name": "Illustrated Cards & Tabletop Simulator",
   "status": "current",
   "authority_set_id": "f473d83b4a349b35a1c309fb6939a434367afa554d0b43ef6e670a80e2d4fe90",
-  "publication_date": null,
+  "publication_date": "2026-08-27",
   "current_package_path": "releases/v0.7.0/",
   "source_provenance": {
     "source_version": "v0.7.0",
@@ -47,7 +47,8 @@
     "website": "v0.7.0",
     "browser_tools": "v0.7.0",
     "rules_arbiter": "v0.7.0",
-    "digital_rules": "v0.7.0"
+    "digital_rules": "v0.7.0",
+    "rulebook": "v0.7.0"
   },
   "public_routes": {
     "start": "/start/",

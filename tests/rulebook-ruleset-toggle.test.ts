@@ -23,21 +23,23 @@ function publicReleasedSource() {
   return `${source.slice(0, start)}${chapter11.trim()}\n\n${source.slice(end)}`;
 }
 
-describe('Browser Rulebook ruleset selector', () => {
-  it('keeps released v0.6.3 as the verified default and exposes a shareable candidate mode', () => {
+describe('Published Browser Rulebook', () => {
+  it('publishes v0.7.0 as the verified default and retires the candidate selector', () => {
     expect(index).toContain('data-ruleset="released" aria-pressed="true"');
-    expect(index).toContain('data-ruleset="candidate" aria-pressed="false"');
-    expect(index).toContain('Release candidate');
-    expect(index).toContain('ruleset-toggle.css');
-    expect(index).not.toContain('data-print-rulebook');
-    expect(app).toContain("params.get('rules') === CANDIDATE_MODE");
-    expect(app).toContain("url.searchParams.set('rules', CANDIDATE_MODE)");
-    expect(app).toContain("url.searchParams.delete('rules')");
-    expect(app).toContain("const SOURCE_SHA256 = '7cca20e8de2eee10332c4e3e82ca5e7abdae3a0af61837bf77caa79ccbc9d643';");
+    expect(index).toContain('data-ruleset="candidate" aria-pressed="false" hidden disabled');
+    expect(index).toContain('Pre-publication view');
+    expect(index).toContain('Published v0.7.0 Rulebook is current.');
+    expect(index).toContain('../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook_Booklet.pdf');
+    expect(index).not.toContain('Gauntlet v0.6.3 Browser Rulebook');
+
+    expect(app).toContain("const SOURCE_URL = '../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook.md';");
+    expect(app).toContain("const SOURCE_SHA256 = 'f113a7f02e85b15358be8345afd90d6f1fd43136acefa9aaa322c9a7bf945dda';");
+    expect(app).toContain("const PDF_URL = '../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook_Booklet.pdf';");
+    expect(app).toContain('return RELEASED_MODE;');
     expect(app).toContain("crypto.subtle.digest('SHA-256', bytes)");
   });
 
-  it('loads the maintained current Rulebook directly instead of projecting it from v0.6.3 at runtime', () => {
+  it('keeps the maintained v0.7.0 Rulebook aligned with the published source', () => {
     const released = publicReleasedSource();
     expect(released).toMatch(/\bpending(?:-|\s+)battle\b/i);
 

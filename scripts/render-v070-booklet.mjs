@@ -90,7 +90,7 @@ async function renderCardAnatomyFigure() {
       deviceScaleFactor: 3,
     });
     page.on('pageerror', error => pageErrors.push(error.message));
-    const response = await page.goto('http://127.0.0.1:8000/rulebook/?rules=candidate', {
+    const response = await page.goto('http://127.0.0.1:8000/rulebook/', {
       waitUntil: 'domcontentloaded',
       timeout: 60000,
     });

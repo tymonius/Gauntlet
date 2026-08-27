@@ -1,4 +1,3 @@
-const CANDIDATE_MODE = 'candidate';
 const CARD_ID = 'military-unbroken-ranks';
 const ARCANE_CARD_ID = 'mystics-witchcraft';
 
@@ -144,7 +143,7 @@ function wrapAuthoredAnatomy() {
   }
 
   // The Markdown source carries a deterministic static figure for print/PDF.
-  // Candidate browser mode replaces that fallback with the live production renderer.
+  // The published browser Rulebook replaces that fallback with the live production renderer.
   section.querySelector('img[alt="Card anatomy diagram"]')?.remove();
 
   const introParagraph = heading.nextElementSibling?.tagName === 'P' ? heading.nextElementSibling : null;
@@ -194,16 +193,15 @@ function removeEnhancement() {
   section.remove();
 }
 
-function enhanceAnatomy(mode) {
+function enhanceAnatomy() {
   removeEnhancement();
-  if (mode !== CANDIDATE_MODE) return;
   const section = wrapAuthoredAnatomy();
   if (!section) return;
   wireMarkerPositioning(section);
 }
 
 document.addEventListener('gauntlet:rulebook-rendered', (event) => {
-  enhanceAnatomy(event.detail?.mode);
+  enhanceAnatomy();
 });
 
 window.addEventListener('resize', () => {
@@ -211,4 +209,4 @@ window.addEventListener('resize', () => {
   if (section) scheduleMarkerPositioning(section);
 });
 
-queueMicrotask(() => enhanceAnatomy(document.body.dataset.rulesetMode));
+queueMicrotask(() => enhanceAnatomy());
