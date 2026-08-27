@@ -278,14 +278,18 @@ function orientStarterBagsForHost(save) {
   for (const bag of save.ObjectStates || []) {
     if (bag?.Name !== 'Bag') continue;
     bag.Transform ||= transform();
-    // Actual TTS testing establishes that the previous stored orientations
-    // emerge facing the opposite seat. Canonicalize every starter package to
-    // the 180°-reversed equivalent rather than relying on the Bag transform.
+    // The package itself faces the host/south seat. Contents retain the
+    // orientation authored for their own physical format. Territory faces are
+    // the one deliberate exception: their sheet artwork is rotated 180° inside
+    // the portrait TTS cell so native SidewaysCard handling is correct.
     bag.Transform.rotY = 180;
     for (const object of bag.ContainedObjects || []) {
       if (!object?.Transform) continue;
-      const stackKind = String(object.GMNotes || '').replace('gauntlet:supplemental-stack:', '');
-      object.Transform.rotY = stackKind === 'deeds' ? 270 : 180;
+      const isPhysicalTerritory = object.Name === 'CardCustom'
+        && /(?:Arena )?Territory$/u.test(String(object.Description || ''));
+      object.Transform.rotY = isPhysicalTerritory
+        ? 180
+        : (object.SidewaysCard === true ? 90 : 0);
     }
   }
 }
