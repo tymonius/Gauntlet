@@ -6,6 +6,7 @@ const authority = JSON.parse(read('game-data/current-game.json'));
 const runtime = read('game-data/current-game.mjs');
 const nodeAuthority = read('scripts/current-game-authority.mjs');
 const ttsCatalog = read('scripts/tts-current-catalog.mjs');
+const componentLoader = read('scripts/tts-component-contract.mjs');
 const releaseBuilder = read('scripts/build-v070-release-source.mjs');
 const rulebook = read('rulebook/player-facing/current-rulebook.md');
 const artworkWorker = read('workers/artwork-authoring/src/index.js');
@@ -130,6 +131,42 @@ describe('complete v0.7.0 current-game authority', () => {
         && typeof section.name === 'string'
       )).toBe(true);
     }
+  });
+
+  it('stores the effective component package directly without runtime corrections', () => {
+    const contract = authority.componentContract;
+    expect(contract.standardBack.mode).toBe('universal-black');
+    expect(contract.effectiveBackPolicy).toMatchObject({
+      standardBack: 'universal-black',
+      factionComponentBack: 'faction',
+    });
+
+    const references = [
+      ...(contract.sharedComponents || []),
+      ...(contract.components || []),
+    ].filter((component: any) => component.family === 'reference-card');
+    expect(references).toHaveLength(8);
+    expect(references.every((component: any) =>
+      component.source.startsWith('card-design/reference-copy/v0.7.0/')
+    )).toBe(true);
+
+    const universal = references.find((component: any) => component.id === 'universal-reference');
+    expect(universal.authoritySource).toBe('rulebook/player-facing/current-rulebook.md');
+    expect(references.filter((component: any) => component.id !== 'universal-reference')
+      .every((component: any) => component.authoritySource === 'game-data/current-game.json')).toBe(true);
+
+    const diplomat = references.find((component: any) => component.id === 'diplomats-reference');
+    expect(diplomat.referenceFaces.front.sections.map((section: any) => section.heading)).toEqual([
+      'Offering Terms',
+      'Diplomat Mirror',
+      'Accepted',
+      'Refused',
+    ]);
+
+    expect(componentLoader).toContain('const contract = JSON.parse(JSON.stringify(embedded))');
+    expect(componentLoader).not.toContain('alignBespokeReferenceFaces');
+    expect(componentLoader).not.toContain('config/tts-component-contract.json');
+    expect(componentLoader).not.toContain('reference-copy/v0.6.3');
   });
 
   it('stores Resource and Progression classifications without derived corrections', () => {
