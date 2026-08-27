@@ -9,7 +9,7 @@ For the v0.7.0 closeout, the active TTS product identity is **v0.7.0** while the
 Active-development game authority comes from:
 
 - `game-data/current-game.json` and the source files it names;
-- `config/tts-component-contract.json` for physical faction/shared components and TTS representation metadata; and
+- `game-data/current-game.json#componentContract` for physical faction/shared components and TTS representation metadata; and
 - `config/tts-release-target.json` for the active TTS package version.
 
 `config/release-lifecycle.json` and `config/github-release-contract.json` still describe the immutable currently published web/release state. They are used where published-release fallback or publication validation is required, but they do not determine the v0.7.0 development package identity.
