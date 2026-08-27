@@ -113,7 +113,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          url="https://gauntlet.run/images/media/all-factions-promotional-showcase.png?v=${GITHUB_SHA}"
+          url="https://gauntlet-public-media.tymon-scott.workers.dev/images/media/all-factions-promotional-showcase.png?v=${GITHUB_SHA}"
           curl --fail --silent --show-error --location --retry 8 --retry-delay 4 --retry-all-errors \
             -D /tmp/gauntlet-public-media.headers \
             "$url" \
@@ -127,7 +127,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          save_url="https://gauntlet.run/tts/v0.7.0/Gauntlet_v0.7.0_TTS_Mod.json?v=${GITHUB_SHA}"
+          save_url="https://gauntlet-public-media.tymon-scott.workers.dev/tts/v0.7.0/Gauntlet_v0.7.0_TTS_Mod.json?v=${GITHUB_SHA}"
           curl --fail --silent --show-error --location --retry 8 --retry-delay 4 --retry-all-errors \
             "$save_url" -o /tmp/Gauntlet_v0.7.0_TTS_Mod.json
           SAVE=/tmp/Gauntlet_v0.7.0_TTS_Mod.json node <<'NODE'
@@ -147,11 +147,11 @@ jobs:
           }
           visit(save);
           const ttsUrls = [...urls].filter(url => url.includes('/tts/v0.7.0/'));
-          if (!ttsUrls.length) throw new Error('Clean TTS save contains no gauntlet.run TTS asset URLs.');
+          if (!ttsUrls.length) throw new Error('Clean TTS save contains no Worker-hosted TTS asset URLs.');
           if ([...urls].some(url => url.includes('tts-v0.7.0-qa-pr-909-'))) {
             throw new Error('Clean TTS save exposes a PR-preview asset URL.');
           }
-          if (ttsUrls.some(url => !url.startsWith('https://gauntlet.run/tts/v0.7.0/'))) {
+          if (ttsUrls.some(url => !url.startsWith('https://gauntlet-public-media.tymon-scott.workers.dev/tts/v0.7.0/'))) {
             throw new Error('Clean TTS save contains an unexpected TTS asset host.');
           }
           console.log(`Validated ${ttsUrls.length} clean TTS URLs in the public mod JSON.`);
