@@ -87,6 +87,39 @@
     return null;
   }
 
+  function canonicalArtworkId(card) {
+    if (card?.dataset?.cardId) return card.dataset.cardId;
+    if (kind === "leader") return id;
+    if (kind === "proposal") return `proposal-${id}${reverseSide() ? "-ratified" : ""}`;
+    if (kind === "rite") return `rite-${id}${reverseSide() ? "-completed" : ""}`;
+    if (kind === "ritual") return `ritual-${id}`;
+    return id;
+  }
+
+  async function applyCanonicalArtworkDirection(card) {
+    const image = card?.querySelector?.(".card-art img:not([hidden])");
+    if (!image) return;
+
+    const artworkId = canonicalArtworkId(card);
+    const direction = window.GAUNTLET_ART_DIRECTION?.[artworkId];
+    if (!direction || typeof direction !== "object" || !Object.keys(direction).length) {
+      card.dataset.artDirectionApplied = "css-default";
+      return;
+    }
+    if (!window.GauntletArtworkCrop?.apply) {
+      throw new Error(`Production artwork crop engine is unavailable for ${artworkId}.`);
+    }
+
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    const result = window.GauntletArtworkCrop.apply(
+      image,
+      direction,
+      { id: artworkId, label: card.getAttribute("aria-label") || artworkId },
+    );
+    if (!result) throw new Error(`Production artwork direction failed for ${artworkId}.`);
+    card.dataset.artDirectionApplied = artworkId;
+  }
+
   function sourceError() {
     if (kind === "leader") {
       const root = document.getElementById("leaderReviewSections");
@@ -304,6 +337,7 @@
     card.style.width = renderWidth;
     card.style.height = renderHeight;
     target.replaceChildren(card);
+    await applyCanonicalArtworkDirection(card);
     document.getElementById("leaderReviewSections")?.remove();
     document.getElementById("proposalReviewSections")?.remove();
     document.getElementById("riteReviewSections")?.remove();
