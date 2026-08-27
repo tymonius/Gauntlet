@@ -224,18 +224,6 @@ function familyDefinitionForComponent(component) {
   return FAMILY_STACKS.find(definition => definition.families.includes(component.family)) || null;
 }
 
-function orientGeneratedContentsForHost(bag) {
-  for (const object of bag.ContainedObjects || []) {
-    const notes = String(object?.GMNotes || '');
-    const isSupplemental = notes.startsWith(SUPPLEMENTAL_GUID_NOTE_PREFIX);
-    const isStack = notes.startsWith(SUPPLEMENTAL_STACK_NOTE_PREFIX);
-    if (!isSupplemental && !isStack) continue;
-    object.Transform ||= transform();
-    const stackKind = isStack ? notes.slice(SUPPLEMENTAL_STACK_NOTE_PREFIX.length) : '';
-    object.Transform.rotY = stackKind === 'deeds' ? 270 : 180;
-  }
-}
-
 function stackGeneratedFamilies(bag, generatedEntries, guid) {
   const stacked = [];
   for (const definition of FAMILY_STACKS) {
@@ -388,7 +376,6 @@ export function assembleReadySupplementals(save, starterManifest, supplementalMa
     bag.ContainedObjects.push(...generatedEntries.map(({ object }) => object));
     wireTrackerCovers(bag, starter, trackers, trackerTags);
     const stackedFamilies = stackGeneratedFamilies(bag, generatedEntries, guid);
-    orientGeneratedContentsForHost(bag);
     for (const component of applicable) assembledIds.add(component.id);
 
     const names = applicable.map(component => component.name || component.id);
