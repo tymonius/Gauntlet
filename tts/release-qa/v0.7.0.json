@@ -12,15 +12,15 @@
       "playAreasRemainDistinct": true
     },
     "factionComponents": {
-      "militaryCommandTracker": false,
-      "diplomatInfluenceTracker": false,
-      "diplomatProposalsAndTreaties": false,
-      "financierCapitalLimitTracker": false,
-      "financierCapitalLedger": false,
-      "financierDeeds": false,
-      "intelligenceNestedOperationStack": false,
-      "mysticsRitesAndCompletedFaces": false,
-      "inquisitionConvictionDoctrineAndPurge": false
+      "militaryCommandTracker": true,
+      "diplomatInfluenceTracker": true,
+      "diplomatProposalsAndTreaties": true,
+      "financierCapitalLimitTracker": true,
+      "financierCapitalLedger": true,
+      "financierDeeds": true,
+      "intelligenceNestedOperationStack": true,
+      "mysticsRitesAndCompletedFaces": true,
+      "inquisitionConvictionDoctrineAndPurge": true
     },
     "handlingValidation": {
       "coreHandlingExercised": false,
@@ -32,6 +32,7 @@
   "notes": [
     "2026-08-27: The hosted gauntlet.run v0.7.0 save and its custom assets load successfully in Tabletop Simulator.",
     "2026-08-27: White/Green perspectives and hand/reserve zones, all six Territory snaps/orientation, faction-colored Player Tokens and battle dice, Rulebook setup from starter Bags, and distinct play areas all passed in-game validation.",
-    "2026-08-27: A remote two-player game is not required for v0.7.0 release; focused handling and faction-component validation remain required."
+    "2026-08-27: All nine faction-component QA checks passed in-game: Military Command; Diplomat Influence and all nine Proposal/Treaty cards; Financier Capital Limit, Capital Ledger, and eight Deeds; Intelligence nested Operation Progress → Intel → Leader; Mystics Reference/Rites/Completed faces; and Inquisition Conviction/Doctrine/Purge.",
+    "2026-08-27: A remote two-player game is not required for v0.7.0 release; focused handling validation remains required."
   ]
 }
