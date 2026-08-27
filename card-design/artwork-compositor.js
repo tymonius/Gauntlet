@@ -501,7 +501,7 @@
       });
     }
     ui.status.textContent = sourceSaved
-      ? 'Saved to tts/artwork-direction-overrides.js and applied to this review surface.'
+      ? 'Saved to game-data/current-game.json and applied to this review surface.'
       : 'Saved as a browser draft and applied here. Run `node scripts/card-design-server.mjs` to write the current-game authority directly.';
   }
 
