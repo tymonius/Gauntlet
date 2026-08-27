@@ -442,13 +442,14 @@ function productionComponentRequest(record) {
   throw new Error(`No card-design production component request for ${record.id} (${record.renderer}).`);
 }
 
-async function captureCard(page, baseUrl, record, side, outputPath) {
+async function captureCard(page, baseUrl, record, side, outputPath, displayVersion) {
   const request = productionComponentRequest(record);
   const url = new URL('/card-design/component-print-render.html', baseUrl);
   url.searchParams.set('kind', request.kind);
   url.searchParams.set('id', request.id);
   url.searchParams.set('side', side);
   url.searchParams.set('orientation', 'portrait');
+  if (displayVersion) url.searchParams.set('version', displayVersion);
 
   await page.goto(url.toString(), { waitUntil: 'load' });
   await page.waitForSelector('#renderTarget > .gauntlet-card');
@@ -540,10 +541,10 @@ export async function renderSupplementalAssets(release, catalog) {
       const frontFile = `supplementals/fronts/${record.id}.png`;
       let reverseFile;
 
-      await captureCard(page, baseUrl, record, 'front', join(outputRoot, frontFile));
+      await captureCard(page, baseUrl, record, 'front', join(outputRoot, frontFile), release.displayVersion || release.version);
 
       reverseFile = generatedReverseFileFor(record);
-      await captureCard(page, baseUrl, record, 'reverse', join(outputRoot, reverseFile));
+      await captureCard(page, baseUrl, record, 'reverse', join(outputRoot, reverseFile), release.displayVersion || release.version);
 
       records.push({
         ...record,
