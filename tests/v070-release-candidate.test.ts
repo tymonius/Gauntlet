@@ -52,7 +52,7 @@ describe('v0.7.0 release candidate boundary', () => {
 
   it('uses draft notes as the pre-publication v0.7.0 release surface', () => {
     expect(notes).toContain('# Gauntlet v0.7.0 — Illustrated Cards & Tabletop Simulator');
-    expect(notes).toContain('Release candidate — not yet published');
+    expect(notes).toContain('Repository/web cutover in progress · Tabletop Simulator Workshop public');
     expect(notes).toContain('v0.6.3 remains the current published playtest release');
     expect(notes).toContain('The Tabletop Simulator publication gate is complete');
     expect(notes).toContain('steamcommunity.com/sharedfiles/filedetails/?id=3790840635');
