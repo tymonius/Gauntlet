@@ -249,7 +249,7 @@ function validateBagsAndUtilities(save, manifest) {
     for (const object of bag.ContainedObjects || []) {
       if (!object?.Transform) continue;
       const stackKind = String(object.GMNotes || '').replace(SUPPLEMENTAL_STACK_NOTE_PREFIX, '');
-      const expectedRotation = stackKind === 'deeds' ? 270 : 180;
+      const expectedRotation = stackKind === 'deeds' ? 90 : 180;
       if (!close(object.Transform.rotY, expectedRotation)) {
         throw new Error(`${bag.Nickname} contains ${object.Nickname || object.GUID} at stored rotation ${object.Transform.rotY}; expected host-facing ${expectedRotation}.`);
       }
@@ -324,7 +324,7 @@ function validateBagsAndUtilities(save, manifest) {
 function validateFamilyStacks(bags) {
   const expectations = new Map([
     ['proposals', { count: 2, cards: 9, sideways: false, rotY: 180, tags: [FACTION_ZONE_TAG] }],
-    ['deeds', { count: 2, cards: 8, sideways: true, rotY: 270, tags: [DEED_STACK_TAG, FACTION_ZONE_TAG] }],
+    ['deeds', { count: 2, cards: 8, sideways: true, rotY: 90, tags: [DEED_STACK_TAG, FACTION_ZONE_TAG] }],
     ['rites-rituals', { count: 2, cards: 4, sideways: false, rotY: 180, tags: [FACTION_ZONE_TAG] }],
   ]);
   const found = new Map([...expectations.keys()].map(key => [key, []]));
@@ -377,7 +377,7 @@ function validateCapitalLedgers(save) {
     }
     for (const required of [
       'id="ledger-window"',
-      'position="0 0 -50"',
+      'position="0 0 -150"',
       'rotation="0 0 180"',
       'id="ledger-current-balance"',
       'onClick="addLedgerEntry"',
