@@ -101,6 +101,7 @@ function fixture() {
       },
     },
     ...Array.from({ length: 8 }, (_, index) => card(`deed-${index + 1}`, 'deed-card', 'financiers', 21000 + index, 210 + index)),
+    card('financiers-capital-ledger', 'ledger', 'financiers', 22100, 221),
     card('military-setup-card', 'doctrine-card', 'military', 22000, 220),
   ];
   const supplementals: any = { gameVersion: 'current-test', readyCount: ready.length, ready };
@@ -169,6 +170,34 @@ describe('TTS ready supplemental save assembly', () => {
     expect(tracker.LuaScript).toContain(`fraction = ${74.65625 / 336}`);
     expect(tracker.LuaScript).not.toContain('3.06');
     expect(leader.Tags).toContain('military-command');
+  });
+
+  it('makes the Financiers Capital Ledger a persistent public transaction interface', () => {
+    const { save, starters, supplementals, assets } = fixture();
+    const result = assembleReadySupplementals(save, starters, supplementals, assets);
+    const financiers = result.save.ObjectStates[0];
+    const ledger = financiers.ContainedObjects.find((object: any) => object.GMNotes === 'gauntlet:supplemental:financiers-capital-ledger');
+
+    expect(ledger).toBeTruthy();
+    expect(ledger.Name).toBe('CardCustom');
+    expect(ledger.Hands).toBe(true);
+    expect(ledger.Tags).toContain('gauntlet-faction-zone');
+    expect(ledger.LuaScript).toContain('local STARTING_BALANCE = 2');
+    expect(ledger.LuaScript).toContain('local ROWS_PER_PAGE = 11');
+    expect(ledger.LuaScript).toContain('function addLedgerEntry');
+    expect(ledger.LuaScript).toContain('function undoLedgerEntry');
+    expect(ledger.LuaScript).toContain('function turnLedgerPage');
+    expect(ledger.LuaScript).toContain('function onSave()');
+    expect(ledger.LuaScript).toContain('function onLoad(savedData)');
+    expect(ledger.LuaScript).toContain('self.setName("Capital Ledger — Balance: "');
+    expect(ledger.LuaScript).toContain('if totalBalance() + delta < 0 then');
+    expect(ledger.XmlUI).toContain('id="ledger-window"');
+    expect(ledger.XmlUI).toContain('id="ledger-current-balance"');
+    expect(ledger.XmlUI).toContain('onClick="addLedgerEntry"');
+    expect(ledger.XmlUI).toContain('onClick="undoLedgerEntry"');
+    expect(ledger.XmlUI).toContain('onClick="turnLedgerPage"');
+    expect((ledger.XmlUI.match(/id="ledger-row-\d+-entry"/g) || [])).toHaveLength(11);
+    expect(JSON.stringify(ledger)).not.toContain('"Name":"Counter"');
   });
 
   it('packages Deeds as one landscape stack that uses ordinary Faction Zone magnets', () => {
