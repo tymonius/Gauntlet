@@ -6,7 +6,6 @@ on:
       - '.github/workflows/generate-tts-card-assets.yml'
       - 'package.json'
       - 'game-data/**'
-      - 'deckbuilder/starter-decks.json'
       - 'docs/v0.6.4-*.json'
       - 'config/release-lifecycle.json'
       - 'config/github-release-contract.json'
@@ -89,7 +88,6 @@ jobs:
             package.json
             design-tokens.css
             game-data
-            deckbuilder/starter-decks.json
             docs/v0.6.4-card-additions.json
             docs/v0.6.4-rules.json
             docs/v0.6.4-territories.json
@@ -214,7 +212,7 @@ jobs:
                     scripts/generate-tts-leader-assets.mjs|images/general.png|images/commandant.png|images/ambassador.png|images/senator.png|images/banker.png|images/executive.png|images/ranger.png|images/spymaster.png|images/alchemist.png|images/spirit\ walker.png|images/grand\ inquisitor.png|images/witch\ hunter.png)
                       render_leaders=true
                       ;;
-                    scripts/generate-tts-starter-decks.mjs|deckbuilder/starter-decks.json)
+                    scripts/generate-tts-starter-decks.mjs)
                       render_starters=true
                       ;;
                     scripts/generate-tts-environment-assets.mjs|scripts/stage-tts-release-assets.mjs|tts/assets/environment/*|config/tts-release-target.json|config/release-lifecycle.json|config/github-release-contract.json)
