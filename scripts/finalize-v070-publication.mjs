@@ -111,7 +111,31 @@ releaseContract.historical_releases = (releaseContract.historical_releases || []
   });
 await writeJson('config/github-release-contract.json', releaseContract);
 
-const releaseNotes = `# ${RELEASE_TITLE}\n\nGauntlet v0.7.0 is the first published playtest release built around the fully illustrated production card set and the complete Tabletop Simulator package. The complete gameplay and Rulebook authorities are both **v0.7.0**.\n\n## Release highlights\n\n- 142 playable cards, 25 Territories, six factions, twelve Leaders, and twelve starter Decks;\n- complete current playable-card artwork with production card layouts and current Territory artwork;\n- finalized shared and faction reference material, including the Universal Reference Card;\n- production supplemental components for all six factions, including trackers, Diplomat Proposals/Treaty Articles, Financier Capital Ledger and Deeds, Mystics Rites, and Inquisition reference material;\n- the published v0.7.0 Rulebook and canonical gameplay-data snapshot;\n- a v0.7.0 Tabletop Simulator package with all twelve starter kits, the shared Universal Reference, and faction supplemental components assembled into each starter Bag; and\n- deterministic hosted-asset staging and machine-readable TTS release-readiness checks.\n\n## Tabletop Simulator\n\nBefore publication, the v0.7.0 TTS package passed both the strict machine-readiness gate and the complete versioned manual/in-game QA gate, including hosted-save setup checks, faction-component checks, core handling validation, focused faction drills, and resolution of discovered TTS friction. A remote two-player game was not required for this release gate.\n\nThe release-event pipeline uploads the same deterministic network assets to this GitHub Release and verifies the final hosted URLs. The TTS implementation remains a digital tabletop rather than a rules engine: players still perform setup, battle resolution, card handling, and faction-specific mechanics themselves. The public Steam Workshop item was published as item `3790840635` and its subscribed public copy passed the post-publication smoke test before repository/web cutover.\n\n## Provenance\n\nThis release freezes the complete **v0.7.0** current-game and Rulebook authorities. Earlier v0.6.3 and v0.6.4 derivation documents remain historical provenance only and are not publication inputs.\n`;
+let releaseNotes = await readText('docs/releases/github/v0.7.0.md');
+releaseNotes = replaceOrConfirm(
+  releaseNotes,
+  '**Repository/web cutover in progress · Tabletop Simulator Workshop public**',
+  `**Current playtest release · ${publicationDate}**`,
+  'release-note publication status',
+);
+releaseNotes = replaceOrConfirm(
+  releaseNotes,
+  'Gauntlet v0.7.0 promotes the approved \`v0.6.4-candidate\` development bundle into the next public playtest edition. It is the first Gauntlet release built around the fully illustrated production card set and the complete Tabletop Simulator package, while also carrying the rules, card-pool, Territory, faction-component, starter-Deck, and player-aid changes developed since v0.6.3.',
+  'Gauntlet v0.7.0 is the current public playtest edition. It is the first Gauntlet release built around the fully illustrated production card set and the complete Tabletop Simulator package, while also carrying the rules, card-pool, Territory, faction-component, starter-Deck, and player-aid changes developed since v0.6.3.',
+  'release-note opening',
+);
+releaseNotes = replaceOrConfirm(
+  releaseNotes,
+  'During the release-candidate period, the Browser Rulebook can switch between the released v0.6.3 rules and the v0.7.0 candidate rules. The candidate view loads the maintained complete v0.7.0 Rulebook authority directly from \`rulebook/player-facing/current-rulebook.md\`; the released view remains pinned to the published v0.6.3 Rulebook.\n\nThe candidate view is shareable through the rules query parameter, and the v0.6.3 Rules Arbiter is hidden while candidate rules are displayed so it cannot silently answer from the wrong ruleset. At final v0.7.0 cutover, the maintained v0.7.0 Rulebook becomes the normal public default.',
+  'The Browser Rulebook now loads the maintained complete v0.7.0 Rulebook authority directly from the published v0.7.0 release package. v0.7.0 is the normal public ruleset, and the Rules Arbiter is bound to the same current release authority.',
+  'release-note Browser Rulebook publication state',
+);
+releaseNotes = replaceOrConfirm(
+  releaseNotes,
+  'This file describes the **v0.7.0 candidate**. It **does not change the repository\'s current published release**, create or move a Git tag, or create the final v0.7.0 GitHub Release by itself. The Tabletop Simulator Workshop mod is an intentional pre-cutover publication surface and is already public.\n\nUntil final cutover, **v0.6.3 remains the current published playtest release**. The \`v0.6.4-candidate\` bundle is preserved as the never-published source-provenance snapshot that feeds this v0.7.0 product release; there will not be a separate numbered v0.6.4 public release.\n\nThe Tabletop Simulator publication gate is complete. Final repository/web release cutover remains tracked separately from the already-public Workshop mod.',
+  'Gauntlet v0.7.0 is the **current published playtest release**. v0.6.3 is historical, and the \`v0.6.4-candidate\` bundle remains preserved only as the never-published source-provenance snapshot that fed this release. There is no separate numbered v0.6.4 public release.\n\nThe Tabletop Simulator Workshop mod remains public, its subscribed-copy smoke test passed, and the repository/web release now publishes the same v0.7.0 product authority.',
+  'release-note publication boundary',
+);
 await writeFile('docs/releases/github/v0.7.0.md', releaseNotes);
 
 let homepage = await readText('index.html');
@@ -199,13 +223,33 @@ rulebookToggleTest = replacePatternRequired(
 await writeFile('tests/rulebook-ruleset-toggle.test.ts', rulebookToggleTest);
 
 let changelog = await readText('changelog/index.html');
-changelog = replaceRequired(changelog, '<div><dt>Current release</dt><dd>v0.6.3</dd></div>', '<div><dt>Current release</dt><dd>v0.7.0</dd></div>', 'changelog current release');
-changelog = replaceRequired(changelog, '<div><dt>Published</dt><dd>August 14, 2026</dd></div>', `<div><dt>Published</dt><dd>${publicationDate}</dd></div>`, 'changelog publication date');
-changelog = replaceRequired(changelog, '<div><dt>Baseline</dt><dd>v0.6.2 rules</dd></div>', '<div><dt>Authority</dt><dd>v0.7.0</dd></div>', 'changelog baseline');
-const currentArticle = `\n    <article class="changelog-entry" id="v0-7-0">\n      <p class="changelog-meta">Current release · ${publicationDate}</p>\n      <h2>v0.7.0</h2>\n      <p class="changelog-summary">v0.7.0 freezes the complete v0.7.0 gameplay and Rulebook authorities as the first fully illustrated production-card release, together with the machine-ready and manually verified Tabletop Simulator package.</p>\n      <div class="release-actions">\n        <a class="button primary" href="/v0.7.0/">Open v0.7.0 release</a>\n        <a class="button secondary" href="/rulebook/">Read the current rules</a>\n      </div>\n      <h3>At a glance</h3>\n      <ol>\n        <li><strong>The production card set is fully illustrated.</strong> The current playable pool contains 142 cards and 25 Territories across six factions.</li>\n        <li><strong>The complete v0.7.0 Rulebook is now the published ruleset.</strong> Historical v0.6.3/v0.6.4 derivation files remain provenance only.</li>\n        <li><strong>Tabletop Simulator is part of the release package.</strong> Twelve starter kits, shared references, and faction supplemental components are assembled into the versioned TTS package and were manually verified before publication.</li>\n        <li><strong>Hosted TTS assets are release-versioned.</strong> The GitHub Release pipeline publishes and verifies the deterministic network assets used by the TTS save.</li>\n      </ol>\n    </article>\n`;
-changelog = replaceRequired(changelog, '\n    <article class="changelog-entry" id="v0-6-3">', `${currentArticle}\n    <article class="changelog-entry" id="v0-6-3">`, 'v0.6.3 changelog article');
-changelog = replaceRequired(changelog, '<p class="changelog-meta">Current release · August 14, 2026</p>\n      <h2>v0.6.3</h2>', '<p class="changelog-meta">Previous release · August 14, 2026</p>\n      <h2>v0.6.3</h2>', 'v0.6.3 changelog status');
-changelog = replaceRequired(changelog, '<a href="/v0.6.3/">Current release</a>', '<a href="/v0.7.0/">Current release</a>', 'changelog current release nav');
+changelog = replaceOrConfirm(changelog, '<div><dt>Current release</dt><dd>v0.6.3</dd></div>', '<div><dt>Current release</dt><dd>v0.7.0</dd></div>', 'changelog current release');
+changelog = replaceOrConfirm(changelog, '<div><dt>Published</dt><dd>August 14, 2026</dd></div>', `<div><dt>Published</dt><dd>${publicationDate}</dd></div>`, 'changelog publication date');
+changelog = replaceOrConfirm(changelog, '<div><dt>Next release</dt><dd>v0.7.0 candidate</dd></div>', '<div><dt>Authority</dt><dd>v0.7.0</dd></div>', 'changelog authority');
+changelog = replaceOrConfirm(changelog, '<p class="changelog-meta">Release candidate · upcoming</p>', `<p class="changelog-meta">Current release · ${publicationDate}</p>`, 'v0.7.0 changelog status');
+changelog = replaceOrConfirm(
+  changelog,
+  '<p class="changelog-summary">v0.7.0 promotes the approved v0.6.4-candidate development bundle into the next public playtest edition. It combines the gameplay changes developed since v0.6.3 with the fully illustrated production card set, finalized physical player aids, locked starter Decks, expanded printing, and the first complete Tabletop Simulator package.</p>',
+  '<p class="changelog-summary">v0.7.0 is the current public playtest edition. It combines the gameplay changes developed since v0.6.3 with the fully illustrated production card set, finalized physical player aids, locked starter Decks, expanded printing, and the complete Tabletop Simulator package.</p>',
+  'v0.7.0 changelog summary',
+);
+changelog = replaceOrConfirm(changelog, '<a class="button primary" href="/v0.7.0/">Preview v0.7.0 release</a>', '<a class="button primary" href="/v0.7.0/">Open v0.7.0 release</a>', 'v0.7.0 release action');
+changelog = replaceOrConfirm(changelog, '<a class="button secondary" href="/rulebook/?rules=candidate">Read candidate rules</a>', '<a class="button secondary" href="/rulebook/">Read current rules</a>', 'v0.7.0 rules action');
+changelog = replaceOrConfirm(
+  changelog,
+  '<p>During the candidate period, the Browser Rulebook can switch between released v0.6.3 and the current v0.7.0 rules with a shareable candidate view. The v0.7.0 view loads the maintained complete Rulebook authority directly from <code>rulebook/player-facing/current-rulebook.md</code> rather than rebuilding the rules from v0.6.3 overlays. The v0.6.3 Rules Arbiter is hidden while v0.7.0 rules are displayed so it cannot answer from the wrong ruleset. At cutover, the maintained v0.7.0 Rulebook becomes the normal public default.</p>',
+  '<p>The Browser Rulebook now loads the maintained complete v0.7.0 Rulebook authority from the published release package. v0.7.0 is the normal public ruleset, and the Rules Arbiter is bound to the same current release authority.</p>',
+  'published Browser Rulebook state',
+);
+changelog = replaceOrConfirm(
+  changelog,
+  '<p><strong>v0.6.3 remains the current repository/web playtest release until the final v0.7.0 cutover.</strong> The v0.6.4-candidate source bundle is preserved as a never-published provenance snapshot; it is being promoted into v0.7.0 rather than released separately as v0.6.4.</p>\n      <p>The Tabletop Simulator publication gate is complete and the Workshop mod is already public. Only the final repository/web cutover remains pending for the complete v0.7.0 release.</p>',
+  '<p><strong>v0.7.0 is the current published playtest release.</strong> v0.6.3 is historical, and the v0.6.4-candidate source bundle remains preserved only as the never-published provenance snapshot that fed this release.</p>\n      <p>The Tabletop Simulator Workshop mod is public, its subscribed-copy smoke test passed, and the repository/web release now publishes the same v0.7.0 product authority.</p>',
+  'published changelog boundary',
+);
+changelog = replaceOrConfirm(changelog, '<p class="changelog-meta">Current release · August 14, 2026</p>\n      <h2>v0.6.3</h2>', '<p class="changelog-meta">Previous release · August 14, 2026</p>\n      <h2>v0.6.3</h2>', 'v0.6.3 changelog status');
+changelog = replaceOrConfirm(changelog, '<p class="changelog-summary">v0.6.3 is the current canonical public playtest edition. This entry summarizes the changes from the v0.6.2 rules baseline that materially affect table play or how cards are read.</p>', '<p class="changelog-summary">v0.6.3 is the previous canonical public playtest edition. This entry summarizes the changes from the v0.6.2 rules baseline that materially affect table play or how cards are read.</p>', 'v0.6.3 changelog summary');
+changelog = replaceOrConfirm(changelog, '<a href="/v0.6.3/">Current release</a>', '<a href="/v0.7.0/">Current release</a>', 'changelog current release nav');
 await writeFile('changelog/index.html', changelog);
 
 console.log(`Finalized public cutover for ${RELEASE_VERSION}.`);
