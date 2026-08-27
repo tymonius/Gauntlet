@@ -101,15 +101,15 @@ function validateTableWorkspace(save) {
     const xs = (line.points3 || []).map(point => Number(point.x));
     const zs = (line.points3 || []).map(point => Number(point.z));
     return xs.length === 4 && zs.length === 4
-      && close(Math.min(...xs), -17.8) && close(Math.max(...xs), -6.7)
-      && close(Math.min(...zs), -21.45) && close(Math.max(...zs), -11.45);
+      && close(Math.min(...xs), -17.55) && close(Math.max(...xs), -6.95)
+      && close(Math.min(...zs), -20.35) && close(Math.max(...zs), -11.45);
   });
   const greenLeaderOutlines = (save.VectorLines || []).filter(line => {
     const xs = (line.points3 || []).map(point => Number(point.x));
     const zs = (line.points3 || []).map(point => Number(point.z));
     return xs.length === 4 && zs.length === 4
-      && close(Math.min(...xs), 6.7) && close(Math.max(...xs), 17.8)
-      && close(Math.min(...zs), 11.45) && close(Math.max(...zs), 21.45);
+      && close(Math.min(...xs), 6.95) && close(Math.max(...xs), 17.55)
+      && close(Math.min(...zs), 11.45) && close(Math.max(...zs), 20.35);
   });
   if (whiteLeaderOutlines.length !== 2 || greenLeaderOutlines.length !== 2) {
     throw new Error('Leader & References outlines must fit the fully extended nested tracker assembly for both players.');
@@ -120,13 +120,6 @@ function validateTableWorkspace(save) {
   if (whiteLeaderXs.some(x => !close(findSnap(save, x, -18.6)?.Rotation?.y, 180))
     || greenLeaderXs.some(x => !close(findSnap(save, x, 18.6)?.Rotation?.y, 0))) {
     throw new Error('Leader & References snaps must sit at the player-side bottom of each workspace so tracker travel extends inward/upward.');
-  }
-
-  const whiteLeaderLabel = labels.find(object => object.GMNotes === 'gauntlet:table-layout:white-leader-references:label');
-  const greenLeaderLabel = labels.find(object => object.GMNotes === 'gauntlet:table-layout:green-leader-references:label');
-  if (!whiteLeaderLabel || !close(whiteLeaderLabel.Transform?.posZ, -20.69, 0.01)
-    || !greenLeaderLabel || !close(greenLeaderLabel.Transform?.posZ, 20.69, 0.01)) {
-    throw new Error('Leader & References labels must remain on the map-side of the table artwork.');
   }
 
   const territory = save.SnapPoints.filter(point => point.Tags?.includes(TERRITORY_TAG));
@@ -160,6 +153,12 @@ function validateTableWorkspace(save) {
 
   const labels = (save.ObjectStates || []).filter(object => String(object?.GMNotes || '').startsWith('gauntlet:table-layout:'));
   if (labels.length !== 28) throw new Error(`Expected 28 visible table-label objects; found ${labels.length}.`);
+  const whiteLeaderLabel = labels.find(object => object.GMNotes === 'gauntlet:table-layout:white-leader-references:label');
+  const greenLeaderLabel = labels.find(object => object.GMNotes === 'gauntlet:table-layout:green-leader-references:label');
+  if (!whiteLeaderLabel || !close(whiteLeaderLabel.Transform?.posZ, -20.69, 0.01)
+    || !greenLeaderLabel || !close(greenLeaderLabel.Transform?.posZ, 20.69, 0.01)) {
+    throw new Error('Leader & References labels must remain on the map-side of the table artwork.');
+  }
   const handLabels = labels.filter(object => object.Text?.Text === 'Hand');
   if (handLabels.length !== 4) throw new Error(`Expected visible Hand parking labels/shadows for both players; found ${handLabels.length}.`);
   const whiteHandLabel = labels.find(object => object.GMNotes === 'gauntlet:table-layout:white-hand:label');
