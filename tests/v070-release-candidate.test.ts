@@ -86,6 +86,10 @@ describe('v0.7.0 release candidate boundary', () => {
     expect(bookletRenderer).not.toContain('Promise.all([...document.images]');
     expect(bookletRenderer).toContain("publication_date: null");
     expect(bookletRenderer).toContain("source_card: 'military-unbroken-ranks'");
+    expect(bookletRenderer).toContain('function brandV070ProductionSurface()');
+    expect(bookletRenderer).toContain("source.replace(/0\\.6\\.3/g, '0.7.0')");
+    expect(bookletRenderer).toContain('brandV070ProductionSurface();');
+    expect(bookletRenderer).toContain('v0.7.0 Rulebook production surface still contains v0.6.3 branding');
     expect(materializer).toContain('Gauntlet_v0.7.0_Card_Anatomy.png');
   });
 

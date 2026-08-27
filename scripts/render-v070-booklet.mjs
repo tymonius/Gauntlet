@@ -18,6 +18,8 @@ const CARD_ANATOMY_PATH = path.join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Ca
 const PLAYER_CHAPTER_11_PATH = path.join(ROOT, 'rulebook', 'player-facing', 'chapter-11.md');
 const TRANSIENT_RULEBOOK_PATH = path.join(ROOT, 'rulebook-production', '.v063-player-facing-input.md');
 const PRODUCTION_DIR = '/tmp/rulebook-production';
+const PRODUCTION_HTML_PATH = path.join(ROOT, 'rulebook-production', 'full-rulebook.html');
+const PRODUCTION_PAGINATOR_PATH = path.join(ROOT, 'rulebook-production', '.paginate_rulebook_runtime.mjs');
 
 const hash = data => crypto.createHash('sha256').update(data).digest('hex');
 const hashFile = file => hash(fs.readFileSync(file));
@@ -36,6 +38,22 @@ function run(command, args, options = {}) {
     throw new Error(`${command} ${args.join(' ')} failed with exit code ${result.status}.${options.capture ? `\n${result.stdout || ''}${result.stderr || ''}` : ''}`);
   }
   return result;
+}
+
+function brandV070ProductionSurface() {
+  const surfaces = [PRODUCTION_HTML_PATH, PRODUCTION_PAGINATOR_PATH];
+  for (const surface of surfaces) {
+    if (!fs.existsSync(surface)) throw new Error(`Missing approved Rulebook production surface: ${relative(surface)}.`);
+    const source = fs.readFileSync(surface, 'utf8');
+    const branded = source.replace(/0\.6\.3/g, '0.7.0');
+    if (/0\.6\.3/.test(branded)) {
+      throw new Error(`v0.7.0 Rulebook production surface still contains v0.6.3 branding: ${relative(surface)}.`);
+    }
+    if (!/0\.7\.0/.test(branded)) {
+      throw new Error(`v0.7.0 Rulebook production surface contains no v0.7.0 identity: ${relative(surface)}.`);
+    }
+    fs.writeFileSync(surface, branded);
+  }
 }
 
 async function waitForServer(url) {
@@ -125,6 +143,7 @@ try {
     fs.writeFileSync(TRANSIENT_RULEBOOK_PATH, rulebook);
     fs.writeFileSync(PLAYER_CHAPTER_11_PATH, chapter11 + '\n');
     run('python', ['scripts/build-v063-rulebook-production.py']);
+    brandV070ProductionSurface();
   } finally {
     fs.writeFileSync(PLAYER_CHAPTER_11_PATH, originalChapter11);
     fs.rmSync(TRANSIENT_RULEBOOK_PATH, { force: true });
