@@ -123,8 +123,10 @@
   }
 
   function needsSharedCardPreparation(card) {
-    if (!card?.matches?.(".gauntlet-card[data-art-max]")) return false;
-    return card.dataset.parchmentLoaded === undefined || card.dataset.titleFit === undefined;
+    if (!card?.matches?.(".gauntlet-card")) return false;
+    if (card.querySelector(".card-interior") && card.dataset.parchmentLoaded === undefined) return true;
+    if (!card.matches("[data-art-max]")) return false;
+    return card.dataset.titleFit === undefined;
   }
 
   function leaderCopyReady(card) {
@@ -132,6 +134,24 @@
     return root?.dataset.leaderCopyReady === "true"
       && Boolean(card.dataset.leaderCopyVersion)
       && card.classList.contains("leader-card--standardized");
+  }
+
+  function validateTrackerVisualContract(card) {
+    if (kind !== "tracker") return;
+
+    const interior = card.querySelector(".tracker-interior");
+    const title = card.querySelector(".tracker-heading h3");
+    if (!interior || !title) {
+      throw new Error(`Tracker ${id} is missing its production interior or title.`);
+    }
+
+    const background = getComputedStyle(interior).backgroundImage;
+    if (card.dataset.parchmentLoaded !== "true" || !background || background === "none") {
+      throw new Error(`Tracker ${id} lost its production parchment background.`);
+    }
+    if (card.dataset.trackerTitleFit !== "true" || title.scrollWidth > title.clientWidth + 0.5) {
+      throw new Error(`Tracker ${id} title is clipped after production fitting.`);
+    }
   }
 
   function validateReferenceVisualContract(card) {
@@ -212,7 +232,13 @@
         && dimensionsReady(card);
     }
 
-    if (kind === "tracker") return dimensionsReady(card);
+    if (kind === "tracker") {
+      const supplementalRoot = document.getElementById("supplementalReviewSections");
+      return card.dataset.parchmentLoaded === "true"
+        && card.dataset.trackerTitleFit === "true"
+        && supplementalRoot?.dataset.trackerLayoutsReady === "true"
+        && dimensionsReady(card);
+    }
 
     if (kind === "supplemental") {
       if (card.classList.contains("reference-card-loading")) return false;
@@ -265,6 +291,7 @@
       throw new Error(`Timed out waiting for production ${kind} component ${id} to finish rendering.`);
     }
 
+    validateTrackerVisualContract(card);
     validateReferenceVisualContract(card);
 
     if (versionOverride) {
