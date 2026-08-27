@@ -23,11 +23,11 @@ function tracker(id: string, name: string, cover: any, snapTag: string, layer: n
       layer,
       snapTag,
       snapPoints: [
-        { value: 0, offset: 0 },
-        { value: 1, offset: 0.5 },
-        { value: 2, offset: 1.0 },
-        { value: 3, offset: 1.5 },
-        { value: 4, offset: 2.0 },
+        { value: 0, registrationFraction: 0 },
+        { value: 1, registrationFraction: 0.12 },
+        { value: 2, registrationFraction: 0.24 },
+        { value: 3, registrationFraction: 0.36 },
+        { value: 4, registrationFraction: 0.48 },
       ],
     },
   };
