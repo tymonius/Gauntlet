@@ -514,7 +514,7 @@ export async function renderSupplementalAssets(release, catalog) {
     for (const record of catalog.ready) {
       if (record.renderer === 'sliding-tracker') {
         const frontFile = `supplementals/trackers/${record.id}.png`;
-        const geometry = await captureProductionTracker(page, baseUrl, record, join(outputRoot, frontFile));
+        const geometry = await captureProductionTracker(page, baseUrl, record, join(outputRoot, frontFile), release.displayVersion || release.version);
         records.push({
           ...record,
           frontFile,
