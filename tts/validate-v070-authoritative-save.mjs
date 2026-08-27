@@ -117,9 +117,16 @@ function validateTableWorkspace(save) {
 
   const whiteLeaderXs = [-16.3, -13.6, -10.9, -8.2];
   const greenLeaderXs = whiteLeaderXs.map(x => -x);
-  if (whiteLeaderXs.some(x => !close(findSnap(save, x, -19.7)?.Rotation?.y, 180))
-    || greenLeaderXs.some(x => !close(findSnap(save, x, 19.7)?.Rotation?.y, 0))) {
+  if (whiteLeaderXs.some(x => !close(findSnap(save, x, -18.6)?.Rotation?.y, 180))
+    || greenLeaderXs.some(x => !close(findSnap(save, x, 18.6)?.Rotation?.y, 0))) {
     throw new Error('Leader & References snaps must sit at the player-side bottom of each workspace so tracker travel extends inward/upward.');
+  }
+
+  const whiteLeaderLabel = labels.find(object => object.GMNotes === 'gauntlet:table-layout:white-leader-references:label');
+  const greenLeaderLabel = labels.find(object => object.GMNotes === 'gauntlet:table-layout:green-leader-references:label');
+  if (!whiteLeaderLabel || !close(whiteLeaderLabel.Transform?.posZ, -20.69, 0.01)
+    || !greenLeaderLabel || !close(greenLeaderLabel.Transform?.posZ, 20.69, 0.01)) {
+    throw new Error('Leader & References labels must remain on the map-side of the table artwork.');
   }
 
   const territory = save.SnapPoints.filter(point => point.Tags?.includes(TERRITORY_TAG));
