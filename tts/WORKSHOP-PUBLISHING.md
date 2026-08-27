@@ -14,12 +14,12 @@ This Tabletop Simulator implementation provides the physical play surface for Ga
 
 Choose a faction and Leader through one of the included starter Bags, unpack one starter per player, arrange the six selected Territories into the Gauntlet, and complete normal opening setup from the current Gauntlet Rulebook.
 
-Rules are player-operated. The v0.7.0 mod is intended to reproduce the physical game accurately rather than automate battle resolution or faction rules.
+Rules are player-operated. The v0.7.0 mod is intended to reproduce the physical game accurately rather than automate battle resolution or faction rules. The Financiers' Capital Ledger is interactive for transaction entry and running-balance bookkeeping, while the separate Capital Limit tracker remains a physical sliding tracker.
 
 ## Controls and setup notes
 
-1. Seat the two players as **Red** and **Blue**.
-2. Each player chooses one starter Bag. The Bag contains that starter's playable Deck, Leader Card, three Territories, shared Universal Reference Card, and the production-ready supplemental components required by its faction.
+1. Seat the two players as **White** and **Green**.
+2. Each player chooses one starter Bag. Pull its contents in setup order: Leader, trackers, reference cards, other faction supplementals, playable Deck, three-Territory stack, Player Token, and battle die.
 3. Unpack both starter Bags.
 4. Arrange the six chosen Territories on the six center snap points in the order determined by normal Gauntlet setup.
 5. Place each Player Token at the appropriate starting end after setup.
@@ -29,10 +29,10 @@ Rules are player-operated. The v0.7.0 mod is intended to reproduce the physical 
 ## What is included
 
 - two-player Tabletop Simulator table;
-- Red and Blue hand zones;
+- White and Green hand/reserve zones;
 - six Gauntlet Territory snap positions;
-- Red and Blue Player Tokens;
-- one battle d6 per player;
+- one faction-colored Player Token per player;
+- one faction-colored battle d6 per player;
 - generated starter Bags for the current Leader/starter catalog;
 - playable card Decks with the universal black standard back;
 - Leader Cards with faction-color component backs;
@@ -55,7 +55,7 @@ The final Workshop item must not be published until all of the following are tru
 
 ## Preview image
 
-**Pending.** The Workshop preview image is a separate visual asset and must be selected or created explicitly before publication. Do not substitute an automatically generated preview during release packaging.
+Use the already approved public Tabletop Simulator gameplay screenshot from the website: `website/public/images/tts-gameplay.png`. Do not generate a replacement solely for Workshop publication.
 
 ## After publishing
 
