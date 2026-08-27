@@ -71,7 +71,7 @@ describe('TTS release readiness reporting', () => {
     expect(result.assembledCopies).toBe(3);
   });
 
-  it('keeps machine blockers separate from the required manual Tabletop Simulator playthrough', () => {
+  it('keeps machine blockers separate from required manual Tabletop Simulator handling QA', () => {
     const report = buildReadinessReport({
       release: { version: 'v0.7.0' },
       contract: { sharedComponents: [], components: [] },
@@ -82,7 +82,8 @@ describe('TTS release readiness reporting', () => {
 
     expect(report.machineReady).toBe(true);
     expect(report.warnings.some(item => item.id === 'review-scaffold-name')).toBe(true);
-    expect(report.manualReleaseChecks.some(item => /full remote two-player game/i.test(item))).toBe(true);
+    expect(report.manualReleaseChecks.some(item => /full remote two-player game/i.test(item))).toBe(false);
+    expect(report.manualReleaseChecks.some(item => /focused in-game drills/i.test(item))).toBe(true);
   });
 
   it('keeps explicit strict mode and automatically enforces it for release-candidate targets', () => {

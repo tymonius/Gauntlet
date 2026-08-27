@@ -58,7 +58,7 @@ The exact generated inventory is governed by the v0.7.0 TTS manifests and releas
 The final Workshop item must not be published until all of the following are true:
 
 - `npm run tts:release:strict` passes for the v0.7.0 package;
-- `tts/release-qa/v0.7.0.json` records completed table/setup, faction-component, and full-game QA;
+- `tts/release-qa/v0.7.0.json` records completed table/setup, faction-component, and focused handling QA;
 - `approvedForWorkshop` is explicitly `true` in that QA record;
 - `npm run tts:save:promote` produces the final `Gauntlet_v0.7.0_TTS_Mod.json` save;
 - all v0.7.0 custom-object network assets have been uploaded to their public host;

@@ -28,11 +28,10 @@ describe('TTS final save promotion', () => {
 
   it('ships a granular pending v0.7.0 manual-QA record rather than pre-approving Workshop publication', () => {
     expect(qa).toEqual(expect.objectContaining({
-      schemaVersion: 2,
+      schemaVersion: 3,
       gameVersion: 'v0.7.0',
-      status: 'pending',
+      status: 'in-progress',
       approvedForWorkshop: false,
-      notes: [],
     }));
     expect(() => validateQaRecordShape(qa)).not.toThrow();
 
@@ -40,9 +39,15 @@ describe('TTS final save promotion', () => {
     expect(Object.keys(qa.checks)).toEqual(expectedGroups);
     for (const [group, checks] of Object.entries(REQUIRED_QA_CHECKS)) {
       expect(Object.keys(qa.checks[group])).toEqual([...checks]);
-      expect(Object.values(qa.checks[group]).every((value) => value === false)).toBe(true);
+      for (const check of checks) {
+        const expected = group === 'tableSetup' && check === 'hostedSaveLoad';
+        expect(qa.checks[group][check]).toBe(expected);
+      }
     }
-    expect(Object.values(REQUIRED_QA_CHECKS).flat()).toHaveLength(19);
+    expect(Object.values(REQUIRED_QA_CHECKS).flat()).toHaveLength(18);
+    expect(qa.checks.fullGame).toBeUndefined();
+    expect(qa.notes.some((note) => /hosted gauntlet\.run/i.test(note))).toBe(true);
+    expect(qa.notes.some((note) => /remote two-player game is not required/i.test(note))).toBe(true);
   });
 
   it('refuses promotion while machine readiness still has blockers', () => {
@@ -55,7 +60,7 @@ describe('TTS final save promotion', () => {
 
   it('refuses promotion at the first incomplete granular QA check', () => {
     const readiness = { gameVersion: 'v0.7.0', machineReady: true, blockers: [] };
-    expect(() => validatePromotionGate({ release, readiness, qa })).toThrow(/tableSetup\.cleanClientLoad/);
+    expect(() => validatePromotionGate({ release, readiness, qa })).toThrow(/tableSetup\.playerPerspectivesAndHandZones/);
 
     const almostComplete = completedQa();
     almostComplete.checks.factionComponents.intelligenceNestedOperationStack = false;
