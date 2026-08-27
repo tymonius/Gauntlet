@@ -308,7 +308,7 @@ function capitalLedgerXml() {
       </HorizontalLayout>`;
   }).join('');
 
-  return `<Panel id="ledger-window" active="false" width="820" height="930" position="0 0 -50" rotation="0 0 180" color="#E8D9B8F5" outline="#31291F" outlineSize="3 3" padding="22 22 22 22">
+  return `<Panel id="ledger-window" active="false" width="820" height="930" position="0 0 -150" rotation="0 0 180" color="#E8D9B8F5" outline="#31291F" outlineSize="3 3" padding="22 22 22 22">
     <VerticalLayout childForceExpandHeight="false" childForceExpandWidth="true" spacing="8">
       <HorizontalLayout preferredHeight="66" childForceExpandWidth="false">
         <Text text="FINANCIERS" preferredWidth="220" fontSize="24" color="#324D37" alignment="MiddleLeft" />
@@ -534,7 +534,7 @@ function orientGeneratedContentsForHost(bag) {
     if (!isSupplemental && !isStack) continue;
     object.Transform ||= transform();
     const stackKind = isStack ? notes.slice(SUPPLEMENTAL_STACK_NOTE_PREFIX.length) : '';
-    object.Transform.rotY = stackKind === 'deeds' ? 270 : 180;
+    object.Transform.rotY = stackKind === 'deeds' ? 90 : 180;
   }
 }
 
