@@ -101,20 +101,24 @@ if (Number.isInteger(manifest.counts?.print_pdfs) && manifest.counts.print_pdfs 
   });
 }
 
-for (const required of [
-  `Gauntlet_${version}_Rulebook.md`,
-  `Gauntlet_${version}_Rulebook.pdf`,
-  `Gauntlet_${version}_Rulebook_Booklet.pdf`,
-  `Gauntlet_${version}_Canonical_Data.json`,
-  `Gauntlet_${version}_Starter_Decks.json`,
-  `Gauntlet_${version}_Deck_Export_Schema.json`,
-  `Gauntlet_${version}_Card_and_Territory_Reference.md`,
-  `Gauntlet_${version}_Card_and_Territory_Reference.pdf`,
-  `Gauntlet_${version}_Starter_Deck_Catalog.md`,
-  `Gauntlet_${version}_Starter_Deck_Catalog.pdf`,
-]) {
-  assert(payloadByPath.has(required), `Current release manifest is missing required payload: ${required}`);
+const packagePrefix = String(release.current_package_path).replace(/\\/g, '/').replace(/^\/+/, '').replace(/\/+$/, '/');
+const bindings = Object.entries(manifest.binding_sources ?? {});
+assert(bindings.length > 0, 'Current release manifest has no binding_sources.');
+for (const [key, binding] of bindings) {
+  assert(binding && typeof binding.path === 'string' && binding.path.trim(), `Binding source ${key} has no path.`);
+  const normalized = binding.path.replace(/\\/g, '/').replace(/^\/+/, '');
+  const relative = normalized.startsWith(packagePrefix) ? normalized.slice(packagePrefix.length) : normalized;
+  const payload = payloadByPath.get(relative);
+  assert(payload, `Current release binding source is not present in payload_files: ${key} -> ${relative}`);
+  if (binding.sha256) {
+    assert.equal(payload.actualSha256, binding.sha256, `Current release binding source hash drifted: ${key}`);
+  }
 }
+
+for (const requiredBinding of ['rulebook', 'canonical_data', 'approved_starters']) {
+  assert(manifest.binding_sources?.[requiredBinding], `Current release manifest is missing required binding source: ${requiredBinding}`);
+}
+assert(pdfKeys.has('rulebook-booklet'), 'Current release manifest is missing the canonical Rulebook booklet PDF output.');
 
 if (mismatches.length) {
   console.error(`Current release payload manifest has ${mismatches.length} mismatch(es):`);
