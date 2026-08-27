@@ -92,7 +92,7 @@ describe('v0.7.0 publication boundary', () => {
 
   it('renders the printable Card Anatomy fallback from the live production-card guide', () => {
     expect(bookletRenderer).toContain("import { chromium } from 'playwright'");
-    expect(bookletRenderer).toContain("page.goto('http://127.0.0.1:8000/rulebook/?rules=candidate'");
+    expect(bookletRenderer).toContain("page.goto('http://127.0.0.1:8000/rulebook/'");
     expect(bookletRenderer).toContain(".card-anatomy-guide.markers-positioned .card-anatomy-figure");
     expect(bookletRenderer).toContain('figure.screenshot({ path: CARD_ANATOMY_PATH })');
     expect(bookletRenderer).not.toContain('Promise.all([...document.images]');
