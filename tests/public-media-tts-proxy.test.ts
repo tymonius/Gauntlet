@@ -3,8 +3,8 @@ import worker from '../workers/public-media/src/index.js';
 
 const APPROVED =
   'https://github.com/tymonius/Gauntlet/releases/download/tts-v0.7.0-qa-pr-917-68247f095969/';
-const PUBLIC = 'https://gauntlet.run/tts/v0.7.0/';
-const ASSETS = 'https://gauntlet.run/tts/v0.7.0/assets/917/';
+const PUBLIC = 'https://gauntlet-public-media.tymon-scott.workers.dev/tts/v0.7.0/';
+const ASSETS = 'https://gauntlet-public-media.tymon-scott.workers.dev/tts/v0.7.0/assets/917/';
 
 describe('public-media TTS proxy', () => {
   afterEach(() => {
