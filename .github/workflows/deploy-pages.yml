@@ -55,7 +55,18 @@ jobs:
 
           # Keep the public site below GitHub Pages' 1 GB published-site limit.
           # These are authoring/reconstruction/generated surfaces, not live site dependencies.
-          rm -rf             "$site/artifacts"             "$site/images/3d"             "$site/images/sketches"             "$site/images/tools"             "$site/images/artwork/reference"             "$site/tts/v0.7.0"
+          rm -rf \
+            "$site/artifacts" \
+            "$site/images/3d" \
+            "$site/images/sketches" \
+            "$site/images/tools" \
+            "$site/images/artwork/reference" \
+            "$site/releases/v0.6.2-withdrawn" \
+            "$site/releases/v0.6.3-withdrawn" \
+            "$site/tts/v0.7.0"
+
+          # Editable release-source documents are retained in Git but are not public-site assets.
+          find "$site/releases" -type f -name '*.docx' -delete
 
           test -s "$site/index.html"
           test -s "$site/CNAME"
