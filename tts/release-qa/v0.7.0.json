@@ -5,11 +5,11 @@
   "checks": {
     "tableSetup": {
       "hostedSaveLoad": true,
-      "playerPerspectivesAndHandZones": false,
-      "gauntletSnapsAndTerritoryOrientation": false,
-      "playerTokensAndBattleDice": false,
-      "rulebookSetup": false,
-      "playAreasRemainDistinct": false
+      "playerPerspectivesAndHandZones": true,
+      "gauntletSnapsAndTerritoryOrientation": true,
+      "playerTokensAndBattleDice": true,
+      "rulebookSetup": true,
+      "playAreasRemainDistinct": true
     },
     "factionComponents": {
       "militaryCommandTracker": false,
@@ -31,6 +31,7 @@
   "approvedForWorkshop": false,
   "notes": [
     "2026-08-27: The hosted gauntlet.run v0.7.0 save and its custom assets load successfully in Tabletop Simulator.",
+    "2026-08-27: White/Green perspectives and hand/reserve zones, all six Territory snaps/orientation, faction-colored Player Tokens and battle dice, Rulebook setup from starter Bags, and distinct play areas all passed in-game validation.",
     "2026-08-27: A remote two-player game is not required for v0.7.0 release; focused handling and faction-component validation remain required."
   ]
 }
