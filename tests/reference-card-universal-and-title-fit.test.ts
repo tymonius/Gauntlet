@@ -1,8 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-const contract = JSON.parse(readFileSync('config/tts-component-contract.json', 'utf8'));
-const copy = readFileSync('card-design/reference-copy/v0.6.3/universal-reference.md', 'utf8');
+const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
+const contract = currentGame.componentContract;
+const copy = readFileSync('card-design/reference-copy/v0.7.0/universal-reference.md', 'utf8');
 const referenceRenderer = readFileSync('card-design/reference-card.js', 'utf8');
 const ruleColumns = readFileSync('card-design/card-rule-columns.css', 'utf8');
 const universalStyles = readFileSync('card-design/universal-reference.css', 'utf8');
@@ -25,7 +26,7 @@ describe('final Universal Reference and reference-title fitting', () => {
       deckInclusion: 'every-deck',
     });
 
-    expect(copy).toContain('# Gauntlet v0.6.4 Candidate — Universal Reference Copy');
+    expect(copy).toContain('# Gauntlet v0.7.0 — Universal Reference Copy');
     expect(copy).toContain('### Battle Sequence');
     expect(copy).toContain("When movement enters the opponent's Position, it initiates a battle and immediately enters **Onset**.");
     expect(copy).toContain('1. **Onset**');
