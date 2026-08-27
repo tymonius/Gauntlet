@@ -12,7 +12,7 @@ permissions:
 
 concurrency:
   group: tts-pages-staging
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   stage:
@@ -28,7 +28,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            .github/workflows/stage-approved-tts-pages.yml
+            tts/v0.7.0
 
       - name: Download the exact approved PR #917 release assets
         env:
