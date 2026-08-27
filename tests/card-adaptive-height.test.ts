@@ -27,8 +27,8 @@ describe("adaptive vertical card layout", () => {
 
   it("does not let Leader headings reserve more width than the established fallback track", () => {
     expect(ruleColumnStyles).toContain(".leader-card");
-    expect(ruleColumnStyles).toContain("--rule-label-max: 0.63in");
-    expect(ruleColumnStyles).toContain("--rule-column-gap: 0.026in");
+    expect(ruleColumnStyles).toContain("--rule-label-max: 0.54in");
+    expect(ruleColumnStyles).toContain("--rule-column-gap: 0.018in");
     expect(ruleColumnStyles).not.toContain("--rule-label-max: 0.78in");
   });
 });

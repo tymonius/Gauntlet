@@ -3,7 +3,8 @@ import { describe, expect, test } from 'vitest';
 
 const read = (path: string) => readFileSync(path, 'utf8');
 const lifecycle = JSON.parse(read('config/release-lifecycle.json'));
-const currentVersion = String(lifecycle.current_release || '');
+const currentGame = JSON.parse(read('game-data/current-game.json'));
+const stagedVersion = String(currentGame.displayVersion || currentGame.version || '');
 const factionPaths = [
   'factions/military/index.html',
   'factions/diplomats/index.html',
@@ -33,10 +34,13 @@ describe('current public faction overviews', () => {
     for (const order of ['Entrench', 'Repel', 'Fortify']) expect(general).not.toContain(order);
   });
 
-  test('identifies the homepage with the lifecycle current release', () => {
-    expect(currentVersion).not.toBe('');
+  test('identifies the staged homepage with the current-game release identity', () => {
+    expect(stagedVersion).not.toBe('');
     const homepage = read('index.html');
-    expect(homepage).toContain(currentVersion);
+    expect(homepage).toContain(stagedVersion);
+    if (String(lifecycle.current_release || '') !== stagedVersion) {
+      expect(currentGame.status).toBe('release-candidate');
+    }
   });
 
   test('keeps historical v0.6.1 synchronization away from current faction pages', () => {
