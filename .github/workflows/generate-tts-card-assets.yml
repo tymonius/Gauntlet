@@ -219,7 +219,7 @@ jobs:
                     scripts/generate-tts-starter-decks.mjs|deckbuilder/starter-decks.json)
                       render_starters=true
                       ;;
-                    scripts/generate-tts-environment-assets.mjs|scripts/stage-tts-release-assets.mjs|images/artwork/site/gauntlet-command-tent-gameplay-painting.webp|config/tts-release-target.json|config/release-lifecycle.json|config/github-release-contract.json)
+                    scripts/generate-tts-environment-assets.mjs|scripts/stage-tts-release-assets.mjs|tts/assets/environment/*|config/tts-release-target.json|config/release-lifecycle.json|config/github-release-contract.json)
                       stage_assets=true
                       ;;
                     scripts/check-tts-release-readiness.mjs|scripts/promote-tts-save.mjs)
