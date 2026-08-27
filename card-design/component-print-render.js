@@ -134,6 +134,54 @@
       && card.classList.contains("leader-card--standardized");
   }
 
+  function validateReferenceVisualContract(card) {
+    if (kind !== "reference") return;
+
+    const interior = card.querySelector(".reference-card-interior");
+    const watermark = card.querySelector(".reference-watermark");
+    const emblem = card.querySelector(".reference-faction-emblem");
+    const panels = [...card.querySelectorAll(".reference-panel + .reference-panel")];
+
+    if (!interior || !watermark || !emblem) {
+      throw new Error(`Reference ${id} is missing production parchment, watermark, or emblem structure.`);
+    }
+
+    const interiorStyle = getComputedStyle(interior);
+    if (!interiorStyle.backgroundImage || interiorStyle.backgroundImage === "none") {
+      throw new Error(`Reference ${id} lost the production parchment/background treatment.`);
+    }
+
+    const divided = panels.filter(panel => {
+      const style = getComputedStyle(panel);
+      return Number.parseFloat(style.borderTopWidth || "0") > 0.01
+        && style.borderTopStyle !== "none";
+    });
+    if (divided.length) {
+      throw new Error(`Reference ${id} reintroduced ${divided.length} horizontal body divider(s).`);
+    }
+
+    const emblemStyle = getComputedStyle(emblem);
+    const emblemPaint = [
+      emblemStyle.backgroundImage,
+      emblemStyle.maskImage,
+      emblemStyle.webkitMaskImage,
+    ].filter(Boolean).join(" ");
+    if (!emblemPaint || /^(none\s*)+$/.test(emblemPaint.trim())) {
+      throw new Error(`Reference ${id} lost its production faction/header emblem.`);
+    }
+
+    if (id === "universal-reference") {
+      const watermarkStyle = getComputedStyle(watermark);
+      const watermarkMask = watermarkStyle.maskImage || watermarkStyle.webkitMaskImage || "";
+      if (!watermarkMask.includes("Gauntlet.svg")) {
+        throw new Error("Universal Reference lost the Gauntlet G watermark mask.");
+      }
+      if (!emblemPaint.includes("Gauntlet.svg")) {
+        throw new Error("Universal Reference lost the Gauntlet G header emblem.");
+      }
+    }
+  }
+
   function fitReady(card) {
     if (card.classList.contains("fit-warning")) {
       throw new Error(`Production ${kind} ${id} reports a fit warning.`);
@@ -216,6 +264,8 @@
     if (!fitReady(card) || !imagesReady(card)) {
       throw new Error(`Timed out waiting for production ${kind} component ${id} to finish rendering.`);
     }
+
+    validateReferenceVisualContract(card);
 
     if (versionOverride) {
       const footer = card.querySelectorAll(".card-footer span");
