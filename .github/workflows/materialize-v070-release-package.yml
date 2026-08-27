@@ -143,6 +143,7 @@ jobs:
           NODE
 
       - name: Commit materialized release package
+        if: github.event_name == 'push'
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |

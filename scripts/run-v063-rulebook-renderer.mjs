@@ -10,7 +10,7 @@ function replaceOnce(label, original, replacement) {
   source = source.replace(original, replacement);
 }
 
-replaceOnce('Chapter 5 required anchor', "  '5. Actions and Assets',", "  '5. Actions, Faction Features, Leader Abilities, and Assets',");
+replaceOnce('Chapter 5 required anchor', "  '5. Actions and Assets',", "  '5. Actions, Faction Actions, Faction Abilities, and Assets',");
 replaceOnce('Chapter 8 required anchor', "  '8. Territory Control and Capture',", "  '8. Front Line, Occupation, and Capture',");
 
 const headingOriginal = `        const next = heading.nextElementSibling;

@@ -3,6 +3,7 @@ import { mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { extname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadCurrentGameAuthority, CURRENT_GAME_AUTHORITY_SOURCE } from './current-game-authority.mjs';
+import { normalizeV063CardForPresentation } from '../card-design/v063-card-heading-normalizer.js';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const OUTPUT = join(ROOT, 'card-design', 'generated', 'v064-card-candidates');
@@ -151,7 +152,7 @@ async function main() {
         throw new Error(`Arcane title marker mismatch for ${sourceCard.name}: ${JSON.stringify(metric)}.`);
       }
 
-      const expectedLabels = sourceCard.effects.map(effect => effect.label);
+      const expectedLabels = normalizeV063CardForPresentation(sourceCard).effects.map(effect => effect.label);
       if (JSON.stringify(metric.labels) !== JSON.stringify(expectedLabels)) {
         throw new Error(`Current card effect headings drifted for ${sourceCard.name}: ${JSON.stringify(metric.labels)}.`);
       }
@@ -167,8 +168,6 @@ async function main() {
     await writeFile(join(OUTPUT, 'metrics.json'), `${JSON.stringify({
       authority: CURRENT_GAME_AUTHORITY_SOURCE,
       source: sourcePath,
-      candidateCount: EXPECTED_CANDIDATE_COUNT,
-      retirementCount: EXPECTED_RETIREMENT_COUNT,
       catalogCount: EXPECTED_CATALOG_COUNT,
       cards: metrics,
     }, null, 2)}\n`);
