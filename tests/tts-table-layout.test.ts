@@ -38,8 +38,8 @@ describe('authoritative TTS table layout', () => {
 
     const whiteHandSnap = buildTableSnapPoints().find(point => point.Position.x === 0 && point.Position.z === -18.25);
     const greenHandSnap = buildTableSnapPoints().find(point => point.Position.x === 0 && point.Position.z === 18.25);
-    expect(whiteHandSnap?.Rotation.y).toBe(0);
-    expect(greenHandSnap?.Rotation.y).toBe(180);
+    expect(whiteHandSnap?.Rotation.y).toBe(180);
+    expect(greenHandSnap?.Rotation.y).toBe(0);
   });
 
   it('keeps six visible Gauntlet slots plus two invisible Manifest Destiny extensions and sixteen landscape Deed snaps', () => {
@@ -82,8 +82,8 @@ describe('authoritative TTS table layout', () => {
 
     expect(whiteFaction).toHaveLength(12);
     expect(greenFaction).toHaveLength(12);
-    expect(whiteFaction.every(point => point.Rotation.y === 0)).toBe(true);
-    expect(greenFaction.every(point => point.Rotation.y === 180)).toBe(true);
+    expect(whiteFaction.every(point => point.Rotation.y === 180)).toBe(true);
+    expect(greenFaction.every(point => point.Rotation.y === 0)).toBe(true);
   });
 
   it('draws the visible Hand parking rectangles and only the six primary Territory guides', () => {
