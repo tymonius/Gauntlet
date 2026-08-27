@@ -5,6 +5,8 @@ import { trackerPresentation } from '../scripts/tts-supplemental-geometry.mjs';
 
 const SUPPLEMENTAL_GUID_NOTE_PREFIX = 'gauntlet:supplemental:';
 const SUPPLEMENTAL_STACK_NOTE_PREFIX = 'gauntlet:supplemental-stack:';
+const STARTER_DECK_NOTE_PREFIX = 'gauntlet:starter-deck:';
+const STARTER_TERRITORY_STACK_NOTE_PREFIX = 'gauntlet:starter-territories:';
 const PLAYER_TOKEN_NOTE_PREFIX = 'gauntlet:starter-utility:player-token:';
 const BATTLE_DIE_NOTE_PREFIX = 'gauntlet:starter-utility:battle-die:';
 const PRIVATE_PARKING_NOTE_PREFIX = 'gauntlet:private-parking:';
@@ -111,6 +113,13 @@ function validateTableWorkspace(save) {
   });
   if (whiteLeaderOutlines.length !== 2 || greenLeaderOutlines.length !== 2) {
     throw new Error('Leader & References outlines must fit the fully extended nested tracker assembly for both players.');
+  }
+
+  const whiteLeaderXs = [-16.3, -13.6, -10.9, -8.2];
+  const greenLeaderXs = whiteLeaderXs.map(x => -x);
+  if (whiteLeaderXs.some(x => !close(findSnap(save, x, -19.7)?.Rotation?.y, 180))
+    || greenLeaderXs.some(x => !close(findSnap(save, x, 19.7)?.Rotation?.y, 0))) {
+    throw new Error('Leader & References snaps must sit at the player-side bottom of each workspace so tracker travel extends inward/upward.');
   }
 
   const territory = save.SnapPoints.filter(point => point.Tags?.includes(TERRITORY_TAG));
@@ -220,13 +229,14 @@ function validateHandsAndSeats(save) {
   }
 }
 
-function validateBagsAndUtilities(save) {
+function validateBagsAndUtilities(save, manifest) {
   const bags = (save.ObjectStates || []).filter(object => object?.Name === 'Bag');
   if (bags.length !== 12) throw new Error(`Expected 12 starter Bags; found ${bags.length}.`);
 
   const looseUtilities = save.ObjectStates.filter(object => object?.Name === 'PlayerPawn' || object?.Name === 'Die_6');
   if (looseUtilities.length) throw new Error(`Found ${looseUtilities.length} loose utility objects.`);
 
+  const supplementalById = new Map((manifest?.ready || []).map((component, index) => [component.id, { component, index }]));
   const byFaction = new Map();
   for (const bag of bags) {
     if (!close(bag.Transform?.rotY, 180)) throw new Error(`${bag.Nickname} starter Bag does not use the host-facing stored orientation established by TTS testing.`);
@@ -238,12 +248,53 @@ function validateBagsAndUtilities(save) {
         throw new Error(`${bag.Nickname} contains ${object.Nickname || object.GUID} at stored rotation ${object.Transform.rotY}; expected host-facing ${expectedRotation}.`);
       }
     }
+
     const objects = bag.ContainedObjects || [];
     const token = objects.filter(object => object?.Name === 'PlayerPawn' && String(object.GMNotes || '').startsWith(PLAYER_TOKEN_NOTE_PREFIX));
     const die = objects.filter(object => object?.Name === 'Die_6' && String(object.GMNotes || '').startsWith(BATTLE_DIE_NOTE_PREFIX));
     if (token.length !== 1 || die.length !== 1) throw new Error(`${bag.Nickname} must contain exactly one faction token and one faction die.`);
     if (!sameColor(token[0].ColorDiffuse, bag.ColorDiffuse) || !sameColor(die[0].ColorDiffuse, bag.ColorDiffuse)) {
       throw new Error(`${bag.Nickname} token/die colors do not match the bag faction color.`);
+    }
+
+    const leader = objects.filter(object => object?.Name === 'CardCustom' && /Leader$/u.test(String(object.Description || '')));
+    const playableDeck = objects.filter(object => object?.Name === 'DeckCustom' && String(object.GMNotes || '').startsWith(STARTER_DECK_NOTE_PREFIX));
+    const territoryStacks = objects.filter(object => object?.Name === 'DeckCustom' && String(object.GMNotes || '').startsWith(STARTER_TERRITORY_STACK_NOTE_PREFIX));
+    if (leader.length !== 1 || playableDeck.length !== 1 || territoryStacks.length !== 1) {
+      throw new Error(`${bag.Nickname} must contain exactly one Leader, one playable Deck, and one Territory stack.`);
+    }
+    const territoryStack = territoryStacks[0];
+    if (territoryStack.SidewaysCard !== true || territoryStack.ContainedObjects?.length !== 3) {
+      throw new Error(`${bag.Nickname} Territory package must be one sideways three-card stack.`);
+    }
+    if (territoryStack.ContainedObjects.some(card => (
+      card?.Name !== 'CardCustom'
+      || !/(?:Arena )?Territory$/u.test(String(card.Description || ''))
+      || !close(card.Transform?.rotY, 180)
+    ))) {
+      throw new Error(`${bag.Nickname} Territory stack members are missing or not stored host-facing.`);
+    }
+
+    const rank = object => {
+      if (object === leader[0]) return 0;
+      const notes = String(object?.GMNotes || '');
+      if (notes.startsWith(SUPPLEMENTAL_GUID_NOTE_PREFIX)) {
+        const id = notes.slice(SUPPLEMENTAL_GUID_NOTE_PREFIX.length);
+        const record = supplementalById.get(id);
+        if (record?.component?.representation === 'sliding-tracker') return 1;
+        if (record?.component?.family === 'reference-card') return 2;
+        return 3;
+      }
+      if (notes.startsWith(SUPPLEMENTAL_STACK_NOTE_PREFIX)) return 3;
+      if (notes.startsWith(STARTER_DECK_NOTE_PREFIX)) return 4;
+      if (notes.startsWith(STARTER_TERRITORY_STACK_NOTE_PREFIX)) return 5;
+      if (object?.Name === 'PlayerPawn' || object?.Name === 'Die_6') return 6;
+      return 99;
+    };
+    const ranks = objects.map(rank);
+    if (ranks[0] !== 0 || ranks.some(value => value === 99)
+      || ranks.some((value, index) => index > 0 && value < ranks[index - 1])) {
+      throw new Error(`${bag.Nickname} extraction order must be Leader → trackers → reference cards → other supplementals → Deck → Territory stack → utilities.`);
     }
 
     const faction = String(token[0].GMNotes).slice(PLAYER_TOKEN_NOTE_PREFIX.length);
@@ -263,7 +314,6 @@ function validateBagsAndUtilities(save) {
   }
   return bags;
 }
-
 function validateFamilyStacks(bags) {
   const expectations = new Map([
     ['proposals', { count: 2, cards: 9, sideways: false, rotY: 180, tags: [FACTION_ZONE_TAG] }],
@@ -408,7 +458,7 @@ async function main() {
   validateEnvironment(save);
   validateTableWorkspace(save);
   validateHandsAndSeats(save);
-  const bags = validateBagsAndUtilities(save);
+  const bags = validateBagsAndUtilities(save, manifest);
   validateFamilyStacks(bags);
   validateTerritoriesDeedsAndFactionEligibility(save, manifest);
   validateTrackers(save, manifest);
