@@ -9,12 +9,13 @@ const SOURCES = Object.freeze([
     outputName: 'campaign-map-table.png',
   },
   {
-    source: join(ROOT, 'tts', 'assets', 'environment', 'command-tent-panorama.jpg'),
+    source: join(ROOT, 'images', 'artwork', 'site', 'gauntlet-command-tent-gameplay-painting.webp'),
     outputName: 'command-tent-panorama.png',
+    resize: { width: 2048, height: 1024, fit: 'cover', position: 'centre' },
   },
 ]);
 
-async function normalizePng(source, destination) {
+async function normalizePng(source, destination, resize = null) {
   const bytes = await readFile(source);
   const image = sharp(bytes, { failOn: 'none' });
   const metadata = await image.metadata();
@@ -22,16 +23,18 @@ async function normalizePng(source, destination) {
     throw new Error(`Environment image has no decodable dimensions: ${relative(ROOT, source)}`);
   }
 
-  await sharp(bytes, { failOn: 'none' })
-    .png({ compressionLevel: 9 })
-    .toFile(destination);
+  let pipeline = sharp(bytes, { failOn: 'none' });
+  if (resize) pipeline = pipeline.resize(resize);
+  await pipeline.png({ compressionLevel: 9 }).toFile(destination);
 
   const output = await readFile(destination);
   if (output.length < 8 || output[0] !== 0x89 || output[1] !== 0x50 || output[2] !== 0x4e || output[3] !== 0x47) {
     throw new Error(`Environment normalization did not produce PNG bytes: ${relative(ROOT, destination)}`);
   }
 
-  return { width: metadata.width, height: metadata.height };
+  return resize
+    ? { width: resize.width, height: resize.height }
+    : { width: metadata.width, height: metadata.height };
 }
 
 async function main() {
@@ -41,7 +44,7 @@ async function main() {
 
   for (const entry of SOURCES) {
     const destination = join(outputDir, entry.outputName);
-    const dimensions = await normalizePng(entry.source, destination);
+    const dimensions = await normalizePng(entry.source, destination, entry.resize || null);
     console.log(`Normalized ${relative(ROOT, entry.source)} -> ${relative(ROOT, destination)} (${dimensions.width}x${dimensions.height}).`);
   }
 }
