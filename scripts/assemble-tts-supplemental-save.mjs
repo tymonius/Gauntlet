@@ -59,7 +59,7 @@ const CAPITAL_LEDGER_STARTING_BALANCE = 2;
 const CAPITAL_LEDGER_ROWS_PER_PAGE = 11;
 
 function capitalLedgerLuaScript() {
-  return String.raw\`local STARTING_BALANCE = 2
+  return String.raw`local STARTING_BALANCE = 2
 local ROWS_PER_PAGE = 11
 
 local ledger = {
@@ -294,21 +294,21 @@ function onLoad(savedData)
   self.addContextMenuItem("Open Ledger", function(playerColor) openLedger(playerColor) end)
   Wait.frames(renderLedger, 1)
 end
-\`;
+`;
 }
 
 function capitalLedgerXml() {
   const rows = Array.from({ length: CAPITAL_LEDGER_ROWS_PER_PAGE }, (_, index) => {
     const row = index + 1;
-    return \`
+    return `
       <HorizontalLayout preferredHeight="42" childForceExpandHeight="true" childForceExpandWidth="false" spacing="6">
-        <Text id="ledger-row-\${row}-entry" text="" preferredWidth="430" fontSize="25" color="#2E281F" alignment="MiddleLeft" />
-        <Text id="ledger-row-\${row}-delta" text="" preferredWidth="120" fontSize="25" color="#2E281F" alignment="MiddleCenter" />
-        <Text id="ledger-row-\${row}-balance" text="" preferredWidth="130" fontSize="25" color="#2E281F" alignment="MiddleCenter" />
-      </HorizontalLayout>\`;
+        <Text id="ledger-row-${row}-entry" text="" preferredWidth="430" fontSize="25" color="#2E281F" alignment="MiddleLeft" />
+        <Text id="ledger-row-${row}-delta" text="" preferredWidth="120" fontSize="25" color="#2E281F" alignment="MiddleCenter" />
+        <Text id="ledger-row-${row}-balance" text="" preferredWidth="130" fontSize="25" color="#2E281F" alignment="MiddleCenter" />
+      </HorizontalLayout>`;
   }).join('');
 
-  return \`<Panel id="ledger-window" active="false" width="820" height="930" color="#E8D9B8F5" outline="#31291F" outlineSize="3 3" padding="22 22 22 22">
+  return `<Panel id="ledger-window" active="false" width="820" height="930" color="#E8D9B8F5" outline="#31291F" outlineSize="3 3" padding="22 22 22 22">
     <VerticalLayout childForceExpandHeight="false" childForceExpandWidth="true" spacing="8">
       <HorizontalLayout preferredHeight="66" childForceExpandWidth="false">
         <Text text="FINANCIERS" preferredWidth="220" fontSize="24" color="#324D37" alignment="MiddleLeft" />
@@ -332,7 +332,7 @@ function capitalLedgerXml() {
         <Text text="BALANCE" preferredWidth="130" fontSize="22" color="#4A4134" alignment="MiddleCenter" />
       </HorizontalLayout>
 
-      \${rows}
+      ${rows}
 
       <Panel preferredHeight="2" color="#665A46" />
 
@@ -351,7 +351,7 @@ function capitalLedgerXml() {
 
       <Text text="Public record · Opening Capital 2 · Capital may temporarily exceed the Capital Limit · Capital cannot fall below 0" preferredHeight="40" fontSize="18" color="#665A46" alignment="MiddleCenter" />
     </VerticalLayout>
-  </Panel>\`;
+  </Panel>`;
 }
 
 function makeSupplementalCard(component, releaseAssets, guid) {
