@@ -58,11 +58,16 @@ describe('authoritative TTS table layout', () => {
     expect(snaps.filter(point => point.Tags?.includes('gauntlet-deed-stack'))).toHaveLength(0);
   });
 
-  it('shrinks Leader & References around the tested snap row without moving the snaps', () => {
+  it('anchors Leader & References snaps at the player-side bottom edge of the workspace', () => {
     const snaps = buildTableSnapPoints();
     const whiteLeaderSnaps = snaps.filter(point =>
-      point.Position.z === -16.45 && [-16.3, -13.6, -10.9, -8.2].includes(point.Position.x));
+      point.Position.z === -19.7 && [-16.3, -13.6, -10.9, -8.2].includes(point.Position.x));
+    const greenLeaderSnaps = snaps.filter(point =>
+      point.Position.z === 19.7 && [16.3, 13.6, 10.9, 8.2].includes(point.Position.x));
     expect(whiteLeaderSnaps).toHaveLength(4);
+    expect(greenLeaderSnaps).toHaveLength(4);
+    expect(whiteLeaderSnaps.every(point => point.Rotation.y === 180)).toBe(true);
+    expect(greenLeaderSnaps.every(point => point.Rotation.y === 0)).toBe(true);
 
     const lines = buildTableVectorLines();
     const whiteLeaderLines = lines.filter(line => {
