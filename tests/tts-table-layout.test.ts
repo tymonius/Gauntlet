@@ -61,9 +61,9 @@ describe('authoritative TTS table layout', () => {
   it('anchors Leader & References snaps at the player-side bottom edge of the workspace', () => {
     const snaps = buildTableSnapPoints();
     const whiteLeaderSnaps = snaps.filter(point =>
-      point.Position.z === -19.7 && [-16.3, -13.6, -10.9, -8.2].includes(point.Position.x));
+      point.Position.z === -18.6 && [-16.3, -13.6, -10.9, -8.2].includes(point.Position.x));
     const greenLeaderSnaps = snaps.filter(point =>
-      point.Position.z === 19.7 && [16.3, 13.6, 10.9, 8.2].includes(point.Position.x));
+      point.Position.z === 18.6 && [16.3, 13.6, 10.9, 8.2].includes(point.Position.x));
     expect(whiteLeaderSnaps).toHaveLength(4);
     expect(greenLeaderSnaps).toHaveLength(4);
     expect(whiteLeaderSnaps.every(point => point.Rotation.y === 180)).toBe(true);
@@ -73,10 +73,16 @@ describe('authoritative TTS table layout', () => {
     const whiteLeaderLines = lines.filter(line => {
       const xs = line.points3.map(point => point.x);
       const zs = line.points3.map(point => point.z);
-      return Math.min(...xs) === -17.8 && Math.max(...xs) === -6.7
-        && Math.min(...zs) === -21.45 && Math.max(...zs) === -11.45;
+      return Math.min(...xs) === -17.55 && Math.max(...xs) === -6.95
+        && Math.min(...zs) === -20.35 && Math.max(...zs) === -11.45;
     });
     expect(whiteLeaderLines).toHaveLength(2);
+
+    const text = buildTableTextObjects();
+    const whiteLabel = text.find(object => object.GMNotes === 'gauntlet:table-layout:white-leader-references:label');
+    const greenLabel = text.find(object => object.GMNotes === 'gauntlet:table-layout:green-leader-references:label');
+    expect(whiteLabel?.Transform.posZ).toBeCloseTo(-20.69, 6);
+    expect(greenLabel?.Transform.posZ).toBeCloseTo(20.69, 6);
   });
 
   it('uses normal Faction Zone magnets without a second Deed-stack magnet system', () => {
