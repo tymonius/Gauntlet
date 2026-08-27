@@ -47,31 +47,13 @@ export function buildReadyTrackerRecord(component, renderer = 'sliding-tracker')
   };
 }
 
-export async function captureProductionTracker(page, baseUrl, record, outputPath, displayVersion = '') {
+export async function captureProductionTracker(page, baseUrl, record, outputPath) {
   const componentId = String(record.renderSource?.componentId || '').trim();
   if (!componentId) throw new Error(`Tracker ${record.id} has no production component id.`);
 
-  const url = new URL('/card-design/component-print-render.html', baseUrl);
-  url.searchParams.set('kind', 'tracker');
-  url.searchParams.set('id', componentId);
-  url.searchParams.set('side', 'front');
-  url.searchParams.set('orientation', 'portrait');
-  if (displayVersion) url.searchParams.set('version', displayVersion);
-  await page.goto(url.toString(), { waitUntil: 'load' });
-  await page.waitForFunction(() => (
-    document.body.dataset.renderReady === 'true'
-    || document.body.dataset.renderError === 'true'
-  ));
+  await page.goto(`${baseUrl}/card-design/`, { waitUntil: 'load' });
 
-  const state = await page.evaluate(() => ({
-    error: document.body.dataset.renderError === 'true',
-    message: document.body.dataset.renderErrorMessage || '',
-  }));
-  if (state.error) {
-    throw new Error(`Card-design production renderer failed for tracker ${record.id}: ${state.message || 'unspecified renderer error'}`);
-  }
-
-  const selector = '#renderTarget > .sliding-tracker-card';
+  const selector = `.sliding-tracker-card[data-component-id="${componentId}"]`;
   await page.waitForSelector(selector);
   await page.evaluate(async () => {
     if (document.fonts?.ready) await document.fonts.ready;

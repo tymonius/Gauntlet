@@ -180,7 +180,7 @@ async function renderAssets(catalog, componentContract) {
     let fontsValidated = false;
     for (const card of catalog.playableCards) {
       await page.setViewportSize({ width: 520, height: 700 });
-      await page.goto(`${baseUrl}/card-design/card-review-render.html?fit=production&card=${encodeURIComponent(card.id)}&version=${encodeURIComponent(release.displayVersion || release.version)}`, { waitUntil: 'load' });
+      await page.goto(`${baseUrl}/tts/renderer/?card=${encodeURIComponent(card.id)}`, { waitUntil: 'load' });
       await page.waitForSelector('.gauntlet-card');
       await page.waitForFunction(() => document.body.dataset.renderReady === 'true');
 
@@ -265,7 +265,7 @@ async function renderAssets(catalog, componentContract) {
         hiddenSlotIndex: HIDDEN_SLOT,
       },
       prototypeBack: false,
-      componentContract: 'config/tts-component-contract.json',
+      componentContract: 'game-data/current-game.json#componentContract',
       backPolicy: {
         policy: 'standardBack',
         ...componentContract.standardBack,

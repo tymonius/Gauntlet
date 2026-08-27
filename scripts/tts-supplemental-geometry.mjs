@@ -4,7 +4,6 @@ export const STANDARD_CARD_SHORT_EDGE = 2.5;
 export const STANDARD_CARD_LONG_EDGE = 3.5;
 export const CUSTOM_TILE_CARD_LINEAR_SCALE = 1.5;
 export const ROUNDED_RECTANGLE_TILE_TYPE = 3;
-export const LANDSCAPE_TTS_CELL_ROTATION_DEGREES = 90;
 
 function validateRegistrationPoints(component) {
   const tag = String(component.tts?.snapTag || '').trim();
