@@ -16,6 +16,7 @@ const BOOKLET_PATH = path.join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Ruleboo
 const MANIFEST_PATH = path.join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Manifest.json`);
 const CARD_ANATOMY_PATH = path.join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Card_Anatomy.png`);
 const PLAYER_CHAPTER_11_PATH = path.join(ROOT, 'rulebook', 'player-facing', 'chapter-11.md');
+const RELEASE_NOTES_PATH = path.join(ROOT, 'docs', 'releases', 'github', 'v0.7.0.md');
 const TRANSIENT_RULEBOOK_PATH = path.join(ROOT, 'rulebook-production', '.v063-player-facing-input.md');
 const PRODUCTION_DIR = '/tmp/rulebook-production';
 const PRODUCTION_HTML_PATH = path.join(ROOT, 'rulebook-production', 'full-rulebook.html');
@@ -38,6 +39,14 @@ function run(command, args, options = {}) {
     throw new Error(`${command} ${args.join(' ')} failed with exit code ${result.status}.${options.capture ? `\n${result.stdout || ''}${result.stderr || ''}` : ''}`);
   }
   return result;
+}
+
+function validateReleaseNotesBookletCounts(logicalPages, bookletSides, physicalSheets) {
+  const notes = fs.readFileSync(RELEASE_NOTES_PATH, 'utf8');
+  const expected = `**${logicalPages}-page half-letter booklet**, imposed as **${bookletSides} Letter-landscape sides on ${physicalSheets} physical sheets**`;
+  if (!notes.includes(expected)) {
+    throw new Error(`v0.7.0 release notes do not match generated Rulebook pagination: expected "${expected}".`);
+  }
 }
 
 function brandV070ProductionSurface() {
@@ -177,6 +186,10 @@ const logicalPages = Number(report.outputs?.readerPages);
 if (!Number.isInteger(bookletPages) || bookletPages < 1) throw new Error('Approved Rulebook production report has no valid booklet-side count.');
 if (!Number.isInteger(logicalPages) || logicalPages < 4) throw new Error('Approved Rulebook production report has no valid reading-page count.');
 
+const physicalSheets = Number(report.outputs?.physicalSheets);
+if (!Number.isInteger(physicalSheets) || physicalSheets < 1) throw new Error('Approved Rulebook production report has no valid physical-sheet count.');
+validateReleaseNotesBookletCounts(logicalPages, bookletPages, physicalSheets);
+
 const provenance = JSON.parse(fs.readFileSync(PROVENANCE_PATH, 'utf8'));
 if (provenance.release_version !== RELEASE_VERSION || provenance.source_version !== SOURCE_VERSION || !provenance.authority_set_id) {
   throw new Error('v0.7.0 source provenance is incomplete.');
@@ -255,7 +268,7 @@ const manifest = {
     source_version: SOURCE_VERSION,
     logical_pages: logicalPages,
     imposed_sides: bookletPages,
-    physical_sheets: Number(report.outputs?.physicalSheets),
+    physical_sheets: physicalSheets,
     padding_pages: Number(report.reader?.report?.intentionalBlanks || 0),
     duplex_flip: 'short-edge',
     approved_v063_production_adapter_reused: true,

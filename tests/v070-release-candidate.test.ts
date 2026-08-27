@@ -57,6 +57,10 @@ describe('v0.7.0 release candidate boundary', () => {
     expect(notes).toContain('Final Workshop publication remains gated');
     expect(notes).toContain('does not change the repository\'s current published release');
     expect(notes).not.toContain('Current canonical playtest edition');
+    expect(notes).toContain('100-page half-letter booklet');
+    expect(notes).toContain('50 Letter-landscape sides on 25 physical sheets');
+    expect(notes).toContain('loads the maintained complete v0.7.0 Rulebook authority directly');
+    expect(notes).not.toContain('candidate view is derived from the verified released Rulebook');
   });
   it('materializes v0.7.0 directly from maintained current authorities', () => {
     expect(releaseBuilder).toContain("CURRENT_RULEBOOK_SOURCE = 'rulebook/player-facing/current-rulebook.md'");
@@ -89,6 +93,8 @@ describe('v0.7.0 release candidate boundary', () => {
     expect(bookletRenderer).toContain('function brandV070ProductionSurface()');
     expect(bookletRenderer).toContain("source.replace(/0\\.6\\.3/g, '0.7.0')");
     expect(bookletRenderer).toContain('brandV070ProductionSurface();');
+    expect(bookletRenderer).toContain('function validateReleaseNotesBookletCounts');
+    expect(bookletRenderer).toContain('validateReleaseNotesBookletCounts(logicalPages, bookletPages, physicalSheets);');
     expect(bookletRenderer).toContain('v0.7.0 Rulebook production surface still contains v0.6.3 branding');
     expect(materializer).toContain('Gauntlet_v0.7.0_Card_Anatomy.png');
   });
