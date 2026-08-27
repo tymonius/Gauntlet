@@ -64,8 +64,12 @@ describe('tracker card cap layout', () => {
 
   it('shrinks tracker titles when needed instead of clipping long names', () => {
     expect(renderer).toContain('TRACKER_TITLE_MIN_PT = 9.5');
+    expect(styles).toContain('.tracker-heading h3');
+    expect(styles).toContain('min-width: 0');
     expect(renderer).toContain('title.scrollWidth > title.clientWidth + 0.5');
     expect(renderer).toContain('title.style.fontSize = `${fontSize}px`');
+    expect(renderer).toContain("card.dataset.trackerTitleFit = fits ? 'true' : 'false'");
+    expect(renderer).toContain('Tracker titles cannot fit at the readability floor');
     expect(renderer).toContain('fitTrackerTitle(card)');
   });
 
