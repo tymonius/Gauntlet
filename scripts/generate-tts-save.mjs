@@ -14,6 +14,8 @@ const FACTION_COLORS = Object.freeze({
 });
 const TABLE_IMAGE_SOURCE = 'environment/campaign-map-table.png';
 const PANORAMA_IMAGE_SOURCE = 'environment/command-tent-panorama.png';
+const STARTER_DECK_NOTE_PREFIX = 'gauntlet:starter-deck:';
+const STARTER_TERRITORY_STACK_NOTE_PREFIX = 'gauntlet:starter-territories:';
 
 
 function jsonText(value) {
@@ -135,7 +137,9 @@ function buildStarterKit(starter, releaseAssets, kitTransform, guid) {
   if (!starter?.leader?.tts) throw new Error(`Starter ${starter?.id || 'unknown'} does not contain a rendered Leader reference.`);
   if (!Array.isArray(starter.cards) || !starter.cards.length) throw new Error(`Starter ${starter.id} has no playable cards.`);
   if (!Array.isArray(starter.faceSheets) || !starter.faceSheets.length) throw new Error(`Starter ${starter.id} has no face-sheet references.`);
-  if (!Array.isArray(starter.territories) || !starter.territories.length) throw new Error(`Starter ${starter.id} has no Territories.`);
+  if (!Array.isArray(starter.territories) || starter.territories.length !== 3) {
+    throw new Error(`Starter ${starter.id} must contain exactly three selected Territories; found ${starter.territories?.length || 0}.`);
+  }
 
   const backUrl = requireHostedUrl(releaseAssets, starter.back.file);
   const deckStates = {};
@@ -189,6 +193,7 @@ function buildStarterKit(starter, releaseAssets, kitTransform, guid) {
     CustomDeck: deckStates,
     ContainedObjects: containedCards,
   };
+  deck.GMNotes = `${STARTER_DECK_NOTE_PREFIX}${starter.id}`;
   if (deck.DeckIDs.length !== Number(starter.cardCount) || deck.ContainedObjects.length !== Number(starter.cardCount)) {
     throw new Error(`Starter ${starter.id} generated an incomplete DeckCustom stack: ${deck.DeckIDs.length} DeckIDs / ${deck.ContainedObjects.length} cards; expected ${starter.cardCount}.`);
   }
@@ -229,6 +234,27 @@ function buildStarterKit(starter, releaseAssets, kitTransform, guid) {
     return card;
   });
 
+  for (const territory of territories) {
+    territory.Transform.rotY = 180;
+  }
+  const territoryDeckStates = {};
+  for (const territory of territories) Object.assign(territoryDeckStates, territory.CustomDeck || {});
+  const territoryStack = {
+    ...objectBase(
+      'DeckCustom',
+      `${starter.name} Territories`,
+      'Three selected Territories · setup stack',
+      transform(),
+      guid(),
+    ),
+    Hands: true,
+    GMNotes: `${STARTER_TERRITORY_STACK_NOTE_PREFIX}${starter.id}`,
+    DeckIDs: territories.map(territory => Number(territory.CardID)),
+    SidewaysCard: true,
+    CustomDeck: territoryDeckStates,
+    ContainedObjects: territories,
+  };
+
   const factionLabel = starter.leader.factionLabel || starter.factionId;
   const tint = factionColor(starter.factionId);
   const playerToken = makePawn(`${factionLabel} Player Token`, tint, guid());
@@ -244,10 +270,13 @@ function buildStarterKit(starter, releaseAssets, kitTransform, guid) {
     `${starter.leader.name} · ${starter.factionId}`,
     starter.summary || starter.strategy || '',
     territoryOrder ? `Recommended Territories: ${territoryOrder}` : '',
-    `Contains the complete ${starter.cardCount}-card face-down playable Deck, Leader Card, three selected Territories, faction-colored Player Token, and faction-colored Battle Die.`,
+    `Contains the complete ${starter.cardCount}-card face-down playable Deck, Leader Card, one three-card selected-Territory stack, faction-colored Player Token, and faction-colored Battle Die.`,
   ].filter(Boolean).join('\n\n');
 
-  const containedObjects = [leader, ...territories, deck, playerToken, battleDie];
+  // Base package order is already setup-oriented. Supplemental assembly inserts
+  // trackers/reference material ahead of the playable Deck while retaining this
+  // Leader-first / Deck-before-Territories backbone.
+  const containedObjects = [leader, deck, territoryStack, playerToken, battleDie];
   for (const object of containedObjects) {
     if (object?.Transform) object.Transform.rotY = 180;
   }
