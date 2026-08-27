@@ -120,8 +120,8 @@ describe('authoritative TTS table layout', () => {
     const whiteParking = parkingHiddenZoneTransform('White');
     const greenParking = parkingHiddenZoneTransform('Green');
 
-    expect(white).toMatchObject({ posX: 0, posY: 4, posZ: -23.25, rotY: 0, scaleX: 12, scaleY: 6, scaleZ: 4 });
-    expect(green).toMatchObject({ posX: 0, posY: 4, posZ: 23.25, rotY: 180, scaleX: 12, scaleY: 6, scaleZ: 4 });
+    expect(white).toMatchObject({ posX: 0, posY: 4, posZ: -23.25, rotY: 180, scaleX: 12, scaleY: 6, scaleZ: 4 });
+    expect(green).toMatchObject({ posX: 0, posY: 4, posZ: 23.25, rotY: 0, scaleX: 12, scaleY: 6, scaleZ: 4 });
     expect(whiteParking).toMatchObject({ posX: 0, posY: 3, posZ: -19, scaleX: 7, scaleY: 6, scaleZ: 6.5 });
     expect(greenParking).toMatchObject({ posX: 0, posY: 3, posZ: 19, scaleX: 7, scaleY: 6, scaleZ: 6.5 });
 
