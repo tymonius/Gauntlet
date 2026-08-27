@@ -1,12 +1,23 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-const stager = readFileSync('scripts/stage-tts-release-assets.mjs', 'utf8');
+const stager = readFileSync('scripts/stage-tts-release-assets.mjs', 'utf8');\nconst environmentGenerator = readFileSync('scripts/generate-tts-environment-assets.mjs', 'utf8');
 const workflow = readFileSync('.github/workflows/generate-tts-card-assets.yml', 'utf8');
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 const readme = readFileSync('tts/README.md', 'utf8');
 
 describe('TTS GitHub Release asset hosting', () => {
+  it('uses the two TTS-owned PNG environment sources without re-encoding them', () => {
+    expect(environmentGenerator).toContain("join(ENVIRONMENT_SOURCE_ROOT, 'campaign-map-table.png')");
+    expect(environmentGenerator).toContain("join(ENVIRONMENT_SOURCE_ROOT, 'command-tent-panorama.png')");
+    expect(environmentGenerator).toContain('copyFile(source, destination)');
+    expect(environmentGenerator).not.toContain('sharp');
+    expect(environmentGenerator).not.toContain('playwright');
+    expect(environmentGenerator).not.toContain('images/artwork/site');
+    expect(workflow).toContain('tts/assets/environment/*');
+    expect(workflow).not.toContain('images/artwork/site/gauntlet-command-tent-gameplay-painting.webp');
+  });
+
   it('stages generated network assets plus the two static TTS environment images', () => {
     expect(stager).toContain('resolveCurrentTtsRelease');
     expect(stager).toContain("readJson(join(outputRoot, 'manifest.json'))");
