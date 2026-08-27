@@ -2,12 +2,19 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { loadAndValidateV070TtsManualQa } from './validate-v070-tts-manual-qa.mjs';
 
 const RELEASE_VERSION = 'v0.7.0';
-const SOURCE_VERSION = 'v0.6.4-candidate';
+const SOURCE_VERSION = 'v0.7.0';
 const HISTORICAL_V063_TARGET = '4f475ffb3649da8ed240b94a702c8b3320b91ff6';
 const RELEASE_TITLE = 'Gauntlet v0.7.0 — Illustrated Cards & Tabletop Simulator';
 const PACKAGE = 'releases/v0.7.0';
-const publicationInstant = new Date();
-const publicationDateIso = publicationInstant.toISOString().slice(0, 10);
+const publicationDateIso = String(
+  process.env.GAUNTLET_PUBLICATION_DATE
+  || process.argv.find(argument => argument.startsWith('--publication-date='))?.slice('--publication-date='.length)
+  || ''
+).trim();
+if (!/^\d{4}-\d{2}-\d{2}$/.test(publicationDateIso) || Number.isNaN(Date.parse(`${publicationDateIso}T00:00:00Z`))) {
+  throw new Error('Set GAUNTLET_PUBLICATION_DATE or --publication-date=YYYY-MM-DD for the public cutover.');
+}
+const publicationInstant = new Date(`${publicationDateIso}T00:00:00Z`);
 const publicationDate = publicationInstant.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 
 const readText = path => readFile(path, 'utf8').then(value => value.replace(/\r\n/g, '\n'));
@@ -104,7 +111,7 @@ releaseContract.historical_releases = (releaseContract.historical_releases || []
   });
 await writeJson('config/github-release-contract.json', releaseContract);
 
-const releaseNotes = `# ${RELEASE_TITLE}\n\nGauntlet v0.7.0 is the first published playtest release built around the fully illustrated production card set and the complete Tabletop Simulator package. The published product identity is **v0.7.0**; its approved rules/data source bundle remains **${SOURCE_VERSION}** for provenance.\n\n## Release highlights\n\n- 142 playable cards, 25 Territories, six factions, twelve Leaders, and twelve starter Decks;\n- complete current playable-card artwork with production card layouts and current Territory artwork;\n- finalized shared and faction reference material, including the Universal Reference Card;\n- production supplemental components for all six factions, including trackers, Diplomat Proposals/Treaty Articles, Financier Capital Ledger and Deeds, Mystics Rites, and Inquisition reference material;\n- the published v0.7.0 Rulebook and canonical gameplay-data snapshot;\n- a v0.7.0 Tabletop Simulator package with all twelve starter kits, the shared Universal Reference, and faction supplemental components assembled into each starter Bag; and\n- deterministic hosted-asset staging and machine-readable TTS release-readiness checks.\n\n## Tabletop Simulator\n\nBefore publication, the v0.7.0 TTS package passed both the strict machine-readiness gate and the complete versioned manual/in-game QA gate, including clean-client setup checks, faction-component checks, a remote two-player game, core handling validation, focused faction drills, and resolution of discovered TTS friction.\n\nThe release-event pipeline uploads the same deterministic network assets to this GitHub Release and verifies the final hosted URLs. The TTS implementation remains a digital tabletop rather than a rules engine: players still perform setup, battle resolution, card handling, and faction-specific mechanics themselves. Final Workshop publication and the post-publication public-Workshop smoke test remain tracked in [#851](https://github.com/tymonius/Gauntlet/issues/851).\n\n## Provenance\n\nThis release promotes the approved **${SOURCE_VERSION}** current-game source bundle into the **v0.7.0** product line. The candidate identifier is retained only as source provenance; player-facing release identity is v0.7.0.\n`;
+const releaseNotes = `# ${RELEASE_TITLE}\n\nGauntlet v0.7.0 is the first published playtest release built around the fully illustrated production card set and the complete Tabletop Simulator package. The complete gameplay and Rulebook authorities are both **v0.7.0**.\n\n## Release highlights\n\n- 142 playable cards, 25 Territories, six factions, twelve Leaders, and twelve starter Decks;\n- complete current playable-card artwork with production card layouts and current Territory artwork;\n- finalized shared and faction reference material, including the Universal Reference Card;\n- production supplemental components for all six factions, including trackers, Diplomat Proposals/Treaty Articles, Financier Capital Ledger and Deeds, Mystics Rites, and Inquisition reference material;\n- the published v0.7.0 Rulebook and canonical gameplay-data snapshot;\n- a v0.7.0 Tabletop Simulator package with all twelve starter kits, the shared Universal Reference, and faction supplemental components assembled into each starter Bag; and\n- deterministic hosted-asset staging and machine-readable TTS release-readiness checks.\n\n## Tabletop Simulator\n\nBefore publication, the v0.7.0 TTS package passed both the strict machine-readiness gate and the complete versioned manual/in-game QA gate, including clean-client setup checks, faction-component checks, a remote two-player game, core handling validation, focused faction drills, and resolution of discovered TTS friction.\n\nThe release-event pipeline uploads the same deterministic network assets to this GitHub Release and verifies the final hosted URLs. The TTS implementation remains a digital tabletop rather than a rules engine: players still perform setup, battle resolution, card handling, and faction-specific mechanics themselves. Final Workshop publication and the post-publication public-Workshop smoke test remain tracked in [#851](https://github.com/tymonius/Gauntlet/issues/851).\n\n## Provenance\n\nThis release freezes the complete **v0.7.0** current-game and Rulebook authorities. Earlier v0.6.3 and v0.6.4 derivation documents remain historical provenance only and are not publication inputs.\n`;
 await writeFile('docs/releases/github/v0.7.0.md', releaseNotes);
 
 let homepage = await readText('index.html');
@@ -144,14 +151,14 @@ rulebookIndex = rulebookIndex.replaceAll('v0.6.3', RELEASE_VERSION);
 rulebookIndex = rulebookIndex.replaceAll('version 0.6.3', 'version 0.7.0');
 rulebookIndex = replaceRequired(
   rulebookIndex,
-  'Read the complete canonical Gauntlet v0.7.0 rulebook or switch to the current release-candidate rules.',
+  'Read the complete canonical Gauntlet v0.7.0 rulebook or switch to the v0.7.0 release-candidate rules.',
   'Read the complete canonical Gauntlet v0.7.0 Rulebook.',
   'Rulebook meta description',
 );
 rulebookIndex = replaceRequired(
   rulebookIndex,
-  'Candidate view: current-development rules layered over the published v0.7.0 Rulebook.',
-  'Archived source candidate: retained for provenance; the published v0.7.0 Rulebook is current.',
+  'Candidate view: complete v0.7.0 Rulebook authority before public cutover.',
+  'Published v0.7.0 Rulebook is current.',
   'candidate ruleset note',
 );
 rulebookIndex = replaceRequired(
@@ -162,8 +169,8 @@ rulebookIndex = replaceRequired(
 );
 rulebookIndex = replaceRequired(
   rulebookIndex,
-  '<span>Release candidate</span>\n          <strong>v0.6.4</strong>',
-  '<span>Archived source candidate</span>\n          <strong>v0.6.4</strong>',
+  '<span>Release candidate</span>\n          <strong>v0.7.0</strong>',
+  '<span>Pre-publication view</span>\n          <strong>v0.7.0</strong>',
   'candidate ruleset label',
 );
 await writeFile('rulebook/index.html', rulebookIndex);
@@ -194,8 +201,8 @@ await writeFile('tests/rulebook-ruleset-toggle.test.ts', rulebookToggleTest);
 let changelog = await readText('changelog/index.html');
 changelog = replaceRequired(changelog, '<div><dt>Current release</dt><dd>v0.6.3</dd></div>', '<div><dt>Current release</dt><dd>v0.7.0</dd></div>', 'changelog current release');
 changelog = replaceRequired(changelog, '<div><dt>Published</dt><dd>August 14, 2026</dd></div>', `<div><dt>Published</dt><dd>${publicationDate}</dd></div>`, 'changelog publication date');
-changelog = replaceRequired(changelog, '<div><dt>Baseline</dt><dd>v0.6.2 rules</dd></div>', '<div><dt>Source</dt><dd>v0.6.4 candidate</dd></div>', 'changelog baseline');
-const currentArticle = `\n    <article class="changelog-entry" id="v0-7-0">\n      <p class="changelog-meta">Current release · ${publicationDate}</p>\n      <h2>v0.7.0</h2>\n      <p class="changelog-summary">v0.7.0 promotes the approved v0.6.4 release-candidate rules and data into the first fully illustrated production-card release, together with the machine-ready and manually verified Tabletop Simulator package.</p>\n      <div class="release-actions">\n        <a class="button primary" href="/v0.7.0/">Open v0.7.0 release</a>\n        <a class="button secondary" href="/rulebook/">Read the current rules</a>\n      </div>\n      <h3>At a glance</h3>\n      <ol>\n        <li><strong>The production card set is fully illustrated.</strong> The current playable pool contains 142 cards and 25 Territories across six factions.</li>\n        <li><strong>The v0.6.4 rules candidate is now the published ruleset.</strong> Its source identity remains preserved in release provenance while the player-facing product version is v0.7.0.</li>\n        <li><strong>Tabletop Simulator is part of the release package.</strong> Twelve starter kits, shared references, and faction supplemental components are assembled into the versioned TTS package and were manually verified before publication.</li>\n        <li><strong>Hosted TTS assets are release-versioned.</strong> The GitHub Release pipeline publishes and verifies the deterministic network assets used by the TTS save.</li>\n      </ol>\n    </article>\n`;
+changelog = replaceRequired(changelog, '<div><dt>Baseline</dt><dd>v0.6.2 rules</dd></div>', '<div><dt>Authority</dt><dd>v0.7.0</dd></div>', 'changelog baseline');
+const currentArticle = `\n    <article class="changelog-entry" id="v0-7-0">\n      <p class="changelog-meta">Current release · ${publicationDate}</p>\n      <h2>v0.7.0</h2>\n      <p class="changelog-summary">v0.7.0 freezes the complete v0.7.0 gameplay and Rulebook authorities as the first fully illustrated production-card release, together with the machine-ready and manually verified Tabletop Simulator package.</p>\n      <div class="release-actions">\n        <a class="button primary" href="/v0.7.0/">Open v0.7.0 release</a>\n        <a class="button secondary" href="/rulebook/">Read the current rules</a>\n      </div>\n      <h3>At a glance</h3>\n      <ol>\n        <li><strong>The production card set is fully illustrated.</strong> The current playable pool contains 142 cards and 25 Territories across six factions.</li>\n        <li><strong>The complete v0.7.0 Rulebook is now the published ruleset.</strong> Historical v0.6.3/v0.6.4 derivation files remain provenance only.</li>\n        <li><strong>Tabletop Simulator is part of the release package.</strong> Twelve starter kits, shared references, and faction supplemental components are assembled into the versioned TTS package and were manually verified before publication.</li>\n        <li><strong>Hosted TTS assets are release-versioned.</strong> The GitHub Release pipeline publishes and verifies the deterministic network assets used by the TTS save.</li>\n      </ol>\n    </article>\n`;
 changelog = replaceRequired(changelog, '\n    <article class="changelog-entry" id="v0-6-3">', `${currentArticle}\n    <article class="changelog-entry" id="v0-6-3">`, 'v0.6.3 changelog article');
 changelog = replaceRequired(changelog, '<p class="changelog-meta">Current release · August 14, 2026</p>\n      <h2>v0.6.3</h2>', '<p class="changelog-meta">Previous release · August 14, 2026</p>\n      <h2>v0.6.3</h2>', 'v0.6.3 changelog status');
 changelog = replaceRequired(changelog, '<a href="/v0.6.3/">Current release</a>', '<a href="/v0.7.0/">Current release</a>', 'changelog current release nav');
