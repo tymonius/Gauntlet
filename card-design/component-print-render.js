@@ -4,6 +4,7 @@
   const id = String(params.get("id") || "").trim();
   const side = String(params.get("side") || "front").trim().toLowerCase();
   const orientation = String(params.get("orientation") || "portrait").trim().toLowerCase();
+  const versionOverride = String(params.get("version") || "").trim();
   const target = document.getElementById("renderTarget");
   const TIMEOUT_MS = 30000;
   const supportedKinds = new Set(["leader", "proposal", "reference", "rite", "ritual", "tracker", "supplemental"]);
@@ -214,6 +215,13 @@
     if (!card) throw new Error(`Timed out locating production ${kind} component ${id}.`);
     if (!fitReady(card) || !imagesReady(card)) {
       throw new Error(`Timed out waiting for production ${kind} component ${id} to finish rendering.`);
+    }
+
+    if (versionOverride) {
+      const footer = card.querySelectorAll(".card-footer span");
+      const versionNode = footer.item(footer.length - 1);
+      if (versionNode) versionNode.textContent = versionOverride;
+      card.dataset.renderVersionOverride = versionOverride;
     }
 
     card.style.width = renderWidth;
