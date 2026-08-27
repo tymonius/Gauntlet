@@ -7,6 +7,8 @@ const files = {
   standardBack: 'backs/standard.png',
   factionBack: 'backs/military.png',
   leader: 'leaders/military-general.png',
+  table: 'environment/campaign-map-table.png',
+  panorama: 'environment/command-tent-panorama.png',
   territories: ['territories/one.png', 'territories/two.png', 'territories/three.png'],
 };
 
@@ -18,6 +20,8 @@ const releaseAssets = {
     files.standardBack,
     files.factionBack,
     files.leader,
+    files.table,
+    files.panorama,
     ...files.territories,
   ].map((file) => [file, `https://example.invalid/${version}/${file}`])),
 };
@@ -79,44 +83,85 @@ const starterManifest = {
 describe('generated TTS table structure', () => {
   const save = buildTtsSave(starterManifest, releaseAssets);
 
-  it('creates exactly the Red and Blue player hand zones', () => {
+  it('uses hosted environment assets instead of branch-local raw URLs', () => {
+    expect(save.Table).toBe('Table_Custom');
+    expect(save.Sky).toBe('Sky_Museum');
+    expect(save.TableURL).toBe(`https://example.invalid/${version}/${files.table}`);
+    expect(save.SkyURL).toBe(`https://example.invalid/${version}/${files.panorama}`);
+  });
+
+  it('creates exactly the White and Green native TTS player hand configurations', () => {
     expect(save.Hands.Enable).toBe(true);
-    expect(save.Hands.DisableUnused).toBe(true);
-    expect(save.Hands.HandTransforms.map((hand) => hand.Color)).toEqual(['Red', 'Blue']);
-    expect(save.Hands.HandTransforms[0].Transform.posZ).toBeLessThan(0);
-    expect(save.Hands.HandTransforms[1].Transform.posZ).toBeGreaterThan(0);
+    expect(save.Hands.DisableUnused).toBe(false);
+    expect(save.Hands.HandTransforms.map((hand) => hand.Color)).toEqual(['White', 'Green']);
+    expect(save.Hands.HandTransforms[0].Transform).toMatchObject({ posY: 4, posZ: -23.25, rotY: 0, scaleX: 12, scaleY: 6, scaleZ: 4 });
+    expect(save.Hands.HandTransforms[1].Transform).toMatchObject({ posY: 4, posZ: 23.25, rotY: 180, scaleX: 12, scaleY: 6, scaleZ: 4 });
   });
 
   it('creates the six center-line Gauntlet snap positions in order', () => {
     expect(save.SnapPoints).toHaveLength(6);
     expect(save.SnapPoints.map((point) => point.Position.x)).toEqual([0, 0, 0, 0, 0, 0]);
     expect(save.SnapPoints.map((point) => point.Position.z)).toEqual([-7.5, -4.5, -1.5, 1.5, 4.5, 7.5]);
+    expect(save.SnapPoints.every((point) => point.Rotation === undefined)).toBe(true);
   });
 
-  it('provides one battle die and one Player Token for each player', () => {
-    const objects = save.ObjectStates;
-    expect(objects.filter((object) => object.Name === 'Die_6').map((object) => object.Nickname).sort())
-      .toEqual(['Blue Battle Die', 'Red Battle Die']);
-    expect(objects.filter((object) => object.Name === 'PlayerPawn').map((object) => object.Nickname).sort())
-      .toEqual(['Blue Player Token', 'Red Player Token']);
+  it('keeps player utilities inside the selected faction starter Bag rather than on the table', () => {
+    const topLevel = save.ObjectStates;
+    expect(topLevel.filter((object) => object.Name === 'Die_6')).toHaveLength(0);
+    expect(topLevel.filter((object) => object.Name === 'PlayerPawn')).toHaveLength(0);
+
+    const bag = topLevel.find((object) => object.Name === 'Bag');
+    expect(bag).toBeTruthy();
+    expect(bag.Transform.rotY).toBe(180);
+    expect(bag.ContainedObjects.every((object) => object.Transform?.rotY === 180)).toBe(true);
+    const die = bag.ContainedObjects.filter((object) => object.Name === 'Die_6');
+    const token = bag.ContainedObjects.filter((object) => object.Name === 'PlayerPawn');
+    expect(die).toHaveLength(1);
+    expect(token).toHaveLength(1);
+    expect(die[0].Nickname).toBe('Military Battle Die');
+    expect(token[0].Nickname).toBe('Military Player Token');
+    expect(die[0].GMNotes).toBe('gauntlet:starter-utility:battle-die:military');
+    expect(token[0].GMNotes).toBe('gauntlet:starter-utility:player-token:military');
+    expect(die[0].ColorDiffuse).toEqual(bag.ColorDiffuse);
+    expect(token[0].ColorDiffuse).toEqual(bag.ColorDiffuse);
   });
 
-  it('builds each starter Bag with one Leader, three sideways Territories, and one Deck', () => {
+  it('builds each starter Bag with a Leader, playable Deck, one three-Territory stack, token, and die', () => {
     const bag = save.ObjectStates.find((object) => object.Name === 'Bag');
     expect(bag).toBeTruthy();
     expect(bag.ContainedObjects).toHaveLength(5);
 
-    const deck = bag.ContainedObjects.filter((object) => object.Name === 'DeckCustom');
-    const cards = bag.ContainedObjects.filter((object) => object.Name === 'CardCustom');
-    const leader = cards.filter((object) => object.Description.endsWith('Leader'));
-    const territories = cards.filter((object) => object.Description.includes('Territory'));
+    const leader = bag.ContainedObjects.find((object) => object.Name === 'CardCustom' && object.Description.endsWith('Leader'));
+    const deck = bag.ContainedObjects.find((object) => object.GMNotes === 'gauntlet:starter-deck:military-general-test');
+    const territoryStack = bag.ContainedObjects.find((object) => object.GMNotes === 'gauntlet:starter-territories:military-general-test');
+    const territories = territoryStack?.ContainedObjects || [];
 
-    expect(deck).toHaveLength(1);
-    expect(deck[0].DeckIDs).toEqual([101, 101]);
-    expect(leader).toHaveLength(1);
-    expect(leader[0].CardID).toBe(10000);
+    expect(bag.ContainedObjects.slice(0, 3).map((object) => object.GMNotes || object.Nickname)).toEqual([
+      'General',
+      'gauntlet:starter-deck:military-general-test',
+      'gauntlet:starter-territories:military-general-test',
+    ]);
+    expect(leader?.CardID).toBe(10000);
+
+    expect(deck?.Name).toBe('DeckCustom');
+    expect(deck?.DeckIDs).toEqual([101, 101]);
+    expect(deck?.ContainedObjects.every((card) => card.GMNotes === 'gauntlet:playable-card:test-card')).toBe(true);
+
+    expect(territoryStack?.Name).toBe('DeckCustom');
+    expect(territoryStack?.SidewaysCard).toBe(true);
+    expect(territoryStack?.Transform.rotY).toBe(180);
+    expect(territoryStack?.DeckIDs).toEqual([20000, 20001, 20002]);
     expect(territories).toHaveLength(3);
     expect(territories.every((territory) => territory.SidewaysCard === true)).toBe(true);
+    expect(territories.every((territory) => territory.Transform.rotY === 180)).toBe(true);
+    expect(territories.every((territory) => String(territory.LuaScript || '') === '')).toBe(true);
+    expect(territories.every((territory) => !String(territory.LuaScript || '').includes('tryRotate'))).toBe(true);
+    expect(territories.every((territory) => !String(territory.LuaScript || '').includes('use_rotation_value_flip'))).toBe(true);
+    expect(territories.every((territory) => Object.values(territory.CustomDeck)
+      .every((state) => state.BackURL === `https://example.invalid/${version}/${files.standardBack}`))).toBe(true);
+
+    expect(bag.ContainedObjects.filter((object) => object.Name === 'PlayerPawn')).toHaveLength(1);
+    expect(bag.ContainedObjects.filter((object) => object.Name === 'Die_6')).toHaveLength(1);
   });
 
   it('uses only HTTPS hosted URLs for every custom face and back in the save', () => {

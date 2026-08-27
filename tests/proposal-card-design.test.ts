@@ -39,7 +39,7 @@ describe("Diplomat Proposal / Treaty Article catalog", () => {
     expect(approved.mechanics_changed).toBe(false);
     expect(approved.proposals).toHaveLength(9);
     expect(approved.proposals.map((proposal: { id: string }) => proposal.id)).toEqual(proposalIds);
-    expect(currentAuthority.sources.proposals).toBe("/docs/v0.6.4-diplomat-proposals.json");
+    expect(currentAuthority.proposals).toEqual(approved.proposals);
     expect(proposalRenderer).toContain("loadCurrentGame");
     expect(proposalRenderer).toContain("currentGame.proposals");
     expect(proposalRenderer).toContain("currentDisplayVersion = currentGame.displayVersion");
@@ -75,10 +75,10 @@ describe("Diplomat Proposal / Treaty Article catalog", () => {
     expect(proposalRenderer).toContain("value-medallion");
   });
 
-  it("leaves Proposal source validation and precedence in the current-game authority rather than the renderer", () => {
-    expect(currentAuthority.version).toBe("v0.6.4-candidate");
-    expect(currentAuthority.baseVersion).toBe("v0.6.3");
-    expect(currentAuthority.sources.proposals).toBe("/docs/v0.6.4-diplomat-proposals.json");
+  it("keeps Proposal authority complete in current-game while preserving the historical rewrite as provenance", () => {
+    expect(currentAuthority.version).toBe("v0.7.0");
+    expect(currentAuthority.proposals).toEqual(approved.proposals);
+    expect(currentAuthority.provenance.historicalInputs.proposals).toBe("/docs/v0.6.4-diplomat-proposals.json");
     expect(proposalRenderer).toContain("if (!proposals.length) throw new Error('Current-game authority has no Proposals.')");
     expect(proposalRenderer).toContain("root.dataset.proposalCount = String(proposals.length)");
     expect(proposalRenderer).toContain("document.querySelectorAll('[data-proposal-count]')");

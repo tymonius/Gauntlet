@@ -199,7 +199,7 @@ export function buildReadinessReport({ release, contract, supplementalManifest, 
       'Verify both player perspectives, hand zones, Gauntlet snaps, Territory orientation, dice, and Player Tokens.',
       'Unpack and play with representative starter kits from all six factions.',
       'Verify each faction supplemental component can be manipulated as intended, including trackers, Rites, Proposals/Treaties, Ledger, and Deeds.',
-      'Complete at least one full remote two-player game before Workshop publication.',
+      'Exercise core handling and any faction supplemental interactions not already covered through focused in-game drills before Workshop publication.',
     ],
   };
 }

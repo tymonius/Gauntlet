@@ -1,8 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-const contract = JSON.parse(readFileSync('config/tts-component-contract.json', 'utf8'));
-const standards = readFileSync('card-design/reference-copy/v0.6.3/README.md', 'utf8');
+const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
+const contract = currentGame.componentContract;
+const standards = readFileSync('card-design/reference-copy/v0.7.0/README.md', 'utf8');
 const references = [
   ...(contract.sharedComponents || []),
   ...(contract.components || []),

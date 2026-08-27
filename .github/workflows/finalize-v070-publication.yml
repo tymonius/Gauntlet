@@ -1,0 +1,77 @@
+name: Finalize v0.7.0 publication
+
+on:
+  workflow_dispatch:
+    inputs:
+      publication_date:
+        description: Public cutover date in YYYY-MM-DD
+        required: true
+        type: string
+      confirmation:
+        description: Type publish-v0.7.0 to confirm the cutover
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: finalize-v0.7.0-publication
+  cancel-in-progress: false
+
+jobs:
+  finalize:
+    if: ${{ inputs.confirmation == 'publish-v0.7.0' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout frozen v0.7.0 cutover branch
+        uses: actions/checkout@v4
+        with:
+          ref: release/v0.7.0-cutover
+          fetch-depth: 0
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Validate publication date
+        env:
+          PUBLICATION_DATE: ${{ inputs.publication_date }}
+        run: |
+          node --input-type=module <<'NODE'
+          const value = process.env.PUBLICATION_DATE || '';
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(value) || Number.isNaN(Date.parse(`${value}T00:00:00Z`))) {
+            throw new Error('publication_date must be a valid YYYY-MM-DD date.');
+          }
+          NODE
+
+      - name: Require complete TTS manual QA
+        run: node scripts/validate-v070-tts-manual-qa.mjs
+
+      - name: Finalize public cutover
+        env:
+          GAUNTLET_PUBLICATION_DATE: ${{ inputs.publication_date }}
+        run: npm run release:v070:finalize
+
+      - name: Run release-boundary tests
+        run: |
+          npx vitest run tests/v070-release-candidate.test.ts tests/rulebook-ruleset-toggle.test.ts
+          node scripts/validate-current-public-contract.mjs
+
+      - name: Commit public cutover
+        env:
+          PUBLICATION_DATE: ${{ inputs.publication_date }}
+        run: |
+          if git diff --quiet; then
+            echo "Finalizer produced no changes."
+            exit 1
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add             config/release-lifecycle.json             config/github-release-contract.json             releases/v0.7.0/Gauntlet_v0.7.0_Manifest.json             docs/releases/github/v0.7.0.md             index.html             rulebook/index.html             rulebook/app.js             tests/rulebook-ruleset-toggle.test.ts             changelog/index.html
+          git commit -m "Finalize Gauntlet v0.7.0 publication (${PUBLICATION_DATE})"
+          git push origin HEAD:release/v0.7.0-cutover

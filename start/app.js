@@ -1,6 +1,6 @@
 (() => {
   const STORAGE_KEY = "gauntlet_standalone_onboarding_v1";
-  const FACTIONS = Object.freeze({
+  const FACTION_PRESENTATION = Object.freeze({
     military: {
       name: "Military",
       summary: "Turn battlefield victories into Command, then spend it on movement, pressure, defense, and control.",
@@ -51,6 +51,9 @@
     }
   });
 
+  let currentAuthority = null;
+  let FACTIONS = Object.freeze({});
+
   const state = {
     factionId: "",
     leaderId: "",
@@ -80,6 +83,7 @@
     el.printForm.addEventListener("submit", openGuidedDeckbuilder);
     installTrackedPlaytestAction();
 
+    await loadCurrentAuthority();
     restoreState();
     renderChoice();
     await loadStarterDecks();
@@ -174,17 +178,50 @@
     syncPrintAction();
   }
 
+  async function loadCurrentAuthority() {
+    const response = await fetch("../game-data/current-game.json", { cache: "no-store" });
+    if (!response.ok) throw new Error(`Current-game authority returned ${response.status}.`);
+    const authority = await response.json();
+    if (authority?.schemaVersion !== 2 || authority?.authority !== "current-game" || authority?.version !== "v0.7.0") {
+      throw new Error("Start Playing requires the complete v0.7.0 current-game authority.");
+    }
+    if (!Array.isArray(authority.gameplay?.factions) || !Array.isArray(authority.leaders)) {
+      throw new Error("Current-game authority is missing factions or Leaders.");
+    }
+    currentAuthority = authority;
+
+    FACTIONS = Object.freeze(Object.fromEntries(authority.gameplay.factions.map(faction => {
+      const presentation = FACTION_PRESENTATION[faction.id] || {};
+      const leaders = authority.leaders
+        .filter(leader => leader.faction === faction.id)
+        .map(leader => {
+          const copy = presentation.leaders?.find(item => item.id === leader.id) || {};
+          return {
+            id: leader.id,
+            name: leader.name,
+            portrait: leader.image || copy.portrait || "",
+            summary: copy.summary || leader.note || "",
+          };
+        });
+      return [faction.id, Object.freeze({
+        name: faction.name,
+        summary: presentation.summary || "",
+        leaders: Object.freeze(leaders),
+      })];
+    })));
+  }
+
   async function loadStarterDecks() {
     try {
-      const [deckResponse, tipResponse] = await Promise.all([
-        fetch("../deckbuilder/starter-decks.json", { cache: "no-store" }),
-        fetch("../deckbuilder/starter-first-game-tips.json", { cache: "no-store" })
-      ]);
-      if (!deckResponse.ok) throw new Error(`Starter deck library returned ${deckResponse.status}.`);
+      const tipResponse = await fetch("../deckbuilder/starter-first-game-tips.json", { cache: "no-store" });
       if (!tipResponse.ok) throw new Error(`Starter tip library returned ${tipResponse.status}.`);
-      const [data, tipData] = await Promise.all([deckResponse.json(), tipResponse.json()]);
+      const tipData = await tipResponse.json();
+      const data = currentAuthority?.starterDecks;
+      if (!data || !Array.isArray(data.decks)) {
+        throw new Error("Current-game authority did not provide starter Deck data.");
+      }
       const tips = tipData?.tips && typeof tipData.tips === "object" ? tipData.tips : {};
-      state.starterDecks = (Array.isArray(data.decks) ? data.decks : []).map(deck => ({
+      state.starterDecks = data.decks.map(deck => ({
         ...deck,
         firstGameTip: deck.firstGameTip || tips[deck.id] || ""
       }));

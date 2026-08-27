@@ -122,37 +122,3 @@ jobs:
           test "$(wc -c < /tmp/all-factions-promotional-showcase.png)" -gt 100000
           file /tmp/all-factions-promotional-showcase.png | grep -q 'PNG image data'
           echo "Verified $url"
-
-      - name: Verify clean v0.7.0 TTS proxy
-        shell: bash
-        run: |
-          set -euo pipefail
-          save_url="https://gauntlet.run/tts/v0.7.0/Gauntlet_v0.7.0_TTS_Mod.json?v=${GITHUB_SHA}"
-          curl --fail --silent --show-error --location --retry 8 --retry-delay 4 --retry-all-errors \
-            "$save_url" -o /tmp/Gauntlet_v0.7.0_TTS_Mod.json
-          SAVE=/tmp/Gauntlet_v0.7.0_TTS_Mod.json node <<'NODE'
-          const fs = require('fs');
-          const save = JSON.parse(fs.readFileSync(process.env.SAVE, 'utf8'));
-          const urls = new Set();
-          function visit(value) {
-            if (Array.isArray(value)) {
-              value.forEach(visit);
-              return;
-            }
-            if (!value || typeof value !== 'object') return;
-            for (const child of Object.values(value)) {
-              if (typeof child === 'string' && /^https:\/\//i.test(child)) urls.add(child);
-              else visit(child);
-            }
-          }
-          visit(save);
-          const ttsUrls = [...urls].filter(url => url.includes('/tts/v0.7.0/'));
-          if (!ttsUrls.length) throw new Error('Clean TTS save contains no gauntlet.run TTS asset URLs.');
-          if ([...urls].some(url => url.includes('tts-v0.7.0-qa-pr-909-'))) {
-            throw new Error('Clean TTS save exposes a PR-preview asset URL.');
-          }
-          if (ttsUrls.some(url => !url.startsWith('https://gauntlet.run/tts/v0.7.0/'))) {
-            throw new Error('Clean TTS save contains an unexpected TTS asset host.');
-          }
-          console.log(`Validated ${ttsUrls.length} clean TTS URLs in the public mod JSON.`);
-          NODE

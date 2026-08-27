@@ -67,7 +67,10 @@ describe("TTS Territory assets", () => {
     expect(renderer).toContain("/images/artwork/cards/territories/");
     expect(existsSync("images/artwork/cards/territories/high-ground.jpg")).toBe(true);
     expect(existsSync("images/artwork/cards/territories/arena-grand-melee.png")).toBe(true);
-    expect(sharedStyles).toContain("grid-template-rows: minmax(0, var(--art-height)) auto");
+    expect(sharedStyles).toContain(".territory-body {");
+    expect(sharedStyles).toContain("display: flex");
+    expect(sharedStyles).toContain("flex-direction: column");
+    expect(sharedStyles).toContain("flex: 1 1 0");
     expect(sharedStyles).not.toContain("grid-template-columns: var(--art-width)");
     expect(sharedStyles).toContain(".territory-art {");
     expect(sharedStyles).toContain("width: 100%");
@@ -88,30 +91,38 @@ describe("TTS Territory assets", () => {
 
   it("gives Territory effect text its natural height before clipping", () => {
     expect(sharedStyles).toContain("overflow: visible");
-    expect(sharedStyles).toContain("padding: 0.045in 0.07in 0.045in");
+    expect(sharedStyles).toContain("padding: 0.045in 0.07in 0.018in");
     expect(sharedStyles).toContain("line-height: 1.1");
     expect(sharedStyles).not.toContain("line-height: 1.18");
   });
 
-  it("keeps the current catalog index stable while candidate review frames use v0.6.4 Territory text", () => {
+  it("keeps the current catalog index and review frames on current-game Territory authority", () => {
     expect(specimenPage).toContain('id="territory-title"');
     expect(specimenPage).toContain('class="card-section territory-specimen-section"');
     expect(specimenPage).toContain('id="territoryReviewSections"');
     expect(specimenPage).toContain('<span data-territory-count>25</span>');
     expect(specimenPage).toContain('<span data-arena-count>4</span>');
-    expect(reviewScript).toContain("canonical.territories||[]");
-    expect(reviewScript).toContain("territoryGroup('standard','Territories',ordinary)");
-    expect(reviewScript).toContain("territoryGroup('arenas','Arenas',arenas)");
+    expect(reviewScript).toContain("const current = await currentGame()");
+    expect(reviewScript).toContain("current.territories || []");
+    expect(reviewScript).toContain("territoryGroup('standard','Territories',ordinary,current.displayVersion)");
+    expect(reviewScript).toContain("territoryGroup('arenas','Arenas',arenas,current.displayVersion)");
     expect(reviewScript).toContain('class="territory-review-frame"');
     expect(reviewScript).toContain("territory-review-render.html?territory=");
-    expect(territoryReviewScript).toContain("const CANDIDATE_SOURCE = '/docs/v0.6.4-territories.json'");
-    expect(territoryReviewScript).toContain("const EXPECTED_SOURCE_ISSUE = 738");
-    expect(territoryReviewScript).toContain("const EXPECTED_VERSION = 'v0.6.4-candidate'");
-    expect(territoryReviewScript).toContain("source.territories || []");
+    expect(territoryReviewScript).toContain("import { loadCurrentGame } from '../game-data/current-game.mjs'");
+    expect(territoryReviewScript).toContain("const currentGame = await loadCurrentGame()");
+    expect(territoryReviewScript).toContain("currentGame.findTerritory(territoryId)");
+    expect(territoryReviewScript).toContain("source: currentGame.authorityUrl");
     expect(territoryReviewScript).not.toContain("Gauntlet_v0.6.3_Canonical_Data.json");
     expect(territoryReviewPage).toContain("Gauntlet v0.6.4 Candidate Territory Review Render");
     expect(dedicatedSpecimenPage).toContain("Gauntlet Territory Card Mockup");
     expect(dedicatedSpecimenPage).toContain('aria-label="High Ground Territory card-front prototype"');
+  });
+
+  it("orients Territory faces upright with the shared landscape packaging authority", () => {
+    expect(generator).toContain("LANDSCAPE_TTS_CELL_ROTATION_DEGREES");
+    expect(generator).toContain("rotate(${LANDSCAPE_TTS_CELL_ROTATION_DEGREES}deg)");
+    expect(generator).toContain("sheetCellRotationDegrees: LANDSCAPE_TTS_CELL_ROTATION_DEGREES");
+    expect(generator).not.toContain("rotate(-90deg)");
   });
 
   it("packs Territories into as many seven-by-four sheets as the current pool requires", () => {
@@ -141,14 +152,14 @@ describe("TTS Territory assets", () => {
   });
 
   it("maximizes art height before reducing text", () => {
-    expect(sharedStyles).toContain("--art-height: 1.42in");
+    expect(sharedStyles).toContain("--art-height: 0.78in");
     expect(renderer).toContain("const MINIMUM_ART_HEIGHT = 0.55 * CSS_PIXELS_PER_INCH");
-    expect(renderer).toContain("while (cardOverflows(card) && artHeight > MINIMUM_ART_HEIGHT)");
+    expect(renderer).toContain("art.style.minHeight = \`${MINIMUM_ART_HEIGHT}px\`");
     expect(renderer).toContain("card.dataset.artHeight");
     expect(renderer).toContain("card.dataset.artSpansBody");
-    expect(renderer).toContain("while (cardOverflows(card) && effectScale > 0.78)");
+    expect(renderer).toContain("while (bodyOverflows(body, art, effect) && effectScale > 0.78)");
     expect(renderer).toContain("card.classList.add('compact')");
-    expect(renderer).toContain("while (cardOverflows(card) && effectScale > MINIMUM_EFFECT_SCALE)");
+    expect(renderer).toContain("while (bodyOverflows(body, art, effect) && effectScale > MINIMUM_EFFECT_SCALE)");
     expect(renderer).toContain("card.classList.toggle('fit-warning', !fits)");
     expect(generator).toContain("Territory text does not fit the approved landscape frame");
   });

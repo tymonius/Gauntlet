@@ -3,7 +3,7 @@ import { createServer } from 'node:http';
 import { mkdir, readFile, stat } from 'node:fs/promises';
 import { extname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { readCurrentJsonSource, CURRENT_GAME_MANIFEST_SOURCE } from './current-game-authority.mjs';
+import { loadCurrentGameAuthority, CURRENT_GAME_AUTHORITY_SOURCE } from './current-game-authority.mjs';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const OUTPUT = join(ROOT, 'card-design', 'generated', 'proposals');
@@ -12,7 +12,6 @@ const CARD_WIDTH = 240;
 const CARD_HEIGHT = 336;
 const EXPECTED_PROPOSALS = 9;
 const EXPECTED_FACES = EXPECTED_PROPOSALS * 2;
-const EXPECTED_SOURCE_ISSUE = 617;
 const MINIMUM_RULE_SCALE = 0.93;
 
 function contentType(path) {
@@ -60,15 +59,11 @@ async function main() {
   try { ({ chromium } = await import('playwright')); }
   catch { throw new Error('Playwright is required.'); }
 
-  const { manifest, source: sourcePath, data: source } = await readCurrentJsonSource('proposals');
-  if (source.version !== manifest.version
-    || source.base_version !== manifest.baseVersion
-    || source.source_issue !== EXPECTED_SOURCE_ISSUE
-    || source.mechanics_changed !== false) {
-    throw new Error('Proposal render validation source does not match the current-game authority.');
-  }
-  if (!Array.isArray(source.proposals) || source.proposals.length !== EXPECTED_PROPOSALS) {
-    throw new Error(`Expected ${EXPECTED_PROPOSALS} current Proposals in the authority-selected render source.`);
+  const authority = await loadCurrentGameAuthority();
+  const sourcePath = CURRENT_GAME_AUTHORITY_SOURCE;
+  const source = { proposals: authority.proposals || [] };
+  if (authority.version !== 'v0.7.0' || source.proposals.length !== EXPECTED_PROPOSALS) {
+    throw new Error(`Expected ${EXPECTED_PROPOSALS} Proposals in the complete v0.7.0 authority.`);
   }
 
   await mkdir(OUTPUT, { recursive: true });
@@ -147,7 +142,7 @@ async function main() {
         if (face.stake !== proposal.stake) {
           throw new Error(`Stake mismatch for ${proposal.name}: ${JSON.stringify(face)}.`);
         }
-        if (face.version !== manifest.displayVersion) {
+        if (face.version !== authority.displayVersion) {
           throw new Error(`Current-game version footer missing for ${proposal.name}: ${JSON.stringify(face)}.`);
         }
         if (Math.abs(face.width - CARD_WIDTH) > 0.25 || Math.abs(face.height - CARD_HEIGHT) > 0.25) {
@@ -188,7 +183,7 @@ async function main() {
       path: join(OUTPUT, 'diplomat-proposal-card-review.png'),
     });
     console.log(JSON.stringify({
-      authority: CURRENT_GAME_MANIFEST_SOURCE,
+      authority: CURRENT_GAME_AUTHORITY_SOURCE,
       source: sourcePath,
       sourceIssue: source.source_issue,
       metrics,

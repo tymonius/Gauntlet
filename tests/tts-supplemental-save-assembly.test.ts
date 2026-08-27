@@ -1,244 +1,229 @@
 import { describe, expect, it } from 'vitest';
 import { assembleReadySupplementals } from '../scripts/assemble-tts-supplemental-save.mjs';
+import {
+  CUSTOM_TILE_CARD_LINEAR_SCALE,
+  ROUNDED_RECTANGLE_TILE_TYPE,
+} from '../scripts/tts-supplemental-geometry.mjs';
 
-function bag(nickname: string, guid: string, leaderCardId?: number) {
+const PENDING_NOTE = 'Ready shared and faction supplemental components are assembled into the same starter kit later in the TTS package pipeline. Rules remain manual.';
+
+function card(id: string, family: string, faction: string, cardId: number, deckId: number) {
   return {
-    Name: 'Bag',
-    Nickname: nickname,
-    Description: 'Starter kit',
-    GUID: guid,
-    ContainedObjects: [
-      {
-        Name: 'CardCustom',
-        Nickname: leaderCardId ? 'Selected Leader' : 'Existing card',
-        GUID: `${guid.slice(0, 5)}a`,
-        ...(leaderCardId ? { CardID: leaderCardId } : {}),
-      },
-    ],
+    id,
+    name: id,
+    faction,
+    family,
+    quantity: 1,
+    productionStatus: 'ready',
+    representation: 'card',
+    tts: {
+      cardId,
+      deckId,
+      faceFile: `supplementals/fronts/${id}.png`,
+      backFile: `supplementals/reverses/${id}.png`,
+      numWidth: 1,
+      numHeight: 1,
+      ...(family === 'deed-card' ? { sidewaysCard: true } : {}),
+    },
   };
 }
 
 function fixture() {
-  const save = {
-    Note: 'This scaffold intentionally does not yet include faction-specific supplemental trackers or secondary components. Rules remain manual.',
-    Rules: 'This scaffold intentionally does not yet include faction-specific supplemental trackers or secondary components. Rules remain manual.',
+  const save: any = {
+    Note: `Gauntlet current-test review scaffold.\n\n${PENDING_NOTE}`,
+    Rules: `Gauntlet current-test review scaffold.\n\n${PENDING_NOTE}`,
     ObjectStates: [
-      bag('Mystics Starter — Alchemist', '000010'),
-      bag('Military Starter — General', '000020', 10000),
+      {
+        Name: 'Bag', Nickname: 'Financiers Starter — Banker', Description: 'Starter kit', GUID: '000010',
+        ContainedObjects: [
+          { Name: 'CardCustom', Nickname: 'Banker', GUID: '00001a', CardID: 10000 },
+          { Name: 'DeckCustom', Nickname: 'Financiers Starter Deck', GUID: '00001b', GMNotes: 'gauntlet:starter-deck:financiers' },
+          {
+            Name: 'DeckCustom', Nickname: 'Financiers Territories', GUID: '00001c',
+            GMNotes: 'gauntlet:starter-territories:financiers',
+            ContainedObjects: [
+              { Name: 'CardCustom', Nickname: 'Territory A' },
+              { Name: 'CardCustom', Nickname: 'Territory B' },
+              { Name: 'CardCustom', Nickname: 'Territory C' },
+            ],
+          },
+          { Name: 'PlayerPawn', Nickname: 'Financiers Player Token', GUID: '00001d' },
+          { Name: 'Die_6', Nickname: 'Financiers Battle Die', GUID: '00001e' },
+        ],
+      },
+      {
+        Name: 'Bag', Nickname: 'Military Starter — General', Description: 'Starter kit', GUID: '000020',
+        ContainedObjects: [
+          { Name: 'CardCustom', Nickname: 'General', GUID: '00002a', CardID: 11000 },
+          { Name: 'DeckCustom', Nickname: 'Military Starter Deck', GUID: '00002b', GMNotes: 'gauntlet:starter-deck:military' },
+          {
+            Name: 'DeckCustom', Nickname: 'Military Territories', GUID: '00002c',
+            GMNotes: 'gauntlet:starter-territories:military',
+            ContainedObjects: [
+              { Name: 'CardCustom', Nickname: 'Territory D' },
+              { Name: 'CardCustom', Nickname: 'Territory E' },
+              { Name: 'CardCustom', Nickname: 'Territory F' },
+            ],
+          },
+          { Name: 'PlayerPawn', Nickname: 'Military Player Token', GUID: '00002d' },
+          { Name: 'Die_6', Nickname: 'Military Battle Die', GUID: '00002e' },
+        ],
+      },
     ],
   };
-  const starters = {
+  const starters: any = {
     gameVersion: 'current-test',
     decks: [
-      { id: 'mystics-starter', name: 'Mystics Starter', factionId: 'mystics', leader: { name: 'Alchemist' } },
-      {
-        id: 'military-starter',
-        name: 'Military Starter',
-        factionId: 'military',
-        leader: { name: 'General', tts: { cardId: 10000 } },
-        back: { file: 'backs/intelligence.png', policy: 'standardBack' },
-        factionComponentBack: { file: 'backs/military.png', policy: 'factionComponentBack' },
-      },
+      { id: 'financiers', name: 'Financiers Starter', factionId: 'financiers', leader: { name: 'Banker' }, factionComponentBack: { file: 'backs/financiers.png' } },
+      { id: 'military', name: 'Military Starter', factionId: 'military', leader: { name: 'General' }, factionComponentBack: { file: 'backs/military.png' } },
     ],
   };
-  const supplementals = {
-    gameVersion: 'current-test',
-    readyCount: 2,
-    ready: [
-      {
-        id: 'mystics-rite-a',
-        name: 'Rite A',
-        faction: 'mystics',
-        family: 'rite-card',
-        quantity: 2,
-        productionStatus: 'ready',
-        representation: 'card',
-        tts: {
-          cardId: 20000,
-          deckId: 200,
-          faceFile: 'supplementals/fronts/rite-a.png',
-          backFile: 'supplementals/reverses/completed.png',
-          numWidth: 1,
-          numHeight: 1,
-        },
-      },
-      {
-        id: 'military-ready-card',
-        name: 'Military Ready Card',
-        faction: 'military',
-        family: 'reference-card',
-        quantity: 1,
-        productionStatus: 'ready',
-        representation: 'card',
-        tts: {
-          cardId: 20100,
-          deckId: 201,
-          faceFile: 'supplementals/fronts/military.png',
-          backFile: 'backs/military.png',
-          numWidth: 1,
-          numHeight: 1,
-        },
-      },
-    ],
-  };
-  const assets = {
-    gameVersion: 'current-test',
-    releaseTag: 'current-test',
-    bySourceFile: {
-      'supplementals/fronts/rite-a.png': 'https://example.invalid/rite-a.png',
-      'supplementals/reverses/completed.png': 'https://example.invalid/completed.png',
-      'supplementals/fronts/military.png': 'https://example.invalid/military.png',
-      'supplementals/fronts/universal.png': 'https://example.invalid/universal.png',
-      'supplementals/reverses/universal.png': 'https://example.invalid/universal-back.png',
-      'supplementals/trackers/command.png': 'https://example.invalid/command.png',
-      'backs/intelligence.png': 'https://example.invalid/black-back.png',
-      'backs/military.png': 'https://example.invalid/military-back.png',
+  const ready: any[] = [
+    {
+      ...card('universal-reference', 'reference-card', 'neutral', 20000, 200),
+      name: 'Universal Reference',
+      deckInclusion: 'every-deck',
     },
+    {
+      id: 'military-command-tracker', name: 'Military Command Tracker', faction: 'military', family: 'tracker', quantity: 1,
+      productionStatus: 'ready', representation: 'sliding-tracker', cover: { kind: 'leader' },
+      physicalScale: { cardWidth: 2.5, cardHeight: 3.5, minimum: 0, maximum: 4 },
+      tts: {
+        faceFile: 'supplementals/trackers/command.png', widthScale: 2.5, heightScale: 3.5, thickness: 0.05,
+        stackable: false, assembly: 'military-command', axis: 'vertical', layer: 1, snapTag: 'military-command',
+        snapPoints: [
+          { value: 0, rendererTravelPx: 0, registrationFraction: 0 },
+          { value: 1, rendererTravelPx: 51.54688, registrationFraction: 51.54688 / 336 },
+          { value: 2, rendererTravelPx: 74.65625, registrationFraction: 74.65625 / 336 },
+          { value: 3, rendererTravelPx: 97.76563, registrationFraction: 97.76563 / 336 },
+          { value: 4, rendererTravelPx: 120.875, registrationFraction: 120.875 / 336 },
+        ],
+      },
+    },
+    ...Array.from({ length: 8 }, (_, index) => card(`deed-${index + 1}`, 'deed-card', 'financiers', 21000 + index, 210 + index)),
+    card('financiers-capital-ledger', 'ledger', 'financiers', 22100, 221),
+    card('military-setup-card', 'doctrine-card', 'military', 22000, 220),
+  ];
+  const supplementals: any = { gameVersion: 'current-test', readyCount: ready.length, ready };
+  const bySourceFile: Record<string, string> = {
+    'backs/financiers.png': 'https://example.invalid/financiers-back.png',
+    'backs/military.png': 'https://example.invalid/military-back.png',
+    'supplementals/trackers/command.png': 'https://example.invalid/command.png',
   };
+  for (const component of ready.filter(item => item.representation === 'card')) {
+    bySourceFile[component.tts.faceFile] = `https://example.invalid/${component.id}-front.png`;
+    bySourceFile[component.tts.backFile] = `https://example.invalid/${component.id}-back.png`;
+  }
+  const assets: any = { gameVersion: 'current-test', releaseTag: 'current-test', bySourceFile };
   return { save, starters, supplementals, assets };
 }
 
 describe('TTS ready supplemental save assembly', () => {
-  it('places ready components only into starter Bags for their faction and expands quantity', () => {
+  it('places shared material into every starter and faction material only into its faction', () => {
     const { save, starters, supplementals, assets } = fixture();
     const result = assembleReadySupplementals(save, starters, supplementals, assets);
-
-    expect(result.placedCount).toBe(3);
-    const mystics = result.save.ObjectStates[0];
-    const military = result.save.ObjectStates[1];
-    const mysticsSupplementals = mystics.ContainedObjects.filter((object: any) => object.GMNotes?.startsWith('gauntlet:supplemental:'));
-    const militarySupplementals = military.ContainedObjects.filter((object: any) => object.GMNotes?.startsWith('gauntlet:supplemental:'));
-
-    expect(mysticsSupplementals).toHaveLength(2);
-    expect(mysticsSupplementals.every((object: any) => object.Nickname === 'Rite A')).toBe(true);
-    expect(militarySupplementals).toHaveLength(1);
-    expect(militarySupplementals[0].Nickname).toBe('Military Ready Card');
-    expect(mystics.Description).toContain('Ready supplemental components: Rite A ×2');
-    expect(military.Description).toContain('Ready supplemental components: Military Ready Card');
-  });
-
-  it('places an every-deck shared reference into every starter Bag', () => {
-    const { save, starters, supplementals, assets } = fixture();
-    supplementals.ready.push({
-      id: 'universal-reference',
-      name: 'Universal Reference Card',
-      faction: 'neutral',
-      family: 'reference-card',
-      quantity: 1,
-      deckInclusion: 'every-deck',
-      productionStatus: 'ready',
-      representation: 'card',
-      tts: {
-        cardId: 20200,
-        deckId: 202,
-        faceFile: 'supplementals/fronts/universal.png',
-        backFile: 'supplementals/reverses/universal.png',
-        numWidth: 1,
-        numHeight: 1,
-      },
-    } as any);
-    supplementals.readyCount = supplementals.ready.length;
-
-    const result = assembleReadySupplementals(save, starters, supplementals, assets);
-    expect(result.placedCount).toBe(5);
-
+    expect(result.assembledIds).toContain('universal-reference');
     for (const starterBag of result.save.ObjectStates) {
-      const universal = starterBag.ContainedObjects.filter((object: any) => object.GMNotes === 'gauntlet:supplemental:universal-reference');
-      expect(universal).toHaveLength(1);
-      expect(universal[0].Nickname).toBe('Universal Reference Card');
-      expect(starterBag.Description).toContain('Universal Reference Card');
+      expect(JSON.stringify(starterBag)).toContain('gauntlet:supplemental:universal-reference');
     }
+    expect(JSON.stringify(result.save.ObjectStates[0])).not.toContain('military-command-tracker');
+    expect(JSON.stringify(result.save.ObjectStates[1])).toContain('military-command-tracker');
   });
 
-  it('creates public supplemental cards with hosted face and reverse URLs', () => {
+  it('orders starter Bag extraction as Leader, trackers, references, other supplementals, Deck, Territories, then utilities', () => {
     const { save, starters, supplementals, assets } = fixture();
     const result = assembleReadySupplementals(save, starters, supplementals, assets);
-    const card = result.save.ObjectStates[0].ContainedObjects.find((object: any) => object.GMNotes === 'gauntlet:supplemental:mystics-rite-a');
+    const military = result.save.ObjectStates[1];
 
-    expect(card.Name).toBe('CardCustom');
-    expect(card.Hands).toBe(false);
-    expect(card.CardID).toBe(20000);
-    expect(card.CustomDeck['200'].FaceURL).toBe('https://example.invalid/rite-a.png');
-    expect(card.CustomDeck['200'].BackURL).toBe('https://example.invalid/completed.png');
-    expect(card.CustomDeck['200'].BackIsHidden).toBe(true);
-    expect(card.CustomDeck['200'].UniqueBack).toBe(false);
+    // Native TTS Bag extraction pops from the end of ContainedObjects.
+    expect([...military.ContainedObjects].reverse().map((object: any) => object.GMNotes || object.Nickname)).toEqual([
+      'General',
+      'gauntlet:supplemental:military-command-tracker',
+      'gauntlet:supplemental:universal-reference',
+      'gauntlet:supplemental:military-setup-card',
+      'gauntlet:starter-deck:military',
+      'gauntlet:starter-territories:military',
+      'Military Player Token',
+      'Military Battle Die',
+    ]);
   });
 
-  it('creates non-stackable sliding tracker tiles with faction-color backs, production snap points, and tagged Leader covers', () => {
+  it('makes live TTS bounds the sole authority for tracker snap coordinates', () => {
     const { save, starters, supplementals, assets } = fixture();
-    supplementals.ready.push({
-      id: 'military-command-tracker',
-      name: 'Military Command Tracker',
-      faction: 'military',
-      family: 'tracker',
-      quantity: 1,
-      productionStatus: 'ready',
-      representation: 'sliding-tracker',
-      cover: { kind: 'leader' },
-      physicalScale: { minimum: 0, maximum: 4 },
-      tts: {
-        faceFile: 'supplementals/trackers/command.png',
-        widthScale: 2.5,
-        heightScale: 3.5,
-        thickness: 0.05,
-        stackable: false,
-        assembly: 'military-command',
-        axis: 'vertical',
-        layer: 1,
-        snapTag: 'military-command',
-        snapPoints: [
-          { value: 0, offset: 0 },
-          { value: 1, offset: 0.8 },
-          { value: 2, offset: 1.3 },
-          { value: 3, offset: 1.8 },
-          { value: 4, offset: 2.3 },
-        ],
-      },
-    } as any);
-    supplementals.readyCount = supplementals.ready.length;
-
     const result = assembleReadySupplementals(save, starters, supplementals, assets);
     const military = result.save.ObjectStates[1];
     const tracker = military.ContainedObjects.find((object: any) => object.GMNotes === 'gauntlet:supplemental:military-command-tracker');
-    const leader = military.ContainedObjects.find((object: any) => object.CardID === 10000);
+    const leader = military.ContainedObjects.find((object: any) => object.CardID === 11000);
 
     expect(tracker.Name).toBe('Custom_Tile');
-    expect(tracker.CustomImage.ImageURL).toBe('https://example.invalid/command.png');
-    expect(tracker.CustomImage.ImageSecondaryURL).toBe('https://example.invalid/military-back.png');
-    expect(tracker.CustomImage.ImageSecondaryURL).not.toBe('https://example.invalid/black-back.png');
     expect(tracker.CustomImage.CustomTile.Stackable).toBe(false);
-    expect(tracker.AttachedSnapPoints).toHaveLength(5);
-    expect(tracker.AttachedSnapPoints[0].Position.z).toBe(0);
-    expect(tracker.AttachedSnapPoints[4].Position.z).toBe(2.3);
-    expect(tracker.AttachedSnapPoints.every((point: any) => point.Tags.includes('military-command'))).toBe(true);
+    expect(tracker.Sticky).toBe(true);
+    expect(tracker.Transform.rotY).toBe(180);
+    expect(tracker.Tags).toContain('gauntlet-faction-zone');
+    expect(tracker.CustomImage.CustomTile.Type).toBe(ROUNDED_RECTANGLE_TILE_TYPE);
+    expect(tracker.Transform.scaleZ).toBe(CUSTOM_TILE_CARD_LINEAR_SCALE);
+    expect(tracker.AttachedSnapPoints).toBeUndefined();
+    expect(tracker.LuaScript).toContain('self.getBoundsNormalized()');
+    expect(tracker.LuaScript).toContain('local localLength = bounds.size.z / scaleZ');
+    expect(tracker.LuaScript).toContain('-localLength * registration.fraction');
+    expect(tracker.LuaScript).toContain(`fraction = ${51.54688 / 336}`);
+    expect(tracker.LuaScript).toContain(`fraction = ${74.65625 / 336}`);
+    expect(tracker.LuaScript).not.toContain('3.06');
     expect(leader.Tags).toContain('military-command');
   });
 
-  it('is idempotent when assembly runs more than once', () => {
+  it('makes the Financiers Capital Ledger a persistent public transaction interface', () => {
+    const { save, starters, supplementals, assets } = fixture();
+    const result = assembleReadySupplementals(save, starters, supplementals, assets);
+    const financiers = result.save.ObjectStates[0];
+    const ledger = financiers.ContainedObjects.find((object: any) => object.GMNotes === 'gauntlet:supplemental:financiers-capital-ledger');
+
+    expect(ledger).toBeTruthy();
+    expect(ledger.Name).toBe('CardCustom');
+    expect(ledger.Hands).toBe(true);
+    expect(ledger.Tags).toContain('gauntlet-faction-zone');
+    expect(ledger.LuaScript).toContain('local STARTING_BALANCE = 2');
+    expect(ledger.LuaScript).toContain('local ROWS_PER_PAGE = 11');
+    expect(ledger.LuaScript).toContain('function addLedgerEntry');
+    expect(ledger.LuaScript).toContain('function undoLedgerEntry');
+    expect(ledger.LuaScript).toContain('function turnLedgerPage');
+    expect(ledger.LuaScript).toContain('function onSave()');
+    expect(ledger.LuaScript).toContain('function onLoad(savedData)');
+    expect(ledger.LuaScript).toContain('self.setName("Capital Ledger — Balance: "');
+    expect(ledger.LuaScript).toContain('if totalBalance() + delta < 0 then');
+    expect(ledger.XmlUI).toContain('id="ledger-window"');
+    expect(ledger.XmlUI).toContain('position="0 0 -500"');
+    expect(ledger.XmlUI).toContain('rotation="0 0 180"');
+    expect(ledger.XmlUI).toContain('id="ledger-current-balance"');
+    expect(ledger.XmlUI).toContain('onClick="addLedgerEntry"');
+    expect(ledger.XmlUI).toContain('onClick="undoLedgerEntry"');
+    expect(ledger.XmlUI).toContain('onClick="turnLedgerPage"');
+    expect((ledger.XmlUI.match(/id="ledger-row-\d+-entry"/g) || [])).toHaveLength(11);
+    expect(JSON.stringify(ledger)).not.toContain('"Name":"Counter"');
+  });
+
+  it('packages Deeds as one landscape stack that uses ordinary Faction Zone magnets', () => {
+    const { save, starters, supplementals, assets } = fixture();
+    const result = assembleReadySupplementals(save, starters, supplementals, assets);
+    const financiers = result.save.ObjectStates[0];
+    const stack = financiers.ContainedObjects.find((object: any) => object.GMNotes === 'gauntlet:supplemental-stack:deeds');
+
+    expect(stack.Name).toBe('DeckCustom');
+    expect(stack.ContainedObjects).toHaveLength(8);
+    expect(stack.SidewaysCard).toBe(true);
+    expect(stack.Transform.rotY).toBe(90);
+    expect(stack.Tags).toContain('gauntlet-deed-stack');
+    expect(stack.Tags).toContain('gauntlet-faction-zone');
+    expect(stack.ContainedObjects.every((deed: any) => deed.Tags.includes('gauntlet-deed'))).toBe(true);
+    expect(stack.ContainedObjects.every((deed: any) => deed.Tags.includes('gauntlet-faction-zone'))).toBe(true);
+  });
+
+  it('is idempotent', () => {
     const { save, starters, supplementals, assets } = fixture();
     const first = assembleReadySupplementals(save, starters, supplementals, assets).save;
     const second = assembleReadySupplementals(first, starters, supplementals, assets).save;
-
-    const mysticsSupplementals = second.ObjectStates[0].ContainedObjects.filter((object: any) => object.GMNotes?.startsWith('gauntlet:supplemental:'));
-    expect(mysticsSupplementals).toHaveLength(2);
-    expect(second.ObjectStates[0].Description.match(/Ready supplemental components:/g)).toHaveLength(1);
-  });
-
-  it('fails closed when a ready component has an unsupported save representation', () => {
-    const { save, starters, supplementals, assets } = fixture();
-    supplementals.ready[0].representation = 'ledger';
-
-    expect(() => assembleReadySupplementals(save, starters, supplementals, assets)).toThrow(/unsupported save representation ledger/);
-  });
-
-  it('updates the scaffold note without pretending rules are automated', () => {
-    const { save, starters, supplementals, assets } = fixture();
-    const result = assembleReadySupplementals(save, starters, supplementals, assets);
-
-    expect(result.save.Note).toContain('marked ready are included automatically');
-    expect(result.save.Note).toContain('single-sided faction components use faction-color backs');
-    expect(result.save.Note).toContain('production-derived snap registration');
-    expect(result.save.Note).toContain('Rules remain manual');
-    expect(result.save.Rules).toBe(result.save.Note);
+    for (const starterBag of second.ObjectStates) {
+      expect((starterBag.ContainedObjects || []).filter((object: any) => object.GMNotes === 'gauntlet:supplemental:universal-reference')).toHaveLength(1);
+    }
   });
 });

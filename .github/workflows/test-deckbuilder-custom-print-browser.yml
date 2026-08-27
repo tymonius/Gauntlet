@@ -8,7 +8,7 @@ on:
       - "deckbuilder/custom-print.*"
       - "deckbuilder/print-card-back-orientation.js"
       - "card-design/**"
-      - "config/tts-component-contract.json"
+      - "game-data/current-game.json"
       - "game-data/**"
       - ".github/workflows/test-deckbuilder-custom-print-browser.yml"
   workflow_dispatch:

@@ -1,12 +1,25 @@
 # Gauntlet v0.7.0 — Tabletop Simulator Workshop publication
 
-This file prepares the text and final publication checklist for the v0.7.0 Tabletop Simulator Workshop item. It does **not** indicate that the mod has passed QA or is ready to publish.
+This file records the published v0.7.0 Tabletop Simulator Workshop item, its player-facing copy, publication gate, and post-publication verification.
 
-## Draft Workshop title
+## Workshop item
+
+- **Steam Workshop ID:** `3790840635`
+- **Workshop URL:** https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635
+- **Current visibility:** public
+- **Created:** 2026-08-27
+- **Published:** 2026-08-27
+- **Final hosted save:** https://gauntlet.run/tts/v0.7.0/Gauntlet_v0.7.0_TTS_Mod.json
+- **Primary listing image:** production CSS-composited universal black Gauntlet card back
+- **Secondary listing image:** approved Tabletop Simulator gameplay screenshot
+
+The public subscribed Workshop copy was loaded and smoke-tested successfully after publication; hosted assets resolved and no publication-specific breakage was found.
+
+## Workshop title
 
 **Gauntlet — v0.7.0**
 
-## Draft Workshop description
+## Workshop description
 
 Gauntlet is a two-player tactical card-and-territory game about deck construction, hidden battle commitments, territorial control, faction asymmetry, and running the Gauntlet.
 
@@ -14,12 +27,12 @@ This Tabletop Simulator implementation provides the physical play surface for Ga
 
 Choose a faction and Leader through one of the included starter Bags, unpack one starter per player, arrange the six selected Territories into the Gauntlet, and complete normal opening setup from the current Gauntlet Rulebook.
 
-Rules are player-operated. The v0.7.0 mod is intended to reproduce the physical game accurately rather than automate battle resolution or faction rules.
+Rules are player-operated. The v0.7.0 mod is intended to reproduce the physical game accurately rather than automate battle resolution or faction rules. The Financiers' Capital Ledger is interactive for transaction entry and running-balance bookkeeping, while the separate Capital Limit tracker remains a physical sliding tracker.
 
 ## Controls and setup notes
 
-1. Seat the two players as **Red** and **Blue**.
-2. Each player chooses one starter Bag. The Bag contains that starter's playable Deck, Leader Card, three Territories, shared Universal Reference Card, and the production-ready supplemental components required by its faction.
+1. Seat the two players as **White** and **Green**.
+2. Each player chooses one starter Bag. Pull its contents in setup order: Leader, trackers, reference cards, other faction supplementals, playable Deck, three-Territory stack, Player Token, and battle die.
 3. Unpack both starter Bags.
 4. Arrange the six chosen Territories on the six center snap points in the order determined by normal Gauntlet setup.
 5. Place each Player Token at the appropriate starting end after setup.
@@ -29,10 +42,10 @@ Rules are player-operated. The v0.7.0 mod is intended to reproduce the physical 
 ## What is included
 
 - two-player Tabletop Simulator table;
-- Red and Blue hand zones;
+- White and Green hand/reserve zones;
 - six Gauntlet Territory snap positions;
-- Red and Blue Player Tokens;
-- one battle d6 per player;
+- one faction-colored Player Token per player;
+- one faction-colored battle d6 per player;
 - generated starter Bags for the current Leader/starter catalog;
 - playable card Decks with the universal black standard back;
 - Leader Cards with faction-color component backs;
@@ -42,25 +55,25 @@ Rules are player-operated. The v0.7.0 mod is intended to reproduce the physical 
 
 The exact generated inventory is governed by the v0.7.0 TTS manifests and release-readiness report rather than this prose list.
 
-## Before publishing
+## Publication gate — completed
 
-The final Workshop item must not be published until all of the following are true:
+The v0.7.0 Workshop item was published only after all of the following were true:
 
 - `npm run tts:release:strict` passes for the v0.7.0 package;
-- `tts/release-qa/v0.7.0.json` records completed table/setup, faction-component, and full-game QA;
+- `tts/release-qa/v0.7.0.json` records completed table/setup, faction-component, and focused handling QA;
 - `approvedForWorkshop` is explicitly `true` in that QA record;
 - `npm run tts:save:promote` produces the final `Gauntlet_v0.7.0_TTS_Mod.json` save;
 - all v0.7.0 custom-object network assets have been uploaded to their public host;
 - the final save is loaded successfully from a clean TTS client without relying on locally cached custom assets.
 
-## Preview image
+## Listing images
 
-**Pending.** The Workshop preview image is a separate visual asset and must be selected or created explicitly before publication. Do not substitute an automatically generated preview during release packaging.
+The Workshop listing uses the production CSS-composited **universal black Gauntlet card back** as its primary image. The approved Tabletop Simulator gameplay screenshot remains as a secondary gallery image. The production card-back image comes from the same browser-rendered CSS composition used by the TTS card-asset exporter; it is not an image-generation mockup.
 
-## After publishing
+## Post-publication verification
 
-1. Subscribe to the public Workshop item from a clean client.
-2. Load the subscribed item and verify every hosted face/back/image resolves.
-3. Recheck player perspectives, Territory orientation, supplemental manipulation, and starter Bag contents in the public copy.
-4. Record the public Workshop URL in the v0.7.0 release/site documentation.
-5. Only then treat the Workshop publication item in issue #851 as complete.
+1. Public Workshop item published at the permanent URL above. — **Complete**
+2. Subscribed public Workshop copy loaded from Tabletop Simulator. — **Complete**
+3. Hosted faces, backs, environment art, Leaders, Territories, and faction components resolved in the subscribed copy. — **Complete**
+4. Public-copy smoke test found no publication-specific breakage. — **Complete**
+5. Workshop URL linked from the public site/release documentation. — **Tracked in the final site/documentation closeout.**

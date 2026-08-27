@@ -224,7 +224,7 @@
               <button type="button" data-action="reset">Reset saved</button>
             </div>
             <div class="art-compositor-output">
-              <div class="art-compositor-control-heading"><strong>Override</strong><span>tts/artwork-direction-overrides.js</span></div>
+              <div class="art-compositor-control-heading"><strong>Override</strong><span>game-data/current-game.json · artDirection</span></div>
               <code></code>
             </div>
             <div class="art-compositor-actions">
@@ -501,8 +501,8 @@
       });
     }
     ui.status.textContent = sourceSaved
-      ? 'Saved to tts/artwork-direction-overrides.js and applied to this review surface.'
-      : 'Saved as a browser draft and applied here. Run `node scripts/card-design-server.mjs` to write the source file directly.';
+      ? 'Saved to game-data/current-game.json and applied to this review surface.'
+      : 'Saved as a browser draft and applied here. Run `node scripts/card-design-server.mjs` to write the current-game authority directly.';
   }
 
   function cropMetrics() {

@@ -224,7 +224,12 @@ function fitTrackerTitle(card) {
   while (title.scrollWidth > title.clientWidth + 0.5 && fontSize > minimumPx) {
     fontSize = Math.max(minimumPx, fontSize - 0.25);
     title.style.fontSize = `${fontSize}px`;
+    void title.offsetWidth;
   }
+
+  const fits = title.scrollWidth <= title.clientWidth + 0.5;
+  card.dataset.trackerTitleFit = fits ? 'true' : 'false';
+  return fits;
 }
 
 function layoutTrackerCard(card) {
@@ -257,7 +262,12 @@ async function layoutTrackerCards() {
   if (!root) return;
   await new Promise(resolve => requestAnimationFrame(resolve));
   if (document.fonts?.ready) await document.fonts.ready;
-  root.querySelectorAll('.sliding-tracker-card').forEach(layoutTrackerCard);
+  const cards = [...root.querySelectorAll('.sliding-tracker-card')];
+  cards.forEach(layoutTrackerCard);
+  const titleFailures = cards.filter(card => card.dataset.trackerTitleFit !== 'true');
+  if (titleFailures.length) {
+    throw new Error(`Tracker titles cannot fit at the readability floor: ${titleFailures.map(card => card.dataset.contractComponentId || card.dataset.componentId).join(', ')}`);
+  }
   root.dataset.trackerLayoutsReady = 'true';
 }
 

@@ -26,13 +26,12 @@ describe('TTS final save promotion', () => {
     expect(packageJson.scripts['tts:check']).toContain('promote-tts-save.mjs --check');
   });
 
-  it('ships a granular pending v0.7.0 manual-QA record rather than pre-approving Workshop publication', () => {
+  it('tracks the passed and explicitly Workshop-approved v0.7.0 manual-QA record', () => {
     expect(qa).toEqual(expect.objectContaining({
-      schemaVersion: 2,
+      schemaVersion: 3,
       gameVersion: 'v0.7.0',
-      status: 'pending',
-      approvedForWorkshop: false,
-      notes: [],
+      status: 'passed',
+      approvedForWorkshop: true,
     }));
     expect(() => validateQaRecordShape(qa)).not.toThrow();
 
@@ -40,9 +39,18 @@ describe('TTS final save promotion', () => {
     expect(Object.keys(qa.checks)).toEqual(expectedGroups);
     for (const [group, checks] of Object.entries(REQUIRED_QA_CHECKS)) {
       expect(Object.keys(qa.checks[group])).toEqual([...checks]);
-      expect(Object.values(qa.checks[group]).every((value) => value === false)).toBe(true);
     }
-    expect(Object.values(REQUIRED_QA_CHECKS).flat()).toHaveLength(19);
+    expect(Object.values(REQUIRED_QA_CHECKS).flat()).toHaveLength(18);
+    expect(qa.checks.fullGame).toBeUndefined();
+    expect(Object.values(qa.checks.tableSetup).every((value) => value === true)).toBe(true);
+    expect(Object.values(qa.checks.factionComponents).every((value) => value === true)).toBe(true);
+    expect(Object.values(qa.checks.handlingValidation).every((value) => value === true)).toBe(true);
+    expect(qa.notes.some((note) => /hosted gauntlet\.run/i.test(note))).toBe(true);
+    expect(qa.notes.some((note) => /White\/Green perspectives/i.test(note))).toBe(true);
+    expect(qa.notes.some((note) => /All nine faction-component QA checks passed/i.test(note))).toBe(true);
+    expect(qa.notes.some((note) => /Focused handling validation passed/i.test(note))).toBe(true);
+    expect(qa.notes.some((note) => /remote two-player game is not required/i.test(note))).toBe(true);
+    expect(qa.notes.some((note) => /Workshop promotion explicitly approved/i.test(note))).toBe(true);
   });
 
   it('refuses promotion while machine readiness still has blockers', () => {
@@ -55,9 +63,13 @@ describe('TTS final save promotion', () => {
 
   it('refuses promotion at the first incomplete granular QA check', () => {
     const readiness = { gameVersion: 'v0.7.0', machineReady: true, blockers: [] };
-    expect(() => validatePromotionGate({ release, readiness, qa })).toThrow(/tableSetup\.cleanClientLoad/);
 
     const almostComplete = completedQa();
+    almostComplete.checks.handlingValidation.coreHandlingExercised = false;
+    expect(() => validatePromotionGate({ release, readiness, qa: almostComplete }))
+      .toThrow(/handlingValidation\.coreHandlingExercised/);
+
+    almostComplete.checks.handlingValidation.coreHandlingExercised = true;
     almostComplete.checks.factionComponents.intelligenceNestedOperationStack = false;
     expect(() => validatePromotionGate({ release, readiness, qa: almostComplete }))
       .toThrow(/factionComponents\.intelligenceNestedOperationStack/);
@@ -70,6 +82,14 @@ describe('TTS final save promotion', () => {
       readiness,
       qa: completedQa({ approvedForWorkshop: false }),
     })).toThrow(/not approved for Workshop/);
+  });
+
+  it('opens the current v0.7.0 promotion gate after explicit approval', () => {
+    expect(() => validatePromotionGate({
+      release,
+      readiness: { gameVersion: 'v0.7.0', machineReady: true, blockers: [] },
+      qa,
+    })).not.toThrow();
   });
 
   it('allows promotion only after machine readiness and every granular manual QA check pass', () => {
