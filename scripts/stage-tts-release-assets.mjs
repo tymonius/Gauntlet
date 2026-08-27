@@ -8,13 +8,13 @@ const DEFAULT_REPOSITORY = 'tymonius/Gauntlet';
 const STAGING_ROOT = join(ROOT, 'tts', 'generated', 'release-assets');
 const ENVIRONMENT_ASSETS = Object.freeze([
   {
-    sourceFile: 'tts/assets/environment/campaign-map-table.jpg',
-    releaseSuffix: 'Environment_Table.jpg',
+    sourceFile: 'environment/campaign-map-table.png',
+    releaseSuffix: 'Environment_Table.png',
     kind: 'environment-table',
   },
   {
-    sourceFile: 'tts/assets/environment/command-tent-panorama.jpg',
-    releaseSuffix: 'Environment_Panorama.jpg',
+    sourceFile: 'environment/command-tent-panorama.png',
+    releaseSuffix: 'Environment_Panorama.png',
     kind: 'environment-panorama',
   },
 ]);
@@ -111,7 +111,6 @@ async function stageReleaseAssets() {
       environment.sourceFile,
       `${prefix}_${environment.releaseSuffix}`,
       environment.kind,
-      { sourceScope: 'repository' },
     );
   }
 
@@ -231,9 +230,7 @@ async function stageReleaseAssets() {
   const staged = [];
   for (const record of records) {
     if (!record.sourceFile) throw new Error(`TTS release asset ${record.releaseAsset} has no source file.`);
-    const sourcePath = record.sourceScope === 'repository'
-      ? join(ROOT, record.sourceFile)
-      : join(outputRoot, record.sourceFile);
+    const sourcePath = join(outputRoot, record.sourceFile);
     const info = await ensureFile(sourcePath);
     const targetPath = join(STAGING_ROOT, record.releaseAsset);
     await copyFile(sourcePath, targetPath);
