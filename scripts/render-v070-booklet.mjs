@@ -6,7 +6,7 @@ import { chromium } from 'playwright';
 
 const ROOT = process.cwd();
 const RELEASE_VERSION = 'v0.7.0';
-const SOURCE_VERSION = 'v0.6.4-candidate';
+const SOURCE_VERSION = 'v0.7.0';
 const RELEASE_DIR = path.join(ROOT, 'releases', RELEASE_VERSION);
 const RULEBOOK_PATH = path.join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Rulebook.md`);
 const CANONICAL_PATH = path.join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Canonical_Data.json`);
