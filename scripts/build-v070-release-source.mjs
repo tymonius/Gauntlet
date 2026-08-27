@@ -150,6 +150,9 @@ const landing = `<!doctype html>
   </script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
   <title>Gauntlet ${RELEASE_VERSION}</title>
   <meta name="description" content="Gauntlet ${RELEASE_VERSION} — ${RELEASE_NAME}">
   <link rel="stylesheet" href="../site.css">
