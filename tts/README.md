@@ -61,7 +61,7 @@ The current generated package contains:
 - 12 starter Bags;
 - 27 ready faction supplemental component definitions;
 - 68 supplemental object copies assembled across the starter Bags; and
-- 73 staged network assets.
+- 75 staged network assets.
 
 Those counts are observations from the current generated manifests, not constants embedded in the runtime.
 
@@ -171,6 +171,23 @@ The Intelligence trackers share a nested assembly while remaining independently 
 
 See `docs/tts-sliding-trackers.md` for the implementation contract.
 
+## Financiers Capital Ledger in TTS
+
+The Financiers' physical Capital Ledger remains the visible component in TTS; there is no separate Capital Counter. When the Ledger is removed from the starter Bag it exposes an **OPEN LEDGER** interaction and a public parchment-style transaction window.
+
+The TTS Ledger:
+
+- begins at the rules-authoritative Opening Capital of **2**;
+- records transaction description, signed change, and running Balance;
+- calculates the running balance automatically while allowing Capital to exceed the separate Capital Limit temporarily;
+- prevents a posted transaction from taking Capital below 0;
+- provides 11 transaction rows per page, matching the physical ledger;
+- can turn to additional pages without discarding prior history;
+- supports Previous/Next page navigation and Undo Last Entry; and
+- persists the ledger pages, current page, and draft fields through the object's native TTS save state.
+
+The existing Capital Limit sliding tracker remains independent and continues to show the derived limit. The Ledger is the authoritative current-Capital record and audit trail; the script performs bookkeeping arithmetic but does not automate income, spending, purchases, or other game rules.
+
 ## Supplemental save assembly contract
 
 `scripts/assemble-tts-supplemental-save.mjs` injects every ready faction supplemental into every matching starter Bag using the generated component quantities and staged hosted assets.
@@ -215,7 +232,7 @@ The committed record remains pending. `npm run tts:save:promote` refuses to crea
 
 `scripts/stage-tts-release-assets.mjs` copies only network assets required by TTS into `tts/generated/release-assets/`, assigns deterministic `Gauntlet_v0.7.0_TTS_*` names, records byte sizes and SHA-256 digests, and generates public GitHub Release download URLs.
 
-The current package stages 73 network assets under the v0.7.0 target. Generated TTS saves reference those staged HTTPS URLs rather than local paths.
+The current package stages 75 network assets under the v0.7.0 target, including the custom campaign-table image and command-tent panorama. Generated TTS saves reference those staged HTTPS release URLs rather than local paths or raw branch URLs.
 
 Publication remains explicit. The **Generate TTS card assets** workflow can be dispatched from `main` with `publish_release_assets` enabled only after the matching GitHub Release exists. The workflow uploads the deterministic assets without moving the release tag and then verifies every published URL with live HTTP requests.
 
@@ -238,3 +255,5 @@ Derived output is ignored by Git and written under:
 - `tts/generated/release-assets/` for deterministic hosted assets.
 
 Pull-request CI uploads the generated tree as the `gauntlet-current-tts-card-assets` artifact rather than committing derived PNGs and save JSON.
+
+For TTS-affecting pull requests, the workflow also publishes those staged network assets to an ephemeral prerelease named `tts-<version>-qa-pr-<number>` and uploads a rewritten `Gauntlet_<version>_TTS_PR<number>_Preview.json`. That preview save points only at the prerelease assets, so live TTS QA does not depend on unpublished production-release files or manual local image loading.

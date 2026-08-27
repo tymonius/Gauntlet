@@ -15,6 +15,7 @@ on:
       - 'scripts/current-game-authority.mjs'
       - 'scripts/generate-tts-card-assets.mjs'
       - 'scripts/generate-tts-territory-assets.mjs'
+      - 'scripts/generate-tts-environment-assets.mjs'
       - 'scripts/generate-tts-leader-assets.mjs'
       - 'scripts/generate-tts-starter-decks.mjs'
       - 'scripts/generate-tts-supplemental-assets.mjs'
@@ -101,6 +102,7 @@ jobs:
             scripts/current-game-authority.mjs
             scripts/generate-tts-card-assets.mjs
             scripts/generate-tts-territory-assets.mjs
+            scripts/generate-tts-environment-assets.mjs
             scripts/generate-tts-leader-assets.mjs
             scripts/generate-tts-starter-decks.mjs
             scripts/generate-tts-supplemental-assets.mjs
@@ -215,7 +217,7 @@ jobs:
                     scripts/generate-tts-starter-decks.mjs|deckbuilder/starter-decks.json)
                       render_starters=true
                       ;;
-                    scripts/stage-tts-release-assets.mjs|config/tts-release-target.json|config/release-lifecycle.json|config/github-release-contract.json)
+                    scripts/generate-tts-environment-assets.mjs|scripts/stage-tts-release-assets.mjs|tts/assets/environment/*|config/tts-release-target.json|config/release-lifecycle.json|config/github-release-contract.json)
                       stage_assets=true
                       ;;
                     scripts/check-tts-release-readiness.mjs|scripts/promote-tts-save.mjs)
@@ -258,7 +260,7 @@ jobs:
             fi
           fi
 
-          if [[ "$render_cards" == "true" || "$render_territories" == "true" || "$render_leaders" == "true" || "$render_supplementals" == "true" || "$render_finalized" == "true" || "$render_mystics" == "true" ]]; then
+          if [[ "$render_cards" == "true" || "$render_territories" == "true" || "$render_leaders" == "true" || "$render_supplementals" == "true" || "$render_finalized" == "true" || "$render_mystics" == "true" || "$stage_assets" == "true" ]]; then
             any_render=true
           else
             any_render=false
@@ -379,6 +381,145 @@ jobs:
           name: gauntlet-current-tts-card-assets
           path: tts/generated/
           if-no-files-found: error
+
+  preview:
+    name: Publish TTS PR preview assets
+    if: github.event_name == 'pull_request'
+    needs: render
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: gauntlet-current-tts-card-assets
+          path: tts-output
+
+      - name: Prepare immutable PR-preview asset URLs
+        id: preview
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          manifest="$(find tts-output/release-assets -maxdepth 1 -type f -name 'Gauntlet_*_TTS_Release_Assets.json' -print -quit)"
+          test -n "$manifest"
+
+          version="$(node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));process.stdout.write(m.gameVersion)" "$manifest")"
+          release_tag="$(node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));process.stdout.write(m.releaseTag)" "$manifest")"
+          preview_tag="tts-${version}-qa-pr-${PR_NUMBER}-${HEAD_SHA:0:12}"
+          preview_prefix="https://github.com/${GITHUB_REPOSITORY}/releases/download/${preview_tag}/"
+          release_prefix="https://github.com/${GITHUB_REPOSITORY}/releases/download/${release_tag}/"
+
+          scaffold="$(find tts-output -type f -name "Gauntlet_${version}_TTS_Review_Scaffold.json" -print -quit)"
+          test -n "$scaffold"
+
+          preview_json="tts-output/Gauntlet_${version}_TTS_PR${PR_NUMBER}_Preview.json"
+          PREVIEW_PREFIX="$preview_prefix" RELEASE_PREFIX="$release_prefix" SOURCE="$scaffold" DEST="$preview_json" node <<'NODE'
+          const fs = require('fs');
+          const source = fs.readFileSync(process.env.SOURCE, 'utf8');
+          if (!source.includes(process.env.RELEASE_PREFIX)) {
+            throw new Error(`Review Scaffold does not reference expected release prefix ${process.env.RELEASE_PREFIX}`);
+          }
+          const rewritten = source.split(process.env.RELEASE_PREFIX).join(process.env.PREVIEW_PREFIX);
+          fs.writeFileSync(process.env.DEST, rewritten);
+          JSON.parse(rewritten);
+          NODE
+
+          PREVIEW_PREFIX="$preview_prefix" RELEASE_PREFIX="$release_prefix" MANIFEST="$manifest" node <<'NODE'
+          const fs = require('fs');
+          const path = process.env.MANIFEST;
+          const manifest = JSON.parse(fs.readFileSync(path, 'utf8'));
+          manifest.preview = {
+            kind: 'pull-request',
+            pullRequest: Number(process.env.PR_NUMBER || 0) || undefined,
+            tag: process.env.PREVIEW_PREFIX.split('/').filter(Boolean).at(-1),
+          };
+          for (const asset of manifest.assets || []) {
+            asset.url = String(asset.url || '').split(process.env.RELEASE_PREFIX).join(process.env.PREVIEW_PREFIX);
+          }
+          fs.writeFileSync(path, JSON.stringify(manifest, null, 2) + '\n');
+          NODE
+
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "preview_tag=$preview_tag" >> "$GITHUB_OUTPUT"
+          echo "preview_prefix=$preview_prefix" >> "$GITHUB_OUTPUT"
+          echo "preview_json=$preview_json" >> "$GITHUB_OUTPUT"
+          echo "head_sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Publish preview prerelease and assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PREVIEW_TAG: ${{ steps.preview.outputs.preview_tag }}
+          PREVIEW_JSON: ${{ steps.preview.outputs.preview_json }}
+          HEAD_SHA: ${{ steps.preview.outputs.head_sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if ! gh release view "$PREVIEW_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create "$PREVIEW_TAG"               --repo "$GITHUB_REPOSITORY"               --target "$HEAD_SHA"               --title "TTS QA Preview — PR #$PR_NUMBER @ ${HEAD_SHA:0:12}"               --notes "Immutable Tabletop Simulator QA assets for PR #$PR_NUMBER at commit $HEAD_SHA. Not a game release."               --prerelease
+          fi
+
+          mapfile -t network_assets < <(find tts-output/release-assets -maxdepth 1 -type f -print | sort)
+          test "${#network_assets[@]}" -gt 1
+          gh release upload "$PREVIEW_TAG" --repo "$GITHUB_REPOSITORY" --clobber "${network_assets[@]}" "$PREVIEW_JSON"
+
+      - name: Verify preview JSON and every hosted object URL
+        env:
+          PREVIEW_TAG: ${{ steps.preview.outputs.preview_tag }}
+          PREVIEW_JSON: ${{ steps.preview.outputs.preview_json }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          node - "$PREVIEW_JSON" <<'NODE'
+          const fs = require('fs');
+          const save = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+          const urls = new Set();
+
+          function visit(value) {
+            if (Array.isArray(value)) {
+              value.forEach(visit);
+              return;
+            }
+            if (!value || typeof value !== 'object') return;
+            for (const child of Object.values(value)) {
+              if (typeof child === 'string' && /^https:\/\//i.test(child)) urls.add(child);
+              else visit(child);
+            }
+          }
+          visit(save);
+
+          const previewNeedle = `/releases/download/${process.env.PREVIEW_TAG}/`;
+          const ttsUrls = [...urls].filter(url => url.includes('/releases/download/'));
+          if (!ttsUrls.length) throw new Error('Preview save contains no hosted release asset URLs.');
+          if (ttsUrls.some(url => !url.includes(previewNeedle))) {
+            throw new Error('Preview save still contains a non-preview GitHub Release asset URL.');
+          }
+
+          const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+          (async () => {
+            for (const url of ttsUrls) {
+              let response;
+              for (let attempt = 1; attempt <= 6; attempt += 1) {
+                response = await fetch(url, { redirect: 'follow' });
+                if (response.ok) break;
+                if (attempt < 6) await sleep(1500 * attempt);
+              }
+              if (!response?.ok) throw new Error(`Preview asset is not reachable (${response?.status || 0}): ${url}`);
+            }
+            console.log(`Verified ${ttsUrls.length} unique TTS object URLs in the PR preview save.`);
+          })().catch(error => {
+            console.error(error.stack || error.message || error);
+            process.exitCode = 1;
+          });
+          NODE
 
   publish:
     name: Publish TTS assets to current GitHub Release

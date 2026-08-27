@@ -15,9 +15,11 @@ import {
 
 // Territory artwork is authored and exported landscape at 560x400. TTS custom
 // cards derive their physical aspect from the card-sheet cell, so the hosted
-// card sheet uses the same 400x560 portrait cells as ordinary Gauntlet cards
-// and rotates the Territory artwork inside the cell. The CardCustom object is
-// then rotated 90 degrees on the tabletop during final save normalization.
+// sheet uses the same 400x560 portrait cells as ordinary Gauntlet cards and
+// quarter-turns the landscape Territory artwork +90 degrees inside that portrait cell so
+// TTS's native sideways-card orientation reads upright in player hands. Seat/camera
+// orientation is handled separately by native Hand transforms; Territory Y rotation
+// remains gameplay state for control.
 const TERRITORY_WIDTH = 560;
 const TERRITORY_HEIGHT = 400;
 const TTS_CARD_WIDTH = 400;
@@ -104,7 +106,7 @@ function territorySheetHtml(baseUrl, version, territories, fallbackBackFile) {
     *{box-sizing:border-box}html,body{margin:0;background:transparent}
     .sheet{display:grid;grid-template-columns:repeat(${SHEET_COLUMNS},${CSS_TTS_CARD_WIDTH}px);grid-template-rows:repeat(${SHEET_ROWS},${CSS_TTS_CARD_HEIGHT}px);width:${SHEET_COLUMNS * CSS_TTS_CARD_WIDTH}px;height:${SHEET_ROWS * CSS_TTS_CARD_HEIGHT}px}
     .slot{position:relative;display:block;overflow:hidden;width:${CSS_TTS_CARD_WIDTH}px;height:${CSS_TTS_CARD_HEIGHT}px;background:transparent}
-    .territory-face{position:absolute;display:block;width:${CSS_TERRITORY_WIDTH}px;height:${CSS_TERRITORY_HEIGHT}px;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-90deg);transform-origin:center center}
+    .territory-face{position:absolute;display:block;width:${CSS_TERRITORY_WIDTH}px;height:${CSS_TERRITORY_HEIGHT}px;left:50%;top:50%;transform:translate(-50%,-50%) rotate(90deg);transform-origin:center center}
     .standard-back{display:block;width:${CSS_TTS_CARD_WIDTH}px;height:${CSS_TTS_CARD_HEIGHT}px}
   </style></head><body><div class="sheet">${slots}</div></body></html>`;
 }
@@ -248,6 +250,7 @@ async function renderTerritories(catalog, componentContract) {
         // landscape Territory artwork raster before its quarter-turn into that cell.
         cardPixels: { width: TTS_CARD_WIDTH, height: TTS_CARD_HEIGHT },
         sourceCardPixels: { width: TERRITORY_WIDTH, height: TERRITORY_HEIGHT },
+        sheetCellRotationDegrees: 90,
         sheetPixels: {
           width: TTS_CARD_WIDTH * SHEET_COLUMNS,
           height: TTS_CARD_HEIGHT * SHEET_ROWS,

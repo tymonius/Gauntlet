@@ -12,12 +12,11 @@ const FACTION_COLORS = Object.freeze({
   mystics: { r: 0.365, g: 0.204, b: 0.494 },
   inquisition: { r: 0.651, g: 0.478, b: 0.153 },
 });
+const TABLE_IMAGE_SOURCE = 'environment/campaign-map-table.png';
+const PANORAMA_IMAGE_SOURCE = 'environment/command-tent-panorama.png';
+const STARTER_DECK_NOTE_PREFIX = 'gauntlet:starter-deck:';
+const STARTER_TERRITORY_STACK_NOTE_PREFIX = 'gauntlet:starter-territories:';
 
-const LANDSCAPE_CARD_FLIP_SCRIPT = [
-  'function onLoad()',
-  '  self.use_rotation_value_flip = true',
-  'end',
-].join('\n');
 
 function jsonText(value) {
   return `${JSON.stringify(value, null, 2)}\n`;
@@ -104,14 +103,13 @@ function starterBagTransform(starter, starters) {
 
   const rowSpacing = factionIds.length <= 1 ? 0 : 24 / (factionIds.length - 1);
   const z = -((factionIds.length - 1) * rowSpacing) / 2 + factionIndex * rowSpacing;
-  if (factionStarters.length === 1) return transform(-20.5, 1.4, z, 90);
+  if (factionStarters.length === 1) return transform(-20.5, 1.4, z, 180);
 
-  // The current package has two Leaders per faction. Keep that tested pairing
-  // exact while remaining deterministic if the source later contains more.
+  // TTS testing establishes that the former stored orientation emerges facing
+  // the opposite seat. Store starter Bags at the 180°-reversed orientation.
   const fraction = leaderIndex / (factionStarters.length - 1);
   const x = -20.5 + fraction * 41;
-  const rotY = fraction < 0.5 ? 90 : 270;
-  return transform(x, 1.4, z, rotY);
+  return transform(x, 1.4, z, 180);
 }
 
 function factionColor(factionId) {
@@ -139,7 +137,9 @@ function buildStarterKit(starter, releaseAssets, kitTransform, guid) {
   if (!starter?.leader?.tts) throw new Error(`Starter ${starter?.id || 'unknown'} does not contain a rendered Leader reference.`);
   if (!Array.isArray(starter.cards) || !starter.cards.length) throw new Error(`Starter ${starter.id} has no playable cards.`);
   if (!Array.isArray(starter.faceSheets) || !starter.faceSheets.length) throw new Error(`Starter ${starter.id} has no face-sheet references.`);
-  if (!Array.isArray(starter.territories) || !starter.territories.length) throw new Error(`Starter ${starter.id} has no Territories.`);
+  if (!Array.isArray(starter.territories) || starter.territories.length !== 3) {
+    throw new Error(`Starter ${starter.id} must contain exactly three selected Territories; found ${starter.territories?.length || 0}.`);
+  }
 
   const backUrl = requireHostedUrl(releaseAssets, starter.back.file);
   const deckStates = {};
@@ -160,14 +160,16 @@ function buildStarterKit(starter, releaseAssets, kitTransform, guid) {
     if (!customDeckState) throw new Error(`Starter ${starter.id} card ${card.id} references unmapped deck ${deckId}.`);
     for (let copy = 0; copy < Number(card.quantity); copy += 1) {
       deckIds.push(Number(card.tts.cardId));
-      containedCards.push(makeCardObject({
+      const playable = makeCardObject({
         nickname: card.name,
         description: `${card.faction === 'neutral' ? 'Neutral' : starter.factionId} · Cost ${card.cost}`,
         cardId: card.tts.cardId,
         deckId,
         customDeckState,
         guid: guid(),
-      }));
+      });
+      playable.GMNotes = `gauntlet:playable-card:${card.id}`;
+      containedCards.push(playable);
     }
   }
 
@@ -191,6 +193,7 @@ function buildStarterKit(starter, releaseAssets, kitTransform, guid) {
     CustomDeck: deckStates,
     ContainedObjects: containedCards,
   };
+  deck.GMNotes = `${STARTER_DECK_NOTE_PREFIX}${starter.id}`;
   if (deck.DeckIDs.length !== Number(starter.cardCount) || deck.ContainedObjects.length !== Number(starter.cardCount)) {
     throw new Error(`Starter ${starter.id} generated an incomplete DeckCustom stack: ${deck.DeckIDs.length} DeckIDs / ${deck.ContainedObjects.length} cards; expected ${starter.cardCount}.`);
   }
@@ -228,13 +231,29 @@ function buildStarterKit(starter, releaseAssets, kitTransform, guid) {
       sideways: true,
       guid: guid(),
     });
-    card.Transform.rotY = 90;
-    // SidewaysCard controls the landscape card presentation; this TTS object
-    // property controls only which physical axis the card rotates around when
-    // flipped. Keep the existing face/back images untouched.
-    card.LuaScript = LANDSCAPE_CARD_FLIP_SCRIPT;
     return card;
   });
+
+  for (const territory of territories) {
+    territory.Transform.rotY = 180;
+  }
+  const territoryDeckStates = {};
+  for (const territory of territories) Object.assign(territoryDeckStates, territory.CustomDeck || {});
+  const territoryStack = {
+    ...objectBase(
+      'DeckCustom',
+      `${starter.name} Territories`,
+      'Three selected Territories · setup stack',
+      transform(),
+      guid(),
+    ),
+    Hands: true,
+    GMNotes: `${STARTER_TERRITORY_STACK_NOTE_PREFIX}${starter.id}`,
+    DeckIDs: territories.map(territory => Number(territory.CardID)),
+    SidewaysCard: true,
+    CustomDeck: territoryDeckStates,
+    ContainedObjects: territories,
+  };
 
   const factionLabel = starter.leader.factionLabel || starter.factionId;
   const tint = factionColor(starter.factionId);
@@ -251,13 +270,21 @@ function buildStarterKit(starter, releaseAssets, kitTransform, guid) {
     `${starter.leader.name} · ${starter.factionId}`,
     starter.summary || starter.strategy || '',
     territoryOrder ? `Recommended Territories: ${territoryOrder}` : '',
-    `Contains the complete ${starter.cardCount}-card face-down playable Deck, Leader Card, three selected Territories, faction-colored Player Token, and faction-colored Battle Die.`,
+    `Contains the complete ${starter.cardCount}-card face-down playable Deck, Leader Card, one three-card selected-Territory stack, faction-colored Player Token, and faction-colored Battle Die.`,
   ].filter(Boolean).join('\n\n');
+
+  // Base package order is already setup-oriented. Supplemental assembly inserts
+  // trackers/reference material ahead of the playable Deck while retaining this
+  // Leader-first / Deck-before-Territories backbone.
+  const containedObjects = [leader, deck, territoryStack, playerToken, battleDie];
+  for (const object of containedObjects) {
+    if (object?.Transform) object.Transform.rotY = 180;
+  }
 
   return {
     ...objectBase('Bag', `${starter.name} — ${starter.leader.name}`, kitDescription, kitTransform, guid()),
     ColorDiffuse: { ...tint },
-    ContainedObjects: [leader, ...territories, deck, playerToken, battleDie],
+    ContainedObjects: containedObjects,
   };
 }
 
@@ -268,15 +295,18 @@ function buildTtsSave(starterManifest, releaseAssets) {
   const starters = starterManifest.decks || [];
   if (!starters.length) throw new Error('Starter manifest contains no starter decks.');
 
+  const tableUrl = requireHostedUrl(releaseAssets, TABLE_IMAGE_SOURCE);
+  const panoramaUrl = requireHostedUrl(releaseAssets, PANORAMA_IMAGE_SOURCE);
+
   const guid = makeGuidFactory();
   const starterKits = starters.map(starter => buildStarterKit(starter, releaseAssets, starterBagTransform(starter, starters), guid));
   const territoryZ = [-7.5, -4.5, -1.5, 1.5, 4.5, 7.5];
-  const snapPoints = territoryZ.map(z => ({ Position: vector(0, 0, z), Rotation: vector(0, 90, 0) }));
+  const snapPoints = territoryZ.map(z => ({ Position: vector(0, 0, z) }));
 
   const note = [
     `Gauntlet ${version} Tabletop Simulator review scaffold.`,
     'Choose one starter kit per player. Each kit contains its face-down Deck, Leader Card, three Territories, faction-colored Player Token, and faction-colored Battle Die. Arrange the six chosen Territories on the center snap points, then complete normal opening setup from the current Rulebook.',
-    'Red sits at the south end; Blue sits at the north end. Each player uses the faction-colored token and die from the chosen starter kit.',
+    'White sits at the south end; Green sits at the north end. Each player uses the faction-colored token and die from the chosen starter kit.',
     'Ready shared and faction supplemental components are assembled into the same starter kit later in the TTS package pipeline. Rules remain manual.',
   ].join('\n\n');
 
@@ -286,8 +316,10 @@ function buildTtsSave(starterManifest, releaseAssets) {
     Gravity: 0.5,
     PlayArea: 0.5,
     Date: '',
-    Table: 'Table_RPG',
-    Sky: 'Sky_Field',
+    Table: 'Table_Custom',
+    TableURL: tableUrl,
+    Sky: 'Sky_Museum',
+    SkyURL: panoramaUrl,
     Note: note,
     Rules: note,
     XmlUI: '',
@@ -308,22 +340,22 @@ function buildTtsSave(starterManifest, releaseAssets) {
     },
     Hands: {
       Enable: true,
-      DisableUnused: true,
+      DisableUnused: false,
       Hiding: 0,
       HandTransforms: [
-        { Color: 'Red', Transform: transform(0, 1.5, -20.15, 0, 7, 2.5, 3) },
-        { Color: 'Blue', Transform: transform(0, 1.5, 20.15, 180, 7, 2.5, 3) },
+        { Color: 'White', Transform: transform(0, 4, -23.25, 0, 12, 6, 4) },
+        { Color: 'Green', Transform: transform(0, 4, 23.25, 180, 12, 6, 4) },
       ],
     },
     Turns: {
       Enable: false,
       Type: 0,
-      TurnOrder: ['Red', 'Blue'],
+      TurnOrder: ['White', 'Green'],
       Reverse: false,
       SkipEmpty: true,
       DisableInteractions: false,
       PassTurns: true,
-      TurnColor: 'Red',
+      TurnColor: 'White',
     },
     SnapPoints: snapPoints,
     ObjectStates: starterKits,

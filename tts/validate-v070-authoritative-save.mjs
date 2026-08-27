@@ -5,10 +5,27 @@ import { trackerPresentation } from '../scripts/tts-supplemental-geometry.mjs';
 
 const SUPPLEMENTAL_GUID_NOTE_PREFIX = 'gauntlet:supplemental:';
 const SUPPLEMENTAL_STACK_NOTE_PREFIX = 'gauntlet:supplemental-stack:';
+const STARTER_DECK_NOTE_PREFIX = 'gauntlet:starter-deck:';
+const STARTER_TERRITORY_STACK_NOTE_PREFIX = 'gauntlet:starter-territories:';
 const PLAYER_TOKEN_NOTE_PREFIX = 'gauntlet:starter-utility:player-token:';
 const BATTLE_DIE_NOTE_PREFIX = 'gauntlet:starter-utility:battle-die:';
+const PRIVATE_PARKING_NOTE_PREFIX = 'gauntlet:private-parking:';
 const TERRITORY_TAG = 'gauntlet-territory';
+const TERRITORY_OVERLAY_TAG = 'gauntlet-territory-overlay';
 const DEED_TAG = 'gauntlet-deed';
+const PLAYABLE_CARD_NOTE_PREFIX = 'gauntlet:playable-card:';
+const TERRITORY_SLOT_CARD_IDS = new Set(['neutral-manifest-destiny']);
+const TERRITORY_OVERLAY_CARD_IDS = new Set([
+  'military-encampment',
+  'diplomats-demilitarized-zone',
+  'diplomats-sanctions-blockade',
+  'intelligence-fog-of-war',
+  'neutral-bombardment',
+  'neutral-scorched-earth',
+  'neutral-protracted-siege',
+  'mystics-circle-of-bones',
+  'mystics-spirit-hollow',
+]);
 const DEED_STACK_TAG = 'gauntlet-deed-stack';
 const FACTION_ZONE_TAG = 'gauntlet-faction-zone';
 
@@ -56,11 +73,21 @@ function zoneContainsPoint(zone, x, z) {
 }
 
 function validateEnvironment(save) {
-  if (save.Table !== 'Table_Custom' || !String(save.TableURL || '').includes('campaign-map-table')) {
-    throw new Error('Authoritative TTS save is not using the campaign-map custom table.');
+  const tableUrl = String(save.TableURL || '');
+  const skyUrl = String(save.SkyURL || '');
+  if (save.Table !== 'Table_Custom' || save.Sky !== 'Sky_Museum') {
+    throw new Error('Authoritative TTS save is not using the custom campaign table / museum-lit panorama environment.');
   }
-  if (!String(save.SkyURL || '').includes('command-tent-panorama')) {
-    throw new Error('Authoritative TTS save is not using the command-tent panorama.');
+  if (!/^https:\/\/github\.com\/tymonius\/Gauntlet\/releases\/download\//i.test(tableUrl)
+    || !tableUrl.endsWith('_TTS_Environment_Table.png')) {
+    throw new Error('Campaign table image must use the published GitHub Release environment asset.');
+  }
+  if (!/^https:\/\/github\.com\/tymonius\/Gauntlet\/releases\/download\//i.test(skyUrl)
+    || !skyUrl.endsWith('_TTS_Environment_Panorama.png')) {
+    throw new Error('Command-tent panorama must use the published GitHub Release environment asset.');
+  }
+  if (tableUrl.includes('raw.githubusercontent.com') || skyUrl.includes('raw.githubusercontent.com')) {
+    throw new Error('Raw branch URLs are forbidden for TTS environment images.');
   }
 }
 
@@ -70,43 +97,74 @@ function validateTableWorkspace(save) {
   }
   if ((save.SnapPoints || []).length !== 78) throw new Error(`Expected 78 final table snaps; found ${save.SnapPoints?.length || 0}.`);
 
+  const whiteLeaderOutlines = (save.VectorLines || []).filter(line => {
+    const xs = (line.points3 || []).map(point => Number(point.x));
+    const zs = (line.points3 || []).map(point => Number(point.z));
+    return xs.length === 4 && zs.length === 4
+      && close(Math.min(...xs), -17.55) && close(Math.max(...xs), -6.95)
+      && close(Math.min(...zs), -20.35) && close(Math.max(...zs), -11.45);
+  });
+  const greenLeaderOutlines = (save.VectorLines || []).filter(line => {
+    const xs = (line.points3 || []).map(point => Number(point.x));
+    const zs = (line.points3 || []).map(point => Number(point.z));
+    return xs.length === 4 && zs.length === 4
+      && close(Math.min(...xs), 6.95) && close(Math.max(...xs), 17.55)
+      && close(Math.min(...zs), 11.45) && close(Math.max(...zs), 20.35);
+  });
+  if (whiteLeaderOutlines.length !== 2 || greenLeaderOutlines.length !== 2) {
+    throw new Error('Leader & References outlines must fit the fully extended nested tracker assembly for both players.');
+  }
+
+  const whiteLeaderXs = [-16.3, -13.6, -10.9, -8.2];
+  const greenLeaderXs = whiteLeaderXs.map(x => -x);
+  if (whiteLeaderXs.some(x => !close(findSnap(save, x, -18.6)?.Rotation?.y, 180))
+    || greenLeaderXs.some(x => !close(findSnap(save, x, 18.6)?.Rotation?.y, 0))) {
+    throw new Error('Leader & References snaps must sit at the player-side bottom of each workspace so tracker travel extends inward/upward.');
+  }
+
   const territory = save.SnapPoints.filter(point => point.Tags?.includes(TERRITORY_TAG));
   const deeds = save.SnapPoints.filter(point => point.Tags?.includes(DEED_TAG));
   const faction = save.SnapPoints.filter(point => point.Tags?.includes(FACTION_ZONE_TAG));
   const deedStackMagnets = save.SnapPoints.filter(point => point.Tags?.includes(DEED_STACK_TAG));
 
-  if (territory.length !== 8 || territory.some(point => !close(point.Rotation?.y, 90))) {
-    throw new Error('Territory table snaps do not match the eight-position landscape contract.');
+  if (territory.length !== 8 || territory.some(point => point.Rotation !== undefined)) {
+    throw new Error('Territory table snaps must constrain position only so Y rotation remains available to indicate control.');
   }
-  if (deeds.length !== 16 || deeds.some(point => !close(Math.abs(point.Position?.x), 4.35) || !close(point.Rotation?.y, 90))) {
-    throw new Error('Deed table snaps must remain landscape at ±4.35 / rotation 90.');
+  if (deeds.length !== 16 || deeds.some(point => !close(Math.abs(point.Position?.x), 4.35) || point.Rotation !== undefined)) {
+    throw new Error('Deed table snaps must constrain position only at ±4.35 so Y rotation remains available to indicate ownership.');
   }
   if (faction.length !== 24) throw new Error(`Expected 24 Faction Zone card snaps; found ${faction.length}.`);
   if (deedStackMagnets.length) throw new Error('Deed stacks must use ordinary Faction Zone magnets; dedicated Deed-stack magnets are forbidden.');
   if (faction.filter(point => Number(point.Position?.z) < 0).some(point => !close(point.Rotation?.y, 180))) {
-    throw new Error('Red Faction Zone card snaps are not facing Red.');
+    throw new Error('White/south Faction Zone card snaps are not facing the White seat.');
   }
   if (faction.filter(point => Number(point.Position?.z) > 0).some(point => !close(point.Rotation?.y, 0))) {
-    throw new Error('Blue Faction Zone card snaps are not facing Blue.');
+    throw new Error('Green/north Faction Zone card snaps are not facing the Green seat.');
   }
 
-  const redWorkspace = [[-1.55, -13.55], [1.55, -13.55], [0, -18.25], [17.15, -17.75]];
-  const blueWorkspace = redWorkspace.map(([x, z]) => [-x, -z]);
-  if (redWorkspace.some(([x, z]) => !close(findSnap(save, x, z)?.Rotation?.y, 180))) {
-    throw new Error('One or more Red Draw/Discard/Hand/Graveyard snaps are not facing Red.');
+  const whiteWorkspace = [[-1.55, -13.55], [1.55, -13.55], [0, -18.25], [17.15, -17.75]];
+  const greenWorkspace = whiteWorkspace.map(([x, z]) => [-x, -z]);
+  if (whiteWorkspace.some(([x, z]) => !close(findSnap(save, x, z)?.Rotation?.y, 180))) {
+    throw new Error('One or more White/south Draw/Discard/Hand/Graveyard snaps are not facing the White seat.');
   }
-  if (blueWorkspace.some(([x, z]) => !close(findSnap(save, x, z)?.Rotation?.y, 0))) {
-    throw new Error('One or more Blue Draw/Discard/Hand/Graveyard snaps are not facing Blue.');
+  if (greenWorkspace.some(([x, z]) => !close(findSnap(save, x, z)?.Rotation?.y, 0))) {
+    throw new Error('One or more Green/north Draw/Discard/Hand/Graveyard snaps are not facing the Green seat.');
   }
 
   const labels = (save.ObjectStates || []).filter(object => String(object?.GMNotes || '').startsWith('gauntlet:table-layout:'));
   if (labels.length !== 28) throw new Error(`Expected 28 visible table-label objects; found ${labels.length}.`);
+  const whiteLeaderLabel = labels.find(object => object.GMNotes === 'gauntlet:table-layout:white-leader-references:label');
+  const greenLeaderLabel = labels.find(object => object.GMNotes === 'gauntlet:table-layout:green-leader-references:label');
+  if (!whiteLeaderLabel || !close(whiteLeaderLabel.Transform?.posZ, -20.69, 0.01)
+    || !greenLeaderLabel || !close(greenLeaderLabel.Transform?.posZ, 20.69, 0.01)) {
+    throw new Error('Leader & References labels must remain on the map-side of the table artwork.');
+  }
   const handLabels = labels.filter(object => object.Text?.Text === 'Hand');
   if (handLabels.length !== 4) throw new Error(`Expected visible Hand parking labels/shadows for both players; found ${handLabels.length}.`);
-  const redHandLabel = labels.find(object => object.GMNotes === 'gauntlet:table-layout:red-hand:label');
-  const blueHandLabel = labels.find(object => object.GMNotes === 'gauntlet:table-layout:blue-hand:label');
-  if (!redHandLabel || !close(redHandLabel.Transform?.posZ, -20.59, 0.01)
-    || !blueHandLabel || !close(blueHandLabel.Transform?.posZ, 20.59, 0.01)) {
+  const whiteHandLabel = labels.find(object => object.GMNotes === 'gauntlet:table-layout:white-hand:label');
+  const greenHandLabel = labels.find(object => object.GMNotes === 'gauntlet:table-layout:green-hand:label');
+  if (!whiteHandLabel || !close(whiteHandLabel.Transform?.posZ, -20.59, 0.01)
+    || !greenHandLabel || !close(greenHandLabel.Transform?.posZ, 20.59, 0.01)) {
     throw new Error('Visible Hand parking labels are not in the expected player workspaces.');
   }
 }
@@ -115,28 +173,30 @@ function validateHandsAndSeats(save) {
   if (save.Hands?.Enable !== true || save.Hands?.DisableUnused !== false || save.Hands?.HandTransforms?.length !== 2) {
     throw new Error('Expected exactly two enabled serialized TTS hand transforms.');
   }
-  const red = save.Hands.HandTransforms.find(hand => hand.Color === 'Red');
-  const blue = save.Hands.HandTransforms.find(hand => hand.Color === 'Blue');
-  if (!red || !blue) throw new Error('Missing Red or Blue hand transform.');
+  if (save.Hands?.Hiding !== 0) throw new Error('TTS Hand hiding must remain at the default player-private setting.');
+
+  const white = save.Hands.HandTransforms.find(hand => hand.Color === 'White');
+  const green = save.Hands.HandTransforms.find(hand => hand.Color === 'Green');
+  if (!white || !green) throw new Error('Missing White or Green hand transform.');
 
   const expectedHands = [
-    [red, 'Red', -20.25, 0, -18.25],
-    [blue, 'Blue', 20.25, 180, 18.25],
+    [white, 'White', -23.25, 0, -18.25],
+    [green, 'Green', 23.25, 180, 18.25],
   ];
   for (const [hand, side, z, rotY, parkingZ] of expectedHands) {
-    if (!close(hand.Transform?.posX, 0) || !close(hand.Transform?.posZ, z) || !close(hand.Transform?.rotY, rotY)
-      || !close(hand.Transform?.scaleX, 7) || !close(hand.Transform?.scaleY, 2) || !close(hand.Transform?.scaleZ, 8)) {
-      throw new Error(`${side} hand transform does not match the unified parking-plus-Reserve geometry.`);
+    if (!close(hand.Transform?.posX, 0) || !close(hand.Transform?.posY, 4) || !close(hand.Transform?.posZ, z) || !close(hand.Transform?.rotY, rotY)
+      || !close(hand.Transform?.scaleX, 12) || !close(hand.Transform?.scaleY, 6) || !close(hand.Transform?.scaleZ, 4)) {
+      throw new Error(`${side} Reserve hand transform does not match the outward-only geometry.`);
     }
-    if (!zoneContainsPoint(hand.Transform, 0, parkingZ)) {
-      throw new Error(`${side} visible Hand parking snap is not inside the same private Hand zone as the Reserve.`);
+    if (zoneContainsPoint(hand.Transform, 0, parkingZ)) {
+      throw new Error(`${side} Reserve Hand zone overlaps the tabletop parking snap.`);
     }
   }
 
-  // The unified private zone must not swallow ordinary public workspaces.
+  // Reserve must not swallow ordinary public workspaces.
   for (const [hand, side, publicPoints] of [
-    [red, 'Red', [[-1.55, -13.55], [1.55, -13.55], [17.15, -17.75]]],
-    [blue, 'Blue', [[1.55, 13.55], [-1.55, 13.55], [-17.15, 17.75]]],
+    [white, 'White', [[-1.55, -13.55], [1.55, -13.55], [17.15, -17.75]]],
+    [green, 'Green', [[1.55, 13.55], [-1.55, 13.55], [-17.15, 17.75]]],
   ]) {
     if (publicPoints.some(([x, z]) => zoneContainsPoint(hand.Transform, x, z))) {
       throw new Error(`${side} private Hand zone overlaps Draw, Discard, or Graveyard.`);
@@ -144,12 +204,25 @@ function validateHandsAndSeats(save) {
   }
 
   const objects = allObjects(save);
-  const explicitHandVolumes = objects.filter(object => object?.Name === 'HandTrigger');
-  if (explicitHandVolumes.length) {
-    throw new Error(`Found ${explicitHandVolumes.length} explicit HandTrigger ObjectStates. Hands.HandTransforms must be the single hand-zone authority.`);
+  const handTriggers = objects.filter(object => object?.Name === 'HandTrigger');
+  if (handTriggers.length) {
+    throw new Error(`Found ${handTriggers.length} duplicate HandTrigger ObjectStates. Hands.HandTransforms is the serialized TTS hand-zone authority.`);
   }
   const fogVolumes = objects.filter(object => object?.Name === 'FogOfWarTrigger');
-  if (fogVolumes.length) throw new Error(`Found ${fogVolumes.length} obsolete FogOfWarTrigger objects.`);
+  const parkingZones = fogVolumes.filter(object => String(object.GMNotes || '').startsWith(PRIVATE_PARKING_NOTE_PREFIX));
+  if (parkingZones.length !== 2 || fogVolumes.length !== 2) {
+    throw new Error(`Expected exactly two player-private tabletop parking Hidden Zones; found ${parkingZones.length} parking / ${fogVolumes.length} total hidden zones.`);
+  }
+  for (const [side, z, rotY] of [['White', -19, 0], ['Green', 19, 180]]) {
+    const zone = parkingZones.find(object => object.FogColor === side);
+    if (!zone || zone.GMNotes !== `${PRIVATE_PARKING_NOTE_PREFIX}${side.toLowerCase()}`
+      || zone.FogReverseHiding !== false || zone.FogSeethrough !== true || zone.FogHidePointers !== true || zone.Hands !== false
+      || !close(zone.Transform?.posX, 0) || !close(zone.Transform?.posY, 3) || !close(zone.Transform?.posZ, z)
+      || !close(zone.Transform?.rotY, rotY) || !close(zone.Transform?.scaleX, 7)
+      || !close(zone.Transform?.scaleY, 6) || !close(zone.Transform?.scaleZ, 6.5)) {
+      throw new Error(`${side} tabletop parking Hidden Zone is missing or malformed.`);
+    }
+  }
 
   const handEligible = objects.filter(object => object?.Name === 'CardCustom' || object?.Name === 'DeckCustom');
   if (!handEligible.length || handEligible.some(object => object.Hands !== true)) {
@@ -157,28 +230,78 @@ function validateHandsAndSeats(save) {
   }
 
   const lua = String(save.LuaScript || '');
-  if (!lua.includes('function gauntletSeatCamera(color)')
-    || !lua.includes('pitch = 55, yaw = 0, distance = 38')
-    || !lua.includes('pitch = 55, yaw = 180, distance = 38')) {
-    throw new Error('Authoritative save is missing Red/Blue seat-camera alignment.');
+  if (lua.includes('gauntletSeatCamera') || lua.includes('Player[color].lookAt(')) {
+    throw new Error('Authoritative save must not rotate or commandeer a seated player camera.');
   }
 }
 
-function validateBagsAndUtilities(save) {
+function validateBagsAndUtilities(save, manifest) {
   const bags = (save.ObjectStates || []).filter(object => object?.Name === 'Bag');
   if (bags.length !== 12) throw new Error(`Expected 12 starter Bags; found ${bags.length}.`);
 
   const looseUtilities = save.ObjectStates.filter(object => object?.Name === 'PlayerPawn' || object?.Name === 'Die_6');
   if (looseUtilities.length) throw new Error(`Found ${looseUtilities.length} loose utility objects.`);
 
+  const supplementalById = new Map((manifest?.ready || []).map((component, index) => [component.id, { component, index }]));
   const byFaction = new Map();
   for (const bag of bags) {
+    if (!close(bag.Transform?.rotY, 180)) throw new Error(`${bag.Nickname} starter Bag does not use the host-facing stored orientation established by TTS testing.`);
+    for (const object of bag.ContainedObjects || []) {
+      if (!object?.Transform) continue;
+      const stackKind = String(object.GMNotes || '').replace(SUPPLEMENTAL_STACK_NOTE_PREFIX, '');
+      const expectedRotation = stackKind === 'deeds' ? 270 : 180;
+      if (!close(object.Transform.rotY, expectedRotation)) {
+        throw new Error(`${bag.Nickname} contains ${object.Nickname || object.GUID} at stored rotation ${object.Transform.rotY}; expected host-facing ${expectedRotation}.`);
+      }
+    }
+
     const objects = bag.ContainedObjects || [];
     const token = objects.filter(object => object?.Name === 'PlayerPawn' && String(object.GMNotes || '').startsWith(PLAYER_TOKEN_NOTE_PREFIX));
     const die = objects.filter(object => object?.Name === 'Die_6' && String(object.GMNotes || '').startsWith(BATTLE_DIE_NOTE_PREFIX));
     if (token.length !== 1 || die.length !== 1) throw new Error(`${bag.Nickname} must contain exactly one faction token and one faction die.`);
     if (!sameColor(token[0].ColorDiffuse, bag.ColorDiffuse) || !sameColor(die[0].ColorDiffuse, bag.ColorDiffuse)) {
       throw new Error(`${bag.Nickname} token/die colors do not match the bag faction color.`);
+    }
+
+    const leader = objects.filter(object => object?.Name === 'CardCustom' && /Leader$/u.test(String(object.Description || '')));
+    const playableDeck = objects.filter(object => object?.Name === 'DeckCustom' && String(object.GMNotes || '').startsWith(STARTER_DECK_NOTE_PREFIX));
+    const territoryStacks = objects.filter(object => object?.Name === 'DeckCustom' && String(object.GMNotes || '').startsWith(STARTER_TERRITORY_STACK_NOTE_PREFIX));
+    if (leader.length !== 1 || playableDeck.length !== 1 || territoryStacks.length !== 1) {
+      throw new Error(`${bag.Nickname} must contain exactly one Leader, one playable Deck, and one Territory stack.`);
+    }
+    const territoryStack = territoryStacks[0];
+    if (territoryStack.SidewaysCard !== true || territoryStack.ContainedObjects?.length !== 3) {
+      throw new Error(`${bag.Nickname} Territory package must be one sideways three-card stack.`);
+    }
+    if (territoryStack.ContainedObjects.some(card => (
+      card?.Name !== 'CardCustom'
+      || !/(?:Arena )?Territory$/u.test(String(card.Description || ''))
+      || !close(card.Transform?.rotY, 180)
+    ))) {
+      throw new Error(`${bag.Nickname} Territory stack members are missing or not stored host-facing.`);
+    }
+
+    const rank = object => {
+      if (object === leader[0]) return 0;
+      const notes = String(object?.GMNotes || '');
+      if (notes.startsWith(SUPPLEMENTAL_GUID_NOTE_PREFIX)) {
+        const id = notes.slice(SUPPLEMENTAL_GUID_NOTE_PREFIX.length);
+        const record = supplementalById.get(id);
+        if (record?.component?.representation === 'sliding-tracker') return 1;
+        if (record?.component?.family === 'reference-card') return 2;
+        return 3;
+      }
+      if (notes.startsWith(SUPPLEMENTAL_STACK_NOTE_PREFIX)) return 3;
+      if (notes.startsWith(STARTER_DECK_NOTE_PREFIX)) return 4;
+      if (notes.startsWith(STARTER_TERRITORY_STACK_NOTE_PREFIX)) return 5;
+      if (object?.Name === 'PlayerPawn' || object?.Name === 'Die_6') return 6;
+      return 99;
+    };
+    const ranks = objects.map(rank);
+    const extractionRanks = [...ranks].reverse();
+    if (extractionRanks[0] !== 0 || extractionRanks.some(value => value === 99)
+      || extractionRanks.some((value, index) => index > 0 && value < extractionRanks[index - 1])) {
+      throw new Error(`${bag.Nickname} native TTS extraction order must be Leader → trackers → reference cards → other supplementals → Deck → Territory stack → utilities.`);
     }
 
     const faction = String(token[0].GMNotes).slice(PLAYER_TOKEN_NOTE_PREFIX.length);
@@ -198,12 +321,11 @@ function validateBagsAndUtilities(save) {
   }
   return bags;
 }
-
 function validateFamilyStacks(bags) {
   const expectations = new Map([
-    ['proposals', { count: 2, cards: 9, sideways: false, rotY: 0, tags: [FACTION_ZONE_TAG] }],
-    ['deeds', { count: 2, cards: 8, sideways: true, rotY: 90, tags: [DEED_STACK_TAG, FACTION_ZONE_TAG] }],
-    ['rites-rituals', { count: 2, cards: 4, sideways: false, rotY: 0, tags: [FACTION_ZONE_TAG] }],
+    ['proposals', { count: 2, cards: 9, sideways: false, rotY: 180, tags: [FACTION_ZONE_TAG] }],
+    ['deeds', { count: 2, cards: 8, sideways: true, rotY: 270, tags: [DEED_STACK_TAG, FACTION_ZONE_TAG] }],
+    ['rites-rituals', { count: 2, cards: 4, sideways: false, rotY: 180, tags: [FACTION_ZONE_TAG] }],
   ]);
   const found = new Map([...expectations.keys()].map(key => [key, []]));
 
@@ -227,14 +349,91 @@ function validateFamilyStacks(bags) {
   }
 }
 
+function validateCapitalLedgers(save) {
+  const objects = allObjects(save);
+  const ledgers = objects.filter(object => (
+    object?.Name === 'CardCustom'
+    && object.GMNotes === 'gauntlet:supplemental:financiers-capital-ledger'
+  ));
+  if (ledgers.length !== 2) {
+    throw new Error(`Expected two interactive Financiers Capital Ledgers; found ${ledgers.length}.`);
+  }
+
+  for (const ledger of ledgers) {
+    const lua = String(ledger.LuaScript || '');
+    const xml = String(ledger.XmlUI || '');
+    for (const required of [
+      'local STARTING_BALANCE = 2',
+      'local ROWS_PER_PAGE = 11',
+      'function addLedgerEntry',
+      'function undoLedgerEntry',
+      'function turnLedgerPage',
+      'function onSave()',
+      'function onLoad(savedData)',
+      'self.setName("Capital Ledger — Balance: "',
+      'if totalBalance() + delta < 0 then',
+    ]) {
+      if (!lua.includes(required)) throw new Error(`Capital Ledger is missing required persistent ledger behavior: ${required}`);
+    }
+    for (const required of [
+      'id="ledger-window"',
+      'position="0 0 -50"',
+      'rotation="0 0 180"',
+      'id="ledger-current-balance"',
+      'onClick="addLedgerEntry"',
+      'onClick="undoLedgerEntry"',
+      'onClick="turnLedgerPage"',
+    ]) {
+      if (!xml.includes(required)) throw new Error(`Capital Ledger is missing required public ledger UI: ${required}`);
+    }
+    const rowCount = [...xml.matchAll(/id="ledger-row-\d+-entry"/gu)].length;
+    if (rowCount !== 11) throw new Error(`Capital Ledger page must expose exactly 11 transaction rows; found ${rowCount}.`);
+  }
+
+  const capitalCounters = objects.filter(object => (
+    object?.Name === 'Counter'
+    && /capital/iu.test(`${object.Nickname || ''} ${object.Description || ''} ${object.GMNotes || ''}`)
+  ));
+  if (capitalCounters.length) {
+    throw new Error('Financier Capital must be tracked through the interactive Capital Ledger, not a separate visible Counter.');
+  }
+}
+
 function validateTerritoriesDeedsAndFactionEligibility(save, manifest) {
   const objects = allObjects(save);
-  const territories = objects.filter(object => object?.Name === 'CardCustom' && hasTag(object, TERRITORY_TAG));
+  const territories = objects.filter(object => (
+    object?.Name === 'CardCustom'
+    && hasTag(object, TERRITORY_TAG)
+    && /(?:Arena )?Territory$/u.test(String(object.Description || ''))
+  ));
   if (!territories.length) throw new Error('No tagged Territory cards found.');
   for (const card of territories) {
-    if (card.SidewaysCard !== true || !close(card.Transform?.rotY, 90)) throw new Error(`Territory ${card.Nickname || card.GUID} is not landscape.`);
-    if (!String(card.LuaScript || '').includes('self.use_rotation_value_flip = true')) {
-      throw new Error(`Territory ${card.Nickname || card.GUID} does not switch TTS to the landscape flip axis.`);
+    if (card.SidewaysCard !== true) throw new Error(`Territory ${card.Nickname || card.GUID} is not marked SidewaysCard.`);
+    if (!close(card.Transform?.rotX, 0) || !close(card.Transform?.rotY, 180) || !close(card.Transform?.rotZ, 0)) {
+      throw new Error(`Territory ${card.Nickname || card.GUID} must begin at the host-facing stored rotation while board snaps leave control rotation free.`);
+    }
+    const lua = String(card.LuaScript || '');
+    if (lua.includes('function tryRotate(spin, flip')
+      || lua.includes('setRotationSmooth({x = flip')
+      || lua.includes('use_rotation_value_flip')) {
+      throw new Error(`Territory ${card.Nickname || card.GUID} still carries an obsolete flip-axis override; native TTS flipping must remain authoritative.`);
+    }
+    const overlaySnaps = (card.AttachedSnapPoints || []).filter(point => point?.Tags?.includes(TERRITORY_OVERLAY_TAG));
+    if (overlaySnaps.length !== 1
+      || !close(overlaySnaps[0].Position?.x, 0) || !close(overlaySnaps[0].Position?.y, 0.25) || !close(overlaySnaps[0].Position?.z, 0)
+      || !close(overlaySnaps[0].Rotation?.x, 0) || !close(overlaySnaps[0].Rotation?.y, 0) || !close(overlaySnaps[0].Rotation?.z, 0)) {
+      throw new Error(`Territory ${card.Nickname || card.GUID} is missing its orientation-following Overlay snap.`);
+    }
+  }
+
+  for (const card of objects.filter(object => object?.Name === 'CardCustom')) {
+    const notes = String(card.GMNotes || '');
+    const id = notes.startsWith(PLAYABLE_CARD_NOTE_PREFIX) ? notes.slice(PLAYABLE_CARD_NOTE_PREFIX.length) : null;
+    if (TERRITORY_SLOT_CARD_IDS.has(id) && !hasTag(card, TERRITORY_TAG)) {
+      throw new Error(`${id} must be eligible for Territory table snaps when it becomes a Territory.`);
+    }
+    if (TERRITORY_OVERLAY_CARD_IDS.has(id) && !hasTag(card, TERRITORY_OVERLAY_TAG)) {
+      throw new Error(`${id} must be eligible for attached Territory Overlay snaps.`);
     }
   }
 
@@ -267,6 +466,12 @@ function validateTrackers(save, manifest) {
     const record = trackerRecords.get(id);
     if (!record) return;
 
+    if (!hasTag(object, FACTION_ZONE_TAG)) {
+      throw new Error(`Tracker ${id} is missing generic Faction Zone snap eligibility.`);
+    }
+    if (object.Sticky !== true) {
+      throw new Error(`Tracker ${id} must be Sticky so covers snapped above it move with the tracker.`);
+    }
     const expected = trackerPresentation(record);
     const authored = record.tts?.snapPoints || [];
     if (expected.registrations.length !== authored.length) {
@@ -310,8 +515,9 @@ async function main() {
   validateEnvironment(save);
   validateTableWorkspace(save);
   validateHandsAndSeats(save);
-  const bags = validateBagsAndUtilities(save);
+  const bags = validateBagsAndUtilities(save, manifest);
   validateFamilyStacks(bags);
+  validateCapitalLedgers(save);
   validateTerritoriesDeedsAndFactionEligibility(save, manifest);
   validateTrackers(save, manifest);
 

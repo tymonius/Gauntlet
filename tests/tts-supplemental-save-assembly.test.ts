@@ -35,11 +35,39 @@ function fixture() {
     ObjectStates: [
       {
         Name: 'Bag', Nickname: 'Financiers Starter — Banker', Description: 'Starter kit', GUID: '000010',
-        ContainedObjects: [{ Name: 'CardCustom', Nickname: 'Banker', GUID: '00001a', CardID: 10000 }],
+        ContainedObjects: [
+          { Name: 'CardCustom', Nickname: 'Banker', GUID: '00001a', CardID: 10000 },
+          { Name: 'DeckCustom', Nickname: 'Financiers Starter Deck', GUID: '00001b', GMNotes: 'gauntlet:starter-deck:financiers' },
+          {
+            Name: 'DeckCustom', Nickname: 'Financiers Territories', GUID: '00001c',
+            GMNotes: 'gauntlet:starter-territories:financiers',
+            ContainedObjects: [
+              { Name: 'CardCustom', Nickname: 'Territory A' },
+              { Name: 'CardCustom', Nickname: 'Territory B' },
+              { Name: 'CardCustom', Nickname: 'Territory C' },
+            ],
+          },
+          { Name: 'PlayerPawn', Nickname: 'Financiers Player Token', GUID: '00001d' },
+          { Name: 'Die_6', Nickname: 'Financiers Battle Die', GUID: '00001e' },
+        ],
       },
       {
         Name: 'Bag', Nickname: 'Military Starter — General', Description: 'Starter kit', GUID: '000020',
-        ContainedObjects: [{ Name: 'CardCustom', Nickname: 'General', GUID: '00002a', CardID: 11000 }],
+        ContainedObjects: [
+          { Name: 'CardCustom', Nickname: 'General', GUID: '00002a', CardID: 11000 },
+          { Name: 'DeckCustom', Nickname: 'Military Starter Deck', GUID: '00002b', GMNotes: 'gauntlet:starter-deck:military' },
+          {
+            Name: 'DeckCustom', Nickname: 'Military Territories', GUID: '00002c',
+            GMNotes: 'gauntlet:starter-territories:military',
+            ContainedObjects: [
+              { Name: 'CardCustom', Nickname: 'Territory D' },
+              { Name: 'CardCustom', Nickname: 'Territory E' },
+              { Name: 'CardCustom', Nickname: 'Territory F' },
+            ],
+          },
+          { Name: 'PlayerPawn', Nickname: 'Military Player Token', GUID: '00002d' },
+          { Name: 'Die_6', Nickname: 'Military Battle Die', GUID: '00002e' },
+        ],
       },
     ],
   };
@@ -73,6 +101,8 @@ function fixture() {
       },
     },
     ...Array.from({ length: 8 }, (_, index) => card(`deed-${index + 1}`, 'deed-card', 'financiers', 21000 + index, 210 + index)),
+    card('financiers-capital-ledger', 'ledger', 'financiers', 22100, 221),
+    card('military-setup-card', 'doctrine-card', 'military', 22000, 220),
   ];
   const supplementals: any = { gameVersion: 'current-test', readyCount: ready.length, ready };
   const bySourceFile: Record<string, string> = {
@@ -100,6 +130,24 @@ describe('TTS ready supplemental save assembly', () => {
     expect(JSON.stringify(result.save.ObjectStates[1])).toContain('military-command-tracker');
   });
 
+  it('orders starter Bag extraction as Leader, trackers, references, other supplementals, Deck, Territories, then utilities', () => {
+    const { save, starters, supplementals, assets } = fixture();
+    const result = assembleReadySupplementals(save, starters, supplementals, assets);
+    const military = result.save.ObjectStates[1];
+
+    // Native TTS Bag extraction pops from the end of ContainedObjects.
+    expect([...military.ContainedObjects].reverse().map((object: any) => object.GMNotes || object.Nickname)).toEqual([
+      'General',
+      'gauntlet:supplemental:military-command-tracker',
+      'gauntlet:supplemental:universal-reference',
+      'gauntlet:supplemental:military-setup-card',
+      'gauntlet:starter-deck:military',
+      'gauntlet:starter-territories:military',
+      'Military Player Token',
+      'Military Battle Die',
+    ]);
+  });
+
   it('makes live TTS bounds the sole authority for tracker snap coordinates', () => {
     const { save, starters, supplementals, assets } = fixture();
     const result = assembleReadySupplementals(save, starters, supplementals, assets);
@@ -109,6 +157,9 @@ describe('TTS ready supplemental save assembly', () => {
 
     expect(tracker.Name).toBe('Custom_Tile');
     expect(tracker.CustomImage.CustomTile.Stackable).toBe(false);
+    expect(tracker.Sticky).toBe(true);
+    expect(tracker.Transform.rotY).toBe(180);
+    expect(tracker.Tags).toContain('gauntlet-faction-zone');
     expect(tracker.CustomImage.CustomTile.Type).toBe(ROUNDED_RECTANGLE_TILE_TYPE);
     expect(tracker.Transform.scaleZ).toBe(CUSTOM_TILE_CARD_LINEAR_SCALE);
     expect(tracker.AttachedSnapPoints).toBeUndefined();
@@ -121,6 +172,36 @@ describe('TTS ready supplemental save assembly', () => {
     expect(leader.Tags).toContain('military-command');
   });
 
+  it('makes the Financiers Capital Ledger a persistent public transaction interface', () => {
+    const { save, starters, supplementals, assets } = fixture();
+    const result = assembleReadySupplementals(save, starters, supplementals, assets);
+    const financiers = result.save.ObjectStates[0];
+    const ledger = financiers.ContainedObjects.find((object: any) => object.GMNotes === 'gauntlet:supplemental:financiers-capital-ledger');
+
+    expect(ledger).toBeTruthy();
+    expect(ledger.Name).toBe('CardCustom');
+    expect(ledger.Hands).toBe(true);
+    expect(ledger.Tags).toContain('gauntlet-faction-zone');
+    expect(ledger.LuaScript).toContain('local STARTING_BALANCE = 2');
+    expect(ledger.LuaScript).toContain('local ROWS_PER_PAGE = 11');
+    expect(ledger.LuaScript).toContain('function addLedgerEntry');
+    expect(ledger.LuaScript).toContain('function undoLedgerEntry');
+    expect(ledger.LuaScript).toContain('function turnLedgerPage');
+    expect(ledger.LuaScript).toContain('function onSave()');
+    expect(ledger.LuaScript).toContain('function onLoad(savedData)');
+    expect(ledger.LuaScript).toContain('self.setName("Capital Ledger — Balance: "');
+    expect(ledger.LuaScript).toContain('if totalBalance() + delta < 0 then');
+    expect(ledger.XmlUI).toContain('id="ledger-window"');
+    expect(ledger.XmlUI).toContain('position="0 0 -50"');
+    expect(ledger.XmlUI).toContain('rotation="0 0 180"');
+    expect(ledger.XmlUI).toContain('id="ledger-current-balance"');
+    expect(ledger.XmlUI).toContain('onClick="addLedgerEntry"');
+    expect(ledger.XmlUI).toContain('onClick="undoLedgerEntry"');
+    expect(ledger.XmlUI).toContain('onClick="turnLedgerPage"');
+    expect((ledger.XmlUI.match(/id="ledger-row-\d+-entry"/g) || [])).toHaveLength(11);
+    expect(JSON.stringify(ledger)).not.toContain('"Name":"Counter"');
+  });
+
   it('packages Deeds as one landscape stack that uses ordinary Faction Zone magnets', () => {
     const { save, starters, supplementals, assets } = fixture();
     const result = assembleReadySupplementals(save, starters, supplementals, assets);
@@ -130,7 +211,7 @@ describe('TTS ready supplemental save assembly', () => {
     expect(stack.Name).toBe('DeckCustom');
     expect(stack.ContainedObjects).toHaveLength(8);
     expect(stack.SidewaysCard).toBe(true);
-    expect(stack.Transform.rotY).toBe(90);
+    expect(stack.Transform.rotY).toBe(270);
     expect(stack.Tags).toContain('gauntlet-deed-stack');
     expect(stack.Tags).toContain('gauntlet-faction-zone');
     expect(stack.ContainedObjects.every((deed: any) => deed.Tags.includes('gauntlet-deed'))).toBe(true);

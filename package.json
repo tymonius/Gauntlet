@@ -48,7 +48,7 @@
     "tts:starters": "node scripts/generate-tts-starter-decks.mjs",
     "tts:supplementals": "node scripts/generate-tts-supplemental-assets.mjs",
     "tts:finalized-supplementals": "node scripts/generate-tts-finalized-supplementals.mjs",
-    "tts:release:stage": "node tts/ensure-current-mystics-assets.mjs && node scripts/stage-tts-release-assets.mjs",
+    "tts:release:stage": "node tts/ensure-current-mystics-assets.mjs && npm run tts:environment && node scripts/stage-tts-release-assets.mjs",
     "tts:release:status": "node scripts/check-tts-release-readiness.mjs",
     "tts:release:strict": "node scripts/check-tts-release-readiness.mjs --strict",
     "tts:save:base": "node scripts/generate-tts-save.mjs",
@@ -63,13 +63,15 @@
     "media:build": "node scripts/generate-card-media-library.mjs",
     "test:watch": "vitest",
     "dev:cli": "tsx src/cli/dev-runner-v06.ts",
-    "dev:gui": "tsx src/gui/dev-server-v06.ts"
+    "dev:gui": "tsx src/gui/dev-server-v06.ts",
+    "tts:environment": "node scripts/generate-tts-environment-assets.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
     "playwright": "^1.62.0",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",
-    "vitest": "^2.1.8"
+    "vitest": "^2.1.8",
+    "sharp": "^0.33.5"
   }
 }

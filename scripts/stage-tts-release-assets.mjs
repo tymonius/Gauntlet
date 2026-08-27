@@ -6,6 +6,18 @@ import { resolveCurrentTtsRelease, ROOT } from './tts-current-catalog.mjs';
 
 const DEFAULT_REPOSITORY = 'tymonius/Gauntlet';
 const STAGING_ROOT = join(ROOT, 'tts', 'generated', 'release-assets');
+const ENVIRONMENT_ASSETS = Object.freeze([
+  {
+    sourceFile: 'environment/campaign-map-table.png',
+    releaseSuffix: 'Environment_Table.png',
+    kind: 'environment-table',
+  },
+  {
+    sourceFile: 'environment/command-tent-panorama.png',
+    releaseSuffix: 'Environment_Panorama.png',
+    kind: 'environment-panorama',
+  },
+]);
 
 function jsonText(value) {
   return `${JSON.stringify(value, null, 2)}\n`;
@@ -91,6 +103,16 @@ async function stageReleaseAssets() {
   const prefix = assetPrefix(release.version);
   const records = [];
   const seenNames = new Set();
+
+  for (const environment of ENVIRONMENT_ASSETS) {
+    addAsset(
+      records,
+      seenNames,
+      environment.sourceFile,
+      `${prefix}_${environment.releaseSuffix}`,
+      environment.kind,
+    );
+  }
 
   for (const sheet of cardManifest.sheets || []) {
     addAsset(
