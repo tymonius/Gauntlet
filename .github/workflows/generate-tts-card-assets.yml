@@ -43,7 +43,6 @@ on:
       - 'images/artwork/card-backgrounds/**'
       - 'images/artwork/cardbacks/**'
       - 'images/artwork/supplemental/**'
-      - 'images/artwork/site/gauntlet-command-tent-gameplay-painting.webp'
       - 'images/general.png'
       - 'images/commandant.png'
       - 'images/ambassador.png'
@@ -130,7 +129,6 @@ jobs:
             images/artwork/card-backgrounds
             images/artwork/cardbacks
             images/artwork/supplemental
-            images/artwork/site/gauntlet-command-tent-gameplay-painting.webp
             images/general.png
             images/commandant.png
             images/ambassador.png
