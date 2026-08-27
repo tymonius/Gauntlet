@@ -26,12 +26,12 @@ describe('TTS final save promotion', () => {
     expect(packageJson.scripts['tts:check']).toContain('promote-tts-save.mjs --check');
   });
 
-  it('tracks the passed v0.7.0 manual-QA record without pre-approving Workshop publication', () => {
+  it('tracks the passed and explicitly Workshop-approved v0.7.0 manual-QA record', () => {
     expect(qa).toEqual(expect.objectContaining({
       schemaVersion: 3,
       gameVersion: 'v0.7.0',
       status: 'passed',
-      approvedForWorkshop: false,
+      approvedForWorkshop: true,
     }));
     expect(() => validateQaRecordShape(qa)).not.toThrow();
 
@@ -50,6 +50,7 @@ describe('TTS final save promotion', () => {
     expect(qa.notes.some((note) => /All nine faction-component QA checks passed/i.test(note))).toBe(true);
     expect(qa.notes.some((note) => /Focused handling validation passed/i.test(note))).toBe(true);
     expect(qa.notes.some((note) => /remote two-player game is not required/i.test(note))).toBe(true);
+    expect(qa.notes.some((note) => /Workshop promotion explicitly approved/i.test(note))).toBe(true);
   });
 
   it('refuses promotion while machine readiness still has blockers', () => {
@@ -81,6 +82,14 @@ describe('TTS final save promotion', () => {
       readiness,
       qa: completedQa({ approvedForWorkshop: false }),
     })).toThrow(/not approved for Workshop/);
+  });
+
+  it('opens the current v0.7.0 promotion gate after explicit approval', () => {
+    expect(() => validatePromotionGate({
+      release,
+      readiness: { gameVersion: 'v0.7.0', machineReady: true, blockers: [] },
+      qa,
+    })).not.toThrow();
   });
 
   it('allows promotion only after machine readiness and every granular manual QA check pass', () => {
