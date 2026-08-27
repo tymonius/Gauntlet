@@ -292,9 +292,10 @@ function validateBagsAndUtilities(save, manifest) {
       return 99;
     };
     const ranks = objects.map(rank);
-    if (ranks[0] !== 0 || ranks.some(value => value === 99)
-      || ranks.some((value, index) => index > 0 && value < ranks[index - 1])) {
-      throw new Error(`${bag.Nickname} extraction order must be Leader → trackers → reference cards → other supplementals → Deck → Territory stack → utilities.`);
+    const extractionRanks = [...ranks].reverse();
+    if (extractionRanks[0] !== 0 || extractionRanks.some(value => value === 99)
+      || extractionRanks.some((value, index) => index > 0 && value < extractionRanks[index - 1])) {
+      throw new Error(`${bag.Nickname} native TTS extraction order must be Leader → trackers → reference cards → other supplementals → Deck → Territory stack → utilities.`);
     }
 
     const faction = String(token[0].GMNotes).slice(PLAYER_TOKEN_NOTE_PREFIX.length);
