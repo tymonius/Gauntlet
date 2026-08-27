@@ -14,8 +14,8 @@ function zoneContainsPoint(zone: any, x: number, z: number) {
 }
 
 const TEST_ENVIRONMENT = {
-  TableURL: 'https://github.com/tymonius/Gauntlet/releases/download/v0.7.0/Gauntlet_v0.7.0_TTS_Environment_Table.jpg',
-  SkyURL: 'https://github.com/tymonius/Gauntlet/releases/download/v0.7.0/Gauntlet_v0.7.0_TTS_Environment_Panorama.jpg',
+  TableURL: 'https://github.com/tymonius/Gauntlet/releases/download/v0.7.0/Gauntlet_v0.7.0_TTS_Environment_Table.png',
+  SkyURL: 'https://github.com/tymonius/Gauntlet/releases/download/v0.7.0/Gauntlet_v0.7.0_TTS_Environment_Panorama.png',
 };
 
 describe('authoritative TTS table layout', () => {
