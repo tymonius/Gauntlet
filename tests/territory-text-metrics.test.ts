@@ -6,10 +6,13 @@ const territoryRendererStyles = readFileSync("tts/territory-renderer/territory-r
 
 describe("Territory effect layout", () => {
   it("lets effect text claim its natural height before artwork", () => {
-    expect(territoryStyles).toContain("--art-height: 1.42in");
-    expect(territoryStyles).toContain("grid-template-rows: minmax(0, var(--art-height)) auto");
+    expect(territoryStyles).toContain("--art-height: 0.78in");
+    expect(territoryStyles).toContain(".territory-body {");
+    expect(territoryStyles).toContain("display: flex");
+    expect(territoryStyles).toContain("flex-direction: column");
+    expect(territoryStyles).toContain("min-height: var(--art-height)");
     expect(territoryStyles).toContain("overflow: visible");
-    expect(territoryStyles).toContain("padding: 0.045in 0.07in 0.045in");
+    expect(territoryStyles).toContain("padding: 0.045in 0.07in 0.018in");
     expect(territoryStyles).toContain("line-height: 1.1");
     expect(territoryStyles).not.toContain("line-height: 1.18");
   });

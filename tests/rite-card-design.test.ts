@@ -4,6 +4,8 @@ import { describe, expect, it } from "vitest";
 
 const reviewPage = readFileSync("card-design/index.html", "utf8");
 const riteRenderer = readFileSync("card-design/rite-card.js", "utf8");
+const currentGame = JSON.parse(readFileSync("game-data/current-game.json", "utf8"));
+const mysticsAuthority = currentGame.mystics;
 const riteStyles = readFileSync("card-design/rite-card.css", "utf8");
 const leaderStyles = readFileSync("card-design/leader-card.css", "utf8");
 const ruleColumnStyles = readFileSync("card-design/card-rule-columns.css", "utf8");
@@ -27,7 +29,8 @@ describe("Mystics Rite card prototypes", () => {
     expect(reviewPage).toContain('type="module" src="rite-card.js"');
     expect(reviewPage).toContain('<span data-rite-count>3</span> double-sided Rites');
     expect(reviewPage).toContain('<strong data-ritual-count>1</strong> Ritual');
-    for (const name of riteNames) expect(riteRenderer).toContain(`name: '${name}'`);
+    expect(mysticsAuthority.rites.map((item: any) => item.name)).toEqual(riteNames);
+    expect(riteRenderer).toContain("import { loadCurrentGame } from '../game-data/current-game.mjs'");
     expect(riteRenderer).toContain("RITES.map(reviewPair).join('')");
     expect(riteRenderer).toContain("ritualReview()");
   });
@@ -49,24 +52,25 @@ describe("Mystics Rite card prototypes", () => {
     expect(riteRenderer).toContain("ruleSection('Begin', rite.begin)");
     expect(riteRenderer).toContain("ruleSection('Complete', rite.complete)");
     expect(riteRenderer).toContain("ruleSection('Interrupted', rite.interrupted)");
-    expect(riteRenderer).toContain("RITE_SOURCE");
-    expect(riteRenderer).toContain("clean-v0.6.3/faction-guides/mystics/Gauntlet_v0.6.3_Mystics_Faction_Guide.md");
+    expect(riteRenderer).toContain("RITES = Array.isArray(mystics.rites) ? mystics.rites : []");
+    expect(riteRenderer).not.toContain("RITE_SOURCE");
   });
 
   it("uses the uploaded artwork on all three incomplete Rite faces and the Ritual face", () => {
     for (const path of riteArtworkPaths) expect(existsSync(path)).toBe(true);
     expect(existsSync(ritualArtworkPath)).toBe(true);
     expect(existsSync(ritualCardBackPath)).toBe(true);
-    expect(riteRenderer).toContain("const RITE_ART_ROOT = '../images/artwork/cards/mystics/rites-and-rituals'");
-    expect(riteRenderer).toContain("artwork: `${RITE_ART_ROOT}/rite-of-echoes.png`");
-    expect(riteRenderer).toContain("artwork: `${RITE_ART_ROOT}/rite-of-blood.png`");
-    expect(riteRenderer).toContain("artwork: `${RITE_ART_ROOT}/rite-of-crossing.png`");
-    expect(riteRenderer).toContain("const RITUAL_ART_SOURCE = `${RITE_ART_ROOT}/ritual-of-ascension.png`");
-    expect(riteRenderer).toContain("const RITUAL_CARD_BACK_SOURCE = '../images/artwork/cardbacks/mystics/ritual-of-ascension.png'");
+    expect(mysticsAuthority.rites.map((item: any) => item.artwork)).toEqual([
+      "/images/artwork/cards/mystics/rites-and-rituals/rite-of-echoes.png",
+      "/images/artwork/cards/mystics/rites-and-rituals/rite-of-blood.png",
+      "/images/artwork/cards/mystics/rites-and-rituals/rite-of-crossing.png",
+    ]);
+    expect(mysticsAuthority.ritual.artwork).toBe("/images/artwork/cards/mystics/rites-and-rituals/ritual-of-ascension.png");
+    expect(mysticsAuthority.ritual.cardBack).toBe("/images/artwork/cardbacks/mystics/ritual-of-ascension.png");
     expect(riteRenderer).toContain('class="card-art has-image" aria-label="Artwork for ${esc(rite.name)}"');
     expect(riteRenderer).toContain('<img src="${esc(rite.artwork)}"');
     expect(riteRenderer).toContain("function ritualArtwork()");
-    expect(riteRenderer).toContain('<img src="${RITUAL_ART_SOURCE}"');
+    expect(riteRenderer).toContain('<img src="${esc(RITUAL.artwork)}"');
     expect(riteRenderer).not.toContain("Artwork pending for ${esc(RITUAL.name)}");
   });
 
@@ -83,9 +87,10 @@ describe("Mystics Rite card prototypes", () => {
   });
 
   it("turns every completed face into the same count-based progression reference", () => {
-    for (const label of ["1 Rite", "2 Rites", "3 Rites", "Ritual"]) expect(riteRenderer).toContain(`count: '${label}'`);
-    for (const ability of ["Invocation", "Transmutation", "Convergence", "Ritual of Ascension"]) expect(riteRenderer).toContain(`name: '${ability}'`);
-    expect(riteRenderer).toContain("headerLines: ['Ritual of', 'Ascension']");
+    expect(mysticsAuthority.unlocks.map((item: any) => item.count)).toEqual(["1 Rite", "2 Rites", "3 Rites", "Ritual"]);
+    expect(mysticsAuthority.unlocks.map((item: any) => item.name)).toEqual(["Invocation", "Transmutation", "Convergence", "Ritual of Ascension"]);
+    expect(mysticsAuthority.unlocks.at(-1).headerLines).toEqual(["Ritual of", "Ascension"]);
+    expect(riteRenderer).toContain("UNLOCKS = Array.isArray(mystics.unlocks) ? mystics.unlocks : []");
     expect(riteRenderer).toContain("rite-unlock-section--ritual");
     expect(riteRenderer).toContain("rite-unlock-ritual-heading");
     expect(riteRenderer).toContain('<p>${esc(unlock.text)}</p>');
@@ -102,8 +107,8 @@ describe("Mystics Rite card prototypes", () => {
   });
 
   it("uses the approved shared Mystics completion artwork rather than the Diplomat wax-seal treatment", () => {
-    expect(riteRenderer).toContain("../images/artwork/supplemental/mystics/rite-completed.webp");
-    expect(riteRenderer).not.toContain("const COMPLETED_RITE_ART_SOURCE = '/images/");
+    expect(mysticsAuthority.completedArtwork).toBe("/images/artwork/supplemental/mystics/rite-completed.webp");
+    expect(riteRenderer).toContain("COMPLETED_RITE_ART_SOURCE = mystics.completedArtwork || COMPLETED_RITE_ART_SOURCE");
     expect(riteRenderer).toContain('class="card-art rite-completed-panel has-image"');
     expect(riteRenderer).toContain('<img src="${COMPLETED_RITE_ART_SOURCE}"');
     expect(riteStyles).toContain(".rite-completed-panel > img");
