@@ -1,7 +1,7 @@
 {
   "schemaVersion": 3,
   "gameVersion": "v0.7.0",
-  "status": "in-progress",
+  "status": "passed",
   "checks": {
     "tableSetup": {
       "hostedSaveLoad": true,
@@ -23,9 +23,9 @@
       "inquisitionConvictionDoctrineAndPurge": true
     },
     "handlingValidation": {
-      "coreHandlingExercised": false,
-      "focusedFactionDrillsComplete": false,
-      "frictionResolved": false
+      "coreHandlingExercised": true,
+      "focusedFactionDrillsComplete": true,
+      "frictionResolved": true
     }
   },
   "approvedForWorkshop": false,
@@ -33,6 +33,7 @@
     "2026-08-27: The hosted gauntlet.run v0.7.0 save and its custom assets load successfully in Tabletop Simulator.",
     "2026-08-27: White/Green perspectives and hand/reserve zones, all six Territory snaps/orientation, faction-colored Player Tokens and battle dice, Rulebook setup from starter Bags, and distinct play areas all passed in-game validation.",
     "2026-08-27: All nine faction-component QA checks passed in-game: Military Command; Diplomat Influence and all nine Proposal/Treaty cards; Financier Capital Limit, Capital Ledger, and eight Deeds; Intelligence nested Operation Progress → Intel → Leader; Mystics Reference/Rites/Completed faces; and Inquisition Conviction/Doctrine/Purge.",
-    "2026-08-27: A remote two-player game is not required for v0.7.0 release; focused handling validation remains required."
+    "2026-08-27: Focused handling validation passed: battle setup/cleanup, Reserve/Gambit/Tactic handling, capture/rotation, Asset banking, Draw/Discard reshuffling, Graveyard use, and any remaining faction interaction drills were exercised without unresolved TTS-specific friction.",
+    "2026-08-27: A remote two-player game is not required for v0.7.0 release."
   ]
 }
