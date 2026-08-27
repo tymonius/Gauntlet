@@ -99,7 +99,6 @@ async function validateLeader(page, leader, displayVersion) {
       interiorOverflow: overflows(interior),
       footerOverflow: Boolean(interior && footerNode && footerNode.getBoundingClientRect().bottom > interior.getBoundingClientRect().bottom + 1),
       imageLoaded: Boolean(image?.complete && image?.naturalWidth > 0 && image?.naturalHeight > 0),
-      artCrop: image?.dataset.artCrop || '',
       artPosition: image ? window.getComputedStyle(image).objectPosition : '',
       footer,
     };
@@ -115,8 +114,8 @@ async function validateLeader(page, leader, displayVersion) {
     throw new Error(`Leader content does not fit the approved frame: ${leader.faction}:${leader.id} ${JSON.stringify(metrics)}.`);
   }
   if (!metrics.imageLoaded) throw new Error(`Leader portrait failed to load: ${leader.faction}:${leader.id}.`);
-  if (!metrics.artCrop || !metrics.artPosition) {
-    throw new Error(`Leader portrait has no resolved catalog artwork composition: ${leader.faction}:${leader.id}.`);
+  if (!metrics.artPosition) {
+    throw new Error(`Leader portrait has no Card Design artwork composition: ${leader.faction}:${leader.id}.`);
   }
   if (metrics.footer.at(-1) !== displayVersion) {
     throw new Error(`Leader ${leader.faction}:${leader.id} renders ${metrics.footer.at(-1) || 'no version'} but TTS package displays ${displayVersion}.`);
