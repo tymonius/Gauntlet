@@ -12,8 +12,8 @@ const FACTION_COLORS = Object.freeze({
   mystics: { r: 0.365, g: 0.204, b: 0.494 },
   inquisition: { r: 0.651, g: 0.478, b: 0.153 },
 });
-const TABLE_IMAGE_SOURCE = 'tts/assets/environment/campaign-map-table.jpg';
-const PANORAMA_IMAGE_SOURCE = 'tts/assets/environment/command-tent-panorama.jpg';
+const TABLE_IMAGE_SOURCE = 'environment/campaign-map-table.png';
+const PANORAMA_IMAGE_SOURCE = 'environment/command-tent-panorama.png';
 
 
 function jsonText(value) {
