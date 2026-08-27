@@ -62,7 +62,7 @@ describe('TTS card render authority', () => {
   it('stamps the pending TTS release version without changing the Card Design catalog default', () => {
     expect(target.releaseTag).toBe('v0.7.0');
     expect(target.displayVersion).toBe('v0.7.0');
-    expect(target.sourceVersion).toBe('v0.6.4-candidate');
+    expect(target.sourceVersion).toBe('v0.7.0');
 
     expect(cardGenerator).toContain('version=${encodeURIComponent(release.displayVersion || release.version)}');
     expect(territoryGenerator).toContain('version=${encodeURIComponent(release.displayVersion || release.version)}');

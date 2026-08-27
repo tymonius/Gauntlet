@@ -113,7 +113,7 @@ describe("TTS Territory assets", () => {
     expect(territoryReviewScript).toContain("currentGame.findTerritory(territoryId)");
     expect(territoryReviewScript).toContain("source: currentGame.authorityUrl");
     expect(territoryReviewScript).not.toContain("Gauntlet_v0.6.3_Canonical_Data.json");
-    expect(territoryReviewPage).toContain("Gauntlet v0.6.4 Candidate Territory Review Render");
+    expect(territoryReviewPage).toContain("Gauntlet v0.7.0 Territory Review Render");
     expect(dedicatedSpecimenPage).toContain("Gauntlet Territory Card Mockup");
     expect(dedicatedSpecimenPage).toContain('aria-label="High Ground Territory card-front prototype"');
   });

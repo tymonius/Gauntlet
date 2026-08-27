@@ -12,7 +12,7 @@ describe('TTS Leader assets', () => {
   it('derives the current Leader roster from the current-game authority', () => {
     expect(catalogSource).toContain('export async function loadCurrentLeaders()');
     expect(catalogSource).toContain('resolveCurrentTtsRelease()');
-    expect(catalogSource).toContain('const sourceLeaders = Array.isArray(manifest.leaders)');
+    expect(catalogSource).toContain('const sourceLeaders = Array.isArray(authority.leaders)');
     expect(catalogSource).toContain('for (const leader of sourceLeaders)');
     expect(exporter).toContain('loadCurrentLeaders');
     expect(exporter).not.toMatch(/v0\.6\.[0-9]+/);
