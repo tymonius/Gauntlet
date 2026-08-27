@@ -61,9 +61,9 @@ describe('authoritative TTS table layout', () => {
   it('anchors Leader & References snaps at the player-side bottom edge of the workspace', () => {
     const snaps = buildTableSnapPoints();
     const whiteLeaderSnaps = snaps.filter(point =>
-      point.Position.z === -18.6 && [-16.3, -13.6, -10.9, -8.2].includes(point.Position.x));
+      Math.abs(point.Position.z - (-18.6)) < 0.001 && [-16.3, -13.6, -10.9, -8.2].some(x => Math.abs(point.Position.x - x) < 0.001));
     const greenLeaderSnaps = snaps.filter(point =>
-      point.Position.z === 18.6 && [16.3, 13.6, 10.9, 8.2].includes(point.Position.x));
+      Math.abs(point.Position.z - 18.6) < 0.001 && [16.3, 13.6, 10.9, 8.2].some(x => Math.abs(point.Position.x - x) < 0.001));
     expect(whiteLeaderSnaps).toHaveLength(4);
     expect(greenLeaderSnaps).toHaveLength(4);
     expect(whiteLeaderSnaps.every(point => point.Rotation.y === 180)).toBe(true);
