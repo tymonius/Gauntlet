@@ -35,11 +35,39 @@ function fixture() {
     ObjectStates: [
       {
         Name: 'Bag', Nickname: 'Financiers Starter — Banker', Description: 'Starter kit', GUID: '000010',
-        ContainedObjects: [{ Name: 'CardCustom', Nickname: 'Banker', GUID: '00001a', CardID: 10000 }],
+        ContainedObjects: [
+          { Name: 'CardCustom', Nickname: 'Banker', GUID: '00001a', CardID: 10000 },
+          { Name: 'DeckCustom', Nickname: 'Financiers Starter Deck', GUID: '00001b', GMNotes: 'gauntlet:starter-deck:financiers' },
+          {
+            Name: 'DeckCustom', Nickname: 'Financiers Territories', GUID: '00001c',
+            GMNotes: 'gauntlet:starter-territories:financiers',
+            ContainedObjects: [
+              { Name: 'CardCustom', Nickname: 'Territory A' },
+              { Name: 'CardCustom', Nickname: 'Territory B' },
+              { Name: 'CardCustom', Nickname: 'Territory C' },
+            ],
+          },
+          { Name: 'PlayerPawn', Nickname: 'Financiers Player Token', GUID: '00001d' },
+          { Name: 'Die_6', Nickname: 'Financiers Battle Die', GUID: '00001e' },
+        ],
       },
       {
         Name: 'Bag', Nickname: 'Military Starter — General', Description: 'Starter kit', GUID: '000020',
-        ContainedObjects: [{ Name: 'CardCustom', Nickname: 'General', GUID: '00002a', CardID: 11000 }],
+        ContainedObjects: [
+          { Name: 'CardCustom', Nickname: 'General', GUID: '00002a', CardID: 11000 },
+          { Name: 'DeckCustom', Nickname: 'Military Starter Deck', GUID: '00002b', GMNotes: 'gauntlet:starter-deck:military' },
+          {
+            Name: 'DeckCustom', Nickname: 'Military Territories', GUID: '00002c',
+            GMNotes: 'gauntlet:starter-territories:military',
+            ContainedObjects: [
+              { Name: 'CardCustom', Nickname: 'Territory D' },
+              { Name: 'CardCustom', Nickname: 'Territory E' },
+              { Name: 'CardCustom', Nickname: 'Territory F' },
+            ],
+          },
+          { Name: 'PlayerPawn', Nickname: 'Military Player Token', GUID: '00002d' },
+          { Name: 'Die_6', Nickname: 'Military Battle Die', GUID: '00002e' },
+        ],
       },
     ],
   };
@@ -73,6 +101,7 @@ function fixture() {
       },
     },
     ...Array.from({ length: 8 }, (_, index) => card(`deed-${index + 1}`, 'deed-card', 'financiers', 21000 + index, 210 + index)),
+    card('military-setup-card', 'doctrine-card', 'military', 22000, 220),
   ];
   const supplementals: any = { gameVersion: 'current-test', readyCount: ready.length, ready };
   const bySourceFile: Record<string, string> = {
@@ -98,6 +127,23 @@ describe('TTS ready supplemental save assembly', () => {
     }
     expect(JSON.stringify(result.save.ObjectStates[0])).not.toContain('military-command-tracker');
     expect(JSON.stringify(result.save.ObjectStates[1])).toContain('military-command-tracker');
+  });
+
+  it('orders starter Bag extraction as Leader, trackers, references, other supplementals, Deck, Territories, then utilities', () => {
+    const { save, starters, supplementals, assets } = fixture();
+    const result = assembleReadySupplementals(save, starters, supplementals, assets);
+    const military = result.save.ObjectStates[1];
+
+    expect(military.ContainedObjects.map((object: any) => object.GMNotes || object.Nickname)).toEqual([
+      'General',
+      'gauntlet:supplemental:military-command-tracker',
+      'gauntlet:supplemental:universal-reference',
+      'gauntlet:supplemental:military-setup-card',
+      'gauntlet:starter-deck:military',
+      'gauntlet:starter-territories:military',
+      'Military Player Token',
+      'Military Battle Die',
+    ]);
   });
 
   it('makes live TTS bounds the sole authority for tracker snap coordinates', () => {
