@@ -147,9 +147,9 @@ describe("TTS Territory assets", () => {
     expect(renderer).toContain("art.style.minHeight");
     expect(renderer).toContain("card.dataset.artHeight");
     expect(renderer).toContain("card.dataset.artSpansBody");
-    expect(renderer).toContain("while (cardOverflows(card) && effectScale > 0.78)");
+    expect(renderer).toContain("while (bodyOverflows(body, art, effect) && effectScale > 0.78)");
     expect(renderer).toContain("card.classList.add('compact')");
-    expect(renderer).toContain("while (cardOverflows(card) && effectScale > MINIMUM_EFFECT_SCALE)");
+    expect(renderer).toContain("while (bodyOverflows(body, art, effect) && effectScale > MINIMUM_EFFECT_SCALE)");
     expect(renderer).toContain("card.classList.toggle('fit-warning', !fits)");
     expect(generator).toContain("Territory text does not fit the approved landscape frame");
   });
