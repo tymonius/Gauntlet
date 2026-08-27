@@ -1,8 +1,4 @@
-import {
-  parseArtDirectionSource,
-  serializeArtDirectionMap,
-  updateArtDirectionMap,
-} from './format.js';
+import { updateArtDirectionMap } from './format.js';
 
 const API_VERSION = '2022-11-28';
 const SESSION_VERSION = 'v1';
@@ -22,7 +18,7 @@ function config(env) {
     allowedLogin: String(env.GITHUB_ALLOWED_LOGIN || 'tymonius').toLowerCase(),
     defaultBranch: String(env.GITHUB_DEFAULT_BRANCH || 'main'),
     authorBranch: String(env.GITHUB_AUTHOR_BRANCH || 'artwork/compositor-authoring'),
-    overridePath: String(env.GITHUB_OVERRIDE_PATH || 'tts/artwork-direction-overrides.js'),
+    authorityPath: String(env.GITHUB_AUTHORITY_PATH || env.GITHUB_OVERRIDE_PATH || 'game-data/current-game.json'),
     callbackUrl: String(env.OAUTH_CALLBACK_URL || ''),
   };
 }
@@ -274,10 +270,10 @@ async function ensureAuthorBranch(token, cfg) {
   });
 }
 
-async function getOverrideFile(token, cfg) {
+async function getAuthorityFile(token, cfg) {
   await ensureAuthorBranch(token, cfg);
   return github(
-    `/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.overridePath}?ref=${encodeURIComponent(cfg.authorBranch)}`,
+    `/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.authorityPath}?ref=${encodeURIComponent(cfg.authorBranch)}`,
     token,
   );
 }
@@ -298,7 +294,7 @@ async function ensurePullRequest(token, cfg) {
       title: 'Update canonical artwork compositions',
       head: cfg.authorBranch,
       base: cfg.defaultBranch,
-      body: 'Canonical artwork-composition updates saved from the public `/card-design/` compositor.\n\nAll render surfaces consume the shared `tts/artwork-direction-overrides.js` source.',
+      body: 'Canonical artwork-composition updates saved from the public `/card-design/` compositor.\n\nArtwork direction is stored directly in `game-data/current-game.json.artDirection`, the complete current gameplay authority.',
     }),
   });
 }
@@ -320,23 +316,29 @@ async function handleArtDirection(request, env) {
   const cfg = config(env);
 
   if (request.method === 'GET') {
-    const file = await getOverrideFile(session.githubToken, cfg);
+    const file = await getAuthorityFile(session.githubToken, cfg);
+    const authority = JSON.parse(decodeGitHubContent(file));
     return json({
-      directions: parseArtDirectionSource(decodeGitHubContent(file)),
+      directions: authority?.artDirection && typeof authority.artDirection === 'object' ? authority.artDirection : {},
       branch: cfg.authorBranch,
     }, 200, corsHeaders(request, env));
   }
 
   const payload = await request.json();
-  const file = await getOverrideFile(session.githubToken, cfg);
+  const file = await getAuthorityFile(session.githubToken, cfg);
   const currentSource = decodeGitHubContent(file);
-  const before = parseArtDirectionSource(currentSource);
+  const authority = JSON.parse(currentSource);
+  if (authority?.schemaVersion !== 2 || authority?.authority !== 'current-game') {
+    throw new Error('Artwork authoring requires the complete current-game authority.');
+  }
+  const before = authority.artDirection && typeof authority.artDirection === 'object' ? authority.artDirection : {};
   const after = updateArtDirectionMap(before, payload?.id, payload?.direction);
   const id = String(payload?.id || '');
-  const nextSource = serializeArtDirectionMap(after);
+  const nextAuthority = { ...authority, artDirection: after };
+  const nextSource = `${JSON.stringify(nextAuthority, null, 2)}\n`;
 
   if (nextSource !== currentSource) {
-    await github(`/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.overridePath}`, session.githubToken, {
+    await github(`/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.authorityPath}`, session.githubToken, {
       method: 'PUT',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
@@ -353,7 +355,7 @@ async function handleArtDirection(request, env) {
     saved: true,
     id,
     direction: after[id] || null,
-    file: cfg.overridePath,
+    file: cfg.authorityPath,
     branch: cfg.authorBranch,
     pr: pr ? { number: pr.number, url: pr.html_url } : null,
   }, 200, corsHeaders(request, env));
