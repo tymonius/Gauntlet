@@ -20,6 +20,7 @@ on:
       - scripts/render-v070-booklet.mjs
       - scripts/build-v063-rulebook-production.py
       - scripts/run-v063-rulebook-renderer.mjs
+      - scripts/run-v070-rulebook-renderer.mjs
       - images/sketches/**
       - .github/workflows/materialize-v070-release-package.yml
   pull_request:
@@ -87,7 +88,7 @@ jobs:
         run: |
           node --check scripts/render-v070-booklet.mjs
           python -m py_compile scripts/build-v063-rulebook-production.py
-          node --check scripts/run-v063-rulebook-renderer.mjs
+          node --check scripts/run-v070-rulebook-renderer.mjs
           node scripts/render-v070-booklet.mjs
 
       - name: Validate materialized release package
