@@ -1,0 +1,127 @@
+.card-showcase-section {
+  overflow: visible;
+}
+
+.card-showcase-heading {
+  margin-bottom: 24px;
+}
+
+.card-showcase-copy {
+  align-self: end;
+}
+
+.card-showcase-copy p {
+  margin-bottom: 18px;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.card-showcase-figure {
+  width: min(1440px, calc(100vw - 28px));
+  margin: 16px 0 0 50%;
+  transform: translateX(-50%);
+}
+
+.card-showcase-stage {
+  width: 100%;
+  position: relative;
+  overflow: visible;
+  isolation: isolate;
+}
+
+.card-showcase-card {
+  position: absolute;
+  display: block;
+  aspect-ratio: 5 / 7;
+  transform-origin: 50% 100%;
+  filter: drop-shadow(0 14px 16px rgba(41, 30, 16, .24));
+  transition: filter .18s ease, translate .18s ease;
+}
+
+.card-showcase-card:hover,
+.card-showcase-card:focus-visible {
+  z-index: 1000 !important;
+  translate: 0 -6px;
+  filter: drop-shadow(0 20px 22px rgba(41, 30, 16, .3));
+}
+
+.card-showcase-frame {
+  position: absolute;
+  inset: 0 auto auto 0;
+  display: block;
+  border: 0;
+  background: transparent;
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+
+.card-showcase-stage:not([data-ready="true"])::before {
+  content: "Loading current card showcase…";
+  position: absolute;
+  inset: 50% auto auto 50%;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: .82rem;
+  letter-spacing: .05em;
+  transform: translate(-50%, -50%);
+}
+
+.card-showcase-stage.card-showcase-error {
+  min-height: 220px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-family: var(--sans);
+}
+
+.card-showcase-stage.card-showcase-error::before {
+  content: none;
+}
+
+.card-showcase-figure figcaption {
+  margin-top: 14px;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: .78rem;
+  letter-spacing: .035em;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .card-showcase-heading {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .card-showcase-copy {
+    max-width: 720px;
+  }
+
+  .card-showcase-figure {
+    width: calc(100vw - 16px);
+    margin-top: 8px;
+  }
+}
+
+@media (max-width: 620px) {
+  .card-showcase-section {
+    padding-top: 66px;
+    padding-bottom: 70px;
+  }
+
+  .card-showcase-copy .button {
+    width: 100%;
+  }
+
+  .card-showcase-figure {
+    width: calc(100vw - 8px);
+  }
+
+  .card-showcase-figure figcaption {
+    width: min(100% - 28px, 560px);
+    margin: 8px auto 0;
+    font-size: .7rem;
+    line-height: 1.45;
+  }
+}

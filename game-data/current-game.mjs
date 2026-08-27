@@ -173,11 +173,99 @@ export function resolveRuleSection(baseSection, overrideSection) {
   return result;
 }
 
+function validateLeader(leader) {
+  if (!leader?.id || !leader?.faction || !leader?.name) throw new Error('A current Leader definition is incomplete.');
+  const sections = requireArray(leader.sections, `${leader.id} Leader sections`);
+  if (!sections.length) throw new Error(`Current Leader ${leader.id} has no sections.`);
+  const classifications = new Set(['Faction Victory', 'Leader Ability', 'Resource', 'Progression']);
+  for (const section of sections) {
+    if (!section?.name || !classifications.has(section.classification)) {
+      throw new Error(`Current Leader ${leader.id} has an invalid section classification.`);
+    }
+    if (section.items !== undefined) {
+      const items = requireArray(section.items, `${leader.id} grouped Leader Ability items`);
+      if (section.classification !== 'Leader Ability' || !items.length) {
+        throw new Error(`Current Leader ${leader.id} groups items outside a Leader Ability.`);
+      }
+      for (const item of items) {
+        if (!item?.name || !item?.text) throw new Error(`Current Leader ${leader.id} has an incomplete grouped ability.`);
+      }
+    }
+  }
+  if (!sections.some(section => section.classification === 'Faction Victory')) {
+    throw new Error(`Current Leader ${leader.id} is missing Faction Victory.`);
+  }
+  if (!sections.some(section => section.classification === 'Leader Ability')) {
+    throw new Error(`Current Leader ${leader.id} is missing Leader Ability.`);
+  }
+}
+
+function legacySectionText(section) {
+  if (section?.text) return section.text;
+  if (Array.isArray(section?.items)) {
+    return section.items.map(item => `${item.name}: ${item.text}`).join(' ');
+  }
+  return '';
+}
+
+function runtimeLeader(source) {
+  const leader = clone(source);
+  leader.sections = requireArray(leader.sections, `${leader.id} Leader sections`).map(section => {
+    const resolved = { ...section };
+    Object.defineProperty(resolved, Symbol.iterator, {
+      enumerable: false,
+      configurable: false,
+      value: function* legacyLeaderSectionTuple() {
+        yield resolved.name;
+        yield legacySectionText(resolved);
+        yield resolved.cost || '';
+      },
+    });
+    return resolved;
+  });
+  return leader;
+}
+
+function validateFactionFeatureAuthority(manifest) {
+  const taxonomy = manifest.factionFeatureTaxonomy;
+  if (!taxonomy?.factionFeature || !taxonomy?.leaderAbility || !taxonomy?.actionProfiles) {
+    throw new Error('Current-game authority is missing the Faction Feature taxonomy.');
+  }
+  const profiles = new Set(['1 Action', 'No Action', 'Automatic']);
+  for (const profile of profiles) {
+    if (!taxonomy.actionProfiles[profile]) throw new Error(`Faction Feature taxonomy is missing ${profile}.`);
+  }
+  const expectedFactions = ['military', 'diplomats', 'financiers', 'intelligence', 'mystics', 'inquisition'];
+  for (const factionId of expectedFactions) {
+    const features = requireArray(manifest.factionFeatures?.[factionId], `${factionId} Faction Features`);
+    for (const feature of features) {
+      if (!feature?.name || !profiles.has(feature.profile) || !feature?.timing) {
+        throw new Error(`Current ${factionId} Faction Feature is incomplete.`);
+      }
+    }
+  }
+  if (manifest.factionFeatures.military.length) {
+    throw new Error('Military Orders are Leader Abilities and must not appear as shared Military Faction Features.');
+  }
+}
+
+function rejectRetiredCurrentTerminology(manifest, rulesSource = null) {
+  const source = JSON.stringify({
+    leaders: manifest.leaders,
+    factionOverrides: manifest.factionOverrides,
+    factionFeatures: manifest.factionFeatures,
+    mystics: manifest.mystics,
+    rules: rulesSource?.rulebook_overrides || [],
+  });
+  const retired = source.match(/Faction Actions?|Faction Abilit(?:y|ies)|faction procedure/iu);
+  if (retired) throw new Error(`Current-game authority still contains retired terminology: ${retired[0]}.`);
+}
+
 function resolveFactions(baseFactions, manifest) {
   const leaders = requireArray(manifest.leaders, 'Leader definitions');
   const leaderIds = new Set();
   for (const leader of leaders) {
-    if (!leader?.id || !leader?.faction || !leader?.name) throw new Error('A current Leader definition is incomplete.');
+    validateLeader(leader);
     const key = `${leader.faction}:${leader.id}`;
     if (leaderIds.has(key)) throw new Error(`Duplicate current Leader: ${key}.`);
     leaderIds.add(key);
@@ -188,7 +276,7 @@ function resolveFactions(baseFactions, manifest) {
     const override = manifest.factionOverrides?.[faction.id] || {};
     const currentLeaders = leaders
       .filter(leader => leader.faction === faction.id)
-      .map(leader => clone(leader));
+      .map(runtimeLeader);
     if (!currentLeaders.length) throw new Error(`Current-game authority has no Leaders for ${faction.id}.`);
     return {
       ...faction,
@@ -198,8 +286,39 @@ function resolveFactions(baseFactions, manifest) {
   });
 }
 
-function resolveFactionRules(baseRules, manifest) {
+export function resolveFactionRules(baseRules, manifest) {
   const rules = clone(baseRules || {});
+  for (const [factionId, source] of Object.entries(rules)) {
+    const current = { ...(source || {}) };
+
+    if (Object.prototype.hasOwnProperty.call(current, 'faction_action_phase')) {
+      current.faction_feature_action_phase = current.faction_action_phase;
+      delete current.faction_action_phase;
+    }
+    if (Object.prototype.hasOwnProperty.call(current, 'faction_actions')) {
+      current.faction_features_1_action = requireArray(
+        manifest.factionFeatures?.[factionId] || [],
+        `${factionId} Faction Features`,
+      )
+        .filter(feature => feature.profile === '1 Action')
+        .map(feature => feature.name);
+      delete current.faction_actions;
+    }
+    if (Object.prototype.hasOwnProperty.call(current, 'faction_abilities')) {
+      current.leader_abilities = clone(current.faction_abilities);
+      delete current.faction_abilities;
+    }
+    if (Object.prototype.hasOwnProperty.call(current, 'mission_control_type')) {
+      current.mission_control_classification = 'Leader Ability';
+      delete current.mission_control_type;
+    }
+    if (Object.prototype.hasOwnProperty.call(current, 'final_judgment_type')) {
+      current.final_judgment_classification = 'Leader Ability';
+      delete current.final_judgment_type;
+    }
+    rules[factionId] = current;
+  }
+
   for (const [factionId, override] of Object.entries(manifest.factionOverrides || {})) {
     if (!override?.factionRules) continue;
     rules[factionId] = {
@@ -207,6 +326,21 @@ function resolveFactionRules(baseRules, manifest) {
       ...clone(override.factionRules),
     };
   }
+
+  const terms = manifest.factionFeatures?.diplomats?.find(feature => feature.name === 'Terms');
+  if (rules.diplomats && terms?.timing) rules.diplomats.terms_timing = terms.timing;
+
+  if (rules.financiers?.financial_capacity) {
+    rules.financiers.financial_capacity = rules.financiers.financial_capacity.replace(
+      'provided at least one is a Financier Faction Action.',
+      'provided at least one Action is spent on a Financier Faction Feature marked 1 Action.',
+    );
+  }
+
+  const payload = JSON.stringify(rules);
+  const retired = payload.match(/Faction Actions?|Faction Abilit(?:y|ies)|faction procedure|pending(?:-|\s+)battles?/iu);
+  if (retired) throw new Error(`Resolved current faction rules still contain retired terminology: ${retired[0]}.`);
+
   return rules;
 }
 
@@ -220,6 +354,9 @@ function validateManifest(manifest) {
   for (const key of ['baseGameplay', 'cardChanges', 'territories', 'proposals', 'arcaneSymbol', 'rules', 'componentContract', 'starterDecks']) {
     if (!manifest.sources[key]) throw new Error(`Current-game authority is missing source ${key}.`);
   }
+  validateFactionFeatureAuthority(manifest);
+  for (const leader of requireArray(manifest.leaders, 'Leader definitions')) validateLeader(leader);
+  rejectRetiredCurrentTerminology(manifest);
 }
 
 function validateRulesSource(rulesSource, manifest) {
@@ -232,6 +369,7 @@ function validateRulesSource(rulesSource, manifest) {
   if (!rulesSource?.battle || !Array.isArray(rulesSource?.rulebook_overrides)) {
     throw new Error('Current rules source is missing battle or rulebook override data.');
   }
+  rejectRetiredCurrentTerminology(manifest, rulesSource);
 }
 
 async function resolveCurrentGame() {
@@ -272,6 +410,7 @@ async function resolveCurrentGame() {
   const proposals = requireArray(proposalSource.proposals, 'current Proposals').map(proposal => clone(proposal));
   const starterDecks = requireArray(starterDeckSource.decks, 'current starter Decks').map(deck => clone(deck));
   const factions = resolveFactions(gameplay.factions, manifest);
+  const leaders = requireArray(manifest.leaders, 'Leader definitions').map(runtimeLeader);
   const factionRules = resolveFactionRules(gameplay.faction_rules, manifest);
   const battle = resolveRuleSection(gameplay.battle, rulesSource.battle);
   const artDirection = parseArtDirectionSource(artDirectionSource);
@@ -294,6 +433,8 @@ async function resolveCurrentGame() {
 
   const resolvedSources = {
     ...clone(manifest.sources),
+    leaders: CURRENT_GAME_AUTHORITY_URL,
+    factionFeatures: CURRENT_GAME_AUTHORITY_URL,
     artDirection: CURRENT_ART_DIRECTION_SOURCE_URL,
   };
 
@@ -314,8 +455,10 @@ async function resolveCurrentGame() {
     cardRules: Object.freeze(clone(gameplay.card_rules || {})),
     ruleChanges: Object.freeze(clone(rulesSource)),
     factionRules: Object.freeze(factionRules),
+    factionFeatureTaxonomy: Object.freeze(clone(manifest.factionFeatureTaxonomy)),
+    factionFeatures: Object.freeze(clone(manifest.factionFeatures)),
     factions: Object.freeze(factions),
-    leaders: Object.freeze(clone(manifest.leaders)),
+    leaders: Object.freeze(leaders),
     cards: Object.freeze(cards),
     territories: Object.freeze(territories),
     proposals: Object.freeze(proposals),
@@ -335,11 +478,14 @@ async function resolveCurrentGame() {
       starterDecks: Object.freeze({ version: starterDeckSource.version || null, status: starterDeckSource.status || null }),
       arcaneSymbol: Object.freeze({ changeType: arcaneSymbolSource.change_type || null, mechanicsChanged: arcaneSymbolSource.mechanics_changed }),
       rules: Object.freeze({ changeType: rulesSource.change_type || null, mechanicsChanged: rulesSource.mechanics_changed, status: rulesSource.status || null }),
+      leaders: Object.freeze({ source: CURRENT_GAME_AUTHORITY_URL, count: manifest.leaders.length }),
+      factionFeatures: Object.freeze({ source: CURRENT_GAME_AUTHORITY_URL, factions: Object.keys(manifest.factionFeatures).length }),
       artDirection: Object.freeze({ source: CURRENT_ART_DIRECTION_SOURCE_URL, entries: Object.keys(artDirection).length }),
     }),
     findCard(id) { return cards.find(card => card.id === id) || null; },
     findTerritory(id) { return territories.find(territory => territory.id === id) || null; },
     findLeader(faction, id) { return factions.find(item => item.id === faction)?.leaders.find(leader => leader.id === id) || null; },
+    findFactionFeatures(faction) { return clone(manifest.factionFeatures[faction] || []); },
     findStarterDeck(faction, leader) { return starterDecks.find(deck => deck.factionId === faction && deck.leaderId === leader) || null; },
     artDirectionFor(id) { return artDirection[id] ? clone(artDirection[id]) : null; },
     slugify,

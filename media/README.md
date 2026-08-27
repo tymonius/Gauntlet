@@ -4,11 +4,11 @@ This directory defines the supported export path for finished card images used o
 
 ## Source discipline
 
-The media exporter does not maintain an independent card design. It reads the same governing v0.6.1 card sources and approved artwork as the TTS exporter, then renders through the shared card component under `card-design/` and `tts/renderer/`.
+The media exporter does not maintain an independent card design. It reads the current-game card authority and approved artwork through the same catalog path as the TTS exporter, then renders through the shared card component under `card-design/` and `tts/renderer/`.
 
-Promotional compositions follow the same rule. They are assembled from the generated canonical card renders through `media/compositions.json`; they do not redraw, approximate, or regenerate card faces. Card IDs, placement, scale, rotation, stacking, canvas dimensions, and output profiles remain explicit and reproducible.
+Promotional compositions follow the same rule. They are assembled from generated canonical card renders through `media/compositions.json`; they do not redraw, approximate, or regenerate card faces. Card IDs, placement, scale, rotation, stacking, canvas dimensions, and output profiles remain explicit and reproducible.
 
-The generated raster files are derivatives and are not committed to Git. GitHub Actions uploads them as a downloadable artifact.
+The generated raster files are derivatives and are not committed to Git. GitHub Actions uploads them as downloadable artifacts. Selected public derivatives can also be published directly from the renderer to the production media endpoint without adding the raster to source control.
 
 ## Card profiles
 
@@ -22,15 +22,21 @@ The exporter renders one 1500 × 2100 master from the live HTML/CSS card compone
 
 ## Compositions
 
-`media/compositions.json` defines reusable multi-card arrangements. Each composition references canonical card IDs and consumes the matching generated card profile. The first composition is `financiers-fanned-hand`, using:
+`media/compositions.json` defines reusable multi-card arrangements. Each composition references canonical card IDs and consumes the matching generated card profile.
 
-- `neutral-scouting-report`
-- `financiers-leveraged-buyout`
-- `financiers-corner-the-market`
-- `financiers-monetary-crisis`
-- `neutral-sabotage`
+Current compositions:
 
-It exports a transparent five-card fan in three profiles:
+- `financiers-fanned-hand` — a five-card Financiers/Neutral hand treatment;
+- `all-factions-promotional-showcase` — a deliberately non-playable seven-card promotional hero spread with one card from each faction plus a Neutral centerpiece:
+  - Military — Invasion
+  - Diplomats — Gunboat Diplomacy
+  - Financiers — Corner the Market
+  - Neutral — Valor
+  - Mystics — Rend the Veil
+  - Inquisition — Burning at the Stake
+  - Intelligence — Assassins
+
+Every composition exports with a transparent background in three profiles:
 
 | Profile | Dimensions | Formats |
 |---|---:|---|
@@ -38,7 +44,19 @@ It exports a transparent five-card fan in three profiles:
 | `website` | 1600 × 960 | PNG, WebP |
 | `publication` | 3000 × 1800 | PNG |
 
-The composition renderer validates that every referenced card exists and has approved artwork before it renders. It records the exact cards and transforms in a separate compositions manifest.
+The composition renderer validates that every referenced card exists in the current card authority and has canonical artwork before rendering. It records the exact cards and transforms in a separate compositions manifest.
+
+## Public media
+
+The canonical website-profile PNG for `all-factions-promotional-showcase` is published directly from the media renderer at:
+
+```text
+https://gauntlet.run/images/media/all-factions-promotional-showcase.png
+```
+
+`.github/workflows/deploy-public-media.yml` rebuilds the website profile with strict artwork validation, stages that generated PNG into the Cloudflare Worker asset bundle, and deploys only the `/images/media/*` route. The normal website remains on its existing publication path. `workers/public-media/` contains the route and cache behavior; its generated `public/` payload exists only in CI and is not checked into Git.
+
+This stable URL is suitable for the HTML announcement email and other external promotional surfaces that require a conventional static image URL rather than the live browser compositor.
 
 ## Commands
 
@@ -54,10 +72,10 @@ Supported profile values are `thumbnail`, `website`, `publication`, and `all`.
 
 `media:check` validates both the individual-card media source and the composition configuration. `media:build` generates the card library first and then builds every configured composition from those exact outputs.
 
-Generated output is written beneath:
+Generated output is currently written beneath the media exporter's versioned directory:
 
 ```text
-media/generated/v0.6.1/
+media/generated/v0.6.2/
   catalog.json
   manifest.json
   compositions-manifest.json
@@ -84,6 +102,6 @@ media/generated/v0.6.1/
 
 ## Current scope
 
-The card-media pass covers all 122 playable cards. The composition system currently contains the first approved five-card fan and is designed to accept additional hands, stacks, battle reveals, and other website or publication arrangements without creating independent card artwork.
+The card-media pass covers all 128 playable cards in the current catalog. The composition system supports both plausible hand treatments and explicitly promotional cross-faction arrangements without creating independent card artwork.
 
 Territories remain cataloged by the shared canonical parser but require their own component renderer and are not forced into the playable-card frame.

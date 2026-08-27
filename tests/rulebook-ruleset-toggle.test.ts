@@ -1,14 +1,10 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { applyReleaseCandidateRulebook } from '../rulebook/release-candidate.js';
 
 const read = (path: string) => readFileSync(path, 'utf8');
 const baseSource = read('artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md');
 const chapter11 = read('rulebook/player-facing/chapter-11.md');
-const manifest = JSON.parse(read('game-data/current-game.json'));
-const rules = JSON.parse(read('docs/v0.6.4-rules.json'));
-const proposals = JSON.parse(read('docs/v0.6.4-diplomat-proposals.json'));
-const arcaneSymbol = JSON.parse(read('docs/v0.6.4-arcane-symbol.json'));
+const currentRulebook = read('rulebook/player-facing/current-rulebook.md');
 const index = read('rulebook/index.html');
 const app = read('rulebook/app.js');
 const universalReference = read('card-design/reference-copy/v0.6.3/universal-reference.md');
@@ -27,15 +23,6 @@ function publicReleasedSource() {
   return `${source.slice(0, start)}${chapter11.trim()}\n\n${source.slice(end)}`;
 }
 
-const currentGame = {
-  version: manifest.version,
-  displayVersion: manifest.displayVersion,
-  ruleChanges: rules,
-  proposals: proposals.proposals,
-  arcaneSymbol,
-  leaders: manifest.leaders,
-};
-
 describe('Browser Rulebook ruleset selector', () => {
   it('keeps released v0.6.3 as the verified default and exposes a shareable candidate mode', () => {
     expect(index).toContain('data-ruleset="released" aria-pressed="true"');
@@ -50,21 +37,23 @@ describe('Browser Rulebook ruleset selector', () => {
     expect(app).toContain("crypto.subtle.digest('SHA-256', bytes)");
   });
 
-  it('projects the current candidate rules over the released Rulebook without mutating the released source', () => {
+  it('loads the maintained current Rulebook directly instead of projecting it from v0.6.3 at runtime', () => {
     const released = publicReleasedSource();
     expect(released).toMatch(/\bpending(?:-|\s+)battle\b/i);
 
-    const candidate = applyReleaseCandidateRulebook(released, currentGame);
-    expect(candidate).toContain('**Version 0.6.4 — Release Candidate**');
-    expect(candidate).toContain('Onset is the first phase of the battle sequence.');
-    expect(candidate).toContain('Terms occur during Onset');
-    expect(candidate).toContain('Withdrawal during Onset ends the battle sequence');
-    expect(candidate).toContain('if the sequence ends during Onset, no Gambits are set, no battle result occurs, and no Aftermath is resolved');
-    expect(candidate).toContain('Accepting player: +1 Card.');
-    expect(candidate).toContain("The symbol's shape identifies the Arcane trait; its color reflects the card's allegiance.");
-    expect(candidate).toContain('During your Movement, before a battle is initiated, move one additional Position. This movement may initiate a battle.');
-    expect(candidate).not.toMatch(/\bpending(?:-|\s+)battle\b/i);
-    expect(candidate).not.toMatch(/\bbefore Onset\b/i);
+    expect(app).toContain("const CURRENT_SOURCE_URL = './player-facing/current-rulebook.md';");
+    expect(app).toContain('loadCurrentRulebookSource()');
+    expect(app).not.toContain("import { applyReleaseCandidateRulebook } from './release-candidate.js';");
+    expect(app).not.toContain('applyReleaseCandidateRulebook(releasedMarkdown, currentGame)');
+
+    expect(currentRulebook).toContain('**Version 0.6.4 — Release Candidate**');
+    expect(currentRulebook).toContain('# 5. Actions, Faction Features, Leader Abilities, and Assets');
+    expect(currentRulebook).toContain('## Card anatomy');
+    expect(currentRulebook).toContain('Onset is the first phase of the battle sequence.');
+    expect(currentRulebook).toContain('Terms occur during Onset');
+    expect(currentRulebook).toContain('Withdrawal during Onset ends the battle sequence');
+    expect(currentRulebook).not.toMatch(/\bpending(?:-|\s+)battle\b/i);
+    expect(currentRulebook).not.toMatch(/\bFaction Actions?\b|\bFaction Abilit(?:y|ies)\b|\bfaction procedure\b/i);
   });
 
   it('keeps the current Universal and Diplomat reference cards on the same Onset model', () => {

@@ -1,0 +1,158 @@
+name: Build and deploy public media
+
+on:
+  pull_request:
+    paths:
+      - 'media/**'
+      - 'game-data/**'
+      - 'config/tts-release-target.json'
+      - 'config/release-lifecycle.json'
+      - 'config/github-release-contract.json'
+      - 'images/artwork/cards/**'
+      - 'images/artwork/card-backgrounds/**'
+      - 'tts/renderer/**'
+      - 'card-design/**'
+      - 'scripts/generate-card-media-*.mjs'
+      - 'scripts/generate-tts-card-assets.mjs'
+      - 'scripts/tts-current-catalog.mjs'
+      - 'scripts/current-game-authority.mjs'
+      - 'workers/public-media/**'
+      - '.github/workflows/deploy-public-media.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'media/**'
+      - 'game-data/**'
+      - 'config/tts-release-target.json'
+      - 'config/release-lifecycle.json'
+      - 'config/github-release-contract.json'
+      - 'images/artwork/cards/**'
+      - 'images/artwork/card-backgrounds/**'
+      - 'tts/renderer/**'
+      - 'card-design/**'
+      - 'scripts/generate-card-media-*.mjs'
+      - 'scripts/generate-tts-card-assets.mjs'
+      - 'scripts/tts-current-catalog.mjs'
+      - 'scripts/current-game-authority.mjs'
+      - 'workers/public-media/**'
+      - '.github/workflows/deploy-public-media.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-media-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || 'production' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npx playwright install --with-deps chromium
+      - name: Render canonical website media
+        run: npm run media:build -- --profile=website --strict-art
+      - name: Stage public promotional spread
+        shell: bash
+        run: |
+          set -euo pipefail
+          source='media/generated/v0.6.2/compositions/website/png/all-factions-promotional-showcase.png'
+          target='workers/public-media/public/images/media/all-factions-promotional-showcase.png'
+          test -s "$source"
+          rm -rf workers/public-media/public
+          mkdir -p "$(dirname "$target")"
+          cp "$source" "$target"
+          test -s "$target"
+          file "$target" | grep -q 'PNG image data'
+          sha256sum "$target"
+      - name: Validate Worker bundle
+        run: |
+          npm install --no-save wrangler@4
+          npx wrangler deploy --dry-run --config workers/public-media/wrangler.toml --outdir /tmp/gauntlet-public-media-dry-run
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gauntlet-public-media
+          path: workers/public-media/public/
+          if-no-files-found: error
+          retention-days: 30
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        with:
+          name: gauntlet-public-media
+          path: workers/public-media/public
+      - name: Verify deployment secrets
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo 'CLOUDFLARE_API_TOKEN is not configured'; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo 'CLOUDFLARE_ACCOUNT_ID is not configured'; exit 1; }
+      - name: Deploy public media Worker
+        run: |
+          npm install --no-save wrangler@4
+          npx wrangler deploy --config workers/public-media/wrangler.toml
+      - name: Verify public promotional spread
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://gauntlet.run/images/media/all-factions-promotional-showcase.png?v=${GITHUB_SHA}"
+          curl --fail --silent --show-error --location --retry 8 --retry-delay 4 --retry-all-errors \
+            -D /tmp/gauntlet-public-media.headers \
+            "$url" \
+            -o /tmp/all-factions-promotional-showcase.png
+          grep -Eiq '^content-type:[[:space:]]*image/png' /tmp/gauntlet-public-media.headers
+          test "$(wc -c < /tmp/all-factions-promotional-showcase.png)" -gt 100000
+          file /tmp/all-factions-promotional-showcase.png | grep -q 'PNG image data'
+          echo "Verified $url"
+
+      - name: Verify clean v0.7.0 TTS proxy
+        shell: bash
+        run: |
+          set -euo pipefail
+          save_url="https://gauntlet.run/tts/v0.7.0/Gauntlet_v0.7.0_TTS_Mod.json?v=${GITHUB_SHA}"
+          curl --fail --silent --show-error --location --retry 8 --retry-delay 4 --retry-all-errors \
+            "$save_url" -o /tmp/Gauntlet_v0.7.0_TTS_Mod.json
+          SAVE=/tmp/Gauntlet_v0.7.0_TTS_Mod.json node <<'NODE'
+          const fs = require('fs');
+          const save = JSON.parse(fs.readFileSync(process.env.SAVE, 'utf8'));
+          const urls = new Set();
+          function visit(value) {
+            if (Array.isArray(value)) {
+              value.forEach(visit);
+              return;
+            }
+            if (!value || typeof value !== 'object') return;
+            for (const child of Object.values(value)) {
+              if (typeof child === 'string' && /^https:\/\//i.test(child)) urls.add(child);
+              else visit(child);
+            }
+          }
+          visit(save);
+          const ttsUrls = [...urls].filter(url => url.includes('/tts/v0.7.0/'));
+          if (!ttsUrls.length) throw new Error('Clean TTS save contains no gauntlet.run TTS asset URLs.');
+          if ([...urls].some(url => url.includes('tts-v0.7.0-qa-pr-909-'))) {
+            throw new Error('Clean TTS save exposes a PR-preview asset URL.');
+          }
+          if (ttsUrls.some(url => !url.startsWith('https://gauntlet.run/tts/v0.7.0/'))) {
+            throw new Error('Clean TTS save contains an unexpected TTS asset host.');
+          }
+          console.log(`Validated ${ttsUrls.length} clean TTS URLs in the public mod JSON.`);
+          NODE
