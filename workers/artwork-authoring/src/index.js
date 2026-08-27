@@ -18,7 +18,7 @@ function config(env) {
     allowedLogin: String(env.GITHUB_ALLOWED_LOGIN || 'tymonius').toLowerCase(),
     defaultBranch: String(env.GITHUB_DEFAULT_BRANCH || 'main'),
     authorBranch: String(env.GITHUB_AUTHOR_BRANCH || 'artwork/compositor-authoring'),
-    authorityPath: String(env.GITHUB_AUTHORITY_PATH || env.GITHUB_OVERRIDE_PATH || 'game-data/current-game.json'),
+    authorityPath: String(env.GITHUB_AUTHORITY_PATH || 'game-data/current-game.json'),
     callbackUrl: String(env.OAUTH_CALLBACK_URL || ''),
   };
 }
