@@ -100,8 +100,8 @@ describe("TTS Territory assets", () => {
     expect(specimenPage).toContain('<span data-territory-count>25</span>');
     expect(specimenPage).toContain('<span data-arena-count>4</span>');
     expect(reviewScript).toContain("const territories = (current.territories || [])");
-    expect(reviewScript).toContain("territoryGroup('standard','Territories',ordinary)");
-    expect(reviewScript).toContain("territoryGroup('arenas','Arenas',arenas)");
+    expect(reviewScript).toContain("territoryGroup('standard','Territories',ordinary,current.displayVersion)");
+    expect(reviewScript).toContain("territoryGroup('arenas','Arenas',arenas,current.displayVersion)");
     expect(reviewScript).toContain('class="territory-review-frame"');
     expect(reviewScript).toContain("territory-review-render.html?territory=");
     expect(territoryReviewScript).toContain("loadCurrentGame");
@@ -143,7 +143,8 @@ describe("TTS Territory assets", () => {
   it("maximizes art height before reducing text", () => {
     expect(sharedStyles).toContain("--art-height: 0.78in");
     expect(renderer).toContain("const MINIMUM_ART_HEIGHT = 0.55 * CSS_PIXELS_PER_INCH");
-    expect(renderer).toContain("while (cardOverflows(card) && artHeight > MINIMUM_ART_HEIGHT)");
+    expect(renderer).toContain("artwork receives every remaining pixel");
+    expect(renderer).toContain("art.style.minHeight");
     expect(renderer).toContain("card.dataset.artHeight");
     expect(renderer).toContain("card.dataset.artSpansBody");
     expect(renderer).toContain("while (cardOverflows(card) && effectScale > 0.78)");
