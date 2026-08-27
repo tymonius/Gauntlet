@@ -1,12 +1,12 @@
 import { buildLocalFallbackAnswer, retrieveRules } from "../rules-assistant/local-search.js";
 import {
-  V063_RULES_VERSION as RULES_VERSION,
-  V063_VERSION_LABEL as VERSION_LABEL,
-  defaultV063SourceUrls,
-  loadV063RulesCorpus
-} from "../rules-assistant/v063-public-corpus.js";
+  V070_RULES_VERSION as RULES_VERSION,
+  V070_VERSION_LABEL as VERSION_LABEL,
+  defaultV070SourceUrls,
+  loadV070RulesCorpus
+} from "../rules-assistant/v070-public-corpus.js";
 
-const CURRENT_PUBLIC_RELEASE = "v0.6.3";
+const CURRENT_PUBLIC_RELEASE = "v0.7.0";
 const endpoint = String(window.GAUNTLET_RULES_ASSISTANT_ENDPOINT || "https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/rules").trim();
 const form = document.getElementById("arbiterForm");
 const input = document.getElementById("question");
@@ -53,8 +53,8 @@ form.addEventListener("submit", async (event) => {
 });
 
 status.textContent = endpoint
-  ? "Connected to the current v0.6.3 Rules Arbiter; local Rulebook lookup is available as a fallback."
-  : "Current v0.6.3 local Rulebook lookup mode.";
+  ? "Connected to the current v0.7.0 Rules Arbiter; local Rulebook lookup is available as a fallback."
+  : "Current v0.7.0 local Rulebook lookup mode.";
 
 async function askLocal(question) {
   const corpus = await getCorpus();
@@ -95,7 +95,7 @@ async function askRemote(question) {
       payload.reconstruction !== false ||
       payload.currentPublicRelease !== CURRENT_PUBLIC_RELEASE
     ) {
-      throw new Error("Configured endpoint did not identify itself as the current v0.6.3 Rules Arbiter.");
+      throw new Error("Configured endpoint did not identify itself as the current v0.7.0 Rules Arbiter.");
     }
     return payload;
   } catch (error) {
@@ -106,8 +106,8 @@ async function askRemote(question) {
 
 async function getCorpus() {
   if (!corpusPromise) {
-    const urls = defaultV063SourceUrls(window.location.origin);
-    corpusPromise = loadV063RulesCorpus({
+    const urls = defaultV070SourceUrls(window.location.origin);
+    corpusPromise = loadV070RulesCorpus({
       ...urls,
       fetchImpl: window.fetch.bind(window)
     });

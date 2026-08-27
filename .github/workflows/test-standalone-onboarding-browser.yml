@@ -24,6 +24,7 @@ jobs:
             /index.html
             /start/
             /deckbuilder/
+            /game-data/current-game.json
 
       - name: Set up Node
         uses: actions/setup-node@v4

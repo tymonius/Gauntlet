@@ -77,6 +77,20 @@ await (async () => {
     document.body.dataset.renderFontsReady = 'true';
   }
 
+  async function resolveDisplayVersion(currentGame) {
+    if (params.get('releaseTarget') !== 'tts') return currentGame.displayVersion;
+
+    try {
+      const response = await fetch('/config/tts-release-target.json', { cache: 'no-cache' });
+      if (!response.ok) throw new Error(`TTS release target returned ${response.status}.`);
+      const target = await response.json();
+      return String(target.displayVersion || target.releaseTag || currentGame.displayVersion);
+    } catch (error) {
+      console.warn('Unable to resolve TTS display version for embedded card render.', error);
+      return currentGame.displayVersion;
+    }
+  }
+
   try {
     if (!cardId) throw new Error('No card selected.');
 
@@ -84,6 +98,7 @@ await (async () => {
     const sourceCard = currentGame.findCard(cardId);
     if (!sourceCard) throw new Error(`Unknown current card: ${cardId}`);
 
+    const displayVersion = versionOverride || await resolveDisplayVersion(currentGame);
     const card = normalizeV063CardForPresentation(sourceCard);
     const faction = slugify(card.allegiance);
     const artwork = await resolveFirstArtwork(card, faction, imageExists);
@@ -104,7 +119,7 @@ await (async () => {
     };
     window.GAUNTLET_TTS_CATALOG = {
       schemaVersion: 1,
-      gameVersion: versionOverride || currentGame.displayVersion,
+      gameVersion: displayVersion,
       sourceHierarchy: [currentGame.authorityUrl],
       playableCards: [preview],
       missingArtwork: artwork ? [] : [preview.id],

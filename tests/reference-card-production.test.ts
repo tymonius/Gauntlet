@@ -1,7 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-const contract = JSON.parse(readFileSync('config/tts-component-contract.json', 'utf8'));
+const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
+const contract = currentGame.componentContract;
 const catalogHtml = readFileSync('card-design/index.html', 'utf8');
 const supplemental = readFileSync('card-design/supplemental-card.js', 'utf8');
 const supplementalRefinements = readFileSync('card-design/supplemental-refinements.css', 'utf8');
@@ -28,16 +29,18 @@ describe('production faction reference cards', () => {
     const references = contract.components.filter((component: any) => component.family === 'reference-card');
 
     expect(references.every((component: any) => component.copyMode === 'bespoke')).toBe(true);
-    expect(references.every((component: any) => component.source.startsWith('card-design/reference-copy/'))).toBe(true);
-    expect(references.every((component: any) => component.authoritySource.includes('/faction-guides/'))).toBe(true);
+    expect(references.every((component: any) => component.source.startsWith('card-design/reference-copy/v0.7.0/'))).toBe(true);
+    expect(references.every((component: any) => component.authoritySource === 'game-data/current-game.json')).toBe(true);
 
     for (const reference of references) {
       const copy = readFileSync(reference.source, 'utf8');
-      const authority = readFileSync(reference.authoritySource, 'utf8');
       expect(copy).toContain('Player-aid copy, not faction-rule authority.');
+      expect(copy).toContain('Audit authority: `game-data/current-game.json`.');
       expect(copy).toContain(`## Front — ${reference.referenceFaces.front.title}`);
       expect(copy).toContain(`## Reverse — ${reference.referenceFaces.reverse.title}`);
-      for (const heading of reference.auditHeadings) expect(authority).toContain(heading);
+      for (const face of [reference.referenceFaces.front, reference.referenceFaces.reverse]) {
+        for (const section of face.sections) expect(copy).toContain(`### ${section.heading}`);
+      }
     }
 
     const diplomat = references.find((component: any) => component.id === 'diplomats-reference');

@@ -1,4 +1,3 @@
-const COPY_URL = './leader-copy/v0.6.4/leader-card-copy.json';
 const STYLE_URL = './leader-card-copy.css';
 
 const PRINT_LEADER_SPECIMEN_ID = (() => {
@@ -123,45 +122,45 @@ function applyCopyToLeader(root, leaderId, copy, source, specimenId = '') {
   const leaderCard = leaderCardFor(root, leaderId, specimenId);
   const rules = leaderCard?.querySelector('.card-rules');
   if (!leaderCard || !rules) throw new Error(`Missing rendered Leader card for ${leaderId}.`);
-  if (!Array.isArray(copy.sections) || !copy.sections.length) throw new Error(`Leader card copy for ${leaderId} has no sections.`);
+  if (!Array.isArray(copy.sections) || !copy.sections.length) throw new Error(`Leader card authority for ${leaderId} has no sections.`);
   rules.innerHTML = copy.sections.map(renderSection).join('');
   leaderCard.classList.add('leader-card--standardized');
-  // Any fitting state measured against the pre-standardized rules is stale.
-  // Clear it before marking the new copy ready so embedded production
-  // renderers cannot detach the card until card-design.js has refit it.
   delete leaderCard.dataset.titleFit;
   delete leaderCard.dataset.overlayTitleFit;
   leaderCard.classList.remove('fit-warning', 'title-fit-warning', 'overlay-title-fit-warning');
-  // Dense standardized cards may trade portrait height for rules space before
-  // the fitter ever crosses its typography floor. The fitter uses only as
-  // much of this allowance as each card actually needs.
   leaderCard.dataset.artMin = '0.98';
   leaderCard.dataset.leaderCopyVersion = source.gameVersion || 'current';
+  leaderCard.dataset.leaderCopySource = source.authorityUrl || '/game-data/current-game.json';
+}
+
+async function loadLeaderAuthority() {
+  const currentGame = await import('../game-data/current-game.mjs').then(module => module.loadCurrentGame());
+  const leaders = Object.fromEntries((currentGame.leaders || []).map(leader => [leader.id, leader]));
+  if (!Object.keys(leaders).length) throw new Error('Current-game authority contains no Leader definitions.');
+  return {
+    gameVersion: currentGame.version,
+    authorityUrl: currentGame.authorityUrl,
+    leaders,
+  };
 }
 
 async function applyLeaderCardCopy() {
   const root = document.querySelector('#leaderReviewSections');
   if (!root) return;
   try {
-    const response = await fetch(COPY_URL, { cache: 'no-store' });
-    if (!response.ok) throw new Error(`Leader card copy request failed: HTTP ${response.status}.`);
-    const source = await response.json();
+    const source = await loadLeaderAuthority();
     const entries = Object.entries(source.leaders || {});
-    if (!entries.length) throw new Error('Leader card copy contains no Leader definitions.');
 
     await ensureStyles();
 
-    // A component print iframe needs exactly one Leader. Waiting for all twelve
-    // hidden catalog cards makes one-card printing depend on unrelated async work
-    // and can incorrectly fail on a cold load. Standardize only the requested
-    // Leader in print mode; the normal Card Design catalog still standardizes all.
     if (PRINT_LEADER_SPECIMEN_ID) {
       const match = entries.find(([leaderId]) => PRINT_LEADER_SPECIMEN_ID.endsWith(`-${leaderId}`));
-      if (!match) throw new Error(`No current Leader copy matches print component ${PRINT_LEADER_SPECIMEN_ID}.`);
+      if (!match) throw new Error(`No current Leader authority matches print component ${PRINT_LEADER_SPECIMEN_ID}.`);
       const [leaderId, copy] = match;
       await waitForLeaderSpecimen(root, PRINT_LEADER_SPECIMEN_ID);
       applyCopyToLeader(root, leaderId, copy, source, PRINT_LEADER_SPECIMEN_ID);
       root.dataset.leaderCopyReady = 'true';
+      root.dataset.leaderCopySource = source.authorityUrl;
       delete root.dataset.leaderCopyError;
       window.dispatchEvent(new Event('resize'));
       return;
@@ -176,10 +175,11 @@ async function applyLeaderCardCopy() {
 
     const cards = Array.from(root.querySelectorAll('.leader-specimen'));
     if (cards.length !== renderedIds.size) {
-      throw new Error(`Leader copy covers ${renderedIds.size} cards but the catalog renders ${cards.length}.`);
+      throw new Error(`Current Leader authority covers ${renderedIds.size} cards but the catalog renders ${cards.length}.`);
     }
 
     root.dataset.leaderCopyReady = 'true';
+    root.dataset.leaderCopySource = source.authorityUrl;
     delete root.dataset.leaderCopyError;
     window.dispatchEvent(new Event('resize'));
   } catch (error) {

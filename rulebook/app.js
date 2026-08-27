@@ -1,11 +1,11 @@
 import { renderMarkdown } from './markdown.js';
-import { applyReleaseCandidateRulebook } from './release-candidate.js';
 import { loadCurrentGame } from '../game-data/current-game.mjs';
 import { normalizeV063LastStandText } from '../rules-assistant/v063-last-stand-language.js';
 
 const SOURCE_URL = '/artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md';
 const SOURCE_SHA256 = '7cca20e8de2eee10332c4e3e82ca5e7abdae3a0af61837bf77caa79ccbc9d643';
 const CHAPTER_11_URL = './player-facing/chapter-11.md';
+const CURRENT_SOURCE_URL = './player-facing/current-rulebook.md';
 const PUBLISHED_SOURCE_URL = '../releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md';
 const PDF_URL = '../releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.pdf';
 const RELEASED_MODE = 'released';
@@ -28,6 +28,7 @@ const rulesetButtons = [...document.querySelectorAll('[data-ruleset]')];
 const publishedBookletLinks = [...document.querySelectorAll('[data-published-booklet]')];
 
 let sourcePromise = null;
+let currentSourcePromise = null;
 let activeMode = RELEASED_MODE;
 let sectionObserver = null;
 
@@ -281,17 +282,17 @@ function setRulesetUi(mode, currentGame = null) {
   if (candidateNote) {
     candidateNote.hidden = !candidate;
     candidateNote.textContent = candidate
-      ? 'Candidate view: current-development rules layered over the published v0.6.3 Rulebook. The Rules Arbiter currently follows released v0.6.3 and is hidden in this view.'
+      ? 'Candidate view: current-development rules from the maintained current Rulebook source. The Rules Arbiter currently follows released v0.6.3 and is hidden in this view.'
       : '';
   }
 
   if (candidate) {
-    const label = currentGame?.displayVersion || 'v0.6.4 candidate';
+    const label = currentGame?.displayVersion || 'v0.7.0';
     if (eyebrow) eyebrow.textContent = `Release candidate rules · ${label}`;
-    if (footerVersion) footerVersion.innerHTML = '<strong>Gauntlet v0.6.4 candidate</strong> · Current release-candidate rules view.';
+    if (footerVersion) footerVersion.innerHTML = '<strong>Gauntlet v0.7.0</strong> · Current release-candidate rules view.';
     if (printHeading) printHeading.textContent = 'Release candidate rules';
-    if (printNote) printNote.textContent = 'No candidate booklet has been published. Switch to Released v0.6.3 for the official printable booklet.';
-    document.title = 'Gauntlet v0.6.4 Candidate Browser Rulebook';
+    if (printNote) printNote.textContent = 'The complete v0.7.0 Rulebook authority is loaded directly. Switch to Released v0.6.3 for the currently published printable booklet.';
+    document.title = 'Gauntlet v0.7.0 Release Candidate Browser Rulebook';
   } else {
     if (eyebrow) eyebrow.textContent = 'Canonical rules · version 0.6.3';
     if (footerVersion) footerVersion.innerHTML = '<strong>Gauntlet v0.6.3</strong> · Current canonical playtest edition.';
@@ -396,6 +397,28 @@ async function loadVerifiedReleasedSource() {
   return sourcePromise;
 }
 
+async function loadCurrentRulebookSource() {
+  if (!currentSourcePromise) {
+    currentSourcePromise = fetch(CURRENT_SOURCE_URL, { cache: 'no-store' })
+      .then(async (response) => {
+        if (!response.ok) throw new Error(`Current Rulebook source returned ${response.status}`);
+        const markdown = await response.text();
+        if (!markdown.includes('**Version 0.7.0**')) throw new Error('Current Rulebook source has the wrong version marker.');
+        if (!markdown.includes('# 5. Actions, Faction Features, Leader Abilities, and Assets')) throw new Error('Current Rulebook source is missing the Faction Feature chapter.');
+        if (!markdown.includes('## Card anatomy')) throw new Error('Current Rulebook source is missing Card anatomy.');
+        if (/\bFaction Actions?\b|\bFaction Abilit(?:y|ies)\b|\bfaction procedure\b/iu.test(markdown)) {
+          throw new Error('Current Rulebook source contains retired faction terminology.');
+        }
+        return markdown;
+      })
+      .catch((error) => {
+        currentSourcePromise = null;
+        throw error;
+      });
+  }
+  return currentSourcePromise;
+}
+
 async function renderRulebook(mode) {
   activeMode = mode === CANDIDATE_MODE ? CANDIDATE_MODE : RELEASED_MODE;
   content.setAttribute('aria-busy', 'true');
@@ -407,12 +430,15 @@ async function renderRulebook(mode) {
     : 'Loading the canonical rulebook…';
 
   try {
-    const releasedMarkdown = await loadVerifiedReleasedSource();
     let currentGame = null;
-    let markdown = releasedMarkdown;
+    let markdown = null;
     if (activeMode === CANDIDATE_MODE) {
-      currentGame = await loadCurrentGame();
-      markdown = applyReleaseCandidateRulebook(releasedMarkdown, currentGame);
+      [currentGame, markdown] = await Promise.all([
+        loadCurrentGame(),
+        loadCurrentRulebookSource(),
+      ]);
+    } else {
+      markdown = await loadVerifiedReleasedSource();
     }
 
     const rendered = renderMarkdown(markdown);
@@ -430,7 +456,7 @@ async function renderRulebook(mode) {
       rendered.headings.filter(({ level, id }) => level === 1 && id !== 'gauntlet' && id !== 'official-rulebook').length
     );
     status.textContent = activeMode === CANDIDATE_MODE
-      ? `Release candidate ${currentGame?.displayVersion || 'v0.6.4'} · based on v0.6.3 · ${sectionCount} sections · rules loaded`
+      ? `Release candidate ${currentGame?.displayVersion || 'v0.7.0'} · ${sectionCount} sections · rules loaded`
       : `Canonical v0.6.3 · ${sectionCount} sections · rules loaded`;
   } catch (error) {
     console.error(error);

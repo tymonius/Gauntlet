@@ -71,6 +71,92 @@
           "z": 1
         }
       ]
+    },
+    {
+      "id": "all-factions-promotional-showcase",
+      "name": "All-factions promotional showcase",
+      "description": "A seven-card promotional hero spread featuring one card from each faction plus one Neutral card. This is intentionally a marketing composition rather than a legal in-game hand.",
+      "canvas": {
+        "width": 3000,
+        "height": 1800
+      },
+      "profiles": {
+        "thumbnail": {
+          "width": 900,
+          "height": 540,
+          "formats": ["png", "webp"],
+          "webpQuality": 86
+        },
+        "website": {
+          "width": 1600,
+          "height": 960,
+          "formats": ["png", "webp"],
+          "webpQuality": 90
+        },
+        "publication": {
+          "width": 3000,
+          "height": 1800,
+          "formats": ["png"]
+        }
+      },
+      "cards": [
+        {
+          "id": "military-invasion",
+          "x": 300,
+          "y": 590,
+          "width": 560,
+          "rotation": -18,
+          "z": 1
+        },
+        {
+          "id": "diplomats-gunboat-diplomacy",
+          "x": 500,
+          "y": 420,
+          "width": 620,
+          "rotation": -12,
+          "z": 2
+        },
+        {
+          "id": "financiers-corner-the-market",
+          "x": 760,
+          "y": 250,
+          "width": 660,
+          "rotation": -6,
+          "z": 4
+        },
+        {
+          "id": "neutral-valor",
+          "x": 1150,
+          "y": 140,
+          "width": 700,
+          "rotation": 0,
+          "z": 7
+        },
+        {
+          "id": "mystics-rend-the-veil",
+          "x": 1580,
+          "y": 250,
+          "width": 660,
+          "rotation": 6,
+          "z": 5
+        },
+        {
+          "id": "inquisition-burning-at-the-stake",
+          "x": 1880,
+          "y": 420,
+          "width": 620,
+          "rotation": 12,
+          "z": 3
+        },
+        {
+          "id": "intelligence-assassins",
+          "x": 2140,
+          "y": 590,
+          "width": 560,
+          "rotation": 18,
+          "z": 1
+        }
+      ]
     }
   ]
 }

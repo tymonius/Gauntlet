@@ -72,7 +72,6 @@ jobs:
               exact('deckbuilder/index.html'),
               exact('deckbuilder/starter-handoff.js'),
               exact('deckbuilder/starter-decks.js'),
-              exact('deckbuilder/starter-decks.json')
             );
 
             const booklet = any(

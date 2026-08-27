@@ -44,6 +44,7 @@
   <link rel="stylesheet" href="newsletter.css" />
   <link rel="stylesheet" href="factions/homepage.css" />
   <link rel="stylesheet" href="gameplay-showcase.css" />
+  <link rel="stylesheet" href="homepage-card-showcase.css" />
   <link rel="stylesheet" href="declaration-typography.css" />
   <link rel="stylesheet" href="rules-assistant/widget.css" />
 </head>
@@ -67,7 +68,7 @@
   <main>
     <section class="hero" aria-labelledby="hero-title">
       <div class="hero-copy">
-        <p class="eyebrow">Current canonical playtest edition · v0.6.3</p>
+        <p class="eyebrow">Current canonical playtest edition · v0.7.0</p>
         <h1 id="hero-title">Run the <span class="hero-title-accent">Gauntlet.</span></h1>
         <p class="hero-lede">
           Choose a faction and leader, build your deck, and fight through the opponent's line to win the final battle.
@@ -80,7 +81,7 @@
         <dl class="edition-stats" aria-label="Current edition contents">
           <div><dt>6</dt><dd>Factions</dd></div>
           <div><dt>12</dt><dd>Leaders</dd></div>
-          <div><dt>128</dt><dd>Playable cards</dd></div>
+          <div><dt>142</dt><dd>Playable cards</dd></div>
           <div><dt>25</dt><dd>Territories</dd></div>
         </dl>
       </div>
@@ -177,6 +178,27 @@
       </div>
     </section>
 
+    <section id="cards" class="section card-showcase-section" aria-labelledby="card-showcase-title">
+      <div class="section-heading split-heading card-showcase-heading">
+        <div>
+          <p class="eyebrow declaration-overline">Cards of Gauntlet</p>
+          <h2 id="card-showcase-title">The game in seven cards.</h2>
+        </div>
+        <div class="card-showcase-copy">
+          <p>Every faction brings its own tools, tempo, and pressure to the same battlefield. Neutral cards add a shared tactical vocabulary that any deck can draw on.</p>
+          <a class="button secondary" href="card-reference/">Browse all 128 cards</a>
+        </div>
+      </div>
+      <figure
+        class="card-showcase-figure"
+        data-card-showcase="all-factions-promotional-showcase"
+        aria-label="Seven-card promotional spread showing Invasion, Gunboat Diplomacy, Corner the Market, Valor, Rend the Veil, Burning at the Stake, and Assassins."
+      >
+        <div class="card-showcase-stage" data-card-showcase-stage></div>
+        <figcaption>Military · Diplomats · Financiers · Neutral · Mystics · Inquisition · Intelligence</figcaption>
+      </figure>
+    </section>
+
     <section id="factions" class="section factions-section">
       <div class="section-heading split-heading">
         <div>
@@ -236,7 +258,7 @@
         <p class="eyebrow declaration-overline">Rules support at the table</p>
         <h2>Ask the Rules Arbiter.</h2>
         <p>
-          Use the floating <strong>Ask the rules</strong> control to look up card text, battle timing, territory interactions, faction systems, and victory conditions from the canonical v0.6.3 sources.
+          Use the floating <strong>Ask the rules</strong> control to look up card text, battle timing, territory interactions, faction systems, and victory conditions from the published v0.7.0 sources.
         </p>
         <p class="assistant-note">The source passages remain visible with every answer. When the AI service is unavailable, exact canonical source lookup still works in the browser.</p>
       </div>
@@ -258,12 +280,12 @@
         <a class="tool-card" href="rulebook/">
           <span>Canonical rules</span>
           <h3>Browser Rulebook</h3>
-          <p>Read and search the complete v0.6.3 rules in a responsive format, with direct section links and the Rules Arbiter close at hand.</p>
+          <p>Read and search the complete v0.7.0 rules in a responsive format, with direct section links and the Rules Arbiter close at hand.</p>
           <strong>Read the rulebook →</strong>
         </a>
         <a class="tool-card" href="deckbuilder/">
           <span>Build and print</span>
-          <h3>v0.6.3 Deckbuilder</h3>
+          <h3>v0.7.0 Deckbuilder</h3>
           <p>Load a ready-to-play leader deck or build your own, check it against the current rules, save it in your browser, and print a complete playtest package.</p>
           <strong>Open Deckbuilder →</strong>
         </a>
@@ -279,10 +301,10 @@
           <p>Use the one-page questionnaire after a game and preserve observations for structured testing.</p>
           <strong>Open Playtest Sheet →</strong>
         </a>
-        <a class="tool-card" href="releases/v0.6.3/">
+        <a class="tool-card" href="v0.7.0/">
           <span>Canonical package</span>
-          <h3>v0.6.3 Release</h3>
-          <p>Download the Rulebook, faction guides, card reference, starter catalog, canonical data, exports, and manifest.</p>
+          <h3>v0.7.0 Release</h3>
+          <p>Download the printable Rulebook, canonical gameplay data, starter Decks, provenance, and release manifest.</p>
           <strong>Browse release →</strong>
         </a>
       </div>
@@ -328,9 +350,10 @@
     <div class="footer-links">
       <a href="rulebook/">Browser Rulebook</a>
       <a href="card-reference/">Card Reference</a>
-      <a href="releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.pdf">Rulebook PDF</a>
+      <a href="releases/v0.7.0/Gauntlet_v0.7.0_Rulebook_Booklet.pdf">Rulebook booklet</a>
       <a href="docs/README.md">Documentation</a>
       <a href="rules-arbiter/">Rules Arbiter</a>
+      <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener noreferrer">Tabletop Simulator</a>
       <a href="#updates">Project updates</a>
       <a href="https://github.com/tymonius/Gauntlet">GitHub</a>
     </div>
@@ -340,6 +363,8 @@
   <noscript>
     <p class="noscript">JavaScript is required for the Rules Arbiter and interactive browser tools.</p>
   </noscript>
+  <script type="module" src="homepage-card-showcase.js"></script>
+  <script type="module" src="homepage-tts.js?v=20260827-1"></script>
   <script type="module" src="rules-assistant/widget.js"></script>
   <script>
     document.addEventListener("click", (event) => {

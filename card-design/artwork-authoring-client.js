@@ -7,7 +7,7 @@
   const PUBLIC_SAVE_PATH = '/api/art-direction';
   const PUBLISH_PATH = '/api/art-direction/publish';
   const WORKING_BRANCH = 'artwork/compositor-authoring';
-  const WORKING_FILE_API = `https://api.github.com/repos/tymonius/Gauntlet/contents/tts/artwork-direction-overrides.js?ref=${encodeURIComponent(WORKING_BRANCH)}`;
+  const WORKING_FILE_API = `https://api.github.com/repos/tymonius/Gauntlet/contents/game-data/current-game.json?ref=${encodeURIComponent(WORKING_BRANCH)}`;
 
   if (window.location.origin !== PUBLIC_ORIGIN) return;
 
@@ -129,32 +129,10 @@
     return true;
   }
 
-  function numberField(body, name) {
-    const match = body.match(new RegExp(`(?:^|[,\\s{])["']?${name}["']?\\s*:\\s*(-?\\d+(?:\\.\\d+)?)`, 'u'));
-    return match ? Number(match[1]) : undefined;
-  }
-
-  function parseDirectionBody(body) {
-    const direction = {};
-    const focus = body.match(/(?:^|[,\s{])["']?focus["']?\s*:\s*\[\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*\]/u);
-    if (focus) direction.focus = [Number(focus[1]), Number(focus[2])];
-    for (const key of ['focusX', 'focusY', 'zoom']) {
-      const value = numberField(body, key);
-      if (value !== undefined) direction[key] = value;
-    }
-    const fit = body.match(/(?:^|[,\s{])["']?fit["']?\s*:\s*["'](cover|contain)["']/u);
-    if (fit) direction.fit = fit[1];
-    return direction;
-  }
-
   function parseDirectionSource(source) {
-    const directions = {};
-    const entry = /^\s*"((?:\\.|[^"\\])+)"\s*:\s*(\{[^\n]*\})\s*,?\s*$/gmu;
-    for (const match of String(source || '').matchAll(entry)) {
-      const id = JSON.parse(`"${match[1]}"`);
-      directions[id] = parseDirectionBody(match[2]);
-    }
-    return directions;
+    const authority = JSON.parse(String(source || '{}'));
+    const directions = authority?.artDirection;
+    return directions && typeof directions === 'object' ? directions : {};
   }
 
   function decodeGitHubContent(content) {

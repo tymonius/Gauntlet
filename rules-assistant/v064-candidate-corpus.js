@@ -1,82 +1,105 @@
 import { loadV063RulesCorpus } from "./v063-public-corpus.js";
-import { loadCurrentGame } from "../game-data/current-game.mjs";
 
-export const CURRENT_GAME_AUTHORITY_PATH = "game-data/current-game.json";
 export const V064_CANDIDATE_RULES_VERSION = "v0.6.4-candidate";
 export const V064_CANDIDATE_VERSION_LABEL = "Gauntlet v0.6.4 candidate";
-export const V064_PROPOSAL_SOURCE_PATH = CURRENT_GAME_AUTHORITY_PATH;
+export const V064_PROPOSAL_SOURCE_PATH = "docs/v0.6.4-diplomat-proposals.json";
 export const V064_PROPOSAL_SOURCE_ISSUE = 617;
-export const V064_ARCANE_SYMBOL_SOURCE_PATH = CURRENT_GAME_AUTHORITY_PATH;
-export const V064_TERRITORY_SOURCE_PATH = CURRENT_GAME_AUTHORITY_PATH;
+export const V064_ARCANE_SYMBOL_SOURCE_PATH = "docs/v0.6.4-arcane-symbol.json";
+export const V064_TERRITORY_SOURCE_PATH = "docs/v0.6.4-territories.json";
 export const V064_TERRITORY_SOURCE_ISSUE = 738;
-export const V064_RULES_SOURCE_PATH = CURRENT_GAME_AUTHORITY_PATH;
-export const V064_CARD_SOURCE_PATH = CURRENT_GAME_AUTHORITY_PATH;
+export const V064_RULES_SOURCE_PATH = "docs/v0.6.4-rules.json";
+export const V064_CARD_SOURCE_PATH = "docs/v0.6.4-card-additions.json";
+
+function historicalUrl(origin, path) {
+  const base = String(origin || "https://gauntlet.run").replace(/\/$/, "");
+  return `${base}/${path}`;
+}
 
 export function defaultV064CandidateSourceUrls(origin = "https://gauntlet.run") {
-  const base = String(origin || "https://gauntlet.run").replace(/\/$/, "");
-  const authorityUrl = `${base}/${CURRENT_GAME_AUTHORITY_PATH}`;
   return {
-    currentGameAuthorityUrl: authorityUrl,
-    proposalSourceUrl: authorityUrl,
-    arcaneSymbolSourceUrl: authorityUrl,
-    territorySourceUrl: authorityUrl,
-    rulesSourceUrl: authorityUrl,
-    cardSourceUrl: authorityUrl
+    proposalSourceUrl: historicalUrl(origin, V064_PROPOSAL_SOURCE_PATH),
+    arcaneSymbolSourceUrl: historicalUrl(origin, V064_ARCANE_SYMBOL_SOURCE_PATH),
+    territorySourceUrl: historicalUrl(origin, V064_TERRITORY_SOURCE_PATH),
+    rulesSourceUrl: historicalUrl(origin, V064_RULES_SOURCE_PATH),
+    cardSourceUrl: historicalUrl(origin, V064_CARD_SOURCE_PATH),
   };
+}
+
+async function fetchJson(fetchImpl, url, label) {
+  const response = await fetchImpl(url, { cache: "no-store" });
+  if (!response.ok) throw new Error(`Archived v0.6.4 ${label} returned ${response.status}.`);
+  return response.json();
+}
+
+function resolveHistoricalCandidateCards(baseCards, changes) {
+  const byId = new Map((baseCards || []).map(card => [card.id, { ...card }]));
+  const byName = new Map((baseCards || []).map(card => [card.name, card.id]));
+
+  for (const retired of changes?.retired_cards || []) {
+    const id = retired.id || byName.get(retired.name);
+    if (!id || !byId.has(id)) throw new Error(`Archived v0.6.4 retirement cannot resolve ${retired.id || retired.name}.`);
+    const removed = byId.get(id);
+    byId.delete(id);
+    if (removed?.name) byName.delete(removed.name);
+  }
+  for (const source of changes?.cards || []) {
+    if (!source?.id) throw new Error("Archived v0.6.4 card change is missing a stable id.");
+    const previous = byId.get(source.id);
+    if (previous?.name && previous.name !== source.name) byName.delete(previous.name);
+    byId.set(source.id, { ...source });
+    byName.set(source.name, source.id);
+  }
+  return [...byId.values()];
 }
 
 export async function loadV064CandidateRulesCorpus({
   fetchImpl = globalThis.fetch,
+  siteOrigin = "https://gauntlet.run",
   ...v063Options
 } = {}) {
   if (typeof fetchImpl !== "function") throw new Error("A fetch implementation is required.");
+  const urls = defaultV064CandidateSourceUrls(siteOrigin);
 
-  const [baseCorpus, currentGame] = await Promise.all([
+  const [baseCorpus, rulesSource, cardChanges, proposalSource, arcaneSource, territorySource] = await Promise.all([
     loadV063RulesCorpus({ ...v063Options, fetchImpl }),
-    loadCurrentGame()
+    fetchJson(fetchImpl, urls.rulesSourceUrl, "rules source"),
+    fetchJson(fetchImpl, urls.cardSourceUrl, "card source"),
+    fetchJson(fetchImpl, urls.proposalSourceUrl, "Proposal source"),
+    fetchJson(fetchImpl, urls.arcaneSymbolSourceUrl, "Arcane-symbol source"),
+    fetchJson(fetchImpl, urls.territorySourceUrl, "Territory source"),
   ]);
 
-  if (currentGame.version !== V064_CANDIDATE_RULES_VERSION) {
-    throw new Error(`Rules Arbiter expected ${V064_CANDIDATE_RULES_VERSION}, received ${currentGame.version}.`);
+  if (baseCorpus.version !== "v0.6.3") {
+    throw new Error(`Archived v0.6.4 corpus requires v0.6.3 base corpus, received ${baseCorpus.version}.`);
   }
-  if (baseCorpus.version !== currentGame.baseVersion) {
-    throw new Error(`Rules Arbiter base corpus ${baseCorpus.version} does not match current-game base ${currentGame.baseVersion}.`);
+  validateV064RulesSource(rulesSource);
+  validateV064ProposalSource(proposalSource);
+  validateV064ArcaneSymbolSource(arcaneSource);
+  validateV064TerritorySource(territorySource);
+  if (cardChanges?.version !== V064_CANDIDATE_RULES_VERSION || cardChanges?.base_version !== "v0.6.3") {
+    throw new Error("Archived v0.6.4 card-change source has the wrong identity.");
   }
 
-  const authorityUrl = currentGame.authorityUrl;
-  const proposalSource = {
-    version: currentGame.version,
-    base_version: currentGame.baseVersion,
-    source_issue: currentGame.sourceMetadata?.proposals?.sourceIssue ?? V064_PROPOSAL_SOURCE_ISSUE,
-    mechanics_changed: false,
-    proposals: currentGame.proposals
-  };
-  const territorySource = {
-    version: currentGame.version,
-    base_version: currentGame.baseVersion,
-    source_issue: currentGame.sourceMetadata?.territories?.sourceIssue ?? V064_TERRITORY_SOURCE_ISSUE,
-    mechanics_changed: true,
-    count: currentGame.territories.length,
-    territories: currentGame.territories
-  };
-  const arcaneSource = currentGame.arcaneSymbol;
-  const rulesSource = currentGame.ruleChanges;
+  const cards = resolveHistoricalCandidateCards(baseCorpus?.data?.cards || [], cardChanges);
+  const rulesCorpus = applyV064SharedRulesOverride(baseCorpus, rulesSource, urls.rulesSourceUrl);
+  const cardCorpus = applyV064CardOverride(rulesCorpus, cards, urls.cardSourceUrl);
+  const proposalCorpus = applyV064ProposalOverride(cardCorpus, proposalSource, urls.proposalSourceUrl);
+  const arcaneCorpus = applyV064ArcaneSymbolOverride(proposalCorpus, arcaneSource, urls.arcaneSymbolSourceUrl);
+  const resolved = applyV064TerritoryOverride(arcaneCorpus, territorySource, urls.territorySourceUrl);
 
-  const rulesCorpus = applyV064SharedRulesOverride(baseCorpus, rulesSource, authorityUrl);
-  const cardCorpus = applyV064CardOverride(rulesCorpus, currentGame.cards, authorityUrl);
-  const proposalCorpus = applyV064ProposalOverride(cardCorpus, proposalSource, authorityUrl);
-  const arcaneCorpus = applyV064ArcaneSymbolOverride(proposalCorpus, arcaneSource, authorityUrl);
-  const resolved = applyV064TerritoryOverride(arcaneCorpus, territorySource, authorityUrl);
   return {
     ...resolved,
-    currentGameAuthority: authorityUrl,
-    currentGameVersion: currentGame.version,
-    currentGameSources: currentGame.sources,
+    archived: true,
+    currentGameAuthority: null,
+    currentGameVersion: null,
+    currentGameSources: null,
+    historicalSourceUrls: urls,
     rulesSourcePath: V064_RULES_SOURCE_PATH,
-    rulesSourceUrl: authorityUrl,
+    rulesSourceUrl: urls.rulesSourceUrl,
     rulesSource,
     cardSourcePath: V064_CARD_SOURCE_PATH,
-    cardSourceUrl: authorityUrl
+    cardSourceUrl: urls.cardSourceUrl,
+    cardChanges,
   };
 }
 
@@ -215,7 +238,7 @@ export function applyV064TerritoryOverride(baseCorpus, territorySource, sourceUr
 
 export function buildV064RuleDocuments(rulesSource, sourceUrl) {
   validateV064RulesSource(rulesSource);
-  const resolvedUrl = sourceUrl || defaultV064CandidateSourceUrls().currentGameAuthorityUrl;
+  const resolvedUrl = sourceUrl || defaultV064CandidateSourceUrls().rulesSourceUrl;
   return rulesSource.rulebook_overrides.map((rule) => ({
     id: `rulebook:v064-${rule.id}`,
     kind: "rulebook",
@@ -229,7 +252,7 @@ export function buildV064RuleDocuments(rulesSource, sourceUrl) {
 }
 
 export function buildV064CardDocuments(cards, sourceUrl) {
-  const resolvedUrl = sourceUrl || defaultV064CandidateSourceUrls().currentGameAuthorityUrl;
+  const resolvedUrl = sourceUrl || defaultV064CandidateSourceUrls().cardSourceUrl;
   return cards.map((card) => {
     const body = [
       card.allegiance && `Allegiance: ${card.allegiance}`,
@@ -253,7 +276,7 @@ export function buildV064CardDocuments(cards, sourceUrl) {
 
 export function buildV064ProposalDocuments(proposalSource, sourceUrl) {
   validateV064ProposalSource(proposalSource);
-  const resolvedUrl = sourceUrl || defaultV064CandidateSourceUrls().currentGameAuthorityUrl;
+  const resolvedUrl = sourceUrl || defaultV064CandidateSourceUrls().proposalSourceUrl;
 
   return proposalSource.proposals.map((proposal) => {
     const body = [
@@ -278,7 +301,7 @@ export function buildV064ProposalDocuments(proposalSource, sourceUrl) {
 
 export function buildV064ArcaneSymbolDocuments(arcaneSource, sourceUrl) {
   validateV064ArcaneSymbolSource(arcaneSource);
-  const resolvedUrl = sourceUrl || defaultV064CandidateSourceUrls().currentGameAuthorityUrl;
+  const resolvedUrl = sourceUrl || defaultV064CandidateSourceUrls().arcaneSymbolSourceUrl;
   return [arcaneSource.general_rule, arcaneSource.mystics_rule].map((rule) => ({
     id: `rulebook:v064-${rule.id}`,
     kind: "rulebook",
@@ -295,7 +318,7 @@ export function buildV064ArcaneSymbolDocuments(arcaneSource, sourceUrl) {
 
 export function buildV064TerritoryDocuments(territorySource, sourceUrl) {
   validateV064TerritorySource(territorySource);
-  const resolvedUrl = sourceUrl || defaultV064CandidateSourceUrls().currentGameAuthorityUrl;
+  const resolvedUrl = sourceUrl || defaultV064CandidateSourceUrls().territorySourceUrl;
   return territorySource.territories.map((territory) => {
     const kind = territory.arena ? "arena" : "territory";
     return {

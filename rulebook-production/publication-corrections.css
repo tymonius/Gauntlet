@@ -127,3 +127,14 @@
 .continuation-page .production-flow ol {
   margin-bottom: 5px;
 }
+
+
+/* v0.7.0 adds one publication-derived Card Anatomy figure to Chapter 2.
+   Give that image its final 3.1in print height before the PNG finishes decoding,
+   so the synchronous paginator measures the same geometry that the reader sees.
+   The selector is source-specific and has no effect on historical Rulebook art. */
+.production-flow .print-image[alt="Card anatomy diagram"] {
+  height: 3.1in;
+  width: auto;
+  max-width: 100%;
+}

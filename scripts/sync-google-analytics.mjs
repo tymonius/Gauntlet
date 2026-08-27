@@ -26,6 +26,8 @@ const ANALYTICS_EXCLUDED_FILES = new Set([
   "tts/back-renderer/index.html",
   "tts/supplemental-renderer/index.html",
   "tts/finalized-supplemental-renderer/index.html",
+  // Embedded/render-only card surfaces; parent pages own analytics.
+  "card-design/card-showcase-embed.html",
   // Internal card-design review/study surfaces; they are not public navigation pages.
   "card-design/capital-ledger-preview.html",
   "card-design/deed-ornament-study.html",
