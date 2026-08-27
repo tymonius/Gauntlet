@@ -3,7 +3,7 @@ import { join, relative } from 'node:path';
 import { resolveCurrentTtsRelease, ROOT } from './tts-current-catalog.mjs';
 
 const ENVIRONMENT_SOURCE_ROOT = join(ROOT, 'tts', 'assets', 'environment');
-const TABLE_SOURCE = join(ENVIRONMENT_SOURCE_ROOT, 'campaign-map-table.png');
+const TABLE_SOURCE = join(ENVIRONMENT_SOURCE_ROOT, 'command-map-table.png');
 const PANORAMA_SOURCE = join(ENVIRONMENT_SOURCE_ROOT, 'command-tent-panorama.png');
 
 async function assertPng(source) {
