@@ -13,6 +13,9 @@ const componentShell = readFileSync('card-design/component-print-render.html', '
 const componentRenderer = readFileSync('card-design/component-print-render.js', 'utf8');
 const playableRenderer = readFileSync('card-design/card-review-render.js', 'utf8');
 const territoryRenderer = readFileSync('card-design/territory-review-render.js', 'utf8');
+const playableTtsRenderer = readFileSync('tts/renderer/renderer.js', 'utf8');
+const territoryTtsRenderer = readFileSync('tts/territory-renderer/territory-renderer.js', 'utf8');
+const artDirectionOverrides = readFileSync('tts/artwork-direction-overrides.js', 'utf8');
 const dividerRules = readFileSync('card-design/reference-divider-rules.css', 'utf8');
 const universalReference = readFileSync('card-design/universal-reference.css', 'utf8');
 
@@ -75,6 +78,19 @@ describe('TTS card render authority', () => {
     expect(componentRenderer).toContain('const versionOverride = String(params.get("version") || "").trim()');
     expect(componentRenderer).toContain('if (versionOverride)');
     expect(componentRenderer).toContain('versionNode.textContent = versionOverride');
+  });
+
+  it('applies only committed artwork direction on every production capture surface', () => {
+    expect(artDirectionOverrides).toContain('"financiers-banker": {"focusY":0}');
+
+    expect(componentRenderer).toContain('function canonicalArtworkId(card)');
+    expect(componentRenderer).toContain('window.GAUNTLET_ART_DIRECTION?.[artworkId]');
+    expect(componentRenderer).toContain('await applyCanonicalArtworkDirection(card)');
+    expect(componentRenderer).toContain('card.dataset.artDirectionApplied = artworkId');
+    expect(componentRenderer).toContain('card.dataset.artDirectionApplied = "css-default"');
+
+    expect(playableTtsRenderer).toContain('if (card.artDirection && Object.keys(card.artDirection).length)');
+    expect(territoryTtsRenderer).toContain('if (territory.artDirection && Object.keys(territory.artDirection).length)');
   });
 
   it('inherits current reference styling including divider removal and Universal G watermark', () => {
