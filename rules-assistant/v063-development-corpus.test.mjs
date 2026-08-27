@@ -28,7 +28,10 @@ const canonicalJson = JSON.stringify({
   version: "v0.6.3-candidate",
   normalization: {
     ...(publishedCanonical.normalization || {}),
-    published_release: false,
+    canonical_data_integration: {
+      ...(publishedCanonical.normalization?.canonical_data_integration || {}),
+      published_release: false,
+    },
   },
 });
 
