@@ -1,0 +1,165 @@
+name: Stage approved TTS assets for Pages
+
+on:
+  push:
+    branches:
+      - fix/tts-pages-hosting
+    paths:
+      - '.github/workflows/stage-approved-tts-pages.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tts-pages-staging
+  cancel-in-progress: false
+
+jobs:
+  stage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SOURCE_TAG: tts-v0.7.0-qa-pr-917-68247f095969
+      SOURCE_COMMIT: 68247f095969d3ab5d979c359b0ae82b23cb0041
+      SOURCE_SAVE: Gauntlet_v0.7.0_TTS_PR917_Preview.json
+      PUBLIC_SAVE: tts/v0.7.0/Gauntlet_v0.7.0_TTS_Mod.json
+      PUBLIC_ASSET_DIR: tts/v0.7.0/assets/917
+      PUBLIC_ASSET_URL: https://gauntlet.run/tts/v0.7.0/assets/917/
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download the exact approved PR #917 release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          download_dir="$(mktemp -d)"
+          echo "DOWNLOAD_DIR=$download_dir" >> "$GITHUB_ENV"
+          gh release download "$SOURCE_TAG" --repo "$GITHUB_REPOSITORY" --dir "$download_dir"
+
+          gh api "repos/$GITHUB_REPOSITORY/releases/tags/$SOURCE_TAG" > /tmp/approved-release.json
+          RELEASE_JSON=/tmp/approved-release.json DOWNLOAD_DIR="$download_dir" node <<'NODE'
+          const crypto = require('crypto');
+          const fs = require('fs');
+          const path = require('path');
+
+          const release = JSON.parse(fs.readFileSync(process.env.RELEASE_JSON, 'utf8'));
+          if (release.target_commitish !== process.env.SOURCE_COMMIT) {
+            throw new Error(
+              `Approved release target mismatch: expected ${process.env.SOURCE_COMMIT}, got ${release.target_commitish}`,
+            );
+          }
+
+          for (const asset of release.assets) {
+            const filename = path.join(process.env.DOWNLOAD_DIR, asset.name);
+            if (!fs.existsSync(filename)) {
+              throw new Error(`Missing downloaded release asset: ${asset.name}`);
+            }
+            const body = fs.readFileSync(filename);
+            if (body.length !== asset.size) {
+              throw new Error(
+                `Size mismatch for ${asset.name}: expected ${asset.size}, got ${body.length}`,
+              );
+            }
+            if (asset.digest?.startsWith('sha256:')) {
+              const actual = crypto.createHash('sha256').update(body).digest('hex');
+              const expected = asset.digest.slice('sha256:'.length);
+              if (actual !== expected) {
+                throw new Error(
+                  `SHA-256 mismatch for ${asset.name}: expected ${expected}, got ${actual}`,
+                );
+              }
+            }
+          }
+
+          console.log(
+            `Verified ${release.assets.length} exact assets from ${release.tag_name} @ ${release.target_commitish}.`,
+          );
+          NODE
+
+      - name: Stage approved bytes into the Pages-served tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s "$DOWNLOAD_DIR/$SOURCE_SAVE"
+
+          rm -rf "$PUBLIC_ASSET_DIR"
+          mkdir -p "$PUBLIC_ASSET_DIR"
+          find "$DOWNLOAD_DIR" -maxdepth 1 -type f ! -name "$SOURCE_SAVE" -exec cp "{}" "$PUBLIC_ASSET_DIR/" \;
+
+          mkdir -p "$(dirname "$PUBLIC_SAVE")"
+
+          REPOSITORY="$GITHUB_REPOSITORY" node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+
+          const sourcePath = path.join(process.env.DOWNLOAD_DIR, process.env.SOURCE_SAVE);
+          const sourcePrefix =
+            `https://github.com/${process.env.REPOSITORY}/releases/download/${process.env.SOURCE_TAG}/`;
+          const publicPrefix = process.env.PUBLIC_ASSET_URL;
+
+          const source = fs.readFileSync(sourcePath, 'utf8');
+          if (!source.includes(sourcePrefix)) {
+            throw new Error('Approved preview save does not contain the expected immutable source prefix.');
+          }
+
+          const rewritten = source.split(sourcePrefix).join(publicPrefix);
+          if (rewritten.includes(sourcePrefix)) {
+            throw new Error('Approved preview source prefix remains after rewrite.');
+          }
+
+          const save = JSON.parse(rewritten);
+          const urls = new Set();
+          function visit(value) {
+            if (Array.isArray(value)) {
+              value.forEach(visit);
+              return;
+            }
+            if (!value || typeof value !== 'object') return;
+            for (const child of Object.values(value)) {
+              if (typeof child === 'string' && /^https:\/\//i.test(child)) urls.add(child);
+              else visit(child);
+            }
+          }
+          visit(save);
+
+          const pageUrls = [...urls].filter((url) => url.startsWith(publicPrefix));
+          if (!pageUrls.length) {
+            throw new Error('Rewritten save contains no versioned Pages TTS asset URLs.');
+          }
+
+          for (const url of pageUrls) {
+            const parsed = new URL(url);
+            const assetName = decodeURIComponent(parsed.pathname.split('/').pop());
+            const assetPath = path.join(process.env.PUBLIC_ASSET_DIR, assetName);
+            if (!fs.existsSync(assetPath)) {
+              throw new Error(`Rewritten save references an unstaged asset: ${assetName}`);
+            }
+          }
+
+          if ([...urls].some((url) => url.includes('tts-v0.7.0-qa-pr-'))) {
+            throw new Error('Rewritten public save still exposes a PR-preview asset URL.');
+          }
+
+          fs.writeFileSync(process.env.PUBLIC_SAVE, rewritten);
+          console.log(
+            `Staged ${pageUrls.length} unique TTS URLs under ${publicPrefix} and wrote ${process.env.PUBLIC_SAVE}.`,
+          );
+          NODE
+
+      - name: Commit the immutable Pages snapshot to this branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tts/v0.7.0
+          if git diff --cached --quiet; then
+            echo "Approved Pages snapshot is already current."
+            exit 0
+          fi
+          git commit -m "Stage approved PR #917 TTS assets for Pages"
+          git push origin "HEAD:$GITHUB_REF_NAME"
