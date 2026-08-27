@@ -231,10 +231,14 @@ function validateBagsAndUtilities(save) {
   for (const bag of bags) {
     if (!close(bag.Transform?.rotY, 180)) throw new Error(`${bag.Nickname} starter Bag does not use the host-facing stored orientation established by TTS testing.`);
     for (const object of bag.ContainedObjects || []) {
-      const stackKind = String(object.GMNotes || '').replace(SUPPLEMENTAL_STACK_NOTE_PREFIX, '');
-      const expectedRotation = stackKind === 'deeds' ? 270 : 180;
-      if (object?.Transform && !close(object.Transform.rotY, expectedRotation)) {
-        throw new Error(`${bag.Nickname} contains ${object.Nickname || object.GUID} at stored rotation ${object.Transform.rotY}; expected host-facing ${expectedRotation}.`);
+      if (!object?.Transform) continue;
+      const isPhysicalTerritory = object.Name === 'CardCustom'
+        && /(?:Arena )?Territory$/u.test(String(object.Description || ''));
+      const expectedRotation = isPhysicalTerritory
+        ? 180
+        : (object.SidewaysCard === true ? 90 : 0);
+      if (!close(object.Transform.rotY, expectedRotation)) {
+        throw new Error(`${bag.Nickname} contains ${object.Nickname || object.GUID} at stored rotation ${object.Transform.rotY}; expected authored ${expectedRotation}.`);
       }
     }
     const objects = bag.ContainedObjects || [];
@@ -265,9 +269,9 @@ function validateBagsAndUtilities(save) {
 
 function validateFamilyStacks(bags) {
   const expectations = new Map([
-    ['proposals', { count: 2, cards: 9, sideways: false, rotY: 180, tags: [FACTION_ZONE_TAG] }],
-    ['deeds', { count: 2, cards: 8, sideways: true, rotY: 270, tags: [DEED_STACK_TAG, FACTION_ZONE_TAG] }],
-    ['rites-rituals', { count: 2, cards: 4, sideways: false, rotY: 180, tags: [FACTION_ZONE_TAG] }],
+    ['proposals', { count: 2, cards: 9, sideways: false, rotY: 0, tags: [FACTION_ZONE_TAG] }],
+    ['deeds', { count: 2, cards: 8, sideways: true, rotY: 90, tags: [DEED_STACK_TAG, FACTION_ZONE_TAG] }],
+    ['rites-rituals', { count: 2, cards: 4, sideways: false, rotY: 0, tags: [FACTION_ZONE_TAG] }],
   ]);
   const found = new Map([...expectations.keys()].map(key => [key, []]));
 
@@ -342,6 +346,12 @@ function validateTerritoriesDeedsAndFactionEligibility(save, manifest) {
   if (!ordinaryCards.length || ordinaryCards.some(card => !hasTag(card, FACTION_ZONE_TAG))) {
     throw new Error('Every ordinary card must retain generic Faction Zone snap eligibility.');
   }
+  for (const card of ordinaryCards) {
+    const expectedRotation = card.SidewaysCard === true ? 90 : 0;
+    if (!close(card.Transform?.rotY, expectedRotation)) {
+      throw new Error(`Ordinary card ${card.Nickname || card.GUID} has stored rotation ${card.Transform?.rotY}; expected authored ${expectedRotation} so it enters the Hand right side up.`);
+    }
+  }
 }
 
 function validateTrackers(save, manifest) {
@@ -363,6 +373,9 @@ function validateTrackers(save, manifest) {
     }
     if (object.Sticky !== true) {
       throw new Error(`Tracker ${id} must be Sticky so covers snapped above it move with the tracker.`);
+    }
+    if (!close(object.Transform?.rotY, 0)) {
+      throw new Error(`Tracker ${id} must retain its authored 0° stored orientation.`);
     }
 
     const expected = trackerPresentation(record);
