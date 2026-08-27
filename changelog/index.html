@@ -75,7 +75,8 @@
         <li><strong>Reference cards and faction components are now a finished physical system.</strong> The release includes the Universal Reference, faction references, trackers, Proposals/Treaty Articles, Capital Ledgers, Deeds, Rites, and other current components.</li>
         <li><strong>All twelve starter Decks are locked.</strong> Every list remains 30 cards / 60 Deckbuilding Value, with several updated to use the new card pool.</li>
         <li><strong>Deckbuilder printing is substantially expanded.</strong> Current production cards/components print through shared renderers, and Advanced → Custom printing can assemble arbitrary mixed card sheets.</li>
-        <li><strong>Tabletop Simulator becomes a release feature.</strong> All twelve starter kits and their required physical components are assembled into the v0.7.0 TTS package.</li>
+        <li><strong>Tabletop Simulator is already live on Steam Workshop.</strong> All twelve starter kits and their required physical components are assembled into the v0.7.0 TTS package, the manual QA gate is complete, and the subscribed public copy passed its post-publication smoke test.</li>
+        <li><strong>The Rulebook is now a 100-page half-letter booklet.</strong> It also adds a production-derived Card Anatomy guide shared between browser and print presentation.</li>
       </ol>
 
       <h3>Returning from v0.6.3?</h3>
@@ -191,24 +192,30 @@
       <p><strong>Advanced → Custom printing</strong> can build physical print sheets independently of legal Deck construction. It supports search and filters, arbitrary quantities, Add all for the currently visible filtered cards, mixed portrait / landscape 9-up Letter sheets, playable cards and current physical components, intrinsic reverse faces, and canonical standard backs. The print path fails closed rather than substituting stale placeholder faces when a production render is not ready.</p>
 
       <h3>Browser Rulebook</h3>
-      <p>During the candidate period, the Browser Rulebook can switch between released v0.6.3 and the candidate rules, with a shareable candidate view. The candidate rules are derived from the verified released Rulebook plus the current Onset rules, Proposal wording, Arcane clarification, and Leader wording. The v0.6.3 Rules Arbiter is hidden while candidate rules are displayed so it cannot answer from the wrong ruleset.</p>
+      <p>During the candidate period, the Browser Rulebook can switch between released v0.6.3 and the current v0.7.0 rules with a shareable candidate view. The v0.7.0 view loads the maintained complete Rulebook authority directly from <code>rulebook/player-facing/current-rulebook.md</code> rather than rebuilding the rules from v0.6.3 overlays. The v0.6.3 Rules Arbiter is hidden while v0.7.0 rules are displayed so it cannot answer from the wrong ruleset. At cutover, the maintained v0.7.0 Rulebook becomes the normal public default.</p>
+
+      <h3>Card Anatomy guide</h3>
+      <p>The v0.7.0 Rulebook adds a <strong>Card Anatomy</strong> guide before the printed-card-effects rules. The browser guide uses the actual production-rendered <strong>Unbroken Ranks</strong> card rather than a mockup, identifying card name, value, faction treatment, artwork, effect heading, effect text, and standardized footer metadata; the Arcane trait mark is explained separately.</p>
+      <p>The printable booklet includes a static Card Anatomy figure derived from the same current production card authority, keeping the browser and print explanations synchronized.</p>
 
       <h3>Tabletop Simulator</h3>
-      <p>v0.7.0 introduces the complete <strong>Tabletop Simulator</strong> package as a release feature. The current release-candidate build is machine-ready with <strong>28 ready supplemental component definitions, 80 assembled supplemental objects, 75 staged network assets,</strong> and no machine-readiness blockers.</p>
-      <p>The generated table includes Red and Blue hand zones, six Gauntlet snap positions, battle dice and Player Tokens, and all twelve starter Bags. Each starter package contains its playable Deck, Leader, three Territories, the shared Universal Reference, and the faction components required by that starter.</p>
+      <p>v0.7.0 introduces the complete <strong>Tabletop Simulator</strong> package as a release feature. The package passed its strict machine-readiness audit and complete <strong>18-check manual QA record</strong>, received explicit Workshop approval, and has been promoted from Review Scaffold to final mod identity.</p>
+      <p>The table uses <strong>White and Green</strong> player seats and hand/reserve zones, all six Gauntlet snap positions, faction-colored battle dice and Player Tokens, and all twelve starter Bags. Each Bag deterministically packages its Leader, trackers, Reference cards, other required faction components, playable Deck, three-Territory stack, and faction utilities.</p>
+      <p>Physical handling uses the same production component model as print: current Card Design renders supply the card faces; Territories and Deeds retain their landscape handling; Territory Overlays snap with their Territory; and sliding tracker/Leader assemblies can move as nested physical components.</p>
+      <p>The Financiers' <strong>Capital Ledger</strong> is an interactive public ledger rather than a generic counter: it begins at 2 Capital, records signed transactions with an automatic running balance, preserves 11-row pages through save/load, and supports page turning and undo while Capital Limit remains a separate tracker.</p>
       <p>TTS intentionally remains a <strong>digital tabletop, not a rules engine</strong>. Players perform setup, movement, battle resolution, card handling, and faction procedures themselves.</p>
-      <p>Workshop publication remains gated on the versioned <strong>19-check manual TTS QA record</strong>, explicit Workshop approval, and the required in-game / remote two-player validation. The release machinery cannot promote the Review Scaffold or publish v0.7.0 while that gate is incomplete.</p>
+      <p>The mod is already public on <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635">Steam Workshop</a>, and the subscribed public copy passed its post-publication smoke test. A remote two-player game was not required for this release gate.</p>
 
       <h3>Printable Rulebook and release package</h3>
-      <p>The v0.7.0 package carries the current designed Rulebook as a <strong>96-page half-letter booklet</strong>, imposed as 48 Letter-landscape sides on 24 physical sheets for duplex short-edge printing and saddle stitching.</p>
+      <p>The v0.7.0 package carries the current designed Rulebook as a <strong>100-page half-letter booklet</strong>, imposed as <strong>50 Letter-landscape sides on 25 physical sheets</strong> for duplex short-edge printing and saddle stitching.</p>
       <p>The versioned package also includes the v0.7.0 canonical-data export, locked starter-Deck export, and source-provenance export alongside the Rulebook source and booklet PDF.</p>
 
       <h3>What remains familiar</h3>
       <p>v0.7.0 is a substantial product milestone rather than a ground-up replacement for v0.6.3. The six factions, twelve Leaders, turn structure, Front Line, two normal Run-the-Gauntlet victory routes, faction identities, starter-Deck model, and Gambit / Reserves / Tactics battle core remain the foundation of play except where the changes above or a current card/component expressly say otherwise.</p>
 
       <h3>Publication boundary</h3>
-      <p><strong>v0.6.3 remains the current published playtest release until the final v0.7.0 cutover.</strong> The v0.6.4-candidate source bundle is preserved as a never-published provenance snapshot; it is being promoted into v0.7.0 rather than released separately as v0.6.4.</p>
-      <p>This candidate changelog does not itself publish v0.7.0 or the TTS Workshop item. Final publication remains subject to the release QA gate.</p>
+      <p><strong>v0.6.3 remains the current repository/web playtest release until the final v0.7.0 cutover.</strong> The v0.6.4-candidate source bundle is preserved as a never-published provenance snapshot; it is being promoted into v0.7.0 rather than released separately as v0.6.4.</p>
+      <p>The Tabletop Simulator publication gate is complete and the Workshop mod is already public. Only the final repository/web cutover remains pending for the complete v0.7.0 release.</p>
     </article>
 
     <article class="changelog-entry" id="v0-6-3">
