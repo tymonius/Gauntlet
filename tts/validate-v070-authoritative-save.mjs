@@ -377,7 +377,7 @@ function validateCapitalLedgers(save) {
     }
     for (const required of [
       'id="ledger-window"',
-      'position="0 0 -150"',
+      'position="0 0 -500"',
       'rotation="0 0 180"',
       'id="ledger-current-balance"',
       'onClick="addLedgerEntry"',
