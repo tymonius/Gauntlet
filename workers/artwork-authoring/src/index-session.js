@@ -11,7 +11,7 @@ function config(env) {
     repo,
     defaultBranch: String(env.GITHUB_DEFAULT_BRANCH || 'main'),
     authorBranch: String(env.GITHUB_AUTHOR_BRANCH || 'artwork/compositor-authoring'),
-    authorityPath: String(env.GITHUB_AUTHORITY_PATH || env.GITHUB_OVERRIDE_PATH || 'game-data/current-game.json'),
+    authorityPath: String(env.GITHUB_AUTHORITY_PATH || 'game-data/current-game.json'),
   };
 }
 
