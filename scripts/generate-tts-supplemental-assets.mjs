@@ -404,8 +404,8 @@ export async function buildSupplementalCatalog(componentContract = null) {
     catalog: {
       schemaVersion: 3,
       gameVersion: release.version,
-      componentContract: 'game-data/current-game.json#componentContract',
-      sourcePolicy: 'ready shared and faction supplemental components export through their declared representation; pending components remain cataloged but produce no TTS objects',
+      componentContract: 'config/tts-component-contract.json',
+      sourcePolicy: 'card faces are captured only from card-design production render authority; pending components remain cataloged but produce no TTS objects',
       readyCount: ready.length,
       pendingCount: pending.length,
       ready,
@@ -432,35 +432,56 @@ function generatedReverseFileFor(record) {
   return `supplementals/reverses/${record.id}.png`;
 }
 
-async function captureCard(page, baseUrl, record, side, outputPath) {
-  await page.goto(`${baseUrl}/tts/supplemental-renderer/?component=${encodeURIComponent(record.id)}&side=${encodeURIComponent(side)}`, { waitUntil: 'load' });
-  await page.waitForSelector('.supplemental-card');
+function productionComponentRequest(record) {
+  if (record.renderer === 'reference-card') {
+    return { kind: 'reference', id: record.id };
+  }
+  if (record.renderer === 'rite-card') {
+    return { kind: 'rite', id: String(record.id).replace(/^mystics-rite-/, '') };
+  }
+  throw new Error(`No card-design production component request for ${record.id} (${record.renderer}).`);
+}
+
+async function captureCard(page, baseUrl, record, side, outputPath, displayVersion) {
+  const request = productionComponentRequest(record);
+  const url = new URL('/card-design/component-print-render.html', baseUrl);
+  url.searchParams.set('kind', request.kind);
+  url.searchParams.set('id', request.id);
+  url.searchParams.set('side', side);
+  url.searchParams.set('orientation', 'portrait');
+  if (displayVersion) url.searchParams.set('version', displayVersion);
+
+  await page.goto(url.toString(), { waitUntil: 'load' });
+  await page.waitForSelector('#renderTarget > .gauntlet-card');
   await page.waitForFunction(() => document.body.dataset.renderReady === 'true' || document.body.dataset.renderError === 'true');
   const renderState = await page.evaluate(() => ({
     error: document.body.dataset.renderError === 'true',
     message: document.body.dataset.renderErrorMessage || '',
   }));
   if (renderState.error) {
-    throw new Error(`Supplemental renderer failed for ${record.id} (${side}): ${renderState.message || 'browser renderer reported an unspecified error'}`);
+    throw new Error(`Card-design production renderer failed for ${record.id} (${side}): ${renderState.message || 'browser renderer reported an unspecified error'}`);
   }
 
-  const metrics = await page.locator('.supplemental-card').evaluate((element) => {
+  const card = page.locator('#renderTarget > .gauntlet-card');
+  const metrics = await card.evaluate((element) => {
     const rect = element.getBoundingClientRect();
     return {
       width: rect.width,
       height: rect.height,
+      overflowWidth: element.scrollWidth,
+      clientWidth: element.clientWidth,
       overflowHeight: element.scrollHeight,
       clientHeight: element.clientHeight,
     };
   });
   if (Math.abs(metrics.width - CSS_CARD_WIDTH) > 0.25 || Math.abs(metrics.height - CSS_CARD_HEIGHT) > 0.25) {
-    throw new Error(`Unexpected supplemental geometry for ${record.id} (${side}): ${metrics.width} × ${metrics.height}.`);
+    throw new Error(`Unexpected production supplemental geometry for ${record.id} (${side}): ${metrics.width} × ${metrics.height}.`);
   }
-  if (metrics.overflowHeight > metrics.clientHeight + 1) {
-    throw new Error(`Supplemental content overflows ${record.id} (${side}): ${metrics.overflowHeight}px > ${metrics.clientHeight}px.`);
+  if (metrics.overflowWidth > metrics.clientWidth + 1 || metrics.overflowHeight > metrics.clientHeight + 1) {
+    throw new Error(`Production supplemental content overflows ${record.id} (${side}).`);
   }
 
-  await page.locator('.supplemental-card').screenshot({ path: outputPath, omitBackground: true });
+  await card.screenshot({ path: outputPath, omitBackground: true });
 }
 
 export async function renderSupplementalAssets(release, catalog) {
@@ -487,14 +508,13 @@ export async function renderSupplementalAssets(release, catalog) {
   const page = await context.newPage();
 
   try {
-    const renderedArtworkReverses = new Map();
     const records = [];
     let nextDeckId = FIRST_SUPPLEMENTAL_DECK_ID;
 
     for (const record of catalog.ready) {
       if (record.renderer === 'sliding-tracker') {
         const frontFile = `supplementals/trackers/${record.id}.png`;
-        const geometry = await captureProductionTracker(page, baseUrl, record, join(outputRoot, frontFile));
+        const geometry = await captureProductionTracker(page, baseUrl, record, join(outputRoot, frontFile), release.displayVersion || release.version);
         records.push({
           ...record,
           frontFile,
@@ -521,19 +541,10 @@ export async function renderSupplementalAssets(release, catalog) {
       const frontFile = `supplementals/fronts/${record.id}.png`;
       let reverseFile;
 
-      await captureCard(page, baseUrl, record, 'front', join(outputRoot, frontFile));
+      await captureCard(page, baseUrl, record, 'front', join(outputRoot, frontFile), release.displayVersion || release.version);
 
-      if (record.renderer === 'rite-card') {
-        reverseFile = artworkReverseFileFor(record);
-        if (!renderedArtworkReverses.has(record.reverseArtwork)) {
-          await captureCard(page, baseUrl, record, 'reverse', join(outputRoot, reverseFile));
-          renderedArtworkReverses.set(record.reverseArtwork, reverseFile);
-        }
-        reverseFile = renderedArtworkReverses.get(record.reverseArtwork);
-      } else {
-        reverseFile = generatedReverseFileFor(record);
-        await captureCard(page, baseUrl, record, 'reverse', join(outputRoot, reverseFile));
-      }
+      reverseFile = generatedReverseFileFor(record);
+      await captureCard(page, baseUrl, record, 'reverse', join(outputRoot, reverseFile), release.displayVersion || release.version);
 
       records.push({
         ...record,
