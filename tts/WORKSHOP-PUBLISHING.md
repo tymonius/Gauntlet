@@ -8,8 +8,10 @@ This file prepares the text and final publication checklist for the v0.7.0 Table
 - **Workshop URL:** https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635
 - **Current visibility:** hidden / pre-publication smoke-test item
 - **Created:** 2026-08-27
+- **Permanent Workshop candidate:** https://github.com/tymonius/Gauntlet/releases/download/v0.7.0/Gauntlet_v0.7.0_TTS_Workshop_Candidate.json
+- **Permanent hosted asset set:** refreshed from the approved PR #909 build on 2026-08-27; 83 TTS network assets plus the Workshop candidate are present on the `v0.7.0` release.
 
-Do not expose this item from the public site until the permanent v0.7.0 asset host is refreshed and the subscribed Workshop copy passes the final smoke test.
+The permanent host refresh is complete. Keep the Workshop item hidden until the subscribed Workshop copy has been loaded once from Steam and confirmed to resolve the permanent `v0.7.0` asset URLs.
 
 ## Draft Workshop title
 
