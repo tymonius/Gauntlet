@@ -2,6 +2,15 @@
 
 This file prepares the text and final publication checklist for the v0.7.0 Tabletop Simulator Workshop item. It does **not** indicate that the mod has passed QA or is ready to publish.
 
+## Workshop item
+
+- **Steam Workshop ID:** `3790840635`
+- **Workshop URL:** https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635
+- **Current visibility:** hidden / pre-publication smoke-test item
+- **Created:** 2026-08-27
+
+Do not expose this item from the public site until the permanent v0.7.0 asset host is refreshed and the subscribed Workshop copy passes the final smoke test.
+
 ## Draft Workshop title
 
 **Gauntlet — v0.7.0**
