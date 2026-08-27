@@ -126,21 +126,31 @@ describe('generated TTS table structure', () => {
     expect(token[0].ColorDiffuse).toEqual(bag.ColorDiffuse);
   });
 
-  it('builds each starter Bag with one Leader, three sideways Territories, one Deck, one token, and one die', () => {
+  it('builds each starter Bag with a Leader, playable Deck, one three-Territory stack, token, and die', () => {
     const bag = save.ObjectStates.find((object) => object.Name === 'Bag');
     expect(bag).toBeTruthy();
-    expect(bag.ContainedObjects).toHaveLength(7);
+    expect(bag.ContainedObjects).toHaveLength(5);
 
-    const deck = bag.ContainedObjects.filter((object) => object.Name === 'DeckCustom');
-    const cards = bag.ContainedObjects.filter((object) => object.Name === 'CardCustom');
-    const leader = cards.filter((object) => object.Description.endsWith('Leader'));
-    const territories = cards.filter((object) => object.Description.includes('Territory'));
+    const leader = bag.ContainedObjects.find((object) => object.Name === 'CardCustom' && object.Description.endsWith('Leader'));
+    const deck = bag.ContainedObjects.find((object) => object.GMNotes === 'gauntlet:starter-deck:military-general-test');
+    const territoryStack = bag.ContainedObjects.find((object) => object.GMNotes === 'gauntlet:starter-territories:military-general-test');
+    const territories = territoryStack?.ContainedObjects || [];
 
-    expect(deck).toHaveLength(1);
-    expect(deck[0].DeckIDs).toEqual([101, 101]);
-    expect(deck[0].ContainedObjects.every((card) => card.GMNotes === 'gauntlet:playable-card:test-card')).toBe(true);
-    expect(leader).toHaveLength(1);
-    expect(leader[0].CardID).toBe(10000);
+    expect(bag.ContainedObjects.slice(0, 3).map((object) => object.GMNotes || object.Nickname)).toEqual([
+      'General',
+      'gauntlet:starter-deck:military-general-test',
+      'gauntlet:starter-territories:military-general-test',
+    ]);
+    expect(leader?.CardID).toBe(10000);
+
+    expect(deck?.Name).toBe('DeckCustom');
+    expect(deck?.DeckIDs).toEqual([101, 101]);
+    expect(deck?.ContainedObjects.every((card) => card.GMNotes === 'gauntlet:playable-card:test-card')).toBe(true);
+
+    expect(territoryStack?.Name).toBe('DeckCustom');
+    expect(territoryStack?.SidewaysCard).toBe(true);
+    expect(territoryStack?.Transform.rotY).toBe(180);
+    expect(territoryStack?.DeckIDs).toEqual([20000, 20001, 20002]);
     expect(territories).toHaveLength(3);
     expect(territories.every((territory) => territory.SidewaysCard === true)).toBe(true);
     expect(territories.every((territory) => territory.Transform.rotY === 180)).toBe(true);
@@ -149,6 +159,7 @@ describe('generated TTS table structure', () => {
     expect(territories.every((territory) => !String(territory.LuaScript || '').includes('use_rotation_value_flip'))).toBe(true);
     expect(territories.every((territory) => Object.values(territory.CustomDeck)
       .every((state) => state.BackURL === `https://example.invalid/${version}/${files.standardBack}`))).toBe(true);
+
     expect(bag.ContainedObjects.filter((object) => object.Name === 'PlayerPawn')).toHaveLength(1);
     expect(bag.ContainedObjects.filter((object) => object.Name === 'Die_6')).toHaveLength(1);
   });
