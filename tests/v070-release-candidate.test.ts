@@ -29,15 +29,16 @@ describe('v0.7.0 release candidate boundary', () => {
     expect(ttsTarget.displayVersion).toBe('v0.7.0');
     expect(ttsTarget.status).toBe('release-candidate');
     expect(ttsQa.gameVersion).toBe('v0.7.0');
-    expect(ttsQa.status).toBe('pending');
-    expect(ttsQa.approvedForWorkshop).toBe(false);
+    expect(ttsQa.status).toBe('passed');
+    expect(ttsQa.approvedForWorkshop).toBe(true);
   });
 
   it('uses draft notes as the pre-publication v0.7.0 release surface', () => {
     expect(notes).toContain('# Gauntlet v0.7.0 — Illustrated Cards & Tabletop Simulator');
     expect(notes).toContain('Release candidate — not yet published');
     expect(notes).toContain('v0.6.3 remains the current published playtest release');
-    expect(notes).toContain('Final Workshop publication remains gated');
+    expect(notes).toContain('The Tabletop Simulator publication gate is complete');
+    expect(notes).toContain('steamcommunity.com/sharedfiles/filedetails/?id=3790840635');
     expect(notes).toContain('does not change the repository\'s current published release');
     expect(notes).not.toContain('Current canonical playtest edition');
   });
