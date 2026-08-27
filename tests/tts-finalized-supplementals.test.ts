@@ -60,7 +60,7 @@ describe('finalized TTS supplemental exports', () => {
   it('keeps the Capital Ledger popout above ordinary tabletop cards', () => {
     const assembler = readFileSync('scripts/assemble-tts-supplemental-save.mjs', 'utf8');
     expect(assembler).toContain('id="ledger-window"');
-    expect(assembler).toContain('position="0 0 -150"');
+    expect(assembler).toContain('position="0 0 -500"');
     expect(assembler).toContain('rotation="0 0 180"');
     expect(assembler).not.toContain('position="0 0 -50"');
   });
