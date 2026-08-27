@@ -2,7 +2,11 @@ name = "gauntlet-public-media"
 main = "src/index.js"
 compatibility_date = "2026-08-24"
 workers_dev = false
-route = "gauntlet.run/images/media/*"
+
+routes = [
+  { pattern = "gauntlet.run/images/media/*", zone_name = "gauntlet.run" },
+  { pattern = "gauntlet.run/tts/v0.7.0/*", zone_name = "gauntlet.run" }
+]
 
 [assets]
 directory = "./public"
