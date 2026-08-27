@@ -192,6 +192,8 @@ describe('TTS ready supplemental save assembly', () => {
     expect(ledger.LuaScript).toContain('self.setName("Capital Ledger — Balance: "');
     expect(ledger.LuaScript).toContain('if totalBalance() + delta < 0 then');
     expect(ledger.XmlUI).toContain('id="ledger-window"');
+    expect(ledger.XmlUI).toContain('position="0 0 -50"');
+    expect(ledger.XmlUI).toContain('rotation="0 180 0"');
     expect(ledger.XmlUI).toContain('id="ledger-current-balance"');
     expect(ledger.XmlUI).toContain('onClick="addLedgerEntry"');
     expect(ledger.XmlUI).toContain('onClick="undoLedgerEntry"');
