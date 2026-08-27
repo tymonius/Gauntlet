@@ -345,11 +345,19 @@ function playerZone(side, zone) {
   };
 }
 
-function playerFacingCardRotation(side) {
-  // TTS-tested card-facing contract: the south/White player's cards face the
-  // player at 180 degrees; the mirrored north/Green player's cards face the
-  // player at 0 degrees. Table labels use their own visual rotation.
+function tabletopCardRotation(side) {
+  // TTS-tested tabletop card-facing contract: south/White workspace cards face
+  // the player at 180 degrees; mirrored north/Green workspace cards face at 0.
+  // This is intentionally NOT the native Hand transform rotation: TTS also uses
+  // the Hand transform as seat/camera-facing authority when a save loads.
   return side === 'Green' ? 0 : 180;
+}
+
+function nativeHandRotation(side) {
+  // Native TTS seat orientation: White is the south seat looking north and
+  // Green is the north seat looking south. Reversing these values makes TTS
+  // move the player's camera to the opposite side of the table on load.
+  return side === 'Green' ? 180 : 0;
 }
 
 function handParkingDefinition() {
@@ -370,7 +378,7 @@ export function handZoneTransform(side) {
     0,
     4.0,
     north ? center : -center,
-    playerFacingCardRotation(side),
+    nativeHandRotation(side),
     HAND_ZONE_WIDTH,
     HAND_ZONE_HEIGHT,
     HAND_RESERVE_EXTENSION,
@@ -385,7 +393,7 @@ export function parkingHiddenZoneTransform(side) {
     0,
     3.0,
     north ? center : -center,
-    playerFacingCardRotation(side),
+    nativeHandRotation(side),
     PARKING_ZONE_WIDTH,
     PARKING_ZONE_HEIGHT,
     PARKING_ZONE_DEPTH,
@@ -457,7 +465,7 @@ export function buildTableSnapPoints() {
   }
 
   for (const side of ['White', 'Green']) {
-    const faceRotation = playerFacingCardRotation(side);
+    const faceRotation = tabletopCardRotation(side);
     for (const zone of PLAYER_ZONES) {
       if (zone.snapLayout === 'leader') {
         for (const [x, z] of leaderOffsets()) points.push(snap(pointInPlayerZone(side, zone, x, z), faceRotation));
