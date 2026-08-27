@@ -13,9 +13,8 @@ describe('TTS GitHub Release asset hosting', () => {
     expect(stager).toContain("readJson(join(outputRoot, 'territory-manifest.json'))");
     expect(stager).toContain("readJson(join(outputRoot, 'leader-manifest.json'))");
     expect(stager).toContain("readJson(join(outputRoot, 'starter-deck-manifest.json'))");
-    expect(stager).toContain("'tts/assets/environment/campaign-map-table.jpg'");
-    expect(stager).toContain("'tts/assets/environment/command-tent-panorama.jpg'");
-    expect(stager).toContain("sourceScope: 'repository'");
+    expect(stager).toContain("'environment/campaign-map-table.png'");
+    expect(stager).toContain("'environment/command-tent-panorama.png'");
     expect(stager).toContain('for (const sheet of cardManifest.sheets || [])');
     expect(stager).toContain('Object.entries(cardManifest.backVariants || {})');
     expect(stager).toContain('for (const sheet of territoryManifest.sheets || [])');
@@ -38,8 +37,8 @@ describe('TTS GitHub Release asset hosting', () => {
     expect(stager).toContain('_Playable_Sheet_');
     expect(stager).toContain('_Back_');
     expect(stager).toContain('_Territory_Sheet_');
-    expect(stager).toContain('Environment_Table.jpg');
-    expect(stager).toContain('Environment_Panorama.jpg');
+    expect(stager).toContain('Environment_Table.png');
+    expect(stager).toContain('Environment_Panorama.png');
     expect(stager).not.toContain('_Territory_Back.png');
     expect(stager).toContain("if (territoryManifest.backPolicy !== 'standardBack')");
     expect(stager).toContain('_Leader_');
@@ -52,6 +51,7 @@ describe('TTS GitHub Release asset hosting', () => {
 
   it('keeps publication an explicit main-branch workflow action', () => {
     expect(packageJson.scripts['tts:release:stage']).toContain('node tts/ensure-current-mystics-assets.mjs');
+    expect(packageJson.scripts['tts:release:stage']).toContain('npm run tts:environment');
     expect(packageJson.scripts['tts:release:stage']).toContain('node scripts/stage-tts-release-assets.mjs');
     expect(workflow).toContain('publish_release_assets:');
     expect(workflow).toContain("if: github.event_name == 'workflow_dispatch' && inputs.publish_release_assets && github.ref == 'refs/heads/main'");
