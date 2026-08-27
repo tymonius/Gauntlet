@@ -4585,8 +4585,7 @@
     }
   ],
   "arcane_symbol": {
-    "version": "v0.6.4-candidate",
-    "base_version": "v0.6.3",
+    "version": "v0.7.0",
     "mechanics_changed": false,
     "change_type": "visual-identification-and-rules-clarification",
     "general_rule": {

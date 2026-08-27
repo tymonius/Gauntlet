@@ -1,7 +1,7 @@
 {
   "version": "v0.7.0",
-  "status": "Locked v0.6.4 public playtest starter set",
-  "purpose": "Recommended v0.6.4 starter Decks optimized for competitive strength first, Leader expression second, and title diversity / starter-pool coverage as a tiebreaker. Mystics Rite of Echoes pairs are preserved when they provide functional completion infrastructure.",
+  "status": "Locked v0.7.0 public playtest starter set",
+  "purpose": "Recommended v0.7.0 starter Decks optimized for competitive strength first, Leader expression second, and title diversity / starter-pool coverage as a tiebreaker. Mystics Rite of Echoes pairs are preserved when they provide functional completion infrastructure.",
   "construction": {
     "minimumCards": 30,
     "maximumDeckbuildingValue": 60,
@@ -15,7 +15,7 @@
     "tiebreaker": "title-diversity-and-starter-pool-coverage",
     "mysticsRiteOfEchoesPairException": true,
     "cardPoolCoverageQuota": false,
-    "status": "locked-for-v0.6.4-public-playtest",
+    "status": "locked-for-v0.7.0-public-playtest",
     "predecessorAudit": "docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md",
     "predecessorFinalization": "docs/Gauntlet_v0.6.3_Starter_Deck_Finalization.md",
     "cardAdditions": "docs/v0.6.4-card-additions.json"
@@ -1287,7 +1287,7 @@
     }
   ],
   "approval": {
-    "status": "locked-for-v0.6.4-public-playtest",
+    "status": "locked-for-v0.7.0-public-playtest",
     "predecessor_pr": 573,
     "peace_treaty_pr": 736,
     "card_additions_pr": 765
