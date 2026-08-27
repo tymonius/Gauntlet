@@ -18,25 +18,18 @@ describe('TTS Leader assets', () => {
     expect(exporter).not.toMatch(/v0\.6\.[0-9]+/);
   });
 
-  it('renders the shared production Leader surface instead of duplicating Leader rules', () => {
-    expect(exporter).toContain("page.goto(`${baseUrl}/card-design/`");
-    expect(exporter).toContain("#${leader.faction}-${leader.id} .gauntlet-card");
-    expect(exporter).toContain("document.querySelectorAll('#leaderReviewSections .card-art img')");
+  it('captures the shared Card Design Leader surface instead of duplicating Leader rules or crop logic', () => {
+    expect(exporter).toContain('/card-design/component-print-render.html');
+    expect(exporter).toContain("url.searchParams.set('kind', 'leader')");
+    expect(exporter).toContain("url.searchParams.set('version', displayVersion)");
+    expect(exporter).toContain("return '#renderTarget > .leader-card'");
     expect(exporter).toContain("metrics.footer.at(-1) !== displayVersion");
     expect(exporter).toContain('fitWarning');
+    expect(exporter).not.toContain('GauntletArtworkCrop.apply');
+    expect(exporter).not.toContain('GAUNTLET_ART_DIRECTION');
     expect(exporter).not.toContain('Materia Prima');
     expect(exporter).not.toContain('Guardians of the Circle');
     expect(readme).toContain('does not maintain a second copy of Leader rules or layout');
-  });
-
-  it('preserves the Card Review catalog artwork composition unless an authored override exists', () => {
-    expect(exporter).toContain("window.GAUNTLET_ART_DIRECTION?.[payload.key]");
-    expect(exporter).toContain("image.dataset.artCrop = 'catalog-css'");
-    expect(exporter).toContain("mode: 'catalog-css'");
-    expect(exporter).toContain('if (!authored || !Object.keys(authored).length)');
-    expect(exporter).toContain('GauntletArtworkCrop.apply');
-    expect(exporter).toContain('authored,');
-    expect(exporter).not.toContain('payload.direction || null');
   });
 
   it('captures exact 400 by 560 Leader rasters without fractional-position inflation', () => {

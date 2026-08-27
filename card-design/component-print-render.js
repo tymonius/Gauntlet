@@ -4,6 +4,7 @@
   const id = String(params.get("id") || "").trim();
   const side = String(params.get("side") || "front").trim().toLowerCase();
   const orientation = String(params.get("orientation") || "portrait").trim().toLowerCase();
+  const versionOverride = String(params.get("version") || "").trim();
   const target = document.getElementById("renderTarget");
   const TIMEOUT_MS = 30000;
   const supportedKinds = new Set(["leader", "proposal", "reference", "rite", "ritual", "tracker", "supplemental"]);
@@ -122,8 +123,10 @@
   }
 
   function needsSharedCardPreparation(card) {
-    if (!card?.matches?.(".gauntlet-card[data-art-max]")) return false;
-    return card.dataset.parchmentLoaded === undefined || card.dataset.titleFit === undefined;
+    if (!card?.matches?.(".gauntlet-card")) return false;
+    if (card.querySelector(".card-interior") && card.dataset.parchmentLoaded === undefined) return true;
+    if (!card.matches("[data-art-max]")) return false;
+    return card.dataset.titleFit === undefined;
   }
 
   function leaderCopyReady(card) {
@@ -131,6 +134,72 @@
     return root?.dataset.leaderCopyReady === "true"
       && Boolean(card.dataset.leaderCopyVersion)
       && card.classList.contains("leader-card--standardized");
+  }
+
+  function validateTrackerVisualContract(card) {
+    if (kind !== "tracker") return;
+
+    const interior = card.querySelector(".tracker-interior");
+    const title = card.querySelector(".tracker-heading h3");
+    if (!interior || !title) {
+      throw new Error(`Tracker ${id} is missing its production interior or title.`);
+    }
+
+    const background = getComputedStyle(interior).backgroundImage;
+    if (card.dataset.parchmentLoaded !== "true" || !background || background === "none") {
+      throw new Error(`Tracker ${id} lost its production parchment background.`);
+    }
+    if (card.dataset.trackerTitleFit !== "true" || title.scrollWidth > title.clientWidth + 0.5) {
+      throw new Error(`Tracker ${id} title is clipped after production fitting.`);
+    }
+  }
+
+  function validateReferenceVisualContract(card) {
+    if (kind !== "reference") return;
+
+    const interior = card.querySelector(".reference-card-interior");
+    const watermark = card.querySelector(".reference-watermark");
+    const emblem = card.querySelector(".reference-faction-emblem");
+    const panels = [...card.querySelectorAll(".reference-panel + .reference-panel")];
+
+    if (!interior || !watermark || !emblem) {
+      throw new Error(`Reference ${id} is missing production parchment, watermark, or emblem structure.`);
+    }
+
+    const interiorStyle = getComputedStyle(interior);
+    if (!interiorStyle.backgroundImage || interiorStyle.backgroundImage === "none") {
+      throw new Error(`Reference ${id} lost the production parchment/background treatment.`);
+    }
+
+    const divided = panels.filter(panel => {
+      const style = getComputedStyle(panel);
+      return Number.parseFloat(style.borderTopWidth || "0") > 0.01
+        && style.borderTopStyle !== "none";
+    });
+    if (divided.length) {
+      throw new Error(`Reference ${id} reintroduced ${divided.length} horizontal body divider(s).`);
+    }
+
+    const emblemStyle = getComputedStyle(emblem);
+    const emblemPaint = [
+      emblemStyle.backgroundImage,
+      emblemStyle.maskImage,
+      emblemStyle.webkitMaskImage,
+    ].filter(Boolean).join(" ");
+    if (!emblemPaint || /^(none\s*)+$/.test(emblemPaint.trim())) {
+      throw new Error(`Reference ${id} lost its production faction/header emblem.`);
+    }
+
+    if (id === "universal-reference") {
+      const watermarkStyle = getComputedStyle(watermark);
+      const watermarkMask = watermarkStyle.maskImage || watermarkStyle.webkitMaskImage || "";
+      if (!watermarkMask.includes("Gauntlet.svg")) {
+        throw new Error("Universal Reference lost the Gauntlet G watermark mask.");
+      }
+      if (!emblemPaint.includes("Gauntlet.svg")) {
+        throw new Error("Universal Reference lost the Gauntlet G header emblem.");
+      }
+    }
   }
 
   function fitReady(card) {
@@ -163,7 +232,13 @@
         && dimensionsReady(card);
     }
 
-    if (kind === "tracker") return dimensionsReady(card);
+    if (kind === "tracker") {
+      const supplementalRoot = document.getElementById("supplementalReviewSections");
+      return card.dataset.parchmentLoaded === "true"
+        && card.dataset.trackerTitleFit === "true"
+        && supplementalRoot?.dataset.trackerLayoutsReady === "true"
+        && dimensionsReady(card);
+    }
 
     if (kind === "supplemental") {
       if (card.classList.contains("reference-card-loading")) return false;
@@ -214,6 +289,16 @@
     if (!card) throw new Error(`Timed out locating production ${kind} component ${id}.`);
     if (!fitReady(card) || !imagesReady(card)) {
       throw new Error(`Timed out waiting for production ${kind} component ${id} to finish rendering.`);
+    }
+
+    validateTrackerVisualContract(card);
+    validateReferenceVisualContract(card);
+
+    if (versionOverride) {
+      const footer = card.querySelectorAll(".card-footer span");
+      const versionNode = footer.item(footer.length - 1);
+      if (versionNode) versionNode.textContent = versionOverride;
+      card.dataset.renderVersionOverride = versionOverride;
     }
 
     card.style.width = renderWidth;

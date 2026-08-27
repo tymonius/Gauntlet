@@ -118,9 +118,11 @@ describe("TTS Territory assets", () => {
     expect(dedicatedSpecimenPage).toContain('aria-label="High Ground Territory card-front prototype"');
   });
 
-  it("orients Territory faces upright for native sideways-card handling", () => {
-    expect(generator).toContain("rotate(90deg)");
-    expect(generator).toContain("sheetCellRotationDegrees: 90");
+  it("orients Territory faces upright with the shared landscape packaging authority", () => {
+    expect(generator).toContain("LANDSCAPE_TTS_CELL_ROTATION_DEGREES");
+    expect(generator).toContain("rotate(${LANDSCAPE_TTS_CELL_ROTATION_DEGREES}deg)");
+    expect(generator).toContain("sheetCellRotationDegrees: LANDSCAPE_TTS_CELL_ROTATION_DEGREES");
+    expect(generator).not.toContain("rotate(-90deg)");
   });
 
   it("packs Territories into as many seven-by-four sheets as the current pool requires", () => {

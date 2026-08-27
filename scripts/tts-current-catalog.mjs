@@ -110,6 +110,9 @@ export async function resolveCurrentTtsRelease() {
 
   return Object.freeze({
     version,
+    // Package identity and the TTS card-face footer both target the pending
+    // release during pre-cutover QA. The underlying Card Design catalog may
+    // still display the currently published candidate until public cutover.
     displayVersion: String(target.displayVersion || version),
     sourceVersion,
     baseVersion: String(manifest.baseVersion || ''),

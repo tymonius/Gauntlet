@@ -192,7 +192,7 @@ describe('TTS ready supplemental save assembly', () => {
     expect(ledger.LuaScript).toContain('self.setName("Capital Ledger — Balance: "');
     expect(ledger.LuaScript).toContain('if totalBalance() + delta < 0 then');
     expect(ledger.XmlUI).toContain('id="ledger-window"');
-    expect(ledger.XmlUI).toContain('position="0 0 -50"');
+    expect(ledger.XmlUI).toContain('position="0 0 -500"');
     expect(ledger.XmlUI).toContain('rotation="0 0 180"');
     expect(ledger.XmlUI).toContain('id="ledger-current-balance"');
     expect(ledger.XmlUI).toContain('onClick="addLedgerEntry"');
@@ -211,7 +211,7 @@ describe('TTS ready supplemental save assembly', () => {
     expect(stack.Name).toBe('DeckCustom');
     expect(stack.ContainedObjects).toHaveLength(8);
     expect(stack.SidewaysCard).toBe(true);
-    expect(stack.Transform.rotY).toBe(270);
+    expect(stack.Transform.rotY).toBe(90);
     expect(stack.Tags).toContain('gauntlet-deed-stack');
     expect(stack.Tags).toContain('gauntlet-faction-zone');
     expect(stack.ContainedObjects.every((deed: any) => deed.Tags.includes('gauntlet-deed'))).toBe(true);

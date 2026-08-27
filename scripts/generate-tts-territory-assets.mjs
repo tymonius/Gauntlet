@@ -12,6 +12,7 @@ import {
   loadTtsComponentContract,
   resolveStandardBackFile,
 } from './tts-component-contract.mjs';
+import { LANDSCAPE_TTS_CELL_ROTATION_DEGREES } from './tts-supplemental-geometry.mjs';
 
 // Territory artwork is authored and exported landscape at 560x400. TTS custom
 // cards derive their physical aspect from the card-sheet cell, so the hosted
@@ -106,7 +107,7 @@ function territorySheetHtml(baseUrl, version, territories, fallbackBackFile) {
     *{box-sizing:border-box}html,body{margin:0;background:transparent}
     .sheet{display:grid;grid-template-columns:repeat(${SHEET_COLUMNS},${CSS_TTS_CARD_WIDTH}px);grid-template-rows:repeat(${SHEET_ROWS},${CSS_TTS_CARD_HEIGHT}px);width:${SHEET_COLUMNS * CSS_TTS_CARD_WIDTH}px;height:${SHEET_ROWS * CSS_TTS_CARD_HEIGHT}px}
     .slot{position:relative;display:block;overflow:hidden;width:${CSS_TTS_CARD_WIDTH}px;height:${CSS_TTS_CARD_HEIGHT}px;background:transparent}
-    .territory-face{position:absolute;display:block;width:${CSS_TERRITORY_WIDTH}px;height:${CSS_TERRITORY_HEIGHT}px;left:50%;top:50%;transform:translate(-50%,-50%) rotate(90deg);transform-origin:center center}
+    .territory-face{position:absolute;display:block;width:${CSS_TERRITORY_WIDTH}px;height:${CSS_TERRITORY_HEIGHT}px;left:50%;top:50%;transform:translate(-50%,-50%) rotate(${LANDSCAPE_TTS_CELL_ROTATION_DEGREES}deg);transform-origin:center center}
     .standard-back{display:block;width:${CSS_TTS_CARD_WIDTH}px;height:${CSS_TTS_CARD_HEIGHT}px}
   </style></head><body><div class="sheet">${slots}</div></body></html>`;
 }
@@ -172,7 +173,7 @@ async function renderTerritories(catalog, componentContract) {
     let fontsValidated = false;
     for (const territory of catalog.territories) {
       await page.setViewportSize({ width: 620, height: 500 });
-      await page.goto(`${baseUrl}/tts/territory-renderer/?territory=${encodeURIComponent(territory.id)}`, { waitUntil: 'load' });
+      await page.goto(`${baseUrl}/card-design/territory-review-render.html?territory=${encodeURIComponent(territory.id)}&version=${encodeURIComponent(release.displayVersion || release.version)}`, { waitUntil: 'load' });
       await page.waitForSelector('.territory-card');
       await page.waitForFunction(() => document.body.dataset.renderReady === 'true');
 
@@ -250,7 +251,7 @@ async function renderTerritories(catalog, componentContract) {
         // landscape Territory artwork raster before its quarter-turn into that cell.
         cardPixels: { width: TTS_CARD_WIDTH, height: TTS_CARD_HEIGHT },
         sourceCardPixels: { width: TERRITORY_WIDTH, height: TERRITORY_HEIGHT },
-        sheetCellRotationDegrees: 90,
+        sheetCellRotationDegrees: LANDSCAPE_TTS_CELL_ROTATION_DEGREES,
         sheetPixels: {
           width: TTS_CARD_WIDTH * SHEET_COLUMNS,
           height: TTS_CARD_HEIGHT * SHEET_ROWS,

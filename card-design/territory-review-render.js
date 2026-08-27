@@ -1,8 +1,10 @@
 import { loadCurrentGame } from '../game-data/current-game.mjs';
 
 await (async () => {
-  const territoryId = new URLSearchParams(window.location.search).get('territory');
-  const inspectionRender = new URLSearchParams(window.location.search).get('inspection') === '1';
+  const params = new URLSearchParams(window.location.search);
+  const territoryId = params.get('territory');
+  const inspectionRender = params.get('inspection') === '1';
+  const versionOverride = String(params.get('version') || '').trim();
   const target = document.getElementById('renderTarget');
 
   function loadScript(src) {
@@ -100,7 +102,7 @@ await (async () => {
     };
     window.GAUNTLET_TTS_CATALOG = {
       schemaVersion: 1,
-      gameVersion: currentGame.displayVersion,
+      gameVersion: versionOverride || currentGame.displayVersion,
       sourceHierarchy: [currentGame.authorityUrl],
       territories: [preview],
     };

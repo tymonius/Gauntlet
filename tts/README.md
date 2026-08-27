@@ -22,6 +22,20 @@ Generated metadata records both the TTS package version and source/canonical-dat
 
 The runtime does not hard-code starter, card, Leader, or Territory counts.
 
+## Single card-face render authority
+
+All TTS card faces are captured from the production **Card Design** surfaces. TTS owns packaging, not a second visual system:
+
+- playable cards: `card-design/card-review-render.html`;
+- Territories: `card-design/territory-review-render.html`;
+- Leaders, trackers, references, Rites, Proposals/Treaties, Capital Ledger, and Deeds: `card-design/component-print-render.html`.
+
+This means parchment, faction symbols, border colors, artwork framing, reference-card divider policy, the Universal Reference G watermark, typography, and component geometry come from the same CSS/markup that powers `/card-design`. The older standalone TTS render pages are not valid card-face authorities.
+
+The deliberate exception is the printed version footer during a pre-cutover TTS build. Card Design may still identify the source catalog as `v0.6.4 candidate`, while `config/tts-release-target.json` stamps exported TTS faces as `v0.7.0`. No other visual or rules content is overridden during TTS capture.
+
+Landscape presentation is also centralized: Territories and landscape supplementals use the same +90° quarter-turn when their approved 3.5 × 2.5 face is packed into TTS's standard portrait Custom Card cell. Native `SidewaysCard` then supplies the landscape physical orientation in play.
+
 ## Commands
 
 ```bash

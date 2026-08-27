@@ -20,26 +20,18 @@ describe('finalized TTS supplemental exports', () => {
     expect(deeds[0].backPolicy).toBe('standardBack');
   });
 
-  it('reuses the complete production rendering lifecycle instead of defining a second visual system', () => {
-    const shell = readFileSync('tts/finalized-supplemental-renderer/index.html', 'utf8');
-    const renderer = readFileSync('tts/finalized-supplemental-renderer/renderer.js', 'utf8');
+  it('captures finalized components only from the Card Design production authority', () => {
+    const generator = readFileSync('scripts/generate-tts-finalized-supplementals.mjs', 'utf8');
+    const componentRenderer = readFileSync('card-design/component-print-render.js', 'utf8');
 
-    expect(renderer).toContain("from '/card-design/proposal-card.js'");
-    expect(renderer).toContain("from '/card-design/capital-ledger.js'");
-    expect(renderer).toContain("from '/card-design/deed-card.js'");
-    expect(renderer).toContain('proposalFace(');
-    expect(renderer).toContain('capitalLedgerMarkup(');
-    expect(renderer).toContain('deedCardMarkup(');
-
-    expect(shell).toContain('/card-design/card-design-refinement.css');
-    expect(shell).toContain('/card-design/supplemental-refinements.css');
-    expect(shell).toContain('/tts/artwork-direction-overrides.js');
-    expect(shell).toContain('/tts/artwork-crop.js');
-    expect(shell).toContain('/card-design/card-design.js');
-    expect(renderer).toContain('prepareProductionCard(');
-    expect(renderer).toContain('GauntletArtworkCrop.apply(');
-    expect(renderer).toContain('title is clipped');
-    expect(renderer).toContain('rules are clipped');
+    expect(generator).toContain('/card-design/component-print-render.html');
+    expect(generator).toContain("return { kind: 'proposal', id: item.proposalId }");
+    expect(generator).toContain("return { kind: 'supplemental', id: component.id }");
+    expect(generator).toContain("url.searchParams.set('version', displayVersion)");
+    expect(generator).not.toContain('/tts/finalized-supplemental-renderer/');
+    expect(componentRenderer).toContain('const supportedKinds = new Set');
+    expect(componentRenderer).toContain('"leader", "proposal", "reference", "rite", "ritual", "tracker", "supplemental"');
+    expect(componentRenderer).toContain('versionOverride');
   });
 
   it('normalizes landscape Deed artwork into a standard portrait TTS image cell', () => {
@@ -47,7 +39,8 @@ describe('finalized TTS supplemental exports', () => {
     expect(generator).toContain("wrapper.id = 'tts-portrait-card-cell'");
     expect(generator).toContain("width: '240px'");
     expect(generator).toContain("height: '336px'");
-    expect(generator).toContain('rotate(-90deg)');
+    expect(generator).toContain('LANDSCAPE_TTS_CELL_ROTATION_DEGREES');
+    expect(generator).not.toContain('rotate(-90deg)');
     expect(generator).toContain("cellOrientation: 'portrait'");
     expect(generator).toContain("sidewaysCard: item.orientation === 'landscape'");
   });
@@ -59,7 +52,17 @@ describe('finalized TTS supplemental exports', () => {
     expect(assembler).toContain('Transform: transform(0, 1, 0, tabletopRotation)');
     expect(assembler).toContain('SidewaysCard: sideways');
     expect(assembler).toContain("tags: Object.freeze([DEED_STACK_TAG, FACTION_ZONE_TAG])");
+    expect(assembler).toContain("object.Transform.rotY = stackKind === 'deeds' ? 90 : 180");
+    expect(assembler).not.toContain("stackKind === 'deeds' ? 270");
     expect(assembler).not.toContain('finalizeSupplementalObjectPresentation');
+  });
+
+  it('keeps the Capital Ledger popout above ordinary tabletop cards', () => {
+    const assembler = readFileSync('scripts/assemble-tts-supplemental-save.mjs', 'utf8');
+    expect(assembler).toContain('id="ledger-window"');
+    expect(assembler).toContain('position="0 0 -500"');
+    expect(assembler).toContain('rotation="0 0 180"');
+    expect(assembler).not.toContain('position="0 0 -50"');
   });
 
   it('wires finalized exports into generation followed by authoritative save validation', () => {

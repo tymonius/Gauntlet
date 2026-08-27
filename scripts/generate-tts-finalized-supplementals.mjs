@@ -12,6 +12,7 @@ import {
   loadTtsComponentContract,
   resolveFactionBackFile,
 } from './tts-component-contract.mjs';
+import { LANDSCAPE_TTS_CELL_ROTATION_DEGREES } from './tts-supplemental-geometry.mjs';
 
 const PORTRAIT_CSS = Object.freeze({ width: 240, height: 336 });
 const LANDSCAPE_CSS = Object.freeze({ width: 336, height: 240 });
@@ -132,17 +133,38 @@ function maxExistingDeckId(manifest) {
   return Math.max(199, ...(manifest.ready || []).map(record => Number(record.tts?.deckId) || 0));
 }
 
-async function captureComponent(page, baseUrl, item, side, outputPath) {
-  await page.goto(`${baseUrl}/tts/finalized-supplemental-renderer/?component=${encodeURIComponent(item.component.id)}&side=${encodeURIComponent(side)}`, { waitUntil: 'load' });
-  await page.waitForSelector('.gauntlet-card');
+function productionComponentRequest(item) {
+  const component = item.component;
+  if (component.family === 'proposal-treaty-card') {
+    return { kind: 'proposal', id: item.proposalId };
+  }
+  if (component.family === 'ledger' || component.family === 'deed-card') {
+    return { kind: 'supplemental', id: component.id };
+  }
+  throw new Error(`No card-design production component request for ${component.id} (${component.family}).`);
+}
+
+async function captureComponent(page, baseUrl, item, side, outputPath, displayVersion) {
+  const request = productionComponentRequest(item);
+  const url = new URL('/card-design/component-print-render.html', baseUrl);
+  url.searchParams.set('kind', request.kind);
+  url.searchParams.set('id', request.id);
+  url.searchParams.set('side', side);
+  url.searchParams.set('orientation', item.orientation);
+  if (displayVersion) url.searchParams.set('version', displayVersion);
+
+  await page.goto(url.toString(), { waitUntil: 'load' });
+  await page.waitForSelector('#renderTarget > .gauntlet-card');
   await page.waitForFunction(() => document.body.dataset.renderReady === 'true' || document.body.dataset.renderError === 'true');
   const state = await page.evaluate(() => ({
     error: document.body.dataset.renderError === 'true',
     message: document.body.dataset.renderErrorMessage || '',
   }));
-  if (state.error) throw new Error(`Finalized supplemental renderer failed for ${item.component.id} (${side}): ${state.message || 'unspecified renderer error'}`);
+  if (state.error) {
+    throw new Error(`Card-design production renderer failed for ${item.component.id} (${side}): ${state.message || 'unspecified renderer error'}`);
+  }
 
-  const card = page.locator('.gauntlet-card');
+  const card = page.locator('#renderTarget > .gauntlet-card');
   const expected = item.orientation === 'landscape' ? LANDSCAPE_CSS : PORTRAIT_CSS;
   const metrics = await card.evaluate(element => {
     const rect = element.getBoundingClientRect();
@@ -156,20 +178,18 @@ async function captureComponent(page, baseUrl, item, side, outputPath) {
     };
   });
   if (Math.abs(metrics.width - expected.width) > 0.25 || Math.abs(metrics.height - expected.height) > 0.25) {
-    throw new Error(`Unexpected ${item.orientation} geometry for ${item.component.id}: ${metrics.width} × ${metrics.height}.`);
+    throw new Error(`Unexpected card-design ${item.orientation} geometry for ${item.component.id}: ${metrics.width} × ${metrics.height}.`);
   }
   if (metrics.scrollWidth > metrics.clientWidth + 1 || metrics.scrollHeight > metrics.clientHeight + 1) {
-    throw new Error(`Finalized supplemental content overflows ${item.component.id} (${side}).`);
+    throw new Error(`Card-design production content overflows ${item.component.id} (${side}).`);
   }
 
   if (item.orientation === 'landscape') {
-    // TTS derives a Custom Card's physical aspect ratio from its image cell.
-    // Landscape Gauntlet cards therefore use the same 400x560 portrait cell as
-    // ordinary cards and Territories; the 560x400 artwork is quarter-turned
-    // *inside* that cell, then SidewaysCard rotates the physical card in play.
-    // Exporting a raw 560x400 cell and also setting SidewaysCard double-applies
-    // landscape geometry and creates an oversized physical card.
-    await card.evaluate(element => {
+    // Rendering authority stops at the approved 3.5 x 2.5 card face. TTS
+    // packaging alone quarter-turns that exact raster into the standard
+    // portrait Custom Card cell. The sign is shared with Territories so no
+    // component can quietly acquire an opposite inspection orientation.
+    await card.evaluate((element, rotationDegrees) => {
       const wrapper = document.createElement('div');
       wrapper.id = 'tts-portrait-card-cell';
       Object.assign(wrapper.style, {
@@ -188,7 +208,7 @@ async function captureComponent(page, baseUrl, item, side, outputPath) {
         left: '50%',
         top: '50%',
         margin: '0',
-        transform: 'translate(-50%, -50%) rotate(-90deg)',
+        transform: `translate(-50%, -50%) rotate(${rotationDegrees}deg)`,
         transformOrigin: 'center center',
       });
       document.documentElement.style.width = '240px';
@@ -198,7 +218,7 @@ async function captureComponent(page, baseUrl, item, side, outputPath) {
       document.body.style.height = '336px';
       document.body.style.margin = '0';
       document.body.style.background = 'transparent';
-    });
+    }, LANDSCAPE_TTS_CELL_ROTATION_DEGREES);
     await page.locator('#tts-portrait-card-cell').screenshot({ path: outputPath, omitBackground: true });
     return;
   }
@@ -286,12 +306,12 @@ export async function renderFinalizedSupplementals(plan) {
     for (const item of components) {
       const component = item.component;
       const frontFile = `supplementals/fronts/${component.id}.png`;
-      await captureComponent(page, baseUrl, item, 'front', join(release.outputRoot, frontFile));
+      await captureComponent(page, baseUrl, item, 'front', join(release.outputRoot, frontFile), release.displayVersion || release.version);
 
       let reverseFile;
       if (item.backPolicy === 'twoSided') {
         reverseFile = `supplementals/reverses/${component.id}.png`;
-        await captureComponent(page, baseUrl, item, 'reverse', join(release.outputRoot, reverseFile));
+        await captureComponent(page, baseUrl, item, 'reverse', join(release.outputRoot, reverseFile), release.displayVersion || release.version);
       } else {
         reverseFile = resolveFactionBackFile(contract, component.faction);
         await access(join(release.outputRoot, reverseFile));
@@ -308,14 +328,14 @@ export async function renderFinalizedSupplementals(plan) {
     manifest.finalizedExportBridge = {
       componentCount: additions.length,
       families: [...new Set(additions.map(record => record.family))],
-      note: 'Final physical designs still marked export-pending in the component contract are rendered through their production surfaces and promoted to ready in the generated TTS manifest. Landscape cards are normalized into standard portrait TTS image cells before SidewaysCard presentation.',
+      note: 'Final physical designs still marked export-pending in the component contract are captured from the card-design production authority and promoted to ready in the generated TTS manifest. Landscape cards are normalized into standard portrait TTS image cells using the same +90 degree packaging orientation as Territories before SidewaysCard presentation.',
     };
 
     catalog.ready = replaceRecords(catalog.ready, additions);
     catalog.pending = removePending(catalog.pending, additions);
     catalog.readyCount = catalog.ready.length;
     catalog.pendingCount = catalog.pending.length;
-    catalog.sourcePolicy = `${catalog.sourcePolicy}; final export-pending Proposal/Ledger/Deed designs are promoted by the finalized supplemental export bridge`;
+    catalog.sourcePolicy = `${catalog.sourcePolicy}; final export-pending Proposal/Ledger/Deed designs are captured from card-design and promoted by the finalized supplemental export bridge`;
 
     const manifestText = jsonText(manifest);
     const catalogText = jsonText(catalog);

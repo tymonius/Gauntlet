@@ -281,6 +281,7 @@
 
 .tracker-heading h3 {
   grid-column: 2;
+  min-width: 0;
   margin: 0.012in 0 0;
   overflow: hidden;
   color: var(--card-ink);
