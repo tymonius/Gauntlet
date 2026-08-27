@@ -8,6 +8,12 @@ const nodeAuthority = read('scripts/current-game-authority.mjs');
 const ttsCatalog = read('scripts/tts-current-catalog.mjs');
 const releaseBuilder = read('scripts/build-v070-release-source.mjs');
 const rulebook = read('rulebook/player-facing/current-rulebook.md');
+const artworkWorker = read('workers/artwork-authoring/src/index.js');
+const artworkSession = read('workers/artwork-authoring/src/index-session.js');
+const artworkClient = read('card-design/artwork-authoring-client.js');
+const artworkServer = read('scripts/card-design-server.mjs');
+const artworkCompositor = read('card-design/artwork-compositor.js');
+const livePublicationWorkflow = read('.github/workflows/verify-current-live-publication.yml');
 
 const TRANSITIONAL_RUNTIME_MARKERS = [
   'docs/v0.6.4-card-additions.json',
@@ -163,6 +169,31 @@ describe('complete v0.7.0 current-game authority', () => {
     expect(releaseBuilder).not.toContain('baseGameplay');
     expect(releaseBuilder).not.toContain('cardChanges');
     expect(releaseBuilder).not.toContain('card_text_overrides');
+  });
+
+  it('writes artwork composition edits back into the complete current authority', () => {
+    expect(artworkWorker).toContain("authorityPath: String(env.GITHUB_AUTHORITY_PATH || 'game-data/current-game.json')");
+    expect(artworkWorker).toContain("const before = authority.artDirection");
+    expect(artworkWorker).toContain("const nextAuthority = { ...authority, artDirection: after }");
+    expect(artworkWorker).not.toContain('tts/artwork-direction-overrides.js');
+    expect(artworkWorker).not.toContain('GITHUB_OVERRIDE_PATH');
+
+    expect(artworkSession).toContain("authorityPath: String(env.GITHUB_AUTHORITY_PATH || 'game-data/current-game.json')");
+    expect(artworkSession).toContain('file: context.cfg.authorityPath');
+    expect(artworkSession).not.toContain('GITHUB_OVERRIDE_PATH');
+
+    expect(artworkClient).toContain('contents/game-data/current-game.json?ref=');
+    expect(artworkClient).toContain('const directions = authority?.artDirection');
+    expect(artworkClient).not.toContain('contents/tts/artwork-direction-overrides.js');
+
+    expect(artworkServer).toContain("const AUTHORITY_FILE = join(ROOT, 'game-data', 'current-game.json')");
+    expect(artworkServer).toContain('const next = { ...authority, artDirection: map }');
+    expect(artworkServer).not.toContain("join(ROOT, 'tts', 'artwork-direction-overrides.js')");
+
+    expect(artworkCompositor).toContain('game-data/current-game.json · artDirection');
+    expect(artworkCompositor).not.toContain('tts/artwork-direction-overrides.js');
+    expect(livePublicationWorkflow).toContain("'game-data/current-game.json'");
+    expect(livePublicationWorkflow).not.toContain("'tts/artwork-direction-overrides.js'");
   });
 
   it('keeps the maintained Rulebook itself native v0.7.0', () => {
