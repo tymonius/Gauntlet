@@ -1,6 +1,6 @@
 const TTS_PUBLIC_PREFIX = '/tts/v0.7.0/';
 const TTS_PUBLIC_ASSET_PREFIX = '/tts/v0.7.0/assets/917/';
-const TTS_PUBLIC_ORIGIN = 'https://gauntlet.run';
+const TTS_PUBLIC_ORIGIN = 'https://gauntlet-public-media.tymon-scott.workers.dev';
 const TTS_APPROVED_RELEASE_PREFIX =
   'https://github.com/tymonius/Gauntlet/releases/download/tts-v0.7.0-qa-pr-917-68247f095969/';
 const TTS_APPROVED_PREVIEW_SAVE = 'Gauntlet_v0.7.0_TTS_PR917_Preview.json';
