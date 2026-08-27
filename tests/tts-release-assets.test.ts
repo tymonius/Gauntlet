@@ -8,7 +8,7 @@ const readme = readFileSync('tts/README.md', 'utf8');
 
 describe('TTS GitHub Release asset hosting', () => {
   it('uses the two TTS-owned PNG environment sources without re-encoding them', () => {
-    expect(environmentGenerator).toContain("join(ENVIRONMENT_SOURCE_ROOT, 'campaign-map-table.png')");
+    expect(environmentGenerator).toContain("join(ENVIRONMENT_SOURCE_ROOT, 'command-map-table.png')");
     expect(environmentGenerator).toContain("join(ENVIRONMENT_SOURCE_ROOT, 'command-tent-panorama.png')");
     expect(environmentGenerator).toContain('copyFile(source, destination)');
     expect(environmentGenerator).not.toContain('sharp');
