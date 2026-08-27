@@ -54,7 +54,7 @@ The canonical website-profile PNG for `all-factions-promotional-showcase` is pub
 https://gauntlet.run/images/media/all-factions-promotional-showcase.png
 ```
 
-`.github/workflows/deploy-public-media.yml` rebuilds the website profile with strict artwork validation, stages that generated PNG into the Cloudflare Worker asset bundle, and deploys only the `/images/media/*` route. The normal website remains on its existing publication path. `workers/public-media/` contains the route and cache behavior; its generated `public/` payload exists only in CI and is not checked into Git.
+`.github/workflows/deploy-pages.yml` publishes the site through a GitHub Actions Pages artifact. It stages the tracked public site, rebuilds the website media profile with strict artwork validation, adds the generated seven-card PNG at `/images/media/`, and stages the approved v0.7.0 TTS release assets under their clean `/tts/v0.7.0/` paths. Generated raster derivatives exist only in CI and are not checked into Git. The Pages artifact is size-gated below the 1 GB published-site limit.
 
 This stable URL is suitable for the HTML announcement email and other external promotional surfaces that require a conventional static image URL rather than the live browser compositor.
 
