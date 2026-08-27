@@ -1,7 +1,8 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const contract = JSON.parse(readFileSync("config/tts-component-contract.json", "utf8"));
+const currentGame = JSON.parse(readFileSync("game-data/current-game.json", "utf8"));
+const contract = currentGame.componentContract;
 const productionPrint = readFileSync("deckbuilder/print-duplex-sheet-pairing.js", "utf8");
 const compatibilityPrint = readFileSync("deckbuilder/print-capital-ledger.js", "utf8");
 const legacyPrint = readFileSync("deckbuilder/print.js", "utf8");
