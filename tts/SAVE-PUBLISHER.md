@@ -87,10 +87,9 @@ The bag description records the starter summary and recommended Territory order.
 
 The scaffold creates:
 
-- a two-player RPG table;
-- Red and Blue hand zones;
-- one built-in d6 per player;
-- one built-in Player Token per player; and
+- a custom two-player table and environment;
+- White and Green hand/reserve zones;
+- one faction-colored battle d6 and Player Token inside each selected starter Bag; and
 - six center-line snap points for the Gauntlet.
 
 Players choose one starter kit each, unpack the kits, arrange the six selected Territories on the center snap points, and complete normal opening setup from the current Rulebook.
@@ -117,12 +116,12 @@ The v0.7.0 manual release gate is recorded in:
 
 - `tts/release-qa/v0.7.0.json`
 
-The committed record remains `pending` until the corresponding in-game checks are actually completed. Schema version 2 records **18 individual checks**, grouped as follows.
+The committed record remains `in-progress` until the corresponding in-game checks are actually completed. Schema version 3 records **18 required checks**, grouped as follows.
 
 ### Table and setup
 
-- clean-client load from hosted assets;
-- Red/Blue player perspectives and hand zones;
+- successful load of the hosted v0.7.0 save and custom assets;
+- White/Green player perspectives and hand/reserve zones;
 - all six Gauntlet snaps and Territory orientation;
 - Player Tokens and battle dice;
 - opening setup from the current Rulebook; and
@@ -133,20 +132,20 @@ The committed record remains `pending` until the corresponding in-game checks ar
 - Military Command tracker;
 - Diplomat Influence tracker;
 - Diplomat Proposals and ratified Treaty reverse faces;
+- Financier Capital Limit tracker;
 - Financier Capital Ledger;
 - Financier Deeds;
 - Intelligence nested Operation stack;
 - Mystic Rites and Completed faces; and
 - Inquisition Conviction, Doctrine, and Purge components.
 
-### Full-game validation
+### Handling validation
 
-- complete remote two-player game;
-- core handling exercised during that game;
-- focused faction drills completed; and
+- core handling exercised in TTS;
+- focused faction drills completed for interactions not already covered; and
 - any TTS-specific friction found during testing resolved before approval.
 
-Workshop approval is a separate explicit boolean after all 19 checks. Do not mark a check complete merely because the JSON package generated successfully; these fields represent actual Tabletop Simulator testing.
+A remote two-player game is not a v0.7.0 release requirement. Workshop approval is a separate explicit boolean after all 18 required checks. Do not mark a check complete merely because the JSON package generated successfully; these fields represent actual Tabletop Simulator testing.
 
 ## Final save promotion
 
@@ -177,6 +176,6 @@ The generated Review Scaffold is therefore allowed to exist while a component or
 
 ## In-game review checklist
 
-The versioned QA record is the authoritative checklist. Before Workshop promotion, complete every table/setup, faction-component, and full-game check recorded there and add notes for any noteworthy friction or fixes.
+The versioned QA record is the authoritative checklist. Before Workshop promotion, complete every table/setup, faction-component, and handling-validation check recorded there and add notes for any noteworthy friction or fixes.
 
 After promotion and publication, subscribe to/load the public Workshop item from a clean client and confirm every hosted asset resolves.

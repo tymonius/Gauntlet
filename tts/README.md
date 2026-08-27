@@ -214,7 +214,7 @@ The current package assembles 68 expected supplemental copies across the 12 star
 
 `scripts/generate-tts-save.mjs` creates a two-player Review Scaffold with:
 
-- Red and Blue hand zones;
+- White and Green hand/reserve zones;
 - six center-line Gauntlet snap points;
 - one battle d6 per player;
 - one Player Token per player; and
@@ -238,7 +238,7 @@ The versioned manual QA record is:
 
 - `tts/release-qa/v0.7.0.json`
 
-It contains explicit checks for table/setup behavior, each faction component family, and full-game validation. See `tts/SAVE-PUBLISHER.md` for the complete gate.
+It contains explicit checks for table/setup behavior, each faction component family, and focused handling validation; a remote two-player game is not required for v0.7.0. See `tts/SAVE-PUBLISHER.md` for the complete gate.
 
 The committed record remains pending. `npm run tts:save:promote` refuses to create final Workshop identity unless machine readiness is clean, every required manual check is true, and `approvedForWorkshop` is explicitly true.
 

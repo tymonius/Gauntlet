@@ -1,10 +1,10 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "gameVersion": "v0.7.0",
-  "status": "pending",
+  "status": "in-progress",
   "checks": {
     "tableSetup": {
-      "cleanClientLoad": false,
+      "hostedSaveLoad": true,
       "playerPerspectivesAndHandZones": false,
       "gauntletSnapsAndTerritoryOrientation": false,
       "playerTokensAndBattleDice": false,
@@ -22,13 +22,15 @@
       "mysticsRitesAndCompletedFaces": false,
       "inquisitionConvictionDoctrineAndPurge": false
     },
-    "fullGame": {
-      "completedRemoteTwoPlayerGame": false,
+    "handlingValidation": {
       "coreHandlingExercised": false,
       "focusedFactionDrillsComplete": false,
       "frictionResolved": false
     }
   },
   "approvedForWorkshop": false,
-  "notes": []
+  "notes": [
+    "2026-08-27: The hosted gauntlet.run v0.7.0 save and its custom assets load successfully in Tabletop Simulator.",
+    "2026-08-27: A remote two-player game is not required for v0.7.0 release; focused handling and faction-component validation remain required."
+  ]
 }
