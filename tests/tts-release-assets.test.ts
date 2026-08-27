@@ -59,7 +59,10 @@ describe('TTS GitHub Release asset hosting', () => {
     expect(workflow).toContain('run: npm run tts:release:stage');
     expect(workflow).toContain("gh release view \"$tag\" --repo \"$repo\"");
     expect(workflow).toContain("gh release upload \"$tag\" --repo \"$repo\" --clobber");
-    expect(workflow).not.toContain('gh release create');
+    const productionPublish = workflow.slice(workflow.indexOf('  publish:'));
+    expect(productionPublish).not.toContain('gh release create');
+    expect(workflow).toContain('name: Publish TTS PR preview assets');
+    expect(workflow).toContain('gh release create "$PREVIEW_TAG"');
   });
 
   it('verifies hosted URLs after upload without moving the release tag', () => {
