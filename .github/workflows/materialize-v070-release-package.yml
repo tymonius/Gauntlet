@@ -143,8 +143,18 @@ jobs:
           console.log(`Validated v0.7.0 package with ${pdf.getPageCount()} booklet sides.`);
           NODE
 
+      - name: Upload v0.7.0 release package preview
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: gauntlet-v0.7.0-release-package-preview
+          path: |
+            releases/v0.7.0/**
+            v0.7.0/index.html
+          if-no-files-found: error
+
       - name: Commit materialized release package
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/release/v0.7.0-cutover'
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
