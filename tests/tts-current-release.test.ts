@@ -39,20 +39,23 @@ const releaseAgnosticRuntimeText = [
 ].join('\n');
 
 describe('durable current-game TTS pipeline', () => {
-  it('uses current-game as the active development selector and keeps publication separate', () => {
+  it('uses the complete current-game authority as the active development selector and keeps publication separate', () => {
     expect(currentGame.authority).toBe('current-game');
-    expect(currentGame.version).toBeTruthy();
-    expect(currentGame.sources.baseGameplay).toBeTruthy();
-    expect(currentGame.sources.cardChanges).toBeTruthy();
-    expect(currentGame.sources.territories).toBeTruthy();
-    expect(currentGame.sources.starterDecks).toBe('/deckbuilder/starter-decks.json');
+    expect(currentGame.schemaVersion).toBe(2);
+    expect(currentGame.version).toBe('v0.7.0');
+    expect(currentGame.gameplay.cards).toHaveLength(142);
+    expect(currentGame.gameplay.territories).toHaveLength(25);
+    expect(currentGame.starterDecks.decks).toHaveLength(12);
+    expect(currentGame).not.toHaveProperty('sources');
+    expect(currentGame).not.toHaveProperty('resolution');
+    expect(currentGame.provenance.note).toContain('not runtime inputs');
 
     expect(catalogSource).toContain("const CURRENT_GAME_SOURCE = 'game-data/current-game.json'");
-    expect(catalogSource).toContain('loadCurrentGameManifest');
-    expect(catalogSource).toContain("readCurrentJsonSource('baseGameplay')");
-    expect(catalogSource).toContain("readCurrentJsonSource('cardChanges')");
-    expect(catalogSource).toContain("readCurrentJsonSource('territories')");
-    expect(catalogSource).toContain('resolveCards(gameplay.cards, cardChangeSource.data, manifest)');
+    expect(catalogSource).toContain('loadCurrentGameAuthority');
+    expect(catalogSource).toContain('const gameplay = authority.gameplay');
+    expect(catalogSource).toContain('const starterDecks = authority.starterDecks');
+    expect(catalogSource).not.toContain('readCurrentJsonSource');
+    expect(catalogSource).not.toContain('resolveCards(');
     expect(catalogSource).toContain('export async function resolvePublishedTtsRelease()');
     expect(catalogSource).toContain('publishedVersion: published.version');
   });
@@ -74,9 +77,10 @@ describe('durable current-game TTS pipeline', () => {
     expect(catalogSource).toContain('Release metadata disagrees');
   });
 
-  it('resolves Leaders and starter decks from the current-game authority', () => {
-    expect(catalogSource).toContain('manifest.leaders');
-    expect(catalogSource).toContain('manifest.sources?.starterDecks');
+  it('resolves Leaders and starter decks directly from the current-game authority', () => {
+    expect(catalogSource).toContain('authority.leaders');
+    expect(catalogSource).toContain('authority.starterDecks');
+    expect(catalogSource).not.toContain('manifest.sources');
     expect(catalogSource).not.toContain('for (const leader of faction.leaders)');
     expect(leaderGenerator).toContain('release.displayVersion || release.version');
     expect(starterGenerator).toContain('loadCurrentStarterDecks');

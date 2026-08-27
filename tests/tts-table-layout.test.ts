@@ -1,0 +1,179 @@
+import { describe, expect, it } from 'vitest';
+import {
+  applyTableLayout,
+  buildTableSnapPoints,
+  buildTableTextObjects,
+  buildTableVectorLines,
+  handZoneTransform,
+} from '../tts/apply-table-layout.mjs';
+
+function zoneContainsPoint(zone: any, x: number, z: number) {
+  return Math.abs(x - zone.posX) <= zone.scaleX / 2
+    && Math.abs(z - zone.posZ) <= zone.scaleZ / 2;
+}
+
+describe('authoritative TTS table layout', () => {
+  it('keeps every player workspace visible, including the one-card Hand parking area', () => {
+    const text = buildTableTextObjects([]);
+    const labels = text.map(object => object.Text.Text);
+
+    for (const label of [
+      'Leader & References',
+      'Draw Pile',
+      'Discard Pile',
+      'Graveyard',
+      'Hand',
+      'Asset Bank',
+      'Faction Zone',
+    ]) {
+      expect(labels.filter(value => value === label)).toHaveLength(4);
+    }
+    expect(text).toHaveLength(28);
+
+    const redHandSnap = buildTableSnapPoints().find(point => point.Position.x === 0 && point.Position.z === -18.25);
+    const blueHandSnap = buildTableSnapPoints().find(point => point.Position.x === 0 && point.Position.z === 18.25);
+    expect(redHandSnap?.Rotation.y).toBe(180);
+    expect(blueHandSnap?.Rotation.y).toBe(0);
+  });
+
+  it('keeps six visible Gauntlet slots plus two invisible Manifest Destiny extensions and sixteen landscape Deed snaps', () => {
+    const snaps = buildTableSnapPoints();
+    const territory = snaps.filter(point => point.Tags?.includes('gauntlet-territory'));
+    const deeds = snaps.filter(point => point.Tags?.includes('gauntlet-deed'));
+
+    expect(territory.map(point => point.Position.z)).toEqual([
+      -10.5, -7.5, -4.5, -1.5, 1.5, 4.5, 7.5, 10.5,
+    ]);
+    expect(territory.every(point => point.Rotation.y === 90)).toBe(true);
+    expect(deeds).toHaveLength(16);
+    expect(deeds.every(point => Math.abs(point.Position.x) === 4.35)).toBe(true);
+    expect(deeds.every(point => point.Rotation.y === 90)).toBe(true);
+    expect(snaps).toHaveLength(78);
+    expect(snaps.filter(point => point.Tags?.includes('gauntlet-deed-stack'))).toHaveLength(0);
+  });
+
+  it('uses normal Faction Zone magnets without a second Deed-stack magnet system', () => {
+    const snaps = buildTableSnapPoints();
+    const faction = snaps.filter(point => point.Tags?.includes('gauntlet-faction-zone'));
+    const redFaction = faction.filter(point => point.Position.z < 0);
+    const blueFaction = faction.filter(point => point.Position.z > 0);
+
+    expect(redFaction).toHaveLength(12);
+    expect(blueFaction).toHaveLength(12);
+    expect(redFaction.every(point => point.Rotation.y === 180)).toBe(true);
+    expect(blueFaction.every(point => point.Rotation.y === 0)).toBe(true);
+  });
+
+  it('draws the visible Hand parking rectangles and only the six primary Territory guides', () => {
+    const lines = buildTableVectorLines();
+    expect(lines).toHaveLength(40);
+
+    const territoryLines = lines.filter(line => {
+      const xs = line.points3.map(point => point.x);
+      return Math.min(...xs) === -1.9 && Math.max(...xs) === 1.9;
+    });
+    expect(territoryLines).toHaveLength(12);
+    expect(territoryLines.filter(line => line.thickness === 0.105)).toHaveLength(6);
+    expect(territoryLines.filter(line => line.thickness === 0.048)).toHaveLength(6);
+
+    const redHandLines = lines.filter(line => {
+      const zs = line.points3.map(point => point.z);
+      const xs = line.points3.map(point => point.x);
+      return Math.min(...xs) === -1.425 && Math.max(...xs) === 1.425
+        && Math.min(...zs) === -20.25 && Math.max(...zs) === -16.25;
+    });
+    const blueHandLines = lines.filter(line => {
+      const zs = line.points3.map(point => point.z);
+      const xs = line.points3.map(point => point.x);
+      return Math.min(...xs) === -1.425 && Math.max(...xs) === 1.425
+        && Math.min(...zs) === 16.25 && Math.max(...zs) === 20.25;
+    });
+    expect(redHandLines).toHaveLength(2);
+    expect(blueHandLines).toHaveLength(2);
+  });
+
+  it('uses one private Hand zone per player that contains both parking and Reserve space', () => {
+    const red = handZoneTransform('Red');
+    const blue = handZoneTransform('Blue');
+
+    expect(red).toMatchObject({ posX: 0, posZ: -20.25, rotY: 0, scaleX: 7, scaleY: 2, scaleZ: 8 });
+    expect(blue).toMatchObject({ posX: 0, posZ: 20.25, rotY: 180, scaleX: 7, scaleY: 2, scaleZ: 8 });
+
+    // The visible parking snap sits inside the same private zone as the Reserve.
+    expect(zoneContainsPoint(red, 0, -18.25)).toBe(true);
+    expect(zoneContainsPoint(blue, 0, 18.25)).toBe(true);
+    // Draw/Discard and Graveyard remain ordinary public table workspaces.
+    expect(zoneContainsPoint(red, -1.55, -13.55)).toBe(false);
+    expect(zoneContainsPoint(red, 1.55, -13.55)).toBe(false);
+    expect(zoneContainsPoint(red, 17.15, -17.75)).toBe(false);
+    expect(zoneContainsPoint(blue, 1.55, 13.55)).toBe(false);
+    expect(zoneContainsPoint(blue, -1.55, 13.55)).toBe(false);
+    expect(zoneContainsPoint(blue, -17.15, 17.75)).toBe(false);
+  });
+
+  it('serializes only those two canonical Hand zones and aligns them with the seat cameras', () => {
+    const save: any = {
+      ObjectStates: [
+        { Name: 'HandTrigger', GUID: 'legacy-hand' },
+        { Name: 'FogOfWarTrigger', GMNotes: 'gauntlet:private-zone:red', GUID: 'legacy-fog' },
+        {
+          Name: 'Bag',
+          GUID: 'starter',
+          ContainedObjects: [
+            { Name: 'CardCustom', GUID: 'card', Hands: false },
+            { Name: 'DeckCustom', GUID: 'deck', Hands: false, ContainedObjects: [{ Name: 'CardCustom', GUID: 'inside', Hands: false }] },
+          ],
+        },
+      ],
+      Note: 'base note',
+      Rules: 'base rules',
+      LuaScript: '',
+      Turns: { TurnColor: 'Blue' },
+    };
+
+    const result = applyTableLayout(save);
+    expect(result.textObjectCount).toBe(28);
+    expect(result.vectorLineCount).toBe(40);
+    expect(result.snapPointCount).toBe(78);
+
+    const red = save.Hands.HandTransforms.find((hand: any) => hand.Color === 'Red');
+    const blue = save.Hands.HandTransforms.find((hand: any) => hand.Color === 'Blue');
+    expect(save.Hands.DisableUnused).toBe(false);
+    expect(red.Transform).toEqual(handZoneTransform('Red'));
+    expect(blue.Transform).toEqual(handZoneTransform('Blue'));
+
+    expect(save.ObjectStates.filter((object: any) => object.Name === 'HandTrigger')).toHaveLength(0);
+    expect(save.ObjectStates.filter((object: any) => object.Name === 'FogOfWarTrigger')).toHaveLength(0);
+    expect(save.Note).toContain('one canonical private TTS Hand zone');
+    expect(save.LuaScript).toContain('pitch = 55, yaw = 0, distance = 38');
+    expect(save.LuaScript).toContain('pitch = 55, yaw = 180, distance = 38');
+
+    const starter = save.ObjectStates.find((object: any) => object.GUID === 'starter');
+    const handEligible = [starter.ContainedObjects[0], starter.ContainedObjects[1], starter.ContainedObjects[1].ContainedObjects[0]];
+    expect(handEligible.every((object: any) => object.Hands === true)).toBe(true);
+  });
+
+  it('changes Territory flip behavior without altering its cardback data', () => {
+    const originalCustomDeck = {
+      '200': {
+        FaceURL: 'https://example.invalid/territory.png',
+        BackURL: 'https://example.invalid/standard-cardback.png',
+      },
+    };
+    const save: any = {
+      ObjectStates: [{
+        Name: 'Bag', GUID: 'starter', ContainedObjects: [{
+          Name: 'CardCustom', Description: 'Territory', GUID: 'territory', Transform: {}, CustomDeck: structuredClone(originalCustomDeck),
+        }],
+      }],
+      Note: '', Rules: '', Turns: {},
+    };
+
+    applyTableLayout(save);
+    const territory = save.ObjectStates.find((object: any) => object.GUID === 'starter').ContainedObjects[0];
+    expect(territory.CustomDeck).toEqual(originalCustomDeck);
+    expect(territory.SidewaysCard).toBe(true);
+    expect(territory.Transform.rotY).toBe(90);
+    expect(territory.LuaScript).toContain('self.use_rotation_value_flip = true');
+  });
+});

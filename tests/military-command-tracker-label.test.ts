@@ -2,7 +2,8 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const supplementalRenderer = readFileSync('card-design/supplemental-card.js', 'utf8');
-const componentContract = JSON.parse(readFileSync('config/tts-component-contract.json', 'utf8'));
+const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
+const componentContract = currentGame.componentContract;
 const militaryTracker = componentContract.components.find((component: { id?: string }) => component.id === 'military-command-tracker');
 
 describe('Military Command tracker label', () => {

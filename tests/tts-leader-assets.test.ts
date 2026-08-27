@@ -29,6 +29,16 @@ describe('TTS Leader assets', () => {
     expect(readme).toContain('does not maintain a second copy of Leader rules or layout');
   });
 
+  it('preserves the Card Review catalog artwork composition unless an authored override exists', () => {
+    expect(exporter).toContain("window.GAUNTLET_ART_DIRECTION?.[payload.key]");
+    expect(exporter).toContain("image.dataset.artCrop = 'catalog-css'");
+    expect(exporter).toContain("mode: 'catalog-css'");
+    expect(exporter).toContain('if (!authored || !Object.keys(authored).length)');
+    expect(exporter).toContain('GauntletArtworkCrop.apply');
+    expect(exporter).toContain('authored,');
+    expect(exporter).not.toContain('payload.direction || null');
+  });
+
   it('captures exact 400 by 560 Leader rasters without fractional-position inflation', () => {
     expect(exporter).toContain('const CARD_WIDTH = 400');
     expect(exporter).toContain('const CARD_HEIGHT = 560');

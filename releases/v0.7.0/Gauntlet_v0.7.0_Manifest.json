@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "release_version": "v0.7.0",
+  "name": "Illustrated Cards & Tabletop Simulator",
+  "status": "current",
+  "authority_set_id": "31156f29d3f4aef875c51d9f591ff9606db9a0540e74f090b512be662fdc907b",
+  "publication_date": null,
+  "current_package_path": "releases/v0.7.0/",
+  "source_provenance": {
+    "source_version": "v0.7.0",
+    "base_version": "v0.6.3",
+    "current_game_authority": "game-data/current-game.json"
+  },
+  "binding_sources": {
+    "rulebook": {
+      "path": "releases/v0.7.0/Gauntlet_v0.7.0_Rulebook.md",
+      "sha256": "f113a7f02e85b15358be8345afd90d6f1fd43136acefa9aaa322c9a7bf945dda"
+    },
+    "canonical_data": {
+      "path": "releases/v0.7.0/Gauntlet_v0.7.0_Canonical_Data.json",
+      "sha256": "3a0d5d9f3e9f6b997cb42714dd02892b31a64a051c0e4151f0bd1e470fd4d5b7"
+    },
+    "approved_starters": {
+      "path": "releases/v0.7.0/Gauntlet_v0.7.0_Starter_Decks.json",
+      "sha256": "f81623d4760930fdee9d0c3db3f20977257336468e06a64b6de32ce0a9f2a223"
+    },
+    "source_provenance": {
+      "path": "releases/v0.7.0/Gauntlet_v0.7.0_Source_Provenance.json",
+      "sha256": "d332ef0339f7aec9138db00e6d54af76fc923df2210869239e2403bcd94f2486"
+    },
+    "card_anatomy_figure": {
+      "path": "releases/v0.7.0/Gauntlet_v0.7.0_Card_Anatomy.png",
+      "sha256": "f42b98416854516b2d8128f81ace11b772c7b2d8fec814e012101edc12c25416"
+    }
+  },
+  "counts": {
+    "playable_cards": 142,
+    "territories": 25,
+    "factions": 6,
+    "leaders": 12,
+    "starter_decks": 12,
+    "print_pdfs": 1,
+    "json_exports": 3,
+    "static_figures": 1
+  },
+  "public_defaults": {
+    "website": "v0.7.0",
+    "browser_tools": "v0.7.0",
+    "rules_arbiter": "v0.7.0",
+    "digital_rules": "v0.7.0"
+  },
+  "public_routes": {
+    "start": "/start/",
+    "rulebook": "/rulebook/",
+    "card_reference": "/card-reference/",
+    "factions": "/factions/",
+    "deckbuilder": "/deckbuilder/",
+    "rules_arbiter": "/rules-arbiter/"
+  },
+  "json_exports": [
+    "Gauntlet_v0.7.0_Canonical_Data.json",
+    "Gauntlet_v0.7.0_Starter_Decks.json",
+    "Gauntlet_v0.7.0_Source_Provenance.json"
+  ],
+  "pdf_outputs": [
+    {
+      "key": "rulebook-booklet",
+      "path": "Gauntlet_v0.7.0_Rulebook_Booklet.pdf",
+      "pages": 50,
+      "sha256": "4f4b1c35fa1f5caff412ef487e396fbc95b75407388656431136df384e939f74",
+      "bytes": 29549148
+    }
+  ],
+  "payload_files": [
+    {
+      "path": "Gauntlet_v0.7.0_Rulebook.md",
+      "sha256": "f113a7f02e85b15358be8345afd90d6f1fd43136acefa9aaa322c9a7bf945dda",
+      "bytes": 114356
+    },
+    {
+      "path": "Gauntlet_v0.7.0_Rulebook_Booklet.pdf",
+      "sha256": "4f4b1c35fa1f5caff412ef487e396fbc95b75407388656431136df384e939f74",
+      "bytes": 29549148
+    },
+    {
+      "path": "Gauntlet_v0.7.0_Card_Anatomy.png",
+      "sha256": "f42b98416854516b2d8128f81ace11b772c7b2d8fec814e012101edc12c25416",
+      "bytes": 1495882
+    },
+    {
+      "path": "Gauntlet_v0.7.0_Canonical_Data.json",
+      "sha256": "3a0d5d9f3e9f6b997cb42714dd02892b31a64a051c0e4151f0bd1e470fd4d5b7",
+      "bytes": 254151
+    },
+    {
+      "path": "Gauntlet_v0.7.0_Starter_Decks.json",
+      "sha256": "f81623d4760930fdee9d0c3db3f20977257336468e06a64b6de32ce0a9f2a223",
+      "bytes": 31181
+    },
+    {
+      "path": "Gauntlet_v0.7.0_Source_Provenance.json",
+      "sha256": "d332ef0339f7aec9138db00e6d54af76fc923df2210869239e2403bcd94f2486",
+      "bytes": 1391
+    }
+  ],
+  "rulebook_booklet_provenance": {
+    "source_version": "v0.7.0",
+    "logical_pages": 100,
+    "imposed_sides": 50,
+    "physical_sheets": 25,
+    "padding_pages": 8,
+    "duplex_flip": "short-edge",
+    "approved_v063_production_adapter_reused": true,
+    "card_anatomy_figure": {
+      "path": "releases/v0.7.0/Gauntlet_v0.7.0_Card_Anatomy.png",
+      "sha256": "f42b98416854516b2d8128f81ace11b772c7b2d8fec814e012101edc12c25416",
+      "source_card": "military-unbroken-ranks",
+      "renderer": "rulebook/card-anatomy.js + card-design/card-print-render.html?fit=production&card=military-unbroken-ranks"
+    }
+  }
+}

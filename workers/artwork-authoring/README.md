@@ -8,10 +8,10 @@ This Cloudflare Worker makes the public `/card-design/` compositor capable of sa
 2. If no authoring session exists, it opens GitHub sign-in in a popup.
 3. GitHub returns to this Worker through the GitHub App OAuth callback.
 4. The Worker verifies the signed-in GitHub login is `tymonius` and returns an encrypted, short-lived authoring session to the browser. The GitHub user token itself is never exposed to page JavaScript.
-5. Each **Save position** updates `tts/artwork-direction-overrides.js` on `artwork/compositor-authoring` and creates or reuses one pull request against `main`.
+5. Each **Save position** updates `game-data/current-game.json` (`artDirection`) on `artwork/compositor-authoring` and creates or reuses one pull request against `main`.
 6. Additional saved cards and Territories keep accumulating in that same open PR.
 7. When the batch is ready, **Publish batch** in the compositor calls the Worker's authenticated publication endpoint. The Worker merges the active composition PR into `main`, then resets `artwork/compositor-authoring` to the merge commit so the next batch starts cleanly.
-8. `game-data/current-game.mjs` resolves the canonical file into `currentGame.artDirection`; current production card/Territory renderers consume the resolved map, so the published batch propagates to Card Design, Card Reference, Deckbuilder preview, and production printing through the shared render pipeline.
+8. `game-data/current-game.mjs` loads the canonical `artDirection` map directly from the complete authority into `currentGame.artDirection`; current production card/Territory renderers consume the resolved map, so the published batch propagates to Card Design, Card Reference, Deckbuilder preview, and production printing through the shared render pipeline.
 
 The browser session is kept in `sessionStorage`; closing the browser session requires GitHub sign-in again.
 
@@ -63,4 +63,4 @@ node --check ../../card-design/artwork-authoring-client.js
 
 ## Publication boundary
 
-**Save position** adds or updates a composition in the current authoring PR. **Publish batch** merges that PR into `main` from the compositor page. Only that publication action makes the batch canonical for Card Reference, Deckbuilder, printing, and the other shared renderers. The merge of `tts/artwork-direction-overrides.js` also triggers the current live-publication workflow, so the canonical web surfaces rebuild from the same source. For local fallback authoring, `node scripts/card-design-server.mjs` still writes the working-tree override file directly.
+**Save position** adds or updates a composition in the current authoring PR. **Publish batch** merges that PR into `main` from the compositor page. Only that publication action makes the batch canonical for Card Reference, Deckbuilder, printing, and the other shared renderers. The merge of `game-data/current-game.json` (`artDirection`) also triggers the current live-publication workflow, so the canonical web surfaces rebuild from the same source. For local fallback authoring, `node scripts/card-design-server.mjs` still writes the working-tree current-game authority directly.

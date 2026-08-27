@@ -1,0 +1,229 @@
+# Temporary pre-release QA host for the exact generated v0.7.0 TTS artifact.
+name: Publish v0.7.0 TTS QA assets
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/publish-v070-tts-qa-assets.yml'
+      - '.github/workflows/generate-tts-card-assets.yml'
+      - 'package.json'
+      - 'game-data/**'
+      - 'deckbuilder/starter-decks.json'
+      - 'docs/v0.6.4-*.json'
+      - 'config/tts-component-contract.json'
+      - 'config/tts-release-target.json'
+      - 'scripts/generate-tts-*.mjs'
+      - 'scripts/assemble-tts-supplemental-save.mjs'
+      - 'scripts/finalize-tts-save.mjs'
+      - 'scripts/stage-tts-release-assets.mjs'
+      - 'scripts/check-tts-release-readiness.mjs'
+      - 'scripts/tts-*.mjs'
+      - 'tts/**'
+      - 'card-design/**'
+      - 'images/artwork/**'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: publish-v070-tts-qa-assets-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  publish-qa-assets:
+    if: github.event_name == 'workflow_dispatch' || github.head_ref == 'release/v0.7.0-cutover'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      SOURCE_WORKFLOW: 'generate-tts-card-assets.yml'
+      SOURCE_ARTIFACT_NAME: 'gauntlet-current-tts-card-assets'
+      QA_BRANCH: 'tts-v0.7.0-qa-assets'
+      FINAL_URL_PREFIX: 'https://github.com/tymonius/Gauntlet/releases/download/v0.7.0/'
+      QA_URL_PREFIX: 'https://raw.githubusercontent.com/tymonius/Gauntlet/tts-v0.7.0-qa-assets/'
+    steps:
+      - name: Checkout release branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Wait for matching generated TTS artifact
+        id: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Waiting for ${SOURCE_WORKFLOW} at ${SOURCE_SHA}..."
+          run_id=""
+          artifact_id=""
+
+          for attempt in $(seq 1 90); do
+            runs_json="$(gh api "/repos/${GITHUB_REPOSITORY}/actions/workflows/${SOURCE_WORKFLOW}/runs?event=pull_request&branch=release/v0.7.0-cutover&per_page=100")"
+            run_id="$(jq -r --arg sha "$SOURCE_SHA" '[.workflow_runs[] | select(.head_sha == $sha)] | sort_by(.run_number) | last | .id // empty' <<<"$runs_json")"
+
+            if [[ -n "$run_id" ]]; then
+              run_json="$(gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}")"
+              status="$(jq -r '.status' <<<"$run_json")"
+              conclusion="$(jq -r '.conclusion // empty' <<<"$run_json")"
+              echo "Source run ${run_id}: ${status}${conclusion:+ / ${conclusion}}"
+
+              if [[ "$status" == "completed" ]]; then
+                if [[ "$conclusion" != "success" ]]; then
+                  echo "Matching TTS generation run ${run_id} did not succeed." >&2
+                  exit 1
+                fi
+                artifacts_json="$(gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/artifacts?per_page=100")"
+                artifact_id="$(jq -r --arg name "$SOURCE_ARTIFACT_NAME" '.artifacts[] | select(.name == $name and .expired == false) | .id' <<<"$artifacts_json" | head -n1)"
+                if [[ -z "$artifact_id" ]]; then
+                  echo "Successful source run ${run_id} has no non-expired ${SOURCE_ARTIFACT_NAME} artifact." >&2
+                  exit 1
+                fi
+                break
+              fi
+            fi
+
+            if [[ "$attempt" -eq 90 ]]; then
+              echo "Timed out waiting for a successful ${SOURCE_WORKFLOW} run at ${SOURCE_SHA}." >&2
+              exit 1
+            fi
+            sleep 15
+          done
+
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+          echo "artifact_id=$artifact_id" >> "$GITHUB_OUTPUT"
+          echo "Using TTS artifact ${artifact_id} from source run ${run_id}."
+
+      - name: Download matching generated TTS artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_ARTIFACT_ID: ${{ steps.source.outputs.artifact_id }}
+        run: |
+          set -euo pipefail
+          gh api "/repos/${GITHUB_REPOSITORY}/actions/artifacts/${SOURCE_ARTIFACT_ID}/zip" > /tmp/tts-assets.zip
+          mkdir -p /tmp/tts-assets
+          unzip -q /tmp/tts-assets.zip -d /tmp/tts-assets
+          test -f /tmp/tts-assets/current/Gauntlet_TTS_Review_Scaffold.json
+          test -f /tmp/tts-assets/current/tts-release-readiness.json
+          test -f /tmp/tts-assets/release-assets/Gauntlet_v0.7.0_TTS_Release_Assets.json
+
+      - name: Verify machine-ready source artifact
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const p = '/tmp/tts-assets/current/tts-release-readiness.json';
+          const r = JSON.parse(fs.readFileSync(p, 'utf8'));
+          if (r.gameVersion !== 'v0.7.0') throw new Error(`Unexpected TTS gameVersion: ${r.gameVersion}`);
+          if (r.machineReady !== true) throw new Error(`Source artifact is not machine-ready: ${JSON.stringify(r.blockers || [])}`);
+          console.log('Source artifact is machine-ready for v0.7.0.');
+          NODE
+
+      - name: Build QA-hosted scaffold
+        env:
+          SOURCE_RUN_ID: ${{ steps.source.outputs.run_id }}
+          SOURCE_ARTIFACT_ID: ${{ steps.source.outputs.artifact_id }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/qa-publish
+          cp -a /tmp/tts-assets/release-assets/. /tmp/qa-publish/
+          cp /tmp/tts-assets/current/Gauntlet_TTS_Review_Scaffold.json /tmp/qa-publish/Gauntlet_v0.7.0_TTS_QA_Scaffold.json
+          cp /tmp/tts-assets/current/tts-release-readiness.json /tmp/qa-publish/tts-release-readiness.json
+          python - <<'PY'
+          import json, os, pathlib
+          root = pathlib.Path('/tmp/qa-publish')
+          old = os.environ['FINAL_URL_PREFIX']
+          new = os.environ['QA_URL_PREFIX']
+          revision = os.environ['SOURCE_SHA'][:12]
+
+          def rewrite(value):
+              if isinstance(value, dict):
+                  return {key: rewrite(item) for key, item in value.items()}
+              if isinstance(value, list):
+                  return [rewrite(item) for item in value]
+              if not isinstance(value, str):
+                  return value
+              rewritten = value.replace(old, new)
+              if rewritten.startswith(new):
+                  separator = '&' if '?' in rewritten else '?'
+                  rewritten = f'{rewritten}{separator}qa={revision}'
+              return rewritten
+
+          for name in ['Gauntlet_v0.7.0_TTS_QA_Scaffold.json', 'Gauntlet_v0.7.0_TTS_Release_Assets.json']:
+              p = root / name
+              source = p.read_text(encoding='utf-8')
+              if old not in source:
+                  raise SystemExit(f'Expected final URL prefix not found in {name}')
+              data = rewrite(json.loads(source))
+              p.write_text(json.dumps(data, indent=2) + '\n', encoding='utf-8')
+
+          manifest = json.loads((root / 'Gauntlet_v0.7.0_TTS_Release_Assets.json').read_text())
+          manifest['releasePage'] = None
+          manifest['publication'] = {
+              'host': 'raw-github-qa-branch',
+              'branch': os.environ['QA_BRANCH'],
+              'sourceCommit': os.environ['SOURCE_SHA'],
+              'sourceWorkflowRun': int(os.environ['SOURCE_RUN_ID']),
+              'sourceArtifactId': int(os.environ['SOURCE_ARTIFACT_ID']),
+              'cacheRevision': revision,
+              'purpose': 'Temporary clean-client Tabletop Simulator QA only; not a published Gauntlet release.'
+          }
+          (root / 'Gauntlet_v0.7.0_TTS_Release_Assets.json').write_text(json.dumps(manifest, indent=2) + '\n')
+          PY
+          cat > /tmp/qa-publish/README.md <<EOF
+          # Gauntlet v0.7.0 TTS QA assets
+
+          Temporary pre-publication host for the exact machine-ready asset bundle generated for commit ${SOURCE_SHA} by Actions run ${{ steps.source.outputs.run_id }} / artifact ${{ steps.source.outputs.artifact_id }}.
+
+          - This branch is **not** a Gauntlet release.
+          - It exists only so Tabletop Simulator can perform clean-client manual QA before v0.7.0 publication.
+          - The QA scaffold rewrites the network host prefix and appends the source commit as a cache key so TTS cannot silently reuse an older rendered asset at the same deterministic filename.
+          - After QA approval, the final release pipeline will upload those deterministic filenames to the v0.7.0 GitHub Release.
+          EOF
+
+      - name: Publish isolated QA branch
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cd /tmp/qa-publish
+          git init
+          git checkout -b "$QA_BRANCH"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .
+          git commit -m "Publish v0.7.0 TTS QA assets for ${SOURCE_SHA}"
+          git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git push --force origin "HEAD:refs/heads/${QA_BRANCH}"
+
+      - name: Verify QA-hosted URLs
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const manifest = JSON.parse(fs.readFileSync('/tmp/qa-publish/Gauntlet_v0.7.0_TTS_Release_Assets.json', 'utf8'));
+          const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+          (async () => {
+            for (const asset of manifest.assets) {
+              let ok = false;
+              let status = 0;
+              for (let attempt = 1; attempt <= 6; attempt += 1) {
+                const response = await fetch(asset.url, { method: 'HEAD', redirect: 'follow' });
+                status = response.status;
+                if (response.ok) { ok = true; break; }
+                await sleep(1500 * attempt);
+              }
+              if (!ok) throw new Error(`QA asset unavailable (${status}): ${asset.url}`);
+            }
+            console.log(`Verified ${manifest.assets.length} QA-hosted TTS asset URLs.`);
+          })().catch(error => { console.error(error); process.exitCode = 1; });
+          NODE
+
+      - name: Upload QA scaffold for convenience
+        uses: actions/upload-artifact@v4
+        with:
+          name: gauntlet-v0.7.0-tts-qa-scaffold
+          path: /tmp/qa-publish/Gauntlet_v0.7.0_TTS_QA_Scaffold.json
+          if-no-files-found: error

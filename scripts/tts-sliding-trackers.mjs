@@ -3,7 +3,7 @@ const CSS_CARD_HEIGHT = 336;
 const PHYSICAL_CARD_WIDTH = 2.5;
 const PHYSICAL_CARD_HEIGHT = 3.5;
 
-function round(value, places = 5) {
+function round(value, places = 6) {
   const factor = 10 ** places;
   return Math.round(value * factor) / factor;
 }
@@ -42,7 +42,7 @@ export function buildReadyTrackerRecord(component, renderer = 'sliding-tracker')
       layer: component.tts.layer,
       snapTag: component.tts.snapTag,
       stackable: component.tts.stackable,
-      snapRegistration: 'renderer-derived',
+      snapRegistration: 'renderer-line-fraction',
     },
   };
 }
@@ -73,9 +73,15 @@ export async function captureProductionTracker(page, baseUrl, record, outputPath
       if (!line || !label) return null;
       const lineRect = line.getBoundingClientRect();
       const value = Number.parseInt(String(label.textContent || '').trim(), 10);
+      const rendererTravelPx = rect.bottom - lineRect.top;
       return {
         value,
-        travelFraction: (rect.bottom - lineRect.top) / rect.height,
+        rendererTravelPx,
+        // This is the authoritative registration geometry: how far the cover
+        // card must move from the fully covered position for its bottom edge to
+        // land on this exact printed line. It is measured from the rendered
+        // card, not inferred from value/max and not converted through inches.
+        registrationFraction: rendererTravelPx / rect.height,
       };
     }).filter(Boolean);
     return {
@@ -88,7 +94,9 @@ export async function captureProductionTracker(page, baseUrl, record, outputPath
   if (Math.abs(geometry.width - CSS_CARD_WIDTH) > 0.25 || Math.abs(geometry.height - CSS_CARD_HEIGHT) > 0.25) {
     throw new Error(`Unexpected production tracker geometry for ${record.id}: ${geometry.width} × ${geometry.height}.`);
   }
-  if (!geometry.marks.length || geometry.marks.some((mark) => !Number.isInteger(mark.value) || !(mark.travelFraction > 0))) {
+  if (!geometry.marks.length || geometry.marks.some((mark) => !Number.isInteger(mark.value)
+    || !(mark.rendererTravelPx > 0)
+    || !(mark.registrationFraction > 0 && mark.registrationFraction < 1))) {
     throw new Error(`Production tracker ${record.id} did not expose valid registration lines.`);
   }
 
@@ -99,15 +107,16 @@ export async function captureProductionTracker(page, baseUrl, record, outputPath
   }
 
   const snapPoints = [
-    { value: 0, offset: 0 },
+    { value: 0, rendererTravelPx: 0, registrationFraction: 0 },
     ...geometry.marks.map((mark) => ({
       value: mark.value,
-      offset: round(mark.travelFraction * PHYSICAL_CARD_HEIGHT),
+      rendererTravelPx: round(mark.rendererTravelPx),
+      registrationFraction: round(mark.registrationFraction, 8),
     })),
   ];
   for (let index = 1; index < snapPoints.length; index += 1) {
-    if (!(snapPoints[index].offset > snapPoints[index - 1].offset)) {
-      throw new Error(`Production tracker ${record.id} registration offsets are not strictly increasing.`);
+    if (!(snapPoints[index].registrationFraction > snapPoints[index - 1].registrationFraction)) {
+      throw new Error(`Production tracker ${record.id} registration lines are not strictly increasing from the covered position.`);
     }
   }
 
@@ -141,7 +150,7 @@ export async function captureProductionTracker(page, baseUrl, record, outputPath
       maximum: Math.max(...values),
       cardWidth: PHYSICAL_CARD_WIDTH,
       cardHeight: PHYSICAL_CARD_HEIGHT,
-      maximumTravel: snapPoints.at(-1).offset,
+      maximumRegistrationFraction: snapPoints.at(-1).registrationFraction,
     },
     snapPoints,
   };

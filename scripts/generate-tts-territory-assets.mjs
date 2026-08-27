@@ -13,10 +13,19 @@ import {
   resolveStandardBackFile,
 } from './tts-component-contract.mjs';
 
+// Territory artwork is authored and exported landscape at 560x400. TTS custom
+// cards derive their physical aspect from the card-sheet cell, so the hosted
+// card sheet uses the same 400x560 portrait cells as ordinary Gauntlet cards
+// and rotates the Territory artwork inside the cell. The CardCustom object is
+// then rotated 90 degrees on the tabletop during final save normalization.
 const TERRITORY_WIDTH = 560;
 const TERRITORY_HEIGHT = 400;
+const TTS_CARD_WIDTH = 400;
+const TTS_CARD_HEIGHT = 560;
 const CSS_TERRITORY_WIDTH = 336;
 const CSS_TERRITORY_HEIGHT = 240;
+const CSS_TTS_CARD_WIDTH = 240;
+const CSS_TTS_CARD_HEIGHT = 336;
 const SHEET_COLUMNS = 7;
 const SHEET_ROWS = 4;
 const HIDDEN_SLOT = SHEET_COLUMNS * SHEET_ROWS - 1;
@@ -83,18 +92,20 @@ async function startStaticServer() {
 function territorySheetHtml(baseUrl, version, territories, fallbackBackFile) {
   const slots = Array.from({ length: SHEET_COLUMNS * SHEET_ROWS }, (_, index) => {
     if (index === HIDDEN_SLOT) {
-      return `<img src="${baseUrl}/tts/generated/${version}/${fallbackBackFile}" alt="standard hidden-card image">`;
+      return `<div class="slot"><img class="standard-back" src="${baseUrl}/tts/generated/${version}/${fallbackBackFile}" alt="standard hidden-card image"></div>`;
     }
     const territory = territories[index];
     return territory
-      ? `<img src="${baseUrl}/tts/generated/${version}/territories/${territory.id}.png" alt="${territory.id}">`
-      : '<div class="empty"></div>';
+      ? `<div class="slot"><img class="territory-face" src="${baseUrl}/tts/generated/${version}/territories/${territory.id}.png" alt="${territory.id}"></div>`
+      : '<div class="slot empty"></div>';
   }).join('');
 
   return `<!doctype html><html><head><meta charset="utf-8"><style>
     *{box-sizing:border-box}html,body{margin:0;background:transparent}
-    .sheet{display:grid;grid-template-columns:repeat(${SHEET_COLUMNS},${CSS_TERRITORY_WIDTH}px);grid-template-rows:repeat(${SHEET_ROWS},${CSS_TERRITORY_HEIGHT}px);width:${SHEET_COLUMNS * CSS_TERRITORY_WIDTH}px;height:${SHEET_ROWS * CSS_TERRITORY_HEIGHT}px}
-    .sheet>*{display:block;width:${CSS_TERRITORY_WIDTH}px;height:${CSS_TERRITORY_HEIGHT}px}.empty{background:transparent}
+    .sheet{display:grid;grid-template-columns:repeat(${SHEET_COLUMNS},${CSS_TTS_CARD_WIDTH}px);grid-template-rows:repeat(${SHEET_ROWS},${CSS_TTS_CARD_HEIGHT}px);width:${SHEET_COLUMNS * CSS_TTS_CARD_WIDTH}px;height:${SHEET_ROWS * CSS_TTS_CARD_HEIGHT}px}
+    .slot{position:relative;display:block;overflow:hidden;width:${CSS_TTS_CARD_WIDTH}px;height:${CSS_TTS_CARD_HEIGHT}px;background:transparent}
+    .territory-face{position:absolute;display:block;width:${CSS_TERRITORY_WIDTH}px;height:${CSS_TERRITORY_HEIGHT}px;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-90deg);transform-origin:center center}
+    .standard-back{display:block;width:${CSS_TTS_CARD_WIDTH}px;height:${CSS_TTS_CARD_HEIGHT}px}
   </style></head><body><div class="sheet">${slots}</div></body></html>`;
 }
 
@@ -191,8 +202,8 @@ async function renderTerritories(catalog, componentContract) {
       const sheetNumber = sheetIndex + 1;
       const deckId = FIRST_DECK_ID + sheetIndex;
       await page.setViewportSize({
-        width: SHEET_COLUMNS * CSS_TERRITORY_WIDTH,
-        height: SHEET_ROWS * CSS_TERRITORY_HEIGHT,
+        width: SHEET_COLUMNS * CSS_TTS_CARD_WIDTH,
+        height: SHEET_ROWS * CSS_TTS_CARD_HEIGHT,
       });
       await page.setContent(territorySheetHtml(baseUrl, release.version, territories, fallbackBackFile), { waitUntil: 'load' });
       await page.waitForFunction(() => Array.from(document.images).every(
@@ -232,10 +243,14 @@ async function renderTerritories(catalog, componentContract) {
       release: catalog.release,
       component: 'territories',
       output: {
-        cardPixels: { width: TERRITORY_WIDTH, height: TERRITORY_HEIGHT },
+        // `cardPixels` is the cell TTS sees and intentionally matches ordinary
+        // Gauntlet card geometry. `sourceCardPixels` records the approved
+        // landscape Territory artwork raster before its quarter-turn into that cell.
+        cardPixels: { width: TTS_CARD_WIDTH, height: TTS_CARD_HEIGHT },
+        sourceCardPixels: { width: TERRITORY_WIDTH, height: TERRITORY_HEIGHT },
         sheetPixels: {
-          width: TERRITORY_WIDTH * SHEET_COLUMNS,
-          height: TERRITORY_HEIGHT * SHEET_ROWS,
+          width: TTS_CARD_WIDTH * SHEET_COLUMNS,
+          height: TTS_CARD_HEIGHT * SHEET_ROWS,
         },
         columns: SHEET_COLUMNS,
         rows: SHEET_ROWS,
@@ -277,7 +292,7 @@ async function main() {
 
   const release = await writeCatalog(catalog);
   await renderTerritories(catalog, componentContract);
-  console.log(`Rendered ${catalog.territories.length} current landscape Territories across ${Math.ceil(catalog.territories.length / TERRITORIES_PER_SHEET)} sheet(s) to ${relative(ROOT, release.outputRoot)}.`);
+  console.log(`Rendered ${catalog.territories.length} current landscape Territories into standard-size portrait TTS card cells across ${Math.ceil(catalog.territories.length / TERRITORIES_PER_SHEET)} sheet(s) at ${relative(ROOT, release.outputRoot)}.`);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

@@ -19,7 +19,9 @@ REQUIRED = [
     "rules-assistant/worker-entry.js",
     "rules-assistant/worker-v061.js",
     "rules-assistant/worker-v063.js",
+    "rules-assistant/worker-v070.js",
     "rules-assistant/v063-public-corpus.js",
+    "rules-assistant/v070-public-corpus.js",
     "rules-assistant/local-search.js",
     "rules-assistant/wrangler.toml",
     "workers/playtest-sessions/wrangler.toml",
@@ -118,8 +120,12 @@ def main() -> int:
         "rules-assistant/worker-entry.js",
         [
             'import v061Worker from "./worker-v061.js"',
-            'import worker from "./worker-v063.js"',
+            'import v063Worker from "./worker-v063.js"',
+            'import worker from "./worker-v070.js"',
             'if (requestedVersion === "v0.6.1") return v061Worker.fetch(request, env, context);',
+            'if (requestedVersion === "v0.6.3") return v063Worker.fetch(request, env, context);',
+            'url.pathname === "/api/v063/rules"',
+            'url.pathname === "/api/v070/rules"',
             "return worker.fetch(request, env, context);",
         ],
         errors,
@@ -131,6 +137,17 @@ def main() -> int:
             "certified v0.6.3 source passages",
             "V063_RULES_VERSION",
             "v063-public-corpus.js",
+        ],
+        errors,
+    )
+    require_markers(
+        "rules-assistant/worker-v070.js",
+        [
+            "current canonical v0.7.0 playtest edition",
+            "published v0.7.0 release passages",
+            "V070_RULES_VERSION",
+            "v070-public-corpus.js",
+            'currentPublicRelease: "v0.7.0"',
         ],
         errors,
     )
@@ -370,7 +387,7 @@ def main() -> int:
     print(
         "Validated v0.6.3 formal and tracked playtest sessions: current runtime versioning, G063/EV063 serials, "
         "event-scoped onboarding, public tracked games, two-seat sessions, player-attributed Rules Arbiter linkage, "
-        "current browser fallback sources, privacy-safe QR rendering, and explicit legacy-read compatibility."
+        "published v0.7.0 Rules Arbiter routing with v0.6.3 session compatibility, privacy-safe QR rendering, and explicit legacy-read compatibility."
     )
     return 0
 

@@ -3,14 +3,15 @@
 /* Universal reference card: neutral counterpart to the finalized faction
    references. It uses the approved Neutral parchment and the same compact
    tracker-style header, open lookup body, and metadata footer, with the
-   stylized Gauntlet G occupying the faction-emblem position. */
+   stylized G at the left edge of the canonical self-contained wordmark
+   occupying the faction-emblem position. */
 
 .reference-card[data-component-id="universal-reference"] {
   --reference-parchment-image: url("../images/artwork/card-backgrounds/neutral-parchment-v2.png");
   --reference-accent: var(--card-muted-ink, #5c4d3e);
-  --reference-border: #4e4135;
-  --reference-border-outline: #2f2924;
-  --reference-border-rule: rgba(78, 65, 53, 0.56);
+  --reference-border: #eee7d5;
+  --reference-border-outline: #c9bfa8;
+  --reference-border-rule: rgba(92, 77, 62, 0.34);
   --component-parchment-tint: rgba(0, 0, 0, 0);
   --component-footer-tint: rgba(177, 139, 83, 0.24);
   --component-accent-ink: var(--card-muted-ink, #5c4d3e);
@@ -78,15 +79,31 @@
   align-self: center;
   width: 0.17in;
   height: 0.17in;
-  background: currentColor;
-  -webkit-mask-image: url("../images/Gauntlet.svg");
-  -webkit-mask-position: left center;
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: auto 100%;
-  mask-image: url("../images/Gauntlet.svg");
-  mask-position: left center;
-  mask-repeat: no-repeat;
-  mask-size: auto 100%;
+  overflow: hidden;
+  background-color: transparent;
+  background-image: url("../images/Gauntlet.svg");
+  background-position: left center;
+  background-repeat: no-repeat;
+  background-size: auto 100%;
+  /* Browser preview fallback. The TTS renderer replaces this paint-only
+     fallback with a literal <img> and validates its rendered pixels before
+     allowing the screenshot to proceed. */
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.reference-card[data-component-id="universal-reference"] .reference-faction-emblem--image {
+  overflow: hidden;
+  background: none !important;
+  -webkit-mask: none !important;
+  mask: none !important;
+}
+
+.reference-card[data-component-id="universal-reference"] .reference-faction-emblem-image {
+  display: block;
+  width: auto;
+  max-width: none;
+  height: 100%;
 }
 
 .reference-card[data-component-id="universal-reference"] .reference-watermark {

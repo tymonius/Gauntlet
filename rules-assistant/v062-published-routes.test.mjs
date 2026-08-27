@@ -3,7 +3,7 @@ import { describe, expect, test } from 'vitest';
 import dispatcher from './worker-entry.js';
 
 const lifecycle = JSON.parse(readFileSync(new URL('../config/release-lifecycle.json', import.meta.url), 'utf8'));
-const currentVersion = String(lifecycle.current_release || '');
+const stagedCurrentVersion = 'v0.7.0';
 
 async function health(path) {
   const response = await dispatcher.fetch(new Request(`https://gauntlet.run${path}`), {}, {});
@@ -12,11 +12,12 @@ async function health(path) {
 }
 
 describe('Rules Arbiter current and historical release routing', () => {
-  test('routes the unversioned public health endpoint to the lifecycle current release', async () => {
-    expect(currentVersion).not.toBe('');
+  test('routes the staged unversioned public health endpoint to v0.7.0 before lifecycle cutover', async () => {
+    expect(lifecycle.current_release).toBe('v0.6.3');
     const payload = await health('/api/health');
-    expect(payload.version).toBe(currentVersion);
-    expect(payload.currentPublicRelease).toBe(currentVersion);
+    expect(payload.version).toBe(stagedCurrentVersion);
+    expect(payload.currentPublicRelease).toBe(stagedCurrentVersion);
+    expect(payload.published).toBe(true);
   });
 
   test('preserves explicit historical v0.6.1, withdrawn v0.6.2, and candidate routes without making them the public default', async () => {
@@ -25,8 +26,16 @@ describe('Rules Arbiter current and historical release routing', () => {
     expect(publishedV062.candidate).toBe(false);
     expect(publishedV062.publishedVersion).toBe('v0.6.2');
 
+    const historicalV063 = await health('/api/v063/health');
+    expect(historicalV063.version).toBe('v0.6.3');
+    expect(historicalV063.currentPublicRelease).toBe('v0.6.3');
+
     const historicalV061 = await health('/api/v061/health');
     expect(historicalV061.version).toBe('v0.6.1');
+
+    const explicitV070 = await health('/api/v070/health');
+    expect(explicitV070.version).toBe('v0.7.0');
+    expect(explicitV070.currentPublicRelease).toBe('v0.7.0');
 
     const candidate = await health('/api/v062-candidate/health');
     expect(candidate.version).toBe('v0.6.2-candidate');

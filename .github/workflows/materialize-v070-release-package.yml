@@ -1,0 +1,158 @@
+name: Materialize v0.7.0 release package
+
+on:
+  push:
+    branches:
+      - release/v0.7.0-cutover
+      - release/v0.7.0-refresh-prep
+    paths:
+      - game-data/**
+      - docs/v0.6.4-*.json
+      - docs/v0.6.3-starter-decks.json
+      - rulebook/**
+      - card-design/**
+      - images/artwork/cards/**
+      - images/artwork/card-backgrounds/**
+      - design-tokens.css
+      - rulebook-design/**
+      - rulebook-production/**
+      - scripts/build-v070-release-source.mjs
+      - scripts/render-v070-booklet.mjs
+      - scripts/build-v063-rulebook-production.py
+      - scripts/run-v063-rulebook-renderer.mjs
+      - images/sketches/**
+      - .github/workflows/materialize-v070-release-package.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - game-data/**
+      - docs/v0.6.4-*.json
+      - docs/v0.6.3-starter-decks.json
+      - rulebook/**
+      - card-design/**
+      - images/artwork/cards/**
+      - images/artwork/card-backgrounds/**
+      - design-tokens.css
+      - rulebook-design/**
+      - rulebook-production/**
+      - scripts/build-v070-release-source.mjs
+      - scripts/render-v070-booklet.mjs
+      - scripts/build-v063-rulebook-production.py
+      - scripts/run-v063-rulebook-renderer.mjs
+      - images/sketches/**
+      - .github/workflows/materialize-v070-release-package.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: materialize-v070-release-package-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  materialize:
+    if: ${{ github.event_name == 'pull_request' || !contains(github.event.head_commit.message, 'Materialize v0.7.0 release package') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout release cutover branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Rulebook production dependencies
+        run: |
+          npm install
+          npm install --no-save --package-lock=false pdf-lib
+          npx playwright install --with-deps chromium
+
+      - name: Install publication utility font
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fonts-inter
+          fc-match Inter
+
+      - name: Build v0.7.0 source snapshot
+        run: |
+          node --check scripts/build-v070-release-source.mjs
+          node scripts/build-v070-release-source.mjs
+
+      - name: Render approved v0.7.0 Rulebook booklet
+        run: |
+          node --check scripts/render-v070-booklet.mjs
+          python -m py_compile scripts/build-v063-rulebook-production.py
+          node --check scripts/run-v063-rulebook-renderer.mjs
+          node scripts/render-v070-booklet.mjs
+
+      - name: Validate materialized release package
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import fs from 'node:fs';
+          import { PDFDocument } from 'pdf-lib';
+
+          const root = 'releases/v0.7.0';
+          const names = [
+            'Gauntlet_v0.7.0_Rulebook.md',
+            'Gauntlet_v0.7.0_Rulebook_Booklet.pdf',
+            'Gauntlet_v0.7.0_Card_Anatomy.png',
+            'Gauntlet_v0.7.0_Canonical_Data.json',
+            'Gauntlet_v0.7.0_Starter_Decks.json',
+            'Gauntlet_v0.7.0_Source_Provenance.json',
+            'Gauntlet_v0.7.0_Manifest.json',
+          ];
+          for (const name of names) assert(fs.existsSync(`${root}/${name}`), `Missing ${name}`);
+          assert(fs.existsSync('v0.7.0/index.html'), 'Missing v0.7.0 release landing page');
+
+          const rulebook = fs.readFileSync(`${root}/Gauntlet_v0.7.0_Rulebook.md`, 'utf8');
+          const manifest = JSON.parse(fs.readFileSync(`${root}/Gauntlet_v0.7.0_Manifest.json`, 'utf8'));
+          const canonical = JSON.parse(fs.readFileSync(`${root}/Gauntlet_v0.7.0_Canonical_Data.json`, 'utf8'));
+          const starters = JSON.parse(fs.readFileSync(`${root}/Gauntlet_v0.7.0_Starter_Decks.json`, 'utf8'));
+          const provenance = JSON.parse(fs.readFileSync(`${root}/Gauntlet_v0.7.0_Source_Provenance.json`, 'utf8'));
+          assert.equal(manifest.release_version, 'v0.7.0');
+          assert.equal(manifest.status, 'current');
+          assert.equal(provenance.source_version, 'v0.7.0');
+          assert.equal(manifest.authority_set_id, provenance.authority_set_id);
+          assert.equal(canonical.gameplay.cards.length, 142);
+          assert.equal(canonical.gameplay.territories.length, 25);
+          assert.equal(canonical.gameplay.factions.length, 6);
+          assert.equal(starters.decks.length, 12);
+          assert.match(rulebook, /## Card anatomy/);
+          assert.match(rulebook, /!\[Card anatomy diagram\]/);
+          assert.doesNotMatch(rulebook, /\bpending(?:-|\s+)battles?\b|\bFaction Actions?\b|\bFaction Abilit(?:y|ies)\b|\bfaction procedure\b/i);
+          assert(canonical.faction_feature_taxonomy?.actionProfiles?.['1 Action']);
+          assert.equal(canonical.leaders.length, 12);
+          assert(canonical.leaders.every(leader => Array.isArray(leader.sections) && leader.sections.every(section => !Array.isArray(section) && section.classification && section.name)));
+          const intelligence = canonical.gameplay.factions.find(faction => faction.id === 'intelligence');
+          assert.equal(intelligence.resource, 'Intel (no maximum)');
+          assert.equal(intelligence.progression, 'Operation Progress');
+          const mystics = canonical.gameplay.factions.find(faction => faction.id === 'mystics');
+          assert.equal(mystics.resource, null);
+          assert.equal(mystics.progression, 'Rites');
+          assert(fs.statSync(`${root}/Gauntlet_v0.7.0_Card_Anatomy.png`).size > 10000);
+
+          const pdf = await PDFDocument.load(fs.readFileSync(`${root}/Gauntlet_v0.7.0_Rulebook_Booklet.pdf`));
+          assert.equal(pdf.getPageCount(), manifest.pdf_outputs[0].pages);
+          console.log(`Validated v0.7.0 package with ${pdf.getPageCount()} booklet sides.`);
+          NODE
+
+      - name: Commit materialized release package
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          node scripts/commit-generated-files.mjs \
+            "Materialize v0.7.0 release package" -- \
+            releases/v0.7.0/Gauntlet_v0.7.0_Rulebook.md \
+            releases/v0.7.0/Gauntlet_v0.7.0_Rulebook_Booklet.pdf \
+            releases/v0.7.0/Gauntlet_v0.7.0_Card_Anatomy.png \
+            releases/v0.7.0/Gauntlet_v0.7.0_Canonical_Data.json \
+            releases/v0.7.0/Gauntlet_v0.7.0_Starter_Decks.json \
+            releases/v0.7.0/Gauntlet_v0.7.0_Source_Provenance.json \
+            releases/v0.7.0/Gauntlet_v0.7.0_Manifest.json \
+            v0.7.0/index.html

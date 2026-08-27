@@ -2,12 +2,11 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const source = JSON.parse(readFileSync("docs/v0.6.4-card-additions.json", "utf8"));
-const starterDecks = JSON.parse(readFileSync("deckbuilder/starter-decks.json", "utf8"));
 const catalogPage = readFileSync("card-design/index.html", "utf8");
 const catalogOverlay = readFileSync("card-design/v064-card-candidates.js", "utf8");
 const cardRenderer = readFileSync("card-design/card-review-render.js", "utf8");
 const currentAuthority = JSON.parse(readFileSync("game-data/current-game.json", "utf8"));
-const currentResolver = readFileSync("game-data/current-game.mjs", "utf8");
+const starterDecks = currentAuthority.starterDecks;
 
 const expectedByAllegiance: Record<string, string[]> = {
   Neutral: ["Phantom Passage", "Battlefield Plunder"],
@@ -157,12 +156,19 @@ describe("v0.6.4 full card-expansion candidate staging", () => {
     expect(divination.effects[0].text).toContain("Otherwise, put it in your Graveyard.");
   });
 
-  it("resolves candidate additions, same-id revisions, and retirements once through the current-game authority", () => {
-    expect(currentAuthority.sources.cardChanges).toBe("/docs/v0.6.4-card-additions.json");
-    expect(currentAuthority.resolution.cards).toContain("replace an existing stable id");
-    expect(currentResolver).toContain("export function resolveCards");
-    expect(currentResolver).toContain("byId.set(card.id, card)");
-    expect(currentResolver).toContain("byId.delete(id)");
+  it("preserves the v0.6.4 staging document only as provenance for the flattened v0.7.0 card pool", () => {
+    expect(currentAuthority.version).toBe("v0.7.0");
+    expect(currentAuthority.provenance.historicalInputs.cardChanges).toBe("/docs/v0.6.4-card-additions.json");
+    expect(currentAuthority).not.toHaveProperty("sources");
+    expect(currentAuthority).not.toHaveProperty("resolution");
+
+    for (const staged of source.cards) {
+      const current = currentAuthority.gameplay.cards.find((card: any) => card.id === staged.id);
+      expect(current).toBeDefined();
+      expect(current.name).toBe(staged.name);
+    }
+    expect(currentAuthority.gameplay.cards.some((card: any) => card.id === "inquisition-no-martyrs")).toBe(false);
+    expect(currentAuthority.gameplay.cards.some((card: any) => card.id === "inquisition-malleus-maleficarum")).toBe(true);
 
     expect(catalogPage).toContain('src="v064-card-candidates.js"');
     expect(catalogOverlay).toContain("loadCurrentGame");
