@@ -7,8 +7,8 @@ const files = {
   standardBack: 'backs/standard.png',
   factionBack: 'backs/military.png',
   leader: 'leaders/military-general.png',
-  table: 'tts/assets/environment/campaign-map-table.jpg',
-  panorama: 'tts/assets/environment/command-tent-panorama.jpg',
+  table: 'environment/campaign-map-table.png',
+  panorama: 'environment/command-tent-panorama.png',
   territories: ['territories/one.png', 'territories/two.png', 'territories/three.png'],
 };
 
