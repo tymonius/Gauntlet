@@ -171,6 +171,23 @@ The Intelligence trackers share a nested assembly while remaining independently 
 
 See `docs/tts-sliding-trackers.md` for the implementation contract.
 
+## Financiers Capital Ledger in TTS
+
+The Financiers' physical Capital Ledger remains the visible component in TTS; there is no separate Capital Counter. When the Ledger is removed from the starter Bag it exposes an **OPEN LEDGER** interaction and a public parchment-style transaction window.
+
+The TTS Ledger:
+
+- begins at the rules-authoritative Opening Capital of **2**;
+- records transaction description, signed change, and running Balance;
+- calculates the running balance automatically while allowing Capital to exceed the separate Capital Limit temporarily;
+- prevents a posted transaction from taking Capital below 0;
+- provides 11 transaction rows per page, matching the physical ledger;
+- can turn to additional pages without discarding prior history;
+- supports Previous/Next page navigation and Undo Last Entry; and
+- persists the ledger pages, current page, and draft fields through the object's native TTS save state.
+
+The existing Capital Limit sliding tracker remains independent and continues to show the derived limit. The Ledger is the authoritative current-Capital record and audit trail; the script performs bookkeeping arithmetic but does not automate income, spending, purchases, or other game rules.
+
 ## Supplemental save assembly contract
 
 `scripts/assemble-tts-supplemental-save.mjs` injects every ready faction supplemental into every matching starter Bag using the generated component quantities and staged hosted assets.
