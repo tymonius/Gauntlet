@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 493.58" preserveAspectRatio="xMidYMid meet">
+  <title>Gauntlet stylized G</title>
+  <desc>The left-hand stylized G isolated from the canonical Gauntlet wordmark for small emblem use.</desc>
+  <defs>
+    <clipPath id="gauntlet-g-clip">
+      <rect x="0" y="0" width="430" height="493.58" />
+    </clipPath>
+  </defs>
+  <g clip-path="url(#gauntlet-g-clip)">
+    <image href="Gauntlet.svg" x="0" y="0" width="1871.79" height="493.58" preserveAspectRatio="xMinYMid meet" />
+  </g>
+</svg>

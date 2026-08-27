@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "version": "v0.6.4-candidate",
+  "display_version": "v0.6.4 candidate",
+  "record_type": "archived-release-candidate",
+  "status": "archived",
+  "base_version": "v0.6.3",
+  "archived_on": "2026-08-23",
+  "publication": {
+    "was_published": false,
+    "public_cutover": false,
+    "git_tag": null,
+    "github_release": null
+  },
+  "promotion": {
+    "promoted_to": "v0.7.0",
+    "relationship": "The approved v0.6.4-candidate source bundle became the source provenance for the v0.7.0 product release. The candidate identity is preserved here rather than relabeled retroactively."
+  },
+  "snapshot": {
+    "repository": "tymonius/Gauntlet",
+    "commit": "268b6b3bfd6a5d3bf6ac97de815ab7af93cd69b3",
+    "authority_path": "game-data/current-game.json",
+    "authority_blob_sha": "8bfd82ac282fd6e374c0bfecad439ace5668bf9b"
+  },
+  "counts": {
+    "playable_cards": 142,
+    "territories": 25,
+    "factions": 6,
+    "leaders": 12,
+    "starter_decks": 12
+  },
+  "source_files": {
+    "base_gameplay": "artifacts/reconstruction/clean-v0.6.3/complete-authority/canonical-structured-data.json",
+    "card_changes": "docs/v0.6.4-card-additions.json",
+    "territories": "docs/v0.6.4-territories.json",
+    "proposals": "docs/v0.6.4-diplomat-proposals.json",
+    "arcane_symbol": "docs/v0.6.4-arcane-symbol.json",
+    "rules": "docs/v0.6.4-rules.json",
+    "component_contract": "config/tts-component-contract.json",
+    "starter_decks": "deckbuilder/starter-decks.json"
+  },
+  "known_source_blob_shas": {
+    "base_gameplay": "5cf408fced395eaf35d042f28188edf125174de6",
+    "card_changes": "6a10a412d6f0ceeafff955a42c5f6d11960e1f88",
+    "territories": "b011d69752ab93b90d27b02e7bf72200bd280437",
+    "proposals": "3d8d1a66372357f8820c1f89c5d28f08898a4bae",
+    "arcane_symbol": "6e4831fd971ebc9bf3c4f33c17a9a6def008c4ed",
+    "rules": "19b569cebb88a2a7efb46042aeb2c9949c4fa51e",
+    "component_contract": "0a6176ca07da5f6ddb24599e27922cc0e4e0f057"
+  },
+  "notes": [
+    "This directory is a provenance and record-keeping archive, not a retroactive public release.",
+    "No v0.6.4-candidate Git tag or GitHub Release is created by this archive.",
+    "The pinned snapshot commit is the main-branch state immediately before the v0.7.0 cutover branch was created."
+  ]
+}

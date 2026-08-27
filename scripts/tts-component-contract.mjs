@@ -3,11 +3,11 @@ import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import {
   ROOT,
-  CURRENT_GAME_MANIFEST_SOURCE,
-  resolveCurrentSourcePath,
+  CURRENT_GAME_AUTHORITY_SOURCE,
+  loadCurrentGameAuthority,
 } from './current-game-authority.mjs';
 
-export const TTS_COMPONENT_CONTRACT_AUTHORITY = CURRENT_GAME_MANIFEST_SOURCE;
+export const TTS_COMPONENT_CONTRACT_AUTHORITY = `${CURRENT_GAME_AUTHORITY_SOURCE}#componentContract`;
 
 const FACTIONS = Object.freeze([
   'military',
@@ -40,47 +40,15 @@ function validateCardLikeMetadata(component) {
   }
 }
 
-function alignBespokeReferenceFaces(contract) {
-  const diplomat = (contract.components || []).find((component) => component.id === 'diplomats-reference');
-  if (diplomat?.copyMode !== 'bespoke') return contract;
-
-  // The Diplomat contract predates authored bespoke headings. Keep its effective
-  // TTS selectors aligned with the approved player-aid source without rewriting
-  // that older audit list. New bespoke references declare their authored faces
-  // directly in the component contract.
-  diplomat.referenceFaces = {
-    front: {
-      title: 'Terms',
-      sections: [
-        { heading: 'Offering Terms', depth: 3 },
-        { heading: 'Diplomat Mirror', depth: 3 },
-        { heading: 'Accepted', depth: 3 },
-        { heading: 'Refused', depth: 3 },
-      ],
-    },
-    reverse: {
-      title: 'Outcomes & Treaties',
-      sections: [
-        { heading: 'After Refused Terms', depth: 3 },
-        { heading: 'Leverage', depth: 3 },
-        { heading: 'Treaty Articles', depth: 3 },
-        { heading: 'Peace Treaty', depth: 3 },
-      ],
-    },
-  };
-  return contract;
-}
-
 async function readContract() {
-  const { source, absolutePath } = await resolveCurrentSourcePath('componentContract');
-  const contract = alignBespokeReferenceFaces(JSON.parse(await readFile(absolutePath, 'utf8')));
-  contract.currentGameAuthority = CURRENT_GAME_MANIFEST_SOURCE;
-  contract.currentGameComponentSource = source;
-  contract.effectiveBackPolicy = {
-    standardBack: 'universal-black',
-    factionComponentBack: 'faction',
-    note: 'Playable cards and Territories use the universal black Gauntlet back. Leaders and other single-sided faction components use their faction-color Gauntlet back. Intrinsically two-sided components retain their reverse face.',
-  };
+  const authority = await loadCurrentGameAuthority();
+  const embedded = authority.componentContract;
+  if (!embedded || typeof embedded !== 'object') {
+    throw new Error(`${CURRENT_GAME_AUTHORITY_SOURCE} is missing componentContract.`);
+  }
+  const contract = JSON.parse(JSON.stringify(embedded));
+  contract.currentGameAuthority = CURRENT_GAME_AUTHORITY_SOURCE;
+  contract.currentGameComponentSource = TTS_COMPONENT_CONTRACT_AUTHORITY;
   return contract;
 }
 
@@ -137,6 +105,9 @@ export async function validateTtsComponentContract(contract) {
   assert(Array.isArray(standardBack.variants), 'Standard-back policy must declare variants.');
   assert(FACTIONS.every((faction) => standardBack.variants.includes(faction)), 'Standard-back variants must cover all six factions.');
   assert(standardBack.allowedModes.includes(standardBack.mode), `Current standard-back mode is invalid: ${standardBack.mode || 'missing'}.`);
+  assert(standardBack.mode === 'universal-black', 'Current playable-card and Territory standard backs must be universal black.');
+  assert(contract.effectiveBackPolicy?.standardBack === 'universal-black', 'Current component authority must declare its effective universal-black standard-back policy.');
+  assert(contract.effectiveBackPolicy?.factionComponentBack === 'faction', 'Current component authority must declare faction-colored single-sided faction-component backs.');
   assert(standardBack.variants.includes(standardBack.universalVariant), 'Universal black back must resolve to a declared back variant.');
 
   const families = contract.canonicalFamilies || {};
@@ -202,8 +173,8 @@ export async function validateTtsComponentContract(contract) {
   assert(universalReference.cardLike === true && universalReference.backPolicy === 'twoSided', 'Universal Reference Card must be a two-sided card-like component.');
   assert(designStatusFor(universalReference) === 'final' && universalReference.productionStatus === 'ready', 'Universal Reference Card must be finalized and production-ready.');
   assert(universalReference.copyMode === 'bespoke', 'Universal Reference Card must use authored bespoke player-aid copy.');
-  assert(String(universalReference.source || '').startsWith('card-design/reference-copy/'), 'Universal Reference Card must source its compact player-aid copy from card-design/reference-copy.');
-  assert(String(universalReference.authoritySource || '').includes('/rulebook/'), 'Universal Reference Card must retain the canonical shared Rulebook as audit authority.');
+  assert(String(universalReference.source || '').startsWith('card-design/reference-copy/v0.7.0/'), 'Universal Reference Card must source its compact v0.7.0 player-aid copy.');
+  assert(universalReference.authoritySource === 'rulebook/player-facing/current-rulebook.md', 'Universal Reference Card must audit against the complete current Rulebook authority.');
   assert(universalReference.referenceFaces?.front?.sections?.length && universalReference.referenceFaces?.reverse?.sections?.length, 'Universal Reference Card must declare both production faces.');
 
   const trackers = (contract.components || []).filter((component) => component.tts?.representation === 'sliding-tracker');
@@ -230,8 +201,8 @@ export async function validateTtsComponentContract(contract) {
   assert(factionReferences.every((component) => component.productionStatus === 'ready'), 'Every faction reference card must be production-ready.');
   assert(factionReferences.every((component) => designStatusFor(component) === 'final'), 'Every faction reference-card design must be final.');
   assert(factionReferences.every((component) => component.copyMode === 'bespoke'), 'Every faction reference card must use authored bespoke player-aid copy.');
-  assert(factionReferences.every((component) => String(component.source || '').startsWith('card-design/reference-copy/')), 'Every faction reference card must source its compact player-aid copy from card-design/reference-copy.');
-  assert(factionReferences.every((component) => String(component.authoritySource || '').includes('/faction-guides/')), 'Every faction reference card must retain its canonical faction-guide audit authority.');
+  assert(factionReferences.every((component) => String(component.source || '').startsWith('card-design/reference-copy/v0.7.0/')), 'Every faction reference card must source its compact v0.7.0 player-aid copy.');
+  assert(factionReferences.every((component) => component.authoritySource === 'game-data/current-game.json'), 'Every faction reference card must audit against the complete current gameplay authority.');
 
   const capitalLimitTracker = map.get('financiers-capital-limit-tracker');
   assert(capitalLimitTracker, 'Financiers package must contain its Capital Limit Tracker.');

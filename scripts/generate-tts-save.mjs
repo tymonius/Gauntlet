@@ -4,6 +4,21 @@ import { pathToFileURL } from 'node:url';
 import { CURRENT_ALIAS_ROOT, resolveCurrentTtsRelease, ROOT } from './tts-current-catalog.mjs';
 import { STAGING_ROOT } from './stage-tts-release-assets.mjs';
 
+const FACTION_COLORS = Object.freeze({
+  military: { r: 0.620, g: 0.149, b: 0.173 },
+  diplomats: { r: 0.149, g: 0.310, b: 0.569 },
+  financiers: { r: 0.133, g: 0.439, b: 0.267 },
+  intelligence: { r: 0.157, g: 0.157, b: 0.153 },
+  mystics: { r: 0.365, g: 0.204, b: 0.494 },
+  inquisition: { r: 0.651, g: 0.478, b: 0.153 },
+});
+
+const LANDSCAPE_CARD_FLIP_SCRIPT = [
+  'function onLoad()',
+  '  self.use_rotation_value_flip = true',
+  'end',
+].join('\n');
+
 function jsonText(value) {
   return `${JSON.stringify(value, null, 2)}\n`;
 }
@@ -72,19 +87,52 @@ function makeCardObject({ nickname, description, cardId, deckId, customDeckState
     Hands: true,
     CardID: Number(cardId),
     SidewaysCard: Boolean(sideways),
-    CustomDeck: {
-      [String(deckId)]: customDeckState,
-    },
+    CustomDeck: { [String(deckId)]: customDeckState },
   };
 }
 
-function starterBagTransform(index, total) {
-  const rows = Math.ceil(total / 2);
-  const column = index < rows ? 0 : 1;
-  const row = index % rows;
-  const spacing = rows <= 1 ? 0 : Math.min(4, 20 / (rows - 1));
-  const start = -((rows - 1) * spacing) / 2;
-  return transform(column === 0 ? -15 : 15, 1.4, start + row * spacing, column === 0 ? 90 : 270);
+function starterBagTransform(starter, starters) {
+  // Preserve the tested setup presentation without hard-coding the starter
+  // count: each faction occupies one Z row and its Leaders sit as a left/right
+  // pair outside the active board. Faction rows are derived from manifest order.
+  const factionIds = [...new Set(starters.map(candidate => candidate.factionId))];
+  const factionIndex = factionIds.indexOf(starter.factionId);
+  if (factionIndex < 0) throw new Error(`Starter ${starter.id || 'unknown'} has no faction row.`);
+  const factionStarters = starters.filter(candidate => candidate.factionId === starter.factionId);
+  const leaderIndex = factionStarters.findIndex(candidate => candidate.id === starter.id);
+  if (leaderIndex < 0) throw new Error(`Starter ${starter.id || 'unknown'} cannot be located inside faction ${starter.factionId}.`);
+
+  const rowSpacing = factionIds.length <= 1 ? 0 : 24 / (factionIds.length - 1);
+  const z = -((factionIds.length - 1) * rowSpacing) / 2 + factionIndex * rowSpacing;
+  if (factionStarters.length === 1) return transform(-20.5, 1.4, z, 90);
+
+  // The current package has two Leaders per faction. Keep that tested pairing
+  // exact while remaining deterministic if the source later contains more.
+  const fraction = leaderIndex / (factionStarters.length - 1);
+  const x = -20.5 + fraction * 41;
+  const rotY = fraction < 0.5 ? 90 : 270;
+  return transform(x, 1.4, z, rotY);
+}
+
+function factionColor(factionId) {
+  const tint = FACTION_COLORS[factionId];
+  if (!tint) throw new Error(`No TTS component color is defined for faction ${factionId || 'missing'}.`);
+  return color(tint.r, tint.g, tint.b);
+}
+
+function makeDie(nickname, tint, guid) {
+  return {
+    ...objectBase('Die_6', nickname, '', transform(0, 1.5, 0), guid),
+    ColorDiffuse: { ...tint },
+    MaterialIndex: 0,
+  };
+}
+
+function makePawn(nickname, tint, guid) {
+  return {
+    ...objectBase('PlayerPawn', nickname, '', transform(0, 1.1, 0), guid),
+    ColorDiffuse: { ...tint },
+  };
 }
 
 function buildStarterKit(starter, releaseAssets, kitTransform, guid) {
@@ -128,12 +176,14 @@ function buildStarterKit(starter, releaseAssets, kitTransform, guid) {
     throw new Error(`Starter ${starter.id} expanded card order does not match deckCardIds.`);
   }
 
+  const deckTransform = transform();
+  deckTransform.rotZ = 180;
   const deck = {
     ...objectBase(
       'DeckCustom',
-      `${starter.name} Deck`,
-      `${starter.cardCount} cards · ${starter.deckbuildingValue} deckbuilding value`,
-      transform(),
+      `${starter.name} Deck — ${starter.cardCount} cards`,
+      `Complete ${starter.cardCount}-card starter Deck · ${starter.deckbuildingValue} deckbuilding value`,
+      deckTransform,
       guid(),
     ),
     Hands: true,
@@ -141,6 +191,9 @@ function buildStarterKit(starter, releaseAssets, kitTransform, guid) {
     CustomDeck: deckStates,
     ContainedObjects: containedCards,
   };
+  if (deck.DeckIDs.length !== Number(starter.cardCount) || deck.ContainedObjects.length !== Number(starter.cardCount)) {
+    throw new Error(`Starter ${starter.id} generated an incomplete DeckCustom stack: ${deck.DeckIDs.length} DeckIDs / ${deck.ContainedObjects.length} cards; expected ${starter.cardCount}.`);
+  }
 
   const leaderTts = starter.leader.tts;
   const leaderBackFile = leaderTts.backFile || starter.back.file;
@@ -159,14 +212,14 @@ function buildStarterKit(starter, releaseAssets, kitTransform, guid) {
     guid: guid(),
   });
 
-  const territories = starter.territories.map((territory) => {
+  const territories = starter.territories.map(territory => {
     const state = makeCustomDeckState(
       requireHostedUrl(releaseAssets, territory.tts.faceFile),
       requireHostedUrl(releaseAssets, territory.tts.backFile),
       territory.tts.numWidth,
       territory.tts.numHeight,
     );
-    return makeCardObject({
+    const card = makeCardObject({
       nickname: territory.name,
       description: territory.arena ? 'Arena Territory' : 'Territory',
       cardId: territory.tts.cardId,
@@ -175,65 +228,56 @@ function buildStarterKit(starter, releaseAssets, kitTransform, guid) {
       sideways: true,
       guid: guid(),
     });
+    card.Transform.rotY = 90;
+    // SidewaysCard controls the landscape card presentation; this TTS object
+    // property controls only which physical axis the card rotates around when
+    // flipped. Keep the existing face/back images untouched.
+    card.LuaScript = LANDSCAPE_CARD_FLIP_SCRIPT;
+    return card;
   });
 
-  const orderById = new Map(starter.territories.map((territory) => [territory.id, territory.name]));
-  const territoryOrder = (starter.recommendedTerritoryOrder || []).map((id) => orderById.get(id) || id).join(' → ');
+  const factionLabel = starter.leader.factionLabel || starter.factionId;
+  const tint = factionColor(starter.factionId);
+  const playerToken = makePawn(`${factionLabel} Player Token`, tint, guid());
+  playerToken.Description = `${factionLabel} faction-colored player token`;
+  playerToken.GMNotes = `gauntlet:starter-utility:player-token:${starter.factionId}`;
+  const battleDie = makeDie(`${factionLabel} Battle Die`, tint, guid());
+  battleDie.Description = `${factionLabel} faction-colored battle die`;
+  battleDie.GMNotes = `gauntlet:starter-utility:battle-die:${starter.factionId}`;
+
+  const orderById = new Map(starter.territories.map(territory => [territory.id, territory.name]));
+  const territoryOrder = (starter.recommendedTerritoryOrder || []).map(id => orderById.get(id) || id).join(' → ');
   const kitDescription = [
     `${starter.leader.name} · ${starter.factionId}`,
     starter.summary || starter.strategy || '',
     territoryOrder ? `Recommended Territories: ${territoryOrder}` : '',
-    'Contains the playable Deck, Leader Card, and three selected Territories.',
+    `Contains the complete ${starter.cardCount}-card face-down playable Deck, Leader Card, three selected Territories, faction-colored Player Token, and faction-colored Battle Die.`,
   ].filter(Boolean).join('\n\n');
 
   return {
     ...objectBase('Bag', `${starter.name} — ${starter.leader.name}`, kitDescription, kitTransform, guid()),
-    ContainedObjects: [leader, ...territories, deck],
-  };
-}
-
-function makeDie(nickname, x, z, tint, guid) {
-  return {
-    ...objectBase('Die_6', nickname, '', transform(x, 1.5, z), guid),
-    ColorDiffuse: tint,
-    MaterialIndex: 0,
-  };
-}
-
-function makePawn(nickname, x, z, tint, rotation, guid) {
-  return {
-    ...objectBase('PlayerPawn', nickname, '', transform(x, 1.1, z, rotation), guid),
-    ColorDiffuse: tint,
+    ColorDiffuse: { ...tint },
+    ContainedObjects: [leader, ...territories, deck, playerToken, battleDie],
   };
 }
 
 function buildTtsSave(starterManifest, releaseAssets) {
   const version = String(starterManifest?.gameVersion || '').trim();
   if (!version) throw new Error('Starter manifest does not declare gameVersion.');
-  if (releaseAssets?.gameVersion !== version || releaseAssets?.releaseTag !== version) {
-    throw new Error(`Hosted TTS release assets do not match starter manifest ${version}.`);
-  }
+  if (releaseAssets?.gameVersion !== version || releaseAssets?.releaseTag !== version) throw new Error(`Hosted TTS release assets do not match starter manifest ${version}.`);
   const starters = starterManifest.decks || [];
   if (!starters.length) throw new Error('Starter manifest contains no starter decks.');
 
   const guid = makeGuidFactory();
-  const red = color(0.856, 0.1, 0.094);
-  const blue = color(0.118, 0.53, 1);
-  const starterKits = starters.map((starter, index) => buildStarterKit(
-    starter,
-    releaseAssets,
-    starterBagTransform(index, starters.length),
-    guid,
-  ));
-
+  const starterKits = starters.map(starter => buildStarterKit(starter, releaseAssets, starterBagTransform(starter, starters), guid));
   const territoryZ = [-7.5, -4.5, -1.5, 1.5, 4.5, 7.5];
-  const snapPoints = territoryZ.map((z) => ({ Position: vector(0, 1, z), Rotation: vector(0, 0, 0) }));
+  const snapPoints = territoryZ.map(z => ({ Position: vector(0, 0, z), Rotation: vector(0, 90, 0) }));
 
   const note = [
     `Gauntlet ${version} Tabletop Simulator review scaffold.`,
-    'Choose one starter kit per player. Each kit contains its Deck, Leader Card, and three Territories. Arrange the six chosen Territories on the center snap points, then complete normal opening setup from the current Rulebook.',
-    'Red sits at the south end; Blue sits at the north end. Player pawns begin on the Territory at their own end after setup.',
-    'This scaffold intentionally does not yet include faction-specific supplemental trackers or secondary components. Rules remain manual.',
+    'Choose one starter kit per player. Each kit contains its face-down Deck, Leader Card, three Territories, faction-colored Player Token, and faction-colored Battle Die. Arrange the six chosen Territories on the center snap points, then complete normal opening setup from the current Rulebook.',
+    'Red sits at the south end; Blue sits at the north end. Each player uses the faction-colored token and die from the chosen starter kit.',
+    'Ready shared and faction supplemental components are assembled into the same starter kit later in the TTS package pipeline. Rules remain manual.',
   ].join('\n\n');
 
   return {
@@ -267,8 +311,8 @@ function buildTtsSave(starterManifest, releaseAssets) {
       DisableUnused: true,
       Hiding: 0,
       HandTransforms: [
-        { Color: 'Red', Transform: transform(0, 1.5, -17, 180, 9, 2, 2) },
-        { Color: 'Blue', Transform: transform(0, 1.5, 17, 0, 9, 2, 2) },
+        { Color: 'Red', Transform: transform(0, 1.5, -20.15, 0, 7, 2.5, 3) },
+        { Color: 'Blue', Transform: transform(0, 1.5, 20.15, 180, 7, 2.5, 3) },
       ],
     },
     Turns: {
@@ -282,31 +326,19 @@ function buildTtsSave(starterManifest, releaseAssets) {
       TurnColor: 'Red',
     },
     SnapPoints: snapPoints,
-    ObjectStates: [
-      ...starterKits,
-      makeDie('Red Battle Die', -4.5, -12.5, red, guid()),
-      makeDie('Blue Battle Die', 4.5, 12.5, blue, guid()),
-      makePawn('Red Player Token', 0, -10.5, red, 0, guid()),
-      makePawn('Blue Player Token', 0, 10.5, blue, 180, guid()),
-    ],
+    ObjectStates: starterKits,
   };
 }
 
 async function readReleaseAssetManifest(version) {
-  const names = await readdir(STAGING_ROOT).catch((error) => {
-    if (error.code === 'ENOENT') {
-      throw new Error('TTS save generation requires staged hosted assets. Run npm run tts:release:stage first.');
-    }
+  const names = await readdir(STAGING_ROOT).catch(error => {
+    if (error.code === 'ENOENT') throw new Error('TTS save generation requires staged hosted assets. Run npm run tts:release:stage first.');
     throw error;
   });
-  const candidates = names.filter((name) => /^Gauntlet_.*_TTS_Release_Assets\.json$/i.test(name));
-  if (candidates.length !== 1) {
-    throw new Error(`Expected exactly one staged TTS release-asset manifest; found ${candidates.length}.`);
-  }
+  const candidates = names.filter(name => /^Gauntlet_.*_TTS_Release_Assets\.json$/i.test(name));
+  if (candidates.length !== 1) throw new Error(`Expected exactly one staged TTS release-asset manifest; found ${candidates.length}.`);
   const manifest = JSON.parse(await readFile(join(STAGING_ROOT, candidates[0]), 'utf8'));
-  if (manifest.gameVersion !== version || manifest.releaseTag !== version) {
-    throw new Error(`Staged TTS release-asset manifest targets ${manifest.gameVersion || manifest.releaseTag || 'unknown'}; expected ${version}.`);
-  }
+  if (manifest.gameVersion !== version || manifest.releaseTag !== version) throw new Error(`Staged TTS release-asset manifest targets ${manifest.gameVersion || manifest.releaseTag || 'unknown'}; expected ${version}.`);
   return manifest;
 }
 
@@ -319,10 +351,8 @@ async function main() {
   }
 
   const starterPath = join(release.outputRoot, 'starter-deck-manifest.json');
-  const starterManifest = JSON.parse(await readFile(starterPath, 'utf8').catch((error) => {
-    if (error.code === 'ENOENT') {
-      throw new Error('TTS save generation requires the current starter manifest. Run npm run tts:build first.');
-    }
+  const starterManifest = JSON.parse(await readFile(starterPath, 'utf8').catch(error => {
+    if (error.code === 'ENOENT') throw new Error('TTS save generation requires the current starter manifest. Run npm run tts:build first.');
     throw error;
   }));
   const releaseAssets = await readReleaseAssetManifest(release.version);
@@ -337,7 +367,7 @@ async function main() {
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  main().catch((error) => {
+  main().catch(error => {
     console.error(error.stack || error.message || error);
     process.exitCode = 1;
   });

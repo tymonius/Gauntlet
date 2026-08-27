@@ -404,7 +404,7 @@ export async function buildSupplementalCatalog(componentContract = null) {
     catalog: {
       schemaVersion: 3,
       gameVersion: release.version,
-      componentContract: 'config/tts-component-contract.json',
+      componentContract: 'game-data/current-game.json#componentContract',
       sourcePolicy: 'ready shared and faction supplemental components export through their declared representation; pending components remain cataloged but produce no TTS objects',
       readyCount: ready.length,
       pendingCount: pending.length,

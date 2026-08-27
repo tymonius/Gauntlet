@@ -7,6 +7,7 @@ const params = new URLSearchParams(window.location.search);
 const componentId = params.get('component') || '';
 const side = params.get('side') || 'front';
 const target = document.querySelector('#renderTarget');
+const PREPARE_TIMEOUT_MS = 10000;
 
 function reportError(error) {
   const message = error?.stack || error?.message || String(error);
@@ -28,10 +29,93 @@ function waitForImage(image) {
   });
 }
 
+function doubleFrame() {
+  return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+}
+
+async function waitFor(predicate, label, timeoutMs = PREPARE_TIMEOUT_MS) {
+  const started = performance.now();
+  while (!predicate()) {
+    if (performance.now() - started > timeoutMs) throw new Error(`Timed out waiting for ${label}.`);
+    await new Promise(resolve => setTimeout(resolve, 25));
+  }
+}
+
 async function waitForVisuals() {
   if (document.fonts?.ready) await document.fonts.ready;
   await Promise.all(Array.from(target.querySelectorAll('img')).map(waitForImage));
-  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  await doubleFrame();
+}
+
+function elementOverflows(element) {
+  return Boolean(element)
+    && (element.scrollWidth > element.clientWidth + 1
+      || element.scrollHeight > element.clientHeight + 1);
+}
+
+function titleOverflowsHorizontally(title) {
+  return Boolean(title) && title.scrollWidth > title.clientWidth + 1;
+}
+
+function rectFitsInside(inner, outer, tolerance = 1) {
+  const a = inner.getBoundingClientRect();
+  const b = outer.getBoundingClientRect();
+  return a.left >= b.left - tolerance
+    && a.right <= b.right + tolerance
+    && a.top >= b.top - tolerance
+    && a.bottom <= b.bottom + tolerance;
+}
+
+function assertProductionFit(card, label) {
+  const interior = card.querySelector('.card-interior');
+  const title = card.querySelector('.card-title');
+  const rules = card.querySelector('.card-rules');
+  const footer = card.querySelector('.card-footer');
+  const heading = card.querySelector('.card-heading');
+  if (card.hasAttribute('data-art-max') && card.dataset.titleFit !== 'true') {
+    throw new Error(`${label} did not pass the production title-fitting check.`);
+  }
+  if (card.classList.contains('fit-warning')) throw new Error(`${label} still carries the production fit-warning class.`);
+  // The shared production fitter deliberately defines title fit by horizontal
+  // width. Font glyph metrics can report scrollHeight slightly larger than a
+  // sub-1 line-height even when nothing is visually clipped, so do not create a
+  // contradictory second vertical criterion here.
+  if (titleOverflowsHorizontally(title)) throw new Error(`${label} title is clipped.`);
+  if (elementOverflows(rules)) throw new Error(`${label} rules are clipped.`);
+  if (interior && footer && footer.getBoundingClientRect().bottom > interior.getBoundingClientRect().bottom + 1) {
+    throw new Error(`${label} footer extends beyond the card interior.`);
+  }
+
+  if (card.classList.contains('deed-card')) {
+    // The approved Deed intentionally overscans a rotated parchment
+    // pseudo-element to 145% and clips it inside the interior. That decorative
+    // overscan legitimately enlarges scrollHeight. Validate the actual printed
+    // content block instead of rejecting the background construction.
+    if (interior && heading && !rectFitsInside(heading, interior)) {
+      throw new Error(`${label} heading extends beyond the card interior.`);
+    }
+  } else if (interior && interior.scrollHeight > interior.clientHeight + 1) {
+    throw new Error(`${label} card interior is clipped.`);
+  }
+}
+
+async function prepareProductionCard(card, label) {
+  // These cards are inserted after the page's native load event may already have
+  // fired. Replay the shared production preparation lifecycle only after the
+  // production markup and artwork exist, then wait for its async fitting pass.
+  window.dispatchEvent(new Event('load'));
+  await waitFor(() => card.dataset.parchmentLoaded !== undefined, `${label} parchment preparation`);
+  if (card.dataset.parchmentLoaded !== 'true') throw new Error(`${label} production parchment failed to load.`);
+
+  if (card.hasAttribute('data-art-max')) {
+    const interior = card.querySelector('.card-interior');
+    await waitFor(
+      () => Boolean(interior?.style.getPropertyValue('--art-height')) && card.dataset.titleFit !== undefined,
+      `${label} production fitting`,
+    );
+  }
+  await doubleFrame();
+  assertProductionFit(card, label);
 }
 
 function proposalIdForComponent(component) {
@@ -43,7 +127,7 @@ async function renderProposal(currentGame, component) {
   const proposal = (currentGame.proposals || []).find(item => item.id === proposalId);
   if (!proposal) throw new Error(`No current Proposal data matches ${component.id}.`);
   if (proposal.name !== component.name) {
-    throw new Error(`Proposal contract mismatch for ${component.id}: ${component.name} != ${proposal.name}.`);
+    throw new Error(`Proposal contract mismatch for ${component.id}: ${proposal.name} != ${component.name}.`);
   }
 
   const ratified = side === 'reverse';
@@ -60,6 +144,21 @@ async function renderProposal(currentGame, component) {
     throw new Error(`Final Proposal artwork is missing for ${component.id}.`);
   }
   await waitForVisuals();
+  await prepareProductionCard(card, `${component.name} ${ratified ? 'Treaty Article' : 'Proposal'}`);
+
+  if (!ratified) {
+    const artImage = card.querySelector('.card-art img');
+    if (!artImage) throw new Error(`Final Proposal artwork image is missing for ${component.id}.`);
+    if (!window.GauntletArtworkCrop?.apply) throw new Error('Shared artwork crop engine is unavailable in finalized supplemental rendering.');
+    window.GauntletArtworkCrop.apply(
+      artImage,
+      null,
+      { id: `proposal-${proposal.id}`, label: proposal.name },
+    );
+    await doubleFrame();
+    if (!artImage.dataset.artCrop) throw new Error(`Proposal artwork crop was not applied for ${component.id}.`);
+  }
+  assertProductionFit(card, `${component.name} ${ratified ? 'Treaty Article' : 'Proposal'}`);
 }
 
 async function renderLedger(currentGame, component) {
@@ -72,6 +171,7 @@ async function renderLedger(currentGame, component) {
   card.dataset.contractComponentId = component.id;
   card.dataset.productionStatus = 'ready';
   await waitForVisuals();
+  await prepareProductionCard(card, `Capital Ledger ${side}`);
 }
 
 async function renderDeed(component) {
@@ -85,6 +185,7 @@ async function renderDeed(component) {
   card.dataset.contractComponentId = component.id;
   card.dataset.productionStatus = 'ready';
   await waitForVisuals();
+  await prepareProductionCard(card, 'Financier Deed');
 }
 
 async function main() {

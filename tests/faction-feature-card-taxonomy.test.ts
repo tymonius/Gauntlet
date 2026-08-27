@@ -135,8 +135,9 @@ describe('Faction Feature and Leader Ability component taxonomy', () => {
         text: 'Increment by 1 each time you complete a normal Mission.',
       });
     }
-    expect(currentGame.factionOverrides.intelligence.resource).toBe('Intel (no maximum)');
-    expect(currentGame.factionOverrides.intelligence.progression).toBe('Operation Progress');
+    const intelligence = currentGame.gameplay.factions.find((faction: any) => faction.id === 'intelligence');
+    expect(intelligence.resource).toBe('Intel (no maximum)');
+    expect(intelligence.progression).toBe('Operation Progress');
     expect(taxonomy).toContain('**Operation Progress is not a Resource.**');
   });
 
@@ -149,8 +150,9 @@ describe('Faction Feature and Leader Ability component taxonomy', () => {
         descriptor: '1st — Invocation · 2nd — Transmutation · 3rd — Convergence + Ritual',
       });
     }
-    expect(currentGame.factionOverrides.mystics.resource).toBeNull();
-    expect(currentGame.factionOverrides.mystics.progression).toBe('Rites');
+    const mystics = currentGame.gameplay.factions.find((faction: any) => faction.id === 'mystics');
+    expect(mystics.resource).toBeNull();
+    expect(mystics.progression).toBe('Rites');
   });
 
   it('renders named concepts from current-game instead of a second Leader copy file', () => {
@@ -214,7 +216,8 @@ describe('Faction Feature and Leader Ability component taxonomy', () => {
   it('contains no retired current terminology in the current authority payload', () => {
     const currentPayload = JSON.stringify({
       leaders: currentGame.leaders,
-      factionOverrides: currentGame.factionOverrides,
+      factions: currentGame.gameplay.factions,
+      factionRules: currentGame.gameplay.faction_rules,
       factionFeatures: currentGame.factionFeatures,
       mystics: currentGame.mystics,
     });

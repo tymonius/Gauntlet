@@ -39,8 +39,12 @@ describe("standalone new-player onboarding", () => {
 
   it("offers every canonical faction and Leader starter pair", () => {
     const app = read("start/app.js");
-    const catalog = JSON.parse(read("deckbuilder/starter-decks.json"));
-    const available = new Set(catalog.decks.map((deck: { factionId: string; leaderId: string }) => `${deck.factionId}/${deck.leaderId}`));
+    const authority = JSON.parse(read("game-data/current-game.json"));
+    const available = new Set(authority.starterDecks.decks.map((deck: { factionId: string; leaderId: string }) => `${deck.factionId}/${deck.leaderId}`));
+
+    expect(app).toContain('fetch("../game-data/current-game.json"');
+    expect(app).toContain('currentAuthority?.starterDecks');
+    expect(app).not.toContain('fetch("../deckbuilder/starter-decks.json"');
 
     for (const [faction, leader] of EXPECTED_CHOICES) {
       expect(app).toContain(`${faction}:`);
@@ -52,7 +56,8 @@ describe("standalone new-player onboarding", () => {
   it("provides a non-empty first-game tip for every recommended starter Deck", () => {
     const app = read("start/app.js");
     const deckbuilderStarter = read("deckbuilder/starter-decks.js");
-    const catalog = JSON.parse(read("deckbuilder/starter-decks.json"));
+    const authority = JSON.parse(read("game-data/current-game.json"));
+    const catalog = authority.starterDecks;
     const tipCatalog = JSON.parse(read("deckbuilder/starter-first-game-tips.json"));
     const tips = tipCatalog.tips || {};
 
@@ -89,11 +94,11 @@ describe("standalone new-player onboarding", () => {
     expect(deckbuilder.indexOf("starter-decks.js")).toBeLessThan(deckbuilder.indexOf("starter-handoff.js"));
   });
 
-  it("keeps the current v0.6.3 start path as the homepage first-time call to action", () => {
+  it("keeps the current v0.7.0 start path as the homepage first-time call to action", () => {
     const homepage = read("index.html");
     expect(homepage).toContain('<a href="/start/">Start</a>');
     expect(homepage).toContain('<a class="button primary" href="start/">Start playing</a>');
-    expect(homepage).toContain("Current canonical playtest edition · v0.6.3");
+    expect(homepage).toContain("Current canonical playtest edition · v0.7.0");
     expect(homepage).toContain("New-player setup");
     expect(homepage).toContain("Choose your first deck");
     expect(homepage).not.toContain('href="v0.6.2/start/"');

@@ -3,14 +3,10 @@ import { createServer } from 'node:http';
 import { readFile, rename, stat, writeFile } from 'node:fs/promises';
 import { dirname, extname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import {
-  parseArtDirectionSource,
-  serializeArtDirectionMap,
-  updateArtDirectionMap,
-} from './art-direction-overrides.mjs';
+import { updateArtDirectionMap } from './art-direction-overrides.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const OVERRIDE_FILE = join(ROOT, 'tts', 'artwork-direction-overrides.js');
+const AUTHORITY_FILE = join(ROOT, 'game-data', 'current-game.json');
 const HOST = '127.0.0.1';
 const PORT = Number(process.env.PORT || 4173);
 
@@ -57,14 +53,25 @@ function readBody(request, limit = 64 * 1024) {
   });
 }
 
+async function loadAuthority() {
+  const authority = JSON.parse(await readFile(AUTHORITY_FILE, 'utf8'));
+  if (authority?.schemaVersion !== 2 || authority?.authority !== 'current-game') {
+    throw new Error('Artwork authoring requires the complete current-game authority.');
+  }
+  return authority;
+}
+
 async function loadMap() {
-  return parseArtDirectionSource(await readFile(OVERRIDE_FILE, 'utf8'));
+  const authority = await loadAuthority();
+  return authority.artDirection && typeof authority.artDirection === 'object' ? authority.artDirection : {};
 }
 
 async function saveMap(map) {
-  const temporary = `${OVERRIDE_FILE}.tmp`;
-  await writeFile(temporary, serializeArtDirectionMap(map), 'utf8');
-  await rename(temporary, OVERRIDE_FILE);
+  const authority = await loadAuthority();
+  const temporary = `${AUTHORITY_FILE}.tmp`;
+  const next = { ...authority, artDirection: map };
+  await writeFile(temporary, `${JSON.stringify(next, null, 2)}\n`, 'utf8');
+  await rename(temporary, AUTHORITY_FILE);
 }
 
 async function handleArtDirectionApi(request, response) {
@@ -82,7 +89,7 @@ async function handleArtDirectionApi(request, response) {
     saved: true,
     id: String(payload?.id || ''),
     direction: after[String(payload?.id || '')] || null,
-    file: 'tts/artwork-direction-overrides.js',
+    file: 'game-data/current-game.json#artDirection',
   });
   return true;
 }
@@ -139,6 +146,6 @@ const server = createServer(async (request, response) => {
 
 server.listen(PORT, HOST, () => {
   console.log(`Gauntlet card-design compositor: http://${HOST}:${PORT}/card-design/`);
-  console.log('Save position writes tts/artwork-direction-overrides.js directly.');
+  console.log('Save position writes game-data/current-game.json#artDirection directly.');
   console.log('When the compositing pass is finished, run: node scripts/validate-artwork-render-pipeline.mjs && npm run tts:package');
 });

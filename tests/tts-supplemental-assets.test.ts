@@ -7,6 +7,7 @@ import { loadTtsComponentContract } from '../scripts/tts-component-contract.mjs'
 const contract = await loadTtsComponentContract();
 const generator = readFileSync('scripts/generate-tts-supplemental-assets.mjs', 'utf8');
 const trackerHelper = readFileSync('scripts/tts-sliding-trackers.mjs', 'utf8');
+const geometry = readFileSync('scripts/tts-supplemental-geometry.mjs', 'utf8');
 const productionSupplementals = readFileSync('card-design/supplemental-card.js', 'utf8');
 const renderer = readFileSync('tts/supplemental-renderer/supplemental-renderer.js', 'utf8');
 const rendererCss = readFileSync('tts/supplemental-renderer/supplemental-renderer.css', 'utf8');
@@ -138,14 +139,22 @@ describe('TTS supplemental component exports', () => {
     expect(readyTrackers.every((component: any) => component.cover?.kind)).toBe(true);
   });
 
-  it('derives TTS snap travel from the rendered registration lines instead of faction-specific coordinates', () => {
+  it('maps the actual rendered registration lines onto the live tracker collider', () => {
     expect(generator).toContain('captureProductionTracker');
-    expect(trackerHelper).toContain(".tracker-registration-line");
-    expect(trackerHelper).toContain('travelFraction: (rect.bottom - lineRect.top) / rect.height');
-    expect(trackerHelper).toContain('travelFraction * PHYSICAL_CARD_HEIGHT');
-    expect(trackerHelper).toContain('{ value: 0, offset: 0 }');
-    expect(trackerHelper).toContain('registration offsets are not strictly increasing');
-    expect(trackerHelper).not.toMatch(/command[^\n]*offset|influence[^\n]*offset|capital[^\n]*offset|intel[^\n]*offset|conviction[^\n]*offset/i);
+    expect(trackerHelper).toContain('.tracker-registration-line');
+    expect(trackerHelper).toContain('registrationFraction: rendererTravelPx / rect.height');
+    expect(trackerHelper).toContain('{ value: 0, rendererTravelPx: 0, registrationFraction: 0 }');
+    expect(trackerHelper).toContain('registration lines are not strictly increasing from the covered position');
+    expect(trackerHelper).not.toContain('value / max');
+    expect(trackerHelper).not.toContain('PHYSICAL_CARD_HEIGHT /');
+    expect(geometry).toContain('self.getBoundsNormalized()');
+    expect(geometry).toContain('local localLength = bounds.size.z / scaleZ');
+    expect(geometry).toContain('-localLength * registration.fraction');
+    expect(geometry).toContain('Wait.condition(');
+    expect(geometry).not.toContain('3.06');
+    expect(geometry).not.toContain('rendererTravelPx /');
+    expect(geometry).not.toContain('physicalTravel');
+    expect(geometry).not.toContain('value / max');
   });
 
   it('declares the nested Intelligence cover chain and distinct tracker layers', () => {
@@ -196,25 +205,36 @@ describe('TTS supplemental component exports', () => {
     expect(assembler).toContain("readFile(join(release.outputRoot, 'supplemental-manifest.json')");
     expect(assembler).toContain("component.deckInclusion === 'every-deck' || component.faction === starter.factionId");
     expect(assembler).toContain("component.productionStatus !== 'ready'");
-    expect(assembler).toContain("object?.GMNotes || '').startsWith(SUPPLEMENTAL_GUID_NOTE_PREFIX");
+    expect(assembler).toContain('cleanPriorAssembly(save, trackerTags)');
+    expect(assembler).toContain('SUPPLEMENTAL_GUID_NOTE_PREFIX');
+    expect(assembler).toContain('SUPPLEMENTAL_STACK_NOTE_PREFIX');
     expect(assembler).toContain("Name: 'Custom_Tile'");
-    expect(assembler).toContain('Stackable: false');
-    expect(assembler).toContain('AttachedSnapPoints: makeTrackerSnapPoints(component)');
+    expect(assembler).toContain('const presentation = trackerPresentation(component)');
+    expect(assembler).not.toContain('AttachedSnapPoints:');
     expect(assembler).toContain('ImageSecondaryURL: backUrl');
-    expect(assembler).toContain('addObjectTag(cover, tracker.tts.snapTag)');
+    expect(assembler).toContain('wireTrackerCovers(bag, starter, trackers, trackerTags)');
   });
 
-  it('is wired into source checks, package generation, save assembly, and TTS CI', () => {
+  it('is wired into source checks, package generation, save assembly, validation, and TTS CI', () => {
     expect(packageJson.scripts['tts:supplementals:check']).toBe('node scripts/generate-tts-supplemental-assets.mjs --check');
     expect(packageJson.scripts['tts:supplementals']).toBe('node scripts/generate-tts-supplemental-assets.mjs');
     expect(packageJson.scripts['tts:save:assemble']).toBe('node scripts/assemble-tts-supplemental-save.mjs');
     expect(packageJson.scripts['tts:check']).toContain('assemble-tts-supplemental-save.mjs --check');
+    expect(packageJson.scripts['tts:check']).toContain('tts-supplemental-geometry.mjs');
     expect(packageJson.scripts['tts:package']).toContain('npm run tts:supplementals');
     expect(packageJson.scripts['tts:package']).toContain('npm run tts:save:assemble');
+    expect(packageJson.scripts['tts:package']).toContain('validate-v070-authoritative-save.mjs');
     expect(workflow).toContain('scripts/generate-tts-supplemental-assets.mjs');
     expect(workflow).toContain('scripts/assemble-tts-supplemental-save.mjs');
+    expect(workflow).toContain('scripts/tts-supplemental-geometry.mjs');
     expect(workflow).toContain('Generate ready supplemental components');
-    expect(workflow).toContain('Assemble ready supplemental components into review scaffold');
+    expect(workflow).toContain('Generate finalized Proposal, Ledger, and Deed components');
+    expect(workflow).toContain('Refresh current Mystics Rite and Ritual components');
+    expect(workflow).toContain('if [[ "$render_supplementals" == "true" ]]');
+    expect(workflow).toContain('render_finalized=true');
+    expect(workflow).toContain('render_mystics=true');
+    expect(workflow).toContain('Assemble supplemental starter-kit contents');
+    expect(workflow).toContain('Validate authoritative v0.7.0 save contract');
     expect(workflow).toContain('run: npm run tts:save:assemble');
   });
 

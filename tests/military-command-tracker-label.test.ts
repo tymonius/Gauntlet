@@ -2,7 +2,8 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const supplementalRenderer = readFileSync('card-design/supplemental-card.js', 'utf8');
-const componentContract = JSON.parse(readFileSync('config/tts-component-contract.json', 'utf8'));
+const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
+const componentContract = currentGame.componentContract;
 const militaryTracker = componentContract.components.find((component: { id?: string }) => component.id === 'military-command-tracker');
 
 describe('Military Command tracker label', () => {
@@ -12,7 +13,8 @@ describe('Military Command tracker label', () => {
     expect(supplementalRenderer).toContain("resourceName: component.family === 'tracker'");
     expect(supplementalRenderer).toContain('component.trackedValue?.name');
     expect(supplementalRenderer).toContain('const resourceName = component.resourceName ||');
-    expect(supplementalRenderer).toContain('<h3>${esc(resourceName)} Tracker</h3>');
+    expect(supplementalRenderer).toContain('const title = trackerTitle(component, resourceName);');
+    expect(supplementalRenderer).toContain('<h3>${esc(title)}</h3>');
     expect(supplementalRenderer).toContain('${trackerMarks(component, resourceName)}');
   });
 });

@@ -12,7 +12,7 @@ describe('TTS Leader assets', () => {
   it('derives the current Leader roster from the current-game authority', () => {
     expect(catalogSource).toContain('export async function loadCurrentLeaders()');
     expect(catalogSource).toContain('resolveCurrentTtsRelease()');
-    expect(catalogSource).toContain('const sourceLeaders = Array.isArray(manifest.leaders)');
+    expect(catalogSource).toContain('const sourceLeaders = Array.isArray(authority.leaders)');
     expect(catalogSource).toContain('for (const leader of sourceLeaders)');
     expect(exporter).toContain('loadCurrentLeaders');
     expect(exporter).not.toMatch(/v0\.6\.[0-9]+/);
@@ -27,6 +27,16 @@ describe('TTS Leader assets', () => {
     expect(exporter).not.toContain('Materia Prima');
     expect(exporter).not.toContain('Guardians of the Circle');
     expect(readme).toContain('does not maintain a second copy of Leader rules or layout');
+  });
+
+  it('preserves the Card Review catalog artwork composition unless an authored override exists', () => {
+    expect(exporter).toContain("window.GAUNTLET_ART_DIRECTION?.[payload.key]");
+    expect(exporter).toContain("image.dataset.artCrop = 'catalog-css'");
+    expect(exporter).toContain("mode: 'catalog-css'");
+    expect(exporter).toContain('if (!authored || !Object.keys(authored).length)');
+    expect(exporter).toContain('GauntletArtworkCrop.apply');
+    expect(exporter).toContain('authored,');
+    expect(exporter).not.toContain('payload.direction || null');
   });
 
   it('captures exact 400 by 560 Leader rasters without fractional-position inflation', () => {

@@ -1,7 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { buildFinalizedExportPlan } from '../scripts/generate-tts-finalized-supplementals.mjs';
-import { finalizeSupplementalObjectPresentation } from '../scripts/finalize-tts-save.mjs';
 
 describe('finalized TTS supplemental exports', () => {
   it('covers all final export-pending Proposal, Ledger, and Deed components from current authority', async () => {
@@ -21,52 +20,59 @@ describe('finalized TTS supplemental exports', () => {
     expect(deeds[0].backPolicy).toBe('standardBack');
   });
 
-  it('reuses the production Proposal, Ledger, and Deed renderers instead of defining second visual systems', () => {
+  it('reuses the complete production rendering lifecycle instead of defining a second visual system', () => {
+    const shell = readFileSync('tts/finalized-supplemental-renderer/index.html', 'utf8');
     const renderer = readFileSync('tts/finalized-supplemental-renderer/renderer.js', 'utf8');
+
     expect(renderer).toContain("from '/card-design/proposal-card.js'");
     expect(renderer).toContain("from '/card-design/capital-ledger.js'");
     expect(renderer).toContain("from '/card-design/deed-card.js'");
     expect(renderer).toContain('proposalFace(');
     expect(renderer).toContain('capitalLedgerMarkup(');
     expect(renderer).toContain('deedCardMarkup(');
+
+    expect(shell).toContain('/card-design/card-design-refinement.css');
+    expect(shell).toContain('/card-design/supplemental-refinements.css');
+    expect(shell).toContain('/tts/artwork-direction-overrides.js');
+    expect(shell).toContain('/tts/artwork-crop.js');
+    expect(shell).toContain('/card-design/card-design.js');
+    expect(renderer).toContain('prepareProductionCard(');
+    expect(renderer).toContain('GauntletArtworkCrop.apply(');
+    expect(renderer).toContain('title is clipped');
+    expect(renderer).toContain('rules are clipped');
   });
 
-  it('orients landscape supplemental cards generically from manifest metadata', () => {
-    const save = {
-      ObjectStates: [
-        {
-          Name: 'Bag',
-          ContainedObjects: [
-            { Name: 'CardCustom', GMNotes: 'gauntlet:supplemental:financiers-deed', SidewaysCard: false },
-            { Name: 'CardCustom', GMNotes: 'gauntlet:supplemental:financiers-deed', SidewaysCard: false },
-          ],
-        },
-      ],
-    };
-    const manifest = {
-      ready: [
-        {
-          id: 'financiers-deed',
-          quantity: 2,
-          representation: 'card',
-          tts: { sidewaysCard: true },
-        },
-      ],
-    };
-
-    const result = finalizeSupplementalObjectPresentation(save, manifest);
-    expect(result.sidewaysCount).toBe(2);
-    expect(save.ObjectStates[0].ContainedObjects.every(object => object.SidewaysCard === true)).toBe(true);
+  it('normalizes landscape Deed artwork into a standard portrait TTS image cell', () => {
+    const generator = readFileSync('scripts/generate-tts-finalized-supplementals.mjs', 'utf8');
+    expect(generator).toContain("wrapper.id = 'tts-portrait-card-cell'");
+    expect(generator).toContain("width: '240px'");
+    expect(generator).toContain("height: '336px'");
+    expect(generator).toContain('rotate(-90deg)');
+    expect(generator).toContain("cellOrientation: 'portrait'");
+    expect(generator).toContain("sidewaysCard: item.orientation === 'landscape'");
   });
 
-  it('wires finalized exports into checks, packaging, and TTS CI', () => {
+  it('assembles landscape supplementals directly at their authoritative TTS orientation and snap eligibility', () => {
+    const assembler = readFileSync('scripts/assemble-tts-supplemental-save.mjs', 'utf8');
+    expect(assembler).toContain('const sideways = component.tts?.sidewaysCard === true');
+    expect(assembler).toContain("const tabletopRotation = component.family === 'deed-card' ? 0 : (sideways ? 90 : 0)");
+    expect(assembler).toContain('Transform: transform(0, 1, 0, tabletopRotation)');
+    expect(assembler).toContain('SidewaysCard: sideways');
+    expect(assembler).toContain("tags: Object.freeze([DEED_STACK_TAG, FACTION_ZONE_TAG])");
+    expect(assembler).not.toContain('finalizeSupplementalObjectPresentation');
+  });
+
+  it('wires finalized exports into generation followed by authoritative save validation', () => {
     const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
     const workflow = readFileSync('.github/workflows/generate-tts-card-assets.yml', 'utf8');
 
     expect(packageJson.scripts['tts:finalized-supplementals:check']).toContain('--check');
     expect(packageJson.scripts['tts:package']).toContain('tts:finalized-supplementals');
-    expect(packageJson.scripts['tts:package']).toContain('tts:save:finalize');
+    expect(packageJson.scripts['tts:package']).toContain('validate-v070-authoritative-save.mjs');
+    expect(packageJson.scripts['tts:save:finalize']).toBeUndefined();
     expect(workflow).toContain('Generate finalized Proposal, Ledger, and Deed components');
-    expect(workflow).toContain('Finalize supplemental object presentation');
+    expect(workflow).toContain('Validate authoritative v0.7.0 save contract');
+    expect(workflow).not.toContain('Finalize card and tracker physical presentation');
+    expect(workflow).not.toContain('scripts/finalize-tts-save.mjs');
   });
 });

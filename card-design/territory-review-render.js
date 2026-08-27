@@ -93,7 +93,7 @@ await (async () => {
       arena: Boolean(territory.arena),
       complexity: territory.complexity || 'Unspecified',
       watchlist: territory.watchlist || 'None',
-      status: territory.status || 'Current candidate',
+      status: territory.status || 'Current',
       text: String(territory.text || '').trim(),
       source: currentGame.authorityUrl,
       artDirection: currentGame.artDirectionFor(territory.id) || territory.artDirection,

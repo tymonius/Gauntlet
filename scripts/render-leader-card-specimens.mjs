@@ -2,7 +2,7 @@ import { createServer } from 'node:http';
 import { mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { extname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { loadCurrentGameManifest } from './current-game-authority.mjs';
+import { loadCurrentGameAuthority } from './current-game-authority.mjs';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const OUTPUT = join(ROOT, 'card-design', 'generated', 'leaders');
@@ -51,7 +51,7 @@ async function main() {
   try { ({ chromium } = await import('playwright')); }
   catch { throw new Error('Playwright is required.'); }
 
-  const current = await loadCurrentGameManifest();
+  const current = await loadCurrentGameAuthority();
   const expectedVersion = String(current.displayVersion || current.version || '').trim();
   const expectedLeaderNames = (current.leaders || []).map(leader => leader.name);
   if (!expectedVersion || !expectedLeaderNames.length) throw new Error('Current-game authority is missing displayVersion or Leaders.');
