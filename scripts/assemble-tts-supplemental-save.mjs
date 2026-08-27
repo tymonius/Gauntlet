@@ -8,6 +8,8 @@ import { STAGING_ROOT } from './stage-tts-release-assets.mjs';
 
 const SUPPLEMENTAL_GUID_NOTE_PREFIX = 'gauntlet:supplemental:';
 const SUPPLEMENTAL_STACK_NOTE_PREFIX = 'gauntlet:supplemental-stack:';
+const STARTER_DECK_NOTE_PREFIX = 'gauntlet:starter-deck:';
+const STARTER_TERRITORY_STACK_NOTE_PREFIX = 'gauntlet:starter-territories:';
 const DEED_TAG = 'gauntlet-deed';
 const DEED_STACK_TAG = 'gauntlet-deed-stack';
 const FACTION_ZONE_TAG = 'gauntlet-faction-zone';
@@ -257,6 +259,50 @@ function stackGeneratedFamilies(bag, generatedEntries, guid) {
   return stacked;
 }
 
+function supplementalStackOrder(stackKey, applicable) {
+  const definition = FAMILY_STACKS.find(candidate => candidate.key === stackKey);
+  if (!definition) return Number.MAX_SAFE_INTEGER;
+  const index = applicable.findIndex(component => definition.families.includes(component.family));
+  return index < 0 ? Number.MAX_SAFE_INTEGER : index;
+}
+
+function reorderStarterBagContents(bag, starter, applicable) {
+  const original = [...(bag.ContainedObjects || [])];
+  const originalIndex = new Map(original.map((object, index) => [object, index]));
+  const componentOrder = new Map(applicable.map((component, index) => [component.id, { component, index }]));
+  const leader = findLeaderObject(bag, starter);
+
+  const orderKey = object => {
+    if (object === leader) return [0, 0];
+
+    const notes = String(object?.GMNotes || '');
+    if (notes.startsWith(SUPPLEMENTAL_GUID_NOTE_PREFIX)) {
+      const id = notes.slice(SUPPLEMENTAL_GUID_NOTE_PREFIX.length);
+      const record = componentOrder.get(id);
+      if (!record) return [3, originalIndex.get(object) ?? Number.MAX_SAFE_INTEGER];
+      if (record.component.representation === 'sliding-tracker') return [1, record.index];
+      if (record.component.family === 'reference-card') return [2, record.index];
+      return [3, record.index];
+    }
+
+    if (notes.startsWith(SUPPLEMENTAL_STACK_NOTE_PREFIX)) {
+      return [3, supplementalStackOrder(notes.slice(SUPPLEMENTAL_STACK_NOTE_PREFIX.length), applicable)];
+    }
+    if (notes === `${STARTER_DECK_NOTE_PREFIX}${starter.id}`) return [4, 0];
+    if (notes === `${STARTER_TERRITORY_STACK_NOTE_PREFIX}${starter.id}`) return [5, 0];
+
+    // Player token and Battle Die (and any future non-card utilities) follow the
+    // requested card/setup sequence instead of interrupting it.
+    return [6, originalIndex.get(object) ?? Number.MAX_SAFE_INTEGER];
+  };
+
+  bag.ContainedObjects = original.sort((left, right) => {
+    const a = orderKey(left);
+    const b = orderKey(right);
+    return a[0] - b[0] || a[1] - b[1];
+  });
+}
+
 function starterBagNickname(starter) {
   return `${starter.name} — ${starter.leader.name}`;
 }
@@ -389,6 +435,7 @@ export function assembleReadySupplementals(save, starterManifest, supplementalMa
     wireTrackerCovers(bag, starter, trackers, trackerTags);
     const stackedFamilies = stackGeneratedFamilies(bag, generatedEntries, guid);
     orientGeneratedContentsForHost(bag);
+    reorderStarterBagContents(bag, starter, applicable);
     for (const component of applicable) assembledIds.add(component.id);
 
     const names = applicable.map(component => component.name || component.id);
