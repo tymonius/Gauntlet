@@ -152,6 +152,14 @@ describe('complete v0.7.0 current-game authority', () => {
     }
   });
 
+  it('keeps the embedded Arcane-symbol authority current-version native', () => {
+    expect(authority.arcaneSymbol.version).toBe('v0.7.0');
+    expect(authority.arcaneSymbol).not.toHaveProperty('base_version');
+    expect(authority.arcaneSymbol.mechanics_changed).toBe(false);
+    expect(authority.arcaneSymbol.general_rule.body).toContain('Arcane cards are marked with the Mystics sigil');
+    expect(authority.provenance.historicalInputs.arcaneSymbol).toBe('/docs/v0.6.4-arcane-symbol.json');
+  });
+
   it('stores the effective component package directly without runtime corrections', () => {
     const contract = authority.componentContract;
     expect(contract.standardBack.mode).toBe('universal-black');
