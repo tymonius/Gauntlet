@@ -54,6 +54,306 @@ function makeContinuationGuidFactory(save) {
   };
 }
 
+
+const CAPITAL_LEDGER_STARTING_BALANCE = 2;
+const CAPITAL_LEDGER_ROWS_PER_PAGE = 11;
+
+function capitalLedgerLuaScript() {
+  return String.raw\`local STARTING_BALANCE = 2
+local ROWS_PER_PAGE = 11
+
+local ledger = {
+  pages = {{}},
+  page = 1,
+  draftEntry = "",
+  draftDelta = "",
+}
+
+local function safeDecode(saved)
+  if saved == nil or saved == "" then return nil end
+  local ok, decoded = pcall(JSON.decode, saved)
+  if not ok or type(decoded) ~= "table" then return nil end
+  return decoded
+end
+
+local function normalize()
+  if type(ledger.pages) ~= "table" or #ledger.pages == 0 then ledger.pages = {{}} end
+  if type(ledger.page) ~= "number" then ledger.page = 1 end
+  ledger.page = math.max(1, math.min(math.floor(ledger.page), #ledger.pages))
+  ledger.draftEntry = tostring(ledger.draftEntry or "")
+  ledger.draftDelta = tostring(ledger.draftDelta or "")
+  for pageIndex, page in ipairs(ledger.pages) do
+    if type(page) ~= "table" then
+      ledger.pages[pageIndex] = {}
+    else
+      local cleaned = {}
+      for _, entry in ipairs(page) do
+        if type(entry) == "table" and tostring(entry.entry or "") ~= "" and tonumber(entry.delta) ~= nil then
+          table.insert(cleaned, {
+            entry = tostring(entry.entry),
+            delta = math.floor(tonumber(entry.delta)),
+          })
+        end
+      end
+      ledger.pages[pageIndex] = cleaned
+    end
+  end
+end
+
+local function totalBalance()
+  local balance = STARTING_BALANCE
+  for _, page in ipairs(ledger.pages) do
+    for _, entry in ipairs(page) do
+      balance = balance + (tonumber(entry.delta) or 0)
+    end
+  end
+  return balance
+end
+
+local function openingBalanceForPage(pageIndex)
+  local balance = STARTING_BALANCE
+  for index = 1, pageIndex - 1 do
+    for _, entry in ipairs(ledger.pages[index] or {}) do
+      balance = balance + (tonumber(entry.delta) or 0)
+    end
+  end
+  return balance
+end
+
+local function formatDelta(value)
+  value = tonumber(value) or 0
+  if value > 0 then return "+" .. tostring(value) end
+  return tostring(value)
+end
+
+local function setValue(id, value)
+  self.UI.setValue(id, tostring(value or ""))
+end
+
+local function renderLedger()
+  normalize()
+  local currentPage = ledger.pages[ledger.page]
+  local running = openingBalanceForPage(ledger.page)
+
+  setValue("ledger-page-label", "PAGE " .. tostring(ledger.page) .. " OF " .. tostring(#ledger.pages))
+  setValue("ledger-opening-balance", tostring(running))
+  setValue("ledger-current-balance", tostring(totalBalance()))
+  setValue("ledger-draft-entry", ledger.draftEntry)
+  setValue("ledger-draft-delta", ledger.draftDelta)
+
+  for row = 1, ROWS_PER_PAGE do
+    local item = currentPage[row]
+    if item ~= nil then
+      running = running + (tonumber(item.delta) or 0)
+      setValue("ledger-row-" .. row .. "-entry", item.entry)
+      setValue("ledger-row-" .. row .. "-delta", formatDelta(item.delta))
+      setValue("ledger-row-" .. row .. "-balance", running)
+    else
+      setValue("ledger-row-" .. row .. "-entry", "")
+      setValue("ledger-row-" .. row .. "-delta", "")
+      setValue("ledger-row-" .. row .. "-balance", "")
+    end
+  end
+
+  self.setName("Capital Ledger — Balance: " .. tostring(totalBalance()))
+  self.setDescription("Public Financier Capital record. Right-click or use OPEN LEDGER to inspect and record transactions.")
+end
+
+local function colorOf(player)
+  if player ~= nil and player.color ~= nil then return player.color end
+  if type(player) == "string" then return player end
+  return "White"
+end
+
+local function message(player, text)
+  broadcastToColor(text, colorOf(player), {0.95, 0.82, 0.45})
+end
+
+function openLedger(player)
+  self.UI.setAttribute("ledger-window", "active", "true")
+  renderLedger()
+end
+
+function openLedgerButton(object, playerColor, altClick)
+  openLedger(playerColor)
+end
+
+function closeLedger(player, value, id)
+  self.UI.setAttribute("ledger-window", "active", "false")
+end
+
+function updateLedgerDraftEntry(player, value, id)
+  ledger.draftEntry = tostring(value or "")
+end
+
+function updateLedgerDraftDelta(player, value, id)
+  ledger.draftDelta = tostring(value or "")
+end
+
+function addLedgerEntry(player, value, id)
+  normalize()
+  local entryText = tostring(ledger.draftEntry or ""):gsub("^%s+", ""):gsub("%s+$", "")
+  local deltaText = tostring(ledger.draftDelta or ""):gsub("%s+", "")
+  local delta = tonumber(deltaText)
+
+  if entryText == "" then
+    message(player, "Capital Ledger: enter a transaction description.")
+    return
+  end
+  if delta == nil or delta ~= math.floor(delta) then
+    message(player, "Capital Ledger: amount must be a whole number such as +2 or -3.")
+    return
+  end
+  delta = math.floor(delta)
+  if totalBalance() + delta < 0 then
+    message(player, "Capital cannot fall below 0.")
+    return
+  end
+
+  ledger.page = #ledger.pages
+  if #ledger.pages[ledger.page] >= ROWS_PER_PAGE then
+    table.insert(ledger.pages, {})
+    ledger.page = #ledger.pages
+  end
+
+  table.insert(ledger.pages[ledger.page], {
+    entry = entryText,
+    delta = delta,
+  })
+  ledger.draftEntry = ""
+  ledger.draftDelta = ""
+  renderLedger()
+end
+
+function undoLedgerEntry(player, value, id)
+  normalize()
+  for pageIndex = #ledger.pages, 1, -1 do
+    local page = ledger.pages[pageIndex]
+    if #page > 0 then
+      table.remove(page, #page)
+      while #ledger.pages > 1 and #ledger.pages[#ledger.pages] == 0 do
+        table.remove(ledger.pages, #ledger.pages)
+      end
+      ledger.page = math.min(pageIndex, #ledger.pages)
+      renderLedger()
+      return
+    end
+  end
+  message(player, "Capital Ledger: there is no transaction to undo.")
+end
+
+function previousLedgerPage(player, value, id)
+  normalize()
+  if ledger.page > 1 then ledger.page = ledger.page - 1 end
+  renderLedger()
+end
+
+function nextLedgerPage(player, value, id)
+  normalize()
+  if ledger.page < #ledger.pages then ledger.page = ledger.page + 1 end
+  renderLedger()
+end
+
+function turnLedgerPage(player, value, id)
+  normalize()
+  if ledger.page < #ledger.pages then
+    ledger.page = ledger.page + 1
+  elseif #ledger.pages[ledger.page] == 0 then
+    message(player, "Capital Ledger: the current page is still blank.")
+  else
+    table.insert(ledger.pages, {})
+    ledger.page = #ledger.pages
+  end
+  renderLedger()
+end
+
+function onSave()
+  normalize()
+  return JSON.encode(ledger)
+end
+
+function onLoad(savedData)
+  ledger = safeDecode(savedData) or ledger
+  normalize()
+  self.clearButtons()
+  self.createButton({
+    click_function = "openLedgerButton",
+    function_owner = self,
+    label = "OPEN LEDGER",
+    position = {0, 0.28, -2.02},
+    rotation = {0, 0, 0},
+    width = 920,
+    height = 220,
+    font_size = 90,
+    color = {0.12, 0.23, 0.15, 0.96},
+    font_color = {0.96, 0.90, 0.72, 1},
+    hover_color = {0.18, 0.32, 0.21, 1},
+    press_color = {0.08, 0.16, 0.10, 1},
+    tooltip = "Open the public Capital Ledger",
+  })
+  self.addContextMenuItem("Open Ledger", function(playerColor) openLedger(playerColor) end)
+  Wait.frames(renderLedger, 1)
+end
+\`;
+}
+
+function capitalLedgerXml() {
+  const rows = Array.from({ length: CAPITAL_LEDGER_ROWS_PER_PAGE }, (_, index) => {
+    const row = index + 1;
+    return \`
+      <HorizontalLayout preferredHeight="42" childForceExpandHeight="true" childForceExpandWidth="false" spacing="6">
+        <Text id="ledger-row-\${row}-entry" text="" preferredWidth="430" fontSize="25" color="#2E281F" alignment="MiddleLeft" />
+        <Text id="ledger-row-\${row}-delta" text="" preferredWidth="120" fontSize="25" color="#2E281F" alignment="MiddleCenter" />
+        <Text id="ledger-row-\${row}-balance" text="" preferredWidth="130" fontSize="25" color="#2E281F" alignment="MiddleCenter" />
+      </HorizontalLayout>\`;
+  }).join('');
+
+  return \`<Panel id="ledger-window" active="false" width="820" height="930" color="#E8D9B8F5" outline="#31291F" outlineSize="3 3" padding="22 22 22 22">
+    <VerticalLayout childForceExpandHeight="false" childForceExpandWidth="true" spacing="8">
+      <HorizontalLayout preferredHeight="66" childForceExpandWidth="false">
+        <Text text="FINANCIERS" preferredWidth="220" fontSize="24" color="#324D37" alignment="MiddleLeft" />
+        <Text text="CAPITAL LEDGER" preferredWidth="380" fontSize="37" color="#252018" alignment="MiddleCenter" />
+        <Button text="CLOSE" onClick="closeLedger" preferredWidth="140" fontSize="22" color="#4A4134" textColor="#F4E8CC" />
+      </HorizontalLayout>
+
+      <HorizontalLayout preferredHeight="54" childForceExpandWidth="false" spacing="8">
+        <Text text="Opening Balance" preferredWidth="210" fontSize="23" color="#3A3328" alignment="MiddleLeft" />
+        <Text id="ledger-opening-balance" text="2" preferredWidth="90" fontSize="28" color="#252018" alignment="MiddleCenter" />
+        <Text id="ledger-page-label" text="PAGE 1 OF 1" preferredWidth="220" fontSize="20" color="#5E5545" alignment="MiddleCenter" />
+        <Text text="CURRENT CAPITAL" preferredWidth="170" fontSize="20" color="#324D37" alignment="MiddleRight" />
+        <Text id="ledger-current-balance" text="2" preferredWidth="70" fontSize="32" color="#1F3D27" alignment="MiddleCenter" />
+      </HorizontalLayout>
+
+      <Panel preferredHeight="2" color="#665A46" />
+
+      <HorizontalLayout preferredHeight="42" childForceExpandWidth="false" spacing="6">
+        <Text text="ENTRY" preferredWidth="430" fontSize="22" color="#4A4134" alignment="MiddleLeft" />
+        <Text text="±" preferredWidth="120" fontSize="22" color="#4A4134" alignment="MiddleCenter" />
+        <Text text="BALANCE" preferredWidth="130" fontSize="22" color="#4A4134" alignment="MiddleCenter" />
+      </HorizontalLayout>
+
+      \${rows}
+
+      <Panel preferredHeight="2" color="#665A46" />
+
+      <HorizontalLayout preferredHeight="60" childForceExpandWidth="false" spacing="8">
+        <InputField id="ledger-draft-entry" text="" placeholder="Transaction (Income, Buy Deed, Play the Market…)" onValueChanged="updateLedgerDraftEntry" preferredWidth="430" fontSize="23" textColor="#282218" />
+        <InputField id="ledger-draft-delta" text="" placeholder="+ / −" onValueChanged="updateLedgerDraftDelta" preferredWidth="120" fontSize="23" textColor="#282218" />
+        <Button text="POST ENTRY" onClick="addLedgerEntry" preferredWidth="180" fontSize="22" color="#324D37" textColor="#F4E8CC" />
+      </HorizontalLayout>
+
+      <HorizontalLayout preferredHeight="56" childForceExpandWidth="false" spacing="8">
+        <Button text="◀ PREVIOUS" onClick="previousLedgerPage" preferredWidth="160" fontSize="20" color="#5A5143" textColor="#F4E8CC" />
+        <Button text="NEXT ▶" onClick="nextLedgerPage" preferredWidth="140" fontSize="20" color="#5A5143" textColor="#F4E8CC" />
+        <Button text="TURN PAGE" onClick="turnLedgerPage" preferredWidth="170" fontSize="20" color="#324D37" textColor="#F4E8CC" />
+        <Button text="UNDO LAST ENTRY" onClick="undoLedgerEntry" preferredWidth="220" fontSize="20" color="#6B493B" textColor="#F4E8CC" />
+      </HorizontalLayout>
+
+      <Text text="Public record · Opening Capital 2 · Capital may temporarily exceed the Capital Limit · Capital cannot fall below 0" preferredHeight="40" fontSize="18" color="#665A46" alignment="MiddleCenter" />
+    </VerticalLayout>
+  </Panel>\`;
+}
+
 function makeSupplementalCard(component, releaseAssets, guid) {
   if (!component.tts?.faceFile || !component.tts?.backFile || !component.tts?.deckId) {
     throw new Error(`Ready supplemental card ${component.id} is missing rendered TTS metadata.`);
@@ -86,9 +386,9 @@ function makeSupplementalCard(component, releaseAssets, guid) {
     GridProjection: false,
     HideWhenFaceDown: false,
     Hands: true,
-    LuaScript: '',
+    LuaScript: component.family === 'ledger' ? capitalLedgerLuaScript() : '',
     LuaScriptState: '',
-    XmlUI: '',
+    XmlUI: component.family === 'ledger' ? capitalLedgerXml() : '',
     GUID: guid(),
     CardID: Number(component.tts.cardId),
     SidewaysCard: sideways,
