@@ -1,25 +1,34 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "release_version": "v0.7.0",
-  "source_version": "v0.6.4-candidate",
-  "base_version": "v0.6.3",
-  "authority_set_id": "a66c0e7c77c3dc42688d0cf577fbfcc683352a62c6012d14a99b9d9c3d4a5bba",
+  "source_version": "v0.7.0",
+  "authority_set_id": "27710ad754929498a9bb1b94c0f63d11c3d778d4a5d9b42ff340f4aa8764b09b",
   "current_game_authority": "game-data/current-game.json",
-  "source_inputs": {
-    "baseGameplay": "/artifacts/reconstruction/clean-v0.6.3/complete-authority/canonical-structured-data.json",
-    "cardChanges": "/docs/v0.6.4-card-additions.json",
-    "territories": "/docs/v0.6.4-territories.json",
-    "proposals": "/docs/v0.6.4-diplomat-proposals.json",
-    "arcaneSymbol": "/docs/v0.6.4-arcane-symbol.json",
-    "rules": "/docs/v0.6.4-rules.json",
-    "componentContract": "/config/tts-component-contract.json",
-    "starterDecks": "/deckbuilder/starter-decks.json"
+  "current_rulebook_authority": "rulebook/player-facing/current-rulebook.md",
+  "historical_derivation": {
+    "historicalBaseVersion": "v0.6.3",
+    "transitionalSourceVersion": "v0.6.4-candidate",
+    "note": "The historical inputs below document how v0.7.0 was derived. They are not runtime inputs, override layers, or current authorities.",
+    "historicalInputs": {
+      "baseGameplay": "/artifacts/reconstruction/clean-v0.6.3/complete-authority/canonical-structured-data.json",
+      "cardChanges": "/docs/v0.6.4-card-additions.json",
+      "territories": "/docs/v0.6.4-territories.json",
+      "proposals": "/docs/v0.6.4-diplomat-proposals.json",
+      "arcaneSymbol": "/docs/v0.6.4-arcane-symbol.json",
+      "rules": "/docs/v0.6.4-rules.json",
+      "componentContract": "/config/tts-component-contract.json",
+      "starterDecks": "/deckbuilder/starter-decks.json"
+    }
+  },
+  "publication_derived_assets": {
+    "card_anatomy_figure": "releases/v0.7.0/Gauntlet_v0.7.0_Card_Anatomy.png"
   },
   "counts": {
     "playable_cards": 142,
     "territories": 25,
     "factions": 6,
     "leaders": 12,
+    "proposals": 9,
     "starter_decks": 12
   }
 }
