@@ -144,13 +144,14 @@ function productionComponentRequest(item) {
   throw new Error(`No card-design production component request for ${component.id} (${component.family}).`);
 }
 
-async function captureComponent(page, baseUrl, item, side, outputPath) {
+async function captureComponent(page, baseUrl, item, side, outputPath, displayVersion) {
   const request = productionComponentRequest(item);
   const url = new URL('/card-design/component-print-render.html', baseUrl);
   url.searchParams.set('kind', request.kind);
   url.searchParams.set('id', request.id);
   url.searchParams.set('side', side);
   url.searchParams.set('orientation', item.orientation);
+  if (displayVersion) url.searchParams.set('version', displayVersion);
 
   await page.goto(url.toString(), { waitUntil: 'load' });
   await page.waitForSelector('#renderTarget > .gauntlet-card');
@@ -305,12 +306,12 @@ export async function renderFinalizedSupplementals(plan) {
     for (const item of components) {
       const component = item.component;
       const frontFile = `supplementals/fronts/${component.id}.png`;
-      await captureComponent(page, baseUrl, item, 'front', join(release.outputRoot, frontFile));
+      await captureComponent(page, baseUrl, item, 'front', join(release.outputRoot, frontFile), release.displayVersion || release.version);
 
       let reverseFile;
       if (item.backPolicy === 'twoSided') {
         reverseFile = `supplementals/reverses/${component.id}.png`;
-        await captureComponent(page, baseUrl, item, 'reverse', join(release.outputRoot, reverseFile));
+        await captureComponent(page, baseUrl, item, 'reverse', join(release.outputRoot, reverseFile), release.displayVersion || release.version);
       } else {
         reverseFile = resolveFactionBackFile(contract, component.faction);
         await access(join(release.outputRoot, reverseFile));
