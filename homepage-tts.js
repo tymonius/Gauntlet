@@ -1,7 +1,7 @@
 const factionsSection = document.querySelector('#factions');
 
 if (factionsSection && !document.querySelector('#tabletop-simulator')) {
-  loadStylesheet('/homepage-tts.css');
+  loadStylesheet('/homepage-tts.css?v=20260827-1');
 
   const section = document.createElement('section');
   section.id = 'tabletop-simulator';
@@ -11,17 +11,17 @@ if (factionsSection && !document.querySelector('#tabletop-simulator')) {
     <div class="tts-shell">
       <div class="tts-copy">
         <p class="eyebrow declaration-overline">Play remotely</p>
-        <p class="tts-status"><span>v0.7.0</span> Tabletop Simulator build · final in-game QA</p>
+        <p class="tts-status"><span>v0.7.0</span> · Live on Steam Workshop</p>
         <h2 id="tts-title">Bring the Gauntlet to the digital table.</h2>
         <p class="tts-lede">
-          The complete v0.7.0 Tabletop Simulator implementation reproduces Gauntlet's physical play surface for remote two-player games: decks, Leaders, Territories, the six-position Gauntlet, starter Bags, player pieces, and faction-specific components.
+          Gauntlet v0.7.0 is now available on the Steam Workshop for Tabletop Simulator, with decks, Leaders, Territories, the six-position Gauntlet, starter Bags, player pieces, and faction-specific components ready for online play.
         </p>
         <p class="tts-note">
-          Rules remain player-operated rather than automated. Workshop publication follows clean-client and full-game QA.
+          Rules remain player-operated rather than automated, so the same Rulebook and card interactions govern play at the digital table.
         </p>
         <div class="tts-actions">
-          <a class="button primary" href="https://github.com/tymonius/Gauntlet/issues/851" target="_blank" rel="noopener noreferrer">Follow TTS release progress</a>
-          <a class="button secondary" href="#updates">Get the Workshop launch update</a>
+          <a class="button primary" href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener noreferrer">Open on Steam Workshop</a>
+          <a class="button secondary" href="/rulebook/">Read the Rulebook</a>
         </div>
       </div>
 
@@ -29,7 +29,7 @@ if (factionsSection && !document.querySelector('#tabletop-simulator')) {
         <article>
           <span class="tts-feature-number">01</span>
           <h3>Complete play surface</h3>
-          <p>Red and Blue player areas, six Territory positions, hand zones, Player Tokens, battle dice, and the physical spaces needed to run a game.</p>
+          <p>White and Green player areas, six Territory positions, hand zones, Player Tokens, battle dice, and the physical spaces needed to run a game.</p>
         </article>
         <article>
           <span class="tts-feature-number">02</span>
@@ -52,7 +52,7 @@ if (factionsSection && !document.querySelector('#tabletop-simulator')) {
           loading="lazy"
           decoding="async"
         />
-        <figcaption>Gauntlet set up for remote playtesting in Tabletop Simulator.</figcaption>
+        <figcaption>Gauntlet v0.7.0 set up for online play in Tabletop Simulator.</figcaption>
       </figure>
     </div>
   `;
