@@ -9,8 +9,11 @@ const generator = readFileSync('scripts/generate-tts-supplemental-assets.mjs', '
 const trackerHelper = readFileSync('scripts/tts-sliding-trackers.mjs', 'utf8');
 const geometry = readFileSync('scripts/tts-supplemental-geometry.mjs', 'utf8');
 const productionSupplementals = readFileSync('card-design/supplemental-card.js', 'utf8');
-const renderer = readFileSync('tts/supplemental-renderer/supplemental-renderer.js', 'utf8');
-const rendererCss = readFileSync('tts/supplemental-renderer/supplemental-renderer.css', 'utf8');
+const componentRenderer = readFileSync('card-design/component-print-render.js', 'utf8');
+const riteDesign = readFileSync('card-design/rite-card.js', 'utf8');
+const referenceCss = readFileSync('card-design/reference-card.css', 'utf8');
+const referenceDividerCss = readFileSync('card-design/reference-divider-rules.css', 'utf8');
+const universalReferenceCss = readFileSync('card-design/universal-reference.css', 'utf8');
 const stager = readFileSync('scripts/stage-tts-release-assets.mjs', 'utf8');
 const assembler = readFileSync('scripts/assemble-tts-supplemental-save.mjs', 'utf8');
 const workflow = readFileSync('.github/workflows/generate-tts-card-assets.yml', 'utf8');
@@ -59,10 +62,11 @@ describe('TTS supplemental component exports', () => {
     expect(bloodText).toContain('without setting a Gambit or choosing a Tactic');
     expect(crossingText).toContain('during Denouement');
     expect(crossingText).not.toContain('Ritual of Ascendance');
-    expect(renderer).toContain("image.src = `/${String(record.reverseArtwork");
-    expect(renderer).toContain("'mystics-rite-echoes': '◉'");
-    expect(renderer).toContain("'mystics-rite-blood': '◆'");
-    expect(renderer).toContain("'mystics-rite-crossing': '✦'");
+    expect(generator).toContain('/card-design/component-print-render.html');
+    expect(generator).toContain("return { kind: 'rite', id: String(record.id).replace(/^mystics-rite-/, '') }");
+    expect(generator).not.toContain('/tts/supplemental-renderer/');
+    expect(riteDesign).toContain('class="rite-faction-emblem"');
+    expect(riteDesign).toContain('completedArtwork(rite)');
   });
 
   it('treats every physical reference card as ready public two-sided material', async () => {
@@ -100,10 +104,14 @@ describe('TTS supplemental component exports', () => {
     expect(JSON.stringify(byId.get('inquisition-purge-reference'))).toContain('Direct Purges');
     expect(JSON.stringify(byId.get('inquisition-purge-reference'))).not.toContain('Final Judgment');
 
-    expect(renderer).toContain("record.renderer === 'reference-card'");
-    expect(renderer).toContain('Public supplemental reference · no card value · not part of the Deck');
-    expect(rendererCss).toContain('Reference cards are intentionally distinct from playable cards');
-    expect(rendererCss).toContain('.reference-table');
+    expect(generator).toContain("return { kind: 'reference', id: record.id }");
+    expect(componentRenderer).toContain('"reference"');
+    expect(componentRenderer).toContain('versionOverride');
+    expect(referenceCss).toContain('.reference-watermark');
+    expect(referenceCss).toContain('.reference-table');
+    expect(referenceDividerCss).toContain('border-top: 0 !important');
+    expect(universalReferenceCss).toContain('.reference-card[data-component-id="universal-reference"] .reference-watermark');
+    expect(universalReferenceCss).toContain('mask-image: url("../images/Gauntlet.svg")');
   });
 
   it('exports all six production tracker designs without confusing physical capacity with rules maximum', async () => {
@@ -141,6 +149,9 @@ describe('TTS supplemental component exports', () => {
 
   it('maps the actual rendered registration lines onto the live tracker collider', () => {
     expect(generator).toContain('captureProductionTracker');
+    expect(trackerHelper).toContain('/card-design/component-print-render.html');
+    expect(trackerHelper).toContain("url.searchParams.set('kind', 'tracker')");
+    expect(trackerHelper).toContain("url.searchParams.set('version', displayVersion)");
     expect(trackerHelper).toContain('.tracker-registration-line');
     expect(trackerHelper).toContain('registrationFraction: rendererTravelPx / rect.height');
     expect(trackerHelper).toContain('{ value: 0, rendererTravelPx: 0, registrationFraction: 0 }');
