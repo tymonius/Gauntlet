@@ -19,6 +19,9 @@ const startPage = readFileSync('start/index.html', 'utf8');
 const cardReferencePage = readFileSync('card-reference/index.html', 'utf8');
 const deckbuilderPage = readFileSync('deckbuilder/index.html', 'utf8');
 const homepage = readFileSync('index.html', 'utf8');
+const finalizer = readFileSync('scripts/finalize-v070-publication.mjs', 'utf8');
+const finalizerWorkflow = readFileSync('.github/workflows/finalize-v070-publication.yml', 'utf8');
+const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 
 // Shadow validation keeps the real #894 cutover frozen while exercising the same publication machinery.
 describe('v0.7.0 release candidate boundary', () => {
@@ -41,7 +44,7 @@ describe('v0.7.0 release candidate boundary', () => {
   it('keeps the TTS package and manual-QA records aligned to v0.7.0', () => {
     expect(ttsTarget.releaseTag).toBe('v0.7.0');
     expect(ttsTarget.displayVersion).toBe('v0.7.0');
-    expect(ttsTarget.status).toBe('release-candidate');
+    expect(ttsTarget.status).toBe('qa-pending');
     expect(ttsQa.gameVersion).toBe('v0.7.0');
     expect(ttsQa.status).toBe('pending');
     expect(ttsQa.approvedForWorkshop).toBe(false);
@@ -84,6 +87,24 @@ describe('v0.7.0 release candidate boundary', () => {
     expect(bookletRenderer).toContain("publication_date: null");
     expect(bookletRenderer).toContain("source_card: 'military-unbroken-ranks'");
     expect(materializer).toContain('Gauntlet_v0.7.0_Card_Anatomy.png');
+  });
+
+  it('keeps final publication explicit, dated, and TTS-gated', () => {
+    expect(packageJson.scripts['release:v070:finalize']).toBe('node scripts/finalize-v070-publication.mjs');
+    expect(finalizer).toContain("const SOURCE_VERSION = 'v0.7.0'");
+    expect(finalizer).toContain('GAUNTLET_PUBLICATION_DATE');
+    expect(finalizer).toContain('--publication-date=YYYY-MM-DD');
+    expect(finalizer).toContain('loadAndValidateV070TtsManualQa()');
+    expect(finalizer).not.toContain("SOURCE_VERSION = 'v0.6.4-candidate'");
+    expect(finalizer).not.toContain('const publicationInstant = new Date();');
+
+    expect(finalizerWorkflow).toContain('workflow_dispatch:');
+    expect(finalizerWorkflow).toContain("inputs.confirmation == 'publish-v0.7.0'");
+    expect(finalizerWorkflow).toContain('ref: release/v0.7.0-cutover');
+    expect(finalizerWorkflow).toContain('node scripts/validate-v070-tts-manual-qa.mjs');
+    expect(finalizerWorkflow).toContain('GAUNTLET_PUBLICATION_DATE:');
+    expect(finalizerWorkflow).toContain('npm run release:v070:finalize');
+    expect(finalizerWorkflow).toContain('git push origin HEAD:release/v0.7.0-cutover');
   });
 
   it('promotes the existing v0.7.0 hosting prerelease only after live verification', () => {
