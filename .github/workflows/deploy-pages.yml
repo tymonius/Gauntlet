@@ -1,0 +1,231 @@
+name: Build and deploy GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    paths:
+      - 'media/**'
+      - 'game-data/**'
+      - 'config/tts-release-target.json'
+      - 'config/release-lifecycle.json'
+      - 'config/github-release-contract.json'
+      - 'images/artwork/cards/**'
+      - 'images/artwork/card-backgrounds/**'
+      - 'tts/renderer/**'
+      - 'card-design/**'
+      - 'scripts/generate-card-media-*.mjs'
+      - 'scripts/generate-tts-card-assets.mjs'
+      - 'scripts/tts-current-catalog.mjs'
+      - 'scripts/current-game-authority.mjs'
+      - '.github/workflows/deploy-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || 'production' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  TTS_RELEASE_TAG: tts-v0.7.0-qa-pr-917-68247f095969
+  TTS_PREVIEW_SAVE: Gauntlet_v0.7.0_TTS_PR917_Preview.json
+  TTS_PUBLIC_SAVE: Gauntlet_v0.7.0_TTS_Mod.json
+  TTS_APPROVED_PREFIX: https://github.com/tymonius/Gauntlet/releases/download/tts-v0.7.0-qa-pr-917-68247f095969/
+  TTS_PUBLIC_PREFIX: https://gauntlet.run/tts/v0.7.0/assets/917/
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Stage tracked website
+        shell: bash
+        run: |
+          set -euo pipefail
+          site="$RUNNER_TEMP/gauntlet-pages"
+          rm -rf "$site"
+          mkdir -p "$site"
+          git archive --format=tar HEAD | tar -xf - -C "$site"
+
+          # Keep the public site below GitHub Pages' 1 GB published-site limit.
+          # These are authoring/reconstruction/generated surfaces, not live site dependencies.
+          rm -rf \
+            "$site/artifacts" \
+            "$site/images/3d" \
+            "$site/images/sketches" \
+            "$site/images/tools" \
+            "$site/images/artwork/reference" \
+            "$site/releases/v0.6.2-withdrawn" \
+            "$site/releases/v0.6.3-withdrawn" \
+            "$site/tts/v0.7.0"
+
+          # Editable release-source documents are retained in Git but are not public-site assets.
+          find "$site/releases" -type f -name '*.docx' -delete
+
+          test -s "$site/index.html"
+          test -s "$site/CNAME"
+          test "$(tr -d '\r\n' < "$site/CNAME")" = "gauntlet.run"
+          touch "$site/.nojekyll"
+          echo "SITE_DIR=$site" >> "$GITHUB_ENV"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Render canonical website media
+        run: npm run media:build -- --profile=website --strict-art
+
+      - name: Stage canonical promotional spread
+        shell: bash
+        run: |
+          set -euo pipefail
+          source='media/generated/v0.6.2/compositions/website/png/all-factions-promotional-showcase.png'
+          target="$SITE_DIR/images/media/all-factions-promotional-showcase.png"
+          test -s "$source"
+          mkdir -p "$(dirname "$target")"
+          cp "$source" "$target"
+          file "$target" | grep -q 'PNG image data'
+          test "$(wc -c < "$target")" -gt 100000
+          sha256sum "$target"
+
+      - name: Download approved v0.7.0 TTS release assets
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          release_dir="$RUNNER_TEMP/gauntlet-tts-release"
+          rm -rf "$release_dir"
+          mkdir -p "$release_dir"
+          gh release download "$TTS_RELEASE_TAG"             --repo "$GITHUB_REPOSITORY"             --dir "$release_dir"
+
+          test -s "$release_dir/$TTS_PREVIEW_SAVE"
+          count="$(find "$release_dir" -maxdepth 1 -type f | wc -l | tr -d ' ')"
+          test "$count" -eq 83
+          echo "TTS_RELEASE_DIR=$release_dir" >> "$GITHUB_ENV"
+
+      - name: Stage clean v0.7.0 TTS paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          public_root="$SITE_DIR/tts/v0.7.0"
+          asset_root="$public_root/assets/917"
+          rm -rf "$public_root"
+          mkdir -p "$asset_root"
+
+          find "$TTS_RELEASE_DIR" -maxdepth 1 -type f ! -name "$TTS_PREVIEW_SAVE" -exec cp '{}' "$asset_root/" ';'
+
+          SOURCE="$TTS_RELEASE_DIR/$TTS_PREVIEW_SAVE"           TARGET="$public_root/$TTS_PUBLIC_SAVE"           APPROVED_PREFIX="$TTS_APPROVED_PREFIX"           PUBLIC_PREFIX="$TTS_PUBLIC_PREFIX"           node <<'NODE'
+          const fs = require('fs');
+
+          const source = fs.readFileSync(process.env.SOURCE, 'utf8');
+          if (!source.includes(process.env.APPROVED_PREFIX)) {
+            throw new Error('Approved TTS preview does not contain the expected immutable release prefix.');
+          }
+
+          const rewritten = source.split(process.env.APPROVED_PREFIX).join(process.env.PUBLIC_PREFIX);
+          const parsed = JSON.parse(rewritten);
+          if (!parsed || typeof parsed !== 'object') {
+            throw new Error('Rewritten public TTS save is not a JSON object.');
+          }
+          if (rewritten.includes(process.env.APPROVED_PREFIX)) {
+            throw new Error('Approved GitHub Release URLs remain after rewrite.');
+          }
+
+          fs.writeFileSync(process.env.TARGET, rewritten);
+          NODE
+
+          test -s "$public_root/$TTS_PUBLIC_SAVE"
+
+      - name: Validate staged public paths
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          SITE="$SITE_DIR" PUBLIC_PREFIX="$TTS_PUBLIC_PREFIX" SAVE="$SITE_DIR/tts/v0.7.0/$TTS_PUBLIC_SAVE" node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+
+          const site = process.env.SITE;
+          const publicPrefix = process.env.PUBLIC_PREFIX;
+          const save = JSON.parse(fs.readFileSync(process.env.SAVE, 'utf8'));
+          const urls = new Set();
+
+          function visit(value) {
+            if (Array.isArray(value)) {
+              value.forEach(visit);
+              return;
+            }
+            if (!value || typeof value !== 'object') return;
+            for (const child of Object.values(value)) {
+              if (typeof child === 'string' && /^https:\/\//i.test(child)) urls.add(child);
+              else visit(child);
+            }
+          }
+
+          visit(save);
+          const publicUrls = [...urls].filter((url) => url.startsWith(publicPrefix));
+          if (!publicUrls.length) throw new Error('Public TTS save contains no gauntlet.run TTS asset URLs.');
+
+          for (const url of publicUrls) {
+            const filename = decodeURIComponent(url.slice(publicPrefix.length));
+            if (!filename || filename.includes('/') || filename.includes('\\')) {
+              throw new Error(`Unexpected nested TTS asset URL: ${url}`);
+            }
+            const local = path.join(site, 'tts', 'v0.7.0', 'assets', '917', filename);
+            if (!fs.existsSync(local)) throw new Error(`Missing staged TTS asset: ${filename}`);
+          }
+
+          console.log(`Validated ${publicUrls.length} clean TTS URLs against staged Pages assets.`);
+          NODE
+
+          if find "$SITE_DIR" -type l -print -quit | grep -q .; then
+            echo "Pages artifact contains a symbolic link."
+            exit 1
+          fi
+
+          bytes="$(du -sb "$SITE_DIR" | cut -f1)"
+          echo "Staged Pages site size: $bytes bytes"
+          test "$bytes" -lt 950000000
+
+          test -s "$SITE_DIR/images/media/all-factions-promotional-showcase.png"
+          test -s "$SITE_DIR/tts/v0.7.0/$TTS_PUBLIC_SAVE"
+
+      - name: Upload GitHub Pages artifact
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ${{ env.SITE_DIR }}
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
