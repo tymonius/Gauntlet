@@ -50,6 +50,16 @@ const TERRITORY_SLOT_WIDTH = 3.8;
 const TERRITORY_SLOT_DEPTH = 2.75;
 const LABEL_GAP = 0.34;
 
+const PORTRAIT_CARD_WIDTH = 2.5;
+const PORTRAIT_CARD_DEPTH = 3.5;
+// Current absolute maximum: one full Leader/card footprint plus the maximum
+// renderer-authoritative travel of the Intelligence Intel and Operation Progress
+// trackers (0.77232143 and 0.77004278 card lengths respectively).
+const LEADER_WORKSPACE_DEPTH = 8.9;
+const LEADER_WORKSPACE_WIDTH = 10.6;
+const LEADER_WORKSPACE_INWARD_EDGE_Z = -11.45;
+const LEADER_WORKSPACE_CENTER_Z = LEADER_WORKSPACE_INWARD_EDGE_Z - LEADER_WORKSPACE_DEPTH / 2;
+
 const OUTLINE_SHADOW_COLOR = Object.freeze({ r: 0.12, g: 0.085, b: 0.055 });
 const OUTLINE_COLOR = Object.freeze({ r: 0.83, g: 0.69, b: 0.40 });
 const LABEL_SHADOW_COLOR = Object.freeze({ r: 0.08, g: 0.055, b: 0.035 });
@@ -63,11 +73,12 @@ const PLAYER_ZONES = Object.freeze([
     id: 'leader-references',
     label: 'Leader & References',
     x: -12.25,
-    z: -16.45,
-    width: 11.1,
-    // Two card-length trackers can be nested under an Intelligence Leader.
-    // 10 units covers both maximum tracker travels plus the Leader footprint.
-    depth: 10.0,
+    z: LEADER_WORKSPACE_CENTER_Z,
+    width: LEADER_WORKSPACE_WIDTH,
+    // Tight to the current theoretical maximum nested Intelligence assembly.
+    // Keep the former inward/top edge fixed and remove only unused player-side
+    // depth, which also keeps the outline label on the map artwork.
+    depth: LEADER_WORKSPACE_DEPTH,
     fontSize: 29,
     textScale: 0.26,
     snapLayout: 'leader',
@@ -426,10 +437,9 @@ function snap(position, rotationY = null, tags = null) {
 }
 
 function leaderOffsets() {
-  // The snap is the center of a 3.5-unit-deep portrait card. Put that card
-  // flush against the player-side/bottom edge of the 10-unit-deep workspace,
-  // leaving all remaining depth above it for tracker travel.
-  const bottomCardCenterOffset = -(10 / 2 - 3.5 / 2);
+  // Put each portrait card flush against the player-side/bottom edge. The
+  // remaining depth is exactly the maximum nested tracker travel.
+  const bottomCardCenterOffset = -(LEADER_WORKSPACE_DEPTH / 2 - PORTRAIT_CARD_DEPTH / 2);
   return [
     [-4.05, bottomCardCenterOffset],
     [-1.35, bottomCardCenterOffset],
