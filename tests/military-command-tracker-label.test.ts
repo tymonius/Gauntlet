@@ -13,7 +13,8 @@ describe('Military Command tracker label', () => {
     expect(supplementalRenderer).toContain("resourceName: component.family === 'tracker'");
     expect(supplementalRenderer).toContain('component.trackedValue?.name');
     expect(supplementalRenderer).toContain('const resourceName = component.resourceName ||');
-    expect(supplementalRenderer).toContain('<h3>${esc(resourceName)} Tracker</h3>');
+    expect(supplementalRenderer).toContain('const title = trackerTitle(component, resourceName);');
+    expect(supplementalRenderer).toContain('<h3>${esc(title)}</h3>');
     expect(supplementalRenderer).toContain('${trackerMarks(component, resourceName)}');
   });
 });

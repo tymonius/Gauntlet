@@ -41,7 +41,7 @@ describe("Deckbuilder supplemental print audit", () => {
     expect(legacyPackages).toContain('component.deckInclusion === "every-deck"');
     expect(legacyPackages).toContain('Production universal reference card.');
     expect(legacyPackages).toContain('bridgeSharedReferencesIntoPrintAuthority(currentGame)');
-    expect(legacyPackages).toContain('components: Object.freeze([...factionComponents, ...sharedReferences])');
+    expect(legacyPackages).toContain('components: Object.freeze([...factionComponents, ...printSharedReferences])');
   });
 
   it("routes every legacy supplemental card class through production replacement", () => {

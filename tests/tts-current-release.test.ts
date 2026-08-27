@@ -143,10 +143,9 @@ describe('durable current-game TTS pipeline', () => {
 
   it('keeps TTS CI watching every authority dependency needed by the sparse checkout', () => {
     expect(workflow).toContain("'game-data/**'");
-    expect(workflow).toContain("'deckbuilder/starter-decks.json'");
+    expect(workflow).not.toContain('deckbuilder/starter-decks.json');
     expect(workflow).toContain('scripts/current-game-authority.mjs');
     expect(workflow).toContain('scripts/tts-current-catalog.mjs');
-    expect(workflow).toContain('deckbuilder/starter-decks.json');
     expect(workflow).toContain('game-data');
     expect(workflow).toContain('name: gauntlet-current-tts-card-assets');
   });

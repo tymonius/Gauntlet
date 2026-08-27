@@ -67,7 +67,7 @@ describe("TTS Territory assets", () => {
     expect(renderer).toContain("/images/artwork/cards/territories/");
     expect(existsSync("images/artwork/cards/territories/high-ground.jpg")).toBe(true);
     expect(existsSync("images/artwork/cards/territories/arena-grand-melee.png")).toBe(true);
-    expect(sharedStyles).toContain("grid-template-rows: minmax(0, var(--art-height)) auto");
+    expect(sharedStyles).toContain("min-height: var(--art-height)");
     expect(sharedStyles).not.toContain("grid-template-columns: var(--art-width)");
     expect(sharedStyles).toContain(".territory-art {");
     expect(sharedStyles).toContain("width: 100%");
@@ -88,7 +88,7 @@ describe("TTS Territory assets", () => {
 
   it("gives Territory effect text its natural height before clipping", () => {
     expect(sharedStyles).toContain("overflow: visible");
-    expect(sharedStyles).toContain("padding: 0.045in 0.07in 0.045in");
+    expect(sharedStyles).toContain("padding: 0.045in 0.07in 0.018in");
     expect(sharedStyles).toContain("line-height: 1.1");
     expect(sharedStyles).not.toContain("line-height: 1.18");
   });
@@ -99,7 +99,7 @@ describe("TTS Territory assets", () => {
     expect(specimenPage).toContain('id="territoryReviewSections"');
     expect(specimenPage).toContain('<span data-territory-count>25</span>');
     expect(specimenPage).toContain('<span data-arena-count>4</span>');
-    expect(reviewScript).toContain("canonical.territories||[]");
+    expect(reviewScript).toContain("const territories = (current.territories || [])");
     expect(reviewScript).toContain("territoryGroup('standard','Territories',ordinary)");
     expect(reviewScript).toContain("territoryGroup('arenas','Arenas',arenas)");
     expect(reviewScript).toContain('class="territory-review-frame"');
@@ -141,7 +141,7 @@ describe("TTS Territory assets", () => {
   });
 
   it("maximizes art height before reducing text", () => {
-    expect(sharedStyles).toContain("--art-height: 1.42in");
+    expect(sharedStyles).toContain("--art-height: 0.78in");
     expect(renderer).toContain("const MINIMUM_ART_HEIGHT = 0.55 * CSS_PIXELS_PER_INCH");
     expect(renderer).toContain("while (cardOverflows(card) && artHeight > MINIMUM_ART_HEIGHT)");
     expect(renderer).toContain("card.dataset.artHeight");
