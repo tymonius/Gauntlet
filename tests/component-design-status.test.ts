@@ -30,8 +30,8 @@ describe('physical component design maturity', () => {
       productionStatus: 'ready',
       backPolicy: 'twoSided',
       copyMode: 'bespoke',
-      source: 'card-design/reference-copy/v0.6.3/universal-reference.md',
-      authoritySource: 'artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md',
+      source: 'card-design/reference-copy/v0.7.0/universal-reference.md',
+      authoritySource: 'rulebook/player-facing/current-rulebook.md',
     });
     expect(universal?.referenceFaces?.front?.title).toBe('Turn & Battle');
     expect(universal?.referenceFaces?.reverse?.title).toBe('Results & Control');
@@ -45,8 +45,8 @@ describe('physical component design maturity', () => {
     expect(references.every(item => item.productionStatus === 'ready')).toBe(true);
     expect(references.every(item => item.designStatus === 'final')).toBe(true);
     expect(references.every(item => item.copyMode === 'bespoke')).toBe(true);
-    expect(references.every(item => item.source.startsWith('card-design/reference-copy/'))).toBe(true);
-    expect(references.every(item => item.authoritySource?.includes('/faction-guides/'))).toBe(true);
+    expect(references.every(item => item.source.startsWith('card-design/reference-copy/v0.7.0/'))).toBe(true);
+    expect(references.every(item => item.authoritySource === 'game-data/current-game.json')).toBe(true);
 
     expect(references.map(item => item.id).sort()).toEqual([
       'diplomats-reference',
