@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "gameVersion": "v0.7.0",
+  "generatedAt": "2026-08-27T22:51:15.103Z",
+  "machineReady": true,
+  "blockers": [],
+  "warnings": [
+    {
+      "id": "review-scaffold-name",
+      "reason": "The generated save still identifies itself as a review scaffold; promote/rename it only after the final in-game usability pass."
+    }
+  ],
+  "checks": {
+    "expectedGeneratedFactionComponents": 27,
+    "generatedReadyComponents": 29,
+    "starterCount": 12,
+    "expectedStarterSupplementalCopies": 70,
+    "assembledStarterSupplementalCopies": 70,
+    "hostedObjectUrlsChecked": 1108
+  },
+  "manualReleaseChecks": [
+    "Load the generated save in Tabletop Simulator using published release assets.",
+    "Verify both player perspectives, hand zones, Gauntlet snaps, Territory orientation, dice, and Player Tokens.",
+    "Unpack and play with representative starter kits from all six factions.",
+    "Verify each faction supplemental component can be manipulated as intended, including trackers, Rites, Proposals/Treaties, Ledger, and Deeds.",
+    "Exercise core handling and any faction supplemental interactions not already covered through focused in-game drills before Workshop publication."
+  ]
+}
