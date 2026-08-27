@@ -3,7 +3,8 @@ import { describe, expect, it } from 'vitest';
 
 const renderer = readFileSync('card-design/supplemental-card.js', 'utf8');
 const styles = readFileSync('card-design/supplemental-card.css', 'utf8');
-const contract = JSON.parse(readFileSync('config/tts-component-contract.json', 'utf8'));
+const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
+const contract = currentGame.componentContract;
 
 const trackerById = new Map(
   contract.components
