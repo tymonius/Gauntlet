@@ -43,8 +43,10 @@ describe('TTS final save promotion', () => {
     expect(Object.values(REQUIRED_QA_CHECKS).flat()).toHaveLength(18);
     expect(qa.checks.fullGame).toBeUndefined();
     expect(Object.values(qa.checks.tableSetup).every((value) => value === true)).toBe(true);
+    expect(Object.values(qa.checks.factionComponents).every((value) => value === true)).toBe(true);
     expect(qa.notes.some((note) => /hosted gauntlet\.run/i.test(note))).toBe(true);
     expect(qa.notes.some((note) => /White\/Green perspectives/i.test(note))).toBe(true);
+    expect(qa.notes.some((note) => /All nine faction-component QA checks passed/i.test(note))).toBe(true);
     expect(qa.notes.some((note) => /remote two-player game is not required/i.test(note))).toBe(true);
   });
 
@@ -58,7 +60,7 @@ describe('TTS final save promotion', () => {
 
   it('refuses promotion at the first incomplete granular QA check', () => {
     const readiness = { gameVersion: 'v0.7.0', machineReady: true, blockers: [] };
-    expect(() => validatePromotionGate({ release, readiness, qa })).toThrow(/factionComponents\.militaryCommandTracker/);
+    expect(() => validatePromotionGate({ release, readiness, qa })).toThrow(/handlingValidation\.coreHandlingExercised/);
 
     const almostComplete = completedQa();
     almostComplete.checks.factionComponents.intelligenceNestedOperationStack = false;
