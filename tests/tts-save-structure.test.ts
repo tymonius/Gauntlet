@@ -94,8 +94,8 @@ describe('generated TTS table structure', () => {
     expect(save.Hands.Enable).toBe(true);
     expect(save.Hands.DisableUnused).toBe(false);
     expect(save.Hands.HandTransforms.map((hand) => hand.Color)).toEqual(['White', 'Green']);
-    expect(save.Hands.HandTransforms[0].Transform).toMatchObject({ posY: 4, posZ: -23.25, rotY: 0, scaleX: 12, scaleY: 6, scaleZ: 4 });
-    expect(save.Hands.HandTransforms[1].Transform).toMatchObject({ posY: 4, posZ: 23.25, rotY: 180, scaleX: 12, scaleY: 6, scaleZ: 4 });
+    expect(save.Hands.HandTransforms[0].Transform).toMatchObject({ posY: 4, posZ: -23.25, rotY: 180, scaleX: 12, scaleY: 6, scaleZ: 4 });
+    expect(save.Hands.HandTransforms[1].Transform).toMatchObject({ posY: 4, posZ: 23.25, rotY: 0, scaleX: 12, scaleY: 6, scaleZ: 4 });
   });
 
   it('creates the six center-line Gauntlet snap positions in order', () => {
@@ -113,10 +113,7 @@ describe('generated TTS table structure', () => {
     const bag = topLevel.find((object) => object.Name === 'Bag');
     expect(bag).toBeTruthy();
     expect(bag.Transform.rotY).toBe(180);
-    const physicalTerritories = bag.ContainedObjects.filter((object) => /(?:Arena )?Territory$/.test(String(object.Description || '')));
-    const otherObjects = bag.ContainedObjects.filter((object) => !physicalTerritories.includes(object));
-    expect(physicalTerritories.every((object) => object.Transform?.rotY === 180)).toBe(true);
-    expect(otherObjects.every((object) => object.Transform?.rotY === (object.SidewaysCard === true ? 90 : 0))).toBe(true);
+    expect(bag.ContainedObjects.every((object) => object.Transform?.rotY === 180)).toBe(true);
     const die = bag.ContainedObjects.filter((object) => object.Name === 'Die_6');
     const token = bag.ContainedObjects.filter((object) => object.Name === 'PlayerPawn');
     expect(die).toHaveLength(1);
