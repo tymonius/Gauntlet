@@ -30,7 +30,7 @@
     },
     "card_anatomy_figure": {
       "path": "releases/v0.7.0/Gauntlet_v0.7.0_Card_Anatomy.png",
-      "sha256": "2b3970c10c42cbdb731487a0035f0f75336f1df23bd0191a75a087e69d99d038"
+      "sha256": "f42b98416854516b2d8128f81ace11b772c7b2d8fec814e012101edc12c25416"
     }
   },
   "counts": {
@@ -67,8 +67,8 @@
       "key": "rulebook-booklet",
       "path": "Gauntlet_v0.7.0_Rulebook_Booklet.pdf",
       "pages": 50,
-      "sha256": "4478fd6bb135d41bfab9071dc75c1ecbe7f719818c58dfba5b55f0cfe6f57621",
-      "bytes": 29549311
+      "sha256": "4f4b1c35fa1f5caff412ef487e396fbc95b75407388656431136df384e939f74",
+      "bytes": 29549148
     }
   ],
   "payload_files": [
@@ -79,13 +79,13 @@
     },
     {
       "path": "Gauntlet_v0.7.0_Rulebook_Booklet.pdf",
-      "sha256": "4478fd6bb135d41bfab9071dc75c1ecbe7f719818c58dfba5b55f0cfe6f57621",
-      "bytes": 29549311
+      "sha256": "4f4b1c35fa1f5caff412ef487e396fbc95b75407388656431136df384e939f74",
+      "bytes": 29549148
     },
     {
       "path": "Gauntlet_v0.7.0_Card_Anatomy.png",
-      "sha256": "2b3970c10c42cbdb731487a0035f0f75336f1df23bd0191a75a087e69d99d038",
-      "bytes": 1495135
+      "sha256": "f42b98416854516b2d8128f81ace11b772c7b2d8fec814e012101edc12c25416",
+      "bytes": 1495882
     },
     {
       "path": "Gauntlet_v0.7.0_Canonical_Data.json",
@@ -113,7 +113,7 @@
     "approved_v063_production_adapter_reused": true,
     "card_anatomy_figure": {
       "path": "releases/v0.7.0/Gauntlet_v0.7.0_Card_Anatomy.png",
-      "sha256": "2b3970c10c42cbdb731487a0035f0f75336f1df23bd0191a75a087e69d99d038",
+      "sha256": "f42b98416854516b2d8128f81ace11b772c7b2d8fec814e012101edc12c25416",
       "source_card": "military-unbroken-ranks",
       "renderer": "rulebook/card-anatomy.js + card-design/card-print-render.html?fit=production&card=military-unbroken-ranks"
     }
