@@ -49,6 +49,11 @@
       "id": "neutral-forced-march",
       "label": "Action",
       "text": "During Opening, during your Movement this turn, you may move one additional Position. This additional movement cannot initiate a battle."
+    },
+    {
+      "id": "mystics-nature-s-altar",
+      "label": "Overlay",
+      "text": "During your Opening, while you are here, you may use the Begin a Rite Faction Feature. A Rite begun this way may complete this turn if you control this Territory when its completion condition and timing are satisfied."
     }
   ],
   "rulebook_overrides": [

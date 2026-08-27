@@ -5,11 +5,14 @@ import {
   parseArtDirectionSource,
   resolveCards,
   resolveCardTextOverrides,
+  resolveFactionRules,
   resolveRuleSection,
 } from '../game-data/current-game.mjs';
 
 const manifest = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
 const rulesSource = JSON.parse(readFileSync('docs/v0.6.4-rules.json', 'utf8'));
+const baseGameplaySource = JSON.parse(readFileSync('artifacts/reconstruction/clean-v0.6.3/complete-authority/canonical-structured-data.json', 'utf8'));
+const cardChangesSource = JSON.parse(readFileSync('docs/v0.6.4-card-additions.json', 'utf8'));
 
 const CURRENT_RUNTIME_SURFACES = [
   'card-reference/app.js',
@@ -41,6 +44,7 @@ const RAW_CURRENT_SOURCE_MARKERS = [
   '/deckbuilder/starter-decks.json',
 ];
 
+// Current resolved taxonomy is asserted here so release packaging never has to repair playable data.
 describe('single current-game authority', () => {
   it('declares one current-development authority and its provenance inputs', () => {
     expect(manifest.schemaVersion).toBe(1);
@@ -105,15 +109,63 @@ describe('single current-game authority', () => {
           { label: 'Action', text: 'Old pending battle wording.' },
         ],
       },
+      {
+        id: 'mystics-nature-s-altar',
+        name: "Nature's Altar",
+        overlay: 'Old Faction Action wording.',
+        effects: [
+          { label: 'Overlay', text: 'Old Faction Action wording.' },
+        ],
+      },
     ], rulesSource);
 
     const advanceGuard = cards.find(card => card.id === 'neutral-advance-guard');
     const forcedMarch = cards.find(card => card.id === 'neutral-forced-march');
+    const natureAltar = cards.find(card => card.id === 'mystics-nature-s-altar');
     expect(advanceGuard?.effects[0].text).toContain('initiates a battle');
     expect(forcedMarch?.effects[0].text).toContain('cannot initiate a battle');
     expect(advanceGuard?.action).toContain('initiates a battle');
     expect(forcedMarch?.action).toContain('cannot initiate a battle');
-    expect(JSON.stringify(cards)).not.toContain('pending battle');
+    expect(natureAltar?.effects[0].text).toContain('Begin a Rite Faction Feature');
+    expect(natureAltar?.overlay).toContain('Begin a Rite Faction Feature');
+    expect(JSON.stringify(cards)).not.toMatch(/pending battle|Faction Action/i);
+  });
+
+  it('resolves all current playable card text and faction-rule taxonomy without retired terms', () => {
+    const cards = resolveCardTextOverrides(
+      resolveCards(baseGameplaySource.gameplay.cards, cardChangesSource, manifest),
+      rulesSource,
+    );
+    const natureAltar = cards.find((card: any) => card.id === 'mystics-nature-s-altar');
+    expect(natureAltar?.effects.find((effect: any) => effect.label === 'Overlay')?.text)
+      .toContain('Begin a Rite Faction Feature');
+    expect(natureAltar?.overlay).toContain('Begin a Rite Faction Feature');
+
+    const playerFacingCardText = cards.flatMap((card: any) => [
+      ...(card.effects || []).map((effect: any) => effect.text || ''),
+      card.action || '',
+      card.gambit || '',
+      card.tactic || '',
+      card.gambit_tactic || '',
+      card.asset || '',
+      card.overlay || '',
+    ]).join('\n');
+    expect(playerFacingCardText).not.toMatch(/Faction Actions?|Faction Abilit(?:y|ies)|faction procedure|pending(?:-|\s+)battles?/i);
+
+    const factionRules = resolveFactionRules(baseGameplaySource.gameplay.faction_rules, manifest);
+    expect(factionRules.diplomats.terms_timing).toBe('During Onset');
+    expect(factionRules.financiers.faction_feature_action_phase).toBe('Denouement');
+    expect(factionRules.financiers.financial_capacity).toContain('Faction Feature marked 1 Action');
+    expect(factionRules.intelligence.faction_features_1_action).toEqual([
+      'Start Mission',
+      'Complete Mission',
+      'Abort Mission',
+      'Start Special Operation',
+      'Complete Special Operation',
+    ]);
+    expect(factionRules.intelligence.mission_control_classification).toBe('Leader Ability');
+    expect(factionRules.inquisition.final_judgment_classification).toBe('Leader Ability');
+    expect(JSON.stringify(factionRules)).not.toMatch(/Faction Actions?|Faction Abilit(?:y|ies)|faction procedure|pending(?:-|\s+)battles?/i);
   });
 
   it('removes the inherited pending-battle sequence from current shared rules', () => {
