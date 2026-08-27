@@ -13,6 +13,7 @@ const TERRITORY_OVERLAY_TAG = 'gauntlet-territory-overlay';
 const DEED_TAG = 'gauntlet-deed';
 const FACTION_ZONE_TAG = 'gauntlet-faction-zone';
 const PLAYABLE_CARD_NOTE_PREFIX = 'gauntlet:playable-card:';
+const STARTER_TERRITORY_STACK_NOTE_PREFIX = 'gauntlet:starter-territories:';
 
 const TERRITORY_SLOT_CARD_IDS = new Set(['neutral-manifest-destiny']);
 const TERRITORY_SLOT_CARD_NAMES = new Set(['Manifest Destiny']);
@@ -285,8 +286,20 @@ function orientStarterBagsForHost(save) {
     bag.Transform.rotY = 180;
     for (const object of bag.ContainedObjects || []) {
       if (!object?.Transform) continue;
-      const stackKind = String(object.GMNotes || '').replace('gauntlet:supplemental-stack:', '');
+      const notes = String(object.GMNotes || '');
+      const stackKind = notes.replace('gauntlet:supplemental-stack:', '');
       object.Transform.rotY = stackKind === 'deeds' ? 270 : 180;
+
+      // Territory cards are now packaged as one three-card DeckCustom. Keep
+      // the members at the same tested host-facing stored rotation as the stack
+      // so separating the stack does not reintroduce an orientation mismatch.
+      if (notes.startsWith(STARTER_TERRITORY_STACK_NOTE_PREFIX)) {
+        for (const territory of object.ContainedObjects || []) {
+          if (territory?.Name !== 'CardCustom' || !/(?:Arena )?Territory$/u.test(String(territory.Description || ''))) continue;
+          territory.Transform ||= transform();
+          territory.Transform.rotY = 180;
+        }
+      }
     }
   }
 }
@@ -413,13 +426,15 @@ function snap(position, rotationY = null, tags = null) {
 }
 
 function leaderOffsets() {
-  // Keep the tested absolute snap row at z=-16.45 while tightening the visible
-  // Leader & References outline around the actual card/tracker footprint.
+  // The snap is the center of a 3.5-unit-deep portrait card. Put that card
+  // flush against the player-side/bottom edge of the 10-unit-deep workspace,
+  // leaving all remaining depth above it for tracker travel.
+  const bottomCardCenterOffset = -(10 / 2 - 3.5 / 2);
   return [
-    [-4.05, 0],
-    [-1.35, 0],
-    [1.35, 0],
-    [4.05, 0],
+    [-4.05, bottomCardCenterOffset],
+    [-1.35, bottomCardCenterOffset],
+    [1.35, bottomCardCenterOffset],
+    [4.05, bottomCardCenterOffset],
   ];
 }
 
