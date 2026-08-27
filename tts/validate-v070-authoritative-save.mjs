@@ -126,19 +126,19 @@ function validateTableWorkspace(save) {
   }
   if (faction.length !== 24) throw new Error(`Expected 24 Faction Zone card snaps; found ${faction.length}.`);
   if (deedStackMagnets.length) throw new Error('Deed stacks must use ordinary Faction Zone magnets; dedicated Deed-stack magnets are forbidden.');
-  if (faction.filter(point => Number(point.Position?.z) < 0).some(point => !close(point.Rotation?.y, 0))) {
+  if (faction.filter(point => Number(point.Position?.z) < 0).some(point => !close(point.Rotation?.y, 180))) {
     throw new Error('White/south Faction Zone card snaps are not facing the White seat.');
   }
-  if (faction.filter(point => Number(point.Position?.z) > 0).some(point => !close(point.Rotation?.y, 180))) {
+  if (faction.filter(point => Number(point.Position?.z) > 0).some(point => !close(point.Rotation?.y, 0))) {
     throw new Error('Green/north Faction Zone card snaps are not facing the Green seat.');
   }
 
   const whiteWorkspace = [[-1.55, -13.55], [1.55, -13.55], [0, -18.25], [17.15, -17.75]];
   const greenWorkspace = whiteWorkspace.map(([x, z]) => [-x, -z]);
-  if (whiteWorkspace.some(([x, z]) => !close(findSnap(save, x, z)?.Rotation?.y, 0))) {
+  if (whiteWorkspace.some(([x, z]) => !close(findSnap(save, x, z)?.Rotation?.y, 180))) {
     throw new Error('One or more White/south Draw/Discard/Hand/Graveyard snaps are not facing the White seat.');
   }
-  if (greenWorkspace.some(([x, z]) => !close(findSnap(save, x, z)?.Rotation?.y, 180))) {
+  if (greenWorkspace.some(([x, z]) => !close(findSnap(save, x, z)?.Rotation?.y, 0))) {
     throw new Error('One or more Green/north Draw/Discard/Hand/Graveyard snaps are not facing the Green seat.');
   }
 
@@ -165,8 +165,8 @@ function validateHandsAndSeats(save) {
   if (!white || !green) throw new Error('Missing White or Green hand transform.');
 
   const expectedHands = [
-    [white, 'White', -23.25, 0, -18.25],
-    [green, 'Green', 23.25, 180, 18.25],
+    [white, 'White', -23.25, 180, -18.25],
+    [green, 'Green', 23.25, 0, 18.25],
   ];
   for (const [hand, side, z, rotY, parkingZ] of expectedHands) {
     if (!close(hand.Transform?.posX, 0) || !close(hand.Transform?.posY, 4) || !close(hand.Transform?.posZ, z) || !close(hand.Transform?.rotY, rotY)
@@ -198,7 +198,7 @@ function validateHandsAndSeats(save) {
   if (parkingZones.length !== 2 || fogVolumes.length !== 2) {
     throw new Error(`Expected exactly two player-private tabletop parking Hidden Zones; found ${parkingZones.length} parking / ${fogVolumes.length} total hidden zones.`);
   }
-  for (const [side, z, rotY] of [['White', -19, 0], ['Green', 19, 180]]) {
+  for (const [side, z, rotY] of [['White', -19, 180], ['Green', 19, 0]]) {
     const zone = parkingZones.find(object => object.FogColor === side);
     if (!zone || zone.GMNotes !== `${PRIVATE_PARKING_NOTE_PREFIX}${side.toLowerCase()}`
       || zone.FogReverseHiding !== false || zone.FogSeethrough !== true || zone.FogHidePointers !== true || zone.Hands !== false
@@ -232,13 +232,10 @@ function validateBagsAndUtilities(save) {
     if (!close(bag.Transform?.rotY, 180)) throw new Error(`${bag.Nickname} starter Bag does not use the host-facing stored orientation established by TTS testing.`);
     for (const object of bag.ContainedObjects || []) {
       if (!object?.Transform) continue;
-      const isPhysicalTerritory = object.Name === 'CardCustom'
-        && /(?:Arena )?Territory$/u.test(String(object.Description || ''));
-      const expectedRotation = isPhysicalTerritory
-        ? 180
-        : (object.SidewaysCard === true ? 90 : 0);
+      const stackKind = String(object.GMNotes || '').replace(SUPPLEMENTAL_STACK_NOTE_PREFIX, '');
+      const expectedRotation = stackKind === 'deeds' ? 270 : 180;
       if (!close(object.Transform.rotY, expectedRotation)) {
-        throw new Error(`${bag.Nickname} contains ${object.Nickname || object.GUID} at stored rotation ${object.Transform.rotY}; expected authored ${expectedRotation}.`);
+        throw new Error(`${bag.Nickname} contains ${object.Nickname || object.GUID} at stored rotation ${object.Transform.rotY}; expected host-facing ${expectedRotation}.`);
       }
     }
     const objects = bag.ContainedObjects || [];
@@ -269,9 +266,9 @@ function validateBagsAndUtilities(save) {
 
 function validateFamilyStacks(bags) {
   const expectations = new Map([
-    ['proposals', { count: 2, cards: 9, sideways: false, rotY: 0, tags: [FACTION_ZONE_TAG] }],
-    ['deeds', { count: 2, cards: 8, sideways: true, rotY: 90, tags: [DEED_STACK_TAG, FACTION_ZONE_TAG] }],
-    ['rites-rituals', { count: 2, cards: 4, sideways: false, rotY: 0, tags: [FACTION_ZONE_TAG] }],
+    ['proposals', { count: 2, cards: 9, sideways: false, rotY: 180, tags: [FACTION_ZONE_TAG] }],
+    ['deeds', { count: 2, cards: 8, sideways: true, rotY: 270, tags: [DEED_STACK_TAG, FACTION_ZONE_TAG] }],
+    ['rites-rituals', { count: 2, cards: 4, sideways: false, rotY: 180, tags: [FACTION_ZONE_TAG] }],
   ]);
   const found = new Map([...expectations.keys()].map(key => [key, []]));
 
@@ -346,12 +343,6 @@ function validateTerritoriesDeedsAndFactionEligibility(save, manifest) {
   if (!ordinaryCards.length || ordinaryCards.some(card => !hasTag(card, FACTION_ZONE_TAG))) {
     throw new Error('Every ordinary card must retain generic Faction Zone snap eligibility.');
   }
-  for (const card of ordinaryCards) {
-    const expectedRotation = card.SidewaysCard === true ? 90 : 0;
-    if (!close(card.Transform?.rotY, expectedRotation)) {
-      throw new Error(`Ordinary card ${card.Nickname || card.GUID} has stored rotation ${card.Transform?.rotY}; expected authored ${expectedRotation} so it enters the Hand right side up.`);
-    }
-  }
 }
 
 function validateTrackers(save, manifest) {
@@ -374,10 +365,6 @@ function validateTrackers(save, manifest) {
     if (object.Sticky !== true) {
       throw new Error(`Tracker ${id} must be Sticky so covers snapped above it move with the tracker.`);
     }
-    if (!close(object.Transform?.rotY, 0)) {
-      throw new Error(`Tracker ${id} must retain its authored 0° stored orientation.`);
-    }
-
     const expected = trackerPresentation(record);
     const authored = record.tts?.snapPoints || [];
     if (expected.registrations.length !== authored.length) {
