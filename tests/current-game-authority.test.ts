@@ -45,6 +45,25 @@ describe('complete v0.7.0 current-game authority', () => {
     }
   });
 
+  it('keeps the promoted starter Deck identity native to v0.7.0', () => {
+    expect(authority.starterDecks.version).toBe('v0.7.0');
+    expect(authority.starterDecks.status).toBe('Locked v0.7.0 public playtest starter set');
+    expect(authority.starterDecks.purpose).toContain('Recommended v0.7.0 starter Decks');
+    expect(authority.starterDecks.optimizationPolicy.status).toBe('locked-for-v0.7.0-public-playtest');
+    expect(authority.starterDecks.approval.status).toBe('locked-for-v0.7.0-public-playtest');
+
+    // Historical source paths remain provenance; active release identity must not.
+    expect(authority.starterDecks.optimizationPolicy.predecessorAudit).toContain('v0.6.3');
+    expect(authority.starterDecks.optimizationPolicy.cardAdditions).toContain('v0.6.4-card-additions.json');
+    expect(JSON.stringify({
+      version: authority.starterDecks.version,
+      status: authority.starterDecks.status,
+      purpose: authority.starterDecks.purpose,
+      optimizationStatus: authority.starterDecks.optimizationPolicy.status,
+      approvalStatus: authority.starterDecks.approval.status,
+    })).not.toMatch(/v0\.6\.4|v0\.6\.3/i);
+  });
+
   it('contains the entire resolved gameplay and component state in one document', () => {
     expect(authority.gameplay.cards).toHaveLength(142);
     expect(authority.gameplay.territories).toHaveLength(25);
