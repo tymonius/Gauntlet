@@ -15,6 +15,7 @@ on:
       - 'scripts/current-game-authority.mjs'
       - 'scripts/generate-tts-card-assets.mjs'
       - 'scripts/generate-tts-territory-assets.mjs'
+      - 'scripts/generate-tts-environment-assets.mjs'
       - 'scripts/generate-tts-leader-assets.mjs'
       - 'scripts/generate-tts-starter-decks.mjs'
       - 'scripts/generate-tts-supplemental-assets.mjs'
@@ -101,6 +102,7 @@ jobs:
             scripts/current-game-authority.mjs
             scripts/generate-tts-card-assets.mjs
             scripts/generate-tts-territory-assets.mjs
+            scripts/generate-tts-environment-assets.mjs
             scripts/generate-tts-leader-assets.mjs
             scripts/generate-tts-starter-decks.mjs
             scripts/generate-tts-supplemental-assets.mjs
@@ -215,7 +217,7 @@ jobs:
                     scripts/generate-tts-starter-decks.mjs|deckbuilder/starter-decks.json)
                       render_starters=true
                       ;;
-                    scripts/stage-tts-release-assets.mjs|config/tts-release-target.json|config/release-lifecycle.json|config/github-release-contract.json)
+                    scripts/generate-tts-environment-assets.mjs|scripts/stage-tts-release-assets.mjs|config/tts-release-target.json|config/release-lifecycle.json|config/github-release-contract.json)
                       stage_assets=true
                       ;;
                     scripts/check-tts-release-readiness.mjs|scripts/promote-tts-save.mjs)
@@ -258,7 +260,7 @@ jobs:
             fi
           fi
 
-          if [[ "$render_cards" == "true" || "$render_territories" == "true" || "$render_leaders" == "true" || "$render_supplementals" == "true" || "$render_finalized" == "true" || "$render_mystics" == "true" ]]; then
+          if [[ "$render_cards" == "true" || "$render_territories" == "true" || "$render_leaders" == "true" || "$render_supplementals" == "true" || "$render_finalized" == "true" || "$render_mystics" == "true" || "$stage_assets" == "true" ]]; then
             any_render=true
           else
             any_render=false
