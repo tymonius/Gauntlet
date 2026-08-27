@@ -6,6 +6,7 @@ await (async () => {
   const params = new URLSearchParams(window.location.search);
   const cardId = params.get('card');
   const productionFit = params.get('fit') === 'production';
+  const versionOverride = String(params.get('version') || '').trim();
   const target = document.getElementById('renderTarget');
 
   function sectionsFromEffects(effects) {
@@ -103,7 +104,7 @@ await (async () => {
     };
     window.GAUNTLET_TTS_CATALOG = {
       schemaVersion: 1,
-      gameVersion: currentGame.displayVersion,
+      gameVersion: versionOverride || currentGame.displayVersion,
       sourceHierarchy: [currentGame.authorityUrl],
       playableCards: [preview],
       missingArtwork: artwork ? [] : [preview.id],
