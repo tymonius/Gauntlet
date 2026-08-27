@@ -349,6 +349,54 @@ function validateFamilyStacks(bags) {
   }
 }
 
+function validateCapitalLedgers(save) {
+  const objects = allObjects(save);
+  const ledgers = objects.filter(object => (
+    object?.Name === 'CardCustom'
+    && object.GMNotes === 'gauntlet:supplemental:financiers-capital-ledger'
+  ));
+  if (ledgers.length !== 2) {
+    throw new Error(`Expected two interactive Financiers Capital Ledgers; found ${ledgers.length}.`);
+  }
+
+  for (const ledger of ledgers) {
+    const lua = String(ledger.LuaScript || '');
+    const xml = String(ledger.XmlUI || '');
+    for (const required of [
+      'local STARTING_BALANCE = 2',
+      'local ROWS_PER_PAGE = 11',
+      'function addLedgerEntry',
+      'function undoLedgerEntry',
+      'function turnLedgerPage',
+      'function onSave()',
+      'function onLoad(savedData)',
+      'self.setName("Capital Ledger — Balance: "',
+      'if totalBalance() + delta < 0 then',
+    ]) {
+      if (!lua.includes(required)) throw new Error(`Capital Ledger is missing required persistent ledger behavior: ${required}`);
+    }
+    for (const required of [
+      'id="ledger-window"',
+      'id="ledger-current-balance"',
+      'onClick="addLedgerEntry"',
+      'onClick="undoLedgerEntry"',
+      'onClick="turnLedgerPage"',
+    ]) {
+      if (!xml.includes(required)) throw new Error(`Capital Ledger is missing required public ledger UI: ${required}`);
+    }
+    const rowCount = [...xml.matchAll(/id="ledger-row-\d+-entry"/gu)].length;
+    if (rowCount !== 11) throw new Error(`Capital Ledger page must expose exactly 11 transaction rows; found ${rowCount}.`);
+  }
+
+  const capitalCounters = objects.filter(object => (
+    object?.Name === 'Counter'
+    && /capital/iu.test(`${object.Nickname || ''} ${object.Description || ''} ${object.GMNotes || ''}`)
+  ));
+  if (capitalCounters.length) {
+    throw new Error('Financier Capital must be tracked through the interactive Capital Ledger, not a separate visible Counter.');
+  }
+}
+
 function validateTerritoriesDeedsAndFactionEligibility(save, manifest) {
   const objects = allObjects(save);
   const territories = objects.filter(object => (
@@ -467,6 +515,7 @@ async function main() {
   validateHandsAndSeats(save);
   const bags = validateBagsAndUtilities(save, manifest);
   validateFamilyStacks(bags);
+  validateCapitalLedgers(save);
   validateTerritoriesDeedsAndFactionEligibility(save, manifest);
   validateTrackers(save, manifest);
 
