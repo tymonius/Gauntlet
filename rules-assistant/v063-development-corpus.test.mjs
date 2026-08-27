@@ -26,6 +26,10 @@ const publishedCanonical = JSON.parse(await fs.readFile(
 const canonicalJson = JSON.stringify({
   ...publishedCanonical,
   version: "v0.6.3-candidate",
+  normalization: {
+    ...(publishedCanonical.normalization || {}),
+    published_release: false,
+  },
 });
 
 // The old /v0.6.3/rulebook/ review route now redirects to the published current

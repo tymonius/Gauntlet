@@ -72,7 +72,8 @@ describe('TTS card render authority', () => {
     expect(trackerCapture).toContain("url.searchParams.set('version', displayVersion)");
 
     expect(playableRenderer).toContain("const versionOverride = String(params.get('version') || '').trim()");
-    expect(playableRenderer).toContain('gameVersion: versionOverride || currentGame.displayVersion');
+    expect(playableRenderer).toContain('const displayVersion = versionOverride || await resolveDisplayVersion(currentGame)');
+    expect(playableRenderer).toContain('gameVersion: displayVersion');
     expect(territoryRenderer).toContain("const versionOverride = String(params.get('version') || '').trim()");
     expect(territoryRenderer).toContain('gameVersion: versionOverride || currentGame.displayVersion');
     expect(componentRenderer).toContain('const versionOverride = String(params.get("version") || "").trim()');

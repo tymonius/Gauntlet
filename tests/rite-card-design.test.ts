@@ -110,7 +110,7 @@ describe("Mystics Rite card prototypes", () => {
     expect(mysticsAuthority.completedArtwork).toBe("/images/artwork/supplemental/mystics/rite-completed.webp");
     expect(riteRenderer).toContain("COMPLETED_RITE_ART_SOURCE = mystics.completedArtwork || COMPLETED_RITE_ART_SOURCE");
     expect(riteRenderer).toContain('class="card-art rite-completed-panel has-image"');
-    expect(riteRenderer).toContain('<img src="${COMPLETED_RITE_ART_SOURCE}"');
+    expect(riteRenderer).toContain('<img src="${esc(COMPLETED_RITE_ART_SOURCE)}"');
     expect(riteStyles).toContain(".rite-completed-panel > img");
     expect(riteStyles).toContain("object-fit: cover");
     expect(riteStyles).toContain("object-position: center");

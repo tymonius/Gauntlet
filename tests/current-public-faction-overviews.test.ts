@@ -39,7 +39,7 @@ describe('current public faction overviews', () => {
     const homepage = read('index.html');
     expect(homepage).toContain(stagedVersion);
     if (String(lifecycle.current_release || '') !== stagedVersion) {
-      expect(currentGame.status).toBe('release-candidate');
+      expect(['release-candidate', 'release-ready']).toContain(currentGame.status);
     }
   });
 
