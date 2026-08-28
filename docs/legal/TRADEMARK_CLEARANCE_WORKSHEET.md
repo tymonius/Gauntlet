@@ -5,14 +5,25 @@
 
 > Trademark clearance is a likelihood-of-confusion analysis, not an exact-name availability lookup. This worksheet is designed for attorney review before a federal application is filed.
 
+## Product positioning
+
+**Gauntlet is primarily a physical board/card game.** The digital implementation is a secondary/incidental adaptation of that tabletop game rather than the core product identity.
+
+That distinction should control the clearance and filing strategy:
+
+1. analyze and, if cleared, protect **GAUNTLET for the physical tabletop game first**;
+2. treat Tabletop Simulator and the rules-aware digital version as secondary uses/extensions;
+3. do not let the existence of a digital adaptation cause the project to be analyzed as though it were principally a video-game brand;
+4. still evaluate digital use separately because secondary use can create its own likelihood-of-confusion risk.
+
 ## Proposed marks to evaluate
 
-| Mark | Format | Proposed use | Status |
-| --- | --- | --- | --- |
-| GAUNTLET | standard characters | tabletop card/territory game | NOT CLEARED |
-| GAUNTLET | standard characters | downloadable/digital game | HIGH-RISK / NOT CLEARED |
-| Current Gauntlet logo | design + wording | game/products/site | NOT CLEARED |
-| GAUNTLET + future subtitle | composite | tabletop/digital game | TBD after candidate subtitle exists |
+| Mark | Format | Proposed use | Priority | Status |
+| --- | --- | --- | --- | --- |
+| GAUNTLET | standard characters | physical board/card game | PRIMARY | NOT CLEARED |
+| Current Gauntlet logo | design + wording | physical game/products/site | PRIMARY | NOT CLEARED |
+| GAUNTLET | standard characters | downloadable/digital adaptation | SECONDARY | HIGH-RISK / NOT CLEARED |
+| GAUNTLET + future subtitle | composite | tabletop game; potentially digital adaptation | FALLBACK | TBD after candidate subtitle exists |
 
 ## Most material federal conflict found
 
@@ -26,13 +37,23 @@ Working database facts:
 - 2026 renewal/status activity is reported
 - current ownership chain is reported as ending with **Warner Bros. Entertainment Inc.** by multiple databases
 
-### Why it matters
+### Why it matters — and why it does not define the whole analysis
 
-Gauntlet is no longer exclusively a paper tabletop concept:
-- a public Tabletop Simulator implementation exists;
-- a rules-aware digital implementation is in active development.
+The Warner registration is most directly relevant to the **secondary digital adaptation**, not the core tabletop product.
 
-That puts planned digital use much closer to the listed video-game goods than a paper-only board/card game would be.
+Gauntlet's primary commercial identity is a physical board/card game. A registration for computer programs for video games therefore does **not** create the same direct goods overlap for the primary product that it would if Gauntlet were principally a video game.
+
+However:
+- trademark classes do not determine likelihood of confusion by themselves;
+- related goods can still conflict across classes;
+- tabletop games and video games can originate from the same publishers/brands;
+- Gauntlet already has a public Tabletop Simulator implementation and an actively developed digital adaptation.
+
+Accordingly, the Warner registration should be treated as:
+- a **significant but indirect clearance issue for the physical game**; and
+- a **much more direct issue for any standalone downloadable/digital Gauntlet game**.
+
+It should not, by itself, drive a rename of the physical tabletop product without a fuller related-goods/common-law analysis.
 
 ### Required verification
 
@@ -61,7 +82,7 @@ Working facts:
 - registered **2024-04-09**
 - related game-retail services.
 
-These do not automatically bar a game title, but they reinforce that the same exact term is already used commercially in the tabletop-game channel.
+For the physical-game clearance, these tabletop-channel registrations may be at least as important as the Warner video-game registration even though they cover retail services rather than game goods.
 
 ## Federal search matrix still required
 
@@ -79,18 +100,17 @@ Search the USPTO database for:
 - other close phonetic equivalents returned by USPTO search tools
 
 ### Composite marks containing GAUNTLET
-Review all live marks where GAUNTLET is dominant and goods/services include:
-- board games;
-- card games;
-- tabletop games;
-- role-playing games;
-- downloadable games;
-- computer/video games;
-- game software;
-- game publishing;
-- game retail;
-- online game services;
-- entertainment involving games.
+Review all live marks where GAUNTLET is dominant and goods/services include, in this priority order:
+1. board games;
+2. card games;
+3. tabletop games;
+4. role-playing games;
+5. game publishing and tabletop-game retail;
+6. downloadable games;
+7. computer/video games;
+8. game software;
+9. online game services;
+10. entertainment involving games.
 
 Record serial/registration, owner, mark, status, goods/services, first-use claim, filing priority, and reason for relevance.
 
@@ -98,30 +118,44 @@ Record serial/registration, owner, mark, status, goods/services, first-use claim
 
 USPTO recommends a broader search beyond the federal database. Search and archive:
 
-- state trademark/business-name records;
-- Google/general web;
-- Steam;
-- major console/mobile storefronts;
-- Tabletop Simulator Workshop;
+### Primary tabletop clearance
 - BoardGameGeek;
 - RPGGeek / DriveThruRPG;
 - Kickstarter / BackerKit / Gamefound;
-- Amazon and specialist tabletop retailers;
-- game publishers/distributors;
-- domains;
-- major social platforms.
+- tabletop publishers/distributors;
+- specialist game retailers;
+- Amazon;
+- state trademark/business-name records;
+- Google/general web;
+- domains and major social platforms.
+
+### Secondary digital clearance
+- Steam;
+- major console/mobile storefronts;
+- Tabletop Simulator Workshop;
+- digital game publishers/platforms.
 
 Known marketplace uses already identified for review include game retailers and tabletop/RPG uses containing Gauntlet.
 
 ## Goods/services strategy for counsel
 
-Potential Gauntlet commercial scope should be mapped before filing. Candidate areas include:
+The filing strategy should reflect the actual product hierarchy rather than treating every conceivable use as co-equal.
 
-- physical card/board game goods;
+### Primary filing target
+
+**Physical board/card game goods.**
+
+The exact identification/class should be selected from the current USPTO ID Manual at filing time, but this is the product category the clearance effort should prioritize.
+
+### Secondary/future targets
+
+Only if justified by actual planned commercial use:
 - downloadable game software;
 - online/non-downloadable game software or game services;
 - printed rulebooks/manuals if independently relevant;
-- merchandising only if actually planned.
+- merchandising if actually planned.
+
+The TTS implementation should be treated as a way to play/test the tabletop game, not evidence that Gauntlet's primary product category is video games.
 
 Do not add classes merely to "reserve" them. Filing basis and bona fide use/intent must support the identified goods/services.
 
@@ -129,28 +163,41 @@ Do not add classes merely to "reserve" them. Filing basis and bona fide use/inte
 
 Preserve evidence that can establish chronology and specimens if the mark is ultimately cleared:
 
-- dated gauntlet.run pages showing the mark associated with the game;
-- downloadable release pages/packages;
+### Primary tabletop evidence
+- dated gauntlet.run pages identifying Gauntlet as the board/card game;
+- downloadable print-and-play/release packages;
 - dated Rulebook covers;
+- card/component images;
 - Deckbuilder/start pages;
-- TTS Workshop listing;
 - newsletters/release announcements;
 - repository release commits;
 - any actual interstate commercial transaction when one eventually occurs.
+
+### Secondary digital evidence
+- TTS Workshop listing;
+- later digital-game pages/builds once publicly offered under the mark.
 
 Do not assume free playtest distribution automatically satisfies every trademark "use in commerce" requirement for every proposed class.
 
 ## Risk assessment
 
-### Bare GAUNTLET for downloadable/digital games
+### Bare GAUNTLET for physical tabletop board/card game
+**Material preliminary risk requiring full clearance, but this is the principal question.**
+
+Reason:
+- identical-word uses exist in the broader game marketplace;
+- Gauntlet Properties has exact-word registrations in tabletop-game retail services;
+- the Warner video-game mark is related but not a direct goods match for the core product;
+- common-law tabletop uses may prove more important than the software registration.
+
+The physical-game mark should therefore be evaluated on its own merits rather than presumed unavailable because of the video-game registration.
+
+### Bare GAUNTLET for downloadable/digital adaptation
 **High preliminary risk.**
 
 Reason: exact live federal mark for video-game computer programs plus overlapping commercial impression and product category.
 
-### Bare GAUNTLET for physical tabletop card/board game
-**Material preliminary risk requiring counsel.**
-
-Reason: identical wording, adjacency between tabletop and digital game markets, active game-retail GAUNTLET registrations, and marketplace use. The risk is lower than the direct digital overlap but is not cleared.
+A viable physical tabletop mark does **not** automatically mean the same mark can safely be extended to standalone digital software.
 
 ### Stylized GAUNTLET logo
 **Not a workaround by itself.**
@@ -158,20 +205,20 @@ Reason: identical wording, adjacency between tabletop and digital game markets, 
 A design filing can protect design elements, but adding stylization does not automatically cure a likelihood-of-confusion problem where the dominant wording remains identical.
 
 ### Composite title/subtitle
-**Potential mitigation, not yet evaluated.**
+**Potential fallback, not yet evaluated.**
 
 A sufficiently distinctive composite mark may improve registrability/clearance, but the dominant-word analysis and marketplace impression still need review.
 
 ## Decision gate
 
 Before a federal application:
-- [ ] complete federal similar-mark matrix;
-- [ ] complete common-law search;
+- [ ] complete the **physical tabletop** federal similar-mark matrix first;
+- [ ] complete physical tabletop common-law search;
 - [ ] verify the three registrations above in official USPTO systems;
-- [ ] define physical vs. digital goods/services actually intended;
+- [ ] obtain counsel's conclusion on **GAUNTLET for physical board/card game goods**;
 - [ ] settle applicant/owner entity;
-- [ ] obtain attorney clearance opinion;
-- [ ] decide keep bare GAUNTLET / adopt composite / rename;
-- [ ] only then choose filing basis and classes.
+- [ ] decide keep bare GAUNTLET / adopt composite / rename for the tabletop product;
+- [ ] only then choose filing basis and identification/class for the physical game;
+- [ ] evaluate a separate digital filing/clearance later, before commercial standalone digital release.
 
 Current USPTO base application fee is **$350 per class**, before possible additional fees. There is little reason to spend it before this gate is satisfied.
