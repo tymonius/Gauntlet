@@ -69,6 +69,105 @@ export function deriveRuleFacts(authority) {
   return Object.freeze(facts);
 }
 
+
+
+function summarizeCards(cards) {
+  const summary = {};
+  for (const card of cards || []) {
+    if (!card?.allegiance) continue;
+    const bucket = summary[card.allegiance] ||= { count: 0, total_value: 0 };
+    bucket.count += 1;
+    bucket.total_value += Number(card.cost || 0);
+  }
+  return summary;
+}
+
+export function validateAuthorityEmbeddedFacts(authority) {
+  const facts = deriveRuleFacts(authority);
+  const errors = [];
+  const summary = summarizeCards(authority?.gameplay?.cards);
+
+  for (const [id, allegiance] of FACTIONS) {
+    const actual = facts[`cards.${id}.count`];
+    const factionRecord = faction(authority, id);
+    if (Number(factionRecord?.card_count) !== actual) {
+      errors.push(`gameplay.factions[${id}].card_count is ${factionRecord?.card_count}; actual card records yield ${actual}`);
+    }
+    if (Number(authority?.gameplay?.card_pool_summary?.[allegiance]?.count) !== actual) {
+      errors.push(`gameplay.card_pool_summary.${allegiance}.count is ${authority?.gameplay?.card_pool_summary?.[allegiance]?.count}; actual card records yield ${actual}`);
+    }
+    const expectedValue = summary[allegiance]?.total_value;
+    if (
+      Number.isFinite(expectedValue)
+      && Number(authority?.gameplay?.card_pool_summary?.[allegiance]?.total_value) !== expectedValue
+    ) {
+      errors.push(
+        `gameplay.card_pool_summary.${allegiance}.total_value is ${authority?.gameplay?.card_pool_summary?.[allegiance]?.total_value}; actual card records yield ${expectedValue}`,
+      );
+    }
+  }
+
+  const neutral = summary.Neutral;
+  if (neutral) {
+    if (Number(authority?.gameplay?.card_pool_summary?.Neutral?.count) !== neutral.count) {
+      errors.push(
+        `gameplay.card_pool_summary.Neutral.count is ${authority?.gameplay?.card_pool_summary?.Neutral?.count}; actual card records yield ${neutral.count}`,
+      );
+    }
+    if (Number(authority?.gameplay?.card_pool_summary?.Neutral?.total_value) !== neutral.total_value) {
+      errors.push(
+        `gameplay.card_pool_summary.Neutral.total_value is ${authority?.gameplay?.card_pool_summary?.Neutral?.total_value}; actual card records yield ${neutral.total_value}`,
+      );
+    }
+  }
+
+  const diplomats = faction(authority, 'diplomats');
+  const treatyThreshold = facts['diplomats.peace_treaty_threshold'];
+  const treatyWord = ruleNumberWord(treatyThreshold);
+  const expectedLeaderVictory = `At the start of your turn, if ${treatyThreshold} different Proposals are ratified, you win.`;
+  for (const leader of diplomats?.leaders || []) {
+    const victory = leader?.sections?.find(section => section?.classification === 'Faction Victory' && section?.name === 'Peace Treaty');
+    if (victory?.text !== expectedLeaderVictory) {
+      errors.push(
+        `Diplomat Leader ${leader?.name || leader?.id || 'unknown'} repeats the Peace Treaty threshold as "${victory?.text}", expected "${expectedLeaderVictory}"`,
+      );
+    }
+  }
+  const expectedFactionVictory = `Peace Treaty: after the Capture step, have ${treatyWord} different ratified Proposals.`;
+  if (diplomats?.victory !== expectedFactionVictory) {
+    errors.push(
+      `Diplomat faction victory summary is "${diplomats?.victory}", expected "${expectedFactionVictory}"`,
+    );
+  }
+
+  const riteCount = facts['mystics.rites.count'];
+  const selectedRites = facts['mystics.rites.selected_count'];
+  const riteWord = ruleNumberWord(riteCount);
+  const selectedWord = ruleNumberWord(selectedRites);
+  if (Number(authority?.mystics?.selectionPolicy?.poolSize) !== riteCount) {
+    errors.push(
+      `mystics.selectionPolicy.poolSize is ${authority?.mystics?.selectionPolicy?.poolSize}; mystics.rites contains ${riteCount}`,
+    );
+  }
+  const selectionRule = String(authority?.mystics?.selectionPolicy?.rule || '');
+  if (!selectionRule.includes(`Choose exactly ${selectedWord} different Rites from the ${riteWord}-Rite pool`)) {
+    errors.push('Mystics selectionPolicy.rule does not reflect selectedCount and Rite-pool size.');
+  }
+  if (!selectionRule.includes(`Completing all ${selectedWord} selected Rites`)) {
+    errors.push('Mystics selectionPolicy.rule does not reflect selectedCount in the Ritual requirement.');
+  }
+  const ritualBegin = String(authority?.mystics?.ritual?.begin || '');
+  if (!ritualBegin.includes(`After completing all ${selectedWord} selected Rites`)) {
+    errors.push('Mystics ritual.begin does not reflect selectionPolicy.selectedCount.');
+  }
+
+  if (errors.length) {
+    throw new Error(`Structured current-game authority contains stale derived summaries:\n- ${errors.join('\n- ')}`);
+  }
+
+  return facts;
+}
+
 function formatFact(value, format) {
   if (format === 'number') return String(value);
   if (format === 'word') return ruleNumberWord(value);
