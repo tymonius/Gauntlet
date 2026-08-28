@@ -10,6 +10,21 @@ npm run typecheck
 npm test
 ```
 
+## Repository placement and cleanup
+
+Read [`docs/Repository_Architecture.md`](docs/Repository_Architecture.md) before adding a new top-level directory, moving an existing subsystem, or changing build/release layout.
+
+Repository structure is part of the project contract:
+
+- current authority, active applications, production tooling, historical compatibility surfaces, frozen releases, and generated evidence must remain distinguishable;
+- stable public URLs must not move merely for source-tree aesthetics;
+- published release packages are immutable;
+- prefer extending an existing subsystem over creating another top-level implementation of the same concern;
+- repeated version-specific build/release logic should move toward shared parameterized tooling when behavior is genuinely common;
+- structural cleanup must preserve behavior and keep required CI green.
+
+Do not use a cleanup pull request to smuggle in game-design or rules changes. Separate behavior changes from structural changes so they can be tested and reverted independently.
+
 ## Issue lifecycle
 
 Open issues are a working queue, not an archive or a substitute for a decision record.

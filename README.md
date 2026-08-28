@@ -85,6 +85,8 @@ Generated PDFs, browser pages, printable tools, and TTS assets are derived produ
 
 ## Repository map
 
+The repository's current/historical/generated path classifications and cleanup target are defined in [Repository Architecture](docs/Repository_Architecture.md). Stable public paths remain at the repository root until source/deployment separation can preserve their URLs explicitly.
+
 ### game-data/
 
 Complete current gameplay authority and runtime adapter. Current browser tools, TTS generation, card/component renderers, Deckbuilder, Card Reference, and release publication derive from this source.
@@ -131,7 +133,7 @@ Canonical-data validation, document/card rendering, TTS generation, release publ
 
 ### src/ and data/
 
-Legacy automated digital-prototype code and historical starter data. Work on the automated rules-aware digital game has resumed as an active parallel development track.
+`src/` is the active rules-aware digital-engine codebase, with some older/transitional modules retained as migration evidence while current-release parity work proceeds. `data/` is historical starter/adapter data; current gameplay authority lives in `game-data/`.
 
 ## Development workflow
 
@@ -161,7 +163,7 @@ http://localhost:8000/card-reference/
 http://localhost:8000/playtest/
 ~~~
 
-For the legacy automated prototype:
+For the active rules-aware digital engine:
 
 ~~~bash
 npm install
