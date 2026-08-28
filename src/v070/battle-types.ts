@@ -118,10 +118,19 @@ export interface V070UnsupportedBattleEffect {
   encounteredAt: 'reveal_gambits' | 'reveal_tactics';
 }
 
+export interface V070GambitOrderOverride {
+  source: 'neutral_observers';
+  firstPlayer: PlayerId;
+  secondPlayer: PlayerId;
+  nextPlayer: PlayerId | null;
+  firstCommitmentFaceUp: boolean;
+}
+
 export interface V070BattleRuntime {
   stage: V070BattleRuntimeStage;
   participants: Record<PlayerId, V070BattleParticipantRuntime>;
   terms: V070TermsRuntime;
+  gambitOrderOverride: V070GambitOrderOverride | null;
   unsupportedEffects: V070UnsupportedBattleEffect[];
 }
 
@@ -164,6 +173,7 @@ export function createV070BattleRuntime(): V070BattleRuntime {
       },
       deferredAfterPoliticalCapital: null,
     },
+    gambitOrderOverride: null,
     unsupportedEffects: [],
   };
 }
