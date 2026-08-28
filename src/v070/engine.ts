@@ -1,6 +1,7 @@
 import { V070_RULES_VERSION } from '../content/v070';
 import { createV070TurnState, type PlayerId, type V070BattleState, type V070TurnState } from './rules';
 import { v070StarterDecks, type V070ResolvedStarterDeck } from './starter-decks';
+import type { V070BattleRuntime } from './battle-types';
 
 export type V070GameStage = 'setup' | 'playing' | 'ended';
 export type V070SetupStage = 'opening_selection' | 'territory_arrangement' | 'first_player';
@@ -69,6 +70,7 @@ export interface V070GameState {
   turnNumber: number;
   turnState: V070TurnState | null;
   battle: V070BattleState | null;
+  battleRuntime: V070BattleRuntime | null;
   winner: PlayerId | null;
   events: V070GameEvent[];
 }
@@ -159,6 +161,7 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
     turnNumber: 0,
     turnState: null,
     battle: null,
+    battleRuntime: null,
     winner: null,
     events: [],
   };
