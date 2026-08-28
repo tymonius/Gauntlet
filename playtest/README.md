@@ -15,7 +15,7 @@ The public entry point is:
 https://gauntlet.run/playtest/
 ```
 
-Tabletop Simulator is the recommended self-serve playtest transport for v0.7.0 because the public Workshop mod already contains all twelve locked starter kits and permits true two-location play.
+Use the physical tabletop when both players are together in person. Use Tabletop Simulator when the players are in different locations. Both routes use the same tracked-session, Rules Arbiter, feedback, and analysis pipeline.
 
 ## Public self-serve playtest path
 
@@ -25,7 +25,7 @@ The ordinary journey is:
 2. continue through `/start/` to browse factions and choose a Leader;
 3. create a public tracked game at `/playtest/tracked/`;
 4. share the join link with the second player;
-5. use the v0.7.0 TTS Workshop mod, or choose the physical-tabletop path;
+5. use the physical tabletop if the players are together, or the v0.7.0 TTS Workshop mod if they are remote;
 6. record the game start;
 7. ask Rules Arbiter questions from the joined player device;
 8. optionally record timestamped diagnostic flags during play;
@@ -59,7 +59,7 @@ Current public Workshop item:
 https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635
 ```
 
-For v0.7.0 self-serve tests, each player uses the locked starter kit matching the Leader selected in the tracked session.
+For remote v0.7.0 self-serve tests, each player uses the locked TTS starter kit matching the Leader selected in the tracked session.
 
 Deckbuilder → TTS custom-Deck import remains gated to v0.7.1. The self-serve session and feedback pipeline is transport-independent and will also support the native digital client later.
 

@@ -178,7 +178,7 @@
     state.filteredGames = state.games.filter((game) => {
       if (filters.status !== "all" && game.status !== filters.status) return false;
       if (filters.version !== "all" && game.rulesVersion !== filters.version) return false;
-      const playMode = game.metadata?.playMode === "tts" ? "tts" : "physical";
+      const playMode = ["tts", "physical"].includes(game.metadata?.playMode) ? game.metadata.playMode : "unspecified";
       if (filters.playMode !== "all" && playMode !== filters.playMode) return false;
       if (filters.faction !== "all" && !game.players.some((player) => player.faction === filters.faction)) return false;
       if (filters.leader !== "all" && !game.players.some((player) => player.leader === filters.leader)) return false;
@@ -238,8 +238,11 @@
     el.metricArbiter.textContent = String(summary.arbiterQuestionCount);
     const ttsGames = Number(summary.playModes?.tts || 0);
     const physicalGames = Number(summary.playModes?.physical || 0);
-    el.metricPlayMode.textContent = ttsGames || physicalGames ? `${ttsGames} / ${physicalGames}` : "—";
-    el.metricPlayModeDetail.textContent = "TTS / physical";
+    const unspecifiedGames = Number(summary.playModes?.unspecified || 0);
+    el.metricPlayMode.textContent = ttsGames || physicalGames || unspecifiedGames ? `${physicalGames} / ${ttsGames}` : "—";
+    el.metricPlayModeDetail.textContent = unspecifiedGames
+      ? `physical / TTS · ${unspecifiedGames} not recorded`
+      : "physical / TTS";
     el.metricDiagnostics.textContent = String(Object.values(summary.diagnosticFlags || {}).reduce((sum, count) => sum + Number(count || 0), 0));
     const versions = Object.keys(summary.rulesVersions);
     el.metricVersions.textContent = String(versions.length);
@@ -594,7 +597,7 @@
 
     for (const game of games) {
       rulesVersions.set(game.rulesVersion, (rulesVersions.get(game.rulesVersion) || 0) + 1);
-      const playMode = game.metadata?.playMode === "tts" ? "tts" : "physical";
+      const playMode = ["tts", "physical"].includes(game.metadata?.playMode) ? game.metadata.playMode : "unspecified";
       playModes[playMode] = (playModes[playMode] || 0) + 1;
       for (const event of game.events || []) {
         if (event.eventType !== "diagnostic_flag" || !event.data?.flag) continue;

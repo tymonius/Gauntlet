@@ -70,7 +70,7 @@
         <ol>
           <li>Create the game using your faction and Leader.</li>
           <li>Let the opponent scan the QR code and confirm their own choice.</li>
-          <li>Choose Tabletop Simulator for remote self-serve play, or physical tabletop for an in-person test.</li>
+          <li>If you're together in person, use the physical tabletop. If you're in different locations, use Tabletop Simulator.</li>
           <li>The creator records the start once, then both players play normally.</li>
           <li>The creator submits the shared result; both players submit separate individual responses.</li>
         </ol>
@@ -83,10 +83,11 @@
         <p class="eyebrow">Create tracked game</p>
         <h2>Who are you playing?</h2>
         <label>Your name<input id="createName" type="text" maxlength="80" autocomplete="name" required placeholder="Name your opponent will recognize" /></label>
-        <label>How will you play?
+        <label>Where are you playing?
           <select id="createPlayMode" required>
-            <option value="tts">Tabletop Simulator — recommended</option>
-            <option value="physical">Physical tabletop</option>
+            <option value="">Choose</option>
+            <option value="physical">Together in person — physical tabletop</option>
+            <option value="tts">Remotely — Tabletop Simulator</option>
           </select>
         </label>
         <div class="two-field-grid">

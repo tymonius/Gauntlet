@@ -8,7 +8,7 @@
   const params = new URLSearchParams(window.location.search);
   const code = String(params.get("code") || "").trim();
   const suppliedHostKey = String(params.get("host") || "").trim();
-  const requestedPlayMode = params.get("mode") === "physical" ? "physical" : "tts";
+  const requestedPlayMode = ["physical", "tts"].includes(params.get("mode")) ? params.get("mode") : "";
   const creationSource = params.get("source") === "start" ? "start" : "tracked-page";
   const storagePrefix = TOKEN_PATTERN.test(code) ? `gauntlet_tracked_${code.slice(0, 16)}` : "gauntlet_tracked_new";
   const nativeFetch = window.fetch.bind(window);
@@ -67,7 +67,7 @@
 
     populateFactionSelect(el.createFaction, el.createLeader);
     populateFactionSelect(el.joinFaction, el.joinLeader);
-    if (el.createPlayMode) el.createPlayMode.value = requestedPlayMode;
+    if (el.createPlayMode && requestedPlayMode) el.createPlayMode.value = requestedPlayMode;
     renderRatingGrid();
     restoreStartChoice();
 
@@ -118,7 +118,7 @@
           displayName: el.createName.value.trim(),
           faction: el.createFaction.value,
           leader: el.createLeader.value,
-          playMode: el.createPlayMode?.value || requestedPlayMode,
+          playMode: el.createPlayMode?.value || "",
           selectionReason: el.createSelectionReason.value.trim(),
           creationSource,
           selectionSource: readStartChoice() ? "standalone-onboarding" : "tracked-page"
@@ -251,13 +251,13 @@
     }
 
     if (mode === "tts") {
-      el.transportEyebrow.textContent = "Recommended play method · Tabletop Simulator";
+      el.transportEyebrow.textContent = "Remote play · Tabletop Simulator";
       el.transportTitle.textContent = "Open the v0.7.0 Workshop mod.";
       el.transportCopy.textContent = "One player hosts a multiplayer room. Each player takes the starter kit matching their selected Leader, then the creator records Game started here when setup is complete.";
       el.ttsWorkshopLink.hidden = false;
       el.physicalSetupLink.hidden = true;
     } else {
-      el.transportEyebrow.textContent = "Physical tabletop";
+      el.transportEyebrow.textContent = "In-person play · Physical tabletop";
       el.transportTitle.textContent = "Prepare the two selected starter Decks.";
       el.transportCopy.textContent = "Use Start Playing and the Deckbuilder to print the starter Deck, Leader, Territories, references, and faction components for each selected player. Keep this tracked page open during play.";
       el.ttsWorkshopLink.hidden = true;

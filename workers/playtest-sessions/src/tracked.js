@@ -93,7 +93,8 @@ async function createTrackedGame(request, env, headers) {
   const hostKey = randomToken(40);
   const participantToken = randomToken(32);
   const serial = await uniqueSerial(env.DB);
-  const playMode = body.playMode === "physical" ? "physical" : "tts";
+  const requestedMode = cleanString(body.playMode, 16);
+  const playMode = ["physical", "tts"].includes(requestedMode) ? requestedMode : "unspecified";
   const metadata = {
     mode: "tracked",
     playMode,
@@ -136,7 +137,8 @@ async function createTrackedGame(request, env, headers) {
     rulesVersion: CURRENT_RULES_VERSION,
     serial,
     sessionKind: "game",
-    mode: "tracked"
+    mode: "tracked",
+    playMode
   }, now);
   await insertEvent(env.DB, sessionId, "participant_joined", {
     participantId,
