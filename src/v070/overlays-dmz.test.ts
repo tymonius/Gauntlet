@@ -335,9 +335,11 @@ describe('v0.7.0 Territory Overlays and Demilitarized Zone', () => {
       type: 'pass_denouement',
       playerId: 'A',
     });
+    const cleanupExcess = Math.max(0, state.players.A.zones.hand.length - 3);
     state = reduceV070TurnAction(state, {
       type: 'complete_cleanup',
       playerId: 'A',
+      discardInstanceIds: state.players.A.zones.hand.slice(0, cleanupExcess),
     });
 
     expect(state.activePlayer).toBe('B');
