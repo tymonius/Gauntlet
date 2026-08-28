@@ -134,7 +134,7 @@ jobs:
           from pathlib import Path
 
           sessions = json.loads(Path('/tmp/session-health.json').read_text())
-          if not sessions.get('ok') or sessions.get('version') != 'v0.6.3':
+          if not sessions.get('ok') or sessions.get('version') != 'v0.7.0':
               raise SystemExit(f'Playtest session health failed: {sessions}')
           if not sessions.get('database'):
               raise SystemExit(f'Playtest session D1 binding unavailable: {sessions}')
@@ -168,5 +168,5 @@ jobs:
               raise SystemExit(f'Standalone feedback unavailable: {sessions}')
           if not sessions.get('completeStandaloneContextSupported'):
               raise SystemExit(f'Complete standalone context unavailable: {sessions}')
-          print('Verified production v0.6.3 playtest sessions, journals, closure controls, complete standalone feedback, compiled analysis, and audited exclusions.')
+          print('Verified production v0.7.0 playtest sessions, journals, closure controls, complete standalone feedback, compiled analysis, and audited exclusions.')
           PY
