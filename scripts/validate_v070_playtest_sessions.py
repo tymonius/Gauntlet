@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the current v0.7.0 playtest workflow and TTS-first self-serve playtest contract."""
+"""Validate the current v0.7.0 playtest workflow and location-aware self-serve playtest contract."""
 
 from __future__ import annotations
 
@@ -88,6 +88,8 @@ def main() -> int:
     ], errors)
     require("playtest/tracked/index.html", [
         'id="createPlayMode"',
+        "Together in person — physical tabletop",
+        "Remotely — Tabletop Simulator",
         'id="transportPanel"',
         'data-diagnostic-flag="feels_decided"',
         'data-diagnostic-flag="no_meaningful_option"',
@@ -110,7 +112,7 @@ def main() -> int:
     require("start/app.js", [
         'new URL("../playtest/tracked/"',
         'url.searchParams.set("mode"',
-        '"physical" ? "physical" : "tts"',
+        'if (mode === "physical" || mode === "tts")',
     ], errors)
     require("start/index.html", [
         "Tabletop Simulator",
@@ -151,7 +153,7 @@ def main() -> int:
 
     if errors:
         return fail(errors)
-    print("Validated v0.7.0 TTS-first self-serve playtests, physical/facilitated compatibility, G070/EV070 runtime identity, live diagnostics, private decision-point feedback, and current terminology.")
+    print("Validated v0.7.0 location-aware self-serve playtests, physical/TTS/facilitated compatibility, G070/EV070 runtime identity, live diagnostics, private decision-point feedback, and current terminology.")
     return 0
 
 def fail(errors: list[str]) -> int:
