@@ -229,7 +229,8 @@ function unsupportedOnsetFeatures(state: V070GameState): string[] {
       const onsetAsset = card?.effects.find(effect =>
         effect.label === 'Asset' && /during onset|before gambits are set|after terms are refused|after the opponent refuses/i.test(effect.text),
       );
-      if (onsetAsset && card) result.push(`${playerId}:${card.name}`);
+      const implementedOnsetAsset = cardId === 'diplomats-plenipotentiary';
+      if (onsetAsset && card && !implementedOnsetAsset) result.push(`${playerId}:${card.name}`);
     }
   }
 
