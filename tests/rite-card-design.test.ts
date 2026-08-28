@@ -134,8 +134,8 @@ describe("Mystics Rite card prototypes", () => {
   });
 
   it("uses reclaimed completed-Rite space for artwork while retaining a finite cap", () => {
-    expect(riteRenderer).toContain("const artMax = completed ? '1.24' : '1.48'");
-    expect(riteRenderer).toContain("const artMin = completed ? '0.78' : '0.92'");
+    expect(riteRenderer).toContain("const artMax = completed ? '1.24' : hasReminder ? '1.34' : '1.48'");
+    expect(riteRenderer).toContain("const artMin = completed ? '0.78' : hasReminder ? '0.72' : '0.92'");
     expect(riteStyles).toContain("font-size: calc(5.45pt * var(--rules-scale))");
     expect(riteStyles).toContain("--minimum-rules-scale: 0.82");
   });
