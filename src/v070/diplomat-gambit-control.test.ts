@@ -132,6 +132,7 @@ describe('v0.7.0 Diplomat Gambit control', () => {
     expect(state.battleRuntime?.gambitOrderOverride?.nextPlayer).toBe('A');
 
     const diplomatView = viewV070GameForPlayer(state, 'A');
+    expect(diplomatView.battleRuntime?.gambitOrderOverride?.nextPlayer).toBe('A');
     expect(diplomatView.battleRuntime?.participants.B.gambit).toEqual({
       instanceId: opponentGambit,
       cardId: 'neutral-new-recruits',
