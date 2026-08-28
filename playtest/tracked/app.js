@@ -8,6 +8,8 @@
   const params = new URLSearchParams(window.location.search);
   const code = String(params.get("code") || "").trim();
   const suppliedHostKey = String(params.get("host") || "").trim();
+  const requestedPlayMode = params.get("mode") === "physical" ? "physical" : "tts";
+  const creationSource = params.get("source") === "start" ? "start" : "tracked-page";
   const storagePrefix = TOKEN_PATTERN.test(code) ? `gauntlet_tracked_${code.slice(0, 16)}` : "gauntlet_tracked_new";
   const nativeFetch = window.fetch.bind(window);
 
@@ -46,22 +48,26 @@
   function init() {
     for (const id of [
       "loadingPanel", "errorPanel", "errorTitle", "errorMessage", "createPanel", "createForm",
-      "createName", "createFaction", "createLeader", "savedChoiceNote", "createStatus", "sessionApp",
+      "createName", "createPlayMode", "createFaction", "createLeader", "savedChoiceNote", "createStatus", "sessionApp",
       "sessionSerial", "lifecycleCopy", "statusLabel", "playerCount", "arbiterCount", "responseCount",
-      "sharePanel", "copyJoinLink", "shareJoinLink", "shareStatus", "qrCode", "playerCards", "joinPanel",
+      "sharePanel", "copyJoinLink", "shareJoinLink", "shareStatus", "qrCode", "playerCards",
+      "transportPanel", "transportEyebrow", "transportTitle", "transportCopy", "transportMatchup",
+      "ttsWorkshopLink", "physicalSetupLink", "joinPanel",
       "joinForm", "joinName", "joinFaction", "joinLeader", "joinStatus", "joinedPanel", "joinedHeading",
       "joinedCopy", "openArbiter", "playPanel", "recordStart", "showCompletedResult", "showStoppedResult",
-      "noteForm", "noteText", "eventStatus", "resultSection", "resultForm", "completionStatus",
+      "diagnosticPanel", "diagnosticStatus", "noteForm", "noteText", "eventStatus", "resultSection", "resultForm", "completionStatus",
       "firstPlayer", "winnerLabel", "winner", "victoryRouteLabel", "victoryRoute", "durationMinutes",
       "rounds", "battles", "stopReasonLabel", "stopReason", "packageUnmodified", "variantUsed",
       "productionIssue", "strongestMoment", "confusingPoint", "importantObservation", "resultStatus",
-      "responseSection", "responseForm", "factionInterest", "ratingGrid", "playAgain", "responseComments",
+      "responseSection", "responseForm", "factionInterest", "ratingGrid", "feltDecidedWhen",
+      "agencyAfterDecided", "decisiveCause", "playAgain", "responseComments",
       "responseStatus", "completionPanel", "reviewPanel", "refreshReview", "downloadReviewJson",
       "downloadReviewCsv", "reviewContent", "reviewStatus"
     ]) el[id] = document.getElementById(id);
 
     populateFactionSelect(el.createFaction, el.createLeader);
     populateFactionSelect(el.joinFaction, el.joinLeader);
+    if (el.createPlayMode) el.createPlayMode.value = requestedPlayMode;
     renderRatingGrid();
     restoreStartChoice();
 
@@ -75,6 +81,9 @@
     el.recordStart?.addEventListener("click", () => recordEvent("game_started", {}));
     el.showCompletedResult?.addEventListener("click", () => showResultForm("completed"));
     el.showStoppedResult?.addEventListener("click", () => showResultForm("stopped"));
+    document.querySelectorAll("[data-diagnostic-flag]").forEach(button => {
+      button.addEventListener("click", () => recordDiagnostic(button.dataset.diagnosticFlag || ""));
+    });
     el.noteForm?.addEventListener("submit", saveNote);
     el.completionStatus?.addEventListener("change", updateOutcomeFields);
     el.resultForm?.addEventListener("submit", submitResult);
@@ -108,7 +117,8 @@
           displayName: el.createName.value.trim(),
           faction: el.createFaction.value,
           leader: el.createLeader.value,
-          creationSource: "tracked-page",
+          playMode: el.createPlayMode?.value || requestedPlayMode,
+          creationSource,
           selectionSource: readStartChoice() ? "standalone-onboarding" : "tracked-page"
         }
       });
@@ -164,6 +174,7 @@
     el.lifecycleCopy.textContent = lifecycleCopy(session);
 
     renderPlayers();
+    renderTransport();
     fillPlayerOptions();
 
     const joinedPlayer = currentPlayer();
@@ -216,6 +227,31 @@
     }
   }
 
+  function renderTransport() {
+    if (!el.transportPanel || !state.session) return;
+    const mode = state.session.playMode === "physical" ? "physical" : "tts";
+    const matchup = state.session.players
+      .map(player => `${player.leader} of the ${FACTIONS[player.faction]?.name || titleCase(player.faction)}`)
+      .join(" vs. ");
+    el.transportMatchup.textContent = matchup
+      ? `Selected matchup: ${matchup}.`
+      : "The selected starter kits will appear here as both players join.";
+
+    if (mode === "tts") {
+      el.transportEyebrow.textContent = "Recommended play method · Tabletop Simulator";
+      el.transportTitle.textContent = "Open the v0.7.0 Workshop mod.";
+      el.transportCopy.textContent = "One player hosts a multiplayer room. Each player takes the starter kit matching their selected Leader, then the creator records Game started here when setup is complete.";
+      el.ttsWorkshopLink.hidden = false;
+      el.physicalSetupLink.hidden = true;
+    } else {
+      el.transportEyebrow.textContent = "Physical tabletop";
+      el.transportTitle.textContent = "Prepare the two selected starter Decks.";
+      el.transportCopy.textContent = "Use Start Playing and the Deckbuilder to print the starter Deck, Leader, Territories, references, and faction components for each selected player. Keep this tracked page open during play.";
+      el.ttsWorkshopLink.hidden = true;
+      el.physicalSetupLink.hidden = false;
+    }
+  }
+
   async function joinGame(event) {
     event.preventDefault();
     setBusy(el.joinForm, true);
@@ -264,6 +300,33 @@
     } catch (error) {
       console.error(error);
       setStatus(el.eventStatus, error.message || "The event could not be recorded.", "error");
+    }
+  }
+
+  async function recordDiagnostic(flag) {
+    if (!state.participant || !flag) return;
+    const labels = {
+      dont_know_what_happens_next: "Marked: don't know what happens next.",
+      rule_unclear: "Marked: rule unclear.",
+      no_meaningful_option: "Marked: no meaningful option.",
+      feels_decided: "Marked: game feels decided.",
+      repeated_or_futile_battle: "Marked: repeated or futile battle.",
+      component_or_tts_problem: "Marked: component / TTS problem."
+    };
+    setStatus(el.diagnosticStatus, "Recording observation…");
+    try {
+      const payload = await api(`/api/tracked-games/${encodeURIComponent(code)}/event`, {
+        method: "POST",
+        body: participantBody({
+          eventType: "diagnostic_flag",
+          data: { flag }
+        })
+      });
+      state.session = payload.session;
+      setStatus(el.diagnosticStatus, labels[flag] || "Observation recorded.", "success");
+    } catch (error) {
+      console.error(error);
+      setStatus(el.diagnosticStatus, error.message || "The observation could not be recorded.", "error");
     }
   }
 
@@ -337,6 +400,9 @@
     try {
       const response = {
         factionInterest: el.factionInterest.value.trim(),
+        feltDecidedWhen: el.feltDecidedWhen.value,
+        agencyAfterDecided: el.agencyAfterDecided.value,
+        decisiveCause: el.decisiveCause.value.trim(),
         playAgain: el.playAgain.value === "yes",
         comments: el.responseComments.value.trim()
       };
