@@ -14,13 +14,13 @@ The release manifest identifies `digital_rules: v0.7.0`. The published package i
 ## Migration layers
 
 - `content/v070.ts` — published v0.7.0 content index and release-contract validation.
-- `v070/rules.ts` — released v0.7.0 shared turn, movement, Onset, withdrawal, battle-outcome, and Last Stand surface.
+- `v070/rules.ts` — released v0.7.0 shared turn, movement, Onset, withdrawal, battle-outcome, and Last Stand surface.\n- `v070/starter-decks.ts` — released starter-package adapter with canonical card/Territory validation.\n- `v070/engine.ts` — authoritative deterministic setup state with physical card-instance identity, opening selection, Territory arrangement, and first-player resolution.\n- `v070/views.ts` — player-scoped hidden-information views.
 - `v064/` — transitional Onset implementation retained as historical migration evidence after its relevant shared procedures were audited into `v070/rules.ts`.
 - `v063/` — substantial validated procedure library from the v0.6.3 migration: setup, Front Line/Capture, copied/repeated effects, Arcane Knowledge, Manifest Destiny, dynamic Territories/Deeds, and all printed Territory/Arena procedures. These remain explicitly versioned until individually revalidated against v0.7.0.
 - `content/v063.ts` — immutable v0.6.3 release adapter retained for historical/versioned regression tests.
 - `state/`, `effects/`, `cards/`, `cli/`, and `gui/` — pre-faction/earlier playable architecture. Useful scaffolding, but not presumed v0.7.0-compatible.
 
-The live `content/current.ts` boundary now identifies v0.7.0 and exposes the released v0.7.0 shared-rules API. Older procedure libraries remain visible only under their explicit versioned names until promoted deliberately.
+The live `content/current.ts` boundary now identifies v0.7.0 and exposes the released shared-rules API plus the authoritative starter/setup and private-view surfaces. Older procedure libraries remain visible only under their explicit versioned names until promoted deliberately.
 
 Issue #741 tracks completion of the playable engine against the current released rules.
 
