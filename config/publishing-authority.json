@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "project": "Gauntlet",
+  "imprint": {
+    "displayName": "TDS Games",
+    "status": "provisional",
+    "role": "publishing imprint",
+    "logo": "images/branding/tds-games-mark.svg"
+  },
+  "copyright": {
+    "holder": "Tymon Scott",
+    "year": 2026,
+    "notice": "Copyright © 2026 Tymon Scott. All rights reserved."
+  },
+  "playerFacing": {
+    "publisherLine": "Published by TDS Games",
+    "imprintStatement": "Gauntlet is published under the TDS Games imprint for playtesting and review."
+  },
+  "legal": {
+    "ownershipAssertion": "TDS Games is used here as a publishing imprint. This file does not by itself transfer copyright, trademark, or other intellectual-property ownership.",
+    "entityStatus": "No legal-entity status is asserted by this publishing-authority record."
+  }
+}
