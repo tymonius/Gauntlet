@@ -89,9 +89,14 @@ function startDiplomatDefendingCounterattack(
       territory.controller = territory.position <= 4 ? 'A' : 'B';
       territory.occupant = null;
     }
+    // A occupies B's final Territory while B is one Position inward.
+    // B therefore initiates the Counterattack by Falling Back onto its own
+    // occupied final Territory; the attacker origin remains a legal Territory
+    // Position, as required by the battle envelope.
     state.players.A.position = 5;
-    state.players.B.position = 6;
+    state.players.B.position = 4;
     state.board[5].occupant = 'A';
+    state.board[4].occupant = 'B';
   } else {
     state.players.A.position = 2;
     state.players.B.position = 3;
@@ -108,7 +113,7 @@ function startDiplomatDefendingCounterattack(
   state = reduceV070TurnAction(state, {
     type: 'choose_movement',
     playerId: 'B',
-    choice: 'advance',
+    choice: finalTerritory ? 'fall_back' : 'advance',
   });
   state.players.A.diplomats!.influence = 2;
   return state;
