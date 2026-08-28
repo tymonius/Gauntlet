@@ -64,14 +64,15 @@
 
     <section id="createPanel" class="create-layout" hidden>
       <div class="tracked-panel create-copy">
-        <p class="eyebrow">Start at the table</p>
+        <p class="eyebrow">Blind playtest · v0.7.0</p>
         <h2>One player creates the game.</h2>
-        <p>The creator receives a public join link and QR code. Both players join from their own devices so Rules Arbiter questions and individual questionnaire responses are attributed correctly.</p>
+        <p>The creator receives a public join link and QR code. Both players join from their own devices so faction choices, Rules Arbiter questions, live observations, and individual questionnaire responses stay attached to the same game.</p>
         <ol>
           <li>Create the game using your faction and Leader.</li>
           <li>Let the opponent scan the QR code and confirm their own choice.</li>
+          <li>Choose Tabletop Simulator for remote blind play, or physical tabletop for an in-person test.</li>
           <li>The creator records the start once, then both players play normally.</li>
-          <li>The creator submits the shared result; both players submit individual responses.</li>
+          <li>The creator submits the shared result; both players submit separate individual responses.</li>
         </ol>
         <p class="privacy-note"><strong>No account is required.</strong> The public join code cannot read questionnaire answers. A separate review key is saved only for the game creator.</p>
         <p class="privacy-note"><strong>Already finished the game?</strong> <a href="../retrospective/">Create a retrospective record</a> if both players can still join that record.</p>
@@ -82,6 +83,12 @@
         <p class="eyebrow">Create tracked game</p>
         <h2>Who are you playing?</h2>
         <label>Your name<input id="createName" type="text" maxlength="80" autocomplete="name" required placeholder="Name your opponent will recognize" /></label>
+        <label>How will you play?
+          <select id="createPlayMode" required>
+            <option value="tts">Tabletop Simulator — recommended</option>
+            <option value="physical">Physical tabletop</option>
+          </select>
+        </label>
         <div class="two-field-grid">
           <label>Faction<select id="createFaction" required></select></label>
           <label>Leader<select id="createLeader" required disabled></select></label>
@@ -129,6 +136,19 @@
         <div id="playerCards" class="player-cards"></div>
       </section>
 
+      <section id="transportPanel" class="tracked-panel transport-panel" aria-labelledby="transport-title">
+        <div>
+          <p id="transportEyebrow" class="eyebrow">Play method</p>
+          <h2 id="transportTitle">Preparing the play handoff…</h2>
+          <p id="transportCopy"></p>
+          <p id="transportMatchup" class="transport-matchup"></p>
+        </div>
+        <div class="transport-actions">
+          <a id="ttsWorkshopLink" class="button primary" href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener">Open TTS Workshop mod ↗</a>
+          <a id="physicalSetupLink" class="button secondary" href="../../start/?playtest=1&mode=physical">Open physical setup</a>
+        </div>
+      </section>
+
       <section id="joinPanel" class="tracked-panel form-panel" hidden>
         <p class="eyebrow">Join this game</p>
         <h2>Confirm your side.</h2>
@@ -156,6 +176,20 @@
           <button id="showCompletedResult" type="button" class="button secondary">Game completed</button>
           <button id="showStoppedResult" type="button" class="button secondary">Game stopped</button>
         </div>
+        <section id="diagnosticPanel" class="diagnostic-panel">
+          <p class="eyebrow">Live observation</p>
+          <h3>Mark the moment, not the diagnosis.</h3>
+          <p>Either player can tap one of these when it happens. The timestamp and player are stored with the game.</p>
+          <div class="diagnostic-grid">
+            <button type="button" class="button secondary" data-diagnostic-flag="dont_know_what_happens_next">I don't know what happens next</button>
+            <button type="button" class="button secondary" data-diagnostic-flag="rule_unclear">A rule is unclear</button>
+            <button type="button" class="button secondary" data-diagnostic-flag="no_meaningful_option">I have no meaningful option</button>
+            <button type="button" class="button secondary" data-diagnostic-flag="feels_decided">This feels decided</button>
+            <button type="button" class="button secondary" data-diagnostic-flag="repeated_or_futile_battle">Battle feels repeated or futile</button>
+            <button type="button" class="button secondary" data-diagnostic-flag="component_or_tts_problem">Component / TTS problem</button>
+          </div>
+          <p id="diagnosticStatus" class="form-status" aria-live="polite"></p>
+        </section>
         <details class="note-details">
           <summary>Record a factual session note</summary>
           <form id="noteForm"><textarea id="noteText" rows="3" maxlength="500" placeholder="What happened? Avoid proposing a fix here."></textarea><button type="submit" class="button secondary">Save note</button></form>
@@ -204,6 +238,31 @@
         <form id="responseForm" class="tracked-panel feedback-form">
           <label>Why did this faction or Leader interest you?<textarea id="factionInterest" rows="3" maxlength="1000" required></textarea></label>
           <div id="ratingGrid" class="rating-grid"></div>
+          <div class="decision-experience">
+            <p class="eyebrow">Decision point</p>
+            <label>When did the result first feel decided to you?
+              <select id="feltDecidedWhen" required>
+                <option value="">Choose</option>
+                <option value="never">It never felt decided before the end</option>
+                <option value="early">Early in the game</option>
+                <option value="middle">Around the middle</option>
+                <option value="late">Late, but before the end</option>
+                <option value="at_end">Only when the game actually ended</option>
+              </select>
+            </label>
+            <label>After that point, did you still have meaningful decisions?
+              <select id="agencyAfterDecided" required>
+                <option value="">Choose</option>
+                <option value="yes">Yes</option>
+                <option value="some">Some</option>
+                <option value="no">No</option>
+                <option value="not_applicable">Not applicable — it never felt decided early</option>
+              </select>
+            </label>
+            <label>What most determined the result? <span class="optional">optional</span>
+              <textarea id="decisiveCause" rows="3" maxlength="1000" placeholder="A decision, battle, card, faction progression, rules mistake, luck, or something else."></textarea>
+            </label>
+          </div>
           <label>Would you play Gauntlet again?<select id="playAgain" required><option value="">Choose</option><option value="yes">Yes</option><option value="no">No</option></select></label>
           <label>Additional comments <span class="optional">optional</span><textarea id="responseComments" rows="4" maxlength="2000"></textarea></label>
           <button class="button primary" type="submit">Submit my response</button>
