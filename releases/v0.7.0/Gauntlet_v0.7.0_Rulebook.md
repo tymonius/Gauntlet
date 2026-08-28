@@ -1267,7 +1267,7 @@ War Crimes and Shock and Awe may prohibit movement, capture, or Orders resulting
 
 During Onset, a Diplomat may offer **Terms**. The Diplomat stakes Influence and presents a Proposal. The opponent may accept, ending the battle sequence during Onset before Gambits are set, or refuse and fight under the Proposal's refusal effect.
 
-Accepted or successfully imposed Proposals become Treaty Articles. Ratify five different Proposals and survive until the start of your next turn to win through the **Peace Treaty**.
+Accepted or successfully imposed Proposals become Treaty Articles. Ratify six different Proposals and survive until the start of your next turn to win through the **Peace Treaty**.
 
 ## Complete rules
 
@@ -1388,7 +1388,7 @@ The progression continues without a fixed maximum. Each additional +1 costs one 
 
 A ratified Proposal is a Treaty Article. It may be offered again for its tactical effects but cannot be ratified again and grants no normal newly-ratified Influence reward.
 
-At the start of the Diplomat's turn, after the Capture step and before the Draw step, if five different Proposals are ratified, the Diplomat wins through the Peace Treaty.
+At the start of the Diplomat's turn, after the Capture step and before the Draw step, if six different Proposals are ratified, the Diplomat wins through the Peace Treaty.
 
 ## Leaders
 
@@ -1908,7 +1908,7 @@ When the controller of Watchtower defends there, the attacker sets their Gambit 
 
 ## How it works
 
-Mystics sacrifice, bind, exchange, and recover cards while completing three public **Rites**. The first completed Rite unlocks **Invocation**, the second unlocks **Transmutation**, and the third unlocks **Convergence** and the ability to begin the **Ritual of Ascendance**.
+Mystics sacrifice, bind, exchange, and recover cards while completing three public **Rites**. The first completed Rite unlocks **Invocation**, the second unlocks **Transmutation**, and the third unlocks **Convergence** and the ability to begin the **Ritual of Ascension**.
 
 To win through Ritual, bind three cards from three different zones, initiate a battle while they remain bound, and win that battle.
 
@@ -1916,11 +1916,11 @@ To win through Ritual, bind three cards from three different zones, initiate a b
 
 | Element | Mystics rule |
 |---|---|
-| Victory | Run the Gauntlet or complete the Ritual of Ascendance. |
+| Victory | Run the Gauntlet or complete the Ritual of Ascension. |
 | Resource | None. |
 | Trait | All thirteen Mystics cards have the Arcane trait. |
 | Progression | First Rite: Invocation; second: Transmutation; third: Convergence and Ritual. |
-| Faction Features | Begin a Rite and Begin the Ritual of Ascendance — 1 Action · Denouement; Invocation and Transmutation — No Action; Convergence — Automatic. |
+| Faction Features | Begin a Rite and Begin the Ritual of Ascension — 1 Action · Denouement; Invocation and Transmutation — No Action; Convergence — Automatic. |
 | Leaders | Alchemist and Spirit Walker. |
 | Faction pool | 13 Mystics card titles. |
 | Unique card | Necromancy, cost 5; maximum one copy per Deck. |
@@ -1930,7 +1930,7 @@ To win through Ritual, bind three cards from three different zones, initiate a b
 Mystics have the following Faction Features marked **1 Action · Denouement**:
 
 - **Begin a Rite:** Choose one incomplete Rite you may legally begin and pay its beginning cost.
-- **Begin the Ritual of Ascendance:** After completing all three Rites, bind the required Arcane cards from Hand, Discard Pile, and Graveyard.
+- **Begin the Ritual of Ascension:** After completing all three Rites, bind the required Arcane cards from Hand, Discard Pile, and Graveyard.
 
 Completing a Rite is automatic when that Rite's completion condition and timing are satisfied. **Invocation** and **Transmutation** are Faction Features marked **No Action**; **Convergence** is **Automatic**. The Alchemist and Spirit Walker mechanics are Leader Abilities.
 
@@ -1969,7 +1969,7 @@ During Denouement, take an Action to begin one incomplete Rite by paying its beg
 
 - Complete the first Rite to unlock **Invocation**.
 - Complete the second Rite to unlock **Transmutation**.
-- Complete the third Rite to unlock **Convergence** and permission to begin the **Ritual of Ascendance**.
+- Complete the third Rite to unlock **Convergence** and permission to begin the **Ritual of Ascension**.
 
 #### Bound cards
 
@@ -2022,7 +2022,7 @@ You may use the **Begin a Rite** Faction Feature for Rite of Crossing during Den
 
 > **Completion:** At the start of your next turn, after the Capture step, complete this Rite if you are still the occupier or now control that Territory. Otherwise, the Rite is interrupted and resets.
 
-## Ritual of Ascendance and Convergence
+## Ritual of Ascension and Convergence
 
 ### How it works
 
@@ -2040,7 +2040,7 @@ After completing all three Rites, during an Denouement, spend 1 Action to bind:
 - one Arcane card from your Discard Pile; and
 - one Arcane card from your Graveyard.
 
-This begins the Ritual of Ascendance.
+This begins the Ritual of Ascension.
 
 #### Convergence
 
@@ -2121,6 +2121,7 @@ Spend Conviction on **Purges** that remove cards and Assets. The first time on y
 | Faction Features | Purge — 1 Action · Opening or Denouement · Once per turn; Conviction, Condemnation, Blasphemy, and Purification — Automatic at their stated timings. |
 | Leaders | Grand Inquisitor and Witch Hunter. |
 | Faction pool | 13 Inquisition card titles. |
+| Unique card | Martyrdom, cost 5; maximum one copy per Deck. |
 | Arcane card | Heresy. |
 
 ## Faction Features
