@@ -138,6 +138,7 @@ jobs:
             let response = await page.goto(`${origin}/playtest/tracked/`, { waitUntil: 'networkidle' });
             if (!response?.ok()) throw new Error(`Tracked page returned ${response?.status()}`);
             await page.fill('#createName', 'Alice');
+            await page.selectOption('#createPlayMode', 'tts');
             await page.selectOption('#createFaction', 'diplomats');
             await page.selectOption('#createLeader', 'ambassador');
             await page.fill('#createSelectionReason', 'Negotiation and political leverage sounded most interesting.');
