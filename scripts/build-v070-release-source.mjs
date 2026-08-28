@@ -42,14 +42,14 @@ function addCardAnatomyFigures(markdown) {
     .replace(arcaneMarker, arcaneMarker + arcaneFigure);
 }
 
-async function validateFrozenReleaseSources() {
+async function repairAndValidateFrozenReleaseSources() {
   const paths = {
     rulebook: `releases/${RELEASE_VERSION}/Gauntlet_${RELEASE_VERSION}_Rulebook.md`,
     canonical: `releases/${RELEASE_VERSION}/Gauntlet_${RELEASE_VERSION}_Canonical_Data.json`,
     starters: `releases/${RELEASE_VERSION}/Gauntlet_${RELEASE_VERSION}_Starter_Decks.json`,
     provenance: `releases/${RELEASE_VERSION}/Gauntlet_${RELEASE_VERSION}_Source_Provenance.json`,
   };
-  const [rulebook, canonicalText, startersText, provenanceText] = await Promise.all([
+  let [rulebook, canonicalText, startersText, provenanceText] = await Promise.all([
     readText(paths.rulebook),
     readText(paths.canonical),
     readText(paths.starters),
@@ -71,6 +71,59 @@ async function validateFrozenReleaseSources() {
   if (provenance.release_version !== RELEASE_VERSION || provenance.source_version !== RELEASE_VERSION || !provenance.authority_set_id) {
     throw new Error(`${RELEASE_VERSION} frozen source provenance is incomplete.`);
   }
+
+  const diplomats = canonical.gameplay?.factions?.find(faction => faction.id === 'diplomats');
+  if (diplomats?.factionRules?.peace_treaty_threshold !== 6) {
+    throw new Error('Frozen v0.7.0 canonical Peace Treaty threshold must be six.');
+  }
+
+  const stalePhrases = [
+    'Ratify five different Proposals',
+    'if five different Proposals are ratified',
+  ];
+  const correctedPhrases = [
+    'Ratify six different Proposals',
+    'if six different Proposals are ratified',
+  ];
+  const staleCount = stalePhrases.reduce(
+    (total, phrase) => total + rulebook.split(phrase).length - 1,
+    0,
+  );
+  if (staleCount > 0) {
+    if (staleCount !== 2) {
+      throw new Error(`Frozen v0.7.0 Rulebook has an unexpected Peace Treaty drift shape: ${staleCount} stale occurrences.`);
+    }
+    rulebook = rulebook
+      .replace('Ratify five different Proposals', 'Ratify six different Proposals')
+      .replace('if five different Proposals are ratified', 'if six different Proposals are ratified');
+    await writeText(join(ROOT, paths.rulebook), rulebook);
+    console.log('Applied frozen v0.7.0 Peace Treaty erratum: five → six ratified Proposals.');
+  }
+
+  for (const phrase of correctedPhrases) {
+    if (!rulebook.includes(phrase)) {
+      throw new Error(`Frozen v0.7.0 Rulebook is missing corrected Peace Treaty text: ${phrase}`);
+    }
+  }
+  for (const phrase of stalePhrases) {
+    if (rulebook.includes(phrase)) {
+      throw new Error(`Frozen v0.7.0 Rulebook still contains stale Peace Treaty text: ${phrase}`);
+    }
+  }
+
+  const authoritySetId = sha256(Buffer.from(`${rulebook}\n${canonicalText}\n${startersText}`, 'utf8'));
+  if (provenance.authority_set_id !== authoritySetId) {
+    provenance.authority_set_id = authoritySetId;
+    provenance.publication_corrections = {
+      ...(provenance.publication_corrections || {}),
+      peace_treaty_threshold: {
+        corrected_to: 6,
+        reason: 'Published Rulebook prose retained the pre-v0.6.4 five-Proposal threshold while canonical v0.7.0 authority correctly required six.',
+      },
+    };
+    await writeText(join(ROOT, paths.provenance), jsonText(provenance));
+    console.log(`Updated frozen v0.7.0 authority set after Peace Treaty erratum: ${authoritySetId}`);
+  }
 }
 
 function validateAuthority(authority) {
@@ -91,6 +144,10 @@ function validateAuthority(authority) {
   if (!authority.factionFeatureTaxonomy || !authority.factionFeatures) {
     throw new Error('v0.7.0 requires current Faction Feature authority.');
   }
+  const diplomats = authority.gameplay.factions.find(faction => faction.id === 'diplomats');
+  if (diplomats?.factionRules?.peace_treaty_threshold !== 6) {
+    throw new Error('v0.7.0 publication requires a six-Proposal Peace Treaty threshold.');
+  }
 
   const active = JSON.stringify({
     gameplay: authority.gameplay,
@@ -108,8 +165,8 @@ function validateAuthority(authority) {
 const authority = await loadCurrentGameAuthority();
 
 if (authority.version !== RELEASE_VERSION) {
-  await validateFrozenReleaseSources();
-  console.log(`Current development is ${authority.version}; preserving the frozen ${RELEASE_VERSION} release-source snapshot.`);
+  await repairAndValidateFrozenReleaseSources();
+  console.log(`Current development is ${authority.version}; preserving the frozen ${RELEASE_VERSION} release-source snapshot with approved publication errata.`);
 } else {
   const currentRulebookSource = await readText(CURRENT_RULEBOOK_SOURCE);
   validateAuthority(authority);
