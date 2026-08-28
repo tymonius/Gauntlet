@@ -29,7 +29,11 @@ The author's 2026-08-28 recollection adds an earlier physical-distribution fact:
 
 This materially changes the publication analysis. An unrestricted transfer/gift or lending of copies can constitute publication, but Copyright Office practice also recognizes "limited publication" where copies are distributed only to a definitely selected group for a limited purpose and without the right of further diffusion, reproduction, distribution, or sale. A social-acquaintance/playtest exchange can therefore remain unpublished depending on the restrictions and circumstances.
 
-Accordingly, **June 21 is now the earliest plausible 2026 publication date**, but the legal classification of that playtest distribution remains unresolved pending the nature of any express or implied restrictions.
+Accordingly, **June 21 is now the earliest plausible 2026 publication date**, but the legal classification of that playtest distribution remains unresolved.
+
+On 2026-08-28 the author further confirmed that **no one was told the materials were private**. That weakens the case for an express restriction, but it does not by itself eliminate limited-publication treatment. Current Copyright Office Compendium guidance notes that exchanges among family members or social acquaintances can remain unpublished, and that limited publication may turn on both the selected audience and limited purpose, with express or implied restrictions being relevant rather than always mandatory.
+
+The remaining question is therefore primarily **who received the copies and for what purpose**: a small selected playtest/friend group versus a broader distribution to people generally.
 
 ## 1. Revival chronology from the retained ChatGPT archive
 
@@ -246,7 +250,8 @@ Before the v0.5.3 application is certified:
 - [x] identify and independently hash the exact historical Complete Playtest Guide PDF;
 - [x] establish the broad human/AI filing posture;
 - [x] **author recollection:** during the June 21 playtest, the author believes the other player was allowed to keep the cards and printed rulebooks were handed out.
-- [ ] determine whether those physical copies were subject to an express or implied no-copy/no-redistribution restriction, or were simply given/lent without restriction.
+- [x] author confirmed on 2026-08-28 that recipients were **not expressly told the materials were private**.
+- [ ] determine whether the copies went only to a small selected playtest/social-acquaintance group for testing, or were handed out more broadly beyond that selected group.
 - [ ] confirm claimant at filing time;
 - [ ] resolve Nation of First Publication using then-current Copyright Office guidance;
 - [ ] prepare the final field-by-field Standard Application entry sheet;
