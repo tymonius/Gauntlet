@@ -17,6 +17,10 @@ on:
       - design-tokens.css
       - rulebook-design/**
       - rulebook-production/**
+      - config/publishing-authority.json
+      - images/branding/**
+      - config/publishing-authority.json
+      - images/branding/**
       - scripts/build-v070-release-source.mjs
       - scripts/render-v070-booklet.mjs
       - scripts/build-v063-rulebook-production.py
