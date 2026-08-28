@@ -1,6 +1,6 @@
 {
-  "version": "v0.6.3",
-  "purpose": "First-game guidance matched to the finalized v0.6.3 recommended starter Decks.",
+  "version": "v0.7.1-candidate",
+  "purpose": "First-game guidance matched to the current v0.7.1 candidate recommended starter Decks.",
   "tips": {
     "military-general-forward-doctrine": "Use Forced March and Advance Guard to choose the battles that matter. Save Command for Rally when a battle is close or Rout when a second attack can turn one win into immediate Front Line progress.",
     "military-commandant-holdfast": "Do not rush every advance. Make the opponent attack prepared ground, then combine Entrench or Repel with Landslide and Court Martial retreat pressure so one defensive win opens a counterattack.",
@@ -10,8 +10,8 @@
     "financiers-executive-hostile-expansion": "Plan turns so movement, battle, and acquisition happen together. Keep enough Capital or collateral for Hostile Takeover after a successful attack, then use the new Deed and control swing to set up Corner the Market.",
     "intelligence-ranger-field-operations": "Use Pathfinders before spending Intel just to bypass hostile Territory text. Save Fieldcraft, Surveillance, and Interference for effects or hidden commitments that would actually stop a Mission or decisive attack.",
     "intelligence-spymaster-mission-network": "Keep a second eligible Mission in Hand before completing the first so Mission Control keeps the chain moving. Use Contraband and Ruined Storehouse to recover completed Missions, and save Sleeper Network for a turn with several useful Actions lined up.",
-    "mystics-alchemist-first-principles": "Plan your first Hand-to-Graveyard sacrifice each turn so it replaces itself, then treat the Graveyard as a second hand with Rend the Veil, Necromancy, and Witchcraft. Do not sacrifice key pieces before you have a way to reuse them.",
-    "mystics-spirit-walker-unbroken-circle": "Begin a Rite only when you can protect its requirement. Keep a valuable Arcane card available for a protective sacrifice, use Nature's Altar to shorten vulnerable setup, and prioritize preserving Ritual progress over unnecessary advances.",
+    "mystics-alchemist-first-principles": "Use Threefold Vision to seed Hand, Discard, and Graveyard early. Plan the first Hand-to-Graveyard sacrifice each turn so Materia Prima replaces it, and save Rend the Veil or Transmutation support for the Rite of Blood battle.",
+    "mystics-spirit-walker-unbroken-circle": "Use Nature's Altar and your Overlays to establish a protected Rite early. Keep a valuable Arcane card available for Guardians of the Circle, and bank Witchcraft or Rend the Veil so Shattering can turn established power into a decisive battle.",
     "inquisition-grand-inquisitor-final-judgment": "Build Conviction before committing to a major Purge. After a battle win, use Final Judgment's discounted Purge immediately; Attrition can make that same win dump the opponent's Reserve into the Graveyard.",
     "inquisition-witch-hunter-relentless-pursuit": "Keep 2 Conviction available when the opponent attacks. Use Confession, Court Martial, or Contingency Plan to force the defensive win, then turn their ended turn into immediate forward pressure with Relentless Pursuit."
   }

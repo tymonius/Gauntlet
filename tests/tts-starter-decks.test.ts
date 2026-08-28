@@ -57,6 +57,14 @@ describe('TTS starter-deck assembly', () => {
     expect(assembler).toContain("'starter-deck-manifest.json'");
   });
 
+  it('carries selected Mystics Rites and recommended Rite order into starter metadata without assuming physical Rite assembly', () => {
+    expect(assembler).toContain('selectedRites: Array.isArray(deck.selectedRites)');
+    expect(assembler).toContain('recommendedRiteOrder: Array.isArray(deck.recommendedRiteOrder)');
+    expect(assembler).not.toContain('mystics-rite-shattering');
+    expect(assembler).not.toContain('mystics-rite-consecration');
+    expect(assembler).not.toContain('mystics-rite-equivalence');
+  });
+
   it('does not hard-code how many starter decks or Leaders the current release must contain', () => {
     expect(assembler).toContain('starterDecks.decks.map((deck) =>');
     expect(assembler).toContain('deckCount: decks.length');

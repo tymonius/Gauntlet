@@ -83,18 +83,21 @@ describe('TTS save publisher', () => {
   it('runs staged assets -> save/layout -> supplemental assembly -> validation in that order', () => {
     expect(packageJson.scripts['tts:check']).toContain('generate-tts-save.mjs --check');
     expect(packageJson.scripts['tts:package']).toContain('tts:save:assemble');
-    expect(packageJson.scripts['tts:package']).toContain('validate-v070-authoritative-save.mjs');
+    expect(packageJson.scripts['tts:package']).toContain('validate-current-authoritative-save.mjs');
     expect(packageJson.scripts['tts:save:finalize']).toBeUndefined();
 
     const stage = workflow.indexOf('Stage hosted TTS release assets');
     const save = workflow.indexOf('Generate authoritative TTS review scaffold');
     const assemble = workflow.indexOf('Assemble supplemental starter-kit contents');
-    const validate = workflow.indexOf('Validate authoritative v0.7.0 save contract');
+    const validate = workflow.indexOf('Validate authoritative current TTS save contract');
     expect(stage).toBeGreaterThan(-1);
     expect(stage).toBeLessThan(save);
     expect(save).toBeLessThan(assemble);
     expect(assemble).toBeLessThan(validate);
     expect(workflow).toContain('run: npm run tts:save');
+    expect(workflow).toContain('tts/validate-current-authoritative-save.mjs');
+    expect(workflow).not.toContain('tts/validate-v070-authoritative-save.mjs');
+    expect(packageJson.scripts['tts:package']).not.toContain('validate-v070-authoritative-save.mjs');
   });
 
   it('passes its current-release source check', () => {
