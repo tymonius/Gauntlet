@@ -82,9 +82,13 @@ def main() -> int:
     require("playtest/index.html", [
         "Self-serve playtesting · canonical v0.7.0",
         "Start a self-serve playtest",
-        "Tabletop Simulator",
-        "3790840635",
-        'href="sheet/"',
+        "Together in person",
+        "Playing remotely",
+        'mode=physical',
+        'mode=tts',
+    ], errors)
+    require("playtest/sheet/index.html", [
+        "Gauntlet Playtest Sheet",
     ], errors)
     require("playtest/tracked/index.html", [
         'id="createPlayMode"',
