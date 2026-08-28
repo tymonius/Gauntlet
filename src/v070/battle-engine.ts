@@ -522,7 +522,6 @@ function applyOutcome(state: V070GameState, outcome: V070BattleOutcome): void {
   const resolution = applyV070BattleOutcome(battle, outcome);
   state.battle = resolution.state;
   runtime.stage = 'aftermath';
-  settleV070RefusedTermsOutcome(state, outcome);
 
   appendV070Event(state, {
     type: 'battle_outcome',
@@ -535,6 +534,7 @@ function applyOutcome(state: V070GameState, outcome: V070BattleOutcome): void {
     },
   });
 
+  settleV070RefusedTermsOutcome(state, outcome);
   if (state.stage === 'ended') return;
   if (resolution.victory) completeAftermathInternal(state, resolution.victory.winner);
 }
