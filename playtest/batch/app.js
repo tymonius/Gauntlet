@@ -131,7 +131,7 @@
   }
 
   async function loadSheetTemplate() {
-    const response = await fetch("../index.html", { cache: "no-store" });
+    const response = await fetch("../sheet/", { cache: "no-store" });
     if (!response.ok) throw new Error("The printable playtest sheet template could not be loaded.");
     const documentSource = new DOMParser().parseFromString(await response.text(), "text/html");
     const template = documentSource.querySelector(".playtest-sheet");
