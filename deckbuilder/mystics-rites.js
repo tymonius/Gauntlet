@@ -10,6 +10,7 @@
   state.selectedRiteId = null;
   state.pendingRites = null;
   state.riteSelectedCount = FALLBACK_SELECTED_COUNT;
+  state.riteSelectionEnabled = false;
 
   const riteElements = {};
   let ritePreviewResizeObserver = null;
@@ -26,6 +27,8 @@
     selectedIds: () => [...state.rites],
     selectedRites: () => selectedRites(),
     requiredCount: () => state.riteSelectedCount,
+    selectionEnabled: () => state.riteSelectionEnabled,
+    defaultIds: () => state.ritePool.map(rite => rite.id),
   });
 
   document.addEventListener("DOMContentLoaded", installRiteIntegration);
@@ -48,16 +51,17 @@
 
   async function loadRites() {
     try {
-      const { loadCurrentGame } = await import("../game-data/current-game.mjs");
-      const currentGame = await loadCurrentGame();
+      const { loadGameRuleset, rulesetModeFromUrl } = await import("../game-data/ruleset.mjs");
+      const currentGame = await loadGameRuleset(rulesetModeFromUrl());
       const rites = currentGame.mystics?.rites;
-      const selectedCount = Number(currentGame.mystics?.selectionPolicy?.selectedCount);
+      const policy = currentGame.mystics?.selectionPolicy;
+      const selectedCount = Number(policy?.selectedCount);
 
       if (!Array.isArray(rites) || !rites.length) {
-        throw new Error("Current-game authority exposes no Mystics Rite pool.");
+        throw new Error("Selected ruleset exposes no Mystics Rite pool.");
       }
-      if (!Number.isInteger(selectedCount) || selectedCount <= 0 || selectedCount > rites.length) {
-        throw new Error("Current-game authority has an invalid Mystics Rite selection count.");
+      if (policy && (!Number.isInteger(selectedCount) || selectedCount <= 0 || selectedCount > rites.length)) {
+        throw new Error("Selected ruleset has an invalid Mystics Rite selection count.");
       }
 
       state.ritePool = rites.map(rite => ({
@@ -68,9 +72,13 @@
         interrupted: String(rite.interrupted || ""),
         reminder: rite.reminder?.text ? String(rite.reminder.text) : "",
       }));
-      state.riteSelectedCount = selectedCount;
+      state.riteSelectionEnabled = Boolean(policy);
+      state.riteSelectedCount = state.riteSelectionEnabled ? selectedCount : rites.length;
 
-      if (state.pendingRites) {
+      if (!state.riteSelectionEnabled) {
+        state.rites = state.ritePool.map(rite => rite.id);
+        state.pendingRites = null;
+      } else if (state.pendingRites) {
         state.rites = resolveRiteIds(state.pendingRites);
         state.pendingRites = null;
       } else {
@@ -106,8 +114,9 @@
 
   function syncRiteMetric() {
     const mystics = isMystics();
-    if (riteElements.mysticsRitesPanel) riteElements.mysticsRitesPanel.hidden = !mystics;
-    if (riteElements.riteMetricCard) riteElements.riteMetricCard.hidden = !mystics;
+    const selectable = mystics && state.riteSelectionEnabled;
+    if (riteElements.mysticsRitesPanel) riteElements.mysticsRitesPanel.hidden = !selectable;
+    if (riteElements.riteMetricCard) riteElements.riteMetricCard.hidden = !selectable;
     if (riteElements.deckRitesSection) riteElements.deckRitesSection.hidden = !mystics;
     if (riteElements.riteMetricCount) riteElements.riteMetricCount.textContent = String(state.rites.length);
     if (riteElements.riteSelectedCount) {
@@ -121,7 +130,7 @@
     if (!list || !preview) return;
 
     syncRiteMetric();
-    if (!isMystics()) {
+    if (!isMystics() || !state.riteSelectionEnabled) {
       ritePreviewResizeObserver?.disconnect();
       return;
     }
@@ -227,7 +236,7 @@
   }
 
   function toggleRite(id) {
-    if (!isMystics() || !getRite(id)) return;
+    if (!isMystics() || !state.riteSelectionEnabled || !getRite(id)) return;
     if (state.rites.includes(id)) {
       state.rites = state.rites.filter(item => item !== id);
     } else {
@@ -255,15 +264,20 @@
       <article class="deck-row">
         <div>
           <div class="deck-title"><strong>${escapeHtml(rite.name)}</strong></div>
-          <div class="deck-stats"><span class="mini-pill">Selected Rite</span><span class="mini-pill">Public at setup</span></div>
+          <div class="deck-stats">
+            <span class="mini-pill">${state.riteSelectionEnabled ? "Selected Rite" : "Included Rite"}</span>
+            <span class="mini-pill">Public at setup</span>
+          </div>
         </div>
-        <button type="button" class="secondary danger" data-remove-rite="${escapeHtml(rite.id)}">Remove</button>
+        ${state.riteSelectionEnabled ? `<button type="button" class="secondary danger" data-remove-rite="${escapeHtml(rite.id)}">Remove</button>` : ""}
       </article>
     `).join("");
 
-    container.querySelectorAll("[data-remove-rite]").forEach(button => {
-      button.addEventListener("click", () => toggleRite(button.dataset.removeRite));
-    });
+    if (state.riteSelectionEnabled) {
+      container.querySelectorAll("[data-remove-rite]").forEach(button => {
+        button.addEventListener("click", () => toggleRite(button.dataset.removeRite));
+      });
+    }
   }
 
   function enhancedValidateDeck() {
@@ -271,7 +285,7 @@
     const errors = [...result.errors];
     const warnings = [...result.warnings];
 
-    if (isMystics()) {
+    if (isMystics() && state.riteSelectionEnabled) {
       const validIds = new Set(state.ritePool.map(rite => rite.id));
       const distinct = new Set(state.rites);
       if (state.ritePool.length && (
@@ -320,8 +334,13 @@
     baseApplyDeckData(data);
 
     if (state.factionId === MYSTICS_FACTION_ID) {
-      if (state.ritePool.length) state.rites = resolveRiteIds(data.selectedRites || []);
-      else state.pendingRites = data.selectedRites || [];
+      if (state.ritePool.length) {
+        state.rites = state.riteSelectionEnabled
+          ? resolveRiteIds(data.selectedRites || [])
+          : state.ritePool.map(rite => rite.id);
+      } else {
+        state.pendingRites = data.selectedRites || [];
+      }
     } else {
       state.pendingRites = null;
     }
@@ -356,7 +375,9 @@
     const before = state.factionId;
     baseChangeFaction();
     if (state.factionId !== before) {
-      state.rites = [];
+      state.rites = state.factionId === MYSTICS_FACTION_ID && !state.riteSelectionEnabled
+        ? state.ritePool.map(rite => rite.id)
+        : [];
       state.pendingRites = null;
       state.selectedRiteId = state.ritePool[0]?.id || null;
       renderAll();

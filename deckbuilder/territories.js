@@ -50,8 +50,8 @@
 
   async function loadTerritories() {
     try {
-      const { loadCurrentGame } = await import("../game-data/current-game.mjs");
-      const currentGame = await loadCurrentGame();
+      const { loadGameRuleset, rulesetModeFromUrl } = await import("../game-data/ruleset.mjs");
+      const currentGame = await loadGameRuleset(rulesetModeFromUrl());
       state.territoryPool = (currentGame.territories || []).map(territory => ({
         id: territory.id,
         name: territory.name,
