@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -23,7 +24,14 @@ jobs:
             let names = [];
             let uncertain = false;
 
-            if (context.eventName === 'pull_request') {
+            if (context.eventName === 'workflow_dispatch') {
+              names = [
+                'releases/v0.7.0/Gauntlet_v0.7.0_Rulebook.md',
+                'releases/v0.7.0/Gauntlet_v0.7.0_Rulebook_Booklet.pdf',
+                'releases/v0.7.0/Gauntlet_v0.7.0_Manifest.json',
+                'v0.7.0/index.html',
+              ];
+            } else if (context.eventName === 'pull_request') {
               const files = await github.paginate(github.rest.pulls.listFiles, {
                 owner: context.repo.owner,
                 repo: context.repo.repo,
