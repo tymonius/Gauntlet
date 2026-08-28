@@ -161,18 +161,22 @@ This establishes a substantial **revision boundary** for registration purposes, 
 
 ## 6. AI/human-authorship boundary
 
-The v0.6.0 development process used generative-AI assistance extensively enough that repository authorship, project direction, prompting, acceptance, or revision status cannot be treated as proof that all final prose is human-authored.
+The v0.6.0 development process used generative-AI tools extensively, but **AI involvement is not the same thing as AI authorship**.
+
+The project-level filing posture is that **Tymon Scott is the sole human creator/author of the overall Gauntlet work**. The provenance audit should therefore identify only the appreciable final expression that a generative system actually supplied without sufficient human expressive contribution, rather than treating every passage developed through an AI conversation as presumptively non-human.
 
 For registration purposes, classify final material based on the expression actually present:
 
-- **H / HA:** qualifying human-authored expression may be claimed;
-- **HM:** claim only qualifying human modifications to AI-generated source expression;
-- **AR:** substantially AI-generated expression must be excluded;
+- **H / HA:** qualifying human-authored expression, including work where AI functioned only as an assisting tool, may be claimed;
+- **HM:** claim qualifying human modifications to AI-generated source expression;
+- **AR:** substantially AI-generated final expression that survives without sufficient human expressive contribution must be excluded;
 - **TP:** third-party expression must be excluded unless copyright was validly transferred;
 - **PD/U:** public-domain or uncopyrightable matter is excluded;
-- **TBD:** do not claim until evidence is resolved.
+- **TBD:** use only where provenance is genuinely insufficient.
 
-This audit therefore does **not** label all 73 new-name cards, faction guides, or rewritten Rulebook passages as human-authored. It identifies the universe of potentially new matter that the authorship ledger must classify.
+Strong evidence of human authorship includes human-supplied wording or substantial phrasing, dictated clauses/examples/sequence, substantial human rewriting, sufficiently creative human modifications, and creative human selection/coordination/arrangement.
+
+This audit therefore identifies the universe of potentially new matter without assuming that the 73 new-name cards, faction guides, or rewritten Rulebook passages are either automatically human-authored **or** automatically AI-authored.
 
 ## 7. Filing consequence
 
