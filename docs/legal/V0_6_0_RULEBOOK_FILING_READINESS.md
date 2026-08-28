@@ -128,12 +128,16 @@ The repository also includes `scripts/legal/export-v060-copyright-deposits.sh`, 
 ### Still required before filing
 
 - [x] Recover and independently hash the historical Rulebook PDF. SHA-256: `a8324dcb9a88e95b4b5557aedd4c4c23d938fe721edfb34df4c819efa258d931`.
-- [ ] Author confirms no substantially identical v0.6.0 Rulebook was distributed outside the repository before July 20, 2026.
-- [ ] Author confirms there has been no written copyright transfer that would change the claimant.
-- [ ] Re-check current Copyright Office online-publication guidance.
-- [ ] Final application-versus-deposit review.
+- [x] Author confirmed on 2026-08-28 that no substantially identical v0.6.0 Rulebook was distributed outside the repository before July 20, 2026.
+- [x] Author confirmed on 2026-08-28 that there has been no written copyright transfer that would change the claimant.
+- [x] Re-checked current Copyright Office AI, fee, and online-publication guidance on 2026-08-28.
+- [ ] Final application-versus-deposit review during eCO entry.
 - [ ] Submit Standard Application and preserve confirmation/case number in the legal record.
+
+**Current online Standard Application fee checked 2026-08-28: $65.**
 
 ## 8. Practical next action
 
-The registration package is now far enough along that the next useful step is not another broad authorship audit. It is to **recover/hash the deposit, obtain the two factual confirmations from the author, and prepare the field-by-field Standard Application entry sheet for submission**.
+The registration package is **ready for submission**. No further substantive provenance work is required before filing Worksheet A.
+
+Use `V0_6_0_STANDARD_APPLICATION_ENTRY_SHEET.md` to enter the application in eCO, supply private contact/address information directly in the portal, pay the current **$65** Standard Application fee, upload the historical July 20 deposit, and preserve the case number and confirmation afterward.
