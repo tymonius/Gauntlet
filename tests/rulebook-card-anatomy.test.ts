@@ -24,9 +24,12 @@ describe('Browser Rulebook card anatomy guide', () => {
     expect(anatomy).toContain('transformKey(list)');
   });
 
-  it('keeps the immutable released v0.6.3 view unchanged', () => {
-    expect(anatomy).toContain("const CANDIDATE_MODE = 'candidate';");
-    expect(anatomy).toContain('if (mode !== CANDIDATE_MODE) return;');
+  it('uses the same anatomy component for browser reading and booklet embedding', () => {
+    expect(anatomy).toContain("CARD_ANATOMY_EMBED");
+    expect(anatomy).toContain("get('embed') === 'card-anatomy'");
+    expect(anatomy).toContain("document.documentElement.dataset.cardAnatomyEmbedReady = 'true'");
+    expect(styles).toContain('body.card-anatomy-embed');
+    expect(styles).toContain('.card-anatomy-arcane');
     expect(anatomy).toContain('removeEnhancement();');
   });
 

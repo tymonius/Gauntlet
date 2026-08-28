@@ -90,21 +90,14 @@ describe('v0.7.0 publication boundary', () => {
     expect(releaseBuilder).not.toContain('spliceReviewedChapter11');
   });
 
-  it('renders the printable Card Anatomy fallback from the live production-card guide', () => {
-    expect(bookletRenderer).toContain("import { chromium } from 'playwright'");
-    expect(bookletRenderer).toContain("page.goto('http://127.0.0.1:8000/rulebook/'");
-    expect(bookletRenderer).toContain(".card-anatomy-guide.markers-positioned .card-anatomy-figure");
-    expect(bookletRenderer).toContain('figure.screenshot({ path: CARD_ANATOMY_PATH })');
-    expect(bookletRenderer).not.toContain('Promise.all([...document.images]');
-    expect(bookletRenderer).toContain("publication_date: null");
-    expect(bookletRenderer).toContain("source_card: 'military-unbroken-ranks'");
-    expect(bookletRenderer).toContain('function brandV070ProductionSurface()');
-    expect(bookletRenderer).toContain("source.replace(/0\\.6\\.3/g, '0.7.0')");
-    expect(bookletRenderer).toContain('brandV070ProductionSurface();');
-    expect(bookletRenderer).toContain('function validateReleaseNotesBookletCounts');
-    expect(bookletRenderer).toContain('validateReleaseNotesBookletCounts(logicalPages, bookletPages, physicalSheets);');
-    expect(bookletRenderer).toContain('v0.7.0 Rulebook production surface still contains v0.6.3 branding');
-    expect(materializer).toContain('Gauntlet_v0.7.0_Card_Anatomy.png');
+  it('renders the booklet Card Anatomy from the same Browser Rulebook component', () => {
+    expect(bookletRenderer).not.toContain("import { chromium } from 'playwright'");
+    expect(bookletRenderer).not.toContain('CARD_ANATOMY_PATH');
+    expect(bookletRenderer).not.toContain('figure.screenshot');
+    expect(materializer).not.toContain('Gauntlet_v0.7.0_Card_Anatomy.png');
+    expect(releaseBuilder).toContain("browser_route: '/rulebook/?embed=card-anatomy'");
+    expect(bookletRenderer).toContain("card_anatomy_component");
+    expect(bookletRenderer).toContain("arcane_card: 'mystics-witchcraft'");
   });
 
   it('keeps final publication explicit, dated, and TTS-gated', () => {
