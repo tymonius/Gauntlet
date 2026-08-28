@@ -74,6 +74,7 @@ describe('TTS Deckbuilder importer', () => {
   it('is a v0.7.1-and-later release feature', () => {
     expect(TTS_DECK_IMPORTER_MIN_VERSION).toBe('v0.7.1');
     expect(isDeckImporterReleaseVersion('v0.7.0')).toBe(false);
+    expect(isDeckImporterReleaseVersion('v0.7.1-candidate')).toBe(true);
     expect(isDeckImporterReleaseVersion('v0.7.1')).toBe(true);
     expect(isDeckImporterReleaseVersion('v0.7.2')).toBe(true);
     expect(isDeckImporterReleaseVersion('v1.0.0')).toBe(true);

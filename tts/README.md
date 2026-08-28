@@ -61,9 +61,9 @@ npm run tts:save:promote
 
 `tts:save:promote` is a separate guarded action. It is documented in `tts/SAVE-PUBLISHER.md` and requires clean machine readiness plus the versioned manual-QA gate.
 
-## Current v0.7.0 package
+## Current v0.7.1-candidate development package
 
-The current generated package contains:
+The current development package is generated from the v0.7.1-candidate current-game authority and contains:
 
 - 142 playable cards;
 - 25 landscape Territories, including 4 Arenas;
@@ -130,7 +130,7 @@ There is no separate Territory-specific back asset.
 
 Leader export does not maintain a second copy of Leader rules or layout. The current-game authority supplies the roster and `/card-design/` supplies the production face, portrait, faction treatment, rules, and geometry.
 
-For TTS export, the production surface is captured at exact 400 × 560 geometry. The exporter overlays the active TTS package display version on the captured footer so a v0.7.0 TTS Leader does not inherit the older source-bundle label. Source provenance remains separately recorded in `leader-manifest.json`.
+For TTS export, the production surface is captured at exact 400 × 560 geometry. The exporter overlays the current-game display version on the captured footer, so candidate builds are visibly stamped `v0.7.1 candidate`. Source provenance remains separately recorded in `leader-manifest.json`.
 
 Leader Cards use faction-color component backs and deterministic one-card CustomDeck IDs.
 
@@ -153,7 +153,7 @@ It does not hard-code starter, card, Leader, or Territory counts; those are deri
 
 `scripts/generate-tts-supplemental-assets.mjs` renders components already marked production-ready in the physical component contract. `scripts/generate-tts-finalized-supplementals.mjs` is the explicit production bridge for final Proposal/Treaty, Capital Ledger, and Deed definitions whose raw contract status remains export-pending for provenance.
 
-After both passes, the current v0.7.0 generated supplemental manifest has 27 ready and 0 pending faction component definitions.
+After both passes, the current v0.7.1-candidate generated supplemental manifest has 27 ready and 0 pending faction component definitions.
 
 Supported representations include:
 
@@ -224,19 +224,19 @@ Behavioral tests construct the returned save JSON and verify the core table stru
 
 `npm run tts:release:status` writes `tts-release-readiness.json` without failing solely because a known release blocker remains. `npm run tts:release:strict` converts those blockers into a final closeout failure.
 
-The readiness pass verifies generated component coverage, starter supplemental quantities, and hosted object URL structure. For the current v0.7.0 package it reports 27/27 ready component definitions and 68/68 expected assembled supplemental copies.
+The readiness pass verifies generated component coverage, starter supplemental quantities, and hosted object URL structure. The current candidate package is evaluated independently from the already-published v0.7.0 Workshop build.
 
-The generator still emits a Review Scaffold by default so future builds remain fail-closed. For v0.7.0, manual QA and explicit approval completed and the approved hosted save was promoted to final mod identity.
+The generator still emits a Review Scaffold by default. v0.7.1-candidate has its own in-progress QA record and no Workshop approval; the completed v0.7.0 approval remains historical evidence for the public mod.
 
 ## Manual QA and final promotion
 
-The versioned manual QA record is:
+The active development manual QA record is:
 
-- `tts/release-qa/v0.7.0.json`
+- `tts/release-qa/v0.7.1-candidate.json`
 
-It contains explicit checks for table/setup behavior, each faction component family, and focused handling validation; a remote two-player game is not required for v0.7.0. See `tts/SAVE-PUBLISHER.md` for the complete gate.
+It contains explicit checks for table/setup behavior, each faction component family, and focused handling validation. It starts `in-progress`, with all 18 checks false and `approvedForWorkshop` false.
 
-For v0.7.0, all 18 required manual checks passed, the QA record is `passed`, and `approvedForWorkshop` is explicitly `true`. `npm run tts:save:promote` remains the guarded mechanism for producing final Workshop identity and continues to refuse promotion unless machine readiness and approval are complete.
+The passed v0.7.0 record remains preserved at `tts/release-qa/v0.7.0.json`. Candidate builds are not Workshop publication targets; stable v0.7.1 will require its own completed QA gate before promotion.
 
 ## GitHub Release asset hosting
 
@@ -260,7 +260,7 @@ The v0.7.0 mod is public at https://steamcommunity.com/sharedfiles/filedetails/?
 
 Derived output is ignored by Git and written under:
 
-- `tts/generated/v0.7.0/` for the active versioned package;
+- `tts/generated/v0.7.1-candidate/` for the active development package;
 - `tts/generated/current/` for current aliases; and
 - `tts/generated/release-assets/` for deterministic hosted assets.
 

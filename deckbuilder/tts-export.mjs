@@ -2,7 +2,7 @@ export const TTS_DECK_CODE_PREFIX = "GDL1:";
 export const TTS_DECK_EXPORT_MIN_VERSION = "v0.7.1";
 
 function parseReleaseVersion(value) {
-  const match = /^v?(\d+)\.(\d+)\.(\d+)(?:[-+].*)?$/.exec(String(value || "").trim());
+  const match = /^v?(\d+)\.(\d+)\.(\d+)$/.exec(String(value || "").trim());
   return match ? match.slice(1, 4).map(Number) : null;
 }
 

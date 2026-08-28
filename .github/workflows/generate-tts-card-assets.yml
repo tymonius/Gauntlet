@@ -367,7 +367,7 @@ jobs:
       - name: Assemble supplemental starter-kit contents
         run: npm run tts:save:assemble
 
-      - name: Validate authoritative v0.7.0 save contract
+      - name: Validate authoritative current TTS save contract
         run: node tts/validate-v070-authoritative-save.mjs
 
       - name: Report TTS release readiness

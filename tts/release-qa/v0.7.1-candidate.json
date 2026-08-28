@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 3,
+  "gameVersion": "v0.7.1-candidate",
+  "status": "in-progress",
+  "checks": {
+    "tableSetup": {
+      "hostedSaveLoad": false,
+      "playerPerspectivesAndHandZones": false,
+      "gauntletSnapsAndTerritoryOrientation": false,
+      "playerTokensAndBattleDice": false,
+      "rulebookSetup": false,
+      "playAreasRemainDistinct": false
+    },
+    "factionComponents": {
+      "militaryCommandTracker": false,
+      "diplomatInfluenceTracker": false,
+      "diplomatProposalsAndTreaties": false,
+      "financierCapitalLimitTracker": false,
+      "financierCapitalLedger": false,
+      "financierDeeds": false,
+      "intelligenceNestedOperationStack": false,
+      "mysticsRitesAndCompletedFaces": false,
+      "inquisitionConvictionDoctrineAndPurge": false
+    },
+    "handlingValidation": {
+      "coreHandlingExercised": false,
+      "focusedFactionDrillsComplete": false,
+      "frictionResolved": false
+    }
+  },
+  "approvedForWorkshop": false,
+  "notes": [
+    "2026-08-28: Opened the v0.7.1-candidate TTS QA record from the active current-game authority.",
+    "2026-08-28: Every manual QA check intentionally begins incomplete and Workshop approval is false.",
+    "2026-08-28: v0.7.0 remains the published Workshop version; candidate QA must not update the public Workshop item."
+  ]
+}
