@@ -131,7 +131,7 @@ Canonical-data validation, document/card rendering, TTS generation, release publ
 
 ### src/ and data/
 
-Legacy automated digital-prototype code and historical starter data. The automated rules-aware digital game remains a separate development track.
+Legacy automated digital-prototype code and historical starter data. Work on the automated rules-aware digital game has resumed as an active parallel development track.
 
 ## Development workflow
 
@@ -173,7 +173,7 @@ npm run dev:gui
 
 ## Current development priorities
 
-See [Gauntlet Development Status](docs/Gauntlet_Development_Status.md). The immediate post-v0.7.0 emphasis is broad human playtesting through physical and TTS play, matchup/faction balance, winner/loser experience, self-serve onboarding, Deckbuilder-to-TTS interoperability, and eventual synchronization of the rules-aware digital engine.
+See [Gauntlet Development Status](docs/Gauntlet_Development_Status.md). The immediate post-v0.7.0 emphasis is broad human playtesting through physical and TTS play, matchup/faction balance, winner/loser experience, self-serve onboarding, Deckbuilder-to-TTS interoperability, and active synchronization of the rules-aware digital engine with v0.7.0.
 
 ## Copyright and use
 
