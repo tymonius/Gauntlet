@@ -13,6 +13,12 @@ Accordingly, do **not** use the cheaper Single Application for the filings below
 
 Current electronic Standard Application fee: **$65 per application** (subject to change before filing).
 
+## Historical-publication warning
+
+Repository history now establishes that Gauntlet had a public distribution surface on **June 11, 2021**: the public README linked a copyable Google Sheets game document and a Tabletop Simulator Workshop mod. The repository itself contained only the README, so the underlying 2021 game materials still need to be recovered and compared against later releases.
+
+This means v0.6.0 must be treated as a later derivative/revised work unless the recovered historical materials show otherwise. See `docs/legal/HISTORICAL_PUBLICATION_EVIDENCE.md`.
+
 ## Proposed registration set
 
 The safest working strategy is to register distinct works rather than treating the entire repository/release tree as one undifferentiated work:
@@ -105,7 +111,7 @@ Before upload, verify:
 
 ## Unresolved facts
 
-- [ ] Identify the earliest public Gauntlet version containing any substantial text carried into v0.6.0.
+- [ ] Recover the June 2021 Google Sheets/TTS materials and identify substantial expression carried into v0.6.0.
 - [ ] Complete text-level AI authorship review.
 - [ ] Confirm first-publication nation.
 - [ ] Confirm exact deposit file and hash.
