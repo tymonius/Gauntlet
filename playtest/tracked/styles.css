@@ -88,3 +88,20 @@
 @media (max-width: 520px) {
   .diagnostic-grid { grid-template-columns: 1fr; }
 }
+
+.transport-references { display:flex; gap:.6rem; flex-wrap:wrap; margin-top:.8rem; justify-content:flex-end; }
+.transport-references a { font-weight:700; font-size:.9rem; }
+
+.companion-panel { margin:1.4rem 0; padding:1.2rem; border:1px solid rgba(49,42,34,.18); background:#fff; }
+.companion-heading { display:flex; justify-content:space-between; gap:1rem; align-items:center; margin-bottom:1rem; }
+.companion-heading h3 { margin:.2rem 0 0; }
+.companion-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.8rem; }
+.companion-grid details { border:1px solid rgba(49,42,34,.15); padding:.8rem 1rem; background:#f8f4ed; }
+.companion-grid summary { cursor:pointer; font-weight:700; }
+.companion-grid ol,.companion-grid ul { margin:.8rem 0 .2rem; padding-left:1.25rem; }
+.companion-grid li { margin:.38rem 0; line-height:1.4; }
+@media (max-width:800px) {
+  .transport-references { justify-content:flex-start; }
+  .companion-heading { align-items:stretch; flex-direction:column; }
+  .companion-grid { grid-template-columns:1fr; }
+}
