@@ -199,7 +199,8 @@ If June 21 is determined to be a limited/nonpublication event and this v0.5.3 wo
 - [x] Define broad pre-2026 exclusion boundary.
 - [x] Remove visual provenance from this Literary Work filing by excluding pictorial material.
 - [x] Author recalled on 2026-08-28 that a June 21 playtester probably kept the cards and printed rulebooks were handed out.
-- [ ] Resolve whether the June 21 physical distribution was unrestricted publication or a limited playtest distribution.
+- [x] Author confirmed no express privacy/no-sharing instruction was given.
+- [ ] Resolve whether the June 21 copies were confined to a small selected playtest/social-acquaintance group or distributed more broadly.
 - [ ] Confirm claimant at filing time.
 - [ ] Finalize whether v0.5.3 or v0.5.4 is the operative foundation filing.
 - [ ] Finalize Nation of First Publication / Office note.
