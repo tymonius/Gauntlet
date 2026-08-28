@@ -24,6 +24,12 @@ import {
   resolveV070PoliticalCapital,
   resolveV070ProposalChoice,
   useV070DiplomaticLatitude,
+  useV070DiplomaticDivination,
+  useV070TradeConcessions,
+  useV070GoodFaith,
+  useV070NonbindingResolution,
+  useV070GunboatDiplomacy,
+  resolveV070TermsCardChoice,
   useV070PlenipotentiaryAfterRefusal,
   settleV070RefusedTermsOutcome,
   v070LeverageRequiresDecision,
@@ -50,6 +56,23 @@ export type V070BattleAction =
       secondProposalId: string;
     }
   | { type: 'use_plenipotentiary'; playerId: PlayerId; cardInstanceId: string }
+  | {
+      type: 'use_diplomatic_divination';
+      playerId: PlayerId;
+      cardInstanceId: string;
+      prediction: 'accept' | 'refuse';
+    }
+  | { type: 'use_trade_concessions'; playerId: PlayerId; cardInstanceId: string }
+  | { type: 'use_good_faith'; playerId: PlayerId; cardInstanceId: string }
+  | { type: 'use_nonbinding_resolution'; playerId: PlayerId; cardInstanceId: string }
+  | { type: 'use_gunboat_diplomacy'; playerId: PlayerId; cardInstanceId: string }
+  | {
+      type: 'resolve_terms_card_choice';
+      playerId: PlayerId;
+      choice?: 'ratify' | 'decline_ratification' | 'draw_two' | 'bank_asset';
+      cardInstanceId?: string;
+      replaceAssetInstanceId?: string;
+    }
   | {
       type: 'resolve_proposal_choice';
       playerId: PlayerId;
@@ -102,6 +125,30 @@ export function reduceV070BattleAction(
       break;
     case 'use_plenipotentiary':
       useV070PlenipotentiaryAfterRefusal(next, action.playerId, action.cardInstanceId);
+      break;
+    case 'use_diplomatic_divination':
+      useV070DiplomaticDivination(next, action.playerId, action.cardInstanceId, action.prediction);
+      break;
+    case 'use_trade_concessions':
+      useV070TradeConcessions(next, action.playerId, action.cardInstanceId);
+      break;
+    case 'use_good_faith':
+      useV070GoodFaith(next, action.playerId, action.cardInstanceId);
+      break;
+    case 'use_nonbinding_resolution':
+      useV070NonbindingResolution(next, action.playerId, action.cardInstanceId);
+      break;
+    case 'use_gunboat_diplomacy':
+      useV070GunboatDiplomacy(next, action.playerId, action.cardInstanceId);
+      break;
+    case 'resolve_terms_card_choice':
+      resolveV070TermsCardChoice(
+        next,
+        action.playerId,
+        action.choice,
+        action.cardInstanceId,
+        action.replaceAssetInstanceId,
+      );
       break;
     case 'resolve_proposal_choice':
       resolveV070ProposalChoice(
@@ -333,7 +380,17 @@ function revealBattleRole(
   }
 
   const commitments = (['A', 'B'] as const)
-    .map(owner => runtime.participants[owner][role])
+    .flatMap(owner => {
+      const participant = runtime.participants[owner];
+      const normal = participant[role];
+      if (role === 'gambit') {
+        return [
+          ...(normal ? [normal] : []),
+          ...participant.additionalGambits,
+        ];
+      }
+      return normal ? [normal] : [];
+    })
     .filter((item): item is V070BattleCardCommitment => Boolean(item));
 
   for (const item of commitments) {
@@ -593,6 +650,9 @@ function completeAftermathInternal(
     const participant = runtime.participants[playerId];
     if (participant.gambit) {
       state.players[playerId].zones.graveyard.push(participant.gambit.instanceId);
+    }
+    for (const additional of participant.additionalGambits) {
+      state.players[playerId].zones.graveyard.push(additional.instanceId);
     }
     if (participant.tactic) {
       state.players[playerId].zones.discardPile.push(participant.tactic.instanceId);

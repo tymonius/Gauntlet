@@ -233,6 +233,226 @@ export function useV070PlenipotentiaryAfterRefusal(
   });
 }
 
+export function useV070DiplomaticDivination(
+  state: V070GameState,
+  diplomatId: PlayerId,
+  cardInstanceId: string,
+  prediction: 'accept' | 'refuse',
+): void {
+  const terms = requireBeforeTermsResponse(state, diplomatId);
+  removeHandCardToTerms(state, diplomatId, cardInstanceId, 'diplomats-diplomatic-divination');
+  terms.termsCards.diplomaticDivinations.push({ instanceId: cardInstanceId, prediction });
+
+  appendV070Event(state, {
+    type: 'diplomatic_divination_used',
+    actor: diplomatId,
+    visibility: 'public',
+    payload: { cardInstanceId, prediction },
+  });
+}
+
+export function useV070TradeConcessions(
+  state: V070GameState,
+  diplomatId: PlayerId,
+  cardInstanceId: string,
+): void {
+  const terms = requireBeforeTermsResponse(state, diplomatId);
+  removeHandCardToTerms(state, diplomatId, cardInstanceId, 'diplomats-trade-concessions');
+  terms.termsCards.tradeConcessionsInstanceIds.push(cardInstanceId);
+
+  appendV070Event(state, {
+    type: 'trade_concessions_revealed',
+    actor: diplomatId,
+    visibility: 'public',
+    payload: { cardInstanceId },
+  });
+}
+
+export function useV070GoodFaith(
+  state: V070GameState,
+  diplomatId: PlayerId,
+  assetInstanceId: string,
+): void {
+  const terms = requireBeforeTermsResponse(state, diplomatId);
+  requireCardInZone(state, diplomatId, 'assetBank', assetInstanceId, 'diplomats-good-faith');
+
+  const bank = state.players[diplomatId].zones.assetBank;
+  bank.splice(bank.indexOf(assetInstanceId), 1);
+  state.players[diplomatId].zones.discardPile.push(assetInstanceId);
+  drawIntoHand(state, diplomatId, 1, 'Good Faith');
+
+  beginTermsCardChoice(state, 'good_faith_set_aside', diplomatId, assetInstanceId);
+  appendV070Event(state, {
+    type: 'good_faith_used',
+    actor: diplomatId,
+    visibility: 'public',
+    payload: { assetInstanceId },
+  });
+
+  // The printed "then" matters: the card drawn above is now a legal card to
+  // reveal and set aside in the pending Good Faith choice.
+  terms.priorityPlayer = diplomatId;
+}
+
+export function useV070NonbindingResolution(
+  state: V070GameState,
+  diplomatId: PlayerId,
+  cardInstanceId: string,
+): void {
+  const terms = requireBeforeTermsResponse(state, diplomatId);
+  removeHandCardToTerms(state, diplomatId, cardInstanceId, 'diplomats-nonbinding-resolution');
+  terms.termsCards.nonbindingResolutionInstanceIds.push(cardInstanceId);
+
+  appendV070Event(state, {
+    type: 'nonbinding_resolution_revealed',
+    actor: diplomatId,
+    visibility: 'public',
+    payload: { cardInstanceId },
+  });
+}
+
+export function useV070GunboatDiplomacy(
+  state: V070GameState,
+  diplomatId: PlayerId,
+  cardInstanceId: string,
+): void {
+  const terms = requireBeforeTermsResponse(state, diplomatId);
+  requireCardInZone(state, diplomatId, 'hand', cardInstanceId, 'diplomats-gunboat-diplomacy');
+  if (terms.termsCards.gunboatDiplomacyInstanceIds.includes(cardInstanceId)) {
+    throw new V070GameActionError('That Gunboat Diplomacy has already been revealed for these Terms.');
+  }
+  terms.termsCards.gunboatDiplomacyInstanceIds.push(cardInstanceId);
+
+  appendV070Event(state, {
+    type: 'gunboat_diplomacy_revealed',
+    actor: diplomatId,
+    visibility: 'public',
+    payload: { cardInstanceId },
+  });
+}
+
+export function resolveV070TermsCardChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  choice?: 'ratify' | 'decline_ratification' | 'draw_two' | 'bank_asset',
+  cardInstanceId?: string,
+  replaceAssetInstanceId?: string,
+): void {
+  const terms = requireRuntime(state).terms;
+  const pending = terms.termsCardChoice;
+  if (terms.stage !== 'terms_card_choice' || !pending || pending.playerId !== playerId) {
+    throw new V070GameActionError('No Terms-card choice is pending for that player.');
+  }
+
+  switch (pending.kind) {
+    case 'good_faith_set_aside': {
+      if (!cardInstanceId) throw new V070GameActionError('Good Faith requires one card from Hand.');
+      const player = state.players[playerId];
+      const index = player.zones.hand.indexOf(cardInstanceId);
+      if (index < 0) throw new V070GameActionError('Good Faith must set aside a card from Hand.');
+      player.zones.hand.splice(index, 1);
+      terms.termsCards.goodFaithSetAsideInstanceIds.push(cardInstanceId);
+
+      appendV070Event(state, {
+        type: 'good_faith_card_set_aside',
+        actor: playerId,
+        visibility: 'public',
+        payload: {
+          cardInstanceId,
+          cardId: state.cardInstances[cardInstanceId]?.cardId,
+        },
+      });
+
+      terms.termsCardChoice = null;
+      terms.stage = 'response';
+      terms.priorityPlayer = requireTermsPlayer(terms.opponent);
+      return;
+    }
+
+    case 'nonbinding_resolution': {
+      if (choice !== 'ratify' && choice !== 'decline_ratification') {
+        throw new V070GameActionError('Nonbinding Resolution requires ratify or decline_ratification.');
+      }
+      const diplomatId = requireTermsPlayer(terms.offerer);
+      const proposal = requireProposal(terms.proposalId);
+      const source = pending.sourceInstanceId;
+      if (!source) throw new V070GameActionError('Nonbinding Resolution source is missing.');
+
+      const sourceIndex = terms.termsCards.nonbindingResolutionInstanceIds.indexOf(source);
+      if (sourceIndex < 0) throw new V070GameActionError('Nonbinding Resolution is no longer pending.');
+      terms.termsCards.nonbindingResolutionInstanceIds.splice(sourceIndex, 1);
+      terms.termsCards.resolvedNonbindingResolutionInstanceIds.push(source);
+      terms.termsCardChoice = null;
+
+      if (choice === 'ratify') {
+        terms.termsCards.nonbindingSuppressRatification = false;
+        terms.termsCards.acceptedNewlyRatified = ratifyProposal(
+          state,
+          diplomatId,
+          proposal.id,
+          1,
+          'accepted',
+        );
+        terms.termsCards.acceptedRatificationComplete = true;
+      } else {
+        terms.termsCards.nonbindingSuppressRatification = true;
+        changeInfluence(state, diplomatId, 2, 'Nonbinding Resolution');
+      }
+
+      appendV070Event(state, {
+        type: 'nonbinding_resolution_resolved',
+        actor: playerId,
+        visibility: 'public',
+        payload: { proposalId: proposal.id, choice, sourceInstanceId: source },
+      });
+
+      settleAcceptedTerms(state, diplomatId, requireTermsPlayer(terms.acceptingPlayer), proposal);
+      return;
+    }
+
+    case 'trade_concessions': {
+      if (choice !== 'draw_two' && choice !== 'bank_asset') {
+        throw new V070GameActionError('Trade Concessions requires draw_two or bank_asset.');
+      }
+      const diplomatId = requireTermsPlayer(terms.offerer);
+      const source = pending.sourceInstanceId;
+      if (!source) throw new V070GameActionError('Trade Concessions source is missing.');
+
+      if (choice === 'draw_two') {
+        drawIntoHand(state, playerId, 2, 'Trade Concessions');
+      } else {
+        if (!cardInstanceId) {
+          throw new V070GameActionError('Choose an eligible Asset from Hand to bank.');
+        }
+        bankOptionalAssetFromHand(
+          state,
+          playerId,
+          cardInstanceId,
+          replaceAssetInstanceId,
+          'Trade Concessions',
+        );
+      }
+
+      const sourceIndex = terms.termsCards.tradeConcessionsInstanceIds.indexOf(source);
+      if (sourceIndex < 0) throw new V070GameActionError('Trade Concessions is no longer pending.');
+      terms.termsCards.tradeConcessionsInstanceIds.splice(sourceIndex, 1);
+      state.players[diplomatId].zones.discardPile.push(source);
+      drawIntoHand(state, diplomatId, 1, 'Trade Concessions');
+      terms.termsCardChoice = null;
+
+      appendV070Event(state, {
+        type: 'trade_concessions_resolved',
+        actor: playerId,
+        visibility: 'public',
+        payload: { choice, sourceInstanceId: source },
+      });
+
+      finishAcceptedTermsAfterCardEffects(state);
+      return;
+    }
+  }
+}
+
 export function respondToV070Terms(
   state: V070GameState,
   playerId: PlayerId,
@@ -244,6 +464,7 @@ export function respondToV070Terms(
   }
   const offerer = requireTermsPlayer(terms.offerer);
   terms.response = response === 'accept' ? 'accepted' : 'refused';
+  resolveV070DivinationsAfterResponse(state, offerer, response);
 
   if (response === 'accept') {
     terms.acceptingPlayer = playerId;
@@ -586,6 +807,7 @@ function continueRefusedTerms(
   terms.stage = 'refused';
   terms.priorityPlayer = null;
   terms.proposalChoice = null;
+  resolveV070RefusedTermsCards(state, diplomatId);
   const proposal = requireProposal(terms.proposalId);
   applyRefusedProposalImmediate(state, diplomatId, refusingPlayer, proposal);
 }
@@ -748,9 +970,52 @@ function settleAcceptedTerms(
 ): void {
   const runtime = requireRuntime(state);
   const terms = runtime.terms;
+  const cards = terms.termsCards;
 
-  changeInfluence(state, diplomatId, terms.stake, 'Return accepted Stake');
-  const newlyRatified = ratifyProposal(state, diplomatId, proposal.id, 1, 'accepted');
+  if (!cards.acceptedStakeReturned) {
+    changeInfluence(state, diplomatId, terms.stake, 'Return accepted Stake');
+    cards.acceptedStakeReturned = true;
+  }
+
+  const diplomat = requireDiplomat(state, diplomatId);
+  if (!cards.acceptedRatificationComplete) {
+    if (diplomat.ratifiedProposals.includes(proposal.id)) {
+      cards.acceptedRatificationComplete = true;
+    } else if (cards.nonbindingResolutionInstanceIds.length > 0) {
+      beginTermsCardChoice(
+        state,
+        'nonbinding_resolution',
+        acceptingPlayer,
+        cards.nonbindingResolutionInstanceIds[0],
+      );
+      return;
+    } else if (cards.nonbindingSuppressRatification) {
+      cards.acceptedRatificationComplete = true;
+    } else {
+      cards.acceptedNewlyRatified = ratifyProposal(
+        state,
+        diplomatId,
+        proposal.id,
+        1,
+        'accepted',
+      );
+      cards.acceptedRatificationComplete = true;
+    }
+  }
+
+  // Once the Proposal has become ratified (or has definitively remained
+  // unratified), additional Nonbinding Resolution copies no longer need to
+  // interrupt default ratification. They still receive their normal
+  // post-acceptance discard/draw cleanup below.
+  if (cards.acceptedRatificationComplete
+    && cards.nonbindingResolutionInstanceIds.length > 0) {
+    cards.resolvedNonbindingResolutionInstanceIds.push(
+      ...cards.nonbindingResolutionInstanceIds,
+    );
+    cards.nonbindingResolutionInstanceIds = [];
+  }
+
+  resolveV070AcceptedAutomaticTermsCards(state, diplomatId);
 
   const player = state.players[diplomatId];
   if (terms.ratifiedAtOffer.includes(proposal.id)
@@ -779,6 +1044,50 @@ function settleAcceptedTerms(
     });
   }
 
+  if (cards.tradeConcessionsInstanceIds.length > 0) {
+    beginTermsCardChoice(
+      state,
+      'trade_concessions',
+      acceptingPlayer,
+      cards.tradeConcessionsInstanceIds[0],
+    );
+    return;
+  }
+
+  finishAcceptedTermsAfterCardEffects(state);
+}
+
+function finishAcceptedTermsAfterCardEffects(state: V070GameState): void {
+  const runtime = requireRuntime(state);
+  const terms = runtime.terms;
+  const cards = terms.termsCards;
+  const diplomatId = requireTermsPlayer(terms.offerer);
+  const acceptingPlayer = requireTermsPlayer(terms.acceptingPlayer);
+  const proposal = requireProposal(terms.proposalId);
+
+  if (cards.tradeConcessionsInstanceIds.length > 0) {
+    beginTermsCardChoice(
+      state,
+      'trade_concessions',
+      acceptingPlayer,
+      cards.tradeConcessionsInstanceIds[0],
+    );
+    return;
+  }
+
+  if (cards.resolvedNonbindingResolutionInstanceIds.length > 0) {
+    state.players[diplomatId].zones.discardPile.push(
+      ...cards.resolvedNonbindingResolutionInstanceIds,
+    );
+    drawIntoHand(
+      state,
+      diplomatId,
+      cards.resolvedNonbindingResolutionInstanceIds.length,
+      'Nonbinding Resolution',
+    );
+    cards.resolvedNonbindingResolutionInstanceIds = [];
+  }
+
   appendV070Event(state, {
     type: 'terms_concluded',
     actor: diplomatId,
@@ -787,11 +1096,189 @@ function settleAcceptedTerms(
       proposalId: proposal.id,
       acceptingPlayer,
       result: 'accepted',
-      newlyRatified,
+      newlyRatified: cards.acceptedNewlyRatified,
     },
   });
 
   finishOnsetWithoutBattle(state);
+}
+
+function resolveV070DivinationsAfterResponse(
+  state: V070GameState,
+  diplomatId: PlayerId,
+  response: 'accept' | 'refuse',
+): void {
+  const cards = requireRuntime(state).terms.termsCards;
+  for (const divination of cards.diplomaticDivinations) {
+    const matched = divination.prediction === response;
+    if (matched) {
+      changeInfluence(state, diplomatId, 1, 'Diplomatic Divination');
+      state.players[diplomatId].zones.discardPile.push(divination.instanceId);
+    } else {
+      state.players[diplomatId].zones.graveyard.push(divination.instanceId);
+    }
+
+    appendV070Event(state, {
+      type: 'diplomatic_divination_resolved',
+      actor: diplomatId,
+      visibility: 'public',
+      payload: {
+        cardInstanceId: divination.instanceId,
+        prediction: divination.prediction,
+        response,
+        matched,
+      },
+    });
+  }
+  cards.diplomaticDivinations = [];
+}
+
+function resolveV070RefusedTermsCards(
+  state: V070GameState,
+  diplomatId: PlayerId,
+): void {
+  const runtime = requireRuntime(state);
+  const terms = runtime.terms;
+  const cards = terms.termsCards;
+  const player = state.players[diplomatId];
+
+  if (cards.goodFaithSetAsideInstanceIds.length > 0) {
+    player.zones.hand.push(...cards.goodFaithSetAsideInstanceIds);
+    appendV070Event(state, {
+      type: 'good_faith_refused',
+      actor: diplomatId,
+      visibility: 'public',
+      payload: { returned: [...cards.goodFaithSetAsideInstanceIds] },
+    });
+    cards.goodFaithSetAsideInstanceIds = [];
+  }
+
+  if (cards.tradeConcessionsInstanceIds.length > 0) {
+    player.zones.hand.push(...cards.tradeConcessionsInstanceIds);
+    appendV070Event(state, {
+      type: 'trade_concessions_refused',
+      actor: diplomatId,
+      visibility: 'public',
+      payload: { returned: [...cards.tradeConcessionsInstanceIds] },
+    });
+    cards.tradeConcessionsInstanceIds = [];
+  }
+
+  if (cards.nonbindingResolutionInstanceIds.length > 0) {
+    const count = cards.nonbindingResolutionInstanceIds.length;
+    player.zones.discardPile.push(...cards.nonbindingResolutionInstanceIds);
+    cards.nonbindingResolutionInstanceIds = [];
+    drawIntoHand(state, diplomatId, count, 'Nonbinding Resolution refused effect');
+  }
+
+  for (const instanceId of cards.gunboatDiplomacyInstanceIds) {
+    const handIndex = player.zones.hand.indexOf(instanceId);
+    if (handIndex < 0) {
+      throw new V070GameActionError('Revealed Gunboat Diplomacy is no longer in Hand.');
+    }
+    player.zones.hand.splice(handIndex, 1);
+    runtime.participants[diplomatId].additionalGambits.push({
+      instanceId,
+      owner: diplomatId,
+      role: 'gambit',
+      faceUp: true,
+    });
+
+    appendV070Event(state, {
+      type: 'additional_gambit_set',
+      actor: diplomatId,
+      visibility: 'public',
+      payload: {
+        instanceId,
+        cardId: 'diplomats-gunboat-diplomacy',
+        faceUp: true,
+        source: 'refused_terms',
+      },
+    });
+  }
+  cards.gunboatDiplomacyInstanceIds = [];
+}
+
+function resolveV070AcceptedAutomaticTermsCards(
+  state: V070GameState,
+  diplomatId: PlayerId,
+): void {
+  const cards = requireRuntime(state).terms.termsCards;
+  const player = state.players[diplomatId];
+
+  if (cards.goodFaithSetAsideInstanceIds.length > 0) {
+    const count = cards.goodFaithSetAsideInstanceIds.length;
+    player.zones.graveyard.push(...cards.goodFaithSetAsideInstanceIds);
+    cards.goodFaithSetAsideInstanceIds = [];
+    changeInfluence(state, diplomatId, count, 'Good Faith');
+
+    appendV070Event(state, {
+      type: 'good_faith_accepted',
+      actor: diplomatId,
+      visibility: 'public',
+      payload: { count },
+    });
+  }
+
+  for (const instanceId of cards.gunboatDiplomacyInstanceIds) {
+    const handIndex = player.zones.hand.indexOf(instanceId);
+    if (handIndex >= 0) {
+      player.zones.hand.splice(handIndex, 1);
+      player.zones.discardPile.push(instanceId);
+    } else if (!player.zones.discardPile.includes(instanceId)) {
+      throw new V070GameActionError('Revealed Gunboat Diplomacy has no legal accepted destination.');
+    }
+  }
+  cards.gunboatDiplomacyInstanceIds = [];
+}
+
+function beginTermsCardChoice(
+  state: V070GameState,
+  kind: NonNullable<NonNullable<V070GameState['battleRuntime']>['terms']['termsCardChoice']>['kind'],
+  playerId: PlayerId,
+  sourceInstanceId: string | null,
+): void {
+  const terms = requireRuntime(state).terms;
+  terms.stage = 'terms_card_choice';
+  terms.priorityPlayer = playerId;
+  terms.termsCardChoice = {
+    kind,
+    playerId,
+    sourceInstanceId,
+  };
+
+  appendV070Event(state, {
+    type: 'terms_card_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      kind,
+      playerId,
+      sourceInstanceId,
+    },
+  });
+}
+
+function requireBeforeTermsResponse(
+  state: V070GameState,
+  diplomatId: PlayerId,
+) {
+  const terms = requireRuntime(state).terms;
+  if (terms.stage !== 'response' || terms.offerer !== diplomatId || terms.response !== null) {
+    throw new V070GameActionError('This card may be used only after offering Terms and before the opponent responds.');
+  }
+  return terms;
+}
+
+function removeHandCardToTerms(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+  expectedCardId: string,
+): void {
+  requireCardInZone(state, playerId, 'hand', instanceId, expectedCardId);
+  const hand = state.players[playerId].zones.hand;
+  hand.splice(hand.indexOf(instanceId), 1);
 }
 
 function proposalRequirementMet(
@@ -1239,6 +1726,19 @@ function closeTerms(runtime: NonNullable<V070GameState['battleRuntime']>): void 
   runtime.terms.leverageResolved = true;
   runtime.terms.acceptingPlayer = null;
   runtime.terms.proposalChoice = null;
+  runtime.terms.termsCardChoice = null;
+  runtime.terms.termsCards = {
+    diplomaticDivinations: [],
+    tradeConcessionsInstanceIds: [],
+    goodFaithSetAsideInstanceIds: [],
+    nonbindingResolutionInstanceIds: [],
+    resolvedNonbindingResolutionInstanceIds: [],
+    gunboatDiplomacyInstanceIds: [],
+    nonbindingSuppressRatification: false,
+    acceptedStakeReturned: false,
+    acceptedRatificationComplete: false,
+    acceptedNewlyRatified: false,
+  };
   runtime.terms.deferredAfterPoliticalCapital = null;
   runtime.terms.response = null;
   runtime.terms.offeredProposalIds = [];

@@ -23,6 +23,7 @@ export type V070TermsStage =
   | 'opportunity'
   | 'response'
   | 'proposal_choice'
+  | 'terms_card_choice'
   | 'refused'
   | 'political_capital';
 
@@ -35,6 +36,33 @@ export type V070ProposalChoiceKind =
   | 'rebuilding_pact_refused'
   | 'diplomatic_latitude_accepted'
   | 'diplomatic_latitude_refused';
+
+export type V070TermsCardChoiceKind =
+  | 'good_faith_set_aside'
+  | 'nonbinding_resolution'
+  | 'trade_concessions';
+
+export interface V070TermsCardChoiceRuntime {
+  kind: V070TermsCardChoiceKind;
+  playerId: PlayerId;
+  sourceInstanceId: string | null;
+}
+
+export interface V070TermsCardsRuntime {
+  diplomaticDivinations: Array<{
+    instanceId: string;
+    prediction: 'accept' | 'refuse';
+  }>;
+  tradeConcessionsInstanceIds: string[];
+  goodFaithSetAsideInstanceIds: string[];
+  nonbindingResolutionInstanceIds: string[];
+  resolvedNonbindingResolutionInstanceIds: string[];
+  gunboatDiplomacyInstanceIds: string[];
+  nonbindingSuppressRatification: boolean;
+  acceptedStakeReturned: boolean;
+  acceptedRatificationComplete: boolean;
+  acceptedNewlyRatified: boolean;
+}
 
 export interface V070ProposalChoiceRuntime {
   kind: V070ProposalChoiceKind;
@@ -60,11 +88,14 @@ export interface V070TermsRuntime {
   politicalCapitalPending: boolean;
   acceptingPlayer: PlayerId | null;
   proposalChoice: V070ProposalChoiceRuntime | null;
+  termsCardChoice: V070TermsCardChoiceRuntime | null;
+  termsCards: V070TermsCardsRuntime;
   deferredAfterPoliticalCapital: V070ProposalChoiceKind | null;
 }
 
 export interface V070BattleParticipantRuntime {
   gambit: V070BattleCardCommitment | null | undefined;
+  additionalGambits: V070BattleCardCommitment[];
   reserve: string[];
   reserveBonus: number;
   tactic: V070BattleCardCommitment | null | undefined;
@@ -118,6 +149,19 @@ export function createV070BattleRuntime(): V070BattleRuntime {
       politicalCapitalPending: false,
       acceptingPlayer: null,
       proposalChoice: null,
+      termsCardChoice: null,
+      termsCards: {
+        diplomaticDivinations: [],
+        tradeConcessionsInstanceIds: [],
+        goodFaithSetAsideInstanceIds: [],
+        nonbindingResolutionInstanceIds: [],
+        resolvedNonbindingResolutionInstanceIds: [],
+        gunboatDiplomacyInstanceIds: [],
+        nonbindingSuppressRatification: false,
+        acceptedStakeReturned: false,
+        acceptedRatificationComplete: false,
+        acceptedNewlyRatified: false,
+      },
       deferredAfterPoliticalCapital: null,
     },
     unsupportedEffects: [],
@@ -127,6 +171,7 @@ export function createV070BattleRuntime(): V070BattleRuntime {
 function createParticipant(): V070BattleParticipantRuntime {
   return {
     gambit: undefined,
+    additionalGambits: [],
     reserve: [],
     reserveBonus: 0,
     tactic: undefined,

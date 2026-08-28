@@ -20,6 +20,7 @@ export type V070BattleCardView = V070VisibleCard | V070HiddenBattleCard | null |
 
 export interface V070BattleParticipantView {
   gambit: V070BattleCardView;
+  additionalGambits: V070BattleCardView[];
   reserveCount: number;
   reserve?: V070VisibleCard[];
   tactic: V070BattleCardView;
@@ -176,6 +177,9 @@ function viewBattleParticipant(
 
   return {
     gambit: viewBattleCommitment(state, participant.gambit, owner),
+    additionalGambits: participant.additionalGambits.map(commitment =>
+      viewBattleCommitment(state, commitment, owner)
+    ),
     reserveCount: participant.reserve.length,
     reserve: owner ? visibleCards(state, participant.reserve) : undefined,
     tactic: viewBattleCommitment(state, participant.tactic, owner),
