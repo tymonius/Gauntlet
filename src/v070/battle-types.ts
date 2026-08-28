@@ -41,7 +41,8 @@ export type V070ProposalChoiceKind =
 export type V070TermsCardChoiceKind =
   | 'good_faith_set_aside'
   | 'nonbinding_resolution'
-  | 'trade_concessions';
+  | 'trade_concessions'
+  | 'demilitarized_zone';
 
 export interface V070TermsCardChoiceRuntime {
   kind: V070TermsCardChoiceKind;
@@ -133,6 +134,7 @@ export interface V070BattleRuntime {
   terms: V070TermsRuntime;
   gambitOrderOverride: V070GambitOrderOverride | null;
   pendingOutcome: V070BattleOutcome | null;
+  activeOverlayAtOnset: string | null;
   unsupportedEffects: V070UnsupportedBattleEffect[];
 }
 
@@ -177,6 +179,7 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     },
     gambitOrderOverride: null,
     pendingOutcome: null,
+    activeOverlayAtOnset: null,
     unsupportedEffects: [],
   };
 }
