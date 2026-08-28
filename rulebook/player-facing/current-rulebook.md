@@ -1175,7 +1175,7 @@ Military has no alternate victory condition. It wins by running the Gauntlet.
 | Faction Features | None. |
 | Leader Ability | Orders; each Leader has their own Orders with printed Command costs and timings. |
 | Leaders | General and Commandant. |
-| Faction pool | 13 Military card titles. |
+| Faction pool | 15 Military card titles. |
 | Unique card | Shock and Awe, cost 5; maximum one copy per Deck. |
 
 ## Faction Features
@@ -1277,7 +1277,8 @@ Accepted or successfully imposed Proposals become Treaty Articles. Ratify six di
 | Faction Features | Terms — No Action · During Onset; Leverage — No Action · Before dice after refused Terms. |
 | Leaders | Ambassador and Senator. |
 | Proposal set | Nine double-sided Proposal / Treaty Article cards. |
-| Faction pool | 13 Diplomat card titles. |
+| Faction pool | 15 Diplomat card titles. |
+| Unique card | Plenipotentiary, cost 4; maximum one copy per Deck. |
 
 ## Faction Features
 
@@ -1527,7 +1528,7 @@ Deed ownership is independent of token position and Territory control. Own the D
 | Faction Features | Treasury, Buy / Buy Out Deed, and Play the Market — 1 Action · Denouement; Subsidize — No Action · Before dice; Financial Capacity — No Action · After Capture; Income — Automatic · After Capture. |
 | Income | After the Capture step, gain 1 Capital per Deed you own. |
 | Leaders | Banker and Executive. |
-| Faction pool | 13 Financier card titles. |
+| Faction pool | 15 Financier card titles. |
 | Unique card | Corner the Market, cost 5; maximum one copy per Deck. |
 
 ## Faction Features
@@ -1728,7 +1729,7 @@ Complete enough Missions to make a **Special Operation** ready, satisfy its hidd
 | Battle tools | Surveillance and Interference. |
 | Faction Features | Start / Complete / Abort Mission and Start / Complete Special Operation — 1 Action · Denouement; Surveillance and Interference — No Action at their stated battle timings. |
 | Leaders | Ranger and Spymaster. |
-| Faction pool | 13 Intelligence card titles. |
+| Faction pool | 15 Intelligence card titles. |
 | Unique card | Sleeper Network, cost 5; maximum one copy per Deck. |
 
 ## Faction Features
@@ -1908,7 +1909,7 @@ When the controller of Watchtower defends there, the attacker sets their Gambit 
 
 Mystics sacrifice, bind, exchange, recover, and transform cards while completing three selected public **Rites**. A Mystics game package chooses exactly three different Rites from a pool of six. Those three are public at setup and are the only Rites that may be begun during that game.
 
-The first completed Rite unlocks **Invocation**, the second unlocks **Transmutation**, and the third unlocks **Convergence** and the ability to begin the **Ritual of Ascendance**.
+The first completed Rite unlocks **Invocation**, the second unlocks **Transmutation**, and the third unlocks **Convergence** and the ability to begin the **Ritual of Ascension**.
 
 To win through Ritual, bind three cards from three different zones, initiate a battle while they remain bound, and win that battle.
 
@@ -1916,14 +1917,14 @@ To win through Ritual, bind three cards from three different zones, initiate a b
 
 | Element | Mystics rule |
 |---|---|
-| Victory | Run the Gauntlet or complete the Ritual of Ascendance. |
+| Victory | Run the Gauntlet or complete the Ritual of Ascension. |
 | Resource | None. |
-| Trait | All thirteen Mystics cards have the Arcane trait. |
+| Trait | All fifteen Mystics cards have the Arcane trait. |
 | Rite pool | Six Rites; choose exactly three during game-package construction. |
 | Progression | First completed Rite: Invocation; second: Transmutation; third: Convergence and Ritual. |
-| Faction Features | Begin a Rite and Begin the Ritual of Ascendance — 1 Action · Denouement; Invocation and Transmutation — No Action; Convergence — Automatic. |
+| Faction Features | Begin a Rite and Begin the Ritual of Ascension — 1 Action · Denouement; Invocation and Transmutation — No Action; Convergence — Automatic. |
 | Leaders | Alchemist and Spirit Walker. |
-| Faction pool | 13 Mystics card titles. |
+| Faction pool | 15 Mystics card titles. |
 | Unique card | Necromancy, cost 5; maximum one copy per Deck. |
 
 ## Faction Features
@@ -1931,7 +1932,7 @@ To win through Ritual, bind three cards from three different zones, initiate a b
 Mystics have the following Faction Features marked **1 Action · Denouement**:
 
 - **Begin a Rite:** Choose one incomplete selected Rite you may legally begin and pay its beginning cost.
-- **Begin the Ritual of Ascendance:** After completing all three selected Rites, bind the required Arcane cards from Hand, Discard Pile, and Graveyard.
+- **Begin the Ritual of Ascension:** After completing all three selected Rites, bind the required Arcane cards from Hand, Discard Pile, and Graveyard.
 
 Completing a Rite is automatic when that Rite's completion condition and timing are satisfied. **Invocation** and **Transmutation** are Faction Features marked **No Action**; **Convergence** is **Automatic**. The Alchemist and Spirit Walker mechanics are Leader Abilities.
 
@@ -1981,7 +1982,7 @@ During Denouement, take an Action to begin one incomplete selected Rite by follo
 
 - Complete the first selected Rite to unlock **Invocation**.
 - Complete the second selected Rite to unlock **Transmutation**.
-- Complete the third selected Rite to unlock **Convergence** and permission to begin the **Ritual of Ascendance**.
+- Complete the third selected Rite to unlock **Convergence** and permission to begin the **Ritual of Ascension**.
 
 #### Bound cards
 
@@ -2051,7 +2052,7 @@ The card is not played and none of its printed effects apply. Supplemental compo
 
 **Interrupted:** If the exchanged card leaves your Hand in any other way, or if you lose a battle before completion, reset this Rite.
 
-## Ritual of Ascendance and Convergence
+## Ritual of Ascension and Convergence
 
 ### How it works
 
@@ -2069,7 +2070,7 @@ After completing all three selected Rites, during Denouement, spend 1 Action to 
 - one Arcane card from your Discard Pile; and
 - one Arcane card from your Graveyard.
 
-This begins the Ritual of Ascendance.
+This begins the Ritual of Ascension.
 
 #### Convergence
 
@@ -2149,7 +2150,8 @@ Spend Conviction on **Purges** that remove cards and Assets. The first time on y
 | Doctrine | Condemnation and Blasphemy. |
 | Faction Features | Purge — 1 Action · Opening or Denouement · Once per turn; Conviction, Condemnation, Blasphemy, and Purification — Automatic at their stated timings. |
 | Leaders | Grand Inquisitor and Witch Hunter. |
-| Faction pool | 13 Inquisition card titles. |
+| Faction pool | 15 Inquisition card titles. |
+| Unique card | Martyrdom, cost 5; maximum one copy per Deck. |
 | Arcane card | Heresy. |
 
 ## Faction Features
