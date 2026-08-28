@@ -144,8 +144,10 @@ The corresponding file on current `main` differs from the publication snapshot. 
 - [x] Working Nation of First Publication: **United States**, with a filing note that first publication occurred online through a public GitHub repository and was accessible internationally. The Copyright Office's online-publication guidance acknowledges that place-of-publication law remains unsettled; re-check the field against then-current Office guidance at filing.
 - [x] Working claimant: **Tymon Scott**, as author/current documented owner, unless a written transfer of the copyright occurs before filing.
 - [x] Repository history establishes the first v0.6.0 Rulebook commit on **July 20, 2026**; no earlier repository commit for that Rulebook path has been identified. Earlier public availability later on July 20 does not change the calendar-date publication entry.
-- [ ] Confirm from the author's personal knowledge that no substantially identical v0.6.0 Rulebook was distributed outside the repository **before July 20, 2026**.
-- [ ] Perform final application/deposit cross-check before certification.
+- [x] Author confirmed on 2026-08-28 that no substantially identical v0.6.0 Rulebook was distributed outside the repository before July 20, 2026.
+- [x] Author confirmed on 2026-08-28 that no written transfer changes the claimant from Tymon Scott.
+- [x] Re-checked current Copyright Office AI, fee, and online-publication guidance on 2026-08-28.
+- [ ] Perform final application/deposit cross-check during eCO entry before certification.
 
 A forensic audit of every procedural rule sentence is **not** required as the working filing approach. Game methods/procedures are excluded as uncopyrightable matter; short faction/Leader descriptions are not relied on as the principal literary claim; the known appreciable AI-drafted Welcome is expressly excluded; and pictorial material is reserved for a separate visual/card workstream.
 
