@@ -65,9 +65,9 @@ npm run tts:save:promote
 
 `tts:save:promote` is a separate guarded action. It is documented in `tts/SAVE-PUBLISHER.md` and requires clean machine readiness plus the versioned manual-QA gate.
 
-## Current v0.7.0 package
+## Active v0.7.1 development package
 
-The current generated package contains:
+The active v0.7.1 development package is generated from the still-current v0.7.0 gameplay authority. Its initial component inventory contains:
 
 - 142 playable cards;
 - 25 landscape Territories, including 4 Arenas;
@@ -134,7 +134,7 @@ There is no separate Territory-specific back asset.
 
 Leader export does not maintain a second copy of Leader rules or layout. The current-game authority supplies the roster and `/card-design/` supplies the production face, portrait, faction treatment, rules, and geometry.
 
-For TTS export, the production surface is captured at exact 400 × 560 geometry. The exporter overlays the active TTS package display version on the captured footer so a v0.7.0 TTS Leader does not inherit the older source-bundle label. Source provenance remains separately recorded in `leader-manifest.json`.
+For TTS export, the production surface is captured at exact 400 × 560 geometry. The exporter overlays the active TTS package display version on the captured footer so a v0.7.1 TTS Leader is stamped with the development package identity rather than the v0.7.0 source-authority label. Source provenance remains separately recorded in `leader-manifest.json`.
 
 Leader Cards use faction-color component backs and deterministic one-card CustomDeck IDs.
 
@@ -157,7 +157,7 @@ It does not hard-code starter, card, Leader, or Territory counts; those are deri
 
 `scripts/generate-tts-supplemental-assets.mjs` renders components already marked production-ready in the physical component contract. `scripts/generate-tts-finalized-supplementals.mjs` is the explicit production bridge for final Proposal/Treaty, Capital Ledger, and Deed definitions whose raw contract status remains export-pending for provenance.
 
-After both passes, the current v0.7.0 generated supplemental manifest has 27 ready and 0 pending faction component definitions.
+After both passes, the current v0.7.1 generated supplemental manifest has 27 ready and 0 pending faction component definitions.
 
 Supported representations include:
 
@@ -228,25 +228,25 @@ Behavioral tests construct the returned save JSON and verify the core table stru
 
 `npm run tts:release:status` writes `tts-release-readiness.json` without failing solely because a known release blocker remains. `npm run tts:release:strict` converts those blockers into a final closeout failure.
 
-The readiness pass verifies generated component coverage, starter supplemental quantities, and hosted object URL structure. For the current v0.7.0 package it reports 27/27 ready component definitions and 68/68 expected assembled supplemental copies.
+The readiness pass verifies generated component coverage, starter supplemental quantities, and hosted object URL structure. The initial v0.7.1 package retains the same 27/27 ready component definitions and 68/68 expected assembled supplemental copies unless later v0.7.1 work changes that inventory.
 
-The generator still emits a Review Scaffold by default so future builds remain fail-closed. For v0.7.0, manual QA and explicit approval completed and the approved hosted save was promoted to final mod identity.
+The generator still emits a Review Scaffold by default. v0.7.1 begins with a fresh in-progress manual-QA record and no Workshop approval; the completed v0.7.0 approval remains historical evidence for the currently published mod.
 
 ## Manual QA and final promotion
 
-The versioned manual QA record is:
+The active versioned manual QA record is:
 
-- `tts/release-qa/v0.7.0.json`
+- `tts/release-qa/v0.7.1.json`
 
-It contains explicit checks for table/setup behavior, each faction component family, and focused handling validation; a remote two-player game is not required for v0.7.0. See `tts/SAVE-PUBLISHER.md` for the complete gate.
+It contains explicit checks for table/setup behavior, each faction component family, and focused handling validation. It starts `in-progress`, with all 18 checks false and `approvedForWorkshop` false. See `tts/SAVE-PUBLISHER.md` for the complete gate.
 
-For v0.7.0, all 18 required manual checks passed, the QA record is `passed`, and `approvedForWorkshop` is explicitly `true`. `npm run tts:save:promote` remains the guarded mechanism for producing final Workshop identity and continues to refuse promotion unless machine readiness and approval are complete.
+The passed v0.7.0 record remains preserved at `tts/release-qa/v0.7.0.json`. `npm run tts:save:promote` remains the guarded mechanism for producing final Workshop identity and refuses v0.7.1 promotion until machine readiness, all manual checks, and explicit approval are complete.
 
 ## GitHub Release asset hosting
 
-`scripts/stage-tts-release-assets.mjs` copies only network assets required by TTS into `tts/generated/release-assets/`, assigns deterministic `Gauntlet_v0.7.0_TTS_*` names, records byte sizes and SHA-256 digests, and generates public GitHub Release download URLs.
+`scripts/stage-tts-release-assets.mjs` copies only network assets required by TTS into `tts/generated/release-assets/`, assigns deterministic `Gauntlet_v0.7.1_TTS_*` names, records byte sizes and SHA-256 digests, and generates public GitHub Release download URLs.
 
-The current package stages 75 network assets under the v0.7.0 target, including the custom campaign-table image and command-tent panorama. Development/QA builds use staged immutable HTTPS assets; the published v0.7.0 Workshop save uses the approved `gauntlet.run/tts/v0.7.0/` Pages-hosted asset set.
+The active development package stages the network assets under the v0.7.1 target, including the custom campaign-table image and command-tent panorama. PR QA builds use immutable preview assets; the published v0.7.0 Workshop save continues to use the approved `gauntlet.run/tts/v0.7.0/` Pages-hosted asset set.
 
 Publication remains explicit. The **Generate TTS card assets** workflow can be dispatched from `main` with `publish_release_assets` enabled only after the matching GitHub Release exists. The workflow uploads the deterministic assets without moving the release tag and then verifies every published URL with live HTTP requests.
 
@@ -264,7 +264,7 @@ The v0.7.0 mod is public at https://steamcommunity.com/sharedfiles/filedetails/?
 
 Derived output is ignored by Git and written under:
 
-- `tts/generated/v0.7.0/` for the active versioned package;
+- `tts/generated/v0.7.1/` for the active development package;
 - `tts/generated/current/` for current aliases; and
 - `tts/generated/release-assets/` for deterministic hosted assets.
 
