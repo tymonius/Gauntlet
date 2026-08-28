@@ -172,7 +172,7 @@ export function summarizeGames(games) {
 
   for (const game of games) {
     rulesVersions.set(game.rulesVersion, (rulesVersions.get(game.rulesVersion) || 0) + 1);
-    const playMode = game.metadata?.playMode === "tts" ? "tts" : "physical";
+    const playMode = ["tts", "physical"].includes(game.metadata?.playMode) ? game.metadata.playMode : "unspecified";
     playModes.set(playMode, (playModes.get(playMode) || 0) + 1);
     for (const event of game.events || []) {
       if (event.eventType !== "diagnostic_flag" || !event.data?.flag) continue;
