@@ -97,7 +97,7 @@ export function buildDeckImporterConfig({
     gameVersion: version,
     minimumCards: Number(starterManifest.construction?.minimumCards || 30),
     maximumDeckbuildingValue: Number(starterManifest.construction?.maximumDeckbuildingValue || 60),
-    territoriesPerPlayer: Number(starterManifest.construction?.territoriesPerPlayer || 3),
+    territoriesPerPlayer: Number(starterManifest.construction?.territoryCount || starterManifest.construction?.territoriesPerPlayer || 3),
     maximumArenas: Number(starterManifest.construction?.maximumArenas || 1),
     backUrl: requireHostedUrl(releaseAssets, backFile),
     cards,
