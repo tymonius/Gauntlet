@@ -68,7 +68,9 @@
     "release:v070:finalize": "node scripts/finalize-v070-publication.mjs",
     "rules:facts:check": "node scripts/sync-current-rulebook-facts.mjs",
     "rules:facts:sync": "node scripts/sync-current-rulebook-facts.mjs --write",
-    "rules:authority:check": "node scripts/validate-rules-authority-practices.mjs"
+    "rules:authority:check": "node scripts/validate-rules-authority-practices.mjs",
+    "publishing:check": "node scripts/sync-publishing-authority.mjs",
+    "publishing:sync": "node scripts/sync-publishing-authority.mjs --write"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
