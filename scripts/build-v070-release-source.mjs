@@ -19,7 +19,7 @@ const writeText = async (path, value) => {
 };
 const clone = value => JSON.parse(JSON.stringify(value));
 
-function addCardAnatomyFigure(markdown) {
+function validateCurrentRulebook(markdown) {
   const source = String(markdown || '').replace(/\r\n/g, '\n');
   if (!source.includes('**Version 0.7.0**')) {
     throw new Error('Current Rulebook authority is not natively v0.7.0.');
@@ -27,12 +27,10 @@ function addCardAnatomyFigure(markdown) {
   if (/Release candidate|GENERATED CLEAN V0\.6\.3/u.test(source)) {
     throw new Error('Current Rulebook authority still contains transitional publication markers.');
   }
-  const marker = "Most ordinary playable cards use the same frame. Read these elements when constructing a Deck and resolving a card in play:\n\n";
-  if (!source.includes(marker)) {
-    throw new Error('Card Anatomy introduction marker is missing from the current Rulebook authority.');
+  if (!source.includes('## Card anatomy') || !source.includes('### Arcane trait mark')) {
+    throw new Error('Current Rulebook authority is missing the shared Card Anatomy content.');
   }
-  const figure = '![Card anatomy diagram](</releases/v0.7.0/Gauntlet_v0.7.0_Card_Anatomy.png>)\n\n';
-  return source.replace(marker, marker + figure);
+  return source;
 }
 
 function validateAuthority(authority) {
@@ -73,7 +71,7 @@ const [authority, currentRulebookSource] = await Promise.all([
 ]);
 validateAuthority(authority);
 
-const rulebook = addCardAnatomyFigure(currentRulebookSource);
+const rulebook = validateCurrentRulebook(currentRulebookSource);
 const canonicalData = {
   schema_version: 2,
   release_version: RELEASE_VERSION,
@@ -115,8 +113,12 @@ const sourceProvenance = {
   current_game_authority: CURRENT_GAME_SOURCE,
   current_rulebook_authority: CURRENT_RULEBOOK_SOURCE,
   historical_derivation: clone(authority.provenance),
-  publication_derived_assets: {
-    card_anatomy_figure: 'releases/v0.7.0/Gauntlet_v0.7.0_Card_Anatomy.png',
+  publication_components: {
+    card_anatomy: {
+      browser_route: '/rulebook/?embed=card-anatomy',
+      component: 'rulebook/card-anatomy.js',
+      card_renderer: 'card-design/card-print-render.html',
+    },
   },
   counts: {
     playable_cards: authority.gameplay.cards.length,
