@@ -29,6 +29,7 @@ import {
 } from './assets';
 
 export { bankableV070AssetInstanceIds } from './assets';
+import { expireV070SanctionsAfterAcceptance } from './sanctions';
 
 export const V070_EXECUTABLE_PROPOSAL_IDS = [
   'de-escalation',
@@ -602,6 +603,8 @@ export function respondToV070Terms(
       visibility: 'public',
       payload: { proposalIds: [...terms.offeredProposalIds] },
     });
+
+    expireV070SanctionsAfterAcceptance(state, offerer, playerId);
 
     if (terms.diplomaticLatitudeInstanceId) {
       beginProposalChoice(state, 'diplomatic_latitude_accepted', playerId, 'single', false);
