@@ -1175,7 +1175,7 @@ Military has no alternate victory condition. It wins by running the Gauntlet.
 | Faction Features | None. |
 | Leader Ability | Orders; each Leader has their own Orders with printed Command costs and timings. |
 | Leaders | General and Commandant. |
-| Faction pool | 15 Military card titles. |
+| Faction pool | 15<!-- RULE-FACT:cards.military.count:number --> Military card titles. |
 | Unique card | Shock and Awe, cost 5; maximum one copy per Deck. |
 
 ## Faction Features
@@ -1265,7 +1265,7 @@ War Crimes and Shock and Awe may prohibit movement, capture, or Orders resulting
 
 During Onset, a Diplomat may offer **Terms**. The Diplomat stakes Influence and presents a Proposal. The opponent may accept, ending the battle sequence during Onset before Gambits are set, or refuse and fight under the Proposal's refusal effect.
 
-Accepted or successfully imposed Proposals become Treaty Articles. Ratify six different Proposals and survive until the start of your next turn to win through the **Peace Treaty**.
+Accepted or successfully imposed Proposals become Treaty Articles. Ratify six<!-- RULE-FACT:diplomats.peace_treaty_threshold:word --> different Proposals and survive until the start of your next turn to win through the **Peace Treaty**.
 
 ## Complete rules
 
@@ -1276,8 +1276,8 @@ Accepted or successfully imposed Proposals become Treaty Articles. Ratify six di
 | Starting value | 1 Influence. |
 | Faction Features | Terms — No Action · During Onset; Leverage — No Action · Before dice after refused Terms. |
 | Leaders | Ambassador and Senator. |
-| Proposal set | Nine double-sided Proposal / Treaty Article cards. |
-| Faction pool | 15 Diplomat card titles. |
+| Proposal set | Nine<!-- RULE-FACT:proposals.count:word-cap --> double-sided Proposal / Treaty Article cards. |
+| Faction pool | 15<!-- RULE-FACT:cards.diplomats.count:number --> Diplomat card titles. |
 | Unique card | Plenipotentiary, cost 4; maximum one copy per Deck. |
 
 ## Faction Features
@@ -1387,7 +1387,7 @@ The progression continues without a fixed maximum. Each additional +1 costs one 
 
 A ratified Proposal is a Treaty Article. It may be offered again for its tactical effects but cannot be ratified again and grants no normal newly-ratified Influence reward.
 
-At the start of the Diplomat's turn, after the Capture step and before the Draw step, if six different Proposals are ratified, the Diplomat wins through the Peace Treaty.
+At the start of the Diplomat's turn, after the Capture step and before the Draw step, if six<!-- RULE-FACT:diplomats.peace_treaty_threshold:word --> different Proposals are ratified, the Diplomat wins through the Peace Treaty.
 
 ## Leaders
 
@@ -1528,7 +1528,7 @@ Deed ownership is independent of token position and Territory control. Own the D
 | Faction Features | Treasury, Buy / Buy Out Deed, and Play the Market — 1 Action · Denouement; Subsidize — No Action · Before dice; Financial Capacity — No Action · After Capture; Income — Automatic · After Capture. |
 | Income | After the Capture step, gain 1 Capital per Deed you own. |
 | Leaders | Banker and Executive. |
-| Faction pool | 15 Financier card titles. |
+| Faction pool | 15<!-- RULE-FACT:cards.financiers.count:number --> Financier card titles. |
 | Unique card | Corner the Market, cost 5; maximum one copy per Deck. |
 
 ## Faction Features
@@ -1729,7 +1729,7 @@ Complete enough Missions to make a **Special Operation** ready, satisfy its hidd
 | Battle tools | Surveillance and Interference. |
 | Faction Features | Start / Complete / Abort Mission and Start / Complete Special Operation — 1 Action · Denouement; Surveillance and Interference — No Action at their stated battle timings. |
 | Leaders | Ranger and Spymaster. |
-| Faction pool | 15 Intelligence card titles. |
+| Faction pool | 15<!-- RULE-FACT:cards.intelligence.count:number --> Intelligence card titles. |
 | Unique card | Sleeper Network, cost 5; maximum one copy per Deck. |
 
 ## Faction Features
@@ -1919,12 +1919,12 @@ To win through Ritual, bind three cards from three different zones, initiate a b
 |---|---|
 | Victory | Run the Gauntlet or complete the Ritual of Ascension. |
 | Resource | None. |
-| Trait | All fifteen Mystics cards have the Arcane trait. |
+| Trait | All fifteen<!-- RULE-FACT:cards.mystics.arcane_count:word --> Mystics cards have the Arcane trait. |
 | Rite pool | Six Rites; choose exactly three during game-package construction. |
 | Progression | First completed Rite: Invocation; second: Transmutation; third: Convergence and Ritual. |
 | Faction Features | Begin a Rite and Begin the Ritual of Ascension — 1 Action · Denouement; Invocation and Transmutation — No Action; Convergence — Automatic. |
 | Leaders | Alchemist and Spirit Walker. |
-| Faction pool | 15 Mystics card titles. |
+| Faction pool | 15<!-- RULE-FACT:cards.mystics.count:number --> Mystics card titles. |
 | Unique card | Necromancy, cost 5; maximum one copy per Deck. |
 
 ## Faction Features
@@ -2150,7 +2150,7 @@ Spend Conviction on **Purges** that remove cards and Assets. The first time on y
 | Doctrine | Condemnation and Blasphemy. |
 | Faction Features | Purge — 1 Action · Opening or Denouement · Once per turn; Conviction, Condemnation, Blasphemy, and Purification — Automatic at their stated timings. |
 | Leaders | Grand Inquisitor and Witch Hunter. |
-| Faction pool | 15 Inquisition card titles. |
+| Faction pool | 15<!-- RULE-FACT:cards.inquisition.count:number --> Inquisition card titles. |
 | Unique card | Martyrdom, cost 5; maximum one copy per Deck. |
 | Arcane card | Heresy. |
 

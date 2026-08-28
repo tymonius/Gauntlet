@@ -146,6 +146,9 @@ jobs:
       - name: Audit repository-wide release path normalization
         run: node scripts/validate-release-path-normalization.mjs
 
+      - name: Verify tracked Rulebook facts
+        run: node scripts/sync-current-rulebook-facts.mjs
+
       - name: Setup Node
         if: steps.scope.outputs.relevant == 'true'
         uses: actions/setup-node@v4

@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { validateAuthorityEmbeddedFacts } from '../rulebook/player-facing/rule-facts.js';
 
 export const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 export const CURRENT_GAME_AUTHORITY_SOURCE = 'game-data/current-game.json';
@@ -41,6 +42,7 @@ export function validateCurrentGameAuthority(authority) {
       }
     }
   }
+  validateAuthorityEmbeddedFacts(authority);
   return authority;
 }
 

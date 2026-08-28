@@ -2,6 +2,8 @@ import crypto from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { ROOT, loadCurrentGameAuthority } from './current-game-authority.mjs';
+import { applyV070CanonicalCorrections, applyV070RulebookCorrections } from '../rulebook/player-facing/v070-corrections.js';
+import { synchronizeKnownRulebookClaims, validateKnownRulebookClaims } from '../rulebook/player-facing/rule-facts.js';
 
 const RELEASE_VERSION = 'v0.7.0';
 const RELEASE_NAME = 'Illustrated Cards & Tabletop Simulator';
@@ -55,7 +57,7 @@ async function repairAndValidateFrozenReleaseSources() {
     readText(paths.starters),
     readText(paths.provenance),
   ]);
-  const canonical = JSON.parse(canonicalText);
+  let canonical = JSON.parse(canonicalText);
   const starters = JSON.parse(startersText);
   const provenance = JSON.parse(provenanceText);
 
@@ -72,43 +74,26 @@ async function repairAndValidateFrozenReleaseSources() {
     throw new Error(`${RELEASE_VERSION} frozen source provenance is incomplete.`);
   }
 
+  canonical = applyV070CanonicalCorrections(canonical);
+  const correctedCanonicalText = jsonText(canonical);
+  if (correctedCanonicalText !== canonicalText) {
+    canonicalText = correctedCanonicalText;
+    await writeText(join(ROOT, paths.canonical), canonicalText);
+    console.log('Re-derived maintained v0.7.0 canonical summaries from playable-card records.');
+  }
+
+  const semanticRulebook = applyV070RulebookCorrections(rulebook);
+  const synchronized = synchronizeKnownRulebookClaims(semanticRulebook, canonical);
+  rulebook = synchronized.output;
+  validateKnownRulebookClaims(rulebook, canonical);
+  if (rulebook !== await readText(paths.rulebook)) {
+    await writeText(join(ROOT, paths.rulebook), rulebook);
+    console.log('Synchronized maintained v0.7.0 Rulebook facts from canonical authority.');
+  }
+
   const diplomats = canonical.gameplay?.factions?.find(faction => faction.id === 'diplomats');
   if (diplomats?.factionRules?.peace_treaty_threshold !== 6) {
     throw new Error('Frozen v0.7.0 canonical Peace Treaty threshold must be six.');
-  }
-
-  const stalePhrases = [
-    'Ratify five different Proposals',
-    'if five different Proposals are ratified',
-  ];
-  const correctedPhrases = [
-    'Ratify six different Proposals',
-    'if six different Proposals are ratified',
-  ];
-  const staleCount = stalePhrases.reduce(
-    (total, phrase) => total + rulebook.split(phrase).length - 1,
-    0,
-  );
-  if (staleCount > 0) {
-    if (staleCount !== 2) {
-      throw new Error(`Frozen v0.7.0 Rulebook has an unexpected Peace Treaty drift shape: ${staleCount} stale occurrences.`);
-    }
-    rulebook = rulebook
-      .replace('Ratify five different Proposals', 'Ratify six different Proposals')
-      .replace('if five different Proposals are ratified', 'if six different Proposals are ratified');
-    await writeText(join(ROOT, paths.rulebook), rulebook);
-    console.log('Applied frozen v0.7.0 Peace Treaty erratum: five → six ratified Proposals.');
-  }
-
-  for (const phrase of correctedPhrases) {
-    if (!rulebook.includes(phrase)) {
-      throw new Error(`Frozen v0.7.0 Rulebook is missing corrected Peace Treaty text: ${phrase}`);
-    }
-  }
-  for (const phrase of stalePhrases) {
-    if (rulebook.includes(phrase)) {
-      throw new Error(`Frozen v0.7.0 Rulebook still contains stale Peace Treaty text: ${phrase}`);
-    }
   }
 
   const authoritySetId = sha256(Buffer.from(`${rulebook}\n${canonicalText}\n${startersText}`, 'utf8'));
@@ -116,13 +101,13 @@ async function repairAndValidateFrozenReleaseSources() {
     provenance.authority_set_id = authoritySetId;
     provenance.publication_corrections = {
       ...(provenance.publication_corrections || {}),
-      peace_treaty_threshold: {
-        corrected_to: 6,
-        reason: 'Published Rulebook prose retained the pre-v0.6.4 five-Proposal threshold while canonical v0.7.0 authority correctly required six.',
+      derived_rulebook_facts: {
+        source: 'canonical gameplay records and faction rule fields',
+        corrected_claims: synchronized.changes.map(change => change.label),
       },
     };
     await writeText(join(ROOT, paths.provenance), jsonText(provenance));
-    console.log(`Updated frozen v0.7.0 authority set after Peace Treaty erratum: ${authoritySetId}`);
+    console.log(`Updated maintained v0.7.0 authority set after derived-fact synchronization: ${authoritySetId}`);
   }
 }
 

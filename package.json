@@ -65,7 +65,9 @@
     "dev:cli": "tsx src/cli/dev-runner-v06.ts",
     "dev:gui": "tsx src/gui/dev-server-v06.ts",
     "tts:environment": "node scripts/generate-tts-environment-assets.mjs",
-    "release:v070:finalize": "node scripts/finalize-v070-publication.mjs"
+    "release:v070:finalize": "node scripts/finalize-v070-publication.mjs",
+    "rules:facts:check": "node scripts/sync-current-rulebook-facts.mjs",
+    "rules:facts:sync": "node scripts/sync-current-rulebook-facts.mjs --write"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
