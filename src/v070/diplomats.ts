@@ -28,7 +28,6 @@ import {
   bankableV070AssetInstanceIds,
 } from './assets';
 
-export { bankableV070AssetInstanceIds } from './assets';
 import { expireV070SanctionsAfterAcceptance } from './sanctions';
 
 export const V070_EXECUTABLE_PROPOSAL_IDS = [
