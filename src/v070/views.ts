@@ -92,6 +92,7 @@ export interface V070GameView {
   battle: V070GameState['battle'];
   battleRuntime: V070BattleRuntimeView | null;
   overlays: V070OverlayView[];
+  territoryTurnRestrictions: V070GameState['territoryTurnRestrictions'];
   pendingTurnChoice: V070GameState['pendingTurnChoice'];
   winner: PlayerId | null;
   events: V070GameEvent[];
@@ -121,6 +122,9 @@ export function viewV070GameForPlayer(
       ? viewBattleRuntime(state, state.battleRuntime, viewer)
       : null,
     overlays: viewOverlays(state),
+    territoryTurnRestrictions: state.territoryTurnRestrictions.map(
+      restriction => structuredClone(restriction),
+    ),
     pendingTurnChoice: state.pendingTurnChoice
       ? structuredClone(state.pendingTurnChoice)
       : null,
