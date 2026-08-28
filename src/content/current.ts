@@ -18,6 +18,8 @@ export * from '../v070/rules';
 export * from '../v070/starter-decks';
 export * from '../v070/engine';
 export * from '../v070/turn-engine';
+export * from '../v070/battle-types';
+export * from '../v070/battle-engine';
 export * from '../v070/views';
 
 /**

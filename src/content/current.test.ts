@@ -53,6 +53,9 @@ describe('current digital rules surface', () => {
       'reduceV070SetupAction',
       'reduceV070TurnAction',
       'drawV070Cards',
+      'reduceV070BattleAction',
+      'cardEligibleForV070BattleRole',
+      'requiredV070BattleDice',
       'viewV070GameForPlayer',
     ]) {
       expect(typeof current[name as keyof typeof current]).toBe('function');
