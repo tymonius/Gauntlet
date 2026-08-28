@@ -29,6 +29,7 @@ import {
   useV070GoodFaith,
   useV070NonbindingResolution,
   useV070GunboatDiplomacy,
+  useV070NeutralObserversAfterRefusal,
   resolveV070TermsCardChoice,
   useV070PlenipotentiaryAfterRefusal,
   settleV070RefusedTermsOutcome,
@@ -66,6 +67,7 @@ export type V070BattleAction =
   | { type: 'use_good_faith'; playerId: PlayerId; cardInstanceId: string }
   | { type: 'use_nonbinding_resolution'; playerId: PlayerId; cardInstanceId: string }
   | { type: 'use_gunboat_diplomacy'; playerId: PlayerId; cardInstanceId: string }
+  | { type: 'use_neutral_observers'; playerId: PlayerId; cardInstanceId: string }
   | {
       type: 'resolve_terms_card_choice';
       playerId: PlayerId;
@@ -140,6 +142,9 @@ export function reduceV070BattleAction(
       break;
     case 'use_gunboat_diplomacy':
       useV070GunboatDiplomacy(next, action.playerId, action.cardInstanceId);
+      break;
+    case 'use_neutral_observers':
+      useV070NeutralObserversAfterRefusal(next, action.playerId, action.cardInstanceId);
       break;
     case 'resolve_terms_card_choice':
       resolveV070TermsCardChoice(
@@ -276,7 +281,8 @@ function unsupportedOnsetFeatures(state: V070GameState): string[] {
       const onsetAsset = card?.effects.find(effect =>
         effect.label === 'Asset' && /during onset|before gambits are set|after terms are refused|after the opponent refuses/i.test(effect.text),
       );
-      const implementedOnsetAsset = cardId === 'diplomats-plenipotentiary';
+      const implementedOnsetAsset = cardId === 'diplomats-plenipotentiary'
+        || cardId === 'diplomats-neutral-observers';
       if (onsetAsset && card && !implementedOnsetAsset) result.push(`${playerId}:${card.name}`);
     }
   }
@@ -291,6 +297,11 @@ function setGambit(
 ): void {
   const runtime = requireRuntime(state);
   requireRuntimeStage(runtime, 'set_gambits');
+  const order = runtime.gambitOrderOverride;
+  if (order?.nextPlayer && order.nextPlayer !== playerId) {
+    throw new V070GameActionError(`${order.nextPlayer} must make the next Gambit choice.`);
+  }
+
   const participant = runtime.participants[playerId];
   if (participant.gambit !== undefined) {
     throw new V070GameActionError(`${playerId} has already made a Gambit choice.`);
@@ -315,18 +326,35 @@ function setGambit(
 
     player.zones.hand.splice(index, 1);
     participant.gambit = commitment(instanceId, playerId, 'gambit');
+    const forcedFaceUp = Boolean(
+      order
+      && playerId === order.firstPlayer
+      && order.firstCommitmentFaceUp,
+    );
+    if (forcedFaceUp) participant.gambit.faceUp = true;
+
     appendV070Event(state, {
       type: 'gambit_set',
       actor: playerId,
       visibility: 'public',
-      payload: { faceDown: true },
+      payload: { faceDown: !forcedFaceUp },
     });
     appendV070Event(state, {
       type: 'gambit_identity',
       actor: playerId,
-      visibility: playerId,
+      visibility: forcedFaceUp ? 'public' : playerId,
       payload: { instanceId, cardId },
     });
+  }
+
+  if (order) {
+    if (playerId === order.firstPlayer) {
+      order.nextPlayer = order.secondPlayer;
+      return;
+    }
+    if (playerId === order.secondPlayer) {
+      order.nextPlayer = null;
+    }
   }
 
   if (bothBattleChoicesMade(runtime, 'gambit')) formReserves(state);
