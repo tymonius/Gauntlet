@@ -108,10 +108,9 @@ async function copyDeckCode(button) {
 
 async function installDeckCodeButton() {
   try {
-    const response = await fetch("../game-data/current-game.json", { cache: "no-store" });
-    if (!response.ok) return;
-    const currentGame = await response.json();
-    if (!isTtsDeckExportAvailable(currentGame?.version)) return;
+    const { loadGameRuleset, rulesetModeFromUrl } = await import("../game-data/ruleset.mjs");
+    const selectedGame = await loadGameRuleset(rulesetModeFromUrl());
+    if (!isTtsDeckExportAvailable(selectedGame?.version)) return;
   } catch {
     return;
   }

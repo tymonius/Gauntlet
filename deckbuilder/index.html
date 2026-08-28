@@ -23,6 +23,7 @@
   <link rel="preconnect" href="https://p.typekit.net" crossorigin />
   <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="ruleset-toggle.css?v=20260828-1" />
   <link rel="stylesheet" href="territories.css" />
   <link rel="stylesheet" href="mystics-rites.css?v=20260828-1" />
   <link rel="stylesheet" href="print-options.css?v=20260819-1" />
@@ -33,7 +34,7 @@
   <link rel="stylesheet" href="shell.css?v=20260815-1" />
   <link rel="stylesheet" href="../arcane-trait-markers.css" />
 </head>
-<body>
+<body data-ruleset-mode="released">
   <header class="global-header">
     <a class="brand" href="../" aria-label="Gauntlet home">
       <span class="brand-mark" aria-hidden="true">G</span>
@@ -58,6 +59,17 @@
         Choose a faction and leader, begin with a ready-to-play starter deck,
         then customize only what you need.
       </p>
+      <div class="ruleset-switch" role="group" aria-label="Deckbuilder ruleset" data-ruleset-switch hidden>
+        <button type="button" data-ruleset="released" aria-pressed="true">
+          <span>Released</span>
+          <strong>v0.7.0</strong>
+        </button>
+        <button type="button" data-ruleset="candidate" aria-pressed="false">
+          <span>Release candidate</span>
+          <strong data-candidate-version>Current candidate</strong>
+        </button>
+      </div>
+      <p class="ruleset-note" data-candidate-rules-note hidden></p>
     </div>
     <p class="source-status" aria-live="polite">
       <span class="status-dot" aria-hidden="true"></span>

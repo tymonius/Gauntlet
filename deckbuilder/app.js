@@ -253,7 +253,7 @@ async function init() {
   } catch (error) {
     console.error(error);
     el.dataStatus.textContent = "Source load failed";
-    document.body.insertAdjacentHTML("beforeend", `<p class="warning-panel panel">Unable to load the active v0.6 Markdown sources. Serve the repository through a web server rather than opening this file directly.</p>`);
+    document.body.insertAdjacentHTML("beforeend", `<p class="warning-panel panel">Unable to load the selected Gauntlet ruleset. Reload the page or switch rulesets.</p>`);
   }
 }
 
@@ -656,7 +656,7 @@ function renderSavedDecks() {
   const entries = Object.entries(saved).sort((a, b) => a[1].name.localeCompare(b[1].name));
   el.savedDeckSelect.innerHTML = entries.length
     ? entries.map(([key, deck]) => `<option value="${escapeHtml(key)}">${escapeHtml(deck.name)}</option>`).join("")
-    : '<option value="">No saved v0.6 decks</option>';
+    : '<option value="">No saved decks</option>';
   el.loadDeckButton.disabled = !entries.length;
   el.deleteDeckButton.disabled = !entries.length;
 }
@@ -667,7 +667,7 @@ function readSavedDecks() {
 }
 
 function applyDeckData(data) {
-  if (data.schema !== "gauntlet-v0.6.1-deck") throw new Error("This is not a v0.6 development deck export.");
+  if (data.schema !== "gauntlet-v0.6.1-deck") throw new Error("This is not a compatible Gauntlet Deck export.");
   const faction = FACTIONS.find(item => item.id === data.factionId && item.status === "ready");
   if (!faction) throw new Error("The exported faction is not currently available.");
 

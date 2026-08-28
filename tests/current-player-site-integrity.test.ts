@@ -163,7 +163,7 @@ describe("v0.7.0 player-site release preparation", () => {
     expect(workerEntry).toContain('import v063Worker from "./worker-v063.js";');
   });
 
-  it("keeps the Deckbuilder identified as v0.7.0 while runtime data remains current-game authoritative", () => {
+  it("keeps the Deckbuilder on released v0.7.0 by default with an explicit current-candidate view", () => {
     const html = read("deckbuilder/index.html");
     const runtime = read("deckbuilder/v061-runtime.js");
     const print = read("deckbuilder/print.js");
@@ -175,7 +175,11 @@ describe("v0.7.0 player-site release preparation", () => {
     expect(html).toContain('href="../v0.7.0/"');
     expect(html).not.toContain(`href="${LEGACY_RELEASE_ALIAS}"`);
     expect(html).not.toContain('href="../releases/v0.6.1/"');
-    expect(runtime).toContain('import("../game-data/current-game.mjs")');
+    expect(runtime).toContain('import("../game-data/ruleset.mjs")');
+    expect(html).toContain('data-ruleset="released"');
+    expect(html).toContain('data-ruleset="candidate"');
+    expect(runtime).toContain('gauntlet-v0.7.0-decks');
+    expect(runtime).toContain('gauntlet-current-game-decks');
     expect(runtime).toContain("state.currentGameVersion = data.version");
     expect(runtime).toContain("state.currentGameDisplayVersion = data.displayVersion");
     expect(runtime).toContain('data.gameVersion = state.currentGameVersion || "current-game"');
@@ -183,7 +187,7 @@ describe("v0.7.0 player-site release preparation", () => {
     expect(runtime).not.toContain('const CANONICAL_URL = "../releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json";');
     expect(print).toContain('state.currentGameDisplayVersion || state.currentGameVersion || "current"');
     expect(print).not.toContain("v0.6.1");
-    expect(bulkPrint).toContain('import("../game-data/current-game.mjs")');
+    expect(bulkPrint).toContain('import("../game-data/ruleset.mjs")');
     expect(bulkPrint).not.toContain("starter-decks.json");
     expect(bulkPrint).not.toContain("v0.6.1");
   });

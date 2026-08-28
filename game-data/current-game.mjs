@@ -241,9 +241,20 @@ async function resolveCurrentGame() {
   });
 }
 
+function explicitlyRequestsReleasedRuleset() {
+  if (typeof window === 'undefined') return false;
+  return new URLSearchParams(window.location.search).get('rules') === 'released';
+}
+
+async function resolveRequestedGame() {
+  if (!explicitlyRequestsReleasedRuleset()) return resolveCurrentGame();
+  const { loadPublishedGame } = await import('./ruleset.mjs');
+  return loadPublishedGame();
+}
+
 export function loadCurrentGame() {
   if (!currentGamePromise) {
-    currentGamePromise = resolveCurrentGame().catch(error => {
+    currentGamePromise = resolveRequestedGame().catch(error => {
       currentGamePromise = null;
       throw error;
     });

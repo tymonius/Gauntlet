@@ -27,7 +27,7 @@
     }
 
     try {
-      const currentGame = state.currentGameData || await import("../game-data/current-game.mjs").then(module => module.loadCurrentGame());
+      const currentGame = state.currentGameData || await import("../game-data/ruleset.mjs").then(module => module.loadGameRuleset(module.rulesetModeFromUrl()));
       state.currentGameData ||= currentGame;
       bridgeSharedReferencesIntoPrintAuthority(currentGame);
       hydrateLegacyPrintPackages(currentGame);

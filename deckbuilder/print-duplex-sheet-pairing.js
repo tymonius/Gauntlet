@@ -351,9 +351,14 @@
     }
   }
 
+  function selectedRulesetMode() {
+    return window.GAUNTLET_DECKBUILDER_RULESET?.mode
+      || (new URLSearchParams(window.location.search).get("rules") === "candidate" ? "candidate" : "released");
+  }
+
   function productionFrameSource(options) {
     if (options.kind === "external") return options.src;
-    return `/card-design/component-print-render.html?kind=${encodeURIComponent(options.kind)}&id=${encodeURIComponent(options.id)}&side=${encodeURIComponent(options.side || "front")}`;
+    return `/card-design/component-print-render.html?kind=${encodeURIComponent(options.kind)}&id=${encodeURIComponent(options.id)}&side=${encodeURIComponent(options.side || "front")}&rules=${encodeURIComponent(selectedRulesetMode())}`;
   }
 
   function makeProductionComponent(documentNode, options) {
@@ -397,7 +402,7 @@
     frame.className = "production-card-frame";
     frame.dataset.productionRenderFrame = "true";
     frame.dataset.productionRenderKind = "card";
-    frame.src = `/card-design/card-print-render.html?card=${encodeURIComponent(card.id)}&fit=production`;
+    frame.src = `/card-design/card-print-render.html?card=${encodeURIComponent(card.id)}&fit=production&rules=${encodeURIComponent(selectedRulesetMode())}`;
     frame.title = `${card.name} production card`;
     frame.setAttribute("scrolling", "no");
     frame.setAttribute("loading", "eager");
@@ -419,7 +424,7 @@
     frame.className = "production-territory-frame";
     frame.dataset.productionRenderFrame = "true";
     frame.dataset.productionRenderKind = "territory";
-    frame.src = `/card-design/territory-print-render.html?territory=${encodeURIComponent(territory.id)}`;
+    frame.src = `/card-design/territory-print-render.html?territory=${encodeURIComponent(territory.id)}&rules=${encodeURIComponent(selectedRulesetMode())}`;
     frame.title = `${territory.name} production Territory`;
     frame.setAttribute("scrolling", "no");
     frame.setAttribute("loading", "eager");

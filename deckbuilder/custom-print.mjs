@@ -405,11 +405,17 @@ function reverseCellHtml(entry, includeStandardBacks, backStyle) {
   return "";
 }
 
+function selectedRulesetMode() {
+  return window.GAUNTLET_DECKBUILDER_RULESET?.mode
+    || (new URLSearchParams(window.location.search).get("rules") === "candidate" ? "candidate" : "released");
+}
+
 function cardFrameHtml(entry, side) {
+  const ruleset = `&rules=${encodeURIComponent(selectedRulesetMode())}`;
   let src;
-  if (entry.render.surface === "card") src = `/card-design/card-print-render.html?card=${encodeURIComponent(entry.render.id)}&fit=production`;
-  else if (entry.render.surface === "territory") src = `/card-design/territory-print-render.html?territory=${encodeURIComponent(entry.render.id)}`;
-  else src = `/card-design/component-print-render.html?kind=${encodeURIComponent(entry.render.kind)}&id=${encodeURIComponent(entry.render.id)}&side=${encodeURIComponent(side)}${entry.orientation === "landscape" ? "&orientation=landscape" : ""}`;
+  if (entry.render.surface === "card") src = `/card-design/card-print-render.html?card=${encodeURIComponent(entry.render.id)}&fit=production${ruleset}`;
+  else if (entry.render.surface === "territory") src = `/card-design/territory-print-render.html?territory=${encodeURIComponent(entry.render.id)}${ruleset}`;
+  else src = `/card-design/component-print-render.html?kind=${encodeURIComponent(entry.render.kind)}&id=${encodeURIComponent(entry.render.id)}&side=${encodeURIComponent(side)}${entry.orientation === "landscape" ? "&orientation=landscape" : ""}${ruleset}`;
   const frame = `<iframe class="custom-render-frame" data-custom-render-frame data-custom-render-kind="face" src="${escapeHtml(src)}" title="${escapeHtml(`${entry.name} ${side} production render`)}" scrolling="no" loading="eager"></iframe>`;
   return entry.orientation === "landscape" ? `<div class="custom-landscape-rotate">${frame}</div>` : frame;
 }

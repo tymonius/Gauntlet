@@ -21,8 +21,8 @@
 
   async function loadStarterDecks() {
     try {
-      const { loadCurrentGame } = await import("../game-data/current-game.mjs");
-      const currentGame = await loadCurrentGame();
+      const { loadGameRuleset, rulesetModeFromUrl } = await import("../game-data/ruleset.mjs");
+      const currentGame = await loadGameRuleset(rulesetModeFromUrl());
       starterDecks = Array.isArray(currentGame.starterDecks)
         ? currentGame.starterDecks.map(deck => ({ ...deck }))
         : [];
@@ -41,10 +41,12 @@
   function isReady() {
     const starterApi = window.GAUNTLET_STARTER_DECKS;
     const starterTipsReady = typeof starterApi?.getSelectedDeck === "function" && Boolean(starterApi.getSelectedDeck());
+    const mysticsRitesReady = document.body.dataset.mysticsRites === "ready";
 
     return Boolean(
       starterDecks.length === EXPECTED_DECK_COUNT &&
       starterTipsReady &&
+      mysticsRitesReady &&
       state.cards?.length &&
       state.territoryPool?.length &&
       !document.getElementById("printDeckButton")?.disabled
@@ -140,6 +142,13 @@
     state.selectedRiteId = snapshot.selectedRiteId;
   }
 
+  function starterRiteIds(preset) {
+    if (preset.factionId !== "mystics") return [];
+    if (Array.isArray(preset.selectedRites)) return [...preset.selectedRites];
+    const riteApi = window.GAUNTLET_MYSTICS_RITES;
+    return riteApi?.selectionEnabled?.() ? [] : (riteApi?.defaultIds?.() || []);
+  }
+
   function applyStarterDeckToState(preset) {
     const faction = FACTIONS.find(item => item.id === preset.factionId);
     const leader = faction?.leaders?.find(item => item.id === preset.leaderId);
@@ -166,7 +175,7 @@
     state.leaderId = preset.leaderId;
     state.deck = deck;
     state.territories = territories;
-    state.rites = preset.factionId === "mystics" ? [...(preset.selectedRites || [])] : [];
+    state.rites = starterRiteIds(preset);
   }
 
   function captureCurrentPrintDocument() {
