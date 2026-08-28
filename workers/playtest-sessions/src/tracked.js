@@ -568,7 +568,7 @@ async function trackedPublicState(session, db) {
 async function readPlayers(sessionId, db) {
   const rows = rowsFromResult(await db.prepare(
     `SELECT p.id AS participant_id, p.display_name, p.seat_index, p.faction,
-            p.leader, p.joined_at,
+            p.leader, p.selection_reason, p.joined_at,
             CASE WHEN r.participant_id IS NULL THEN 0 ELSE 1 END AS response_submitted
        FROM playtest_participants p
        LEFT JOIN playtest_participant_responses r ON r.participant_id = p.id
@@ -581,6 +581,7 @@ async function readPlayers(sessionId, db) {
     seatIndex: Number(row.seat_index),
     faction: row.faction,
     leader: row.leader,
+    selectionReasonCaptured: Boolean(cleanString(row.selection_reason, 1000)),
     joinedAt: row.joined_at,
     responseSubmitted: Number(row.response_submitted) === 1
   }));
@@ -666,8 +667,8 @@ function normalizeSharedResult(value, playerIds) {
 
 function normalizePlayerResponse(value, selectionReasonValue) {
   const input = value && typeof value === "object" && !Array.isArray(value) ? value : {};
-  const factionInterest = cleanString(selectionReasonValue, 1000);
-  if (!factionInterest) throw new HttpError(400, "The pregame faction/Leader selection reason is missing");
+  const factionInterest = cleanString(selectionReasonValue || input.factionInterest, 1000);
+  if (!factionInterest) throw new HttpError(400, "Describe why this faction or Leader interested you");
   return {
     factionInterest,
     expectationMatch: rating(input.expectationMatch),
