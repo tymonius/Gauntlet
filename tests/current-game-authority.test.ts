@@ -45,12 +45,13 @@ describe('complete current-game authority', () => {
     }
   });
 
-  it('keeps the promoted starter Deck identity native to v0.7.0', () => {
-    expect(authority.starterDecks.version).toBe('v0.7.0');
-    expect(authority.starterDecks.status).toBe('Locked v0.7.0 public playtest starter set');
-    expect(authority.starterDecks.purpose).toContain('Recommended v0.7.0 starter Decks');
-    expect(authority.starterDecks.optimizationPolicy.status).toBe('locked-for-v0.7.0-public-playtest');
-    expect(authority.starterDecks.approval.status).toBe('locked-for-v0.7.0-public-playtest');
+  it('advances starter Deck authority to the v0.7.1 candidate when the Mystics packages change', () => {
+    expect(authority.starterDecks.version).toBe('v0.7.1-candidate');
+    expect(authority.starterDecks.status).toBe('Active v0.7.1 candidate starter set');
+    expect(authority.starterDecks.purpose).toContain('selected three-Rite package');
+    expect(authority.starterDecks.optimizationPolicy.status).toBe('active-for-v0.7.1-candidate');
+    expect(authority.starterDecks.optimizationPolicy.mysticsRitePackageSupport).toBe(true);
+    expect(authority.starterDecks.approval.status).toBe('approved-for-v0.7.1-candidate');
 
     // Historical source paths remain provenance; active release identity must not.
     expect(authority.starterDecks.optimizationPolicy.predecessorAudit).toContain('v0.6.3');
@@ -93,6 +94,36 @@ describe('complete current-game authority', () => {
     expect(authority.mystics.rites.find((rite: any) => rite.id === 'blood')?.reminder)
       .toMatchObject({ style: 'italic' });
     expect(authority.mystics.ritual.begin).toContain('all three selected Rites');
+  });
+
+  it('locks the two Mystics starter Rite packages, recommended orders, and supporting card swaps', () => {
+    const byId = new Map(authority.starterDecks.decks.map((deck: any) => [deck.id, deck]));
+    const alchemist = byId.get('mystics-alchemist-first-principles');
+    const spiritWalker = byId.get('mystics-spirit-walker-unbroken-circle');
+
+    expect(alchemist.selectedRites).toEqual(['echoes', 'blood', 'equivalence']);
+    expect(alchemist.recommendedRiteOrder).toEqual(['equivalence', 'echoes', 'blood']);
+    expect(alchemist.cards.find((entry: any) => entry.name === 'Accursed Wager')).toBeUndefined();
+    expect(alchemist.cards.find((entry: any) => entry.name === 'Threefold Vision')?.quantity).toBe(1);
+    expect(alchemist.cardCount).toBe(30);
+    expect(alchemist.deckbuildingValue).toBe(60);
+
+    expect(spiritWalker.selectedRites).toEqual(['crossing', 'shattering', 'consecration']);
+    expect(spiritWalker.recommendedRiteOrder).toEqual(['consecration', 'shattering', 'crossing']);
+    expect(spiritWalker.cards.find((entry: any) => entry.name === 'Necromancy')).toBeUndefined();
+    expect(spiritWalker.cards.find((entry: any) => entry.name === 'Threefold Vision')).toBeUndefined();
+    expect(spiritWalker.cards.find((entry: any) => entry.name === 'Paths of Shadow')?.quantity).toBe(2);
+    expect(spiritWalker.cards.find((entry: any) => entry.name === 'Witchcraft')?.quantity).toBe(2);
+    expect(spiritWalker.cardCount).toBe(30);
+    expect(spiritWalker.deckbuildingValue).toBe(60);
+
+    const riteIds = new Set(authority.mystics.rites.map((rite: any) => rite.id));
+    for (const deck of [alchemist, spiritWalker]) {
+      expect(deck.selectedRites).toHaveLength(authority.mystics.selectionPolicy.selectedCount);
+      expect(new Set(deck.selectedRites).size).toBe(deck.selectedRites.length);
+      expect(deck.selectedRites.every((id: string) => riteIds.has(id))).toBe(true);
+      expect([...deck.recommendedRiteOrder].sort()).toEqual([...deck.selectedRites].sort());
+    }
   });
 
   it('keeps card-pool summary metadata synchronized with the actual playable pool', () => {
@@ -260,12 +291,14 @@ describe('complete current-game authority', () => {
   it('loads the complete authority directly in browser and Node runtimes', () => {
     expect(runtime).toContain("const authority = await loadJson(CURRENT_GAME_AUTHORITY_URL)");
     expect(runtime).toContain("authority?.schemaVersion !== 2");
+    expect(runtime).toContain('validateMysticsStarterRites(authority)');
     expect(runtime).not.toContain('Promise.all([');
     expect(runtime).not.toContain('CURRENT_ART_DIRECTION_SOURCE_URL');
     expect(runtime).not.toContain('card_text_overrides');
 
     expect(nodeAuthority).toContain("CURRENT_GAME_AUTHORITY_SOURCE = 'game-data/current-game.json'");
     expect(nodeAuthority).toContain('export async function loadCurrentGameAuthority()');
+    expect(nodeAuthority).toContain('Invalid Mystics starter Rite package');
     expect(nodeAuthority).not.toContain('readCurrentJsonSource');
     expect(nodeAuthority).not.toContain('resolveCurrentSourcePath');
   });

@@ -5589,9 +5589,9 @@
     }
   },
   "starterDecks": {
-    "version": "v0.7.0",
-    "status": "Locked v0.7.0 public playtest starter set",
-    "purpose": "Recommended v0.7.0 starter Decks optimized for competitive strength first, Leader expression second, and title diversity / starter-pool coverage as a tiebreaker. Mystics Rite of Echoes pairs are preserved when they provide functional completion infrastructure.",
+    "version": "v0.7.1-candidate",
+    "status": "Active v0.7.1 candidate starter set",
+    "purpose": "Recommended v0.7.1 candidate starter Decks optimized for competitive strength first, Leader expression second, and title diversity / starter-pool coverage as a tiebreaker. Mystics starters include a selected three-Rite package, recommended Rite order, and card choices that support that package.",
     "construction": {
       "minimumCards": 30,
       "maximumDeckbuildingValue": 60,
@@ -5603,12 +5603,13 @@
       "primary": "competitive-strength",
       "secondary": "leader-expression",
       "tiebreaker": "title-diversity-and-starter-pool-coverage",
-      "mysticsRiteOfEchoesPairException": true,
+      "mysticsRiteOfEchoesPairException": false,
       "cardPoolCoverageQuota": false,
-      "status": "locked-for-v0.7.0-public-playtest",
+      "status": "active-for-v0.7.1-candidate",
       "predecessorAudit": "docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md",
       "predecessorFinalization": "docs/Gauntlet_v0.6.3_Starter_Deck_Finalization.md",
-      "cardAdditions": "docs/v0.6.4-card-additions.json"
+      "cardAdditions": "docs/v0.6.4-card-additions.json",
+      "mysticsRitePackageSupport": true
     },
     "decks": [
       {
@@ -6476,10 +6477,6 @@
         ],
         "cards": [
           {
-            "name": "Accursed Wager",
-            "quantity": 1
-          },
-          {
             "name": "Arcane Knowledge",
             "quantity": 1
           },
@@ -6552,12 +6549,26 @@
             "quantity": 1
           },
           {
+            "name": "Threefold Vision",
+            "quantity": 1
+          },
+          {
             "name": "Witchcraft",
             "quantity": 1
           }
         ],
         "cardCount": 30,
-        "deckbuildingValue": 60
+        "deckbuildingValue": 60,
+        "selectedRites": [
+          "echoes",
+          "blood",
+          "equivalence"
+        ],
+        "recommendedRiteOrder": [
+          "equivalence",
+          "echoes",
+          "blood"
+        ]
       },
       {
         "id": "mystics-spirit-walker-unbroken-circle",
@@ -6612,16 +6623,12 @@
             "quantity": 1
           },
           {
-            "name": "Necromancy",
-            "quantity": 1
-          },
-          {
             "name": "New Recruits",
             "quantity": 1
           },
           {
             "name": "Paths of Shadow",
-            "quantity": 1
+            "quantity": 2
           },
           {
             "name": "Rallying Cry",
@@ -6656,16 +6663,22 @@
             "quantity": 2
           },
           {
-            "name": "Threefold Vision",
-            "quantity": 1
-          },
-          {
             "name": "Witchcraft",
-            "quantity": 1
+            "quantity": 2
           }
         ],
         "cardCount": 30,
-        "deckbuildingValue": 60
+        "deckbuildingValue": 60,
+        "selectedRites": [
+          "crossing",
+          "shattering",
+          "consecration"
+        ],
+        "recommendedRiteOrder": [
+          "consecration",
+          "shattering",
+          "crossing"
+        ]
       },
       {
         "id": "inquisition-grand-inquisitor-final-judgment",
@@ -6877,12 +6890,12 @@
       }
     ],
     "approval": {
-      "status": "locked-for-v0.7.0-public-playtest",
+      "status": "approved-for-v0.7.1-candidate",
       "predecessor_pr": 573,
       "peace_treaty_pr": 736,
       "card_additions_pr": 765
     },
-    "publication_unlocked": true
+    "publication_unlocked": false
   },
   "factionFeatureTaxonomy": {
     "factionFeature": "A named faction-specific rule, option, procedure, passive effect, or special mechanic shared by the faction. The term does not imply Action use.",

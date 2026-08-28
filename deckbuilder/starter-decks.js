@@ -209,8 +209,28 @@
         <strong>Territories, from your end outward:</strong>
         ${preset.territories.map(name => `<span class="mini-pill">${escapeHtml(name)}</span>`).join("")}
       </div>
+      ${renderRecommendedRiteOrder(preset)}
       <p class="starter-tip"><strong>First-game tip:</strong> ${escapeHtml(preset.firstGameTip)}</p>
     `;
+  }
+
+  function riteName(riteId) {
+    const rites = state.currentGameData?.mystics?.rites || [];
+    return rites.find(rite => rite.id === riteId)?.name || riteId;
+  }
+
+  function recommendedRiteNames(preset) {
+    return (preset.recommendedRiteOrder || []).map(riteName);
+  }
+
+  function renderRecommendedRiteOrder(preset) {
+    const names = recommendedRiteNames(preset);
+    if (!names.length) return "";
+    return `
+      <div class="starter-territories starter-rites">
+        <strong>Recommended Rite order:</strong>
+        ${names.map(name => `<span class="mini-pill">${escapeHtml(name)}</span>`).join('<span aria-hidden="true">→</span>')}
+      </div>`;
   }
 
   function installStarterPrintTips() {
@@ -253,6 +273,9 @@
     const territoryOrder = (preset.territories || [])
       .map((name, index) => `<span><strong>${index + 1}.</strong> ${escapeStarterHtml(name)}</span>`)
       .join('<span class="starter-territory-arrow" aria-hidden="true">→</span>');
+    const riteOrder = recommendedRiteNames(preset)
+      .map((name, index) => `<span><strong>${index + 1}.</strong> ${escapeStarterHtml(name)}</span>`)
+      .join('<span class="starter-territory-arrow" aria-hidden="true">→</span>');
 
     const strategy = documentNode.createElement("section");
     strategy.className = "starter-print-strategy";
@@ -268,7 +291,11 @@
       <div class="starter-print-territories">
         <h2>Recommended Territory order</h2>
         <p><strong>From your end outward:</strong> ${territoryOrder}</p>
-      </div>`;
+      </div>
+      ${riteOrder ? `<div class="starter-print-territories starter-print-rites">
+        <h2>Recommended Rite order</h2>
+        <p>${riteOrder}</p>
+      </div>` : ""}`;
     summaryGrid.before(strategy);
 
     style.textContent += `

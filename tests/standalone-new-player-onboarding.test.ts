@@ -71,6 +71,23 @@ describe("standalone new-player onboarding", () => {
     }
   });
 
+  it("shows recommended Rite order for each Mystics starter alongside its existing setup guidance", () => {
+    const starter = read("deckbuilder/starter-decks.js");
+    const authority = JSON.parse(read("game-data/current-game.json"));
+    const mystics = authority.starterDecks.decks.filter((deck: any) => deck.factionId === "mystics");
+
+    expect(starter).toContain("Recommended Rite order");
+    expect(starter).toContain("recommendedRiteNames(preset)");
+    expect(starter).toContain("starter-print-rites");
+    expect(mystics).toHaveLength(2);
+
+    for (const deck of mystics) {
+      expect(deck.selectedRites).toHaveLength(3);
+      expect(deck.recommendedRiteOrder).toHaveLength(3);
+      expect([...deck.recommendedRiteOrder].sort()).toEqual([...deck.selectedRites].sort());
+    }
+  });
+
   it("hands the exact choice to guided Deckbuilder print mode", () => {
     const app = read("start/app.js");
     const handoff = read("deckbuilder/starter-handoff.js");
