@@ -78,7 +78,7 @@ describe('v0.7.0 publication boundary', () => {
     expect(releaseBuilder).toContain('faction_features: clone(authority.factionFeatures)');
     expect(releaseBuilder).toContain('leaders: clone(authority.leaders)');
     expect(releaseBuilder).toContain("source_version: authority.version");
-    expect(releaseBuilder).toContain('![Card anatomy diagram]');
+    expect(releaseBuilder).not.toContain('![Card anatomy diagram]');
     expect(releaseBuilder).not.toContain('readCurrentJsonSource');
     expect(releaseBuilder).not.toContain('baseGameplay');
     expect(releaseBuilder).not.toContain('cardChanges');

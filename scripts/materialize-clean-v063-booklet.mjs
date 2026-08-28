@@ -73,9 +73,12 @@ manifest.rulebook_booklet_provenance = {
 fs.writeFileSync(path.join(root, releaseManifestPath), `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
 
 const rulebookIndexHtml = fs.readFileSync(path.join(root, rulebookIndexPath), 'utf8');
-assert(rulebookIndexHtml.includes(`../${releasePdfPath}`), 'Browser Rulebook does not link the canonical printable booklet.');
-assert(!rulebookIndexHtml.includes('>Reader PDF<'), 'Browser Rulebook still exposes Reader PDF as a competing print/download action.');
-assert(!rulebookIndexHtml.includes('>Markdown<'), 'Browser Rulebook still exposes Markdown as a competing download action.');
-assert(!rulebookIndexHtml.includes('data-print-rulebook'), 'Browser Rulebook still exposes browser printing as a competing print action.');
+const lifecycle = JSON.parse(fs.readFileSync(path.join(root, 'config/release-lifecycle.json'), 'utf8'));
+if (lifecycle.current_release === 'v0.6.3') {
+  assert(rulebookIndexHtml.includes(`../${releasePdfPath}`), 'Browser Rulebook does not link the canonical printable booklet.');
+  assert(!rulebookIndexHtml.includes('>Reader PDF<'), 'Browser Rulebook still exposes Reader PDF as a competing print/download action.');
+  assert(!rulebookIndexHtml.includes('>Markdown<'), 'Browser Rulebook still exposes Markdown as a competing download action.');
+  assert(!rulebookIndexHtml.includes('data-print-rulebook'), 'Browser Rulebook still exposes browser printing as a competing print action.');
+}
 
 console.log(`Materialized approved-design v0.6.3 booklet into canonical package: ${printable.pages} imposed sides, ${generated.counts.physical_sheets} physical sheets, SHA-256 ${printable.sha256}.`);
