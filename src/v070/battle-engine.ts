@@ -5,6 +5,7 @@ import {
   defenderHasV070DefensiveEdge,
   proceedV070ToGambits,
   resolveV070BattleOutcome,
+  resolveV070Withdrawal,
   type PlayerId,
   type V070BattleOutcome,
 } from './rules';
@@ -33,6 +34,7 @@ import {
   resolveV070TermsCardChoice,
   useV070PlenipotentiaryAfterRefusal,
   settleV070RefusedTermsOutcome,
+  settleV070RefusedTermsWithoutWinner,
   v070LeverageRequiresDecision,
   v070PoliticalCapitalPending,
   v070ProposalChoicePending,
@@ -91,6 +93,8 @@ export type V070BattleAction =
   | { type: 'reveal_tactics'; playerId: PlayerId }
   | { type: 'submit_battle_dice'; playerId: PlayerId; values: readonly number[] }
   | { type: 'submit_tiebreak_roll'; playerId: PlayerId; value: number }
+  | { type: 'use_safe_conduct'; playerId: PlayerId; cardInstanceId: string }
+  | { type: 'pass_loss_replacement'; playerId: PlayerId }
   | { type: 'complete_aftermath'; playerId: PlayerId };
 
 export function reduceV070BattleAction(
@@ -190,6 +194,12 @@ export function reduceV070BattleAction(
       break;
     case 'submit_tiebreak_roll':
       submitTiebreak(next, action.playerId, action.value);
+      break;
+    case 'use_safe_conduct':
+      useSafeConduct(next, action.playerId, action.cardInstanceId);
+      break;
+    case 'pass_loss_replacement':
+      passLossReplacement(next, action.playerId);
       break;
     case 'complete_aftermath':
       completeAftermath(next, action.playerId);
@@ -625,10 +635,120 @@ function submitTiebreak(state: V070GameState, playerId: PlayerId, value: number)
 }
 
 function applyOutcome(state: V070GameState, outcome: V070BattleOutcome): void {
+  const runtime = requireRuntime(state);
+  if (safeConductAvailable(state, outcome.loser)) {
+    runtime.pendingOutcome = outcome;
+    runtime.stage = 'loss_replacement';
+
+    appendV070Event(state, {
+      type: 'loss_replacement_pending',
+      actor: outcome.loser,
+      visibility: 'public',
+      payload: {
+        playerId: outcome.loser,
+        source: 'safe_conduct',
+        wouldLoseTo: outcome.winner,
+      },
+    });
+    return;
+  }
+
+  finalizeOutcome(state, outcome);
+}
+
+function useSafeConduct(
+  state: V070GameState,
+  playerId: PlayerId,
+  cardInstanceId: string,
+): void {
+  const battle = requireBattle(state);
+  const runtime = requireRuntime(state);
+  requireRuntimeStage(runtime, 'loss_replacement');
+
+  const pending = runtime.pendingOutcome;
+  if (!pending || pending.loser !== playerId) {
+    throw new V070GameActionError('Safe Conduct is not pending for that player.');
+  }
+  if (!safeConductAvailable(state, playerId)) {
+    throw new V070GameActionError('Safe Conduct is not available for this loss.');
+  }
+
+  const player = state.players[playerId];
+  const index = player.zones.assetBank.indexOf(cardInstanceId);
+  if (index < 0
+    || state.cardInstances[cardInstanceId]?.cardId !== 'diplomats-safe-conduct') {
+    throw new V070GameActionError('Choose a banked Safe Conduct to use.');
+  }
+
+  player.zones.assetBank.splice(index, 1);
+  player.zones.discardPile.push(cardInstanceId);
+
+  state.battle = resolveV070Withdrawal(battle, [playerId]);
+  runtime.pendingOutcome = null;
+  runtime.stage = 'aftermath';
+
+  appendV070Event(state, {
+    type: 'safe_conduct_used',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      cardInstanceId,
+      wouldHaveLostTo: pending.winner,
+      positions: structuredClone(state.battle.positions),
+    },
+  });
+
+  settleV070RefusedTermsWithoutWinner(state);
+}
+
+function passLossReplacement(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  const runtime = requireRuntime(state);
+  requireRuntimeStage(runtime, 'loss_replacement');
+
+  const pending = runtime.pendingOutcome;
+  if (!pending || pending.loser !== playerId) {
+    throw new V070GameActionError('That player does not have the pending loss replacement.');
+  }
+
+  runtime.pendingOutcome = null;
+  appendV070Event(state, {
+    type: 'loss_replacement_passed',
+    actor: playerId,
+    visibility: 'public',
+    payload: { source: 'safe_conduct' },
+  });
+  finalizeOutcome(state, pending);
+}
+
+function safeConductAvailable(
+  state: V070GameState,
+  playerId: PlayerId,
+): boolean {
+  const runtime = requireRuntime(state);
+  const terms = runtime.terms;
+  if (terms.stage !== 'refused'
+    || terms.response !== 'refused'
+    || terms.offerer !== playerId) {
+    return false;
+  }
+
+  return state.players[playerId].zones.assetBank.some(instanceId =>
+    state.cardInstances[instanceId]?.cardId === 'diplomats-safe-conduct'
+  );
+}
+
+function finalizeOutcome(
+  state: V070GameState,
+  outcome: V070BattleOutcome,
+): void {
   const battle = requireBattle(state);
   const runtime = requireRuntime(state);
   const resolution = applyV070BattleOutcome(battle, outcome);
   state.battle = resolution.state;
+  runtime.pendingOutcome = null;
   runtime.stage = 'aftermath';
 
   appendV070Event(state, {
