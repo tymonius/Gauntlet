@@ -146,9 +146,12 @@
           <p id="transportCopy"></p>
           <p id="transportMatchup" class="transport-matchup"></p>
         </div>
-        <div class="transport-actions">
-          <a id="ttsWorkshopLink" class="button primary" href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener">Open TTS Workshop mod ↗</a>
-          <a id="physicalSetupLink" class="button secondary" href="../../start/?playtest=1&mode=physical">Open physical setup</a>
+        <div>
+          <div class="transport-actions">
+            <a id="ttsWorkshopLink" class="button primary" href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener">Open TTS Workshop mod ↗</a>
+            <a id="physicalSetupLink" class="button secondary" href="../../start/?playtest=1&mode=physical">Open physical setup</a>
+          </div>
+          <div id="transportReferences" class="transport-references" aria-label="Selected faction references"></div>
         </div>
       </section>
 
@@ -182,6 +185,49 @@
           <button id="showCompletedResult" type="button" class="button secondary">Game completed</button>
           <button id="showStoppedResult" type="button" class="button secondary">Game stopped</button>
         </div>
+        <section class="companion-panel" aria-labelledby="companion-title">
+          <div class="companion-heading">
+            <div><p class="eyebrow">Table companion</p><h3 id="companion-title">Keep the sequence visible.</h3></div>
+            <button id="companionArbiter" type="button" class="button secondary">What happens now? Ask the Rules Arbiter</button>
+          </div>
+          <div class="companion-grid">
+            <details open>
+              <summary>Turn sequence</summary>
+              <ol>
+                <li><strong>Capture</strong> — advance the Front Line when eligible.</li>
+                <li><strong>Draw</strong> — draw one card.</li>
+                <li><strong>Opening</strong> — take your Action now or save it.</li>
+                <li><strong>Movement</strong> — Advance, Hold, or Fall Back; entering the opponent's Position begins Onset.</li>
+                <li><strong>Denouement</strong> — take your Action here if you did not take it during Opening.</li>
+                <li><strong>Cleanup</strong> — end-of-turn effects and Hand limit.</li>
+              </ol>
+            </details>
+            <details>
+              <summary>Battle sequence</summary>
+              <ol>
+                <li>Onset</li>
+                <li>Set Gambits</li>
+                <li>Form Reserves</li>
+                <li>Reveal Gambits</li>
+                <li>Choose Tactics</li>
+                <li>Reveal Tactics</li>
+                <li>Outcome</li>
+                <li>Aftermath</li>
+              </ol>
+            </details>
+            <details>
+              <summary>First-battle reminders</summary>
+              <ul>
+                <li>Terms, when applicable, resolve first during Onset.</li>
+                <li>Gambits are set from Hand; Reserves are private three-card battle draws.</li>
+                <li>Tactics are chosen from Reserve.</li>
+                <li>Defensive Edge wins tied battle totals for the defender; an unresolved tie uses a separate unmodified Tiebreak Roll.</li>
+                <li>Normal Gambits go to the Graveyard, Tactics to Discard, and unused Reserve cards to Discard during cleanup.</li>
+              </ul>
+            </details>
+          </div>
+        </section>
+
         <section id="diagnosticPanel" class="diagnostic-panel">
           <p class="eyebrow">Live observation</p>
           <h3>Mark the moment, not the diagnosis.</h3>
