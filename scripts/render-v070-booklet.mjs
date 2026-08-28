@@ -195,6 +195,12 @@ const physicalSheets = Number(report.outputs?.physicalSheets);
 if (!Number.isInteger(physicalSheets) || physicalSheets < 1) throw new Error('Approved Rulebook production report has no valid physical-sheet count.');
 validateReleaseNotesBookletCounts(logicalPages, bookletPages, physicalSheets);
 
+const lifecycle = JSON.parse(fs.readFileSync(path.join(ROOT, 'config', 'release-lifecycle.json'), 'utf8'));
+const lifecycleRelease = lifecycle.releases?.[RELEASE_VERSION];
+const isPublishedCurrent = lifecycle.current_release === RELEASE_VERSION
+  && lifecycleRelease?.status === 'current'
+  && lifecycleRelease?.public_cutover === true;
+
 const provenance = JSON.parse(fs.readFileSync(PROVENANCE_PATH, 'utf8'));
 if (provenance.release_version !== RELEASE_VERSION || provenance.source_version !== SOURCE_VERSION || !provenance.authority_set_id) {
   throw new Error('v0.7.0 source provenance is incomplete.');
@@ -222,7 +228,7 @@ const manifest = {
   name: 'Illustrated Cards & Tabletop Simulator',
   status: 'current',
   authority_set_id: provenance.authority_set_id,
-  publication_date: null,
+  publication_date: isPublishedCurrent ? (lifecycleRelease.publication_date || null) : null,
   current_package_path: `releases/${RELEASE_VERSION}/`,
   source_provenance: {
     source_version: SOURCE_VERSION,
@@ -253,6 +259,7 @@ const manifest = {
     browser_tools: RELEASE_VERSION,
     rules_arbiter: RELEASE_VERSION,
     digital_rules: RELEASE_VERSION,
+    ...(isPublishedCurrent ? { rulebook: RELEASE_VERSION } : {}),
   },
   public_routes: publicRoutes,
   json_exports: [
