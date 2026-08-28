@@ -54,10 +54,42 @@ describe('current rules authority consistency', () => {
     expect(correctedRulebook).toContain('Ritual of Ascension');
     expect(correctedRulebook).not.toContain('Ritual of Ascendance');
     expect(correctedRulebook).toContain('| Unique card | Martyrdom, cost 5; maximum one copy per Deck. |');
+    expect(correctedRulebook).toContain('| Unique card | Plenipotentiary, cost 4; maximum one copy per Deck. |');
+    expect(correctedRulebook).toContain('| Faction pool | 15 Military card titles. |');
+    expect(correctedRulebook).toContain('| Faction pool | 15 Diplomat card titles. |');
+    expect(correctedRulebook).toContain('| Faction pool | 15 Financier card titles. |');
+    expect(correctedRulebook).toContain('| Faction pool | 15 Intelligence card titles. |');
+    expect(correctedRulebook).toContain('| Faction pool | 15 Mystics card titles. |');
+    expect(correctedRulebook).toContain('| Faction pool | 15 Inquisition card titles. |');
+    expect(correctedRulebook).toContain('All fifteen Mystics cards have the Arcane trait.');
+    expect(correctedRulebook).not.toMatch(/\| Faction pool \| 13 /);
+    expect(correctedRulebook).not.toContain('All thirteen Mystics cards');
 
     const sourceCanonical = JSON.parse(read('releases/v0.7.0/Gauntlet_v0.7.0_Canonical_Data.json'));
     const correctedCanonical = applyV070CanonicalCorrections(sourceCanonical);
     expect(correctedCanonical.gameplay.factions.find((faction: { id?: string }) => faction.id === 'mystics').victory)
       .toContain('Ritual of Ascension');
+
+    const expectedCounts: Record<string, number> = {
+      Neutral: 52,
+      Military: 15,
+      Diplomats: 15,
+      Financiers: 15,
+      Intelligence: 15,
+      Mystics: 15,
+      Inquisition: 15,
+    };
+    for (const [allegiance, count] of Object.entries(expectedCounts)) {
+      expect(correctedCanonical.gameplay.card_pool_summary[allegiance].count).toBe(count);
+      expect(correctedCanonical.gameplay.card_pool_summary[allegiance].total_value).toBe(
+        correctedCanonical.gameplay.cards
+          .filter((card: { allegiance?: string }) => card.allegiance === allegiance)
+          .reduce((total: number, card: { cost?: number }) => total + Number(card.cost || 0), 0)
+      );
+    }
+    for (const faction of correctedCanonical.gameplay.factions) {
+      expect(faction.card_count).toBe(expectedCounts[faction.name]);
+    }
+    expect(correctedCanonical.gameplay.card_pool_summary.Diplomats.unique).toEqual(['Plenipotentiary']);
   });
 });
