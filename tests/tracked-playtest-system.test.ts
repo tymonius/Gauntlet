@@ -53,7 +53,7 @@ describe("streamlined tracked playtests", () => {
     expect(app).toContain("renderTransport");
     expect(app).toContain("playMode:");
     expect(app).toContain('el.createPlayMode?.value || ""');
-    expect(worker).toContain('if (!["physical", "tts"].includes(playMode))');
+    expect(worker).toContain('const playMode = ["physical", "tts"].includes(requestedMode) ? requestedMode : "unspecified"');
     expect(worker).toContain("playMode,");
     expect(worker).toContain('metadata.playMode || "physical"');
     expect(start).toContain('if (mode === "physical" || mode === "tts")');
