@@ -123,6 +123,12 @@ export function offerV070Terms(
   terms.offerer = diplomatId;
   terms.opponent = opponentId;
   terms.proposalId = proposalId;
+  terms.offeredProposalIds = [proposalId];
+  terms.ratifiedAtOffer = requireDiplomat(state, diplomatId).ratifiedProposals.includes(proposalId)
+    ? [proposalId]
+    : [];
+  terms.diplomaticLatitudeInstanceId = null;
+  terms.response = null;
   terms.stake = proposal.stake;
   terms.leverageResolved = false;
   terms.leverageBonus = 0;
@@ -144,6 +150,89 @@ export function offerV070Terms(
   });
 }
 
+export function useV070DiplomaticLatitude(
+  state: V070GameState,
+  diplomatId: PlayerId,
+  cardInstanceId: string,
+  secondProposalId: string,
+): void {
+  const terms = requireRuntime(state).terms;
+  if (terms.stage !== 'response' || terms.offerer !== diplomatId) {
+    throw new V070GameActionError('Diplomatic Latitude is available only after you offer Terms and before the response.');
+  }
+  if (terms.diplomaticLatitudeInstanceId) {
+    throw new V070GameActionError('Diplomatic Latitude already modified these Terms.');
+  }
+  requireCardInZone(state, diplomatId, 'hand', cardInstanceId, 'diplomats-diplomatic-latitude');
+
+  const first = requireProposal(terms.proposalId);
+  const second = requireProposal(secondProposalId);
+  if (second.id === first.id || second.stake !== first.stake) {
+    throw new V070GameActionError('Diplomatic Latitude requires a different eligible Proposal with the same Stake.');
+  }
+  const battle = requireBattle(state);
+  if (!proposalRequirementMet(state, diplomatId, otherPlayer(diplomatId), battle.attacker, second)) {
+    throw new V070GameActionError('The second Proposal does not meet its released Requirement.');
+  }
+
+  terms.diplomaticLatitudeInstanceId = cardInstanceId;
+  terms.offeredProposalIds = [first.id, second.id];
+  if (requireDiplomat(state, diplomatId).ratifiedProposals.includes(second.id)) {
+    terms.ratifiedAtOffer.push(second.id);
+  }
+
+  appendV070Event(state, {
+    type: 'diplomatic_latitude_used',
+    actor: diplomatId,
+    visibility: 'public',
+    payload: {
+      cardInstanceId,
+      proposalIds: [...terms.offeredProposalIds],
+      stake: terms.stake,
+    },
+  });
+}
+
+export function useV070PlenipotentiaryAfterRefusal(
+  state: V070GameState,
+  diplomatId: PlayerId,
+  cardInstanceId: string,
+): void {
+  const runtime = requireRuntime(state);
+  const terms = runtime.terms;
+  if (terms.response !== 'refused' || terms.offerer !== diplomatId) {
+    throw new V070GameActionError('Plenipotentiary may be used only after that Diplomat’s Terms are refused.');
+  }
+  if (terms.proposalChoice?.kind === 'diplomatic_latitude_refused') {
+    throw new V070GameActionError('Choose the refused Diplomatic Latitude Proposal before using Plenipotentiary.');
+  }
+
+  const diplomat = requireDiplomat(state, diplomatId);
+  const proposal = requireProposal(terms.proposalId);
+  if (diplomat.ratifiedProposals.includes(proposal.id)) {
+    throw new V070GameActionError('Plenipotentiary requires an unratified refused Proposal.');
+  }
+  requireCardInZone(state, diplomatId, 'assetBank', cardInstanceId, 'diplomats-plenipotentiary');
+
+  const cost = diplomat.ratifiedProposals.length + 1;
+  if (cost > diplomat.influence) {
+    throw new V070GameActionError(`Plenipotentiary requires ${cost} available Influence.`);
+  }
+
+  const assetIndex = state.players[diplomatId].zones.assetBank.indexOf(cardInstanceId);
+  state.players[diplomatId].zones.assetBank.splice(assetIndex, 1);
+  state.players[diplomatId].zones.graveyard.push(cardInstanceId);
+  changeInfluence(state, diplomatId, -cost, 'Plenipotentiary');
+  ratifyProposal(state, diplomatId, proposal.id, 0, 'plenipotentiary');
+
+  appendV070Event(state, {
+    type: 'plenipotentiary_used',
+    actor: diplomatId,
+    visibility: 'public',
+    payload: { proposalId: proposal.id, influenceCost: cost, cardInstanceId },
+  });
+}
+
 export function respondToV070Terms(
   state: V070GameState,
   playerId: PlayerId,
@@ -154,7 +243,7 @@ export function respondToV070Terms(
     throw new V070GameActionError('No Terms response is pending for that player.');
   }
   const offerer = requireTermsPlayer(terms.offerer);
-  const proposal = requireProposal(terms.proposalId);
+  terms.response = response === 'accept' ? 'accepted' : 'refused';
 
   if (response === 'accept') {
     terms.acceptingPlayer = playerId;
@@ -163,24 +252,32 @@ export function respondToV070Terms(
       type: 'terms_accepted',
       actor: playerId,
       visibility: 'public',
-      payload: { proposalId: proposal.id },
+      payload: { proposalIds: [...terms.offeredProposalIds] },
     });
 
-    if (beginAcceptedProposalChoice(state, offerer, proposal)) return;
-    resolveAcceptedProposal(state, offerer, playerId, proposal);
+    if (terms.diplomaticLatitudeInstanceId) {
+      beginProposalChoice(state, 'diplomatic_latitude_accepted', playerId, 'single', false);
+      return;
+    }
+
+    continueAcceptedTerms(state, offerer, playerId);
     return;
   }
 
-  terms.stage = 'refused';
   terms.priorityPlayer = null;
-  applyRefusedProposalImmediate(state, offerer, playerId, proposal);
-
   appendV070Event(state, {
     type: 'terms_refused',
     actor: playerId,
     visibility: 'public',
-    payload: { proposalId: proposal.id },
+    payload: { proposalIds: [...terms.offeredProposalIds] },
   });
+
+  if (terms.diplomaticLatitudeInstanceId) {
+    beginProposalChoice(state, 'diplomatic_latitude_refused', offerer, 'single', false);
+    return;
+  }
+
+  continueRefusedTerms(state, offerer, playerId);
 }
 
 export function resolveV070ProposalChoice(
@@ -188,6 +285,7 @@ export function resolveV070ProposalChoice(
   playerId: PlayerId,
   cardInstanceId?: string,
   replaceAssetInstanceId?: string,
+  proposalId?: string,
 ): void {
   const runtime = requireRuntime(state);
   const terms = runtime.terms;
@@ -197,6 +295,26 @@ export function resolveV070ProposalChoice(
   }
 
   switch (choice.kind) {
+    case 'diplomatic_latitude_accepted': {
+      selectLatitudeProposal(state, proposalId);
+      const offerer = requireTermsPlayer(terms.offerer);
+      const acceptingPlayer = requireTermsPlayer(terms.acceptingPlayer);
+      continueAcceptedTerms(state, offerer, acceptingPlayer);
+      return;
+    }
+
+    case 'diplomatic_latitude_refused': {
+      selectLatitudeProposal(state, proposalId);
+      const offerer = requireTermsPlayer(terms.offerer);
+      const refusingPlayer = requireTermsPlayer(terms.opponent);
+      const latitudeInstanceId = terms.diplomaticLatitudeInstanceId;
+      if (!latitudeInstanceId) throw new V070GameActionError('Diplomatic Latitude state is missing.');
+      discardSpecificHandCard(state, offerer, latitudeInstanceId, 'Diplomatic Latitude refused effect');
+      terms.diplomaticLatitudeInstanceId = null;
+      continueRefusedTerms(state, offerer, refusingPlayer);
+      return;
+    }
+
     case 'mutual_disarmament_accepted':
       discardRequiredHandCard(state, playerId, cardInstanceId, 'Mutual Disarmament accepted effect');
       if (choice.stage === 'diplomat') {
@@ -449,6 +567,39 @@ export function bankableV070AssetInstanceIds(
   });
 }
 
+function continueAcceptedTerms(
+  state: V070GameState,
+  diplomatId: PlayerId,
+  acceptingPlayer: PlayerId,
+): void {
+  const proposal = requireProposal(requireRuntime(state).terms.proposalId);
+  if (beginAcceptedProposalChoice(state, diplomatId, proposal)) return;
+  resolveAcceptedProposal(state, diplomatId, acceptingPlayer, proposal);
+}
+
+function continueRefusedTerms(
+  state: V070GameState,
+  diplomatId: PlayerId,
+  refusingPlayer: PlayerId,
+): void {
+  const terms = requireRuntime(state).terms;
+  terms.stage = 'refused';
+  terms.priorityPlayer = null;
+  terms.proposalChoice = null;
+  const proposal = requireProposal(terms.proposalId);
+  applyRefusedProposalImmediate(state, diplomatId, refusingPlayer, proposal);
+}
+
+function selectLatitudeProposal(state: V070GameState, proposalId: string | undefined): void {
+  const terms = requireRuntime(state).terms;
+  if (!proposalId || !terms.offeredProposalIds.includes(proposalId)) {
+    throw new V070GameActionError('Choose one of the two Proposals offered through Diplomatic Latitude.');
+  }
+  terms.proposalId = proposalId;
+  terms.proposalChoice = null;
+  terms.priorityPlayer = null;
+}
+
 function beginAcceptedProposalChoice(
   state: V070GameState,
   diplomatId: PlayerId,
@@ -595,6 +746,19 @@ function settleAcceptedTerms(
   const newlyRatified = ratifyProposal(state, diplomatId, proposal.id, 1, 'accepted');
 
   const player = state.players[diplomatId];
+  if (terms.ratifiedAtOffer.includes(proposal.id)
+    && player.diplomats
+    && player.diplomats.detenteUsedTurn !== state.turnNumber
+    && hasBankedCard(state, diplomatId, 'diplomats-detente')) {
+    player.diplomats.detenteUsedTurn = state.turnNumber;
+    changeInfluence(state, diplomatId, 1, 'Détente');
+    appendV070Event(state, {
+      type: 'detente_triggered',
+      actor: diplomatId,
+      visibility: 'public',
+      payload: { proposalId: proposal.id },
+    });
+  }
   if (player.leaderId === 'ambassador'
     && player.diplomats
     && player.diplomats.cordialityUsedTurn !== state.turnNumber) {
@@ -698,6 +862,35 @@ function refusedLossChoiceFor(proposalId: string): V070ProposalChoiceKind | null
   if (proposalId === 'prisoner-exchange') return 'prisoner_exchange_refused';
   if (proposalId === 'rebuilding-pact') return 'rebuilding_pact_refused';
   return null;
+}
+
+function discardSpecificHandCard(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+  purpose: string,
+): void {
+  discardOptionalHandCard(state, playerId, instanceId, purpose);
+}
+
+function hasBankedCard(state: V070GameState, playerId: PlayerId, cardId: string): boolean {
+  return state.players[playerId].zones.assetBank.some(instanceId =>
+    state.cardInstances[instanceId]?.cardId === cardId
+  );
+}
+
+function requireCardInZone(
+  state: V070GameState,
+  playerId: PlayerId,
+  zone: 'hand' | 'assetBank',
+  instanceId: string,
+  expectedCardId: string,
+): void {
+  const player = state.players[playerId];
+  if (!player.zones[zone].includes(instanceId)
+    || state.cardInstances[instanceId]?.cardId !== expectedCardId) {
+    throw new V070GameActionError(`${expectedCardId} is not available in the required zone.`);
+  }
 }
 
 function discardRequiredHandCard(
@@ -881,7 +1074,7 @@ function ratifyProposal(
   diplomatId: PlayerId,
   proposalId: string,
   reward: number,
-  source: 'accepted' | 'imposed',
+  source: 'accepted' | 'imposed' | 'plenipotentiary',
 ): boolean {
   const diplomat = requireDiplomat(state, diplomatId);
   if (diplomat.ratifiedProposals.includes(proposalId)) return false;
@@ -1040,6 +1233,10 @@ function closeTerms(runtime: NonNullable<V070GameState['battleRuntime']>): void 
   runtime.terms.acceptingPlayer = null;
   runtime.terms.proposalChoice = null;
   runtime.terms.deferredAfterPoliticalCapital = null;
+  runtime.terms.response = null;
+  runtime.terms.offeredProposalIds = [];
+  runtime.terms.ratifiedAtOffer = [];
+  runtime.terms.diplomaticLatitudeInstanceId = null;
 }
 
 function syncBoardOccupants(state: V070GameState): void {
