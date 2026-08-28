@@ -38,7 +38,7 @@ describe("streamlined tracked playtests", () => {
     expect(app).toContain('gauntlet_standalone_onboarding_v1');
     expect(app).toContain("restoreStartChoice");
     expect(app).toContain("standalone-onboarding");
-    expect(start).toContain("Start tracked TTS playtest");
+    expect(start).toContain("Create tracked playtest");
     expect(start).toContain('new URL("../playtest/tracked/"');
   });
 
