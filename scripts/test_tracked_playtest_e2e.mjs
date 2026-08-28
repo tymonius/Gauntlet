@@ -111,6 +111,7 @@ try {
       leader: "ambassador",
       creationSource: "e2e",
       selectionSource: "standalone-onboarding",
+      selectionReason: "Negotiation and political leverage sounded most interesting.",
       playMode: "tts"
     }
   }), 201);
@@ -136,7 +137,12 @@ try {
 
   const playerTwo = await json(await call(`/api/tracked-games/${created.joinToken}/join`, {
     method: "POST",
-    body: { displayName: "Ben", faction: "military", leader: "general" }
+    body: {
+      displayName: "Ben",
+      faction: "military",
+      leader: "general",
+      selectionReason: "I wanted direct battlefield pressure and movement."
+    }
   }), 201);
   assert.equal(playerTwo.seatIndex, 2);
   assert.equal(playerTwo.leader, "General");
@@ -144,7 +150,12 @@ try {
 
   const thirdPlayer = await json(await call(`/api/tracked-games/${created.joinToken}/join`, {
     method: "POST",
-    body: { displayName: "Cara", faction: "mystics", leader: "alchemist" }
+    body: {
+      displayName: "Cara",
+      faction: "mystics",
+      leader: "alchemist",
+      selectionReason: "The ritual progression sounded interesting."
+    }
   }), 409);
   assert.match(thirdPlayer.error, /both player seats/i);
 
@@ -228,7 +239,6 @@ try {
     method: "POST",
     body: auth(created, {
       response: {
-        factionInterest: "I liked negotiation and alternative victory pressure.",
         expectationMatch: 5,
         leaderDistinction: 4,
         fun: 4,
@@ -260,6 +270,7 @@ try {
   const partialReview = await json(await call(`/api/tracked-games/${created.joinToken}/review?host=${encodeURIComponent(created.hostKey)}`), 200);
   assert.equal(partialReview.result.durationMinutes, 74);
   assert.equal(partialReview.responses.length, 1);
+  assert.equal(partialReview.responses[0].factionInterest, "Negotiation and political leverage sounded most interesting.");
   assert.equal(partialReview.responses[0].comments, "Terms created the most memorable decisions.");
   assert.equal(partialReview.responses[0].feltDecidedWhen, "late");
   assert.equal(partialReview.responses[0].agencyAfterDecided, "some");
@@ -273,7 +284,6 @@ try {
     method: "POST",
     body: auth(playerTwo, {
       response: {
-        factionInterest: "I wanted direct movement and battle pressure.",
         expectationMatch: 5,
         leaderDistinction: 5,
         fun: 5,
@@ -298,7 +308,12 @@ try {
 
   const retiredJoin = await json(await call(`/api/tracked-games/${created.joinToken}/join`, {
     method: "POST",
-    body: { displayName: "Late", faction: "financiers", leader: "banker" }
+    body: {
+      displayName: "Late",
+      faction: "financiers",
+      leader: "banker",
+      selectionReason: "Economic engine building."
+    }
   }), 409);
   assert.match(retiredJoin.error, /closed/i);
 
