@@ -1,5 +1,6 @@
 import type { PlayerId } from './rules';
 import type { V070GameEvent, V070GameState, V070SetupStage } from './engine';
+import { effectiveV070AssetLimit } from './assets';
 import type {
   V070BattleCardCommitment,
   V070BattleRuntime,
@@ -77,6 +78,7 @@ export interface V070PlayerViewState {
   territoryOrder: string[] | null;
   position: number | null;
   controlledTerritories: string[];
+  assetLimit: number;
   diplomats: V070GameState['players'][PlayerId]['diplomats'];
 }
 
@@ -94,6 +96,8 @@ export interface V070GameView {
   battleRuntime: V070BattleRuntimeView | null;
   overlays: V070OverlayView[];
   territoryTurnRestrictions: V070GameState['territoryTurnRestrictions'];
+  sanctions: V070GameState['sanctions'];
+  pendingAssetLimitChoice: V070GameState['pendingAssetLimitChoice'];
   pendingTurnChoice: V070GameState['pendingTurnChoice'];
   winner: PlayerId | null;
   events: V070GameEvent[];
@@ -126,6 +130,10 @@ export function viewV070GameForPlayer(
     territoryTurnRestrictions: state.territoryTurnRestrictions.map(
       restriction => structuredClone(restriction),
     ),
+    sanctions: state.sanctions.map(sanction => structuredClone(sanction)),
+    pendingAssetLimitChoice: state.pendingAssetLimitChoice
+      ? structuredClone(state.pendingAssetLimitChoice)
+      : null,
     pendingTurnChoice: state.pendingTurnChoice
       ? structuredClone(state.pendingTurnChoice)
       : null,
@@ -203,6 +211,7 @@ function viewPlayer(
       : null,
     position: player.position,
     controlledTerritories: [...player.controlledTerritories],
+    assetLimit: effectiveV070AssetLimit(state, playerId),
     diplomats: player.diplomats ? structuredClone(player.diplomats) : null,
   };
 }
