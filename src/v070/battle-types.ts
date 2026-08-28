@@ -32,7 +32,9 @@ export type V070ProposalChoiceKind =
   | 'prisoner_exchange_accepted'
   | 'prisoner_exchange_refused'
   | 'rebuilding_pact_accepted'
-  | 'rebuilding_pact_refused';
+  | 'rebuilding_pact_refused'
+  | 'diplomatic_latitude_accepted'
+  | 'diplomatic_latitude_refused';
 
 export interface V070ProposalChoiceRuntime {
   kind: V070ProposalChoiceKind;
@@ -47,6 +49,10 @@ export interface V070TermsRuntime {
   offerer: PlayerId | null;
   opponent: PlayerId | null;
   proposalId: string | null;
+  offeredProposalIds: string[];
+  ratifiedAtOffer: string[];
+  diplomaticLatitudeInstanceId: string | null;
+  response: 'accepted' | 'refused' | null;
   stake: number;
   leverageResolved: boolean;
   leverageBonus: number;
@@ -101,6 +107,10 @@ export function createV070BattleRuntime(): V070BattleRuntime {
       offerer: null,
       opponent: null,
       proposalId: null,
+      offeredProposalIds: [],
+      ratifiedAtOffer: [],
+      diplomaticLatitudeInstanceId: null,
+      response: null,
       stake: 0,
       leverageResolved: true,
       leverageBonus: 0,
