@@ -1,0 +1,394 @@
+(() => {
+  const MYSTICS_FACTION_ID = "mystics";
+  const FALLBACK_SELECTED_COUNT = 3;
+  const CARD_WIDTH = 240;
+  const CARD_HEIGHT = 336;
+  const MAX_PREVIEW_WIDTH = 300;
+
+  state.ritePool = [];
+  state.rites = [];
+  state.selectedRiteId = null;
+  state.pendingRites = null;
+  state.riteSelectedCount = FALLBACK_SELECTED_COUNT;
+
+  const riteElements = {};
+  let ritePreviewResizeObserver = null;
+
+  const baseRenderAll = renderAll;
+  const baseValidateDeck = validateDeck;
+  const baseValidateAndRender = validateAndRender;
+  const baseCurrentDeckData = currentDeckData;
+  const baseApplyDeckData = applyDeckData;
+  const baseCopyDeckList = copyDeckList;
+  const baseChangeFaction = changeFaction;
+
+  window.GAUNTLET_MYSTICS_RITES = Object.freeze({
+    selectedIds: () => [...state.rites],
+    selectedRites: () => selectedRites(),
+    requiredCount: () => state.riteSelectedCount,
+  });
+
+  document.addEventListener("DOMContentLoaded", installRiteIntegration);
+
+  function installRiteIntegration() {
+    for (const id of [
+      "mysticsRitesPanel", "riteSelectedCount", "clearRitesButton", "riteList", "ritePreview",
+      "riteMetricCard", "riteMetricCount", "deckRitesSection", "deckRites"
+    ]) riteElements[id] = document.getElementById(id);
+
+    riteElements.clearRitesButton?.addEventListener("click", () => {
+      if (state.rites.length && !confirm("Remove all selected Rites?")) return;
+      state.rites = [];
+      state.selectedRiteId = state.ritePool[0]?.id || null;
+      renderAll();
+    });
+
+    void loadRites();
+  }
+
+  async function loadRites() {
+    try {
+      const { loadCurrentGame } = await import("../game-data/current-game.mjs");
+      const currentGame = await loadCurrentGame();
+      const rites = currentGame.mystics?.rites;
+      const selectedCount = Number(currentGame.mystics?.selectionPolicy?.selectedCount);
+
+      if (!Array.isArray(rites) || !rites.length) {
+        throw new Error("Current-game authority exposes no Mystics Rite pool.");
+      }
+      if (!Number.isInteger(selectedCount) || selectedCount <= 0 || selectedCount > rites.length) {
+        throw new Error("Current-game authority has an invalid Mystics Rite selection count.");
+      }
+
+      state.ritePool = rites.map(rite => ({
+        id: String(rite.id),
+        name: String(rite.name),
+        begin: String(rite.begin || ""),
+        complete: String(rite.complete || ""),
+        interrupted: String(rite.interrupted || ""),
+        reminder: rite.reminder?.text ? String(rite.reminder.text) : "",
+      }));
+      state.riteSelectedCount = selectedCount;
+
+      if (state.pendingRites) {
+        state.rites = resolveRiteIds(state.pendingRites);
+        state.pendingRites = null;
+      } else {
+        state.rites = resolveRiteIds(state.rites);
+      }
+
+      if (!state.selectedRiteId || !getRite(state.selectedRiteId)) {
+        state.selectedRiteId = state.ritePool[0]?.id || null;
+      }
+
+      document.body.dataset.mysticsRites = "ready";
+      renderAll();
+    } catch (error) {
+      console.error("Unable to load Mystics Rites", error);
+      document.body.dataset.mysticsRites = "error";
+      if (riteElements.riteList) {
+        riteElements.riteList.className = "compact-rite-list empty-state";
+        riteElements.riteList.textContent = "Unable to load Rites from the current-game authority.";
+      }
+    }
+  }
+
+  function enhancedRenderAll() {
+    baseRenderAll();
+    renderRitePicker();
+    renderDeckRites();
+    syncRiteMetric();
+  }
+
+  function isMystics() {
+    return state.factionId === MYSTICS_FACTION_ID;
+  }
+
+  function syncRiteMetric() {
+    const mystics = isMystics();
+    if (riteElements.mysticsRitesPanel) riteElements.mysticsRitesPanel.hidden = !mystics;
+    if (riteElements.riteMetricCard) riteElements.riteMetricCard.hidden = !mystics;
+    if (riteElements.deckRitesSection) riteElements.deckRitesSection.hidden = !mystics;
+    if (riteElements.riteMetricCount) riteElements.riteMetricCount.textContent = String(state.rites.length);
+    if (riteElements.riteSelectedCount) {
+      riteElements.riteSelectedCount.textContent = `${state.rites.length} / ${state.riteSelectedCount}`;
+    }
+  }
+
+  function renderRitePicker() {
+    const list = riteElements.riteList;
+    const preview = riteElements.ritePreview;
+    if (!list || !preview) return;
+
+    syncRiteMetric();
+    if (!isMystics()) {
+      ritePreviewResizeObserver?.disconnect();
+      return;
+    }
+
+    if (!state.ritePool.length) {
+      list.className = "compact-rite-list empty-state";
+      list.textContent = "Loading Rites…";
+      renderRitePreview(null);
+      return;
+    }
+
+    if (!getRite(state.selectedRiteId)) state.selectedRiteId = state.ritePool[0].id;
+
+    list.className = "compact-rite-list";
+    list.innerHTML = "";
+    for (const rite of state.ritePool) {
+      const selected = state.rites.includes(rite.id);
+      const unavailable = !selected && state.rites.length >= state.riteSelectedCount;
+      const row = document.createElement("article");
+      row.className = `compact-rite-row${rite.id === state.selectedRiteId ? " selected" : ""}${selected ? " chosen" : ""}`;
+      row.innerHTML = `
+        <div>
+          <div class="compact-card-title"><strong>${escapeHtml(rite.name)}</strong></div>
+          <div class="compact-card-meta">
+            <span class="mini-pill">Rite</span>
+            ${selected ? '<span class="mini-pill">Selected</span>' : ""}
+          </div>
+        </div>
+        <button type="button" class="${selected ? "secondary danger" : ""}" ${unavailable ? "disabled" : ""}>${selected ? "Remove" : "Choose"}</button>
+      `;
+
+      row.addEventListener("click", event => {
+        state.selectedRiteId = rite.id;
+        if (event.target.closest("button")) toggleRite(rite.id);
+        else renderRitePicker();
+      });
+      list.append(row);
+    }
+
+    renderRitePreview(getRite(state.selectedRiteId));
+  }
+
+  function renderRitePreview(rite) {
+    const preview = riteElements.ritePreview;
+    if (!preview) return;
+    ritePreviewResizeObserver?.disconnect();
+    ritePreviewResizeObserver = null;
+
+    if (!rite) {
+      preview.className = "rite-preview empty-state";
+      preview.textContent = "Select a Rite to view its current card and rules.";
+      return;
+    }
+
+    const selected = state.rites.includes(rite.id);
+    const unavailable = !selected && state.rites.length >= state.riteSelectedCount;
+    const rendererUrl = `../card-design/component-print-render.html?kind=rite&id=${encodeURIComponent(rite.id)}&side=front`;
+
+    preview.className = "rite-preview rendered-rite-preview";
+    preview.innerHTML = `
+      <div class="deckbuilder-rite-render-stage" data-rite-render-stage>
+        <iframe
+          class="deckbuilder-rite-render-frame"
+          src="${escapeHtml(rendererUrl)}"
+          title="${escapeHtml(rite.name)} incomplete Rite card"
+          loading="eager"
+          scrolling="no"
+        ></iframe>
+      </div>
+      <div class="rite-preview-copy">
+        <p><strong>Begin:</strong> ${escapeHtml(rite.begin)}</p>
+        <p><strong>Complete:</strong> ${escapeHtml(rite.complete)}</p>
+        ${rite.reminder ? `<p class="rite-preview-reminder"><em>${escapeHtml(rite.reminder)}</em></p>` : ""}
+        <p><strong>Interrupted:</strong> ${escapeHtml(rite.interrupted)}</p>
+      </div>
+      <div class="button-row rendered-rite-preview-actions">
+        <button id="previewRiteButton" type="button" class="${selected ? "secondary danger" : ""}" ${unavailable ? "disabled" : ""}>${selected ? "Remove Rite" : "Choose Rite"}</button>
+      </div>
+    `;
+    document.getElementById("previewRiteButton")?.addEventListener("click", () => toggleRite(rite.id));
+    installRitePreviewScaling();
+  }
+
+  function installRitePreviewScaling() {
+    const stage = riteElements.ritePreview?.querySelector("[data-rite-render-stage]");
+    if (!stage) return;
+    const resize = () => scaleRitePreview(stage);
+    if ("ResizeObserver" in window) {
+      ritePreviewResizeObserver = new ResizeObserver(resize);
+      ritePreviewResizeObserver.observe(stage);
+    }
+    requestAnimationFrame(resize);
+  }
+
+  function scaleRitePreview(stage) {
+    const frame = stage.querySelector(".deckbuilder-rite-render-frame");
+    if (!frame) return;
+    const availableWidth = Math.max(0, stage.clientWidth);
+    const targetWidth = Math.min(MAX_PREVIEW_WIDTH, availableWidth || CARD_WIDTH);
+    const scale = targetWidth / CARD_WIDTH;
+    stage.style.height = `${CARD_HEIGHT * scale}px`;
+    frame.style.transform = `translateX(-50%) scale(${scale})`;
+  }
+
+  function toggleRite(id) {
+    if (!isMystics() || !getRite(id)) return;
+    if (state.rites.includes(id)) {
+      state.rites = state.rites.filter(item => item !== id);
+    } else {
+      if (state.rites.length >= state.riteSelectedCount) return;
+      state.rites = [...state.rites, id];
+    }
+    state.selectedRiteId = id;
+    renderAll();
+  }
+
+  function renderDeckRites() {
+    const container = riteElements.deckRites;
+    if (!container) return;
+    if (!isMystics()) return;
+
+    const rites = selectedRites();
+    if (!rites.length) {
+      container.className = "deck-list empty-state";
+      container.textContent = "No Rites selected yet.";
+      return;
+    }
+
+    container.className = "deck-list";
+    container.innerHTML = rites.map(rite => `
+      <article class="deck-row">
+        <div>
+          <div class="deck-title"><strong>${escapeHtml(rite.name)}</strong></div>
+          <div class="deck-stats"><span class="mini-pill">Selected Rite</span><span class="mini-pill">Public at setup</span></div>
+        </div>
+        <button type="button" class="secondary danger" data-remove-rite="${escapeHtml(rite.id)}">Remove</button>
+      </article>
+    `).join("");
+
+    container.querySelectorAll("[data-remove-rite]").forEach(button => {
+      button.addEventListener("click", () => toggleRite(button.dataset.removeRite));
+    });
+  }
+
+  function enhancedValidateDeck() {
+    const result = baseValidateDeck();
+    const errors = [...result.errors];
+    const warnings = [...result.warnings];
+
+    if (isMystics()) {
+      const validIds = new Set(state.ritePool.map(rite => rite.id));
+      const distinct = new Set(state.rites);
+      if (state.ritePool.length && (
+        state.rites.length !== state.riteSelectedCount
+        || distinct.size !== state.rites.length
+        || state.rites.some(id => !validIds.has(id))
+      )) {
+        errors.push(`Choose exactly ${state.riteSelectedCount} different Rites (${state.rites.length}/${state.riteSelectedCount} selected).`);
+      }
+    }
+
+    return {
+      ...result,
+      riteCount: isMystics() ? state.rites.length : 0,
+      requiredRites: isMystics() ? state.riteSelectedCount : 0,
+      errors,
+      warnings,
+      valid: errors.length === 0,
+    };
+  }
+
+  function enhancedValidateAndRender() {
+    baseValidateAndRender();
+    const result = enhancedValidateDeck();
+    el.validityText.textContent = result.valid ? "Valid" : "Incomplete";
+    el.validityCard.classList.toggle("valid", result.valid);
+    el.validityCard.classList.toggle("invalid", !result.valid);
+    el.validationList.innerHTML = [
+      ...(result.errors.length
+        ? result.errors.map(message => `<li>${escapeHtml(message)}</li>`)
+        : ['<li class="ok">Deck package is valid.</li>']),
+      ...result.warnings.map(message => `<li class="warning">${escapeHtml(message)}</li>`)
+    ].join("");
+  }
+
+  function enhancedCurrentDeckData() {
+    return {
+      ...baseCurrentDeckData(),
+      schemaVersion: Math.max(3, Number(baseCurrentDeckData().schemaVersion) || 0),
+      selectedRites: isMystics() ? [...state.rites] : [],
+    };
+  }
+
+  function enhancedApplyDeckData(data) {
+    state.rites = [];
+    baseApplyDeckData(data);
+
+    if (state.factionId === MYSTICS_FACTION_ID) {
+      if (state.ritePool.length) state.rites = resolveRiteIds(data.selectedRites || []);
+      else state.pendingRites = data.selectedRites || [];
+    } else {
+      state.pendingRites = null;
+    }
+
+    renderAll();
+  }
+
+  async function enhancedCopyDeckList() {
+    if (!isMystics()) return baseCopyDeckList();
+
+    const data = enhancedCurrentDeckData();
+    const faction = getFaction();
+    const leader = faction.leaders.find(item => item.id === state.leaderId);
+    const validation = enhancedValidateDeck();
+    const lines = [
+      data.name,
+      `${faction.name} — ${leader?.name || "No leader"}`,
+      `${validation.cardCount} cards · ${validation.pointTotal}/60 value · ${validation.territoryCount}/3 Territories · ${validation.riteCount}/${validation.requiredRites} Rites`,
+      "",
+      ...deckEntries().map(({ card, qty }) => `${qty}x ${card.name} (${card.cost}) [${card.factionLabel}]`),
+      "",
+      "Territories:",
+      ...(state.territories || []).map(id => state.territoryPool.find(territory => territory.id === id)?.name).filter(Boolean).map(name => `- ${name}`),
+      "",
+      "Rites:",
+      ...selectedRites().map(rite => `- ${rite.name}`),
+    ];
+    await navigator.clipboard.writeText(lines.join("\n"));
+  }
+
+  function enhancedChangeFaction() {
+    const before = state.factionId;
+    baseChangeFaction();
+    if (state.factionId !== before) {
+      state.rites = [];
+      state.pendingRites = null;
+      state.selectedRiteId = state.ritePool[0]?.id || null;
+      renderAll();
+    }
+  }
+
+  function resolveRiteIds(items) {
+    const ids = [];
+    for (const item of items || []) {
+      const id = typeof item === "string" ? item : item?.id;
+      const name = typeof item === "string" ? "" : item?.name;
+      const rite = getRite(id) || state.ritePool.find(candidate => candidate.name === name);
+      if (!rite || ids.includes(rite.id)) continue;
+      if (ids.length >= state.riteSelectedCount) break;
+      ids.push(rite.id);
+    }
+    return ids;
+  }
+
+  function selectedRites() {
+    return state.rites.map(getRite).filter(Boolean);
+  }
+
+  function getRite(id) {
+    return state.ritePool.find(rite => rite.id === id);
+  }
+
+  renderAll = enhancedRenderAll;
+  validateDeck = enhancedValidateDeck;
+  validateAndRender = enhancedValidateAndRender;
+  currentDeckData = enhancedCurrentDeckData;
+  applyDeckData = enhancedApplyDeckData;
+  copyDeckList = enhancedCopyDeckList;
+  changeFaction = enhancedChangeFaction;
+})();

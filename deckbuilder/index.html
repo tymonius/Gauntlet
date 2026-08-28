@@ -24,6 +24,7 @@
   <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="territories.css" />
+  <link rel="stylesheet" href="mystics-rites.css?v=20260828-1" />
   <link rel="stylesheet" href="print-options.css?v=20260819-1" />
   <link rel="stylesheet" href="starter-decks.css" />
   <link rel="stylesheet" href="starter-handoff.css?v=20260815-4" />
@@ -119,6 +120,10 @@
       <article class="metric-card">
         <span>Territories</span>
         <strong><span id="territoryMetricCount">0</span> / 3</strong>
+      </article>
+      <article id="riteMetricCard" class="metric-card" hidden>
+        <span>Rites</span>
+        <strong><span id="riteMetricCount">0</span> / 3</strong>
       </article>
       <article id="validityCard" class="metric-card validation-card">
         <span>Deck status</span>
@@ -216,6 +221,23 @@
             </aside>
           </div>
         </section>
+
+        <section id="mysticsRitesPanel" class="panel mystics-rites-panel" hidden>
+          <div class="panel-heading">
+            <div>
+              <h2>Rites</h2>
+              <p class="muted">Choose exactly three different Rites. Your selected Rites are public at setup.</p>
+            </div>
+            <div class="panel-tools">
+              <span id="riteSelectedCount" class="pill">0 / 3</span>
+              <button id="clearRitesButton" type="button" class="text-button danger">Clear</button>
+            </div>
+          </div>
+          <div class="rite-browser">
+            <div id="riteList" class="compact-rite-list empty-state">Loading Rites…</div>
+            <aside id="ritePreview" class="rite-preview empty-state">Select a Rite to view its current card and rules.</aside>
+          </div>
+        </section>
       </div>
 
       <div class="builder-column current-deck-column">
@@ -237,6 +259,10 @@
           <div class="deck-section-divider">Territories</div>
           <div id="deckTerritories" class="deck-list empty-state">
             No territories selected yet.
+          </div>
+          <div id="deckRitesSection" hidden>
+            <div class="deck-section-divider">Rites</div>
+            <div id="deckRites" class="deck-list empty-state">No Rites selected yet.</div>
           </div>
         </section>
       </div>
@@ -332,6 +358,7 @@
   <script src="mobile-card-preview.js?v=20260819-1" defer></script>
   <script src="completed-factions.js?v=20260729-1" defer></script>
   <script src="territories.js?v=20260729-1" defer></script>
+  <script src="mystics-rites.js?v=20260828-1" defer></script>
   <script type="module" src="tts-export.mjs?v=20260828-1"></script>
   <script src="supplemental-data.js?v=20260722-1" defer></script>
   <script src="completed-supplementals.js?v=20260723-1" defer></script>

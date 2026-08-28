@@ -58,4 +58,13 @@ describe('Deckbuilder TTS Deck Code', () => {
     expect(() => encodeTtsDeckCode({ ...deck, cards: [{ id: 'neutral-rally', qty: 0 }] })).toThrow(/quantity/i);
     expect(() => decodeTtsDeckCode('not a deck')).toThrow(/not a Gauntlet/i);
   });
+
+  it('fails closed for Mystics until TTS can assemble the selected three-Rite package', () => {
+    expect(() => buildTtsDeckPayload({
+      ...deck,
+      factionId: 'mystics',
+      leaderId: 'alchemist',
+      selectedRites: ['echoes', 'blood', 'equivalence'],
+    })).toThrow(/selected-Rite assembly/i);
+  });
 });

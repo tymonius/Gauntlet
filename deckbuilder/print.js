@@ -68,6 +68,10 @@
       entries,
       cards,
       territories,
+      selectedRiteIds: state.factionId === "mystics" ? [...(state.rites || [])] : [],
+      selectedRites: state.factionId === "mystics"
+        ? (state.rites || []).map(id => state.currentGameData?.mystics?.rites?.find(rite => rite.id === id)).filter(Boolean)
+        : [],
       validation: validateDeck(),
       supplementalPackage,
       supplementalRequirements: supplementalPackage.summary || ["Selected Leader Card"]
@@ -225,9 +229,13 @@ window.addEventListener('load',preparePrint);
     }
 
 
-    if (packageData.rites?.length) {
-      const riteFronts = packageData.rites.map(rite => riteToPrintHtml(rite, false));
-      const riteBacks = [...packageData.rites]
+    const packageRites = data.faction.id === "mystics"
+      ? (packageData.rites || []).filter(rite => data.selectedRiteIds.includes(rite.id))
+      : (packageData.rites || []);
+
+    if (packageRites.length) {
+      const riteFronts = packageRites.map(rite => riteToPrintHtml(rite, false));
+      const riteBacks = [...packageRites]
         .reverse()
         .map(rite => riteToPrintHtml(rite, true));
       dedicatedPages.push(cardTableToHtml(riteFronts, 3));
@@ -255,7 +263,12 @@ window.addEventListener('load',preparePrint);
     const territoryNames = data.territories.length
       ? data.territories.map(territory => `<li>${escapeHtml(territory.name)}</li>`).join("")
       : "<li>None selected</li>";
-    const supplementalItems = data.supplementalRequirements.map(item => `<li>${escapeHtml(item)}</li>`).join("");
+    const supplementalItems = data.supplementalRequirements
+      .filter(item => !(data.faction.id === "mystics" && /three double-sided rite cards/i.test(item)))
+      .map(item => `<li>${escapeHtml(item)}</li>`).join("");
+    const riteSummary = data.selectedRites?.length
+      ? `<div class="summary-block"><h2>Rites</h2><ul class="summary-list">${data.selectedRites.map(rite => `<li>${escapeHtml(rite.name)}</li>`).join("")}</ul></div>`
+      : "";
     const diplomatNote = data.faction.id === "diplomats"
       ? " Proposal fronts and mirrored Treaty Article backs are included on dedicated 9-up pages for long-edge duplex printing."
       : "";
@@ -271,6 +284,7 @@ window.addEventListener('load',preparePrint);
           </section>
           <aside class="summary-side">
             <div class="summary-block"><h2>Territories</h2><ul class="summary-list">${territoryNames}</ul></div>
+            ${riteSummary}
             <div class="summary-block"><h2>Faction components included</h2><ul class="summary-list">${supplementalItems}</ul></div>
             <div class="summary-block"><strong>Print note:</strong> The selected Leader and required faction supplemental faces are included in this package.${diplomatNote}</div>
           </aside>
@@ -417,6 +431,7 @@ window.addEventListener('load',preparePrint);
         ${rite.requirement ? `<div class="rite-section"><strong>Requirement:</strong> ${escapeHtml(rite.requirement)}</div>` : ""}
         <div class="rite-section"><strong>Beginning cost:</strong> ${escapeHtml(rite.beginning)}</div>
         <div class="rite-section"><strong>Completion:</strong> ${escapeHtml(rite.completion)}</div>
+        ${rite.reminder ? `<div class="rite-section rite-reminder"><em>${escapeHtml(rite.reminder)}</em></div>` : ""}
         ${rite.result ? `<div class="rite-section"><strong>Result:</strong> ${escapeHtml(rite.result)}</div>` : ""}
         <div class="rite-section"><strong>Interruption:</strong> ${escapeHtml(rite.interruption)}</div>
       </div>
