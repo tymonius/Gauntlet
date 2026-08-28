@@ -144,7 +144,7 @@ These paths should not receive new product behavior except explicit compatibilit
 
 | Path | Current interpretation |
 |---|---|
-| `data/` | Historical starter/adapter data; current gameplay authority is `game-data/` |
+| `legacy/digital-prototype-data/` | Historical starter/adapter data; current gameplay authority is `game-data/` |
 | version-pinned scripts/workflows | Historical and current production logic are mixed; candidates for parameterization |
 | root-level presentation files | Current deployment dependencies mixed with source organization concerns |
 
