@@ -294,7 +294,7 @@ function setRulesetUi(mode, currentGame = null) {
     if (printNote) printNote.textContent = 'The complete v0.7.0 Rulebook authority is loaded directly. Switch to Released v0.7.0 for the currently published printable booklet.';
     document.title = 'Gauntlet v0.7.0 Release Candidate Browser Rulebook';
   } else {
-    if (eyebrow) eyebrow.textContent = 'Canonical rules · version 0.6.3';
+    if (eyebrow) eyebrow.textContent = 'Canonical rules · version 0.7.0';
     if (footerVersion) footerVersion.innerHTML = '<strong>Gauntlet v0.7.0</strong> · Current canonical playtest edition.';
     if (printHeading) printHeading.textContent = 'Print the released rulebook';
     if (printNote) printNote.textContent = 'Print double-sided, flip on the short edge, then fold and saddle stitch.';

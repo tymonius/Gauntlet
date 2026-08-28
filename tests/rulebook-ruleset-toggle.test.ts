@@ -35,6 +35,8 @@ describe('Published Browser Rulebook', () => {
     expect(app).toContain("const SOURCE_URL = '../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook.md';");
     expect(app).toContain("const SOURCE_SHA256 = 'f113a7f02e85b15358be8345afd90d6f1fd43136acefa9aaa322c9a7bf945dda';");
     expect(app).toContain("const PDF_URL = '../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook_Booklet.pdf';");
+    expect(app).toContain("eyebrow.textContent = 'Canonical rules · version 0.7.0';");
+    expect(app).not.toContain("eyebrow.textContent = 'Canonical rules · version 0.6.3';");
     expect(app).toContain('return RELEASED_MODE;');
     expect(app).toContain("crypto.subtle.digest('SHA-256', bytes)");
   });

@@ -1,5 +1,4 @@
 (() => {
-  const STARTER_DECK_SOURCE = "starter-decks.json";
   const EXPECTED_DECK_COUNT = 12;
   let starterDecks = [];
   let starterLoadError = null;
@@ -22,10 +21,11 @@
 
   async function loadStarterDecks() {
     try {
-      const response = await fetch(STARTER_DECK_SOURCE, { cache: "no-store" });
-      if (!response.ok) throw new Error(`Failed to load ${STARTER_DECK_SOURCE}: ${response.status}`);
-      const data = await response.json();
-      starterDecks = Array.isArray(data.decks) ? data.decks : [];
+      const { loadCurrentGame } = await import("../game-data/current-game.mjs");
+      const currentGame = await loadCurrentGame();
+      starterDecks = Array.isArray(currentGame.starterDecks)
+        ? currentGame.starterDecks.map(deck => ({ ...deck }))
+        : [];
       if (starterDecks.length !== EXPECTED_DECK_COUNT) {
         throw new Error(`Expected ${EXPECTED_DECK_COUNT} starter Decks but found ${starterDecks.length}.`);
       }
@@ -218,7 +218,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>All 12 Gauntlet v0.6.1 Starter Decks</title>
+<title>All 12 Gauntlet ${escapeHtml(state.currentGameDisplayVersion || state.currentGameVersion || "current")} Starter Decks</title>
 ${links}
 ${styles.map(style => `<style>${style}</style>`).join("\n")}
 <style>
