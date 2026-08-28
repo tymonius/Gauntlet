@@ -15,6 +15,7 @@ const PROVENANCE_PATH = path.join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Sour
 const BOOKLET_PATH = path.join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Rulebook_Booklet.pdf`);
 const MANIFEST_PATH = path.join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Manifest.json`);
 const CARD_ANATOMY_PATH = path.join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Card_Anatomy.png`);
+const ARCANE_TRAIT_PATH = path.join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Arcane_Trait_Mark.png`);
 const PLAYER_CHAPTER_11_PATH = path.join(ROOT, 'rulebook', 'player-facing', 'chapter-11.md');
 const RELEASE_NOTES_PATH = path.join(ROOT, 'docs', 'releases', 'github', 'v0.7.0.md');
 const TRANSIENT_RULEBOOK_PATH = path.join(ROOT, 'rulebook-production', '.v063-player-facing-input.md');
@@ -80,32 +81,30 @@ async function waitForServer(url) {
   throw new Error(`Rulebook production server did not become ready: ${lastError?.message || 'unknown error'}`);
 }
 
-async function renderCardAnatomyFigure() {
+async function renderCardAnatomyFigures() {
   fs.mkdirSync(RELEASE_DIR, { recursive: true });
   const browser = await chromium.launch({ headless: true });
   try {
     const pageErrors = [];
-    const page = await browser.newPage({
-      viewport: { width: 1280, height: 1800 },
-      deviceScaleFactor: 3,
-    });
+    const page = await browser.newPage({ viewport: { width: 1280, height: 1800 }, deviceScaleFactor: 3 });
     page.on('pageerror', error => pageErrors.push(error.message));
-    const response = await page.goto('http://127.0.0.1:8000/rulebook/', {
-      waitUntil: 'domcontentloaded',
-      timeout: 60000,
-    });
+    const response = await page.goto('http://127.0.0.1:8000/rulebook/', { waitUntil: 'domcontentloaded', timeout: 60000 });
     if (!response?.ok()) throw new Error('Card Anatomy Rulebook view returned ' + response?.status() + '.');
     const guide = page.locator('.card-anatomy-guide').first();
     await guide.waitFor({ state: 'attached', timeout: 60000 });
     await guide.scrollIntoViewIfNeeded();
-    await page.waitForSelector('.card-anatomy-guide.markers-positioned .card-anatomy-figure', {
-      state: 'visible',
-      timeout: 60000,
-    });
-    await page.evaluate(async () => {
-      await document.fonts?.ready;
-      document.querySelector('.card-anatomy-arcane')?.remove();
-    });
+    await page.waitForSelector('.card-anatomy-guide.markers-positioned .card-anatomy-figure', { state: 'visible', timeout: 60000 });
+    await page.waitForFunction(() => {
+      const frame = document.querySelector('.card-anatomy-arcane-card');
+      return frame?.contentDocument?.body?.dataset.renderReady === 'true';
+    }, null, { timeout: 60000 });
+    await page.evaluate(async () => { await document.fonts?.ready; });
+
+    const arcaneCrop = page.locator('.card-anatomy-guide .card-anatomy-arcane-crop').first();
+    if (await arcaneCrop.count() !== 1) throw new Error('Expected exactly one live Arcane trait-mark crop.');
+    await arcaneCrop.screenshot({ path: ARCANE_TRAIT_PATH });
+
+    await page.evaluate(() => { document.querySelector('.card-anatomy-arcane')?.remove(); });
     const figure = page.locator('.card-anatomy-guide .card-anatomy-figure').first();
     if (await figure.count() !== 1) throw new Error('Expected exactly one live Card Anatomy figure.');
     await figure.screenshot({ path: CARD_ANATOMY_PATH });
@@ -113,9 +112,15 @@ async function renderCardAnatomyFigure() {
   } finally {
     await browser.close();
   }
-  const bytes = fs.statSync(CARD_ANATOMY_PATH).size;
-  if (bytes < 10000) throw new Error('Generated Card Anatomy figure is unexpectedly small: ' + bytes + ' bytes.');
-  console.log('Rendered deterministic Card Anatomy figure: ' + relative(CARD_ANATOMY_PATH) + ' (' + bytes + ' bytes).');
+
+  for (const [label, outputPath, minimumBytes] of [
+    ['Card Anatomy', CARD_ANATOMY_PATH, 10000],
+    ['Arcane trait mark', ARCANE_TRAIT_PATH, 5000],
+  ]) {
+    const bytes = fs.statSync(outputPath).size;
+    if (bytes < minimumBytes) throw new Error(`${label} figure is unexpectedly small: ${bytes} bytes.`);
+    console.log(`Rendered deterministic ${label} figure: ${relative(outputPath)} (${bytes} bytes).`);
+  }
 }
 function extractChapter11(rulebook) {
   const startMarker = '# 11. Detailed Card and Timing Rules';
@@ -144,7 +149,7 @@ const server = spawn('python', ['-m', 'http.server', '8000'], {
 });
 try {
   await waitForServer('http://127.0.0.1:8000/rulebook/');
-  await renderCardAnatomyFigure();
+  await renderCardAnatomyFigures();
 
   run('python', ['rulebook-design/build_proofs.py']);
   run('python', ['rulebook-production/build_fidelity_gate.py']);
@@ -190,6 +195,12 @@ const physicalSheets = Number(report.outputs?.physicalSheets);
 if (!Number.isInteger(physicalSheets) || physicalSheets < 1) throw new Error('Approved Rulebook production report has no valid physical-sheet count.');
 validateReleaseNotesBookletCounts(logicalPages, bookletPages, physicalSheets);
 
+const lifecycle = JSON.parse(fs.readFileSync(path.join(ROOT, 'config', 'release-lifecycle.json'), 'utf8'));
+const lifecycleRelease = lifecycle.releases?.[RELEASE_VERSION];
+const isPublishedCurrent = lifecycle.current_release === RELEASE_VERSION
+  && lifecycleRelease?.status === 'current'
+  && lifecycleRelease?.public_cutover === true;
+
 const provenance = JSON.parse(fs.readFileSync(PROVENANCE_PATH, 'utf8'));
 if (provenance.release_version !== RELEASE_VERSION || provenance.source_version !== SOURCE_VERSION || !provenance.authority_set_id) {
   throw new Error('v0.7.0 source provenance is incomplete.');
@@ -206,7 +217,7 @@ const publicRoutes = {
   rules_arbiter: '/rules-arbiter/',
 };
 
-const payloadFiles = [RULEBOOK_PATH, BOOKLET_PATH, CARD_ANATOMY_PATH, CANONICAL_PATH, STARTERS_PATH, PROVENANCE_PATH].map(file => {
+const payloadFiles = [RULEBOOK_PATH, BOOKLET_PATH, CARD_ANATOMY_PATH, ARCANE_TRAIT_PATH, CANONICAL_PATH, STARTERS_PATH, PROVENANCE_PATH].map(file => {
   const bytes = fs.readFileSync(file);
   return { path: path.basename(file), sha256: hash(bytes), bytes: bytes.length };
 });
@@ -217,7 +228,7 @@ const manifest = {
   name: 'Illustrated Cards & Tabletop Simulator',
   status: 'current',
   authority_set_id: provenance.authority_set_id,
-  publication_date: null,
+  publication_date: isPublishedCurrent ? (lifecycleRelease.publication_date || null) : null,
   current_package_path: `releases/${RELEASE_VERSION}/`,
   source_provenance: {
     source_version: SOURCE_VERSION,
@@ -231,6 +242,7 @@ const manifest = {
     approved_starters: { path: relative(STARTERS_PATH), sha256: hashFile(STARTERS_PATH) },
     source_provenance: { path: relative(PROVENANCE_PATH), sha256: hashFile(PROVENANCE_PATH) },
     card_anatomy_figure: { path: relative(CARD_ANATOMY_PATH), sha256: hashFile(CARD_ANATOMY_PATH) },
+    arcane_trait_figure: { path: relative(ARCANE_TRAIT_PATH), sha256: hashFile(ARCANE_TRAIT_PATH) },
   },
   counts: {
     playable_cards: canonical?.gameplay?.cards?.length ?? provenance.counts?.playable_cards,
@@ -240,13 +252,14 @@ const manifest = {
     starter_decks: starters?.decks?.length ?? provenance.counts?.starter_decks,
     print_pdfs: 1,
     json_exports: 3,
-    static_figures: 1,
+    static_figures: 2,
   },
   public_defaults: {
     website: RELEASE_VERSION,
     browser_tools: RELEASE_VERSION,
     rules_arbiter: RELEASE_VERSION,
     digital_rules: RELEASE_VERSION,
+    ...(isPublishedCurrent ? { rulebook: RELEASE_VERSION } : {}),
   },
   public_routes: publicRoutes,
   json_exports: [
@@ -277,6 +290,12 @@ const manifest = {
       sha256: hashFile(CARD_ANATOMY_PATH),
       source_card: 'military-unbroken-ranks',
       renderer: 'rulebook/card-anatomy.js + card-design/card-print-render.html?fit=production&card=military-unbroken-ranks',
+    },
+    arcane_trait_figure: {
+      path: relative(ARCANE_TRAIT_PATH),
+      sha256: hashFile(ARCANE_TRAIT_PATH),
+      source_card: 'mystics-witchcraft',
+      renderer: 'rulebook/card-anatomy.js + card-design/card-print-render.html?fit=production&card=mystics-witchcraft',
     },
   },
 };

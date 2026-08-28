@@ -19,7 +19,7 @@ const writeText = async (path, value) => {
 };
 const clone = value => JSON.parse(JSON.stringify(value));
 
-function addCardAnatomyFigure(markdown) {
+function addCardAnatomyFigures(markdown) {
   const source = String(markdown || '').replace(/\r\n/g, '\n');
   if (!source.includes('**Version 0.7.0**')) {
     throw new Error('Current Rulebook authority is not natively v0.7.0.');
@@ -27,12 +27,19 @@ function addCardAnatomyFigure(markdown) {
   if (/Release candidate|GENERATED CLEAN V0\.6\.3/u.test(source)) {
     throw new Error('Current Rulebook authority still contains transitional publication markers.');
   }
-  const marker = "Most ordinary playable cards use the same frame. Read these elements when constructing a Deck and resolving a card in play:\n\n";
-  if (!source.includes(marker)) {
+  const cardMarker = "Most ordinary playable cards use the same frame. Read these elements when constructing a Deck and resolving a card in play:\n\n";
+  if (!source.includes(cardMarker)) {
     throw new Error('Card Anatomy introduction marker is missing from the current Rulebook authority.');
   }
-  const figure = '![Card anatomy diagram](</releases/v0.7.0/Gauntlet_v0.7.0_Card_Anatomy.png>)\n\n';
-  return source.replace(marker, marker + figure);
+  const arcaneMarker = "Some playable cards show the Mystics sigil immediately before the card name. The symbol marks the **Arcane** trait; its color follows the card's faction identity.\n\n";
+  if (!source.includes(arcaneMarker)) {
+    throw new Error('Arcane trait-mark explanation is missing from the current Rulebook authority.');
+  }
+  const cardFigure = '![Card anatomy diagram](</releases/v0.7.0/Gauntlet_v0.7.0_Card_Anatomy.png>)\n\n';
+  const arcaneFigure = '![Arcane trait mark example](</releases/v0.7.0/Gauntlet_v0.7.0_Arcane_Trait_Mark.png>)\n\n';
+  return source
+    .replace(cardMarker, cardMarker + cardFigure)
+    .replace(arcaneMarker, arcaneMarker + arcaneFigure);
 }
 
 function validateAuthority(authority) {
@@ -73,7 +80,7 @@ const [authority, currentRulebookSource] = await Promise.all([
 ]);
 validateAuthority(authority);
 
-const rulebook = addCardAnatomyFigure(currentRulebookSource);
+const rulebook = addCardAnatomyFigures(currentRulebookSource);
 const canonicalData = {
   schema_version: 2,
   release_version: RELEASE_VERSION,

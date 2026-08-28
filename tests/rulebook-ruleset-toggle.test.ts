@@ -25,18 +25,20 @@ function publicReleasedSource() {
 
 describe('Published Browser Rulebook', () => {
   it('publishes v0.7.0 as the verified default and retires the candidate selector', () => {
+    expect(index).toContain('data-ruleset-switch hidden');
     expect(index).toContain('data-ruleset="released" aria-pressed="true"');
     expect(index).toContain('data-ruleset="candidate" aria-pressed="false" hidden disabled');
-    expect(index).toContain('Pre-publication view');
+    expect(app).toContain('candidateVersion !== PUBLISHED_VERSION');
+    expect(app).toContain('rulesetSwitch.hidden = !distinctCandidate');
     expect(index).toContain('Published v0.7.0 Rulebook is current.');
     expect(index).toContain('../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook_Booklet.pdf');
     expect(index).not.toContain('Gauntlet v0.6.3 Browser Rulebook');
 
     expect(app).toContain("const SOURCE_URL = '../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook.md';");
-    expect(app).toContain("const SOURCE_SHA256 = 'f113a7f02e85b15358be8345afd90d6f1fd43136acefa9aaa322c9a7bf945dda';");
+    expect(app).toContain("const SOURCE_SHA256 = '7027ef7fe7dcfd59cf43ae9f68d2bd2760667a128839a8b4f141559328f2c653';");
     expect(app).toContain("const PDF_URL = '../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook_Booklet.pdf';");
-    expect(app).toContain("eyebrow.textContent = 'Canonical rules · version 0.7.0';");
-    expect(app).not.toContain("eyebrow.textContent = 'Canonical rules · version 0.6.3';");
+    expect(app).toContain('eyebrow.textContent = `Canonical rules · version ${PUBLISHED_VERSION}`');
+    expect(app).not.toContain("eyebrow.textContent = 'Canonical rules · version 0.6.3'");
     expect(app).toContain('return RELEASED_MODE;');
     expect(app).toContain("crypto.subtle.digest('SHA-256', bytes)");
   });

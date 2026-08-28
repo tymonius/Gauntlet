@@ -142,9 +142,10 @@ function wrapAuthoredAnatomy() {
     node = following;
   }
 
-  // The Markdown source carries a deterministic static figure for print/PDF.
-  // The published browser Rulebook replaces that fallback with the live production renderer.
+  // The release Markdown carries deterministic static figures for print/PDF.
+  // The Browser Rulebook replaces those fallbacks with its live production renders.
   section.querySelector('img[alt="Card anatomy diagram"]')?.remove();
+  section.querySelector('img[alt="Arcane trait mark example"]')?.remove();
 
   const introParagraph = heading.nextElementSibling?.tagName === 'P' ? heading.nextElementSibling : null;
   const intro = document.createElement('div');

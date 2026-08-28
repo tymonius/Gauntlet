@@ -109,6 +109,8 @@ Most ordinary playable cards use the same frame. Read these elements when constr
 
 Some playable cards show the Mystics sigil immediately before the card name. The symbol marks the **Arcane** trait; its color follows the card's faction identity.
 
+![Arcane trait mark example](</releases/v0.7.0/Gauntlet_v0.7.0_Arcane_Trait_Mark.png>)
+
 Territories and faction supplemental components use specialized layouts and are explained with their own rules.
 
 ## Printed card effects

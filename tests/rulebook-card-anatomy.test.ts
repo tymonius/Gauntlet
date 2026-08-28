@@ -24,9 +24,11 @@ describe('Browser Rulebook card anatomy guide', () => {
     expect(anatomy).toContain('transformKey(list)');
   });
 
-  it('keeps the immutable released v0.6.3 view unchanged', () => {
-    expect(anatomy).toContain("const CANDIDATE_MODE = 'candidate';");
-    expect(anatomy).toContain('if (mode !== CANDIDATE_MODE) return;');
+  it('keeps print fallbacks separate from the live Browser Rulebook presentation', () => {
+    expect(anatomy).toContain('img[alt="Card anatomy diagram"]');
+    expect(anatomy).toContain('img[alt="Arcane trait mark example"]');
+    expect(anatomy).not.toContain('CARD_ANATOMY_EMBED');
+    expect(styles).not.toContain('body.card-anatomy-embed');
     expect(anatomy).toContain('removeEnhancement();');
   });
 

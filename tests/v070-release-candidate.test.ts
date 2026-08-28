@@ -79,6 +79,7 @@ describe('v0.7.0 publication boundary', () => {
     expect(releaseBuilder).toContain('leaders: clone(authority.leaders)');
     expect(releaseBuilder).toContain("source_version: authority.version");
     expect(releaseBuilder).toContain('![Card anatomy diagram]');
+    expect(releaseBuilder).toContain('![Arcane trait mark example]');
     expect(releaseBuilder).not.toContain('readCurrentJsonSource');
     expect(releaseBuilder).not.toContain('baseGameplay');
     expect(releaseBuilder).not.toContain('cardChanges');
@@ -90,21 +91,20 @@ describe('v0.7.0 publication boundary', () => {
     expect(releaseBuilder).not.toContain('spliceReviewedChapter11');
   });
 
-  it('renders the printable Card Anatomy fallback from the live production-card guide', () => {
+  it('adapts the Browser Rulebook Card Anatomy visuals into separate print figures', () => {
     expect(bookletRenderer).toContain("import { chromium } from 'playwright'");
     expect(bookletRenderer).toContain("page.goto('http://127.0.0.1:8000/rulebook/'");
     expect(bookletRenderer).toContain(".card-anatomy-guide.markers-positioned .card-anatomy-figure");
+    expect(bookletRenderer).toContain('arcaneCrop.screenshot({ path: ARCANE_TRAIT_PATH })');
     expect(bookletRenderer).toContain('figure.screenshot({ path: CARD_ANATOMY_PATH })');
-    expect(bookletRenderer).not.toContain('Promise.all([...document.images]');
-    expect(bookletRenderer).toContain("publication_date: null");
+    expect(bookletRenderer).not.toContain('browser-card-anatomy-frame');
     expect(bookletRenderer).toContain("source_card: 'military-unbroken-ranks'");
-    expect(bookletRenderer).toContain('function brandV070ProductionSurface()');
-    expect(bookletRenderer).toContain("source.replace(/0\\.6\\.3/g, '0.7.0')");
-    expect(bookletRenderer).toContain('brandV070ProductionSurface();');
+    expect(bookletRenderer).toContain("source_card: 'mystics-witchcraft'");
+    expect(bookletRenderer).toContain('static_figures: 2');
     expect(bookletRenderer).toContain('function validateReleaseNotesBookletCounts');
     expect(bookletRenderer).toContain('validateReleaseNotesBookletCounts(logicalPages, bookletPages, physicalSheets);');
-    expect(bookletRenderer).toContain('v0.7.0 Rulebook production surface still contains v0.6.3 branding');
     expect(materializer).toContain('Gauntlet_v0.7.0_Card_Anatomy.png');
+    expect(materializer).toContain('Gauntlet_v0.7.0_Arcane_Trait_Mark.png');
   });
 
   it('keeps final publication explicit, dated, and TTS-gated', () => {

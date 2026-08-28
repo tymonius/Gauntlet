@@ -137,4 +137,17 @@
   height: 3.1in;
   width: auto;
   max-width: 100%;
+  filter: none;
+  mix-blend-mode: normal;
+}
+
+/* The Arcane trait example is a separate production-derived crop, matching
+   the Browser Rulebook's Arcane callout without replacing the authored flow. */
+.production-flow .print-image[alt="Arcane trait mark example"] {
+  height: .72in;
+  width: auto;
+  max-width: 100%;
+  margin: 4px auto 5px;
+  filter: none;
+  mix-blend-mode: normal;
 }
