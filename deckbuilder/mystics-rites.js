@@ -76,7 +76,7 @@
       state.riteSelectedCount = state.riteSelectionEnabled ? selectedCount : rites.length;
 
       if (!state.riteSelectionEnabled) {
-        state.rites = state.ritePool.map(rite => rite.id);
+        state.rites = isMystics() ? state.ritePool.map(rite => rite.id) : [];
         state.pendingRites = null;
       } else if (state.pendingRites) {
         state.rites = resolveRiteIds(state.pendingRites);

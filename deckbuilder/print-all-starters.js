@@ -41,10 +41,12 @@
   function isReady() {
     const starterApi = window.GAUNTLET_STARTER_DECKS;
     const starterTipsReady = typeof starterApi?.getSelectedDeck === "function" && Boolean(starterApi.getSelectedDeck());
+    const mysticsRitesReady = document.body.dataset.mysticsRites === "ready";
 
     return Boolean(
       starterDecks.length === EXPECTED_DECK_COUNT &&
       starterTipsReady &&
+      mysticsRitesReady &&
       state.cards?.length &&
       state.territoryPool?.length &&
       !document.getElementById("printDeckButton")?.disabled
