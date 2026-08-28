@@ -27,7 +27,6 @@ export const PLAYABLE_BACK_FACTIONS = Object.freeze([
 
 const ART_EXTENSIONS = new Set(['.png', '.webp', '.jpg', '.jpeg']);
 const CURRENT_GAME_SOURCE = 'game-data/current-game.json';
-const TTS_RELEASE_TARGET_SOURCE = 'config/tts-release-target.json';
 const LIFECYCLE_SOURCE = 'config/release-lifecycle.json';
 const GITHUB_RELEASE_CONTRACT_SOURCE = 'config/github-release-contract.json';
 
@@ -89,36 +88,26 @@ export async function resolvePublishedTtsRelease() {
 // published release. Its release identity is explicit so current-game source
 // provenance can remain pinned to the approved source bundle until cutover.
 export async function resolveCurrentTtsRelease() {
-  const [authority, published, target] = await Promise.all([
+  const [authority, published] = await Promise.all([
     loadCurrentGameAuthority(),
     resolvePublishedTtsRelease(),
-    readJson(TTS_RELEASE_TARGET_SOURCE),
   ]);
   const sourceVersion = String(authority.version || '').trim();
-  const version = String(target.releaseTag || '').trim();
+  const displayVersion = String(authority.displayVersion || sourceVersion).trim();
 
-  if (target.schemaVersion !== 1) throw new Error(`${TTS_RELEASE_TARGET_SOURCE} has an unsupported schemaVersion.`);
-  if (!version) throw new Error(`${TTS_RELEASE_TARGET_SOURCE} does not declare releaseTag.`);
   if (!sourceVersion) throw new Error(`${CURRENT_GAME_SOURCE} does not declare a current version.`);
-  if (String(target.currentGameAuthority || '').replace(/^\/+/, '') !== CURRENT_GAME_SOURCE) {
-    throw new Error(`${TTS_RELEASE_TARGET_SOURCE} must target ${CURRENT_GAME_SOURCE}.`);
-  }
-  if (String(target.sourceVersion || '').trim() !== sourceVersion) {
-    throw new Error(`TTS release target sourceVersion ${target.sourceVersion || 'missing'} does not match current-game source ${sourceVersion}.`);
-  }
 
   return Object.freeze({
-    version,
-    displayVersion: String(target.displayVersion || version),
+    version: sourceVersion,
+    displayVersion,
     sourceVersion,
     canonicalDataSource: CURRENT_GAME_SOURCE,
     starterDecksSource: CURRENT_GAME_SOURCE,
     releasePackageRoot: 'game-data',
-    outputRoot: join(ROOT, 'tts', 'generated', version),
+    outputRoot: join(ROOT, 'tts', 'generated', sourceVersion),
     currentGameSource: CURRENT_GAME_SOURCE,
     authorityProvenance: Object.freeze({ ...(authority.provenance || {}) }),
-    ttsReleaseTargetSource: TTS_RELEASE_TARGET_SOURCE,
-    targetStatus: String(target.status || ''),
+    targetStatus: String(authority.status || ''),
     publishedVersion: published.version,
     lifecycleSource: LIFECYCLE_SOURCE,
     githubReleaseContractSource: GITHUB_RELEASE_CONTRACT_SOURCE,
@@ -329,7 +318,6 @@ export async function buildCatalog() {
       canonicalDataSource: CURRENT_GAME_SOURCE,
       canonicalDataVersion: release.sourceVersion,
       starterDecksSource: release.starterDecksSource,
-      ttsReleaseTargetSource: release.ttsReleaseTargetSource,
     },
     counts,
     playableCards: cardsWithArtwork,
@@ -354,7 +342,6 @@ export async function writeCatalog(catalog) {
     displayVersion: release.displayVersion,
     sourceVersion: release.sourceVersion,
     currentGameAuthority: CURRENT_GAME_SOURCE,
-    ttsReleaseTargetSource: release.ttsReleaseTargetSource,
     publishedVersion: release.publishedVersion,
     canonicalDataSource: CURRENT_GAME_SOURCE,
     canonicalDataVersion: catalog.release.canonicalDataVersion,

@@ -30,13 +30,13 @@ const TRANSITIONAL_RUNTIME_MARKERS = [
   'resolveFactionRules(',
 ];
 
-describe('complete v0.7.0 current-game authority', () => {
-  it('is a native, complete v0.7.0 authority rather than a resolution manifest', () => {
+describe('complete current-game authority', () => {
+  it('is a native, complete v0.7.1 candidate authority rather than a resolution manifest', () => {
     expect(authority.schemaVersion).toBe(2);
     expect(authority.authority).toBe('current-game');
-    expect(authority.version).toBe('v0.7.0');
-    expect(authority.displayVersion).toBe('v0.7.0');
-    expect(authority.status).toBe('release-ready');
+    expect(authority.version).toBe('v0.7.1-candidate');
+    expect(authority.displayVersion).toBe('v0.7.1 candidate');
+    expect(authority.status).toBe('active-development');
     expect(authority.runtimePolicy).toContain('complete current gameplay authority');
     expect(authority.runtimePolicy).toContain('historical source and change documents are provenance only');
 
@@ -75,6 +75,24 @@ describe('complete v0.7.0 current-game authority', () => {
     expect(authority.componentContract).toBeTruthy();
     expect(authority.arcaneSymbol).toBeTruthy();
     expect(authority.mystics).toBeTruthy();
+  });
+
+  it('promotes the approved v0.7.1 Mystics six-Rite model into current authority', () => {
+    expect(authority.provenance.currentDevelopmentInputs.mysticsRites).toBe('/docs/v0.7.1-mystics-rites.json');
+    expect(authority.mystics.selectionPolicy).toMatchObject({
+      poolSize: 6,
+      selectedCount: 3,
+      timing: 'game-package construction',
+      visibility: 'public at setup',
+    });
+    expect(authority.mystics.rites.map((rite: any) => rite.id)).toEqual([
+      'echoes', 'blood', 'crossing', 'shattering', 'consecration', 'equivalence',
+    ]);
+    expect(new Set(authority.mystics.rites.map((rite: any) => rite.id)).size).toBe(6);
+    expect(authority.mystics.generalRules.impossibleCompletion).toContain('can no longer be completed');
+    expect(authority.mystics.rites.find((rite: any) => rite.id === 'blood')?.reminder)
+      .toMatchObject({ style: 'italic' });
+    expect(authority.mystics.ritual.begin).toContain('all three selected Rites');
   });
 
   it('keeps card-pool summary metadata synchronized with the actual playable pool', () => {
@@ -293,11 +311,10 @@ describe('complete v0.7.0 current-game authority', () => {
     expect(livePublicationWorkflow).not.toContain("'tts/artwork-direction-overrides.js'");
   });
 
-  it('keeps the maintained Rulebook itself native v0.7.0', () => {
-    expect(rulebook).toContain('**Version 0.7.0**');
+  it('keeps the maintained Rulebook on the v0.7.1 candidate identity', () => {
+    expect(rulebook).toContain('**Version 0.7.1 Candidate**');
     expect(rulebook).toContain('## Card anatomy');
     expect(rulebook).toContain('Terms occur during Onset');
-    expect(rulebook).not.toContain('Release candidate');
     expect(rulebook).not.toContain('GENERATED CLEAN V0.6.3');
     expect(rulebook).not.toMatch(/\bpending(?:-|\s+)battles?\b|\bFaction Actions?\b|\bFaction Abilit(?:y|ies)\b|\bfaction procedure\b/i);
   });

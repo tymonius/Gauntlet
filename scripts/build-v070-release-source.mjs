@@ -42,6 +42,37 @@ function addCardAnatomyFigures(markdown) {
     .replace(arcaneMarker, arcaneMarker + arcaneFigure);
 }
 
+async function validateFrozenReleaseSources() {
+  const paths = {
+    rulebook: `releases/${RELEASE_VERSION}/Gauntlet_${RELEASE_VERSION}_Rulebook.md`,
+    canonical: `releases/${RELEASE_VERSION}/Gauntlet_${RELEASE_VERSION}_Canonical_Data.json`,
+    starters: `releases/${RELEASE_VERSION}/Gauntlet_${RELEASE_VERSION}_Starter_Decks.json`,
+    provenance: `releases/${RELEASE_VERSION}/Gauntlet_${RELEASE_VERSION}_Source_Provenance.json`,
+  };
+  const [rulebook, canonicalText, startersText, provenanceText] = await Promise.all([
+    readText(paths.rulebook),
+    readText(paths.canonical),
+    readText(paths.starters),
+    readText(paths.provenance),
+  ]);
+  const canonical = JSON.parse(canonicalText);
+  const starters = JSON.parse(startersText);
+  const provenance = JSON.parse(provenanceText);
+
+  if (!rulebook.includes(`**Version ${RELEASE_VERSION.replace(/^v/, '')}**`)) {
+    throw new Error(`${RELEASE_VERSION} frozen Rulebook source has the wrong version identity.`);
+  }
+  if (canonical.release_version !== RELEASE_VERSION || canonical.source_version !== RELEASE_VERSION) {
+    throw new Error(`${RELEASE_VERSION} frozen canonical data has the wrong release/source identity.`);
+  }
+  if (starters.release_version !== RELEASE_VERSION || starters.source_version !== RELEASE_VERSION) {
+    throw new Error(`${RELEASE_VERSION} frozen starter data has the wrong release/source identity.`);
+  }
+  if (provenance.release_version !== RELEASE_VERSION || provenance.source_version !== RELEASE_VERSION || !provenance.authority_set_id) {
+    throw new Error(`${RELEASE_VERSION} frozen source provenance is incomplete.`);
+  }
+}
+
 function validateAuthority(authority) {
   if (authority.schemaVersion !== 2 || authority.authority !== 'current-game' || authority.version !== RELEASE_VERSION) {
     throw new Error('v0.7.0 publication requires the complete v0.7.0 current-game authority.');
@@ -74,13 +105,16 @@ function validateAuthority(authority) {
   if (retired) throw new Error(`Published authority still contains retired terminology: ${retired[0]}.`);
 }
 
-const [authority, currentRulebookSource] = await Promise.all([
-  loadCurrentGameAuthority(),
-  readText(CURRENT_RULEBOOK_SOURCE),
-]);
-validateAuthority(authority);
+const authority = await loadCurrentGameAuthority();
 
-const rulebook = addCardAnatomyFigures(currentRulebookSource);
+if (authority.version !== RELEASE_VERSION) {
+  await validateFrozenReleaseSources();
+  console.log(`Current development is ${authority.version}; preserving the frozen ${RELEASE_VERSION} release-source snapshot.`);
+} else {
+  const currentRulebookSource = await readText(CURRENT_RULEBOOK_SOURCE);
+  validateAuthority(authority);
+
+  const rulebook = addCardAnatomyFigures(currentRulebookSource);
 const canonicalData = {
   schema_version: 2,
   release_version: RELEASE_VERSION,
@@ -187,3 +221,4 @@ await writeText(join(PUBLIC_DIR, 'index.html'), landing);
 console.log(`Materialized ${RELEASE_VERSION} directly from complete current authorities.`);
 console.log(`Authority set: ${authoritySetId}`);
 console.log(`Cards: ${authority.gameplay.cards.length}; Territories: ${authority.gameplay.territories.length}; Starter Decks: ${authority.starterDecks.decks.length}.`);
+}

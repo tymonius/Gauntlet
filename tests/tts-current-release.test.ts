@@ -42,7 +42,7 @@ describe('durable current-game TTS pipeline', () => {
   it('uses the complete current-game authority as the active development selector and keeps publication separate', () => {
     expect(currentGame.authority).toBe('current-game');
     expect(currentGame.schemaVersion).toBe(2);
-    expect(currentGame.version).toBe('v0.7.0');
+    expect(currentGame.version).toMatch(/^v\d+\.\d+\.\d+(?:-candidate)?$/);
     expect(currentGame.gameplay.cards).toHaveLength(142);
     expect(currentGame.gameplay.territories).toHaveLength(25);
     expect(currentGame.starterDecks.decks).toHaveLength(12);
@@ -58,6 +58,8 @@ describe('durable current-game TTS pipeline', () => {
     expect(catalogSource).not.toContain('resolveCards(');
     expect(catalogSource).toContain('export async function resolvePublishedTtsRelease()');
     expect(catalogSource).toContain('publishedVersion: published.version');
+    expect(catalogSource).toContain('version: sourceVersion');
+    expect(catalogSource).not.toContain('TTS_RELEASE_TARGET_SOURCE');
   });
 
   it('still resolves the immutable published release from release lifecycle metadata', () => {

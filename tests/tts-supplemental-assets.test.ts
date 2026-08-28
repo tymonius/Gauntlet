@@ -17,6 +17,9 @@ const universalReferenceCss = readFileSync('card-design/universal-reference.css'
 const stager = readFileSync('scripts/stage-tts-release-assets.mjs', 'utf8');
 const assembler = readFileSync('scripts/assemble-tts-supplemental-save.mjs', 'utf8');
 const workflow = readFileSync('.github/workflows/generate-tts-card-assets.yml', 'utf8');
+const mysticsBridge = readFileSync('tts/render-current-mystics-assets.mjs', 'utf8');
+const mysticsEnsure = readFileSync('tts/ensure-current-mystics-assets.mjs', 'utf8');
+const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 
 function allReferenceComponents() {
@@ -43,6 +46,20 @@ describe('TTS supplemental component exports', () => {
     expect(generator).not.toMatch(/readyCount\s*[:=]\s*\d+|pendingCount\s*[:=]\s*\d+/);
   });
 
+  it('separates the full current Rite pool from the subset currently packaged by TTS', () => {
+    const packagedRites = contract.components.filter((component: any) =>
+      component.family === 'rite-card' && component.productionStatus === 'ready'
+    );
+    expect(currentGame.mystics.rites).toHaveLength(6);
+    expect(packagedRites).toHaveLength(3);
+    expect(mysticsBridge).toContain("component.family === 'rite-card' && component.productionStatus === 'ready'");
+    expect(mysticsBridge).toContain('const packagedRites = packagedRiteComponents.map');
+    expect(mysticsBridge).toContain('data-rite-count=');
+    expect(mysticsBridge).toContain('rites.length');
+    expect(mysticsBridge).not.toContain('rites.length !== 3');
+    expect(mysticsEnsure).toContain('function packagedRiteIds(currentGame)');
+    expect(mysticsEnsure).not.toContain('riteIds.length !== 3');
+  });
   it('exports the ready Mystics Rites as source-driven two-sided cards', async () => {
     const riteCards = contract.components.filter((component: any) => component.family === 'rite-card');
     expect(riteCards).toHaveLength(3);

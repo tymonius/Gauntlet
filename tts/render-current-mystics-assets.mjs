@@ -164,9 +164,21 @@ async function main() {
 
   const rites = currentGame.mystics?.rites || [];
   const ritual = currentGame.mystics?.ritual;
-  if (rites.length !== 3 || !ritual?.id || !ritual?.name) {
-    throw new Error('Current-game Mystics authority must expose exactly three Rites and one Ritual.');
+  if (!rites.length || !ritual?.id || !ritual?.name) {
+    throw new Error('Current-game Mystics authority must expose a Rite pool and one Ritual.');
   }
+
+  const riteByComponentId = new Map(rites.map(rite => [`mystics-rite-${rite.id}`, rite]));
+  const packagedRiteComponents = (currentGame.componentContract?.components || [])
+    .filter(component => component.family === 'rite-card' && component.productionStatus === 'ready');
+  if (!packagedRiteComponents.length) {
+    throw new Error('Current component contract exposes no production-ready Mystics Rite components.');
+  }
+  const packagedRites = packagedRiteComponents.map(component => {
+    const rite = riteByComponentId.get(component.id);
+    if (!rite) throw new Error(`Production Rite component ${component.id} is not present in the current Rite pool.`);
+    return rite;
+  });
 
   await mkdir(join(outputRoot, 'supplementals/fronts'), { recursive: true });
   await mkdir(join(outputRoot, 'supplementals/reverses'), { recursive: true });
@@ -188,9 +200,9 @@ async function main() {
 
   try {
     await page.goto(`${baseUrl}/card-design/`, { waitUntil: 'load' });
-    await page.waitForSelector('#riteReviewSections[data-rite-count="3"][data-ritual-count="1"]', { timeout: 15000 });
+    await page.waitForSelector(`#riteReviewSections[data-rite-count="${rites.length}"][data-ritual-count="1"]`, { timeout: 15000 });
 
-    for (const rite of rites) {
+    for (const rite of packagedRites) {
       const componentId = `mystics-rite-${rite.id}`;
       const frontFile = `supplementals/fronts/${componentId}.png`;
       const reverseFile = `supplementals/reverses/${componentId}-completed.png`;
@@ -243,9 +255,10 @@ async function main() {
     catalog.readyCount = catalog.ready.length;
     catalog.pendingCount = catalog.pending.length;
     manifest.currentMysticsProductionBridge = {
-      riteCount: rites.length,
+      ritePoolCount: rites.length,
+      packagedRiteCount: packagedRites.length,
       ritualCount: 1,
-      source: 'card-design/rite-card.js + game-data/current-game.json',
+      source: 'card-design/rite-card.js + game-data/current-game.json + componentContract',
     };
     catalog.currentMysticsProductionBridge = manifest.currentMysticsProductionBridge;
 
@@ -258,7 +271,7 @@ async function main() {
       writeFile(join(CURRENT_ALIAS_ROOT, 'supplemental-catalog.json'), catalogText),
     ]);
 
-    console.log(`Re-rendered ${rites.length} current Mystics Rite pairs and added ${ritual.name} to the TTS supplemental package.`);
+    console.log(`Re-rendered ${packagedRites.length} production-ready Mystics Rite pairs from a ${rites.length}-Rite pool and added ${ritual.name} to the TTS supplemental package.`);
   } finally {
     await context.close();
     await browser.close();

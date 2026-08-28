@@ -10,9 +10,9 @@ const renderValidator = readFileSync('scripts/validate-v064-territory-render.mjs
 const renderWorkflow = readFileSync('.github/workflows/render-leader-card-specimens.yml', 'utf8');
 const currentAuthority = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
 
-describe('historical v0.6.4 Territory derivation and current v0.7.0 propagation', () => {
+describe('historical v0.6.4 Territory derivation and current authority propagation', () => {
   it('keeps the accepted v0.6.4 Territory document only as derivation provenance', () => {
-    expect(currentAuthority.version).toBe('v0.7.0');
+    expect(currentAuthority.authority).toBe('current-game');
     expect(currentAuthority.provenance.historicalInputs.territories).toBe('/docs/v0.6.4-territories.json');
     expect(currentAuthority.gameplay.territories).toEqual(historical.territories);
     expect(currentAuthority).not.toHaveProperty('sources');
@@ -44,10 +44,11 @@ describe('historical v0.6.4 Territory derivation and current v0.7.0 propagation'
     expect(reference).toContain('Shared battle rules already require a Tiebreak Roll');
   });
 
-  it('runs production-size validation against the complete v0.7.0 authority', () => {
+  it('runs production-size validation against the complete current authority', () => {
     expect(renderValidator).toContain('loadCurrentGameAuthority');
     expect(renderValidator).toContain('authority.gameplay?.territories');
-    expect(renderValidator).toContain("authority.version !== 'v0.7.0'");
+    expect(renderValidator).toContain('validateCurrentGameAuthority(authority)');
+    expect(renderValidator).not.toContain("authority.version !== 'v0.7.0'");
     expect(renderValidator).not.toContain('readCurrentJsonSource');
     expect(renderValidator).not.toContain('source.base_version');
     expect(renderValidator).not.toContain('EXPECTED_SOURCE_ISSUE');

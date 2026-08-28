@@ -105,6 +105,9 @@ describe('v0.7.0 publication boundary', () => {
     expect(bookletRenderer).toContain('validateReleaseNotesBookletCounts(logicalPages, bookletPages, physicalSheets);');
     expect(materializer).toContain('Gauntlet_v0.7.0_Card_Anatomy.png');
     expect(materializer).toContain('Gauntlet_v0.7.0_Arcane_Trait_Mark.png');
+    expect(materializer).toContain('pull_request:');
+    expect(releaseBuilder).toContain('validateFrozenReleaseSources');
+    expect(releaseBuilder).toContain('if (authority.version !== RELEASE_VERSION)');
   });
 
   it('keeps final publication explicit, dated, and TTS-gated', () => {

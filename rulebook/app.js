@@ -275,7 +275,7 @@ function writeModeToUrl(mode, replace = false) {
 
 function setRulesetUi(mode, currentGame = null, distinctCandidate = false) {
   const candidate = mode === CANDIDATE_MODE && distinctCandidate;
-  if (rulesetSwitch) rulesetSwitch.hidden = !distinctCandidate;
+  if (rulesetSwitch) rulesetSwitch.hidden = true;
   document.body.dataset.rulesetMode = mode;
   rulesetButtons.forEach((button) => {
     button.setAttribute('aria-pressed', String(button.dataset.ruleset === mode));

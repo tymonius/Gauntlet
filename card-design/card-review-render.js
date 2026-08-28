@@ -78,17 +78,7 @@ await (async () => {
   }
 
   async function resolveDisplayVersion(currentGame) {
-    if (params.get('releaseTarget') !== 'tts') return currentGame.displayVersion;
-
-    try {
-      const response = await fetch('/config/tts-release-target.json', { cache: 'no-cache' });
-      if (!response.ok) throw new Error(`TTS release target returned ${response.status}.`);
-      const target = await response.json();
-      return String(target.displayVersion || target.releaseTag || currentGame.displayVersion);
-    } catch (error) {
-      console.warn('Unable to resolve TTS display version for embedded card render.', error);
-      return currentGame.displayVersion;
-    }
+    return currentGame.displayVersion;
   }
 
   try {

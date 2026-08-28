@@ -30,7 +30,7 @@ describe('Published Browser Rulebook', () => {
     expect(index).toContain('data-ruleset="released" aria-pressed="true"');
     expect(index).toContain('data-ruleset="candidate" aria-pressed="false" hidden disabled');
     expect(app).toContain('candidateVersion !== PUBLISHED_VERSION');
-    expect(app).toContain('rulesetSwitch.hidden = !distinctCandidate');
+    expect(app).toContain('rulesetSwitch.hidden = true');
     expect(rulesetStyles).toContain('.ruleset-switch[hidden]');
     expect(rulesetStyles).toContain('.ruleset-switch button[hidden]');
     expect(rulesetStyles).toContain('display: none !important;');
@@ -47,7 +47,7 @@ describe('Published Browser Rulebook', () => {
     expect(app).toContain("crypto.subtle.digest('SHA-256', bytes)");
   });
 
-  it('keeps the maintained v0.7.0 Rulebook aligned with the published source', () => {
+  it('keeps the maintained v0.7.1 candidate source separate from the published v0.7.0 Rulebook', () => {
     const released = publicReleasedSource();
     expect(released).toMatch(/\bpending(?:-|\s+)battle\b/i);
 
@@ -56,7 +56,7 @@ describe('Published Browser Rulebook', () => {
     expect(app).not.toContain("import { applyReleaseCandidateRulebook } from './release-candidate.js';");
     expect(app).not.toContain('applyReleaseCandidateRulebook(releasedMarkdown, currentGame)');
 
-    expect(currentRulebook).toContain('**Version 0.7.0**');
+    expect(currentRulebook).toContain('**Version 0.7.1 Candidate**');
     expect(currentRulebook).toContain('# 5. Actions, Faction Features, Leader Abilities, and Assets');
     expect(currentRulebook).toContain('## Card anatomy');
     expect(currentRulebook).toContain('Onset is the first phase of the battle sequence.');

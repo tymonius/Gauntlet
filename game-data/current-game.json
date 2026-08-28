@@ -1,14 +1,14 @@
 {
   "schemaVersion": 2,
   "authority": "current-game",
-  "version": "v0.7.0",
-  "displayVersion": "v0.7.0",
-  "status": "release-ready",
+  "version": "v0.7.1-candidate",
+  "displayVersion": "v0.7.1 candidate",
+  "status": "active-development",
   "runtimePolicy": "This file is the complete current gameplay authority. Runtime consumers load it directly; historical source and change documents are provenance only and are never layered over this authority.",
   "provenance": {
     "historicalBaseVersion": "v0.6.3",
     "transitionalSourceVersion": "v0.6.4-candidate",
-    "note": "The historical inputs below document how v0.7.0 was derived. They are not runtime inputs, override layers, or current authorities.",
+    "note": "The historical and approved-design inputs below document how the current authority was derived. They are provenance only, not runtime inputs, override layers, or current authorities.",
     "historicalInputs": {
       "baseGameplay": "/artifacts/reconstruction/clean-v0.6.3/complete-authority/canonical-structured-data.json",
       "cardChanges": "/docs/v0.6.4-card-additions.json",
@@ -18,6 +18,9 @@
       "rules": "/docs/v0.6.4-rules.json",
       "componentContract": "/config/tts-component-contract.json",
       "starterDecks": "/deckbuilder/starter-decks.json"
+    },
+    "currentDevelopmentInputs": {
+      "mysticsRites": "/docs/v0.7.1-mystics-rites.json"
     }
   },
   "gameplay": {
@@ -7425,25 +7428,53 @@
         "id": "echoes",
         "name": "Rite of Echoes",
         "artwork": "/images/artwork/cards/mystics/rites-and-rituals/rite-of-echoes.png",
-        "begin": "Bind one chosen card from your Graveyard face up beneath this Rite. Then bind one card from your Hand face down beneath it whose title matches at least one other card in your Deck.",
-        "complete": "On a later turn, complete this Rite after the Gambit, Tactic, or Gambit or Tactic effect of another card with the bound Hand card's title is applied during a battle.",
-        "interrupted": "If you lose a battle before completion, put both bound cards in your Graveyard and reset the Rite."
+        "begin": "Bind one card from your Graveyard face up beneath this Rite. Then bind one card from your Hand face up beneath it that shares its title with at least one card in your Draw Pile. Search your Draw Pile for that card, reveal it, shuffle your Draw Pile, then place the revealed card on top.",
+        "complete": "On a later turn, complete this Rite after you win a battle in which the Gambit or Tactic effect of a card with the bound Hand card's title was applied. Move the card bound from your Graveyard to your Discard Pile. Put the card bound from your Hand in your Graveyard.",
+        "interrupted": "If you lose a battle before completion, put both bound cards in your Graveyard and reset this Rite."
       },
       {
         "id": "blood",
         "name": "Rite of Blood",
         "artwork": "/images/artwork/cards/mystics/rites-and-rituals/rite-of-blood.png",
         "begin": "Put one card from your Hand in your Graveyard.",
-        "complete": "On a later turn, complete this Rite when you win a battle without setting a Gambit or choosing a Tactic. Using Transmutation, an Asset, Overlay, Territory, Leader Ability, or card from another source does not by itself prevent completion.",
-        "interrupted": "If you lose a battle before completion, reset the Rite."
+        "complete": "On a later turn, complete this Rite when you win a battle without setting a Gambit or choosing a Tactic.",
+        "reminder": {
+          "style": "italic",
+          "text": "Using Transmutation, an Asset, Overlay, Territory effect, Leader Ability, or card from another source does not by itself prevent completion."
+        },
+        "interrupted": "If you lose a battle before completion, reset this Rite."
       },
       {
         "id": "crossing",
         "name": "Rite of Crossing",
         "artwork": "/images/artwork/cards/mystics/rites-and-rituals/rite-of-crossing.png",
-        "begin": "You may use the Begin a Rite Faction Feature for Rite of Crossing during Denouement only after winning a battle that turn that made you the occupier of a Territory the opponent controlled immediately before that battle. Put one Arcane card from your Hand in your Graveyard. If you have none, reveal your Hand and move one Arcane card from your Discard Pile to your Graveyard instead.",
-        "complete": "At the start of your next turn, after the Capture step, complete this Rite if you are still the occupier or now control that Territory. Otherwise, the Rite is interrupted and resets.",
-        "interrupted": ""
+        "begin": "You may begin this Rite during Denouement only after winning a battle that turn that made you the occupier of a Territory the opponent controlled immediately before that battle.",
+        "complete": "At the start of your next turn, after the Capture step, complete this Rite if you are still the occupier or now control that Territory.",
+        "interrupted": "If before then you cease to occupy that Territory, reset this Rite."
+      },
+      {
+        "id": "shattering",
+        "name": "Rite of Shattering",
+        "artwork": null,
+        "begin": "Put one banked Asset in your Graveyard.",
+        "complete": "In the first battle that reaches dice on a later turn, gain a number of instances of advantage equal to that Asset's value. If you win that battle, complete this Rite.",
+        "interrupted": "If you lose that battle, Retreat +1 and reset this Rite."
+      },
+      {
+        "id": "consecration",
+        "name": "Rite of Consecration",
+        "artwork": null,
+        "begin": "Place one Overlay from Hand on a Territory without using an Action. That Territory is consecrated while this Rite is active.",
+        "complete": "On a later turn, complete this Rite after you win a battle on the consecrated Territory.",
+        "interrupted": "If you lose a battle on the consecrated Territory before completion, or if that Overlay is removed from the Territory before completion, reset this Rite."
+      },
+      {
+        "id": "equivalence",
+        "name": "Rite of Equivalence",
+        "artwork": null,
+        "begin": "Choose one card in your Hand and one card in your Graveyard with the same value. Exchange them. Keep the card moved to your Hand revealed while this Rite is active.",
+        "complete": "Complete when you play the exchanged card for one of its printed effects.",
+        "interrupted": "If the exchanged card leaves your Hand in any other way, or if you lose a battle before completion, reset this Rite."
       }
     ],
     "ritual": {
@@ -7451,7 +7482,7 @@
       "name": "Ritual of Ascension",
       "artwork": "/images/artwork/cards/mystics/rites-and-rituals/ritual-of-ascension.png",
       "cardBack": "/images/artwork/cardbacks/mystics/ritual-of-ascension.png",
-      "begin": "After completing all three Rites, during Denouement, spend 1 Action to bind one Arcane card from your Hand, one Arcane card from your Discard Pile, and one Arcane card from your Graveyard. This begins the Ritual.",
+      "begin": "After completing all three selected Rites, during Denouement, spend 1 Action to bind one Arcane card from your Hand, one Arcane card from your Discard Pile, and one Arcane card from your Graveyard. This begins the Ritual.",
       "convergence": "While the Ritual is underway, during a battle you initiated, add +1 to your battle total for each card bound to the Ritual.",
       "complete": "Initiate a battle while all three Ritual cards remain bound. If you win that battle, complete the Ritual and immediately win the game.",
       "interrupted": "If you lose any battle before Ritual completion, the Ritual is interrupted. Put all three Ritual-bound cards in your Graveyard. Withdrawal neither completes nor interrupts the Ritual."
@@ -7479,10 +7510,20 @@
           "Ritual of",
           "Ascension"
         ],
-        "text": "After completing all three Rites, during Denouement, spend 1 Action to bind one Arcane card from your Hand, one from your Discard Pile, and one from your Graveyard. Initiate a battle while all three remain bound. If you win that battle, complete the Ritual and immediately win the game."
+        "text": "After completing all three selected Rites, during Denouement, spend 1 Action to bind one Arcane card from your Hand, one from your Discard Pile, and one from your Graveyard. Initiate a battle while all three remain bound. If you win that battle, complete the Ritual and immediately win the game."
       }
     ],
-    "completedArtwork": "/images/artwork/supplemental/mystics/rite-completed.webp"
+    "completedArtwork": "/images/artwork/supplemental/mystics/rite-completed.webp",
+    "selectionPolicy": {
+      "poolSize": 6,
+      "selectedCount": 3,
+      "timing": "game-package construction",
+      "visibility": "public at setup",
+      "rule": "Choose exactly three different Rites from the six-Rite pool as part of the Mystics game package. Only those selected Rites may be begun during that game. Completing all three selected Rites satisfies the three-Rite requirement for the Ritual route."
+    },
+    "generalRules": {
+      "impossibleCompletion": "If an active Rite can no longer be completed because a required card, component, position, or game state is lost or changes, it is immediately interrupted and resets."
+    }
   },
   "artDirection": {
     "diplomats-ambassador": {
