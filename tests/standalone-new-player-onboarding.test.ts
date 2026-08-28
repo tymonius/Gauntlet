@@ -27,7 +27,7 @@ describe("standalone new-player onboarding", () => {
     expect(html).toContain("Step 1 · Understand");
     expect(html).toContain("Step 2 · Choose");
     expect(html).toContain("Step 3 · Learn");
-    expect(html).toContain("Step 4 · Print");
+    expect(html).toContain("Step 4 · Play");
     expect(html.match(/class=\"intro-card/g)).toHaveLength(9);
     expect(html.match(/name=\"faction\"/g)).toHaveLength(6);
 
@@ -117,7 +117,7 @@ describe("standalone new-player onboarding", () => {
     expect(homepage).toContain('<a class="button primary" href="start/">Start playing</a>');
     expect(homepage).toContain("Current canonical playtest edition · v0.7.0");
     expect(homepage).toContain("New-player setup");
-    expect(homepage).toContain("Choose your first deck");
+    expect(homepage).toContain("Choose your first side");
     expect(homepage).not.toContain('href="v0.6.2/start/"');
   });
 
