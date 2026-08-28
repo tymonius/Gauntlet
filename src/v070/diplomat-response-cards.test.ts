@@ -363,7 +363,9 @@ describe('v0.7.0 Diplomat offer/response cards', () => {
     });
 
     expect(state.players.A.zones.discardPile).toContain(nonbinding);
-    expect(state.players.A.zones.hand.length).toBe(handBefore);
+    // Nonbinding replaces the set-aside card with one draw, while the refused
+    // De-escalation Proposal independently grants the Diplomat another card.
+    expect(state.players.A.zones.hand.length).toBe(handBefore + 1);
     expect(state.battleRuntime?.terms.stage).toBe('refused');
   });
 
