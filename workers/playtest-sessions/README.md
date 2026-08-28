@@ -55,7 +55,7 @@ The production GitHub workflow applies pending remote migrations **before** depl
 | POST | `/api/tracked-games/:token/response` | Submit one authenticated player's private response |
 | GET | `/api/tracked-games/:token/review` | Creator-key protected complete game review |
 
-Tracked creation records `playMode` as `tts` or `physical`. TTS is the default for new public self-serve tests.
+Tracked creation records `playMode` as `tts` or `physical`. New public self-serve tests must choose explicitly: physical for players together in person, TTS for players in different locations.
 
 Supported live diagnostic flags:
 
