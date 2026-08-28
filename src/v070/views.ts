@@ -1,9 +1,41 @@
 import type { PlayerId } from './rules';
 import type { V070GameEvent, V070GameState, V070SetupStage } from './engine';
+import type {
+  V070BattleCardCommitment,
+  V070BattleRuntime,
+  V070UnsupportedBattleEffect,
+} from './battle-types';
 
 export interface V070VisibleCard {
   instanceId: string;
   cardId: string;
+}
+
+export interface V070HiddenBattleCard {
+  set: true;
+  faceUp: false;
+}
+
+export type V070BattleCardView = V070VisibleCard | V070HiddenBattleCard | null | undefined;
+
+export interface V070BattleParticipantView {
+  gambit: V070BattleCardView;
+  reserveCount: number;
+  reserve?: V070VisibleCard[];
+  tactic: V070BattleCardView;
+  battleModifier: number;
+  advantage: number;
+  disadvantage: number;
+  battleDice: number[];
+  selectedBattleDie: number | null;
+  battleTotal: number | null;
+  tiebreakRolls: number[];
+}
+
+export interface V070BattleRuntimeView {
+  stage: V070BattleRuntime['stage'];
+  participants: Record<PlayerId, V070BattleParticipantView>;
+  unsupportedEffects: V070UnsupportedBattleEffect[];
 }
 
 export interface V070PlayerZoneView {
@@ -41,6 +73,7 @@ export interface V070GameView {
   turnNumber: number;
   turnState: V070GameState['turnState'];
   battle: V070GameState['battle'];
+  battleRuntime: V070BattleRuntimeView | null;
   winner: PlayerId | null;
   events: V070GameEvent[];
 }
@@ -65,6 +98,9 @@ export function viewV070GameForPlayer(
     turnNumber: state.turnNumber,
     turnState: state.turnState ? structuredClone(state.turnState) : null,
     battle: state.battle ? structuredClone(state.battle) : null,
+    battleRuntime: state.battleRuntime
+      ? viewBattleRuntime(state, state.battleRuntime, viewer)
+      : null,
     winner: state.winner,
     events: state.events
       .filter(event => event.visibility === 'public' || event.visibility === viewer)
@@ -107,6 +143,63 @@ function viewPlayer(
       : null,
     position: player.position,
     controlledTerritories: [...player.controlledTerritories],
+  };
+}
+
+function viewBattleRuntime(
+  state: V070GameState,
+  runtime: V070BattleRuntime,
+  viewer: PlayerId,
+): V070BattleRuntimeView {
+  return {
+    stage: runtime.stage,
+    participants: {
+      A: viewBattleParticipant(state, runtime, 'A', viewer),
+      B: viewBattleParticipant(state, runtime, 'B', viewer),
+    },
+    unsupportedEffects: runtime.unsupportedEffects.map(effect => structuredClone(effect)),
+  };
+}
+
+function viewBattleParticipant(
+  state: V070GameState,
+  runtime: V070BattleRuntime,
+  playerId: PlayerId,
+  viewer: PlayerId,
+): V070BattleParticipantView {
+  const participant = runtime.participants[playerId];
+  const owner = playerId === viewer;
+
+  return {
+    gambit: viewBattleCommitment(state, participant.gambit, owner),
+    reserveCount: participant.reserve.length,
+    reserve: owner ? visibleCards(state, participant.reserve) : undefined,
+    tactic: viewBattleCommitment(state, participant.tactic, owner),
+    battleModifier: participant.battleModifier,
+    advantage: participant.advantage,
+    disadvantage: participant.disadvantage,
+    battleDice: [...participant.battleDice],
+    selectedBattleDie: participant.selectedBattleDie,
+    battleTotal: participant.battleTotal,
+    tiebreakRolls: [...participant.tiebreakRolls],
+  };
+}
+
+function viewBattleCommitment(
+  state: V070GameState,
+  commitment: V070BattleCardCommitment | null | undefined,
+  owner: boolean,
+): V070BattleCardView {
+  if (commitment === undefined || commitment === null) return commitment;
+
+  if (!owner && !commitment.faceUp) {
+    return { set: true, faceUp: false };
+  }
+  const instance = state.cardInstances[commitment.instanceId];
+  if (!instance) throw new Error(`Unknown card instance ${commitment.instanceId}.`);
+  return {
+    instanceId: commitment.instanceId,
+    cardId: instance.cardId,
   };
 }
 
