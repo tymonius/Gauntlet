@@ -86,6 +86,10 @@
     const playerName = el.printRequestPlayerName.value.trim();
     const note = el.printRequestNote.value.trim();
     const territories = Array.isArray(deck.territories) ? deck.territories.map(item => item.name || item.id).filter(Boolean) : [];
+    const riteById = new Map((state.currentGameData?.mystics?.rites || []).map(rite => [rite.id, rite.name]));
+    const rites = deck.factionId === "mystics"
+      ? (deck.selectedRites || []).map(id => riteById.get(id) || id)
+      : [];
     const json = JSON.stringify(deck, null, 2);
     const subject = `Gauntlet Deck printing request — ${playerName} — ${deck.name}`;
     const lines = [
@@ -98,6 +102,7 @@
       `Playable cards: ${validation.cardCount}`,
       `Deck value: ${validation.pointTotal}/60`,
       `Territories: ${territories.length ? territories.join(" → ") : "None selected"}`,
+      ...(deck.factionId === "mystics" ? [`Rites: ${rites.length ? rites.join(", ") : "None selected"}`] : []),
       ...(note ? [`Note: ${note}`] : []),
       "",
       "HOST INSTRUCTIONS",
