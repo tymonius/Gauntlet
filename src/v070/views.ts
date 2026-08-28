@@ -40,6 +40,7 @@ export interface V070GameView {
   activePlayer: PlayerId | null;
   turnNumber: number;
   turnState: V070GameState['turnState'];
+  battle: V070GameState['battle'];
   winner: PlayerId | null;
   events: V070GameEvent[];
 }
@@ -63,6 +64,7 @@ export function viewV070GameForPlayer(
     activePlayer: state.activePlayer,
     turnNumber: state.turnNumber,
     turnState: state.turnState ? structuredClone(state.turnState) : null,
+    battle: state.battle ? structuredClone(state.battle) : null,
     winner: state.winner,
     events: state.events
       .filter(event => event.visibility === 'public' || event.visibility === viewer)
