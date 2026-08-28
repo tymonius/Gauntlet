@@ -215,6 +215,8 @@ Trademark ownership should be decided **before** filing, particularly if an inte
 
 Copyright registration does not need to be delayed solely to wait for formation of a future company: registrations can be made in the current copyright owner's name and copyright ownership can later be transferred by written assignment. Any transfer should be documented and, where useful, recorded.
 
+The repository now establishes **TDS Games** as the provisional publishing imprint for Gauntlet through `config/publishing-authority.json`. That record deliberately separates publishing identity from IP ownership: Tymon Scott remains the stated copyright holder, and no legal-entity, trademark-ownership, or copyright-assignment status is asserted merely by use of the imprint.
+
 ## 7. Immediate action queue
 
 ### P0 — this week
@@ -238,7 +240,8 @@ Copyright registration does not need to be delayed solely to wait for formation 
 - [ ] Create an asset/IP ledger and keep it current with each release.
 - [ ] Adopt contributor IP terms before accepting substantive outside contributions.
 - [ ] Document licenses for fonts, libraries, textures, and other third-party production assets.
-- [ ] Establish the relationship between the eventual operating entity, TDS Games publishing brand, and Gauntlet IP ownership.
+- [x] Establish TDS Games as the provisional Gauntlet publishing imprint without asserting an IP transfer.
+- [ ] Decide and document the eventual legal relationship among the operating entity, TDS Games imprint, and Gauntlet copyright/trademark ownership.
 - [ ] Evaluate website terms/privacy and commercial product-liability needs before paid release.
 
 ## 8. Authoritative reference points
