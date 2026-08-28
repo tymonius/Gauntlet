@@ -58,6 +58,19 @@ export function validateV070PublishedData({ canonicalData, manifest, provenance,
   if (!canonicalData.faction_feature_taxonomy?.actionProfiles?.['1 Action'] || !canonicalData.faction_features) {
     throw new Error('Published v0.7.0 canonical data is missing Faction Feature authority.');
   }
+  const diplomats = canonicalData.gameplay?.factions?.find(faction => faction.id === 'diplomats');
+  if (diplomats?.factionRules?.peace_treaty_threshold !== 6) {
+    throw new Error('Published v0.7.0 canonical Peace Treaty threshold must be six.');
+  }
+  const rulebook = String(rulebookMarkdown || '');
+  if (
+    !rulebook.includes('Ratify six different Proposals')
+    || !rulebook.includes('if six different Proposals are ratified')
+    || rulebook.includes('Ratify five different Proposals')
+    || rulebook.includes('if five different Proposals are ratified')
+  ) {
+    throw new Error('Published v0.7.0 Rulebook Peace Treaty threshold is not synchronized to six.');
+  }
   if (!canonicalData.leaders.every(leader =>
     Array.isArray(leader.sections)
     && leader.sections.every(section =>
