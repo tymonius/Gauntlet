@@ -22,9 +22,11 @@ import {
   passV070Terms,
   respondToV070Terms,
   resolveV070PoliticalCapital,
+  resolveV070ProposalChoice,
   settleV070RefusedTermsOutcome,
   v070LeverageRequiresDecision,
   v070PoliticalCapitalPending,
+  v070ProposalChoicePending,
   v070TermsReadyForGambits,
 } from './diplomats';
 import {
@@ -39,6 +41,12 @@ export type V070BattleAction =
   | { type: 'pass_terms'; playerId: PlayerId }
   | { type: 'offer_terms'; playerId: PlayerId; proposalId: string }
   | { type: 'respond_to_terms'; playerId: PlayerId; response: 'accept' | 'refuse' }
+  | {
+      type: 'resolve_proposal_choice';
+      playerId: PlayerId;
+      cardInstanceId?: string;
+      replaceAssetInstanceId?: string;
+    }
   | { type: 'use_leverage'; playerId: PlayerId; bonus: number }
   | { type: 'resolve_political_capital'; playerId: PlayerId; cardInstanceIds: readonly string[] }
   | { type: 'proceed_from_onset'; playerId: PlayerId }
@@ -73,6 +81,14 @@ export function reduceV070BattleAction(
       break;
     case 'respond_to_terms':
       respondToV070Terms(next, action.playerId, action.response);
+      break;
+    case 'resolve_proposal_choice':
+      resolveV070ProposalChoice(
+        next,
+        action.playerId,
+        action.cardInstanceId,
+        action.replaceAssetInstanceId,
+      );
       break;
     case 'use_leverage':
       applyV070Leverage(next, action.playerId, action.bonus);
@@ -519,6 +535,7 @@ function applyOutcome(state: V070GameState, outcome: V070BattleOutcome): void {
     },
   });
 
+  if (state.stage === 'ended') return;
   if (resolution.victory) completeAftermathInternal(state, resolution.victory.winner);
 }
 
@@ -528,6 +545,9 @@ function completeAftermath(state: V070GameState, playerId: PlayerId): void {
   requireRuntimeStage(runtime, 'aftermath');
   if (v070PoliticalCapitalPending(state)) {
     throw new V070GameActionError('Resolve Senator Political Capital before completing the Aftermath.');
+  }
+  if (v070ProposalChoicePending(state)) {
+    throw new V070GameActionError('Resolve the pending Proposal choice before completing the Aftermath.');
   }
   if (playerId !== battle.attacker) {
     throw new V070GameActionError('The attacker advances the shared Aftermath procedure.');
