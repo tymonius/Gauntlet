@@ -29,9 +29,9 @@ Individual stages remain available through the `tts:*` package scripts when a na
 
 ## Review Scaffold outputs
 
-The publisher writes the versioned Review Scaffold under the resolved TTS target, for example:
+The publisher writes the versioned Review Scaffold under the current-development identity, for example:
 
-- `tts/generated/v0.7.0/Gauntlet_v0.7.0_TTS_Review_Scaffold.json`
+- `tts/generated/v0.7.1-candidate/Gauntlet_v0.7.1-candidate_TTS_Review_Scaffold.json`
 - `tts/generated/current/Gauntlet_TTS_Review_Scaffold.json`
 
 Generated output remains ignored by Git. Pull-request CI includes the generated TTS tree inside the `gauntlet-current-tts-card-assets` Actions artifact.
@@ -77,11 +77,11 @@ The bag description records the starter summary and recommended Territory order.
 
 ## Deckbuilder custom Deck import
 
-Deckbuilder-to-TTS import is a **v0.7.1 feature**. The implementation is present in the codebase but remains dormant while the current game/TTS release target is v0.7.0; the published v0.7.0 Workshop mod and v0.7.0 Deckbuilder therefore do not expose the importer.
+Deckbuilder-to-TTS import is a **v0.7.1 feature**. The active `v0.7.1-candidate` TTS Review Scaffold installs the importer for private QA, while the public Deckbuilder keeps **Copy for Tabletop Simulator** hidden for prerelease authorities. The published v0.7.0 Workshop mod therefore remains the only public TTS version during candidate testing.
 
-Starting with v0.7.1, the Deckbuilder can copy a compact versioned `GDL1:` Deck Code containing only the current game version, Deck name, faction/Leader ids, playable-card ids with quantities, and the three selected Territory ids.
+When the current-game authority becomes stable v0.7.1, the Deckbuilder can copy a compact versioned `GDL1:` Deck Code containing only the current game version, Deck name, faction/Leader ids, playable-card ids with quantities, and the three selected Territory ids.
 
-The assembled TTS save installs a global **IMPORT DECK** control after faction supplementals are assembled when the release target is v0.7.1 or later. Import validates the Deck Code against the same generated card/Territory manifests and exact TTS game version, then uses the matching official starter Bag as the runtime template. The custom Bag therefore keeps the correct Leader, faction-colored utility pieces, references, trackers, Proposals/Deeds/Rites, and other ready supplementals while replacing only the playable Deck and selected Territory stack.
+The assembled v0.7.1-candidate and later TTS saves install a global **IMPORT DECK** control after faction supplementals are assembled. Import validates the Deck Code against the same generated card/Territory manifests and exact TTS game version, then uses the matching official starter Bag as the runtime template. The custom Bag therefore keeps the correct Leader, faction-colored utility pieces, references, trackers, Proposals/Deeds/Rites, and other ready supplementals while replacing only the playable Deck and selected Territory stack.
 
 Official starter Bags carry `gauntlet:starter-kit:<starter-id>` GM notes so the importer can locate a safe template. The source starter Bag is never modified.
 
@@ -116,11 +116,13 @@ must pass. A non-ready component, missing required generated object, starter-ass
 
 ## Manual QA record
 
-The v0.7.0 manual release gate is recorded in:
+The active development QA record is:
 
-- `tts/release-qa/v0.7.0.json`
+- `tts/release-qa/v0.7.1-candidate.json`
 
-A release QA record remains `in-progress` until the corresponding in-game checks are actually completed. For v0.7.0, the committed record is now `passed`, all 18 required checks are true, and Workshop approval is explicit. Schema version 3 records the **18 required checks**, grouped as follows.
+It begins `in-progress`, with all 18 manual checks false and `approvedForWorkshop: false`. The completed v0.7.0 record remains preserved separately at `tts/release-qa/v0.7.0.json` as evidence for the already-published Workshop version.
+
+A release QA record remains `in-progress` until the corresponding in-game checks are actually completed. Schema version 3 records the **18 required checks**, grouped as follows.
 
 ### Table and setup
 
@@ -149,7 +151,7 @@ A release QA record remains `in-progress` until the corresponding in-game checks
 - focused faction drills completed for interactions not already covered; and
 - any TTS-specific friction found during testing resolved before approval.
 
-A remote two-player game is not a v0.7.0 release requirement. Workshop approval is a separate explicit boolean after all 18 required checks. Do not mark a check complete merely because the JSON package generated successfully; these fields represent actual Tabletop Simulator testing.
+A remote two-player game is not currently a required release check. Workshop approval is a separate explicit boolean after all 18 required checks. Do not mark a check complete merely because the JSON package generated successfully; these fields represent actual Tabletop Simulator testing.
 
 ## Final save promotion
 
@@ -165,16 +167,13 @@ Promotion is deliberately excluded from `npm run tts:package`. The command refus
 2. all 18 required manual-QA checks are complete; and
 3. the QA record explicitly sets `approvedForWorkshop: true`.
 
-A successful promotion preserves the Review Scaffold and writes a separate final save:
+Candidate builds are not publication targets. The `v0.7.1-candidate` QA record deliberately leaves Workshop approval false, so the guarded promotion path cannot produce a publishable candidate mod. When the authority advances to stable v0.7.1, that version receives its own QA record before any final save is promoted.
 
-- `tts/generated/v0.7.0/Gauntlet_v0.7.0_TTS_Mod.json`
-- `tts/generated/current/Gauntlet_TTS_Mod.json`
-
-Only the promoted copy loses the `Review Scaffold` identity. For v0.7.0 this promotion has completed; the final hosted save is `https://gauntlet.run/tts/v0.7.0/Gauntlet_v0.7.0_TTS_Mod.json` and the public Workshop item is `https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635`.
+The already-promoted v0.7.0 save remains hosted at `https://gauntlet.run/tts/v0.7.0/Gauntlet_v0.7.0_TTS_Mod.json` and remains the save behind the public Workshop item `https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635`.
 
 ## Review boundary
 
-Rules automation is not a v0.7.0 requirement. The release target is an accurate and pleasant digital tabletop implementation of the physical game: players still perform setup, battle resolution, card handling, and faction rules themselves unless automation is separately approved.
+The current development target remains an accurate and pleasant digital tabletop implementation of the physical game. Players still perform setup, battle resolution, card handling, and faction rules themselves unless automation is separately approved.
 
 The generated Review Scaffold is therefore allowed to exist while a component or manual-QA blocker remains. The final save is not.
 
