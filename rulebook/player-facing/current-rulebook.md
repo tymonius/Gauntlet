@@ -1276,7 +1276,7 @@ Accepted or successfully imposed Proposals become Treaty Articles. Ratify six<!-
 | Starting value | 1 Influence. |
 | Faction Features | Terms — No Action · During Onset; Leverage — No Action · Before dice after refused Terms. |
 | Leaders | Ambassador and Senator. |
-| Proposal set | Nine<!-- RULE-FACT:proposals.count:word --> double-sided Proposal / Treaty Article cards. |
+| Proposal set | Nine<!-- RULE-FACT:proposals.count:word-cap --> double-sided Proposal / Treaty Article cards. |
 | Faction pool | 15<!-- RULE-FACT:cards.diplomats.count:number --> Diplomat card titles. |
 | Unique card | Plenipotentiary, cost 4; maximum one copy per Deck. |
 
