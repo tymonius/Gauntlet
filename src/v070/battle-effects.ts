@@ -1,5 +1,6 @@
 import { v070CanonicalContent } from '../content/v070';
 import { appendV070Event, type V070GameState } from './engine';
+import { drawV070Cards } from './turn-engine';
 import type { PlayerId } from './rules';
 import type {
   V070BattleCardCommitment,
@@ -26,6 +27,39 @@ const handlers: V070BattleEffectHandler[] = [
   modifier('neutral-new-recruits', '+1 Battle Total.', 1),
   modifier('neutral-rallying-cry', '+1 Battle Total.', 1),
   modifier('diplomats-gunboat-diplomacy', '+2 Battle Total.', 2),
+  {
+    cardId: 'diplomats-trade-concessions',
+    expectedText: 'Opponent: +1 Card. +2 Battle Total.',
+    timing: 'reveal',
+    apply: ({ state, owner, opponent }) => {
+      const draw = drawV070Cards(state, opponent, 1, 'Trade Concessions battle effect');
+      state.players[opponent].zones.hand.push(...draw.drawn);
+      participant(state, owner).battleModifier += 2;
+
+      appendV070Event(state, {
+        type: 'cards_drawn',
+        actor: opponent,
+        visibility: 'public',
+        payload: {
+          count: draw.drawn.length,
+          purpose: 'Trade Concessions battle effect',
+          reshuffles: draw.reshuffles,
+          exhausted: draw.exhausted,
+        },
+      });
+      if (draw.drawn.length > 0) {
+        appendV070Event(state, {
+          type: 'drawn_card_identity',
+          actor: opponent,
+          visibility: opponent,
+          payload: {
+            cardInstanceIds: [...draw.drawn],
+            purpose: 'Trade Concessions battle effect',
+          },
+        });
+      }
+    },
+  },
   {
     cardId: 'neutral-forced-march',
     expectedText: 'Attacker — +1 Battle Total.',
