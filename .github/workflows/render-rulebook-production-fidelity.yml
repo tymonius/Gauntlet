@@ -25,7 +25,9 @@ jobs:
             rulebook-design
             rulebook-production
             releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md
+            config/publishing-authority.json
             images/sketches
+            images/branding
             package.json
             package-lock.json
 
