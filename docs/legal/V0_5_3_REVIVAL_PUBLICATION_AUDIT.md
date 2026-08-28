@@ -25,7 +25,11 @@ v0.5.3 is the first complete fixed package in that sequence:
 
 The package was created on **June 20, 2026**. The first hard evidence presently recovered of the v0.5.3 files being made publicly available through GitHub is **June 23, 2026**. A June 22 Git commit/tag date records the local Git object date but does not by itself prove when the branch/tag was pushed to the public repository.
 
-One factual publication question remains: whether substantially identical v0.5.x material was distributed to another person during the June 21 human playtest or by another non-GitHub channel before the June 23 public-repository evidence.
+The author's 2026-08-28 recollection adds an earlier physical-distribution fact: during the June 21 human playtest, the author believes the other player was allowed to **keep the cards**, and that **printed rulebooks were handed out**. Because the current v0.5.4 package had been generated that morning and the recorded human playtest later that day was explicitly a v0.5.4 test, those distributed physical copies were most likely v0.5.4 rather than v0.5.3.
+
+This materially changes the publication analysis. An unrestricted transfer/gift or lending of copies can constitute publication, but Copyright Office practice also recognizes "limited publication" where copies are distributed only to a definitely selected group for a limited purpose and without the right of further diffusion, reproduction, distribution, or sale. A social-acquaintance/playtest exchange can therefore remain unpublished depending on the restrictions and circumstances.
+
+Accordingly, **June 21 is now the earliest plausible 2026 publication date**, but the legal classification of that playtest distribution remains unresolved pending the nature of any express or implied restrictions.
 
 ## 1. Revival chronology from the retained ChatGPT archive
 
@@ -89,7 +93,13 @@ The guide itself says "Released for physical playtesting on June 20, 2026." That
 
 v0.5.4 added the Last Stand rule. The later v0.5.5 release notes expressly say v0.5.5 was based on the **first human playtest of v0.5.4**.
 
-This is evidence that the physical package was in use by June 21. It is not enough, without more facts, to determine whether copies were distributed by sale, transfer, rental, lease, or lending, as opposed to the author simply using their own physical components in a game.
+The v0.5.4 package was generated at approximately 06:38 UTC on June 21; the author reported the human playtest at 22:52 UTC that same day. The v0.5.4 Complete Playtest Guide is itself dated June 21 and states that v0.5.4 was released for physical playtesting that day.
+
+On 2026-08-28, the author recalled that the other player was probably allowed to **keep the cards** and that **printed rulebooks were handed out**.
+
+That recollection is stronger than mere evidence of display/use at the table. If the copies were given, lent, or otherwise transferred without a restriction on further diffusion, the June 21 event is a plausible statutory publication. If the materials were distributed only to a selected playtest group for a limited testing purpose with an express or implied no-redistribution restriction, the Copyright Office's limited-publication doctrine may support unpublished status despite physical distribution.
+
+The exact physical version was not separately remembered, but the chronology makes v0.5.4 the likely distributed edition: v0.5.4 was generated that morning, designated the current playtest version, and the later errata record identifies the resulting session as a v0.5.4 playtest.
 
 ### June 23: first hard public-GitHub evidence
 
@@ -124,10 +134,14 @@ Those timestamps establish when the Git objects were created. Git does not encod
 
 Accordingly:
 
-- **creation/fixation of package:** June 20;
-- **Git object date:** June 22;
+- **v0.5.3 creation/fixation:** June 20;
+- **v0.5.4 creation/fixation:** June 21;
+- **earliest plausible physical publication:** June 21, based on the author's recollection of retained cards and handed-out rulebooks;
+- **Git object date for v0.5.3:** June 22;
 - **first hard public-GitHub evidence:** June 23;
-- **legal publication date:** June 23 is the present working date **unless earlier copy distribution is established**.
+- **legal publication status of the June 21 playtest distribution:** unresolved because limited-publication facts still matter.
+
+If the June 21 distribution qualifies as publication, **v0.5.4—not v0.5.3—is likely the better first published 2026 foundation work**, because it incorporated the otherwise-unpublished v0.5.3 material plus the Last Stand revision. If the June 21 distribution was a limited publication, v0.5.3 remains the first hard public-GitHub foundation candidate on June 23.
 
 ## 3. Exact v0.5.3 literary deposit
 
@@ -198,23 +212,29 @@ The v0.5.3 registration is therefore likely to be a **thin but useful foundation
 
 ## 6. Recommended filing order
 
-The working registration sequence should be:
+The working registration sequence is now conditional on the June 21 distribution facts:
 
-1. **v0.5.3 Complete Playtest Guide** — first 2026 foundation registration;
-2. **v0.6.0 Rulebook** — later substantial revised/derivative work;
-3. evaluate whether any v0.5.4–v0.5.7 revision contains enough separately copyrightable human authorship to justify another filing; default is **skip** unless the audit shows otherwise;
-4. v0.7 Rulebook and illustrated card/visual registrations;
-5. software registrations later where commercially useful.
+**If June 21 was an unrestricted publication:**
+1. **v0.5.4 Complete Playtest Guide** — first published 2026 foundation registration; it incorporates the earlier unpublished v0.5.0–v0.5.3 revival material plus Last Stand.
+2. **v0.6.0 Rulebook** — later substantial revised/derivative work.
+3. skip separate v0.5.3 and v0.5.5–v0.5.7 registrations unless a later audit identifies an unusual reason to file them separately.
+4. v0.7 Rulebook / illustrated visual work.
+5. software later where commercially useful.
 
-The already-prepared v0.6.0 registration work remains valid; it simply belongs **after** the v0.5.3 foundation filing in the sequence.
+**If June 21 was only a limited playtest distribution:**
+1. **v0.5.3 Complete Playtest Guide** — first hard public-GitHub foundation candidate on June 23.
+2. **v0.6.0 Rulebook**.
+3. later work as above.
+
+The already-prepared v0.6.0 registration work remains valid either way.
 
 ## 7. Section 412 timing
 
-Using the current working first-publication date of **June 23, 2026**, the three-month post-publication timing point falls on approximately **September 23, 2026**.
+The earliest plausible 2026 publication is now **June 21, 2026**. If that physical distribution qualifies as publication, the three-month timing point falls approximately **September 21, 2026**.
 
-If earlier publication is established through copy distribution before June 23, that date moves earlier.
+If the June 21 exchange was only a limited publication, the first hard public-GitHub evidence remains June 23, producing an approximately **September 23, 2026** timing point.
 
-The filing should therefore be treated as time-sensitive even though the project is still pre-release.
+Until the playtest-distribution restrictions are resolved, use the **earlier June 21 date for deadline planning**.
 
 ## 8. Remaining factual questions
 
@@ -225,7 +245,8 @@ Before the v0.5.3 application is certified:
 - [x] identify the first hard public-GitHub evidence on June 23;
 - [x] identify and independently hash the exact historical Complete Playtest Guide PDF;
 - [x] establish the broad human/AI filing posture;
-- [ ] **author confirmation:** before June 23, did the author give, lend, send, or otherwise provide a copy of the v0.5.3/v0.5.4 guide/cards to another person, or did other players merely use the author's own physical copy during the June 21 playtest?
+- [x] **author recollection:** during the June 21 playtest, the author believes the other player was allowed to keep the cards and printed rulebooks were handed out.
+- [ ] determine whether those physical copies were subject to an express or implied no-copy/no-redistribution restriction, or were simply given/lent without restriction.
 - [ ] confirm claimant at filing time;
 - [ ] resolve Nation of First Publication using then-current Copyright Office guidance;
 - [ ] prepare the final field-by-field Standard Application entry sheet;
