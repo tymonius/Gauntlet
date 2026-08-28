@@ -1,7 +1,7 @@
 # Gauntlet v0.5.3 — Copyright Filing Worksheet
 
 **Prepared:** 2026-08-28  
-**Status:** Foundation filing preparation — one publication fact remains to be confirmed by the author.
+**Status:** Fallback foundation worksheet. Use this only if the June 21 v0.5.4 physical playtest distribution is determined to be a limited/non-publication event.
 
 > This worksheet should be read with `V0_5_3_REVIVAL_PUBLICATION_AUDIT.md`. It is not a legal opinion.
 
@@ -15,6 +15,8 @@ Register the first complete 2026 revival edition of Gauntlet without overstating
 
 The useful claim is primarily the qualifying human compilation/editorial authorship embodied in the complete v0.5.3 playtest edition.
 
+**Important:** the author's 2026-08-28 recollection that a June 21 playtester likely kept cards and that printed rulebooks were handed out makes **v0.5.4** the preferred foundation candidate if that physical distribution qualifies as publication. See `V0_5_4_COPYRIGHT_FILING_WORKSHEET.md`.
+
 ## Application route
 
 - **Application:** Standard Application
@@ -22,8 +24,8 @@ The useful claim is primarily the qualifying human compilation/editorial authors
 - **Title:** `Gauntlet v0.5.3 Complete Playtest Edition`
 - **Alternate/version title:** `Gauntlet v0.5.3 — Attrition Patch`
 - **Year completed:** 2026
-- **Publication status:** Published — working conclusion
-- **Working first-publication date:** **2026-06-23**, subject to the physical-distribution confirmation below
+- **Publication status:** Published — fallback conclusion
+- **Working first-publication date:** **2026-06-23**, only if the June 21 v0.5.4 playtest distribution was a limited/nonpublication event
 - **Nation of First Publication:** working **United States**, subject to final online-publication review
 
 ## Why v0.5.3 rather than v0.5.0
@@ -141,7 +143,11 @@ The old transcript also shows the branch/tag/PR publication steps being performe
 
 ### Working date
 
-Use **June 23, 2026** unless the author confirms that copies of v0.5.3 content were distributed to another person before that date.
+The author has now recalled that during the June 21 v0.5.4 playtest the other player probably kept the cards and printed rulebooks were handed out.
+
+Because the June 21 materials were most likely v0.5.4, this does not automatically establish publication of the exact v0.5.3 edition. It does, however, create an earlier potential publication of the revived work and may make v0.5.4 the better foundation registration.
+
+Use **June 23, 2026** for this v0.5.3 worksheet only if the June 21 distribution is treated as limited/non-publication and no earlier v0.5.3 copy distribution is found.
 
 The June 22 commit/tag timestamps are local Git object timestamps and should not be treated as proof of public server availability.
 
@@ -159,7 +165,11 @@ Re-check then-current Copyright Office online-publication guidance immediately b
 
 ## Relationship to later versions
 
-### v0.5.4–v0.5.7
+### v0.5.4
+
+v0.5.4 is now a **conditional replacement for this foundation filing**, not merely an optional patch registration. If the June 21 physical distribution qualifies as publication, use `V0_5_4_COPYRIGHT_FILING_WORKSHEET.md` and do not separately file v0.5.3 merely for sequence.
+
+### v0.5.5–v0.5.7
 
 Do not automatically file each patch.
 
@@ -173,9 +183,9 @@ The already-prepared v0.6 filing package remains valid. Filing v0.5.3 first mere
 
 ## Timing
 
-If first publication is June 23, 2026, the three-month post-publication point is approximately **September 23, 2026**.
+Use the **June 21, 2026** physical-distribution date for conservative deadline planning until the limited-publication issue is resolved. That produces an approximately **September 21, 2026** three-month point.
 
-This filing should therefore precede less time-sensitive visual/software work.
+If June 21 is determined to be a limited/nonpublication event and this v0.5.3 worksheet remains operative, the June 23 public-GitHub date produces an approximately **September 23, 2026** point.
 
 ## Checklist
 
@@ -188,9 +198,10 @@ This filing should therefore precede less time-sensitive visual/software work.
 - [x] Define conservative human/AI authorship posture.
 - [x] Define broad pre-2026 exclusion boundary.
 - [x] Remove visual provenance from this Literary Work filing by excluding pictorial material.
-- [ ] Author confirms whether copies were given/lent/sent to anyone before June 23.
+- [x] Author recalled on 2026-08-28 that a June 21 playtester probably kept the cards and printed rulebooks were handed out.
+- [ ] Resolve whether the June 21 physical distribution was unrestricted publication or a limited playtest distribution.
 - [ ] Confirm claimant at filing time.
-- [ ] Finalize exact first-publication date.
+- [ ] Finalize whether v0.5.3 or v0.5.4 is the operative foundation filing.
 - [ ] Finalize Nation of First Publication / Office note.
 - [ ] Decide after targeted review whether any separate `Text` checkbox claim is warranted.
 - [ ] Prepare final Standard Application entry sheet.
