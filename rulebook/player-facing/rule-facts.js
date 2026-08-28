@@ -193,10 +193,14 @@ export function validateAuthorityEmbeddedFacts(authority) {
 function formatFact(value, format) {
   if (format === 'number') return String(value);
   if (format === 'word') return ruleNumberWord(value);
+  if (format === 'word-cap') {
+    const word = ruleNumberWord(value);
+    return word[0].toUpperCase() + word.slice(1);
+  }
   throw new Error(`Unsupported Rulebook fact format: ${format}`);
 }
 
-const MARKER = /([A-Za-z0-9]+)<!-- RULE-FACT:([a-z0-9_.-]+):(number|word) -->/g;
+const MARKER = /([A-Za-z0-9]+)<!-- RULE-FACT:([a-z0-9_.-]+):(number|word|word-cap) -->/g;
 
 export function synchronizeRuleFactMarkers(markdown, authority) {
   const facts = deriveRuleFacts(authority);
