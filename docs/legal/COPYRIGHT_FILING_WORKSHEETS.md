@@ -136,12 +136,16 @@ The corresponding file on current `main` differs from the publication snapshot. 
 
 - [x] Establish a practical preexisting-material boundary: **exclude all pre-v0.6 Gauntlet material**.
 - [x] Identify the July 20 publication snapshot and historical Rulebook deposit object.
+- [x] Complete the first section-level Rulebook authorship pass and narrow the remaining AI review to appreciable expressive prose/visuals. See `V0_6_0_RULEBOOK_AUTHORSHIP_AUDIT.md`.
 - [ ] Recover that historical Rulebook PDF and calculate an independent SHA-256.
-- [ ] Complete affirmative text-level human/AI authorship review for the July 20 Rulebook.
+- [ ] Complete targeted provenance review of the three-paragraph Welcome, faction/Leader descriptive prose, and any other substantial nonfunctional prose.
+- [ ] Classify Leader images and other appreciable visual material in the Rulebook deposit.
 - [ ] Identify appreciable third-party material in the Rulebook deposit, if any.
 - [ ] Confirm first-publication nation.
 - [ ] Confirm claimant at filing time.
 - [ ] Confirm whether a substantially identical v0.6.0 Rulebook was distributed before July 20 through another channel.
+
+A forensic audit of every procedural rule sentence is **not** required as the working filing approach. Game methods/procedures are excluded as uncopyrightable matter, while the human-created selection, coordination, arrangement, revisions, and qualifying text are claimed. The remaining provenance work concentrates on expression whose copyrightability materially depends on authorship.
 
 Recovery of the June 2021 Google Sheets/TTS materials remains useful for a later historical registration and evidentiary record, but is **not a blocker** to a v0.6 filing that excludes all pre-v0.6 expression.
 
