@@ -7468,7 +7468,7 @@
       {
         "id": "shattering",
         "name": "Rite of Shattering",
-        "artwork": null,
+        "artwork": "/images/artwork/cards/mystics/rites-and-rituals/rite-of-shattering.png",
         "begin": "Put one banked Asset in your Graveyard.",
         "complete": "In the first battle that reaches dice on a later turn, gain a number of instances of advantage equal to that Asset's value. If you win that battle, complete this Rite.",
         "interrupted": "If you lose that battle, Retreat +1 and reset this Rite."
@@ -7476,7 +7476,7 @@
       {
         "id": "consecration",
         "name": "Rite of Consecration",
-        "artwork": null,
+        "artwork": "/images/artwork/cards/mystics/rites-and-rituals/rite-of-consecration.png",
         "begin": "Place one Overlay from Hand on a Territory without using an Action. That Territory is consecrated while this Rite is active.",
         "complete": "On a later turn, complete this Rite after you win a battle on the consecrated Territory.",
         "interrupted": "If you lose a battle on the consecrated Territory before completion, or if that Overlay is removed from the Territory before completion, reset this Rite."
@@ -7484,7 +7484,7 @@
       {
         "id": "equivalence",
         "name": "Rite of Equivalence",
-        "artwork": null,
+        "artwork": "/images/artwork/cards/mystics/rites-and-rituals/rite-of-equivalence.png",
         "begin": "Choose one card in your Hand and one card in your Graveyard with the same value. Exchange them. Keep the card moved to your Hand revealed while this Rite is active.",
         "complete": "Complete when you play the exchanged card for one of its printed effects.",
         "interrupted": "If the exchanged card leaves your Hand in any other way, or if you lose a battle before completion, reset this Rite."
