@@ -3,6 +3,7 @@ name: Materialize v0.7.0 release package
 on:
   push:
     branches:
+      - main
       - release/v0.7.0-cutover
       - release/v0.7.0-refresh-prep
     paths:
@@ -23,9 +24,31 @@ on:
       - scripts/run-v070-rulebook-renderer.mjs
       - images/sketches/**
       - .github/workflows/materialize-v070-release-package.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - game-data/**
+      - docs/v0.6.4-*.json
+      - docs/v0.6.3-starter-decks.json
+      - rulebook/**
+      - card-design/**
+      - images/artwork/cards/**
+      - images/artwork/card-backgrounds/**
+      - design-tokens.css
+      - rulebook-design/**
+      - rulebook-production/**
+      - scripts/build-v070-release-source.mjs
+      - scripts/render-v070-booklet.mjs
+      - scripts/build-v063-rulebook-production.py
+      - scripts/run-v063-rulebook-renderer.mjs
+      - images/sketches/**
+      - .github/workflows/materialize-v070-release-package.yml
 
 permissions:
+  actions: write
   contents: write
+  pull-requests: write
 
 concurrency:
   group: materialize-v070-release-package-${{ github.event.pull_request.number || github.ref }}
@@ -136,6 +159,58 @@ jobs:
             releases/v0.7.0/**
             v0.7.0/index.html
           if-no-files-found: error
+
+      - name: Prepare protected-main release refresh
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          branch="automation/v070-release-package-refresh"
+          files=(
+            releases/v0.7.0/Gauntlet_v0.7.0_Rulebook.md
+            releases/v0.7.0/Gauntlet_v0.7.0_Rulebook_Booklet.pdf
+            releases/v0.7.0/Gauntlet_v0.7.0_Card_Anatomy.png
+            releases/v0.7.0/Gauntlet_v0.7.0_Arcane_Trait_Mark.png
+            releases/v0.7.0/Gauntlet_v0.7.0_Canonical_Data.json
+            releases/v0.7.0/Gauntlet_v0.7.0_Starter_Decks.json
+            releases/v0.7.0/Gauntlet_v0.7.0_Source_Provenance.json
+            releases/v0.7.0/Gauntlet_v0.7.0_Manifest.json
+            v0.7.0/index.html
+          )
+
+          if git diff --quiet -- "${files[@]}"; then
+            echo "Generated v0.7.0 package already matches main."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -C "$branch"
+          git add "${files[@]}"
+          git commit -m "Refresh v0.7.0 release package"
+          git push --force origin "HEAD:$branch"
+
+          compare_url="https://github.com/${GITHUB_REPOSITORY}/compare/main...${branch}?expand=1"
+          echo "Generated refresh branch: `$branch`" >> "$GITHUB_STEP_SUMMARY"
+          echo "Refresh PR: $compare_url" >> "$GITHUB_STEP_SUMMARY"
+
+          pr_number="$(gh pr list --repo "$GITHUB_REPOSITORY" --head "$branch" --base main --state open --json number --jq '.[0].number // empty')"
+          if [[ -z "$pr_number" ]]; then
+            if gh pr create               --repo "$GITHUB_REPOSITORY"               --base main               --head "$branch"               --title "Refresh v0.7.0 release package"               --body "Automated rematerialization of the current v0.7.0 release package after publication-source changes landed on main. This updates the tracked Rulebook booklet PDF and its manifest/provenance outputs without bypassing protected-main review."; then
+              pr_number="$(gh pr list --repo "$GITHUB_REPOSITORY" --head "$branch" --base main --state open --json number --jq '.[0].number // empty')"
+            else
+              echo "::warning::GitHub Actions could not open the refresh PR automatically. The branch is ready at $compare_url."
+            fi
+          fi
+
+          if [[ -n "$pr_number" ]]; then
+            echo "Refresh PR #$pr_number is open; dispatching the protected-main checks on the generated head commit."
+            gh workflow run test.yml --repo "$GITHUB_REPOSITORY" --ref "$branch"
+            gh workflow run pr-quality-gate.yml --repo "$GITHUB_REPOSITORY" --ref "$branch"
+            gh workflow run governance-integrity.yml --repo "$GITHUB_REPOSITORY" --ref "$branch"
+          fi
 
       - name: Commit materialized release package
         if: github.event_name == 'push' && github.ref == 'refs/heads/release/v0.7.0-cutover'
