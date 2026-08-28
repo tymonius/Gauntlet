@@ -182,8 +182,8 @@
     const response = await fetch("../game-data/current-game.json", { cache: "no-store" });
     if (!response.ok) throw new Error(`Current-game authority returned ${response.status}.`);
     const authority = await response.json();
-    if (authority?.schemaVersion !== 2 || authority?.authority !== "current-game" || authority?.version !== "v0.7.0") {
-      throw new Error("Start Playing requires the complete v0.7.0 current-game authority.");
+    if (authority?.schemaVersion !== 2 || authority?.authority !== "current-game" || !authority?.version) {
+      throw new Error("Start Playing requires the complete current-game authority.");
     }
     if (!Array.isArray(authority.gameplay?.factions) || !Array.isArray(authority.leaders)) {
       throw new Error("Current-game authority is missing factions or Leaders.");

@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-const target = JSON.parse(readFileSync('config/tts-release-target.json', 'utf8'));
+const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
 const cardGenerator = readFileSync('scripts/generate-tts-card-assets.mjs', 'utf8');
 const territoryGenerator = readFileSync('scripts/generate-tts-territory-assets.mjs', 'utf8');
 const leaderGenerator = readFileSync('scripts/generate-tts-leader-assets.mjs', 'utf8');
@@ -59,10 +59,9 @@ describe('TTS card render authority', () => {
     }
   });
 
-  it('stamps the pending TTS release version without changing the Card Design catalog default', () => {
-    expect(target.releaseTag).toBe('v0.7.0');
-    expect(target.displayVersion).toBe('v0.7.0');
-    expect(target.sourceVersion).toBe('v0.7.0');
+  it('derives current TTS identity from current-game without a render-time version override', () => {
+    expect(currentGame.version).toBe('v0.7.1-candidate');
+    expect(currentGame.displayVersion).toBe('v0.7.1 candidate');
 
     expect(cardGenerator).toContain('version=${encodeURIComponent(release.displayVersion || release.version)}');
     expect(territoryGenerator).toContain('version=${encodeURIComponent(release.displayVersion || release.version)}');

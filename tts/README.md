@@ -2,7 +2,7 @@
 
 This directory contains Gauntlet's supported Tabletop Simulator export, packaging, QA, and publication path.
 
-For the v0.7.0 closeout, the active TTS product identity is **v0.7.0** while the approved current-game source bundle retains its own provenance. The TTS pipeline deliberately separates those concepts rather than relabeling source data.
+Current-development TTS identity is derived directly from `game-data/current-game.json`. Published-release identity remains separate and is resolved from release lifecycle metadata.
 
 ## Source and release identity
 
@@ -10,15 +10,11 @@ Active-development game authority comes from:
 
 - `game-data/current-game.json` and the source files it names;
 - `config/tts-component-contract.json` for physical faction/shared components and TTS representation metadata; and
-- `config/tts-release-target.json` for the active TTS package version.
+- `config/tts-release-target.json` for versioned publication/QA targeting only; it does not determine current-development TTS identity.
 
-`config/release-lifecycle.json` and `config/github-release-contract.json` still describe the immutable currently published web/release state. They are used where published-release fallback or publication validation is required, but they do not determine the v0.7.0 development package identity.
+`config/release-lifecycle.json` and `config/github-release-contract.json` describe the immutable currently published web/release state. They are used where published-release fallback or publication validation is required, but they do not determine current-development TTS identity.
 
-Generated metadata records both the TTS package version and source/canonical-data version. For the current closeout that means:
-
-- TTS package/display version: `v0.7.0`;
-- current-game source version: `v0.6.4-candidate`; and
-- currently published release: independently resolved from release metadata.
+Generated current-development metadata takes its version and display identity from `current-game`, while the currently published release is resolved independently from release metadata.
 
 The runtime does not hard-code starter, card, Leader, or Territory counts.
 
@@ -32,7 +28,7 @@ All TTS card faces are captured from the production **Card Design** surfaces. TT
 
 This means parchment, faction symbols, border colors, artwork framing, reference-card divider policy, the Universal Reference G watermark, typography, and component geometry come from the same CSS/markup that powers `/card-design`. The older standalone TTS render pages are not valid card-face authorities.
 
-The deliberate exception is the printed version footer during a pre-cutover TTS build. Card Design may still identify the source catalog as `v0.6.4 candidate`, while `config/tts-release-target.json` stamps exported TTS faces as `v0.7.0`. No other visual or rules content is overridden during TTS capture.
+The printed version footer for current TTS captures comes from the current-game authority's `displayVersion`. No separate current-development TTS version override is maintained.
 
 Landscape presentation is also centralized: Territories and landscape supplementals use the same +90° quarter-turn when their approved 3.5 × 2.5 face is packed into TTS's standard portrait Custom Card cell. Native `SidewaysCard` then supplies the landscape physical orientation in play.
 

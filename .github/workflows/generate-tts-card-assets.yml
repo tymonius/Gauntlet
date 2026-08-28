@@ -10,7 +10,6 @@ on:
       - 'config/release-lifecycle.json'
       - 'config/github-release-contract.json'
       - 'config/tts-component-contract.json'
-      - 'config/tts-release-target.json'
       - 'scripts/current-game-authority.mjs'
       - 'scripts/generate-tts-card-assets.mjs'
       - 'scripts/generate-tts-territory-assets.mjs'
@@ -96,7 +95,6 @@ jobs:
             config/release-lifecycle.json
             config/github-release-contract.json
             config/tts-component-contract.json
-            config/tts-release-target.json
             scripts/current-game-authority.mjs
             scripts/generate-tts-card-assets.mjs
             scripts/generate-tts-territory-assets.mjs
@@ -216,7 +214,7 @@ jobs:
                     scripts/generate-tts-starter-decks.mjs)
                       render_starters=true
                       ;;
-                    scripts/generate-tts-environment-assets.mjs|scripts/stage-tts-release-assets.mjs|tts/assets/environment/*|config/tts-release-target.json|config/release-lifecycle.json|config/github-release-contract.json)
+                    scripts/generate-tts-environment-assets.mjs|scripts/stage-tts-release-assets.mjs|tts/assets/environment/*|config/release-lifecycle.json|config/github-release-contract.json)
                       stage_assets=true
                       ;;
                     scripts/check-tts-release-readiness.mjs|scripts/promote-tts-save.mjs)

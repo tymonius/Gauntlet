@@ -7,7 +7,7 @@ export const CURRENT_GAME_AUTHORITY_SOURCE = 'game-data/current-game.json';
 
 let authorityPromise = null;
 
-function validateAuthority(authority) {
+export function validateCurrentGameAuthority(authority) {
   if (authority?.schemaVersion !== 2 || authority?.authority !== 'current-game') {
     throw new Error('Invalid complete current-game authority.');
   }
@@ -26,7 +26,7 @@ export async function loadCurrentGameAuthority() {
   if (!authorityPromise) {
     authorityPromise = readFile(resolve(ROOT, CURRENT_GAME_AUTHORITY_SOURCE), 'utf8')
       .then(JSON.parse)
-      .then(validateAuthority)
+      .then(validateCurrentGameAuthority)
       .catch(error => {
         authorityPromise = null;
         throw error;

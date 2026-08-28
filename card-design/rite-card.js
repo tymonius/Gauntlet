@@ -36,6 +36,11 @@ function unlockSection(unlock) {
 }
 
 function incompleteArtwork(rite) {
+  if (!rite.artwork) {
+    return `<figure class="card-art" aria-label="Artwork pending for ${esc(rite.name)}">
+      <span>Artwork pending</span>
+    </figure>`;
+  }
   return `<figure class="card-art has-image" aria-label="Artwork for ${esc(rite.name)}">
     <img src="${esc(rite.artwork)}" alt="Artwork for ${esc(rite.name)}" />
   </figure>`;
@@ -65,7 +70,7 @@ function riteFace(rite, completed = false) {
   const type = completed ? 'Completed Rite' : 'Rite';
   const rules = completed
     ? UNLOCKS.map(unlockSection).join('')
-    : `${ruleSection('Begin', rite.begin)}${ruleSection('Complete', rite.complete)}${ruleSection('Interrupted', rite.interrupted)}`;
+    : `${ruleSection('Begin', rite.begin)}${ruleSection('Complete', rite.complete)}${rite.reminder?.text ? `<p class="rite-reminder"><em>${esc(rite.reminder.text)}</em></p>` : ''}${ruleSection('Interrupted', rite.interrupted)}`;
   const art = completed ? completedArtwork(rite) : incompleteArtwork(rite);
   const artMax = completed ? '1.24' : '1.48';
   const artMin = completed ? '0.78' : '0.92';

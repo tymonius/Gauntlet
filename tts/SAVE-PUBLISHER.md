@@ -25,15 +25,7 @@ Individual stages remain available through the `tts:*` package scripts when a na
 
 ## Release identity and source provenance
 
-The active TTS package has its own explicit target in:
-
-- `config/tts-release-target.json`
-
-For the v0.7.0 closeout, generated TTS output, save names, hosted-asset names, manifests, and card/component release labels use **v0.7.0**.
-
-The TTS target does not rewrite the version identity of the approved current-development source bundle. `game-data/current-game.json` remains the current-game authority, and generated catalog metadata records its source version separately from the TTS package version. This preserves the v0.6.4-candidate source provenance while allowing the assembled TTS product to be staged as v0.7.0.
-
-Published-release metadata remains a separate concern; generating a v0.7.0 TTS package does not move a Git tag or publish a GitHub Release by itself.
+`game-data/current-game.json` is the identity source for current-development TTS builds. Their package version, display version, source version, and status are derived directly from that authority. `config/tts-release-target.json` remains a versioned publication/QA target for the frozen v0.7.0 release and does not control current-development TTS identity. Published-release metadata remains separate; generating a current-development TTS package does not move a Git tag or publish a GitHub Release by itself.
 
 ## Review Scaffold outputs
 

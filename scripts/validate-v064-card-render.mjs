@@ -2,7 +2,7 @@ import { createServer } from 'node:http';
 import { mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { extname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { loadCurrentGameAuthority, CURRENT_GAME_AUTHORITY_SOURCE } from './current-game-authority.mjs';
+import { loadCurrentGameAuthority, validateCurrentGameAuthority, CURRENT_GAME_AUTHORITY_SOURCE } from './current-game-authority.mjs';
 import { normalizeV063CardForPresentation } from '../card-design/v063-card-heading-normalizer.js';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
@@ -49,8 +49,9 @@ async function startStaticServer() {
 
 function validateAuthority(authority) {
   const cards = authority.gameplay?.cards;
-  if (authority.version !== 'v0.7.0' || !Array.isArray(cards) || cards.length !== EXPECTED_CATALOG_COUNT) {
-    throw new Error('Card render validation requires the complete v0.7.0 current-game authority.');
+  validateCurrentGameAuthority(authority);
+  if (!Array.isArray(cards) || cards.length !== EXPECTED_CATALOG_COUNT) {
+    throw new Error(`Card render validation expected ${EXPECTED_CATALOG_COUNT} current playable cards; found ${Array.isArray(cards) ? cards.length : 0}.`);
   }
   if (cards.some(card => card.id === 'inquisition-no-martyrs')) {
     throw new Error('Retired No Martyrs remains in the current playable-card pool.');

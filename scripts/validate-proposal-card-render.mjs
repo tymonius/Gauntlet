@@ -3,7 +3,7 @@ import { createServer } from 'node:http';
 import { mkdir, readFile, stat } from 'node:fs/promises';
 import { extname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { loadCurrentGameAuthority, CURRENT_GAME_AUTHORITY_SOURCE } from './current-game-authority.mjs';
+import { loadCurrentGameAuthority, validateCurrentGameAuthority, CURRENT_GAME_AUTHORITY_SOURCE } from './current-game-authority.mjs';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const OUTPUT = join(ROOT, 'card-design', 'generated', 'proposals');
@@ -62,8 +62,9 @@ async function main() {
   const authority = await loadCurrentGameAuthority();
   const sourcePath = CURRENT_GAME_AUTHORITY_SOURCE;
   const source = { proposals: authority.proposals || [] };
-  if (authority.version !== 'v0.7.0' || source.proposals.length !== EXPECTED_PROPOSALS) {
-    throw new Error(`Expected ${EXPECTED_PROPOSALS} Proposals in the complete v0.7.0 authority.`);
+  validateCurrentGameAuthority(authority);
+  if (source.proposals.length !== EXPECTED_PROPOSALS) {
+    throw new Error(`Expected ${EXPECTED_PROPOSALS} current Proposals; found ${source.proposals.length}.`);
   }
 
   await mkdir(OUTPUT, { recursive: true });

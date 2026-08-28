@@ -2,7 +2,7 @@ import { createServer } from 'node:http';
 import { mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { extname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { loadCurrentGameAuthority, CURRENT_GAME_AUTHORITY_SOURCE } from './current-game-authority.mjs';
+import { loadCurrentGameAuthority, validateCurrentGameAuthority, CURRENT_GAME_AUTHORITY_SOURCE } from './current-game-authority.mjs';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const OUTPUT = join(ROOT, 'card-design', 'generated', 'territories-v064');
@@ -63,8 +63,9 @@ async function main() {
   const authority = await loadCurrentGameAuthority();
   const sourcePath = CURRENT_GAME_AUTHORITY_SOURCE;
   const source = { territories: authority.gameplay?.territories || [] };
-  if (authority.version !== 'v0.7.0' || source.territories.length !== 25) {
-    throw new Error('Territory render validation requires all 25 Territories from the complete v0.7.0 authority.');
+  validateCurrentGameAuthority(authority);
+  if (source.territories.length !== 25) {
+    throw new Error(`Territory render validation expected 25 current Territories; found ${source.territories.length}.`);
   }
 
   await rm(OUTPUT, { recursive: true, force: true });

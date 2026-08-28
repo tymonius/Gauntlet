@@ -2,12 +2,12 @@ import { createServer } from 'node:http';
 import { mkdir, readFile, stat } from 'node:fs/promises';
 import { extname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { loadCurrentGameAuthority } from './current-game-authority.mjs';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const OUTPUT = join(ROOT, 'card-design', 'generated', 'leaders');
 const CARD_WIDTH = 240;
 const CARD_HEIGHT = 336;
-const EXPECTED_RITES = ['Rite of Echoes', 'Rite of Blood', 'Rite of Crossing'];
 const EXPECTED_RITUAL = 'Ritual of Ascension';
 const RITUAL_CARD_BACK_ID = 'ritual-ascension';
 const RITUAL_FRONT_ART_PATH = '/images/artwork/cards/mystics/rites-and-rituals/ritual-of-ascension.png';
@@ -53,6 +53,11 @@ async function main() {
   try { ({ chromium } = await import('playwright')); }
   catch { throw new Error('Playwright is required.'); }
 
+  const authority = await loadCurrentGameAuthority();
+  const expectedRites = (authority.mystics?.rites || []).map(rite => rite.name);
+  if (!expectedRites.length) throw new Error('Current-game authority has no Mystics Rite pool.');
+  const expectedCardFaces = expectedRites.length * 2 + 1;
+
   await mkdir(OUTPUT, { recursive: true });
   const { server, baseUrl } = await startStaticServer();
   const browser = await chromium.launch({ headless: true });
@@ -61,7 +66,7 @@ async function main() {
 
   try {
     await page.goto(`${baseUrl}/card-design/#rite-cards`, { waitUntil: 'load' });
-    await page.waitForFunction(() => document.querySelectorAll('.rite-card').length === 7);
+    await page.waitForFunction(expected => document.querySelectorAll('.rite-card').length === expected, expectedCardFaces);
     await page.waitForFunction(() => [...document.querySelectorAll('.rite-card')].every(card => (
       card.dataset.parchmentLoaded === 'true'
       && card.dataset.titleFit === 'true'
@@ -119,8 +124,8 @@ async function main() {
       };
     }));
 
-    if (metrics.length !== 7) throw new Error(`Expected 6 Rite faces plus the Ritual, found ${metrics.length} cards.`);
-    for (const name of EXPECTED_RITES) {
+    if (metrics.length !== expectedCardFaces) throw new Error(`Expected ${expectedRites.length * 2} Rite faces plus the Ritual, found ${metrics.length} cards.`);
+    for (const name of expectedRites) {
       const faces = metrics.filter(metric => metric.name === name);
       if (faces.length !== 2 || !faces.some(face => face.type === 'Rite') || !faces.some(face => face.type === 'Completed Rite')) {
         throw new Error(`Rite pair is incomplete for ${name}: ${JSON.stringify(faces)}.`);

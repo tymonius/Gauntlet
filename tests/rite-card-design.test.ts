@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 
 const reviewPage = readFileSync("card-design/index.html", "utf8");
 const riteRenderer = readFileSync("card-design/rite-card.js", "utf8");
+const riteValidator = readFileSync("scripts/validate-rite-card-render.mjs", "utf8");
 const currentGame = JSON.parse(readFileSync("game-data/current-game.json", "utf8"));
 const mysticsAuthority = currentGame.mystics;
 const riteStyles = readFileSync("card-design/rite-card.css", "utf8");
@@ -11,7 +12,7 @@ const leaderStyles = readFileSync("card-design/leader-card.css", "utf8");
 const ruleColumnStyles = readFileSync("card-design/card-rule-columns.css", "utf8");
 const completedRiteArtwork = readFileSync("images/artwork/supplemental/mystics/rite-completed.webp");
 
-const riteNames = ["Rite of Echoes", "Rite of Blood", "Rite of Crossing"];
+const riteNames = ["Rite of Echoes", "Rite of Blood", "Rite of Crossing", "Rite of Shattering", "Rite of Consecration", "Rite of Equivalence"];
 const riteArtworkPaths = [
   "images/artwork/cards/mystics/rites-and-rituals/rite-of-echoes.png",
   "images/artwork/cards/mystics/rites-and-rituals/rite-of-blood.png",
@@ -21,13 +22,13 @@ const ritualArtworkPath = "images/artwork/cards/mystics/rites-and-rituals/ritual
 const ritualCardBackPath = "images/artwork/cardbacks/mystics/ritual-of-ascension.png";
 
 describe("Mystics Rite card prototypes", () => {
-  it("adds all three double-sided Rites and the Ritual to the unified card-review page", () => {
+  it("adds all six double-sided Rites and the Ritual to the unified card-review page", () => {
     expect(reviewPage).toContain('id="rite-cards"');
     expect(reviewPage).toContain('id="riteReviewSections"');
     expect(reviewPage).toContain('href="#rite-cards"');
     expect(reviewPage).toContain('href="rite-card.css"');
     expect(reviewPage).toContain('type="module" src="rite-card.js"');
-    expect(reviewPage).toContain('<span data-rite-count>3</span> double-sided Rites');
+    expect(reviewPage).toContain('<span data-rite-count>6</span> double-sided Rites');
     expect(reviewPage).toContain('<strong data-ritual-count>1</strong> Ritual');
     expect(mysticsAuthority.rites.map((item: any) => item.name)).toEqual(riteNames);
     expect(riteRenderer).toContain("import { loadCurrentGame } from '../game-data/current-game.mjs'");
@@ -56,19 +57,24 @@ describe("Mystics Rite card prototypes", () => {
     expect(riteRenderer).not.toContain("RITE_SOURCE");
   });
 
-  it("uses the uploaded artwork on all three incomplete Rite faces and the Ritual face", () => {
+  it("uses approved artwork where available and a pending-art fallback for new Rite faces", () => {
     for (const path of riteArtworkPaths) expect(existsSync(path)).toBe(true);
     expect(existsSync(ritualArtworkPath)).toBe(true);
     expect(existsSync(ritualCardBackPath)).toBe(true);
-    expect(mysticsAuthority.rites.map((item: any) => item.artwork)).toEqual([
+    expect(mysticsAuthority.rites.slice(0, 3).map((item: any) => item.artwork)).toEqual([
       "/images/artwork/cards/mystics/rites-and-rituals/rite-of-echoes.png",
       "/images/artwork/cards/mystics/rites-and-rituals/rite-of-blood.png",
       "/images/artwork/cards/mystics/rites-and-rituals/rite-of-crossing.png",
     ]);
+    expect(mysticsAuthority.rites.slice(3).every((item: any) => item.artwork === null)).toBe(true);
     expect(mysticsAuthority.ritual.artwork).toBe("/images/artwork/cards/mystics/rites-and-rituals/ritual-of-ascension.png");
     expect(mysticsAuthority.ritual.cardBack).toBe("/images/artwork/cardbacks/mystics/ritual-of-ascension.png");
     expect(riteRenderer).toContain('class="card-art has-image" aria-label="Artwork for ${esc(rite.name)}"');
     expect(riteRenderer).toContain('<img src="${esc(rite.artwork)}"');
+    expect(riteRenderer).toContain('Artwork pending for ${esc(rite.name)}');
+    expect(riteRenderer).toContain('rite.reminder?.text');
+    expect(riteValidator).toContain('expectedCardFaces = expectedRites.length * 2 + 1');
+    expect(riteValidator).not.toContain('EXPECTED_RITES');
     expect(riteRenderer).toContain("function ritualArtwork()");
     expect(riteRenderer).toContain('<img src="${esc(RITUAL.artwork)}"');
     expect(riteRenderer).not.toContain("Artwork pending for ${esc(RITUAL.name)}");

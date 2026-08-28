@@ -1,14 +1,10 @@
-import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
+import { CURRENT_GAME_AUTHORITY_SOURCE, loadCurrentGameAuthority } from "./current-game-authority.mjs";
 
 const root = process.cwd();
-const authorityPath = path.join(root, "game-data/current-game.json");
-const authority = JSON.parse(fs.readFileSync(authorityPath, "utf8"));
-
-if (authority.schemaVersion !== 2 || authority.authority !== "current-game" || authority.version !== "v0.7.0") {
-  throw new Error("Starter Deck validation requires the complete v0.7.0 current-game authority.");
-}
+const authorityPath = path.join(root, CURRENT_GAME_AUTHORITY_SOURCE);
+const authority = await loadCurrentGameAuthority();
 
 const cards = authority.gameplay?.cards || [];
 const territories = authority.gameplay?.territories || [];

@@ -2,7 +2,7 @@
 
 ## Official Rulebook
 
-**Version 0.7.0**
+**Version 0.7.1 Candidate**
 
 ---
 
@@ -799,6 +799,8 @@ Choose exactly three different Territory Cards.
 ### Supplemental components
 
 Prepare all components required by the chosen faction and Leader.
+
+If you chose Mystics, choose exactly three different Rites from the six-Rite pool as part of game-package construction. Those three Rites are public at setup, and only those selected Rites may be begun during that game.
 
 Unless a rule says otherwise, supplemental components:
 
@@ -1904,7 +1906,9 @@ When the controller of Watchtower defends there, the attacker sets their Gambit 
 
 ## How it works
 
-Mystics sacrifice, bind, exchange, and recover cards while completing three public **Rites**. The first completed Rite unlocks **Invocation**, the second unlocks **Transmutation**, and the third unlocks **Convergence** and the ability to begin the **Ritual of Ascendance**.
+Mystics sacrifice, bind, exchange, recover, and transform cards while completing three selected public **Rites**. A Mystics game package chooses exactly three different Rites from a pool of six. Those three are public at setup and are the only Rites that may be begun during that game.
+
+The first completed Rite unlocks **Invocation**, the second unlocks **Transmutation**, and the third unlocks **Convergence** and the ability to begin the **Ritual of Ascendance**.
 
 To win through Ritual, bind three cards from three different zones, initiate a battle while they remain bound, and win that battle.
 
@@ -1915,7 +1919,8 @@ To win through Ritual, bind three cards from three different zones, initiate a b
 | Victory | Run the Gauntlet or complete the Ritual of Ascendance. |
 | Resource | None. |
 | Trait | All thirteen Mystics cards have the Arcane trait. |
-| Progression | First Rite: Invocation; second: Transmutation; third: Convergence and Ritual. |
+| Rite pool | Six Rites; choose exactly three during game-package construction. |
+| Progression | First completed Rite: Invocation; second: Transmutation; third: Convergence and Ritual. |
 | Faction Features | Begin a Rite and Begin the Ritual of Ascendance — 1 Action · Denouement; Invocation and Transmutation — No Action; Convergence — Automatic. |
 | Leaders | Alchemist and Spirit Walker. |
 | Faction pool | 13 Mystics card titles. |
@@ -1925,27 +1930,36 @@ To win through Ritual, bind three cards from three different zones, initiate a b
 
 Mystics have the following Faction Features marked **1 Action · Denouement**:
 
-- **Begin a Rite:** Choose one incomplete Rite you may legally begin and pay its beginning cost.
-- **Begin the Ritual of Ascendance:** After completing all three Rites, bind the required Arcane cards from Hand, Discard Pile, and Graveyard.
+- **Begin a Rite:** Choose one incomplete selected Rite you may legally begin and pay its beginning cost.
+- **Begin the Ritual of Ascendance:** After completing all three selected Rites, bind the required Arcane cards from Hand, Discard Pile, and Graveyard.
 
 Completing a Rite is automatic when that Rite's completion condition and timing are satisfied. **Invocation** and **Transmutation** are Faction Features marked **No Action**; **Convergence** is **Automatic**. The Alchemist and Spirit Walker mechanics are Leader Abilities.
 
 ## Components and setup
 
+The six-Rite pool is:
+
+- **Rite of Echoes**
+- **Rite of Blood**
+- **Rite of Crossing**
+- **Rite of Shattering**
+- **Rite of Consecration**
+- **Rite of Equivalence**
+
 A Mystics game package includes:
 
 - one Mystics Leader Card: **Alchemist** or **Spirit Walker**;
 - one Mystics Reference Card;
-- three double-sided Rite cards: **Rite of Echoes**, **Rite of Blood**, and **Rite of Crossing**; and
+- exactly three different double-sided Rite cards chosen from the six-Rite pool; and
 - any Mystics cards included in the Deck.
 
-Place all three Rite cards incomplete side up. Mystics use no resource tracker.
+Rite selection is part of game-package construction. Place the three selected Rite cards incomplete side up and visible to both players during setup. Rites not selected for that game are not part of the game package and cannot be begun. Mystics use no resource tracker.
 
 ## Rites and progression
 
 ### How it works
 
-During Denouement, take an Action and pay a Rite's beginning cost to begin it. You may have only one begun but incomplete Rite at a time, and a Rite cannot complete on the turn it begins.
+During Denouement, take an Action and begin one of your selected Rites by following its **Begin** instruction. You may have only one begun but incomplete Rite at a time, and a Rite cannot complete on the turn it begins.
 
 Once its condition is met on a later turn, complete it and unlock the next Faction Feature. Completed Rites remain complete.
 
@@ -1953,19 +1967,21 @@ Once its condition is met on a later turn, complete it and unlock the next Facti
 
 #### Beginning a Rite
 
-During Denouement, take an Action to begin one incomplete Rite by paying its beginning cost.
+During Denouement, take an Action to begin one incomplete selected Rite by following its **Begin** instruction.
 
 - You may have only one begun but incomplete Rite.
-- You may begin any uncompleted Rite; there is no required order.
+- You may begin any uncompleted selected Rite; there is no required order.
+- A Rite is **active** from the time it is begun until it is completed, interrupted, or reset.
 - A Rite cannot complete during the turn it begins.
 - Only one Rite may be completed per turn.
 - If interrupted, it resets and paid costs are not returned unless stated.
+- If an active Rite can no longer be completed because a required card, component, position, or game state is lost or changes, it is immediately interrupted and resets.
 
 #### Progression
 
-- Complete the first Rite to unlock **Invocation**.
-- Complete the second Rite to unlock **Transmutation**.
-- Complete the third Rite to unlock **Convergence** and permission to begin the **Ritual of Ascendance**.
+- Complete the first selected Rite to unlock **Invocation**.
+- Complete the second selected Rite to unlock **Transmutation**.
+- Complete the third selected Rite to unlock **Convergence** and permission to begin the **Ritual of Ascendance**.
 
 #### Bound cards
 
@@ -1983,46 +1999,63 @@ A copied effect does not trigger Invocation unless the Arcane card is itself pla
 
 The card is not played and none of its printed effects apply. Supplemental components cannot be used.
 
-## The three Rites
+## The six Rites
 
 ### Rite of Echoes
 
-**Beginning cost:** Bind one chosen card from your Graveyard face up beneath this Rite. Then bind one card from your Hand face down beneath it whose title matches at least one other card in your Deck.
+**Begin:** Bind one card from your Graveyard face up beneath this Rite. Then bind one card from your Hand face up beneath it that shares its title with at least one card in your Draw Pile. Search your Draw Pile for that card, reveal it, shuffle your Draw Pile, then place the revealed card on top.
 
-> **Completion:** On a later turn, complete this Rite after the Gambit, Tactic, or Gambit or Tactic effect of another card with the bound Hand card's title is applied during a battle.
+> **Complete:** On a later turn, complete this Rite after you win a battle in which the Gambit or Tactic effect of a card with the bound Hand card's title was applied. Move the card bound from your Graveyard to your Discard Pile. Put the card bound from your Hand in your Graveyard.
 
-On completion:
-
-- move the selected Graveyard card to your Discard Pile;
-- put the bound Hand card in your Graveyard;
-- apply the completing card normally; and
-- flip Rite of Echoes to its completed side.
-
-If you lose a battle before completion, put both bound cards in your Graveyard and reset the Rite.
+**Interrupted:** If you lose a battle before completion, put both bound cards in your Graveyard and reset this Rite.
 
 ### Rite of Blood
 
-**Beginning cost:** Put one card from your Hand in your Graveyard.
+**Begin:** Put one card from your Hand in your Graveyard.
 
-> **Completion:** On a later turn, complete this Rite when you win a battle without setting a Gambit or choosing a Tactic.
+> **Complete:** On a later turn, complete this Rite when you win a battle without setting a Gambit or choosing a Tactic.
 
-Using Transmutation, an Asset, Overlay, Territory, Leader Ability, or card from another source does not by itself prevent completion.
+*Using Transmutation, an Asset, Overlay, Territory effect, Leader Ability, or card from another source does not by itself prevent completion.*
 
-If you lose a battle before completion, reset the Rite.
+**Interrupted:** If you lose a battle before completion, reset this Rite.
 
 ### Rite of Crossing
 
-You may use the **Begin a Rite** Faction Feature for Rite of Crossing during Denouement only after winning a battle that turn that made you the occupier of a Territory the opponent controlled immediately before that battle.
+**Begin:** You may begin this Rite during Denouement only after winning a battle that turn that made you the occupier of a Territory the opponent controlled immediately before that battle.
 
-**Beginning cost:** Put one Arcane card from your Hand in your Graveyard. If you have none, reveal your Hand and move one Arcane card from your Discard Pile to your Graveyard instead.
+> **Complete:** At the start of your next turn, after the Capture step, complete this Rite if you are still the occupier or now control that Territory.
 
-> **Completion:** At the start of your next turn, after the Capture step, complete this Rite if you are still the occupier or now control that Territory. Otherwise, the Rite is interrupted and resets.
+**Interrupted:** If before then you cease to occupy that Territory, reset this Rite.
+
+### Rite of Shattering
+
+**Begin:** Put one banked Asset in your Graveyard.
+
+> **Complete:** In the first battle that reaches dice on a later turn, gain a number of instances of advantage equal to that Asset's value. If you win that battle, complete this Rite.
+
+**Interrupted:** If you lose that battle, Retreat +1 and reset this Rite.
+
+### Rite of Consecration
+
+**Begin:** Place one Overlay from Hand on a Territory without using an Action. That Territory is consecrated while this Rite is active.
+
+> **Complete:** On a later turn, complete this Rite after you win a battle on the consecrated Territory.
+
+**Interrupted:** If you lose a battle on the consecrated Territory before completion, or if that Overlay is removed from the Territory before completion, reset this Rite.
+
+### Rite of Equivalence
+
+**Begin:** Choose one card in your Hand and one card in your Graveyard with the same value. Exchange them. Keep the card moved to your Hand revealed while this Rite is active.
+
+> **Complete:** Complete when you play the exchanged card for one of its printed effects.
+
+**Interrupted:** If the exchanged card leaves your Hand in any other way, or if you lose a battle before completion, reset this Rite.
 
 ## Ritual of Ascendance and Convergence
 
 ### How it works
 
-After completing all three Rites, spend 1 Action during an Denouement to bind one Arcane card from your Hand, one from your Discard Pile, and one from your Graveyard. This begins the Ritual.
+After completing all three selected Rites, spend 1 Action during Denouement to bind one Arcane card from your Hand, one from your Discard Pile, and one from your Graveyard. This begins the Ritual.
 
 Initiate a battle while all three remain bound. Convergence adds +1 for each Ritual card. Win that battle to win the game. Lose any battle before completion and the Ritual is interrupted.
 
@@ -2030,7 +2063,7 @@ Initiate a battle while all three remain bound. Convergence adds +1 for each Rit
 
 #### Beginning the Ritual
 
-After completing all three Rites, during an Denouement, spend 1 Action to bind:
+After completing all three selected Rites, during Denouement, spend 1 Action to bind:
 
 - one Arcane card from your Hand;
 - one Arcane card from your Discard Pile; and
