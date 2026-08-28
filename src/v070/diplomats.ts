@@ -595,9 +595,16 @@ function selectLatitudeProposal(state: V070GameState, proposalId: string | undef
   if (!proposalId || !terms.offeredProposalIds.includes(proposalId)) {
     throw new V070GameActionError('Choose one of the two Proposals offered through Diplomatic Latitude.');
   }
+  const chooser = terms.priorityPlayer;
   terms.proposalId = proposalId;
   terms.proposalChoice = null;
   terms.priorityPlayer = null;
+  appendV070Event(state, {
+    type: 'diplomatic_latitude_selected',
+    actor: chooser ?? undefined,
+    visibility: 'public',
+    payload: { proposalId },
+  });
 }
 
 function beginAcceptedProposalChoice(
