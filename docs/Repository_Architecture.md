@@ -99,6 +99,8 @@ The repository currently contains a large binary footprint, especially under `im
 | `playtest/` | Current playtest browser surfaces |
 | `workers/` | Deployed support services |
 | `src/` | Active rules-aware digital engine; older modules within it may still be transitional/historical and must be classified during engine cleanup |
+| `rules-arbiter/` | Current static Rules Arbiter browser shell; implementation/service logic lives under `rules-assistant/` |
+| `changelog/` | Current player-facing changelog surface |
 
 ### Production tooling
 
@@ -111,6 +113,8 @@ The repository currently contains a large binary footprint, especially under `im
 | `rulebook-design/` | Rulebook visual/design support |
 | `.github/workflows/` | CI, deployment, publication, and generation automation |
 | `tests/` | Cross-surface and release contract tests |
+| `media/` | Current reproducible card-media/composition configuration and export tooling |
+| `.github/` | Repository automation, PR policy, CI, deployment, and workflow support |
 
 ### Historical compatibility
 
@@ -131,7 +135,14 @@ These paths should not receive new product behavior except explicit compatibilit
 |---|---|
 | `releases/` | Immutable published release packages |
 | `artifacts/` | Reconstruction/build/QA evidence; each subtree should be audited for retention need |
+| `legacy/` | Historical implementation provenance that is explicitly non-authoritative |
 | `tts/v*/` | Versioned TTS release artifacts/evidence; do not treat as authoring source |
+
+### Documentation and project records
+
+| Path | Role |
+|---|---|
+| `docs/` | Maintained project documentation plus explicitly archived historical development records; not gameplay authority unless a governing source says otherwise |
 
 ### Assets and shared presentation
 
