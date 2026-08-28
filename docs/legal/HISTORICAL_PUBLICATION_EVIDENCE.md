@@ -77,7 +77,9 @@ The retained June 2026 ChatGPT archive establishes an important distinction with
 - v0.5.4 followed June 21 and was the version used in the first recorded human playtest;
 - the v0.5.3 package was pushed into the public GitHub workflow on June 23.
 
-Accordingly, v0.5.3 is the current first-priority 2026 foundation-registration candidate. See `V0_5_3_REVIVAL_PUBLICATION_AUDIT.md`.
+The author's 2026-08-28 recollection adds a potentially earlier physical-distribution event: during the June 21 v0.5.4 human playtest, the other player was probably allowed to keep the cards and printed rulebooks were handed out. Because v0.5.4 had been generated earlier that day and the resulting errata record identifies the session as a v0.5.4 playtest, those copies were most likely v0.5.4.
+
+If that distribution was unrestricted, v0.5.4 becomes the better first published 2026 foundation-registration candidate. If it was a limited private-playtest distribution with no right of further dissemination, v0.5.3 remains the first hard public-GitHub foundation candidate. See `V0_5_3_REVIVAL_PUBLICATION_AUDIT.md` and `V0_5_4_COPYRIGHT_FILING_WORKSHEET.md`.
 
 ## Copyright implications
 
@@ -87,7 +89,7 @@ This changes the filing assumptions materially.
 
 The first complete revived edition is v0.5.3, not the later v0.6.0 release. A v0.5.3 registration can establish the qualifying 2026 compilation/editorial authorship while excluding appreciable expression carried from the older public Gauntlet work and excluding AI-generated/unclaimable matter.
 
-Whether the working v0.5.3 first-publication date remains June 23 depends on one remaining fact: whether copies of substantially identical v0.5.x material were distributed to another person during the June 21 human playtest or through another channel before the public GitHub evidence.
+The June 21 physical distribution is now affirmatively remembered in broad outline, but its legal status remains fact-dependent. Copyright Office practice distinguishes unrestricted transfer/lending from a limited distribution to a selected group for a restricted purpose. Until that distinction is resolved, use June 21 for conservative deadline planning but do not yet treat it as a final statutory publication date.
 
 ### v0.6.0 cannot be treated as the origin of all Gauntlet expression
 
