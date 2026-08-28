@@ -2,22 +2,24 @@
 
 Gauntlet is a two-player tactical card-and-territory game about deck construction, hidden battle commitments, territorial control, faction asymmetry, and running the Gauntlet.
 
-**Project site:** [gauntlet.run](https://gauntlet.run/) — the custom URL for Gauntlet repository materials, releases, and browser tools.
+**Project site:** [gauntlet.run](https://gauntlet.run/) — the public home for current rules, factions, cards, Deckbuilder, and playtest tools.
 
 ## Canonical release
 
-**Current canonical version:** v0.6.3 — Third Playtest Revision
+**Current canonical version:** v0.7.0 — Illustrated Cards & Tabletop Simulator
 
-The certified reconstructed package is the canonical [`releases/v0.6.3/`](releases/v0.6.3/) release. It contains:
+The frozen canonical package is [releases/v0.7.0/](releases/v0.7.0/). Its manifest identifies the certified authority set and hashes the published payload. The package contains:
 
-- the official Rulebook in Markdown, reader PDF, and imposed booklet PDF;
-- six faction guides;
-- the complete card-and-Territory reference;
-- canonical structured data and starter-Deck data;
-- the starter-Deck catalog and Deck export schema; and
-- the release manifest identifying the certified authority set.
+- the complete v0.7.0 Rulebook source;
+- the imposed half-letter Rulebook booklet PDF;
+- canonical structured gameplay data;
+- the twelve locked starter Decks;
+- source-provenance data; and
+- the production Card Anatomy and Arcane-trait figures.
 
-Historical release evidence is preserved separately. `releases/v0.6.2-withdrawn/` and `releases/v0.6.3-withdrawn/` are the original packages that were disqualified during release reconstruction; they are preserved for provenance and **must not be used as current rules or tool inputs**. Valid earlier releases such as v0.6.0 and v0.6.1 remain historical rather than withdrawn.
+Published release snapshots are immutable. Live browser tools and production renderers consume the complete current authorities in game-data/current-game.json and rulebook/player-facing/current-rulebook.md; release publication freezes copies of those authorities under releases/.
+
+Earlier valid releases remain historical. Withdrawn reconstructed packages are explicitly named as withdrawn and must not be used as current rules or tool inputs.
 
 ## Game overview
 
@@ -25,147 +27,153 @@ Each player builds a Deck consisting of:
 
 - one faction;
 - one Leader;
-- one Playable Deck of at least 30 cards and no more than 60 total card value;
-- three different Territories; and
+- one Playable Deck of at least 30 cards and no more than 60 total Deckbuilding Value;
+- three different Territories, with no more than one Arena; and
 - any required faction- or Leader-specific supplemental components.
 
-The players secretly arrange their Territories, reveal all six, and join them into the Gauntlet. They then advance, fight battles, become occupiers of enemy-controlled Territories, survive Counterattacks, capture ground, and attempt to run the Gauntlet.
+Players secretly arrange their Territories, reveal all six, and join them into the Gauntlet. They Advance, fight battles, occupy enemy-controlled Territories, survive Counterattacks, advance their Front Line, and attempt to run the Gauntlet.
 
-A Player Token always has a Position. Occupation begins only when that token is on an opposing Territory the player does not control.
+A battle proceeds through:
 
-To run the Gauntlet, a player must defeat the opponent on their final Territory, become its occupier and capture it, advance beyond the Territory column, force the opponent to make a Last Stand, and win the resulting battle.
+1. **Onset**
+2. **Set Gambits**
+3. **Form Reserves**
+4. **Reveal Gambits**
+5. **Choose Tactics**
+6. **Reveal Tactics**
+7. **Outcome**
+8. **Aftermath**
+
+A player wins by capturing the Territory at the opponent's end or by forcing and winning the opponent's Last Stand. Five factions also have an additional faction victory route.
 
 ## Factions
 
 | Faction | Leaders | Core system | Additional victory |
 |---|---|---|---|
-| Military | General, Commandant | Command and Orders | None |
-| Diplomats | Ambassador, Senator | Influence, Terms, Proposals | Peace Treaty |
-| Financiers | Banker, Executive | Capital, Treasury, Deeds | Controlling Interest |
-| Intelligence | Ranger, Spymaster | Intel, Missions, Operation Progress | Special Operation |
-| Mystics | Alchemist, Spirit Walker | Rites, Invocation, Transmutation | Ritual |
-| Inquisition | Grand Inquisitor, Witch Hunter | Conviction, Condemnation, Purge | Purification |
+| **Military** | General, Commandant | Command and Orders | None |
+| **Diplomats** | Ambassador, Senator | Influence, Terms, Proposals | Peace Treaty |
+| **Financiers** | Banker, Executive | Capital, Treasury, Deeds | Controlling Interest |
+| **Intelligence** | Ranger, Spymaster | Intel, Missions, Operation Progress | Special Operation |
+| **Mystics** | Alchemist, Spirit Walker | Rites, Invocation, Transmutation | Ritual |
+| **Inquisition** | Grand Inquisitor, Witch Hunter | Conviction, Condemnation, Purge | Purification |
+
+The v0.7.0 playable pool contains **142 cards**: **52 Neutral cards and 15 cards in each faction**, plus **25 Territories/Arenas**, **12 Leaders**, and **12 locked starter Decks**.
 
 ## Playtest tools
 
-- [Gauntlet v0.6.3 Browser Rulebook](https://gauntlet.run/rulebook/) — searchable, responsive rendering of the complete canonical Rulebook with direct section links and integrated Rules Arbiter access.
-- [Gauntlet v0.6.3 Rulebook (PDF)](releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.pdf) — the complete official rules for the current release.
-- [Gauntlet v0.6.3 Imposed Booklet (PDF)](releases/v0.6.3/Gauntlet_v0.6.3_Rulebook_Booklet.pdf) — color, grayscale-compatible, and ordered for Letter duplex printing with short-edge flip.
-- [Gauntlet v0.6.3 Rules Arbiter](https://gauntlet.run/rules-arbiter/) — ask about rules, cards, Leaders, faction systems, Territories, timing, and victory conditions using canonical v0.6.3 sources.
-- [Gauntlet v0.6.3 Deckbuilder](https://gauntlet.run/deckbuilder/) — load a recommended Leader Deck or build, validate, save, export, randomize, and print a complete package containing its Leader, Territories, playable cards, and required faction components.
-- [Playtest browser tools](https://gauntlet.run/playtest/) — current v0.6.3 tracked/formal playtest workflows and feedback tools.
-- [Gauntlet v0.7.0 on Tabletop Simulator](https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635) — public Steam Workshop mod for online play.
-
-Scan to open the v0.6 Deckbuilder:
-
-<img src="images/qr/gauntlet-v0.6-deckbuilder.svg" alt="QR code for the Gauntlet v0.6.3 Deckbuilder" width="180">
+- [Start Playing](https://gauntlet.run/start/) — faction and Leader discovery plus starter-Deck handoff.
+- [Browser Rulebook](https://gauntlet.run/rulebook/) — searchable current v0.7.0 Rulebook.
+- [Rulebook booklet](releases/v0.7.0/Gauntlet_v0.7.0_Rulebook_Booklet.pdf) — imposed Letter duplex booklet, printed short-edge.
+- [Card Reference](https://gauntlet.run/card-reference/) — current card and Territory reference.
+- [Faction pages](https://gauntlet.run/factions/) — current faction systems and Leader references.
+- [Deckbuilder](https://gauntlet.run/deckbuilder/) — build, validate, save, export, randomize, and print complete v0.7.0 Deck packages.
+- [Rules Arbiter](https://gauntlet.run/rules-arbiter/) — current rules lookup and adjudication surface.
+- [Playtest tools](https://gauntlet.run/playtest/) — tracked/formal playtest workflows and feedback tools.
+- [Tabletop Simulator](https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635) — public v0.7.0 Workshop mod with all twelve starter kits.
 
 ## Canonical source hierarchy
 
-1. [`releases/v0.6.3/Gauntlet_v0.6.3_Manifest.json`](releases/v0.6.3/Gauntlet_v0.6.3_Manifest.json) identifies the current release and certified authority set.
-2. [`releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md`](releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md) governs shared rules.
-3. The six faction guides under [`releases/v0.6.3/faction-guides/`](releases/v0.6.3/faction-guides/) govern faction-specific rules, Leaders, and supplemental systems.
-4. [`releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json`](releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json) is the certified machine-readable release data.
-5. [`releases/v0.6.3/Gauntlet_v0.6.3_Card_and_Territory_Reference.md`](releases/v0.6.3/Gauntlet_v0.6.3_Card_and_Territory_Reference.md) is the generated human-readable card and Territory reference.
-6. [`releases/v0.6.3/Gauntlet_v0.6.3_Starter_Decks.json`](releases/v0.6.3/Gauntlet_v0.6.3_Starter_Decks.json) and the [Starter Deck Catalog](releases/v0.6.3/Gauntlet_v0.6.3_Starter_Deck_Catalog.md) define the certified recommended starter Decks.
+For current development and public browser tooling:
 
-Generated PDFs, browser surfaces, printable tools, and Deckbuilder output are derived production artifacts. If a derived file conflicts with its governing source, correct the source and regenerate the supported artifact.
+1. game-data/current-game.json is the complete current gameplay authority.
+2. rulebook/player-facing/current-rulebook.md is the complete current Rulebook authority.
+3. releases/v0.7.0/Gauntlet_v0.7.0_Manifest.json identifies the frozen v0.7.0 published authority set.
+4. releases/v0.7.0/Gauntlet_v0.7.0_Canonical_Data.json is the frozen machine-readable release snapshot.
+5. releases/v0.7.0/Gauntlet_v0.7.0_Starter_Decks.json defines the frozen public starter Deck set.
+
+Generated PDFs, browser pages, printable tools, and TTS assets are derived production surfaces. If a derived surface conflicts with its governing current source, correct the governing source and regenerate the supported artifact. Do not silently rewrite a frozen published release package.
 
 ## Repository map
 
-### `releases/`
+### game-data/
 
-Versioned canonical and historical release packages. The current package is [`releases/v0.6.3/`](releases/v0.6.3/). Withdrawn original packages are explicitly named `v0.6.2-withdrawn` and `v0.6.3-withdrawn` so they cannot be mistaken for current authority.
+Complete current gameplay authority and runtime adapter. Current browser tools, TTS generation, card/component renderers, Deckbuilder, Card Reference, and release publication derive from this source.
 
-### `docs/`
+### rulebook/
 
-The [documentation index](docs/README.md) separates canonical sources, active design and testing documents, and archived provenance. Current post-release priorities are in [Gauntlet Development Status](docs/Gauntlet_Development_Status.md).
+Complete current Rulebook authority plus the responsive Browser Rulebook and print-generation support.
 
-### `faction-sheets/`
+### releases/
 
-Legacy browser-printable faction sheets retained for compatibility with existing bookmarks and release-era references. They are no longer actively maintained, linked from the public site, or treated as a supported production surface. Use the Deckbuilder for current complete-package printing.
+Frozen versioned release packages and historical release evidence. The current published package is [releases/v0.7.0/](releases/v0.7.0/).
 
-### `images/`
+### card-design/
 
-Leader portraits and production artwork. Canonical Rulebook Leader sketches are under `images/sketches/`. QR codes for public tools are under `images/qr/`.
+Production card compositor, renderers, artwork authoring tools, reference-card production, and shared print surfaces.
 
-### `deckbuilder/`
+### deckbuilder/
 
-Faction-era browser Deckbuilder and the supported printing surface for complete Deck packages, including Leaders, Territories, playable cards, and required faction supplemental components.
+Current faction-era Deckbuilder and complete-package print/export surface.
 
-### `deckbuilder-v0.5/`
+### deckbuilder-v0.5/ and deckbuilder-v0.6/
 
-Historical v0.5 Deckbuilder.
+Historical Deckbuilder surfaces retained for versioned compatibility.
 
-### `rulebook/`
+### card-reference/, factions/, and start/
 
-Responsive browser Rulebook. It renders the canonical v0.6.3 Markdown source directly, with search, anchored navigation, print support, and Rules Arbiter access.
+Current public discovery/reference surfaces generated from current authority.
 
-### `rules-assistant/`
+### rules-assistant/
 
-Static Rules Arbiter widget, canonical-source retrieval, regression tests, and deployable serverless endpoint. The current unversioned Arbiter and browser fallback use v0.6.3 sources; explicit older version routes remain for historical compatibility.
+Rules Arbiter widget, canonical-source retrieval, regression tests, and deployable endpoint.
 
-### `playtest/` and `workers/playtest-sessions/`
+### playtest/ and workers/playtest-sessions/
 
-Current v0.6.3 playtest browser surfaces and session service. New game sessions use `G063-…` serials and event containers use `EV063-…`; historical stored records retain their persisted version and serial.
+Formal playtest browser surfaces and session service.
 
-### `scripts/`
+### tts/
 
-Canonical-data generation, document rendering, package validation, and release-production scripts.
+Tabletop Simulator build, hosted assets, Workshop packaging, QA records, and generation tooling.
 
-### `.github/workflows/`
+### scripts/ and .github/workflows/
 
-Automated validation, rendering, and release-publication workflows.
+Canonical-data validation, document/card rendering, TTS generation, release publication, and cross-surface validation.
 
-### `src/` and `data/`
+### src/ and data/
 
-Legacy pre-v0.6 digital-prototype code and starter data. They are retained for architecture and testing provenance but do not implement the canonical faction-era game. Future work is governed by the [Digital Roadmap](docs/Gauntlet_Digital_Roadmap.md).
+Legacy automated digital-prototype code and historical starter data. The automated rules-aware digital game remains a separate development track.
 
 ## Development workflow
 
-1. Change the appropriate canonical source.
-2. Regenerate and validate canonical data.
-3. Regenerate the affected documents, cards, or supported tools.
-4. Visually inspect rendered documents and Deckbuilder print output.
-5. Record release-facing changes in the changelog.
-6. Record open testing concerns in `docs/Gauntlet_Development_Status.md`; do not silently settle them in generated data or production artifacts.
+1. Change the appropriate complete current authority.
+2. Regenerate and validate affected canonical/derived data.
+3. Regenerate affected documents, cards, components, browser tools, or TTS assets.
+4. Run automated tests and visual/physical QA where relevant.
+5. Record player-facing changes in the changelog.
+6. Preserve published release packages as immutable historical evidence.
+7. Record unresolved testing concerns in [Gauntlet Development Status](docs/Gauntlet_Development_Status.md).
 
 ## Running browser tools locally
 
 From the repository root:
 
-```bash
+~~~bash
 python3 -m http.server 8000
-```
+~~~
 
 Then open:
 
-```text
+~~~text
 http://localhost:8000/
 http://localhost:8000/rulebook/
 http://localhost:8000/deckbuilder/
+http://localhost:8000/card-reference/
 http://localhost:8000/playtest/
-```
+~~~
 
-The Rules Arbiter source-lookup mode works through the local server without an API key. Deploying the optional AI endpoint is documented in [`rules-assistant/README.md`](rules-assistant/README.md).
+For the legacy automated prototype:
 
-For the legacy TypeScript prototype:
-
-```bash
+~~~bash
 npm install
 npm run typecheck
 npm test
 npm run dev:cli
 npm run dev:gui
-```
+~~~
 
-## New-player onboarding
+## Current development priorities
 
-- [Start Playing](https://gauntlet.run/start/) — current guided faction/Leader selection and starter-Deck handoff.
-- [Faction guides](releases/v0.6.3/faction-guides/) — current faction-specific rules and Leader references.
-- [Playtest tools](playtest/) — current tracked/formal session and feedback workflows.
-- [Tabletop Simulator](https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635) — public v0.7.0 Workshop mod for online play.
-- [Player Mat and Zone Reference](playtest/player-mat/)
+See [Gauntlet Development Status](docs/Gauntlet_Development_Status.md). The immediate post-v0.7.0 emphasis is broad human playtesting through physical and TTS play, matchup/faction balance, winner/loser experience, self-serve onboarding, Deckbuilder-to-TTS interoperability, and eventual synchronization of the rules-aware digital engine.
 
 ## Copyright and use
 
