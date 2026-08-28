@@ -82,6 +82,8 @@ async function createTrackedGame(request, env, headers) {
   const displayName = cleanString(body.displayName, 80);
   if (!displayName) throw new HttpError(400, "Enter your name");
   const choice = cleanChoice(body.faction, body.leader);
+  const selectionReason = cleanString(body.selectionReason, 1000);
+  if (!selectionReason) throw new HttpError(400, "Describe what made this faction or Leader appeal to you");
   await enforceCreationLimit(request, env);
 
   const now = new Date().toISOString();
@@ -117,8 +119,8 @@ async function createTrackedGame(request, env, headers) {
   await env.DB.prepare(
     `INSERT INTO playtest_participants
       (id, session_id, display_name, role, joined_at, identity_token_hash,
-       seat_index, faction, leader)
-     VALUES (?, ?, ?, 'player', ?, ?, 1, ?, ?)`
+       seat_index, faction, leader, selection_reason)
+     VALUES (?, ?, ?, 'player', ?, ?, 1, ?, ?, ?)`
   ).bind(
     participantId,
     sessionId,
@@ -126,7 +128,8 @@ async function createTrackedGame(request, env, headers) {
     now,
     await sha256(participantToken),
     choice.faction,
-    choice.leader
+    choice.leader,
+    selectionReason
   ).run();
 
   await insertEvent(env.DB, sessionId, "session_created", {
@@ -140,6 +143,7 @@ async function createTrackedGame(request, env, headers) {
     seatIndex: 1,
     faction: choice.faction,
     leader: choice.leader,
+    selectionReason,
     identityMethod: "tracked_creator"
   }, now);
 
@@ -198,6 +202,8 @@ async function joinTrackedGame(token, request, env, headers) {
   const displayName = cleanString(body.displayName, 80);
   if (!displayName) throw new HttpError(400, "Enter your name");
   const choice = cleanChoice(body.faction, body.leader);
+  const selectionReason = cleanString(body.selectionReason, 1000);
+  if (!selectionReason) throw new HttpError(400, "Describe what made this faction or Leader appeal to you");
   const occupiedRows = rowsFromResult(await env.DB.prepare(
     `SELECT seat_index FROM playtest_participants
       WHERE session_id = ? AND role = 'player' AND seat_index IS NOT NULL`
@@ -212,8 +218,8 @@ async function joinTrackedGame(token, request, env, headers) {
   await env.DB.prepare(
     `INSERT INTO playtest_participants
       (id, session_id, display_name, role, joined_at, identity_token_hash,
-       seat_index, faction, leader)
-     VALUES (?, ?, ?, 'player', ?, ?, ?, ?, ?)`
+       seat_index, faction, leader, selection_reason)
+     VALUES (?, ?, ?, 'player', ?, ?, ?, ?, ?, ?)`
   ).bind(
     participantId,
     session.id,
@@ -222,13 +228,15 @@ async function joinTrackedGame(token, request, env, headers) {
     await sha256(participantToken),
     seatIndex,
     choice.faction,
-    choice.leader
+    choice.leader,
+    selectionReason
   ).run();
   await insertEvent(env.DB, session.id, "participant_joined", {
     participantId,
     seatIndex,
     faction: choice.faction,
     leader: choice.leader,
+    selectionReason,
     identityMethod: "tracked_join"
   }, now);
 
@@ -395,7 +403,7 @@ async function submitPlayerResponse(token, request, env, headers) {
   requireOpen(session);
   const body = await readJson(request);
   const participant = await requireParticipant(session.id, body.participantId, body.participantToken, env.DB);
-  const response = normalizePlayerResponse(body.response);
+  const response = normalizePlayerResponse(body.response, participant.selection_reason);
   const now = new Date().toISOString();
 
   await env.DB.prepare(
@@ -599,7 +607,7 @@ async function requireParticipant(sessionId, participantIdValue, participantToke
   }
   const participant = await db.prepare(
     `SELECT id, session_id, display_name, role, joined_at, identity_token_hash,
-            seat_index, faction, leader
+            seat_index, faction, leader, selection_reason
        FROM playtest_participants WHERE id = ? AND session_id = ? AND role = 'player'`
   ).bind(participantId, sessionId).first();
   if (!participant || !participant.identity_token_hash) throw new HttpError(401, "Player access was not recognized");
@@ -656,10 +664,10 @@ function normalizeSharedResult(value, playerIds) {
   };
 }
 
-function normalizePlayerResponse(value) {
+function normalizePlayerResponse(value, selectionReasonValue) {
   const input = value && typeof value === "object" && !Array.isArray(value) ? value : {};
-  const factionInterest = cleanString(input.factionInterest, 1000);
-  if (!factionInterest) throw new HttpError(400, "Describe why this faction or Leader interested you");
+  const factionInterest = cleanString(selectionReasonValue, 1000);
+  if (!factionInterest) throw new HttpError(400, "The pregame faction/Leader selection reason is missing");
   return {
     factionInterest,
     expectationMatch: rating(input.expectationMatch),
