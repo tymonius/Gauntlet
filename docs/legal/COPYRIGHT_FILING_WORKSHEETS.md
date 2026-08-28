@@ -140,10 +140,11 @@ The corresponding file on current `main` differs from the publication snapshot. 
 - [x] Identify the known appreciable AI-drafted literary block: the three-paragraph Welcome.
 - [x] Remove Rulebook-image provenance as a Worksheet A blocker by excluding all pictorial material from this Literary Work claim.
 - [ ] Recover the historical Rulebook PDF and calculate an independent SHA-256.
-- [ ] Confirm no appreciable third-party literary material requires a more specific exclusion.
-- [ ] Confirm first-publication nation.
-- [ ] Confirm claimant at filing time.
-- [ ] Confirm whether a substantially identical v0.6.0 Rulebook was distributed before July 20 through another channel.
+- [x] No appreciable third-party literary material has been identified in the July 20 Markdown source; all pictorial material is separately excluded from Worksheet A.
+- [x] Working Nation of First Publication: **United States**, with a filing note that first publication occurred online through a public GitHub repository and was accessible internationally. The Copyright Office's online-publication guidance acknowledges that place-of-publication law remains unsettled; re-check the field against then-current Office guidance at filing.
+- [x] Working claimant: **Tymon Scott**, as author/current documented owner, unless a written transfer of the copyright occurs before filing.
+- [x] Repository history establishes the first v0.6.0 Rulebook commit on **July 20, 2026**; no earlier repository commit for that Rulebook path has been identified. Earlier public availability later on July 20 does not change the calendar-date publication entry.
+- [ ] Confirm from the author's personal knowledge that no substantially identical v0.6.0 Rulebook was distributed outside the repository **before July 20, 2026**.
 - [ ] Perform final application/deposit cross-check before certification.
 
 A forensic audit of every procedural rule sentence is **not** required as the working filing approach. Game methods/procedures are excluded as uncopyrightable matter; short faction/Leader descriptions are not relied on as the principal literary claim; the known appreciable AI-drafted Welcome is expressly excluded; and pictorial material is reserved for a separate visual/card workstream.
@@ -152,7 +153,17 @@ Recovery of the June 2021 Google Sheets/TTS materials remains useful for a later
 
 ### Nation-of-first-publication note
 
-Current Copyright Office guidance says that when a work is first published on the same day in the United States and another country, the application should identify the United States. The Office also acknowledges unresolved practical uncertainty about determining the place of publication for works distributed online. Because the July 20/21 release was distributed through an online GitHub publication surface, this field remains `VERIFY` rather than being inferred from residence, repository ownership, or server location.
+**Working entry: United States.**
+
+Current Copyright Office Standard Application guidance states that if a work was first published on the same day in the United States and another country, the applicant should select **United States**. The v0.6.0 Rulebook was made available through a public GitHub repository on July 20, 2026 and was accessible internationally, including in the United States.
+
+Because the Office separately acknowledges that the law concerning the place of publication for internet-distributed works remains unsettled, add a concise Note to Copyright Office rather than pretending the online-publication issue is free from ambiguity.
+
+Working note:
+
+> First publication occurred online through a public GitHub repository on July 20, 2026 and was accessible internationally.
+
+Re-check then-current Copyright Office guidance immediately before filing.
 
 ---
 
