@@ -87,6 +87,23 @@ async function waitForServer(url) {
   throw new Error(`Rulebook production server did not become ready: ${lastError?.message || 'unknown error'}`);
 }
 
+function frozenCardAnatomyFiguresAreUsable() {
+  return [
+    [CARD_ANATOMY_PATH, 10000],
+    [ARCANE_TRAIT_PATH, 5000],
+  ].every(([file, minimumBytes]) =>
+    fs.existsSync(file) && fs.statSync(file).size >= minimumBytes
+  );
+}
+
+async function ensureCardAnatomyFigures() {
+  if (frozenCardAnatomyFiguresAreUsable()) {
+    console.log('Preserving frozen v0.7.0 Card Anatomy figures for release errata.');
+    return;
+  }
+  await ensureCardAnatomyFigures();
+}
+
 async function renderCardAnatomyFigures() {
   fs.mkdirSync(RELEASE_DIR, { recursive: true });
   const browser = await chromium.launch({ headless: true });
