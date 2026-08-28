@@ -27,6 +27,7 @@ describe('Browser Rulebook card anatomy guide', () => {
   it('uses the same anatomy component for browser reading and booklet embedding', () => {
     expect(anatomy).toContain("CARD_ANATOMY_EMBED");
     expect(anatomy).toContain("get('embed') === 'card-anatomy'");
+    expect(anatomy.match(/CARD_ANATOMY_EMBED \\? 'eager' : 'lazy'/g)).toHaveLength(2);
     expect(anatomy).toContain("document.documentElement.dataset.cardAnatomyEmbedReady = 'true'");
     expect(styles).toContain('body.card-anatomy-embed');
     expect(styles).toContain('.card-anatomy-arcane');

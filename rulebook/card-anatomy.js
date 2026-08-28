@@ -21,7 +21,7 @@ function cardFigureMarkup() {
         class="card-anatomy-card"
         src="../card-design/card-print-render.html?fit=production&amp;card=${CARD_ID}"
         title="Current production render of Unbroken Ranks"
-        loading="lazy"
+        loading="${CARD_ANATOMY_EMBED ? 'eager' : 'lazy'}"
         tabindex="-1"
         aria-hidden="true"
       ></iframe>
@@ -47,7 +47,7 @@ function arcaneCropMarkup() {
       class="card-anatomy-arcane-card"
       src="../card-design/card-print-render.html?fit=production&amp;card=${ARCANE_CARD_ID}"
       title="Cropped current production render of the Witchcraft card header"
-      loading="lazy"
+      loading="${CARD_ANATOMY_EMBED ? 'eager' : 'lazy'}"
       tabindex="-1"
     ></iframe>
   `;
