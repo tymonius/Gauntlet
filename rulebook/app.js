@@ -1,6 +1,7 @@
 import { renderMarkdown } from './markdown.js';
 import { loadCurrentGame } from '../game-data/current-game.mjs';
 import { normalizeV063LastStandText } from '../rules-assistant/v063-last-stand-language.js';
+import { applyV070RulebookCorrections } from './player-facing/v070-corrections.js';
 
 const SOURCE_URL = '../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook.md';
 const SOURCE_SHA256 = '7027ef7fe7dcfd59cf43ae9f68d2bd2760667a128839a8b4f141559328f2c653';
@@ -374,7 +375,7 @@ function publicRulebookSource(source, chapter11) {
   const normalized = normalizeV063LastStandText(source)
     .replace('**Version 0.6.3 — Clean Reconstruction Candidate**', '**Version 0.6.3**')
     .replace(/^> \*\*Authority candidate, not current\/public rules\.\*\*[^\n]*\n\n/m, '');
-  return replacePlayerFacingChapter11(normalized, chapter11);
+  return applyV070RulebookCorrections(replacePlayerFacingChapter11(normalized, chapter11));
 }
 
 async function loadVerifiedReleasedSource() {
