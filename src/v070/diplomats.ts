@@ -249,7 +249,9 @@ export function settleV070RefusedTermsOutcome(
   }
 
   const player = state.players[diplomatId];
-  if (player.leaderId === 'senator' && terms.stake > 0) {
+  if (player.leaderId === 'senator'
+    && terms.stake > 0
+    && player.diplomats?.politicalCapitalUsedTurn !== state.turnNumber) {
     terms.stage = 'political_capital';
     terms.politicalCapitalPending = true;
     appendV070Event(state, {
@@ -299,6 +301,9 @@ export function resolveV070PoliticalCapital(
   if (cardInstanceIds.length > 0) {
     changeInfluence(state, diplomatId, cardInstanceIds.length, 'Political Capital');
   }
+
+  const diplomat = requireDiplomat(state, diplomatId);
+  diplomat.politicalCapitalUsedTurn = state.turnNumber;
 
   appendV070Event(state, {
     type: 'political_capital_resolved',
