@@ -42,13 +42,15 @@ These archived release directories were materialized later and therefore **do no
 
 The GitHub commit history shows no repository commits between **June 11, 2021** and **June 22, 2026**.
 
-The first 2026 development/release commit after the dormant period was:
+The first 2026 development/release Git object after the dormant period was:
 
 - `90013e13f90f73ca15fcf2c0ba13d74bc1f9bb77`
-- 2026-06-22 11:29:04 UTC
+- Git author/commit timestamp: 2026-06-22 11:29:04 UTC
 - "Release v0.5.3 Attrition patch"
 
-That commit was based directly on the 2021 repository state before the 2026 release-development branch was merged.
+That commit was based directly on the 2021 repository state.
+
+**Important:** the June 22 value is a Git-object timestamp, not proof that the commit was publicly pushed on June 22. The retained June 23 development transcript records the branch/tag/pull-request publication workflow, and GitHub PR #1 was created on June 23 at 04:21:29 UTC with `90013e...` as its head. The first hard server-side evidence presently recovered for public availability of the v0.5.3 files is therefore June 23.
 
 ## 2026 pre-v0.6 release history
 
@@ -56,8 +58,8 @@ Confirmed repository release evidence before v0.6.0 includes:
 
 | Version | Earliest repository evidence currently confirmed | Notes |
 | --- | --- | --- |
-| v0.5.3 | 2026-06-22 | "Release v0.5.3 Attrition patch" |
-| v0.5.4 | 2026-06-23 | "Release v0.5.4 Last Stand Patch" |
+| v0.5.3 | 2026-06-23 public-GitHub evidence; Git object dated 2026-06-22 | Complete package created privately June 20; PR #1 created June 23 with the historical release commit as head |
+| v0.5.4 | 2026-06-23 public-GitHub evidence; package created June 21 | "Release v0.5.4 Last Stand Patch"; first human playtest used v0.5.4 on June 21 |
 | v0.5.5 | 2026-06-23 | "Release v0.5.5 Human Playtest Errata" |
 | v0.5.6 | 2026-06-23 | "Release v0.5.6 Asset Bank Patch" |
 | v0.5.7 | 2026-06-26 | "Release v0.5.7 Core Cleanup Patch" |
@@ -65,9 +67,27 @@ Confirmed repository release evidence before v0.6.0 includes:
 
 The historical `releases/` tree also contains v0.3.0, v0.3.1, and v0.4.0 archive stubs, but their original distribution dates have not yet been independently reconstructed beyond the June 11, 2021 public README evidence.
 
+## 2026 revival chronology
+
+The retained June 2026 ChatGPT archive establishes an important distinction within the v0.5 line:
+
+- development resumed from the legacy v0.4-era game;
+- the labels **v0.5.0**, **v0.5.1**, and **v0.5.2** were assigned retrospectively to stages of the continuous June redesign;
+- **v0.5.3** was the first complete fixed print-and-play package, generated June 20;
+- v0.5.4 followed June 21 and was the version used in the first recorded human playtest;
+- the v0.5.3 package was pushed into the public GitHub workflow on June 23.
+
+Accordingly, v0.5.3 is the current first-priority 2026 foundation-registration candidate. See `V0_5_3_REVIVAL_PUBLICATION_AUDIT.md`.
+
 ## Copyright implications
 
 This changes the filing assumptions materially.
+
+### v0.5.3 is the current 2026 foundation candidate
+
+The first complete revived edition is v0.5.3, not the later v0.6.0 release. A v0.5.3 registration can establish the qualifying 2026 compilation/editorial authorship while excluding appreciable expression carried from the older public Gauntlet work and excluding AI-generated/unclaimable matter.
+
+Whether the working v0.5.3 first-publication date remains June 23 depends on one remaining fact: whether copies of substantially identical v0.5.x material were distributed to another person during the June 21 human playtest or through another channel before the public GitHub evidence.
 
 ### v0.6.0 cannot be treated as the origin of all Gauntlet expression
 
