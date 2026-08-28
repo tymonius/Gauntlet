@@ -1,7 +1,7 @@
 import baseWorker from "./index.js";
 
 const DEFAULT_ORIGIN = "https://gauntlet.run";
-const CURRENT_RULES_VERSION = "v0.6.3";
+const CURRENT_RULES_VERSION = "v0.7.0";
 const TOKEN_PATTERN = /^[A-Za-z0-9_-]{24,96}$/;
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const CREATION_LIMIT_PER_DAY = 12;
@@ -737,7 +737,7 @@ async function enforceCreationLimit(request, env) {
   const dayKey = now.slice(0, 10);
   const address = cleanString(request.headers.get("cf-connecting-ip") || "local", 120);
   const agent = cleanString(request.headers.get("user-agent") || "unknown", 300);
-  const salt = cleanString(env.TRACKED_CREATION_SALT || "gauntlet-tracked-v1", 256);
+  const salt = cleanString(env.TRACKED_CREATION_SALT || "gauntlet-tracked-v070", 256);
   const clientHash = await sha256(`${salt}|${address}|${agent}`);
   const row = await env.DB.prepare(
     "SELECT created_count FROM playtest_public_creation_limits WHERE client_hash = ? AND day_key = ?"
@@ -756,7 +756,7 @@ async function enforceCreationLimit(request, env) {
 
 async function uniqueSerial(db) {
   for (let attempt = 0; attempt < 8; attempt += 1) {
-    const serial = `G063-${randomCode(8)}`;
+    const serial = `G070-${randomCode(8)}`;
     const existing = await db.prepare("SELECT 1 AS found FROM playtest_sessions WHERE sheet_serial = ?")
       .bind(serial).first();
     if (!existing) return serial;
