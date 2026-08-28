@@ -10,7 +10,9 @@ import { advanceV070FrontLine } from './front-line';
 import {
   V070_DEMILITARIZED_ZONE_ID,
   activeV070Overlay,
+  discardV070Overlay,
   placeV070OverlayFromHand,
+  registerV070DmzEntryLock,
   v070DmzBlocksEntryThisTurn,
 } from './overlays';
 import { viewV070GameForPlayer } from './views';
@@ -171,8 +173,18 @@ describe('v0.7.0 Territory Overlays and Demilitarized Zone', () => {
     ]);
     expect(state.board.find(territory => territory.position === 3)?.occupant).toBeNull();
     expect(v070DmzBlocksEntryThisTurn(state, 3)).toBe(true);
+    expect(state.territoryTurnRestrictions).toEqual([
+      expect.objectContaining({
+        kind: 'no_entry',
+        source: 'demilitarized_zone',
+        sourceInstanceId: dmz,
+        territoryInstanceId: contestedIdentity,
+        turnNumber: state.turnNumber,
+      }),
+    ]);
 
     const view = viewV070GameForPlayer(state, 'B');
+    expect(view.territoryTurnRestrictions).toHaveLength(1);
     expect(view.overlays).toEqual([
       expect.objectContaining({
         instanceId: dmz,
@@ -237,20 +249,34 @@ describe('v0.7.0 Territory Overlays and Demilitarized Zone', () => {
     }));
   });
 
-  test('a covered DMZ is dormant, including its same-turn entry prohibition', () => {
+  test('covering DMZ makes its Overlay text dormant but does not undo the resolved placement-turn entry lock', () => {
     const state = setupGame();
     const dmz = injectCard(state, 'A', V070_DEMILITARIZED_ZONE_ID);
     const blockade = injectCard(state, 'A', 'diplomats-sanctions-blockade');
 
     placeV070OverlayFromHand(state, 'A', dmz, 2, 'test');
+    registerV070DmzEntryLock(state, 2, dmz);
     placeV070OverlayFromHand(state, 'A', blockade, 2, 'test');
 
     expect(activeV070Overlay(state, 2)?.instanceId).toBe(blockade);
-    expect(v070DmzBlocksEntryThisTurn(state, 2)).toBe(false);
+    expect(v070DmzBlocksEntryThisTurn(state, 2)).toBe(true);
 
     const view = viewV070GameForPlayer(state, 'B');
     expect(view.overlays.find(overlay => overlay.instanceId === dmz)?.active).toBe(false);
     expect(view.overlays.find(overlay => overlay.instanceId === blockade)?.active).toBe(true);
+  });
+
+  test('the resolved DMZ entry lock survives Overlay removal for the rest of that turn', () => {
+    const state = setupGame();
+    const dmz = injectCard(state, 'A', V070_DEMILITARIZED_ZONE_ID);
+
+    placeV070OverlayFromHand(state, 'A', dmz, 2, 'test');
+    registerV070DmzEntryLock(state, 2, dmz);
+    discardV070Overlay(state, dmz, 'test_removal');
+
+    expect(state.overlays).toHaveLength(0);
+    expect(v070DmzBlocksEntryThisTurn(state, 2)).toBe(true);
+    expect(state.players.A.zones.discardPile).toContain(dmz);
   });
 
   test('entering an unoccupied active DMZ on a later turn requires one Hand discard', () => {
