@@ -15,6 +15,7 @@ export interface V070OverlayView {
   instanceId: string;
   cardId: string;
   owner: PlayerId;
+  controller: PlayerId;
   territoryInstanceId: string;
   territoryPosition: number;
   territoryId: string;
@@ -159,6 +160,7 @@ function viewOverlays(state: V070GameState): V070OverlayView[] {
       return {
         ...structuredClone(overlay),
         cardId: instance.cardId,
+        controller: territory.controller,
         territoryPosition: territory.position,
         territoryId: territory.territoryId,
         active: overlay.sequence === activeSequence,
