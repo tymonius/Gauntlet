@@ -5,6 +5,7 @@ import { spawn, spawnSync } from 'node:child_process';
 import { chromium } from 'playwright';
 import { applyV070CanonicalCorrections, applyV070RulebookCorrections } from '../rulebook/player-facing/v070-corrections.js';
 import { synchronizeKnownRulebookClaims, validateKnownRulebookClaims } from '../rulebook/player-facing/rule-facts.js';
+import { PUBLISHING_AUTHORITY_SOURCE, loadPublishingAuthority } from './publishing-authority.mjs';
 
 const ROOT = process.cwd();
 const RELEASE_VERSION = 'v0.7.0';
@@ -234,6 +235,7 @@ const physicalSheets = Number(report.outputs?.physicalSheets);
 if (!Number.isInteger(physicalSheets) || physicalSheets < 1) throw new Error('Approved Rulebook production report has no valid physical-sheet count.');
 validateReleaseNotesBookletCounts(logicalPages, bookletPages, physicalSheets);
 
+const publishing = await loadPublishingAuthority();
 const lifecycle = JSON.parse(fs.readFileSync(path.join(ROOT, 'config', 'release-lifecycle.json'), 'utf8'));
 const lifecycleRelease = lifecycle.releases?.[RELEASE_VERSION];
 const isPublishedCurrent = lifecycle.current_release === RELEASE_VERSION
@@ -243,6 +245,13 @@ const isPublishedCurrent = lifecycle.current_release === RELEASE_VERSION
 const provenance = JSON.parse(fs.readFileSync(PROVENANCE_PATH, 'utf8'));
 if (provenance.release_version !== RELEASE_VERSION || provenance.source_version !== SOURCE_VERSION || !provenance.authority_set_id) {
   throw new Error('v0.7.0 source provenance is incomplete.');
+}
+if (
+  provenance.publishing_authority?.authority !== PUBLISHING_AUTHORITY_SOURCE
+  || provenance.publishing_authority?.name !== publishing.imprint.displayName
+  || provenance.publishing_authority?.copyright_holder !== publishing.copyright.holder
+) {
+  throw new Error('v0.7.0 source provenance does not match current publishing authority.');
 }
 
 const starters = JSON.parse(fs.readFileSync(STARTERS_PATH, 'utf8'));
@@ -266,6 +275,14 @@ const manifest = {
   name: RELEASE_NAME,
   status: 'current',
   authority_set_id: provenance.authority_set_id,
+  publisher: {
+    authority: PUBLISHING_AUTHORITY_SOURCE,
+    name: publishing.imprint.displayName,
+    role: publishing.imprint.role,
+    status: publishing.imprint.status,
+    logo: publishing.imprint.logo,
+    copyright_holder: publishing.copyright.holder,
+  },
   publication_date: isPublishedCurrent ? (lifecycleRelease.publication_date || null) : null,
   current_package_path: `releases/${RELEASE_VERSION}/`,
   source_provenance: {
