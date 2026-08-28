@@ -7,6 +7,7 @@ const chapter11 = read('rulebook/player-facing/chapter-11.md');
 const currentRulebook = read('rulebook/player-facing/current-rulebook.md');
 const index = read('rulebook/index.html');
 const app = read('rulebook/app.js');
+const rulesetStyles = read('rulebook/ruleset-toggle.css');
 const universalReference = read('card-design/reference-copy/v0.6.3/universal-reference.md');
 const diplomatReference = read('card-design/reference-copy/v0.6.3/diplomat-reference.md');
 
@@ -30,6 +31,9 @@ describe('Published Browser Rulebook', () => {
     expect(index).toContain('data-ruleset="candidate" aria-pressed="false" hidden disabled');
     expect(app).toContain('candidateVersion !== PUBLISHED_VERSION');
     expect(app).toContain('rulesetSwitch.hidden = !distinctCandidate');
+    expect(rulesetStyles).toContain('.ruleset-switch[hidden]');
+    expect(rulesetStyles).toContain('.ruleset-switch button[hidden]');
+    expect(rulesetStyles).toContain('display: none !important;');
     expect(index).toContain('Published v0.7.0 Rulebook is current.');
     expect(index).toContain('../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook_Booklet.pdf');
     expect(index).not.toContain('Gauntlet v0.6.3 Browser Rulebook');

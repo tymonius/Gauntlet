@@ -11,6 +11,14 @@
   box-shadow: 0 8px 22px rgba(55, 38, 18, 0.06);
 }
 
+/* Author-level display rules override the browser's default [hidden] rule.
+   Make hidden state authoritative for the retired selector and its controls. */
+.ruleset-switch[hidden],
+.ruleset-switch button[hidden],
+.ruleset-note[hidden] {
+  display: none !important;
+}
+
 .ruleset-switch button {
   min-width: 150px;
   min-height: 48px;
