@@ -324,8 +324,9 @@
     }
     saveState();
     const url = new URL("../playtest/tracked/", window.location.href);
+    const currentParams = new URLSearchParams(window.location.search);
     url.searchParams.set("source", "start");
-    url.searchParams.set("mode", "tts");
+    url.searchParams.set("mode", currentParams.get("mode") === "physical" ? "physical" : "tts");
     window.location.assign(url.href);
   }
 
