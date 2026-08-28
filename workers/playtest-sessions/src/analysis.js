@@ -81,7 +81,8 @@ export async function readTrackedAnalysis(db) {
               r.faction_interest, r.expectation_match, r.leader_distinction,
               r.fun, r.pacing, r.meaningful_decisions, r.battle_tension,
               r.rules_clarity, r.faction_clarity, r.table_organization,
-              r.play_again, r.comments, r.submitted_at AS response_submitted_at,
+              r.play_again, r.felt_decided_when, r.agency_after_decided,
+              r.decisive_cause, r.comments, r.submitted_at AS response_submitted_at,
               r.updated_at AS response_updated_at
          FROM playtest_participants p
          JOIN playtest_sessions s ON s.id = p.session_id
@@ -246,6 +247,9 @@ function mapPlayer(row) {
       factionClarity: Number(row.faction_clarity),
       tableOrganization: Number(row.table_organization),
       playAgain: Number(row.play_again) === 1,
+      feltDecidedWhen: row.felt_decided_when || "never",
+      agencyAfterDecided: row.agency_after_decided || "not_applicable",
+      decisiveCause: row.decisive_cause || "",
       comments: row.comments || "",
       submittedAt: row.response_submitted_at,
       updatedAt: row.response_updated_at
