@@ -1,0 +1,539 @@
+import { v070CanonicalContent } from '../content/v070';
+
+export type PlayerId = 'A' | 'B';
+export type TurnPhase = 'capture' | 'draw' | 'opening' | 'movement' | 'denouement' | 'cleanup';
+export type MovementChoice = 'advance' | 'hold' | 'fall_back';
+export type ExtendedPosition = number;
+
+export const V070_TURN_SEQUENCE: readonly TurnPhase[] = [
+  'capture',
+  'draw',
+  'opening',
+  'movement',
+  'denouement',
+  'cleanup',
+] as const;
+
+export const V070_BATTLE_SEQUENCE = [
+  'onset',
+  'set_gambits',
+  'form_reserves',
+  'reveal_gambits',
+  'choose_tactics',
+  'reveal_tactics',
+  'outcome',
+  'aftermath',
+] as const;
+
+export type V070BattleSequenceStep = typeof V070_BATTLE_SEQUENCE[number];
+export type V070BattleStage = 'onset' | 'active' | 'resolved' | 'ended';
+export type V070BattleEndReason = 'withdrawal' | 'terms_accepted' | 'prevented';
+
+export interface V070BattleOnsetInput {
+  territoryCount: number;
+  attacker: PlayerId;
+  defender: PlayerId;
+  attackerOrigin: ExtendedPosition;
+  contestedPosition: ExtendedPosition;
+  positions: Record<PlayerId, ExtendedPosition>;
+  defenderControlsContested: boolean;
+  lastStand?: boolean;
+  defensiveEdgeRemoved?: boolean;
+}
+
+export interface V070BattleState extends V070BattleOnsetInput {
+  lastStand: boolean;
+  defensiveEdgeRemoved: boolean;
+  stage: V070BattleStage;
+  termsAccepted: boolean | null;
+  winner: PlayerId | null;
+  loser: PlayerId | null;
+  occupier: PlayerId | null;
+  positions: Record<PlayerId, ExtendedPosition>;
+  endReason: V070BattleEndReason | null;
+  completeNonResultAftermath: boolean;
+  clearCommittedCards: boolean;
+}
+
+export interface V070BattleOutcomeInput {
+  attacker: PlayerId;
+  defender: PlayerId;
+  attackerTotal: number;
+  defenderTotal: number;
+  defenderHasDefensiveEdge: boolean;
+  tiebreakRolls?: readonly [number, number][];
+}
+
+export interface V070BattleOutcome {
+  winner: PlayerId;
+  loser: PlayerId;
+  method: 'total' | 'defensive_edge' | 'tiebreak_roll';
+  tiebreakRounds: number;
+}
+
+export type RunTheGauntletRoute = 'final_territory_capture' | 'last_stand';
+
+export interface RunTheGauntletVictory {
+  winner: PlayerId;
+  route: RunTheGauntletRoute;
+  immediate: true;
+}
+
+export interface V070BattleResolution {
+  state: V070BattleState;
+  victory: RunTheGauntletVictory | null;
+}
+
+export interface V070LastStandAccessInput {
+  attacker: PlayerId;
+  defender: PlayerId;
+  territoryCount: number;
+  attackerPosition: ExtendedPosition;
+  defenderPosition: ExtendedPosition;
+  separateMovementSequence: boolean;
+  advancingBeyondOpponentEnd: boolean;
+}
+
+export type V070MovementSequenceSource = 'normal' | 'effect';
+
+export interface V070TurnState {
+  phase: TurnPhase;
+  actionsAvailable: number;
+  actionsTaken: Record<'opening' | 'denouement', number>;
+  movementRemaining: number;
+  movementSequenceOpen: boolean;
+  battleInitiated: boolean;
+  movementSequenceSource: V070MovementSequenceSource | null;
+}
+
+function assertReleasedRuleContract(): void {
+  const battle = v070CanonicalContent.content.battle;
+  if (JSON.stringify(battle.sequence) !== JSON.stringify(V070_BATTLE_SEQUENCE)) {
+    throw new Error('v0.7.0 executable battle sequence drifted from released canonical data.');
+  }
+  if (!battle.onset.includes('Terms first')
+    || !battle.battle_fought.includes('proceeds to Gambits')
+    || !battle.withdrawal.includes('Withdrawal during Onset')) {
+    throw new Error('v0.7.0 executable battle procedures require the released Onset and withdrawal contract.');
+  }
+}
+
+assertReleasedRuleContract();
+
+/**
+ * Movement that enters the opponent's Position establishes the battle context
+ * and enters Onset immediately. There is no separate Pending Battle stage.
+ */
+export function createV070BattleOnset(input: V070BattleOnsetInput): V070BattleState {
+  if (input.attacker === input.defender) throw new Error('Attacker and defender must be different players.');
+  assertTerritoryCount(input.territoryCount);
+  assertTerritoryIndex(input.attackerOrigin, input.territoryCount, 'attacker origin');
+  assertExtendedPosition(input.contestedPosition, input.territoryCount, 'contested Position');
+  assertExtendedPosition(input.positions.A, input.territoryCount, 'A Position');
+  assertExtendedPosition(input.positions.B, input.territoryCount, 'B Position');
+
+  const lastStand = Boolean(input.lastStand);
+  if (lastStand) {
+    if (input.contestedPosition !== outsideOwnEnd(input.defender, input.territoryCount)) {
+      throw new Error('A Last Stand is fought beyond the defender’s own end of the Gauntlet.');
+    }
+    if (input.attackerOrigin !== finalTerritoryAtOpponentEnd(input.attacker, input.territoryCount)) {
+      throw new Error('A Last Stand attacker must Advance from the Territory at the opponent’s end.');
+    }
+  } else {
+    assertTerritoryIndex(input.contestedPosition, input.territoryCount, 'normal contested Position');
+  }
+
+  if (input.positions[input.attacker] !== input.contestedPosition
+    || input.positions[input.defender] !== input.contestedPosition) {
+    throw new Error('Onset requires both Player Tokens at the contested Position.');
+  }
+
+  return {
+    ...input,
+    lastStand,
+    defensiveEdgeRemoved: Boolean(input.defensiveEdgeRemoved),
+    stage: 'onset',
+    termsAccepted: null,
+    winner: null,
+    loser: null,
+    occupier: null,
+    positions: { ...input.positions },
+    endReason: null,
+    completeNonResultAftermath: false,
+    clearCommittedCards: false,
+  };
+}
+
+export function createV070LastStandOnset(input: V070LastStandAccessInput): V070BattleState {
+  if (!canInitiateV070LastStand(input)) {
+    throw new Error('Last Stand requires the defender beyond their end and a separate legal Advance beyond that end.');
+  }
+  const contestedPosition = outsideOwnEnd(input.defender, input.territoryCount);
+  return createV070BattleOnset({
+    territoryCount: input.territoryCount,
+    attacker: input.attacker,
+    defender: input.defender,
+    attackerOrigin: input.attackerPosition,
+    contestedPosition,
+    positions: { A: contestedPosition, B: contestedPosition },
+    defenderControlsContested: false,
+    lastStand: true,
+  });
+}
+
+export function canInitiateV070LastStand(input: V070LastStandAccessInput): boolean {
+  if (input.attacker === input.defender) return false;
+  assertTerritoryCount(input.territoryCount);
+  return input.attackerPosition === finalTerritoryAtOpponentEnd(input.attacker, input.territoryCount)
+    && input.defenderPosition === outsideOwnEnd(input.defender, input.territoryCount)
+    && input.separateMovementSequence
+    && input.advancingBeyondOpponentEnd;
+}
+
+export function defenderHasV070DefensiveEdge(battle: V070BattleState): boolean {
+  return !battle.defensiveEdgeRemoved && (battle.defenderControlsContested || battle.lastStand);
+}
+
+/**
+ * Finishing Onset means the battle has proceeded to Gambits and therefore
+ * counts as a battle fought for effects that care whether a battle occurred.
+ */
+export function proceedV070ToGambits(battle: V070BattleState): V070BattleState {
+  if (battle.stage !== 'onset') throw new Error('A battle can proceed to Gambits only from Onset.');
+  return { ...battle, stage: 'active' };
+}
+
+/**
+ * End the sequence during Onset. Accepted Terms normally cause the attacker to
+ * withdraw and the defender to remain; callers may provide an explicit
+ * positions result when the Proposal says otherwise.
+ */
+export function endV070OnsetWithoutBattle(
+  battle: V070BattleState,
+  reason: Exclude<V070BattleEndReason, 'withdrawal'>,
+  positions?: Record<PlayerId, ExtendedPosition>,
+): V070BattleState {
+  if (battle.stage !== 'onset') throw new Error('Only Onset can end before a battle proceeds.');
+
+  const resolvedPositions = positions
+    ? { ...positions }
+    : reason === 'terms_accepted'
+      ? normalWithdrawalPositions(battle, new Set<PlayerId>([battle.attacker]))
+      : { ...battle.positions };
+
+  assertExtendedPosition(resolvedPositions.A, battle.territoryCount, 'A Position');
+  assertExtendedPosition(resolvedPositions.B, battle.territoryCount, 'B Position');
+
+  return {
+    ...battle,
+    stage: 'ended',
+    termsAccepted: reason === 'terms_accepted' ? true : battle.termsAccepted,
+    winner: null,
+    loser: null,
+    occupier: null,
+    positions: resolvedPositions,
+    endReason: reason,
+    completeNonResultAftermath: false,
+    clearCommittedCards: false,
+  };
+}
+
+export function v070BattleWasFought(battle: V070BattleState): boolean {
+  return battle.stage === 'active'
+    || battle.stage === 'resolved'
+    || (battle.stage === 'ended' && battle.completeNonResultAftermath);
+}
+
+export function resolveV070BattleOutcome(input: V070BattleOutcomeInput): V070BattleOutcome {
+  if (input.attacker === input.defender) throw new Error('Attacker and defender must be different players.');
+
+  if (input.attackerTotal > input.defenderTotal) {
+    return { winner: input.attacker, loser: input.defender, method: 'total', tiebreakRounds: 0 };
+  }
+  if (input.defenderTotal > input.attackerTotal) {
+    return { winner: input.defender, loser: input.attacker, method: 'total', tiebreakRounds: 0 };
+  }
+  if (input.defenderHasDefensiveEdge) {
+    return { winner: input.defender, loser: input.attacker, method: 'defensive_edge', tiebreakRounds: 0 };
+  }
+
+  const rolls = input.tiebreakRolls ?? [];
+  for (let index = 0; index < rolls.length; index += 1) {
+    const [attackerRoll, defenderRoll] = rolls[index];
+    assertDie(attackerRoll, 'Tiebreak Rolls');
+    assertDie(defenderRoll, 'Tiebreak Rolls');
+    if (attackerRoll > defenderRoll) {
+      return { winner: input.attacker, loser: input.defender, method: 'tiebreak_roll', tiebreakRounds: index + 1 };
+    }
+    if (defenderRoll > attackerRoll) {
+      return { winner: input.defender, loser: input.attacker, method: 'tiebreak_roll', tiebreakRounds: index + 1 };
+    }
+  }
+
+  throw new Error('A tied battle without Defensive Edge requires a decisive unmodified Tiebreak Roll.');
+}
+
+export function applyV070BattleOutcome(
+  battle: V070BattleState,
+  outcome: V070BattleOutcome,
+): V070BattleResolution {
+  if (battle.stage !== 'active') {
+    throw new Error('A battle outcome may be applied only after Onset has proceeded to Gambits.');
+  }
+  assertOutcomeMatchesBattle(battle, outcome);
+
+  const positions = { ...battle.positions };
+  if (outcome.loser === battle.attacker) {
+    positions[battle.attacker] = battle.attackerOrigin;
+  } else {
+    positions[battle.defender] = retreatV070Position(
+      battle.defender,
+      battle.contestedPosition,
+      battle.territoryCount,
+    );
+  }
+  positions[outcome.winner] = battle.contestedPosition;
+
+  const attackerWon = outcome.winner === battle.attacker;
+  const occupier = attackerWon
+    && !battle.lastStand
+    && isTerritoryIndex(battle.contestedPosition, battle.territoryCount)
+    && battle.defenderControlsContested
+      ? battle.attacker
+      : null;
+
+  const state: V070BattleState = {
+    ...battle,
+    stage: 'resolved',
+    winner: outcome.winner,
+    loser: outcome.loser,
+    occupier,
+    positions,
+    endReason: null,
+    clearCommittedCards: true,
+  };
+
+  return {
+    state,
+    victory: battle.lastStand && attackerWon
+      ? victoryFromV070LastStand(battle.attacker, battle.defender)
+      : null,
+  };
+}
+
+/**
+ * Withdrawal uses the same positional procedure as retreat but has no winner
+ * or loser. Onset withdrawal has no Aftermath; withdrawal after the battle has
+ * proceeded to Gambits completes the remaining non-result Aftermath.
+ */
+export function resolveV070Withdrawal(
+  battle: V070BattleState,
+  withdrawingPlayers: readonly PlayerId[],
+): V070BattleState {
+  if (battle.stage === 'resolved' || battle.stage === 'ended') {
+    throw new Error('A completed battle sequence cannot withdraw again.');
+  }
+
+  const withdrawing = new Set(withdrawingPlayers);
+  if (withdrawing.size === 0) throw new Error('At least one player must withdraw.');
+  if ([...withdrawing].some(player => player !== battle.attacker && player !== battle.defender)) {
+    throw new Error('Only the attacker or defender may withdraw from this battle sequence.');
+  }
+
+  const battleProceeded = battle.stage === 'active';
+  const positions = normalWithdrawalPositions(battle, withdrawing);
+  const defenderOnly = withdrawing.size === 1 && withdrawing.has(battle.defender);
+  const occupier = defenderOnly
+    && !battle.lastStand
+    && isTerritoryIndex(battle.contestedPosition, battle.territoryCount)
+    && battle.defenderControlsContested
+      ? battle.attacker
+      : null;
+
+  return {
+    ...battle,
+    stage: 'ended',
+    winner: null,
+    loser: null,
+    occupier,
+    positions,
+    endReason: 'withdrawal',
+    completeNonResultAftermath: battleProceeded,
+    clearCommittedCards: battleProceeded,
+  };
+}
+
+export function createV070TurnState(additionalActions = 0): V070TurnState {
+  return {
+    phase: 'capture',
+    actionsAvailable: 1 + nonnegativeInteger(additionalActions),
+    actionsTaken: { opening: 0, denouement: 0 },
+    movementRemaining: 0,
+    movementSequenceOpen: false,
+    battleInitiated: false,
+    movementSequenceSource: null,
+  };
+}
+
+export function advanceV070TurnPhase(state: V070TurnState): V070TurnState {
+  const index = V070_TURN_SEQUENCE.indexOf(state.phase);
+  if (index < 0 || index === V070_TURN_SEQUENCE.length - 1) return { ...state };
+
+  return {
+    ...state,
+    phase: V070_TURN_SEQUENCE[index + 1],
+    movementRemaining: 0,
+    movementSequenceOpen: false,
+    battleInitiated: false,
+    movementSequenceSource: null,
+  };
+}
+
+export function beginEffectGrantedV070Movement(state: V070TurnState, movement = 1): V070TurnState {
+  const amount = nonnegativeInteger(movement);
+  if (amount < 1) throw new Error('Effect-granted movement must grant at least one movement.');
+
+  return {
+    ...state,
+    movementRemaining: amount,
+    movementSequenceOpen: true,
+    battleInitiated: false,
+    movementSequenceSource: 'effect',
+  };
+}
+
+export function beginNormalV070Movement(state: V070TurnState, additionalMovement = 0): V070TurnState {
+  if (state.phase !== 'movement') throw new Error('Normal movement begins only during the Movement phase.');
+
+  return {
+    ...state,
+    movementRemaining: 1 + nonnegativeInteger(additionalMovement),
+    movementSequenceOpen: true,
+    battleInitiated: false,
+    movementSequenceSource: 'normal',
+  };
+}
+
+export function applyV070MovementChoice(
+  state: V070TurnState,
+  choice: MovementChoice,
+  options: { initiatesBattle?: boolean } = {},
+): V070TurnState {
+  if (!state.movementSequenceOpen || !state.movementSequenceSource) {
+    throw new Error('No movement sequence is currently open.');
+  }
+  if (state.movementSequenceSource === 'normal' && state.phase !== 'movement') {
+    throw new Error('Normal movement is legal only during the Movement phase.');
+  }
+  if (choice === 'hold') {
+    return {
+      ...state,
+      movementRemaining: 0,
+      movementSequenceOpen: false,
+      movementSequenceSource: null,
+    };
+  }
+  if (state.movementRemaining <= 0) throw new Error('No movement remains.');
+
+  const initiatesBattle = Boolean(options.initiatesBattle);
+  const remaining = initiatesBattle ? 0 : state.movementRemaining - 1;
+
+  return {
+    ...state,
+    movementRemaining: remaining,
+    movementSequenceOpen: !initiatesBattle && remaining > 0,
+    movementSequenceSource: initiatesBattle || remaining === 0 ? null : state.movementSequenceSource,
+    battleInitiated: initiatesBattle,
+  };
+}
+
+export function finalTerritoryAtOpponentEnd(player: PlayerId, territoryCount: number): number {
+  assertTerritoryCount(territoryCount);
+  return player === 'A' ? territoryCount - 1 : 0;
+}
+
+export function outsideOwnEnd(player: PlayerId, territoryCount: number): ExtendedPosition {
+  assertTerritoryCount(territoryCount);
+  return player === 'A' ? -1 : territoryCount;
+}
+
+export function retreatV070Position(
+  player: PlayerId,
+  position: ExtendedPosition,
+  territoryCount: number,
+): ExtendedPosition {
+  assertExtendedPosition(position, territoryCount, `${player} Position`);
+  return player === 'A'
+    ? Math.max(-1, position - 1)
+    : Math.min(territoryCount, position + 1);
+}
+
+export function victoryFromV070LastStand(
+  winner: PlayerId,
+  defender: PlayerId,
+): RunTheGauntletVictory | null {
+  if (winner === defender) return null;
+  return { winner, route: 'last_stand', immediate: true };
+}
+
+function normalWithdrawalPositions(
+  battle: V070BattleState,
+  withdrawing: ReadonlySet<PlayerId>,
+): Record<PlayerId, ExtendedPosition> {
+  const positions = { ...battle.positions };
+
+  // The shared procedure moves the attacker first when both withdraw.
+  if (withdrawing.has(battle.attacker)) positions[battle.attacker] = battle.attackerOrigin;
+  if (withdrawing.has(battle.defender)) {
+    positions[battle.defender] = retreatV070Position(
+      battle.defender,
+      battle.contestedPosition,
+      battle.territoryCount,
+    );
+  }
+
+  if (!withdrawing.has(battle.attacker)) positions[battle.attacker] = battle.contestedPosition;
+  if (!withdrawing.has(battle.defender)) positions[battle.defender] = battle.contestedPosition;
+  return positions;
+}
+
+function assertOutcomeMatchesBattle(battle: V070BattleState, outcome: V070BattleOutcome): void {
+  const players = new Set([battle.attacker, battle.defender]);
+  if (outcome.winner === outcome.loser || !players.has(outcome.winner) || !players.has(outcome.loser)) {
+    throw new Error('Battle outcome winner and loser must match the battle participants.');
+  }
+}
+
+function nonnegativeInteger(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  return Math.max(0, Math.floor(value));
+}
+
+function isTerritoryIndex(value: number, territoryCount: number): boolean {
+  return Number.isInteger(value) && value >= 0 && value < territoryCount;
+}
+
+function assertTerritoryIndex(value: number, territoryCount: number, label: string): void {
+  if (!isTerritoryIndex(value, territoryCount)) {
+    throw new Error(`${label} must be a Territory Position.`);
+  }
+}
+
+function assertExtendedPosition(value: number, territoryCount: number, label: string): void {
+  if (!Number.isInteger(value) || value < -1 || value > territoryCount) {
+    throw new Error(`${label} must be a legal in-Gauntlet or edge-of-Gauntlet Position.`);
+  }
+}
+
+function assertTerritoryCount(value: number): void {
+  if (!Number.isInteger(value) || value < 2) {
+    throw new Error('territoryCount must be an integer of at least two.');
+  }
+}
+
+function assertDie(value: number, label: string): void {
+  if (!Number.isInteger(value) || value < 1 || value > 6) {
+    throw new Error(`${label} must be unmodified d6 results.`);
+  }
+}

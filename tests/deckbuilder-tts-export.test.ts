@@ -3,7 +3,9 @@ import {
   buildTtsDeckPayload,
   decodeTtsDeckCode,
   encodeTtsDeckCode,
+  isTtsDeckExportAvailable,
   TTS_DECK_CODE_PREFIX,
+  TTS_DECK_EXPORT_MIN_VERSION,
 } from '../deckbuilder/tts-export.mjs';
 
 describe('Deckbuilder TTS Deck Code', () => {
@@ -22,6 +24,14 @@ describe('Deckbuilder TTS Deck Code', () => {
       { id: 'arena-grand-melee', name: 'Grand Melee', arena: true },
     ],
   };
+
+  it('keeps the public Deckbuilder export dormant until v0.7.1', () => {
+    expect(TTS_DECK_EXPORT_MIN_VERSION).toBe('v0.7.1');
+    expect(isTtsDeckExportAvailable('v0.7.0')).toBe(false);
+    expect(isTtsDeckExportAvailable('v0.7.1')).toBe(true);
+    expect(isTtsDeckExportAvailable('v0.8.0')).toBe(true);
+    expect(isTtsDeckExportAvailable('candidate')).toBe(false);
+  });
 
   it('exports only stable ids and compact quantities', () => {
     expect(buildTtsDeckPayload(deck)).toEqual({

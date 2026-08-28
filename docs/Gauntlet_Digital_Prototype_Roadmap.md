@@ -30,7 +30,7 @@ The published digital-rules authority is v0.7.0:
 - `releases/v0.7.0/Gauntlet_v0.7.0_Canonical_Data.json`
 - `releases/v0.7.0/Gauntlet_v0.7.0_Starter_Decks.json`
 
-The release manifest explicitly identifies `digital_rules: v0.7.0`. Current engine work must therefore derive identity, rules metadata, card text, Territory text, and starter Decks from the published v0.7.0 package rather than from historical candidate sources.
+The release manifest explicitly identifies `digital_rules: v0.7.0`. Current engine work must derive identity, rules metadata, card text, Territory text, and starter Decks from the published v0.7.0 package rather than from historical candidate sources.
 
 `game-data/current-game.json` remains useful as the project-level current-game authority and provenance record. Transitional v0.6.4 source bundles remain historical inputs, not the released engine authority.
 
@@ -43,8 +43,9 @@ The repository already contains substantial reusable implementation work.
 ### Current/recent migration layers
 
 - `src/content/v070.ts` — release-bound v0.7.0 content adapter and validation boundary.
-- `src/v064/` — transitional Onset migration created while the future release was still a v0.6.4 candidate. It is implementation evidence, not current authority.
-- `src/v063/` — validated procedures developed during the v0.6.3 parity migration, including setup, turn flow, Front Line/Capture, movement, battle results, Last Stand, copied/repeated effects, Arcane Knowledge, Manifest Destiny, dynamic Territories/Deeds, and all 25 Territory/Arena procedures.
+- `src/v070/rules.ts` — released shared-rules surface for turn flow, movement, Onset, withdrawal, battle outcome, and Last Stand.
+- `src/v064/` — transitional Onset migration retained as historical implementation evidence.
+- `src/v063/` — validated procedures developed during the v0.6.3 parity migration, including setup, Front Line/Capture, copied/repeated effects, Arcane Knowledge, Manifest Destiny, dynamic Territories/Deeds, and all 25 Territory/Arena procedures.
 - `src/state/`, `src/effects/`, `src/cards/`, `src/cli/`, and `src/gui/` — older playable-prototype architecture and interfaces. These remain useful scaffolding but are not presumed current-compatible.
 
 The old parked branch `feature/v061-digital-engine-migration` is historical salvage material only. It diverged before thousands of later repository commits and must not be merged wholesale.
@@ -105,35 +106,35 @@ A development game should record:
 
 ---
 
-## 6. Next implementation sequence
+## 6. Implementation sequence
 
-### Tranche 1 — released authority
+### Completed — released authority
 
 1. Bind an engine content adapter directly to the v0.7.0 release manifest and canonical JSON.
 2. Lock release counts, added/retired card identities, Onset metadata, and key v0.7.0 rule deltas in tests.
 3. Update engine documentation and issue tracking to v0.7.0.
 
-### Tranche 2 — current rules surface
+### Completed — current shared-rules surface
 
 4. Replace the live `src/content/current.ts` candidate boundary with a v0.7.0 surface.
-5. Audit `src/v064/rules.ts` against the released Onset, Terms, withdrawal, movement, battle, and Last Stand contract.
-6. Promote only validated procedures into a v0.7.0 rules module; keep mismatches explicitly quarantined.
+5. Audit the transitional Onset implementation against the released Onset, Terms, withdrawal, movement, battle, and Last Stand contract.
+6. Promote those validated procedures into `src/v070/rules.ts`; keep all other historical procedures explicitly versioned until separately revalidated.
 
-### Tranche 3 — executable game state
+### Next — executable game state
 
 7. Build/finish an authoritative v0.7.0 game-state reducer that owns setup, turn progression, movement, battles, Capture, zones, Assets, Overlays, faction resources, and victory.
-8. Wire the existing validated v0.6.3 procedure modules into that reducer only after v0.7.0 revalidation.
+8. Wire existing v0.6.3 procedure modules into that reducer only after v0.7.0 revalidation.
 9. Add the 15 new v0.7.0 cards and retire No Martyrs from executable content.
 10. Revalidate all existing card, Territory, Leader, and faction procedures against current text.
 
-### Tranche 4 — complete local playable client
+### Then — complete local playable client
 
 11. Replace placeholder/legacy CLI and GUI setup with certified v0.7.0 starter Decks.
 12. Complete private/public player views.
 13. Expose legal actions and required choices through the development GUI.
 14. Complete a full deterministic local game without direct state editing.
 
-### Tranche 5 — multiplayer and telemetry
+### Finally — multiplayer and telemetry
 
 15. Add version-safe save/load and replay.
 16. Add playtest telemetry based on `Gauntlet_Playtest_Targets_and_Metrics.md`.

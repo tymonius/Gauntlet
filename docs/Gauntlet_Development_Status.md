@@ -101,9 +101,9 @@ This is the key step that turns the v0.7.0 TTS environment from a starter-Deck p
 
 ### 8. Rules-aware digital implementation
 
-The automated digital engine remains behind the tabletop/TTS game. [Issue #741](https://github.com/tymonius/Gauntlet/issues/741) still describes the migration problem but its v0.6.3 language is now stale and should be rebased to v0.7.0 authority.
+Work on the automated digital engine has resumed. It remains behind the tabletop/TTS game in rules parity, but synchronization with the complete v0.7.0 authority is now an **active development track**, tracked in [issue #741](https://github.com/tymonius/Gauntlet/issues/741).
 
-The eventual digital target must generate engine-facing content from the complete current authority; implement the Onset/Gambit/Reserve/Tactic/Outcome/Aftermath model; implement all current card, Territory, faction, Leader, replacement, reveal, withdrawal, destination, and copied/repeated-effect rules; preserve private/public information boundaries; support multiplayer synchronization; and pass complete engine/regression/rules-interaction tests.
+The active digital-engine target is to generate engine-facing content from the complete current authority; implement the Onset/Gambit/Reserve/Tactic/Outcome/Aftermath model; implement all current card, Territory, faction, Leader, replacement, reveal, withdrawal, destination, and copied/repeated-effect rules; preserve private/public information boundaries; support multiplayer synchronization; and pass complete engine/regression/rules-interaction tests.
 
 TTS is the current supported remote-play solution; the rules-aware digital game is not a v0.7.0 publication dependency.
 

@@ -1,6 +1,23 @@
 import { requireHostedUrl } from './generate-tts-save.mjs';
 
 export const TTS_DECK_CODE_PREFIX = 'GDL1:';
+export const TTS_DECK_IMPORTER_MIN_VERSION = 'v0.7.1';
+
+function parseReleaseVersion(value) {
+  const match = /^v?(\d+)\.(\d+)\.(\d+)(?:[-+].*)?$/.exec(String(value || '').trim());
+  return match ? match.slice(1, 4).map(Number) : null;
+}
+
+export function isDeckImporterReleaseVersion(version) {
+  const current = parseReleaseVersion(version);
+  const minimum = parseReleaseVersion(TTS_DECK_IMPORTER_MIN_VERSION);
+  if (!current || !minimum) return false;
+  for (let index = 0; index < 3; index += 1) {
+    if (current[index] > minimum[index]) return true;
+    if (current[index] < minimum[index]) return false;
+  }
+  return true;
+}
 const LUA_BEGIN = '-- GAUNTLET_DECK_IMPORTER_BEGIN';
 const LUA_END = '-- GAUNTLET_DECK_IMPORTER_END';
 const XML_BEGIN = '<!-- GAUNTLET_DECK_IMPORTER_BEGIN -->';
