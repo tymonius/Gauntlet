@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the current v0.7.0 playtest workflow and TTS-first blind-test contract."""
+"""Validate the current v0.7.0 playtest workflow and TTS-first self-serve playtest contract."""
 
 from __future__ import annotations
 
@@ -80,8 +80,8 @@ def main() -> int:
         "selection_reason",
     ], errors)
     require("playtest/index.html", [
-        "Blind playtesting · canonical v0.7.0",
-        "Start a blind playtest",
+        "Self-serve playtesting · canonical v0.7.0",
+        "Start a self-serve playtest",
         "Tabletop Simulator",
         "3790840635",
         'href="sheet/"',
@@ -151,7 +151,7 @@ def main() -> int:
 
     if errors:
         return fail(errors)
-    print("Validated v0.7.0 TTS-first blind playtests, physical/facilitated compatibility, G070/EV070 runtime identity, live diagnostics, private decision-point feedback, and current terminology.")
+    print("Validated v0.7.0 TTS-first self-serve playtests, physical/facilitated compatibility, G070/EV070 runtime identity, live diagnostics, private decision-point feedback, and current terminology.")
     return 0
 
 def fail(errors: list[str]) -> int:

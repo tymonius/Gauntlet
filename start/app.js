@@ -96,7 +96,7 @@
     panel.className = "tracked-playtest-start";
     panel.style.cssText = "margin-top:1rem;padding-top:1rem;border-top:1px solid var(--start-line)";
     panel.innerHTML = `
-      <p style="margin:.1rem 0 .75rem;line-height:1.5"><strong>Recommended blind-test path</strong><br><span style="color:#59625f">Create one tracked game, share the join link with your opponent, then play the selected starter kits in Tabletop Simulator.</span></p>
+      <p style="margin:.1rem 0 .75rem;line-height:1.5"><strong>Recommended self-serve path</strong><br><span style="color:#59625f">Create one tracked game, share the join link with your opponent, then play the selected starter kits in Tabletop Simulator.</span></p>
       <button id="startTrackedPlaytest" class="button primary" type="button" disabled>Start tracked TTS playtest</button>`;
     el.openStarterDeck.after(panel);
     el.startTrackedPlaytest = document.getElementById("startTrackedPlaytest");

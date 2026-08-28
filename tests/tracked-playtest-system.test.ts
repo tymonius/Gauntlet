@@ -42,7 +42,7 @@ describe("streamlined tracked playtests", () => {
     expect(start).toContain('new URL("../playtest/tracked/"');
   });
 
-  it("defaults blind playtests to TTS and preserves the transport in tracked state", () => {
+  it("defaults self-serve playtests to TTS and preserves the transport in tracked state", () => {
     expect(page).toContain('id="createPlayMode"');
     expect(page).toContain("Tabletop Simulator — recommended");
     expect(page).toContain("3790840635");
