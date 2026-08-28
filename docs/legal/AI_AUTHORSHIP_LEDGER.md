@@ -91,18 +91,31 @@ See `docs/legal/V0_6_0_COPYRIGHT_DIFF_AUDIT.md`.
 
 Audit the current Rulebook by section/chapter, with special attention to passages drafted or substantially rewritten through ChatGPT or other generative systems.
 
-### Rulebook table
+### v0.6.0 Rulebook preliminary table
 
-| Section / path | First version | Class | Human contribution | AI contribution | Registration treatment | Evidence |
-| --- | --- | --- | --- | --- | --- | --- |
-| `rulebook/player-facing/current-rulebook.md` — Ch. 1 | TBD | TBD | TBD | TBD | TBD | Git history / conversation provenance |
-| Ch. 2 | TBD | TBD | TBD | TBD | TBD | |
-| Ch. 3 | TBD | TBD | TBD | TBD | TBD | |
-| Ch. 4 | TBD | TBD | TBD | TBD | TBD | |
-| Ch. 5 | TBD | TBD | TBD | TBD | TBD | |
-| Ch. 6+ | TBD | TBD | TBD | TBD | TBD | |
+This table applies to the **July 20, 2026 publication snapshot**. It separates authorship from copyright significance: procedural game rules may embody human editorial work while the underlying methods/systems remain uncopyrightable or only narrowly protectable.
 
-Do not classify a whole chapter as human-authored merely because the concepts/mechanics originated with a human. The question for copyright registration is who formed the protectable **expression**.
+| Section | Preliminary class | Human contribution established | AI issue remaining | Registration treatment |
+| --- | --- | --- | --- | --- |
+| Welcome to Gauntlet | H/HA + TBD | Overall content/structure and key substantive framing directed by human | Exact provenance of appreciable expressive sentences | Claim supported human expression; review three paragraphs before final filing |
+| Rules Conventions / Playing Cards | H/HA + PD/U | Terminology, hierarchy, editorial conventions, revisions | Low-value unless substantial nonfunctional prose is found | Claim qualifying text/arrangement; game methods excluded |
+| 1. Components | H/HA + PD/U | Component model and terminology decisions | No material AI issue presently identified | Claim qualifying text/arrangement; functional matter excluded |
+| 2. Building a Deck | H/HA + PD/U | Strong direct evidence for Deck / Playable Deck / Draw Pile hierarchy and supplemental components | No priority expressive-prose issue | Claim qualifying text/revisions/arrangement |
+| 3. Setup | H/HA + PD/U | Human-directed setup decisions and sequencing | No priority expressive-prose issue | Functional procedure excluded; qualifying editing/arrangement claimed |
+| 4. Turn Structure | H/HA + PD/U | Human-directed sequence and capture timing | No priority expressive-prose issue | Same |
+| 5. Movement | H/HA + PD/U | Human-directed terminology and distinctions | Review only substantial explanatory prose if found | Same |
+| 6. Battles | H/HA + PD/U | Strong direct evidence for battle sequencing and hand-vs-Battle-Hand destinations | Review only substantial explanatory prose if found | Same |
+| 7. Territory Control | H/HA + PD/U | Human-directed occupation/control/capture architecture | No priority expressive-prose issue | Same |
+| 8. Running the Gauntlet | H/HA + PD/U + TBD | Human-directed objective/Last Stand architecture | Some explanatory prose may warrant provenance review | Claim qualifying text/arrangement; review expressive passages |
+| 9. Game Zones | H/HA + PD/U | Human-directed zone taxonomy | Low | Claim selection/arrangement and qualifying text |
+| 10. Actions, Assets, and Overlays | H/HA + PD/U | Human-directed system integration and terminology | Low outside explanatory prose | Same |
+| 11–16. Factions | H/HA + PD/U + TBD | Strong human selection, editing, scope, chapter order, terminology integration | Faction introductions and Leader descriptive prose require targeted review | Claim qualifying text/editing/arrangement; exclude only identified AI-generated expression |
+| 17. Glossary | H/HA + PD/U | Human terminology selection/normalization | Low | Claim selection/coordination/arrangement; functional/short matter excluded |
+| Quick Reference | H/HA + PD/U | Human selection/condensation/arrangement | Low | Claim compilation arrangement; procedures excluded |
+
+See `docs/legal/V0_6_0_RULEBOOK_AUTHORSHIP_AUDIT.md` for the supporting rationale and targeted review list.
+
+Do not classify a whole chapter as AI-generated merely because it was developed through an AI-assisted workflow. Conversely, human control of mechanics or approval alone does not convert appreciable machine-supplied final expression into human-authored prose.
 
 ## Workstream 2 — card text
 
