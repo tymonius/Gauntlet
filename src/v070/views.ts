@@ -35,6 +35,7 @@ export interface V070BattleParticipantView {
 export interface V070BattleRuntimeView {
   stage: V070BattleRuntime['stage'];
   participants: Record<PlayerId, V070BattleParticipantView>;
+  terms: V070BattleRuntime['terms'];
   unsupportedEffects: V070UnsupportedBattleEffect[];
 }
 
@@ -60,6 +61,7 @@ export interface V070PlayerViewState {
   territoryOrder: string[] | null;
   position: number | null;
   controlledTerritories: string[];
+  diplomats: V070GameState['players'][PlayerId]['diplomats'];
 }
 
 export interface V070GameView {
@@ -143,6 +145,7 @@ function viewPlayer(
       : null,
     position: player.position,
     controlledTerritories: [...player.controlledTerritories],
+    diplomats: player.diplomats ? structuredClone(player.diplomats) : null,
   };
 }
 
@@ -157,6 +160,7 @@ function viewBattleRuntime(
       A: viewBattleParticipant(state, runtime, 'A', viewer),
       B: viewBattleParticipant(state, runtime, 'B', viewer),
     },
+    terms: structuredClone(runtime.terms),
     unsupportedEffects: runtime.unsupportedEffects.map(effect => structuredClone(effect)),
   };
 }
