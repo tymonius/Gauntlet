@@ -1,5 +1,5 @@
 import { V070_RULES_VERSION } from '../content/v070';
-import { createV070TurnState, type PlayerId, type V070TurnState } from './rules';
+import { createV070TurnState, type PlayerId, type V070BattleState, type V070TurnState } from './rules';
 import { v070StarterDecks, type V070ResolvedStarterDeck } from './starter-decks';
 
 export type V070GameStage = 'setup' | 'playing' | 'ended';
@@ -32,6 +32,7 @@ export interface V070PlayerState {
   territoryOrder: string[] | null;
   position: number | null;
   controlledTerritories: string[];
+  reshuffleCount: number;
 }
 
 export interface V070BoardTerritory {
@@ -67,6 +68,7 @@ export interface V070GameState {
   activePlayer: PlayerId | null;
   turnNumber: number;
   turnState: V070TurnState | null;
+  battle: V070BattleState | null;
   winner: PlayerId | null;
   events: V070GameEvent[];
 }
@@ -115,7 +117,7 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
     const playerInput = input.players[playerId];
     const starter = requireStarter(playerInput.starterDeckId);
     const deck = instantiateStarterDeck(playerId, starter, cardInstances);
-    const shuffled = deterministicShuffle(deck, `${input.seed}:${playerId}:opening-deck`);
+    const shuffled = deterministicV070Shuffle(deck, `${input.seed}:${playerId}:opening-deck`);
     const openingSelection = shuffled.splice(0, 4);
 
     players[playerId] = {
@@ -137,6 +139,7 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
       territoryOrder: null,
       position: null,
       controlledTerritories: [],
+      reshuffleCount: 0,
     };
   }
 
@@ -155,11 +158,12 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
     activePlayer: null,
     turnNumber: 0,
     turnState: null,
+    battle: null,
     winner: null,
     events: [],
   };
 
-  appendEvent(state, {
+  appendV070Event(state, {
     type: 'game_created',
     visibility: 'public',
     payload: {
@@ -171,13 +175,13 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
       seed: input.seed,
     },
   });
-  appendEvent(state, {
+  appendV070Event(state, {
     type: 'opening_selection_dealt',
     visibility: 'A',
     actor: 'A',
     payload: { cardInstanceIds: [...players.A.openingSelection] },
   });
-  appendEvent(state, {
+  appendV070Event(state, {
     type: 'opening_selection_dealt',
     visibility: 'B',
     actor: 'B',
@@ -234,7 +238,7 @@ function chooseOpeningDiscard(
   player.zones.hand.push(...kept);
   player.zones.discardPile.push(cardInstanceId);
 
-  appendEvent(state, {
+  appendV070Event(state, {
     type: 'opening_discard_chosen',
     actor: playerId,
     visibility: 'public',
@@ -247,7 +251,7 @@ function chooseOpeningDiscard(
   if (state.players.A.openingSelection.length === 0
     && state.players.B.openingSelection.length === 0) {
     state.setup!.stage = 'territory_arrangement';
-    appendEvent(state, {
+    appendV070Event(state, {
       type: 'opening_selection_complete',
       visibility: 'public',
     });
@@ -275,7 +279,7 @@ function arrangeTerritories(
   }
 
   player.territoryOrder = [...territoryIds];
-  appendEvent(state, {
+  appendV070Event(state, {
     type: 'territory_arrangement_locked',
     actor: playerId,
     visibility: playerId,
@@ -284,7 +288,7 @@ function arrangeTerritories(
 
   if (state.players.A.territoryOrder && state.players.B.territoryOrder) {
     state.setup!.stage = 'first_player';
-    appendEvent(state, {
+    appendV070Event(state, {
       type: 'territory_arrangements_complete',
       visibility: 'public',
     });
@@ -304,7 +308,7 @@ function rollFirstPlayer(
   }
   state.setup!.firstPlayerRolls[playerId] = value;
 
-  appendEvent(state, {
+  appendV070Event(state, {
     type: 'first_player_roll',
     actor: playerId,
     visibility: 'public',
@@ -317,7 +321,7 @@ function rollFirstPlayer(
 
   if (a === b) {
     state.setup!.firstPlayerRolls = {};
-    appendEvent(state, {
+    appendV070Event(state, {
       type: 'first_player_roll_tied',
       visibility: 'public',
       payload: { value: a },
@@ -367,7 +371,7 @@ function completeSetup(state: V070GameState, firstPlayer: PlayerId): void {
   state.turnNumber = 1;
   state.turnState = createV070TurnState();
 
-  appendEvent(state, {
+  appendV070Event(state, {
     type: 'territories_revealed',
     visibility: 'public',
     payload: {
@@ -379,13 +383,13 @@ function completeSetup(state: V070GameState, firstPlayer: PlayerId): void {
       })),
     },
   });
-  appendEvent(state, {
+  appendV070Event(state, {
     type: 'first_player_determined',
     actor: firstPlayer,
     visibility: 'public',
     payload: { firstPlayer },
   });
-  appendEvent(state, {
+  appendV070Event(state, {
     type: 'turn_started',
     actor: firstPlayer,
     visibility: 'public',
@@ -421,7 +425,7 @@ function instantiateStarterDeck(
   return result;
 }
 
-function deterministicShuffle<T>(values: readonly T[], seed: string): T[] {
+export function deterministicV070Shuffle<T>(values: readonly T[], seed: string): T[] {
   const result = [...values];
   const random = mulberry32(hashSeed(seed));
 
@@ -470,7 +474,7 @@ function assertDie(value: number): void {
   }
 }
 
-function appendEvent(
+export function appendV070Event(
   state: V070GameState,
   event: Omit<V070GameEvent, 'index'>,
 ): void {
