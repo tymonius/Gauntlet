@@ -28,6 +28,15 @@ export interface V070CanonicalTerritory {
   effects?: V070CanonicalCardEffect[];
 }
 
+export interface V070CanonicalProposal {
+  id: string;
+  name: string;
+  stake: number;
+  requirement: string;
+  accepted: string;
+  refused: string;
+}
+
 export interface V070CanonicalFaction {
   id: string;
   name: string;
@@ -87,6 +96,7 @@ export interface V070CanonicalData {
   source_version: typeof V070_RULES_VERSION;
   status: 'published';
   gameplay: V070Gameplay;
+  proposals: V070CanonicalProposal[];
 }
 
 export interface V070ReleaseManifest {
@@ -122,6 +132,7 @@ export interface V070CanonicalContentIndex {
   factionsById: ReadonlyMap<string, V070CanonicalFaction>;
   cardsById: ReadonlyMap<string, V070CanonicalCard>;
   territoriesById: ReadonlyMap<string, V070CanonicalTerritory>;
+  proposalsById: ReadonlyMap<string, V070CanonicalProposal>;
 }
 
 function uniqueMap<T>(items: readonly T[], keyFor: (item: T) => string, label: string): Map<string, T> {
@@ -200,6 +211,9 @@ function assertV070CanonicalData(value: unknown): asserts value is V070Canonical
   if (!diplomats || diplomats.peace_treaty_threshold !== 6 || diplomats.terms_timing !== 'During Onset') {
     throw new Error('v0.7.0 Diplomat rules must use six ratified Proposals and Terms during Onset.');
   }
+  if (!Array.isArray(data.proposals) || data.proposals.length !== 9) {
+    throw new Error('v0.7.0 canonical content must include exactly nine Diplomat Proposals.');
+  }
 }
 
 export function loadV070CanonicalContent(): V070CanonicalContentIndex {
@@ -213,6 +227,7 @@ export function loadV070CanonicalContent(): V070CanonicalContentIndex {
   const factionsById = uniqueMap(gameplay.factions, faction => faction.id, 'faction id');
   const cardsById = uniqueMap(gameplay.cards, card => card.id, 'card id');
   const territoriesById = uniqueMap(gameplay.territories, territory => territory.id, 'Territory id');
+  const proposalsById = uniqueMap(raw.proposals, proposal => proposal.id, 'Proposal id');
 
   const neutralCount = gameplay.cards.filter(card => card.allegiance === 'Neutral').length;
   if (neutralCount !== 52) throw new Error(`Expected 52 Neutral cards, received ${neutralCount}.`);
@@ -254,6 +269,7 @@ export function loadV070CanonicalContent(): V070CanonicalContentIndex {
     factionsById,
     cardsById,
     territoriesById,
+    proposalsById,
   };
 }
 
