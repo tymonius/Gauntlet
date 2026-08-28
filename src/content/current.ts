@@ -20,6 +20,7 @@ export * from '../v070/engine';
 export * from '../v070/turn-engine';
 export * from '../v070/battle-types';
 export * from '../v070/battle-engine';
+export * from '../v070/battle-effects';
 export * from '../v070/views';
 
 /**
