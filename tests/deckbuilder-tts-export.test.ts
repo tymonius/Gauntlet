@@ -1,0 +1,50 @@
+import { describe, expect, it } from 'vitest';
+import {
+  buildTtsDeckPayload,
+  decodeTtsDeckCode,
+  encodeTtsDeckCode,
+  TTS_DECK_CODE_PREFIX,
+} from '../deckbuilder/tts-export.mjs';
+
+describe('Deckbuilder TTS Deck Code', () => {
+  const deck = {
+    gameVersion: 'v0.7.0',
+    name: 'General Pressure',
+    factionId: 'military',
+    leaderId: 'general',
+    cards: [
+      { id: 'military-encampment', name: 'Encampment', faction: 'military', qty: 2 },
+      { id: 'neutral-rally', name: 'Rally', faction: 'neutral', qty: 3 },
+    ],
+    territories: [
+      { id: 'high-ground', name: 'High Ground' },
+      { id: 'supply-depot', name: 'Supply Depot' },
+      { id: 'arena-grand-melee', name: 'Grand Melee', arena: true },
+    ],
+  };
+
+  it('exports only stable ids and compact quantities', () => {
+    expect(buildTtsDeckPayload(deck)).toEqual({
+      v: 'v0.7.0',
+      n: 'General Pressure',
+      f: 'military',
+      l: 'general',
+      c: [
+        ['military-encampment', 2],
+        ['neutral-rally', 3],
+      ],
+      t: ['high-ground', 'supply-depot', 'arena-grand-melee'],
+    });
+  });
+
+  it('round-trips the GDL1 clipboard format', () => {
+    const code = encodeTtsDeckCode(deck);
+    expect(code.startsWith(TTS_DECK_CODE_PREFIX)).toBe(true);
+    expect(decodeTtsDeckCode(code)).toEqual(buildTtsDeckPayload(deck));
+  });
+
+  it('rejects malformed quantities and foreign clipboard text', () => {
+    expect(() => encodeTtsDeckCode({ ...deck, cards: [{ id: 'neutral-rally', qty: 0 }] })).toThrow(/quantity/i);
+    expect(() => decodeTtsDeckCode('not a deck')).toThrow(/not a Gauntlet/i);
+  });
+});

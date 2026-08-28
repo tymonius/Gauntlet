@@ -129,6 +129,7 @@ describe('generated TTS table structure', () => {
   it('builds each starter Bag with a Leader, playable Deck, one three-Territory stack, token, and die', () => {
     const bag = save.ObjectStates.find((object) => object.Name === 'Bag');
     expect(bag).toBeTruthy();
+    expect(bag.GMNotes).toBe('gauntlet:starter-kit:military-general-test');
     expect(bag.ContainedObjects).toHaveLength(5);
 
     const leader = bag.ContainedObjects.find((object) => object.Name === 'CardCustom' && object.Description.endsWith('Leader'));

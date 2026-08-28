@@ -1,10 +1,11 @@
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { basename, join, relative } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { CURRENT_ALIAS_ROOT, resolveCurrentTtsRelease, ROOT } from './tts-current-catalog.mjs';
+import { buildCatalog, CURRENT_ALIAS_ROOT, resolveCurrentTtsRelease, ROOT } from './tts-current-catalog.mjs';
 import { makeCustomDeckState, requireHostedUrl } from './generate-tts-save.mjs';
 import { trackerPresentation } from './tts-supplemental-geometry.mjs';
 import { STAGING_ROOT } from './stage-tts-release-assets.mjs';
+import { buildDeckImporterConfig, installDeckImporter } from './tts-deck-importer.mjs';
 
 const SUPPLEMENTAL_GUID_NOTE_PREFIX = 'gauntlet:supplemental:';
 const SUPPLEMENTAL_STACK_NOTE_PREFIX = 'gauntlet:supplemental-stack:';
@@ -785,17 +786,29 @@ async function main() {
   }
   const versionedName = `Gauntlet_${release.version}_TTS_Review_Scaffold.json`;
   const versionedPath = join(release.outputRoot, versionedName);
-  const [save, starterManifest, supplementalManifest, releaseAssets] = await Promise.all([
+  const [save, starterManifest, supplementalManifest, releaseAssets, catalog, cardManifest, territoryManifest] = await Promise.all([
     readFile(versionedPath, 'utf8').then(JSON.parse),
     readFile(join(release.outputRoot, 'starter-deck-manifest.json'), 'utf8').then(JSON.parse),
     readFile(join(release.outputRoot, 'supplemental-manifest.json'), 'utf8').then(JSON.parse),
     readReleaseAssetManifest(release.version),
+    buildCatalog(),
+    readFile(join(release.outputRoot, 'manifest.json'), 'utf8').then(JSON.parse),
+    readFile(join(release.outputRoot, 'territory-manifest.json'), 'utf8').then(JSON.parse),
   ]);
   const result = assembleReadySupplementals(save, starterManifest, supplementalManifest, releaseAssets);
+  const importerConfig = buildDeckImporterConfig({
+    version: release.version,
+    catalog,
+    cardManifest,
+    territoryManifest,
+    starterManifest,
+    releaseAssets,
+  });
+  installDeckImporter(result.save, importerConfig);
   const text = jsonText(result.save);
   await writeFile(versionedPath, text);
   await writeFile(join(CURRENT_ALIAS_ROOT, 'Gauntlet_TTS_Review_Scaffold.json'), text);
-  console.log(`Assembled ${result.assembledIds.length} ready supplemental component ids into ${result.starterSummaries.length} starter kits in ${relative(ROOT, versionedPath)}.`);
+  console.log(`Assembled ${result.assembledIds.length} ready supplemental component ids and installed Deckbuilder import into ${result.starterSummaries.length} starter kits in ${relative(ROOT, versionedPath)}.`);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

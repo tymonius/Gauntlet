@@ -283,6 +283,7 @@ function buildStarterKit(starter, releaseAssets, kitTransform, guid) {
 
   return {
     ...objectBase('Bag', `${starter.name} — ${starter.leader.name}`, kitDescription, kitTransform, guid()),
+    GMNotes: `gauntlet:starter-kit:${starter.id}`,
     ColorDiffuse: { ...tint },
     ContainedObjects: containedObjects,
   };
