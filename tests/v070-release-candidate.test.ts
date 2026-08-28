@@ -106,7 +106,14 @@ describe('v0.7.0 publication boundary', () => {
     expect(materializer).toContain('Gauntlet_v0.7.0_Card_Anatomy.png');
     expect(materializer).toContain('Gauntlet_v0.7.0_Arcane_Trait_Mark.png');
     expect(materializer).toContain('pull_request:');
-    expect(releaseBuilder).toContain('validateFrozenReleaseSources');
+    expect(materializer).toContain('peace_treaty_threshold, 6');
+    expect(materializer).toContain('Ratify six different Proposals');
+    expect(v070Corpus).toContain('peace_treaty_threshold !== 6');
+    expect(v070Corpus).toContain('Ratify six different Proposals');
+    expect(releaseBuilder).toContain('repairAndValidateFrozenReleaseSources');
+    expect(releaseBuilder).toContain("'Ratify five different Proposals'");
+    expect(releaseBuilder).toContain("'Ratify six different Proposals'");
+    expect(releaseBuilder).toContain('peace_treaty_threshold !== 6');
     expect(releaseBuilder).toContain('if (authority.version !== RELEASE_VERSION)');
   });
 
