@@ -1,6 +1,6 @@
-# Gauntlet v0.6.1 Player Mat
+# Gauntlet v0.7.0 Player Mat
 
-This directory contains the printable player mat and zone reference introduced in response to the first physical v0.6.0 playtest.
+This directory contains the printable player mat and zone reference maintained as the current printable zone reference.
 
 Print one copy per player on Letter paper in landscape orientation at Actual Size / 100%.
 
@@ -33,4 +33,4 @@ The release PDF is generated from `index.html` and `styles.css` by `.github/work
 
 Update the HTML/CSS source rather than editing the generated PDF independently.
 
-The mat is a play aid, not a governing rules source. When it conflicts with the v0.6.1 rulebook or exact card text, follow the governing source and correct the mat.
+The mat is a play aid, not a governing rules source. When it conflicts with the current v0.7.0 Rulebook or exact card text, follow the governing source and correct the mat.
