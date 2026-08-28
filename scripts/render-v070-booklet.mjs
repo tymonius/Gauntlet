@@ -101,7 +101,7 @@ async function ensureCardAnatomyFigures() {
     console.log('Preserving frozen v0.7.0 Card Anatomy figures for release errata.');
     return;
   }
-  await ensureCardAnatomyFigures();
+  await renderCardAnatomyFigures();
 }
 
 async function renderCardAnatomyFigures() {
@@ -172,7 +172,7 @@ const server = spawn('python', ['-m', 'http.server', '8000'], {
 });
 try {
   await waitForServer('http://127.0.0.1:8000/rulebook/');
-  await renderCardAnatomyFigures();
+  await ensureCardAnatomyFigures();
 
   run('python', ['rulebook-design/build_proofs.py']);
   run('python', ['rulebook-production/build_fidelity_gate.py']);
