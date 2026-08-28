@@ -100,7 +100,7 @@ describe("standalone new-player onboarding", () => {
     expect(homepage).toContain('<a class="button primary" href="start/">Start playing</a>');
     expect(homepage).toContain("Current canonical playtest edition · v0.7.0");
     expect(homepage).toContain("New-player setup");
-    expect(homepage).toContain("Choose your first deck");
+    expect(homepage).toContain("Choose your first side");
     expect(homepage).not.toContain('href="v0.6.2/start/"');
   });
 
