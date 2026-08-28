@@ -134,14 +134,14 @@
    space before the nested browser/card renderers finish loading. */
 .browser-card-anatomy-embed {
   width: 100%;
-  height: 3.72in;
+  height: 6.37in;
   margin: 6px 0 8px;
   overflow: hidden;
   position: relative;
 }
 .browser-card-anatomy-frame {
   width: 10in;
-  height: 8.15in;
+  height: 14in;
   display: block;
   border: 0;
   background: #fffaf0;
