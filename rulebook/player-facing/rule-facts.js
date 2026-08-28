@@ -53,9 +53,14 @@ export function deriveRuleFacts(authority) {
     ),
     'cards.mystics.arcane_count': mysticsCards.filter(card => card?.trait === 'Arcane').length,
     'proposals.count': (authority?.proposals || []).length,
-    'mystics.rites.count': (authority?.mystics?.rites || []).length,
-    'mystics.rites.selected_count': Number(authority?.mystics?.selectionPolicy?.selectedCount),
   };
+
+  const rites = authority?.mystics?.rites;
+  if (Array.isArray(rites)) facts['mystics.rites.count'] = rites.length;
+  const selectedCount = Number(authority?.mystics?.selectionPolicy?.selectedCount);
+  if (Number.isInteger(selectedCount) && selectedCount >= 0) {
+    facts['mystics.rites.selected_count'] = selectedCount;
+  }
 
   for (const [id, allegiance] of FACTIONS) {
     facts[`cards.${id}.count`] = cardCount(authority, allegiance);
@@ -63,7 +68,7 @@ export function deriveRuleFacts(authority) {
 
   for (const [id, value] of Object.entries(facts)) {
     if (!Number.isInteger(value) || value < 0) {
-      throw new Error(`Rulebook fact ${id} is missing or invalid: ${value}`);
+      throw new Error(`Rulebook fact ${id} is invalid: ${value}`);
     }
   }
   return Object.freeze(facts);
@@ -156,8 +161,11 @@ export function validateAuthorityEmbeddedFacts(authority) {
 
   const riteCount = facts['mystics.rites.count'];
   const selectedRites = facts['mystics.rites.selected_count'];
-  const riteWord = ruleNumberWord(riteCount);
-  const selectedWord = ruleNumberWord(selectedRites);
+  if (!Number.isInteger(riteCount) || !Number.isInteger(selectedRites)) {
+    errors.push('Current mystics authority must provide rites and selectionPolicy.selectedCount.');
+  }
+  const riteWord = Number.isInteger(riteCount) ? ruleNumberWord(riteCount) : null;
+  const selectedWord = Number.isInteger(selectedRites) ? ruleNumberWord(selectedRites) : null;
   if (Number(authority?.mystics?.selectionPolicy?.poolSize) !== riteCount) {
     errors.push(
       `mystics.selectionPolicy.poolSize is ${authority?.mystics?.selectionPolicy?.poolSize}; mystics.rites contains ${riteCount}`,
@@ -292,15 +300,19 @@ export function synchronizeKnownRulebookClaims(markdown, authority) {
     changes,
   );
 
-  const ritePool = ruleNumberWord(facts['mystics.rites.count']);
-  const riteSelected = ruleNumberWord(facts['mystics.rites.selected_count']);
-  output = replaceClaim(
-    output,
-    /\| Rite pool \| [A-Za-z]+ Rites; choose exactly [a-z]+ during game-package construction\. \|/g,
-    `| Rite pool | ${ritePool[0].toUpperCase() + ritePool.slice(1)} Rites; choose exactly ${riteSelected} during game-package construction. |`,
-    'Mystics Rite-pool summary',
-    changes,
-  );
+  const riteCount = facts['mystics.rites.count'];
+  const riteSelectedCount = facts['mystics.rites.selected_count'];
+  if (Number.isInteger(riteCount) && Number.isInteger(riteSelectedCount)) {
+    const ritePool = ruleNumberWord(riteCount);
+    const riteSelected = ruleNumberWord(riteSelectedCount);
+    output = replaceClaim(
+      output,
+      /\| Rite pool \| [A-Za-z]+ Rites; choose exactly [a-z]+ during game-package construction\. \|/g,
+      `| Rite pool | ${ritePool[0].toUpperCase() + ritePool.slice(1)} Rites; choose exactly ${riteSelected} during game-package construction. |`,
+      'Mystics Rite-pool summary',
+      changes,
+    );
+  }
 
   return { output, changes, facts };
 }
