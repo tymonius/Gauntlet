@@ -85,7 +85,7 @@ export interface V070CanonicalData {
   schema_version: number;
   release_version: typeof V070_RULES_VERSION;
   source_version: typeof V070_RULES_VERSION;
-  status: 'current';
+  status: 'published';
   gameplay: V070Gameplay;
 }
 
@@ -164,7 +164,7 @@ function assertV070ReleaseManifest(value: unknown): asserts value is V070Release
 function assertV070CanonicalData(value: unknown): asserts value is V070CanonicalData {
   if (!value || typeof value !== 'object') throw new Error('v0.7.0 canonical content must be an object.');
   const data = value as Partial<V070CanonicalData>;
-  if (data.release_version !== V070_RULES_VERSION || data.source_version !== V070_RULES_VERSION || data.status !== 'current') {
+  if (data.release_version !== V070_RULES_VERSION || data.source_version !== V070_RULES_VERSION || data.status !== 'published') {
     throw new Error('v0.7.0 canonical content must identify the current released rules version.');
   }
   const gameplay = data.gameplay as Partial<V070Gameplay> | undefined;
