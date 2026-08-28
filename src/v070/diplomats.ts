@@ -233,6 +233,57 @@ export function useV070PlenipotentiaryAfterRefusal(
   });
 }
 
+export function useV070NeutralObserversAfterRefusal(
+  state: V070GameState,
+  diplomatId: PlayerId,
+  assetInstanceId: string,
+): void {
+  const runtime = requireRuntime(state);
+  const terms = runtime.terms;
+  if (runtime.stage !== 'onset'
+    || terms.stage !== 'refused'
+    || terms.response !== 'refused'
+    || terms.offerer !== diplomatId
+    || terms.proposalChoice
+    || terms.termsCardChoice) {
+    throw new V070GameActionError(
+      'Neutral Observers is available only after that Diplomat’s refused Terms and before Gambits are set.',
+    );
+  }
+
+  requireCardInZone(
+    state,
+    diplomatId,
+    'assetBank',
+    assetInstanceId,
+    'diplomats-neutral-observers',
+  );
+
+  const opponentId = requireTermsPlayer(terms.opponent);
+  const bank = state.players[diplomatId].zones.assetBank;
+  bank.splice(bank.indexOf(assetInstanceId), 1);
+  state.players[diplomatId].zones.discardPile.push(assetInstanceId);
+
+  runtime.gambitOrderOverride = {
+    source: 'neutral_observers',
+    firstPlayer: opponentId,
+    secondPlayer: diplomatId,
+    nextPlayer: opponentId,
+    firstCommitmentFaceUp: true,
+  };
+
+  appendV070Event(state, {
+    type: 'neutral_observers_used',
+    actor: diplomatId,
+    visibility: 'public',
+    payload: {
+      assetInstanceId,
+      firstPlayer: opponentId,
+      secondPlayer: diplomatId,
+    },
+  });
+}
+
 export function useV070DiplomaticDivination(
   state: V070GameState,
   diplomatId: PlayerId,
