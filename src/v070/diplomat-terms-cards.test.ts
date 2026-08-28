@@ -81,6 +81,17 @@ function relocateCard(
   return instance.instanceId;
 }
 
+function declineIncidentalDemilitarizedZone(state: V070GameState): V070GameState {
+  if (state.battleRuntime?.terms.termsCardChoice?.kind !== 'demilitarized_zone') {
+    return state;
+  }
+  return reduceV070BattleAction(state, {
+    type: 'resolve_terms_card_choice',
+    playerId: 'A',
+    choice: 'decline_overlay',
+  });
+}
+
 describe('v0.7.0 Diplomat Terms cards — first integration tranche', () => {
   test('Diplomatic Latitude offers two same-Stake Proposals and the accepting opponent selects the one that applies', () => {
     let state = activeBattle();
@@ -131,6 +142,7 @@ describe('v0.7.0 Diplomat Terms cards — first integration tranche', () => {
       playerId: 'B',
       cardInstanceId: bDiscard,
     });
+    state = declineIncidentalDemilitarizedZone(state);
 
     expect(state.battle).toBeNull();
     expect(state.players.A.diplomats?.ratifiedProposals).toContain('mutual-disarmament');
@@ -194,6 +206,8 @@ describe('v0.7.0 Diplomat Terms cards — first integration tranche', () => {
       response: 'accept',
     });
 
+    state = declineIncidentalDemilitarizedZone(state);
+
     expect(state.players.A.zones.assetBank).toContain(detente);
     expect(state.players.A.diplomats?.influence).toBe(influenceBefore + 1);
     expect(state.players.A.diplomats?.detenteUsedTurn).toBe(state.turnNumber);
@@ -215,6 +229,8 @@ describe('v0.7.0 Diplomat Terms cards — first integration tranche', () => {
       playerId: 'B',
       response: 'accept',
     });
+
+    state = declineIncidentalDemilitarizedZone(state);
 
     expect(state.players.A.diplomats?.influence).toBe(influenceBefore + 1);
     expect(state.players.A.diplomats?.detenteUsedTurn).toBeNull();
