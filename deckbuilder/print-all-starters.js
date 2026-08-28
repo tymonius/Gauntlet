@@ -121,8 +121,10 @@
       leaderId: state.leaderId,
       deck: { ...state.deck },
       territories: [...(state.territories || [])],
+      rites: [...(state.rites || [])],
       selectedCardId: state.selectedCardId,
-      selectedTerritoryId: state.selectedTerritoryId
+      selectedTerritoryId: state.selectedTerritoryId,
+      selectedRiteId: state.selectedRiteId
     };
   }
 
@@ -132,8 +134,10 @@
     state.leaderId = snapshot.leaderId;
     state.deck = { ...snapshot.deck };
     state.territories = [...snapshot.territories];
+    state.rites = [...(snapshot.rites || [])];
     state.selectedCardId = snapshot.selectedCardId;
     state.selectedTerritoryId = snapshot.selectedTerritoryId;
+    state.selectedRiteId = snapshot.selectedRiteId;
   }
 
   function applyStarterDeckToState(preset) {
@@ -162,6 +166,7 @@
     state.leaderId = preset.leaderId;
     state.deck = deck;
     state.territories = territories;
+    state.rites = preset.factionId === "mystics" ? [...(preset.selectedRites || [])] : [];
   }
 
   function captureCurrentPrintDocument() {

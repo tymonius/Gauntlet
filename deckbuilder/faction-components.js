@@ -196,6 +196,7 @@
         name: rite.name,
         beginning: rite.begin,
         completion: rite.complete,
+        reminder: rite.reminder?.text || "",
         interruption: rite.interrupted,
       }));
 
@@ -271,7 +272,11 @@
     const components = (currentGame.components || []).filter(component => (
       component.faction === state.factionId
       && component.deckInclusion !== "every-deck"
+      && !(state.factionId === "mystics" && component.family === "rite-card")
     ));
+    const selectedRiteItems = state.factionId === "mystics"
+      ? (state.rites || []).map(id => currentGame.mystics?.rites?.find(rite => rite.id === id)).filter(Boolean)
+      : [];
     const items = [
       ...sharedComponents.map(component => ({
         name: component.quantityPerPlayer > 1 ? `${component.quantityPerPlayer} × ${component.name}` : component.name,
@@ -284,6 +289,10 @@
       ...components.map(component => ({
         name: component.quantity > 1 ? `${component.quantity} × ${component.name}` : component.name,
         meta: `${componentMeta(component)} · ${designMeta(component)}`,
+      })),
+      ...selectedRiteItems.map(rite => ({
+        name: rite.name,
+        meta: "Selected Rite · Double-sided incomplete / completed Rite",
       }))
     ];
 

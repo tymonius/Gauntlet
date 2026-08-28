@@ -88,18 +88,20 @@
   function resetCurrentDeck() {
     const hasCards = Object.keys(state.deck).length > 0;
     const hasTerritories = Boolean(state.territories?.length);
+    const hasRites = Boolean(state.rites?.length);
     const hasName = Boolean(state.deckName.trim());
 
     if (
-      (hasCards || hasTerritories || hasName) &&
+      (hasCards || hasTerritories || hasRites || hasName) &&
       !confirm(
-        "Reset this deck? This removes all playable cards, Territories, and the deck name. " +
+        "Reset this deck? This removes all playable cards, Territories, Rites, and the deck name. " +
         "Your selected faction and Leader will remain."
       )
     ) return;
 
     state.deck = {};
     state.territories = [];
+    if (Array.isArray(state.rites)) state.rites = [];
     state.deckName = "";
     state.selectedCardId = null;
     state.selectedTerritoryId = null;
@@ -140,6 +142,13 @@
 
     if (currentTerritories.length !== expectedTerritories.length) return null;
     if (currentTerritories.some((name, index) => name !== expectedTerritories[index])) return null;
+
+    if (preset.factionId === "mystics") {
+      const currentRites = [...(state.rites || [])].sort();
+      const expectedRites = [...(preset.selectedRites || [])].sort();
+      if (currentRites.length !== expectedRites.length) return null;
+      if (currentRites.some((id, index) => id !== expectedRites[index])) return null;
+    }
 
     return preset;
   }
@@ -328,7 +337,7 @@
     const leader = faction?.leaders.find(item => item.id === state.leaderId);
     if (!preset || !faction || !leader || !starterDeckReady()) return;
 
-    const hasCurrentDeck = Object.keys(state.deck).length > 0 || state.territories.length > 0;
+    const hasCurrentDeck = Object.keys(state.deck).length > 0 || state.territories.length > 0 || Boolean(state.rites?.length);
     if (
       hasCurrentDeck &&
       !confirm(`Replace the current Deck with ${leader.name}'s recommended starter Deck, ${preset.name}?`)
@@ -372,6 +381,7 @@
     state.deckName = `${leader.name} — ${preset.name}`;
     state.deck = deck;
     state.territories = territoryIds;
+    state.rites = preset.factionId === "mystics" ? [...(preset.selectedRites || [])] : [];
     state.selectedCardId = null;
     state.selectedTerritoryId = territoryIds[0] || null;
 
