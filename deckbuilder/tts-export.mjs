@@ -1,4 +1,21 @@
 export const TTS_DECK_CODE_PREFIX = "GDL1:";
+export const TTS_DECK_EXPORT_MIN_VERSION = "v0.7.1";
+
+function parseReleaseVersion(value) {
+  const match = /^v?(\d+)\.(\d+)\.(\d+)(?:[-+].*)?$/.exec(String(value || "").trim());
+  return match ? match.slice(1, 4).map(Number) : null;
+}
+
+export function isTtsDeckExportAvailable(version) {
+  const current = parseReleaseVersion(version);
+  const minimum = parseReleaseVersion(TTS_DECK_EXPORT_MIN_VERSION);
+  if (!current || !minimum) return false;
+  for (let index = 0; index < 3; index += 1) {
+    if (current[index] > minimum[index]) return true;
+    if (current[index] < minimum[index]) return false;
+  }
+  return true;
+}
 
 function requiredString(value, label) {
   const normalized = String(value || "").trim();
@@ -65,7 +82,12 @@ async function copyDeckCode(button) {
 
   let code;
   try {
-    code = encodeTtsDeckCode(currentDeckData());
+    const deck = currentDeckData();
+    if (!isTtsDeckExportAvailable(deck?.gameVersion)) {
+      window.alert(`Tabletop Simulator Deck export begins with ${TTS_DECK_EXPORT_MIN_VERSION}.`);
+      return;
+    }
+    code = encodeTtsDeckCode(deck);
   } catch (error) {
     window.alert(error.message || "Unable to create a TTS Deck Code.");
     return;
@@ -81,7 +103,16 @@ async function copyDeckCode(button) {
   }
 }
 
-function installDeckCodeButton() {
+async function installDeckCodeButton() {
+  try {
+    const response = await fetch("../game-data/current-game.json", { cache: "no-store" });
+    if (!response.ok) return;
+    const currentGame = await response.json();
+    if (!isTtsDeckExportAvailable(currentGame?.version)) return;
+  } catch {
+    return;
+  }
+
   const exportJsonButton = document.getElementById("exportJsonButton");
   if (!exportJsonButton || document.getElementById("copyTtsDeckCodeButton")) return;
 
@@ -96,5 +127,5 @@ function installDeckCodeButton() {
 }
 
 if (typeof document !== "undefined") {
-  document.addEventListener("DOMContentLoaded", installDeckCodeButton);
+  document.addEventListener("DOMContentLoaded", () => { void installDeckCodeButton(); });
 }
