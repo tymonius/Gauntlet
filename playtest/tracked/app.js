@@ -52,9 +52,9 @@
       "sessionSerial", "lifecycleCopy", "statusLabel", "playerCount", "arbiterCount", "responseCount",
       "sharePanel", "copyJoinLink", "shareJoinLink", "shareStatus", "qrCode", "playerCards",
       "transportPanel", "transportEyebrow", "transportTitle", "transportCopy", "transportMatchup",
-      "ttsWorkshopLink", "physicalSetupLink", "joinPanel",
+      "ttsWorkshopLink", "physicalSetupLink", "transportReferences", "joinPanel",
       "joinForm", "joinName", "joinFaction", "joinLeader", "joinSelectionReason", "joinStatus", "joinedPanel", "joinedHeading",
-      "joinedCopy", "openArbiter", "playPanel", "recordStart", "showCompletedResult", "showStoppedResult",
+      "joinedCopy", "openArbiter", "companionArbiter", "playPanel", "recordStart", "showCompletedResult", "showStoppedResult",
       "diagnosticPanel", "diagnosticStatus", "noteForm", "noteText", "eventStatus", "resultSection", "resultForm", "completionStatus",
       "firstPlayer", "winnerLabel", "winner", "victoryRouteLabel", "victoryRoute", "durationMinutes",
       "rounds", "battles", "stopReasonLabel", "stopReason", "packageUnmodified", "variantUsed",
@@ -78,6 +78,7 @@
     el.copyJoinLink?.addEventListener("click", copyJoinLink);
     el.shareJoinLink?.addEventListener("click", shareJoinLink);
     el.openArbiter?.addEventListener("click", openArbiter);
+    el.companionArbiter?.addEventListener("click", openArbiter);
     el.recordStart?.addEventListener("click", () => recordEvent("game_started", {}));
     el.showCompletedResult?.addEventListener("click", () => showResultForm("completed"));
     el.showStoppedResult?.addEventListener("click", () => showResultForm("stopped"));
@@ -237,6 +238,12 @@
     el.transportMatchup.textContent = matchup
       ? `Selected matchup: ${matchup}.`
       : "The selected starter kits will appear here as both players join.";
+    if (el.transportReferences) {
+      el.transportReferences.innerHTML = state.session.players.map(player => {
+        const factionName = FACTIONS[player.faction]?.name || titleCase(player.faction);
+        return `<a href="../../factions/${escapeAttribute(player.faction)}/" target="_blank" rel="noopener">${escapeHtml(player.leader)} · ${escapeHtml(factionName)} guide ↗</a>`;
+      }).join("");
+    }
 
     if (mode === "tts") {
       el.transportEyebrow.textContent = "Recommended play method · Tabletop Simulator";
