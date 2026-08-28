@@ -61,7 +61,8 @@
     };
 
     return {
-      name: state.deckName.trim() || "Untitled v0.6.1 Deck",
+      name: state.deckName.trim() || `Untitled ${state.currentGameDisplayVersion || state.currentGameVersion || "current"} Deck`,
+      versionLabel: state.currentGameDisplayVersion || state.currentGameVersion || "current",
       faction,
       leader,
       entries,
@@ -92,7 +93,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>${escapeHtml(data.name)} — Gauntlet v0.6.1</title>
+<title>${escapeHtml(data.name)} — Gauntlet ${escapeHtml(data.versionLabel)}</title>
 ${PRINT_FONT_LINKS}
 <style>
 *{box-sizing:border-box;font-synthesis:none;-webkit-print-color-adjust:exact;print-color-adjust:exact;color-adjust:exact}
@@ -303,7 +304,7 @@ window.addEventListener('load',preparePrint);
       <header class="card-header"><span class="card-name">${escapeHtml(card.name)}</span><span class="cost-circle">${escapeHtml(card.cost)}</span></header>
       ${card.unique ? '<div class="unique-flag">Unique</div>' : ""}
       <div class="card-body">${sectionHtml}</div>
-      <footer class="card-footer"><span>${escapeHtml(card.factionLabel)}</span><span>© 2026 T. Scott</span><span>v0.6.1</span></footer>
+      <footer class="card-footer"><span>${escapeHtml(card.factionLabel)}</span><span>© 2026 T. Scott</span><span>${escapeHtml(state.currentGameDisplayVersion || state.currentGameVersion || "current")}</span></footer>
     </article>`;
   }
 
@@ -318,7 +319,7 @@ window.addEventListener('load',preparePrint);
         <div class="leader-intro"><div class="leader-tagline">${escapeHtml(leader.tagline || "")}</div><div class="leader-role">${escapeHtml(leader.role || faction.identity)}</div></div>
         ${(leader.rules || []).map(([label, text]) => rulesSection(label, text)).join("")}
       </div>
-      <footer class="card-footer"><span>${escapeHtml(faction.name)}</span><span>Supplemental Leader</span><span>v0.6.1</span></footer>
+      <footer class="card-footer"><span>${escapeHtml(faction.name)}</span><span>Supplemental Leader</span><span>${escapeHtml(state.currentGameDisplayVersion || state.currentGameVersion || "current")}</span></footer>
     </article>`;
   }
 
@@ -427,7 +428,7 @@ window.addEventListener('load',preparePrint);
     return `<article class="print-card territory"><div class="territory-inner fit-target">
       <header class="territory-header"><span class="territory-type">${territory.arena ? "Arena Territory" : "Territory"}</span><span class="territory-name">${escapeHtml(territory.name)}</span></header>
       <div class="territory-body"><div class="card-text">${escapeHtml(territory.text || "")}</div></div>
-      <footer class="territory-footer"><span>${escapeHtml(territory.complexity || "")}</span><span>Gauntlet v0.6.1</span></footer>
+      <footer class="territory-footer"><span>${escapeHtml(territory.complexity || "")}</span><span>Gauntlet ${escapeHtml(state.currentGameDisplayVersion || state.currentGameVersion || "current")}</span></footer>
     </div></article>`;
   }
 
