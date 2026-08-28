@@ -118,6 +118,7 @@ The repository currently contains a large binary footprint, especially under `im
 |---|---|
 | `deckbuilder-v0.5/` | Historical pre-faction Deckbuilder compatibility |
 | `deckbuilder-v0.6/` | Historical faction-era compatibility surface |
+| `faction-sheets/` | Retired printable faction-sheet compatibility surface retained for historical URLs and regression coverage |
 | `v0.6.2/` | Historical public/versioned surface |
 | `v0.6.3/` | Historical public/versioned surface |
 | `v0.7.0/` | Versioned public entry/compatibility surface |
