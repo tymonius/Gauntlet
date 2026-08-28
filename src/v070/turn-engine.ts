@@ -8,6 +8,7 @@ import {
   createV070TurnState,
   type MovementChoice,
   type PlayerId,
+  type TurnPhase,
 } from './rules';
 import {
   V070GameActionError,
@@ -292,6 +293,10 @@ function chooseMovement(
     return;
   }
 
+  if (isBeyondOpponentEnd(playerId, destination, state.board.length)) {
+    throw new V070GameActionError('Advancing beyond the opponent’s end is legal only when it initiates a Last Stand.');
+  }
+
   if (wouldPassOpponent(playerId, origin, destination, opponent.position)) {
     throw new V070GameActionError('Player Tokens cannot move through or past one another.');
   }
@@ -476,8 +481,7 @@ function requireTurnState(state: V070GameState) {
   return state.turnState;
 }
 
-function requirePhase(state: V070GameState, phase: V070GameState['turnState'] extends null ? never : never): never;
-function requirePhase(state: V070GameState, phase: 'capture' | 'draw' | 'opening' | 'movement' | 'denouement' | 'cleanup'): void {
+function requirePhase(state: V070GameState, phase: TurnPhase): void {
   if (requireTurnState(state).phase !== phase) {
     throw new V070GameActionError(`Expected ${phase} phase.`);
   }
