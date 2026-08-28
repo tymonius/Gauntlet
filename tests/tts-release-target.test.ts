@@ -6,33 +6,35 @@ const target = JSON.parse(readFileSync('config/tts-release-target.json', 'utf8')
 const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
 
 describe('TTS release target identity', () => {
-  it('targets the v0.7.0 release candidate from the complete current-game authority', () => {
+  it('targets v0.7.1 active development from the current v0.7.0 game authority', () => {
     expect(target).toEqual(expect.objectContaining({
       schemaVersion: 1,
-      releaseTag: 'v0.7.0',
-      displayVersion: 'v0.7.0',
+      releaseTag: 'v0.7.1',
+      displayVersion: 'v0.7.1',
       sourceVersion: currentGame.version,
       currentGameAuthority: 'game-data/current-game.json',
-      status: 'release-candidate',
+      status: 'active-development',
     }));
     expect(currentGame.version).toBe('v0.7.0');
     expect(currentGame.provenance.transitionalSourceVersion).toBe('v0.6.4-candidate');
   });
 
-  it('resolves generated TTS output under the v0.7.0 identity', async () => {
+  it('resolves generated TTS output under the v0.7.1 development identity', async () => {
     const release = await resolveCurrentTtsRelease();
-    expect(release.version).toBe('v0.7.0');
-    expect(release.displayVersion).toBe('v0.7.0');
+    expect(release.version).toBe('v0.7.1');
+    expect(release.displayVersion).toBe('v0.7.1');
     expect(release.sourceVersion).toBe(currentGame.version);
-    expect(release.targetStatus).toBe('release-candidate');
-    expect(release.outputRoot.replaceAll('\\', '/')).toMatch(/\/tts\/generated\/v0\.7\.0$/);
+    expect(release.publishedVersion).toBe('v0.7.0');
+    expect(release.targetStatus).toBe('active-development');
+    expect(release.outputRoot.replaceAll('\\', '/')).toMatch(/\/tts\/generated\/v0\.7\.1$/);
   });
 
-  it('records source-data version separately from the TTS package version', async () => {
+  it('records source and published versions separately from the TTS package version', async () => {
     const catalog = await buildCatalog();
-    expect(catalog.gameVersion).toBe('v0.7.0');
+    expect(catalog.gameVersion).toBe('v0.7.1');
     expect(catalog.release.sourceVersion).toBe(currentGame.version);
     expect(catalog.release.canonicalDataVersion).toBe(currentGame.version);
+    expect(catalog.release.publishedVersion).toBe('v0.7.0');
     expect(catalog.release.ttsReleaseTargetSource).toBe('config/tts-release-target.json');
   });
 });
