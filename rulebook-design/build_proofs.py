@@ -3,10 +3,19 @@
 
 from __future__ import annotations
 
+import json
 from html import escape
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
+REPO = ROOT.parent
+PUBLISHING = json.loads((REPO / "config" / "publishing-authority.json").read_text(encoding="utf-8"))
+IMPRINT_NAME = PUBLISHING["imprint"]["displayName"]
+PUBLISHER_LINE = PUBLISHING["playerFacing"]["publisherLine"]
+IMPRINT_STATEMENT = PUBLISHING["playerFacing"]["imprintStatement"]
+COPYRIGHT_NOTICE = PUBLISHING["copyright"]["notice"]
+PUBLISHER_LOGO = "../" + PUBLISHING["imprint"]["logo"]
+
 TYPEKIT_IMPORT = '@import url("https://use.typekit.net/vgm6nwi.css");'
 
 
@@ -151,9 +160,9 @@ def build_pages() -> list[str]:
 
     pages.append(page(11, f'''
       {running("Gauntlet v0.6.1", "Publication Notes")}<div class="colophon-block"><p class="flavor-overline">For playtest tables and careful readers</p><h2>About this edition</h2><p>Gauntlet v0.6.1 is the First Playtest Revision. This Rulebook is intended for private review, playtesting, and structured feedback while development continues.</p><p>The Browser Rulebook is the most convenient searchable rules surface. The printed booklet is designed for sustained reading and table reference.</p></div>
-      <div class="colophon-meta"><strong>Gauntlet v0.6.1 · First Playtest Revision</strong><br />Copyright © 2026 Tymon Scott. All rights reserved.<br />Repository and release materials are provided for private review and playtesting only. They may not be copied, redistributed, sold, republished, or used to create commercial derivative works without written permission.<br /><br />gauntlet.run · github.com/tymonius/Gauntlet</div>''', cls="colophon", label="PUBLICATION NOTES"))
+      <div class="colophon-meta"><strong>Gauntlet v0.6.1 · First Playtest Revision</strong><br />{escape(PUBLISHER_LINE)}<br />{escape(COPYRIGHT_NOTICE)}<br />Repository and release materials are provided for private review and playtesting only. They may not be copied, redistributed, sold, republished, or used to create commercial derivative works without written permission.<br /><br />gauntlet.run · github.com/tymonius/Gauntlet</div>''', cls="colophon", label="PUBLICATION NOTES"))
 
-    pages.append(page(12, '''<p class="back-flavor">Run the Gauntlet.</p><h2>Build. Advance. Contend. Capture.</h2><p class="back-copy">Gauntlet is a two-player tactical card-and-territory game of institutional power, battlefield pressure, and competing paths to victory.</p><div class="back-url">gauntlet.run</div><div class="back-legal"><strong>Gauntlet v0.6.1 · First Playtest Revision</strong><br />Gauntlet is an unpublished playtest project. Copyright © 2026 Tymon Scott. All rights reserved.<br />Repository and release materials are provided for private review and playtesting only. They may not be copied, redistributed, sold, republished, or used to create commercial derivative works without written permission.</div>''', cls="cover back-cover"))
+    pages.append(page(12, f'''<p class="back-flavor">Run the Gauntlet.</p><h2>Build. Advance. Contend. Capture.</h2><p class="back-copy">Gauntlet is a two-player tactical card-and-territory game of institutional power, battlefield pressure, and competing paths to victory.</p><div class="back-url">gauntlet.run</div><div class="back-publisher"><img class="back-publisher-mark" src="{escape(PUBLISHER_LOGO)}" alt="{escape(IMPRINT_NAME)} publisher mark" /><span class="back-publisher-kicker">Published by</span><strong class="back-publisher-name">{escape(IMPRINT_NAME)}</strong></div><div class="back-legal"><strong>Gauntlet v0.6.1 · First Playtest Revision</strong><br />{escape(IMPRINT_STATEMENT)} {escape(COPYRIGHT_NOTICE)}<br />Repository and release materials are provided for private review and playtesting only. They may not be copied, redistributed, sold, republished, or used to create commercial derivative works without written permission.</div>''', cls="cover back-cover"))
     return pages
 
 
@@ -179,7 +188,7 @@ def imposed_spreads(pages: list[str]) -> str:
 
 
 def toner_cover() -> str:
-    content = '''<div class="toner-band"><p class="back-flavor">Run the Gauntlet.</p><h2>Build. Advance. Contend. Capture.</h2></div><p class="back-copy">Gauntlet is a two-player tactical card-and-territory game of institutional power, battlefield pressure, and competing paths to victory.</p><div class="back-url" style="color:#111;border-color:#555">gauntlet.run</div><div class="back-legal"><strong>Gauntlet v0.6.1 · First Playtest Revision</strong><br />Gauntlet is an unpublished playtest project. Copyright © 2026 Tymon Scott. All rights reserved.<br />Repository and release materials are provided for private review and playtesting only.</div>'''
+    content = f'''<div class="toner-band"><p class="back-flavor">Run the Gauntlet.</p><h2>Build. Advance. Contend. Capture.</h2></div><p class="back-copy">Gauntlet is a two-player tactical card-and-territory game of institutional power, battlefield pressure, and competing paths to victory.</p><div class="back-url" style="color:#111;border-color:#555">gauntlet.run</div><div class="back-publisher"><img class="back-publisher-mark" src="{escape(PUBLISHER_LOGO)}" alt="{escape(IMPRINT_NAME)} publisher mark" /><span class="back-publisher-kicker">Published by</span><strong class="back-publisher-name">{escape(IMPRINT_NAME)}</strong></div><div class="back-legal"><strong>Gauntlet v0.6.1 · First Playtest Revision</strong><br />{escape(IMPRINT_STATEMENT)} {escape(COPYRIGHT_NOTICE)}<br />Repository and release materials are provided for private review and playtesting only.</div>'''
     return shell("Gauntlet Toner-Saver Back Cover", page(12, content, cls="cover toner-cover"))
 
 
