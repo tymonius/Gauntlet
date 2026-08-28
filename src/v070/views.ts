@@ -11,6 +11,18 @@ export interface V070VisibleCard {
   cardId: string;
 }
 
+export interface V070OverlayView {
+  instanceId: string;
+  cardId: string;
+  owner: PlayerId;
+  territoryInstanceId: string;
+  territoryPosition: number;
+  territoryId: string;
+  placedTurn: number;
+  sequence: number;
+  active: boolean;
+}
+
 export interface V070HiddenBattleCard {
   set: true;
   faceUp: false;
@@ -79,6 +91,8 @@ export interface V070GameView {
   turnState: V070GameState['turnState'];
   battle: V070GameState['battle'];
   battleRuntime: V070BattleRuntimeView | null;
+  overlays: V070OverlayView[];
+  pendingTurnChoice: V070GameState['pendingTurnChoice'];
   winner: PlayerId | null;
   events: V070GameEvent[];
 }
@@ -106,11 +120,46 @@ export function viewV070GameForPlayer(
     battleRuntime: state.battleRuntime
       ? viewBattleRuntime(state, state.battleRuntime, viewer)
       : null,
+    overlays: viewOverlays(state),
+    pendingTurnChoice: state.pendingTurnChoice
+      ? structuredClone(state.pendingTurnChoice)
+      : null,
     winner: state.winner,
     events: state.events
       .filter(event => event.visibility === 'public' || event.visibility === viewer)
       .map(event => structuredClone(event)),
   };
+}
+
+function viewOverlays(state: V070GameState): V070OverlayView[] {
+  return [...state.overlays]
+    .sort((a, b) => a.sequence - b.sequence)
+    .map(overlay => {
+      const instance = state.cardInstances[overlay.instanceId];
+      if (!instance) throw new Error(`Unknown Overlay card instance ${overlay.instanceId}.`);
+      const territory = state.board.find(
+        candidate => candidate.territoryInstanceId === overlay.territoryInstanceId,
+      );
+      if (!territory) {
+        throw new Error(
+          `Overlay ${overlay.instanceId} is attached to missing Territory ${overlay.territoryInstanceId}.`,
+        );
+      }
+      const activeSequence = Math.max(
+        ...state.overlays
+          .filter(candidate =>
+            candidate.territoryInstanceId === overlay.territoryInstanceId
+          )
+          .map(candidate => candidate.sequence),
+      );
+      return {
+        ...structuredClone(overlay),
+        cardId: instance.cardId,
+        territoryPosition: territory.position,
+        territoryId: territory.territoryId,
+        active: overlay.sequence === activeSequence,
+      };
+    });
 }
 
 function viewPlayer(
