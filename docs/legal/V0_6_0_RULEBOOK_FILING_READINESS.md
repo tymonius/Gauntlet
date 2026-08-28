@@ -100,13 +100,13 @@ Use the July 20 historical deposit, not the later archived/current file:
 - path: `releases/v0.6/Gauntlet_v0.6.0_Rulebook.pdf`
 - Git blob: `e6a6a7e92dbc111c78ffe12a0ff909965c65ff31`
 
-The repository includes:
+The publication-snapshot PDF was independently recovered from the exact historical commit and hashed in GitHub Actions on 2026-08-28.
 
-`scripts/legal/export-v060-copyright-deposits.sh`
+- **SHA-256:** `a8324dcb9a88e95b4b5557aedd4c4c23d938fe721edfb34df4c819efa258d931`
+- **Bytes:** `15,475,969`
+- historical Git blob: `e6a6a7e92dbc111c78ffe12a0ff909965c65ff31`
 
-which reconstructs the publication-snapshot deposit with `git show` and produces `SHA256SUMS.txt`.
-
-The independent SHA-256 should be copied into the filing record after that script is run against a local clone.
+The repository also includes `scripts/legal/export-v060-copyright-deposits.sh`, which can reproduce the historical deposit and generate `SHA256SUMS.txt` from a local clone.
 
 ## 7. Final certification checklist
 
@@ -127,7 +127,7 @@ The independent SHA-256 should be copied into the filing record after that scrip
 
 ### Still required before filing
 
-- [ ] Run the deposit-recovery script and record the Rulebook PDF SHA-256.
+- [x] Recover and independently hash the historical Rulebook PDF. SHA-256: `a8324dcb9a88e95b4b5557aedd4c4c23d938fe721edfb34df4c819efa258d931`.
 - [ ] Author confirms no substantially identical v0.6.0 Rulebook was distributed outside the repository before July 20, 2026.
 - [ ] Author confirms there has been no written copyright transfer that would change the claimant.
 - [ ] Re-check current Copyright Office online-publication guidance.
