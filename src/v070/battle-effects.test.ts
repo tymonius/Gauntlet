@@ -19,7 +19,7 @@ const input = {
   gameId: 'effect-test',
   seed: 'effect-seed',
   players: {
-    A: { name: 'Alpha', starterDeckId: 'military-commandant-holdfast' },
+    A: { name: 'Alpha', starterDeckId: 'military-general-forward-doctrine' },
     B: { name: 'Bravo', starterDeckId: 'military-commandant-holdfast' },
   },
 } as const;
@@ -167,17 +167,17 @@ describe('v0.7.0 audited reveal-effect registry', () => {
     expect(state.battleRuntime?.stage).toBe('choose_tactics');
   });
 
-  test('preserves attacker-first shared timing when supported effects interact', () => {
+  test('preserves attacker-first shared timing for supported reveal effects', () => {
     let state = activeBattle();
-    const fealty = instanceByCardId(state, 'A', 'neutral-fealty');
+    const recruits = instanceByCardId(state, 'A', 'neutral-new-recruits');
     const entrenchment = instanceByCardId(state, 'B', 'neutral-entrenchment');
-    moveToHand(state, 'A', fealty);
+    moveToHand(state, 'A', recruits);
     moveToHand(state, 'B', entrenchment);
 
     state = reduceV070BattleAction(state, {
       type: 'set_gambit',
       playerId: 'A',
-      cardInstanceId: fealty,
+      cardInstanceId: recruits,
     });
     state = reduceV070BattleAction(state, {
       type: 'set_gambit',
@@ -186,10 +186,31 @@ describe('v0.7.0 audited reveal-effect registry', () => {
     });
     state = reduceV070BattleAction(state, { type: 'reveal_gambits', playerId: 'A' });
 
-    // Attacker Fealty applies first: there is no Disadvantage yet, so it grants +1.
-    // Defender Entrenchment then gives the attacker one Disadvantage.
+    const applied = state.events
+      .filter(event => event.type === 'battle_card_effect_applied')
+      .slice(-2)
+      .map(event => (event.payload as { cardId: string }).cardId);
+    expect(applied).toEqual(['neutral-new-recruits', 'neutral-entrenchment']);
     expect(state.battleRuntime?.participants.A.battleModifier).toBe(1);
     expect(state.battleRuntime?.participants.A.disadvantage).toBe(1);
+  });
+
+  test('Fealty removes one existing Disadvantage before falling back to its +1 modifier', () => {
+    let state = activeBattle();
+    const fealty = instanceByCardId(state, 'B', 'neutral-fealty');
+    moveToHand(state, 'B', fealty);
+    state.battleRuntime!.participants.B.disadvantage = 2;
+
+    state = reduceV070BattleAction(state, { type: 'set_gambit', playerId: 'A' });
+    state = reduceV070BattleAction(state, {
+      type: 'set_gambit',
+      playerId: 'B',
+      cardInstanceId: fealty,
+    });
+    state = reduceV070BattleAction(state, { type: 'reveal_gambits', playerId: 'A' });
+
+    expect(state.battleRuntime?.participants.B.disadvantage).toBe(1);
+    expect(state.battleRuntime?.participants.B.battleModifier).toBe(0);
   });
 
   test('does not partially apply supported cards when another revealed effect is unsupported', () => {
@@ -240,15 +261,25 @@ describe('v0.7.0 audited reveal-effect registry', () => {
 
     const tactic = instanceByCardId(tacticState, 'A', 'neutral-advance-guard');
     const reserve = tacticState.battleRuntime!.participants.A.reserve;
-    const displaced = reserve[0];
-    reserve[0] = tactic;
-
-    // Keep physical-zone ownership coherent for the test fixture.
-    const drawIndex = tacticState.players.A.zones.drawPile.indexOf(tactic);
-    if (drawIndex >= 0) tacticState.players.A.zones.drawPile.splice(drawIndex, 1);
-    const handIndex = tacticState.players.A.zones.hand.indexOf(tactic);
-    if (handIndex >= 0) tacticState.players.A.zones.hand.splice(handIndex, 1);
-    tacticState.players.A.zones.drawPile.push(displaced);
+    const existingReserveIndex = reserve.indexOf(tactic);
+    if (existingReserveIndex >= 0) {
+      [reserve[0], reserve[existingReserveIndex]] = [reserve[existingReserveIndex], reserve[0]];
+    } else {
+      const displaced = reserve[0];
+      for (const zone of [
+        tacticState.players.A.zones.drawPile,
+        tacticState.players.A.zones.hand,
+        tacticState.players.A.zones.discardPile,
+        tacticState.players.A.zones.graveyard,
+        tacticState.players.A.zones.assetBank,
+        tacticState.players.A.zones.removed,
+      ]) {
+        const index = zone.indexOf(tactic);
+        if (index >= 0) zone.splice(index, 1);
+      }
+      reserve[0] = tactic;
+      tacticState.players.A.zones.drawPile.push(displaced);
+    }
 
     tacticState = reduceV070BattleAction(tacticState, {
       type: 'choose_tactic',
