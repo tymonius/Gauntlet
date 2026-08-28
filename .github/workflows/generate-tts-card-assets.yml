@@ -191,7 +191,7 @@ jobs:
 
                 for file in "${changed_files[@]}"; do
                   case "$file" in
-                    .github/workflows/generate-tts-card-assets.yml|scripts/generate-tts-save.mjs|scripts/assemble-tts-supplemental-save.mjs|scripts/tts-supplemental-geometry.mjs|tts/apply-table-layout.mjs|tts/validate-v070-authoritative-save.mjs|tests/tts-*|tests/universal-reference-watermark.test.ts)
+                    .github/workflows/generate-tts-card-assets.yml|scripts/generate-tts-save.mjs|scripts/assemble-tts-supplemental-save.mjs|scripts/tts-supplemental-geometry.mjs|tts/apply-table-layout.mjs|tts/validate-current-authoritative-save.mjs|tests/tts-*|tests/universal-reference-watermark.test.ts)
                       ;;
                     scripts/generate-tts-finalized-supplementals.mjs|tts/finalized-supplemental-renderer/*)
                       render_finalized=true
@@ -368,7 +368,7 @@ jobs:
         run: npm run tts:save:assemble
 
       - name: Validate authoritative current TTS save contract
-        run: node tts/validate-v070-authoritative-save.mjs
+        run: node tts/validate-current-authoritative-save.mjs
 
       - name: Report TTS release readiness
         run: npm run tts:release:status
