@@ -17,7 +17,7 @@ Current electronic Standard Application fee: **$65 per application** (subject to
 
 Repository history now establishes that Gauntlet had a public distribution surface on **June 11, 2021**: the public README linked a copyable Google Sheets game document and a Tabletop Simulator Workshop mod. The repository itself contained only the README, so the underlying 2021 game materials still need to be recovered and compared against later releases.
 
-This means v0.6.0 must be treated as a later derivative/revised work unless the recovered historical materials show otherwise. See `docs/legal/HISTORICAL_PUBLICATION_EVIDENCE.md`.
+This means v0.6.0 must be treated as a later derivative/revised work. The v0.6.0 filing may proceed without recovering every historical source if the claim broadly excludes **all pre-v0.6 Gauntlet material**. See `docs/legal/HISTORICAL_PUBLICATION_EVIDENCE.md` and `docs/legal/V0_6_0_COPYRIGHT_DIFF_AUDIT.md`.
 
 ## Proposed registration set
 
@@ -50,10 +50,14 @@ The exact grouping should be checked against the Copyright Office deposit/unit-o
 
 - Publication commit: `e3d03c68c182c4ea61947019485b4b09f7ca07b9`
 - Commit message: `Publish canonical Gauntlet v0.6.0 release (#78)`
-- Release manifest: `releases/v0.6.0/Gauntlet_v0.6.0_Manifest.json`
-- Manifest generation date: **July 20, 2026**
-- Rulebook source: `releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md`
-- Frozen release also contains Rulebook PDF/DOCX production outputs.
+- Commit timestamp: **2026-07-21 01:11:22 UTC / 2026-07-20 21:11:22 EDT**
+- Release notes state publication date: **July 20, 2026**
+- At publication, the release path was `releases/v0.6/`; it was renamed to `releases/v0.6.0/` later.
+- Publication Rulebook Markdown blob: `48cc589e78029b65cf59dbeca550dfd88f14ad47`
+- Publication Rulebook PDF blob: `e6a6a7e92dbc111c78ffe12a0ff909965c65ff31`
+- Publication Rulebook DOCX blob: `bdb7934d50e9880a972e4deb656bfb69819237a8`
+- The current archived `releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md` is **not byte-identical** to the July 20 publication snapshot and contains post-publication wording changes.
+- Current GitHub Release assets were later refreshed/replaced; do not assume a present-day asset under the v0.6.0 tag is the July 20 edition.
 
 ## Author / claimant
 
@@ -91,32 +95,51 @@ The application should describe appreciable excluded material with enough specif
 
 ## New material / derivative-work field
 
-Because the repository predates v0.6.0, determine which v0.6.0 expression was already present in publicly distributed earlier versions.
+The v0.5.7 → v0.6.0 audit now establishes the derivative-work boundary at a useful filing level:
 
-Candidate `New Material Included` language:
+- v0.5.7 contained 54 playable card designs and 25 Territories;
+- v0.6.0 contains 122 playable card designs, six faction frameworks, and twelve Leaders;
+- the Rulebook was substantially rewritten/reorganized for the faction framework;
+- all pre-v0.6 Gauntlet expression should be treated as preexisting and excluded rather than reconstructed sentence-by-sentence before filing.
 
-> New and revised human-authored text and human-authored selection, coordination, and arrangement.
+See `V0_6_0_COPYRIGHT_DIFF_AUDIT.md`.
+
+Candidate `New Material Included` language, **only after the AI/human-authorship ledger supports it**:
+
+> New and revised human-authored text; human-authored editing and modifications; and human-authored selection, coordination, and arrangement.
 
 ## Deposit candidate
 
-Preferred working deposit:
-- `releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.pdf` if the frozen release contains the complete published visual/textual work; otherwise
-- the complete published Rulebook in the authoritative released format.
+**Use the historical July 20 publication snapshot, not the current archived file.**
 
-Before upload, verify:
-- the file is exactly the edition associated with the claimed publication date;
-- it contains no later revisions;
-- the deposit visibly includes the claimed human-authored material;
-- file-size/upload constraints in the registration portal.
+Preferred deposit:
+- publication commit: `e3d03c68c182c4ea61947019485b4b09f7ca07b9`
+- historical path: `releases/v0.6/Gauntlet_v0.6.0_Rulebook.pdf`
+- Git blob: `e6a6a7e92dbc111c78ffe12a0ff909965c65ff31`
+
+Supporting publication source:
+- `releases/v0.6/Gauntlet_v0.6.0_Rulebook.md`
+- Git blob: `48cc589e78029b65cf59dbeca550dfd88f14ad47`
+
+The corresponding file on current `main` differs from the publication snapshot. Before upload:
+- recover the historical PDF directly from the publication commit;
+- calculate and record an independent SHA-256;
+- retain the commit/path/blob evidence with the filing record;
+- confirm the deposit visibly contains the claimed human-authored material;
+- confirm Copyright Office file-size/upload requirements.
 
 ## Unresolved facts
 
-- [ ] Recover the June 2021 Google Sheets/TTS materials and identify substantial expression carried into v0.6.0.
-- [ ] Complete text-level AI authorship review.
+- [x] Establish a practical preexisting-material boundary: **exclude all pre-v0.6 Gauntlet material**.
+- [x] Identify the July 20 publication snapshot and historical Rulebook deposit object.
+- [ ] Recover that historical Rulebook PDF and calculate an independent SHA-256.
+- [ ] Complete affirmative text-level human/AI authorship review for the July 20 Rulebook.
+- [ ] Identify appreciable third-party material in the Rulebook deposit, if any.
 - [ ] Confirm first-publication nation.
-- [ ] Confirm exact deposit file and hash.
 - [ ] Confirm claimant at filing time.
-- [ ] Confirm whether the v0.6.0 Rulebook was first distributed on July 20 or earlier through another channel.
+- [ ] Confirm whether a substantially identical v0.6.0 Rulebook was distributed before July 20 through another channel.
+
+Recovery of the June 2021 Google Sheets/TTS materials remains useful for a later historical registration and evidentiary record, but is **not a blocker** to a v0.6 filing that excludes all pre-v0.6 expression.
 
 ---
 
@@ -124,9 +147,17 @@ Before upload, verify:
 
 ## Why this may deserve a separate registration
 
-The v0.6.0 release manifest records **122 playable card designs**, **25 Territories**, **6 factions**, and **12 Leaders**. The release directory includes `Gauntlet_v0.6.0_All_Cards_and_Components.pdf` and the complete card reference.
+The v0.6.0 release manifest records **122 playable card designs**, **25 Territories**, **6 factions**, and **12 Leaders**.
 
-The card set contains potentially protectable text, graphic treatment, and compilation authorship, but not the underlying methods of play.
+The publication-snapshot canonical-data diff against v0.5.7 shows:
+- **73** card names not present in the v0.5.7 canonical set;
+- **49** shared card names, of which only **New Recruits** and **Rallying Cry** have identical cost + Action text + Battle text;
+- **47** shared-name designs with changed cost and/or Action/Battle expression;
+- all **25 Territory text strings** revised.
+
+These counts demonstrate development scope; they do **not** make titles, mechanics, numbers, or other uncopyrightable matter protectable.
+
+The card set contains potentially protectable literary expression, graphic treatment, supplemental-component expression, and compilation authorship, but not the underlying methods of play.
 
 ## Application route
 
@@ -157,9 +188,14 @@ Potentially:
 
 ## Deposit candidate
 
-- `releases/v0.6.0/Gauntlet_v0.6.0_All_Cards_and_Components.pdf`
+Use the July 20 publication snapshot:
+- publication commit: `e3d03c68c182c4ea61947019485b4b09f7ca07b9`
+- historical path: `releases/v0.6/Gauntlet_v0.6.0_All_Cards_and_Components.pdf`
+- Git blob: `09852bf2759155734292b0b4017ee41c23aa87d0`
 
-Do not file this worksheet until the asset-provenance audit establishes what human-authored visual material existed in v0.6.0.
+Recover the historical binary and record an independent SHA-256 before filing.
+
+Do not file this worksheet until the card-text and visual/component provenance audit establishes the human-authored material that can actually be claimed.
 
 ---
 

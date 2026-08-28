@@ -39,6 +39,44 @@ For each material asset or coherent asset family record:
 | Registration treatment | Claim / claim modifications only / exclude |
 | Notes | Ambiguities or attorney/examiner questions |
 
+## v0.6.0 filing audit set
+
+For the first registration pass, audit the **July 20, 2026 publication snapshot**, not the later archived v0.6.0 files on current `main`.
+
+### Frozen sources
+
+- Publication commit: `e3d03c68c182c4ea61947019485b4b09f7ca07b9`
+- Rulebook Markdown: `releases/v0.6/Gauntlet_v0.6.0_Rulebook.md`, Git blob `48cc589e78029b65cf59dbeca550dfd88f14ad47`
+- Rulebook PDF: `releases/v0.6/Gauntlet_v0.6.0_Rulebook.pdf`, Git blob `e6a6a7e92dbc111c78ffe12a0ff909965c65ff31`
+- Canonical data: `releases/v0.6/Gauntlet_v0.6.0_Canonical_Data.json`, Git blob `669a1f8e6235d9d0475570516905aa9c67c5d273`
+- Cards/components PDF: `releases/v0.6/Gauntlet_v0.6.0_All_Cards_and_Components.pdf`, Git blob `09852bf2759155734292b0b4017ee41c23aa87d0`
+
+### Scope facts
+
+The publication-snapshot comparison against v0.5.7 identifies the material that needs authorship classification:
+
+- 122 v0.6.0 playable card designs versus 54 in v0.5.7;
+- 73 card names new to the canonical set;
+- 49 shared names, with only New Recruits and Rallying Cry retaining identical cost + Action text + Battle text;
+- 47 shared-name designs revised in cost and/or Action/Battle expression;
+- all 25 Territory text strings revised;
+- six complete faction systems and twelve Leaders;
+- a substantially rewritten/reorganized Rulebook.
+
+These are **scope markers, not authorship conclusions**. A new name, changed rule, changed number, or changed mechanic is not itself protectable human authorship.
+
+### Default classification rule for this audit
+
+Do not mark a v0.6 passage/card/component **H** merely because:
+- the underlying game idea came from the project owner;
+- the project owner directed or approved the wording;
+- the material was committed under the project owner's account;
+- the material was iteratively discussed with a generative-AI system.
+
+Use **TBD** until there is affirmative evidence of the human-created expressive contribution. Where generative AI supplied substantially unchanged wording, classify the machine-generated expression **AR** and separately record any qualifying human modifications, selection, coordination, or arrangement.
+
+See `docs/legal/V0_6_0_COPYRIGHT_DIFF_AUDIT.md`.
+
 ## Workstream 1 — Rulebook prose
 
 Audit the current Rulebook by section/chapter, with special attention to passages drafted or substantially rewritten through ChatGPT or other generative systems.
