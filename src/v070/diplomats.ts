@@ -761,6 +761,36 @@ export function settleV070RefusedTermsOutcome(
   closeTerms(runtime);
 }
 
+export function settleV070RefusedTermsWithoutWinner(
+  state: V070GameState,
+): void {
+  const runtime = requireRuntime(state);
+  const terms = runtime.terms;
+  if (terms.stage !== 'refused') return;
+
+  const diplomatId = requireTermsPlayer(terms.offerer);
+  const proposal = requireProposal(terms.proposalId);
+
+  changeInfluence(state, diplomatId, terms.stake, 'Return no-winner Stake');
+
+  appendV070Event(state, {
+    type: 'refused_terms_no_winner',
+    actor: diplomatId,
+    visibility: 'public',
+    payload: {
+      proposalId: proposal.id,
+      stakeReturned: terms.stake,
+    },
+  });
+
+  if (proposal.id === 'rebuilding-pact') {
+    beginProposalChoice(state, 'rebuilding_pact_refused', diplomatId, 'single', true);
+    return;
+  }
+
+  closeTerms(runtime);
+}
+
 export function resolveV070PoliticalCapital(
   state: V070GameState,
   diplomatId: PlayerId,
