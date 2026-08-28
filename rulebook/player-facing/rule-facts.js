@@ -71,13 +71,27 @@ export function deriveRuleFacts(authority) {
 
 
 
-function summarizeCards(cards) {
+export function deriveCardPoolSummary(cards) {
   const summary = {};
   for (const card of cards || []) {
     if (!card?.allegiance) continue;
-    const bucket = summary[card.allegiance] ||= { count: 0, total_value: 0 };
+    const bucket = summary[card.allegiance] ||= {
+      count: 0,
+      total_value: 0,
+      unique: [],
+      cost_curve: {},
+    };
+    const cost = Number(card.cost || 0);
     bucket.count += 1;
-    bucket.total_value += Number(card.cost || 0);
+    bucket.total_value += cost;
+    bucket.cost_curve[String(cost)] = (bucket.cost_curve[String(cost)] || 0) + 1;
+    if (card.unique) bucket.unique.push(card.name);
+  }
+  for (const bucket of Object.values(summary)) {
+    bucket.unique.sort((a, b) => String(a).localeCompare(String(b)));
+    bucket.cost_curve = Object.fromEntries(
+      Object.entries(bucket.cost_curve).sort(([a], [b]) => Number(a) - Number(b)),
+    );
   }
   return summary;
 }
@@ -85,7 +99,7 @@ function summarizeCards(cards) {
 export function validateAuthorityEmbeddedFacts(authority) {
   const facts = deriveRuleFacts(authority);
   const errors = [];
-  const summary = summarizeCards(authority?.gameplay?.cards);
+  const summary = deriveCardPoolSummary(authority?.gameplay?.cards);
 
   for (const [id, allegiance] of FACTIONS) {
     const actual = facts[`cards.${id}.count`];
