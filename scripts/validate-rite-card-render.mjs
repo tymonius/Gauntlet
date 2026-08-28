@@ -112,6 +112,7 @@ async function main() {
         artworkPending: Boolean(card.querySelector('.ritual-art-pending')),
         ruleLabels: [...card.querySelectorAll('.rule-section h4')].map(node => node.textContent?.trim()),
         ruleText: [...card.querySelectorAll('.rule-section p')].map(node => node.textContent?.trim()).join(' '),
+        version: card.querySelector('.card-footer span:last-child')?.textContent?.trim() || '',
         abilityNames,
         completedImageWidth: completedImageRect?.width || 0,
         completedImageHeight: completedImageRect?.height || 0,
@@ -196,6 +197,9 @@ async function main() {
       }
       if (metric.rulesScale < 0.82 - 0.001) throw new Error(`Mystics component typography fell below the readability floor: ${JSON.stringify(metric)}.`);
       if (metric.artWidth <= 0 || metric.artHeight <= 0) throw new Error(`Mystics component artwork field collapsed: ${JSON.stringify(metric)}.`);
+      if (metric.version !== authority.displayVersion) {
+        throw new Error(`Mystics component footer version ${JSON.stringify(metric.version)} does not match current authority ${JSON.stringify(authority.displayVersion)}: ${JSON.stringify(metric)}.`);
+      }
       if (metric.completed) {
         const expected = ['Invocation', 'Transmutation', 'Convergence', 'Ritual of Ascension'];
         if (expected.some(name => !metric.abilityNames.includes(name))) throw new Error(`Completed Rite reference is incomplete: ${JSON.stringify(metric)}.`);

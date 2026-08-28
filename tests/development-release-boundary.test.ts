@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
+const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 const lifecycle = JSON.parse(readFileSync('config/release-lifecycle.json', 'utf8'));
 const releaseTarget = JSON.parse(readFileSync('config/tts-release-target.json', 'utf8'));
 const materializer = readFileSync('.github/workflows/materialize-v070-release-package.yml', 'utf8');
@@ -21,6 +22,8 @@ describe('development and published-release boundary', () => {
   });
 
   it('derives current TTS identity from current-game rather than the publication target', () => {
+    expect(packageJson.scripts['tts:check']).not.toContain('promote-tts-save.mjs --check');
+    expect(packageJson.scripts['tts:check']).toContain('node --check scripts/promote-tts-save.mjs');
     expect(ttsCatalog).not.toContain('TTS_RELEASE_TARGET_SOURCE');
     expect(ttsCatalog).toContain('version: sourceVersion');
     expect(ttsCatalog).toContain('targetStatus: String(authority.status');

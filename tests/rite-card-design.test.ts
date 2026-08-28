@@ -29,6 +29,9 @@ describe("Mystics Rite card prototypes", () => {
     expect(reviewPage).toContain('href="rite-card.css"');
     expect(reviewPage).toContain('type="module" src="rite-card.js"');
     expect(reviewPage).toContain('<span data-rite-count>6</span> double-sided Rites');
+    for (const shortName of ["Echoes", "Blood", "Crossing", "Shattering", "Consecration", "Equivalence"]) {
+      expect(reviewPage).toContain(shortName);
+    }
     expect(reviewPage).toContain('<strong data-ritual-count>1</strong> Ritual');
     expect(mysticsAuthority.rites.map((item: any) => item.name)).toEqual(riteNames);
     expect(riteRenderer).toContain("import { loadCurrentGame } from '../game-data/current-game.mjs'");
@@ -73,7 +76,11 @@ describe("Mystics Rite card prototypes", () => {
     expect(riteRenderer).toContain('<img src="${esc(rite.artwork)}"');
     expect(riteRenderer).toContain('Artwork pending for ${esc(rite.name)}');
     expect(riteRenderer).toContain('rite.reminder?.text');
+    expect(riteRenderer).toContain('currentDisplayVersion = currentGame.displayVersion');
+    expect(riteRenderer).toContain('data-has-reminder="true"');
+    expect(riteStyles).toContain('.rite-reminder');
     expect(riteValidator).toContain('expectedCardFaces = expectedRites.length * 2 + 1');
+    expect(riteValidator).toContain('metric.version !== authority.displayVersion');
     expect(riteValidator).not.toContain('EXPECTED_RITES');
     expect(riteRenderer).toContain("function ritualArtwork()");
     expect(riteRenderer).toContain('<img src="${esc(RITUAL.artwork)}"');
