@@ -77,6 +77,7 @@ def main() -> int:
         "felt_decided_when",
         "agency_after_decided",
         "decisive_cause",
+        "selection_reason",
     ], errors)
     require("playtest/index.html", [
         "Blind playtesting · canonical v0.7.0",
@@ -90,6 +91,8 @@ def main() -> int:
         'id="transportPanel"',
         'data-diagnostic-flag="feels_decided"',
         'data-diagnostic-flag="no_meaningful_option"',
+        'id="createSelectionReason"',
+        'id="joinSelectionReason"',
         'id="feltDecidedWhen"',
         'id="agencyAfterDecided"',
         "3790840635",
@@ -102,6 +105,7 @@ def main() -> int:
         "feltDecidedWhen",
         "agencyAfterDecided",
         "decisiveCause",
+        "selectionReason",
     ], errors)
     require("start/app.js", [
         'new URL("../playtest/tracked/"',
@@ -109,9 +113,11 @@ def main() -> int:
         '"physical" ? "physical" : "tts"',
     ], errors)
     require("start/index.html", [
-        "Start tracked TTS playtest",
         "Tabletop Simulator",
         "begins <strong>Onset</strong>",
+    ], errors)
+    require("start/app.js", [
+        "Start tracked TTS playtest",
     ], errors)
 
     for rel in [
