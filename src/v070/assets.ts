@@ -10,6 +10,8 @@ import {
 import type { PlayerId } from './rules';
 
 const REMOVAL_LIFECYCLE_UNSUPPORTED = new Set([
+  'neutral-contingency-plan',
+  'military-reserve-force',
   'intelligence-extraordinary-rendition',
   'financiers-margin-loan',
   'intelligence-sleeper-network',
