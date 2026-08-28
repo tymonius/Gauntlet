@@ -43,6 +43,9 @@ function compactTerritories(territories) {
 
 export function buildTtsDeckPayload(deck) {
   if (!deck || typeof deck !== "object") throw new Error("Deck data is required.");
+  if (String(deck.factionId || "").trim().toLowerCase() === "mystics") {
+    throw new Error("Mystics Tabletop Simulator export is temporarily unavailable until selected-Rite assembly is supported. Export JSON to preserve the selected Rites.");
+  }
   return {
     v: requiredString(deck.gameVersion, "game version"),
     n: requiredString(deck.name, "deck name"),

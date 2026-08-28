@@ -12,8 +12,8 @@ async function health(path) {
 }
 
 describe('Rules Arbiter current and historical release routing', () => {
-  test('routes the staged unversioned public health endpoint to v0.7.0 before lifecycle cutover', async () => {
-    expect(lifecycle.current_release).toBe('v0.6.3');
+  test('routes the unversioned public health endpoint to the current v0.7.0 release', async () => {
+    expect(lifecycle.current_release).toBe('v0.7.0');
     const payload = await health('/api/health');
     expect(payload.version).toBe(stagedCurrentVersion);
     expect(payload.currentPublicRelease).toBe(stagedCurrentVersion);
