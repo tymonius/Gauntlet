@@ -68,7 +68,7 @@ function renderLeaderCard(leader) {
       <div class="leader-rule"><strong>Setup:</strong> Set Influence to 1. Place your nine Proposal cards Proposal side up.</div>
       <div class="leader-rule"><strong>Leverage:</strong> Before dice in a battle following refused Terms, you may spend any amount of available Influence. Add +1 to your battle total per Influence spent.</div>
       <div class="leader-rule"><strong>${escapeHtml(leader.abilityName)}:</strong> ${escapeHtml(leader.ability)}</div>
-      <div class="leader-rule"><strong>Peace Treaty:</strong> At the start of your turn, after the Capture step, if five different Proposals are ratified, you win.</div>
+      <div class="leader-rule"><strong>Peace Treaty:</strong> At the start of your turn, after the Capture step, if six different Proposals are ratified, you win.</div>
     </div>
   </article>`;
 }
