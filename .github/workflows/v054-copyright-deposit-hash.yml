@@ -1,0 +1,22 @@
+name: v0.5.4 copyright deposit hash
+
+on:
+  push:
+    branches:
+      - docs/v053-copyright-foundation-audit
+
+permissions:
+  contents: read
+
+jobs:
+  hash-deposit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download and hash v0.5.4 guide
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://raw.githubusercontent.com/tymonius/Gauntlet/bb6e1263797f67a2856286b836171808afc49154/releases/v0.5.4/Gauntlet_v0.5.4_Complete_Playtest_Guide.pdf"
+          curl --fail --location --silent --show-error "$url" --output /tmp/Gauntlet_v0.5.4_Complete_Playtest_Guide.pdf
+          echo "COPYRIGHT_DEPOSIT_SHA256=$(sha256sum /tmp/Gauntlet_v0.5.4_Complete_Playtest_Guide.pdf | awk '{print $1}')"
+          echo "COPYRIGHT_DEPOSIT_BYTES=$(wc -c < /tmp/Gauntlet_v0.5.4_Complete_Playtest_Guide.pdf | tr -d ' ')"
