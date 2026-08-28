@@ -59,7 +59,7 @@
       "firstPlayer", "winnerLabel", "winner", "victoryRouteLabel", "victoryRoute", "durationMinutes",
       "rounds", "battles", "stopReasonLabel", "stopReason", "packageUnmodified", "variantUsed",
       "productionIssue", "strongestMoment", "confusingPoint", "importantObservation", "resultStatus",
-      "responseSection", "responseForm", "ratingGrid", "feltDecidedWhen",
+      "responseSection", "responseForm", "legacySelectionReasonField", "legacySelectionReason", "ratingGrid", "feltDecidedWhen",
       "agencyAfterDecided", "decisiveCause", "playAgain", "responseComments",
       "responseStatus", "completionPanel", "reviewPanel", "refreshReview", "downloadReviewJson",
       "downloadReviewCsv", "reviewContent", "reviewStatus"
@@ -196,6 +196,11 @@
     el.playPanel.hidden = !open || !joinedPlayer || !full;
     el.resultSection.hidden = !open || !joinedPlayer || !full || session.resultSubmitted;
     el.responseSection.hidden = !open || !joinedPlayer || !session.resultSubmitted || ownResponse;
+    if (el.legacySelectionReasonField && joinedPlayer) {
+      const legacyMissingReason = !joinedPlayer.selectionReasonCaptured;
+      el.legacySelectionReasonField.hidden = !legacyMissingReason;
+      if (el.legacySelectionReason) el.legacySelectionReason.required = legacyMissingReason;
+    }
     el.completionPanel.hidden = !session.complete;
     el.reviewPanel.hidden = !state.hostKey;
 
@@ -408,6 +413,7 @@
     setStatus(el.responseStatus, "Submitting your response…");
     try {
       const response = {
+        factionInterest: el.legacySelectionReason?.value.trim() || "",
         feltDecidedWhen: el.feltDecidedWhen.value,
         agencyAfterDecided: el.agencyAfterDecided.value,
         decisiveCause: el.decisiveCause.value.trim(),
