@@ -18,6 +18,10 @@ import {
   type V070GameState,
   type V070PlayerState,
 } from './engine';
+import {
+  advanceV070FrontLine,
+  nextV070FrontLineTarget,
+} from './front-line';
 
 export type V070TurnAction =
   | { type: 'resolve_capture'; playerId: PlayerId }
@@ -120,7 +124,7 @@ export function drawV070Cards(
 
 function resolveCapture(state: V070GameState, playerId: PlayerId): void {
   requirePhase(state, 'capture');
-  const target = nextFrontLineTarget(state, playerId);
+  const target = nextV070FrontLineTarget(state, playerId);
 
   if (target) {
     const position = requirePosition(state.players[playerId]);
@@ -129,23 +133,9 @@ function resolveCapture(state: V070GameState, playerId: PlayerId): void {
       : position <= target.position;
 
     if (supportsCapture && target.controller === otherPlayer(playerId)) {
-      const previousController = target.controller;
-      target.controller = playerId;
-      refreshControlledTerritories(state);
+      const advance = advanceV070FrontLine(state, playerId, 1, 'normal_capture');
 
-      appendV070Event(state, {
-        type: 'territory_captured',
-        actor: playerId,
-        visibility: 'public',
-        payload: {
-          position: target.position,
-          territoryId: target.territoryId,
-          previousController,
-          controller: playerId,
-        },
-      });
-
-      if (controlsEveryTerritory(state, playerId)) {
+      if (advance.reachedOpponentEnd) {
         state.stage = 'ended';
         state.winner = playerId;
         state.turnState = null;
@@ -396,25 +386,6 @@ function completeCleanup(
     visibility: 'public',
     payload: { turnNumber: state.turnNumber, phase: state.turnState.phase },
   });
-}
-
-function nextFrontLineTarget(state: V070GameState, playerId: PlayerId) {
-  const ordered = playerId === 'A'
-    ? state.board
-    : [...state.board].reverse();
-  return ordered.find(territory => territory.controller !== playerId) ?? null;
-}
-
-function refreshControlledTerritories(state: V070GameState): void {
-  for (const playerId of ['A', 'B'] as const) {
-    state.players[playerId].controlledTerritories = state.board
-      .filter(territory => territory.controller === playerId)
-      .map(territory => territory.territoryId);
-  }
-}
-
-function controlsEveryTerritory(state: V070GameState, playerId: PlayerId): boolean {
-  return state.board.length > 0 && state.board.every(territory => territory.controller === playerId);
 }
 
 function movementDelta(playerId: PlayerId, choice: Exclude<MovementChoice, 'hold'>): number {

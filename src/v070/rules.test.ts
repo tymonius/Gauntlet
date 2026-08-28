@@ -54,6 +54,21 @@ describe('v0.7.0 released sequence contract', () => {
     expect(v070BattleWasFought(battle)).toBe(false);
   });
 
+  test('normal Onset may originate from a legal off-board Position', () => {
+    const battle = createV070BattleOnset({
+      territoryCount: 6,
+      attacker: 'B',
+      defender: 'A',
+      attackerOrigin: 6,
+      contestedPosition: 5,
+      positions: { A: 5, B: 5 },
+      defenderControlsContested: true,
+    });
+    expect(battle.attackerOrigin).toBe(6);
+    expect(battle.contestedPosition).toBe(5);
+    expect(battle.stage).toBe('onset');
+  });
+
   test('a battle counts as fought only after Onset proceeds to Gambits', () => {
     const active = proceedV070ToGambits(normalOnset());
     expect(active.stage).toBe('active');

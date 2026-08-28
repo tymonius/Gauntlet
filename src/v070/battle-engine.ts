@@ -22,9 +22,13 @@ import {
   passV070Terms,
   respondToV070Terms,
   resolveV070PoliticalCapital,
+  resolveV070ProposalChoice,
+  useV070DiplomaticLatitude,
+  useV070PlenipotentiaryAfterRefusal,
   settleV070RefusedTermsOutcome,
   v070LeverageRequiresDecision,
   v070PoliticalCapitalPending,
+  v070ProposalChoicePending,
   v070TermsReadyForGambits,
 } from './diplomats';
 import {
@@ -39,6 +43,20 @@ export type V070BattleAction =
   | { type: 'pass_terms'; playerId: PlayerId }
   | { type: 'offer_terms'; playerId: PlayerId; proposalId: string }
   | { type: 'respond_to_terms'; playerId: PlayerId; response: 'accept' | 'refuse' }
+  | {
+      type: 'use_diplomatic_latitude';
+      playerId: PlayerId;
+      cardInstanceId: string;
+      secondProposalId: string;
+    }
+  | { type: 'use_plenipotentiary'; playerId: PlayerId; cardInstanceId: string }
+  | {
+      type: 'resolve_proposal_choice';
+      playerId: PlayerId;
+      cardInstanceId?: string;
+      replaceAssetInstanceId?: string;
+      proposalId?: string;
+    }
   | { type: 'use_leverage'; playerId: PlayerId; bonus: number }
   | { type: 'resolve_political_capital'; playerId: PlayerId; cardInstanceIds: readonly string[] }
   | { type: 'proceed_from_onset'; playerId: PlayerId }
@@ -73,6 +91,26 @@ export function reduceV070BattleAction(
       break;
     case 'respond_to_terms':
       respondToV070Terms(next, action.playerId, action.response);
+      break;
+    case 'use_diplomatic_latitude':
+      useV070DiplomaticLatitude(
+        next,
+        action.playerId,
+        action.cardInstanceId,
+        action.secondProposalId,
+      );
+      break;
+    case 'use_plenipotentiary':
+      useV070PlenipotentiaryAfterRefusal(next, action.playerId, action.cardInstanceId);
+      break;
+    case 'resolve_proposal_choice':
+      resolveV070ProposalChoice(
+        next,
+        action.playerId,
+        action.cardInstanceId,
+        action.replaceAssetInstanceId,
+        action.proposalId,
+      );
       break;
     case 'use_leverage':
       applyV070Leverage(next, action.playerId, action.bonus);
@@ -191,7 +229,8 @@ function unsupportedOnsetFeatures(state: V070GameState): string[] {
       const onsetAsset = card?.effects.find(effect =>
         effect.label === 'Asset' && /during onset|before gambits are set|after terms are refused|after the opponent refuses/i.test(effect.text),
       );
-      if (onsetAsset && card) result.push(`${playerId}:${card.name}`);
+      const implementedOnsetAsset = cardId === 'diplomats-plenipotentiary';
+      if (onsetAsset && card && !implementedOnsetAsset) result.push(`${playerId}:${card.name}`);
     }
   }
 
@@ -506,7 +545,6 @@ function applyOutcome(state: V070GameState, outcome: V070BattleOutcome): void {
   const resolution = applyV070BattleOutcome(battle, outcome);
   state.battle = resolution.state;
   runtime.stage = 'aftermath';
-  settleV070RefusedTermsOutcome(state, outcome);
 
   appendV070Event(state, {
     type: 'battle_outcome',
@@ -519,6 +557,8 @@ function applyOutcome(state: V070GameState, outcome: V070BattleOutcome): void {
     },
   });
 
+  settleV070RefusedTermsOutcome(state, outcome);
+  if (state.stage === 'ended') return;
   if (resolution.victory) completeAftermathInternal(state, resolution.victory.winner);
 }
 
@@ -528,6 +568,9 @@ function completeAftermath(state: V070GameState, playerId: PlayerId): void {
   requireRuntimeStage(runtime, 'aftermath');
   if (v070PoliticalCapitalPending(state)) {
     throw new V070GameActionError('Resolve Senator Political Capital before completing the Aftermath.');
+  }
+  if (v070ProposalChoicePending(state)) {
+    throw new V070GameActionError('Resolve the pending Proposal choice before completing the Aftermath.');
   }
   if (playerId !== battle.attacker) {
     throw new V070GameActionError('The attacker advances the shared Aftermath procedure.');

@@ -22,6 +22,7 @@ export * from '../v070/battle-types';
 export * from '../v070/battle-engine';
 export * from '../v070/battle-effects';
 export * from '../v070/diplomats';
+export * from '../v070/front-line';
 export * from '../v070/views';
 
 /**

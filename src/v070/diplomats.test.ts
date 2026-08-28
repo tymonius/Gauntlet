@@ -97,7 +97,11 @@ describe('v0.7.0 Diplomat Terms runtime', () => {
       'orderly-withdrawal',
       'capitulation',
       'open-channels',
+      'mutual-disarmament',
+      'prisoner-exchange',
+      'rebuilding-pact',
       'ultimatum',
+      'diplomatic-recognition',
     ]);
 
     const state = startedGame();
@@ -106,6 +110,7 @@ describe('v0.7.0 Diplomat Terms runtime', () => {
       ratifiedProposals: [],
       cordialityUsedTurn: null,
       politicalCapitalUsedTurn: null,
+      detenteUsedTurn: null,
     });
     expect(state.players.B.diplomats).toBeNull();
   });
@@ -166,21 +171,6 @@ describe('v0.7.0 Diplomat Terms runtime', () => {
 
     state = reduceV070BattleAction(state, { type: 'pass_terms', playerId: 'B' });
     expect(state.battleRuntime?.terms.stage).toBe('closed');
-  });
-
-  test('rejects choice-heavy Proposals explicitly instead of approximating them', () => {
-    let state = activeBattle();
-    const eligible = eligibleV070Proposals(state, 'A');
-    expect(eligible).toContain('mutual-disarmament');
-
-    expect(() => reduceV070BattleAction(state, {
-      type: 'offer_terms',
-      playerId: 'A',
-      proposalId: 'mutual-disarmament',
-    })).toThrow(V070GameActionError);
-
-    expect(state.players.A.diplomats?.influence).toBe(1);
-    expect(state.battleRuntime).toBeNull();
   });
 
   test('accepted Terms end during Onset, ratify once, return the Stake, and trigger Cordiality', () => {

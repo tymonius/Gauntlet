@@ -127,7 +127,7 @@ assertReleasedRuleContract();
 export function createV070BattleOnset(input: V070BattleOnsetInput): V070BattleState {
   if (input.attacker === input.defender) throw new Error('Attacker and defender must be different players.');
   assertTerritoryCount(input.territoryCount);
-  assertTerritoryIndex(input.attackerOrigin, input.territoryCount, 'attacker origin');
+  assertExtendedPosition(input.attackerOrigin, input.territoryCount, 'attacker origin');
   assertExtendedPosition(input.contestedPosition, input.territoryCount, 'contested Position');
   assertExtendedPosition(input.positions.A, input.territoryCount, 'A Position');
   assertExtendedPosition(input.positions.B, input.territoryCount, 'B Position');
