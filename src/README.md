@@ -1,24 +1,39 @@
 # Gauntlet Digital Engine Work
 
-This directory contains both the preserved legacy rules-engine prototype and the incremental migration toward the current published Gauntlet rules.
+This directory contains the preserved legacy prototype plus the incremental migration toward the current published Gauntlet rules.
 
 ## Current authority boundary
 
-The published rules baseline is **v0.6.3**. Engine-facing v0.6.3 content in `src/content/v063.ts` is loaded from the immutable release package:
+The published digital-rules baseline is **v0.7.0**. Engine-facing released content is loaded from:
 
-- `releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json`
-- `releases/v0.6.3/Gauntlet_v0.6.3_Manifest.json`
+- `releases/v0.7.0/Gauntlet_v0.7.0_Canonical_Data.json`
+- `releases/v0.7.0/Gauntlet_v0.7.0_Manifest.json`
 
-The release manifest identifies the binding Rulebook source as `artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md`; the published package carries the corresponding Rulebook PDF. The release contract is authoritative. Pre-publication browser candidates are historical/provenance inputs, not the active engine content source.
+The release manifest identifies `digital_rules: v0.7.0`. The published package is authoritative. Transitional v0.6.4 candidate bundles and earlier releases remain provenance and implementation history, not the current engine content source.
 
 ## Migration layers
 
-- `v063/` — current incremental v0.6.3 rule/card procedures and tests. The rules module owns the migrated v0.6.3 runtime surface for setup, Front Line/Capture, movement, retreat/withdrawal, battle outcome, and Last Stand. The card module owns the migrated shared card procedures plus Invasion, Landslide, Détente, Compound Interest, Extraordinary Rendition, Nature's Altar, and Martyrdom. `copied-effects.ts` owns the shared v0.6.3 apply/repeat contract, including physical source-instance references where later instructions need to move the exact selected card. `arcane-knowledge.ts` implements Arcane Knowledge without the legacy title whitelist or virtual battle-card replay, and `copied-effect-callers.ts` migrates Heresy, Rend the Veil, and Witchcraft onto that same contract. `gauntlet.ts` adds an ordered dynamic-Territory layer over the Front Line model, including normal Deeds, control-derived Asset/Capital limits, Deed income/cost, and Controlling Interest. `manifest-destiny.ts` uses that shared topology rather than treating Manifest Destiny as a special pseudo-Territory. `territories.ts` owns the non-battle and persistent Territory-effect runtime for Quicksand, Difficult Terrain, Disrupted Supply Lines, Ruined Storehouse, Supply Depot, Refuge, Command Tent, Monastery, King's Road, Toll Bridge, and Smuggler's Run. `territory-battles.ts` completes the published 25-Territory runtime with Poisonous Gas, Garrison, Field Hospital, Exposed Flank, High Ground, Fortified Pass, Insurgency, Watchtower, Old Battlefield, Training Grounds, and all four Arenas. None of these current modules re-export v0.6.2 runtime behavior.
-- `content/v063.ts` — published v0.6.3 content index for engine migration work.
-- `v062/` — earlier versioned migration work retained as implementation history. Stable structural types may still be shared deliberately, but current v0.6.3 rules and card behavior must not be inherited through blanket runtime exports.
-- `state/`, `effects/`, `cards/`, `cli/`, and `gui/` — pre-v0.6 prototype architecture and interfaces. These remain useful implementation material but are **not** presumed v0.6.3-compatible. Their old replay/virtual-card implementations for Arcane Knowledge, Rend the Veil, and Witchcraft remain historical until those shells are explicitly wired to the active v0.6.3 procedures.
+- `content/v070.ts` — published v0.7.0 content index and release-contract validation.
+- `v064/` — transitional Onset implementation developed against the former v0.6.4 candidate. Reuse only after checking each procedure against v0.7.0.
+- `v063/` — substantial validated procedure library from the v0.6.3 migration: setup, turn flow, Front Line/Capture, movement, retreat/withdrawal, battle outcome, Last Stand, copied/repeated effects, Arcane Knowledge, Manifest Destiny, dynamic Territories/Deeds, and all printed Territory/Arena procedures.
+- `content/v063.ts` — immutable v0.6.3 release adapter retained for historical/versioned regression tests.
+- `state/`, `effects/`, `cards/`, `cli/`, and `gui/` — pre-faction/earlier playable architecture. Useful scaffolding, but not presumed v0.7.0-compatible.
 
-Issue #741 tracks the full synchronization of the playable engine with v0.6.3. The existence of a `v063/` adapter or passing tests for an implemented procedure does not imply complete engine parity; unsupported or stale legacy behavior must remain explicit until migrated and validated.
+The current live behavioral surface still contains transitional v0.6.4 wiring. It must not be described as v0.7.0-compatible until the released Onset/Terms contract and all dependent procedures are audited and promoted deliberately.
+
+Issue #741 tracks completion of the playable engine against the current released rules.
+
+## v0.7.0 content delta
+
+The current release contains:
+
+- 142 playable titles;
+- 52 Neutral cards;
+- 15 cards in each of six factions;
+- 25 Territories/Arenas;
+- 12 Leaders.
+
+Relative to the v0.6.3 baseline, v0.7.0 adds 15 cards, retires **No Martyrs**, formalizes Onset/Terms timing, and raises the Diplomat Peace Treaty threshold to six ratified Proposals. Current behavior must come from the released v0.7.0 contract, not from old tests or candidate terminology.
 
 ## Development commands
 
@@ -32,8 +47,8 @@ npm run dev:cli
 npm run dev:gui
 ```
 
-The broad development commands still exercise legacy code as well as versioned migration code. Passing them demonstrates repository consistency, not completion of #741.
+The broad development commands still exercise legacy/versioned code as well as current migration work. Passing them demonstrates repository consistency, not complete v0.7.0 parity.
 
 ## Reuse policy
 
-Reuse legacy architecture deliberately. New or retained gameplay behavior must be checked against the published v0.6.3 Rulebook and canonical data rather than inherited from an older prototype merely because a handler or test already exists.
+Reuse architecture and procedures deliberately. A historical handler is evidence, not authority. New or retained gameplay behavior must be checked against the published v0.7.0 Rulebook and canonical data before it is exposed through the current engine surface.
