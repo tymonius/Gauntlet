@@ -2360,8 +2360,10 @@ Heresy follows the shared copied-effect rule but retains permission for one addi
 
 # Copyright and Playtest Use
 
-Gauntlet is an unpublished playtest project.
+<!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT -->
 
-Copyright © 2026 Tymon Scott. All rights reserved.
+<!-- PUBLISHING-FACT:imprint.statement -->Gauntlet is published under the TDS Games imprint for playtesting and review.<!-- /PUBLISHING-FACT -->
+
+<!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT -->
 
 Repository and release materials are provided for private review and playtesting only. They may not be copied, redistributed, sold, republished, or used to create commercial derivative works without written permission.
