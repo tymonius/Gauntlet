@@ -23,6 +23,8 @@ import {
   respondToV070Terms,
   resolveV070PoliticalCapital,
   resolveV070ProposalChoice,
+  useV070DiplomaticLatitude,
+  useV070PlenipotentiaryAfterRefusal,
   settleV070RefusedTermsOutcome,
   v070LeverageRequiresDecision,
   v070PoliticalCapitalPending,
@@ -42,10 +44,18 @@ export type V070BattleAction =
   | { type: 'offer_terms'; playerId: PlayerId; proposalId: string }
   | { type: 'respond_to_terms'; playerId: PlayerId; response: 'accept' | 'refuse' }
   | {
+      type: 'use_diplomatic_latitude';
+      playerId: PlayerId;
+      cardInstanceId: string;
+      secondProposalId: string;
+    }
+  | { type: 'use_plenipotentiary'; playerId: PlayerId; cardInstanceId: string }
+  | {
       type: 'resolve_proposal_choice';
       playerId: PlayerId;
       cardInstanceId?: string;
       replaceAssetInstanceId?: string;
+      proposalId?: string;
     }
   | { type: 'use_leverage'; playerId: PlayerId; bonus: number }
   | { type: 'resolve_political_capital'; playerId: PlayerId; cardInstanceIds: readonly string[] }
@@ -82,12 +92,24 @@ export function reduceV070BattleAction(
     case 'respond_to_terms':
       respondToV070Terms(next, action.playerId, action.response);
       break;
+    case 'use_diplomatic_latitude':
+      useV070DiplomaticLatitude(
+        next,
+        action.playerId,
+        action.cardInstanceId,
+        action.secondProposalId,
+      );
+      break;
+    case 'use_plenipotentiary':
+      useV070PlenipotentiaryAfterRefusal(next, action.playerId, action.cardInstanceId);
+      break;
     case 'resolve_proposal_choice':
       resolveV070ProposalChoice(
         next,
         action.playerId,
         action.cardInstanceId,
         action.replaceAssetInstanceId,
+        action.proposalId,
       );
       break;
     case 'use_leverage':
