@@ -21,6 +21,12 @@ export interface V070PlayerZones {
   removed: string[];
 }
 
+export interface V070DiplomatState {
+  influence: number;
+  ratifiedProposals: string[];
+  cordialityUsedTurn: number | null;
+}
+
 export interface V070PlayerState {
   id: PlayerId;
   name: string;
@@ -34,6 +40,7 @@ export interface V070PlayerState {
   position: number | null;
   controlledTerritories: string[];
   reshuffleCount: number;
+  diplomats: V070DiplomatState | null;
 }
 
 export interface V070BoardTerritory {
@@ -142,6 +149,13 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
       position: null,
       controlledTerritories: [],
       reshuffleCount: 0,
+      diplomats: starter.definition.factionId === 'diplomats'
+        ? {
+            influence: 1,
+            ratifiedProposals: [],
+            cordialityUsedTurn: null,
+          }
+        : null,
     };
   }
 
