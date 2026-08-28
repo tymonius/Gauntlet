@@ -1,8 +1,8 @@
 # Gauntlet Digital Prototype Roadmap
 
 **Status:** Active development roadmap and current migration snapshot.  
-**Current tabletop authority:** v0.6.3 — Third Playtest Revision  
-**Scope:** Machine-readable game data, rules engine, CLI, GUI, playtest telemetry, and future remote play.
+**Current digital-rules authority:** v0.7.0 — Illustrated Cards & Tabletop Simulator  
+**Scope:** Machine-readable game data, rules engine, local development clients, playtest telemetry, and future remote play.
 
 ---
 
@@ -10,226 +10,153 @@
 
 The digital project exists to reduce the friction of Gauntlet playtesting:
 
-- no repeated printing and cutting after every card update;
-- remote or asynchronous testing;
-- automatic enforcement of difficult timing and destination rules;
-- rapid card-text iteration;
-- structured logs and telemetry; and
-- a shared source of truth between printable cards, Deckbuilder, Rules Arbiter, simulator, and digital play.
+- no repeated physical setup or manual rules bookkeeping;
+- remote play;
+- automatic enforcement of timing, hidden information, and card destinations;
+- rapid rules/card iteration;
+- deterministic logs and telemetry; and
+- one released data contract shared by the engine and player-facing tools.
 
-The digital prototype should remain a testing tool before it becomes a polished commercial game client.
-
----
-
-## 2. Product layers
-
-### A. Canonical game data
-
-The current published machine-readable source is:
-
-- `releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json`
-
-It is generated from the v0.6.3 governing release sources and carries the current cards, Territories, factions, Leaders, deck-construction data, and related identifiers. It is authoritative for the published v0.6.3 release but must not be edited independently of its governing sources.
-
-### B. Deckbuilder
-
-The public Deckbuilder is a browser production tool for constructing, validating, saving, importing, exporting, and printing Decks. The current public default follows v0.6.3 release data.
-
-Historical pre-faction modes and saved Deck formats may remain available for compatibility, but they must stay explicitly versioned. Old v0.5 Decks must never be silently treated as v0.6.3 Decks.
-
-### C. Rules engine
-
-The `/src` tree contains framework-neutral engine scaffolding and testable state logic. It preserves substantial earlier implementation work, but it is **not yet a complete v0.6.3 digital edition**.
-
-A current engine must own:
-
-- hidden and public information;
-- legal actions;
-- turn flow;
-- movement;
-- battles;
-- Gambits, Reserves, and Tactics;
-- card destinations;
-- Actions, Assets, and Overlays;
-- occupation and capture;
-- Asset-bank limits;
-- faction resources and additional victory systems; and
-- win-condition evaluation.
-
-### D. Development interfaces
-
-- guided CLI for exercising engine flow and exporting logs;
-- browser GUI for clickable local testing;
-- later multiplayer or remote interface.
+The first milestone is a reliable playtest client, not a polished commercial game.
 
 ---
 
-## 3. Current repository status
+## 2. Current authority
 
-### Canonical release data exists
+The published digital-rules authority is v0.7.0:
 
-The earlier roadmap statement that no canonical v0.6 dataset existed is obsolete. v0.6.3 is published with canonical JSON, rulebook, six faction guides, a complete card and Territory reference, starter Deck data, and release manifests.
+- `releases/v0.7.0/Gauntlet_v0.7.0_Manifest.json`
+- `releases/v0.7.0/Gauntlet_v0.7.0_Rulebook.md`
+- `releases/v0.7.0/Gauntlet_v0.7.0_Canonical_Data.json`
+- `releases/v0.7.0/Gauntlet_v0.7.0_Starter_Decks.json`
 
-Digital implementation work must therefore synchronize to the published v0.6.3 package rather than reconstructing current rules from card-review notes or stale v0.5 records.
+The release manifest explicitly identifies `digital_rules: v0.7.0`. Current engine work must therefore derive identity, rules metadata, card text, Territory text, and starter Decks from the published v0.7.0 package rather than from historical candidate sources.
 
-### Legacy data starter
-
-The `/data` folder contains early machine-readable starter records and schema notes. It is legacy scaffolding, not current authority. Reuse schema ideas where useful, but do not let `/data` override the v0.6.3 release sources.
-
-### TypeScript engine scaffold
-
-The `/src` tree includes earlier work on authoritative and public/private state views, setup validation, turn and battle reducers, draw and reshuffle behavior, card cancellation and destinations, an Action framework, Asset-bank enforcement, Territory occupation/capture, win-condition evaluation, CLI logging, and browser development interfaces.
-
-Those milestones remain useful architecture and regression evidence. Their existence does not prove v0.6.3 compatibility. Old fixture Decks, identifiers, terminology, and rule assumptions must be audited explicitly against the current release.
-
-The former Condition-zone removal remains a durable architectural direction: persistent current effects should use the current canonical mechanisms—such as Assets, Territory Overlays, immediate resolution, or explicit card-specific state—rather than reintroducing a generic Condition zone.
+`game-data/current-game.json` remains useful as the project-level current-game authority and provenance record. Transitional v0.6.4 source bundles remain historical inputs, not the released engine authority.
 
 ---
 
-## 4. Source-of-truth rules
+## 3. Existing engine foundation
 
-Avoid maintaining several manually divergent current card databases.
+The repository already contains substantial reusable implementation work.
 
-For v0.6.3 digital work, use this hierarchy:
+### Current/recent migration layers
 
-1. `releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md` for shared rules;
-2. the six Markdown guides under `releases/v0.6.3/faction-guides/` for faction, Leader, and supplemental-component rules;
-3. `releases/v0.6.3/Gauntlet_v0.6.3_Card_and_Territory_Reference.md` for exact playable-card and Territory text; and
-4. `releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json` as the generated machine-readable release dataset and stable identifier source.
+- `src/content/v070.ts` — release-bound v0.7.0 content adapter and validation boundary.
+- `src/v064/` — transitional Onset migration created while the future release was still a v0.6.4 candidate. It is implementation evidence, not current authority.
+- `src/v063/` — validated procedures developed during the v0.6.3 parity migration, including setup, turn flow, Front Line/Capture, movement, battle results, Last Stand, copied/repeated effects, Arcane Knowledge, Manifest Destiny, dynamic Territories/Deeds, and all 25 Territory/Arena procedures.
+- `src/state/`, `src/effects/`, `src/cards/`, `src/cli/`, and `src/gui/` — older playable-prototype architecture and interfaces. These remain useful scaffolding but are not presumed current-compatible.
 
-The implementation must not invent current text from stale v0.5 data, superseded working rules, or old implementation ledgers.
+The old parked branch `feature/v061-digital-engine-migration` is historical salvage material only. It diverged before thousands of later repository commits and must not be merged wholesale.
 
-### Saved deck and game compatibility
+---
 
-Every saved Deck or game should permanently record:
+## 4. v0.7.0 migration boundary
 
-- game version;
-- ruleset mode where needed;
-- faction and Leader;
-- card IDs and quantities;
-- Territory IDs; and
-- any engine/schema version needed to replay the state safely.
+v0.7.0 is not merely a visual/TTS release from the engine's perspective. The published contract includes rule and content changes that must be represented explicitly.
 
-Do not automatically migrate Decks or saved games across a major rules boundary. Offer explicit conversion review or read-only legacy behavior instead.
+Known release deltas from the v0.6.3 engine baseline include:
+
+- 142 playable cards instead of 128;
+- 52 Neutral cards and 15 cards in each faction;
+- 15 newly added cards and retirement of **No Martyrs**;
+- explicit Onset procedure and battle-occurrence boundary;
+- Terms during Onset;
+- Diplomat Peace Treaty threshold of 6 ratified Proposals;
+- current card/Territory wording and component contracts; and
+- current v0.7.0 faction-feature and Leader metadata.
+
+No `v063` or `v064` procedure becomes v0.7.0 behavior merely by re-exporting or renaming it. Each reusable behavior must be checked against the published v0.7.0 contract.
 
 ---
 
 ## 5. Architecture guardrails
 
-### Pure engine first
-
-Keep game-state logic separate from display code.
+### Pure authoritative engine
 
 - UI asks the engine for legal actions.
-- UI submits actions to reducers or a public game API.
-- UI should not reproduce legality rules independently.
-- Tests should exercise engine state without requiring a browser.
+- UI submits actions to the engine.
+- UI does not duplicate legality rules.
+- Game logic remains testable without a browser.
 
-### Public and private views
+### Public/private views
 
-The authoritative state may contain hidden information. Each player-facing interface should receive only the legal private view for that player plus public state.
+The authoritative state may contain every hidden card and choice. Player views must expose only information legal for that viewer. This boundary must be complete before network multiplayer.
 
-This is essential before remote multiplayer.
+### Physical instance identity
 
-### Incremental effect automation
+Duplicate card titles, bound cards, stored cards, Gambits, Tactics, Reserve cards, Overlays, and dynamic Territories must retain physical instance identity wherever later instructions can refer to the exact card.
 
-Do not block useful playtesting until every card is executable.
+### Explicit unsupported behavior
 
-Prioritize:
+Unimplemented effects must be visible and block or request manual resolution. The engine must never silently treat an unknown effect as resolved.
 
-1. current turn and battle sequence;
-2. card destinations;
-3. movement, occupation, capture, and running the Gauntlet;
-4. Asset-bank limits;
-5. common Actions, Assets, and Overlays;
-6. Territory effects;
-7. faction resources and victory systems; and
-8. unusual card exceptions.
+### Deterministic replay
 
-Unimplemented effects must be visible and explicit. The engine must never silently pretend an unknown card has resolved correctly.
+A development game should record:
 
-### Deterministic logs
-
-A development session should be reproducible where practical through:
-
-- initial state;
-- deck order or seed;
-- ordered action log;
-- errors and rejected actions;
-- final state; and
-- rules/data version.
+- rules/content version;
+- initial Decks and Territory order;
+- seed or shuffled order where applicable;
+- ordered player actions and choices;
+- rejected actions/errors;
+- all random outcomes; and
+- final state.
 
 ---
 
-## 6. Historical rules-clarity evidence
+## 6. Next implementation sequence
 
-Earlier digital implementation exposed several physical-rule ambiguities and helped drive later published clarifications. Historical v0.5.7 and v0.6 implementation notes remain useful regression evidence for issues such as draw/reshuffle behavior, hidden commitments, card destinations, persistent effects, cancellation/negation, copied effects, movement, and Territory state.
+### Tranche 1 — released authority
 
-Treat those records as provenance. Current expected behavior must be derived from v0.6.3, not from the historical wording itself.
+1. Bind an engine content adapter directly to the v0.7.0 release manifest and canonical JSON.
+2. Lock release counts, added/retired card identities, Onset metadata, and key v0.7.0 rule deltas in tests.
+3. Update engine documentation and issue tracking to v0.7.0.
 
-Continue using digital implementation as a rules-clarity test: when code exposes a genuine ambiguity in the current sources, resolve it in the physical rules pipeline rather than burying the answer only in engine behavior.
+### Tranche 2 — current rules surface
 
----
+4. Replace the live `src/content/current.ts` candidate boundary with a v0.7.0 surface.
+5. Audit `src/v064/rules.ts` against the released Onset, Terms, withdrawal, movement, battle, and Last Stand contract.
+6. Promote only validated procedures into a v0.7.0 rules module; keep mismatches explicitly quarantined.
 
-## 7. Current audit findings
+### Tranche 3 — executable game state
 
-### Current and authoritative
+7. Build/finish an authoritative v0.7.0 game-state reducer that owns setup, turn progression, movement, battles, Capture, zones, Assets, Overlays, faction resources, and victory.
+8. Wire the existing validated v0.6.3 procedure modules into that reducer only after v0.7.0 revalidation.
+9. Add the 15 new v0.7.0 cards and retire No Martyrs from executable content.
+10. Revalidate all existing card, Territory, Leader, and faction procedures against current text.
 
-- v0.6.3 canonical release data exists.
-- The public release and browser-tool defaults target v0.6.3.
-- Current governing rules are versioned and available in the release package.
-- Saved Decks and games must remain version-tagged.
-- The framework-neutral engine direction and public/private state boundary remain valid.
+### Tranche 4 — complete local playable client
 
-### Legacy or transitional
+11. Replace placeholder/legacy CLI and GUI setup with certified v0.7.0 starter Decks.
+12. Complete private/public player views.
+13. Expose legal actions and required choices through the development GUI.
+14. Complete a full deterministic local game without direct state editing.
 
-- `/data` remains starter/legacy scaffolding rather than current canonical data.
-- `/src` contains useful engine scaffolding but requires a complete v0.6.3 compatibility audit.
-- Some development fixtures and effect handlers may still use pre-faction or earlier-v0.6 identifiers, terminology, or behavior.
-- Version-specific historical tests and routes should remain version-specific rather than being globally renamed to v0.6.3.
+### Tranche 5 — multiplayer and telemetry
 
-### Work in progress
-
-- full v0.6.3 engine synchronization;
-- complete current card and Territory effect coverage;
-- complete faction and Leader systems;
-- persistent game save/load;
-- reproducible telemetry tied to the current playtest standard;
-- remote multiplayer;
-- polished player UI; and
-- automated playtest analysis.
+15. Add version-safe save/load and replay.
+16. Add playtest telemetry based on `Gauntlet_Playtest_Targets_and_Metrics.md`.
+17. Add network transport only after authoritative state and privacy boundaries are stable.
+18. Add synchronization/reconnect tests and remote-play validation.
 
 ---
 
-## 8. Next implementation sequence
+## 7. Definition of a useful v0.7.0 playable prototype
 
-1. Make v0.6.3 the explicit supported engine target.
-2. Generate or load engine-facing content from the v0.6.3 canonical dataset rather than legacy starter records.
-3. Audit every existing reducer, fixture, identifier, and automated effect against the current rules.
-4. Replace placeholder or legacy example Decks with validated v0.6.3 Deck data.
-5. Run an end-to-end guided game and log every missing or incorrect interaction.
-6. Implement remaining common Territory, card, faction, and Leader effects in priority order.
-7. Add explicit manual-resolution hooks for effects not yet automated.
-8. Add playtest telemetry based on `Gauntlet_Playtest_Targets_and_Metrics.md`.
-9. Add version-safe save/load for local sessions.
-10. Add network transport only after authoritative/private-state boundaries and deterministic replay are stable.
+The digital build may claim v0.7.0 playtest compatibility when it can:
 
----
-
-## 9. Definition of a useful v0.6.3 playable prototype
-
-A digital build is ready for meaningful remote or local v0.6.3 playtesting when it can:
-
-- create legal Decks from the v0.6.3 canonical data;
-- initialize the complete current board state;
-- enforce hidden Hands, Gambits, Reserves, and Tactics correctly;
-- execute the current turn and battle flow;
-- handle draws, reshuffles, destinations, cancellation, and negation correctly;
-- resolve occupation, counterattack, capture, and running the Gauntlet;
-- enforce Asset-bank capacity and persistent state;
-- implement or visibly flag every current card, Territory, faction, Leader, and supplemental-component effect;
-- evaluate all current victory routes;
-- save a reproducible, version-tagged log; and
+- initialize certified v0.7.0 Decks, Leaders, faction components, and Territories;
+- execute current setup and turn flow;
+- enforce hidden Hands, Gambits, Reserves, Tactics, and hidden faction components;
+- execute Onset, Terms, Gambits, Reserves, Tactics, outcome, and Aftermath correctly;
+- handle draws, reshuffles, destinations, cancellation, negation, copied/repeated effects, Assets, and Overlays;
+- resolve movement, occupation, Capture, Front Lines, dynamic Territories, and Last Stand;
+- enforce all six faction systems and twelve Leader abilities;
+- implement or explicitly halt for every current card and Territory effect;
+- evaluate Run the Gauntlet and all current additional victory routes;
+- provide legal private/public views;
+- save a deterministic, version-tagged replay log; and
 - complete a full game without direct state editing.
 
-It does not need final art, animation, matchmaking, accounts, or a commercial-grade interface to meet this milestone.
+Final art, animation, matchmaking, accounts, and commercial-grade UX are outside this milestone.
