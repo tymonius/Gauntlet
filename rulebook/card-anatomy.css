@@ -264,3 +264,146 @@
     box-shadow: none;
   }
 }
+
+
+/* The booklet embeds the browser Card Anatomy component directly. This compact
+   presentation changes only page geometry; the DOM, card renders, callouts,
+   Arcane example, and source text are the same browser component. */
+body.card-anatomy-embed {
+  margin: 0;
+  min-width: 0;
+  background: #fffaf0;
+}
+body.card-anatomy-embed > :not(.rulebook-shell) {
+  display: none !important;
+}
+body.card-anatomy-embed .rulebook-shell {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  display: block;
+}
+body.card-anatomy-embed .rulebook-sidebar {
+  display: none !important;
+}
+body.card-anatomy-embed .rulebook-content {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+body.card-anatomy-embed .rulebook-content > :not(.card-anatomy-guide) {
+  display: none !important;
+}
+body.card-anatomy-embed .card-anatomy-guide {
+  width: 4.55in;
+  margin: 0;
+  padding: 0.12in;
+  border: 0;
+  box-sizing: border-box;
+  background: #fffaf0;
+}
+body.card-anatomy-embed .card-anatomy-intro {
+  max-width: none;
+  margin-bottom: 0.1in;
+}
+body.card-anatomy-embed .card-anatomy-kicker {
+  margin-bottom: 0.03in;
+  font-size: 5.4pt;
+}
+body.card-anatomy-embed .card-anatomy-intro h2 {
+  margin-bottom: 0.04in;
+  font-size: 13pt;
+}
+body.card-anatomy-embed .card-anatomy-intro > p:last-child {
+  font-size: 6.8pt;
+  line-height: 1.22;
+}
+body.card-anatomy-embed .card-anatomy-layout {
+  grid-template-columns: 1.72in minmax(0, 1fr);
+  gap: 0.15in;
+}
+body.card-anatomy-embed .card-anatomy-card-wrap {
+  width: 1.72in;
+  min-height: 2.3in;
+}
+body.card-anatomy-embed .card-anatomy-card {
+  width: 1.5in;
+  height: 2.1in;
+  border-radius: 0.03in;
+  box-shadow: 0 0.04in 0.08in rgba(41, 30, 16, 0.16);
+}
+body.card-anatomy-embed .card-anatomy-marker {
+  width: 0.18in;
+  height: 0.18in;
+  border-width: 1px;
+  font-size: 5.2pt;
+  box-shadow: none;
+}
+body.card-anatomy-embed .card-anatomy-marker::after {
+  width: 0.12in;
+}
+body.card-anatomy-embed .card-anatomy-marker.marker-left {
+  left: 0.01in;
+}
+body.card-anatomy-embed .card-anatomy-marker.marker-right {
+  right: 0.01in;
+}
+body.card-anatomy-embed .card-anatomy-figure {
+  gap: 0.05in;
+}
+body.card-anatomy-embed .card-anatomy-figure figcaption {
+  max-width: 1.72in;
+  font-size: 5.5pt;
+  line-height: 1.2;
+}
+body.card-anatomy-embed .card-anatomy-key {
+  gap: 0.035in;
+}
+body.card-anatomy-embed .card-anatomy-key li {
+  grid-template-columns: 0.18in minmax(0, 1fr);
+  gap: 0.05in;
+}
+body.card-anatomy-embed .card-anatomy-key li > span {
+  width: 0.17in;
+  height: 0.17in;
+  font-size: 5pt;
+}
+body.card-anatomy-embed .card-anatomy-key strong {
+  font-size: 7pt;
+}
+body.card-anatomy-embed .card-anatomy-key p {
+  margin-top: 0.01in;
+  font-size: 6pt;
+  line-height: 1.16;
+}
+body.card-anatomy-embed .card-anatomy-arcane {
+  margin-top: 0.11in;
+  padding: 0.07in 0.08in;
+  grid-template-columns: 1.55in minmax(0, 1fr);
+  gap: 0.1in;
+  border-left-width: 2px;
+}
+body.card-anatomy-embed .card-anatomy-arcane-crop {
+  width: 1.55in;
+  height: 0.52in;
+}
+body.card-anatomy-embed .card-anatomy-arcane-card {
+  width: 1.55in;
+  height: 2.17in;
+}
+body.card-anatomy-embed .card-anatomy-arcane-copy h3 {
+  font-size: 7.2pt;
+}
+body.card-anatomy-embed .card-anatomy-arcane-copy p {
+  margin-top: 0.02in;
+  font-size: 6.2pt;
+  line-height: 1.18;
+}
+body.card-anatomy-embed .card-anatomy-scope {
+  margin-top: 0.06in;
+  font-size: 5.8pt;
+  line-height: 1.2;
+}
