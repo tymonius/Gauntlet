@@ -28,6 +28,7 @@ describe('Deckbuilder TTS Deck Code', () => {
   it('keeps the public Deckbuilder export dormant until v0.7.1', () => {
     expect(TTS_DECK_EXPORT_MIN_VERSION).toBe('v0.7.1');
     expect(isTtsDeckExportAvailable('v0.7.0')).toBe(false);
+    expect(isTtsDeckExportAvailable('v0.7.1-candidate')).toBe(false);
     expect(isTtsDeckExportAvailable('v0.7.1')).toBe(true);
     expect(isTtsDeckExportAvailable('v0.8.0')).toBe(true);
     expect(isTtsDeckExportAvailable('candidate')).toBe(false);
