@@ -22,6 +22,7 @@ const sidebar = document.querySelector('[data-rulebook-sidebar]');
 const eyebrow = document.querySelector('[data-rulebook-eyebrow]');
 const candidateNote = document.querySelector('[data-candidate-rules-note]');
 const rulesetSwitch = document.querySelector('[data-ruleset-switch]');
+const candidateVersionLabel = document.querySelector('[data-candidate-version]');
 const footerVersion = document.querySelector('[data-rulebook-footer-version]');
 const printHeading = document.querySelector('[data-rulebook-print-heading]');
 const printNote = document.querySelector('[data-rulebook-print-note]');
@@ -261,8 +262,8 @@ function highlightSearch(query) {
 }
 
 function modeFromUrl() {
-  // Archived candidate URLs now resolve to the published release.
-  return RELEASED_MODE;
+  const url = new URL(window.location.href);
+  return url.searchParams.get('rules') === CANDIDATE_MODE ? CANDIDATE_MODE : RELEASED_MODE;
 }
 
 function writeModeToUrl(mode, replace = false) {
@@ -275,7 +276,9 @@ function writeModeToUrl(mode, replace = false) {
 
 function setRulesetUi(mode, currentGame = null, distinctCandidate = false) {
   const candidate = mode === CANDIDATE_MODE && distinctCandidate;
-  if (rulesetSwitch) rulesetSwitch.hidden = true;
+  const candidateLabel = currentGame?.displayVersion || currentGame?.version || 'current development';
+  if (rulesetSwitch) rulesetSwitch.hidden = !distinctCandidate;
+  if (candidateVersionLabel) candidateVersionLabel.textContent = candidateLabel;
   document.body.dataset.rulesetMode = mode;
   rulesetButtons.forEach((button) => {
     button.setAttribute('aria-pressed', String(button.dataset.ruleset === mode));
@@ -290,12 +293,11 @@ function setRulesetUi(mode, currentGame = null, distinctCandidate = false) {
   }
 
   if (candidate) {
-    const label = currentGame?.displayVersion || currentGame?.version || 'current development';
-    if (eyebrow) eyebrow.textContent = `Release candidate rules · ${label}`;
-    if (footerVersion) footerVersion.innerHTML = '<strong>Gauntlet v0.7.0</strong> · Current release-candidate rules view.';
+    if (eyebrow) eyebrow.textContent = `Release candidate rules · ${candidateLabel}`;
+    if (footerVersion) footerVersion.innerHTML = `<strong>Gauntlet ${candidateLabel}</strong> · Current release-candidate rules view.`;
     if (printHeading) printHeading.textContent = 'Release candidate rules';
-    if (printNote) printNote.textContent = 'The complete v0.7.0 Rulebook authority is loaded directly. Switch to Released v0.7.0 for the currently published printable booklet.';
-    document.title = 'Gauntlet v0.7.0 Release Candidate Browser Rulebook';
+    if (printNote) printNote.textContent = `The ${candidateLabel} Rulebook is the current development authority. Switch to Released ${PUBLISHED_VERSION} for the published printable booklet.`;
+    document.title = `Gauntlet ${candidateLabel} Browser Rulebook`;
   } else {
     if (eyebrow) eyebrow.textContent = `Canonical rules · version ${PUBLISHED_VERSION}`;
     if (footerVersion) footerVersion.innerHTML = '<strong>Gauntlet v0.7.0</strong> · Current canonical playtest edition.';
@@ -400,13 +402,21 @@ async function loadVerifiedReleasedSource() {
   return sourcePromise;
 }
 
-async function loadCurrentRulebookSource() {
+function candidateRulebookVersionMarker(currentGame) {
+  const match = String(currentGame?.version || '').match(/^v(\d+\.\d+\.\d+)-candidate$/i);
+  return match ? `**Version ${match[1]} Candidate**` : null;
+}
+
+async function loadCurrentRulebookSource(currentGame) {
   if (!currentSourcePromise) {
     currentSourcePromise = fetch(CURRENT_SOURCE_URL, { cache: 'no-store' })
       .then(async (response) => {
         if (!response.ok) throw new Error(`Current Rulebook source returned ${response.status}`);
         const markdown = await response.text();
-        if (!markdown.includes('**Version 0.7.0**')) throw new Error('Current Rulebook source has the wrong version marker.');
+        const expectedMarker = candidateRulebookVersionMarker(currentGame);
+        if (!expectedMarker || !markdown.includes(expectedMarker)) {
+          throw new Error(`Current Rulebook source does not match current-game authority (${expectedMarker || 'no candidate version'}).`);
+        }
         if (!markdown.includes('# 5. Actions, Faction Features, Leader Abilities, and Assets')) throw new Error('Current Rulebook source is missing the Faction Feature chapter.');
         if (!markdown.includes('## Card anatomy')) throw new Error('Current Rulebook source is missing Card anatomy.');
         if (/\bFaction Actions?\b|\bFaction Abilit(?:y|ies)\b|\bfaction procedure\b/iu.test(markdown)) {
@@ -444,7 +454,7 @@ async function renderRulebook(mode) {
 
   try {
     let markdown = null;
-    if (activeMode === CANDIDATE_MODE) markdown = await loadCurrentRulebookSource();
+    if (activeMode === CANDIDATE_MODE) markdown = await loadCurrentRulebookSource(currentGame);
     else markdown = await loadVerifiedReleasedSource();
 
     const rendered = renderMarkdown(markdown);
