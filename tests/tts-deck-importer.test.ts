@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { buildDeckImporterConfig, installDeckImporter } from '../scripts/tts-deck-importer.mjs';
+import {
+  buildDeckImporterConfig,
+  installDeckImporter,
+  isDeckImporterReleaseVersion,
+  TTS_DECK_IMPORTER_MIN_VERSION,
+} from '../scripts/tts-deck-importer.mjs';
 
 const version = 'v0.7.0';
 const releaseAssets = {
@@ -66,6 +71,15 @@ const starterManifest = {
 };
 
 describe('TTS Deckbuilder importer', () => {
+  it('is a v0.7.1-and-later release feature', () => {
+    expect(TTS_DECK_IMPORTER_MIN_VERSION).toBe('v0.7.1');
+    expect(isDeckImporterReleaseVersion('v0.7.0')).toBe(false);
+    expect(isDeckImporterReleaseVersion('v0.7.1')).toBe(true);
+    expect(isDeckImporterReleaseVersion('v0.7.2')).toBe(true);
+    expect(isDeckImporterReleaseVersion('v1.0.0')).toBe(true);
+    expect(isDeckImporterReleaseVersion('development')).toBe(false);
+  });
+
   it('builds a hosted canonical-id import map', () => {
     const config = buildDeckImporterConfig({
       version,

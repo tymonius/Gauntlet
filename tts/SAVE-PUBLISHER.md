@@ -85,9 +85,11 @@ The bag description records the starter summary and recommended Territory order.
 
 ## Deckbuilder custom Deck import
 
-The Deckbuilder can copy a compact versioned `GDL1:` Deck Code containing only the current game version, Deck name, faction/Leader ids, playable-card ids with quantities, and the three selected Territory ids.
+Deckbuilder-to-TTS import is a **v0.7.1 feature**. The implementation is present in the codebase but remains dormant while the current game/TTS release target is v0.7.0; the published v0.7.0 Workshop mod and v0.7.0 Deckbuilder therefore do not expose the importer.
 
-The assembled TTS save installs a global **IMPORT DECK** control after faction supplementals are assembled. Import validates the Deck Code against the same generated card/Territory manifests and exact TTS game version, then uses the matching official starter Bag as the runtime template. The custom Bag therefore keeps the correct Leader, faction-colored utility pieces, references, trackers, Proposals/Deeds/Rites, and other ready supplementals while replacing only the playable Deck and selected Territory stack.
+Starting with v0.7.1, the Deckbuilder can copy a compact versioned `GDL1:` Deck Code containing only the current game version, Deck name, faction/Leader ids, playable-card ids with quantities, and the three selected Territory ids.
+
+The assembled TTS save installs a global **IMPORT DECK** control after faction supplementals are assembled when the release target is v0.7.1 or later. Import validates the Deck Code against the same generated card/Territory manifests and exact TTS game version, then uses the matching official starter Bag as the runtime template. The custom Bag therefore keeps the correct Leader, faction-colored utility pieces, references, trackers, Proposals/Deeds/Rites, and other ready supplementals while replacing only the playable Deck and selected Territory stack.
 
 Official starter Bags carry `gauntlet:starter-kit:<starter-id>` GM notes so the importer can locate a safe template. The source starter Bag is never modified.
 

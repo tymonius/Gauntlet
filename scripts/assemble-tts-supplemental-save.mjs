@@ -5,7 +5,7 @@ import { buildCatalog, CURRENT_ALIAS_ROOT, resolveCurrentTtsRelease, ROOT } from
 import { makeCustomDeckState, requireHostedUrl } from './generate-tts-save.mjs';
 import { trackerPresentation } from './tts-supplemental-geometry.mjs';
 import { STAGING_ROOT } from './stage-tts-release-assets.mjs';
-import { buildDeckImporterConfig, installDeckImporter } from './tts-deck-importer.mjs';
+import { buildDeckImporterConfig, installDeckImporter, isDeckImporterReleaseVersion } from './tts-deck-importer.mjs';
 
 const SUPPLEMENTAL_GUID_NOTE_PREFIX = 'gauntlet:supplemental:';
 const SUPPLEMENTAL_STACK_NOTE_PREFIX = 'gauntlet:supplemental-stack:';
@@ -796,19 +796,23 @@ async function main() {
     readFile(join(release.outputRoot, 'territory-manifest.json'), 'utf8').then(JSON.parse),
   ]);
   const result = assembleReadySupplementals(save, starterManifest, supplementalManifest, releaseAssets);
-  const importerConfig = buildDeckImporterConfig({
-    version: release.version,
-    catalog,
-    cardManifest,
-    territoryManifest,
-    starterManifest,
-    releaseAssets,
-  });
-  installDeckImporter(result.save, importerConfig);
+  const importerEnabled = isDeckImporterReleaseVersion(release.version);
+  if (importerEnabled) {
+    const importerConfig = buildDeckImporterConfig({
+      version: release.version,
+      catalog,
+      cardManifest,
+      territoryManifest,
+      starterManifest,
+      releaseAssets,
+    });
+    installDeckImporter(result.save, importerConfig);
+  }
   const text = jsonText(result.save);
   await writeFile(versionedPath, text);
   await writeFile(join(CURRENT_ALIAS_ROOT, 'Gauntlet_TTS_Review_Scaffold.json'), text);
-  console.log(`Assembled ${result.assembledIds.length} ready supplemental component ids and installed Deckbuilder import into ${result.starterSummaries.length} starter kits in ${relative(ROOT, versionedPath)}.`);
+  const importerStatus = importerEnabled ? ' and installed Deckbuilder import' : '';
+  console.log(`Assembled ${result.assembledIds.length} ready supplemental component ids${importerStatus} into ${result.starterSummaries.length} starter kits in ${relative(ROOT, versionedPath)}.`);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
