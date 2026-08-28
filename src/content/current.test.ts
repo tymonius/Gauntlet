@@ -51,6 +51,8 @@ describe('current digital rules surface', () => {
       'loadV070StarterDecks',
       'createV070StarterGame',
       'reduceV070SetupAction',
+      'reduceV070TurnAction',
+      'drawV070Cards',
       'viewV070GameForPlayer',
     ]) {
       expect(typeof current[name as keyof typeof current]).toBe('function');
