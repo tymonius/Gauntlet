@@ -23,7 +23,8 @@ That distinction should control the clearance and filing strategy:
 | GAUNTLET | standard characters | physical board/card game | PRIMARY | NOT CLEARED |
 | Current Gauntlet logo | design + wording | physical game/products/site | PRIMARY | NOT CLEARED |
 | GAUNTLET | standard characters | downloadable/digital adaptation | SECONDARY | HIGH-RISK / NOT CLEARED |
-| GAUNTLET + future subtitle | composite | tabletop game; potentially digital adaptation | FALLBACK | TBD after candidate subtitle exists |
+| GAUNTLET ONLINE | standard characters/composite wording | digital adaptation | DIGITAL CANDIDATE | TBD — descriptive modifier may not cure conflict |
+| GAUNTLET + distinctive future subtitle | composite | tabletop game; potentially digital adaptation | FALLBACK | TBD after candidate subtitle exists |
 
 ## Most material federal conflict found
 
@@ -204,10 +205,21 @@ A viable physical tabletop mark does **not** automatically mean the same mark ca
 
 A design filing can protect design elements, but adding stylization does not automatically cure a likelihood-of-confusion problem where the dominant wording remains identical.
 
+### GAUNTLET ONLINE
+**Plausible consumer-facing digital title, but not a guaranteed trademark workaround.**
+
+"Online" describes a feature/mode of delivery and is likely to receive little source-identifying weight. The dominant portion of the mark would still be **GAUNTLET**, so adding ONLINE may not eliminate a likelihood-of-confusion problem with an existing GAUNTLET mark for video-game software.
+
+A quick public-web check did not surface an obvious current standalone game titled exactly **Gauntlet Online**, but that is not a federal/common-law clearance and should not be relied on as availability.
+
+If digital clearance for bare GAUNTLET is problematic, evaluate two branches:
+1. **GAUNTLET ONLINE** if counsel believes the tabletop-first brand relationship and full marketplace context support it; or
+2. a more distinctive digital subtitle/sub-brand where the added wording contributes substantial source-identifying significance.
+
 ### Composite title/subtitle
 **Potential fallback, not yet evaluated.**
 
-A sufficiently distinctive composite mark may improve registrability/clearance, but the dominant-word analysis and marketplace impression still need review.
+A sufficiently distinctive composite mark may improve registrability/clearance, especially if the added wording is distinctive rather than merely descriptive. The dominant-word analysis and marketplace impression still need review.
 
 ## Decision gate
 
@@ -219,6 +231,6 @@ Before a federal application:
 - [ ] settle applicant/owner entity;
 - [ ] decide keep bare GAUNTLET / adopt composite / rename for the tabletop product;
 - [ ] only then choose filing basis and identification/class for the physical game;
-- [ ] evaluate a separate digital filing/clearance later, before commercial standalone digital release.
+- [ ] evaluate a separate digital filing/clearance later, before commercial standalone digital release, including **GAUNTLET ONLINE** and at least one more distinctive digital sub-brand candidate.
 
 Current USPTO base application fee is **$350 per class**, before possible additional fees. There is little reason to spend it before this gate is satisfied.
