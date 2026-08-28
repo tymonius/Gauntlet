@@ -20,6 +20,7 @@ import { advanceV070FrontLine } from './front-line';
 import {
   V070_DEMILITARIZED_ZONE_ID,
   placeV070OverlayFromHand,
+  registerV070DmzEntryLock,
   withdrawV070PlayersFromNewDemilitarizedZone,
 } from './overlays';
 import type { V070ProposalChoiceKind } from './battle-types';
@@ -437,6 +438,11 @@ export function resolveV070TermsCardChoice(
         cardInstanceId,
         battle.contestedPosition,
         'accepted_terms',
+      );
+      registerV070DmzEntryLock(
+        state,
+        battle.contestedPosition,
+        cardInstanceId,
       );
       withdrawV070PlayersFromNewDemilitarizedZone(state);
       terms.termsCardChoice = null;
