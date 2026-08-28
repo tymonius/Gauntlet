@@ -48,18 +48,18 @@
   function init() {
     for (const id of [
       "loadingPanel", "errorPanel", "errorTitle", "errorMessage", "createPanel", "createForm",
-      "createName", "createPlayMode", "createFaction", "createLeader", "savedChoiceNote", "createStatus", "sessionApp",
+      "createName", "createPlayMode", "createFaction", "createLeader", "createSelectionReason", "savedChoiceNote", "createStatus", "sessionApp",
       "sessionSerial", "lifecycleCopy", "statusLabel", "playerCount", "arbiterCount", "responseCount",
       "sharePanel", "copyJoinLink", "shareJoinLink", "shareStatus", "qrCode", "playerCards",
       "transportPanel", "transportEyebrow", "transportTitle", "transportCopy", "transportMatchup",
       "ttsWorkshopLink", "physicalSetupLink", "joinPanel",
-      "joinForm", "joinName", "joinFaction", "joinLeader", "joinStatus", "joinedPanel", "joinedHeading",
+      "joinForm", "joinName", "joinFaction", "joinLeader", "joinSelectionReason", "joinStatus", "joinedPanel", "joinedHeading",
       "joinedCopy", "openArbiter", "playPanel", "recordStart", "showCompletedResult", "showStoppedResult",
       "diagnosticPanel", "diagnosticStatus", "noteForm", "noteText", "eventStatus", "resultSection", "resultForm", "completionStatus",
       "firstPlayer", "winnerLabel", "winner", "victoryRouteLabel", "victoryRoute", "durationMinutes",
       "rounds", "battles", "stopReasonLabel", "stopReason", "packageUnmodified", "variantUsed",
       "productionIssue", "strongestMoment", "confusingPoint", "importantObservation", "resultStatus",
-      "responseSection", "responseForm", "factionInterest", "ratingGrid", "feltDecidedWhen",
+      "responseSection", "responseForm", "ratingGrid", "feltDecidedWhen",
       "agencyAfterDecided", "decisiveCause", "playAgain", "responseComments",
       "responseStatus", "completionPanel", "reviewPanel", "refreshReview", "downloadReviewJson",
       "downloadReviewCsv", "reviewContent", "reviewStatus"
@@ -118,6 +118,7 @@
           faction: el.createFaction.value,
           leader: el.createLeader.value,
           playMode: el.createPlayMode?.value || requestedPlayMode,
+          selectionReason: el.createSelectionReason.value.trim(),
           creationSource,
           selectionSource: readStartChoice() ? "standalone-onboarding" : "tracked-page"
         }
@@ -262,7 +263,8 @@
         body: {
           displayName: el.joinName.value.trim(),
           faction: el.joinFaction.value,
-          leader: el.joinLeader.value
+          leader: el.joinLeader.value,
+          selectionReason: el.joinSelectionReason.value.trim()
         }
       });
       state.participant = {
@@ -399,7 +401,6 @@
     setStatus(el.responseStatus, "Submitting your response…");
     try {
       const response = {
-        factionInterest: el.factionInterest.value.trim(),
         feltDecidedWhen: el.feltDecidedWhen.value,
         agencyAfterDecided: el.agencyAfterDecided.value,
         decisiveCause: el.decisiveCause.value.trim(),
