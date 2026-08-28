@@ -1,5 +1,5 @@
 import type { PlayerId } from './rules';
-import type { V070GameEvent, V070GameState, V070PlayerState } from './engine';
+import type { V070GameEvent, V070GameState, V070SetupStage } from './engine';
 
 export interface V070VisibleCard {
   instanceId: string;
@@ -34,7 +34,7 @@ export interface V070GameView {
   rulesVersion: V070GameState['rulesVersion'];
   gameId: string;
   stage: V070GameState['stage'];
-  setupStage: V070GameState['setup'] extends null ? never : V070GameState['setup']['stage'] | null;
+  setupStage: V070SetupStage | null;
   players: Record<PlayerId, V070PlayerViewState>;
   board: V070GameState['board'];
   activePlayer: PlayerId | null;
