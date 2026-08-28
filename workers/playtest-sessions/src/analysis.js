@@ -77,7 +77,7 @@ export async function readTrackedAnalysis(db) {
     ).all(),
     db.prepare(
       `SELECT p.session_id, p.id AS participant_id, p.display_name, p.seat_index,
-              p.faction, p.leader, p.joined_at,
+              p.faction, p.leader, p.selection_reason, p.joined_at,
               r.faction_interest, r.expectation_match, r.leader_distinction,
               r.fun, r.pacing, r.meaningful_decisions, r.battle_tension,
               r.rules_clarity, r.faction_clarity, r.table_organization,
@@ -234,6 +234,7 @@ function mapPlayer(row) {
     seatIndex: Number(row.seat_index),
     faction: row.faction,
     leader: row.leader,
+    selectionReason: row.selection_reason || "",
     joinedAt: row.joined_at,
     response: row.response_submitted_at ? {
       factionInterest: row.faction_interest,
