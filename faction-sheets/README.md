@@ -1,10 +1,12 @@
 # Gauntlet v0.6 Faction Sheets
 
-**Status:** Working print-and-play sources for developing v0.6 faction packages and supplemental cards.
+**Status:** Retired compatibility surface retained for historical links and regression coverage.
 
-These browser-printable sheets are separate from the versioned v0.5 deckbuilder. They may use active v0.6 exact text before canonical v0.6 data exists.
+These browser-printable sheets preserve an earlier faction-era print workflow. They are **not current authoring sources or current gameplay authority**. New printable packages should come from the current Deckbuilder and current production renderers. Compatibility fixes may still be made when needed to keep preserved pages coherent, but new product behavior does not belong here.
 
-## Available sheets
+Some regression tests intentionally read these files to ensure retired player-facing copy does not drift into contradictory terminology. That dependency is compatibility coverage, not evidence that this directory is current source.
+
+## Preserved sheets
 
 - [Open the rendered Military faction sheets](https://tymonius.github.io/Gauntlet/faction-sheets/military.html) — twelve Military cards, General, Commandant, and the sliding Command tracker.
 - [Open the rendered Diplomat faction sheets](https://tymonius.github.io/Gauntlet/faction-sheets/diplomat.html) — twelve Diplomat cards, both leaders, Proposal / Treaty Article cards, references, and the sliding Influence tracker.
@@ -47,7 +49,7 @@ Financiers use a reusable **Capital Ledger** rather than a marker. Record every 
 
 Mystics use no tracker or ledger. Completed Rites are flipped to their completed faces and remain public.
 
-## Sources of truth
+## Historical sources for these preserved sheets
 
 - `releases/v0.6.0/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md` — definitive Military rules, leaders, components, and playable-card text. The Military sheets are derived from this guide.
 - `releases/v0.6.0/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md` — definitive Diplomat rules, leaders, Proposals, references, tracker, and playable-card text. The Diplomat sheets are derived from this guide.
@@ -58,4 +60,4 @@ Mystics use no tracker or ledger. Completed Rites are flipped to their completed
 - `releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md` — canonical shared rules.
 - `docs/Gauntlet_v0.6_Leader_Design_Bible.md` — leader art direction.
 
-The HTML is a rendering source, not independent canonical game data. Update authoritative text first, then synchronize the sheets.
+The HTML is preserved rendering/compatibility material, not independent canonical game data. Current gameplay authority lives in `game-data/current-game.json`; do not use these sheets to reconstruct current rules.
