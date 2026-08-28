@@ -234,6 +234,7 @@ describe('v0.7.0 Territory Overlays and Demilitarized Zone', () => {
 
     original.position = 3;
     neighbor.position = 2;
+    original.controller = 'B';
 
     expect(activeV070Overlay(state, 2)).toBeNull();
     expect(activeV070Overlay(state, 3)).toEqual(expect.objectContaining({
@@ -246,6 +247,7 @@ describe('v0.7.0 Territory Overlays and Demilitarized Zone', () => {
       territoryInstanceId: attachedIdentity,
       territoryPosition: 3,
       territoryId: original.territoryId,
+      controller: 'B',
     }));
   });
 
