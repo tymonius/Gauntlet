@@ -67,8 +67,8 @@ describe('v0.7.0 publication boundary', () => {
     expect(notes).toContain('steamcommunity.com/sharedfiles/filedetails/?id=3790840635');
     expect(notes).not.toContain('Repository/web cutover in progress');
     expect(notes).not.toContain('v0.6.3 remains the current published playtest release');
-    expect(notes).toContain('100-page half-letter booklet');
-    expect(notes).toContain('50 Letter-landscape sides on 25 physical sheets');
+    expect(notes).toContain('96-page half-letter booklet');
+    expect(notes).toContain('48 Letter-landscape sides on 24 physical sheets');
   });
   it('materializes v0.7.0 directly from maintained current authorities', () => {
     expect(releaseBuilder).toContain("CURRENT_RULEBOOK_SOURCE = 'rulebook/player-facing/current-rulebook.md'");
