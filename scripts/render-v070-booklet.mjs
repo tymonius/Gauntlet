@@ -7,6 +7,7 @@ import { chromium } from 'playwright';
 const ROOT = process.cwd();
 const RELEASE_VERSION = 'v0.7.0';
 const SOURCE_VERSION = 'v0.7.0';
+const RELEASE_NAME = 'Illustrated Cards & Tabletop Simulator';
 const RELEASE_DIR = path.join(ROOT, 'releases', RELEASE_VERSION);
 const RULEBOOK_PATH = path.join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Rulebook.md`);
 const CANONICAL_PATH = path.join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Canonical_Data.json`);
@@ -55,12 +56,17 @@ function brandV070ProductionSurface() {
   for (const surface of surfaces) {
     if (!fs.existsSync(surface)) throw new Error(`Missing approved Rulebook production surface: ${relative(surface)}.`);
     const source = fs.readFileSync(surface, 'utf8');
-    const branded = source.replace(/0\.6\.3/g, '0.7.0');
+    const branded = source
+      .replace(/0\.6\.3/g, '0.7.0')
+      .replace(/First Playtest Revision/g, RELEASE_NAME);
     if (/0\.6\.3/.test(branded)) {
       throw new Error(`v0.7.0 Rulebook production surface still contains v0.6.3 branding: ${relative(surface)}.`);
     }
     if (!/0\.7\.0/.test(branded)) {
       throw new Error(`v0.7.0 Rulebook production surface contains no v0.7.0 identity: ${relative(surface)}.`);
+    }
+    if (/First Playtest Revision/.test(branded)) {
+      throw new Error(`v0.7.0 Rulebook production surface still contains the v0.6.1 publication tagline: ${relative(surface)}.`);
     }
     fs.writeFileSync(surface, branded);
   }
@@ -225,7 +231,7 @@ const payloadFiles = [RULEBOOK_PATH, BOOKLET_PATH, CARD_ANATOMY_PATH, ARCANE_TRA
 const manifest = {
   schema_version: 1,
   release_version: RELEASE_VERSION,
-  name: 'Illustrated Cards & Tabletop Simulator',
+  name: RELEASE_NAME,
   status: 'current',
   authority_set_id: provenance.authority_set_id,
   publication_date: isPublishedCurrent ? (lifecycleRelease.publication_date || null) : null,
