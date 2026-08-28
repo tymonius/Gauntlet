@@ -22,8 +22,24 @@ export type V070TermsStage =
   | 'closed'
   | 'opportunity'
   | 'response'
+  | 'proposal_choice'
   | 'refused'
   | 'political_capital';
+
+export type V070ProposalChoiceKind =
+  | 'mutual_disarmament_accepted'
+  | 'mutual_disarmament_refused'
+  | 'prisoner_exchange_accepted'
+  | 'prisoner_exchange_refused'
+  | 'rebuilding_pact_accepted'
+  | 'rebuilding_pact_refused';
+
+export interface V070ProposalChoiceRuntime {
+  kind: V070ProposalChoiceKind;
+  playerId: PlayerId;
+  stage: 'diplomat' | 'opponent' | 'single';
+  optional: boolean;
+}
 
 export interface V070TermsRuntime {
   stage: V070TermsStage;
@@ -36,6 +52,9 @@ export interface V070TermsRuntime {
   leverageBonus: number;
   leverageCost: number;
   politicalCapitalPending: boolean;
+  acceptingPlayer: PlayerId | null;
+  proposalChoice: V070ProposalChoiceRuntime | null;
+  deferredAfterPoliticalCapital: V070ProposalChoiceKind | null;
 }
 
 export interface V070BattleParticipantRuntime {
@@ -87,6 +106,9 @@ export function createV070BattleRuntime(): V070BattleRuntime {
       leverageBonus: 0,
       leverageCost: 0,
       politicalCapitalPending: false,
+      acceptingPlayer: null,
+      proposalChoice: null,
+      deferredAfterPoliticalCapital: null,
     },
     unsupportedEffects: [],
   };
