@@ -12,6 +12,7 @@ import {
   requiredV070BattleDice,
   selectV070BattleDie,
 } from './battle-engine';
+import { v070BattleEffectHandler } from './battle-effects';
 import { viewV070GameForPlayer } from './views';
 
 const input = {
@@ -101,6 +102,20 @@ function moveInstanceToHand(
     if (index >= 0) zone.splice(index, 1);
   }
   player.zones.hand.push(instanceId);
+}
+
+function firstUnsupportedEligibleInstance(
+  state: V070GameState,
+  playerId: 'A' | 'B',
+  role: 'gambit' | 'tactic',
+): string {
+  const instance = Object.values(state.cardInstances).find(item =>
+    item.owner === playerId
+    && cardEligibleForV070BattleRole(item.cardId, role)
+    && !v070BattleEffectHandler(item.cardId),
+  );
+  if (!instance) throw new Error(`Fixture has no unsupported ${role}-eligible card for ${playerId}.`);
+  return instance.instanceId;
 }
 
 function firstEligibleInstance(
@@ -339,7 +354,7 @@ describe('v0.7.0 battle envelope', () => {
 
   test('revealing an unimplemented current Gambit effect halts explicitly instead of treating it as blank', () => {
     let state = activeBattle();
-    const gambit = firstEligibleInstance(state, 'A', 'gambit');
+    const gambit = firstUnsupportedEligibleInstance(state, 'A', 'gambit');
     moveInstanceToHand(state, 'A', gambit);
 
     state = reduceV070BattleAction(state, {
