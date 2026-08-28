@@ -121,15 +121,58 @@ export function discardV070Overlay(
   });
 }
 
+export function registerV070DmzEntryLock(
+  state: V070GameState,
+  territoryPosition: number,
+  sourceInstanceId: string,
+): void {
+  const territory = territoryAtPosition(state, territoryPosition);
+  if (!territory) {
+    throw new V070GameActionError('Demilitarized Zone entry lock requires a Territory.');
+  }
+
+  state.territoryTurnRestrictions.push({
+    kind: 'no_entry',
+    source: 'demilitarized_zone',
+    sourceInstanceId,
+    territoryInstanceId: territory.territoryInstanceId,
+    turnNumber: state.turnNumber,
+  });
+
+  appendV070Event(state, {
+    type: 'territory_turn_restriction_added',
+    visibility: 'public',
+    payload: {
+      kind: 'no_entry',
+      source: 'demilitarized_zone',
+      sourceInstanceId,
+      territoryInstanceId: territory.territoryInstanceId,
+      territoryPosition: territory.position,
+      turnNumber: state.turnNumber,
+    },
+  });
+}
+
+export function expireV070TerritoryTurnRestrictions(
+  state: V070GameState,
+): void {
+  state.territoryTurnRestrictions = state.territoryTurnRestrictions.filter(
+    restriction => restriction.turnNumber === state.turnNumber,
+  );
+}
+
 export function v070DmzBlocksEntryThisTurn(
   state: V070GameState,
   territoryPosition: number,
 ): boolean {
-  const active = activeV070Overlay(state, territoryPosition);
-  return Boolean(
-    active
-    && active.placedTurn === state.turnNumber
-    && cardIdForV070Overlay(state, active) === V070_DEMILITARIZED_ZONE_ID
+  const territory = territoryAtPosition(state, territoryPosition);
+  if (!territory) return false;
+
+  return state.territoryTurnRestrictions.some(restriction =>
+    restriction.kind === 'no_entry'
+    && restriction.source === 'demilitarized_zone'
+    && restriction.territoryInstanceId === territory.territoryInstanceId
+    && restriction.turnNumber === state.turnNumber
   );
 }
 
