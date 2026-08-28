@@ -96,6 +96,7 @@ jobs:
             config/github-release-contract.json
             config/tts-component-contract.json
             scripts/current-game-authority.mjs
+            rulebook/player-facing/rule-facts.js
             scripts/generate-tts-card-assets.mjs
             scripts/generate-tts-territory-assets.mjs
             scripts/generate-tts-environment-assets.mjs
