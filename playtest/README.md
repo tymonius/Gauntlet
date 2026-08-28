@@ -5,7 +5,7 @@
 
 The playtest subsystem supports three collection modes around one common evidence pipeline:
 
-1. **Blind tracked playtest** — the default public workflow. Two players create/join one tracked game, choose factions and Leaders, play in Tabletop Simulator or physically, link Rules Arbiter questions, record live diagnostic flags, submit one shared result, and submit separate private player responses.
+1. **Self-serve tracked playtest** — the default public workflow. Two players create/join one tracked game, choose factions and Leaders, play in Tabletop Simulator or physically, link Rules Arbiter questions, record live diagnostic flags, submit one shared result, and submit separate private player responses.
 2. **Facilitated game-night playtest** — organizer-created events, rosters, child game sessions, table QR codes, and controlled matchups.
 3. **Standalone / retrospective feedback** — records feedback for games that were not tracked live without inventing a verified shared timeline.
 
@@ -15,9 +15,9 @@ The public entry point is:
 https://gauntlet.run/playtest/
 ```
 
-Tabletop Simulator is the recommended blind-playtest transport for v0.7.0 because the public Workshop mod already contains all twelve locked starter kits and permits true two-location play.
+Tabletop Simulator is the recommended self-serve playtest transport for v0.7.0 because the public Workshop mod already contains all twelve locked starter kits and permits true two-location play.
 
-## Public blind-playtest path
+## Public self-serve playtest path
 
 The ordinary journey is:
 
@@ -59,13 +59,13 @@ Current public Workshop item:
 https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635
 ```
 
-For v0.7.0 blind tests, each player uses the locked starter kit matching the Leader selected in the tracked session.
+For v0.7.0 self-serve tests, each player uses the locked starter kit matching the Leader selected in the tracked session.
 
 Deckbuilder → TTS custom-Deck import remains gated to v0.7.1. The self-serve session and feedback pipeline is transport-independent and will also support the native digital client later.
 
 ## Physical play
 
-Physical blind play remains supported.
+Self-serve physical play remains supported.
 
 - Use `/start/` and the Deckbuilder for faction/Leader selection and printable starter packages.
 - Use the same `/playtest/tracked/` session for timing, Arbiter linkage, live flags, results, and private feedback.
