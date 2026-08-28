@@ -16,6 +16,18 @@ import {
 import { drawV070Cards } from './turn-engine';
 import { resolveV070SupportedRevealEffects } from './battle-effects';
 import {
+  applyV070Leverage,
+  initializeV070TermsWindow,
+  offerV070Terms,
+  passV070Terms,
+  respondToV070Terms,
+  resolveV070PoliticalCapital,
+  settleV070RefusedTermsOutcome,
+  v070LeverageRequiresDecision,
+  v070PoliticalCapitalPending,
+  v070TermsReadyForGambits,
+} from './diplomats';
+import {
   createV070BattleRuntime,
   type V070BattleCardCommitment,
   type V070BattleRuntime
@@ -24,6 +36,11 @@ import {
 export const V070_NORMAL_BATTLE_DICE = 1 as const;
 
 export type V070BattleAction =
+  | { type: 'pass_terms'; playerId: PlayerId }
+  | { type: 'offer_terms'; playerId: PlayerId; proposalId: string }
+  | { type: 'respond_to_terms'; playerId: PlayerId; response: 'accept' | 'refuse' }
+  | { type: 'use_leverage'; playerId: PlayerId; bonus: number }
+  | { type: 'resolve_political_capital'; playerId: PlayerId; cardInstanceIds: readonly string[] }
   | { type: 'proceed_from_onset'; playerId: PlayerId }
   | { type: 'set_gambit'; playerId: PlayerId; cardInstanceId?: string }
   | { type: 'reveal_gambits'; playerId: PlayerId }
@@ -48,6 +65,21 @@ export function reduceV070BattleAction(
   ensureBattleRuntime(next);
 
   switch (action.type) {
+    case 'pass_terms':
+      passV070Terms(next, action.playerId);
+      break;
+    case 'offer_terms':
+      offerV070Terms(next, action.playerId, action.proposalId);
+      break;
+    case 'respond_to_terms':
+      respondToV070Terms(next, action.playerId, action.response);
+      break;
+    case 'use_leverage':
+      applyV070Leverage(next, action.playerId, action.bonus);
+      break;
+    case 'resolve_political_capital':
+      resolveV070PoliticalCapital(next, action.playerId, action.cardInstanceIds);
+      break;
     case 'proceed_from_onset':
       proceedFromOnset(next, action.playerId);
       break;
@@ -112,7 +144,10 @@ export function selectV070BattleDie(runtime: V070BattleRuntime, playerId: Player
 }
 
 function ensureBattleRuntime(state: V070GameState): V070BattleRuntime {
-  if (!state.battleRuntime) state.battleRuntime = createV070BattleRuntime();
+  if (!state.battleRuntime) {
+    state.battleRuntime = createV070BattleRuntime();
+    initializeV070TermsWindow(state);
+  }
   return state.battleRuntime;
 }
 
@@ -122,6 +157,9 @@ function proceedFromOnset(state: V070GameState, playerId: PlayerId): void {
   requireRuntimeStage(runtime, 'onset');
   if (playerId !== battle.attacker) {
     throw new V070GameActionError('The attacker advances the shared battle procedure out of Onset.');
+  }
+  if (!v070TermsReadyForGambits(state)) {
+    throw new V070GameActionError('Resolve or pass the current Terms opportunity before leaving Onset.');
   }
 
   const blockers = unsupportedOnsetFeatures(state);
@@ -146,13 +184,12 @@ function unsupportedOnsetFeatures(state: V070GameState): string[] {
 
   for (const playerId of [battle.attacker, battle.defender]) {
     const player = state.players[playerId];
-    if (player.factionId === 'diplomats') result.push(`${playerId}:Terms`);
 
     for (const instanceId of player.zones.assetBank) {
       const cardId = state.cardInstances[instanceId]?.cardId;
       const card = cardId ? v070CanonicalContent.cardsById.get(cardId) : undefined;
       const onsetAsset = card?.effects.find(effect =>
-        effect.label === 'Asset' && /during onset|before gambits are set/i.test(effect.text),
+        effect.label === 'Asset' && /during onset|before gambits are set|after terms are refused|after the opponent refuses/i.test(effect.text),
       );
       if (onsetAsset && card) result.push(`${playerId}:${card.name}`);
     }
@@ -216,7 +253,8 @@ function formReserves(state: V070GameState): void {
     const result = drawV070Cards(
       state,
       playerId,
-      v070CanonicalContent.content.battle.normal_reserve_size,
+      v070CanonicalContent.content.battle.normal_reserve_size
+        + runtime.participants[playerId].reserveBonus,
       'battle_reserve',
     );
     runtime.participants[playerId].reserve = result.drawn;
@@ -355,6 +393,9 @@ function submitBattleDice(
 ): void {
   const runtime = requireRuntime(state);
   requireRuntimeStage(runtime, 'outcome');
+  if (v070LeverageRequiresDecision(state)) {
+    throw new V070GameActionError('Resolve Leverage, including a +0 pass, before battle dice are rolled.');
+  }
   const participant = runtime.participants[playerId];
   if (participant.battleDice.length > 0) {
     throw new V070GameActionError(`${playerId} has already submitted battle dice.`);
@@ -465,6 +506,7 @@ function applyOutcome(state: V070GameState, outcome: V070BattleOutcome): void {
   const resolution = applyV070BattleOutcome(battle, outcome);
   state.battle = resolution.state;
   runtime.stage = 'aftermath';
+  settleV070RefusedTermsOutcome(state, outcome);
 
   appendV070Event(state, {
     type: 'battle_outcome',
@@ -484,6 +526,9 @@ function completeAftermath(state: V070GameState, playerId: PlayerId): void {
   const battle = requireBattle(state);
   const runtime = requireRuntime(state);
   requireRuntimeStage(runtime, 'aftermath');
+  if (v070PoliticalCapitalPending(state)) {
+    throw new V070GameActionError('Resolve Senator Political Capital before completing the Aftermath.');
+  }
   if (playerId !== battle.attacker) {
     throw new V070GameActionError('The attacker advances the shared Aftermath procedure.');
   }
