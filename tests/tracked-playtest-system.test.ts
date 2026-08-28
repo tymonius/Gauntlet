@@ -42,18 +42,21 @@ describe("streamlined tracked playtests", () => {
     expect(start).toContain('new URL("../playtest/tracked/"');
   });
 
-  it("defaults self-serve playtests to TTS and preserves the transport in tracked state", () => {
+  it("chooses play transport by location instead of preferring TTS", () => {
     expect(page).toContain('id="createPlayMode"');
-    expect(page).toContain("Tabletop Simulator — recommended");
+    expect(page).toContain("Together in person — physical tabletop");
+    expect(page).toContain("Remotely — Tabletop Simulator");
+    expect(page).not.toContain("Tabletop Simulator — recommended");
     expect(page).toContain("3790840635");
     expect(page).toContain('id="transportPanel"');
     expect(app).toContain("requestedPlayMode");
     expect(app).toContain("renderTransport");
     expect(app).toContain("playMode:");
-    expect(worker).toContain('body.playMode === "physical" ? "physical" : "tts"');
+    expect(app).toContain('el.createPlayMode?.value || ""');
+    expect(worker).toContain('if (!["physical", "tts"].includes(playMode))');
     expect(worker).toContain("playMode,");
     expect(worker).toContain('metadata.playMode || "physical"');
-    expect(start).toContain('url.searchParams.set("mode"');
+    expect(start).toContain('if (mode === "physical" || mode === "tts")');
   });
 
   it("creates two authenticated player seats and player-attributed Arbiter links", () => {
