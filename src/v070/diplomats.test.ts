@@ -105,6 +105,7 @@ describe('v0.7.0 Diplomat Terms runtime', () => {
       influence: 1,
       ratifiedProposals: [],
       cordialityUsedTurn: null,
+      politicalCapitalUsedTurn: null,
     });
     expect(state.players.B.diplomats).toBeNull();
   });
@@ -322,6 +323,7 @@ describe('v0.7.0 Diplomat Terms runtime', () => {
     });
 
     expect(state.players.A.diplomats?.influence).toBe(1);
+    expect(state.players.A.diplomats?.politicalCapitalUsedTurn).toBe(state.turnNumber);
     expect(state.players.A.zones.graveyard).toContain(recoveryCard);
     expect(state.battleRuntime?.terms.politicalCapitalPending).toBe(false);
 
