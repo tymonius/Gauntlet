@@ -8,8 +8,8 @@ on:
       - "rules-assistant/local-search.js"
       - "rules-assistant/v063-public-corpus.js"
       - "playtest/**"
-      - "scripts/validate_v063_playtest_sessions.py"
-      - "scripts/test_v063_formal_session_e2e.mjs"
+      - "scripts/validate_v070_playtest_sessions.py"
+      - "scripts/test_v070_formal_session_e2e.mjs"
       - "package.json"
       - ".github/workflows/deploy-playtest-sessions.yml"
   push:
@@ -21,8 +21,8 @@ on:
       - "rules-assistant/local-search.js"
       - "rules-assistant/v063-public-corpus.js"
       - "playtest/**"
-      - "scripts/validate_v063_playtest_sessions.py"
-      - "scripts/test_v063_formal_session_e2e.mjs"
+      - "scripts/validate_v070_playtest_sessions.py"
+      - "scripts/test_v070_formal_session_e2e.mjs"
       - "package.json"
       - ".github/workflows/deploy-playtest-sessions.yml"
   workflow_dispatch:
@@ -70,7 +70,7 @@ jobs:
           npm run test:playtest-sessions
           npm run test:formal-session-e2e
           npm run test:tracked-session-e2e
-          python scripts/validate_v063_playtest_sessions.py
+          python scripts/validate_v070_playtest_sessions.py
 
   deploy:
     if: ${{ github.event_name != 'pull_request' }}
