@@ -17,6 +17,9 @@ const riteArtworkPaths = [
   "images/artwork/cards/mystics/rites-and-rituals/rite-of-echoes.png",
   "images/artwork/cards/mystics/rites-and-rituals/rite-of-blood.png",
   "images/artwork/cards/mystics/rites-and-rituals/rite-of-crossing.png",
+  "images/artwork/cards/mystics/rites-and-rituals/rite-of-shattering.png",
+  "images/artwork/cards/mystics/rites-and-rituals/rite-of-consecration.png",
+  "images/artwork/cards/mystics/rites-and-rituals/rite-of-equivalence.png",
 ];
 const ritualArtworkPath = "images/artwork/cards/mystics/rites-and-rituals/ritual-of-ascension.png";
 const ritualCardBackPath = "images/artwork/cardbacks/mystics/ritual-of-ascension.png";
@@ -61,16 +64,18 @@ describe("Mystics Rite card prototypes", () => {
     expect(riteRenderer).not.toContain("RITE_SOURCE");
   });
 
-  it("uses approved artwork where available and a pending-art fallback for new Rite faces", () => {
+  it("uses approved artwork for every Rite face", () => {
     for (const path of riteArtworkPaths) expect(existsSync(path)).toBe(true);
     expect(existsSync(ritualArtworkPath)).toBe(true);
     expect(existsSync(ritualCardBackPath)).toBe(true);
-    expect(mysticsAuthority.rites.slice(0, 3).map((item: any) => item.artwork)).toEqual([
+    expect(mysticsAuthority.rites.map((item: any) => item.artwork)).toEqual([
       "/images/artwork/cards/mystics/rites-and-rituals/rite-of-echoes.png",
       "/images/artwork/cards/mystics/rites-and-rituals/rite-of-blood.png",
       "/images/artwork/cards/mystics/rites-and-rituals/rite-of-crossing.png",
+      "/images/artwork/cards/mystics/rites-and-rituals/rite-of-shattering.png",
+      "/images/artwork/cards/mystics/rites-and-rituals/rite-of-consecration.png",
+      "/images/artwork/cards/mystics/rites-and-rituals/rite-of-equivalence.png",
     ]);
-    expect(mysticsAuthority.rites.slice(3).every((item: any) => item.artwork === null)).toBe(true);
     expect(mysticsAuthority.ritual.artwork).toBe("/images/artwork/cards/mystics/rites-and-rituals/ritual-of-ascension.png");
     expect(mysticsAuthority.ritual.cardBack).toBe("/images/artwork/cardbacks/mystics/ritual-of-ascension.png");
     expect(riteRenderer).toContain('class="card-art has-image" aria-label="Artwork for ${esc(rite.name)}"');
