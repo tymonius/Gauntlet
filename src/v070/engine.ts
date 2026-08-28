@@ -425,7 +425,7 @@ function instantiateStarterDeck(
   return result;
 }
 
-function deterministicShuffle<T>(values: readonly T[], seed: string): T[] {
+export function deterministicV070Shuffle<T>(values: readonly T[], seed: string): T[] {
   const result = [...values];
   const random = mulberry32(hashSeed(seed));
 
