@@ -95,6 +95,8 @@ A battle creates three temporary areas: a Gambit set from Hand, a three-card Res
 
 Most ordinary playable cards use the same frame. Read these elements when constructing a Deck and resolving a card in play:
 
+![Card anatomy diagram](</releases/v0.7.0/Gauntlet_v0.7.0_Card_Anatomy.png>)
+
 1. **Card name** — The card's title.
 2. **Card value** — Used for Deck construction and whenever an effect refers to a card's value.
 3. **Faction identity** — The border and parchment treatment identify the card's faction. Neutral cards use ivory.
@@ -106,6 +108,8 @@ Most ordinary playable cards use the same frame. Read these elements when constr
 ### Arcane trait mark
 
 Some playable cards show the Mystics sigil immediately before the card name. The symbol marks the **Arcane** trait; its color follows the card's faction identity.
+
+![Arcane trait mark example](</releases/v0.7.0/Gauntlet_v0.7.0_Arcane_Trait_Mark.png>)
 
 Territories and faction supplemental components use specialized layouts and are explained with their own rules.
 

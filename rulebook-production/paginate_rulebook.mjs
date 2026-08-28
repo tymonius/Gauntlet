@@ -284,50 +284,6 @@ function appendSingleToken(token, page, context) {
   return splitAndAppend(token, current, context);
 }
 
-function appendBrowserCardAnatomy(sourceTokens, startIndex, page, context) {
-  let endIndex = startIndex + 1;
-  while (endIndex < sourceTokens.length) {
-    const token = sourceTokens[endIndex];
-    if (token.kind === 'heading' && token.title === 'Printed card effects') break;
-    endIndex += 1;
-  }
-  if (endIndex >= sourceTokens.length) throw new Error('Card Anatomy section has no Printed card effects boundary.');
-
-  const anatomyTokens = sourceTokens.slice(startIndex, endIndex);
-  anatomyTokens.forEach(token => consumed.add(token.id));
-
-  const wrapper = document.createElement('div');
-  wrapper.className = 'browser-card-anatomy-embed';
-  wrapper.dataset.sourceId = sourceTokens[startIndex].id;
-  wrapper.innerHTML = `
-    <iframe
-      class="browser-card-anatomy-frame"
-      src="../rulebook/?embed=card-anatomy"
-      title="Published Browser Rulebook Card Anatomy"
-      tabindex="-1"
-      aria-hidden="true"
-    ></iframe>
-  `;
-
-  let current = page;
-  let flow = flowOf(current);
-  flow.append(wrapper);
-  if (overflows(flow)) {
-    wrapper.remove();
-    if (hasRealContent(flow)) {
-      current = newContinuationPage(context);
-      flow = flowOf(current);
-      flow.append(wrapper);
-    }
-  }
-  if (overflows(flow)) {
-    wrapper.remove();
-    throw new Error('Published Browser Rulebook Card Anatomy component does not fit on an empty Rulebook page.');
-  }
-
-  return { page: current, nextIndex: endIndex - 1 };
-}
-
 function paginateTokens(sourceTokens, context, firstPage = null) {
   let page = firstPage || newContinuationPage(context);
   for (let index = 0; index < sourceTokens.length; index += 1) {
@@ -339,13 +295,6 @@ function paginateTokens(sourceTokens, context, firstPage = null) {
     if (token.kind === 'pagebreak') {
       consumed.add(token.id);
       if (hasRealContent(flowOf(page))) page = newContinuationPage(context);
-      continue;
-    }
-
-    if (token.kind === 'heading' && token.title === 'Card anatomy') {
-      const result = appendBrowserCardAnatomy(sourceTokens, index, page, context);
-      page = result.page;
-      index = result.nextIndex;
       continue;
     }
 
@@ -861,27 +810,8 @@ function buildDocument() {
   };
 }
 
-async function waitForCardAnatomyEmbeds() {
-  const frames = [...document.querySelectorAll('iframe.browser-card-anatomy-frame')];
-  if (!frames.length) return;
-  const deadline = Date.now() + 120000;
-  while (Date.now() < deadline) {
-    const ready = frames.every(frame => {
-      try {
-        return frame.contentDocument?.documentElement?.dataset.cardAnatomyEmbedReady === 'true';
-      } catch {
-        return false;
-      }
-    });
-    if (ready) return;
-    await new Promise(resolve => setTimeout(resolve, 100));
-  }
-  throw new Error('Published Browser Rulebook Card Anatomy embed did not become ready within 120 seconds.');
-}
-
 await document.fonts?.ready;
 buildDocument();
-await waitForCardAnatomyEmbeds();
 await Promise.all([...document.images].map(image => image.complete && image.naturalWidth > 0
   ? image.decode?.().catch(() => undefined)
   : new Promise((resolve, reject) => {

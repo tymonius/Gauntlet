@@ -3,7 +3,7 @@ import { loadCurrentGame } from '../game-data/current-game.mjs';
 import { normalizeV063LastStandText } from '../rules-assistant/v063-last-stand-language.js';
 
 const SOURCE_URL = '../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook.md';
-const SOURCE_SHA256 = 'e8a3b9f1b910df18dfa3b033f49802f64bd889e2f553a9076d1697b4f0939ef4';
+const SOURCE_SHA256 = '7027ef7fe7dcfd59cf43ae9f68d2bd2760667a128839a8b4f141559328f2c653';
 const CHAPTER_11_URL = './player-facing/chapter-11.md';
 const CURRENT_SOURCE_URL = './player-facing/current-rulebook.md';
 const PUBLISHED_SOURCE_URL = '../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook.md';

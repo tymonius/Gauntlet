@@ -102,6 +102,8 @@ jobs:
           const names = [
             'Gauntlet_v0.7.0_Rulebook.md',
             'Gauntlet_v0.7.0_Rulebook_Booklet.pdf',
+            'Gauntlet_v0.7.0_Card_Anatomy.png',
+            'Gauntlet_v0.7.0_Arcane_Trait_Mark.png',
             'Gauntlet_v0.7.0_Canonical_Data.json',
             'Gauntlet_v0.7.0_Starter_Decks.json',
             'Gauntlet_v0.7.0_Source_Provenance.json',
@@ -124,6 +126,8 @@ jobs:
           assert.equal(canonical.gameplay.factions.length, 6);
           assert.equal(starters.decks.length, 12);
           assert.match(rulebook, /## Card anatomy/);
+          assert.match(rulebook, /!\[Card anatomy diagram\]/);
+          assert.match(rulebook, /!\[Arcane trait mark example\]/);
           assert.doesNotMatch(rulebook, /\bpending(?:-|\s+)battles?\b|\bFaction Actions?\b|\bFaction Abilit(?:y|ies)\b|\bfaction procedure\b/i);
           assert(canonical.faction_feature_taxonomy?.actionProfiles?.['1 Action']);
           assert.equal(canonical.leaders.length, 12);
@@ -134,6 +138,9 @@ jobs:
           const mystics = canonical.gameplay.factions.find(faction => faction.id === 'mystics');
           assert.equal(mystics.resource, null);
           assert.equal(mystics.progression, 'Rites');
+          assert(fs.statSync(`${root}/Gauntlet_v0.7.0_Card_Anatomy.png`).size > 10000);
+          assert(fs.statSync(`${root}/Gauntlet_v0.7.0_Arcane_Trait_Mark.png`).size > 5000);
+          assert.equal(manifest.counts.static_figures, 2);
 
           const pdf = await PDFDocument.load(fs.readFileSync(`${root}/Gauntlet_v0.7.0_Rulebook_Booklet.pdf`));
           assert.equal(pdf.getPageCount(), manifest.pdf_outputs[0].pages);
@@ -159,6 +166,8 @@ jobs:
             "Materialize v0.7.0 release package" -- \
             releases/v0.7.0/Gauntlet_v0.7.0_Rulebook.md \
             releases/v0.7.0/Gauntlet_v0.7.0_Rulebook_Booklet.pdf \
+            releases/v0.7.0/Gauntlet_v0.7.0_Card_Anatomy.png \
+            releases/v0.7.0/Gauntlet_v0.7.0_Arcane_Trait_Mark.png \
             releases/v0.7.0/Gauntlet_v0.7.0_Canonical_Data.json \
             releases/v0.7.0/Gauntlet_v0.7.0_Starter_Decks.json \
             releases/v0.7.0/Gauntlet_v0.7.0_Source_Provenance.json \

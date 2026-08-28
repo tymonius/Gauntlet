@@ -67,8 +67,8 @@ describe('v0.7.0 publication boundary', () => {
     expect(notes).toContain('steamcommunity.com/sharedfiles/filedetails/?id=3790840635');
     expect(notes).not.toContain('Repository/web cutover in progress');
     expect(notes).not.toContain('v0.6.3 remains the current published playtest release');
-    expect(notes).toContain('96-page half-letter booklet');
-    expect(notes).toContain('48 Letter-landscape sides on 24 physical sheets');
+    expect(notes).toContain('100-page half-letter booklet');
+    expect(notes).toContain('50 Letter-landscape sides on 25 physical sheets');
   });
   it('materializes v0.7.0 directly from maintained current authorities', () => {
     expect(releaseBuilder).toContain("CURRENT_RULEBOOK_SOURCE = 'rulebook/player-facing/current-rulebook.md'");
@@ -78,7 +78,8 @@ describe('v0.7.0 publication boundary', () => {
     expect(releaseBuilder).toContain('faction_features: clone(authority.factionFeatures)');
     expect(releaseBuilder).toContain('leaders: clone(authority.leaders)');
     expect(releaseBuilder).toContain("source_version: authority.version");
-    expect(releaseBuilder).not.toContain('![Card anatomy diagram]');
+    expect(releaseBuilder).toContain('![Card anatomy diagram]');
+    expect(releaseBuilder).toContain('![Arcane trait mark example]');
     expect(releaseBuilder).not.toContain('readCurrentJsonSource');
     expect(releaseBuilder).not.toContain('baseGameplay');
     expect(releaseBuilder).not.toContain('cardChanges');
@@ -90,14 +91,20 @@ describe('v0.7.0 publication boundary', () => {
     expect(releaseBuilder).not.toContain('spliceReviewedChapter11');
   });
 
-  it('renders the booklet Card Anatomy from the same Browser Rulebook component', () => {
-    expect(bookletRenderer).not.toContain("import { chromium } from 'playwright'");
-    expect(bookletRenderer).not.toContain('CARD_ANATOMY_PATH');
-    expect(bookletRenderer).not.toContain('figure.screenshot');
-    expect(materializer).not.toContain('Gauntlet_v0.7.0_Card_Anatomy.png');
-    expect(releaseBuilder).toContain("browser_route: '/rulebook/?embed=card-anatomy'");
-    expect(bookletRenderer).toContain("card_anatomy_component");
-    expect(bookletRenderer).toContain("arcane_card: 'mystics-witchcraft'");
+  it('adapts the Browser Rulebook Card Anatomy visuals into separate print figures', () => {
+    expect(bookletRenderer).toContain("import { chromium } from 'playwright'");
+    expect(bookletRenderer).toContain("page.goto('http://127.0.0.1:8000/rulebook/'");
+    expect(bookletRenderer).toContain(".card-anatomy-guide.markers-positioned .card-anatomy-figure");
+    expect(bookletRenderer).toContain('arcaneCrop.screenshot({ path: ARCANE_TRAIT_PATH })');
+    expect(bookletRenderer).toContain('figure.screenshot({ path: CARD_ANATOMY_PATH })');
+    expect(bookletRenderer).not.toContain('browser-card-anatomy-frame');
+    expect(bookletRenderer).toContain("source_card: 'military-unbroken-ranks'");
+    expect(bookletRenderer).toContain("source_card: 'mystics-witchcraft'");
+    expect(bookletRenderer).toContain('static_figures: 2');
+    expect(bookletRenderer).toContain('function validateReleaseNotesBookletCounts');
+    expect(bookletRenderer).toContain('validateReleaseNotesBookletCounts(logicalPages, bookletPages, physicalSheets);');
+    expect(materializer).toContain('Gauntlet_v0.7.0_Card_Anatomy.png');
+    expect(materializer).toContain('Gauntlet_v0.7.0_Arcane_Trait_Mark.png');
   });
 
   it('keeps final publication explicit, dated, and TTS-gated', () => {

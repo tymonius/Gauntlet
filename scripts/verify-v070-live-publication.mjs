@@ -59,6 +59,8 @@ const urls = {
   canonical: 'https://gauntlet.run/releases/v0.7.0/Gauntlet_v0.7.0_Canonical_Data.json',
   starters: 'https://gauntlet.run/releases/v0.7.0/Gauntlet_v0.7.0_Starter_Decks.json',
   provenance: 'https://gauntlet.run/releases/v0.7.0/Gauntlet_v0.7.0_Source_Provenance.json',
+  anatomy: 'https://gauntlet.run/releases/v0.7.0/Gauntlet_v0.7.0_Card_Anatomy.png',
+  arcaneTrait: 'https://gauntlet.run/releases/v0.7.0/Gauntlet_v0.7.0_Arcane_Trait_Mark.png',
   booklet: 'https://gauntlet.run/releases/v0.7.0/Gauntlet_v0.7.0_Rulebook_Booklet.pdf',
 };
 
@@ -161,7 +163,7 @@ if (mystics?.resource !== null || mystics?.progression !== 'Rites') {
 const retired = /\bpending(?:-|\s+)battles?\b|\bFaction Actions?\b|\bFaction Abilit(?:y|ies)\b|\bfaction procedure\b/i;
 if (retired.test(rulebookText)) throw new Error('Public v0.7.0 Rulebook contains retired terminology.');
 if (retired.test(JSON.stringify(canonical))) throw new Error('Public v0.7.0 canonical data contains retired terminology.');
-if (!rulebookText.includes('## Card anatomy') || !rulebookText.includes('### Arcane trait mark') || !rulebookText.includes('Terms occur during Onset')) {
+if (!rulebookText.includes('## Card anatomy') || !rulebookText.includes('![Card anatomy diagram]') || !rulebookText.includes('![Arcane trait mark example]') || !rulebookText.includes('Terms occur during Onset')) {
   throw new Error('Public v0.7.0 Rulebook is missing current Card Anatomy or Onset content.');
 }
 if (starters.release_version !== 'v0.7.0' || starters.decks?.length !== 12) {
@@ -179,6 +181,26 @@ for (const [key, value] of textBindings) {
   if (!binding?.sha256 || sha256(Buffer.from(value, 'utf8')) !== binding.sha256) {
     throw new Error(`Public ${key} does not match its manifest SHA-256 binding.`);
   }
+}
+
+const anatomyResponse = await fetchPublic(urls.anatomy);
+const anatomyType = String(anatomyResponse.headers.get('content-type') || '').toLowerCase();
+const anatomyBytes = Buffer.from(await anatomyResponse.arrayBuffer());
+if (!anatomyType.includes('image') || anatomyBytes.length < 10000) {
+  throw new Error(`Public Card Anatomy figure is invalid: type=${anatomyType} bytes=${anatomyBytes.length}.`);
+}
+if (sha256(anatomyBytes) !== manifest.binding_sources?.card_anatomy_figure?.sha256) {
+  throw new Error('Public Card Anatomy figure does not match its manifest SHA-256 binding.');
+}
+
+const arcaneTraitResponse = await fetchPublic(urls.arcaneTrait);
+const arcaneTraitType = String(arcaneTraitResponse.headers.get('content-type') || '').toLowerCase();
+const arcaneTraitBytes = Buffer.from(await arcaneTraitResponse.arrayBuffer());
+if (!arcaneTraitType.includes('image') || arcaneTraitBytes.length < 5000) {
+  throw new Error(`Public Arcane trait-mark figure is invalid: type=${arcaneTraitType} bytes=${arcaneTraitBytes.length}.`);
+}
+if (sha256(arcaneTraitBytes) !== manifest.binding_sources?.arcane_trait_figure?.sha256) {
+  throw new Error('Public Arcane trait-mark figure does not match its manifest SHA-256 binding.');
 }
 
 const bookletResponse = await fetchPublic(urls.booklet);
@@ -221,4 +243,4 @@ if (historicalPayload?.version !== 'v0.6.3' || historicalPayload?.currentPublicR
   throw new Error(`Historical v0.6.3 Rules Arbiter route is not preserved: ${JSON.stringify(historicalPayload)}`);
 }
 
-console.log('gauntlet.run live verification passed for v0.7.0 publication with bound Rulebook, canonical data, shared Browser Card Anatomy, booklet, and Rules Arbiter assets.');
+console.log('gauntlet.run live verification passed for v0.7.0 publication with bound Rulebook, canonical data, provenance, print-adapted Card Anatomy figures, booklet, and Rules Arbiter assets.');
