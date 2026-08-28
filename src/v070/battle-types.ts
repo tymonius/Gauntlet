@@ -18,9 +18,30 @@ export interface V070BattleCardCommitment {
   faceUp: boolean;
 }
 
+export type V070TermsStage =
+  | 'closed'
+  | 'opportunity'
+  | 'response'
+  | 'refused'
+  | 'political_capital';
+
+export interface V070TermsRuntime {
+  stage: V070TermsStage;
+  priorityPlayer: PlayerId | null;
+  offerer: PlayerId | null;
+  opponent: PlayerId | null;
+  proposalId: string | null;
+  stake: number;
+  leverageResolved: boolean;
+  leverageBonus: number;
+  leverageCost: number;
+  politicalCapitalPending: boolean;
+}
+
 export interface V070BattleParticipantRuntime {
   gambit: V070BattleCardCommitment | null | undefined;
   reserve: string[];
+  reserveBonus: number;
   tactic: V070BattleCardCommitment | null | undefined;
   battleModifier: number;
   advantage: number;
@@ -44,6 +65,7 @@ export interface V070UnsupportedBattleEffect {
 export interface V070BattleRuntime {
   stage: V070BattleRuntimeStage;
   participants: Record<PlayerId, V070BattleParticipantRuntime>;
+  terms: V070TermsRuntime;
   unsupportedEffects: V070UnsupportedBattleEffect[];
 }
 
@@ -54,6 +76,18 @@ export function createV070BattleRuntime(): V070BattleRuntime {
       A: createParticipant(),
       B: createParticipant(),
     },
+    terms: {
+      stage: 'closed',
+      priorityPlayer: null,
+      offerer: null,
+      opponent: null,
+      proposalId: null,
+      stake: 0,
+      leverageResolved: true,
+      leverageBonus: 0,
+      leverageCost: 0,
+      politicalCapitalPending: false,
+    },
     unsupportedEffects: [],
   };
 }
@@ -62,6 +96,7 @@ function createParticipant(): V070BattleParticipantRuntime {
   return {
     gambit: undefined,
     reserve: [],
+    reserveBonus: 0,
     tactic: undefined,
     battleModifier: 0,
     advantage: 0,
