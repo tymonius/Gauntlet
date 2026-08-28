@@ -1,3 +1,5 @@
+import { deriveCardPoolSummary } from './rule-facts.js';
+
 export function applyV070RulebookCorrections(value) {
   let text = String(value ?? '').replaceAll('Ritual of Ascendance', 'Ritual of Ascension');
 
@@ -18,32 +20,6 @@ export function applyV070RulebookCorrections(value) {
   return text;
 }
 
-function summarizeCards(cards) {
-  const summary = {};
-  for (const card of cards || []) {
-    const allegiance = card.allegiance;
-    if (!allegiance) continue;
-    const bucket = summary[allegiance] ||= {
-      count: 0,
-      total_value: 0,
-      unique: [],
-      cost_curve: {},
-    };
-    const cost = Number(card.cost || 0);
-    bucket.count += 1;
-    bucket.total_value += cost;
-    bucket.cost_curve[String(cost)] = (bucket.cost_curve[String(cost)] || 0) + 1;
-    if (card.unique) bucket.unique.push(card.name);
-  }
-  for (const bucket of Object.values(summary)) {
-    bucket.unique.sort((a, b) => String(a).localeCompare(String(b)));
-    bucket.cost_curve = Object.fromEntries(
-      Object.entries(bucket.cost_curve).sort(([a], [b]) => Number(a) - Number(b))
-    );
-  }
-  return summary;
-}
-
 export function applyV070CanonicalCorrections(value) {
   const data = typeof value === 'string' ? JSON.parse(value) : JSON.parse(JSON.stringify(value));
   const gameplay = data.gameplay || {};
@@ -52,7 +28,7 @@ export function applyV070CanonicalCorrections(value) {
     mystics.victory = 'Run the Gauntlet or complete the Ritual of Ascension.';
   }
 
-  const summary = summarizeCards(gameplay.cards);
+  const summary = deriveCardPoolSummary(gameplay.cards);
   if (Object.keys(summary).length) {
     gameplay.card_pool_summary = summary;
     for (const faction of gameplay.factions || []) {
