@@ -144,6 +144,10 @@ function validateAuthority(authority) {
   if (!authority.factionFeatureTaxonomy || !authority.factionFeatures) {
     throw new Error('v0.7.0 requires current Faction Feature authority.');
   }
+  const diplomats = authority.gameplay.factions.find(faction => faction.id === 'diplomats');
+  if (diplomats?.factionRules?.peace_treaty_threshold !== 6) {
+    throw new Error('v0.7.0 publication requires a six-Proposal Peace Treaty threshold.');
+  }
 
   const active = JSON.stringify({
     gameplay: authority.gameplay,
