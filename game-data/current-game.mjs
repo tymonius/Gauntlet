@@ -84,6 +84,35 @@ function runtimeLeader(source) {
   return leader;
 }
 
+function validateMysticsStarterRites(authority) {
+  const policy = authority.mystics?.selectionPolicy;
+  const rites = requireArray(authority.mystics?.rites, 'Mystics Rite pool');
+  const selectedCount = Number(policy?.selectedCount);
+  if (!Number.isInteger(selectedCount) || selectedCount <= 0) {
+    throw new Error('Current Mystics Rite selection policy has no valid selectedCount.');
+  }
+  const riteIds = new Set(rites.map(rite => rite?.id).filter(Boolean));
+  for (const deck of requireArray(authority.starterDecks?.decks, 'starter Decks')) {
+    if (deck.factionId !== 'mystics') continue;
+    const selected = requireArray(deck.selectedRites, `${deck.id} selected Rites`);
+    const order = requireArray(deck.recommendedRiteOrder, `${deck.id} recommended Rite order`);
+    if (selected.length !== selectedCount || new Set(selected).size !== selected.length) {
+      throw new Error(`Mystics starter ${deck.id} must select exactly ${selectedCount} different Rites.`);
+    }
+    if (selected.some(id => !riteIds.has(id))) {
+      throw new Error(`Mystics starter ${deck.id} references an unknown selected Rite.`);
+    }
+    if (order.length !== selected.length || new Set(order).size !== order.length) {
+      throw new Error(`Mystics starter ${deck.id} recommended Rite order must contain each selected Rite exactly once.`);
+    }
+    const selectedSorted = [...selected].sort();
+    const orderSorted = [...order].sort();
+    if (selectedSorted.some((id, index) => id !== orderSorted[index])) {
+      throw new Error(`Mystics starter ${deck.id} recommended Rite order is not a permutation of its selected Rites.`);
+    }
+  }
+}
+
 function validateFactionFeatures(authority) {
   const taxonomy = authority.factionFeatureTaxonomy;
   if (!taxonomy?.factionFeature || !taxonomy?.leaderAbility || !taxonomy?.actionProfiles) {
@@ -126,6 +155,7 @@ function validateAuthority(authority) {
   requireArray(authority.proposals, 'Proposals');
   requireArray(authority.starterDecks?.decks, 'starter Decks');
   requireArray(authority.leaders, 'Leaders');
+  validateMysticsStarterRites(authority);
   validateFactionFeatures(authority);
   authority.leaders.forEach(validateLeader);
 

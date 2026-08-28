@@ -16,6 +16,8 @@ const cardsByName = new Map(cards.map(card => [card.name, card]));
 const territoriesByName = new Map(territories.map(territory => [territory.name, territory]));
 const factionsById = new Map(factions.map(faction => [faction.id, faction]));
 const expectedLeaderPairs = new Set(leaders.map(leader => `${leader.faction}/${leader.id}`));
+const mysticsRiteIds = new Set((authority.mystics?.rites || []).map(rite => rite.id));
+const mysticsSelectedRiteCount = Number(authority.mystics?.selectionPolicy?.selectedCount || 0);
 
 const errors = [];
 const seenIds = new Set();
@@ -98,7 +100,27 @@ for (const deck of decks) {
   }
 
   if (arenaCount > 1) errors.push(`${label}: contains ${arenaCount} Arenas.`);
-  console.log(`✓ ${label}: ${cardCount} cards, ${deckbuildingValue} value, ${territoryNames.join(" → ")}`);
+
+  let riteSummary = "";
+  if (deck.factionId === "mystics") {
+    const selected = Array.isArray(deck.selectedRites) ? deck.selectedRites : [];
+    const order = Array.isArray(deck.recommendedRiteOrder) ? deck.recommendedRiteOrder : [];
+    const selectedSorted = [...selected].sort();
+    const orderSorted = [...order].sort();
+    if (selected.length !== mysticsSelectedRiteCount || new Set(selected).size !== selected.length) {
+      errors.push(`${label}: must select exactly ${mysticsSelectedRiteCount} different Rites.`);
+    }
+    if (selected.some(id => !mysticsRiteIds.has(id))) errors.push(`${label}: references an unknown Rite.`);
+    if (
+      order.length !== selected.length
+      || new Set(order).size !== order.length
+      || selectedSorted.some((id, index) => id !== orderSorted[index])
+    ) {
+      errors.push(`${label}: recommended Rite order must contain exactly its selected Rites.`);
+    }
+    riteSummary = `, Rites ${order.join(" → ")}`;
+  }
+  console.log(`✓ ${label}: ${cardCount} cards, ${deckbuildingValue} value, ${territoryNames.join(" → ")}${riteSummary}`);
 }
 
 for (const pair of expectedLeaderPairs) {
@@ -116,4 +138,4 @@ if (errors.length) {
 }
 
 console.log(`\nValidated ${decks.length} recommended ${authority.version} starter Decks from ${authorityPath}.`);
-console.log("Each preset has 30 cards, 60 value, Basic Neutral cards, and three Basic Territories.");
+console.log("Each preset has 30 cards, 60 value, Basic Neutral cards, and three Basic Territories; Mystics starters also carry a valid three-Rite package and recommended Rite order.");

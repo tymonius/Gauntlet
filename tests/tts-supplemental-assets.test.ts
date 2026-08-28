@@ -251,7 +251,7 @@ describe('TTS supplemental component exports', () => {
     expect(packageJson.scripts['tts:check']).toContain('tts-supplemental-geometry.mjs');
     expect(packageJson.scripts['tts:package']).toContain('npm run tts:supplementals');
     expect(packageJson.scripts['tts:package']).toContain('npm run tts:save:assemble');
-    expect(packageJson.scripts['tts:package']).toContain('validate-v070-authoritative-save.mjs');
+    expect(packageJson.scripts['tts:package']).toContain('validate-current-authoritative-save.mjs');
     expect(workflow).toContain('scripts/generate-tts-supplemental-assets.mjs');
     expect(workflow).toContain('scripts/assemble-tts-supplemental-save.mjs');
     expect(workflow).toContain('scripts/tts-supplemental-geometry.mjs');
@@ -262,7 +262,7 @@ describe('TTS supplemental component exports', () => {
     expect(workflow).toContain('render_finalized=true');
     expect(workflow).toContain('render_mystics=true');
     expect(workflow).toContain('Assemble supplemental starter-kit contents');
-    expect(workflow).toContain('Validate authoritative v0.7.0 save contract');
+    expect(workflow).toContain('Validate authoritative current TTS save contract');
     expect(workflow).toContain('run: npm run tts:save:assemble');
   });
 

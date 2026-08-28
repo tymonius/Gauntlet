@@ -50,7 +50,7 @@ npm run tts:finalized-supplementals
 npm run tts:release:stage
 npm run tts:save
 npm run tts:save:assemble
-node tts/validate-v070-authoritative-save.mjs
+node tts/validate-current-authoritative-save.mjs
 npm run tts:release:status
 npm run tts:release:strict
 npm run tts:package
