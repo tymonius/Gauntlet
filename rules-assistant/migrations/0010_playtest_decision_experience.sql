@@ -1,5 +1,8 @@
 PRAGMA foreign_keys = ON;
 
+ALTER TABLE playtest_participants
+  ADD COLUMN selection_reason TEXT;
+
 ALTER TABLE playtest_participant_responses
   ADD COLUMN felt_decided_when TEXT
   CHECK (felt_decided_when IS NULL OR felt_decided_when IN ('never', 'early', 'middle', 'late', 'at_end'));
