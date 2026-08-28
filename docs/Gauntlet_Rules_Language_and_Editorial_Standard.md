@@ -109,3 +109,21 @@ Add a value to the fact registry before merging when it:
 
 The goal is not to template every sentence. The goal is to make volatile facts single-source, traceable, and mechanically checkable.
 
+### Enforcement
+
+These rules are not advisory. The repository's required **Governance Integrity** status check runs `scripts/validate-rules-authority-practices.mjs` on every pull request and blocks merge when the authority contract is violated.
+
+The gate currently enforces all of the following:
+
+- `game-data/current-game.json` must pass structured-authority consistency checks before downstream tooling may load it.
+- Every registered `RULE-FACT` occurrence in the maintained current Rulebook must equal the value derived from structured authority.
+- Selected player-facing surfaces that repeat authoritative facts must agree with the same source, including the Diplomat Peace Treaty threshold, Unique-card summaries, and the Mystics Ritual identity.
+- Existing untracked high-risk numeric Rulebook prose is treated as **authority debt**. Its bootstrap fingerprints are stored in `config/rules-authority-debt-baseline.json`. The baseline is a one-way ratchet: existing debt may be removed by converting prose to tracked facts, but CI rejects new fingerprints, increased occurrence counts, or attempts to expand the baseline.
+- Active documentation may not newly describe a hard-coded version as “current,” “official,” “latest,” or “active.” Active documents must point to lifecycle/current authority instead. Intentionally historical statements belong in historical/release material; an exceptional inline historical statement may be marked `DOC-HISTORICAL`.
+
+Because `governance-integrity` is a required status on the protected default branch and the branch ruleset has no bypass actor, these failures cannot be merged by simply ignoring the convention.
+
+The authority-debt baseline exists only to permit incremental migration of pre-existing prose. It is not permission to leave those claims untracked indefinitely, and it must never be regenerated upward to make a failing pull request pass.
+
+When editing an existing untracked high-risk numeric claim, that edit is deliberately treated as an opportunity to eliminate the debt: move or derive the governing value in structured authority and add the appropriate `RULE-FACT` marker as part of the same change.
+
