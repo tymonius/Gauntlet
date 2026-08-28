@@ -1,4 +1,4 @@
-import type { PlayerId } from './rules';
+import type { PlayerId, V070BattleOutcome } from './rules';
 
 export type V070BattleRuntimeStage =
   | 'onset'
@@ -8,6 +8,7 @@ export type V070BattleRuntimeStage =
   | 'reveal_tactics'
   | 'outcome'
   | 'tiebreak'
+  | 'loss_replacement'
   | 'aftermath'
   | 'halted';
 
@@ -131,6 +132,7 @@ export interface V070BattleRuntime {
   participants: Record<PlayerId, V070BattleParticipantRuntime>;
   terms: V070TermsRuntime;
   gambitOrderOverride: V070GambitOrderOverride | null;
+  pendingOutcome: V070BattleOutcome | null;
   unsupportedEffects: V070UnsupportedBattleEffect[];
 }
 
@@ -174,6 +176,7 @@ export function createV070BattleRuntime(): V070BattleRuntime {
       deferredAfterPoliticalCapital: null,
     },
     gambitOrderOverride: null,
+    pendingOutcome: null,
     unsupportedEffects: [],
   };
 }
