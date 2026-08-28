@@ -45,6 +45,7 @@ describe('Published Browser Rulebook', () => {
     expect(app).toContain('eyebrow.textContent = `Canonical rules · version ${PUBLISHED_VERSION}`');
     expect(app).not.toContain("eyebrow.textContent = 'Canonical rules · version 0.6.3'");
     expect(app).toContain("crypto.subtle.digest('SHA-256', bytes)");
+    expect(app).toContain("applyV070RulebookCorrections");
   });
 
   it('keeps the maintained v0.7.1 candidate source separate from the published v0.7.0 Rulebook', () => {
@@ -64,6 +65,9 @@ describe('Published Browser Rulebook', () => {
     expect(currentRulebook).toContain('Onset is the first phase of the battle sequence.');
     expect(currentRulebook).toContain('Terms occur during Onset');
     expect(currentRulebook).toContain('Withdrawal during Onset ends the battle sequence');
+    expect(currentRulebook).toContain('Ratify six different Proposals');
+    expect(currentRulebook).toContain('if six different Proposals are ratified');
+    expect(currentRulebook).not.toContain('five different Proposals');
     expect(currentRulebook).not.toMatch(/\bpending(?:-|\s+)battle\b/i);
     expect(currentRulebook).not.toMatch(/\bFaction Actions?\b|\bFaction Abilit(?:y|ies)\b|\bfaction procedure\b/i);
   });
