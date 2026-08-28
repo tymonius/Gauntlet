@@ -124,7 +124,7 @@ describe('v0.7.0 turn lifecycle', () => {
     expect(state.stage).toBe('ended');
     expect(state.winner).toBe('A');
     expect(state.turnState).toBeNull();
-    expect(state.events.at(-1)?.payload).toEqual({ route: 'final_territory_capture' });
+    expect(state.events[state.events.length - 1]?.payload).toEqual({ route: 'final_territory_capture' });
   });
 
   test('Draw reshuffles the public Discard Pile deterministically when required', () => {
