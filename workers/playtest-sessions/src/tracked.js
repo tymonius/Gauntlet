@@ -91,8 +91,10 @@ async function createTrackedGame(request, env, headers) {
   const hostKey = randomToken(40);
   const participantToken = randomToken(32);
   const serial = await uniqueSerial(env.DB);
+  const playMode = body.playMode === "physical" ? "physical" : "tts";
   const metadata = {
     mode: "tracked",
+    playMode,
     creationSource: cleanString(body.creationSource || "public-site", 80),
     selectionSource: cleanString(body.selectionSource || "self-selected", 80)
   };
@@ -159,6 +161,7 @@ async function createTrackedGame(request, env, headers) {
     seatIndex: 1,
     faction: choice.faction,
     leader: choice.leader,
+    playMode,
     createdAt: now
   }, 201, headers);
 }
@@ -247,7 +250,7 @@ async function recordTrackedEvent(token, request, env, headers) {
   const body = await readJson(request);
   const participant = await requireParticipant(session.id, body.participantId, body.participantToken, env.DB);
   const eventType = cleanString(body.eventType, 48);
-  const allowed = new Set(["game_started", "game_completed", "game_stopped", "note"]);
+  const allowed = new Set(["game_started", "game_completed", "game_stopped", "note", "diagnostic_flag"]);
   if (!allowed.has(eventType)) throw new HttpError(400, "Unsupported tracked-game event");
 
   const players = await readPlayers(session.id, env.DB);
@@ -257,6 +260,19 @@ async function recordTrackedEvent(token, request, env, headers) {
 
   const now = new Date().toISOString();
   const data = sanitizeMetadata(body.data);
+  if (eventType === "diagnostic_flag") {
+    const allowedFlags = new Set([
+      "dont_know_what_happens_next",
+      "rule_unclear",
+      "no_meaningful_option",
+      "feels_decided",
+      "repeated_or_futile_battle",
+      "component_or_tts_problem"
+    ]);
+    const flag = cleanString(data.flag, 64);
+    if (!allowedFlags.has(flag)) throw new HttpError(400, "Choose a supported diagnostic flag");
+    data.flag = flag;
+  }
   data.participantId = participant.id;
   await insertEvent(env.DB, session.id, eventType, data, now);
   return json({ ok: true, eventType, recordedAt: now, session: await trackedPublicState(session, env.DB) }, 201, headers);
@@ -386,9 +402,10 @@ async function submitPlayerResponse(token, request, env, headers) {
     `INSERT INTO playtest_participant_responses
       (participant_id, session_id, faction_interest, expectation_match,
        leader_distinction, fun, pacing, meaningful_decisions, battle_tension,
-       rules_clarity, faction_clarity, table_organization, play_again, comments,
+       rules_clarity, faction_clarity, table_organization, play_again,
+       felt_decided_when, agency_after_decided, decisive_cause, comments,
        submitted_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
      ON CONFLICT(participant_id) DO UPDATE SET
        faction_interest = excluded.faction_interest,
        expectation_match = excluded.expectation_match,
@@ -401,6 +418,9 @@ async function submitPlayerResponse(token, request, env, headers) {
        faction_clarity = excluded.faction_clarity,
        table_organization = excluded.table_organization,
        play_again = excluded.play_again,
+       felt_decided_when = excluded.felt_decided_when,
+       agency_after_decided = excluded.agency_after_decided,
+       decisive_cause = excluded.decisive_cause,
        comments = excluded.comments,
        updated_at = excluded.updated_at`
   ).bind(
@@ -417,6 +437,9 @@ async function submitPlayerResponse(token, request, env, headers) {
     response.factionClarity,
     response.tableOrganization,
     response.playAgain ? 1 : 0,
+    response.feltDecidedWhen,
+    response.agencyAfterDecided,
+    response.decisiveCause || null,
     response.comments || null,
     now,
     now
@@ -515,10 +538,12 @@ async function trackedPublicState(session, db) {
   else if (Number(eventCounts?.started || 0) > 0) lifecycleState = "playing";
   else if (players.length === 2) lifecycleState = "ready";
 
+  const metadata = parseJsonObject(session.metadata_json);
   return {
     sessionId: session.id,
     sheetSerial: session.sheet_serial,
     rulesVersion: session.rules_version,
+    playMode: metadata.playMode || "physical",
     status: session.status,
     lifecycleState,
     createdAt: session.created_at,
@@ -647,8 +672,25 @@ function normalizePlayerResponse(value) {
     factionClarity: rating(input.factionClarity),
     tableOrganization: rating(input.tableOrganization),
     playAgain: input.playAgain === true,
+    feltDecidedWhen: normalizeDecisionPoint(input.feltDecidedWhen),
+    agencyAfterDecided: normalizeAgencyAfterDecided(input.agencyAfterDecided),
+    decisiveCause: cleanString(input.decisiveCause, 1000),
     comments: cleanString(input.comments, 2000)
   };
+}
+
+function normalizeDecisionPoint(value) {
+  const point = cleanString(value, 32);
+  const allowed = new Set(["never", "early", "middle", "late", "at_end"]);
+  if (!allowed.has(point)) throw new HttpError(400, "Choose when the result first felt decided");
+  return point;
+}
+
+function normalizeAgencyAfterDecided(value) {
+  const agency = cleanString(value, 32);
+  const allowed = new Set(["yes", "some", "no", "not_applicable"]);
+  if (!allowed.has(agency)) throw new HttpError(400, "Choose whether meaningful decisions remained");
+  return agency;
 }
 
 function mapResult(row) {
@@ -692,6 +734,9 @@ function mapResponse(row) {
     factionClarity: Number(row.faction_clarity),
     tableOrganization: Number(row.table_organization),
     playAgain: Number(row.play_again) === 1,
+    feltDecidedWhen: row.felt_decided_when || "never",
+    agencyAfterDecided: row.agency_after_decided || "not_applicable",
+    decisiveCause: row.decisive_cause || "",
     comments: row.comments || "",
     submittedAt: row.submitted_at,
     updatedAt: row.updated_at
