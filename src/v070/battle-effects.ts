@@ -137,10 +137,15 @@ export function resolveV070SupportedRevealEffects(
   const battle = state.battle;
   if (!battle) throw new Error('Battle effect resolution requires an active battle.');
 
-  const ordered = [
-    ...commitments.filter(commitment => commitment.owner === battle.attacker),
-    ...commitments.filter(commitment => commitment.owner === battle.defender),
-  ];
+  const attackerQueue = commitments.filter(commitment => commitment.owner === battle.attacker);
+  const defenderQueue = commitments.filter(commitment => commitment.owner === battle.defender);
+  const ordered: V070BattleCardCommitment[] = [];
+  while (attackerQueue.length > 0 || defenderQueue.length > 0) {
+    const attackerCommitment = attackerQueue.shift();
+    if (attackerCommitment) ordered.push(attackerCommitment);
+    const defenderCommitment = defenderQueue.shift();
+    if (defenderCommitment) ordered.push(defenderCommitment);
+  }
 
   for (const commitment of ordered) {
     const cardId = requireCardId(state, commitment.instanceId);
@@ -229,7 +234,7 @@ function otherActiveBattleCardHasCost(
 ): boolean {
   if (!state.battleRuntime) return false;
   const runtime = state.battleRuntime.participants[owner];
-  const commitments = [runtime.gambit, runtime.tactic]
+  const commitments = [runtime.gambit, ...runtime.additionalGambits, runtime.tactic]
     .filter((item): item is V070BattleCardCommitment => Boolean(item))
     .filter(item => item.instanceId !== excludedInstanceId);
 
