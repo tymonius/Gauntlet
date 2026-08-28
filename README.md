@@ -133,7 +133,7 @@ Canonical-data validation, document/card rendering, TTS generation, release publ
 
 ### src/ and data/
 
-`src/` is the active rules-aware digital-engine codebase, with some older/transitional modules retained as migration evidence while v0.7.0 parity work proceeds. `data/` is historical starter/adapter data; current gameplay authority lives in `game-data/`.
+`src/` is the active rules-aware digital-engine codebase, with some older/transitional modules retained as migration evidence while current-release parity work proceeds. `data/` is historical starter/adapter data; current gameplay authority lives in `game-data/`.
 
 ## Development workflow
 
