@@ -17,17 +17,22 @@ Current electronic Standard Application fee: **$65 per application** (subject to
 
 Repository history now establishes that Gauntlet had a public distribution surface on **June 11, 2021**: the public README linked a copyable Google Sheets game document and a Tabletop Simulator Workshop mod. The repository itself contained only the README, so the underlying 2021 game materials still need to be recovered and compared against later releases.
 
-This means v0.6.0 must be treated as a later derivative/revised work. The v0.6.0 filing may proceed without recovering every historical source if the claim broadly excludes **all pre-v0.6 Gauntlet material**. See `docs/legal/HISTORICAL_PUBLICATION_EVIDENCE.md` and `docs/legal/V0_6_0_COPYRIGHT_DIFF_AUDIT.md`.
+This means the 2026 filings must be layered rather than treating v0.6.0 as the origin of all Gauntlet expression. The current foundation target is **v0.5.3**, excluding appreciable previously published 2020–2021 Gauntlet material and unclaimable/AI-generated matter. v0.6.0 then remains a later derivative/revised filing. See `docs/legal/HISTORICAL_PUBLICATION_EVIDENCE.md`, `docs/legal/V0_5_3_REVIVAL_PUBLICATION_AUDIT.md`, and `docs/legal/V0_6_0_COPYRIGHT_DIFF_AUDIT.md`.
 
 ## Proposed registration set
 
-The safest working strategy is to register distinct works rather than treating the entire repository/release tree as one undifferentiated work:
+The 2026 revival-history audit changes the filing order. v0.5.3 is the first complete fixed edition of the resumed-development cycle; v0.5.0–v0.5.2 are retrospective labels for internal development stages rather than recovered separate public editions.
 
-1. **Gauntlet v0.6.0 Rulebook / game text**
-2. **Gauntlet v0.6.0 card-and-component set** if the provenance audit shows a useful independent claim
-3. **Gauntlet v0.7.0 Rulebook** as a derivative/revised literary work
-4. **Gauntlet v0.7.0 illustrated card set** as a separate mixed literary/visual compilation
-5. **Software** registrations later for commercially important codebases
+The safest working strategy is therefore:
+
+1. **Gauntlet v0.5.3 Complete Playtest Edition** — foundation literary/compilation registration; see `V0_5_3_COPYRIGHT_FILING_WORKSHEET.md`.
+2. **Gauntlet v0.6.0 Rulebook / game text** — substantial later revised/derivative work.
+3. **Gauntlet v0.6.0 card-and-component set** if the provenance audit shows a useful independent claim.
+4. **Gauntlet v0.7.0 Rulebook** as a derivative/revised literary work.
+5. **Gauntlet v0.7.0 illustrated card set** as a separate mixed literary/visual compilation.
+6. **Software** registrations later for commercially important codebases.
+
+Do not automatically register v0.5.4–v0.5.7. Those patch releases should receive separate applications only if they contain enough additional protectable human authorship to justify the filing.
 
 The exact grouping should be checked against the Copyright Office deposit/unit-of-publication rules before submission.
 
