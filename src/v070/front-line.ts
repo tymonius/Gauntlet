@@ -4,6 +4,7 @@ import {
   type V070GameState,
 } from './engine';
 import type { PlayerId } from './rules';
+import { replaceV070CaptureWithOverlay } from './overlays';
 
 export interface V070FrontLineCapture {
   position: number;
@@ -39,6 +40,10 @@ export function advanceV070FrontLine(
   for (let step = 0; step < amount; step += 1) {
     const target = nextV070FrontLineTarget(state, playerId);
     if (!target) break;
+
+    if (replaceV070CaptureWithOverlay(state, target.position, playerId, source)) {
+      continue;
+    }
 
     const previousController = target.controller;
     target.controller = playerId;

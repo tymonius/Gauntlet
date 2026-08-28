@@ -22,12 +22,29 @@ import {
   advanceV070FrontLine,
   nextV070FrontLineTarget,
 } from './front-line';
+import {
+  expireV070TerritoryTurnRestrictions,
+  openV070StartTurnOverlayChoice,
+  resolveV070OverlayEntryRequirements,
+  resolveV070StartTurnOverlayChoice,
+} from './overlays';
 
 export type V070TurnAction =
   | { type: 'resolve_capture'; playerId: PlayerId }
   | { type: 'draw_turn_card'; playerId: PlayerId }
   | { type: 'pass_opening'; playerId: PlayerId }
-  | { type: 'choose_movement'; playerId: PlayerId; choice: MovementChoice }
+  | {
+      type: 'choose_movement';
+      playerId: PlayerId;
+      choice: MovementChoice;
+      discardInstanceId?: string;
+    }
+  | {
+      type: 'resolve_start_turn_overlay_choice';
+      playerId: PlayerId;
+      choice: 'discard' | 'withdraw';
+      discardInstanceId?: string;
+    }
   | { type: 'pass_denouement'; playerId: PlayerId }
   | { type: 'complete_cleanup'; playerId: PlayerId; discardInstanceIds?: readonly string[] };
 
@@ -45,6 +62,9 @@ export function reduceV070TurnAction(
   if (state.battle) {
     throw new V070GameActionError('Resolve the active battle before continuing the turn.');
   }
+  if (state.pendingTurnChoice && action.type !== 'resolve_start_turn_overlay_choice') {
+    throw new V070GameActionError('Resolve the pending start-of-turn Overlay choice first.');
+  }
 
   const next = structuredClone(state) as V070GameState;
 
@@ -59,7 +79,15 @@ export function reduceV070TurnAction(
       passOpening(next, action.playerId);
       break;
     case 'choose_movement':
-      chooseMovement(next, action.playerId, action.choice);
+      chooseMovement(next, action.playerId, action.choice, action.discardInstanceId);
+      break;
+    case 'resolve_start_turn_overlay_choice':
+      resolveV070StartTurnOverlayChoice(
+        next,
+        action.playerId,
+        action.choice,
+        action.discardInstanceId,
+      );
       break;
     case 'pass_denouement':
       passDenouement(next, action.playerId);
@@ -217,6 +245,7 @@ function chooseMovement(
   state: V070GameState,
   playerId: PlayerId,
   choice: MovementChoice,
+  discardInstanceId?: string,
 ): void {
   requirePhase(state, 'movement');
   const turnState = requireTurnState(state);
@@ -225,6 +254,9 @@ function chooseMovement(
   }
 
   if (choice === 'hold') {
+    if (discardInstanceId) {
+      throw new V070GameActionError('Hold has no Territory Overlay entry cost.');
+    }
     state.turnState = applyV070MovementChoice(turnState, choice);
     state.turnState = advanceV070TurnPhase(state.turnState);
     appendV070Event(state, {
@@ -244,6 +276,12 @@ function chooseMovement(
   const destination = origin + delta;
 
   assertMovementDestination(playerId, choice, destination, state.board.length);
+  resolveV070OverlayEntryRequirements(
+    state,
+    playerId,
+    destination,
+    discardInstanceId,
+  );
 
   if (opponent.position === destination) {
     const lastStand = canInitiateV070LastStand({
@@ -379,6 +417,7 @@ function completeCleanup(
   state.activePlayer = next;
   state.turnNumber += 1;
   state.turnState = createV070TurnState();
+  expireV070TerritoryTurnRestrictions(state);
 
   appendV070Event(state, {
     type: 'turn_started',
@@ -386,6 +425,8 @@ function completeCleanup(
     visibility: 'public',
     payload: { turnNumber: state.turnNumber, phase: state.turnState.phase },
   });
+
+  openV070StartTurnOverlayChoice(state, next);
 }
 
 function movementDelta(playerId: PlayerId, choice: Exclude<MovementChoice, 'hold'>): number {

@@ -17,6 +17,12 @@ import {
 } from './engine';
 import { drawV070Cards } from './turn-engine';
 import { advanceV070FrontLine } from './front-line';
+import {
+  V070_DEMILITARIZED_ZONE_ID,
+  placeV070OverlayFromHand,
+  registerV070DmzEntryLock,
+  withdrawV070PlayersFromNewDemilitarizedZone,
+} from './overlays';
 import type { V070ProposalChoiceKind } from './battle-types';
 
 export const V070_EXECUTABLE_PROPOSAL_IDS = [
@@ -385,7 +391,13 @@ export function useV070GunboatDiplomacy(
 export function resolveV070TermsCardChoice(
   state: V070GameState,
   playerId: PlayerId,
-  choice?: 'ratify' | 'decline_ratification' | 'draw_two' | 'bank_asset',
+  choice?:
+    | 'ratify'
+    | 'decline_ratification'
+    | 'draw_two'
+    | 'bank_asset'
+    | 'place_overlay'
+    | 'decline_overlay',
   cardInstanceId?: string,
   replaceAssetInstanceId?: string,
 ): void {
@@ -396,6 +408,65 @@ export function resolveV070TermsCardChoice(
   }
 
   switch (pending.kind) {
+    case 'demilitarized_zone': {
+      const diplomatId = requireTermsPlayer(terms.offerer);
+      const acceptingPlayer = requireTermsPlayer(terms.acceptingPlayer);
+      const proposal = requireProposal(terms.proposalId);
+
+      if (choice === 'decline_overlay') {
+        terms.termsCardChoice = null;
+        settleAcceptedTerms(state, diplomatId, acceptingPlayer, proposal);
+        return;
+      }
+      if (choice !== 'place_overlay' || !cardInstanceId) {
+        throw new V070GameActionError(
+          'Demilitarized Zone requires place_overlay with a Hand copy, or decline_overlay.',
+        );
+      }
+      requireCardInZone(
+        state,
+        diplomatId,
+        'hand',
+        cardInstanceId,
+        V070_DEMILITARIZED_ZONE_ID,
+      );
+
+      const battle = requireBattle(state);
+      placeV070OverlayFromHand(
+        state,
+        diplomatId,
+        cardInstanceId,
+        battle.contestedPosition,
+        'accepted_terms',
+      );
+      registerV070DmzEntryLock(
+        state,
+        battle.contestedPosition,
+        cardInstanceId,
+      );
+      withdrawV070PlayersFromNewDemilitarizedZone(state);
+      terms.termsCardChoice = null;
+
+      appendV070Event(state, {
+        type: 'demilitarized_zone_terms_applied',
+        actor: diplomatId,
+        visibility: 'public',
+        payload: {
+          cardInstanceId,
+          territoryPosition: battle.contestedPosition,
+          placedTurn: state.turnNumber,
+        },
+      });
+
+      if (hasDemilitarizedZoneInHand(state, diplomatId)) {
+        beginTermsCardChoice(state, 'demilitarized_zone', diplomatId, null);
+        return;
+      }
+
+      settleAcceptedTerms(state, diplomatId, acceptingPlayer, proposal);
+      return;
+    }
+
     case 'good_faith_set_aside': {
       if (!cardInstanceId) throw new V070GameActionError('Good Faith requires one card from Hand.');
       const player = state.players[playerId];
@@ -973,7 +1044,12 @@ function resolveAcceptedProposal(
       throw new V070GameActionError(`${proposal.name} accepted effect requires its Proposal choice window.`);
   }
 
-  settleAcceptedTerms(state, diplomatId, acceptingPlayer, proposal);
+  continueAcceptedTermsAfterProposalEffect(
+    state,
+    diplomatId,
+    acceptingPlayer,
+    proposal,
+  );
 }
 
 function applyRefusedProposalImmediate(
@@ -1016,7 +1092,12 @@ function finishMutualDisarmamentAccepted(state: V070GameState): void {
   drawIntoHand(state, acceptingPlayer, 1, 'Mutual Disarmament accepted effect');
   const battle = requireBattle(state);
   applyAcceptedWithdrawal(state, [battle.attacker, battle.defender]);
-  settleAcceptedTerms(state, diplomatId, acceptingPlayer, proposal);
+  continueAcceptedTermsAfterProposalEffect(
+    state,
+    diplomatId,
+    acceptingPlayer,
+    proposal,
+  );
 }
 
 function finishBothWithdrawAcceptedTerms(state: V070GameState): void {
@@ -1027,7 +1108,12 @@ function finishBothWithdrawAcceptedTerms(state: V070GameState): void {
   const battle = requireBattle(state);
 
   applyAcceptedWithdrawal(state, [battle.attacker, battle.defender]);
-  settleAcceptedTerms(state, diplomatId, acceptingPlayer, proposal);
+  continueAcceptedTermsAfterProposalEffect(
+    state,
+    diplomatId,
+    acceptingPlayer,
+    proposal,
+  );
 }
 
 function applyAcceptedWithdrawal(
@@ -1040,6 +1126,28 @@ function applyAcceptedWithdrawal(
     battle,
     'terms_accepted',
     withdrawal.positions,
+  );
+}
+
+function continueAcceptedTermsAfterProposalEffect(
+  state: V070GameState,
+  diplomatId: PlayerId,
+  acceptingPlayer: PlayerId,
+  proposal: V070CanonicalProposal,
+): void {
+  if (hasDemilitarizedZoneInHand(state, diplomatId)) {
+    beginTermsCardChoice(state, 'demilitarized_zone', diplomatId, null);
+    return;
+  }
+  settleAcceptedTerms(state, diplomatId, acceptingPlayer, proposal);
+}
+
+function hasDemilitarizedZoneInHand(
+  state: V070GameState,
+  diplomatId: PlayerId,
+): boolean {
+  return state.players[diplomatId].zones.hand.some(instanceId =>
+    state.cardInstances[instanceId]?.cardId === V070_DEMILITARIZED_ZONE_ID
   );
 }
 

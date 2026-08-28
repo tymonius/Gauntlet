@@ -17,6 +17,10 @@ import {
 import { drawV070Cards } from './turn-engine';
 import { resolveV070SupportedRevealEffects } from './battle-effects';
 import {
+  activeV070OverlayAtBattleOnset,
+  resolveV070OverlayAfterBattle,
+} from './overlays';
+import {
   applyV070Leverage,
   initializeV070TermsWindow,
   offerV070Terms,
@@ -73,7 +77,13 @@ export type V070BattleAction =
   | {
       type: 'resolve_terms_card_choice';
       playerId: PlayerId;
-      choice?: 'ratify' | 'decline_ratification' | 'draw_two' | 'bank_asset';
+      choice?:
+        | 'ratify'
+        | 'decline_ratification'
+        | 'draw_two'
+        | 'bank_asset'
+        | 'place_overlay'
+        | 'decline_overlay';
       cardInstanceId?: string;
       replaceAssetInstanceId?: string;
     }
@@ -246,6 +256,11 @@ export function selectV070BattleDie(runtime: V070BattleRuntime, playerId: Player
 function ensureBattleRuntime(state: V070GameState): V070BattleRuntime {
   if (!state.battleRuntime) {
     state.battleRuntime = createV070BattleRuntime();
+    if (!state.battle) throw new V070GameActionError('There is no active battle.');
+    state.battleRuntime.activeOverlayAtOnset = activeV070OverlayAtBattleOnset(
+      state,
+      state.battle.contestedPosition,
+    );
     initializeV070TermsWindow(state);
   }
   return state.battleRuntime;
@@ -818,6 +833,12 @@ function completeAftermathInternal(
       },
     },
   });
+
+  resolveV070OverlayAfterBattle(
+    state,
+    battle.contestedPosition,
+    runtime.activeOverlayAtOnset,
+  );
 
   state.battle = null;
   state.battleRuntime = null;

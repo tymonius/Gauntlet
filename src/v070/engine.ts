@@ -12,6 +12,29 @@ export interface V070CardInstance {
   owner: PlayerId;
 }
 
+export interface V070OverlayAttachment {
+  instanceId: string;
+  owner: PlayerId;
+  territoryInstanceId: string;
+  placedTurn: number;
+  sequence: number;
+}
+
+export interface V070PendingTurnChoice {
+  kind: 'demilitarized_zone_upkeep';
+  playerId: PlayerId;
+  overlayInstanceId: string;
+  territoryInstanceId: string;
+}
+
+export interface V070TerritoryTurnRestriction {
+  kind: 'no_entry';
+  source: 'demilitarized_zone';
+  sourceInstanceId: string;
+  territoryInstanceId: string;
+  turnNumber: number;
+}
+
 export interface V070PlayerZones {
   drawPile: string[];
   hand: string[];
@@ -46,6 +69,7 @@ export interface V070PlayerState {
 }
 
 export interface V070BoardTerritory {
+  territoryInstanceId: string;
   position: number;
   territoryId: string;
   contributedBy: PlayerId;
@@ -80,6 +104,10 @@ export interface V070GameState {
   turnState: V070TurnState | null;
   battle: V070BattleState | null;
   battleRuntime: V070BattleRuntime | null;
+  overlays: V070OverlayAttachment[];
+  nextOverlaySequence: number;
+  territoryTurnRestrictions: V070TerritoryTurnRestriction[];
+  pendingTurnChoice: V070PendingTurnChoice | null;
   winner: PlayerId | null;
   events: V070GameEvent[];
 }
@@ -180,6 +208,10 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
     turnState: null,
     battle: null,
     battleRuntime: null,
+    overlays: [],
+    nextOverlaySequence: 1,
+    territoryTurnRestrictions: [],
+    pendingTurnChoice: null,
     winner: null,
     events: [],
   };
@@ -361,6 +393,7 @@ function completeSetup(state: V070GameState, firstPlayer: PlayerId): void {
 
   const boardTerritories = [
     ...orderA.map((territoryId, index): V070BoardTerritory => ({
+      territoryInstanceId: `A-territory-${String(index + 1).padStart(2, '0')}-${territoryId}`,
       position: index,
       territoryId,
       contributedBy: 'A',
@@ -368,6 +401,7 @@ function completeSetup(state: V070GameState, firstPlayer: PlayerId): void {
       occupant: index === 0 ? 'A' : null,
     })),
     ...[...orderB].reverse().map((territoryId, index): V070BoardTerritory => ({
+      territoryInstanceId: `B-territory-${String(index + 1).padStart(2, '0')}-${territoryId}`,
       position: index + 3,
       territoryId,
       contributedBy: 'B',
@@ -397,6 +431,7 @@ function completeSetup(state: V070GameState, firstPlayer: PlayerId): void {
     visibility: 'public',
     payload: {
       board: boardTerritories.map(territory => ({
+        territoryInstanceId: territory.territoryInstanceId,
         position: territory.position,
         territoryId: territory.territoryId,
         controller: territory.controller,
