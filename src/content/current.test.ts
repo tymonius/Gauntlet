@@ -46,6 +46,18 @@ describe('current digital rules surface', () => {
     }
   });
 
+  test('exposes the released starter setup and private-view engine surface', () => {
+    for (const name of [
+      'loadV070StarterDecks',
+      'createV070StarterGame',
+      'reduceV070SetupAction',
+      'viewV070GameForPlayer',
+    ]) {
+      expect(typeof current[name as keyof typeof current]).toBe('function');
+    }
+    expect(current.v070StarterDecks.size).toBe(12);
+  });
+
   test('uses released v0.7.0 wording for battle initiation and Onset', () => {
     const advanceGuard = current.v070CanonicalContent.cardsById.get('neutral-advance-guard');
     const forcedMarch = current.v070CanonicalContent.cardsById.get('neutral-forced-march');
