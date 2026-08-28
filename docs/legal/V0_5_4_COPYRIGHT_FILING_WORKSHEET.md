@@ -145,9 +145,13 @@ If this v0.5.4 worksheet becomes the operative foundation filing:
 
 ## Remaining factual issue
 
-One fact controls which foundation worksheet becomes operative:
+The author has now confirmed there was **no express statement that the materials were private**.
 
-- [ ] Were the June 21 printed rulebooks/cards simply given or lent to the playtester(s) without any no-copy/no-sharing restriction, or were they provided only for a restricted/private playtest with an express or understood prohibition on further dissemination?
+One fact still controls which foundation worksheet becomes operative:
+
+- [ ] Were the June 21 cards/rulebooks given only to a small, definitely selected group of playtesters/friends for the purpose of testing, or were copies handed out more broadly beyond that selected playtest/social circle?
+
+Current Copyright Office practice recognizes that a restricted exchange among social acquaintances or a definitely selected group for a limited purpose may remain unpublished even without a formal confidentiality label. Lack of an express privacy instruction therefore weighs toward publication but is not dispositive.
 
 ## Sources
 
