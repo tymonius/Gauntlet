@@ -1,6 +1,5 @@
 import {
   v070CanonicalContent,
-  type V070CanonicalCard,
   type V070CanonicalProposal,
 } from '../content/v070';
 import {
@@ -24,6 +23,12 @@ import {
   withdrawV070PlayersFromNewDemilitarizedZone,
 } from './overlays';
 import type { V070ProposalChoiceKind } from './battle-types';
+import {
+  bankV070AssetFromHand,
+  bankableV070AssetInstanceIds,
+} from './assets';
+
+export { bankableV070AssetInstanceIds } from './assets';
 
 export const V070_EXECUTABLE_PROPOSAL_IDS = [
   'de-escalation',
@@ -924,22 +929,6 @@ export function v070PoliticalCapitalPending(state: V070GameState): boolean {
   return Boolean(state.battleRuntime?.terms.politicalCapitalPending);
 }
 
-export function bankableV070AssetInstanceIds(
-  state: V070GameState,
-  playerId: PlayerId,
-): string[] {
-  const player = state.players[playerId];
-  const replaceable = replaceableV070AssetInstanceIds(state, playerId);
-  const hasCapacity = player.zones.assetBank.length < player.controlledTerritories.length;
-
-  return player.zones.hand.filter(instanceId => {
-    const card = canonicalCardForInstance(state, instanceId);
-    if (!cardHasAssetEffect(card)) return false;
-    if (violatesSingleBankedCopy(state, playerId, card)) return false;
-    return hasCapacity || replaceable.length > 0;
-  });
-}
-
 function continueAcceptedTerms(
   state: V070GameState,
   diplomatId: PlayerId,
@@ -1644,112 +1633,17 @@ function bankOptionalAssetFromHand(
 ): void {
   if (!instanceId) {
     if (replaceAssetInstanceId) {
-      throw new V070GameActionError('An Asset cannot be replaced when the player declines to bank a new Asset.');
+      throw new V070GameActionError(
+        'An Asset cannot be replaced when the player declines to bank a new Asset.',
+      );
     }
     return;
   }
 
-  const player = state.players[playerId];
-  if (!bankableV070AssetInstanceIds(state, playerId).includes(instanceId)) {
-    throw new V070GameActionError('That Hand card cannot legally be banked as an Asset now.');
-  }
-
-  const atLimit = player.zones.assetBank.length >= player.controlledTerritories.length;
-  if (atLimit) {
-    if (!replaceAssetInstanceId) {
-      throw new V070GameActionError('Banking at the Asset limit requires choosing a replaceable Asset.');
-    }
-    const replaceable = replaceableV070AssetInstanceIds(state, playerId);
-    if (!replaceable.includes(replaceAssetInstanceId)) {
-      throw new V070GameActionError('That banked Asset cannot be replaced now.');
-    }
-    const replacementIndex = player.zones.assetBank.indexOf(replaceAssetInstanceId);
-    player.zones.assetBank.splice(replacementIndex, 1);
-    player.zones.discardPile.push(replaceAssetInstanceId);
-    appendV070Event(state, {
-      type: 'asset_replaced',
-      actor: playerId,
-      visibility: 'public',
-      payload: {
-        instanceId: replaceAssetInstanceId,
-        cardId: state.cardInstances[replaceAssetInstanceId]?.cardId,
-        purpose,
-      },
-    });
-  } else if (replaceAssetInstanceId) {
-    throw new V070GameActionError('Asset replacement is available only when banking at the Asset limit.');
-  }
-
-  player.zones.hand.splice(player.zones.hand.indexOf(instanceId), 1);
-  player.zones.assetBank.push(instanceId);
-  appendV070Event(state, {
-    type: 'asset_banked',
-    actor: playerId,
-    visibility: 'public',
-    payload: {
-      instanceId,
-      cardId: state.cardInstances[instanceId]?.cardId,
-      purpose,
-    },
+  bankV070AssetFromHand(state, playerId, instanceId, {
+    replaceAssetInstanceId,
+    purpose,
   });
-}
-
-function replaceableV070AssetInstanceIds(
-  state: V070GameState,
-  playerId: PlayerId,
-): string[] {
-  const bank = state.players[playerId].zones.assetBank;
-  const extraordinary = bank.find(instanceId =>
-    state.cardInstances[instanceId]?.cardId === 'intelligence-extraordinary-rendition'
-  );
-
-  // Extraordinary Rendition must be the first Asset discarded, but its bound
-  // card also has a lifecycle that the v0.7.0 authoritative state does not yet
-  // represent. Do not permit an Asset replacement that would silently orphan
-  // or lose that bound card.
-  if (extraordinary) return [];
-
-  return bank.filter(instanceId => {
-    const card = canonicalCardForInstance(state, instanceId);
-    const assetText = card.effects
-      .filter(effect => effect.label === 'Asset')
-      .map(effect => effect.text)
-      .join(' ');
-    if (/cannot voluntarily discard this card at another time/i.test(assetText)) return false;
-    // Tariffs is replaceable only after the turn in which it was banked. The
-    // current engine does not yet persist bank-age metadata, so do not
-    // over-permit replacement while that timing cannot be proven.
-    if (/cannot voluntarily cause it to leave play during the turn it is banked/i.test(assetText)) return false;
-    return true;
-  });
-}
-
-function violatesSingleBankedCopy(
-  state: V070GameState,
-  playerId: PlayerId,
-  card: V070CanonicalCard,
-): boolean {
-  const restrictionText = card.effects.map(effect => effect.text).join(' ');
-  if (!/only one banked|cannot bank it while you control another banked/i.test(restrictionText)) {
-    return false;
-  }
-  return state.players[playerId].zones.assetBank.some(instanceId =>
-    state.cardInstances[instanceId]?.cardId === card.id
-  );
-}
-
-function canonicalCardForInstance(
-  state: V070GameState,
-  instanceId: string,
-): V070CanonicalCard {
-  const cardId = state.cardInstances[instanceId]?.cardId;
-  const card = cardId ? v070CanonicalContent.cardsById.get(cardId) : undefined;
-  if (!card) throw new V070GameActionError(`Unknown card instance ${instanceId}.`);
-  return card;
-}
-
-function cardHasAssetEffect(card: V070CanonicalCard): boolean {
-  return card.effects.some(effect => effect.label === 'Asset');
 }
 
 function ratifyProposal(
