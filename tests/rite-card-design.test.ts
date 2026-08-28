@@ -28,6 +28,7 @@ describe("Mystics Rite card prototypes", () => {
     expect(reviewPage).toContain('href="#rite-cards"');
     expect(reviewPage).toContain('href="rite-card.css"');
     expect(reviewPage).toContain('type="module" src="rite-card.js"');
+    expect(reviewPage).not.toContain('data-rite-count>3</span>');
     expect(reviewPage).toContain('<span data-rite-count>6</span> double-sided Rites');
     for (const shortName of ["Echoes", "Blood", "Crossing", "Shattering", "Consecration", "Equivalence"]) {
       expect(reviewPage).toContain(shortName);
