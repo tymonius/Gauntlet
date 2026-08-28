@@ -7,7 +7,7 @@ const SOURCE_SHA256 = '7027ef7fe7dcfd59cf43ae9f68d2bd2760667a128839a8b4f14155932
 const CHAPTER_11_URL = './player-facing/chapter-11.md';
 const CURRENT_SOURCE_URL = './player-facing/current-rulebook.md';
 const PUBLISHED_SOURCE_URL = '../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook.md';
-const PDF_URL = '../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook_Booklet.pdf';
+const PDF_URL = '../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook_Booklet.pdf?rev=419138bb';
 const RELEASED_MODE = 'released';
 const CANDIDATE_MODE = 'candidate';
 const PUBLISHED_VERSION = 'v0.7.0';
