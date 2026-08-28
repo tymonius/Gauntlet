@@ -29,7 +29,6 @@ jobs:
             /scripts/validate-clean-v063-booklet.mjs
             /scripts/validate-v063-rulebook-wordmark.mjs
             /scripts/materialize-clean-v063-booklet.mjs
-            /scripts/validate-current-rulebook-booklet-provenance.mjs
             /scripts/publication-utils.mjs
             /rules-assistant/v063-last-stand-language.js
             /rulebook/index.html
@@ -71,12 +70,11 @@ jobs:
           node scripts/render-clean-v063-booklet.mjs
           node scripts/validate-clean-v063-booklet.mjs
 
-      - name: Exercise canonical materialization
+      - name: Exercise historical v0.6.3 materialization
         shell: bash
         run: |
           set -euo pipefail
           node scripts/materialize-clean-v063-booklet.mjs
-          node scripts/validate-current-rulebook-booklet-provenance.mjs
 
       - name: Upload current booklet review artifact
         uses: actions/upload-artifact@v4

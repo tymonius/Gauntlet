@@ -264,3 +264,39 @@
     box-shadow: none;
   }
 }
+
+
+/* The booklet embeds the Browser Rulebook Card Anatomy route at its normal
+   desktop geometry. The production page scales the entire iframe as one unit;
+   no child card, marker, or Arcane layout is resized here. */
+body.card-anatomy-embed {
+  margin: 0;
+  min-width: 0;
+  background: #fffaf0;
+}
+body.card-anatomy-embed > :not(.rulebook-shell) {
+  display: none !important;
+}
+body.card-anatomy-embed .rulebook-shell {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  display: block;
+}
+body.card-anatomy-embed .rulebook-sidebar {
+  display: none !important;
+}
+body.card-anatomy-embed .rulebook-content {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+body.card-anatomy-embed .rulebook-content > :not(.card-anatomy-guide) {
+  display: none !important;
+}
+body.card-anatomy-embed .card-anatomy-guide {
+  margin: 0;
+}

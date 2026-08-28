@@ -1,3 +1,4 @@
+const CARD_ANATOMY_EMBED = new URLSearchParams(window.location.search).get('embed') === 'card-anatomy';
 const CARD_ID = 'military-unbroken-ranks';
 const ARCANE_CARD_ID = 'mystics-witchcraft';
 
@@ -20,7 +21,7 @@ function cardFigureMarkup() {
         class="card-anatomy-card"
         src="../card-design/card-print-render.html?fit=production&amp;card=${CARD_ID}"
         title="Current production render of Unbroken Ranks"
-        loading="lazy"
+        loading="${CARD_ANATOMY_EMBED ? 'eager' : 'lazy'}"
         tabindex="-1"
         aria-hidden="true"
       ></iframe>
@@ -46,7 +47,7 @@ function arcaneCropMarkup() {
       class="card-anatomy-arcane-card"
       src="../card-design/card-print-render.html?fit=production&amp;card=${ARCANE_CARD_ID}"
       title="Cropped current production render of the Witchcraft card header"
-      loading="lazy"
+      loading="${CARD_ANATOMY_EMBED ? 'eager' : 'lazy'}"
       tabindex="-1"
     ></iframe>
   `;
@@ -87,6 +88,19 @@ function positionCardMarkers(section) {
 
   section.classList.add('markers-positioned');
   return true;
+}
+
+function updateEmbedReadiness(section, attempts = 0) {
+  if (!CARD_ANATOMY_EMBED || !section?.isConnected) return;
+  const mainFrame = section.querySelector('.card-anatomy-card');
+  const arcaneFrame = section.querySelector('.card-anatomy-arcane-card');
+  const mainReady = mainFrame?.contentDocument?.body?.dataset.renderReady === 'true';
+  const arcaneReady = arcaneFrame?.contentDocument?.body?.dataset.renderReady === 'true';
+  if (section.classList.contains('markers-positioned') && mainReady && arcaneReady) {
+    document.documentElement.dataset.cardAnatomyEmbedReady = 'true';
+    return;
+  }
+  if (attempts < 240) setTimeout(() => updateEmbedReadiness(section, attempts + 1), 25);
 }
 
 function scheduleMarkerPositioning(section, attempts = 0) {
@@ -197,7 +211,9 @@ function enhanceAnatomy() {
   removeEnhancement();
   const section = wrapAuthoredAnatomy();
   if (!section) return;
+  if (CARD_ANATOMY_EMBED) document.body.classList.add('card-anatomy-embed');
   wireMarkerPositioning(section);
+  updateEmbedReadiness(section);
 }
 
 document.addEventListener('gauntlet:rulebook-rendered', (event) => {
