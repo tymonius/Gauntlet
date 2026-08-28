@@ -15,6 +15,9 @@ export {
 } from './v070';
 
 export * from '../v070/rules';
+export * from '../v070/starter-decks';
+export * from '../v070/engine';
+export * from '../v070/views';
 
 /**
  * These procedure modules remain explicitly versioned because they were
