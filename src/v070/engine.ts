@@ -27,6 +27,14 @@ export interface V070PendingTurnChoice {
   territoryInstanceId: string;
 }
 
+export interface V070TerritoryTurnRestriction {
+  kind: 'no_entry';
+  source: 'demilitarized_zone';
+  sourceInstanceId: string;
+  territoryInstanceId: string;
+  turnNumber: number;
+}
+
 export interface V070PlayerZones {
   drawPile: string[];
   hand: string[];
@@ -98,6 +106,7 @@ export interface V070GameState {
   battleRuntime: V070BattleRuntime | null;
   overlays: V070OverlayAttachment[];
   nextOverlaySequence: number;
+  territoryTurnRestrictions: V070TerritoryTurnRestriction[];
   pendingTurnChoice: V070PendingTurnChoice | null;
   winner: PlayerId | null;
   events: V070GameEvent[];
@@ -201,6 +210,7 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
     battleRuntime: null,
     overlays: [],
     nextOverlaySequence: 1,
+    territoryTurnRestrictions: [],
     pendingTurnChoice: null,
     winner: null,
     events: [],
