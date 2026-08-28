@@ -110,6 +110,7 @@ describe('v0.7.0 Diplomat Terms runtime', () => {
       ratifiedProposals: [],
       cordialityUsedTurn: null,
       politicalCapitalUsedTurn: null,
+      detenteUsedTurn: null,
     });
     expect(state.players.B.diplomats).toBeNull();
   });

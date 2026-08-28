@@ -26,6 +26,7 @@ export interface V070DiplomatState {
   ratifiedProposals: string[];
   cordialityUsedTurn: number | null;
   politicalCapitalUsedTurn: number | null;
+  detenteUsedTurn: number | null;
 }
 
 export interface V070PlayerState {
@@ -156,6 +157,7 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
             ratifiedProposals: [],
             cordialityUsedTurn: null,
             politicalCapitalUsedTurn: null,
+            detenteUsedTurn: null,
           }
         : null,
     };
