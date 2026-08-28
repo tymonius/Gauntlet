@@ -48,7 +48,7 @@ const SUBJECT_PRESENTATIONS = [
   },
   {
     subject: /^Peace Treaty$/i,
-    answer: "You do not win immediately. At the start of your next turn, after Capture and before Draw, you win if five different Proposals are ratified.",
+    answer: "You do not win immediately. At the start of your next turn, after Capture and before Draw, you win if six different Proposals are ratified.",
     details: "The five ratified Proposals must still be present at that victory check."
   },
   {
