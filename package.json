@@ -67,7 +67,8 @@
     "tts:environment": "node scripts/generate-tts-environment-assets.mjs",
     "release:v070:finalize": "node scripts/finalize-v070-publication.mjs",
     "rules:facts:check": "node scripts/sync-current-rulebook-facts.mjs",
-    "rules:facts:sync": "node scripts/sync-current-rulebook-facts.mjs --write"
+    "rules:facts:sync": "node scripts/sync-current-rulebook-facts.mjs --write",
+    "rules:authority:check": "node scripts/validate-rules-authority-practices.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
