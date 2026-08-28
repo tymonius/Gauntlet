@@ -125,9 +125,9 @@ Supporting publication source:
 - Git blob: `48cc589e78029b65cf59dbeca550dfd88f14ad47`
 
 The corresponding file on current `main` differs from the publication snapshot. Before upload:
-- recover the historical PDF directly from the publication commit;
-- calculate and record an independent SHA-256;
-- retain the commit/path/blob evidence with the filing record;
+- use the historical PDF from the publication commit;
+- verify SHA-256 `a8324dcb9a88e95b4b5557aedd4c4c23d938fe721edfb34df4c819efa258d931` and size 15,475,969 bytes;
+- retain the commit/path/blob/hash evidence with the filing record;
 - confirm the deposit visibly contains the claimed human-authored material;
 - confirm Copyright Office file-size/upload requirements.
 
@@ -139,7 +139,7 @@ The corresponding file on current `main` differs from the publication snapshot. 
 - [x] Complete the targeted expressive-provenance pass. See `V0_6_0_EXPRESSIVE_PROVENANCE_AUDIT.md`.
 - [x] Identify the known appreciable AI-drafted literary block: the three-paragraph Welcome.
 - [x] Remove Rulebook-image provenance as a Worksheet A blocker by excluding all pictorial material from this Literary Work claim.
-- [ ] Recover the historical Rulebook PDF and calculate an independent SHA-256.
+- [x] Historical Rulebook PDF recovered and independently hashed: SHA-256 `a8324dcb9a88e95b4b5557aedd4c4c23d938fe721edfb34df4c819efa258d931` (15,475,969 bytes).
 - [x] No appreciable third-party literary material has been identified in the July 20 Markdown source; all pictorial material is separately excluded from Worksheet A.
 - [x] Working Nation of First Publication: **United States**, with a filing note that first publication occurred online through a public GitHub repository and was accessible internationally. The Copyright Office's online-publication guidance acknowledges that place-of-publication law remains unsettled; re-check the field against then-current Office guidance at filing.
 - [x] Working claimant: **Tymon Scott**, as author/current documented owner, unless a written transfer of the copyright occurs before filing.
