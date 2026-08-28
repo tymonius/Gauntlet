@@ -127,8 +127,10 @@ describe("v0.7.0 player-site release preparation", () => {
     const html = read("card-reference/index.html");
     const app = read("card-reference/app.js");
 
+    expect(html).toContain("<title>Gauntlet v0.7.0 Card Reference</title>");
     expect(html).toContain("Quick rules lookup · v0.7.0 production");
     expect(html).toContain("Current v0.7.0 production card reference.");
+    expect(app).toContain("document.title = `Gauntlet ${state.version} Card Reference`;");
     expect(html).toContain("v0.7.0 Release");
     expect(app).toContain("loadCurrentGame");
     expect(app).toContain("currentGame.cards");
@@ -164,6 +166,8 @@ describe("v0.7.0 player-site release preparation", () => {
   it("keeps the Deckbuilder identified as v0.7.0 while runtime data remains current-game authoritative", () => {
     const html = read("deckbuilder/index.html");
     const runtime = read("deckbuilder/v061-runtime.js");
+    const print = read("deckbuilder/print.js");
+    const bulkPrint = read("deckbuilder/print-all-starters.js");
 
     expect(html).toContain("Gauntlet v0.7.0 Deckbuilder");
     expect(html).toContain("Playtest tool · canonical v0.7.0");
@@ -177,6 +181,11 @@ describe("v0.7.0 player-site release preparation", () => {
     expect(runtime).toContain('data.gameVersion = state.currentGameVersion || "current-game"');
     expect(runtime).toContain('document.title = `Gauntlet ${data.displayVersion} Deckbuilder`');
     expect(runtime).not.toContain('const CANONICAL_URL = "../releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json";');
+    expect(print).toContain('state.currentGameDisplayVersion || state.currentGameVersion || "current"');
+    expect(print).not.toContain("v0.6.1");
+    expect(bulkPrint).toContain('import("../game-data/current-game.mjs")');
+    expect(bulkPrint).not.toContain("starter-decks.json");
+    expect(bulkPrint).not.toContain("v0.6.1");
   });
 
   it("removes stale player-facing v0.6.3/v0.6.4 identity from the promoted surfaces", () => {
