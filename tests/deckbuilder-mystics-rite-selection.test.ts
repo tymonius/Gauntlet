@@ -64,7 +64,7 @@ describe('Deckbuilder Mystics Rite selection', () => {
 
   it('keeps candidate snapshots invalid until three legal Rites are chosen while released v0.7.0 uses its fixed three-Rite package', () => {
     expect(rites).toContain('state.riteSelectionEnabled = Boolean(policy)');
-    expect(rites).toContain('state.rites = state.ritePool.map(rite => rite.id)');
+    expect(rites).toContain('state.rites = isMystics() ? state.ritePool.map(rite => rite.id) : []');
     expect(rites).toContain('state.rites = state.riteSelectionEnabled');
     expect(rites).toContain('errors.push(`Choose exactly ${state.riteSelectedCount} different Rites');
     expect(rites).not.toContain('selectedRites || ["echoes", "blood", "crossing"]');
