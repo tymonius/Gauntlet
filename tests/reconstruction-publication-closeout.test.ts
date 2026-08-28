@@ -77,8 +77,10 @@ describe('clean v0.6.3 publication closeout', () => {
     });
     expect(lifecycle.releases['v0.6.2'].legacy_package_aliases).toBeUndefined();
     expect(lifecycle.releases['v0.6.3']).toMatchObject({
+      status: 'historical',
       artifacts_preserved: true,
-      public_cutover: true,
+      public_cutover: false,
+      historical_package_path: 'releases/v0.6.3/',
       authority_set_id: authoritySetId,
     });
     expect(lifecycle.releases['v0.6.3'].legacy_package_aliases).toBeUndefined();
