@@ -14,11 +14,11 @@ import {
   type V070GameState,
 } from './engine';
 import { drawV070Cards } from './turn-engine';
+import { resolveV070SupportedRevealEffects } from './battle-effects';
 import {
   createV070BattleRuntime,
   type V070BattleCardCommitment,
-  type V070BattleRuntime,
-  type V070UnsupportedBattleEffect,
+  type V070BattleRuntime
 } from './battle-types';
 
 export const V070_NORMAL_BATTLE_DICE = 1 as const;
@@ -273,8 +273,10 @@ function revealBattleRole(
     });
   }
 
-  const unsupported = commitments.flatMap(item =>
-    unsupportedEffectsForCommitment(state, item, expectedStage),
+  const unsupported = resolveV070SupportedRevealEffects(
+    state,
+    commitments,
+    expectedStage,
   );
   if (unsupported.length > 0) {
     runtime.unsupportedEffects.push(...unsupported);
@@ -547,31 +549,6 @@ function completeAftermathInternal(
     visibility: 'public',
     payload: { turnNumber: state.turnNumber, phase: state.turnState.phase },
   });
-}
-
-function unsupportedEffectsForCommitment(
-  state: V070GameState,
-  commitmentValue: V070BattleCardCommitment,
-  encounteredAt: 'reveal_gambits' | 'reveal_tactics',
-): V070UnsupportedBattleEffect[] {
-  const cardId = requireCardInstance(state, commitmentValue.instanceId).cardId;
-  const card = v070CanonicalContent.cardsById.get(cardId);
-  if (!card) throw new Error(`Unknown canonical card ${cardId}.`);
-
-  return card.effects
-    .filter(effect =>
-      effect.label === (commitmentValue.role === 'gambit' ? 'Gambit' : 'Tactic')
-      || effect.label === 'Gambit/Tactic',
-    )
-    .map(effect => ({
-      owner: commitmentValue.owner,
-      instanceId: commitmentValue.instanceId,
-      cardId,
-      role: commitmentValue.role,
-      label: effect.label,
-      text: effect.text,
-      encounteredAt,
-    }));
 }
 
 function bothBattleChoicesMade(
