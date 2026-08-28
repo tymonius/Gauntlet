@@ -154,20 +154,17 @@ Unless the remaining expressive-prose review reveals a substantially different p
 
 The final application should not use "AI-generated text" as a blanket description of rules language merely because AI was used in the drafting workflow.
 
-## 7. Remaining targeted provenance review
+## 7. Targeted provenance review — resolved for Worksheet A
 
-The Rulebook review can now be limited principally to:
+The follow-up audit in `docs/legal/V0_6_0_EXPRESSIVE_PROVENANCE_AUDIT.md` resolves this filing pass as follows:
 
-- [ ] **Welcome to Gauntlet:** classify the final expressive contribution in each of the three paragraphs.
-- [ ] **Military:** review faction intro and General/Commandant descriptive prose.
-- [ ] **Diplomats:** review faction intro and Ambassador/Senator descriptive prose.
-- [ ] **Financiers:** review faction intro and Banker/Executive descriptive prose.
-- [ ] **Intelligence:** review faction intro and Ranger/Spymaster descriptive prose.
-- [ ] **Mystics:** review faction intro and Alchemist/Spirit Walker descriptive prose.
-- [ ] **Inquisition:** review faction intro and Grand Inquisitor/Witch Hunter descriptive prose.
-- [ ] Review any other substantial explanatory prose discovered outside those passages.
-- [ ] Classify Leader images and any other appreciable visual content in the historical Rulebook PDF.
-- [ ] Confirm no appreciable third-party prose/visual material requires additional exclusion.
+- **Welcome to Gauntlet:** the final three-paragraph sentence-level prose was supplied by ChatGPT after substantive human direction/correction; exclude that introductory prose as AI-generated text.
+- **Faction introductions and Leader descriptive prose:** short and predominantly functional; exact line-by-line provenance is not relied on as a principal literary claim and does not justify delaying Worksheet A.
+- **Mottos/titles/archetype labels:** short matter and not relied on as material independent authorship.
+- **Rulebook pictorial material:** exclude all pictorial material from Worksheet A as a scope choice; evaluate visuals in the separate card/visual workstream.
+- **Other functional rules:** no forensic sentence-by-sentence provenance review required for this filing posture.
+
+The Rulebook's claimed human authorship remains qualifying text, revisions/editing, and selection/coordination/arrangement, subject to the stated exclusions.
 
 ## 8. Filing consequence
 
