@@ -164,24 +164,36 @@ Before certification, confirm:
 
 Do not substitute the current archived v0.6.0 PDF; later revisions exist.
 
-## 13. Final factual confirmations required from the applicant
+## 13. Final factual confirmations from the applicant
 
-Before submission, the applicant must answer:
+**Confirmed by the author on 2026-08-28:**
 
-1. Was a substantially identical v0.6.0 Rulebook distributed anywhere outside the public GitHub repository **before July 20, 2026**?
-2. Has the copyright in the v0.6.0 Rulebook been transferred in writing to another person or entity?
+1. A substantially identical v0.6.0 Rulebook was **not** distributed anywhere outside the public GitHub repository before July 20, 2026.
+2. The copyright in the v0.6.0 Rulebook has **not** been transferred in writing to another person or entity.
 
-If both answers are **No**, the working publication date and claimant entries above remain appropriate.
+Result:
+- working first-publication date remains **July 20, 2026**;
+- working claimant remains **Tymon Scott**.
 
 ## 14. Current filing status
 
-Everything that can presently be established from the project record is prepared.
+**READY FOR SUBMISSION, subject only to portal entry, payment, and final certification.**
 
-Remaining steps:
+Re-check performed on **2026-08-28** against current U.S. Copyright Office guidance:
+- Standard Application remains the appropriate route for a work containing appreciable AI-generated material;
+- current online Standard Application fee is **$65**;
+- Copyright Office guidance continues to acknowledge uncertainty around place of publication for internet-distributed works;
+- current guidance permits a United States entry where first publication occurred on the same day in the United States and another country.
 
-- obtain the two factual confirmations above;
-- re-check then-current Copyright Office online-publication guidance immediately before submission;
+Remaining submission steps:
+
 - enter applicant-private contact/address information directly into eCO;
-- perform final application-versus-deposit comparison;
-- pay the Standard Application fee and submit;
+- compare the completed application against this entry sheet and the historical deposit;
+- pay the **$65 Standard Application fee** and submit;
 - preserve the case number, submission confirmation, deposit hash, and eventual registration certificate in the project legal record.
+
+Official sources checked 2026-08-28:
+- `https://www.copyright.gov/ai/ai_policy_guidance.pdf`
+- `https://www.copyright.gov/title37/201/37cfr201-3.html`
+- `https://copyright.gov/policy/online-publication/`
+- `https://www.copyright.gov/eco/grtx/help-titles.html`
