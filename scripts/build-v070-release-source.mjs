@@ -4,6 +4,7 @@ import { dirname, join } from 'node:path';
 import { ROOT, loadCurrentGameAuthority } from './current-game-authority.mjs';
 import { applyV070CanonicalCorrections, applyV070RulebookCorrections } from '../rulebook/player-facing/v070-corrections.js';
 import { synchronizeKnownRulebookClaims, validateKnownRulebookClaims } from '../rulebook/player-facing/rule-facts.js';
+import { PUBLISHING_AUTHORITY_SOURCE, loadPublishingAuthority } from './publishing-authority.mjs';
 
 const RELEASE_VERSION = 'v0.7.0';
 const RELEASE_NAME = 'Illustrated Cards & Tabletop Simulator';
@@ -44,7 +45,40 @@ function addCardAnatomyFigures(markdown) {
     .replace(arcaneMarker, arcaneMarker + arcaneFigure);
 }
 
-async function repairAndValidateFrozenReleaseSources() {
+function publishingRecord(publishing) {
+  return {
+    authority: PUBLISHING_AUTHORITY_SOURCE,
+    name: publishing.imprint.displayName,
+    role: publishing.imprint.role,
+    status: publishing.imprint.status,
+    logo: publishing.imprint.logo,
+    copyright_holder: publishing.copyright.holder,
+  };
+}
+
+function applyPublishingIdentityToReleaseRulebook(markdown, publishing) {
+  let source = String(markdown || '').replace(/\r\n/g, '\n');
+  const publisherLine = publishing.playerFacing.publisherLine;
+  const imprintStatement = publishing.playerFacing.imprintStatement;
+  const copyrightNotice = publishing.copyright.notice;
+
+  if (source.includes(publisherLine) && source.includes(imprintStatement) && source.includes(copyrightNotice)) {
+    return source;
+  }
+
+  const legacy = 'Gauntlet is an unpublished playtest project.\n\nCopyright © 2026 Tymon Scott. All rights reserved.';
+  if (!source.includes(legacy)) {
+    throw new Error('Maintained v0.7.0 Rulebook has no recognized publishing-identity block to migrate.');
+  }
+
+  source = source.replace(
+    legacy,
+    publisherLine + '\n\n' + imprintStatement + '\n\n' + copyrightNotice,
+  );
+  return source;
+}
+
+async function repairAndValidateFrozenReleaseSources(publishing) {
   const paths = {
     rulebook: `releases/${RELEASE_VERSION}/Gauntlet_${RELEASE_VERSION}_Rulebook.md`,
     canonical: `releases/${RELEASE_VERSION}/Gauntlet_${RELEASE_VERSION}_Canonical_Data.json`,
@@ -83,7 +117,8 @@ async function repairAndValidateFrozenReleaseSources() {
   }
 
   const semanticRulebook = applyV070RulebookCorrections(rulebook);
-  const synchronized = synchronizeKnownRulebookClaims(semanticRulebook, canonical);
+  const publishedRulebook = applyPublishingIdentityToReleaseRulebook(semanticRulebook, publishing);
+  const synchronized = synchronizeKnownRulebookClaims(publishedRulebook, canonical);
   rulebook = synchronized.output;
   validateKnownRulebookClaims(rulebook, canonical);
   if (rulebook !== await readText(paths.rulebook)) {
@@ -97,17 +132,25 @@ async function repairAndValidateFrozenReleaseSources() {
   }
 
   const authoritySetId = sha256(Buffer.from(`${rulebook}\n${canonicalText}\n${startersText}`, 'utf8'));
-  if (provenance.authority_set_id !== authoritySetId) {
-    provenance.authority_set_id = authoritySetId;
-    provenance.publication_corrections = {
-      ...(provenance.publication_corrections || {}),
-      derived_rulebook_facts: {
-        source: 'canonical gameplay records and faction rule fields',
-        corrected_claims: synchronized.changes.map(change => change.label),
-      },
-    };
-    await writeText(join(ROOT, paths.provenance), jsonText(provenance));
-    console.log(`Updated maintained v0.7.0 authority set after derived-fact synchronization: ${authoritySetId}`);
+  const authorityChanged = provenance.authority_set_id !== authoritySetId;
+  provenance.authority_set_id = authoritySetId;
+  provenance.publishing_authority = publishingRecord(publishing);
+  provenance.publication_corrections = {
+    ...(provenance.publication_corrections || {}),
+    derived_rulebook_facts: {
+      source: 'canonical gameplay records and faction rule fields',
+      corrected_claims: synchronized.changes.map(change => change.label),
+    },
+    publishing_identity: {
+      source: PUBLISHING_AUTHORITY_SOURCE,
+      publisher: publishing.imprint.displayName,
+      role: publishing.imprint.role,
+      copyright_holder: publishing.copyright.holder,
+    },
+  };
+  await writeText(join(ROOT, paths.provenance), jsonText(provenance));
+  if (authorityChanged) {
+    console.log(`Updated maintained v0.7.0 authority set after publication synchronization: ${authoritySetId}`);
   }
 }
 
@@ -147,10 +190,13 @@ function validateAuthority(authority) {
   if (retired) throw new Error(`Published authority still contains retired terminology: ${retired[0]}.`);
 }
 
-const authority = await loadCurrentGameAuthority();
+const [authority, publishing] = await Promise.all([
+  loadCurrentGameAuthority(),
+  loadPublishingAuthority(),
+]);
 
 if (authority.version !== RELEASE_VERSION) {
-  await repairAndValidateFrozenReleaseSources();
+  await repairAndValidateFrozenReleaseSources(publishing);
   console.log(`Current development is ${authority.version}; preserving the frozen ${RELEASE_VERSION} release-source snapshot with approved publication errata.`);
 } else {
   const currentRulebookSource = await readText(CURRENT_RULEBOOK_SOURCE);
@@ -197,6 +243,7 @@ const sourceProvenance = {
   authority_set_id: authoritySetId,
   current_game_authority: CURRENT_GAME_SOURCE,
   current_rulebook_authority: CURRENT_RULEBOOK_SOURCE,
+  publishing_authority: publishingRecord(publishing),
   historical_derivation: clone(authority.provenance),
   publication_derived_assets: {
     card_anatomy_figure: 'releases/v0.7.0/Gauntlet_v0.7.0_Card_Anatomy.png',
