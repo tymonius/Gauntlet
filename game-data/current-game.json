@@ -7638,6 +7638,9 @@
     },
     "territory-watchtower": {
       "focusY": 0.229
+    },
+    "rite-equivalence": {
+      "focusY": 0
     }
   }
 }
