@@ -154,7 +154,7 @@ function unsupportedOnsetFeatures(state: V070GameState): string[] {
       const onsetAsset = card?.effects.find(effect =>
         effect.label === 'Asset' && /during onset|before gambits are set/i.test(effect.text),
       );
-      if (onsetAsset) result.push(`${playerId}:${card.name}`);
+      if (onsetAsset && card) result.push(`${playerId}:${card.name}`);
     }
   }
 
