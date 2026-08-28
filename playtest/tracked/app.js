@@ -460,8 +460,11 @@
     responseCard.innerHTML = `<h3>Player responses</h3>${review.responses.length ? review.responses.map((response) => `
       <section>
         <h4>Seat ${response.seatIndex}: ${escapeHtml(response.displayName)} — ${escapeHtml(response.leader)}</h4>
-        <p><strong>Initial interest:</strong> ${escapeHtml(response.factionInterest)}</p>
+        <p><strong>Pregame attraction:</strong> ${escapeHtml(response.factionInterest)}</p>
         <p><strong>Ratings:</strong> fun ${response.fun}/5 · pacing ${response.pacing}/5 · decisions ${response.meaningfulDecisions}/5 · rules ${response.rulesClarity}/5</p>
+        <p><strong>First felt decided:</strong> ${escapeHtml(titleCase(response.feltDecidedWhen || "never"))}</p>
+        <p><strong>Meaningful decisions afterward:</strong> ${escapeHtml(titleCase(response.agencyAfterDecided || "not_applicable"))}</p>
+        ${response.decisiveCause ? `<p><strong>What most determined the result:</strong> ${escapeHtml(response.decisiveCause)}</p>` : ""}
         <p><strong>Play again:</strong> ${response.playAgain ? "Yes" : "No"}</p>
         ${response.comments ? `<p><strong>Comments:</strong> ${escapeHtml(response.comments)}</p>` : ""}
       </section>`).join("") : "<p>No private responses have been submitted.</p>"}`;
@@ -483,16 +486,18 @@
     const result = state.review.result || {};
     const rows = state.review.responses.length ? state.review.responses : [{}];
     const headers = [
-      "sheet_serial", "status", "completion_status", "duration_minutes", "victory_route",
-      "seat", "player", "faction", "leader", "fun", "pacing", "meaningful_decisions",
+      "sheet_serial", "status", "play_mode", "completion_status", "duration_minutes", "victory_route",
+      "seat", "player", "faction", "leader", "pregame_attraction", "fun", "pacing", "meaningful_decisions",
       "battle_tension", "rules_clarity", "faction_clarity", "table_organization",
-      "expectation_match", "leader_distinction", "play_again", "comments"
+      "expectation_match", "leader_distinction", "felt_decided_when", "agency_after_decided",
+      "decisive_cause", "play_again", "comments"
     ];
     const body = rows.map((response) => [
-      state.session.sheetSerial, state.session.status, result.completionStatus || "", result.durationMinutes || "", result.victoryRoute || "",
-      response.seatIndex || "", response.displayName || "", response.faction || "", response.leader || "", response.fun || "", response.pacing || "",
-      response.meaningfulDecisions || "", response.battleTension || "", response.rulesClarity || "", response.factionClarity || "",
-      response.tableOrganization || "", response.expectationMatch || "", response.leaderDistinction || "", response.playAgain == null ? "" : response.playAgain ? "yes" : "no", response.comments || ""
+      state.session.sheetSerial, state.session.status, state.session.playMode || "", result.completionStatus || "", result.durationMinutes || "", result.victoryRoute || "",
+      response.seatIndex || "", response.displayName || "", response.faction || "", response.leader || "", response.factionInterest || "",
+      response.fun || "", response.pacing || "", response.meaningfulDecisions || "", response.battleTension || "", response.rulesClarity || "", response.factionClarity || "",
+      response.tableOrganization || "", response.expectationMatch || "", response.leaderDistinction || "", response.feltDecidedWhen || "",
+      response.agencyAfterDecided || "", response.decisiveCause || "", response.playAgain == null ? "" : response.playAgain ? "yes" : "no", response.comments || ""
     ]);
     const csv = [headers, ...body].map((row) => row.map(csvCell).join(",")).join("\n");
     downloadBlob(`${state.session.sheetSerial}-tracked-playtest.csv`, `${csv}\n`, "text/csv");
