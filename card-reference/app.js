@@ -36,6 +36,7 @@ async function init() {
     const { loadCurrentGame } = await import('../game-data/current-game.mjs');
     const currentGame = await loadCurrentGame();
     state.version = currentGame.displayVersion;
+    document.title = `Gauntlet ${state.version} Card Reference`;
     state.entries = [
       ...currentGame.cards.map(normalizeCard),
       ...currentGame.territories.map(normalizeTerritory)
