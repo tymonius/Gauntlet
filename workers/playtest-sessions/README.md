@@ -3,7 +3,7 @@
 **Implementation baseline:** v0.7.0  
 **Current canonical tabletop release:** v0.7.0 — Illustrated Cards & Tabletop Simulator
 
-This Cloudflare Worker and D1-backed API powers Gauntlet's tracked blind-playtest, facilitated event, feedback, journal, closure, and analysis workflows.
+This Cloudflare Worker and D1-backed API powers Gauntlet's tracked self-serve playtest, facilitated event, feedback, journal, closure, and analysis workflows.
 
 New current game sessions use `G070-…` serials; new event containers use `EV070-…`. The runtime reports `v0.7.0` from `/health` and stores the rules version with every session.
 
@@ -42,7 +42,7 @@ npm run db:migrate:remote
 
 The production GitHub workflow applies pending remote migrations **before** deploying the Worker.
 
-## Current tracked blind-playtest API
+## Current tracked self-serve playtest API
 
 | Method | Endpoint | Purpose |
 |---|---|---|
@@ -55,7 +55,7 @@ The production GitHub workflow applies pending remote migrations **before** depl
 | POST | `/api/tracked-games/:token/response` | Submit one authenticated player's private response |
 | GET | `/api/tracked-games/:token/review` | Creator-key protected complete game review |
 
-Tracked creation records `playMode` as `tts` or `physical`. TTS is the default for new public blind tests.
+Tracked creation records `playMode` as `tts` or `physical`. TTS is the default for new public self-serve tests.
 
 Supported live diagnostic flags:
 
