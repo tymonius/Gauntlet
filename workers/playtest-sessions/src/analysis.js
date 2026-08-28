@@ -157,6 +157,10 @@ export function summarizeGames(games) {
   const factions = new Map();
   const leaders = new Map();
   const rulesVersions = new Map();
+  const playModes = new Map();
+  const diagnosticFlags = new Map();
+  const decisionPoints = new Map();
+  const agencyAfterDecided = new Map();
   const completion = { completed: 0, stopped: 0, pending: 0 };
   const victoryRoutes = new Map();
   let closedGames = 0;
@@ -168,6 +172,12 @@ export function summarizeGames(games) {
 
   for (const game of games) {
     rulesVersions.set(game.rulesVersion, (rulesVersions.get(game.rulesVersion) || 0) + 1);
+    const playMode = game.metadata?.playMode === "tts" ? "tts" : "physical";
+    playModes.set(playMode, (playModes.get(playMode) || 0) + 1);
+    for (const event of game.events || []) {
+      if (event.eventType !== "diagnostic_flag" || !event.data?.flag) continue;
+      diagnosticFlags.set(event.data.flag, (diagnosticFlags.get(event.data.flag) || 0) + 1);
+    }
     if (game.status === "closed") closedGames += 1;
     arbiterQuestionCount += game.arbiterQuestions.length;
     playerCount += game.players.length;
@@ -199,6 +209,10 @@ export function summarizeGames(games) {
       }
       if (!player.response) continue;
       responses.push(player.response);
+      const decisionPoint = player.response.feltDecidedWhen || "never";
+      const agency = player.response.agencyAfterDecided || "not_applicable";
+      decisionPoints.set(decisionPoint, (decisionPoints.get(decisionPoint) || 0) + 1);
+      agencyAfterDecided.set(agency, (agencyAfterDecided.get(agency) || 0) + 1);
       addResponseToGroup(faction, player.response);
       addResponseToGroup(leader, player.response);
     }
@@ -221,6 +235,10 @@ export function summarizeGames(games) {
     completion,
     victoryRoutes: Object.fromEntries(victoryRoutes),
     rulesVersions: Object.fromEntries(rulesVersions),
+    playModes: Object.fromEntries(playModes),
+    diagnosticFlags: Object.fromEntries(diagnosticFlags),
+    decisionPoints: Object.fromEntries(decisionPoints),
+    agencyAfterDecided: Object.fromEntries(agencyAfterDecided),
     ratingAverages: averages,
     factions: finalizeGroups(factions),
     leaders: finalizeGroups(leaders)
