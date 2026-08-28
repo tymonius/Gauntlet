@@ -13,6 +13,8 @@ on:
       - 'config/github-release-contract.json'
       - 'images/artwork/cards/**'
       - 'images/artwork/card-backgrounds/**'
+      - 'images/sketches/*.png'
+      - 'rulebook/**'
       - 'tts/renderer/**'
       - 'card-design/**'
       - 'scripts/generate-card-media-*.mjs'
@@ -64,6 +66,11 @@ jobs:
             "$site/releases/v0.6.2-withdrawn" \
             "$site/releases/v0.6.3-withdrawn" \
             "$site/tts/v0.7.0"
+
+          # The Rulebook uses the top-level sketch PNGs as live hero/Leader artwork.
+          # Publish those files without carrying the much larger sketch-authoring subdirectories.
+          mkdir -p "$site/images/sketches"
+          find images/sketches -maxdepth 1 -type f -name '*.png' -exec cp '{}' "$site/images/sketches/" ';'
 
           # Editable release-source documents are retained in Git but are not public-site assets.
           find "$site/releases" -type f -name '*.docx' -delete
@@ -202,6 +209,24 @@ jobs:
           test "$bytes" -lt 950000000
 
           test -s "$SITE_DIR/images/media/all-factions-promotional-showcase.png"
+
+          for image in \
+            "hero sketch.png" \
+            "general.png" \
+            "commandant.png" \
+            "ambassador.png" \
+            "senator.png" \
+            "banker.png" \
+            "executive.png" \
+            "ranger.png" \
+            "spymaster.png" \
+            "alchemist.png" \
+            "spirit walker.png" \
+            "grand inquisitor.png" \
+            "witch hunter.png"; do
+            test -s "$SITE_DIR/images/sketches/$image"
+          done
+
           test -s "$SITE_DIR/tts/v0.7.0/$TTS_PUBLIC_SAVE"
 
       - name: Upload GitHub Pages artifact
