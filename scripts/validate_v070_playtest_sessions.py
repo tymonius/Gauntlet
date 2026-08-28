@@ -119,7 +119,7 @@ def main() -> int:
         "begins <strong>Onset</strong>",
     ], errors)
     require("start/app.js", [
-        "Start tracked TTS playtest",
+        "Create tracked playtest",
     ], errors)
 
     for rel in [
