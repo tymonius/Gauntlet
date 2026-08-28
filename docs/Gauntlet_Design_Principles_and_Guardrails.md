@@ -3,7 +3,7 @@
 **Status:** Active design reference.  
 **Purpose:** Evaluate proposed rules, cards, factions, components, and digital features without duplicating the canonical rulebook or the current development tracker.
 
-Current rules live in the [official v0.6.0 rulebook](../releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md). Current testing priorities live in [Gauntlet Development Status](Gauntlet_Development_Status.md).
+Published-rule identity and the current release package are defined by [`config/release-lifecycle.json`](../config/release-lifecycle.json). Current development rules live in [`game-data/current-game.json`](../game-data/current-game.json) and the [maintained current Rulebook](../rulebook/player-facing/current-rulebook.md). Current testing priorities live in [Gauntlet Development Status](Gauntlet_Development_Status.md).
 
 ---
 
@@ -274,7 +274,7 @@ If not, the victory condition is likely recreating a static tug-of-war or a disc
 
 ## 9. Future modules and factions
 
-Post-v0.6 concepts belong in [the v0.7 Parking Lot](Gauntlet_v0.7_Parking_Lot.md).
+Future-module concepts belong in the current development tracker or an explicitly active parking-lot document rather than being embedded as version-specific future work in this stable guardrail document.
 
 A future faction may specialize in a shared component without owning it exclusively. For example, Engineers may specialize deeply in Overlays while current cards continue to use Overlays whenever a Territory-local effect is clearest.
 
