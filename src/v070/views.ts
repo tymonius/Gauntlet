@@ -37,6 +37,7 @@ export interface V070BattleRuntimeView {
   stage: V070BattleRuntime['stage'];
   participants: Record<PlayerId, V070BattleParticipantView>;
   terms: V070BattleRuntime['terms'];
+  gambitOrderOverride: V070BattleRuntime['gambitOrderOverride'];
   unsupportedEffects: V070UnsupportedBattleEffect[];
 }
 
@@ -162,6 +163,9 @@ function viewBattleRuntime(
       B: viewBattleParticipant(state, runtime, 'B', viewer),
     },
     terms: structuredClone(runtime.terms),
+    gambitOrderOverride: runtime.gambitOrderOverride
+      ? structuredClone(runtime.gambitOrderOverride)
+      : null,
     unsupportedEffects: runtime.unsupportedEffects.map(effect => structuredClone(effect)),
   };
 }
