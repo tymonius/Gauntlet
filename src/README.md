@@ -14,7 +14,7 @@ The release manifest identifies `digital_rules: v0.7.0`. The published package i
 ## Migration layers
 
 - `content/v070.ts` — published v0.7.0 content index and release-contract validation.
-- `v070/rules.ts` — released v0.7.0 shared turn, movement, Onset, withdrawal, battle-outcome, and Last Stand surface.\n- `v070/starter-decks.ts` — released starter-package adapter with canonical card/Territory validation.\n- `v070/engine.ts` — authoritative deterministic setup state with physical card-instance identity, opening selection, Territory arrangement, and first-player resolution.\n- `v070/views.ts` — player-scoped hidden-information views.
+- `v070/rules.ts` — released v0.7.0 shared turn, movement, Onset, withdrawal, battle-outcome, and Last Stand surface.\n- `v070/starter-decks.ts` — released starter-package adapter with canonical card/Territory validation.\n- `v070/engine.ts` — authoritative deterministic setup/game state with physical card-instance identity, opening selection, Territory arrangement, first-player resolution, turn state, and active battle state.\n- `v070/turn-engine.ts` — Capture, Draw, Opening/Movement/Denouement/Cleanup lifecycle, deterministic reshuffles, Front Line capture, and battle initiation.\n- `v070/battle-engine.ts` / `battle-types.ts` — executable Onset→Gambit→Reserve→Tactic→Outcome→Aftermath envelope, battle dice, Defensive Edge/Tiebreak, hidden commitments, and explicit unsupported-effect halts.\n- `v070/views.ts` — player-scoped hidden-information views.
 - `v064/` — transitional Onset implementation retained as historical migration evidence after its relevant shared procedures were audited into `v070/rules.ts`.
 - `v063/` — substantial validated procedure library from the v0.6.3 migration: setup, Front Line/Capture, copied/repeated effects, Arcane Knowledge, Manifest Destiny, dynamic Territories/Deeds, and all printed Territory/Arena procedures. These remain explicitly versioned until individually revalidated against v0.7.0.
 - `content/v063.ts` — immutable v0.6.3 release adapter retained for historical/versioned regression tests.
@@ -53,3 +53,10 @@ The broad development commands still exercise legacy/versioned code as well as c
 ## Reuse policy
 
 Reuse architecture and procedures deliberately. A historical handler is evidence, not authority. New or retained gameplay behavior must be checked against the published v0.7.0 Rulebook and canonical data before it is exposed through the current engine surface.
+
+
+## Battle execution boundary
+
+The current engine can complete an ordinary battle when both players pass on Gambits and Tactics. It also supports legal face-down Gambit/Tactic commitments and their private views. Until an audited handler exists for a revealed printed battle-card effect, execution halts explicitly with the card/effect identified; the engine never treats an unimplemented effect as blank.
+
+The published v0.7.0 rulebook refers to the inherited “ordinary battle rules” rather than restating the base battle-total formula. The executable surface preserves the established shared procedure: normally roll one d6, apply the applicable advantage/disadvantage selection and rerolls/die changes, then apply numerical modifiers to obtain the battle total. v0.7.0’s separate unmodified Tiebreak Roll is handled independently.
