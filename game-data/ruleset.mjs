@@ -23,6 +23,37 @@ export function rulesetModeFromUrl(url = typeof window !== 'undefined' ? window.
   return parsed.searchParams.get('rules') === CANDIDATE_MODE ? CANDIDATE_MODE : RELEASED_MODE;
 }
 
+// Production render surfaces historically default to current-game. They only
+// enter released mode when the embedding Deckbuilder explicitly requests it.
+export function renderRulesetModeFromUrl(url = typeof window !== 'undefined' ? window.location.href : 'https://gauntlet.run/card-design/') {
+  const parsed = new URL(url, 'https://gauntlet.run/');
+  return parsed.searchParams.get('rules') === RELEASED_MODE ? RELEASED_MODE : CANDIDATE_MODE;
+}
+
+function legacySectionText(section) {
+  if (section?.text) return section.text;
+  if (Array.isArray(section?.items)) return section.items.map(item => `${item.name}: ${item.text}`).join(' ');
+  return '';
+}
+
+function runtimeLeader(source) {
+  const leader = clone(source);
+  leader.sections = (leader.sections || []).map(section => {
+    const resolved = { ...section };
+    Object.defineProperty(resolved, Symbol.iterator, {
+      enumerable: false,
+      configurable: false,
+      value: function* legacyLeaderSectionTuple() {
+        yield resolved.name;
+        yield legacySectionText(resolved);
+        yield resolved.cost || '';
+      },
+    });
+    return resolved;
+  });
+  return leader;
+}
+
 export function normalizePublishedGame(authority, starterDeckData) {
   if (!authority?.gameplay || !Array.isArray(authority.gameplay.cards) || !Array.isArray(authority.gameplay.territories)) {
     throw new Error('Published Gauntlet authority is incomplete.');
@@ -39,8 +70,11 @@ export function normalizePublishedGame(authority, starterDeckData) {
 
   const cards = gameplay.cards.map(clone);
   const territories = gameplay.territories.map(clone);
-  const factions = (gameplay.factions || []).map(clone);
-  const leaders = (authority.leaders || []).map(clone);
+  const factions = (gameplay.factions || []).map(faction => ({
+    ...clone(faction),
+    leaders: (faction.leaders || []).map(runtimeLeader),
+  }));
+  const leaders = (authority.leaders || []).map(runtimeLeader);
   const starterDecks = starterDeckData.decks.map(clone);
   const componentContract = clone(authority.component_contract || {});
   const factionFeatures = clone(authority.faction_features || {});

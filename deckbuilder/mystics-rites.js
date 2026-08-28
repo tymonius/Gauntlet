@@ -187,7 +187,8 @@
 
     const selected = state.rites.includes(rite.id);
     const unavailable = !selected && state.rites.length >= state.riteSelectedCount;
-    const rendererUrl = `../card-design/component-print-render.html?kind=rite&id=${encodeURIComponent(rite.id)}&side=front`;
+    const rulesetMode = new URLSearchParams(window.location.search).get("rules") === "candidate" ? "candidate" : "released";
+    const rendererUrl = `../card-design/component-print-render.html?kind=rite&id=${encodeURIComponent(rite.id)}&side=front&rules=${encodeURIComponent(rulesetMode)}`;
 
     preview.className = "rite-preview rendered-rite-preview";
     preview.innerHTML = `

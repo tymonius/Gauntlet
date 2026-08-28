@@ -11,6 +11,9 @@ const territories = readFileSync('deckbuilder/territories.js', 'utf8');
 const rites = readFileSync('deckbuilder/mystics-rites.js', 'utf8');
 const components = readFileSync('deckbuilder/faction-components.js', 'utf8');
 const bulk = readFileSync('deckbuilder/print-all-starters.js', 'utf8');
+const productionPrint = readFileSync('deckbuilder/print-duplex-sheet-pairing.js', 'utf8');
+const customPrint = readFileSync('deckbuilder/custom-print.mjs', 'utf8');
+const currentRuntime = readFileSync('game-data/current-game.mjs', 'utf8');
 
 describe('Deckbuilder released / release-candidate ruleset toggle', () => {
   it('defaults to the published release and uses the same candidate query convention as the Rulebook', () => {
@@ -44,6 +47,13 @@ describe('Deckbuilder released / release-candidate ruleset toggle', () => {
     expect(rites).toContain('../game-data/ruleset.mjs');
     expect(components).toContain('../game-data/ruleset.mjs');
     expect(bulk).toContain('../game-data/ruleset.mjs');
+  });
+
+  it('threads the selected ruleset into production and custom-print render surfaces', () => {
+    expect(productionPrint).toContain('&rules=${encodeURIComponent(selectedRulesetMode())}');
+    expect(customPrint).toContain('&rules=${encodeURIComponent(selectedRulesetMode())}');
+    expect(currentRuntime).toContain("get('rules') === 'released'");
+    expect(currentRuntime).toContain("import('./ruleset.mjs')");
   });
 
   it('keeps saved Deck libraries separate so candidate Decks do not silently appear as released Decks', () => {

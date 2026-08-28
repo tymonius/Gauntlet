@@ -184,7 +184,8 @@
       state.territories.length >= REQUIRED_TERRITORIES ||
       (territory.arena && arenaSelected)
     );
-    const rendererUrl = `../card-design/territory-review-render.html?territory=${encodeURIComponent(territory.id)}`;
+    const rulesetMode = new URLSearchParams(window.location.search).get("rules") === "candidate" ? "candidate" : "released";
+    const rendererUrl = `../card-design/territory-review-render.html?territory=${encodeURIComponent(territory.id)}&rules=${encodeURIComponent(rulesetMode)}`;
 
     preview.className = "territory-preview rendered-territory-preview";
     preview.innerHTML = `
