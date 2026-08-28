@@ -131,9 +131,9 @@ Tabletop Simulator build, hosted assets, Workshop packaging, QA records, and gen
 
 Canonical-data validation, document/card rendering, TTS generation, release publication, and cross-surface validation.
 
-### src/ and data/
+### src/ and legacy/
 
-`src/` is the active rules-aware digital-engine codebase, with some older/transitional modules retained as migration evidence while current-release parity work proceeds. `data/` is historical starter/adapter data; current gameplay authority lives in `game-data/`.
+`src/` is the active rules-aware digital-engine codebase, with some older/transitional modules retained as migration evidence while current-release parity work proceeds. `legacy/` contains historical implementation material that is not current authority; the original prototype data now lives under `legacy/digital-prototype-data/`.
 
 ## Development workflow
 
