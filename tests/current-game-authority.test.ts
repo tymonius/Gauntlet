@@ -77,6 +77,39 @@ describe('complete v0.7.0 current-game authority', () => {
     expect(authority.mystics).toBeTruthy();
   });
 
+  it('keeps card-pool summary metadata synchronized with the actual playable pool', () => {
+    const cards = authority.gameplay.cards;
+    const summary = authority.gameplay.card_pool_summary;
+
+    const expectedCounts = cards.reduce((counts: Record<string, number>, card: any) => {
+      counts[card.allegiance] = (counts[card.allegiance] || 0) + 1;
+      return counts;
+    }, {});
+
+    expect(expectedCounts).toEqual({
+      Neutral: 52,
+      Military: 15,
+      Diplomats: 15,
+      Financiers: 15,
+      Intelligence: 15,
+      Mystics: 15,
+      Inquisition: 15,
+    });
+
+    for (const [allegiance, count] of Object.entries(expectedCounts)) {
+      expect(summary[allegiance]?.count).toBe(count);
+      expect(summary[allegiance]?.total_value).toBe(
+        cards
+          .filter((card: any) => card.allegiance === allegiance)
+          .reduce((total: number, card: any) => total + Number(card.cost || 0), 0)
+      );
+    }
+
+    for (const faction of authority.gameplay.factions) {
+      expect(faction.card_count).toBe(expectedCounts[faction.name]);
+    }
+  });
+
   it('keeps historical derivation only as explicit non-runtime provenance', () => {
     expect(authority.provenance).toMatchObject({
       historicalBaseVersion: 'v0.6.3',
