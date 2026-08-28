@@ -89,7 +89,7 @@ Continue [issue #358](https://github.com/tymonius/Gauntlet/issues/358).
 
 The target is a choice-first workflow in which two testers can discover factions and Leaders, choose what interests them, receive a complete version-locked package or TTS handoff, learn/setup without the designer present, obtain rulings, record a valid session, and submit structured feedback.
 
-The current TTS release substantially reduces remote-play friction, but blind onboarding still needs to prove that strangers can learn and play correctly without facilitation.
+The current TTS release substantially reduces remote-play friction, but unfacilitated onboarding still needs to prove that strangers can learn and play correctly without facilitation.
 
 ### 7. Deckbuilder → TTS interoperability
 
