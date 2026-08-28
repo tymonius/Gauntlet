@@ -93,10 +93,8 @@ async function createTrackedGame(request, env, headers) {
   const hostKey = randomToken(40);
   const participantToken = randomToken(32);
   const serial = await uniqueSerial(env.DB);
-  const playMode = cleanString(body.playMode, 16);
-  if (!["physical", "tts"].includes(playMode)) {
-    throw new HttpError(400, "Choose whether the players are together in person or playing remotely");
-  }
+  const requestedMode = cleanString(body.playMode, 16);
+  const playMode = ["physical", "tts"].includes(requestedMode) ? requestedMode : "unspecified";
   const metadata = {
     mode: "tracked",
     playMode,
