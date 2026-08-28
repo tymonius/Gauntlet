@@ -1,3 +1,4 @@
+import { v070CanonicalContent } from '../content/v070';
 import {
   advanceV070TurnPhase,
   applyV070MovementChoice,
@@ -157,6 +158,21 @@ function resolveCapture(state: V070GameState, playerId: PlayerId): void {
         return;
       }
     }
+  }
+
+  const diplomat = state.players[playerId].diplomats;
+  const peaceTreatyThreshold = v070CanonicalContent.content.faction_rules.diplomats.peace_treaty_threshold;
+  if (diplomat && diplomat.ratifiedProposals.length >= peaceTreatyThreshold) {
+    state.stage = 'ended';
+    state.winner = playerId;
+    state.turnState = null;
+    appendV070Event(state, {
+      type: 'game_won',
+      actor: playerId,
+      visibility: 'public',
+      payload: { route: 'peace_treaty', ratifiedProposals: diplomat.ratifiedProposals.length },
+    });
+    return;
   }
 
   state.turnState = advanceV070TurnPhase(requireTurnState(state));
