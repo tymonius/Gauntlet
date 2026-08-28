@@ -165,8 +165,6 @@ export function openV070AssetLimitEnforcement(
     return false;
   }
 
-  assertForcedRemovalLifecycleSupported(state, playerId);
-
   state.pendingAssetLimitChoice = {
     playerId,
     effectiveLimit: limit,
