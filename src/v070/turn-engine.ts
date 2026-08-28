@@ -23,6 +23,7 @@ import {
   nextV070FrontLineTarget,
 } from './front-line';
 import {
+  expireV070TerritoryTurnRestrictions,
   openV070StartTurnOverlayChoice,
   resolveV070OverlayEntryRequirements,
   resolveV070StartTurnOverlayChoice,
@@ -416,6 +417,7 @@ function completeCleanup(
   state.activePlayer = next;
   state.turnNumber += 1;
   state.turnState = createV070TurnState();
+  expireV070TerritoryTurnRestrictions(state);
 
   appendV070Event(state, {
     type: 'turn_started',
