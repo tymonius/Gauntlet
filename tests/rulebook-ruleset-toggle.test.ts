@@ -25,25 +25,25 @@ function publicReleasedSource() {
 }
 
 describe('Published Browser Rulebook', () => {
-  it('publishes v0.7.0 as the verified default and retires the candidate selector', () => {
+  it('publishes v0.7.0 by default while exposing the distinct v0.7.1 candidate', () => {
     expect(index).toContain('data-ruleset-switch hidden');
     expect(index).toContain('data-ruleset="released" aria-pressed="true"');
-    expect(index).toContain('data-ruleset="candidate" aria-pressed="false" hidden disabled');
+    expect(index).toContain('data-ruleset="candidate" aria-pressed="false"');
+    expect(index).not.toContain('data-ruleset="candidate" aria-pressed="false" hidden disabled');
+    expect(index).toContain('data-candidate-version>v0.7.1 candidate</strong>');
     expect(app).toContain('candidateVersion !== PUBLISHED_VERSION');
-    expect(app).toContain('rulesetSwitch.hidden = true');
+    expect(app).toContain('rulesetSwitch.hidden = !distinctCandidate');
+    expect(app).toContain("url.searchParams.get('rules') === CANDIDATE_MODE");
     expect(rulesetStyles).toContain('.ruleset-switch[hidden]');
-    expect(rulesetStyles).toContain('.ruleset-switch button[hidden]');
     expect(rulesetStyles).toContain('display: none !important;');
-    expect(index).toContain('Published v0.7.0 Rulebook is current.');
-    expect(index).toContain('../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook_Booklet.pdf');
+    expect(index).toContain('../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook_Booklet.pdf?rev=419138bb');
     expect(index).not.toContain('Gauntlet v0.6.3 Browser Rulebook');
 
     expect(app).toContain("const SOURCE_URL = '../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook.md';");
     expect(app).toContain("const SOURCE_SHA256 = '7027ef7fe7dcfd59cf43ae9f68d2bd2760667a128839a8b4f141559328f2c653';");
-    expect(app).toContain("const PDF_URL = '../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook_Booklet.pdf';");
+    expect(app).toContain("const PDF_URL = '../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook_Booklet.pdf?rev=419138bb';");
     expect(app).toContain('eyebrow.textContent = `Canonical rules · version ${PUBLISHED_VERSION}`');
     expect(app).not.toContain("eyebrow.textContent = 'Canonical rules · version 0.6.3'");
-    expect(app).toContain('return RELEASED_MODE;');
     expect(app).toContain("crypto.subtle.digest('SHA-256', bytes)");
   });
 
@@ -52,11 +52,13 @@ describe('Published Browser Rulebook', () => {
     expect(released).toMatch(/\bpending(?:-|\s+)battle\b/i);
 
     expect(app).toContain("const CURRENT_SOURCE_URL = './player-facing/current-rulebook.md';");
-    expect(app).toContain('loadCurrentRulebookSource()');
+    expect(app).toContain('loadCurrentRulebookSource(currentGame)');
     expect(app).not.toContain("import { applyReleaseCandidateRulebook } from './release-candidate.js';");
     expect(app).not.toContain('applyReleaseCandidateRulebook(releasedMarkdown, currentGame)');
 
     expect(currentRulebook).toContain('**Version 0.7.1 Candidate**');
+    expect(app).toContain("match(/^v(\\d+\\.\\d+\\.\\d+)-candidate$/i)");
+    expect(app).toContain('Current Rulebook source does not match current-game authority');
     expect(currentRulebook).toContain('# 5. Actions, Faction Features, Leader Abilities, and Assets');
     expect(currentRulebook).toContain('## Card anatomy');
     expect(currentRulebook).toContain('Onset is the first phase of the battle sequence.');
