@@ -23,6 +23,7 @@ jobs:
             /brand.css
             /assets/wordmark/
             /config/release-lifecycle.json
+            /config/publishing-authority.json
             /scripts/build-v063-rulebook-production.py
             /scripts/run-v063-rulebook-renderer.mjs
             /scripts/render-clean-v063-booklet.mjs
@@ -40,6 +41,7 @@ jobs:
             /artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md
             /releases/v0.6.3/**
             /images/sketches/
+            /images/branding/
 
       - name: Use Node.js
         uses: actions/setup-node@v4
