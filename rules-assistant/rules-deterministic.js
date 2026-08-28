@@ -494,7 +494,7 @@ export function resolveDeterministicRuling(corpus, { question, history = [], gam
   if (matches(text, /\b(fifth|five|5)\b.*\bproposal|proposal.*\b(fifth|five|5)\b/i)) {
     return result({
       id: "peace-treaty-timing",
-      answer: "You do not win immediately. At the start of your next turn, after the Capture step and before the Draw step, you win through the Peace Treaty if five different Proposals are ratified.",
+      answer: "You do not win immediately. At the start of your next turn, after the Capture step and before the Draw step, you win through the Peace Treaty if six different Proposals are ratified.",
       sourceIds: ["rulebook:treaty-articles-and-peace-treaty"],
       subject: "Peace Treaty",
       topic: "victory timing"
