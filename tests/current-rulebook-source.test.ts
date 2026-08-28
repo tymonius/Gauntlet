@@ -16,6 +16,10 @@ describe('Maintained current Rulebook source', () => {
     expect(currentRulebook).toContain('### Rite of Shattering');
     expect(currentRulebook).toContain('### Rite of Consecration');
     expect(currentRulebook).toContain('### Rite of Equivalence');
+    expect(currentRulebook).toContain('Ratify six different Proposals');
+    expect(currentRulebook).toContain('if six different Proposals are ratified');
+    expect(currentRulebook).not.toContain('Ratify five different Proposals');
+    expect(currentRulebook).not.toContain('if five different Proposals are ratified');
     expect(browserApp).toContain("const CURRENT_SOURCE_URL = './player-facing/current-rulebook.md';");
     expect(browserApp).not.toContain("import { applyReleaseCandidateRulebook } from './release-candidate.js';");
     expect(browserApp).not.toContain('applyReleaseCandidateRulebook(releasedMarkdown, currentGame)');
