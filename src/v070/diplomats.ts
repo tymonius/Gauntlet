@@ -827,8 +827,13 @@ function replaceableV070AssetInstanceIds(
     state.cardInstances[instanceId]?.cardId === 'intelligence-extraordinary-rendition'
   );
 
+  // Extraordinary Rendition must be the first Asset discarded, but its bound
+  // card also has a lifecycle that the v0.7.0 authoritative state does not yet
+  // represent. Do not permit an Asset replacement that would silently orphan
+  // or lose that bound card.
+  if (extraordinary) return [];
+
   return bank.filter(instanceId => {
-    if (extraordinary && instanceId !== extraordinary) return false;
     const card = canonicalCardForInstance(state, instanceId);
     const assetText = card.effects
       .filter(effect => effect.label === 'Asset')
