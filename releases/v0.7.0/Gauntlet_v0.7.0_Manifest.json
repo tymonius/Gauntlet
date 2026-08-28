@@ -4,7 +4,7 @@
   "name": "Illustrated Cards & Tabletop Simulator",
   "status": "current",
   "authority_set_id": "1267adcd3a2b23209259c45474454b96f83a5340c23f9e26222b549df142128d",
-  "publication_date": null,
+  "publication_date": "2026-08-27",
   "current_package_path": "releases/v0.7.0/",
   "source_provenance": {
     "source_version": "v0.7.0",
@@ -51,7 +51,8 @@
     "website": "v0.7.0",
     "browser_tools": "v0.7.0",
     "rules_arbiter": "v0.7.0",
-    "digital_rules": "v0.7.0"
+    "digital_rules": "v0.7.0",
+    "rulebook": "v0.7.0"
   },
   "public_routes": {
     "start": "/start/",
@@ -71,7 +72,7 @@
       "key": "rulebook-booklet",
       "path": "Gauntlet_v0.7.0_Rulebook_Booklet.pdf",
       "pages": 50,
-      "sha256": "45c675deebd7d27dcd29bcdec98c3f4a53167dacb35ed549c4babcf9c99bdece",
+      "sha256": "c97c0a6dd5f3dc3cad384736d2ec5a20c5f0df638b2fa50d8ec808dc1b0505b3",
       "bytes": 30986158
     }
   ],
@@ -83,7 +84,7 @@
     },
     {
       "path": "Gauntlet_v0.7.0_Rulebook_Booklet.pdf",
-      "sha256": "45c675deebd7d27dcd29bcdec98c3f4a53167dacb35ed549c4babcf9c99bdece",
+      "sha256": "c97c0a6dd5f3dc3cad384736d2ec5a20c5f0df638b2fa50d8ec808dc1b0505b3",
       "bytes": 30986158
     },
     {
