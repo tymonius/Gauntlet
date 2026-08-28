@@ -15,6 +15,25 @@ const REMOVAL_LIFECYCLE_UNSUPPORTED = new Set([
   'intelligence-sleeper-network',
 ]);
 
+export type V070AssetAction = {
+  type: 'resolve_asset_limit_removal';
+  playerId: PlayerId;
+  instanceIds: readonly string[];
+};
+
+export function reduceV070AssetAction(
+  state: V070GameState,
+  action: V070AssetAction,
+): V070GameState {
+  if (state.stage !== 'playing') {
+    throw new V070GameActionError('Asset actions require an active v0.7.0 game.');
+  }
+
+  const next = structuredClone(state) as V070GameState;
+  resolveV070AssetLimitRemoval(next, action.playerId, action.instanceIds);
+  return next;
+}
+
 export interface V070BankAssetOptions {
   replaceAssetInstanceId?: string;
   purpose: string;
