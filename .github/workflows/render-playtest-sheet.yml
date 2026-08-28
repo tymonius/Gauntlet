@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      -     paths:
+    paths:
       - playtest/sheet/index.html
       - playtest/styles.css
       - playtest/README.md
