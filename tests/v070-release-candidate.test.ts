@@ -5,6 +5,7 @@ const lifecycle = JSON.parse(readFileSync('config/release-lifecycle.json', 'utf8
 const githubRelease = JSON.parse(readFileSync('config/github-release-contract.json', 'utf8'));
 const ttsTarget = JSON.parse(readFileSync('config/tts-release-target.json', 'utf8'));
 const ttsQa = JSON.parse(readFileSync('tts/release-qa/v0.7.0.json', 'utf8'));
+const ttsQa071 = JSON.parse(readFileSync('tts/release-qa/v0.7.1.json', 'utf8'));
 const notes = readFileSync('docs/releases/github/v0.7.0.md', 'utf8');
 const releaseBuilder = readFileSync('scripts/build-v070-release-source.mjs', 'utf8');
 const bookletRenderer = readFileSync('scripts/render-v070-booklet.mjs', 'utf8');
@@ -49,13 +50,20 @@ describe('v0.7.0 publication boundary', () => {
     )).toBe(true);
   });
 
-  it('keeps the TTS package and manual-QA records aligned to v0.7.0', () => {
-    expect(ttsTarget.releaseTag).toBe('v0.7.0');
-    expect(ttsTarget.displayVersion).toBe('v0.7.0');
-    expect(ttsTarget.status).toBe('release-candidate');
+  it('keeps published v0.7.0 frozen while TTS development advances to v0.7.1', () => {
+    expect(ttsTarget.releaseTag).toBe('v0.7.1');
+    expect(ttsTarget.displayVersion).toBe('v0.7.1');
+    expect(ttsTarget.sourceVersion).toBe('v0.7.0');
+    expect(ttsTarget.status).toBe('active-development');
+
     expect(ttsQa.gameVersion).toBe('v0.7.0');
     expect(ttsQa.status).toBe('passed');
     expect(ttsQa.approvedForWorkshop).toBe(true);
+
+    expect(ttsQa071.gameVersion).toBe('v0.7.1');
+    expect(ttsQa071.status).toBe('in-progress');
+    expect(ttsQa071.approvedForWorkshop).toBe(false);
+    expect(Object.values(ttsQa071.checks).flatMap((group: any) => Object.values(group)).every((value) => value === false)).toBe(true);
   });
 
   it('publishes final v0.7.0 release notes rather than candidate-boundary notes', () => {
