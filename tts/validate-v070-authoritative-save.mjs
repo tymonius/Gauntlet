@@ -521,7 +521,7 @@ async function main() {
   validateTerritoriesDeedsAndFactionEligibility(save, manifest);
   validateTrackers(save, manifest);
 
-  console.log(`Authoritative v0.7.0 TTS save contract passed for ${relative(ROOT, path)}.`);
+  console.log(`Authoritative ${release.version} TTS save contract passed for ${relative(ROOT, path)}.`);
 }
 
 main().catch(error => {
