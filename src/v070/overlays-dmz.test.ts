@@ -279,6 +279,35 @@ describe('v0.7.0 Territory Overlays and Demilitarized Zone', () => {
     expect(state.players.A.zones.discardPile).toContain(dmz);
   });
 
+  test('placement-turn entry restrictions expire at the next turn boundary', () => {
+    let state = movementState();
+    const dmz = injectCard(state, 'A', V070_DEMILITARIZED_ZONE_ID);
+    placeV070OverlayFromHand(state, 'A', dmz, 2, 'test');
+    registerV070DmzEntryLock(state, 2, dmz);
+
+    expect(v070DmzBlocksEntryThisTurn(state, 2)).toBe(true);
+
+    state = reduceV070TurnAction(state, {
+      type: 'choose_movement',
+      playerId: 'A',
+      choice: 'hold',
+    });
+    state = reduceV070TurnAction(state, {
+      type: 'pass_denouement',
+      playerId: 'A',
+    });
+    const excess = Math.max(0, state.players.A.zones.hand.length - 3);
+    state = reduceV070TurnAction(state, {
+      type: 'complete_cleanup',
+      playerId: 'A',
+      discardInstanceIds: state.players.A.zones.hand.slice(0, excess),
+    });
+
+    expect(state.turnNumber).toBe(2);
+    expect(state.territoryTurnRestrictions).toHaveLength(0);
+    expect(v070DmzBlocksEntryThisTurn(state, 2)).toBe(false);
+  });
+
   test('entering an unoccupied active DMZ on a later turn requires one Hand discard', () => {
     let state = movementState();
     state.players.A.position = 1;
