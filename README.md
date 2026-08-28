@@ -179,8 +179,12 @@ See [Gauntlet Development Status](docs/Gauntlet_Development_Status.md). The imme
 
 ## Copyright and use
 
-Copyright © 2026 Tymon Scott. All rights reserved.
+<!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT -->
 
-Gauntlet is an unpublished playtest project. Repository materials are provided for private review and playtesting only. They may not be copied, redistributed, sold, republished, or used to create commercial derivative works without written permission.
+<!-- PUBLISHING-FACT:imprint.statement -->Gauntlet is published under the TDS Games imprint for playtesting and review.<!-- /PUBLISHING-FACT -->
+
+<!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT -->
+
+Repository materials are provided for private review and playtesting only. They may not be copied, redistributed, sold, republished, or used to create commercial derivative works without written permission.
 
 Submitted comments, corrections, suggestions, and playtest feedback may be used or adapted in future versions without compensation or attribution unless agreed otherwise in writing.
