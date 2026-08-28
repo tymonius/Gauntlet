@@ -89,7 +89,11 @@ This changes the filing assumptions materially.
 
 The first complete revived edition is v0.5.3, not the later v0.6.0 release. A v0.5.3 registration can establish the qualifying 2026 compilation/editorial authorship while excluding appreciable expression carried from the older public Gauntlet work and excluding AI-generated/unclaimable matter.
 
-The June 21 physical distribution is now affirmatively remembered in broad outline, but its legal status remains fact-dependent. Copyright Office practice distinguishes unrestricted transfer/lending from a limited distribution to a selected group for a restricted purpose. Until that distinction is resolved, use June 21 for conservative deadline planning but do not yet treat it as a final statutory publication date.
+The June 21 physical distribution is now affirmatively remembered in broad outline. The author further confirmed on 2026-08-28 that recipients were not expressly told the materials were private.
+
+Its legal status nevertheless remains fact-dependent. Copyright Office practice recognizes that exchanges among social acquaintances and distributions to a definitely selected group for a limited purpose can remain unpublished, while unrestricted transfer/lending to the public is publication. The next factual discriminator is therefore the **audience and purpose** of the handout, not merely whether a formal confidentiality instruction was spoken.
+
+Until that distinction is resolved, use June 21 for conservative deadline planning but do not yet treat it as a final statutory publication date.
 
 ### v0.6.0 cannot be treated as the origin of all Gauntlet expression
 
