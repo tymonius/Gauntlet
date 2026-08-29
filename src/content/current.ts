@@ -26,6 +26,7 @@ export * from '../v070/front-line';
 export * from '../v070/overlays';
 export * from '../v070/assets';
 export * from '../v070/sanctions';
+export * from '../v070/movement-triggers';
 export * from '../v070/views';
 
 /**
