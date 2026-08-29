@@ -1,11 +1,11 @@
 # Gauntlet v0.5.4 — Conditional Foundation Copyright Filing Worksheet
 
 **Prepared:** 2026-08-28  
-**Status:** Preferred foundation filing **if** the June 21, 2026 physical playtest distribution qualifies as statutory publication.
+**Status:** **OPERATIVE 2026 FOUNDATION FILING.** Working first publication: **June 21, 2026** through physical distribution of playtest copies.
 
 > This worksheet should be read with `V0_5_3_REVIVAL_PUBLICATION_AUDIT.md`. It is filing preparation, not a legal opinion.
 
-## Why v0.5.4 may now be the correct foundation work
+## Why v0.5.4 is the current foundation work
 
 The retained development archive establishes:
 
@@ -16,11 +16,11 @@ The retained development archive establishes:
 
 The June 21 distributed copies were therefore most likely v0.5.4.
 
-If those copies were transferred/lent without a restriction on further dissemination, June 21 is a plausible first-publication date and v0.5.4 is the best foundation registration target. It incorporates the otherwise-unpublished v0.5.0–v0.5.3 revival material plus the Last Stand revision.
+The author confirmed that recipients were not told the materials were private and, on 2026-08-29, accepted the working filing position that this June 21 physical distribution should be treated as publication rather than characterized as a limited private distribution.
 
-If the distribution was instead limited to a selected playtest group for a restricted testing purpose, v0.5.4 may remain unpublished and the first hard public-GitHub foundation candidate remains v0.5.3 on June 23.
+Accordingly, **v0.5.4 is the operative foundation registration target**. It incorporates the otherwise-unpublished v0.5.0–v0.5.3 revival material plus the Last Stand revision.
 
-## Application route if June 21 qualifies as publication
+## Application route
 
 - **Application:** Standard Application
 - **Type of Work:** Literary Work
@@ -119,7 +119,7 @@ This creates a plausible June 21 publication event because ownership/lending of 
 
 ## Nation of First Publication
 
-If June 21 is treated as first publication, working entry:
+Working entry:
 
 **United States**
 
@@ -127,17 +127,15 @@ Working note:
 
 > First publication occurred through physical distribution of playtest copies in the United States on June 21, 2026.
 
-If the June 21 event is determined to be a limited publication and GitHub becomes the first publication event, use the online-publication note from the v0.5.3 worksheet instead.
+This physical-distribution filing posture avoids the online place-of-publication ambiguity that affects the later GitHub publication event.
 
 ## Section 412 planning
 
-If June 21 qualifies as publication, plan around approximately **September 21, 2026** for the three-month post-publication point.
-
-Use June 21 for deadline planning unless the limited-publication issue is resolved in favor of unpublished status.
+Plan around approximately **September 21, 2026** for the three-month post-publication point.
 
 ## Filing consequence for v0.5.3
 
-If this v0.5.4 worksheet becomes the operative foundation filing:
+Because this v0.5.4 worksheet is now the operative foundation filing:
 
 - do **not** separately file v0.5.3 merely to create an earlier version registration;
 - treat v0.5.3 as an unpublished owned source incorporated into v0.5.4, unless contrary publication evidence is found;
@@ -145,13 +143,9 @@ If this v0.5.4 worksheet becomes the operative foundation filing:
 
 ## Remaining factual issue
 
-The author has now confirmed there was **no express statement that the materials were private**.
+The author confirmed there was **no express statement that the materials were private**, and on 2026-08-29 accepted the working filing position that the June 21 physical distribution should be treated as publication.
 
-One fact still controls which foundation worksheet becomes operative:
-
-- [ ] Were the June 21 cards/rulebooks given only to a small, definitely selected group of playtesters/friends for the purpose of testing, or were copies handed out more broadly beyond that selected playtest/social circle?
-
-Current Copyright Office practice recognizes that a restricted exchange among social acquaintances or a definitely selected group for a limited purpose may remain unpublished even without a formal confidentiality label. Lack of an express privacy instruction therefore weighs toward publication but is not dispositive.
+The remaining tasks are application preparation rather than publication classification.
 
 ## Sources
 
