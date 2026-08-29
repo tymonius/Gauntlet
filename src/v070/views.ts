@@ -51,6 +51,7 @@ export interface V070BattleRuntimeView {
   stage: V070BattleRuntime['stage'];
   participants: Record<PlayerId, V070BattleParticipantView>;
   terms: V070BattleRuntime['terms'];
+  refusedTermsContext: V070BattleRuntime['refusedTermsContext'];
   gambitOrderOverride: V070BattleRuntime['gambitOrderOverride'];
   pendingOutcome: V070BattleRuntime['pendingOutcome'];
   unsupportedEffects: V070UnsupportedBattleEffect[];
@@ -238,6 +239,9 @@ function viewBattleRuntime(
       B: viewBattleParticipant(state, runtime, 'B', viewer),
     },
     terms: structuredClone(runtime.terms),
+    refusedTermsContext: runtime.refusedTermsContext
+      ? structuredClone(runtime.refusedTermsContext)
+      : null,
     gambitOrderOverride: runtime.gambitOrderOverride
       ? structuredClone(runtime.gambitOrderOverride)
       : null,
