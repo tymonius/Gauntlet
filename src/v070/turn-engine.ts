@@ -34,6 +34,7 @@ import {
   currentV070CensureChoice,
   openV070CensureChoicesForActionPlay,
 } from './sanctions';
+import { openV070BlockadeChoicesForPositionChange } from './movement-triggers';
 
 export type V070TurnAction =
   | { type: 'resolve_capture'; playerId: PlayerId }
@@ -79,8 +80,13 @@ export function reduceV070TurnAction(
   if (state.pendingTurnChoice && action.type !== 'resolve_start_turn_overlay_choice') {
     throw new V070GameActionError('Resolve the pending start-of-turn Overlay choice first.');
   }
-  if (state.pendingSanctionChoices.length > 0 && action.type !== 'resolve_censure_choice') {
-    throw new V070GameActionError('Resolve the pending Sanctions: Censure choice first.');
+  if (state.pendingSanctionChoices.length > 0) {
+    const pending = state.pendingSanctionChoices[0];
+    const resolvingCensure = pending.kind === 'censure_action'
+      && action.type === 'resolve_censure_choice';
+    if (!resolvingCensure) {
+      throw new V070GameActionError('Resolve the pending Sanction choice first.');
+    }
   }
   if (state.pendingActionCard
     && state.pendingSanctionChoices.length === 0
@@ -561,6 +567,12 @@ function chooseMovement(
         lastStand,
       },
     });
+    openV070BlockadeChoicesForPositionChange(
+      state,
+      playerId,
+      origin,
+      destination,
+    );
     return;
   }
 
@@ -583,6 +595,14 @@ function chooseMovement(
     visibility: 'public',
     payload: { choice, from: origin, to: destination },
   });
+
+  openV070BlockadeChoicesForPositionChange(
+    state,
+    playerId,
+    origin,
+    destination,
+  );
+  if (state.pendingSanctionChoices.length > 0) return;
 
   if (!state.turnState.movementSequenceOpen) {
     state.turnState = advanceV070TurnPhase(state.turnState);
