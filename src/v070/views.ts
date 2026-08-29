@@ -97,6 +97,9 @@ export interface V070GameView {
   overlays: V070OverlayView[];
   territoryTurnRestrictions: V070GameState['territoryTurnRestrictions'];
   sanctions: V070GameState['sanctions'];
+  sanctionTriggerTurns: V070GameState['sanctionTriggerTurns'];
+  pendingActionCard: V070GameState['pendingActionCard'];
+  pendingSanctionChoices: V070GameState['pendingSanctionChoices'];
   pendingAssetLimitChoice: V070GameState['pendingAssetLimitChoice'];
   pendingTurnChoice: V070GameState['pendingTurnChoice'];
   winner: PlayerId | null;
@@ -131,6 +134,13 @@ export function viewV070GameForPlayer(
       restriction => structuredClone(restriction),
     ),
     sanctions: state.sanctions.map(sanction => structuredClone(sanction)),
+    sanctionTriggerTurns: { ...state.sanctionTriggerTurns },
+    pendingActionCard: state.pendingActionCard
+      ? structuredClone(state.pendingActionCard)
+      : null,
+    pendingSanctionChoices: state.pendingSanctionChoices.map(
+      choice => structuredClone(choice),
+    ),
     pendingAssetLimitChoice: state.pendingAssetLimitChoice
       ? structuredClone(state.pendingAssetLimitChoice)
       : null,
