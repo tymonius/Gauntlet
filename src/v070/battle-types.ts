@@ -128,10 +128,16 @@ export interface V070GambitOrderOverride {
   firstCommitmentFaceUp: boolean;
 }
 
+export interface V070RefusedTermsContext {
+  offerer: PlayerId;
+  opponent: PlayerId;
+}
+
 export interface V070BattleRuntime {
   stage: V070BattleRuntimeStage;
   participants: Record<PlayerId, V070BattleParticipantRuntime>;
   terms: V070TermsRuntime;
+  refusedTermsContext: V070RefusedTermsContext | null;
   gambitOrderOverride: V070GambitOrderOverride | null;
   pendingOutcome: V070BattleOutcome | null;
   activeOverlayAtOnset: string | null;
@@ -177,6 +183,7 @@ export function createV070BattleRuntime(): V070BattleRuntime {
       },
       deferredAfterPoliticalCapital: null,
     },
+    refusedTermsContext: null,
     gambitOrderOverride: null,
     pendingOutcome: null,
     activeOverlayAtOnset: null,

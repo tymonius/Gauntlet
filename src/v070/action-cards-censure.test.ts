@@ -244,7 +244,7 @@ describe('v0.7.0 printed Action cards and Sanctions: Censure', () => {
     expect(() => reduceV070TurnAction(state, {
       type: 'pass_opening',
       playerId: 'B',
-    })).toThrow(/Censure choice/);
+    })).toThrow(/pending Sanction choice/);
 
     state = reduceV070TurnAction(state, {
       type: 'resolve_censure_choice',

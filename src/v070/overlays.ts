@@ -9,6 +9,7 @@ import {
   retreatV070Position,
   type PlayerId,
 } from './rules';
+import { openV070BlockadeChoicesForPositionChange } from './movement-triggers';
 
 export const V070_DEMILITARIZED_ZONE_ID = 'diplomats-demilitarized-zone';
 
@@ -485,4 +486,6 @@ function moveV070PlayerOutsideBattle(
     }
     destination.occupant = playerId;
   }
+
+  openV070BlockadeChoicesForPositionChange(state, playerId, from, to);
 }

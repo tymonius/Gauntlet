@@ -51,9 +51,11 @@ import {
 } from './battle-types';
 import { resolveV070AssetLimitRemoval } from './assets';
 import {
+  useV070SanctionsBlockadeInAftermath,
   useV070SanctionsCensureAfterRefusal,
   useV070SanctionsEmbargoAfterRefusal,
 } from './sanctions';
+import { openV070BlockadeChoicesForPositionChange } from './movement-triggers';
 
 export const V070_NORMAL_BATTLE_DICE = 1 as const;
 
@@ -79,6 +81,12 @@ export type V070BattleAction =
   | { type: 'use_nonbinding_resolution'; playerId: PlayerId; cardInstanceId: string }
   | { type: 'use_gunboat_diplomacy'; playerId: PlayerId; cardInstanceId: string }
   | { type: 'use_neutral_observers'; playerId: PlayerId; cardInstanceId: string }
+  | {
+      type: 'use_sanctions_blockade';
+      playerId: PlayerId;
+      cardInstanceId: string;
+      territoryPosition: number;
+    }
   | {
       type: 'use_sanctions_censure';
       playerId: PlayerId;
@@ -144,6 +152,11 @@ export function reduceV070BattleAction(
       'Resolve the pending Asset-limit Removal before continuing the battle.',
     );
   }
+  if (state.pendingSanctionChoices.length > 0) {
+    throw new V070GameActionError(
+      'Resolve the pending Sanction movement choice before continuing the battle.',
+    );
+  }
 
   const next = structuredClone(state) as V070GameState;
   ensureBattleRuntime(next);
@@ -186,6 +199,14 @@ export function reduceV070BattleAction(
       break;
     case 'use_neutral_observers':
       useV070NeutralObserversAfterRefusal(next, action.playerId, action.cardInstanceId);
+      break;
+    case 'use_sanctions_blockade':
+      useV070SanctionsBlockadeInAftermath(
+        next,
+        action.playerId,
+        action.cardInstanceId,
+        action.territoryPosition,
+      );
       break;
     case 'use_sanctions_censure':
       useV070SanctionsCensureAfterRefusal(
@@ -745,6 +766,7 @@ function useSafeConduct(
   player.zones.discardPile.push(cardInstanceId);
 
   state.battle = resolveV070Withdrawal(battle, [playerId]);
+  openBattlePositionChangeSanctions(state, state.battle.positions);
   runtime.pendingOutcome = null;
   runtime.stage = 'aftermath';
 
@@ -809,6 +831,7 @@ function finalizeOutcome(
   const runtime = requireRuntime(state);
   const resolution = applyV070BattleOutcome(battle, outcome);
   state.battle = resolution.state;
+  openBattlePositionChangeSanctions(state, state.battle.positions);
   runtime.pendingOutcome = null;
   runtime.stage = 'aftermath';
 
@@ -826,6 +849,19 @@ function finalizeOutcome(
   settleV070RefusedTermsOutcome(state, outcome);
   if (state.stage === 'ended') return;
   if (resolution.victory) completeAftermathInternal(state, resolution.victory.winner);
+}
+
+function openBattlePositionChangeSanctions(
+  state: V070GameState,
+  positions: Record<PlayerId, number>,
+): void {
+  for (const playerId of ['A', 'B'] as const) {
+    const from = state.players[playerId].position;
+    const to = positions[playerId];
+    if (from !== null && from !== to) {
+      openV070BlockadeChoicesForPositionChange(state, playerId, from, to);
+    }
+  }
 }
 
 function completeAftermath(state: V070GameState, playerId: PlayerId): void {
@@ -905,6 +941,8 @@ function completeAftermathInternal(
   if (!state.turnState || state.turnState.phase !== 'movement') {
     throw new Error('A completed movement battle must return to the Movement phase boundary.');
   }
+  if (state.pendingSanctionChoices.length > 0) return;
+
   state.turnState = advanceV070TurnPhase(state.turnState);
   appendV070Event(state, {
     type: 'turn_phase',

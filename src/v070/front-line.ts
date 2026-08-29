@@ -5,6 +5,7 @@ import {
 } from './engine';
 import type { PlayerId } from './rules';
 import { replaceV070CaptureWithOverlay } from './overlays';
+import { expireV070BlockadesForControlLoss } from './sanctions';
 
 export interface V070FrontLineCapture {
   position: number;
@@ -47,6 +48,11 @@ export function advanceV070FrontLine(
 
     const previousController = target.controller;
     target.controller = playerId;
+    expireV070BlockadesForControlLoss(
+      state,
+      target.territoryInstanceId,
+      previousController,
+    );
     refreshV070ControlledTerritories(state);
 
     const capture = {
