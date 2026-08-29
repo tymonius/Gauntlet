@@ -79,21 +79,22 @@ The retained June 2026 ChatGPT archive establishes an important distinction with
 
 The author's 2026-08-28 recollection adds a potentially earlier physical-distribution event: during the June 21 v0.5.4 human playtest, the other player was probably allowed to keep the cards and printed rulebooks were handed out. Because v0.5.4 had been generated earlier that day and the resulting errata record identifies the session as a v0.5.4 playtest, those copies were most likely v0.5.4.
 
-If that distribution was unrestricted, v0.5.4 becomes the better first published 2026 foundation-registration candidate. If it was a limited private-playtest distribution with no right of further dissemination, v0.5.3 remains the first hard public-GitHub foundation candidate. See `V0_5_3_REVIVAL_PUBLICATION_AUDIT.md` and `V0_5_4_COPYRIGHT_FILING_WORKSHEET.md`.
+The project has now adopted the working filing position that this June 21 physical distribution **was publication**. v0.5.4 is therefore the operative first published 2026 foundation-registration candidate. v0.5.3 remains important as the first complete fixed package but is not separately filed merely for version sequence. See `V0_5_3_REVIVAL_PUBLICATION_AUDIT.md` and `V0_5_4_COPYRIGHT_FILING_WORKSHEET.md`.
 
 ## Copyright implications
 
 This changes the filing assumptions materially.
 
-### v0.5.3 is the current 2026 foundation candidate
+### v0.5.4 is the current 2026 foundation candidate
 
-The first complete revived edition is v0.5.3, not the later v0.6.0 release. A v0.5.3 registration can establish the qualifying 2026 compilation/editorial authorship while excluding appreciable expression carried from the older public Gauntlet work and excluding AI-generated/unclaimable matter.
+The first complete revived package was v0.5.3 on June 20, but the project now treats the **June 21 physical distribution of v0.5.4 playtest copies as first publication**.
 
-The June 21 physical distribution is now affirmatively remembered in broad outline. The author further confirmed on 2026-08-28 that recipients were not expressly told the materials were private.
+The author recalled that another player likely kept the cards and that printed rulebooks were handed out, confirmed no privacy/no-sharing instruction was given, and on 2026-08-29 accepted the recommendation to use that event as the filing publication point rather than characterize it as a limited private distribution.
 
-Its legal status nevertheless remains fact-dependent. Copyright Office practice recognizes that exchanges among social acquaintances and distributions to a definitely selected group for a limited purpose can remain unpublished, while unrestricted transfer/lending to the public is publication. The next factual discriminator is therefore the **audience and purpose** of the handout, not merely whether a formal confidentiality instruction was spoken.
+Accordingly, v0.5.4 is the operative foundation registration. It can establish the qualifying 2026 compilation/editorial authorship embodied in the revived edition while excluding appreciable expression carried from the older public Gauntlet work and excluding AI-generated/unclaimable matter.
 
-Until that distinction is resolved, use June 21 for conservative deadline planning but do not yet treat it as a final statutory publication date.
+Working first-publication date: **June 21, 2026**.
+Working Nation of First Publication: **United States**.
 
 ### v0.6.0 cannot be treated as the origin of all Gauntlet expression
 
