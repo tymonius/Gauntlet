@@ -29,6 +29,7 @@ import {
 } from './assets';
 
 import { expireV070SanctionsAfterAcceptance } from './sanctions';
+import { openV070BlockadeChoicesForPositionChange } from './movement-triggers';
 
 export const V070_EXECUTABLE_PROPOSAL_IDS = [
   'de-escalation',
@@ -1677,9 +1678,21 @@ function ratifyProposal(
 
 function finishOnsetWithoutBattle(state: V070GameState): void {
   const battle = requireBattle(state);
+  const previousPositions = {
+    A: state.players.A.position,
+    B: state.players.B.position,
+  };
   state.players.A.position = battle.positions.A;
   state.players.B.position = battle.positions.B;
   syncBoardOccupants(state);
+
+  for (const playerId of ['A', 'B'] as const) {
+    const from = previousPositions[playerId];
+    const to = state.players[playerId].position;
+    if (from !== null && to !== null && from !== to) {
+      openV070BlockadeChoicesForPositionChange(state, playerId, from, to);
+    }
+  }
 
   state.battle = null;
   state.battleRuntime = null;
@@ -1687,6 +1700,8 @@ function finishOnsetWithoutBattle(state: V070GameState): void {
   if (!state.turnState || state.turnState.phase !== 'movement') {
     throw new Error('Terms accepted during movement must return to the post-Movement turn boundary.');
   }
+  if (state.pendingSanctionChoices.length > 0) return;
+
   state.turnState = advanceV070TurnPhase(state.turnState);
   appendV070Event(state, {
     type: 'turn_phase',
