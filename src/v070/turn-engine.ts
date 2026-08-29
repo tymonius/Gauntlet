@@ -7,6 +7,7 @@ import {
   createV070BattleOnset,
   createV070LastStandOnset,
   createV070TurnState,
+  spendV070Action,
   type MovementChoice,
   type PlayerId,
   type TurnPhase,
@@ -28,11 +29,24 @@ import {
   resolveV070OverlayEntryRequirements,
   resolveV070StartTurnOverlayChoice,
 } from './overlays';
+import {
+  completeV070CensureChoice,
+  currentV070CensureChoice,
+  openV070CensureChoicesForActionPlay,
+} from './sanctions';
 
 export type V070TurnAction =
   | { type: 'resolve_capture'; playerId: PlayerId }
   | { type: 'draw_turn_card'; playerId: PlayerId }
   | { type: 'pass_opening'; playerId: PlayerId }
+  | { type: 'play_action_card'; playerId: PlayerId; cardInstanceId: string }
+  | {
+      type: 'resolve_censure_choice';
+      playerId: PlayerId;
+      sanctionInstanceId: string;
+      choice: 'discard' | 'draw';
+      discardInstanceId?: string;
+    }
   | {
       type: 'choose_movement';
       playerId: PlayerId;
@@ -65,6 +79,14 @@ export function reduceV070TurnAction(
   if (state.pendingTurnChoice && action.type !== 'resolve_start_turn_overlay_choice') {
     throw new V070GameActionError('Resolve the pending start-of-turn Overlay choice first.');
   }
+  if (state.pendingSanctionChoices.length > 0 && action.type !== 'resolve_censure_choice') {
+    throw new V070GameActionError('Resolve the pending Sanctions: Censure choice first.');
+  }
+  if (state.pendingActionCard
+    && state.pendingSanctionChoices.length === 0
+    && action.type !== 'resolve_censure_choice') {
+    throw new V070GameActionError('Resolve the pending Action card before continuing the turn.');
+  }
 
   const next = structuredClone(state) as V070GameState;
 
@@ -77,6 +99,18 @@ export function reduceV070TurnAction(
       break;
     case 'pass_opening':
       passOpening(next, action.playerId);
+      break;
+    case 'play_action_card':
+      playActionCard(next, action.playerId, action.cardInstanceId);
+      break;
+    case 'resolve_censure_choice':
+      resolveCensureChoice(
+        next,
+        action.playerId,
+        action.sanctionInstanceId,
+        action.choice,
+        action.discardInstanceId,
+      );
       break;
     case 'choose_movement':
       chooseMovement(next, action.playerId, action.choice, action.discardInstanceId);
@@ -226,6 +260,199 @@ function drawTurnCard(state: V070GameState, playerId: PlayerId): void {
 
   state.turnState = advanceV070TurnPhase(requireTurnState(state));
   appendPhaseEvent(state);
+}
+
+export const V070_EXECUTABLE_ACTION_CARD_IDS = [
+  'neutral-rallying-cry',
+] as const;
+
+function playActionCard(
+  state: V070GameState,
+  playerId: PlayerId,
+  cardInstanceId: string,
+): void {
+  const turnState = requireTurnState(state);
+  if (turnState.phase !== 'opening' && turnState.phase !== 'denouement') {
+    throw new V070GameActionError(
+      'A printed Action card may normally be played only during Opening or Denouement.',
+    );
+  }
+
+  const player = state.players[playerId];
+  const handIndex = player.zones.hand.indexOf(cardInstanceId);
+  if (handIndex < 0) {
+    throw new V070GameActionError('An Action card must be played from Hand.');
+  }
+
+  const instance = state.cardInstances[cardInstanceId];
+  const card = instance ? v070CanonicalContent.cardsById.get(instance.cardId) : undefined;
+  if (!instance || instance.owner !== playerId || !card) {
+    throw new V070GameActionError('Unknown or incorrectly owned Action card instance.');
+  }
+  if (!card.effects.some(effect => effect.label === 'Action')) {
+    throw new V070GameActionError('That card has no printed Action effect.');
+  }
+  if (!(V070_EXECUTABLE_ACTION_CARD_IDS as readonly string[]).includes(card.id)) {
+    throw new V070GameActionError(
+      `The printed Action effect of ${card.name} is not yet executable in v0.7.0.`,
+    );
+  }
+
+  try {
+    state.turnState = spendV070Action(turnState);
+  } catch (error) {
+    throw new V070GameActionError(
+      error instanceof Error ? error.message : 'That Action cannot be spent now.',
+    );
+  }
+
+  player.zones.hand.splice(handIndex, 1);
+  state.pendingActionCard = {
+    playerId,
+    instanceId: cardInstanceId,
+    cardId: card.id,
+    phase: turnState.phase,
+  };
+
+  appendV070Event(state, {
+    type: 'action_card_played',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      instanceId: cardInstanceId,
+      cardId: card.id,
+      phase: turnState.phase,
+      actionsRemaining: state.turnState.actionsAvailable,
+    },
+  });
+
+  const censureCount = openV070CensureChoicesForActionPlay(
+    state,
+    playerId,
+    cardInstanceId,
+  );
+  if (censureCount === 0) continuePendingActionCard(state);
+}
+
+function resolveCensureChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  sanctionInstanceId: string,
+  choice: 'discard' | 'draw',
+  discardInstanceId?: string,
+): void {
+  const pending = currentV070CensureChoice(state, playerId);
+  if (pending.sanctionInstanceId !== sanctionInstanceId) {
+    throw new V070GameActionError('Resolve Sanctions: Censure choices in trigger order.');
+  }
+  if (!state.pendingActionCard
+    || state.pendingActionCard.instanceId !== pending.sourceActionInstanceId) {
+    throw new V070GameActionError('The Censure trigger is missing its pending Action card.');
+  }
+
+  if (choice === 'discard') {
+    if (!discardInstanceId) {
+      throw new V070GameActionError('Sanctions: Censure requires one chosen Hand discard.');
+    }
+    const hand = state.players[playerId].zones.hand;
+    const index = hand.indexOf(discardInstanceId);
+    if (index < 0) {
+      throw new V070GameActionError('Sanctions: Censure must discard a card from Hand.');
+    }
+    hand.splice(index, 1);
+    state.players[playerId].zones.discardPile.push(discardInstanceId);
+    appendV070Event(state, {
+      type: 'card_discarded',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        instanceId: discardInstanceId,
+        cardId: state.cardInstances[discardInstanceId]?.cardId,
+        purpose: 'Sanctions: Censure',
+      },
+    });
+  } else {
+    if (discardInstanceId) {
+      throw new V070GameActionError('The +1 Card Censure choice does not discard a Hand card.');
+    }
+    drawIntoHand(state, playerId, 1, 'Sanctions: Censure');
+  }
+
+  completeV070CensureChoice(
+    state,
+    playerId,
+    sanctionInstanceId,
+    choice,
+    discardInstanceId,
+  );
+
+  if (state.pendingSanctionChoices.length === 0) {
+    continuePendingActionCard(state);
+  }
+}
+
+function continuePendingActionCard(state: V070GameState): void {
+  const pending = state.pendingActionCard;
+  if (!pending) throw new V070GameActionError('No Action card is pending resolution.');
+  if (state.pendingSanctionChoices.length > 0) {
+    throw new V070GameActionError('Resolve all Censure choices before the Action effect.');
+  }
+
+  switch (pending.cardId) {
+    case 'neutral-rallying-cry':
+      drawIntoHand(state, pending.playerId, 1, 'Rallying Cry');
+      break;
+    default:
+      throw new V070GameActionError(
+        `Unsupported pending Action effect: ${pending.cardId}.`,
+      );
+  }
+
+  state.players[pending.playerId].zones.discardPile.push(pending.instanceId);
+  appendV070Event(state, {
+    type: 'action_card_resolved',
+    actor: pending.playerId,
+    visibility: 'public',
+    payload: {
+      instanceId: pending.instanceId,
+      cardId: pending.cardId,
+      destination: 'discard',
+    },
+  });
+  state.pendingActionCard = null;
+}
+
+function drawIntoHand(
+  state: V070GameState,
+  playerId: PlayerId,
+  count: number,
+  purpose: string,
+): void {
+  const result = drawV070Cards(state, playerId, count, purpose);
+  state.players[playerId].zones.hand.push(...result.drawn);
+
+  appendV070Event(state, {
+    type: 'cards_drawn',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      count: result.drawn.length,
+      purpose,
+      reshuffles: result.reshuffles,
+      exhausted: result.exhausted,
+    },
+  });
+  if (result.drawn.length > 0) {
+    appendV070Event(state, {
+      type: 'drawn_card_identity',
+      actor: playerId,
+      visibility: playerId,
+      payload: {
+        cardInstanceIds: [...result.drawn],
+        purpose,
+      },
+    });
+  }
 }
 
 function passOpening(state: V070GameState, playerId: PlayerId): void {

@@ -376,6 +376,27 @@ export function createV070TurnState(additionalActions = 0): V070TurnState {
   };
 }
 
+export function spendV070Action(state: V070TurnState): V070TurnState {
+  if (state.phase !== 'opening' && state.phase !== 'denouement') {
+    throw new Error('Actions may normally be taken only during Opening or Denouement.');
+  }
+  if (state.actionsAvailable <= 0) {
+    throw new Error('No Actions remain this turn.');
+  }
+  if (state.actionsTaken[state.phase] >= 1) {
+    throw new Error(`The normal Action limit for ${state.phase} has already been reached.`);
+  }
+
+  return {
+    ...state,
+    actionsAvailable: state.actionsAvailable - 1,
+    actionsTaken: {
+      ...state.actionsTaken,
+      [state.phase]: state.actionsTaken[state.phase] + 1,
+    },
+  };
+}
+
 export function advanceV070TurnPhase(state: V070TurnState): V070TurnState {
   const index = V070_TURN_SEQUENCE.indexOf(state.phase);
   if (index < 0 || index === V070_TURN_SEQUENCE.length - 1) return { ...state };

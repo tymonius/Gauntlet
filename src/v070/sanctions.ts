@@ -14,29 +14,54 @@ export const V070_SANCTIONS_CENSURE_ID = 'diplomats-sanctions-censure';
 export const V070_SANCTIONS_EMBARGO_ID = 'diplomats-sanctions-embargo';
 export const V070_SANCTIONS_BLOCKADE_ID = 'diplomats-sanctions-blockade';
 
+export function useV070SanctionsCensureAfterRefusal(
+  state: V070GameState,
+  diplomatId: PlayerId,
+  cardInstanceId: string,
+  replaceAssetInstanceId?: string,
+): void {
+  const { opponentId } = requireRefusedTermsSanctionWindow(state, diplomatId);
+
+  const instance = state.cardInstances[cardInstanceId];
+  if (!instance
+    || instance.owner !== diplomatId
+    || instance.cardId !== V070_SANCTIONS_CENSURE_ID) {
+    throw new V070GameActionError('Choose your Sanctions: Censure from Hand.');
+  }
+
+  bankV070AssetFromHand(state, diplomatId, cardInstanceId, {
+    replaceAssetInstanceId,
+    purpose: 'Sanctions: Censure after refused Terms',
+    allowSpecialBanking: true,
+  });
+
+  associateV070Sanction(state, {
+    instanceId: cardInstanceId,
+    owner: diplomatId,
+    opponent: opponentId,
+    kind: 'asset',
+  });
+
+  appendV070Event(state, {
+    type: 'sanction_applied',
+    actor: diplomatId,
+    visibility: 'public',
+    payload: {
+      instanceId: cardInstanceId,
+      cardId: V070_SANCTIONS_CENSURE_ID,
+      opponentId,
+      kind: 'asset',
+    },
+  });
+}
+
 export function useV070SanctionsEmbargoAfterRefusal(
   state: V070GameState,
   diplomatId: PlayerId,
   cardInstanceId: string,
   replaceAssetInstanceId?: string,
 ): void {
-  const runtime = state.battleRuntime;
-  if (!runtime) throw new V070GameActionError('Sanctions: Embargo requires an active battle.');
-  const terms = runtime.terms;
-  if (runtime.stage !== 'onset'
-    || terms.stage !== 'refused'
-    || terms.response !== 'refused'
-    || terms.offerer !== diplomatId
-    || terms.proposalChoice
-    || terms.termsCardChoice
-    || terms.politicalCapitalPending) {
-    throw new V070GameActionError(
-      'Sanctions: Embargo is available after that Diplomat’s Terms are refused and refusal choices are resolved.',
-    );
-  }
-
-  const opponentId = terms.opponent;
-  if (!opponentId) throw new V070GameActionError('Refused Terms are missing their opponent.');
+  const { opponentId } = requireRefusedTermsSanctionWindow(state, diplomatId);
 
   const instance = state.cardInstances[cardInstanceId];
   if (!instance
@@ -78,6 +103,83 @@ export function useV070SanctionsEmbargoAfterRefusal(
   );
 }
 
+export function openV070CensureChoicesForActionPlay(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+): number {
+  const active = state.sanctions.filter(sanction =>
+    sanction.opponent === playerId
+    && sanction.kind === 'asset'
+    && state.cardInstances[sanction.instanceId]?.cardId === V070_SANCTIONS_CENSURE_ID
+    && state.players[sanction.owner].zones.assetBank.includes(sanction.instanceId)
+    && state.sanctionTriggerTurns[sanction.instanceId] !== state.turnNumber
+  );
+
+  for (const sanction of active) {
+    state.sanctionTriggerTurns[sanction.instanceId] = state.turnNumber;
+    state.pendingSanctionChoices.push({
+      kind: 'censure_action',
+      playerId,
+      sanctionInstanceId: sanction.instanceId,
+      sourceActionInstanceId,
+    });
+
+    appendV070Event(state, {
+      type: 'sanction_choice_pending',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        kind: 'censure_action',
+        sanctionInstanceId: sanction.instanceId,
+        sourceActionInstanceId,
+        owner: sanction.owner,
+        opponent: sanction.opponent,
+        turnNumber: state.turnNumber,
+      },
+    });
+  }
+
+  return active.length;
+}
+
+export function currentV070CensureChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+) {
+  const pending = state.pendingSanctionChoices[0];
+  if (!pending || pending.kind !== 'censure_action' || pending.playerId !== playerId) {
+    throw new V070GameActionError('No Sanctions: Censure choice is pending for that player.');
+  }
+  return pending;
+}
+
+export function completeV070CensureChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  sanctionInstanceId: string,
+  choice: 'discard' | 'draw',
+  discardedInstanceId?: string,
+): void {
+  const pending = currentV070CensureChoice(state, playerId);
+  if (pending.sanctionInstanceId !== sanctionInstanceId) {
+    throw new V070GameActionError('Resolve Sanctions: Censure choices in trigger order.');
+  }
+
+  state.pendingSanctionChoices.shift();
+  appendV070Event(state, {
+    type: 'censure_resolved',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      sanctionInstanceId,
+      sourceActionInstanceId: pending.sourceActionInstanceId,
+      choice,
+      discardedInstanceId: discardedInstanceId ?? null,
+    },
+  });
+}
+
 export function associateV070Sanction(
   state: V070GameState,
   association: V070SanctionAssociation,
@@ -112,6 +214,30 @@ export function sanctionForV070Instance(
   return state.sanctions.find(sanction => sanction.instanceId === instanceId) ?? null;
 }
 
+function requireRefusedTermsSanctionWindow(
+  state: V070GameState,
+  diplomatId: PlayerId,
+): { opponentId: PlayerId } {
+  const runtime = state.battleRuntime;
+  if (!runtime) throw new V070GameActionError('Sanctions require an active battle.');
+  const terms = runtime.terms;
+  if (runtime.stage !== 'onset'
+    || terms.stage !== 'refused'
+    || terms.response !== 'refused'
+    || terms.offerer !== diplomatId
+    || terms.proposalChoice
+    || terms.termsCardChoice
+    || terms.politicalCapitalPending) {
+    throw new V070GameActionError(
+      'This Sanction is available after that Diplomat’s Terms are refused and refusal choices are resolved.',
+    );
+  }
+  if (!terms.opponent) {
+    throw new V070GameActionError('Refused Terms are missing their opponent.');
+  }
+  return { opponentId: terms.opponent };
+}
+
 function expireV070Sanction(
   state: V070GameState,
   sanction: V070SanctionAssociation,
@@ -142,6 +268,7 @@ function expireV070Sanction(
   state.sanctions = state.sanctions.filter(
     existing => existing.instanceId !== sanction.instanceId,
   );
+  delete state.sanctionTriggerTurns[sanction.instanceId];
 
   appendV070Event(state, {
     type: 'sanction_expired',

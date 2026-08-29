@@ -59,6 +59,20 @@ export interface V070PendingAssetLimitChoice {
   sourceInstanceId: string | null;
 }
 
+export interface V070PendingActionCard {
+  playerId: PlayerId;
+  instanceId: string;
+  cardId: string;
+  phase: 'opening' | 'denouement';
+}
+
+export interface V070PendingSanctionChoice {
+  kind: 'censure_action';
+  playerId: PlayerId;
+  sanctionInstanceId: string;
+  sourceActionInstanceId: string;
+}
+
 export interface V070DiplomatState {
   influence: number;
   ratifiedProposals: string[];
@@ -123,6 +137,9 @@ export interface V070GameState {
   nextOverlaySequence: number;
   territoryTurnRestrictions: V070TerritoryTurnRestriction[];
   sanctions: V070SanctionAssociation[];
+  sanctionTriggerTurns: Record<string, number>;
+  pendingActionCard: V070PendingActionCard | null;
+  pendingSanctionChoices: V070PendingSanctionChoice[];
   pendingAssetLimitChoice: V070PendingAssetLimitChoice | null;
   pendingTurnChoice: V070PendingTurnChoice | null;
   winner: PlayerId | null;
@@ -229,6 +246,9 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
     nextOverlaySequence: 1,
     territoryTurnRestrictions: [],
     sanctions: [],
+    sanctionTriggerTurns: {},
+    pendingActionCard: null,
+    pendingSanctionChoices: [],
     pendingAssetLimitChoice: null,
     pendingTurnChoice: null,
     winner: null,
