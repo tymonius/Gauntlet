@@ -23,18 +23,16 @@ This means the 2026 filings must be layered rather than treating v0.6.0 as the o
 
 The 2026 revival-history audit changes the filing order. v0.5.3 is the first complete fixed edition of the resumed-development cycle; v0.5.0–v0.5.2 are retrospective labels for internal development stages rather than recovered separate public editions.
 
-The working strategy is now conditional on the June 21 physical-playtest distribution:
+The working strategy is now:
 
-1. **Foundation filing**
-   - **preferred if June 21 qualifies as publication:** `Gauntlet v0.5.4 Complete Playtest Edition`; see `V0_5_4_COPYRIGHT_FILING_WORKSHEET.md`.
-   - **fallback if June 21 was a limited/nonpublication event:** `Gauntlet v0.5.3 Complete Playtest Edition`; see `V0_5_3_COPYRIGHT_FILING_WORKSHEET.md`.
+1. **Gauntlet v0.5.4 Complete Playtest Edition** — operative 2026 foundation literary/compilation filing; working first publication **June 21, 2026** through physical distribution of playtest copies. See `V0_5_4_COPYRIGHT_FILING_WORKSHEET.md`.
 2. **Gauntlet v0.6.0 Rulebook / game text** — substantial later revised/derivative work.
 3. **Gauntlet v0.6.0 card-and-component set** if the provenance audit shows a useful independent claim.
 4. **Gauntlet v0.7.0 Rulebook** as a derivative/revised literary work.
 5. **Gauntlet v0.7.0 illustrated card set** as a separate mixed literary/visual compilation.
 6. **Software** registrations later for commercially important codebases.
 
-Do not automatically register v0.5.5–v0.5.7. Those patch releases should receive separate applications only if they contain enough additional protectable human authorship to justify the filing. If v0.5.4 becomes the foundation filing, do not separately register v0.5.3 merely to preserve version sequence.
+The v0.5.3 worksheet is retained as historical analysis only; do not separately register v0.5.3 merely to preserve version sequence. Do not automatically register v0.5.5–v0.5.7 unless an authorship audit shows enough additional protectable human material to justify the fee.
 
 The exact grouping should be checked against the Copyright Office deposit/unit-of-publication rules before submission.
 
