@@ -60,7 +60,7 @@ Use **Other**:
 
 `selection, coordination, and arrangement of rules, card/reference material, deck lists, and playtest materials; qualifying human revisions`
 
-Do not add `Text` unless a final targeted provenance review identifies a sufficiently appreciable body of specific human-authored text worth claiming independently.
+Do **not** add `Text`. The targeted v0.5.4 text-authorship review did not identify a sufficiently appreciable body of independently expressive prose personally written by Tymon and carried substantially verbatim into the Guide to justify a broad Text claim. See `V0_5_4_TEXT_AUTHORSHIP_AUDIT.md`.
 
 The Copyright Office's Standard Application help permits a more specific authorship description in `Other` when the standard Literary Work boxes do not fully describe the contribution.
 
@@ -112,7 +112,7 @@ Use **Other**:
 
 `selection, coordination, and arrangement of rules, card/reference material, deck lists, and playtest materials; qualifying human revisions`
 
-If `Text` is later added to `Author Created`, add the identical `Text` claim here.
+Do not add `Text` under the current filing posture.
 
 ## 7. Rights & Permissions
 
@@ -145,7 +145,7 @@ Before certification, confirm:
 - publication date entered as `06/21/2026`;
 - Nation of First Publication entered as `United States`;
 - claimant remains `Tymon Scott`;
-- no `Text` authorship is claimed unless the targeted provenance review justifies it;
+- no broad `Text` authorship is claimed;
 - AI-generated text and pictorial material are expressly excluded;
 - the uploaded deposit is the exact historical v0.5.4 PDF below.
 
@@ -176,7 +176,7 @@ This foundation application should therefore be submitted before the later v0.6/
 
 ## 14. Current status
 
-**SUBSTANTIVELY READY FOR SUBMISSION, subject to one targeted authorship check and normal portal entry.**
+**READY FOR SUBMISSION, subject only to normal portal entry, final cross-check, payment, and certification.**
 
 Resolved:
 
@@ -188,11 +188,11 @@ Resolved:
 - [x] broad pre-2026 limitation boundary;
 - [x] conservative AI-generated-text exclusion;
 - [x] pictorial material excluded from this Literary Work claim;
-- [x] field-by-field Standard Application language prepared.
+- [x] field-by-field Standard Application language prepared;
+- [x] targeted text-authorship review completed; no broad `Text` claim recommended.
 
 Remaining:
 
-- [ ] targeted review for any appreciable specifically human-authored text worth adding as a `Text` claim;
 - [ ] final application/deposit cross-check during eCO entry;
 - [ ] enter private contact/address information;
 - [ ] pay the current Standard Application fee;
