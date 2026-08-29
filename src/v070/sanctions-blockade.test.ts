@@ -105,6 +105,11 @@ function refusedBattleAtAftermath(): V070GameState {
   state = reduceV070BattleAction(state, { type: 'choose_tactic', playerId: 'B' });
   state = reduceV070BattleAction(state, { type: 'reveal_tactics', playerId: 'A' });
   state = reduceV070BattleAction(state, {
+    type: 'use_leverage',
+    playerId: 'A',
+    bonus: 0,
+  });
+  state = reduceV070BattleAction(state, {
     type: 'submit_battle_dice',
     playerId: 'A',
     values: [6],
