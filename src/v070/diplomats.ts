@@ -946,7 +946,12 @@ function continueRefusedTerms(
   diplomatId: PlayerId,
   refusingPlayer: PlayerId,
 ): void {
-  const terms = requireRuntime(state).terms;
+  const runtime = requireRuntime(state);
+  const terms = runtime.terms;
+  runtime.refusedTermsContext = {
+    offerer: diplomatId,
+    opponent: refusingPlayer,
+  };
   terms.stage = 'refused';
   terms.priorityPlayer = null;
   terms.proposalChoice = null;
