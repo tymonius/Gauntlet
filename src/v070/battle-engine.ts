@@ -50,7 +50,10 @@ import {
   type V070BattleRuntime
 } from './battle-types';
 import { resolveV070AssetLimitRemoval } from './assets';
-import { useV070SanctionsEmbargoAfterRefusal } from './sanctions';
+import {
+  useV070SanctionsCensureAfterRefusal,
+  useV070SanctionsEmbargoAfterRefusal,
+} from './sanctions';
 
 export const V070_NORMAL_BATTLE_DICE = 1 as const;
 
@@ -76,6 +79,12 @@ export type V070BattleAction =
   | { type: 'use_nonbinding_resolution'; playerId: PlayerId; cardInstanceId: string }
   | { type: 'use_gunboat_diplomacy'; playerId: PlayerId; cardInstanceId: string }
   | { type: 'use_neutral_observers'; playerId: PlayerId; cardInstanceId: string }
+  | {
+      type: 'use_sanctions_censure';
+      playerId: PlayerId;
+      cardInstanceId: string;
+      replaceAssetInstanceId?: string;
+    }
   | {
       type: 'use_sanctions_embargo';
       playerId: PlayerId;
@@ -177,6 +186,14 @@ export function reduceV070BattleAction(
       break;
     case 'use_neutral_observers':
       useV070NeutralObserversAfterRefusal(next, action.playerId, action.cardInstanceId);
+      break;
+    case 'use_sanctions_censure':
+      useV070SanctionsCensureAfterRefusal(
+        next,
+        action.playerId,
+        action.cardInstanceId,
+        action.replaceAssetInstanceId,
+      );
       break;
     case 'use_sanctions_embargo':
       useV070SanctionsEmbargoAfterRefusal(
