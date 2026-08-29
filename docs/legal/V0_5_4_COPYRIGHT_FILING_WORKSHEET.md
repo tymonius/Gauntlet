@@ -51,9 +51,9 @@ Working `Author Created — Other`:
 
 > Selection, coordination, and arrangement of rules, card/reference material, deck lists, and playtest materials; qualifying human revisions.
 
-Do not automatically check a broad `Text` claim merely because the work contains extensive rules prose. Much of the exact language was generated or consolidated through ChatGPT and much of the remaining rules language is functional.
+Do **not** check a broad `Text` claim. The targeted v0.5.4 text-authorship audit did not identify a sufficiently appreciable body of independently expressive prose personally written by Tymon and carried substantially verbatim into the final Guide. See `V0_5_4_TEXT_AUTHORSHIP_AUDIT.md`.
 
-A broader `Text` claim may be added only if the targeted provenance review identifies a sufficient body of separately human-authored expressive text.
+This does not mean no sentence contains human expression; it is a conservative decision about what to make a principal registration claim.
 
 ## Material Excluded
 
@@ -75,7 +75,7 @@ Use the same human-authorship description:
 
 > Selection, coordination, and arrangement of rules, card/reference material, deck lists, and playtest materials; qualifying human revisions.
 
-If a `Text` claim is added in `Author Created`, mirror it here.
+Do not add a broad `Text` claim under the current filing posture.
 
 ## Exact literary deposit
 
