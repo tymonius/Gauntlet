@@ -66,12 +66,20 @@ export interface V070PendingActionCard {
   phase: 'opening' | 'denouement';
 }
 
-export interface V070PendingSanctionChoice {
-  kind: 'censure_action';
-  playerId: PlayerId;
-  sanctionInstanceId: string;
-  sourceActionInstanceId: string;
-}
+export type V070PendingSanctionChoice =
+  | {
+      kind: 'censure_action';
+      playerId: PlayerId;
+      sanctionInstanceId: string;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'blockade_movement';
+      playerId: PlayerId;
+      sanctionInstanceId: string;
+      territoryInstanceId: string;
+      movement: 'leave' | 'enter';
+    };
 
 export interface V070DiplomatState {
   influence: number;
