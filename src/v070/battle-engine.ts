@@ -766,6 +766,7 @@ function useSafeConduct(
   player.zones.discardPile.push(cardInstanceId);
 
   state.battle = resolveV070Withdrawal(battle, [playerId]);
+  openBattlePositionChangeSanctions(state, state.battle.positions);
   runtime.pendingOutcome = null;
   runtime.stage = 'aftermath';
 
@@ -830,6 +831,7 @@ function finalizeOutcome(
   const runtime = requireRuntime(state);
   const resolution = applyV070BattleOutcome(battle, outcome);
   state.battle = resolution.state;
+  openBattlePositionChangeSanctions(state, state.battle.positions);
   runtime.pendingOutcome = null;
   runtime.stage = 'aftermath';
 
@@ -847,6 +849,19 @@ function finalizeOutcome(
   settleV070RefusedTermsOutcome(state, outcome);
   if (state.stage === 'ended') return;
   if (resolution.victory) completeAftermathInternal(state, resolution.victory.winner);
+}
+
+function openBattlePositionChangeSanctions(
+  state: V070GameState,
+  positions: Record<PlayerId, number>,
+): void {
+  for (const playerId of ['A', 'B'] as const) {
+    const from = state.players[playerId].position;
+    const to = positions[playerId];
+    if (from !== null && from !== to) {
+      openV070BlockadeChoicesForPositionChange(state, playerId, from, to);
+    }
+  }
 }
 
 function completeAftermath(state: V070GameState, playerId: PlayerId): void {
@@ -872,21 +887,9 @@ function completeAftermathInternal(
   const battle = requireBattle(state);
   const runtime = requireRuntime(state);
 
-  const previousPositions = {
-    A: state.players.A.position,
-    B: state.players.B.position,
-  };
   state.players.A.position = battle.positions.A;
   state.players.B.position = battle.positions.B;
   syncBoardOccupants(state);
-
-  for (const playerId of ['A', 'B'] as const) {
-    const from = previousPositions[playerId];
-    const to = state.players[playerId].position;
-    if (from !== null && to !== null && from !== to) {
-      openV070BlockadeChoicesForPositionChange(state, playerId, from, to);
-    }
-  }
 
   for (const playerId of ['A', 'B'] as const) {
     const participant = runtime.participants[playerId];
