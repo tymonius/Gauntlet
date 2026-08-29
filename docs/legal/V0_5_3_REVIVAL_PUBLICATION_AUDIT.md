@@ -29,11 +29,11 @@ The author's 2026-08-28 recollection adds an earlier physical-distribution fact:
 
 This materially changes the publication analysis. An unrestricted transfer/gift or lending of copies can constitute publication, but Copyright Office practice also recognizes "limited publication" where copies are distributed only to a definitely selected group for a limited purpose and without the right of further diffusion, reproduction, distribution, or sale. A social-acquaintance/playtest exchange can therefore remain unpublished depending on the restrictions and circumstances.
 
-Accordingly, **June 21 is now the earliest plausible 2026 publication date**, but the legal classification of that playtest distribution remains unresolved.
+The working filing position is now to treat **June 21, 2026 as first publication of v0.5.4**.
 
-On 2026-08-28 the author further confirmed that **no one was told the materials were private**. That weakens the case for an express restriction, but it does not by itself eliminate limited-publication treatment. Current Copyright Office Compendium guidance notes that exchanges among family members or social acquaintances can remain unpublished, and that limited publication may turn on both the selected audience and limited purpose, with express or implied restrictions being relevant rather than always mandatory.
+On 2026-08-28 the author recalled that the other player probably kept the cards and printed rulebooks were handed out, and confirmed that recipients were **not told the materials were private**. On 2026-08-29 the author accepted the recommendation to characterize that physical distribution as publication rather than strain for limited-publication treatment.
 
-The remaining question is therefore primarily **who received the copies and for what purpose**: a small selected playtest/friend group versus a broader distribution to people generally.
+That is a conservative filing choice, not a claim that every private playtest handout must legally constitute publication. It reflects the actual record here: physical copies left the author's possession, no confidentiality/no-sharing restriction was communicated, and v0.5.4 was the current playtest edition used that day.
 
 ## 1. Revival chronology from the retained ChatGPT archive
 
@@ -143,9 +143,9 @@ Accordingly:
 - **earliest plausible physical publication:** June 21, based on the author's recollection of retained cards and handed-out rulebooks;
 - **Git object date for v0.5.3:** June 22;
 - **first hard public-GitHub evidence:** June 23;
-- **legal publication status of the June 21 playtest distribution:** unresolved because limited-publication facts still matter.
+- **working legal publication position:** v0.5.4 published June 21 through physical distribution of playtest copies.
 
-If the June 21 distribution qualifies as publication, **v0.5.4—not v0.5.3—is likely the better first published 2026 foundation work**, because it incorporated the otherwise-unpublished v0.5.3 material plus the Last Stand revision. If the June 21 distribution was a limited publication, v0.5.3 remains the first hard public-GitHub foundation candidate on June 23.
+On that working position, **v0.5.4—not v0.5.3—is the first published 2026 foundation work**. It incorporates the otherwise-unpublished v0.5.0–v0.5.3 revival material plus the Last Stand revision. v0.5.3 should not receive a separate foundation filing merely to preserve version sequence.
 
 ## 3. Exact v0.5.3 literary deposit
 
@@ -216,29 +216,21 @@ The v0.5.3 registration is therefore likely to be a **thin but useful foundation
 
 ## 6. Recommended filing order
 
-The working registration sequence is now conditional on the June 21 distribution facts:
+The working registration sequence is:
 
-**If June 21 was an unrestricted publication:**
-1. **v0.5.4 Complete Playtest Guide** — first published 2026 foundation registration; it incorporates the earlier unpublished v0.5.0–v0.5.3 revival material plus Last Stand.
+1. **v0.5.4 Complete Playtest Guide** — first published 2026 foundation registration; incorporates the earlier unpublished v0.5.0–v0.5.3 revival material plus Last Stand.
 2. **v0.6.0 Rulebook** — later substantial revised/derivative work.
 3. skip separate v0.5.3 and v0.5.5–v0.5.7 registrations unless a later audit identifies an unusual reason to file them separately.
 4. v0.7 Rulebook / illustrated visual work.
 5. software later where commercially useful.
 
-**If June 21 was only a limited playtest distribution:**
-1. **v0.5.3 Complete Playtest Guide** — first hard public-GitHub foundation candidate on June 23.
-2. **v0.6.0 Rulebook**.
-3. later work as above.
-
-The already-prepared v0.6.0 registration work remains valid either way.
+The already-prepared v0.6.0 registration work remains valid; it follows the v0.5.4 foundation filing.
 
 ## 7. Section 412 timing
 
-The earliest plausible 2026 publication is now **June 21, 2026**. If that physical distribution qualifies as publication, the three-month timing point falls approximately **September 21, 2026**.
+Working first publication is **June 21, 2026**. The three-month post-publication timing point therefore falls approximately **September 21, 2026**.
 
-If the June 21 exchange was only a limited publication, the first hard public-GitHub evidence remains June 23, producing an approximately **September 23, 2026** timing point.
-
-Until the playtest-distribution restrictions are resolved, use the **earlier June 21 date for deadline planning**.
+Use that date for filing priority.
 
 ## 8. Remaining factual questions
 
@@ -251,10 +243,10 @@ Before the v0.5.3 application is certified:
 - [x] establish the broad human/AI filing posture;
 - [x] **author recollection:** during the June 21 playtest, the author believes the other player was allowed to keep the cards and printed rulebooks were handed out.
 - [x] author confirmed on 2026-08-28 that recipients were **not expressly told the materials were private**.
-- [ ] determine whether the copies went only to a small selected playtest/social-acquaintance group for testing, or were handed out more broadly beyond that selected group.
-- [ ] confirm claimant at filing time;
-- [ ] resolve Nation of First Publication using then-current Copyright Office guidance;
-- [ ] prepare the final field-by-field Standard Application entry sheet;
+- [x] author accepted on 2026-08-29 the working publication treatment: **v0.5.4 published June 21, 2026** through physical distribution.
+- [x] working claimant remains **Tymon Scott** based on the author's prior confirmation that no written copyright transfer has occurred.
+- [x] working Nation of First Publication: **United States**, based on the physical-distribution filing position.
+- [ ] prepare/finalize the field-by-field Standard Application entry sheet;
 - [ ] final application/deposit cross-check and certification.
 
 ## Stable repository references
