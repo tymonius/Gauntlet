@@ -44,6 +44,21 @@ export interface V070PlayerZones {
   removed: string[];
 }
 
+export interface V070SanctionAssociation {
+  instanceId: string;
+  owner: PlayerId;
+  opponent: PlayerId;
+  kind: 'asset' | 'overlay';
+}
+
+export interface V070PendingAssetLimitChoice {
+  playerId: PlayerId;
+  effectiveLimit: number;
+  excess: number;
+  reason: string;
+  sourceInstanceId: string | null;
+}
+
 export interface V070DiplomatState {
   influence: number;
   ratifiedProposals: string[];
@@ -107,6 +122,8 @@ export interface V070GameState {
   overlays: V070OverlayAttachment[];
   nextOverlaySequence: number;
   territoryTurnRestrictions: V070TerritoryTurnRestriction[];
+  sanctions: V070SanctionAssociation[];
+  pendingAssetLimitChoice: V070PendingAssetLimitChoice | null;
   pendingTurnChoice: V070PendingTurnChoice | null;
   winner: PlayerId | null;
   events: V070GameEvent[];
@@ -211,6 +228,8 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
     overlays: [],
     nextOverlaySequence: 1,
     territoryTurnRestrictions: [],
+    sanctions: [],
+    pendingAssetLimitChoice: null,
     pendingTurnChoice: null,
     winner: null,
     events: [],

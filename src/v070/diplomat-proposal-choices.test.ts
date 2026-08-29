@@ -7,8 +7,8 @@ import {
 } from './engine';
 import { reduceV070TurnAction } from './turn-engine';
 import { reduceV070BattleAction } from './battle-engine';
+import { bankableV070AssetInstanceIds } from './assets';
 import {
-  bankableV070AssetInstanceIds,
   eligibleV070Proposals,
 } from './diplomats';
 import { refreshV070ControlledTerritories } from './front-line';
