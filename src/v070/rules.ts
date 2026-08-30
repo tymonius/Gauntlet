@@ -100,6 +100,7 @@ export interface V070TurnState {
   phase: TurnPhase;
   actionsAvailable: number;
   actionsTaken: Record<'opening' | 'denouement', number>;
+  phaseActionGrants: Record<'opening' | 'denouement', number>;
   movementRemaining: number;
   movementSequenceOpen: boolean;
   battleInitiated: boolean;
@@ -369,6 +370,7 @@ export function createV070TurnState(additionalActions = 0): V070TurnState {
     phase: 'capture',
     actionsAvailable: 1 + nonnegativeInteger(additionalActions),
     actionsTaken: { opening: 0, denouement: 0 },
+    phaseActionGrants: { opening: 0, denouement: 0 },
     movementRemaining: 0,
     movementSequenceOpen: false,
     battleInitiated: false,
@@ -383,8 +385,12 @@ export function spendV070Action(state: V070TurnState): V070TurnState {
   if (state.actionsAvailable <= 0) {
     throw new Error('No Actions remain this turn.');
   }
-  if (state.actionsTaken[state.phase] >= 1) {
-    throw new Error(`The normal Action limit for ${state.phase} has already been reached.`);
+
+  const phaseLimit = 1 + state.phaseActionGrants[state.phase];
+  if (state.actionsTaken[state.phase] >= phaseLimit) {
+    throw new Error(
+      `The Action limit for ${state.phase} has already been reached.`,
+    );
   }
 
   return {
@@ -397,13 +403,54 @@ export function spendV070Action(state: V070TurnState): V070TurnState {
   };
 }
 
+export function grantCurrentPhaseV070Actions(
+  state: V070TurnState,
+  amount = 1,
+): V070TurnState {
+  if (state.phase !== 'opening' && state.phase !== 'denouement') {
+    throw new Error(
+      'Current-phase Actions may be granted only during Opening or Denouement.',
+    );
+  }
+  const grant = nonnegativeInteger(amount);
+  if (grant < 1) return { ...state };
+
+  return {
+    ...state,
+    actionsAvailable: state.actionsAvailable + grant,
+    phaseActionGrants: {
+      ...state.phaseActionGrants,
+      [state.phase]: state.phaseActionGrants[state.phase] + grant,
+    },
+  };
+}
+
 export function advanceV070TurnPhase(state: V070TurnState): V070TurnState {
   const index = V070_TURN_SEQUENCE.indexOf(state.phase);
   if (index < 0 || index === V070_TURN_SEQUENCE.length - 1) return { ...state };
 
+  let actionsAvailable = state.actionsAvailable;
+  let phaseActionGrants = state.phaseActionGrants;
+
+  if (state.phase === 'opening' || state.phase === 'denouement') {
+    const grants = state.phaseActionGrants[state.phase];
+    const grantActionsUsed = Math.max(
+      0,
+      state.actionsTaken[state.phase] - 1,
+    );
+    const unusedGrants = Math.max(0, grants - grantActionsUsed);
+    actionsAvailable = Math.max(0, actionsAvailable - unusedGrants);
+    phaseActionGrants = {
+      ...state.phaseActionGrants,
+      [state.phase]: 0,
+    };
+  }
+
   return {
     ...state,
     phase: V070_TURN_SEQUENCE[index + 1],
+    actionsAvailable,
+    phaseActionGrants,
     movementRemaining: 0,
     movementSequenceOpen: false,
     battleInitiated: false,
