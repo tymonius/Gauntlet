@@ -122,6 +122,12 @@ export type V070PendingActionEffectChoice =
       sourceActionInstanceId: string;
     }
   | {
+      kind: 'penance_choice';
+      playerId: PlayerId;
+      actionOwnerId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
       kind: 'hand_destination_target';
       playerId: PlayerId;
       sourceActionInstanceId: string;

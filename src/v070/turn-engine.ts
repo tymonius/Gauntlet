@@ -211,6 +211,12 @@ export type V070TurnAction =
       targetInstanceId: string;
     }
   | {
+      type: 'resolve_penance_choice';
+      playerId: PlayerId;
+      choice: 'hand_to_graveyard' | 'conviction';
+      handInstanceId?: string;
+    }
+  | {
       type: 'resolve_censure_choice';
       playerId: PlayerId;
       sanctionInstanceId: string;
@@ -239,6 +245,7 @@ export function reduceV070TurnAction(
   if (action.type === 'resolve_clemency_choice'
     || action.type === 'choose_forced_asset_target'
     || action.type === 'resolve_accusation_choice'
+    || action.type === 'resolve_penance_choice'
     || action.type === 'choose_sequestration_keep_asset') {
     requirePlayingGame(state);
   } else {
@@ -276,6 +283,10 @@ export function reduceV070TurnAction(
         || pending.kind === 'divine_mercy_target'
       )
       && action.type === 'choose_recovery_action_target'
+      && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'penance_choice'
+      && action.type === 'resolve_penance_choice'
       && action.playerId === pending.playerId
     ) || (
       pending.kind === 'hand_destination_target'
@@ -377,6 +388,7 @@ export function reduceV070TurnAction(
       'choose_clemency_target',
       'resolve_clemency_choice',
       'choose_recovery_action_target',
+      'resolve_penance_choice',
       'choose_hand_destination_target',
       'choose_controlled_asset_target',
       'choose_sequestration_keep_asset',
@@ -441,6 +453,14 @@ export function reduceV070TurnAction(
       break;
     case 'choose_recovery_action_target':
       chooseRecoveryActionTarget(next, action.playerId, action.targetInstanceId);
+      break;
+    case 'resolve_penance_choice':
+      resolvePenanceChoice(
+        next,
+        action.playerId,
+        action.choice,
+        action.handInstanceId,
+      );
       break;
     case 'choose_hand_destination_target':
       chooseHandDestinationTarget(next, action.playerId, action.targetInstanceId);
@@ -746,6 +766,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'inquisition-accusation',
   'inquisition-anathema',
   'inquisition-divine-mercy',
+  'inquisition-penance',
   'inquisition-excommunication',
   'inquisition-act-of-faith',
   'inquisition-guilt-by-association',
@@ -1697,6 +1718,31 @@ function continuePendingActionCard(state: V070GameState): void {
         },
       });
       return;
+    case 'inquisition-penance': {
+      const opponentId = otherPlayer(pending.playerId);
+      state.pendingActionEffectChoice = {
+        kind: 'penance_choice',
+        playerId: opponentId,
+        actionOwnerId: pending.playerId,
+        sourceActionInstanceId: pending.instanceId,
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: opponentId,
+        visibility: 'public',
+        payload: {
+          kind: 'penance_choice',
+          playerId: opponentId,
+          actionOwnerId: pending.playerId,
+          sourceActionInstanceId: pending.instanceId,
+          purpose: 'Penance',
+          options: state.players[opponentId].zones.hand.length > 0
+            ? ['hand_to_graveyard', 'conviction']
+            : ['conviction'],
+        },
+      });
+      return;
+    }
     case 'inquisition-divine-mercy': {
       const opponentId = otherPlayer(pending.playerId);
       state.pendingActionEffectChoice = {
@@ -2330,6 +2376,72 @@ function shuffleDiscardIntoDrawPile(
       effectDriven: true,
     },
   });
+}
+
+function resolvePenanceChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  choiceValue: 'hand_to_graveyard' | 'conviction',
+  handInstanceId?: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'penance_choice'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.playerId !== choice.actionOwnerId
+    || pending.cardId !== 'inquisition-penance') {
+    throw new V070GameActionError(
+      'No Penance choice is pending for that player.',
+    );
+  }
+
+  if (choiceValue === 'hand_to_graveyard') {
+    if (!handInstanceId) {
+      throw new V070GameActionError(
+        'Penance requires the opponent to choose one card from their Hand.',
+      );
+    }
+    const hand = state.players[playerId].zones.hand;
+    const index = hand.indexOf(handInstanceId);
+    if (index < 0) {
+      throw new V070GameActionError(
+        'The chosen Penance card is not in the opponent’s Hand.',
+      );
+    }
+
+    hand.splice(index, 1);
+    state.players[playerId].zones.graveyard.push(handInstanceId);
+    appendV070Event(state, {
+      type: 'card_graveyarded',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        instanceId: handInstanceId,
+        cardId: state.cardInstances[handInstanceId]?.cardId,
+        owner: playerId,
+        causedBy: choice.actionOwnerId,
+        purpose: 'Penance',
+      },
+    });
+  } else {
+    if (handInstanceId !== undefined) {
+      throw new V070GameActionError(
+        'The Conviction option of Penance does not choose a Hand card.',
+      );
+    }
+    gainV070Conviction(
+      state,
+      choice.actionOwnerId,
+      1,
+      'Penance',
+    );
+  }
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state);
 }
 
 function chooseRecoveryActionTarget(
