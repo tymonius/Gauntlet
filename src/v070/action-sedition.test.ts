@@ -213,8 +213,8 @@ describe('v0.7.0 Sedition Action', () => {
     expect(state.pendingActionCard?.instanceId).toBe(source);
   });
 
-  test('does not narrow the opponent choice when a Removed lifecycle is unsupported', () => {
-    const state = openingForB();
+  test('Reserve Force remains a legal Sedition target now that its bound lifecycle is represented', () => {
+    let state = openingForB();
     injectCard(
       state,
       'A',
@@ -222,35 +222,47 @@ describe('v0.7.0 Sedition Action', () => {
       'assetBank',
       'supported',
     );
-    injectCard(
+    const reserveForce = injectCard(
       state,
       'A',
       'military-reserve-force',
       'assetBank',
-      'unsupported',
+      'reserve-force',
     );
     const source = injectCard(state, 'B', 'neutral-sedition', 'hand', 'source');
 
-    expect(() => reduceV070TurnAction(state, {
+    state = reduceV070TurnAction(state, {
       type: 'play_action_card',
       playerId: 'B',
       cardInstanceId: source,
-    })).toThrow(/Forced Asset Removal for military-reserve-force is unsupported/);
+    });
+    expect(state.pendingActionEffectChoice).toEqual(expect.objectContaining({
+      kind: 'forced_asset_target',
+      playerId: 'A',
+      purpose: 'Sedition',
+    }));
 
-    expect(state.players.B.zones.hand).toContain(source);
-    expect(state.turnState?.actionsAvailable).toBe(1);
+    state = reduceV070TurnAction(state, {
+      type: 'choose_forced_asset_target',
+      playerId: 'A',
+      targetInstanceId: reserveForce,
+    });
+
+    expect(state.players.A.zones.assetBank).not.toContain(reserveForce);
+    expect(state.players.A.zones.discardPile).toContain(reserveForce);
+    expect(state.pendingActionEffectChoice).toBeNull();
   });
 
-  test('Extraordinary Rendition blocks Sedition until its bound-card departure lifecycle is represented', () => {
-    const state = openingForB();
-    injectCard(
+  test('Extraordinary Rendition is the required first Sedition target while it remains banked', () => {
+    let state = openingForB();
+    const rendition = injectCard(
       state,
       'A',
       'intelligence-extraordinary-rendition',
       'assetBank',
       'rendition',
     );
-    injectCard(
+    const other = injectCard(
       state,
       'A',
       'neutral-counterintelligence',
@@ -259,13 +271,25 @@ describe('v0.7.0 Sedition Action', () => {
     );
     const source = injectCard(state, 'B', 'neutral-sedition', 'hand', 'source');
 
-    expect(() => reduceV070TurnAction(state, {
+    state = reduceV070TurnAction(state, {
       type: 'play_action_card',
       playerId: 'B',
       cardInstanceId: source,
-    })).toThrow(/intelligence-extraordinary-rendition is unsupported/);
+    });
 
-    expect(state.pendingActionCard).toBeNull();
-    expect(state.players.B.zones.hand).toContain(source);
+    expect(() => reduceV070TurnAction(state, {
+      type: 'choose_forced_asset_target',
+      playerId: 'A',
+      targetInstanceId: other,
+    })).toThrow(/Extraordinary Rendition must be discarded before any other Asset/);
+
+    state = reduceV070TurnAction(state, {
+      type: 'choose_forced_asset_target',
+      playerId: 'A',
+      targetInstanceId: rendition,
+    });
+    expect(state.players.A.zones.assetBank).not.toContain(rendition);
+    expect(state.players.A.zones.discardPile).toContain(rendition);
+    expect(state.players.A.zones.assetBank).toContain(other);
   });
 });
