@@ -578,6 +578,17 @@ function moveBankedAsset(
     },
   });
 
+  if (v070BindingsForHost(state, instanceId).length > 0) {
+    releaseV070BoundCards(
+      state,
+      instanceId,
+      cardId === 'military-reserve-force' ? 'graveyard' : 'discard',
+      cardId === 'military-reserve-force'
+        ? 'Reserve Force host left play'
+        : 'bound Asset host left play',
+    );
+  }
+
   if (removed) {
     resolveV070RemovedAssetTrigger(
       state,
