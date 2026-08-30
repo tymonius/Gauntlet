@@ -361,7 +361,7 @@ function componentSpecimen(component, faction, factionLabel) {
         ? 'Loading current face'
         : 'Design placeholder';
     return `<article class="supplemental-review-item supplemental-review-pair" id="supplemental-${esc(faction)}-${esc(component.id)}" data-contract-component-id="${esc(component.contractId)}">
-      <div class="supplemental-item-heading screen-only"><strong>${esc(component.name)}</strong><span>${esc(factionLabel)} · ${esc(statusText)}</span></div>
+      <div class="supplemental-item-heading screen-only"><strong>${esc(component.name)}</strong><span>${esc(statusText)}</span></div>
       <div class="supplemental-face-grid">
         <div class="supplemental-face" data-reference-face="front"><p class="supplemental-face-label screen-only"><strong>Front</strong><span>${esc(faceDescription)}</span></p>${componentFace(component, faction, factionLabel, 'Front')}</div>
         <div class="supplemental-face" data-reference-face="reverse"><p class="supplemental-face-label screen-only"><strong>Reverse</strong><span>${esc(faceDescription)}</span></p>${componentFace(component, faction, factionLabel, 'Reverse')}</div>
@@ -370,7 +370,7 @@ function componentSpecimen(component, faction, factionLabel) {
   }
 
   return `<article class="supplemental-review-item" id="supplemental-${esc(faction)}-${esc(component.id)}" data-contract-component-id="${esc(component.contractId)}">
-    <div class="supplemental-item-heading screen-only"><strong>${esc(component.name)}</strong><span>${esc(factionLabel)} · ${esc(statusText)}</span></div>
+    <div class="supplemental-item-heading screen-only"><strong>${esc(component.name)}</strong><span>${esc(statusText)}</span></div>
     <div class="supplemental-face-grid supplemental-single-face-grid">
       <div class="supplemental-face">${componentFace(component, faction, factionLabel)}</div>
     </div>
@@ -378,7 +378,15 @@ function componentSpecimen(component, faction, factionLabel) {
 }
 
 function groupMarkup(group) {
-  return group.cards.map(component => componentSpecimen(component, group.faction, group.factionLabel)).join('');
+  return `<section class="review-faction-block supplemental-faction-block" id="supplemental-${esc(group.faction)}" aria-labelledby="supplemental-${esc(group.faction)}-title">
+    <div class="review-faction-heading screen-only">
+      <h3 id="supplemental-${esc(group.faction)}-title">${esc(group.factionLabel)}</h3>
+      <span>${group.cards.length} component ${group.cards.length === 1 ? 'design' : 'designs'}</span>
+    </div>
+    <div class="supplemental-review-grid supplemental-faction-grid">
+      ${group.cards.map(component => componentSpecimen(component, group.faction, group.factionLabel)).join('')}
+    </div>
+  </section>`;
 }
 
 function renderSupplementalMarkup() {
@@ -389,7 +397,7 @@ function renderSupplementalMarkup() {
   root.dataset.supplementalPhysicalCount = String(physicalCount);
   document.querySelectorAll('[data-supplemental-design-count]').forEach(node => { node.textContent = String(uniqueCount); });
   document.querySelectorAll('[data-supplemental-physical-count]').forEach(node => { node.textContent = String(physicalCount); });
-  root.innerHTML = `<div class="supplemental-review-grid supplemental-catalog-grid">${supplementalGroups.map(groupMarkup).join('')}</div>`;
+  root.innerHTML = supplementalGroups.map(groupMarkup).join('');
 }
 
 function markupToElement(markup) {
