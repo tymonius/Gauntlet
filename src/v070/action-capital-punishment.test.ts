@@ -256,8 +256,8 @@ describe('v0.7.0 Capital Punishment Action', () => {
     expect(state.turnState?.actionsAvailable).toBe(1);
   });
 
-  test('unsupported Removed lifecycles are not silently removed from Capital Punishment choices', () => {
-    const state = openingForB();
+  test('Reserve Force is a legal Capital Punishment target once its bound lifecycle is represented', () => {
+    let state = openingForB();
     recordBattleOutcome(state, 'B');
     injectCard(
       state,
@@ -266,12 +266,12 @@ describe('v0.7.0 Capital Punishment Action', () => {
       'assetBank',
       'supported',
     );
-    injectCard(
+    const reserveForce = injectCard(
       state,
       'A',
       'military-reserve-force',
       'assetBank',
-      'unsupported',
+      'reserve-force',
     );
     const source = injectCard(
       state,
@@ -281,14 +281,21 @@ describe('v0.7.0 Capital Punishment Action', () => {
       'source',
     );
 
-    expect(() => reduceV070TurnAction(state, {
+    state = reduceV070TurnAction(state, {
       type: 'play_action_card',
       playerId: 'B',
       cardInstanceId: source,
-    })).toThrow(/military-reserve-force is unsupported/);
+    });
+    state = reduceV070TurnAction(state, {
+      type: 'choose_forced_asset_target',
+      playerId: 'B',
+      targetInstanceId: reserveForce,
+    });
 
-    expect(state.players.B.zones.hand).toContain(source);
-    expect(state.turnState?.actionsAvailable).toBe(1);
+    expect(state.players.A.zones.assetBank).not.toContain(reserveForce);
+    expect(state.players.A.zones.graveyard).toContain(reserveForce);
+    expect(state.pendingActionEffectChoice).toBeNull();
+    expect(state.pendingActionCard).toBeNull();
   });
 
   test('an invalid opposing Asset target leaves the choice pending', () => {
