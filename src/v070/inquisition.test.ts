@@ -43,7 +43,6 @@ describe('v0.7.0 Inquisition Conviction core', () => {
     expect(gainV070Conviction(state, 'A', 3, 'test cap')).toBe(1);
     expect(v070Conviction(state, 'A')).toBe(V070_MAX_CONVICTION);
 
-    const event = state.events.findLast?.(() => false);
     expect(state.events.some(candidate =>
       candidate.type === 'conviction_changed'
       && (candidate.payload as {
@@ -58,7 +57,6 @@ describe('v0.7.0 Inquisition Conviction core', () => {
       && (candidate.payload as { capped?: boolean })?.capped === true
       && (candidate.payload as { reason?: string })?.reason === 'test cap'
     )).toBe(true);
-    expect(event).toBeUndefined();
   });
 
   test('spends Conviction exactly and records the public running balance', () => {
