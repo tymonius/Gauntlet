@@ -99,7 +99,7 @@ export type V070PendingActionEffectChoice =
       kind: 'hand_destination_target';
       playerId: PlayerId;
       sourceActionInstanceId: string;
-      purpose: 'Second Line' | 'Tactical Planning' | 'Salvage' | 'New Recruits';
+      purpose: 'Second Line' | 'Tactical Planning' | 'Salvage' | 'New Recruits' | 'Spies';
       destination: 'draw_top' | 'draw_bottom' | 'discard';
       drawAfter: number;
     }
