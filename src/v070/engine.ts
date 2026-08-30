@@ -128,8 +128,8 @@ export type V070PendingActionEffectChoice =
       assetOwnerId: PlayerId;
       actionOwnerId: PlayerId;
       sourceActionInstanceId: string;
-      purpose: 'Sedition';
-      destination: 'discard';
+      purpose: 'Sedition' | 'Capital Punishment';
+      destination: 'discard' | 'graveyard';
     };
 
 export type V070PendingSanctionChoice =
