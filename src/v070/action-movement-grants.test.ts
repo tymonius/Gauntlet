@@ -138,6 +138,12 @@ describe('v0.7.0 Advance Guard Action', () => {
       'neutral-rallying-cry',
       'gambit',
     );
+    const defenderGambit = inject(
+      state,
+      'B',
+      'neutral-rallying-cry',
+      'defender-gambit',
+    );
 
     state = reduceV070TurnAction(state, {
       type: 'play_action_card',
@@ -193,6 +199,18 @@ describe('v0.7.0 Advance Guard Action', () => {
       playerId: 'A',
     });
     expect(state.battleRuntime?.participants.A.gambit).toBeNull();
+
+    state = reduceV070BattleAction(state, {
+      type: 'set_gambit',
+      playerId: 'B',
+      cardInstanceId: defenderGambit,
+    });
+    expect(state.battleRuntime?.participants.B.gambit).toEqual(
+      expect.objectContaining({
+        instanceId: defenderGambit,
+        owner: 'B',
+      }),
+    );
   });
 
   test('the base movement step may still initiate an ordinary battle with Gambits allowed', () => {
