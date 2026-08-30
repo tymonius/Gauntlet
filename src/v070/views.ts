@@ -165,7 +165,8 @@ function viewPendingActionEffectChoice(
   if (!choice) return null;
 
   const visible = structuredClone(choice);
-  if (visible.kind === 'dark_omens_graveyard_target'
+  if ((visible.kind === 'dark_omens_graveyard_target'
+      || visible.kind === 'threefold_vision_distribution')
     && visible.playerId !== viewer) {
     visible.candidateInstanceIds = [];
   }
