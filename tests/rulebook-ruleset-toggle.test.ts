@@ -8,6 +8,7 @@ const releaseManifest = JSON.parse(read('releases/v0.7.0/Gauntlet_v0.7.0_Manifes
 const publishedRulebookPath = releaseManifest.binding_sources.rulebook.path;
 const publishedRulebook = read(publishedRulebookPath);
 const currentRulebook = read('rulebook/player-facing/current-rulebook.md');
+const visibleCurrentRulebook = currentRulebook.replace(/<!--\s*RULE-FACT:[\s\S]*?-->/g, '');
 const index = read('rulebook/index.html');
 const app = read('rulebook/app.js');
 const rulesetStyles = read('rulebook/ruleset-toggle.css');
@@ -70,9 +71,9 @@ describe('Published Browser Rulebook', () => {
     expect(currentRulebook).toContain('Onset is the first phase of the battle sequence.');
     expect(currentRulebook).toContain('Terms occur during Onset');
     expect(currentRulebook).toContain('Withdrawal during Onset ends the battle sequence');
-    expect(currentRulebook).toContain('Ratify six different Proposals');
-    expect(currentRulebook).toContain('if six different Proposals are ratified');
-    expect(currentRulebook).not.toContain('five different Proposals');
+    expect(visibleCurrentRulebook).toContain('Ratify six different Proposals');
+    expect(visibleCurrentRulebook).toContain('if six different Proposals are ratified');
+    expect(visibleCurrentRulebook).not.toContain('five different Proposals');
     expect(currentRulebook).not.toMatch(/\bpending(?:-|\s+)battle\b/i);
     expect(currentRulebook).not.toMatch(/\bFaction Actions?\b|\bFaction Abilit(?:y|ies)\b|\bfaction procedure\b/i);
   });
