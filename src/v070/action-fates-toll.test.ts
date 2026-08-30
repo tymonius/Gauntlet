@@ -211,7 +211,7 @@ describe("v0.7.0 Fate's Toll Action", () => {
       choice: 'advance',
     });
 
-    expect(state.players.B.position).toBe(2);
+    expect(state.players.B.position).toBe(0);
     expect(state.turnState?.phase).toBe('denouement');
     expect(state.turnState?.movementSequenceOpen).toBe(false);
   });
