@@ -110,6 +110,11 @@ export type V070PendingActionEffectChoice =
       purpose: 'Requisition';
       operation: 'voluntary_discard';
       drawAfter: number;
+    }
+  | {
+      kind: 'scouting_report_source';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
     };
 
 export type V070PendingSanctionChoice =
