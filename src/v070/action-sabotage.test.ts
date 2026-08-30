@@ -173,7 +173,7 @@ describe('v0.7.0 Sabotage Action', () => {
       cardInstanceId: source,
     });
 
-    const pending = state.events.findLast(event =>
+    const pending = [...state.events].reverse().find(event =>
       event.type === 'action_effect_choice_pending'
       && (event.payload as { purpose?: string })?.purpose === 'Sabotage'
     );
