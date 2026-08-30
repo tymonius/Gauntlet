@@ -159,6 +159,7 @@ describe('v0.7.0 Neutral recovery Actions', () => {
 
   test('Contraband requires a pre-existing Discard target before spending the Action', () => {
     const state = openingForB();
+    state.players.B.zones.drawPile.push(...state.players.B.zones.discardPile.splice(0));
     const source = injectHandCard(state, 'B', 'neutral-contraband', 'contraband');
 
     expect(state.players.B.zones.discardPile).toHaveLength(0);
