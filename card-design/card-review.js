@@ -15,6 +15,26 @@
   const slugify = value => String(value ?? '').toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
   const esc = value => String(value ?? '').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'})[c]);
 
+  function catalogFilter() {
+    return document.body?.classList.contains('developer-catalog-page')
+      ? window.GauntletCatalogFilter || null
+      : null;
+  }
+
+  function catalogTypeMatches(...types) {
+    const filter = catalogFilter();
+    return !filter || filter.typeMatches(...types);
+  }
+
+  function catalogFactionMatches(faction) {
+    const filter = catalogFilter();
+    return !filter || filter.factionMatches(faction);
+  }
+
+  function alphabetical(items, selector = item => item.name) {
+    return items.slice().sort((a, b) => String(selector(a) || '').localeCompare(String(selector(b) || '')));
+  }
+
   async function currentGame() {
     if (!currentGamePromise) {
       currentGamePromise = import('../game-data/current-game.mjs').then(module => module.loadCurrentGame());
@@ -30,13 +50,21 @@
   async function renderLeaders() {
     const root = document.querySelector('#leaderReviewSections');
     if (!root) return;
+    if (!catalogTypeMatches('leader')) {
+      root.replaceChildren();
+      return;
+    }
     try {
       const current = await currentGame();
       root.dataset.currentGameAuthority = current.authorityUrl;
-      const leaders = FACTION_ORDER
+      let leaders = FACTION_ORDER
         .filter(([id]) => id !== 'neutral')
-        .flatMap(([faction]) => current.leaders.filter(leader => leader.faction === faction));
-      root.innerHTML = `<div class="review-faction-block leader-review-block"><div class="leader-review-grid">${leaders.map(leader => leaderCard(leader, current.displayVersion)).join('')}</div></div>`;
+        .flatMap(([faction]) => current.leaders.filter(leader => leader.faction === faction))
+        .filter(leader => catalogFactionMatches(leader.faction));
+      if (catalogFilter()?.sort === 'name') leaders = alphabetical(leaders);
+      root.innerHTML = leaders.length
+        ? `<div class="review-faction-block leader-review-block"><div class="leader-review-grid">${leaders.map(leader => leaderCard(leader, current.displayVersion)).join('')}</div></div>`
+        : '';
     } catch (error) {
       root.innerHTML = `<p class="review-note">Unable to load current Leader catalog: ${esc(error.message)}</p>`;
       console.error(error);
@@ -46,13 +74,19 @@
   async function renderPlayable() {
     const root = document.querySelector('#playableReviewSections');
     if (!root) return;
+    if (!catalogTypeMatches('playable')) {
+      root.replaceChildren();
+      return;
+    }
     try {
       const current = await currentGame();
-      const cards = current.cards || [];
+      const allCards = current.cards || [];
+      const cards = allCards.filter(card => catalogFactionMatches(slugify(card.allegiance)));
       root.dataset.currentGameAuthority = current.authorityUrl;
-      document.querySelectorAll('[data-playable-count]').forEach(node => node.textContent = String(cards.length));
+      document.querySelectorAll('[data-playable-count]').forEach(node => node.textContent = String(allCards.length));
       root.innerHTML = FACTION_ORDER.map(([faction, label]) => {
-        const list = cards.filter(card => slugify(card.allegiance) === faction).sort((a,b) => a.name.localeCompare(b.name));
+        let list = cards.filter(card => slugify(card.allegiance) === faction);
+        if (catalogFilter()?.sort === 'name') list = alphabetical(list);
         if (!list.length) return '';
         return `<section class="review-faction-block" id="playable-${faction}" aria-labelledby="playable-${faction}-title"><div class="review-faction-heading screen-only"><h3 id="playable-${faction}-title">${esc(label)}</h3><span>${list.length} cards</span></div><div class="full-card-review-grid">${list.map(card=>`<div class="specimen-column"><p class="review-card-label screen-only"><strong title="${esc(card.name)}">${esc(card.name)}</strong><span>Value ${Number(card.cost)}</span></p><iframe class="full-card-review-frame" loading="lazy" src="card-review-render.html?fit=production&amp;card=${encodeURIComponent(card.id)}" title="${esc(card.name)} ${esc(current.displayVersion)} production render"></iframe></div>`).join('')}</div></section>`;
       }).join('');
@@ -70,9 +104,14 @@
   async function renderTerritories() {
     const root = document.querySelector('#territoryReviewSections');
     if (!root) return;
+    if (!catalogTypeMatches('territory') || !catalogFactionMatches('neutral')) {
+      root.replaceChildren();
+      return;
+    }
     try {
       const current = await currentGame();
-      const territories = (current.territories || []).slice().sort((a,b)=>(Number(a.number)||999)-(Number(b.number)||999)||a.name.localeCompare(b.name));
+      let territories = (current.territories || []).slice().sort((a,b)=>(Number(a.number)||999)-(Number(b.number)||999)||a.name.localeCompare(b.name));
+      if (catalogFilter()?.sort === 'name') territories = alphabetical(territories);
       const arenas = territories.filter(territory => territory.arena);
       root.dataset.currentGameAuthority = current.authorityUrl;
       document.querySelectorAll('[data-territory-count]').forEach(node => node.textContent = String(territories.length));
