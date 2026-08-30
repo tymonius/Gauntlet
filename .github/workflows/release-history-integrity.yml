@@ -19,7 +19,7 @@ on:
       - 'v0.6.2/**'
       - 'artifacts/v0.6.3/**'
       - 'scripts/build-v062-release.mjs'
-      - 'scripts/*pre-recovery*'
+      - 'docs/recovery/frozen-scripts/**'
       - 'docs/recovery/frozen-workflows/**'
   push:
     branches: [main]
@@ -39,7 +39,7 @@ on:
       - 'v0.6.2/**'
       - 'artifacts/v0.6.3/**'
       - 'scripts/build-v062-release.mjs'
-      - 'scripts/*pre-recovery*'
+      - 'docs/recovery/frozen-scripts/**'
       - 'docs/recovery/frozen-workflows/**'
   workflow_dispatch:
 
