@@ -145,11 +145,15 @@ describe('v0.7.0 Guilt by Association Action', () => {
     expect(state.pendingActionCard).toBeNull();
     expect(state.pendingActionEffectChoice).toBeNull();
 
-    expect(state.events.some(event =>
+    const routed = state.events.find(event =>
       event.type === 'discard_title_cards_graveyarded'
-      && (event.payload as { cardId?: string; count?: number })?.cardId === 'neutral-rallying-cry'
-      && (event.payload as { count?: number })?.count === 2
-    )).toBe(true);
+      && (event.payload as { cardId?: string })?.cardId === 'neutral-rallying-cry'
+    );
+    expect(routed?.visibility).toBe('public');
+    expect(routed?.payload).toEqual(expect.objectContaining({
+      cardId: 'neutral-rallying-cry',
+      count: 2,
+    }));
   });
 
   test('invalid title target leaves the choice pending', () => {
