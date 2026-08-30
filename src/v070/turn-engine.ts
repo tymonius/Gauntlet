@@ -145,6 +145,16 @@ export type V070TurnAction =
       targetInstanceId: string;
     }
   | {
+      type: 'choose_dark_omens_graveyard_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
+      type: 'choose_act_of_faith_graveyard_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
       type: 'resolve_censure_choice';
       playerId: PlayerId;
       sanctionInstanceId: string;
@@ -257,6 +267,14 @@ export function reduceV070TurnAction(
       pending.kind === 'opponent_hand_discard_target'
       && action.type === 'choose_opponent_hand_discard_target'
       && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'dark_omens_graveyard_target'
+      && action.type === 'choose_dark_omens_graveyard_target'
+      && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'act_of_faith_graveyard_target'
+      && action.type === 'choose_act_of_faith_graveyard_target'
+      && action.playerId === pending.playerId
     );
     if (!validContinuation) {
       throw new V070GameActionError('Resolve the pending printed Action effect choice first.');
@@ -281,6 +299,8 @@ export function reduceV070TurnAction(
       'choose_guilt_by_association_target',
       'choose_excommunication_targets',
       'choose_opponent_hand_discard_target',
+      'choose_dark_omens_graveyard_target',
+      'choose_act_of_faith_graveyard_target',
     ].includes(action.type)) {
     throw new V070GameActionError('Resolve the pending Action card before continuing the turn.');
   }
@@ -367,6 +387,20 @@ export function reduceV070TurnAction(
       break;
     case 'choose_opponent_hand_discard_target':
       chooseOpponentHandDiscardTarget(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
+      break;
+    case 'choose_dark_omens_graveyard_target':
+      chooseDarkOmensGraveyardTarget(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
+      break;
+    case 'choose_act_of_faith_graveyard_target':
+      chooseActOfFaithGraveyardTarget(
         next,
         action.playerId,
         action.targetInstanceId,
@@ -545,11 +579,13 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'financiers-war-bonds',
   'inquisition-accusation',
   'inquisition-excommunication',
+  'inquisition-act-of-faith',
   'inquisition-guilt-by-association',
   'intelligence-assassins',
   'intelligence-regime-change',
   'intelligence-spies',
   'military-high-command',
+  'mystics-dark-omens',
   'mystics-sacrifice-recovery',
   'mystics-soul-for-soul',
 ] as const;
@@ -704,6 +740,12 @@ function playActionCard(
     && state.players[otherPlayer(playerId)].zones.hand.length === 0) {
     throw new V070GameActionError(
       'Assassins requires at least one card in the opponent’s Hand.',
+    );
+  }
+  if (card.id === 'inquisition-act-of-faith'
+    && state.players[otherPlayer(playerId)].zones.drawPile.length === 0) {
+    throw new V070GameActionError(
+      'Act of Faith requires at least one card in the opponent’s Draw Pile.',
     );
   }
   if (isSimpleBankingActionCardId(card.id)) {
@@ -1143,6 +1185,112 @@ function continuePendingActionCard(state: V070GameState): void {
           opponentId,
           sourceActionInstanceId: pending.instanceId,
           targetInstanceIds: [...state.players[opponentId].zones.discardPile],
+        },
+      });
+      return;
+    }
+    case 'mystics-dark-omens': {
+      const drawn = drawIntoHand(
+        state,
+        pending.playerId,
+        2,
+        'Dark Omens',
+      );
+      if (drawn.length === 0) {
+        appendV070Event(state, {
+          type: 'action_effect_incomplete',
+          actor: pending.playerId,
+          visibility: 'public',
+          payload: {
+            sourceActionInstanceId: pending.instanceId,
+            purpose: 'Dark Omens',
+            reason: 'required_drawn_card_unavailable',
+          },
+        });
+        finishPendingActionCard(state);
+        return;
+      }
+      if (drawn.length === 1) {
+        moveDarkOmensDrawnCardToGraveyard(
+          state,
+          pending.playerId,
+          drawn[0],
+        );
+        finishPendingActionCard(state);
+        return;
+      }
+      state.pendingActionEffectChoice = {
+        kind: 'dark_omens_graveyard_target',
+        playerId: pending.playerId,
+        sourceActionInstanceId: pending.instanceId,
+        candidateInstanceIds: [...drawn],
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          kind: 'dark_omens_graveyard_target',
+          playerId: pending.playerId,
+          sourceActionInstanceId: pending.instanceId,
+          purpose: 'Dark Omens',
+          candidateCount: drawn.length,
+        },
+      });
+      return;
+    }
+    case 'inquisition-act-of-faith': {
+      const opponentId = otherPlayer(pending.playerId);
+      const revealed = revealTopV070DrawCards(
+        state,
+        pending.playerId,
+        opponentId,
+        3,
+        'Act of Faith',
+      );
+      if (revealed.length === 0) {
+        appendV070Event(state, {
+          type: 'action_effect_incomplete',
+          actor: pending.playerId,
+          visibility: 'public',
+          payload: {
+            sourceActionInstanceId: pending.instanceId,
+            purpose: 'Act of Faith',
+            reason: 'required_opponent_draw_card_unavailable',
+          },
+        });
+        finishPendingActionCard(state);
+        return;
+      }
+      if (revealed.length === 1) {
+        routeActOfFaithRevealedCards(
+          state,
+          pending.playerId,
+          opponentId,
+          revealed,
+          revealed[0],
+        );
+        finishPendingActionCard(state);
+        return;
+      }
+      state.pendingActionEffectChoice = {
+        kind: 'act_of_faith_graveyard_target',
+        playerId: pending.playerId,
+        opponentId,
+        sourceActionInstanceId: pending.instanceId,
+        revealedInstanceIds: [...revealed],
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          kind: 'act_of_faith_graveyard_target',
+          playerId: pending.playerId,
+          opponentId,
+          sourceActionInstanceId: pending.instanceId,
+          purpose: 'Act of Faith',
+          targetInstanceIds: [...revealed],
         },
       });
       return;
@@ -1614,6 +1762,164 @@ function chooseSoulForSoulTargets(
 
   state.pendingActionEffectChoice = null;
   finishPendingActionCard(state);
+}
+
+function chooseDarkOmensGraveyardTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'dark_omens_graveyard_target'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'mystics-dark-omens') {
+    throw new V070GameActionError(
+      'No Dark Omens Graveyard choice is pending for that player.',
+    );
+  }
+  if (!choice.candidateInstanceIds.includes(targetInstanceId)) {
+    throw new V070GameActionError(
+      'Dark Omens must choose one of the cards drawn by its Action.',
+    );
+  }
+  if (!state.players[playerId].zones.hand.includes(targetInstanceId)) {
+    throw new V070GameActionError(
+      'The chosen Dark Omens card is no longer in your Hand.',
+    );
+  }
+
+  moveDarkOmensDrawnCardToGraveyard(state, playerId, targetInstanceId);
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state);
+}
+
+function moveDarkOmensDrawnCardToGraveyard(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const hand = state.players[playerId].zones.hand;
+  const index = hand.indexOf(targetInstanceId);
+  if (index < 0) {
+    throw new V070GameActionError(
+      'Dark Omens must move a drawn card from Hand to Graveyard.',
+    );
+  }
+  hand.splice(index, 1);
+  state.players[playerId].zones.graveyard.push(targetInstanceId);
+
+  appendV070Event(state, {
+    type: 'card_graveyarded',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      instanceId: targetInstanceId,
+      cardId: state.cardInstances[targetInstanceId]?.cardId,
+      purpose: 'Dark Omens',
+    },
+  });
+}
+
+function revealTopV070DrawCards(
+  state: V070GameState,
+  actor: PlayerId,
+  owner: PlayerId,
+  count: number,
+  purpose: 'Act of Faith',
+): string[] {
+  const instanceIds = state.players[owner].zones.drawPile.slice(0, count);
+  appendV070Event(state, {
+    type: 'draw_pile_cards_revealed',
+    actor,
+    visibility: 'public',
+    payload: {
+      owner,
+      purpose,
+      instanceIds: [...instanceIds],
+      cards: instanceIds.map(instanceId => ({
+        instanceId,
+        cardId: state.cardInstances[instanceId]?.cardId,
+      })),
+    },
+  });
+  return instanceIds;
+}
+
+function chooseActOfFaithGraveyardTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'act_of_faith_graveyard_target'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'inquisition-act-of-faith') {
+    throw new V070GameActionError(
+      'No Act of Faith Graveyard choice is pending for that player.',
+    );
+  }
+  if (!choice.revealedInstanceIds.includes(targetInstanceId)) {
+    throw new V070GameActionError(
+      'Act of Faith must choose one of the cards it revealed.',
+    );
+  }
+
+  routeActOfFaithRevealedCards(
+    state,
+    playerId,
+    choice.opponentId,
+    choice.revealedInstanceIds,
+    targetInstanceId,
+  );
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state);
+}
+
+function routeActOfFaithRevealedCards(
+  state: V070GameState,
+  playerId: PlayerId,
+  opponentId: PlayerId,
+  revealedInstanceIds: readonly string[],
+  graveyardInstanceId: string,
+): void {
+  const drawPile = state.players[opponentId].zones.drawPile;
+  if (drawPile.length < revealedInstanceIds.length
+    || revealedInstanceIds.some((instanceId, index) => drawPile[index] !== instanceId)) {
+    throw new V070GameActionError(
+      'The revealed Act of Faith cards are no longer on top of the opponent’s Draw Pile.',
+    );
+  }
+
+  drawPile.splice(0, revealedInstanceIds.length);
+  const discardInstanceIds = revealedInstanceIds.filter(
+    instanceId => instanceId !== graveyardInstanceId,
+  );
+  state.players[opponentId].zones.graveyard.push(graveyardInstanceId);
+  state.players[opponentId].zones.discardPile.push(...discardInstanceIds);
+
+  appendV070Event(state, {
+    type: 'revealed_draw_cards_routed',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      owner: opponentId,
+      purpose: 'Act of Faith',
+      graveyardInstanceId,
+      graveyardCardId: state.cardInstances[graveyardInstanceId]?.cardId,
+      discardInstanceIds: [...discardInstanceIds],
+      discardCardIds: discardInstanceIds.map(
+        instanceId => state.cardInstances[instanceId]?.cardId,
+      ),
+    },
+  });
 }
 
 function revealV070Hand(
@@ -2573,7 +2879,7 @@ function drawIntoHand(
   playerId: PlayerId,
   count: number,
   purpose: string,
-): void {
+): string[] {
   const result = drawV070Cards(state, playerId, count, purpose);
   state.players[playerId].zones.hand.push(...result.drawn);
 
@@ -2599,6 +2905,7 @@ function drawIntoHand(
       },
     });
   }
+  return [...result.drawn];
 }
 
 function passOpening(state: V070GameState, playerId: PlayerId): void {
