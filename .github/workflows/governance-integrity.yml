@@ -29,5 +29,8 @@ jobs:
           RULES_AUTHORITY_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || '' }}
         run: node scripts/validate-rules-authority-practices.mjs
 
+      - name: Validate publishing authority
+        run: npm run publishing:check
+
       - name: Validate decision provenance and traceability
         run: python .github/scripts/validate-governance.py

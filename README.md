@@ -77,9 +77,10 @@ For current development and public browser tooling:
 
 1. game-data/current-game.json is the complete current gameplay authority.
 2. rulebook/player-facing/current-rulebook.md is the complete current Rulebook authority.
-3. releases/v0.7.0/Gauntlet_v0.7.0_Manifest.json identifies the frozen v0.7.0 published authority set.
-4. releases/v0.7.0/Gauntlet_v0.7.0_Canonical_Data.json is the frozen machine-readable release snapshot.
-5. releases/v0.7.0/Gauntlet_v0.7.0_Starter_Decks.json defines the frozen public starter Deck set.
+3. config/publishing-authority.json is the current publishing-imprint authority for maintained development and player-facing surfaces; published release snapshots retain their recorded publishing identity.
+4. releases/v0.7.0/Gauntlet_v0.7.0_Manifest.json identifies the frozen v0.7.0 published authority set.
+5. releases/v0.7.0/Gauntlet_v0.7.0_Canonical_Data.json is the frozen machine-readable release snapshot.
+6. releases/v0.7.0/Gauntlet_v0.7.0_Starter_Decks.json defines the frozen public starter Deck set.
 
 Generated PDFs, browser pages, printable tools, and TTS assets are derived production surfaces. If a derived surface conflicts with its governing current source, correct the governing source and regenerate the supported artifact. Do not silently rewrite a frozen published release package.
 
@@ -179,8 +180,12 @@ See [Gauntlet Development Status](docs/Gauntlet_Development_Status.md). The imme
 
 ## Copyright and use
 
-Copyright © 2026 Tymon Scott. All rights reserved.
+<!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT -->
 
-Gauntlet is an unpublished playtest project. Repository materials are provided for private review and playtesting only. They may not be copied, redistributed, sold, republished, or used to create commercial derivative works without written permission.
+<!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises<!-- /PUBLISHING-FACT -->
+
+<!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT -->
+
+Repository materials are provided for private review and playtesting only. They may not be copied, redistributed, sold, republished, or used to create commercial derivative works without written permission.
 
 Submitted comments, corrections, suggestions, and playtest feedback may be used or adapted in future versions without compensation or attribution unless agreed otherwise in writing.
