@@ -126,10 +126,19 @@ describe('v0.7.0 Monetary Crisis Action', () => {
     expect(players?.find(entry => entry.playerId === 'B')?.cards.map(card => card.instanceId))
       .toEqual(bHandBefore);
 
-    expect(state.events.filter(event =>
-      event.type === 'cards_drawn'
+    const discardIndex = state.events.findIndex(event =>
+      event.type === 'hands_discarded'
       && (event.payload as { purpose?: string })?.purpose === 'Monetary Crisis'
-    )).toHaveLength(2);
+    );
+    const drawIndexes = state.events
+      .map((event, index) => ({ event, index }))
+      .filter(({ event }) =>
+        event.type === 'cards_drawn'
+        && (event.payload as { purpose?: string })?.purpose === 'Monetary Crisis'
+      )
+      .map(({ index }) => index);
+    expect(drawIndexes).toHaveLength(2);
+    expect(drawIndexes.every(index => index > discardIndex)).toBe(true);
   });
 
   test('with empty Draw Piles, newly discarded Hands are available to the required reshuffles', () => {
