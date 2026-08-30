@@ -41,7 +41,9 @@ import { openV070BlockadeChoicesForPositionChange } from './movement-triggers';
 import {
   bankV070AssetWithInherentAction,
   discardV070AssetAsAction,
+  assertV070ForcedAssetChoicesSupported,
   discardV070AssetVoluntarily,
+  removeV070AssetForced,
   voluntarilyDiscardableV070AssetInstanceIds,
 } from './assets';
 
@@ -97,6 +99,11 @@ export type V070TurnAction =
       territoryPosition: number;
     }
   | {
+      type: 'choose_forced_asset_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
       type: 'resolve_censure_choice';
       playerId: PlayerId;
       sanctionInstanceId: string;
@@ -128,7 +135,8 @@ export function reduceV070TurnAction(
   state: V070GameState,
   action: V070TurnAction,
 ): V070GameState {
-  if (action.type === 'resolve_clemency_choice') {
+  if (action.type === 'resolve_clemency_choice'
+    || action.type === 'choose_forced_asset_target') {
     requirePlayingGame(state);
   } else {
     requirePlayingTurn(state, action.playerId);
@@ -181,6 +189,10 @@ export function reduceV070TurnAction(
       pending.kind === 'territory_overlay_target'
       && action.type === 'choose_territory_overlay_target'
       && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'forced_asset_target'
+      && action.type === 'choose_forced_asset_target'
+      && action.playerId === pending.playerId
     );
     if (!validContinuation) {
       throw new V070GameActionError('Resolve the pending printed Action effect choice first.');
@@ -197,6 +209,7 @@ export function reduceV070TurnAction(
       'choose_controlled_asset_target',
       'resolve_scouting_report_choice',
       'choose_territory_overlay_target',
+      'choose_forced_asset_target',
     ].includes(action.type)) {
     throw new V070GameActionError('Resolve the pending Action card before continuing the turn.');
   }
@@ -242,6 +255,9 @@ export function reduceV070TurnAction(
       break;
     case 'choose_territory_overlay_target':
       chooseTerritoryOverlayTarget(next, action.playerId, action.territoryPosition);
+      break;
+    case 'choose_forced_asset_target':
+      chooseForcedAssetTarget(next, action.playerId, action.targetInstanceId);
       break;
     case 'resolve_censure_choice':
       resolveCensureChoice(
@@ -456,6 +472,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'neutral-requisition',
   'neutral-salvage',
   'neutral-scouting-report',
+  'neutral-sedition',
   'neutral-tactical-planning',
   'diplomats-clemency',
 ] as const;
@@ -550,6 +567,15 @@ function playActionCard(
     throw new V070GameActionError(
       'Landslide requires a Territory that does not already have a Landslide.',
     );
+  }
+  if (card.id === 'neutral-sedition') {
+    const opponentId = otherPlayer(playerId);
+    if (state.players[opponentId].zones.assetBank.length === 0) {
+      throw new V070GameActionError(
+        'Sedition requires the opponent to control at least one Asset.',
+      );
+    }
+    assertV070ForcedAssetChoicesSupported(state, opponentId);
   }
 
   try {
@@ -819,6 +845,49 @@ function continuePendingActionCard(state: V070GameState): void {
         },
       });
       return;
+    case 'neutral-sedition': {
+      const opponentId = otherPlayer(pending.playerId);
+      if (state.players[opponentId].zones.assetBank.length === 0) {
+        appendV070Event(state, {
+          type: 'action_effect_incomplete',
+          actor: pending.playerId,
+          visibility: 'public',
+          payload: {
+            sourceActionInstanceId: pending.instanceId,
+            purpose: 'Sedition',
+            reason: 'required_opposing_asset_unavailable',
+          },
+        });
+        finishPendingActionCard(state);
+        return;
+      }
+      assertV070ForcedAssetChoicesSupported(state, opponentId);
+      state.pendingActionEffectChoice = {
+        kind: 'forced_asset_target',
+        playerId: opponentId,
+        assetOwnerId: opponentId,
+        actionOwnerId: pending.playerId,
+        sourceActionInstanceId: pending.instanceId,
+        purpose: 'Sedition',
+        destination: 'discard',
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: opponentId,
+        visibility: 'public',
+        payload: {
+          kind: 'forced_asset_target',
+          playerId: opponentId,
+          assetOwnerId: opponentId,
+          actionOwnerId: pending.playerId,
+          sourceActionInstanceId: pending.instanceId,
+          purpose: 'Sedition',
+          destination: 'discard',
+          targetInstanceIds: [...state.players[opponentId].zones.assetBank],
+        },
+      });
+      return;
+    }
     case 'neutral-tactical-planning':
       drawIntoHand(state, pending.playerId, 2, 'Tactical Planning');
       if (!openHandDestinationChoice(
@@ -1093,6 +1162,40 @@ function chooseRecoveryActionTarget(
     'Salvage',
     'discard',
   );
+}
+
+function chooseForcedAssetTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'forced_asset_target'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.playerId !== choice.actionOwnerId
+    || pending.cardId !== 'neutral-sedition') {
+    throw new V070GameActionError('No Sedition Asset choice is pending for that player.');
+  }
+
+  assertV070ForcedAssetChoicesSupported(state, choice.assetOwnerId);
+  if (!state.players[choice.assetOwnerId].zones.assetBank.includes(targetInstanceId)) {
+    throw new V070GameActionError('Sedition must choose one Asset controlled by the opponent.');
+  }
+
+  removeV070AssetForced(
+    state,
+    choice.assetOwnerId,
+    targetInstanceId,
+    choice.destination,
+    choice.purpose,
+  );
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state);
 }
 
 function chooseTerritoryOverlayTarget(
