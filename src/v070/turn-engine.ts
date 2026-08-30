@@ -59,8 +59,10 @@ import {
 } from './assets';
 import { bindV070CardFromPlayerZone } from './bindings';
 import {
+  faceUpV070AssetInstanceIds,
   isV070AssetFaceUp,
   restoreV070AssetsAtTurnStart,
+  turnV070AssetFaceDownUntilPlayerNextTurn,
 } from './asset-face-state';
 
 export type V070TurnAction =
@@ -116,6 +118,11 @@ export type V070TurnAction =
     }
   | {
       type: 'choose_battlefield_promotion_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
+      type: 'choose_sabotage_asset_target';
       playerId: PlayerId;
       targetInstanceId: string;
     }
@@ -289,6 +296,10 @@ export function reduceV070TurnAction(
       && action.type === 'choose_battlefield_promotion_target'
       && action.playerId === pending.playerId
     ) || (
+      pending.kind === 'sabotage_asset_target'
+      && action.type === 'choose_sabotage_asset_target'
+      && action.playerId === pending.playerId
+    ) || (
       pending.kind === 'scouting_report_source'
       && action.type === 'resolve_scouting_report_choice'
       && action.playerId === pending.playerId
@@ -369,6 +380,7 @@ export function reduceV070TurnAction(
       'choose_sequestration_keep_asset',
       'choose_fates_toll_cost',
       'choose_battlefield_promotion_target',
+      'choose_sabotage_asset_target',
       'resolve_scouting_report_choice',
       'choose_territory_overlay_target',
       'choose_forced_asset_target',
@@ -450,6 +462,13 @@ export function reduceV070TurnAction(
       break;
     case 'choose_battlefield_promotion_target':
       chooseBattlefieldPromotionTarget(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
+      break;
+    case 'choose_sabotage_asset_target':
+      chooseSabotageAssetTarget(
         next,
         action.playerId,
         action.targetInstanceId,
@@ -709,6 +728,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'neutral-reserves',
   'neutral-requisition',
   'neutral-salvage',
+  'neutral-sabotage',
   'neutral-scouting-report',
   'neutral-sedition',
   'neutral-sequestration',
@@ -859,6 +879,15 @@ function playActionCard(
     && voluntarilyReturnableV070AssetInstanceIds(state, playerId).length === 0) {
     throw new V070GameActionError(
       'Strategic Withdrawal requires one Asset you can return to your Hand.',
+    );
+  }
+  if (card.id === 'neutral-sabotage'
+    && faceUpV070AssetInstanceIds(
+      state,
+      otherPlayer(playerId),
+    ).length === 0) {
+    throw new V070GameActionError(
+      'Sabotage requires at least one face-up opposing Asset.',
     );
   }
   if (card.id === 'neutral-scouting-report'
@@ -1411,6 +1440,44 @@ function continuePendingActionCard(state: V070GameState): void {
         'salvage_recovery_target',
       );
       return;
+    case 'neutral-sabotage': {
+      const opponentId = otherPlayer(pending.playerId);
+      const candidates = faceUpV070AssetInstanceIds(state, opponentId);
+      if (candidates.length === 0) {
+        appendV070Event(state, {
+          type: 'action_effect_incomplete',
+          actor: pending.playerId,
+          visibility: 'public',
+          payload: {
+            sourceActionInstanceId: pending.instanceId,
+            purpose: 'Sabotage',
+            reason: 'required_face_up_opposing_asset_unavailable',
+          },
+        });
+        finishPendingActionCard(state);
+        return;
+      }
+      state.pendingActionEffectChoice = {
+        kind: 'sabotage_asset_target',
+        playerId: pending.playerId,
+        opponentId,
+        sourceActionInstanceId: pending.instanceId,
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          kind: 'sabotage_asset_target',
+          playerId: pending.playerId,
+          opponentId,
+          sourceActionInstanceId: pending.instanceId,
+          purpose: 'Sabotage',
+          targetInstanceIds: [...candidates],
+        },
+      });
+      return;
+    }
     case 'neutral-scouting-report':
       if (availableScoutingReportSources(state, pending.playerId).length === 0) {
         appendV070Event(state, {
@@ -3582,6 +3649,43 @@ function battlefieldPromotionCandidateInstanceIds(
   }
 
   return candidates;
+}
+
+function chooseSabotageAssetTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'sabotage_asset_target'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'neutral-sabotage') {
+    throw new V070GameActionError(
+      'No Sabotage Asset target choice is pending for that player.',
+    );
+  }
+
+  if (!state.players[choice.opponentId].zones.assetBank.includes(targetInstanceId)
+    || !isV070AssetFaceUp(state, targetInstanceId)) {
+    throw new V070GameActionError(
+      'Sabotage must choose a face-up Asset controlled by the opponent.',
+    );
+  }
+
+  turnV070AssetFaceDownUntilPlayerNextTurn(state, {
+    instanceId: targetInstanceId,
+    changedBy: playerId,
+    restoreAtPlayer: playerId,
+    sourceInstanceId: pending.instanceId,
+    reason: 'Sabotage',
+  });
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state);
 }
 
 function chooseBattlefieldPromotionTarget(
