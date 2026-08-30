@@ -59,9 +59,9 @@ function brandV070ProductionSurface() {
     if (!fs.existsSync(surface)) throw new Error(`Missing approved Rulebook production surface: ${relative(surface)}.`);
     const source = fs.readFileSync(surface, 'utf8');
     const branded = source
-      .replace(/0\.6\.3/g, '0.7.1')
+      .replace(/0\.(?:6\.3|7\.0)/g, '0.7.1')
       .replace(/First Playtest Revision/g, RELEASE_NAME);
-    if (/0\.6\.3/.test(branded)) {
+    if (/0\.(?:6\.3|7\.0)/.test(branded)) {
       throw new Error(`v0.7.1 Rulebook production surface still contains v0.6.3 branding: ${relative(surface)}.`);
     }
     if (!/0\.7\.0/.test(branded)) {
