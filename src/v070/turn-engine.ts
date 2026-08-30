@@ -130,6 +130,16 @@ export type V070TurnAction =
       destination: 'draw_top' | 'graveyard';
     }
   | {
+      type: 'choose_guilt_by_association_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
+      type: 'choose_excommunication_targets';
+      playerId: PlayerId;
+      targetInstanceIds: readonly string[];
+    }
+  | {
       type: 'resolve_censure_choice';
       playerId: PlayerId;
       sanctionInstanceId: string;
@@ -230,6 +240,14 @@ export function reduceV070TurnAction(
       pending.kind === 'accusation_response'
       && action.type === 'resolve_accusation_choice'
       && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'guilt_by_association_target'
+      && action.type === 'choose_guilt_by_association_target'
+      && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'excommunication_targets'
+      && action.type === 'choose_excommunication_targets'
+      && action.playerId === pending.playerId
     );
     if (!validContinuation) {
       throw new V070GameActionError('Resolve the pending printed Action effect choice first.');
@@ -251,6 +269,8 @@ export function reduceV070TurnAction(
       'choose_soul_for_soul_targets',
       'choose_accusation_target',
       'resolve_accusation_choice',
+      'choose_guilt_by_association_target',
+      'choose_excommunication_targets',
     ].includes(action.type)) {
     throw new V070GameActionError('Resolve the pending Action card before continuing the turn.');
   }
@@ -320,6 +340,20 @@ export function reduceV070TurnAction(
       break;
     case 'resolve_accusation_choice':
       resolveAccusationChoice(next, action.playerId, action.destination);
+      break;
+    case 'choose_guilt_by_association_target':
+      chooseGuiltByAssociationTarget(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
+      break;
+    case 'choose_excommunication_targets':
+      chooseExcommunicationTargets(
+        next,
+        action.playerId,
+        action.targetInstanceIds,
+      );
       break;
     case 'resolve_censure_choice':
       resolveCensureChoice(
@@ -493,6 +527,8 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'financiers-tariffs',
   'financiers-war-bonds',
   'inquisition-accusation',
+  'inquisition-excommunication',
+  'inquisition-guilt-by-association',
   'intelligence-regime-change',
   'military-high-command',
   'mystics-sacrifice-recovery',
@@ -629,6 +665,20 @@ function playActionCard(
     && state.players[otherPlayer(playerId)].zones.discardPile.length === 0) {
     throw new V070GameActionError(
       'Accusation requires at least one card in the opponent’s Discard Pile.',
+    );
+  }
+  if (card.id === 'inquisition-guilt-by-association'
+    && state.players[otherPlayer(playerId)].zones.discardPile.length === 0) {
+    throw new V070GameActionError(
+      'Guilt by Association requires at least one card in the opponent’s Discard Pile.',
+    );
+  }
+  if (card.id === 'inquisition-excommunication'
+    && !state.players[otherPlayer(playerId)].zones.discardPile.some(
+      instanceId => v070CardValue(state, instanceId) <= 5,
+    )) {
+    throw new V070GameActionError(
+      'Excommunication requires at least one opposing Discard card with value 5 or less.',
     );
   }
   if (isSimpleBankingActionCardId(card.id)) {
@@ -1072,6 +1122,54 @@ function continuePendingActionCard(state: V070GameState): void {
       });
       return;
     }
+    case 'inquisition-guilt-by-association': {
+      const opponentId = otherPlayer(pending.playerId);
+      state.pendingActionEffectChoice = {
+        kind: 'guilt_by_association_target',
+        playerId: pending.playerId,
+        opponentId,
+        sourceActionInstanceId: pending.instanceId,
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          kind: 'guilt_by_association_target',
+          playerId: pending.playerId,
+          opponentId,
+          sourceActionInstanceId: pending.instanceId,
+          targetInstanceIds: [...state.players[opponentId].zones.discardPile],
+        },
+      });
+      return;
+    }
+    case 'inquisition-excommunication': {
+      const opponentId = otherPlayer(pending.playerId);
+      state.pendingActionEffectChoice = {
+        kind: 'excommunication_targets',
+        playerId: pending.playerId,
+        opponentId,
+        sourceActionInstanceId: pending.instanceId,
+        maxCombinedValue: 5,
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          kind: 'excommunication_targets',
+          playerId: pending.playerId,
+          opponentId,
+          sourceActionInstanceId: pending.instanceId,
+          maxCombinedValue: 5,
+          eligibleInstanceIds: state.players[opponentId].zones.discardPile.filter(
+            instanceId => v070CardValue(state, instanceId) <= 5,
+          ),
+        },
+      });
+      return;
+    }
     case 'diplomats-detente':
     case 'financiers-compound-interest':
     case 'financiers-tariffs':
@@ -1429,6 +1527,144 @@ function chooseSoulForSoulTargets(
 
   state.pendingActionEffectChoice = null;
   finishPendingActionCard(state);
+}
+
+function chooseGuiltByAssociationTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'guilt_by_association_target'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'inquisition-guilt-by-association') {
+    throw new V070GameActionError(
+      'No Guilt by Association target choice is pending for that player.',
+    );
+  }
+
+  const discard = state.players[choice.opponentId].zones.discardPile;
+  if (!discard.includes(targetInstanceId)) {
+    throw new V070GameActionError(
+      'Guilt by Association must target a card in the opponent’s Discard Pile.',
+    );
+  }
+
+  const targetCardId = state.cardInstances[targetInstanceId]?.cardId;
+  if (!targetCardId) {
+    throw new V070GameActionError('Guilt by Association targeted an unknown card.');
+  }
+
+  const moved = discard.filter(instanceId =>
+    state.cardInstances[instanceId]?.cardId === targetCardId
+  );
+  state.players[choice.opponentId].zones.discardPile = discard.filter(
+    instanceId => state.cardInstances[instanceId]?.cardId !== targetCardId,
+  );
+  state.players[choice.opponentId].zones.graveyard.push(...moved);
+
+  appendV070Event(state, {
+    type: 'discard_title_cards_graveyarded',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      purpose: 'Guilt by Association',
+      opponentId: choice.opponentId,
+      cardId: targetCardId,
+      instanceIds: moved,
+      count: moved.length,
+    },
+  });
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state);
+}
+
+function chooseExcommunicationTargets(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceIds: readonly string[],
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'excommunication_targets'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'inquisition-excommunication') {
+    throw new V070GameActionError(
+      'No Excommunication target choice is pending for that player.',
+    );
+  }
+
+  if (targetInstanceIds.length === 0
+    || new Set(targetInstanceIds).size !== targetInstanceIds.length) {
+    throw new V070GameActionError(
+      'Excommunication requires one or more different cards.',
+    );
+  }
+
+  const discard = state.players[choice.opponentId].zones.discardPile;
+  for (const instanceId of targetInstanceIds) {
+    if (!discard.includes(instanceId)) {
+      throw new V070GameActionError(
+        'Every Excommunication target must be in the opponent’s Discard Pile.',
+      );
+    }
+  }
+
+  const combinedValue = targetInstanceIds.reduce(
+    (sum, instanceId) => sum + v070CardValue(state, instanceId),
+    0,
+  );
+  if (combinedValue > choice.maxCombinedValue) {
+    throw new V070GameActionError(
+      `Excommunication targets have combined card value ${combinedValue}; maximum is ${choice.maxCombinedValue}.`,
+    );
+  }
+
+  const selected = new Set(targetInstanceIds);
+  state.players[choice.opponentId].zones.discardPile = discard.filter(
+    instanceId => !selected.has(instanceId),
+  );
+  state.players[choice.opponentId].zones.graveyard.push(...targetInstanceIds);
+
+  appendV070Event(state, {
+    type: 'discard_cards_graveyarded',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      purpose: 'Excommunication',
+      opponentId: choice.opponentId,
+      instanceIds: [...targetInstanceIds],
+      cardIds: targetInstanceIds.map(
+        instanceId => state.cardInstances[instanceId]?.cardId,
+      ),
+      combinedValue,
+    },
+  });
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state);
+}
+
+function v070CardValue(
+  state: V070GameState,
+  instanceId: string,
+): number {
+  const cardId = state.cardInstances[instanceId]?.cardId;
+  const card = cardId ? v070CanonicalContent.cardsById.get(cardId) : undefined;
+  if (!card || typeof card.cost !== 'number') {
+    throw new V070GameActionError(
+      `Card value is unavailable for instance ${instanceId}.`,
+    );
+  }
+  return card.cost;
 }
 
 function chooseAccusationTarget(
