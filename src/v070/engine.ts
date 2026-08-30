@@ -152,7 +152,9 @@ export type V070PendingActionEffectChoice =
         | 'Regime Change'
         | 'Reembodiment'
         | 'Tariffs'
-        | 'Anathema';
+        | 'Anathema'
+        | 'Reserve Force'
+        | 'Extraordinary Rendition';
       replacementInstanceIds: string[];
     }
   | {
@@ -214,6 +216,17 @@ export type V070PendingActionEffectChoice =
     }
   | {
       kind: 'anathema_target';
+      playerId: PlayerId;
+      opponentId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'reserve_force_bind_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'extraordinary_rendition_bind_target';
       playerId: PlayerId;
       opponentId: PlayerId;
       sourceActionInstanceId: string;

@@ -9,10 +9,9 @@ import {
 } from './engine';
 import type { PlayerId } from './rules';
 import { drawV070Cards } from './card-draw';
+import { releaseV070BoundCards, v070BindingsForHost } from './bindings';
 
 const REMOVAL_LIFECYCLE_UNSUPPORTED = new Set([
-  'military-reserve-force',
-  'intelligence-extraordinary-rendition',
   'financiers-margin-loan',
   'intelligence-sleeper-network',
 ]);
@@ -115,10 +114,8 @@ export function voluntarilyDiscardableV070AssetInstanceIds(
     state.cardInstances[instanceId]?.cardId === 'intelligence-extraordinary-rendition'
   );
 
-  // Extraordinary Rendition must be discarded before every other Asset. Its
-  // bound-card departure lifecycle is not yet represented, so do not expose a
-  // voluntary discard that the engine cannot complete correctly.
-  if (extraordinary) return [];
+  // Extraordinary Rendition must be discarded before every other Asset, if able.
+  if (extraordinary) return [extraordinary];
 
   return bank.filter(instanceId => {
     const card = canonicalCardForInstance(state, instanceId);
@@ -504,9 +501,8 @@ export function replaceableV070AssetInstanceIds(
     state.cardInstances[instanceId]?.cardId === 'intelligence-extraordinary-rendition'
   );
 
-  // Extraordinary Rendition must leave before other Assets, but its bound-card
-  // lifecycle is not yet represented in the v0.7.0 authoritative state.
-  if (extraordinary) return [];
+  // Asset replacement is a voluntary discard, so Rendition must be chosen first.
+  if (extraordinary) return [extraordinary];
 
   return bank.filter(instanceId => {
     const card = canonicalCardForInstance(state, instanceId);
@@ -581,6 +577,17 @@ function moveBankedAsset(
       reason,
     },
   });
+
+  if (v070BindingsForHost(state, instanceId).length > 0) {
+    releaseV070BoundCards(
+      state,
+      instanceId,
+      cardId === 'military-reserve-force' ? 'graveyard' : 'discard',
+      cardId === 'military-reserve-force'
+        ? 'Reserve Force host left play'
+        : 'bound Asset host left play',
+    );
+  }
 
   if (removed) {
     resolveV070RemovedAssetTrigger(
