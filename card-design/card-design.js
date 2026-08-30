@@ -262,6 +262,7 @@
   ]);
 
   function integrateLongCardReview() {
+    if (document.body?.classList.contains('developer-catalog-page')) return;
     const territorySection = document.querySelector('.territory-specimen-section');
     if (!territorySection || document.querySelector('.long-card-review-section')) return;
 
