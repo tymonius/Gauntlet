@@ -151,6 +151,12 @@ export type V070PendingActionEffectChoice =
       candidateInstanceIds: string[];
     }
   | {
+      kind: 'sabotage_asset_target';
+      playerId: PlayerId;
+      opponentId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
       kind: 'scouting_report_source';
       playerId: PlayerId;
       sourceActionInstanceId: string;
