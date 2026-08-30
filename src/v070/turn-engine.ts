@@ -1697,6 +1697,31 @@ function continuePendingActionCard(state: V070GameState): void {
         },
       });
       return;
+    case 'inquisition-divine-mercy': {
+      const opponentId = otherPlayer(pending.playerId);
+      state.pendingActionEffectChoice = {
+        kind: 'divine_mercy_target',
+        playerId: pending.playerId,
+        opponentId,
+        sourceActionInstanceId: pending.instanceId,
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          kind: 'divine_mercy_target',
+          playerId: pending.playerId,
+          opponentId,
+          sourceActionInstanceId: pending.instanceId,
+          purpose: 'Divine Mercy',
+          targetInstanceIds: [
+            ...state.players[opponentId].zones.graveyard,
+          ],
+        },
+      });
+      return;
+    }
     case 'inquisition-accusation': {
       const opponentId = otherPlayer(pending.playerId);
       if (state.players[opponentId].zones.discardPile.length === 0) {
@@ -2319,6 +2344,7 @@ function chooseRecoveryActionTarget(
       choice.kind !== 'arcane_knowledge_target'
       && choice.kind !== 'contraband_target'
       && choice.kind !== 'salvage_recovery_target'
+      && choice.kind !== 'divine_mercy_target'
     )
     || choice.playerId !== playerId
     || !pending
@@ -2347,6 +2373,40 @@ function chooseRecoveryActionTarget(
         purpose: 'Arcane Knowledge',
       },
     });
+    state.pendingActionEffectChoice = null;
+    finishPendingActionCard(state);
+    return;
+  }
+
+  if (choice.kind === 'divine_mercy_target') {
+    if (pending.cardId !== 'inquisition-divine-mercy') {
+      throw new V070GameActionError(
+        'Divine Mercy target state does not match its pending Action card.',
+      );
+    }
+
+    const graveyard = state.players[choice.opponentId].zones.graveyard;
+    const index = graveyard.indexOf(targetInstanceId);
+    if (index < 0) {
+      throw new V070GameActionError(
+        'Divine Mercy must target a card in the opponent’s Graveyard.',
+      );
+    }
+
+    graveyard.splice(index, 1);
+    state.players[choice.opponentId].zones.discardPile.push(targetInstanceId);
+    appendV070Event(state, {
+      type: 'graveyard_card_recycled',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        instanceId: targetInstanceId,
+        cardId: state.cardInstances[targetInstanceId]?.cardId,
+        owner: choice.opponentId,
+        purpose: 'Divine Mercy',
+      },
+    });
+    gainV070Conviction(state, playerId, 2, 'Divine Mercy');
     state.pendingActionEffectChoice = null;
     finishPendingActionCard(state);
     return;
