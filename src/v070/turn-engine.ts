@@ -51,6 +51,7 @@ import {
   removeV070AssetForced,
   voluntarilyDiscardableV070AssetInstanceIds,
 } from './assets';
+import { bindV070CardFromPlayerZone } from './bindings';
 
 export type V070TurnAction =
   | { type: 'resolve_capture'; playerId: PlayerId }
@@ -163,6 +164,16 @@ export type V070TurnAction =
     }
   | {
       type: 'choose_anathema_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
+      type: 'choose_reserve_force_bind_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
+      type: 'choose_extraordinary_rendition_bind_target';
       playerId: PlayerId;
       targetInstanceId: string;
     }
@@ -295,6 +306,14 @@ export function reduceV070TurnAction(
       pending.kind === 'anathema_target'
       && action.type === 'choose_anathema_target'
       && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'reserve_force_bind_target'
+      && action.type === 'choose_reserve_force_bind_target'
+      && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'extraordinary_rendition_bind_target'
+      && action.type === 'choose_extraordinary_rendition_bind_target'
+      && action.playerId === pending.playerId
     );
     if (!validContinuation) {
       throw new V070GameActionError('Resolve the pending printed Action effect choice first.');
@@ -323,6 +342,8 @@ export function reduceV070TurnAction(
       'choose_act_of_faith_graveyard_target',
       'resolve_threefold_vision_distribution',
       'choose_anathema_target',
+      'choose_reserve_force_bind_target',
+      'choose_extraordinary_rendition_bind_target',
     ].includes(action.type)) {
     throw new V070GameActionError('Resolve the pending Action card before continuing the turn.');
   }
@@ -439,6 +460,16 @@ export function reduceV070TurnAction(
       break;
     case 'choose_anathema_target':
       chooseAnathemaTarget(next, action.playerId, action.targetInstanceId);
+      break;
+    case 'choose_reserve_force_bind_target':
+      chooseReserveForceBindTarget(next, action.playerId, action.targetInstanceId);
+      break;
+    case 'choose_extraordinary_rendition_bind_target':
+      chooseExtraordinaryRenditionBindTarget(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
       break;
     case 'resolve_censure_choice':
       resolveCensureChoice(
@@ -618,9 +649,11 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'inquisition-act-of-faith',
   'inquisition-guilt-by-association',
   'intelligence-assassins',
+  'intelligence-extraordinary-rendition',
   'intelligence-regime-change',
   'intelligence-spies',
   'military-high-command',
+  'military-reserve-force',
   'mystics-dark-omens',
   'mystics-sacrifice-recovery',
   'mystics-soul-for-soul',
