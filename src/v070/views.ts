@@ -12,6 +12,15 @@ export interface V070VisibleCard {
   cardId: string;
 }
 
+export interface V070BindingView {
+  hostId: string;
+  owner: PlayerId;
+  faceUp: boolean;
+  purpose: string;
+  sequence: number;
+  card?: V070VisibleCard;
+}
+
 export interface V070OverlayView {
   instanceId: string;
   cardId: string;
@@ -96,6 +105,7 @@ export interface V070GameView {
   battle: V070GameState['battle'];
   battleRuntime: V070BattleRuntimeView | null;
   overlays: V070OverlayView[];
+  bindings: V070BindingView[];
   territoryTurnRestrictions: V070GameState['territoryTurnRestrictions'];
   sanctions: V070GameState['sanctions'];
   sanctionTriggerTurns: V070GameState['sanctionTriggerTurns'];
@@ -132,6 +142,7 @@ export function viewV070GameForPlayer(
       ? viewBattleRuntime(state, state.battleRuntime, viewer)
       : null,
     overlays: viewOverlays(state),
+    bindings: viewBindings(state, viewer),
     territoryTurnRestrictions: state.territoryTurnRestrictions.map(
       restriction => structuredClone(restriction),
     ),
@@ -171,6 +182,39 @@ function viewPendingActionEffectChoice(
     visible.candidateInstanceIds = [];
   }
   return visible;
+}
+
+function viewBindings(
+  state: V070GameState,
+  viewer: PlayerId,
+): V070BindingView[] {
+  return [...state.bindings]
+    .sort((a, b) => a.sequence - b.sequence)
+    .map(binding => {
+      const instance = state.cardInstances[binding.cardInstanceId];
+      if (!instance) {
+        throw new Error(
+          `Unknown bound card instance ${binding.cardInstanceId}.`,
+        );
+      }
+
+      const identityVisible = binding.faceUp || binding.owner === viewer;
+      return {
+        hostId: binding.hostId,
+        owner: binding.owner,
+        faceUp: binding.faceUp,
+        purpose: binding.purpose,
+        sequence: binding.sequence,
+        ...(identityVisible
+          ? {
+              card: {
+                instanceId: binding.cardInstanceId,
+                cardId: instance.cardId,
+              },
+            }
+          : {}),
+      };
+    });
 }
 
 function viewOverlays(state: V070GameState): V070OverlayView[] {
