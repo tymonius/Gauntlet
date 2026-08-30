@@ -2257,7 +2257,7 @@ function revealV070Hand(
   state: V070GameState,
   actor: PlayerId,
   owner: PlayerId,
-  purpose: 'Assassins' | 'Spies',
+  purpose: 'Assassins' | 'Spies' | 'Extraordinary Rendition',
 ): string[] {
   const instanceIds = [...state.players[owner].zones.hand];
   appendV070Event(state, {
@@ -2649,6 +2649,249 @@ function completeAnathemaBanking(
   finishPendingActionCard(state, 'asset');
 }
 
+function reserveForceEligibleHandInstanceIds(
+  state: V070GameState,
+  playerId: PlayerId,
+): string[] {
+  return state.players[playerId].zones.hand.filter(instanceId => {
+    const cardId = state.cardInstances[instanceId]?.cardId;
+    const card = cardId ? v070CanonicalContent.cardsById.get(cardId) : undefined;
+    return card?.effects.some(effect =>
+      effect.label === 'Tactic' || effect.label === 'Gambit/Tactic'
+    ) ?? false;
+  });
+}
+
+function resolveBindingBankAction(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+  cardId: 'military-reserve-force' | 'intelligence-extraordinary-rendition',
+): void {
+  const replacements = pendingBankReplacementV070AssetInstanceIds(
+    state,
+    playerId,
+    sourceActionInstanceId,
+  );
+  const purpose = cardId === 'military-reserve-force'
+    ? 'Reserve Force'
+    : 'Extraordinary Rendition';
+
+  if (replacements.length > 0) {
+    state.pendingActionEffectChoice = {
+      kind: 'pending_asset_bank_replacement',
+      playerId,
+      sourceActionInstanceId,
+      purpose,
+      replacementInstanceIds: [...replacements],
+    };
+    appendV070Event(state, {
+      type: 'action_effect_choice_pending',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        kind: 'pending_asset_bank_replacement',
+        playerId,
+        sourceActionInstanceId,
+        purpose,
+        replacementInstanceIds: [...replacements],
+      },
+    });
+    return;
+  }
+
+  completeBindingBankAction(
+    state,
+    playerId,
+    sourceActionInstanceId,
+    cardId,
+  );
+}
+
+function completeBindingBankAction(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+  cardId: 'military-reserve-force' | 'intelligence-extraordinary-rendition',
+  replaceAssetInstanceId?: string,
+): void {
+  const purpose = cardId === 'military-reserve-force'
+    ? 'Reserve Force'
+    : 'Extraordinary Rendition';
+
+  bankV070AssetFromPendingAction(
+    state,
+    playerId,
+    sourceActionInstanceId,
+    purpose,
+    replaceAssetInstanceId,
+  );
+
+  if (cardId === 'military-reserve-force') {
+    const eligible = reserveForceEligibleHandInstanceIds(state, playerId);
+    if (eligible.length === 0) {
+      appendV070Event(state, {
+        type: 'action_effect_incomplete',
+        actor: playerId,
+        visibility: 'public',
+        payload: {
+          sourceActionInstanceId,
+          purpose,
+          reason: 'required_tactic_hand_target_unavailable',
+        },
+      });
+      finishPendingActionCard(state, 'asset');
+      return;
+    }
+
+    state.pendingActionEffectChoice = {
+      kind: 'reserve_force_bind_target',
+      playerId,
+      sourceActionInstanceId,
+    };
+    appendV070Event(state, {
+      type: 'action_effect_choice_pending',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        kind: 'reserve_force_bind_target',
+        playerId,
+        sourceActionInstanceId,
+        purpose,
+        candidateCount: eligible.length,
+      },
+    });
+    appendV070Event(state, {
+      type: 'action_effect_choice_options',
+      actor: playerId,
+      visibility: playerId,
+      payload: {
+        kind: 'reserve_force_bind_target',
+        sourceActionInstanceId,
+        purpose,
+        targetInstanceIds: [...eligible],
+      },
+    });
+    return;
+  }
+
+  const opponentId = otherPlayer(playerId);
+  const revealed = revealV070Hand(
+    state,
+    playerId,
+    opponentId,
+    'Extraordinary Rendition',
+  );
+  if (revealed.length === 0) {
+    appendV070Event(state, {
+      type: 'action_effect_incomplete',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        sourceActionInstanceId,
+        purpose,
+        reason: 'required_opponent_hand_target_unavailable',
+      },
+    });
+    finishPendingActionCard(state, 'asset');
+    return;
+  }
+
+  state.pendingActionEffectChoice = {
+    kind: 'extraordinary_rendition_bind_target',
+    playerId,
+    opponentId,
+    sourceActionInstanceId,
+  };
+  appendV070Event(state, {
+    type: 'action_effect_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      kind: 'extraordinary_rendition_bind_target',
+      playerId,
+      opponentId,
+      sourceActionInstanceId,
+      purpose,
+      targetInstanceIds: [...revealed],
+    },
+  });
+}
+
+function chooseReserveForceBindTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'reserve_force_bind_target'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'military-reserve-force') {
+    throw new V070GameActionError(
+      'No Reserve Force binding choice is pending for that player.',
+    );
+  }
+
+  if (!reserveForceEligibleHandInstanceIds(state, playerId).includes(targetInstanceId)) {
+    throw new V070GameActionError(
+      'Reserve Force must bind a Tactic-eligible card from your Hand.',
+    );
+  }
+
+  bindV070CardFromPlayerZone(state, {
+    hostId: pending.instanceId,
+    owner: playerId,
+    cardInstanceId: targetInstanceId,
+    sourceZone: 'hand',
+    faceUp: false,
+    purpose: 'Reserve Force',
+  });
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state, 'asset');
+}
+
+function chooseExtraordinaryRenditionBindTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'extraordinary_rendition_bind_target'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'intelligence-extraordinary-rendition') {
+    throw new V070GameActionError(
+      'No Extraordinary Rendition binding choice is pending for that player.',
+    );
+  }
+
+  if (!state.players[choice.opponentId].zones.hand.includes(targetInstanceId)) {
+    throw new V070GameActionError(
+      'Extraordinary Rendition must bind a card still in the opponent’s Hand.',
+    );
+  }
+
+  bindV070CardFromPlayerZone(state, {
+    hostId: pending.instanceId,
+    owner: choice.opponentId,
+    cardInstanceId: targetInstanceId,
+    sourceZone: 'hand',
+    faceUp: true,
+    purpose: 'Extraordinary Rendition',
+  });
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state, 'asset');
+}
+
 function choosePendingAssetBankReplacement(
   state: V070GameState,
   playerId: PlayerId,
@@ -2683,6 +2926,26 @@ function choosePendingAssetBankReplacement(
       state,
       playerId,
       pending.instanceId,
+      replaceAssetInstanceId,
+    );
+    return;
+  }
+
+  if (choice.purpose === 'Reserve Force'
+    || choice.purpose === 'Extraordinary Rendition') {
+    const expectedCardId = choice.purpose === 'Reserve Force'
+      ? 'military-reserve-force'
+      : 'intelligence-extraordinary-rendition';
+    if (pending.cardId !== expectedCardId) {
+      throw new V070GameActionError(
+        'Binding banking replacement state does not match its pending Action card.',
+      );
+    }
+    completeBindingBankAction(
+      state,
+      playerId,
+      pending.instanceId,
+      expectedCardId,
       replaceAssetInstanceId,
     );
     return;
