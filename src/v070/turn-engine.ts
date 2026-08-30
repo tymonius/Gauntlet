@@ -58,6 +58,7 @@ import {
   voluntarilyReturnableV070AssetInstanceIds,
 } from './assets';
 import { bindV070CardFromPlayerZone } from './bindings';
+import { restoreV070AssetsAtTurnStart } from './asset-face-state';
 
 export type V070TurnAction =
   | { type: 'resolve_capture'; playerId: PlayerId }
@@ -4581,6 +4582,7 @@ function completeCleanup(
   state.turnNumber += 1;
   state.turnState = createV070TurnState();
   expireV070TerritoryTurnRestrictions(state);
+  restoreV070AssetsAtTurnStart(state, next);
 
   appendV070Event(state, {
     type: 'turn_started',
