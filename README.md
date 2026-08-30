@@ -77,9 +77,10 @@ For current development and public browser tooling:
 
 1. game-data/current-game.json is the complete current gameplay authority.
 2. rulebook/player-facing/current-rulebook.md is the complete current Rulebook authority.
-3. releases/v0.7.0/Gauntlet_v0.7.0_Manifest.json identifies the frozen v0.7.0 published authority set.
-4. releases/v0.7.0/Gauntlet_v0.7.0_Canonical_Data.json is the frozen machine-readable release snapshot.
-5. releases/v0.7.0/Gauntlet_v0.7.0_Starter_Decks.json defines the frozen public starter Deck set.
+3. config/publishing-authority.json is the current publishing-imprint authority, effective beginning with v0.7.1.
+4. releases/v0.7.0/Gauntlet_v0.7.0_Manifest.json identifies the frozen v0.7.0 published authority set.
+5. releases/v0.7.0/Gauntlet_v0.7.0_Canonical_Data.json is the frozen machine-readable release snapshot.
+6. releases/v0.7.0/Gauntlet_v0.7.0_Starter_Decks.json defines the frozen public starter Deck set.
 
 Generated PDFs, browser pages, printable tools, and TTS assets are derived production surfaces. If a derived surface conflicts with its governing current source, correct the governing source and regenerate the supported artifact. Do not silently rewrite a frozen published release package.
 
