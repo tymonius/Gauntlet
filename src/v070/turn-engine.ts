@@ -140,6 +140,11 @@ export type V070TurnAction =
       targetInstanceIds: readonly string[];
     }
   | {
+      type: 'choose_opponent_hand_discard_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
       type: 'resolve_censure_choice';
       playerId: PlayerId;
       sanctionInstanceId: string;
@@ -248,6 +253,10 @@ export function reduceV070TurnAction(
       pending.kind === 'excommunication_targets'
       && action.type === 'choose_excommunication_targets'
       && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'opponent_hand_discard_target'
+      && action.type === 'choose_opponent_hand_discard_target'
+      && action.playerId === pending.playerId
     );
     if (!validContinuation) {
       throw new V070GameActionError('Resolve the pending printed Action effect choice first.');
@@ -271,6 +280,7 @@ export function reduceV070TurnAction(
       'resolve_accusation_choice',
       'choose_guilt_by_association_target',
       'choose_excommunication_targets',
+      'choose_opponent_hand_discard_target',
     ].includes(action.type)) {
     throw new V070GameActionError('Resolve the pending Action card before continuing the turn.');
   }
@@ -353,6 +363,13 @@ export function reduceV070TurnAction(
         next,
         action.playerId,
         action.targetInstanceIds,
+      );
+      break;
+    case 'choose_opponent_hand_discard_target':
+      chooseOpponentHandDiscardTarget(
+        next,
+        action.playerId,
+        action.targetInstanceId,
       );
       break;
     case 'resolve_censure_choice':
@@ -529,7 +546,9 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'inquisition-accusation',
   'inquisition-excommunication',
   'inquisition-guilt-by-association',
+  'intelligence-assassins',
   'intelligence-regime-change',
+  'intelligence-spies',
   'military-high-command',
   'mystics-sacrifice-recovery',
   'mystics-soul-for-soul',
@@ -679,6 +698,12 @@ function playActionCard(
     )) {
     throw new V070GameActionError(
       'Excommunication requires at least one opposing Discard card with value 5 or less.',
+    );
+  }
+  if (card.id === 'intelligence-assassins'
+    && state.players[otherPlayer(playerId)].zones.hand.length === 0) {
+    throw new V070GameActionError(
+      'Assassins requires at least one card in the opponent’s Hand.',
     );
   }
   if (isSimpleBankingActionCardId(card.id)) {
@@ -1122,6 +1147,68 @@ function continuePendingActionCard(state: V070GameState): void {
       });
       return;
     }
+    case 'intelligence-assassins': {
+      const opponentId = otherPlayer(pending.playerId);
+      const revealed = revealV070Hand(
+        state,
+        pending.playerId,
+        opponentId,
+        'Assassins',
+      );
+      if (revealed.length === 0) {
+        appendV070Event(state, {
+          type: 'action_effect_incomplete',
+          actor: pending.playerId,
+          visibility: 'public',
+          payload: {
+            sourceActionInstanceId: pending.instanceId,
+            purpose: 'Assassins',
+            reason: 'required_opponent_hand_target_unavailable',
+          },
+        });
+        finishPendingActionCard(state);
+        return;
+      }
+      state.pendingActionEffectChoice = {
+        kind: 'opponent_hand_discard_target',
+        playerId: pending.playerId,
+        opponentId,
+        sourceActionInstanceId: pending.instanceId,
+        purpose: 'Assassins',
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          kind: 'opponent_hand_discard_target',
+          playerId: pending.playerId,
+          opponentId,
+          sourceActionInstanceId: pending.instanceId,
+          purpose: 'Assassins',
+          targetInstanceIds: [...revealed],
+        },
+      });
+      return;
+    }
+    case 'intelligence-spies':
+      revealV070Hand(
+        state,
+        pending.playerId,
+        otherPlayer(pending.playerId),
+        'Spies',
+      );
+      drawIntoHand(state, pending.playerId, 1, 'Spies');
+      if (!openHandDestinationChoice(
+        state,
+        pending.playerId,
+        pending.instanceId,
+        'Spies',
+        'discard',
+      )) {
+        finishPendingActionCard(state);
+      }
+      return;
     case 'inquisition-guilt-by-association': {
       const opponentId = otherPlayer(pending.playerId);
       state.pendingActionEffectChoice = {
@@ -1522,6 +1609,74 @@ function chooseSoulForSoulTargets(
       handToGraveyardCardId: state.cardInstances[handInstanceId]?.cardId,
       graveyardToHandInstanceId: graveyardInstanceId,
       graveyardToHandCardId: state.cardInstances[graveyardInstanceId]?.cardId,
+    },
+  });
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state);
+}
+
+function revealV070Hand(
+  state: V070GameState,
+  actor: PlayerId,
+  owner: PlayerId,
+  purpose: 'Assassins' | 'Spies',
+): string[] {
+  const instanceIds = [...state.players[owner].zones.hand];
+  appendV070Event(state, {
+    type: 'hand_revealed',
+    actor,
+    visibility: 'public',
+    payload: {
+      owner,
+      purpose,
+      instanceIds,
+      cards: instanceIds.map(instanceId => ({
+        instanceId,
+        cardId: state.cardInstances[instanceId]?.cardId,
+      })),
+    },
+  });
+  return instanceIds;
+}
+
+function chooseOpponentHandDiscardTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'opponent_hand_discard_target'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'intelligence-assassins') {
+    throw new V070GameActionError(
+      'No Assassins opposing-Hand discard choice is pending for that player.',
+    );
+  }
+
+  const hand = state.players[choice.opponentId].zones.hand;
+  const index = hand.indexOf(targetInstanceId);
+  if (index < 0) {
+    throw new V070GameActionError(
+      'Assassins must choose a card still in the opponent’s Hand.',
+    );
+  }
+
+  hand.splice(index, 1);
+  state.players[choice.opponentId].zones.discardPile.push(targetInstanceId);
+  appendV070Event(state, {
+    type: 'card_discarded',
+    actor: choice.opponentId,
+    visibility: 'public',
+    payload: {
+      instanceId: targetInstanceId,
+      cardId: state.cardInstances[targetInstanceId]?.cardId,
+      causedBy: playerId,
+      purpose: choice.purpose,
     },
   });
 
@@ -2195,7 +2350,7 @@ function openHandDestinationChoice(
   state: V070GameState,
   playerId: PlayerId,
   sourceActionInstanceId: string,
-  purpose: 'Second Line' | 'Tactical Planning' | 'Salvage' | 'New Recruits',
+  purpose: 'Second Line' | 'Tactical Planning' | 'Salvage' | 'New Recruits' | 'Spies',
   destination: 'draw_top' | 'draw_bottom' | 'discard',
   drawAfter = 0,
 ): boolean {
