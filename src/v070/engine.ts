@@ -121,6 +121,15 @@ export type V070PendingActionEffectChoice =
       playerId: PlayerId;
       sourceActionInstanceId: string;
       purpose: 'Landslide';
+    }
+  | {
+      kind: 'forced_asset_target';
+      playerId: PlayerId;
+      assetOwnerId: PlayerId;
+      actionOwnerId: PlayerId;
+      sourceActionInstanceId: string;
+      purpose: 'Sedition';
+      destination: 'discard';
     };
 
 export type V070PendingSanctionChoice =

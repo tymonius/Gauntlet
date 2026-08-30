@@ -151,6 +151,48 @@ export function discardV070AssetAsAction(
   );
 }
 
+export type V070AssetDepartureDestination = 'discard' | 'graveyard' | 'hand';
+
+export function assertV070ForcedAssetChoicesSupported(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  assertForcedRemovalLifecycleSupported(state, playerId);
+}
+
+export function removeV070AssetForced(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+  destination: V070AssetDepartureDestination,
+  reason: string,
+): void {
+  const bank = state.players[playerId].zones.assetBank;
+  if (!bank.includes(instanceId)) {
+    throw new V070GameActionError('Forced Asset departure must target a banked Asset.');
+  }
+
+  assertForcedRemovalLifecycleSupported(state, playerId, [instanceId]);
+
+  const extraordinary = bank.find(candidate =>
+    state.cardInstances[candidate]?.cardId === 'intelligence-extraordinary-rendition'
+  );
+  if (extraordinary && instanceId !== extraordinary) {
+    throw new V070GameActionError(
+      'Extraordinary Rendition must be discarded before any other Asset, if able.',
+    );
+  }
+
+  moveBankedAsset(
+    state,
+    playerId,
+    instanceId,
+    destination,
+    reason,
+    true,
+  );
+}
+
 export function discardV070AssetVoluntarily(
   state: V070GameState,
   playerId: PlayerId,
@@ -161,7 +203,7 @@ export function discardV070AssetVoluntarily(
     throw new V070GameActionError('That Asset cannot be voluntarily discarded now.');
   }
 
-  removeBankedAssetToDiscard(
+  moveBankedAssetToDiscard(
     state,
     playerId,
     instanceId,
@@ -206,7 +248,7 @@ export function bankV070AssetFromHand(
     if (!replaceable.includes(replacement)) {
       throw new V070GameActionError('That banked Asset cannot be replaced now.');
     }
-    removeBankedAssetToDiscard(
+    moveBankedAssetToDiscard(
       state,
       playerId,
       replacement,
@@ -327,7 +369,7 @@ export function resolveV070AssetLimitRemoval(
   }
 
   for (const instanceId of instanceIds) {
-    removeBankedAssetToDiscard(
+    moveBankedAssetToDiscard(
       state,
       playerId,
       instanceId,
@@ -379,10 +421,28 @@ export function replaceableV070AssetInstanceIds(
   });
 }
 
-function removeBankedAssetToDiscard(
+function moveBankedAssetToDiscard(
   state: V070GameState,
   playerId: PlayerId,
   instanceId: string,
+  reason: string,
+  removed: boolean,
+): void {
+  moveBankedAsset(
+    state,
+    playerId,
+    instanceId,
+    'discard',
+    reason,
+    removed,
+  );
+}
+
+function moveBankedAsset(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+  destination: V070AssetDepartureDestination,
   reason: string,
   removed: boolean,
 ): void {
@@ -396,7 +456,13 @@ function removeBankedAssetToDiscard(
   if (!cardId) throw new V070GameActionError(`Unknown Asset instance ${instanceId}.`);
 
   bank.splice(index, 1);
-  state.players[playerId].zones.discardPile.push(instanceId);
+  if (destination === 'discard') {
+    state.players[playerId].zones.discardPile.push(instanceId);
+  } else if (destination === 'graveyard') {
+    state.players[playerId].zones.graveyard.push(instanceId);
+  } else {
+    state.players[playerId].zones.hand.push(instanceId);
+  }
   state.sanctions = state.sanctions.filter(
     sanction => sanction.instanceId !== instanceId,
   );
@@ -408,7 +474,7 @@ function removeBankedAssetToDiscard(
     payload: {
       instanceId,
       cardId,
-      destination: 'discard',
+      destination,
       removed,
       reason,
     },
