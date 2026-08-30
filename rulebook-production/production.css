@@ -157,3 +157,21 @@
   filter:none;
   mix-blend-mode:normal;
 }
+
+
+/* Compact the terminal publication colophon so publisher/imprint lines and
+   the legal playtest notice remain on a single approved reader page without
+   reducing normal Rulebook body type. */
+.page.colophon .production-flow{
+  font-size:7.8pt;
+  line-height:1.22;
+}
+.page.colophon .production-flow p{
+  margin-bottom:4px;
+}
+.page.colophon .production-flow img[alt="TDS Games publisher mark"]{
+  width:.42in;
+  max-width:.42in;
+  max-height:.48in;
+  margin:4px 0;
+}
