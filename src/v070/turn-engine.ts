@@ -1736,6 +1736,30 @@ function continuePendingActionCard(state: V070GameState): void {
         },
       });
       return;
+    case 'inquisition-hellfire': {
+      const maxAmount = v070Conviction(state, pending.playerId);
+      state.pendingActionEffectChoice = {
+        kind: 'conviction_spend_choice',
+        playerId: pending.playerId,
+        sourceActionInstanceId: pending.instanceId,
+        purpose: 'Hellfire',
+        maxAmount,
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          kind: 'conviction_spend_choice',
+          playerId: pending.playerId,
+          sourceActionInstanceId: pending.instanceId,
+          purpose: 'Hellfire',
+          minAmount: 0,
+          maxAmount,
+        },
+      });
+      return;
+    }
     case 'inquisition-penance': {
       const opponentId = otherPlayer(pending.playerId);
       state.pendingActionEffectChoice = {
@@ -2394,6 +2418,60 @@ function shuffleDiscardIntoDrawPile(
       effectDriven: true,
     },
   });
+}
+
+function resolveConvictionSpendChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  amount: number,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'conviction_spend_choice'
+    || choice.playerId !== playerId
+    || choice.purpose !== 'Hellfire'
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'inquisition-hellfire') {
+    throw new V070GameActionError(
+      'No Hellfire Conviction-spend choice is pending for that player.',
+    );
+  }
+
+  if (!Number.isInteger(amount)
+    || amount < 0
+    || amount > choice.maxAmount) {
+    throw new V070GameActionError(
+      `Hellfire must spend an integer from 0 through ${choice.maxAmount} Conviction.`,
+    );
+  }
+
+  spendV070Conviction(state, playerId, amount, 'Hellfire');
+
+  const opponentId = otherPlayer(playerId);
+  const drawPile = state.players[opponentId].zones.drawPile;
+  const moved = drawPile.splice(0, amount);
+  state.players[opponentId].zones.graveyard.push(...moved);
+
+  appendV070Event(state, {
+    type: 'draw_pile_cards_graveyarded',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      purpose: 'Hellfire',
+      opponentId,
+      requestedCount: amount,
+      count: moved.length,
+      instanceIds: [...moved],
+      cardIds: moved.map(
+        instanceId => state.cardInstances[instanceId]?.cardId,
+      ),
+    },
+  });
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state);
 }
 
 function resolvePenanceChoice(
