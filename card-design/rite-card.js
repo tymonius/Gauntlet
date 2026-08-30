@@ -112,41 +112,29 @@ function ritualFace() {
 }
 
 function reviewPair(rite) {
-  return `<section class="rite-review-pair" id="rite-${esc(rite.id)}" aria-labelledby="rite-${esc(rite.id)}-title">
-    <div class="review-faction-heading screen-only">
-      <h3 id="rite-${esc(rite.id)}-title">${esc(rite.name)}</h3>
-      <span>Double-sided Rite</span>
-    </div>
+  return `<article class="rite-review-pair catalog-pair-tile" id="rite-${esc(rite.id)}" aria-labelledby="rite-${esc(rite.id)}-title">
+    <header class="catalog-item-heading screen-only">
+      <strong id="rite-${esc(rite.id)}-title">${esc(rite.name)}</strong>
+      <span>Rite</span>
+    </header>
     <div class="rite-face-grid">
-      <div class="rite-face">
-        <p class="rite-face-label screen-only"><strong>Rite</strong><span>Incomplete face</span></p>
-        ${riteFace(rite, false)}
-      </div>
-      <div class="rite-face">
-        <p class="rite-face-label screen-only"><strong>Completed</strong><span>Progression reference</span></p>
-        ${riteFace(rite, true)}
-      </div>
+      <div class="rite-face">${riteFace(rite, false)}</div>
+      <div class="rite-face">${riteFace(rite, true)}</div>
     </div>
-  </section>`;
+  </article>`;
 }
 
 function ritualReview() {
-  return `<section class="rite-review-pair ritual-review" id="ritual-ascension" aria-labelledby="ritual-ascension-title">
-    <div class="review-faction-heading screen-only">
-      <h3 id="ritual-ascension-title">${esc(RITUAL.name)}</h3>
-      <span>Single-sided Ritual · dedicated card back</span>
-    </div>
+  return `<article class="rite-review-pair ritual-review catalog-pair-tile" id="ritual-ascension" aria-labelledby="ritual-ascension-title">
+    <header class="catalog-item-heading screen-only">
+      <strong id="ritual-ascension-title">${esc(RITUAL.name)}</strong>
+      <span>Ritual</span>
+    </header>
     <div class="rite-face-grid ritual-face-grid">
-      <div class="rite-face">
-        <p class="rite-face-label screen-only"><strong>Ritual</strong><span>Victory card</span></p>
-        ${ritualFace()}
-      </div>
-      <div class="rite-face">
-        <p class="rite-face-label screen-only"><strong>Back</strong><span>Ritual working sheet</span></p>
-        ${ritualCardBack()}
-      </div>
+      <div class="rite-face">${ritualFace()}</div>
+      <div class="rite-face">${ritualCardBack()}</div>
     </div>
-  </section>`;
+  </article>`;
 }
 
 async function renderRites() {
