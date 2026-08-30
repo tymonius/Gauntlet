@@ -175,3 +175,31 @@
   max-height:.48in;
   margin:4px 0;
 }
+
+.page.colophon .colophon-block{max-width:4.35in}
+.page.colophon .colophon-block .flavor-overline{
+  margin-bottom:8px;
+  font-size:16pt;
+  line-height:1.05;
+}
+.page.colophon .colophon-block h2{
+  margin-bottom:8px;
+  font-size:22pt;
+  line-height:1.02;
+}
+.page.colophon .colophon-source p{
+  margin-bottom:4px;
+  font-size:8pt;
+  line-height:1.24;
+}
+.page.colophon .colophon-source img[alt="TDS Games publisher mark"]{
+  width:.4in;
+  max-width:.4in;
+  max-height:.45in;
+  margin:3px 0;
+}
+.page.colophon .colophon-meta{
+  padding-top:8px;
+  font-size:7pt;
+  line-height:1.3;
+}
