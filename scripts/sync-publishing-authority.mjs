@@ -46,3 +46,12 @@ for (const target of targets) {
 
 if (changed && mode === 'check') process.exitCode = 1;
 if (!changed) console.log('Publishing authority is synchronized.');
+
+const frozenV070Path = path.join(ROOT, 'releases/v0.7.0/Gauntlet_v0.7.0_Rulebook.md');
+const frozenV070 = fs.readFileSync(frozenV070Path, 'utf8');
+if (/TDS Games|Misty Hollow Enterprises/.test(frozenV070)) {
+  console.error('Frozen v0.7.0 Rulebook must retain its original pre-TDS publishing identity.');
+  process.exitCode = 1;
+} else {
+  console.log('Frozen v0.7.0 publishing identity remains unchanged.');
+}
