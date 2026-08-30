@@ -106,6 +106,27 @@ async function ensureCardAnatomyFigures() {
   await renderCardAnatomyFigures();
 }
 
+function writeBootstrapManifestForRulebookFigures() {
+  const zeroHash = '0'.repeat(64);
+  const bootstrap = {
+    schema_version: 1,
+    release_version: RELEASE_VERSION,
+    status: 'rendering',
+    current_package_path: `releases/${RELEASE_VERSION}/`,
+    binding_sources: {
+      rulebook: { path: relative(RULEBOOK_PATH), sha256: hashFile(RULEBOOK_PATH) },
+    },
+    pdf_outputs: [{
+      key: 'rulebook-booklet',
+      path: path.basename(BOOKLET_PATH),
+      sha256: zeroHash,
+      bytes: 0,
+    }],
+  };
+  fs.writeFileSync(MANIFEST_PATH, jsonText(bootstrap));
+}
+
+
 async function renderCardAnatomyFigures() {
   fs.mkdirSync(RELEASE_DIR, { recursive: true });
   const browser = await chromium.launch({ headless: true });
@@ -180,6 +201,7 @@ const originalChapter11 = fs.readFileSync(PLAYER_CHAPTER_11_PATH);
 
 fs.rmSync(PRODUCTION_DIR, { recursive: true, force: true });
 fs.mkdirSync(path.dirname(TRANSIENT_RULEBOOK_PATH), { recursive: true });
+writeBootstrapManifestForRulebookFigures();
 
 const server = spawn('python', ['-m', 'http.server', '8000'], {
   cwd: ROOT,
