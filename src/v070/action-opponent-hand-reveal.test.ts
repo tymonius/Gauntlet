@@ -219,6 +219,18 @@ describe('v0.7.0 Spies Action', () => {
     expect(state.players.B.zones.hand).toContain(top);
     expect(state.players.B.zones.hand).not.toContain(source);
     expect(state.players.B.zones.hand.length).toBe(handBefore);
+
+    const revealIndex = state.events.findIndex(event =>
+      event.type === 'hand_revealed'
+      && (event.payload as { purpose?: string })?.purpose === 'Spies'
+    );
+    const drawIndex = state.events.findIndex(event =>
+      event.type === 'cards_drawn'
+      && (event.payload as { purpose?: string })?.purpose === 'Spies'
+    );
+    expect(revealIndex).toBeGreaterThanOrEqual(0);
+    expect(drawIndex).toBeGreaterThan(revealIndex);
+
     expect(state.pendingActionEffectChoice).toEqual({
       kind: 'hand_destination_target',
       playerId: 'B',
