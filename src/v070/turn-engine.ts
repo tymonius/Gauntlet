@@ -721,6 +721,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'neutral-forced-march',
   'mystics-fate-s-toll',
   'military-battlefield-promotion',
+  'military-give-chase',
   'neutral-insurrection',
   'neutral-landslide',
   'neutral-new-recruits',
@@ -854,6 +855,18 @@ function playActionCard(
     if (battlefieldPromotionCandidateInstanceIds(state, playerId).length === 0) {
       throw new V070GameActionError(
         'Battlefield Promotion requires a Tactic you chose in a battle you won this turn that is still in your Discard Pile.',
+      );
+    }
+  }
+  if (card.id === 'military-give-chase') {
+    if (turnState.phase !== 'denouement') {
+      throw new V070GameActionError(
+        'Give Chase may be played only during Denouement.',
+      );
+    }
+    if (!wonInitiatedBattleThisTurn(state, playerId)) {
+      throw new V070GameActionError(
+        'Give Chase requires a battle you initiated and won this turn.',
       );
     }
   }
@@ -1225,6 +1238,31 @@ function continuePendingActionCard(state: V070GameState): void {
     case 'neutral-disruption':
       resolveDisruptionAction(state, pending.playerId, pending.instanceId);
       finishPendingActionCard(state);
+      return;
+    case 'military-give-chase':
+      state.turnState = beginEffectGrantedV070Movement(
+        requireTurnState(state),
+        1,
+        {
+          source: 'Give Chase',
+          choiceRestriction: 'advance_required',
+          battleRestriction: 'allowed',
+        },
+      );
+      appendV070Event(state, {
+        type: 'movement_step_granted',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          purpose: 'Give Chase',
+          sourceActionInstanceId: pending.instanceId,
+          phase: pending.phase,
+          separateSequence: true,
+          choiceRestriction: 'advance_required',
+          battleRestriction: 'allowed',
+        },
+      });
+      finishPendingActionCard(state, 'graveyard');
       return;
     case 'military-battlefield-promotion': {
       const candidates = battlefieldPromotionCandidateInstanceIds(
@@ -2035,6 +2073,38 @@ function resolveDisruptionAction(
       purpose: 'Disruption',
     },
   });
+}
+
+function wonInitiatedBattleThisTurn(
+  state: V070GameState,
+  playerId: PlayerId,
+): boolean {
+  const turnStartIndex = currentTurnStartEventIndex(state);
+  if (turnStartIndex < 0) return false;
+
+  let playerInitiatedCurrentBattle = false;
+  for (const event of state.events.slice(turnStartIndex + 1)) {
+    if (event.type === 'battle_initiated') {
+      const payload = event.payload as { attacker?: PlayerId } | undefined;
+      playerInitiatedCurrentBattle =
+        (payload?.attacker ?? event.actor) === playerId;
+      continue;
+    }
+
+    if (event.type === 'battle_outcome') {
+      const payload = event.payload as { winner?: PlayerId } | undefined;
+      if (playerInitiatedCurrentBattle && payload?.winner === playerId) {
+        return true;
+      }
+      continue;
+    }
+
+    if (event.type === 'battle_aftermath_complete') {
+      playerInitiatedCurrentBattle = false;
+    }
+  }
+
+  return false;
 }
 
 function wonBattleThisTurn(
@@ -4384,7 +4454,7 @@ function gainClemencyInfluence(
 
 function finishPendingActionCard(
   state: V070GameState,
-  destination: 'discard' | 'overlay' | 'asset' = 'discard',
+  destination: 'discard' | 'graveyard' | 'overlay' | 'asset' = 'discard',
 ): void {
   const pending = state.pendingActionCard;
   if (!pending) throw new V070GameActionError('No Action card is pending resolution.');
@@ -4394,6 +4464,8 @@ function finishPendingActionCard(
 
   if (destination === 'discard') {
     state.players[pending.playerId].zones.discardPile.push(pending.instanceId);
+  } else if (destination === 'graveyard') {
+    state.players[pending.playerId].zones.graveyard.push(pending.instanceId);
   } else if (destination === 'overlay') {
     if (!state.overlays.some(overlay => overlay.instanceId === pending.instanceId)) {
       throw new V070GameActionError(

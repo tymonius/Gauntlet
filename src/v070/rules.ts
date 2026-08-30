@@ -99,7 +99,10 @@ export interface V070LastStandAccessInput {
 
 export type V070MovementSequenceSource = 'normal' | 'effect';
 
-export type V070MovementChoiceRestriction = 'any' | 'advance_only';
+export type V070MovementChoiceRestriction =
+  | 'any'
+  | 'advance_only'
+  | 'advance_required';
 export type V070MovementBattleRestriction =
   | 'allowed'
   | 'prohibited'
@@ -583,6 +586,9 @@ export function applyV070MovementChoice(
   if (!step) throw new Error('An open movement sequence must have a current movement step.');
 
   if (choice === 'hold') {
+    if (step.choiceRestriction === 'advance_required') {
+      throw new Error('The current movement effect requires an Advance.');
+    }
     return {
       ...state,
       movementRemaining: 0,
@@ -592,7 +598,9 @@ export function applyV070MovementChoice(
     };
   }
   if (state.movementRemaining <= 0) throw new Error('No movement remains.');
-  if (step.choiceRestriction === 'advance_only' && choice !== 'advance') {
+  if ((step.choiceRestriction === 'advance_only'
+      || step.choiceRestriction === 'advance_required')
+    && choice !== 'advance') {
     throw new Error('The current additional movement may only be used to Advance.');
   }
 
