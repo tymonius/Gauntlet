@@ -28,9 +28,10 @@ permissions:
 
 concurrency:
   group: pages-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || 'production' }}
-  # Pages publishes a complete immutable artifact. During rapid merges, only the newest
-  # production build is useful; letting older builds finish creates a long stale-site queue.
-  cancel-in-progress: true
+  # PR previews may supersede themselves, but production must be allowed to finish.
+  # With cancel-in-progress disabled for main, GitHub keeps one active production deploy
+  # and at most one pending replacement, so rapid merges cannot starve the live site.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   TTS_RELEASE_TAG: tts-v0.7.0-qa-pr-917-68247f095969
