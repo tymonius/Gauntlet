@@ -39,10 +39,12 @@ import {
 } from './sanctions';
 import { openV070BlockadeChoicesForPositionChange } from './movement-triggers';
 import {
+  bankV070AssetFromPendingAction,
   bankV070AssetWithInherentAction,
   discardV070AssetAsAction,
   assertV070ForcedAssetChoicesSupported,
   discardV070AssetVoluntarily,
+  pendingBankReplacementV070AssetInstanceIds,
   removeV070AssetForced,
   voluntarilyDiscardableV070AssetInstanceIds,
 } from './assets';
@@ -102,6 +104,11 @@ export type V070TurnAction =
       type: 'choose_forced_asset_target';
       playerId: PlayerId;
       targetInstanceId: string;
+    }
+  | {
+      type: 'choose_pending_asset_bank_replacement';
+      playerId: PlayerId;
+      replaceAssetInstanceId: string;
     }
   | {
       type: 'resolve_censure_choice';
@@ -193,6 +200,10 @@ export function reduceV070TurnAction(
       pending.kind === 'forced_asset_target'
       && action.type === 'choose_forced_asset_target'
       && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'pending_asset_bank_replacement'
+      && action.type === 'choose_pending_asset_bank_replacement'
+      && action.playerId === pending.playerId
     );
     if (!validContinuation) {
       throw new V070GameActionError('Resolve the pending printed Action effect choice first.');
@@ -210,6 +221,7 @@ export function reduceV070TurnAction(
       'resolve_scouting_report_choice',
       'choose_territory_overlay_target',
       'choose_forced_asset_target',
+      'choose_pending_asset_bank_replacement',
     ].includes(action.type)) {
     throw new V070GameActionError('Resolve the pending Action card before continuing the turn.');
   }
@@ -258,6 +270,13 @@ export function reduceV070TurnAction(
       break;
     case 'choose_forced_asset_target':
       chooseForcedAssetTarget(next, action.playerId, action.targetInstanceId);
+      break;
+    case 'choose_pending_asset_bank_replacement':
+      choosePendingAssetBankReplacement(
+        next,
+        action.playerId,
+        action.replaceAssetInstanceId,
+      );
       break;
     case 'resolve_censure_choice':
       resolveCensureChoice(
@@ -476,6 +495,13 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'neutral-sedition',
   'neutral-tactical-planning',
   'diplomats-clemency',
+  'diplomats-detente',
+  'financiers-compound-interest',
+  'financiers-tariffs',
+  'financiers-war-bonds',
+  'intelligence-regime-change',
+  'military-high-command',
+  'mystics-sacrifice-recovery',
 ] as const;
 
 function playActionCard(
@@ -591,6 +617,13 @@ function playActionCard(
       );
     }
     assertV070ForcedAssetChoicesSupported(state, opponentId);
+  }
+  if (isSimpleBankingActionCardId(card.id)) {
+    pendingBankReplacementV070AssetInstanceIds(
+      state,
+      playerId,
+      cardInstanceId,
+    );
   }
 
   try {
@@ -958,6 +991,15 @@ function continuePendingActionCard(state: V070GameState): void {
         finishPendingActionCard(state);
       }
       return;
+    case 'diplomats-detente':
+    case 'financiers-compound-interest':
+    case 'financiers-tariffs':
+    case 'financiers-war-bonds':
+    case 'intelligence-regime-change':
+    case 'military-high-command':
+    case 'mystics-sacrifice-recovery':
+      resolveSimpleBankingAction(state, pending.playerId, pending.instanceId, pending.cardId);
+      return;
     case 'diplomats-clemency': {
       const opponentId = otherPlayer(pending.playerId);
       state.pendingActionEffectChoice = {
@@ -1074,6 +1116,14 @@ function resolveInsurrectionAction(
 
   drawIntoHand(state, playerId, 3, 'Insurrection');
 
+  grantAdditionalAction(state, playerId, 'Insurrection');
+}
+
+function grantAdditionalAction(
+  state: V070GameState,
+  playerId: PlayerId,
+  purpose: string,
+): void {
   const turnState = requireTurnState(state);
   turnState.actionsAvailable += 1;
   appendV070Event(state, {
@@ -1082,7 +1132,7 @@ function resolveInsurrectionAction(
     visibility: 'public',
     payload: {
       amount: 1,
-      purpose: 'Insurrection',
+      purpose,
       actionsAvailable: turnState.actionsAvailable,
     },
   });
@@ -1235,6 +1285,161 @@ function chooseRecoveryActionTarget(
     'Salvage',
     'discard',
   );
+}
+
+function choosePendingAssetBankReplacement(
+  state: V070GameState,
+  playerId: PlayerId,
+  replaceAssetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'pending_asset_bank_replacement'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || !isSimpleBankingActionCardId(pending.cardId)) {
+    throw new V070GameActionError(
+      'No printed Asset banking replacement choice is pending for that player.',
+    );
+  }
+
+  if (!choice.replacementInstanceIds.includes(replaceAssetInstanceId)) {
+    throw new V070GameActionError(
+      'That Asset is not a legal replacement for the pending banking Action.',
+    );
+  }
+
+  state.pendingActionEffectChoice = null;
+  completeSimpleBankingAction(
+    state,
+    playerId,
+    pending.instanceId,
+    pending.cardId,
+    replaceAssetInstanceId,
+  );
+}
+
+function resolveSimpleBankingAction(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+  cardId: string,
+): void {
+  if (!isSimpleBankingActionCardId(cardId)) {
+    throw new V070GameActionError(
+      `Unsupported simple banking Action: ${cardId}.`,
+    );
+  }
+
+  const replacements = pendingBankReplacementV070AssetInstanceIds(
+    state,
+    playerId,
+    sourceActionInstanceId,
+  );
+  const purpose = simpleBankingPurpose(cardId);
+
+  if (replacements.length > 0) {
+    state.pendingActionEffectChoice = {
+      kind: 'pending_asset_bank_replacement',
+      playerId,
+      sourceActionInstanceId,
+      purpose,
+      replacementInstanceIds: [...replacements],
+    };
+    appendV070Event(state, {
+      type: 'action_effect_choice_pending',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        kind: 'pending_asset_bank_replacement',
+        playerId,
+        sourceActionInstanceId,
+        purpose,
+        replacementInstanceIds: [...replacements],
+      },
+    });
+    return;
+  }
+
+  completeSimpleBankingAction(
+    state,
+    playerId,
+    sourceActionInstanceId,
+    cardId,
+  );
+}
+
+function completeSimpleBankingAction(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+  cardId: string,
+  replaceAssetInstanceId?: string,
+): void {
+  const purpose = simpleBankingPurpose(cardId);
+  bankV070AssetFromPendingAction(
+    state,
+    playerId,
+    sourceActionInstanceId,
+    purpose,
+    replaceAssetInstanceId,
+  );
+
+  if (cardId === 'financiers-tariffs') {
+    drawIntoHand(state, playerId, 2, purpose);
+    grantAdditionalAction(state, playerId, purpose);
+  }
+
+  finishPendingActionCard(state, 'asset');
+}
+
+function isSimpleBankingActionCardId(cardId: string): cardId is
+  | 'diplomats-detente'
+  | 'financiers-compound-interest'
+  | 'financiers-tariffs'
+  | 'financiers-war-bonds'
+  | 'intelligence-regime-change'
+  | 'military-high-command'
+  | 'mystics-sacrifice-recovery' {
+  return [
+    'diplomats-detente',
+    'financiers-compound-interest',
+    'financiers-tariffs',
+    'financiers-war-bonds',
+    'intelligence-regime-change',
+    'military-high-command',
+    'mystics-sacrifice-recovery',
+  ].includes(cardId);
+}
+
+function simpleBankingPurpose(
+  cardId:
+    | 'diplomats-detente'
+    | 'financiers-compound-interest'
+    | 'financiers-tariffs'
+    | 'financiers-war-bonds'
+    | 'intelligence-regime-change'
+    | 'military-high-command'
+    | 'mystics-sacrifice-recovery',
+):
+  | 'Compound Interest'
+  | 'Détente'
+  | 'High Command'
+  | 'War Bonds'
+  | 'Regime Change'
+  | 'Reembodiment'
+  | 'Tariffs' {
+  switch (cardId) {
+    case 'diplomats-detente': return 'Détente';
+    case 'financiers-compound-interest': return 'Compound Interest';
+    case 'financiers-tariffs': return 'Tariffs';
+    case 'financiers-war-bonds': return 'War Bonds';
+    case 'intelligence-regime-change': return 'Regime Change';
+    case 'military-high-command': return 'High Command';
+    case 'mystics-sacrifice-recovery': return 'Reembodiment';
+  }
 }
 
 function chooseForcedAssetTarget(
@@ -1692,7 +1897,7 @@ function gainClemencyInfluence(
 
 function finishPendingActionCard(
   state: V070GameState,
-  destination: 'discard' | 'overlay' = 'discard',
+  destination: 'discard' | 'overlay' | 'asset' = 'discard',
 ): void {
   const pending = state.pendingActionCard;
   if (!pending) throw new V070GameActionError('No Action card is pending resolution.');
@@ -1702,9 +1907,15 @@ function finishPendingActionCard(
 
   if (destination === 'discard') {
     state.players[pending.playerId].zones.discardPile.push(pending.instanceId);
-  } else if (!state.overlays.some(overlay => overlay.instanceId === pending.instanceId)) {
+  } else if (destination === 'overlay') {
+    if (!state.overlays.some(overlay => overlay.instanceId === pending.instanceId)) {
+      throw new V070GameActionError(
+        'An Action card can resolve to Overlay only after it has been attached.',
+      );
+    }
+  } else if (!state.players[pending.playerId].zones.assetBank.includes(pending.instanceId)) {
     throw new V070GameActionError(
-      'An Action card can resolve to Overlay only after it has been attached.',
+      'An Action card can resolve to Asset only after it has been banked.',
     );
   }
 
