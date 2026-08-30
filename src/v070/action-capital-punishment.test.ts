@@ -269,7 +269,7 @@ describe('v0.7.0 Capital Punishment Action', () => {
     injectCard(
       state,
       'A',
-      'neutral-contingency-plan',
+      'military-reserve-force',
       'assetBank',
       'unsupported',
     );
@@ -285,7 +285,7 @@ describe('v0.7.0 Capital Punishment Action', () => {
       type: 'play_action_card',
       playerId: 'B',
       cardInstanceId: source,
-    })).toThrow(/neutral-contingency-plan is unsupported/);
+    })).toThrow(/military-reserve-force is unsupported/);
 
     expect(state.players.B.zones.hand).toContain(source);
     expect(state.turnState?.actionsAvailable).toBe(1);

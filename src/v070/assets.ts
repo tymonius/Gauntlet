@@ -8,9 +8,9 @@ import {
   type V070GameState,
 } from './engine';
 import type { PlayerId } from './rules';
+import { drawV070Cards } from './card-draw';
 
 const REMOVAL_LIFECYCLE_UNSUPPORTED = new Set([
-  'neutral-contingency-plan',
   'military-reserve-force',
   'intelligence-extraordinary-rendition',
   'financiers-margin-loan',
@@ -479,6 +479,53 @@ function moveBankedAsset(
       reason,
     },
   });
+
+  if (removed) {
+    resolveV070RemovedAssetTrigger(
+      state,
+      playerId,
+      instanceId,
+      cardId,
+    );
+  }
+}
+
+function resolveV070RemovedAssetTrigger(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+  cardId: string,
+): void {
+  if (cardId !== 'neutral-contingency-plan') return;
+
+  const purpose = 'Contingency Plan';
+  const result = drawV070Cards(state, playerId, 1, purpose);
+  state.players[playerId].zones.hand.push(...result.drawn);
+
+  appendV070Event(state, {
+    type: 'cards_drawn',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      count: result.drawn.length,
+      purpose,
+      sourceInstanceId: instanceId,
+      reshuffles: result.reshuffles,
+      exhausted: result.exhausted,
+    },
+  });
+  if (result.drawn.length > 0) {
+    appendV070Event(state, {
+      type: 'drawn_card_identity',
+      actor: playerId,
+      visibility: playerId,
+      payload: {
+        cardInstanceIds: [...result.drawn],
+        purpose,
+        sourceInstanceId: instanceId,
+      },
+    });
+  }
 }
 
 function assertForcedRemovalLifecycleSupported(

@@ -275,7 +275,7 @@ describe('v0.7.0 Sanctions: Embargo and shared Asset limits', () => {
   test('unsupported Removal-trigger lifecycle is rejected only when that Asset is actually chosen', () => {
     let state = activeBattle();
     const embargo = injectCard(state, 'A', V070_SANCTIONS_EMBARGO_ID, 'hand', 'embargo');
-    const contingency = injectCard(state, 'B', 'neutral-contingency-plan', 'assetBank', 'contingency');
+    const reserveForce = injectCard(state, 'B', 'military-reserve-force', 'assetBank', 'reserve-force');
     const safe = injectCard(state, 'B', 'neutral-counterintelligence', 'assetBank', 'safe');
     injectCard(state, 'B', 'neutral-fortifications', 'assetBank', 'other');
 
@@ -290,7 +290,7 @@ describe('v0.7.0 Sanctions: Embargo and shared Asset limits', () => {
     expect(() => reduceV070BattleAction(state, {
       type: 'resolve_asset_limit_removal',
       playerId: 'B',
-      instanceIds: [contingency],
+      instanceIds: [reserveForce],
     })).toThrow(/unsupported until its bound-card lifecycle|Forced Asset Removal/);
 
     state = reduceV070BattleAction(state, {
@@ -299,6 +299,6 @@ describe('v0.7.0 Sanctions: Embargo and shared Asset limits', () => {
       instanceIds: [safe],
     });
     expect(state.pendingAssetLimitChoice).toBeNull();
-    expect(state.players.B.zones.assetBank).toContain(contingency);
+    expect(state.players.B.zones.assetBank).toContain(reserveForce);
   });
 });
