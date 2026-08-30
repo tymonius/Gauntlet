@@ -229,7 +229,7 @@ async function main() {
   const page = await browser.newPage({ viewport: { width: 1100, height: 1000 }, deviceScaleFactor: 2 });
 
   try {
-    await page.goto(`${baseUrl}/card-design/#card-back`, { waitUntil: 'load' });
+    await page.goto(`${baseUrl}/card-design/?type=back#card-back`, { waitUntil: 'load' });
     await page.waitForFunction(() => document.querySelectorAll('[data-gauntlet-card-back].gauntlet-card-back').length === 6);
     await page.waitForTimeout(100);
 
