@@ -211,6 +211,12 @@ export type V070TurnAction =
       targetInstanceId: string;
     }
   | {
+      type: 'resolve_penance_choice';
+      playerId: PlayerId;
+      choice: 'hand_to_graveyard' | 'conviction';
+      handInstanceId?: string;
+    }
+  | {
       type: 'resolve_censure_choice';
       playerId: PlayerId;
       sanctionInstanceId: string;
@@ -239,6 +245,7 @@ export function reduceV070TurnAction(
   if (action.type === 'resolve_clemency_choice'
     || action.type === 'choose_forced_asset_target'
     || action.type === 'resolve_accusation_choice'
+    || action.type === 'resolve_penance_choice'
     || action.type === 'choose_sequestration_keep_asset') {
     requirePlayingGame(state);
   } else {
@@ -276,6 +283,10 @@ export function reduceV070TurnAction(
         || pending.kind === 'divine_mercy_target'
       )
       && action.type === 'choose_recovery_action_target'
+      && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'penance_choice'
+      && action.type === 'resolve_penance_choice'
       && action.playerId === pending.playerId
     ) || (
       pending.kind === 'hand_destination_target'
@@ -377,6 +388,7 @@ export function reduceV070TurnAction(
       'choose_clemency_target',
       'resolve_clemency_choice',
       'choose_recovery_action_target',
+      'resolve_penance_choice',
       'choose_hand_destination_target',
       'choose_controlled_asset_target',
       'choose_sequestration_keep_asset',
@@ -441,6 +453,14 @@ export function reduceV070TurnAction(
       break;
     case 'choose_recovery_action_target':
       chooseRecoveryActionTarget(next, action.playerId, action.targetInstanceId);
+      break;
+    case 'resolve_penance_choice':
+      resolvePenanceChoice(
+        next,
+        action.playerId,
+        action.choice,
+        action.handInstanceId,
+      );
       break;
     case 'choose_hand_destination_target':
       chooseHandDestinationTarget(next, action.playerId, action.targetInstanceId);
@@ -746,6 +766,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'inquisition-accusation',
   'inquisition-anathema',
   'inquisition-divine-mercy',
+  'inquisition-penance',
   'inquisition-excommunication',
   'inquisition-act-of-faith',
   'inquisition-guilt-by-association',
