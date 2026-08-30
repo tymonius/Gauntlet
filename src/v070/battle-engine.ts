@@ -395,6 +395,14 @@ function setGambit(
   }
 
   const participant = runtime.participants[playerId];
+  const battle = requireBattle(state);
+  if (battle.attackerGambitProhibited
+    && playerId === battle.attacker
+    && instanceId !== undefined) {
+    throw new V070GameActionError(
+      'The attacker cannot set a Gambit in this battle.',
+    );
+  }
   if (participant.gambit !== undefined) {
     throw new V070GameActionError(`${playerId} has already made a Gambit choice.`);
   }
