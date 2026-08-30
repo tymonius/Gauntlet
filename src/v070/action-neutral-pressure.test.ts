@@ -1,6 +1,5 @@
 import { describe, expect, test } from 'vitest';
 import {
-  V070GameActionError,
   appendV070Event,
   createV070StarterGame,
   reduceV070SetupAction,
