@@ -62,9 +62,9 @@
     }
   }
 
-  function territoryGroup(id, label, list, version) {
-    if (!list.length) return '';
-    return `<section class="review-faction-block territory-review-block" id="territories-${id}" aria-labelledby="territories-${id}-title"><div class="review-faction-heading screen-only"><h3 id="territories-${id}-title">${esc(label)}</h3><span>${list.length} cards</span></div><div class="territory-review-grid">${list.map(territory=>`<div class="territory-review-item"><p class="territory-review-label screen-only"><strong title="${esc(territory.name)}">${esc(territory.name)}</strong><span>No. ${Number(territory.number)}</span></p><iframe class="territory-review-frame" loading="lazy" src="territory-review-render.html?territory=${encodeURIComponent(territory.id)}" title="${esc(territory.name)} ${esc(version)} Territory render"></iframe></div>`).join('')}</div></section>`;
+  function territoryItem(territory, version) {
+    const meta = territory.arena ? `Arena · No. ${Number(territory.number)}` : `No. ${Number(territory.number)}`;
+    return `<div class="territory-review-item"><p class="territory-review-label screen-only"><strong title="${esc(territory.name)}">${esc(territory.name)}</strong><span>${esc(meta)}</span></p><iframe class="territory-review-frame" loading="lazy" src="territory-review-render.html?territory=${encodeURIComponent(territory.id)}" title="${esc(territory.name)} ${esc(version)} Territory render"></iframe></div>`;
   }
 
   async function renderTerritories() {
@@ -74,11 +74,10 @@
       const current = await currentGame();
       const territories = (current.territories || []).slice().sort((a,b)=>(Number(a.number)||999)-(Number(b.number)||999)||a.name.localeCompare(b.name));
       const arenas = territories.filter(territory => territory.arena);
-      const ordinary = territories.filter(territory => !territory.arena);
       root.dataset.currentGameAuthority = current.authorityUrl;
       document.querySelectorAll('[data-territory-count]').forEach(node => node.textContent = String(territories.length));
       document.querySelectorAll('[data-arena-count]').forEach(node => node.textContent = String(arenas.length));
-      root.innerHTML = territoryGroup('standard','Territories',ordinary,current.displayVersion)+territoryGroup('arenas','Arenas',arenas,current.displayVersion);
+      root.innerHTML = `<div class="territory-review-block"><div class="territory-review-grid">${territories.map(territory => territoryItem(territory, current.displayVersion)).join('')}</div></div>`;
     } catch (error) {
       root.innerHTML = `<p class="review-note">Unable to load current Territory catalog: ${esc(error.message)}</p>`;
       console.error(error);
