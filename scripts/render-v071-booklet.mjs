@@ -62,9 +62,9 @@ function brandV070ProductionSurface() {
       .replace(/0\.(?:6\.3|7\.0)/g, '0.7.1')
       .replace(/First Playtest Revision/g, RELEASE_NAME);
     if (/0\.(?:6\.3|7\.0)/.test(branded)) {
-      throw new Error(`v0.7.1 Rulebook production surface still contains v0.6.3 branding: ${relative(surface)}.`);
+      throw new Error(`v0.7.1 Rulebook production surface still contains prior-release branding: ${relative(surface)}.`);
     }
-    if (!/0\.7\.0/.test(branded)) {
+    if (!/0\.7\.1/.test(branded)) {
       throw new Error(`v0.7.1 Rulebook production surface contains no v0.7.1 identity: ${relative(surface)}.`);
     }
     if (/First Playtest Revision/.test(branded)) {
