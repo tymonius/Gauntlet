@@ -9,13 +9,13 @@ import {
 } from './engine';
 import type { PlayerId } from './rules';
 
-export const V070_SUPPORTED_ASSET_RUNTIME_IDS = new Set([
+export const V070_SUPPORTED_ASSET_RUNTIME_IDS: ReadonlySet<string> = new Set([
   'diplomats-detente',
   'diplomats-good-faith',
   'diplomats-neutral-observers',
   'diplomats-safe-conduct',
   'diplomats-plenipotentiary',
-] as const);
+]);
 
 const REMOVAL_LIFECYCLE_UNSUPPORTED = new Set([
   'neutral-contingency-plan',
@@ -437,9 +437,7 @@ function canonicalCardForInstance(
 }
 
 export function v070AssetRuntimeSupported(cardId: string): boolean {
-  return V070_SUPPORTED_ASSET_RUNTIME_IDS.has(
-    cardId as typeof V070_SUPPORTED_ASSET_RUNTIME_IDS extends Set<infer T> ? T : never,
-  );
+  return V070_SUPPORTED_ASSET_RUNTIME_IDS.has(cardId);
 }
 
 function cardHasSpecialBankingAction(card: V070CanonicalCard): boolean {
