@@ -58,6 +58,10 @@ import {
   voluntarilyReturnableV070AssetInstanceIds,
 } from './assets';
 import { bindV070CardFromPlayerZone } from './bindings';
+import {
+  isV070AssetFaceUp,
+  restoreV070AssetsAtTurnStart,
+} from './asset-face-state';
 
 export type V070TurnAction =
   | { type: 'resolve_capture'; playerId: PlayerId }
@@ -3717,6 +3721,7 @@ function sequestrationKeepOptions(
   const rendition = bank.find(instanceId =>
     state.cardInstances[instanceId]?.cardId
       === 'intelligence-extraordinary-rendition'
+    && isV070AssetFaceUp(state, instanceId)
   );
   return rendition
     ? bank.filter(instanceId => instanceId !== rendition)
@@ -3880,6 +3885,7 @@ function resolveSequestrationDiscards(
     const rendition = discard.find(instanceId =>
       state.cardInstances[instanceId]?.cardId
         === 'intelligence-extraordinary-rendition'
+      && isV070AssetFaceUp(state, instanceId)
     );
     if (rendition) {
       discard = [
@@ -4581,6 +4587,7 @@ function completeCleanup(
   state.turnNumber += 1;
   state.turnState = createV070TurnState();
   expireV070TerritoryTurnRestrictions(state);
+  restoreV070AssetsAtTurnStart(state, next);
 
   appendV070Event(state, {
     type: 'turn_started',
