@@ -7,6 +7,7 @@ import {
 import { reduceV070TurnAction } from './turn-engine';
 import { currentV070MovementStep } from './rules';
 import { voluntarilyReturnableV070AssetInstanceIds } from './assets';
+import { bindV070CardFromPlayerZone } from './bindings';
 
 const militaryStarter = 'military-commandant-holdfast';
 
@@ -300,6 +301,51 @@ describe('v0.7.0 Strategic Withdrawal Action', () => {
     expect(state.players.A.zones.assetBank).toContain(rendition);
     expect(state.players.A.zones.assetBank).not.toContain(other);
     expect(state.players.A.zones.hand).toContain(other);
+  });
+
+  test('returning Reserve Force still applies its bound-card Graveyard departure override', () => {
+    let state = openingForA();
+    const reserveForce = inject(
+      state,
+      'military-reserve-force',
+      'assetBank',
+      'reserve-force',
+    );
+    const tactic = inject(
+      state,
+      'neutral-advance-guard',
+      'hand',
+      'bound-tactic',
+    );
+    bindV070CardFromPlayerZone(state, {
+      hostId: reserveForce,
+      owner: 'A',
+      cardInstanceId: tactic,
+      sourceZone: 'hand',
+      faceUp: false,
+      purpose: 'Reserve Force',
+    });
+    const source = inject(
+      state,
+      'neutral-strategic-withdrawal',
+      'hand',
+      'source',
+    );
+
+    state = reduceV070TurnAction(state, {
+      type: 'play_action_card',
+      playerId: 'A',
+      cardInstanceId: source,
+    });
+    state = reduceV070TurnAction(state, {
+      type: 'choose_controlled_asset_target',
+      playerId: 'A',
+      targetInstanceId: reserveForce,
+    });
+
+    expect(state.players.A.zones.hand).toContain(reserveForce);
+    expect(state.players.A.zones.graveyard).toContain(tactic);
+    expect(state.bindings.some(binding => binding.hostId === reserveForce)).toBe(false);
   });
 
   test('requires a returnable Asset before spending the Action', () => {
