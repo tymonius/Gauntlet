@@ -64,7 +64,7 @@ async function main() {
   const page = await context.newPage();
 
   try {
-    await page.goto(`${baseUrl}/card-design/#leader-cards`, { waitUntil: 'load' });
+    await page.goto(`${baseUrl}/card-design/?type=all#leader-cards`, { waitUntil: 'load' });
     await page.waitForSelector('.leader-card');
     await page.waitForFunction(count => document.querySelectorAll('.full-card-review-frame').length === count, 142);
     await page.waitForFunction(count => document.querySelectorAll('.territory-review-frame').length === count, 25);
