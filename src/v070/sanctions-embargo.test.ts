@@ -272,11 +272,11 @@ describe('v0.7.0 Sanctions: Embargo and shared Asset limits', () => {
     )).toBe(true);
   });
 
-  test('unsupported Removal-trigger lifecycle is rejected only when that Asset is actually chosen', () => {
+  test('Asset-limit enforcement may remove Reserve Force now that its bound lifecycle is represented', () => {
     let state = activeBattle();
     const embargo = injectCard(state, 'A', V070_SANCTIONS_EMBARGO_ID, 'hand', 'embargo');
     const reserveForce = injectCard(state, 'B', 'military-reserve-force', 'assetBank', 'reserve-force');
-    const safe = injectCard(state, 'B', 'neutral-counterintelligence', 'assetBank', 'safe');
+    injectCard(state, 'B', 'neutral-counterintelligence', 'assetBank', 'safe');
     injectCard(state, 'B', 'neutral-fortifications', 'assetBank', 'other');
 
     state = refuseTerms(state);
@@ -287,18 +287,14 @@ describe('v0.7.0 Sanctions: Embargo and shared Asset limits', () => {
     });
 
     expect(state.pendingAssetLimitChoice?.excess).toBe(1);
-    expect(() => reduceV070BattleAction(state, {
-      type: 'resolve_asset_limit_removal',
-      playerId: 'B',
-      instanceIds: [reserveForce],
-    })).toThrow(/unsupported until its bound-card lifecycle|Forced Asset Removal/);
-
     state = reduceV070BattleAction(state, {
       type: 'resolve_asset_limit_removal',
       playerId: 'B',
-      instanceIds: [safe],
+      instanceIds: [reserveForce],
     });
+
     expect(state.pendingAssetLimitChoice).toBeNull();
-    expect(state.players.B.zones.assetBank).toContain(reserveForce);
+    expect(state.players.B.zones.assetBank).not.toContain(reserveForce);
+    expect(state.players.B.zones.discardPile).toContain(reserveForce);
   });
 });
