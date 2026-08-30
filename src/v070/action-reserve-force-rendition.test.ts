@@ -82,7 +82,7 @@ describe('v0.7.0 Reserve Force Action', () => {
       'hand',
       'source',
     );
-    inject(state, 'B', 'neutral-rallying-cry', 'hand', 'ineligible');
+    inject(state, 'B', 'neutral-tactical-planning', 'hand', 'ineligible');
 
     expect(() => reduceV070TurnAction(state, {
       type: 'play_action_card',
