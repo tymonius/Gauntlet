@@ -308,6 +308,47 @@ describe('v0.7.0 Battlefield Promotion Action', () => {
     expect(state.turnState?.actionsAvailable).toBe(1);
   });
 
+  test('won-battle Tactics from a prior turn are excluded by the current turn boundary', () => {
+    let state = openingForA();
+    const priorTactic = inject(
+      state,
+      'A',
+      'neutral-rallying-cry',
+      'discardPile',
+      'prior-turn',
+    );
+    recordCompletedBattle(state, 'A', { A: [priorTactic] }, 'prior-turn');
+
+    state.turnNumber += 1;
+    appendV070Event(state, {
+      type: 'turn_started',
+      actor: 'A',
+      visibility: 'public',
+      payload: {
+        turnNumber: state.turnNumber,
+        phase: state.turnState?.phase,
+      },
+    });
+    state = advanceToDenouement(state);
+
+    const source = inject(
+      state,
+      'A',
+      'military-battlefield-promotion',
+      'hand',
+      'source',
+    );
+
+    expect(() => reduceV070TurnAction(state, {
+      type: 'play_action_card',
+      playerId: 'A',
+      cardInstanceId: source,
+    })).toThrow(/requires a Tactic you chose in a battle you won this turn/);
+
+    expect(state.players.A.zones.discardPile).toContain(priorTactic);
+    expect(state.players.A.zones.hand).toContain(source);
+  });
+
   test('Battlefield Promotion is Denouement-only', () => {
     const state = openingForA();
     const tactic = inject(
