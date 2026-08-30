@@ -129,9 +129,46 @@
     summary.textContent = `${factionLabels[faction]} · ${typeLabels[type]}${sortSuffix}`;
   }
 
+  function updateSectionCopy() {
+    const factionName = factionLabels[faction].replace(' / universal', '');
+
+    const leaderTitle = document.getElementById('leaders-title');
+    const leaderCopy = document.querySelector('#leader-cards .card-section-heading > p:last-child');
+    if (leaderTitle && faction !== 'all') leaderTitle.textContent = `${factionName} Leaders`;
+    if (leaderCopy && faction !== 'all') {
+      leaderCopy.textContent = `Current ${factionName} Leader cards, rendered from the shared current-game authority.`;
+    }
+
+    const supplementalTitle = document.getElementById('supplemental-title');
+    const supplementalCopy = document.querySelector('#supplemental-cards .card-section-heading > p:last-child');
+    const supplementalTitles = {
+      tracker: 'Resource trackers',
+      reference: 'Reference cards',
+      ledger: 'Ledgers',
+      deed: 'Deeds',
+    };
+    if (supplementalTitle) {
+      supplementalTitle.textContent = supplementalTitles[type]
+        || (faction !== 'all' ? `${factionName} supplemental cards` : 'Other supplemental cards');
+    }
+    if (supplementalCopy && type !== 'all') {
+      if (type === 'tracker') supplementalCopy.textContent = 'Current physical resource trackers across the selected faction scope.';
+      else if (type === 'reference') supplementalCopy.textContent = 'Current double-sided reference cards across the selected faction scope.';
+      else if (type === 'ledger') supplementalCopy.textContent = 'Current ledger components across the selected faction scope.';
+      else if (type === 'deed') supplementalCopy.textContent = 'Current deed components across the selected faction scope.';
+      else if (type === 'supplemental') supplementalCopy.textContent = 'Current supplemental card components across the selected faction scope.';
+    } else if (supplementalCopy && faction !== 'all') {
+      supplementalCopy.textContent = `Current supplemental components for ${factionName}, grouped and packed by component design.`;
+    }
+
+    const playableTitle = document.getElementById('cards-title');
+    if (playableTitle && faction !== 'all') playableTitle.textContent = `${factionName} playable cards`;
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     applyFormState();
     applySectionVisibility();
     updateSummary();
+    updateSectionCopy();
   });
 })();
