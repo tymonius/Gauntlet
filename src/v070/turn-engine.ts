@@ -3418,7 +3418,13 @@ function startSequestrationAction(
 
     const options = sequestrationKeepOptions(state, playerId);
     if (bank.length === 1 || options.length === 1) {
-      keepers[playerId] = options[0];
+      const automaticKeeper = options[0];
+      if (!automaticKeeper) {
+        throw new V070GameActionError(
+          'Sequestration could not identify the required kept Asset.',
+        );
+      }
+      keepers[playerId] = automaticKeeper;
     } else {
       choosers.push(playerId);
     }
