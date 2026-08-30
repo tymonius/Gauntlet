@@ -6,6 +6,12 @@
 @media screen {
   body.developer-catalog-page {
     --catalog-shell: min(1180px, calc(100% - 40px));
+    --catalog-card-width: 2.5in;
+    --catalog-card-height: 3.5in;
+    --catalog-territory-width: 3.5in;
+    --catalog-territory-height: 2.5in;
+    --catalog-deed-width: 3.5in;
+    --catalog-deed-height: 2.5in;
     --catalog-charcoal: var(--developer-charcoal, #1c1916);
     --catalog-gold: var(--developer-gold, #a37338);
     --catalog-gold-dark: var(--developer-gold-dark, #795426);
@@ -849,17 +855,6 @@
 }
 
 @media screen and (max-width: 580px) {
-  body.developer-catalog-page {
-    --catalog-card-scale: 1;
-    --catalog-territory-scale: 1;
-    --catalog-card-width: 2.5in;
-    --catalog-card-height: 3.5in;
-    --catalog-territory-width: 3.5in;
-    --catalog-territory-height: 2.5in;
-    --catalog-deed-width: 3.5in;
-    --catalog-deed-height: 2.5in;
-  }
-
   .full-card-review-grid,
   .leader-review-grid,
   .territory-review-grid,
