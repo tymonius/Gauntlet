@@ -72,6 +72,11 @@ export type V070TurnAction =
       targetInstanceId: string;
     }
   | {
+      type: 'choose_hand_destination_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
       type: 'resolve_censure_choice';
       playerId: PlayerId;
       sanctionInstanceId: string;
@@ -133,8 +138,16 @@ export function reduceV070TurnAction(
       && action.type === 'resolve_clemency_choice'
       && action.playerId === pending.playerId
     ) || (
-      (pending.kind === 'arcane_knowledge_target' || pending.kind === 'contraband_target')
+      (
+        pending.kind === 'arcane_knowledge_target'
+        || pending.kind === 'contraband_target'
+        || pending.kind === 'salvage_recovery_target'
+      )
       && action.type === 'choose_recovery_action_target'
+      && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'hand_destination_target'
+      && action.type === 'choose_hand_destination_target'
       && action.playerId === pending.playerId
     );
     if (!validContinuation) {
@@ -148,6 +161,7 @@ export function reduceV070TurnAction(
       'choose_clemency_target',
       'resolve_clemency_choice',
       'choose_recovery_action_target',
+      'choose_hand_destination_target',
     ].includes(action.type)) {
     throw new V070GameActionError('Resolve the pending Action card before continuing the turn.');
   }
@@ -181,6 +195,9 @@ export function reduceV070TurnAction(
       break;
     case 'choose_recovery_action_target':
       chooseRecoveryActionTarget(next, action.playerId, action.targetInstanceId);
+      break;
+    case 'choose_hand_destination_target':
+      chooseHandDestinationTarget(next, action.playerId, action.targetInstanceId);
       break;
     case 'resolve_censure_choice':
       resolveCensureChoice(
@@ -389,6 +406,9 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'neutral-disruption',
   'neutral-insurrection',
   'neutral-revolution',
+  'neutral-reserves',
+  'neutral-salvage',
+  'neutral-tactical-planning',
   'diplomats-clemency',
 ] as const;
 
@@ -451,6 +471,12 @@ function playActionCard(
     && state.players[otherPlayer(playerId)].zones.hand.length === 0) {
     throw new V070GameActionError(
       'Disruption requires at least one card in the opponent’s Hand.',
+    );
+  }
+  if (card.id === 'neutral-salvage'
+    && player.zones.discardPile.length === 0) {
+    throw new V070GameActionError(
+      'Salvage requires at least one card in your Discard Pile.',
     );
   }
 
@@ -593,6 +619,43 @@ function continuePendingActionCard(state: V070GameState): void {
     case 'neutral-revolution':
       resolveRevolutionAction(state, pending.playerId);
       finishPendingActionCard(state);
+      return;
+    case 'neutral-reserves':
+      drawIntoHand(state, pending.playerId, 1, 'Second Line');
+      if (!openHandDestinationChoice(
+        state,
+        pending.playerId,
+        pending.instanceId,
+        'Second Line',
+        'draw_top',
+      )) {
+        finishPendingActionCard(state);
+      }
+      return;
+    case 'neutral-salvage':
+      state.pendingActionEffectChoice = {
+        kind: 'salvage_recovery_target',
+        playerId: pending.playerId,
+        sourceActionInstanceId: pending.instanceId,
+      };
+      appendActionTargetChoicePending(
+        state,
+        pending.playerId,
+        pending.instanceId,
+        'salvage_recovery_target',
+      );
+      return;
+    case 'neutral-tactical-planning':
+      drawIntoHand(state, pending.playerId, 2, 'Tactical Planning');
+      if (!openHandDestinationChoice(
+        state,
+        pending.playerId,
+        pending.instanceId,
+        'Tactical Planning',
+        'draw_bottom',
+      )) {
+        finishPendingActionCard(state);
+      }
       return;
     case 'diplomats-clemency': {
       const opponentId = otherPlayer(pending.playerId);
@@ -779,7 +842,11 @@ function chooseRecoveryActionTarget(
   const choice = state.pendingActionEffectChoice;
   const pending = state.pendingActionCard;
   if (!choice
-    || (choice.kind !== 'arcane_knowledge_target' && choice.kind !== 'contraband_target')
+    || (
+      choice.kind !== 'arcane_knowledge_target'
+      && choice.kind !== 'contraband_target'
+      && choice.kind !== 'salvage_recovery_target'
+    )
     || choice.playerId !== playerId
     || !pending
     || pending.instanceId !== choice.sourceActionInstanceId) {
@@ -807,37 +874,171 @@ function chooseRecoveryActionTarget(
         purpose: 'Arcane Knowledge',
       },
     });
-  } else {
-    if (pending.cardId !== 'neutral-contraband') {
-      throw new V070GameActionError('Contraband target state does not match its pending Action card.');
-    }
-    const index = player.zones.discardPile.indexOf(targetInstanceId);
-    if (index < 0) {
-      throw new V070GameActionError('Contraband must target a card in your Discard Pile.');
-    }
-    player.zones.discardPile.splice(index, 1);
-    player.zones.hand.push(targetInstanceId);
+    state.pendingActionEffectChoice = null;
+    finishPendingActionCard(state);
+    return;
+  }
+
+  if (pending.cardId !== (
+    choice.kind === 'contraband_target' ? 'neutral-contraband' : 'neutral-salvage'
+  )) {
+    throw new V070GameActionError('Recovery target state does not match its pending Action card.');
+  }
+
+  const index = player.zones.discardPile.indexOf(targetInstanceId);
+  if (index < 0) {
+    throw new V070GameActionError(
+      choice.kind === 'contraband_target'
+        ? 'Contraband must target a card in your Discard Pile.'
+        : 'Salvage must target a card in your Discard Pile.',
+    );
+  }
+  player.zones.discardPile.splice(index, 1);
+  player.zones.hand.push(targetInstanceId);
+  appendV070Event(state, {
+    type: 'discard_card_returned_to_hand',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      instanceId: targetInstanceId,
+      cardId: state.cardInstances[targetInstanceId]?.cardId,
+      purpose: choice.kind === 'contraband_target' ? 'Contraband' : 'Salvage',
+    },
+  });
+
+  state.pendingActionEffectChoice = null;
+  if (choice.kind === 'contraband_target') {
+    finishPendingActionCard(state);
+    return;
+  }
+
+  openHandDestinationChoice(
+    state,
+    playerId,
+    pending.instanceId,
+    'Salvage',
+    'discard',
+  );
+}
+
+function chooseHandDestinationTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'hand_destination_target'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId) {
+    throw new V070GameActionError('No Hand-routing Action choice is pending for that player.');
+  }
+
+  const hand = state.players[playerId].zones.hand;
+  const index = hand.indexOf(targetInstanceId);
+  if (index < 0) {
+    throw new V070GameActionError('That Action must choose a card from your Hand.');
+  }
+  hand.splice(index, 1);
+
+  if (choice.destination === 'discard') {
+    state.players[playerId].zones.discardPile.push(targetInstanceId);
     appendV070Event(state, {
-      type: 'discard_card_returned_to_hand',
+      type: 'card_discarded',
       actor: playerId,
       visibility: 'public',
       payload: {
         instanceId: targetInstanceId,
         cardId: state.cardInstances[targetInstanceId]?.cardId,
-        purpose: 'Contraband',
+        purpose: choice.purpose,
+      },
+    });
+  } else {
+    const drawPile = state.players[playerId].zones.drawPile;
+    if (choice.destination === 'draw_top') drawPile.unshift(targetInstanceId);
+    else drawPile.push(targetInstanceId);
+
+    appendV070Event(state, {
+      type: 'hand_card_routed_to_draw_pile',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        destination: choice.destination,
+        purpose: choice.purpose,
+      },
+    });
+    appendV070Event(state, {
+      type: 'hand_card_routed_identity',
+      actor: playerId,
+      visibility: playerId,
+      payload: {
+        instanceId: targetInstanceId,
+        cardId: state.cardInstances[targetInstanceId]?.cardId,
+        destination: choice.destination,
+        purpose: choice.purpose,
       },
     });
   }
 
   state.pendingActionEffectChoice = null;
+  if (choice.drawAfter > 0) {
+    drawIntoHand(state, playerId, choice.drawAfter, choice.purpose);
+  }
   finishPendingActionCard(state);
+}
+
+function openHandDestinationChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+  purpose: 'Second Line' | 'Tactical Planning' | 'Salvage' | 'New Recruits',
+  destination: 'draw_top' | 'draw_bottom' | 'discard',
+  drawAfter = 0,
+): boolean {
+  if (state.players[playerId].zones.hand.length === 0) {
+    appendV070Event(state, {
+      type: 'action_effect_incomplete',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        sourceActionInstanceId,
+        purpose,
+        reason: 'required_hand_target_unavailable',
+      },
+    });
+    return false;
+  }
+
+  state.pendingActionEffectChoice = {
+    kind: 'hand_destination_target',
+    playerId,
+    sourceActionInstanceId,
+    purpose,
+    destination,
+    drawAfter,
+  };
+  appendV070Event(state, {
+    type: 'action_effect_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      kind: 'hand_destination_target',
+      playerId,
+      sourceActionInstanceId,
+      purpose,
+      destination,
+    },
+  });
+  return true;
 }
 
 function appendActionTargetChoicePending(
   state: V070GameState,
   playerId: PlayerId,
   sourceActionInstanceId: string,
-  kind: 'arcane_knowledge_target' | 'contraband_target',
+  kind: 'arcane_knowledge_target' | 'contraband_target' | 'salvage_recovery_target',
 ): void {
   appendV070Event(state, {
     type: 'action_effect_choice_pending',
