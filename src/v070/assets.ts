@@ -212,6 +212,108 @@ export function discardV070AssetVoluntarily(
   );
 }
 
+export function pendingBankReplacementV070AssetInstanceIds(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+): string[] {
+  const card = canonicalCardForInstance(state, instanceId);
+  if (!cardHasAssetEffect(card) || !hasPrintedSpecialBankingAction(card)) {
+    throw new V070GameActionError(
+      `${card.name} does not have a printed special banking Action.`,
+    );
+  }
+  if (violatesSingleBankedCopy(state, playerId, card)) {
+    throw new V070GameActionError(
+      `${card.name} violates its single-banked-copy restriction.`,
+    );
+  }
+
+  const player = state.players[playerId];
+  const limit = effectiveV070AssetLimit(state, playerId);
+  if (player.zones.assetBank.length < limit) return [];
+
+  const replaceable = replaceableV070AssetInstanceIds(state, playerId);
+  if (replaceable.length === 0) {
+    throw new V070GameActionError(
+      `Banking ${card.name} at the Asset limit requires a replaceable Asset.`,
+    );
+  }
+  return replaceable;
+}
+
+export function bankV070AssetFromPendingAction(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+  purpose: string,
+  replaceAssetInstanceId?: string,
+): void {
+  const pending = state.pendingActionCard;
+  if (!pending
+    || pending.playerId !== playerId
+    || pending.instanceId !== instanceId) {
+    throw new V070GameActionError(
+      'That Asset card is not the player’s pending Action card.',
+    );
+  }
+
+  const replacements = pendingBankReplacementV070AssetInstanceIds(
+    state,
+    playerId,
+    instanceId,
+  );
+  const replacement = replaceAssetInstanceId;
+
+  if (replacements.length > 0) {
+    if (!replacement) {
+      throw new V070GameActionError(
+        'Banking at the Asset limit requires choosing a replaceable Asset.',
+      );
+    }
+    if (!replacements.includes(replacement)) {
+      throw new V070GameActionError('That banked Asset cannot be replaced now.');
+    }
+
+    moveBankedAssetToDiscard(
+      state,
+      playerId,
+      replacement,
+      purpose,
+      false,
+    );
+    appendV070Event(state, {
+      type: 'asset_replaced',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        instanceId: replacement,
+        cardId: state.cardInstances[replacement]?.cardId,
+        purpose,
+      },
+    });
+  } else if (replacement) {
+    throw new V070GameActionError(
+      'Asset replacement is available only when banking at the Asset limit.',
+    );
+  }
+
+  const card = canonicalCardForInstance(state, instanceId);
+  state.players[playerId].zones.assetBank.push(instanceId);
+  appendV070Event(state, {
+    type: 'asset_banked',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      instanceId,
+      cardId: card.id,
+      purpose,
+      effectiveLimit: effectiveV070AssetLimit(state, playerId),
+      turnNumber: state.turnNumber,
+    },
+  });
+}
+
 export function bankV070AssetFromHand(
   state: V070GameState,
   playerId: PlayerId,
