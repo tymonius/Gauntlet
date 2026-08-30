@@ -48,6 +48,7 @@ import {
   bankV070AssetFromPendingAction,
   bankV070AssetWithInherentAction,
   discardV070AssetAsAction,
+  discardV070AssetByEffect,
   assertV070ForcedAssetChoicesSupported,
   discardV070AssetVoluntarily,
   pendingBankReplacementV070AssetInstanceIds,
@@ -96,6 +97,11 @@ export type V070TurnAction =
     }
   | {
       type: 'choose_controlled_asset_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
+      type: 'choose_sequestration_keep_asset';
       playerId: PlayerId;
       targetInstanceId: string;
     }
@@ -210,7 +216,8 @@ export function reduceV070TurnAction(
 ): V070GameState {
   if (action.type === 'resolve_clemency_choice'
     || action.type === 'choose_forced_asset_target'
-    || action.type === 'resolve_accusation_choice') {
+    || action.type === 'resolve_accusation_choice'
+    || action.type === 'choose_sequestration_keep_asset') {
     requirePlayingGame(state);
   } else {
     requirePlayingTurn(state, action.playerId);
@@ -254,6 +261,10 @@ export function reduceV070TurnAction(
     ) || (
       pending.kind === 'controlled_asset_target'
       && action.type === 'choose_controlled_asset_target'
+      && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'sequestration_keep_asset'
+      && action.type === 'choose_sequestration_keep_asset'
       && action.playerId === pending.playerId
     ) || (
       pending.kind === 'scouting_report_source'
@@ -333,6 +344,7 @@ export function reduceV070TurnAction(
       'choose_recovery_action_target',
       'choose_hand_destination_target',
       'choose_controlled_asset_target',
+      'choose_sequestration_keep_asset',
       'resolve_scouting_report_choice',
       'choose_territory_overlay_target',
       'choose_forced_asset_target',
@@ -397,6 +409,13 @@ export function reduceV070TurnAction(
       break;
     case 'choose_controlled_asset_target':
       chooseControlledAssetTarget(next, action.playerId, action.targetInstanceId);
+      break;
+    case 'choose_sequestration_keep_asset':
+      chooseSequestrationKeepAsset(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
       break;
     case 'resolve_scouting_report_choice':
       resolveScoutingReportChoice(next, action.playerId, action.source);
@@ -652,6 +671,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'neutral-salvage',
   'neutral-scouting-report',
   'neutral-sedition',
+  'neutral-sequestration',
   'neutral-strategic-withdrawal',
   'neutral-tactical-planning',
   'diplomats-clemency',
@@ -1279,6 +1299,13 @@ function continuePendingActionCard(state: V070GameState): void {
           sources: availableScoutingReportSources(state, pending.playerId),
         },
       });
+      return;
+    case 'neutral-sequestration':
+      startSequestrationAction(
+        state,
+        pending.playerId,
+        pending.instanceId,
+      );
       return;
     case 'neutral-sedition': {
       const opponentId = otherPlayer(pending.playerId);
@@ -3355,6 +3382,221 @@ function availableScoutingReportSources(
   if (state.players[opponent].zones.drawPile.length > 0) sources.push('opponent_draw');
   if (state.players[opponent].zones.hand.length > 0) sources.push('opponent_hand');
   return sources;
+}
+
+function sequestrationKeepOptions(
+  state: V070GameState,
+  playerId: PlayerId,
+): string[] {
+  const bank = state.players[playerId].zones.assetBank;
+  if (bank.length <= 1) return [...bank];
+
+  const rendition = bank.find(instanceId =>
+    state.cardInstances[instanceId]?.cardId
+      === 'intelligence-extraordinary-rendition'
+  );
+  return rendition
+    ? bank.filter(instanceId => instanceId !== rendition)
+    : [...bank];
+}
+
+function startSequestrationAction(
+  state: V070GameState,
+  actionOwnerId: PlayerId,
+  sourceActionInstanceId: string,
+): void {
+  const playerOrder: PlayerId[] = [
+    actionOwnerId,
+    otherPlayer(actionOwnerId),
+  ];
+  const keepers: Partial<Record<PlayerId, string>> = {};
+  const choosers: PlayerId[] = [];
+
+  for (const playerId of playerOrder) {
+    const bank = state.players[playerId].zones.assetBank;
+    if (bank.length === 0) continue;
+
+    const options = sequestrationKeepOptions(state, playerId);
+    if (bank.length === 1 || options.length === 1) {
+      const automaticKeeper = options[0];
+      if (!automaticKeeper) {
+        throw new V070GameActionError(
+          'Sequestration could not identify the required kept Asset.',
+        );
+      }
+      keepers[playerId] = automaticKeeper;
+    } else {
+      choosers.push(playerId);
+    }
+  }
+
+  if (choosers.length === 0) {
+    resolveSequestrationDiscards(
+      state,
+      actionOwnerId,
+      sourceActionInstanceId,
+      keepers,
+    );
+    return;
+  }
+
+  openSequestrationKeepChoice(
+    state,
+    choosers[0],
+    actionOwnerId,
+    sourceActionInstanceId,
+    keepers,
+    choosers.slice(1),
+  );
+}
+
+function openSequestrationKeepChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  actionOwnerId: PlayerId,
+  sourceActionInstanceId: string,
+  keepers: Partial<Record<PlayerId, string>>,
+  remainingChoosers: PlayerId[],
+): void {
+  const targetInstanceIds = sequestrationKeepOptions(state, playerId);
+  state.pendingActionEffectChoice = {
+    kind: 'sequestration_keep_asset',
+    playerId,
+    actionOwnerId,
+    sourceActionInstanceId,
+    keepers: { ...keepers },
+    remainingChoosers: [...remainingChoosers],
+  };
+  appendV070Event(state, {
+    type: 'action_effect_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      kind: 'sequestration_keep_asset',
+      playerId,
+      actionOwnerId,
+      sourceActionInstanceId,
+      purpose: 'Sequestration',
+      targetInstanceIds,
+    },
+  });
+}
+
+function chooseSequestrationKeepAsset(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'sequestration_keep_asset'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'neutral-sequestration') {
+    throw new V070GameActionError(
+      'No Sequestration keep-Asset choice is pending for that player.',
+    );
+  }
+
+  const options = sequestrationKeepOptions(state, playerId);
+  if (!options.includes(targetInstanceId)) {
+    throw new V070GameActionError(
+      'Sequestration must keep one currently legal Asset.',
+    );
+  }
+
+  const keepers: Partial<Record<PlayerId, string>> = {
+    ...choice.keepers,
+    [playerId]: targetInstanceId,
+  };
+  const [nextChooser, ...rest] = choice.remainingChoosers;
+  if (nextChooser) {
+    openSequestrationKeepChoice(
+      state,
+      nextChooser,
+      choice.actionOwnerId,
+      choice.sourceActionInstanceId,
+      keepers,
+      rest,
+    );
+    return;
+  }
+
+  state.pendingActionEffectChoice = null;
+  resolveSequestrationDiscards(
+    state,
+    choice.actionOwnerId,
+    choice.sourceActionInstanceId,
+    keepers,
+  );
+}
+
+function resolveSequestrationDiscards(
+  state: V070GameState,
+  actionOwnerId: PlayerId,
+  sourceActionInstanceId: string,
+  keepers: Partial<Record<PlayerId, string>>,
+): void {
+  for (const playerId of [
+    actionOwnerId,
+    otherPlayer(actionOwnerId),
+  ] as const) {
+    const bank = [...state.players[playerId].zones.assetBank];
+    if (bank.length <= 1) continue;
+
+    const keeper = keepers[playerId];
+    if (!keeper || !bank.includes(keeper)) {
+      throw new V070GameActionError(
+        `Sequestration is missing ${playerId}’s kept Asset.`,
+      );
+    }
+
+    let discard = bank.filter(instanceId => instanceId !== keeper);
+    const rendition = discard.find(instanceId =>
+      state.cardInstances[instanceId]?.cardId
+        === 'intelligence-extraordinary-rendition'
+    );
+    if (rendition) {
+      discard = [
+        rendition,
+        ...discard.filter(instanceId => instanceId !== rendition),
+      ];
+    }
+
+    for (const instanceId of discard) {
+      discardV070AssetByEffect(
+        state,
+        playerId,
+        instanceId,
+        'Sequestration',
+      );
+    }
+
+    appendV070Event(state, {
+      type: 'sequestration_asset_kept',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        playerId,
+        instanceId: keeper,
+        cardId: state.cardInstances[keeper]?.cardId,
+        sourceActionInstanceId,
+      },
+    });
+  }
+
+  appendV070Event(state, {
+    type: 'sequestration_resolved',
+    actor: actionOwnerId,
+    visibility: 'public',
+    payload: {
+      sourceActionInstanceId,
+      keepers: { ...keepers },
+    },
+  });
+  finishPendingActionCard(state);
 }
 
 function chooseControlledAssetTarget(
