@@ -121,6 +121,14 @@ export type V070PendingActionEffectChoice =
       drawAfter: number;
     }
   | {
+      kind: 'sequestration_keep_asset';
+      playerId: PlayerId;
+      actionOwnerId: PlayerId;
+      sourceActionInstanceId: string;
+      keepers: Partial<Record<PlayerId, string>>;
+      remainingChoosers: PlayerId[];
+    }
+  | {
       kind: 'scouting_report_source';
       playerId: PlayerId;
       sourceActionInstanceId: string;
