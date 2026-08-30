@@ -291,6 +291,10 @@ export interface V070DiplomatState {
   detenteUsedTurn: number | null;
 }
 
+export interface V070InquisitionState {
+  conviction: number;
+}
+
 export interface V070PlayerState {
   id: PlayerId;
   name: string;
@@ -305,6 +309,7 @@ export interface V070PlayerState {
   controlledTerritories: string[];
   reshuffleCount: number;
   diplomats: V070DiplomatState | null;
+  inquisition: V070InquisitionState | null;
 }
 
 export interface V070BoardTerritory {
@@ -435,6 +440,9 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
             politicalCapitalUsedTurn: null,
             detenteUsedTurn: null,
           }
+        : null,
+      inquisition: starter.definition.factionId === 'inquisition'
+        ? { conviction: 0 }
         : null,
     };
   }

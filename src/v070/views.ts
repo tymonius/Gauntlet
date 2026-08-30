@@ -90,6 +90,7 @@ export interface V070PlayerViewState {
   controlledTerritories: string[];
   assetLimit: number;
   diplomats: V070GameState['players'][PlayerId]['diplomats'];
+  inquisition: V070GameState['players'][PlayerId]['inquisition'];
 }
 
 export interface V070GameView {
@@ -288,6 +289,9 @@ function viewPlayer(
     controlledTerritories: [...player.controlledTerritories],
     assetLimit: effectiveV070AssetLimit(state, playerId),
     diplomats: player.diplomats ? structuredClone(player.diplomats) : null,
+    inquisition: player.inquisition
+      ? structuredClone(player.inquisition)
+      : null,
   };
 }
 
