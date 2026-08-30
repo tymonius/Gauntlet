@@ -1378,6 +1378,11 @@ function completeSimpleBankingAction(
   cardId: string,
   replaceAssetInstanceId?: string,
 ): void {
+  if (!isSimpleBankingActionCardId(cardId)) {
+    throw new V070GameActionError(
+      `Unsupported simple banking Action: ${cardId}.`,
+    );
+  }
   const purpose = simpleBankingPurpose(cardId);
   bankV070AssetFromPendingAction(
     state,
