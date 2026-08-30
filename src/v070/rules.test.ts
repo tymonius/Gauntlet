@@ -11,10 +11,12 @@ import {
   createV070BattleOnset,
   createV070LastStandOnset,
   createV070TurnState,
+  grantCurrentPhaseV070Actions,
   defenderHasV070DefensiveEdge,
   endV070OnsetWithoutBattle,
   proceedV070ToGambits,
   resolveV070BattleOutcome,
+  spendV070Action,
   resolveV070Withdrawal,
   v070BattleWasFought,
   type V070BattleOnsetInput,
@@ -179,6 +181,63 @@ describe('v0.7.0 battle outcome', () => {
     expect(result.state.positions).toEqual({ A: 3, B: 4 });
     expect(result.state.occupier).toBe('A');
     expect(result.state.clearCommittedCards).toBe(true);
+  });
+});
+
+describe('v0.7.0 Action allowances', () => {
+  test('+Action increases the current-phase Action limit', () => {
+    let state = {
+      ...createV070TurnState(),
+      phase: 'opening' as const,
+    };
+
+    state = spendV070Action(state);
+    expect(state.actionsAvailable).toBe(0);
+    expect(state.actionsTaken.opening).toBe(1);
+
+    state = grantCurrentPhaseV070Actions(state, 1);
+    expect(state.actionsAvailable).toBe(1);
+    expect(state.phaseActionGrants.opening).toBe(1);
+
+    state = spendV070Action(state);
+    expect(state.actionsAvailable).toBe(0);
+    expect(state.actionsTaken.opening).toBe(2);
+  });
+
+  test('unused +Action permission expires when its Action phase ends', () => {
+    let state = {
+      ...createV070TurnState(),
+      phase: 'opening' as const,
+    };
+
+    state = spendV070Action(state);
+    state = grantCurrentPhaseV070Actions(state, 1);
+    expect(state.actionsAvailable).toBe(1);
+
+    state = advanceV070TurnPhase(state);
+    expect(state.phase).toBe('movement');
+    expect(state.actionsAvailable).toBe(0);
+    expect(state.phaseActionGrants.opening).toBe(0);
+  });
+
+  test('turn-wide additional Actions survive phases but do not increase a phase limit', () => {
+    let state = {
+      ...createV070TurnState(1),
+      phase: 'opening' as const,
+    };
+
+    state = spendV070Action(state);
+    expect(state.actionsAvailable).toBe(1);
+    expect(() => spendV070Action(state)).toThrow(/Action limit for opening/);
+
+    state = advanceV070TurnPhase(state);
+    state = advanceV070TurnPhase(state);
+    expect(state.phase).toBe('denouement');
+    expect(state.actionsAvailable).toBe(1);
+
+    state = spendV070Action(state);
+    expect(state.actionsAvailable).toBe(0);
+    expect(state.actionsTaken.denouement).toBe(1);
   });
 });
 
