@@ -20,6 +20,15 @@ export interface V070OverlayAttachment {
   sequence: number;
 }
 
+export interface V070Binding {
+  hostId: string;
+  cardInstanceId: string;
+  owner: PlayerId;
+  faceUp: boolean;
+  purpose: string;
+  sequence: number;
+}
+
 export interface V070PendingTurnChoice {
   kind: 'demilitarized_zone_upkeep';
   playerId: PlayerId;
@@ -287,6 +296,8 @@ export interface V070GameState {
   battleRuntime: V070BattleRuntime | null;
   overlays: V070OverlayAttachment[];
   nextOverlaySequence: number;
+  bindings: V070Binding[];
+  nextBindingSequence: number;
   territoryTurnRestrictions: V070TerritoryTurnRestriction[];
   sanctions: V070SanctionAssociation[];
   sanctionTriggerTurns: Record<string, number>;
@@ -397,6 +408,8 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
     battleRuntime: null,
     overlays: [],
     nextOverlaySequence: 1,
+    bindings: [],
+    nextBindingSequence: 1,
     territoryTurnRestrictions: [],
     sanctions: [],
     sanctionTriggerTurns: {},
