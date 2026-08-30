@@ -1,9 +1,9 @@
 {
   "schemaVersion": 2,
   "authority": "current-game",
-  "version": "v0.7.1-candidate",
-  "displayVersion": "v0.7.1 candidate",
-  "status": "active-development",
+  "version": "v0.7.1",
+  "displayVersion": "v0.7.1",
+  "status": "current-release",
   "runtimePolicy": "This file is the complete current gameplay authority. Runtime consumers load it directly; historical source and change documents are provenance only and are never layered over this authority.",
   "provenance": {
     "historicalBaseVersion": "v0.6.3",
@@ -5589,9 +5589,9 @@
     }
   },
   "starterDecks": {
-    "version": "v0.7.1-candidate",
-    "status": "Active v0.7.1 candidate starter set",
-    "purpose": "Recommended v0.7.1 candidate starter Decks optimized for competitive strength first, Leader expression second, and title diversity / starter-pool coverage as a tiebreaker. Mystics starters include a selected three-Rite package, recommended Rite order, and card choices that support that package.",
+    "version": "v0.7.1",
+    "status": "Active v0.7.1 starter set",
+    "purpose": "Recommended v0.7.1 starter Decks optimized for competitive strength first, Leader expression second, and title diversity / starter-pool coverage as a tiebreaker. Mystics starters include a selected three-Rite package, recommended Rite order, and card choices that support that package.",
     "construction": {
       "minimumCards": 30,
       "maximumDeckbuildingValue": 60,
@@ -5605,7 +5605,7 @@
       "tiebreaker": "title-diversity-and-starter-pool-coverage",
       "mysticsRiteOfEchoesPairException": false,
       "cardPoolCoverageQuota": false,
-      "status": "active-for-v0.7.1-candidate",
+      "status": "active-for-v0.7.1",
       "predecessorAudit": "docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md",
       "predecessorFinalization": "docs/Gauntlet_v0.6.3_Starter_Deck_Finalization.md",
       "cardAdditions": "docs/v0.6.4-card-additions.json",
@@ -6890,7 +6890,7 @@
       }
     ],
     "approval": {
-      "status": "approved-for-v0.7.1-candidate",
+      "status": "approved-for-v0.7.1",
       "predecessor_pr": 573,
       "peace_treaty_pr": 736,
       "card_additions_pr": 765
