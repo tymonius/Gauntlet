@@ -115,6 +115,12 @@ export type V070PendingActionEffectChoice =
       kind: 'scouting_report_source';
       playerId: PlayerId;
       sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'territory_overlay_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      purpose: 'Landslide';
     };
 
 export type V070PendingSanctionChoice =
