@@ -461,6 +461,7 @@ function discardAsset(
 export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'neutral-rallying-cry',
   'neutral-arcane-knowledge',
+  'neutral-capital-punishment',
   'neutral-consolidation',
   'neutral-contraband',
   'neutral-disruption',
@@ -525,6 +526,20 @@ function playActionCard(
     throw new V070GameActionError(
       'Contraband requires at least one card in your Discard Pile.',
     );
+  }
+  if (card.id === 'neutral-capital-punishment') {
+    const opponentId = otherPlayer(playerId);
+    if (!wonBattleThisTurn(state, playerId)) {
+      throw new V070GameActionError(
+        'Capital Punishment may be played only if you won a battle this turn.',
+      );
+    }
+    if (state.players[opponentId].zones.assetBank.length === 0) {
+      throw new V070GameActionError(
+        'Capital Punishment requires the opponent to control at least one Asset.',
+      );
+    }
+    assertV070ForcedAssetChoicesSupported(state, opponentId);
   }
   if (card.id === 'neutral-consolidation'
     && !capturedTerritoryThisTurn(state, playerId)) {
@@ -694,6 +709,49 @@ function continuePendingActionCard(state: V070GameState): void {
       };
       appendActionTargetChoicePending(state, pending.playerId, pending.instanceId, 'arcane_knowledge_target');
       return;
+    case 'neutral-capital-punishment': {
+      const opponentId = otherPlayer(pending.playerId);
+      if (state.players[opponentId].zones.assetBank.length === 0) {
+        appendV070Event(state, {
+          type: 'action_effect_incomplete',
+          actor: pending.playerId,
+          visibility: 'public',
+          payload: {
+            sourceActionInstanceId: pending.instanceId,
+            purpose: 'Capital Punishment',
+            reason: 'required_opposing_asset_unavailable',
+          },
+        });
+        finishPendingActionCard(state);
+        return;
+      }
+      assertV070ForcedAssetChoicesSupported(state, opponentId);
+      state.pendingActionEffectChoice = {
+        kind: 'forced_asset_target',
+        playerId: pending.playerId,
+        assetOwnerId: opponentId,
+        actionOwnerId: pending.playerId,
+        sourceActionInstanceId: pending.instanceId,
+        purpose: 'Capital Punishment',
+        destination: 'graveyard',
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          kind: 'forced_asset_target',
+          playerId: pending.playerId,
+          assetOwnerId: opponentId,
+          actionOwnerId: pending.playerId,
+          sourceActionInstanceId: pending.instanceId,
+          purpose: 'Capital Punishment',
+          destination: 'graveyard',
+          targetInstanceIds: [...state.players[opponentId].zones.assetBank],
+        },
+      });
+      return;
+    }
     case 'neutral-consolidation':
       drawIntoHand(state, pending.playerId, 2, 'Consolidation');
       finishPendingActionCard(state);
@@ -963,25 +1021,40 @@ function resolveDisruptionAction(
   });
 }
 
+function wonBattleThisTurn(
+  state: V070GameState,
+  playerId: PlayerId,
+): boolean {
+  const turnStartIndex = currentTurnStartEventIndex(state);
+  if (turnStartIndex < 0) return false;
+
+  return state.events.slice(turnStartIndex + 1).some(event => {
+    if (event.type !== 'battle_outcome') return false;
+    const payload = event.payload as { winner?: PlayerId } | undefined;
+    return payload?.winner === playerId;
+  });
+}
+
 function capturedTerritoryThisTurn(
   state: V070GameState,
   playerId: PlayerId,
 ): boolean {
-  let turnStartIndex = -1;
+  const turnStartIndex = currentTurnStartEventIndex(state);
+  if (turnStartIndex < 0) return false;
+
+  return state.events.slice(turnStartIndex + 1).some(event =>
+    event.type === 'territory_captured' && event.actor === playerId
+  );
+}
+
+function currentTurnStartEventIndex(state: V070GameState): number {
   for (let index = state.events.length - 1; index >= 0; index -= 1) {
     const event = state.events[index];
     if (event.type !== 'turn_started') continue;
     const payload = event.payload as { turnNumber?: number } | undefined;
-    if (payload?.turnNumber === state.turnNumber) {
-      turnStartIndex = index;
-      break;
-    }
+    if (payload?.turnNumber === state.turnNumber) return index;
   }
-
-  if (turnStartIndex < 0) return false;
-  return state.events.slice(turnStartIndex + 1).some(event =>
-    event.type === 'territory_captured' && event.actor === playerId
-  );
+  return -1;
 }
 
 function resolveInsurrectionAction(
@@ -1176,14 +1249,24 @@ function chooseForcedAssetTarget(
     || choice.playerId !== playerId
     || !pending
     || pending.instanceId !== choice.sourceActionInstanceId
-    || pending.playerId !== choice.actionOwnerId
-    || pending.cardId !== 'neutral-sedition') {
-    throw new V070GameActionError('No Sedition Asset choice is pending for that player.');
+    || pending.playerId !== choice.actionOwnerId) {
+    throw new V070GameActionError('No forced Asset choice is pending for that player.');
+  }
+
+  const expectedCardId = choice.purpose === 'Sedition'
+    ? 'neutral-sedition'
+    : 'neutral-capital-punishment';
+  if (pending.cardId !== expectedCardId) {
+    throw new V070GameActionError(
+      'Forced Asset target state does not match its pending Action card.',
+    );
   }
 
   assertV070ForcedAssetChoicesSupported(state, choice.assetOwnerId);
   if (!state.players[choice.assetOwnerId].zones.assetBank.includes(targetInstanceId)) {
-    throw new V070GameActionError('Sedition must choose one Asset controlled by the opponent.');
+    throw new V070GameActionError(
+      `${choice.purpose} must choose one Asset controlled by the opponent.`,
+    );
   }
 
   removeV070AssetForced(
