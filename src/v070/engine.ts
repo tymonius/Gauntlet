@@ -66,6 +66,21 @@ export interface V070PendingActionCard {
   phase: 'opening' | 'denouement';
 }
 
+export type V070PendingActionEffectChoice =
+  | {
+      kind: 'clemency_target';
+      playerId: PlayerId;
+      opponentId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'clemency_response';
+      playerId: PlayerId;
+      actionOwnerId: PlayerId;
+      sourceActionInstanceId: string;
+      targetInstanceId: string;
+    };
+
 export type V070PendingSanctionChoice =
   | {
       kind: 'censure_action';
@@ -147,6 +162,7 @@ export interface V070GameState {
   sanctions: V070SanctionAssociation[];
   sanctionTriggerTurns: Record<string, number>;
   pendingActionCard: V070PendingActionCard | null;
+  pendingActionEffectChoice: V070PendingActionEffectChoice | null;
   pendingSanctionChoices: V070PendingSanctionChoice[];
   pendingAssetLimitChoice: V070PendingAssetLimitChoice | null;
   pendingTurnChoice: V070PendingTurnChoice | null;
@@ -256,6 +272,7 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
     sanctions: [],
     sanctionTriggerTurns: {},
     pendingActionCard: null,
+    pendingActionEffectChoice: null,
     pendingSanctionChoices: [],
     pendingAssetLimitChoice: null,
     pendingTurnChoice: null,
