@@ -141,6 +141,11 @@ describe('v0.7.0 Reserve Force Action', () => {
     ]);
     expect(state.pendingActionCard).toBeNull();
     expect(state.pendingActionEffectChoice).toBeNull();
+    expect(state.events.some(event =>
+      event.type === 'action_card_resolved'
+      && (event.payload as { instanceId?: string; destination?: string })?.instanceId === source
+      && (event.payload as { destination?: string })?.destination === 'asset'
+    )).toBe(true);
 
     const aView = viewV070GameForPlayer(state, 'A');
     const bView = viewV070GameForPlayer(state, 'B');
