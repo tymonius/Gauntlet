@@ -93,22 +93,16 @@ export function proposalFace(proposal, ratified = false, version = currentDispla
 }
 
 function reviewPair(proposal) {
-  return `<section class="proposal-review-pair" id="proposal-${esc(proposal.id)}" aria-labelledby="proposal-${esc(proposal.id)}-title">
-    <div class="review-faction-heading screen-only">
-      <h3 id="proposal-${esc(proposal.id)}-title">${esc(proposal.name)}</h3>
-      <span>Stake ${Number(proposal.stake)} Influence</span>
-    </div>
+  return `<article class="proposal-review-pair catalog-pair-tile" id="proposal-${esc(proposal.id)}" aria-labelledby="proposal-${esc(proposal.id)}-title">
+    <header class="catalog-item-heading screen-only">
+      <strong id="proposal-${esc(proposal.id)}-title">${esc(proposal.name)}</strong>
+      <span>Stake ${Number(proposal.stake)}</span>
+    </header>
     <div class="proposal-face-grid">
-      <div class="proposal-face">
-        <p class="proposal-face-label screen-only"><strong>Proposal</strong><span>Unratified face</span></p>
-        ${proposalFace(proposal, false)}
-      </div>
-      <div class="proposal-face">
-        <p class="proposal-face-label screen-only"><strong>Treaty Article</strong><span>Ratified face</span></p>
-        ${proposalFace(proposal, true)}
-      </div>
+      <div class="proposal-face">${proposalFace(proposal, false)}</div>
+      <div class="proposal-face">${proposalFace(proposal, true)}</div>
     </div>
-  </section>`;
+  </article>`;
 }
 
 function updateProposalCounts(count) {
