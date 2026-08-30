@@ -116,6 +116,12 @@ export type V070PendingActionEffectChoice =
       sourceActionInstanceId: string;
     }
   | {
+      kind: 'divine_mercy_target';
+      playerId: PlayerId;
+      opponentId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
       kind: 'hand_destination_target';
       playerId: PlayerId;
       sourceActionInstanceId: string;
