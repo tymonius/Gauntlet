@@ -225,7 +225,7 @@ describe('v0.7.0 Sedition Action', () => {
     injectCard(
       state,
       'A',
-      'neutral-contingency-plan',
+      'military-reserve-force',
       'assetBank',
       'unsupported',
     );
@@ -235,7 +235,7 @@ describe('v0.7.0 Sedition Action', () => {
       type: 'play_action_card',
       playerId: 'B',
       cardInstanceId: source,
-    })).toThrow(/Forced Asset Removal for neutral-contingency-plan is unsupported/);
+    })).toThrow(/Forced Asset Removal for military-reserve-force is unsupported/);
 
     expect(state.players.B.zones.hand).toContain(source);
     expect(state.turnState?.actionsAvailable).toBe(1);
