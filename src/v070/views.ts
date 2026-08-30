@@ -106,6 +106,7 @@ export interface V070GameView {
   battleRuntime: V070BattleRuntimeView | null;
   overlays: V070OverlayView[];
   bindings: V070BindingView[];
+  assetFaceStates: V070GameState['assetFaceStates'];
   territoryTurnRestrictions: V070GameState['territoryTurnRestrictions'];
   sanctions: V070GameState['sanctions'];
   sanctionTriggerTurns: V070GameState['sanctionTriggerTurns'];
@@ -143,6 +144,7 @@ export function viewV070GameForPlayer(
       : null,
     overlays: viewOverlays(state),
     bindings: viewBindings(state, viewer),
+    assetFaceStates: state.assetFaceStates.map(face => structuredClone(face)),
     territoryTurnRestrictions: state.territoryTurnRestrictions.map(
       restriction => structuredClone(restriction),
     ),
