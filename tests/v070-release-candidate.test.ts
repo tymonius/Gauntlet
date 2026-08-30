@@ -24,13 +24,13 @@ const finalizerWorkflow = readFileSync('.github/workflows/finalize-v070-publicat
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 
 // Shadow validation keeps the real #894 cutover frozen while exercising the same publication machinery.
-describe('v0.7.0 publication boundary', () => {
-  it('records v0.7.0 as current and v0.6.3 as historical after cutover', () => {
-    expect(lifecycle.current_release).toBe('v0.7.0');
+describe('v0.7.0 historical publication boundary', () => {
+  it('preserves v0.7.0 as historical after the v0.7.1 cutover', () => {
+    expect(lifecycle.current_release).toBe('v0.7.1');
     expect(lifecycle.releases['v0.7.0']).toEqual(expect.objectContaining({
-      status: 'current',
-      public_cutover: true,
-      current_package_path: 'releases/v0.7.0/',
+      status: 'historical',
+      public_cutover: false,
+      historical_package_path: 'releases/v0.7.0/',
       publication_date: '2026-08-27',
     }));
     expect(lifecycle.releases['v0.6.3']).toEqual(expect.objectContaining({
@@ -40,12 +40,14 @@ describe('v0.7.0 publication boundary', () => {
     }));
   });
 
-  it('moves the published GitHub Release contract to v0.7.0', () => {
-    expect(githubRelease.current_release.tag).toBe('v0.7.0');
+  it('moves the published GitHub Release contract to v0.7.1 while freezing v0.7.0', () => {
+    expect(githubRelease.current_release.tag).toBe('v0.7.1');
     expect(githubRelease.current_release.status).toBe('current');
-    expect(githubRelease.current_release.notes_file).toBe('docs/releases/github/v0.7.0.md');
-    expect(githubRelease.historical_releases.some((release: { tag?: string; status?: string }) =>
-      release.tag === 'v0.6.3' && release.status === 'historical'
+    expect(githubRelease.current_release.notes_file).toBe('docs/releases/github/v0.7.1.md');
+    expect(githubRelease.historical_releases.some((release: { tag?: string; status?: string; target?: string }) =>
+      release.tag === 'v0.7.0'
+      && release.status === 'historical'
+      && release.target === '71020fbb478007538773fc766820197fe8fe1592'
     )).toBe(true);
   });
 
@@ -154,30 +156,29 @@ describe('v0.7.0 publication boundary', () => {
     expect(v070Corpus).not.toContain('game-data/current-game.json');
   });
 
-  it('routes the unversioned Rules Arbiter to v0.7.0 and preserves historical routes', () => {
+  it('preserves the versioned v0.7.0 Rules Arbiter while the unversioned route advances to v0.7.1', () => {
     expect(v070Worker).toContain('export const RULES_VERSION = V070_RULES_VERSION');
     expect(v070Worker).toContain('current canonical v0.7.0 playtest edition');
-    expect(v070Worker).toContain('currentPublicRelease: "v0.7.0"');
-    expect(workerEntry).toContain('import worker from "./worker-v070.js";');
-    expect(workerEntry).toContain('import v063Worker from "./worker-v063.js";');
-    expect(workerEntry).toContain('requestedVersion === "v0.6.3"');
-    expect(workerEntry).toContain('url.pathname === "/api/v063/rules"');
+    expect(workerEntry).toContain('import v070Worker from "./worker-v070.js";');
+    expect(workerEntry).toContain('import worker from "./worker-v071.js";');
+    expect(workerEntry).toContain('requestedVersion === "v0.7.0"');
     expect(workerEntry).toContain('url.pathname === "/api/v070/rules"');
-    expect(arbiterApp).toContain('../rules-assistant/v070-public-corpus.js');
-    expect(arbiterApp).toContain('const CURRENT_PUBLIC_RELEASE = "v0.7.0";');
+    expect(workerEntry).toContain('url.pathname === "/api/v071/rules"');
+    expect(arbiterApp).toContain('../rules-assistant/v071-public-corpus.js');
+    expect(arbiterApp).toContain('const CURRENT_PUBLIC_RELEASE = "v0.7.1";');
   });
 
-  it('prepares the public player surfaces for v0.7.0 identity', () => {
-    expect(homepage).toContain('Current canonical playtest edition · v0.7.0');
+  it('advances the public player surfaces to v0.7.1 without rewriting the frozen v0.7.0 package', () => {
+    expect(homepage).toContain('Current canonical playtest edition · v0.7.1');
     expect(homepage).toContain('<dt>142</dt><dd>Playable cards</dd>');
-    expect(homepage).toContain('<h3>v0.7.0 Release</h3>');
-    expect(startPage).toContain('canonical v0.7.0');
-    expect(cardReferencePage).toContain('Current v0.7.0 production card reference.');
-    expect(cardReferencePage).toContain('v0.7.0 Release');
-    expect(deckbuilderPage).toContain('Gauntlet v0.7.0 Deckbuilder');
-    expect(deckbuilderPage).toContain('canonical v0.7.0');
-    expect(arbiterIndex).toContain('Gauntlet v0.7.0 Rules Arbiter');
-    expect(arbiterIndex).toContain('Rules support · v0.7.0');
+    expect(homepage).toContain('<h3>v0.7.1 Release</h3>');
+    expect(startPage).toContain('canonical v0.7.1');
+    expect(cardReferencePage).toContain('Current v0.7.1 production card reference.');
+    expect(cardReferencePage).toContain('v0.7.1 Release');
+    expect(deckbuilderPage).toContain('Gauntlet v0.7.1 Deckbuilder');
+    expect(deckbuilderPage).toContain('canonical v0.7.1');
+    expect(arbiterIndex).toContain('Gauntlet v0.7.1 Rules Arbiter');
+    expect(arbiterIndex).toContain('Rules support · v0.7.1');
   });
 
 });
