@@ -345,7 +345,7 @@ describe('v0.7.0 printed Action cards and Sanctions: Censure', () => {
       type: 'play_action_card',
       playerId: 'B',
       cardInstanceId: rally2,
-    })).toThrow(/normal Action limit for opening/);
+    })).toThrow(/Action limit for opening/);
 
     state = reduceV070TurnAction(state, { type: 'pass_opening', playerId: 'B' });
     state = reduceV070TurnAction(state, {

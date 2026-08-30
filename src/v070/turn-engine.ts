@@ -7,6 +7,7 @@ import {
   createV070BattleOnset,
   createV070LastStandOnset,
   createV070TurnState,
+  grantCurrentPhaseV070Actions,
   spendV070Action,
   type MovementChoice,
   type PlayerId,
@@ -1070,8 +1071,14 @@ function grantAdditionalAction(
   playerId: PlayerId,
   purpose: string,
 ): void {
-  const turnState = requireTurnState(state);
-  turnState.actionsAvailable += 1;
+  const turnState = grantCurrentPhaseV070Actions(requireTurnState(state), 1);
+  state.turnState = turnState;
+  const phase = turnState.phase;
+  if (phase !== 'opening' && phase !== 'denouement') {
+    throw new V070GameActionError(
+      'An additional Action was granted outside an Action phase.',
+    );
+  }
   appendV070Event(state, {
     type: 'additional_action_granted',
     actor: playerId,
@@ -1079,7 +1086,9 @@ function grantAdditionalAction(
     payload: {
       amount: 1,
       purpose,
+      phase,
       actionsAvailable: turnState.actionsAvailable,
+      phaseActionLimit: 1 + turnState.phaseActionGrants[phase],
     },
   });
 }
