@@ -58,6 +58,7 @@ import {
   voluntarilyReturnableV070AssetInstanceIds,
 } from './assets';
 import { bindV070CardFromPlayerZone } from './bindings';
+import { gainV070Conviction } from './inquisition';
 import {
   faceUpV070AssetInstanceIds,
   isV070AssetFaceUp,
@@ -272,6 +273,7 @@ export function reduceV070TurnAction(
         pending.kind === 'arcane_knowledge_target'
         || pending.kind === 'contraband_target'
         || pending.kind === 'salvage_recovery_target'
+        || pending.kind === 'divine_mercy_target'
       )
       && action.type === 'choose_recovery_action_target'
       && action.playerId === pending.playerId
@@ -743,6 +745,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'financiers-war-bonds',
   'inquisition-accusation',
   'inquisition-anathema',
+  'inquisition-divine-mercy',
   'inquisition-excommunication',
   'inquisition-act-of-faith',
   'inquisition-guilt-by-association',
@@ -936,6 +939,12 @@ function playActionCard(
         'Soul for Soul requires one card in your Graveyard.',
       );
     }
+  }
+  if (card.id === 'inquisition-divine-mercy'
+    && state.players[otherPlayer(playerId)].zones.graveyard.length === 0) {
+    throw new V070GameActionError(
+      'Divine Mercy requires at least one card in the opponent’s Graveyard.',
+    );
   }
   if (card.id === 'inquisition-accusation'
     && state.players[otherPlayer(playerId)].zones.discardPile.length === 0) {
