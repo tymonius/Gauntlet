@@ -47,6 +47,15 @@ for (const target of targets) {
 if (changed && mode === 'check') process.exitCode = 1;
 if (!changed) console.log('Publishing authority is synchronized.');
 
+
+const currentRulebookPath = path.join(ROOT, 'rulebook/player-facing/current-rulebook.md');
+const currentRulebook = fs.readFileSync(currentRulebookPath, 'utf8');
+const expectedLogoReference = `../../${authority.imprint.logo}`;
+if (!currentRulebook.includes(`![TDS Games publisher mark](${expectedLogoReference})`)) {
+  console.error('Current v0.7.1 Rulebook must include the configured TDS Games publisher mark.');
+  process.exitCode = 1;
+}
+
 const frozenV070Path = path.join(ROOT, 'releases/v0.7.0/Gauntlet_v0.7.0_Rulebook.md');
 const frozenV070 = fs.readFileSync(frozenV070Path, 'utf8');
 if (/TDS Games|Misty Hollow Enterprises/.test(frozenV070)) {
