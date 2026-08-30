@@ -112,7 +112,12 @@ describe('v0.7.0 Neutral reset Actions', () => {
       && (event.payload as { purpose?: string })?.purpose === 'Insurrection'
     )).toBe(true);
 
-    const followUp = state.players.B.zones.hand[0];
+    const followUp = injectHandCard(
+      state,
+      'B',
+      'neutral-rallying-cry',
+      'insurrection-follow-up',
+    );
     state = reduceV070TurnAction(state, {
       type: 'play_action_card',
       playerId: 'B',
