@@ -24,10 +24,13 @@ import {
   nextV070FrontLineTarget,
 } from './front-line';
 import {
+  cardIdForV070Overlay,
   expireV070TerritoryTurnRestrictions,
   openV070StartTurnOverlayChoice,
+  placeV070OverlayFromPendingAction,
   resolveV070OverlayEntryRequirements,
   resolveV070StartTurnOverlayChoice,
+  v070OverlaysAt,
 } from './overlays';
 import {
   completeV070CensureChoice,
@@ -87,6 +90,11 @@ export type V070TurnAction =
       type: 'resolve_scouting_report_choice';
       playerId: PlayerId;
       source: 'own_draw' | 'opponent_draw' | 'opponent_hand';
+    }
+  | {
+      type: 'choose_territory_overlay_target';
+      playerId: PlayerId;
+      territoryPosition: number;
     }
   | {
       type: 'resolve_censure_choice';
@@ -169,6 +177,10 @@ export function reduceV070TurnAction(
       pending.kind === 'scouting_report_source'
       && action.type === 'resolve_scouting_report_choice'
       && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'territory_overlay_target'
+      && action.type === 'choose_territory_overlay_target'
+      && action.playerId === pending.playerId
     );
     if (!validContinuation) {
       throw new V070GameActionError('Resolve the pending printed Action effect choice first.');
@@ -184,6 +196,7 @@ export function reduceV070TurnAction(
       'choose_hand_destination_target',
       'choose_controlled_asset_target',
       'resolve_scouting_report_choice',
+      'choose_territory_overlay_target',
     ].includes(action.type)) {
     throw new V070GameActionError('Resolve the pending Action card before continuing the turn.');
   }
@@ -226,6 +239,9 @@ export function reduceV070TurnAction(
       break;
     case 'resolve_scouting_report_choice':
       resolveScoutingReportChoice(next, action.playerId, action.source);
+      break;
+    case 'choose_territory_overlay_target':
+      chooseTerritoryOverlayTarget(next, action.playerId, action.territoryPosition);
       break;
     case 'resolve_censure_choice':
       resolveCensureChoice(
@@ -433,6 +449,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'neutral-contraband',
   'neutral-disruption',
   'neutral-insurrection',
+  'neutral-landslide',
   'neutral-new-recruits',
   'neutral-revolution',
   'neutral-reserves',
@@ -526,6 +543,12 @@ function playActionCard(
     && availableScoutingReportSources(state, playerId).length === 0) {
     throw new V070GameActionError(
       'Scouting Report requires a nonempty Draw Pile or opposing Hand to reveal.',
+    );
+  }
+  if (card.id === 'neutral-landslide'
+    && availableLandslidePositions(state).length === 0) {
+    throw new V070GameActionError(
+      'Landslide requires a Territory that does not already have a Landslide.',
     );
   }
 
@@ -665,6 +688,42 @@ function continuePendingActionCard(state: V070GameState): void {
       resolveInsurrectionAction(state, pending.playerId, pending.instanceId);
       finishPendingActionCard(state);
       return;
+    case 'neutral-landslide': {
+      const positions = availableLandslidePositions(state);
+      if (positions.length === 0) {
+        appendV070Event(state, {
+          type: 'action_effect_incomplete',
+          actor: pending.playerId,
+          visibility: 'public',
+          payload: {
+            sourceActionInstanceId: pending.instanceId,
+            purpose: 'Landslide',
+            reason: 'required_territory_target_unavailable',
+          },
+        });
+        finishPendingActionCard(state);
+        return;
+      }
+      state.pendingActionEffectChoice = {
+        kind: 'territory_overlay_target',
+        playerId: pending.playerId,
+        sourceActionInstanceId: pending.instanceId,
+        purpose: 'Landslide',
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          kind: 'territory_overlay_target',
+          playerId: pending.playerId,
+          sourceActionInstanceId: pending.instanceId,
+          purpose: 'Landslide',
+          territoryPositions: positions,
+        },
+      });
+      return;
+    }
     case 'neutral-new-recruits':
       if (!openHandDestinationChoice(
         state,
@@ -1036,6 +1095,52 @@ function chooseRecoveryActionTarget(
   );
 }
 
+function chooseTerritoryOverlayTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  territoryPosition: number,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'territory_overlay_target'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'neutral-landslide') {
+    throw new V070GameActionError('No Landslide Territory choice is pending for that player.');
+  }
+
+  if (!availableLandslidePositions(state).includes(territoryPosition)) {
+    throw new V070GameActionError(
+      'Landslide must target a Territory that does not already have a Landslide.',
+    );
+  }
+
+  placeV070OverlayFromPendingAction(
+    state,
+    playerId,
+    pending.instanceId,
+    territoryPosition,
+    'Landslide Action',
+  );
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state, 'overlay');
+}
+
+function availableLandslidePositions(
+  state: V070GameState,
+): number[] {
+  return state.board
+    .filter(territory =>
+      !v070OverlaysAt(state, territory.position).some(overlay =>
+        cardIdForV070Overlay(state, overlay) === 'neutral-landslide'
+      )
+    )
+    .map(territory => territory.position);
+}
+
 function resolveScoutingReportChoice(
   state: V070GameState,
   playerId: PlayerId,
@@ -1399,14 +1504,24 @@ function gainClemencyInfluence(
   });
 }
 
-function finishPendingActionCard(state: V070GameState): void {
+function finishPendingActionCard(
+  state: V070GameState,
+  destination: 'discard' | 'overlay' = 'discard',
+): void {
   const pending = state.pendingActionCard;
   if (!pending) throw new V070GameActionError('No Action card is pending resolution.');
   if (state.pendingActionEffectChoice || state.pendingSanctionChoices.length > 0) {
     throw new V070GameActionError('The Action card still has unresolved choices.');
   }
 
-  state.players[pending.playerId].zones.discardPile.push(pending.instanceId);
+  if (destination === 'discard') {
+    state.players[pending.playerId].zones.discardPile.push(pending.instanceId);
+  } else if (!state.overlays.some(overlay => overlay.instanceId === pending.instanceId)) {
+    throw new V070GameActionError(
+      'An Action card can resolve to Overlay only after it has been attached.',
+    );
+  }
+
   appendV070Event(state, {
     type: 'action_card_resolved',
     actor: pending.playerId,
@@ -1414,7 +1529,7 @@ function finishPendingActionCard(state: V070GameState): void {
     payload: {
       instanceId: pending.instanceId,
       cardId: pending.cardId,
-      destination: 'discard',
+      destination,
     },
   });
   state.pendingActionCard = null;
