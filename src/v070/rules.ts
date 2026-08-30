@@ -96,6 +96,18 @@ export interface V070LastStandAccessInput {
 
 export type V070MovementSequenceSource = 'normal' | 'effect';
 
+export type V070MovementChoiceRestriction = 'any' | 'advance_only';
+export type V070MovementBattleRestriction =
+  | 'allowed'
+  | 'prohibited'
+  | 'allowed_no_gambit';
+
+export interface V070MovementStep {
+  source: string;
+  choiceRestriction: V070MovementChoiceRestriction;
+  battleRestriction: V070MovementBattleRestriction;
+}
+
 export interface V070TurnState {
   phase: TurnPhase;
   actionsAvailable: number;
@@ -105,6 +117,8 @@ export interface V070TurnState {
   movementSequenceOpen: boolean;
   battleInitiated: boolean;
   movementSequenceSource: V070MovementSequenceSource | null;
+  pendingNormalMovementSteps: V070MovementStep[];
+  movementStepQueue: V070MovementStep[];
 }
 
 function assertReleasedRuleContract(): void {
@@ -375,6 +389,8 @@ export function createV070TurnState(additionalActions = 0): V070TurnState {
     movementSequenceOpen: false,
     battleInitiated: false,
     movementSequenceSource: null,
+    pendingNormalMovementSteps: [],
+    movementStepQueue: [],
   };
 }
 
@@ -455,31 +471,94 @@ export function advanceV070TurnPhase(state: V070TurnState): V070TurnState {
     movementSequenceOpen: false,
     battleInitiated: false,
     movementSequenceSource: null,
+    pendingNormalMovementSteps:
+      state.phase === 'movement' ? [] : [...state.pendingNormalMovementSteps],
+    movementStepQueue: [],
   };
 }
 
-export function beginEffectGrantedV070Movement(state: V070TurnState, movement = 1): V070TurnState {
+export function queueNormalV070MovementStep(
+  state: V070TurnState,
+  step: V070MovementStep,
+): V070TurnState {
+  if (state.phase !== 'opening') {
+    throw new Error('Normal Movement bonuses must be queued during Opening.');
+  }
+  if (state.movementSequenceOpen) {
+    throw new Error('Normal Movement bonuses must be queued before movement begins.');
+  }
+  return {
+    ...state,
+    pendingNormalMovementSteps: [
+      ...state.pendingNormalMovementSteps,
+      structuredClone(step),
+    ],
+  };
+}
+
+export function currentV070MovementStep(
+  state: V070TurnState,
+): V070MovementStep | null {
+  if (!state.movementSequenceOpen || state.movementStepQueue.length === 0) {
+    return null;
+  }
+  return structuredClone(state.movementStepQueue[0]);
+}
+
+export function beginEffectGrantedV070Movement(
+  state: V070TurnState,
+  movement = 1,
+  options: Partial<Omit<V070MovementStep, 'source'>> & { source?: string } = {},
+): V070TurnState {
   const amount = nonnegativeInteger(movement);
   if (amount < 1) throw new Error('Effect-granted movement must grant at least one movement.');
 
+  const step: V070MovementStep = {
+    source: options.source ?? 'effect',
+    choiceRestriction: options.choiceRestriction ?? 'any',
+    battleRestriction: options.battleRestriction ?? 'allowed',
+  };
+  const queue = Array.from({ length: amount }, () => structuredClone(step));
+
   return {
     ...state,
-    movementRemaining: amount,
+    movementRemaining: queue.length,
     movementSequenceOpen: true,
     battleInitiated: false,
     movementSequenceSource: 'effect',
+    movementStepQueue: queue,
   };
 }
 
 export function beginNormalV070Movement(state: V070TurnState, additionalMovement = 0): V070TurnState {
   if (state.phase !== 'movement') throw new Error('Normal movement begins only during the Movement phase.');
 
+  const unrestrictedAdditional = Array.from(
+    { length: nonnegativeInteger(additionalMovement) },
+    (): V070MovementStep => ({
+      source: 'normal_additional',
+      choiceRestriction: 'any',
+      battleRestriction: 'allowed',
+    }),
+  );
+  const queue: V070MovementStep[] = [
+    {
+      source: 'normal',
+      choiceRestriction: 'any',
+      battleRestriction: 'allowed',
+    },
+    ...unrestrictedAdditional,
+    ...state.pendingNormalMovementSteps.map(step => structuredClone(step)),
+  ];
+
   return {
     ...state,
-    movementRemaining: 1 + nonnegativeInteger(additionalMovement),
+    movementRemaining: queue.length,
     movementSequenceOpen: true,
     battleInitiated: false,
     movementSequenceSource: 'normal',
+    pendingNormalMovementSteps: [],
+    movementStepQueue: queue,
   };
 }
 
@@ -494,25 +573,42 @@ export function applyV070MovementChoice(
   if (state.movementSequenceSource === 'normal' && state.phase !== 'movement') {
     throw new Error('Normal movement is legal only during the Movement phase.');
   }
+
+  const step = currentV070MovementStep(state);
+  if (!step) throw new Error('An open movement sequence must have a current movement step.');
+
   if (choice === 'hold') {
     return {
       ...state,
       movementRemaining: 0,
       movementSequenceOpen: false,
       movementSequenceSource: null,
+      movementStepQueue: [],
     };
   }
   if (state.movementRemaining <= 0) throw new Error('No movement remains.');
+  if (step.choiceRestriction === 'advance_only' && choice !== 'advance') {
+    throw new Error('The current additional movement may only be used to Advance.');
+  }
 
   const initiatesBattle = Boolean(options.initiatesBattle);
-  const remaining = initiatesBattle ? 0 : state.movementRemaining - 1;
+  if (initiatesBattle && step.battleRestriction === 'prohibited') {
+    throw new Error('The current additional movement cannot initiate a battle.');
+  }
+
+  const remainingQueue = initiatesBattle
+    ? []
+    : state.movementStepQueue.slice(1).map(item => structuredClone(item));
+  const remaining = remainingQueue.length;
 
   return {
     ...state,
     movementRemaining: remaining,
     movementSequenceOpen: !initiatesBattle && remaining > 0,
-    movementSequenceSource: initiatesBattle || remaining === 0 ? null : state.movementSequenceSource,
+    movementSequenceSource:
+      initiatesBattle || remaining === 0 ? null : state.movementSequenceSource,
     battleInitiated: initiatesBattle,
+    movementStepQueue: remainingQueue,
   };
 }
 
