@@ -114,10 +114,8 @@ export function voluntarilyDiscardableV070AssetInstanceIds(
     state.cardInstances[instanceId]?.cardId === 'intelligence-extraordinary-rendition'
   );
 
-  // Extraordinary Rendition must be discarded before every other Asset. Its
-  // bound-card departure lifecycle is not yet represented, so do not expose a
-  // voluntary discard that the engine cannot complete correctly.
-  if (extraordinary) return [];
+  // Extraordinary Rendition must be discarded before every other Asset, if able.
+  if (extraordinary) return [extraordinary];
 
   return bank.filter(instanceId => {
     const card = canonicalCardForInstance(state, instanceId);
@@ -503,9 +501,8 @@ export function replaceableV070AssetInstanceIds(
     state.cardInstances[instanceId]?.cardId === 'intelligence-extraordinary-rendition'
   );
 
-  // Extraordinary Rendition must leave before other Assets, but its bound-card
-  // lifecycle is not yet represented in the v0.7.0 authoritative state.
-  if (extraordinary) return [];
+  // Asset replacement is a voluntary discard, so Rendition must be chosen first.
+  if (extraordinary) return [extraordinary];
 
   return bank.filter(instanceId => {
     const card = canonicalCardForInstance(state, instanceId);
