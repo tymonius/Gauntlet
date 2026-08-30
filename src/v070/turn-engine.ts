@@ -35,11 +35,26 @@ import {
   openV070CensureChoicesForActionPlay,
 } from './sanctions';
 import { openV070BlockadeChoicesForPositionChange } from './movement-triggers';
+import {
+  bankV070AssetWithInherentAction,
+  discardV070AssetAsAction,
+} from './assets';
 
 export type V070TurnAction =
   | { type: 'resolve_capture'; playerId: PlayerId }
   | { type: 'draw_turn_card'; playerId: PlayerId }
   | { type: 'pass_opening'; playerId: PlayerId }
+  | {
+      type: 'bank_asset';
+      playerId: PlayerId;
+      cardInstanceId: string;
+      replaceAssetInstanceId?: string;
+    }
+  | {
+      type: 'discard_asset';
+      playerId: PlayerId;
+      assetInstanceId: string;
+    }
   | { type: 'play_action_card'; playerId: PlayerId; cardInstanceId: string }
   | {
       type: 'choose_clemency_target';
@@ -138,6 +153,12 @@ export function reduceV070TurnAction(
       break;
     case 'pass_opening':
       passOpening(next, action.playerId);
+      break;
+    case 'bank_asset':
+      bankAsset(next, action.playerId, action.cardInstanceId, action.replaceAssetInstanceId);
+      break;
+    case 'discard_asset':
+      discardAsset(next, action.playerId, action.assetInstanceId);
       break;
     case 'play_action_card':
       playActionCard(next, action.playerId, action.cardInstanceId);
@@ -305,6 +326,46 @@ function drawTurnCard(state: V070GameState, playerId: PlayerId): void {
 
   state.turnState = advanceV070TurnPhase(requireTurnState(state));
   appendPhaseEvent(state);
+}
+
+function bankAsset(
+  state: V070GameState,
+  playerId: PlayerId,
+  cardInstanceId: string,
+  replaceAssetInstanceId?: string,
+): void {
+  const turnState = requireTurnState(state);
+  try {
+    state.turnState = spendV070Action(turnState);
+  } catch (error) {
+    throw new V070GameActionError(
+      error instanceof Error ? error.message : 'That Action cannot be spent now.',
+    );
+  }
+
+  bankV070AssetWithInherentAction(
+    state,
+    playerId,
+    cardInstanceId,
+    replaceAssetInstanceId,
+  );
+}
+
+function discardAsset(
+  state: V070GameState,
+  playerId: PlayerId,
+  assetInstanceId: string,
+): void {
+  const turnState = requireTurnState(state);
+  try {
+    state.turnState = spendV070Action(turnState);
+  } catch (error) {
+    throw new V070GameActionError(
+      error instanceof Error ? error.message : 'That Action cannot be spent now.',
+    );
+  }
+
+  discardV070AssetAsAction(state, playerId, assetInstanceId);
 }
 
 export const V070_EXECUTABLE_ACTION_CARD_IDS = [

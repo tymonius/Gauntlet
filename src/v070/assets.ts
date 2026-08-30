@@ -75,6 +75,87 @@ export function bankableV070AssetInstanceIds(
   });
 }
 
+export function inherentBankActionV070AssetInstanceIds(
+  state: V070GameState,
+  playerId: PlayerId,
+): string[] {
+  return bankableV070AssetInstanceIds(state, playerId).filter(instanceId =>
+    !hasPrintedSpecialBankingAction(canonicalCardForInstance(state, instanceId))
+  );
+}
+
+export function bankV070AssetWithInherentAction(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+  replaceAssetInstanceId?: string,
+): void {
+  const card = canonicalCardForInstance(state, instanceId);
+  if (!cardHasAssetEffect(card)) {
+    throw new V070GameActionError('That card has no Asset effect to bank.');
+  }
+  if (hasPrintedSpecialBankingAction(card)) {
+    throw new V070GameActionError(
+      `${card.name} has a printed special banking Action that overrides the inherent Bank Action.`,
+    );
+  }
+
+  bankV070AssetFromHand(state, playerId, instanceId, {
+    replaceAssetInstanceId,
+    purpose: 'inherent Bank Action',
+  });
+}
+
+export function voluntarilyDiscardableV070AssetInstanceIds(
+  state: V070GameState,
+  playerId: PlayerId,
+): string[] {
+  const bank = state.players[playerId].zones.assetBank;
+  const extraordinary = bank.find(instanceId =>
+    state.cardInstances[instanceId]?.cardId === 'intelligence-extraordinary-rendition'
+  );
+
+  // Extraordinary Rendition must be discarded before every other Asset. Its
+  // bound-card departure lifecycle is not yet represented, so do not expose a
+  // voluntary discard that the engine cannot complete correctly.
+  if (extraordinary) return [];
+
+  return bank.filter(instanceId => {
+    const card = canonicalCardForInstance(state, instanceId);
+    const assetText = card.effects
+      .filter(effect => effect.label === 'Asset')
+      .map(effect => effect.text)
+      .join(' ');
+
+    if (/cannot voluntarily discard this card at another time/i.test(assetText)) {
+      return false;
+    }
+    if (/cannot voluntarily cause it to leave play during the turn it is banked/i.test(assetText)
+      && assetWasBankedThisTurn(state, instanceId)) {
+      return false;
+    }
+    return true;
+  });
+}
+
+export function discardV070AssetAsAction(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+): void {
+  if (!voluntarilyDiscardableV070AssetInstanceIds(state, playerId).includes(instanceId)) {
+    throw new V070GameActionError('That Asset cannot be voluntarily discarded now.');
+  }
+
+  removeBankedAssetToDiscard(
+    state,
+    playerId,
+    instanceId,
+    'Asset discard Action',
+    false,
+  );
+}
+
 export function bankV070AssetFromHand(
   state: V070GameState,
   playerId: PlayerId,
@@ -145,6 +226,7 @@ export function bankV070AssetFromHand(
       cardId: card.id,
       purpose: options.purpose,
       effectiveLimit: effectiveV070AssetLimit(state, playerId),
+      turnNumber: state.turnNumber,
     },
   });
 }
@@ -275,7 +357,8 @@ export function replaceableV070AssetInstanceIds(
       .map(effect => effect.text)
       .join(' ');
     if (/cannot voluntarily discard this card at another time/i.test(assetText)) return false;
-    if (/cannot voluntarily cause it to leave play during the turn it is banked/i.test(assetText)) {
+    if (/cannot voluntarily cause it to leave play during the turn it is banked/i.test(assetText)
+      && assetWasBankedThisTurn(state, instanceId)) {
       return false;
     }
     return true;
@@ -357,6 +440,27 @@ function canonicalCardForInstance(
   const card = cardId ? v070CanonicalContent.cardsById.get(cardId) : undefined;
   if (!card) throw new V070GameActionError(`Unknown card instance ${instanceId}.`);
   return card;
+}
+
+function hasPrintedSpecialBankingAction(card: V070CanonicalCard): boolean {
+  return card.effects.some(effect =>
+    effect.label === 'Action' && /\bbank this card\b/i.test(effect.text)
+  );
+}
+
+function assetWasBankedThisTurn(
+  state: V070GameState,
+  instanceId: string,
+): boolean {
+  return state.events.some(event => {
+    if (event.type !== 'asset_banked') return false;
+    const payload = event.payload as {
+      instanceId?: string;
+      turnNumber?: number;
+    } | undefined;
+    return payload?.instanceId === instanceId
+      && payload.turnNumber === state.turnNumber;
+  });
 }
 
 function cardHasAssetEffect(card: V070CanonicalCard): boolean {
