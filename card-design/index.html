@@ -85,13 +85,13 @@
       <div class="catalog-jumpbar-inner">
         <span class="catalog-jump-label">Catalog</span>
         <nav class="catalog-primary-nav" aria-label="Catalog sections">
-          <a href="#card-back">Back</a>
           <a href="#playable-cards">Playable</a>
           <a href="#leader-cards">Leaders</a>
+          <a href="#territories">Territories</a>
           <a href="#proposal-cards">Proposals</a>
           <a href="#rite-cards">Rites</a>
           <a href="#supplemental-cards">Supplemental</a>
-          <a href="#territories">Territories</a>
+          <a href="#card-back">Back</a>
         </nav>
         <span class="catalog-jump-divider" aria-hidden="true"></span>
         <span class="catalog-jump-label">Playable factions</span>
@@ -107,44 +107,7 @@
       </div>
     </div>
 
-    <section id="card-back" class="card-section card-back-review-section" aria-labelledby="card-back-title">
-      <div class="section-shell card-section-heading screen-only">
-        <div>
-          <p class="section-label">Universal back color studies</p>
-          <h2 id="card-back-title">Playable card back</h2>
-        </div>
-        <p>The same production back is shown in all six faction palettes for comparison. Each study carries the faction hue through both the outer frame and the full inner field, with darker faction icons, the warm-ivory Gauntlet wordmark, and the pale-gold inset rule unchanged. These are colorway studies for selecting one universal back, not different backs for differently factioned cards.</p>
-      </div>
-      <div class="section-shell card-back-review-shell" data-card-back-colorways>
-        <figure class="card-back-specimen">
-          <div data-gauntlet-card-back data-card-back-faction="military"></div>
-          <figcaption>Military</figcaption>
-        </figure>
-        <figure class="card-back-specimen">
-          <div data-gauntlet-card-back data-card-back-faction="diplomats"></div>
-          <figcaption>Diplomats</figcaption>
-        </figure>
-        <figure class="card-back-specimen">
-          <div data-gauntlet-card-back data-card-back-faction="financiers"></div>
-          <figcaption>Financiers</figcaption>
-        </figure>
-        <figure class="card-back-specimen">
-          <div data-gauntlet-card-back data-card-back-faction="intelligence"></div>
-          <figcaption>Intelligence</figcaption>
-        </figure>
-        <figure class="card-back-specimen">
-          <div data-gauntlet-card-back data-card-back-faction="mystics"></div>
-          <figcaption>Mystics</figcaption>
-        </figure>
-        <figure class="card-back-specimen">
-          <div data-gauntlet-card-back data-card-back-faction="inquisition"></div>
-          <figcaption>Inquisition</figcaption>
-        </figure>
-      </div>
-    </section>
-
-    <!-- The legacy class intentionally suppresses card-design.js's old twelve-card
-         long-card insertion. This section supersedes it with the full catalog. -->
+    <!-- Core game cards first, faction-specific components next, production back last. -->
     <section id="playable-cards" class="card-section long-card-review-section" aria-labelledby="cards-title">
       <div class="section-shell card-section-heading screen-only">
         <div>
@@ -165,6 +128,17 @@
         <p>The complete twelve-Leader set, grouped by faction, with current abilities, resources, victory reminders, portraits, approved faction symbols, and metadata tints.</p>
       </div>
       <div id="leaderReviewSections"></div>
+    </section>
+
+    <section id="territories" class="card-section territory-specimen-section" aria-labelledby="territory-title">
+      <div class="section-shell card-section-heading screen-only">
+        <div>
+          <p class="section-label">Complete landscape set</p>
+          <h2 id="territory-title">Territories &amp; Arenas</h2>
+        </div>
+        <p>All <span data-territory-count>25</span> current landscape cards, including <span data-arena-count>4</span> Arenas, using the production Territory renderer and current-game authority text.</p>
+      </div>
+      <div id="territoryReviewSections"></div>
     </section>
 
     <section id="proposal-cards" class="card-section" aria-labelledby="proposals-title">
@@ -200,15 +174,40 @@
       <div id="supplementalReviewSections"></div>
     </section>
 
-    <section id="territories" class="card-section territory-specimen-section" aria-labelledby="territory-title">
+    <section id="card-back" class="card-section card-back-review-section" aria-labelledby="card-back-title">
       <div class="section-shell card-section-heading screen-only">
         <div>
-          <p class="section-label">Complete landscape set</p>
-          <h2 id="territory-title">Territories &amp; Arenas</h2>
+          <p class="section-label">Universal back color studies</p>
+          <h2 id="card-back-title">Playable card back</h2>
         </div>
-        <p>All <span data-territory-count>25</span> current landscape cards, including <span data-arena-count>4</span> Arenas, using the production Territory renderer and current-game authority text.</p>
+        <p>The same production back is shown in all six faction palettes for comparison. Each study carries the faction hue through both the outer frame and the full inner field, with darker faction icons, the warm-ivory Gauntlet wordmark, and the pale-gold inset rule unchanged. These are colorway studies for selecting one universal back, not different backs for differently factioned cards.</p>
       </div>
-      <div id="territoryReviewSections"></div>
+      <div class="section-shell card-back-review-shell" data-card-back-colorways>
+        <figure class="card-back-specimen">
+          <div data-gauntlet-card-back data-card-back-faction="military"></div>
+          <figcaption>Military</figcaption>
+        </figure>
+        <figure class="card-back-specimen">
+          <div data-gauntlet-card-back data-card-back-faction="diplomats"></div>
+          <figcaption>Diplomats</figcaption>
+        </figure>
+        <figure class="card-back-specimen">
+          <div data-gauntlet-card-back data-card-back-faction="financiers"></div>
+          <figcaption>Financiers</figcaption>
+        </figure>
+        <figure class="card-back-specimen">
+          <div data-gauntlet-card-back data-card-back-faction="intelligence"></div>
+          <figcaption>Intelligence</figcaption>
+        </figure>
+        <figure class="card-back-specimen">
+          <div data-gauntlet-card-back data-card-back-faction="mystics"></div>
+          <figcaption>Mystics</figcaption>
+        </figure>
+        <figure class="card-back-specimen">
+          <div data-gauntlet-card-back data-card-back-faction="inquisition"></div>
+          <figcaption>Inquisition</figcaption>
+        </figure>
+      </div>
     </section>
   </main>
 
