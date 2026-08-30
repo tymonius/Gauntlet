@@ -215,6 +215,33 @@ describe('v0.7.0 Give Chase Action', () => {
     expect(state.players.A.zones.hand).toContain(source);
   });
 
+  test('an earlier qualifying initiated win still qualifies after another completed battle', () => {
+    let state = openingForA();
+    recordCompletedBattle(state, 'A', 'A', 'qualifying-first');
+    recordCompletedBattle(state, 'B', 'A', 'defended-later');
+    state = advanceToDenouement(state);
+
+    const source = injectHand(
+      state,
+      'A',
+      'military-give-chase',
+      'source',
+    );
+
+    state = reduceV070TurnAction(state, {
+      type: 'play_action_card',
+      playerId: 'A',
+      cardInstanceId: source,
+    });
+
+    expect(state.players.A.zones.graveyard).toContain(source);
+    expect(currentV070MovementStep(state.turnState!)).toEqual({
+      source: 'Give Chase',
+      choiceRestriction: 'advance_required',
+      battleRestriction: 'allowed',
+    });
+  });
+
   test('a qualifying win from a prior turn does not cross the current turn boundary', () => {
     let state = openingForA();
     recordCompletedBattle(state, 'A', 'A', 'prior-turn');
