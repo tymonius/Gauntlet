@@ -5,6 +5,12 @@ async function syncCurrentGameCatalogCopy() {
   try {
     const currentGame = await loadCurrentGame();
     const cards = currentGame.cards || [];
+    const catalogFilter = document.body?.classList.contains('developer-catalog-page')
+      ? window.GauntletCatalogFilter || null
+      : null;
+    const visibleCards = catalogFilter
+      ? cards.filter(card => catalogFilter.factionMatches(currentGame.slugify(card.allegiance)))
+      : cards;
     const neutralCount = cards.filter(card => currentGame.slugify(card.allegiance) === 'neutral').length;
     const factionCounts = ['military', 'diplomats', 'financiers', 'intelligence', 'mystics', 'inquisition']
       .map(faction => cards.filter(card => currentGame.slugify(card.allegiance) === faction).length);
@@ -25,7 +31,12 @@ async function syncCurrentGameCatalogCopy() {
 
     const description = playableHeading?.querySelector(':scope > p:last-child');
     if (description) {
-      description.textContent = `All ${cards.length} current playable cards are supplied by the shared current-game authority. Card additions, revisions, and retirements are resolved before this catalog receives them.`;
+      if (catalogFilter && catalogFilter.faction !== 'all') {
+        const label = catalogFilter.factionLabels[catalogFilter.faction].replace(' / universal', '');
+        description.textContent = `${visibleCards.length} current ${label} playable cards are supplied by the shared current-game authority.`;
+      } else {
+        description.textContent = `All ${cards.length} current playable cards are supplied by the shared current-game authority. Card additions, revisions, and retirements are resolved before this catalog receives them.`;
+      }
     }
 
     const overviewNote = document.querySelector('.catalog-overview-note');

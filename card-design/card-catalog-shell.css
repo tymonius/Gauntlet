@@ -252,6 +252,14 @@
 
   /* ---------- Catalog sections ---------- */
 
+  .catalog-jumpbar {
+    margin-bottom: 40px;
+  }
+
+  .developer-catalog-main {
+    padding-bottom: 64px;
+  }
+
   .developer-catalog-main .card-section {
     overflow-x: auto;
     padding: 0 0 86px;
@@ -559,5 +567,465 @@
 @media screen and (max-width: 760px) {
   .supplemental-review-pair {
     grid-column: auto;
+  }
+}
+
+
+/* ---------- Catalog density v2 ---------- */
+@media screen {
+  /* Major sections stay legible, but repeated catalog structure should not
+     read like a sequence of landing pages. */
+  .developer-catalog-main .card-section {
+    padding-bottom: 42px;
+  }
+
+  .developer-catalog-main .card-section-heading {
+    margin-bottom: 18px;
+    padding-top: 24px;
+    gap: 24px;
+  }
+
+  .developer-catalog-main .card-section-heading h2 {
+    font-size: clamp(2rem, 3.4vw, 3.2rem);
+  }
+
+  .developer-catalog-main .card-section-heading > p {
+    font-size: .92rem;
+    line-height: 1.52;
+  }
+
+  .developer-catalog-main .review-faction-block {
+    margin-bottom: 24px;
+  }
+
+  .developer-catalog-main .review-faction-heading {
+    min-height: 0;
+    margin-bottom: 10px;
+    padding: 0 0 6px;
+  }
+
+  .developer-catalog-main .review-faction-heading h3 {
+    font-family: var(--sans);
+    font-size: 1.02rem;
+    font-weight: 780;
+    letter-spacing: .01em;
+  }
+
+  /* Playable cards and Leaders are thumbnails in the catalog; inspection opens
+     the unchanged full production card. */
+  .full-card-review-grid,
+  .leader-review-grid {
+    grid-template-columns: repeat(auto-fit, var(--catalog-card-width));
+    gap: 18px 12px;
+  }
+
+  .full-card-review-grid .specimen-column,
+  .leader-review-grid .leader-specimen {
+    width: var(--catalog-card-width);
+    min-width: 0;
+  }
+
+  .full-card-review-frame,
+  .leader-review-grid .gauntlet-card {
+    transform: none;
+    margin-bottom: 0;
+  }
+
+  .review-card-label,
+  .leader-review-label,
+  .territory-review-label {
+    margin-bottom: 5px;
+    font-size: .56rem;
+  }
+
+  .review-card-label strong,
+  .leader-review-label strong,
+  .territory-review-label strong {
+    font-size: .61rem;
+  }
+
+  /* Territories and Arenas are one continuous landscape grid; Arena identity
+     is metadata rather than a second chapter. */
+  .territory-review-block {
+    width: var(--catalog-shell);
+    margin: 0 auto;
+  }
+
+  .territory-review-grid {
+    grid-template-columns: repeat(auto-fit, var(--catalog-territory-width));
+    gap: 18px 12px;
+  }
+
+  .territory-review-item {
+    width: var(--catalog-territory-width);
+    min-width: 0;
+  }
+
+  .territory-review-frame {
+    transform: none;
+    margin-bottom: 0;
+  }
+
+  /* Proposals and Rites are paired tiles inside a single catalog grid, not
+     one named subsection per concept. */
+  .proposal-review-block,
+  .rite-review-block {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(calc(var(--catalog-card-width) + var(--catalog-card-width) + 12px), 1fr));
+    gap: 24px 18px;
+    width: var(--catalog-shell);
+    margin: 0 auto;
+  }
+
+  .catalog-pair-tile {
+    min-width: 0;
+    margin: 0;
+  }
+
+  .catalog-item-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 0 0 6px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--line);
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .62rem;
+  }
+
+  .catalog-item-heading strong {
+    overflow: hidden;
+    color: var(--ink);
+    font-size: .72rem;
+    font-weight: 780;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .catalog-item-heading span {
+    flex: none;
+    font-size: .56rem;
+    font-weight: 800;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+
+  .proposal-face-grid,
+  .rite-face-grid {
+    grid-template-columns: repeat(2, var(--catalog-card-width));
+    justify-content: start;
+    gap: 12px;
+  }
+
+  .proposal-face,
+  .rite-face {
+    width: var(--catalog-card-width);
+    min-width: 0;
+  }
+
+  .proposal-face .gauntlet-card,
+  .rite-face .gauntlet-card {
+    transform: none;
+    margin-bottom: 0;
+  }
+
+  /* Supplemental components remain grouped by faction, but each faction is a
+     dense packing grid rather than a vertical stack of component rows. Paired
+     faces span two card tracks; single-sided pieces fill remaining tracks. */
+  .supplemental-faction-block {
+    width: var(--catalog-shell);
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .supplemental-faction-grid {
+    grid-template-columns: repeat(auto-fit, var(--catalog-card-width));
+    gap: 22px 12px;
+    justify-content: start;
+    align-items: start;
+  }
+
+  .supplemental-review-item {
+    width: var(--catalog-card-width);
+    min-width: 0;
+    margin: 0;
+  }
+
+  .supplemental-review-pair {
+    grid-column: span 2;
+    width: calc(var(--catalog-card-width) + var(--catalog-card-width) + 12px);
+  }
+
+  .supplemental-face-grid {
+    grid-template-columns: repeat(2, var(--catalog-card-width));
+    gap: 12px;
+  }
+
+  .supplemental-single-face-grid {
+    grid-template-columns: var(--catalog-card-width);
+  }
+
+  .supplemental-face {
+    width: var(--catalog-card-width);
+    min-width: 0;
+  }
+
+  .supplemental-face .gauntlet-card {
+    transform: none;
+    margin-bottom: 0;
+  }
+
+  .supplemental-item-heading {
+    min-width: 0;
+    margin-bottom: 6px;
+    gap: 6px;
+    font-size: .6rem;
+  }
+
+  .supplemental-item-heading strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .supplemental-item-heading span {
+    overflow: hidden;
+    font-size: .5rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .supplemental-face-label {
+    margin-bottom: 4px;
+    font-size: .54rem;
+  }
+
+  #supplemental-financiers-deed {
+    grid-column: span 2;
+    width: var(--catalog-deed-width);
+  }
+
+  #supplemental-financiers-deed .supplemental-single-face-grid,
+  #supplemental-financiers-deed .supplemental-face {
+    width: var(--catalog-deed-width);
+    grid-template-columns: var(--catalog-deed-width);
+  }
+
+  #supplemental-financiers-deed .gauntlet-card {
+    margin-bottom: 0;
+  }
+
+  /* Pack card-back studies tightly while preserving production dimensions. */
+  .card-back-review-shell {
+    grid-template-columns: repeat(auto-fit, var(--catalog-card-width));
+    gap: 12px;
+  }
+
+  .card-back-specimen {
+    width: var(--catalog-card-width);
+  }
+
+  .card-back-specimen .gauntlet-card-back {
+    transform: none;
+    margin-bottom: 0;
+  }
+
+  .card-back-specimen figcaption {
+    margin-top: 5px;
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .proposal-review-block,
+  .rite-review-block {
+    grid-template-columns: 1fr;
+  }
+
+  .card-back-review-shell {
+    grid-template-columns: repeat(auto-fit, var(--catalog-card-width));
+  }
+}
+
+@media screen and (max-width: 580px) {
+  body.developer-catalog-page {
+    --catalog-card-scale: 1;
+    --catalog-territory-scale: 1;
+    --catalog-card-width: 2.5in;
+    --catalog-card-height: 3.5in;
+    --catalog-territory-width: 3.5in;
+    --catalog-territory-height: 2.5in;
+    --catalog-deed-width: 3.5in;
+    --catalog-deed-height: 2.5in;
+  }
+
+  .full-card-review-grid,
+  .leader-review-grid,
+  .territory-review-grid,
+  .supplemental-faction-grid,
+  .card-back-review-shell {
+    justify-content: start;
+    overflow-x: auto;
+  }
+
+  .supplemental-review-pair,
+  #supplemental-financiers-deed {
+    grid-column: auto;
+  }
+}
+
+
+/* ---------- Filtered catalog controls ---------- */
+@media screen {
+  [data-catalog-kind][hidden] {
+    display: none !important;
+  }
+
+  .catalog-filterbar {
+    padding: 12px 14px 10px;
+  }
+
+  .catalog-filter-form {
+    display: grid;
+    grid-template-columns: minmax(150px, .9fr) minmax(180px, 1.15fr) minmax(150px, .9fr) auto auto;
+    gap: 10px;
+    align-items: end;
+  }
+
+  .catalog-filter-form label {
+    min-width: 0;
+    display: grid;
+    gap: 4px;
+    color: var(--catalog-gold-dark);
+    font-family: var(--sans);
+    font-size: .62rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .catalog-filter-form select {
+    width: 100%;
+    min-height: 36px;
+    padding: 0 30px 0 10px;
+    border: 1px solid var(--catalog-line);
+    border-radius: 2px;
+    background: var(--catalog-cream);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: .78rem;
+    font-weight: 650;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .catalog-filter-form button,
+  .catalog-filterbar .catalog-filter-reset {
+    min-height: 36px;
+    padding: 0 13px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--catalog-charcoal);
+    border-radius: 2px;
+    background: var(--catalog-charcoal);
+    color: var(--catalog-cream);
+    font-family: var(--sans);
+    font-size: .72rem;
+    font-weight: 750;
+    text-decoration: none;
+  }
+
+  .catalog-filterbar .catalog-filter-reset {
+    border-color: var(--catalog-line);
+    background: transparent;
+    color: var(--muted);
+  }
+
+  .catalog-filter-form button:hover,
+  .catalog-filter-form button:focus-visible {
+    background: #2b2620;
+  }
+
+  .catalog-filterbar .catalog-filter-reset:hover,
+  .catalog-filterbar .catalog-filter-reset:focus-visible {
+    border-color: var(--catalog-gold);
+    background: rgba(163, 115, 56, .06);
+    color: var(--catalog-gold-dark);
+  }
+
+  .catalog-filter-meta {
+    margin-top: 9px;
+    padding-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-top: 1px solid var(--catalog-line);
+  }
+
+  .catalog-filter-meta > strong {
+    flex: 0 0 auto;
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: .68rem;
+    font-weight: 800;
+  }
+
+  .catalog-preset-nav {
+    justify-content: flex-end;
+  }
+
+  .catalog-preset-nav a {
+    min-height: 26px;
+    padding-inline: 6px;
+    font-size: .64rem;
+  }
+
+  .catalog-empty-state {
+    margin: 28px auto 64px;
+    padding: 28px;
+    border: 1px solid var(--catalog-line);
+    background: rgba(255, 252, 244, .55);
+  }
+
+  .catalog-empty-state h2 {
+    margin: 0 0 8px;
+    font-family: var(--serif);
+    font-size: 2rem;
+    font-weight: 500;
+  }
+
+  .catalog-empty-state p:last-child {
+    margin-bottom: 0;
+    color: var(--muted);
+    font-family: var(--reading);
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .catalog-filter-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .catalog-filter-form button,
+  .catalog-filter-reset {
+    width: 100%;
+  }
+
+  .catalog-filter-meta {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .catalog-preset-nav {
+    justify-content: flex-start;
+  }
+}
+
+@media screen and (max-width: 560px) {
+  .catalog-filter-form {
+    grid-template-columns: 1fr;
   }
 }

@@ -5,6 +5,8 @@ on:
     paths:
       - "game-data/**"
       - "card-design/index.html"
+      - "card-design/catalog-filter.js"
+      - "card-design/card-catalog-shell.css"
       - "card-design/leaders.html"
       - "card-design/card-back.css"
       - "card-design/card-back.js"

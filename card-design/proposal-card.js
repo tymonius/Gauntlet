@@ -3,6 +3,9 @@ import { loadCurrentGame } from '../game-data/current-game.mjs';
 const PROPOSAL_ART_ROOT = '/images/artwork/cards/diplomats/proposals';
 const RATIFIED_SEAL_SOURCE = '/images/artwork/supplemental/diplomats/ratified-wax-seal.webp';
 const root = document.querySelector('#proposalReviewSections');
+const catalogFilter = document.body?.classList.contains('developer-catalog-page')
+  ? window.GauntletCatalogFilter || null
+  : null;
 let currentDisplayVersion = 'Current';
 
 function esc(value) {
@@ -93,22 +96,16 @@ export function proposalFace(proposal, ratified = false, version = currentDispla
 }
 
 function reviewPair(proposal) {
-  return `<section class="proposal-review-pair" id="proposal-${esc(proposal.id)}" aria-labelledby="proposal-${esc(proposal.id)}-title">
-    <div class="review-faction-heading screen-only">
-      <h3 id="proposal-${esc(proposal.id)}-title">${esc(proposal.name)}</h3>
-      <span>Stake ${Number(proposal.stake)} Influence</span>
-    </div>
+  return `<article class="proposal-review-pair catalog-pair-tile" id="proposal-${esc(proposal.id)}" aria-labelledby="proposal-${esc(proposal.id)}-title">
+    <header class="catalog-item-heading screen-only">
+      <strong id="proposal-${esc(proposal.id)}-title">${esc(proposal.name)}</strong>
+      <span>Stake ${Number(proposal.stake)}</span>
+    </header>
     <div class="proposal-face-grid">
-      <div class="proposal-face">
-        <p class="proposal-face-label screen-only"><strong>Proposal</strong><span>Unratified face</span></p>
-        ${proposalFace(proposal, false)}
-      </div>
-      <div class="proposal-face">
-        <p class="proposal-face-label screen-only"><strong>Treaty Article</strong><span>Ratified face</span></p>
-        ${proposalFace(proposal, true)}
-      </div>
+      <div class="proposal-face">${proposalFace(proposal, false)}</div>
+      <div class="proposal-face">${proposalFace(proposal, true)}</div>
     </div>
-  </section>`;
+  </article>`;
 }
 
 function updateProposalCounts(count) {
@@ -119,9 +116,14 @@ function updateProposalCounts(count) {
 
 async function renderProposalCatalog() {
   if (!root) return;
+  if (catalogFilter && (!catalogFilter.typeMatches('proposal') || !catalogFilter.factionMatches('diplomats'))) {
+    root.replaceChildren();
+    return;
+  }
   try {
     const currentGame = await loadCurrentGame();
-    const proposals = Array.isArray(currentGame.proposals) ? currentGame.proposals : [];
+    let proposals = Array.isArray(currentGame.proposals) ? currentGame.proposals : [];
+    if (catalogFilter?.sort === 'name') proposals = proposals.slice().sort((a, b) => a.name.localeCompare(b.name));
     if (!proposals.length) throw new Error('Current-game authority has no Proposals.');
     currentDisplayVersion = currentGame.displayVersion;
     updateProposalCounts(proposals.length);

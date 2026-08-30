@@ -7,6 +7,9 @@ let COMPLETED_RITE_ART_SOURCE = '/images/artwork/supplemental/mystics/rite-compl
 let currentDisplayVersion = 'Current';
 
 const root = document.querySelector('#riteReviewSections');
+const catalogFilter = document.body?.classList.contains('developer-catalog-page')
+  ? window.GauntletCatalogFilter || null
+  : null;
 
 function esc(value) {
   return String(value ?? '').replace(/[&<>'"]/g, character => ({
@@ -112,49 +115,42 @@ function ritualFace() {
 }
 
 function reviewPair(rite) {
-  return `<section class="rite-review-pair" id="rite-${esc(rite.id)}" aria-labelledby="rite-${esc(rite.id)}-title">
-    <div class="review-faction-heading screen-only">
-      <h3 id="rite-${esc(rite.id)}-title">${esc(rite.name)}</h3>
-      <span>Double-sided Rite</span>
-    </div>
+  return `<article class="rite-review-pair catalog-pair-tile" id="rite-${esc(rite.id)}" aria-labelledby="rite-${esc(rite.id)}-title">
+    <header class="catalog-item-heading screen-only">
+      <strong id="rite-${esc(rite.id)}-title">${esc(rite.name)}</strong>
+      <span>Rite</span>
+    </header>
     <div class="rite-face-grid">
-      <div class="rite-face">
-        <p class="rite-face-label screen-only"><strong>Rite</strong><span>Incomplete face</span></p>
-        ${riteFace(rite, false)}
-      </div>
-      <div class="rite-face">
-        <p class="rite-face-label screen-only"><strong>Completed</strong><span>Progression reference</span></p>
-        ${riteFace(rite, true)}
-      </div>
+      <div class="rite-face">${riteFace(rite, false)}</div>
+      <div class="rite-face">${riteFace(rite, true)}</div>
     </div>
-  </section>`;
+  </article>`;
 }
 
 function ritualReview() {
-  return `<section class="rite-review-pair ritual-review" id="ritual-ascension" aria-labelledby="ritual-ascension-title">
-    <div class="review-faction-heading screen-only">
-      <h3 id="ritual-ascension-title">${esc(RITUAL.name)}</h3>
-      <span>Single-sided Ritual · dedicated card back</span>
-    </div>
+  return `<article class="rite-review-pair ritual-review catalog-pair-tile" id="ritual-ascension" aria-labelledby="ritual-ascension-title">
+    <header class="catalog-item-heading screen-only">
+      <strong id="ritual-ascension-title">${esc(RITUAL.name)}</strong>
+      <span>Ritual</span>
+    </header>
     <div class="rite-face-grid ritual-face-grid">
-      <div class="rite-face">
-        <p class="rite-face-label screen-only"><strong>Ritual</strong><span>Victory card</span></p>
-        ${ritualFace()}
-      </div>
-      <div class="rite-face">
-        <p class="rite-face-label screen-only"><strong>Back</strong><span>Ritual working sheet</span></p>
-        ${ritualCardBack()}
-      </div>
+      <div class="rite-face">${ritualFace()}</div>
+      <div class="rite-face">${ritualCardBack()}</div>
     </div>
-  </section>`;
+  </article>`;
 }
 
 async function renderRites() {
   if (!root) return;
+  if (catalogFilter && (!catalogFilter.typeMatches('rite') || !catalogFilter.factionMatches('mystics'))) {
+    root.replaceChildren();
+    return;
+  }
   try {
     const currentGame = await loadCurrentGame();
     const mystics = currentGame.mystics || {};
     RITES = Array.isArray(mystics.rites) ? mystics.rites : [];
+    if (catalogFilter?.sort === 'name') RITES = RITES.slice().sort((a, b) => a.name.localeCompare(b.name));
     RITUAL = mystics.ritual || {};
     UNLOCKS = Array.isArray(mystics.unlocks) ? mystics.unlocks : [];
     COMPLETED_RITE_ART_SOURCE = mystics.completedArtwork || COMPLETED_RITE_ART_SOURCE;

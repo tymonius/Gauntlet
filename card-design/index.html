@@ -38,6 +38,7 @@
   <link rel="stylesheet" href="../developer-tools.css?v=20260815-3" media="screen" />
   <link rel="stylesheet" href="card-catalog-shell.css?v=20260815-3" />
   <link rel="stylesheet" href="artwork-compositor.css" media="screen" />
+  <script src="catalog-filter.js"></script>
   <script src="card-review.js" defer></script>
   <script type="module" src="v064-card-candidates.js"></script>
   <script type="module" src="proposal-card.js"></script>
@@ -58,7 +59,7 @@
       <a href="../#tools">Developer tools</a>
       <a href="../playtest/analysis/">Analysis</a>
       <a href="../playtest/host/">Host home</a>
-      <a href="#" onclick="window.print(); return false;">Print cards</a>
+      <a href="#" onclick="window.print(); return false;">Print current view</a>
     </nav>
   </header>
 
@@ -67,7 +68,7 @@
       <div class="catalog-hero-copy">
         <p class="eyebrow">Current development · single current-game authority</p>
         <h1 id="catalog-title">Card review <span>catalog.</span></h1>
-        <p class="intro-copy">Inspect the complete current production card system in one place. Playable cards, Leaders, Territories, Rites, and other supplemental components resolve from the same current-game authority for wording, fit, artwork, and balance review.</p>
+        <p class="intro-copy">Browse the current production card system without rendering the entire game at once. Filter by faction or component type, then inspect the selected cards at full production geometry; every view resolves from the same current-game authority.</p>
       </div>
       <aside class="catalog-overview" aria-label="Catalog snapshot">
         <p class="catalog-overview-label">Catalog snapshot</p>
@@ -81,34 +82,73 @@
       </aside>
     </section>
 
-    <div class="catalog-jumpbar screen-only">
-      <div class="catalog-jumpbar-inner">
-        <span class="catalog-jump-label">Catalog</span>
-        <nav class="catalog-primary-nav" aria-label="Catalog sections">
-          <a href="#playable-cards">Playable</a>
-          <a href="#leader-cards">Leaders</a>
-          <a href="#territories">Territories</a>
-          <a href="#proposal-cards">Proposals</a>
-          <a href="#rite-cards">Rites</a>
-          <a href="#supplemental-cards">Supplemental</a>
-          <a href="#card-back">Back</a>
-        </nav>
-        <span class="catalog-jump-divider" aria-hidden="true"></span>
-        <span class="catalog-jump-label">Playable factions</span>
-        <nav class="catalog-faction-nav" aria-label="Playable-card factions">
-          <a href="#playable-neutral">Neutral</a>
-          <a href="#playable-military">Military</a>
-          <a href="#playable-diplomats">Diplomats</a>
-          <a href="#playable-financiers">Financiers</a>
-          <a href="#playable-intelligence">Intelligence</a>
-          <a href="#playable-mystics">Mystics</a>
-          <a href="#playable-inquisition">Inquisition</a>
+    <section class="catalog-jumpbar catalog-filterbar screen-only" aria-label="Catalog filters">
+      <form id="catalogFilters" class="catalog-filter-form">
+        <label>
+          <span>Faction</span>
+          <select name="faction" aria-label="Filter by faction">
+            <option value="all">All factions</option>
+            <option value="neutral">Neutral / universal</option>
+            <option value="military">Military</option>
+            <option value="diplomats">Diplomats</option>
+            <option value="financiers">Financiers</option>
+            <option value="intelligence">Intelligence</option>
+            <option value="mystics">Mystics</option>
+            <option value="inquisition">Inquisition</option>
+          </select>
+        </label>
+        <label>
+          <span>Type</span>
+          <select name="type" aria-label="Filter by card type">
+            <option value="all">All card types</option>
+            <option value="playable">Playable cards</option>
+            <option value="leader">Leaders</option>
+            <option value="territory">Territories &amp; Arenas</option>
+            <option value="proposal">Proposals</option>
+            <option value="rite">Rites &amp; Ritual</option>
+            <option value="tracker">Resource trackers</option>
+            <option value="reference">Reference cards</option>
+            <option value="ledger">Ledgers</option>
+            <option value="deed">Deeds</option>
+            <option value="supplemental">Other supplemental</option>
+            <option value="back">Card backs</option>
+          </select>
+        </label>
+        <label>
+          <span>Sort</span>
+          <select name="sort" aria-label="Sort catalog results">
+            <option value="canonical">Canonical order</option>
+            <option value="name">Alphabetical</option>
+          </select>
+        </label>
+        <button type="submit">Apply</button>
+        <a class="catalog-filter-reset" href="?type=leader">Reset</a>
+      </form>
+      <div class="catalog-filter-meta">
+        <strong data-catalog-filter-summary>All factions · Leaders</strong>
+        <nav class="catalog-preset-nav" aria-label="Catalog presets">
+          <a href="?faction=military&amp;type=all">Military</a>
+          <a href="?faction=diplomats&amp;type=all">Diplomats</a>
+          <a href="?faction=financiers&amp;type=all">Financiers</a>
+          <a href="?faction=intelligence&amp;type=all">Intelligence</a>
+          <a href="?faction=mystics&amp;type=all">Mystics</a>
+          <a href="?faction=inquisition&amp;type=all">Inquisition</a>
+          <a href="?type=leader">Leaders</a>
+          <a href="?type=tracker">Trackers</a>
+          <a href="?type=territory">Territories</a>
+          <a href="?type=all">Entire catalog</a>
         </nav>
       </div>
+    </section>
+
+    <div id="catalogEmptyState" class="section-shell catalog-empty-state screen-only" hidden>
+      <p class="section-label">No matching catalog group</p>
+      <h2>No cards match this filter.</h2>
+      <p>Choose a different faction or card type.</p>
     </div>
 
-    <!-- Core game cards first, faction-specific components next, production back last. -->
-    <section id="playable-cards" class="card-section long-card-review-section" aria-labelledby="cards-title">
+    <!-- Filtered catalog groups are instantiated only when the active query permits them. -->
+    <section id="playable-cards" class="card-section long-card-review-section" data-catalog-kind="playable" aria-labelledby="cards-title">
       <div class="section-shell card-section-heading screen-only">
         <div>
           <p class="section-label">Current playable-card authority</p>
@@ -119,7 +159,7 @@
       <div id="playableReviewSections"></div>
     </section>
 
-    <section id="leader-cards" class="card-section" aria-labelledby="leaders-title">
+    <section id="leader-cards" class="card-section" data-catalog-kind="leader" aria-labelledby="leaders-title">
       <div class="section-shell card-section-heading screen-only">
         <div>
           <p class="section-label">Faction dashboards</p>
@@ -130,7 +170,7 @@
       <div id="leaderReviewSections"></div>
     </section>
 
-    <section id="territories" class="card-section territory-specimen-section" aria-labelledby="territory-title">
+    <section id="territories" class="card-section territory-specimen-section" data-catalog-kind="territory" aria-labelledby="territory-title">
       <div class="section-shell card-section-heading screen-only">
         <div>
           <p class="section-label">Complete landscape set</p>
@@ -141,7 +181,7 @@
       <div id="territoryReviewSections"></div>
     </section>
 
-    <section id="proposal-cards" class="card-section" aria-labelledby="proposals-title">
+    <section id="proposal-cards" class="card-section" data-catalog-kind="proposal" aria-labelledby="proposals-title">
       <div class="section-shell card-section-heading screen-only">
         <div>
           <p class="section-label">Diplomat components</p>
@@ -152,7 +192,7 @@
       <div id="proposalReviewSections"></div>
     </section>
 
-    <section id="rite-cards" class="card-section" aria-labelledby="rites-title">
+    <section id="rite-cards" class="card-section" data-catalog-kind="rite" aria-labelledby="rites-title">
       <div class="section-shell card-section-heading screen-only">
         <div>
           <p class="section-label">Mystics components</p>
@@ -163,7 +203,7 @@
       <div id="riteReviewSections"></div>
     </section>
 
-    <section id="supplemental-cards" class="card-section" aria-labelledby="supplemental-title">
+    <section id="supplemental-cards" class="card-section" data-catalog-kind="supplemental" aria-labelledby="supplemental-title">
       <div class="section-shell card-section-heading screen-only">
         <div>
           <p class="section-label">Required faction components</p>
@@ -174,7 +214,7 @@
       <div id="supplementalReviewSections"></div>
     </section>
 
-    <section id="card-back" class="card-section card-back-review-section" aria-labelledby="card-back-title">
+    <section id="card-back" class="card-section card-back-review-section" data-catalog-kind="back" aria-labelledby="card-back-title">
       <div class="section-shell card-section-heading screen-only">
         <div>
           <p class="section-label">Universal back color studies</p>

@@ -229,7 +229,7 @@ async function main() {
   const page = await browser.newPage({ viewport: { width: 1100, height: 1000 }, deviceScaleFactor: 2 });
 
   try {
-    await page.goto(`${baseUrl}/card-design/#card-back`, { waitUntil: 'load' });
+    await page.goto(`${baseUrl}/card-design/?type=back#card-back`, { waitUntil: 'load' });
     await page.waitForFunction(() => document.querySelectorAll('[data-gauntlet-card-back].gauntlet-card-back').length === 6);
     await page.waitForTimeout(100);
 
@@ -253,10 +253,19 @@ async function main() {
     await intelligenceBack.screenshot({ path: join(OUTPUT, 'universal-card-back.png'), omitBackground: true });
 
     /* Regression coverage for the review interaction itself, not just static
-       specimen geometry. Both the existing Leader path and the new card-back
-       path must use the same fixed viewport inspector and enlarge correctly. */
+       specimen geometry. Validate each catalog slice independently so the
+       filtered catalog does not need to instantiate unrelated components. */
     await validateSharedInspector(page, intelligenceBack, '.gauntlet-card-back', 'Card back');
-    await validateSharedInspector(page, page.locator('.leader-card').first(), '.leader-card', 'Leader card');
+
+    const leaderPage = await browser.newPage({ viewport: { width: 1100, height: 1000 }, deviceScaleFactor: 2 });
+    try {
+      await leaderPage.goto(`${baseUrl}/card-design/?type=leader#leader-cards`, { waitUntil: 'load' });
+      const leader = leaderPage.locator('.leader-card').first();
+      await leader.waitFor();
+      await validateSharedInspector(leaderPage, leader, '.leader-card', 'Leader card');
+    } finally {
+      await leaderPage.close();
+    }
 
     for (const faction of Object.keys(FACTIONS)) {
       await page.evaluate(factionName => {

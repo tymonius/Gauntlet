@@ -80,7 +80,7 @@ async function main() {
 
   try {
     const catalogPage = await context.newPage();
-    await catalogPage.goto(`${baseUrl}/card-design/#playable-cards`, { waitUntil: 'load' });
+    await catalogPage.goto(`${baseUrl}/card-design/?type=playable#playable-cards`, { waitUntil: 'load' });
     await catalogPage.waitForFunction(() => document.body.dataset.currentGameCards === 'ready');
     const catalogState = await catalogPage.evaluate(() => ({
       playableFrames: document.querySelectorAll('.full-card-review-frame').length,

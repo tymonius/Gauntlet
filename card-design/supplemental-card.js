@@ -58,6 +58,9 @@ const TRACKER_PRESENTATION = Object.freeze({
 });
 
 const root = document.querySelector('#supplementalReviewSections');
+const catalogFilter = document.body?.classList.contains('developer-catalog-page')
+  ? window.GauntletCatalogFilter || null
+  : null;
 let currentDisplayVersion = 'Current';
 let supplementalGroups = [];
 
@@ -106,6 +109,7 @@ function presentationComponent(component) {
   return {
     contractId: component.id,
     id: rendererId(component),
+    family: component.family,
     referenceId: hasReferenceFaces ? component.id : '',
     ledger,
     name: component.name,
@@ -144,6 +148,32 @@ function buildSupplementalGroups(currentGame) {
     { faction: 'neutral', factionLabel: 'Universal', cards: sharedCards },
     ...factionGroups,
   ].filter(group => group.cards.length);
+}
+
+function filterSupplementalGroups(groups) {
+  if (!catalogFilter) return groups;
+
+  const familyForType = {
+    tracker: 'tracker',
+    reference: 'reference-card',
+    ledger: 'ledger',
+    deed: 'deed-card',
+  };
+
+  return groups
+    .filter(group => catalogFilter.factionMatches(group.faction))
+    .map(group => {
+      let cards = group.cards;
+      if (catalogFilter.type !== 'all' && catalogFilter.type !== 'supplemental') {
+        const family = familyForType[catalogFilter.type];
+        cards = family ? cards.filter(component => component.family === family) : [];
+      }
+      if (catalogFilter.sort === 'name') {
+        cards = cards.slice().sort((a, b) => a.name.localeCompare(b.name));
+      }
+      return { ...group, cards };
+    })
+    .filter(group => group.cards.length);
 }
 
 function supplementalTypeLine(component) {
@@ -360,37 +390,39 @@ function componentSpecimen(component, faction, factionLabel) {
       : component.referenceId
         ? 'Loading current face'
         : 'Design placeholder';
-    return `<section class="supplemental-review-item supplemental-review-pair" id="supplemental-${esc(faction)}-${esc(component.id)}" data-contract-component-id="${esc(component.contractId)}">
+    return `<article class="supplemental-review-item supplemental-review-pair" id="supplemental-${esc(faction)}-${esc(component.id)}" data-contract-component-id="${esc(component.contractId)}">
       <div class="supplemental-item-heading screen-only"><strong>${esc(component.name)}</strong><span>${esc(statusText)}</span></div>
       <div class="supplemental-face-grid">
         <div class="supplemental-face" data-reference-face="front"><p class="supplemental-face-label screen-only"><strong>Front</strong><span>${esc(faceDescription)}</span></p>${componentFace(component, faction, factionLabel, 'Front')}</div>
         <div class="supplemental-face" data-reference-face="reverse"><p class="supplemental-face-label screen-only"><strong>Reverse</strong><span>${esc(faceDescription)}</span></p>${componentFace(component, faction, factionLabel, 'Reverse')}</div>
       </div>
-    </section>`;
+    </article>`;
   }
 
-  return `<section class="supplemental-review-item" id="supplemental-${esc(faction)}-${esc(component.id)}" data-contract-component-id="${esc(component.contractId)}">
+  return `<article class="supplemental-review-item" id="supplemental-${esc(faction)}-${esc(component.id)}" data-contract-component-id="${esc(component.contractId)}">
     <div class="supplemental-item-heading screen-only"><strong>${esc(component.name)}</strong><span>${esc(statusText)}</span></div>
     <div class="supplemental-face-grid supplemental-single-face-grid">
       <div class="supplemental-face">${componentFace(component, faction, factionLabel)}</div>
     </div>
-  </section>`;
+  </article>`;
 }
 
 function groupMarkup(group) {
   return `<section class="review-faction-block supplemental-faction-block" id="supplemental-${esc(group.faction)}" aria-labelledby="supplemental-${esc(group.faction)}-title">
     <div class="review-faction-heading screen-only">
       <h3 id="supplemental-${esc(group.faction)}-title">${esc(group.factionLabel)}</h3>
-      <span>${group.cards.length} design ${group.cards.length === 1 ? 'slot' : 'slots'}</span>
+      <span>${group.cards.length} component ${group.cards.length === 1 ? 'design' : 'designs'}</span>
     </div>
-    <div class="supplemental-review-grid">${group.cards.map(component => componentSpecimen(component, group.faction, group.factionLabel)).join('')}</div>
+    <div class="supplemental-review-grid supplemental-faction-grid">
+      ${group.cards.map(component => componentSpecimen(component, group.faction, group.factionLabel)).join('')}
+    </div>
   </section>`;
 }
 
-function renderSupplementalMarkup() {
+function renderSupplementalMarkup(metricGroups = supplementalGroups) {
   if (!root) return;
-  const uniqueCount = supplementalGroups.reduce((sum, group) => sum + group.cards.length, 0);
-  const physicalCount = supplementalGroups.reduce((sum, group) => sum + group.cards.reduce((groupSum, component) => groupSum + (Number(component.quantity) || 1), 0), 0);
+  const uniqueCount = metricGroups.reduce((sum, group) => sum + group.cards.length, 0);
+  const physicalCount = metricGroups.reduce((sum, group) => sum + group.cards.reduce((groupSum, component) => groupSum + (Number(component.quantity) || 1), 0), 0);
   root.dataset.supplementalDesignCount = String(uniqueCount);
   root.dataset.supplementalPhysicalCount = String(physicalCount);
   document.querySelectorAll('[data-supplemental-design-count]').forEach(node => { node.textContent = String(uniqueCount); });
@@ -425,9 +457,13 @@ function hydrateReferenceElement(loadingCard, rendered) {
 
 async function hydrateReferenceCards() {
   if (!root) return;
+  const referenceComponents = supplementalGroups.flatMap(group => group.cards.map(component => ({ group, component }))).filter(({ component }) => component.referenceId);
+  if (!referenceComponents.length) {
+    root.dataset.referenceCardsReady = 'true';
+    return;
+  }
   const records = await loadReferenceRecords();
   const recordsById = new Map(records.map(record => [record.id, record]));
-  const referenceComponents = supplementalGroups.flatMap(group => group.cards.map(component => ({ group, component }))).filter(({ component }) => component.referenceId);
   const missing = referenceComponents.filter(({ component }) => !recordsById.has(component.referenceId));
   if (missing.length) throw new Error(`Reference-card contract mismatch: ${missing.map(({ component }) => component.referenceId).join(', ')}`);
 
@@ -464,12 +500,17 @@ async function hydrateReferenceCards() {
 
 async function renderCurrentSupplementals() {
   if (!root) return;
+  if (catalogFilter && !catalogFilter.typeMatches('supplemental', 'tracker', 'reference', 'ledger', 'deed')) {
+    root.replaceChildren();
+    return;
+  }
   try {
     const currentGame = await loadCurrentGame();
     currentDisplayVersion = currentGame.displayVersion;
-    supplementalGroups = buildSupplementalGroups(currentGame);
+    const allGroups = buildSupplementalGroups(currentGame);
+    supplementalGroups = filterSupplementalGroups(allGroups);
     root.dataset.currentGameAuthority = currentGame.authorityUrl;
-    renderSupplementalMarkup();
+    renderSupplementalMarkup(allGroups);
     await layoutTrackerCards();
     await hydrateReferenceCards();
   } catch (error) {
