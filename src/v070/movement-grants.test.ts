@@ -61,6 +61,39 @@ describe('v0.7.0 movement-step grant core', () => {
     });
   });
 
+  test('legacy numeric additional movement remains unrestricted before queued restricted steps', () => {
+    let state = openingState();
+    state = queueNormalV070MovementStep(state, {
+      source: 'Forced March',
+      choiceRestriction: 'any',
+      battleRestriction: 'prohibited',
+    });
+
+    state = beginNormalV070Movement(
+      advanceV070TurnPhase(state),
+      1,
+    );
+
+    expect(state.movementStepQueue).toEqual([
+      {
+        source: 'normal',
+        choiceRestriction: 'any',
+        battleRestriction: 'allowed',
+      },
+      {
+        source: 'normal_additional',
+        choiceRestriction: 'any',
+        battleRestriction: 'allowed',
+      },
+      {
+        source: 'Forced March',
+        choiceRestriction: 'any',
+        battleRestriction: 'prohibited',
+      },
+    ]);
+    expect(state.movementRemaining).toBe(state.movementStepQueue.length);
+  });
+
   test('advance-only extra movement rejects Fall Back without consuming the step', () => {
     let state = openingState();
     state = queueNormalV070MovementStep(state, {
