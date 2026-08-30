@@ -38,6 +38,8 @@ import { openV070BlockadeChoicesForPositionChange } from './movement-triggers';
 import {
   bankV070AssetWithInherentAction,
   discardV070AssetAsAction,
+  discardV070AssetVoluntarily,
+  voluntarilyDiscardableV070AssetInstanceIds,
 } from './assets';
 
 export type V070TurnAction =
@@ -73,6 +75,11 @@ export type V070TurnAction =
     }
   | {
       type: 'choose_hand_destination_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
+      type: 'choose_controlled_asset_target';
       playerId: PlayerId;
       targetInstanceId: string;
     }
@@ -149,6 +156,10 @@ export function reduceV070TurnAction(
       pending.kind === 'hand_destination_target'
       && action.type === 'choose_hand_destination_target'
       && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'controlled_asset_target'
+      && action.type === 'choose_controlled_asset_target'
+      && action.playerId === pending.playerId
     );
     if (!validContinuation) {
       throw new V070GameActionError('Resolve the pending printed Action effect choice first.');
@@ -162,6 +173,7 @@ export function reduceV070TurnAction(
       'resolve_clemency_choice',
       'choose_recovery_action_target',
       'choose_hand_destination_target',
+      'choose_controlled_asset_target',
     ].includes(action.type)) {
     throw new V070GameActionError('Resolve the pending Action card before continuing the turn.');
   }
@@ -198,6 +210,9 @@ export function reduceV070TurnAction(
       break;
     case 'choose_hand_destination_target':
       chooseHandDestinationTarget(next, action.playerId, action.targetInstanceId);
+      break;
+    case 'choose_controlled_asset_target':
+      chooseControlledAssetTarget(next, action.playerId, action.targetInstanceId);
       break;
     case 'resolve_censure_choice':
       resolveCensureChoice(
@@ -408,6 +423,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'neutral-new-recruits',
   'neutral-revolution',
   'neutral-reserves',
+  'neutral-requisition',
   'neutral-salvage',
   'neutral-tactical-planning',
   'diplomats-clemency',
@@ -484,6 +500,12 @@ function playActionCard(
     && player.zones.hand.length < 2) {
     throw new V070GameActionError(
       'New Recruits requires one other card in your Hand.',
+    );
+  }
+  if (card.id === 'neutral-requisition'
+    && voluntarilyDiscardableV070AssetInstanceIds(state, playerId).length === 0) {
+    throw new V070GameActionError(
+      'Requisition requires one Asset you can voluntarily discard.',
     );
   }
 
@@ -650,6 +672,28 @@ function continuePendingActionCard(state: V070GameState): void {
       )) {
         finishPendingActionCard(state);
       }
+      return;
+    case 'neutral-requisition':
+      state.pendingActionEffectChoice = {
+        kind: 'controlled_asset_target',
+        playerId: pending.playerId,
+        sourceActionInstanceId: pending.instanceId,
+        purpose: 'Requisition',
+        operation: 'voluntary_discard',
+        drawAfter: 2,
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          kind: 'controlled_asset_target',
+          playerId: pending.playerId,
+          sourceActionInstanceId: pending.instanceId,
+          purpose: 'Requisition',
+          operation: 'voluntary_discard',
+        },
+      });
       return;
     case 'neutral-salvage':
       state.pendingActionEffectChoice = {
@@ -938,6 +982,40 @@ function chooseRecoveryActionTarget(
     'Salvage',
     'discard',
   );
+}
+
+function chooseControlledAssetTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'controlled_asset_target'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'neutral-requisition') {
+    throw new V070GameActionError('No controlled-Asset Action choice is pending for that player.');
+  }
+
+  if (!voluntarilyDiscardableV070AssetInstanceIds(state, playerId).includes(targetInstanceId)) {
+    throw new V070GameActionError('Requisition must choose an Asset you can voluntarily discard.');
+  }
+
+  discardV070AssetVoluntarily(
+    state,
+    playerId,
+    targetInstanceId,
+    choice.purpose,
+  );
+
+  state.pendingActionEffectChoice = null;
+  if (choice.drawAfter > 0) {
+    drawIntoHand(state, playerId, choice.drawAfter, choice.purpose);
+  }
+  finishPendingActionCard(state);
 }
 
 function chooseHandDestinationTarget(
