@@ -140,9 +140,7 @@ export function viewV070GameForPlayer(
     pendingActionCard: state.pendingActionCard
       ? structuredClone(state.pendingActionCard)
       : null,
-    pendingActionEffectChoice: state.pendingActionEffectChoice
-      ? structuredClone(state.pendingActionEffectChoice)
-      : null,
+    pendingActionEffectChoice: viewPendingActionEffectChoice(state, viewer),
     pendingSanctionChoices: state.pendingSanctionChoices.map(
       choice => structuredClone(choice),
     ),
@@ -157,6 +155,21 @@ export function viewV070GameForPlayer(
       .filter(event => event.visibility === 'public' || event.visibility === viewer)
       .map(event => structuredClone(event)),
   };
+}
+
+function viewPendingActionEffectChoice(
+  state: V070GameState,
+  viewer: PlayerId,
+): V070GameState['pendingActionEffectChoice'] {
+  const choice = state.pendingActionEffectChoice;
+  if (!choice) return null;
+
+  const visible = structuredClone(choice);
+  if (visible.kind === 'dark_omens_graveyard_target'
+    && visible.playerId !== viewer) {
+    visible.candidateInstanceIds = [];
+  }
+  return visible;
 }
 
 function viewOverlays(state: V070GameState): V070OverlayView[] {
