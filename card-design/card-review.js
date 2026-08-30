@@ -33,10 +33,10 @@
     try {
       const current = await currentGame();
       root.dataset.currentGameAuthority = current.authorityUrl;
-      root.innerHTML = FACTION_ORDER.filter(([id]) => id !== 'neutral').map(([faction, label]) => {
-        const leaders = current.leaders.filter(leader => leader.faction === faction);
-        return `<section class="review-faction-block" id="leaders-${faction}" aria-labelledby="leaders-${faction}-title"><div class="review-faction-heading screen-only"><h3 id="leaders-${faction}-title">${esc(label)}</h3><span>${leaders.length} Leaders</span></div><div class="leader-review-grid">${leaders.map(leader => leaderCard(leader, current.displayVersion)).join('')}</div></section>`;
-      }).join('');
+      const leaders = FACTION_ORDER
+        .filter(([id]) => id !== 'neutral')
+        .flatMap(([faction]) => current.leaders.filter(leader => leader.faction === faction));
+      root.innerHTML = `<div class="review-faction-block leader-review-block"><div class="leader-review-grid">${leaders.map(leader => leaderCard(leader, current.displayVersion)).join('')}</div></div>`;
     } catch (error) {
       root.innerHTML = `<p class="review-note">Unable to load current Leader catalog: ${esc(error.message)}</p>`;
       console.error(error);

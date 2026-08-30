@@ -470,3 +470,94 @@
     gap: 4px;
   }
 }
+
+
+/* ---------- Compact catalog density pass ---------- */
+@media screen {
+  /* Keep the full-size production renders, but stop treating every small
+     conceptual group as its own full-width chapter. */
+  .developer-catalog-main .card-section {
+    padding-bottom: 56px;
+  }
+
+  .developer-catalog-main .card-section-heading {
+    margin-bottom: 24px;
+    padding-top: 32px;
+  }
+
+  .developer-catalog-main .review-faction-block {
+    margin-bottom: 34px;
+  }
+
+  .proposal-review-block,
+  .rite-review-block {
+    width: var(--catalog-shell);
+    margin: 0 auto 34px;
+  }
+
+  .proposal-review-pair,
+  .rite-review-pair {
+    min-width: 0;
+    margin-bottom: 0;
+  }
+
+  .proposal-review-pair > .review-faction-heading,
+  .rite-review-pair > .review-faction-heading {
+    margin-bottom: 9px;
+    padding-bottom: 7px;
+  }
+
+  .proposal-review-pair > .review-faction-heading h3,
+  .rite-review-pair > .review-faction-heading h3 {
+    font-family: var(--sans);
+    font-size: .94rem;
+    font-weight: 780;
+    letter-spacing: .01em;
+  }
+
+  .proposal-review-pair > .review-faction-heading span,
+  .rite-review-pair > .review-faction-heading span {
+    font-size: .6rem;
+  }
+
+  .proposal-face-grid,
+  .rite-face-grid {
+    gap: 12px;
+  }
+
+  /* Double-sided supplemental components should occupy two card columns,
+     not seize an otherwise empty full-width row. */
+  .supplemental-review-pair {
+    grid-column: span 2;
+  }
+
+  .supplemental-review-grid {
+    gap: 34px 18px;
+  }
+
+  .supplemental-face-grid {
+    gap: 12px;
+  }
+
+  /* The Deed intentionally remains a landscape, full-width special case. */
+  #supplemental-financiers-deed {
+    grid-column: 1 / -1;
+  }
+}
+
+@media screen and (min-width: 1060px) {
+  .proposal-review-block,
+  .rite-review-block {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 28px;
+    row-gap: 34px;
+    align-items: start;
+  }
+}
+
+@media screen and (max-width: 760px) {
+  .supplemental-review-pair {
+    grid-column: auto;
+  }
+}
