@@ -199,7 +199,7 @@ async function main() {
   const page = await context.newPage();
 
   try {
-    await page.goto(`${baseUrl}/card-design/`, { waitUntil: 'load' });
+    await page.goto(`${baseUrl}/card-design/?type=rite`, { waitUntil: 'load' });
     await page.waitForSelector(`#riteReviewSections[data-rite-count="${rites.length}"][data-ritual-count="1"]`, { timeout: 15000 });
 
     for (const rite of packagedRites) {
