@@ -3,6 +3,9 @@ import { loadCurrentGame } from '../game-data/current-game.mjs';
 const PROPOSAL_ART_ROOT = '/images/artwork/cards/diplomats/proposals';
 const RATIFIED_SEAL_SOURCE = '/images/artwork/supplemental/diplomats/ratified-wax-seal.webp';
 const root = document.querySelector('#proposalReviewSections');
+const catalogFilter = document.body?.classList.contains('developer-catalog-page')
+  ? window.GauntletCatalogFilter || null
+  : null;
 let currentDisplayVersion = 'Current';
 
 function esc(value) {
@@ -113,9 +116,14 @@ function updateProposalCounts(count) {
 
 async function renderProposalCatalog() {
   if (!root) return;
+  if (catalogFilter && (!catalogFilter.typeMatches('proposal') || !catalogFilter.factionMatches('diplomats'))) {
+    root.replaceChildren();
+    return;
+  }
   try {
     const currentGame = await loadCurrentGame();
-    const proposals = Array.isArray(currentGame.proposals) ? currentGame.proposals : [];
+    let proposals = Array.isArray(currentGame.proposals) ? currentGame.proposals : [];
+    if (catalogFilter?.sort === 'name') proposals = proposals.slice().sort((a, b) => a.name.localeCompare(b.name));
     if (!proposals.length) throw new Error('Current-game authority has no Proposals.');
     currentDisplayVersion = currentGame.displayVersion;
     updateProposalCounts(proposals.length);
