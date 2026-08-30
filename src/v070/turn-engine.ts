@@ -114,6 +114,22 @@ export type V070TurnAction =
       replaceAssetInstanceId: string;
     }
   | {
+      type: 'choose_soul_for_soul_targets';
+      playerId: PlayerId;
+      handInstanceId: string;
+      graveyardInstanceId: string;
+    }
+  | {
+      type: 'choose_accusation_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
+      type: 'resolve_accusation_choice';
+      playerId: PlayerId;
+      destination: 'draw_top' | 'graveyard';
+    }
+  | {
       type: 'resolve_censure_choice';
       playerId: PlayerId;
       sanctionInstanceId: string;
@@ -140,7 +156,8 @@ export function reduceV070TurnAction(
   action: V070TurnAction,
 ): V070GameState {
   if (action.type === 'resolve_clemency_choice'
-    || action.type === 'choose_forced_asset_target') {
+    || action.type === 'choose_forced_asset_target'
+    || action.type === 'resolve_accusation_choice') {
     requirePlayingGame(state);
   } else {
     requirePlayingTurn(state, action.playerId);
@@ -201,6 +218,18 @@ export function reduceV070TurnAction(
       pending.kind === 'pending_asset_bank_replacement'
       && action.type === 'choose_pending_asset_bank_replacement'
       && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'soul_for_soul_targets'
+      && action.type === 'choose_soul_for_soul_targets'
+      && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'accusation_target'
+      && action.type === 'choose_accusation_target'
+      && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'accusation_response'
+      && action.type === 'resolve_accusation_choice'
+      && action.playerId === pending.playerId
     );
     if (!validContinuation) {
       throw new V070GameActionError('Resolve the pending printed Action effect choice first.');
@@ -219,6 +248,9 @@ export function reduceV070TurnAction(
       'choose_territory_overlay_target',
       'choose_forced_asset_target',
       'choose_pending_asset_bank_replacement',
+      'choose_soul_for_soul_targets',
+      'choose_accusation_target',
+      'resolve_accusation_choice',
     ].includes(action.type)) {
     throw new V070GameActionError('Resolve the pending Action card before continuing the turn.');
   }
@@ -274,6 +306,20 @@ export function reduceV070TurnAction(
         action.playerId,
         action.replaceAssetInstanceId,
       );
+      break;
+    case 'choose_soul_for_soul_targets':
+      chooseSoulForSoulTargets(
+        next,
+        action.playerId,
+        action.handInstanceId,
+        action.graveyardInstanceId,
+      );
+      break;
+    case 'choose_accusation_target':
+      chooseAccusationTarget(next, action.playerId, action.targetInstanceId);
+      break;
+    case 'resolve_accusation_choice':
+      resolveAccusationChoice(next, action.playerId, action.destination);
       break;
     case 'resolve_censure_choice':
       resolveCensureChoice(
@@ -446,9 +492,11 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'financiers-compound-interest',
   'financiers-tariffs',
   'financiers-war-bonds',
+  'inquisition-accusation',
   'intelligence-regime-change',
   'military-high-command',
   'mystics-sacrifice-recovery',
+  'mystics-soul-for-soul',
 ] as const;
 
 function playActionCard(
@@ -564,6 +612,24 @@ function playActionCard(
       );
     }
     assertV070ForcedAssetChoicesSupported(state, opponentId);
+  }
+  if (card.id === 'mystics-soul-for-soul') {
+    if (player.zones.hand.length < 2) {
+      throw new V070GameActionError(
+        'Soul for Soul requires one other card in your Hand.',
+      );
+    }
+    if (player.zones.graveyard.length === 0) {
+      throw new V070GameActionError(
+        'Soul for Soul requires one card in your Graveyard.',
+      );
+    }
+  }
+  if (card.id === 'inquisition-accusation'
+    && state.players[otherPlayer(playerId)].zones.discardPile.length === 0) {
+    throw new V070GameActionError(
+      'Accusation requires at least one card in the opponent’s Discard Pile.',
+    );
   }
   if (isSimpleBankingActionCardId(card.id)) {
     pendingBankReplacementV070AssetInstanceIds(
@@ -938,6 +1004,74 @@ function continuePendingActionCard(state: V070GameState): void {
         finishPendingActionCard(state);
       }
       return;
+    case 'mystics-soul-for-soul':
+      if (state.players[pending.playerId].zones.hand.length === 0
+        || state.players[pending.playerId].zones.graveyard.length === 0) {
+        appendV070Event(state, {
+          type: 'action_effect_incomplete',
+          actor: pending.playerId,
+          visibility: 'public',
+          payload: {
+            sourceActionInstanceId: pending.instanceId,
+            purpose: 'Soul for Soul',
+            reason: 'required_exchange_target_unavailable',
+          },
+        });
+        finishPendingActionCard(state);
+        return;
+      }
+      state.pendingActionEffectChoice = {
+        kind: 'soul_for_soul_targets',
+        playerId: pending.playerId,
+        sourceActionInstanceId: pending.instanceId,
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          kind: 'soul_for_soul_targets',
+          playerId: pending.playerId,
+          sourceActionInstanceId: pending.instanceId,
+        },
+      });
+      return;
+    case 'inquisition-accusation': {
+      const opponentId = otherPlayer(pending.playerId);
+      if (state.players[opponentId].zones.discardPile.length === 0) {
+        appendV070Event(state, {
+          type: 'action_effect_incomplete',
+          actor: pending.playerId,
+          visibility: 'public',
+          payload: {
+            sourceActionInstanceId: pending.instanceId,
+            purpose: 'Accusation',
+            reason: 'required_opponent_discard_target_unavailable',
+          },
+        });
+        finishPendingActionCard(state);
+        return;
+      }
+      state.pendingActionEffectChoice = {
+        kind: 'accusation_target',
+        playerId: pending.playerId,
+        opponentId,
+        sourceActionInstanceId: pending.instanceId,
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          kind: 'accusation_target',
+          playerId: pending.playerId,
+          opponentId,
+          sourceActionInstanceId: pending.instanceId,
+          targetInstanceIds: [...state.players[opponentId].zones.discardPile],
+        },
+      });
+      return;
+    }
     case 'diplomats-detente':
     case 'financiers-compound-interest':
     case 'financiers-tariffs':
@@ -1233,6 +1367,157 @@ function chooseRecoveryActionTarget(
     'Salvage',
     'discard',
   );
+}
+
+function chooseSoulForSoulTargets(
+  state: V070GameState,
+  playerId: PlayerId,
+  handInstanceId: string,
+  graveyardInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'soul_for_soul_targets'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'mystics-soul-for-soul') {
+    throw new V070GameActionError(
+      'No Soul for Soul exchange choice is pending for that player.',
+    );
+  }
+
+  const player = state.players[playerId];
+  const handIndex = player.zones.hand.indexOf(handInstanceId);
+  const graveyardIndex = player.zones.graveyard.indexOf(graveyardInstanceId);
+  if (handIndex < 0) {
+    throw new V070GameActionError(
+      'Soul for Soul must choose one card from your Hand.',
+    );
+  }
+  if (graveyardIndex < 0) {
+    throw new V070GameActionError(
+      'Soul for Soul must choose one card from your Graveyard.',
+    );
+  }
+
+  player.zones.hand.splice(handIndex, 1);
+  player.zones.graveyard.splice(graveyardIndex, 1);
+  player.zones.hand.push(graveyardInstanceId);
+  player.zones.graveyard.push(handInstanceId);
+
+  appendV070Event(state, {
+    type: 'hand_graveyard_cards_exchanged',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      purpose: 'Soul for Soul',
+      handToGraveyardInstanceId: handInstanceId,
+      handToGraveyardCardId: state.cardInstances[handInstanceId]?.cardId,
+      graveyardToHandInstanceId: graveyardInstanceId,
+      graveyardToHandCardId: state.cardInstances[graveyardInstanceId]?.cardId,
+    },
+  });
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state);
+}
+
+function chooseAccusationTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'accusation_target'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'inquisition-accusation') {
+    throw new V070GameActionError(
+      'No Accusation target choice is pending for that player.',
+    );
+  }
+
+  if (!state.players[choice.opponentId].zones.discardPile.includes(targetInstanceId)) {
+    throw new V070GameActionError(
+      'Accusation must target a card in the opponent’s Discard Pile.',
+    );
+  }
+
+  state.pendingActionEffectChoice = {
+    kind: 'accusation_response',
+    playerId: choice.opponentId,
+    actionOwnerId: playerId,
+    sourceActionInstanceId: pending.instanceId,
+    targetInstanceId,
+  };
+
+  appendV070Event(state, {
+    type: 'accusation_target_chosen',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      sourceActionInstanceId: pending.instanceId,
+      targetInstanceId,
+      targetCardId: state.cardInstances[targetInstanceId]?.cardId,
+      opponentId: choice.opponentId,
+    },
+  });
+}
+
+function resolveAccusationChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  destination: 'draw_top' | 'graveyard',
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'accusation_response'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.playerId !== choice.actionOwnerId
+    || pending.cardId !== 'inquisition-accusation') {
+    throw new V070GameActionError(
+      'No Accusation destination choice is pending for that player.',
+    );
+  }
+
+  const discard = state.players[playerId].zones.discardPile;
+  const index = discard.indexOf(choice.targetInstanceId);
+  if (index < 0) {
+    throw new V070GameActionError(
+      'The chosen Accusation card is no longer in the opponent’s Discard Pile.',
+    );
+  }
+  discard.splice(index, 1);
+
+  if (destination === 'draw_top') {
+    state.players[playerId].zones.drawPile.unshift(choice.targetInstanceId);
+  } else {
+    state.players[playerId].zones.graveyard.push(choice.targetInstanceId);
+  }
+
+  appendV070Event(state, {
+    type: 'accusation_resolved',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      sourceActionInstanceId: pending.instanceId,
+      actionOwnerId: choice.actionOwnerId,
+      targetInstanceId: choice.targetInstanceId,
+      targetCardId: state.cardInstances[choice.targetInstanceId]?.cardId,
+      destination,
+    },
+  });
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state);
 }
 
 function choosePendingAssetBankReplacement(
