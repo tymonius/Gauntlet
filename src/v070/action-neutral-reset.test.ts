@@ -106,10 +106,20 @@ describe('v0.7.0 Neutral reset Actions', () => {
     expect(state.players.B.reshuffleCount).toBe(bReshufflesBefore + 1);
     expect(state.turnState?.actionsAvailable).toBe(1);
     expect(state.turnState?.actionsTaken.opening).toBe(1);
+    expect(state.turnState?.phaseActionGrants.opening).toBe(1);
     expect(state.events.some(event =>
       event.type === 'additional_action_granted'
       && (event.payload as { purpose?: string })?.purpose === 'Insurrection'
     )).toBe(true);
+
+    const followUp = state.players.B.zones.hand[0];
+    state = reduceV070TurnAction(state, {
+      type: 'play_action_card',
+      playerId: 'B',
+      cardInstanceId: followUp,
+    });
+    expect(state.turnState?.actionsAvailable).toBe(0);
+    expect(state.turnState?.actionsTaken.opening).toBe(2);
   });
 
   test('Insurrection effect shuffling is deterministic for the same authoritative state', () => {
