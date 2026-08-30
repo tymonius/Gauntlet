@@ -457,9 +457,13 @@ function hydrateReferenceElement(loadingCard, rendered) {
 
 async function hydrateReferenceCards() {
   if (!root) return;
+  const referenceComponents = supplementalGroups.flatMap(group => group.cards.map(component => ({ group, component }))).filter(({ component }) => component.referenceId);
+  if (!referenceComponents.length) {
+    root.dataset.referenceCardsReady = 'true';
+    return;
+  }
   const records = await loadReferenceRecords();
   const recordsById = new Map(records.map(record => [record.id, record]));
-  const referenceComponents = supplementalGroups.flatMap(group => group.cards.map(component => ({ group, component }))).filter(({ component }) => component.referenceId);
   const missing = referenceComponents.filter(({ component }) => !recordsById.has(component.referenceId));
   if (missing.length) throw new Error(`Reference-card contract mismatch: ${missing.map(({ component }) => component.referenceId).join(', ')}`);
 
