@@ -48,15 +48,58 @@ export function placeV070OverlayFromHand(
   territoryPosition: number,
   source: string,
 ): V070OverlayAttachment {
-  const territory = territoryAtPosition(state, territoryPosition);
-  if (!territory) {
-    throw new V070GameActionError('An Overlay must be attached to a Territory in the Gauntlet.');
-  }
-
   const player = state.players[owner];
   const handIndex = player.zones.hand.indexOf(instanceId);
   if (handIndex < 0) {
     throw new V070GameActionError('That Overlay card is not in the player’s Hand.');
+  }
+
+  const overlay = attachV070Overlay(
+    state,
+    owner,
+    instanceId,
+    territoryPosition,
+    source,
+  );
+  player.zones.hand.splice(handIndex, 1);
+  return overlay;
+}
+
+export function placeV070OverlayFromPendingAction(
+  state: V070GameState,
+  owner: PlayerId,
+  instanceId: string,
+  territoryPosition: number,
+  source: string,
+): V070OverlayAttachment {
+  const pending = state.pendingActionCard;
+  if (!pending
+    || pending.playerId !== owner
+    || pending.instanceId !== instanceId) {
+    throw new V070GameActionError(
+      'That Overlay card is not the player’s pending Action card.',
+    );
+  }
+
+  return attachV070Overlay(
+    state,
+    owner,
+    instanceId,
+    territoryPosition,
+    source,
+  );
+}
+
+function attachV070Overlay(
+  state: V070GameState,
+  owner: PlayerId,
+  instanceId: string,
+  territoryPosition: number,
+  source: string,
+): V070OverlayAttachment {
+  const territory = territoryAtPosition(state, territoryPosition);
+  if (!territory) {
+    throw new V070GameActionError('An Overlay must be attached to a Territory in the Gauntlet.');
   }
 
   const cardId = state.cardInstances[instanceId]?.cardId;
@@ -65,7 +108,6 @@ export function placeV070OverlayFromHand(
     throw new V070GameActionError('That card is not a released Territory Overlay.');
   }
 
-  player.zones.hand.splice(handIndex, 1);
   const overlay: V070OverlayAttachment = {
     instanceId,
     owner,
