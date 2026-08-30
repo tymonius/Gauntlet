@@ -52,7 +52,7 @@ const currentRulebookPath = path.join(ROOT, 'rulebook/player-facing/current-rule
 const currentRulebook = fs.readFileSync(currentRulebookPath, 'utf8');
 const expectedLogoReference = `../../${authority.imprint.logo}`;
 if (!currentRulebook.includes(`![TDS Games publisher mark](${expectedLogoReference})`)) {
-  console.error('Current v0.7.1 Rulebook must include the configured TDS Games publisher mark.');
+  console.error('Current Rulebook must include the configured TDS Games publisher mark.');
   process.exitCode = 1;
 }
 
