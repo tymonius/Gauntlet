@@ -195,6 +195,12 @@ export type V070PendingActionEffectChoice =
       opponentId: PlayerId;
       sourceActionInstanceId: string;
       revealedInstanceIds: string[];
+    }
+  | {
+      kind: 'threefold_vision_distribution';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      candidateInstanceIds: string[];
     };
 
 export type V070PendingSanctionChoice =
