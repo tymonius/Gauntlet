@@ -230,6 +230,7 @@ describe('v0.7.0 Contingency Plan Removed trigger', () => {
       'assetBank',
       'reshuffle-contingency',
     );
+    state.players.A.zones.discardPile = [];
     const otherDiscard = injectCard(
       state,
       'A',
