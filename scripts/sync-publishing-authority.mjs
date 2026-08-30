@@ -5,6 +5,29 @@ import { loadPublishingAuthority, ROOT, synchronizePublishingFactMarkers } from 
 const mode = process.argv.includes('--write') ? 'write' : 'check';
 const authority = await loadPublishingAuthority();
 
+const websiteFooterTargets = [
+  'index.html',
+  'rulebook/index.html',
+  'rules-arbiter/index.html',
+  'card-reference/index.html',
+  'deckbuilder/index.html',
+  'changelog/index.html',
+  'factions/military/index.html',
+  'factions/diplomats/index.html',
+  'factions/financiers/index.html',
+  'factions/intelligence/index.html',
+  'factions/mystics/index.html',
+  'factions/inquisition/index.html',
+  'playtest/batch/index.html',
+  'playtest/session/index.html',
+  'playtest/analysis/index.html',
+  'playtest/guide/index.html',
+  'playtest/tracked/index.html',
+  'playtest/onboarding/index.html',
+  'card-design/index.html',
+  'rules-assistant/worker-entry.js',
+];
+
 const targets = [
   {
     path: 'rulebook/player-facing/current-rulebook.md',
@@ -23,6 +46,14 @@ const targets = [
       'copyright.notice': 1,
     },
   },
+  ...websiteFooterTargets.map(path => ({
+    path,
+    expectedCounts: {
+      'publisher.line': 1,
+      'publisher.parent_line': 1,
+      'copyright.notice': 1,
+    },
+  })),
 ];
 
 let changed = false;
@@ -46,6 +77,14 @@ for (const target of targets) {
 
 if (changed && mode === 'check') process.exitCode = 1;
 if (!changed) console.log('Publishing authority is synchronized.');
+
+for (const relativePath of websiteFooterTargets) {
+  const source = fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
+  if (/unpublished(?:\s+pre-release)?\s+playtest\s+project/i.test(source)) {
+    console.error(`${relativePath} still describes Gauntlet as an unpublished playtest project.`);
+    process.exitCode = 1;
+  }
+}
 
 
 const currentRulebookPath = path.join(ROOT, 'rulebook/player-facing/current-rulebook.md');
