@@ -84,12 +84,13 @@ describe('PR #171 Last Stand terminology', () => {
     expect(normalizeV063LastStandText(normalized)).toBe(normalized);
   });
 
-  it('applies publication terminology only after live authority verification', () => {
+  it('keeps published browser authority verified while preserving v0.6.3 corpus verification', () => {
     const rulebookApp = read('rulebook/app.js');
     const corpus = read('rules-assistant/v063-public-corpus.js');
 
-    expect(rulebookApp).toContain("if (actualHash !== SOURCE_SHA256)");
-    expect(rulebookApp).toContain('normalizeV063LastStandText(source)');
+    expect(rulebookApp).toContain("const RELEASE_MANIFEST_URL = '../releases/v0.7.0/Gauntlet_v0.7.0_Manifest.json';");
+    expect(rulebookApp).toContain('actualHash !== rulebook.sha256');
+    expect(rulebookApp).not.toContain('normalizeV063LastStandText(source)');
     expect(corpus).toContain('if (rulebookHash !== CLEAN_V063_RULEBOOK_SHA256)');
     expect(corpus).toContain('if (canonicalHash !== CLEAN_V063_CANONICAL_DATA_SHA256)');
     expect(corpus.indexOf('validateV063Inputs({ rulebookMarkdown, canonicalData });')).toBeLessThan(corpus.indexOf('normalizeV063LastStandValue(canonicalData)'));

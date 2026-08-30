@@ -200,11 +200,15 @@ rulebookIndex = replaceRequired(
 await writeFile('rulebook/index.html', rulebookIndex);
 
 let rulebookApp = await readText('rulebook/app.js');
-rulebookApp = replacePatternRequired(rulebookApp, /const SOURCE_URL = .*?;/, `const SOURCE_URL = '../${PACKAGE}/Gauntlet_v0.7.0_Rulebook.md';`, 'Rulebook SOURCE_URL');
-rulebookApp = replacePatternRequired(rulebookApp, /const SOURCE_SHA256 = '.*?';/, `const SOURCE_SHA256 = '${manifest.binding_sources.rulebook.sha256}';`, 'Rulebook SOURCE_SHA256');
-rulebookApp = replacePatternRequired(rulebookApp, /const PUBLISHED_SOURCE_URL = .*?;/, `const PUBLISHED_SOURCE_URL = '../${PACKAGE}/Gauntlet_v0.7.0_Rulebook.md';`, 'Rulebook PUBLISHED_SOURCE_URL');
-rulebookApp = replacePatternRequired(rulebookApp, /const PDF_URL = .*?;/, `const PDF_URL = '../${PACKAGE}/Gauntlet_v0.7.0_Rulebook_Booklet.pdf';`, 'Rulebook PDF_URL');
 rulebookApp = rulebookApp.replaceAll('v0.6.3', RELEASE_VERSION);
+requireContains(
+  rulebookApp,
+  `const RELEASE_MANIFEST_URL = '../${PACKAGE}/Gauntlet_v0.7.0_Manifest.json';`,
+  'Rulebook release-manifest binding',
+);
+requireContains(rulebookApp, 'manifest?.binding_sources?.rulebook', 'Rulebook manifest Rulebook binding');
+requireContains(rulebookApp, 'actualHash !== rulebook.sha256', 'Rulebook manifest hash verification');
+requireContains(rulebookApp, 'booklet.sha256.slice(0, 8)', 'Rulebook booklet manifest revision');
 rulebookApp = replacePatternRequired(
   rulebookApp,
   /function modeFromUrl\(\) \{[\s\S]*?\n\}/,
@@ -213,14 +217,9 @@ rulebookApp = replacePatternRequired(
 );
 await writeFile('rulebook/app.js', rulebookApp);
 
-let rulebookToggleTest = await readText('tests/rulebook-ruleset-toggle.test.ts');
-rulebookToggleTest = replacePatternRequired(
-  rulebookToggleTest,
-  /expect\(app\)\.toContain\("const SOURCE_SHA256 = '[a-f0-9]{64}';"\);/,
-  `expect(app).toContain("const SOURCE_SHA256 = '${manifest.binding_sources.rulebook.sha256}';");`,
-  'Rulebook toggle SHA assertion',
-);
-await writeFile('tests/rulebook-ruleset-toggle.test.ts', rulebookToggleTest);
+const rulebookToggleTest = await readText('tests/rulebook-ruleset-toggle.test.ts');
+requireContains(rulebookToggleTest, 'RELEASE_MANIFEST_URL', 'Rulebook toggle manifest assertion');
+requireContains(rulebookToggleTest, "expect(app).not.toContain('SOURCE_SHA256')", 'Rulebook toggle stale-hash guard');
 
 let changelog = await readText('changelog/index.html');
 changelog = replaceOrConfirm(changelog, '<div><dt>Current release</dt><dd>v0.6.3</dd></div>', '<div><dt>Current release</dt><dd>v0.7.0</dd></div>', 'changelog current release');
