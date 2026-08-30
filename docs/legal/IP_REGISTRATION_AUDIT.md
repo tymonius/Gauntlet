@@ -211,6 +211,10 @@ Current USPTO base filing fee: **$350 per class**, before possible additional fe
 
 ### Entity ownership
 
+The current business architecture treats **TDS Games** as the game-publishing imprint of **Misty Hollow Enterprises** beginning with the v0.7.1 candidate. Misty Hollow Enterprises LLC is the intended operating entity but is not represented as formed in player-facing materials until Virginia formation is complete.
+
+Gauntlet copyright remains with **Tymon Scott**. The intended operating model is a written game-publishing license from the copyright owner to Misty Hollow Enterprises, operating through TDS Games; the publishing identity does not itself transfer copyright or trademark ownership.
+
 Trademark ownership should be decided **before** filing, particularly if an intent-to-use application is contemplated.
 
 Copyright registration does not need to be delayed solely to wait for formation of a future company: registrations can be made in the current copyright owner's name and copyright ownership can later be transferred by written assignment. Any transfer should be documented and, where useful, recorded.
@@ -238,7 +242,7 @@ Copyright registration does not need to be delayed solely to wait for formation 
 - [ ] Create an asset/IP ledger and keep it current with each release.
 - [ ] Adopt contributor IP terms before accepting substantive outside contributions.
 - [ ] Document licenses for fonts, libraries, textures, and other third-party production assets.
-- [ ] Establish the relationship between the eventual operating entity, TDS Games publishing brand, and Gauntlet IP ownership.
+- [x] Establish working relationship: TDS Games is the MHE game-publishing imprint; Gauntlet IP remains with Tymon Scott and is intended to be licensed to the operating company. Finalize the written license after entity formation.
 - [ ] Evaluate website terms/privacy and commercial product-liability needs before paid release.
 
 ## 8. Authoritative reference points
