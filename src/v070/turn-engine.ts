@@ -385,6 +385,8 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'neutral-rallying-cry',
   'neutral-arcane-knowledge',
   'neutral-contraband',
+  'neutral-insurrection',
+  'neutral-revolution',
   'diplomats-clemency',
 ] as const;
 
@@ -562,6 +564,14 @@ function continuePendingActionCard(state: V070GameState): void {
       };
       appendActionTargetChoicePending(state, pending.playerId, pending.instanceId, 'contraband_target');
       return;
+    case 'neutral-insurrection':
+      resolveInsurrectionAction(state, pending.playerId, pending.instanceId);
+      finishPendingActionCard(state);
+      return;
+    case 'neutral-revolution':
+      resolveRevolutionAction(state, pending.playerId);
+      finishPendingActionCard(state);
+      return;
     case 'diplomats-clemency': {
       const opponentId = otherPlayer(pending.playerId);
       state.pendingActionEffectChoice = {
@@ -588,6 +598,99 @@ function continuePendingActionCard(state: V070GameState): void {
         `Unsupported pending Action effect: ${pending.cardId}.`,
       );
   }
+}
+
+function resolveInsurrectionAction(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+): void {
+  discardEntireHand(state, playerId, 'Insurrection');
+
+  for (const current of ['A', 'B'] as const) {
+    shuffleDiscardIntoDrawPile(
+      state,
+      current,
+      `Insurrection:${sourceActionInstanceId}`,
+    );
+  }
+
+  drawIntoHand(state, playerId, 3, 'Insurrection');
+
+  const turnState = requireTurnState(state);
+  turnState.actionsAvailable += 1;
+  appendV070Event(state, {
+    type: 'additional_action_granted',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      amount: 1,
+      purpose: 'Insurrection',
+      actionsAvailable: turnState.actionsAvailable,
+    },
+  });
+}
+
+function resolveRevolutionAction(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  const opponent = otherPlayer(playerId);
+  const playerDiscarded = discardEntireHand(state, playerId, 'Revolution');
+  const opponentDiscarded = discardEntireHand(state, opponent, 'Revolution');
+
+  drawIntoHand(state, playerId, opponentDiscarded.length, 'Revolution');
+  drawIntoHand(state, opponent, playerDiscarded.length, 'Revolution');
+}
+
+function discardEntireHand(
+  state: V070GameState,
+  playerId: PlayerId,
+  purpose: string,
+): string[] {
+  const player = state.players[playerId];
+  const discarded = player.zones.hand.splice(0);
+  player.zones.discardPile.push(...discarded);
+
+  appendV070Event(state, {
+    type: 'hand_discarded',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      count: discarded.length,
+      purpose,
+    },
+  });
+
+  return discarded;
+}
+
+function shuffleDiscardIntoDrawPile(
+  state: V070GameState,
+  playerId: PlayerId,
+  purpose: string,
+): void {
+  const player = state.players[playerId];
+  if (player.zones.discardPile.length === 0) return;
+
+  player.reshuffleCount += 1;
+  player.zones.drawPile = deterministicV070Shuffle(
+    [...player.zones.drawPile, ...player.zones.discardPile],
+    `${state.seed}:${playerId}:effect-reshuffle:${player.reshuffleCount}:${purpose}`,
+  );
+  player.zones.discardPile = [];
+
+  appendV070Event(state, {
+    type: 'discard_reshuffled',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      reshuffleCount: player.reshuffleCount,
+      cardCount: player.zones.drawPile.length,
+      purpose,
+      effectDriven: true,
+    },
+  });
 }
 
 function chooseRecoveryActionTarget(
