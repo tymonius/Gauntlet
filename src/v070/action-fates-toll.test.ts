@@ -10,6 +10,7 @@ import {
   V070_SANCTIONS_CENSURE_ID,
 } from './sanctions';
 import { currentV070MovementStep } from './rules';
+import { viewV070GameForPlayer } from './views';
 
 const militaryStarter = 'military-commandant-holdfast';
 
@@ -109,6 +110,28 @@ describe("v0.7.0 Fate's Toll Action", () => {
       playerId: 'B',
       sourceActionInstanceId: source,
     });
+
+    const publicPending = state.events.find(event =>
+      event.type === 'action_effect_choice_pending'
+      && (event.payload as { sourceActionInstanceId?: string })
+        ?.sourceActionInstanceId === source
+    );
+    expect(publicPending?.payload).not.toHaveProperty('targetInstanceIds');
+
+    const ownView = viewV070GameForPlayer(state, 'B');
+    const opponentView = viewV070GameForPlayer(state, 'A');
+    expect(ownView.events.some(event =>
+      event.type === 'action_effect_choice_options'
+      && (event.payload as { sourceActionInstanceId?: string })
+        ?.sourceActionInstanceId === source
+      && (event.payload as { targetInstanceIds?: string[] })
+        ?.targetInstanceIds?.includes(payment)
+    )).toBe(true);
+    expect(opponentView.events.some(event =>
+      event.type === 'action_effect_choice_options'
+      && (event.payload as { sourceActionInstanceId?: string })
+        ?.sourceActionInstanceId === source
+    )).toBe(false);
 
     state = reduceV070TurnAction(state, {
       type: 'choose_fates_toll_cost',
