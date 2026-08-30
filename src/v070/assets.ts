@@ -75,6 +75,69 @@ export function bankableV070AssetInstanceIds(
   });
 }
 
+export function inherentBankActionV070AssetInstanceIds(
+  state: V070GameState,
+  playerId: PlayerId,
+): string[] {
+  return bankableV070AssetInstanceIds(state, playerId).filter(instanceId => {
+    const card = canonicalCardForInstance(state, instanceId);
+    return !cardHasSpecialBankingAction(card);
+  });
+}
+
+export function bankV070AssetWithInherentAction(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+  replaceAssetInstanceId?: string,
+): void {
+  const card = canonicalCardForInstance(state, instanceId);
+  if (!cardHasAssetEffect(card)) {
+    throw new V070GameActionError(
+      'The inherent Bank Action requires a card with an Asset effect.',
+    );
+  }
+  if (cardHasSpecialBankingAction(card)) {
+    throw new V070GameActionError(
+      `${card.name} has a printed banking Action that overrides the inherent Bank procedure.`,
+    );
+  }
+
+  bankV070AssetFromHand(state, playerId, instanceId, {
+    replaceAssetInstanceId,
+    purpose: 'Inherent Bank Action',
+  });
+}
+
+export function voluntarilyDiscardableV070AssetInstanceIds(
+  state: V070GameState,
+  playerId: PlayerId,
+): string[] {
+  return replaceableV070AssetInstanceIds(state, playerId);
+}
+
+export function discardV070AssetAsAction(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+): void {
+  const discardable = voluntarilyDiscardableV070AssetInstanceIds(state, playerId);
+  if (!discardable.includes(instanceId)) {
+    if (!state.players[playerId].zones.assetBank.includes(instanceId)) {
+      throw new V070GameActionError('That card is not a controlled banked Asset.');
+    }
+    throw new V070GameActionError('That Asset cannot be voluntarily discarded now.');
+  }
+
+  removeBankedAssetToDiscard(
+    state,
+    playerId,
+    instanceId,
+    'Discard Asset as an Action',
+    false,
+  );
+}
+
 export function bankV070AssetFromHand(
   state: V070GameState,
   playerId: PlayerId,
@@ -357,6 +420,13 @@ function canonicalCardForInstance(
   const card = cardId ? v070CanonicalContent.cardsById.get(cardId) : undefined;
   if (!card) throw new V070GameActionError(`Unknown card instance ${instanceId}.`);
   return card;
+}
+
+function cardHasSpecialBankingAction(card: V070CanonicalCard): boolean {
+  return card.effects.some(effect =>
+    effect.label === 'Action'
+    && /\bbank this card\b/i.test(effect.text)
+  );
 }
 
 function cardHasAssetEffect(card: V070CanonicalCard): boolean {
