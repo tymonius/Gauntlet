@@ -155,6 +155,13 @@ export type V070TurnAction =
       targetInstanceId: string;
     }
   | {
+      type: 'resolve_threefold_vision_distribution';
+      playerId: PlayerId;
+      handInstanceId: string;
+      discardInstanceId: string;
+      graveyardInstanceId: string;
+    }
+  | {
       type: 'resolve_censure_choice';
       playerId: PlayerId;
       sanctionInstanceId: string;
@@ -275,6 +282,10 @@ export function reduceV070TurnAction(
       pending.kind === 'act_of_faith_graveyard_target'
       && action.type === 'choose_act_of_faith_graveyard_target'
       && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'threefold_vision_distribution'
+      && action.type === 'resolve_threefold_vision_distribution'
+      && action.playerId === pending.playerId
     );
     if (!validContinuation) {
       throw new V070GameActionError('Resolve the pending printed Action effect choice first.');
@@ -301,6 +312,7 @@ export function reduceV070TurnAction(
       'choose_opponent_hand_discard_target',
       'choose_dark_omens_graveyard_target',
       'choose_act_of_faith_graveyard_target',
+      'resolve_threefold_vision_distribution',
     ].includes(action.type)) {
     throw new V070GameActionError('Resolve the pending Action card before continuing the turn.');
   }
@@ -404,6 +416,15 @@ export function reduceV070TurnAction(
         next,
         action.playerId,
         action.targetInstanceId,
+      );
+      break;
+    case 'resolve_threefold_vision_distribution':
+      resolveThreefoldVisionDistribution(
+        next,
+        action.playerId,
+        action.handInstanceId,
+        action.discardInstanceId,
+        action.graveyardInstanceId,
       );
       break;
     case 'resolve_censure_choice':
@@ -575,6 +596,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'diplomats-clemency',
   'diplomats-detente',
   'financiers-compound-interest',
+  'financiers-monetary-crisis',
   'financiers-tariffs',
   'financiers-war-bonds',
   'inquisition-accusation',
@@ -588,6 +610,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'mystics-dark-omens',
   'mystics-sacrifice-recovery',
   'mystics-soul-for-soul',
+  'mystics-threefold-vision',
 ] as const;
 
 function playActionCard(
@@ -746,6 +769,12 @@ function playActionCard(
     && state.players[otherPlayer(playerId)].zones.drawPile.length === 0) {
     throw new V070GameActionError(
       'Act of Faith requires at least one card in the opponent’s Draw Pile.',
+    );
+  }
+  if (card.id === 'mystics-threefold-vision'
+    && player.zones.drawPile.length < 3) {
+    throw new V070GameActionError(
+      'Threefold Vision requires at least three cards in your Draw Pile.',
     );
   }
   if (isSimpleBankingActionCardId(card.id)) {
@@ -1185,6 +1214,62 @@ function continuePendingActionCard(state: V070GameState): void {
           opponentId,
           sourceActionInstanceId: pending.instanceId,
           targetInstanceIds: [...state.players[opponentId].zones.discardPile],
+        },
+      });
+      return;
+    }
+    case 'financiers-monetary-crisis':
+      resolveMonetaryCrisisAction(state, pending.playerId);
+      finishPendingActionCard(state);
+      return;
+    case 'mystics-threefold-vision': {
+      const candidates = state.players[pending.playerId].zones.drawPile.slice(0, 3);
+      if (candidates.length < 3) {
+        appendV070Event(state, {
+          type: 'action_effect_incomplete',
+          actor: pending.playerId,
+          visibility: 'public',
+          payload: {
+            sourceActionInstanceId: pending.instanceId,
+            purpose: 'Threefold Vision',
+            reason: 'required_draw_pile_cards_unavailable',
+            availableCount: candidates.length,
+          },
+        });
+        finishPendingActionCard(state);
+        return;
+      }
+
+      state.pendingActionEffectChoice = {
+        kind: 'threefold_vision_distribution',
+        playerId: pending.playerId,
+        sourceActionInstanceId: pending.instanceId,
+        candidateInstanceIds: [...candidates],
+      };
+      appendV070Event(state, {
+        type: 'draw_pile_cards_looked_at',
+        actor: pending.playerId,
+        visibility: pending.playerId,
+        payload: {
+          purpose: 'Threefold Vision',
+          sourceActionInstanceId: pending.instanceId,
+          instanceIds: [...candidates],
+          cards: candidates.map(instanceId => ({
+            instanceId,
+            cardId: state.cardInstances[instanceId]?.cardId,
+          })),
+        },
+      });
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          kind: 'threefold_vision_distribution',
+          playerId: pending.playerId,
+          sourceActionInstanceId: pending.instanceId,
+          purpose: 'Threefold Vision',
+          candidateCount: candidates.length,
         },
       });
       return;
@@ -1757,6 +1842,114 @@ function chooseSoulForSoulTargets(
       handToGraveyardCardId: state.cardInstances[handInstanceId]?.cardId,
       graveyardToHandInstanceId: graveyardInstanceId,
       graveyardToHandCardId: state.cardInstances[graveyardInstanceId]?.cardId,
+    },
+  });
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state);
+}
+
+function resolveMonetaryCrisisAction(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  const discardedByPlayer = {
+    A: [...state.players.A.zones.hand],
+    B: [...state.players.B.zones.hand],
+  } satisfies Record<PlayerId, string[]>;
+
+  for (const owner of ['A', 'B'] as const) {
+    state.players[owner].zones.hand = [];
+    state.players[owner].zones.discardPile.push(...discardedByPlayer[owner]);
+  }
+
+  appendV070Event(state, {
+    type: 'hands_discarded',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      purpose: 'Monetary Crisis',
+      players: (['A', 'B'] as const).map(owner => ({
+        playerId: owner,
+        cards: discardedByPlayer[owner].map(instanceId => ({
+          instanceId,
+          cardId: state.cardInstances[instanceId]?.cardId,
+        })),
+      })),
+    },
+  });
+
+  // Both Hands are fully discarded before either player draws.
+  drawIntoHand(state, 'A', 2, 'Monetary Crisis');
+  drawIntoHand(state, 'B', 2, 'Monetary Crisis');
+}
+
+function resolveThreefoldVisionDistribution(
+  state: V070GameState,
+  playerId: PlayerId,
+  handInstanceId: string,
+  discardInstanceId: string,
+  graveyardInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'threefold_vision_distribution'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'mystics-threefold-vision') {
+    throw new V070GameActionError(
+      'No Threefold Vision distribution choice is pending for that player.',
+    );
+  }
+
+  const assigned = [handInstanceId, discardInstanceId, graveyardInstanceId];
+  if (new Set(assigned).size !== 3) {
+    throw new V070GameActionError(
+      'Threefold Vision must assign three different cards.',
+    );
+  }
+  const candidates = choice.candidateInstanceIds;
+  if (assigned.some(instanceId => !candidates.includes(instanceId))
+    || candidates.some(instanceId => !assigned.includes(instanceId))) {
+    throw new V070GameActionError(
+      'Threefold Vision must assign exactly the three cards it looked at.',
+    );
+  }
+
+  const drawPile = state.players[playerId].zones.drawPile;
+  if (candidates.some((instanceId, index) => drawPile[index] !== instanceId)) {
+    throw new V070GameActionError(
+      'The Threefold Vision cards are no longer the top three cards of your Draw Pile.',
+    );
+  }
+
+  drawPile.splice(0, 3);
+  state.players[playerId].zones.hand.push(handInstanceId);
+  state.players[playerId].zones.discardPile.push(discardInstanceId);
+  state.players[playerId].zones.graveyard.push(graveyardInstanceId);
+
+  appendV070Event(state, {
+    type: 'threefold_vision_public_cards_routed',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      purpose: 'Threefold Vision',
+      discardInstanceId,
+      discardCardId: state.cardInstances[discardInstanceId]?.cardId,
+      graveyardInstanceId,
+      graveyardCardId: state.cardInstances[graveyardInstanceId]?.cardId,
+    },
+  });
+  appendV070Event(state, {
+    type: 'threefold_vision_hand_card_routed',
+    actor: playerId,
+    visibility: playerId,
+    payload: {
+      purpose: 'Threefold Vision',
+      handInstanceId,
+      handCardId: state.cardInstances[handInstanceId]?.cardId,
     },
   });
 
