@@ -7,7 +7,7 @@ const runtime = read('game-data/current-game.mjs');
 const nodeAuthority = read('scripts/current-game-authority.mjs');
 const ttsCatalog = read('scripts/tts-current-catalog.mjs');
 const componentLoader = read('scripts/tts-component-contract.mjs');
-const releaseBuilder = read('scripts/build-v070-release-source.mjs');
+const releaseBuilder = read('scripts/build-v071-release-source.mjs');
 const rulebook = read('rulebook/player-facing/current-rulebook.md');
 const artworkWorker = read('workers/artwork-authoring/src/index.js');
 const artworkSession = read('workers/artwork-authoring/src/index-session.js');
@@ -31,12 +31,12 @@ const TRANSITIONAL_RUNTIME_MARKERS = [
 ];
 
 describe('complete current-game authority', () => {
-  it('is a native, complete v0.7.1 candidate authority rather than a resolution manifest', () => {
+  it('is a native, complete v0.7.1 release authority rather than a resolution manifest', () => {
     expect(authority.schemaVersion).toBe(2);
     expect(authority.authority).toBe('current-game');
-    expect(authority.version).toBe('v0.7.1-candidate');
-    expect(authority.displayVersion).toBe('v0.7.1 candidate');
-    expect(authority.status).toBe('active-development');
+    expect(authority.version).toBe('v0.7.1');
+    expect(authority.displayVersion).toBe('v0.7.1');
+    expect(authority.status).toBe('current-release');
     expect(authority.runtimePolicy).toContain('complete current gameplay authority');
     expect(authority.runtimePolicy).toContain('historical source and change documents are provenance only');
 
@@ -45,13 +45,13 @@ describe('complete current-game authority', () => {
     }
   });
 
-  it('advances starter Deck authority to the v0.7.1 candidate when the Mystics packages change', () => {
-    expect(authority.starterDecks.version).toBe('v0.7.1-candidate');
-    expect(authority.starterDecks.status).toBe('Active v0.7.1 candidate starter set');
+  it('publishes the v0.7.1 starter Deck authority with the Mystics packages', () => {
+    expect(authority.starterDecks.version).toBe('v0.7.1');
+    expect(authority.starterDecks.status).toBe('Active v0.7.1 starter set');
     expect(authority.starterDecks.purpose).toContain('selected three-Rite package');
-    expect(authority.starterDecks.optimizationPolicy.status).toBe('active-for-v0.7.1-candidate');
+    expect(authority.starterDecks.optimizationPolicy.status).toBe('active-for-v0.7.1');
     expect(authority.starterDecks.optimizationPolicy.mysticsRitePackageSupport).toBe(true);
-    expect(authority.starterDecks.approval.status).toBe('approved-for-v0.7.1-candidate');
+    expect(authority.starterDecks.approval.status).toBe('approved-for-v0.7.1');
 
     // Historical source paths remain provenance; active release identity must not.
     expect(authority.starterDecks.optimizationPolicy.predecessorAudit).toContain('v0.6.3');
@@ -315,7 +315,7 @@ describe('complete current-game authority', () => {
 
     expect(releaseBuilder).toContain('loadCurrentGameAuthority()');
     expect(releaseBuilder).toContain('gameplay: clone(authority.gameplay)');
-    expect(releaseBuilder).toContain("source_version: authority.version");
+    expect(releaseBuilder).toContain('source_version: RELEASE_VERSION');
     expect(releaseBuilder).not.toContain('readCurrentJsonSource');
     expect(releaseBuilder).not.toContain('baseGameplay');
     expect(releaseBuilder).not.toContain('cardChanges');
@@ -347,8 +347,9 @@ describe('complete current-game authority', () => {
     expect(livePublicationWorkflow).not.toContain("'tts/artwork-direction-overrides.js'");
   });
 
-  it('keeps the maintained Rulebook on the v0.7.1 candidate identity', () => {
-    expect(rulebook).toContain('**Version 0.7.1 Candidate**');
+  it('keeps the maintained Rulebook on the v0.7.1 release identity', () => {
+    expect(rulebook).toContain('**Version 0.7.1**');
+    expect(rulebook).not.toContain('**Version 0.7.1 Candidate**');
     expect(rulebook).toContain('## Card anatomy');
     expect(rulebook).toContain('Terms occur during Onset');
     expect(rulebook).not.toContain('GENERATED CLEAN V0.6.3');

@@ -78,7 +78,7 @@ function expectNavigationTargets(file: string, expectedTargets: string[]) {
   }
 }
 
-describe("v0.7.0 player-site release preparation", () => {
+describe("v0.7.1 player-site release", () => {
   it("keeps every static internal link and asset reference on core player pages resolvable", () => {
     for (const file of CORE_PLAYER_HTML) {
       const html = read(file);
@@ -123,15 +123,15 @@ describe("v0.7.0 player-site release preparation", () => {
     ]);
   });
 
-  it("keeps the Card Reference on current-game authority with v0.7.0 publication identity", () => {
+  it("keeps the Card Reference on current-game authority with v0.7.1 publication identity", () => {
     const html = read("card-reference/index.html");
     const app = read("card-reference/app.js");
 
-    expect(html).toContain("<title>Gauntlet v0.7.0 Card Reference</title>");
-    expect(html).toContain("Quick rules lookup · v0.7.0 production");
-    expect(html).toContain("Current v0.7.0 production card reference.");
+    expect(html).toContain("<title>Gauntlet v0.7.1 Card Reference</title>");
+    expect(html).toContain("Quick rules lookup · v0.7.1 production");
+    expect(html).toContain("Current v0.7.1 production card reference.");
     expect(app).toContain("document.title = `Gauntlet ${state.version} Card Reference`;");
-    expect(html).toContain("v0.7.0 Release");
+    expect(html).toContain("v0.7.1 Release");
     expect(app).toContain("loadCurrentGame");
     expect(app).toContain("currentGame.cards");
     expect(app).toContain("currentGame.territories");
@@ -142,43 +142,43 @@ describe("v0.7.0 player-site release preparation", () => {
     expect(app).not.toContain("Authority set");
   });
 
-  it("uses the published v0.7.0 Rules Arbiter remotely and preserves immutable local fallback", () => {
+  it("uses the published v0.7.1 Rules Arbiter remotely and preserves immutable local fallback", () => {
     const html = read("rules-arbiter/index.html");
     const app = read("rules-arbiter/app.js");
-    const corpus = read("rules-assistant/v070-public-corpus.js");
+    const corpus = read("rules-assistant/v071-public-corpus.js");
     const workerEntry = read("rules-assistant/worker-entry.js");
 
-    expect(html).toContain("Rules support · v0.7.0");
+    expect(html).toContain("Rules support · v0.7.1");
     expect(html).toContain("Answers include the relevant current Rulebook sources");
-    expect(app).toContain('const CURRENT_PUBLIC_RELEASE = "v0.7.0";');
-    expect(app).toContain("../rules-assistant/v070-public-corpus.js");
+    expect(app).toContain('const CURRENT_PUBLIC_RELEASE = "v0.7.1";');
+    expect(app).toContain("../rules-assistant/v071-public-corpus.js");
     expect(app).toContain("payload.published !== true");
     expect(app).toContain("payload.reconstruction !== false");
     expect(app).toContain("payload.currentPublicRelease !== CURRENT_PUBLIC_RELEASE");
     expect(app).toContain("return askLocal(question);");
-    expect(corpus).toContain("releases/v0.7.0/Gauntlet_v0.7.0_Rulebook.md");
-    expect(corpus).toContain("releases/v0.7.0/Gauntlet_v0.7.0_Canonical_Data.json");
+    expect(corpus).toContain("releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md");
+    expect(corpus).toContain("releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json");
     expect(corpus).not.toContain("loadV064CandidateRulesCorpus");
     expect(workerEntry).toContain('import worker from "./worker-v070.js";');
     expect(workerEntry).toContain('import v063Worker from "./worker-v063.js";');
   });
 
-  it("keeps the Deckbuilder on released v0.7.0 by default with an explicit current-candidate view", () => {
+  it("keeps the Deckbuilder on released v0.7.1 by default and preserves future-candidate support", () => {
     const html = read("deckbuilder/index.html");
     const runtime = read("deckbuilder/v061-runtime.js");
     const print = read("deckbuilder/print.js");
     const bulkPrint = read("deckbuilder/print-all-starters.js");
 
-    expect(html).toContain("Gauntlet v0.7.0 Deckbuilder");
-    expect(html).toContain("Playtest tool · canonical v0.7.0");
+    expect(html).toContain("Gauntlet v0.7.1 Deckbuilder");
+    expect(html).toContain("Playtest tool · canonical v0.7.1");
     expect(visibleText(html)).not.toContain("v0.6.1");
-    expect(html).toContain('href="../v0.7.0/"');
+    expect(html).toContain('href="../v0.7.1/"');
     expect(html).not.toContain(`href="${LEGACY_RELEASE_ALIAS}"`);
     expect(html).not.toContain('href="../releases/v0.6.1/"');
     expect(runtime).toContain('import("../game-data/ruleset.mjs")');
     expect(html).toContain('data-ruleset="released"');
     expect(html).toContain('data-ruleset="candidate"');
-    expect(runtime).toContain('gauntlet-v0.7.0-decks');
+    expect(runtime).toContain('gauntlet-v0.7.1-decks');
     expect(runtime).toContain('gauntlet-current-game-decks');
     expect(runtime).toContain("state.currentGameVersion = data.version");
     expect(runtime).toContain("state.currentGameDisplayVersion = data.displayVersion");
