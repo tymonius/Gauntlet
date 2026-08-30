@@ -142,7 +142,8 @@ export type V070PendingActionEffectChoice =
         | 'War Bonds'
         | 'Regime Change'
         | 'Reembodiment'
-        | 'Tariffs';
+        | 'Tariffs'
+        | 'Anathema';
       replacementInstanceIds: string[];
     }
   | {
@@ -201,6 +202,12 @@ export type V070PendingActionEffectChoice =
       playerId: PlayerId;
       sourceActionInstanceId: string;
       candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'anathema_target';
+      playerId: PlayerId;
+      opponentId: PlayerId;
+      sourceActionInstanceId: string;
     };
 
 export type V070PendingSanctionChoice =
