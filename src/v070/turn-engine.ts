@@ -4,10 +4,12 @@ import {
   applyV070MovementChoice,
   beginNormalV070Movement,
   canInitiateV070LastStand,
+  currentV070MovementStep,
   createV070BattleOnset,
   createV070LastStandOnset,
   createV070TurnState,
   grantCurrentPhaseV070Actions,
+  queueNormalV070MovementStep,
   spendV070Action,
   type MovementChoice,
   type PlayerId,
@@ -622,11 +624,13 @@ function discardAsset(
 
 export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'neutral-rallying-cry',
+  'neutral-advance-guard',
   'neutral-arcane-knowledge',
   'neutral-capital-punishment',
   'neutral-consolidation',
   'neutral-contraband',
   'neutral-disruption',
+  'neutral-forced-march',
   'neutral-insurrection',
   'neutral-landslide',
   'neutral-new-recruits',
@@ -707,6 +711,13 @@ function playActionCard(
     && player.zones.discardPile.length === 0) {
     throw new V070GameActionError(
       'Contraband requires at least one card in your Discard Pile.',
+    );
+  }
+  if ((card.id === 'neutral-advance-guard'
+      || card.id === 'neutral-forced-march')
+    && turnState.phase !== 'opening') {
+    throw new V070GameActionError(
+      `${card.name} may be played only during Opening.`,
     );
   }
   if (card.id === 'neutral-capital-punishment') {
@@ -976,6 +987,50 @@ function continuePendingActionCard(state: V070GameState): void {
   switch (pending.cardId) {
     case 'neutral-rallying-cry':
       drawIntoHand(state, pending.playerId, 1, 'Rallying Cry');
+      finishPendingActionCard(state);
+      return;
+    case 'neutral-advance-guard':
+      state.turnState = queueNormalV070MovementStep(
+        requireTurnState(state),
+        {
+          source: 'Advance Guard',
+          choiceRestriction: 'any',
+          battleRestriction: 'allowed_no_gambit',
+        },
+      );
+      appendV070Event(state, {
+        type: 'movement_step_granted',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          purpose: 'Advance Guard',
+          sourceActionInstanceId: pending.instanceId,
+          choiceRestriction: 'any',
+          battleRestriction: 'allowed_no_gambit',
+        },
+      });
+      finishPendingActionCard(state);
+      return;
+    case 'neutral-forced-march':
+      state.turnState = queueNormalV070MovementStep(
+        requireTurnState(state),
+        {
+          source: 'Forced March',
+          choiceRestriction: 'any',
+          battleRestriction: 'prohibited',
+        },
+      );
+      appendV070Event(state, {
+        type: 'movement_step_granted',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          purpose: 'Forced March',
+          sourceActionInstanceId: pending.instanceId,
+          choiceRestriction: 'any',
+          battleRestriction: 'prohibited',
+        },
+      });
       finishPendingActionCard(state);
       return;
     case 'neutral-arcane-knowledge':
@@ -3663,6 +3718,24 @@ function chooseMovement(
   const destination = origin + delta;
 
   assertMovementDestination(playerId, choice, destination, state.board.length);
+  const movementStep = currentV070MovementStep(turnState);
+  if (!movementStep) {
+    throw new V070GameActionError('No current movement step is available.');
+  }
+  const initiatesBattle = opponent.position === destination;
+  let nextMovementState;
+  try {
+    nextMovementState = applyV070MovementChoice(
+      turnState,
+      choice,
+      { initiatesBattle },
+    );
+  } catch (error) {
+    throw new V070GameActionError(
+      error instanceof Error ? error.message : 'That movement is not legal now.',
+    );
+  }
+
   resolveV070OverlayEntryRequirements(
     state,
     playerId,
@@ -3670,7 +3743,7 @@ function chooseMovement(
     discardInstanceId,
   );
 
-  if (opponent.position === destination) {
+  if (initiatesBattle) {
     const lastStand = canInitiateV070LastStand({
       attacker: playerId,
       defender: opponentId,
@@ -3693,6 +3766,8 @@ function chooseMovement(
           defenderPosition: destination,
           separateMovementSequence: true,
           advancingBeyondOpponentEnd: true,
+          attackerGambitProhibited:
+            movementStep.battleRestriction === 'allowed_no_gambit',
         })
       : createV070BattleOnset({
           territoryCount: state.board.length,
@@ -3705,9 +3780,11 @@ function chooseMovement(
             B: state.players.B.position!,
           },
           defenderControlsContested: territoryAt(state, destination)?.controller === opponentId,
+          attackerGambitProhibited:
+            movementStep.battleRestriction === 'allowed_no_gambit',
         });
 
-    state.turnState = applyV070MovementChoice(turnState, choice, { initiatesBattle: true });
+    state.turnState = nextMovementState;
 
     appendV070Event(state, {
       type: 'battle_initiated',
@@ -3719,6 +3796,9 @@ function chooseMovement(
         attackerOrigin: origin,
         contestedPosition: destination,
         lastStand,
+        movementStepSource: movementStep.source,
+        attackerGambitProhibited:
+          movementStep.battleRestriction === 'allowed_no_gambit',
       },
     });
     openV070BlockadeChoicesForPositionChange(
@@ -3742,7 +3822,7 @@ function chooseMovement(
   player.position = destination;
   setSettledOccupant(state, playerId, destination);
 
-  state.turnState = applyV070MovementChoice(turnState, choice);
+  state.turnState = nextMovementState;
   appendV070Event(state, {
     type: 'player_moved',
     actor: playerId,
