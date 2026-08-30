@@ -67,6 +67,11 @@ export type V070TurnAction =
       choice: 'recycle' | 'leave';
     }
   | {
+      type: 'choose_recovery_action_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
       type: 'resolve_censure_choice';
       playerId: PlayerId;
       sanctionInstanceId: string;
@@ -127,6 +132,10 @@ export function reduceV070TurnAction(
       pending.kind === 'clemency_response'
       && action.type === 'resolve_clemency_choice'
       && action.playerId === pending.playerId
+    ) || (
+      (pending.kind === 'arcane_knowledge_target' || pending.kind === 'contraband_target')
+      && action.type === 'choose_recovery_action_target'
+      && action.playerId === pending.playerId
     );
     if (!validContinuation) {
       throw new V070GameActionError('Resolve the pending printed Action effect choice first.');
@@ -138,6 +147,7 @@ export function reduceV070TurnAction(
       'resolve_censure_choice',
       'choose_clemency_target',
       'resolve_clemency_choice',
+      'choose_recovery_action_target',
     ].includes(action.type)) {
     throw new V070GameActionError('Resolve the pending Action card before continuing the turn.');
   }
@@ -168,6 +178,9 @@ export function reduceV070TurnAction(
       break;
     case 'resolve_clemency_choice':
       resolveClemencyChoice(next, action.playerId, action.choice);
+      break;
+    case 'choose_recovery_action_target':
+      chooseRecoveryActionTarget(next, action.playerId, action.targetInstanceId);
       break;
     case 'resolve_censure_choice':
       resolveCensureChoice(
@@ -370,6 +383,8 @@ function discardAsset(
 
 export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'neutral-rallying-cry',
+  'neutral-arcane-knowledge',
+  'neutral-contraband',
   'diplomats-clemency',
 ] as const;
 
@@ -408,6 +423,18 @@ function playActionCard(
     && state.players[otherPlayer(playerId)].zones.graveyard.length === 0) {
     throw new V070GameActionError(
       'Clemency requires at least one card in the opponent’s Graveyard.',
+    );
+  }
+  if (card.id === 'neutral-arcane-knowledge'
+    && player.zones.graveyard.length === 0) {
+    throw new V070GameActionError(
+      'Arcane Knowledge requires at least one card in your Graveyard.',
+    );
+  }
+  if (card.id === 'neutral-contraband'
+    && player.zones.discardPile.length === 0) {
+    throw new V070GameActionError(
+      'Contraband requires at least one card in your Discard Pile.',
     );
   }
 
@@ -519,6 +546,22 @@ function continuePendingActionCard(state: V070GameState): void {
       drawIntoHand(state, pending.playerId, 1, 'Rallying Cry');
       finishPendingActionCard(state);
       return;
+    case 'neutral-arcane-knowledge':
+      state.pendingActionEffectChoice = {
+        kind: 'arcane_knowledge_target',
+        playerId: pending.playerId,
+        sourceActionInstanceId: pending.instanceId,
+      };
+      appendActionTargetChoicePending(state, pending.playerId, pending.instanceId, 'arcane_knowledge_target');
+      return;
+    case 'neutral-contraband':
+      state.pendingActionEffectChoice = {
+        kind: 'contraband_target',
+        playerId: pending.playerId,
+        sourceActionInstanceId: pending.instanceId,
+      };
+      appendActionTargetChoicePending(state, pending.playerId, pending.instanceId, 'contraband_target');
+      return;
     case 'diplomats-clemency': {
       const opponentId = otherPlayer(pending.playerId);
       state.pendingActionEffectChoice = {
@@ -545,6 +588,86 @@ function continuePendingActionCard(state: V070GameState): void {
         `Unsupported pending Action effect: ${pending.cardId}.`,
       );
   }
+}
+
+function chooseRecoveryActionTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || (choice.kind !== 'arcane_knowledge_target' && choice.kind !== 'contraband_target')
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId) {
+    throw new V070GameActionError('No recovery Action target choice is pending for that player.');
+  }
+
+  const player = state.players[playerId];
+  if (choice.kind === 'arcane_knowledge_target') {
+    if (pending.cardId !== 'neutral-arcane-knowledge') {
+      throw new V070GameActionError('Arcane Knowledge target state does not match its pending Action card.');
+    }
+    const index = player.zones.graveyard.indexOf(targetInstanceId);
+    if (index < 0) {
+      throw new V070GameActionError('Arcane Knowledge must target a card in your Graveyard.');
+    }
+    player.zones.graveyard.splice(index, 1);
+    player.zones.discardPile.push(targetInstanceId);
+    appendV070Event(state, {
+      type: 'graveyard_card_recycled',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        instanceId: targetInstanceId,
+        cardId: state.cardInstances[targetInstanceId]?.cardId,
+        purpose: 'Arcane Knowledge',
+      },
+    });
+  } else {
+    if (pending.cardId !== 'neutral-contraband') {
+      throw new V070GameActionError('Contraband target state does not match its pending Action card.');
+    }
+    const index = player.zones.discardPile.indexOf(targetInstanceId);
+    if (index < 0) {
+      throw new V070GameActionError('Contraband must target a card in your Discard Pile.');
+    }
+    player.zones.discardPile.splice(index, 1);
+    player.zones.hand.push(targetInstanceId);
+    appendV070Event(state, {
+      type: 'discard_card_returned_to_hand',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        instanceId: targetInstanceId,
+        cardId: state.cardInstances[targetInstanceId]?.cardId,
+        purpose: 'Contraband',
+      },
+    });
+  }
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state);
+}
+
+function appendActionTargetChoicePending(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+  kind: 'arcane_knowledge_target' | 'contraband_target',
+): void {
+  appendV070Event(state, {
+    type: 'action_effect_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      kind,
+      playerId,
+      sourceActionInstanceId,
+    },
+  });
 }
 
 function chooseClemencyTarget(

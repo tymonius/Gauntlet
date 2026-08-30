@@ -79,6 +79,16 @@ export type V070PendingActionEffectChoice =
       actionOwnerId: PlayerId;
       sourceActionInstanceId: string;
       targetInstanceId: string;
+    }
+  | {
+      kind: 'arcane_knowledge_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'contraband_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
     };
 
 export type V070PendingSanctionChoice =
