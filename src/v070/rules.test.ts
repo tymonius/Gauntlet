@@ -22,6 +22,7 @@ import {
   v070BattleWasFought,
   type V070BattleOnsetInput,
   type V070LastStandAccessInput,
+  type V070TurnState,
 } from './rules';
 
 function normalOnset(overrides: Partial<V070BattleOnsetInput> = {}) {
@@ -187,9 +188,9 @@ describe('v0.7.0 battle outcome', () => {
 
 describe('v0.7.0 Action allowances', () => {
   test('+Action increases the current-phase Action limit', () => {
-    let state = {
+    let state: V070TurnState = {
       ...createV070TurnState(),
-      phase: 'opening' as const,
+      phase: 'opening',
     };
 
     state = spendV070Action(state);
@@ -206,9 +207,9 @@ describe('v0.7.0 Action allowances', () => {
   });
 
   test('unused +Action permission expires when its Action phase ends', () => {
-    let state = {
+    let state: V070TurnState = {
       ...createV070TurnState(),
-      phase: 'opening' as const,
+      phase: 'opening',
     };
 
     state = spendV070Action(state);
@@ -222,9 +223,9 @@ describe('v0.7.0 Action allowances', () => {
   });
 
   test('turn-wide additional Actions survive phases but do not increase a phase limit', () => {
-    let state = {
+    let state: V070TurnState = {
       ...createV070TurnState(1),
-      phase: 'opening' as const,
+      phase: 'opening',
     };
 
     state = spendV070Action(state);
