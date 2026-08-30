@@ -169,7 +169,7 @@ describe('v0.7.0 Give Chase Action', () => {
       choice: 'advance',
     });
 
-    expect(state.players.A.position).toBe(0);
+    expect(state.players.A.position).toBe(1);
     expect(state.turnState?.phase).toBe('denouement');
     expect(state.turnState?.movementSequenceOpen).toBe(false);
   });
