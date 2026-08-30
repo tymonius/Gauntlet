@@ -100,6 +100,7 @@ export interface V070GameView {
   sanctions: V070GameState['sanctions'];
   sanctionTriggerTurns: V070GameState['sanctionTriggerTurns'];
   pendingActionCard: V070GameState['pendingActionCard'];
+  pendingActionEffectChoice: V070GameState['pendingActionEffectChoice'];
   pendingSanctionChoices: V070GameState['pendingSanctionChoices'];
   pendingAssetLimitChoice: V070GameState['pendingAssetLimitChoice'];
   pendingTurnChoice: V070GameState['pendingTurnChoice'];
@@ -138,6 +139,9 @@ export function viewV070GameForPlayer(
     sanctionTriggerTurns: { ...state.sanctionTriggerTurns },
     pendingActionCard: state.pendingActionCard
       ? structuredClone(state.pendingActionCard)
+      : null,
+    pendingActionEffectChoice: state.pendingActionEffectChoice
+      ? structuredClone(state.pendingActionEffectChoice)
       : null,
     pendingSanctionChoices: state.pendingSanctionChoices.map(
       choice => structuredClone(choice),

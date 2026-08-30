@@ -42,6 +42,16 @@ export type V070TurnAction =
   | { type: 'pass_opening'; playerId: PlayerId }
   | { type: 'play_action_card'; playerId: PlayerId; cardInstanceId: string }
   | {
+      type: 'choose_clemency_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
+      type: 'resolve_clemency_choice';
+      playerId: PlayerId;
+      choice: 'recycle' | 'leave';
+    }
+  | {
       type: 'resolve_censure_choice';
       playerId: PlayerId;
       sanctionInstanceId: string;
@@ -73,7 +83,11 @@ export function reduceV070TurnAction(
   state: V070GameState,
   action: V070TurnAction,
 ): V070GameState {
-  requirePlayingTurn(state, action.playerId);
+  if (action.type === 'resolve_clemency_choice') {
+    requirePlayingGame(state);
+  } else {
+    requirePlayingTurn(state, action.playerId);
+  }
   if (state.battle) {
     throw new V070GameActionError('Resolve the active battle before continuing the turn.');
   }
@@ -88,9 +102,28 @@ export function reduceV070TurnAction(
       throw new V070GameActionError('Resolve the pending Sanction choice first.');
     }
   }
+  if (state.pendingActionEffectChoice) {
+    const pending = state.pendingActionEffectChoice;
+    const validContinuation = (
+      pending.kind === 'clemency_target'
+      && action.type === 'choose_clemency_target'
+      && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'clemency_response'
+      && action.type === 'resolve_clemency_choice'
+      && action.playerId === pending.playerId
+    );
+    if (!validContinuation) {
+      throw new V070GameActionError('Resolve the pending printed Action effect choice first.');
+    }
+  }
   if (state.pendingActionCard
     && state.pendingSanctionChoices.length === 0
-    && action.type !== 'resolve_censure_choice') {
+    && ![
+      'resolve_censure_choice',
+      'choose_clemency_target',
+      'resolve_clemency_choice',
+    ].includes(action.type)) {
     throw new V070GameActionError('Resolve the pending Action card before continuing the turn.');
   }
 
@@ -108,6 +141,12 @@ export function reduceV070TurnAction(
       break;
     case 'play_action_card':
       playActionCard(next, action.playerId, action.cardInstanceId);
+      break;
+    case 'choose_clemency_target':
+      chooseClemencyTarget(next, action.playerId, action.targetInstanceId);
+      break;
+    case 'resolve_clemency_choice':
+      resolveClemencyChoice(next, action.playerId, action.choice);
       break;
     case 'resolve_censure_choice':
       resolveCensureChoice(
@@ -270,6 +309,7 @@ function drawTurnCard(state: V070GameState, playerId: PlayerId): void {
 
 export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'neutral-rallying-cry',
+  'diplomats-clemency',
 ] as const;
 
 function playActionCard(
@@ -301,6 +341,12 @@ function playActionCard(
   if (!(V070_EXECUTABLE_ACTION_CARD_IDS as readonly string[]).includes(card.id)) {
     throw new V070GameActionError(
       `The printed Action effect of ${card.name} is not yet executable in v0.7.0.`,
+    );
+  }
+  if (card.id === 'diplomats-clemency'
+    && state.players[otherPlayer(playerId)].zones.graveyard.length === 0) {
+    throw new V070GameActionError(
+      'Clemency requires at least one card in the opponent’s Graveyard.',
     );
   }
 
@@ -403,15 +449,170 @@ function continuePendingActionCard(state: V070GameState): void {
   if (state.pendingSanctionChoices.length > 0) {
     throw new V070GameActionError('Resolve all Censure choices before the Action effect.');
   }
+  if (state.pendingActionEffectChoice) {
+    throw new V070GameActionError('Resolve the pending printed Action effect choice first.');
+  }
 
   switch (pending.cardId) {
     case 'neutral-rallying-cry':
       drawIntoHand(state, pending.playerId, 1, 'Rallying Cry');
-      break;
+      finishPendingActionCard(state);
+      return;
+    case 'diplomats-clemency': {
+      const opponentId = otherPlayer(pending.playerId);
+      state.pendingActionEffectChoice = {
+        kind: 'clemency_target',
+        playerId: pending.playerId,
+        opponentId,
+        sourceActionInstanceId: pending.instanceId,
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          kind: 'clemency_target',
+          playerId: pending.playerId,
+          opponentId,
+          sourceActionInstanceId: pending.instanceId,
+        },
+      });
+      return;
+    }
     default:
       throw new V070GameActionError(
         `Unsupported pending Action effect: ${pending.cardId}.`,
       );
+  }
+}
+
+function chooseClemencyTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'clemency_target'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'diplomats-clemency') {
+    throw new V070GameActionError('No Clemency target choice is pending for that player.');
+  }
+
+  const graveyard = state.players[choice.opponentId].zones.graveyard;
+  if (!graveyard.includes(targetInstanceId)) {
+    throw new V070GameActionError(
+      'Clemency must target a card in the opponent’s Graveyard.',
+    );
+  }
+
+  state.pendingActionEffectChoice = {
+    kind: 'clemency_response',
+    playerId: choice.opponentId,
+    actionOwnerId: playerId,
+    sourceActionInstanceId: pending.instanceId,
+    targetInstanceId,
+  };
+
+  appendV070Event(state, {
+    type: 'clemency_target_chosen',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      sourceActionInstanceId: pending.instanceId,
+      targetInstanceId,
+      targetCardId: state.cardInstances[targetInstanceId]?.cardId,
+      opponentId: choice.opponentId,
+    },
+  });
+}
+
+function resolveClemencyChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  response: 'recycle' | 'leave',
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'clemency_response'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'diplomats-clemency') {
+    throw new V070GameActionError('No Clemency response is pending for that player.');
+  }
+
+  const graveyard = state.players[playerId].zones.graveyard;
+  const targetIndex = graveyard.indexOf(choice.targetInstanceId);
+  if (targetIndex < 0) {
+    throw new V070GameActionError('The chosen Clemency card is no longer in the opponent’s Graveyard.');
+  }
+
+  if (response === 'recycle') {
+    graveyard.splice(targetIndex, 1);
+    state.players[playerId].zones.discardPile.push(choice.targetInstanceId);
+    appendV070Event(state, {
+      type: 'graveyard_card_recycled',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        instanceId: choice.targetInstanceId,
+        cardId: state.cardInstances[choice.targetInstanceId]?.cardId,
+        purpose: 'Clemency',
+      },
+    });
+    gainClemencyInfluence(state, choice.actionOwnerId);
+  } else {
+    drawIntoHand(state, choice.actionOwnerId, 1, 'Clemency');
+  }
+
+  appendV070Event(state, {
+    type: 'clemency_resolved',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      sourceActionInstanceId: pending.instanceId,
+      actionOwnerId: choice.actionOwnerId,
+      targetInstanceId: choice.targetInstanceId,
+      response,
+    },
+  });
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state);
+}
+
+function gainClemencyInfluence(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  const diplomat = state.players[playerId].diplomats;
+  if (!diplomat) {
+    throw new V070GameActionError('Clemency Influence requires a Diplomat.');
+  }
+  const previous = diplomat.influence;
+  diplomat.influence = Math.min(10, diplomat.influence + 1);
+  appendV070Event(state, {
+    type: 'influence_changed',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      delta: diplomat.influence - previous,
+      balance: diplomat.influence,
+      reason: 'Clemency',
+    },
+  });
+}
+
+function finishPendingActionCard(state: V070GameState): void {
+  const pending = state.pendingActionCard;
+  if (!pending) throw new V070GameActionError('No Action card is pending resolution.');
+  if (state.pendingActionEffectChoice || state.pendingSanctionChoices.length > 0) {
+    throw new V070GameActionError('The Action card still has unresolved choices.');
   }
 
   state.players[pending.playerId].zones.discardPile.push(pending.instanceId);
@@ -742,10 +943,14 @@ function territoryAt(state: V070GameState, position: number) {
   return state.board.find(territory => territory.position === position);
 }
 
-function requirePlayingTurn(state: V070GameState, playerId: PlayerId): void {
+function requirePlayingGame(state: V070GameState): void {
   if (state.stage !== 'playing' || !state.turnState || !state.activePlayer) {
     throw new V070GameActionError('Turn actions require an active v0.7.0 game.');
   }
+}
+
+function requirePlayingTurn(state: V070GameState, playerId: PlayerId): void {
+  requirePlayingGame(state);
   if (state.activePlayer !== playerId) {
     throw new V070GameActionError(`It is not ${playerId}’s turn.`);
   }
