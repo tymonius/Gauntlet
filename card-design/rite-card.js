@@ -7,6 +7,9 @@ let COMPLETED_RITE_ART_SOURCE = '/images/artwork/supplemental/mystics/rite-compl
 let currentDisplayVersion = 'Current';
 
 const root = document.querySelector('#riteReviewSections');
+const catalogFilter = document.body?.classList.contains('developer-catalog-page')
+  ? window.GauntletCatalogFilter || null
+  : null;
 
 function esc(value) {
   return String(value ?? '').replace(/[&<>'"]/g, character => ({
@@ -139,10 +142,15 @@ function ritualReview() {
 
 async function renderRites() {
   if (!root) return;
+  if (catalogFilter && (!catalogFilter.typeMatches('rite') || !catalogFilter.factionMatches('mystics'))) {
+    root.replaceChildren();
+    return;
+  }
   try {
     const currentGame = await loadCurrentGame();
     const mystics = currentGame.mystics || {};
     RITES = Array.isArray(mystics.rites) ? mystics.rites : [];
+    if (catalogFilter?.sort === 'name') RITES = RITES.slice().sort((a, b) => a.name.localeCompare(b.name));
     RITUAL = mystics.ritual || {};
     UNLOCKS = Array.isArray(mystics.unlocks) ? mystics.unlocks : [];
     COMPLETED_RITE_ART_SOURCE = mystics.completedArtwork || COMPLETED_RITE_ART_SOURCE;
