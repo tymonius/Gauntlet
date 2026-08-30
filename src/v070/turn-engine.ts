@@ -162,6 +162,11 @@ export type V070TurnAction =
       graveyardInstanceId: string;
     }
   | {
+      type: 'choose_anathema_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
       type: 'resolve_censure_choice';
       playerId: PlayerId;
       sanctionInstanceId: string;
@@ -286,6 +291,10 @@ export function reduceV070TurnAction(
       pending.kind === 'threefold_vision_distribution'
       && action.type === 'resolve_threefold_vision_distribution'
       && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'anathema_target'
+      && action.type === 'choose_anathema_target'
+      && action.playerId === pending.playerId
     );
     if (!validContinuation) {
       throw new V070GameActionError('Resolve the pending printed Action effect choice first.');
@@ -313,6 +322,7 @@ export function reduceV070TurnAction(
       'choose_dark_omens_graveyard_target',
       'choose_act_of_faith_graveyard_target',
       'resolve_threefold_vision_distribution',
+      'choose_anathema_target',
     ].includes(action.type)) {
     throw new V070GameActionError('Resolve the pending Action card before continuing the turn.');
   }
@@ -426,6 +436,9 @@ export function reduceV070TurnAction(
         action.discardInstanceId,
         action.graveyardInstanceId,
       );
+      break;
+    case 'choose_anathema_target':
+      chooseAnathemaTarget(next, action.playerId, action.targetInstanceId);
       break;
     case 'resolve_censure_choice':
       resolveCensureChoice(
@@ -600,6 +613,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'financiers-tariffs',
   'financiers-war-bonds',
   'inquisition-accusation',
+  'inquisition-anathema',
   'inquisition-excommunication',
   'inquisition-act-of-faith',
   'inquisition-guilt-by-association',
@@ -769,6 +783,18 @@ function playActionCard(
     && state.players[otherPlayer(playerId)].zones.drawPile.length === 0) {
     throw new V070GameActionError(
       'Act of Faith requires at least one card in the opponent’s Draw Pile.',
+    );
+  }
+  if (card.id === 'inquisition-anathema') {
+    if (state.players[otherPlayer(playerId)].zones.discardPile.length === 0) {
+      throw new V070GameActionError(
+        'Anathema requires at least one card in the opponent’s Discard Pile.',
+      );
+    }
+    pendingBankReplacementV070AssetInstanceIds(
+      state,
+      playerId,
+      cardInstanceId,
     );
   }
   if (card.id === 'mystics-threefold-vision'
@@ -1320,6 +1346,43 @@ function continuePendingActionCard(state: V070GameState): void {
           sourceActionInstanceId: pending.instanceId,
           purpose: 'Dark Omens',
           candidateCount: drawn.length,
+        },
+      });
+      return;
+    }
+    case 'inquisition-anathema': {
+      const opponentId = otherPlayer(pending.playerId);
+      if (state.players[opponentId].zones.discardPile.length === 0) {
+        appendV070Event(state, {
+          type: 'action_effect_incomplete',
+          actor: pending.playerId,
+          visibility: 'public',
+          payload: {
+            sourceActionInstanceId: pending.instanceId,
+            purpose: 'Anathema',
+            reason: 'required_opponent_discard_target_unavailable',
+          },
+        });
+        finishPendingActionCard(state);
+        return;
+      }
+      state.pendingActionEffectChoice = {
+        kind: 'anathema_target',
+        playerId: pending.playerId,
+        opponentId,
+        sourceActionInstanceId: pending.instanceId,
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          kind: 'anathema_target',
+          playerId: pending.playerId,
+          opponentId,
+          sourceActionInstanceId: pending.instanceId,
+          purpose: 'Anathema',
+          targetInstanceIds: [...state.players[opponentId].zones.discardPile],
         },
       });
       return;
@@ -2417,6 +2480,100 @@ function resolveAccusationChoice(
   finishPendingActionCard(state);
 }
 
+function chooseAnathemaTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'anathema_target'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'inquisition-anathema') {
+    throw new V070GameActionError(
+      'No Anathema target choice is pending for that player.',
+    );
+  }
+
+  const discard = state.players[choice.opponentId].zones.discardPile;
+  const index = discard.indexOf(targetInstanceId);
+  if (index < 0) {
+    throw new V070GameActionError(
+      'Anathema must choose a card in the opponent’s Discard Pile.',
+    );
+  }
+
+  discard.splice(index, 1);
+  state.players[choice.opponentId].zones.graveyard.push(targetInstanceId);
+  appendV070Event(state, {
+    type: 'card_graveyarded',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      instanceId: targetInstanceId,
+      cardId: state.cardInstances[targetInstanceId]?.cardId,
+      owner: choice.opponentId,
+      purpose: 'Anathema',
+    },
+  });
+
+  const replacements = pendingBankReplacementV070AssetInstanceIds(
+    state,
+    playerId,
+    pending.instanceId,
+  );
+  if (replacements.length > 0) {
+    state.pendingActionEffectChoice = {
+      kind: 'pending_asset_bank_replacement',
+      playerId,
+      sourceActionInstanceId: pending.instanceId,
+      purpose: 'Anathema',
+      replacementInstanceIds: [...replacements],
+    };
+    appendV070Event(state, {
+      type: 'action_effect_choice_pending',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        kind: 'pending_asset_bank_replacement',
+        playerId,
+        sourceActionInstanceId: pending.instanceId,
+        purpose: 'Anathema',
+        replacementInstanceIds: [...replacements],
+      },
+    });
+    return;
+  }
+
+  state.pendingActionEffectChoice = null;
+  bankV070AssetFromPendingAction(
+    state,
+    playerId,
+    pending.instanceId,
+    'Anathema',
+  );
+  finishPendingActionCard(state, 'asset');
+}
+
+function completeAnathemaBanking(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+  replaceAssetInstanceId: string,
+): void {
+  bankV070AssetFromPendingAction(
+    state,
+    playerId,
+    sourceActionInstanceId,
+    'Anathema',
+    replaceAssetInstanceId,
+  );
+  finishPendingActionCard(state, 'asset');
+}
+
 function choosePendingAssetBankReplacement(
   state: V070GameState,
   playerId: PlayerId,
@@ -2428,8 +2585,7 @@ function choosePendingAssetBankReplacement(
     || choice.kind !== 'pending_asset_bank_replacement'
     || choice.playerId !== playerId
     || !pending
-    || pending.instanceId !== choice.sourceActionInstanceId
-    || !isSimpleBankingActionCardId(pending.cardId)) {
+    || pending.instanceId !== choice.sourceActionInstanceId) {
     throw new V070GameActionError(
       'No printed Asset banking replacement choice is pending for that player.',
     );
@@ -2442,6 +2598,26 @@ function choosePendingAssetBankReplacement(
   }
 
   state.pendingActionEffectChoice = null;
+  if (choice.purpose === 'Anathema') {
+    if (pending.cardId !== 'inquisition-anathema') {
+      throw new V070GameActionError(
+        'Anathema banking replacement state does not match its pending Action card.',
+      );
+    }
+    completeAnathemaBanking(
+      state,
+      playerId,
+      pending.instanceId,
+      replaceAssetInstanceId,
+    );
+    return;
+  }
+
+  if (!isSimpleBankingActionCardId(pending.cardId)) {
+    throw new V070GameActionError(
+      'The pending banking replacement does not match a supported banking Action.',
+    );
+  }
   completeSimpleBankingAction(
     state,
     playerId,
