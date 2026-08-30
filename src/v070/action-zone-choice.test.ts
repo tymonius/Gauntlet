@@ -308,6 +308,11 @@ describe('v0.7.0 Accusation Action', () => {
       sourceActionInstanceId: source,
       targetInstanceId: target,
     });
+    const targetEvent = state.events.find(event =>
+      event.type === 'accusation_target_chosen'
+      && (event.payload as { targetInstanceId?: string })?.targetInstanceId === target
+    );
+    expect(targetEvent?.visibility).toBe('public');
 
     state = reduceV070TurnAction(state, {
       type: 'resolve_accusation_choice',
