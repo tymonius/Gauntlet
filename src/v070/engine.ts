@@ -116,8 +116,8 @@ export type V070PendingActionEffectChoice =
       kind: 'controlled_asset_target';
       playerId: PlayerId;
       sourceActionInstanceId: string;
-      purpose: 'Requisition';
-      operation: 'voluntary_discard';
+      purpose: 'Requisition' | 'Strategic Withdrawal';
+      operation: 'voluntary_discard' | 'voluntary_return_hand';
       drawAfter: number;
     }
   | {
