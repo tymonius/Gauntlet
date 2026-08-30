@@ -830,6 +830,32 @@ function playActionCard(
       cardInstanceId,
     );
   }
+  if (card.id === 'military-reserve-force') {
+    const eligible = player.zones.hand.some(instanceId => {
+      if (instanceId === cardInstanceId) return false;
+      const candidateId = state.cardInstances[instanceId]?.cardId;
+      const candidate = candidateId
+        ? v070CanonicalContent.cardsById.get(candidateId)
+        : undefined;
+      return candidate?.effects.some(effect =>
+        effect.label === 'Tactic' || effect.label === 'Gambit/Tactic'
+      ) ?? false;
+    });
+    if (!eligible) {
+      throw new V070GameActionError(
+        'Reserve Force requires another Tactic-eligible card in your Hand.',
+      );
+    }
+    pendingBankReplacementV070AssetInstanceIds(state, playerId, cardInstanceId);
+  }
+  if (card.id === 'intelligence-extraordinary-rendition') {
+    if (state.players[otherPlayer(playerId)].zones.hand.length === 0) {
+      throw new V070GameActionError(
+        'Extraordinary Rendition requires at least one card in the opponent’s Hand.',
+      );
+    }
+    pendingBankReplacementV070AssetInstanceIds(state, playerId, cardInstanceId);
+  }
   if (card.id === 'mystics-threefold-vision'
     && player.zones.drawPile.length < 3) {
     throw new V070GameActionError(
@@ -1586,6 +1612,22 @@ function continuePendingActionCard(state: V070GameState): void {
       });
       return;
     }
+    case 'military-reserve-force':
+      resolveBindingBankAction(
+        state,
+        pending.playerId,
+        pending.instanceId,
+        pending.cardId,
+      );
+      return;
+    case 'intelligence-extraordinary-rendition':
+      resolveBindingBankAction(
+        state,
+        pending.playerId,
+        pending.instanceId,
+        pending.cardId,
+      );
+      return;
     case 'diplomats-detente':
     case 'financiers-compound-interest':
     case 'financiers-tariffs':
