@@ -9,6 +9,14 @@ import {
 } from './engine';
 import type { PlayerId } from './rules';
 
+export const V070_SUPPORTED_ASSET_RUNTIME_IDS = new Set([
+  'diplomats-detente',
+  'diplomats-good-faith',
+  'diplomats-neutral-observers',
+  'diplomats-safe-conduct',
+  'diplomats-plenipotentiary',
+] as const);
+
 const REMOVAL_LIFECYCLE_UNSUPPORTED = new Set([
   'neutral-contingency-plan',
   'military-reserve-force',
@@ -70,6 +78,7 @@ export function bankableV070AssetInstanceIds(
   return player.zones.hand.filter(instanceId => {
     const card = canonicalCardForInstance(state, instanceId);
     if (!cardHasAssetEffect(card)) return false;
+    if (!v070AssetRuntimeSupported(card.id)) return false;
     if (violatesSingleBankedCopy(state, playerId, card)) return false;
     return hasCapacity || replaceable.length > 0;
   });
@@ -157,6 +166,11 @@ export function bankV070AssetFromHand(
 
   if (!inherentBanking && !specialBanking) {
     throw new V070GameActionError('That Hand card cannot legally be banked as an Asset now.');
+  }
+  if (inherentBanking && !v070AssetRuntimeSupported(card.id)) {
+    throw new V070GameActionError(
+      `${card.name} cannot be banked yet because its persistent Asset effect is not executable in v0.7.0.`,
+    );
   }
   if (violatesSingleBankedCopy(state, playerId, card)) {
     throw new V070GameActionError('That Asset violates its single-banked-copy restriction.');
@@ -420,6 +434,12 @@ function canonicalCardForInstance(
   const card = cardId ? v070CanonicalContent.cardsById.get(cardId) : undefined;
   if (!card) throw new V070GameActionError(`Unknown card instance ${instanceId}.`);
   return card;
+}
+
+export function v070AssetRuntimeSupported(cardId: string): boolean {
+  return V070_SUPPORTED_ASSET_RUNTIME_IDS.has(
+    cardId as typeof V070_SUPPORTED_ASSET_RUNTIME_IDS extends Set<infer T> ? T : never,
+  );
 }
 
 function cardHasSpecialBankingAction(card: V070CanonicalCard): boolean {
