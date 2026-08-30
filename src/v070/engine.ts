@@ -89,6 +89,19 @@ export type V070PendingActionEffectChoice =
       kind: 'contraband_target';
       playerId: PlayerId;
       sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'salvage_recovery_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'hand_destination_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      purpose: 'Second Line' | 'Tactical Planning' | 'Salvage' | 'New Recruits';
+      destination: 'draw_top' | 'draw_bottom' | 'discard';
+      drawAfter: number;
     };
 
 export type V070PendingSanctionChoice =
