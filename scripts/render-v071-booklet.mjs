@@ -204,7 +204,7 @@ try {
 
   await waitForServer('http://127.0.0.1:8000/rulebook-production/full-rulebook.html');
   run('node', ['rulebook-production/render_fidelity_gate.mjs']);
-  run('node', ['scripts/run-v070-rulebook-renderer.mjs']);
+  run('node', ['scripts/run-v071-rulebook-renderer.mjs']);
 } finally {
   server.kill('SIGTERM');
 }
