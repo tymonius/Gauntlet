@@ -16,6 +16,10 @@ import {
   discardV070Overlay,
   placeV070OverlayFromHand,
 } from './overlays';
+import {
+  clearV070AssetFaceState,
+  isV070AssetFaceUp,
+} from './asset-face-state';
 
 export const V070_SANCTIONS_CENSURE_ID = 'diplomats-sanctions-censure';
 export const V070_SANCTIONS_EMBARGO_ID = 'diplomats-sanctions-embargo';
@@ -317,6 +321,7 @@ export function openV070CensureChoicesForActionPlay(
     && sanction.kind === 'asset'
     && state.cardInstances[sanction.instanceId]?.cardId === V070_SANCTIONS_CENSURE_ID
     && state.players[sanction.owner].zones.assetBank.includes(sanction.instanceId)
+    && isV070AssetFaceUp(state, sanction.instanceId)
     && state.sanctionTriggerTurns[sanction.instanceId] !== state.turnNumber
   );
 
@@ -487,6 +492,7 @@ function expireV070Sanction(
       return;
     }
     bank.splice(index, 1);
+    clearV070AssetFaceState(state, sanction.instanceId);
     state.players[sanction.owner].zones.discardPile.push(sanction.instanceId);
   } else {
     discardV070Overlay(state, sanction.instanceId, reason);
