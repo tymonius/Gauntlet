@@ -5,6 +5,7 @@ import {
   type V070GameState,
 } from './engine';
 import { reduceV070TurnAction } from './turn-engine';
+import { bindV070CardFromPlayerZone } from './bindings';
 
 const militaryStarter = 'military-commandant-holdfast';
 
@@ -246,6 +247,62 @@ describe('v0.7.0 Sequestration Action', () => {
       event.type === 'asset_removed'
       && (event.payload as { instanceId?: string })?.instanceId === armistice
     )).toBe(false);
+  });
+
+  test('discarding Reserve Force through Sequestration applies its bound-card Graveyard override', () => {
+    let state = openingForA();
+    const source = inject(
+      state,
+      'A',
+      'neutral-sequestration',
+      'hand',
+      'source',
+    );
+    const reserveForce = inject(
+      state,
+      'A',
+      'military-reserve-force',
+      'assetBank',
+      'reserve-force',
+    );
+    const keep = inject(
+      state,
+      'A',
+      'neutral-counterintelligence',
+      'assetBank',
+      'keep',
+    );
+    const tactic = inject(
+      state,
+      'A',
+      'neutral-advance-guard',
+      'hand',
+      'bound-tactic',
+    );
+    bindV070CardFromPlayerZone(state, {
+      hostId: reserveForce,
+      owner: 'A',
+      cardInstanceId: tactic,
+      sourceZone: 'hand',
+      faceUp: false,
+      purpose: 'Reserve Force',
+    });
+
+    state = reduceV070TurnAction(state, {
+      type: 'play_action_card',
+      playerId: 'A',
+      cardInstanceId: source,
+    });
+    state = reduceV070TurnAction(state, {
+      type: 'choose_sequestration_keep_asset',
+      playerId: 'A',
+      targetInstanceId: keep,
+    });
+
+    expect(state.players.A.zones.assetBank).toEqual([keep]);
+    expect(state.players.A.zones.discardPile).toContain(reserveForce);
+    expect(state.players.A.zones.graveyard).toContain(tactic);
+    expect(state.bindings.some(binding => binding.hostId === reserveForce)).toBe(false);
   });
 
   test('an invalid keep target leaves Sequestration pending', () => {
