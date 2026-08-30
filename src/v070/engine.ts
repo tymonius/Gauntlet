@@ -162,6 +162,19 @@ export type V070PendingActionEffectChoice =
       actionOwnerId: PlayerId;
       sourceActionInstanceId: string;
       targetInstanceId: string;
+    }
+  | {
+      kind: 'guilt_by_association_target';
+      playerId: PlayerId;
+      opponentId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'excommunication_targets';
+      playerId: PlayerId;
+      opponentId: PlayerId;
+      sourceActionInstanceId: string;
+      maxCombinedValue: number;
     };
 
 export type V070PendingSanctionChoice =
