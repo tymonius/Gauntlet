@@ -24,6 +24,9 @@ jobs:
         with:
           node-version: 22
 
+      - name: Validate repository architecture classification
+        run: node scripts/validate-repository-architecture.mjs
+
       - name: Enforce rules authority and stale-information policy
         env:
           RULES_AUTHORITY_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || '' }}

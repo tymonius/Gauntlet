@@ -77,6 +77,8 @@ The repository currently contains a large binary footprint, especially under `im
 
 ## Current path classification
 
+The current top-level directory inventory is enforced by `scripts/validate-repository-architecture.mjs` in required Governance Integrity CI. Adding or removing a root directory requires updating these classifications in the same change.
+
 ### Authority
 
 | Path | Role |
