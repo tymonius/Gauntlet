@@ -144,3 +144,16 @@
   #reader-root>.page{margin:0;box-shadow:none}
   .production-document[data-mode="booklet"] .spread-sheet{margin:0;box-shadow:none}
 }
+
+
+/* Current publishing mark when the active Rulebook source carries it. */
+.production-flow img[alt="TDS Games publisher mark"]{
+  width:.55in;
+  max-width:.55in;
+  max-height:.7in;
+  height:auto;
+  margin:8px 0 6px;
+  object-fit:contain;
+  filter:none;
+  mix-blend-mode:normal;
+}
