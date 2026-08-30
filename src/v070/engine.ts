@@ -144,6 +144,24 @@ export type V070PendingActionEffectChoice =
         | 'Reembodiment'
         | 'Tariffs';
       replacementInstanceIds: string[];
+    }
+  | {
+      kind: 'soul_for_soul_targets';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'accusation_target';
+      playerId: PlayerId;
+      opponentId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'accusation_response';
+      playerId: PlayerId;
+      actionOwnerId: PlayerId;
+      sourceActionInstanceId: string;
+      targetInstanceId: string;
     };
 
 export type V070PendingSanctionChoice =
