@@ -921,7 +921,7 @@
   }
 
   .catalog-filter-form button,
-  .catalog-filter-reset {
+  .catalog-filterbar .catalog-filter-reset {
     min-height: 36px;
     padding: 0 13px;
     display: inline-flex;
@@ -937,7 +937,7 @@
     text-decoration: none;
   }
 
-  .catalog-filter-reset {
+  .catalog-filterbar .catalog-filter-reset {
     border-color: var(--catalog-line);
     background: transparent;
     color: var(--muted);
@@ -948,8 +948,8 @@
     background: #2b2620;
   }
 
-  .catalog-filter-reset:hover,
-  .catalog-filter-reset:focus-visible {
+  .catalog-filterbar .catalog-filter-reset:hover,
+  .catalog-filterbar .catalog-filter-reset:focus-visible {
     border-color: var(--catalog-gold);
     background: rgba(163, 115, 56, .06);
     color: var(--catalog-gold-dark);
