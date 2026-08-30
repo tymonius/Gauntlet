@@ -35,12 +35,23 @@ import {
   openV070CensureChoicesForActionPlay,
 } from './sanctions';
 import { openV070BlockadeChoicesForPositionChange } from './movement-triggers';
+import {
+  bankV070AssetWithInherentAction,
+  discardV070AssetAsAction,
+} from './assets';
 
 export type V070TurnAction =
   | { type: 'resolve_capture'; playerId: PlayerId }
   | { type: 'draw_turn_card'; playerId: PlayerId }
   | { type: 'pass_opening'; playerId: PlayerId }
   | { type: 'play_action_card'; playerId: PlayerId; cardInstanceId: string }
+  | {
+      type: 'bank_asset';
+      playerId: PlayerId;
+      cardInstanceId: string;
+      replaceAssetInstanceId?: string;
+    }
+  | { type: 'discard_asset'; playerId: PlayerId; assetInstanceId: string }
   | {
       type: 'choose_clemency_target';
       playerId: PlayerId;
@@ -141,6 +152,17 @@ export function reduceV070TurnAction(
       break;
     case 'play_action_card':
       playActionCard(next, action.playerId, action.cardInstanceId);
+      break;
+    case 'bank_asset':
+      bankAssetAction(
+        next,
+        action.playerId,
+        action.cardInstanceId,
+        action.replaceAssetInstanceId,
+      );
+      break;
+    case 'discard_asset':
+      discardAssetAction(next, action.playerId, action.assetInstanceId);
       break;
     case 'choose_clemency_target':
       chooseClemencyTarget(next, action.playerId, action.targetInstanceId);
@@ -311,6 +333,63 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'neutral-rallying-cry',
   'diplomats-clemency',
 ] as const;
+
+function bankAssetAction(
+  state: V070GameState,
+  playerId: PlayerId,
+  cardInstanceId: string,
+  replaceAssetInstanceId?: string,
+): void {
+  spendNormalV070TurnAction(state);
+  bankV070AssetWithInherentAction(
+    state,
+    playerId,
+    cardInstanceId,
+    replaceAssetInstanceId,
+  );
+
+  appendV070Event(state, {
+    type: 'asset_bank_action_taken',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      instanceId: cardInstanceId,
+      cardId: state.cardInstances[cardInstanceId]?.cardId,
+      replaceAssetInstanceId: replaceAssetInstanceId ?? null,
+      actionsRemaining: state.turnState?.actionsAvailable ?? null,
+    },
+  });
+}
+
+function discardAssetAction(
+  state: V070GameState,
+  playerId: PlayerId,
+  assetInstanceId: string,
+): void {
+  spendNormalV070TurnAction(state);
+  discardV070AssetAsAction(state, playerId, assetInstanceId);
+
+  appendV070Event(state, {
+    type: 'asset_discard_action_taken',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      instanceId: assetInstanceId,
+      cardId: state.cardInstances[assetInstanceId]?.cardId,
+      actionsRemaining: state.turnState?.actionsAvailable ?? null,
+    },
+  });
+}
+
+function spendNormalV070TurnAction(state: V070GameState): void {
+  try {
+    state.turnState = spendV070Action(requireTurnState(state));
+  } catch (error) {
+    throw new V070GameActionError(
+      error instanceof Error ? error.message : 'That Action cannot be spent now.',
+    );
+  }
+}
 
 function playActionCard(
   state: V070GameState,
