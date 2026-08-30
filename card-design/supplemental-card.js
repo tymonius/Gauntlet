@@ -58,6 +58,9 @@ const TRACKER_PRESENTATION = Object.freeze({
 });
 
 const root = document.querySelector('#supplementalReviewSections');
+const catalogFilter = document.body?.classList.contains('developer-catalog-page')
+  ? window.GauntletCatalogFilter || null
+  : null;
 let currentDisplayVersion = 'Current';
 let supplementalGroups = [];
 
@@ -106,6 +109,7 @@ function presentationComponent(component) {
   return {
     contractId: component.id,
     id: rendererId(component),
+    family: component.family,
     referenceId: hasReferenceFaces ? component.id : '',
     ledger,
     name: component.name,
@@ -144,6 +148,32 @@ function buildSupplementalGroups(currentGame) {
     { faction: 'neutral', factionLabel: 'Universal', cards: sharedCards },
     ...factionGroups,
   ].filter(group => group.cards.length);
+}
+
+function filterSupplementalGroups(groups) {
+  if (!catalogFilter) return groups;
+
+  const familyForType = {
+    tracker: 'tracker',
+    reference: 'reference-card',
+    ledger: 'ledger',
+    deed: 'deed-card',
+  };
+
+  return groups
+    .filter(group => catalogFilter.factionMatches(group.faction))
+    .map(group => {
+      let cards = group.cards;
+      if (catalogFilter.type !== 'all' && catalogFilter.type !== 'supplemental') {
+        const family = familyForType[catalogFilter.type];
+        cards = family ? cards.filter(component => component.family === family) : [];
+      }
+      if (catalogFilter.sort === 'name') {
+        cards = cards.slice().sort((a, b) => a.name.localeCompare(b.name));
+      }
+      return { ...group, cards };
+    })
+    .filter(group => group.cards.length);
 }
 
 function supplementalTypeLine(component) {
@@ -389,10 +419,10 @@ function groupMarkup(group) {
   </section>`;
 }
 
-function renderSupplementalMarkup() {
+function renderSupplementalMarkup(metricGroups = supplementalGroups) {
   if (!root) return;
-  const uniqueCount = supplementalGroups.reduce((sum, group) => sum + group.cards.length, 0);
-  const physicalCount = supplementalGroups.reduce((sum, group) => sum + group.cards.reduce((groupSum, component) => groupSum + (Number(component.quantity) || 1), 0), 0);
+  const uniqueCount = metricGroups.reduce((sum, group) => sum + group.cards.length, 0);
+  const physicalCount = metricGroups.reduce((sum, group) => sum + group.cards.reduce((groupSum, component) => groupSum + (Number(component.quantity) || 1), 0), 0);
   root.dataset.supplementalDesignCount = String(uniqueCount);
   root.dataset.supplementalPhysicalCount = String(physicalCount);
   document.querySelectorAll('[data-supplemental-design-count]').forEach(node => { node.textContent = String(uniqueCount); });
@@ -466,12 +496,17 @@ async function hydrateReferenceCards() {
 
 async function renderCurrentSupplementals() {
   if (!root) return;
+  if (catalogFilter && !catalogFilter.typeMatches('supplemental', 'tracker', 'reference', 'ledger', 'deed')) {
+    root.replaceChildren();
+    return;
+  }
   try {
     const currentGame = await loadCurrentGame();
     currentDisplayVersion = currentGame.displayVersion;
-    supplementalGroups = buildSupplementalGroups(currentGame);
+    const allGroups = buildSupplementalGroups(currentGame);
+    supplementalGroups = filterSupplementalGroups(allGroups);
     root.dataset.currentGameAuthority = currentGame.authorityUrl;
-    renderSupplementalMarkup();
+    renderSupplementalMarkup(allGroups);
     await layoutTrackerCards();
     await hydrateReferenceCards();
   } catch (error) {
