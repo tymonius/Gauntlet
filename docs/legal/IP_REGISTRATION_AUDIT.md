@@ -211,7 +211,7 @@ Current USPTO base filing fee: **$350 per class**, before possible additional fe
 
 ### Entity ownership
 
-The current business architecture treats **TDS Games** as the game-publishing imprint of **Misty Hollow Enterprises** beginning with the v0.7.1 candidate. Misty Hollow Enterprises LLC is the intended operating entity but is not represented as formed in player-facing materials until Virginia formation is complete.
+The current business architecture treats **TDS Games** as the game-publishing imprint of **Misty Hollow Enterprises** for maintained development and future publication surfaces. Misty Hollow Enterprises LLC is the intended operating entity but is not represented as formed in player-facing materials until Virginia formation is complete. Frozen published releases retain the publishing identity recorded at publication.
 
 Gauntlet copyright remains with **Tymon Scott**. The intended operating model is a written game-publishing license from the copyright owner to Misty Hollow Enterprises, operating through TDS Games; the publishing identity does not itself transfer copyright or trademark ownership.
 
