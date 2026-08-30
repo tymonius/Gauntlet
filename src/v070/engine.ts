@@ -29,6 +29,17 @@ export interface V070Binding {
   sequence: number;
 }
 
+export interface V070AssetFaceState {
+  instanceId: string;
+  owner: PlayerId;
+  faceUp: false;
+  changedBy: PlayerId;
+  sourceInstanceId: string | null;
+  reason: string;
+  appliedTurn: number;
+  restoreAtPlayer: PlayerId;
+}
+
 export interface V070PendingTurnChoice {
   kind: 'demilitarized_zone_upkeep';
   playerId: PlayerId;
@@ -330,6 +341,7 @@ export interface V070GameState {
   nextOverlaySequence: number;
   bindings: V070Binding[];
   nextBindingSequence: number;
+  assetFaceStates: V070AssetFaceState[];
   territoryTurnRestrictions: V070TerritoryTurnRestriction[];
   sanctions: V070SanctionAssociation[];
   sanctionTriggerTurns: Record<string, number>;
@@ -442,6 +454,7 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
     nextOverlaySequence: 1,
     bindings: [],
     nextBindingSequence: 1,
+    assetFaceStates: [],
     territoryTurnRestrictions: [],
     sanctions: [],
     sanctionTriggerTurns: {},
