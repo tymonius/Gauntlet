@@ -128,6 +128,13 @@ export type V070PendingActionEffectChoice =
       sourceActionInstanceId: string;
     }
   | {
+      kind: 'conviction_spend_choice';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      purpose: 'Hellfire';
+      maxAmount: number;
+    }
+  | {
       kind: 'hand_destination_target';
       playerId: PlayerId;
       sourceActionInstanceId: string;
