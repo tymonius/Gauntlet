@@ -731,14 +731,20 @@
     margin-bottom: 0;
   }
 
-  /* Supplemental components are one packing grid across factions. Paired
-     faces span two card tracks; single-sided pieces fill the holes. */
-  .supplemental-catalog-grid {
+  /* Supplemental components remain grouped by faction, but each faction is a
+     dense packing grid rather than a vertical stack of component rows. Paired
+     faces span two card tracks; single-sided pieces fill remaining tracks. */
+  .supplemental-faction-block {
     width: var(--catalog-shell);
-    margin: 0 auto;
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .supplemental-faction-grid {
     grid-template-columns: repeat(auto-fit, var(--catalog-card-width));
     gap: 22px 12px;
-    justify-content: center;
+    justify-content: start;
+    align-items: start;
   }
 
   .supplemental-review-item {
@@ -857,7 +863,7 @@
   .full-card-review-grid,
   .leader-review-grid,
   .territory-review-grid,
-  .supplemental-catalog-grid,
+  .supplemental-faction-grid,
   .card-back-review-shell {
     justify-content: start;
     overflow-x: auto;
