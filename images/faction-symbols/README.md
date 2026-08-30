@@ -11,4 +11,6 @@ Current production directions:
 
 All six faction marks are approved monochrome SVGs intended for use as CSS masks so faction color is supplied by the consuming component.
 
+Superseded explorations and raster/source references belong under `candidates/`; files there are not approved production marks.
+
 `Arcane` is a card type, not a faction name.
