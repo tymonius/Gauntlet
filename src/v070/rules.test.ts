@@ -5,6 +5,7 @@ import {
   V070_TURN_SEQUENCE,
   applyV070BattleOutcome,
   applyV070MovementChoice,
+  advanceV070TurnPhase,
   beginEffectGrantedV070Movement,
   beginNormalV070Movement,
   canInitiateV070LastStand,
