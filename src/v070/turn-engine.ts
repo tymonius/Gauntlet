@@ -405,6 +405,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'neutral-contraband',
   'neutral-disruption',
   'neutral-insurrection',
+  'neutral-new-recruits',
   'neutral-revolution',
   'neutral-reserves',
   'neutral-salvage',
@@ -477,6 +478,12 @@ function playActionCard(
     && player.zones.discardPile.length === 0) {
     throw new V070GameActionError(
       'Salvage requires at least one card in your Discard Pile.',
+    );
+  }
+  if (card.id === 'neutral-new-recruits'
+    && player.zones.hand.length < 2) {
+    throw new V070GameActionError(
+      'New Recruits requires one other card in your Hand.',
     );
   }
 
@@ -615,6 +622,18 @@ function continuePendingActionCard(state: V070GameState): void {
     case 'neutral-insurrection':
       resolveInsurrectionAction(state, pending.playerId, pending.instanceId);
       finishPendingActionCard(state);
+      return;
+    case 'neutral-new-recruits':
+      if (!openHandDestinationChoice(
+        state,
+        pending.playerId,
+        pending.instanceId,
+        'New Recruits',
+        'discard',
+        2,
+      )) {
+        finishPendingActionCard(state);
+      }
       return;
     case 'neutral-revolution':
       resolveRevolutionAction(state, pending.playerId);

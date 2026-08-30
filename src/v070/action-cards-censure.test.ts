@@ -164,17 +164,17 @@ describe('v0.7.0 printed Action cards and Sanctions: Censure', () => {
 
   test('unsupported printed Action effects fail explicitly without spending the Action or moving the card', () => {
     const state = openingForB();
-    const recruits = relocateCard(state, 'B', 'neutral-new-recruits', 'hand');
+    const landslide = relocateCard(state, 'B', 'neutral-landslide', 'hand');
 
     expect(() => reduceV070TurnAction(state, {
       type: 'play_action_card',
       playerId: 'B',
-      cardInstanceId: recruits,
+      cardInstanceId: landslide,
     })).toThrow(/not yet executable/);
 
     expect(state.turnState?.actionsAvailable).toBe(1);
     expect(state.turnState?.actionsTaken.opening).toBe(0);
-    expect(state.players.B.zones.hand).toContain(recruits);
+    expect(state.players.B.zones.hand).toContain(landslide);
   });
 
   test('Censure may be banked from Hand after that opponent refuses Terms and remembers the refusing opponent', () => {
