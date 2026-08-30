@@ -45,6 +45,38 @@ function inject(
 }
 
 describe('v0.7.0 bound-card core', () => {
+  test('binding sequence numbers remain monotonic after release', () => {
+    const state = game();
+    const first = inject(state, 'A', 'hand', 'sequence-first');
+    const second = inject(state, 'A', 'hand', 'sequence-second');
+
+    const initial = bindV070CardFromPlayerZone(state, {
+      hostId: 'sequence-host-1',
+      owner: 'A',
+      cardInstanceId: first,
+      sourceZone: 'hand',
+      faceUp: false,
+      purpose: 'sequence test',
+    });
+    releaseV070BoundCards(
+      state,
+      'sequence-host-1',
+      'discard',
+      'sequence release',
+    );
+    const rebound = bindV070CardFromPlayerZone(state, {
+      hostId: 'sequence-host-2',
+      owner: 'A',
+      cardInstanceId: second,
+      sourceZone: 'hand',
+      faceUp: false,
+      purpose: 'sequence test',
+    });
+
+    expect(rebound.sequence).toBeGreaterThan(initial.sequence);
+    expect(state.nextBindingSequence).toBe(rebound.sequence + 1);
+  });
+
   test('binding removes a card from its normal zone and records stable host order', () => {
     const state = game();
     const first = inject(state, 'A', 'hand', 'first');
