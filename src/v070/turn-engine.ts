@@ -751,6 +751,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'intelligence-regime-change',
   'intelligence-spies',
   'military-high-command',
+  'military-invasion',
   'military-reserve-force',
   'mystics-dark-omens',
   'mystics-sacrifice-recovery',
@@ -1237,6 +1238,51 @@ function continuePendingActionCard(state: V070GameState): void {
       return;
     case 'neutral-disruption':
       resolveDisruptionAction(state, pending.playerId, pending.instanceId);
+      finishPendingActionCard(state);
+      return;
+    case 'military-invasion':
+      if (pending.phase === 'opening') {
+        state.turnState = queueNormalV070MovementStep(
+          requireTurnState(state),
+          {
+            source: 'Invasion',
+            choiceRestriction: 'advance_only',
+            battleRestriction: 'allowed',
+          },
+        );
+        state.turnState = queueNormalV070MovementStep(
+          requireTurnState(state),
+          {
+            source: 'Invasion',
+            choiceRestriction: 'advance_only',
+            battleRestriction: 'allowed',
+          },
+        );
+        appendV070Event(state, {
+          type: 'movement_steps_granted',
+          actor: pending.playerId,
+          visibility: 'public',
+          payload: {
+            amount: 2,
+            purpose: 'Invasion',
+            sourceActionInstanceId: pending.instanceId,
+            phase: pending.phase,
+            choiceRestriction: 'advance_only',
+            battleRestriction: 'allowed',
+          },
+        });
+      } else {
+        appendV070Event(state, {
+          type: 'action_effect_incomplete',
+          actor: pending.playerId,
+          visibility: 'public',
+          payload: {
+            sourceActionInstanceId: pending.instanceId,
+            purpose: 'Invasion',
+            reason: 'movement_phase_already_passed',
+          },
+        });
+      }
       finishPendingActionCard(state);
       return;
     case 'military-give-chase':
