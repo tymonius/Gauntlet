@@ -39,11 +39,13 @@ export interface V070BattleOnsetInput {
   defenderControlsContested: boolean;
   lastStand?: boolean;
   defensiveEdgeRemoved?: boolean;
+  attackerGambitProhibited?: boolean;
 }
 
 export interface V070BattleState extends V070BattleOnsetInput {
   lastStand: boolean;
   defensiveEdgeRemoved: boolean;
+  attackerGambitProhibited: boolean;
   stage: V070BattleStage;
   termsAccepted: boolean | null;
   winner: PlayerId | null;
@@ -92,6 +94,7 @@ export interface V070LastStandAccessInput {
   defenderPosition: ExtendedPosition;
   separateMovementSequence: boolean;
   advancingBeyondOpponentEnd: boolean;
+  attackerGambitProhibited?: boolean;
 }
 
 export type V070MovementSequenceSource = 'normal' | 'effect';
@@ -168,6 +171,7 @@ export function createV070BattleOnset(input: V070BattleOnsetInput): V070BattleSt
     ...input,
     lastStand,
     defensiveEdgeRemoved: Boolean(input.defensiveEdgeRemoved),
+    attackerGambitProhibited: Boolean(input.attackerGambitProhibited),
     stage: 'onset',
     termsAccepted: null,
     winner: null,
@@ -194,6 +198,7 @@ export function createV070LastStandOnset(input: V070LastStandAccessInput): V070B
     positions: { A: contestedPosition, B: contestedPosition },
     defenderControlsContested: false,
     lastStand: true,
+    attackerGambitProhibited: Boolean(input.attackerGambitProhibited),
   });
 }
 
