@@ -347,6 +347,7 @@ export function useV070GoodFaith(
 
   const bank = state.players[diplomatId].zones.assetBank;
   bank.splice(bank.indexOf(assetInstanceId), 1);
+  clearV070AssetFaceState(state, assetInstanceId);
   state.players[diplomatId].zones.discardPile.push(assetInstanceId);
   drawIntoHand(state, diplomatId, 1, 'Good Faith');
 
