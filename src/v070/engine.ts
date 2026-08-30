@@ -130,6 +130,20 @@ export type V070PendingActionEffectChoice =
       sourceActionInstanceId: string;
       purpose: 'Sedition' | 'Capital Punishment';
       destination: 'discard' | 'graveyard';
+    }
+  | {
+      kind: 'pending_asset_bank_replacement';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      purpose:
+        | 'Compound Interest'
+        | 'Détente'
+        | 'High Command'
+        | 'War Bonds'
+        | 'Regime Change'
+        | 'Reembodiment'
+        | 'Tariffs';
+      replacementInstanceIds: string[];
     };
 
 export type V070PendingSanctionChoice =
