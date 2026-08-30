@@ -106,15 +106,18 @@ for (const [relativePath, required] of [
   failures += requireText(relativePath, required, `PR #171 terminology: ${JSON.stringify(required)}`);
 }
 
-// Live consumers must authenticate the recovered authority before applying the
-// publication-language correction.
-failures += requireText('rulebook/app.js', "normalizeV063LastStandText", 'Last Stand publication normalizer');
+// The current Browser Rulebook consumes its published release authority
+// directly. Historical v0.6.3 publication transforms remain confined to the
+// archived v0.6.3 corpus and publication tooling.
+failures += requireText('rulebook/app.js', 'RELEASE_MANIFEST_URL', 'published release-manifest binding');
+failures += requireText('rulebook/app.js', 'manifest?.binding_sources?.rulebook', 'manifest Rulebook binding');
 failures += requireOrder(
   'rulebook/app.js',
-  'if (actualHash !== SOURCE_SHA256)',
-  'const markdown = publicRulebookSource',
-  'Rulebook must verify the certified hash before applying publication terminology.',
+  'const { rulebook, sourceUrl } = await loadReleaseManifest();',
+  'if (actualHash !== rulebook.sha256)',
+  'Rulebook must load its published binding before verifying the published source hash.',
 );
+failures += requireText('rulebook/app.js', 'return new TextDecoder().decode(bytes);', 'direct published Rulebook rendering');
 failures += requireText('rules-assistant/v063-public-corpus.js', 'normalizeV063LastStandValue', 'structured Last Stand normalizer');
 failures += requireOrder(
   'rules-assistant/v063-public-corpus.js',

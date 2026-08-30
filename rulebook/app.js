@@ -1,17 +1,13 @@
 import { renderMarkdown } from './markdown.js';
 import { loadCurrentGame } from '../game-data/current-game.mjs';
-import { normalizeV063LastStandText } from '../rules-assistant/v063-last-stand-language.js';
-import { applyV070RulebookCorrections } from './player-facing/v070-corrections.js';
 
-const SOURCE_URL = '../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook.md';
-const SOURCE_SHA256 = '7027ef7fe7dcfd59cf43ae9f68d2bd2760667a128839a8b4f141559328f2c653';
-const CHAPTER_11_URL = './player-facing/chapter-11.md';
+const RELEASE_MANIFEST_URL = '../releases/v0.7.0/Gauntlet_v0.7.0_Manifest.json';
 const CURRENT_SOURCE_URL = './player-facing/current-rulebook.md';
-const PUBLISHED_SOURCE_URL = '../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook.md';
-const PDF_URL = '../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook_Booklet.pdf?rev=419138bb';
+const PUBLISHED_VERSION = 'v0.7.0';
+const FALLBACK_PUBLISHED_SOURCE_URL = '../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook.md';
+const FALLBACK_PDF_URL = '../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook_Booklet.pdf';
 const RELEASED_MODE = 'released';
 const CANDIDATE_MODE = 'candidate';
-const PUBLISHED_VERSION = 'v0.7.0';
 const content = document.querySelector('[data-rulebook-content]');
 const toc = document.querySelector('[data-rulebook-toc]');
 const status = document.querySelector('[data-rulebook-status]');
@@ -32,7 +28,10 @@ const rulesetButtons = [...document.querySelectorAll('[data-ruleset]')];
 const publishedBookletLinks = [...document.querySelectorAll('[data-published-booklet]')];
 
 let sourcePromise = null;
+let releaseManifestPromise = null;
 let currentSourcePromise = null;
+let publishedSourceUrl = FALLBACK_PUBLISHED_SOURCE_URL;
+let pdfUrl = FALLBACK_PDF_URL;
 let activeMode = RELEASED_MODE;
 let sectionObserver = null;
 
@@ -354,47 +353,67 @@ async function sha256(bytes) {
   return [...new Uint8Array(digest)].map((value) => value.toString(16).padStart(2, '0')).join('');
 }
 
-function replacePlayerFacingChapter11(source, chapter11) {
-  const startMarker = '# 11. Detailed Card and Timing Rules';
-  const endMarker = '# 12. Overlays and Other Shared Card Rules';
-  const start = source.indexOf(startMarker);
-  const end = source.indexOf(endMarker);
-  const replacement = chapter11.trim();
+function releasePackagePath(manifest, path) {
+  const normalizedPath = String(path || '').replace(/^\/+/, '');
+  if (normalizedPath.startsWith('releases/')) return normalizedPath;
 
-  if (start < 0 || end < 0 || end <= start) {
-    throw new Error('Rulebook Chapter 11 boundaries could not be located.');
-  }
-  if (!replacement.startsWith(startMarker) || replacement.includes(`\n${endMarker}`)) {
-    throw new Error('Player-facing Chapter 11 override has invalid boundaries.');
-  }
-
-  return `${source.slice(0, start)}${replacement}\n\n${source.slice(end)}`;
+  const packagePath = String(manifest?.current_package_path || `releases/${PUBLISHED_VERSION}/`)
+    .replace(/^\/+|\/+$/g, '');
+  return `${packagePath}/${normalizedPath}`;
 }
 
-function publicRulebookSource(source, chapter11) {
-  const normalized = normalizeV063LastStandText(source)
-    .replace('**Version 0.6.3 — Clean Reconstruction Candidate**', '**Version 0.6.3**')
-    .replace(/^> \*\*Authority candidate, not current\/public rules\.\*\*[^\n]*\n\n/m, '');
-  return applyV070RulebookCorrections(replacePlayerFacingChapter11(normalized, chapter11));
+function releaseAssetUrl(path) {
+  return `../${String(path || '').replace(/^\/+/, '')}`;
+}
+
+async function loadReleaseManifest() {
+  if (!releaseManifestPromise) {
+    releaseManifestPromise = fetch(RELEASE_MANIFEST_URL, { cache: 'no-store' })
+      .then(async (response) => {
+        if (!response.ok) throw new Error(`Release manifest returned ${response.status}`);
+        const manifest = await response.json();
+        if (manifest?.release_version !== PUBLISHED_VERSION) {
+          throw new Error(`Release manifest version mismatch: ${manifest?.release_version || 'missing'}`);
+        }
+
+        const rulebook = manifest?.binding_sources?.rulebook;
+        if (!rulebook?.path || !/^[a-f0-9]{64}$/i.test(rulebook?.sha256 || '')) {
+          throw new Error('Release manifest is missing a valid Rulebook binding.');
+        }
+
+        const booklet = manifest?.pdf_outputs?.find((entry) => entry?.key === 'rulebook-booklet');
+        if (!booklet?.path || !/^[a-f0-9]{64}$/i.test(booklet?.sha256 || '')) {
+          throw new Error('Release manifest is missing a valid Rulebook booklet binding.');
+        }
+
+        publishedSourceUrl = releaseAssetUrl(releasePackagePath(manifest, rulebook.path));
+        pdfUrl = `${releaseAssetUrl(releasePackagePath(manifest, booklet.path))}?rev=${booklet.sha256.slice(0, 8)}`;
+        publishedBookletLinks.forEach((link) => { link.href = pdfUrl; });
+
+        return { manifest, rulebook, sourceUrl: publishedSourceUrl };
+      })
+      .catch((error) => {
+        releaseManifestPromise = null;
+        throw error;
+      });
+  }
+  return releaseManifestPromise;
 }
 
 async function loadVerifiedReleasedSource() {
   if (!sourcePromise) {
     sourcePromise = (async () => {
-      const [response, chapter11Response] = await Promise.all([
-        fetch(SOURCE_URL, { cache: 'no-store' }),
-        fetch(CHAPTER_11_URL, { cache: 'no-store' }),
-      ]);
+      const { rulebook, sourceUrl } = await loadReleaseManifest();
+      const response = await fetch(sourceUrl, { cache: 'no-store' });
       if (!response.ok) throw new Error(`Rulebook source returned ${response.status}`);
-      if (!chapter11Response.ok) throw new Error(`Player-facing Chapter 11 returned ${chapter11Response.status}`);
 
       const bytes = await response.arrayBuffer();
       const actualHash = await sha256(bytes);
-      if (actualHash !== SOURCE_SHA256) throw new Error(`Rulebook source hash mismatch: ${actualHash}`);
+      if (actualHash !== rulebook.sha256) {
+        throw new Error(`Rulebook source hash mismatch: expected ${rulebook.sha256}, received ${actualHash}`);
+      }
 
-      const chapter11 = await chapter11Response.text();
-      const markdown = publicRulebookSource(new TextDecoder().decode(bytes), chapter11);
-      return markdown;
+      return new TextDecoder().decode(bytes);
     })().catch((error) => {
       sourcePromise = null;
       throw error;
@@ -481,7 +500,7 @@ async function renderRulebook(mode) {
     content.innerHTML = `
       <section class="load-error" role="alert">
         <h1>The browser rulebook could not be loaded.</h1>
-        <p>Use the <a href="${PDF_URL}">reader PDF</a> or <a href="${PUBLISHED_SOURCE_URL}">canonical Markdown source</a>.</p>
+        <p>Use the <a href="${pdfUrl}">reader PDF</a> or <a href="${publishedSourceUrl}">canonical Markdown source</a>.</p>
       </section>
     `;
     status.textContent = 'Rulebook unavailable';
