@@ -175,6 +175,13 @@ export type V070PendingActionEffectChoice =
       opponentId: PlayerId;
       sourceActionInstanceId: string;
       maxCombinedValue: number;
+    }
+  | {
+      kind: 'opponent_hand_discard_target';
+      playerId: PlayerId;
+      opponentId: PlayerId;
+      sourceActionInstanceId: string;
+      purpose: 'Assassins';
     };
 
 export type V070PendingSanctionChoice =
