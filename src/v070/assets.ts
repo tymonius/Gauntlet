@@ -143,6 +143,20 @@ export function discardV070AssetAsAction(
   playerId: PlayerId,
   instanceId: string,
 ): void {
+  discardV070AssetVoluntarily(
+    state,
+    playerId,
+    instanceId,
+    'Asset discard Action',
+  );
+}
+
+export function discardV070AssetVoluntarily(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+  purpose: string,
+): void {
   if (!voluntarilyDiscardableV070AssetInstanceIds(state, playerId).includes(instanceId)) {
     throw new V070GameActionError('That Asset cannot be voluntarily discarded now.');
   }
@@ -151,7 +165,7 @@ export function discardV070AssetAsAction(
     state,
     playerId,
     instanceId,
-    'Asset discard Action',
+    purpose,
     false,
   );
 }
