@@ -239,6 +239,12 @@ describe('v0.7.0 Act of Faith Action', () => {
     );
     expect(revealEvent?.visibility).toBe('public');
     expect((revealEvent?.payload as { instanceIds?: string[] })?.instanceIds).toEqual(revealed);
+    expect((revealEvent?.payload as {
+      cards?: Array<{ instanceId: string; cardId: string }>;
+    })?.cards).toEqual(revealed.map(instanceId => ({
+      instanceId,
+      cardId: state.cardInstances[instanceId].cardId,
+    })));
 
     state = reduceV070TurnAction(state, {
       type: 'choose_act_of_faith_graveyard_target',
