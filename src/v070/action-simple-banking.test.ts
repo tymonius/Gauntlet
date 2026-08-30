@@ -265,7 +265,7 @@ describe('v0.7.0 simple printed banking Actions', () => {
     expect(state.turnState?.actionsAvailable).toBe(1);
   });
 
-  test('Tariffs banks, draws two, grants one Action, but does not permit a second Opening Action', () => {
+  test('Tariffs banks, draws two, and grants a second Action in the current Opening phase', () => {
     let state = openingForB();
     const tariffs = injectCard(
       state,
@@ -294,6 +294,7 @@ describe('v0.7.0 simple printed banking Actions', () => {
     expect(state.players.B.zones.hand.length).toBe(handBefore + 1);
     expect(state.turnState?.actionsAvailable).toBe(1);
     expect(state.turnState?.actionsTaken.opening).toBe(1);
+    expect(state.turnState?.phaseActionGrants.opening).toBe(1);
     expect(state.events.some(event =>
       event.type === 'cards_drawn'
       && (event.payload as { purpose?: string; count?: number })?.purpose === 'Tariffs'
@@ -305,11 +306,15 @@ describe('v0.7.0 simple printed banking Actions', () => {
       && (event.payload as { amount?: number })?.amount === 1
     )).toBe(true);
 
-    expect(() => reduceV070TurnAction(state, {
+    state = reduceV070TurnAction(state, {
       type: 'play_action_card',
       playerId: 'B',
       cardInstanceId: anotherAction,
-    })).toThrow(/normal Action limit for opening has already been reached/);
+    });
+
+    expect(state.players.B.zones.discardPile).toContain(anotherAction);
+    expect(state.turnState?.actionsAvailable).toBe(0);
+    expect(state.turnState?.actionsTaken.opening).toBe(2);
   });
 
   test('Tariffs cannot be banked while another Tariffs is already banked', () => {
