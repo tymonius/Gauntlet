@@ -58,7 +58,11 @@ import {
   voluntarilyReturnableV070AssetInstanceIds,
 } from './assets';
 import { bindV070CardFromPlayerZone } from './bindings';
-import { gainV070Conviction } from './inquisition';
+import {
+  gainV070Conviction,
+  spendV070Conviction,
+  v070Conviction,
+} from './inquisition';
 import {
   faceUpV070AssetInstanceIds,
   isV070AssetFaceUp,
@@ -217,6 +221,11 @@ export type V070TurnAction =
       handInstanceId?: string;
     }
   | {
+      type: 'resolve_conviction_spend_choice';
+      playerId: PlayerId;
+      amount: number;
+    }
+  | {
       type: 'resolve_censure_choice';
       playerId: PlayerId;
       sanctionInstanceId: string;
@@ -287,6 +296,10 @@ export function reduceV070TurnAction(
     ) || (
       pending.kind === 'penance_choice'
       && action.type === 'resolve_penance_choice'
+      && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'conviction_spend_choice'
+      && action.type === 'resolve_conviction_spend_choice'
       && action.playerId === pending.playerId
     ) || (
       pending.kind === 'hand_destination_target'
@@ -389,6 +402,7 @@ export function reduceV070TurnAction(
       'resolve_clemency_choice',
       'choose_recovery_action_target',
       'resolve_penance_choice',
+      'resolve_conviction_spend_choice',
       'choose_hand_destination_target',
       'choose_controlled_asset_target',
       'choose_sequestration_keep_asset',
@@ -461,6 +475,9 @@ export function reduceV070TurnAction(
         action.choice,
         action.handInstanceId,
       );
+      break;
+    case 'resolve_conviction_spend_choice':
+      resolveConvictionSpendChoice(next, action.playerId, action.amount);
       break;
     case 'choose_hand_destination_target':
       chooseHandDestinationTarget(next, action.playerId, action.targetInstanceId);
@@ -767,6 +784,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'inquisition-anathema',
   'inquisition-divine-mercy',
   'inquisition-penance',
+  'inquisition-hellfire',
   'inquisition-excommunication',
   'inquisition-act-of-faith',
   'inquisition-guilt-by-association',
