@@ -229,6 +229,37 @@ export function removeV070AssetForced(
   );
 }
 
+export function discardV070AssetByEffect(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+  purpose: string,
+): void {
+  const bank = state.players[playerId].zones.assetBank;
+  if (!bank.includes(instanceId)) {
+    throw new V070GameActionError(
+      'An effect-forced Asset discard must target a banked Asset.',
+    );
+  }
+
+  const extraordinary = bank.find(candidate =>
+    state.cardInstances[candidate]?.cardId === 'intelligence-extraordinary-rendition'
+  );
+  if (extraordinary && instanceId !== extraordinary) {
+    throw new V070GameActionError(
+      'Extraordinary Rendition must be discarded before any other Asset, if able.',
+    );
+  }
+
+  moveBankedAssetToDiscard(
+    state,
+    playerId,
+    instanceId,
+    purpose,
+    false,
+  );
+}
+
 export function discardV070AssetVoluntarily(
   state: V070GameState,
   playerId: PlayerId,
