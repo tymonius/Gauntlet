@@ -106,6 +106,11 @@ export type V070TurnAction =
       targetInstanceId: string;
     }
   | {
+      type: 'choose_fates_toll_cost';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
       type: 'resolve_scouting_report_choice';
       playerId: PlayerId;
       source: 'own_draw' | 'opponent_draw' | 'opponent_hand';
@@ -267,6 +272,10 @@ export function reduceV070TurnAction(
       && action.type === 'choose_sequestration_keep_asset'
       && action.playerId === pending.playerId
     ) || (
+      pending.kind === 'fates_toll_cost'
+      && action.type === 'choose_fates_toll_cost'
+      && action.playerId === pending.playerId
+    ) || (
       pending.kind === 'scouting_report_source'
       && action.type === 'resolve_scouting_report_choice'
       && action.playerId === pending.playerId
@@ -345,6 +354,7 @@ export function reduceV070TurnAction(
       'choose_hand_destination_target',
       'choose_controlled_asset_target',
       'choose_sequestration_keep_asset',
+      'choose_fates_toll_cost',
       'resolve_scouting_report_choice',
       'choose_territory_overlay_target',
       'choose_forced_asset_target',
@@ -412,6 +422,13 @@ export function reduceV070TurnAction(
       break;
     case 'choose_sequestration_keep_asset':
       chooseSequestrationKeepAsset(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
+      break;
+    case 'choose_fates_toll_cost':
+      chooseFatesTollCost(
         next,
         action.playerId,
         action.targetInstanceId,
@@ -662,6 +679,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'neutral-contraband',
   'neutral-disruption',
   'neutral-forced-march',
+  'mystics-fate-s-toll',
   'neutral-insurrection',
   'neutral-landslide',
   'neutral-new-recruits',
@@ -783,6 +801,12 @@ function playActionCard(
     && player.zones.discardPile.length === 0) {
     throw new V070GameActionError(
       'Salvage requires at least one card in your Discard Pile.',
+    );
+  }
+  if (card.id === 'mystics-fate-s-toll'
+    && player.zones.hand.length < 2) {
+    throw new V070GameActionError(
+      "Fate's Toll requires one other card in your Hand.",
     );
   }
   if (card.id === 'neutral-new-recruits'
@@ -1138,6 +1162,52 @@ function continuePendingActionCard(state: V070GameState): void {
     case 'neutral-disruption':
       resolveDisruptionAction(state, pending.playerId, pending.instanceId);
       finishPendingActionCard(state);
+      return;
+    case 'mystics-fate-s-toll':
+      if (state.players[pending.playerId].zones.hand.length === 0) {
+        appendV070Event(state, {
+          type: 'action_effect_incomplete',
+          actor: pending.playerId,
+          visibility: 'public',
+          payload: {
+            sourceActionInstanceId: pending.instanceId,
+            purpose: "Fate's Toll",
+            reason: 'required_hand_cost_unavailable',
+          },
+        });
+        finishPendingActionCard(state);
+        return;
+      }
+      state.pendingActionEffectChoice = {
+        kind: 'fates_toll_cost',
+        playerId: pending.playerId,
+        sourceActionInstanceId: pending.instanceId,
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          kind: 'fates_toll_cost',
+          playerId: pending.playerId,
+          sourceActionInstanceId: pending.instanceId,
+          purpose: "Fate's Toll",
+          candidateCount: state.players[pending.playerId].zones.hand.length,
+        },
+      });
+      appendV070Event(state, {
+        type: 'action_effect_choice_options',
+        actor: pending.playerId,
+        visibility: pending.playerId,
+        payload: {
+          kind: 'fates_toll_cost',
+          sourceActionInstanceId: pending.instanceId,
+          purpose: "Fate's Toll",
+          targetInstanceIds: [
+            ...state.players[pending.playerId].zones.hand,
+          ],
+        },
+      });
       return;
     case 'neutral-insurrection':
       resolveInsurrectionAction(state, pending.playerId, pending.instanceId);
@@ -3382,6 +3452,84 @@ function availableScoutingReportSources(
   if (state.players[opponent].zones.drawPile.length > 0) sources.push('opponent_draw');
   if (state.players[opponent].zones.hand.length > 0) sources.push('opponent_hand');
   return sources;
+}
+
+function chooseFatesTollCost(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'fates_toll_cost'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'mystics-fate-s-toll') {
+    throw new V070GameActionError(
+      "No Fate's Toll payment choice is pending for that player.",
+    );
+  }
+
+  const hand = state.players[playerId].zones.hand;
+  const index = hand.indexOf(targetInstanceId);
+  if (index < 0) {
+    throw new V070GameActionError(
+      "Fate's Toll must put another card from your Hand in your Graveyard.",
+    );
+  }
+
+  hand.splice(index, 1);
+  state.players[playerId].zones.graveyard.push(targetInstanceId);
+  appendV070Event(state, {
+    type: 'card_moved_to_graveyard',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      instanceId: targetInstanceId,
+      cardId: state.cardInstances[targetInstanceId]?.cardId,
+      purpose: "Fate's Toll",
+    },
+  });
+
+  state.pendingActionEffectChoice = null;
+  if (pending.phase === 'opening') {
+    state.turnState = queueNormalV070MovementStep(
+      requireTurnState(state),
+      {
+        source: "Fate's Toll",
+        choiceRestriction: 'any',
+        battleRestriction: 'allowed',
+      },
+    );
+  } else {
+    state.turnState = beginEffectGrantedV070Movement(
+      requireTurnState(state),
+      1,
+      {
+        source: "Fate's Toll",
+        choiceRestriction: 'any',
+        battleRestriction: 'allowed',
+      },
+    );
+  }
+
+  appendV070Event(state, {
+    type: 'movement_step_granted',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      purpose: "Fate's Toll",
+      sourceActionInstanceId: pending.instanceId,
+      phase: pending.phase,
+      separateSequence: pending.phase === 'denouement',
+      choiceRestriction: 'any',
+      battleRestriction: 'allowed',
+    },
+  });
+
+  finishPendingActionCard(state);
 }
 
 function sequestrationKeepOptions(
