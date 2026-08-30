@@ -111,6 +111,13 @@ describe('v0.7.0 Anathema Action', () => {
       opponentId: 'A',
       sourceActionInstanceId: source,
     });
+    const pendingEvent = state.events.find(event =>
+      event.type === 'action_effect_choice_pending'
+      && (event.payload as { purpose?: string })?.purpose === 'Anathema'
+    );
+    expect(pendingEvent?.visibility).toBe('public');
+    expect((pendingEvent?.payload as { targetInstanceIds?: string[] })
+      ?.targetInstanceIds).toContain(target);
 
     state = reduceV070TurnAction(state, {
       type: 'choose_anathema_target',
