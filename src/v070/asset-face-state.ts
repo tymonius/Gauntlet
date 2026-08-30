@@ -1,6 +1,7 @@
 import {
   V070GameActionError,
   appendV070Event,
+  type V070AssetFaceState,
   type V070GameState,
 } from './engine';
 import type { PlayerId } from './rules';
@@ -73,7 +74,7 @@ export function restoreV070AssetsAtTurnStart(
   startingPlayer: PlayerId,
 ): string[] {
   const restored: string[] = [];
-  const remaining = [];
+  const remaining: V070AssetFaceState[] = [];
 
   for (const face of state.assetFaceStates) {
     const due = face.restoreAtPlayer === startingPlayer
