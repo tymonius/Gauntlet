@@ -182,6 +182,19 @@ export type V070PendingActionEffectChoice =
       opponentId: PlayerId;
       sourceActionInstanceId: string;
       purpose: 'Assassins';
+    }
+  | {
+      kind: 'dark_omens_graveyard_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'act_of_faith_graveyard_target';
+      playerId: PlayerId;
+      opponentId: PlayerId;
+      sourceActionInstanceId: string;
+      revealedInstanceIds: string[];
     };
 
 export type V070PendingSanctionChoice =
