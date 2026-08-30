@@ -84,6 +84,11 @@ export type V070TurnAction =
       targetInstanceId: string;
     }
   | {
+      type: 'resolve_scouting_report_choice';
+      playerId: PlayerId;
+      source: 'own_draw' | 'opponent_draw' | 'opponent_hand';
+    }
+  | {
       type: 'resolve_censure_choice';
       playerId: PlayerId;
       sanctionInstanceId: string;
@@ -160,6 +165,10 @@ export function reduceV070TurnAction(
       pending.kind === 'controlled_asset_target'
       && action.type === 'choose_controlled_asset_target'
       && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'scouting_report_source'
+      && action.type === 'resolve_scouting_report_choice'
+      && action.playerId === pending.playerId
     );
     if (!validContinuation) {
       throw new V070GameActionError('Resolve the pending printed Action effect choice first.');
@@ -174,6 +183,7 @@ export function reduceV070TurnAction(
       'choose_recovery_action_target',
       'choose_hand_destination_target',
       'choose_controlled_asset_target',
+      'resolve_scouting_report_choice',
     ].includes(action.type)) {
     throw new V070GameActionError('Resolve the pending Action card before continuing the turn.');
   }
@@ -213,6 +223,9 @@ export function reduceV070TurnAction(
       break;
     case 'choose_controlled_asset_target':
       chooseControlledAssetTarget(next, action.playerId, action.targetInstanceId);
+      break;
+    case 'resolve_scouting_report_choice':
+      resolveScoutingReportChoice(next, action.playerId, action.source);
       break;
     case 'resolve_censure_choice':
       resolveCensureChoice(
@@ -425,6 +438,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'neutral-reserves',
   'neutral-requisition',
   'neutral-salvage',
+  'neutral-scouting-report',
   'neutral-tactical-planning',
   'diplomats-clemency',
 ] as const;
@@ -506,6 +520,12 @@ function playActionCard(
     && voluntarilyDiscardableV070AssetInstanceIds(state, playerId).length === 0) {
     throw new V070GameActionError(
       'Requisition requires one Asset you can voluntarily discard.',
+    );
+  }
+  if (card.id === 'neutral-scouting-report'
+    && availableScoutingReportSources(state, playerId).length === 0) {
+    throw new V070GameActionError(
+      'Scouting Report requires a nonempty Draw Pile or opposing Hand to reveal.',
     );
   }
 
@@ -707,6 +727,38 @@ function continuePendingActionCard(state: V070GameState): void {
         pending.instanceId,
         'salvage_recovery_target',
       );
+      return;
+    case 'neutral-scouting-report':
+      if (availableScoutingReportSources(state, pending.playerId).length === 0) {
+        appendV070Event(state, {
+          type: 'action_effect_incomplete',
+          actor: pending.playerId,
+          visibility: 'public',
+          payload: {
+            sourceActionInstanceId: pending.instanceId,
+            purpose: 'Scouting Report',
+            reason: 'required_reveal_source_unavailable',
+          },
+        });
+        finishPendingActionCard(state);
+        return;
+      }
+      state.pendingActionEffectChoice = {
+        kind: 'scouting_report_source',
+        playerId: pending.playerId,
+        sourceActionInstanceId: pending.instanceId,
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          kind: 'scouting_report_source',
+          playerId: pending.playerId,
+          sourceActionInstanceId: pending.instanceId,
+          sources: availableScoutingReportSources(state, pending.playerId),
+        },
+      });
       return;
     case 'neutral-tactical-planning':
       drawIntoHand(state, pending.playerId, 2, 'Tactical Planning');
@@ -982,6 +1034,82 @@ function chooseRecoveryActionTarget(
     'Salvage',
     'discard',
   );
+}
+
+function resolveScoutingReportChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  source: 'own_draw' | 'opponent_draw' | 'opponent_hand',
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'scouting_report_source'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'neutral-scouting-report') {
+    throw new V070GameActionError('No Scouting Report source choice is pending for that player.');
+  }
+
+  const available = availableScoutingReportSources(state, playerId);
+  if (!available.includes(source)) {
+    throw new V070GameActionError('That Scouting Report reveal source is no longer available.');
+  }
+
+  const opponent = otherPlayer(playerId);
+  let owner: PlayerId;
+  let zone: 'draw_top' | 'hand';
+  let instanceId: string;
+
+  if (source === 'own_draw') {
+    owner = playerId;
+    zone = 'draw_top';
+    instanceId = state.players[playerId].zones.drawPile[0];
+  } else if (source === 'opponent_draw') {
+    owner = opponent;
+    zone = 'draw_top';
+    instanceId = state.players[opponent].zones.drawPile[0];
+  } else {
+    owner = opponent;
+    zone = 'hand';
+    instanceId = deterministicV070Shuffle(
+      state.players[opponent].zones.hand,
+      `${state.seed}:Scouting Report:${pending.instanceId}:turn:${state.turnNumber}`,
+    )[0];
+  }
+
+  if (!instanceId) {
+    throw new V070GameActionError('Scouting Report could not identify a card to reveal.');
+  }
+
+  appendV070Event(state, {
+    type: 'card_revealed',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      instanceId,
+      cardId: state.cardInstances[instanceId]?.cardId,
+      owner,
+      zone,
+      purpose: 'Scouting Report',
+    },
+  });
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state);
+}
+
+function availableScoutingReportSources(
+  state: V070GameState,
+  playerId: PlayerId,
+): Array<'own_draw' | 'opponent_draw' | 'opponent_hand'> {
+  const opponent = otherPlayer(playerId);
+  const sources: Array<'own_draw' | 'opponent_draw' | 'opponent_hand'> = [];
+  if (state.players[playerId].zones.drawPile.length > 0) sources.push('own_draw');
+  if (state.players[opponent].zones.drawPile.length > 0) sources.push('opponent_draw');
+  if (state.players[opponent].zones.hand.length > 0) sources.push('opponent_hand');
+  return sources;
 }
 
 function chooseControlledAssetTarget(
