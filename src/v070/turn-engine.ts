@@ -384,7 +384,9 @@ function discardAsset(
 export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'neutral-rallying-cry',
   'neutral-arcane-knowledge',
+  'neutral-consolidation',
   'neutral-contraband',
+  'neutral-disruption',
   'neutral-insurrection',
   'neutral-revolution',
   'diplomats-clemency',
@@ -437,6 +439,18 @@ function playActionCard(
     && player.zones.discardPile.length === 0) {
     throw new V070GameActionError(
       'Contraband requires at least one card in your Discard Pile.',
+    );
+  }
+  if (card.id === 'neutral-consolidation'
+    && !capturedTerritoryThisTurn(state, playerId)) {
+    throw new V070GameActionError(
+      'Consolidation may be played only if you captured a Territory this turn.',
+    );
+  }
+  if (card.id === 'neutral-disruption'
+    && state.players[otherPlayer(playerId)].zones.hand.length === 0) {
+    throw new V070GameActionError(
+      'Disruption requires at least one card in the opponent’s Hand.',
     );
   }
 
@@ -556,6 +570,10 @@ function continuePendingActionCard(state: V070GameState): void {
       };
       appendActionTargetChoicePending(state, pending.playerId, pending.instanceId, 'arcane_knowledge_target');
       return;
+    case 'neutral-consolidation':
+      drawIntoHand(state, pending.playerId, 2, 'Consolidation');
+      finishPendingActionCard(state);
+      return;
     case 'neutral-contraband':
       state.pendingActionEffectChoice = {
         kind: 'contraband_target',
@@ -563,6 +581,10 @@ function continuePendingActionCard(state: V070GameState): void {
         sourceActionInstanceId: pending.instanceId,
       };
       appendActionTargetChoicePending(state, pending.playerId, pending.instanceId, 'contraband_target');
+      return;
+    case 'neutral-disruption':
+      resolveDisruptionAction(state, pending.playerId, pending.instanceId);
+      finishPendingActionCard(state);
       return;
     case 'neutral-insurrection':
       resolveInsurrectionAction(state, pending.playerId, pending.instanceId);
@@ -598,6 +620,62 @@ function continuePendingActionCard(state: V070GameState): void {
         `Unsupported pending Action effect: ${pending.cardId}.`,
       );
   }
+}
+
+function resolveDisruptionAction(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+): void {
+  const opponent = otherPlayer(playerId);
+  const hand = state.players[opponent].zones.hand;
+  if (hand.length === 0) {
+    throw new V070GameActionError('Disruption requires at least one card in the opponent’s Hand.');
+  }
+
+  const selected = deterministicV070Shuffle(
+    hand,
+    `${state.seed}:Disruption:${sourceActionInstanceId}:turn:${state.turnNumber}`,
+  )[0];
+  const index = hand.indexOf(selected);
+  if (index < 0) {
+    throw new V070GameActionError('Disruption could not select a random opposing Hand card.');
+  }
+
+  hand.splice(index, 1);
+  state.players[opponent].zones.discardPile.push(selected);
+  appendV070Event(state, {
+    type: 'random_hand_card_discarded',
+    actor: opponent,
+    visibility: 'public',
+    payload: {
+      instanceId: selected,
+      cardId: state.cardInstances[selected]?.cardId,
+      causedBy: playerId,
+      purpose: 'Disruption',
+    },
+  });
+}
+
+function capturedTerritoryThisTurn(
+  state: V070GameState,
+  playerId: PlayerId,
+): boolean {
+  let turnStartIndex = -1;
+  for (let index = state.events.length - 1; index >= 0; index -= 1) {
+    const event = state.events[index];
+    if (event.type !== 'turn_started') continue;
+    const payload = event.payload as { turnNumber?: number } | undefined;
+    if (payload?.turnNumber === state.turnNumber) {
+      turnStartIndex = index;
+      break;
+    }
+  }
+
+  if (turnStartIndex < 0) return false;
+  return state.events.slice(turnStartIndex + 1).some(event =>
+    event.type === 'territory_captured' && event.actor === playerId
+  );
 }
 
 function resolveInsurrectionAction(
