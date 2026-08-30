@@ -111,11 +111,11 @@ describe("standalone new-player onboarding", () => {
     expect(deckbuilder.indexOf("starter-decks.js")).toBeLessThan(deckbuilder.indexOf("starter-handoff.js"));
   });
 
-  it("keeps the current v0.7.0 start path as the homepage first-time call to action", () => {
+  it("keeps the current v0.7.1 start path as the homepage first-time call to action", () => {
     const homepage = read("index.html");
     expect(homepage).toContain('<a href="/start/">Start</a>');
     expect(homepage).toContain('<a class="button primary" href="start/">Start playing</a>');
-    expect(homepage).toContain("Current canonical playtest edition · v0.7.0");
+    expect(homepage).toContain("Current canonical playtest edition · v0.7.1");
     expect(homepage).toContain("New-player setup");
     expect(homepage).toContain("Choose your first side");
     expect(homepage).not.toContain('href="v0.6.2/start/"');
