@@ -7,6 +7,7 @@ import {
   createV070BattleOnset,
   createV070LastStandOnset,
   createV070TurnState,
+  grantCurrentPhaseV070Actions,
   spendV070Action,
   type MovementChoice,
   type PlayerId,
@@ -1070,8 +1071,7 @@ function grantAdditionalAction(
   playerId: PlayerId,
   purpose: string,
 ): void {
-  const turnState = requireTurnState(state);
-  turnState.actionsAvailable += 1;
+  state.turnState = grantCurrentPhaseV070Actions(requireTurnState(state), 1);
   appendV070Event(state, {
     type: 'additional_action_granted',
     actor: playerId,
@@ -1079,7 +1079,9 @@ function grantAdditionalAction(
     payload: {
       amount: 1,
       purpose,
-      actionsAvailable: turnState.actionsAvailable,
+      phase: state.turnState.phase,
+      actionsAvailable: state.turnState.actionsAvailable,
+      phaseActionLimit: 1 + state.turnState.phaseActionGrants[state.turnState.phase],
     },
   });
 }
