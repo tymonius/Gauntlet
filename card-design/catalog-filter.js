@@ -11,14 +11,32 @@
   let type = String(params.get('type') || '').toLowerCase();
   let sort = String(params.get('sort') || 'canonical').toLowerCase();
 
+  const legacySectionTypes = {
+    '#playable-cards': 'playable',
+    '#leader-cards': 'leader',
+    '#territories': 'territory',
+    '#proposal-cards': 'proposal',
+    '#rite-cards': 'rite',
+    '#supplemental-cards': 'supplemental',
+    '#card-back': 'back',
+  };
+  const legacyPlayableFaction = /^#playable-(neutral|military|diplomats|financiers|intelligence|mystics|inquisition)$/.exec(window.location.hash);
+
   if (!VALID_FACTIONS.has(faction)) faction = 'all';
   if (!VALID_TYPES.has(type)) type = '';
   if (!VALID_SORTS.has(sort)) sort = 'canonical';
 
   // The catalog should not instantiate the entire game on first visit. A
   // deliberate faction-only URL means "all types for this faction"; otherwise
-  // the compact default view is the complete Leader set.
-  if (!type) type = hasExplicitFaction && !hasExplicitType ? 'all' : 'leader';
+  // preserve old hash deep links before falling back to the compact Leader view.
+  if (!hasExplicitFaction && !hasExplicitType && legacyPlayableFaction) {
+    faction = legacyPlayableFaction[1];
+    type = 'playable';
+  } else if (!type) {
+    type = hasExplicitFaction && !hasExplicitType
+      ? 'all'
+      : legacySectionTypes[window.location.hash] || 'leader';
+  }
 
   const factionLabels = {
     all: 'All factions',
