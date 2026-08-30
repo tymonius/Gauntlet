@@ -2,7 +2,7 @@
 
 ## Official Rulebook
 
-**Version 0.7.1 Candidate**
+**Version 0.7.1**
 
 ---
 

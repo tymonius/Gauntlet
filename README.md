@@ -6,11 +6,11 @@ Gauntlet is a two-player tactical card-and-territory game about deck constructio
 
 ## Canonical release
 
-**Current canonical version:** v0.7.0 — Illustrated Cards & Tabletop Simulator
+**Current canonical version:** v0.7.1 — Mystics Rites & Deck Import
 
-The frozen canonical package is [releases/v0.7.0/](releases/v0.7.0/). Its manifest identifies the certified authority set and hashes the published payload. The package contains:
+The frozen canonical package is [releases/v0.7.1/](releases/v0.7.1/). Its manifest identifies the certified authority set and hashes the published payload. The package contains:
 
-- the complete v0.7.0 Rulebook source;
+- the complete v0.7.1 Rulebook source;
 - the imposed half-letter Rulebook booklet PDF;
 - canonical structured gameplay data;
 - the twelve locked starter Decks;
@@ -57,16 +57,16 @@ A player wins by capturing the Territory at the opponent's end or by forcing and
 | **Mystics** | Alchemist, Spirit Walker | Rites, Invocation, Transmutation | Ritual |
 | **Inquisition** | Grand Inquisitor, Witch Hunter | Conviction, Condemnation, Purge | Purification |
 
-The v0.7.0 playable pool contains **142 cards**: **52 Neutral cards and 15 cards in each faction**, plus **25 Territories/Arenas**, **12 Leaders**, and **12 locked starter Decks**.
+The v0.7.1 playable pool contains **142 cards**: **52 Neutral cards and 15 cards in each faction**, plus **25 Territories/Arenas**, **12 Leaders**, and **12 locked starter Decks**.
 
 ## Playtest tools
 
 - [Start Playing](https://gauntlet.run/start/) — faction and Leader discovery plus starter-Deck handoff.
-- [Browser Rulebook](https://gauntlet.run/rulebook/) — searchable current v0.7.0 Rulebook.
-- [Rulebook booklet](releases/v0.7.0/Gauntlet_v0.7.0_Rulebook_Booklet.pdf) — imposed Letter duplex booklet, printed short-edge.
+- [Browser Rulebook](https://gauntlet.run/rulebook/) — searchable current v0.7.1 Rulebook.
+- [Rulebook booklet](releases/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf) — imposed Letter duplex booklet, printed short-edge.
 - [Card Reference](https://gauntlet.run/card-reference/) — current card and Territory reference.
 - [Faction pages](https://gauntlet.run/factions/) — current faction systems and Leader references.
-- [Deckbuilder](https://gauntlet.run/deckbuilder/) — build, validate, save, export, randomize, and print complete v0.7.0 Deck packages.
+- [Deckbuilder](https://gauntlet.run/deckbuilder/) — build, validate, save, export, randomize, and print complete v0.7.1 Deck packages.
 - [Rules Arbiter](https://gauntlet.run/rules-arbiter/) — current rules lookup and adjudication surface.
 - [Playtest tools](https://gauntlet.run/playtest/) — tracked/formal playtest workflows and feedback tools.
 - [Tabletop Simulator](https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635) — public v0.7.0 Workshop mod with all twelve starter kits.
@@ -78,9 +78,9 @@ For current development and public browser tooling:
 1. game-data/current-game.json is the complete current gameplay authority.
 2. rulebook/player-facing/current-rulebook.md is the complete current Rulebook authority.
 3. config/publishing-authority.json is the current publishing-imprint authority for maintained development and player-facing surfaces; published release snapshots retain their recorded publishing identity.
-4. releases/v0.7.0/Gauntlet_v0.7.0_Manifest.json identifies the frozen v0.7.0 published authority set.
-5. releases/v0.7.0/Gauntlet_v0.7.0_Canonical_Data.json is the frozen machine-readable release snapshot.
-6. releases/v0.7.0/Gauntlet_v0.7.0_Starter_Decks.json defines the frozen public starter Deck set.
+4. releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json identifies the frozen v0.7.1 published authority set.
+5. releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json is the frozen machine-readable release snapshot.
+6. releases/v0.7.1/Gauntlet_v0.7.1_Starter_Decks.json defines the frozen public starter Deck set.
 
 Generated PDFs, browser pages, printable tools, and TTS assets are derived production surfaces. If a derived surface conflicts with its governing current source, correct the governing source and regenerate the supported artifact. Do not silently rewrite a frozen published release package.
 
@@ -98,7 +98,7 @@ Complete current Rulebook authority plus the responsive Browser Rulebook and pri
 
 ### releases/
 
-Frozen versioned release packages and historical release evidence. The current published package is [releases/v0.7.0/](releases/v0.7.0/).
+Frozen versioned release packages and historical release evidence. The current published package is [releases/v0.7.1/](releases/v0.7.1/).
 
 ### card-design/
 
@@ -176,7 +176,7 @@ npm run dev:gui
 
 ## Current development priorities
 
-See [Gauntlet Development Status](docs/Gauntlet_Development_Status.md). The immediate post-v0.7.0 emphasis is broad human playtesting through physical and TTS play, matchup/faction balance, winner/loser experience, self-serve onboarding, Deckbuilder-to-TTS interoperability, and active synchronization of the rules-aware digital engine with v0.7.0.
+See [Gauntlet Development Status](docs/Gauntlet_Development_Status.md). The immediate post-v0.7.1 emphasis is broad human playtesting, matchup/faction balance, winner/loser experience, self-serve onboarding, completion of the separately gated v0.7.1 Tabletop Simulator QA/promotion, and active synchronization of the rules-aware digital engine with v0.7.1.
 
 ## Copyright and use
 

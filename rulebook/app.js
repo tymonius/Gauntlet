@@ -1,11 +1,11 @@
 import { renderMarkdown } from './markdown.js';
 import { loadCurrentGame } from '../game-data/current-game.mjs';
 
-const RELEASE_MANIFEST_URL = '../releases/v0.7.0/Gauntlet_v0.7.0_Manifest.json';
+const RELEASE_MANIFEST_URL = '../releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json';
 const CURRENT_SOURCE_URL = './player-facing/current-rulebook.md';
-const PUBLISHED_VERSION = 'v0.7.0';
-const FALLBACK_PUBLISHED_SOURCE_URL = '../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook.md';
-const FALLBACK_PDF_URL = '../releases/v0.7.0/Gauntlet_v0.7.0_Rulebook_Booklet.pdf';
+const PUBLISHED_VERSION = 'v0.7.1';
+const FALLBACK_PUBLISHED_SOURCE_URL = '../releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md';
+const FALLBACK_PDF_URL = '../releases/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf';
 const RELEASED_MODE = 'released';
 const CANDIDATE_MODE = 'candidate';
 const content = document.querySelector('[data-rulebook-content]');
@@ -288,7 +288,7 @@ function setRulesetUi(mode, currentGame = null, distinctCandidate = false) {
   if (candidateNote) {
     candidateNote.hidden = !candidate;
     candidateNote.textContent = candidate
-      ? 'Candidate view: current-development rules from the maintained current Rulebook source. The Rules Arbiter currently follows released v0.7.0 and is hidden in this view.'
+      ? 'Candidate view: current-development rules from the maintained current Rulebook source. The Rules Arbiter currently follows released v0.7.1 and is hidden in this view.'
       : '';
   }
 
@@ -300,10 +300,10 @@ function setRulesetUi(mode, currentGame = null, distinctCandidate = false) {
     document.title = `Gauntlet ${candidateLabel} Browser Rulebook`;
   } else {
     if (eyebrow) eyebrow.textContent = `Canonical rules · version ${PUBLISHED_VERSION}`;
-    if (footerVersion) footerVersion.innerHTML = '<strong>Gauntlet v0.7.0</strong> · Current canonical playtest edition.';
+    if (footerVersion) footerVersion.innerHTML = '<strong>Gauntlet v0.7.1</strong> · Current canonical playtest edition.';
     if (printHeading) printHeading.textContent = 'Print the released rulebook';
     if (printNote) printNote.textContent = 'Print double-sided, flip on the short edge, then fold and saddle stitch.';
-    document.title = 'Gauntlet v0.7.0 Browser Rulebook';
+    document.title = 'Gauntlet v0.7.1 Browser Rulebook';
   }
 }
 
@@ -492,8 +492,8 @@ async function renderRulebook(mode) {
       rendered.headings.filter(({ level, id }) => level === 1 && id !== 'gauntlet' && id !== 'official-rulebook').length
     );
     status.textContent = activeMode === CANDIDATE_MODE
-      ? `Release candidate ${currentGame?.displayVersion || 'v0.7.0'} · ${sectionCount} sections · rules loaded`
-      : `Canonical v0.7.0 · ${sectionCount} sections · rules loaded`;
+      ? `Release candidate ${currentGame?.displayVersion || 'v0.7.1'} · ${sectionCount} sections · rules loaded`
+      : `Canonical v0.7.1 · ${sectionCount} sections · rules loaded`;
   } catch (error) {
     console.error(error);
     content.removeAttribute('aria-busy');

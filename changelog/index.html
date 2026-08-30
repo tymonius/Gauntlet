@@ -49,16 +49,40 @@
         <p class="release-lede">Player-facing changes between Gauntlet playtest editions, focused on rules, cards, components, and table play rather than repository implementation details.</p>
       </div>
       <dl class="release-status" aria-label="Current release">
-        <div><dt>Current release</dt><dd>v0.7.0</dd></div>
-        <div><dt>Published</dt><dd>August 27, 2026</dd></div>
-        <div><dt>Authority</dt><dd>v0.7.0</dd></div>
+        <div><dt>Current release</dt><dd>v0.7.1</dd></div>
+        <div><dt>Published</dt><dd>August 30, 2026</dd></div>
+        <div><dt>Authority</dt><dd>v0.7.1</dd></div>
       </dl>
     </section>
 
+    <article class="changelog-entry" id="v0-7-1">
+      <p class="changelog-meta">Current release · August 30, 2026</p>
+      <h2>v0.7.1 — Mystics Rites &amp; Deck Import</h2>
+      <p class="changelog-summary">v0.7.1 is a focused playtest update built on the v0.7.0 core. It expands Mystics from a fixed three-Rite package to a six-Rite pool, locks the audited current faction/card authority, and activates versioned Deckbuilder-to-TTS Deck Codes.</p>
+      <div class="release-actions">
+        <a class="button primary" href="/v0.7.1/">Open v0.7.1 release</a>
+        <a class="button secondary" href="/rulebook/">Read current rules</a>
+      </div>
+
+      <h3>At a glance</h3>
+      <ol>
+        <li><strong>Mystics choose three different Rites from a six-Rite pool</strong> during game-package construction, with the selected Rites public at setup.</li>
+        <li><strong>Rite of Shattering, Rite of Consecration, and Rite of Equivalence</strong> join Rite of Echoes, Rite of Blood, and Rite of Crossing.</li>
+        <li><strong>Echoes and Crossing use their approved revised requirements.</strong> Blood keeps its existing rules with its reminder separated as reminder text.</li>
+        <li><strong>Completing all three selected Rites still unlocks the Ritual route.</strong> The Ritual is canonically <em>Ritual of Ascension</em>.</li>
+        <li><strong>The current card/faction audit is locked:</strong> 52 Neutral cards and 15 cards in each faction, including 15 Mystics cards; Plenipotentiary and Martyrdom are Unique; Peace Treaty requires six different ratified Proposals.</li>
+        <li><strong>Deckbuilder → TTS Deck Codes are active for v0.7.1.</strong> Codes carry version, Deck name, faction, Leader, card quantities, and Territories.</li>
+        <li><strong>Publication branding is unified under TDS Games</strong>, an imprint of Misty Hollow Enterprises.</li>
+      </ol>
+
+      <h3>Tabletop Simulator boundary</h3>
+      <p>The web/tabletop rules release and the Steam Workshop publication are intentionally separate gates. The public Workshop mod remains v0.7.0 while the v0.7.1 TTS candidate completes its manual in-game QA; publishing this release does not silently promote the Workshop package.</p>
+    </article>
+
     <article class="changelog-entry" id="v0-7-0">
-      <p class="changelog-meta">Current release · August 27, 2026</p>
+      <p class="changelog-meta">Previous release · August 27, 2026</p>
       <h2>v0.7.0 — Illustrated Cards &amp; Tabletop Simulator</h2>
-      <p class="changelog-summary">v0.7.0 is the current public playtest edition. It combines the gameplay changes developed since v0.6.3 with the fully illustrated production card set, finalized physical player aids, locked starter Decks, expanded printing, and the complete Tabletop Simulator package.</p>
+      <p class="changelog-summary">v0.7.0 was the previous public playtest edition. It combines the gameplay changes developed since v0.6.3 with the fully illustrated production card set, finalized physical player aids, locked starter Decks, expanded printing, and the complete Tabletop Simulator package.</p>
       <div class="release-actions">
         <a class="button primary" href="/v0.7.0/">Open v0.7.0 release</a>
         <a class="button secondary" href="/rulebook/">Read current rules</a>
@@ -192,7 +216,7 @@
       <p><strong>Advanced → Custom printing</strong> can build physical print sheets independently of legal Deck construction. It supports search and filters, arbitrary quantities, Add all for the currently visible filtered cards, mixed portrait / landscape 9-up Letter sheets, playable cards and current physical components, intrinsic reverse faces, and canonical standard backs. The print path fails closed rather than substituting stale placeholder faces when a production render is not ready.</p>
 
       <h3>Browser Rulebook</h3>
-      <p>The Browser Rulebook now loads the maintained complete v0.7.0 Rulebook authority from the published release package. v0.7.0 is the normal public ruleset, and the Rules Arbiter is bound to the same current release authority.</p>
+      <p>For v0.7.0, the Browser Rulebook loaded the maintained complete v0.7.0 Rulebook authority from its immutable release package, and the Rules Arbiter was bound to that same release authority.</p>
 
       <h3>Card Anatomy guide</h3>
       <p>The v0.7.0 Rulebook adds a <strong>Card Anatomy</strong> guide before the printed-card-effects rules. The browser guide uses the actual production-rendered <strong>Unbroken Ranks</strong> card rather than a mockup, identifying card name, value, faction treatment, artwork, effect heading, effect text, and standardized footer metadata; the Arcane trait mark is explained separately.</p>
@@ -214,7 +238,7 @@
       <p>v0.7.0 is a substantial product milestone rather than a ground-up replacement for v0.6.3. The six factions, twelve Leaders, turn structure, Front Line, two normal Run-the-Gauntlet victory routes, faction identities, starter-Deck model, and Gambit / Reserves / Tactics battle core remain the foundation of play except where the changes above or a current card/component expressly say otherwise.</p>
 
       <h3>Publication boundary</h3>
-      <p><strong>v0.7.0 is the current published playtest release.</strong> v0.6.3 is historical, and the v0.6.4-candidate source bundle remains preserved only as the never-published provenance snapshot that fed this release.</p>
+      <p><strong>v0.7.0 is the previous published playtest release.</strong> v0.6.3 is historical, and the v0.6.4-candidate source bundle remains preserved only as the never-published provenance snapshot that fed this release.</p>
       <p>The Tabletop Simulator Workshop mod is public, its subscribed-copy smoke test passed, and the repository/web release now publishes the same v0.7.0 product authority.</p>
     </article>
 
@@ -279,7 +303,7 @@
       <p><!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT --> · <!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises<!-- /PUBLISHING-FACT --></p>
     </div>
     <div class="footer-links">
-      <a href="/v0.7.0/">Current release</a>
+      <a href="/v0.7.1/">Current release</a>
       <a href="/rulebook/">Rulebook</a>
       <a href="/card-reference/">Card Reference</a>
       <a href="https://github.com/tymonius/Gauntlet">GitHub</a>
