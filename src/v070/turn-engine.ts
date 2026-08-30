@@ -2,6 +2,7 @@ import { v070CanonicalContent } from '../content/v070';
 import {
   advanceV070TurnPhase,
   applyV070MovementChoice,
+  beginEffectGrantedV070Movement,
   beginNormalV070Movement,
   canInitiateV070LastStand,
   currentV070MovementStep,
@@ -51,7 +52,9 @@ import {
   discardV070AssetVoluntarily,
   pendingBankReplacementV070AssetInstanceIds,
   removeV070AssetForced,
+  returnV070AssetVoluntarilyToHand,
   voluntarilyDiscardableV070AssetInstanceIds,
+  voluntarilyReturnableV070AssetInstanceIds,
 } from './assets';
 import { bindV070CardFromPlayerZone } from './bindings';
 
@@ -350,6 +353,15 @@ export function reduceV070TurnAction(
     throw new V070GameActionError('Resolve the pending Action card before continuing the turn.');
   }
 
+  const activeTurnState = state.turnState;
+  if (activeTurnState?.movementSequenceOpen
+    && activeTurnState.movementSequenceSource === 'effect'
+    && action.type !== 'choose_movement') {
+    throw new V070GameActionError(
+      'Resolve the effect-granted movement sequence before continuing the turn.',
+    );
+  }
+
   const next = structuredClone(state) as V070GameState;
 
   switch (action.type) {
@@ -640,6 +652,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'neutral-salvage',
   'neutral-scouting-report',
   'neutral-sedition',
+  'neutral-strategic-withdrawal',
   'neutral-tactical-planning',
   'diplomats-clemency',
   'diplomats-detente',
@@ -762,6 +775,12 @@ function playActionCard(
     && voluntarilyDiscardableV070AssetInstanceIds(state, playerId).length === 0) {
     throw new V070GameActionError(
       'Requisition requires one Asset you can voluntarily discard.',
+    );
+  }
+  if (card.id === 'neutral-strategic-withdrawal'
+    && voluntarilyReturnableV070AssetInstanceIds(state, playerId).length === 0) {
+    throw new V070GameActionError(
+      'Strategic Withdrawal requires one Asset you can return to your Hand.',
     );
   }
   if (card.id === 'neutral-scouting-report'
@@ -1187,6 +1206,32 @@ function continuePendingActionCard(state: V070GameState): void {
           sourceActionInstanceId: pending.instanceId,
           purpose: 'Requisition',
           operation: 'voluntary_discard',
+        },
+      });
+      return;
+    case 'neutral-strategic-withdrawal':
+      state.pendingActionEffectChoice = {
+        kind: 'controlled_asset_target',
+        playerId: pending.playerId,
+        sourceActionInstanceId: pending.instanceId,
+        purpose: 'Strategic Withdrawal',
+        operation: 'voluntary_return_hand',
+        drawAfter: 0,
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          kind: 'controlled_asset_target',
+          playerId: pending.playerId,
+          sourceActionInstanceId: pending.instanceId,
+          purpose: 'Strategic Withdrawal',
+          operation: 'voluntary_return_hand',
+          targetInstanceIds: voluntarilyReturnableV070AssetInstanceIds(
+            state,
+            pending.playerId,
+          ),
         },
       });
       return;
@@ -3323,26 +3368,89 @@ function chooseControlledAssetTarget(
     || choice.kind !== 'controlled_asset_target'
     || choice.playerId !== playerId
     || !pending
-    || pending.instanceId !== choice.sourceActionInstanceId
-    || pending.cardId !== 'neutral-requisition') {
+    || pending.instanceId !== choice.sourceActionInstanceId) {
     throw new V070GameActionError('No controlled-Asset Action choice is pending for that player.');
   }
 
-  if (!voluntarilyDiscardableV070AssetInstanceIds(state, playerId).includes(targetInstanceId)) {
-    throw new V070GameActionError('Requisition must choose an Asset you can voluntarily discard.');
+  if (choice.operation === 'voluntary_discard') {
+    if (pending.cardId !== 'neutral-requisition'
+      || choice.purpose !== 'Requisition') {
+      throw new V070GameActionError(
+        'The pending controlled-Asset discard does not match Requisition.',
+      );
+    }
+    if (!voluntarilyDiscardableV070AssetInstanceIds(state, playerId).includes(targetInstanceId)) {
+      throw new V070GameActionError('Requisition must choose an Asset you can voluntarily discard.');
+    }
+
+    discardV070AssetVoluntarily(
+      state,
+      playerId,
+      targetInstanceId,
+      choice.purpose,
+    );
+    state.pendingActionEffectChoice = null;
+    if (choice.drawAfter > 0) {
+      drawIntoHand(state, playerId, choice.drawAfter, choice.purpose);
+    }
+    finishPendingActionCard(state);
+    return;
   }
 
-  discardV070AssetVoluntarily(
+  if (pending.cardId !== 'neutral-strategic-withdrawal'
+    || choice.purpose !== 'Strategic Withdrawal') {
+    throw new V070GameActionError(
+      'The pending controlled-Asset return does not match Strategic Withdrawal.',
+    );
+  }
+  if (!voluntarilyReturnableV070AssetInstanceIds(state, playerId).includes(targetInstanceId)) {
+    throw new V070GameActionError(
+      'Strategic Withdrawal must choose an Asset you can return to your Hand.',
+    );
+  }
+
+  returnV070AssetVoluntarilyToHand(
     state,
     playerId,
     targetInstanceId,
     choice.purpose,
   );
-
   state.pendingActionEffectChoice = null;
-  if (choice.drawAfter > 0) {
-    drawIntoHand(state, playerId, choice.drawAfter, choice.purpose);
+
+  if (pending.phase === 'opening') {
+    state.turnState = queueNormalV070MovementStep(
+      requireTurnState(state),
+      {
+        source: 'Strategic Withdrawal',
+        choiceRestriction: 'any',
+        battleRestriction: 'allowed',
+      },
+    );
+  } else {
+    state.turnState = beginEffectGrantedV070Movement(
+      requireTurnState(state),
+      1,
+      {
+        source: 'Strategic Withdrawal',
+        choiceRestriction: 'any',
+        battleRestriction: 'allowed',
+      },
+    );
   }
+
+  appendV070Event(state, {
+    type: 'movement_step_granted',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      purpose: 'Strategic Withdrawal',
+      sourceActionInstanceId: pending.instanceId,
+      phase: pending.phase,
+      separateSequence: pending.phase === 'denouement',
+      choiceRestriction: 'any',
+      battleRestriction: 'allowed',
+    },
+  });
   finishPendingActionCard(state);
 }
 
@@ -3689,10 +3797,15 @@ function chooseMovement(
   choice: MovementChoice,
   discardInstanceId?: string,
 ): void {
-  requirePhase(state, 'movement');
   const turnState = requireTurnState(state);
-  if (!turnState.movementSequenceOpen) {
-    throw new V070GameActionError('No normal movement sequence is currently open.');
+  const sequenceSource = turnState.movementSequenceSource;
+  if (!turnState.movementSequenceOpen || !sequenceSource) {
+    throw new V070GameActionError('No movement sequence is currently open.');
+  }
+  if (sequenceSource === 'normal' && turnState.phase !== 'movement') {
+    throw new V070GameActionError(
+      'Normal movement may be resolved only during the Movement phase.',
+    );
   }
 
   if (choice === 'hold') {
@@ -3700,13 +3813,16 @@ function chooseMovement(
       throw new V070GameActionError('Hold has no Territory Overlay entry cost.');
     }
     state.turnState = applyV070MovementChoice(turnState, choice);
-    state.turnState = advanceV070TurnPhase(state.turnState);
     appendV070Event(state, {
       type: 'movement_hold',
       actor: playerId,
       visibility: 'public',
+      payload: { sequenceSource },
     });
-    appendPhaseEvent(state);
+    if (sequenceSource === 'normal') {
+      state.turnState = advanceV070TurnPhase(state.turnState);
+      appendPhaseEvent(state);
+    }
     return;
   }
 
@@ -3838,7 +3954,8 @@ function chooseMovement(
   );
   if (state.pendingSanctionChoices.length > 0) return;
 
-  if (!state.turnState.movementSequenceOpen) {
+  if (!state.turnState.movementSequenceOpen
+    && sequenceSource === 'normal') {
     state.turnState = advanceV070TurnPhase(state.turnState);
     appendPhaseEvent(state);
   }
