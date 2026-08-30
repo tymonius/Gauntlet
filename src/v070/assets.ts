@@ -9,10 +9,9 @@ import {
 } from './engine';
 import type { PlayerId } from './rules';
 import { drawV070Cards } from './card-draw';
+import { releaseV070BoundCards, v070BindingsForHost } from './bindings';
 
 const REMOVAL_LIFECYCLE_UNSUPPORTED = new Set([
-  'military-reserve-force',
-  'intelligence-extraordinary-rendition',
   'financiers-margin-loan',
   'intelligence-sleeper-network',
 ]);
