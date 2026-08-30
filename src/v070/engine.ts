@@ -102,6 +102,14 @@ export type V070PendingActionEffectChoice =
       purpose: 'Second Line' | 'Tactical Planning' | 'Salvage' | 'New Recruits';
       destination: 'draw_top' | 'draw_bottom' | 'discard';
       drawAfter: number;
+    }
+  | {
+      kind: 'controlled_asset_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      purpose: 'Requisition';
+      operation: 'voluntary_discard';
+      drawAfter: number;
     };
 
 export type V070PendingSanctionChoice =
