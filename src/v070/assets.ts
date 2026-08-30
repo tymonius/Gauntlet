@@ -135,6 +135,45 @@ export function voluntarilyDiscardableV070AssetInstanceIds(
   });
 }
 
+export function voluntarilyReturnableV070AssetInstanceIds(
+  state: V070GameState,
+  playerId: PlayerId,
+): string[] {
+  return state.players[playerId].zones.assetBank.filter(instanceId => {
+    const card = canonicalCardForInstance(state, instanceId);
+    const assetText = card.effects
+      .filter(effect => effect.label === 'Asset')
+      .map(effect => effect.text)
+      .join(' ');
+
+    if (/cannot voluntarily cause it to leave play during the turn it is banked/i.test(assetText)
+      && assetWasBankedThisTurn(state, instanceId)) {
+      return false;
+    }
+    return true;
+  });
+}
+
+export function returnV070AssetVoluntarilyToHand(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+  purpose: string,
+): void {
+  if (!voluntarilyReturnableV070AssetInstanceIds(state, playerId).includes(instanceId)) {
+    throw new V070GameActionError('That Asset cannot be voluntarily returned to Hand now.');
+  }
+
+  moveBankedAsset(
+    state,
+    playerId,
+    instanceId,
+    'hand',
+    purpose,
+    false,
+  );
+}
+
 export function discardV070AssetAsAction(
   state: V070GameState,
   playerId: PlayerId,
@@ -566,7 +605,13 @@ function moveBankedAsset(
   );
 
   appendV070Event(state, {
-    type: removed ? 'asset_removed' : 'asset_discarded',
+    type: removed
+      ? 'asset_removed'
+      : destination === 'discard'
+        ? 'asset_discarded'
+        : destination === 'hand'
+          ? 'asset_returned'
+          : 'asset_departed',
     actor: playerId,
     visibility: 'public',
     payload: {
