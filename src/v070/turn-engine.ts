@@ -111,6 +111,11 @@ export type V070TurnAction =
       targetInstanceId: string;
     }
   | {
+      type: 'choose_battlefield_promotion_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
       type: 'resolve_scouting_report_choice';
       playerId: PlayerId;
       source: 'own_draw' | 'opponent_draw' | 'opponent_hand';
@@ -276,6 +281,10 @@ export function reduceV070TurnAction(
       && action.type === 'choose_fates_toll_cost'
       && action.playerId === pending.playerId
     ) || (
+      pending.kind === 'battlefield_promotion_target'
+      && action.type === 'choose_battlefield_promotion_target'
+      && action.playerId === pending.playerId
+    ) || (
       pending.kind === 'scouting_report_source'
       && action.type === 'resolve_scouting_report_choice'
       && action.playerId === pending.playerId
@@ -355,6 +364,7 @@ export function reduceV070TurnAction(
       'choose_controlled_asset_target',
       'choose_sequestration_keep_asset',
       'choose_fates_toll_cost',
+      'choose_battlefield_promotion_target',
       'resolve_scouting_report_choice',
       'choose_territory_overlay_target',
       'choose_forced_asset_target',
@@ -429,6 +439,13 @@ export function reduceV070TurnAction(
       break;
     case 'choose_fates_toll_cost':
       chooseFatesTollCost(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
+      break;
+    case 'choose_battlefield_promotion_target':
+      chooseBattlefieldPromotionTarget(
         next,
         action.playerId,
         action.targetInstanceId,
@@ -680,6 +697,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'neutral-disruption',
   'neutral-forced-march',
   'mystics-fate-s-toll',
+  'military-battlefield-promotion',
   'neutral-insurrection',
   'neutral-landslide',
   'neutral-new-recruits',
@@ -802,6 +820,18 @@ function playActionCard(
     throw new V070GameActionError(
       'Salvage requires at least one card in your Discard Pile.',
     );
+  }
+  if (card.id === 'military-battlefield-promotion') {
+    if (turnState.phase !== 'denouement') {
+      throw new V070GameActionError(
+        'Battlefield Promotion may be played only during Denouement.',
+      );
+    }
+    if (battlefieldPromotionCandidateInstanceIds(state, playerId).length === 0) {
+      throw new V070GameActionError(
+        'Battlefield Promotion requires a Tactic you chose in a battle you won this turn that is still in your Discard Pile.',
+      );
+    }
   }
   if (card.id === 'mystics-fate-s-toll'
     && player.zones.hand.length < 2) {
@@ -1163,6 +1193,45 @@ function continuePendingActionCard(state: V070GameState): void {
       resolveDisruptionAction(state, pending.playerId, pending.instanceId);
       finishPendingActionCard(state);
       return;
+    case 'military-battlefield-promotion': {
+      const candidates = battlefieldPromotionCandidateInstanceIds(
+        state,
+        pending.playerId,
+      );
+      if (candidates.length === 0) {
+        appendV070Event(state, {
+          type: 'action_effect_incomplete',
+          actor: pending.playerId,
+          visibility: 'public',
+          payload: {
+            sourceActionInstanceId: pending.instanceId,
+            purpose: 'Battlefield Promotion',
+            reason: 'required_winning_battle_tactic_unavailable',
+          },
+        });
+        finishPendingActionCard(state);
+        return;
+      }
+      state.pendingActionEffectChoice = {
+        kind: 'battlefield_promotion_target',
+        playerId: pending.playerId,
+        sourceActionInstanceId: pending.instanceId,
+        candidateInstanceIds: [...candidates],
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          kind: 'battlefield_promotion_target',
+          playerId: pending.playerId,
+          sourceActionInstanceId: pending.instanceId,
+          purpose: 'Battlefield Promotion',
+          targetInstanceIds: [...candidates],
+        },
+      });
+      return;
+    }
     case 'mystics-fate-s-toll':
       if (state.players[pending.playerId].zones.hand.length === 0) {
         appendV070Event(state, {
@@ -3452,6 +3521,112 @@ function availableScoutingReportSources(
   if (state.players[opponent].zones.drawPile.length > 0) sources.push('opponent_draw');
   if (state.players[opponent].zones.hand.length > 0) sources.push('opponent_hand');
   return sources;
+}
+
+function battlefieldPromotionCandidateInstanceIds(
+  state: V070GameState,
+  playerId: PlayerId,
+): string[] {
+  const turnStartIndex = currentTurnStartEventIndex(state);
+  if (turnStartIndex < 0) return [];
+
+  const currentDiscard = new Set(
+    state.players[playerId].zones.discardPile,
+  );
+  const candidates: string[] = [];
+  let battleOpen = false;
+  let winner: PlayerId | undefined;
+  let chosenTactics: string[] = [];
+
+  for (const event of state.events.slice(turnStartIndex + 1)) {
+    if (event.type === 'battle_initiated') {
+      battleOpen = true;
+      winner = undefined;
+      chosenTactics = [];
+      continue;
+    }
+    if (!battleOpen) continue;
+
+    if (event.type === 'tactic_revealed' && event.actor === playerId) {
+      const instanceId = (
+        event.payload as { instanceId?: string } | undefined
+      )?.instanceId;
+      if (instanceId) chosenTactics.push(instanceId);
+      continue;
+    }
+
+    if (event.type === 'battle_outcome') {
+      winner = (
+        event.payload as { winner?: PlayerId } | undefined
+      )?.winner;
+      continue;
+    }
+
+    if (event.type === 'battle_aftermath_complete') {
+      if (winner === playerId) {
+        for (const instanceId of chosenTactics) {
+          if (currentDiscard.has(instanceId)
+            && !candidates.includes(instanceId)) {
+            candidates.push(instanceId);
+          }
+        }
+      }
+      battleOpen = false;
+      winner = undefined;
+      chosenTactics = [];
+    }
+  }
+
+  return candidates;
+}
+
+function chooseBattlefieldPromotionTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'battlefield_promotion_target'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'military-battlefield-promotion') {
+    throw new V070GameActionError(
+      'No Battlefield Promotion target choice is pending for that player.',
+    );
+  }
+
+  if (!choice.candidateInstanceIds.includes(targetInstanceId)) {
+    throw new V070GameActionError(
+      'Battlefield Promotion must target a Tactic chosen in a battle you won this turn.',
+    );
+  }
+
+  const discard = state.players[playerId].zones.discardPile;
+  const index = discard.indexOf(targetInstanceId);
+  if (index < 0) {
+    throw new V070GameActionError(
+      'The chosen Battlefield Promotion Tactic is no longer in your Discard Pile.',
+    );
+  }
+
+  discard.splice(index, 1);
+  state.players[playerId].zones.hand.push(targetInstanceId);
+  appendV070Event(state, {
+    type: 'battlefield_promotion_recovered',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      instanceId: targetInstanceId,
+      cardId: state.cardInstances[targetInstanceId]?.cardId,
+      sourceActionInstanceId: pending.instanceId,
+    },
+  });
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state);
 }
 
 function chooseFatesTollCost(

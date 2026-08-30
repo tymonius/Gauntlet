@@ -134,6 +134,12 @@ export type V070PendingActionEffectChoice =
       sourceActionInstanceId: string;
     }
   | {
+      kind: 'battlefield_promotion_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      candidateInstanceIds: string[];
+    }
+  | {
       kind: 'scouting_report_source';
       playerId: PlayerId;
       sourceActionInstanceId: string;
