@@ -129,6 +129,11 @@ export type V070PendingActionEffectChoice =
       remainingChoosers: PlayerId[];
     }
   | {
+      kind: 'fates_toll_cost';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
       kind: 'scouting_report_source';
       playerId: PlayerId;
       sourceActionInstanceId: string;
