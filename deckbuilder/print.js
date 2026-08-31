@@ -160,10 +160,10 @@ ${firstPage}
 ${remainingPages}
 ${supplemental.dedicatedPages.join("")}
 <script>
-window.GAUNTLET_PRINT_PREFLIGHTS=window.GAUNTLET_PRINT_PREFLIGHTS||[];
+window.__gauntletPrintPreflights=window.__gauntletPrintPreflights||[];
 function nextFrame(){return new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));}
 function waitForImages(){return Promise.all(Array.from(document.images).map(image=>image.complete?Promise.resolve():new Promise(resolve=>{image.addEventListener('load',resolve,{once:true});image.addEventListener('error',resolve,{once:true});})));}
-async function preparePrint(){try{for(const preflight of window.GAUNTLET_PRINT_PREFLIGHTS){await preflight();}if(document.fonts?.ready){try{await document.fonts.ready;}catch(error){}}await waitForImages();document.body.offsetHeight;await nextFrame();await nextFrame();setTimeout(()=>window.print(),300);}catch(error){console.error(error);window.alert(error?.message||'Printing stopped because the print document did not finish preparing.');}}
+async function preparePrint(){try{for(const preflight of window.__gauntletPrintPreflights){await preflight();}if(document.fonts?.ready){try{await document.fonts.ready;}catch(error){}}await waitForImages();document.body.offsetHeight;await nextFrame();await nextFrame();setTimeout(()=>window.print(),300);}catch(error){console.error(error);window.alert(error?.message||'Printing stopped because the print document did not finish preparing.');}}
 window.addEventListener('load',preparePrint,{once:true});
 <\/script>
 </body>
