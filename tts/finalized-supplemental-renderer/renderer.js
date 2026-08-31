@@ -190,6 +190,7 @@ async function renderDeed(component) {
 async function main() {
   if (!componentId) throw new Error('Missing finalized supplemental component id.');
   const currentGame = await loadCurrentGame();
+  window.GAUNTLET_ART_DIRECTION = currentGame.artDirection || {};
   const component = (currentGame.components || []).find(item => item.id === componentId);
   if (!component) throw new Error(`Unknown current supplemental component ${componentId}.`);
   if ((component.designStatus || 'final') !== 'final' || component.productionStatus !== 'export-pending') {

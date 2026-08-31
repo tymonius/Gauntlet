@@ -47,6 +47,7 @@
     column-gap: var(--rule-column-gap) !important;
   }
 
+
   :where(.rule-section, .leader-rule-section, .rite-unlock-section) {
     grid-column: 1 / -1;
     grid-template-columns: subgrid !important;

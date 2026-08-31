@@ -15,6 +15,14 @@
   const delay = ms => new Promise(resolve => window.setTimeout(resolve, ms));
   const reverseSide = () => side === "reverse" || side === "back" || side === "treaty" || side === "completed";
 
+
+  async function loadCanonicalArtDirection() {
+    const { loadCurrentGame } = await import("/game-data/current-game.mjs");
+    const currentGame = await loadCurrentGame();
+    window.GAUNTLET_ART_DIRECTION = currentGame.artDirection || {};
+    document.body.dataset.artDirectionAuthority = currentGame.authorityUrl || "/game-data/current-game.json";
+  }
+
   function applyRenderViewport() {
     for (const node of [document.documentElement, document.body, target]) {
       if (!node) continue;
@@ -236,6 +244,12 @@
   }
 
   function fitReady(card) {
+    const fontState = document.body.dataset.productionFontsReady;
+    if (fontState === "false") {
+      throw new Error(document.body.dataset.productionFontError || "Production component fonts failed to load.");
+    }
+    if (fontState !== "true") return false;
+
     if (card.classList.contains("fit-warning")) {
       throw new Error(`Production ${kind} ${id} reports a fit warning.`);
     }
@@ -291,7 +305,7 @@
     if (document.readyState !== "complete") {
       await new Promise(resolve => window.addEventListener("load", resolve, { once: true }));
     }
-    if (document.fonts?.ready) await document.fonts.ready;
+    await loadCanonicalArtDirection();
 
     const deadline = performance.now() + TIMEOUT_MS;
     let card = null;
