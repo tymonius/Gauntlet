@@ -107,7 +107,7 @@ jobs:
             if (!match) throw new Error('Printing request did not contain marked Deck JSON');
             const exported = JSON.parse(match[1]);
             const cardCount = exported.cards.reduce((sum, item) => sum + Number(item.qty || 0), 0);
-            if (exported.schema !== 'gauntlet-deck' || exported.schemaVersion !== 2 || exported.factionId !== 'military' || exported.leaderId !== 'general') {
+            if (exported.schema !== 'gauntlet-deck' || exported.schemaVersion !== 3 || exported.factionId !== 'military' || exported.leaderId !== 'general') {
               throw new Error(`Unexpected exported Deck identity: ${JSON.stringify(exported).slice(0, 300)}`);
             }
             if (cardCount !== 30 || exported.territories?.length !== 3) {
