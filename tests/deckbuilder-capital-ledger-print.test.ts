@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 const printer = readFileSync('deckbuilder/print-capital-ledger.js', 'utf8');
 const deckPrint = readFileSync('deckbuilder/print.js', 'utf8');
-const productionPrint = readFileSync('deckbuilder/print-duplex-sheet-pairing.js', 'utf8');
+const productionPrint = readFileSync('deckbuilder/production-print.js', 'utf8');
 
 describe('Deckbuilder Capital Ledger printing', () => {
   it('uses the canonical production renderer for bulk Ledger sheets', () => {
@@ -11,7 +11,7 @@ describe('Deckbuilder Capital Ledger printing', () => {
     expect(printer).toContain('capitalLedgerSheetFrameHtml(side)');
     expect(printer).toContain('data-capital-ledger-sheet-frame');
     expect(printer).toContain('productionLedgerFrameSource(side)');
-    expect(printer).toContain('/card-design/component-print-render.html?kind=');
+    expect(printer).toContain('productionPrint().componentSource(PRODUCTION_LEDGER_COMPONENT_ID, side)');
     expect(printer).toContain('waitForProductionLedgerFrames');
     expect(printer).toContain('preloadProductionLedgerFrameAssets');
 
