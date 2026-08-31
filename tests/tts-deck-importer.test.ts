@@ -4,6 +4,7 @@ import {
   installDeckImporter,
   installStarterTemplateLibrary,
   MAX_TTS_IMPORTER_LUA_BYTES,
+  validateGeneratedLuaStrings,
   isDeckImporterReleaseVersion,
   TTS_DECK_IMPORTER_MIN_VERSION,
 } from '../scripts/tts-deck-importer.mjs';
@@ -334,6 +335,12 @@ describe('TTS Deckbuilder importer', () => {
     expect(save.XmlUI).toContain('lineType="MultiLineNewLine"');
     expect(save.XmlUI).toContain('onEndEdit="gauntletDeckImportChanged"');
     expect((save.XmlUI.match(/GAUNTLET_DECK_IMPORTER_BEGIN/g) || [])).toHaveLength(1);
+  });
+
+  it('rejects raw newlines inside generated Lua quoted strings', () => {
+    expect(() => validateGeneratedLuaStrings('local value = "broken\nstring"')).toThrow(/raw newline/i);
+    expect(validateGeneratedLuaStrings('local value = "safe\\nstring"')).toBe(true);
+    expect(validateGeneratedLuaStrings('local payload = [[line one\nline two]]')).toBe(true);
   });
 
   it('rejects mismatched generated versions', () => {
