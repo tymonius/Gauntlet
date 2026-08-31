@@ -318,6 +318,7 @@ describe('TTS Deckbuilder importer', () => {
     expect(save.LuaScript).toContain('templateObject.getData()');
     expect(save.LuaScript).not.toContain('getAllObjects()');
     expect(save.LuaScript).not.toContain('.getJSON()');
+    expect(save.LuaScript).not.toContain('JSON.encode(');
     expect(save.LuaScript).not.toContain('official " .. validated.starter.leaderName .. " starter kit is not on the table');
     expect(save.LuaScript).toContain('function gauntletBuildMysticsRiteStack');
     expect(save.LuaScript).toContain('GAUNTLET_DECK_IMPORT.selectedRiteCount');
