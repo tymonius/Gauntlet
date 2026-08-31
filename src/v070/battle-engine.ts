@@ -60,6 +60,11 @@ import {
   clearV070AssetFaceState,
   isV070AssetFaceUp,
 } from './asset-face-state';
+import {
+  applyV070BlasphemyForBattleReveal,
+  applyV070NormalAftermathConviction,
+  v070CondemnationAppliesToPlayerTactic,
+} from './inquisition';
 
 export const V070_NORMAL_BATTLE_DICE = 1 as const;
 
@@ -538,6 +543,12 @@ function revealBattleRole(
         cardId,
       },
     });
+    applyV070BlasphemyForBattleReveal(
+      state,
+      item.owner,
+      cardId,
+      role,
+    );
   }
 
   const unsupported = resolveV070SupportedRevealEffects(
@@ -907,18 +918,49 @@ function completeAftermathInternal(
   state.players.B.position = battle.positions.B;
   syncBoardOccupants(state);
 
+  const graveyardedDuringAftermath: Record<PlayerId, string[]> = {
+    A: [],
+    B: [],
+  };
+
   for (const playerId of ['A', 'B'] as const) {
     const participant = runtime.participants[playerId];
     if (participant.gambit) {
       state.players[playerId].zones.graveyard.push(participant.gambit.instanceId);
+      graveyardedDuringAftermath[playerId].push(participant.gambit.instanceId);
     }
     for (const additional of participant.additionalGambits) {
       state.players[playerId].zones.graveyard.push(additional.instanceId);
+      graveyardedDuringAftermath[playerId].push(additional.instanceId);
     }
     if (participant.tactic) {
-      state.players[playerId].zones.discardPile.push(participant.tactic.instanceId);
+      const instanceId = participant.tactic.instanceId;
+      if (v070CondemnationAppliesToPlayerTactic(state, playerId)) {
+        state.players[playerId].zones.graveyard.push(instanceId);
+        graveyardedDuringAftermath[playerId].push(instanceId);
+        appendV070Event(state, {
+          type: 'condemnation_applied',
+          actor: otherPlayer(playerId),
+          visibility: 'public',
+          payload: {
+            tacticOwner: playerId,
+            instanceId,
+            cardId: state.cardInstances[instanceId]?.cardId,
+          },
+        });
+      } else {
+        state.players[playerId].zones.discardPile.push(instanceId);
+      }
     }
     state.players[playerId].zones.discardPile.push(...participant.reserve);
+  }
+
+  for (const playerId of ['A', 'B'] as const) {
+    applyV070NormalAftermathConviction(
+      state,
+      playerId,
+      graveyardedDuringAftermath[otherPlayer(playerId)],
+    );
   }
 
   appendV070Event(state, {

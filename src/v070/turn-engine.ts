@@ -58,7 +58,10 @@ import {
   voluntarilyReturnableV070AssetInstanceIds,
 } from './assets';
 import { bindV070CardFromPlayerZone } from './bindings';
-import { gainV070Conviction } from './inquisition';
+import {
+  applyV070BlasphemyForActionPlay,
+  gainV070Conviction,
+} from './inquisition';
 import {
   faceUpV070AssetInstanceIds,
   isV070AssetFaceUp,
@@ -1057,6 +1060,11 @@ function playActionCard(
       actionsRemaining: state.turnState.actionsAvailable,
     },
   });
+  applyV070BlasphemyForActionPlay(
+    state,
+    playerId,
+    card.id,
+  );
 
   const censureCount = openV070CensureChoicesForActionPlay(
     state,
