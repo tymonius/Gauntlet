@@ -83,7 +83,7 @@ describe("Deckbuilder supplemental print audit", () => {
     expect(compatibilityPrint).not.toContain('removeLegacyDiplomatReverseReference(documentNode)');
     expect(productionPrint).toContain('if (component.family === "ledger")');
     expect(productionPrint).toContain('if (component.family === "deed-card")');
-    expect(productionPrint).toContain('const isRitual = legacyCard.classList.contains("reference-card")');
+    expect(productionPrint).toContain('shell.dataset.printComponentKind === "ritual"');
   });
 
   it("confirms every current shared/faction reference, tracker, and Rite has a production-ready renderer", () => {
@@ -98,7 +98,7 @@ describe("Deckbuilder supplemental print audit", () => {
     expect(references.every(item => item.productionStatus === "ready")).toBe(true);
     expect(trackers).toHaveLength(6);
     expect(trackers.every(item => item.productionStatus === "ready")).toBe(true);
-    expect(rites).toHaveLength(3);
+    expect(rites).toHaveLength(currentGame.mystics.rites.length);
     expect(rites.every(item => item.productionStatus === "ready")).toBe(true);
   });
 
