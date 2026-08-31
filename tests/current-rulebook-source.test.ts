@@ -2,22 +2,28 @@ import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const read = (path: string) => readFileSync(path, 'utf8');
+const currentGame = JSON.parse(read('game-data/current-game.json'));
 const currentRulebook = read('rulebook/player-facing/current-rulebook.md');
 const releasedChapter11 = read('rulebook/player-facing/chapter-11.md');
 const browserApp = read('rulebook/app.js');
 
 describe('Maintained current Rulebook source', () => {
   it('is the direct current-development player-facing authority', () => {
-    expect(currentRulebook).toContain('**Version 0.7.1 Candidate**');
+    const version = String(currentGame.version || '');
+    const match = version.match(/^v(\d+\.\d+\.\d+)(-candidate)?$/i);
+    expect(match).not.toBeNull();
+    const marker = match?.[2] ? `**Version ${match[1]} Candidate**` : `**Version ${match?.[1]}**`;
+    expect(currentRulebook).toContain(marker);
     expect(currentRulebook).toContain('# 5. Actions, Faction Features, Leader Abilities, and Assets');
     expect(currentRulebook).toContain('## Card anatomy');
     expect(currentRulebook).toContain('Onset is the first phase of the battle sequence.');
-    expect(currentRulebook).toContain('choose exactly three different Rites from the six-Rite pool');
+    expect(currentGame.mystics.selectionPolicy).toMatchObject({ poolSize: 6, selectedCount: 3 });
+    expect(currentRulebook).toMatch(/choose exactly three(?:<!--[^>]+-->)? different Rites from the six(?:<!--[^>]+-->)?-Rite pool/);
     expect(currentRulebook).toContain('### Rite of Shattering');
     expect(currentRulebook).toContain('### Rite of Consecration');
     expect(currentRulebook).toContain('### Rite of Equivalence');
-    expect(currentRulebook).toContain('Ratify six different Proposals');
-    expect(currentRulebook).toContain('if six different Proposals are ratified');
+    expect(currentRulebook).toMatch(/Ratify six(?:<!--[^>]+-->)? different Proposals/);
+    expect(currentRulebook).toMatch(/if six(?:<!--[^>]+-->)? different Proposals are ratified/);
     expect(currentRulebook).not.toContain('Ratify five different Proposals');
     expect(currentRulebook).not.toContain('if five different Proposals are ratified');
     expect(browserApp).toContain("const CURRENT_SOURCE_URL = './player-facing/current-rulebook.md';");

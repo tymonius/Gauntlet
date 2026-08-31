@@ -28,6 +28,7 @@ describe("Mystics Rite card prototypes", () => {
   it("adds all six double-sided Rites and the Ritual to the unified card-review page", () => {
     expect(reviewPage).toContain('id="rite-cards"');
     expect(reviewPage).toContain('id="riteReviewSections"');
+    expect(reviewPage).toContain('<option value="rite">Rites &amp; Ritual</option>');
     expect(reviewPage).toContain('data-catalog-kind="rite"');
     expect(reviewPage).toContain('href="rite-card.css"');
     expect(reviewPage).toContain('type="module" src="rite-card.js"');

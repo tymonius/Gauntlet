@@ -104,8 +104,10 @@ describe("TTS Territory assets", () => {
     expect(specimenPage).toContain('<span data-arena-count>4</span>');
     expect(reviewScript).toContain("const current = await currentGame()");
     expect(reviewScript).toContain("current.territories || []");
-    expect(reviewScript).toContain("territoryGroup('standard','Territories',ordinary,current.displayVersion)");
-    expect(reviewScript).toContain("territoryGroup('arenas','Arenas',arenas,current.displayVersion)");
+    expect(reviewScript).toContain("let territories = (current.territories || []).slice().sort");
+    expect(reviewScript).toContain("const arenas = territories.filter(territory => territory.arena)");
+    expect(reviewScript).toContain("root.dataset.currentGameAuthority = current.authorityUrl");
+    expect(reviewScript).toContain("territories.map(territory => territoryItem(territory, current.displayVersion))");
     expect(reviewScript).toContain('class="territory-review-frame"');
     expect(reviewScript).toContain("territory-review-render.html?territory=");
     expect(territoryReviewScript).toContain("import { loadCurrentGame } from '../game-data/current-game.mjs'");
