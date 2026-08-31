@@ -230,7 +230,11 @@ describe('TTS supplemental component exports', () => {
     expect(stager).toContain("'supplemental-tracker-face'");
     expect(stager).toContain('_Supplemental_Manifest.json');
     expect(assembler).toContain("readFile(join(release.outputRoot, 'supplemental-manifest.json')");
-    expect(assembler).toContain("component.deckInclusion === 'every-deck' || component.faction === starter.factionId");
+    expect(assembler).toContain('function componentAppliesToStarter');
+    expect(assembler).toContain("component?.deckInclusion === 'every-deck'");
+    expect(assembler).toContain("component?.family === 'rite-card'");
+    expect(assembler).toContain('selectedRites.includes(riteIdFromComponent(component))');
+    expect(assembler).toContain('ready.filter(component => componentAppliesToStarter(component, starter))');
     expect(assembler).toContain("component.productionStatus !== 'ready'");
     expect(assembler).toContain('cleanPriorAssembly(save, trackerTags)');
     expect(assembler).toContain('SUPPLEMENTAL_GUID_NOTE_PREFIX');
