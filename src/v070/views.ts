@@ -76,6 +76,10 @@ export interface V070PlayerZoneView {
   removed: V070VisibleCard[];
 }
 
+export interface V070InquisitionView {
+  conviction: number;
+}
+
 export interface V070PlayerViewState {
   id: PlayerId;
   name: string;
@@ -90,7 +94,7 @@ export interface V070PlayerViewState {
   controlledTerritories: string[];
   assetLimit: number;
   diplomats: V070GameState['players'][PlayerId]['diplomats'];
-  inquisition: V070GameState['players'][PlayerId]['inquisition'];
+  inquisition: V070InquisitionView | null;
 }
 
 export interface V070GameView {
@@ -290,7 +294,7 @@ function viewPlayer(
     assetLimit: effectiveV070AssetLimit(state, playerId),
     diplomats: player.diplomats ? structuredClone(player.diplomats) : null,
     inquisition: player.inquisition
-      ? structuredClone(player.inquisition)
+      ? { conviction: player.inquisition.conviction }
       : null,
   };
 }
