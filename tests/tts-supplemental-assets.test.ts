@@ -51,7 +51,7 @@ describe('TTS supplemental component exports', () => {
       component.family === 'rite-card' && component.productionStatus === 'ready'
     );
     expect(currentGame.mystics.rites).toHaveLength(6);
-    expect(physicalReadyRites).toHaveLength(3);
+    expect(physicalReadyRites).toHaveLength(currentGame.mystics.rites.length);
     expect(mysticsBridge).toContain('const packagedRites = rites');
     expect(mysticsBridge).toContain("deckInclusion: 'selected-rite'");
     expect(mysticsBridge).toContain('data-rite-count=');
@@ -61,7 +61,7 @@ describe('TTS supplemental component exports', () => {
   });
   it('exports the ready Mystics Rites as source-driven two-sided cards', async () => {
     const riteCards = contract.components.filter((component: any) => component.family === 'rite-card');
-    expect(riteCards).toHaveLength(3);
+    expect(riteCards).toHaveLength(currentGame.mystics.rites.length);
     expect(riteCards.every((component: any) => component.productionStatus === 'ready')).toBe(true);
     expect(riteCards.every((component: any) => component.backPolicy === 'twoSided')).toBe(true);
     expect(new Set(riteCards.map((component: any) => component.reverseArtwork)).size).toBe(1);
@@ -74,9 +74,9 @@ describe('TTS supplemental component exports', () => {
     const bloodText = JSON.stringify(blood?.front?.blocks || []);
     const crossingText = JSON.stringify(crossing?.front?.blocks || []);
 
-    expect(echoesText).toContain('Gambit, Tactic, or Gambit or Tactic effect');
-    expect(bloodText).toContain('without setting a Gambit or choosing a Tactic');
-    expect(crossingText).toContain('during Denouement');
+    expect(echoesText).toContain(currentGame.mystics.rites.find((rite: any) => rite.id === 'echoes').complete);
+    expect(bloodText).toContain(currentGame.mystics.rites.find((rite: any) => rite.id === 'blood').complete);
+    expect(crossingText).toContain(currentGame.mystics.rites.find((rite: any) => rite.id === 'crossing').begin);
     expect(crossingText).not.toContain('Ritual of Ascendance');
     expect(generator).toContain('/card-design/component-print-render.html');
     expect(generator).toContain("return { kind: 'rite', id: String(record.id).replace(/^mystics-rite-/, '') }");
