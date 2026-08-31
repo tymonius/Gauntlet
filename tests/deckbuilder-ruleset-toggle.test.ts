@@ -41,10 +41,13 @@ describe('Deckbuilder released / release-candidate ruleset toggle', () => {
     expect(current.mystics.selectionPolicy.selectedCount).toBe(3);
   });
 
-  it('routes every Deckbuilder authority loader through the selected ruleset', () => {
+  it('routes every Deckbuilder authority consumer through the selected shared ruleset bootstrap', () => {
     expect(runtime).toContain('../game-data/ruleset.mjs');
-    expect(territories).toContain('../game-data/ruleset.mjs');
-    expect(rites).toContain('../game-data/ruleset.mjs');
+    expect(runtime).toContain('GAUNTLET_DECKBUILDER_BOOTSTRAP');
+    expect(territories).toContain('window.GAUNTLET_DECKBUILDER_BOOTSTRAP');
+    expect(rites).toContain('window.GAUNTLET_DECKBUILDER_BOOTSTRAP');
+    expect(territories).not.toContain('../game-data/ruleset.mjs');
+    expect(rites).not.toContain('../game-data/ruleset.mjs');
     expect(components).toContain('../game-data/ruleset.mjs');
     expect(bulk).toContain('../game-data/ruleset.mjs');
   });
