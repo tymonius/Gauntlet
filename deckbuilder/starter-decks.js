@@ -211,6 +211,7 @@
       return;
     }
 
+    const rules = deckbuilder.constructionRules();
     preview.className = "starter-deck-preview";
     preview.innerHTML = `
       <div class="starter-deck-heading">
@@ -219,8 +220,8 @@
           <h3>${escapeHtml(preset.name)}</h3>
         </div>
         <div class="starter-deck-metrics">
-          <span class="mini-pill">${Number(preset.cardCount) || 30} cards</span>
-          <span class="mini-pill">${Number(preset.deckbuildingValue) || 60}/60 value</span>
+          <span class="mini-pill">${Number(preset.cardCount) || rules.minimumCards} cards</span>
+          <span class="mini-pill">${Number(preset.deckbuildingValue) || rules.maximumDeckbuildingValue}/${rules.maximumDeckbuildingValue} value</span>
         </div>
       </div>
       <p>${escapeHtml(preset.summary)}</p>
