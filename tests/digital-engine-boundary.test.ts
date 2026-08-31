@@ -41,4 +41,25 @@ describe('digital engine boundary', () => {
     expect(currentSource).not.toContain('/reconstruction/');
     expect(currentSource).not.toContain("from '../state'");
   });
+
+  it('requires content consumers to choose current or an explicit version', () => {
+    expect(existsSync('src/content/index.ts')).toBe(false);
+
+    const legacyConsumers = [
+      'src/cards/intelligence.ts',
+      'src/state/v06-setup.ts',
+      'src/state/financiers.ts',
+      'src/dev/mystics-options.ts',
+      'src/state/inquisition-purge.ts',
+      'src/state/mystics-conversion.ts',
+      'src/state/inquisition-guilt-by-association.ts',
+      'src/state/v06-setup.test.ts',
+    ];
+
+    for (const path of legacyConsumers) {
+      const source = readFileSync(path, 'utf8');
+      expect(source).toContain("from '../content/v06'");
+      expect(source).not.toMatch(/from ['"]\.\.\/content['"]/);
+    }
+  });
 });
