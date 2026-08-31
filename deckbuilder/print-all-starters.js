@@ -2,6 +2,8 @@
   const deckbuilder = window.GAUNTLET_DECKBUILDER;
   if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
   const { state } = deckbuilder;
+  const territoriesApi = () => deckbuilder.feature("territories");
+  const ritesApi = () => deckbuilder.feature("mysticsRites");
 
   const EXPECTED_DECK_COUNT = 12;
   let starterDecks = [];
@@ -51,7 +53,7 @@
       starterTipsReady &&
       mysticsRitesReady &&
       state.cards?.length &&
-      state.territoryPool?.length &&
+      territoriesApi()?.isReady?.() &&
       !document.getElementById("printDeckButton")?.disabled
     );
   }
@@ -125,11 +127,9 @@
       factionId: state.factionId,
       leaderId: state.leaderId,
       deck: { ...state.deck },
-      territories: [...(state.territories || [])],
-      rites: [...(state.rites || [])],
-      selectedCardId: state.selectedCardId,
-      selectedTerritoryId: state.selectedTerritoryId,
-      selectedRiteId: state.selectedRiteId
+      territories: territoriesApi()?.selectedIds?.() || [],
+      rites: ritesApi()?.selectedIds?.() || [],
+      selectedCardId: state.selectedCardId
     };
   }
 
@@ -138,17 +138,15 @@
     state.factionId = snapshot.factionId;
     state.leaderId = snapshot.leaderId;
     state.deck = { ...snapshot.deck };
-    state.territories = [...snapshot.territories];
-    state.rites = [...(snapshot.rites || [])];
+    territoriesApi()?.setSelectedIds?.(snapshot.territories || []);
+    ritesApi()?.setSelectedIds?.(snapshot.rites || []);
     state.selectedCardId = snapshot.selectedCardId;
-    state.selectedTerritoryId = snapshot.selectedTerritoryId;
-    state.selectedRiteId = snapshot.selectedRiteId;
   }
 
   function starterRiteIds(preset) {
     if (preset.factionId !== "mystics") return [];
     if (Array.isArray(preset.selectedRites)) return [...preset.selectedRites];
-    const riteApi = deckbuilder.feature("mysticsRites");
+    const riteApi = ritesApi();
     return riteApi?.selectionEnabled?.() ? [] : (riteApi?.defaultIds?.() || []);
   }
 
@@ -167,8 +165,9 @@
       deck[card.id] = Number(item.quantity);
     }
 
+    const territoryPool = state.currentGameData?.territories || [];
     const territories = (preset.territories || []).map(name => {
-      const territory = state.territoryPool.find(candidate => candidate.name === name);
+      const territory = territoryPool.find(candidate => candidate.name === name);
       if (!territory) throw new Error(`${preset.name} references missing Territory ${name}.`);
       return territory.id;
     });
@@ -177,8 +176,8 @@
     state.factionId = preset.factionId;
     state.leaderId = preset.leaderId;
     state.deck = deck;
-    state.territories = territories;
-    state.rites = starterRiteIds(preset);
+    territoriesApi()?.setSelectedIds?.(territories);
+    ritesApi()?.setSelectedIds?.(starterRiteIds(preset));
   }
 
   function captureCurrentPrintDocument() {
