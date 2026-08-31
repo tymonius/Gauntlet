@@ -672,6 +672,54 @@
       "git_object": "3db81bc3da6f078a65c088c207178566c33c20f5",
       "kind": "blob",
       "meaning": "Frozen clean-v0.6.3 complete-authority reconstruction orchestrator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/build-clean-v063-downstream-data.mjs",
+      "git_object": "40d56868bccd228e047174c89441aae6de56f2f6",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.3 downstream-data builder"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/build-clean-v063-faction-authority.mjs",
+      "git_object": "a4c9e68ebd670b895f76989499d0919ff5181dcd",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.3 faction-authority builder"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/build-clean-v063-rulebook.mjs",
+      "git_object": "d2091a8c571709100a16c2ff19c24c7e8b2023dd",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.3 Rulebook builder"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/certify-clean-v063-authority.mjs",
+      "git_object": "3dd93e3d0ee5ce86b63c0d0f371bc72c67de2002",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.3 authority certification entrypoint"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-clean-v063-certification.mjs",
+      "git_object": "4c4c6de0775aec72bf04d5b2acfea7fd0a6f685d",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.3 certification validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-clean-v063-complete-authority.mjs",
+      "git_object": "81eadf50586aa087fe9e6c418c2b342148a76258",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.3 complete-authority validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-clean-v063-downstream-data.mjs",
+      "git_object": "ae338caa781475041f09fb7fadd94da405c84aa9",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.3 downstream-data validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-clean-v063-faction-authority.mjs",
+      "git_object": "26c671c216a4c61b03bc8937ade28391a7760220",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.3 faction-authority validator"
     }
   ],
   "maintained_historical_surfaces": [
