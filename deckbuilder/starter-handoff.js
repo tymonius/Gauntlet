@@ -1,4 +1,8 @@
 (() => {
+  const deckbuilder = window.GAUNTLET_DECKBUILDER;
+  if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
+  const { state, factions: FACTIONS } = deckbuilder;
+
   const params = new URLSearchParams(window.location.search);
   const factionId = String(params.get("faction") || "").trim();
   const leaderId = String(params.get("leader") || "").trim();
@@ -31,9 +35,7 @@
 
   async function init() {
     try {
-      const bootstrap = window.GAUNTLET_DECKBUILDER_BOOTSTRAP;
-      if (typeof bootstrap !== "function") throw new Error("Current Deckbuilder runtime is unavailable.");
-      await bootstrap();
+      await deckbuilder.bootstrap();
 
       faction = FACTIONS.find(item => item.id === factionId && item.status === "ready") || null;
       requestedLeader = faction?.leaders.find(item => item.id === leaderId) || null;
@@ -42,8 +44,8 @@
 
       state.factionId = faction.id;
       state.leaderId = leader.id;
-      renderFactionOptions();
-      renderAll();
+      deckbuilder.renderFactionOptions();
+      deckbuilder.render();
       injectPanel();
       requestAnimationFrame(waitForStarterData);
     } catch (error) {
@@ -91,7 +93,7 @@
   }
 
   function waitForStarterData() {
-    const api = window.GAUNTLET_STARTER_DECKS;
+    const api = deckbuilder.feature("starterDecks");
     if (api?.isReady?.()) {
       applyStarterDeck(api);
       return;
