@@ -1996,7 +1996,7 @@ Bound cards follow the shared rules. If a Rite or Ritual binding ends without an
 
 #### Invocation
 
-> Once per turn, after applying the Action, Gambit, Tactic, or Gambit or Tactic effect of an Arcane card you played, set, or chose, you may move one card from your Graveyard to your Discard Pile.
+> Once per turn, after applying the Action, Gambit, or Tactic effect of an Arcane card you played, set, or chose, you may move one card from your Graveyard to your Discard Pile.
 
 A copied effect does not trigger Invocation unless the Arcane card is itself played, set, or chosen again and its printed effect is applied.
 
