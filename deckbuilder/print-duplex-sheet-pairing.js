@@ -2,10 +2,17 @@
   const deckbuilder = window.GAUNTLET_DECKBUILDER;
   if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
   const { state } = deckbuilder;
+  const escapeHtml = value => deckbuilder.escapeHtml(value);
 
   const COLUMNS = 3;
   const RENDER_TIMEOUT_MS = 30000;
 
+  deckbuilder.registerFeature("productionPrintRenderer", Object.freeze({
+    card: renderProductionCardHtml,
+    territory: renderProductionTerritoryHtml,
+    leader: renderProductionLeaderHtml,
+    component: renderProductionComponentHtml,
+  }));
   deckbuilder.registerPrintTransform("production-rendering", prepareProductionPrintDocument, 40);
   document.addEventListener("DOMContentLoaded", installFactionBackOption);
 
@@ -51,7 +58,6 @@
     const printCardBacks = Boolean(document.getElementById("printCardBacks")?.checked);
     const documentNode = new DOMParser().parseFromString(html, "text/html");
 
-    replaceProductionFronts(documentNode, currentGame);
     ensureIntrinsicReversePages(documentNode, currentGame);
     if (printCardBacks) {
       ensureStandardBackPages(documentNode);
@@ -63,13 +69,98 @@
     return `<!doctype html>\n${documentNode.documentElement.outerHTML}`;
   }
 
-  function contractComponentForShell(shell, currentGame) {
-    const componentId = String(shell.dataset.contractComponentId || "").trim();
-    if (!componentId) return null;
+  function contractComponentById(componentId, currentGame = resolvedCurrentGame()) {
+    const id = String(componentId || "").trim();
+    if (!id) return null;
     return [
       ...(currentGame.sharedComponents || []),
       ...(currentGame.components || []),
-    ].find(component => component.id === componentId) || null;
+    ].find(component => component.id === id) || null;
+  }
+
+  function renderProductionLeaderHtml(faction, leader) {
+    const currentGame = resolvedCurrentGame();
+    const factionId = String(faction?.id || state.factionId || "").trim().toLowerCase();
+    const leaderId = String(leader?.id || state.leaderId || "").trim().toLowerCase();
+    const canonicalLeader = currentGame.findLeader?.(factionId, leaderId)
+      || currentGame.leaders?.find(item => item.faction === factionId && item.id === leaderId);
+    if (!canonicalLeader) {
+      throw new Error(`Current-game authority cannot resolve selected Leader ${factionId}/${leaderId}.`);
+    }
+
+    return productionComponentHtml({
+      kind: "leader",
+      id: `${factionId}-${canonicalLeader.id}`,
+      label: `${canonicalLeader.name} Leader`,
+      side: "front",
+      backPolicy: "standardBack",
+      componentId: `leader:${factionId}:${canonicalLeader.id}`,
+    });
+  }
+
+  function renderProductionComponentHtml(componentId, side = "front") {
+    const component = contractComponentById(componentId);
+    if (!component) throw new Error(`Current-game authority cannot resolve supplemental component ${componentId}.`);
+
+    const descriptor = renderDescriptorForComponent(component);
+    if (!componentIsPrintableProduction(component, descriptor)) {
+      throw new Error(`Current-game authority has no production print renderer for ${component.name || component.id}.`);
+    }
+
+    return productionComponentHtml({
+      ...descriptor,
+      label: component.name,
+      side,
+      backPolicy: component.backPolicy,
+      componentId: component.id,
+    });
+  }
+
+  function renderProductionCardHtml(card) {
+    const currentGame = resolvedCurrentGame();
+    const id = String(card?.id || "").trim();
+    const canonicalCard = (currentGame.cards || []).find(item => item.id === id);
+    if (!canonicalCard) throw new Error(`Current-game authority cannot resolve playable card ${id || "(missing id)"}.`);
+    return productionCardHtml(canonicalCard);
+  }
+
+  function renderProductionTerritoryHtml(territory) {
+    const currentGame = resolvedCurrentGame();
+    const id = String(territory?.id || "").trim();
+    const canonicalTerritory = (currentGame.territories || []).find(item => item.id === id);
+    if (!canonicalTerritory) throw new Error(`Current-game authority cannot resolve Territory ${id || "(missing id)"}.`);
+    return productionTerritoryHtml(canonicalTerritory);
+  }
+
+  function productionComponentHtml(options) {
+    const {
+      kind,
+      id,
+      side = "front",
+      label,
+      backPolicy = "",
+      componentId = id,
+      orientation = "portrait",
+    } = options;
+    const landscape = orientation === "landscape";
+    const source = productionFrameSource({ ...options, kind, id, side, orientation });
+    const className = `print-card production-render-component production-render-${kind}${landscape ? " production-render-landscape" : ""}${backPolicy === "standardBack" ? " production-standard-back" : ""}`;
+    const frame = `<iframe class="production-component-frame${landscape ? " production-component-frame-landscape" : ""}" data-production-render-frame="true" data-production-render-kind="component" src="${escapeHtml(source)}" title="${escapeHtml(label)} production render" scrolling="no" loading="eager"></iframe>`;
+    const content = landscape
+      ? `<div class="production-component-landscape-rotate">${frame}</div>`
+      : frame;
+
+    return `<article class="${escapeHtml(className)}" data-production-component-kind="${escapeHtml(kind)}" data-production-component-id="${escapeHtml(componentId)}" data-production-component-render-id="${escapeHtml(id)}" data-production-component-side="${escapeHtml(side)}" data-production-back-policy="${escapeHtml(backPolicy)}" data-production-orientation="${escapeHtml(orientation)}" aria-label="${escapeHtml(label)} production render">${content}</article>`;
+  }
+
+  function productionCardHtml(card) {
+    const source = `/card-design/card-print-render.html?card=${encodeURIComponent(card.id)}&fit=production&rules=${encodeURIComponent(selectedRulesetMode())}`;
+    return `<article class="print-card main-card production-render-card production-standard-back" data-production-card-id="${escapeHtml(card.id)}" data-production-back-policy="standardBack" aria-label="${escapeHtml(card.name)} production card"><iframe class="production-card-frame" data-production-render-frame="true" data-production-render-kind="card" src="${escapeHtml(source)}" title="${escapeHtml(card.name)} production card" scrolling="no" loading="eager"></iframe></article>`;
+  }
+
+  function productionTerritoryHtml(territory) {
+    const source = `/card-design/territory-print-render.html?territory=${encodeURIComponent(territory.id)}&rules=${encodeURIComponent(selectedRulesetMode())}`;
+    return `<article class="print-card territory production-render-territory production-standard-back" data-production-territory-id="${escapeHtml(territory.id)}" data-production-back-policy="standardBack" aria-label="${escapeHtml(territory.name)} production Territory"><div class="production-territory-rotate"><iframe class="production-territory-frame" data-production-render-frame="true" data-production-render-kind="territory" src="${escapeHtml(source)}" title="${escapeHtml(territory.name)} production Territory" scrolling="no" loading="eager"></iframe></div></article>`;
   }
 
   function renderDescriptorForComponent(component) {
@@ -118,110 +209,6 @@
     return ["proposal-treaty-card", "ledger", "deed-card"].includes(component.family)
       && (component.designStatus || "final") === "final"
       && component.productionStatus === "export-pending";
-  }
-
-  function annotateContract(shell, component) {
-    shell.dataset.contractFamily = component.family;
-    shell.dataset.contractDesignStatus = component.designStatus || "final";
-    shell.dataset.contractProductionStatus = component.productionStatus;
-    shell.dataset.contractBackPolicy = component.backPolicy || "";
-    if (component.backPolicy === "standardBack") shell.classList.add("production-standard-back");
-  }
-
-  function replaceProductionFronts(documentNode, currentGame) {
-    replaceProductionLeader(documentNode, currentGame);
-    replaceSupplementalFronts(documentNode, currentGame);
-    replacePlayableAndTerritoryFronts(documentNode, currentGame);
-  }
-
-  function replaceProductionLeader(documentNode, currentGame) {
-    const leaderShell = documentNode.querySelector(".print-card.leader-card");
-    if (!leaderShell) return;
-
-    const faction = String(state.factionId || "").trim().toLowerCase();
-    const leaderId = String(state.leaderId || "").trim().toLowerCase();
-    const leader = currentGame.findLeader?.(faction, leaderId)
-      || currentGame.leaders?.find(item => item.faction === faction && item.id === leaderId);
-    if (!leader) throw new Error(`Current-game authority cannot resolve selected Leader ${faction}/${leaderId}.`);
-
-    leaderShell.replaceWith(makeProductionComponent(documentNode, {
-      kind: "leader",
-      id: `${faction}-${leader.id}`,
-      label: `${leader.name} Leader`,
-      side: "front",
-      backPolicy: "standardBack",
-      componentId: `leader:${faction}:${leader.id}`,
-    }));
-  }
-
-  function replaceSupplementalFronts(documentNode, currentGame) {
-    const shells = [...documentNode.querySelectorAll(
-      ".print-card.tracker-card, .print-card.reference-card, .print-card.purge-card, .print-card.capital-tracker-card, .print-card.deed-card, .print-card.proposal-card, .print-card.rite-card"
-    )];
-
-    const unresolved = [];
-    for (const shell of shells) {
-      if (!shell.isConnected) continue;
-
-      const component = contractComponentForShell(shell, currentGame);
-      if (!component) {
-        unresolved.push(shell.dataset.contractComponentId || shell.getAttribute("aria-label") || "unnamed supplemental component");
-        continue;
-      }
-      annotateContract(shell, component);
-
-      const descriptor = renderDescriptorForComponent(component);
-      if (!componentIsPrintableProduction(component, descriptor)) {
-        unresolved.push(component.name || component.id);
-        continue;
-      }
-
-      let side = "front";
-      if (shell.classList.contains("proposal-card") && shell.classList.contains("treaty")) side = "reverse";
-      if (shell.classList.contains("rite-card") && (shell.classList.contains("rite-back-card") || shell.classList.contains("completed"))) side = "reverse";
-
-      shell.replaceWith(makeProductionComponent(documentNode, {
-        ...descriptor,
-        label: component.name,
-        side,
-        backPolicy: component.backPolicy,
-        componentId: component.id,
-      }));
-    }
-
-    if (unresolved.length) {
-      throw new Error(`Current-game authority could not resolve production supplemental renders for: ${unresolved.join(", ")}`);
-    }
-  }
-
-  function replacePlayableAndTerritoryFronts(documentNode, currentGame) {
-    const cardsById = new Map((currentGame.cards || []).map(card => [card.id, card]));
-    const territoriesById = new Map((currentGame.territories || []).map(territory => [territory.id, territory]));
-    const unresolved = [];
-
-    documentNode.querySelectorAll(".print-card.main-card").forEach(cardShell => {
-      const id = cardShell.dataset.cardId || "";
-      const card = cardsById.get(id);
-      if (!card?.id) {
-        unresolved.push(id || "playable card without authority id");
-        return;
-      }
-      cardShell.replaceWith(makeProductionCard(documentNode, card));
-    });
-
-    documentNode.querySelectorAll(".print-card.territory").forEach(territoryShell => {
-      const id = territoryShell.dataset.territoryId || "";
-      const territory = territoriesById.get(id);
-      if (!territory?.id) {
-        unresolved.push(id || "Territory without authority id");
-        return;
-      }
-      territoryShell.replaceWith(makeProductionTerritory(documentNode, territory));
-    });
-
-    if (unresolved.length) {
-      throw new Error(`Current-game authority could not resolve production render IDs for: ${unresolved.join(", ")}`);
-    }
   }
 
   function selectedRulesetMode() {
@@ -273,49 +260,6 @@
     } else {
       wrapper.append(frame);
     }
-    return wrapper;
-  }
-
-  function makeProductionCard(documentNode, card) {
-    const wrapper = documentNode.createElement("article");
-    wrapper.className = "print-card main-card production-render-card production-standard-back";
-    wrapper.dataset.productionCardId = card.id;
-    wrapper.dataset.productionBackPolicy = "standardBack";
-    wrapper.setAttribute("aria-label", `${card.name} production card`);
-
-    const frame = documentNode.createElement("iframe");
-    frame.className = "production-card-frame";
-    frame.dataset.productionRenderFrame = "true";
-    frame.dataset.productionRenderKind = "card";
-    frame.src = `/card-design/card-print-render.html?card=${encodeURIComponent(card.id)}&fit=production&rules=${encodeURIComponent(selectedRulesetMode())}`;
-    frame.title = `${card.name} production card`;
-    frame.setAttribute("scrolling", "no");
-    frame.setAttribute("loading", "eager");
-    wrapper.append(frame);
-    return wrapper;
-  }
-
-  function makeProductionTerritory(documentNode, territory) {
-    const wrapper = documentNode.createElement("article");
-    wrapper.className = "print-card territory production-render-territory production-standard-back";
-    wrapper.dataset.productionTerritoryId = territory.id;
-    wrapper.dataset.productionBackPolicy = "standardBack";
-    wrapper.setAttribute("aria-label", `${territory.name} production Territory`);
-
-    const rotate = documentNode.createElement("div");
-    rotate.className = "production-territory-rotate";
-
-    const frame = documentNode.createElement("iframe");
-    frame.className = "production-territory-frame";
-    frame.dataset.productionRenderFrame = "true";
-    frame.dataset.productionRenderKind = "territory";
-    frame.src = `/card-design/territory-print-render.html?territory=${encodeURIComponent(territory.id)}&rules=${encodeURIComponent(selectedRulesetMode())}`;
-    frame.title = `${territory.name} production Territory`;
-    frame.setAttribute("scrolling", "no");
-    frame.setAttribute("loading", "eager");
-
-    rotate.append(frame);
-    wrapper.append(rotate);
     return wrapper;
   }
 
