@@ -53,12 +53,17 @@
     column-gap: inherit !important;
   }
 
-  /* Reminders are full-width prose and should not enter either shared track.
-     Rite reminders predate the shared .card-reminder class and use their own
-     .rite-reminder hook, so include both here. Otherwise Grid auto-placement
-     drops a Rite reminder into the narrow label column and wraps it almost one
-     word per line. */
-  .gauntlet-card .card-rules > :is(.card-reminder, .rite-reminder) {
+  /* Generic reminders remain full-width prose. */
+  .gauntlet-card .card-rules > .card-reminder {
     grid-column: 1 / -1;
+  }
+
+  /* Rite reminders belong with the rule body, not the section labels. Put
+     them directly in the shared body column so their left edge exactly matches
+     Begin/Complete/Interrupted copy. The Rite stylesheet keeps its historical
+     fixed indent only as a fallback for browsers without subgrid support. */
+  .rite-card .card-rules > .rite-reminder {
+    grid-column: 2 / -1;
+    margin-left: 0;
   }
 }
