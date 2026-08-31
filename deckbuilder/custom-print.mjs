@@ -179,11 +179,6 @@ function buildCatalog(game) {
     if (entry) entries.push(entry);
   }
 
-  const ritual = game.mystics?.ritual;
-  if (ritual?.id && !entries.some(entry => entry.key === `ritual:${ritual.id}`)) {
-    entries.push(makeEntry(`ritual:${ritual.id}`, ritual.name || "Ritual of Ascension", "Ritual", "mystics", factionNames.get("mystics") || "Mystics", "portrait", "specialBack", { surface: "component", kind: "ritual", id: ritual.id }));
-  }
-
   const categoryIndex = category => {
     const index = CATEGORY_ORDER.indexOf(category);
     return index < 0 ? CATEGORY_ORDER.length : index;
@@ -209,6 +204,8 @@ function renderDescriptorForComponent(component) {
   const explicit = component.renderSource || {};
   const surface = String(explicit.surface || "");
   const componentId = String(explicit.componentId || "").trim();
+  const explicitKind = String(explicit.kind || "").trim();
+  if (explicitKind && componentId) return { surface: "component", kind: explicitKind, id: componentId };
   if (component.id === "financiers-capital-ledger") return { surface: "component", kind: "supplemental", id: "financiers-capital-ledger" };
   if (component.id === "financiers-deed") return { surface: "component", kind: "supplemental", id: "financiers-deed" };
   if (/supplemental-card\.js$/i.test(surface) && componentId) return { surface: "component", kind: "supplemental", id: componentId };
@@ -219,6 +216,7 @@ function renderDescriptorForComponent(component) {
   if (component.family === "tracker") return { surface: "component", kind: componentId ? "tracker" : "supplemental", id: componentId || component.id };
   if (component.family === "proposal-treaty-card") return { surface: "component", kind: "proposal", id: component.id.replace(/^diplomats-proposal-/, "") };
   if (component.family === "rite-card") return { surface: "component", kind: "rite", id: component.id.replace(/^mystics-rite-/, "") };
+  if (component.family === "ritual-card") return { surface: "component", kind: "ritual", id: componentId || component.id.replace(/^mystics-ritual-of-/, "") };
   if (component.family === "ledger" || component.family === "deed-card") return { surface: "component", kind: "supplemental", id: componentId || component.id };
   return { surface: "component", kind: "supplemental", id: componentId || component.id };
 }
@@ -230,6 +228,7 @@ function componentCategory(component) {
   if (component.family === "tracker") return "Tracker";
   if (component.family === "proposal-treaty-card") return "Proposal / Treaty";
   if (component.family === "rite-card") return "Rite";
+  if (component.family === "ritual-card") return "Ritual";
   return "Supplemental card";
 }
 
