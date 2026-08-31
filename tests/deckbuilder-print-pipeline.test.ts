@@ -26,7 +26,7 @@ describe("Deckbuilder print pipeline", () => {
   it("routes the main Deckbuilder print action through the core pipeline", () => {
     expect(print).toContain("deckbuilder.preparePrintDocument(html");
     expect(print).toContain('kind: "deck"');
-    expect(print).toContain("printWindow.document.write(preparedHtml)");
+    expect(print).toContain("printWindow.document.write(buildCurrentPrintDocument(printData))");
   });
 
   it("keeps only the intentional production and presentation print stages", () => {
