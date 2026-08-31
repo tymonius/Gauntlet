@@ -2,6 +2,7 @@ import { v070CanonicalContent } from '../content/v070';
 import { appendV070Event, type V070GameState } from './engine';
 import { drawV070Cards } from './turn-engine';
 import type { PlayerId } from './rules';
+import { faceUpV070AssetInstanceIds } from './asset-face-state';
 import type {
   V070BattleCardCommitment,
   V070UnsupportedBattleEffect,
@@ -121,7 +122,8 @@ const handlers: V070BattleEffectHandler[] = [
     expectedText: 'If the opponent has more face-up Assets than you, gain Advantage.',
     timing: 'reveal',
     apply: ({ state, owner, opponent }) => {
-      if (state.players[opponent].zones.assetBank.length > state.players[owner].zones.assetBank.length) {
+      if (faceUpV070AssetInstanceIds(state, opponent).length
+        > faceUpV070AssetInstanceIds(state, owner).length) {
         participant(state, owner).advantage += 1;
       }
     },

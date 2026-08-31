@@ -56,6 +56,10 @@ import {
   useV070SanctionsEmbargoAfterRefusal,
 } from './sanctions';
 import { openV070BlockadeChoicesForPositionChange } from './movement-triggers';
+import {
+  clearV070AssetFaceState,
+  isV070AssetFaceUp,
+} from './asset-face-state';
 
 export const V070_NORMAL_BATTLE_DICE = 1 as const;
 
@@ -368,6 +372,7 @@ function unsupportedOnsetFeatures(state: V070GameState): string[] {
     const player = state.players[playerId];
 
     for (const instanceId of player.zones.assetBank) {
+      if (!isV070AssetFaceUp(state, instanceId)) continue;
       const cardId = state.cardInstances[instanceId]?.cardId;
       const card = cardId ? v070CanonicalContent.cardsById.get(cardId) : undefined;
       const onsetAsset = card?.effects.find(effect =>
@@ -395,6 +400,14 @@ function setGambit(
   }
 
   const participant = runtime.participants[playerId];
+  const battle = requireBattle(state);
+  if (battle.attackerGambitProhibited
+    && playerId === battle.attacker
+    && instanceId !== undefined) {
+    throw new V070GameActionError(
+      'The attacker cannot set a Gambit in this battle.',
+    );
+  }
   if (participant.gambit !== undefined) {
     throw new V070GameActionError(`${playerId} has already made a Gambit choice.`);
   }
@@ -758,11 +771,13 @@ function useSafeConduct(
   const player = state.players[playerId];
   const index = player.zones.assetBank.indexOf(cardInstanceId);
   if (index < 0
-    || state.cardInstances[cardInstanceId]?.cardId !== 'diplomats-safe-conduct') {
+    || state.cardInstances[cardInstanceId]?.cardId !== 'diplomats-safe-conduct'
+    || !isV070AssetFaceUp(state, cardInstanceId)) {
     throw new V070GameActionError('Choose a banked Safe Conduct to use.');
   }
 
   player.zones.assetBank.splice(index, 1);
+  clearV070AssetFaceState(state, cardInstanceId);
   player.zones.discardPile.push(cardInstanceId);
 
   state.battle = resolveV070Withdrawal(battle, [playerId]);
@@ -820,6 +835,7 @@ function safeConductAvailable(
 
   return state.players[playerId].zones.assetBank.some(instanceId =>
     state.cardInstances[instanceId]?.cardId === 'diplomats-safe-conduct'
+    && isV070AssetFaceUp(state, instanceId)
   );
 }
 

@@ -14,6 +14,10 @@ import {
   appendV070Event,
   type V070GameState,
 } from './engine';
+import {
+  clearV070AssetFaceState,
+  isV070AssetFaceUp,
+} from './asset-face-state';
 import { drawV070Cards } from './turn-engine';
 import { advanceV070FrontLine } from './front-line';
 import {
@@ -233,6 +237,7 @@ export function useV070PlenipotentiaryAfterRefusal(
 
   const assetIndex = state.players[diplomatId].zones.assetBank.indexOf(cardInstanceId);
   state.players[diplomatId].zones.assetBank.splice(assetIndex, 1);
+  clearV070AssetFaceState(state, cardInstanceId);
   state.players[diplomatId].zones.graveyard.push(cardInstanceId);
   changeInfluence(state, diplomatId, -cost, 'Plenipotentiary');
   ratifyProposal(state, diplomatId, proposal.id, 0, 'plenipotentiary');
@@ -274,6 +279,7 @@ export function useV070NeutralObserversAfterRefusal(
   const opponentId = requireTermsPlayer(terms.opponent);
   const bank = state.players[diplomatId].zones.assetBank;
   bank.splice(bank.indexOf(assetInstanceId), 1);
+  clearV070AssetFaceState(state, assetInstanceId);
   state.players[diplomatId].zones.discardPile.push(assetInstanceId);
 
   runtime.gambitOrderOverride = {
@@ -341,6 +347,7 @@ export function useV070GoodFaith(
 
   const bank = state.players[diplomatId].zones.assetBank;
   bank.splice(bank.indexOf(assetInstanceId), 1);
+  clearV070AssetFaceState(state, assetInstanceId);
   state.players[diplomatId].zones.discardPile.push(assetInstanceId);
   drawIntoHand(state, diplomatId, 1, 'Good Faith');
 
@@ -1556,6 +1563,7 @@ function discardSpecificHandCard(
 function hasBankedCard(state: V070GameState, playerId: PlayerId, cardId: string): boolean {
   return state.players[playerId].zones.assetBank.some(instanceId =>
     state.cardInstances[instanceId]?.cardId === cardId
+    && isV070AssetFaceUp(state, instanceId)
   );
 }
 
@@ -1568,7 +1576,8 @@ function requireCardInZone(
 ): void {
   const player = state.players[playerId];
   if (!player.zones[zone].includes(instanceId)
-    || state.cardInstances[instanceId]?.cardId !== expectedCardId) {
+    || state.cardInstances[instanceId]?.cardId !== expectedCardId
+    || (zone === 'assetBank' && !isV070AssetFaceUp(state, instanceId))) {
     throw new V070GameActionError(`${expectedCardId} is not available in the required zone.`);
   }
 }

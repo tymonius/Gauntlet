@@ -20,6 +20,26 @@ export interface V070OverlayAttachment {
   sequence: number;
 }
 
+export interface V070Binding {
+  hostId: string;
+  cardInstanceId: string;
+  owner: PlayerId;
+  faceUp: boolean;
+  purpose: string;
+  sequence: number;
+}
+
+export interface V070AssetFaceState {
+  instanceId: string;
+  owner: PlayerId;
+  faceUp: false;
+  changedBy: PlayerId;
+  sourceInstanceId: string | null;
+  reason: string;
+  appliedTurn: number;
+  restoreAtPlayer: PlayerId;
+}
+
 export interface V070PendingTurnChoice {
   kind: 'demilitarized_zone_upkeep';
   playerId: PlayerId;
@@ -96,6 +116,12 @@ export type V070PendingActionEffectChoice =
       sourceActionInstanceId: string;
     }
   | {
+      kind: 'divine_mercy_target';
+      playerId: PlayerId;
+      opponentId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
       kind: 'hand_destination_target';
       playerId: PlayerId;
       sourceActionInstanceId: string;
@@ -107,9 +133,34 @@ export type V070PendingActionEffectChoice =
       kind: 'controlled_asset_target';
       playerId: PlayerId;
       sourceActionInstanceId: string;
-      purpose: 'Requisition';
-      operation: 'voluntary_discard';
+      purpose: 'Requisition' | 'Strategic Withdrawal';
+      operation: 'voluntary_discard' | 'voluntary_return_hand';
       drawAfter: number;
+    }
+  | {
+      kind: 'sequestration_keep_asset';
+      playerId: PlayerId;
+      actionOwnerId: PlayerId;
+      sourceActionInstanceId: string;
+      keepers: Partial<Record<PlayerId, string>>;
+      remainingChoosers: PlayerId[];
+    }
+  | {
+      kind: 'fates_toll_cost';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'battlefield_promotion_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'sabotage_asset_target';
+      playerId: PlayerId;
+      opponentId: PlayerId;
+      sourceActionInstanceId: string;
     }
   | {
       kind: 'scouting_report_source';
@@ -142,7 +193,10 @@ export type V070PendingActionEffectChoice =
         | 'War Bonds'
         | 'Regime Change'
         | 'Reembodiment'
-        | 'Tariffs';
+        | 'Tariffs'
+        | 'Anathema'
+        | 'Reserve Force'
+        | 'Extraordinary Rendition';
       replacementInstanceIds: string[];
     }
   | {
@@ -201,6 +255,23 @@ export type V070PendingActionEffectChoice =
       playerId: PlayerId;
       sourceActionInstanceId: string;
       candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'anathema_target';
+      playerId: PlayerId;
+      opponentId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'reserve_force_bind_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'extraordinary_rendition_bind_target';
+      playerId: PlayerId;
+      opponentId: PlayerId;
+      sourceActionInstanceId: string;
     };
 
 export type V070PendingSanctionChoice =
@@ -226,6 +297,10 @@ export interface V070DiplomatState {
   detenteUsedTurn: number | null;
 }
 
+export interface V070InquisitionState {
+  conviction: number;
+}
+
 export interface V070PlayerState {
   id: PlayerId;
   name: string;
@@ -240,6 +315,7 @@ export interface V070PlayerState {
   controlledTerritories: string[];
   reshuffleCount: number;
   diplomats: V070DiplomatState | null;
+  inquisition: V070InquisitionState | null;
 }
 
 export interface V070BoardTerritory {
@@ -280,6 +356,9 @@ export interface V070GameState {
   battleRuntime: V070BattleRuntime | null;
   overlays: V070OverlayAttachment[];
   nextOverlaySequence: number;
+  bindings: V070Binding[];
+  nextBindingSequence: number;
+  assetFaceStates: V070AssetFaceState[];
   territoryTurnRestrictions: V070TerritoryTurnRestriction[];
   sanctions: V070SanctionAssociation[];
   sanctionTriggerTurns: Record<string, number>;
@@ -368,6 +447,9 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
             detenteUsedTurn: null,
           }
         : null,
+      inquisition: starter.definition.factionId === 'inquisition'
+        ? { conviction: 0 }
+        : null,
     };
   }
 
@@ -390,6 +472,9 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
     battleRuntime: null,
     overlays: [],
     nextOverlaySequence: 1,
+    bindings: [],
+    nextBindingSequence: 1,
+    assetFaceStates: [],
     territoryTurnRestrictions: [],
     sanctions: [],
     sanctionTriggerTurns: {},

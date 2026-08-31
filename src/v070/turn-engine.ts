@@ -2,12 +2,15 @@ import { v070CanonicalContent } from '../content/v070';
 import {
   advanceV070TurnPhase,
   applyV070MovementChoice,
+  beginEffectGrantedV070Movement,
   beginNormalV070Movement,
   canInitiateV070LastStand,
+  currentV070MovementStep,
   createV070BattleOnset,
   createV070LastStandOnset,
   createV070TurnState,
   grantCurrentPhaseV070Actions,
+  queueNormalV070MovementStep,
   spendV070Action,
   type MovementChoice,
   type PlayerId,
@@ -45,12 +48,23 @@ import {
   bankV070AssetFromPendingAction,
   bankV070AssetWithInherentAction,
   discardV070AssetAsAction,
+  discardV070AssetByEffect,
   assertV070ForcedAssetChoicesSupported,
   discardV070AssetVoluntarily,
   pendingBankReplacementV070AssetInstanceIds,
   removeV070AssetForced,
+  returnV070AssetVoluntarilyToHand,
   voluntarilyDiscardableV070AssetInstanceIds,
+  voluntarilyReturnableV070AssetInstanceIds,
 } from './assets';
+import { bindV070CardFromPlayerZone } from './bindings';
+import { gainV070Conviction } from './inquisition';
+import {
+  faceUpV070AssetInstanceIds,
+  isV070AssetFaceUp,
+  restoreV070AssetsAtTurnStart,
+  turnV070AssetFaceDownUntilPlayerNextTurn,
+} from './asset-face-state';
 
 export type V070TurnAction =
   | { type: 'resolve_capture'; playerId: PlayerId }
@@ -90,6 +104,26 @@ export type V070TurnAction =
     }
   | {
       type: 'choose_controlled_asset_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
+      type: 'choose_sequestration_keep_asset';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
+      type: 'choose_fates_toll_cost';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
+      type: 'choose_battlefield_promotion_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
+      type: 'choose_sabotage_asset_target';
       playerId: PlayerId;
       targetInstanceId: string;
     }
@@ -162,6 +196,21 @@ export type V070TurnAction =
       graveyardInstanceId: string;
     }
   | {
+      type: 'choose_anathema_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
+      type: 'choose_reserve_force_bind_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
+      type: 'choose_extraordinary_rendition_bind_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
       type: 'resolve_censure_choice';
       playerId: PlayerId;
       sanctionInstanceId: string;
@@ -189,7 +238,8 @@ export function reduceV070TurnAction(
 ): V070GameState {
   if (action.type === 'resolve_clemency_choice'
     || action.type === 'choose_forced_asset_target'
-    || action.type === 'resolve_accusation_choice') {
+    || action.type === 'resolve_accusation_choice'
+    || action.type === 'choose_sequestration_keep_asset') {
     requirePlayingGame(state);
   } else {
     requirePlayingTurn(state, action.playerId);
@@ -223,6 +273,7 @@ export function reduceV070TurnAction(
         pending.kind === 'arcane_knowledge_target'
         || pending.kind === 'contraband_target'
         || pending.kind === 'salvage_recovery_target'
+        || pending.kind === 'divine_mercy_target'
       )
       && action.type === 'choose_recovery_action_target'
       && action.playerId === pending.playerId
@@ -233,6 +284,22 @@ export function reduceV070TurnAction(
     ) || (
       pending.kind === 'controlled_asset_target'
       && action.type === 'choose_controlled_asset_target'
+      && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'sequestration_keep_asset'
+      && action.type === 'choose_sequestration_keep_asset'
+      && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'fates_toll_cost'
+      && action.type === 'choose_fates_toll_cost'
+      && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'battlefield_promotion_target'
+      && action.type === 'choose_battlefield_promotion_target'
+      && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'sabotage_asset_target'
+      && action.type === 'choose_sabotage_asset_target'
       && action.playerId === pending.playerId
     ) || (
       pending.kind === 'scouting_report_source'
@@ -286,6 +353,18 @@ export function reduceV070TurnAction(
       pending.kind === 'threefold_vision_distribution'
       && action.type === 'resolve_threefold_vision_distribution'
       && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'anathema_target'
+      && action.type === 'choose_anathema_target'
+      && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'reserve_force_bind_target'
+      && action.type === 'choose_reserve_force_bind_target'
+      && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'extraordinary_rendition_bind_target'
+      && action.type === 'choose_extraordinary_rendition_bind_target'
+      && action.playerId === pending.playerId
     );
     if (!validContinuation) {
       throw new V070GameActionError('Resolve the pending printed Action effect choice first.');
@@ -300,6 +379,10 @@ export function reduceV070TurnAction(
       'choose_recovery_action_target',
       'choose_hand_destination_target',
       'choose_controlled_asset_target',
+      'choose_sequestration_keep_asset',
+      'choose_fates_toll_cost',
+      'choose_battlefield_promotion_target',
+      'choose_sabotage_asset_target',
       'resolve_scouting_report_choice',
       'choose_territory_overlay_target',
       'choose_forced_asset_target',
@@ -313,8 +396,20 @@ export function reduceV070TurnAction(
       'choose_dark_omens_graveyard_target',
       'choose_act_of_faith_graveyard_target',
       'resolve_threefold_vision_distribution',
+      'choose_anathema_target',
+      'choose_reserve_force_bind_target',
+      'choose_extraordinary_rendition_bind_target',
     ].includes(action.type)) {
     throw new V070GameActionError('Resolve the pending Action card before continuing the turn.');
+  }
+
+  const activeTurnState = state.turnState;
+  if (activeTurnState?.movementSequenceOpen
+    && activeTurnState.movementSequenceSource === 'effect'
+    && action.type !== 'choose_movement') {
+    throw new V070GameActionError(
+      'Resolve the effect-granted movement sequence before continuing the turn.',
+    );
   }
 
   const next = structuredClone(state) as V070GameState;
@@ -352,6 +447,34 @@ export function reduceV070TurnAction(
       break;
     case 'choose_controlled_asset_target':
       chooseControlledAssetTarget(next, action.playerId, action.targetInstanceId);
+      break;
+    case 'choose_sequestration_keep_asset':
+      chooseSequestrationKeepAsset(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
+      break;
+    case 'choose_fates_toll_cost':
+      chooseFatesTollCost(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
+      break;
+    case 'choose_battlefield_promotion_target':
+      chooseBattlefieldPromotionTarget(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
+      break;
+    case 'choose_sabotage_asset_target':
+      chooseSabotageAssetTarget(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
       break;
     case 'resolve_scouting_report_choice':
       resolveScoutingReportChoice(next, action.playerId, action.source);
@@ -425,6 +548,19 @@ export function reduceV070TurnAction(
         action.handInstanceId,
         action.discardInstanceId,
         action.graveyardInstanceId,
+      );
+      break;
+    case 'choose_anathema_target':
+      chooseAnathemaTarget(next, action.playerId, action.targetInstanceId);
+      break;
+    case 'choose_reserve_force_bind_target':
+      chooseReserveForceBindTarget(next, action.playerId, action.targetInstanceId);
+      break;
+    case 'choose_extraordinary_rendition_bind_target':
+      chooseExtraordinaryRenditionBindTarget(
+        next,
+        action.playerId,
+        action.targetInstanceId,
       );
       break;
     case 'resolve_censure_choice':
@@ -578,11 +714,16 @@ function discardAsset(
 
 export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'neutral-rallying-cry',
+  'neutral-advance-guard',
   'neutral-arcane-knowledge',
   'neutral-capital-punishment',
   'neutral-consolidation',
   'neutral-contraband',
   'neutral-disruption',
+  'neutral-forced-march',
+  'mystics-fate-s-toll',
+  'military-battlefield-promotion',
+  'military-give-chase',
   'neutral-insurrection',
   'neutral-landslide',
   'neutral-new-recruits',
@@ -590,8 +731,11 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'neutral-reserves',
   'neutral-requisition',
   'neutral-salvage',
+  'neutral-sabotage',
   'neutral-scouting-report',
   'neutral-sedition',
+  'neutral-sequestration',
+  'neutral-strategic-withdrawal',
   'neutral-tactical-planning',
   'diplomats-clemency',
   'diplomats-detente',
@@ -600,13 +744,18 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'financiers-tariffs',
   'financiers-war-bonds',
   'inquisition-accusation',
+  'inquisition-anathema',
+  'inquisition-divine-mercy',
   'inquisition-excommunication',
   'inquisition-act-of-faith',
   'inquisition-guilt-by-association',
   'intelligence-assassins',
+  'intelligence-extraordinary-rendition',
   'intelligence-regime-change',
   'intelligence-spies',
   'military-high-command',
+  'military-invasion',
+  'military-reserve-force',
   'mystics-dark-omens',
   'mystics-sacrifice-recovery',
   'mystics-soul-for-soul',
@@ -662,6 +811,13 @@ function playActionCard(
       'Contraband requires at least one card in your Discard Pile.',
     );
   }
+  if ((card.id === 'neutral-advance-guard'
+      || card.id === 'neutral-forced-march')
+    && turnState.phase !== 'opening') {
+    throw new V070GameActionError(
+      `${card.name} may be played only during Opening.`,
+    );
+  }
   if (card.id === 'neutral-capital-punishment') {
     const opponentId = otherPlayer(playerId);
     if (!wonBattleThisTurn(state, playerId)) {
@@ -694,6 +850,36 @@ function playActionCard(
       'Salvage requires at least one card in your Discard Pile.',
     );
   }
+  if (card.id === 'military-battlefield-promotion') {
+    if (turnState.phase !== 'denouement') {
+      throw new V070GameActionError(
+        'Battlefield Promotion may be played only during Denouement.',
+      );
+    }
+    if (battlefieldPromotionCandidateInstanceIds(state, playerId).length === 0) {
+      throw new V070GameActionError(
+        'Battlefield Promotion requires a Tactic you chose in a battle you won this turn that is still in your Discard Pile.',
+      );
+    }
+  }
+  if (card.id === 'military-give-chase') {
+    if (turnState.phase !== 'denouement') {
+      throw new V070GameActionError(
+        'Give Chase may be played only during Denouement.',
+      );
+    }
+    if (!wonInitiatedBattleThisTurn(state, playerId)) {
+      throw new V070GameActionError(
+        'Give Chase requires a battle you initiated and won this turn.',
+      );
+    }
+  }
+  if (card.id === 'mystics-fate-s-toll'
+    && player.zones.hand.length < 2) {
+    throw new V070GameActionError(
+      "Fate's Toll requires one other card in your Hand.",
+    );
+  }
   if (card.id === 'neutral-new-recruits'
     && player.zones.hand.length < 2) {
     throw new V070GameActionError(
@@ -704,6 +890,21 @@ function playActionCard(
     && voluntarilyDiscardableV070AssetInstanceIds(state, playerId).length === 0) {
     throw new V070GameActionError(
       'Requisition requires one Asset you can voluntarily discard.',
+    );
+  }
+  if (card.id === 'neutral-strategic-withdrawal'
+    && voluntarilyReturnableV070AssetInstanceIds(state, playerId).length === 0) {
+    throw new V070GameActionError(
+      'Strategic Withdrawal requires one Asset you can return to your Hand.',
+    );
+  }
+  if (card.id === 'neutral-sabotage'
+    && faceUpV070AssetInstanceIds(
+      state,
+      otherPlayer(playerId),
+    ).length === 0) {
+    throw new V070GameActionError(
+      'Sabotage requires at least one face-up opposing Asset.',
     );
   }
   if (card.id === 'neutral-scouting-report'
@@ -739,6 +940,12 @@ function playActionCard(
       );
     }
   }
+  if (card.id === 'inquisition-divine-mercy'
+    && state.players[otherPlayer(playerId)].zones.graveyard.length === 0) {
+    throw new V070GameActionError(
+      'Divine Mercy requires at least one card in the opponent’s Graveyard.',
+    );
+  }
   if (card.id === 'inquisition-accusation'
     && state.players[otherPlayer(playerId)].zones.discardPile.length === 0) {
     throw new V070GameActionError(
@@ -770,6 +977,44 @@ function playActionCard(
     throw new V070GameActionError(
       'Act of Faith requires at least one card in the opponent’s Draw Pile.',
     );
+  }
+  if (card.id === 'inquisition-anathema') {
+    if (state.players[otherPlayer(playerId)].zones.discardPile.length === 0) {
+      throw new V070GameActionError(
+        'Anathema requires at least one card in the opponent’s Discard Pile.',
+      );
+    }
+    pendingBankReplacementV070AssetInstanceIds(
+      state,
+      playerId,
+      cardInstanceId,
+    );
+  }
+  if (card.id === 'military-reserve-force') {
+    const eligible = player.zones.hand.some(instanceId => {
+      if (instanceId === cardInstanceId) return false;
+      const candidateId = state.cardInstances[instanceId]?.cardId;
+      const candidate = candidateId
+        ? v070CanonicalContent.cardsById.get(candidateId)
+        : undefined;
+      return candidate?.effects.some(effect =>
+        effect.label === 'Tactic' || effect.label === 'Gambit/Tactic'
+      ) ?? false;
+    });
+    if (!eligible) {
+      throw new V070GameActionError(
+        'Reserve Force requires another Tactic-eligible card in your Hand.',
+      );
+    }
+    pendingBankReplacementV070AssetInstanceIds(state, playerId, cardInstanceId);
+  }
+  if (card.id === 'intelligence-extraordinary-rendition') {
+    if (state.players[otherPlayer(playerId)].zones.hand.length === 0) {
+      throw new V070GameActionError(
+        'Extraordinary Rendition requires at least one card in the opponent’s Hand.',
+      );
+    }
+    pendingBankReplacementV070AssetInstanceIds(state, playerId, cardInstanceId);
   }
   if (card.id === 'mystics-threefold-vision'
     && player.zones.drawPile.length < 3) {
@@ -893,6 +1138,50 @@ function continuePendingActionCard(state: V070GameState): void {
       drawIntoHand(state, pending.playerId, 1, 'Rallying Cry');
       finishPendingActionCard(state);
       return;
+    case 'neutral-advance-guard':
+      state.turnState = queueNormalV070MovementStep(
+        requireTurnState(state),
+        {
+          source: 'Advance Guard',
+          choiceRestriction: 'any',
+          battleRestriction: 'allowed_no_gambit',
+        },
+      );
+      appendV070Event(state, {
+        type: 'movement_step_granted',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          purpose: 'Advance Guard',
+          sourceActionInstanceId: pending.instanceId,
+          choiceRestriction: 'any',
+          battleRestriction: 'allowed_no_gambit',
+        },
+      });
+      finishPendingActionCard(state);
+      return;
+    case 'neutral-forced-march':
+      state.turnState = queueNormalV070MovementStep(
+        requireTurnState(state),
+        {
+          source: 'Forced March',
+          choiceRestriction: 'any',
+          battleRestriction: 'prohibited',
+        },
+      );
+      appendV070Event(state, {
+        type: 'movement_step_granted',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          purpose: 'Forced March',
+          sourceActionInstanceId: pending.instanceId,
+          choiceRestriction: 'any',
+          battleRestriction: 'prohibited',
+        },
+      });
+      finishPendingActionCard(state);
+      return;
     case 'neutral-arcane-knowledge':
       state.pendingActionEffectChoice = {
         kind: 'arcane_knowledge_target',
@@ -959,6 +1248,161 @@ function continuePendingActionCard(state: V070GameState): void {
     case 'neutral-disruption':
       resolveDisruptionAction(state, pending.playerId, pending.instanceId);
       finishPendingActionCard(state);
+      return;
+    case 'military-invasion':
+      if (pending.phase === 'opening') {
+        state.turnState = queueNormalV070MovementStep(
+          requireTurnState(state),
+          {
+            source: 'Invasion',
+            choiceRestriction: 'advance_only',
+            battleRestriction: 'allowed',
+          },
+        );
+        state.turnState = queueNormalV070MovementStep(
+          requireTurnState(state),
+          {
+            source: 'Invasion',
+            choiceRestriction: 'advance_only',
+            battleRestriction: 'allowed',
+          },
+        );
+        appendV070Event(state, {
+          type: 'movement_steps_granted',
+          actor: pending.playerId,
+          visibility: 'public',
+          payload: {
+            amount: 2,
+            purpose: 'Invasion',
+            sourceActionInstanceId: pending.instanceId,
+            phase: pending.phase,
+            choiceRestriction: 'advance_only',
+            battleRestriction: 'allowed',
+          },
+        });
+      } else {
+        appendV070Event(state, {
+          type: 'action_effect_incomplete',
+          actor: pending.playerId,
+          visibility: 'public',
+          payload: {
+            sourceActionInstanceId: pending.instanceId,
+            purpose: 'Invasion',
+            reason: 'movement_phase_already_passed',
+          },
+        });
+      }
+      finishPendingActionCard(state);
+      return;
+    case 'military-give-chase':
+      state.turnState = beginEffectGrantedV070Movement(
+        requireTurnState(state),
+        1,
+        {
+          source: 'Give Chase',
+          choiceRestriction: 'advance_required',
+          battleRestriction: 'allowed',
+        },
+      );
+      appendV070Event(state, {
+        type: 'movement_step_granted',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          purpose: 'Give Chase',
+          sourceActionInstanceId: pending.instanceId,
+          phase: pending.phase,
+          separateSequence: true,
+          choiceRestriction: 'advance_required',
+          battleRestriction: 'allowed',
+        },
+      });
+      finishPendingActionCard(state, 'graveyard');
+      return;
+    case 'military-battlefield-promotion': {
+      const candidates = battlefieldPromotionCandidateInstanceIds(
+        state,
+        pending.playerId,
+      );
+      if (candidates.length === 0) {
+        appendV070Event(state, {
+          type: 'action_effect_incomplete',
+          actor: pending.playerId,
+          visibility: 'public',
+          payload: {
+            sourceActionInstanceId: pending.instanceId,
+            purpose: 'Battlefield Promotion',
+            reason: 'required_winning_battle_tactic_unavailable',
+          },
+        });
+        finishPendingActionCard(state);
+        return;
+      }
+      state.pendingActionEffectChoice = {
+        kind: 'battlefield_promotion_target',
+        playerId: pending.playerId,
+        sourceActionInstanceId: pending.instanceId,
+        candidateInstanceIds: [...candidates],
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          kind: 'battlefield_promotion_target',
+          playerId: pending.playerId,
+          sourceActionInstanceId: pending.instanceId,
+          purpose: 'Battlefield Promotion',
+          targetInstanceIds: [...candidates],
+        },
+      });
+      return;
+    }
+    case 'mystics-fate-s-toll':
+      if (state.players[pending.playerId].zones.hand.length === 0) {
+        appendV070Event(state, {
+          type: 'action_effect_incomplete',
+          actor: pending.playerId,
+          visibility: 'public',
+          payload: {
+            sourceActionInstanceId: pending.instanceId,
+            purpose: "Fate's Toll",
+            reason: 'required_hand_cost_unavailable',
+          },
+        });
+        finishPendingActionCard(state);
+        return;
+      }
+      state.pendingActionEffectChoice = {
+        kind: 'fates_toll_cost',
+        playerId: pending.playerId,
+        sourceActionInstanceId: pending.instanceId,
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          kind: 'fates_toll_cost',
+          playerId: pending.playerId,
+          sourceActionInstanceId: pending.instanceId,
+          purpose: "Fate's Toll",
+          candidateCount: state.players[pending.playerId].zones.hand.length,
+        },
+      });
+      appendV070Event(state, {
+        type: 'action_effect_choice_options',
+        actor: pending.playerId,
+        visibility: pending.playerId,
+        payload: {
+          kind: 'fates_toll_cost',
+          sourceActionInstanceId: pending.instanceId,
+          purpose: "Fate's Toll",
+          targetInstanceIds: [
+            ...state.players[pending.playerId].zones.hand,
+          ],
+        },
+      });
       return;
     case 'neutral-insurrection':
       resolveInsurrectionAction(state, pending.playerId, pending.instanceId);
@@ -1050,6 +1494,32 @@ function continuePendingActionCard(state: V070GameState): void {
         },
       });
       return;
+    case 'neutral-strategic-withdrawal':
+      state.pendingActionEffectChoice = {
+        kind: 'controlled_asset_target',
+        playerId: pending.playerId,
+        sourceActionInstanceId: pending.instanceId,
+        purpose: 'Strategic Withdrawal',
+        operation: 'voluntary_return_hand',
+        drawAfter: 0,
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          kind: 'controlled_asset_target',
+          playerId: pending.playerId,
+          sourceActionInstanceId: pending.instanceId,
+          purpose: 'Strategic Withdrawal',
+          operation: 'voluntary_return_hand',
+          targetInstanceIds: voluntarilyReturnableV070AssetInstanceIds(
+            state,
+            pending.playerId,
+          ),
+        },
+      });
+      return;
     case 'neutral-salvage':
       state.pendingActionEffectChoice = {
         kind: 'salvage_recovery_target',
@@ -1063,6 +1533,44 @@ function continuePendingActionCard(state: V070GameState): void {
         'salvage_recovery_target',
       );
       return;
+    case 'neutral-sabotage': {
+      const opponentId = otherPlayer(pending.playerId);
+      const candidates = faceUpV070AssetInstanceIds(state, opponentId);
+      if (candidates.length === 0) {
+        appendV070Event(state, {
+          type: 'action_effect_incomplete',
+          actor: pending.playerId,
+          visibility: 'public',
+          payload: {
+            sourceActionInstanceId: pending.instanceId,
+            purpose: 'Sabotage',
+            reason: 'required_face_up_opposing_asset_unavailable',
+          },
+        });
+        finishPendingActionCard(state);
+        return;
+      }
+      state.pendingActionEffectChoice = {
+        kind: 'sabotage_asset_target',
+        playerId: pending.playerId,
+        opponentId,
+        sourceActionInstanceId: pending.instanceId,
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          kind: 'sabotage_asset_target',
+          playerId: pending.playerId,
+          opponentId,
+          sourceActionInstanceId: pending.instanceId,
+          purpose: 'Sabotage',
+          targetInstanceIds: [...candidates],
+        },
+      });
+      return;
+    }
     case 'neutral-scouting-report':
       if (availableScoutingReportSources(state, pending.playerId).length === 0) {
         appendV070Event(state, {
@@ -1094,6 +1602,13 @@ function continuePendingActionCard(state: V070GameState): void {
           sources: availableScoutingReportSources(state, pending.playerId),
         },
       });
+      return;
+    case 'neutral-sequestration':
+      startSequestrationAction(
+        state,
+        pending.playerId,
+        pending.instanceId,
+      );
       return;
     case 'neutral-sedition': {
       const opponentId = otherPlayer(pending.playerId);
@@ -1182,6 +1697,31 @@ function continuePendingActionCard(state: V070GameState): void {
         },
       });
       return;
+    case 'inquisition-divine-mercy': {
+      const opponentId = otherPlayer(pending.playerId);
+      state.pendingActionEffectChoice = {
+        kind: 'divine_mercy_target',
+        playerId: pending.playerId,
+        opponentId,
+        sourceActionInstanceId: pending.instanceId,
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          kind: 'divine_mercy_target',
+          playerId: pending.playerId,
+          opponentId,
+          sourceActionInstanceId: pending.instanceId,
+          purpose: 'Divine Mercy',
+          targetInstanceIds: [
+            ...state.players[opponentId].zones.graveyard,
+          ],
+        },
+      });
+      return;
+    }
     case 'inquisition-accusation': {
       const opponentId = otherPlayer(pending.playerId);
       if (state.players[opponentId].zones.discardPile.length === 0) {
@@ -1320,6 +1860,43 @@ function continuePendingActionCard(state: V070GameState): void {
           sourceActionInstanceId: pending.instanceId,
           purpose: 'Dark Omens',
           candidateCount: drawn.length,
+        },
+      });
+      return;
+    }
+    case 'inquisition-anathema': {
+      const opponentId = otherPlayer(pending.playerId);
+      if (state.players[opponentId].zones.discardPile.length === 0) {
+        appendV070Event(state, {
+          type: 'action_effect_incomplete',
+          actor: pending.playerId,
+          visibility: 'public',
+          payload: {
+            sourceActionInstanceId: pending.instanceId,
+            purpose: 'Anathema',
+            reason: 'required_opponent_discard_target_unavailable',
+          },
+        });
+        finishPendingActionCard(state);
+        return;
+      }
+      state.pendingActionEffectChoice = {
+        kind: 'anathema_target',
+        playerId: pending.playerId,
+        opponentId,
+        sourceActionInstanceId: pending.instanceId,
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          kind: 'anathema_target',
+          playerId: pending.playerId,
+          opponentId,
+          sourceActionInstanceId: pending.instanceId,
+          purpose: 'Anathema',
+          targetInstanceIds: [...state.players[opponentId].zones.discardPile],
         },
       });
       return;
@@ -1490,6 +2067,22 @@ function continuePendingActionCard(state: V070GameState): void {
       });
       return;
     }
+    case 'military-reserve-force':
+      resolveBindingBankAction(
+        state,
+        pending.playerId,
+        pending.instanceId,
+        pending.cardId,
+      );
+      return;
+    case 'intelligence-extraordinary-rendition':
+      resolveBindingBankAction(
+        state,
+        pending.playerId,
+        pending.instanceId,
+        pending.cardId,
+      );
+      return;
     case 'diplomats-detente':
     case 'financiers-compound-interest':
     case 'financiers-tariffs':
@@ -1560,6 +2153,38 @@ function resolveDisruptionAction(
       purpose: 'Disruption',
     },
   });
+}
+
+function wonInitiatedBattleThisTurn(
+  state: V070GameState,
+  playerId: PlayerId,
+): boolean {
+  const turnStartIndex = currentTurnStartEventIndex(state);
+  if (turnStartIndex < 0) return false;
+
+  let playerInitiatedCurrentBattle = false;
+  for (const event of state.events.slice(turnStartIndex + 1)) {
+    if (event.type === 'battle_initiated') {
+      const payload = event.payload as { attacker?: PlayerId } | undefined;
+      playerInitiatedCurrentBattle =
+        (payload?.attacker ?? event.actor) === playerId;
+      continue;
+    }
+
+    if (event.type === 'battle_outcome') {
+      const payload = event.payload as { winner?: PlayerId } | undefined;
+      if (playerInitiatedCurrentBattle && payload?.winner === playerId) {
+        return true;
+      }
+      continue;
+    }
+
+    if (event.type === 'battle_aftermath_complete') {
+      playerInitiatedCurrentBattle = false;
+    }
+  }
+
+  return false;
 }
 
 function wonBattleThisTurn(
@@ -1719,6 +2344,7 @@ function chooseRecoveryActionTarget(
       choice.kind !== 'arcane_knowledge_target'
       && choice.kind !== 'contraband_target'
       && choice.kind !== 'salvage_recovery_target'
+      && choice.kind !== 'divine_mercy_target'
     )
     || choice.playerId !== playerId
     || !pending
@@ -1747,6 +2373,40 @@ function chooseRecoveryActionTarget(
         purpose: 'Arcane Knowledge',
       },
     });
+    state.pendingActionEffectChoice = null;
+    finishPendingActionCard(state);
+    return;
+  }
+
+  if (choice.kind === 'divine_mercy_target') {
+    if (pending.cardId !== 'inquisition-divine-mercy') {
+      throw new V070GameActionError(
+        'Divine Mercy target state does not match its pending Action card.',
+      );
+    }
+
+    const graveyard = state.players[choice.opponentId].zones.graveyard;
+    const index = graveyard.indexOf(targetInstanceId);
+    if (index < 0) {
+      throw new V070GameActionError(
+        'Divine Mercy must target a card in the opponent’s Graveyard.',
+      );
+    }
+
+    graveyard.splice(index, 1);
+    state.players[choice.opponentId].zones.discardPile.push(targetInstanceId);
+    appendV070Event(state, {
+      type: 'graveyard_card_recycled',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        instanceId: targetInstanceId,
+        cardId: state.cardInstances[targetInstanceId]?.cardId,
+        owner: choice.opponentId,
+        purpose: 'Divine Mercy',
+      },
+    });
+    gainV070Conviction(state, playerId, 2, 'Divine Mercy');
     state.pendingActionEffectChoice = null;
     finishPendingActionCard(state);
     return;
@@ -2119,7 +2779,7 @@ function revealV070Hand(
   state: V070GameState,
   actor: PlayerId,
   owner: PlayerId,
-  purpose: 'Assassins' | 'Spies',
+  purpose: 'Assassins' | 'Spies' | 'Extraordinary Rendition',
 ): string[] {
   const instanceIds = [...state.players[owner].zones.hand];
   appendV070Event(state, {
@@ -2417,6 +3077,343 @@ function resolveAccusationChoice(
   finishPendingActionCard(state);
 }
 
+function chooseAnathemaTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'anathema_target'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'inquisition-anathema') {
+    throw new V070GameActionError(
+      'No Anathema target choice is pending for that player.',
+    );
+  }
+
+  const discard = state.players[choice.opponentId].zones.discardPile;
+  const index = discard.indexOf(targetInstanceId);
+  if (index < 0) {
+    throw new V070GameActionError(
+      'Anathema must choose a card in the opponent’s Discard Pile.',
+    );
+  }
+
+  discard.splice(index, 1);
+  state.players[choice.opponentId].zones.graveyard.push(targetInstanceId);
+  appendV070Event(state, {
+    type: 'card_graveyarded',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      instanceId: targetInstanceId,
+      cardId: state.cardInstances[targetInstanceId]?.cardId,
+      owner: choice.opponentId,
+      purpose: 'Anathema',
+    },
+  });
+
+  const replacements = pendingBankReplacementV070AssetInstanceIds(
+    state,
+    playerId,
+    pending.instanceId,
+  );
+  if (replacements.length > 0) {
+    state.pendingActionEffectChoice = {
+      kind: 'pending_asset_bank_replacement',
+      playerId,
+      sourceActionInstanceId: pending.instanceId,
+      purpose: 'Anathema',
+      replacementInstanceIds: [...replacements],
+    };
+    appendV070Event(state, {
+      type: 'action_effect_choice_pending',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        kind: 'pending_asset_bank_replacement',
+        playerId,
+        sourceActionInstanceId: pending.instanceId,
+        purpose: 'Anathema',
+        replacementInstanceIds: [...replacements],
+      },
+    });
+    return;
+  }
+
+  state.pendingActionEffectChoice = null;
+  bankV070AssetFromPendingAction(
+    state,
+    playerId,
+    pending.instanceId,
+    'Anathema',
+  );
+  finishPendingActionCard(state, 'asset');
+}
+
+function completeAnathemaBanking(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+  replaceAssetInstanceId: string,
+): void {
+  bankV070AssetFromPendingAction(
+    state,
+    playerId,
+    sourceActionInstanceId,
+    'Anathema',
+    replaceAssetInstanceId,
+  );
+  finishPendingActionCard(state, 'asset');
+}
+
+function reserveForceEligibleHandInstanceIds(
+  state: V070GameState,
+  playerId: PlayerId,
+): string[] {
+  return state.players[playerId].zones.hand.filter(instanceId => {
+    const cardId = state.cardInstances[instanceId]?.cardId;
+    const card = cardId ? v070CanonicalContent.cardsById.get(cardId) : undefined;
+    return card?.effects.some(effect =>
+      effect.label === 'Tactic' || effect.label === 'Gambit/Tactic'
+    ) ?? false;
+  });
+}
+
+function resolveBindingBankAction(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+  cardId: 'military-reserve-force' | 'intelligence-extraordinary-rendition',
+): void {
+  const replacements = pendingBankReplacementV070AssetInstanceIds(
+    state,
+    playerId,
+    sourceActionInstanceId,
+  );
+  const purpose = cardId === 'military-reserve-force'
+    ? 'Reserve Force'
+    : 'Extraordinary Rendition';
+
+  if (replacements.length > 0) {
+    state.pendingActionEffectChoice = {
+      kind: 'pending_asset_bank_replacement',
+      playerId,
+      sourceActionInstanceId,
+      purpose,
+      replacementInstanceIds: [...replacements],
+    };
+    appendV070Event(state, {
+      type: 'action_effect_choice_pending',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        kind: 'pending_asset_bank_replacement',
+        playerId,
+        sourceActionInstanceId,
+        purpose,
+        replacementInstanceIds: [...replacements],
+      },
+    });
+    return;
+  }
+
+  completeBindingBankAction(
+    state,
+    playerId,
+    sourceActionInstanceId,
+    cardId,
+  );
+}
+
+function completeBindingBankAction(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+  cardId: 'military-reserve-force' | 'intelligence-extraordinary-rendition',
+  replaceAssetInstanceId?: string,
+): void {
+  const purpose = cardId === 'military-reserve-force'
+    ? 'Reserve Force'
+    : 'Extraordinary Rendition';
+
+  bankV070AssetFromPendingAction(
+    state,
+    playerId,
+    sourceActionInstanceId,
+    purpose,
+    replaceAssetInstanceId,
+  );
+
+  if (cardId === 'military-reserve-force') {
+    const eligible = reserveForceEligibleHandInstanceIds(state, playerId);
+    if (eligible.length === 0) {
+      appendV070Event(state, {
+        type: 'action_effect_incomplete',
+        actor: playerId,
+        visibility: 'public',
+        payload: {
+          sourceActionInstanceId,
+          purpose,
+          reason: 'required_tactic_hand_target_unavailable',
+        },
+      });
+      finishPendingActionCard(state, 'asset');
+      return;
+    }
+
+    state.pendingActionEffectChoice = {
+      kind: 'reserve_force_bind_target',
+      playerId,
+      sourceActionInstanceId,
+    };
+    appendV070Event(state, {
+      type: 'action_effect_choice_pending',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        kind: 'reserve_force_bind_target',
+        playerId,
+        sourceActionInstanceId,
+        purpose,
+        candidateCount: eligible.length,
+      },
+    });
+    appendV070Event(state, {
+      type: 'action_effect_choice_options',
+      actor: playerId,
+      visibility: playerId,
+      payload: {
+        kind: 'reserve_force_bind_target',
+        sourceActionInstanceId,
+        purpose,
+        targetInstanceIds: [...eligible],
+      },
+    });
+    return;
+  }
+
+  const opponentId = otherPlayer(playerId);
+  const revealed = revealV070Hand(
+    state,
+    playerId,
+    opponentId,
+    'Extraordinary Rendition',
+  );
+  if (revealed.length === 0) {
+    appendV070Event(state, {
+      type: 'action_effect_incomplete',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        sourceActionInstanceId,
+        purpose,
+        reason: 'required_opponent_hand_target_unavailable',
+      },
+    });
+    finishPendingActionCard(state, 'asset');
+    return;
+  }
+
+  state.pendingActionEffectChoice = {
+    kind: 'extraordinary_rendition_bind_target',
+    playerId,
+    opponentId,
+    sourceActionInstanceId,
+  };
+  appendV070Event(state, {
+    type: 'action_effect_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      kind: 'extraordinary_rendition_bind_target',
+      playerId,
+      opponentId,
+      sourceActionInstanceId,
+      purpose,
+      targetInstanceIds: [...revealed],
+    },
+  });
+}
+
+function chooseReserveForceBindTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'reserve_force_bind_target'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'military-reserve-force') {
+    throw new V070GameActionError(
+      'No Reserve Force binding choice is pending for that player.',
+    );
+  }
+
+  if (!reserveForceEligibleHandInstanceIds(state, playerId).includes(targetInstanceId)) {
+    throw new V070GameActionError(
+      'Reserve Force must bind a Tactic-eligible card from your Hand.',
+    );
+  }
+
+  bindV070CardFromPlayerZone(state, {
+    hostId: pending.instanceId,
+    owner: playerId,
+    cardInstanceId: targetInstanceId,
+    sourceZone: 'hand',
+    faceUp: false,
+    purpose: 'Reserve Force',
+  });
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state, 'asset');
+}
+
+function chooseExtraordinaryRenditionBindTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'extraordinary_rendition_bind_target'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'intelligence-extraordinary-rendition') {
+    throw new V070GameActionError(
+      'No Extraordinary Rendition binding choice is pending for that player.',
+    );
+  }
+
+  if (!state.players[choice.opponentId].zones.hand.includes(targetInstanceId)) {
+    throw new V070GameActionError(
+      'Extraordinary Rendition must bind a card still in the opponent’s Hand.',
+    );
+  }
+
+  bindV070CardFromPlayerZone(state, {
+    hostId: pending.instanceId,
+    owner: choice.opponentId,
+    cardInstanceId: targetInstanceId,
+    sourceZone: 'hand',
+    faceUp: true,
+    purpose: 'Extraordinary Rendition',
+  });
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state, 'asset');
+}
+
 function choosePendingAssetBankReplacement(
   state: V070GameState,
   playerId: PlayerId,
@@ -2428,8 +3425,7 @@ function choosePendingAssetBankReplacement(
     || choice.kind !== 'pending_asset_bank_replacement'
     || choice.playerId !== playerId
     || !pending
-    || pending.instanceId !== choice.sourceActionInstanceId
-    || !isSimpleBankingActionCardId(pending.cardId)) {
+    || pending.instanceId !== choice.sourceActionInstanceId) {
     throw new V070GameActionError(
       'No printed Asset banking replacement choice is pending for that player.',
     );
@@ -2442,6 +3438,46 @@ function choosePendingAssetBankReplacement(
   }
 
   state.pendingActionEffectChoice = null;
+  if (choice.purpose === 'Anathema') {
+    if (pending.cardId !== 'inquisition-anathema') {
+      throw new V070GameActionError(
+        'Anathema banking replacement state does not match its pending Action card.',
+      );
+    }
+    completeAnathemaBanking(
+      state,
+      playerId,
+      pending.instanceId,
+      replaceAssetInstanceId,
+    );
+    return;
+  }
+
+  if (choice.purpose === 'Reserve Force'
+    || choice.purpose === 'Extraordinary Rendition') {
+    const expectedCardId = choice.purpose === 'Reserve Force'
+      ? 'military-reserve-force'
+      : 'intelligence-extraordinary-rendition';
+    if (pending.cardId !== expectedCardId) {
+      throw new V070GameActionError(
+        'Binding banking replacement state does not match its pending Action card.',
+      );
+    }
+    completeBindingBankAction(
+      state,
+      playerId,
+      pending.instanceId,
+      expectedCardId,
+      replaceAssetInstanceId,
+    );
+    return;
+  }
+
+  if (!isSimpleBankingActionCardId(pending.cardId)) {
+    throw new V070GameActionError(
+      'The pending banking replacement does not match a supported banking Action.',
+    );
+  }
   completeSimpleBankingAction(
     state,
     playerId,
@@ -2743,6 +3779,444 @@ function availableScoutingReportSources(
   return sources;
 }
 
+function battlefieldPromotionCandidateInstanceIds(
+  state: V070GameState,
+  playerId: PlayerId,
+): string[] {
+  const turnStartIndex = currentTurnStartEventIndex(state);
+  if (turnStartIndex < 0) return [];
+
+  const currentDiscard = new Set(
+    state.players[playerId].zones.discardPile,
+  );
+  const candidates: string[] = [];
+  let battleOpen = false;
+  let winner: PlayerId | undefined;
+  let chosenTactics: string[] = [];
+
+  for (const event of state.events.slice(turnStartIndex + 1)) {
+    if (event.type === 'battle_initiated') {
+      battleOpen = true;
+      winner = undefined;
+      chosenTactics = [];
+      continue;
+    }
+    if (!battleOpen) continue;
+
+    if (event.type === 'tactic_revealed' && event.actor === playerId) {
+      const instanceId = (
+        event.payload as { instanceId?: string } | undefined
+      )?.instanceId;
+      if (instanceId) chosenTactics.push(instanceId);
+      continue;
+    }
+
+    if (event.type === 'battle_outcome') {
+      winner = (
+        event.payload as { winner?: PlayerId } | undefined
+      )?.winner;
+      continue;
+    }
+
+    if (event.type === 'battle_aftermath_complete') {
+      if (winner === playerId) {
+        for (const instanceId of chosenTactics) {
+          if (currentDiscard.has(instanceId)
+            && !candidates.includes(instanceId)) {
+            candidates.push(instanceId);
+          }
+        }
+      }
+      battleOpen = false;
+      winner = undefined;
+      chosenTactics = [];
+    }
+  }
+
+  return candidates;
+}
+
+function chooseSabotageAssetTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'sabotage_asset_target'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'neutral-sabotage') {
+    throw new V070GameActionError(
+      'No Sabotage Asset target choice is pending for that player.',
+    );
+  }
+
+  if (!state.players[choice.opponentId].zones.assetBank.includes(targetInstanceId)
+    || !isV070AssetFaceUp(state, targetInstanceId)) {
+    throw new V070GameActionError(
+      'Sabotage must choose a face-up Asset controlled by the opponent.',
+    );
+  }
+
+  turnV070AssetFaceDownUntilPlayerNextTurn(state, {
+    instanceId: targetInstanceId,
+    changedBy: playerId,
+    restoreAtPlayer: playerId,
+    sourceInstanceId: pending.instanceId,
+    reason: 'Sabotage',
+  });
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state);
+}
+
+function chooseBattlefieldPromotionTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'battlefield_promotion_target'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'military-battlefield-promotion') {
+    throw new V070GameActionError(
+      'No Battlefield Promotion target choice is pending for that player.',
+    );
+  }
+
+  if (!choice.candidateInstanceIds.includes(targetInstanceId)) {
+    throw new V070GameActionError(
+      'Battlefield Promotion must target a Tactic chosen in a battle you won this turn.',
+    );
+  }
+
+  const discard = state.players[playerId].zones.discardPile;
+  const index = discard.indexOf(targetInstanceId);
+  if (index < 0) {
+    throw new V070GameActionError(
+      'The chosen Battlefield Promotion Tactic is no longer in your Discard Pile.',
+    );
+  }
+
+  discard.splice(index, 1);
+  state.players[playerId].zones.hand.push(targetInstanceId);
+  appendV070Event(state, {
+    type: 'battlefield_promotion_recovered',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      instanceId: targetInstanceId,
+      cardId: state.cardInstances[targetInstanceId]?.cardId,
+      sourceActionInstanceId: pending.instanceId,
+    },
+  });
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state);
+}
+
+function chooseFatesTollCost(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'fates_toll_cost'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'mystics-fate-s-toll') {
+    throw new V070GameActionError(
+      "No Fate's Toll payment choice is pending for that player.",
+    );
+  }
+
+  const hand = state.players[playerId].zones.hand;
+  const index = hand.indexOf(targetInstanceId);
+  if (index < 0) {
+    throw new V070GameActionError(
+      "Fate's Toll must put another card from your Hand in your Graveyard.",
+    );
+  }
+
+  hand.splice(index, 1);
+  state.players[playerId].zones.graveyard.push(targetInstanceId);
+  appendV070Event(state, {
+    type: 'card_moved_to_graveyard',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      instanceId: targetInstanceId,
+      cardId: state.cardInstances[targetInstanceId]?.cardId,
+      purpose: "Fate's Toll",
+    },
+  });
+
+  state.pendingActionEffectChoice = null;
+  if (pending.phase === 'opening') {
+    state.turnState = queueNormalV070MovementStep(
+      requireTurnState(state),
+      {
+        source: "Fate's Toll",
+        choiceRestriction: 'any',
+        battleRestriction: 'allowed',
+      },
+    );
+  } else {
+    state.turnState = beginEffectGrantedV070Movement(
+      requireTurnState(state),
+      1,
+      {
+        source: "Fate's Toll",
+        choiceRestriction: 'any',
+        battleRestriction: 'allowed',
+      },
+    );
+  }
+
+  appendV070Event(state, {
+    type: 'movement_step_granted',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      purpose: "Fate's Toll",
+      sourceActionInstanceId: pending.instanceId,
+      phase: pending.phase,
+      separateSequence: pending.phase === 'denouement',
+      choiceRestriction: 'any',
+      battleRestriction: 'allowed',
+    },
+  });
+
+  finishPendingActionCard(state);
+}
+
+function sequestrationKeepOptions(
+  state: V070GameState,
+  playerId: PlayerId,
+): string[] {
+  const bank = state.players[playerId].zones.assetBank;
+  if (bank.length <= 1) return [...bank];
+
+  const rendition = bank.find(instanceId =>
+    state.cardInstances[instanceId]?.cardId
+      === 'intelligence-extraordinary-rendition'
+    && isV070AssetFaceUp(state, instanceId)
+  );
+  return rendition
+    ? bank.filter(instanceId => instanceId !== rendition)
+    : [...bank];
+}
+
+function startSequestrationAction(
+  state: V070GameState,
+  actionOwnerId: PlayerId,
+  sourceActionInstanceId: string,
+): void {
+  const playerOrder: PlayerId[] = [
+    actionOwnerId,
+    otherPlayer(actionOwnerId),
+  ];
+  const keepers: Partial<Record<PlayerId, string>> = {};
+  const choosers: PlayerId[] = [];
+
+  for (const playerId of playerOrder) {
+    const bank = state.players[playerId].zones.assetBank;
+    if (bank.length === 0) continue;
+
+    const options = sequestrationKeepOptions(state, playerId);
+    if (bank.length === 1 || options.length === 1) {
+      const automaticKeeper = options[0];
+      if (!automaticKeeper) {
+        throw new V070GameActionError(
+          'Sequestration could not identify the required kept Asset.',
+        );
+      }
+      keepers[playerId] = automaticKeeper;
+    } else {
+      choosers.push(playerId);
+    }
+  }
+
+  if (choosers.length === 0) {
+    resolveSequestrationDiscards(
+      state,
+      actionOwnerId,
+      sourceActionInstanceId,
+      keepers,
+    );
+    return;
+  }
+
+  openSequestrationKeepChoice(
+    state,
+    choosers[0],
+    actionOwnerId,
+    sourceActionInstanceId,
+    keepers,
+    choosers.slice(1),
+  );
+}
+
+function openSequestrationKeepChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  actionOwnerId: PlayerId,
+  sourceActionInstanceId: string,
+  keepers: Partial<Record<PlayerId, string>>,
+  remainingChoosers: PlayerId[],
+): void {
+  const targetInstanceIds = sequestrationKeepOptions(state, playerId);
+  state.pendingActionEffectChoice = {
+    kind: 'sequestration_keep_asset',
+    playerId,
+    actionOwnerId,
+    sourceActionInstanceId,
+    keepers: { ...keepers },
+    remainingChoosers: [...remainingChoosers],
+  };
+  appendV070Event(state, {
+    type: 'action_effect_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      kind: 'sequestration_keep_asset',
+      playerId,
+      actionOwnerId,
+      sourceActionInstanceId,
+      purpose: 'Sequestration',
+      targetInstanceIds,
+    },
+  });
+}
+
+function chooseSequestrationKeepAsset(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'sequestration_keep_asset'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'neutral-sequestration') {
+    throw new V070GameActionError(
+      'No Sequestration keep-Asset choice is pending for that player.',
+    );
+  }
+
+  const options = sequestrationKeepOptions(state, playerId);
+  if (!options.includes(targetInstanceId)) {
+    throw new V070GameActionError(
+      'Sequestration must keep one currently legal Asset.',
+    );
+  }
+
+  const keepers: Partial<Record<PlayerId, string>> = {
+    ...choice.keepers,
+    [playerId]: targetInstanceId,
+  };
+  const [nextChooser, ...rest] = choice.remainingChoosers;
+  if (nextChooser) {
+    openSequestrationKeepChoice(
+      state,
+      nextChooser,
+      choice.actionOwnerId,
+      choice.sourceActionInstanceId,
+      keepers,
+      rest,
+    );
+    return;
+  }
+
+  state.pendingActionEffectChoice = null;
+  resolveSequestrationDiscards(
+    state,
+    choice.actionOwnerId,
+    choice.sourceActionInstanceId,
+    keepers,
+  );
+}
+
+function resolveSequestrationDiscards(
+  state: V070GameState,
+  actionOwnerId: PlayerId,
+  sourceActionInstanceId: string,
+  keepers: Partial<Record<PlayerId, string>>,
+): void {
+  for (const playerId of [
+    actionOwnerId,
+    otherPlayer(actionOwnerId),
+  ] as const) {
+    const bank = [...state.players[playerId].zones.assetBank];
+    if (bank.length <= 1) continue;
+
+    const keeper = keepers[playerId];
+    if (!keeper || !bank.includes(keeper)) {
+      throw new V070GameActionError(
+        `Sequestration is missing ${playerId}’s kept Asset.`,
+      );
+    }
+
+    let discard = bank.filter(instanceId => instanceId !== keeper);
+    const rendition = discard.find(instanceId =>
+      state.cardInstances[instanceId]?.cardId
+        === 'intelligence-extraordinary-rendition'
+      && isV070AssetFaceUp(state, instanceId)
+    );
+    if (rendition) {
+      discard = [
+        rendition,
+        ...discard.filter(instanceId => instanceId !== rendition),
+      ];
+    }
+
+    for (const instanceId of discard) {
+      discardV070AssetByEffect(
+        state,
+        playerId,
+        instanceId,
+        'Sequestration',
+      );
+    }
+
+    appendV070Event(state, {
+      type: 'sequestration_asset_kept',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        playerId,
+        instanceId: keeper,
+        cardId: state.cardInstances[keeper]?.cardId,
+        sourceActionInstanceId,
+      },
+    });
+  }
+
+  appendV070Event(state, {
+    type: 'sequestration_resolved',
+    actor: actionOwnerId,
+    visibility: 'public',
+    payload: {
+      sourceActionInstanceId,
+      keepers: { ...keepers },
+    },
+  });
+  finishPendingActionCard(state);
+}
+
 function chooseControlledAssetTarget(
   state: V070GameState,
   playerId: PlayerId,
@@ -2754,26 +4228,89 @@ function chooseControlledAssetTarget(
     || choice.kind !== 'controlled_asset_target'
     || choice.playerId !== playerId
     || !pending
-    || pending.instanceId !== choice.sourceActionInstanceId
-    || pending.cardId !== 'neutral-requisition') {
+    || pending.instanceId !== choice.sourceActionInstanceId) {
     throw new V070GameActionError('No controlled-Asset Action choice is pending for that player.');
   }
 
-  if (!voluntarilyDiscardableV070AssetInstanceIds(state, playerId).includes(targetInstanceId)) {
-    throw new V070GameActionError('Requisition must choose an Asset you can voluntarily discard.');
+  if (choice.operation === 'voluntary_discard') {
+    if (pending.cardId !== 'neutral-requisition'
+      || choice.purpose !== 'Requisition') {
+      throw new V070GameActionError(
+        'The pending controlled-Asset discard does not match Requisition.',
+      );
+    }
+    if (!voluntarilyDiscardableV070AssetInstanceIds(state, playerId).includes(targetInstanceId)) {
+      throw new V070GameActionError('Requisition must choose an Asset you can voluntarily discard.');
+    }
+
+    discardV070AssetVoluntarily(
+      state,
+      playerId,
+      targetInstanceId,
+      choice.purpose,
+    );
+    state.pendingActionEffectChoice = null;
+    if (choice.drawAfter > 0) {
+      drawIntoHand(state, playerId, choice.drawAfter, choice.purpose);
+    }
+    finishPendingActionCard(state);
+    return;
   }
 
-  discardV070AssetVoluntarily(
+  if (pending.cardId !== 'neutral-strategic-withdrawal'
+    || choice.purpose !== 'Strategic Withdrawal') {
+    throw new V070GameActionError(
+      'The pending controlled-Asset return does not match Strategic Withdrawal.',
+    );
+  }
+  if (!voluntarilyReturnableV070AssetInstanceIds(state, playerId).includes(targetInstanceId)) {
+    throw new V070GameActionError(
+      'Strategic Withdrawal must choose an Asset you can return to your Hand.',
+    );
+  }
+
+  returnV070AssetVoluntarilyToHand(
     state,
     playerId,
     targetInstanceId,
     choice.purpose,
   );
-
   state.pendingActionEffectChoice = null;
-  if (choice.drawAfter > 0) {
-    drawIntoHand(state, playerId, choice.drawAfter, choice.purpose);
+
+  if (pending.phase === 'opening') {
+    state.turnState = queueNormalV070MovementStep(
+      requireTurnState(state),
+      {
+        source: 'Strategic Withdrawal',
+        choiceRestriction: 'any',
+        battleRestriction: 'allowed',
+      },
+    );
+  } else {
+    state.turnState = beginEffectGrantedV070Movement(
+      requireTurnState(state),
+      1,
+      {
+        source: 'Strategic Withdrawal',
+        choiceRestriction: 'any',
+        battleRestriction: 'allowed',
+      },
+    );
   }
+
+  appendV070Event(state, {
+    type: 'movement_step_granted',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      purpose: 'Strategic Withdrawal',
+      sourceActionInstanceId: pending.instanceId,
+      phase: pending.phase,
+      separateSequence: pending.phase === 'denouement',
+      choiceRestriction: 'any',
+      battleRestriction: 'allowed',
+    },
+  });
   finishPendingActionCard(state);
 }
 
@@ -3032,7 +4569,7 @@ function gainClemencyInfluence(
 
 function finishPendingActionCard(
   state: V070GameState,
-  destination: 'discard' | 'overlay' | 'asset' = 'discard',
+  destination: 'discard' | 'graveyard' | 'overlay' | 'asset' = 'discard',
 ): void {
   const pending = state.pendingActionCard;
   if (!pending) throw new V070GameActionError('No Action card is pending resolution.');
@@ -3042,6 +4579,8 @@ function finishPendingActionCard(
 
   if (destination === 'discard') {
     state.players[pending.playerId].zones.discardPile.push(pending.instanceId);
+  } else if (destination === 'graveyard') {
+    state.players[pending.playerId].zones.graveyard.push(pending.instanceId);
   } else if (destination === 'overlay') {
     if (!state.overlays.some(overlay => overlay.instanceId === pending.instanceId)) {
       throw new V070GameActionError(
@@ -3120,10 +4659,15 @@ function chooseMovement(
   choice: MovementChoice,
   discardInstanceId?: string,
 ): void {
-  requirePhase(state, 'movement');
   const turnState = requireTurnState(state);
-  if (!turnState.movementSequenceOpen) {
-    throw new V070GameActionError('No normal movement sequence is currently open.');
+  const sequenceSource = turnState.movementSequenceSource;
+  if (!turnState.movementSequenceOpen || !sequenceSource) {
+    throw new V070GameActionError('No movement sequence is currently open.');
+  }
+  if (sequenceSource === 'normal' && turnState.phase !== 'movement') {
+    throw new V070GameActionError(
+      'Normal movement may be resolved only during the Movement phase.',
+    );
   }
 
   if (choice === 'hold') {
@@ -3131,13 +4675,16 @@ function chooseMovement(
       throw new V070GameActionError('Hold has no Territory Overlay entry cost.');
     }
     state.turnState = applyV070MovementChoice(turnState, choice);
-    state.turnState = advanceV070TurnPhase(state.turnState);
     appendV070Event(state, {
       type: 'movement_hold',
       actor: playerId,
       visibility: 'public',
+      payload: { sequenceSource },
     });
-    appendPhaseEvent(state);
+    if (sequenceSource === 'normal') {
+      state.turnState = advanceV070TurnPhase(state.turnState);
+      appendPhaseEvent(state);
+    }
     return;
   }
 
@@ -3149,6 +4696,24 @@ function chooseMovement(
   const destination = origin + delta;
 
   assertMovementDestination(playerId, choice, destination, state.board.length);
+  const movementStep = currentV070MovementStep(turnState);
+  if (!movementStep) {
+    throw new V070GameActionError('No current movement step is available.');
+  }
+  const initiatesBattle = opponent.position === destination;
+  let nextMovementState;
+  try {
+    nextMovementState = applyV070MovementChoice(
+      turnState,
+      choice,
+      { initiatesBattle },
+    );
+  } catch (error) {
+    throw new V070GameActionError(
+      error instanceof Error ? error.message : 'That movement is not legal now.',
+    );
+  }
+
   resolveV070OverlayEntryRequirements(
     state,
     playerId,
@@ -3156,7 +4721,7 @@ function chooseMovement(
     discardInstanceId,
   );
 
-  if (opponent.position === destination) {
+  if (initiatesBattle) {
     const lastStand = canInitiateV070LastStand({
       attacker: playerId,
       defender: opponentId,
@@ -3179,6 +4744,8 @@ function chooseMovement(
           defenderPosition: destination,
           separateMovementSequence: true,
           advancingBeyondOpponentEnd: true,
+          attackerGambitProhibited:
+            movementStep.battleRestriction === 'allowed_no_gambit',
         })
       : createV070BattleOnset({
           territoryCount: state.board.length,
@@ -3191,9 +4758,11 @@ function chooseMovement(
             B: state.players.B.position!,
           },
           defenderControlsContested: territoryAt(state, destination)?.controller === opponentId,
+          attackerGambitProhibited:
+            movementStep.battleRestriction === 'allowed_no_gambit',
         });
 
-    state.turnState = applyV070MovementChoice(turnState, choice, { initiatesBattle: true });
+    state.turnState = nextMovementState;
 
     appendV070Event(state, {
       type: 'battle_initiated',
@@ -3205,6 +4774,9 @@ function chooseMovement(
         attackerOrigin: origin,
         contestedPosition: destination,
         lastStand,
+        movementStepSource: movementStep.source,
+        attackerGambitProhibited:
+          movementStep.battleRestriction === 'allowed_no_gambit',
       },
     });
     openV070BlockadeChoicesForPositionChange(
@@ -3228,7 +4800,7 @@ function chooseMovement(
   player.position = destination;
   setSettledOccupant(state, playerId, destination);
 
-  state.turnState = applyV070MovementChoice(turnState, choice);
+  state.turnState = nextMovementState;
   appendV070Event(state, {
     type: 'player_moved',
     actor: playerId,
@@ -3244,7 +4816,8 @@ function chooseMovement(
   );
   if (state.pendingSanctionChoices.length > 0) return;
 
-  if (!state.turnState.movementSequenceOpen) {
+  if (!state.turnState.movementSequenceOpen
+    && sequenceSource === 'normal') {
     state.turnState = advanceV070TurnPhase(state.turnState);
     appendPhaseEvent(state);
   }
@@ -3305,6 +4878,7 @@ function completeCleanup(
   state.turnNumber += 1;
   state.turnState = createV070TurnState();
   expireV070TerritoryTurnRestrictions(state);
+  restoreV070AssetsAtTurnStart(state, next);
 
   appendV070Event(state, {
     type: 'turn_started',

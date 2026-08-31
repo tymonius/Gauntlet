@@ -9,10 +9,13 @@ import {
 } from './engine';
 import type { PlayerId } from './rules';
 import { drawV070Cards } from './card-draw';
+import { releaseV070BoundCards, v070BindingsForHost } from './bindings';
+import {
+  clearV070AssetFaceState,
+  isV070AssetFaceUp,
+} from './asset-face-state';
 
 const REMOVAL_LIFECYCLE_UNSUPPORTED = new Set([
-  'military-reserve-force',
-  'intelligence-extraordinary-rendition',
   'financiers-margin-loan',
   'intelligence-sleeper-network',
 ]);
@@ -51,6 +54,7 @@ export function effectiveV070AssetLimit(
     && sanction.kind === 'asset'
     && state.cardInstances[sanction.instanceId]?.cardId === 'diplomats-sanctions-embargo'
     && state.players[sanction.owner].zones.assetBank.includes(sanction.instanceId)
+    && isV070AssetFaceUp(state, sanction.instanceId)
   ).length;
 
   return Math.max(
@@ -113,14 +117,14 @@ export function voluntarilyDiscardableV070AssetInstanceIds(
   const bank = state.players[playerId].zones.assetBank;
   const extraordinary = bank.find(instanceId =>
     state.cardInstances[instanceId]?.cardId === 'intelligence-extraordinary-rendition'
+    && isV070AssetFaceUp(state, instanceId)
   );
 
-  // Extraordinary Rendition must be discarded before every other Asset. Its
-  // bound-card departure lifecycle is not yet represented, so do not expose a
-  // voluntary discard that the engine cannot complete correctly.
-  if (extraordinary) return [];
+  // Extraordinary Rendition must be discarded before every other Asset, if able.
+  if (extraordinary) return [extraordinary];
 
   return bank.filter(instanceId => {
+    if (!isV070AssetFaceUp(state, instanceId)) return true;
     const card = canonicalCardForInstance(state, instanceId);
     const assetText = card.effects
       .filter(effect => effect.label === 'Asset')
@@ -136,6 +140,46 @@ export function voluntarilyDiscardableV070AssetInstanceIds(
     }
     return true;
   });
+}
+
+export function voluntarilyReturnableV070AssetInstanceIds(
+  state: V070GameState,
+  playerId: PlayerId,
+): string[] {
+  return state.players[playerId].zones.assetBank.filter(instanceId => {
+    if (!isV070AssetFaceUp(state, instanceId)) return true;
+    const card = canonicalCardForInstance(state, instanceId);
+    const assetText = card.effects
+      .filter(effect => effect.label === 'Asset')
+      .map(effect => effect.text)
+      .join(' ');
+
+    if (/cannot voluntarily cause it to leave play during the turn it is banked/i.test(assetText)
+      && assetWasBankedThisTurn(state, instanceId)) {
+      return false;
+    }
+    return true;
+  });
+}
+
+export function returnV070AssetVoluntarilyToHand(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+  purpose: string,
+): void {
+  if (!voluntarilyReturnableV070AssetInstanceIds(state, playerId).includes(instanceId)) {
+    throw new V070GameActionError('That Asset cannot be voluntarily returned to Hand now.');
+  }
+
+  moveBankedAsset(
+    state,
+    playerId,
+    instanceId,
+    'hand',
+    purpose,
+    false,
+  );
 }
 
 export function discardV070AssetAsAction(
@@ -176,6 +220,7 @@ export function removeV070AssetForced(
 
   const extraordinary = bank.find(candidate =>
     state.cardInstances[candidate]?.cardId === 'intelligence-extraordinary-rendition'
+    && isV070AssetFaceUp(state, candidate)
   );
   if (extraordinary && instanceId !== extraordinary) {
     throw new V070GameActionError(
@@ -190,6 +235,38 @@ export function removeV070AssetForced(
     destination,
     reason,
     true,
+  );
+}
+
+export function discardV070AssetByEffect(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+  purpose: string,
+): void {
+  const bank = state.players[playerId].zones.assetBank;
+  if (!bank.includes(instanceId)) {
+    throw new V070GameActionError(
+      'An effect-forced Asset discard must target a banked Asset.',
+    );
+  }
+
+  const extraordinary = bank.find(candidate =>
+    state.cardInstances[candidate]?.cardId === 'intelligence-extraordinary-rendition'
+    && isV070AssetFaceUp(state, candidate)
+  );
+  if (extraordinary && instanceId !== extraordinary) {
+    throw new V070GameActionError(
+      'Extraordinary Rendition must be discarded before any other Asset, if able.',
+    );
+  }
+
+  moveBankedAssetToDiscard(
+    state,
+    playerId,
+    instanceId,
+    purpose,
+    false,
   );
 }
 
@@ -463,6 +540,7 @@ export function resolveV070AssetLimitRemoval(
 
   const extraordinary = bank.find(instanceId =>
     state.cardInstances[instanceId]?.cardId === 'intelligence-extraordinary-rendition'
+    && isV070AssetFaceUp(state, instanceId)
   );
   if (extraordinary && instanceIds[0] !== extraordinary) {
     throw new V070GameActionError(
@@ -502,13 +580,14 @@ export function replaceableV070AssetInstanceIds(
   const bank = state.players[playerId].zones.assetBank;
   const extraordinary = bank.find(instanceId =>
     state.cardInstances[instanceId]?.cardId === 'intelligence-extraordinary-rendition'
+    && isV070AssetFaceUp(state, instanceId)
   );
 
-  // Extraordinary Rendition must leave before other Assets, but its bound-card
-  // lifecycle is not yet represented in the v0.7.0 authoritative state.
-  if (extraordinary) return [];
+  // Asset replacement is a voluntary discard, so Rendition must be chosen first.
+  if (extraordinary) return [extraordinary];
 
   return bank.filter(instanceId => {
+    if (!isV070AssetFaceUp(state, instanceId)) return true;
     const card = canonicalCardForInstance(state, instanceId);
     const assetText = card.effects
       .filter(effect => effect.label === 'Asset')
@@ -558,6 +637,7 @@ function moveBankedAsset(
   if (!cardId) throw new V070GameActionError(`Unknown Asset instance ${instanceId}.`);
 
   bank.splice(index, 1);
+  clearV070AssetFaceState(state, instanceId);
   if (destination === 'discard') {
     state.players[playerId].zones.discardPile.push(instanceId);
   } else if (destination === 'graveyard') {
@@ -570,7 +650,13 @@ function moveBankedAsset(
   );
 
   appendV070Event(state, {
-    type: removed ? 'asset_removed' : 'asset_discarded',
+    type: removed
+      ? 'asset_removed'
+      : destination === 'discard'
+        ? 'asset_discarded'
+        : destination === 'hand'
+          ? 'asset_returned'
+          : 'asset_departed',
     actor: playerId,
     visibility: 'public',
     payload: {
@@ -581,6 +667,17 @@ function moveBankedAsset(
       reason,
     },
   });
+
+  if (v070BindingsForHost(state, instanceId).length > 0) {
+    releaseV070BoundCards(
+      state,
+      instanceId,
+      cardId === 'military-reserve-force' ? 'graveyard' : 'discard',
+      cardId === 'military-reserve-force'
+        ? 'Reserve Force host left play'
+        : 'bound Asset host left play',
+    );
+  }
 
   if (removed) {
     resolveV070RemovedAssetTrigger(
