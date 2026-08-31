@@ -304,6 +304,19 @@ export function synchronizeKnownRulebookClaims(markdown, authority) {
     changes,
   );
 
+  const invocationText = String(
+    authority?.mystics?.unlocks?.find(unlock => unlock?.name === 'Invocation')?.text || ''
+  ).trim();
+  if (invocationText) {
+    output = replaceClaim(
+      output,
+      /^> .*<!-- RULE-FACT:mystics\.invocation\.text -->$/m,
+      `> ${invocationText}<!-- RULE-FACT:mystics.invocation.text -->`,
+      'Mystics Invocation text',
+      changes,
+    );
+  }
+
   const riteCount = facts['mystics.rites.count'];
   const riteSelectedCount = facts['mystics.rites.selected_count'];
   if (Number.isInteger(riteCount) && Number.isInteger(riteSelectedCount)) {
