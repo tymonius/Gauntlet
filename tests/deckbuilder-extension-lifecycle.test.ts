@@ -49,6 +49,14 @@ describe("Deckbuilder extension architecture", () => {
     }
   });
 
+  it("does not let extensions replace browser primitives or publish side-channel globals", () => {
+    for (const { path, source } of extensions) {
+      expect(source, `${path} replaces window.open`).not.toMatch(/window\.open\s*=/);
+      expect(source, `${path} replaces document.write`).not.toMatch(/document\.write\s*=/);
+      expect(source, `${path} publishes a side-channel GAUNTLET global`).not.toMatch(/window\.GAUNTLET_(?!DECKBUILDER\b)[A-Z0-9_]+\s*=/);
+    }
+  });
+
   it("uses lifecycle hooks for Territory, Rite, starter, and component integrations", () => {
     const territories = read("deckbuilder/territories.js");
     const rites = read("deckbuilder/mystics-rites.js");
