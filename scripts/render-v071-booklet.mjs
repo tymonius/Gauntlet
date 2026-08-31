@@ -5,6 +5,7 @@ import { spawn, spawnSync } from 'node:child_process';
 import { chromium } from 'playwright';
 import { applyV070CanonicalCorrections, applyV070RulebookCorrections } from '../rulebook/player-facing/v070-corrections.js';
 import { synchronizeKnownRulebookClaims, validateKnownRulebookClaims } from '../rulebook/player-facing/rule-facts.js';
+import { loadPublishingAuthority } from './publishing-authority.mjs';
 
 const ROOT = process.cwd();
 const RELEASE_VERSION = 'v0.7.1';
@@ -25,6 +26,8 @@ const TRANSIENT_RULEBOOK_PATH = path.join(ROOT, 'rulebook-production', '.v063-pl
 const PRODUCTION_DIR = '/tmp/rulebook-production';
 const PRODUCTION_HTML_PATH = path.join(ROOT, 'rulebook-production', 'full-rulebook.html');
 const PRODUCTION_PAGINATOR_PATH = path.join(ROOT, 'rulebook-production', '.paginate_rulebook_runtime.mjs');
+
+const publishingAuthority = await loadPublishingAuthority();
 
 const hash = data => crypto.createHash('sha256').update(data).digest('hex');
 const hashFile = file => hash(fs.readFileSync(file));
@@ -53,14 +56,40 @@ function validateReleaseNotesBookletCounts(logicalPages, bookletSides, physicalS
   }
 }
 
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;');
+}
+
+function applyCurrentBackCoverPublishing(source) {
+  const marker = '<div class="back-legal">';
+  const matches = source.split(marker).length - 1;
+  if (matches !== 1) {
+    throw new Error(`Expected exactly one back-cover legal block; found ${matches}.`);
+  }
+  const start = source.indexOf(marker);
+  const end = source.indexOf('</div>', start);
+  if (end < 0) throw new Error('Back-cover legal block is not closed.');
+
+  const logo = `../${publishingAuthority.imprint.logo}`;
+  const publisherStatement = escapeHtml(publishingAuthority.playerFacing.imprintStatement);
+  const copyrightNotice = escapeHtml(publishingAuthority.copyright.notice);
+  const replacement = `<div class="back-legal"><div class="back-publisher-lockup"><img class="back-publisher-mark" src="${escapeHtml(logo)}" alt="TDS Games publisher mark" /><div class="back-publisher-copy"><strong>Gauntlet ${RELEASE_VERSION} · ${escapeHtml(RELEASE_NAME)}</strong><br />${publisherStatement}<br />${copyrightNotice}</div></div><div class="back-restrictions">Repository and release materials are provided for private review and playtesting only. They may not be copied, redistributed, sold, republished, or used to create commercial derivative works without written permission.</div></div>`;
+  return source.slice(0, start) + replacement + source.slice(end + '</div>'.length);
+}
+
 function brandV070ProductionSurface() {
   const surfaces = [PRODUCTION_HTML_PATH, PRODUCTION_PAGINATOR_PATH];
   for (const surface of surfaces) {
     if (!fs.existsSync(surface)) throw new Error(`Missing approved Rulebook production surface: ${relative(surface)}.`);
     const source = fs.readFileSync(surface, 'utf8');
-    const branded = source
+    let branded = source
       .replace(/0\.(?:6\.3|7\.0)/g, '0.7.1')
       .replace(/First Playtest Revision/g, RELEASE_NAME);
+    if (surface === PRODUCTION_HTML_PATH) branded = applyCurrentBackCoverPublishing(branded);
     if (/0\.(?:6\.3|7\.0)/.test(branded)) {
       throw new Error(`v0.7.1 Rulebook production surface still contains prior-release branding: ${relative(surface)}.`);
     }
@@ -69,6 +98,9 @@ function brandV070ProductionSurface() {
     }
     if (/First Playtest Revision/.test(branded)) {
       throw new Error(`v0.7.1 Rulebook production surface still contains the v0.6.1 publication tagline: ${relative(surface)}.`);
+    }
+    if (surface === PRODUCTION_HTML_PATH && /unpublished playtest project/i.test(branded)) {
+      throw new Error('v0.7.1 back cover still describes Gauntlet as an unpublished playtest project.');
     }
     fs.writeFileSync(surface, branded);
   }
