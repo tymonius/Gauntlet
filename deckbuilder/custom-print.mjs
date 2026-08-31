@@ -201,7 +201,7 @@ function componentCatalogEntry(component, factionNames) {
   if (!render) return null;
   const faction = component.faction || "shared";
   const orientation = component.id === "financiers-deed" || component.family === "deed-card" || component.orientation === "landscape" ? "landscape" : "portrait";
-  const backPolicy = component.id === "financiers-capital-ledger" ? "ledgerDuplex" : (component.backPolicy || "standardBack");
+  const backPolicy = component.backPolicy || "standardBack";
   return makeEntry(`component:${component.id}`, component.name, componentCategory(component), faction, factionNames.get(faction) || (faction === "shared" ? "Shared" : faction), orientation, backPolicy, render);
 }
 
@@ -399,7 +399,6 @@ function customPageHtml(sheet, includeStandardBacks, backStyle, isLast) {
 }
 
 function reverseCellHtml(entry, includeStandardBacks, backStyle) {
-  if (entry.backPolicy === "ledgerDuplex") return cardFrameHtml(entry, "front");
   if (intrinsicReverse(entry)) return cardFrameHtml(entry, "reverse");
   if (includeStandardBacks && entry.backPolicy === "standardBack") return backFrameHtml(backFactionForEntry(entry, backStyle));
   return "";
@@ -432,7 +431,7 @@ function backFactionForEntry(entry, selected) {
   if (selected && selected !== "per-card" && BACK_VARIANTS.has(selected)) return selected;
   return canonicalBackFactionForEntry(entry);
 }
-function intrinsicReverse(entry) { return entry.backPolicy === "twoSided" || entry.backPolicy === "specialBack" || entry.backPolicy === "ledgerDuplex"; }
+function intrinsicReverse(entry) { return entry.backPolicy === "twoSided" || entry.backPolicy === "specialBack"; }
 function mirrorIndexForLongEdge(index) { const row = Math.floor(index / COLUMNS); const column = index % COLUMNS; return row * COLUMNS + (COLUMNS - 1 - column); }
 function setStatus(message, kind = "") { if (!ui.customPrintStatus) return; ui.customPrintStatus.textContent = message; ui.customPrintStatus.className = `custom-print-summary custom-print-status${kind ? ` ${kind}` : ""}`; }
 function normalize(value) { return String(value || "").toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, " ").trim(); }
