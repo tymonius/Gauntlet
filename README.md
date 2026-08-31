@@ -69,7 +69,7 @@ The v0.7.1 playable pool contains **142 cards**: **52 Neutral cards and 15 cards
 - [Deckbuilder](https://gauntlet.run/deckbuilder/) — build, validate, save, export, randomize, and print complete v0.7.1 Deck packages.
 - [Rules Arbiter](https://gauntlet.run/rules-arbiter/) — current rules lookup and adjudication surface.
 - [Playtest tools](https://gauntlet.run/playtest/) — tracked/formal playtest workflows and feedback tools.
-- [Tabletop Simulator](https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635) — public v0.7.0 Workshop mod with all twelve starter kits.
+- [Tabletop Simulator](https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635) — public v0.7.1 Workshop mod with all twelve starter kits, the six-Rite Mystics package, and Deck Code import.
 
 ## Canonical source hierarchy
 
@@ -176,7 +176,7 @@ npm run dev:gui
 
 ## Current development priorities
 
-See [Gauntlet Development Status](docs/Gauntlet_Development_Status.md). The immediate release-followup emphasis is broad human playtesting, matchup/faction balance, winner/loser experience, self-serve onboarding, completion of the separately gated Tabletop Simulator QA/promotion, and active synchronization of the rules-aware digital engine with the published tabletop authority.
+See [Gauntlet Development Status](docs/Gauntlet_Development_Status.md). The immediate release-followup emphasis is broad human playtesting, matchup/faction balance, winner/loser experience, self-serve onboarding, post-release Tabletop Simulator smoke testing/maintenance, and active synchronization of the rules-aware digital engine with the published tabletop authority.
 
 ## Copyright and use
 

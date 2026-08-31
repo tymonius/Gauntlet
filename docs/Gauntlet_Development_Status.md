@@ -6,7 +6,7 @@
 
 The release identified by `config/release-lifecycle.json` is the current public tabletop/web playtest edition. Its frozen package path is recorded in that lifecycle entry. Current browser and production tooling derive from `game-data/current-game.json` and `rulebook/player-facing/current-rulebook.md`.
 
-The Steam Workshop is deliberately on a separate publication gate: the public Tabletop Simulator mod remains **v0.7.0** until the v0.7.1 TTS candidate completes its manual in-game QA and is explicitly promoted.
+The Steam Workshop publication gate is complete for the release identified by `config/release-lifecycle.json`. The existing public Workshop item at ID `3790840635` has been updated in place to match the current canonical tabletop/web playtest edition.
 
 ## Release baseline
 
@@ -29,11 +29,11 @@ Published release snapshots remain immutable historical evidence. Corrections di
 
 ## Current priorities
 
-### 1. v0.7.1 Tabletop Simulator QA and promotion
+### 1. Current Tabletop Simulator publication closeout
 
-Complete the separately gated v0.7.1 TTS manual QA record before changing the public Workshop target from v0.7.0. Validate the six-Rite Mystics package, Deck Code import, starter Bags, faction components, normal battle handling, and save/reload behavior in the actual TTS client.
+The current release manual QA gate is complete, `approvedForWorkshop` is true, and the permanent Workshop item has been updated in place to the current canonical release.
 
-Do not label the Workshop v0.7.1 until that gate passes and the subscribed public copy is smoke-tested after publication.
+Treat any remaining TTS work as post-release verification and maintenance: subscribed-copy smoke testing, hosted-asset checks, importer regressions, or publication-specific defects should be recorded as follow-up evidence rather than reopening the completed promotion gate.
 
 ### 2. Broad human playtesting
 
