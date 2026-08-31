@@ -1,15 +1,8 @@
 (() => {
-  const inheritedOpen = window.open.bind(window);
+  const deckbuilder = window.GAUNTLET_DECKBUILDER;
+  if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
 
-  window.open = function gauntletPrintAwareOpen(...args) {
-    const openedWindow = inheritedOpen(...args);
-    if (!openedWindow?.document || openedWindow.document.__gauntletPortraitWriteWrapped) return openedWindow;
-
-    const inheritedWrite = openedWindow.document.write.bind(openedWindow.document);
-    openedWindow.document.write = html => inheritedWrite(polishPrintDocument(String(html)));
-    openedWindow.document.__gauntletPortraitWriteWrapped = true;
-    return openedWindow;
-  };
+  deckbuilder.registerPrintTransform("print-window-polish", polishPrintDocument, 70);
 
   function polishPrintDocument(html) {
     const needsPortraitFraming = /alt=["'](?:Ranger|Spymaster)["']/i.test(html);
