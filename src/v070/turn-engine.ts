@@ -81,9 +81,13 @@ import {
   consumeV070FinancialCapacityAction,
   gainV070Capital,
   isV070FinancierPlayer,
+  makeV070DeedUnowned,
   markV070FinancierFeatureActionSpent,
   placeV070CardInTreasury,
+  removeV070CardFromTreasury,
   v070DeedCost,
+  v070DeedOwner,
+  v070DeedsOwned,
   v070FinancialCapacityAvailable,
   v070FinancierFeatureActionSpentThisTurn,
 } from './financiers';
@@ -119,6 +123,21 @@ export type V070TurnAction =
       playerId: PlayerId;
       cardInstanceId: string;
       roll: number;
+    }
+  | {
+      type: 'choose_owned_deed_target';
+      playerId: PlayerId;
+      territoryPosition: number;
+    }
+  | {
+      type: 'choose_treasury_card_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
+      type: 'resolve_deed_purchase_choice';
+      playerId: PlayerId;
+      territoryPosition?: number;
     }
   | {
       type: 'choose_clemency_target';
@@ -451,6 +470,18 @@ export function reduceV070TurnAction(
       pending.kind === 'extraordinary_rendition_bind_target'
       && action.type === 'choose_extraordinary_rendition_bind_target'
       && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'owned_deed_target'
+      && action.type === 'choose_owned_deed_target'
+      && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'treasury_card_target'
+      && action.type === 'choose_treasury_card_target'
+      && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'deed_purchase_choice'
+      && action.type === 'resolve_deed_purchase_choice'
+      && action.playerId === pending.playerId
     );
     if (!validContinuation) {
       throw new V070GameActionError('Resolve the pending printed Action effect choice first.');
@@ -490,6 +521,9 @@ export function reduceV070TurnAction(
       'choose_anathema_target',
       'choose_reserve_force_bind_target',
       'choose_extraordinary_rendition_bind_target',
+      'choose_owned_deed_target',
+      'choose_treasury_card_target',
+      'resolve_deed_purchase_choice',
     ].includes(action.type)) {
     throw new V070GameActionError('Resolve the pending Action card before continuing the turn.');
   }
@@ -536,6 +570,27 @@ export function reduceV070TurnAction(
         action.playerId,
         action.cardInstanceId,
         action.roll,
+      );
+      break;
+    case 'choose_owned_deed_target':
+      chooseOwnedDeedTarget(
+        next,
+        action.playerId,
+        action.territoryPosition,
+      );
+      break;
+    case 'choose_treasury_card_target':
+      chooseTreasuryCardTarget(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
+      break;
+    case 'resolve_deed_purchase_choice':
+      resolveDeedPurchaseChoice(
+        next,
+        action.playerId,
+        action.territoryPosition,
       );
       break;
     case 'choose_clemency_target':
