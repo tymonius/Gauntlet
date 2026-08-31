@@ -49,17 +49,11 @@ const frozenCandidateSurfaces = new Set([
 // intentionally predate publication. They are retained as provenance and are
 // not current release tooling.
 const frozenCandidateScripts = new Set([
-  'scripts/apply-v063-asset-language.mjs',
-  'scripts/apply-v063-compact-shorthand.mjs',
-  'scripts/apply-v063-general-card-rules.mjs',
-  'scripts/apply-v063-natural-advantage-wording.mjs',
-  'scripts/apply-v063-numeric-shorthand.mjs',
   'scripts/build-clean-v063-downstream-data.mjs',
   'scripts/validate-clean-v063-downstream-data.mjs',
   'scripts/validate-reconstruction-version-plan.mjs',
   'scripts/build-v062-release.mjs',
   'scripts/build-v063-browser-development.mjs',
-  'scripts/build-v063-card-normalization.mjs',
   'scripts/build-v063-print-candidate-html.mjs',
   'scripts/build-v063-release-candidate.mjs',
   'scripts/validate-v063-release-candidate.mjs',
@@ -68,7 +62,6 @@ const frozenCandidateScripts = new Set([
   'scripts/build-v063-cross-surface-closeout.mjs',
   'scripts/validate-v063-cross-surface-closeout.mjs',
   'scripts/validate-v063-print-visual-regressions.mjs',
-  'scripts/finalize-v063-card-conventions.mjs',
   'scripts/generate-v063-canonical-data-candidate.mjs',
   'scripts/generate-v063-player-facing-candidates.mjs',
   'scripts/generate-v063-production-card-preview.mjs',
