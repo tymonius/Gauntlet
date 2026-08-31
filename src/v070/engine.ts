@@ -343,6 +343,19 @@ export interface V070InquisitionState {
   normalConvictionGainTurn: number | null;
 }
 
+export interface V070FinancierState {
+  capital: number;
+  treasury: string[];
+  financialCapacityTurn: number | null;
+  financialCapacityUsedTurn: number | null;
+  financierFeatureActionSpentTurn: number | null;
+}
+
+export interface V070DeedState {
+  territoryInstanceId: string;
+  owner: PlayerId | null;
+}
+
 export interface V070PlayerState {
   id: PlayerId;
   name: string;
@@ -358,6 +371,7 @@ export interface V070PlayerState {
   reshuffleCount: number;
   diplomats: V070DiplomatState | null;
   inquisition: V070InquisitionState | null;
+  financiers: V070FinancierState | null;
 }
 
 export interface V070BoardTerritory {
@@ -391,6 +405,7 @@ export interface V070GameState {
   players: Record<PlayerId, V070PlayerState>;
   cardInstances: Record<string, V070CardInstance>;
   board: V070BoardTerritory[];
+  deeds: V070DeedState[];
   activePlayer: PlayerId | null;
   turnNumber: number;
   turnState: V070TurnState | null;
@@ -495,6 +510,15 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
             normalConvictionGainTurn: null,
           }
         : null,
+      financiers: starter.definition.factionId === 'financiers'
+        ? {
+            capital: 2,
+            treasury: [],
+            financialCapacityTurn: null,
+            financialCapacityUsedTurn: null,
+            financierFeatureActionSpentTurn: null,
+          }
+        : null,
     };
   }
 
@@ -510,6 +534,7 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
     players,
     cardInstances,
     board: [],
+    deeds: [],
     activePlayer: null,
     turnNumber: 0,
     turnState: null,
@@ -727,6 +752,10 @@ function completeSetup(state: V070GameState, firstPlayer: PlayerId): void {
   ];
 
   state.board = boardTerritories;
+  state.deeds = boardTerritories.map(territory => ({
+    territoryInstanceId: territory.territoryInstanceId,
+    owner: null,
+  }));
   state.players.A.position = 0;
   state.players.B.position = 5;
   state.players.A.controlledTerritories = boardTerritories
