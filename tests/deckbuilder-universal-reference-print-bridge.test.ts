@@ -18,16 +18,15 @@ describe("Deckbuilder Universal Reference print bridge", () => {
     });
   });
 
-  it("bridges shared references into the legacy faction-scoped production matcher", () => {
-    expect(productionPrint).toContain('if (component.faction !== factionId) return false;');
-    expect(factionComponents).toContain("function sharedReferencePrintCandidate(component)");
-    expect(factionComponents).toContain('Object.defineProperty(bridged, "faction"');
-    expect(factionComponents).toContain('get: () => String(state.factionId || "").trim().toLowerCase()');
-    expect(factionComponents).toContain("sharedReferences.map(sharedReferencePrintCandidate)");
-    expect(factionComponents).toContain("...printSharedReferences");
+  it("renders shared references directly from current component authority", () => {
+    expect(productionPrint).toContain('...(currentGame.sharedComponents || [])');
+    expect(productionPrint).toContain("function contractComponentById");
+    expect(productionPrint).toContain("function renderProductionComponentHtml");
+    expect(productionPrint).not.toContain("sharedReferencePrintCandidate");
+    expect(factionComponents).toContain('component.deckInclusion === "every-deck"');
   });
 
-  it("does not duplicate the bridged every-deck reference in the faction component list", () => {
+  it("does not duplicate every-deck references in the faction-only component list", () => {
     expect(factionComponents).toContain('component.deckInclusion !== "every-deck"');
   });
 });
