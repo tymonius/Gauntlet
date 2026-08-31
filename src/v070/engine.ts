@@ -163,6 +163,15 @@ export type V070PendingActionEffectChoice =
       sourceActionInstanceId: string;
     }
   | {
+      kind: 'controlled_territory_move_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      purpose: 'Paths of Shadow' | 'Phantom Passage';
+      battleAllowed: boolean;
+      sourceDestination: 'discard' | 'graveyard';
+      candidatePositions: number[];
+    }
+  | {
       kind: 'burning_at_stake_tie';
       playerId: PlayerId;
       opponentId: PlayerId;
