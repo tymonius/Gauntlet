@@ -50,6 +50,7 @@ describe('TTS release readiness reporting', () => {
         {
           Name: 'Bag',
           Nickname: 'Banker Starter — Banker',
+          GMNotes: 'gauntlet:starter-kit:banker',
           ContainedObjects: [
             { Name: 'CardCustom', GMNotes: 'gauntlet:supplemental:financiers-deed' },
             { Name: 'CardCustom', GMNotes: 'gauntlet:supplemental:financiers-deed' },
@@ -58,6 +59,7 @@ describe('TTS release readiness reporting', () => {
         {
           Name: 'Bag',
           Nickname: 'General Starter — General',
+          GMNotes: 'gauntlet:starter-kit:general',
           ContainedObjects: [
             { Name: 'Custom_Tile', GMNotes: 'gauntlet:supplemental:military-command-tracker' },
           ],
