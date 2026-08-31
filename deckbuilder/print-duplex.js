@@ -7,38 +7,7 @@
   const DUPLEX_SLOT_COUNT = 9;
   const REFERENCE_SLOT = 4;
 
-  document.addEventListener("DOMContentLoaded", installDuplexPrintTransform);
-
-  function installDuplexPrintTransform() {
-    const button = document.getElementById("printDeckButton");
-    if (!button) return;
-
-    button.addEventListener("click", () => {
-      const originalOpen = window.open;
-      let restored = false;
-
-      const restoreOpen = () => {
-        if (restored) return;
-        restored = true;
-        window.open = originalOpen;
-      };
-
-      window.open = function duplexAwareOpen(...args) {
-        const printWindow = originalOpen.apply(window, args);
-        if (!printWindow) {
-          restoreOpen();
-          return printWindow;
-        }
-
-        const originalWrite = printWindow.document.write.bind(printWindow.document);
-        printWindow.document.write = html => originalWrite(preparePrintDocument(html));
-        restoreOpen();
-        return printWindow;
-      };
-
-      window.setTimeout(restoreOpen, 0);
-    }, true);
-  }
+  deckbuilder.registerPrintTransform("duplex-layout", preparePrintDocument, 30);
 
   function preparePrintDocument(html) {
     const documentNode = new DOMParser().parseFromString(html, "text/html");
