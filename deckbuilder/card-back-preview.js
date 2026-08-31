@@ -1,4 +1,8 @@
 (() => {
+  const deckbuilder = window.GAUNTLET_DECKBUILDER;
+  if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
+  const { state } = deckbuilder;
+
   const PREVIEW_RETRY_LIMIT = 10;
 
   document.addEventListener("DOMContentLoaded", () => {
