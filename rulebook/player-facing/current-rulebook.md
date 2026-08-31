@@ -1931,7 +1931,7 @@ To win through Ritual, bind three cards from three different zones, initiate a b
 
 Mystics have the following Faction Features marked **1 Action · Denouement**:
 
-- **Begin a Rite:** Choose one incomplete selected Rite you may legally begin, reveal it, and pay its beginning cost.
+- **Begin a Rite:** Choose an incomplete selected Rite you may legally begin, reveal it, and pay its beginning cost.
 - **Begin the Ritual of Ascension:** After completing all three selected Rites, bind the required Arcane cards from Hand, Discard Pile, and Graveyard.
 
 Completing a Rite is automatic when that Rite's completion condition and timing are satisfied. **Invocation** and **Transmutation** are Faction Features marked **No Action**; **Convergence** is **Automatic**. The Alchemist and Spirit Walker mechanics are Leader Abilities.
