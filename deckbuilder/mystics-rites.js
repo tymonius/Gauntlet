@@ -33,6 +33,14 @@
     requiredCount: () => state.riteSelectedCount,
     selectionEnabled: () => state.riteSelectionEnabled,
     defaultIds: () => state.ritePool.map(rite => rite.id),
+    setSelectedIds(items) {
+      state.pendingRites = null;
+      state.rites = isMystics()
+        ? (state.riteSelectionEnabled ? resolveRiteIds(items || []) : state.ritePool.map(rite => rite.id))
+        : [];
+      state.selectedRiteId = state.rites[0] || state.ritePool[0]?.id || null;
+      return [...state.rites];
+    },
   });
 
   document.addEventListener("DOMContentLoaded", installRiteIntegration);
