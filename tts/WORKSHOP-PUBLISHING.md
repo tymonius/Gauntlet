@@ -77,3 +77,11 @@ The Workshop listing uses the production CSS-composited **universal black Gauntl
 3. Hosted faces, backs, environment art, Leaders, Territories, and faction components resolved in the subscribed copy. — **Complete**
 4. Public-copy smoke test found no publication-specific breakage. — **Complete**
 5. Workshop URL linked from the public site/release documentation. — **Tracked in the final site/documentation closeout.**
+
+## Pending v0.7.1 update
+
+The existing Workshop item will be updated in place to v0.7.1 after the stable v0.7.1 TTS promotion gate passes. The permanent Workshop ID remains `3790840635`; no replacement listing is planned.
+
+The v0.7.1 Workshop update adds the six-Rite Mystics package and the Deckbuilder → TTS Deck Code importer while preserving the existing two-player table and manual-rules play model. The final public title will become **Gauntlet — v0.7.1**.
+
+The stable v0.7.1 release uses delta QA: unchanged table and non-Mystics faction-component behavior inherits the completed v0.7.0 Workshop QA evidence, while changed surfaces are re-tested against the stable v0.7.1 artifact. The update must not be published until `tts/release-qa/v0.7.1.json` is complete, `approvedForWorkshop` is true, and `npm run tts:save:promote` has produced the final v0.7.1 mod save.
