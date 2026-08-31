@@ -168,6 +168,54 @@ export function buildDeckImporterConfig({
   };
 }
 
+function deepClone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function clearTemplateGuids(node) {
+  if (!node || typeof node !== 'object') return;
+  delete node.GUID;
+  for (const child of node.ContainedObjects || []) clearTemplateGuids(child);
+}
+
+function findTemplateChild(bag, prefix) {
+  return (bag?.ContainedObjects || []).find(child => String(child?.GMNotes || '').startsWith(prefix));
+}
+
+function pruneCardStackForTemplate(stack, label) {
+  if (!stack) throw new Error(`Deck importer template is missing ${label}.`);
+  const prototype = (stack.ContainedObjects || [])[0];
+  if (!prototype) throw new Error(`Deck importer ${label} has no prototype card.`);
+  stack.DeckIDs = [];
+  stack.CustomDeck = {};
+  stack.ContainedObjects = [prototype];
+}
+
+export function embedStarterKitTemplates(save, config) {
+  if (!save || !Array.isArray(save.ObjectStates)) throw new Error('Deck importer template capture requires a TTS save.');
+  const embedded = deepClone(config);
+
+  for (const starter of Object.values(embedded.starters || {})) {
+    const note = `gauntlet:starter-kit:${starter.starterId}`;
+    const visible = save.ObjectStates.find(object => object?.Name === 'Bag' && object?.GMNotes === note);
+    if (!visible) throw new Error(`Deck importer cannot capture missing starter template ${starter.starterId}.`);
+
+    const template = deepClone(visible);
+    const playableDeck = findTemplateChild(template, 'gauntlet:starter-deck:');
+    const territoryStack = findTemplateChild(template, 'gauntlet:starter-territories:');
+    pruneCardStackForTemplate(playableDeck, `${starter.starterId} playable Deck`);
+    pruneCardStackForTemplate(territoryStack, `${starter.starterId} Territory stack`);
+
+    const riteStack = findTemplateChild(template, 'gauntlet:supplemental-stack:rites-rituals');
+    if (riteStack) pruneCardStackForTemplate(riteStack, `${starter.starterId} Rites + Ritual stack`);
+
+    clearTemplateGuids(template);
+    starter.template = template;
+  }
+
+  return embedded;
+}
+
 function luaLongString(value) {
   const text = String(value);
   for (let equals = 0; equals < 8; equals += 1) {
@@ -245,14 +293,6 @@ end
 local function gauntletFindChildByNotePrefix(bagData, prefix)
   for _, child in ipairs(bagData.ContainedObjects or {}) do
     if gauntletStartsWith(child.GMNotes, prefix) then return child end
-  end
-  return nil
-end
-
-local function gauntletFindStarterBag(starterId)
-  local note = "gauntlet:starter-kit:" .. tostring(starterId)
-  for _, object in ipairs(getAllObjects()) do
-    if object.getGMNotes ~= nil and object.getGMNotes() == note then return object end
   end
   return nil
 end
@@ -491,17 +531,11 @@ function gauntletImportDeck(player, value, id)
     return
   end
 
-  local templateBag = gauntletFindStarterBag(validated.starter.starterId)
-  if templateBag == nil then
-    gauntletMessage(color, "The official " .. validated.starter.leaderName .. " starter kit is not on the table. Reload the mod or restore that starter bag, then import again.", true)
+  if type(validated.starter.template) ~= "table" then
+    gauntletMessage(color, "This TTS build is missing its embedded starter-kit template.", true)
     return
   end
-
-  local okTemplate, bagData = pcall(JSON.decode, templateBag.getJSON())
-  if not okTemplate or type(bagData) ~= "table" then
-    gauntletMessage(color, "TTS could not read the starter-kit template.", true)
-    return
-  end
+  local bagData = gauntletDeepCopy(validated.starter.template)
 
   local playableDeck = gauntletFindChildByNotePrefix(bagData, "gauntlet:starter-deck:")
   local territoryStack = gauntletFindChildByNotePrefix(bagData, "gauntlet:starter-territories:")
@@ -580,9 +614,10 @@ function stripGeneratedBlock(text, begin, end) {
 
 export function installDeckImporter(save, config) {
   if (!save || !Array.isArray(save.ObjectStates)) throw new Error('Deck importer requires a TTS save.');
+  const embeddedConfig = embedStarterKitTemplates(save, config);
   const existingLua = stripGeneratedBlock(save.LuaScript, LUA_BEGIN, LUA_END);
   const existingXml = stripGeneratedBlock(save.XmlUI, XML_BEGIN, XML_END);
-  save.LuaScript = [existingLua, deckImporterLua(config)].filter(Boolean).join('\n\n');
+  save.LuaScript = [existingLua, deckImporterLua(embeddedConfig)].filter(Boolean).join('\n\n');
   save.XmlUI = [existingXml, deckImporterXml()].filter(Boolean).join('\n');
   return save;
 }
