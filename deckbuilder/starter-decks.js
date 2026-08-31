@@ -1,22 +1,25 @@
 (() => {
+  const deckbuilder = window.GAUNTLET_DECKBUILDER;
+  if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
+  const { state } = deckbuilder;
+
   const STARTER_TIP_SOURCE = "starter-first-game-tips.json";
   let starterDecks = [];
   let loadError = null;
   let currentGameReady = false;
 
-  window.GAUNTLET_STARTER_DECKS = {
+  deckbuilder.registerFeature("starterDecks", {
     getSelectedDeck: selectedStarterDeck,
     getMatchingCurrentDeck: matchingCurrentStarterDeck,
     loadSelectedDeck: loadRecommendedDeck,
     isReady: starterDeckReady
-  };
+  });
+  deckbuilder.registerRenderHook(renderStarterIntegration);
 
-  const baseRenderAll = renderAll;
-  renderAll = function renderAllWithStarterDeck() {
-    baseRenderAll();
+  function renderStarterIntegration() {
     renderStarterDeckPreview();
     syncStarterDeckButton();
-  };
+  }
 
   document.addEventListener("DOMContentLoaded", installStarterDecks);
 
@@ -55,7 +58,7 @@
       loadError = error;
     }
 
-    renderAll();
+    deckbuilder.render();
   }
 
   async function waitForCurrentGamePool() {
@@ -88,7 +91,7 @@
   function starterRiteIds(preset = null) {
     if ((preset?.factionId || state.factionId) !== "mystics") return [];
     if (Array.isArray(preset?.selectedRites)) return [...preset.selectedRites];
-    const riteApi = window.GAUNTLET_MYSTICS_RITES;
+    const riteApi = deckbuilder.feature("mysticsRites");
     return riteApi?.selectionEnabled?.() ? [] : (riteApi?.defaultIds?.() || []);
   }
 
@@ -113,7 +116,7 @@
     state.selectedCardId = null;
     state.selectedTerritoryId = null;
     if ("pendingTerritories" in state) state.pendingTerritories = null;
-    renderAll();
+    deckbuilder.render();
   }
 
   function selectedStarterDeck() {
@@ -175,7 +178,7 @@
     if (!button) return;
 
     const preset = selectedStarterDeck();
-    const faction = getFaction();
+    const faction = deckbuilder.getFaction();
     const leader = faction?.leaders.find(item => item.id === state.leaderId);
 
     button.disabled = !starterDeckReady();
@@ -340,7 +343,7 @@
 
   function loadRecommendedDeck() {
     const preset = selectedStarterDeck();
-    const faction = getFaction();
+    const faction = deckbuilder.getFaction();
     const leader = faction?.leaders.find(item => item.id === state.leaderId);
     if (!preset || !faction || !leader || !starterDeckReady()) return;
 
@@ -392,9 +395,9 @@
     state.selectedCardId = null;
     state.selectedTerritoryId = territoryIds[0] || null;
 
-    renderAll();
+    deckbuilder.render();
 
-    const validation = validateDeck();
+    const validation = deckbuilder.validate();
     if (!validation.valid) {
       console.error("Recommended starter Deck failed runtime validation", preset, validation);
       alert("The recommended Deck loaded but failed validation. Please report this Deckbuilder error.");
