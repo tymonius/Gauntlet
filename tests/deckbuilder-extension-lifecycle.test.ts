@@ -57,6 +57,11 @@ describe("Deckbuilder extension architecture", () => {
     }
   });
 
+  it("keeps core validation free of extension-specific placeholder warnings", () => {
+    expect(app).not.toContain("Territory selection is not yet included");
+    expect(read("deckbuilder/territories.js")).not.toContain('startsWith("Territory selection")');
+  });
+
   it("uses lifecycle hooks for Territory, Rite, starter, and component integrations", () => {
     const territories = read("deckbuilder/territories.js");
     const rites = read("deckbuilder/mystics-rites.js");
