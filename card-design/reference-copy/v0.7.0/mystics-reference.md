@@ -42,7 +42,7 @@ Once per turn, after applying the Action, Gambit, or Tactic effect of an **Arcan
 
 ### Transmutation
 
-Once per turn, **before dice are rolled** in a battle involving you, you may put **1 card from Hand in your Graveyard** and add its value to your battle total.
+Once per turn, **before dice are rolled** in a battle, you may put **1 card from Hand in your Graveyard** and add its value to your battle total.
 
 Move the card directly from Hand to Graveyard for its value; only its value applies.
 

@@ -317,6 +317,19 @@ export function synchronizeKnownRulebookClaims(markdown, authority) {
     );
   }
 
+  const transmutationText = String(
+    authority?.mystics?.unlocks?.find(unlock => unlock?.name === 'Transmutation')?.text || ''
+  ).trim();
+  if (transmutationText) {
+    output = replaceClaim(
+      output,
+      /^> .*<!-- RULE-FACT:mystics\.transmutation\.text -->$/m,
+      `> ${transmutationText}<!-- RULE-FACT:mystics.transmutation.text -->`,
+      'Mystics Transmutation text',
+      changes,
+    );
+  }
+
   const riteCount = facts['mystics.rites.count'];
   const riteSelectedCount = facts['mystics.rites.selected_count'];
   if (Number.isInteger(riteCount) && Number.isInteger(riteSelectedCount)) {

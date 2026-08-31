@@ -53,7 +53,7 @@ const SUBJECT_PRESENTATIONS = [
   },
   {
     subject: /^Transmutation$/i,
-    answer: "Once per turn before dice are rolled in a battle involving you, put one card from Hand in your Graveyard and add its value to your battle total.",
+    answer: "Once per turn before dice are rolled in a battle, put one card from Hand in your Graveyard and add its value to your battle total.",
     details: "Transmutation unlocks after your second completed Rite. The card is not played, so none of its printed effects apply. Spirit Walker uses it normally."
   },
   {
