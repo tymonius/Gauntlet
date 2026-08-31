@@ -12,6 +12,49 @@ export interface V070CardInstance {
   owner: PlayerId;
 }
 
+export interface V070OverlayAttachment {
+  instanceId: string;
+  owner: PlayerId;
+  territoryInstanceId: string;
+  placedTurn: number;
+  sequence: number;
+}
+
+export interface V070Binding {
+  hostId: string;
+  cardInstanceId: string;
+  owner: PlayerId;
+  faceUp: boolean;
+  purpose: string;
+  sequence: number;
+}
+
+export interface V070AssetFaceState {
+  instanceId: string;
+  owner: PlayerId;
+  faceUp: false;
+  changedBy: PlayerId;
+  sourceInstanceId: string | null;
+  reason: string;
+  appliedTurn: number;
+  restoreAtPlayer: PlayerId;
+}
+
+export interface V070PendingTurnChoice {
+  kind: 'demilitarized_zone_upkeep';
+  playerId: PlayerId;
+  overlayInstanceId: string;
+  territoryInstanceId: string;
+}
+
+export interface V070TerritoryTurnRestriction {
+  kind: 'no_entry';
+  source: 'demilitarized_zone';
+  sourceInstanceId: string;
+  territoryInstanceId: string;
+  turnNumber: number;
+}
+
 export interface V070PlayerZones {
   drawPile: string[];
   hand: string[];
@@ -19,6 +62,329 @@ export interface V070PlayerZones {
   graveyard: string[];
   assetBank: string[];
   removed: string[];
+}
+
+export interface V070SanctionAssociation {
+  instanceId: string;
+  owner: PlayerId;
+  opponent: PlayerId;
+  kind: 'asset' | 'overlay';
+}
+
+export interface V070PendingAssetLimitChoice {
+  playerId: PlayerId;
+  effectiveLimit: number;
+  excess: number;
+  reason: string;
+  sourceInstanceId: string | null;
+}
+
+export interface V070PendingActionCard {
+  playerId: PlayerId;
+  instanceId: string;
+  cardId: string;
+  phase: 'opening' | 'denouement';
+}
+
+export type V070PendingActionEffectChoice =
+  | {
+      kind: 'clemency_target';
+      playerId: PlayerId;
+      opponentId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'clemency_response';
+      playerId: PlayerId;
+      actionOwnerId: PlayerId;
+      sourceActionInstanceId: string;
+      targetInstanceId: string;
+    }
+  | {
+      kind: 'arcane_knowledge_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'contraband_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'salvage_recovery_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'divine_mercy_target';
+      playerId: PlayerId;
+      opponentId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'hand_destination_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      purpose: 'Second Line' | 'Tactical Planning' | 'Salvage' | 'New Recruits' | 'Spies';
+      destination: 'draw_top' | 'draw_bottom' | 'discard';
+      drawAfter: number;
+    }
+  | {
+      kind: 'controlled_asset_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      purpose: 'Requisition' | 'Strategic Withdrawal';
+      operation: 'voluntary_discard' | 'voluntary_return_hand';
+      drawAfter: number;
+    }
+  | {
+      kind: 'sequestration_keep_asset';
+      playerId: PlayerId;
+      actionOwnerId: PlayerId;
+      sourceActionInstanceId: string;
+      keepers: Partial<Record<PlayerId, string>>;
+      remainingChoosers: PlayerId[];
+    }
+  | {
+      kind: 'fates_toll_cost';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'battlefield_promotion_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'sabotage_asset_target';
+      playerId: PlayerId;
+      opponentId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'controlled_territory_move_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      purpose: 'Paths of Shadow' | 'Phantom Passage';
+      battleAllowed: boolean;
+      sourceDestination: 'discard' | 'graveyard';
+      candidatePositions: number[];
+    }
+  | {
+      kind: 'burning_at_stake_tie';
+      playerId: PlayerId;
+      opponentId: PlayerId;
+      sourceActionInstanceId: string;
+      candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'confession_gambit_target';
+      playerId: PlayerId;
+      opponentId: PlayerId;
+      sourceActionInstanceId: string;
+      candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'hellfire_conviction_amount';
+      playerId: PlayerId;
+      opponentId: PlayerId;
+      sourceActionInstanceId: string;
+      maximum: number;
+    }
+  | {
+      kind: 'penance_choice';
+      playerId: PlayerId;
+      actionOwnerId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'scouting_report_source';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'territory_overlay_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      purpose:
+        | 'Landslide'
+        | 'Encampment'
+        | 'Circle of Bones'
+        | "Nature's Altar"
+        | 'Spirit Hollow';
+    }
+  | {
+      kind: 'forced_asset_target';
+      playerId: PlayerId;
+      assetOwnerId: PlayerId;
+      actionOwnerId: PlayerId;
+      sourceActionInstanceId: string;
+      purpose: 'Sedition' | 'Capital Punishment';
+      destination: 'discard' | 'graveyard';
+    }
+  | {
+      kind: 'pending_asset_bank_replacement';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      purpose:
+        | 'Compound Interest'
+        | 'Détente'
+        | 'High Command'
+        | 'War Bonds'
+        | 'Regime Change'
+        | 'Reembodiment'
+        | 'Tariffs'
+        | 'Anathema'
+        | 'Reserve Force'
+        | 'Extraordinary Rendition'
+        | 'Sleeper Network';
+      replacementInstanceIds: string[];
+    }
+  | {
+      kind: 'soul_for_soul_targets';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'accusation_target';
+      playerId: PlayerId;
+      opponentId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'accusation_response';
+      playerId: PlayerId;
+      actionOwnerId: PlayerId;
+      sourceActionInstanceId: string;
+      targetInstanceId: string;
+    }
+  | {
+      kind: 'guilt_by_association_target';
+      playerId: PlayerId;
+      opponentId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'excommunication_targets';
+      playerId: PlayerId;
+      opponentId: PlayerId;
+      sourceActionInstanceId: string;
+      maxCombinedValue: number;
+    }
+  | {
+      kind: 'opponent_hand_discard_target';
+      playerId: PlayerId;
+      opponentId: PlayerId;
+      sourceActionInstanceId: string;
+      purpose: 'Assassins';
+    }
+  | {
+      kind: 'dark_omens_graveyard_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'act_of_faith_graveyard_target';
+      playerId: PlayerId;
+      opponentId: PlayerId;
+      sourceActionInstanceId: string;
+      revealedInstanceIds: string[];
+    }
+  | {
+      kind: 'threefold_vision_distribution';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'anathema_target';
+      playerId: PlayerId;
+      opponentId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'reserve_force_bind_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'extraordinary_rendition_bind_target';
+      playerId: PlayerId;
+      opponentId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'sleeper_network_bind_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'necromancy_mode';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      reclaimCandidateInstanceIds: string[];
+    }
+  | {
+      kind: 'owned_deed_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      purpose: 'Divestment';
+    }
+  | {
+      kind: 'treasury_card_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      purpose: 'Liquidation';
+    }
+  | {
+      kind: 'deed_purchase_choice';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      purpose: 'Liquidation' | 'Corner the Market';
+      remainingPurchases: number | null;
+    };
+
+export type V070PendingSanctionChoice =
+  | {
+      kind: 'censure_action';
+      playerId: PlayerId;
+      sanctionInstanceId: string;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'blockade_movement';
+      playerId: PlayerId;
+      sanctionInstanceId: string;
+      territoryInstanceId: string;
+      movement: 'leave' | 'enter';
+    };
+
+export interface V070DiplomatState {
+  influence: number;
+  ratifiedProposals: string[];
+  cordialityUsedTurn: number | null;
+  politicalCapitalUsedTurn: number | null;
+  detenteUsedTurn: number | null;
+}
+
+export interface V070InquisitionState {
+  conviction: number;
+  normalConvictionGainTurn: number | null;
+}
+
+export interface V070FinancierState {
+  capital: number;
+  treasury: string[];
+  financialCapacityTurn: number | null;
+  financialCapacityUsedTurn: number | null;
+  financierFeatureActionSpentTurn: number | null;
+}
+
+export interface V070DeedState {
+  territoryInstanceId: string;
+  owner: PlayerId | null;
 }
 
 export interface V070PlayerState {
@@ -34,14 +400,19 @@ export interface V070PlayerState {
   position: number | null;
   controlledTerritories: string[];
   reshuffleCount: number;
+  diplomats: V070DiplomatState | null;
+  inquisition: V070InquisitionState | null;
+  financiers: V070FinancierState | null;
 }
 
 export interface V070BoardTerritory {
+  territoryInstanceId: string;
   position: number;
   territoryId: string;
   contributedBy: PlayerId;
   controller: PlayerId;
   occupant: PlayerId | null;
+  blank?: boolean;
 }
 
 export interface V070SetupState {
@@ -66,11 +437,25 @@ export interface V070GameState {
   players: Record<PlayerId, V070PlayerState>;
   cardInstances: Record<string, V070CardInstance>;
   board: V070BoardTerritory[];
+  deeds: V070DeedState[];
   activePlayer: PlayerId | null;
   turnNumber: number;
   turnState: V070TurnState | null;
   battle: V070BattleState | null;
   battleRuntime: V070BattleRuntime | null;
+  overlays: V070OverlayAttachment[];
+  nextOverlaySequence: number;
+  bindings: V070Binding[];
+  nextBindingSequence: number;
+  assetFaceStates: V070AssetFaceState[];
+  territoryTurnRestrictions: V070TerritoryTurnRestriction[];
+  sanctions: V070SanctionAssociation[];
+  sanctionTriggerTurns: Record<string, number>;
+  pendingActionCard: V070PendingActionCard | null;
+  pendingActionEffectChoice: V070PendingActionEffectChoice | null;
+  pendingSanctionChoices: V070PendingSanctionChoice[];
+  pendingAssetLimitChoice: V070PendingAssetLimitChoice | null;
+  pendingTurnChoice: V070PendingTurnChoice | null;
   winner: PlayerId | null;
   events: V070GameEvent[];
 }
@@ -142,6 +527,30 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
       position: null,
       controlledTerritories: [],
       reshuffleCount: 0,
+      diplomats: starter.definition.factionId === 'diplomats'
+        ? {
+            influence: 1,
+            ratifiedProposals: [],
+            cordialityUsedTurn: null,
+            politicalCapitalUsedTurn: null,
+            detenteUsedTurn: null,
+          }
+        : null,
+      inquisition: starter.definition.factionId === 'inquisition'
+        ? {
+            conviction: 0,
+            normalConvictionGainTurn: null,
+          }
+        : null,
+      financiers: starter.definition.factionId === 'financiers'
+        ? {
+            capital: 2,
+            treasury: [],
+            financialCapacityTurn: null,
+            financialCapacityUsedTurn: null,
+            financierFeatureActionSpentTurn: null,
+          }
+        : null,
     };
   }
 
@@ -157,11 +566,25 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
     players,
     cardInstances,
     board: [],
+    deeds: [],
     activePlayer: null,
     turnNumber: 0,
     turnState: null,
     battle: null,
     battleRuntime: null,
+    overlays: [],
+    nextOverlaySequence: 1,
+    bindings: [],
+    nextBindingSequence: 1,
+    assetFaceStates: [],
+    territoryTurnRestrictions: [],
+    sanctions: [],
+    sanctionTriggerTurns: {},
+    pendingActionCard: null,
+    pendingActionEffectChoice: null,
+    pendingSanctionChoices: [],
+    pendingAssetLimitChoice: null,
+    pendingTurnChoice: null,
     winner: null,
     events: [],
   };
@@ -343,6 +766,7 @@ function completeSetup(state: V070GameState, firstPlayer: PlayerId): void {
 
   const boardTerritories = [
     ...orderA.map((territoryId, index): V070BoardTerritory => ({
+      territoryInstanceId: `A-territory-${String(index + 1).padStart(2, '0')}-${territoryId}`,
       position: index,
       territoryId,
       contributedBy: 'A',
@@ -350,6 +774,7 @@ function completeSetup(state: V070GameState, firstPlayer: PlayerId): void {
       occupant: index === 0 ? 'A' : null,
     })),
     ...[...orderB].reverse().map((territoryId, index): V070BoardTerritory => ({
+      territoryInstanceId: `B-territory-${String(index + 1).padStart(2, '0')}-${territoryId}`,
       position: index + 3,
       territoryId,
       contributedBy: 'B',
@@ -359,6 +784,10 @@ function completeSetup(state: V070GameState, firstPlayer: PlayerId): void {
   ];
 
   state.board = boardTerritories;
+  state.deeds = boardTerritories.map(territory => ({
+    territoryInstanceId: territory.territoryInstanceId,
+    owner: null,
+  }));
   state.players.A.position = 0;
   state.players.B.position = 5;
   state.players.A.controlledTerritories = boardTerritories
@@ -379,6 +808,7 @@ function completeSetup(state: V070GameState, firstPlayer: PlayerId): void {
     visibility: 'public',
     payload: {
       board: boardTerritories.map(territory => ({
+        territoryInstanceId: territory.territoryInstanceId,
         position: territory.position,
         territoryId: territory.territoryId,
         controller: territory.controller,

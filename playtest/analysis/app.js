@@ -40,18 +40,19 @@
       "accessPanel", "accessForm", "adminToken", "accessStatus", "analysisApp",
       "dataFreshness", "connectionStatus", "refreshData", "lockAnalysis",
       "metricGames", "metricGamesDetail", "metricResponses", "metricResponsesDetail",
-      "metricReplay", "metricDuration", "metricArbiter", "metricVersions", "metricVersionsDetail",
-      "filterStatus", "filterVersion", "filterFaction", "filterLeader", "filterFrom", "filterTo",
+      "metricReplay", "metricDuration", "metricArbiter", "metricPlayMode", "metricPlayModeDetail",
+      "metricDiagnostics", "metricVersions", "metricVersionsDetail",
+      "filterStatus", "filterVersion", "filterPlayMode", "filterFaction", "filterLeader", "filterFrom", "filterTo",
       "filterSearch", "resetFilters", "filterSummary", "anonymizeExports", "downloadBundle",
       "downloadResponses", "downloadGames", "downloadArbiter", "exportStatus", "ratingAverages",
-      "outcomeSummary", "breakdownRows", "writtenFeedback", "gameRecords"
+      "outcomeSummary", "decisionSummary", "diagnosticSummary", "breakdownRows", "writtenFeedback", "gameRecords"
     ]) el[id] = document.getElementById(id);
 
     el.accessForm?.addEventListener("submit", unlockAnalysis);
     el.refreshData?.addEventListener("click", refreshData);
     el.lockAnalysis?.addEventListener("click", lockAnalysis);
     for (const control of [
-      el.filterStatus, el.filterVersion, el.filterFaction, el.filterLeader,
+      el.filterStatus, el.filterVersion, el.filterPlayMode, el.filterFaction, el.filterLeader,
       el.filterFrom, el.filterTo, el.filterSearch
     ]) {
       control?.addEventListener(control === el.filterSearch ? "input" : "change", applyFilters);
@@ -177,6 +178,8 @@
     state.filteredGames = state.games.filter((game) => {
       if (filters.status !== "all" && game.status !== filters.status) return false;
       if (filters.version !== "all" && game.rulesVersion !== filters.version) return false;
+      const playMode = ["tts", "physical"].includes(game.metadata?.playMode) ? game.metadata.playMode : "unspecified";
+      if (filters.playMode !== "all" && playMode !== filters.playMode) return false;
       if (filters.faction !== "all" && !game.players.some((player) => player.faction === filters.faction)) return false;
       if (filters.leader !== "all" && !game.players.some((player) => player.leader === filters.leader)) return false;
       const created = new Date(game.createdAt).valueOf();
@@ -190,6 +193,8 @@
     renderMetrics(summary);
     renderRatings(summary);
     renderOutcomes(summary);
+    renderDecisionExperience(summary);
+    renderDiagnostics(summary);
     renderBreakdown(summary);
     renderWrittenFeedback();
     renderGames();
@@ -202,6 +207,7 @@
     return {
       status: el.filterStatus.value,
       version: el.filterVersion.value,
+      playMode: el.filterPlayMode.value,
       faction: el.filterFaction.value,
       leader: el.filterLeader.value,
       from: el.filterFrom.value,
@@ -213,6 +219,7 @@
   function resetFilters() {
     el.filterStatus.value = "all";
     el.filterVersion.value = "all";
+    el.filterPlayMode.value = "all";
     el.filterFaction.value = "all";
     el.filterFrom.value = "";
     el.filterTo.value = "";
@@ -229,6 +236,14 @@
     el.metricReplay.textContent = formatPercent(summary.playAgainRate);
     el.metricDuration.textContent = summary.averageDurationMinutes == null ? "—" : `${summary.averageDurationMinutes}m`;
     el.metricArbiter.textContent = String(summary.arbiterQuestionCount);
+    const ttsGames = Number(summary.playModes?.tts || 0);
+    const physicalGames = Number(summary.playModes?.physical || 0);
+    const unspecifiedGames = Number(summary.playModes?.unspecified || 0);
+    el.metricPlayMode.textContent = ttsGames || physicalGames || unspecifiedGames ? `${physicalGames} / ${ttsGames}` : "—";
+    el.metricPlayModeDetail.textContent = unspecifiedGames
+      ? `physical / TTS · ${unspecifiedGames} not recorded`
+      : "physical / TTS";
+    el.metricDiagnostics.textContent = String(Object.values(summary.diagnosticFlags || {}).reduce((sum, count) => sum + Number(count || 0), 0));
     const versions = Object.keys(summary.rulesVersions);
     el.metricVersions.textContent = String(versions.length);
     el.metricVersionsDetail.textContent = versions.join(" · ") || "No version data";
@@ -254,6 +269,46 @@
       <div class="outcome-card"><strong>${summary.completion.stopped || 0}</strong><span>stopped early</span></div>
       <div class="outcome-card"><strong>${summary.completion.pending || 0}</strong><span>without a shared result</span></div>
       <div class="outcome-card"><strong>${routes.length ? routes.map(([route, count]) => `${escapeHtml(titleCase(route))}: ${count}`).join(" · ") : "—"}</strong><span>victory routes</span></div>`;
+  }
+
+  function renderDecisionExperience(summary) {
+    const points = summary.decisionPoints || {};
+    const agency = summary.agencyAfterDecided || {};
+    const pointLabels = {
+      never: "Never before end",
+      early: "Early",
+      middle: "Middle",
+      late: "Late",
+      at_end: "At the end"
+    };
+    const agencyLabels = {
+      yes: "Meaningful decisions remained",
+      some: "Some decisions remained",
+      no: "No meaningful decisions remained",
+      not_applicable: "Not applicable"
+    };
+    const pointCards = Object.entries(pointLabels)
+      .filter(([key]) => Number(points[key] || 0) > 0)
+      .map(([key, label]) => `<div class="outcome-card"><strong>${Number(points[key] || 0)}</strong><span>${escapeHtml(label)}</span></div>`);
+    const agencyCards = Object.entries(agencyLabels)
+      .filter(([key]) => Number(agency[key] || 0) > 0)
+      .map(([key, label]) => `<div class="outcome-card"><strong>${Number(agency[key] || 0)}</strong><span>${escapeHtml(label)}</span></div>`);
+    el.decisionSummary.innerHTML = [...pointCards, ...agencyCards].join("") || emptyState("No decision-point responses are present in this slice.");
+  }
+
+  function renderDiagnostics(summary) {
+    const labels = {
+      dont_know_what_happens_next: "Didn't know what happens next",
+      rule_unclear: "Rule unclear",
+      no_meaningful_option: "No meaningful option",
+      feels_decided: "Game felt decided",
+      repeated_or_futile_battle: "Repeated / futile battle",
+      component_or_tts_problem: "Component / TTS problem"
+    };
+    const cards = Object.entries(summary.diagnosticFlags || {})
+      .sort((a, b) => Number(b[1]) - Number(a[1]))
+      .map(([flag, count]) => `<div class="outcome-card"><strong>${Number(count || 0)}</strong><span>${escapeHtml(labels[flag] || titleCase(flag))}</span></div>`);
+    el.diagnosticSummary.innerHTML = cards.join("") || emptyState("No live diagnostic flags are present in this slice.");
   }
 
   function renderBreakdown(summary) {
@@ -286,7 +341,10 @@
         cards.push(`<article class="feedback-card">
           <header><div><h3>${escapeHtml(player.displayName)}</h3><div class="meta">${escapeHtml(player.leader)} · ${escapeHtml(factionName(player.faction))}</div></div><div class="meta">${escapeHtml(game.sheetSerial)}<br>${escapeHtml(formatDate(game.createdAt, false))}</div></header>
           <dl>
-            <div><dt>Why this faction or Leader?</dt><dd>${escapeHtml(player.response.factionInterest)}</dd></div>
+            <div><dt>Pregame attraction</dt><dd>${escapeHtml(player.selectionReason || player.response.factionInterest)}</dd></div>
+            <div><dt>First felt decided</dt><dd>${escapeHtml(titleCase(player.response.feltDecidedWhen || "never"))}</dd></div>
+            <div><dt>Meaningful decisions afterward</dt><dd>${escapeHtml(titleCase(player.response.agencyAfterDecided || "not_applicable"))}</dd></div>
+            ${player.response.decisiveCause ? `<div><dt>What most determined the result</dt><dd>${escapeHtml(player.response.decisiveCause)}</dd></div>` : ""}
             ${player.response.comments ? `<div><dt>Additional comments</dt><dd>${escapeHtml(player.response.comments)}</dd></div>` : ""}
             <div><dt>Selected ratings</dt><dd>Fun ${formatRating(player.response.fun)} · Pacing ${formatRating(player.response.pacing)} · Decisions ${formatRating(player.response.meaningfulDecisions)} · Rules ${formatRating(player.response.rulesClarity)} · Play again ${player.response.playAgain ? "Yes" : "No"}</dd></div>
           </dl>
@@ -308,10 +366,15 @@
         ? `<ul class="question-list">${game.arbiterQuestions.map((question) => `<li><strong>Seat ${question.seatIndex || "?"}${question.displayName ? ` · ${escapeHtml(question.displayName)}` : ""}</strong>: ${escapeHtml(question.question || "Question unavailable")}<br><small>${escapeHtml(question.classification || "unclassified")} · ${escapeHtml(formatDate(question.linkedAt))}</small></li>`).join("")}</ul>`
         : "<p>No Rules Arbiter questions were linked.</p>";
       const timeline = game.events.length
-        ? `<ol class="timeline-list">${game.events.map((event) => `<li><strong>${escapeHtml(titleCase(event.eventType))}</strong> · ${escapeHtml(formatDate(event.createdAt))}</li>`).join("")}</ol>`
+        ? `<ol class="timeline-list">${game.events.map((event) => {
+          const detail = event.eventType === "diagnostic_flag" && event.data?.flag
+            ? ` — ${titleCase(event.data.flag)}`
+            : "";
+          return `<li><strong>${escapeHtml(titleCase(event.eventType))}</strong>${escapeHtml(detail)} · ${escapeHtml(formatDate(event.createdAt))}</li>`;
+        }).join("")}</ol>`
         : "<p>No timeline events were recorded.</p>";
       return `<details class="game-record">
-        <summary><div><h3>${escapeHtml(game.sheetSerial)}</h3><div class="game-meta">${escapeHtml(game.rulesVersion)} · ${escapeHtml(formatDate(game.createdAt))} · ${game.players.map((player) => escapeHtml(player.leader)).join(" vs. ") || "Players pending"}</div></div><span class="status-pill ${escapeAttribute(game.status)}">${escapeHtml(game.status)}</span></summary>
+        <summary><div><h3>${escapeHtml(game.sheetSerial)}</h3><div class="game-meta">${escapeHtml(game.rulesVersion)} · ${escapeHtml(game.metadata?.playMode === "tts" ? "Tabletop Simulator" : "Physical tabletop")} · ${escapeHtml(formatDate(game.createdAt))} · ${game.players.map((player) => escapeHtml(player.leader)).join(" vs. ") || "Players pending"}</div></div><span class="status-pill ${escapeAttribute(game.status)}">${escapeHtml(game.status)}</span></summary>
         <div class="game-record-content">
           <section class="game-section"><h4>Players and questionnaires</h4><div class="player-grid">${players || "<p>No players joined.</p>"}</div></section>
           <section class="game-section"><h4>Shared result</h4>${result ? resultBlock(game, result) : "<p>No shared result has been submitted.</p>"}</section>
@@ -327,7 +390,7 @@
     return `<article class="player-detail" style="--faction:${escapeAttribute(FACTIONS[player.faction]?.color || "#777")}">
       <h5>Seat ${player.seatIndex}: ${escapeHtml(player.displayName)}</h5>
       <p><strong>${escapeHtml(player.leader)}</strong> · ${escapeHtml(factionName(player.faction))}</p>
-      ${response ? `<p class="rating-inline">Fun ${formatRating(response.fun)} · Pacing ${formatRating(response.pacing)} · Decisions ${formatRating(response.meaningfulDecisions)} · Rules ${formatRating(response.rulesClarity)} · Play again ${response.playAgain ? "Yes" : "No"}</p><p><strong>Initial interest:</strong> ${escapeHtml(response.factionInterest)}</p>${response.comments ? `<p><strong>Comments:</strong> ${escapeHtml(response.comments)}</p>` : ""}` : "<p>Questionnaire not submitted.</p>"}
+      ${response ? `<p class="rating-inline">Fun ${formatRating(response.fun)} · Pacing ${formatRating(response.pacing)} · Decisions ${formatRating(response.meaningfulDecisions)} · Rules ${formatRating(response.rulesClarity)} · Play again ${response.playAgain ? "Yes" : "No"}</p><p><strong>Pregame attraction:</strong> ${escapeHtml(player.selectionReason || response.factionInterest)}</p><p><strong>First felt decided:</strong> ${escapeHtml(titleCase(response.feltDecidedWhen || "never"))} · <strong>Agency afterward:</strong> ${escapeHtml(titleCase(response.agencyAfterDecided || "not_applicable"))}</p>${response.decisiveCause ? `<p><strong>Decisive cause:</strong> ${escapeHtml(response.decisiveCause)}</p>` : ""}${response.comments ? `<p><strong>Comments:</strong> ${escapeHtml(response.comments)}</p>` : ""}` : "<p>Questionnaire not submitted.</p>"}
     </article>`;
   }
 
@@ -385,6 +448,7 @@
           sheet_serial: game.sheetSerial,
           session_status: game.status,
           rules_version: game.rulesVersion,
+          play_mode: game.metadata?.playMode === "tts" ? "tts" : "physical",
           created_at: game.createdAt,
           closed_at: game.closedAt || "",
           completion_status: game.result?.completionStatus || "",
@@ -395,7 +459,7 @@
           player: player.displayName,
           faction: factionName(player.faction),
           leader: player.leader,
-          faction_interest: player.response.factionInterest,
+          pregame_attraction: player.selectionReason || player.response.factionInterest,
           expectation_match: player.response.expectationMatch,
           leader_distinction: player.response.leaderDistinction,
           fun: player.response.fun,
@@ -405,6 +469,9 @@
           rules_clarity: player.response.rulesClarity,
           faction_clarity: player.response.factionClarity,
           table_organization: player.response.tableOrganization,
+          felt_decided_when: player.response.feltDecidedWhen || "",
+          agency_after_decided: player.response.agencyAfterDecided || "",
+          decisive_cause: player.response.decisiveCause || "",
           play_again: player.response.playAgain ? "yes" : "no",
           comments: player.response.comments,
           strongest_moment: game.result?.strongestMoment || "",
@@ -423,6 +490,7 @@
       sheet_serial: game.sheetSerial,
       session_status: game.status,
       rules_version: game.rulesVersion,
+      play_mode: game.metadata?.playMode === "tts" ? "tts" : "physical",
       created_at: game.createdAt,
       closed_at: game.closedAt || "",
       player_1: game.players.find((player) => player.seatIndex === 1)?.displayName || "",
@@ -446,7 +514,8 @@
       confusing_point: game.result?.confusingPoint || "",
       important_observation: game.result?.importantObservation || "",
       response_count: game.players.filter((player) => player.response).length,
-      arbiter_question_count: game.arbiterQuestions.length
+      arbiter_question_count: game.arbiterQuestions.length,
+      diagnostic_flag_count: game.events.filter((event) => event.eventType === "diagnostic_flag").length
     }));
     downloadCsv(`gauntlet-playtest-games-${dateStamp()}.csv`, rows);
     setStatus(el.exportStatus, `${rows.length} game record${rows.length === 1 ? "" : "s"} exported.`, "success");
@@ -513,6 +582,10 @@
     const factions = new Map();
     const leaders = new Map();
     const rulesVersions = new Map();
+    const playModes = {};
+    const diagnosticFlags = {};
+    const decisionPoints = {};
+    const agencyAfterDecided = {};
     const completion = { completed: 0, stopped: 0, pending: 0 };
     const victoryRoutes = {};
     let closedGameCount = 0;
@@ -524,6 +597,12 @@
 
     for (const game of games) {
       rulesVersions.set(game.rulesVersion, (rulesVersions.get(game.rulesVersion) || 0) + 1);
+      const playMode = ["tts", "physical"].includes(game.metadata?.playMode) ? game.metadata.playMode : "unspecified";
+      playModes[playMode] = (playModes[playMode] || 0) + 1;
+      for (const event of game.events || []) {
+        if (event.eventType !== "diagnostic_flag" || !event.data?.flag) continue;
+        diagnosticFlags[event.data.flag] = (diagnosticFlags[event.data.flag] || 0) + 1;
+      }
       if (game.status === "closed") closedGameCount += 1;
       arbiterQuestionCount += game.arbiterQuestions.length;
       playerCount += game.players.length;
@@ -548,6 +627,10 @@
         }
         if (!player.response) continue;
         responses.push(player.response);
+        const decisionPoint = player.response.feltDecidedWhen || "never";
+        const agency = player.response.agencyAfterDecided || "not_applicable";
+        decisionPoints[decisionPoint] = (decisionPoints[decisionPoint] || 0) + 1;
+        agencyAfterDecided[agency] = (agencyAfterDecided[agency] || 0) + 1;
         addGroupResponse(faction, player.response);
         addGroupResponse(leader, player.response);
       }
@@ -568,6 +651,10 @@
       completion,
       victoryRoutes,
       rulesVersions: Object.fromEntries(rulesVersions),
+      playModes,
+      diagnosticFlags,
+      decisionPoints,
+      agencyAfterDecided,
       ratingAverages: averageRatings(responses),
       factions: finalizeGroups(factions),
       leaders: finalizeGroups(leaders)
@@ -614,7 +701,7 @@
     const values = [game.sheetSerial, game.rulesVersion, game.status, JSON.stringify(game.metadata || {})];
     if (game.result) values.push(...Object.values(game.result));
     for (const player of game.players) {
-      values.push(player.displayName, player.faction, factionName(player.faction), player.leader);
+      values.push(player.displayName, player.faction, factionName(player.faction), player.leader, player.selectionReason);
       if (player.response) values.push(...Object.values(player.response));
     }
     for (const question of game.arbiterQuestions) values.push(question.question, question.answer, question.classification, question.displayName);

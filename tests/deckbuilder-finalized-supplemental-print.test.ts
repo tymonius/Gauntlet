@@ -1,60 +1,51 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
+const currentGame = JSON.parse(readFileSync("game-data/current-game.json", "utf8"));
 const compatibilityPrint = readFileSync("deckbuilder/print-capital-ledger.js", "utf8");
 const productionPrint = readFileSync("deckbuilder/print-duplex-sheet-pairing.js", "utf8");
-const legacyPrint = readFileSync("deckbuilder/print.js", "utf8");
-const legacySupplementals = [
-  readFileSync("deckbuilder/supplemental-data.js", "utf8"),
-  readFileSync("deckbuilder/v061-supplementals.js", "utf8"),
-].join("\n");
+const deckPrint = readFileSync("deckbuilder/print.js", "utf8");
 const componentPrintHtml = readFileSync("card-design/component-print-render.html", "utf8");
 const componentPrintJs = readFileSync("card-design/component-print-render.js", "utf8");
 const deedScript = readFileSync("card-design/deed-card.js", "utf8");
 
 describe("Deckbuilder finalized supplemental printing", () => {
-  it("replaces all legacy Deed placeholders with the finalized landscape production component", () => {
-    expect(legacyPrint).toContain('function deedToPrintHtml()');
-    expect(legacyPrint).toContain('Territory Ownership');
+  it("routes the finalized Deed through the shared landscape production renderer", () => {
+    const deed = currentGame.componentContract.components.find((component: any) => component.id === "financiers-deed");
+    expect(deed).toMatchObject({
+      family: "deed-card",
+      productionStatus: "export-pending",
+      backPolicy: "standardBack",
+    });
 
-    expect(compatibilityPrint).toContain('PRODUCTION_DEED_COMPONENT_ID = "financiers-deed"');
-    expect(compatibilityPrint).toContain('documentNode.querySelectorAll(".print-card.deed-card")');
-    expect(compatibilityPrint).toContain('deed.replaceWith(productionDeedFrame(documentNode))');
-    expect(compatibilityPrint).toContain('production-render-landscape production-standard-back');
-    expect(compatibilityPrint).toContain('"front", "landscape"');
-    expect(compatibilityPrint).toContain('&orientation=landscape');
-    expect(compatibilityPrint).toContain('width: 3.5in');
-    expect(compatibilityPrint).toContain('height: 2.5in');
-    expect(compatibilityPrint).toContain('transform: rotate(90deg)');
+    expect(deckPrint).toContain('if (component.type === "deed-set")');
+    expect(productionPrint).toContain('if (component.family === "deed-card") return { kind: "supplemental", id: component.id, orientation: "landscape" };');
+    expect(productionPrint).toContain("production-component-landscape-rotate");
+    expect(productionPrint).toContain("&orientation=landscape");
+    expect(compatibilityPrint).not.toContain("replaceLegacyDeeds");
   });
 
-  it("makes the shared component renderer capable of producing the complete finalized Deed", () => {
+  it("makes the shared component renderer produce the finalized Deed directly", () => {
     expect(componentPrintHtml).toContain('href="/card-design/deed-card.css"');
     expect(componentPrintHtml).toContain('href="/card-design/capital-ledger.css"');
     expect(componentPrintJs).toContain('params.get("orientation") || "portrait"');
     expect(componentPrintJs).toContain('const landscape = orientation === "landscape"');
     expect(componentPrintJs).toContain('card.style.width = renderWidth');
     expect(componentPrintJs).toContain('card.style.height = renderHeight');
-    expect(deedScript).toContain("card.classList.remove('supplemental-placeholder-card')");
-    expect(deedScript).toContain("card.classList.add('deed-card')");
+    expect(deedScript).toContain('class="gauntlet-card faction-component-card deed-card financiers-card"');
+    expect(deedScript).not.toContain("supplemental-placeholder-card");
   });
 
-  it("removes the obsolete Diplomat Side B front card and lets duplex production create the finalized reverse", () => {
-    expect(legacySupplementals).toContain('Side B — Resource and Victory');
-    expect(legacySupplementals).toContain('Influence & Treaty');
-
-    expect(compatibilityPrint).toContain('removeLegacyDiplomatReverseReference(documentNode)');
-    expect(compatibilityPrint).toContain('/\\bside\\s*b\\b|\\breverse\\b/i');
-    expect(compatibilityPrint).toContain('/influence\\s*(?:&|and)\\s*treaty/i');
-    expect(compatibilityPrint).toContain('cell.replaceChildren()');
-    expect(productionPrint).toContain('ensureIntrinsicReversePages(documentNode, currentGame)');
+  it("lets duplex production create intrinsic and standard reverses from component authority", () => {
+    expect(productionPrint).toContain("ensureIntrinsicReversePages(documentNode, currentGame)");
     expect(productionPrint).toContain('side: "reverse"');
-    expect(productionPrint).toContain('mirrorIndexForLongEdge(frontIndex)');
+    expect(productionPrint).toContain("mirrorIndexForLongEdge(frontIndex)");
+    expect(compatibilityPrint).not.toContain("removeLegacyDiplomatReverseReference");
   });
 
-  it("does not relax placeholder rejection for unfinished supplemental components", () => {
+  it("fails closed if a future production component still resolves to a placeholder", () => {
     expect(componentPrintJs).toContain('if (card.classList.contains("supplemental-placeholder-card"))');
-    expect(componentPrintJs).toContain('kind === "supplemental" && id === "financiers-deed"');
     expect(componentPrintJs).toContain('throw new Error(`Component ${id} still resolves to a production-layout placeholder.`)');
+    expect(componentPrintJs).not.toContain('kind === "supplemental" && id === "financiers-deed"');
   });
 });

@@ -102,13 +102,14 @@ for (const required of [
 }
 
 const app = read('rulebook/app.js');
-if (!app.includes("const CHAPTER_11_URL = './player-facing/chapter-11.md';")) {
-  fail('Browser Rulebook does not load the reviewed player-facing Chapter 11 source.');
+if (!app.includes("const RELEASE_MANIFEST_URL = '../releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json';")) {
+  fail('Current Browser Rulebook is not bound to the published v0.7.1 release manifest.');
 }
-const verifyIndex = app.indexOf('if (actualHash !== SOURCE_SHA256)');
-const applyIndex = app.indexOf('const markdown = publicRulebookSource');
-if (verifyIndex < 0 || applyIndex < 0 || verifyIndex >= applyIndex) {
-  fail('Browser Rulebook must verify the certified source hash before applying the player-facing Rulebook layer.');
+if (app.includes("const CHAPTER_11_URL = './player-facing/chapter-11.md';") || app.includes('publicRulebookSource')) {
+  fail('Current Browser Rulebook must not layer mutable v0.6.3 player-facing sources over the published v0.7.0 release.');
+}
+if (!app.includes('if (actualHash !== rulebook.sha256)')) {
+  fail('Current Browser Rulebook does not verify its published Rulebook binding.');
 }
 if (!read('scripts/publication-utils.mjs').includes('replacePlayerFacingChapter11(normalized)')) {
   fail('Semantic Rulebook publication does not apply the reviewed Chapter 11 replacement.');

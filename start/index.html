@@ -11,7 +11,7 @@
   </script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Learn Gauntlet v0.7.0, choose a faction and leader, and load a complete printable starter deck." />
+  <meta name="description" content="Learn Gauntlet v0.7.1, choose a faction and leader, then start a tracked Tabletop Simulator game or print a starter deck." />
   <link rel="canonical" href="https://gauntlet.run/start/" />
   <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
@@ -44,9 +44,9 @@
   <main>
     <section class="start-hero" aria-labelledby="start-title">
       <div>
-        <p class="eyebrow">New-player setup · canonical v0.7.0</p>
+        <p class="eyebrow">New-player setup · canonical v0.7.1</p>
         <h1 id="start-title">Your first game <span>starts here.</span></h1>
-        <p class="hero-lede">Learn the shape of Gauntlet, choose the institution and leader that interest you, then load a complete recommended starter deck ready to print.</p>
+        <p class="hero-lede">Learn the shape of Gauntlet, choose the institution and Leader that interest you, then play together at a physical table or remotely in Tabletop Simulator.</p>
         <div class="hero-actions">
           <a class="button primary" href="#overview">Begin</a>
           <a class="button secondary" href="../rulebook/">Open the rulebook</a>
@@ -56,7 +56,7 @@
         <li><span>1</span><strong>Understand</strong><small>See what the game is and what each player needs.</small></li>
         <li><span>2</span><strong>Choose</strong><small>Pick a faction and one of its two leaders.</small></li>
         <li><span>3</span><strong>Learn</strong><small>Read the shared first-game flow in play order.</small></li>
-        <li><span>4</span><strong>Print</strong><small>Load the matching starter deck and print the package.</small></li>
+        <li><span>4</span><strong>Play</strong><small>Use physical cards in person or Tabletop Simulator remotely.</small></li>
       </ol>
     </section>
 
@@ -168,9 +168,9 @@
         <article class="intro-card"><span>01</span><h3>Cards and zones</h3><p>Your <strong>Hand</strong> is private. Your <strong>Draw Pile</strong> supplies cards; your <strong>Discard Pile</strong> can be recycled; your <strong>Graveyard</strong> normally cannot. Face-up Assets remain in your <strong>Asset Bank</strong>.</p><p>A battle creates three temporary areas: a <strong>Gambit</strong> set from Hand, a three-card private <strong>Reserve</strong> drawn from the Draw Pile, and a <strong>Tactic</strong> chosen from that Reserve.</p></article>
         <article class="intro-card"><span>02</span><h3>Setup</h3><ol><li>Prepare faction and Leader components that add cards to or remove cards from the Deck.</li><li>Shuffle the remaining Deck to form the Draw Pile.</li><li>Draw four cards, discard one face up, and keep three as your opening Hand.</li><li>With that Hand and opening discard known, secretly arrange your three Territories.</li><li>Join both Territory lines and reveal the six-Territory Gauntlet.</li><li>Place your Player Token on the Territory at your own end. This is not movement and does not count as entering.</li><li>After both players finish opening selection and Territory arrangement, roll for first player; reroll ties.</li></ol></article>
         <article class="intro-card"><span>03</span><h3>Your turn</h3><ol><li><strong>Capture:</strong> advance your Front Line if your Position satisfies the Capture rules.</li><li><strong>Draw:</strong> draw one card.</li><li><strong>Opening:</strong> take your Action now, or save it.</li><li><strong>Movement:</strong> Advance, Hold, or Fall Back; resolve any battle caused by movement immediately.</li><li><strong>Denouement:</strong> take your Action now if you did not take it during Opening.</li><li><strong>Cleanup:</strong> resolve end-of-turn effects, discard down to the Hand limit, and pass the active-player marker.</li></ol></article>
-        <article class="intro-card"><span>04</span><h3>Actions and Assets</h3><p>An Action may play a card for its Action effect, bank a card from Hand using its inherent Bank Action if it has an Asset effect, take a legal Faction Action, or discard one of your Assets.</p><p>An additional Action does not by itself permit two Actions in one phase.</p></article>
-        <article class="intro-card"><span>05</span><h3>Movement</h3><p>During normal Movement, choose <strong>Advance</strong>, <strong>Hold</strong>, or <strong>Fall Back</strong>. Entering the opponent's Position creates a pending battle and ends that Movement sequence.</p><p><strong>Fall Back</strong> is ordinary Movement. A player who loses a battle <strong>retreats</strong>. A player who leaves a pending or active battle without losing <strong>withdraws</strong>.</p></article>
-        <article class="intro-card sequence-card"><span>06</span><h3>Battle sequence</h3><ol><li>Resolve Terms first if a Diplomat is involved; accepted Terms prevent the battle.</li><li>Resolve <strong>Onset</strong> effects.</li><li>Each player may set one eligible Hand card as a face-down Gambit.</li><li>Each player normally draws three cards into a private Reserve.</li><li>Reveal and resolve Gambits.</li><li>Each player may normally choose one eligible Reserve card as a face-down Tactic.</li><li>Reveal and resolve Tactics.</li><li>Apply active effects, roll, and compare battle totals; then resolve the Aftermath.</li></ol><p>If the defender has <strong>Defensive Edge</strong>, the defender wins tied battle totals. If a tie remains unresolved, make a separate unmodified Tiebreak Roll; higher roll wins and further ties are rerolled.</p></article>
+        <article class="intro-card"><span>04</span><h3>Actions and Assets</h3><p>An Action may play a card for its Action effect, bank a card from Hand using its inherent Bank Action if it has an Asset effect, take a legal Faction Feature marked 1 Action, or discard one of your Assets.</p><p>An additional Action does not by itself permit two Actions in one phase.</p></article>
+        <article class="intro-card"><span>05</span><h3>Movement</h3><p>During normal Movement, choose <strong>Advance</strong>, <strong>Hold</strong>, or <strong>Fall Back</strong>. Entering the opponent's Position begins <strong>Onset</strong> and ends that Movement sequence.</p><p><strong>Fall Back</strong> is ordinary Movement. A player who loses a battle <strong>retreats</strong>. A player who leaves an Onset or battle sequence without losing <strong>withdraws</strong>.</p></article>
+        <article class="intro-card sequence-card"><span>06</span><h3>Battle sequence</h3><ol><li>Begin <strong>Onset</strong>; if a Diplomat is involved, resolve Terms first. Accepted Terms end the sequence before a battle is fought.</li><li>Resolve the remaining <strong>Onset</strong> effects.</li><li>Each player may set one eligible Hand card as a face-down Gambit.</li><li>Each player normally draws three cards into a private Reserve.</li><li>Reveal and resolve Gambits.</li><li>Each player may normally choose one eligible Reserve card as a face-down Tactic.</li><li>Reveal and resolve Tactics.</li><li>Apply active effects, roll, and compare battle totals; then resolve the Aftermath.</li></ol><p>If the defender has <strong>Defensive Edge</strong>, the defender wins tied battle totals. If a tie remains unresolved, make a separate unmodified Tiebreak Roll; higher roll wins and further ties are rerolled.</p></article>
         <article class="intro-card"><span>07</span><h3>Aftermath</h3><p>Apply the result, retreat the loser, establish Occupation when applicable, resolve Aftermath effects, and clear battle cards to their normal destinations.</p><p>When an attacker wins on an opposing controlled Territory, the defender retreats and the attacker remains as the <strong>occupier</strong>. Control does not change yet.</p></article>
         <article class="intro-card"><span>08</span><h3>Front Line and Capture</h3><p>If your token remains on or beyond the next opposing Territory immediately beyond your Front Line until a later Capture step, that Territory joins your Front Line.</p><p>Control remains contiguous from your own end, Position may extend beyond control, and normal Capture advances the Front Line by at most one Territory.</p></article>
         <article class="intro-card objective-card"><span>09</span><h3>Run the Gauntlet</h3><p>You win immediately by either <strong>capturing the Territory at your opponent's end</strong> or <strong>forcing your opponent to make a Last Stand and winning the resulting battle</strong>.</p><p>A separate legal movement sequence can force the opponent to make a Last Stand after the opponent is forced beyond their end. You do not need to capture the final Territory first.</p></article>
@@ -180,13 +180,28 @@
     <section id="print" class="section print-section" aria-labelledby="print-title">
       <div class="section-heading split-heading">
         <div>
-          <p class="eyebrow">Step 4 · Print</p>
-          <h2 id="print-title">Put your starter Deck on the table.</h2>
+          <p class="eyebrow">Step 4 · Play</p>
+          <h2 id="print-title">Take your chosen side into a game.</h2>
         </div>
-        <p>The Deckbuilder will receive your faction and Leader, load the matching 30-card starter, and prepare the full first-game print package automatically.</p>
+        <p>Choose based on where the two players are. If you're together, use the physical game. If you're in different locations, use Tabletop Simulator. The same faction, Leader, starter Deck, tracking, and feedback apply either way.</p>
       </div>
 
-      <div class="print-grid">
+      <div class="play-mode-grid">
+        <article class="play-mode-card">
+          <p class="eyebrow">Together in person</p>
+          <h3>Physical tabletop</h3>
+          <p>Prepare the printed Deck, Leader, Territories, references, and faction components for each player, then play at one table.</p>
+          <a class="button secondary" href="#physicalSetup">Prepare the physical game</a>
+        </article>
+        <article class="play-mode-card">
+          <p class="eyebrow">Playing remotely</p>
+          <h3>Tabletop Simulator</h3>
+          <p>The public v0.7.0 Workshop mod contains all twelve starter kits and the shared table setup for players in different locations.</p>
+          <a class="button secondary" href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener">Open the Workshop mod ↗</a>
+        </article>
+      </div>
+
+      <div id="physicalSetup" class="print-grid">
         <div class="print-checklist">
           <ol>
             <li><strong>Confirm your choice.</strong> The summary below should show the faction and Leader you intend to play.</li>
@@ -199,11 +214,11 @@
         </div>
 
         <form id="printForm" class="print-action-card">
-          <p class="eyebrow">Ready to continue</p>
+          <p class="eyebrow">Physical play</p>
           <h3 id="printSelectionHeading">Choose a faction and Leader first.</h3>
           <p id="printSelectionCopy">Your selection is saved in this browser as you work.</p>
           <label class="confirmation"><input id="introConfirmed" type="checkbox" required /><span>I have read the First Game Introduction and understand that the full rules remain available during play.</span></label>
-          <button id="openStarterDeck" class="button primary" type="submit" disabled>Load and print my starter Deck</button>
+          <button id="openStarterDeck" class="button secondary" type="submit" disabled>Load printable starter Deck</button>
           <p id="printStatus" class="form-status" aria-live="polite"></p>
         </form>
       </div>
@@ -213,7 +228,7 @@
   <footer>
     <a class="brand footer-brand" href="../" aria-label="Gauntlet home"><span class="brand-mark" aria-hidden="true">G</span><span>Gauntlet</span></a>
     <div class="footer-links"><a href="../rulebook/">Rules</a><a href="../deckbuilder/">Deckbuilder</a><a href="../card-reference/">Card reference</a><a href="../playtest/guide/?role=participant">Game-night player guide</a></div>
-    <p>Current playtest edition: v0.7.0 · Copyright © 2026 Tymon Scott.</p>
+    <p>Current playtest edition: v0.7.1 · Copyright © 2026 Tymon Scott.</p>
   </footer>
 
   <script src="app.js?v=20260802-1" defer></script>

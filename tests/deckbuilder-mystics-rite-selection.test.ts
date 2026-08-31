@@ -40,11 +40,11 @@ describe('Deckbuilder Mystics Rite selection', () => {
   });
 
   it('loads and recognizes the official starter Rite packages and preserves them during bulk printing', () => {
-    expect(starters).toContain('state.rites = preset.factionId === "mystics" ? [...(preset.selectedRites || [])] : []');
+    expect(starters).toContain('state.rites = starterRiteIds(preset)');
     expect(starters).toContain('const currentRites = [...(state.rites || [])].sort()');
-    expect(starters).toContain('if (Array.isArray(state.rites)) state.rites = []');
+    expect(starters).toContain('if (Array.isArray(state.rites)) state.rites = starterRiteIds()');
     expect(bulkPrint).toContain('rites: [...(state.rites || [])]');
-    expect(bulkPrint).toContain('state.rites = preset.factionId === "mystics" ? [...(preset.selectedRites || [])] : []');
+    expect(bulkPrint).toContain('state.rites = starterRiteIds(preset)');
 
     const mystics = authority.starterDecks.decks.filter((deck: any) => deck.factionId === 'mystics');
     expect(mystics.map((deck: any) => deck.selectedRites)).toEqual([
@@ -62,8 +62,10 @@ describe('Deckbuilder Mystics Rite selection', () => {
     expect(printRequest).toContain('Rites: ${rites.length ? rites.join(", ") : "None selected"}');
   });
 
-  it('keeps old or incomplete Mystics snapshots loadable but invalid until three legal Rites are chosen', () => {
-    expect(rites).toContain('state.rites = resolveRiteIds(data.selectedRites || [])');
+  it('keeps candidate snapshots invalid until three legal Rites are chosen while released v0.7.0 uses its fixed three-Rite package', () => {
+    expect(rites).toContain('state.riteSelectionEnabled = Boolean(policy)');
+    expect(rites).toContain('state.rites = isMystics() ? state.ritePool.map(rite => rite.id) : []');
+    expect(rites).toContain('state.rites = state.riteSelectionEnabled');
     expect(rites).toContain('errors.push(`Choose exactly ${state.riteSelectedCount} different Rites');
     expect(rites).not.toContain('selectedRites || ["echoes", "blood", "crossing"]');
   });

@@ -1,6 +1,8 @@
 import { v070CanonicalContent } from '../content/v070';
 import { appendV070Event, type V070GameState } from './engine';
+import { drawV070Cards } from './turn-engine';
 import type { PlayerId } from './rules';
+import { faceUpV070AssetInstanceIds } from './asset-face-state';
 import type {
   V070BattleCardCommitment,
   V070UnsupportedBattleEffect,
@@ -26,6 +28,39 @@ const handlers: V070BattleEffectHandler[] = [
   modifier('neutral-new-recruits', '+1 Battle Total.', 1),
   modifier('neutral-rallying-cry', '+1 Battle Total.', 1),
   modifier('diplomats-gunboat-diplomacy', '+2 Battle Total.', 2),
+  {
+    cardId: 'diplomats-trade-concessions',
+    expectedText: 'Opponent: +1 Card. +2 Battle Total.',
+    timing: 'reveal',
+    apply: ({ state, owner, opponent }) => {
+      const draw = drawV070Cards(state, opponent, 1, 'Trade Concessions battle effect');
+      state.players[opponent].zones.hand.push(...draw.drawn);
+      participant(state, owner).battleModifier += 2;
+
+      appendV070Event(state, {
+        type: 'cards_drawn',
+        actor: opponent,
+        visibility: 'public',
+        payload: {
+          count: draw.drawn.length,
+          purpose: 'Trade Concessions battle effect',
+          reshuffles: draw.reshuffles,
+          exhausted: draw.exhausted,
+        },
+      });
+      if (draw.drawn.length > 0) {
+        appendV070Event(state, {
+          type: 'drawn_card_identity',
+          actor: opponent,
+          visibility: opponent,
+          payload: {
+            cardInstanceIds: [...draw.drawn],
+            purpose: 'Trade Concessions battle effect',
+          },
+        });
+      }
+    },
+  },
   {
     cardId: 'neutral-forced-march',
     expectedText: 'Attacker — +1 Battle Total.',
@@ -87,7 +122,8 @@ const handlers: V070BattleEffectHandler[] = [
     expectedText: 'If the opponent has more face-up Assets than you, gain Advantage.',
     timing: 'reveal',
     apply: ({ state, owner, opponent }) => {
-      if (state.players[opponent].zones.assetBank.length > state.players[owner].zones.assetBank.length) {
+      if (faceUpV070AssetInstanceIds(state, opponent).length
+        > faceUpV070AssetInstanceIds(state, owner).length) {
         participant(state, owner).advantage += 1;
       }
     },
@@ -137,10 +173,15 @@ export function resolveV070SupportedRevealEffects(
   const battle = state.battle;
   if (!battle) throw new Error('Battle effect resolution requires an active battle.');
 
-  const ordered = [
-    ...commitments.filter(commitment => commitment.owner === battle.attacker),
-    ...commitments.filter(commitment => commitment.owner === battle.defender),
-  ];
+  const attackerQueue = commitments.filter(commitment => commitment.owner === battle.attacker);
+  const defenderQueue = commitments.filter(commitment => commitment.owner === battle.defender);
+  const ordered: V070BattleCardCommitment[] = [];
+  while (attackerQueue.length > 0 || defenderQueue.length > 0) {
+    const attackerCommitment = attackerQueue.shift();
+    if (attackerCommitment) ordered.push(attackerCommitment);
+    const defenderCommitment = defenderQueue.shift();
+    if (defenderCommitment) ordered.push(defenderCommitment);
+  }
 
   for (const commitment of ordered) {
     const cardId = requireCardId(state, commitment.instanceId);
@@ -229,7 +270,7 @@ function otherActiveBattleCardHasCost(
 ): boolean {
   if (!state.battleRuntime) return false;
   const runtime = state.battleRuntime.participants[owner];
-  const commitments = [runtime.gambit, runtime.tactic]
+  const commitments = [runtime.gambit, ...runtime.additionalGambits, runtime.tactic]
     .filter((item): item is V070BattleCardCommitment => Boolean(item))
     .filter(item => item.instanceId !== excludedInstanceId);
 

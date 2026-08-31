@@ -39,11 +39,13 @@ export interface V070BattleOnsetInput {
   defenderControlsContested: boolean;
   lastStand?: boolean;
   defensiveEdgeRemoved?: boolean;
+  attackerGambitProhibited?: boolean;
 }
 
 export interface V070BattleState extends V070BattleOnsetInput {
   lastStand: boolean;
   defensiveEdgeRemoved: boolean;
+  attackerGambitProhibited: boolean;
   stage: V070BattleStage;
   termsAccepted: boolean | null;
   winner: PlayerId | null;
@@ -92,18 +94,44 @@ export interface V070LastStandAccessInput {
   defenderPosition: ExtendedPosition;
   separateMovementSequence: boolean;
   advancingBeyondOpponentEnd: boolean;
+  attackerGambitProhibited?: boolean;
 }
 
 export type V070MovementSequenceSource = 'normal' | 'effect';
+
+export type V070MovementChoiceRestriction =
+  | 'any'
+  | 'advance_only'
+  | 'advance_required';
+export type V070MovementBattleRestriction =
+  | 'allowed'
+  | 'prohibited'
+  | 'allowed_no_gambit';
+
+export interface V070MovementStep {
+  source: string;
+  choiceRestriction: V070MovementChoiceRestriction;
+  battleRestriction: V070MovementBattleRestriction;
+}
+
+export interface V070GambitMandate {
+  playerId: PlayerId;
+  instanceId: string;
+  sourceInstanceId: string;
+}
 
 export interface V070TurnState {
   phase: TurnPhase;
   actionsAvailable: number;
   actionsTaken: Record<'opening' | 'denouement', number>;
+  phaseActionGrants: Record<'opening' | 'denouement', number>;
   movementRemaining: number;
   movementSequenceOpen: boolean;
   battleInitiated: boolean;
   movementSequenceSource: V070MovementSequenceSource | null;
+  pendingNormalMovementSteps: V070MovementStep[];
+  movementStepQueue: V070MovementStep[];
+  gambitMandates: V070GambitMandate[];
 }
 
 function assertReleasedRuleContract(): void {
@@ -127,7 +155,7 @@ assertReleasedRuleContract();
 export function createV070BattleOnset(input: V070BattleOnsetInput): V070BattleState {
   if (input.attacker === input.defender) throw new Error('Attacker and defender must be different players.');
   assertTerritoryCount(input.territoryCount);
-  assertTerritoryIndex(input.attackerOrigin, input.territoryCount, 'attacker origin');
+  assertExtendedPosition(input.attackerOrigin, input.territoryCount, 'attacker origin');
   assertExtendedPosition(input.contestedPosition, input.territoryCount, 'contested Position');
   assertExtendedPosition(input.positions.A, input.territoryCount, 'A Position');
   assertExtendedPosition(input.positions.B, input.territoryCount, 'B Position');
@@ -153,6 +181,7 @@ export function createV070BattleOnset(input: V070BattleOnsetInput): V070BattleSt
     ...input,
     lastStand,
     defensiveEdgeRemoved: Boolean(input.defensiveEdgeRemoved),
+    attackerGambitProhibited: Boolean(input.attackerGambitProhibited),
     stage: 'onset',
     termsAccepted: null,
     winner: null,
@@ -179,6 +208,7 @@ export function createV070LastStandOnset(input: V070LastStandAccessInput): V070B
     positions: { A: contestedPosition, B: contestedPosition },
     defenderControlsContested: false,
     lastStand: true,
+    attackerGambitProhibited: Boolean(input.attackerGambitProhibited),
   });
 }
 
@@ -369,10 +399,61 @@ export function createV070TurnState(additionalActions = 0): V070TurnState {
     phase: 'capture',
     actionsAvailable: 1 + nonnegativeInteger(additionalActions),
     actionsTaken: { opening: 0, denouement: 0 },
+    phaseActionGrants: { opening: 0, denouement: 0 },
     movementRemaining: 0,
     movementSequenceOpen: false,
     battleInitiated: false,
     movementSequenceSource: null,
+    pendingNormalMovementSteps: [],
+    movementStepQueue: [],
+    gambitMandates: [],
+  };
+}
+
+export function spendV070Action(state: V070TurnState): V070TurnState {
+  if (state.phase !== 'opening' && state.phase !== 'denouement') {
+    throw new Error('Actions may normally be taken only during Opening or Denouement.');
+  }
+  if (state.actionsAvailable <= 0) {
+    throw new Error('No Actions remain this turn.');
+  }
+
+  const phaseLimit = 1 + state.phaseActionGrants[state.phase];
+  if (state.actionsTaken[state.phase] >= phaseLimit) {
+    throw new Error(
+      `The Action limit for ${state.phase} has already been reached.`,
+    );
+  }
+
+  return {
+    ...state,
+    actionsAvailable: state.actionsAvailable - 1,
+    actionsTaken: {
+      ...state.actionsTaken,
+      [state.phase]: state.actionsTaken[state.phase] + 1,
+    },
+  };
+}
+
+export function grantCurrentPhaseV070Actions(
+  state: V070TurnState,
+  amount = 1,
+): V070TurnState {
+  if (state.phase !== 'opening' && state.phase !== 'denouement') {
+    throw new Error(
+      'Current-phase Actions may be granted only during Opening or Denouement.',
+    );
+  }
+  const grant = nonnegativeInteger(amount);
+  if (grant < 1) return { ...state };
+
+  return {
+    ...state,
+    actionsAvailable: state.actionsAvailable + grant,
+    phaseActionGrants: {
+      ...state.phaseActionGrants,
+      [state.phase]: state.phaseActionGrants[state.phase] + grant,
+    },
   };
 }
 
@@ -380,38 +461,120 @@ export function advanceV070TurnPhase(state: V070TurnState): V070TurnState {
   const index = V070_TURN_SEQUENCE.indexOf(state.phase);
   if (index < 0 || index === V070_TURN_SEQUENCE.length - 1) return { ...state };
 
+  let actionsAvailable = state.actionsAvailable;
+  let phaseActionGrants = state.phaseActionGrants;
+
+  if (state.phase === 'opening' || state.phase === 'denouement') {
+    const grants = state.phaseActionGrants[state.phase];
+    const grantActionsUsed = Math.max(
+      0,
+      state.actionsTaken[state.phase] - 1,
+    );
+    const unusedGrants = Math.max(0, grants - grantActionsUsed);
+    actionsAvailable = Math.max(0, actionsAvailable - unusedGrants);
+    phaseActionGrants = {
+      ...state.phaseActionGrants,
+      [state.phase]: 0,
+    };
+  }
+
   return {
     ...state,
     phase: V070_TURN_SEQUENCE[index + 1],
+    actionsAvailable,
+    phaseActionGrants,
     movementRemaining: 0,
     movementSequenceOpen: false,
     battleInitiated: false,
     movementSequenceSource: null,
+    pendingNormalMovementSteps:
+      state.phase === 'movement' ? [] : [...state.pendingNormalMovementSteps],
+    movementStepQueue: [],
   };
 }
 
-export function beginEffectGrantedV070Movement(state: V070TurnState, movement = 1): V070TurnState {
+export function queueNormalV070MovementStep(
+  state: V070TurnState,
+  step: V070MovementStep,
+): V070TurnState {
+  if (state.phase !== 'opening') {
+    throw new Error('Normal Movement bonuses must be queued during Opening.');
+  }
+  if (state.movementSequenceOpen) {
+    throw new Error('Normal Movement bonuses must be queued before movement begins.');
+  }
+  return {
+    ...state,
+    pendingNormalMovementSteps: [
+      ...state.pendingNormalMovementSteps,
+      structuredClone(step),
+    ],
+  };
+}
+
+export function currentV070MovementStep(
+  state: V070TurnState,
+): V070MovementStep | null {
+  if (!state.movementSequenceOpen || state.movementStepQueue.length === 0) {
+    return null;
+  }
+  return structuredClone(state.movementStepQueue[0]);
+}
+
+export function beginEffectGrantedV070Movement(
+  state: V070TurnState,
+  movement = 1,
+  options: Partial<Omit<V070MovementStep, 'source'>> & { source?: string } = {},
+): V070TurnState {
   const amount = nonnegativeInteger(movement);
   if (amount < 1) throw new Error('Effect-granted movement must grant at least one movement.');
 
+  const step: V070MovementStep = {
+    source: options.source ?? 'effect',
+    choiceRestriction: options.choiceRestriction ?? 'any',
+    battleRestriction: options.battleRestriction ?? 'allowed',
+  };
+  const queue = Array.from({ length: amount }, () => structuredClone(step));
+
   return {
     ...state,
-    movementRemaining: amount,
+    movementRemaining: queue.length,
     movementSequenceOpen: true,
     battleInitiated: false,
     movementSequenceSource: 'effect',
+    movementStepQueue: queue,
   };
 }
 
 export function beginNormalV070Movement(state: V070TurnState, additionalMovement = 0): V070TurnState {
   if (state.phase !== 'movement') throw new Error('Normal movement begins only during the Movement phase.');
 
+  const unrestrictedAdditional = Array.from(
+    { length: nonnegativeInteger(additionalMovement) },
+    (): V070MovementStep => ({
+      source: 'normal_additional',
+      choiceRestriction: 'any',
+      battleRestriction: 'allowed',
+    }),
+  );
+  const queue: V070MovementStep[] = [
+    {
+      source: 'normal',
+      choiceRestriction: 'any',
+      battleRestriction: 'allowed',
+    },
+    ...unrestrictedAdditional,
+    ...state.pendingNormalMovementSteps.map(step => structuredClone(step)),
+  ];
+
   return {
     ...state,
-    movementRemaining: 1 + nonnegativeInteger(additionalMovement),
+    movementRemaining: queue.length,
     movementSequenceOpen: true,
     battleInitiated: false,
     movementSequenceSource: 'normal',
+    pendingNormalMovementSteps: [],
+    movementStepQueue: queue,
   };
 }
 
@@ -426,25 +589,47 @@ export function applyV070MovementChoice(
   if (state.movementSequenceSource === 'normal' && state.phase !== 'movement') {
     throw new Error('Normal movement is legal only during the Movement phase.');
   }
+
+  const step = currentV070MovementStep(state);
+  if (!step) throw new Error('An open movement sequence must have a current movement step.');
+
   if (choice === 'hold') {
+    if (step.choiceRestriction === 'advance_required') {
+      throw new Error('The current movement effect requires an Advance.');
+    }
     return {
       ...state,
       movementRemaining: 0,
       movementSequenceOpen: false,
       movementSequenceSource: null,
+      movementStepQueue: [],
     };
   }
   if (state.movementRemaining <= 0) throw new Error('No movement remains.');
+  if ((step.choiceRestriction === 'advance_only'
+      || step.choiceRestriction === 'advance_required')
+    && choice !== 'advance') {
+    throw new Error('The current additional movement may only be used to Advance.');
+  }
 
   const initiatesBattle = Boolean(options.initiatesBattle);
-  const remaining = initiatesBattle ? 0 : state.movementRemaining - 1;
+  if (initiatesBattle && step.battleRestriction === 'prohibited') {
+    throw new Error('The current additional movement cannot initiate a battle.');
+  }
+
+  const remainingQueue = initiatesBattle
+    ? []
+    : state.movementStepQueue.slice(1).map(item => structuredClone(item));
+  const remaining = remainingQueue.length;
 
   return {
     ...state,
     movementRemaining: remaining,
     movementSequenceOpen: !initiatesBattle && remaining > 0,
-    movementSequenceSource: initiatesBattle || remaining === 0 ? null : state.movementSequenceSource,
+    movementSequenceSource:
+      initiatesBattle || remaining === 0 ? null : state.movementSequenceSource,
     battleInitiated: initiatesBattle,
+    movementStepQueue: remainingQueue,
   };
 }
 

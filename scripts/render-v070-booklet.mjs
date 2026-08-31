@@ -4,6 +4,7 @@ import path from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
 import { chromium } from 'playwright';
 import { applyV070CanonicalCorrections, applyV070RulebookCorrections } from '../rulebook/player-facing/v070-corrections.js';
+import { synchronizeKnownRulebookClaims, validateKnownRulebookClaims } from '../rulebook/player-facing/rule-facts.js';
 
 const ROOT = process.cwd();
 const RELEASE_VERSION = 'v0.7.0';
@@ -159,9 +160,21 @@ for (const required of [RULEBOOK_PATH, CANONICAL_PATH, STARTERS_PATH, PROVENANCE
   if (!fs.existsSync(required)) throw new Error(`Missing v0.7.0 source artifact: ${relative(required)}.`);
 }
 
+const canonical = applyV070CanonicalCorrections(JSON.parse(fs.readFileSync(CANONICAL_PATH, 'utf8')));
+fs.writeFileSync(CANONICAL_PATH, jsonText(canonical));
+
 const sourceRulebook = fs.readFileSync(RULEBOOK_PATH, 'utf8').replace(/\r\n/g, '\n');
-const rulebook = applyV070RulebookCorrections(sourceRulebook);
-if (rulebook !== sourceRulebook) fs.writeFileSync(RULEBOOK_PATH, rulebook);
+const semanticRulebook = applyV070RulebookCorrections(sourceRulebook);
+const synchronizedRulebook = synchronizeKnownRulebookClaims(semanticRulebook, canonical);
+const rulebook = synchronizedRulebook.output;
+validateKnownRulebookClaims(rulebook, canonical);
+if (rulebook !== sourceRulebook) {
+  fs.writeFileSync(RULEBOOK_PATH, rulebook);
+  if (synchronizedRulebook.changes.length) {
+    console.log('Synchronized maintained v0.7.0 Rulebook facts from canonical data:');
+    for (const change of synchronizedRulebook.changes) console.log(`- ${change.label}`);
+  }
+}
 const chapter11 = extractChapter11(rulebook);
 const originalChapter11 = fs.readFileSync(PLAYER_CHAPTER_11_PATH);
 
@@ -232,8 +245,6 @@ if (provenance.release_version !== RELEASE_VERSION || provenance.source_version 
   throw new Error('v0.7.0 source provenance is incomplete.');
 }
 
-const canonical = applyV070CanonicalCorrections(JSON.parse(fs.readFileSync(CANONICAL_PATH, 'utf8')));
-fs.writeFileSync(CANONICAL_PATH, jsonText(canonical));
 const starters = JSON.parse(fs.readFileSync(STARTERS_PATH, 'utf8'));
 const publicRoutes = {
   start: '/start/',

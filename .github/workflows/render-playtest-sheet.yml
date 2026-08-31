@@ -4,9 +4,8 @@ on:
   push:
     branches:
       - main
-      - rules/v0.6.1-playtest-revision
     paths:
-      - playtest/index.html
+      - playtest/sheet/index.html
       - playtest/styles.css
       - playtest/README.md
       - .github/workflows/render-playtest-sheet.yml
@@ -14,7 +13,7 @@ on:
     branches:
       - main
     paths:
-      - playtest/index.html
+      - playtest/sheet/index.html
       - playtest/styles.css
       - playtest/README.md
       - .github/workflows/render-playtest-sheet.yml
@@ -65,15 +64,15 @@ jobs:
             if (message.type() === 'error') errors.push(message.text());
           });
 
-          await page.goto('http://127.0.0.1:8000/playtest/?serial=G061-PREVIEW', { waitUntil: 'networkidle' });
+          await page.goto('http://127.0.0.1:8000/playtest/sheet/?serial=G070-PREVIEW', { waitUntil: 'networkidle' });
           await page.screenshot({
-            path: 'playtest/Gauntlet_v0.6.1_Playtest_Sheet_Preview.png',
+            path: 'playtest/Gauntlet_v0.7.0_Playtest_Sheet_Preview.png',
             fullPage: true
           });
 
           await page.emulateMedia({ media: 'print' });
           await page.pdf({
-            path: 'playtest/Gauntlet_v0.6.1_Playtest_Sheet.pdf',
+            path: 'playtest/Gauntlet_v0.7.0_Playtest_Sheet.pdf',
             format: 'Letter',
             printBackground: true,
             preferCSSPageSize: true,
@@ -92,7 +91,7 @@ jobs:
           from pathlib import Path
           from pypdf import PdfReader
 
-          path = Path('playtest/Gauntlet_v0.6.1_Playtest_Sheet.pdf')
+          path = Path('playtest/Gauntlet_v0.7.0_Playtest_Sheet.pdf')
           if not path.exists() or path.stat().st_size < 20_000:
               raise SystemExit('Generated PDF is missing or unexpectedly small')
           reader = PdfReader(str(path))
@@ -123,15 +122,15 @@ jobs:
       - name: Upload rendered sheet
         uses: actions/upload-artifact@v4
         with:
-          name: gauntlet-v061-playtest-sheet
+          name: gauntlet-v070-playtest-sheet
           path: |
-            playtest/Gauntlet_v0.6.1_Playtest_Sheet.pdf
-            playtest/Gauntlet_v0.6.1_Playtest_Sheet_Preview.png
+            playtest/Gauntlet_v0.7.0_Playtest_Sheet.pdf
+            playtest/Gauntlet_v0.7.0_Playtest_Sheet_Preview.png
           if-no-files-found: error
 
       - name: Commit generated PDF on main
         if: github.event_name == 'push' && github.ref_name == 'main'
         run: |
           node scripts/commit-generated-files.mjs \
-            "Render v0.6.1 printable playtest sheet PDF" \
-            -- playtest/Gauntlet_v0.6.1_Playtest_Sheet.pdf
+            "Render v0.7.0 printable playtest sheet PDF" \
+            -- playtest/Gauntlet_v0.7.0_Playtest_Sheet.pdf

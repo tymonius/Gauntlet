@@ -262,6 +262,7 @@
   ]);
 
   function integrateLongCardReview() {
+    if (document.body?.classList.contains('developer-catalog-page')) return;
     const territorySection = document.querySelector('.territory-specimen-section');
     if (!territorySection || document.querySelector('.long-card-review-section')) return;
 
@@ -473,7 +474,8 @@
     clearInspectionStage();
     inspectionSource = card;
 
-    const rect = card.getBoundingClientRect();
+    const nativeWidth = card.offsetWidth;
+    const nativeHeight = card.offsetHeight;
     const clone = card.cloneNode(true);
     clone.classList.remove('card-inspectable');
     clone.classList.add('card-inspection-clone');
@@ -486,8 +488,8 @@
 
     inspectionStage.append(clone);
     inspectionSubject = clone;
-    inspectionWidth = rect.width;
-    inspectionHeight = rect.height;
+    inspectionWidth = nativeWidth;
+    inspectionHeight = nativeHeight;
     makeArtworkInspectable(clone, openArtworkInspection);
     showInspection(inspectionLabel(card));
   }

@@ -65,7 +65,7 @@ async function main() {
   const page = await context.newPage();
 
   try {
-    await page.goto(`${baseUrl}/card-design/#rite-cards`, { waitUntil: 'load' });
+    await page.goto(`${baseUrl}/card-design/?type=rite#rite-cards`, { waitUntil: 'load' });
     await page.waitForFunction(expected => document.querySelectorAll('.rite-card').length === expected, expectedCardFaces);
     await page.waitForFunction(() => [...document.querySelectorAll('.rite-card')].every(card => (
       card.dataset.parchmentLoaded === 'true'

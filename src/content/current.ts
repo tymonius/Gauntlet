@@ -21,21 +21,15 @@ export * from '../v070/turn-engine';
 export * from '../v070/battle-types';
 export * from '../v070/battle-engine';
 export * from '../v070/battle-effects';
+export * from '../v070/diplomats';
+export * from '../v070/front-line';
+export * from '../v070/overlays';
+export * from '../v070/assets';
+export * from '../v070/sanctions';
+export * from '../v070/movement-triggers';
 export * from '../v070/views';
 
-/**
- * These procedure modules remain explicitly versioned because they were
- * implemented and validated during the v0.6.3 migration. They are retained as
- * reusable migration surfaces, not silently relabeled as v0.7.0 behavior.
- * Promote them individually only after current-rule revalidation.
+/** Historical v0.6.x procedure libraries are intentionally not re-exported here.
+ * Import an explicit versioned module when working with migration evidence.
  */
-export * from '../v063/cards';
-export * from '../v063/copied-effects';
-export * from '../v063/arcane-knowledge';
-export * from '../v063/copied-effect-callers';
-export * from '../v063/gauntlet';
-export * from '../v063/manifest-destiny';
-export * from '../v063/territories';
-export * from '../v063/territory-battles';
-
 export { V070_RULES_VERSION as CURRENT_RULES_VERSION } from './v070';

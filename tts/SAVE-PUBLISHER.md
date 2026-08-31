@@ -77,13 +77,17 @@ The bag description records the starter summary and recommended Territory order.
 
 ## Deckbuilder custom Deck import
 
-Deckbuilder-to-TTS import is a **v0.7.1 feature**. The active `v0.7.1-candidate` TTS Review Scaffold installs the importer for private QA, while the public Deckbuilder keeps **Copy for Tabletop Simulator** hidden for prerelease authorities. The published v0.7.0 Workshop mod therefore remains the only public TTS version during candidate testing.
+Deckbuilder-to-TTS import is a **v0.7.1 feature**. In the Deckbuilder, the existing ruleset toggle is the exposure boundary: the released v0.7.0 view does not show TTS export, while the `v0.7.1-candidate` view shows the Tabletop Simulator transfer section for private QA. The published v0.7.0 Workshop mod remains the only public TTS version during candidate testing.
 
-When the current-game authority becomes stable v0.7.1, the Deckbuilder can copy a compact versioned `GDL1:` Deck Code containing only the current game version, Deck name, faction/Leader ids, playable-card ids with quantities, and the three selected Territory ids.
+The Deckbuilder copies a compact versioned `GDL1:` Deck Code containing the current game version, Deck name, faction/Leader ids, playable-card ids with quantities, and the three selected Territory ids. Mystics codes additionally carry the three selected Rite ids.
 
-The assembled v0.7.1-candidate and later TTS saves install a global **IMPORT DECK** control after faction supplementals are assembled. Import validates the Deck Code against the same generated card/Territory manifests and exact TTS game version, then uses the matching official starter Bag as the runtime template. The custom Bag therefore keeps the correct Leader, faction-colored utility pieces, references, trackers, Proposals/Deeds/Rites, and other ready supplementals while replacing only the playable Deck and selected Territory stack.
+The assembled v0.7.1-candidate and later TTS saves install a global **DECK IMPORT** control after faction supplementals are assembled. Import validates the Deck Code against the generated card/Territory/Rite assets and exact TTS game version.
 
-Official starter Bags carry `gauntlet:starter-kit:<starter-id>` GM notes so the importer can locate a safe template. The source starter Bag is never modified.
+During save generation, the importer captures a pruned snapshot of each fully assembled faction/Leader starter kit and stores each snapshot as its own locked, non-selectable internal Bag parked off-table. The compact Global Lua configuration stores only the direct GUID for each starter template; the large object trees remain native TTS save data rather than being serialized into script. A hard build-time size guard prevents the importer Global script from growing beyond 100 KB.
+
+At runtime, custom import resolves the one requested template directly with `getObjectFromGUID()` and reads its native table data with `getData()`. It does not scan the table, serialize all templates, or JSON-decode a template library. The custom Bag preserves the correct Leader, faction-colored utility pieces, references, trackers, Proposals/Deeds, and other ready supplementals while replacing the playable Deck and selected Territory stack. For Mystics, it also rebuilds the **Rites + Ritual** stack from the three selected Rites plus Ritual of Ascension.
+
+Visible official starter Bags still carry `gauntlet:starter-kit:<starter-id>` GM notes for save validation and ordinary setup, but they are **not runtime importer dependencies**. Players may move, unpack, or delete them without breaking later custom Deck imports.
 
 A Deck Code from another game version is rejected rather than migrated silently; re-open that Deck in the current Deckbuilder and export a fresh code.
 
@@ -116,17 +120,15 @@ must pass. A non-ready component, missing required generated object, starter-ass
 
 ## Manual QA record
 
-The active development QA record is:
+The stable v0.7.1 release uses `tts/release-qa/v0.7.1.json`. The completed v0.7.0 record remains preserved separately at `tts/release-qa/v0.7.0.json` as evidence for the already-published Workshop version.
 
-- `tts/release-qa/v0.7.1-candidate.json`
-
-It begins `in-progress`, with all 18 manual checks false and `approvedForWorkshop: false`. The completed v0.7.0 record remains preserved separately at `tts/release-qa/v0.7.0.json` as evidence for the already-published Workshop version.
+For v0.7.1, checks covering TTS surfaces that are unchanged from the completed v0.7.0 package may inherit that prior QA evidence when the inheritance is explicit in the v0.7.1 record. Changed surfaces must be exercised again in the stable v0.7.1 artifact. The v0.7.1 delta gate currently requires fresh validation of stable hosted-save loading, v0.7.1 Rulebook/setup behavior, Mystics Rites and Completed faces, core handling of the changed package, focused changed-surface drills, and final friction resolution.
 
 A release QA record remains `in-progress` until the corresponding in-game checks are actually completed. Schema version 3 records the **18 required checks**, grouped as follows.
 
 ### Table and setup
 
-- successful load of the hosted v0.7.0 save and custom assets;
+- successful load of the hosted save for the version under QA and its custom assets;
 - White/Green player perspectives and hand/reserve zones;
 - all six Gauntlet snaps and Territory orientation;
 - Player Tokens and battle dice;

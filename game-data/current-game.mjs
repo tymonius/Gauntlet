@@ -58,30 +58,8 @@ function validateLeader(leader) {
   }
 }
 
-function legacySectionText(section) {
-  if (section?.text) return section.text;
-  if (Array.isArray(section?.items)) {
-    return section.items.map(item => `${item.name}: ${item.text}`).join(' ');
-  }
-  return '';
-}
-
 function runtimeLeader(source) {
-  const leader = clone(source);
-  leader.sections = requireArray(leader.sections, `${leader.id} Leader sections`).map(section => {
-    const resolved = { ...section };
-    Object.defineProperty(resolved, Symbol.iterator, {
-      enumerable: false,
-      configurable: false,
-      value: function* legacyLeaderSectionTuple() {
-        yield resolved.name;
-        yield legacySectionText(resolved);
-        yield resolved.cost || '';
-      },
-    });
-    return resolved;
-  });
-  return leader;
+  return clone(source);
 }
 
 function validateMysticsStarterRites(authority) {
@@ -164,6 +142,32 @@ function validateAuthority(authority) {
     if (!card?.id || !card?.name || ids.has(card.id)) throw new Error(`Duplicate or incomplete playable card ${card?.id || '(missing id)'}.`);
     ids.add(card.id);
   }
+
+  const headingRules = gameplay.card_rules?.effect_headings;
+  const supportedHeadings = new Set(requireArray(headingRules?.supported, 'supported card effect headings'));
+  const declaredPresentHeadings = new Set(requireArray(headingRules?.all_present_headings, 'present card effect headings'));
+  const retiredHeadings = new Set(requireArray(headingRules?.retired, 'retired card effect headings'));
+  const actualHeadings = new Set();
+
+  for (const card of gameplay.cards) {
+    for (const effect of requireArray(card.effects, `${card.id} effects`)) {
+      const label = String(effect?.label || '').trim();
+      if (!label) throw new Error(`Current card ${card.id} has an effect without a heading.`);
+      if (!supportedHeadings.has(label)) {
+        throw new Error(`Current card ${card.id} uses unsupported effect heading ${label}.`);
+      }
+      if (retiredHeadings.has(label)) {
+        throw new Error(`Current card ${card.id} still uses retired effect heading ${label}.`);
+      }
+      actualHeadings.add(label);
+    }
+  }
+
+  if (actualHeadings.size !== declaredPresentHeadings.size
+    || [...actualHeadings].some(label => !declaredPresentHeadings.has(label))) {
+    throw new Error('Current card effect-heading taxonomy does not match the headings actually present on cards.');
+  }
+
   const territoryIds = new Set();
   for (const territory of gameplay.territories) {
     if (!territory?.id || territoryIds.has(territory.id)) throw new Error(`Duplicate or incomplete Territory ${territory?.id || '(missing id)'}.`);
@@ -241,9 +245,20 @@ async function resolveCurrentGame() {
   });
 }
 
+function explicitlyRequestsReleasedRuleset() {
+  if (typeof window === 'undefined') return false;
+  return new URLSearchParams(window.location.search).get('rules') === 'released';
+}
+
+async function resolveRequestedGame() {
+  if (!explicitlyRequestsReleasedRuleset()) return resolveCurrentGame();
+  const { loadPublishedGame } = await import('./ruleset.mjs');
+  return loadPublishedGame();
+}
+
 export function loadCurrentGame() {
   if (!currentGamePromise) {
-    currentGamePromise = resolveCurrentGame().catch(error => {
+    currentGamePromise = resolveRequestedGame().catch(error => {
       currentGamePromise = null;
       throw error;
     });

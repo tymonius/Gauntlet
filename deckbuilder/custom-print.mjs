@@ -179,11 +179,6 @@ function buildCatalog(game) {
     if (entry) entries.push(entry);
   }
 
-  const ritual = game.mystics?.ritual;
-  if (ritual?.id && !entries.some(entry => entry.key === `ritual:${ritual.id}`)) {
-    entries.push(makeEntry(`ritual:${ritual.id}`, ritual.name || "Ritual of Ascension", "Ritual", "mystics", factionNames.get("mystics") || "Mystics", "portrait", "specialBack", { surface: "component", kind: "ritual", id: ritual.id }));
-  }
-
   const categoryIndex = category => {
     const index = CATEGORY_ORDER.indexOf(category);
     return index < 0 ? CATEGORY_ORDER.length : index;
@@ -201,7 +196,7 @@ function componentCatalogEntry(component, factionNames) {
   if (!render) return null;
   const faction = component.faction || "shared";
   const orientation = component.id === "financiers-deed" || component.family === "deed-card" || component.orientation === "landscape" ? "landscape" : "portrait";
-  const backPolicy = component.id === "financiers-capital-ledger" ? "ledgerDuplex" : (component.backPolicy || "standardBack");
+  const backPolicy = component.backPolicy || "standardBack";
   return makeEntry(`component:${component.id}`, component.name, componentCategory(component), faction, factionNames.get(faction) || (faction === "shared" ? "Shared" : faction), orientation, backPolicy, render);
 }
 
@@ -209,6 +204,8 @@ function renderDescriptorForComponent(component) {
   const explicit = component.renderSource || {};
   const surface = String(explicit.surface || "");
   const componentId = String(explicit.componentId || "").trim();
+  const explicitKind = String(explicit.kind || "").trim();
+  if (explicitKind && componentId) return { surface: "component", kind: explicitKind, id: componentId };
   if (component.id === "financiers-capital-ledger") return { surface: "component", kind: "supplemental", id: "financiers-capital-ledger" };
   if (component.id === "financiers-deed") return { surface: "component", kind: "supplemental", id: "financiers-deed" };
   if (/supplemental-card\.js$/i.test(surface) && componentId) return { surface: "component", kind: "supplemental", id: componentId };
@@ -219,6 +216,7 @@ function renderDescriptorForComponent(component) {
   if (component.family === "tracker") return { surface: "component", kind: componentId ? "tracker" : "supplemental", id: componentId || component.id };
   if (component.family === "proposal-treaty-card") return { surface: "component", kind: "proposal", id: component.id.replace(/^diplomats-proposal-/, "") };
   if (component.family === "rite-card") return { surface: "component", kind: "rite", id: component.id.replace(/^mystics-rite-/, "") };
+  if (component.family === "ritual-card") return { surface: "component", kind: "ritual", id: componentId || component.id.replace(/^mystics-ritual-of-/, "") };
   if (component.family === "ledger" || component.family === "deed-card") return { surface: "component", kind: "supplemental", id: componentId || component.id };
   return { surface: "component", kind: "supplemental", id: componentId || component.id };
 }
@@ -230,6 +228,7 @@ function componentCategory(component) {
   if (component.family === "tracker") return "Tracker";
   if (component.family === "proposal-treaty-card") return "Proposal / Treaty";
   if (component.family === "rite-card") return "Rite";
+  if (component.family === "ritual-card") return "Ritual";
   return "Supplemental card";
 }
 
@@ -399,17 +398,22 @@ function customPageHtml(sheet, includeStandardBacks, backStyle, isLast) {
 }
 
 function reverseCellHtml(entry, includeStandardBacks, backStyle) {
-  if (entry.backPolicy === "ledgerDuplex") return cardFrameHtml(entry, "front");
   if (intrinsicReverse(entry)) return cardFrameHtml(entry, "reverse");
   if (includeStandardBacks && entry.backPolicy === "standardBack") return backFrameHtml(backFactionForEntry(entry, backStyle));
   return "";
 }
 
+function selectedRulesetMode() {
+  return window.GAUNTLET_DECKBUILDER_RULESET?.mode
+    || (new URLSearchParams(window.location.search).get("rules") === "candidate" ? "candidate" : "released");
+}
+
 function cardFrameHtml(entry, side) {
+  const ruleset = `&rules=${encodeURIComponent(selectedRulesetMode())}`;
   let src;
-  if (entry.render.surface === "card") src = `/card-design/card-print-render.html?card=${encodeURIComponent(entry.render.id)}&fit=production`;
-  else if (entry.render.surface === "territory") src = `/card-design/territory-print-render.html?territory=${encodeURIComponent(entry.render.id)}`;
-  else src = `/card-design/component-print-render.html?kind=${encodeURIComponent(entry.render.kind)}&id=${encodeURIComponent(entry.render.id)}&side=${encodeURIComponent(side)}${entry.orientation === "landscape" ? "&orientation=landscape" : ""}`;
+  if (entry.render.surface === "card") src = `/card-design/card-print-render.html?card=${encodeURIComponent(entry.render.id)}&fit=production${ruleset}`;
+  else if (entry.render.surface === "territory") src = `/card-design/territory-print-render.html?territory=${encodeURIComponent(entry.render.id)}${ruleset}`;
+  else src = `/card-design/component-print-render.html?kind=${encodeURIComponent(entry.render.kind)}&id=${encodeURIComponent(entry.render.id)}&side=${encodeURIComponent(side)}${entry.orientation === "landscape" ? "&orientation=landscape" : ""}${ruleset}`;
   const frame = `<iframe class="custom-render-frame" data-custom-render-frame data-custom-render-kind="face" src="${escapeHtml(src)}" title="${escapeHtml(`${entry.name} ${side} production render`)}" scrolling="no" loading="eager"></iframe>`;
   return entry.orientation === "landscape" ? `<div class="custom-landscape-rotate">${frame}</div>` : frame;
 }
@@ -426,7 +430,7 @@ function backFactionForEntry(entry, selected) {
   if (selected && selected !== "per-card" && BACK_VARIANTS.has(selected)) return selected;
   return canonicalBackFactionForEntry(entry);
 }
-function intrinsicReverse(entry) { return entry.backPolicy === "twoSided" || entry.backPolicy === "specialBack" || entry.backPolicy === "ledgerDuplex"; }
+function intrinsicReverse(entry) { return entry.backPolicy === "twoSided" || entry.backPolicy === "specialBack"; }
 function mirrorIndexForLongEdge(index) { const row = Math.floor(index / COLUMNS); const column = index % COLUMNS; return row * COLUMNS + (COLUMNS - 1 - column); }
 function setStatus(message, kind = "") { if (!ui.customPrintStatus) return; ui.customPrintStatus.textContent = message; ui.customPrintStatus.className = `custom-print-summary custom-print-status${kind ? ` ${kind}` : ""}`; }
 function normalize(value) { return String(value || "").toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, " ").trim(); }

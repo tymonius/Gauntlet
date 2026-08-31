@@ -90,6 +90,8 @@
         <article><span>Play again</span><strong id="metricReplay">—</strong><small>among submitted responses</small></article>
         <article><span>Average duration</span><strong id="metricDuration">—</strong><small>completed or stopped games</small></article>
         <article><span>Arbiter questions</span><strong id="metricArbiter">0</strong><small>attributed where tracking was available</small></article>
+        <article><span>Play method</span><strong id="metricPlayMode">—</strong><small id="metricPlayModeDetail"></small></article>
+        <article><span>Live flags</span><strong id="metricDiagnostics">0</strong><small>timestamped player observations</small></article>
         <article><span>Rules versions</span><strong id="metricVersions">0</strong><small id="metricVersionsDetail"></small></article>
       </section>
 
@@ -101,6 +103,7 @@
         <div class="filter-grid">
           <label>Status<select id="filterStatus"><option value="all">All games</option><option value="closed">Submitted</option><option value="open">Open</option></select></label>
           <label>Rules version<select id="filterVersion"><option value="all">All versions</option></select></label>
+          <label>Play method<select id="filterPlayMode"><option value="all">All methods</option><option value="physical">Physical tabletop</option><option value="tts">Tabletop Simulator</option><option value="unspecified">Not recorded</option></select></label>
           <label>Faction<select id="filterFaction"><option value="all">All factions</option></select></label>
           <label>Leader<select id="filterLeader"><option value="all">All Leaders</option></select></label>
           <label>Created after<input id="filterFrom" type="date" /></label>
@@ -139,6 +142,17 @@
         </section>
       </section>
 
+      <section class="analysis-grid">
+        <section class="analysis-panel" aria-labelledby="decision-title">
+          <div class="section-heading"><p class="eyebrow">Winner / loser experience</p><h2 id="decision-title">When did the game feel decided?</h2></div>
+          <div id="decisionSummary" class="outcome-summary"></div>
+        </section>
+        <section class="analysis-panel" aria-labelledby="diagnostic-title">
+          <div class="section-heading"><p class="eyebrow">Live observations</p><h2 id="diagnostic-title">What players marked during play.</h2></div>
+          <div id="diagnosticSummary" class="outcome-summary"></div>
+        </section>
+      </section>
+
       <section class="analysis-panel breakdown-panel" aria-labelledby="breakdown-title">
         <div class="section-heading split-heading">
           <div><p class="eyebrow">Faction and Leader comparison</p><h2 id="breakdown-title">Response patterns by side.</h2></div>
@@ -166,8 +180,8 @@
   </main>
 
   <footer>
-    <div><strong>Gauntlet</strong><p>Unpublished pre-release playtest project.</p></div>
-    <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
+    <div><strong>Gauntlet</strong><p><!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT --> · <!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises<!-- /PUBLISHING-FACT --></p></div>
+    <p class="copyright"><!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT --></p>
   </footer>
 
   <script src="complete-responses.js?v=20260804-1" defer></script>

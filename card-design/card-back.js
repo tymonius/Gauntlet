@@ -59,6 +59,10 @@ export function renderCardBack(element) {
 }
 
 function initializeCardBackSpecimens() {
+  const filter = document.body?.classList.contains('developer-catalog-page')
+    ? window.GauntletCatalogFilter || null
+    : null;
+  if (filter && (!filter.typeMatches('back') || (filter.faction !== 'all' && filter.faction !== 'neutral'))) return;
   document.querySelectorAll('[data-gauntlet-card-back]').forEach(renderCardBack);
 }
 

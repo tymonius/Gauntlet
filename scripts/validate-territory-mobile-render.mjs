@@ -61,7 +61,7 @@ async function inspection(browser, options, screenshotPath) {
   const context = await browser.newContext(options);
   const page = await context.newPage();
   try {
-    await page.goto(`${BASE}/card-design/`, { waitUntil: 'load' });
+    await page.goto(`${BASE}/card-design/?type=territory#territories`, { waitUntil: 'load' });
     const sourceSelector = `iframe.territory-review-frame[src*="territory=${ID}"]`;
     const source = page.locator(sourceSelector);
     await source.waitFor({ state: 'attached', timeout: 30000 });

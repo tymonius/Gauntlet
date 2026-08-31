@@ -5,20 +5,24 @@ import {
   V070_TURN_SEQUENCE,
   applyV070BattleOutcome,
   applyV070MovementChoice,
+  advanceV070TurnPhase,
   beginEffectGrantedV070Movement,
   beginNormalV070Movement,
   canInitiateV070LastStand,
   createV070BattleOnset,
   createV070LastStandOnset,
   createV070TurnState,
+  grantCurrentPhaseV070Actions,
   defenderHasV070DefensiveEdge,
   endV070OnsetWithoutBattle,
   proceedV070ToGambits,
   resolveV070BattleOutcome,
+  spendV070Action,
   resolveV070Withdrawal,
   v070BattleWasFought,
   type V070BattleOnsetInput,
   type V070LastStandAccessInput,
+  type V070TurnState,
 } from './rules';
 
 function normalOnset(overrides: Partial<V070BattleOnsetInput> = {}) {
@@ -52,6 +56,21 @@ describe('v0.7.0 released sequence contract', () => {
     const battle = normalOnset();
     expect(battle.stage).toBe('onset');
     expect(v070BattleWasFought(battle)).toBe(false);
+  });
+
+  test('normal Onset may originate from a legal off-board Position', () => {
+    const battle = createV070BattleOnset({
+      territoryCount: 6,
+      attacker: 'B',
+      defender: 'A',
+      attackerOrigin: 6,
+      contestedPosition: 5,
+      positions: { A: 5, B: 5 },
+      defenderControlsContested: true,
+    });
+    expect(battle.attackerOrigin).toBe(6);
+    expect(battle.contestedPosition).toBe(5);
+    expect(battle.stage).toBe('onset');
   });
 
   test('a battle counts as fought only after Onset proceeds to Gambits', () => {
@@ -164,6 +183,63 @@ describe('v0.7.0 battle outcome', () => {
     expect(result.state.positions).toEqual({ A: 3, B: 4 });
     expect(result.state.occupier).toBe('A');
     expect(result.state.clearCommittedCards).toBe(true);
+  });
+});
+
+describe('v0.7.0 Action allowances', () => {
+  test('+Action increases the current-phase Action limit', () => {
+    let state: V070TurnState = {
+      ...createV070TurnState(),
+      phase: 'opening',
+    };
+
+    state = spendV070Action(state);
+    expect(state.actionsAvailable).toBe(0);
+    expect(state.actionsTaken.opening).toBe(1);
+
+    state = grantCurrentPhaseV070Actions(state, 1);
+    expect(state.actionsAvailable).toBe(1);
+    expect(state.phaseActionGrants.opening).toBe(1);
+
+    state = spendV070Action(state);
+    expect(state.actionsAvailable).toBe(0);
+    expect(state.actionsTaken.opening).toBe(2);
+  });
+
+  test('unused +Action permission expires when its Action phase ends', () => {
+    let state: V070TurnState = {
+      ...createV070TurnState(),
+      phase: 'opening',
+    };
+
+    state = spendV070Action(state);
+    state = grantCurrentPhaseV070Actions(state, 1);
+    expect(state.actionsAvailable).toBe(1);
+
+    state = advanceV070TurnPhase(state);
+    expect(state.phase).toBe('movement');
+    expect(state.actionsAvailable).toBe(0);
+    expect(state.phaseActionGrants.opening).toBe(0);
+  });
+
+  test('turn-wide additional Actions survive phases but do not increase a phase limit', () => {
+    let state: V070TurnState = {
+      ...createV070TurnState(1),
+      phase: 'opening',
+    };
+
+    state = spendV070Action(state);
+    expect(state.actionsAvailable).toBe(1);
+    expect(() => spendV070Action(state)).toThrow(/Action limit for opening/);
+
+    state = advanceV070TurnPhase(state);
+    state = advanceV070TurnPhase(state);
+    expect(state.phase).toBe('denouement');
+    expect(state.actionsAvailable).toBe(1);
+
+    state = spendV070Action(state);
+    expect(state.actionsAvailable).toBe(0);
+    expect(state.actionsTaken.denouement).toBe(1);
   });
 });
 

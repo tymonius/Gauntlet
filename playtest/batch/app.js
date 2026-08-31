@@ -54,7 +54,7 @@
         batchId,
         label,
         generatedAt: new Date().toISOString(),
-        rulesVersion: "v0.6.3",
+        rulesVersion: "v0.7.0",
         sessionApiOrigin: API_ORIGIN
       };
 
@@ -105,7 +105,7 @@
     const response = await fetch(`${API_ORIGIN}/health`, { cache: "no-store" });
     if (!response.ok) throw new Error(`Session service health check failed (${response.status}).`);
     const health = await response.json();
-    if (health.version !== "v0.6.3") throw new Error(`Session service reports ${health.version || "an unknown version"}.`);
+    if (health.version !== "v0.7.0") throw new Error(`Session service reports ${health.version || "an unknown version"}.`);
     if (!health.database) throw new Error("Session service database is not configured.");
     if (!health.sessionCreationConfigured) throw new Error("Session creation secret is not configured.");
   }
@@ -118,7 +118,7 @@
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        rulesVersion: "v0.6.3",
+        rulesVersion: "v0.7.0",
         metadata
       })
     });
@@ -131,7 +131,7 @@
   }
 
   async function loadSheetTemplate() {
-    const response = await fetch("../index.html", { cache: "no-store" });
+    const response = await fetch("../sheet/", { cache: "no-store" });
     if (!response.ok) throw new Error("The printable playtest sheet template could not be loaded.");
     const documentSource = new DOMParser().parseFromString(await response.text(), "text/html");
     const template = documentSource.querySelector(".playtest-sheet");

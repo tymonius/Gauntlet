@@ -16,6 +16,24 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate repository architecture classification
+        run: node scripts/validate-repository-architecture.mjs
+
+      - name: Enforce rules authority and stale-information policy
+        env:
+          RULES_AUTHORITY_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || '' }}
+        run: node scripts/validate-rules-authority-practices.mjs
+
+      - name: Validate publishing authority
+        run: npm run publishing:check
 
       - name: Validate decision provenance and traceability
         run: python .github/scripts/validate-governance.py

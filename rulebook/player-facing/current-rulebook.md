@@ -2,7 +2,7 @@
 
 ## Official Rulebook
 
-**Version 0.7.1 Candidate**
+**Version 0.7.1**
 
 ---
 
@@ -99,7 +99,7 @@ Most ordinary playable cards use the same frame. Read these elements when constr
 2. **Card value** — Used for Deck construction and whenever an effect refers to a card's value.
 3. **Faction identity** — The border and parchment treatment identify the card's faction. Neutral cards use ivory.
 4. **Artwork** — The card's illustration.
-5. **Effect heading** — Names the effect's role or timing, such as **Action**, **Asset**, **Gambit**, **Tactic**, **Gambit/Tactic**, **Overlay**, **Mission**, or another faction-specific heading.
+5. **Effect heading** — Names the effect's role or timing. Current printed headings are **Action**, **Asset**, **Gambit**, **Tactic**, **Gambit/Tactic**, **Mission**, **Overlay**, **Terms**, **Sanctions**, and **Reaction**.
 6. **Effect text** — Resolve only the printed effect being used unless a rule says otherwise.
 7. **Metadata footer** — Shows faction at left, **Unique** in the center when applicable, and the rules version at right.
 
@@ -111,18 +111,24 @@ Territories and faction supplemental components use specialized layouts and are 
 
 ## Printed card effects
 
-A card may have several printed effects. The way it is used determines which effect applies.
+A card may show multiple effect headings. The heading tells you the role, timing, or procedure that governs that block of text. A heading does not grant any other role or play permission unless the card or another rule says so. Some headings are faction-specific; those are identified below.
 
-- **Action:** normally play from Hand by taking an Action during Opening or Denouement.
-- **Gambit:** set from Hand during a battle.
-- **Tactic:** choose from Reserve during a battle.
-- **Gambit/Tactic:** may be used as either a Gambit or a Tactic.
+- **Action:** Normally play the card from Hand by taking an Action during Opening or Denouement. Follow any more specific timing printed in the effect.
+- **Asset:** The card may be banked from Hand using its inherent **Bank** Action unless it has a printed special banking procedure. Its Asset effect applies while it is banked, subject to its own timing and conditions.
+- **Gambit:** Set the card from Hand as a Gambit during a battle. Its Gambit effect normally applies when Gambits are revealed unless it gives a later timing.
+- **Tactic:** Choose the card from Reserve as a Tactic during a battle. Its Tactic effect normally applies when Tactics are revealed unless it gives a later timing.
+- **Gambit/Tactic:** The card is eligible for either role. Use the source, timing, and normal destination of the role in which it was used.
+- **Mission:** *(Intelligence only.)* An Intelligence requirement used when the card is started as an Active Mission or Special Operation. Starting a Mission is not playing the card for another printed effect; follow the Intelligence procedures in Chapter 16.
+- **Overlay:** A persistent effect that applies while the card is the active, exposed Overlay on a Territory. Overlay rules appear in Chapter 12.
+- **Terms:** *(Diplomats only.)* A Diplomat effect used while offering or resolving Terms at the timing stated by the card. **Accepted —** and **Refused —** clauses printed within a Terms effect apply only for the corresponding response.
+- **Sanctions:** *(Diplomats only.)* After an opponent refuses your Terms, you may use the card's Sanctions effect from Hand. Resolve it immediately unless the effect gives a later timing. A Sanction that remains in play stays associated with that opponent and follows the shared Sanctions rules.
+- **Reaction:** A directly permitted effect used when its stated trigger occurs. A Reaction does not spend an Action unless it expressly says otherwise; follow its printed source, timing, and destination.
 
-Only the printed effect being used applies unless a rule says otherwise.
+Only the printed effect being used applies unless a rule says otherwise. Using a card through a heading does not also apply its other printed effects merely because they are on the same card.
 
 Setting a Gambit or choosing a Tactic places the card in battle without applying its effect immediately. Gambit and Tactic effects apply at their normal reveal stages even when an effect causes the card to become face up early, unless that effect says otherwise.
 
-Faction cards may contain other headings. Those headings use the procedure stated in the relevant faction chapter and do not make a card eligible as a Gambit or Tactic unless it also has a Gambit, Tactic, or Gambit/Tactic effect.
+A **Mission**, **Overlay**, **Terms**, **Sanctions**, or **Reaction** heading does not make a card eligible as a Gambit or Tactic unless it also has a **Gambit**, **Tactic**, or **Gambit/Tactic** effect.
 
 ### Arcane symbol
 
@@ -800,7 +806,7 @@ Choose exactly three different Territory Cards.
 
 Prepare all components required by the chosen faction and Leader.
 
-If you chose Mystics, choose exactly three different Rites from the six-Rite pool as part of game-package construction. Those three Rites are public at setup, and only those selected Rites may be begun during that game.
+If you chose Mystics, choose exactly three<!-- RULE-FACT:mystics.rites.selected_count:word --> different Rites from the six<!-- RULE-FACT:mystics.rites.count:word -->-Rite pool as part of game-package construction. You are under no obligation to reveal your chosen Rites until you begin them. Only those selected Rites may be begun during that game.
 
 Unless a rule says otherwise, supplemental components:
 
@@ -1175,7 +1181,7 @@ Military has no alternate victory condition. It wins by running the Gauntlet.
 | Faction Features | None. |
 | Leader Ability | Orders; each Leader has their own Orders with printed Command costs and timings. |
 | Leaders | General and Commandant. |
-| Faction pool | 15 Military card titles. |
+| Faction pool | 15<!-- RULE-FACT:cards.military.count:number --> Military card titles. |
 | Unique card | Shock and Awe, cost 5; maximum one copy per Deck. |
 
 ## Faction Features
@@ -1265,7 +1271,7 @@ War Crimes and Shock and Awe may prohibit movement, capture, or Orders resulting
 
 During Onset, a Diplomat may offer **Terms**. The Diplomat stakes Influence and presents a Proposal. The opponent may accept, ending the battle sequence during Onset before Gambits are set, or refuse and fight under the Proposal's refusal effect.
 
-Accepted or successfully imposed Proposals become Treaty Articles. Ratify six different Proposals and survive until the start of your next turn to win through the **Peace Treaty**.
+Accepted or successfully imposed Proposals become Treaty Articles. Ratify six<!-- RULE-FACT:diplomats.peace_treaty_threshold:word --> different Proposals and survive until the start of your next turn to win through the **Peace Treaty**.
 
 ## Complete rules
 
@@ -1276,8 +1282,8 @@ Accepted or successfully imposed Proposals become Treaty Articles. Ratify six di
 | Starting value | 1 Influence. |
 | Faction Features | Terms — No Action · During Onset; Leverage — No Action · Before dice after refused Terms. |
 | Leaders | Ambassador and Senator. |
-| Proposal set | Nine double-sided Proposal / Treaty Article cards. |
-| Faction pool | 15 Diplomat card titles. |
+| Proposal set | Nine<!-- RULE-FACT:proposals.count:word-cap --> double-sided Proposal / Treaty Article cards. |
+| Faction pool | 15<!-- RULE-FACT:cards.diplomats.count:number --> Diplomat card titles. |
 | Unique card | Plenipotentiary, cost 4; maximum one copy per Deck. |
 
 ## Faction Features
@@ -1387,7 +1393,7 @@ The progression continues without a fixed maximum. Each additional +1 costs one 
 
 A ratified Proposal is a Treaty Article. It may be offered again for its tactical effects but cannot be ratified again and grants no normal newly-ratified Influence reward.
 
-At the start of the Diplomat's turn, after the Capture step and before the Draw step, if six different Proposals are ratified, the Diplomat wins through the Peace Treaty.
+At the start of the Diplomat's turn, after the Capture step and before the Draw step, if six<!-- RULE-FACT:diplomats.peace_treaty_threshold:word --> different Proposals are ratified, the Diplomat wins through the Peace Treaty.
 
 ## Leaders
 
@@ -1528,7 +1534,7 @@ Deed ownership is independent of token position and Territory control. Own the D
 | Faction Features | Treasury, Buy / Buy Out Deed, and Play the Market — 1 Action · Denouement; Subsidize — No Action · Before dice; Financial Capacity — No Action · After Capture; Income — Automatic · After Capture. |
 | Income | After the Capture step, gain 1 Capital per Deed you own. |
 | Leaders | Banker and Executive. |
-| Faction pool | 15 Financier card titles. |
+| Faction pool | 15<!-- RULE-FACT:cards.financiers.count:number --> Financier card titles. |
 | Unique card | Corner the Market, cost 5; maximum one copy per Deck. |
 
 ## Faction Features
@@ -1729,7 +1735,7 @@ Complete enough Missions to make a **Special Operation** ready, satisfy its hidd
 | Battle tools | Surveillance and Interference. |
 | Faction Features | Start / Complete / Abort Mission and Start / Complete Special Operation — 1 Action · Denouement; Surveillance and Interference — No Action at their stated battle timings. |
 | Leaders | Ranger and Spymaster. |
-| Faction pool | 15 Intelligence card titles. |
+| Faction pool | 15<!-- RULE-FACT:cards.intelligence.count:number --> Intelligence card titles. |
 | Unique card | Sleeper Network, cost 5; maximum one copy per Deck. |
 
 ## Faction Features
@@ -1907,7 +1913,7 @@ When the controller of Watchtower defends there, the attacker sets their Gambit 
 
 ## How it works
 
-Mystics sacrifice, bind, exchange, recover, and transform cards while completing three selected public **Rites**. A Mystics game package chooses exactly three different Rites from a pool of six. Those three are public at setup and are the only Rites that may be begun during that game.
+Mystics sacrifice, bind, exchange, recover, and transform cards while completing three selected **Rites**. A Mystics game package chooses exactly three<!-- RULE-FACT:mystics.rites.selected_count:word --> different Rites from a pool of six<!-- RULE-FACT:mystics.rites.count:word -->. You are under no obligation to reveal your chosen Rites until you begin them. Only those selected Rites may be begun during that game.
 
 The first completed Rite unlocks **Invocation**, the second unlocks **Transmutation**, and the third unlocks **Convergence** and the ability to begin the **Ritual of Ascension**.
 
@@ -1919,19 +1925,19 @@ To win through Ritual, bind three cards from three different zones, initiate a b
 |---|---|
 | Victory | Run the Gauntlet or complete the Ritual of Ascension. |
 | Resource | None. |
-| Trait | All fifteen Mystics cards have the Arcane trait. |
+| Trait | All fifteen<!-- RULE-FACT:cards.mystics.arcane_count:word --> Mystics cards have the Arcane trait. |
 | Rite pool | Six Rites; choose exactly three during game-package construction. |
 | Progression | First completed Rite: Invocation; second: Transmutation; third: Convergence and Ritual. |
 | Faction Features | Begin a Rite and Begin the Ritual of Ascension — 1 Action · Denouement; Invocation and Transmutation — No Action; Convergence — Automatic. |
 | Leaders | Alchemist and Spirit Walker. |
-| Faction pool | 15 Mystics card titles. |
+| Faction pool | 15<!-- RULE-FACT:cards.mystics.count:number --> Mystics card titles. |
 | Unique card | Necromancy, cost 5; maximum one copy per Deck. |
 
 ## Faction Features
 
 Mystics have the following Faction Features marked **1 Action · Denouement**:
 
-- **Begin a Rite:** Choose one incomplete selected Rite you may legally begin and pay its beginning cost.
+- **Begin a Rite:** Choose an incomplete selected Rite you may legally begin, reveal it, and pay its beginning cost.
 - **Begin the Ritual of Ascension:** After completing all three selected Rites, bind the required Arcane cards from Hand, Discard Pile, and Graveyard.
 
 Completing a Rite is automatic when that Rite's completion condition and timing are satisfied. **Invocation** and **Transmutation** are Faction Features marked **No Action**; **Convergence** is **Automatic**. The Alchemist and Spirit Walker mechanics are Leader Abilities.
@@ -1954,7 +1960,7 @@ A Mystics game package includes:
 - exactly three different double-sided Rite cards chosen from the six-Rite pool; and
 - any Mystics cards included in the Deck.
 
-Rite selection is part of game-package construction. Place the three selected Rite cards incomplete side up and visible to both players during setup. Rites not selected for that game are not part of the game package and cannot be begun. Mystics use no resource tracker.
+Rite selection is part of game-package construction. You are under no obligation to reveal your chosen Rites until you begin them. When you begin a Rite, reveal it. Rites not selected for that game are not part of the game package and cannot be begun. Mystics use no resource tracker.
 
 ## Rites and progression
 
@@ -2150,7 +2156,7 @@ Spend Conviction on **Purges** that remove cards and Assets. The first time on y
 | Doctrine | Condemnation and Blasphemy. |
 | Faction Features | Purge — 1 Action · Opening or Denouement · Once per turn; Conviction, Condemnation, Blasphemy, and Purification — Automatic at their stated timings. |
 | Leaders | Grand Inquisitor and Witch Hunter. |
-| Faction pool | 15 Inquisition card titles. |
+| Faction pool | 15<!-- RULE-FACT:cards.inquisition.count:number --> Inquisition card titles. |
 | Unique card | Martyrdom, cost 5; maximum one copy per Deck. |
 | Arcane card | Heresy. |
 
@@ -2360,8 +2366,14 @@ Heresy follows the shared copied-effect rule but retains permission for one addi
 
 # Copyright and Playtest Use
 
-Gauntlet is an unpublished playtest project.
+![TDS Games publisher mark](../../images/branding/tds-games-mark.svg)
 
-Copyright © 2026 Tymon Scott. All rights reserved.
+<!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT -->
+
+<!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises<!-- /PUBLISHING-FACT -->
+
+<!-- PUBLISHING-FACT:imprint.statement -->Gauntlet is published by TDS Games, an imprint of Misty Hollow Enterprises, for playtesting and review.<!-- /PUBLISHING-FACT -->
+
+<!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT -->
 
 Repository and release materials are provided for private review and playtesting only. They may not be copied, redistributed, sold, republished, or used to create commercial derivative works without written permission.

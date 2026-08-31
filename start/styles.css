@@ -202,3 +202,21 @@ body{background:radial-gradient(circle at 10% 5%,rgba(143,31,37,.1),transparent 
   .selected-choice::before{max-width:240px}
   .selected-choice::after{bottom:-2.5rem;width:290px}
 }
+
+.play-mode-grid {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+}
+.play-mode-card {
+  padding: 1.5rem;
+  border: 1px solid rgba(49,42,34,.18);
+  background: #f5f0e7;
+}
+.play-mode-card h3 { margin: .25rem 0 .5rem; font-size: 1.5rem; }
+.play-mode-card p { line-height: 1.55; }
+@media (max-width: 760px) {
+  .play-mode-grid { grid-template-columns: 1fr; }
+  .play-mode-card .button { width: 100%; text-align: center; }
+}

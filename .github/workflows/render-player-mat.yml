@@ -2,7 +2,7 @@ name: Validate current player mat
 
 on:
   push:
-    branches: [main, agent/v062-printed-materials]
+    branches: [main]
     paths:
       - ".github/workflows/render-player-mat.yml"
       - "config/release-lifecycle.json"
@@ -34,17 +34,17 @@ jobs:
       - name: Validate release recovery locks
         run: node scripts/validate-release-recovery-state.mjs
 
-      - name: Validate restored v0.6.1 player mat
+      - name: Validate current v0.7.0 player mat
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const currentPath = 'playtest/player-mat/index.html';
           const current = fs.readFileSync(currentPath, 'utf8');
-          for (const marker of ['Gauntlet v0.6.1 Player Mat', 'Gauntlet v0.6.1', 'Hand', 'Reserve', 'Gambit', 'Tactic', 'Asset Bank']) {
-            if (!current.includes(marker)) throw new Error(`Restored v0.6.1 player mat is missing: ${marker}`);
+          for (const marker of ['Gauntlet v0.7.0 Player Mat', 'Gauntlet v0.7.0', 'Hand', 'Reserve', 'Gambit', 'Tactic', 'Asset Bank']) {
+            if (!current.includes(marker)) throw new Error(`Current v0.7.0 player mat is missing: ${marker}`);
           }
           if (current.includes('v0.6.2/print/player-mat.html')) {
             throw new Error('Current player mat still redirects to withdrawn v0.6.2.');
           }
-          console.log('Validated exact locked v0.6.1 current player mat.');
+          console.log('Validated current v0.7.0 player mat.');
           NODE

@@ -96,8 +96,8 @@
     panel.className = "tracked-playtest-start";
     panel.style.cssText = "margin-top:1rem;padding-top:1rem;border-top:1px solid var(--start-line)";
     panel.innerHTML = `
-      <p style="margin:.1rem 0 .75rem;line-height:1.5"><strong>Ready to play?</strong><br><span style="color:#59625f">Create one tracked game, let your opponent scan one code, and submit both players' feedback digitally.</span></p>
-      <button id="startTrackedPlaytest" class="button secondary" type="button" disabled>Start a tracked playtest</button>`;
+      <p style="margin:.1rem 0 .75rem;line-height:1.5"><strong>Track this playtest</strong><br><span style="color:#59625f">Create one tracked game, share the join link with your opponent, and record the result and separate player feedback. The next screen will use the in-person or remote mode you selected, or ask where you're playing.</span></p>
+      <button id="startTrackedPlaytest" class="button primary" type="button" disabled>Create tracked playtest</button>`;
     el.openStarterDeck.after(panel);
     el.startTrackedPlaytest = document.getElementById("startTrackedPlaytest");
     el.startTrackedPlaytest.addEventListener("click", openTrackedPlaytest);
@@ -323,7 +323,12 @@
       return;
     }
     saveState();
-    window.location.assign(new URL("../playtest/tracked/", window.location.href).href);
+    const url = new URL("../playtest/tracked/", window.location.href);
+    const currentParams = new URLSearchParams(window.location.search);
+    url.searchParams.set("source", "start");
+    const mode = currentParams.get("mode");
+    if (mode === "physical" || mode === "tts") url.searchParams.set("mode", mode);
+    window.location.assign(url.href);
   }
 
   function restoreState() {

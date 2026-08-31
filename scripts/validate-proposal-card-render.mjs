@@ -74,7 +74,7 @@ async function main() {
   const page = await context.newPage();
 
   try {
-    await page.goto(`${baseUrl}/card-design/#proposal-cards`, { waitUntil: 'load' });
+    await page.goto(`${baseUrl}/card-design/?type=proposal#proposal-cards`, { waitUntil: 'load' });
     await page.waitForFunction(expected => document.querySelectorAll('.proposal-card').length === expected, EXPECTED_FACES);
     await page.waitForFunction(count => {
       const root = document.querySelector('#proposalReviewSections');

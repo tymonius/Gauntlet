@@ -22,6 +22,7 @@ jobs:
         with:
           script: |
             let names = [];
+            let retiredSourceNames = [];
             let uncertain = false;
 
             if (context.eventName === 'workflow_dispatch') {
@@ -39,6 +40,11 @@ jobs:
                 per_page: 100,
               });
               names = files.map((file) => file.filename);
+              retiredSourceNames = files.flatMap((file) => {
+                if (file.status === 'removed') return [file.filename];
+                if (file.status === 'renamed' && file.previous_filename) return [file.previous_filename];
+                return [];
+              });
             } else {
               const before = context.payload.before;
               if (!before || /^0+$/.test(before)) {
@@ -50,8 +56,14 @@ jobs:
                   base: before,
                   head: context.sha,
                 });
-                names = (comparison.data.files || []).map((file) => file.filename);
-                if ((comparison.data.files || []).length >= 300) uncertain = true;
+                const comparedFiles = comparison.data.files || [];
+                names = comparedFiles.map((file) => file.filename);
+                retiredSourceNames = comparedFiles.flatMap((file) => {
+                  if (file.status === 'removed') return [file.filename];
+                  if (file.status === 'renamed' && file.previous_filename) return [file.previous_filename];
+                  return [];
+                });
+                if (comparedFiles.length >= 300) uncertain = true;
               }
             }
 
@@ -103,6 +115,7 @@ jobs:
             const changedTests = names.filter((file) => testPattern.test(file));
             const relatedSources = names.filter((file) => sourcePattern.test(file) && !testPattern.test(file));
             const testWorkflowOnly = names.length === 1 && exact('.github/workflows/test.yml');
+            const retiredSources = retiredSourceNames.filter((file) => sourcePattern.test(file) && !testPattern.test(file));
 
             const fullTests = uncertain || packageRuntimeChanged || exact('package-lock.json') || exact('vitest.config.ts') || exact('vitest.config.js') || exact('vitest.config.mjs') || testWorkflowOnly;
             const code = fullTests || exact('.github/workflows/test.yml') || changedTests.length > 0 || relatedSources.length > 0;
@@ -123,12 +136,14 @@ jobs:
             core.setOutput('renderer', String(renderer));
             core.setOutput('changed_tests', JSON.stringify(changedTests));
             core.setOutput('related_sources', JSON.stringify(relatedSources));
+            core.setOutput('retired_sources', JSON.stringify(retiredSources));
             core.summary
               .addHeading('Test routing')
               .addTable([
                 [{data: 'Check', header: true}, {data: 'Run?', header: true}],
                 ['Release-path normalization', 'true'],
                 ['Vitest', String(code)],
+                ['Retired source references', retiredSources.length ? 'scan' : 'none'],
                 ['Full Vitest suite', String(fullTests)],
                 ['TypeScript', String(types)],
                 ['Analytics', String(analytics)],
@@ -143,8 +158,31 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Reject references to retired source paths
+        if: steps.scope.outputs.retired_sources != '[]'
+        shell: bash
+        env:
+          RETIRED_SOURCES: ${{ steps.scope.outputs.retired_sources }}
+        run: |
+          set -euo pipefail
+          found=0
+          mapfile -t retired_sources < <(node -e "for (const file of JSON.parse(process.env.RETIRED_SOURCES || '[]')) console.log(file)")
+          for retired in "${retired_sources[@]}"; do
+            while IFS= read -r match; do
+              [[ -z "$match" ]] && continue
+              echo "Dangling reference to retired source $retired: $match" >&2
+              found=1
+            done < <(git grep -n -F "$retired" -- '*.js' '*.mjs' '*.ts' '*.tsx' || true)
+          done
+          if (( found )); then
+            exit 1
+          fi
+
       - name: Audit repository-wide release path normalization
         run: node scripts/validate-release-path-normalization.mjs
+
+      - name: Verify tracked Rulebook facts
+        run: node scripts/sync-current-rulebook-facts.mjs
 
       - name: Setup Node
         if: steps.scope.outputs.relevant == 'true'

@@ -85,6 +85,13 @@
     actions.append(resetButton);
   }
 
+  function starterRiteIds(preset = null) {
+    if ((preset?.factionId || state.factionId) !== "mystics") return [];
+    if (Array.isArray(preset?.selectedRites)) return [...preset.selectedRites];
+    const riteApi = window.GAUNTLET_MYSTICS_RITES;
+    return riteApi?.selectionEnabled?.() ? [] : (riteApi?.defaultIds?.() || []);
+  }
+
   function resetCurrentDeck() {
     const hasCards = Object.keys(state.deck).length > 0;
     const hasTerritories = Boolean(state.territories?.length);
@@ -101,7 +108,7 @@
 
     state.deck = {};
     state.territories = [];
-    if (Array.isArray(state.rites)) state.rites = [];
+    if (Array.isArray(state.rites)) state.rites = starterRiteIds();
     state.deckName = "";
     state.selectedCardId = null;
     state.selectedTerritoryId = null;
@@ -143,9 +150,9 @@
     if (currentTerritories.length !== expectedTerritories.length) return null;
     if (currentTerritories.some((name, index) => name !== expectedTerritories[index])) return null;
 
-    if (preset.factionId === "mystics") {
+    if (preset.factionId === "mystics" && Array.isArray(preset.selectedRites)) {
       const currentRites = [...(state.rites || [])].sort();
-      const expectedRites = [...(preset.selectedRites || [])].sort();
+      const expectedRites = [...preset.selectedRites].sort();
       if (currentRites.length !== expectedRites.length) return null;
       if (currentRites.some((id, index) => id !== expectedRites[index])) return null;
     }
@@ -381,7 +388,7 @@
     state.deckName = `${leader.name} — ${preset.name}`;
     state.deck = deck;
     state.territories = territoryIds;
-    state.rites = preset.factionId === "mystics" ? [...(preset.selectedRites || [])] : [];
+    state.rites = starterRiteIds(preset);
     state.selectedCardId = null;
     state.selectedTerritoryId = territoryIds[0] || null;
 

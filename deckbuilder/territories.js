@@ -50,8 +50,9 @@
 
   async function loadTerritories() {
     try {
-      const { loadCurrentGame } = await import("../game-data/current-game.mjs");
-      const currentGame = await loadCurrentGame();
+      const bootstrap = window.GAUNTLET_DECKBUILDER_BOOTSTRAP;
+      if (typeof bootstrap !== "function") throw new Error("Current Deckbuilder runtime is unavailable.");
+      const currentGame = await bootstrap();
       state.territoryPool = (currentGame.territories || []).map(territory => ({
         id: territory.id,
         name: territory.name,
@@ -184,7 +185,8 @@
       state.territories.length >= REQUIRED_TERRITORIES ||
       (territory.arena && arenaSelected)
     );
-    const rendererUrl = `../card-design/territory-review-render.html?territory=${encodeURIComponent(territory.id)}`;
+    const rulesetMode = new URLSearchParams(window.location.search).get("rules") === "candidate" ? "candidate" : "released";
+    const rendererUrl = `../card-design/territory-review-render.html?territory=${encodeURIComponent(territory.id)}&rules=${encodeURIComponent(rulesetMode)}`;
 
     preview.className = "territory-preview rendered-territory-preview";
     preview.innerHTML = `
@@ -303,7 +305,6 @@
   function enhancedCurrentDeckData() {
     return {
       ...baseCurrentDeckData(),
-      schemaVersion: 2,
       territories: selectedTerritories().map(territory => ({ id: territory.id, name: territory.name, arena: territory.arena }))
     };
   }

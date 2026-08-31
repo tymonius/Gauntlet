@@ -1,4 +1,7 @@
 const STYLE_URL = './leader-card-copy.css';
+const CATALOG_FILTER = document.body?.classList.contains('developer-catalog-page')
+  ? window.GauntletCatalogFilter || null
+  : null;
 
 const PRINT_LEADER_SPECIMEN_ID = (() => {
   const params = new URLSearchParams(window.location.search);
@@ -147,9 +150,16 @@ async function loadLeaderAuthority() {
 async function applyLeaderCardCopy() {
   const root = document.querySelector('#leaderReviewSections');
   if (!root) return;
+  if (CATALOG_FILTER && !CATALOG_FILTER.typeMatches('leader')) {
+    root.dataset.leaderCopyReady = 'true';
+    return;
+  }
   try {
     const source = await loadLeaderAuthority();
-    const entries = Object.entries(source.leaders || {});
+    let entries = Object.entries(source.leaders || {});
+    if (CATALOG_FILTER) {
+      entries = entries.filter(([, leader]) => CATALOG_FILTER.factionMatches(leader.faction));
+    }
 
     await ensureStyles();
 
@@ -163,6 +173,12 @@ async function applyLeaderCardCopy() {
       root.dataset.leaderCopySource = source.authorityUrl;
       delete root.dataset.leaderCopyError;
       window.dispatchEvent(new Event('resize'));
+      return;
+    }
+
+    if (!entries.length) {
+      root.dataset.leaderCopyReady = 'true';
+      root.dataset.leaderCopySource = source.authorityUrl;
       return;
     }
 

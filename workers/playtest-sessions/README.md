@@ -1,44 +1,38 @@
 # Gauntlet Playtest Session Service
 
-**Implementation baseline:** v0.6.3 — Third Playtest Revision  
-**Current canonical tabletop release:** v0.6.3 — Third Playtest Revision
+**Implementation baseline:** v0.7.0  
+**Current canonical tabletop release:** v0.7.0 — Illustrated Cards & Tabletop Simulator
 
-This Cloudflare Worker and D1-backed API powers the onboarding and coded formal-session workflow for the current v0.6.3 playtest release. New game sessions use `G063-…` serials; new game-night event containers use `EV063-…` serials. The runtime reports `v0.6.3` from `/health` and stores the rules version with every session.
+This Cloudflare Worker and D1-backed API powers Gauntlet's tracked self-serve playtest, facilitated event, feedback, journal, closure, and analysis workflows.
 
-Existing v0.6.1 records are not rewritten during the cutover. Reads return each record's persisted rules version and serial, so historical sessions retain their original attribution. New v0.6.1 session creation is not supported by the current service.
+New current game sessions use `G070-…` serials; new event containers use `EV070-…`. The runtime reports `v0.7.0` from `/health` and stores the rules version with every session.
 
-The service separates two different records:
+Historical records are version-preserving. Existing v0.6.1/v0.6.3 sessions are read with their stored version and serial rather than rewritten.
 
-- an **event session** is the shared game-night invitation, onboarding roster, and organizer dashboard;
-- a **game session** is one particular match between up to two players, opened from one unique table or sheet QR code.
+## Production Worker chain
 
-Rules Arbiter interactions attach to the game session and the player seat that submitted the question. They never attach to the shared event record.
+`wrangler.toml` deploys `src/completeness.js`, which composes the complete service:
 
-Standalone coded playtest sheets remain supported. A session created without an event parent behaves as the existing independent formal-session workflow.
+`completeness → closure → journal → integrity → analysis → tracked → base formal-session Worker`.
 
-## Data storage
+The public tracked-game API is distinct from facilitator session creation:
 
-The service uses the existing `gauntlet-rules-assistant` D1 database so formal sessions and Rules Arbiter records can be linked without duplicating the interaction database.
+- `POST /api/tracked-games` is public, abuse-limited, and creates one two-player tracked game.
+- `POST /api/sessions` creates facilitator-managed standalone/event sessions and requires `SESSION_ADMIN_TOKEN`.
 
-Migrations are applied in sequence:
+## Shared D1 database
 
-```text
-rules-assistant/migrations/0001_rules_interactions.sql
-rules-assistant/migrations/0002_review_export_checkpoints.sql
-rules-assistant/migrations/0003_playtest_sessions.sql
-rules-assistant/migrations/0004_event_game_sessions.sql
-```
+The service uses the same `gauntlet-rules-assistant` D1 database as the Rules Arbiter so interactions can be linked without duplicating records.
 
-Migration 0004 adds:
+Migrations are applied in numeric order from `rules-assistant/migrations/`. The current playtest schema includes:
 
-- event-versus-game session classification;
-- child-game relationships;
-- event participant identity-token hashes;
-- two numbered player seats per game;
-- carried faction and Leader selections; and
-- player attribution on Rules Arbiter links and stored interactions.
+- 0003 — base playtest sessions;
+- 0004 — event/game sessions and player attribution;
+- 0005 — tracked results, private responses, public creation limits;
+- later migrations — integrity, journal, closure/standalone feedback support; and
+- 0010 — decision-point / post-decision-agency fields.
 
-Apply migrations from this directory:
+Use:
 
 ```bash
 npm install
@@ -46,114 +40,72 @@ npm run db:migrate:local
 npm run db:migrate:remote
 ```
 
-The remote migrations change the production database and should be run only after reviewing the SQL.
+The production GitHub workflow applies pending remote migrations **before** deploying the Worker.
 
-## Development
-
-```bash
-npm install
-npm run db:migrate:local
-npm run dev
-```
-
-The production Worker name is `gauntlet-playtest-sessions`.
-
-Before creating sessions, set the facilitator-only creation secret:
-
-```bash
-npx wrangler secret put SESSION_ADMIN_TOKEN
-```
-
-The batch generator sends that secret as a bearer token. It is entered for the current browser session only and is never included in a printed QR code or returned by a public endpoint.
-
-## Endpoints
+## Current tracked self-serve playtest API
 
 | Method | Endpoint | Purpose |
 |---|---|---|
-| `GET` | `/health` | Service, database, creation, onboarding, event-game, and player-attribution capability check |
-| `POST` | `/api/sessions` | Create a standalone game session or explicit event session; requires `SESSION_ADMIN_TOKEN` |
-| `GET` | `/api/sessions/:token` | Read public session status, type, parent event, players, and counts |
-| `POST` | `/api/sessions/:token/join` | Join onboarding, a standalone session, or one of two child-game player seats |
-| `POST` | `/api/sessions/:token/event` | Record a supported onboarding or game event |
-| `GET` | `/api/sessions/:token/onboarding` | Read the event roster and latest choices; requires the event host key |
-| `POST` | `/api/sessions/:eventToken/games` | Create one to twenty child game sessions; requires the event host key |
-| `GET` | `/api/sessions/:eventToken/games` | Read child-game statuses, seats, and Arbiter counts; requires the event host key |
-| `POST` | `/api/sessions/:eventToken/games/:gameId/close` | Close a child game through the event dashboard; requires the event host key |
-| `GET` | `/api/sessions/:gameToken/event-participants` | Read the completed event roster for the low-friction table identity picker |
-| `POST` | `/api/sessions/:gameToken/arbiter` | Link a Rules Arbiter interaction to the game and asking player |
-| `POST` | `/api/sessions/:token/close` | Close registration or retire a standalone/game code; requires that session's host key |
+| POST | `/api/tracked-games` | Publicly create one tracked v0.7.0 game; rate-limited |
+| GET | `/api/tracked-games/:token` | Read public lifecycle/player completion state |
+| POST | `/api/tracked-games/:token/join` | Join one of two authenticated player seats |
+| POST | `/api/tracked-games/:token/event` | Record lifecycle, note, or diagnostic event |
+| POST | `/api/tracked-games/:token/arbiter` | Link a Rules Arbiter interaction to the asking player |
+| POST | `/api/tracked-games/:token/result` | Submit the one shared factual result |
+| POST | `/api/tracked-games/:token/response` | Submit one authenticated player's private response |
+| GET | `/api/tracked-games/:token/review` | Creator-key protected complete game review |
 
-New `/api/sessions` requests accept only the current `v0.6.3` creation version. Reads are version-preserving rather than version-normalizing: an older record remains older data.
+Live tracked creation records `playMode` as `tts` or `physical`. The public self-serve UI requires an explicit choice: physical for players together in person, TTS for players in different locations. Retrospective or feedback-only records that do not establish a play method retain `unspecified` rather than being assigned a false transport.
 
-## Player workflow
+Supported live diagnostic flags:
 
-### Before game night
+- `dont_know_what_happens_next`
+- `rule_unclear`
+- `no_meaningful_option`
+- `feels_decided`
+- `repeated_or_futile_battle`
+- `component_or_tts_problem`
 
-Everyone opens the same onboarding URL. The browser:
+A tracked session automatically closes when it has two player seats, one shared result, and two private player responses.
 
-1. registers the player against the event;
-2. receives a private participant identity token;
-3. stores that token locally; and
-4. records the player's latest faction and Leader choice.
+## Facilitated event/session API
 
-Only the token hash is written to D1. A participant may revise their choice until event registration is closed.
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/health` | Current version and deployed capability contract |
+| POST | `/api/sessions` | Create facilitator-managed game/event; requires `SESSION_ADMIN_TOKEN` |
+| GET | `/api/sessions/:token` | Read public session status |
+| POST | `/api/sessions/:token/join` | Join onboarding/game session |
+| POST | `/api/sessions/:token/event` | Record supported event |
+| GET | `/api/sessions/:token/onboarding` | Read event choices; host key required |
+| POST | `/api/sessions/:eventToken/games` | Create child games; host key required |
+| GET | `/api/sessions/:eventToken/games` | Read child games; host key required |
+| POST | `/api/sessions/:eventToken/games/:gameId/close` | Close child game |
+| GET | `/api/sessions/:gameToken/event-participants` | Read event roster for table join |
+| POST | `/api/sessions/:gameToken/arbiter` | Link Arbiter interaction |
+| POST | `/api/sessions/:token/close` | Close/retire facilitator session |
 
-### At the table
+## Security and privacy
 
-The organizer creates and prints one QR card per expected game. Both players scan the same table code.
+- Raw session tokens, host keys, and participant tokens are not stored; only SHA-256 hashes are persisted.
+- Public tracked creation is rate-limited by a salted hash of request client characteristics.
+- A tracked game has at most two authenticated player seats.
+- Public game state exposes response completion, not private questionnaire content.
+- Creator review requires the separate host/review key.
+- Event administration requires its host key.
+- Facilitator session creation requires the Worker secret.
+- CORS is restricted to configured origins.
+- Closed codes reject future joins/events.
+- Rules Arbiter links require an authenticated player for tracked games.
 
-The table page uses this order:
+## Production order
 
-1. **Recognized browser:** show the saved name, faction, and Leader with one `Join game` button.
-2. **Unrecognized browser:** show the event roster so the player taps their name.
-3. **Late addition:** allow a manual name, faction, and Leader only when the player was not onboarded.
+1. Validate all tests and static contracts.
+2. Apply pending shared D1 migrations.
+3. Deploy the Worker.
+4. Verify `/health` reports `v0.7.0` and all required capability flags.
+5. Smoke-test public tracked creation, two-player join, play-mode persistence, diagnostic event capture, shared result, separate responses, and automatic closure.
+6. Smoke-test facilitator event/session creation and historical record reads.
+7. Deploy/verify static playtest surfaces.
 
-Each child game has exactly two player seats. The same event participant may join a later child game and receives a new game-specific participant ID for that match.
-
-### During play
-
-The session page intercepts successful Rules Arbiter responses and links them with:
-
-- the child game session;
-- the printed sheet or table serial; and
-- the game-specific participant ID for the asking player.
-
-The event record rejects game activity and Rules Arbiter links, preventing questions from multiple simultaneous matches from being combined.
-
-New sessions use v0.6.3 and therefore align with the current unversioned Rules Arbiter. Stored v0.6.1 sessions remain readable historical records, but the current session page does not automatically switch its embedded Arbiter to the legacy ruleset merely because a stored record is v0.6.1. Explicitly versioned Rules Arbiter routes remain separate compatibility/history surfaces.
-
-## Organizer workflow
-
-The private onboarding host page contains two distinct sections:
-
-- **Game-night roster:** each participant's latest faction and Leader choice;
-- **Table sessions:** child game creation, QR rendering, player-seat status, closure, printing, and public-link manifest download.
-
-Public child-game join URLs are returned only when those games are created. The browser keeps them in local storage and can download a public table manifest. Raw child host keys are not needed because the event host key can review and close every child game.
-
-Closing event registration freezes onboarding but does not prevent the host from creating table sessions afterward. This supports collecting choices before the preparation deadline and generating match codes later at the event.
-
-## Security model
-
-- Raw session tokens, host keys, and participant identity tokens are never stored; only SHA-256 hashes are written to D1.
-- Session creation requires a separately configured facilitator secret.
-- Public child-game reads expose status, serial, version, aggregate counts, and occupied player seats.
-- Event roster and child-game administration require the event host key.
-- A saved identity token must match its event participant before one-tap joining.
-- The roster picker requires an explicit player confirmation and is intended for the shared physical event context.
-- Child games accept no more than two player seats.
-- Event records reject game lifecycle events and Rules Arbiter links.
-- Child-game Arbiter links require a participant seated in that game.
-- CORS is limited by `ALLOWED_ORIGINS`.
-- Closed game codes cannot accept future joins or playtest events.
-
-## Production setup
-
-1. Review and apply all four remote migrations in numeric order.
-2. Deploy this directory as a separate Cloudflare Worker project using `wrangler.toml`.
-3. Set `SESSION_ADMIN_TOKEN` with `wrangler secret put` or the Cloudflare dashboard.
-4. Confirm `/health` reports v0.6.3 with `database`, `sessionCreationConfigured`, `onboardingSupported`, `eventGamesSupported`, and `playerAttributionSupported` all true.
-5. Test current standalone creation (`G063-…`), current event creation (`EV063-…`), event onboarding, identity continuity, roster fallback, child-game creation, two-seat limits, player-attributed Arbiter linkage, child closure, and coded sheets.
-6. Confirm at least one stored v0.6.1 session can still be read and returns its original version/serial without rewriting the record.
-7. Deploy the static onboarding, host, batch, and session pages only after the Worker passes the above checks.
-8. Generate table QR codes only after the production endpoint passes the above checks.
+The public TTS Workshop path and physical tabletop path use the same tracked evidence pipeline.

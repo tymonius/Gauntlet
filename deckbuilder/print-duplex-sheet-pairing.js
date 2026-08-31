@@ -100,93 +100,13 @@
     return `<!doctype html>\n${documentNode.documentElement.outerHTML}`;
   }
 
-  function normalizeLabel(value) {
-    return String(value || "")
-      .toLowerCase()
-      .normalize("NFKD")
-      .replace(/&/g, " and ")
-      .replace(/[^a-z0-9]+/g, " ")
-      .replace(/\b(card|supplemental|reference|tracker)\b/g, " ")
-      .replace(/\s+/g, " ")
-      .trim();
-  }
-
-  function slugify(value) {
-    return String(value || "")
-      .toLowerCase()
-      .normalize("NFKD")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "");
-  }
-
-  function componentAliases(component) {
-    const values = new Set([
-      component.id,
-      component.name,
-      component.trackedValue?.name,
-      component.referenceFaces?.front?.title,
-      component.referenceFaces?.reverse?.title,
-      component.reverse,
-    ]);
-    return [...values].map(normalizeLabel).filter(Boolean);
-  }
-
-  function familyForLegacyCard(card) {
-    if (card.classList.contains("tracker-card")) return "tracker";
-    if (card.classList.contains("reference-card") || card.classList.contains("purge-card")) return "reference-card";
-    if (card.classList.contains("capital-tracker-card")) return "ledger";
-    if (card.classList.contains("deed-card")) return "deed-card";
-    if (card.classList.contains("proposal-card")) return "proposal-treaty-card";
-    if (card.classList.contains("rite-card")) return "rite-card";
-    return "";
-  }
-
-  function legacyCardLabels(card) {
+  function contractComponentForShell(shell, currentGame) {
+    const componentId = String(shell.dataset.contractComponentId || "").trim();
+    if (!componentId) return null;
     return [
-      card.dataset.contractComponentId,
-      card.dataset.riteName,
-      card.querySelector(".tracker-title")?.textContent,
-      card.querySelector(".supplemental-header")?.textContent,
-      card.querySelector(".supplemental-subtitle")?.textContent,
-      card.querySelector(".proposal-title")?.textContent,
-      card.querySelector(".rite-title")?.textContent,
-      card.querySelector(".deed-title")?.textContent,
-      card.querySelector(".deed-banner")?.textContent,
-    ].map(normalizeLabel).filter(Boolean);
-  }
-
-  function componentMatchesLegacy(component, legacyCard, factionId) {
-    if (component.faction !== factionId) return false;
-    const family = familyForLegacyCard(legacyCard);
-    if (!family || component.family !== family) return false;
-
-    const labels = legacyCardLabels(legacyCard);
-    const aliases = componentAliases(component);
-    if (labels.some(label => aliases.includes(label))) return true;
-    if (labels.some(label => aliases.some(alias => label.includes(alias) || alias.includes(label)))) return true;
-
-    if (family === "tracker") {
-      const tracked = normalizeLabel(component.trackedValue?.name);
-      return Boolean(tracked && labels.some(label => label.includes(tracked)));
-    }
-    if (family === "ledger") return labels.some(label => /capital|ledger/.test(label));
-    if (family === "deed-card") return labels.some(label => /deed/.test(label));
-    return false;
-  }
-
-  function contractComponentForLegacy(legacyCard, currentGame) {
-    const explicitId = legacyCard.dataset.contractComponentId;
-    if (explicitId) {
-      const explicit = (currentGame.components || []).find(component => component.id === explicitId);
-      if (explicit) return explicit;
-    }
-
-    const factionId = String(state.factionId || "").trim().toLowerCase();
-    const matches = (currentGame.components || []).filter(component => componentMatchesLegacy(component, legacyCard, factionId));
-    if (matches.length > 1) {
-      throw new Error(`Current-game component contract ambiguously matches ${legacyCardLabels(legacyCard).join(" / ") || "an unnamed supplemental card"}.`);
-    }
-    return matches[0] || null;
+      ...(currentGame.sharedComponents || []),
+      ...(currentGame.components || []),
+    ].find(component => component.id === componentId) || null;
   }
 
   function renderDescriptorForComponent(component) {
@@ -201,6 +121,8 @@
 
     const surface = String(explicit.surface || "");
     const componentId = String(explicit.componentId || "").trim();
+    const explicitKind = String(explicit.kind || "").trim();
+    if (explicitKind && componentId) return { kind: explicitKind, id: componentId };
     if (/supplemental-card\.js$/i.test(surface) && componentId) {
       return { kind: "supplemental", id: componentId };
     }
@@ -218,29 +140,29 @@
     if (component.family === "reference-card") return { kind: "reference", id: component.id };
     if (component.family === "proposal-treaty-card") return { kind: "proposal", id: component.id.replace(/^diplomats-proposal-/, "") };
     if (component.family === "rite-card") return { kind: "rite", id: component.id.replace(/^mystics-rite-/, "") };
+    if (component.family === "ritual-card") return { kind: "ritual", id: componentId || component.id.replace(/^mystics-ritual-of-/, "") };
+    if (component.family === "ledger") return { kind: "supplemental", id: component.id };
+    if (component.family === "deed-card") return { kind: "supplemental", id: component.id, orientation: "landscape" };
     return null;
   }
 
   function componentIsPrintableProduction(component, descriptor) {
     if (!descriptor) return false;
     if (component.productionStatus === "ready") return true;
-    // Proposal faces already use their final physical design and artwork. They
-    // remain export-pending only because the separate supplemental/TTS export
-    // integration is not finalized; Deckbuilder printing should keep using the
-    // canonical production Proposal renderer in the meantime.
-    return component.family === "proposal-treaty-card"
+    // Final card faces may be printable before their separate supplemental/TTS
+    // export status is promoted. The Deckbuilder still uses the canonical
+    // production renderer and never falls back to placeholder design.
+    return ["proposal-treaty-card", "ledger", "deed-card"].includes(component.family)
       && (component.designStatus || "final") === "final"
       && component.productionStatus === "export-pending";
   }
 
-  function annotateFallback(legacyCard, component) {
-    if (!component) return;
-    legacyCard.dataset.contractComponentId = component.id;
-    legacyCard.dataset.contractFamily = component.family;
-    legacyCard.dataset.contractDesignStatus = component.designStatus || "final";
-    legacyCard.dataset.contractProductionStatus = component.productionStatus;
-    legacyCard.dataset.contractBackPolicy = component.backPolicy || "";
-    if (component.backPolicy === "standardBack") legacyCard.classList.add("production-standard-back");
+  function annotateContract(shell, component) {
+    shell.dataset.contractFamily = component.family;
+    shell.dataset.contractDesignStatus = component.designStatus || "final";
+    shell.dataset.contractProductionStatus = component.productionStatus;
+    shell.dataset.contractBackPolicy = component.backPolicy || "";
+    if (component.backPolicy === "standardBack") shell.classList.add("production-standard-back");
   }
 
   function replaceProductionFronts(documentNode, currentGame) {
@@ -250,8 +172,8 @@
   }
 
   function replaceProductionLeader(documentNode, currentGame) {
-    const legacyLeader = documentNode.querySelector(".print-card.leader-card");
-    if (!legacyLeader) return;
+    const leaderShell = documentNode.querySelector(".print-card.leader-card");
+    if (!leaderShell) return;
 
     const faction = String(state.factionId || "").trim().toLowerCase();
     const leaderId = String(state.leaderId || "").trim().toLowerCase();
@@ -259,7 +181,7 @@
       || currentGame.leaders?.find(item => item.faction === faction && item.id === leaderId);
     if (!leader) throw new Error(`Current-game authority cannot resolve selected Leader ${faction}/${leaderId}.`);
 
-    legacyLeader.replaceWith(makeProductionComponent(documentNode, {
+    leaderShell.replaceWith(makeProductionComponent(documentNode, {
       kind: "leader",
       id: `${faction}-${leader.id}`,
       label: `${leader.name} Leader`,
@@ -270,44 +192,32 @@
   }
 
   function replaceSupplementalFronts(documentNode, currentGame) {
-    const legacyCards = [...documentNode.querySelectorAll(
+    const shells = [...documentNode.querySelectorAll(
       ".print-card.tracker-card, .print-card.reference-card, .print-card.purge-card, .print-card.capital-tracker-card, .print-card.deed-card, .print-card.proposal-card, .print-card.rite-card"
     )];
 
-    for (const legacyCard of legacyCards) {
-      if (!legacyCard.isConnected) continue;
+    const unresolved = [];
+    for (const shell of shells) {
+      if (!shell.isConnected) continue;
 
-      const ritualName = normalizeLabel(currentGame.mystics?.ritual?.name);
-      const labels = legacyCardLabels(legacyCard);
-      const isRitual = legacyCard.classList.contains("reference-card")
-        && ritualName
-        && labels.some(label => label === ritualName || label.includes(ritualName));
-      if (isRitual) {
-        const ritual = currentGame.mystics.ritual;
-        legacyCard.replaceWith(makeProductionComponent(documentNode, {
-          kind: "ritual",
-          id: ritual.id,
-          label: ritual.name,
-          side: "front",
-          backPolicy: "specialBack",
-          componentId: `mystics-ritual-${ritual.id}`,
-        }));
+      const component = contractComponentForShell(shell, currentGame);
+      if (!component) {
+        unresolved.push(shell.dataset.contractComponentId || shell.getAttribute("aria-label") || "unnamed supplemental component");
+        continue;
+      }
+      annotateContract(shell, component);
+
+      const descriptor = renderDescriptorForComponent(component);
+      if (!componentIsPrintableProduction(component, descriptor)) {
+        unresolved.push(component.name || component.id);
         continue;
       }
 
-      const component = contractComponentForLegacy(legacyCard, currentGame);
-      if (!component) continue;
-      annotateFallback(legacyCard, component);
-
-      const descriptor = renderDescriptorForComponent(component);
-      if (!componentIsPrintableProduction(component, descriptor)) continue;
-
       let side = "front";
-      if (legacyCard.classList.contains("proposal-card") && legacyCard.classList.contains("treaty")) side = "reverse";
-      if (legacyCard.classList.contains("rite-card") && (legacyCard.classList.contains("rite-back-card") || legacyCard.classList.contains("completed"))) side = "reverse";
-      if (component.family === "reference-card" && /\b(side b|reverse)\b/.test(normalizeLabel(legacyCard.querySelector(".supplemental-subtitle")?.textContent))) side = "reverse";
+      if (shell.classList.contains("proposal-card") && shell.classList.contains("treaty")) side = "reverse";
+      if (shell.classList.contains("rite-card") && (shell.classList.contains("rite-back-card") || shell.classList.contains("completed"))) side = "reverse";
 
-      legacyCard.replaceWith(makeProductionComponent(documentNode, {
+      shell.replaceWith(makeProductionComponent(documentNode, {
         ...descriptor,
         label: component.name,
         side,
@@ -315,35 +225,35 @@
         componentId: component.id,
       }));
     }
+
+    if (unresolved.length) {
+      throw new Error(`Current-game authority could not resolve production supplemental renders for: ${unresolved.join(", ")}`);
+    }
   }
 
   function replacePlayableAndTerritoryFronts(documentNode, currentGame) {
     const cardsById = new Map((currentGame.cards || []).map(card => [card.id, card]));
-    const cardsByName = new Map((currentGame.cards || []).map(card => [String(card.name || "").trim(), card]));
     const territoriesById = new Map((currentGame.territories || []).map(territory => [territory.id, territory]));
-    const territoriesByName = new Map((currentGame.territories || []).map(territory => [String(territory.name || "").trim(), territory]));
     const unresolved = [];
 
-    documentNode.querySelectorAll(".print-card.main-card").forEach(legacyCard => {
-      const id = legacyCard.dataset.cardId || "";
-      const name = legacyCard.querySelector(".card-name")?.textContent.trim() || "";
-      const card = cardsById.get(id) || cardsByName.get(name);
+    documentNode.querySelectorAll(".print-card.main-card").forEach(cardShell => {
+      const id = cardShell.dataset.cardId || "";
+      const card = cardsById.get(id);
       if (!card?.id) {
-        unresolved.push(name || id || "unnamed playable card");
+        unresolved.push(id || "playable card without authority id");
         return;
       }
-      legacyCard.replaceWith(makeProductionCard(documentNode, card));
+      cardShell.replaceWith(makeProductionCard(documentNode, card));
     });
 
-    documentNode.querySelectorAll(".print-card.territory").forEach(legacyTerritory => {
-      const id = legacyTerritory.dataset.territoryId || "";
-      const name = legacyTerritory.querySelector(".territory-name")?.textContent.trim() || "";
-      const territory = territoriesById.get(id) || territoriesByName.get(name);
+    documentNode.querySelectorAll(".print-card.territory").forEach(territoryShell => {
+      const id = territoryShell.dataset.territoryId || "";
+      const territory = territoriesById.get(id);
       if (!territory?.id) {
-        unresolved.push(name || id || "unnamed Territory");
+        unresolved.push(id || "Territory without authority id");
         return;
       }
-      legacyTerritory.replaceWith(makeProductionTerritory(documentNode, territory));
+      territoryShell.replaceWith(makeProductionTerritory(documentNode, territory));
     });
 
     if (unresolved.length) {
@@ -351,9 +261,15 @@
     }
   }
 
+  function selectedRulesetMode() {
+    return window.GAUNTLET_DECKBUILDER_RULESET?.mode
+      || (new URLSearchParams(window.location.search).get("rules") === "candidate" ? "candidate" : "released");
+  }
+
   function productionFrameSource(options) {
     if (options.kind === "external") return options.src;
-    return `/card-design/component-print-render.html?kind=${encodeURIComponent(options.kind)}&id=${encodeURIComponent(options.id)}&side=${encodeURIComponent(options.side || "front")}`;
+    const orientation = options.orientation === "landscape" ? "&orientation=landscape" : "";
+    return `/card-design/component-print-render.html?kind=${encodeURIComponent(options.kind)}&id=${encodeURIComponent(options.id)}&side=${encodeURIComponent(options.side || "front")}${orientation}&rules=${encodeURIComponent(selectedRulesetMode())}`;
   }
 
   function makeProductionComponent(documentNode, options) {
@@ -364,25 +280,36 @@
       label,
       backPolicy = "",
       componentId = id,
+      orientation = "portrait",
     } = options;
+    const landscape = orientation === "landscape";
     const wrapper = documentNode.createElement("article");
-    wrapper.className = `print-card production-render-component production-render-${kind}${backPolicy === "standardBack" ? " production-standard-back" : ""}`;
+    wrapper.className = `print-card production-render-component production-render-${kind}${landscape ? " production-render-landscape" : ""}${backPolicy === "standardBack" ? " production-standard-back" : ""}`;
     wrapper.dataset.productionComponentKind = kind;
     wrapper.dataset.productionComponentId = componentId;
     wrapper.dataset.productionComponentRenderId = id;
     wrapper.dataset.productionComponentSide = side;
     wrapper.dataset.productionBackPolicy = backPolicy;
+    wrapper.dataset.productionOrientation = orientation;
     wrapper.setAttribute("aria-label", `${label} production render`);
 
     const frame = documentNode.createElement("iframe");
-    frame.className = "production-component-frame";
+    frame.className = `production-component-frame${landscape ? " production-component-frame-landscape" : ""}`;
     frame.dataset.productionRenderFrame = "true";
     frame.dataset.productionRenderKind = "component";
-    frame.src = productionFrameSource({ ...options, kind, id, side });
+    frame.src = productionFrameSource({ ...options, kind, id, side, orientation });
     frame.title = `${label} production render`;
     frame.setAttribute("scrolling", "no");
     frame.setAttribute("loading", "eager");
-    wrapper.append(frame);
+
+    if (landscape) {
+      const rotate = documentNode.createElement("div");
+      rotate.className = "production-component-landscape-rotate";
+      rotate.append(frame);
+      wrapper.append(rotate);
+    } else {
+      wrapper.append(frame);
+    }
     return wrapper;
   }
 
@@ -397,7 +324,7 @@
     frame.className = "production-card-frame";
     frame.dataset.productionRenderFrame = "true";
     frame.dataset.productionRenderKind = "card";
-    frame.src = `/card-design/card-print-render.html?card=${encodeURIComponent(card.id)}&fit=production`;
+    frame.src = `/card-design/card-print-render.html?card=${encodeURIComponent(card.id)}&fit=production&rules=${encodeURIComponent(selectedRulesetMode())}`;
     frame.title = `${card.name} production card`;
     frame.setAttribute("scrolling", "no");
     frame.setAttribute("loading", "eager");
@@ -419,7 +346,7 @@
     frame.className = "production-territory-frame";
     frame.dataset.productionRenderFrame = "true";
     frame.dataset.productionRenderKind = "territory";
-    frame.src = `/card-design/territory-print-render.html?territory=${encodeURIComponent(territory.id)}`;
+    frame.src = `/card-design/territory-print-render.html?territory=${encodeURIComponent(territory.id)}&rules=${encodeURIComponent(selectedRulesetMode())}`;
     frame.title = `${territory.name} production Territory`;
     frame.setAttribute("scrolling", "no");
     frame.setAttribute("loading", "eager");
@@ -436,18 +363,10 @@
     const backPolicy = front.dataset.productionBackPolicy;
     if (!["twoSided", "specialBack"].includes(backPolicy)) return null;
 
-    if (kind === "ritual") {
-      return {
-        kind: "ritual",
-        id: renderId || currentGame.mystics?.ritual?.id,
-        label: `${currentGame.mystics?.ritual?.name || "Ritual"} back`,
-        side: "reverse",
-        backPolicy,
-        componentId,
-      };
-    }
-
-    const component = (currentGame.components || []).find(item => item.id === componentId);
+    const component = [
+      ...(currentGame.sharedComponents || []),
+      ...(currentGame.components || []),
+    ].find(item => item.id === componentId);
     const descriptor = component ? renderDescriptorForComponent(component) : null;
     if (!component || !descriptor) return null;
     return {
@@ -619,8 +538,29 @@
   background: transparent;
   pointer-events: none;
 }
-.print-card.production-render-territory {
+.print-card.production-render-territory,
+.print-card.production-render-component.production-render-landscape {
   position: relative !important;
+}
+.production-component-landscape-rotate {
+  position: absolute;
+  top: 0;
+  left: 2.5in;
+  width: 3.5in;
+  height: 2.5in;
+  transform: rotate(90deg);
+  transform-origin: top left;
+}
+.production-render-landscape .production-component-frame {
+  display: block;
+  width: 3.5in;
+  height: 2.5in;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  background: transparent;
+  pointer-events: none;
 }
 .production-territory-rotate {
   position: absolute;

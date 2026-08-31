@@ -5,6 +5,7 @@ import {
   defenderHasV070DefensiveEdge,
   proceedV070ToGambits,
   resolveV070BattleOutcome,
+  resolveV070Withdrawal,
   type PlayerId,
   type V070BattleOutcome,
 } from './rules';
@@ -16,14 +17,124 @@ import {
 import { drawV070Cards } from './turn-engine';
 import { resolveV070SupportedRevealEffects } from './battle-effects';
 import {
+  activeV070OverlayAtBattleOnset,
+  resolveV070OverlayAfterBattle,
+} from './overlays';
+import {
+  applyV070Leverage,
+  initializeV070TermsWindow,
+  offerV070Terms,
+  passV070Terms,
+  respondToV070Terms,
+  resolveV070PoliticalCapital,
+  resolveV070ProposalChoice,
+  useV070DiplomaticLatitude,
+  useV070DiplomaticDivination,
+  useV070TradeConcessions,
+  useV070GoodFaith,
+  useV070NonbindingResolution,
+  useV070GunboatDiplomacy,
+  useV070NeutralObserversAfterRefusal,
+  resolveV070TermsCardChoice,
+  useV070PlenipotentiaryAfterRefusal,
+  settleV070RefusedTermsOutcome,
+  settleV070RefusedTermsWithoutWinner,
+  v070LeverageRequiresDecision,
+  v070PoliticalCapitalPending,
+  v070ProposalChoicePending,
+  v070TermsReadyForGambits,
+} from './diplomats';
+import {
   createV070BattleRuntime,
   type V070BattleCardCommitment,
   type V070BattleRuntime
 } from './battle-types';
+import { resolveV070AssetLimitRemoval } from './assets';
+import {
+  useV070SanctionsBlockadeInAftermath,
+  useV070SanctionsCensureAfterRefusal,
+  useV070SanctionsEmbargoAfterRefusal,
+} from './sanctions';
+import { openV070BlockadeChoicesForPositionChange } from './movement-triggers';
+import {
+  clearV070AssetFaceState,
+  isV070AssetFaceUp,
+} from './asset-face-state';
+import {
+  applyV070BlasphemyForBattleReveal,
+  applyV070NormalAftermathConviction,
+  v070CondemnationAppliesToPlayerTactic,
+} from './inquisition';
 
 export const V070_NORMAL_BATTLE_DICE = 1 as const;
 
 export type V070BattleAction =
+  | { type: 'pass_terms'; playerId: PlayerId }
+  | { type: 'offer_terms'; playerId: PlayerId; proposalId: string }
+  | { type: 'respond_to_terms'; playerId: PlayerId; response: 'accept' | 'refuse' }
+  | {
+      type: 'use_diplomatic_latitude';
+      playerId: PlayerId;
+      cardInstanceId: string;
+      secondProposalId: string;
+    }
+  | { type: 'use_plenipotentiary'; playerId: PlayerId; cardInstanceId: string }
+  | {
+      type: 'use_diplomatic_divination';
+      playerId: PlayerId;
+      cardInstanceId: string;
+      prediction: 'accept' | 'refuse';
+    }
+  | { type: 'use_trade_concessions'; playerId: PlayerId; cardInstanceId: string }
+  | { type: 'use_good_faith'; playerId: PlayerId; cardInstanceId: string }
+  | { type: 'use_nonbinding_resolution'; playerId: PlayerId; cardInstanceId: string }
+  | { type: 'use_gunboat_diplomacy'; playerId: PlayerId; cardInstanceId: string }
+  | { type: 'use_neutral_observers'; playerId: PlayerId; cardInstanceId: string }
+  | {
+      type: 'use_sanctions_blockade';
+      playerId: PlayerId;
+      cardInstanceId: string;
+      territoryPosition: number;
+    }
+  | {
+      type: 'use_sanctions_censure';
+      playerId: PlayerId;
+      cardInstanceId: string;
+      replaceAssetInstanceId?: string;
+    }
+  | {
+      type: 'use_sanctions_embargo';
+      playerId: PlayerId;
+      cardInstanceId: string;
+      replaceAssetInstanceId?: string;
+    }
+  | {
+      type: 'resolve_asset_limit_removal';
+      playerId: PlayerId;
+      instanceIds: readonly string[];
+    }
+  | {
+      type: 'resolve_terms_card_choice';
+      playerId: PlayerId;
+      choice?:
+        | 'ratify'
+        | 'decline_ratification'
+        | 'draw_two'
+        | 'bank_asset'
+        | 'place_overlay'
+        | 'decline_overlay';
+      cardInstanceId?: string;
+      replaceAssetInstanceId?: string;
+    }
+  | {
+      type: 'resolve_proposal_choice';
+      playerId: PlayerId;
+      cardInstanceId?: string;
+      replaceAssetInstanceId?: string;
+      proposalId?: string;
+    }
+  | { type: 'use_leverage'; playerId: PlayerId; bonus: number }
+  | { type: 'resolve_political_capital'; playerId: PlayerId; cardInstanceIds: readonly string[] }
   | { type: 'proceed_from_onset'; playerId: PlayerId }
   | { type: 'set_gambit'; playerId: PlayerId; cardInstanceId?: string }
   | { type: 'reveal_gambits'; playerId: PlayerId }
@@ -31,6 +142,8 @@ export type V070BattleAction =
   | { type: 'reveal_tactics'; playerId: PlayerId }
   | { type: 'submit_battle_dice'; playerId: PlayerId; values: readonly number[] }
   | { type: 'submit_tiebreak_roll'; playerId: PlayerId; value: number }
+  | { type: 'use_safe_conduct'; playerId: PlayerId; cardInstanceId: string }
+  | { type: 'pass_loss_replacement'; playerId: PlayerId }
   | { type: 'complete_aftermath'; playerId: PlayerId };
 
 export function reduceV070BattleAction(
@@ -43,11 +156,110 @@ export function reduceV070BattleAction(
   if (action.playerId !== state.battle.attacker && action.playerId !== state.battle.defender) {
     throw new V070GameActionError('Only battle participants may act in this battle.');
   }
+  if (state.pendingAssetLimitChoice && action.type !== 'resolve_asset_limit_removal') {
+    throw new V070GameActionError(
+      'Resolve the pending Asset-limit Removal before continuing the battle.',
+    );
+  }
+  if (state.pendingSanctionChoices.length > 0) {
+    throw new V070GameActionError(
+      'Resolve the pending Sanction movement choice before continuing the battle.',
+    );
+  }
 
   const next = structuredClone(state) as V070GameState;
   ensureBattleRuntime(next);
 
   switch (action.type) {
+    case 'pass_terms':
+      passV070Terms(next, action.playerId);
+      break;
+    case 'offer_terms':
+      offerV070Terms(next, action.playerId, action.proposalId);
+      break;
+    case 'respond_to_terms':
+      respondToV070Terms(next, action.playerId, action.response);
+      break;
+    case 'use_diplomatic_latitude':
+      useV070DiplomaticLatitude(
+        next,
+        action.playerId,
+        action.cardInstanceId,
+        action.secondProposalId,
+      );
+      break;
+    case 'use_plenipotentiary':
+      useV070PlenipotentiaryAfterRefusal(next, action.playerId, action.cardInstanceId);
+      break;
+    case 'use_diplomatic_divination':
+      useV070DiplomaticDivination(next, action.playerId, action.cardInstanceId, action.prediction);
+      break;
+    case 'use_trade_concessions':
+      useV070TradeConcessions(next, action.playerId, action.cardInstanceId);
+      break;
+    case 'use_good_faith':
+      useV070GoodFaith(next, action.playerId, action.cardInstanceId);
+      break;
+    case 'use_nonbinding_resolution':
+      useV070NonbindingResolution(next, action.playerId, action.cardInstanceId);
+      break;
+    case 'use_gunboat_diplomacy':
+      useV070GunboatDiplomacy(next, action.playerId, action.cardInstanceId);
+      break;
+    case 'use_neutral_observers':
+      useV070NeutralObserversAfterRefusal(next, action.playerId, action.cardInstanceId);
+      break;
+    case 'use_sanctions_blockade':
+      useV070SanctionsBlockadeInAftermath(
+        next,
+        action.playerId,
+        action.cardInstanceId,
+        action.territoryPosition,
+      );
+      break;
+    case 'use_sanctions_censure':
+      useV070SanctionsCensureAfterRefusal(
+        next,
+        action.playerId,
+        action.cardInstanceId,
+        action.replaceAssetInstanceId,
+      );
+      break;
+    case 'use_sanctions_embargo':
+      useV070SanctionsEmbargoAfterRefusal(
+        next,
+        action.playerId,
+        action.cardInstanceId,
+        action.replaceAssetInstanceId,
+      );
+      break;
+    case 'resolve_asset_limit_removal':
+      resolveV070AssetLimitRemoval(next, action.playerId, action.instanceIds);
+      break;
+    case 'resolve_terms_card_choice':
+      resolveV070TermsCardChoice(
+        next,
+        action.playerId,
+        action.choice,
+        action.cardInstanceId,
+        action.replaceAssetInstanceId,
+      );
+      break;
+    case 'resolve_proposal_choice':
+      resolveV070ProposalChoice(
+        next,
+        action.playerId,
+        action.cardInstanceId,
+        action.replaceAssetInstanceId,
+        action.proposalId,
+      );
+      break;
+    case 'use_leverage':
+      applyV070Leverage(next, action.playerId, action.bonus);
+      break;
+    case 'resolve_political_capital':
+      resolveV070PoliticalCapital(next, action.playerId, action.cardInstanceIds);
+      break;
     case 'proceed_from_onset':
       proceedFromOnset(next, action.playerId);
       break;
@@ -68,6 +280,12 @@ export function reduceV070BattleAction(
       break;
     case 'submit_tiebreak_roll':
       submitTiebreak(next, action.playerId, action.value);
+      break;
+    case 'use_safe_conduct':
+      useSafeConduct(next, action.playerId, action.cardInstanceId);
+      break;
+    case 'pass_loss_replacement':
+      passLossReplacement(next, action.playerId);
       break;
     case 'complete_aftermath':
       completeAftermath(next, action.playerId);
@@ -112,7 +330,15 @@ export function selectV070BattleDie(runtime: V070BattleRuntime, playerId: Player
 }
 
 function ensureBattleRuntime(state: V070GameState): V070BattleRuntime {
-  if (!state.battleRuntime) state.battleRuntime = createV070BattleRuntime();
+  if (!state.battleRuntime) {
+    state.battleRuntime = createV070BattleRuntime();
+    if (!state.battle) throw new V070GameActionError('There is no active battle.');
+    state.battleRuntime.activeOverlayAtOnset = activeV070OverlayAtBattleOnset(
+      state,
+      state.battle.contestedPosition,
+    );
+    initializeV070TermsWindow(state);
+  }
   return state.battleRuntime;
 }
 
@@ -122,6 +348,9 @@ function proceedFromOnset(state: V070GameState, playerId: PlayerId): void {
   requireRuntimeStage(runtime, 'onset');
   if (playerId !== battle.attacker) {
     throw new V070GameActionError('The attacker advances the shared battle procedure out of Onset.');
+  }
+  if (!v070TermsReadyForGambits(state)) {
+    throw new V070GameActionError('Resolve or pass the current Terms opportunity before leaving Onset.');
   }
 
   const blockers = unsupportedOnsetFeatures(state);
@@ -146,15 +375,17 @@ function unsupportedOnsetFeatures(state: V070GameState): string[] {
 
   for (const playerId of [battle.attacker, battle.defender]) {
     const player = state.players[playerId];
-    if (player.factionId === 'diplomats') result.push(`${playerId}:Terms`);
 
     for (const instanceId of player.zones.assetBank) {
+      if (!isV070AssetFaceUp(state, instanceId)) continue;
       const cardId = state.cardInstances[instanceId]?.cardId;
       const card = cardId ? v070CanonicalContent.cardsById.get(cardId) : undefined;
       const onsetAsset = card?.effects.find(effect =>
-        effect.label === 'Asset' && /during onset|before gambits are set/i.test(effect.text),
+        effect.label === 'Asset' && /during onset|before gambits are set|after terms are refused|after the opponent refuses/i.test(effect.text),
       );
-      if (onsetAsset && card) result.push(`${playerId}:${card.name}`);
+      const implementedOnsetAsset = cardId === 'diplomats-plenipotentiary'
+        || cardId === 'diplomats-neutral-observers';
+      if (onsetAsset && card && !implementedOnsetAsset) result.push(`${playerId}:${card.name}`);
     }
   }
 
@@ -168,7 +399,38 @@ function setGambit(
 ): void {
   const runtime = requireRuntime(state);
   requireRuntimeStage(runtime, 'set_gambits');
+  const order = runtime.gambitOrderOverride;
+  if (order?.nextPlayer && order.nextPlayer !== playerId) {
+    throw new V070GameActionError(`${order.nextPlayer} must make the next Gambit choice.`);
+  }
+
   const participant = runtime.participants[playerId];
+  const battle = requireBattle(state);
+  if (battle.attackerGambitProhibited
+    && playerId === battle.attacker
+    && instanceId !== undefined) {
+    throw new V070GameActionError(
+      'The attacker cannot set a Gambit in this battle.',
+    );
+  }
+
+  const ableMandates = (state.turnState?.gambitMandates ?? []).filter(
+    mandate =>
+      mandate.playerId === playerId
+      && state.players[playerId].zones.hand.includes(mandate.instanceId)
+      && cardEligibleForV070BattleRole(
+        state.cardInstances[mandate.instanceId]?.cardId ?? '',
+        'gambit',
+      )
+      && !(battle.attackerGambitProhibited && playerId === battle.attacker),
+  );
+  if (instanceId !== undefined
+    && ableMandates.some(mandate => mandate.instanceId !== instanceId)) {
+    throw new V070GameActionError(
+      'Confession requires every still-able mandated Gambit instruction to be satisfied if the player sets a Gambit.',
+    );
+  }
+
   if (participant.gambit !== undefined) {
     throw new V070GameActionError(`${playerId} has already made a Gambit choice.`);
   }
@@ -192,18 +454,35 @@ function setGambit(
 
     player.zones.hand.splice(index, 1);
     participant.gambit = commitment(instanceId, playerId, 'gambit');
+    const forcedFaceUp = Boolean(
+      order
+      && playerId === order.firstPlayer
+      && order.firstCommitmentFaceUp,
+    );
+    if (forcedFaceUp) participant.gambit.faceUp = true;
+
     appendV070Event(state, {
       type: 'gambit_set',
       actor: playerId,
       visibility: 'public',
-      payload: { faceDown: true },
+      payload: { faceDown: !forcedFaceUp },
     });
     appendV070Event(state, {
       type: 'gambit_identity',
       actor: playerId,
-      visibility: playerId,
+      visibility: forcedFaceUp ? 'public' : playerId,
       payload: { instanceId, cardId },
     });
+  }
+
+  if (order) {
+    if (playerId === order.firstPlayer) {
+      order.nextPlayer = order.secondPlayer;
+      return;
+    }
+    if (playerId === order.secondPlayer) {
+      order.nextPlayer = null;
+    }
   }
 
   if (bothBattleChoicesMade(runtime, 'gambit')) formReserves(state);
@@ -216,7 +495,8 @@ function formReserves(state: V070GameState): void {
     const result = drawV070Cards(
       state,
       playerId,
-      v070CanonicalContent.content.battle.normal_reserve_size,
+      v070CanonicalContent.content.battle.normal_reserve_size
+        + runtime.participants[playerId].reserveBonus,
       'battle_reserve',
     );
     runtime.participants[playerId].reserve = result.drawn;
@@ -256,7 +536,17 @@ function revealBattleRole(
   }
 
   const commitments = (['A', 'B'] as const)
-    .map(owner => runtime.participants[owner][role])
+    .flatMap(owner => {
+      const participant = runtime.participants[owner];
+      const normal = participant[role];
+      if (role === 'gambit') {
+        return [
+          ...(normal ? [normal] : []),
+          ...participant.additionalGambits,
+        ];
+      }
+      return normal ? [normal] : [];
+    })
     .filter((item): item is V070BattleCardCommitment => Boolean(item));
 
   for (const item of commitments) {
@@ -271,6 +561,12 @@ function revealBattleRole(
         cardId,
       },
     });
+    applyV070BlasphemyForBattleReveal(
+      state,
+      item.owner,
+      cardId,
+      role,
+    );
   }
 
   const unsupported = resolveV070SupportedRevealEffects(
@@ -355,6 +651,9 @@ function submitBattleDice(
 ): void {
   const runtime = requireRuntime(state);
   requireRuntimeStage(runtime, 'outcome');
+  if (v070LeverageRequiresDecision(state)) {
+    throw new V070GameActionError('Resolve Leverage, including a +0 pass, before battle dice are rolled.');
+  }
   const participant = runtime.participants[playerId];
   if (participant.battleDice.length > 0) {
     throw new V070GameActionError(`${playerId} has already submitted battle dice.`);
@@ -460,10 +759,125 @@ function submitTiebreak(state: V070GameState, playerId: PlayerId, value: number)
 }
 
 function applyOutcome(state: V070GameState, outcome: V070BattleOutcome): void {
+  const runtime = requireRuntime(state);
+  if (safeConductAvailable(state, outcome.loser)) {
+    runtime.pendingOutcome = outcome;
+    runtime.stage = 'loss_replacement';
+
+    appendV070Event(state, {
+      type: 'loss_replacement_pending',
+      actor: outcome.loser,
+      visibility: 'public',
+      payload: {
+        playerId: outcome.loser,
+        source: 'safe_conduct',
+        wouldLoseTo: outcome.winner,
+      },
+    });
+    return;
+  }
+
+  finalizeOutcome(state, outcome);
+}
+
+function useSafeConduct(
+  state: V070GameState,
+  playerId: PlayerId,
+  cardInstanceId: string,
+): void {
+  const battle = requireBattle(state);
+  const runtime = requireRuntime(state);
+  requireRuntimeStage(runtime, 'loss_replacement');
+
+  const pending = runtime.pendingOutcome;
+  if (!pending || pending.loser !== playerId) {
+    throw new V070GameActionError('Safe Conduct is not pending for that player.');
+  }
+  if (!safeConductAvailable(state, playerId)) {
+    throw new V070GameActionError('Safe Conduct is not available for this loss.');
+  }
+
+  const player = state.players[playerId];
+  const index = player.zones.assetBank.indexOf(cardInstanceId);
+  if (index < 0
+    || state.cardInstances[cardInstanceId]?.cardId !== 'diplomats-safe-conduct'
+    || !isV070AssetFaceUp(state, cardInstanceId)) {
+    throw new V070GameActionError('Choose a banked Safe Conduct to use.');
+  }
+
+  player.zones.assetBank.splice(index, 1);
+  clearV070AssetFaceState(state, cardInstanceId);
+  player.zones.discardPile.push(cardInstanceId);
+
+  state.battle = resolveV070Withdrawal(battle, [playerId]);
+  openBattlePositionChangeSanctions(state, state.battle.positions);
+  runtime.pendingOutcome = null;
+  runtime.stage = 'aftermath';
+
+  appendV070Event(state, {
+    type: 'safe_conduct_used',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      cardInstanceId,
+      wouldHaveLostTo: pending.winner,
+      positions: structuredClone(state.battle.positions),
+    },
+  });
+
+  settleV070RefusedTermsWithoutWinner(state);
+}
+
+function passLossReplacement(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  const runtime = requireRuntime(state);
+  requireRuntimeStage(runtime, 'loss_replacement');
+
+  const pending = runtime.pendingOutcome;
+  if (!pending || pending.loser !== playerId) {
+    throw new V070GameActionError('That player does not have the pending loss replacement.');
+  }
+
+  runtime.pendingOutcome = null;
+  appendV070Event(state, {
+    type: 'loss_replacement_passed',
+    actor: playerId,
+    visibility: 'public',
+    payload: { source: 'safe_conduct' },
+  });
+  finalizeOutcome(state, pending);
+}
+
+function safeConductAvailable(
+  state: V070GameState,
+  playerId: PlayerId,
+): boolean {
+  const runtime = requireRuntime(state);
+  const terms = runtime.terms;
+  if (terms.stage !== 'refused'
+    || terms.response !== 'refused'
+    || terms.offerer !== playerId) {
+    return false;
+  }
+
+  return state.players[playerId].zones.assetBank.some(instanceId =>
+    state.cardInstances[instanceId]?.cardId === 'diplomats-safe-conduct'
+    && isV070AssetFaceUp(state, instanceId)
+  );
+}
+
+function finalizeOutcome(
+  state: V070GameState,
+  outcome: V070BattleOutcome,
+): void {
   const battle = requireBattle(state);
   const runtime = requireRuntime(state);
   const resolution = applyV070BattleOutcome(battle, outcome);
   state.battle = resolution.state;
+  openBattlePositionChangeSanctions(state, state.battle.positions);
+  runtime.pendingOutcome = null;
   runtime.stage = 'aftermath';
 
   appendV070Event(state, {
@@ -477,13 +891,34 @@ function applyOutcome(state: V070GameState, outcome: V070BattleOutcome): void {
     },
   });
 
+  settleV070RefusedTermsOutcome(state, outcome);
+  if (state.stage === 'ended') return;
   if (resolution.victory) completeAftermathInternal(state, resolution.victory.winner);
+}
+
+function openBattlePositionChangeSanctions(
+  state: V070GameState,
+  positions: Record<PlayerId, number>,
+): void {
+  for (const playerId of ['A', 'B'] as const) {
+    const from = state.players[playerId].position;
+    const to = positions[playerId];
+    if (from !== null && from !== to) {
+      openV070BlockadeChoicesForPositionChange(state, playerId, from, to);
+    }
+  }
 }
 
 function completeAftermath(state: V070GameState, playerId: PlayerId): void {
   const battle = requireBattle(state);
   const runtime = requireRuntime(state);
   requireRuntimeStage(runtime, 'aftermath');
+  if (v070PoliticalCapitalPending(state)) {
+    throw new V070GameActionError('Resolve Senator Political Capital before completing the Aftermath.');
+  }
+  if (v070ProposalChoicePending(state)) {
+    throw new V070GameActionError('Resolve the pending Proposal choice before completing the Aftermath.');
+  }
   if (playerId !== battle.attacker) {
     throw new V070GameActionError('The attacker advances the shared Aftermath procedure.');
   }
@@ -501,15 +936,49 @@ function completeAftermathInternal(
   state.players.B.position = battle.positions.B;
   syncBoardOccupants(state);
 
+  const graveyardedDuringAftermath: Record<PlayerId, string[]> = {
+    A: [],
+    B: [],
+  };
+
   for (const playerId of ['A', 'B'] as const) {
     const participant = runtime.participants[playerId];
     if (participant.gambit) {
       state.players[playerId].zones.graveyard.push(participant.gambit.instanceId);
+      graveyardedDuringAftermath[playerId].push(participant.gambit.instanceId);
+    }
+    for (const additional of participant.additionalGambits) {
+      state.players[playerId].zones.graveyard.push(additional.instanceId);
+      graveyardedDuringAftermath[playerId].push(additional.instanceId);
     }
     if (participant.tactic) {
-      state.players[playerId].zones.discardPile.push(participant.tactic.instanceId);
+      const instanceId = participant.tactic.instanceId;
+      if (v070CondemnationAppliesToPlayerTactic(state, playerId)) {
+        state.players[playerId].zones.graveyard.push(instanceId);
+        graveyardedDuringAftermath[playerId].push(instanceId);
+        appendV070Event(state, {
+          type: 'condemnation_applied',
+          actor: otherPlayer(playerId),
+          visibility: 'public',
+          payload: {
+            tacticOwner: playerId,
+            instanceId,
+            cardId: state.cardInstances[instanceId]?.cardId,
+          },
+        });
+      } else {
+        state.players[playerId].zones.discardPile.push(instanceId);
+      }
     }
     state.players[playerId].zones.discardPile.push(...participant.reserve);
+  }
+
+  for (const playerId of ['A', 'B'] as const) {
+    applyV070NormalAftermathConviction(
+      state,
+      playerId,
+      graveyardedDuringAftermath[otherPlayer(playerId)],
+    );
   }
 
   appendV070Event(state, {
@@ -522,6 +991,12 @@ function completeAftermathInternal(
       },
     },
   });
+
+  resolveV070OverlayAfterBattle(
+    state,
+    battle.contestedPosition,
+    runtime.activeOverlayAtOnset,
+  );
 
   state.battle = null;
   state.battleRuntime = null;
@@ -542,6 +1017,8 @@ function completeAftermathInternal(
   if (!state.turnState || state.turnState.phase !== 'movement') {
     throw new Error('A completed movement battle must return to the Movement phase boundary.');
   }
+  if (state.pendingSanctionChoices.length > 0) return;
+
   state.turnState = advanceV070TurnPhase(state.turnState);
   appendV070Event(state, {
     type: 'turn_phase',

@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const catalog = readFileSync("card-design/index.html", "utf8");
-const catalogOverlay = readFileSync("card-design/v064-card-candidates.js", "utf8");
+const catalogOverlay = readFileSync("card-design/current-card-catalog.js", "utf8");
 const componentPrintRenderer = readFileSync("card-design/component-print-render.html", "utf8");
 const cardReviewRenderer = readFileSync("card-design/card-review-render.html", "utf8");
 const cardPrintRenderer = readFileSync("card-design/card-print-render.html", "utf8");

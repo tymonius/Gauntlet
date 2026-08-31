@@ -20,7 +20,7 @@ The release manifest identifies `digital_rules: v0.7.0`. The published package i
 - `content/v063.ts` — immutable v0.6.3 release adapter retained for historical/versioned regression tests.
 - `state/`, `effects/`, `cards/`, `cli/`, and `gui/` — pre-faction/earlier playable architecture. Useful scaffolding, but not presumed v0.7.0-compatible.
 
-The live `content/current.ts` boundary now identifies v0.7.0 and exposes the released shared-rules API plus the authoritative starter/setup and private-view surfaces. Older procedure libraries remain visible only under their explicit versioned names until promoted deliberately.
+The live `content/current.ts` boundary identifies v0.7.0 and exposes only the released shared-rules API plus the authoritative starter/setup and private-view surfaces. Historical procedure libraries are not re-exported through `current.ts`; migration work must import their explicit versioned modules until a procedure is revalidated and promoted deliberately.
 
 Issue #741 tracks completion of the playable engine against the current released rules.
 

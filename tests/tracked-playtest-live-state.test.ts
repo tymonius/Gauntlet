@@ -44,6 +44,6 @@ describe("tracked playtest live state and creator controls", () => {
 
   it("keeps individual response controls available to each joined player", () => {
     expect(live).toContain("!open || !joinedPlayer || !nextSession.resultSubmitted || ownResponse");
-    expect(page).toContain("both players submit individual responses");
+    expect(page).toContain("both players submit separate individual responses");
   });
 });

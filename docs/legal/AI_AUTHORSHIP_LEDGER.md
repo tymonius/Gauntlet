@@ -3,9 +3,11 @@
 **Prepared:** 2026-08-28  
 **Purpose:** Evidence ledger for copyright registration and future IP diligence.
 
-The U.S. Copyright Office analyzes AI-containing works based on the human authorship actually present in the final work. Repository ownership, prompting, project direction, or accepting an AI output is not by itself enough to treat the output as human-authored expression.
+The U.S. Copyright Office analyzes AI-containing works based on the human authorship actually present in the final work. Repository ownership, prompting, project direction, or accepting an AI output is not by itself enough to make every machine-generated phrase human-authored expression.
 
-Use this ledger to record **affirmative human authorship**, not merely the use of an AI tool.
+For Gauntlet, the audit should nevertheless begin from the correct project-level fact: **Tymon Scott is the sole human creator/author directing the overall work.** The purpose of this ledger is not to reclassify the project as "AI-authored." It is to identify any appreciable final expression that was actually supplied by a generative system without sufficient human expressive contribution, so that those portions can be excluded from a registration while the human-authored text, revisions, modifications, selection, coordination, and arrangement are claimed.
+
+Do not treat mere AI involvement as disqualifying. Use this ledger to distinguish **assistive AI use** from **AI-supplied final expression**.
 
 ## Classification codes
 
@@ -67,13 +69,21 @@ These are **scope markers, not authorship conclusions**. A new name, changed rul
 
 ### Default classification rule for this audit
 
-Do not mark a v0.6 passage/card/component **H** merely because:
-- the underlying game idea came from the project owner;
-- the project owner directed or approved the wording;
-- the material was committed under the project owner's account;
-- the material was iteratively discussed with a generative-AI system.
+The audit should not ask merely whether AI participated. It should ask **who formed the protectable expression that survives in the final work**.
 
-Use **TBD** until there is affirmative evidence of the human-created expressive contribution. Where generative AI supplied substantially unchanged wording, classify the machine-generated expression **AR** and separately record any qualifying human modifications, selection, coordination, or arrangement.
+Treat the following as strong evidence of human authorship or human-assistive AI use:
+- the human supplied the actual wording or substantial phrasing;
+- the human dictated specific clauses, examples, sequence, or language and the tool implemented them closely;
+- the human substantially rewrote an AI draft;
+- AI use was limited to proofreading, formatting, grammar, consistency, organization assistance, or suggestions that the human independently expressed;
+- the human made sufficiently creative modifications to machine-generated source material;
+- the human selected, coordinated, and arranged material in a sufficiently creative way.
+
+Do **not** classify material as AI-generated merely because it was developed through an AI conversation.
+
+Use **AR** only where the final protectable expression was substantially supplied by a generative system and survives without sufficient human expressive contribution. Use **HM** where qualifying human modifications are protectable even though the source expression was AI-generated. Use **TBD** only where the evidence is genuinely insufficient.
+
+Project direction, approval, mechanics, and ideas remain important context, but they do not by themselves convert machine-supplied wording into human-authored expression.
 
 See `docs/legal/V0_6_0_COPYRIGHT_DIFF_AUDIT.md`.
 
@@ -81,18 +91,32 @@ See `docs/legal/V0_6_0_COPYRIGHT_DIFF_AUDIT.md`.
 
 Audit the current Rulebook by section/chapter, with special attention to passages drafted or substantially rewritten through ChatGPT or other generative systems.
 
-### Rulebook table
+### v0.6.0 Rulebook resolved filing table
 
-| Section / path | First version | Class | Human contribution | AI contribution | Registration treatment | Evidence |
-| --- | --- | --- | --- | --- | --- | --- |
-| `rulebook/player-facing/current-rulebook.md` — Ch. 1 | TBD | TBD | TBD | TBD | TBD | Git history / conversation provenance |
-| Ch. 2 | TBD | TBD | TBD | TBD | TBD | |
-| Ch. 3 | TBD | TBD | TBD | TBD | TBD | |
-| Ch. 4 | TBD | TBD | TBD | TBD | TBD | |
-| Ch. 5 | TBD | TBD | TBD | TBD | TBD | |
-| Ch. 6+ | TBD | TBD | TBD | TBD | TBD | |
+This table applies to the **July 20, 2026 publication snapshot** and incorporates the targeted expressive-provenance pass in `V0_6_0_EXPRESSIVE_PROVENANCE_AUDIT.md`.
 
-Do not classify a whole chapter as human-authored merely because the concepts/mechanics originated with a human. The question for copyright registration is who formed the protectable **expression**.
+| Section | Class / copyright posture | Human contribution established | AI treatment | Registration treatment |
+| --- | --- | --- | --- | --- |
+| Welcome to Gauntlet | AR for final three-paragraph expressive prose; H/HA for human-directed substance and surrounding editorial structure | Human supplied substantive constraints, rejected earlier marketing-style wording, required mirror-match accuracy and deck-construction emphasis, selected/approved final placement | ChatGPT supplied the final sentence-level three-paragraph prose; expressly exclude it | Exclude `introductory text generated by artificial intelligence`; claim overall selection/coordination/arrangement |
+| Rules Conventions / Playing Cards | H/HA + PD/U | Terminology, hierarchy, editorial conventions, revisions | No additional appreciable AI-generated prose identified | Claim qualifying text/arrangement; game methods excluded |
+| 1. Components | H/HA + PD/U | Component model and terminology decisions | No material AI issue identified | Claim qualifying text/arrangement; functional matter excluded |
+| 2. Building a Deck | H/HA + PD/U | Strong direct evidence for Deck / Playable Deck / Draw Pile hierarchy and supplemental components | No priority expressive-prose issue | Claim qualifying text/revisions/arrangement |
+| 3. Setup | H/HA + PD/U | Human-directed setup decisions and sequencing | No priority expressive-prose issue | Functional procedure excluded; qualifying editing/arrangement claimed |
+| 4. Turn Structure | H/HA + PD/U | Human-directed sequence and capture timing | No priority expressive-prose issue | Same |
+| 5. Movement | H/HA + PD/U | Human-directed terminology and distinctions | No appreciable nonfunctional block identified as a filing blocker | Same |
+| 6. Battles | H/HA + PD/U | Strong direct evidence for battle sequencing and hand-vs-Battle-Hand destinations | No appreciable nonfunctional block identified as a filing blocker | Same |
+| 7. Territory Control | H/HA + PD/U | Human-directed occupation/control/capture architecture | No priority expressive-prose issue | Same |
+| 8. Running the Gauntlet | H/HA + PD/U | Human-directed objective/Last Stand architecture | Predominantly functional exposition; not treated as a separate AI-authorship blocker | Claim qualifying text/arrangement; systems/procedures excluded |
+| 9. Game Zones | H/HA + PD/U | Human-directed zone taxonomy | Low | Claim selection/arrangement and qualifying text |
+| 10. Actions, Assets, and Overlays | H/HA + PD/U | Human-directed system integration and terminology | Low outside functional prose | Same |
+| 11–16. Factions | H/HA + PD/U; exact short descriptive lines not relied on as principal authorship | Strong human selection, editing, scope, chapter order, mechanics, terminology integration | Exact line-by-line provenance of short faction/Leader descriptions is incomplete, but those short/function-heavy passages do not justify delaying Worksheet A | Claim qualifying editing/arrangement and supported text; do not rely on mottos/titles/function summaries as major literary authorship |
+| 17. Glossary | H/HA + PD/U | Human terminology selection/normalization | Low | Claim selection/coordination/arrangement; functional/short matter excluded |
+| Quick Reference | H/HA + PD/U | Human selection/condensation/arrangement | Low | Claim compilation arrangement; procedures excluded |
+| Rulebook pictorial material | Unclaimed in Worksheet A | Visual provenance reserved for separate visual/card audit | No need to classify each image for this Literary Work filing | Exclude all `pictorial material` from Worksheet A |
+
+The Rulebook filing therefore no longer depends on a sentence-by-sentence AI audit of functional rules or an image-by-image visual provenance audit. The known appreciable AI-drafted literary block is the three-paragraph Welcome; pictorial material is excluded from this filing as a scope choice.
+
+Do not classify a whole chapter as AI-generated merely because it was developed through an AI-assisted workflow. Conversely, human control of mechanics or approval alone does not convert appreciable machine-supplied final expression into human-authored prose.
 
 ## Workstream 2 — card text
 
@@ -206,3 +230,16 @@ For future canonical releases, provenance should become part of release QA:
 - registration-deposit candidates can be generated reproducibly from frozen sources.
 
 This avoids reconstructing authorship months or years later.
+
+
+## Filing posture for Gauntlet
+
+For registration purposes, the working posture is:
+
+- **Human author:** Tymon Scott.
+- **Overall work:** a human-directed and human-authored game publication containing AI-assisted and, in some places, potentially AI-generated material.
+- **Claim affirmatively:** qualifying human-authored text; human revisions and sufficiently original modifications; qualifying graphic/design authorship; and human selection, coordination, and arrangement.
+- **Exclude only where required:** appreciable final text or pictorial material actually generated by AI without sufficient human expressive contribution; third-party material; preexisting material; and uncopyrightable game systems/methods.
+- **Do not characterize Gauntlet as AI-authored** merely because generative tools were used extensively during development.
+
+The practical objective is the broadest accurate human-authorship claim supported by the final work and provenance evidence, not a maximal disclaimer of everything touched by AI.
