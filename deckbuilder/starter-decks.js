@@ -4,6 +4,8 @@
   const { state } = deckbuilder;
   const deckEntries = () => deckbuilder.deckEntries();
   const escapeHtml = value => deckbuilder.escapeHtml(value);
+  const territoriesApi = () => deckbuilder.feature("territories");
+  const ritesApi = () => deckbuilder.feature("mysticsRites");
 
   const STARTER_TIP_SOURCE = "starter-first-game-tips.json";
   let starterDecks = [];
@@ -66,7 +68,7 @@
   async function waitForCurrentGamePool() {
     const deadline = Date.now() + 10000;
     while (Date.now() < deadline) {
-      if (state.currentGameVersion && state.currentGameData?.starterDecks?.length && Array.isArray(state.cards) && state.cards.length && state.territoryPool?.length) return;
+      if (state.currentGameVersion && state.currentGameData?.starterDecks?.length && Array.isArray(state.cards) && state.cards.length && territoriesApi()?.isReady?.()) return;
       await new Promise(resolve => window.setTimeout(resolve, 25));
     }
     throw new Error("Timed out waiting for the shared current-game card, Territory, and starter Deck pool.");
@@ -93,14 +95,14 @@
   function starterRiteIds(preset = null) {
     if ((preset?.factionId || state.factionId) !== "mystics") return [];
     if (Array.isArray(preset?.selectedRites)) return [...preset.selectedRites];
-    const riteApi = deckbuilder.feature("mysticsRites");
+    const riteApi = ritesApi();
     return riteApi?.selectionEnabled?.() ? [] : (riteApi?.defaultIds?.() || []);
   }
 
   function resetCurrentDeck() {
     const hasCards = Object.keys(state.deck).length > 0;
-    const hasTerritories = Boolean(state.territories?.length);
-    const hasRites = Boolean(state.rites?.length);
+    const hasTerritories = Boolean(territoriesApi()?.selectedIds?.().length);
+    const hasRites = Boolean(ritesApi()?.selectedIds?.().length);
     const hasName = Boolean(state.deckName.trim());
 
     if (
@@ -112,12 +114,10 @@
     ) return;
 
     state.deck = {};
-    state.territories = [];
-    if (Array.isArray(state.rites)) state.rites = starterRiteIds();
+    territoriesApi()?.setSelectedIds?.([]);
+    ritesApi()?.setSelectedIds?.(starterRiteIds());
     state.deckName = "";
     state.selectedCardId = null;
-    state.selectedTerritoryId = null;
-    if ("pendingTerritories" in state) state.pendingTerritories = null;
     deckbuilder.render();
   }
 
@@ -130,7 +130,7 @@
 
   function matchingCurrentStarterDeck() {
     const preset = selectedStarterDeck();
-    if (!preset || !state.cards.length || !state.territoryPool?.length) return null;
+    if (!preset || !state.cards.length || !territoriesApi()?.isReady?.()) return null;
 
     const currentCards = new Map();
     for (const { card, qty } of deckEntries()) {
@@ -147,16 +147,14 @@
       if (currentCards.get(name) !== quantity) return null;
     }
 
-    const currentTerritories = (state.territories || [])
-      .map(id => state.territoryPool.find(territory => territory.id === id)?.name)
-      .filter(Boolean);
+    const currentTerritories = (territoriesApi()?.selected?.() || []).map(territory => territory.name);
     const expectedTerritories = preset.territories || [];
 
     if (currentTerritories.length !== expectedTerritories.length) return null;
     if (currentTerritories.some((name, index) => name !== expectedTerritories[index])) return null;
 
     if (preset.factionId === "mystics" && Array.isArray(preset.selectedRites)) {
-      const currentRites = [...(state.rites || [])].sort();
+      const currentRites = [...(ritesApi()?.selectedIds?.() || [])].sort();
       const expectedRites = [...preset.selectedRites].sort();
       if (currentRites.length !== expectedRites.length) return null;
       if (currentRites.some((id, index) => id !== expectedRites[index])) return null;
@@ -171,7 +169,7 @@
       currentGameReady &&
       state.currentGameVersion &&
       state.cards.length &&
-      state.territoryPool?.length
+      territoriesApi()?.isReady?.()
     );
   }
 
@@ -326,7 +324,9 @@
     const leader = faction?.leaders.find(item => item.id === state.leaderId);
     if (!preset || !faction || !leader || !starterDeckReady()) return;
 
-    const hasCurrentDeck = Object.keys(state.deck).length > 0 || state.territories.length > 0 || Boolean(state.rites?.length);
+    const hasCurrentDeck = Object.keys(state.deck).length > 0
+      || Boolean(territoriesApi()?.selectedIds?.().length)
+      || Boolean(ritesApi()?.selectedIds?.().length);
     if (
       hasCurrentDeck &&
       !confirm(`Replace the current Deck with ${leader.name}'s recommended starter Deck, ${preset.name}?`)
@@ -351,8 +351,9 @@
 
     const territoryIds = [];
     const missingTerritories = [];
+    const territoryPool = state.currentGameData?.territories || [];
     for (const name of preset.territories) {
-      const territory = state.territoryPool.find(candidate => candidate.name === name);
+      const territory = territoryPool.find(candidate => candidate.name === name);
       if (!territory) missingTerritories.push(name);
       else territoryIds.push(territory.id);
     }
@@ -369,10 +370,9 @@
 
     state.deckName = `${leader.name} — ${preset.name}`;
     state.deck = deck;
-    state.territories = territoryIds;
-    state.rites = starterRiteIds(preset);
+    territoriesApi()?.setSelectedIds?.(territoryIds);
+    ritesApi()?.setSelectedIds?.(starterRiteIds(preset));
     state.selectedCardId = null;
-    state.selectedTerritoryId = territoryIds[0] || null;
 
     deckbuilder.render();
 
