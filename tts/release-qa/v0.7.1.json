@@ -1,14 +1,14 @@
 {
   "schemaVersion": 3,
   "gameVersion": "v0.7.1",
-  "status": "in-progress",
+  "status": "passed",
   "checks": {
     "tableSetup": {
       "hostedSaveLoad": true,
       "playerPerspectivesAndHandZones": true,
       "gauntletSnapsAndTerritoryOrientation": true,
       "playerTokensAndBattleDice": true,
-      "rulebookSetup": false,
+      "rulebookSetup": true,
       "playAreasRemainDistinct": true
     },
     "factionComponents": {
@@ -23,12 +23,12 @@
       "inquisitionConvictionDoctrineAndPurge": true
     },
     "handlingValidation": {
-      "coreHandlingExercised": false,
-      "focusedFactionDrillsComplete": false,
+      "coreHandlingExercised": true,
+      "focusedFactionDrillsComplete": true,
       "frictionResolved": true
     }
   },
-  "approvedForWorkshop": false,
+  "approvedForWorkshop": true,
   "notes": [
     "2026-08-31: Opened the stable v0.7.1 TTS QA record for Workshop promotion.",
     "2026-08-31: Unchanged table/setup and non-Mystics faction-component checks inherit the completed v0.7.0 Workshop QA evidence; v0.7.0 remains the provenance for those unchanged surfaces.",
@@ -36,6 +36,8 @@
     "2026-08-31: The v0.7.1-candidate PR1082 build manually passed the Deckbuilder-to-TTS import workflow after the final importer fixes: the save loaded, Deck Code import completed without freezing, and the imported starter Bag spawned at normal usable size. This is supporting candidate evidence only; the final stable v0.7.1 Workshop artifact still requires its own smoke test.",
     "2026-08-31: Stable production run #2085 was loaded successfully in Tabletop Simulator from the published v0.7.1 hosted assets; the current save rendered correctly after the final art-direction/font-parity fixes.",
     "2026-08-31: Stable v0.7.1 Mystics Rite QA passed visual/handling review for current Rite fronts and Completed faces, including the corrected composited artwork positions and current rules/reference text.",
-    "2026-08-31: After the final production render/load review, no remaining TTS-specific friction was identified in the stable v0.7.1 save; the final known Rite crop, typography, layout, and cache issues were resolved before Workshop closeout."
+    "2026-08-31: After the final production render/load review, no remaining TTS-specific friction was identified in the stable v0.7.1 save; the final known Rite crop, typography, layout, and cache issues were resolved before Workshop closeout.",
+    "2026-08-31: Final stable v0.7.1 hands-on QA passed: Rulebook/opening setup, representative core handling, and Deckbuilder-to-TTS Deck Code import were exercised successfully on the stable Workshop-target save.",
+    "2026-08-31: Workshop promotion explicitly approved after all 18 required v0.7.1 checks passed, using inherited v0.7.0 evidence only for unchanged surfaces and fresh stable-v0.7.1 evidence for changed surfaces."
   ]
 }
