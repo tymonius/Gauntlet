@@ -7,31 +7,29 @@
    traced ornamental divider beneath it. No artwork, emblem, watermark, rules,
    or footer belongs on this component. */
 
-/* The supplemental renderer now derives its specimen id from the current-game
-   component contract (`financiers-deed`). Keep the former wrapper id as a
-   compatibility alias while treating the contract id on the card itself as
-   the stable production hook used by inspection clones. */
-:is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) {
+/* The current component contract id is the stable production hook used by
+   the catalog, print renderer, and inspection clones. */
+#supplemental-financiers-financiers-deed {
   grid-column: 1 / -1;
 }
 
-:is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) .supplemental-single-face-grid {
+#supplemental-financiers-financiers-deed .supplemental-single-face-grid {
   grid-template-columns: 3.5in;
 }
 
-:is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) .supplemental-face {
+#supplemental-financiers-financiers-deed .supplemental-face {
   width: 3.5in;
 }
 
-:is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) :is(.deed-card, .supplemental-placeholder-card)[data-contract-component-id="financiers-deed"],
-:is(.deed-card, .supplemental-placeholder-card)[data-contract-component-id="financiers-deed"] {
+#supplemental-financiers-financiers-deed .deed-card[data-contract-component-id="financiers-deed"],
+.deed-card[data-contract-component-id="financiers-deed"] {
   --deed-parchment-tint: rgba(34, 112, 68, 0.18);
   width: 3.5in;
   height: 2.5in;
 }
 
-:is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) :is(.deed-card, .supplemental-placeholder-card)[data-contract-component-id="financiers-deed"] .card-interior,
-:is(.deed-card, .supplemental-placeholder-card)[data-contract-component-id="financiers-deed"] .card-interior {
+#supplemental-financiers-financiers-deed .deed-card[data-contract-component-id="financiers-deed"] .card-interior,
+.deed-card[data-contract-component-id="financiers-deed"] .card-interior {
   position: relative;
   display: block;
   overflow: hidden;
@@ -40,8 +38,8 @@
     var(--card-parchment);
 }
 
-:is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) :is(.deed-card, .supplemental-placeholder-card)[data-contract-component-id="financiers-deed"] .card-interior > *,
-:is(.deed-card, .supplemental-placeholder-card)[data-contract-component-id="financiers-deed"] .card-interior > * {
+#supplemental-financiers-financiers-deed .deed-card[data-contract-component-id="financiers-deed"] .card-interior > *,
+.deed-card[data-contract-component-id="financiers-deed"] .card-interior > * {
   display: none;
 }
 
@@ -49,8 +47,8 @@
    exact source and deliberately overscan it beneath the interior keyline so
    subpixel rounding can never expose a bright seam at any edge. The green
    wash stays above the parchment in the same background stack. */
-:is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) :is(.deed-card, .supplemental-placeholder-card)[data-contract-component-id="financiers-deed"] .card-interior::before,
-:is(.deed-card, .supplemental-placeholder-card)[data-contract-component-id="financiers-deed"] .card-interior::before {
+#supplemental-financiers-financiers-deed .deed-card[data-contract-component-id="financiers-deed"] .card-interior::before,
+.deed-card[data-contract-component-id="financiers-deed"] .card-interior::before {
   position: absolute;
   z-index: 0;
   top: 50%;
@@ -73,16 +71,16 @@
 /* The general component-card tint also uses .card-interior::after. The Deed
    carries its tint in the parchment layer above, so suppress that inherited
    pseudo-element and keep the title block in the existing heading markup. */
-:is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) :is(.deed-card, .supplemental-placeholder-card)[data-contract-component-id="financiers-deed"] .card-interior::after,
-:is(.deed-card, .supplemental-placeholder-card)[data-contract-component-id="financiers-deed"] .card-interior::after {
+#supplemental-financiers-financiers-deed .deed-card[data-contract-component-id="financiers-deed"] .card-interior::after,
+.deed-card[data-contract-component-id="financiers-deed"] .card-interior::after {
   display: none;
   content: none;
 }
 
 /* Treat the wordmark and divider as one title block and center that complete
    block on the physical card. */
-:is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) :is(.deed-card, .supplemental-placeholder-card)[data-contract-component-id="financiers-deed"] .card-heading,
-:is(.deed-card, .supplemental-placeholder-card)[data-contract-component-id="financiers-deed"] .card-heading {
+#supplemental-financiers-financiers-deed .deed-card[data-contract-component-id="financiers-deed"] .card-heading,
+.deed-card[data-contract-component-id="financiers-deed"] .card-heading {
   position: absolute;
   z-index: 3;
   top: 50%;
@@ -101,8 +99,8 @@
 
 /* The component contract calls the physical component “Deed Card”; the printed
    face remains the approved single-word title “Deed”. */
-:is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) :is(.deed-card, .supplemental-placeholder-card)[data-contract-component-id="financiers-deed"] .card-title,
-:is(.deed-card, .supplemental-placeholder-card)[data-contract-component-id="financiers-deed"] .card-title {
+#supplemental-financiers-financiers-deed .deed-card[data-contract-component-id="financiers-deed"] .card-title,
+.deed-card[data-contract-component-id="financiers-deed"] .card-title {
   display: block;
   width: auto;
   max-width: none;
@@ -117,8 +115,8 @@
   white-space: nowrap;
 }
 
-:is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) :is(.deed-card, .supplemental-placeholder-card)[data-contract-component-id="financiers-deed"] .card-title::after,
-:is(.deed-card, .supplemental-placeholder-card)[data-contract-component-id="financiers-deed"] .card-title::after {
+#supplemental-financiers-financiers-deed .deed-card[data-contract-component-id="financiers-deed"] .card-title::after,
+.deed-card[data-contract-component-id="financiers-deed"] .card-title::after {
   display: block;
   color: var(--card-ink);
   content: "Deed";
@@ -139,8 +137,8 @@
 /* deed-card.js replaces the generic type line with a single real element. The
    approved traced SVG is used as a mask so the divider takes exactly the same
    ink color as the Declaration wordmark while remaining resolution-independent. */
-:is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) :is(.deed-card, .supplemental-placeholder-card)[data-contract-component-id="financiers-deed"] .supplemental-type-line,
-:is(.deed-card, .supplemental-placeholder-card)[data-contract-component-id="financiers-deed"] .supplemental-type-line {
+#supplemental-financiers-financiers-deed .deed-card[data-contract-component-id="financiers-deed"] .supplemental-type-line,
+.deed-card[data-contract-component-id="financiers-deed"] .supplemental-type-line {
   display: block;
   width: max-content;
   min-height: 0;
@@ -152,8 +150,8 @@
   line-height: 1;
 }
 
-:is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) :is(.deed-card, .supplemental-placeholder-card)[data-contract-component-id="financiers-deed"] .deed-divider,
-:is(.deed-card, .supplemental-placeholder-card)[data-contract-component-id="financiers-deed"] .deed-divider {
+#supplemental-financiers-financiers-deed .deed-card[data-contract-component-id="financiers-deed"] .deed-divider,
+.deed-card[data-contract-component-id="financiers-deed"] .deed-divider {
   display: block;
   width: 1.22in;
   aspect-ratio: 327 / 16;
@@ -165,28 +163,28 @@
 
 /* The generic fit-warning diagnostic is a portrait-card fitting aid and does
    not apply to this intentionally custom landscape face. */
-:is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) :is(.deed-card, .supplemental-placeholder-card)[data-contract-component-id="financiers-deed"].fit-warning::after,
-:is(.deed-card, .supplemental-placeholder-card)[data-contract-component-id="financiers-deed"].fit-warning::after {
+#supplemental-financiers-financiers-deed .deed-card[data-contract-component-id="financiers-deed"].fit-warning::after,
+.deed-card[data-contract-component-id="financiers-deed"].fit-warning::after {
   display: none;
 }
 
 @media screen and (max-width: 760px) {
-  :is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) {
+  #supplemental-financiers-financiers-deed {
     grid-column: auto;
   }
 }
 
 @media print {
-  :is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) {
+  #supplemental-financiers-financiers-deed {
     grid-column: 1 / -1;
   }
 
-  :is(#supplemental-financiers-financiers-deed, #supplemental-financiers-deed) .supplemental-single-face-grid {
+  #supplemental-financiers-financiers-deed .supplemental-single-face-grid {
     grid-template-columns: 3.5in;
   }
 
-  :is(.deed-card, .supplemental-placeholder-card)[data-contract-component-id="financiers-deed"] .card-heading,
-  :is(.deed-card, .supplemental-placeholder-card)[data-contract-component-id="financiers-deed"] .card-interior::before {
+  .deed-card[data-contract-component-id="financiers-deed"] .card-heading,
+  .deed-card[data-contract-component-id="financiers-deed"] .card-interior::before {
     print-color-adjust: exact;
   }
 }

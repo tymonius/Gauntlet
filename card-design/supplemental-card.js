@@ -1,4 +1,4 @@
-import './deed-card.js';
+import { deedCardMarkup } from './deed-card.js';
 import {
   fitReferenceCard,
   loadReferenceRecords,
@@ -120,13 +120,10 @@ function presentationComponent(component) {
     type: componentType(component),
     detail: componentDetail(component),
     quantity: Number(component.quantity ?? component.quantityPerPlayer) || 1,
-    // The approved Capital Ledger is an identical-face duplex consumable. Until
-    // the component contract is promoted from its legacy standardBack state,
-    // the production catalog still presents the approved physical geometry.
-    doubleSided: ledger || component.backPolicy === 'twoSided',
+    doubleSided: component.backPolicy === 'twoSided',
     designStatus: designStatus(component),
     productionStatus: component.productionStatus,
-    backPolicy: ledger ? 'twoSided' : component.backPolicy,
+    backPolicy: component.backPolicy,
     deckInclusion: component.deckInclusion || '',
     tracker: component.family === 'tracker' ? TRACKER_PRESENTATION[component.id] || null : null,
   };
@@ -361,6 +358,7 @@ function referenceLoadingFace(component, faction, factionLabel, sideName) {
 function componentFace(component, faction, factionLabel, faceLabel = '') {
   if (component.referenceId) return referenceLoadingFace(component, faction, factionLabel, /^reverse$/i.test(faceLabel) ? 'reverse' : 'front');
   if (component.ledger) return capitalLedgerMarkup(currentDisplayVersion);
+  if (component.family === 'deed-card') return deedCardMarkup();
   if (component.tracker && !faceLabel) return trackerFace(component, faction, factionLabel);
   return placeholderFace(component, faction, factionLabel, faceLabel);
 }

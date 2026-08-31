@@ -165,7 +165,7 @@ describe("v0.7.0 player-site release preparation", () => {
 
   it("keeps the Deckbuilder on released v0.7.0 by default with an explicit current-candidate view", () => {
     const html = read("deckbuilder/index.html");
-    const runtime = read("deckbuilder/v061-runtime.js");
+    const runtime = read("deckbuilder/current-runtime.js");
     const print = read("deckbuilder/print.js");
     const bulkPrint = read("deckbuilder/print-all-starters.js");
 
@@ -182,9 +182,11 @@ describe("v0.7.0 player-site release preparation", () => {
     expect(runtime).toContain('gauntlet-current-game-decks');
     expect(runtime).toContain("state.currentGameVersion = data.version");
     expect(runtime).toContain("state.currentGameDisplayVersion = data.displayVersion");
-    expect(runtime).toContain('data.gameVersion = state.currentGameVersion || "current-game"');
+    expect(read("deckbuilder/app.js")).toContain('gameVersion: state.currentGameVersion || "current-game"');
     expect(runtime).toContain('document.title = `Gauntlet ${data.displayVersion} Deckbuilder`');
-    expect(runtime).not.toContain('const CANONICAL_URL = "../releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json";');
+    expect(runtime).not.toContain('Storage.prototype');
+    expect(read("deckbuilder/app.js")).not.toContain("Gauntlet_v0.6.1_Neutral_Card_Pool");
+    expect(read("deckbuilder/app.js")).not.toContain("gauntlet-v0.6.1-deck");
     expect(print).toContain('state.currentGameDisplayVersion || state.currentGameVersion || "current"');
     expect(print).not.toContain("v0.6.1");
     expect(bulkPrint).toContain('import("../game-data/ruleset.mjs")');

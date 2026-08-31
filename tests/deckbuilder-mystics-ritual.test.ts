@@ -5,30 +5,35 @@ const readRepoFile = (path: string) =>
   readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
 
 describe("Mystics Ritual Deckbuilder component", () => {
-  it("adds the Ritual of Ascension to the Mystics supplemental package", () => {
+  it("derives the Ritual of Ascension package entry from physical component authority", () => {
     const source = readRepoFile("deckbuilder/faction-components.js");
+    const currentGame = JSON.parse(readRepoFile("game-data/current-game.json"));
+    const ritual = currentGame.componentContract.components.find((component: any) => component.id === "mystics-ritual-of-ascension");
 
-    expect(source).toContain('const MYSTICS_RITUAL_COMPONENT_ID = "mystics-ritual-of-ascension"');
-    expect(source).toContain('const ritual = currentGame.mystics?.ritual');
-    expect(source).toContain('const summaryLabel = `${ritual.name} card`');
-    expect(source).toContain('title: ritual.name');
-    expect(source).toContain('kind: "ritual"');
-    expect(source).toContain('type: "reference"');
+    expect(ritual).toMatchObject({
+      family: "ritual-card",
+      productionStatus: "ready",
+      backPolicy: "specialBack",
+    });
+    expect(source).toContain('component.family === "reference-card" || component.family === "ritual-card"');
+    expect(source).toContain('const ritual = component.family === "ritual-card" ? currentGame.mystics?.ritual : null;');
+    expect(source).toContain('kind: component.renderSource?.kind || ""');
     expect(source).toContain('label: "Convergence"');
     expect(source).toContain('label: "Complete"');
     expect(source).toContain('label: "Interruption"');
-    expect(source).toContain('footer: "Supplemental Ritual card — not a Playable Deck card"');
+    expect(source).not.toContain("MYSTICS_RITUAL_COMPONENT_ID");
   });
 
-  it("loads the Ritual augmentation after supplemental data and before printing", () => {
+  it("derives Ritual print data from current authority before the print module runs", () => {
     const html = readRepoFile("deckbuilder/index.html");
-    const supplementalIndex = html.indexOf("v061-supplementals.js");
     const componentsIndex = html.indexOf("faction-components.js?v=20260802-1");
     const printIndex = html.indexOf("print.js");
 
-    expect(supplementalIndex).toBeGreaterThan(-1);
-    expect(componentsIndex).toBeGreaterThan(supplementalIndex);
+    expect(componentsIndex).toBeGreaterThan(-1);
     expect(printIndex).toBeGreaterThan(componentsIndex);
+    expect(html).not.toContain("v061-supplementals.js");
+    expect(html).not.toContain("completed-supplementals.js");
+    expect(html).not.toContain("supplemental-data.js");
   });
   it("derives completed-Rite progression from current Mystics authority", () => {
     const print = readRepoFile("deckbuilder/print.js");
