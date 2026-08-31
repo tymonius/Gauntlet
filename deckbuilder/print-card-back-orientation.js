@@ -1,4 +1,7 @@
 (() => {
+  const deckbuilder = window.GAUNTLET_DECKBUILDER;
+  if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
+
   const STALE_PRINT_FACE_SELECTORS = [
     ".print-card.leader-card",
     ".print-card.main-card:not(.production-render-card)",
@@ -13,60 +16,13 @@
     ".supplemental-placeholder-card",
   ];
 
-  document.addEventListener("DOMContentLoaded", installCardBackOrientationFix);
+  deckbuilder.registerPrintTransform("card-back-orientation", rotateCardBacks, 10);
+  deckbuilder.registerPrintTransform("production-face-guard", guardProductionFaces, 100);
 
-  function installCardBackOrientationFix() {
-    const button = document.getElementById("printDeckButton");
-    if (!button) return;
-
-    button.addEventListener("click", () => {
-      const inheritedOpen = window.open;
-      let restored = false;
-
-      const restoreOpen = () => {
-        if (restored) return;
-        restored = true;
-        if (window.open === cardBackAwareOpen) window.open = inheritedOpen;
-      };
-
-      function cardBackAwareOpen(...args) {
-        const printWindow = inheritedOpen.apply(window, args);
-        if (!printWindow) {
-          restoreOpen();
-          return printWindow;
-        }
-
-        const inheritedWrite = printWindow.document.write.bind(printWindow.document);
-        printWindow.document.write = html => inheritedWrite(rotateCardBacks(html));
-        installFinalProductionFaceGuard(printWindow);
-        restoreOpen();
-        return printWindow;
-      }
-
-      window.open = cardBackAwareOpen;
-      window.setTimeout(restoreOpen, 0);
-    }, true);
-  }
-
-  function installFinalProductionFaceGuard(printWindow) {
-    if (printWindow.document.__gauntletProductionFaceGuardInstalled) return;
-
-    const inheritedClose = printWindow.document.close.bind(printWindow.document);
-    printWindow.document.close = () => {
-      try {
-        assertNoStalePrintFaces(printWindow.document);
-        inheritedClose();
-      } catch (error) {
-        console.error(error);
-        window.alert(`Printing was stopped because an outdated card face survived the production replacement pass: ${error.message}`);
-        try {
-          printWindow.close();
-        } catch (closeError) {
-          console.error(closeError);
-        }
-      }
-    };
-    printWindow.document.__gauntletProductionFaceGuardInstalled = true;
+  function guardProductionFaces(html) {
+    const documentNode = new DOMParser().parseFromString(html, "text/html");
+    assertNoStalePrintFaces(documentNode);
+    return html;
   }
 
   function assertNoStalePrintFaces(documentNode) {
