@@ -225,17 +225,18 @@
     if (component.family === "reference-card") return { kind: "reference", id: component.id };
     if (component.family === "proposal-treaty-card") return { kind: "proposal", id: component.id.replace(/^diplomats-proposal-/, "") };
     if (component.family === "rite-card") return { kind: "rite", id: component.id.replace(/^mystics-rite-/, "") };
+    if (component.family === "ledger") return { kind: "supplemental", id: component.id };
+    if (component.family === "deed-card") return { kind: "supplemental", id: component.id, orientation: "landscape" };
     return null;
   }
 
   function componentIsPrintableProduction(component, descriptor) {
     if (!descriptor) return false;
     if (component.productionStatus === "ready") return true;
-    // Proposal faces already use their final physical design and artwork. They
-    // remain export-pending only because the separate supplemental/TTS export
-    // integration is not finalized; Deckbuilder printing should keep using the
-    // canonical production Proposal renderer in the meantime.
-    return component.family === "proposal-treaty-card"
+    // Final card faces may be printable before their separate supplemental/TTS
+    // export status is promoted. The Deckbuilder still uses the canonical
+    // production renderer and never falls back to placeholder design.
+    return ["proposal-treaty-card", "ledger", "deed-card"].includes(component.family)
       && (component.designStatus || "final") === "final"
       && component.productionStatus === "export-pending";
   }
@@ -365,7 +366,8 @@
 
   function productionFrameSource(options) {
     if (options.kind === "external") return options.src;
-    return `/card-design/component-print-render.html?kind=${encodeURIComponent(options.kind)}&id=${encodeURIComponent(options.id)}&side=${encodeURIComponent(options.side || "front")}&rules=${encodeURIComponent(selectedRulesetMode())}`;
+    const orientation = options.orientation === "landscape" ? "&orientation=landscape" : "";
+    return `/card-design/component-print-render.html?kind=${encodeURIComponent(options.kind)}&id=${encodeURIComponent(options.id)}&side=${encodeURIComponent(options.side || "front")}${orientation}&rules=${encodeURIComponent(selectedRulesetMode())}`;
   }
 
   function makeProductionComponent(documentNode, options) {
@@ -376,25 +378,36 @@
       label,
       backPolicy = "",
       componentId = id,
+      orientation = "portrait",
     } = options;
+    const landscape = orientation === "landscape";
     const wrapper = documentNode.createElement("article");
-    wrapper.className = `print-card production-render-component production-render-${kind}${backPolicy === "standardBack" ? " production-standard-back" : ""}`;
+    wrapper.className = `print-card production-render-component production-render-${kind}${landscape ? " production-render-landscape" : ""}${backPolicy === "standardBack" ? " production-standard-back" : ""}`;
     wrapper.dataset.productionComponentKind = kind;
     wrapper.dataset.productionComponentId = componentId;
     wrapper.dataset.productionComponentRenderId = id;
     wrapper.dataset.productionComponentSide = side;
     wrapper.dataset.productionBackPolicy = backPolicy;
+    wrapper.dataset.productionOrientation = orientation;
     wrapper.setAttribute("aria-label", `${label} production render`);
 
     const frame = documentNode.createElement("iframe");
-    frame.className = "production-component-frame";
+    frame.className = `production-component-frame${landscape ? " production-component-frame-landscape" : ""}`;
     frame.dataset.productionRenderFrame = "true";
     frame.dataset.productionRenderKind = "component";
-    frame.src = productionFrameSource({ ...options, kind, id, side });
+    frame.src = productionFrameSource({ ...options, kind, id, side, orientation });
     frame.title = `${label} production render`;
     frame.setAttribute("scrolling", "no");
     frame.setAttribute("loading", "eager");
-    wrapper.append(frame);
+
+    if (landscape) {
+      const rotate = documentNode.createElement("div");
+      rotate.className = "production-component-landscape-rotate";
+      rotate.append(frame);
+      wrapper.append(rotate);
+    } else {
+      wrapper.append(frame);
+    }
     return wrapper;
   }
 
@@ -634,8 +647,29 @@
   background: transparent;
   pointer-events: none;
 }
-.print-card.production-render-territory {
+.print-card.production-render-territory,
+.print-card.production-render-component.production-render-landscape {
   position: relative !important;
+}
+.production-component-landscape-rotate {
+  position: absolute;
+  top: 0;
+  left: 2.5in;
+  width: 3.5in;
+  height: 2.5in;
+  transform: rotate(90deg);
+  transform-origin: top left;
+}
+.production-render-landscape .production-component-frame {
+  display: block;
+  width: 3.5in;
+  height: 2.5in;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  background: transparent;
+  pointer-events: none;
 }
 .production-territory-rotate {
   position: absolute;
