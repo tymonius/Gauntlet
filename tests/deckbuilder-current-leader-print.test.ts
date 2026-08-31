@@ -42,12 +42,13 @@ describe("Deckbuilder current Leader printing", () => {
     expect(leaderCopyScript).toContain("window.dispatchEvent(new Event('resize'))");
   });
 
-  it("keeps the Deckbuilder Leader shell only as a handoff to the current production component renderer", () => {
-    expect(printTransform).toContain('replaceProductionLeader(documentNode, currentGame)');
-    expect(printTransform).toContain('currentGame.findLeader?.(faction, leaderId)');
+  it("renders the selected Leader directly through the current production component renderer", () => {
+    expect(printTransform).toContain("function renderProductionLeaderHtml(faction, leader)");
+    expect(printTransform).toContain('currentGame.findLeader?.(factionId, leaderId)');
     expect(printTransform).toContain('kind: "leader"');
-    expect(printTransform).toContain('id: `${faction}-${leader.id}`');
+    expect(printTransform).toContain('id: `${factionId}-${canonicalLeader.id}`');
     expect(printTransform).toContain('/card-design/component-print-render.html?kind=');
+    expect(printTransform).not.toContain("replaceProductionLeader");
   });
 
   it("locks a representative Leader to the finalized current wording", () => {
