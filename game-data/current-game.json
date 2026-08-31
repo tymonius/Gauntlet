@@ -7666,13 +7666,13 @@
       "focusY": 0.398
     },
     "rite-blood": {
-      "focusY": 0.32
+      "focusY": 0.261
     },
     "rite-crossing-completed": {
       "focusY": 0.413
     },
     "rite-echoes": {
-      "focusY": 0.366
+      "focusY": 0.105
     },
     "territory-arena-grand-melee": {
       "focusY": 0.747
@@ -7724,6 +7724,9 @@
     },
     "territory-watchtower": {
       "focusY": 0.229
+    },
+    "rite-equivalence": {
+      "focusY": 0
     }
   }
 }
