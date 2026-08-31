@@ -1,10 +1,10 @@
 # Gauntlet Development Status
 
-**Current canonical version:** v0.7.1 — Mystics Rites & Deck Import  
+**Current canonical release:** defined by `config/release-lifecycle.json`  
 **Release date:** August 30, 2026  
 **Status:** Canonical published playtest edition
 
-Gauntlet v0.7.1 is the current public tabletop/web playtest edition. The frozen release package is under `releases/v0.7.1/`. Current browser and production tooling derive from `game-data/current-game.json` and `rulebook/player-facing/current-rulebook.md`.
+The release identified by `config/release-lifecycle.json` is the current public tabletop/web playtest edition. Its frozen package path is recorded in that lifecycle entry. Current browser and production tooling derive from `game-data/current-game.json` and `rulebook/player-facing/current-rulebook.md`.
 
 The Steam Workshop is deliberately on a separate publication gate: the public Tabletop Simulator mod remains **v0.7.0** until the v0.7.1 TTS candidate completes its manual in-game QA and is explicitly promoted.
 
@@ -74,7 +74,7 @@ Deck Codes now remove much of the custom-Deck handoff friction; the remaining qu
 
 Work on the automated digital engine remains an active development track, tracked in [issue #741](https://github.com/tymonius/Gauntlet/issues/741).
 
-Synchronize the engine with complete v0.7.1 authority; implement the current Onset/Gambit/Reserve/Tactic/Outcome/Aftermath model and all current card, Territory, faction, Leader, Rite, replacement, reveal, withdrawal, destination, and copied/repeated-effect rules; preserve private/public information boundaries; support multiplayer synchronization; and keep regression/rules-interaction tests exhaustive.
+Synchronize the engine with the complete current gameplay and Rulebook authorities; implement the Onset/Gambit/Reserve/Tactic/Outcome/Aftermath model and all current card, Territory, faction, Leader, Rite, replacement, reveal, withdrawal, destination, and copied/repeated-effect rules; preserve private/public information boundaries; support multiplayer synchronization; and keep regression/rules-interaction tests exhaustive.
 
 TTS remains the supported remote-play solution while the rules-aware digital game is under development.
 

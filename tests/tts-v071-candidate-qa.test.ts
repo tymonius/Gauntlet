@@ -9,7 +9,7 @@ const qa = JSON.parse(readFileSync('tts/release-qa/v0.7.1-candidate.json', 'utf8
 describe('v0.7.1 release / TTS QA boundary', () => {
   it('keeps development and publication identities separate', () => {
     expect(currentGame.version).toBe('v0.7.1');
-    expect(currentGame.status).toBe('active-development');
+    expect(currentGame.status).toBe('current-release');
     expect(lifecycle.current_release).toBe('v0.7.1');
     expect(publicationTarget.releaseTag).toBe('v0.7.0');
   });

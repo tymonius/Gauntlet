@@ -40,7 +40,7 @@ describe('Published v0.7.1 Browser Rulebook', () => {
     expect(currentRulebook).toContain('# 5. Actions, Faction Features, Leader Abilities, and Assets');
     expect(currentRulebook).toContain('## Card anatomy');
     expect(currentRulebook).toContain('Terms occur during Onset');
-    expect(currentRulebook).toContain('Ratify six different Proposals');
+    expect(currentRulebook.replace(/<!--.*?-->/g, '')).toContain('Ratify six different Proposals');
     expect(currentRulebook).not.toMatch(/\bpending(?:-|\s+)battle\b/i);
     expect(currentRulebook).not.toMatch(/\bFaction Actions?\b|\bFaction Abilit(?:y|ies)\b|\bfaction procedure\b/i);
     expect(publishedRulebook).toContain('Rite of Equivalence');

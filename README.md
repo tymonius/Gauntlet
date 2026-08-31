@@ -6,7 +6,7 @@ Gauntlet is a two-player tactical card-and-territory game about deck constructio
 
 ## Canonical release
 
-**Current canonical version:** v0.7.1 — Mystics Rites & Deck Import
+**Current canonical release:** defined by `config/release-lifecycle.json` and the matching frozen package under `releases/`.
 
 The frozen canonical package is [releases/v0.7.1/](releases/v0.7.1/). Its manifest identifies the certified authority set and hashes the published payload. The package contains:
 
@@ -62,7 +62,7 @@ The v0.7.1 playable pool contains **142 cards**: **52 Neutral cards and 15 cards
 ## Playtest tools
 
 - [Start Playing](https://gauntlet.run/start/) — faction and Leader discovery plus starter-Deck handoff.
-- [Browser Rulebook](https://gauntlet.run/rulebook/) — searchable current v0.7.1 Rulebook.
+- [Browser Rulebook](https://gauntlet.run/rulebook/) — searchable current Rulebook.
 - [Rulebook booklet](releases/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf) — imposed Letter duplex booklet, printed short-edge.
 - [Card Reference](https://gauntlet.run/card-reference/) — current card and Territory reference.
 - [Faction pages](https://gauntlet.run/factions/) — current faction systems and Leader references.
@@ -98,7 +98,7 @@ Complete current Rulebook authority plus the responsive Browser Rulebook and pri
 
 ### releases/
 
-Frozen versioned release packages and historical release evidence. The current published package is [releases/v0.7.1/](releases/v0.7.1/).
+Frozen versioned release packages and historical release evidence. Published packages include [releases/v0.7.1/](releases/v0.7.1/).
 
 ### card-design/
 
@@ -176,7 +176,7 @@ npm run dev:gui
 
 ## Current development priorities
 
-See [Gauntlet Development Status](docs/Gauntlet_Development_Status.md). The immediate post-v0.7.1 emphasis is broad human playtesting, matchup/faction balance, winner/loser experience, self-serve onboarding, completion of the separately gated v0.7.1 Tabletop Simulator QA/promotion, and active synchronization of the rules-aware digital engine with v0.7.1.
+See [Gauntlet Development Status](docs/Gauntlet_Development_Status.md). The immediate release-followup emphasis is broad human playtesting, matchup/faction balance, winner/loser experience, self-serve onboarding, completion of the separately gated Tabletop Simulator QA/promotion, and active synchronization of the rules-aware digital engine with the published tabletop authority.
 
 ## Copyright and use
 

@@ -130,8 +130,8 @@ jobs:
           assert.equal(starters.decks.length, 12);
           const diplomats = canonical.gameplay.factions.find(faction => faction.id === 'diplomats');
           assert.equal(diplomats?.factionRules?.peace_treaty_threshold, 6);
-          assert.match(rulebook, /Ratify six different Proposals/);
-          assert.match(rulebook, /if six different Proposals are ratified/);
+          assert.match(rulebook, /Ratify six(?:<!--[^>]+-->)? different Proposals/);
+          assert.match(rulebook, /if six(?:<!--[^>]+-->)? different Proposals are ratified/);
           assert.doesNotMatch(rulebook, /Ratify five different Proposals|if five different Proposals are ratified/);
           assert.match(rulebook, /## Card anatomy/);
           assert.match(rulebook, /!\[Card anatomy diagram\]/);
