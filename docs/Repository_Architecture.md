@@ -50,7 +50,7 @@ The release manifest remains the contract for primary browser-tool routes. Curre
 
 The long-term architecture may separate source applications from deployed Pages output, but that migration must first make deployment explicit and preserve stable URLs.
 
-As an initial deployment boundary, the Pages artifact excludes repository-internal `.github/`, `governance/`, `scripts/`, `src/`, and `tests/` trees. Stable browser routes remain unchanged; those internal roots are not public runtime dependencies.
+As an initial deployment boundary, the Pages artifact excludes repository-internal `.github/`, `governance/`, `scripts/`, `src/`, `tests/`, `workers/`, `rulebook-design/`, `rulebook-production/`, and `legacy/` trees. Stable browser routes remain unchanged; those internal roots are not public runtime dependencies.
 
 ### 4. Frozen releases stay frozen
 

@@ -32,7 +32,7 @@ describe('GitHub Pages public media contract', () => {
   });
 
   it('keeps repository-internal source trees out of the Pages artifact', () => {
-    for (const root of ['.github', 'governance', 'scripts', 'src', 'tests']) {
+    for (const root of ['.github', 'governance', 'scripts', 'src', 'tests', 'workers', 'rulebook-design', 'rulebook-production', 'legacy']) {
       expect(pagesWorkflow).toContain(`"$site/${root}"`);
     }
     expect(pagesWorkflow).toContain('test ! -e "$SITE_DIR/$internal"');
