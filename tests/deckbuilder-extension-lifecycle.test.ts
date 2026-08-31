@@ -38,6 +38,7 @@ describe("Deckbuilder extension architecture", () => {
     expect(app).toContain("setCardPreviewRenderer(callback)");
     expect(app).toContain("registerPrintTransform,");
     expect(app).toContain("preparePrintDocument,");
+    expect(read("deckbuilder/print.js")).toContain('deckbuilder.registerFeature("printDeck"');
   });
 
   it("does not let extensions replace core functions by assignment", () => {
@@ -65,6 +66,7 @@ describe("Deckbuilder extension architecture", () => {
     }
     expect(rites).toContain("deckbuilder.registerFactionChangeHook");
     expect(starters).toContain("deckbuilder.registerRenderHook");
+    expect(starters).toContain('deckbuilder.registerPrintTransform("starter-strategy"');
     expect(components).toContain("deckbuilder.registerRenderHook");
   });
 
@@ -93,6 +95,8 @@ describe("Deckbuilder extension architecture", () => {
   it("routes custom and bulk tools through the selected Deckbuilder authority", () => {
     expect(read("deckbuilder/custom-print.mjs")).toContain("await deckbuilder.bootstrap()");
     expect(read("deckbuilder/print-all-starters.js")).toContain("await deckbuilder.bootstrap()");
+    expect(read("deckbuilder/print-all-starters.js")).toContain('deckbuilder.feature("printDeck")');
+    expect(read("deckbuilder/print-all-starters.js")).not.toContain("window.open =");
     expect(read("deckbuilder/territories.js")).toContain("await deckbuilder.bootstrap()");
     expect(read("deckbuilder/mystics-rites.js")).toContain("await deckbuilder.bootstrap()");
   });
