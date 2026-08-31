@@ -2,6 +2,7 @@
   const deckbuilder = window.GAUNTLET_DECKBUILDER;
   if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
   const { state } = deckbuilder;
+  const escapeHtml = value => deckbuilder.escapeHtml(value);
 
   const REQUIRED_TERRITORIES = 3;
   const MAX_ARENAS = 1;
@@ -46,7 +47,7 @@
       if (state.territories.length && !confirm("Remove all selected Territories?")) return;
       state.territories = [];
       state.selectedTerritoryId = null;
-      renderAll();
+      deckbuilder.render();
     });
 
     loadTerritories();
@@ -73,7 +74,7 @@
       if (!state.selectedTerritoryId && state.territoryPool.length) {
         state.selectedTerritoryId = state.territoryPool[0].id;
       }
-      renderAll();
+      deckbuilder.render();
     } catch (error) {
       console.error(error);
       if (territoryElements.territoryList) {
@@ -93,8 +94,9 @@
   }
 
   function syncSourceStatus() {
-    if (!state.territoryPool.length || !el.dataStatus) return;
-    el.dataStatus.textContent = `${state.currentGameDisplayVersion || "Current game"} · ${state.cards.length} active cards + ${state.territoryPool.length} Territories loaded`;
+    const dataStatus = document.getElementById("dataStatus");
+    if (!state.territoryPool.length || !dataStatus) return;
+    dataStatus.textContent = `${state.currentGameDisplayVersion || "Current game"} · ${state.cards.length} active cards + ${state.territoryPool.length} Territories loaded`;
   }
 
   function filteredTerritories() {
@@ -247,7 +249,7 @@
     }
 
     state.selectedTerritoryId = id;
-    renderAll();
+    deckbuilder.render();
   }
 
   function renderDeckTerritories() {
