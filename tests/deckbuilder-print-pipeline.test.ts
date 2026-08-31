@@ -8,6 +8,7 @@ const print = read("deckbuilder/print.js");
 
 const transforms = [
   ["deckbuilder/print-duplex-sheet-pairing.js", "production-rendering", 40],
+  ["deckbuilder/starter-decks.js", "starter-strategy", 65],
   ["deckbuilder/print-window-portrait-fixes.js", "print-window-polish", 70],
 ] as const;
 
