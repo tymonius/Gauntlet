@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="description" content="Gauntlet interface-font comparison: Inter, Segoe UI, and Roboto across production UI use cases." />
+  <title>Gauntlet Interface Font Comparison</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800&display=block" rel="stylesheet" />
+  <link rel="preconnect" href="https://use.typekit.net" />
+  <link rel="preconnect" href="https://p.typekit.net" crossorigin />
+  <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
+  <link rel="stylesheet" href="../../design-tokens.css" />
+  <link rel="stylesheet" href="interface-comparison.css" />
+</head>
+<body>
+  <header class="comparison-header">
+    <a class="comparison-brand" href="./">Typography specimens</a>
+    <div class="header-actions">
+      <span>Internal design specimen</span>
+      <a href="../../card-design/">Card catalog</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="comparison-intro shell">
+      <p class="comparison-kicker">Interface typeface study</p>
+      <h1>Inter, Segoe UI, and Roboto.</h1>
+      <p class="intro-copy">
+        Same strings, sizes, weights, tracking, and component geometry. Only the interface typeface changes.
+        The specimens below reproduce the roles Gauntlet currently assigns to the interface face: navigation,
+        labels, metadata, controls, compact status text, catalog machinery, and card utility text.
+      </p>
+      <p class="availability-note">
+        <strong>Segoe UI is loaded locally.</strong> On Windows this column uses the installed Segoe UI family.
+        On platforms without Segoe UI, the column is marked unavailable rather than pretending a fallback is Segoe.
+      </p>
+    </section>
+
+    <section class="shell" aria-labelledby="overview-title">
+      <div class="section-heading">
+        <p class="section-label">At a glance</p>
+        <h2 id="overview-title">Same interface sample, three faces</h2>
+      </div>
+      <div class="comparison-grid hero-grid">
+        <article class="font-column font-inter" data-font-column="Inter">
+          <header class="font-column-header">
+            <div>
+              <p class="font-name">Inter</p>
+              <p class="font-source">Google Fonts · webfont</p>
+            </div>
+            <span class="availability available">loaded</span>
+          </header>
+          <p class="hero-interface-sample measure">FACTION DASHBOARDS · BUILD A DECK · COST 2 · BASIC</p>
+          <p class="measurement" aria-live="polite"></p>
+        </article>
+
+        <article class="font-column font-segoe" data-font-column="Segoe UI">
+          <header class="font-column-header">
+            <div>
+              <p class="font-name">Segoe UI</p>
+              <p class="font-source">Local Windows family</p>
+            </div>
+            <span class="availability" data-segoe-status>checking</span>
+          </header>
+          <p class="hero-interface-sample measure">FACTION DASHBOARDS · BUILD A DECK · COST 2 · BASIC</p>
+          <p class="measurement" aria-live="polite"></p>
+        </article>
+
+        <article class="font-column font-roboto" data-font-column="Roboto">
+          <header class="font-column-header">
+            <div>
+              <p class="font-name">Roboto</p>
+              <p class="font-source">Google Fonts · webfont</p>
+            </div>
+            <span class="availability available">loaded</span>
+          </header>
+          <p class="hero-interface-sample measure">FACTION DASHBOARDS · BUILD A DECK · COST 2 · BASIC</p>
+          <p class="measurement" aria-live="polite"></p>
+        </article>
+      </div>
+    </section>
+
+    <section class="shell" aria-labelledby="labels-title">
+      <div class="section-heading">
+        <p class="section-label">Use case 01</p>
+        <h2 id="labels-title">Tracked overlines and section labels</h2>
+        <p>Representative of homepage eyebrows, faction labels, catalog section labels, and small all-caps utility headings.</p>
+      </div>
+      <div class="comparison-grid">
+        <article class="font-column font-inter">
+          <p class="specimen-overline measure">FACTION DASHBOARDS</p>
+          <p class="specimen-overline alt measure">COMPLETE LANDSCAPE SET</p>
+          <p class="specimen-overline tight measure">DIPLOMAT COMPONENTS</p>
+        </article>
+        <article class="font-column font-segoe">
+          <p class="specimen-overline measure">FACTION DASHBOARDS</p>
+          <p class="specimen-overline alt measure">COMPLETE LANDSCAPE SET</p>
+          <p class="specimen-overline tight measure">DIPLOMAT COMPONENTS</p>
+        </article>
+        <article class="font-column font-roboto">
+          <p class="specimen-overline measure">FACTION DASHBOARDS</p>
+          <p class="specimen-overline alt measure">COMPLETE LANDSCAPE SET</p>
+          <p class="specimen-overline tight measure">DIPLOMAT COMPONENTS</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="shell" aria-labelledby="nav-title">
+      <div class="section-heading">
+        <p class="section-label">Use case 02</p>
+        <h2 id="nav-title">Navigation and text links</h2>
+        <p>Representative of the shared site header, tool navigation, footer links, and compact inline actions.</p>
+      </div>
+      <div class="comparison-grid">
+        <article class="font-column font-inter">
+          <nav class="nav-sample"><a>Rulebook</a><a>Card Reference</a><a>Deckbuilder</a><a>Playtest</a></nav>
+          <div class="text-link-row"><a>Developer tools</a><a>Print current view</a></div>
+        </article>
+        <article class="font-column font-segoe">
+          <nav class="nav-sample"><a>Rulebook</a><a>Card Reference</a><a>Deckbuilder</a><a>Playtest</a></nav>
+          <div class="text-link-row"><a>Developer tools</a><a>Print current view</a></div>
+        </article>
+        <article class="font-column font-roboto">
+          <nav class="nav-sample"><a>Rulebook</a><a>Card Reference</a><a>Deckbuilder</a><a>Playtest</a></nav>
+          <div class="text-link-row"><a>Developer tools</a><a>Print current view</a></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="shell" aria-labelledby="controls-title">
+      <div class="section-heading">
+        <p class="section-label">Use case 03</p>
+        <h2 id="controls-title">Buttons, filters, and form controls</h2>
+        <p>Representative of search, select menus, deckbuilder controls, catalog filters, and primary/secondary buttons.</p>
+      </div>
+      <div class="comparison-grid">
+        <article class="font-column font-inter">
+          <div class="form-sample">
+            <label>Search cards<input type="text" value="Counterintelligence" readonly /></label>
+            <label>Faction<select><option>All factions</option></select></label>
+          </div>
+          <div class="button-row"><button class="primary">Apply</button><button>Reset</button><button>Print current view</button></div>
+        </article>
+        <article class="font-column font-segoe">
+          <div class="form-sample">
+            <label>Search cards<input type="text" value="Counterintelligence" readonly /></label>
+            <label>Faction<select><option>All factions</option></select></label>
+          </div>
+          <div class="button-row"><button class="primary">Apply</button><button>Reset</button><button>Print current view</button></div>
+        </article>
+        <article class="font-column font-roboto">
+          <div class="form-sample">
+            <label>Search cards<input type="text" value="Counterintelligence" readonly /></label>
+            <label>Faction<select><option>All factions</option></select></label>
+          </div>
+          <div class="button-row"><button class="primary">Apply</button><button>Reset</button><button>Print current view</button></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="shell" aria-labelledby="metadata-title">
+      <div class="section-heading">
+        <p class="section-label">Use case 04</p>
+        <h2 id="metadata-title">Pills, metadata, and compact values</h2>
+        <p>Representative of card-reference pills, deckbuilder metadata, edition stats, counters, and machine-like values.</p>
+      </div>
+      <div class="comparison-grid">
+        <article class="font-column font-inter">
+          <div class="pill-row"><span>COST 2</span><span>BASIC</span><span>NEUTRAL</span><span>2 COPIES MAX</span></div>
+          <dl class="metric-row"><div><dt>142</dt><dd>Playable-card renders</dd></div><div><dt>25</dt><dd>Territories</dd></div><div><dt>9 / 6</dt><dd>Proposal / Rite pairs</dd></div></dl>
+        </article>
+        <article class="font-column font-segoe">
+          <div class="pill-row"><span>COST 2</span><span>BASIC</span><span>NEUTRAL</span><span>2 COPIES MAX</span></div>
+          <dl class="metric-row"><div><dt>142</dt><dd>Playable-card renders</dd></div><div><dt>25</dt><dd>Territories</dd></div><div><dt>9 / 6</dt><dd>Proposal / Rite pairs</dd></div></dl>
+        </article>
+        <article class="font-column font-roboto">
+          <div class="pill-row"><span>COST 2</span><span>BASIC</span><span>NEUTRAL</span><span>2 COPIES MAX</span></div>
+          <dl class="metric-row"><div><dt>142</dt><dd>Playable-card renders</dd></div><div><dt>25</dt><dd>Territories</dd></div><div><dt>9 / 6</dt><dd>Proposal / Rite pairs</dd></div></dl>
+        </article>
+      </div>
+    </section>
+
+    <section class="shell" aria-labelledby="status-title">
+      <div class="section-heading">
+        <p class="section-label">Use case 05</p>
+        <h2 id="status-title">Status, validation, and utility messages</h2>
+        <p>Representative of source status, validation feedback, result summaries, and compact operational prose.</p>
+      </div>
+      <div class="comparison-grid">
+        <article class="font-column font-inter">
+          <div class="status-card"><span>Current source</span><strong>v0.7.1 · current-game authority</strong></div>
+          <p class="validation valid"><strong>Deck valid.</strong> 30 cards · 58 deckbuilding value</p>
+          <p class="result-summary">Showing 142 playable cards across 7 allegiances.</p>
+        </article>
+        <article class="font-column font-segoe">
+          <div class="status-card"><span>Current source</span><strong>v0.7.1 · current-game authority</strong></div>
+          <p class="validation valid"><strong>Deck valid.</strong> 30 cards · 58 deckbuilding value</p>
+          <p class="result-summary">Showing 142 playable cards across 7 allegiances.</p>
+        </article>
+        <article class="font-column font-roboto">
+          <div class="status-card"><span>Current source</span><strong>v0.7.1 · current-game authority</strong></div>
+          <p class="validation valid"><strong>Deck valid.</strong> 30 cards · 58 deckbuilding value</p>
+          <p class="result-summary">Showing 142 playable cards across 7 allegiances.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="shell" aria-labelledby="catalog-title">
+      <div class="section-heading">
+        <p class="section-label">Use case 06</p>
+        <h2 id="catalog-title">Catalog and list machinery</h2>
+        <p>Representative of dense developer surfaces where the interface face must distinguish labels from Caslon or historical display text.</p>
+      </div>
+      <div class="comparison-grid">
+        <article class="font-column font-inter catalog-sample">
+          <div class="catalog-heading"><strong>Military</strong><span>24 cards</span></div>
+          <div class="catalog-row"><div><strong class="historical-title">Rallying Cry</strong><small>Military · Basic</small></div><span class="arrow">→</span></div>
+          <div class="catalog-row"><div><strong class="historical-title">Counterintelligence</strong><small>Intelligence · Basic</small></div><span class="arrow">→</span></div>
+        </article>
+        <article class="font-column font-segoe catalog-sample">
+          <div class="catalog-heading"><strong>Military</strong><span>24 cards</span></div>
+          <div class="catalog-row"><div><strong class="historical-title">Rallying Cry</strong><small>Military · Basic</small></div><span class="arrow">→</span></div>
+          <div class="catalog-row"><div><strong class="historical-title">Counterintelligence</strong><small>Intelligence · Basic</small></div><span class="arrow">→</span></div>
+        </article>
+        <article class="font-column font-roboto catalog-sample">
+          <div class="catalog-heading"><strong>Military</strong><span>24 cards</span></div>
+          <div class="catalog-row"><div><strong class="historical-title">Rallying Cry</strong><small>Military · Basic</small></div><span class="arrow">→</span></div>
+          <div class="catalog-row"><div><strong class="historical-title">Counterintelligence</strong><small>Intelligence · Basic</small></div><span class="arrow">→</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="shell card-utility-section" aria-labelledby="card-utility-title">
+      <div class="section-heading">
+        <p class="section-label">Use case 07</p>
+        <h2 id="card-utility-title">Production card utility text</h2>
+        <p>Same 2.5 × 3.5 inch card geometry. The title and rules remain P22 1722 Pro and Adobe Caslon Pro; only the interface-role text changes.</p>
+      </div>
+      <div class="comparison-grid card-comparison-grid">
+        <article class="font-column font-inter">
+          <p class="card-font-label">Inter</p>
+          <div class="mini-card">
+            <header><h3>Rallying Cry</h3><span class="cost">1</span></header>
+            <div class="mini-art"><span>ART WINDOW</span></div>
+            <div class="mini-rules"><section><h4>Action</h4><p>Draw one card.</p></section><section><h4>Battle</h4><p>Add +1 to your battle total.</p></section></div>
+            <footer><span>MILITARY</span><span>BASIC</span><span>v0.7.1</span></footer>
+          </div>
+        </article>
+        <article class="font-column font-segoe">
+          <p class="card-font-label">Segoe UI</p>
+          <div class="mini-card">
+            <header><h3>Rallying Cry</h3><span class="cost">1</span></header>
+            <div class="mini-art"><span>ART WINDOW</span></div>
+            <div class="mini-rules"><section><h4>Action</h4><p>Draw one card.</p></section><section><h4>Battle</h4><p>Add +1 to your battle total.</p></section></div>
+            <footer><span>MILITARY</span><span>BASIC</span><span>v0.7.1</span></footer>
+          </div>
+        </article>
+        <article class="font-column font-roboto">
+          <p class="card-font-label">Roboto</p>
+          <div class="mini-card">
+            <header><h3>Rallying Cry</h3><span class="cost">1</span></header>
+            <div class="mini-art"><span>ART WINDOW</span></div>
+            <div class="mini-rules"><section><h4>Action</h4><p>Draw one card.</p></section><section><h4>Battle</h4><p>Add +1 to your battle total.</p></section></div>
+            <footer><span>MILITARY</span><span>BASIC</span><span>v0.7.1</span></footer>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="page-footer">
+    <p>Comparison only. This page does not change the production interface typeface.</p>
+  </footer>
+
+  <script>
+    (async () => {
+      await document.fonts.ready;
+
+      const seg = document.querySelector('[data-segoe-status]');
+      let segAvailable = false;
+      try {
+        await document.fonts.load('16px "Gauntlet Segoe UI"');
+        segAvailable = document.fonts.check('16px "Gauntlet Segoe UI"');
+      } catch (_) {}
+
+      seg.textContent = segAvailable ? 'local font found' : 'not available here';
+      seg.classList.toggle('available', segAvailable);
+      seg.classList.toggle('unavailable', !segAvailable);
+      document.documentElement.classList.toggle('segoe-unavailable', !segAvailable);
+
+      document.querySelectorAll('.hero-grid .font-column').forEach((column) => {
+        const sample = column.querySelector('.measure');
+        const output = column.querySelector('.measurement');
+        if (!sample || !output) return;
+        output.textContent = 'Rendered line width: ' + sample.getBoundingClientRect().width.toFixed(1) + ' px';
+      });
+    })();
+  </script>
+</body>
+</html>
