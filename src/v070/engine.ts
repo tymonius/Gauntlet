@@ -299,6 +299,7 @@ export interface V070DiplomatState {
 
 export interface V070InquisitionState {
   conviction: number;
+  normalConvictionGainTurn: number | null;
 }
 
 export interface V070PlayerState {
@@ -448,7 +449,10 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
           }
         : null,
       inquisition: starter.definition.factionId === 'inquisition'
-        ? { conviction: 0 }
+        ? {
+            conviction: 0,
+            normalConvictionGainTurn: null,
+          }
         : null,
     };
   }
