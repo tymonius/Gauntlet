@@ -556,7 +556,7 @@ function gauntletImportDeck(player, value, id)
     gauntletBuildTerritories(territoryStack, validated)
     if mysticsStack ~= nil then gauntletBuildMysticsRiteStack(mysticsStack, validated) end
     bagData.Nickname = validated.name .. " — " .. validated.starter.leaderName
-    bagData.Description = "Custom Deckbuilder starter kit\n\n" .. tostring(validated.cardCount) .. " cards · " .. tostring(validated.pointTotal) .. " deckbuilding value"
+    bagData.Description = "Custom Deckbuilder starter kit\\n\\n" .. tostring(validated.cardCount) .. " cards · " .. tostring(validated.pointTotal) .. " deckbuilding value"
     bagData.GMNotes = "gauntlet:custom-starter:" .. validated.faction .. ":" .. validated.leader
     local position = gauntletSpawnPosition(color)
     bagData.Transform = bagData.Transform or {}
