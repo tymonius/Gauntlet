@@ -35,6 +35,8 @@ describe("Deckbuilder extension architecture", () => {
     expect(app).toContain("setAuthorityBootstrap(callback)");
     expect(app).toContain("setSourceLoader(callback)");
     expect(app).toContain("setCardPreviewRenderer(callback)");
+    expect(app).toContain("registerPrintTransform,");
+    expect(app).toContain("preparePrintDocument,");
   });
 
   it("does not let extensions replace core functions by assignment", () => {
