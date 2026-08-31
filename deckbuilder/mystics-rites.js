@@ -267,7 +267,7 @@
           <div class="deck-title"><strong>${escapeHtml(rite.name)}</strong></div>
           <div class="deck-stats">
             <span class="mini-pill">${state.riteSelectionEnabled ? "Selected Rite" : "Included Rite"}</span>
-            <span class="mini-pill">Private until begun</span>
+            <span class="mini-pill">Disclosure optional until begun</span>
           </div>
         </div>
         ${state.riteSelectionEnabled ? `<button type="button" class="secondary danger" data-remove-rite="${escapeHtml(rite.id)}">Remove</button>` : ""}

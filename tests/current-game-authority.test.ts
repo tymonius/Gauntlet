@@ -84,7 +84,7 @@ describe('complete current-game authority', () => {
       poolSize: 6,
       selectedCount: 3,
       timing: 'game-package construction',
-      visibility: 'secret until begun',
+      visibility: 'disclosure optional until begun',
     });
     expect(authority.mystics.rites.map((rite: any) => rite.id)).toEqual([
       'echoes', 'blood', 'crossing', 'shattering', 'consecration', 'equivalence',
