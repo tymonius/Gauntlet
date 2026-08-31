@@ -10,6 +10,7 @@ on:
       - 'game-data/**'
       - 'config/release-lifecycle.json'
       - 'config/github-release-contract.json'
+      - 'config/pages-publication-boundary.json'
       - 'images/artwork/cards/**'
       - 'images/artwork/card-backgrounds/**'
       - 'images/sketches/*.png'
@@ -275,6 +276,26 @@ jobs:
           done
 
           test -s "$SITE_DIR/tts/v0.7.0/$TTS_PUBLIC_SAVE"
+
+
+          SITE="$SITE_DIR" node <<'NODE'
+          const fs = require('fs');
+
+          const boundary = JSON.parse(fs.readFileSync('config/pages-publication-boundary.json', 'utf8'));
+          const actual = fs.readdirSync(process.env.SITE).sort();
+          const allowed = new Set(boundary.allowedTopLevelEntries || []);
+          const unexpected = actual.filter((entry) => !allowed.has(entry));
+          const missing = (boundary.requiredTopLevelEntries || []).filter((entry) => !actual.includes(entry));
+
+          if (unexpected.length) {
+            throw new Error(`Unexpected top-level Pages artifact entries: ${unexpected.join(', ')}`);
+          }
+          if (missing.length) {
+            throw new Error(`Missing required top-level Pages artifact entries: ${missing.join(', ')}`);
+          }
+
+          console.log(`Validated explicit Pages top-level boundary: ${actual.length} entries.`);
+          NODE
 
       - name: Upload GitHub Pages artifact
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'

@@ -54,6 +54,8 @@ As an initial deployment boundary, the Pages artifact excludes repository-intern
 
 The `media/` authoring/export tree is also excluded from the deployed artifact. The homepage's stable `/media/compositions.json` runtime contract is preserved by staging only that JSON payload; generated promotional imagery is staged separately under `/images/media/`.
 
+`config/pages-publication-boundary.json` is the explicit top-level Pages artifact contract. Deployment fails if staging introduces an unlisted top-level entry or omits a required public entry, so newly added repository roots are non-public by default until the boundary is deliberately updated.
+
 ### 4. Frozen releases stay frozen
 
 Do not reorganize files inside published release packages for repository aesthetics.
