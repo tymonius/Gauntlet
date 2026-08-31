@@ -26,7 +26,7 @@ describe("Mystics Ritual Deckbuilder component", () => {
 
   it("derives Ritual print data from current authority before the print module runs", () => {
     const html = readRepoFile("deckbuilder/index.html");
-    const componentsIndex = html.indexOf("faction-components.js?v=20260831-1");
+    const componentsIndex = html.indexOf("faction-components.js");
     const printIndex = html.indexOf("print.js");
 
     expect(componentsIndex).toBeGreaterThan(-1);
