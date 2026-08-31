@@ -27,6 +27,6 @@ describe('artwork batch publish controller', () => {
     expect(recovery).toContain('lastPr = await publicPr(prNumber)');
     expect(recovery).toContain('after repeated retries');
     expect(recovery).toContain('pr?.merged === true || pr?.merged_at');
-    expect(recovery).toContain('PR #${prNumber} is still open.');
+    expect(recovery).toContain('PR #${prNumber} is still open${mergeState}.');
   });
 });
