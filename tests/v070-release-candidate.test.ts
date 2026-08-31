@@ -113,8 +113,8 @@ describe('v0.7.0 historical publication boundary', () => {
     expect(v070Corpus).toContain('peace_treaty_threshold !== 6');
     expect(v070Corpus).toContain('Ratify six different Proposals');
     expect(releaseBuilder).toContain('repairAndValidateFrozenReleaseSources');
-    expect(releaseBuilder).toContain("'Ratify five different Proposals'");
-    expect(releaseBuilder).toContain("'Ratify six different Proposals'");
+    expect(releaseBuilder).toContain('applyV070RulebookCorrections');
+    expect(releaseBuilder).toContain('synchronizeKnownRulebookClaims');
     expect(releaseBuilder).toContain('peace_treaty_threshold !== 6');
     expect(releaseBuilder).toContain('if (authority.version !== RELEASE_VERSION)');
   });

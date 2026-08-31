@@ -199,7 +199,7 @@ describe('complete current-game authority', () => {
     expect(rules.diplomats.terms_timing).toBe('During Onset');
     expect(rules.diplomats.peace_treaty_threshold).toBe(6);
     expect(rulebook.replace(/<!--.*?-->/g, '')).toContain('Ratify six different Proposals');
-    expect(rulebook).toContain('if six different Proposals are ratified');
+    expect(rulebook.replace(/<!--.*?-->/g, '')).toContain('if six different Proposals are ratified');
     expect(rules.financiers.faction_feature_action_phase).toBe('Denouement');
     expect(rules.financiers.financial_capacity).toContain('Faction Feature marked 1 Action');
     expect(rules.intelligence.faction_features_1_action).toEqual([

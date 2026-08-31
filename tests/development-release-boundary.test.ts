@@ -21,7 +21,7 @@ describe('development and published-release boundary', () => {
     expect(currentGame.version).not.toBe(releaseTarget.releaseTag);
     expect(materializer).toContain('pull_request:');
     expect(releaseBuilder).toContain('[RELEASE_VERSION, CANDIDATE_VERSION].includes(authority.version)');
-    expect(releaseBuilder).toContain('validateFrozenReleaseSources');
+    expect(releaseBuilder).toContain('repairAndValidateFrozenReleaseSources');
   });
 
   it('derives current TTS identity from current-game rather than the publication target', () => {
