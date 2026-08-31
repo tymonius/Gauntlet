@@ -17,6 +17,10 @@ const playableRenderer = readFileSync('card-design/card-review-render.js', 'utf8
 const territoryRenderer = readFileSync('card-design/territory-review-render.js', 'utf8');
 const playableTtsRenderer = readFileSync('tts/renderer/renderer.js', 'utf8');
 const territoryTtsRenderer = readFileSync('tts/territory-renderer/territory-renderer.js', 'utf8');
+const playableTtsShell = readFileSync('tts/renderer/index.html', 'utf8');
+const territoryTtsShell = readFileSync('tts/territory-renderer/index.html', 'utf8');
+const finalizedTtsShell = readFileSync('tts/finalized-supplemental-renderer/index.html', 'utf8');
+const finalizedTtsRenderer = readFileSync('tts/finalized-supplemental-renderer/renderer.js', 'utf8');
 const cardDesignCatalog = readFileSync('card-design/current-card-catalog.js', 'utf8');
 const cardDesignShell = readFileSync('card-design/index.html', 'utf8');
 const dividerRules = readFileSync('card-design/reference-divider-rules.css', 'utf8');
@@ -102,6 +106,10 @@ describe('TTS card render authority', () => {
 
     expect(playableTtsRenderer).toContain('if (card.artDirection && Object.keys(card.artDirection).length)');
     expect(territoryTtsRenderer).toContain('if (territory.artDirection && Object.keys(territory.artDirection).length)');
+    expect(playableTtsShell).not.toContain('/tts/artwork-direction-overrides.js');
+    expect(territoryTtsShell).not.toContain('/tts/artwork-direction-overrides.js');
+    expect(finalizedTtsShell).not.toContain('/tts/artwork-direction-overrides.js');
+    expect(finalizedTtsRenderer).toContain('window.GAUNTLET_ART_DIRECTION = currentGame.artDirection || {}');
   });
 
   it('loads the canonical web fonts before shared content-sensitive fitting', () => {
