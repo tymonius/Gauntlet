@@ -98,6 +98,7 @@
       selectedRiteIds: state.factionId === "mystics" ? (ritesApi()?.selectedIds?.() || []) : [],
       selectedRites: state.factionId === "mystics" ? (ritesApi()?.selectedRites?.() || []) : [],
       validation: validateDeck(),
+      constructionRules: deckbuilder.constructionRules(),
       supplementalPackage,
       supplementalRequirements: supplementalPackage.summary || ["Selected Leader Card"]
     };
@@ -233,7 +234,7 @@ window.addEventListener('load',preparePrint,{once:true});
     return `<section class="first-page${hasMorePages ? " has-more-pages" : ""}">
       <div class="first-page-summary">
         <h1>${escapeHtml(data.name)}</h1>
-        <p class="summary-line"><strong>${escapeHtml(data.faction.name)} — ${escapeHtml(data.leader.name)}</strong> · ${data.validation.cardCount}/30+ cards · ${data.validation.pointTotal}/60 value · ${data.territories.length}/3 Territories · <span class="validity ${validationClass}">${data.validation.valid ? "Valid" : "Invalid"}</span></p>
+        <p class="summary-line"><strong>${escapeHtml(data.faction.name)} — ${escapeHtml(data.leader.name)}</strong> · ${data.validation.cardCount}/${data.constructionRules.minimumCards}+ cards · ${data.validation.pointTotal}/${data.constructionRules.maximumDeckbuildingValue} value · ${data.territories.length}/${data.constructionRules.territoriesPerPlayer} Territories · <span class="validity ${validationClass}">${data.validation.valid ? "Valid" : "Invalid"}</span></p>
         <div class="summary-grid">
           <section>
             <h2>Playable deck</h2>
