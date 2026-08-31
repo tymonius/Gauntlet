@@ -326,7 +326,6 @@
   function enhancedCurrentDeckData() {
     return {
       ...baseCurrentDeckData(),
-      schemaVersion: Math.max(3, Number(baseCurrentDeckData().schemaVersion) || 0),
       selectedRites: isMystics() ? [...state.rites] : [],
     };
   }
