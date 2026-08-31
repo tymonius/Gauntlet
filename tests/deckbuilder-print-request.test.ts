@@ -16,7 +16,7 @@ describe("Deckbuilder host printing requests", () => {
   });
 
   it("uses the existing canonical Deck JSON rather than a second request format", () => {
-    expect(script).toContain("const deck = currentDeckData()");
+    expect(script).toContain("const deck = deckbuilder.serialize()");
     expect(script).toContain("JSON.stringify(deck, null, 2)");
     expect(script).toContain("BEGIN GAUNTLET DECK JSON");
     expect(script).toContain("END GAUNTLET DECK JSON");
@@ -27,7 +27,7 @@ describe("Deckbuilder host printing requests", () => {
     expect(app).toContain('schema: "gauntlet-deck"');
     expect(app).toContain("schemaVersion: 3");
     expect(app).toContain('data.schema !== "gauntlet-deck" || data.schemaVersion !== 3');
-    expect(runtime).toContain("GAUNTLET_DECKBUILDER_BOOTSTRAP");
+    expect(runtime).toContain("deckbuilder.setAuthorityBootstrap(currentGame)");
     expect(runtime).not.toContain("Storage.prototype");
   });
 
@@ -47,7 +47,7 @@ describe("Deckbuilder host printing requests", () => {
   });
 
   it("requires a valid Deck and host email before opening the draft", () => {
-    expect(script).toContain("validateDeck().valid");
+    expect(script).toContain("deckbuilder.validate().valid");
     expect(script).toContain("EMAIL_PATTERN.test");
     expect(script).toContain("Complete and validate the Deck before requesting printing.");
   });
