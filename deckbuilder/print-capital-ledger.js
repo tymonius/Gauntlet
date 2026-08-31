@@ -222,7 +222,7 @@ body{margin:0;background:#f3f3f3;color:#111;font-family:Arial,Helvetica,sans-ser
   }
 
   function selectedRulesetMode() {
-    return window.GAUNTLET_DECKBUILDER_RULESET?.mode
+    return deckbuilder.ruleset()?.mode
       || (new URLSearchParams(window.location.search).get("rules") === "candidate" ? "candidate" : "released");
   }
 
