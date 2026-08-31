@@ -12,6 +12,11 @@
     territory: renderProductionTerritoryHtml,
     leader: renderProductionLeaderHtml,
     component: renderProductionComponentHtml,
+    cardSource: productionCardSource,
+    territorySource: productionTerritorySource,
+    componentSource: productionComponentSource,
+    componentDescriptor: productionComponentDescriptor,
+    frameSource: productionFrameSource,
   }));
   deckbuilder.registerPrintTransform("production-rendering", prepareProductionPrintDocument, 40);
   deckbuilder.registerPrintTransform("production-face-guard", guardProductionFaces, 100);
@@ -95,7 +100,7 @@
     });
   }
 
-  function renderProductionComponentHtml(componentId, side = "front") {
+  function productionComponentDescriptor(componentId) {
     const component = contractComponentById(componentId);
     if (!component) throw new Error(`Current-game authority cannot resolve supplemental component ${componentId}.`);
 
@@ -104,12 +109,28 @@
       throw new Error(`Current-game authority has no production print renderer for ${component.name || component.id}.`);
     }
 
+    return Object.freeze({
+      ...descriptor,
+      componentId: component.id,
+      name: component.name,
+      backPolicy: component.backPolicy || "standardBack",
+      orientation: descriptor.orientation || component.orientation || "portrait",
+      faction: component.faction || "shared",
+      family: component.family || "",
+    });
+  }
+
+  function productionComponentSource(componentId, side = "front") {
+    const descriptor = productionComponentDescriptor(componentId);
+    return productionFrameSource({ ...descriptor, side });
+  }
+
+  function renderProductionComponentHtml(componentId, side = "front") {
+    const descriptor = productionComponentDescriptor(componentId);
     return productionComponentHtml({
       ...descriptor,
-      label: component.name,
+      label: descriptor.name,
       side,
-      backPolicy: component.backPolicy,
-      componentId: component.id,
     });
   }
 
@@ -150,13 +171,21 @@
     return `<article class="${escapeHtml(className)}" data-production-component-kind="${escapeHtml(kind)}" data-production-component-id="${escapeHtml(componentId)}" data-production-component-render-id="${escapeHtml(id)}" data-production-component-side="${escapeHtml(side)}" data-production-back-policy="${escapeHtml(backPolicy)}" data-production-orientation="${escapeHtml(orientation)}" aria-label="${escapeHtml(label)} production render">${content}</article>`;
   }
 
+  function productionCardSource(cardId) {
+    return `/card-design/card-print-render.html?card=${encodeURIComponent(cardId)}&fit=production&rules=${encodeURIComponent(selectedRulesetMode())}`;
+  }
+
+  function productionTerritorySource(territoryId) {
+    return `/card-design/territory-print-render.html?territory=${encodeURIComponent(territoryId)}&rules=${encodeURIComponent(selectedRulesetMode())}`;
+  }
+
   function productionCardHtml(card) {
-    const source = `/card-design/card-print-render.html?card=${encodeURIComponent(card.id)}&fit=production&rules=${encodeURIComponent(selectedRulesetMode())}`;
+    const source = productionCardSource(card.id);
     return `<article class="print-card main-card production-render-card production-standard-back" data-production-card-id="${escapeHtml(card.id)}" data-production-back-policy="standardBack" aria-label="${escapeHtml(card.name)} production card"><iframe class="production-card-frame" data-production-render-frame="true" data-production-render-kind="card" src="${escapeHtml(source)}" title="${escapeHtml(card.name)} production card" scrolling="no" loading="eager"></iframe></article>`;
   }
 
   function productionTerritoryHtml(territory) {
-    const source = `/card-design/territory-print-render.html?territory=${encodeURIComponent(territory.id)}&rules=${encodeURIComponent(selectedRulesetMode())}`;
+    const source = productionTerritorySource(territory.id);
     return `<article class="print-card territory production-render-territory production-standard-back" data-production-territory-id="${escapeHtml(territory.id)}" data-production-back-policy="standardBack" aria-label="${escapeHtml(territory.name)} production Territory"><div class="production-territory-rotate"><iframe class="production-territory-frame" data-production-render-frame="true" data-production-render-kind="territory" src="${escapeHtml(source)}" title="${escapeHtml(territory.name)} production Territory" scrolling="no" loading="eager"></iframe></div></article>`;
   }
 
