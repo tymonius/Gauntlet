@@ -1,6 +1,11 @@
 (() => {
   const deckbuilder = window.GAUNTLET_DECKBUILDER;
   if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
+  const productionPrint = () => {
+    const renderer = deckbuilder.feature("productionPrintRenderer");
+    if (!renderer) throw new Error("Deckbuilder production print renderer is unavailable.");
+    return renderer;
+  };
   const PREVIEW_RETRY_LIMIT = 10;
 
   document.addEventListener("DOMContentLoaded", installCardBackPreview);
