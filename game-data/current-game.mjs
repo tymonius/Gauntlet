@@ -58,30 +58,8 @@ function validateLeader(leader) {
   }
 }
 
-function legacySectionText(section) {
-  if (section?.text) return section.text;
-  if (Array.isArray(section?.items)) {
-    return section.items.map(item => `${item.name}: ${item.text}`).join(' ');
-  }
-  return '';
-}
-
 function runtimeLeader(source) {
-  const leader = clone(source);
-  leader.sections = requireArray(leader.sections, `${leader.id} Leader sections`).map(section => {
-    const resolved = { ...section };
-    Object.defineProperty(resolved, Symbol.iterator, {
-      enumerable: false,
-      configurable: false,
-      value: function* legacyLeaderSectionTuple() {
-        yield resolved.name;
-        yield legacySectionText(resolved);
-        yield resolved.cost || '';
-      },
-    });
-    return resolved;
-  });
-  return leader;
+  return clone(source);
 }
 
 function validateMysticsStarterRites(authority) {
