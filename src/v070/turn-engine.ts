@@ -140,6 +140,11 @@ export type V070TurnAction =
       targetInstanceId: string;
     }
   | {
+      type: 'choose_confession_gambit_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
       type: 'choose_hellfire_amount';
       playerId: PlayerId;
       amount: number;
@@ -330,6 +335,10 @@ export function reduceV070TurnAction(
       && action.type === 'choose_burning_at_stake_target'
       && action.playerId === pending.playerId
     ) || (
+      pending.kind === 'confession_gambit_target'
+      && action.type === 'choose_confession_gambit_target'
+      && action.playerId === pending.playerId
+    ) || (
       pending.kind === 'hellfire_conviction_amount'
       && action.type === 'choose_hellfire_amount'
       && action.playerId === pending.playerId
@@ -420,6 +429,7 @@ export function reduceV070TurnAction(
       'choose_battlefield_promotion_target',
       'choose_sabotage_asset_target',
       'choose_burning_at_stake_target',
+      'choose_confession_gambit_target',
       'choose_hellfire_amount',
       'resolve_penance_choice',
       'resolve_scouting_report_choice',
@@ -517,6 +527,13 @@ export function reduceV070TurnAction(
       break;
     case 'choose_burning_at_stake_target':
       chooseBurningAtStakeTarget(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
+      break;
+    case 'choose_confession_gambit_target':
+      chooseConfessionGambitTarget(
         next,
         action.playerId,
         action.targetInstanceId,
@@ -807,6 +824,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'inquisition-accusation',
   'inquisition-anathema',
   'inquisition-burning-at-the-stake',
+  'inquisition-confession',
   'inquisition-divine-mercy',
   'inquisition-excommunication',
   'inquisition-hellfire',
@@ -1768,6 +1786,13 @@ function continuePendingActionCard(state: V070GameState): void {
       return;
     case 'inquisition-burning-at-the-stake':
       resolveBurningAtStakeAction(
+        state,
+        pending.playerId,
+        pending.instanceId,
+      );
+      return;
+    case 'inquisition-confession':
+      resolveConfessionAction(
         state,
         pending.playerId,
         pending.instanceId,
@@ -2954,7 +2979,8 @@ function revealV070Hand(
     | 'Assassins'
     | 'Spies'
     | 'Extraordinary Rendition'
-    | 'Burning at the Stake',
+    | 'Burning at the Stake'
+    | 'Confession',
   sourceInstanceId: string,
 ): string[] | null {
   if (preventV070OpposingHandReveal(
