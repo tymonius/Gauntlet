@@ -22,6 +22,7 @@ jobs:
         with:
           script: |
             let names = [];
+            let removedNames = [];
             let uncertain = false;
 
             if (context.eventName === 'workflow_dispatch') {
@@ -39,6 +40,7 @@ jobs:
                 per_page: 100,
               });
               names = files.map((file) => file.filename);
+              removedNames = files.filter((file) => file.status === 'removed').map((file) => file.filename);
             } else {
               const before = context.payload.before;
               if (!before || /^0+$/.test(before)) {
@@ -50,8 +52,10 @@ jobs:
                   base: before,
                   head: context.sha,
                 });
-                names = (comparison.data.files || []).map((file) => file.filename);
-                if ((comparison.data.files || []).length >= 300) uncertain = true;
+                const comparedFiles = comparison.data.files || [];
+                names = comparedFiles.map((file) => file.filename);
+                removedNames = comparedFiles.filter((file) => file.status === 'removed').map((file) => file.filename);
+                if (comparedFiles.length >= 300) uncertain = true;
               }
             }
 
@@ -103,8 +107,9 @@ jobs:
             const changedTests = names.filter((file) => testPattern.test(file));
             const relatedSources = names.filter((file) => sourcePattern.test(file) && !testPattern.test(file));
             const testWorkflowOnly = names.length === 1 && exact('.github/workflows/test.yml');
+            const deletedSource = removedNames.some((file) => sourcePattern.test(file) && !testPattern.test(file));
 
-            const fullTests = uncertain || packageRuntimeChanged || exact('package-lock.json') || exact('vitest.config.ts') || exact('vitest.config.js') || exact('vitest.config.mjs') || testWorkflowOnly;
+            const fullTests = uncertain || deletedSource || packageRuntimeChanged || exact('package-lock.json') || exact('vitest.config.ts') || exact('vitest.config.js') || exact('vitest.config.mjs') || testWorkflowOnly;
             const code = fullTests || exact('.github/workflows/test.yml') || changedTests.length > 0 || relatedSources.length > 0;
             const types = uncertain || exact('package.json') || exact('package-lock.json') || matches(/\.(?:ts|tsx)$/) || matches(/(?:^|\/)tsconfig[^/]*\.json$/);
             const analytics = uncertain || exact('scripts/sync-google-analytics.mjs') || exact('index.html') || matches(/^(?:start|rulebook|card-reference|deckbuilder|rules-arbiter)\/[^/]*\.html$/) || matches(/^factions\/(?:[^/]+\/)?[^/]*\.html$/);
@@ -129,6 +134,7 @@ jobs:
                 [{data: 'Check', header: true}, {data: 'Run?', header: true}],
                 ['Release-path normalization', 'true'],
                 ['Vitest', String(code)],
+                ['Deleted source fallback', String(deletedSource)],
                 ['Full Vitest suite', String(fullTests)],
                 ['TypeScript', String(types)],
                 ['Analytics', String(analytics)],
