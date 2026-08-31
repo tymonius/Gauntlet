@@ -121,6 +121,8 @@
 
     const surface = String(explicit.surface || "");
     const componentId = String(explicit.componentId || "").trim();
+    const explicitKind = String(explicit.kind || "").trim();
+    if (explicitKind && componentId) return { kind: explicitKind, id: componentId };
     if (/supplemental-card\.js$/i.test(surface) && componentId) {
       return { kind: "supplemental", id: componentId };
     }
@@ -138,6 +140,7 @@
     if (component.family === "reference-card") return { kind: "reference", id: component.id };
     if (component.family === "proposal-treaty-card") return { kind: "proposal", id: component.id.replace(/^diplomats-proposal-/, "") };
     if (component.family === "rite-card") return { kind: "rite", id: component.id.replace(/^mystics-rite-/, "") };
+    if (component.family === "ritual-card") return { kind: "ritual", id: componentId || component.id.replace(/^mystics-ritual-of-/, "") };
     if (component.family === "ledger") return { kind: "supplemental", id: component.id };
     if (component.family === "deed-card") return { kind: "supplemental", id: component.id, orientation: "landscape" };
     return null;
@@ -196,23 +199,6 @@
     const unresolved = [];
     for (const shell of shells) {
       if (!shell.isConnected) continue;
-
-      if (shell.dataset.printComponentKind === "ritual") {
-        const ritual = currentGame.mystics?.ritual;
-        if (!ritual?.id) {
-          unresolved.push("Mystics Ritual");
-          continue;
-        }
-        shell.replaceWith(makeProductionComponent(documentNode, {
-          kind: "ritual",
-          id: ritual.id,
-          label: ritual.name,
-          side: "front",
-          backPolicy: "specialBack",
-          componentId: shell.dataset.contractComponentId || `mystics-ritual-${ritual.id}`,
-        }));
-        continue;
-      }
 
       const component = contractComponentForShell(shell, currentGame);
       if (!component) {
@@ -376,17 +362,6 @@
     const renderId = front.dataset.productionComponentRenderId;
     const backPolicy = front.dataset.productionBackPolicy;
     if (!["twoSided", "specialBack"].includes(backPolicy)) return null;
-
-    if (kind === "ritual") {
-      return {
-        kind: "ritual",
-        id: renderId || currentGame.mystics?.ritual?.id,
-        label: `${currentGame.mystics?.ritual?.name || "Ritual"} back`,
-        side: "reverse",
-        backPolicy,
-        componentId,
-      };
-    }
 
     const component = [
       ...(currentGame.sharedComponents || []),
