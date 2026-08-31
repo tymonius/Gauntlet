@@ -28,6 +28,13 @@ describe('Rulebook fact registry', () => {
     expect(facts['cards.inquisition.count']).toBe(15);
     expect(facts['cards.mystics.arcane_count']).toBe(15);
     expect(facts['proposals.count']).toBe(9);
+
+    const semantic = synchronizeKnownRulebookClaims(rulebook, authority);
+    expect(semantic.changes).toEqual([]);
+    expect(semantic.output).toContain(
+      'Action, Gambit, or Tactic effect of an Arcane card'
+    );
+    expect(semantic.output).toContain('RULE-FACT:mystics.invocation.text');
   });
 
   it('produces an exact repair instead of relying on search-and-replace memory', () => {
