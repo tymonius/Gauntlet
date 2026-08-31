@@ -1,6 +1,6 @@
 # Current Gauntlet game data
 
-`game-data/current-game.json` is the **complete current gameplay authority** for Gauntlet v0.7.0.
+`game-data/current-game.json` is the **complete current gameplay authority** for Gauntlet's active development state.
 
 It is not a manifest, patch list, overlay, or source-precedence declaration. Current browser tools, TTS generation, card/component renderers, Deckbuilder, Card Reference, and release publication load this document directly.
 
@@ -47,16 +47,15 @@ Its responsibilities are limited to:
 
 - validating the complete authority;
 - exposing convenient lookup methods such as `findCard()`, `findTerritory()`, and `findLeader()`;
-- supplying harmless runtime compatibility views such as iterable Leader sections;
 - cloning/freezing data so consumers cannot mutate shared authority state.
 
-It must not add, retire, replace, merge, or rewrite game mechanics.
+It must not add, retire, replace, merge, relabel, or rewrite game mechanics or printed card semantics. Current authority is already in the semantic form consumed by current surfaces; renderers may format it, but they may not repair it through hidden compatibility or presentation transforms.
 
 Node tooling uses `scripts/current-game-authority.mjs`, which likewise reads only the complete authority.
 
 ## Rulebook authority
 
-`rulebook/player-facing/current-rulebook.md` is natively **Version 0.7.0**.
+`rulebook/player-facing/current-rulebook.md` is the native Rulebook for the active current-game authority.
 
 It contains the complete current rules and is not reconstructed from the v0.6.3 Rulebook, chapter patches, terminology transformations, or candidate overlays.
 
@@ -74,13 +73,11 @@ Published release snapshots remain immutable.
 
 The v0.7.0 publication pipeline copies the complete gameplay and Rulebook authorities, generates publication-only assets, hashes the result, and freezes the package. It does not replay historical migrations.
 
-Historical release tooling may intentionally load historical files when its explicit purpose is to reproduce or inspect that historical version. Such code must not be used by unversioned or current v0.7.0 runtime surfaces.
+Historical release tooling may intentionally load historical files when its explicit purpose is to reproduce or inspect that historical version. Such code must not be used by unversioned or current runtime surfaces.
 
 ## Changing current gameplay
 
-For v0.7.0 release preparation, edit the complete current authority—not an old change document.
-
-After v0.7.0 is frozen, future development should create the next complete current authority as its own versioned development state. Migration tools may help construct that state, but the resulting authority must again be self-contained before it becomes the current source.
+Edit the complete current authority—not an old change document. Each development version is a self-contained current state. Migration tools may help construct that state, but the resulting authority must be complete and surface-ready before it becomes current.
 
 Do **not** introduce a new current UI or tool that selects its own versioned gameplay file or layers corrections over an older release.
 
