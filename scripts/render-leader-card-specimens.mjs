@@ -78,6 +78,41 @@ async function main() {
     }));
     if (!fonts.title || !fonts.rules) throw new Error(`Required card fonts failed to load: ${JSON.stringify(fonts)}.`);
 
+    const catalogLayout = await page.evaluate(() => {
+      const bodyStyles = getComputedStyle(document.body);
+      const gridMetrics = selector => {
+        const grid = document.querySelector(selector);
+        const children = [...(grid?.children || [])];
+        const rows = children.slice(0, 6).map(child => child.getBoundingClientRect().top);
+        const distinctRows = rows.filter((top, index) => rows.findIndex(other => Math.abs(other - top) < 0.5) === index);
+        return {
+          childCount: children.length,
+          firstSixRows: distinctRows.length,
+          columns: getComputedStyle(grid).gridTemplateColumns,
+        };
+      };
+      return {
+        cardWidth: bodyStyles.getPropertyValue('--catalog-card-width').trim(),
+        territoryWidth: bodyStyles.getPropertyValue('--catalog-territory-width').trim(),
+        deedWidth: bodyStyles.getPropertyValue('--catalog-deed-width').trim(),
+        playable: gridMetrics('.full-card-review-grid'),
+        leaders: gridMetrics('.leader-review-grid'),
+        territories: gridMetrics('.territory-review-grid'),
+      };
+    });
+    if (!catalogLayout.cardWidth || !catalogLayout.territoryWidth || !catalogLayout.deedWidth) {
+      throw new Error(`Catalog production-size variables are undefined: ${JSON.stringify(catalogLayout)}.`);
+    }
+    for (const [name, metrics] of Object.entries({
+      playable: catalogLayout.playable,
+      leaders: catalogLayout.leaders,
+      territories: catalogLayout.territories,
+    })) {
+      if (metrics.childCount > 1 && metrics.firstSixRows >= Math.min(6, metrics.childCount)) {
+        throw new Error(`Catalog ${name} grid collapsed to one item per row: ${JSON.stringify(metrics)}.`);
+      }
+    }
+
     const leaders = await page.locator('.leader-card').evaluateAll(cards => cards.map(card => {
       const rect = card.getBoundingClientRect();
       const portrait = card.querySelector('.card-art img');
