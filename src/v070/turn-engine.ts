@@ -4054,6 +4054,171 @@ function battlefieldPromotionCandidateInstanceIds(
   return candidates;
 }
 
+function confessionEligibleGambitInstanceIds(
+  state: V070GameState,
+  playerId: PlayerId,
+): string[] {
+  return state.players[playerId].zones.hand.filter(instanceId => {
+    const cardId = state.cardInstances[instanceId]?.cardId;
+    const card = cardId ? v070CanonicalContent.cardsById.get(cardId) : undefined;
+    return card?.effects.some(effect =>
+      effect.label === 'Gambit'
+      || effect.label === 'Gambit/Tactic'
+    ) ?? false;
+  });
+}
+
+function applyConfessionGambitMandate(
+  state: V070GameState,
+  playerId: PlayerId,
+  opponentId: PlayerId,
+  sourceActionInstanceId: string,
+  targetInstanceId: string,
+): void {
+  const turnState = requireTurnState(state);
+  if (!confessionEligibleGambitInstanceIds(state, opponentId)
+    .includes(targetInstanceId)) {
+    throw new V070GameActionError(
+      'Confession must name an eligible Gambit still in the revealed opponent Hand.',
+    );
+  }
+
+  state.turnState = {
+    ...turnState,
+    gambitMandates: [
+      ...turnState.gambitMandates,
+      {
+        playerId: opponentId,
+        instanceId: targetInstanceId,
+        sourceInstanceId: sourceActionInstanceId,
+      },
+    ],
+  };
+  appendV070Event(state, {
+    type: 'confession_gambit_mandated',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      opponentId,
+      instanceId: targetInstanceId,
+      cardId: state.cardInstances[targetInstanceId]?.cardId,
+      sourceActionInstanceId,
+      expiresAt: 'end_of_turn',
+    },
+  });
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state);
+}
+
+function resolveConfessionAction(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+): void {
+  const opponentId = otherPlayer(playerId);
+  const revealed = revealV070Hand(
+    state,
+    playerId,
+    opponentId,
+    'Confession',
+    sourceActionInstanceId,
+  );
+  if (revealed === null) {
+    finishPendingActionCard(state);
+    return;
+  }
+
+  const candidates = confessionEligibleGambitInstanceIds(
+    state,
+    opponentId,
+  );
+  if (candidates.length === 0) {
+    appendV070Event(state, {
+      type: 'action_effect_incomplete',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        sourceActionInstanceId,
+        purpose: 'Confession',
+        reason: 'no_eligible_gambit_in_revealed_hand',
+      },
+    });
+    finishPendingActionCard(state);
+    return;
+  }
+
+  if (candidates.length === 1) {
+    const onlyCandidate = candidates[0];
+    if (!onlyCandidate) {
+      throw new V070GameActionError(
+        'Confession could not identify its only eligible Gambit.',
+      );
+    }
+    applyConfessionGambitMandate(
+      state,
+      playerId,
+      opponentId,
+      sourceActionInstanceId,
+      onlyCandidate,
+    );
+    return;
+  }
+
+  state.pendingActionEffectChoice = {
+    kind: 'confession_gambit_target',
+    playerId,
+    opponentId,
+    sourceActionInstanceId,
+    candidateInstanceIds: [...candidates],
+  };
+  appendV070Event(state, {
+    type: 'action_effect_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      kind: 'confession_gambit_target',
+      playerId,
+      opponentId,
+      sourceActionInstanceId,
+      purpose: 'Confession',
+      targetInstanceIds: [...candidates],
+    },
+  });
+}
+
+function chooseConfessionGambitTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'confession_gambit_target'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'inquisition-confession') {
+    throw new V070GameActionError(
+      'No Confession Gambit choice is pending for that player.',
+    );
+  }
+  if (!choice.candidateInstanceIds.includes(targetInstanceId)) {
+    throw new V070GameActionError(
+      'Confession must choose one eligible Gambit from the revealed Hand.',
+    );
+  }
+
+  applyConfessionGambitMandate(
+    state,
+    playerId,
+    choice.opponentId,
+    pending.instanceId,
+    targetInstanceId,
+  );
+}
+
 function resolveBurningAtStakeAction(
   state: V070GameState,
   playerId: PlayerId,
