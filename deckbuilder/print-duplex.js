@@ -197,7 +197,7 @@
 
   function appendMysticsRitePages(documentNode) {
     if (state.factionId !== "mystics") return;
-    const ritePool = window.GAUNTLET_CURRENT_SUPPLEMENTALS?.mystics?.rites || [];
+    const ritePool = deckbuilder.feature("supplementalPackages")?.mystics?.rites || [];
     const selectedIds = new Set(state.rites || []);
     const rites = state.riteSelectionEnabled
       ? ritePool.filter(rite => selectedIds.has(rite.id))
