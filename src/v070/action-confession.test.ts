@@ -122,7 +122,7 @@ describe('v0.7.0 Confession Action', () => {
     inject(
       state,
       'B',
-      'neutral-tactical-planning',
+      'mystics-threefold-vision',
       'hand',
       'action-only',
     );
