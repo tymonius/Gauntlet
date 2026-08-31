@@ -75,19 +75,30 @@ function zoneContainsPoint(zone, x, z) {
     && Math.abs(Number(z) - Number(zone?.posZ)) <= Number(zone?.scaleZ) / 2;
 }
 
+function isContentVersionedReleaseAsset(value, suffix) {
+  try {
+    const url = new URL(String(value || ''));
+    return url.protocol === 'https:'
+      && url.hostname === 'github.com'
+      && url.pathname.startsWith('/tymonius/Gauntlet/releases/download/')
+      && url.pathname.endsWith(suffix)
+      && /^[a-f0-9]{12}$/iu.test(url.searchParams.get('v') || '');
+  } catch {
+    return false;
+  }
+}
+
 function validateEnvironment(save) {
   const tableUrl = String(save.TableURL || '');
   const skyUrl = String(save.SkyURL || '');
   if (save.Table !== 'Table_Custom' || save.Sky !== 'Sky_Museum') {
     throw new Error('Authoritative TTS save is not using the custom campaign table / museum-lit panorama environment.');
   }
-  if (!/^https:\/\/github\.com\/tymonius\/Gauntlet\/releases\/download\//i.test(tableUrl)
-    || !tableUrl.endsWith('_TTS_Environment_Table.png')) {
-    throw new Error('Campaign table image must use the published GitHub Release environment asset.');
+  if (!isContentVersionedReleaseAsset(tableUrl, '_TTS_Environment_Table.png')) {
+    throw new Error('Campaign table image must use the content-versioned published GitHub Release environment asset.');
   }
-  if (!/^https:\/\/github\.com\/tymonius\/Gauntlet\/releases\/download\//i.test(skyUrl)
-    || !skyUrl.endsWith('_TTS_Environment_Panorama.png')) {
-    throw new Error('Command-tent panorama must use the published GitHub Release environment asset.');
+  if (!isContentVersionedReleaseAsset(skyUrl, '_TTS_Environment_Panorama.png')) {
+    throw new Error('Command-tent panorama must use the content-versioned published GitHub Release environment asset.');
   }
   if (tableUrl.includes('raw.githubusercontent.com') || skyUrl.includes('raw.githubusercontent.com')) {
     throw new Error('Raw branch URLs are forbidden for TTS environment images.');
