@@ -4070,12 +4070,18 @@ function resolveBurningAtStakeAction(
   );
 
   if (candidates.length === 1) {
+    const onlyCandidate = candidates[0];
+    if (!onlyCandidate) {
+      throw new V070GameActionError(
+        'Burning at the Stake could not identify its highest-value card.',
+      );
+    }
     resolveBurningAtStakeCard(
       state,
       playerId,
       opponentId,
       sourceActionInstanceId,
-      candidates[0],
+      onlyCandidate,
     );
     return;
   }
