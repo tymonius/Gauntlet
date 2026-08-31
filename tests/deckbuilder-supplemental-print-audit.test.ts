@@ -83,7 +83,8 @@ describe("Deckbuilder supplemental print audit", () => {
     expect(compatibilityPrint).not.toContain('removeLegacyDiplomatReverseReference(documentNode)');
     expect(productionPrint).toContain('if (component.family === "ledger")');
     expect(productionPrint).toContain('if (component.family === "deed-card")');
-    expect(productionPrint).toContain('shell.dataset.printComponentKind === "ritual"');
+    expect(productionPrint).toContain('if (component.family === "ritual-card")');
+    expect(productionPrint).toContain('const explicitKind = String(explicit.kind || "").trim();');
   });
 
   it("confirms every current shared/faction reference, tracker, and Rite has a production-ready renderer", () => {
