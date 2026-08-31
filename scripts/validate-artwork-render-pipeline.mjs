@@ -16,14 +16,16 @@ const contracts = [
   {
     path: 'card-design/card-review-render.js',
     requires: [
-      '/tts/artwork-direction-overrides.js',
+      "loadCurrentGame",
+      "window.GAUNTLET_ART_DIRECTION = currentGame.artDirection",
       '/tts/artwork-crop.js',
     ],
   },
   {
     path: 'card-design/territory-review-render.js',
     requires: [
-      '/tts/artwork-direction-overrides.js',
+      "loadCurrentGame",
+      "window.GAUNTLET_ART_DIRECTION = currentGame.artDirection",
       '/tts/artwork-crop.js',
     ],
   },
@@ -69,4 +71,4 @@ if (failures.length) {
 
 console.log('Artwork render pipeline contract passed.');
 console.log('Saved card compositions propagate through /card-design, Card Reference, and TTS renderers.');
-console.log('Future card-rendering surfaces (including Deckbuilder viewing/printing) should reuse the canonical card/territory review renderers or this same shared override + crop pipeline.');
+console.log('Future card-rendering surfaces (including Deckbuilder viewing/printing) should reuse the canonical current-game composition authority plus the shared crop pipeline.');
