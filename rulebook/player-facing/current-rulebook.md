@@ -111,7 +111,7 @@ Territories and faction supplemental components use specialized layouts and are 
 
 ## Printed card effects
 
-A card may show one or more effect headings. The heading tells you the role, timing, or procedure that governs that block of text. A heading does not grant any other role or play permission unless the card or another rule says so.
+A card may show multiple effect headings. The heading tells you the role, timing, or procedure that governs that block of text. A heading does not grant any other role or play permission unless the card or another rule says so.
 
 - **Action:** Normally play the card from Hand by taking an Action during Opening or Denouement. Follow any more specific timing printed in the effect.
 - **Asset:** The card may be banked from Hand using its inherent **Bank** Action unless it has a printed special banking procedure. Its Asset effect applies while it is banked, subject to its own timing and conditions.
@@ -121,10 +121,10 @@ A card may show one or more effect headings. The heading tells you the role, tim
 - **Mission:** An Intelligence requirement used when the card is started as an Active Mission or Special Operation. Starting a Mission is not playing the card for another printed effect; follow the Intelligence procedures in Chapter 16.
 - **Overlay:** A persistent effect that applies while the card is the active, exposed Overlay on a Territory. Overlay rules appear in Chapter 12.
 - **Terms:** A Diplomat effect used while offering or resolving Terms at the timing stated by the card. **Accepted —** and **Refused —** clauses printed within a Terms effect apply only for the corresponding response.
-- **Sanctions:** After an opponent refuses your Terms, you may use the card's Sanctions effect from Hand. Resolve it immediately unless the effect gives a later timing. A Sanction that remains in play stays associated with that opponent and follows the Sanctions rules in Chapters 12 and 14.
+- **Sanctions:** After an opponent refuses your Terms, you may use the card's Sanctions effect from Hand. Resolve it immediately unless the effect gives a later timing. A Sanction that remains in play stays associated with that opponent and follows the shared Sanctions rules.
 - **Reaction:** A directly permitted effect used when its stated trigger occurs. A Reaction does not spend an Action unless it expressly says otherwise; follow its printed source, timing, and destination.
 
-Only the printed effect being used applies unless a rule says otherwise. Using a card through one heading does not also apply its other printed effects merely because they are on the same card.
+Only the printed effect being used applies unless a rule says otherwise. Using a card through a heading does not also apply its other printed effects merely because they are on the same card.
 
 Setting a Gambit or choosing a Tactic places the card in battle without applying its effect immediately. Gambit and Tactic effects apply at their normal reveal stages even when an effect causes the card to become face up early, unless that effect says otherwise.
 
