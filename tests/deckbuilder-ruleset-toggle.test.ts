@@ -11,7 +11,7 @@ const territories = readFileSync('deckbuilder/territories.js', 'utf8');
 const rites = readFileSync('deckbuilder/mystics-rites.js', 'utf8');
 const components = readFileSync('deckbuilder/faction-components.js', 'utf8');
 const bulk = readFileSync('deckbuilder/print-all-starters.js', 'utf8');
-const productionPrint = readFileSync('deckbuilder/print-duplex-sheet-pairing.js', 'utf8');
+const productionPrint = readFileSync('deckbuilder/production-print.js', 'utf8');
 const customPrint = readFileSync('deckbuilder/custom-print.mjs', 'utf8');
 const currentRuntime = readFileSync('game-data/current-game.mjs', 'utf8');
 
