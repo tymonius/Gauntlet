@@ -387,6 +387,7 @@ export interface V070BoardTerritory {
   contributedBy: PlayerId;
   controller: PlayerId;
   occupant: PlayerId | null;
+  blank?: boolean;
 }
 
 export interface V070SetupState {
