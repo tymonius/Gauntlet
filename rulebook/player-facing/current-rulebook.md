@@ -2368,11 +2368,7 @@ Heresy follows the shared copied-effect rule but retains permission for one addi
 
 ![TDS Games publisher mark](../../images/branding/tds-games-mark.svg)
 
-<!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT -->
-
-<!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises<!-- /PUBLISHING-FACT -->
-
-<!-- PUBLISHING-FACT:imprint.statement -->Gauntlet is published by TDS Games, an imprint of Misty Hollow Enterprises, for playtesting and review.<!-- /PUBLISHING-FACT -->
+<!-- PUBLISHING-FACT:imprint.statement -->Published by TDS Games, an imprint of Misty Hollow Enterprises, for playtesting and review.<!-- /PUBLISHING-FACT -->
 
 <!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT -->
 

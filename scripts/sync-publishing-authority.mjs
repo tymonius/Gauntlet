@@ -32,8 +32,8 @@ const targets = [
   {
     path: 'rulebook/player-facing/current-rulebook.md',
     expectedCounts: {
-      'publisher.line': 1,
-      'publisher.parent_line': 1,
+      'publisher.line': 0,
+      'publisher.parent_line': 0,
       'imprint.statement': 1,
       'copyright.notice': 1,
     },
