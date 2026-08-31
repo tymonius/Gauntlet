@@ -5117,7 +5117,8 @@
         "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/financier/Gauntlet_v0.6.3_Financier_Faction_Guide.md",
         "tts": {
           "representation": "ledger"
-        }
+        },
+        "reverse": "Identical Capital Ledger face"
       },
       {
         "id": "financiers-deed",
