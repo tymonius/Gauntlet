@@ -211,6 +211,7 @@ export async function validateTtsComponentContract(contract) {
 
   const ledger = map.get('financiers-capital-ledger');
   assert(ledger?.productionStatus === 'export-pending' && designStatusFor(ledger) === 'final', 'Capital Ledger design is final and must be marked export-pending rather than design-pending.');
+  assert(ledger?.backPolicy === 'twoSided', 'Capital Ledger must declare its intrinsic duplex reverse directly in component authority.');
 
   const deeds = map.get('financiers-deed');
   assert(deeds?.quantity === 8 && deeds?.identicalCopies === true, 'Financiers must have eight identical full-size Deed Cards.');
