@@ -48,7 +48,7 @@ data.governing_sources = {
   shared_rules: 'docs/Gauntlet_v0.6.3_Shared_Rules_Candidate.md',
   general_card_rules: 'docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md',
   card_text: 'artifacts/v0.6.3/Gauntlet_v0.6.3_Card_Text_Candidate.json',
-  player_facing_candidates: 'scripts/generate-v063-player-facing-candidates.mjs',
+  player_facing_candidates: 'docs/recovery/frozen-scripts/v0.6.3/generate-v063-player-facing-candidates.mjs',
   inherited_faction_components: 'releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md',
   inherited_starter_decks: 'docs/Gauntlet_v0.6.2_Starter_Decks_Candidate.json',
   inherited_base: 'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json',
