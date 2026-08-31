@@ -35,6 +35,9 @@ describe('Rulebook fact registry', () => {
       'Action, Gambit, or Tactic effect of an Arcane card'
     );
     expect(semantic.output).toContain('RULE-FACT:mystics.invocation.text');
+    expect(semantic.output).toContain('RULE-FACT:mystics.transmutation.text');
+    expect(semantic.output).toContain('before dice are rolled in a battle, you may put one card');
+    expect(semantic.output).not.toContain('before dice are rolled in a battle involving you');
   });
 
   it('produces an exact repair instead of relying on search-and-replace memory', () => {
