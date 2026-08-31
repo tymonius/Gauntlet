@@ -3,7 +3,7 @@ import { describe, expect, test } from 'vitest';
 import dispatcher from './worker-entry.js';
 
 const lifecycle = JSON.parse(readFileSync(new URL('../config/release-lifecycle.json', import.meta.url), 'utf8'));
-const stagedCurrentVersion = 'v0.7.0';
+const stagedCurrentVersion = 'v0.7.1';
 
 async function health(path) {
   const response = await dispatcher.fetch(new Request(`https://gauntlet.run${path}`), {}, {});
@@ -12,8 +12,8 @@ async function health(path) {
 }
 
 describe('Rules Arbiter current and historical release routing', () => {
-  test('routes the unversioned public health endpoint to the current v0.7.0 release', async () => {
-    expect(lifecycle.current_release).toBe('v0.7.0');
+  test('routes the unversioned public health endpoint to the lifecycle current release', async () => {
+    expect(lifecycle.current_release).toBe(stagedCurrentVersion);
     const payload = await health('/api/health');
     expect(payload.version).toBe(stagedCurrentVersion);
     expect(payload.currentPublicRelease).toBe(stagedCurrentVersion);
