@@ -10,24 +10,25 @@ describe("Mystics Ritual Deckbuilder component", () => {
 
     expect(source).toContain('const MYSTICS_RITUAL_COMPONENT_ID = "mystics-ritual-of-ascension"');
     expect(source).toContain('const ritual = currentGame.mystics?.ritual');
-    expect(source).toContain('const summaryLabel = `${ritual.name} card`');
+    expect(source).toContain('packages.mystics.summary.push(`${ritual.name} card`)');
     expect(source).toContain('title: ritual.name');
     expect(source).toContain('kind: "ritual"');
     expect(source).toContain('type: "reference"');
     expect(source).toContain('label: "Convergence"');
     expect(source).toContain('label: "Complete"');
     expect(source).toContain('label: "Interruption"');
-    expect(source).toContain('footer: "Supplemental Ritual card — not a Playable Deck card"');
+    expect(source).toContain('contractId: MYSTICS_RITUAL_COMPONENT_ID');
   });
 
-  it("loads the Ritual augmentation after supplemental data and before printing", () => {
+  it("derives Ritual print data from current authority before the print module runs", () => {
     const html = readRepoFile("deckbuilder/index.html");
-    const supplementalIndex = html.indexOf("v061-supplementals.js");
     const componentsIndex = html.indexOf("faction-components.js?v=20260802-1");
     const printIndex = html.indexOf("print.js");
 
-    expect(supplementalIndex).toBeGreaterThan(-1);
-    expect(componentsIndex).toBeGreaterThan(supplementalIndex);
+    expect(componentsIndex).toBeGreaterThan(-1);
     expect(printIndex).toBeGreaterThan(componentsIndex);
+    expect(html).not.toContain("v061-supplementals.js");
+    expect(html).not.toContain("completed-supplementals.js");
+    expect(html).not.toContain("supplemental-data.js");
   });
 });
