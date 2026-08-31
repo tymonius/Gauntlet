@@ -235,8 +235,17 @@ export async function validateTtsComponentContract(contract) {
   assert(operationProgressTracker.tts?.layer === 1 && intelTracker.tts?.layer === 2, 'Intelligence tracker layers must run Operation Progress bottom, Intel above it.');
 
   const rites = componentsFor(contract, 'mystics', 'rite-card');
-  assert(rites.length === 3, `Mystics must contain exactly 3 Rite cards; found ${rites.length}.`);
-  assert(rites.every((component) => component.productionStatus === 'ready' && component.backPolicy === 'twoSided'), 'All three Mystics Rite cards must be ready and two-sided.');
+  const currentAuthority = await loadCurrentGameAuthority();
+  const currentRites = currentAuthority.mystics?.rites || [];
+  const expectedRiteIds = currentRites.map((rite) => `mystics-rite-${rite.id}`).sort();
+  const contractRiteIds = rites.map((rite) => rite.id).sort();
+  assert(
+    JSON.stringify(contractRiteIds) === JSON.stringify(expectedRiteIds),
+    `Mystics physical Rite contract does not match the current Rite pool: ${contractRiteIds.join(', ')}.`,
+  );
+  assert(rites.every((component) => component.productionStatus === 'ready' && component.backPolicy === 'twoSided'), 'All current Mystics Rite cards must be ready and two-sided.');
+  assert(rites.every((component) => component.deckInclusion === 'selected-rite'), 'Mystics Rite components must use selected-rite package inclusion.');
+  assert(rites.every((component) => component.source === CURRENT_GAME_AUTHORITY_SOURCE), 'Mystics Rite components must source current-game authority directly.');
 
   const inquisitionReferences = componentsFor(contract, 'inquisition', 'reference-card');
   assert(inquisitionReferences.length === 2, `Inquisition must contain Doctrine and Purge Reference Cards; found ${inquisitionReferences.length}.`);
