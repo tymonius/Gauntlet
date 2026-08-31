@@ -51,9 +51,9 @@ describe('v0.7.0 historical publication boundary', () => {
     )).toBe(true);
   });
 
-  it('keeps the TTS package and manual-QA records aligned to v0.7.0', () => {
-    expect(ttsTarget.releaseTag).toBe('v0.7.0');
-    expect(ttsTarget.displayVersion).toBe('v0.7.0');
+  it('preserves v0.7.0 manual-QA evidence while the active TTS target advances to v0.7.1', () => {
+    expect(ttsTarget.releaseTag).toBe('v0.7.1');
+    expect(ttsTarget.displayVersion).toBe('v0.7.1');
     expect(ttsTarget.status).toBe('release-candidate');
     expect(ttsQa.gameVersion).toBe('v0.7.0');
     expect(ttsQa.status).toBe('passed');

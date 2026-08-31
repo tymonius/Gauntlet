@@ -5,6 +5,8 @@ import { REQUIRED_QA_CHECKS, promoteSaveIdentity, validatePromotionGate, validat
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 const qa = JSON.parse(readFileSync('tts/release-qa/v0.7.0.json', 'utf8'));
 const release = { version: 'v0.7.0' };
+const v071Qa = JSON.parse(readFileSync('tts/release-qa/v0.7.1.json', 'utf8'));
+const ttsWorkflow = readFileSync('.github/workflows/generate-tts-card-assets.yml', 'utf8');
 
 function completedQa(overrides = {}) {
   return {
@@ -101,6 +103,30 @@ describe('TTS final save promotion', () => {
     });
     expect(result.version).toBe('v0.7.0');
     expect(result.checks).toEqual(Object.fromEntries(Object.entries(REQUIRED_QA_CHECKS).map(([group, checks]) => [group, [...checks]])));
+  });
+
+  it('opens the stable v0.7.1 promotion gate after explicit manual approval', () => {
+    expect(v071Qa).toEqual(expect.objectContaining({
+      schemaVersion: 3,
+      gameVersion: 'v0.7.1',
+      status: 'passed',
+      approvedForWorkshop: true,
+    }));
+    expect(() => validateQaRecordShape(v071Qa)).not.toThrow();
+    expect(() => validatePromotionGate({
+      release: { version: 'v0.7.1' },
+      readiness: { gameVersion: 'v0.7.1', machineReady: true, blockers: [] },
+      qa: v071Qa,
+    })).not.toThrow();
+  });
+
+  it('automates strict v0.7.1 promotion and release upload only from main push', () => {
+    expect(ttsWorkflow).toContain("tts/release-qa/v0.7.1.json");
+    expect(ttsWorkflow).toContain("npm run tts:release:strict");
+    expect(ttsWorkflow).toContain("npm run tts:save:promote");
+    expect(ttsWorkflow).toContain("github.event_name == 'push'");
+    expect(ttsWorkflow).toContain('Gauntlet_${tag}_TTS_Mod.json');
+    expect(ttsWorkflow).toContain('Gauntlet_v0.7.1_TTS_Mod.json');
   });
 
   it('creates final mod identity without mutating the preserved review scaffold', () => {
