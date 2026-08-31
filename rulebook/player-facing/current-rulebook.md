@@ -99,7 +99,7 @@ Most ordinary playable cards use the same frame. Read these elements when constr
 2. **Card value** — Used for Deck construction and whenever an effect refers to a card's value.
 3. **Faction identity** — The border and parchment treatment identify the card's faction. Neutral cards use ivory.
 4. **Artwork** — The card's illustration.
-5. **Effect heading** — Names the effect's role or timing, such as **Action**, **Asset**, **Gambit**, **Tactic**, **Gambit/Tactic**, **Overlay**, **Mission**, or another faction-specific heading.
+5. **Effect heading** — Names the effect's role or timing. Current printed headings are **Action**, **Asset**, **Gambit**, **Tactic**, **Gambit/Tactic**, **Mission**, **Overlay**, **Terms**, **Sanctions**, and **Reaction**.
 6. **Effect text** — Resolve only the printed effect being used unless a rule says otherwise.
 7. **Metadata footer** — Shows faction at left, **Unique** in the center when applicable, and the rules version at right.
 
@@ -111,32 +111,24 @@ Territories and faction supplemental components use specialized layouts and are 
 
 ## Printed card effects
 
-A card may show one or more effect headings. An effect heading identifies the role or procedure that governs that block of text. A heading does not grant any other role, timing, or play permission unless the card or another rule says so.
-
-### Ordinary role headings
+A card may show one or more effect headings. The heading tells you the role, timing, or procedure that governs that block of text. A heading does not grant any other role or play permission unless the card or another rule says so.
 
 - **Action:** Normally play the card from Hand by taking an Action during Opening or Denouement. Follow any more specific timing printed in the effect.
-- **Asset:** The card may be banked from Hand using its inherent **Bank** Action unless it has a printed special banking procedure. Its Asset effect applies while it is banked, subject to the effect's own timing and conditions.
+- **Asset:** The card may be banked from Hand using its inherent **Bank** Action unless it has a printed special banking procedure. Its Asset effect applies while it is banked, subject to its own timing and conditions.
 - **Gambit:** Set the card from Hand as a Gambit during a battle. Its Gambit effect normally applies when Gambits are revealed unless it gives a later timing.
 - **Tactic:** Choose the card from Reserve as a Tactic during a battle. Its Tactic effect normally applies when Tactics are revealed unless it gives a later timing.
 - **Gambit/Tactic:** The card is eligible for either role. Use the source, timing, and normal destination of the role in which it was used.
-
-### Special and procedural headings
-
-- **Placement:** States where the card may be placed as an Overlay when another printed effect, Faction Feature, Leader Ability, or rule permits that placement. Placement does not by itself let you play or place the card.
+- **Mission:** An Intelligence requirement used when the card is started as an Active Mission or Special Operation. Starting a Mission is not playing the card for another printed effect; follow the Intelligence procedures in Chapter 16.
 - **Overlay:** A persistent effect that applies while the card is the active, exposed Overlay on a Territory. Overlay rules appear in Chapter 12.
-- **Mission:** An Intelligence requirement used when the card is started as an Active Mission or Special Operation. Starting a Mission is not playing the card for a printed effect; follow the Intelligence procedures in Chapter 16.
-- **Terms:** Applies when the card's text permits it to be used as part of offering or resolving Diplomat Terms. Follow the Terms procedure in Chapter 14.
-- **Accepted:** Applies when the associated Terms are accepted, at the timing stated by the card and the Terms procedure.
-- **Refused:** Applies when the associated Terms are refused, at the timing stated by the card and the Terms procedure.
-- **Aftermath:** Applies during the Aftermath at the timing and from the source stated by the effect. An Aftermath heading does not by itself make the card a Gambit or Tactic.
-- **Text:** A self-contained special procedure whose permission, timing, destination, and duration are stated directly in the block. **Text** is not an ordinary card role and grants no additional Action, Gambit, Tactic, Asset, or Overlay eligibility beyond what it expressly says.
+- **Terms:** A Diplomat effect used while offering or resolving Terms at the timing stated by the card. **Accepted —** and **Refused —** clauses printed within a Terms effect apply only for the corresponding response.
+- **Sanctions:** After an opponent refuses your Terms, you may use the card's Sanctions effect from Hand. Resolve it immediately unless the effect gives a later timing. A Sanction that remains in play stays associated with that opponent and follows the Sanctions rules in Chapters 12 and 14.
+- **Reaction:** A directly permitted effect used when its stated trigger occurs. A Reaction does not spend an Action unless it expressly says otherwise; follow its printed source, timing, and destination.
 
-Only the printed effect being used applies unless a rule says otherwise. If a card is used through one heading, do not also apply its other printed effects merely because they are on the same card.
+Only the printed effect being used applies unless a rule says otherwise. Using a card through one heading does not also apply its other printed effects merely because they are on the same card.
 
 Setting a Gambit or choosing a Tactic places the card in battle without applying its effect immediately. Gambit and Tactic effects apply at their normal reveal stages even when an effect causes the card to become face up early, unless that effect says otherwise.
 
-Special and procedural headings apply only through the procedure, timing, and permission stated for them. They do not make a card eligible as a Gambit or Tactic unless it also has a **Gambit**, **Tactic**, or **Gambit/Tactic** effect.
+A **Mission**, **Overlay**, **Terms**, **Sanctions**, or **Reaction** heading does not make a card eligible as a Gambit or Tactic unless it also has a **Gambit**, **Tactic**, or **Gambit/Tactic** effect.
 
 ### Arcane symbol
 
