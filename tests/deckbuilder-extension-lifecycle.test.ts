@@ -58,6 +58,20 @@ describe("Deckbuilder extension architecture", () => {
     }
   });
 
+  it("keeps Territory and Rite state behind their owning feature modules", () => {
+    expect(runtime).not.toMatch(/state\.(?:territories|territoryPool|selectedTerritoryId|pendingTerritories)/);
+    expect(runtime).not.toMatch(/state\.(?:rites|ritePool|selectedRiteId|pendingRites|riteSelectionEnabled)/);
+
+    for (const { path, source } of extensions) {
+      if (path !== "deckbuilder/territories.js") {
+        expect(source, `${path} reads Territory-owned state directly`).not.toMatch(/state\.(?:territories|territoryPool|selectedTerritoryId|pendingTerritories)/);
+      }
+      if (path !== "deckbuilder/mystics-rites.js") {
+        expect(source, `${path} reads Rite-owned state directly`).not.toMatch(/state\.(?:rites|ritePool|selectedRiteId|pendingRites|riteSelectionEnabled)/);
+      }
+    }
+  });
+
   it("keeps extension-specific copied Deck lines out of core", () => {
     expect(app).not.toContain("state.territories");
     expect(app).not.toContain("state.territoryPool");
