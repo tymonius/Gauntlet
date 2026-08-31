@@ -53,10 +53,11 @@ export function buildDeckImporterConfig({
   cardManifest,
   territoryManifest,
   starterManifest,
+  supplementalManifest,
   releaseAssets,
 }) {
   if (!version) throw new Error('Deck importer requires a game version.');
-  assertSameVersion(version, catalog, cardManifest, territoryManifest, starterManifest, releaseAssets);
+  assertSameVersion(version, catalog, cardManifest, territoryManifest, starterManifest, supplementalManifest, releaseAssets);
 
   const renderedCards = renderedIndex(cardManifest);
   const renderedTerritories = renderedIndex(territoryManifest);
@@ -108,6 +109,47 @@ export function buildDeckImporterConfig({
   if (backFiles.size !== 1) throw new Error('Deck importer requires one shared playable/Territory back.');
   const [backFile] = [...backFiles];
 
+  const rites = {};
+  const riteComponents = (supplementalManifest.ready || []).filter(component => component.family === 'rite-card' && component.faction === 'mystics');
+  for (const component of riteComponents) {
+    const id = String(component.id || '').replace(/^mystics-rite-/, '');
+    if (!id || id === component.id || rites[id]) throw new Error(`Deck importer has invalid or duplicate Mystics Rite component ${component.id || 'missing'}.`);
+    rites[id] = {
+      name: component.name,
+      cardId: Number(component.tts?.cardId),
+      deckId: Number(component.tts?.deckId),
+      frontUrl: requireHostedUrl(releaseAssets, component.tts?.faceFile || component.frontFile),
+      backUrl: requireHostedUrl(releaseAssets, component.tts?.backFile || component.reverseFile),
+      numWidth: Number(component.tts?.numWidth || 1),
+      numHeight: Number(component.tts?.numHeight || 1),
+    };
+  }
+
+  const rituals = (supplementalManifest.ready || []).filter(component => component.family === 'ritual-card' && component.faction === 'mystics');
+  if (rituals.length !== 1) throw new Error(`Deck importer requires exactly one Mystics Ritual component; found ${rituals.length}.`);
+  const ritualComponent = rituals[0];
+  const ritual = {
+    name: ritualComponent.name,
+    cardId: Number(ritualComponent.tts?.cardId),
+    deckId: Number(ritualComponent.tts?.deckId),
+    frontUrl: requireHostedUrl(releaseAssets, ritualComponent.tts?.faceFile || ritualComponent.frontFile),
+    backUrl: requireHostedUrl(releaseAssets, ritualComponent.tts?.backFile || ritualComponent.reverseFile),
+    numWidth: Number(ritualComponent.tts?.numWidth || 1),
+    numHeight: Number(ritualComponent.tts?.numHeight || 1),
+  };
+
+  const mysticsStarters = (starterManifest.decks || []).filter(starter => starter.factionId === 'mystics');
+  const selectedRiteCounts = new Set(mysticsStarters.map(starter => Array.isArray(starter.selectedRites) ? starter.selectedRites.length : 0));
+  if (!mysticsStarters.length || selectedRiteCounts.size !== 1 || [...selectedRiteCounts][0] <= 0) {
+    throw new Error('Deck importer requires a consistent selected-Rite count across Mystics starter kits.');
+  }
+  const selectedRiteCount = [...selectedRiteCounts][0];
+  for (const starter of mysticsStarters) {
+    for (const id of starter.selectedRites || []) {
+      if (!rites[id]) throw new Error(`Deck importer is missing rendered Mystics Rite ${id}.`);
+    }
+  }
+
   return {
     schemaVersion: 1,
     codePrefix: TTS_DECK_CODE_PREFIX,
@@ -116,9 +158,12 @@ export function buildDeckImporterConfig({
     maximumDeckbuildingValue: Number(starterManifest.construction?.maximumDeckbuildingValue || 60),
     territoriesPerPlayer: Number(starterManifest.construction?.territoryCount || starterManifest.construction?.territoriesPerPlayer || 3),
     maximumArenas: Number(starterManifest.construction?.maximumArenas || 1),
+    selectedRiteCount,
     backUrl: requireHostedUrl(releaseAssets, backFile),
     cards,
     territories,
+    rites,
+    ritual,
     starters,
   };
 }
