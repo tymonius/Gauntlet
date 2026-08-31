@@ -1,33 +1,28 @@
 (() => {
-  const wrapped = new WeakSet();
+  const deckbuilder = window.GAUNTLET_DECKBUILDER;
+  if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
+  const { state } = deckbuilder;
+  const escapeHtml = value => deckbuilder.escapeHtml(value);
 
-  installMetadataUi();
+  deckbuilder.registerRenderHook(refineAll);
 
-  function installMetadataUi() {
-    wrapRenderer("renderAvailable", refineAvailableCards);
-    wrapRenderer("renderDeck", refineDeckRows);
-    wrapRenderer("renderCardPreview", refineRenderedPreview);
-    wrapRenderer("renderLeader", refineLeaderPreview);
-
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", refineAll, { once: true });
-    } else {
-      refineAll();
-    }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", installMetadataUi, { once: true });
+  } else {
+    installMetadataUi();
   }
 
-  function wrapRenderer(name, afterRender) {
-    const original = globalThis[name];
-    if (typeof original !== "function" || wrapped.has(original)) return;
-
-    function refinedRenderer(...args) {
-      const result = original.apply(this, args);
-      afterRender(...args);
-      return result;
+  function installMetadataUi() {
+    for (const id of ["cardSearch", "costFilter", "allegianceFilter", "leaderSelect"]) {
+      const control = document.getElementById(id);
+      control?.addEventListener("input", scheduleRefine);
+      control?.addEventListener("change", scheduleRefine);
     }
+    refineAll();
+  }
 
-    wrapped.add(refinedRenderer);
-    globalThis[name] = refinedRenderer;
+  function scheduleRefine() {
+    queueMicrotask(refineAll);
   }
 
   function refineAll() {
