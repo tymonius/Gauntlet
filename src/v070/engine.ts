@@ -321,6 +321,12 @@ export type V070PendingActionEffectChoice =
       sourceActionInstanceId: string;
     }
   | {
+      kind: 'necromancy_mode';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      reclaimCandidateInstanceIds: string[];
+    }
+  | {
       kind: 'owned_deed_target';
       playerId: PlayerId;
       sourceActionInstanceId: string;
