@@ -198,6 +198,50 @@
   max-height:.45in;
   margin:3px 0;
 }
+
+.page.colophon .publication-lockup{
+  display:grid;
+  grid-template-columns:.44in minmax(0,1fr);
+  gap:10px;
+  align-items:start;
+  margin:3px 0 7px;
+}
+.page.colophon .publication-lockup img[alt="TDS Games publisher mark"]{
+  width:.4in;
+  max-width:.4in;
+  max-height:.45in;
+  margin:0;
+}
+.page.colophon .publication-lockup-copy p{
+  margin:0 0 3px;
+}
+.page.colophon .publication-lockup-copy p:last-child{
+  margin-bottom:0;
+}
+.page.colophon .publication-lockup + p{
+  margin-top:5px;
+}
+
+.back-cover .back-publisher-lockup{
+  display:grid;
+  grid-template-columns:.5in minmax(0,1fr);
+  gap:10px;
+  align-items:start;
+}
+.back-cover .back-publisher-mark{
+  width:.44in;
+  max-width:.44in;
+  max-height:.52in;
+  margin:0;
+  object-fit:contain;
+}
+.back-cover .back-publisher-copy{
+  min-width:0;
+}
+.back-cover .back-restrictions{
+  margin-top:5px;
+}
+
 .page.colophon .colophon-meta{
   padding-top:8px;
   font-size:7pt;
