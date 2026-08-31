@@ -252,6 +252,12 @@ export type V070TurnAction =
       targetInstanceId: string;
     }
   | {
+      type: 'resolve_necromancy_action';
+      playerId: PlayerId;
+      mode: 'recycle' | 'reclaim';
+      targetInstanceIds?: readonly string[];
+    }
+  | {
       type: 'resolve_censure_choice';
       playerId: PlayerId;
       sanctionInstanceId: string;
@@ -431,6 +437,10 @@ export function reduceV070TurnAction(
       pending.kind === 'sleeper_network_bind_target'
       && action.type === 'choose_sleeper_network_bind_target'
       && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'necromancy_mode'
+      && action.type === 'resolve_necromancy_action'
+      && action.playerId === pending.playerId
     );
     if (!validContinuation) {
       throw new V070GameActionError('Resolve the pending printed Action effect choice first.');
@@ -471,6 +481,7 @@ export function reduceV070TurnAction(
       'choose_reserve_force_bind_target',
       'choose_extraordinary_rendition_bind_target',
       'choose_sleeper_network_bind_target',
+      'resolve_necromancy_action',
     ].includes(action.type)) {
     throw new V070GameActionError('Resolve the pending Action card before continuing the turn.');
   }
@@ -679,6 +690,14 @@ export function reduceV070TurnAction(
         action.targetInstanceId,
       );
       break;
+    case 'resolve_necromancy_action':
+      resolveNecromancyAction(
+        next,
+        action.playerId,
+        action.mode,
+        action.targetInstanceIds ?? [],
+      );
+      break;
     case 'resolve_censure_choice':
       resolveCensureChoice(
         next,
@@ -881,6 +900,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'military-reserve-force',
   'mystics-circle-of-bones',
   'mystics-dark-omens',
+  'mystics-necromancy',
   'mystics-paths-of-shadow',
   'mystics-nature-s-altar',
   'mystics-sacrifice-recovery',
@@ -2091,6 +2111,33 @@ function continuePendingActionCard(state: V070GameState): void {
           sourceActionInstanceId: pending.instanceId,
           purpose: 'Threefold Vision',
           candidateCount: candidates.length,
+        },
+      });
+      return;
+    }
+    case 'mystics-necromancy': {
+      const candidates = necromancyReclaimCandidateInstanceIds(
+        state,
+        pending.playerId,
+      );
+      state.pendingActionEffectChoice = {
+        kind: 'necromancy_mode',
+        playerId: pending.playerId,
+        sourceActionInstanceId: pending.instanceId,
+        reclaimCandidateInstanceIds: [...candidates],
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          kind: 'necromancy_mode',
+          playerId: pending.playerId,
+          sourceActionInstanceId: pending.instanceId,
+          purpose: 'Necromancy',
+          modes: ['recycle', 'reclaim'],
+          reclaimCandidateInstanceIds: [...candidates],
+          maximumReclaim: 3,
         },
       });
       return;
@@ -3802,6 +3849,109 @@ function chooseExtraordinaryRenditionBindTarget(
 
   state.pendingActionEffectChoice = null;
   finishPendingActionCard(state, 'asset');
+}
+
+function necromancyReclaimCandidateInstanceIds(
+  state: V070GameState,
+  playerId: PlayerId,
+): string[] {
+  return state.players[playerId].zones.graveyard.filter(instanceId =>
+    state.cardInstances[instanceId]?.cardId !== 'mystics-necromancy'
+  );
+}
+
+function resolveNecromancyAction(
+  state: V070GameState,
+  playerId: PlayerId,
+  mode: 'recycle' | 'reclaim',
+  targetInstanceIds: readonly string[],
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'necromancy_mode'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'mystics-necromancy') {
+    throw new V070GameActionError(
+      'No Necromancy Action choice is pending for that player.',
+    );
+  }
+
+  if (mode === 'recycle') {
+    if (targetInstanceIds.length > 0) {
+      throw new V070GameActionError(
+        'Necromancy’s Draw Pile mode does not choose Graveyard cards.',
+      );
+    }
+
+    state.pendingActionEffectChoice = null;
+    state.players[playerId].zones.drawPile.push(pending.instanceId);
+    appendV070Event(state, {
+      type: 'action_card_resolved',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        instanceId: pending.instanceId,
+        cardId: pending.cardId,
+        destination: 'draw_bottom',
+      },
+    });
+    state.pendingActionCard = null;
+
+    drawIntoHand(state, playerId, 1, 'Necromancy');
+    grantAdditionalAction(state, playerId, 'Necromancy');
+    return;
+  }
+
+  if (new Set(targetInstanceIds).size !== targetInstanceIds.length
+    || targetInstanceIds.length > 3) {
+    throw new V070GameActionError(
+      'Necromancy may reclaim up to three different cards.',
+    );
+  }
+
+  const eligible = necromancyReclaimCandidateInstanceIds(state, playerId);
+  if (targetInstanceIds.some(instanceId => !eligible.includes(instanceId))) {
+    throw new V070GameActionError(
+      'Necromancy may reclaim only non-Necromancy cards currently in your Graveyard.',
+    );
+  }
+
+  const player = state.players[playerId];
+  const handToGraveyard = player.zones.hand.splice(0);
+  player.zones.graveyard.push(...handToGraveyard);
+
+  for (const instanceId of targetInstanceIds) {
+    const index = player.zones.graveyard.indexOf(instanceId);
+    if (index < 0) {
+      throw new V070GameActionError(
+        'A chosen Necromancy card is no longer in your Graveyard.',
+      );
+    }
+    player.zones.graveyard.splice(index, 1);
+    player.zones.hand.push(instanceId);
+  }
+
+  appendV070Event(state, {
+    type: 'necromancy_reclaim_resolved',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      handToGraveyard: handToGraveyard.map(instanceId => ({
+        instanceId,
+        cardId: state.cardInstances[instanceId]?.cardId,
+      })),
+      reclaimed: targetInstanceIds.map(instanceId => ({
+        instanceId,
+        cardId: state.cardInstances[instanceId]?.cardId,
+      })),
+    },
+  });
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state, 'graveyard');
 }
 
 function chooseSleeperNetworkBindTarget(
