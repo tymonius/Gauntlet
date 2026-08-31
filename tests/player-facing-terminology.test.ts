@@ -29,8 +29,6 @@ const publicRulesSources = [
   "factions/mystics/index.html",
   "start/app.js",
   "deckbuilder/app.js",
-  "deckbuilder/completed-factions.js",
-  "deckbuilder/v061-supplementals.js",
   "deckbuilder/starter-decks.json",
   "deckbuilder/faction-components.js",
   "deckbuilder/print.js",
