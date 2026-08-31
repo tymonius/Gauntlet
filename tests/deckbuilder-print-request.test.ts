@@ -9,7 +9,7 @@ const app = readFileSync("deckbuilder/app.js", "utf8");
 describe("Deckbuilder host printing requests", () => {
   it("is available directly in the main Deckbuilder", () => {
     expect(index).toContain('print-request.css?v=20260731-1');
-    expect(index).toContain('print-request.js?v=20260831-1');
+    expect(index).toContain('print-request.js?v=20260831-2');
     expect(script).toContain("Prepping for a Gauntlet game night?");
     expect(script).toContain("Send your host this Deck and request printing.");
     expect(script).toContain("Copy request and open email");
