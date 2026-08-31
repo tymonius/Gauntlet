@@ -1,37 +1,8 @@
 (() => {
-  document.addEventListener("DOMContentLoaded", installIntelligenceTrackerPrintTransform);
+  const deckbuilder = window.GAUNTLET_DECKBUILDER;
+  if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
 
-  function installIntelligenceTrackerPrintTransform() {
-    const button = document.getElementById("printDeckButton");
-    if (!button) return;
-
-    button.addEventListener("click", () => {
-      const inheritedOpen = window.open;
-      let restored = false;
-
-      const restoreOpen = () => {
-        if (restored) return;
-        restored = true;
-        if (window.open === intelligenceTrackerAwareOpen) window.open = inheritedOpen;
-      };
-
-      function intelligenceTrackerAwareOpen(...args) {
-        const printWindow = inheritedOpen.apply(window, args);
-        if (!printWindow) {
-          restoreOpen();
-          return printWindow;
-        }
-
-        const inheritedWrite = printWindow.document.write.bind(printWindow.document);
-        printWindow.document.write = html => inheritedWrite(formatIntelligenceTrackers(html));
-        restoreOpen();
-        return printWindow;
-      }
-
-      window.open = intelligenceTrackerAwareOpen;
-      window.setTimeout(restoreOpen, 0);
-    }, true);
-  }
+  deckbuilder.registerPrintTransform("intelligence-tracker-layout", formatIntelligenceTrackers, 20);
 
   function formatIntelligenceTrackers(html) {
     const documentNode = new DOMParser().parseFromString(html, "text/html");
