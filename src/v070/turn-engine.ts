@@ -61,7 +61,11 @@ import { bindV070CardFromPlayerZone } from './bindings';
 import {
   applyV070BlasphemyForActionPlay,
   gainV070Conviction,
+  isV070ArcaneCard,
+  spendV070Conviction,
+  v070Conviction,
 } from './inquisition';
+import { preventV070OpposingHandReveal } from './counterintelligence';
 import {
   faceUpV070AssetInstanceIds,
   isV070AssetFaceUp,
@@ -2787,8 +2791,23 @@ function revealV070Hand(
   state: V070GameState,
   actor: PlayerId,
   owner: PlayerId,
-  purpose: 'Assassins' | 'Spies' | 'Extraordinary Rendition',
-): string[] {
+  purpose:
+    | 'Assassins'
+    | 'Spies'
+    | 'Extraordinary Rendition'
+    | 'Burning at the Stake',
+  sourceInstanceId: string,
+): string[] | null {
+  if (preventV070OpposingHandReveal(
+    state,
+    actor,
+    owner,
+    purpose,
+    sourceInstanceId,
+  )) {
+    return null;
+  }
+
   const instanceIds = [...state.players[owner].zones.hand];
   appendV070Event(state, {
     type: 'hand_revealed',
@@ -2797,6 +2816,7 @@ function revealV070Hand(
     payload: {
       owner,
       purpose,
+      sourceInstanceId,
       instanceIds,
       cards: instanceIds.map(instanceId => ({
         instanceId,
