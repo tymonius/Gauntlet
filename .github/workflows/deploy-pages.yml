@@ -66,6 +66,10 @@ jobs:
             "$site/scripts" \
             "$site/src" \
             "$site/tests" \
+            "$site/workers" \
+            "$site/rulebook-design" \
+            "$site/rulebook-production" \
+            "$site/legacy" \
             "$site/artifacts" \
             "$site/images/3d" \
             "$site/images/sketches" \
@@ -214,7 +218,7 @@ jobs:
           console.log(`Validated ${publicUrls.length} clean TTS URLs against staged Pages assets.`);
           NODE
 
-          for internal in .github governance scripts src tests; do
+          for internal in .github governance scripts src tests workers rulebook-design rulebook-production legacy; do
             test ! -e "$SITE_DIR/$internal"
           done
 
