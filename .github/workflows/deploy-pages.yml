@@ -58,9 +58,14 @@ jobs:
           mkdir -p "$site"
           git archive --format=tar HEAD | tar -xf - -C "$site"
 
-          # Keep the public site below GitHub Pages' 1 GB published-site limit.
-          # These are authoring/reconstruction/generated surfaces, not live site dependencies.
+          # Keep repository-internal source/automation and non-public authoring evidence
+          # out of the deployed site. Public browser surfaces must not depend on these roots.
           rm -rf \
+            "$site/.github" \
+            "$site/governance" \
+            "$site/scripts" \
+            "$site/src" \
+            "$site/tests" \
             "$site/artifacts" \
             "$site/images/3d" \
             "$site/images/sketches" \
@@ -208,6 +213,10 @@ jobs:
 
           console.log(`Validated ${publicUrls.length} clean TTS URLs against staged Pages assets.`);
           NODE
+
+          for internal in .github governance scripts src tests; do
+            test ! -e "$SITE_DIR/$internal"
+          done
 
           if find "$SITE_DIR" -type l -print -quit | grep -q .; then
             echo "Pages artifact contains a symbolic link."
