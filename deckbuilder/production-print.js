@@ -638,7 +638,7 @@
     script.dataset.productionPrintGate = "true";
     script.textContent = `(() => {
   const timeoutMs = ${RENDER_TIMEOUT_MS};
-  const preflights = window.GAUNTLET_PRINT_PREFLIGHTS = window.GAUNTLET_PRINT_PREFLIGHTS || [];
+  const preflights = window.__gauntletPrintPreflights = window.__gauntletPrintPreflights || [];
   const delay = ms => new Promise(resolve => window.setTimeout(resolve, ms));
 
   async function waitForFrame(frame) {
