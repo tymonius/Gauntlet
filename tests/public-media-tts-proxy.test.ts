@@ -31,6 +31,13 @@ describe('GitHub Pages public media contract', () => {
     expect(pagesWorkflow).toContain('test "$count" -eq 83');
   });
 
+  it('keeps repository-internal source trees out of the Pages artifact', () => {
+    for (const root of ['.github', 'governance', 'scripts', 'src', 'tests']) {
+      expect(pagesWorkflow).toContain(`"$site/${root}"`);
+    }
+    expect(pagesWorkflow).toContain('test ! -e "$SITE_DIR/$internal"');
+  });
+
   it('preserves the custom domain and enforces the Pages size guard', () => {
     expect(pagesWorkflow).toContain('test "$(tr -d');
     expect(pagesWorkflow).toContain('" = "gauntlet.run"');

@@ -50,6 +50,8 @@ The release manifest remains the contract for primary browser-tool routes. Curre
 
 The long-term architecture may separate source applications from deployed Pages output, but that migration must first make deployment explicit and preserve stable URLs.
 
+As an initial deployment boundary, the Pages artifact excludes repository-internal `.github/`, `governance/`, `scripts/`, `src/`, and `tests/` trees. Stable browser routes remain unchanged; those internal roots are not public runtime dependencies.
+
 ### 4. Frozen releases stay frozen
 
 Do not reorganize files inside published release packages for repository aesthetics.
@@ -220,6 +222,7 @@ This is a **conceptual dependency target, not an instruction to move every exist
 ### Phase 3 — Source/deployment separation
 
 - Define explicit build output for GitHub Pages.
+- Keep repository-internal automation, governance records, production scripts, digital-engine source, and tests out of the deployed Pages artifact.
 - Preserve current public URLs.
 - Move application source into clearer package boundaries only after deployment no longer depends on source-tree location.
 
