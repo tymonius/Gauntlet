@@ -114,6 +114,12 @@ export interface V070MovementStep {
   battleRestriction: V070MovementBattleRestriction;
 }
 
+export interface V070GambitMandate {
+  playerId: PlayerId;
+  instanceId: string;
+  sourceInstanceId: string;
+}
+
 export interface V070TurnState {
   phase: TurnPhase;
   actionsAvailable: number;
@@ -125,6 +131,7 @@ export interface V070TurnState {
   movementSequenceSource: V070MovementSequenceSource | null;
   pendingNormalMovementSteps: V070MovementStep[];
   movementStepQueue: V070MovementStep[];
+  gambitMandate: V070GambitMandate | null;
 }
 
 function assertReleasedRuleContract(): void {
@@ -399,6 +406,7 @@ export function createV070TurnState(additionalActions = 0): V070TurnState {
     movementSequenceSource: null,
     pendingNormalMovementSteps: [],
     movementStepQueue: [],
+    gambitMandate: null,
   };
 }
 
