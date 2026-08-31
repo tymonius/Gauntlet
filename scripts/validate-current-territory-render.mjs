@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { loadCurrentGameAuthority, validateCurrentGameAuthority, CURRENT_GAME_AUTHORITY_SOURCE } from './current-game-authority.mjs';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
-const OUTPUT = join(ROOT, 'card-design', 'generated', 'territories-v064');
+const OUTPUT = join(ROOT, 'card-design', 'generated', 'current-territories');
 const CSS_WIDTH = 336;
 const CSS_HEIGHT = 240;
 const CSS_PIXELS_PER_INCH = 96;

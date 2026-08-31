@@ -30,4 +30,13 @@ describe("Mystics Ritual Deckbuilder component", () => {
     expect(componentsIndex).toBeGreaterThan(supplementalIndex);
     expect(printIndex).toBeGreaterThan(componentsIndex);
   });
+  it("derives completed-Rite progression from current Mystics authority", () => {
+    const print = readRepoFile("deckbuilder/print.js");
+
+    expect(print).toContain("state.currentGameData?.mystics");
+    expect(print).toContain("mystics.ritual?.name");
+    expect(print).toContain("mystics.unlocks || []");
+    expect(print).not.toContain("Ritual of Ascendance");
+  });
+
 });

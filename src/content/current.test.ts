@@ -78,15 +78,17 @@ describe('current digital rules surface', () => {
     expect(JSON.stringify([advanceGuard, forcedMarch])).not.toContain('pending battle');
   });
 
-  test('keeps unpromoted procedure libraries visibly versioned', () => {
+  test('does not leak unpromoted historical procedure libraries through the current API', () => {
     for (const name of [
       'resolveV063ArcaneKnowledgeAction',
       'prepareV063HeresyApplication',
       'resolveV063ManifestDestinyAction',
       'v063QuicksandMovementRule',
       'v063GrandMeleeBattleBonus',
+      'createV064BattleOnset',
+      'createV064TurnState',
     ]) {
-      expect(typeof current[name as keyof typeof current]).toBe('function');
+      expect(current).not.toHaveProperty(name);
     }
 
     expect(current).not.toHaveProperty('resolveV070ArcaneKnowledgeAction');

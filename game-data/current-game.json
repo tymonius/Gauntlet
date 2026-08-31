@@ -882,7 +882,7 @@
         "unique_rule": null,
         "effects": [
           {
-            "label": "Placement",
+            "label": "Action",
             "text": "The first enemy-controlled Territory ahead of you without an Overlay."
           },
           {
@@ -895,8 +895,8 @@
           }
         ],
         "gambit_tactic": "When attacking on an enemy-controlled Territory, place this Overlay face up there.",
-        "overlay": "This Territory's printed effect is inactive. When you attack here: Win — turn this Overlay into Ruins. Lose — put it in your Graveyard. If you capture this Territory without a battle, turn this Overlay into Ruins.",
-        "placement": "The first enemy-controlled Territory ahead of you without an Overlay."
+        "action": "The first enemy-controlled Territory ahead of you without an Overlay.",
+        "overlay": "This Territory's printed effect is inactive. When you attack here: Win — turn this Overlay into Ruins. Lose — put it in your Graveyard. If you capture this Territory without a battle, turn this Overlay into Ruins."
       },
       {
         "id": "military-brothers-in-arms",
@@ -1358,7 +1358,7 @@
         "unique_rule": null,
         "effects": [
           {
-            "label": "Terms",
+            "label": "Reaction",
             "text": "After your Terms are accepted and the Proposal's Accepted effect applies, you may place this Overlay on the contested Territory. Each player there withdraws. Neither player may enter there this turn."
           },
           {
@@ -1366,7 +1366,7 @@
             "text": "To enter here while unoccupied, discard 1. When this Territory would be captured, discard this Overlay instead. At the start of your turn before Capture, if you are here: Discard 1 or withdraw. After the next battle here, discard this Overlay."
           }
         ],
-        "terms": "After your Terms are accepted and the Proposal's Accepted effect applies, you may place this Overlay on the contested Territory. Each player there withdraws. Neither player may enter there this turn.",
+        "reaction": "After your Terms are accepted and the Proposal's Accepted effect applies, you may place this Overlay on the contested Territory. Each player there withdraws. Neither player may enter there this turn.",
         "overlay": "To enter here while unoccupied, discard 1. When this Territory would be captured, discard this Overlay instead. At the start of your turn before Capture, if you are here: Discard 1 or withdraw. After the next battle here, discard this Overlay."
       },
       {
@@ -1406,20 +1406,10 @@
         "effects": [
           {
             "label": "Terms",
-            "text": "When you offer Terms, you may reveal this card from your Hand and offer two eligible Proposals with the same Stake instead of one. Stake that amount once."
-          },
-          {
-            "label": "Accepted",
-            "text": "The opponent chooses which Proposal is accepted."
-          },
-          {
-            "label": "Refused",
-            "text": "Choose one Proposal before applying its Refused effect. Only it may be imposed. The other Proposal does not take effect or become ratified. After the Terms conclude, put this card in your Discard Pile."
+            "text": "When you offer Terms, you may reveal this card from your Hand and offer two eligible Proposals with the same Stake instead of one. Stake that amount once.\n\nAccepted — The opponent chooses which Proposal is accepted.\n\nRefused — Choose one Proposal before applying its Refused effect. Only it may be imposed. The other Proposal does not take effect or become ratified. After the Terms conclude, put this card in your Discard Pile."
           }
         ],
-        "terms": "When you offer Terms, you may reveal this card from your Hand and offer two eligible Proposals with the same Stake instead of one. Stake that amount once.",
-        "accepted": "The opponent chooses which Proposal is accepted.",
-        "refused": "Choose one Proposal before applying its Refused effect. Only it may be imposed. The other Proposal does not take effect or become ratified. After the Terms conclude, put this card in your Discard Pile."
+        "terms": "When you offer Terms, you may reveal this card from your Hand and offer two eligible Proposals with the same Stake instead of one. Stake that amount once.\n\nAccepted — The opponent chooses which Proposal is accepted.\n\nRefused — Choose one Proposal before applying its Refused effect. Only it may be imposed. The other Proposal does not take effect or become ratified. After the Terms conclude, put this card in your Discard Pile."
       },
       {
         "id": "intelligence-disinformation",
@@ -1707,7 +1697,7 @@
         "unique_rule": null,
         "effects": [
           {
-            "label": "Placement",
+            "label": "Action",
             "text": "Any Territory."
           },
           {
@@ -1725,8 +1715,8 @@
         ],
         "mission": "Win a battle against an opponent who had both a Gambit and a Tactic in that battle.",
         "gambit_tactic": "After Tactics are revealed, if your opponent has both a Gambit and a Tactic, they return either one Gambit or all Tactics to their sources.",
-        "overlay": "In the next battle here, this Territory's controller sets their Gambit and chooses their Tactics after the opponent. Discard this Overlay after that battle.",
-        "placement": "Any Territory."
+        "action": "Any Territory.",
+        "overlay": "In the next battle here, this Territory's controller sets their Gambit and chooses their Tactics after the opponent. Discard this Overlay after that battle."
       },
       {
         "id": "neutral-foothold",
@@ -1850,20 +1840,10 @@
         "effects": [
           {
             "label": "Asset",
-            "text": "When you offer Terms, before the opponent accepts or refuses, you may discard this card for +1 Card, then reveal one card from your Hand and set it aside."
-          },
-          {
-            "label": "Accepted",
-            "text": "Put that card in your Graveyard, then +1 Influence."
-          },
-          {
-            "label": "Refused",
-            "text": "Return it to your Hand before Gambits are set."
+            "text": "When you offer Terms, before the opponent accepts or refuses, you may discard this card for +1 Card, then reveal one card from your Hand and set it aside.\n\nAccepted — Put that card in your Graveyard, then +1 Influence.\n\nRefused — Return it to your Hand before Gambits are set."
           }
         ],
-        "accepted": "Put that card in your Graveyard, then +1 Influence.",
-        "refused": "Return it to your Hand before Gambits are set.",
-        "asset": "When you offer Terms, before the opponent accepts or refuses, you may discard this card for +1 Card, then reveal one card from your Hand and set it aside."
+        "asset": "When you offer Terms, before the opponent accepts or refuses, you may discard this card for +1 Card, then reveal one card from your Hand and set it aside.\n\nAccepted — Put that card in your Graveyard, then +1 Influence.\n\nRefused — Return it to your Hand before Gambits are set."
       },
       {
         "id": "mystics-grave-ward",
@@ -1921,24 +1901,14 @@
         "effects": [
           {
             "label": "Terms",
-            "text": "When you offer Terms, before the opponent accepts or refuses, you may reveal this card from your Hand."
-          },
-          {
-            "label": "Accepted",
-            "text": "Put this card in your Discard Pile."
-          },
-          {
-            "label": "Refused",
-            "text": "Set this card face up as an additional Gambit in the resulting battle. It does not count against your Gambit limit."
+            "text": "When you offer Terms, before the opponent accepts or refuses, you may reveal this card from your Hand.\n\nAccepted — Put this card in your Discard Pile.\n\nRefused — Set this card face up as an additional Gambit in the resulting battle. It does not count against your Gambit limit."
           },
           {
             "label": "Gambit/Tactic",
             "text": "+2 Battle Total."
           }
         ],
-        "terms": "When you offer Terms, before the opponent accepts or refuses, you may reveal this card from your Hand.",
-        "accepted": "Put this card in your Discard Pile.",
-        "refused": "Set this card face up as an additional Gambit in the resulting battle. It does not count against your Gambit limit.",
+        "terms": "When you offer Terms, before the opponent accepts or refuses, you may reveal this card from your Hand.\n\nAccepted — Put this card in your Discard Pile.\n\nRefused — Set this card face up as an additional Gambit in the resulting battle. It does not count against your Gambit limit.",
         "gambit_tactic": "+2 Battle Total."
       },
       {
@@ -2255,11 +2225,11 @@
         "unique_rule": "Maximum one copy per Deck",
         "effects": [
           {
-            "label": "Aftermath",
+            "label": "Reaction",
             "text": "In the Aftermath before battle cards are cleared, if you lost and this card is in your Hand, you may play it. If you do, put cards remaining in the opponent's Reserve in their Graveyard instead of their Discard Pile. After battle cards are cleared, Conviction = 4; put this card in your Graveyard."
           }
         ],
-        "aftermath": "In the Aftermath before battle cards are cleared, if you lost and this card is in your Hand, you may play it. If you do, put cards remaining in the opponent's Reserve in their Graveyard instead of their Discard Pile. After battle cards are cleared, Conviction = 4; put this card in your Graveyard."
+        "reaction": "In the Aftermath before battle cards are cleared, if you lost and this card is in your Hand, you may play it. If you do, put cards remaining in the opponent's Reserve in their Graveyard instead of their Discard Pile. After battle cards are cleared, Conviction = 4; put this card in your Graveyard."
       },
       {
         "id": "financiers-monetary-crisis",
@@ -2386,20 +2356,10 @@
         "effects": [
           {
             "label": "Terms",
-            "text": "When you offer Terms, before the opponent accepts or refuses, you may reveal this card from your Hand and set it aside."
-          },
-          {
-            "label": "Accepted",
-            "text": "If the Proposal is unratified, the opponent chooses one before ratification:\n- Ratify it normally.\n- Leave it unratified; +2 Influence. After the accepted Terms conclude, put this card in your Discard Pile, then +1 Card."
-          },
-          {
-            "label": "Refused",
-            "text": "Put this card in your Discard Pile, then +1 Card before Gambits are set."
+            "text": "When you offer Terms, before the opponent accepts or refuses, you may reveal this card from your Hand and set it aside.\n\nAccepted — If the Proposal is unratified, the opponent chooses one before ratification:\n- Ratify it normally.\n- Leave it unratified; +2 Influence. After the accepted Terms conclude, put this card in your Discard Pile, then +1 Card.\n\nRefused — Put this card in your Discard Pile, then +1 Card before Gambits are set."
           }
         ],
-        "terms": "When you offer Terms, before the opponent accepts or refuses, you may reveal this card from your Hand and set it aside.",
-        "accepted": "If the Proposal is unratified, the opponent chooses one before ratification:\n- Ratify it normally.\n- Leave it unratified; +2 Influence. After the accepted Terms conclude, put this card in your Discard Pile, then +1 Card.",
-        "refused": "Put this card in your Discard Pile, then +1 Card before Gambits are set."
+        "terms": "When you offer Terms, before the opponent accepts or refuses, you may reveal this card from your Hand and set it aside.\n\nAccepted — If the Proposal is unratified, the opponent chooses one before ratification:\n- Ratify it normally.\n- Leave it unratified; +2 Influence. After the accepted Terms conclude, put this card in your Discard Pile, then +1 Card.\n\nRefused — Put this card in your Discard Pile, then +1 Card before Gambits are set."
       },
       {
         "id": "intelligence-operational-reassessment",
@@ -2934,11 +2894,16 @@
         "unique_rule": null,
         "effects": [
           {
-            "label": "Text",
-            "text": "In the Aftermath following an opponent's refusal of your Terms, you may place this Overlay on a Territory that opponent controls.\nThe first time each turn that opponent enters or leaves this Territory, they choose one: discard one card; or +1 Influence.\nPut this card in its owner's Discard Pile if that opponent loses control of this Territory."
+            "label": "Sanctions",
+            "text": "Instead of playing this immediately, in the Aftermath following that refusal, you may place this Overlay on a Territory that opponent controls."
+          },
+          {
+            "label": "Overlay",
+            "text": "The first time each turn that opponent enters or leaves this Territory, they choose one: discard one card; or +1 Influence. Put this card in its owner's Discard Pile if that opponent loses control of this Territory."
           }
         ],
-        "text": "In the Aftermath following an opponent's refusal of your Terms, you may place this Overlay on a Territory that opponent controls.\nThe first time each turn that opponent enters or leaves this Territory, they choose one: discard one card; or +1 Influence.\nPut this card in its owner's Discard Pile if that opponent loses control of this Territory."
+        "sanctions": "Instead of playing this immediately, in the Aftermath following that refusal, you may place this Overlay on a Territory that opponent controls.",
+        "overlay": "The first time each turn that opponent enters or leaves this Territory, they choose one: discard one card; or +1 Influence. Put this card in its owner's Discard Pile if that opponent loses control of this Territory."
       },
       {
         "id": "diplomats-sanctions-censure",
@@ -2951,11 +2916,16 @@
         "unique_rule": null,
         "effects": [
           {
-            "label": "Text",
-            "text": "After an opponent refuses your Terms, you may bank this card from your Hand.\nWhile banked, the first time each turn that opponent plays a card for its Action effect, they choose one: discard one card; or +1 Card."
+            "label": "Sanctions",
+            "text": "Bank this card."
+          },
+          {
+            "label": "Asset",
+            "text": "The first time each turn that opponent plays a card for its Action effect, they choose one: discard one card; or +1 Card."
           }
         ],
-        "text": "After an opponent refuses your Terms, you may bank this card from your Hand.\nWhile banked, the first time each turn that opponent plays a card for its Action effect, they choose one: discard one card; or +1 Card."
+        "sanctions": "Bank this card.",
+        "asset": "The first time each turn that opponent plays a card for its Action effect, they choose one: discard one card; or +1 Card."
       },
       {
         "id": "diplomats-sanctions-embargo",
@@ -2968,11 +2938,16 @@
         "unique_rule": null,
         "effects": [
           {
-            "label": "Text",
-            "text": "After an opponent refuses your Terms, you may bank this card from your Hand.\nWhile banked, that opponent's Asset limit is reduced by 1, to a minimum of 0."
+            "label": "Sanctions",
+            "text": "Bank this card."
+          },
+          {
+            "label": "Asset",
+            "text": "That opponent's Asset limit is reduced by 1, to a minimum of 0."
           }
         ],
-        "text": "After an opponent refuses your Terms, you may bank this card from your Hand.\nWhile banked, that opponent's Asset limit is reduced by 1, to a minimum of 0."
+        "sanctions": "Bank this card.",
+        "asset": "That opponent's Asset limit is reduced by 1, to a minimum of 0."
       },
       {
         "id": "neutral-scorched-earth",
@@ -3361,24 +3336,14 @@
         "effects": [
           {
             "label": "Terms",
-            "text": "When you offer Terms, before the opponent accepts or refuses, you may reveal this card from your Hand and set it aside."
-          },
-          {
-            "label": "Accepted",
-            "text": "The opponent chooses one available option:\n- +2 Cards.\n- Bank one eligible card from Hand. Then put this card in your Discard Pile; +1 Card."
-          },
-          {
-            "label": "Refused",
-            "text": "Return this card to your Hand before Gambits are set."
+            "text": "When you offer Terms, before the opponent accepts or refuses, you may reveal this card from your Hand and set it aside.\n\nAccepted — The opponent chooses one available option:\n- +2 Cards.\n- Bank one eligible card from Hand. Then put this card in your Discard Pile; +1 Card.\n\nRefused — Return this card to your Hand before Gambits are set."
           },
           {
             "label": "Gambit/Tactic",
             "text": "Opponent: +1 Card. +2 Battle Total."
           }
         ],
-        "terms": "When you offer Terms, before the opponent accepts or refuses, you may reveal this card from your Hand and set it aside.",
-        "accepted": "The opponent chooses one available option:\n- +2 Cards.\n- Bank one eligible card from Hand. Then put this card in your Discard Pile; +1 Card.",
-        "refused": "Return this card to your Hand before Gambits are set.",
+        "terms": "When you offer Terms, before the opponent accepts or refuses, you may reveal this card from your Hand and set it aside.\n\nAccepted — The opponent chooses one available option:\n- +2 Cards.\n- Bank one eligible card from Hand. Then put this card in your Discard Pile; +1 Card.\n\nRefused — Return this card to your Hand before Gambits are set.",
         "gambit_tactic": "Opponent: +1 Card. +2 Battle Total."
       },
       {
@@ -4397,12 +4362,22 @@
           "Asset",
           "Gambit",
           "Tactic",
-          "Gambit/Tactic"
+          "Gambit/Tactic",
+          "Mission",
+          "Overlay",
+          "Terms",
+          "Sanctions",
+          "Reaction"
         ],
         "retired": [
           "Activate",
           "Battle",
-          "Use"
+          "Use",
+          "Placement",
+          "Accepted",
+          "Refused",
+          "Aftermath",
+          "Text"
         ],
         "gambit_tactic_default_timing": "A Gambit/Tactic, Gambit, or Tactic effect with no later printed timing applies at that role's normal reveal stage.",
         "ordinary_role_headings": [
@@ -4414,13 +4389,10 @@
         ],
         "special_or_procedural_headings": [
           "Mission",
-          "Placement",
           "Overlay",
           "Terms",
-          "Accepted",
-          "Refused",
-          "Aftermath",
-          "Text"
+          "Sanctions",
+          "Reaction"
         ],
         "all_present_headings": [
           "Action",
@@ -4428,15 +4400,17 @@
           "Asset",
           "Mission",
           "Tactic",
-          "Placement",
           "Overlay",
           "Gambit",
           "Terms",
-          "Accepted",
-          "Refused",
-          "Aftermath",
-          "Text"
-        ]
+          "Sanctions",
+          "Reaction"
+        ],
+        "faction_specific_headings": {
+          "Mission": "Intelligence",
+          "Terms": "Diplomats",
+          "Sanctions": "Diplomats"
+        }
       },
       "inherent_bank_action": {
         "applies_to_cards_with_asset_effect": true,

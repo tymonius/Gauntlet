@@ -412,13 +412,21 @@ window.addEventListener('load',preparePrint);
 
   function riteToPrintHtml(rite, completed) {
     if (completed) {
+      const mystics = state.currentGameData?.mystics || {};
+      const unlocks = (mystics.unlocks || [])
+        .filter(unlock => unlock.count && unlock.name && unlock.count !== "Ritual")
+        .map(unlock => `${unlock.count} unlocks ${unlock.name}`);
+      const ritualName = mystics.ritual?.name || "the Ritual";
+      const progression = unlocks.length
+        ? `${unlocks.join(". ")}. Completing all selected Rites permits ${ritualName}.`
+        : `Completing all selected Rites permits ${ritualName}.`;
       return `<article class="print-card rite-card completed fit-target">
         <div class="rite-banner">Completed Rite</div>
         <div class="rite-icon">${escapeHtml(rite.icon || "✦")}</div>
         <div class="rite-title">${escapeHtml(rite.name)}</div>
         <div class="rite-body">
           <div class="rite-complete">This Rite is complete. Keep this side face up; it cannot be begun again.</div>
-          <div class="rite-progress"><strong>Progression:</strong> First completed Rite unlocks Invocation. Second unlocks Transmutation. Third unlocks Convergence and permission to begin the Ritual of Ascendance.</div>
+          <div class="rite-progress"><strong>Progression:</strong> ${escapeHtml(progression)}</div>
         </div>
         <div class="rite-footer">Pair with the incomplete side · not a Playable Deck card</div>
       </article>`;

@@ -8,8 +8,8 @@ const releaseTarget = JSON.parse(readFileSync('config/tts-release-target.json', 
 const materializer = readFileSync('.github/workflows/materialize-v070-release-package.yml', 'utf8');
 const releaseBuilder = readFileSync('scripts/build-v070-release-source.mjs', 'utf8');
 const ttsCatalog = readFileSync('scripts/tts-current-catalog.mjs', 'utf8');
-const cardValidator = readFileSync('scripts/validate-v064-card-render.mjs', 'utf8');
-const territoryValidator = readFileSync('scripts/validate-v064-territory-render.mjs', 'utf8');
+const cardValidator = readFileSync('scripts/validate-current-card-render.mjs', 'utf8');
+const territoryValidator = readFileSync('scripts/validate-current-territory-render.mjs', 'utf8');
 const proposalValidator = readFileSync('scripts/validate-proposal-card-render.mjs', 'utf8');
 const starterValidator = readFileSync('scripts/validate-starter-decks.mjs', 'utf8');
 const riteValidator = readFileSync('scripts/validate-rite-card-render.mjs', 'utf8');
@@ -21,7 +21,7 @@ describe('development and published-release boundary', () => {
     expect(currentGame.version).not.toBe(releaseTarget.releaseTag);
     expect(materializer).toContain('pull_request:');
     expect(releaseBuilder).toContain('if (authority.version !== RELEASE_VERSION)');
-    expect(releaseBuilder).toContain('validateFrozenReleaseSources');
+    expect(releaseBuilder).toContain('repairAndValidateFrozenReleaseSources');
   });
 
   it('derives current TTS identity from current-game rather than the publication target', () => {
