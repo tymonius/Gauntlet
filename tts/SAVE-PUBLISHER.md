@@ -81,9 +81,11 @@ Deckbuilder-to-TTS import is a **v0.7.1 feature**. In the Deckbuilder, the exist
 
 The Deckbuilder copies a compact versioned `GDL1:` Deck Code containing the current game version, Deck name, faction/Leader ids, playable-card ids with quantities, and the three selected Territory ids. Mystics codes additionally carry the three selected Rite ids.
 
-The assembled v0.7.1-candidate and later TTS saves install a global **DECK IMPORT** control after faction supplementals are assembled. Import validates the Deck Code against the generated card/Territory/Rite assets and exact TTS game version, then uses the matching official starter Bag as the runtime template. The custom Bag keeps the correct Leader, faction-colored utility pieces, references, trackers, Proposals/Deeds, and other ready supplementals while replacing the playable Deck and selected Territory stack. For Mystics, it also rebuilds the **Rites + Ritual** stack from the three selected Rites plus Ritual of Ascension.
+The assembled v0.7.1-candidate and later TTS saves install a global **DECK IMPORT** control after faction supplementals are assembled. Import validates the Deck Code against the generated card/Territory/Rite assets and exact TTS game version. During save generation, the importer captures a pruned, GUID-free immutable snapshot of each fully assembled faction/Leader starter kit and embeds those snapshots in Global Lua configuration.
 
-Official starter Bags carry `gauntlet:starter-kit:<starter-id>` GM notes so the importer can locate a safe template. The source starter Bag is never modified.
+At runtime, custom import starts from that embedded snapshot rather than searching the live table. The custom Bag therefore preserves the correct Leader, faction-colored utility pieces, references, trackers, Proposals/Deeds, and other ready supplementals while replacing the playable Deck and selected Territory stack. For Mystics, it also rebuilds the **Rites + Ritual** stack from the three selected Rites plus Ritual of Ascension.
+
+Visible official starter Bags still carry `gauntlet:starter-kit:<starter-id>` GM notes for save validation and ordinary setup, but they are **not runtime importer dependencies**. Players may move, unpack, or delete them without breaking later custom Deck imports.
 
 A Deck Code from another game version is rejected rather than migrated silently; re-open that Deck in the current Deckbuilder and export a fresh code.
 
