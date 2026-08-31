@@ -247,6 +247,13 @@ export async function validateTtsComponentContract(contract) {
   assert(rites.every((component) => component.deckInclusion === 'selected-rite'), 'Mystics Rite components must use selected-rite package inclusion.');
   assert(rites.every((component) => component.source === CURRENT_GAME_AUTHORITY_SOURCE), 'Mystics Rite components must source current-game authority directly.');
 
+  const ritual = map.get('mystics-ritual-of-ascension');
+  assert(ritual, 'Mystics package must contain the Ritual of Ascension card.');
+  assert(ritual.family === 'ritual-card', 'Ritual of Ascension must use the ritual-card family.');
+  assert(ritual.productionStatus === 'ready' && designStatusFor(ritual) === 'final', 'Ritual of Ascension must be finalized and production-ready.');
+  assert(ritual.backPolicy === 'specialBack' && String(ritual.specialBackFile || '').trim(), 'Ritual of Ascension must declare its special reverse face.');
+  assert(ritual.source === CURRENT_GAME_AUTHORITY_SOURCE, 'Ritual of Ascension must source current-game authority directly.');
+
   const inquisitionReferences = componentsFor(contract, 'inquisition', 'reference-card');
   assert(inquisitionReferences.length === 2, `Inquisition must contain Doctrine and Purge Reference Cards; found ${inquisitionReferences.length}.`);
   assert(map.has('inquisition-doctrine-reference') && map.has('inquisition-purge-reference'), 'Inquisition reference-card identities do not match the current guide.');
