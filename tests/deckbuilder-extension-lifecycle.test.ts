@@ -14,7 +14,7 @@ const extensions = [
   "deckbuilder/rendered-card-preview.js",
   "deckbuilder/metadata-ui.js",
   "deckbuilder/print.js",
-  "deckbuilder/print-duplex-sheet-pairing.js",
+  "deckbuilder/production-print.js",
   "deckbuilder/print-summary.js",
   "deckbuilder/custom-print-loader.js",
   "deckbuilder/print-capital-ledger.js",
