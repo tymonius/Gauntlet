@@ -35,7 +35,7 @@ describe("Deckbuilder supplemental print audit", () => {
     });
 
     expect(packageProjection).toContain('component.deckInclusion === "every-deck"');
-    expect(packageProjection).toContain('window.GAUNTLET_CURRENT_SUPPLEMENTALS = Object.freeze(packages)');
+    expect(packageProjection).toContain('deckbuilder.registerFeature("supplementalPackages", packages)');
     expect(packageProjection).not.toContain('GAUNTLET_V06_SUPPLEMENTALS');
     expect(packageProjection).not.toContain('bridgeSharedReferencesIntoPrintAuthority');
     expect(productionPrint).toContain('...(currentGame.sharedComponents || [])');
@@ -45,7 +45,7 @@ describe("Deckbuilder supplemental print audit", () => {
     expect(deckbuilderHtml).not.toContain("supplemental-data.js");
     expect(deckbuilderHtml).not.toContain("completed-supplementals.js");
     expect(deckbuilderHtml).not.toContain("v061-supplementals.js");
-    expect(deckPrint).toContain("GAUNTLET_CURRENT_SUPPLEMENTALS");
+    expect(deckPrint).toContain('deckbuilder.feature("supplementalPackages")');
     expect(deckPrint).not.toContain("GAUNTLET_V06_SUPPLEMENTALS");
   });
 
