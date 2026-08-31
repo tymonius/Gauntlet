@@ -1,4 +1,8 @@
 (() => {
+  const deckbuilder = window.GAUNTLET_DECKBUILDER;
+  if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
+  const { state } = deckbuilder;
+
   const MYSTICS_FACTION_ID = "mystics";
   const FALLBACK_SELECTED_COUNT = 3;
   const CARD_WIDTH = 240;
@@ -15,15 +19,13 @@
   const riteElements = {};
   let ritePreviewResizeObserver = null;
 
-  const baseRenderAll = renderAll;
-  const baseValidateDeck = validateDeck;
-  const baseValidateAndRender = validateAndRender;
-  const baseCurrentDeckData = currentDeckData;
-  const baseApplyDeckData = applyDeckData;
-  const baseCopyDeckList = copyDeckList;
-  const baseChangeFaction = changeFaction;
+  deckbuilder.registerRenderHook(renderRiteIntegration);
+  deckbuilder.registerValidationHook(extendValidation);
+  deckbuilder.registerSerializeHook(serializeRites);
+  deckbuilder.registerHydrateHook(hydrateRites);
+  deckbuilder.registerFactionChangeHook(resetRitesForFaction);
 
-  window.GAUNTLET_MYSTICS_RITES = Object.freeze({
+  deckbuilder.registerFeature("mysticsRites", {
     selectedIds: () => [...state.rites],
     selectedRites: () => selectedRites(),
     requiredCount: () => state.riteSelectedCount,
@@ -51,9 +53,7 @@
 
   async function loadRites() {
     try {
-      const bootstrap = window.GAUNTLET_DECKBUILDER_BOOTSTRAP;
-      if (typeof bootstrap !== "function") throw new Error("Current Deckbuilder runtime is unavailable.");
-      const currentGame = await bootstrap();
+      const currentGame = await deckbuilder.bootstrap();
       const rites = currentGame.mystics?.rites;
       const policy = currentGame.mystics?.selectionPolicy;
       const selectedCount = Number(policy?.selectedCount);
@@ -102,8 +102,7 @@
     }
   }
 
-  function enhancedRenderAll() {
-    baseRenderAll();
+  function renderRiteIntegration() {
     renderRitePicker();
     renderDeckRites();
     syncRiteMetric();
@@ -282,8 +281,7 @@
     }
   }
 
-  function enhancedValidateDeck() {
-    const result = baseValidateDeck();
+  function extendValidation(result) {
     const errors = [...result.errors];
     const warnings = [...result.warnings];
 
@@ -309,30 +307,15 @@
     };
   }
 
-  function enhancedValidateAndRender() {
-    baseValidateAndRender();
-    const result = enhancedValidateDeck();
-    el.validityText.textContent = result.valid ? "Valid" : "Incomplete";
-    el.validityCard.classList.toggle("valid", result.valid);
-    el.validityCard.classList.toggle("invalid", !result.valid);
-    el.validationList.innerHTML = [
-      ...(result.errors.length
-        ? result.errors.map(message => `<li>${escapeHtml(message)}</li>`)
-        : ['<li class="ok">Deck package is valid.</li>']),
-      ...result.warnings.map(message => `<li class="warning">${escapeHtml(message)}</li>`)
-    ].join("");
-  }
-
-  function enhancedCurrentDeckData() {
+  function serializeRites(data) {
     return {
-      ...baseCurrentDeckData(),
+      ...data,
       selectedRites: isMystics() ? [...state.rites] : [],
     };
   }
 
-  function enhancedApplyDeckData(data) {
+  function hydrateRites(data) {
     state.rites = [];
-    baseApplyDeckData(data);
 
     if (state.factionId === MYSTICS_FACTION_ID) {
       if (state.ritePool.length) {
@@ -345,44 +328,15 @@
     } else {
       state.pendingRites = null;
     }
-
-    renderAll();
   }
 
-  async function enhancedCopyDeckList() {
-    if (!isMystics()) return baseCopyDeckList();
-
-    const data = enhancedCurrentDeckData();
-    const faction = getFaction();
-    const leader = faction.leaders.find(item => item.id === state.leaderId);
-    const validation = enhancedValidateDeck();
-    const lines = [
-      data.name,
-      `${faction.name} — ${leader?.name || "No leader"}`,
-      `${validation.cardCount} cards · ${validation.pointTotal}/60 value · ${validation.territoryCount}/3 Territories · ${validation.riteCount}/${validation.requiredRites} Rites`,
-      "",
-      ...deckEntries().map(({ card, qty }) => `${qty}x ${card.name} (${card.cost}) [${card.factionLabel}]`),
-      "",
-      "Territories:",
-      ...(state.territories || []).map(id => state.territoryPool.find(territory => territory.id === id)?.name).filter(Boolean).map(name => `- ${name}`),
-      "",
-      "Rites:",
-      ...selectedRites().map(rite => `- ${rite.name}`),
-    ];
-    await navigator.clipboard.writeText(lines.join("\n"));
-  }
-
-  function enhancedChangeFaction() {
-    const before = state.factionId;
-    baseChangeFaction();
-    if (state.factionId !== before) {
-      state.rites = state.factionId === MYSTICS_FACTION_ID && !state.riteSelectionEnabled
-        ? state.ritePool.map(rite => rite.id)
-        : [];
-      state.pendingRites = null;
-      state.selectedRiteId = state.ritePool[0]?.id || null;
-      renderAll();
-    }
+  function resetRitesForFaction({ previousFactionId, factionId }) {
+    if (factionId === previousFactionId) return;
+    state.rites = factionId === MYSTICS_FACTION_ID && !state.riteSelectionEnabled
+      ? state.ritePool.map(rite => rite.id)
+      : [];
+    state.pendingRites = null;
+    state.selectedRiteId = state.ritePool[0]?.id || null;
   }
 
   function resolveRiteIds(items) {
@@ -406,11 +360,4 @@
     return state.ritePool.find(rite => rite.id === id);
   }
 
-  renderAll = enhancedRenderAll;
-  validateDeck = enhancedValidateDeck;
-  validateAndRender = enhancedValidateAndRender;
-  currentDeckData = enhancedCurrentDeckData;
-  applyDeckData = enhancedApplyDeckData;
-  copyDeckList = enhancedCopyDeckList;
-  changeFaction = enhancedChangeFaction;
 })();
