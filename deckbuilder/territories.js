@@ -24,6 +24,7 @@
   deckbuilder.registerValidationHook(extendValidation);
   deckbuilder.registerSerializeHook(serializeTerritories);
   deckbuilder.registerHydrateHook(hydrateTerritories);
+  deckbuilder.registerDeckListHook(territoryDeckListLines);
 
   document.addEventListener("DOMContentLoaded", installTerritoryIntegration);
 
@@ -298,6 +299,11 @@
       warnings,
       valid: errors.length === 0
     };
+  }
+
+  function territoryDeckListLines() {
+    const names = selectedTerritories().map(territory => territory.name);
+    return ["", `Territories: ${names.join(", ") || "None"}`];
   }
 
   function serializeTerritories(data) {
