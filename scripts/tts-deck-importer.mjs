@@ -221,6 +221,32 @@ function assignFreshGuids(node, guid) {
   for (const child of node.ContainedObjects || []) assignFreshGuids(child, guid);
 }
 
+function captureStarterBagSpawnState(bag) {
+  const transform = bag?.Transform || {};
+  return {
+    transform: {
+      rotX: Number(transform.rotX ?? 0),
+      rotY: Number(transform.rotY ?? 0),
+      rotZ: Number(transform.rotZ ?? 0),
+      scaleX: Number(transform.scaleX ?? 1),
+      scaleY: Number(transform.scaleY ?? 1),
+      scaleZ: Number(transform.scaleZ ?? 1),
+    },
+    locked: bag?.Locked === true,
+    grid: bag?.Grid !== false,
+    snap: bag?.Snap !== false,
+    autoraise: bag?.Autoraise !== false,
+    sticky: bag?.Sticky !== false,
+    tooltip: bag?.Tooltip !== false,
+    gridProjection: bag?.GridProjection === true,
+    hideWhenFaceDown: bag?.HideWhenFaceDown === true,
+    hands: bag?.Hands === true,
+    ignoreFoW: bag?.IgnoreFoW === true,
+    measureMovement: bag?.MeasureMovement === true,
+    dragSelectable: bag?.DragSelectable !== false,
+  };
+}
+
 export function installStarterTemplateObjects(save, config) {
   if (!save || !Array.isArray(save.ObjectStates)) throw new Error('Deck importer template capture requires a TTS save.');
 
@@ -235,6 +261,8 @@ export function installStarterTemplateObjects(save, config) {
     const note = `gauntlet:starter-kit:${starter.starterId}`;
     const visible = save.ObjectStates.find(object => object?.Name === 'Bag' && object?.GMNotes === note);
     if (!visible) throw new Error(`Deck importer cannot capture missing starter template ${starter.starterId}.`);
+
+    starter.spawnState = captureStarterBagSpawnState(visible);
 
     const template = deepClone(visible);
     const playableDeck = findTemplateChild(template, 'gauntlet:starter-deck:');
@@ -418,6 +446,30 @@ local function gauntletFindChildByNotePrefix(bagData, prefix)
     if gauntletStartsWith(child.GMNotes, prefix) then return child end
   end
   return nil
+end
+
+local function gauntletRestoreStarterBagState(bagData, starter)
+  local state = starter.spawnState or {}
+  local transform = state.transform or {}
+  bagData.Transform = bagData.Transform or {}
+  bagData.Transform.rotX = tonumber(transform.rotX) or 0
+  bagData.Transform.rotY = tonumber(transform.rotY) or 0
+  bagData.Transform.rotZ = tonumber(transform.rotZ) or 0
+  bagData.Transform.scaleX = tonumber(transform.scaleX) or 1
+  bagData.Transform.scaleY = tonumber(transform.scaleY) or 1
+  bagData.Transform.scaleZ = tonumber(transform.scaleZ) or 1
+  bagData.Locked = state.locked == true
+  bagData.Grid = state.grid ~= false
+  bagData.Snap = state.snap ~= false
+  bagData.Autoraise = state.autoraise ~= false
+  bagData.Sticky = state.sticky ~= false
+  bagData.Tooltip = state.tooltip ~= false
+  bagData.GridProjection = state.gridProjection == true
+  bagData.HideWhenFaceDown = state.hideWhenFaceDown == true
+  bagData.Hands = state.hands == true
+  bagData.IgnoreFoW = state.ignoreFoW == true
+  bagData.MeasureMovement = state.measureMovement == true
+  bagData.DragSelectable = state.dragSelectable ~= false
 end
 
 local function gauntletLoadStarterTemplate(starter)
@@ -698,8 +750,8 @@ function gauntletImportDeck(player, value, id)
     bagData.Nickname = validated.name .. " — " .. validated.starter.leaderName
     bagData.Description = "Custom Deckbuilder starter kit\\n\\n" .. tostring(validated.cardCount) .. " cards · " .. tostring(validated.pointTotal) .. " deckbuilding value"
     bagData.GMNotes = "gauntlet:custom-starter:" .. validated.faction .. ":" .. validated.leader
+    gauntletRestoreStarterBagState(bagData, validated.starter)
     local position = gauntletSpawnPosition(color)
-    bagData.Transform = bagData.Transform or {}
     bagData.Transform.posX = position.x
     bagData.Transform.posY = position.y
     bagData.Transform.posZ = position.z

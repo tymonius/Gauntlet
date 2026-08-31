@@ -137,8 +137,21 @@ function starterTemplateBag(starterId: string, faction: string, includeRites = f
   return {
     Name: 'Bag',
     GUID: includeRites ? 'bag002' : 'bag001',
+    Transform: { posX: 20, posY: 1.4, posZ: 4, rotX: 0, rotY: 180, rotZ: 0, scaleX: 1, scaleY: 1, scaleZ: 1 },
     Nickname: `${starterId} Kit`,
     GMNotes: `gauntlet:starter-kit:${starterId}`,
+    Locked: false,
+    Grid: true,
+    Snap: true,
+    Autoraise: true,
+    Sticky: true,
+    Tooltip: true,
+    GridProjection: false,
+    HideWhenFaceDown: false,
+    Hands: false,
+    IgnoreFoW: false,
+    MeasureMovement: false,
+    DragSelectable: true,
     ContainedObjects: objects,
   };
 }
@@ -273,6 +286,21 @@ describe('TTS Deckbuilder importer', () => {
 
     expect(runtimeConfig.starters['military:general'].templateGuid).toBe(template.GUID);
     expect(runtimeConfig.starters['mystics:alchemist'].templateGuid).toBe(mysticsTemplate.GUID);
+    expect(runtimeConfig.starters['military:general'].spawnState).toEqual({
+      transform: { rotX: 0, rotY: 180, rotZ: 0, scaleX: 1, scaleY: 1, scaleZ: 1 },
+      locked: false,
+      grid: true,
+      snap: true,
+      autoraise: true,
+      sticky: true,
+      tooltip: true,
+      gridProjection: false,
+      hideWhenFaceDown: false,
+      hands: false,
+      ignoreFoW: false,
+      measureMovement: false,
+      dragSelectable: true,
+    });
     expect(deck.DeckIDs).toEqual([]);
     expect(deck.CustomDeck).toEqual({});
     expect(deck.ContainedObjects).toHaveLength(1);
@@ -315,6 +343,10 @@ describe('TTS Deckbuilder importer', () => {
     expect(save.LuaScript).toContain('templateGuid');
     expect(save.LuaScript).toContain('getObjectFromGUID(guid)');
     expect(save.LuaScript).toContain('templateObject.getData()');
+    expect(save.LuaScript).toContain('function gauntletRestoreStarterBagState');
+    expect(save.LuaScript).toContain('bagData.Transform.scaleX = tonumber(transform.scaleX) or 1');
+    expect(save.LuaScript).toContain('bagData.Locked = state.locked == true');
+    expect(save.LuaScript).toContain('bagData.DragSelectable = state.dragSelectable ~= false');
     expect(save.LuaScript).not.toContain('getAllObjects()');
     expect(save.LuaScript).not.toContain('.getJSON()');
     expect(save.LuaScript).not.toContain('JSON.encode(');
