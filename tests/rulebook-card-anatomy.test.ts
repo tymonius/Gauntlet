@@ -5,6 +5,7 @@ const read = (path: string) => readFileSync(path, 'utf8');
 const index = read('rulebook/index.html');
 const anatomy = read('rulebook/card-anatomy.js');
 const currentRulebook = read('rulebook/player-facing/current-rulebook.md');
+const currentGame = JSON.parse(read('game-data/current-game.json'));
 const styles = read('rulebook/card-anatomy.css');
 
 describe('Browser Rulebook card anatomy guide', () => {
@@ -49,6 +50,24 @@ describe('Browser Rulebook card anatomy guide', () => {
     expect(currentRulebook).not.toContain('faction-specific procedure');
     expect(anatomy).not.toContain('marker-reminder');
     expect(anatomy).toContain('data-marker-target="footer" aria-hidden="true">7</span>');
+  });
+
+  it('documents every current printed playable-card effect heading', () => {
+    const start = currentRulebook.indexOf('## Printed card effects');
+    const end = currentRulebook.indexOf('### Arcane symbol', start);
+    const section = currentRulebook.slice(start, end);
+    const headingRules = currentGame.gameplay.card_rules.effect_headings;
+    const documentedHeadings = [
+      ...headingRules.ordinary_role_headings,
+      ...headingRules.special_or_procedural_headings,
+    ];
+
+    for (const heading of headingRules.all_present_headings) {
+      expect(documentedHeadings).toContain(heading);
+    }
+    for (const heading of documentedHeadings) {
+      expect(section).toContain(`**${heading}:**`);
+    }
   });
 
   it('uses a card-plus-single-key-column layout instead of splitting the key into narrow columns', () => {
