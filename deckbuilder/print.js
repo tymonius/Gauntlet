@@ -17,6 +17,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700;800;900&display=block" rel="stylesheet">`;
 
+  deckbuilder.registerFeature("printDeck", Object.freeze({
+    buildDocument: buildCurrentPrintDocument,
+    open: openPrintView,
+  }));
+
   document.addEventListener("DOMContentLoaded", installPrintButton);
 
   function installPrintButton() {
@@ -49,14 +54,18 @@
       return;
     }
 
-    const html = buildPrintDocument(printData);
-    const preparedHtml = deckbuilder.preparePrintDocument(html, {
-      kind: "deck",
-      printData
-    });
-    printWindow.document.write(preparedHtml);
+    printWindow.document.write(buildCurrentPrintDocument(printData));
     printWindow.document.close();
     printWindow.focus();
+  }
+
+  function buildCurrentPrintDocument(printData = readPrintData()) {
+    if (!printData) return "";
+    const html = buildPrintDocument(printData);
+    return deckbuilder.preparePrintDocument(html, {
+      kind: "deck",
+      printData,
+    });
   }
 
   function readPrintData() {
