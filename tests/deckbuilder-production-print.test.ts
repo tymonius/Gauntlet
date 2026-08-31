@@ -66,16 +66,15 @@ describe("Deckbuilder production printing", () => {
   it("prints standard backs as black and single-sided faction components in faction color automatically", () => {
     expect(printTransform).toContain('pageNeedsStandardBack(frontPage)');
     expect(printTransform).toContain('replaceProductionBacks(documentNode)');
+    expect(printTransform).toContain('standardBackFaction(frontCell)');
+    expect(printTransform).toContain('frontCell.querySelector(".production-render-card, .production-render-territory")');
+    expect(printTransform).toContain('return "intelligence";');
+    expect(printTransform).toContain('String(state.factionId || "intelligence")');
     expect(printTransform).toContain('production-standard-back');
     expect(printTransform).toContain('/tts/back-renderer/index.html?faction=');
-    expect(printTransform).toContain('if (!useFactionColor) return "intelligence";');
-    expect(cardBackPolicy).toContain('factionColor.checked = false');
-    expect(cardBackPolicy).toContain('factionOption?.remove()');
     expect(cardBackPolicy).toContain('Automatic backs: black for playable cards and Territories');
-    expect(cardBackPolicy).toContain('.production-render-leader');
-    expect(cardBackPolicy).toContain('.production-render-component[data-production-back-policy="standardBack"]');
-    expect(cardBackPolicy).toContain('.deed-card[data-contract-back-policy="standardBack"]');
-    expect(cardBackPolicy).toContain('data-automatic-mixed-back-policy');
+    expect(cardBackPolicy).not.toContain("window.open");
+    expect(cardBackPolicy).not.toContain("document.write");
   });
 
   it("keeps duplex orientation and production-render readiness safeguards", () => {
@@ -97,7 +96,7 @@ describe("Deckbuilder production printing", () => {
     expect(cardBackPolicy).toContain('frame.id = "cardBackPreviewFrame"');
     expect(cardBackPolicy).toContain('/tts/back-renderer/index.html?faction=');
     expect(cardBackPolicy).toContain('factionSelect?.addEventListener("change"');
-    expect(cardBackPolicy).toContain('factionColor.disabled = true');
+    expect(cardBackPolicy).not.toContain("factionColorCardBack");
   });
 
   it("keeps print-only render surfaces analytics-free", () => {
