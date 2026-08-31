@@ -111,9 +111,26 @@ describe("Deckbuilder extension architecture", () => {
     expect(runtime).toContain("deckbuilder.setAuthorityBootstrap(currentGame)");
     expect(runtime).toContain("deckbuilder.setSourceLoader");
     expect(runtime).toContain("deckbuilder.setRuleset");
+    expect(read("deckbuilder/territories.js")).toContain('deckbuilder.registerFeature("territories"');
     expect(read("deckbuilder/mystics-rites.js")).toContain('deckbuilder.registerFeature("mysticsRites"');
     expect(read("deckbuilder/starter-decks.js")).toContain('deckbuilder.registerFeature("starterDecks"');
     expect(read("deckbuilder/faction-components.js")).toContain('deckbuilder.registerFeature("supplementalPackages"');
+  });
+
+  it("keeps starter workflows on extension feature APIs rather than extension-owned state", () => {
+    const starters = read("deckbuilder/starter-decks.js");
+    const bulk = read("deckbuilder/print-all-starters.js");
+    for (const source of [starters, bulk]) {
+      expect(source).toContain('deckbuilder.feature("territories")');
+      expect(source).toContain('deckbuilder.feature("mysticsRites")');
+      expect(source).not.toContain("state.territoryPool");
+      expect(source).not.toContain("state.territories");
+      expect(source).not.toContain("state.rites");
+    }
+    expect(starters).toContain("territoriesApi()?.setSelectedIds?.(territoryIds)");
+    expect(starters).toContain("ritesApi()?.setSelectedIds?.(starterRiteIds(preset))");
+    expect(bulk).toContain("territoriesApi()?.setSelectedIds?.(territories)");
+    expect(bulk).toContain("ritesApi()?.setSelectedIds?.(starterRiteIds(preset))");
   });
 
   it("routes custom and bulk tools through the selected Deckbuilder authority", () => {
