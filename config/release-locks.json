@@ -608,16 +608,28 @@
       "meaning": "Frozen v0.6.3 Rules Arbiter portal refinement helper"
     },
     {
-      "path": "docs/recovery/frozen-scripts/v0.6.3/build-clean-v063-complete-authority.mjs",
-      "git_object": "3db81bc3da6f078a65c088c207178566c33c20f5",
+      "path": "docs/recovery/frozen-scripts/v0.6.3/build-v063-cross-surface-closeout.mjs",
+      "git_object": "81cd8eab3d202f881bd5ffce207a06bc032b330d",
       "kind": "blob",
-      "meaning": "Frozen clean-v0.6.3 complete-authority reconstruction orchestrator"
+      "meaning": "Frozen v0.6.3 cross-surface closeout builder"
     },
     {
       "path": "docs/recovery/frozen-scripts/v0.6.3/validate-v063-cross-surface-closeout.mjs",
       "git_object": "2d82d03d29aa97d868f0232f5bf952411d8c4b1c",
       "kind": "blob",
       "meaning": "Frozen v0.6.3 cross-surface closeout validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-v063-print-visual-regressions.mjs",
+      "git_object": "aed10fe35cc5868f894e8a7746dbfe03b3302817",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.3 print-candidate visual-regression validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/build-clean-v063-complete-authority.mjs",
+      "git_object": "3db81bc3da6f078a65c088c207178566c33c20f5",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.3 complete-authority reconstruction orchestrator"
     }
   ],
   "maintained_historical_surfaces": [
