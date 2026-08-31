@@ -4,6 +4,7 @@ import {
   decodeTtsDeckCode,
   encodeTtsDeckCode,
   isTtsDeckExportAvailable,
+  isTtsDeckExportQaAvailable,
   TTS_DECK_CODE_PREFIX,
   TTS_DECK_EXPORT_MIN_VERSION,
 } from '../deckbuilder/tts-export.mjs';
@@ -29,6 +30,9 @@ describe('Deckbuilder TTS Deck Code', () => {
     expect(TTS_DECK_EXPORT_MIN_VERSION).toBe('v0.7.1');
     expect(isTtsDeckExportAvailable('v0.7.0')).toBe(false);
     expect(isTtsDeckExportAvailable('v0.7.1-candidate')).toBe(false);
+    expect(isTtsDeckExportQaAvailable('v0.7.1-candidate')).toBe(true);
+    expect(isTtsDeckExportQaAvailable('v0.7.0-candidate')).toBe(false);
+    expect(isTtsDeckExportQaAvailable('v0.7.1')).toBe(false);
     expect(isTtsDeckExportAvailable('v0.7.1')).toBe(true);
     expect(isTtsDeckExportAvailable('v0.8.0')).toBe(true);
     expect(isTtsDeckExportAvailable('candidate')).toBe(false);
@@ -59,12 +63,25 @@ describe('Deckbuilder TTS Deck Code', () => {
     expect(() => decodeTtsDeckCode('not a deck')).toThrow(/not a Gauntlet/i);
   });
 
-  it('fails closed for Mystics until TTS can assemble the selected three-Rite package', () => {
-    expect(() => buildTtsDeckPayload({
+  it('carries the selected Mystics Rites in the TTS Deck Code', () => {
+    expect(buildTtsDeckPayload({
       ...deck,
       factionId: 'mystics',
       leaderId: 'alchemist',
       selectedRites: ['echoes', 'blood', 'equivalence'],
-    })).toThrow(/selected-Rite assembly/i);
+    })).toMatchObject({
+      f: 'mystics',
+      l: 'alchemist',
+      r: ['echoes', 'blood', 'equivalence'],
+    });
+  });
+
+  it('rejects a Mystics TTS export that has no selected Rites', () => {
+    expect(() => buildTtsDeckPayload({
+      ...deck,
+      factionId: 'mystics',
+      leaderId: 'alchemist',
+      selectedRites: [],
+    })).toThrow(/selected Rites/i);
   });
 });
