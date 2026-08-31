@@ -1,6 +1,5 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { STANDARD_CARD_HEADINGS, normalizeV063CardsForPresentation } from '../card-design/v063-card-heading-normalizer.js';
 
 const read = (path: string) => readFileSync(path, 'utf8');
 const index = read('rulebook/index.html');
@@ -57,21 +56,21 @@ describe('Browser Rulebook card anatomy guide', () => {
     const start = currentRulebook.indexOf('## Printed card effects');
     const end = currentRulebook.indexOf('### Arcane symbol', start);
     const section = currentRulebook.slice(start, end);
-    const productionCards = normalizeV063CardsForPresentation(currentGame.gameplay.cards);
     const printedHeadings = [...new Set(
-      productionCards.flatMap((card: { effects?: Array<{ label?: string }> }) =>
+      currentGame.gameplay.cards.flatMap((card: { effects?: Array<{ label?: string }> }) =>
         (card.effects || []).map(effect => String(effect.label || '').trim()).filter(Boolean)
       )
     )].sort();
-    const standardHeadings = [...STANDARD_CARD_HEADINGS].sort();
+    const declaredHeadings = [...currentGame.gameplay.card_rules.effect_headings.all_present_headings].sort();
+    const retiredHeadings = currentGame.gameplay.card_rules.effect_headings.retired;
 
-    expect(printedHeadings).toEqual(standardHeadings);
-    for (const heading of standardHeadings) {
+    expect(printedHeadings).toEqual(declaredHeadings);
+    for (const heading of declaredHeadings) {
       expect(section).toContain(`**${heading}:**`);
     }
 
-    for (const rawOnlyHeading of ['Placement', 'Accepted', 'Refused', 'Aftermath', 'Text']) {
-      expect(section).not.toContain(`**${rawOnlyHeading}:**`);
+    for (const heading of retiredHeadings) {
+      expect(printedHeadings).not.toContain(heading);
     }
   });
 
