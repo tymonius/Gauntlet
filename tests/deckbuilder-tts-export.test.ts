@@ -4,6 +4,7 @@ import {
   decodeTtsDeckCode,
   encodeTtsDeckCode,
   isTtsDeckExportAvailable,
+  isTtsDeckExportQaAvailable,
   TTS_DECK_CODE_PREFIX,
   TTS_DECK_EXPORT_MIN_VERSION,
 } from '../deckbuilder/tts-export.mjs';
@@ -29,6 +30,9 @@ describe('Deckbuilder TTS Deck Code', () => {
     expect(TTS_DECK_EXPORT_MIN_VERSION).toBe('v0.7.1');
     expect(isTtsDeckExportAvailable('v0.7.0')).toBe(false);
     expect(isTtsDeckExportAvailable('v0.7.1-candidate')).toBe(false);
+    expect(isTtsDeckExportQaAvailable('v0.7.1-candidate')).toBe(true);
+    expect(isTtsDeckExportQaAvailable('v0.7.0-candidate')).toBe(false);
+    expect(isTtsDeckExportQaAvailable('v0.7.1')).toBe(false);
     expect(isTtsDeckExportAvailable('v0.7.1')).toBe(true);
     expect(isTtsDeckExportAvailable('v0.8.0')).toBe(true);
     expect(isTtsDeckExportAvailable('candidate')).toBe(false);
