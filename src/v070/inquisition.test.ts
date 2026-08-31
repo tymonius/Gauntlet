@@ -3,6 +3,7 @@ import { createV070StarterGame } from './engine';
 import {
   V070_MAX_CONVICTION,
   gainV070Conviction,
+  applyV070NormalAftermathConviction,
   spendV070Conviction,
   v070Conviction,
 } from './inquisition';
@@ -26,7 +27,10 @@ describe('v0.7.0 Inquisition Conviction core', () => {
   test('Inquisition begins at 0 Conviction and non-Inquisition players have no Conviction state', () => {
     const state = game();
 
-    expect(state.players.A.inquisition).toEqual({ conviction: 0 });
+    expect(state.players.A.inquisition).toEqual({
+      conviction: 0,
+      normalConvictionGainTurn: null,
+    });
     expect(v070Conviction(state, 'A')).toBe(0);
     expect(state.players.B.inquisition).toBeNull();
     expect(() => v070Conviction(state, 'B')).toThrow(
@@ -120,6 +124,36 @@ describe('v0.7.0 Inquisition Conviction core', () => {
     expect(v070Conviction(state, 'A')).toBe(0);
   });
 
+  test('normal Aftermath gain is limited to the first qualifying event each turn even when capped', () => {
+    const state = game();
+    state.turnNumber = 7;
+    gainV070Conviction(state, 'A', 4, 'setup');
+
+    expect(applyV070NormalAftermathConviction(
+      state,
+      'A',
+      ['opposing-card-1'],
+    )).toBe(true);
+    expect(v070Conviction(state, 'A')).toBe(4);
+    expect(state.players.A.inquisition?.normalConvictionGainTurn).toBe(7);
+
+    spendV070Conviction(state, 'A', 1, 'after capped trigger');
+    expect(applyV070NormalAftermathConviction(
+      state,
+      'A',
+      ['opposing-card-2'],
+    )).toBe(false);
+    expect(v070Conviction(state, 'A')).toBe(3);
+
+    state.turnNumber = 8;
+    expect(applyV070NormalAftermathConviction(
+      state,
+      'A',
+      ['opposing-card-3'],
+    )).toBe(true);
+    expect(v070Conviction(state, 'A')).toBe(4);
+  });
+
   test('Conviction is public in both player views', () => {
     const state = game();
     gainV070Conviction(state, 'A', 2, 'public resource');
@@ -128,5 +162,7 @@ describe('v0.7.0 Inquisition Conviction core', () => {
       .toEqual({ conviction: 2 });
     expect(viewV070GameForPlayer(state, 'B').players.A.inquisition)
       .toEqual({ conviction: 2 });
+    expect(viewV070GameForPlayer(state, 'A').players.A.inquisition)
+      .not.toHaveProperty('normalConvictionGainTurn');
   });
 });
