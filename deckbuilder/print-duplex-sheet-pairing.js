@@ -1,4 +1,8 @@
 (() => {
+  const deckbuilder = window.GAUNTLET_DECKBUILDER;
+  if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
+  const { state } = deckbuilder;
+
   const COLUMNS = 3;
   const RENDER_TIMEOUT_MS = 30000;
 
@@ -76,7 +80,7 @@
   }
 
   function resolvedCurrentGame() {
-    const currentGame = state.currentGameData || window.GAUNTLET_CURRENT_GAME_DATA;
+    const currentGame = state.currentGameData;
     if (!currentGame?.cards?.length || !currentGame?.territories?.length || !currentGame?.componentContract) {
       throw new Error("The shared current-game authority has not finished loading.");
     }
@@ -262,7 +266,7 @@
   }
 
   function selectedRulesetMode() {
-    return window.GAUNTLET_DECKBUILDER_RULESET?.mode
+    return deckbuilder.ruleset()?.mode
       || (new URLSearchParams(window.location.search).get("rules") === "candidate" ? "candidate" : "released");
   }
 
