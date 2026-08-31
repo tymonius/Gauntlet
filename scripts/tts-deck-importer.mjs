@@ -223,6 +223,17 @@ local function gauntletCustomDeckState(meta)
   }
 end
 
+local function gauntletSupplementalCardState(meta)
+  return {
+    FaceURL = meta.frontUrl,
+    BackURL = meta.backUrl,
+    NumWidth = tonumber(meta.numWidth),
+    NumHeight = tonumber(meta.numHeight),
+    BackIsHidden = true,
+    UniqueBack = false,
+  }
+end
+
 local function gauntletClearGuids(node)
   if type(node) ~= "table" then return end
   node.GUID = nil
@@ -299,6 +310,22 @@ local function gauntletValidatePayload(payload)
     return nil, "Choose no more than " .. tostring(GAUNTLET_DECK_IMPORT.maximumArenas) .. " Arena."
   end
 
+  local selectedRites = {}
+  if faction == "mystics" then
+    if type(payload.r) ~= "table" or #payload.r ~= GAUNTLET_DECK_IMPORT.selectedRiteCount then
+      return nil, "Choose exactly " .. tostring(GAUNTLET_DECK_IMPORT.selectedRiteCount) .. " Mystics Rites."
+    end
+    local seenRites = {}
+    for _, idValue in ipairs(payload.r) do
+      local id = tostring(idValue or "")
+      local meta = GAUNTLET_DECK_IMPORT.rites[id]
+      if meta == nil then return nil, "Rite " .. id .. " is not present in this TTS build." end
+      if seenRites[id] then return nil, "Mystics Rites must be different." end
+      seenRites[id] = true
+      table.insert(selectedRites, id)
+    end
+  end
+
   return {
     name = gauntletTrim(payload.n) ~= "" and gauntletTrim(payload.n) or "Imported Gauntlet Deck",
     faction = faction,
@@ -308,6 +335,7 @@ local function gauntletValidatePayload(payload)
     pointTotal = pointTotal,
     cards = payload.c,
     territories = payload.t,
+    rites = selectedRites,
   }, nil
 end
 
@@ -377,6 +405,42 @@ local function gauntletBuildTerritories(stack, validated)
   end
 end
 
+local function gauntletBuildMysticsRiteStack(stack, validated)
+  local cardTemplate = (stack.ContainedObjects or {})[1]
+  if cardTemplate == nil then error("Mystics Rite stack template has no cards.") end
+
+  stack.Nickname = "Rites + Ritual"
+  stack.Description = "Selected Mystics Rites and Ritual of Ascension from the Gauntlet Deckbuilder"
+  stack.GMNotes = "gauntlet:supplemental-stack:rites-rituals"
+  stack.DeckIDs = {}
+  stack.CustomDeck = {}
+  stack.ContainedObjects = {}
+  stack.SidewaysCard = false
+
+  local function addCard(meta, note, description)
+    local state = gauntletSupplementalCardState(meta)
+    local card = gauntletDeepCopy(cardTemplate)
+    card.Nickname = meta.name
+    card.Description = description
+    card.GMNotes = note
+    card.CardID = tonumber(meta.cardId)
+    card.SidewaysCard = false
+    card.CustomDeck = { [tostring(meta.deckId)] = gauntletDeepCopy(state) }
+    card.LuaScript = ""
+    card.LuaScriptState = ""
+    card.XmlUI = ""
+    stack.CustomDeck[tostring(meta.deckId)] = state
+    table.insert(stack.DeckIDs, tonumber(meta.cardId))
+    table.insert(stack.ContainedObjects, card)
+  end
+
+  for _, id in ipairs(validated.rites or {}) do
+    local meta = GAUNTLET_DECK_IMPORT.rites[id]
+    addCard(meta, "gauntlet:supplemental:mystics-rite-" .. id, "Mystics Rite")
+  end
+  addCard(GAUNTLET_DECK_IMPORT.ritual, "gauntlet:supplemental:mystics-ritual-of-ascension", "Mystics Ritual")
+end
+
 local function gauntletSpawnPosition(color)
   if color == "Green" then return {x = -7, y = 2.2, z = 13.5} end
   return {x = 7, y = 2.2, z = -13.5}
@@ -441,14 +505,22 @@ function gauntletImportDeck(player, value, id)
 
   local playableDeck = gauntletFindChildByNotePrefix(bagData, "gauntlet:starter-deck:")
   local territoryStack = gauntletFindChildByNotePrefix(bagData, "gauntlet:starter-territories:")
+  local mysticsStack = validated.faction == "mystics"
+    and gauntletFindChildByNotePrefix(bagData, "gauntlet:supplemental-stack:rites-rituals")
+    or nil
   if playableDeck == nil or territoryStack == nil then
     gauntletMessage(color, "The starter-kit template is missing its Deck or Territory stack.", true)
+    return
+  end
+  if validated.faction == "mystics" and mysticsStack == nil then
+    gauntletMessage(color, "The Mystics starter-kit template is missing its Rites + Ritual stack.", true)
     return
   end
 
   local okBuild, buildError = pcall(function()
     gauntletBuildPlayableDeck(playableDeck, validated)
     gauntletBuildTerritories(territoryStack, validated)
+    if mysticsStack ~= nil then gauntletBuildMysticsRiteStack(mysticsStack, validated) end
     bagData.Nickname = validated.name .. " — " .. validated.starter.leaderName
     bagData.Description = "Custom Deckbuilder starter kit\n\n" .. tostring(validated.cardCount) .. " cards · " .. tostring(validated.pointTotal) .. " deckbuilding value"
     bagData.GMNotes = "gauntlet:custom-starter:" .. validated.faction .. ":" .. validated.leader
@@ -491,7 +563,7 @@ function deckImporterXml() {
     <Text text="1. Copy a TTS Deck Code from the Gauntlet Deckbuilder.  2. Paste it below.  3. Import the starter kit." preferredHeight="48" fontSize="18" color="#4A4134" alignment="MiddleLeft" />
     <InputField id="gauntlet-deck-import-code" text="" placeholder="GDL1:{...}" onValueChanged="gauntletDeckImportChanged" onEndEdit="gauntletDeckImportChanged" lineType="MultiLineNewLine" preferredHeight="150" fontSize="18" textColor="#282218" />
     <Button text="IMPORT STARTER KIT" onClick="gauntletImportDeck" preferredHeight="56" fontSize="22" color="#324D37" textColor="#F4E8CC" />
-    <Text text="You must be seated in White or Green. The imported Bag keeps the matching Leader and faction components and replaces only its playable Deck and Territories." preferredHeight="54" fontSize="16" color="#665A46" alignment="MiddleCenter" />
+    <Text text="You must be seated in White or Green. The imported Bag keeps the matching Leader and faction components, replaces its playable Deck and Territories, and uses the selected Mystics Rites when applicable." preferredHeight="54" fontSize="16" color="#665A46" alignment="MiddleCenter" />
   </VerticalLayout>
 </Panel>
 ${XML_END}`;
