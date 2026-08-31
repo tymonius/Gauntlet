@@ -5,7 +5,7 @@ const componentRenderHtml = readFileSync("card-design/component-print-render.htm
 const componentRenderJs = readFileSync("card-design/component-print-render.js", "utf8");
 const leaderCopyScript = readFileSync("card-design/leader-card-copy.js", "utf8");
 const currentGame = JSON.parse(readFileSync("game-data/current-game.json", "utf8"));
-const printTransform = readFileSync("deckbuilder/print-duplex-sheet-pairing.js", "utf8");
+const printTransform = readFileSync("deckbuilder/production-print.js", "utf8");
 
 describe("Deckbuilder current Leader printing", () => {
   it("loads standardized Leader rules from current-game authority", () => {
