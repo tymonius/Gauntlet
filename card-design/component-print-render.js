@@ -240,10 +240,6 @@
       throw new Error(`Production ${kind} ${id} reports a fit warning.`);
     }
     if (card.classList.contains("supplemental-placeholder-card")) {
-      // The Deed catalog is hydrated from the historical supplemental shell.
-      // Wait for deed-card.js to normalize that shell into the finalized Deed
-      // instead of treating the transient pre-hydration class as a hard error.
-      if (kind === "supplemental" && id === "financiers-deed") return false;
       throw new Error(`Component ${id} still resolves to a production-layout placeholder.`);
     }
 
