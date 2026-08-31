@@ -43,17 +43,21 @@ describe('Deckbuilder released / release-candidate ruleset toggle', () => {
 
   it('routes every Deckbuilder authority consumer through the selected shared ruleset bootstrap', () => {
     expect(runtime).toContain('../game-data/ruleset.mjs');
-    expect(runtime).toContain('GAUNTLET_DECKBUILDER_BOOTSTRAP');
-    expect(territories).toContain('window.GAUNTLET_DECKBUILDER_BOOTSTRAP');
-    expect(rites).toContain('window.GAUNTLET_DECKBUILDER_BOOTSTRAP');
+    expect(runtime).toContain('deckbuilder.setAuthorityBootstrap(currentGame)');
+    expect(territories).toContain('await deckbuilder.bootstrap()');
+    expect(rites).toContain('await deckbuilder.bootstrap()');
+    expect(components).toContain('await deckbuilder.bootstrap()');
+    expect(bulk).toContain('await deckbuilder.bootstrap()');
     expect(territories).not.toContain('../game-data/ruleset.mjs');
     expect(rites).not.toContain('../game-data/ruleset.mjs');
-    expect(components).toContain('../game-data/ruleset.mjs');
-    expect(bulk).toContain('../game-data/ruleset.mjs');
+    expect(components).not.toContain('../game-data/ruleset.mjs');
+    expect(bulk).not.toContain('../game-data/ruleset.mjs');
   });
 
   it('threads the selected ruleset into production and custom-print render surfaces', () => {
+    expect(productionPrint).toContain('deckbuilder.ruleset()?.mode');
     expect(productionPrint).toContain('&rules=${encodeURIComponent(selectedRulesetMode())}');
+    expect(customPrint).toContain('deckbuilder.ruleset()?.mode');
     expect(customPrint).toContain('&rules=${encodeURIComponent(selectedRulesetMode())}');
     expect(currentRuntime).toContain("get('rules') === 'released'");
     expect(currentRuntime).toContain("import('./ruleset.mjs')");
