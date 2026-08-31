@@ -319,6 +319,12 @@ export type V070PendingActionEffectChoice =
       kind: 'sleeper_network_bind_target';
       playerId: PlayerId;
       sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'necromancy_mode';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      reclaimCandidateInstanceIds: string[];
     };
 
 export type V070PendingSanctionChoice =
