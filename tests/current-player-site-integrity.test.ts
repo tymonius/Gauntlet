@@ -178,8 +178,9 @@ describe("v0.7.1 player-site release", () => {
     expect(runtime).toContain('import("../game-data/ruleset.mjs")');
     expect(html).toContain('data-ruleset="released"');
     expect(html).toContain('data-ruleset="candidate"');
-    expect(runtime).toContain('gauntlet-v0.7.1-decks');
+    expect(runtime).toContain('gauntlet-${module.PUBLISHED_VERSION}-decks');
     expect(runtime).toContain('gauntlet-current-game-decks');
+    expect(runtime).not.toContain('gauntlet-v0.7.1-decks');
     expect(runtime).toContain("state.currentGameVersion = data.version");
     expect(runtime).toContain("state.currentGameDisplayVersion = data.displayVersion");
     expect(read("deckbuilder/app.js")).toContain('gameVersion: state.currentGameVersion || "current-game"');
