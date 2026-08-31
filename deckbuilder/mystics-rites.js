@@ -25,6 +25,7 @@
   deckbuilder.registerSerializeHook(serializeRites);
   deckbuilder.registerHydrateHook(hydrateRites);
   deckbuilder.registerFactionChangeHook(resetRitesForFaction);
+  deckbuilder.registerDeckListHook(riteDeckListLines);
 
   deckbuilder.registerFeature("mysticsRites", {
     selectedIds: () => [...state.rites],
@@ -306,6 +307,12 @@
       warnings,
       valid: errors.length === 0,
     };
+  }
+
+  function riteDeckListLines() {
+    if (!isMystics()) return [];
+    const names = selectedRites().map(rite => rite.name);
+    return [`Rites: ${names.join(", ") || "None"}`];
   }
 
   function serializeRites(data) {
