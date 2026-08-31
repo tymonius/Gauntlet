@@ -28,6 +28,7 @@ const PRODUCTION_HTML_PATH = path.join(ROOT, 'rulebook-production', 'full-rulebo
 const PRODUCTION_PAGINATOR_PATH = path.join(ROOT, 'rulebook-production', '.paginate_rulebook_runtime.mjs');
 
 const publishingAuthority = await loadPublishingAuthority();
+// v0.7.1 publication output is rematerialized when publishing lockups change.
 
 const hash = data => crypto.createHash('sha256').update(data).digest('hex');
 const hashFile = file => hash(fs.readFileSync(file));
