@@ -7,12 +7,7 @@ const app = read("deckbuilder/app.js");
 const print = read("deckbuilder/print.js");
 
 const transforms = [
-  ["deckbuilder/print-card-back-orientation.js", "card-back-orientation", 10],
-  ["deckbuilder/print-intelligence-trackers.js", "intelligence-tracker-layout", 20],
-  ["deckbuilder/print-duplex.js", "duplex-layout", 30],
   ["deckbuilder/print-duplex-sheet-pairing.js", "production-rendering", 40],
-  ["deckbuilder/print-reference-placement.js", "diplomat-reference-placement", 50],
-  ["deckbuilder/print-intelligence-portraits.js", "intelligence-portrait-framing", 60],
   ["deckbuilder/print-window-portrait-fixes.js", "print-window-polish", 70],
 ] as const;
 
@@ -33,7 +28,7 @@ describe("Deckbuilder print pipeline", () => {
     expect(print).toContain("printWindow.document.write(preparedHtml)");
   });
 
-  it("registers the legacy print stages explicitly in their historical execution order", () => {
+  it("keeps only the intentional production and presentation print stages", () => {
     for (const [path, name, priority] of transforms) {
       const source = read(path);
       expect(source, path).toContain(`deckbuilder.registerPrintTransform("${name}"`);
@@ -50,9 +45,23 @@ describe("Deckbuilder print pipeline", () => {
   });
 
   it("runs the stale production-face guard as the final print transform", () => {
-    const source = read("deckbuilder/print-card-back-orientation.js");
+    const source = read("deckbuilder/print-duplex-sheet-pairing.js");
     expect(source).toContain('deckbuilder.registerPrintTransform("production-face-guard", guardProductionFaces, 100)');
-    expect(source).toContain("assertNoStalePrintFaces(documentNode)");
+    expect(source).toContain("Outdated print faces survived production rendering");
     expect(source).not.toContain("printWindow.document.close");
+  });
+
+  it("does not load the retired DOM-rewrite print layers", () => {
+    const index = read("deckbuilder/index.html");
+    for (const retired of [
+      "print-duplex.js",
+      "print-intelligence-trackers.js",
+      "print-reference-placement.js",
+      "print-intelligence-portraits.js",
+      "print-card-back-orientation.js",
+    ]) {
+      expect(index).not.toContain(retired);
+    }
+    expect(index).toContain("custom-print-loader.js");
   });
 });
