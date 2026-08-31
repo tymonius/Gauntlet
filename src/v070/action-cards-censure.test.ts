@@ -164,10 +164,10 @@ describe('v0.7.0 printed Action cards and Sanctions: Censure', () => {
 
   test('unsupported printed Action effects fail explicitly without spending the Action or moving the card', () => {
     const state = openingForB();
-    const unsupported = 'test-B-unsupported-neutral-manifest-destiny';
+    const unsupported = 'test-B-unsupported-neutral-pathfinders';
     state.cardInstances[unsupported] = {
       instanceId: unsupported,
-      cardId: 'neutral-manifest-destiny',
+      cardId: 'neutral-pathfinders',
       owner: 'B',
     };
     state.players.B.zones.hand.push(unsupported);
