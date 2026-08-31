@@ -153,7 +153,7 @@
   }
 
   function applyStarterDeckToState(preset) {
-    const faction = FACTIONS.find(item => item.id === preset.factionId);
+    const faction = deckbuilder.factions.find(item => item.id === preset.factionId);
     const leader = faction?.leaders?.find(item => item.id === preset.leaderId);
     if (!faction || !leader) throw new Error(`Missing faction or Leader for ${preset.name}.`);
 
@@ -182,28 +182,14 @@
   }
 
   function captureCurrentPrintDocument() {
-    const printButton = document.getElementById("printDeckButton");
-    const inheritedOpen = window.open;
-    let captured = "";
-
-    const fakeDocument = {
-      write(value) { captured += String(value); },
-      close() {}
-    };
-    const fakeWindow = {
-      document: fakeDocument,
-      focus() {}
-    };
-
-    window.open = () => fakeWindow;
-    try {
-      printButton.click();
-    } finally {
-      window.open = inheritedOpen;
+    const printApi = deckbuilder.feature("printDeck");
+    if (typeof printApi?.buildDocument !== "function") {
+      throw new Error("The Deckbuilder print document API is unavailable.");
     }
 
-    if (!captured) throw new Error("The Deckbuilder did not generate a printable document.");
-    return captured;
+    const documentHtml = printApi.buildDocument();
+    if (!documentHtml) throw new Error("The Deckbuilder did not generate a printable document.");
+    return documentHtml;
   }
 
   function combinePrintDocuments(documents) {
@@ -212,18 +198,14 @@
     const first = parsed[0];
     if (!first) throw new Error("No starter Deck print documents were generated.");
 
-    parsed.forEach(frameIntelligencePortraits);
-
     const links = [...first.head.querySelectorAll("link")].map(link => link.outerHTML).join("\n");
     const styles = [...new Set(parsed.flatMap(documentNode =>
       [...documentNode.head.querySelectorAll("style")].map(style => style.textContent)
     ))];
 
-    let printScript = "";
+    const printScripts = [...first.body.querySelectorAll("script")].map(script => script.outerHTML);
     const bodies = parsed.map((documentNode, index) => {
-      const scripts = [...documentNode.body.querySelectorAll("script")];
-      if (!printScript && scripts.length) printScript = scripts[scripts.length - 1].textContent;
-      scripts.forEach(script => script.remove());
+      documentNode.body.querySelectorAll("script").forEach(script => script.remove());
 
       const firstPage = documentNode.body.querySelector(".first-page");
       if (index > 0 && firstPage) firstPage.classList.add("bulk-deck-start");
@@ -244,39 +226,9 @@ ${styles.map(style => `<style>${style}</style>`).join("\n")}
 </head>
 <body class="all-starter-decks-print">
 ${bodies}
-<script>${printScript}<\/script>
+${printScripts.join("\n")}
 </body>
 </html>`;
-  }
-
-  function frameIntelligencePortraits(documentNode) {
-    documentNode.querySelectorAll(".leader-card .leader-art img").forEach(image => {
-      const leaderName = String(image.getAttribute("alt") || "").trim().toLowerCase();
-      if (leaderName !== "ranger" && leaderName !== "spymaster") return;
-
-      const card = image.closest(".leader-card");
-      const art = image.closest(".leader-art");
-      if (!card || !art) return;
-
-      card.classList.add("intelligence-leader-card", `${leaderName}-leader-card`);
-      card.style.setProperty("grid-template-rows", "1.37in 1fr .16in", "important");
-      art.style.setProperty("height", "1.37in", "important");
-      art.style.setProperty("min-height", "1.37in", "important");
-      art.style.setProperty("max-height", "1.37in", "important");
-
-      image.style.setProperty("position", "absolute", "important");
-      image.style.setProperty("left", "0", "important");
-      image.style.setProperty("right", "auto", "important");
-      image.style.setProperty("top", leaderName === "ranger" ? "-.015in" : "-.01in", "important");
-      image.style.setProperty("bottom", "auto", "important");
-      image.style.setProperty("width", "100%", "important");
-      image.style.setProperty("height", "auto", "important");
-      image.style.setProperty("min-width", "100%", "important");
-      image.style.setProperty("max-width", "none", "important");
-      image.style.setProperty("object-fit", "fill", "important");
-      image.style.setProperty("object-position", "initial", "important");
-      image.style.setProperty("transform", "none", "important");
-    });
   }
 
   function escapeHtml(value) {
