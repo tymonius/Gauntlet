@@ -32,10 +32,12 @@ describe('Deckbuilder Mystics Rite selection', () => {
   });
 
   it('persists selected Rites through current Deck data, save/load, JSON import/export, and copied lists', () => {
-    expect(rites).toContain('schemaVersion: Math.max(3');
+    expect(rites).toContain('deckbuilder.registerSerializeHook(serializeRites)');
+    expect(rites).toContain('deckbuilder.registerHydrateHook(hydrateRites)');
     expect(rites).toContain('selectedRites: isMystics() ? [...state.rites] : []');
     expect(rites).toContain('data.selectedRites || []');
-    expect(rites).toContain('"Rites:"');
+    expect(rites).toContain('function riteDeckListLines()');
+    expect(rites).toContain('Rites: ${names.join(", ") || "None"}');
     expect(rites).toContain('state.pendingRites');
   });
 
