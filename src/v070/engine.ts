@@ -327,6 +327,13 @@ export type V070PendingActionEffectChoice =
       reclaimCandidateInstanceIds: string[];
     }
   | {
+      kind: 'manifest_destiny_sacrifice';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      minimumAssetCount: number;
+      candidateAssetInstanceIds: string[];
+    }
+  | {
       kind: 'owned_deed_target';
       playerId: PlayerId;
       sourceActionInstanceId: string;
