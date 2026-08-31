@@ -4,6 +4,8 @@ import { describe, expect, it } from 'vitest';
 const read = (path: string) => readFileSync(path, 'utf8');
 const authority = JSON.parse(read('game-data/current-game.json'));
 const runtime = read('game-data/current-game.mjs');
+const rulesetRuntime = read('game-data/ruleset.mjs');
+const leaderCatalog = read('card-design/card-review.js');
 const nodeAuthority = read('scripts/current-game-authority.mjs');
 const ttsCatalog = read('scripts/tts-current-catalog.mjs');
 const componentLoader = read('scripts/tts-component-contract.mjs');
@@ -15,7 +17,7 @@ const artworkClient = read('card-design/artwork-authoring-client.js');
 const artworkServer = read('scripts/card-design-server.mjs');
 const artworkCompositor = read('card-design/artwork-compositor.js');
 const cardRenderer = read('card-design/card-review-render.js');
-const cardRenderValidator = read('scripts/validate-v064-card-render.mjs');
+const cardRenderValidator = read('scripts/validate-current-card-render.mjs');
 const livePublicationWorkflow = read('.github/workflows/verify-current-live-publication.yml');
 
 const TRANSITIONAL_RUNTIME_MARKERS = [
@@ -211,6 +213,15 @@ describe('complete current-game authority', () => {
     expect(cardRenderer).not.toMatch(/normaliz.*Card.*Presentation/i);
     expect(cardRenderValidator).toContain('const expectedLabels = sourceCard.effects.map(effect => effect.label);');
     expect(cardRenderValidator).not.toMatch(/normaliz.*Card.*Presentation/i);
+  });
+
+  it('does not synthesize legacy iterable Leader sections at current runtime boundaries', () => {
+    expect(runtime).not.toContain('legacyLeaderSectionTuple');
+    expect(runtime).not.toContain('Symbol.iterator');
+    expect(rulesetRuntime).not.toContain('legacyLeaderSectionTuple');
+    expect(rulesetRuntime).not.toContain('Symbol.iterator');
+    expect(leaderCatalog).not.toContain('map(([label,text,cost])');
+    expect(leaderCatalog).toContain('(leader.sections || []).map(section');
   });
 
   it('contains the finalized current card wording directly', () => {
