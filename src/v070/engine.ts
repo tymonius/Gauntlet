@@ -237,7 +237,8 @@ export type V070PendingActionEffectChoice =
         | 'Tariffs'
         | 'Anathema'
         | 'Reserve Force'
-        | 'Extraordinary Rendition';
+        | 'Extraordinary Rendition'
+        | 'Sleeper Network';
       replacementInstanceIds: string[];
     }
   | {
@@ -312,6 +313,11 @@ export type V070PendingActionEffectChoice =
       kind: 'extraordinary_rendition_bind_target';
       playerId: PlayerId;
       opponentId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'sleeper_network_bind_target';
+      playerId: PlayerId;
       sourceActionInstanceId: string;
     };
 
