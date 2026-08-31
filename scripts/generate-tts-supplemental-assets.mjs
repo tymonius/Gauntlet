@@ -24,6 +24,7 @@ const CSS_CARD_HEIGHT = 336;
 const FIRST_SUPPLEMENTAL_DECK_ID = 200;
 const SUPPORTED_RENDERERS = new Map([
   ['rite-card', 'rite-card'],
+  ['ritual-card', 'ritual-card'],
   ['reference-card', 'reference-card'],
   ['tracker', 'sliding-tracker'],
 ]);
@@ -318,8 +319,8 @@ function readyCardBase(component, renderer) {
   if (!component.cardLike || component.tts?.representation !== 'card') {
     throw new Error(`Ready supplemental component ${component.id} cannot use ${renderer}: expected a card-like TTS card.`);
   }
-  if (component.backPolicy !== 'twoSided') {
-    throw new Error(`Ready supplemental component ${component.id} must be explicitly two-sided before card export; found ${component.backPolicy || 'missing'}.`);
+  if (!['twoSided', 'specialBack'].includes(component.backPolicy)) {
+    throw new Error(`Ready supplemental component ${component.id} must declare an intrinsic reverse before card export; found ${component.backPolicy || 'missing'}.`);
   }
 
   return {
@@ -370,6 +371,24 @@ async function readyRiteRecord(component, renderer, currentGame) {
   };
 }
 
+async function readyRitualRecord(component, renderer, currentGame) {
+  const ritual = currentGame.mystics?.ritual;
+  if (!ritual?.id || component.id !== `mystics-ritual-of-${ritual.id}`) {
+    throw new Error(`Current-game authority has no Ritual matching ${component.id}.`);
+  }
+  if (ritual.name !== component.name) {
+    throw new Error(`Ritual component ${component.id} does not match current-game name ${ritual.name}.`);
+  }
+  if (!component.specialBackFile) {
+    throw new Error(`Ready Ritual component ${component.id} has no specialBackFile.`);
+  }
+  await access(join(ROOT, component.specialBackFile));
+  return {
+    ...readyCardBase(component, renderer),
+    specialBackFile: component.specialBackFile,
+  };
+}
+
 async function readyReferenceRecord(component, renderer, markdown) {
   const faces = component.referenceFaces;
   if (!faces?.front || !faces?.reverse) {
@@ -393,6 +412,7 @@ async function readyRecord(component, sourceCache, currentGame) {
 
   if (component.family === 'tracker') return buildReadyTrackerRecord(component, renderer);
   if (component.family === 'rite-card') return readyRiteRecord(component, renderer, currentGame);
+  if (component.family === 'ritual-card') return readyRitualRecord(component, renderer, currentGame);
 
   let markdown = sourceCache.get(component.source);
   if (!markdown) {
@@ -462,6 +482,9 @@ function productionComponentRequest(record) {
   }
   if (record.renderer === 'rite-card') {
     return { kind: 'rite', id: String(record.id).replace(/^mystics-rite-/, '') };
+  }
+  if (record.renderer === 'ritual-card') {
+    return { kind: 'ritual', id: String(record.id).replace(/^mystics-ritual-of-/, '') };
   }
   throw new Error(`No card-design production component request for ${record.id} (${record.renderer}).`);
 }
