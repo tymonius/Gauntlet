@@ -77,11 +77,11 @@ The bag description records the starter summary and recommended Territory order.
 
 ## Deckbuilder custom Deck import
 
-Deckbuilder-to-TTS import is a **v0.7.1 feature**. The active `v0.7.1-candidate` TTS Review Scaffold installs the importer for private QA, while the public Deckbuilder keeps **Copy for Tabletop Simulator** hidden for prerelease authorities. The published v0.7.0 Workshop mod therefore remains the only public TTS version during candidate testing.
+Deckbuilder-to-TTS import is a **v0.7.1 feature**. In the Deckbuilder, the existing ruleset toggle is the exposure boundary: the released v0.7.0 view does not show TTS export, while the `v0.7.1-candidate` view shows the Tabletop Simulator transfer section for private QA. The published v0.7.0 Workshop mod remains the only public TTS version during candidate testing.
 
-When the current-game authority becomes stable v0.7.1, the Deckbuilder can copy a compact versioned `GDL1:` Deck Code containing only the current game version, Deck name, faction/Leader ids, playable-card ids with quantities, and the three selected Territory ids.
+The Deckbuilder copies a compact versioned `GDL1:` Deck Code containing the current game version, Deck name, faction/Leader ids, playable-card ids with quantities, and the three selected Territory ids. Mystics codes additionally carry the three selected Rite ids.
 
-The assembled v0.7.1-candidate and later TTS saves install a global **IMPORT DECK** control after faction supplementals are assembled. Import validates the Deck Code against the same generated card/Territory manifests and exact TTS game version, then uses the matching official starter Bag as the runtime template. The custom Bag therefore keeps the correct Leader, faction-colored utility pieces, references, trackers, Proposals/Deeds/Rites, and other ready supplementals while replacing only the playable Deck and selected Territory stack.
+The assembled v0.7.1-candidate and later TTS saves install a global **DECK IMPORT** control after faction supplementals are assembled. Import validates the Deck Code against the generated card/Territory/Rite assets and exact TTS game version, then uses the matching official starter Bag as the runtime template. The custom Bag keeps the correct Leader, faction-colored utility pieces, references, trackers, Proposals/Deeds, and other ready supplementals while replacing the playable Deck and selected Territory stack. For Mystics, it also rebuilds the **Rites + Ritual** stack from the three selected Rites plus Ritual of Ascension.
 
 Official starter Bags carry `gauntlet:starter-kit:<starter-id>` GM notes so the importer can locate a safe template. The source starter Bag is never modified.
 
@@ -126,7 +126,7 @@ A release QA record remains `in-progress` until the corresponding in-game checks
 
 ### Table and setup
 
-- successful load of the hosted v0.7.0 save and custom assets;
+- successful load of the hosted save for the version under QA and its custom assets;
 - White/Green player perspectives and hand/reserve zones;
 - all six Gauntlet snaps and Territory orientation;
 - Player Tokens and battle dice;
