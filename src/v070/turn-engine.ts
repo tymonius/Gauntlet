@@ -27,6 +27,7 @@ import {
   advanceV070FrontLine,
   nextV070FrontLineTarget,
 } from './front-line';
+import { insertV070TerritoryAtPlayerEnd } from './gauntlet';
 import {
   V070_DEMILITARIZED_ZONE_ID,
   cardIdForV070Overlay,
@@ -306,6 +307,11 @@ export type V070TurnAction =
       targetInstanceIds?: readonly string[];
     }
   | {
+      type: 'resolve_manifest_destiny_sacrifice';
+      playerId: PlayerId;
+      assetInstanceIds: readonly string[];
+    }
+  | {
       type: 'resolve_censure_choice';
       playerId: PlayerId;
       sanctionInstanceId: string;
@@ -490,6 +496,10 @@ export function reduceV070TurnAction(
       && action.type === 'resolve_necromancy_action'
       && action.playerId === pending.playerId
     ) || (
+      pending.kind === 'manifest_destiny_sacrifice'
+      && action.type === 'resolve_manifest_destiny_sacrifice'
+      && action.playerId === pending.playerId
+    ) || (
       pending.kind === 'owned_deed_target'
       && action.type === 'choose_owned_deed_target'
       && action.playerId === pending.playerId
@@ -542,6 +552,7 @@ export function reduceV070TurnAction(
       'choose_extraordinary_rendition_bind_target',
       'choose_sleeper_network_bind_target',
       'resolve_necromancy_action',
+      'resolve_manifest_destiny_sacrifice',
       'choose_owned_deed_target',
       'choose_treasury_card_target',
       'resolve_deed_purchase_choice',
@@ -794,6 +805,13 @@ export function reduceV070TurnAction(
         action.playerId,
         action.mode,
         action.targetInstanceIds ?? [],
+      );
+      break;
+    case 'resolve_manifest_destiny_sacrifice':
+      resolveManifestDestinySacrifice(
+        next,
+        action.playerId,
+        action.assetInstanceIds,
       );
       break;
     case 'resolve_censure_choice':
@@ -1146,6 +1164,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'military-give-chase',
   'neutral-insurrection',
   'neutral-landslide',
+  'neutral-manifest-destiny',
   'neutral-new-recruits',
   'neutral-phantom-passage',
   'neutral-revolution',
@@ -1278,6 +1297,23 @@ function playActionCard(
     throw new V070GameActionError(
       'Disruption requires at least one card in the opponent’s Hand.',
     );
+  }
+  if (card.id === 'neutral-manifest-destiny') {
+    const candidates = manifestDestinyAssetCandidateInstanceIds(
+      state,
+      playerId,
+    );
+    const otherHandCount = Math.max(0, player.zones.hand.length - 1);
+    if (candidates.length === 0) {
+      throw new V070GameActionError(
+        'Manifest Destiny requires at least one Asset that can leave play.',
+      );
+    }
+    if (otherHandCount + candidates.length < 3) {
+      throw new V070GameActionError(
+        'Manifest Destiny requires at least three other cards total between your Hand and selected Assets.',
+      );
+    }
   }
   if (card.id === 'neutral-salvage'
     && player.zones.discardPile.length === 0) {
@@ -1906,6 +1942,13 @@ function continuePendingActionCard(state: V070GameState): void {
     case 'neutral-insurrection':
       resolveInsurrectionAction(state, pending.playerId, pending.instanceId);
       finishPendingActionCard(state);
+      return;
+    case 'neutral-manifest-destiny':
+      openManifestDestinySacrificeChoice(
+        state,
+        pending.playerId,
+        pending.instanceId,
+      );
       return;
     case 'neutral-landslide': {
       const positions = availableLandslidePositions(state);
@@ -6752,9 +6795,181 @@ function gainClemencyInfluence(
   });
 }
 
+function manifestDestinyAssetCandidateInstanceIds(
+  state: V070GameState,
+  playerId: PlayerId,
+): string[] {
+  return voluntarilyReturnableV070AssetInstanceIds(state, playerId);
+}
+
+function openManifestDestinySacrificeChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+): void {
+  const candidates = manifestDestinyAssetCandidateInstanceIds(
+    state,
+    playerId,
+  );
+  const otherHandCount = state.players[playerId].zones.hand.length;
+  const minimumAssetCount = Math.max(1, 3 - otherHandCount);
+
+  if (candidates.length < minimumAssetCount) {
+    appendV070Event(state, {
+      type: 'action_effect_incomplete',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        sourceActionInstanceId,
+        purpose: 'Manifest Destiny',
+        reason: 'required_sacrifice_unavailable_after_reactions',
+        otherHandCount,
+        minimumAssetCount,
+        candidateAssetCount: candidates.length,
+      },
+    });
+    finishPendingActionCard(state);
+    return;
+  }
+
+  state.pendingActionEffectChoice = {
+    kind: 'manifest_destiny_sacrifice',
+    playerId,
+    sourceActionInstanceId,
+    minimumAssetCount,
+    candidateAssetInstanceIds: [...candidates],
+  };
+  appendV070Event(state, {
+    type: 'action_effect_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      kind: 'manifest_destiny_sacrifice',
+      playerId,
+      sourceActionInstanceId,
+      purpose: 'Manifest Destiny',
+      otherHandCount,
+      minimumAssetCount,
+      candidateAssetInstanceIds: [...candidates],
+    },
+  });
+}
+
+function resolveManifestDestinySacrifice(
+  state: V070GameState,
+  playerId: PlayerId,
+  assetInstanceIds: readonly string[],
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'manifest_destiny_sacrifice'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'neutral-manifest-destiny') {
+    throw new V070GameActionError(
+      'No Manifest Destiny sacrifice choice is pending for that player.',
+    );
+  }
+
+  if (new Set(assetInstanceIds).size !== assetInstanceIds.length) {
+    throw new V070GameActionError(
+      'Manifest Destiny cannot sacrifice the same Asset twice.',
+    );
+  }
+  if (assetInstanceIds.length < choice.minimumAssetCount) {
+    throw new V070GameActionError(
+      `Manifest Destiny requires at least ${choice.minimumAssetCount} selected Asset${choice.minimumAssetCount === 1 ? '' : 's'} with the current Hand.`,
+    );
+  }
+
+  const currentCandidates = manifestDestinyAssetCandidateInstanceIds(
+    state,
+    playerId,
+  );
+  if (assetInstanceIds.some(instanceId =>
+    !currentCandidates.includes(instanceId)
+  )) {
+    throw new V070GameActionError(
+      'Manifest Destiny may sacrifice only Assets that can currently leave play.',
+    );
+  }
+
+  const player = state.players[playerId];
+  if (player.zones.hand.length + assetInstanceIds.length < 3) {
+    throw new V070GameActionError(
+      'Manifest Destiny must put at least three other cards total in the Graveyard.',
+    );
+  }
+
+  const extraordinary = assetInstanceIds.find(instanceId =>
+    state.cardInstances[instanceId]?.cardId ===
+      'intelligence-extraordinary-rendition'
+    && isV070AssetFaceUp(state, instanceId)
+  );
+  const orderedAssets = extraordinary
+    ? [
+        extraordinary,
+        ...assetInstanceIds.filter(instanceId => instanceId !== extraordinary),
+      ]
+    : [...assetInstanceIds];
+
+  const handSacrifice = player.zones.hand.splice(0);
+  player.zones.graveyard.push(...handSacrifice);
+
+  for (const instanceId of orderedAssets) {
+    removeV070AssetForced(
+      state,
+      playerId,
+      instanceId,
+      'graveyard',
+      'Manifest Destiny sacrifice',
+    );
+  }
+
+  insertV070TerritoryAtPlayerEnd(
+    state,
+    playerId,
+    {
+      territoryInstanceId: pending.instanceId,
+      territoryId: pending.cardId,
+      contributedBy: playerId,
+      blank: true,
+    },
+    'Manifest Destiny Action',
+  );
+
+  appendV070Event(state, {
+    type: 'manifest_destiny_sacrifice_resolved',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      sourceActionInstanceId: pending.instanceId,
+      handCards: handSacrifice.map(instanceId => ({
+        instanceId,
+        cardId: state.cardInstances[instanceId]?.cardId,
+      })),
+      assetCards: orderedAssets.map(instanceId => ({
+        instanceId,
+        cardId: state.cardInstances[instanceId]?.cardId,
+      })),
+      totalSacrificed: handSacrifice.length + orderedAssets.length,
+    },
+  });
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state, 'territory');
+}
+
 function finishPendingActionCard(
   state: V070GameState,
-  destination: 'discard' | 'graveyard' | 'overlay' | 'asset' = 'discard',
+  destination:
+    | 'discard'
+    | 'graveyard'
+    | 'overlay'
+    | 'asset'
+    | 'territory' = 'discard',
 ): void {
   const pending = state.pendingActionCard;
   if (!pending) throw new V070GameActionError('No Action card is pending resolution.');
@@ -6770,6 +6985,14 @@ function finishPendingActionCard(
     if (!state.overlays.some(overlay => overlay.instanceId === pending.instanceId)) {
       throw new V070GameActionError(
         'An Action card can resolve to Overlay only after it has been attached.',
+      );
+    }
+  } else if (destination === 'territory') {
+    if (!state.board.some(
+      territory => territory.territoryInstanceId === pending.instanceId,
+    )) {
+      throw new V070GameActionError(
+        'An Action card can resolve to Territory only after it has entered the Gauntlet.',
       );
     }
   } else if (!state.players[pending.playerId].zones.assetBank.includes(pending.instanceId)) {
