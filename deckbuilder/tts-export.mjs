@@ -57,17 +57,24 @@ function compactTerritories(territories) {
 
 export function buildTtsDeckPayload(deck) {
   if (!deck || typeof deck !== "object") throw new Error("Deck data is required.");
-  if (String(deck.factionId || "").trim().toLowerCase() === "mystics") {
-    throw new Error("Mystics Tabletop Simulator export is temporarily unavailable until selected-Rite assembly is supported. Export JSON to preserve the selected Rites.");
-  }
-  return {
+  const factionId = requiredString(deck.factionId, "faction");
+  const payload = {
     v: requiredString(deck.gameVersion, "game version"),
     n: requiredString(deck.name, "deck name"),
-    f: requiredString(deck.factionId, "faction"),
+    f: factionId,
     l: requiredString(deck.leaderId, "leader"),
     c: compactCards(deck.cards),
     t: compactTerritories(deck.territories)
   };
+  if (factionId.toLowerCase() === "mystics") {
+    const selectedRites = (deck.selectedRites || []).map(rite => requiredString(
+      typeof rite === "string" ? rite : rite?.id,
+      "Rite id"
+    ));
+    if (!selectedRites.length) throw new Error("Mystics TTS export requires selected Rites.");
+    payload.r = selectedRites;
+  }
+  return payload;
 }
 
 export function encodeTtsDeckCode(deck) {
@@ -123,34 +130,33 @@ async function copyDeckCode(button, allowCandidateQa = false) {
 }
 
 async function installDeckCodeButton() {
+  const guide = document.getElementById("ttsTransferGuide");
   const button = document.getElementById("copyTtsDeckCodeButton");
   const help = document.getElementById("ttsDeckExportHelp");
-  if (!button) return;
+  if (!guide || !button) return;
 
   try {
     const { loadGameRuleset, rulesetModeFromUrl } = await import("../game-data/ruleset.mjs");
     const mode = rulesetModeFromUrl();
     const selectedGame = await loadGameRuleset(mode);
-    const params = new URLSearchParams(window.location.search);
-    const candidateQa = mode === "candidate"
-      && params.get("tts-qa") === "1"
-      && isTtsDeckExportQaAvailable(selectedGame?.version);
+    const candidateQa = mode === "candidate" && isTtsDeckExportQaAvailable(selectedGame?.version);
     const stable = isTtsDeckExportAvailable(selectedGame?.version);
+    if (!candidateQa && !stable) return;
+
+    guide.hidden = false;
+    button.hidden = false;
 
     if (candidateQa) {
-      button.hidden = false;
-      button.textContent = "Copy TTS QA Deck Code";
-      button.title = "Copy a v0.7.1-candidate Deck Code for the private TTS QA build.";
+      button.textContent = "Copy TTS Deck Code";
+      button.title = "Copy a candidate Deck Code for the matching private TTS build.";
       if (help) {
-        help.textContent = "QA mode is active. Build and validate a candidate Deck, copy its TTS Deck Code here, then paste it into Deck Import in the private TTS candidate build.";
+        help.textContent = "Build and validate your v0.7.1 candidate Deck, copy its TTS Deck Code here, then paste it into Deck Import in the matching TTS candidate build.";
       }
       button.addEventListener("click", () => copyDeckCode(button, true));
       return;
     }
 
-    if (!stable) return;
 
-    button.hidden = false;
     button.textContent = "Copy TTS Deck Code";
     button.title = "Copy a compact Deck Code to paste into the Gauntlet TTS mod.";
     if (help) {
