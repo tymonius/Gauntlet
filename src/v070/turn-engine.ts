@@ -1125,6 +1125,10 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'diplomats-clemency',
   'diplomats-detente',
   'financiers-compound-interest',
+  'financiers-corner-the-market',
+  'financiers-divestment',
+  'financiers-foreclosure',
+  'financiers-liquidation',
   'financiers-monetary-crisis',
   'financiers-tariffs',
   'financiers-war-bonds',
@@ -1430,6 +1434,41 @@ function playActionCard(
       );
     }
     pendingBankReplacementV070AssetInstanceIds(state, playerId, cardInstanceId);
+  }
+  if ([
+      'financiers-corner-the-market',
+      'financiers-divestment',
+      'financiers-foreclosure',
+      'financiers-liquidation',
+    ].includes(card.id)
+    && !isV070FinancierPlayer(state, playerId)) {
+    throw new V070GameActionError(
+      `${card.name} requires the Financiers faction economy.`,
+    );
+  }
+  if (card.id === 'financiers-divestment'
+    && ownedDeedCandidatePositions(state, playerId).length === 0) {
+    throw new V070GameActionError(
+      'Divestment requires at least one Deed you own.',
+    );
+  }
+  if (card.id === 'financiers-liquidation'
+    && state.players[playerId].financiers!.treasury.length === 0) {
+    throw new V070GameActionError(
+      'Liquidation requires at least one card in your Treasury.',
+    );
+  }
+  if (card.id === 'financiers-foreclosure') {
+    if (turnState.phase !== 'denouement') {
+      throw new V070GameActionError(
+        'Foreclosure may be played only during Denouement.',
+      );
+    }
+    if (!foreclosureTargetPosition(state, playerId)) {
+      throw new V070GameActionError(
+        'Foreclosure requires the next opposing Territory beyond your Front Line to be unoccupied and its Deed to be yours.',
+      );
+    }
   }
   if (card.id === 'mystics-threefold-vision'
     && player.zones.drawPile.length < 3) {
@@ -2291,6 +2330,33 @@ function continuePendingActionCard(state: V070GameState): void {
       });
       return;
     }
+    case 'financiers-divestment':
+      openOwnedDeedTargetChoice(
+        state,
+        pending.playerId,
+        pending.instanceId,
+      );
+      return;
+    case 'financiers-liquidation':
+      openTreasuryCardTargetChoice(
+        state,
+        pending.playerId,
+        pending.instanceId,
+      );
+      return;
+    case 'financiers-corner-the-market':
+      openDeedPurchaseChoice(
+        state,
+        pending.playerId,
+        pending.instanceId,
+        'Corner the Market',
+        null,
+      );
+      return;
+    case 'financiers-foreclosure':
+      resolveForeclosureAction(state, pending.playerId);
+      finishPendingActionCard(state);
+      return;
     case 'financiers-monetary-crisis':
       resolveMonetaryCrisisAction(state, pending.playerId);
       finishPendingActionCard(state);
@@ -4061,6 +4127,390 @@ function choosePendingAssetBankReplacement(
     pending.cardId,
     replaceAssetInstanceId,
   );
+}
+
+function ownedDeedCandidatePositions(
+  state: V070GameState,
+  playerId: PlayerId,
+): number[] {
+  const positions: number[] = [];
+  for (const deed of state.deeds) {
+    if (deed.owner !== playerId) continue;
+    const territory = state.board.find(
+      candidate => candidate.territoryInstanceId === deed.territoryInstanceId,
+    );
+    if (territory) positions.push(territory.position);
+  }
+  return positions.sort((a, b) => a - b);
+}
+
+function foreclosureTargetPosition(
+  state: V070GameState,
+  playerId: PlayerId,
+): number | null {
+  if (!isV070FinancierPlayer(state, playerId)) return null;
+  const target = nextV070FrontLineTarget(state, playerId);
+  if (!target
+    || target.controller === playerId
+    || target.occupant !== null
+    || v070DeedOwner(state, target.territoryInstanceId) !== playerId) {
+    return null;
+  }
+  return target.position;
+}
+
+function affordableDeedPurchasePositions(
+  state: V070GameState,
+  playerId: PlayerId,
+): Array<{ position: number; cost: number }> {
+  if (!isV070FinancierPlayer(state, playerId)) return [];
+  const capital = state.players[playerId].financiers!.capital;
+  const result: Array<{ position: number; cost: number }> = [];
+  for (const territory of state.board) {
+    if (v070DeedOwner(state, territory.territoryInstanceId) === playerId) {
+      continue;
+    }
+    const cost = v070DeedCost(
+      state,
+      playerId,
+      territory.territoryInstanceId,
+    );
+    if (cost <= capital) {
+      result.push({ position: territory.position, cost });
+    }
+  }
+  return result.sort((a, b) => a.position - b.position);
+}
+
+function openOwnedDeedTargetChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+): void {
+  const positions = ownedDeedCandidatePositions(state, playerId);
+  if (positions.length === 0) {
+    appendV070Event(state, {
+      type: 'action_effect_incomplete',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        sourceActionInstanceId,
+        purpose: 'Divestment',
+        reason: 'required_owned_deed_unavailable',
+      },
+    });
+    finishPendingActionCard(state);
+    return;
+  }
+
+  state.pendingActionEffectChoice = {
+    kind: 'owned_deed_target',
+    playerId,
+    sourceActionInstanceId,
+    purpose: 'Divestment',
+  };
+  appendV070Event(state, {
+    type: 'action_effect_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      kind: 'owned_deed_target',
+      playerId,
+      sourceActionInstanceId,
+      purpose: 'Divestment',
+      territoryPositions: positions,
+    },
+  });
+}
+
+function chooseOwnedDeedTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  territoryPosition: number,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'owned_deed_target'
+    || choice.playerId !== playerId
+    || choice.purpose !== 'Divestment'
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'financiers-divestment') {
+    throw new V070GameActionError(
+      'No Divestment Deed choice is pending for that player.',
+    );
+  }
+
+  const territory = territoryAt(state, territoryPosition);
+  if (!territory
+    || v070DeedOwner(state, territory.territoryInstanceId) !== playerId) {
+    throw new V070GameActionError(
+      'Divestment must choose one Deed you currently own.',
+    );
+  }
+
+  const ownedBefore = v070DeedsOwned(state, playerId);
+  makeV070DeedUnowned(
+    state,
+    territory.territoryInstanceId,
+    'Divestment',
+  );
+  gainV070Capital(
+    state,
+    playerId,
+    ownedBefore,
+    'Divestment',
+  );
+  grantAdditionalAction(state, playerId, 'Divestment');
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state);
+}
+
+function openTreasuryCardTargetChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+): void {
+  const treasury = state.players[playerId].financiers?.treasury ?? [];
+  if (treasury.length === 0) {
+    appendV070Event(state, {
+      type: 'action_effect_incomplete',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        sourceActionInstanceId,
+        purpose: 'Liquidation',
+        reason: 'required_treasury_card_unavailable',
+      },
+    });
+    finishPendingActionCard(state);
+    return;
+  }
+
+  state.pendingActionEffectChoice = {
+    kind: 'treasury_card_target',
+    playerId,
+    sourceActionInstanceId,
+    purpose: 'Liquidation',
+  };
+  appendV070Event(state, {
+    type: 'action_effect_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      kind: 'treasury_card_target',
+      playerId,
+      sourceActionInstanceId,
+      purpose: 'Liquidation',
+      targetInstanceIds: [...treasury],
+    },
+  });
+}
+
+function chooseTreasuryCardTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'treasury_card_target'
+    || choice.playerId !== playerId
+    || choice.purpose !== 'Liquidation'
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'financiers-liquidation') {
+    throw new V070GameActionError(
+      'No Liquidation Treasury choice is pending for that player.',
+    );
+  }
+
+  const treasury = state.players[playerId].financiers?.treasury ?? [];
+  if (!treasury.includes(targetInstanceId)) {
+    throw new V070GameActionError(
+      'Liquidation must choose one card currently in your Treasury.',
+    );
+  }
+  const cardId = state.cardInstances[targetInstanceId]?.cardId;
+  const card = cardId ? v070CanonicalContent.cardsById.get(cardId) : undefined;
+  if (!card) {
+    throw new V070GameActionError(
+      'Liquidation requires a known Treasury card.',
+    );
+  }
+
+  removeV070CardFromTreasury(
+    state,
+    playerId,
+    targetInstanceId,
+    'discard',
+    'Liquidation',
+  );
+  gainV070Capital(
+    state,
+    playerId,
+    card.cost,
+    'Liquidation',
+  );
+
+  state.pendingActionEffectChoice = null;
+  openDeedPurchaseChoice(
+    state,
+    playerId,
+    pending.instanceId,
+    'Liquidation',
+    1,
+  );
+}
+
+function openDeedPurchaseChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+  purpose: 'Liquidation' | 'Corner the Market',
+  remainingPurchases: number | null,
+): void {
+  const candidates = affordableDeedPurchasePositions(state, playerId);
+  if (candidates.length === 0 || remainingPurchases === 0) {
+    state.pendingActionEffectChoice = null;
+    finishPendingActionCard(state);
+    return;
+  }
+
+  state.pendingActionEffectChoice = {
+    kind: 'deed_purchase_choice',
+    playerId,
+    sourceActionInstanceId,
+    purpose,
+    remainingPurchases,
+  };
+  appendV070Event(state, {
+    type: 'action_effect_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      kind: 'deed_purchase_choice',
+      playerId,
+      sourceActionInstanceId,
+      purpose,
+      optional: true,
+      candidates,
+      remainingPurchases,
+    },
+  });
+}
+
+function resolveDeedPurchaseChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  territoryPosition?: number,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'deed_purchase_choice'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId) {
+    throw new V070GameActionError(
+      'No immediate Deed purchase choice is pending for that player.',
+    );
+  }
+
+  const expectedCardId = choice.purpose === 'Liquidation'
+    ? 'financiers-liquidation'
+    : 'financiers-corner-the-market';
+  if (pending.cardId !== expectedCardId) {
+    throw new V070GameActionError(
+      'The Deed purchase choice does not match its pending Action card.',
+    );
+  }
+
+  if (territoryPosition === undefined) {
+    state.pendingActionEffectChoice = null;
+    finishPendingActionCard(state);
+    return;
+  }
+
+  const candidates = affordableDeedPurchasePositions(state, playerId);
+  if (!candidates.some(candidate => candidate.position === territoryPosition)) {
+    throw new V070GameActionError(
+      `${choice.purpose} must choose a currently affordable Deed you do not own, or pass.`,
+    );
+  }
+  const territory = territoryAt(state, territoryPosition);
+  if (!territory) {
+    throw new V070GameActionError(
+      'The selected Deed no longer has a Territory in the Gauntlet.',
+    );
+  }
+
+  buyV070Deed(
+    state,
+    playerId,
+    territory.territoryInstanceId,
+    choice.purpose,
+  );
+
+  state.pendingActionEffectChoice = null;
+  if (state.stage === 'ended') {
+    finishPendingActionCard(state);
+    return;
+  }
+
+  const remaining = choice.remainingPurchases === null
+    ? null
+    : Math.max(0, choice.remainingPurchases - 1);
+  openDeedPurchaseChoice(
+    state,
+    playerId,
+    pending.instanceId,
+    choice.purpose,
+    remaining,
+  );
+}
+
+function resolveForeclosureAction(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  const targetPosition = foreclosureTargetPosition(state, playerId);
+  if (targetPosition === null) {
+    throw new V070GameActionError(
+      'Foreclosure requires the next opposing Territory beyond your Front Line to be unoccupied and its Deed to be yours.',
+    );
+  }
+
+  const target = territoryAt(state, targetPosition);
+  if (!target) {
+    throw new V070GameActionError(
+      'Foreclosure target is no longer in the Gauntlet.',
+    );
+  }
+
+  const advance = advanceV070FrontLine(
+    state,
+    playerId,
+    1,
+    'Foreclosure',
+  );
+  if (advance.reachedOpponentEnd) {
+    state.stage = 'ended';
+    state.winner = playerId;
+    state.turnState = null;
+    appendV070Event(state, {
+      type: 'game_won',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        route: 'final_territory_capture',
+        source: 'Foreclosure',
+      },
+    });
+  }
 }
 
 function resolveSimpleBankingAction(
