@@ -17,8 +17,6 @@ const universalReferenceCss = readFileSync('card-design/universal-reference.css'
 const stager = readFileSync('scripts/stage-tts-release-assets.mjs', 'utf8');
 const assembler = readFileSync('scripts/assemble-tts-supplemental-save.mjs', 'utf8');
 const workflow = readFileSync('.github/workflows/generate-tts-card-assets.yml', 'utf8');
-const mysticsBridge = readFileSync('tts/render-current-mystics-assets.mjs', 'utf8');
-const mysticsEnsure = readFileSync('tts/ensure-current-mystics-assets.mjs', 'utf8');
 const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 
@@ -46,18 +44,24 @@ describe('TTS supplemental component exports', () => {
     expect(generator).not.toMatch(/readyCount\s*[:=]\s*\d+|pendingCount\s*[:=]\s*\d+/);
   });
 
-  it('packages the full current Mystics Rite pool for selectable TTS starter kits', () => {
+  it('packages the full current Mystics Rite pool and Ritual from physical component authority', async () => {
     const physicalReadyRites = contract.components.filter((component: any) =>
       component.family === 'rite-card' && component.productionStatus === 'ready'
     );
+    const ritual = contract.components.find((component: any) => component.family === 'ritual-card');
     expect(currentGame.mystics.rites).toHaveLength(6);
     expect(physicalReadyRites).toHaveLength(currentGame.mystics.rites.length);
-    expect(mysticsBridge).toContain('const packagedRites = rites');
-    expect(mysticsBridge).toContain("deckInclusion: 'selected-rite'");
-    expect(mysticsBridge).toContain('data-rite-count=');
-    expect(mysticsBridge).toContain('rites.length');
-    expect(mysticsEnsure).toContain("map(rite => `mystics-rite-${rite.id}`)");
-    expect(mysticsEnsure).not.toContain("component.family === 'rite-card'");
+    expect(physicalReadyRites.every((component: any) => component.deckInclusion === 'selected-rite')).toBe(true);
+    expect(ritual).toMatchObject({
+      id: 'mystics-ritual-of-ascension',
+      productionStatus: 'ready',
+      backPolicy: 'specialBack',
+    });
+
+    const { catalog } = await buildSupplementalCatalog(contract);
+    expect(catalog.ready.some((component: any) => component.id === ritual.id && component.renderer === 'ritual-card')).toBe(true);
+    expect(generator).toContain("['ritual-card', 'ritual-card']");
+    expect(generator).toContain("return { kind: 'ritual', id: String(record.id).replace(/^mystics-ritual-of-/, '') }");
   });
   it('exports the ready Mystics Rites as source-driven two-sided cards', async () => {
     const riteCards = contract.components.filter((component: any) => component.family === 'rite-card');
@@ -213,7 +217,7 @@ describe('TTS supplemental component exports', () => {
 
   it('fails closed when a ready supplemental family or required representation input has no exporter', () => {
     expect(generator).toContain('Ready supplemental component ${component.id} has no supported exporter');
-    expect(generator).toContain('must be explicitly two-sided before card export');
+    expect(generator).toContain('must declare an intrinsic reverse before card export');
     expect(generator).toContain('is two-sided but has no reverseArtwork');
     expect(generator).toContain('must declare referenceFaces.front and referenceFaces.reverse');
     expect(generator).toContain('reference selector must declare heading and depth');
@@ -260,10 +264,10 @@ describe('TTS supplemental component exports', () => {
     expect(workflow).toContain('scripts/tts-supplemental-geometry.mjs');
     expect(workflow).toContain('Generate ready supplemental components');
     expect(workflow).toContain('Generate finalized Proposal, Ledger, and Deed components');
-    expect(workflow).toContain('Refresh current Mystics Rite and Ritual components');
     expect(workflow).toContain('if [[ "$render_supplementals" == "true" ]]');
     expect(workflow).toContain('render_finalized=true');
-    expect(workflow).toContain('render_mystics=true');
+    expect(workflow).not.toContain('render_mystics');
+    expect(workflow).not.toContain('render-current-mystics-assets.mjs');
     expect(workflow).toContain('Assemble supplemental starter-kit contents');
     expect(workflow).toContain('Validate authoritative current TTS save contract');
     expect(workflow).toContain('run: npm run tts:save:assemble');
