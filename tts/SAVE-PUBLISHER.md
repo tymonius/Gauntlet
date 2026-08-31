@@ -81,9 +81,11 @@ Deckbuilder-to-TTS import is a **v0.7.1 feature**. In the Deckbuilder, the exist
 
 The Deckbuilder copies a compact versioned `GDL1:` Deck Code containing the current game version, Deck name, faction/Leader ids, playable-card ids with quantities, and the three selected Territory ids. Mystics codes additionally carry the three selected Rite ids.
 
-The assembled v0.7.1-candidate and later TTS saves install a global **DECK IMPORT** control after faction supplementals are assembled. Import validates the Deck Code against the generated card/Territory/Rite assets and exact TTS game version. During save generation, the importer captures a pruned, GUID-free immutable snapshot of each fully assembled faction/Leader starter kit and embeds those snapshots in Global Lua configuration.
+The assembled v0.7.1-candidate and later TTS saves install a global **DECK IMPORT** control after faction supplementals are assembled. Import validates the Deck Code against the generated card/Territory/Rite assets and exact TTS game version.
 
-At runtime, custom import starts from that embedded snapshot rather than searching the live table. The custom Bag therefore preserves the correct Leader, faction-colored utility pieces, references, trackers, Proposals/Deeds, and other ready supplementals while replacing the playable Deck and selected Territory stack. For Mystics, it also rebuilds the **Rites + Ritual** stack from the three selected Rites plus Ritual of Ascension.
+During save generation, the importer captures a pruned snapshot of each fully assembled faction/Leader starter kit and stores those snapshots as the contents of one locked, non-selectable internal Bag below the table. The large object trees therefore remain native TTS save data rather than being serialized into Global Lua. A hard build-time size guard prevents the importer Global script from growing beyond 100 KB.
+
+At runtime, custom import reads only the requested starter template from that internal library and clones it. The custom Bag preserves the correct Leader, faction-colored utility pieces, references, trackers, Proposals/Deeds, and other ready supplementals while replacing the playable Deck and selected Territory stack. For Mystics, it also rebuilds the **Rites + Ritual** stack from the three selected Rites plus Ritual of Ascension.
 
 Visible official starter Bags still carry `gauntlet:starter-kit:<starter-id>` GM notes for save validation and ordinary setup, but they are **not runtime importer dependencies**. Players may move, unpack, or delete them without breaking later custom Deck imports.
 
