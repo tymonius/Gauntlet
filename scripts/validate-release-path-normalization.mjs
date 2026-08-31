@@ -59,11 +59,8 @@ const frozenCandidateScripts = new Set([
   'scripts/render-v063-print-candidate.mjs',
   'scripts/validate-v063-print-candidate.mjs',
   'scripts/generate-v063-canonical-data-candidate.mjs',
-  'scripts/generate-v063-player-facing-candidates.mjs',
   'scripts/generate-v063-production-card-preview.mjs',
   'scripts/validate-v063-canonical-data-candidate.mjs',
-  'scripts/validate-v063-canonical-promotion-boundary.mjs',
-  'scripts/validate-v063-shared-rules.mjs',
 ]);
 
 // These current files intentionally name removed paths only to detect/reject

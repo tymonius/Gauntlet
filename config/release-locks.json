@@ -626,6 +626,48 @@
       "meaning": "Frozen v0.6.3 print-candidate visual-regression validator"
     },
     {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/generate-v063-player-facing-candidates.mjs",
+      "git_object": "6b1eae14598972ec1a6888abe375ad3632ed1e74",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.3 player-facing candidate generator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-v063-canonical-promotion-boundary.mjs",
+      "git_object": "1d050ca8dc63595eaf59e8eb63f7140a7e8649cb",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.3 canonical-promotion boundary validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-v063-shared-rules.mjs",
+      "git_object": "3904e074929a48d58a59a349065d8014ed4ffb10",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.3 shared-rules candidate validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-v063-starter-guidance.mjs",
+      "git_object": "a2c70b08aade7cc8d6f1d1b18db6322968f818c9",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.3 starter-guidance validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-v063-recovered-decisions.mjs",
+      "git_object": "85b378dec3941ba58f6396ced7c848c228a8ed3c",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.3 recovered-decisions validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-v063-finalized-tracker.mjs",
+      "git_object": "529e5a61e320d8da6127927e975f558b83cb861b",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.3 finalized-card tracker validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/materialize-v063-finalized-tracker-snapshot.mjs",
+      "git_object": "4d136aeffbd7d02ca2bac33a74ebe494bbe51881",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.3 finalized-card tracker snapshot materializer"
+    },
+    {
       "path": "docs/recovery/frozen-scripts/v0.6.3/build-clean-v063-complete-authority.mjs",
       "git_object": "3db81bc3da6f078a65c088c207178566c33c20f5",
       "kind": "blob",
