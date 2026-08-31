@@ -97,6 +97,8 @@ describe("Deckbuilder extension architecture", () => {
     expect(read("deckbuilder/print-all-starters.js")).toContain("await deckbuilder.bootstrap()");
     expect(read("deckbuilder/print-all-starters.js")).toContain('deckbuilder.feature("printDeck")');
     expect(read("deckbuilder/print-all-starters.js")).not.toContain("window.open =");
+    expect(read("deckbuilder/custom-print.mjs")).toContain('deckbuilder.feature("productionPrintRenderer")');
+    expect(read("deckbuilder/print-capital-ledger.js")).toContain('deckbuilder.feature("productionPrintRenderer")');
     expect(read("deckbuilder/territories.js")).toContain("await deckbuilder.bootstrap()");
     expect(read("deckbuilder/mystics-rites.js")).toContain("await deckbuilder.bootstrap()");
   });
