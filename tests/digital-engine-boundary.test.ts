@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { CURRENT_RULES_VERSION } from '../src/content/current';
 
@@ -16,8 +16,8 @@ describe('digital engine boundary', () => {
     expect(packageJson.scripts['dev:legacy:cli']).toBe('tsx src/cli/dev-runner-v06.ts');
     expect(packageJson.scripts['dev:legacy:gui']).toBe('tsx src/gui/dev-server-v06.ts');
 
-    expect(existsSync('src/cli/dev-runner.ts')).toBe(false);
-    expect(existsSync('src/gui/dev-server.ts')).toBe(false);
+    expect(readdirSync('src/cli')).not.toContain('dev-runner.ts');
+    expect(readdirSync('src/gui')).not.toContain('dev-server.ts');
     expect(existsSync('legacy/digital-engine-dev-runners/v056-cli-dev-runner.ts.txt')).toBe(true);
     expect(existsSync('legacy/digital-engine-dev-runners/v056-gui-dev-server.ts.txt')).toBe(true);
   });
