@@ -3,7 +3,8 @@ import { describe, expect, it } from "vitest";
 
 const index = readFileSync("deckbuilder/index.html", "utf8");
 const script = readFileSync("deckbuilder/print-request.js", "utf8");
-const runtime = readFileSync("deckbuilder/v061-runtime.js", "utf8");
+const runtime = readFileSync("deckbuilder/current-runtime.js", "utf8");
+const app = readFileSync("deckbuilder/app.js", "utf8");
 
 describe("Deckbuilder host printing requests", () => {
   it("is available directly in the main Deckbuilder", () => {
@@ -22,9 +23,12 @@ describe("Deckbuilder host printing requests", () => {
     expect(script).toContain("Import JSON");
   });
 
-  it("routes v0.6.1 imports through the canonical Deck data importer", () => {
-    expect(runtime).toContain("applyDeckData(snapshot)");
-    expect(runtime).not.toContain("loadDeckSnapshot(snapshot)");
+  it("uses the current Deck schema and authority runtime without legacy import shims", () => {
+    expect(app).toContain('schema: "gauntlet-deck"');
+    expect(app).toContain("schemaVersion: 3");
+    expect(app).toContain('data.schema !== "gauntlet-deck" || data.schemaVersion !== 3');
+    expect(runtime).toContain("GAUNTLET_DECKBUILDER_BOOTSTRAP");
+    expect(runtime).not.toContain("Storage.prototype");
   });
 
   it("keeps the complete Deck request out of the mailto URL", () => {
