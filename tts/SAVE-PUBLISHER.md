@@ -120,11 +120,9 @@ must pass. A non-ready component, missing required generated object, starter-ass
 
 ## Manual QA record
 
-The active development QA record is:
+The stable v0.7.1 release uses `tts/release-qa/v0.7.1.json`. The completed v0.7.0 record remains preserved separately at `tts/release-qa/v0.7.0.json` as evidence for the already-published Workshop version.
 
-- `tts/release-qa/v0.7.1-candidate.json`
-
-It begins `in-progress`, with all 18 manual checks false and `approvedForWorkshop: false`. The completed v0.7.0 record remains preserved separately at `tts/release-qa/v0.7.0.json` as evidence for the already-published Workshop version.
+For v0.7.1, checks covering TTS surfaces that are unchanged from the completed v0.7.0 package may inherit that prior QA evidence when the inheritance is explicit in the v0.7.1 record. Changed surfaces must be exercised again in the stable v0.7.1 artifact. The v0.7.1 delta gate currently requires fresh validation of stable hosted-save loading, v0.7.1 Rulebook/setup behavior, Mystics Rites and Completed faces, core handling of the changed package, focused changed-surface drills, and final friction resolution.
 
 A release QA record remains `in-progress` until the corresponding in-game checks are actually completed. Schema version 3 records the **18 required checks**, grouped as follows.
 
