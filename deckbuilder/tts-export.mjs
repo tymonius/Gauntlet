@@ -1,3 +1,6 @@
+const deckbuilder = window.GAUNTLET_DECKBUILDER;
+if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
+
 export const TTS_DECK_CODE_PREFIX = "GDL1:";
 export const TTS_DECK_EXPORT_MIN_VERSION = "v0.7.1";
 
@@ -95,14 +98,7 @@ export function decodeTtsDeckCode(code) {
 }
 
 async function copyDeckCode(button, allowCandidateQa = false) {
-  const currentDeckData = window.currentDeckData;
-  const validateDeck = window.validateDeck;
-  if (typeof currentDeckData !== "function") {
-    window.alert("Deck data is not ready yet.");
-    return;
-  }
-
-  const validation = typeof validateDeck === "function" ? validateDeck() : null;
+  const validation = deckbuilder.validate();
   if (validation && !validation.valid) {
     const details = (validation.errors || []).join("\n");
     window.alert(`Finish validating this Deck before exporting it to Tabletop Simulator.${details ? `\n\n${details}` : ""}`);
@@ -111,7 +107,7 @@ async function copyDeckCode(button, allowCandidateQa = false) {
 
   let code;
   try {
-    const deck = currentDeckData();
+    const deck = deckbuilder.serialize();
     const available = isTtsDeckExportAvailable(deck?.gameVersion)
       || (allowCandidateQa && isTtsDeckExportQaAvailable(deck?.gameVersion));
     if (!available) {
