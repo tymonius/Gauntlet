@@ -140,7 +140,9 @@ local GAUNTLET_DECK_IMPORT = JSON.decode(${luaLongString(configJson)})
 local gauntletDeckImportCodes = {}
 
 local function gauntletColorOf(player)
-  if type(player) == "table" and player.color ~= nil then return tostring(player.color) end
+  if player == nil then return "" end
+  local ok, color = pcall(function() return player.color end)
+  if ok and color ~= nil then return tostring(color) end
   return tostring(player or "")
 end
 
@@ -341,11 +343,13 @@ function gauntletOpenDeckImporter(player, value, id)
     gauntletMessage(color, "Sit in the White or Green seat before importing a Deck.", true)
     return
   end
-  UI.setAttribute("gauntlet-deck-import-panel", "active", "true")
+  UI.show("gauntlet-deck-import-panel")
+  UI.hide("gauntlet-deck-import-open")
 end
 
 function gauntletCloseDeckImporter(player, value, id)
-  UI.setAttribute("gauntlet-deck-import-panel", "active", "false")
+  UI.hide("gauntlet-deck-import-panel")
+  UI.show("gauntlet-deck-import-open")
 end
 
 function gauntletDeckImportChanged(player, value, id)
@@ -360,7 +364,7 @@ function gauntletImportDeck(player, value, id)
     return
   end
 
-  local raw = gauntletTrim(gauntletDeckImportCodes[color] or UI.getValue("gauntlet-deck-import-code") or "")
+  local raw = gauntletTrim(gauntletDeckImportCodes[color] or "")
   if not gauntletStartsWith(raw, GAUNTLET_DECK_IMPORT.codePrefix) then
     gauntletMessage(color, "Paste a Deck Code copied from the Gauntlet Deckbuilder.", true)
     return
@@ -420,8 +424,9 @@ function gauntletImportDeck(player, value, id)
     position = gauntletSpawnPosition(color),
     callback_function = function(spawned)
       gauntletMessage(color, "Imported " .. validated.name .. ". Unpack it like an official starter kit.", false)
-      UI.setAttribute("gauntlet-deck-import-panel", "active", "false")
-      UI.setValue("gauntlet-deck-import-code", "")
+      UI.hide("gauntlet-deck-import-panel")
+      UI.show("gauntlet-deck-import-open")
+      UI.setAttribute("gauntlet-deck-import-code", "text", "")
       gauntletDeckImportCodes[color] = ""
     end,
   })
@@ -431,17 +436,17 @@ ${LUA_END}`;
 
 function deckImporterXml() {
   return `${XML_BEGIN}
-<Button id="gauntlet-deck-import-open" text="IMPORT DECK" onClick="gauntletOpenDeckImporter" width="190" height="48" position="0 -330" fontSize="20" color="#3B3025EE" textColor="#F4E8CC" />
-<Panel id="gauntlet-deck-import-panel" active="false" width="760" height="390" position="0 0 -500" color="#E8D9B8F7" outline="#31291F" outlineSize="3 3" padding="22 22 22 22">
+<Button id="gauntlet-deck-import-open" text="DECK IMPORT" onClick="gauntletOpenDeckImporter" width="138" height="34" rectAlignment="LowerRight" offsetXY="-24 24" fontSize="15" color="#3B3025EE" textColor="#F4E8CC" visibility="White|Green" tooltip="Import a Deck Code copied from the Gauntlet Deckbuilder." />
+<Panel id="gauntlet-deck-import-panel" active="false" width="700" height="400" rectAlignment="MiddleCenter" color="#E8D9B8F7" outline="#31291F" outlineSize="3 3" padding="22 22 22 22" visibility="White|Green">
   <VerticalLayout childForceExpandHeight="false" childForceExpandWidth="true" spacing="12">
-    <HorizontalLayout preferredHeight="58" childForceExpandWidth="false">
-      <Text text="GAUNTLET DECK IMPORT" preferredWidth="560" fontSize="32" color="#252018" alignment="MiddleLeft" />
-      <Button text="CLOSE" onClick="gauntletCloseDeckImporter" preferredWidth="140" fontSize="20" color="#4A4134" textColor="#F4E8CC" />
+    <HorizontalLayout preferredHeight="54" childForceExpandWidth="false">
+      <Text text="GAUNTLET DECK IMPORT" preferredWidth="520" fontSize="30" color="#252018" alignment="MiddleLeft" />
+      <Button text="CLOSE" onClick="gauntletCloseDeckImporter" preferredWidth="130" fontSize="18" color="#4A4134" textColor="#F4E8CC" />
     </HorizontalLayout>
-    <Text text="Paste a Deck Code copied from the Gauntlet Deckbuilder. The code must match this TTS game's version." preferredHeight="52" fontSize="20" color="#4A4134" alignment="MiddleLeft" />
-    <InputField id="gauntlet-deck-import-code" text="" placeholder="GDL1:{...}" onValueChanged="gauntletDeckImportChanged" lineType="MultiLineNewline" preferredHeight="150" fontSize="19" textColor="#282218" />
-    <Button text="IMPORT CUSTOM STARTER KIT" onClick="gauntletImportDeck" preferredHeight="58" fontSize="23" color="#324D37" textColor="#F4E8CC" />
-    <Text text="The imported bag reuses the matching official Leader kit and replaces only its playable Deck and selected Territories." preferredHeight="42" fontSize="17" color="#665A46" alignment="MiddleCenter" />
+    <Text text="1. Copy a TTS Deck Code from the Gauntlet Deckbuilder.  2. Paste it below.  3. Import the starter kit." preferredHeight="48" fontSize="18" color="#4A4134" alignment="MiddleLeft" />
+    <InputField id="gauntlet-deck-import-code" text="" placeholder="GDL1:{...}" onValueChanged="gauntletDeckImportChanged" onEndEdit="gauntletDeckImportChanged" lineType="MultiLineNewLine" preferredHeight="150" fontSize="18" textColor="#282218" />
+    <Button text="IMPORT STARTER KIT" onClick="gauntletImportDeck" preferredHeight="56" fontSize="22" color="#324D37" textColor="#F4E8CC" />
+    <Text text="You must be seated in White or Green. The imported Bag keeps the matching Leader and faction components and replaces only its playable Deck and Territories." preferredHeight="54" fontSize="16" color="#665A46" alignment="MiddleCenter" />
   </VerticalLayout>
 </Panel>
 ${XML_END}`;
