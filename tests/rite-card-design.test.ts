@@ -112,6 +112,8 @@ describe("Mystics Rite card prototypes", () => {
   it("turns every completed face into the same count-based progression reference", () => {
     expect(mysticsAuthority.unlocks.map((item: any) => item.count)).toEqual(["1 Rite", "2 Rites", "3 Rites", "Ritual"]);
     expect(mysticsAuthority.unlocks.map((item: any) => item.name)).toEqual(["Invocation", "Transmutation", "Convergence", "Ritual of Ascension"]);
+    expect(mysticsAuthority.unlocks[0].text).toContain("after applying the Action, Gambit, or Tactic effect");
+    expect(mysticsAuthority.unlocks[0].text).not.toContain("Gambit, Tactic, or Gambit or Tactic");
     expect(mysticsAuthority.unlocks.at(-1).headerLines).toEqual(["Ritual of", "Ascension"]);
     expect(riteRenderer).toContain("UNLOCKS = Array.isArray(mystics.unlocks) ? mystics.unlocks : []");
     expect(riteRenderer).toContain("rite-unlock-section--ritual");
