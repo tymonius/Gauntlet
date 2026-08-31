@@ -14,6 +14,8 @@ const artworkSession = read('workers/artwork-authoring/src/index-session.js');
 const artworkClient = read('card-design/artwork-authoring-client.js');
 const artworkServer = read('scripts/card-design-server.mjs');
 const artworkCompositor = read('card-design/artwork-compositor.js');
+const cardRenderer = read('card-design/card-review-render.js');
+const cardRenderValidator = read('scripts/validate-v064-card-render.mjs');
 const livePublicationWorkflow = read('.github/workflows/verify-current-live-publication.yml');
 
 const TRANSITIONAL_RUNTIME_MARKERS = [
@@ -172,6 +174,43 @@ describe('complete current-game authority', () => {
       territories: '/docs/v0.6.4-territories.json',
       rules: '/docs/v0.6.4-rules.json',
     }));
+  });
+
+  it('stores current playable-card headings in final production form without a presentation normalization layer', () => {
+    const headingRules = authority.gameplay.card_rules.effect_headings;
+    expect(headingRules.supported).toEqual([
+      'Action',
+      'Asset',
+      'Gambit',
+      'Tactic',
+      'Gambit/Tactic',
+      'Mission',
+      'Overlay',
+      'Terms',
+      'Sanctions',
+      'Reaction',
+    ]);
+
+    const actualHeadings = [...new Set(
+      authority.gameplay.cards.flatMap((card: any) => card.effects.map((effect: any) => effect.label))
+    )].sort();
+    expect(actualHeadings).toEqual([...headingRules.all_present_headings].sort());
+    for (const retired of ['Placement', 'Accepted', 'Refused', 'Aftermath', 'Text']) {
+      expect(actualHeadings).not.toContain(retired);
+      expect(headingRules.retired).toContain(retired);
+    }
+
+    expect(authority.gameplay.cards.find((card: any) => card.id === 'diplomats-demilitarized-zone')
+      ?.effects.map((effect: any) => effect.label)).toEqual(['Reaction', 'Overlay']);
+    expect(authority.gameplay.cards.find((card: any) => card.id === 'inquisition-martyrdom')
+      ?.effects.map((effect: any) => effect.label)).toEqual(['Reaction']);
+    expect(authority.gameplay.cards.find((card: any) => card.id === 'diplomats-sanctions-blockade')
+      ?.effects.map((effect: any) => effect.label)).toEqual(['Sanctions', 'Overlay']);
+
+    expect(cardRenderer).toContain('const card = sourceCard;');
+    expect(cardRenderer).not.toMatch(/normaliz.*Card.*Presentation/i);
+    expect(cardRenderValidator).toContain('const expectedLabels = sourceCard.effects.map(effect => effect.label);');
+    expect(cardRenderValidator).not.toMatch(/normaliz.*Card.*Presentation/i);
   });
 
   it('contains the finalized current card wording directly', () => {
