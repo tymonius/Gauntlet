@@ -14,6 +14,7 @@
     component: renderProductionComponentHtml,
   }));
   deckbuilder.registerPrintTransform("production-rendering", prepareProductionPrintDocument, 40);
+  deckbuilder.registerPrintTransform("production-face-guard", guardProductionFaces, 100);
   document.addEventListener("DOMContentLoaded", installFactionBackOption);
 
   function installFactionBackOption() {
@@ -63,10 +64,37 @@
       ensureStandardBackPages(documentNode);
       replaceProductionBacks(documentNode);
     }
+    addDuplexInstructions(documentNode);
     injectProductionPrintStyles(documentNode);
     installProductionReadinessGate(documentNode);
 
     return `<!doctype html>\n${documentNode.documentElement.outerHTML}`;
+  }
+
+  function guardProductionFaces(html) {
+    const documentNode = new DOMParser().parseFromString(html, "text/html");
+    const staleSelectors = [
+      ".print-card.leader-card",
+      ".print-card.main-card:not(.production-render-card)",
+      ".print-card.territory:not(.production-render-territory)",
+      ".print-card.tracker-card",
+      ".print-card.reference-card",
+      ".print-card.purge-card",
+      ".print-card.capital-tracker-card",
+      ".print-card.deed-card",
+      ".print-card.proposal-card",
+      ".print-card.rite-card",
+      ".supplemental-placeholder-card",
+    ];
+    const staleFaces = [...documentNode.querySelectorAll(staleSelectors.join(","))];
+    if (!staleFaces.length) return html;
+
+    const labels = staleFaces.slice(0, 5).map(face => (
+      face.getAttribute("aria-label")
+      || [...face.classList].join(".")
+    ));
+    const remaining = staleFaces.length > labels.length ? ` +${staleFaces.length - labels.length} more` : "";
+    throw new Error(`Outdated print faces survived production rendering: ${labels.join("; ")}${remaining}`);
   }
 
   function contractComponentById(componentId, currentGame = resolvedCurrentGame()) {
@@ -286,36 +314,77 @@
   }
 
   function ensureIntrinsicReversePages(documentNode, currentGame) {
-    const fronts = [...documentNode.querySelectorAll(
-      '.production-render-component[data-production-component-side="front"][data-production-back-policy="twoSided"], .production-render-component[data-production-component-side="front"][data-production-back-policy="specialBack"]'
-    )];
+    const frontSelector = '.production-render-component[data-production-component-side="front"][data-production-back-policy="twoSided"], .production-render-component[data-production-component-side="front"][data-production-back-policy="specialBack"]';
+    const reverseSelector = '.production-render-component[data-production-component-side="reverse"]';
+    const fronts = [...documentNode.querySelectorAll(frontSelector)];
+    const frontPages = [...new Set(fronts.map(front => front.closest(".first-page, .card-page")).filter(Boolean))];
 
-    fronts.forEach((front, index) => {
-      const componentId = front.dataset.productionComponentId;
-      if (!componentId) return;
-      const existingReverse = [...documentNode.querySelectorAll('.production-render-component[data-production-component-side="reverse"]')]
-        .find(card => card.dataset.productionComponentId === componentId);
-      if (existingReverse) return;
+    frontPages.forEach((frontPage, pageIndex) => {
+      const pageFronts = fronts.filter(front => front.closest(".first-page, .card-page") === frontPage);
+      if (!pageFronts.length) return;
 
-      const frontPage = front.closest(".first-page, .card-page");
-      const frontCell = front.closest("td");
-      if (!frontPage || !frontCell || frontPage.classList.contains("duplex-back-page")) return;
+      const existingReverses = pageFronts
+        .map(front => [...documentNode.querySelectorAll(reverseSelector)]
+          .find(reverse => reverse.dataset.productionComponentId === front.dataset.productionComponentId))
+        .filter(Boolean);
+      const existingReversePages = [...new Set(existingReverses
+        .map(reverse => reverse.closest(".card-page"))
+        .filter(Boolean))];
+
+      if (existingReversePages.length > 1) {
+        throw new Error("Intrinsic reverse faces for one print sheet are split across multiple pages.");
+      }
+
+      let backPage = existingReversePages[0] || null;
+      const pairName = frontPage.dataset.duplexPair || backPage?.dataset.duplexPair || `intrinsic-sheet-${pageIndex + 1}`;
+
+      if (backPage) {
+        markDuplexPair(frontPage, backPage, pairName);
+        if (frontPage.nextElementSibling !== backPage) frontPage.after(backPage);
+      } else {
+        backPage = ensureBackPageForFront(documentNode, frontPage, pairName);
+        markDuplexPair(frontPage, backPage, pairName);
+      }
 
       const frontTable = frontPage.querySelector(".card-table");
-      if (!frontTable) return;
+      const backTable = backPage.querySelector(".card-table");
+      if (!frontTable || !backTable) throw new Error("A paired print sheet is missing its card table.");
       const frontCells = [...frontTable.querySelectorAll("td")];
-      const frontIndex = frontCells.indexOf(frontCell);
-      if (frontIndex < 0) return;
+      const backCells = [...backTable.querySelectorAll("td")];
 
-      const reverseOptions = reverseOptionsFor(front, currentGame);
-      if (!reverseOptions) throw new Error(`No current-game reverse renderer is declared for ${componentId}.`);
+      const placements = pageFronts.map(front => {
+        const frontCell = front.closest("td");
+        const frontIndex = frontCells.indexOf(frontCell);
+        if (frontIndex < 0) throw new Error("Could not locate an intrinsic front face on its print sheet.");
 
-      const backPage = ensureBackPageForFront(documentNode, frontPage, `intrinsic-sheet-${index + 1}`);
-      const backCells = [...backPage.querySelectorAll(".card-table td")];
-      const backCell = backCells[mirrorIndexForLongEdge(frontIndex)];
-      if (!backCell) throw new Error(`Could not align reverse face for ${componentId}.`);
-      backCell.replaceChildren(makeProductionComponent(documentNode, reverseOptions));
+        const componentId = front.dataset.productionComponentId;
+        const existingReverse = [...documentNode.querySelectorAll(reverseSelector)]
+          .find(reverse => reverse.dataset.productionComponentId === componentId);
+        const reverseOptions = existingReverse ? null : reverseOptionsFor(front, currentGame);
+        if (!existingReverse && !reverseOptions) {
+          throw new Error(`No current-game reverse renderer is declared for ${componentId}.`);
+        }
+
+        return {
+          frontIndex,
+          reverse: existingReverse || makeProductionComponent(documentNode, reverseOptions),
+        };
+      });
+
+      placements.forEach(({ reverse }) => reverse.remove());
+      placements.forEach(({ frontIndex, reverse }) => {
+        const backCell = backCells[mirrorIndexForLongEdge(frontIndex)];
+        if (!backCell) throw new Error("Could not align an intrinsic reverse face with its front.");
+        backCell.replaceChildren(reverse);
+      });
     });
+  }
+
+  function markDuplexPair(frontPage, backPage, pairName) {
+    frontPage.classList.add("duplex-page", "duplex-front-page", "deck-card-front-page");
+    backPage.classList.add("duplex-page", "duplex-back-page", "deck-card-back-page");
+    frontPage.dataset.duplexPair = pairName;
+    backPage.dataset.duplexPair = pairName;
   }
 
   function pageNeedsStandardBack(frontPage) {
@@ -347,9 +416,7 @@
     const existing = existingDirect || existingByPair;
     if (existing) {
       const pairName = existingPairName || existing.dataset.duplexPair || fallbackPairName;
-      frontPage.classList.add("deck-card-front-page");
-      frontPage.dataset.duplexPair = pairName;
-      existing.dataset.duplexPair = pairName;
+      markDuplexPair(frontPage, existing, pairName);
       return existing;
     }
 
@@ -360,9 +427,7 @@
     const pairName = frontPage.dataset.duplexPair || fallbackPairName;
     const backPage = makeBlankBackPage(documentNode, rowCount, isFirstPage);
 
-    frontPage.classList.add("deck-card-front-page");
-    frontPage.dataset.duplexPair = pairName;
-    backPage.dataset.duplexPair = pairName;
+    markDuplexPair(frontPage, backPage, pairName);
     frontPage.after(backPage);
     return backPage;
   }
@@ -413,10 +478,75 @@
     return wrapper;
   }
 
+  function addDuplexInstructions(documentNode) {
+    const hasPairedPages = Boolean(documentNode.querySelector(".duplex-page, .deck-card-back-page"));
+    if (!hasPairedPages) return;
+
+    const summaryBlocks = [...documentNode.querySelectorAll(".summary-side .summary-block")];
+    const printNote = summaryBlocks.find(block => /print note/i.test(block.textContent || ""));
+    const hasStandardBacks = Boolean(documentNode.querySelector(".production-render-back"));
+    const backsNote = hasStandardBacks ? " Playable cards and Territories include mirrored production backs." : "";
+    const instructionHtml = `<strong>Print note:</strong> Leader and supplemental cards are included.${backsNote} For paired cards, use Actual Size / 100%, disable headers and footers, and select <strong>Flip on long edge</strong>. Back positions are mirrored to their fronts.`;
+
+    if (printNote) {
+      printNote.innerHTML = instructionHtml;
+      return;
+    }
+
+    const summarySide = documentNode.querySelector(".summary-side");
+    if (!summarySide) return;
+    const instructions = documentNode.createElement("div");
+    instructions.className = "summary-block";
+    instructions.innerHTML = instructionHtml;
+    summarySide.append(instructions);
+  }
+
   function injectProductionPrintStyles(documentNode) {
     const style = documentNode.createElement("style");
     style.dataset.productionPrintRender = "true";
     style.textContent = `
+@page {
+  size: letter portrait;
+  margin: .25in .5in;
+}
+.first-page,
+.card-page {
+  width: 7.5in !important;
+  height: 10.5in !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+.card-page {
+  position: relative !important;
+}
+.card-table {
+  width: 7.5in !important;
+  margin: 0 !important;
+}
+.card-page .card-table {
+  height: 10.5in !important;
+}
+.first-page .card-table.two-row {
+  height: 7in !important;
+}
+.duplex-page,
+.deck-card-back-page {
+  break-before: page !important;
+  page-break-before: always !important;
+  break-after: page !important;
+  page-break-after: always !important;
+}
+.duplex-page .card-table,
+.deck-card-back-page .card-table {
+  position: absolute;
+  inset: 0;
+}
+.deck-card-back-page.first-page-back .card-table.two-row {
+  height: 7in !important;
+}
+.first-page-back-spacer {
+  height: 3.5in;
+}
 .print-card.production-render-card,
 .print-card.production-render-territory,
 .print-card.production-render-component,
