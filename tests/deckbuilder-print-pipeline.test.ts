@@ -45,6 +45,23 @@ describe("Deckbuilder print pipeline", () => {
     }
   });
 
+  it("does not carry obsolete placeholder card rendering CSS or fitting into the print shell", () => {
+    for (const retired of [
+      "fitPrintCards",
+      ".leader-card{",
+      ".proposal-card{",
+      ".reference-card",
+      ".tracker-card",
+      ".territory-inner",
+      ".rite-card{",
+    ]) {
+      expect(print).not.toContain(retired);
+    }
+    expect(print).toContain("productionPrint().card(card)");
+    expect(print).toContain("productionPrint().territory(territory)");
+    expect(print).toContain("productionPrint().leader(faction, leader)");
+  });
+
   it("runs the stale production-face guard as the final print transform", () => {
     const source = read("deckbuilder/print-duplex-sheet-pairing.js");
     expect(source).toContain('deckbuilder.registerPrintTransform("production-face-guard", guardProductionFaces, 100)');
