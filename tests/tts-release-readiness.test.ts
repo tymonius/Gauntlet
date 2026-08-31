@@ -71,6 +71,28 @@ describe('TTS release readiness reporting', () => {
     expect(result.assembledCopies).toBe(3);
   });
 
+  it('ignores internal Deck importer template Bags when counting visible starter kits', () => {
+    const starterManifest = {
+      decks: [
+        { id: 'banker', name: 'Banker Starter', leader: { name: 'Banker' }, factionId: 'financiers' },
+        { id: 'general', name: 'General Starter', leader: { name: 'General' }, factionId: 'military' },
+      ],
+    };
+    const supplementalManifest = { ready: [] };
+    const save = {
+      ObjectStates: [
+        { Name: 'Bag', Nickname: 'Banker Starter — Banker', GMNotes: 'gauntlet:starter-kit:banker', ContainedObjects: [] },
+        { Name: 'Bag', Nickname: 'General Starter — General', GMNotes: 'gauntlet:starter-kit:general', ContainedObjects: [] },
+        { Name: 'Bag', Nickname: 'Gauntlet Deck Import Template — banker', GMNotes: 'gauntlet:internal:deck-import-template:banker', ContainedObjects: [] },
+        { Name: 'Bag', Nickname: 'Gauntlet Deck Import Template — general', GMNotes: 'gauntlet:internal:deck-import-template:general', ContainedObjects: [] },
+      ],
+    };
+
+    const result = evaluateStarterAssembly(starterManifest, supplementalManifest, save);
+    expect(result.blockers).toEqual([]);
+    expect(result.starterCount).toBe(2);
+  });
+
   it('keeps machine blockers separate from required manual Tabletop Simulator handling QA', () => {
     const report = buildReadinessReport({
       release: { version: 'v0.7.0' },
