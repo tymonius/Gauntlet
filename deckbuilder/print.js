@@ -44,7 +44,12 @@
       return;
     }
 
-    printWindow.document.write(buildPrintDocument(printData));
+    const html = buildPrintDocument(printData);
+    const preparedHtml = deckbuilder.preparePrintDocument(html, {
+      kind: "deck",
+      printData
+    });
+    printWindow.document.write(preparedHtml);
     printWindow.document.close();
     printWindow.focus();
   }
