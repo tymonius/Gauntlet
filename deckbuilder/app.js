@@ -22,6 +22,7 @@ const extensionHooks = {
   serialize: [],
   hydrate: [],
   factionChange: [],
+  deckList: [],
 };
 
 let authorityBootstrap = null;
@@ -87,6 +88,7 @@ const deckbuilderApi = Object.freeze({
   registerSerializeHook: callback => requireHook("serialize", callback),
   registerHydrateHook: callback => requireHook("hydrate", callback),
   registerFactionChangeHook: callback => requireHook("factionChange", callback),
+  registerDeckListHook: callback => requireHook("deckList", callback),
   registerPrintTransform,
   preparePrintDocument,
   registerFeature(name, api) {
@@ -559,13 +561,13 @@ async function copyDeckList() {
     `${faction.name} — ${leader?.name || "No leader"}`,
     `${validation.cardCount} cards · ${validation.pointTotal}/60 value`,
     "",
-    ...deckEntries().map(({ card, qty }) => `${qty}x ${card.name} (${card.cost}) [${card.factionLabel}]`),
-    "",
-    `Territories: ${(state.territories || []).map(id => state.territoryPool?.find(item => item.id === id)?.name || id).join(", ") || "None"}`,
-    ...(state.factionId === "mystics"
-      ? [`Rites: ${(state.rites || []).map(id => state.currentGameData?.mystics?.rites?.find(item => item.id === id)?.name || id).join(", ") || "None"}`]
-      : [])
+    ...deckEntries().map(({ card, qty }) => `${qty}x ${card.name} (${card.cost}) [${card.factionLabel}]`)
   ];
+  for (const hook of extensionHooks.deckList) {
+    const extra = hook({ data, validation, faction, leader });
+    if (Array.isArray(extra)) lines.push(...extra.filter(line => line != null).map(String));
+    else if (extra != null) lines.push(String(extra));
+  }
   await navigator.clipboard.writeText(lines.join("\n"));
 }
 
