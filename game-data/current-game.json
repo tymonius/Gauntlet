@@ -5394,6 +5394,27 @@
         }
       },
       {
+        "id": "mystics-ritual-of-ascension",
+        "name": "Ritual of Ascension",
+        "faction": "mystics",
+        "family": "ritual-card",
+        "quantity": 1,
+        "cardLike": true,
+        "designStatus": "final",
+        "productionStatus": "ready",
+        "backPolicy": "specialBack",
+        "specialBackFile": "images/artwork/cardbacks/mystics/ritual-of-ascension.png",
+        "source": "game-data/current-game.json",
+        "renderSource": {
+          "surface": "card-design/rite-card.js",
+          "kind": "ritual",
+          "componentId": "ascension"
+        },
+        "tts": {
+          "representation": "card"
+        }
+      },
+      {
         "id": "mystics-rite-echoes",
         "name": "Rite of Echoes",
         "faction": "mystics",
