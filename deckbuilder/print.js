@@ -1,4 +1,12 @@
 (() => {
+  const deckbuilder = window.GAUNTLET_DECKBUILDER;
+  if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
+  const { state } = deckbuilder;
+  const getFaction = () => deckbuilder.getFaction();
+  const deckEntries = () => deckbuilder.deckEntries();
+  const validateDeck = () => deckbuilder.validate();
+  const escapeHtml = value => deckbuilder.escapeHtml(value);
+
   const PRINT_FONT_LINKS = `
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -54,7 +62,7 @@
     const territories = (state.territories || [])
       .map(id => state.territoryPool.find(territory => territory.id === id))
       .filter(Boolean);
-    const supplementalPackage = window.GAUNTLET_CURRENT_SUPPLEMENTALS?.[faction.id] || {
+    const supplementalPackage = deckbuilder.feature("supplementalPackages")?.[faction.id] || {
       summary: ["Selected Leader Card"],
       leaderImages: {},
       components: []
