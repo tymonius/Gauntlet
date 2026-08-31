@@ -78,9 +78,11 @@ describe("Deckbuilder supplemental print audit", () => {
     expect(deckPrint).toContain('proposalToPrintHtml');
     expect(deckPrint).toContain('riteToPrintHtml');
 
-    expect(compatibilityPrint).toContain('replaceCapitalLedger(documentNode)');
-    expect(compatibilityPrint).toContain('replaceLegacyDeeds(documentNode)');
-    expect(compatibilityPrint).toContain('removeLegacyDiplomatReverseReference(documentNode)');
+    expect(compatibilityPrint).not.toContain('replaceCapitalLedger(documentNode)');
+    expect(compatibilityPrint).not.toContain('replaceLegacyDeeds(documentNode)');
+    expect(compatibilityPrint).not.toContain('removeLegacyDiplomatReverseReference(documentNode)');
+    expect(productionPrint).toContain('if (component.family === "ledger")');
+    expect(productionPrint).toContain('if (component.family === "deed-card")');
     expect(productionPrint).toContain('const isRitual = legacyCard.classList.contains("reference-card")');
   });
 
@@ -115,8 +117,9 @@ describe("Deckbuilder supplemental print audit", () => {
       designStatus: "final",
       productionStatus: "export-pending",
     });
-    expect(compatibilityPrint).toContain('PRODUCTION_LEDGER_COMPONENT_ID = "financiers-capital-ledger"');
-    expect(compatibilityPrint).toContain('PRODUCTION_DEED_COMPONENT_ID = "financiers-deed"');
+    expect(component("financiers-capital-ledger")?.backPolicy).toBe("twoSided");
+    expect(component("financiers-deed")?.backPolicy).toBe("standardBack");
+    expect(productionPrint).toContain('["proposal-treaty-card", "ledger", "deed-card"].includes(component.family)');
   });
 
   it("keeps the production component renderer fail-closed on any future placeholder face", () => {
