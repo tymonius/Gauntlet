@@ -1,3 +1,6 @@
+const deckbuilder = window.GAUNTLET_DECKBUILDER;
+if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
+
 const CUSTOM_PRINT_STYLE_URL = "custom-print.css?v=20260823-2";
 const CARDS_PER_SHEET = 9;
 const COLUMNS = 3;
@@ -140,7 +143,7 @@ function disableCustomPrinting() {
 }
 
 async function loadCatalog() {
-  let game = window.GAUNTLET_CURRENT_GAME_DATA;
+  let game = deckbuilder.state.currentGameData;
   if (!game?.componentContract) {
     const module = await import("../game-data/current-game.mjs");
     game = await module.loadCurrentGame();
@@ -404,7 +407,7 @@ function reverseCellHtml(entry, includeStandardBacks, backStyle) {
 }
 
 function selectedRulesetMode() {
-  return window.GAUNTLET_DECKBUILDER_RULESET?.mode
+  return deckbuilder.ruleset()?.mode
     || (new URLSearchParams(window.location.search).get("rules") === "candidate" ? "candidate" : "released");
 }
 
