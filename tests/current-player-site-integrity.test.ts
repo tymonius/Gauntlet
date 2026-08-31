@@ -189,7 +189,7 @@ describe("v0.7.0 player-site release preparation", () => {
     expect(read("deckbuilder/app.js")).not.toContain("gauntlet-v0.6.1-deck");
     expect(print).toContain('state.currentGameDisplayVersion || state.currentGameVersion || "current"');
     expect(print).not.toContain("v0.6.1");
-    expect(bulkPrint).toContain('import("../game-data/ruleset.mjs")');
+    expect(bulkPrint).toContain('await deckbuilder.bootstrap()');
     expect(bulkPrint).not.toContain("starter-decks.json");
     expect(bulkPrint).not.toContain("v0.6.1");
   });
