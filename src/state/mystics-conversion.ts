@@ -1,4 +1,4 @@
-import { v06CanonicalContent } from '../content';
+import { v06CanonicalContent } from '../content/v06';
 import type {
   BattleParticipantState,
   BattlePlayedCard,
