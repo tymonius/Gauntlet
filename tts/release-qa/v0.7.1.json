@@ -25,7 +25,7 @@
     "handlingValidation": {
       "coreHandlingExercised": false,
       "focusedFactionDrillsComplete": false,
-      "frictionResolved": false
+      "frictionResolved": true
     }
   },
   "approvedForWorkshop": false,
@@ -35,6 +35,7 @@
     "2026-08-31: Fresh v0.7.1 QA remains required for stable hosted-save load, v0.7.1 Rulebook/setup behavior, Mystics Rites/Completed faces, core handling, focused changed-surface drills, and final friction resolution.",
     "2026-08-31: The v0.7.1-candidate PR1082 build manually passed the Deckbuilder-to-TTS import workflow after the final importer fixes: the save loaded, Deck Code import completed without freezing, and the imported starter Bag spawned at normal usable size. This is supporting candidate evidence only; the final stable v0.7.1 Workshop artifact still requires its own smoke test.",
     "2026-08-31: Stable production run #2085 was loaded successfully in Tabletop Simulator from the published v0.7.1 hosted assets; the current save rendered correctly after the final art-direction/font-parity fixes.",
-    "2026-08-31: Stable v0.7.1 Mystics Rite QA passed visual/handling review for current Rite fronts and Completed faces, including the corrected composited artwork positions and current rules/reference text."
+    "2026-08-31: Stable v0.7.1 Mystics Rite QA passed visual/handling review for current Rite fronts and Completed faces, including the corrected composited artwork positions and current rules/reference text.",
+    "2026-08-31: After the final production render/load review, no remaining TTS-specific friction was identified in the stable v0.7.1 save; the final known Rite crop, typography, layout, and cache issues were resolved before Workshop closeout."
   ]
 }
