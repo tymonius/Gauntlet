@@ -1,4 +1,8 @@
 (() => {
+  const deckbuilder = window.GAUNTLET_DECKBUILDER;
+  if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
+  const { state } = deckbuilder;
+
   const EXPECTED_DECK_COUNT = 12;
   let starterDecks = [];
   let starterLoadError = null;
@@ -39,7 +43,7 @@
   }
 
   function isReady() {
-    const starterApi = window.GAUNTLET_STARTER_DECKS;
+    const starterApi = deckbuilder.feature("starterDecks");
     const starterTipsReady = typeof starterApi?.getSelectedDeck === "function" && Boolean(starterApi.getSelectedDeck());
     const mysticsRitesReady = document.body.dataset.mysticsRites === "ready";
 
@@ -89,7 +93,7 @@
         button.textContent = `Preparing ${index + 1} of ${EXPECTED_DECK_COUNT}…`;
         applyStarterDeckToState(preset);
 
-        const validation = validateDeck();
+        const validation = deckbuilder.validate();
         if (!validation.valid) {
           throw new Error(`${preset.name} failed Deckbuilder validation while preparing the combined print package.`);
         }
@@ -110,7 +114,7 @@
       window.alert(`Unable to prepare all starter Decks: ${error.message || error}`);
     } finally {
       restoreState(snapshot);
-      renderAll();
+      deckbuilder.render();
       printing = false;
       syncButton(button);
     }
@@ -145,7 +149,7 @@
   function starterRiteIds(preset) {
     if (preset.factionId !== "mystics") return [];
     if (Array.isArray(preset.selectedRites)) return [...preset.selectedRites];
-    const riteApi = window.GAUNTLET_MYSTICS_RITES;
+    const riteApi = deckbuilder.feature("mysticsRites");
     return riteApi?.selectionEnabled?.() ? [] : (riteApi?.defaultIds?.() || []);
   }
 
