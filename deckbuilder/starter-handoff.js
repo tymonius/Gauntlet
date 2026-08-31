@@ -2,8 +2,8 @@
   const params = new URLSearchParams(window.location.search);
   const factionId = String(params.get("faction") || "").trim();
   const leaderId = String(params.get("leader") || "").trim();
-  const faction = FACTIONS.find(item => item.id === factionId && item.status === "ready");
-  const requestedLeader = faction?.leaders.find(item => item.id === leaderId);
+  let faction = null;
+  let requestedLeader = null;
   const STARTER_FACTION_COLORS = {
     military: "#9e262c",
     diplomats: "#264f91",
@@ -13,20 +13,13 @@
     inquisition: "#a67a27"
   };
 
-  if (faction) {
-    state.factionId = faction.id;
-    state.leaderId = requestedLeader?.id || faction.leaders[0]?.id || "";
-  }
-
   if (params.get("starter") !== "1") return;
-
-  const leader = requestedLeader;
-  if (!faction || !leader) return;
 
   state.deckName = "";
   state.deck = {};
   state.territories = [];
 
+  let leader = null;
   let panel = null;
   let status = null;
   let printButton = null;
@@ -36,9 +29,26 @@
 
   document.addEventListener("DOMContentLoaded", init);
 
-  function init() {
-    injectPanel();
-    requestAnimationFrame(waitForStarterData);
+  async function init() {
+    try {
+      const bootstrap = window.GAUNTLET_DECKBUILDER_BOOTSTRAP;
+      if (typeof bootstrap !== "function") throw new Error("Current Deckbuilder runtime is unavailable.");
+      await bootstrap();
+
+      faction = FACTIONS.find(item => item.id === factionId && item.status === "ready") || null;
+      requestedLeader = faction?.leaders.find(item => item.id === leaderId) || null;
+      leader = requestedLeader;
+      if (!faction || !leader) return;
+
+      state.factionId = faction.id;
+      state.leaderId = leader.id;
+      renderFactionOptions();
+      renderAll();
+      injectPanel();
+      requestAnimationFrame(waitForStarterData);
+    } catch (error) {
+      console.error("Unable to initialize starter handoff", error);
+    }
   }
 
   function injectPanel() {

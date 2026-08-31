@@ -5087,11 +5087,12 @@
         "cardLike": true,
         "designStatus": "final",
         "productionStatus": "export-pending",
-        "backPolicy": "standardBack",
+        "backPolicy": "twoSided",
         "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/financier/Gauntlet_v0.6.3_Financier_Faction_Guide.md",
         "tts": {
           "representation": "ledger"
-        }
+        },
+        "reverse": "Identical Capital Ledger face"
       },
       {
         "id": "financiers-deed",
@@ -5361,6 +5362,27 @@
               }
             ]
           }
+        },
+        "tts": {
+          "representation": "card"
+        }
+      },
+      {
+        "id": "mystics-ritual-of-ascension",
+        "name": "Ritual of Ascension",
+        "faction": "mystics",
+        "family": "ritual-card",
+        "quantity": 1,
+        "cardLike": true,
+        "designStatus": "final",
+        "productionStatus": "ready",
+        "backPolicy": "specialBack",
+        "specialBackFile": "images/artwork/cardbacks/mystics/ritual-of-ascension.png",
+        "source": "game-data/current-game.json",
+        "renderSource": {
+          "surface": "card-design/rite-card.js",
+          "kind": "ritual",
+          "componentId": "ascension"
         },
         "tts": {
           "representation": "card"

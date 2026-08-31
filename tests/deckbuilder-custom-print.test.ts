@@ -31,7 +31,7 @@ describe("Deckbuilder custom printing", () => {
     expect(customPrint).toContain("for (const leader of game.leaders || [])");
     expect(customPrint).toContain("game.sharedComponents || []");
     expect(customPrint).toContain("game.components || []");
-    expect(customPrint).toContain("const ritual = game.mystics?.ritual");
+    expect(customPrint).not.toContain("const ritual = game.mystics?.ritual");
     expect(customPrint).not.toContain("validateDeck(");
     expect(customPrint).not.toContain("deckEntries(");
   });
@@ -53,6 +53,7 @@ describe("Deckbuilder custom printing", () => {
       "rite-card",
       "ledger",
       "deed-card",
+      "ritual-card",
     ]));
 
     for (const family of cardLikeFamilies) {
@@ -87,8 +88,10 @@ describe("Deckbuilder custom printing", () => {
   it("pairs intrinsic reverses automatically and keeps standard backs optional", () => {
     expect(customPrint).toContain('entry.backPolicy === "twoSided"');
     expect(customPrint).toContain('entry.backPolicy === "specialBack"');
-    expect(customPrint).toContain('entry.backPolicy === "ledgerDuplex"');
     expect(customPrint).toContain('entry.backPolicy === "standardBack"');
+    expect(customPrint).not.toContain("ledgerDuplex");
+    const ledger = contract.components.find((component: any) => component.id === "financiers-capital-ledger");
+    expect(ledger?.backPolicy).toBe("twoSided");
     expect(customPrint).toContain("mirrorIndexForLongEdge(frontIndex)");
     expect(customPrint).toContain("flip on the long edge");
     expect(customPrint).toContain("Use canonical card backs");

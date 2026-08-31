@@ -1,7 +1,7 @@
 import { loadCurrentGame } from '/game-data/current-game.mjs';
 import { loadProposalArtwork, proposalFace } from '/card-design/proposal-card.js';
 import { capitalLedgerMarkup } from '/card-design/capital-ledger.js';
-import { deedCardMarkup, hydrateDeedDivider } from '/card-design/deed-card.js';
+import { deedCardMarkup } from '/card-design/deed-card.js';
 
 const params = new URLSearchParams(window.location.search);
 const componentId = params.get('component') || '';
@@ -178,7 +178,6 @@ async function renderDeed(component) {
   if (side !== 'front') throw new Error(`Deed Card has no rendered ${side} face; it uses the faction standard back.`);
   document.documentElement.dataset.supplementalOrientation = 'landscape';
   target.innerHTML = deedCardMarkup();
-  hydrateDeedDivider(target);
   const card = target.querySelector('.gauntlet-card');
   if (!card) throw new Error('Deed production renderer returned no card.');
   card.dataset.componentId = component.id;
