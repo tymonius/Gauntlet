@@ -15,7 +15,8 @@ const playableRenderer = readFileSync('card-design/card-review-render.js', 'utf8
 const territoryRenderer = readFileSync('card-design/territory-review-render.js', 'utf8');
 const playableTtsRenderer = readFileSync('tts/renderer/renderer.js', 'utf8');
 const territoryTtsRenderer = readFileSync('tts/territory-renderer/territory-renderer.js', 'utf8');
-const artDirectionOverrides = readFileSync('tts/artwork-direction-overrides.js', 'utf8');
+const cardDesignCatalog = readFileSync('card-design/current-card-catalog.js', 'utf8');
+const cardDesignShell = readFileSync('card-design/index.html', 'utf8');
 const dividerRules = readFileSync('card-design/reference-divider-rules.css', 'utf8');
 const universalReference = readFileSync('card-design/universal-reference.css', 'utf8');
 
@@ -60,8 +61,8 @@ describe('TTS card render authority', () => {
   });
 
   it('derives current TTS identity from current-game without a render-time version override', () => {
-    expect(currentGame.version).toBe('v0.7.1-candidate');
-    expect(currentGame.displayVersion).toBe('v0.7.1 candidate');
+    expect(currentGame.version).toBe('v0.7.1');
+    expect(currentGame.displayVersion).toBe('v0.7.1');
 
     expect(cardGenerator).toContain('version=${encodeURIComponent(release.displayVersion || release.version)}');
     expect(territoryGenerator).toContain('version=${encodeURIComponent(release.displayVersion || release.version)}');
@@ -80,9 +81,17 @@ describe('TTS card render authority', () => {
     expect(componentRenderer).toContain('versionNode.textContent = versionOverride');
   });
 
-  it('applies only committed artwork direction on every production capture surface', () => {
-    expect(artDirectionOverrides).toContain('"financiers-banker": {"focusY":0}');
+  it('applies only current-game artwork direction on every production capture surface', () => {
+    expect(currentGame.artDirection['rite-blood']).toEqual({ focusY: 0.261 });
+    expect(currentGame.artDirection['rite-echoes']).toEqual({ focusY: 0.105 });
+    expect(currentGame.artDirection['rite-equivalence']).toEqual({ focusY: 0 });
 
+    expect(cardDesignCatalog).toContain('window.GAUNTLET_ART_DIRECTION = currentGame.artDirection || {}');
+    expect(cardDesignShell).not.toContain('../tts/artwork-direction-overrides.js');
+
+    expect(componentRenderer).toContain('async function loadCanonicalArtDirection()');
+    expect(componentRenderer).toContain('await import("/game-data/current-game.mjs")');
+    expect(componentRenderer).toContain('window.GAUNTLET_ART_DIRECTION = currentGame.artDirection || {}');
     expect(componentRenderer).toContain('function canonicalArtworkId(card)');
     expect(componentRenderer).toContain('window.GAUNTLET_ART_DIRECTION?.[artworkId]');
     expect(componentRenderer).toContain('await applyCanonicalArtworkDirection(card)');
@@ -91,6 +100,15 @@ describe('TTS card render authority', () => {
 
     expect(playableTtsRenderer).toContain('if (card.artDirection && Object.keys(card.artDirection).length)');
     expect(territoryTtsRenderer).toContain('if (territory.artDirection && Object.keys(territory.artDirection).length)');
+  });
+
+  it('preloads production component fonts before content-sensitive fitting', () => {
+    expect(componentRenderer).toContain('async function preloadProductionFonts(card)');
+    expect(componentRenderer).toContain('"adobe-caslon-pro"');
+    expect(componentRenderer).toContain('"p22-1722-pro"');
+    expect(componentRenderer).toContain('await preloadProductionFonts(card)');
+    expect(componentRenderer.indexOf('await preloadProductionFonts(card)'))
+      .toBeLessThan(componentRenderer.indexOf('window.dispatchEvent(new Event("load"))'));
   });
 
   it('inherits current reference styling including divider removal and Universal G watermark', () => {
