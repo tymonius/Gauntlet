@@ -164,6 +164,32 @@ function validateAuthority(authority) {
     if (!card?.id || !card?.name || ids.has(card.id)) throw new Error(`Duplicate or incomplete playable card ${card?.id || '(missing id)'}.`);
     ids.add(card.id);
   }
+
+  const headingRules = gameplay.card_rules?.effect_headings;
+  const supportedHeadings = new Set(requireArray(headingRules?.supported, 'supported card effect headings'));
+  const declaredPresentHeadings = new Set(requireArray(headingRules?.all_present_headings, 'present card effect headings'));
+  const retiredHeadings = new Set(requireArray(headingRules?.retired, 'retired card effect headings'));
+  const actualHeadings = new Set();
+
+  for (const card of gameplay.cards) {
+    for (const effect of requireArray(card.effects, `${card.id} effects`)) {
+      const label = String(effect?.label || '').trim();
+      if (!label) throw new Error(`Current card ${card.id} has an effect without a heading.`);
+      if (!supportedHeadings.has(label)) {
+        throw new Error(`Current card ${card.id} uses unsupported effect heading ${label}.`);
+      }
+      if (retiredHeadings.has(label)) {
+        throw new Error(`Current card ${card.id} still uses retired effect heading ${label}.`);
+      }
+      actualHeadings.add(label);
+    }
+  }
+
+  if (actualHeadings.size !== declaredPresentHeadings.size
+    || [...actualHeadings].some(label => !declaredPresentHeadings.has(label))) {
+    throw new Error('Current card effect-heading taxonomy does not match the headings actually present on cards.');
+  }
+
   const territoryIds = new Set();
   for (const territory of gameplay.territories) {
     if (!territory?.id || territoryIds.has(territory.id)) throw new Error(`Duplicate or incomplete Territory ${territory?.id || '(missing id)'}.`);
