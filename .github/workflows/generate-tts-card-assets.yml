@@ -1,6 +1,12 @@
 name: Generate TTS card assets
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'tts/release-qa/v0.7.1.json'
+      - 'config/tts-release-target.json'
+      - '.github/workflows/generate-tts-card-assets.yml'
   pull_request:
     paths:
       - '.github/workflows/generate-tts-card-assets.yml'
@@ -362,6 +368,12 @@ jobs:
       - name: Report TTS release readiness
         run: npm run tts:release:status
 
+      - name: Validate strict readiness and promote QA-approved stable TTS save
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          npm run tts:release:strict
+          npm run tts:save:promote
+
       - uses: actions/upload-artifact@v4
         with:
           name: gauntlet-current-tts-card-assets
@@ -509,7 +521,7 @@ jobs:
 
   publish:
     name: Publish TTS assets to current GitHub Release
-    if: github.event_name == 'workflow_dispatch' && inputs.publish_release_assets && github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.publish_release_assets))
     needs: render
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -534,7 +546,15 @@ jobs:
           gh release view "$tag" --repo "$repo" >/dev/null
           mapfile -t assets < <(find tts-output/release-assets -maxdepth 1 -type f -print | sort)
           test "${#assets[@]}" -gt 1
-          gh release upload "$tag" --repo "$repo" --clobber "${assets[@]}"
+          final_save="$(find tts-output -type f -name "Gauntlet_${tag}_TTS_Mod.json" -print -quit)"
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+            test -n "$final_save"
+          fi
+          if [[ -n "$final_save" ]]; then
+            gh release upload "$tag" --repo "$repo" --clobber "${assets[@]}" "$final_save"
+          else
+            gh release upload "$tag" --repo "$repo" --clobber "${assets[@]}"
+          fi
       - name: Verify published TTS asset URLs
         shell: bash
         run: |
@@ -563,3 +583,18 @@ jobs:
             process.exitCode = 1;
           });
           NODE
+
+          final_save="$(find tts-output -type f -name 'Gauntlet_*_TTS_Mod.json' -print -quit)"
+          if [[ -n "$final_save" ]]; then
+            tag="$(node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));process.stdout.write(m.releaseTag)" "$manifest")"
+            node - "$final_save" "$tag" <<'NODE'
+          const fs = require('fs');
+          const save = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+          const tag = process.argv[3];
+          if (save.SaveName !== `Gauntlet ${tag}`) throw new Error(`Unexpected promoted save name: ${save.SaveName}`);
+          const text = JSON.stringify(save);
+          if (/review scaffold/i.test(text)) throw new Error('Promoted save still contains Review Scaffold identity.');
+          if (!text.includes(`/releases/download/${tag}/`)) throw new Error(`Promoted save does not reference stable ${tag} release assets.`);
+          console.log(`Verified promoted Gauntlet ${tag} TTS save identity and stable release URLs.`);
+          NODE
+          fi
