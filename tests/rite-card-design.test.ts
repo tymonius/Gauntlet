@@ -85,6 +85,7 @@ describe("Mystics Rite card prototypes", () => {
     expect(riteRenderer).toContain('currentDisplayVersion = currentGame.displayVersion');
     expect(riteRenderer).toContain('data-has-reminder="true"');
     expect(riteStyles).toContain('.rite-reminder');
+    expect(riteStyles).not.toContain('border-top: 0.5px solid color-mix(in srgb, var(--component-accent-ink) 24%, transparent)');
     expect(ruleColumnStyles).toContain(".rite-card .card-rules > .rite-reminder");
     expect(ruleColumnStyles).toContain("grid-column: 2 / -1");
     expect(ruleColumnStyles).toContain("margin-left: 0");
