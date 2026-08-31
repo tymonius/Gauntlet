@@ -638,11 +638,7 @@
     script.dataset.productionPrintGate = "true";
     script.textContent = `(() => {
   const timeoutMs = ${RENDER_TIMEOUT_MS};
-  const previousPreparePrint = window.preparePrint;
-  if (typeof previousPreparePrint !== 'function') return;
-
-  window.removeEventListener('load', previousPreparePrint);
-
+  const preflights = window.GAUNTLET_PRINT_PREFLIGHTS = window.GAUNTLET_PRINT_PREFLIGHTS || [];
   const delay = ms => new Promise(resolve => window.setTimeout(resolve, ms));
 
   async function waitForFrame(frame) {
@@ -668,17 +664,13 @@
     return 'timeout';
   }
 
-  async function prepareProductionPrint() {
+  preflights.push(async () => {
     const frames = [...document.querySelectorAll('[data-production-render-frame]')];
     const results = await Promise.all(frames.map(waitForFrame));
     if (results.some(result => result !== 'true')) {
-      window.alert('One or more production card faces failed to finish rendering. Printing was stopped so the Deck is not printed with incomplete cards.');
-      return;
+      throw new Error('One or more production card faces failed to finish rendering. Printing was stopped so the Deck is not printed with incomplete cards.');
     }
-    await previousPreparePrint();
-  }
-
-  window.addEventListener('load', prepareProductionPrint, { once: true });
+  });
 })();`;
     documentNode.body.append(script);
   }
