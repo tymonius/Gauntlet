@@ -1,9 +1,7 @@
 import crypto from 'node:crypto';
 
-const repo = process.env.GITHUB_REPOSITORY;
-const token = process.env.GH_TOKEN;
 const publishedSha = process.env.PUBLISHED_SHA;
-if (!repo || !token || !publishedSha) throw new Error('GITHUB_REPOSITORY, GH_TOKEN, and PUBLISHED_SHA are required.');
+if (!publishedSha) throw new Error('PUBLISHED_SHA is required.');
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 async function fetchRetry(url, options = {}, attempts = 12, delayMs = 3000) {
@@ -21,28 +19,36 @@ async function fetchRetry(url, options = {}, attempts = 12, delayMs = 3000) {
   throw lastError;
 }
 
-const githubHeaders = {
-  Accept: 'application/vnd.github+json',
-  Authorization: `Bearer ${token}`,
-  'X-GitHub-Api-Version': '2022-11-28',
-  'User-Agent': 'gauntlet-v071-publication-verifier',
-};
-
-await fetchRetry(`https://api.github.com/repos/${repo}/pages/builds`, { method: 'POST', headers: githubHeaders }, 3, 2000);
-console.log(`Requested GitHub Pages build for ${publishedSha}.`);
-
-let built = false;
-for (let attempt = 1; attempt <= 60; attempt += 1) {
-  const latest = await (await fetchRetry(`https://api.github.com/repos/${repo}/pages/builds/latest`, { headers: githubHeaders }, 3, 2000)).json();
-  console.log(`Pages build attempt ${attempt}: status=${latest.status || ''} commit=${latest.commit || ''}`);
-  if (latest.commit === publishedSha && latest.status === 'built') { built = true; break; }
-  if (latest.commit === publishedSha && latest.status === 'errored') throw new Error(`Pages build errored: ${JSON.stringify(latest)}`);
-  await sleep(10000);
-}
-if (!built) throw new Error(`GitHub Pages did not report ${publishedSha} built within the verification window.`);
-
 const cacheBust = `publication=${encodeURIComponent(publishedSha)}`;
 const fetchPublic = url => fetchRetry(`${url}${url.includes('?') ? '&' : '?'}${cacheBust}`);
+
+async function waitForLiveCutover() {
+  let lastState = 'no response';
+  for (let attempt = 1; attempt <= 120; attempt += 1) {
+    try {
+      const [lifecycleResponse, homeResponse] = await Promise.all([
+        fetchPublic('https://gauntlet.run/config/release-lifecycle.json'),
+        fetchPublic('https://gauntlet.run/'),
+      ]);
+      const lifecycle = JSON.parse(await lifecycleResponse.text());
+      const home = await homeResponse.text();
+      lastState = `current_release=${lifecycle?.current_release || 'missing'} home_v071=${home.includes('Current canonical playtest edition · v0.7.1')}`;
+      if (
+        lifecycle?.current_release === 'v0.7.1'
+        && home.includes('Current canonical playtest edition · v0.7.1')
+      ) {
+        console.log(`Live v0.7.1 cutover observed on attempt ${attempt}.`);
+        return;
+      }
+    } catch (error) {
+      lastState = String(error);
+    }
+    if (attempt < 120) await sleep(5000);
+  }
+  throw new Error(`gauntlet.run did not converge to v0.7.1 within the verification window: ${lastState}`);
+}
+
+await waitForLiveCutover();
 const readText = async url => (await fetchPublic(url)).text();
 const sha256 = value => crypto.createHash('sha256').update(value).digest('hex');
 
@@ -113,7 +119,7 @@ for (const [label, source, required] of [
     if (!source.includes(value)) throw new Error(`${label} is missing v0.7.1 identity: ${value}`);
   }
 }
-if (!/Gauntlet v0\.7\.0 Browser Rulebook/.test(browserRulebook)) {
+if (!/Gauntlet v0\.7\.1 Browser Rulebook/.test(browserRulebook)) {
   throw new Error('Public Browser Rulebook is not v0.7.1.');
 }
 if (

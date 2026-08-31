@@ -19,6 +19,7 @@ const artworkCompositor = read('card-design/artwork-compositor.js');
 const cardRenderer = read('card-design/card-review-render.js');
 const cardRenderValidator = read('scripts/validate-current-card-render.mjs');
 const livePublicationWorkflow = read('.github/workflows/verify-current-live-publication.yml');
+const livePublicationVerifier = read('scripts/verify-v071-live-publication.mjs');
 
 const TRANSITIONAL_RUNTIME_MARKERS = [
   'docs/v0.6.4-card-additions.json',
@@ -403,6 +404,13 @@ describe('complete current-game authority', () => {
     expect(artworkCompositor).not.toContain('tts/artwork-direction-overrides.js');
     expect(livePublicationWorkflow).toContain("'game-data/current-game.json'");
     expect(livePublicationWorkflow).not.toContain("'tts/artwork-direction-overrides.js'");
+  });
+
+  it('verifies the Actions-driven v0.7.1 live publication without the legacy Pages builds API', () => {
+    expect(livePublicationWorkflow).not.toContain('/pages/builds');
+    expect(livePublicationVerifier).not.toContain('/pages/builds');
+    expect(livePublicationVerifier).toContain('waitForLiveCutover');
+    expect(livePublicationVerifier).toContain('Gauntlet v0\\.7\\.1 Browser Rulebook');
   });
 
   it('keeps the maintained Rulebook on the v0.7.1 release identity', () => {
