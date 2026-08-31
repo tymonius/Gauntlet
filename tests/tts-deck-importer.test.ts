@@ -131,9 +131,17 @@ describe('TTS Deckbuilder importer', () => {
 
     expect(save.LuaScript).toContain('function existing() end');
     expect(save.LuaScript).toContain('function gauntletImportDeck');
+    expect(save.LuaScript).toContain('pcall(function() return player.color end)');
+    expect(save.LuaScript).toContain('UI.show("gauntlet-deck-import-panel")');
+    expect(save.LuaScript).toContain('UI.hide("gauntlet-deck-import-open")');
+    expect(save.LuaScript).not.toContain('UI.getValue("gauntlet-deck-import-code")');
     expect(save.LuaScript).toContain('gauntlet:starter-kit:');
     expect((save.LuaScript.match(/GAUNTLET_DECK_IMPORTER_BEGIN/g) || [])).toHaveLength(1);
-    expect(save.XmlUI).toContain('IMPORT CUSTOM STARTER KIT');
+    expect(save.XmlUI).toContain('DECK IMPORT');
+    expect(save.XmlUI).toContain('IMPORT STARTER KIT');
+    expect(save.XmlUI).toContain('visibility="White|Green"');
+    expect(save.XmlUI).toContain('lineType="MultiLineNewLine"');
+    expect(save.XmlUI).toContain('onEndEdit="gauntletDeckImportChanged"');
     expect((save.XmlUI.match(/GAUNTLET_DECK_IMPORTER_BEGIN/g) || [])).toHaveLength(1);
   });
 
