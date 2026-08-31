@@ -70,6 +70,7 @@ jobs:
             "$site/rulebook-design" \
             "$site/rulebook-production" \
             "$site/legacy" \
+            "$site/media" \
             "$site/artifacts" \
             "$site/images/3d" \
             "$site/images/sketches" \
@@ -83,6 +84,12 @@ jobs:
           # Publish those files without carrying the much larger sketch-authoring subdirectories.
           mkdir -p "$site/images/sketches"
           find images/sketches -maxdepth 1 -type f -name '*.png' -exec cp '{}' "$site/images/sketches/" ';'
+
+          # The homepage consumes only the composition layout JSON at the stable /media/ URL.
+          # Keep the authoring/exporter tree out of Pages and stage only that runtime payload.
+          mkdir -p "$site/media"
+          cp media/compositions.json "$site/media/compositions.json"
+          test -s "$site/media/compositions.json"
 
           # Editable release-source documents are retained in Git but are not public-site assets.
           find "$site/releases" -type f -name '*.docx' -delete
