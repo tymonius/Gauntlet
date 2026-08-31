@@ -1,11 +1,10 @@
 (() => {
+  const deckbuilder = window.GAUNTLET_DECKBUILDER;
+  if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
+  const { state } = deckbuilder;
   state.currentFactionComponentsReady = false;
 
-  const baseRenderAll = renderAll;
-  renderAll = function renderAllWithFactionComponents() {
-    baseRenderAll();
-    renderFactionComponents();
-  };
+  deckbuilder.registerRenderHook(renderFactionComponents);
 
   document.addEventListener("DOMContentLoaded", installFactionComponentDisplay);
 
@@ -25,7 +24,7 @@
     }
 
     try {
-      const currentGame = state.currentGameData || await import("../game-data/ruleset.mjs").then(module => module.loadGameRuleset(module.rulesetModeFromUrl()));
+      const currentGame = state.currentGameData || await deckbuilder.bootstrap();
       state.currentGameData ||= currentGame;
       hydratePrintPackages(currentGame);
       state.currentFactionComponentsReady = true;
@@ -121,7 +120,7 @@
 
     }
 
-    window.GAUNTLET_CURRENT_SUPPLEMENTALS = Object.freeze(packages);
+    deckbuilder.registerFeature("supplementalPackages", packages);
   }
 
   function componentMeta(component, shared = false) {
@@ -148,7 +147,7 @@
     const container = document.getElementById("deckFactionComponents");
     if (!container) return;
 
-    const faction = typeof getFaction === "function" ? getFaction() : null;
+    const faction = deckbuilder.getFaction();
     const leader = faction?.leaders?.find(item => item.id === state.leaderId);
     const currentGame = state.currentGameData;
 
