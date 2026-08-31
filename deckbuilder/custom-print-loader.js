@@ -1,7 +1,7 @@
 (() => {
   const install = async () => {
     try {
-      const module = await import("./custom-print.mjs?v=20260831-1");
+      const module = await import("./custom-print.mjs?v=20260831-2");
       module.installCustomPrintMode();
     } catch (error) {
       console.error("Unable to initialize Deckbuilder custom printing", error);
