@@ -102,6 +102,7 @@ const manifest = JSON.parse(manifestText);
 const canonical = JSON.parse(canonicalText);
 const starters = JSON.parse(startersText);
 const provenance = JSON.parse(provenanceText);
+const rulebookVisibleText = rulebookText.replace(/<!--[\s\S]*?-->/g, '');
 
 if (!home.includes('Current canonical playtest edition · v0.7.1') || !home.includes('<dt>142</dt><dd>Playable cards</dd>')) {
   throw new Error('gauntlet.run homepage is not current v0.7.1.');
@@ -160,10 +161,10 @@ if (diplomats?.factionRules?.peace_treaty_threshold !== 6) {
   throw new Error('Public v0.7.1 canonical Peace Treaty threshold is not six.');
 }
 if (
-  !rulebookText.includes('Ratify six different Proposals')
-  || !rulebookText.includes('if six different Proposals are ratified')
-  || rulebookText.includes('Ratify five different Proposals')
-  || rulebookText.includes('if five different Proposals are ratified')
+  !rulebookVisibleText.includes('Ratify six different Proposals')
+  || !rulebookVisibleText.includes('if six different Proposals are ratified')
+  || rulebookVisibleText.includes('Ratify five different Proposals')
+  || rulebookVisibleText.includes('if five different Proposals are ratified')
 ) {
   throw new Error('Public v0.7.1 Rulebook Peace Treaty threshold is not synchronized to six.');
 }
