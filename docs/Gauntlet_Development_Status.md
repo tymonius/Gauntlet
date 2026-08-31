@@ -6,7 +6,7 @@
 
 The release identified by `config/release-lifecycle.json` is the current public tabletop/web playtest edition. Its frozen package path is recorded in that lifecycle entry. Current browser and production tooling derive from `game-data/current-game.json` and `rulebook/player-facing/current-rulebook.md`.
 
-The Steam Workshop publication gate is complete for v0.7.1. The existing public Workshop item at ID `3790840635` has been updated in place to **v0.7.1**, matching the current canonical tabletop/web playtest edition.
+The Steam Workshop publication gate is complete for the release identified by `config/release-lifecycle.json`. The existing public Workshop item at ID `3790840635` has been updated in place to match the current canonical tabletop/web playtest edition.
 
 ## Release baseline
 
@@ -29,9 +29,9 @@ Published release snapshots remain immutable historical evidence. Corrections di
 
 ## Current priorities
 
-### 1. v0.7.1 Tabletop Simulator publication closeout
+### 1. Current Tabletop Simulator publication closeout
 
-The v0.7.1 manual QA gate is complete, `approvedForWorkshop` is true, and the permanent Workshop item has been updated in place to v0.7.1.
+The current release manual QA gate is complete, `approvedForWorkshop` is true, and the permanent Workshop item has been updated in place to the current canonical release.
 
 Treat any remaining TTS work as post-release verification and maintenance: subscribed-copy smoke testing, hosted-asset checks, importer regressions, or publication-specific defects should be recorded as follow-up evidence rather than reopening the completed promotion gate.
 
