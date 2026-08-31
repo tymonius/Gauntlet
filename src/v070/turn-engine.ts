@@ -34,6 +34,7 @@ import {
   placeV070OverlayFromPendingAction,
   resolveV070OverlayEntryRequirements,
   resolveV070StartTurnOverlayChoice,
+  v070DmzBlocksEntryThisTurn,
   v070OverlaysAt,
 } from './overlays';
 import {
@@ -990,6 +991,18 @@ function playActionCard(
     ).length === 0) {
     throw new V070GameActionError(
       'Sabotage requires at least one face-up opposing Asset.',
+    );
+  }
+  if ((card.id === 'neutral-phantom-passage'
+      || card.id === 'mystics-paths-of-shadow')
+    && controlledTerritoryMovementCandidatePositions(
+      state,
+      playerId,
+      card.id === 'neutral-phantom-passage',
+      cardInstanceId,
+    ).length === 0) {
+    throw new V070GameActionError(
+      `${card.name} requires another controlled Territory you can legally move to.`,
     );
   }
   if (card.id === 'neutral-scouting-report'
