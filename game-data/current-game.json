@@ -4405,7 +4405,12 @@
           "Terms",
           "Sanctions",
           "Reaction"
-        ]
+        ],
+        "faction_specific_headings": {
+          "Mission": "Intelligence",
+          "Terms": "Diplomats",
+          "Sanctions": "Diplomats"
+        }
       },
       "inherent_bank_action": {
         "applies_to_cards_with_asset_effect": true,
