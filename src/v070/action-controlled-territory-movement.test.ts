@@ -136,6 +136,41 @@ describe('v0.7.0 Paths of Shadow Action', () => {
     expect(moved!.index).toBeLessThan(resolved!.index);
   });
 
+  test('direct controlled-Territory movement during Denouement preserves Denouement', () => {
+    let state = openingForA();
+    state = reduceV070TurnAction(state, {
+      type: 'pass_opening',
+      playerId: 'A',
+    });
+    state = reduceV070TurnAction(state, {
+      type: 'choose_movement',
+      playerId: 'A',
+      choice: 'hold',
+    });
+    expect(state.turnState?.phase).toBe('denouement');
+
+    const source = injectHand(
+      state,
+      'mystics-paths-of-shadow',
+      'denouement-source',
+    );
+    state = reduceV070TurnAction(state, {
+      type: 'play_action_card',
+      playerId: 'A',
+      cardInstanceId: source,
+    });
+    state = reduceV070TurnAction(state, {
+      type: 'choose_controlled_territory_move_target',
+      playerId: 'A',
+      territoryPosition: 3,
+    });
+
+    expect(state.players.A.position).toBe(3);
+    expect(state.turnState?.phase).toBe('denouement');
+    expect(state.turnState?.movementSequenceOpen).toBe(false);
+    expect(state.players.A.zones.discardPile).toContain(source);
+  });
+
   test('an opponent-occupied controlled Territory is excluded because Paths cannot start a battle', () => {
     let state = openingForA();
     state.players.B.position = 3;
