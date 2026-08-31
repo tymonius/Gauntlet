@@ -50,8 +50,9 @@
 
   async function loadTerritories() {
     try {
-      const { loadGameRuleset, rulesetModeFromUrl } = await import("../game-data/ruleset.mjs");
-      const currentGame = await loadGameRuleset(rulesetModeFromUrl());
+      const bootstrap = window.GAUNTLET_DECKBUILDER_BOOTSTRAP;
+      if (typeof bootstrap !== "function") throw new Error("Current Deckbuilder runtime is unavailable.");
+      const currentGame = await bootstrap();
       state.territoryPool = (currentGame.territories || []).map(territory => ({
         id: territory.id,
         name: territory.name,
@@ -304,7 +305,6 @@
   function enhancedCurrentDeckData() {
     return {
       ...baseCurrentDeckData(),
-      schemaVersion: 2,
       territories: selectedTerritories().map(territory => ({ id: territory.id, name: territory.name, arena: territory.arena }))
     };
   }

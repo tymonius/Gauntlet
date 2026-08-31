@@ -160,7 +160,6 @@ jobs:
           render_starters=false
           render_supplementals=false
           render_finalized=false
-          render_mystics=false
           stage_assets=false
           full_render=false
 
@@ -201,9 +200,6 @@ jobs:
                     scripts/generate-tts-supplemental-assets.mjs|scripts/tts-sliding-trackers.mjs|tts/supplemental-renderer/*|card-design/universal-reference.css|card-design/reference-card.js|card-design/reference-card.css|card-design/supplemental-refinements.css|images/Gauntlet-G.svg|images/artwork/supplemental/*)
                       render_supplementals=true
                       ;;
-                    tts/render-current-mystics-assets.mjs)
-                      render_mystics=true
-                      ;;
                     scripts/generate-tts-card-assets.mjs|images/artwork/cards/*)
                       render_cards=true
                       ;;
@@ -238,28 +234,24 @@ jobs:
             render_starters=true
             render_supplementals=true
             render_finalized=true
-            render_mystics=true
             stage_assets=true
             seed_artifact_id=""
           else
-            # Base supplemental rendering recreates the supplemental output and
-            # manifest. Finalized Proposal/Ledger/Deed assets and the current
-            # Mystics bridge are additive descendants, so they must be rebuilt
-            # whenever their base is rebuilt. This is a dependency edge, not a
-            # recovery step after staging notices missing files.
+            # Finalized Proposal/Ledger/Deed assets are additive descendants of
+            # the generic supplemental catalog, so rebuild them whenever that
+            # base catalog is rebuilt.
             if [[ "$render_supplementals" == "true" ]]; then
               render_finalized=true
-              render_mystics=true
             fi
             if [[ "$render_cards" == "true" || "$render_territories" == "true" || "$render_leaders" == "true" ]]; then
               render_starters=true
             fi
-            if [[ "$render_cards" == "true" || "$render_territories" == "true" || "$render_leaders" == "true" || "$render_starters" == "true" || "$render_supplementals" == "true" || "$render_finalized" == "true" || "$render_mystics" == "true" ]]; then
+            if [[ "$render_cards" == "true" || "$render_territories" == "true" || "$render_leaders" == "true" || "$render_starters" == "true" || "$render_supplementals" == "true" || "$render_finalized" == "true" ]]; then
               stage_assets=true
             fi
           fi
 
-          if [[ "$render_cards" == "true" || "$render_territories" == "true" || "$render_leaders" == "true" || "$render_supplementals" == "true" || "$render_finalized" == "true" || "$render_mystics" == "true" || "$stage_assets" == "true" ]]; then
+          if [[ "$render_cards" == "true" || "$render_territories" == "true" || "$render_leaders" == "true" || "$render_supplementals" == "true" || "$render_finalized" == "true" || "$stage_assets" == "true" ]]; then
             any_render=true
           else
             any_render=false
@@ -274,12 +266,11 @@ jobs:
           echo "render_starters=$render_starters" >> "$GITHUB_OUTPUT"
           echo "render_supplementals=$render_supplementals" >> "$GITHUB_OUTPUT"
           echo "render_finalized=$render_finalized" >> "$GITHUB_OUTPUT"
-          echo "render_mystics=$render_mystics" >> "$GITHUB_OUTPUT"
           echo "stage_assets=$stage_assets" >> "$GITHUB_OUTPUT"
           echo "any_render=$any_render" >> "$GITHUB_OUTPUT"
           echo "full_render=$full_render" >> "$GITHUB_OUTPUT"
 
-          echo "TTS build scope: full=${full_render}, cards=${render_cards}, territories=${render_territories}, leaders=${render_leaders}, starters=${render_starters}, supplementals=${render_supplementals}, finalized=${render_finalized}, mystics=${render_mystics}, stage=${stage_assets}."
+          echo "TTS build scope: full=${full_render}, cards=${render_cards}, territories=${render_territories}, leaders=${render_leaders}, starters=${render_starters}, supplementals=${render_supplementals}, finalized=${render_finalized}, stage=${stage_assets}."
 
       - name: Seed unchanged generated TTS outputs
         if: steps.scope.outputs.seed_artifact_id != ''
@@ -354,10 +345,6 @@ jobs:
       - name: Generate finalized Proposal, Ledger, and Deed components
         if: steps.scope.outputs.render_finalized == 'true'
         run: npm run tts:finalized-supplementals
-
-      - name: Refresh current Mystics Rite and Ritual components
-        if: steps.scope.outputs.render_mystics == 'true'
-        run: node tts/render-current-mystics-assets.mjs
 
       - name: Stage hosted TTS release assets
         if: steps.scope.outputs.stage_assets == 'true'

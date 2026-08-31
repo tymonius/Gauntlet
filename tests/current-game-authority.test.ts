@@ -248,8 +248,8 @@ describe('complete current-game authority', () => {
     const rules = authority.gameplay.faction_rules;
     expect(rules.diplomats.terms_timing).toBe('During Onset');
     expect(rules.diplomats.peace_treaty_threshold).toBe(6);
-    expect(rulebook.replace(/<!--.*?-->/g, '')).toContain('Ratify six different Proposals');
-    expect(rulebook.replace(/<!--.*?-->/g, '')).toContain('if six different Proposals are ratified');
+    expect(rulebook).toContain('Ratify six<!-- RULE-FACT:diplomats.peace_treaty_threshold:word --> different Proposals');
+    expect(rulebook).toContain('if six<!-- RULE-FACT:diplomats.peace_treaty_threshold:word --> different Proposals are ratified');
     expect(rules.financiers.faction_feature_action_phase).toBe('Denouement');
     expect(rules.financiers.financial_capacity).toContain('Faction Feature marked 1 Action');
     expect(rules.intelligence.faction_features_1_action).toEqual([
@@ -316,6 +316,14 @@ describe('complete current-game authority', () => {
     expect(universal.authoritySource).toBe('rulebook/player-facing/current-rulebook.md');
     expect(references.filter((component: any) => component.id !== 'universal-reference')
       .every((component: any) => component.authoritySource === 'game-data/current-game.json')).toBe(true);
+
+    const ritual = contract.components.find((component: any) => component.id === 'mystics-ritual-of-ascension');
+    expect(ritual).toMatchObject({
+      family: 'ritual-card',
+      productionStatus: 'ready',
+      backPolicy: 'specialBack',
+      source: 'game-data/current-game.json',
+    });
 
     const diplomat = references.find((component: any) => component.id === 'diplomats-reference');
     expect(diplomat.referenceFaces.front.sections.map((section: any) => section.heading)).toEqual([

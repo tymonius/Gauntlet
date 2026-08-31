@@ -168,12 +168,11 @@ jobs:
           found=0
           mapfile -t retired_sources < <(node -e "for (const file of JSON.parse(process.env.RETIRED_SOURCES || '[]')) console.log(file)")
           for retired in "${retired_sources[@]}"; do
-            base="${retired##*/}"
             while IFS= read -r match; do
               [[ -z "$match" ]] && continue
               echo "Dangling reference to retired source $retired: $match" >&2
               found=1
-            done < <(git grep -n -F "$base" -- '*.js' '*.mjs' '*.ts' '*.tsx' || true)
+            done < <(git grep -n -F "$retired" -- '*.js' '*.mjs' '*.ts' '*.tsx' || true)
           done
           if (( found )); then
             exit 1

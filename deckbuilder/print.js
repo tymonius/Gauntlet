@@ -4,8 +4,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700;800;900&display=block" rel="stylesheet">`;
 
-  const SUPPLEMENTAL_DATA = window.GAUNTLET_V06_SUPPLEMENTALS || {};
-
   document.addEventListener("DOMContentLoaded", installPrintButton);
 
   function installPrintButton() {
@@ -15,7 +13,9 @@
     button.addEventListener("click", openPrintView);
 
     const readyCheck = window.setInterval(() => {
-      const ready = state.cards.length > 0 && state.territoryPool?.length > 0;
+      const ready = state.cards.length > 0
+        && state.territoryPool?.length > 0
+        && state.currentFactionComponentsReady === true;
       button.disabled = !ready;
       button.title = ready
         ? "Open a printable deck package for printing or saving as PDF"
@@ -54,7 +54,7 @@
     const territories = (state.territories || [])
       .map(id => state.territoryPool.find(territory => territory.id === id))
       .filter(Boolean);
-    const supplementalPackage = SUPPLEMENTAL_DATA[faction.id] || {
+    const supplementalPackage = window.GAUNTLET_CURRENT_SUPPLEMENTALS?.[faction.id] || {
       summary: ["Selected Leader Card"],
       leaderImages: {},
       components: []
@@ -249,12 +249,22 @@ window.addEventListener('load',preparePrint);
     };
   }
 
+  function contractAttrs(component) {
+    const contractId = component?.contractId
+      ? ` data-contract-component-id="${escapeHtml(component.contractId)}"`
+      : "";
+    const kind = component?.kind
+      ? ` data-print-component-kind="${escapeHtml(component.kind)}"`
+      : "";
+    return contractId + kind;
+  }
+
   function componentToPrintHtml(component) {
     if (component.type === "tracker") return trackerToPrintHtml(component);
     if (component.type === "reference") return referenceToPrintHtml(component);
     if (component.type === "purge") return purgeToPrintHtml(component);
     if (component.type === "capital") return capitalToPrintHtml(component);
-    if (component.type === "deed-set") return Array.from({ length: Number(component.count) || 8 }, () => deedToPrintHtml());
+    if (component.type === "deed-set") return Array.from({ length: Number(component.count) || 8 }, () => deedToPrintHtml(component));
     return "";
   }
 
@@ -314,7 +324,7 @@ window.addEventListener('load',preparePrint);
       ? sections.map(([label, text]) => rulesSection(label, text)).join("")
       : rulesSection("Text", "—");
 
-    return `<article class="print-card main-card fit-target">
+    return `<article class="print-card main-card fit-target" data-card-id="${escapeHtml(card.id)}">
       <header class="card-header"><span class="card-name">${escapeHtml(card.name)}</span><span class="cost-circle">${escapeHtml(card.cost)}</span></header>
       ${card.unique ? '<div class="unique-flag">Unique</div>' : ""}
       <div class="card-body">${sectionHtml}</div>
@@ -339,7 +349,7 @@ window.addEventListener('load',preparePrint);
 
   function referenceToPrintHtml(component) {
     const subtitle = component.subtitle || "";
-    return `<article class="print-card reference-card fit-target${subtitle ? "" : " no-subtitle"}">
+    return `<article class="print-card reference-card fit-target${subtitle ? "" : " no-subtitle"}"${contractAttrs(component)}>
       <header class="supplemental-header">${escapeHtml(component.title)}</header>
       ${subtitle ? `<div class="supplemental-subtitle">${escapeHtml(subtitle)}</div>` : ""}
       <div class="reference-body">${(component.sections || []).map(section => `<section class="reference-section"><div class="card-label">${escapeHtml(section.label)}</div><div class="card-text">${escapeHtml(section.text)}</div></section>`).join("")}</div>
@@ -348,7 +358,7 @@ window.addEventListener('load',preparePrint);
   }
 
   function purgeToPrintHtml(component) {
-    return `<article class="print-card purge-card fit-target">
+    return `<article class="print-card purge-card fit-target"${contractAttrs(component)}>
       <header class="supplemental-header">${escapeHtml(component.title)}</header>
       <div class="reference-body">
         <div class="purge-intro"><strong>Purge:</strong> ${escapeHtml(component.intro)}</div>
@@ -360,7 +370,7 @@ window.addEventListener('load',preparePrint);
   }
 
   function capitalToPrintHtml(component) {
-    return `<article class="print-card capital-tracker-card">
+    return `<article class="print-card capital-tracker-card"${contractAttrs(component)}>
       <header class="supplemental-header">${escapeHtml(component.title)}</header>
       <div class="capital-tracker-body">
         <div class="capital-box"><span>Current Capital</span><div></div></div>
@@ -371,8 +381,8 @@ window.addEventListener('load',preparePrint);
     </article>`;
   }
 
-  function deedToPrintHtml() {
-    return `<article class="print-card deed-card">
+  function deedToPrintHtml(component) {
+    return `<article class="print-card deed-card"${contractAttrs(component)}>
       <div class="deed-banner">Deed</div>
       <div class="deed-seal">§</div>
       <div class="deed-title">Territory Ownership</div>
@@ -384,7 +394,7 @@ window.addEventListener('load',preparePrint);
   }
 
   function trackerToPrintHtml(component) {
-    return `<article class="print-card tracker-card">
+    return `<article class="print-card tracker-card"${contractAttrs(component)}>
       <div class="tracker-title">${escapeHtml(component.title)}</div>
       <div class="tracker-note">${escapeHtml(component.note)}</div>
       ${(component.steps || []).map(step => `<div class="tracker-step" style="bottom:${Number(step.position).toFixed(2)}in"><span class="tracker-step-value">${escapeHtml(step.value)}</span><span class="tracker-step-label">${escapeHtml(step.label)}</span></div>`).join("")}
@@ -394,7 +404,7 @@ window.addEventListener('load',preparePrint);
   }
 
   function proposalToPrintHtml(proposal, treaty) {
-    return `<article class="print-card proposal-card fit-target${treaty ? " treaty" : ""}">
+    return `<article class="print-card proposal-card fit-target${treaty ? " treaty" : ""}"${contractAttrs(proposal)}>
       <div class="proposal-banner">${treaty ? "Ratified Treaty Article" : "Proposal"}</div>
       <div class="proposal-title-row">
         <div><div class="proposal-number">Article ${escapeHtml(proposal.number)}</div><div class="proposal-title">${escapeHtml(proposal.name)}</div></div>
@@ -420,7 +430,7 @@ window.addEventListener('load',preparePrint);
       const progression = unlocks.length
         ? `${unlocks.join(". ")}. Completing all selected Rites permits ${ritualName}.`
         : `Completing all selected Rites permits ${ritualName}.`;
-      return `<article class="print-card rite-card completed fit-target">
+      return `<article class="print-card rite-card completed fit-target"${contractAttrs(rite)}>
         <div class="rite-banner">Completed Rite</div>
         <div class="rite-icon">${escapeHtml(rite.icon || "✦")}</div>
         <div class="rite-title">${escapeHtml(rite.name)}</div>
@@ -431,7 +441,7 @@ window.addEventListener('load',preparePrint);
         <div class="rite-footer">Pair with the incomplete side · not a Playable Deck card</div>
       </article>`;
     }
-    return `<article class="print-card rite-card fit-target">
+    return `<article class="print-card rite-card fit-target"${contractAttrs(rite)}>
       <div class="rite-banner">Incomplete Rite</div>
       <div class="rite-icon">${escapeHtml(rite.icon || "✦")}</div>
       <div class="rite-title">${escapeHtml(rite.name)}</div>
@@ -448,7 +458,7 @@ window.addEventListener('load',preparePrint);
   }
 
   function territoryToPrintHtml(territory) {
-    return `<article class="print-card territory"><div class="territory-inner fit-target">
+    return `<article class="print-card territory" data-territory-id="${escapeHtml(territory.id)}"><div class="territory-inner fit-target">
       <header class="territory-header"><span class="territory-type">${territory.arena ? "Arena Territory" : "Territory"}</span><span class="territory-name">${escapeHtml(territory.name)}</span></header>
       <div class="territory-body"><div class="card-text">${escapeHtml(territory.text || "")}</div></div>
       <footer class="territory-footer"><span>${escapeHtml(territory.complexity || "")}</span><span>Gauntlet ${escapeHtml(state.currentGameDisplayVersion || state.currentGameVersion || "current")}</span></footer>

@@ -5087,11 +5087,12 @@
         "cardLike": true,
         "designStatus": "final",
         "productionStatus": "export-pending",
-        "backPolicy": "standardBack",
+        "backPolicy": "twoSided",
         "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/financier/Gauntlet_v0.6.3_Financier_Faction_Guide.md",
         "tts": {
           "representation": "ledger"
-        }
+        },
+        "reverse": "Identical Capital Ledger face"
       },
       {
         "id": "financiers-deed",
@@ -5367,17 +5368,45 @@
         }
       },
       {
+        "id": "mystics-ritual-of-ascension",
+        "name": "Ritual of Ascension",
+        "faction": "mystics",
+        "family": "ritual-card",
+        "quantity": 1,
+        "cardLike": true,
+        "designStatus": "final",
+        "productionStatus": "ready",
+        "backPolicy": "specialBack",
+        "specialBackFile": "images/artwork/cardbacks/mystics/ritual-of-ascension.png",
+        "source": "game-data/current-game.json",
+        "renderSource": {
+          "surface": "card-design/rite-card.js",
+          "kind": "ritual",
+          "componentId": "ascension"
+        },
+        "tts": {
+          "representation": "card"
+        }
+      },
+      {
         "id": "mystics-rite-echoes",
         "name": "Rite of Echoes",
         "faction": "mystics",
         "family": "rite-card",
         "quantity": 1,
         "cardLike": true,
+        "designStatus": "final",
         "productionStatus": "ready",
         "backPolicy": "twoSided",
         "reverse": "Completed",
         "reverseArtwork": "images/artwork/supplemental/mystics/rite-completed.webp",
-        "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/mystics/Gauntlet_v0.6.3_Mystics_Faction_Guide.md",
+        "deckInclusion": "selected-rite",
+        "source": "game-data/current-game.json",
+        "renderSource": {
+          "surface": "card-design/rite-card.js",
+          "kind": "rite",
+          "componentId": "echoes"
+        },
         "tts": {
           "representation": "card"
         }
@@ -5389,11 +5418,18 @@
         "family": "rite-card",
         "quantity": 1,
         "cardLike": true,
+        "designStatus": "final",
         "productionStatus": "ready",
         "backPolicy": "twoSided",
         "reverse": "Completed",
         "reverseArtwork": "images/artwork/supplemental/mystics/rite-completed.webp",
-        "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/mystics/Gauntlet_v0.6.3_Mystics_Faction_Guide.md",
+        "deckInclusion": "selected-rite",
+        "source": "game-data/current-game.json",
+        "renderSource": {
+          "surface": "card-design/rite-card.js",
+          "kind": "rite",
+          "componentId": "blood"
+        },
         "tts": {
           "representation": "card"
         }
@@ -5405,11 +5441,87 @@
         "family": "rite-card",
         "quantity": 1,
         "cardLike": true,
+        "designStatus": "final",
         "productionStatus": "ready",
         "backPolicy": "twoSided",
         "reverse": "Completed",
         "reverseArtwork": "images/artwork/supplemental/mystics/rite-completed.webp",
-        "source": "artifacts/reconstruction/clean-v0.6.3/faction-guides/mystics/Gauntlet_v0.6.3_Mystics_Faction_Guide.md",
+        "deckInclusion": "selected-rite",
+        "source": "game-data/current-game.json",
+        "renderSource": {
+          "surface": "card-design/rite-card.js",
+          "kind": "rite",
+          "componentId": "crossing"
+        },
+        "tts": {
+          "representation": "card"
+        }
+      },
+      {
+        "id": "mystics-rite-shattering",
+        "name": "Rite of Shattering",
+        "faction": "mystics",
+        "family": "rite-card",
+        "quantity": 1,
+        "cardLike": true,
+        "designStatus": "final",
+        "productionStatus": "ready",
+        "backPolicy": "twoSided",
+        "reverse": "Completed",
+        "reverseArtwork": "images/artwork/supplemental/mystics/rite-completed.webp",
+        "deckInclusion": "selected-rite",
+        "source": "game-data/current-game.json",
+        "renderSource": {
+          "surface": "card-design/rite-card.js",
+          "kind": "rite",
+          "componentId": "shattering"
+        },
+        "tts": {
+          "representation": "card"
+        }
+      },
+      {
+        "id": "mystics-rite-consecration",
+        "name": "Rite of Consecration",
+        "faction": "mystics",
+        "family": "rite-card",
+        "quantity": 1,
+        "cardLike": true,
+        "designStatus": "final",
+        "productionStatus": "ready",
+        "backPolicy": "twoSided",
+        "reverse": "Completed",
+        "reverseArtwork": "images/artwork/supplemental/mystics/rite-completed.webp",
+        "deckInclusion": "selected-rite",
+        "source": "game-data/current-game.json",
+        "renderSource": {
+          "surface": "card-design/rite-card.js",
+          "kind": "rite",
+          "componentId": "consecration"
+        },
+        "tts": {
+          "representation": "card"
+        }
+      },
+      {
+        "id": "mystics-rite-equivalence",
+        "name": "Rite of Equivalence",
+        "faction": "mystics",
+        "family": "rite-card",
+        "quantity": 1,
+        "cardLike": true,
+        "designStatus": "final",
+        "productionStatus": "ready",
+        "backPolicy": "twoSided",
+        "reverse": "Completed",
+        "reverseArtwork": "images/artwork/supplemental/mystics/rite-completed.webp",
+        "deckInclusion": "selected-rite",
+        "source": "game-data/current-game.json",
+        "renderSource": {
+          "surface": "card-design/rite-card.js",
+          "kind": "rite",
+          "componentId": "equivalence"
+        },
         "tts": {
           "representation": "card"
         }

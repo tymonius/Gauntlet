@@ -6,7 +6,7 @@ const published = JSON.parse(readFileSync('releases/v0.7.1/Gauntlet_v0.7.1_Canon
 const starters = JSON.parse(readFileSync('releases/v0.7.1/Gauntlet_v0.7.1_Starter_Decks.json', 'utf8'));
 const current = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
 const html = readFileSync('deckbuilder/index.html', 'utf8');
-const runtime = readFileSync('deckbuilder/v061-runtime.js', 'utf8');
+const runtime = readFileSync('deckbuilder/current-runtime.js', 'utf8');
 const territories = readFileSync('deckbuilder/territories.js', 'utf8');
 const rites = readFileSync('deckbuilder/mystics-rites.js', 'utf8');
 const components = readFileSync('deckbuilder/faction-components.js', 'utf8');
@@ -41,10 +41,13 @@ describe('Deckbuilder released / release-candidate ruleset toggle', () => {
     expect(current.mystics.selectionPolicy.selectedCount).toBe(3);
   });
 
-  it('routes every Deckbuilder authority loader through the selected ruleset', () => {
+  it('routes every Deckbuilder authority consumer through the selected shared ruleset bootstrap', () => {
     expect(runtime).toContain('../game-data/ruleset.mjs');
-    expect(territories).toContain('../game-data/ruleset.mjs');
-    expect(rites).toContain('../game-data/ruleset.mjs');
+    expect(runtime).toContain('GAUNTLET_DECKBUILDER_BOOTSTRAP');
+    expect(territories).toContain('window.GAUNTLET_DECKBUILDER_BOOTSTRAP');
+    expect(rites).toContain('window.GAUNTLET_DECKBUILDER_BOOTSTRAP');
+    expect(territories).not.toContain('../game-data/ruleset.mjs');
+    expect(rites).not.toContain('../game-data/ruleset.mjs');
     expect(components).toContain('../game-data/ruleset.mjs');
     expect(bulk).toContain('../game-data/ruleset.mjs');
   });
@@ -56,7 +59,7 @@ describe('Deckbuilder released / release-candidate ruleset toggle', () => {
     expect(currentRuntime).toContain("import('./ruleset.mjs')");
   });
 
-  it('keeps the released Deck library version-locked while preserving a separate future-candidate namespace', () => {
+  it('keeps saved Deck libraries separate so candidate Decks do not silently appear as released Decks', () => {
     expect(runtime).toContain('gauntlet-v0.7.1-decks');
     expect(runtime).toContain('gauntlet-current-game-decks');
     expect(runtime).toContain('requestedRulesetMode === CANDIDATE_MODE');

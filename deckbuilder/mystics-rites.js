@@ -51,8 +51,9 @@
 
   async function loadRites() {
     try {
-      const { loadGameRuleset, rulesetModeFromUrl } = await import("../game-data/ruleset.mjs");
-      const currentGame = await loadGameRuleset(rulesetModeFromUrl());
+      const bootstrap = window.GAUNTLET_DECKBUILDER_BOOTSTRAP;
+      if (typeof bootstrap !== "function") throw new Error("Current Deckbuilder runtime is unavailable.");
+      const currentGame = await bootstrap();
       const rites = currentGame.mystics?.rites;
       const policy = currentGame.mystics?.selectionPolicy;
       const selectedCount = Number(policy?.selectedCount);
@@ -325,7 +326,6 @@
   function enhancedCurrentDeckData() {
     return {
       ...baseCurrentDeckData(),
-      schemaVersion: Math.max(3, Number(baseCurrentDeckData().schemaVersion) || 0),
       selectedRites: isMystics() ? [...state.rites] : [],
     };
   }

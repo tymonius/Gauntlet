@@ -55,11 +55,13 @@ describe("Deckbuilder production printing", () => {
     expect(deed?.productionStatus).toBe('export-pending');
     expect(ledger?.designStatus).toBe('final');
     expect(deed?.designStatus).toBe('final');
-    expect(supplementalPrintTransform).toContain('PRODUCTION_LEDGER_COMPONENT_ID = "financiers-capital-ledger"');
-    expect(supplementalPrintTransform).toContain('PRODUCTION_DEED_COMPONENT_ID = "financiers-deed"');
-    expect(supplementalPrintTransform).toContain('deed.replaceWith(productionDeedFrame(documentNode))');
-    expect(printTransform).toContain('annotateFallback(legacyCard, component)');
-    expect(printTransform).toContain('legacyCard.dataset.contractBackPolicy = component.backPolicy');
+    expect(ledger?.backPolicy).toBe('twoSided');
+    expect(deed?.backPolicy).toBe('standardBack');
+    expect(printTransform).toContain('if (component.family === "ledger") return { kind: "supplemental", id: component.id };');
+    expect(printTransform).toContain('if (component.family === "deed-card") return { kind: "supplemental", id: component.id, orientation: "landscape" };');
+    expect(printTransform).toContain('["proposal-treaty-card", "ledger", "deed-card"].includes(component.family)');
+    expect(supplementalPrintTransform).not.toContain('replaceLegacyDeeds');
+    expect(supplementalPrintTransform).not.toContain('removeLegacyDiplomatReverseReference');
   });
 
   it("prints standard backs as black and single-sided faction components in faction color automatically", () => {
@@ -79,8 +81,9 @@ describe("Deckbuilder production printing", () => {
   it("keeps duplex orientation and production-render readiness safeguards", () => {
     expect(printTransform).toContain('mirrorIndexForLongEdge(frontIndex)');
     expect(printTransform).toContain('transform: rotate(90deg);');
-    expect(supplementalPrintTransform).toContain('production-component-landscape-rotate');
-    expect(supplementalPrintTransform).toContain('orientation=landscape');
+    expect(printTransform).toContain('production-component-landscape-rotate');
+    expect(printTransform).toContain('&orientation=landscape');
+    expect(supplementalPrintTransform).toContain('&rules=${encodeURIComponent(selectedRulesetMode())}');
     expect(componentRenderJs).toContain('card.dataset.parchmentLoaded === "true" && dimensionsReady(card)');
     expect(cardBackCss).toContain('transform: translate(-50%, -50%) rotate(90deg);');
     expect(backRender).toContain("params.get('rotation') === '180'");
