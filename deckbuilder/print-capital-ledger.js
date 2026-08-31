@@ -1,4 +1,7 @@
 (() => {
+  const deckbuilder = window.GAUNTLET_DECKBUILDER;
+  if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
+
   const COLUMNS = 3;
   const LEDGERS_PER_SHEET = 9;
   const DEFAULT_SHEET_COUNT = 1;
