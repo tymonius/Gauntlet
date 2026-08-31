@@ -46,6 +46,8 @@ A path that cannot be classified cleanly is a cleanup target.
 
 Current public paths such as `/deckbuilder/`, `/rulebook/`, `/card-reference/`, `/factions/`, `/start/`, and `/playtest/` must not move merely to make the source tree prettier.
 
+The release manifest remains the contract for primary browser-tool routes. Current public applications outside that manifest are inventoried in `config/current-public-routes.json`; CI requires that inventory to cover every tracked `index.html` beneath its managed roots and validates the local deep links on every declared route.
+
 The long-term architecture may separate source applications from deployed Pages output, but that migration must first make deployment explicit and preserve stable URLs.
 
 ### 4. Frozen releases stay frozen

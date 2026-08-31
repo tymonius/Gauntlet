@@ -23,7 +23,9 @@ jobs:
             /package-lock.json
             /config/release-lifecycle.json
             /config/github-release-contract.json
+            /config/current-public-routes.json
             /scripts/validate-current-public-contract.mjs
+            /scripts/validate-current-public-route-graph.mjs
             /scripts/validate-current-release-payload.mjs
             /scripts/validate-current-rulebook-booklet-provenance.mjs
             /scripts/validate-github-release-contract.mjs
@@ -49,6 +51,7 @@ jobs:
             /factions/*/index.html
             /deckbuilder/index.html
             /rules-arbiter/index.html
+            /playtest/**
             /design-tokens.css
             /images/faction-symbols/*.svg
             /releases/*/Gauntlet_*_Manifest.json
@@ -68,6 +71,7 @@ jobs:
       - name: Validate current player-facing publication contract
         run: |
           node scripts/validate-current-public-contract.mjs
+          node scripts/validate-current-public-route-graph.mjs
           node scripts/validate-current-release-payload.mjs
           node scripts/validate-current-rulebook-booklet-provenance.mjs
           node scripts/validate-github-release-contract.mjs

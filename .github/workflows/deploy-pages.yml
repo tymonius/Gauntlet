@@ -14,6 +14,7 @@ on:
       - 'images/artwork/card-backgrounds/**'
       - 'images/sketches/*.png'
       - 'rulebook/**'
+      - 'playtest/**'
       - 'tts/renderer/**'
       - 'card-design/**'
       - 'scripts/generate-card-media-*.mjs'

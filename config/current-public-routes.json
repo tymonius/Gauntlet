@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "purpose": "Current public routes that are maintained outside the release manifest's primary browser-tool route list.",
+  "managed_roots": [
+    "/playtest/"
+  ],
+  "routes": [
+    "/playtest/",
+    "/playtest/analysis/",
+    "/playtest/analysis/integrity/",
+    "/playtest/batch/",
+    "/playtest/feedback/",
+    "/playtest/guide/",
+    "/playtest/host/",
+    "/playtest/onboarding/",
+    "/playtest/player-mat/",
+    "/playtest/retrospective/",
+    "/playtest/session/",
+    "/playtest/sheet/",
+    "/playtest/tracked/"
+  ]
+}

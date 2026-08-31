@@ -45,6 +45,8 @@ jobs:
             const publication = any(
               exact('config/release-lifecycle.json'),
               exact('scripts/validate-current-public-contract.mjs'),
+              exact('scripts/validate-current-public-route-graph.mjs'),
+              exact('config/current-public-routes.json'),
               exact('scripts/validate-current-release-payload.mjs'),
               exact('.github/workflows/current-publication-contract.yml'),
               under('releases/v0.6.3/'),
@@ -59,6 +61,7 @@ jobs:
               under('factions/'),
               under('deckbuilder/'),
               under('rules-arbiter/'),
+              under('playtest/'),
               exact('design-tokens.css'),
               under('images/faction-symbols/')
             );
