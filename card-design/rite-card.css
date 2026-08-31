@@ -7,7 +7,7 @@
 }
 
 .rite-card .card-interior {
-  --art-height: 1.48in;
+  --art-height: 1.72in;
   grid-template-rows: var(--component-heading-height, 0.50in) var(--art-height) auto 0.18in;
 }
 
