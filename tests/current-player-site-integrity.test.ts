@@ -165,7 +165,7 @@ describe("v0.7.0 player-site release preparation", () => {
 
   it("keeps the Deckbuilder on released v0.7.0 by default with an explicit current-candidate view", () => {
     const html = read("deckbuilder/index.html");
-    const runtime = read("deckbuilder/v061-runtime.js");
+    const runtime = read("deckbuilder/current-runtime.js");
     const print = read("deckbuilder/print.js");
     const bulkPrint = read("deckbuilder/print-all-starters.js");
 
