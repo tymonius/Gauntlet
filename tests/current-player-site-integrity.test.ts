@@ -129,7 +129,7 @@ describe("v0.7.1 player-site release", () => {
 
     expect(html).toContain("<title>Gauntlet v0.7.1 Card Reference</title>");
     expect(html).toContain("Quick rules lookup · v0.7.1 production");
-    expect(html).toContain("Current v0.7.1 production card reference.");
+    expect(html).toContain("Complete current v0.7.1 production card and Territory reference.");
     expect(app).toContain("document.title = `Gauntlet ${state.version} Card Reference`;");
     expect(html).toContain("v0.7.1 Release");
     expect(app).toContain("loadCurrentGame");
