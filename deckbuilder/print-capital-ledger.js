@@ -1,13 +1,17 @@
 (() => {
   const deckbuilder = window.GAUNTLET_DECKBUILDER;
   if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
+  const productionPrint = () => {
+    const renderer = deckbuilder.feature("productionPrintRenderer");
+    if (!renderer) throw new Error("Deckbuilder production print renderer is unavailable.");
+    return renderer;
+  };
 
   const COLUMNS = 3;
   const LEDGERS_PER_SHEET = 9;
   const DEFAULT_SHEET_COUNT = 1;
   const MAX_SHEET_COUNT = 10;
   const PRODUCTION_LEDGER_COMPONENT_ID = "financiers-capital-ledger";
-  const PRODUCTION_LEDGER_KIND = "supplemental";
   const PRODUCTION_RENDER_TIMEOUT_MS = 30000;
 
   document.addEventListener("DOMContentLoaded", installCapitalLedgerSheetPrinter);
@@ -224,18 +228,8 @@ body{margin:0;background:#f3f3f3;color:#111;font-family:Arial,Helvetica,sans-ser
     return row * COLUMNS + (COLUMNS - 1 - column);
   }
 
-  function selectedRulesetMode() {
-    return deckbuilder.ruleset()?.mode
-      || (new URLSearchParams(window.location.search).get("rules") === "candidate" ? "candidate" : "released");
-  }
-
-  function productionComponentFrameSource(kind, id, side, orientation = "portrait") {
-    const orientationParam = orientation === "landscape" ? "&orientation=landscape" : "";
-    return `/card-design/component-print-render.html?kind=${encodeURIComponent(kind)}&id=${encodeURIComponent(id)}&side=${encodeURIComponent(side)}${orientationParam}&rules=${encodeURIComponent(selectedRulesetMode())}`;
-  }
-
   function productionLedgerFrameSource(side) {
-    return productionComponentFrameSource(PRODUCTION_LEDGER_KIND, PRODUCTION_LEDGER_COMPONENT_ID, side);
+    return productionPrint().componentSource(PRODUCTION_LEDGER_COMPONENT_ID, side);
   }
 
   function capitalLedgerSheetFrameHtml(side) {
