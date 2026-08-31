@@ -300,6 +300,10 @@ describe('TTS Deckbuilder importer', () => {
     expect(save.LuaScript).toContain('function gauntletBuildMysticsRiteStack');
     expect(save.LuaScript).toContain('GAUNTLET_DECK_IMPORT.selectedRiteCount');
     expect(save.LuaScript).toContain('gauntlet:supplemental:mystics-ritual-of-ascension');
+    expect(save.LuaScript).toContain('bagData.Description = "Custom Deckbuilder starter kit\\n\\n"');
+    expect(save.LuaScript).not.toContain(`bagData.Description = "Custom Deckbuilder starter kit
+
+"`);
     expect((save.LuaScript.match(/GAUNTLET_DECK_IMPORTER_BEGIN/g) || [])).toHaveLength(1);
     expect(save.XmlUI).toContain('DECK IMPORT');
     expect(save.XmlUI).toContain('IMPORT STARTER KIT');
