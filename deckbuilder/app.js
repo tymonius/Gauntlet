@@ -84,6 +84,7 @@ const deckbuilderApi = Object.freeze({
     return selectedRuleset;
   },
   render: () => renderAll(),
+  renderFactionOptions: () => renderFactionOptions(),
   validate: () => validateDeck(),
   serialize: () => currentDeckData(),
   hydrate: data => applyDeckData(data),
