@@ -59,7 +59,6 @@ const frozenCandidateScripts = new Set([
   'scripts/render-v063-print-candidate.mjs',
   'scripts/validate-v063-print-candidate.mjs',
   'scripts/build-v063-cross-surface-closeout.mjs',
-  'scripts/validate-v063-cross-surface-closeout.mjs',
   'scripts/validate-v063-print-visual-regressions.mjs',
   'scripts/generate-v063-canonical-data-candidate.mjs',
   'scripts/generate-v063-player-facing-candidates.mjs',
