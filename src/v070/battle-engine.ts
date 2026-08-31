@@ -413,6 +413,24 @@ function setGambit(
       'The attacker cannot set a Gambit in this battle.',
     );
   }
+
+  const ableMandates = (state.turnState?.gambitMandates ?? []).filter(
+    mandate =>
+      mandate.playerId === playerId
+      && state.players[playerId].zones.hand.includes(mandate.instanceId)
+      && cardEligibleForV070BattleRole(
+        state.cardInstances[mandate.instanceId]?.cardId ?? '',
+        'gambit',
+      )
+      && !(battle.attackerGambitProhibited && playerId === battle.attacker),
+  );
+  if (instanceId !== undefined
+    && ableMandates.some(mandate => mandate.instanceId !== instanceId)) {
+    throw new V070GameActionError(
+      'Confession requires every still-able mandated Gambit instruction to be satisfied if the player sets a Gambit.',
+    );
+  }
+
   if (participant.gambit !== undefined) {
     throw new V070GameActionError(`${playerId} has already made a Gambit choice.`);
   }
