@@ -6,6 +6,8 @@
   const deckEntries = () => deckbuilder.deckEntries();
   const validateDeck = () => deckbuilder.validate();
   const escapeHtml = value => deckbuilder.escapeHtml(value);
+  const territoriesApi = () => deckbuilder.feature("territories");
+  const ritesApi = () => deckbuilder.feature("mysticsRites");
   const productionPrint = () => {
     const renderer = deckbuilder.feature("productionPrintRenderer");
     if (!renderer) throw new Error("Deckbuilder production print renderer is unavailable.");
@@ -32,8 +34,8 @@
 
     const readyCheck = window.setInterval(() => {
       const ready = state.cards.length > 0
-        && state.territoryPool?.length > 0
-        && state.currentFactionComponentsReady === true;
+        && territoriesApi()?.isReady?.()
+        && Boolean(deckbuilder.feature("supplementalPackages"));
       button.disabled = !ready;
       button.title = ready
         ? "Open a printable deck package for printing or saving as PDF"
@@ -78,9 +80,7 @@
 
     const entries = deckEntries();
     const cards = entries.flatMap(({ card, qty }) => Array.from({ length: qty }, () => ({ ...card })));
-    const territories = (state.territories || [])
-      .map(id => state.territoryPool.find(territory => territory.id === id))
-      .filter(Boolean);
+    const territories = territoriesApi()?.selected?.() || [];
     const supplementalPackage = deckbuilder.feature("supplementalPackages")?.[faction.id] || {
       summary: ["Selected Leader Card"],
       leaderImages: {},
@@ -95,10 +95,8 @@
       entries,
       cards,
       territories,
-      selectedRiteIds: state.factionId === "mystics" ? [...(state.rites || [])] : [],
-      selectedRites: state.factionId === "mystics"
-        ? (state.rites || []).map(id => state.currentGameData?.mystics?.rites?.find(rite => rite.id === id)).filter(Boolean)
-        : [],
+      selectedRiteIds: state.factionId === "mystics" ? (ritesApi()?.selectedIds?.() || []) : [],
+      selectedRites: state.factionId === "mystics" ? (ritesApi()?.selectedRites?.() || []) : [],
       validation: validateDeck(),
       supplementalPackage,
       supplementalRequirements: supplementalPackage.summary || ["Selected Leader Card"]
