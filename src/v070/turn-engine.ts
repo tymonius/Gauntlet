@@ -4568,19 +4568,19 @@ function chooseControlledTerritoryMoveTarget(
     );
   }
 
-  resolveV070OverlayEntryRequirements(
-    state,
-    playerId,
-    territoryPosition,
-    discardInstanceId,
-  );
-
   state.pendingActionEffectChoice = null;
   let sourceAlreadyPlaced = false;
   if (choice.sourceDestination === 'graveyard') {
     state.players[playerId].zones.graveyard.push(pending.instanceId);
     sourceAlreadyPlaced = true;
   }
+
+  resolveV070OverlayEntryRequirements(
+    state,
+    playerId,
+    territoryPosition,
+    discardInstanceId,
+  );
 
   moveSettledOccupantOffOrigin(state, playerId, origin);
   player.position = territoryPosition;
