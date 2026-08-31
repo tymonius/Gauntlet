@@ -766,7 +766,9 @@ export function assembleReadySupplementals(save, starterManifest, supplementalMa
     });
   }
 
-  const missingReadyIds = ready.filter(component => !assembledIds.has(component.id)).map(component => component.id);
+  const missingReadyIds = ready
+    .filter(component => component.deckInclusion !== 'selected-rite' && !assembledIds.has(component.id))
+    .map(component => component.id);
   if (missingReadyIds.length) throw new Error(`Ready supplemental components were not assembled into any starter kit: ${missingReadyIds.join(', ')}.`);
 
   for (const field of ['Note', 'Rules']) {
