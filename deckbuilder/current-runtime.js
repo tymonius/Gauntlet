@@ -1,4 +1,8 @@
 (() => {
+  const deckbuilder = window.GAUNTLET_DECKBUILDER;
+  if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
+  const { state, factions: FACTIONS, sources: SOURCES } = deckbuilder;
+
   const RELEASED_MODE = "released";
   const CANDIDATE_MODE = "candidate";
   const PUBLISHED_VERSION = "v0.7.0";
@@ -18,7 +22,7 @@
       currentGamePromise = import("../game-data/ruleset.mjs")
         .then(async module => {
           const data = await module.loadGameRuleset(requestedRulesetMode);
-          window.GAUNTLET_DECKBUILDER_RULESET = Object.freeze({
+          deckbuilder.setRuleset({
             mode: requestedRulesetMode,
             publishedVersion: module.PUBLISHED_VERSION,
             loadGame: () => currentGame(),
@@ -30,7 +34,6 @@
           state.currentGameVersion = data.version;
           state.currentGameDisplayVersion = data.displayVersion;
           state.currentGameAuthority = data.authorityUrl;
-          window.GAUNTLET_CURRENT_GAME_DATA = data;
           hydrateFactions(data);
           return data;
         });
@@ -86,7 +89,7 @@
     inquisition: sourceFor("inquisition", "Inquisition")
   });
 
-  window.GAUNTLET_DECKBUILDER_LOAD_SOURCE = async function loadCurrentGameSource([faction, source]) {
+  deckbuilder.setSourceLoader(async function loadCurrentGameSource([faction, source]) {
     const data = await currentGame();
     return (data.cards || [])
       .filter(card => slugify(card.allegiance || "Neutral") === faction)
@@ -103,7 +106,7 @@
         sections: Object.fromEntries((card.effects || []).map(effect => [effect.label || "Text", effect.text || ""])),
         source: `../card-reference/#${encodeURIComponent(card.id)}`
       }));
-  };
+  });
 
   function deckHasWorkInProgress() {
     return Boolean(
@@ -155,7 +158,7 @@
     }
   }
 
-  window.GAUNTLET_DECKBUILDER_BOOTSTRAP = currentGame;
+  deckbuilder.setAuthorityBootstrap(currentGame);
 
   document.addEventListener("DOMContentLoaded", async () => {
     try {
