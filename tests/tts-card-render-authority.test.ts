@@ -11,6 +11,8 @@ const trackerCapture = readFileSync('scripts/tts-sliding-trackers.mjs', 'utf8');
 const geometry = readFileSync('scripts/tts-supplemental-geometry.mjs', 'utf8');
 const componentShell = readFileSync('card-design/component-print-render.html', 'utf8');
 const componentRenderer = readFileSync('card-design/component-print-render.js', 'utf8');
+const sharedCardDesign = readFileSync('card-design/card-design.js', 'utf8');
+const designTokens = readFileSync('design-tokens.css', 'utf8');
 const playableRenderer = readFileSync('card-design/card-review-render.js', 'utf8');
 const territoryRenderer = readFileSync('card-design/territory-review-render.js', 'utf8');
 const playableTtsRenderer = readFileSync('tts/renderer/renderer.js', 'utf8');
@@ -102,13 +104,17 @@ describe('TTS card render authority', () => {
     expect(territoryTtsRenderer).toContain('if (territory.artDirection && Object.keys(territory.artDirection).length)');
   });
 
-  it('preloads production component fonts before content-sensitive fitting', () => {
-    expect(componentRenderer).toContain('async function preloadProductionFonts(card)');
-    expect(componentRenderer).toContain('"adobe-caslon-pro"');
-    expect(componentRenderer).toContain('"p22-1722-pro"');
-    expect(componentRenderer).toContain('await preloadProductionFonts(card)');
-    expect(componentRenderer.indexOf('await preloadProductionFonts(card)'))
-      .toBeLessThan(componentRenderer.indexOf('window.dispatchEvent(new Event("load"))'));
+  it('loads the canonical web fonts before shared content-sensitive fitting', () => {
+    expect(designTokens).toContain('family=Inter:wght@400;600;700;800');
+    expect(sharedCardDesign).toContain('PRODUCTION_FONT_REQUESTS');
+    expect(sharedCardDesign).toContain('"adobe-caslon-pro"');
+    expect(sharedCardDesign).toContain('"p22-1722-pro"');
+    expect(sharedCardDesign).toContain('"Inter"');
+    expect(sharedCardDesign).toContain('await loadProductionFonts()');
+    expect(sharedCardDesign.indexOf('await loadProductionFonts()'))
+      .toBeLessThan(sharedCardDesign.indexOf('fitAllCards();'));
+    expect(componentRenderer).toContain('document.body.dataset.productionFontsReady');
+    expect(componentRenderer).not.toContain('preloadProductionFonts');
   });
 
   it('inherits current reference styling including divider removal and Universal G watermark', () => {
