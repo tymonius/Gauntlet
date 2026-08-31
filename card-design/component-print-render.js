@@ -15,6 +15,36 @@
   const delay = ms => new Promise(resolve => window.setTimeout(resolve, ms));
   const reverseSide = () => side === "reverse" || side === "back" || side === "treaty" || side === "completed";
 
+
+  async function loadCanonicalArtDirection() {
+    const { loadCurrentGame } = await import("/game-data/current-game.mjs");
+    const currentGame = await loadCurrentGame();
+    window.GAUNTLET_ART_DIRECTION = currentGame.artDirection || {};
+    document.body.dataset.artDirectionAuthority = currentGame.authorityUrl || "/game-data/current-game.json";
+  }
+
+  async function preloadProductionFonts(card) {
+    if (!document.fonts?.load) {
+      throw new Error("Production component rendering requires the CSS Font Loading API.");
+    }
+
+    const title = card.querySelector(".card-title, .reference-card-title, .tracker-heading h3")?.textContent?.trim() || "Gauntlet";
+    const copy = card.textContent?.replace(/\s+/g, " ").trim() || "Gauntlet";
+    const requests = [
+      ['400 12px "p22-1722-pro"', title],
+      ['400 12px "adobe-caslon-pro"', copy],
+      ['700 12px "adobe-caslon-pro"', copy],
+      ['italic 400 12px "adobe-caslon-pro"', copy],
+    ];
+
+    const loaded = await Promise.all(requests.map(([font, sample]) => document.fonts.load(font, sample)));
+    await document.fonts.ready;
+    if (loaded.some(faces => !faces.length)) {
+      throw new Error("One or more production component fonts failed to load before fitting.");
+    }
+    card.dataset.renderFontsReady = "true";
+  }
+
   function applyRenderViewport() {
     for (const node of [document.documentElement, document.body, target]) {
       if (!node) continue;
@@ -291,15 +321,27 @@
     if (document.readyState !== "complete") {
       await new Promise(resolve => window.addEventListener("load", resolve, { once: true }));
     }
-    if (document.fonts?.ready) await document.fonts.ready;
+    await loadCanonicalArtDirection();
 
     const deadline = performance.now() + TIMEOUT_MS;
     let card = null;
+    let preparedCard = null;
     let sharedPreparationRequested = false;
     while (performance.now() < deadline) {
       const error = sourceError();
       if (error) throw new Error(error);
       card = selectedCard();
+
+      // Component catalogs are populated asynchronously into hidden staging
+      // roots. Explicitly request the production font faces after the actual
+      // card exists and before any content-sensitive fitting occurs. Waiting on
+      // document.fonts.ready before insertion is insufficient because hidden
+      // content may not have requested Adobe Caslon yet.
+      if (card && card !== preparedCard) {
+        await preloadProductionFonts(card);
+        preparedCard = card;
+        sharedPreparationRequested = false;
+      }
 
       // Leader/Proposal/Rite catalogs are populated asynchronously. The shared
       // card fitter normally runs on window.load, which can occur before the
