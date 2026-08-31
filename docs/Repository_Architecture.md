@@ -27,6 +27,8 @@ Published release snapshots under `releases/` are immutable historical evidence.
 
 Browser pages, printable documents, card media, TTS assets, and digital implementations are derived or implementation surfaces. If they disagree with governing current authority, fix the authority when appropriate and regenerate or update the surface; do not silently promote a derived artifact into authority.
 
+Current authority must also be **semantically surface-ready**. Active renderers and applications may reshape data for layout or UI convenience, but they must not silently relabel card effects, merge gameplay branches, rewrite rules text, or otherwise repair current authority at runtime. Version-specific compatibility transforms belong only at explicit historical boundaries.
+
 ### 2. Current, historical, and generated paths must be distinguishable
 
 Every maintained top-level subsystem should be classifiable as one of:
