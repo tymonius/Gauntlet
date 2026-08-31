@@ -64,9 +64,9 @@ describe("Deckbuilder print pipeline", () => {
 
   it("uses explicit print-document preflights instead of wrapping the base print handler", () => {
     const production = read("deckbuilder/production-print.js");
-    expect(print).toContain("window.GAUNTLET_PRINT_PREFLIGHTS=window.GAUNTLET_PRINT_PREFLIGHTS||[]");
-    expect(print).toContain("for(const preflight of window.GAUNTLET_PRINT_PREFLIGHTS){await preflight();}");
-    expect(production).toContain("const preflights = window.GAUNTLET_PRINT_PREFLIGHTS = window.GAUNTLET_PRINT_PREFLIGHTS || []");
+    expect(print).toContain("window.__gauntletPrintPreflights=window.__gauntletPrintPreflights||[]");
+    expect(print).toContain("for(const preflight of window.__gauntletPrintPreflights){await preflight();}");
+    expect(production).toContain("const preflights = window.__gauntletPrintPreflights = window.__gauntletPrintPreflights || []");
     expect(production).toContain("preflights.push(async () =>");
     expect(production).not.toContain("previousPreparePrint");
     expect(production).not.toContain("removeEventListener('load'");
