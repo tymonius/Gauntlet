@@ -21,7 +21,8 @@
 
   state.deckName = "";
   state.deck = {};
-  state.territories = [];
+  deckbuilder.feature("territories")?.setSelectedIds?.([]);
+  deckbuilder.feature("mysticsRites")?.setSelectedIds?.([]);
 
   let leader = null;
   let panel = null;
