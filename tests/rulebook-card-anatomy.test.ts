@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { STANDARD_CARD_HEADINGS, normalizeV063CardsForPresentation } from '../card-design/v063-card-heading-normalizer.js';
 
 const read = (path: string) => readFileSync(path, 'utf8');
 const index = read('rulebook/index.html');
@@ -52,21 +53,25 @@ describe('Browser Rulebook card anatomy guide', () => {
     expect(anatomy).toContain('data-marker-target="footer" aria-hidden="true">7</span>');
   });
 
-  it('documents every current printed playable-card effect heading', () => {
+  it('documents every current production playable-card effect heading', () => {
     const start = currentRulebook.indexOf('## Printed card effects');
     const end = currentRulebook.indexOf('### Arcane symbol', start);
     const section = currentRulebook.slice(start, end);
-    const headingRules = currentGame.gameplay.card_rules.effect_headings;
-    const documentedHeadings = [
-      ...headingRules.ordinary_role_headings,
-      ...headingRules.special_or_procedural_headings,
-    ];
+    const productionCards = normalizeV063CardsForPresentation(currentGame.gameplay.cards);
+    const printedHeadings = [...new Set(
+      productionCards.flatMap((card: { effects?: Array<{ label?: string }> }) =>
+        (card.effects || []).map(effect => String(effect.label || '').trim()).filter(Boolean)
+      )
+    )].sort();
+    const standardHeadings = [...STANDARD_CARD_HEADINGS].sort();
 
-    for (const heading of headingRules.all_present_headings) {
-      expect(documentedHeadings).toContain(heading);
-    }
-    for (const heading of documentedHeadings) {
+    expect(printedHeadings).toEqual(standardHeadings);
+    for (const heading of standardHeadings) {
       expect(section).toContain(`**${heading}:**`);
+    }
+
+    for (const rawOnlyHeading of ['Placement', 'Accepted', 'Refused', 'Aftermath', 'Text']) {
+      expect(section).not.toContain(`**${rawOnlyHeading}:**`);
     }
   });
 
