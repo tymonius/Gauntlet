@@ -2002,7 +2002,7 @@ A copied effect does not trigger Invocation unless the Arcane card is itself pla
 
 #### Transmutation
 
-> Once per turn, before dice are rolled in a battle involving you, you may put one card from your Hand in your Graveyard. Add its value to your battle total.
+> Once per turn, before dice are rolled in a battle, you may put one card from your Hand in your Graveyard. Add its value to your battle total.<!-- RULE-FACT:mystics.transmutation.text -->
 
 The card is not played and none of its printed effects apply. Supplemental components cannot be used.
 
