@@ -1408,7 +1408,7 @@ function playActionCard(
       instanceId: cardInstanceId,
       cardId: card.id,
       phase: turnState.phase,
-      actionsRemaining: state.turnState.actionsAvailable,
+      actionsRemaining: requireTurnState(state).actionsAvailable,
     },
   });
   applyV070BlasphemyForActionPlay(
