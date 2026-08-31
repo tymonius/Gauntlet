@@ -54,7 +54,7 @@ function runtimeLeader(source) {
   return leader;
 }
 
-function normalizePublishedComponentContract(source) {
+function normalizePublishedComponentContract(source, authority) {
   const contract = clone(source || {});
   contract.components = (contract.components || []).map(component => {
     if (component.id !== 'financiers-capital-ledger') return component;
@@ -64,6 +64,29 @@ function normalizePublishedComponentContract(source) {
       reverse: component.reverse || 'Identical Capital Ledger face',
     };
   });
+
+  const ritual = authority?.mystics?.ritual;
+  if (ritual?.id && !contract.components.some(component => component.id === `mystics-ritual-of-${ritual.id}`)) {
+    contract.components.push({
+      id: `mystics-ritual-of-${ritual.id}`,
+      name: ritual.name || 'Ritual of Ascension',
+      faction: 'mystics',
+      family: 'ritual-card',
+      quantity: 1,
+      cardLike: true,
+      designStatus: 'final',
+      productionStatus: 'ready',
+      backPolicy: 'specialBack',
+      specialBackFile: String(ritual.cardBack || '').replace(/^\//, ''),
+      source: PUBLISHED_AUTHORITY_URL.replace(/^\//, ''),
+      renderSource: {
+        surface: 'card-design/rite-card.js',
+        kind: 'ritual',
+        componentId: ritual.id,
+      },
+      tts: { representation: 'card' },
+    });
+  }
   return contract;
 }
 
@@ -89,7 +112,7 @@ export function normalizePublishedGame(authority, starterDeckData) {
   }));
   const leaders = (authority.leaders || []).map(runtimeLeader);
   const starterDecks = starterDeckData.decks.map(clone);
-  const componentContract = normalizePublishedComponentContract(authority.component_contract);
+  const componentContract = normalizePublishedComponentContract(authority.component_contract, authority);
   const factionFeatures = clone(authority.faction_features || {});
   const artDirection = {};
 
