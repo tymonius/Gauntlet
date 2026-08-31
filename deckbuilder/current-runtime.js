@@ -62,7 +62,7 @@
       resource: faction.resource || "",
       victory: faction.victory || "",
       leaders: (faction.leaders || []).map(leader => ({
-        id: leader.id || slugify(leader.name),
+        id: leader.id || deckbuilder.slugify(leader.name),
         name: leader.name,
         tagline: leader.note || "",
         role: leader.note || `${faction.name} Leader`,
@@ -92,9 +92,9 @@
   deckbuilder.setSourceLoader(async function loadCurrentGameSource([faction, source]) {
     const data = await currentGame();
     return (data.cards || [])
-      .filter(card => slugify(card.allegiance || "Neutral") === faction)
+      .filter(card => deckbuilder.slugify(card.allegiance || "Neutral") === faction)
       .map(card => ({
-        id: card.id || `${faction}-${slugify(card.name)}`,
+        id: card.id || `${faction}-${deckbuilder.slugify(card.name)}`,
         name: card.name,
         faction,
         factionLabel: card.allegiance || source.label,
