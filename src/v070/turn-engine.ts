@@ -247,6 +247,11 @@ export type V070TurnAction =
       targetInstanceId: string;
     }
   | {
+      type: 'choose_sleeper_network_bind_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
       type: 'resolve_censure_choice';
       playerId: PlayerId;
       sanctionInstanceId: string;
@@ -422,6 +427,10 @@ export function reduceV070TurnAction(
       pending.kind === 'extraordinary_rendition_bind_target'
       && action.type === 'choose_extraordinary_rendition_bind_target'
       && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'sleeper_network_bind_target'
+      && action.type === 'choose_sleeper_network_bind_target'
+      && action.playerId === pending.playerId
     );
     if (!validContinuation) {
       throw new V070GameActionError('Resolve the pending printed Action effect choice first.');
@@ -461,6 +470,7 @@ export function reduceV070TurnAction(
       'choose_anathema_target',
       'choose_reserve_force_bind_target',
       'choose_extraordinary_rendition_bind_target',
+      'choose_sleeper_network_bind_target',
     ].includes(action.type)) {
     throw new V070GameActionError('Resolve the pending Action card before continuing the turn.');
   }
@@ -662,6 +672,13 @@ export function reduceV070TurnAction(
         action.targetInstanceId,
       );
       break;
+    case 'choose_sleeper_network_bind_target':
+      chooseSleeperNetworkBindTarget(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
+      break;
     case 'resolve_censure_choice':
       resolveCensureChoice(
         next,
@@ -857,6 +874,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'intelligence-assassins',
   'intelligence-extraordinary-rendition',
   'intelligence-regime-change',
+  'intelligence-sleeper-network',
   'intelligence-spies',
   'military-high-command',
   'military-invasion',
@@ -1143,6 +1161,14 @@ function playActionCard(
     if (state.players[otherPlayer(playerId)].zones.hand.length === 0) {
       throw new V070GameActionError(
         'Extraordinary Rendition requires at least one card in the opponent’s Hand.',
+      );
+    }
+    pendingBankReplacementV070AssetInstanceIds(state, playerId, cardInstanceId);
+  }
+  if (card.id === 'intelligence-sleeper-network') {
+    if (player.zones.hand.length < 2) {
+      throw new V070GameActionError(
+        'Sleeper Network requires one other card in your Hand to bind.',
       );
     }
     pendingBankReplacementV070AssetInstanceIds(state, playerId, cardInstanceId);
@@ -2359,6 +2385,14 @@ function continuePendingActionCard(state: V070GameState): void {
         pending.cardId,
       );
       return;
+    case 'intelligence-sleeper-network':
+      resolveBindingBankAction(
+        state,
+        pending.playerId,
+        pending.instanceId,
+        pending.cardId,
+      );
+      return;
     case 'diplomats-detente':
     case 'financiers-compound-interest':
     case 'financiers-tariffs':
@@ -3481,7 +3515,10 @@ function resolveBindingBankAction(
   state: V070GameState,
   playerId: PlayerId,
   sourceActionInstanceId: string,
-  cardId: 'military-reserve-force' | 'intelligence-extraordinary-rendition',
+  cardId:
+    | 'military-reserve-force'
+    | 'intelligence-extraordinary-rendition'
+    | 'intelligence-sleeper-network',
 ): void {
   const replacements = pendingBankReplacementV070AssetInstanceIds(
     state,
@@ -3490,7 +3527,9 @@ function resolveBindingBankAction(
   );
   const purpose = cardId === 'military-reserve-force'
     ? 'Reserve Force'
-    : 'Extraordinary Rendition';
+    : cardId === 'intelligence-extraordinary-rendition'
+      ? 'Extraordinary Rendition'
+      : 'Sleeper Network';
 
   if (replacements.length > 0) {
     state.pendingActionEffectChoice = {
@@ -3527,12 +3566,17 @@ function completeBindingBankAction(
   state: V070GameState,
   playerId: PlayerId,
   sourceActionInstanceId: string,
-  cardId: 'military-reserve-force' | 'intelligence-extraordinary-rendition',
+  cardId:
+    | 'military-reserve-force'
+    | 'intelligence-extraordinary-rendition'
+    | 'intelligence-sleeper-network',
   replaceAssetInstanceId?: string,
 ): void {
   const purpose = cardId === 'military-reserve-force'
     ? 'Reserve Force'
-    : 'Extraordinary Rendition';
+    : cardId === 'intelligence-extraordinary-rendition'
+      ? 'Extraordinary Rendition'
+      : 'Sleeper Network';
 
   bankV070AssetFromPendingAction(
     state,
@@ -3582,6 +3626,54 @@ function completeBindingBankAction(
       visibility: playerId,
       payload: {
         kind: 'reserve_force_bind_target',
+        sourceActionInstanceId,
+        purpose,
+        targetInstanceIds: [...eligible],
+      },
+    });
+    return;
+  }
+
+  if (cardId === 'intelligence-sleeper-network') {
+    const eligible = state.players[playerId].zones.hand;
+    if (eligible.length === 0) {
+      appendV070Event(state, {
+        type: 'action_effect_incomplete',
+        actor: playerId,
+        visibility: 'public',
+        payload: {
+          sourceActionInstanceId,
+          purpose,
+          reason: 'required_hand_bind_target_unavailable',
+        },
+      });
+      finishPendingActionCard(state, 'asset');
+      return;
+    }
+
+    state.pendingActionEffectChoice = {
+      kind: 'sleeper_network_bind_target',
+      playerId,
+      sourceActionInstanceId,
+    };
+    appendV070Event(state, {
+      type: 'action_effect_choice_pending',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        kind: 'sleeper_network_bind_target',
+        playerId,
+        sourceActionInstanceId,
+        purpose,
+        candidateCount: eligible.length,
+      },
+    });
+    appendV070Event(state, {
+      type: 'action_effect_choice_options',
+      actor: playerId,
+      visibility: playerId,
+      payload: {
+        kind: 'sleeper_network_bind_target',
         sourceActionInstanceId,
         purpose,
         targetInstanceIds: [...eligible],
@@ -3712,6 +3804,43 @@ function chooseExtraordinaryRenditionBindTarget(
   finishPendingActionCard(state, 'asset');
 }
 
+function chooseSleeperNetworkBindTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'sleeper_network_bind_target'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'intelligence-sleeper-network') {
+    throw new V070GameActionError(
+      'No Sleeper Network binding choice is pending for that player.',
+    );
+  }
+
+  if (!state.players[playerId].zones.hand.includes(targetInstanceId)) {
+    throw new V070GameActionError(
+      'Sleeper Network must bind one card still in your Hand.',
+    );
+  }
+
+  bindV070CardFromPlayerZone(state, {
+    hostId: pending.instanceId,
+    owner: playerId,
+    cardInstanceId: targetInstanceId,
+    sourceZone: 'hand',
+    faceUp: false,
+    purpose: 'Sleeper Network',
+  });
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state, 'asset');
+}
+
 function choosePendingAssetBankReplacement(
   state: V070GameState,
   playerId: PlayerId,
@@ -3752,10 +3881,13 @@ function choosePendingAssetBankReplacement(
   }
 
   if (choice.purpose === 'Reserve Force'
-    || choice.purpose === 'Extraordinary Rendition') {
+    || choice.purpose === 'Extraordinary Rendition'
+    || choice.purpose === 'Sleeper Network') {
     const expectedCardId = choice.purpose === 'Reserve Force'
       ? 'military-reserve-force'
-      : 'intelligence-extraordinary-rendition';
+      : choice.purpose === 'Extraordinary Rendition'
+        ? 'intelligence-extraordinary-rendition'
+        : 'intelligence-sleeper-network';
     if (pending.cardId !== expectedCardId) {
       throw new V070GameActionError(
         'Binding banking replacement state does not match its pending Action card.',
