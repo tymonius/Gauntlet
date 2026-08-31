@@ -52,6 +52,8 @@ The long-term architecture may separate source applications from deployed Pages 
 
 As an initial deployment boundary, the Pages artifact excludes repository-internal `.github/`, `governance/`, `scripts/`, `src/`, `tests/`, `workers/`, `rulebook-design/`, `rulebook-production/`, and `legacy/` trees. Stable browser routes remain unchanged; those internal roots are not public runtime dependencies.
 
+The `media/` authoring/export tree is also excluded from the deployed artifact. The homepage's stable `/media/compositions.json` runtime contract is preserved by staging only that JSON payload; generated promotional imagery is staged separately under `/images/media/`.
+
 ### 4. Frozen releases stay frozen
 
 Do not reorganize files inside published release packages for repository aesthetics.

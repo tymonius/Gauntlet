@@ -31,6 +31,12 @@ describe('GitHub Pages public media contract', () => {
     expect(pagesWorkflow).toContain('test "$count" -eq 83');
   });
 
+  it('publishes only the runtime media composition payload from the media authoring tree', () => {
+    expect(pagesWorkflow).toContain('"$site/media"');
+    expect(pagesWorkflow).toContain('cp media/compositions.json "$site/media/compositions.json"');
+    expect(pagesWorkflow).toContain('test -s "$site/media/compositions.json"');
+  });
+
   it('keeps repository-internal source trees out of the Pages artifact', () => {
     for (const root of ['.github', 'governance', 'scripts', 'src', 'tests', 'workers', 'rulebook-design', 'rulebook-production', 'legacy']) {
       expect(pagesWorkflow).toContain(`"$site/${root}"`);
