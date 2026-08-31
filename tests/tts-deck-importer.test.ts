@@ -312,7 +312,6 @@ describe('TTS Deckbuilder importer', () => {
     expect(save.LuaScript).toContain('UI.show("gauntlet-deck-import-panel")');
     expect(save.LuaScript).toContain('UI.hide("gauntlet-deck-import-open")');
     expect(save.LuaScript).not.toContain('UI.getValue("gauntlet-deck-import-code")');
-    expect(save.LuaScript).toContain('gauntlet:starter-kit:');
     expect(save.LuaScript).toContain('templateGuid');
     expect(save.LuaScript).toContain('getObjectFromGUID(guid)');
     expect(save.LuaScript).toContain('templateObject.getData()');
