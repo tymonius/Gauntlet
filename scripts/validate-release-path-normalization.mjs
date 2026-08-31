@@ -49,8 +49,6 @@ const frozenCandidateSurfaces = new Set([
 // intentionally predate publication. They are retained as provenance and are
 // not current release tooling.
 const frozenCandidateScripts = new Set([
-  'scripts/build-clean-v063-downstream-data.mjs',
-  'scripts/validate-clean-v063-downstream-data.mjs',
   'scripts/validate-reconstruction-version-plan.mjs',
   'scripts/build-v062-release.mjs',
   'scripts/build-v063-print-candidate-html.mjs',
