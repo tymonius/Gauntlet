@@ -375,7 +375,12 @@ local function gauntletMessage(color, text, errorMessage)
 end
 
 local function gauntletDeepCopy(value)
-  return JSON.decode(JSON.encode(value))
+  if type(value) ~= "table" then return value end
+  local copy = {}
+  for key, child in pairs(value) do
+    copy[gauntletDeepCopy(key)] = gauntletDeepCopy(child)
+  end
+  return copy
 end
 
 local function gauntletCustomDeckState(meta)
