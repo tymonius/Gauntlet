@@ -135,6 +135,12 @@ export type V070TurnAction =
       targetInstanceId: string;
     }
   | {
+      type: 'choose_controlled_territory_move_target';
+      playerId: PlayerId;
+      territoryPosition: number;
+      discardInstanceId?: string;
+    }
+  | {
       type: 'choose_burning_at_stake_target';
       playerId: PlayerId;
       targetInstanceId: string;
