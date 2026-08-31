@@ -34,8 +34,8 @@
         labels, metadata, controls, compact status text, catalog machinery, and card utility text.
       </p>
       <p class="availability-note">
-        <strong>Segoe UI is loaded locally.</strong> On Windows this column uses the installed Segoe UI family.
-        On platforms without Segoe UI, the column is marked unavailable rather than pretending a fallback is Segoe.
+        <strong>Segoe UI is served by the Gauntlet Adobe Fonts project.</strong> The comparison therefore uses the same
+        webfont on Windows, Android, and headless rendering instead of depending on a locally installed system copy.
       </p>
     </section>
 
@@ -61,7 +61,7 @@
           <header class="font-column-header">
             <div>
               <p class="font-name">Segoe UI</p>
-              <p class="font-source">Local Windows family</p>
+              <p class="font-source">Adobe Fonts · webfont</p>
             </div>
             <span class="availability" data-segoe-status>checking</span>
           </header>
@@ -282,11 +282,11 @@
       const seg = document.querySelector('[data-segoe-status]');
       let segAvailable = false;
       try {
-        await document.fonts.load('16px "Gauntlet Segoe UI"');
-        segAvailable = document.fonts.check('16px "Gauntlet Segoe UI"');
+        await document.fonts.load('16px "segoe-ui"');
+        segAvailable = document.fonts.check('16px "segoe-ui"');
       } catch (_) {}
 
-      seg.textContent = segAvailable ? 'local font found' : 'not available here';
+      seg.textContent = segAvailable ? 'Adobe font loaded' : 'Adobe font unavailable';
       seg.classList.toggle('available', segAvailable);
       seg.classList.toggle('unavailable', !segAvailable);
       document.documentElement.classList.toggle('segoe-unavailable', !segAvailable);
