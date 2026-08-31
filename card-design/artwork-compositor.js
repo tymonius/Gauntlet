@@ -601,6 +601,7 @@
   function initialize() {
     ensureDialog();
     scan();
+    window.addEventListener('gauntlet-art-direction-ready', queueScan);
     new MutationObserver(queueScan).observe(document.body, { childList: true, subtree: true });
     window.addEventListener('load', scan);
   }
