@@ -720,6 +720,72 @@
       "git_object": "26c671c216a4c61b03bc8937ade28391a7760220",
       "kind": "blob",
       "meaning": "Frozen clean-v0.6.3 faction-authority validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/build-clean-v063-publication.mjs",
+      "git_object": "f4bf65f135795e4ff539b8443f6d82f6e9aa8534",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.3 publication orchestrator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/build-clean-v063-publication-navigation.mjs",
+      "git_object": "a358a383d7648cc0ff8e8027bf1fe3773246fdfe",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.3 publication navigation builder"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/build-clean-v063-publication-arbiter-worker.mjs",
+      "git_object": "b9c9553f3ab82656bf35e07b7fe949e489f31df3",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.3 Rules Arbiter worker publication builder"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/render-clean-v063-publication.mjs",
+      "git_object": "bd26a1da8506554c9f5dfc9f2bc7304a36834223",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.3 publication renderer"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-clean-v063-publication.mjs",
+      "git_object": "d9c4f025c62521fa08a475e7b51e23521f04c029",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.3 publication validation orchestrator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-clean-v063-publication-data.mjs",
+      "git_object": "de4d1d94ffafb3e909b45c7cdd802ee5bd38d271",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.3 publication-data validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-clean-v063-publication-surfaces.mjs",
+      "git_object": "283cd2c4ecac49cd4e08f1b6910365a1206832d1",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.3 publication-surface validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-clean-v063-current-release-metadata.mjs",
+      "git_object": "41c0403fc9ca839da566d188ddf728394afd99e2",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.3 current-release metadata validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-clean-v063-deckbuilder.mjs",
+      "git_object": "766729a7d84132ea00af43e45f9d7416b7a71e0f",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.3 Deckbuilder validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-clean-v063-digital.mjs",
+      "git_object": "edf90b54f5daf9b99fae75fa3f09f5464e0759d2",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.3 digital-surface validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-clean-v063-rulebook.mjs",
+      "git_object": "26a278179748c3de672dd1aabcfa34f823d896c0",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.3 Rulebook validator"
     }
   ],
   "maintained_historical_surfaces": [
