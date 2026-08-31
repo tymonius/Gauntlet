@@ -25,8 +25,7 @@
 
   async function loadStarterDecks() {
     try {
-      const { loadGameRuleset, rulesetModeFromUrl } = await import("../game-data/ruleset.mjs");
-      const currentGame = await loadGameRuleset(rulesetModeFromUrl());
+      const currentGame = await deckbuilder.bootstrap();
       starterDecks = Array.isArray(currentGame.starterDecks)
         ? currentGame.starterDecks.map(deck => ({ ...deck }))
         : [];
