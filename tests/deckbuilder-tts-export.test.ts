@@ -63,12 +63,25 @@ describe('Deckbuilder TTS Deck Code', () => {
     expect(() => decodeTtsDeckCode('not a deck')).toThrow(/not a Gauntlet/i);
   });
 
-  it('fails closed for Mystics until TTS can assemble the selected three-Rite package', () => {
-    expect(() => buildTtsDeckPayload({
+  it('carries the selected Mystics Rites in the TTS Deck Code', () => {
+    expect(buildTtsDeckPayload({
       ...deck,
       factionId: 'mystics',
       leaderId: 'alchemist',
       selectedRites: ['echoes', 'blood', 'equivalence'],
-    })).toThrow(/selected-Rite assembly/i);
+    })).toMatchObject({
+      f: 'mystics',
+      l: 'alchemist',
+      r: ['echoes', 'blood', 'equivalence'],
+    });
+  });
+
+  it('rejects a Mystics TTS export that has no selected Rites', () => {
+    expect(() => buildTtsDeckPayload({
+      ...deck,
+      factionId: 'mystics',
+      leaderId: 'alchemist',
+      selectedRites: [],
+    })).toThrow(/selected Rites/i);
   });
 });
