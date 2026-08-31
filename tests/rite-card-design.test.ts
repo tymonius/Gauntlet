@@ -127,10 +127,15 @@ describe("Mystics Rite card prototypes", () => {
     expect(riteStyles).toContain(".rite-unlock-ritual-heading span");
     expect(riteStyles).toContain("white-space: nowrap");
     expect(ruleColumnStyles).toContain("grid-template-columns: fit-content(var(--rule-label-max)) minmax(0, 1fr)");
+    expect(ruleColumnStyles).toContain(".rite-card .card-rules:has(> :is(.rule-section, .rite-unlock-section))");
+    expect(ruleColumnStyles).toContain("grid-template-columns: var(--rule-label-max) minmax(0, 1fr)");
     expect(ruleColumnStyles).toContain("grid-template-columns: subgrid !important");
+    expect(ruleColumnStyles).toContain(".rite-card {");
+    expect(ruleColumnStyles).toContain("--rule-label-max: 0.52in");
+    expect(ruleColumnStyles).toContain("--rule-column-gap: 0.042in");
     expect(ruleColumnStyles).toContain(".completed-rite-card");
-    expect(ruleColumnStyles).toContain("--rule-label-max: 0.48in");
-    expect(ruleColumnStyles).toContain("--rule-column-gap: 0.024in");
+    expect(ruleColumnStyles).toContain("--rule-label-max: 0.36in");
+    expect(ruleColumnStyles).toContain("--rule-column-gap: 0.022in");
   });
 
   it("uses the approved shared Mystics completion artwork rather than the Diplomat wax-seal treatment", () => {
