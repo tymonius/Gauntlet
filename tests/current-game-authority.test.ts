@@ -267,6 +267,14 @@ describe('complete current-game authority', () => {
     expect(references.filter((component: any) => component.id !== 'universal-reference')
       .every((component: any) => component.authoritySource === 'game-data/current-game.json')).toBe(true);
 
+    const ritual = contract.components.find((component: any) => component.id === 'mystics-ritual-of-ascension');
+    expect(ritual).toMatchObject({
+      family: 'ritual-card',
+      productionStatus: 'ready',
+      backPolicy: 'specialBack',
+      source: 'game-data/current-game.json',
+    });
+
     const diplomat = references.find((component: any) => component.id === 'diplomats-reference');
     expect(diplomat.referenceFaces.front.sections.map((section: any) => section.heading)).toEqual([
       'Offering Terms',
