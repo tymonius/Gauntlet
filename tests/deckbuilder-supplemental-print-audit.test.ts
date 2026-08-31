@@ -49,38 +49,35 @@ describe("Deckbuilder supplemental print audit", () => {
     expect(deckPrint).not.toContain("GAUNTLET_V06_SUPPLEMENTALS");
   });
 
-  it("routes every supplemental print placeholder through production replacement", () => {
-    for (const selector of [
-      ".print-card.tracker-card",
-      ".print-card.reference-card",
-      ".print-card.purge-card",
-      ".print-card.capital-tracker-card",
-      ".print-card.deed-card",
-      ".print-card.proposal-card",
-      ".print-card.rite-card",
-    ]) {
-      expect(productionPrint).toContain(selector);
-    }
-
-    expect(productionPrint).toContain('if (component.family === "tracker" && componentId)');
-    expect(productionPrint).toContain('if (component.family === "reference-card")');
-    expect(productionPrint).toContain('if (component.family === "proposal-treaty-card")');
-    expect(productionPrint).toContain('if (component.family === "rite-card")');
+  it("builds production print faces directly instead of emitting placeholder shells for replacement", () => {
+    expect(productionPrint).toContain('deckbuilder.registerFeature("productionPrintRenderer"');
+    expect(productionPrint).toContain("card: renderProductionCardHtml");
+    expect(productionPrint).toContain("territory: renderProductionTerritoryHtml");
+    expect(productionPrint).toContain("leader: renderProductionLeaderHtml");
+    expect(productionPrint).toContain("component: renderProductionComponentHtml");
+    expect(deckPrint).toContain('deckbuilder.feature("productionPrintRenderer")');
+    expect(deckPrint).toContain('productionPrint().component(component.contractId, "front")');
+    expect(deckPrint).toContain("productionPrint().card(card)");
+    expect(deckPrint).toContain("productionPrint().territory(territory)");
+    expect(productionPrint).not.toContain("replaceProductionFronts");
+    expect(productionPrint).not.toContain("replaceSupplementalFronts");
+    expect(productionPrint).not.toContain("replacePlayableAndTerritoryFronts");
     expect(productionPrint).toContain('if (component.productionStatus === "ready") return true;');
   });
 
-  it("covers every current supplemental family the print projection can emit", () => {
-    expect(deckPrint).toContain('if (component.type === "tracker")');
-    expect(deckPrint).toContain('if (component.type === "reference")');
+  it("covers every current supplemental family through the shared production renderer", () => {
     expect(packageProjection).not.toContain('type: "purge"');
-    expect(deckPrint).toContain('if (component.type === "capital")');
     expect(deckPrint).toContain('if (component.type === "deed-set")');
-    expect(deckPrint).toContain('proposalToPrintHtml');
-    expect(deckPrint).toContain('riteToPrintHtml');
+    expect(deckPrint).toContain("proposalToPrintHtml");
+    expect(deckPrint).toContain("riteToPrintHtml");
 
     expect(compatibilityPrint).not.toContain('replaceCapitalLedger(documentNode)');
     expect(compatibilityPrint).not.toContain('replaceLegacyDeeds(documentNode)');
     expect(compatibilityPrint).not.toContain('removeLegacyDiplomatReverseReference(documentNode)');
+    expect(productionPrint).toContain('if (component.family === "tracker" && componentId)');
+    expect(productionPrint).toContain('if (component.family === "reference-card")');
+    expect(productionPrint).toContain('if (component.family === "proposal-treaty-card")');
+    expect(productionPrint).toContain('if (component.family === "rite-card")');
     expect(productionPrint).toContain('if (component.family === "ledger")');
     expect(productionPrint).toContain('if (component.family === "deed-card")');
     expect(productionPrint).toContain('if (component.family === "ritual-card")');
