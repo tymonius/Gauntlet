@@ -578,10 +578,46 @@
       "meaning": "Pre-containment v0.6.3 cross-surface closeout workflow"
     },
     {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/build-v063-browser-development.mjs",
+      "git_object": "e4a3063bd51e9fb1565f45d30aa0926a55b083a5",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.3 browser-development candidate builder"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/refine-v063-browser-development.mjs",
+      "git_object": "bb4c4b6fbf9a31ef7bb8efa8f543e275a14ff5af",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.3 browser-development refinement pass"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-v063-browser-development.mjs",
+      "git_object": "eb84b14793c07f295691b6f067f6bcf3c5cf5316",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.3 browser-development candidate validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-v063-browser-site-conventions.mjs",
+      "git_object": "c6f9dfaa80f7f2beef6e4ffe6557c346a3b88c06",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.3 browser-site convention validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/refine-v063-rules-arbiter-portal.mjs",
+      "git_object": "9bad8fd350bcaca33ef5a6af93cd507fb98bc23b",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.3 Rules Arbiter portal refinement helper"
+    },
+    {
       "path": "docs/recovery/frozen-scripts/v0.6.3/build-clean-v063-complete-authority.mjs",
       "git_object": "3db81bc3da6f078a65c088c207178566c33c20f5",
       "kind": "blob",
       "meaning": "Frozen clean-v0.6.3 complete-authority reconstruction orchestrator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-v063-cross-surface-closeout.mjs",
+      "git_object": "2d82d03d29aa97d868f0232f5bf952411d8c4b1c",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.3 cross-surface closeout validator"
     }
   ],
   "maintained_historical_surfaces": [
