@@ -313,6 +313,25 @@ export type V070PendingActionEffectChoice =
       playerId: PlayerId;
       opponentId: PlayerId;
       sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'owned_deed_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      purpose: 'Divestment';
+    }
+  | {
+      kind: 'treasury_card_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      purpose: 'Liquidation';
+    }
+  | {
+      kind: 'deed_purchase_choice';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      purpose: 'Liquidation' | 'Corner the Market';
+      remainingPurchases: number | null;
     };
 
 export type V070PendingSanctionChoice =
