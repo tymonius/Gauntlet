@@ -32,15 +32,31 @@ const contracts = [
   {
     path: 'tts/renderer/index.html',
     requires: [
-      '/tts/artwork-direction-overrides.js',
+      '/tts/generated/current/catalog.js',
       '/tts/artwork-crop.js',
+      '/tts/renderer/renderer.js',
     ],
+    forbids: ['/tts/artwork-direction-overrides.js'],
   },
   {
     path: 'tts/territory-renderer/index.html',
     requires: [
-      '/tts/artwork-direction-overrides.js',
+      '/tts/generated/current/catalog.js',
       '/tts/artwork-crop.js',
+      '/tts/territory-renderer/territory-renderer.js',
+    ],
+    forbids: ['/tts/artwork-direction-overrides.js'],
+  },
+  {
+    path: 'tts/finalized-supplemental-renderer/index.html',
+    requires: ['/tts/artwork-crop.js'],
+    forbids: ['/tts/artwork-direction-overrides.js'],
+  },
+  {
+    path: 'tts/finalized-supplemental-renderer/renderer.js',
+    requires: [
+      'loadCurrentGame',
+      'window.GAUNTLET_ART_DIRECTION = currentGame.artDirection || {}',
     ],
   },
   {
@@ -58,6 +74,11 @@ for (const contract of contracts) {
   for (const required of contract.requires) {
     if (!source.includes(required)) {
       failures.push(`${contract.path} must use shared artwork rendering via ${required}`);
+    }
+  }
+  for (const forbidden of contract.forbids || []) {
+    if (source.includes(forbidden)) {
+      failures.push(`${contract.path} must not load legacy artwork direction via ${forbidden}`);
     }
   }
 }
