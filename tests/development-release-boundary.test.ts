@@ -15,10 +15,10 @@ const starterValidator = readFileSync('scripts/validate-starter-decks.mjs', 'utf
 const riteValidator = readFileSync('scripts/validate-rite-card-render.mjs', 'utf8');
 
 describe('development and published-release boundary', () => {
-  it('keeps published v0.7.1 materialization isolated while TTS remains separately gated', () => {
+  it('keeps published v0.7.1 materialization isolated while the TTS target matches the live Workshop release', () => {
     expect(lifecycle.current_release).toBe('v0.7.1');
-    expect(releaseTarget.releaseTag).toBe('v0.7.0');
-    expect(currentGame.version).not.toBe(releaseTarget.releaseTag);
+    expect(releaseTarget.releaseTag).toBe('v0.7.1');
+    expect(currentGame.version).toBe(releaseTarget.releaseTag);
     expect(materializer).toContain('pull_request:');
     expect(releaseBuilder).toContain('[RELEASE_VERSION, CANDIDATE_VERSION].includes(authority.version)');
     expect(releaseBuilder).toContain('repairAndValidateFrozenReleaseSources');

@@ -6,9 +6,10 @@ const target = JSON.parse(readFileSync('config/tts-release-target.json', 'utf8')
 const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
 
 describe('TTS development and publication identity', () => {
-  it('keeps the v0.7.0 release target publication-specific', () => {
-    expect(target.releaseTag).toBe('v0.7.0');
-    expect(target.displayVersion).toBe('v0.7.0');
+  it('tracks the live stable v0.7.1 Workshop target', () => {
+    expect(target.releaseTag).toBe('v0.7.1');
+    expect(target.displayVersion).toBe('v0.7.1');
+    expect(target.sourceVersion).toBe('v0.7.1');
     expect(currentGame.version).toBe('v0.7.1');
   });
 
