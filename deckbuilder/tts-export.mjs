@@ -1,9 +1,23 @@
 export const TTS_DECK_CODE_PREFIX = "GDL1:";
 export const TTS_DECK_EXPORT_MIN_VERSION = "v0.7.1";
 
-function parseReleaseVersion(value) {
-  const match = /^v?(\d+)\.(\d+)\.(\d+)$/.exec(String(value || "").trim());
+function parseReleaseVersion(value, allowCandidate = false) {
+  const pattern = allowCandidate
+    ? /^v?(\d+)\.(\d+)\.(\d+)(?:-candidate)?$/
+    : /^v?(\d+)\.(\d+)\.(\d+)$/;
+  const match = pattern.exec(String(value || "").trim());
   return match ? match.slice(1, 4).map(Number) : null;
+}
+
+function versionAtLeastMinimum(current, minimum) {
+  return versionAtLeastMinimum(current, minimum);
+}
+
+export function isTtsDeckExportQaAvailable(version) {
+  if (!/-candidate$/.test(String(version || "").trim())) return false;
+  const current = parseReleaseVersion(version, true);
+  const minimum = parseReleaseVersion(TTS_DECK_EXPORT_MIN_VERSION);
+  return versionAtLeastMinimum(current, minimum);
 }
 
 export function isTtsDeckExportAvailable(version) {
@@ -68,7 +82,7 @@ export function decodeTtsDeckCode(code) {
   return JSON.parse(normalized.slice(TTS_DECK_CODE_PREFIX.length));
 }
 
-async function copyDeckCode(button) {
+async function copyDeckCode(button, allowCandidateQa = false) {
   const currentDeckData = window.currentDeckData;
   const validateDeck = window.validateDeck;
   if (typeof currentDeckData !== "function") {
@@ -86,8 +100,10 @@ async function copyDeckCode(button) {
   let code;
   try {
     const deck = currentDeckData();
-    if (!isTtsDeckExportAvailable(deck?.gameVersion)) {
-      window.alert(`Tabletop Simulator Deck export begins with ${TTS_DECK_EXPORT_MIN_VERSION}.`);
+    const available = isTtsDeckExportAvailable(deck?.gameVersion)
+      || (allowCandidateQa && isTtsDeckExportQaAvailable(deck?.gameVersion));
+    if (!available) {
+      window.alert(`Tabletop Simulator Deck export begins with stable ${TTS_DECK_EXPORT_MIN_VERSION}.`);
       return;
     }
     code = encodeTtsDeckCode(deck);
@@ -107,25 +123,43 @@ async function copyDeckCode(button) {
 }
 
 async function installDeckCodeButton() {
+  const button = document.getElementById("copyTtsDeckCodeButton");
+  const help = document.getElementById("ttsDeckExportHelp");
+  if (!button) return;
+
   try {
     const { loadGameRuleset, rulesetModeFromUrl } = await import("../game-data/ruleset.mjs");
-    const selectedGame = await loadGameRuleset(rulesetModeFromUrl());
-    if (!isTtsDeckExportAvailable(selectedGame?.version)) return;
+    const mode = rulesetModeFromUrl();
+    const selectedGame = await loadGameRuleset(mode);
+    const params = new URLSearchParams(window.location.search);
+    const candidateQa = mode === "candidate"
+      && params.get("tts-qa") === "1"
+      && isTtsDeckExportQaAvailable(selectedGame?.version);
+    const stable = isTtsDeckExportAvailable(selectedGame?.version);
+
+    if (candidateQa) {
+      button.hidden = false;
+      button.textContent = "Copy TTS QA Deck Code";
+      button.title = "Copy a v0.7.1-candidate Deck Code for the private TTS QA build.";
+      if (help) {
+        help.textContent = "QA mode is active. Build and validate a candidate Deck, copy its TTS Deck Code here, then paste it into Deck Import in the private TTS candidate build.";
+      }
+      button.addEventListener("click", () => copyDeckCode(button, true));
+      return;
+    }
+
+    if (!stable) return;
+
+    button.hidden = false;
+    button.textContent = "Copy TTS Deck Code";
+    button.title = "Copy a compact Deck Code to paste into the Gauntlet TTS mod.";
+    if (help) {
+      help.textContent = "Build and validate your Deck, copy its TTS Deck Code here, then paste that code into Deck Import in Tabletop Simulator.";
+    }
+    button.addEventListener("click", () => copyDeckCode(button));
   } catch {
     return;
   }
-
-  const exportJsonButton = document.getElementById("exportJsonButton");
-  if (!exportJsonButton || document.getElementById("copyTtsDeckCodeButton")) return;
-
-  const button = document.createElement("button");
-  button.id = "copyTtsDeckCodeButton";
-  button.type = "button";
-  button.className = "secondary";
-  button.textContent = "Copy for Tabletop Simulator";
-  button.title = "Copy a compact Deck Code to paste into the Gauntlet TTS mod.";
-  button.addEventListener("click", () => copyDeckCode(button));
-  exportJsonButton.parentElement?.append(button);
 }
 
 if (typeof document !== "undefined") {
