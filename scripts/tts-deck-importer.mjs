@@ -22,6 +22,8 @@ const LUA_BEGIN = '-- GAUNTLET_DECK_IMPORTER_BEGIN';
 const LUA_END = '-- GAUNTLET_DECK_IMPORTER_END';
 const XML_BEGIN = '<!-- GAUNTLET_DECK_IMPORTER_BEGIN -->';
 const XML_END = '<!-- GAUNTLET_DECK_IMPORTER_END -->';
+const TEMPLATE_LIBRARY_NOTE = 'gauntlet:internal:deck-import-template-library';
+export const MAX_TTS_IMPORTER_LUA_BYTES = 100_000;
 
 function renderedIndex(manifest) {
   const index = new Map();
@@ -191,11 +193,40 @@ function pruneCardStackForTemplate(stack, label) {
   stack.ContainedObjects = [prototype];
 }
 
-export function embedStarterKitTemplates(save, config) {
-  if (!save || !Array.isArray(save.ObjectStates)) throw new Error('Deck importer template capture requires a TTS save.');
-  const embedded = deepClone(config);
+function collectGuids(node, used) {
+  if (!node || typeof node !== 'object') return;
+  if (node.GUID) used.add(String(node.GUID).toLowerCase());
+  for (const child of node.ContainedObjects || []) collectGuids(child, used);
+}
 
-  for (const starter of Object.values(embedded.starters || {})) {
+function makeInternalGuidFactory(save) {
+  const used = new Set();
+  for (const object of save.ObjectStates || []) collectGuids(object, used);
+  let value = 0xf00000;
+  return () => {
+    while (value > 0) {
+      const candidate = (value--).toString(16).padStart(6, '0');
+      if (!used.has(candidate)) {
+        used.add(candidate);
+        return candidate;
+      }
+    }
+    throw new Error('Deck importer ran out of internal GUIDs.');
+  };
+}
+
+function assignFreshGuids(node, guid) {
+  if (!node || typeof node !== 'object') return;
+  node.GUID = guid();
+  for (const child of node.ContainedObjects || []) assignFreshGuids(child, guid);
+}
+
+export function installStarterTemplateLibrary(save, config) {
+  if (!save || !Array.isArray(save.ObjectStates)) throw new Error('Deck importer template capture requires a TTS save.');
+  const guid = makeInternalGuidFactory(save);
+  const templates = [];
+
+  for (const starter of Object.values(config.starters || {})) {
     const note = `gauntlet:starter-kit:${starter.starterId}`;
     const visible = save.ObjectStates.find(object => object?.Name === 'Bag' && object?.GMNotes === note);
     if (!visible) throw new Error(`Deck importer cannot capture missing starter template ${starter.starterId}.`);
@@ -210,10 +241,38 @@ export function embedStarterKitTemplates(save, config) {
     if (riteStack) pruneCardStackForTemplate(riteStack, `${starter.starterId} Rites + Ritual stack`);
 
     clearTemplateGuids(template);
-    starter.template = template;
+    assignFreshGuids(template, guid);
+    templates.push(template);
   }
 
-  return embedded;
+  save.ObjectStates = save.ObjectStates.filter(object => object?.GMNotes !== TEMPLATE_LIBRARY_NOTE);
+  save.ObjectStates.push({
+    Name: 'Bag',
+    Transform: { posX: 0, posY: 5, posZ: 100, rotX: 0, rotY: 0, rotZ: 0, scaleX: 0.1, scaleY: 0.1, scaleZ: 0.1 },
+    Nickname: 'Gauntlet Deck Import Template Library',
+    Description: 'Internal TTS importer data. Not a gameplay object.',
+    GMNotes: TEMPLATE_LIBRARY_NOTE,
+    ColorDiffuse: { r: 0, g: 0, b: 0, a: 0 },
+    Locked: true,
+    Grid: false,
+    Snap: false,
+    Autoraise: false,
+    Sticky: false,
+    Tooltip: false,
+    GridProjection: false,
+    HideWhenFaceDown: false,
+    Hands: false,
+    IgnoreFoW: true,
+    MeasureMovement: false,
+    DragSelectable: false,
+    LuaScript: '',
+    LuaScriptState: '',
+    XmlUI: '',
+    GUID: guid(),
+    ContainedObjects: templates,
+  });
+
+  return save;
 }
 
 function luaLongString(value) {
@@ -224,6 +283,55 @@ function luaLongString(value) {
     if (!text.includes(close)) return `[${marker}[${text}]${marker}]`;
   }
   throw new Error('Unable to encode Deck importer configuration as a Lua long string.');
+}
+
+export function validateGeneratedLuaStrings(source) {
+  const text = String(source || '');
+  for (let index = 0; index < text.length;) {
+    if (text.startsWith('--', index)) {
+      const newline = text.indexOf('\n', index + 2);
+      index = newline < 0 ? text.length : newline + 1;
+      continue;
+    }
+
+    if (text[index] === '[') {
+      const match = /^\[(=*)\[/.exec(text.slice(index));
+      if (match) {
+        const close = `]${match[1]}]`;
+        const finish = text.indexOf(close, index + match[0].length);
+        if (finish < 0) throw new Error('Generated TTS Lua has an unterminated long string.');
+        index = finish + close.length;
+        continue;
+      }
+    }
+
+    const quote = text[index];
+    if (quote === '"' || quote === "'") {
+      index += 1;
+      let closed = false;
+      while (index < text.length) {
+        const char = text[index];
+        if (char === '\n' || char === '\r') {
+          throw new Error('Generated TTS Lua contains a raw newline inside a quoted string.');
+        }
+        if (char === '\\') {
+          index += 2;
+          continue;
+        }
+        if (char === quote) {
+          index += 1;
+          closed = true;
+          break;
+        }
+        index += 1;
+      }
+      if (!closed) throw new Error('Generated TTS Lua has an unterminated quoted string.');
+      continue;
+    }
+
+    index += 1;
+  }
+  return true;
 }
 
 function deckImporterLua(config) {
@@ -295,6 +403,28 @@ local function gauntletFindChildByNotePrefix(bagData, prefix)
     if gauntletStartsWith(child.GMNotes, prefix) then return child end
   end
   return nil
+end
+
+local function gauntletLoadStarterTemplate(starterId)
+  local library = nil
+  for _, object in ipairs(getAllObjects()) do
+    if object.getGMNotes ~= nil and object.getGMNotes() == "gauntlet:internal:deck-import-template-library" then
+      library = object
+      break
+    end
+  end
+  if library == nil then return nil, "This TTS build is missing its internal Deck import template library." end
+
+  local okLibrary, libraryData = pcall(JSON.decode, library.getJSON())
+  if not okLibrary or type(libraryData) ~= "table" then
+    return nil, "TTS could not read the internal Deck import template library."
+  end
+
+  local note = "gauntlet:starter-kit:" .. tostring(starterId)
+  for _, child in ipairs(libraryData.ContainedObjects or {}) do
+    if tostring(child.GMNotes or "") == note then return child, nil end
+  end
+  return nil, "The internal Deck import template library has no matching starter kit."
 end
 
 local function gauntletValidatePayload(payload)
@@ -531,11 +661,12 @@ function gauntletImportDeck(player, value, id)
     return
   end
 
-  if type(validated.starter.template) ~= "table" then
-    gauntletMessage(color, "This TTS build is missing its embedded starter-kit template.", true)
+  local template, templateError = gauntletLoadStarterTemplate(validated.starter.starterId)
+  if templateError ~= nil then
+    gauntletMessage(color, templateError, true)
     return
   end
-  local bagData = gauntletDeepCopy(validated.starter.template)
+  local bagData = gauntletDeepCopy(template)
 
   local playableDeck = gauntletFindChildByNotePrefix(bagData, "gauntlet:starter-deck:")
   local territoryStack = gauntletFindChildByNotePrefix(bagData, "gauntlet:starter-territories:")
@@ -614,10 +745,16 @@ function stripGeneratedBlock(text, begin, end) {
 
 export function installDeckImporter(save, config) {
   if (!save || !Array.isArray(save.ObjectStates)) throw new Error('Deck importer requires a TTS save.');
-  const embeddedConfig = embedStarterKitTemplates(save, config);
+  installStarterTemplateLibrary(save, config);
+  const importerLua = deckImporterLua(config);
+  validateGeneratedLuaStrings(importerLua);
+  const importerBytes = Buffer.byteLength(importerLua, 'utf8');
+  if (importerBytes > MAX_TTS_IMPORTER_LUA_BYTES) {
+    throw new Error(`Deck importer Global Lua is ${importerBytes} bytes; maximum is ${MAX_TTS_IMPORTER_LUA_BYTES}. Keep large object templates out of Global Lua.`);
+  }
   const existingLua = stripGeneratedBlock(save.LuaScript, LUA_BEGIN, LUA_END);
   const existingXml = stripGeneratedBlock(save.XmlUI, XML_BEGIN, XML_END);
-  save.LuaScript = [existingLua, deckImporterLua(embeddedConfig)].filter(Boolean).join('\n\n');
+  save.LuaScript = [existingLua, importerLua].filter(Boolean).join('\n\n');
   save.XmlUI = [existingXml, deckImporterXml()].filter(Boolean).join('\n');
   return save;
 }

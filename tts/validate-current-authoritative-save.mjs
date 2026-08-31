@@ -5,6 +5,8 @@ import { trackerPresentation } from '../scripts/tts-supplemental-geometry.mjs';
 
 const SUPPLEMENTAL_GUID_NOTE_PREFIX = 'gauntlet:supplemental:';
 const SUPPLEMENTAL_STACK_NOTE_PREFIX = 'gauntlet:supplemental-stack:';
+const STARTER_KIT_NOTE_PREFIX = 'gauntlet:starter-kit:';
+const INTERNAL_TEMPLATE_LIBRARY_NOTE = 'gauntlet:internal:deck-import-template-library';
 const STARTER_DECK_NOTE_PREFIX = 'gauntlet:starter-deck:';
 const STARTER_TERRITORY_STACK_NOTE_PREFIX = 'gauntlet:starter-territories:';
 const PLAYER_TOKEN_NOTE_PREFIX = 'gauntlet:starter-utility:player-token:';
@@ -41,6 +43,7 @@ const FACTION_ROW_Z = Object.freeze({
 function walk(objects, visit) {
   for (const object of objects || []) {
     visit(object);
+    if (String(object?.GMNotes || '') === INTERNAL_TEMPLATE_LIBRARY_NOTE) continue;
     walk(object?.ContainedObjects, visit);
   }
 }
@@ -236,7 +239,10 @@ function validateHandsAndSeats(save) {
 }
 
 function validateBagsAndUtilities(save, manifest) {
-  const bags = (save.ObjectStates || []).filter(object => object?.Name === 'Bag');
+  const bags = (save.ObjectStates || []).filter(object => (
+    object?.Name === 'Bag'
+    && String(object?.GMNotes || '').startsWith(STARTER_KIT_NOTE_PREFIX)
+  ));
   if (bags.length !== 12) throw new Error(`Expected 12 starter Bags; found ${bags.length}.`);
 
   const looseUtilities = save.ObjectStates.filter(object => object?.Name === 'PlayerPawn' || object?.Name === 'Die_6');
@@ -321,6 +327,61 @@ function validateBagsAndUtilities(save, manifest) {
   }
   return bags;
 }
+function validateDeckImportTemplateLibrary(save) {
+  const libraries = (save.ObjectStates || []).filter(object => (
+    object?.Name === 'Bag' && object?.GMNotes === INTERNAL_TEMPLATE_LIBRARY_NOTE
+  ));
+  if (libraries.length !== 1) {
+    throw new Error(`Expected exactly one internal Deck import template library; found ${libraries.length}.`);
+  }
+
+  const library = libraries[0];
+  if (library.Locked !== true || library.DragSelectable !== false || library.Tooltip !== false) {
+    throw new Error('Internal Deck import template library must remain locked, non-selectable, and non-interactive.');
+  }
+  if (!close(library.Transform?.posZ, 100) || Number(library.Transform?.scaleX) > 0.11) {
+    throw new Error('Internal Deck import template library must remain parked safely off-table at tiny scale.');
+  }
+
+  const templates = library.ContainedObjects || [];
+  if (templates.length !== 12) {
+    throw new Error(`Internal Deck import template library must contain 12 starter templates; found ${templates.length}.`);
+  }
+
+  const ids = new Set();
+  for (const template of templates) {
+    const note = String(template?.GMNotes || '');
+    if (!note.startsWith(STARTER_KIT_NOTE_PREFIX)) {
+      throw new Error('Internal Deck import template library contains an object that is not a starter-kit template.');
+    }
+    const starterId = note.slice(STARTER_KIT_NOTE_PREFIX.length);
+    if (!starterId || ids.has(starterId)) throw new Error(`Duplicate or invalid internal starter template ${starterId || 'missing'}.`);
+    ids.add(starterId);
+
+    const deck = (template.ContainedObjects || []).find(object => String(object?.GMNotes || '').startsWith(STARTER_DECK_NOTE_PREFIX));
+    const territories = (template.ContainedObjects || []).find(object => String(object?.GMNotes || '').startsWith(STARTER_TERRITORY_STACK_NOTE_PREFIX));
+    if (!deck || !territories) throw new Error(`Internal starter template ${starterId} is missing its Deck or Territory prototype.`);
+    if ((deck.ContainedObjects || []).length !== 1 || (territories.ContainedObjects || []).length !== 1) {
+      throw new Error(`Internal starter template ${starterId} was not pruned to one Deck and one Territory prototype card.`);
+    }
+
+    const rites = (template.ContainedObjects || []).find(object => object?.GMNotes === `${SUPPLEMENTAL_STACK_NOTE_PREFIX}rites-rituals`);
+    if (rites && (rites.ContainedObjects || []).length !== 1) {
+      throw new Error(`Internal Mystics starter template ${starterId} was not pruned to one Rite prototype card.`);
+    }
+  }
+
+  const lua = String(save.LuaScript || '');
+  const luaBytes = Buffer.byteLength(lua, 'utf8');
+  if (luaBytes > 100_000) throw new Error(`Global Lua is too large for stable TTS loading: ${luaBytes} bytes.`);
+  if (!lua.includes(INTERNAL_TEMPLATE_LIBRARY_NOTE) || !lua.includes('library.getJSON()')) {
+    throw new Error('Deck importer Global Lua is not wired to the internal template library.');
+  }
+  if (lua.includes('"template":{')) {
+    throw new Error('Deck importer must not serialize starter template object trees into Global Lua.');
+  }
+}
+
 function validateFamilyStacks(bags) {
   const expectations = new Map([
     ['proposals', { count: 2, cards: 9, sideways: false, rotY: 180, tags: [FACTION_ZONE_TAG] }],
@@ -516,6 +577,7 @@ async function main() {
   validateTableWorkspace(save);
   validateHandsAndSeats(save);
   const bags = validateBagsAndUtilities(save, manifest);
+  validateDeckImportTemplateLibrary(save);
   validateFamilyStacks(bags);
   validateCapitalLedgers(save);
   validateTerritoriesDeedsAndFactionEligibility(save, manifest);

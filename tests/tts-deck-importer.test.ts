@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildDeckImporterConfig,
-  embedStarterKitTemplates,
   installDeckImporter,
+  installStarterTemplateLibrary,
+  MAX_TTS_IMPORTER_LUA_BYTES,
+  validateGeneratedLuaStrings,
   isDeckImporterReleaseVersion,
   TTS_DECK_IMPORTER_MIN_VERSION,
 } from '../scripts/tts-deck-importer.mjs';
@@ -230,7 +232,7 @@ describe('TTS Deckbuilder importer', () => {
     });
   });
 
-  it('captures pruned immutable starter templates at build time', () => {
+  it('stores pruned immutable starter templates in a hidden internal library', () => {
     const config = buildDeckImporterConfig({
       version,
       catalog,
@@ -242,25 +244,44 @@ describe('TTS Deckbuilder importer', () => {
     });
     const sourceBag = starterTemplateBag('military-general-starter', 'military');
     const mysticsBag = starterTemplateBag('mystics-alchemist-starter', 'mystics', true);
-    const save = { ObjectStates: [sourceBag, mysticsBag] };
+    const save: any = { ObjectStates: [sourceBag, mysticsBag] };
 
-    const embedded = embedStarterKitTemplates(save, config);
-    const template = embedded.starters['military:general'].template;
-    const deck = template.ContainedObjects.find((object: any) => String(object.GMNotes || '').startsWith('gauntlet:starter-deck:'));
-    const territories = template.ContainedObjects.find((object: any) => String(object.GMNotes || '').startsWith('gauntlet:starter-territories:'));
-    const mysticsTemplate = embedded.starters['mystics:alchemist'].template;
-    const rites = mysticsTemplate.ContainedObjects.find((object: any) => object.GMNotes === 'gauntlet:supplemental-stack:rites-rituals');
+    installStarterTemplateLibrary(save, config);
 
-    expect(template.GUID).toBeUndefined();
-    expect(deck.GUID).toBeUndefined();
+    const library = save.ObjectStates.find((object: any) =>
+      object.GMNotes === 'gauntlet:internal:deck-import-template-library'
+    );
+    expect(library).toBeTruthy();
+    expect(library.Locked).toBe(true);
+    expect(library.DragSelectable).toBe(false);
+    expect(library.Transform.posZ).toBe(100);
+    expect(library.ContainedObjects).toHaveLength(2);
+
+    const template = library.ContainedObjects.find((object: any) =>
+      object.GMNotes === 'gauntlet:starter-kit:military-general-starter'
+    );
+    const deck = template.ContainedObjects.find((object: any) =>
+      String(object.GMNotes || '').startsWith('gauntlet:starter-deck:')
+    );
+    const territories = template.ContainedObjects.find((object: any) =>
+      String(object.GMNotes || '').startsWith('gauntlet:starter-territories:')
+    );
+    const mysticsTemplate = library.ContainedObjects.find((object: any) =>
+      object.GMNotes === 'gauntlet:starter-kit:mystics-alchemist-starter'
+    );
+    const rites = mysticsTemplate.ContainedObjects.find((object: any) =>
+      object.GMNotes === 'gauntlet:supplemental-stack:rites-rituals'
+    );
+
+    expect(template.GUID).toBeTruthy();
+    expect(deck.GUID).toBeTruthy();
     expect(deck.DeckIDs).toEqual([]);
     expect(deck.CustomDeck).toEqual({});
     expect(deck.ContainedObjects).toHaveLength(1);
-    expect(deck.ContainedObjects[0].GUID).toBeUndefined();
     expect(territories.ContainedObjects).toHaveLength(1);
     expect(rites.ContainedObjects).toHaveLength(1);
 
-    // Capturing a template must not mutate the visible starter kit.
+    // Capturing templates must not mutate visible starter kits.
     expect(sourceBag.GUID).toBe('bag001');
     expect(sourceBag.ContainedObjects[0].ContainedObjects).toHaveLength(2);
   });
@@ -294,8 +315,9 @@ describe('TTS Deckbuilder importer', () => {
     expect(save.LuaScript).toContain('UI.hide("gauntlet-deck-import-open")');
     expect(save.LuaScript).not.toContain('UI.getValue("gauntlet-deck-import-code")');
     expect(save.LuaScript).toContain('gauntlet:starter-kit:');
-    expect(save.LuaScript).not.toContain('getAllObjects()');
-    expect(save.LuaScript).not.toContain('getJSON()');
+    expect(save.LuaScript).toContain('gauntlet:internal:deck-import-template-library');
+    expect(save.LuaScript).toContain('getAllObjects()');
+    expect(save.LuaScript).toContain('library.getJSON()');
     expect(save.LuaScript).not.toContain('official " .. validated.starter.leaderName .. " starter kit is not on the table');
     expect(save.LuaScript).toContain('function gauntletBuildMysticsRiteStack');
     expect(save.LuaScript).toContain('GAUNTLET_DECK_IMPORT.selectedRiteCount');
@@ -304,6 +326,8 @@ describe('TTS Deckbuilder importer', () => {
     expect(save.LuaScript).not.toContain(`bagData.Description = "Custom Deckbuilder starter kit
 
 "`);
+    expect(Buffer.byteLength(save.LuaScript, 'utf8')).toBeLessThan(MAX_TTS_IMPORTER_LUA_BYTES);
+    expect(save.LuaScript).not.toContain('"template":{');
     expect((save.LuaScript.match(/GAUNTLET_DECK_IMPORTER_BEGIN/g) || [])).toHaveLength(1);
     expect(save.XmlUI).toContain('DECK IMPORT');
     expect(save.XmlUI).toContain('IMPORT STARTER KIT');
@@ -311,6 +335,12 @@ describe('TTS Deckbuilder importer', () => {
     expect(save.XmlUI).toContain('lineType="MultiLineNewLine"');
     expect(save.XmlUI).toContain('onEndEdit="gauntletDeckImportChanged"');
     expect((save.XmlUI.match(/GAUNTLET_DECK_IMPORTER_BEGIN/g) || [])).toHaveLength(1);
+  });
+
+  it('rejects raw newlines inside generated Lua quoted strings', () => {
+    expect(() => validateGeneratedLuaStrings('local value = "broken\nstring"')).toThrow(/raw newline/i);
+    expect(validateGeneratedLuaStrings('local value = "safe\\nstring"')).toBe(true);
+    expect(validateGeneratedLuaStrings('local payload = [[line one\nline two]]')).toBe(true);
   });
 
   it('rejects mismatched generated versions', () => {
