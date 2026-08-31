@@ -2,6 +2,8 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const printer = readFileSync('deckbuilder/print-capital-ledger.js', 'utf8');
+const deckPrint = readFileSync('deckbuilder/print.js', 'utf8');
+const productionPrint = readFileSync('deckbuilder/print-duplex-sheet-pairing.js', 'utf8');
 
 describe('Deckbuilder Capital Ledger printing', () => {
   it('uses the canonical production renderer for bulk Ledger sheets', () => {
@@ -33,12 +35,12 @@ describe('Deckbuilder Capital Ledger printing', () => {
     expect(printer).toContain('style="grid-column:2;grid-row:2;margin:0;align-self:stretch;height:auto"');
   });
 
-  it('renders finalized Ledger faces in the normal deck print package', () => {
-    expect(printer).toContain('formatCapitalLedgerForProduction');
-    expect(printer).toContain('productionLedgerFrame(documentNode, "front")');
-    expect(printer).toContain('productionLedgerFrame(documentNode, "reverse")');
-    expect(printer).toContain('frame.src = productionLedgerFrameSource(side)');
-    expect(printer).toContain('wrapper.dataset.productionBackPolicy = "ledgerDuplex"');
+  it('renders finalized Ledger faces in the normal deck print package through shared production authority', () => {
+    expect(deckPrint).toContain('productionPrint().component(component.contractId, "front")');
+    expect(productionPrint).toContain('if (component.family === "ledger") return { kind: "supplemental", id: component.id };');
+    expect(productionPrint).toContain('component.backPolicy');
+    expect(productionPrint).toContain('ensureIntrinsicReversePages(documentNode, currentGame)');
+    expect(printer).not.toContain('formatCapitalLedgerForProduction');
   });
 
   it('keeps the bulk Ledger sheets paired for long-edge duplex printing', () => {
