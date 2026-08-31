@@ -135,6 +135,22 @@ export type V070TurnAction =
       targetInstanceId: string;
     }
   | {
+      type: 'choose_burning_at_stake_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
+      type: 'choose_hellfire_amount';
+      playerId: PlayerId;
+      amount: number;
+    }
+  | {
+      type: 'resolve_penance_choice';
+      playerId: PlayerId;
+      choice: 'graveyard' | 'conviction';
+      cardInstanceId?: string;
+    }
+  | {
       type: 'resolve_scouting_report_choice';
       playerId: PlayerId;
       source: 'own_draw' | 'opponent_draw' | 'opponent_hand';
@@ -246,7 +262,8 @@ export function reduceV070TurnAction(
   if (action.type === 'resolve_clemency_choice'
     || action.type === 'choose_forced_asset_target'
     || action.type === 'resolve_accusation_choice'
-    || action.type === 'choose_sequestration_keep_asset') {
+    || action.type === 'choose_sequestration_keep_asset'
+    || action.type === 'resolve_penance_choice') {
     requirePlayingGame(state);
   } else {
     requirePlayingTurn(state, action.playerId);
@@ -307,6 +324,18 @@ export function reduceV070TurnAction(
     ) || (
       pending.kind === 'sabotage_asset_target'
       && action.type === 'choose_sabotage_asset_target'
+      && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'burning_at_stake_tie'
+      && action.type === 'choose_burning_at_stake_target'
+      && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'hellfire_conviction_amount'
+      && action.type === 'choose_hellfire_amount'
+      && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'penance_choice'
+      && action.type === 'resolve_penance_choice'
       && action.playerId === pending.playerId
     ) || (
       pending.kind === 'scouting_report_source'
@@ -390,6 +419,9 @@ export function reduceV070TurnAction(
       'choose_fates_toll_cost',
       'choose_battlefield_promotion_target',
       'choose_sabotage_asset_target',
+      'choose_burning_at_stake_target',
+      'choose_hellfire_amount',
+      'resolve_penance_choice',
       'resolve_scouting_report_choice',
       'choose_territory_overlay_target',
       'choose_forced_asset_target',
@@ -481,6 +513,28 @@ export function reduceV070TurnAction(
         next,
         action.playerId,
         action.targetInstanceId,
+      );
+      break;
+    case 'choose_burning_at_stake_target':
+      chooseBurningAtStakeTarget(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
+      break;
+    case 'choose_hellfire_amount':
+      chooseHellfireAmount(
+        next,
+        action.playerId,
+        action.amount,
+      );
+      break;
+    case 'resolve_penance_choice':
+      resolvePenanceChoice(
+        next,
+        action.playerId,
+        action.choice,
+        action.cardInstanceId,
       );
       break;
     case 'resolve_scouting_report_choice':
