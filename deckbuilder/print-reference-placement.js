@@ -1,37 +1,8 @@
 (() => {
-  document.addEventListener("DOMContentLoaded", installReferencePlacementTransform);
+  const deckbuilder = window.GAUNTLET_DECKBUILDER;
+  if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
 
-  function installReferencePlacementTransform() {
-    const button = document.getElementById("printDeckButton");
-    if (!button) return;
-
-    button.addEventListener("click", () => {
-      const inheritedOpen = window.open;
-      let restored = false;
-
-      const restoreOpen = () => {
-        if (restored) return;
-        restored = true;
-        if (window.open === referenceAwareOpen) window.open = inheritedOpen;
-      };
-
-      function referenceAwareOpen(...args) {
-        const printWindow = inheritedOpen.apply(window, args);
-        if (!printWindow) {
-          restoreOpen();
-          return printWindow;
-        }
-
-        const inheritedWrite = printWindow.document.write.bind(printWindow.document);
-        printWindow.document.write = html => inheritedWrite(repositionDiplomatReference(html));
-        restoreOpen();
-        return printWindow;
-      }
-
-      window.open = referenceAwareOpen;
-      window.setTimeout(restoreOpen, 0);
-    }, true);
-  }
+  deckbuilder.registerPrintTransform("diplomat-reference-placement", repositionDiplomatReference, 50);
 
   function repositionDiplomatReference(html) {
     const documentNode = new DOMParser().parseFromString(html, "text/html");
