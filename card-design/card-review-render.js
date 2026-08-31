@@ -1,5 +1,4 @@
 import { resolveFirstArtwork, slugify } from './card-artwork-resolver.js';
-import { normalizeV063CardForPresentation } from './v063-card-heading-normalizer.js';
 import { loadCurrentGame } from '../game-data/current-game.mjs';
 
 await (async () => {
@@ -89,7 +88,7 @@ await (async () => {
     if (!sourceCard) throw new Error(`Unknown current card: ${cardId}`);
 
     const displayVersion = versionOverride || await resolveDisplayVersion(currentGame);
-    const card = normalizeV063CardForPresentation(sourceCard);
+    const card = sourceCard;
     const faction = slugify(card.allegiance);
     const artwork = await resolveFirstArtwork(card, faction, imageExists);
     const preview = {

@@ -42,9 +42,17 @@
     return currentGamePromise;
   }
 
+  function leaderSectionText(section) {
+    if (section?.text) return section.text;
+    if (Array.isArray(section?.items)) {
+      return section.items.map(item => `${item.name}: ${item.text}`).join(' ');
+    }
+    return '';
+  }
+
   function leaderCard(leader, version) {
     const extra = leader.name === 'Commandant' ? ' commandant-card' : '';
-    return `<div class="leader-specimen" id="${leader.faction}-${slugify(leader.name)}"><p class="leader-review-label screen-only"><strong>${esc(leader.name)}</strong><span>${esc(leader.note)}</span></p><article class="gauntlet-card faction-component-card leader-card ${esc(leader.faction)}-card${extra}" data-faction="${esc(leader.faction)}" data-art-max="1.86" data-art-min="1.34" data-title-min="10" aria-label="${esc(leader.name)} ${esc(leader.factionLabel)} Leader card"><div class="card-interior"><header class="card-heading"><h3 class="card-title">${esc(leader.name)}</h3><div class="leader-faction-line"><span class="leader-faction-emblem" aria-hidden="true"></span><span>${esc(leader.factionLabel)}</span></div></header><figure class="card-art has-image"><img src="${esc(leader.image)}" alt="Portrait of the ${esc(leader.name)}" /></figure><div class="card-rules">${(leader.sections || []).map(([label,text,cost])=>`<section class="leader-rule-section"><h4>${esc(label)}${cost?`<span>${esc(cost)}</span>`:''}</h4><p>${esc(text)}</p></section>`).join('')}</div><footer class="card-footer"><span>${esc(leader.factionLabel)}</span><span>Leader</span><span>${esc(version)}</span></footer></div></article></div>`;
+    return `<div class="leader-specimen" id="${leader.faction}-${slugify(leader.name)}"><p class="leader-review-label screen-only"><strong>${esc(leader.name)}</strong><span>${esc(leader.note)}</span></p><article class="gauntlet-card faction-component-card leader-card ${esc(leader.faction)}-card${extra}" data-faction="${esc(leader.faction)}" data-art-max="1.86" data-art-min="1.34" data-title-min="10" aria-label="${esc(leader.name)} ${esc(leader.factionLabel)} Leader card"><div class="card-interior"><header class="card-heading"><h3 class="card-title">${esc(leader.name)}</h3><div class="leader-faction-line"><span class="leader-faction-emblem" aria-hidden="true"></span><span>${esc(leader.factionLabel)}</span></div></header><figure class="card-art has-image"><img src="${esc(leader.image)}" alt="Portrait of the ${esc(leader.name)}" /></figure><div class="card-rules">${(leader.sections || []).map(section=>`<section class="leader-rule-section"><h4>${esc(section.name)}${section.cost?`<span>${esc(section.cost)}</span>`:''}</h4><p>${esc(leaderSectionText(section))}</p></section>`).join('')}</div><footer class="card-footer"><span>${esc(leader.factionLabel)}</span><span>Leader</span><span>${esc(version)}</span></footer></div></article></div>`;
   }
 
   async function renderLeaders() {

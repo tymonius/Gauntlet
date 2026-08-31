@@ -98,17 +98,34 @@ function replaceById(records, replacement) {
   return [...(records || []).filter(record => record.id !== replacement.id), replacement];
 }
 
-function updateRiteRecord(record, rite, frontFile, reverseFile) {
-  if (!record) throw new Error(`Current supplemental manifest is missing mystics-rite-${rite.id}.`);
+function riteRecord(record, rite, deckId, frontFile, reverseFile) {
+  const resolvedDeckId = Number(record?.tts?.deckId) || Number(deckId);
+  if (!Number.isFinite(resolvedDeckId) || resolvedDeckId <= 0) {
+    throw new Error(`Unable to allocate a TTS DeckID for Mystics Rite ${rite.id}.`);
+  }
   return {
-    ...record,
+    ...(record || {}),
+    id: `mystics-rite-${rite.id}`,
     name: rite.name,
+    faction: 'mystics',
+    family: 'rite-card',
+    quantity: 1,
+    deckInclusion: 'selected-rite',
+    productionStatus: 'ready',
+    designStatus: 'final',
+    backPolicy: 'twoSided',
+    reverse: 'Completed',
+    representation: 'card',
     source: 'game-data/current-game.json',
     renderer: 'production-rite-card',
+    orientation: 'portrait',
     frontFile,
     reverseFile,
     tts: {
-      ...record.tts,
+      ...(record?.tts || {}),
+      cardId: Number(record?.tts?.cardId) || resolvedDeckId * 100,
+      deckId: resolvedDeckId,
+      index: 0,
       faceFile: frontFile,
       backFile: reverseFile,
       numWidth: 1,
@@ -168,17 +185,7 @@ async function main() {
     throw new Error('Current-game Mystics authority must expose a Rite pool and one Ritual.');
   }
 
-  const riteByComponentId = new Map(rites.map(rite => [`mystics-rite-${rite.id}`, rite]));
-  const packagedRiteComponents = (currentGame.componentContract?.components || [])
-    .filter(component => component.family === 'rite-card' && component.productionStatus === 'ready');
-  if (!packagedRiteComponents.length) {
-    throw new Error('Current component contract exposes no production-ready Mystics Rite components.');
-  }
-  const packagedRites = packagedRiteComponents.map(component => {
-    const rite = riteByComponentId.get(component.id);
-    if (!rite) throw new Error(`Production Rite component ${component.id} is not present in the current Rite pool.`);
-    return rite;
-  });
+  const packagedRites = rites;
 
   await mkdir(join(outputRoot, 'supplementals/fronts'), { recursive: true });
   await mkdir(join(outputRoot, 'supplementals/reverses'), { recursive: true });
@@ -199,6 +206,7 @@ async function main() {
   const page = await context.newPage();
 
   try {
+    let nextDeckId = maxDeckId(manifest) + 1;
     await page.goto(`${baseUrl}/card-design/?type=rite`, { waitUntil: 'load' });
     await page.waitForSelector(`#riteReviewSections[data-rite-count="${rites.length}"][data-ritual-count="1"]`, { timeout: 15000 });
 
@@ -220,11 +228,14 @@ async function main() {
       );
 
       const existingManifest = (manifest.ready || []).find(record => record.id === componentId);
-      const updated = updateRiteRecord(existingManifest, rite, frontFile, reverseFile);
+      const riteDeckId = Number(existingManifest?.tts?.deckId) || nextDeckId++;
+      const updated = riteRecord(existingManifest, rite, riteDeckId, frontFile, reverseFile);
       manifest.ready = replaceById(manifest.ready, updated);
+      manifest.pending = (manifest.pending || []).filter(record => record.id !== componentId);
 
       const existingCatalog = (catalog.ready || []).find(record => record.id === componentId) || existingManifest;
-      catalog.ready = replaceById(catalog.ready, updateRiteRecord(existingCatalog, rite, frontFile, reverseFile));
+      catalog.ready = replaceById(catalog.ready, riteRecord(existingCatalog, rite, riteDeckId, frontFile, reverseFile));
+      catalog.pending = (catalog.pending || []).filter(record => record.id !== componentId);
     }
 
     const ritualFront = `supplementals/fronts/${RITUAL_ID}.png`;
@@ -243,7 +254,7 @@ async function main() {
     );
 
     const existingRitual = (manifest.ready || []).find(record => record.id === RITUAL_ID);
-    const deckId = Number(existingRitual?.tts?.deckId) || maxDeckId(manifest) + 1;
+    const deckId = Number(existingRitual?.tts?.deckId) || nextDeckId++;
     const ritualComponent = ritualRecord(ritual, deckId, ritualFront, ritualBack);
     manifest.ready = replaceById(manifest.ready, ritualComponent);
     manifest.pending = (manifest.pending || []).filter(record => record.id !== RITUAL_ID);
@@ -258,7 +269,7 @@ async function main() {
       ritePoolCount: rites.length,
       packagedRiteCount: packagedRites.length,
       ritualCount: 1,
-      source: 'card-design/rite-card.js + game-data/current-game.json + componentContract',
+      source: 'card-design/rite-card.js + game-data/current-game.json',
     };
     catalog.currentMysticsProductionBridge = manifest.currentMysticsProductionBridge;
 
@@ -271,7 +282,7 @@ async function main() {
       writeFile(join(CURRENT_ALIAS_ROOT, 'supplemental-catalog.json'), catalogText),
     ]);
 
-    console.log(`Re-rendered ${packagedRites.length} production-ready Mystics Rite pairs from a ${rites.length}-Rite pool and added ${ritual.name} to the TTS supplemental package.`);
+    console.log(`Re-rendered all ${packagedRites.length} current Mystics Rite pairs and added ${ritual.name} to the TTS supplemental package.`);
   } finally {
     await context.close();
     await browser.close();

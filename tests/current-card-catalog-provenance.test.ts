@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 const source = JSON.parse(readFileSync("docs/v0.6.4-card-additions.json", "utf8"));
 const catalogPage = readFileSync("card-design/index.html", "utf8");
-const catalogOverlay = readFileSync("card-design/v064-card-candidates.js", "utf8");
+const catalogOverlay = readFileSync("card-design/current-card-catalog.js", "utf8");
 const cardRenderer = readFileSync("card-design/card-review-render.js", "utf8");
 const currentAuthority = JSON.parse(readFileSync("game-data/current-game.json", "utf8"));
 const starterDecks = currentAuthority.starterDecks;
@@ -156,8 +156,9 @@ describe("v0.6.4 full card-expansion candidate staging", () => {
     expect(divination.effects[0].text).toContain("Otherwise, put it in your Graveyard.");
   });
 
-  it("preserves the v0.6.4 staging document only as provenance for the flattened v0.7.0 card pool", () => {
-    expect(currentAuthority.version).toBe("v0.7.0");
+  it("preserves the v0.6.4 staging document only as provenance for the flattened current card pool", () => {
+    expect(currentAuthority.version).toBe("v0.7.1-candidate");
+    expect(currentAuthority.status).toBe("active-development");
     expect(currentAuthority.provenance.historicalInputs.cardChanges).toBe("/docs/v0.6.4-card-additions.json");
     expect(currentAuthority).not.toHaveProperty("sources");
     expect(currentAuthority).not.toHaveProperty("resolution");
@@ -170,7 +171,7 @@ describe("v0.6.4 full card-expansion candidate staging", () => {
     expect(currentAuthority.gameplay.cards.some((card: any) => card.id === "inquisition-no-martyrs")).toBe(false);
     expect(currentAuthority.gameplay.cards.some((card: any) => card.id === "inquisition-malleus-maleficarum")).toBe(true);
 
-    expect(catalogPage).toContain('src="v064-card-candidates.js"');
+    expect(catalogPage).toContain('src="current-card-catalog.js"');
     expect(catalogOverlay).toContain("loadCurrentGame");
     expect(catalogOverlay).not.toContain("/docs/v0.6.4-card-additions.json");
     expect(catalogOverlay).not.toContain("removeRetiredCards");

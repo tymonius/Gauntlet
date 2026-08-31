@@ -5,6 +5,8 @@ import { trackerPresentation } from '../scripts/tts-supplemental-geometry.mjs';
 
 const SUPPLEMENTAL_GUID_NOTE_PREFIX = 'gauntlet:supplemental:';
 const SUPPLEMENTAL_STACK_NOTE_PREFIX = 'gauntlet:supplemental-stack:';
+const STARTER_KIT_NOTE_PREFIX = 'gauntlet:starter-kit:';
+const INTERNAL_TEMPLATE_NOTE_PREFIX = 'gauntlet:internal:deck-import-template:';
 const STARTER_DECK_NOTE_PREFIX = 'gauntlet:starter-deck:';
 const STARTER_TERRITORY_STACK_NOTE_PREFIX = 'gauntlet:starter-territories:';
 const PLAYER_TOKEN_NOTE_PREFIX = 'gauntlet:starter-utility:player-token:';
@@ -40,6 +42,7 @@ const FACTION_ROW_Z = Object.freeze({
 
 function walk(objects, visit) {
   for (const object of objects || []) {
+    if (String(object?.GMNotes || '').startsWith(INTERNAL_TEMPLATE_NOTE_PREFIX)) continue;
     visit(object);
     walk(object?.ContainedObjects, visit);
   }
@@ -236,7 +239,10 @@ function validateHandsAndSeats(save) {
 }
 
 function validateBagsAndUtilities(save, manifest) {
-  const bags = (save.ObjectStates || []).filter(object => object?.Name === 'Bag');
+  const bags = (save.ObjectStates || []).filter(object => (
+    object?.Name === 'Bag'
+    && String(object?.GMNotes || '').startsWith(STARTER_KIT_NOTE_PREFIX)
+  ));
   if (bags.length !== 12) throw new Error(`Expected 12 starter Bags; found ${bags.length}.`);
 
   const looseUtilities = save.ObjectStates.filter(object => object?.Name === 'PlayerPawn' || object?.Name === 'Die_6');
@@ -321,6 +327,85 @@ function validateBagsAndUtilities(save, manifest) {
   }
   return bags;
 }
+function validateDeckImportTemplates(save) {
+  const templates = (save.ObjectStates || []).filter(object => (
+    object?.Name === 'Bag'
+    && String(object?.GMNotes || '').startsWith(INTERNAL_TEMPLATE_NOTE_PREFIX)
+  ));
+  if (templates.length !== 12) {
+    throw new Error(`Expected 12 internal Deck import templates; found ${templates.length}.`);
+  }
+
+  const ids = new Set();
+  const guids = new Set();
+  for (const template of templates) {
+    if (template.Locked !== true || template.DragSelectable !== false || template.Tooltip !== false) {
+      throw new Error('Internal Deck import templates must remain locked, non-selectable, and non-interactive.');
+    }
+    if (!close(template.Transform?.posZ, 100) || Number(template.Transform?.scaleX) > 0.11) {
+      throw new Error('Internal Deck import templates must remain parked safely off-table at tiny scale.');
+    }
+
+    const starterId = String(template.GMNotes || '').slice(INTERNAL_TEMPLATE_NOTE_PREFIX.length);
+    if (!starterId || ids.has(starterId)) {
+      throw new Error(`Duplicate or invalid internal starter template ${starterId || 'missing'}.`);
+    }
+    ids.add(starterId);
+
+    const guid = String(template.GUID || '').toLowerCase();
+    if (!/^[0-9a-f]{6}$/u.test(guid) || guids.has(guid)) {
+      throw new Error(`Internal starter template ${starterId} has an invalid or duplicate GUID.`);
+    }
+    guids.add(guid);
+
+    const deck = (template.ContainedObjects || []).find(object => String(object?.GMNotes || '').startsWith(STARTER_DECK_NOTE_PREFIX));
+    const territories = (template.ContainedObjects || []).find(object => String(object?.GMNotes || '').startsWith(STARTER_TERRITORY_STACK_NOTE_PREFIX));
+    if (!deck || !territories) throw new Error(`Internal starter template ${starterId} is missing its Deck or Territory prototype.`);
+    if ((deck.ContainedObjects || []).length !== 1 || (territories.ContainedObjects || []).length !== 1) {
+      throw new Error(`Internal starter template ${starterId} was not pruned to one Deck and one Territory prototype card.`);
+    }
+
+    const rites = (template.ContainedObjects || []).find(object => object?.GMNotes === `${SUPPLEMENTAL_STACK_NOTE_PREFIX}rites-rituals`);
+    if (rites && (rites.ContainedObjects || []).length !== 1) {
+      throw new Error(`Internal Mystics starter template ${starterId} was not pruned to one Rite prototype card.`);
+    }
+  }
+
+  const lua = String(save.LuaScript || '');
+  const luaBytes = Buffer.byteLength(lua, 'utf8');
+  if (luaBytes > 100_000) throw new Error(`Global Lua is too large for stable TTS loading: ${luaBytes} bytes.`);
+  if (!lua.includes('getObjectFromGUID(guid)') || !lua.includes('templateObject.getData()')) {
+    throw new Error('Deck importer Global Lua is not using direct GUID/getData template access.');
+  }
+  if (lua.includes('getAllObjects()') || lua.includes('.getJSON()')) {
+    throw new Error('Deck importer must not scan or JSON-serialize all template objects at runtime.');
+  }
+  if (lua.includes('"template":{')) {
+    throw new Error('Deck importer must not serialize starter template object trees into Global Lua.');
+  }
+
+  const configuredGuids = [...lua.matchAll(/"templateGuid":"([0-9a-f]{6})"/gu)].map(match => match[1]);
+  if (configuredGuids.length !== 12 || configuredGuids.some(guid => !guids.has(guid))) {
+    throw new Error('Deck importer Global Lua does not map all 12 starter kits to their direct internal template GUIDs.');
+  }
+
+  const spawnStates = [...lua.matchAll(/"spawnState":\{/gu)];
+  if (spawnStates.length !== 12) {
+    throw new Error(`Deck importer Global Lua must carry 12 starter Bag spawn-state records; found ${spawnStates.length}.`);
+  }
+  for (const required of [
+    'function gauntletRestoreStarterBagState',
+    'bagData.Transform.scaleX = tonumber(transform.scaleX) or 1',
+    'bagData.Transform.scaleY = tonumber(transform.scaleY) or 1',
+    'bagData.Transform.scaleZ = tonumber(transform.scaleZ) or 1',
+    'bagData.Locked = state.locked == true',
+    'bagData.DragSelectable = state.dragSelectable ~= false',
+  ]) {
+    if (!lua.includes(required)) throw new Error(`Deck importer is missing starter Bag spawn-state restoration: ${required}`);
+  }
+}
+
+
 function validateFamilyStacks(bags) {
   const expectations = new Map([
     ['proposals', { count: 2, cards: 9, sideways: false, rotY: 180, tags: [FACTION_ZONE_TAG] }],
@@ -516,6 +601,7 @@ async function main() {
   validateTableWorkspace(save);
   validateHandsAndSeats(save);
   const bags = validateBagsAndUtilities(save, manifest);
+  validateDeckImportTemplates(save);
   validateFamilyStacks(bags);
   validateCapitalLedgers(save);
   validateTerritoriesDeedsAndFactionEligibility(save, manifest);

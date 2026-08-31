@@ -1,9 +1,28 @@
 export const TTS_DECK_CODE_PREFIX = "GDL1:";
 export const TTS_DECK_EXPORT_MIN_VERSION = "v0.7.1";
 
-function parseReleaseVersion(value) {
-  const match = /^v?(\d+)\.(\d+)\.(\d+)$/.exec(String(value || "").trim());
+function parseReleaseVersion(value, allowCandidate = false) {
+  const pattern = allowCandidate
+    ? /^v?(\d+)\.(\d+)\.(\d+)(?:-candidate)?$/
+    : /^v?(\d+)\.(\d+)\.(\d+)$/;
+  const match = pattern.exec(String(value || "").trim());
   return match ? match.slice(1, 4).map(Number) : null;
+}
+
+function versionAtLeastMinimum(current, minimum) {
+  if (!current || !minimum) return false;
+  for (let index = 0; index < 3; index += 1) {
+    if (current[index] > minimum[index]) return true;
+    if (current[index] < minimum[index]) return false;
+  }
+  return true;
+}
+
+export function isTtsDeckExportQaAvailable(version) {
+  if (!/-candidate$/.test(String(version || "").trim())) return false;
+  const current = parseReleaseVersion(version, true);
+  const minimum = parseReleaseVersion(TTS_DECK_EXPORT_MIN_VERSION);
+  return versionAtLeastMinimum(current, minimum);
 }
 
 export function isTtsDeckExportAvailable(version) {
@@ -43,17 +62,24 @@ function compactTerritories(territories) {
 
 export function buildTtsDeckPayload(deck) {
   if (!deck || typeof deck !== "object") throw new Error("Deck data is required.");
-  if (String(deck.factionId || "").trim().toLowerCase() === "mystics") {
-    throw new Error("Mystics Tabletop Simulator export is temporarily unavailable until selected-Rite assembly is supported. Export JSON to preserve the selected Rites.");
-  }
-  return {
+  const factionId = requiredString(deck.factionId, "faction");
+  const payload = {
     v: requiredString(deck.gameVersion, "game version"),
     n: requiredString(deck.name, "deck name"),
-    f: requiredString(deck.factionId, "faction"),
+    f: factionId,
     l: requiredString(deck.leaderId, "leader"),
     c: compactCards(deck.cards),
     t: compactTerritories(deck.territories)
   };
+  if (factionId.toLowerCase() === "mystics") {
+    const selectedRites = (deck.selectedRites || []).map(rite => requiredString(
+      typeof rite === "string" ? rite : rite?.id,
+      "Rite id"
+    ));
+    if (!selectedRites.length) throw new Error("Mystics TTS export requires selected Rites.");
+    payload.r = selectedRites;
+  }
+  return payload;
 }
 
 export function encodeTtsDeckCode(deck) {
@@ -68,7 +94,7 @@ export function decodeTtsDeckCode(code) {
   return JSON.parse(normalized.slice(TTS_DECK_CODE_PREFIX.length));
 }
 
-async function copyDeckCode(button) {
+async function copyDeckCode(button, allowCandidateQa = false) {
   const currentDeckData = window.currentDeckData;
   const validateDeck = window.validateDeck;
   if (typeof currentDeckData !== "function") {
@@ -86,8 +112,10 @@ async function copyDeckCode(button) {
   let code;
   try {
     const deck = currentDeckData();
-    if (!isTtsDeckExportAvailable(deck?.gameVersion)) {
-      window.alert(`Tabletop Simulator Deck export begins with ${TTS_DECK_EXPORT_MIN_VERSION}.`);
+    const available = isTtsDeckExportAvailable(deck?.gameVersion)
+      || (allowCandidateQa && isTtsDeckExportQaAvailable(deck?.gameVersion));
+    if (!available) {
+      window.alert(`Tabletop Simulator Deck export begins with stable ${TTS_DECK_EXPORT_MIN_VERSION}.`);
       return;
     }
     code = encodeTtsDeckCode(deck);
@@ -107,25 +135,42 @@ async function copyDeckCode(button) {
 }
 
 async function installDeckCodeButton() {
+  const guide = document.getElementById("ttsTransferGuide");
+  const button = document.getElementById("copyTtsDeckCodeButton");
+  const help = document.getElementById("ttsDeckExportHelp");
+  if (!guide || !button) return;
+
   try {
     const { loadGameRuleset, rulesetModeFromUrl } = await import("../game-data/ruleset.mjs");
-    const selectedGame = await loadGameRuleset(rulesetModeFromUrl());
-    if (!isTtsDeckExportAvailable(selectedGame?.version)) return;
+    const mode = rulesetModeFromUrl();
+    const selectedGame = await loadGameRuleset(mode);
+    const candidateQa = mode === "candidate" && isTtsDeckExportQaAvailable(selectedGame?.version);
+    const stable = isTtsDeckExportAvailable(selectedGame?.version);
+    if (!candidateQa && !stable) return;
+
+    guide.hidden = false;
+    button.hidden = false;
+
+    if (candidateQa) {
+      button.textContent = "Copy TTS Deck Code";
+      button.title = "Copy a candidate Deck Code for the matching private TTS build.";
+      if (help) {
+        help.textContent = "Build and validate your v0.7.1 candidate Deck, copy its TTS Deck Code here, then paste it into Deck Import in the matching TTS candidate build.";
+      }
+      button.addEventListener("click", () => copyDeckCode(button, true));
+      return;
+    }
+
+
+    button.textContent = "Copy TTS Deck Code";
+    button.title = "Copy a compact Deck Code to paste into the Gauntlet TTS mod.";
+    if (help) {
+      help.textContent = "Build and validate your Deck, copy its TTS Deck Code here, then paste that code into Deck Import in Tabletop Simulator.";
+    }
+    button.addEventListener("click", () => copyDeckCode(button));
   } catch {
     return;
   }
-
-  const exportJsonButton = document.getElementById("exportJsonButton");
-  if (!exportJsonButton || document.getElementById("copyTtsDeckCodeButton")) return;
-
-  const button = document.createElement("button");
-  button.id = "copyTtsDeckCodeButton";
-  button.type = "button";
-  button.className = "secondary";
-  button.textContent = "Copy for Tabletop Simulator";
-  button.title = "Copy a compact Deck Code to paste into the Gauntlet TTS mod.";
-  button.addEventListener("click", () => copyDeckCode(button));
-  exportJsonButton.parentElement?.append(button);
 }
 
 if (typeof document !== "undefined") {

@@ -21,6 +21,7 @@ on:
       - 'scripts/stage-tts-release-assets.mjs'
       - 'scripts/generate-tts-save.mjs'
       - 'scripts/assemble-tts-supplemental-save.mjs'
+      - 'scripts/tts-deck-importer.mjs'
       - 'scripts/tts-supplemental-geometry.mjs'
       - 'scripts/promote-tts-save.mjs'
       - 'scripts/check-tts-release-readiness.mjs'

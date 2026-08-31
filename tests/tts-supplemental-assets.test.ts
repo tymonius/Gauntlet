@@ -46,19 +46,18 @@ describe('TTS supplemental component exports', () => {
     expect(generator).not.toMatch(/readyCount\s*[:=]\s*\d+|pendingCount\s*[:=]\s*\d+/);
   });
 
-  it('separates the full current Rite pool from the subset currently packaged by TTS', () => {
-    const packagedRites = contract.components.filter((component: any) =>
+  it('packages the full current Mystics Rite pool for selectable TTS starter kits', () => {
+    const physicalReadyRites = contract.components.filter((component: any) =>
       component.family === 'rite-card' && component.productionStatus === 'ready'
     );
     expect(currentGame.mystics.rites).toHaveLength(6);
-    expect(packagedRites).toHaveLength(3);
-    expect(mysticsBridge).toContain("component.family === 'rite-card' && component.productionStatus === 'ready'");
-    expect(mysticsBridge).toContain('const packagedRites = packagedRiteComponents.map');
+    expect(physicalReadyRites).toHaveLength(3);
+    expect(mysticsBridge).toContain('const packagedRites = rites');
+    expect(mysticsBridge).toContain("deckInclusion: 'selected-rite'");
     expect(mysticsBridge).toContain('data-rite-count=');
     expect(mysticsBridge).toContain('rites.length');
-    expect(mysticsBridge).not.toContain('rites.length !== 3');
-    expect(mysticsEnsure).toContain('function packagedRiteIds(currentGame)');
-    expect(mysticsEnsure).not.toContain('riteIds.length !== 3');
+    expect(mysticsEnsure).toContain("map(rite => `mystics-rite-${rite.id}`)");
+    expect(mysticsEnsure).not.toContain("component.family === 'rite-card'");
   });
   it('exports the ready Mystics Rites as source-driven two-sided cards', async () => {
     const riteCards = contract.components.filter((component: any) => component.family === 'rite-card');
@@ -231,7 +230,11 @@ describe('TTS supplemental component exports', () => {
     expect(stager).toContain("'supplemental-tracker-face'");
     expect(stager).toContain('_Supplemental_Manifest.json');
     expect(assembler).toContain("readFile(join(release.outputRoot, 'supplemental-manifest.json')");
-    expect(assembler).toContain("component.deckInclusion === 'every-deck' || component.faction === starter.factionId");
+    expect(assembler).toContain('function componentAppliesToStarter');
+    expect(assembler).toContain("component?.deckInclusion === 'every-deck'");
+    expect(assembler).toContain("component?.family === 'rite-card'");
+    expect(assembler).toContain('selectedRites.includes(riteIdFromComponent(component))');
+    expect(assembler).toContain('ready.filter(component => componentAppliesToStarter(component, starter))');
     expect(assembler).toContain("component.productionStatus !== 'ready'");
     expect(assembler).toContain('cleanPriorAssembly(save, trackerTags)');
     expect(assembler).toContain('SUPPLEMENTAL_GUID_NOTE_PREFIX');

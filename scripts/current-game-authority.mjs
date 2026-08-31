@@ -20,6 +20,33 @@ export function validateCurrentGameAuthority(authority) {
       throw new Error(`Current-game authority still exposes transitional field ${forbidden}.`);
     }
   }
+
+  const gameplay = authority.gameplay;
+  const cards = Array.isArray(gameplay?.cards) ? gameplay.cards : [];
+  const headingRules = gameplay?.card_rules?.effect_headings;
+  const supportedHeadings = new Set(Array.isArray(headingRules?.supported) ? headingRules.supported : []);
+  const declaredPresentHeadings = new Set(Array.isArray(headingRules?.all_present_headings) ? headingRules.all_present_headings : []);
+  const retiredHeadings = new Set(Array.isArray(headingRules?.retired) ? headingRules.retired : []);
+  const actualHeadings = new Set();
+
+  if (!cards.length || !supportedHeadings.size || !declaredPresentHeadings.size) {
+    throw new Error('Current-game authority is missing playable-card effect-heading authority.');
+  }
+  for (const card of cards) {
+    if (!Array.isArray(card.effects)) throw new Error(`Current card ${card?.id || '(missing id)'} has no effects array.`);
+    for (const effect of card.effects) {
+      const label = String(effect?.label || '').trim();
+      if (!supportedHeadings.has(label) || retiredHeadings.has(label)) {
+        throw new Error(`Current card ${card.id} has unresolved effect heading ${label || '(missing)'}.`);
+      }
+      actualHeadings.add(label);
+    }
+  }
+  if (actualHeadings.size !== declaredPresentHeadings.size
+    || [...actualHeadings].some(label => !declaredPresentHeadings.has(label))) {
+    throw new Error('Current-game effect-heading taxonomy does not match current playable cards.');
+  }
+
   const mystics = authority.mystics;
   const selectedCount = Number(mystics?.selectionPolicy?.selectedCount);
   const riteIds = new Set((mystics?.rites || []).map(rite => rite?.id).filter(Boolean));

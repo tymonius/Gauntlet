@@ -5,6 +5,7 @@ const read = (path: string) => readFileSync(path, 'utf8');
 const index = read('rulebook/index.html');
 const anatomy = read('rulebook/card-anatomy.js');
 const currentRulebook = read('rulebook/player-facing/current-rulebook.md');
+const currentGame = JSON.parse(read('game-data/current-game.json'));
 const styles = read('rulebook/card-anatomy.css');
 
 describe('Browser Rulebook card anatomy guide', () => {
@@ -49,6 +50,40 @@ describe('Browser Rulebook card anatomy guide', () => {
     expect(currentRulebook).not.toContain('faction-specific procedure');
     expect(anatomy).not.toContain('marker-reminder');
     expect(anatomy).toContain('data-marker-target="footer" aria-hidden="true">7</span>');
+  });
+
+  it('documents every current production playable-card effect heading', () => {
+    const start = currentRulebook.indexOf('## Printed card effects');
+    const end = currentRulebook.indexOf('### Arcane symbol', start);
+    const section = currentRulebook.slice(start, end);
+    const printedHeadings = [...new Set(
+      currentGame.gameplay.cards.flatMap((card: { effects?: Array<{ label?: string }> }) =>
+        (card.effects || []).map(effect => String(effect.label || '').trim()).filter(Boolean)
+      )
+    )].sort();
+    const declaredHeadings = [...currentGame.gameplay.card_rules.effect_headings.all_present_headings].sort();
+    const retiredHeadings = currentGame.gameplay.card_rules.effect_headings.retired;
+
+    expect(printedHeadings).toEqual(declaredHeadings);
+    for (const heading of declaredHeadings) {
+      expect(section).toContain(`**${heading}:**`);
+    }
+
+    for (const [heading, faction] of Object.entries(
+      currentGame.gameplay.card_rules.effect_headings.faction_specific_headings
+    )) {
+      expect(section).toContain(`**${heading}:** *(${faction} only.)*`);
+      const cardsUsingHeading = currentGame.gameplay.cards.filter(
+        (card: { allegiance?: string; effects?: Array<{ label?: string }> }) =>
+          (card.effects || []).some(effect => effect.label === heading)
+      );
+      expect(cardsUsingHeading.length).toBeGreaterThan(0);
+      expect(cardsUsingHeading.every((card: { allegiance?: string }) => card.allegiance === faction)).toBe(true);
+    }
+
+    for (const heading of retiredHeadings) {
+      expect(printedHeadings).not.toContain(heading);
+    }
   });
 
   it('uses a card-plus-single-key-column layout instead of splitting the key into narrow columns', () => {

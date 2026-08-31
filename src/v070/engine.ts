@@ -163,6 +163,15 @@ export type V070PendingActionEffectChoice =
       sourceActionInstanceId: string;
     }
   | {
+      kind: 'controlled_territory_move_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      purpose: 'Paths of Shadow' | 'Phantom Passage';
+      battleAllowed: boolean;
+      sourceDestination: 'discard' | 'graveyard';
+      candidatePositions: number[];
+    }
+  | {
       kind: 'burning_at_stake_tie';
       playerId: PlayerId;
       opponentId: PlayerId;
@@ -198,7 +207,12 @@ export type V070PendingActionEffectChoice =
       kind: 'territory_overlay_target';
       playerId: PlayerId;
       sourceActionInstanceId: string;
-      purpose: 'Landslide';
+      purpose:
+        | 'Landslide'
+        | 'Encampment'
+        | 'Circle of Bones'
+        | "Nature's Altar"
+        | 'Spirit Hollow';
     }
   | {
       kind: 'forced_asset_target';
@@ -223,7 +237,8 @@ export type V070PendingActionEffectChoice =
         | 'Tariffs'
         | 'Anathema'
         | 'Reserve Force'
-        | 'Extraordinary Rendition';
+        | 'Extraordinary Rendition'
+        | 'Sleeper Network';
       replacementInstanceIds: string[];
     }
   | {
@@ -299,6 +314,36 @@ export type V070PendingActionEffectChoice =
       playerId: PlayerId;
       opponentId: PlayerId;
       sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'sleeper_network_bind_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'necromancy_mode';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      reclaimCandidateInstanceIds: string[];
+    }
+  | {
+      kind: 'owned_deed_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      purpose: 'Divestment';
+    }
+  | {
+      kind: 'treasury_card_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      purpose: 'Liquidation';
+    }
+  | {
+      kind: 'deed_purchase_choice';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      purpose: 'Liquidation' | 'Corner the Market';
+      remainingPurchases: number | null;
     };
 
 export type V070PendingSanctionChoice =
@@ -329,6 +374,19 @@ export interface V070InquisitionState {
   normalConvictionGainTurn: number | null;
 }
 
+export interface V070FinancierState {
+  capital: number;
+  treasury: string[];
+  financialCapacityTurn: number | null;
+  financialCapacityUsedTurn: number | null;
+  financierFeatureActionSpentTurn: number | null;
+}
+
+export interface V070DeedState {
+  territoryInstanceId: string;
+  owner: PlayerId | null;
+}
+
 export interface V070PlayerState {
   id: PlayerId;
   name: string;
@@ -344,6 +402,7 @@ export interface V070PlayerState {
   reshuffleCount: number;
   diplomats: V070DiplomatState | null;
   inquisition: V070InquisitionState | null;
+  financiers: V070FinancierState | null;
 }
 
 export interface V070BoardTerritory {
@@ -353,6 +412,7 @@ export interface V070BoardTerritory {
   contributedBy: PlayerId;
   controller: PlayerId;
   occupant: PlayerId | null;
+  blank?: boolean;
 }
 
 export interface V070SetupState {
@@ -377,6 +437,7 @@ export interface V070GameState {
   players: Record<PlayerId, V070PlayerState>;
   cardInstances: Record<string, V070CardInstance>;
   board: V070BoardTerritory[];
+  deeds: V070DeedState[];
   activePlayer: PlayerId | null;
   turnNumber: number;
   turnState: V070TurnState | null;
@@ -481,6 +542,15 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
             normalConvictionGainTurn: null,
           }
         : null,
+      financiers: starter.definition.factionId === 'financiers'
+        ? {
+            capital: 2,
+            treasury: [],
+            financialCapacityTurn: null,
+            financialCapacityUsedTurn: null,
+            financierFeatureActionSpentTurn: null,
+          }
+        : null,
     };
   }
 
@@ -496,6 +566,7 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
     players,
     cardInstances,
     board: [],
+    deeds: [],
     activePlayer: null,
     turnNumber: 0,
     turnState: null,
@@ -713,6 +784,10 @@ function completeSetup(state: V070GameState, firstPlayer: PlayerId): void {
   ];
 
   state.board = boardTerritories;
+  state.deeds = boardTerritories.map(territory => ({
+    territoryInstanceId: territory.territoryInstanceId,
+    owner: null,
+  }));
   state.players.A.position = 0;
   state.players.B.position = 5;
   state.players.A.controlledTerritories = boardTerritories

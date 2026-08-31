@@ -701,6 +701,21 @@ function cleanPriorAssembly(save, generatedTags) {
   visit(save.ObjectStates || []);
 }
 
+function riteIdFromComponent(component) {
+  const id = String(component?.id || '');
+  return id.startsWith('mystics-rite-') ? id.slice('mystics-rite-'.length) : '';
+}
+
+function componentAppliesToStarter(component, starter) {
+  if (component?.deckInclusion === 'every-deck') return true;
+  if (component?.faction !== starter?.factionId) return false;
+  if (component?.family === 'rite-card') {
+    const selectedRites = Array.isArray(starter?.selectedRites) ? starter.selectedRites : [];
+    return selectedRites.includes(riteIdFromComponent(component));
+  }
+  return true;
+}
+
 function instantiateApplicableComponents(applicable, starter, releaseAssets, guid) {
   const entries = [];
   for (const component of applicable) {
@@ -729,7 +744,7 @@ export function assembleReadySupplementals(save, starterManifest, supplementalMa
   const starterSummaries = [];
   for (const starter of starterManifest.decks || []) {
     const bag = findStarterBag(save, starter);
-    const applicable = ready.filter(component => component.deckInclusion === 'every-deck' || component.faction === starter.factionId);
+    const applicable = ready.filter(component => componentAppliesToStarter(component, starter));
     const trackers = applicable.filter(component => component.representation === 'sliding-tracker');
     const generatedEntries = instantiateApplicableComponents(applicable, starter, releaseAssets, guid);
 
@@ -751,7 +766,9 @@ export function assembleReadySupplementals(save, starterManifest, supplementalMa
     });
   }
 
-  const missingReadyIds = ready.filter(component => !assembledIds.has(component.id)).map(component => component.id);
+  const missingReadyIds = ready
+    .filter(component => component.deckInclusion !== 'selected-rite' && !assembledIds.has(component.id))
+    .map(component => component.id);
   if (missingReadyIds.length) throw new Error(`Ready supplemental components were not assembled into any starter kit: ${missingReadyIds.join(', ')}.`);
 
   for (const field of ['Note', 'Rules']) {
@@ -804,6 +821,7 @@ async function main() {
       cardManifest,
       territoryManifest,
       starterManifest,
+      supplementalManifest,
       releaseAssets,
     });
     installDeckImporter(result.save, importerConfig);

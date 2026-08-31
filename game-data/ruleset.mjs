@@ -30,28 +30,8 @@ export function renderRulesetModeFromUrl(url = typeof window !== 'undefined' ? w
   return parsed.searchParams.get('rules') === RELEASED_MODE ? RELEASED_MODE : CANDIDATE_MODE;
 }
 
-function legacySectionText(section) {
-  if (section?.text) return section.text;
-  if (Array.isArray(section?.items)) return section.items.map(item => `${item.name}: ${item.text}`).join(' ');
-  return '';
-}
-
 function runtimeLeader(source) {
-  const leader = clone(source);
-  leader.sections = (leader.sections || []).map(section => {
-    const resolved = { ...section };
-    Object.defineProperty(resolved, Symbol.iterator, {
-      enumerable: false,
-      configurable: false,
-      value: function* legacyLeaderSectionTuple() {
-        yield resolved.name;
-        yield legacySectionText(resolved);
-        yield resolved.cost || '';
-      },
-    });
-    return resolved;
-  });
-  return leader;
+  return clone(source);
 }
 
 export function normalizePublishedGame(authority, starterDeckData) {

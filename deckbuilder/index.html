@@ -314,6 +314,24 @@
         </section>
       </div>
 
+      <section id="ttsTransferGuide" class="tts-transfer-guide" aria-labelledby="tts-transfer-title" hidden>
+        <div>
+          <h3 id="tts-transfer-title">Tabletop Simulator</h3>
+          <p id="ttsDeckExportHelp" class="muted">
+            Build and validate your Deck here, copy its TTS Deck Code, then paste that code into Deck Import in the matching Tabletop Simulator build.
+          </p>
+          <ol class="tts-transfer-steps">
+            <li>Build a valid Deck and choose its Territories.</li>
+            <li>Copy the TTS Deck Code.</li>
+            <li>In TTS, sit in White or Green, open Deck Import, paste the code, and import the custom starter kit.</li>
+          </ol>
+          <p class="muted">The imported Bag keeps the matching Leader and faction components while replacing the playable Deck and Territory stack. Mystics imports also use the three Rites selected in this Deck.</p>
+        </div>
+        <div class="button-row">
+          <button id="copyTtsDeckCodeButton" type="button" class="secondary" hidden>Copy TTS Deck Code</button>
+        </div>
+      </section>
+
       <details class="advanced-tools">
         <summary>Advanced transfer and bulk printing</summary>
         <div class="advanced-tools-grid">
@@ -372,7 +390,7 @@
   <script src="completed-factions.js?v=20260729-1" defer></script>
   <script src="territories.js?v=20260729-1" defer></script>
   <script src="mystics-rites.js?v=20260828-1" defer></script>
-  <script type="module" src="tts-export.mjs?v=20260828-1"></script>
+  <script type="module" src="tts-export.mjs?v=20260831-1"></script>
   <script src="supplemental-data.js?v=20260722-1" defer></script>
   <script src="completed-supplementals.js?v=20260723-1" defer></script>
   <script src="v061-supplementals.js?v=20260730-1" defer></script>

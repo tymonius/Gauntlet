@@ -28,12 +28,14 @@ import {
   nextV070FrontLineTarget,
 } from './front-line';
 import {
+  V070_DEMILITARIZED_ZONE_ID,
   cardIdForV070Overlay,
   expireV070TerritoryTurnRestrictions,
   openV070StartTurnOverlayChoice,
   placeV070OverlayFromPendingAction,
   resolveV070OverlayEntryRequirements,
   resolveV070StartTurnOverlayChoice,
+  v070DmzBlocksEntryThisTurn,
   v070OverlaysAt,
 } from './overlays';
 import {
@@ -72,6 +74,23 @@ import {
   restoreV070AssetsAtTurnStart,
   turnV070AssetFaceDownUntilPlayerNextTurn,
 } from './asset-face-state';
+import {
+  applyV070FinancierAfterCapture,
+  buyV070Deed,
+  clampAllV070CapitalToLimits,
+  consumeV070FinancialCapacityAction,
+  gainV070Capital,
+  isV070FinancierPlayer,
+  makeV070DeedUnowned,
+  markV070FinancierFeatureActionSpent,
+  placeV070CardInTreasury,
+  removeV070CardFromTreasury,
+  v070DeedCost,
+  v070DeedOwner,
+  v070DeedsOwned,
+  v070FinancialCapacityAvailable,
+  v070FinancierFeatureActionSpentThisTurn,
+} from './financiers';
 
 export type V070TurnAction =
   | { type: 'resolve_capture'; playerId: PlayerId }
@@ -89,6 +108,37 @@ export type V070TurnAction =
       assetInstanceId: string;
     }
   | { type: 'play_action_card'; playerId: PlayerId; cardInstanceId: string }
+  | {
+      type: 'financier_place_treasury';
+      playerId: PlayerId;
+      cardInstanceId: string;
+    }
+  | {
+      type: 'financier_buy_deed';
+      playerId: PlayerId;
+      territoryPosition: number;
+    }
+  | {
+      type: 'financier_play_market';
+      playerId: PlayerId;
+      cardInstanceId: string;
+      roll: number;
+    }
+  | {
+      type: 'choose_owned_deed_target';
+      playerId: PlayerId;
+      territoryPosition: number;
+    }
+  | {
+      type: 'choose_treasury_card_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
+      type: 'resolve_deed_purchase_choice';
+      playerId: PlayerId;
+      territoryPosition?: number;
+    }
   | {
       type: 'choose_clemency_target';
       playerId: PlayerId;
@@ -133,6 +183,12 @@ export type V070TurnAction =
       type: 'choose_sabotage_asset_target';
       playerId: PlayerId;
       targetInstanceId: string;
+    }
+  | {
+      type: 'choose_controlled_territory_move_target';
+      playerId: PlayerId;
+      territoryPosition: number;
+      discardInstanceId?: string;
     }
   | {
       type: 'choose_burning_at_stake_target';
@@ -239,6 +295,17 @@ export type V070TurnAction =
       targetInstanceId: string;
     }
   | {
+      type: 'choose_sleeper_network_bind_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
+      type: 'resolve_necromancy_action';
+      playerId: PlayerId;
+      mode: 'recycle' | 'reclaim';
+      targetInstanceIds?: readonly string[];
+    }
+  | {
       type: 'resolve_censure_choice';
       playerId: PlayerId;
       sanctionInstanceId: string;
@@ -331,6 +398,10 @@ export function reduceV070TurnAction(
       && action.type === 'choose_sabotage_asset_target'
       && action.playerId === pending.playerId
     ) || (
+      pending.kind === 'controlled_territory_move_target'
+      && action.type === 'choose_controlled_territory_move_target'
+      && action.playerId === pending.playerId
+    ) || (
       pending.kind === 'burning_at_stake_tie'
       && action.type === 'choose_burning_at_stake_target'
       && action.playerId === pending.playerId
@@ -410,6 +481,26 @@ export function reduceV070TurnAction(
       pending.kind === 'extraordinary_rendition_bind_target'
       && action.type === 'choose_extraordinary_rendition_bind_target'
       && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'sleeper_network_bind_target'
+      && action.type === 'choose_sleeper_network_bind_target'
+      && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'necromancy_mode'
+      && action.type === 'resolve_necromancy_action'
+      && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'owned_deed_target'
+      && action.type === 'choose_owned_deed_target'
+      && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'treasury_card_target'
+      && action.type === 'choose_treasury_card_target'
+      && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'deed_purchase_choice'
+      && action.type === 'resolve_deed_purchase_choice'
+      && action.playerId === pending.playerId
     );
     if (!validContinuation) {
       throw new V070GameActionError('Resolve the pending printed Action effect choice first.');
@@ -428,6 +519,7 @@ export function reduceV070TurnAction(
       'choose_fates_toll_cost',
       'choose_battlefield_promotion_target',
       'choose_sabotage_asset_target',
+      'choose_controlled_territory_move_target',
       'choose_burning_at_stake_target',
       'choose_confession_gambit_target',
       'choose_hellfire_amount',
@@ -448,6 +540,11 @@ export function reduceV070TurnAction(
       'choose_anathema_target',
       'choose_reserve_force_bind_target',
       'choose_extraordinary_rendition_bind_target',
+      'choose_sleeper_network_bind_target',
+      'resolve_necromancy_action',
+      'choose_owned_deed_target',
+      'choose_treasury_card_target',
+      'resolve_deed_purchase_choice',
     ].includes(action.type)) {
     throw new V070GameActionError('Resolve the pending Action card before continuing the turn.');
   }
@@ -481,6 +578,41 @@ export function reduceV070TurnAction(
       break;
     case 'play_action_card':
       playActionCard(next, action.playerId, action.cardInstanceId);
+      break;
+    case 'financier_place_treasury':
+      financierPlaceTreasury(next, action.playerId, action.cardInstanceId);
+      break;
+    case 'financier_buy_deed':
+      financierBuyDeed(next, action.playerId, action.territoryPosition);
+      break;
+    case 'financier_play_market':
+      financierPlayMarket(
+        next,
+        action.playerId,
+        action.cardInstanceId,
+        action.roll,
+      );
+      break;
+    case 'choose_owned_deed_target':
+      chooseOwnedDeedTarget(
+        next,
+        action.playerId,
+        action.territoryPosition,
+      );
+      break;
+    case 'choose_treasury_card_target':
+      chooseTreasuryCardTarget(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
+      break;
+    case 'resolve_deed_purchase_choice':
+      resolveDeedPurchaseChoice(
+        next,
+        action.playerId,
+        action.territoryPosition,
+      );
       break;
     case 'choose_clemency_target':
       chooseClemencyTarget(next, action.playerId, action.targetInstanceId);
@@ -523,6 +655,14 @@ export function reduceV070TurnAction(
         next,
         action.playerId,
         action.targetInstanceId,
+      );
+      break;
+    case 'choose_controlled_territory_move_target':
+      chooseControlledTerritoryMoveTarget(
+        next,
+        action.playerId,
+        action.territoryPosition,
+        action.discardInstanceId,
       );
       break;
     case 'choose_burning_at_stake_target':
@@ -641,6 +781,21 @@ export function reduceV070TurnAction(
         action.targetInstanceId,
       );
       break;
+    case 'choose_sleeper_network_bind_target':
+      chooseSleeperNetworkBindTarget(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
+      break;
+    case 'resolve_necromancy_action':
+      resolveNecromancyAction(
+        next,
+        action.playerId,
+        action.mode,
+        action.targetInstanceIds ?? [],
+      );
+      break;
     case 'resolve_censure_choice':
       resolveCensureChoice(
         next,
@@ -715,6 +870,8 @@ function resolveCapture(state: V070GameState, playerId: PlayerId): void {
     return;
   }
 
+  applyV070FinancierAfterCapture(state, playerId);
+
   state.turnState = advanceV070TurnPhase(requireTurnState(state));
   appendPhaseEvent(state);
 }
@@ -756,14 +913,7 @@ function bankAsset(
   cardInstanceId: string,
   replaceAssetInstanceId?: string,
 ): void {
-  const turnState = requireTurnState(state);
-  try {
-    state.turnState = spendV070Action(turnState);
-  } catch (error) {
-    throw new V070GameActionError(
-      error instanceof Error ? error.message : 'That Action cannot be spent now.',
-    );
-  }
+  spendTurnAction(state, playerId);
 
   bankV070AssetWithInherentAction(
     state,
@@ -778,16 +928,207 @@ function discardAsset(
   playerId: PlayerId,
   assetInstanceId: string,
 ): void {
+  spendTurnAction(state, playerId);
+
+  discardV070AssetAsAction(state, playerId, assetInstanceId);
+}
+
+function spendTurnAction(
+  state: V070GameState,
+  playerId: PlayerId,
+  financierFeatureName?: string,
+): void {
   const turnState = requireTurnState(state);
+  const financierFeature = Boolean(financierFeatureName);
+
   try {
     state.turnState = spendV070Action(turnState);
+    if (financierFeature) {
+      markV070FinancierFeatureActionSpent(
+        state,
+        playerId,
+        financierFeatureName!,
+      );
+    }
+    return;
   } catch (error) {
+    const message = error instanceof Error
+      ? error.message
+      : 'That Action cannot be spent now.';
+
+    if (message !== 'No Actions remain this turn.'
+      || !v070FinancialCapacityAvailable(state, playerId)) {
+      throw new V070GameActionError(message);
+    }
+
+    if (!financierFeature
+      && !v070FinancierFeatureActionSpentThisTurn(state, playerId)) {
+      throw new V070GameActionError(
+        'Financial Capacity’s additional Action requires at least one Action this turn to be spent on a Financier Faction Feature.',
+      );
+    }
+
+    try {
+      state.turnState = spendV070Action({
+        ...turnState,
+        actionsAvailable: turnState.actionsAvailable + 1,
+      });
+    } catch (capacityError) {
+      throw new V070GameActionError(
+        capacityError instanceof Error
+          ? capacityError.message
+          : 'Financial Capacity cannot provide another Action in this phase.',
+      );
+    }
+
+    consumeV070FinancialCapacityAction(state, playerId);
+    if (financierFeature) {
+      markV070FinancierFeatureActionSpent(
+        state,
+        playerId,
+        financierFeatureName!,
+      );
+    }
+  }
+}
+
+function requireFinancierDenouement(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  requirePhase(state, 'denouement');
+  if (!isV070FinancierPlayer(state, playerId)) {
     throw new V070GameActionError(
-      error instanceof Error ? error.message : 'That Action cannot be spent now.',
+      `${playerId} is not using the Financiers faction.`,
+    );
+  }
+}
+
+function financierPlaceTreasury(
+  state: V070GameState,
+  playerId: PlayerId,
+  cardInstanceId: string,
+): void {
+  requireFinancierDenouement(state, playerId);
+  if (!state.players[playerId].zones.hand.includes(cardInstanceId)) {
+    throw new V070GameActionError(
+      'Treasury requires one card from your Hand.',
     );
   }
 
-  discardV070AssetAsAction(state, playerId, assetInstanceId);
+  spendTurnAction(state, playerId, 'Treasury');
+  placeV070CardInTreasury(
+    state,
+    playerId,
+    cardInstanceId,
+    'Financier Treasury Faction Feature',
+  );
+}
+
+function financierBuyDeed(
+  state: V070GameState,
+  playerId: PlayerId,
+  territoryPosition: number,
+): void {
+  requireFinancierDenouement(state, playerId);
+  const territory = territoryAt(state, territoryPosition);
+  if (!territory) {
+    throw new V070GameActionError(
+      'A Deed purchase must target a Territory in the Gauntlet.',
+    );
+  }
+
+  const cost = v070DeedCost(
+    state,
+    playerId,
+    territory.territoryInstanceId,
+  );
+  const capital = state.players[playerId].financiers!.capital;
+  if (capital < cost) {
+    throw new V070GameActionError(
+      `That Deed costs ${cost} Capital but only ${capital} is available.`,
+    );
+  }
+
+  spendTurnAction(state, playerId, 'Buy / Buy Out Deed');
+  buyV070Deed(
+    state,
+    playerId,
+    territory.territoryInstanceId,
+    'Financier Buy / Buy Out Deed Faction Feature',
+  );
+}
+
+function financierPlayMarket(
+  state: V070GameState,
+  playerId: PlayerId,
+  cardInstanceId: string,
+  roll: number,
+): void {
+  requireFinancierDenouement(state, playerId);
+  if (!Number.isInteger(roll) || roll < 1 || roll > 6) {
+    throw new V070GameActionError(
+      'Play the Market requires an unmodified d6 result.',
+    );
+  }
+
+  const player = state.players[playerId];
+  const handIndex = player.zones.hand.indexOf(cardInstanceId);
+  if (handIndex < 0) {
+    throw new V070GameActionError(
+      'Play the Market requires one card from your Hand.',
+    );
+  }
+  const cardId = state.cardInstances[cardInstanceId]?.cardId;
+  const card = cardId ? v070CanonicalContent.cardsById.get(cardId) : undefined;
+  if (!card) {
+    throw new V070GameActionError(
+      'Play the Market requires a known card instance.',
+    );
+  }
+
+  spendTurnAction(state, playerId, 'Play the Market');
+
+  player.zones.hand.splice(handIndex, 1);
+  player.zones.discardPile.push(cardInstanceId);
+  appendV070Event(state, {
+    type: 'play_the_market_rolled',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      cardInstanceId,
+      cardId,
+      value: card.cost,
+      roll,
+    },
+  });
+
+  if (roll === 1) {
+    player.zones.discardPile.pop();
+    player.zones.graveyard.push(cardInstanceId);
+    appendV070Event(state, {
+      type: 'play_the_market_card_graveyarded',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        cardInstanceId,
+        cardId,
+      },
+    });
+    return;
+  }
+
+  const gain = roll <= 3
+    ? 1
+    : roll <= 5
+      ? card.cost
+      : card.cost * 2;
+  gainV070Capital(
+    state,
+    playerId,
+    gain,
+    `Play the Market roll ${roll}`,
+  );
 }
 
 export const V070_EXECUTABLE_ACTION_CARD_IDS = [
@@ -801,10 +1142,12 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'neutral-forced-march',
   'mystics-fate-s-toll',
   'military-battlefield-promotion',
+  'military-encampment',
   'military-give-chase',
   'neutral-insurrection',
   'neutral-landslide',
   'neutral-new-recruits',
+  'neutral-phantom-passage',
   'neutral-revolution',
   'neutral-reserves',
   'neutral-requisition',
@@ -818,6 +1161,10 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'diplomats-clemency',
   'diplomats-detente',
   'financiers-compound-interest',
+  'financiers-corner-the-market',
+  'financiers-divestment',
+  'financiers-foreclosure',
+  'financiers-liquidation',
   'financiers-monetary-crisis',
   'financiers-tariffs',
   'financiers-war-bonds',
@@ -834,13 +1181,19 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'intelligence-assassins',
   'intelligence-extraordinary-rendition',
   'intelligence-regime-change',
+  'intelligence-sleeper-network',
   'intelligence-spies',
   'military-high-command',
   'military-invasion',
   'military-reserve-force',
+  'mystics-circle-of-bones',
   'mystics-dark-omens',
+  'mystics-necromancy',
+  'mystics-paths-of-shadow',
+  'mystics-nature-s-altar',
   'mystics-sacrifice-recovery',
   'mystics-soul-for-soul',
+  'mystics-spirit-hollow',
   'mystics-threefold-vision',
 ] as const;
 
@@ -989,6 +1342,18 @@ function playActionCard(
       'Sabotage requires at least one face-up opposing Asset.',
     );
   }
+  if ((card.id === 'neutral-phantom-passage'
+      || card.id === 'mystics-paths-of-shadow')
+    && controlledTerritoryMovementCandidatePositions(
+      state,
+      playerId,
+      card.id === 'neutral-phantom-passage',
+      cardInstanceId,
+    ).length === 0) {
+    throw new V070GameActionError(
+      `${card.name} requires another controlled Territory you can legally move to.`,
+    );
+  }
   if (card.id === 'neutral-scouting-report'
     && availableScoutingReportSources(state, playerId).length === 0) {
     throw new V070GameActionError(
@@ -999,6 +1364,16 @@ function playActionCard(
     && availableLandslidePositions(state).length === 0) {
     throw new V070GameActionError(
       'Landslide requires a Territory that does not already have a Landslide.',
+    );
+  }
+  if (isLocalPlacementOverlayActionCardId(card.id)
+    && availableLocalPlacementOverlayPositions(
+      state,
+      playerId,
+      card.id,
+    ).length === 0) {
+    throw new V070GameActionError(
+      noLocalPlacementOverlayTargetMessage(card.id),
     );
   }
   if (card.id === 'neutral-sedition') {
@@ -1098,6 +1473,49 @@ function playActionCard(
     }
     pendingBankReplacementV070AssetInstanceIds(state, playerId, cardInstanceId);
   }
+  if (card.id === 'intelligence-sleeper-network') {
+    if (player.zones.hand.length < 2) {
+      throw new V070GameActionError(
+        'Sleeper Network requires one other card in your Hand to bind.',
+      );
+    }
+    pendingBankReplacementV070AssetInstanceIds(state, playerId, cardInstanceId);
+  }
+  if ([
+      'financiers-corner-the-market',
+      'financiers-divestment',
+      'financiers-foreclosure',
+      'financiers-liquidation',
+    ].includes(card.id)
+    && !isV070FinancierPlayer(state, playerId)) {
+    throw new V070GameActionError(
+      `${card.name} requires the Financiers faction economy.`,
+    );
+  }
+  if (card.id === 'financiers-divestment'
+    && ownedDeedCandidatePositions(state, playerId).length === 0) {
+    throw new V070GameActionError(
+      'Divestment requires at least one Deed you own.',
+    );
+  }
+  if (card.id === 'financiers-liquidation'
+    && state.players[playerId].financiers!.treasury.length === 0) {
+    throw new V070GameActionError(
+      'Liquidation requires at least one card in your Treasury.',
+    );
+  }
+  if (card.id === 'financiers-foreclosure') {
+    if (turnState.phase !== 'denouement') {
+      throw new V070GameActionError(
+        'Foreclosure may be played only during Denouement.',
+      );
+    }
+    if (foreclosureTargetPosition(state, playerId) === null) {
+      throw new V070GameActionError(
+        'Foreclosure requires the next opposing Territory beyond your Front Line to be unoccupied and its Deed to be yours.',
+      );
+    }
+  }
   if (card.id === 'mystics-threefold-vision'
     && player.zones.drawPile.length < 3) {
     throw new V070GameActionError(
@@ -1112,13 +1530,7 @@ function playActionCard(
     );
   }
 
-  try {
-    state.turnState = spendV070Action(turnState);
-  } catch (error) {
-    throw new V070GameActionError(
-      error instanceof Error ? error.message : 'That Action cannot be spent now.',
-    );
-  }
+  spendTurnAction(state, playerId);
 
   player.zones.hand.splice(handIndex, 1);
   state.pendingActionCard = {
@@ -1136,7 +1548,7 @@ function playActionCard(
       instanceId: cardInstanceId,
       cardId: card.id,
       phase: turnState.phase,
-      actionsRemaining: state.turnState.actionsAvailable,
+      actionsRemaining: requireTurnState(state).actionsAvailable,
     },
   });
   applyV070BlasphemyForActionPlay(
@@ -1531,6 +1943,17 @@ function continuePendingActionCard(state: V070GameState): void {
       });
       return;
     }
+    case 'military-encampment':
+    case 'mystics-circle-of-bones':
+    case 'mystics-nature-s-altar':
+    case 'mystics-spirit-hollow':
+      openLocalPlacementOverlayActionChoice(
+        state,
+        pending.playerId,
+        pending.instanceId,
+        pending.cardId,
+      );
+      return;
     case 'neutral-new-recruits':
       if (!openHandDestinationChoice(
         state,
@@ -1542,6 +1965,16 @@ function continuePendingActionCard(state: V070GameState): void {
       )) {
         finishPendingActionCard(state);
       }
+      return;
+    case 'neutral-phantom-passage':
+      openControlledTerritoryMovementChoice(
+        state,
+        pending.playerId,
+        pending.instanceId,
+        'Phantom Passage',
+        true,
+        'graveyard',
+      );
       return;
     case 'neutral-revolution':
       resolveRevolutionAction(state, pending.playerId);
@@ -1943,6 +2376,33 @@ function continuePendingActionCard(state: V070GameState): void {
       });
       return;
     }
+    case 'financiers-divestment':
+      openOwnedDeedTargetChoice(
+        state,
+        pending.playerId,
+        pending.instanceId,
+      );
+      return;
+    case 'financiers-liquidation':
+      openTreasuryCardTargetChoice(
+        state,
+        pending.playerId,
+        pending.instanceId,
+      );
+      return;
+    case 'financiers-corner-the-market':
+      openDeedPurchaseChoice(
+        state,
+        pending.playerId,
+        pending.instanceId,
+        'Corner the Market',
+        null,
+      );
+      return;
+    case 'financiers-foreclosure':
+      resolveForeclosureAction(state, pending.playerId);
+      finishPendingActionCard(state);
+      return;
     case 'financiers-monetary-crisis':
       resolveMonetaryCrisisAction(state, pending.playerId);
       finishPendingActionCard(state);
@@ -1999,6 +2459,43 @@ function continuePendingActionCard(state: V070GameState): void {
       });
       return;
     }
+    case 'mystics-necromancy': {
+      const candidates = necromancyReclaimCandidateInstanceIds(
+        state,
+        pending.playerId,
+      );
+      state.pendingActionEffectChoice = {
+        kind: 'necromancy_mode',
+        playerId: pending.playerId,
+        sourceActionInstanceId: pending.instanceId,
+        reclaimCandidateInstanceIds: [...candidates],
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          kind: 'necromancy_mode',
+          playerId: pending.playerId,
+          sourceActionInstanceId: pending.instanceId,
+          purpose: 'Necromancy',
+          modes: ['recycle', 'reclaim'],
+          reclaimCandidateInstanceIds: [...candidates],
+          maximumReclaim: 3,
+        },
+      });
+      return;
+    }
+    case 'mystics-paths-of-shadow':
+      openControlledTerritoryMovementChoice(
+        state,
+        pending.playerId,
+        pending.instanceId,
+        'Paths of Shadow',
+        false,
+        'discard',
+      );
+      return;
     case 'mystics-dark-omens': {
       const drawn = drawIntoHand(
         state,
@@ -2272,6 +2769,14 @@ function continuePendingActionCard(state: V070GameState): void {
       );
       return;
     case 'intelligence-extraordinary-rendition':
+      resolveBindingBankAction(
+        state,
+        pending.playerId,
+        pending.instanceId,
+        pending.cardId,
+      );
+      return;
+    case 'intelligence-sleeper-network':
       resolveBindingBankAction(
         state,
         pending.playerId,
@@ -3401,7 +3906,10 @@ function resolveBindingBankAction(
   state: V070GameState,
   playerId: PlayerId,
   sourceActionInstanceId: string,
-  cardId: 'military-reserve-force' | 'intelligence-extraordinary-rendition',
+  cardId:
+    | 'military-reserve-force'
+    | 'intelligence-extraordinary-rendition'
+    | 'intelligence-sleeper-network',
 ): void {
   const replacements = pendingBankReplacementV070AssetInstanceIds(
     state,
@@ -3410,7 +3918,9 @@ function resolveBindingBankAction(
   );
   const purpose = cardId === 'military-reserve-force'
     ? 'Reserve Force'
-    : 'Extraordinary Rendition';
+    : cardId === 'intelligence-extraordinary-rendition'
+      ? 'Extraordinary Rendition'
+      : 'Sleeper Network';
 
   if (replacements.length > 0) {
     state.pendingActionEffectChoice = {
@@ -3447,12 +3957,17 @@ function completeBindingBankAction(
   state: V070GameState,
   playerId: PlayerId,
   sourceActionInstanceId: string,
-  cardId: 'military-reserve-force' | 'intelligence-extraordinary-rendition',
+  cardId:
+    | 'military-reserve-force'
+    | 'intelligence-extraordinary-rendition'
+    | 'intelligence-sleeper-network',
   replaceAssetInstanceId?: string,
 ): void {
   const purpose = cardId === 'military-reserve-force'
     ? 'Reserve Force'
-    : 'Extraordinary Rendition';
+    : cardId === 'intelligence-extraordinary-rendition'
+      ? 'Extraordinary Rendition'
+      : 'Sleeper Network';
 
   bankV070AssetFromPendingAction(
     state,
@@ -3502,6 +4017,54 @@ function completeBindingBankAction(
       visibility: playerId,
       payload: {
         kind: 'reserve_force_bind_target',
+        sourceActionInstanceId,
+        purpose,
+        targetInstanceIds: [...eligible],
+      },
+    });
+    return;
+  }
+
+  if (cardId === 'intelligence-sleeper-network') {
+    const eligible = state.players[playerId].zones.hand;
+    if (eligible.length === 0) {
+      appendV070Event(state, {
+        type: 'action_effect_incomplete',
+        actor: playerId,
+        visibility: 'public',
+        payload: {
+          sourceActionInstanceId,
+          purpose,
+          reason: 'required_hand_bind_target_unavailable',
+        },
+      });
+      finishPendingActionCard(state, 'asset');
+      return;
+    }
+
+    state.pendingActionEffectChoice = {
+      kind: 'sleeper_network_bind_target',
+      playerId,
+      sourceActionInstanceId,
+    };
+    appendV070Event(state, {
+      type: 'action_effect_choice_pending',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        kind: 'sleeper_network_bind_target',
+        playerId,
+        sourceActionInstanceId,
+        purpose,
+        candidateCount: eligible.length,
+      },
+    });
+    appendV070Event(state, {
+      type: 'action_effect_choice_options',
+      actor: playerId,
+      visibility: playerId,
+      payload: {
+        kind: 'sleeper_network_bind_target',
         sourceActionInstanceId,
         purpose,
         targetInstanceIds: [...eligible],
@@ -3632,6 +4195,146 @@ function chooseExtraordinaryRenditionBindTarget(
   finishPendingActionCard(state, 'asset');
 }
 
+function necromancyReclaimCandidateInstanceIds(
+  state: V070GameState,
+  playerId: PlayerId,
+): string[] {
+  return state.players[playerId].zones.graveyard.filter(instanceId =>
+    state.cardInstances[instanceId]?.cardId !== 'mystics-necromancy'
+  );
+}
+
+function resolveNecromancyAction(
+  state: V070GameState,
+  playerId: PlayerId,
+  mode: 'recycle' | 'reclaim',
+  targetInstanceIds: readonly string[],
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'necromancy_mode'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'mystics-necromancy') {
+    throw new V070GameActionError(
+      'No Necromancy Action choice is pending for that player.',
+    );
+  }
+
+  if (mode === 'recycle') {
+    if (targetInstanceIds.length > 0) {
+      throw new V070GameActionError(
+        'Necromancy’s Draw Pile mode does not choose Graveyard cards.',
+      );
+    }
+
+    state.pendingActionEffectChoice = null;
+    state.players[playerId].zones.drawPile.push(pending.instanceId);
+    appendV070Event(state, {
+      type: 'action_card_resolved',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        instanceId: pending.instanceId,
+        cardId: pending.cardId,
+        destination: 'draw_bottom',
+      },
+    });
+    state.pendingActionCard = null;
+
+    drawIntoHand(state, playerId, 1, 'Necromancy');
+    grantAdditionalAction(state, playerId, 'Necromancy');
+    return;
+  }
+
+  if (new Set(targetInstanceIds).size !== targetInstanceIds.length
+    || targetInstanceIds.length > 3) {
+    throw new V070GameActionError(
+      'Necromancy may reclaim up to three different cards.',
+    );
+  }
+
+  const eligible = necromancyReclaimCandidateInstanceIds(state, playerId);
+  if (targetInstanceIds.some(instanceId => !eligible.includes(instanceId))) {
+    throw new V070GameActionError(
+      'Necromancy may reclaim only non-Necromancy cards currently in your Graveyard.',
+    );
+  }
+
+  const player = state.players[playerId];
+  const handToGraveyard = player.zones.hand.splice(0);
+  player.zones.graveyard.push(...handToGraveyard);
+
+  for (const instanceId of targetInstanceIds) {
+    const index = player.zones.graveyard.indexOf(instanceId);
+    if (index < 0) {
+      throw new V070GameActionError(
+        'A chosen Necromancy card is no longer in your Graveyard.',
+      );
+    }
+    player.zones.graveyard.splice(index, 1);
+    player.zones.hand.push(instanceId);
+  }
+
+  appendV070Event(state, {
+    type: 'necromancy_reclaim_resolved',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      handToGraveyard: handToGraveyard.map(instanceId => ({
+        instanceId,
+        cardId: state.cardInstances[instanceId]?.cardId,
+      })),
+      reclaimed: targetInstanceIds.map(instanceId => ({
+        instanceId,
+        cardId: state.cardInstances[instanceId]?.cardId,
+      })),
+    },
+  });
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state, 'graveyard');
+}
+
+function chooseSleeperNetworkBindTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'sleeper_network_bind_target'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'intelligence-sleeper-network') {
+    throw new V070GameActionError(
+      'No Sleeper Network binding choice is pending for that player.',
+    );
+  }
+
+  if (!state.players[playerId].zones.hand.includes(targetInstanceId)) {
+    throw new V070GameActionError(
+      'Sleeper Network must bind one card still in your Hand.',
+    );
+  }
+
+  bindV070CardFromPlayerZone(state, {
+    hostId: pending.instanceId,
+    owner: playerId,
+    cardInstanceId: targetInstanceId,
+    sourceZone: 'hand',
+    faceUp: false,
+    purpose: 'Sleeper Network',
+  });
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state, 'asset');
+}
+
 function choosePendingAssetBankReplacement(
   state: V070GameState,
   playerId: PlayerId,
@@ -3672,10 +4375,13 @@ function choosePendingAssetBankReplacement(
   }
 
   if (choice.purpose === 'Reserve Force'
-    || choice.purpose === 'Extraordinary Rendition') {
+    || choice.purpose === 'Extraordinary Rendition'
+    || choice.purpose === 'Sleeper Network') {
     const expectedCardId = choice.purpose === 'Reserve Force'
       ? 'military-reserve-force'
-      : 'intelligence-extraordinary-rendition';
+      : choice.purpose === 'Extraordinary Rendition'
+        ? 'intelligence-extraordinary-rendition'
+        : 'intelligence-sleeper-network';
     if (pending.cardId !== expectedCardId) {
       throw new V070GameActionError(
         'Binding banking replacement state does not match its pending Action card.',
@@ -3703,6 +4409,390 @@ function choosePendingAssetBankReplacement(
     pending.cardId,
     replaceAssetInstanceId,
   );
+}
+
+function ownedDeedCandidatePositions(
+  state: V070GameState,
+  playerId: PlayerId,
+): number[] {
+  const positions: number[] = [];
+  for (const deed of state.deeds) {
+    if (deed.owner !== playerId) continue;
+    const territory = state.board.find(
+      candidate => candidate.territoryInstanceId === deed.territoryInstanceId,
+    );
+    if (territory) positions.push(territory.position);
+  }
+  return positions.sort((a, b) => a - b);
+}
+
+function foreclosureTargetPosition(
+  state: V070GameState,
+  playerId: PlayerId,
+): number | null {
+  if (!isV070FinancierPlayer(state, playerId)) return null;
+  const target = nextV070FrontLineTarget(state, playerId);
+  if (!target
+    || target.controller === playerId
+    || target.occupant !== null
+    || v070DeedOwner(state, target.territoryInstanceId) !== playerId) {
+    return null;
+  }
+  return target.position;
+}
+
+function affordableDeedPurchasePositions(
+  state: V070GameState,
+  playerId: PlayerId,
+): Array<{ position: number; cost: number }> {
+  if (!isV070FinancierPlayer(state, playerId)) return [];
+  const capital = state.players[playerId].financiers!.capital;
+  const result: Array<{ position: number; cost: number }> = [];
+  for (const territory of state.board) {
+    if (v070DeedOwner(state, territory.territoryInstanceId) === playerId) {
+      continue;
+    }
+    const cost = v070DeedCost(
+      state,
+      playerId,
+      territory.territoryInstanceId,
+    );
+    if (cost <= capital) {
+      result.push({ position: territory.position, cost });
+    }
+  }
+  return result.sort((a, b) => a.position - b.position);
+}
+
+function openOwnedDeedTargetChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+): void {
+  const positions = ownedDeedCandidatePositions(state, playerId);
+  if (positions.length === 0) {
+    appendV070Event(state, {
+      type: 'action_effect_incomplete',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        sourceActionInstanceId,
+        purpose: 'Divestment',
+        reason: 'required_owned_deed_unavailable',
+      },
+    });
+    finishPendingActionCard(state);
+    return;
+  }
+
+  state.pendingActionEffectChoice = {
+    kind: 'owned_deed_target',
+    playerId,
+    sourceActionInstanceId,
+    purpose: 'Divestment',
+  };
+  appendV070Event(state, {
+    type: 'action_effect_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      kind: 'owned_deed_target',
+      playerId,
+      sourceActionInstanceId,
+      purpose: 'Divestment',
+      territoryPositions: positions,
+    },
+  });
+}
+
+function chooseOwnedDeedTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  territoryPosition: number,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'owned_deed_target'
+    || choice.playerId !== playerId
+    || choice.purpose !== 'Divestment'
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'financiers-divestment') {
+    throw new V070GameActionError(
+      'No Divestment Deed choice is pending for that player.',
+    );
+  }
+
+  const territory = territoryAt(state, territoryPosition);
+  if (!territory
+    || v070DeedOwner(state, territory.territoryInstanceId) !== playerId) {
+    throw new V070GameActionError(
+      'Divestment must choose one Deed you currently own.',
+    );
+  }
+
+  const ownedBefore = v070DeedsOwned(state, playerId);
+  makeV070DeedUnowned(
+    state,
+    territory.territoryInstanceId,
+    'Divestment',
+  );
+  gainV070Capital(
+    state,
+    playerId,
+    ownedBefore,
+    'Divestment',
+  );
+  grantAdditionalAction(state, playerId, 'Divestment');
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state);
+}
+
+function openTreasuryCardTargetChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+): void {
+  const treasury = state.players[playerId].financiers?.treasury ?? [];
+  if (treasury.length === 0) {
+    appendV070Event(state, {
+      type: 'action_effect_incomplete',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        sourceActionInstanceId,
+        purpose: 'Liquidation',
+        reason: 'required_treasury_card_unavailable',
+      },
+    });
+    finishPendingActionCard(state);
+    return;
+  }
+
+  state.pendingActionEffectChoice = {
+    kind: 'treasury_card_target',
+    playerId,
+    sourceActionInstanceId,
+    purpose: 'Liquidation',
+  };
+  appendV070Event(state, {
+    type: 'action_effect_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      kind: 'treasury_card_target',
+      playerId,
+      sourceActionInstanceId,
+      purpose: 'Liquidation',
+      targetInstanceIds: [...treasury],
+    },
+  });
+}
+
+function chooseTreasuryCardTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'treasury_card_target'
+    || choice.playerId !== playerId
+    || choice.purpose !== 'Liquidation'
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'financiers-liquidation') {
+    throw new V070GameActionError(
+      'No Liquidation Treasury choice is pending for that player.',
+    );
+  }
+
+  const treasury = state.players[playerId].financiers?.treasury ?? [];
+  if (!treasury.includes(targetInstanceId)) {
+    throw new V070GameActionError(
+      'Liquidation must choose one card currently in your Treasury.',
+    );
+  }
+  const cardId = state.cardInstances[targetInstanceId]?.cardId;
+  const card = cardId ? v070CanonicalContent.cardsById.get(cardId) : undefined;
+  if (!card) {
+    throw new V070GameActionError(
+      'Liquidation requires a known Treasury card.',
+    );
+  }
+
+  removeV070CardFromTreasury(
+    state,
+    playerId,
+    targetInstanceId,
+    'discard',
+    'Liquidation',
+  );
+  gainV070Capital(
+    state,
+    playerId,
+    card.cost,
+    'Liquidation',
+  );
+
+  state.pendingActionEffectChoice = null;
+  openDeedPurchaseChoice(
+    state,
+    playerId,
+    pending.instanceId,
+    'Liquidation',
+    1,
+  );
+}
+
+function openDeedPurchaseChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+  purpose: 'Liquidation' | 'Corner the Market',
+  remainingPurchases: number | null,
+): void {
+  const candidates = affordableDeedPurchasePositions(state, playerId);
+  if (candidates.length === 0 || remainingPurchases === 0) {
+    state.pendingActionEffectChoice = null;
+    finishPendingActionCard(state);
+    return;
+  }
+
+  state.pendingActionEffectChoice = {
+    kind: 'deed_purchase_choice',
+    playerId,
+    sourceActionInstanceId,
+    purpose,
+    remainingPurchases,
+  };
+  appendV070Event(state, {
+    type: 'action_effect_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      kind: 'deed_purchase_choice',
+      playerId,
+      sourceActionInstanceId,
+      purpose,
+      optional: true,
+      candidates,
+      remainingPurchases,
+    },
+  });
+}
+
+function resolveDeedPurchaseChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  territoryPosition?: number,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'deed_purchase_choice'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId) {
+    throw new V070GameActionError(
+      'No immediate Deed purchase choice is pending for that player.',
+    );
+  }
+
+  const expectedCardId = choice.purpose === 'Liquidation'
+    ? 'financiers-liquidation'
+    : 'financiers-corner-the-market';
+  if (pending.cardId !== expectedCardId) {
+    throw new V070GameActionError(
+      'The Deed purchase choice does not match its pending Action card.',
+    );
+  }
+
+  if (territoryPosition === undefined) {
+    state.pendingActionEffectChoice = null;
+    finishPendingActionCard(state);
+    return;
+  }
+
+  const candidates = affordableDeedPurchasePositions(state, playerId);
+  if (!candidates.some(candidate => candidate.position === territoryPosition)) {
+    throw new V070GameActionError(
+      `${choice.purpose} must choose a currently affordable Deed you do not own, or pass.`,
+    );
+  }
+  const territory = territoryAt(state, territoryPosition);
+  if (!territory) {
+    throw new V070GameActionError(
+      'The selected Deed no longer has a Territory in the Gauntlet.',
+    );
+  }
+
+  buyV070Deed(
+    state,
+    playerId,
+    territory.territoryInstanceId,
+    choice.purpose,
+  );
+
+  state.pendingActionEffectChoice = null;
+  if (state.stage === 'ended') {
+    finishPendingActionCard(state);
+    return;
+  }
+
+  const remaining = choice.remainingPurchases === null
+    ? null
+    : Math.max(0, choice.remainingPurchases - 1);
+  openDeedPurchaseChoice(
+    state,
+    playerId,
+    pending.instanceId,
+    choice.purpose,
+    remaining,
+  );
+}
+
+function resolveForeclosureAction(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  const targetPosition = foreclosureTargetPosition(state, playerId);
+  if (targetPosition === null) {
+    throw new V070GameActionError(
+      'Foreclosure requires the next opposing Territory beyond your Front Line to be unoccupied and its Deed to be yours.',
+    );
+  }
+
+  const target = territoryAt(state, targetPosition);
+  if (!target) {
+    throw new V070GameActionError(
+      'Foreclosure target is no longer in the Gauntlet.',
+    );
+  }
+
+  const advance = advanceV070FrontLine(
+    state,
+    playerId,
+    1,
+    'Foreclosure',
+  );
+  if (advance.reachedOpponentEnd) {
+    state.stage = 'ended';
+    state.winner = playerId;
+    state.turnState = null;
+    appendV070Event(state, {
+      type: 'game_won',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        route: 'final_territory_capture',
+        source: 'Foreclosure',
+      },
+    });
+  }
 }
 
 function resolveSimpleBankingAction(
@@ -3875,6 +4965,12 @@ function chooseForcedAssetTarget(
   finishPendingActionCard(state);
 }
 
+type V070LocalPlacementOverlayActionCardId =
+  | 'military-encampment'
+  | 'mystics-circle-of-bones'
+  | 'mystics-nature-s-altar'
+  | 'mystics-spirit-hollow';
+
 function chooseTerritoryOverlayTarget(
   state: V070GameState,
   playerId: PlayerId,
@@ -3886,14 +4982,42 @@ function chooseTerritoryOverlayTarget(
     || choice.kind !== 'territory_overlay_target'
     || choice.playerId !== playerId
     || !pending
-    || pending.instanceId !== choice.sourceActionInstanceId
-    || pending.cardId !== 'neutral-landslide') {
-    throw new V070GameActionError('No Landslide Territory choice is pending for that player.');
+    || pending.instanceId !== choice.sourceActionInstanceId) {
+    throw new V070GameActionError(
+      'No Territory Overlay Action target choice is pending for that player.',
+    );
   }
 
-  if (!availableLandslidePositions(state).includes(territoryPosition)) {
+  if (pending.cardId === 'neutral-landslide') {
+    if (choice.purpose !== 'Landslide') {
+      throw new V070GameActionError(
+        'Territory Overlay target state does not match the pending Landslide.',
+      );
+    }
+    if (!availableLandslidePositions(state).includes(territoryPosition)) {
+      throw new V070GameActionError(
+        'Landslide must target a Territory that does not already have a Landslide.',
+      );
+    }
+  } else if (isLocalPlacementOverlayActionCardId(pending.cardId)) {
+    const expectedPurpose = localPlacementOverlayPurpose(pending.cardId);
+    if (choice.purpose !== expectedPurpose) {
+      throw new V070GameActionError(
+        'Territory Overlay target state does not match its pending Action card.',
+      );
+    }
+    if (!availableLocalPlacementOverlayPositions(
+      state,
+      playerId,
+      pending.cardId,
+    ).includes(territoryPosition)) {
+      throw new V070GameActionError(
+        localPlacementOverlayTargetError(pending.cardId),
+      );
+    }
+  } else {
     throw new V070GameActionError(
-      'Landslide must target a Territory that does not already have a Landslide.',
+      'The pending Action card does not use a Territory Overlay target choice.',
     );
   }
 
@@ -3902,7 +5026,7 @@ function chooseTerritoryOverlayTarget(
     playerId,
     pending.instanceId,
     territoryPosition,
-    'Landslide Action',
+    `${choice.purpose} Action`,
   );
 
   state.pendingActionEffectChoice = null;
@@ -3919,6 +5043,117 @@ function availableLandslidePositions(
       )
     )
     .map(territory => territory.position);
+}
+
+function isLocalPlacementOverlayActionCardId(
+  cardId: string,
+): cardId is V070LocalPlacementOverlayActionCardId {
+  return cardId === 'military-encampment'
+    || cardId === 'mystics-circle-of-bones'
+    || cardId === 'mystics-nature-s-altar'
+    || cardId === 'mystics-spirit-hollow';
+}
+
+function localPlacementOverlayPurpose(
+  cardId: V070LocalPlacementOverlayActionCardId,
+): 'Encampment' | 'Circle of Bones' | "Nature's Altar" | 'Spirit Hollow' {
+  switch (cardId) {
+    case 'military-encampment':
+      return 'Encampment';
+    case 'mystics-circle-of-bones':
+      return 'Circle of Bones';
+    case 'mystics-nature-s-altar':
+      return "Nature's Altar";
+    case 'mystics-spirit-hollow':
+      return 'Spirit Hollow';
+  }
+}
+
+function availableLocalPlacementOverlayPositions(
+  state: V070GameState,
+  playerId: PlayerId,
+  cardId: V070LocalPlacementOverlayActionCardId,
+): number[] {
+  const currentPosition = state.players[playerId].position;
+  if (currentPosition === null || !territoryAt(state, currentPosition)) {
+    return [];
+  }
+
+  if (cardId === 'military-encampment') {
+    const current = territoryAt(state, currentPosition);
+    return current?.occupant === playerId && current.controller === playerId
+      ? [currentPosition]
+      : [];
+  }
+
+  return state.board
+    .filter(territory => Math.abs(territory.position - currentPosition) <= 1)
+    .map(territory => territory.position);
+}
+
+function noLocalPlacementOverlayTargetMessage(
+  cardId: V070LocalPlacementOverlayActionCardId,
+): string {
+  if (cardId === 'military-encampment') {
+    return 'Encampment requires your current Territory to be both occupied and controlled by you.';
+  }
+  return `${localPlacementOverlayPurpose(cardId)} requires a current Territory in the Gauntlet.`;
+}
+
+function localPlacementOverlayTargetError(
+  cardId: V070LocalPlacementOverlayActionCardId,
+): string {
+  if (cardId === 'military-encampment') {
+    return 'Encampment must target the Territory you currently occupy and control.';
+  }
+  return `${localPlacementOverlayPurpose(cardId)} must target your current Territory or an adjacent Territory.`;
+}
+
+function openLocalPlacementOverlayActionChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+  cardId: V070LocalPlacementOverlayActionCardId,
+): void {
+  const positions = availableLocalPlacementOverlayPositions(
+    state,
+    playerId,
+    cardId,
+  );
+  if (positions.length === 0) {
+    appendV070Event(state, {
+      type: 'action_effect_incomplete',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        sourceActionInstanceId,
+        purpose: localPlacementOverlayPurpose(cardId),
+        reason: 'required_territory_target_unavailable',
+      },
+    });
+    finishPendingActionCard(state);
+    return;
+  }
+
+  const purpose = localPlacementOverlayPurpose(cardId);
+  state.pendingActionEffectChoice = {
+    kind: 'territory_overlay_target',
+    playerId,
+    sourceActionInstanceId,
+    purpose,
+  };
+  appendV070Event(state, {
+    type: 'action_effect_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      kind: 'territory_overlay_target',
+      playerId,
+      sourceActionInstanceId,
+      purpose,
+      territoryPositions: positions,
+    },
+  });
 }
 
 function resolveScoutingReportChoice(
@@ -4512,6 +5747,278 @@ function resolvePenanceChoice(
 
   state.pendingActionEffectChoice = null;
   finishPendingActionCard(state);
+}
+
+function controlledTerritoryMovementCandidatePositions(
+  state: V070GameState,
+  playerId: PlayerId,
+  battleAllowed: boolean,
+  sourceActionInstanceId?: string,
+): number[] {
+  const origin = state.players[playerId].position;
+  if (origin === null) return [];
+
+  const opponentPosition = state.players[otherPlayer(playerId)].position;
+  const hasEntryPayment = state.players[playerId].zones.hand.some(
+    instanceId => instanceId !== sourceActionInstanceId,
+  );
+
+  return state.board
+    .filter(territory => territory.controller === playerId)
+    .filter(territory => territory.position !== origin)
+    .filter(territory => {
+      if (v070DmzBlocksEntryThisTurn(state, territory.position)) {
+        return false;
+      }
+      if (!battleAllowed && opponentPosition === territory.position) {
+        return false;
+      }
+      if (wouldPassOpponent(
+        playerId,
+        origin,
+        territory.position,
+        opponentPosition,
+      )) {
+        return false;
+      }
+
+      const overlays = v070OverlaysAt(state, territory.position);
+      const active = overlays[overlays.length - 1];
+      const requiresEntryDiscard = Boolean(
+        active
+        && cardIdForV070Overlay(state, active)
+          === V070_DEMILITARIZED_ZONE_ID
+        && territory.occupant === null,
+      );
+      return !requiresEntryDiscard || hasEntryPayment;
+    })
+    .map(territory => territory.position);
+}
+
+function openControlledTerritoryMovementChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+  purpose: 'Paths of Shadow' | 'Phantom Passage',
+  battleAllowed: boolean,
+  sourceDestination: 'discard' | 'graveyard',
+): void {
+  const candidatePositions = controlledTerritoryMovementCandidatePositions(
+    state,
+    playerId,
+    battleAllowed,
+    sourceActionInstanceId,
+  );
+  if (candidatePositions.length === 0) {
+    appendV070Event(state, {
+      type: 'action_effect_incomplete',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        sourceActionInstanceId,
+        purpose,
+        reason: 'controlled_territory_move_target_unavailable',
+      },
+    });
+    finishPendingActionCard(
+      state,
+      sourceDestination,
+    );
+    return;
+  }
+
+  state.pendingActionEffectChoice = {
+    kind: 'controlled_territory_move_target',
+    playerId,
+    sourceActionInstanceId,
+    purpose,
+    battleAllowed,
+    sourceDestination,
+    candidatePositions: [...candidatePositions],
+  };
+  appendV070Event(state, {
+    type: 'action_effect_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      kind: 'controlled_territory_move_target',
+      playerId,
+      sourceActionInstanceId,
+      purpose,
+      battleAllowed,
+      territoryPositions: [...candidatePositions],
+    },
+  });
+}
+
+function finalizeControlledTerritoryMoveAction(
+  state: V070GameState,
+  destination: 'discard' | 'graveyard',
+  sourceAlreadyPlaced: boolean,
+): void {
+  const pending = state.pendingActionCard;
+  if (!pending) {
+    throw new V070GameActionError(
+      'No controlled-Territory movement Action is pending resolution.',
+    );
+  }
+
+  if (!sourceAlreadyPlaced) {
+    if (destination === 'discard') {
+      state.players[pending.playerId].zones.discardPile.push(
+        pending.instanceId,
+      );
+    } else {
+      state.players[pending.playerId].zones.graveyard.push(
+        pending.instanceId,
+      );
+    }
+  }
+
+  appendV070Event(state, {
+    type: 'action_card_resolved',
+    actor: pending.playerId,
+    visibility: 'public',
+    payload: {
+      instanceId: pending.instanceId,
+      cardId: pending.cardId,
+      destination,
+    },
+  });
+  state.pendingActionCard = null;
+}
+
+function chooseControlledTerritoryMoveTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  territoryPosition: number,
+  discardInstanceId?: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'controlled_territory_move_target'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId) {
+    throw new V070GameActionError(
+      'No controlled-Territory movement choice is pending for that player.',
+    );
+  }
+
+  const expectedCardId = choice.purpose === 'Paths of Shadow'
+    ? 'mystics-paths-of-shadow'
+    : 'neutral-phantom-passage';
+  if (pending.cardId !== expectedCardId) {
+    throw new V070GameActionError(
+      'The controlled-Territory movement choice does not match its pending Action card.',
+    );
+  }
+
+  const currentCandidates = controlledTerritoryMovementCandidatePositions(
+    state,
+    playerId,
+    choice.battleAllowed,
+    pending.instanceId,
+  );
+  if (!choice.candidatePositions.includes(territoryPosition)
+    || !currentCandidates.includes(territoryPosition)) {
+    throw new V070GameActionError(
+      `${choice.purpose} must move to another currently legal Territory you control.`,
+    );
+  }
+
+  const player = state.players[playerId];
+  const opponentId = otherPlayer(playerId);
+  const opponent = state.players[opponentId];
+  const origin = requirePosition(player);
+  const initiatesBattle = opponent.position === territoryPosition;
+  if (initiatesBattle && !choice.battleAllowed) {
+    throw new V070GameActionError(
+      `${choice.purpose} cannot start a battle.`,
+    );
+  }
+
+  state.pendingActionEffectChoice = null;
+  let sourceAlreadyPlaced = false;
+  if (choice.sourceDestination === 'graveyard') {
+    state.players[playerId].zones.graveyard.push(pending.instanceId);
+    sourceAlreadyPlaced = true;
+  }
+
+  resolveV070OverlayEntryRequirements(
+    state,
+    playerId,
+    territoryPosition,
+    discardInstanceId,
+  );
+
+  moveSettledOccupantOffOrigin(state, playerId, origin);
+  player.position = territoryPosition;
+
+  if (initiatesBattle) {
+    state.battle = createV070BattleOnset({
+      territoryCount: state.board.length,
+      attacker: playerId,
+      defender: opponentId,
+      attackerOrigin: origin,
+      contestedPosition: territoryPosition,
+      positions: {
+        A: state.players.A.position!,
+        B: state.players.B.position!,
+      },
+      defenderControlsContested:
+        territoryAt(state, territoryPosition)?.controller === opponentId,
+    });
+    state.turnState = {
+      ...requireTurnState(state),
+      battleInitiated: true,
+    };
+    appendV070Event(state, {
+      type: 'battle_initiated',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        attacker: playerId,
+        defender: opponentId,
+        attackerOrigin: origin,
+        contestedPosition: territoryPosition,
+        lastStand: false,
+        movementStepSource: choice.purpose,
+        attackerGambitProhibited: false,
+      },
+    });
+  } else {
+    setSettledOccupant(
+      state,
+      playerId,
+      territoryPosition,
+    );
+    appendV070Event(state, {
+      type: 'player_moved',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        choice: 'effect',
+        movementSource: choice.purpose,
+        from: origin,
+        to: territoryPosition,
+      },
+    });
+  }
+
+  finalizeControlledTerritoryMoveAction(
+    state,
+    choice.sourceDestination,
+    sourceAlreadyPlaced,
+  );
+
+  openV070BlockadeChoicesForPositionChange(
+    state,
+    playerId,
+    origin,
+    territoryPosition,
+  );
 }
 
 function chooseSabotageAssetTarget(
@@ -5550,6 +7057,8 @@ function completeCleanup(
       },
     });
   }
+
+  clampAllV070CapitalToLimits(state);
 
   const next = otherPlayer(playerId);
   state.activePlayer = next;
