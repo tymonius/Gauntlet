@@ -10,7 +10,12 @@ function parseReleaseVersion(value, allowCandidate = false) {
 }
 
 function versionAtLeastMinimum(current, minimum) {
-  return versionAtLeastMinimum(current, minimum);
+  if (!current || !minimum) return false;
+  for (let index = 0; index < 3; index += 1) {
+    if (current[index] > minimum[index]) return true;
+    if (current[index] < minimum[index]) return false;
+  }
+  return true;
 }
 
 export function isTtsDeckExportQaAvailable(version) {
