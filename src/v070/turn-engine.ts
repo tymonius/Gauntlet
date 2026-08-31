@@ -332,6 +332,10 @@ export function reduceV070TurnAction(
       && action.type === 'choose_sabotage_asset_target'
       && action.playerId === pending.playerId
     ) || (
+      pending.kind === 'controlled_territory_move_target'
+      && action.type === 'choose_controlled_territory_move_target'
+      && action.playerId === pending.playerId
+    ) || (
       pending.kind === 'burning_at_stake_tie'
       && action.type === 'choose_burning_at_stake_target'
       && action.playerId === pending.playerId
@@ -425,6 +429,7 @@ export function reduceV070TurnAction(
       'choose_fates_toll_cost',
       'choose_battlefield_promotion_target',
       'choose_sabotage_asset_target',
+      'choose_controlled_territory_move_target',
       'choose_burning_at_stake_target',
       'choose_hellfire_amount',
       'resolve_penance_choice',
@@ -519,6 +524,14 @@ export function reduceV070TurnAction(
         next,
         action.playerId,
         action.targetInstanceId,
+      );
+      break;
+    case 'choose_controlled_territory_move_target':
+      chooseControlledTerritoryMoveTarget(
+        next,
+        action.playerId,
+        action.territoryPosition,
+        action.discardInstanceId,
       );
       break;
     case 'choose_burning_at_stake_target':
@@ -794,6 +807,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'neutral-insurrection',
   'neutral-landslide',
   'neutral-new-recruits',
+  'neutral-phantom-passage',
   'neutral-revolution',
   'neutral-reserves',
   'neutral-requisition',
@@ -827,6 +841,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'military-invasion',
   'military-reserve-force',
   'mystics-dark-omens',
+  'mystics-paths-of-shadow',
   'mystics-sacrifice-recovery',
   'mystics-soul-for-soul',
   'mystics-threefold-vision',
