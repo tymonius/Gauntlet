@@ -130,6 +130,7 @@ The current top-level directory inventory is enforced by `scripts/validate-repos
 | `v0.6.2/` | Historical public/versioned surface |
 | `v0.6.3/` | Historical public/versioned surface |
 | `v0.7.0/` | Versioned public entry/compatibility surface |
+| `v0.7.1/` | Versioned public entry/compatibility surface |
 
 These paths should not receive new product behavior except explicit compatibility fixes.
 

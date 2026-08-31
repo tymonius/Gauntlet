@@ -30,6 +30,7 @@ jobs:
             /scripts/publication-utils.mjs
             /scripts/verify-clean-v063-live-publication.mjs
             /scripts/verify-v070-live-publication.mjs
+            /scripts/verify-v071-live-publication.mjs
             /docs/releases/github/*.md
             /rules-assistant/v063-last-stand-language.js
             /rulebook/player-facing/chapter-11.md
@@ -38,6 +39,7 @@ jobs:
             /index.html
             /v0.6.3/index.html
             /v0.7.0/index.html
+            /v0.7.1/index.html
             /changelog/index.html
             /start/index.html
             /start/styles.css
@@ -53,6 +55,7 @@ jobs:
             /releases/*/Gauntlet_*_Rulebook_Booklet.pdf
             /releases/v0.6.3/**
             /releases/v0.7.0/**
+            /releases/v0.7.1/**
 
       - name: Set up Node
         uses: actions/setup-node@v4

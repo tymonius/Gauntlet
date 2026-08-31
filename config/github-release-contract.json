@@ -6,19 +6,19 @@
     "release_tags_are_immutable": true
   },
   "current_release": {
-    "tag": "v0.7.0",
-    "title": "Gauntlet v0.7.0 — Illustrated Cards & Tabletop Simulator",
+    "tag": "v0.7.1",
+    "title": "Gauntlet v0.7.1 — Mystics Rites & Deck Import",
     "status": "current",
     "prerelease": true,
     "target_strategy": "verified_main_push",
-    "notes_file": "docs/releases/github/v0.7.0.md",
-    "live_verification_script": "scripts/verify-v070-live-publication.mjs",
+    "notes_file": "docs/releases/github/v0.7.1.md",
+    "live_verification_script": "scripts/verify-v071-live-publication.mjs",
     "assets": [
-      "releases/v0.7.0/Gauntlet_v0.7.0_Rulebook_Booklet.pdf",
-      "releases/v0.7.0/Gauntlet_v0.7.0_Canonical_Data.json",
-      "releases/v0.7.0/Gauntlet_v0.7.0_Starter_Decks.json",
-      "releases/v0.7.0/Gauntlet_v0.7.0_Source_Provenance.json",
-      "releases/v0.7.0/Gauntlet_v0.7.0_Manifest.json"
+      "releases/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf",
+      "releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json",
+      "releases/v0.7.1/Gauntlet_v0.7.1_Starter_Decks.json",
+      "releases/v0.7.1/Gauntlet_v0.7.1_Source_Provenance.json",
+      "releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json"
     ]
   },
   "historical_releases": [
@@ -58,6 +58,14 @@
       "status": "historical",
       "prerelease": true,
       "target": "4f475ffb3649da8ed240b94a702c8b3320b91ff6",
+      "publish_if_missing": false
+    },
+    {
+      "tag": "v0.7.0",
+      "title": "Gauntlet v0.7.0 — Illustrated Cards & Tabletop Simulator",
+      "status": "historical",
+      "prerelease": true,
+      "target": "71020fbb478007538773fc766820197fe8fe1592",
       "publish_if_missing": false
     }
   ]

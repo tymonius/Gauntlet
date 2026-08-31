@@ -1,8 +1,8 @@
 export const RELEASED_MODE = 'released';
 export const CANDIDATE_MODE = 'candidate';
-export const PUBLISHED_VERSION = 'v0.7.0';
-export const PUBLISHED_AUTHORITY_URL = '/releases/v0.7.0/Gauntlet_v0.7.0_Canonical_Data.json';
-export const PUBLISHED_STARTER_DECKS_URL = '/releases/v0.7.0/Gauntlet_v0.7.0_Starter_Decks.json';
+export const PUBLISHED_VERSION = 'v0.7.1';
+export const PUBLISHED_AUTHORITY_URL = '/releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json';
+export const PUBLISHED_STARTER_DECKS_URL = '/releases/v0.7.1/Gauntlet_v0.7.1_Starter_Decks.json';
 
 let publishedPromise = null;
 let candidatePromise = null;

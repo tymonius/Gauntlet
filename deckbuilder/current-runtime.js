@@ -1,13 +1,13 @@
 (() => {
   const RELEASED_MODE = "released";
   const CANDIDATE_MODE = "candidate";
-  const PUBLISHED_VERSION = "v0.7.0";
+  const PUBLISHED_VERSION = "v0.7.1";
   const requestedRulesetMode = new URLSearchParams(window.location.search).get("rules") === CANDIDATE_MODE
     ? CANDIDATE_MODE
     : RELEASED_MODE;
   const storageKey = requestedRulesetMode === CANDIDATE_MODE
     ? "gauntlet-current-game-decks"
-    : "gauntlet-v0.7.0-decks";
+    : "gauntlet-v0.7.1-decks";
   let currentGamePromise = null;
   let hydrated = false;
 

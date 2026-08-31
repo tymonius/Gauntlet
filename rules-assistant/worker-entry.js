@@ -1,6 +1,7 @@
 import v061Worker from "./worker-v061.js";
 import v063Worker from "./worker-v063.js";
-import worker from "./worker-v070.js";
+import v070Worker from "./worker-v070.js";
+import worker from "./worker-v071.js";
 import candidateWorker from "./worker-v062-candidate.js";
 import publishedWorker from "./worker-v062.js";
 import smartWorker from "./smart-worker.js";
@@ -173,17 +174,25 @@ export default {
       url.pathname === "/api/v070/rules" || url.pathname === "/v070/rules" ||
       url.pathname === "/api/v070/health" || url.pathname === "/v070/health"
     ) {
+      return v070Worker.fetch(rewriteVersionedPath(request), env, context);
+    }
+
+    if (
+      url.pathname === "/api/v071/rules" || url.pathname === "/v071/rules" ||
+      url.pathname === "/api/v071/health" || url.pathname === "/v071/health"
+    ) {
       return worker.fetch(rewriteVersionedPath(request), env, context);
     }
 
     // The unversioned public Rules Arbiter follows the current canonical release.
     if (url.pathname === "/api/health" || url.pathname === "/health") return worker.fetch(request, env, context);
 
-    // Preserve historical clients while the unversioned route advances to v0.7.0.
+    // Preserve historical clients while the unversioned route advances to v0.7.1.
     if (url.pathname === "/api/rules" || url.pathname === "/rules") {
       const requestedVersion = await requestedRulesVersion(request);
       if (requestedVersion === "v0.6.1") return v061Worker.fetch(request, env, context);
       if (requestedVersion === "v0.6.3") return v063Worker.fetch(request, env, context);
+      if (requestedVersion === "v0.7.0") return v070Worker.fetch(request, env, context);
       return worker.fetch(request, env, context);
     }
 

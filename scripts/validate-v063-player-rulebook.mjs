@@ -102,8 +102,8 @@ for (const required of [
 }
 
 const app = read('rulebook/app.js');
-if (!app.includes("const RELEASE_MANIFEST_URL = '../releases/v0.7.0/Gauntlet_v0.7.0_Manifest.json';")) {
-  fail('Current Browser Rulebook is not bound to the published v0.7.0 release manifest.');
+if (!app.includes("const RELEASE_MANIFEST_URL = '../releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json';")) {
+  fail('Current Browser Rulebook is not bound to the published v0.7.1 release manifest.');
 }
 if (app.includes("const CHAPTER_11_URL = './player-facing/chapter-11.md';") || app.includes('publicRulebookSource')) {
   fail('Current Browser Rulebook must not layer mutable v0.6.3 player-facing sources over the published v0.7.0 release.');

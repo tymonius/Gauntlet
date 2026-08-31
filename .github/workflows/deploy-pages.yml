@@ -77,6 +77,13 @@ jobs:
           # Editable release-source documents are retained in Git but are not public-site assets.
           find "$site/releases" -type f -name '*.docx' -delete
 
+          # v0.6.0 preserves multiple equivalent Rulebook export variants for archival/legal
+          # provenance. Keep the canonical booklet on Pages, but omit redundant large exports
+          # that are not referenced by any live public page.
+          rm -f \
+            "$site/releases/v0.6.0/Gauntlet_v0.6.0_Rulebook_Booklet_Print.pdf" \
+            "$site/releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.pdf"
+
           test -s "$site/index.html"
           test -s "$site/CNAME"
           test "$(tr -d '\r\n' < "$site/CNAME")" = "gauntlet.run"
