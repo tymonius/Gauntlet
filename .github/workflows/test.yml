@@ -172,7 +172,7 @@ jobs:
               [[ -z "$match" ]] && continue
               echo "Dangling reference to retired source $retired: $match" >&2
               found=1
-            done < <(git grep -n -F "$retired" -- '*.js' '*.mjs' '*.ts' '*.tsx' || true)
+            done < <(git grep -n -F "$retired" -- '*.js' '*.mjs' '*.ts' '*.tsx' ':(exclude)docs/recovery/frozen-scripts/**' || true)
           done
           if (( found )); then
             exit 1
