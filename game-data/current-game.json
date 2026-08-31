@@ -7532,7 +7532,7 @@
       "selectedCount": 3,
       "timing": "game-package construction",
       "visibility": "secret until begun",
-      "rule": "Secretly choose exactly three different Rites from the six-Rite pool as part of the Mystics game package. You are under no obligation to reveal your chosen Rites until you begin them. When you begin a Rite, reveal it. Only those selected Rites may be begun during that game. Completing all three selected Rites satisfies the three-Rite requirement for the Ritual route."
+      "rule": "Choose exactly three different Rites from the six-Rite pool as part of the Mystics game package. Keep your chosen Rites secret; you are under no obligation to reveal them until you begin them. When you begin a Rite, reveal it. Only those selected Rites may be begun during that game. Completing all three selected Rites satisfies the three-Rite requirement for the Ritual route."
     },
     "generalRules": {
       "impossibleCompletion": "If an active Rite can no longer be completed because a required card, component, position, or game state is lost or changes, it is immediately interrupted and resets."
