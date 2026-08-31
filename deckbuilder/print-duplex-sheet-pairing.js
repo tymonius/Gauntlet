@@ -100,100 +100,13 @@
     return `<!doctype html>\n${documentNode.documentElement.outerHTML}`;
   }
 
-  function normalizeLabel(value) {
-    return String(value || "")
-      .toLowerCase()
-      .normalize("NFKD")
-      .replace(/&/g, " and ")
-      .replace(/[^a-z0-9]+/g, " ")
-      .replace(/\b(card|supplemental|reference|tracker)\b/g, " ")
-      .replace(/\s+/g, " ")
-      .trim();
-  }
-
-  function slugify(value) {
-    return String(value || "")
-      .toLowerCase()
-      .normalize("NFKD")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "");
-  }
-
-  function componentAliases(component) {
-    const values = new Set([
-      component.id,
-      component.name,
-      component.trackedValue?.name,
-      component.referenceFaces?.front?.title,
-      component.referenceFaces?.reverse?.title,
-      component.reverse,
-    ]);
-    return [...values].map(normalizeLabel).filter(Boolean);
-  }
-
-  function familyForLegacyCard(card) {
-    if (card.classList.contains("tracker-card")) return "tracker";
-    if (card.classList.contains("reference-card") || card.classList.contains("purge-card")) return "reference-card";
-    if (card.classList.contains("capital-tracker-card")) return "ledger";
-    if (card.classList.contains("deed-card")) return "deed-card";
-    if (card.classList.contains("proposal-card")) return "proposal-treaty-card";
-    if (card.classList.contains("rite-card")) return "rite-card";
-    return "";
-  }
-
-  function legacyCardLabels(card) {
+  function contractComponentForShell(shell, currentGame) {
+    const componentId = String(shell.dataset.contractComponentId || "").trim();
+    if (!componentId) return null;
     return [
-      card.dataset.contractComponentId,
-      card.dataset.riteName,
-      card.querySelector(".tracker-title")?.textContent,
-      card.querySelector(".supplemental-header")?.textContent,
-      card.querySelector(".supplemental-subtitle")?.textContent,
-      card.querySelector(".proposal-title")?.textContent,
-      card.querySelector(".rite-title")?.textContent,
-      card.querySelector(".deed-title")?.textContent,
-      card.querySelector(".deed-banner")?.textContent,
-    ].map(normalizeLabel).filter(Boolean);
-  }
-
-  function componentMatchesLegacy(component, legacyCard, factionId) {
-    const sharedEveryDeck = !component.faction && component.deckInclusion === "every-deck";
-    if (!sharedEveryDeck && component.faction !== factionId) return false;
-    const family = familyForLegacyCard(legacyCard);
-    if (!family || component.family !== family) return false;
-
-    const labels = legacyCardLabels(legacyCard);
-    const aliases = componentAliases(component);
-    if (labels.some(label => aliases.includes(label))) return true;
-    if (labels.some(label => aliases.some(alias => label.includes(alias) || alias.includes(label)))) return true;
-
-    if (family === "tracker") {
-      const tracked = normalizeLabel(component.trackedValue?.name);
-      return Boolean(tracked && labels.some(label => label.includes(tracked)));
-    }
-    if (family === "ledger") return labels.some(label => /capital|ledger/.test(label));
-    if (family === "deed-card") return labels.some(label => /deed/.test(label));
-    return false;
-  }
-
-  function contractComponentForLegacy(legacyCard, currentGame) {
-    const explicitId = legacyCard.dataset.contractComponentId;
-    if (explicitId) {
-      const explicit = [
-        ...(currentGame.sharedComponents || []),
-        ...(currentGame.components || []),
-      ].find(component => component.id === explicitId);
-      if (explicit) return explicit;
-    }
-
-    const factionId = String(state.factionId || "").trim().toLowerCase();
-    const matches = [
       ...(currentGame.sharedComponents || []),
       ...(currentGame.components || []),
-    ].filter(component => componentMatchesLegacy(component, legacyCard, factionId));
-    if (matches.length > 1) {
-      throw new Error(`Current-game component contract ambiguously matches ${legacyCardLabels(legacyCard).join(" / ") || "an unnamed supplemental card"}.`);
-    }
-    return matches[0] || null;
+    ].find(component => component.id === componentId) || null;
   }
 
   function renderDescriptorForComponent(component) {
@@ -241,14 +154,12 @@
       && component.productionStatus === "export-pending";
   }
 
-  function annotateFallback(legacyCard, component) {
-    if (!component) return;
-    legacyCard.dataset.contractComponentId = component.id;
-    legacyCard.dataset.contractFamily = component.family;
-    legacyCard.dataset.contractDesignStatus = component.designStatus || "final";
-    legacyCard.dataset.contractProductionStatus = component.productionStatus;
-    legacyCard.dataset.contractBackPolicy = component.backPolicy || "";
-    if (component.backPolicy === "standardBack") legacyCard.classList.add("production-standard-back");
+  function annotateContract(shell, component) {
+    shell.dataset.contractFamily = component.family;
+    shell.dataset.contractDesignStatus = component.designStatus || "final";
+    shell.dataset.contractProductionStatus = component.productionStatus;
+    shell.dataset.contractBackPolicy = component.backPolicy || "";
+    if (component.backPolicy === "standardBack") shell.classList.add("production-standard-back");
   }
 
   function replaceProductionFronts(documentNode, currentGame) {
@@ -258,8 +169,8 @@
   }
 
   function replaceProductionLeader(documentNode, currentGame) {
-    const legacyLeader = documentNode.querySelector(".print-card.leader-card");
-    if (!legacyLeader) return;
+    const leaderShell = documentNode.querySelector(".print-card.leader-card");
+    if (!leaderShell) return;
 
     const faction = String(state.factionId || "").trim().toLowerCase();
     const leaderId = String(state.leaderId || "").trim().toLowerCase();
@@ -267,7 +178,7 @@
       || currentGame.leaders?.find(item => item.faction === faction && item.id === leaderId);
     if (!leader) throw new Error(`Current-game authority cannot resolve selected Leader ${faction}/${leaderId}.`);
 
-    legacyLeader.replaceWith(makeProductionComponent(documentNode, {
+    leaderShell.replaceWith(makeProductionComponent(documentNode, {
       kind: "leader",
       id: `${faction}-${leader.id}`,
       label: `${leader.name} Leader`,
@@ -278,44 +189,49 @@
   }
 
   function replaceSupplementalFronts(documentNode, currentGame) {
-    const legacyCards = [...documentNode.querySelectorAll(
+    const shells = [...documentNode.querySelectorAll(
       ".print-card.tracker-card, .print-card.reference-card, .print-card.purge-card, .print-card.capital-tracker-card, .print-card.deed-card, .print-card.proposal-card, .print-card.rite-card"
     )];
 
-    for (const legacyCard of legacyCards) {
-      if (!legacyCard.isConnected) continue;
+    const unresolved = [];
+    for (const shell of shells) {
+      if (!shell.isConnected) continue;
 
-      const ritualName = normalizeLabel(currentGame.mystics?.ritual?.name);
-      const labels = legacyCardLabels(legacyCard);
-      const isRitual = legacyCard.classList.contains("reference-card")
-        && ritualName
-        && labels.some(label => label === ritualName || label.includes(ritualName));
-      if (isRitual) {
-        const ritual = currentGame.mystics.ritual;
-        legacyCard.replaceWith(makeProductionComponent(documentNode, {
+      if (shell.dataset.printComponentKind === "ritual") {
+        const ritual = currentGame.mystics?.ritual;
+        if (!ritual?.id) {
+          unresolved.push("Mystics Ritual");
+          continue;
+        }
+        shell.replaceWith(makeProductionComponent(documentNode, {
           kind: "ritual",
           id: ritual.id,
           label: ritual.name,
           side: "front",
           backPolicy: "specialBack",
-          componentId: `mystics-ritual-${ritual.id}`,
+          componentId: shell.dataset.contractComponentId || `mystics-ritual-${ritual.id}`,
         }));
         continue;
       }
 
-      const component = contractComponentForLegacy(legacyCard, currentGame);
-      if (!component) continue;
-      annotateFallback(legacyCard, component);
+      const component = contractComponentForShell(shell, currentGame);
+      if (!component) {
+        unresolved.push(shell.dataset.contractComponentId || shell.getAttribute("aria-label") || "unnamed supplemental component");
+        continue;
+      }
+      annotateContract(shell, component);
 
       const descriptor = renderDescriptorForComponent(component);
-      if (!componentIsPrintableProduction(component, descriptor)) continue;
+      if (!componentIsPrintableProduction(component, descriptor)) {
+        unresolved.push(component.name || component.id);
+        continue;
+      }
 
       let side = "front";
-      if (legacyCard.classList.contains("proposal-card") && legacyCard.classList.contains("treaty")) side = "reverse";
-      if (legacyCard.classList.contains("rite-card") && (legacyCard.classList.contains("rite-back-card") || legacyCard.classList.contains("completed"))) side = "reverse";
-      if (component.family === "reference-card" && /\b(side b|reverse)\b/.test(normalizeLabel(legacyCard.querySelector(".supplemental-subtitle")?.textContent))) side = "reverse";
+      if (shell.classList.contains("proposal-card") && shell.classList.contains("treaty")) side = "reverse";
+      if (shell.classList.contains("rite-card") && (shell.classList.contains("rite-back-card") || shell.classList.contains("completed"))) side = "reverse";
 
-      legacyCard.replaceWith(makeProductionComponent(documentNode, {
+      shell.replaceWith(makeProductionComponent(documentNode, {
         ...descriptor,
         label: component.name,
         side,
@@ -323,35 +239,35 @@
         componentId: component.id,
       }));
     }
+
+    if (unresolved.length) {
+      throw new Error(`Current-game authority could not resolve production supplemental renders for: ${unresolved.join(", ")}`);
+    }
   }
 
   function replacePlayableAndTerritoryFronts(documentNode, currentGame) {
     const cardsById = new Map((currentGame.cards || []).map(card => [card.id, card]));
-    const cardsByName = new Map((currentGame.cards || []).map(card => [String(card.name || "").trim(), card]));
     const territoriesById = new Map((currentGame.territories || []).map(territory => [territory.id, territory]));
-    const territoriesByName = new Map((currentGame.territories || []).map(territory => [String(territory.name || "").trim(), territory]));
     const unresolved = [];
 
-    documentNode.querySelectorAll(".print-card.main-card").forEach(legacyCard => {
-      const id = legacyCard.dataset.cardId || "";
-      const name = legacyCard.querySelector(".card-name")?.textContent.trim() || "";
-      const card = cardsById.get(id) || cardsByName.get(name);
+    documentNode.querySelectorAll(".print-card.main-card").forEach(cardShell => {
+      const id = cardShell.dataset.cardId || "";
+      const card = cardsById.get(id);
       if (!card?.id) {
-        unresolved.push(name || id || "unnamed playable card");
+        unresolved.push(id || "playable card without authority id");
         return;
       }
-      legacyCard.replaceWith(makeProductionCard(documentNode, card));
+      cardShell.replaceWith(makeProductionCard(documentNode, card));
     });
 
-    documentNode.querySelectorAll(".print-card.territory").forEach(legacyTerritory => {
-      const id = legacyTerritory.dataset.territoryId || "";
-      const name = legacyTerritory.querySelector(".territory-name")?.textContent.trim() || "";
-      const territory = territoriesById.get(id) || territoriesByName.get(name);
+    documentNode.querySelectorAll(".print-card.territory").forEach(territoryShell => {
+      const id = territoryShell.dataset.territoryId || "";
+      const territory = territoriesById.get(id);
       if (!territory?.id) {
-        unresolved.push(name || id || "unnamed Territory");
+        unresolved.push(id || "Territory without authority id");
         return;
       }
-      legacyTerritory.replaceWith(makeProductionTerritory(documentNode, territory));
+      territoryShell.replaceWith(makeProductionTerritory(documentNode, territory));
     });
 
     if (unresolved.length) {
