@@ -46,19 +46,18 @@ describe('TTS supplemental component exports', () => {
     expect(generator).not.toMatch(/readyCount\s*[:=]\s*\d+|pendingCount\s*[:=]\s*\d+/);
   });
 
-  it('separates the full current Rite pool from the subset currently packaged by TTS', () => {
-    const packagedRites = contract.components.filter((component: any) =>
+  it('packages the full current Mystics Rite pool for selectable TTS starter kits', () => {
+    const physicalReadyRites = contract.components.filter((component: any) =>
       component.family === 'rite-card' && component.productionStatus === 'ready'
     );
     expect(currentGame.mystics.rites).toHaveLength(6);
-    expect(packagedRites).toHaveLength(3);
-    expect(mysticsBridge).toContain("component.family === 'rite-card' && component.productionStatus === 'ready'");
-    expect(mysticsBridge).toContain('const packagedRites = packagedRiteComponents.map');
+    expect(physicalReadyRites).toHaveLength(3);
+    expect(mysticsBridge).toContain('const packagedRites = rites');
+    expect(mysticsBridge).toContain("deckInclusion: 'selected-rite'");
     expect(mysticsBridge).toContain('data-rite-count=');
     expect(mysticsBridge).toContain('rites.length');
-    expect(mysticsBridge).not.toContain('rites.length !== 3');
-    expect(mysticsEnsure).toContain('function packagedRiteIds(currentGame)');
-    expect(mysticsEnsure).not.toContain('riteIds.length !== 3');
+    expect(mysticsEnsure).toContain("map(rite => `mystics-rite-${rite.id}`)");
+    expect(mysticsEnsure).not.toContain("component.family === 'rite-card'");
   });
   it('exports the ready Mystics Rites as source-driven two-sided cards', async () => {
     const riteCards = contract.components.filter((component: any) => component.family === 'rite-card');
