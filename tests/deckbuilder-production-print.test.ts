@@ -11,7 +11,6 @@ const cardBackCss = readFileSync("card-design/card-back.css", "utf8");
 const printTransform = readFileSync("deckbuilder/print-duplex-sheet-pairing.js", "utf8");
 const supplementalPrintTransform = readFileSync("deckbuilder/print-capital-ledger.js", "utf8");
 const cardBackPolicy = readFileSync("deckbuilder/card-back-preview.js", "utf8");
-const duplexTransform = readFileSync("deckbuilder/print-duplex.js", "utf8");
 const analyticsSync = readFileSync("scripts/sync-google-analytics.mjs", "utf8");
 const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
 const componentContract = currentGame.componentContract;
@@ -37,7 +36,7 @@ describe("Deckbuilder production printing", () => {
   });
 
   it("uses current-game component metadata and preserves intrinsic reverse faces", () => {
-    expect(printTransform).toContain('state.currentGameData || window.GAUNTLET_CURRENT_GAME_DATA');
+    expect(printTransform).toContain('const currentGame = state.currentGameData;');
     expect(printTransform).toContain('currentGame.components');
     expect(printTransform).toContain('component.productionStatus');
     expect(printTransform).toContain('component.backPolicy');
@@ -65,7 +64,8 @@ describe("Deckbuilder production printing", () => {
   });
 
   it("prints standard backs as black and single-sided faction components in faction color automatically", () => {
-    expect(duplexTransform).toContain('cell.querySelector(".main-card, .territory")');
+    expect(printTransform).toContain('pageNeedsStandardBack(frontPage)');
+    expect(printTransform).toContain('replaceProductionBacks(documentNode)');
     expect(printTransform).toContain('production-standard-back');
     expect(printTransform).toContain('/tts/back-renderer/index.html?faction=');
     expect(printTransform).toContain('if (!useFactionColor) return "intelligence";');
@@ -92,7 +92,7 @@ describe("Deckbuilder production printing", () => {
   });
 
   it("previews the selected faction component back without exposing a global back-color choice", () => {
-    expect(deckbuilderHtml).toContain('card-back-preview.js?v=20260819-1');
+    expect(deckbuilderHtml).toContain('card-back-preview.js?v=20260831-1');
     expect(cardBackPolicy).toContain('preview.id = "cardBackPreview"');
     expect(cardBackPolicy).toContain('frame.id = "cardBackPreviewFrame"');
     expect(cardBackPolicy).toContain('/tts/back-renderer/index.html?faction=');
