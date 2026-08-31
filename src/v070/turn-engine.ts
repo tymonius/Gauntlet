@@ -1976,7 +1976,12 @@ function continuePendingActionCard(state: V070GameState): void {
         pending.playerId,
         opponentId,
         'Assassins',
+        pending.instanceId,
       );
+      if (revealed === null) {
+        finishPendingActionCard(state);
+        return;
+      }
       if (revealed.length === 0) {
         appendV070Event(state, {
           type: 'action_effect_incomplete',
@@ -2013,13 +2018,18 @@ function continuePendingActionCard(state: V070GameState): void {
       });
       return;
     }
-    case 'intelligence-spies':
-      revealV070Hand(
+    case 'intelligence-spies': {
+      const revealed = revealV070Hand(
         state,
         pending.playerId,
         otherPlayer(pending.playerId),
         'Spies',
+        pending.instanceId,
       );
+      if (revealed === null) {
+        finishPendingActionCard(state);
+        return;
+      }
       drawIntoHand(state, pending.playerId, 1, 'Spies');
       if (!openHandDestinationChoice(
         state,
@@ -2031,6 +2041,7 @@ function continuePendingActionCard(state: V070GameState): void {
         finishPendingActionCard(state);
       }
       return;
+    }
     case 'inquisition-guilt-by-association': {
       const opponentId = otherPlayer(pending.playerId);
       state.pendingActionEffectChoice = {
@@ -3331,7 +3342,12 @@ function completeBindingBankAction(
     playerId,
     opponentId,
     'Extraordinary Rendition',
+    sourceActionInstanceId,
   );
+  if (revealed === null) {
+    finishPendingActionCard(state, 'asset');
+    return;
+  }
   if (revealed.length === 0) {
     appendV070Event(state, {
       type: 'action_effect_incomplete',
