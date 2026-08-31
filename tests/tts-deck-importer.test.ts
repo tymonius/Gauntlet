@@ -14,6 +14,14 @@ const releaseAssets = {
     'backs/standard.png': 'https://example.invalid/v0.7.0/backs/standard.png',
     'sheets/cards.png': 'https://example.invalid/v0.7.0/sheets/cards.png',
     'territory-sheets/territories.png': 'https://example.invalid/v0.7.0/territory-sheets/territories.png',
+    'supplementals/fronts/mystics-rite-echoes.png': 'https://example.invalid/v0.7.0/rites/echoes-front.png',
+    'supplementals/reverses/mystics-rite-echoes-completed.png': 'https://example.invalid/v0.7.0/rites/echoes-back.png',
+    'supplementals/fronts/mystics-rite-blood.png': 'https://example.invalid/v0.7.0/rites/blood-front.png',
+    'supplementals/reverses/mystics-rite-blood-completed.png': 'https://example.invalid/v0.7.0/rites/blood-back.png',
+    'supplementals/fronts/mystics-rite-equivalence.png': 'https://example.invalid/v0.7.0/rites/equivalence-front.png',
+    'supplementals/reverses/mystics-rite-equivalence-completed.png': 'https://example.invalid/v0.7.0/rites/equivalence-back.png',
+    'supplementals/fronts/mystics-ritual-of-ascension.png': 'https://example.invalid/v0.7.0/rites/ritual-front.png',
+    'supplementals/reverses/mystics-ritual-of-ascension.png': 'https://example.invalid/v0.7.0/rites/ritual-back.png',
   },
 };
 const catalog = {
@@ -61,13 +69,57 @@ const starterManifest = {
     territoriesPerPlayer: 3,
     maximumArenas: 1,
   },
-  decks: [{
-    id: 'military-general-starter',
-    factionId: 'military',
-    leaderId: 'general',
-    leader: { name: 'General' },
-    back: { file: 'backs/standard.png' },
-  }],
+  decks: [
+    {
+      id: 'military-general-starter',
+      factionId: 'military',
+      leaderId: 'general',
+      leader: { name: 'General' },
+      back: { file: 'backs/standard.png' },
+    },
+    {
+      id: 'mystics-alchemist-starter',
+      factionId: 'mystics',
+      leaderId: 'alchemist',
+      leader: { name: 'Alchemist' },
+      selectedRites: ['echoes', 'blood', 'equivalence'],
+      back: { file: 'backs/standard.png' },
+    },
+  ],
+};
+
+const supplementalManifest = {
+  gameVersion: version,
+  ready: [
+    {
+      id: 'mystics-rite-echoes',
+      name: 'Rite of Echoes',
+      faction: 'mystics',
+      family: 'rite-card',
+      tts: { cardId: 20600, deckId: 206, faceFile: 'supplementals/fronts/mystics-rite-echoes.png', backFile: 'supplementals/reverses/mystics-rite-echoes-completed.png', numWidth: 1, numHeight: 1 },
+    },
+    {
+      id: 'mystics-rite-blood',
+      name: 'Rite of Blood',
+      faction: 'mystics',
+      family: 'rite-card',
+      tts: { cardId: 20700, deckId: 207, faceFile: 'supplementals/fronts/mystics-rite-blood.png', backFile: 'supplementals/reverses/mystics-rite-blood-completed.png', numWidth: 1, numHeight: 1 },
+    },
+    {
+      id: 'mystics-rite-equivalence',
+      name: 'Rite of Equivalence',
+      faction: 'mystics',
+      family: 'rite-card',
+      tts: { cardId: 22300, deckId: 223, faceFile: 'supplementals/fronts/mystics-rite-equivalence.png', backFile: 'supplementals/reverses/mystics-rite-equivalence-completed.png', numWidth: 1, numHeight: 1 },
+    },
+    {
+      id: 'mystics-ritual-of-ascension',
+      name: 'Ritual of Ascension',
+      faction: 'mystics',
+      family: 'ritual-card',
+      tts: { cardId: 22400, deckId: 224, faceFile: 'supplementals/fronts/mystics-ritual-of-ascension.png', backFile: 'supplementals/reverses/mystics-ritual-of-ascension.png', numWidth: 1, numHeight: 1 },
+    },
+  ],
 };
 
 describe('TTS Deckbuilder importer', () => {
@@ -88,6 +140,7 @@ describe('TTS Deckbuilder importer', () => {
       cardManifest,
       territoryManifest,
       starterManifest,
+      supplementalManifest,
       releaseAssets,
     });
 
@@ -109,6 +162,19 @@ describe('TTS Deckbuilder importer', () => {
       starterName: undefined,
       leaderName: 'General',
     });
+    expect(config.selectedRiteCount).toBe(3);
+    expect(config.rites.equivalence).toMatchObject({
+      name: 'Rite of Equivalence',
+      cardId: 22300,
+      deckId: 223,
+      frontUrl: 'https://example.invalid/v0.7.0/rites/equivalence-front.png',
+      backUrl: 'https://example.invalid/v0.7.0/rites/equivalence-back.png',
+    });
+    expect(config.ritual).toMatchObject({
+      name: 'Ritual of Ascension',
+      cardId: 22400,
+      deckId: 224,
+    });
   });
 
   it('installs an idempotent Global UI and Lua importer', () => {
@@ -118,6 +184,7 @@ describe('TTS Deckbuilder importer', () => {
       cardManifest,
       territoryManifest,
       starterManifest,
+      supplementalManifest,
       releaseAssets,
     });
     const save = {
@@ -136,6 +203,9 @@ describe('TTS Deckbuilder importer', () => {
     expect(save.LuaScript).toContain('UI.hide("gauntlet-deck-import-open")');
     expect(save.LuaScript).not.toContain('UI.getValue("gauntlet-deck-import-code")');
     expect(save.LuaScript).toContain('gauntlet:starter-kit:');
+    expect(save.LuaScript).toContain('function gauntletBuildMysticsRiteStack');
+    expect(save.LuaScript).toContain('GAUNTLET_DECK_IMPORT.selectedRiteCount');
+    expect(save.LuaScript).toContain('gauntlet:supplemental:mystics-ritual-of-ascension');
     expect((save.LuaScript.match(/GAUNTLET_DECK_IMPORTER_BEGIN/g) || [])).toHaveLength(1);
     expect(save.XmlUI).toContain('DECK IMPORT');
     expect(save.XmlUI).toContain('IMPORT STARTER KIT');
@@ -152,6 +222,7 @@ describe('TTS Deckbuilder importer', () => {
       cardManifest: { ...cardManifest, gameVersion: 'v0.6.3' },
       territoryManifest,
       starterManifest,
+      supplementalManifest,
       releaseAssets,
     })).toThrow(/version mismatch/i);
   });
