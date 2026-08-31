@@ -119,8 +119,8 @@
         packages.mystics.components.push({
           type: "reference",
           kind: "ritual",
-          id: `mystics-ritual-${ritual.id}`,
-          contractId: `mystics-ritual-${ritual.id}`,
+          id: MYSTICS_RITUAL_COMPONENT_ID,
+          contractId: MYSTICS_RITUAL_COMPONENT_ID,
           title: ritual.name,
           subtitle: "Mystics victory ritual",
           sections: [
