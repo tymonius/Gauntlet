@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { starterBagTransform } from '../scripts/generate-tts-save.mjs';
 
 const publisher = readFileSync('scripts/generate-tts-save.mjs', 'utf8');
+const validator = readFileSync('tts/validate-current-authoritative-save.mjs', 'utf8');
 const workflow = readFileSync('.github/workflows/generate-tts-card-assets.yml', 'utf8');
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 
@@ -78,6 +79,14 @@ describe('TTS save publisher', () => {
     expect(publisher).toContain('Rules remain manual.');
     expect(packageJson.scripts['tts:save']).toContain('tts:save:base');
     expect(packageJson.scripts['tts:save']).toContain('tts:save:layout');
+  });
+
+  it('requires content-versioned GitHub Release URLs in the authoritative environment', () => {
+    expect(validator).toContain('isContentVersionedReleaseAsset');
+    expect(validator).toContain("url.searchParams.get('v')");
+    expect(validator).toContain("/^[a-f0-9]{12}$/iu");
+    expect(validator).toContain("'_TTS_Environment_Table.png'");
+    expect(validator).toContain("'_TTS_Environment_Panorama.png'");
   });
 
   it('runs staged assets -> save/layout -> supplemental assembly -> validation in that order', () => {
