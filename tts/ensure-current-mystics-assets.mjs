@@ -10,16 +10,9 @@ async function loadJson(path) {
 }
 
 function packagedRiteIds(currentGame) {
-  const currentIds = new Set((currentGame.mystics?.rites || []).map(rite => `mystics-rite-${rite.id}`));
-  if (!currentIds.size || !currentGame.mystics?.ritual?.id) {
+  const ids = (currentGame.mystics?.rites || []).map(rite => `mystics-rite-${rite.id}`);
+  if (!ids.length || !currentGame.mystics?.ritual?.id) {
     throw new Error('Current-game Mystics authority must expose a Rite pool and one Ritual.');
-  }
-  const ids = (currentGame.componentContract?.components || [])
-    .filter(component => component.family === 'rite-card' && component.productionStatus === 'ready')
-    .map(component => component.id);
-  if (!ids.length) throw new Error('Current component contract exposes no production-ready Mystics Rite components.');
-  for (const id of ids) {
-    if (!currentIds.has(id)) throw new Error(`Production Rite component ${id} is not present in the current Rite pool.`);
   }
   return ids;
 }
@@ -60,7 +53,7 @@ async function main() {
     return;
   }
 
-  console.log(`Current Mystics TTS bridge is incomplete (${missingBefore.join(', ')}); refreshing production-ready Rites and the Ritual before release staging.`);
+  console.log(`Current Mystics TTS bridge is incomplete (${missingBefore.join(', ')}); refreshing all selectable Rites and the Ritual before release staging.`);
   execFileSync(process.execPath, [join(ROOT, 'tts/render-current-mystics-assets.mjs')], {
     cwd: ROOT,
     stdio: 'inherit',
