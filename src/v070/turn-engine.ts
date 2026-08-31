@@ -822,6 +822,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'neutral-forced-march',
   'mystics-fate-s-toll',
   'military-battlefield-promotion',
+  'military-encampment',
   'military-give-chase',
   'neutral-insurrection',
   'neutral-landslide',
@@ -860,10 +861,13 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'military-high-command',
   'military-invasion',
   'military-reserve-force',
+  'mystics-circle-of-bones',
   'mystics-dark-omens',
   'mystics-paths-of-shadow',
+  'mystics-nature-s-altar',
   'mystics-sacrifice-recovery',
   'mystics-soul-for-soul',
+  'mystics-spirit-hollow',
   'mystics-threefold-vision',
 ] as const;
 
@@ -1034,6 +1038,16 @@ function playActionCard(
     && availableLandslidePositions(state).length === 0) {
     throw new V070GameActionError(
       'Landslide requires a Territory that does not already have a Landslide.',
+    );
+  }
+  if (isLocalPlacementOverlayActionCardId(card.id)
+    && availableLocalPlacementOverlayPositions(
+      state,
+      playerId,
+      card.id,
+    ).length === 0) {
+    throw new V070GameActionError(
+      noLocalPlacementOverlayTargetMessage(card.id),
     );
   }
   if (card.id === 'neutral-sedition') {
@@ -1566,6 +1580,17 @@ function continuePendingActionCard(state: V070GameState): void {
       });
       return;
     }
+    case 'military-encampment':
+    case 'mystics-circle-of-bones':
+    case 'mystics-nature-s-altar':
+    case 'mystics-spirit-hollow':
+      openLocalPlacementOverlayActionChoice(
+        state,
+        pending.playerId,
+        pending.instanceId,
+        pending.cardId,
+      );
+      return;
     case 'neutral-new-recruits':
       if (!openHandDestinationChoice(
         state,
@@ -3930,6 +3955,12 @@ function chooseForcedAssetTarget(
   finishPendingActionCard(state);
 }
 
+type V070LocalPlacementOverlayActionCardId =
+  | 'military-encampment'
+  | 'mystics-circle-of-bones'
+  | 'mystics-nature-s-altar'
+  | 'mystics-spirit-hollow';
+
 function chooseTerritoryOverlayTarget(
   state: V070GameState,
   playerId: PlayerId,
@@ -3941,14 +3972,42 @@ function chooseTerritoryOverlayTarget(
     || choice.kind !== 'territory_overlay_target'
     || choice.playerId !== playerId
     || !pending
-    || pending.instanceId !== choice.sourceActionInstanceId
-    || pending.cardId !== 'neutral-landslide') {
-    throw new V070GameActionError('No Landslide Territory choice is pending for that player.');
+    || pending.instanceId !== choice.sourceActionInstanceId) {
+    throw new V070GameActionError(
+      'No Territory Overlay Action target choice is pending for that player.',
+    );
   }
 
-  if (!availableLandslidePositions(state).includes(territoryPosition)) {
+  if (pending.cardId === 'neutral-landslide') {
+    if (choice.purpose !== 'Landslide') {
+      throw new V070GameActionError(
+        'Territory Overlay target state does not match the pending Landslide.',
+      );
+    }
+    if (!availableLandslidePositions(state).includes(territoryPosition)) {
+      throw new V070GameActionError(
+        'Landslide must target a Territory that does not already have a Landslide.',
+      );
+    }
+  } else if (isLocalPlacementOverlayActionCardId(pending.cardId)) {
+    const expectedPurpose = localPlacementOverlayPurpose(pending.cardId);
+    if (choice.purpose !== expectedPurpose) {
+      throw new V070GameActionError(
+        'Territory Overlay target state does not match its pending Action card.',
+      );
+    }
+    if (!availableLocalPlacementOverlayPositions(
+      state,
+      playerId,
+      pending.cardId,
+    ).includes(territoryPosition)) {
+      throw new V070GameActionError(
+        localPlacementOverlayTargetError(pending.cardId),
+      );
+    }
+  } else {
     throw new V070GameActionError(
-      'Landslide must target a Territory that does not already have a Landslide.',
+      'The pending Action card does not use a Territory Overlay target choice.',
     );
   }
 
@@ -3957,7 +4016,7 @@ function chooseTerritoryOverlayTarget(
     playerId,
     pending.instanceId,
     territoryPosition,
-    'Landslide Action',
+    `${choice.purpose} Action`,
   );
 
   state.pendingActionEffectChoice = null;
@@ -3974,6 +4033,117 @@ function availableLandslidePositions(
       )
     )
     .map(territory => territory.position);
+}
+
+function isLocalPlacementOverlayActionCardId(
+  cardId: string,
+): cardId is V070LocalPlacementOverlayActionCardId {
+  return cardId === 'military-encampment'
+    || cardId === 'mystics-circle-of-bones'
+    || cardId === 'mystics-nature-s-altar'
+    || cardId === 'mystics-spirit-hollow';
+}
+
+function localPlacementOverlayPurpose(
+  cardId: V070LocalPlacementOverlayActionCardId,
+): 'Encampment' | 'Circle of Bones' | "Nature's Altar" | 'Spirit Hollow' {
+  switch (cardId) {
+    case 'military-encampment':
+      return 'Encampment';
+    case 'mystics-circle-of-bones':
+      return 'Circle of Bones';
+    case 'mystics-nature-s-altar':
+      return "Nature's Altar";
+    case 'mystics-spirit-hollow':
+      return 'Spirit Hollow';
+  }
+}
+
+function availableLocalPlacementOverlayPositions(
+  state: V070GameState,
+  playerId: PlayerId,
+  cardId: V070LocalPlacementOverlayActionCardId,
+): number[] {
+  const currentPosition = state.players[playerId].position;
+  if (currentPosition === null || !territoryAt(state, currentPosition)) {
+    return [];
+  }
+
+  if (cardId === 'military-encampment') {
+    const current = territoryAt(state, currentPosition);
+    return current?.occupant === playerId && current.controller === playerId
+      ? [currentPosition]
+      : [];
+  }
+
+  return state.board
+    .filter(territory => Math.abs(territory.position - currentPosition) <= 1)
+    .map(territory => territory.position);
+}
+
+function noLocalPlacementOverlayTargetMessage(
+  cardId: V070LocalPlacementOverlayActionCardId,
+): string {
+  if (cardId === 'military-encampment') {
+    return 'Encampment requires your current Territory to be both occupied and controlled by you.';
+  }
+  return `${localPlacementOverlayPurpose(cardId)} requires a current Territory in the Gauntlet.`;
+}
+
+function localPlacementOverlayTargetError(
+  cardId: V070LocalPlacementOverlayActionCardId,
+): string {
+  if (cardId === 'military-encampment') {
+    return 'Encampment must target the Territory you currently occupy and control.';
+  }
+  return `${localPlacementOverlayPurpose(cardId)} must target your current Territory or an adjacent Territory.`;
+}
+
+function openLocalPlacementOverlayActionChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+  cardId: V070LocalPlacementOverlayActionCardId,
+): void {
+  const positions = availableLocalPlacementOverlayPositions(
+    state,
+    playerId,
+    cardId,
+  );
+  if (positions.length === 0) {
+    appendV070Event(state, {
+      type: 'action_effect_incomplete',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        sourceActionInstanceId,
+        purpose: localPlacementOverlayPurpose(cardId),
+        reason: 'required_territory_target_unavailable',
+      },
+    });
+    finishPendingActionCard(state);
+    return;
+  }
+
+  const purpose = localPlacementOverlayPurpose(cardId);
+  state.pendingActionEffectChoice = {
+    kind: 'territory_overlay_target',
+    playerId,
+    sourceActionInstanceId,
+    purpose,
+  };
+  appendV070Event(state, {
+    type: 'action_effect_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      kind: 'territory_overlay_target',
+      playerId,
+      sourceActionInstanceId,
+      purpose,
+      territoryPositions: positions,
+    },
+  });
 }
 
 function resolveScoutingReportChoice(

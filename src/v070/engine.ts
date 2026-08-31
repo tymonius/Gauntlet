@@ -207,7 +207,12 @@ export type V070PendingActionEffectChoice =
       kind: 'territory_overlay_target';
       playerId: PlayerId;
       sourceActionInstanceId: string;
-      purpose: 'Landslide';
+      purpose:
+        | 'Landslide'
+        | 'Encampment'
+        | 'Circle of Bones'
+        | "Nature's Altar"
+        | 'Spirit Hollow';
     }
   | {
       kind: 'forced_asset_target';
