@@ -16,7 +16,7 @@ const cardLikeFamilies = new Set(
 
 describe("Deckbuilder custom printing", () => {
   it("loads as an Advanced tool without changing the Deckbuilder HTML shell", () => {
-    expect(printBootstrap).toContain('import("./custom-print.mjs?v=20260831-1")');
+    expect(printBootstrap).toContain('import("./custom-print.mjs?v=20260831-2")');
     expect(customPrint).toContain('document.querySelector(".advanced-tools")');
     expect(customPrint).toContain("Enable custom printing");
     expect(customPrint).toContain("Custom print sheets");
