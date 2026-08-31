@@ -14,7 +14,7 @@
   <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
-  <meta name="description" content="Search the Gauntlet v0.7.1 production card set and view complete production-rendered card faces with artwork." />
+  <meta name="description" content="Search every Gauntlet v0.7.1 production card, faction component, and Territory, with complete production-rendered faces and artwork." />
   <title>Gauntlet v0.7.1 Card Reference</title>
   <link rel="canonical" href="https://gauntlet.run/card-reference/" />
   <link rel="stylesheet" href="site.css" />
@@ -47,7 +47,7 @@
       <div>
         <p class="eyebrow">Quick rules lookup · v0.7.1 production</p>
         <h1 id="reference-title">Card <span>Reference.</span></h1>
-        <p class="reference-lede">Search the current v0.7.1 production card set and Territories, then inspect the complete production-rendered card face with its approved artwork.</p>
+        <p class="reference-lede">Search every current v0.7.1 production card and Territory — including Leaders, Proposals, Rites, reference cards, trackers, and faction support cards — then inspect the complete production-rendered face.</p>
       </div>
       <div class="source-status" aria-live="polite">
         <span>Reference status</span>
@@ -73,9 +73,17 @@
         <label>
           Reference type
           <select id="typeFilter">
-            <option value="all">Playable cards + Territories</option>
-            <option value="card">Playable cards only</option>
-            <option value="territory">Territories only</option>
+            <option value="all">All cards + Territories</option>
+            <option value="card">Playable cards</option>
+            <option value="leader">Leaders</option>
+            <option value="proposal">Proposals</option>
+            <option value="rite">Rites</option>
+            <option value="ritual">Rituals</option>
+            <option value="reference">Reference cards</option>
+            <option value="tracker">Tracker cards</option>
+            <option value="ledger">Ledgers</option>
+            <option value="deed">Deed cards</option>
+            <option value="territory">Territories</option>
           </select>
         </label>
 
@@ -107,6 +115,7 @@
 
         <div class="reference-metrics" aria-label="Reference totals">
           <div><strong id="cardTotal">0</strong><span>Playable cards</span></div>
+          <div><strong id="otherCardTotal">0</strong><span>Other cards</span></div>
           <div><strong id="territoryTotal">0</strong><span>Territories</span></div>
         </div>
       </form>
@@ -122,7 +131,7 @@
 
         <div class="reference-browser">
           <div id="resultList" class="reference-list" role="listbox" aria-label="Reference results"></div>
-          <article id="preview" class="reference-preview empty-state" aria-live="polite">Select a result to view its full card.</article>
+          <article id="preview" class="reference-preview empty-state" aria-live="polite">Select a result to view its complete production component.</article>
         </div>
       </section>
     </section>
@@ -131,7 +140,7 @@
   <footer>
     <div>
       <strong>Gauntlet</strong>
-      <p>Current v0.7.1 production card reference.</p>
+      <p>Complete current v0.7.1 production card and Territory reference.</p>
       <p><!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT --> · <!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises<!-- /PUBLISHING-FACT --></p>
     </div>
     <div class="footer-links">
