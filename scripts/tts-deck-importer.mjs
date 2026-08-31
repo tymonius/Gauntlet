@@ -22,7 +22,7 @@ const LUA_BEGIN = '-- GAUNTLET_DECK_IMPORTER_BEGIN';
 const LUA_END = '-- GAUNTLET_DECK_IMPORTER_END';
 const XML_BEGIN = '<!-- GAUNTLET_DECK_IMPORTER_BEGIN -->';
 const XML_END = '<!-- GAUNTLET_DECK_IMPORTER_END -->';
-const TEMPLATE_LIBRARY_NOTE = 'gauntlet:internal:deck-import-template-library';
+const TEMPLATE_NOTE_PREFIX = 'gauntlet:internal:deck-import-template:';
 export const MAX_TTS_IMPORTER_LUA_BYTES = 100_000;
 
 function renderedIndex(manifest) {
@@ -221,12 +221,17 @@ function assignFreshGuids(node, guid) {
   for (const child of node.ContainedObjects || []) assignFreshGuids(child, guid);
 }
 
-export function installStarterTemplateLibrary(save, config) {
+export function installStarterTemplateObjects(save, config) {
   if (!save || !Array.isArray(save.ObjectStates)) throw new Error('Deck importer template capture requires a TTS save.');
-  const guid = makeInternalGuidFactory(save);
-  const templates = [];
 
-  for (const starter of Object.values(config.starters || {})) {
+  save.ObjectStates = save.ObjectStates.filter(object => (
+    !String(object?.GMNotes || '').startsWith(TEMPLATE_NOTE_PREFIX)
+  ));
+  const guid = makeInternalGuidFactory(save);
+  const runtimeConfig = deepClone(config);
+  const starters = Object.entries(runtimeConfig.starters || {});
+
+  starters.forEach(([key, starter], index) => {
     const note = `gauntlet:starter-kit:${starter.starterId}`;
     const visible = save.ObjectStates.find(object => object?.Name === 'Bag' && object?.GMNotes === note);
     if (!visible) throw new Error(`Deck importer cannot capture missing starter template ${starter.starterId}.`);
@@ -242,37 +247,42 @@ export function installStarterTemplateLibrary(save, config) {
 
     clearTemplateGuids(template);
     assignFreshGuids(template, guid);
-    templates.push(template);
-  }
 
-  save.ObjectStates = save.ObjectStates.filter(object => object?.GMNotes !== TEMPLATE_LIBRARY_NOTE);
-  save.ObjectStates.push({
-    Name: 'Bag',
-    Transform: { posX: 0, posY: 5, posZ: 100, rotX: 0, rotY: 0, rotZ: 0, scaleX: 0.1, scaleY: 0.1, scaleZ: 0.1 },
-    Nickname: 'Gauntlet Deck Import Template Library',
-    Description: 'Internal TTS importer data. Not a gameplay object.',
-    GMNotes: TEMPLATE_LIBRARY_NOTE,
-    ColorDiffuse: { r: 0, g: 0, b: 0, a: 0 },
-    Locked: true,
-    Grid: false,
-    Snap: false,
-    Autoraise: false,
-    Sticky: false,
-    Tooltip: false,
-    GridProjection: false,
-    HideWhenFaceDown: false,
-    Hands: false,
-    IgnoreFoW: true,
-    MeasureMovement: false,
-    DragSelectable: false,
-    LuaScript: '',
-    LuaScriptState: '',
-    XmlUI: '',
-    GUID: guid(),
-    ContainedObjects: templates,
+    template.Transform = {
+      posX: -5.5 + index,
+      posY: 5,
+      posZ: 100,
+      rotX: 0,
+      rotY: 0,
+      rotZ: 0,
+      scaleX: 0.1,
+      scaleY: 0.1,
+      scaleZ: 0.1,
+    };
+    template.Nickname = `Gauntlet Deck Import Template — ${starter.starterId}`;
+    template.Description = 'Internal TTS importer data. Not a gameplay object.';
+    template.GMNotes = `${TEMPLATE_NOTE_PREFIX}${starter.starterId}`;
+    template.Locked = true;
+    template.Grid = false;
+    template.Snap = false;
+    template.Autoraise = false;
+    template.Sticky = false;
+    template.Tooltip = false;
+    template.GridProjection = false;
+    template.HideWhenFaceDown = false;
+    template.Hands = false;
+    template.IgnoreFoW = true;
+    template.MeasureMovement = false;
+    template.DragSelectable = false;
+    template.LuaScript = '';
+    template.LuaScriptState = '';
+    template.XmlUI = '';
+
+    starter.templateGuid = template.GUID;
+    save.ObjectStates.push(template);
   });
 
-  return save;
+  return runtimeConfig;
 }
 
 function luaLongString(value) {
@@ -365,7 +375,12 @@ local function gauntletMessage(color, text, errorMessage)
 end
 
 local function gauntletDeepCopy(value)
-  return JSON.decode(JSON.encode(value))
+  if type(value) ~= "table" then return value end
+  local copy = {}
+  for key, child in pairs(value) do
+    copy[gauntletDeepCopy(key)] = gauntletDeepCopy(child)
+  end
+  return copy
 end
 
 local function gauntletCustomDeckState(meta)
@@ -405,26 +420,20 @@ local function gauntletFindChildByNotePrefix(bagData, prefix)
   return nil
 end
 
-local function gauntletLoadStarterTemplate(starterId)
-  local library = nil
-  for _, object in ipairs(getAllObjects()) do
-    if object.getGMNotes ~= nil and object.getGMNotes() == "gauntlet:internal:deck-import-template-library" then
-      library = object
-      break
-    end
-  end
-  if library == nil then return nil, "This TTS build is missing its internal Deck import template library." end
+local function gauntletLoadStarterTemplate(starter)
+  local guid = tostring(starter.templateGuid or "")
+  if guid == "" then return nil, "This TTS build has no template GUID for that starter kit." end
 
-  local okLibrary, libraryData = pcall(JSON.decode, library.getJSON())
-  if not okLibrary or type(libraryData) ~= "table" then
-    return nil, "TTS could not read the internal Deck import template library."
+  local templateObject = getObjectFromGUID(guid)
+  if templateObject == nil then
+    return nil, "This TTS build is missing the internal template for that starter kit."
   end
 
-  local note = "gauntlet:starter-kit:" .. tostring(starterId)
-  for _, child in ipairs(libraryData.ContainedObjects or {}) do
-    if tostring(child.GMNotes or "") == note then return child, nil end
+  local okData, templateData = pcall(function() return templateObject.getData() end)
+  if not okData or type(templateData) ~= "table" then
+    return nil, "TTS could not read the internal starter template."
   end
-  return nil, "The internal Deck import template library has no matching starter kit."
+  return templateData, nil
 end
 
 local function gauntletValidatePayload(payload)
@@ -661,12 +670,12 @@ function gauntletImportDeck(player, value, id)
     return
   end
 
-  local template, templateError = gauntletLoadStarterTemplate(validated.starter.starterId)
+  local template, templateError = gauntletLoadStarterTemplate(validated.starter)
   if templateError ~= nil then
     gauntletMessage(color, templateError, true)
     return
   end
-  local bagData = gauntletDeepCopy(template)
+  local bagData = template
 
   local playableDeck = gauntletFindChildByNotePrefix(bagData, "gauntlet:starter-deck:")
   local territoryStack = gauntletFindChildByNotePrefix(bagData, "gauntlet:starter-territories:")
@@ -745,8 +754,8 @@ function stripGeneratedBlock(text, begin, end) {
 
 export function installDeckImporter(save, config) {
   if (!save || !Array.isArray(save.ObjectStates)) throw new Error('Deck importer requires a TTS save.');
-  installStarterTemplateLibrary(save, config);
-  const importerLua = deckImporterLua(config);
+  const runtimeConfig = installStarterTemplateObjects(save, config);
+  const importerLua = deckImporterLua(runtimeConfig);
   validateGeneratedLuaStrings(importerLua);
   const importerBytes = Buffer.byteLength(importerLua, 'utf8');
   if (importerBytes > MAX_TTS_IMPORTER_LUA_BYTES) {
