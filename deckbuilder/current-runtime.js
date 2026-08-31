@@ -109,10 +109,12 @@
   });
 
   function deckHasWorkInProgress() {
+    const territories = deckbuilder.feature("territories");
+    const rites = deckbuilder.feature("mysticsRites");
     return Boolean(
       Object.keys(state.deck || {}).length
-      || state.territories?.length
-      || (state.riteSelectionEnabled && state.rites?.length)
+      || territories?.selectedIds?.().length
+      || (rites?.selectionEnabled?.() && rites.selectedIds?.().length)
       || (state.deckName && state.deckName !== "Untitled Gauntlet Deck")
     );
   }
