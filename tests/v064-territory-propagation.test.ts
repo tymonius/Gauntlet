@@ -6,7 +6,7 @@ const reference = readFileSync('docs/v0.6.4-territory-reference.md', 'utf8');
 const reviewRenderer = readFileSync('card-design/territory-review-render.js', 'utf8');
 const reviewPage = readFileSync('card-design/territory-review-render.html', 'utf8');
 const specimen = readFileSync('card-design/territories/index.html', 'utf8');
-const renderValidator = readFileSync('scripts/validate-v064-territory-render.mjs', 'utf8');
+const renderValidator = readFileSync('scripts/validate-current-territory-render.mjs', 'utf8');
 const renderWorkflow = readFileSync('.github/workflows/render-leader-card-specimens.yml', 'utf8');
 const currentAuthority = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
 
@@ -58,7 +58,7 @@ describe('historical v0.6.4 Territory derivation and current authority propagati
     expect(renderValidator).toContain('const OUTPUT_HEIGHT = 400');
     expect(renderValidator).toContain("metric.artworkLoaded !== 'true'");
     expect(renderWorkflow).toContain('game-data/**');
-    expect(renderWorkflow).toContain('node scripts/validate-v064-territory-render.mjs');
-    expect(renderWorkflow).toContain('card-design/generated/territories-v064/');
+    expect(renderWorkflow).toContain('node scripts/validate-current-territory-render.mjs');
+    expect(renderWorkflow).toContain('card-design/generated/current-territories/');
   });
 });
