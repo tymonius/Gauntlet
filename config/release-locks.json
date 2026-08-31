@@ -612,6 +612,12 @@
       "git_object": "3db81bc3da6f078a65c088c207178566c33c20f5",
       "kind": "blob",
       "meaning": "Frozen clean-v0.6.3 complete-authority reconstruction orchestrator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-v063-cross-surface-closeout.mjs",
+      "git_object": "2d82d03d29aa97d868f0232f5bf952411d8c4b1c",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.3 cross-surface closeout validator"
     }
   ],
   "maintained_historical_surfaces": [
