@@ -38,10 +38,17 @@ describe('GitHub Pages public media contract', () => {
   });
 
   it('keeps repository-internal source trees out of the Pages artifact', () => {
-    for (const root of ['.github', 'governance', 'scripts', 'src', 'tests', 'workers', 'rulebook-design', 'rulebook-production', 'legacy']) {
+    for (const root of ['.github', 'config', 'governance', 'scripts', 'src', 'tests', 'workers', 'rulebook-design', 'rulebook-production', 'legacy']) {
       expect(pagesWorkflow).toContain(`"$site/${root}"`);
     }
     expect(pagesWorkflow).toContain('test ! -e "$SITE_DIR/$internal"');
+  });
+
+  it('keeps repository metadata and build configuration out of the Pages artifact', () => {
+    for (const file of ['.gitignore', 'CONTRIBUTING.md', 'README.md', 'package.json', 'package-lock.json', 'tsconfig.json', 'vitest.config.ts', 'sync-gauntlet.cmd', 'sync-gauntlet.ps1']) {
+      expect(pagesWorkflow).toContain(`"$site/${file}"`);
+    }
+    expect(pagesWorkflow).toContain('test ! -e "$SITE_DIR/$internal_file"');
   });
 
   it('preserves the custom domain and enforces the Pages size guard', () => {

@@ -62,6 +62,7 @@ jobs:
           # out of the deployed site. Public browser surfaces must not depend on these roots.
           rm -rf \
             "$site/.github" \
+            "$site/config" \
             "$site/governance" \
             "$site/scripts" \
             "$site/src" \
@@ -79,6 +80,17 @@ jobs:
             "$site/releases/v0.6.2-withdrawn" \
             "$site/releases/v0.6.3-withdrawn" \
             "$site/tts/v0.7.0"
+
+          rm -f \
+            "$site/.gitignore" \
+            "$site/CONTRIBUTING.md" \
+            "$site/README.md" \
+            "$site/package.json" \
+            "$site/package-lock.json" \
+            "$site/tsconfig.json" \
+            "$site/vitest.config.ts" \
+            "$site/sync-gauntlet.cmd" \
+            "$site/sync-gauntlet.ps1"
 
           # The Rulebook uses the top-level sketch PNGs as live hero/Leader artwork.
           # Publish those files without carrying the much larger sketch-authoring subdirectories.
@@ -225,8 +237,13 @@ jobs:
           console.log(`Validated ${publicUrls.length} clean TTS URLs against staged Pages assets.`);
           NODE
 
-          for internal in .github governance scripts src tests workers rulebook-design rulebook-production legacy; do
+          for internal in .github config governance scripts src tests workers rulebook-design rulebook-production legacy; do
             test ! -e "$SITE_DIR/$internal"
+          done
+
+
+          for internal_file in .gitignore CONTRIBUTING.md README.md package.json package-lock.json tsconfig.json vitest.config.ts sync-gauntlet.cmd sync-gauntlet.ps1; do
+            test ! -e "$SITE_DIR/$internal_file"
           done
 
           if find "$SITE_DIR" -type l -print -quit | grep -q .; then

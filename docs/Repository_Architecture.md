@@ -50,7 +50,7 @@ The release manifest remains the contract for primary browser-tool routes. Curre
 
 The long-term architecture may separate source applications from deployed Pages output, but that migration must first make deployment explicit and preserve stable URLs.
 
-As an initial deployment boundary, the Pages artifact excludes repository-internal `.github/`, `governance/`, `scripts/`, `src/`, `tests/`, `workers/`, `rulebook-design/`, `rulebook-production/`, and `legacy/` trees. Stable browser routes remain unchanged; those internal roots are not public runtime dependencies.
+As an initial deployment boundary, the Pages artifact excludes repository-internal `.github/`, `config/`, `governance/`, `scripts/`, `src/`, `tests/`, `workers/`, `rulebook-design/`, `rulebook-production/`, and `legacy/` trees, along with root repository metadata/build files such as `package*.json`, TypeScript/Vitest configuration, sync helpers, README, and CONTRIBUTING. Stable browser routes remain unchanged; those internal sources are not public runtime dependencies.
 
 The `media/` authoring/export tree is also excluded from the deployed artifact. The homepage's stable `/media/compositions.json` runtime contract is preserved by staging only that JSON payload; generated promotional imagery is staged separately under `/images/media/`.
 
