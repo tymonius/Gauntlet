@@ -285,6 +285,55 @@ function luaLongString(value) {
   throw new Error('Unable to encode Deck importer configuration as a Lua long string.');
 }
 
+export function validateGeneratedLuaStrings(source) {
+  const text = String(source || '');
+  for (let index = 0; index < text.length;) {
+    if (text.startsWith('--', index)) {
+      const newline = text.indexOf('\n', index + 2);
+      index = newline < 0 ? text.length : newline + 1;
+      continue;
+    }
+
+    if (text[index] === '[') {
+      const match = /^\[(=*)\[/.exec(text.slice(index));
+      if (match) {
+        const close = `]${match[1]}]`;
+        const finish = text.indexOf(close, index + match[0].length);
+        if (finish < 0) throw new Error('Generated TTS Lua has an unterminated long string.');
+        index = finish + close.length;
+        continue;
+      }
+    }
+
+    const quote = text[index];
+    if (quote === '"' || quote === "'") {
+      index += 1;
+      let closed = false;
+      while (index < text.length) {
+        const char = text[index];
+        if (char === '\n' || char === '\r') {
+          throw new Error('Generated TTS Lua contains a raw newline inside a quoted string.');
+        }
+        if (char === '\\') {
+          index += 2;
+          continue;
+        }
+        if (char === quote) {
+          index += 1;
+          closed = true;
+          break;
+        }
+        index += 1;
+      }
+      if (!closed) throw new Error('Generated TTS Lua has an unterminated quoted string.');
+      continue;
+    }
+
+    index += 1;
+  }
+  return true;
+}
+
 function deckImporterLua(config) {
   const configJson = JSON.stringify(config);
   return `${LUA_BEGIN}
@@ -698,6 +747,7 @@ export function installDeckImporter(save, config) {
   if (!save || !Array.isArray(save.ObjectStates)) throw new Error('Deck importer requires a TTS save.');
   installStarterTemplateLibrary(save, config);
   const importerLua = deckImporterLua(config);
+  validateGeneratedLuaStrings(importerLua);
   const importerBytes = Buffer.byteLength(importerLua, 'utf8');
   if (importerBytes > MAX_TTS_IMPORTER_LUA_BYTES) {
     throw new Error(`Deck importer Global Lua is ${importerBytes} bytes; maximum is ${MAX_TTS_IMPORTER_LUA_BYTES}. Keep large object templates out of Global Lua.`);
