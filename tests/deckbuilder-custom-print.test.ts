@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 const customPrint = readFileSync("deckbuilder/custom-print.mjs", "utf8");
 const customPrintCss = readFileSync("deckbuilder/custom-print.css", "utf8");
-const printBootstrap = readFileSync("deckbuilder/print-card-back-orientation.js", "utf8");
+const printBootstrap = readFileSync("deckbuilder/custom-print-loader.js", "utf8");
 const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
 const contract = currentGame.componentContract;
 
