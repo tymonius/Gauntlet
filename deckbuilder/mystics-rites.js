@@ -2,6 +2,7 @@
   const deckbuilder = window.GAUNTLET_DECKBUILDER;
   if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
   const { state } = deckbuilder;
+  const escapeHtml = value => deckbuilder.escapeHtml(value);
 
   const MYSTICS_FACTION_ID = "mystics";
   const FALLBACK_SELECTED_COUNT = 3;
@@ -45,7 +46,7 @@
       if (state.rites.length && !confirm("Remove all selected Rites?")) return;
       state.rites = [];
       state.selectedRiteId = state.ritePool[0]?.id || null;
-      renderAll();
+      deckbuilder.render();
     });
 
     void loadRites();
@@ -91,7 +92,7 @@
       }
 
       document.body.dataset.mysticsRites = "ready";
-      renderAll();
+      deckbuilder.render();
     } catch (error) {
       console.error("Unable to load Mystics Rites", error);
       document.body.dataset.mysticsRites = "error";
@@ -245,7 +246,7 @@
       state.rites = [...state.rites, id];
     }
     state.selectedRiteId = id;
-    renderAll();
+    deckbuilder.render();
   }
 
   function renderDeckRites() {
