@@ -163,6 +163,33 @@ export type V070PendingActionEffectChoice =
       sourceActionInstanceId: string;
     }
   | {
+      kind: 'burning_at_stake_tie';
+      playerId: PlayerId;
+      opponentId: PlayerId;
+      sourceActionInstanceId: string;
+      candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'confession_gambit_target';
+      playerId: PlayerId;
+      opponentId: PlayerId;
+      sourceActionInstanceId: string;
+      candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'hellfire_conviction_amount';
+      playerId: PlayerId;
+      opponentId: PlayerId;
+      sourceActionInstanceId: string;
+      maximum: number;
+    }
+  | {
+      kind: 'penance_choice';
+      playerId: PlayerId;
+      actionOwnerId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
       kind: 'scouting_report_source';
       playerId: PlayerId;
       sourceActionInstanceId: string;

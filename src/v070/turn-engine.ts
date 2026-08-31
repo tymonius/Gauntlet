@@ -61,7 +61,11 @@ import { bindV070CardFromPlayerZone } from './bindings';
 import {
   applyV070BlasphemyForActionPlay,
   gainV070Conviction,
+  isV070ArcaneCard,
+  spendV070Conviction,
+  v070Conviction,
 } from './inquisition';
+import { preventV070OpposingHandReveal } from './counterintelligence';
 import {
   faceUpV070AssetInstanceIds,
   isV070AssetFaceUp,
@@ -129,6 +133,27 @@ export type V070TurnAction =
       type: 'choose_sabotage_asset_target';
       playerId: PlayerId;
       targetInstanceId: string;
+    }
+  | {
+      type: 'choose_burning_at_stake_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
+      type: 'choose_confession_gambit_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
+      type: 'choose_hellfire_amount';
+      playerId: PlayerId;
+      amount: number;
+    }
+  | {
+      type: 'resolve_penance_choice';
+      playerId: PlayerId;
+      choice: 'graveyard' | 'conviction';
+      cardInstanceId?: string;
     }
   | {
       type: 'resolve_scouting_report_choice';
@@ -242,7 +267,8 @@ export function reduceV070TurnAction(
   if (action.type === 'resolve_clemency_choice'
     || action.type === 'choose_forced_asset_target'
     || action.type === 'resolve_accusation_choice'
-    || action.type === 'choose_sequestration_keep_asset') {
+    || action.type === 'choose_sequestration_keep_asset'
+    || action.type === 'resolve_penance_choice') {
     requirePlayingGame(state);
   } else {
     requirePlayingTurn(state, action.playerId);
@@ -303,6 +329,22 @@ export function reduceV070TurnAction(
     ) || (
       pending.kind === 'sabotage_asset_target'
       && action.type === 'choose_sabotage_asset_target'
+      && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'burning_at_stake_tie'
+      && action.type === 'choose_burning_at_stake_target'
+      && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'confession_gambit_target'
+      && action.type === 'choose_confession_gambit_target'
+      && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'hellfire_conviction_amount'
+      && action.type === 'choose_hellfire_amount'
+      && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'penance_choice'
+      && action.type === 'resolve_penance_choice'
       && action.playerId === pending.playerId
     ) || (
       pending.kind === 'scouting_report_source'
@@ -386,6 +428,10 @@ export function reduceV070TurnAction(
       'choose_fates_toll_cost',
       'choose_battlefield_promotion_target',
       'choose_sabotage_asset_target',
+      'choose_burning_at_stake_target',
+      'choose_confession_gambit_target',
+      'choose_hellfire_amount',
+      'resolve_penance_choice',
       'resolve_scouting_report_choice',
       'choose_territory_overlay_target',
       'choose_forced_asset_target',
@@ -477,6 +523,35 @@ export function reduceV070TurnAction(
         next,
         action.playerId,
         action.targetInstanceId,
+      );
+      break;
+    case 'choose_burning_at_stake_target':
+      chooseBurningAtStakeTarget(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
+      break;
+    case 'choose_confession_gambit_target':
+      chooseConfessionGambitTarget(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
+      break;
+    case 'choose_hellfire_amount':
+      chooseHellfireAmount(
+        next,
+        action.playerId,
+        action.amount,
+      );
+      break;
+    case 'resolve_penance_choice':
+      resolvePenanceChoice(
+        next,
+        action.playerId,
+        action.choice,
+        action.cardInstanceId,
       );
       break;
     case 'resolve_scouting_report_choice':
@@ -748,8 +823,12 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'financiers-war-bonds',
   'inquisition-accusation',
   'inquisition-anathema',
+  'inquisition-burning-at-the-stake',
+  'inquisition-confession',
   'inquisition-divine-mercy',
   'inquisition-excommunication',
+  'inquisition-hellfire',
+  'inquisition-penance',
   'inquisition-act-of-faith',
   'inquisition-guilt-by-association',
   'intelligence-assassins',
@@ -1705,6 +1784,104 @@ function continuePendingActionCard(state: V070GameState): void {
         },
       });
       return;
+    case 'inquisition-burning-at-the-stake':
+      resolveBurningAtStakeAction(
+        state,
+        pending.playerId,
+        pending.instanceId,
+      );
+      return;
+    case 'inquisition-confession':
+      resolveConfessionAction(
+        state,
+        pending.playerId,
+        pending.instanceId,
+      );
+      return;
+    case 'inquisition-hellfire': {
+      const maximum = v070Conviction(state, pending.playerId);
+      if (maximum === 0) {
+        appendV070Event(state, {
+          type: 'hellfire_resolved',
+          actor: pending.playerId,
+          visibility: 'public',
+          payload: {
+            sourceActionInstanceId: pending.instanceId,
+            convictionSpent: 0,
+            graveyardedInstanceIds: [],
+          },
+        });
+        finishPendingActionCard(state);
+        return;
+      }
+      state.pendingActionEffectChoice = {
+        kind: 'hellfire_conviction_amount',
+        playerId: pending.playerId,
+        opponentId: otherPlayer(pending.playerId),
+        sourceActionInstanceId: pending.instanceId,
+        maximum,
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          kind: 'hellfire_conviction_amount',
+          playerId: pending.playerId,
+          sourceActionInstanceId: pending.instanceId,
+          purpose: 'Hellfire',
+          minimum: 0,
+          maximum,
+        },
+      });
+      return;
+    }
+    case 'inquisition-penance': {
+      const opponentId = otherPlayer(pending.playerId);
+      if (state.players[opponentId].zones.hand.length === 0) {
+        gainV070Conviction(
+          state,
+          pending.playerId,
+          1,
+          'Penance',
+        );
+        appendV070Event(state, {
+          type: 'penance_resolved',
+          actor: opponentId,
+          visibility: 'public',
+          payload: {
+            actionOwnerId: pending.playerId,
+            sourceActionInstanceId: pending.instanceId,
+            choice: 'conviction',
+            automatic: true,
+          },
+        });
+        finishPendingActionCard(state);
+        return;
+      }
+
+      state.pendingActionEffectChoice = {
+        kind: 'penance_choice',
+        playerId: opponentId,
+        actionOwnerId: pending.playerId,
+        sourceActionInstanceId: pending.instanceId,
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: opponentId,
+        visibility: 'public',
+        payload: {
+          kind: 'penance_choice',
+          playerId: opponentId,
+          actionOwnerId: pending.playerId,
+          sourceActionInstanceId: pending.instanceId,
+          purpose: 'Penance',
+          options: ['graveyard', 'conviction'],
+          handCount: state.players[opponentId].zones.hand.length,
+        },
+      });
+      return;
+    }
     case 'inquisition-divine-mercy': {
       const opponentId = otherPlayer(pending.playerId);
       state.pendingActionEffectChoice = {
@@ -1972,7 +2149,12 @@ function continuePendingActionCard(state: V070GameState): void {
         pending.playerId,
         opponentId,
         'Assassins',
+        pending.instanceId,
       );
+      if (revealed === null) {
+        finishPendingActionCard(state);
+        return;
+      }
       if (revealed.length === 0) {
         appendV070Event(state, {
           type: 'action_effect_incomplete',
@@ -2009,13 +2191,18 @@ function continuePendingActionCard(state: V070GameState): void {
       });
       return;
     }
-    case 'intelligence-spies':
-      revealV070Hand(
+    case 'intelligence-spies': {
+      const revealed = revealV070Hand(
         state,
         pending.playerId,
         otherPlayer(pending.playerId),
         'Spies',
+        pending.instanceId,
       );
+      if (revealed === null) {
+        finishPendingActionCard(state);
+        return;
+      }
       drawIntoHand(state, pending.playerId, 1, 'Spies');
       if (!openHandDestinationChoice(
         state,
@@ -2027,6 +2214,7 @@ function continuePendingActionCard(state: V070GameState): void {
         finishPendingActionCard(state);
       }
       return;
+    }
     case 'inquisition-guilt-by-association': {
       const opponentId = otherPlayer(pending.playerId);
       state.pendingActionEffectChoice = {
@@ -2787,8 +2975,24 @@ function revealV070Hand(
   state: V070GameState,
   actor: PlayerId,
   owner: PlayerId,
-  purpose: 'Assassins' | 'Spies' | 'Extraordinary Rendition',
-): string[] {
+  purpose:
+    | 'Assassins'
+    | 'Spies'
+    | 'Extraordinary Rendition'
+    | 'Burning at the Stake'
+    | 'Confession',
+  sourceInstanceId: string,
+): string[] | null {
+  if (preventV070OpposingHandReveal(
+    state,
+    actor,
+    owner,
+    purpose,
+    sourceInstanceId,
+  )) {
+    return null;
+  }
+
   const instanceIds = [...state.players[owner].zones.hand];
   appendV070Event(state, {
     type: 'hand_revealed',
@@ -2797,6 +3001,7 @@ function revealV070Hand(
     payload: {
       owner,
       purpose,
+      sourceInstanceId,
       instanceIds,
       cards: instanceIds.map(instanceId => ({
         instanceId,
@@ -3311,7 +3516,12 @@ function completeBindingBankAction(
     playerId,
     opponentId,
     'Extraordinary Rendition',
+    sourceActionInstanceId,
   );
+  if (revealed === null) {
+    finishPendingActionCard(state, 'asset');
+    return;
+  }
   if (revealed.length === 0) {
     appendV070Event(state, {
       type: 'action_effect_incomplete',
@@ -3842,6 +4052,466 @@ function battlefieldPromotionCandidateInstanceIds(
   }
 
   return candidates;
+}
+
+function confessionEligibleGambitInstanceIds(
+  state: V070GameState,
+  playerId: PlayerId,
+): string[] {
+  return state.players[playerId].zones.hand.filter(instanceId => {
+    const cardId = state.cardInstances[instanceId]?.cardId;
+    const card = cardId ? v070CanonicalContent.cardsById.get(cardId) : undefined;
+    return card?.effects.some(effect =>
+      effect.label === 'Gambit'
+      || effect.label === 'Gambit/Tactic'
+    ) ?? false;
+  });
+}
+
+function applyConfessionGambitMandate(
+  state: V070GameState,
+  playerId: PlayerId,
+  opponentId: PlayerId,
+  sourceActionInstanceId: string,
+  targetInstanceId: string,
+): void {
+  const turnState = requireTurnState(state);
+  if (!confessionEligibleGambitInstanceIds(state, opponentId)
+    .includes(targetInstanceId)) {
+    throw new V070GameActionError(
+      'Confession must name an eligible Gambit still in the revealed opponent Hand.',
+    );
+  }
+
+  state.turnState = {
+    ...turnState,
+    gambitMandates: [
+      ...turnState.gambitMandates,
+      {
+        playerId: opponentId,
+        instanceId: targetInstanceId,
+        sourceInstanceId: sourceActionInstanceId,
+      },
+    ],
+  };
+  appendV070Event(state, {
+    type: 'confession_gambit_mandated',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      opponentId,
+      instanceId: targetInstanceId,
+      cardId: state.cardInstances[targetInstanceId]?.cardId,
+      sourceActionInstanceId,
+      expiresAt: 'end_of_turn',
+    },
+  });
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state);
+}
+
+function resolveConfessionAction(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+): void {
+  const opponentId = otherPlayer(playerId);
+  const revealed = revealV070Hand(
+    state,
+    playerId,
+    opponentId,
+    'Confession',
+    sourceActionInstanceId,
+  );
+  if (revealed === null) {
+    finishPendingActionCard(state);
+    return;
+  }
+
+  const candidates = confessionEligibleGambitInstanceIds(
+    state,
+    opponentId,
+  );
+  if (candidates.length === 0) {
+    appendV070Event(state, {
+      type: 'action_effect_incomplete',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        sourceActionInstanceId,
+        purpose: 'Confession',
+        reason: 'no_eligible_gambit_in_revealed_hand',
+      },
+    });
+    finishPendingActionCard(state);
+    return;
+  }
+
+  if (candidates.length === 1) {
+    const onlyCandidate = candidates[0];
+    if (!onlyCandidate) {
+      throw new V070GameActionError(
+        'Confession could not identify its only eligible Gambit.',
+      );
+    }
+    applyConfessionGambitMandate(
+      state,
+      playerId,
+      opponentId,
+      sourceActionInstanceId,
+      onlyCandidate,
+    );
+    return;
+  }
+
+  state.pendingActionEffectChoice = {
+    kind: 'confession_gambit_target',
+    playerId,
+    opponentId,
+    sourceActionInstanceId,
+    candidateInstanceIds: [...candidates],
+  };
+  appendV070Event(state, {
+    type: 'action_effect_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      kind: 'confession_gambit_target',
+      playerId,
+      opponentId,
+      sourceActionInstanceId,
+      purpose: 'Confession',
+      targetInstanceIds: [...candidates],
+    },
+  });
+}
+
+function chooseConfessionGambitTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'confession_gambit_target'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'inquisition-confession') {
+    throw new V070GameActionError(
+      'No Confession Gambit choice is pending for that player.',
+    );
+  }
+  if (!choice.candidateInstanceIds.includes(targetInstanceId)) {
+    throw new V070GameActionError(
+      'Confession must choose one eligible Gambit from the revealed Hand.',
+    );
+  }
+
+  applyConfessionGambitMandate(
+    state,
+    playerId,
+    choice.opponentId,
+    pending.instanceId,
+    targetInstanceId,
+  );
+}
+
+function resolveBurningAtStakeAction(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+): void {
+  const opponentId = otherPlayer(playerId);
+  const revealed = revealV070Hand(
+    state,
+    playerId,
+    opponentId,
+    'Burning at the Stake',
+    sourceActionInstanceId,
+  );
+
+  if (revealed === null) {
+    finishPendingActionCard(state);
+    return;
+  }
+
+  if (revealed.length === 0) {
+    appendV070Event(state, {
+      type: 'action_effect_incomplete',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        sourceActionInstanceId,
+        purpose: 'Burning at the Stake',
+        reason: 'opponent_hand_empty_after_reveal',
+      },
+    });
+    finishPendingActionCard(state);
+    return;
+  }
+
+  const highestValue = Math.max(
+    ...revealed.map(instanceId => v070CardValue(state, instanceId)),
+  );
+  const candidates = revealed.filter(
+    instanceId => v070CardValue(state, instanceId) === highestValue,
+  );
+
+  if (candidates.length === 1) {
+    const onlyCandidate = candidates[0];
+    if (!onlyCandidate) {
+      throw new V070GameActionError(
+        'Burning at the Stake could not identify its highest-value card.',
+      );
+    }
+    resolveBurningAtStakeCard(
+      state,
+      playerId,
+      opponentId,
+      sourceActionInstanceId,
+      onlyCandidate,
+    );
+    return;
+  }
+
+  state.pendingActionEffectChoice = {
+    kind: 'burning_at_stake_tie',
+    playerId,
+    opponentId,
+    sourceActionInstanceId,
+    candidateInstanceIds: [...candidates],
+  };
+  appendV070Event(state, {
+    type: 'action_effect_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      kind: 'burning_at_stake_tie',
+      playerId,
+      opponentId,
+      sourceActionInstanceId,
+      purpose: 'Burning at the Stake',
+      highestCardValue: highestValue,
+      targetInstanceIds: [...candidates],
+    },
+  });
+}
+
+function resolveBurningAtStakeCard(
+  state: V070GameState,
+  playerId: PlayerId,
+  opponentId: PlayerId,
+  sourceActionInstanceId: string,
+  targetInstanceId: string,
+): void {
+  const hand = state.players[opponentId].zones.hand;
+  const index = hand.indexOf(targetInstanceId);
+  if (index < 0) {
+    throw new V070GameActionError(
+      'The chosen Burning at the Stake card is no longer in the opponent’s Hand.',
+    );
+  }
+
+  hand.splice(index, 1);
+  state.players[opponentId].zones.graveyard.push(targetInstanceId);
+  const cardId = state.cardInstances[targetInstanceId]?.cardId;
+  appendV070Event(state, {
+    type: 'hand_card_graveyarded',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      opponentId,
+      instanceId: targetInstanceId,
+      cardId,
+      purpose: 'Burning at the Stake',
+      sourceActionInstanceId,
+    },
+  });
+
+  if (cardId && isV070ArcaneCard(cardId)) {
+    gainV070Conviction(
+      state,
+      playerId,
+      1,
+      'Burning at the Stake',
+    );
+  }
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state);
+}
+
+function chooseBurningAtStakeTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'burning_at_stake_tie'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'inquisition-burning-at-the-stake') {
+    throw new V070GameActionError(
+      'No Burning at the Stake tie choice is pending for that player.',
+    );
+  }
+  if (!choice.candidateInstanceIds.includes(targetInstanceId)) {
+    throw new V070GameActionError(
+      'Burning at the Stake must choose among the tied highest-value cards.',
+    );
+  }
+
+  resolveBurningAtStakeCard(
+    state,
+    playerId,
+    choice.opponentId,
+    pending.instanceId,
+    targetInstanceId,
+  );
+}
+
+function chooseHellfireAmount(
+  state: V070GameState,
+  playerId: PlayerId,
+  amount: number,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'hellfire_conviction_amount'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'inquisition-hellfire') {
+    throw new V070GameActionError(
+      'No Hellfire Conviction choice is pending for that player.',
+    );
+  }
+
+  if (!Number.isInteger(amount) || amount < 0 || amount > choice.maximum) {
+    throw new V070GameActionError(
+      `Hellfire must spend an integer amount of Conviction from 0 to ${choice.maximum}.`,
+    );
+  }
+
+  if (amount > 0) {
+    spendV070Conviction(
+      state,
+      playerId,
+      amount,
+      'Hellfire',
+    );
+  }
+
+  const drawPile = state.players[choice.opponentId].zones.drawPile;
+  const graveyarded = drawPile.splice(0, amount);
+  state.players[choice.opponentId].zones.graveyard.push(...graveyarded);
+
+  appendV070Event(state, {
+    type: 'hellfire_resolved',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      opponentId: choice.opponentId,
+      sourceActionInstanceId: pending.instanceId,
+      convictionSpent: amount,
+      requestedCardCount: amount,
+      graveyardedInstanceIds: [...graveyarded],
+      graveyardedCards: graveyarded.map(instanceId => ({
+        instanceId,
+        cardId: state.cardInstances[instanceId]?.cardId,
+      })),
+      exhausted: graveyarded.length < amount,
+    },
+  });
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state);
+}
+
+function resolvePenanceChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  choiceValue: 'graveyard' | 'conviction',
+  cardInstanceId?: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'penance_choice'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'inquisition-penance') {
+    throw new V070GameActionError(
+      'No Penance response is pending for that player.',
+    );
+  }
+
+  if (choiceValue === 'graveyard') {
+    if (!cardInstanceId) {
+      throw new V070GameActionError(
+        'Penance requires a Hand card when the Graveyard option is chosen.',
+      );
+    }
+    const hand = state.players[playerId].zones.hand;
+    const index = hand.indexOf(cardInstanceId);
+    if (index < 0) {
+      throw new V070GameActionError(
+        'Penance must put a card from the responding player’s Hand in their Graveyard.',
+      );
+    }
+
+    hand.splice(index, 1);
+    state.players[playerId].zones.graveyard.push(cardInstanceId);
+    appendV070Event(state, {
+      type: 'hand_card_graveyarded',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        instanceId: cardInstanceId,
+        cardId: state.cardInstances[cardInstanceId]?.cardId,
+        purpose: 'Penance',
+        sourceActionInstanceId: pending.instanceId,
+      },
+    });
+  } else {
+    if (cardInstanceId) {
+      throw new V070GameActionError(
+        'Penance’s Conviction option does not select a Hand card.',
+      );
+    }
+    gainV070Conviction(
+      state,
+      choice.actionOwnerId,
+      1,
+      'Penance',
+    );
+  }
+
+  appendV070Event(state, {
+    type: 'penance_resolved',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      actionOwnerId: choice.actionOwnerId,
+      sourceActionInstanceId: pending.instanceId,
+      choice: choiceValue,
+      cardInstanceId: choiceValue === 'graveyard'
+        ? cardInstanceId
+        : null,
+      automatic: false,
+    },
+  });
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state);
 }
 
 function chooseSabotageAssetTarget(
