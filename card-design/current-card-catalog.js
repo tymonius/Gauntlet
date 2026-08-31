@@ -5,6 +5,15 @@ async function syncCurrentGameCatalogCopy() {
   try {
     const currentGame = await loadCurrentGame();
     const cards = currentGame.cards || [];
+
+    // Direct component cards (Leaders, Proposals, Rites, references) share the
+    // same committed composition authority as playable-card/territory frames.
+    // Do not source these positions from the legacy generated TTS override file.
+    window.GAUNTLET_ART_DIRECTION = currentGame.artDirection || {};
+    window.dispatchEvent(new CustomEvent('gauntlet-art-direction-ready', {
+      detail: { authority: currentGame.authorityUrl },
+    }));
+
     const catalogFilter = document.body?.classList.contains('developer-catalog-page')
       ? window.GauntletCatalogFilter || null
       : null;
