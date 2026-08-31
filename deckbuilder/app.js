@@ -27,6 +27,7 @@ const extensionHooks = {
 let authorityBootstrap = null;
 let sourceLoader = null;
 let selectedRuleset = null;
+let cardPreviewRenderer = null;
 const featureApis = new Map();
 
 function requireHook(kind, callback) {
@@ -80,16 +81,22 @@ const deckbuilderApi = Object.freeze({
     selectedRuleset = Object.freeze({ ...ruleset });
     return selectedRuleset;
   },
+  setCardPreviewRenderer(callback) {
+    if (typeof callback !== "function") throw new TypeError("Deckbuilder card preview renderer must be a function.");
+    cardPreviewRenderer = callback;
+  },
   ruleset() {
     return selectedRuleset;
   },
   render: () => renderAll(),
+  renderAvailable: () => renderAvailable(),
   renderFactionOptions: () => renderFactionOptions(),
   validate: () => validateDeck(),
   serialize: () => currentDeckData(),
   hydrate: data => applyDeckData(data),
   getFaction: () => getFaction(),
   getCard: id => getCard(id),
+  addCard: id => addCard(id),
   deckEntries: () => deckEntries(),
   slugify: value => slugify(value),
   escapeHtml: value => escapeHtml(value),
@@ -280,6 +287,11 @@ function renderAvailable() {
 }
 
 function renderCardPreview(card) {
+  if (cardPreviewRenderer) return cardPreviewRenderer(card);
+  return renderDefaultCardPreview(card);
+}
+
+function renderDefaultCardPreview(card) {
   if (!card) {
     el.cardPreview.className = "card-preview empty-state";
     el.cardPreview.textContent = "Select a card to view its active working text.";
