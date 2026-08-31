@@ -283,7 +283,7 @@
     const territories = selectedTerritories();
     const arenaCount = territories.filter(territory => territory.arena).length;
     const errors = [...result.errors];
-    const warnings = result.warnings.filter(message => !message.startsWith("Territory selection"));
+    const warnings = [...result.warnings];
 
     if (territories.length !== REQUIRED_TERRITORIES) {
       errors.push(`Choose exactly ${REQUIRED_TERRITORIES} different Territories (${territories.length}/${REQUIRED_TERRITORIES} selected).`);
