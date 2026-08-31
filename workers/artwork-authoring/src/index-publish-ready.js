@@ -5,7 +5,7 @@ const API_VERSION = '2022-11-28';
 const PUBLISH_PATH = '/api/art-direction/publish';
 const DEFAULT_BRANCH = 'main';
 const AUTHOR_BRANCH = 'artwork/compositor-authoring';
-const READY_DELAYS_MS = [0, 250, 500, 750, 1000, 1250];
+const READY_DELAYS_MS = [0, 350, 700, 1000, 1500, 2000];
 
 function config(env) {
   const [owner, repo] = String(env.GITHUB_REPOSITORY || 'tymonius/Gauntlet').split('/');
@@ -30,10 +30,16 @@ function isPublishPost(request) {
 }
 
 function mergeabilityPending(pr) {
+  const state = String(pr?.mergeable_state || '').toLowerCase();
   return Boolean(
     pr
       && pr.state === 'open'
-      && (pr.mergeable === null || pr.mergeable === undefined || pr.mergeable_state === 'unknown'),
+      && (
+        pr.mergeable === null
+        || pr.mergeable === undefined
+        || state === 'unknown'
+        || state === 'unstable'
+      ),
   );
 }
 
@@ -105,7 +111,7 @@ export default {
   async fetch(request, env) {
     if (isPublishPost(request)) {
       try {
-        // GitHub recalculates mergeability asynchronously after each compositor
+        // GitHub recalculates mergeability and status checks asynchronously after each compositor
         // save. A publish click can arrive during that short window, especially
         // immediately after the last Save position. Wait briefly before asking
         // the existing Worker to perform the merge.

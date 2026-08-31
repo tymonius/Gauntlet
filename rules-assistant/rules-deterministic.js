@@ -506,7 +506,7 @@ export function resolveDeterministicRuling(corpus, { question, history = [], gam
       && !/\brite of (?:blood|crossing|echoes)\b/i.test(text)) {
     return result({
       id: "transmutation",
-      answer: "After you complete your second Rite, Transmutation is unlocked. Once per turn, before dice are rolled in a battle involving you, you may put one card from your Hand in your Graveyard and add that card's value to your battle total. The card is not played, so none of its printed effects apply. Spirit Walker uses Transmutation the same way as any other Mystics Leader.",
+      answer: "After you complete your second Rite, Transmutation is unlocked. Once per turn, before dice are rolled in a battle, you may put one card from your Hand in your Graveyard and add that card's value to your battle total. The card is not played, so none of its printed effects apply. Spirit Walker uses Transmutation the same way as any other Mystics Leader.",
       sourceIds: ["rulebook:progression", "rulebook:transmutation", "rulebook:spirit-walker"],
       subject: "Transmutation",
       topic: "use and timing"

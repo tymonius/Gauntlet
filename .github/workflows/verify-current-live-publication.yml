@@ -135,45 +135,16 @@ jobs:
           );
           NODE
 
-      - name: Request and verify exact GitHub Pages build
-        run: |
-          node --input-type=module <<'NODE'
-          const repo = process.env.GITHUB_REPOSITORY_NAME;
-          const token = process.env.GH_TOKEN;
-          const expectedSha = process.env.EXPECTED_SHA;
-          const headers = {
-            Accept: 'application/vnd.github+json',
-            Authorization: `Bearer ${token}`,
-            'X-GitHub-Api-Version': '2022-11-28',
-            'User-Agent': 'gauntlet-current-public-contract',
-          };
-          const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-          async function github(url, options = {}) {
-            const response = await fetch(url, { ...options, headers });
-            const text = await response.text();
-            if (!response.ok) throw new Error(`${options.method || 'GET'} ${url} -> ${response.status} ${text}`);
-            return text ? JSON.parse(text) : null;
-          }
-          await github(`https://api.github.com/repos/${repo}/pages/builds`, { method: 'POST' });
-          for (let attempt = 1; attempt <= 60; attempt += 1) {
-            const latest = await github(`https://api.github.com/repos/${repo}/pages/builds/latest`);
-            console.log(`Pages attempt ${attempt}: status=${latest.status || ''} commit=${latest.commit || ''}`);
-            if (latest.commit === expectedSha && latest.status === 'built') process.exit(0);
-            if (attempt < 60) await sleep(5000);
-          }
-          throw new Error(`GitHub Pages did not report ${expectedSha} built within the verification window.`);
-          NODE
-
       - name: Verify deployed site against the current-publication contract
         shell: bash
         run: |
           set -euo pipefail
-          for attempt in $(seq 1 30); do
+          for attempt in $(seq 1 120); do
             if GAUNTLET_PUBLIC_BASE_URL=https://gauntlet.run GAUNTLET_CONTRACT_BUST="$EXPECTED_SHA" node scripts/validate-current-public-contract.mjs; then
               echo "Live public contract verified on attempt $attempt."
               exit 0
             fi
-            if [[ "$attempt" -lt 30 ]]; then sleep 5; fi
+            if [[ "$attempt" -lt 120 ]]; then sleep 5; fi
           done
-          echo 'Live public contract did not converge after Pages reported the expected commit.' >&2
+          echo 'Live public contract did not converge after the Actions-driven Pages deployment window.' >&2
           exit 1

@@ -49,16 +49,88 @@
         <p class="release-lede">Player-facing changes between Gauntlet playtest editions, focused on rules, cards, components, and table play rather than repository implementation details.</p>
       </div>
       <dl class="release-status" aria-label="Current release">
-        <div><dt>Current release</dt><dd>v0.7.0</dd></div>
-        <div><dt>Published</dt><dd>August 27, 2026</dd></div>
-        <div><dt>Authority</dt><dd>v0.7.0</dd></div>
+        <div><dt>Current release</dt><dd>v0.7.1</dd></div>
+        <div><dt>Published</dt><dd>August 30, 2026</dd></div>
+        <div><dt>Authority</dt><dd>v0.7.1</dd></div>
       </dl>
     </section>
 
+    <article class="changelog-entry" id="v0-7-1">
+      <p class="changelog-meta">Current release · August 30, 2026</p>
+      <h2>v0.7.1 — Mystics Rites &amp; Deck Import</h2>
+      <p class="changelog-summary">v0.7.1 is a focused playtest update built on the v0.7.0 core. Its central change is a complete Mystics Rite-package redesign: choose three Rites from a six-Rite pool, keep those choices hidden until each is begun if desired, and carry the selected trio through starter guidance, Deckbuilder validation, printing, and TTS Deck Codes.</p>
+      <div class="release-actions">
+        <a class="button primary" href="/v0.7.1/">Open v0.7.1 release</a>
+        <a class="button secondary" href="/rulebook/">Read current rules</a>
+      </div>
+
+      <h3>At a glance</h3>
+      <ol>
+        <li><strong>Mystics choose exactly three different Rites from a six-Rite pool</strong> during game-package construction.</li>
+        <li><strong>Selected Rites do not have to be revealed at setup.</strong> You are under no obligation to reveal one until you begin it; when a Rite is begun, reveal it.</li>
+        <li><strong>Rite of Echoes and Rite of Crossing are revised.</strong> Rite of Blood is mechanically unchanged, with its explanatory reminder separated for italic presentation.</li>
+        <li><strong>Rite of Shattering, Rite of Consecration, and Rite of Equivalence</strong> join the Rite pool.</li>
+        <li><strong>An active Rite now has a general fail-state rule:</strong> if a required card, component, position, or other required game state changes so that completion is no longer possible, the Rite immediately interrupts and resets.</li>
+        <li><strong>Completing all three selected Rites still unlocks the Ritual route.</strong> The Ritual is canonically <em>Ritual of Ascension</em>.</li>
+        <li><strong>The Alchemist and Spirit Walker starters are retuned</strong> around authoritative selected Rite packages and recommended Rite orders while remaining 30 cards / 60 Deckbuilding Value.</li>
+        <li><strong>Deckbuilder Rite selection is now part of a Mystics game package.</strong> Selection is validated, saved, printed, exported, and used for starter matching.</li>
+        <li><strong>Deckbuilder → TTS Deck Codes are active for stable v0.7.1.</strong> Mystics codes include the selected three Rite ids.</li>
+        <li><strong>The v0.7.1 authority audit is locked</strong> and the Rulebook/release package now carries TDS Games publication branding.</li>
+      </ol>
+
+      <h3>Mystics: choose three Rites from six</h3>
+      <p>A Mystics game package contains exactly <strong>three different selected Rites</strong> chosen from Rite of Echoes, Rite of Blood, Rite of Crossing, Rite of Shattering, Rite of Consecration, and Rite of Equivalence.</p>
+      <p>The selected trio is part of game-package construction, but <strong>disclosure is optional until a Rite is begun</strong>. When you begin a Rite, reveal it. Only those three selected Rites may be begun during that game. Completing all three satisfies the three-Rite requirement for beginning the <strong>Ritual of Ascension</strong>.</p>
+
+      <h3>General Rite interruption rule</h3>
+      <p>If an active Rite can no longer be completed because a required card, component, position, or game state is lost or changes, it is <strong>immediately interrupted and resets</strong>. This applies in addition to the Rite's own printed interruption condition.</p>
+
+      <h3>The six Rites</h3>
+      <ul>
+        <li><strong>Rite of Echoes — revised:</strong> bind one card from Graveyard and one matching-title card from Hand, seed another copy of that title on top of the Draw Pile, then on a later turn win a battle in which that title's Gambit or Tactic effect was applied. A battle loss before completion sends both bound cards to the Graveyard and resets the Rite.</li>
+        <li><strong>Rite of Blood — mechanically unchanged:</strong> put one card from Hand in the Graveyard, then on a later turn win a battle without setting a Gambit or choosing a Tactic. Its explanatory reminder about Transmutation and other non-Gambit/Tactic sources is now separated as reminder text.</li>
+        <li><strong>Rite of Crossing — revised:</strong> the previous Arcane-card cost is removed. Begin during Denouement after a qualifying battle win that makes you the occupier of an opponent-controlled Territory; complete after Capture at the start of your next turn if you still occupy or now control it.</li>
+        <li><strong>Rite of Shattering — new:</strong> sacrifice a banked Asset; in the first later battle that reaches dice, gain instances of advantage equal to that Asset's value and complete the Rite if you win. Lose that battle and Retreat +1 before the Rite resets.</li>
+        <li><strong>Rite of Consecration — new:</strong> place an Overlay from Hand on a Territory without using an Action, then on a later turn win a battle there. Losing a battle there or losing the Overlay before completion resets the Rite.</li>
+        <li><strong>Rite of Equivalence — new:</strong> exchange equal-value cards between Hand and Graveyard, keep the returned card revealed, and complete the Rite by playing that exchanged card for one of its printed effects. If it leaves Hand another way, or you lose a battle first, the Rite resets.</li>
+      </ul>
+
+      <h3>Mystics starter Decks</h3>
+      <p>Both Mystics starters remain <strong>30 cards / 60 Deckbuilding Value</strong>, but each now has an authoritative Rite package and recommended Rite order.</p>
+      <ul>
+        <li><strong>Alchemist — First Principles:</strong> Echoes, Blood, Equivalence; recommended order <strong>Equivalence → Echoes → Blood</strong>. Accursed Wager ×1 → ×0; Threefold Vision ×0 → ×1.</li>
+        <li><strong>Spirit Walker — Unbroken Circle:</strong> Crossing, Shattering, Consecration; recommended order <strong>Consecration → Shattering → Crossing</strong>. Necromancy ×1 → ×0; Threefold Vision ×1 → ×0; Paths of Shadow ×1 → ×2; Witchcraft ×1 → ×2.</li>
+      </ul>
+      <p>The Deckbuilder starter preview and printed starter strategy now show recommended Rite order alongside recommended Territory order.</p>
+
+      <h3>Deckbuilder Rite-package support</h3>
+      <p>For Mystics, Rite selection is now part of the Deck itself rather than starter-only metadata. The Deckbuilder shows the six current Rites through the production Rite renderer, requires exactly three different selections for a valid Mystics package, displays the selected Rite cards with the current Deck, loads official starter selections automatically, and includes the Rite package when checking whether a Deck still matches a starter.</p>
+      <p>Selected Rites persist in saved Decks and JSON import/export. Printed Mystics packages include only the selected three Rites rather than the full six-Rite inventory, and print summaries name the selected trio.</p>
+
+      <h3>Deckbuilder → Tabletop Simulator Deck Codes</h3>
+      <p>Stable v0.7.1 activates compact <strong>TTS Deck Codes</strong> in the Deckbuilder. A code carries the game version, Deck name, faction, Leader, playable-card ids and quantities, and selected Territories. <strong>Mystics codes also carry the three selected Rite ids.</strong></p>
+      <p>The matching v0.7.1 TTS importer can rebuild a custom starter kit from that code, including the selected three Rites plus Ritual of Ascension. It uses embedded starter-kit templates rather than depending on the visible official starter Bags remaining untouched. The Deckbuilder also includes a visible TTS transfer walkthrough.</p>
+
+      <h3>Tabletop Simulator boundary</h3>
+      <p>The stable web/rules release and the Steam Workshop update remain separate publication gates. The public Workshop item remains <strong>v0.7.0</strong> while the stable v0.7.1 TTS artifact completes its own QA and approval process.</p>
+      <p>The v0.7.1 QA record inherits completed v0.7.0 evidence for unchanged surfaces, but fresh v0.7.1 verification remains required for changed surfaces including the stable hosted save, v0.7.1 Rulebook/setup behavior, Mystics Rites and completed faces, changed-package handling and focused drills, and final friction resolution. The Workshop item will be updated in place after that gate passes; its permanent id remains <code>3790840635</code>.</p>
+
+      <h3>Authority and presentation audit</h3>
+      <p>v0.7.1 freezes the audited current authority at <strong>142 playable cards total</strong>: 52 Neutral cards and 15 cards in each faction. Mystics have 15 Arcane faction cards; the Ritual is canonically <strong>Ritual of Ascension</strong>; <strong>Plenipotentiary</strong> and <strong>Martyrdom</strong> are Unique; and Peace Treaty requires <strong>six different ratified Proposals / Treaty Articles</strong>.</p>
+      <p>The current printed card headings are <strong>Action, Asset, Gambit, Tactic, Gambit/Tactic, Mission, Overlay, Terms, Sanctions,</strong> and <strong>Reaction</strong>. Flattening those headings into current authority is a presentation/source-of-truth cleanup rather than an intended gameplay change.</p>
+
+      <h3>Publishing identity</h3>
+      <p>v0.7.1 is the first Gauntlet Rulebook and release package carrying the current publication identity: <strong>Published by TDS Games</strong>, <strong>An imprint of Misty Hollow Enterprises</strong>, with <strong>Copyright © 2026 Tymon Scott. All rights reserved.</strong></p>
+      <p>The player-facing parent line deliberately omits the intended LLC suffix while formation remains pending.</p>
+
+      <h3>What remains familiar</h3>
+      <p>Outside the changes above, v0.7.1 retains the v0.7.0 core: the shared turn structure, Onset / Gambit / Reserves / Tactics battle sequence, 142-card playable pool, 25 Territories and Arenas, six factions, twelve Leaders, Front Line and Run-the-Gauntlet rules, and the established non-Mystics starter packages.</p>
+    </article>
+
     <article class="changelog-entry" id="v0-7-0">
-      <p class="changelog-meta">Current release · August 27, 2026</p>
+      <p class="changelog-meta">Previous release · August 27, 2026</p>
       <h2>v0.7.0 — Illustrated Cards &amp; Tabletop Simulator</h2>
-      <p class="changelog-summary">v0.7.0 is the current public playtest edition. It combines the gameplay changes developed since v0.6.3 with the fully illustrated production card set, finalized physical player aids, locked starter Decks, expanded printing, and the complete Tabletop Simulator package.</p>
+      <p class="changelog-summary">v0.7.0 was the previous public playtest edition. It combines the gameplay changes developed since v0.6.3 with the fully illustrated production card set, finalized physical player aids, locked starter Decks, expanded printing, and the complete Tabletop Simulator package.</p>
       <div class="release-actions">
         <a class="button primary" href="/v0.7.0/">Open v0.7.0 release</a>
         <a class="button secondary" href="/rulebook/">Read current rules</a>
@@ -192,7 +264,7 @@
       <p><strong>Advanced → Custom printing</strong> can build physical print sheets independently of legal Deck construction. It supports search and filters, arbitrary quantities, Add all for the currently visible filtered cards, mixed portrait / landscape 9-up Letter sheets, playable cards and current physical components, intrinsic reverse faces, and canonical standard backs. The print path fails closed rather than substituting stale placeholder faces when a production render is not ready.</p>
 
       <h3>Browser Rulebook</h3>
-      <p>The Browser Rulebook now loads the maintained complete v0.7.0 Rulebook authority from the published release package. v0.7.0 is the normal public ruleset, and the Rules Arbiter is bound to the same current release authority.</p>
+      <p>For v0.7.0, the Browser Rulebook loaded the maintained complete v0.7.0 Rulebook authority from its immutable release package, and the Rules Arbiter was bound to that same release authority.</p>
 
       <h3>Card Anatomy guide</h3>
       <p>The v0.7.0 Rulebook adds a <strong>Card Anatomy</strong> guide before the printed-card-effects rules. The browser guide uses the actual production-rendered <strong>Unbroken Ranks</strong> card rather than a mockup, identifying card name, value, faction treatment, artwork, effect heading, effect text, and standardized footer metadata; the Arcane trait mark is explained separately.</p>
@@ -214,7 +286,7 @@
       <p>v0.7.0 is a substantial product milestone rather than a ground-up replacement for v0.6.3. The six factions, twelve Leaders, turn structure, Front Line, two normal Run-the-Gauntlet victory routes, faction identities, starter-Deck model, and Gambit / Reserves / Tactics battle core remain the foundation of play except where the changes above or a current card/component expressly say otherwise.</p>
 
       <h3>Publication boundary</h3>
-      <p><strong>v0.7.0 is the current published playtest release.</strong> v0.6.3 is historical, and the v0.6.4-candidate source bundle remains preserved only as the never-published provenance snapshot that fed this release.</p>
+      <p><strong>v0.7.0 is the previous published playtest release.</strong> v0.6.3 is historical, and the v0.6.4-candidate source bundle remains preserved only as the never-published provenance snapshot that fed this release.</p>
       <p>The Tabletop Simulator Workshop mod is public, its subscribed-copy smoke test passed, and the repository/web release now publishes the same v0.7.0 product authority.</p>
     </article>
 
@@ -279,7 +351,7 @@
       <p><!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT --> · <!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises<!-- /PUBLISHING-FACT --></p>
     </div>
     <div class="footer-links">
-      <a href="/v0.7.0/">Current release</a>
+      <a href="/v0.7.1/">Current release</a>
       <a href="/rulebook/">Rulebook</a>
       <a href="/card-reference/">Card Reference</a>
       <a href="https://github.com/tymonius/Gauntlet">GitHub</a>

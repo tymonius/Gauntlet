@@ -5,8 +5,8 @@ const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
 const lifecycle = JSON.parse(readFileSync('config/release-lifecycle.json', 'utf8'));
 const releaseTarget = JSON.parse(readFileSync('config/tts-release-target.json', 'utf8'));
-const materializer = readFileSync('.github/workflows/materialize-v070-release-package.yml', 'utf8');
-const releaseBuilder = readFileSync('scripts/build-v070-release-source.mjs', 'utf8');
+const materializer = readFileSync('.github/workflows/materialize-v071-release-package.yml', 'utf8');
+const releaseBuilder = readFileSync('scripts/build-v071-release-source.mjs', 'utf8');
 const ttsCatalog = readFileSync('scripts/tts-current-catalog.mjs', 'utf8');
 const cardValidator = readFileSync('scripts/validate-current-card-render.mjs', 'utf8');
 const territoryValidator = readFileSync('scripts/validate-current-territory-render.mjs', 'utf8');
@@ -15,12 +15,12 @@ const starterValidator = readFileSync('scripts/validate-starter-decks.mjs', 'utf
 const riteValidator = readFileSync('scripts/validate-rite-card-render.mjs', 'utf8');
 
 describe('development and published-release boundary', () => {
-  it('keeps published v0.7.0 materialization isolated from ordinary development PRs', () => {
-    expect(lifecycle.current_release).toBe('v0.7.0');
+  it('keeps published v0.7.1 materialization isolated while TTS remains separately gated', () => {
+    expect(lifecycle.current_release).toBe('v0.7.1');
     expect(releaseTarget.releaseTag).toBe('v0.7.0');
     expect(currentGame.version).not.toBe(releaseTarget.releaseTag);
     expect(materializer).toContain('pull_request:');
-    expect(releaseBuilder).toContain('if (authority.version !== RELEASE_VERSION)');
+    expect(releaseBuilder).toContain('[RELEASE_VERSION, CANDIDATE_VERSION].includes(authority.version)');
     expect(releaseBuilder).toContain('repairAndValidateFrozenReleaseSources');
   });
 

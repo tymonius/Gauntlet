@@ -244,7 +244,9 @@ The passed v0.7.0 record remains preserved at `tts/release-qa/v0.7.0.json`. Cand
 
 The current package stages 75 network assets under the v0.7.0 target, including the custom campaign-table image and command-tent panorama. Development/QA builds use staged immutable HTTPS assets; the published v0.7.0 Workshop save uses the approved `gauntlet.run/tts/v0.7.0/` Pages-hosted asset set.
 
-Publication remains explicit. The **Generate TTS card assets** workflow can be dispatched from `main` with `publish_release_assets` enabled only after the matching GitHub Release exists. The workflow uploads the deterministic assets without moving the release tag and then verifies every published URL with live HTTP requests.
+Publication remains explicit. Because those deterministic filenames are intentionally replaced in place, every generated TTS object URL carries a `?v=<sha256-prefix>` content revision. When a rendered sheet changes without changing its release filename, Tabletop Simulator therefore requests a new URL instead of silently reusing its local cache of the older image.
+
+The **Generate TTS card assets** workflow can be dispatched from `main` with `publish_release_assets` enabled only after the matching GitHub Release exists. The workflow uploads the deterministic assets without moving the release tag and then verifies every published content-versioned URL with live HTTP requests.
 
 The workflow intentionally does not create a GitHub Release itself.
 

@@ -14,7 +14,7 @@ describe('artwork batch publish controller', () => {
   });
 
   it('loads publish recovery before the persistent batch controller', () => {
-    expect(targets).toContain("artwork-publish-fetch-recovery.js?v=20260823-1");
+    expect(targets).toContain("artwork-publish-fetch-recovery.js?v=20260831-1");
     expect(targets).toContain("artwork-batch-publish-control.js?v=20260819-2");
     expect(targets.indexOf('artwork-publish-fetch-recovery.js')).toBeLessThan(
       targets.indexOf('artwork-batch-publish-control.js'),
@@ -22,9 +22,11 @@ describe('artwork batch publish controller', () => {
   });
 
   it('retries dropped publish requests and verifies GitHub before reporting failure', () => {
-    expect(recovery).toContain('RETRY_DELAYS_MS');
+    expect(recovery).toContain('const RETRY_DELAYS_MS = [500, 1500, 3000, 5000, 8000];');
     expect(recovery).toContain('recoverPublishedPr');
+    expect(recovery).toContain('lastPr = await publicPr(prNumber)');
+    expect(recovery).toContain('after repeated retries');
     expect(recovery).toContain('pr?.merged === true || pr?.merged_at');
-    expect(recovery).toContain('PR #${prNumber} is still open.');
+    expect(recovery).toContain('PR #${prNumber} is still open${mergeState}.');
   });
 });

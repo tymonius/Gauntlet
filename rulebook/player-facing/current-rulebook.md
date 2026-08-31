@@ -2,7 +2,7 @@
 
 ## Official Rulebook
 
-**Version 0.7.1 Candidate**
+**Version 0.7.1**
 
 ---
 
@@ -806,7 +806,7 @@ Choose exactly three different Territory Cards.
 
 Prepare all components required by the chosen faction and Leader.
 
-If you chose Mystics, choose exactly three different Rites from the six-Rite pool as part of game-package construction. Those three Rites are public at setup, and only those selected Rites may be begun during that game.
+If you chose Mystics, choose exactly three<!-- RULE-FACT:mystics.rites.selected_count:word --> different Rites from the six<!-- RULE-FACT:mystics.rites.count:word -->-Rite pool as part of game-package construction. You are under no obligation to reveal your chosen Rites until you begin them. Only those selected Rites may be begun during that game.
 
 Unless a rule says otherwise, supplemental components:
 
@@ -1913,7 +1913,7 @@ When the controller of Watchtower defends there, the attacker sets their Gambit 
 
 ## How it works
 
-Mystics sacrifice, bind, exchange, recover, and transform cards while completing three selected public **Rites**. A Mystics game package chooses exactly three different Rites from a pool of six. Those three are public at setup and are the only Rites that may be begun during that game.
+Mystics sacrifice, bind, exchange, recover, and transform cards while completing three selected **Rites**. A Mystics game package chooses exactly three<!-- RULE-FACT:mystics.rites.selected_count:word --> different Rites from a pool of six<!-- RULE-FACT:mystics.rites.count:word -->. You are under no obligation to reveal your chosen Rites until you begin them. Only those selected Rites may be begun during that game.
 
 The first completed Rite unlocks **Invocation**, the second unlocks **Transmutation**, and the third unlocks **Convergence** and the ability to begin the **Ritual of Ascension**.
 
@@ -1937,7 +1937,7 @@ To win through Ritual, bind three cards from three different zones, initiate a b
 
 Mystics have the following Faction Features marked **1 Action · Denouement**:
 
-- **Begin a Rite:** Choose one incomplete selected Rite you may legally begin and pay its beginning cost.
+- **Begin a Rite:** Choose an incomplete selected Rite you may legally begin, reveal it, and pay its beginning cost.
 - **Begin the Ritual of Ascension:** After completing all three selected Rites, bind the required Arcane cards from Hand, Discard Pile, and Graveyard.
 
 Completing a Rite is automatic when that Rite's completion condition and timing are satisfied. **Invocation** and **Transmutation** are Faction Features marked **No Action**; **Convergence** is **Automatic**. The Alchemist and Spirit Walker mechanics are Leader Abilities.
@@ -1960,7 +1960,7 @@ A Mystics game package includes:
 - exactly three different double-sided Rite cards chosen from the six-Rite pool; and
 - any Mystics cards included in the Deck.
 
-Rite selection is part of game-package construction. Place the three selected Rite cards incomplete side up and visible to both players during setup. Rites not selected for that game are not part of the game package and cannot be begun. Mystics use no resource tracker.
+Rite selection is part of game-package construction. You are under no obligation to reveal your chosen Rites until you begin them. When you begin a Rite, reveal it. Rites not selected for that game are not part of the game package and cannot be begun. Mystics use no resource tracker.
 
 ## Rites and progression
 
@@ -1996,13 +1996,13 @@ Bound cards follow the shared rules. If a Rite or Ritual binding ends without an
 
 #### Invocation
 
-> Once per turn, after applying the Action, Gambit, Tactic, or Gambit or Tactic effect of an Arcane card you played, set, or chose, you may move one card from your Graveyard to your Discard Pile.
+> Once per turn, after applying the Action, Gambit, or Tactic effect of an Arcane card you played, set, or chose, you may move one card from your Graveyard to your Discard Pile.<!-- RULE-FACT:mystics.invocation.text -->
 
 A copied effect does not trigger Invocation unless the Arcane card is itself played, set, or chosen again and its printed effect is applied.
 
 #### Transmutation
 
-> Once per turn, before dice are rolled in a battle involving you, you may put one card from your Hand in your Graveyard. Add its value to your battle total.
+> Once per turn, before dice are rolled in a battle, you may put one card from your Hand in your Graveyard. Add its value to your battle total.<!-- RULE-FACT:mystics.transmutation.text -->
 
 The card is not played and none of its printed effects apply. Supplemental components cannot be used.
 
@@ -2368,11 +2368,7 @@ Heresy follows the shared copied-effect rule but retains permission for one addi
 
 ![TDS Games publisher mark](../../images/branding/tds-games-mark.svg)
 
-<!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT -->
-
-<!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises<!-- /PUBLISHING-FACT -->
-
-<!-- PUBLISHING-FACT:imprint.statement -->Gauntlet is published by TDS Games, an imprint of Misty Hollow Enterprises, for playtesting and review.<!-- /PUBLISHING-FACT -->
+<!-- PUBLISHING-FACT:imprint.statement -->Published by TDS Games, an imprint of Misty Hollow Enterprises, for playtesting and review.<!-- /PUBLISHING-FACT -->
 
 <!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT -->
 

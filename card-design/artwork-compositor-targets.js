@@ -21,7 +21,7 @@
   // GitHub mergeability race cannot strand an otherwise valid artwork batch.
   const publishRecovery = document.createElement('script');
   publishRecovery.async = false;
-  publishRecovery.src = 'artwork-publish-fetch-recovery.js?v=20260823-1';
+  publishRecovery.src = 'artwork-publish-fetch-recovery.js?v=20260831-1';
   document.head.append(publishRecovery);
 
   const batchPublishControl = document.createElement('script');

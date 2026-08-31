@@ -1,5 +1,5 @@
 {
-  "current_release": "v0.7.0",
+  "current_release": "v0.7.1",
   "releases": {
     "v0.6.1": {
       "status": "historical"
@@ -19,12 +19,19 @@
       "authority_set_id": "64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49"
     },
     "v0.7.0": {
+      "status": "historical",
+      "artifacts_preserved": true,
+      "public_cutover": false,
+      "authority_set_id": "5f424f1b293ec3aa592fa50ce374be08ef48cfdcc94369ba4697fe9a38d00953",
+      "publication_date": "2026-08-27",
+      "historical_package_path": "releases/v0.7.0/"
+    },
+    "v0.7.1": {
       "status": "current",
       "artifacts_preserved": true,
       "public_cutover": true,
-      "current_package_path": "releases/v0.7.0/",
-      "authority_set_id": "5f424f1b293ec3aa592fa50ce374be08ef48cfdcc94369ba4697fe9a38d00953",
-      "publication_date": "2026-08-27"
+      "current_package_path": "releases/v0.7.1/",
+      "publication_date": "2026-08-30"
     }
   }
 }

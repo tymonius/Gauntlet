@@ -157,3 +157,93 @@
   filter:none;
   mix-blend-mode:normal;
 }
+
+
+/* Compact the terminal publication colophon so publisher/imprint lines and
+   the legal playtest notice remain on a single approved reader page without
+   reducing normal Rulebook body type. */
+.page.colophon .production-flow{
+  font-size:7.8pt;
+  line-height:1.22;
+}
+.page.colophon .production-flow p{
+  margin-bottom:4px;
+}
+.page.colophon .production-flow img[alt="TDS Games publisher mark"]{
+  width:.42in;
+  max-width:.42in;
+  max-height:.48in;
+  margin:4px 0;
+}
+
+.page.colophon .colophon-block{max-width:4.35in}
+.page.colophon .colophon-block .flavor-overline{
+  margin-bottom:8px;
+  font-size:16pt;
+  line-height:1.05;
+}
+.page.colophon .colophon-block h2{
+  margin-bottom:8px;
+  font-size:22pt;
+  line-height:1.02;
+}
+.page.colophon .colophon-source p{
+  margin-bottom:4px;
+  font-size:8pt;
+  line-height:1.24;
+}
+.page.colophon .colophon-source img[alt="TDS Games publisher mark"]{
+  width:.4in;
+  max-width:.4in;
+  max-height:.45in;
+  margin:3px 0;
+}
+
+.page.colophon .publication-lockup{
+  display:grid;
+  grid-template-columns:.44in minmax(0,1fr);
+  gap:10px;
+  align-items:start;
+  margin:3px 0 7px;
+}
+.page.colophon .publication-lockup img[alt="TDS Games publisher mark"]{
+  width:.4in;
+  max-width:.4in;
+  max-height:.45in;
+  margin:0;
+}
+.page.colophon .publication-lockup-copy p{
+  margin:0 0 3px;
+}
+.page.colophon .publication-lockup-copy p:last-child{
+  margin-bottom:0;
+}
+.page.colophon .publication-lockup + p{
+  margin-top:5px;
+}
+
+.back-cover .back-publisher-lockup{
+  display:grid;
+  grid-template-columns:.5in minmax(0,1fr);
+  gap:10px;
+  align-items:start;
+}
+.back-cover .back-publisher-mark{
+  width:.44in;
+  max-width:.44in;
+  max-height:.52in;
+  margin:0;
+  object-fit:contain;
+}
+.back-cover .back-publisher-copy{
+  min-width:0;
+}
+.back-cover .back-restrictions{
+  margin-top:5px;
+}
+
+.page.colophon .colophon-meta{
+  padding-top:8px;
+  font-size:7pt;
+  line-height:1.3;
+}

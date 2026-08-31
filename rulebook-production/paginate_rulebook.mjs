@@ -703,6 +703,19 @@ function deferCopyright(section) {
     flow.outerHTML = `<div class="colophon-block"><p class="flavor-overline">For playtest tables and careful readers</p><h2${sourceAttr(section.heading)}>Copyright and Playtest Use</h2><div class="colophon-source"></div></div><div class="colophon-meta"><strong>Gauntlet v0.6.1 · First Playtest Revision</strong><br />gauntlet.run · github.com/tymonius/Gauntlet</div>`;
     const source = page.querySelector('.colophon-source');
     section.tokens.forEach(token => source.append(makeTokenElement(token)));
+
+    const publisherMark = source.querySelector('img[alt="TDS Games publisher mark"]');
+    const publisherParagraphs = [...source.children].filter(node => node.tagName === 'P').slice(0, 2);
+    if (publisherMark && publisherParagraphs.length === 2) {
+      const lockup = document.createElement('div');
+      lockup.className = 'publication-lockup';
+      const copy = document.createElement('div');
+      copy.className = 'publication-lockup-copy';
+      copy.append(...publisherParagraphs);
+      source.insertBefore(lockup, publisherMark);
+      lockup.append(publisherMark, copy);
+    }
+
     appendApprovedTemplate('#approved-back-cover', 'Back Cover');
   };
 }

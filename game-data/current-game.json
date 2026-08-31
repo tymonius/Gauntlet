@@ -1,9 +1,9 @@
 {
   "schemaVersion": 2,
   "authority": "current-game",
-  "version": "v0.7.1-candidate",
-  "displayVersion": "v0.7.1 candidate",
-  "status": "active-development",
+  "version": "v0.7.1",
+  "displayVersion": "v0.7.1",
+  "status": "current-release",
   "runtimePolicy": "This file is the complete current gameplay authority. Runtime consumers load it directly; historical source and change documents are provenance only and are never layered over this authority.",
   "provenance": {
     "historicalBaseVersion": "v0.6.3",
@@ -5675,9 +5675,9 @@
     }
   },
   "starterDecks": {
-    "version": "v0.7.1-candidate",
-    "status": "Active v0.7.1 candidate starter set",
-    "purpose": "Recommended v0.7.1 candidate starter Decks optimized for competitive strength first, Leader expression second, and title diversity / starter-pool coverage as a tiebreaker. Mystics starters include a selected three-Rite package, recommended Rite order, and card choices that support that package.",
+    "version": "v0.7.1",
+    "status": "Active v0.7.1 starter set",
+    "purpose": "Recommended v0.7.1 starter Decks optimized for competitive strength first, Leader expression second, and title diversity / starter-pool coverage as a tiebreaker. Mystics starters include a selected three-Rite package, recommended Rite order, and card choices that support that package.",
     "construction": {
       "minimumCards": 30,
       "maximumDeckbuildingValue": 60,
@@ -5691,7 +5691,7 @@
       "tiebreaker": "title-diversity-and-starter-pool-coverage",
       "mysticsRiteOfEchoesPairException": false,
       "cardPoolCoverageQuota": false,
-      "status": "active-for-v0.7.1-candidate",
+      "status": "active-for-v0.7.1",
       "predecessorAudit": "docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md",
       "predecessorFinalization": "docs/Gauntlet_v0.6.3_Starter_Deck_Finalization.md",
       "cardAdditions": "docs/v0.6.4-card-additions.json",
@@ -6976,7 +6976,7 @@
       }
     ],
     "approval": {
-      "status": "approved-for-v0.7.1-candidate",
+      "status": "approved-for-v0.7.1",
       "predecessor_pr": 573,
       "peace_treaty_pr": 736,
       "card_additions_pr": 765
@@ -7590,12 +7590,12 @@
       {
         "count": "1 Rite",
         "name": "Invocation",
-        "text": "Once per turn, after applying the Action, Gambit, Tactic, or Gambit or Tactic effect of an Arcane card you played, set, or chose, you may move one card from your Graveyard to your Discard Pile."
+        "text": "Once per turn, after applying the Action, Gambit, or Tactic effect of an Arcane card you played, set, or chose, you may move one card from your Graveyard to your Discard Pile."
       },
       {
         "count": "2 Rites",
         "name": "Transmutation",
-        "text": "Once per turn, before dice are rolled in a battle involving you, you may put one card from your Hand in your Graveyard. Add its value to your battle total."
+        "text": "Once per turn, before dice are rolled in a battle, you may put one card from your Hand in your Graveyard. Add its value to your battle total."
       },
       {
         "count": "3 Rites",
@@ -7617,8 +7617,8 @@
       "poolSize": 6,
       "selectedCount": 3,
       "timing": "game-package construction",
-      "visibility": "public at setup",
-      "rule": "Choose exactly three different Rites from the six-Rite pool as part of the Mystics game package. Only those selected Rites may be begun during that game. Completing all three selected Rites satisfies the three-Rite requirement for the Ritual route."
+      "visibility": "disclosure optional until begun",
+      "rule": "Choose exactly three different Rites from the six-Rite pool as part of the Mystics game package. You are under no obligation to reveal them until you begin them. When you begin a Rite, reveal it. Only those selected Rites may be begun during that game. Completing all three selected Rites satisfies the three-Rite requirement for the Ritual route."
     },
     "generalRules": {
       "impossibleCompletion": "If an active Rite can no longer be completed because a required card, component, position, or game state is lost or changes, it is immediately interrupted and resets."
@@ -7666,13 +7666,13 @@
       "focusY": 0.398
     },
     "rite-blood": {
-      "focusY": 0.32
+      "focusY": 0.995
     },
     "rite-crossing-completed": {
       "focusY": 0.413
     },
     "rite-echoes": {
-      "focusY": 0.366
+      "focusY": 0.105
     },
     "territory-arena-grand-melee": {
       "focusY": 0.747
@@ -7724,6 +7724,9 @@
     },
     "territory-watchtower": {
       "focusY": 0.229
+    },
+    "rite-equivalence": {
+      "focusY": 0
     }
   }
 }

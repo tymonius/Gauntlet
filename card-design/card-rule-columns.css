@@ -47,14 +47,24 @@
     column-gap: var(--rule-column-gap) !important;
   }
 
+
   :where(.rule-section, .leader-rule-section, .rite-unlock-section) {
     grid-column: 1 / -1;
     grid-template-columns: subgrid !important;
     column-gap: inherit !important;
   }
 
-  /* Reminders are full-width prose and should not enter either shared track. */
+  /* Generic reminders remain full-width prose. */
   .gauntlet-card .card-rules > .card-reminder {
     grid-column: 1 / -1;
+  }
+
+  /* Rite reminders belong with the rule body, not the section labels. Put
+     them directly in the shared body column so their left edge exactly matches
+     Begin/Complete/Interrupted copy. The Rite stylesheet keeps its historical
+     fixed indent only as a fallback for browsers without subgrid support. */
+  .rite-card .card-rules > .rite-reminder {
+    grid-column: 2 / -1;
+    margin-left: 0;
   }
 }

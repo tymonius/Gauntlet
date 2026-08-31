@@ -7,7 +7,7 @@
 }
 
 .rite-card .card-interior {
-  --art-height: 1.48in;
+  --art-height: 1.72in;
   grid-template-rows: var(--component-heading-height, 0.50in) var(--art-height) auto 0.18in;
 }
 
@@ -108,7 +108,6 @@
 .rite-reminder {
   margin: 0.022in 0 0 0.562in;
   padding-top: 0.016in;
-  border-top: 0.5px solid color-mix(in srgb, var(--component-accent-ink) 24%, transparent);
   color: color-mix(in srgb, var(--card-ink) 82%, var(--component-accent-ink));
   font-size: calc(5.1pt * var(--rules-scale));
   line-height: 1.04;

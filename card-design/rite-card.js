@@ -76,11 +76,9 @@ function riteFace(rite, completed = false) {
     : `${ruleSection('Begin', rite.begin)}${ruleSection('Complete', rite.complete)}${rite.reminder?.text ? `<p class="rite-reminder"><em>${esc(rite.reminder.text)}</em></p>` : ''}${ruleSection('Interrupted', rite.interrupted)}`;
   const art = completed ? completedArtwork(rite) : incompleteArtwork(rite);
   const hasReminder = Boolean(!completed && rite.reminder?.text);
-  const artMax = completed ? '1.24' : hasReminder ? '1.34' : '1.48';
-  const artMin = completed ? '0.78' : hasReminder ? '0.72' : '0.92';
   const dense = completed || hasReminder || rite.id === 'crossing' || rite.id === 'echoes' ? ' dense-card' : '';
 
-  return `<article class="gauntlet-card faction-component-card rite-card mystic-card${dense}${completed ? ' completed-rite-card' : ''}" data-faction="mystics" data-art-max="${artMax}" data-art-min="${artMin}" data-title-min="9"${hasReminder ? ' data-has-reminder="true"' : ''} aria-label="${esc(rite.name)} ${esc(type)} card" data-current-game-authority="/game-data/current-game.json">
+  return `<article class="gauntlet-card faction-component-card rite-card mystic-card${dense}${completed ? ' completed-rite-card' : ''}" data-faction="mystics" data-art-max="1.72" data-art-min="0.62" data-title-min="9"${hasReminder ? ' data-has-reminder="true"' : ''} aria-label="${esc(rite.name)} ${esc(type)} card" data-current-game-authority="/game-data/current-game.json">
     <div class="card-interior">
       <header class="card-heading">
         <h3 class="card-title">${esc(rite.name)}</h3>

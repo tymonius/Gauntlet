@@ -28,7 +28,7 @@ describe("Mystics Rite card prototypes", () => {
   it("adds all six double-sided Rites and the Ritual to the unified card-review page", () => {
     expect(reviewPage).toContain('id="rite-cards"');
     expect(reviewPage).toContain('id="riteReviewSections"');
-    expect(reviewPage).toContain('href="#rite-cards"');
+    expect(reviewPage).toContain('data-catalog-kind="rite"');
     expect(reviewPage).toContain('href="rite-card.css"');
     expect(reviewPage).toContain('type="module" src="rite-card.js"');
     expect(reviewPage).not.toContain('data-rite-count>3</span>');
@@ -85,6 +85,10 @@ describe("Mystics Rite card prototypes", () => {
     expect(riteRenderer).toContain('currentDisplayVersion = currentGame.displayVersion');
     expect(riteRenderer).toContain('data-has-reminder="true"');
     expect(riteStyles).toContain('.rite-reminder');
+    expect(riteStyles).not.toContain('border-top: 0.5px solid color-mix(in srgb, var(--component-accent-ink) 24%, transparent)');
+    expect(ruleColumnStyles).toContain(".rite-card .card-rules > .rite-reminder");
+    expect(ruleColumnStyles).toContain("grid-column: 2 / -1");
+    expect(ruleColumnStyles).toContain("margin-left: 0");
     expect(riteValidator).toContain('expectedCardFaces = expectedRites.length * 2 + 1');
     expect(riteValidator).toContain('metric.version !== authority.displayVersion');
     expect(riteValidator).not.toContain('EXPECTED_RITES');
@@ -108,6 +112,10 @@ describe("Mystics Rite card prototypes", () => {
   it("turns every completed face into the same count-based progression reference", () => {
     expect(mysticsAuthority.unlocks.map((item: any) => item.count)).toEqual(["1 Rite", "2 Rites", "3 Rites", "Ritual"]);
     expect(mysticsAuthority.unlocks.map((item: any) => item.name)).toEqual(["Invocation", "Transmutation", "Convergence", "Ritual of Ascension"]);
+    expect(mysticsAuthority.unlocks[0].text).toContain("after applying the Action, Gambit, or Tactic effect");
+    expect(mysticsAuthority.unlocks[0].text).not.toContain("Gambit, Tactic, or Gambit or Tactic");
+    expect(mysticsAuthority.unlocks[1].text).toContain("before dice are rolled in a battle,");
+    expect(mysticsAuthority.unlocks[1].text).not.toContain("battle involving you");
     expect(mysticsAuthority.unlocks.at(-1).headerLines).toEqual(["Ritual of", "Ascension"]);
     expect(riteRenderer).toContain("UNLOCKS = Array.isArray(mystics.unlocks) ? mystics.unlocks : []");
     expect(riteRenderer).toContain("rite-unlock-section--ritual");
@@ -139,9 +147,12 @@ describe("Mystics Rite card prototypes", () => {
     expect(riteRenderer).not.toContain("Ratified");
   });
 
-  it("uses reclaimed completed-Rite space for artwork while retaining a finite cap", () => {
-    expect(riteRenderer).toContain("const artMax = completed ? '1.24' : hasReminder ? '1.34' : '1.48'");
-    expect(riteRenderer).toContain("const artMin = completed ? '0.78' : hasReminder ? '0.72' : '0.92'");
+  it("uses the normal playable-card artwork fitting range for every Rite face", () => {
+    expect(riteRenderer).toContain('data-art-max="1.72"');
+    expect(riteRenderer).toContain('data-art-min="0.62"');
+    expect(riteRenderer).not.toContain("const artMax = completed");
+    expect(riteRenderer).not.toContain("const artMin = completed");
+    expect(riteStyles).toContain("--art-height: 1.72in");
     expect(riteStyles).toContain("font-size: calc(5.45pt * var(--rules-scale))");
     expect(riteStyles).toContain("--minimum-rules-scale: 0.82");
   });

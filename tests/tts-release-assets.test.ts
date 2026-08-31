@@ -39,10 +39,25 @@ describe('TTS GitHub Release asset hosting', () => {
     expect(stager).toContain('https://github.com/${repository}/releases/download/${tag}/');
     expect(stager).toContain("createHash('sha256')");
     expect(stager).toContain('bytes: info.size');
-    expect(stager).toContain('sha256: await sha256(sourcePath)');
+    expect(stager).toContain('const digest = await sha256(sourcePath)');
+    expect(stager).toContain('sha256: digest');
+    expect(stager).toContain('contentVersionedUrl(');
+    expect(stager).toContain('digest.slice(0, 12)');
+    expect(stager).toContain("cachePolicy: 'sha256-query'");
     expect(stager).toContain('bySourceFile: Object.fromEntries');
     expect(stager).toContain("host: 'github-release-assets'");
     expect(stager).not.toMatch(/v0\.6\.[0-9]+/);
+  });
+
+  it('cache-busts mutable release URLs from each asset content digest', async () => {
+    const { contentVersionedUrl } = await import('../scripts/stage-tts-release-assets.mjs');
+    const digest = '0123456789abcdef'.repeat(4);
+    expect(contentVersionedUrl('https://example.com/asset.png', digest))
+      .toBe('https://example.com/asset.png?v=0123456789ab');
+    expect(contentVersionedUrl('https://example.com/asset.png?download=1', digest))
+      .toBe('https://example.com/asset.png?download=1&v=0123456789ab');
+    expect(() => contentVersionedUrl('https://example.com/asset.png', 'bad'))
+      .toThrow(/SHA-256 digest/);
   });
 
   it('uses deterministic release-safe names for every TTS network asset family without creating a Territory-specific back', () => {
