@@ -54,6 +54,15 @@ function runtimeLeader(source) {
   return leader;
 }
 
+function normalizePublishedComponentContract(source) {
+  const contract = clone(source || {});
+  contract.components = (contract.components || []).map(component => {
+    if (component.id !== 'financiers-capital-ledger') return component;
+    return { ...component, backPolicy: 'twoSided' };
+  });
+  return contract;
+}
+
 export function normalizePublishedGame(authority, starterDeckData) {
   if (!authority?.gameplay || !Array.isArray(authority.gameplay.cards) || !Array.isArray(authority.gameplay.territories)) {
     throw new Error('Published Gauntlet authority is incomplete.');
@@ -76,7 +85,7 @@ export function normalizePublishedGame(authority, starterDeckData) {
   }));
   const leaders = (authority.leaders || []).map(runtimeLeader);
   const starterDecks = starterDeckData.decks.map(clone);
-  const componentContract = clone(authority.component_contract || {});
+  const componentContract = normalizePublishedComponentContract(authority.component_contract);
   const factionFeatures = clone(authority.faction_features || {});
   const artDirection = {};
 
