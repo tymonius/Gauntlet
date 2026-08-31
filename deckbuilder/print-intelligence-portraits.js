@@ -1,42 +1,8 @@
 (() => {
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", installIntelligencePortraitTransform, { once: true });
-  } else {
-    installIntelligencePortraitTransform();
-  }
+  const deckbuilder = window.GAUNTLET_DECKBUILDER;
+  if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
 
-  function installIntelligencePortraitTransform() {
-    const button = document.getElementById("printDeckButton");
-    if (!button || button.dataset.intelligencePortraitTransform === "true") return;
-
-    button.dataset.intelligencePortraitTransform = "true";
-    button.addEventListener("click", () => {
-      const inheritedOpen = window.open;
-      let restored = false;
-
-      const restoreOpen = () => {
-        if (restored) return;
-        restored = true;
-        if (window.open === intelligencePortraitAwareOpen) window.open = inheritedOpen;
-      };
-
-      function intelligencePortraitAwareOpen(...args) {
-        const printWindow = inheritedOpen.apply(window, args);
-        if (!printWindow) {
-          restoreOpen();
-          return printWindow;
-        }
-
-        const inheritedWrite = printWindow.document.write.bind(printWindow.document);
-        printWindow.document.write = html => inheritedWrite(frameIntelligencePortraits(html));
-        restoreOpen();
-        return printWindow;
-      }
-
-      window.open = intelligencePortraitAwareOpen;
-      window.setTimeout(restoreOpen, 0);
-    }, true);
-  }
+  deckbuilder.registerPrintTransform("intelligence-portrait-framing", frameIntelligencePortraits, 60);
 
   function frameIntelligencePortraits(html) {
     const documentNode = new DOMParser().parseFromString(html, "text/html");
