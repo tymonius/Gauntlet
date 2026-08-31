@@ -250,9 +250,13 @@ window.addEventListener('load',preparePrint);
   }
 
   function contractAttrs(component) {
-    return component?.contractId
+    const contractId = component?.contractId
       ? ` data-contract-component-id="${escapeHtml(component.contractId)}"`
       : "";
+    const kind = component?.kind
+      ? ` data-print-component-kind="${escapeHtml(component.kind)}"`
+      : "";
+    return contractId + kind;
   }
 
   function componentToPrintHtml(component) {
@@ -320,7 +324,7 @@ window.addEventListener('load',preparePrint);
       ? sections.map(([label, text]) => rulesSection(label, text)).join("")
       : rulesSection("Text", "—");
 
-    return `<article class="print-card main-card fit-target">
+    return `<article class="print-card main-card fit-target" data-card-id="${escapeHtml(card.id)}">
       <header class="card-header"><span class="card-name">${escapeHtml(card.name)}</span><span class="cost-circle">${escapeHtml(card.cost)}</span></header>
       ${card.unique ? '<div class="unique-flag">Unique</div>' : ""}
       <div class="card-body">${sectionHtml}</div>
@@ -446,7 +450,7 @@ window.addEventListener('load',preparePrint);
   }
 
   function territoryToPrintHtml(territory) {
-    return `<article class="print-card territory"><div class="territory-inner fit-target">
+    return `<article class="print-card territory" data-territory-id="${escapeHtml(territory.id)}"><div class="territory-inner fit-target">
       <header class="territory-header"><span class="territory-type">${territory.arena ? "Arena Territory" : "Territory"}</span><span class="territory-name">${escapeHtml(territory.name)}</span></header>
       <div class="territory-body"><div class="card-text">${escapeHtml(territory.text || "")}</div></div>
       <footer class="territory-footer"><span>${escapeHtml(territory.complexity || "")}</span><span>Gauntlet ${escapeHtml(state.currentGameDisplayVersion || state.currentGameVersion || "current")}</span></footer>
