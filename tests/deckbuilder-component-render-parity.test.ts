@@ -8,7 +8,7 @@ const cardReviewRenderer = readFileSync("card-design/card-review-render.html", "
 const cardPrintRenderer = readFileSync("card-design/card-print-render.html", "utf8");
 const territoryReviewRenderer = readFileSync("card-design/territory-review-render.html", "utf8");
 const territoryPrintRenderer = readFileSync("card-design/territory-print-render.html", "utf8");
-const productionPrint = readFileSync("deckbuilder/print-duplex-sheet-pairing.js", "utf8");
+const productionPrint = readFileSync("deckbuilder/production-print.js", "utf8");
 
 describe("Deckbuilder production render shell parity", () => {
   it("loads every current component-specific style and refinement layer used by Card Design", () => {
