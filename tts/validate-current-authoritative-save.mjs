@@ -6,7 +6,7 @@ import { trackerPresentation } from '../scripts/tts-supplemental-geometry.mjs';
 const SUPPLEMENTAL_GUID_NOTE_PREFIX = 'gauntlet:supplemental:';
 const SUPPLEMENTAL_STACK_NOTE_PREFIX = 'gauntlet:supplemental-stack:';
 const STARTER_KIT_NOTE_PREFIX = 'gauntlet:starter-kit:';
-const INTERNAL_TEMPLATE_LIBRARY_NOTE = 'gauntlet:internal:deck-import-template-library';
+const INTERNAL_TEMPLATE_NOTE_PREFIX = 'gauntlet:internal:deck-import-template:';
 const STARTER_DECK_NOTE_PREFIX = 'gauntlet:starter-deck:';
 const STARTER_TERRITORY_STACK_NOTE_PREFIX = 'gauntlet:starter-territories:';
 const PLAYER_TOKEN_NOTE_PREFIX = 'gauntlet:starter-utility:player-token:';
@@ -42,8 +42,8 @@ const FACTION_ROW_Z = Object.freeze({
 
 function walk(objects, visit) {
   for (const object of objects || []) {
+    if (String(object?.GMNotes || '').startsWith(INTERNAL_TEMPLATE_NOTE_PREFIX)) continue;
     visit(object);
-    if (String(object?.GMNotes || '') === INTERNAL_TEMPLATE_LIBRARY_NOTE) continue;
     walk(object?.ContainedObjects, visit);
   }
 }
@@ -327,36 +327,36 @@ function validateBagsAndUtilities(save, manifest) {
   }
   return bags;
 }
-function validateDeckImportTemplateLibrary(save) {
-  const libraries = (save.ObjectStates || []).filter(object => (
-    object?.Name === 'Bag' && object?.GMNotes === INTERNAL_TEMPLATE_LIBRARY_NOTE
+function validateDeckImportTemplates(save) {
+  const templates = (save.ObjectStates || []).filter(object => (
+    object?.Name === 'Bag'
+    && String(object?.GMNotes || '').startsWith(INTERNAL_TEMPLATE_NOTE_PREFIX)
   ));
-  if (libraries.length !== 1) {
-    throw new Error(`Expected exactly one internal Deck import template library; found ${libraries.length}.`);
-  }
-
-  const library = libraries[0];
-  if (library.Locked !== true || library.DragSelectable !== false || library.Tooltip !== false) {
-    throw new Error('Internal Deck import template library must remain locked, non-selectable, and non-interactive.');
-  }
-  if (!close(library.Transform?.posZ, 100) || Number(library.Transform?.scaleX) > 0.11) {
-    throw new Error('Internal Deck import template library must remain parked safely off-table at tiny scale.');
-  }
-
-  const templates = library.ContainedObjects || [];
   if (templates.length !== 12) {
-    throw new Error(`Internal Deck import template library must contain 12 starter templates; found ${templates.length}.`);
+    throw new Error(`Expected 12 internal Deck import templates; found ${templates.length}.`);
   }
 
   const ids = new Set();
+  const guids = new Set();
   for (const template of templates) {
-    const note = String(template?.GMNotes || '');
-    if (!note.startsWith(STARTER_KIT_NOTE_PREFIX)) {
-      throw new Error('Internal Deck import template library contains an object that is not a starter-kit template.');
+    if (template.Locked !== true || template.DragSelectable !== false || template.Tooltip !== false) {
+      throw new Error('Internal Deck import templates must remain locked, non-selectable, and non-interactive.');
     }
-    const starterId = note.slice(STARTER_KIT_NOTE_PREFIX.length);
-    if (!starterId || ids.has(starterId)) throw new Error(`Duplicate or invalid internal starter template ${starterId || 'missing'}.`);
+    if (!close(template.Transform?.posZ, 100) || Number(template.Transform?.scaleX) > 0.11) {
+      throw new Error('Internal Deck import templates must remain parked safely off-table at tiny scale.');
+    }
+
+    const starterId = String(template.GMNotes || '').slice(INTERNAL_TEMPLATE_NOTE_PREFIX.length);
+    if (!starterId || ids.has(starterId)) {
+      throw new Error(`Duplicate or invalid internal starter template ${starterId || 'missing'}.`);
+    }
     ids.add(starterId);
+
+    const guid = String(template.GUID || '').toLowerCase();
+    if (!/^[0-9a-f]{6}$/u.test(guid) || guids.has(guid)) {
+      throw new Error(`Internal starter template ${starterId} has an invalid or duplicate GUID.`);
+    }
+    guids.add(guid);
 
     const deck = (template.ContainedObjects || []).find(object => String(object?.GMNotes || '').startsWith(STARTER_DECK_NOTE_PREFIX));
     const territories = (template.ContainedObjects || []).find(object => String(object?.GMNotes || '').startsWith(STARTER_TERRITORY_STACK_NOTE_PREFIX));
@@ -374,13 +374,22 @@ function validateDeckImportTemplateLibrary(save) {
   const lua = String(save.LuaScript || '');
   const luaBytes = Buffer.byteLength(lua, 'utf8');
   if (luaBytes > 100_000) throw new Error(`Global Lua is too large for stable TTS loading: ${luaBytes} bytes.`);
-  if (!lua.includes(INTERNAL_TEMPLATE_LIBRARY_NOTE) || !lua.includes('library.getJSON()')) {
-    throw new Error('Deck importer Global Lua is not wired to the internal template library.');
+  if (!lua.includes('getObjectFromGUID(guid)') || !lua.includes('templateObject.getData()')) {
+    throw new Error('Deck importer Global Lua is not using direct GUID/getData template access.');
+  }
+  if (lua.includes('getAllObjects()') || lua.includes('.getJSON()')) {
+    throw new Error('Deck importer must not scan or JSON-serialize all template objects at runtime.');
   }
   if (lua.includes('"template":{')) {
     throw new Error('Deck importer must not serialize starter template object trees into Global Lua.');
   }
+
+  const configuredGuids = [...lua.matchAll(/"templateGuid":"([0-9a-f]{6})"/gu)].map(match => match[1]);
+  if (configuredGuids.length !== 12 || configuredGuids.some(guid => !guids.has(guid))) {
+    throw new Error('Deck importer Global Lua does not map all 12 starter kits to their direct internal template GUIDs.');
+  }
 }
+
 
 function validateFamilyStacks(bags) {
   const expectations = new Map([
@@ -577,7 +586,7 @@ async function main() {
   validateTableWorkspace(save);
   validateHandsAndSeats(save);
   const bags = validateBagsAndUtilities(save, manifest);
-  validateDeckImportTemplateLibrary(save);
+  validateDeckImportTemplates(save);
   validateFamilyStacks(bags);
   validateCapitalLedgers(save);
   validateTerritoriesDeedsAndFactionEligibility(save, manifest);
