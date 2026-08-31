@@ -74,6 +74,19 @@ import {
   restoreV070AssetsAtTurnStart,
   turnV070AssetFaceDownUntilPlayerNextTurn,
 } from './asset-face-state';
+import {
+  applyV070FinancierAfterCapture,
+  buyV070Deed,
+  clampAllV070CapitalToLimits,
+  consumeV070FinancialCapacityAction,
+  gainV070Capital,
+  isV070FinancierPlayer,
+  markV070FinancierFeatureActionSpent,
+  placeV070CardInTreasury,
+  v070DeedCost,
+  v070FinancialCapacityAvailable,
+  v070FinancierFeatureActionSpentThisTurn,
+} from './financiers';
 
 export type V070TurnAction =
   | { type: 'resolve_capture'; playerId: PlayerId }
@@ -91,6 +104,22 @@ export type V070TurnAction =
       assetInstanceId: string;
     }
   | { type: 'play_action_card'; playerId: PlayerId; cardInstanceId: string }
+  | {
+      type: 'financier_place_treasury';
+      playerId: PlayerId;
+      cardInstanceId: string;
+    }
+  | {
+      type: 'financier_buy_deed';
+      playerId: PlayerId;
+      territoryPosition: number;
+    }
+  | {
+      type: 'financier_play_market';
+      playerId: PlayerId;
+      cardInstanceId: string;
+      roll: number;
+    }
   | {
       type: 'choose_clemency_target';
       playerId: PlayerId;
@@ -495,6 +524,20 @@ export function reduceV070TurnAction(
     case 'play_action_card':
       playActionCard(next, action.playerId, action.cardInstanceId);
       break;
+    case 'financier_place_treasury':
+      financierPlaceTreasury(next, action.playerId, action.cardInstanceId);
+      break;
+    case 'financier_buy_deed':
+      financierBuyDeed(next, action.playerId, action.territoryPosition);
+      break;
+    case 'financier_play_market':
+      financierPlayMarket(
+        next,
+        action.playerId,
+        action.cardInstanceId,
+        action.roll,
+      );
+      break;
     case 'choose_clemency_target':
       chooseClemencyTarget(next, action.playerId, action.targetInstanceId);
       break;
@@ -736,6 +779,8 @@ function resolveCapture(state: V070GameState, playerId: PlayerId): void {
     return;
   }
 
+  applyV070FinancierAfterCapture(state, playerId);
+
   state.turnState = advanceV070TurnPhase(requireTurnState(state));
   appendPhaseEvent(state);
 }
@@ -777,14 +822,7 @@ function bankAsset(
   cardInstanceId: string,
   replaceAssetInstanceId?: string,
 ): void {
-  const turnState = requireTurnState(state);
-  try {
-    state.turnState = spendV070Action(turnState);
-  } catch (error) {
-    throw new V070GameActionError(
-      error instanceof Error ? error.message : 'That Action cannot be spent now.',
-    );
-  }
+  spendTurnAction(state, playerId);
 
   bankV070AssetWithInherentAction(
     state,
@@ -799,16 +837,207 @@ function discardAsset(
   playerId: PlayerId,
   assetInstanceId: string,
 ): void {
+  spendTurnAction(state, playerId);
+
+  discardV070AssetAsAction(state, playerId, assetInstanceId);
+}
+
+function spendTurnAction(
+  state: V070GameState,
+  playerId: PlayerId,
+  financierFeatureName?: string,
+): void {
   const turnState = requireTurnState(state);
+  const financierFeature = Boolean(financierFeatureName);
+
   try {
     state.turnState = spendV070Action(turnState);
+    if (financierFeature) {
+      markV070FinancierFeatureActionSpent(
+        state,
+        playerId,
+        financierFeatureName!,
+      );
+    }
+    return;
   } catch (error) {
+    const message = error instanceof Error
+      ? error.message
+      : 'That Action cannot be spent now.';
+
+    if (message !== 'No Actions remain this turn.'
+      || !v070FinancialCapacityAvailable(state, playerId)) {
+      throw new V070GameActionError(message);
+    }
+
+    if (!financierFeature
+      && !v070FinancierFeatureActionSpentThisTurn(state, playerId)) {
+      throw new V070GameActionError(
+        'Financial Capacity’s additional Action requires at least one Action this turn to be spent on a Financier Faction Feature.',
+      );
+    }
+
+    try {
+      state.turnState = spendV070Action({
+        ...turnState,
+        actionsAvailable: turnState.actionsAvailable + 1,
+      });
+    } catch (capacityError) {
+      throw new V070GameActionError(
+        capacityError instanceof Error
+          ? capacityError.message
+          : 'Financial Capacity cannot provide another Action in this phase.',
+      );
+    }
+
+    consumeV070FinancialCapacityAction(state, playerId);
+    if (financierFeature) {
+      markV070FinancierFeatureActionSpent(
+        state,
+        playerId,
+        financierFeatureName!,
+      );
+    }
+  }
+}
+
+function requireFinancierDenouement(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  requirePhase(state, 'denouement');
+  if (!isV070FinancierPlayer(state, playerId)) {
     throw new V070GameActionError(
-      error instanceof Error ? error.message : 'That Action cannot be spent now.',
+      `${playerId} is not using the Financiers faction.`,
+    );
+  }
+}
+
+function financierPlaceTreasury(
+  state: V070GameState,
+  playerId: PlayerId,
+  cardInstanceId: string,
+): void {
+  requireFinancierDenouement(state, playerId);
+  if (!state.players[playerId].zones.hand.includes(cardInstanceId)) {
+    throw new V070GameActionError(
+      'Treasury requires one card from your Hand.',
     );
   }
 
-  discardV070AssetAsAction(state, playerId, assetInstanceId);
+  spendTurnAction(state, playerId, 'Treasury');
+  placeV070CardInTreasury(
+    state,
+    playerId,
+    cardInstanceId,
+    'Financier Treasury Faction Feature',
+  );
+}
+
+function financierBuyDeed(
+  state: V070GameState,
+  playerId: PlayerId,
+  territoryPosition: number,
+): void {
+  requireFinancierDenouement(state, playerId);
+  const territory = territoryAt(state, territoryPosition);
+  if (!territory) {
+    throw new V070GameActionError(
+      'A Deed purchase must target a Territory in the Gauntlet.',
+    );
+  }
+
+  const cost = v070DeedCost(
+    state,
+    playerId,
+    territory.territoryInstanceId,
+  );
+  const capital = state.players[playerId].financiers!.capital;
+  if (capital < cost) {
+    throw new V070GameActionError(
+      `That Deed costs ${cost} Capital but only ${capital} is available.`,
+    );
+  }
+
+  spendTurnAction(state, playerId, 'Buy / Buy Out Deed');
+  buyV070Deed(
+    state,
+    playerId,
+    territory.territoryInstanceId,
+    'Financier Buy / Buy Out Deed Faction Feature',
+  );
+}
+
+function financierPlayMarket(
+  state: V070GameState,
+  playerId: PlayerId,
+  cardInstanceId: string,
+  roll: number,
+): void {
+  requireFinancierDenouement(state, playerId);
+  if (!Number.isInteger(roll) || roll < 1 || roll > 6) {
+    throw new V070GameActionError(
+      'Play the Market requires an unmodified d6 result.',
+    );
+  }
+
+  const player = state.players[playerId];
+  const handIndex = player.zones.hand.indexOf(cardInstanceId);
+  if (handIndex < 0) {
+    throw new V070GameActionError(
+      'Play the Market requires one card from your Hand.',
+    );
+  }
+  const cardId = state.cardInstances[cardInstanceId]?.cardId;
+  const card = cardId ? v070CanonicalContent.cardsById.get(cardId) : undefined;
+  if (!card) {
+    throw new V070GameActionError(
+      'Play the Market requires a known card instance.',
+    );
+  }
+
+  spendTurnAction(state, playerId, 'Play the Market');
+
+  player.zones.hand.splice(handIndex, 1);
+  player.zones.discardPile.push(cardInstanceId);
+  appendV070Event(state, {
+    type: 'play_the_market_rolled',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      cardInstanceId,
+      cardId,
+      value: card.cost,
+      roll,
+    },
+  });
+
+  if (roll === 1) {
+    player.zones.discardPile.pop();
+    player.zones.graveyard.push(cardInstanceId);
+    appendV070Event(state, {
+      type: 'play_the_market_card_graveyarded',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        cardInstanceId,
+        cardId,
+      },
+    });
+    return;
+  }
+
+  const gain = roll <= 3
+    ? 1
+    : roll <= 5
+      ? card.cost
+      : card.cost * 2;
+  gainV070Capital(
+    state,
+    playerId,
+    gain,
+    `Play the Market roll ${roll}`,
+  );
 }
 
 export const V070_EXECUTABLE_ACTION_CARD_IDS = [
@@ -1161,13 +1390,7 @@ function playActionCard(
     );
   }
 
-  try {
-    state.turnState = spendV070Action(turnState);
-  } catch (error) {
-    throw new V070GameActionError(
-      error instanceof Error ? error.message : 'That Action cannot be spent now.',
-    );
-  }
+  spendTurnAction(state, playerId);
 
   player.zones.hand.splice(handIndex, 1);
   state.pendingActionCard = {
@@ -1185,7 +1408,7 @@ function playActionCard(
       instanceId: cardInstanceId,
       cardId: card.id,
       phase: turnState.phase,
-      actionsRemaining: state.turnState.actionsAvailable,
+      actionsRemaining: requireTurnState(state).actionsAvailable,
     },
   });
   applyV070BlasphemyForActionPlay(
@@ -6047,6 +6270,8 @@ function completeCleanup(
       },
     });
   }
+
+  clampAllV070CapitalToLimits(state);
 
   const next = otherPlayer(playerId);
   state.activePlayer = next;

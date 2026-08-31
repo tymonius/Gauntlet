@@ -80,6 +80,14 @@ export interface V070InquisitionView {
   conviction: number;
 }
 
+export interface V070FinancierView {
+  capital: number;
+  treasury: V070VisibleCard[];
+  financialCapacityTurn: number | null;
+  financialCapacityUsedTurn: number | null;
+  financierFeatureActionSpentTurn: number | null;
+}
+
 export interface V070PlayerViewState {
   id: PlayerId;
   name: string;
@@ -95,6 +103,7 @@ export interface V070PlayerViewState {
   assetLimit: number;
   diplomats: V070GameState['players'][PlayerId]['diplomats'];
   inquisition: V070InquisitionView | null;
+  financiers: V070FinancierView | null;
 }
 
 export interface V070GameView {
@@ -104,6 +113,7 @@ export interface V070GameView {
   setupStage: V070SetupStage | null;
   players: Record<PlayerId, V070PlayerViewState>;
   board: V070GameState['board'];
+  deeds: V070GameState['deeds'];
   activePlayer: PlayerId | null;
   turnNumber: number;
   turnState: V070GameState['turnState'];
@@ -140,6 +150,7 @@ export function viewV070GameForPlayer(
       B: viewPlayer(state, 'B', viewer),
     },
     board: structuredClone(state.board),
+    deeds: structuredClone(state.deeds),
     activePlayer: state.activePlayer,
     turnNumber: state.turnNumber,
     turnState: state.turnState ? structuredClone(state.turnState) : null,
@@ -295,6 +306,16 @@ function viewPlayer(
     diplomats: player.diplomats ? structuredClone(player.diplomats) : null,
     inquisition: player.inquisition
       ? { conviction: player.inquisition.conviction }
+      : null,
+    financiers: player.financiers
+      ? {
+          capital: player.financiers.capital,
+          treasury: visibleCards(state, player.financiers.treasury),
+          financialCapacityTurn: player.financiers.financialCapacityTurn,
+          financialCapacityUsedTurn: player.financiers.financialCapacityUsedTurn,
+          financierFeatureActionSpentTurn:
+            player.financiers.financierFeatureActionSpentTurn,
+        }
       : null,
   };
 }
