@@ -6,6 +6,11 @@
   const deckEntries = () => deckbuilder.deckEntries();
   const validateDeck = () => deckbuilder.validate();
   const escapeHtml = value => deckbuilder.escapeHtml(value);
+  const productionPrint = () => {
+    const renderer = deckbuilder.feature("productionPrintRenderer");
+    if (!renderer) throw new Error("Deckbuilder production print renderer is unavailable.");
+    return renderer;
+  };
 
   const PRINT_FONT_LINKS = `
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -94,7 +99,7 @@
   function buildPrintDocument(data) {
     const supplemental = buildSupplementalPackage(data);
     const printableItems = [
-      leaderToPrintHtml(data.faction, data.leader, supplemental.leaderImage),
+      leaderToPrintHtml(data.faction, data.leader),
       ...supplemental.inlineItems,
       ...data.cards.map(cardToPrintHtml),
       ...data.territories.map(territoryToPrintHtml)
@@ -256,29 +261,18 @@ window.addEventListener('load',preparePrint);
     }
 
     return {
-      leaderImage: packageData.leaderImages?.[data.leader.id] || "",
       inlineItems,
       dedicatedPages
     };
   }
 
-  function contractAttrs(component) {
-    const contractId = component?.contractId
-      ? ` data-contract-component-id="${escapeHtml(component.contractId)}"`
-      : "";
-    const kind = component?.kind
-      ? ` data-print-component-kind="${escapeHtml(component.kind)}"`
-      : "";
-    return contractId + kind;
-  }
-
   function componentToPrintHtml(component) {
-    if (component.type === "tracker") return trackerToPrintHtml(component);
-    if (component.type === "reference") return referenceToPrintHtml(component);
-    if (component.type === "purge") return purgeToPrintHtml(component);
-    if (component.type === "capital") return capitalToPrintHtml(component);
-    if (component.type === "deed-set") return Array.from({ length: Number(component.count) || 8 }, () => deedToPrintHtml(component));
-    return "";
+    if (!component?.contractId) return "";
+    const item = productionPrint().component(component.contractId, "front");
+    if (component.type === "deed-set") {
+      return Array.from({ length: Number(component.count) || 8 }, () => item);
+    }
+    return item;
   }
 
   function firstPageToHtml(data, pageItems, hasMorePages) {
@@ -332,155 +326,25 @@ window.addEventListener('load',preparePrint);
   }
 
   function cardToPrintHtml(card) {
-    const sections = Object.entries(card.sections || {});
-    const sectionHtml = sections.length
-      ? sections.map(([label, text]) => rulesSection(label, text)).join("")
-      : rulesSection("Text", "—");
-
-    return `<article class="print-card main-card fit-target" data-card-id="${escapeHtml(card.id)}">
-      <header class="card-header"><span class="card-name">${escapeHtml(card.name)}</span><span class="cost-circle">${escapeHtml(card.cost)}</span></header>
-      ${card.unique ? '<div class="unique-flag">Unique</div>' : ""}
-      <div class="card-body">${sectionHtml}</div>
-      <footer class="card-footer"><span>${escapeHtml(card.factionLabel)}</span><span>© 2026 T. Scott</span><span>${escapeHtml(state.currentGameDisplayVersion || state.currentGameVersion || "current")}</span></footer>
-    </article>`;
+    return productionPrint().card(card);
   }
 
-  function leaderToPrintHtml(faction, leader, image) {
-    return `<article class="print-card leader-card fit-target">
-      <div class="leader-art">
-        ${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(leader.name)}">` : ""}
-        <div class="leader-faction">${escapeHtml(faction.name)} Leader</div>
-        <div class="leader-title">${escapeHtml(leader.name)}</div>
-      </div>
-      <div class="leader-card-body">
-        <div class="leader-intro"><div class="leader-tagline">${escapeHtml(leader.tagline || "")}</div><div class="leader-role">${escapeHtml(leader.role || faction.identity)}</div></div>
-        ${(leader.rules || []).map(([label, text]) => rulesSection(label, text)).join("")}
-      </div>
-      <footer class="card-footer"><span>${escapeHtml(faction.name)}</span><span>Supplemental Leader</span><span>${escapeHtml(state.currentGameDisplayVersion || state.currentGameVersion || "current")}</span></footer>
-    </article>`;
-  }
-
-  function referenceToPrintHtml(component) {
-    const subtitle = component.subtitle || "";
-    return `<article class="print-card reference-card fit-target${subtitle ? "" : " no-subtitle"}"${contractAttrs(component)}>
-      <header class="supplemental-header">${escapeHtml(component.title)}</header>
-      ${subtitle ? `<div class="supplemental-subtitle">${escapeHtml(subtitle)}</div>` : ""}
-      <div class="reference-body">${(component.sections || []).map(section => `<section class="reference-section"><div class="card-label">${escapeHtml(section.label)}</div><div class="card-text">${escapeHtml(section.text)}</div></section>`).join("")}</div>
-      <footer class="reference-footer">${escapeHtml(component.footer || "Supplemental reference — not a Playable Deck card")}</footer>
-    </article>`;
-  }
-
-  function purgeToPrintHtml(component) {
-    return `<article class="print-card purge-card fit-target"${contractAttrs(component)}>
-      <header class="supplemental-header">${escapeHtml(component.title)}</header>
-      <div class="reference-body">
-        <div class="purge-intro"><strong>Purge:</strong> ${escapeHtml(component.intro)}</div>
-        <div class="purge-list">${(component.rows || []).map(row => `<div class="purge-row"><div class="purge-cost">${escapeHtml(row.cost)}</div><div class="purge-text">${escapeHtml(row.text)}</div></div>`).join("")}</div>
-        <div class="purge-reminder">${escapeHtml(component.reminder || "")}</div>
-      </div>
-      <footer class="reference-footer">Supplemental reference — not a Playable Deck card</footer>
-    </article>`;
-  }
-
-  function capitalToPrintHtml(component) {
-    return `<article class="print-card capital-tracker-card"${contractAttrs(component)}>
-      <header class="supplemental-header">${escapeHtml(component.title)}</header>
-      <div class="capital-tracker-body">
-        <div class="capital-box"><span>Current Capital</span><div></div></div>
-        <div class="capital-box"><span>Capital Limit</span><div></div></div>
-        <p>${escapeHtml(component.note)}</p>
-      </div>
-      <footer class="reference-footer">Supplemental tracker — not a Playable Deck card</footer>
-    </article>`;
-  }
-
-  function deedToPrintHtml(component) {
-    return `<article class="print-card deed-card"${contractAttrs(component)}>
-      <div class="deed-banner">Deed</div>
-      <div class="deed-seal">§</div>
-      <div class="deed-title">Territory Ownership</div>
-      <div class="deed-rule">When you buy an unowned Deed, place this card beside that Territory on your side.</div>
-      <div class="deed-rule">Move it across on a buyout; return it to the supply when unowned.</div>
-      <div class="deed-note">One per Territory. Heartlands have no Deeds.</div>
-      <footer class="reference-footer">Shared supplemental card — not a Playable Deck card</footer>
-    </article>`;
-  }
-
-  function trackerToPrintHtml(component) {
-    return `<article class="print-card tracker-card"${contractAttrs(component)}>
-      <div class="tracker-title">${escapeHtml(component.title)}</div>
-      <div class="tracker-note">${escapeHtml(component.note)}</div>
-      ${(component.steps || []).map(step => `<div class="tracker-step" style="bottom:${Number(step.position).toFixed(2)}in"><span class="tracker-step-value">${escapeHtml(step.value)}</span><span class="tracker-step-label">${escapeHtml(step.label)}</span></div>`).join("")}
-      <div class="tracker-zero">${escapeHtml(component.zeroLabel || "0 — Fully covered")}</div>
-      <div class="tracker-footer">Supplemental tracker — not a Playable Deck card</div>
-    </article>`;
+  function leaderToPrintHtml(faction, leader) {
+    return productionPrint().leader(faction, leader);
   }
 
   function proposalToPrintHtml(proposal, treaty) {
-    return `<article class="print-card proposal-card fit-target${treaty ? " treaty" : ""}"${contractAttrs(proposal)}>
-      <div class="proposal-banner">${treaty ? "Ratified Treaty Article" : "Proposal"}</div>
-      <div class="proposal-title-row">
-        <div><div class="proposal-number">Article ${escapeHtml(proposal.number)}</div><div class="proposal-title">${escapeHtml(proposal.name)}</div></div>
-        <div class="stake-seal">${escapeHtml(proposal.stake)}</div>
-      </div>
-      ${proposal.requirement ? `<div class="requirement"><strong>Requirement:</strong> ${escapeHtml(proposal.requirement)}</div>` : ""}
-      <div class="proposal-body">
-        <div class="proposal-effect"><strong>Accepted:</strong> ${escapeHtml(proposal.accepted)}</div>
-        <div class="proposal-effect"><strong>Refused:</strong> ${escapeHtml(proposal.refused)}</div>
-      </div>
-      <div class="proposal-footer">Pair ${escapeHtml(proposal.number)} · ${treaty ? "Treaty Article side" : "Proposal side"} · Full rules remain active</div>
-    </article>`;
+    if (!proposal?.contractId) throw new Error("Proposal print contract id is missing.");
+    return productionPrint().component(proposal.contractId, treaty ? "reverse" : "front");
   }
 
-
   function riteToPrintHtml(rite, completed) {
-    if (completed) {
-      const mystics = state.currentGameData?.mystics || {};
-      const unlocks = (mystics.unlocks || [])
-        .filter(unlock => unlock.count && unlock.name && unlock.count !== "Ritual")
-        .map(unlock => `${unlock.count} unlocks ${unlock.name}`);
-      const ritualName = mystics.ritual?.name || "the Ritual";
-      const progression = unlocks.length
-        ? `${unlocks.join(". ")}. Completing all selected Rites permits ${ritualName}.`
-        : `Completing all selected Rites permits ${ritualName}.`;
-      return `<article class="print-card rite-card completed fit-target"${contractAttrs(rite)}>
-        <div class="rite-banner">Completed Rite</div>
-        <div class="rite-icon">${escapeHtml(rite.icon || "✦")}</div>
-        <div class="rite-title">${escapeHtml(rite.name)}</div>
-        <div class="rite-body">
-          <div class="rite-complete">This Rite is complete. Keep this side face up; it cannot be begun again.</div>
-          <div class="rite-progress"><strong>Progression:</strong> ${escapeHtml(progression)}</div>
-        </div>
-        <div class="rite-footer">Pair with the incomplete side · not a Playable Deck card</div>
-      </article>`;
-    }
-    return `<article class="print-card rite-card fit-target"${contractAttrs(rite)}>
-      <div class="rite-banner">Incomplete Rite</div>
-      <div class="rite-icon">${escapeHtml(rite.icon || "✦")}</div>
-      <div class="rite-title">${escapeHtml(rite.name)}</div>
-      <div class="rite-body">
-        ${rite.requirement ? `<div class="rite-section"><strong>Requirement:</strong> ${escapeHtml(rite.requirement)}</div>` : ""}
-        <div class="rite-section"><strong>Beginning cost:</strong> ${escapeHtml(rite.beginning)}</div>
-        <div class="rite-section"><strong>Completion:</strong> ${escapeHtml(rite.completion)}</div>
-        ${rite.reminder ? `<div class="rite-section rite-reminder"><em>${escapeHtml(rite.reminder)}</em></div>` : ""}
-        ${rite.result ? `<div class="rite-section"><strong>Result:</strong> ${escapeHtml(rite.result)}</div>` : ""}
-        <div class="rite-section"><strong>Interruption:</strong> ${escapeHtml(rite.interruption)}</div>
-      </div>
-      <div class="rite-footer">Flip when complete · not a Playable Deck card</div>
-    </article>`;
+    if (!rite?.contractId) throw new Error("Rite print contract id is missing.");
+    return productionPrint().component(rite.contractId, completed ? "reverse" : "front");
   }
 
   function territoryToPrintHtml(territory) {
-    return `<article class="print-card territory" data-territory-id="${escapeHtml(territory.id)}"><div class="territory-inner fit-target">
-      <header class="territory-header"><span class="territory-type">${territory.arena ? "Arena Territory" : "Territory"}</span><span class="territory-name">${escapeHtml(territory.name)}</span></header>
-      <div class="territory-body"><div class="card-text">${escapeHtml(territory.text || "")}</div></div>
-      <footer class="territory-footer"><span>${escapeHtml(territory.complexity || "")}</span><span>Gauntlet ${escapeHtml(state.currentGameDisplayVersion || state.currentGameVersion || "current")}</span></footer>
-    </div></article>`;
-  }
-
-  function rulesSection(label, text) {
-    const reminderClass = String(label).toLowerCase() === "reminder" ? " reminder" : "";
-    return `<section class="rules-section${reminderClass}"><div class="card-label">${escapeHtml(label)}</div><div class="card-text">${escapeHtml(text || "—")}</div></section>`;
+    return productionPrint().territory(territory);
   }
 
   function chunk(items, size) {
