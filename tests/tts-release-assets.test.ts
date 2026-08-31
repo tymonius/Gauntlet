@@ -62,7 +62,7 @@ describe('TTS GitHub Release asset hosting', () => {
   });
 
   it('keeps publication an explicit main-branch workflow action', () => {
-    expect(packageJson.scripts['tts:release:stage']).toContain('node tts/ensure-current-mystics-assets.mjs');
+    expect(packageJson.scripts['tts:release:stage']).not.toContain('ensure-current-mystics-assets.mjs');
     expect(packageJson.scripts['tts:release:stage']).toContain('npm run tts:environment');
     expect(packageJson.scripts['tts:release:stage']).toContain('node scripts/stage-tts-release-assets.mjs');
     expect(workflow).toContain('publish_release_assets:');
