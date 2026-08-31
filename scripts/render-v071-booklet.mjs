@@ -77,7 +77,7 @@ function applyCurrentBackCoverPublishing(source) {
   const logo = `../${publishingAuthority.imprint.logo}`;
   const publisherStatement = escapeHtml(publishingAuthority.playerFacing.imprintStatement);
   const copyrightNotice = escapeHtml(publishingAuthority.copyright.notice);
-  const replacement = `<div class="back-legal"><div class="back-publisher-lockup"><img class="back-publisher-mark" src="${escapeHtml(logo)}" alt="TDS Games publisher mark" /><div class="back-publisher-copy"><strong>Gauntlet ${RELEASE_VERSION} · ${escapeHtml(RELEASE_NAME)}</strong><br />${publisherStatement}<br />${copyrightNotice}</div></div><div class="back-restrictions">Repository and release materials are provided for private review and playtesting only. They may not be copied, redistributed, sold, republished, or used to create commercial derivative works without written permission.</div></div>`;
+  const replacement = `<div class="back-legal"><div class="back-publisher-lockup"><img class="back-publisher-mark" src="${escapeHtml(logo)}" alt="TDS Games publisher mark" /><div class="back-publisher-copy"><strong>Gauntlet ${RELEASE_VERSION} · ${escapeHtml(RELEASE_NAME)}</strong><br />${publisherStatement}<br /><br />${copyrightNotice}</div></div><div class="back-restrictions">Repository and release materials are provided for private review and playtesting only. They may not be copied, redistributed, sold, republished, or used to create commercial derivative works without written permission.</div></div>`;
   return source.slice(0, start) + replacement + source.slice(end + '</div>'.length);
 }
 
