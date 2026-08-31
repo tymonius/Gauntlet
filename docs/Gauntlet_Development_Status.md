@@ -17,7 +17,7 @@ v0.7.1 preserves the v0.7.0 two-player core while adding the approved focused up
 - **6 factions and 12 Leaders**;
 - **12 locked starter Decks**, each 30 cards / 60 Deckbuilding Value;
 - the Onset-based battle sequence and six-Proposal Peace Treaty threshold;
-- a **six-Rite Mystics pool**, with exactly three different Rites selected publicly during game-package construction;
+- a **six-Rite Mystics pool**, with exactly three different Rites selected privately during game-package construction and revealed when begun;
 - the approved Echoes and Crossing revisions plus the new Shattering, Consecration, and Equivalence Rites;
 - the canonical **Ritual of Ascension** route after all three selected Rites are completed;
 - audited faction/card metadata, including 15 Mystics cards and the Unique status of Plenipotentiary and Martyrdom;
