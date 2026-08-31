@@ -6,49 +6,8 @@
   const COLUMNS = 3;
   const RENDER_TIMEOUT_MS = 30000;
 
-  document.addEventListener("DOMContentLoaded", installProductionPrintIntegration);
-
-  function installProductionPrintIntegration() {
-    installFactionBackOption();
-
-    const button = document.getElementById("printDeckButton");
-    if (!button) return;
-
-    button.addEventListener("click", () => {
-      const inheritedOpen = window.open;
-      let restored = false;
-
-      const restoreOpen = () => {
-        if (restored) return;
-        restored = true;
-        if (window.open === productionAwareOpen) window.open = inheritedOpen;
-      };
-
-      function productionAwareOpen(...args) {
-        const printWindow = inheritedOpen.apply(window, args);
-        if (!printWindow) {
-          restoreOpen();
-          return printWindow;
-        }
-
-        const inheritedWrite = printWindow.document.write.bind(printWindow.document);
-        printWindow.document.write = html => {
-          try {
-            inheritedWrite(prepareProductionPrintDocument(html));
-          } catch (error) {
-            console.error(error);
-            window.alert(`Unable to prepare the production card print package: ${error.message}`);
-            printWindow.close();
-          }
-        };
-        restoreOpen();
-        return printWindow;
-      }
-
-      window.open = productionAwareOpen;
-      window.setTimeout(restoreOpen, 0);
-    }, true);
-  }
+  deckbuilder.registerPrintTransform("production-rendering", prepareProductionPrintDocument, 40);
+  document.addEventListener("DOMContentLoaded", installFactionBackOption);
 
   function installFactionBackOption() {
     const printBacks = document.getElementById("printCardBacks");
