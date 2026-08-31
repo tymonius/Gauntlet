@@ -1,4 +1,8 @@
 (() => {
+  const deckbuilder = window.GAUNTLET_DECKBUILDER;
+  if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
+  const { state } = deckbuilder;
+
   const COLUMNS = 3;
   const DUPLEX_SLOT_COUNT = 9;
   const REFERENCE_SLOT = 4;
