@@ -13,7 +13,7 @@ describe("Deckbuilder current Leader printing", () => {
     expect(leaderCopyScript).toContain("import('../game-data/current-game.mjs')");
     expect(leaderCopyScript).toContain('currentGame.leaders');
     expect(leaderCopyScript).not.toContain('leader-card-copy.json');
-    expect(currentGame.version).toBe("v0.7.0");
+    expect(currentGame.version).toBe("v0.7.1");
     expect(currentGame.leaders).toHaveLength(12);
   });
 
