@@ -1,6 +1,12 @@
 const deckbuilder = window.GAUNTLET_DECKBUILDER;
 if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
 
+const productionPrint = () => {
+  const renderer = deckbuilder.feature("productionPrintRenderer");
+  if (!renderer) throw new Error("Deckbuilder production print renderer is unavailable.");
+  return renderer;
+};
+
 const CUSTOM_PRINT_STYLE_URL = "custom-print.css?v=20260823-2";
 const CARDS_PER_SHEET = 9;
 const COLUMNS = 3;
@@ -167,7 +173,7 @@ function buildCatalog(game) {
   }
   for (const leader of game.leaders || []) {
     const faction = leader.faction || "shared";
-    entries.push(makeEntry(`leader:${faction}:${leader.id}`, leader.name, "Leader", faction, factionNames.get(faction) || faction, "portrait", "standardBack", { surface: "component", kind: "leader", id: `${faction}-${leader.id}` }));
+    entries.push(makeEntry(`leader:${faction}:${leader.id}`, leader.name, "Leader", faction, factionNames.get(faction) || faction, "portrait", "standardBack", { surface: "leader", id: `${faction}-${leader.id}` }));
   }
 
   const contractComponents = [
@@ -192,33 +198,25 @@ function makeEntry(key, name, category, faction, factionLabel, orientation, back
 
 function componentCatalogEntry(component, factionNames) {
   if ((component.designStatus || "final") === "placeholder") return null;
-  const render = renderDescriptorForComponent(component);
-  if (!render) return null;
-  const faction = component.faction || "shared";
-  const orientation = component.id === "financiers-deed" || component.family === "deed-card" || component.orientation === "landscape" ? "landscape" : "portrait";
-  const backPolicy = component.backPolicy || "standardBack";
-  return makeEntry(`component:${component.id}`, component.name, componentCategory(component), faction, factionNames.get(faction) || (faction === "shared" ? "Shared" : faction), orientation, backPolicy, render);
-}
 
-function renderDescriptorForComponent(component) {
-  const explicit = component.renderSource || {};
-  const surface = String(explicit.surface || "");
-  const componentId = String(explicit.componentId || "").trim();
-  const explicitKind = String(explicit.kind || "").trim();
-  if (explicitKind && componentId) return { surface: "component", kind: explicitKind, id: componentId };
-  if (component.id === "financiers-capital-ledger") return { surface: "component", kind: "supplemental", id: "financiers-capital-ledger" };
-  if (component.id === "financiers-deed") return { surface: "component", kind: "supplemental", id: "financiers-deed" };
-  if (/supplemental-card\.js$/i.test(surface) && componentId) return { surface: "component", kind: "supplemental", id: componentId };
-  if (/reference-card\.js$/i.test(surface)) return { surface: "component", kind: "reference", id: componentId || component.id };
-  if (/proposal-card\.js$/i.test(surface)) return { surface: "component", kind: "proposal", id: componentId || component.id.replace(/^diplomats-proposal-/, "") };
-  if (/rite-card\.js$/i.test(surface)) return { surface: "component", kind: "rite", id: componentId || component.id.replace(/^mystics-rite-/, "") };
-  if (component.family === "reference-card") return { surface: "component", kind: "reference", id: component.id };
-  if (component.family === "tracker") return { surface: "component", kind: componentId ? "tracker" : "supplemental", id: componentId || component.id };
-  if (component.family === "proposal-treaty-card") return { surface: "component", kind: "proposal", id: component.id.replace(/^diplomats-proposal-/, "") };
-  if (component.family === "rite-card") return { surface: "component", kind: "rite", id: component.id.replace(/^mystics-rite-/, "") };
-  if (component.family === "ritual-card") return { surface: "component", kind: "ritual", id: componentId || component.id.replace(/^mystics-ritual-of-/, "") };
-  if (component.family === "ledger" || component.family === "deed-card") return { surface: "component", kind: "supplemental", id: componentId || component.id };
-  return { surface: "component", kind: "supplemental", id: componentId || component.id };
+  let descriptor;
+  try {
+    descriptor = productionPrint().componentDescriptor(component.id);
+  } catch {
+    return null;
+  }
+
+  const faction = component.faction || descriptor.faction || "shared";
+  return makeEntry(
+    `component:${component.id}`,
+    component.name,
+    componentCategory(component),
+    faction,
+    factionNames.get(faction) || (faction === "shared" ? "Shared" : faction),
+    descriptor.orientation || "portrait",
+    descriptor.backPolicy || "standardBack",
+    { surface: "component", id: component.id },
+  );
 }
 
 function componentCategory(component) {
@@ -403,17 +401,24 @@ function reverseCellHtml(entry, includeStandardBacks, backStyle) {
   return "";
 }
 
-function selectedRulesetMode() {
-  return deckbuilder.ruleset()?.mode
-    || (new URLSearchParams(window.location.search).get("rules") === "candidate" ? "candidate" : "released");
-}
-
 function cardFrameHtml(entry, side) {
-  const ruleset = `&rules=${encodeURIComponent(selectedRulesetMode())}`;
+  const renderer = productionPrint();
   let src;
-  if (entry.render.surface === "card") src = `/card-design/card-print-render.html?card=${encodeURIComponent(entry.render.id)}&fit=production${ruleset}`;
-  else if (entry.render.surface === "territory") src = `/card-design/territory-print-render.html?territory=${encodeURIComponent(entry.render.id)}${ruleset}`;
-  else src = `/card-design/component-print-render.html?kind=${encodeURIComponent(entry.render.kind)}&id=${encodeURIComponent(entry.render.id)}&side=${encodeURIComponent(side)}${entry.orientation === "landscape" ? "&orientation=landscape" : ""}${ruleset}`;
+  if (entry.render.surface === "card") {
+    src = renderer.cardSource(entry.render.id);
+  } else if (entry.render.surface === "territory") {
+    src = renderer.territorySource(entry.render.id);
+  } else if (entry.render.surface === "leader") {
+    src = renderer.frameSource({
+      kind: "leader",
+      id: entry.render.id,
+      side,
+      orientation: entry.orientation,
+    });
+  } else {
+    src = renderer.componentSource(entry.render.id, side);
+  }
+
   const frame = `<iframe class="custom-render-frame" data-custom-render-frame data-custom-render-kind="face" src="${escapeHtml(src)}" title="${escapeHtml(`${entry.name} ${side} production render`)}" scrolling="no" loading="eager"></iframe>`;
   return entry.orientation === "landscape" ? `<div class="custom-landscape-rotate">${frame}</div>` : frame;
 }
