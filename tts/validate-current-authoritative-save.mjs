@@ -388,6 +388,21 @@ function validateDeckImportTemplates(save) {
   if (configuredGuids.length !== 12 || configuredGuids.some(guid => !guids.has(guid))) {
     throw new Error('Deck importer Global Lua does not map all 12 starter kits to their direct internal template GUIDs.');
   }
+
+  const spawnStates = [...lua.matchAll(/"spawnState":\{/gu)];
+  if (spawnStates.length !== 12) {
+    throw new Error(`Deck importer Global Lua must carry 12 starter Bag spawn-state records; found ${spawnStates.length}.`);
+  }
+  for (const required of [
+    'function gauntletRestoreStarterBagState',
+    'bagData.Transform.scaleX = tonumber(transform.scaleX) or 1',
+    'bagData.Transform.scaleY = tonumber(transform.scaleY) or 1',
+    'bagData.Transform.scaleZ = tonumber(transform.scaleZ) or 1',
+    'bagData.Locked = state.locked == true',
+    'bagData.DragSelectable = state.dragSelectable ~= false',
+  ]) {
+    if (!lua.includes(required)) throw new Error(`Deck importer is missing starter Bag spawn-state restoration: ${required}`);
+  }
 }
 
 
