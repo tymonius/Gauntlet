@@ -322,7 +322,7 @@ function validateAndRender() {
 function currentDeckData() {
   return {
     schema: "gauntlet-deck",
-    schemaVersion: 2,
+    schemaVersion: 3,
     gameVersion: state.currentGameVersion || "current-game",
     gameAuthority: state.currentGameAuthority || "/game-data/current-game.json",
     name: state.deckName.trim() || "Untitled Gauntlet Deck",
@@ -377,7 +377,7 @@ function readSavedDecks() {
 }
 
 function applyDeckData(data) {
-  if (data.schema !== "gauntlet-deck" || data.schemaVersion !== 2) {
+  if (data.schema !== "gauntlet-deck" || data.schemaVersion !== 3) {
     throw new Error("This is not a current Gauntlet Deck export.");
   }
   const currentVersion = state.currentGameVersion || "current-game";
