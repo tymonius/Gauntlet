@@ -281,26 +281,30 @@
     const fitScript = documentNode.createElement("script");
     fitScript.dataset.gauntletPrintSummaryFit = "true";
     fitScript.textContent = `(() => {
-  const summary = document.querySelector('.first-page-summary');
-  if (!summary) return;
-  const overflowTargets = () => [
-    summary,
-    ...summary.querySelectorAll('.deck-list, .summary-side, .starter-print-strategy')
-  ];
-  const overflows = () => overflowTargets().some(node => (
-    node.scrollHeight > node.clientHeight + 1 || node.scrollWidth > node.clientWidth + 1
-  ));
-  const fit = () => {
+  const summaries = [...document.querySelectorAll('.first-page-summary')];
+  if (!summaries.length) return;
+
+  const fitSummary = summary => {
+    const overflowTargets = () => [
+      summary,
+      ...summary.querySelectorAll('.deck-list, .summary-side, .starter-print-strategy')
+    ];
+    const overflows = () => overflowTargets().some(node => (
+      node.scrollHeight > node.clientHeight + 1 || node.scrollWidth > node.clientWidth + 1
+    ));
+
     summary.classList.remove('summary-auto-tight', 'summary-auto-tightest');
     if (!overflows()) return;
     summary.classList.add('summary-auto-tight');
     void summary.offsetHeight;
     if (overflows()) summary.classList.add('summary-auto-tightest');
   };
+
+  const fitAll = () => summaries.forEach(fitSummary);
   const run = async () => {
     try { if (document.fonts?.ready) await document.fonts.ready; } catch (error) {}
-    fit();
-    requestAnimationFrame(() => requestAnimationFrame(fit));
+    fitAll();
+    requestAnimationFrame(() => requestAnimationFrame(fitAll));
   };
   if (document.readyState === 'loading') window.addEventListener('load', run, { once: true });
   else run();
