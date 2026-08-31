@@ -91,7 +91,7 @@ describe("Deckbuilder production printing", () => {
   });
 
   it("previews the selected faction component back without exposing a global back-color choice", () => {
-    expect(deckbuilderHtml).toContain('card-back-preview.js?v=20260831-1');
+    expect(deckbuilderHtml).toContain('card-back-preview.js?v=20260831-2');
     expect(cardBackPolicy).toContain('preview.id = "cardBackPreview"');
     expect(cardBackPolicy).toContain('frame.id = "cardBackPreviewFrame"');
     expect(cardBackPolicy).toContain('productionPrint().backSource(faction)');
