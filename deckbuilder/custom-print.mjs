@@ -425,7 +425,8 @@ function cardFrameHtml(entry, side) {
 
 function backFrameHtml(faction) {
   const safeFaction = BACK_VARIANTS.has(faction) ? faction : "intelligence";
-  return `<iframe class="custom-back-frame" data-custom-render-frame data-custom-render-kind="back" src="/tts/back-renderer/index.html?faction=${encodeURIComponent(safeFaction)}&rotation=180" title="${escapeHtml(safeFaction)} card back" scrolling="no" loading="eager"></iframe>`;
+  const src = productionPrint().backSource(safeFaction, 180);
+  return `<iframe class="custom-back-frame" data-custom-render-frame data-custom-render-kind="back" src="${escapeHtml(src)}" title="${escapeHtml(safeFaction)} card back" scrolling="no" loading="eager"></iframe>`;
 }
 function canonicalBackFactionForEntry(entry) {
   if (entry.render.surface === "card" || entry.render.surface === "territory") return "intelligence";
