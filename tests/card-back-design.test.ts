@@ -18,8 +18,9 @@ const factionTokens = {
 
 describe("playable-card back color studies", () => {
   it("shows all six faction colorways in the card review catalog", () => {
-    expect(html).toContain('href="#card-back"');
+    expect(html).toContain('<option value="back">Card backs</option>');
     expect(html).toContain('id="card-back"');
+    expect(html).toContain('data-catalog-kind="back"');
     expect(html).toContain('data-card-back-colorways');
     expect(html.match(/data-gauntlet-card-back/g)?.length).toBe(6);
     for (const faction of Object.keys(factionTokens)) {

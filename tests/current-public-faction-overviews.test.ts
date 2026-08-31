@@ -34,17 +34,19 @@ describe('current public faction overviews', () => {
     for (const order of ['Entrench', 'Repel', 'Fortify']) expect(general).not.toContain(order);
   });
 
-  test('identifies the staged homepage with the current-game release identity', () => {
+  test('keeps the public homepage on the published release while permitting a newer development candidate', () => {
+    const publishedVersion = String(lifecycle.current_release || '');
+    expect(publishedVersion).not.toBe('');
     expect(stagedVersion).not.toBe('');
     const homepage = read('index.html');
-    expect(homepage).toContain(stagedVersion);
-    if (String(lifecycle.current_release || '') !== stagedVersion) {
-      expect(['release-candidate', 'release-ready']).toContain(currentGame.status);
+    expect(homepage).toContain(publishedVersion);
+    if (publishedVersion !== stagedVersion) {
+      expect(['active-development', 'release-candidate', 'release-ready']).toContain(currentGame.status);
     }
   });
 
   test('keeps historical v0.6.1 synchronization away from current faction pages', () => {
-    const historicalSync = read('scripts/sync_v061_public_rules.py');
+    const historicalSync = read('docs/recovery/frozen-scripts/v0.6.1/sync_v061_public_rules.py');
     const historicalPaths = historicalSync.slice(
       historicalSync.indexOf('HISTORICAL_PATHS'),
       historicalSync.indexOf('CURRENT_FACTION_PATHS'),

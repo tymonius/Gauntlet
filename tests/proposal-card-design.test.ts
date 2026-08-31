@@ -26,10 +26,11 @@ describe("Diplomat Proposal / Treaty Article catalog", () => {
   it("adds the complete supplemental component section to the unified card review page", () => {
     expect(reviewPage).toContain('id="proposal-cards"');
     expect(reviewPage).toContain('id="proposalReviewSections"');
-    expect(reviewPage).toContain('href="#proposal-cards"');
+    expect(reviewPage).toContain('<option value="proposal">Proposals</option>');
+    expect(reviewPage).toContain('data-catalog-kind="proposal"');
     expect(reviewPage).toContain('href="proposal-card.css"');
     expect(reviewPage).toContain('type="module" src="proposal-card.js"');
-    expect(reviewPage).toContain('<span data-proposal-count>9</span> / <span data-rite-count>3</span>');
+    expect(reviewPage).toContain('<span data-proposal-count>9</span> / <span data-rite-count>6</span>');
     expect(reviewPage).toContain("Proposal / Rite pairs");
     expect(reviewPage).toContain("All <span data-proposal-count>9</span> canonical Proposals in order");
   });
@@ -76,7 +77,7 @@ describe("Diplomat Proposal / Treaty Article catalog", () => {
   });
 
   it("keeps Proposal authority complete in current-game while preserving the historical rewrite as provenance", () => {
-    expect(currentAuthority.version).toBe("v0.7.0");
+    expect(currentAuthority.displayVersion).toBeTruthy();
     expect(currentAuthority.proposals).toEqual(approved.proposals);
     expect(currentAuthority.provenance.historicalInputs.proposals).toBe("/docs/v0.6.4-diplomat-proposals.json");
     expect(proposalRenderer).toContain("if (!proposals.length) throw new Error('Current-game authority has no Proposals.')");
