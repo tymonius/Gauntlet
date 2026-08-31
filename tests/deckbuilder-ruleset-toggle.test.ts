@@ -64,9 +64,10 @@ describe('Deckbuilder released / release-candidate ruleset toggle', () => {
   });
 
   it('keeps saved Deck libraries separate so candidate Decks do not silently appear as released Decks', () => {
-    expect(runtime).toContain('gauntlet-v0.7.1-decks');
+    expect(runtime).toContain('gauntlet-${module.PUBLISHED_VERSION}-decks');
     expect(runtime).toContain('gauntlet-current-game-decks');
     expect(runtime).toContain('requestedRulesetMode === CANDIDATE_MODE');
+    expect(runtime).not.toMatch(/gauntlet-v0\.\d+\.\d+-decks/);
   });
 
   it('treats v0.7.1 Mystics Rites as a pregame choice', () => {
