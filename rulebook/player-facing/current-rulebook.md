@@ -800,7 +800,7 @@ Choose exactly three different Territory Cards.
 
 Prepare all components required by the chosen faction and Leader.
 
-If you chose Mystics, secretly choose exactly three different Rites from the six-Rite pool as part of game-package construction. You are under no obligation to reveal your chosen Rites until you begin them. Only those selected Rites may be begun during that game.
+If you chose Mystics, secretly choose exactly three<!-- RULE-FACT:mystics.rites.selected_count:word --> different Rites from the six<!-- RULE-FACT:mystics.rites.count:word -->-Rite pool as part of game-package construction. You are under no obligation to reveal your chosen Rites until you begin them. Only those selected Rites may be begun during that game.
 
 Unless a rule says otherwise, supplemental components:
 
@@ -1907,7 +1907,7 @@ When the controller of Watchtower defends there, the attacker sets their Gambit 
 
 ## How it works
 
-Mystics sacrifice, bind, exchange, recover, and transform cards while completing three selected **Rites**. A Mystics game package secretly chooses exactly three different Rites from a pool of six. You are under no obligation to reveal your chosen Rites until you begin them. Only those selected Rites may be begun during that game.
+Mystics sacrifice, bind, exchange, recover, and transform cards while completing three selected **Rites**. A Mystics game package secretly chooses exactly three<!-- RULE-FACT:mystics.rites.selected_count:word --> different Rites from a pool of six<!-- RULE-FACT:mystics.rites.count:word -->. You are under no obligation to reveal your chosen Rites until you begin them. Only those selected Rites may be begun during that game.
 
 The first completed Rite unlocks **Invocation**, the second unlocks **Transmutation**, and the third unlocks **Convergence** and the ability to begin the **Ritual of Ascension**.
 
@@ -1954,7 +1954,7 @@ A Mystics game package includes:
 - exactly three different double-sided Rite cards chosen from the six-Rite pool; and
 - any Mystics cards included in the Deck.
 
-Rite selection is part of game-package construction. Place the three selected Rite cards incomplete side up and visible to both players during setup. Rites not selected for that game are not part of the game package and cannot be begun. Mystics use no resource tracker.
+Rite selection is part of game-package construction. During setup, keep your chosen Rites hidden from your opponent. You are under no obligation to reveal a chosen Rite until you begin it. When you begin a Rite, reveal it. Rites not selected for that game are not part of the game package and cannot be begun. Mystics use no resource tracker.
 
 ## Rites and progression
 
