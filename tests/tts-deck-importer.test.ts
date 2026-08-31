@@ -254,7 +254,7 @@ describe('TTS Deckbuilder importer', () => {
     expect(library).toBeTruthy();
     expect(library.Locked).toBe(true);
     expect(library.DragSelectable).toBe(false);
-    expect(library.Transform.posY).toBe(-30);
+    expect(library.Transform.posZ).toBe(100);
     expect(library.ContainedObjects).toHaveLength(2);
 
     const template = library.ContainedObjects.find((object: any) =>
