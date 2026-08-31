@@ -42,8 +42,10 @@
 
     const loaded = await Promise.all(requests.map(([font, sample]) => document.fonts.load(font, sample)));
     await document.fonts.ready;
-    if (loaded.some(faces => !faces.length)) {
-      throw new Error("One or more production component fonts failed to load before fitting.");
+    const missing = requests.filter((_, index) => !loaded[index].length).map(([font]) => font);
+    if (missing.length) {
+      const available = [...document.fonts].map(face => `${face.family}:${face.weight}:${face.style}`).join(", ");
+      throw new Error(`Production component fonts failed to load before fitting: ${missing.join("; ")}. Available web fonts: ${available || "none"}.`);
     }
     card.dataset.renderFontsReady = "true";
   }
