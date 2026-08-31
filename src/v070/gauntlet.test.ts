@@ -14,6 +14,7 @@ import {
   effectiveV070AssetLimit,
 } from './assets';
 import {
+  checkV070ControllingInterest,
   v070CapitalLimit,
 } from './financiers';
 
@@ -284,11 +285,14 @@ describe('v0.7.0 dynamic Gauntlet insertion', () => {
 
     expect(state.deeds.filter(deed => deed.owner === 'B')).toHaveLength(6);
     expect(state.board).toHaveLength(7);
+    expect(checkV070ControllingInterest(state, 'B')).toBe(false);
     expect(state.stage).toBe('playing');
 
     state.deeds.find(
       deed => deed.territoryInstanceId === 'new-required-deed',
     )!.owner = 'B';
-    expect(state.deeds.every(deed => deed.owner === 'B')).toBe(true);
+    expect(checkV070ControllingInterest(state, 'B')).toBe(true);
+    expect(state.stage).toBe('ended');
+    expect(state.winner).toBe('B');
   });
 });
