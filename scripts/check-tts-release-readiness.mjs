@@ -74,14 +74,24 @@ function countSupplementalsById(objects) {
   return counts;
 }
 
+function riteIdFromComponent(component) {
+  const id = String(component?.id || '');
+  return id.startsWith('mystics-rite-') ? id.slice('mystics-rite-'.length) : '';
+}
+
+function componentAppliesToStarter(component, starter) {
+  if (component?.deckInclusion === 'every-deck') return true;
+  if (component?.faction !== starter?.factionId) return false;
+  if (component?.family === 'rite-card') {
+    const selectedRites = Array.isArray(starter?.selectedRites) ? starter.selectedRites : [];
+    return selectedRites.includes(riteIdFromComponent(component));
+  }
+  return true;
+}
+
 export function evaluateStarterAssembly(starterManifest, supplementalManifest, save) {
   const blockers = [];
-  const readyByFaction = new Map();
-  for (const component of supplementalManifest.ready || []) {
-    if (!component.faction) continue;
-    if (!readyByFaction.has(component.faction)) readyByFaction.set(component.faction, []);
-    readyByFaction.get(component.faction).push(component);
-  }
+  const readyComponents = supplementalManifest.ready || [];
 
   const bags = (save.ObjectStates || []).filter(object => object?.Name === 'Bag');
   const bagByNickname = new Map(bags.map(bag => [bag.Nickname, bag]));
@@ -102,7 +112,7 @@ export function evaluateStarterAssembly(starterManifest, supplementalManifest, s
     }
 
     const counts = countSupplementalsById(bag.ContainedObjects || []);
-    for (const component of readyByFaction.get(starter.factionId) || []) {
+    for (const component of readyComponents.filter(item => componentAppliesToStarter(item, starter))) {
       const expected = Number(component.quantity || 0);
       const actual = counts.get(component.id) || 0;
       expectedCopies += expected;
