@@ -70,7 +70,7 @@ describe("Deckbuilder custom printing", () => {
     expect(customPrint).toContain("renderer.frameSource({");
     expect(customPrint).toContain("renderer.componentSource(entry.render.id, side)");
     expect(customPrint).toContain("productionPrint().componentDescriptor(component.id)");
-    expect(customPrint).toContain("/tts/back-renderer/index.html?faction=");
+    expect(customPrint).toContain("productionPrint().backSource(safeFaction, 180)");
     expect(customPrint).not.toContain("/card-design/card-print-render.html?card=");
     expect(customPrint).not.toContain("/card-design/territory-print-render.html?territory=");
     expect(customPrint).not.toContain("/card-design/component-print-render.html?kind=");
