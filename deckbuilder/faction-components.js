@@ -1,6 +1,4 @@
 (() => {
-  const MYSTICS_RITUAL_COMPONENT_ID = "mystics-ritual-of-ascension";
-
   state.currentFactionComponentsReady = false;
 
   const baseRenderAll = renderAll;
@@ -42,22 +40,30 @@
 
   function printComponentType(component) {
     if (component.family === "tracker") return "tracker";
-    if (component.family === "reference-card") return "reference";
+    if (component.family === "reference-card" || component.family === "ritual-card") return "reference";
     if (component.family === "ledger") return "capital";
     if (component.family === "deed-card") return "deed-set";
     return null;
   }
 
-  function projectPrintComponent(component) {
+  function projectPrintComponent(component, currentGame) {
     const type = printComponentType(component);
     if (!type) return null;
+    const ritual = component.family === "ritual-card" ? currentGame.mystics?.ritual : null;
     return {
       type,
+      kind: component.renderSource?.kind || "",
       id: component.id,
       contractId: component.id,
       title: component.name,
+      subtitle: ritual ? "Mystics victory ritual" : "",
       note: `Production ${component.name}.`,
-      sections: [{ label: "Component", text: `Production ${component.name}.` }],
+      sections: ritual ? [
+        { label: "Begin", text: ritual.begin },
+        { label: "Convergence", text: ritual.convergence },
+        { label: "Complete", text: ritual.complete },
+        { label: "Interruption", text: ritual.interrupted },
+      ] : [{ label: "Component", text: `Production ${component.name}.` }],
       count: component.quantity,
       designStatus: component.designStatus || "final",
       productionStatus: component.productionStatus,
@@ -78,7 +84,7 @@
         && !["proposal-treaty-card", "rite-card"].includes(component.family)
       ));
       const components = [...sharedCardComponents, ...factionComponents]
-        .map(projectPrintComponent)
+        .map(component => projectPrintComponent(component, currentGame))
         .filter(Boolean);
 
       packages[faction.id] = {
@@ -113,27 +119,6 @@
         interruption: rite.interrupted,
       }));
 
-      const ritual = currentGame.mystics?.ritual;
-      if (ritual) {
-        packages.mystics.summary.push(`${ritual.name} card`);
-        packages.mystics.components.push({
-          type: "reference",
-          kind: "ritual",
-          id: MYSTICS_RITUAL_COMPONENT_ID,
-          contractId: MYSTICS_RITUAL_COMPONENT_ID,
-          title: ritual.name,
-          subtitle: "Mystics victory ritual",
-          sections: [
-            { label: "Begin", text: ritual.begin },
-            { label: "Convergence", text: ritual.convergence },
-            { label: "Complete", text: ritual.complete },
-            { label: "Interruption", text: ritual.interrupted },
-          ],
-          backPolicy: "specialBack",
-          designStatus: "final",
-          productionStatus: "ready",
-        });
-      }
     }
 
     window.GAUNTLET_CURRENT_SUPPLEMENTALS = Object.freeze(packages);
