@@ -14,7 +14,7 @@ on:
       - "card-design/card-review.css"
       - "card-design/card-review-render.html"
       - "card-design/card-review-render.js"
-      - "card-design/v064-card-candidates.js"
+      - "card-design/current-card-catalog.js"
       - "card-design/territory-review-render.html"
       - "card-design/territory-review-render.js"
       - "card-design/territories/index.html"
