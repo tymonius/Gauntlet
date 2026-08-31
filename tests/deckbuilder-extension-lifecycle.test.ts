@@ -32,6 +32,7 @@ describe("Deckbuilder extension architecture", () => {
     expect(app).toContain('registerSerializeHook: callback => requireHook("serialize", callback)');
     expect(app).toContain('registerHydrateHook: callback => requireHook("hydrate", callback)');
     expect(app).toContain('registerFactionChangeHook: callback => requireHook("factionChange", callback)');
+    expect(app).toContain('registerDeckListHook: callback => requireHook("deckList", callback)');
     expect(app).toContain("registerFeature(name, api)");
     expect(app).toContain("setAuthorityBootstrap(callback)");
     expect(app).toContain("setSourceLoader(callback)");
@@ -57,6 +58,14 @@ describe("Deckbuilder extension architecture", () => {
     }
   });
 
+  it("keeps extension-specific copied Deck lines out of core", () => {
+    expect(app).not.toContain("state.territories");
+    expect(app).not.toContain("state.territoryPool");
+    expect(app).not.toContain("state.rites");
+    expect(read("deckbuilder/territories.js")).toContain("function territoryDeckListLines()");
+    expect(read("deckbuilder/mystics-rites.js")).toContain("function riteDeckListLines()");
+  });
+
   it("keeps core validation free of extension-specific placeholder warnings", () => {
     expect(app).not.toContain("Territory selection is not yet included");
     expect(read("deckbuilder/territories.js")).not.toContain('startsWith("Territory selection")');
@@ -78,6 +87,8 @@ describe("Deckbuilder extension architecture", () => {
       expect(rites).toContain(`deckbuilder.${hook}`);
     }
     expect(rites).toContain("deckbuilder.registerFactionChangeHook");
+    expect(territories).toContain("deckbuilder.registerDeckListHook");
+    expect(rites).toContain("deckbuilder.registerDeckListHook");
     expect(starters).toContain("deckbuilder.registerRenderHook");
     expect(starters).toContain('deckbuilder.registerPrintTransform("starter-strategy"');
     expect(components).toContain("deckbuilder.registerRenderHook");
