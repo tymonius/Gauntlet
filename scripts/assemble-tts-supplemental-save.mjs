@@ -819,6 +819,7 @@ async function main() {
       cardManifest,
       territoryManifest,
       starterManifest,
+      supplementalManifest,
       releaseAssets,
     });
     installDeckImporter(result.save, importerConfig);
