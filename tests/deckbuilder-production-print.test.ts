@@ -94,7 +94,7 @@ describe("Deckbuilder production printing", () => {
     expect(deckbuilderHtml).toContain('card-back-preview.js?v=20260831-1');
     expect(cardBackPolicy).toContain('preview.id = "cardBackPreview"');
     expect(cardBackPolicy).toContain('frame.id = "cardBackPreviewFrame"');
-    expect(cardBackPolicy).toContain('/tts/back-renderer/index.html?faction=');
+    expect(cardBackPolicy).toContain('productionPrint().backSource(faction)');
     expect(cardBackPolicy).toContain('factionSelect?.addEventListener("change"');
     expect(cardBackPolicy).not.toContain("factionColorCardBack");
   });
