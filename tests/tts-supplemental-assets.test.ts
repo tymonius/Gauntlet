@@ -87,6 +87,10 @@ describe('TTS supplemental component exports', () => {
     expect(generator).not.toContain('/tts/supplemental-renderer/');
     expect(riteDesign).toContain('class="rite-faction-emblem"');
     expect(riteDesign).toContain('completedArtwork(rite)');
+    expect(componentRenderer).toContain('await loadCanonicalArtDirection()');
+    expect(componentRenderer).toContain('window.GAUNTLET_ART_DIRECTION = currentGame.artDirection || {}');
+    expect(componentRenderer).toContain('await preloadProductionFonts(card)');
+    expect(componentRenderer).toContain('card.dataset.renderFontsReady = "true"');
   });
 
   it('treats every physical reference card as ready public two-sided material', async () => {
