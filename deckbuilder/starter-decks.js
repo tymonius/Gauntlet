@@ -16,6 +16,7 @@
     isReady: starterDeckReady
   });
   deckbuilder.registerRenderHook(renderStarterIntegration);
+  deckbuilder.registerPrintTransform("starter-strategy", addMatchingStarterStrategy, 65);
 
   function renderStarterIntegration() {
     renderStarterDeckPreview();
@@ -34,7 +35,6 @@
       renderStarterDeckPreview();
       syncStarterDeckButton();
     });
-    installStarterPrintTips();
 
     try {
       const tipResponse = await fetch(STARTER_TIP_SOURCE, { cache: "no-store" });
@@ -253,32 +253,9 @@
       </div>`;
   }
 
-  function installStarterPrintTips() {
-    const button = document.getElementById("printDeckButton");
-    if (!button || button.dataset.starterPrintTipsInstalled === "true") return;
-
-    button.dataset.starterPrintTipsInstalled = "true";
-    button.addEventListener("click", prepareStarterPrintTips, true);
-  }
-
-  function prepareStarterPrintTips() {
+  function addMatchingStarterStrategy(html) {
     const preset = matchingCurrentStarterDeck();
-    if (!preset) return;
-
-    const inheritedOpen = window.open;
-    const starterAwareOpen = function starterAwareOpen(...args) {
-      const printWindow = inheritedOpen.apply(window, args);
-      if (!printWindow) return printWindow;
-
-      const inheritedWrite = printWindow.document.write.bind(printWindow.document);
-      printWindow.document.write = html => inheritedWrite(addStarterStrategyToPrintDocument(html, preset));
-      return printWindow;
-    };
-
-    window.open = starterAwareOpen;
-    window.setTimeout(() => {
-      if (window.open === starterAwareOpen) window.open = inheritedOpen;
-    }, 0);
+    return preset ? addStarterStrategyToPrintDocument(html, preset) : html;
   }
 
   function addStarterStrategyToPrintDocument(html, preset) {
