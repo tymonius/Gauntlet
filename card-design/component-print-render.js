@@ -35,9 +35,6 @@
       ['400 12px "adobe-caslon-pro"', copy],
       ['700 12px "adobe-caslon-pro"', copy],
       ['italic 400 12px "adobe-caslon-pro"', copy],
-      ['400 12px "Inter"', copy],
-      ['700 12px "Inter"', copy],
-      ['800 12px "Inter"', copy],
     ];
 
     const loaded = await Promise.all(requests.map(([font, sample]) => document.fonts.load(font, sample)));
