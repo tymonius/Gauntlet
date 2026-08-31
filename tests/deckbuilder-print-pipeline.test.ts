@@ -62,6 +62,16 @@ describe("Deckbuilder print pipeline", () => {
     expect(print).toContain("productionPrint().leader(faction, leader)");
   });
 
+  it("uses explicit print-document preflights instead of wrapping the base print handler", () => {
+    const production = read("deckbuilder/production-print.js");
+    expect(print).toContain("window.GAUNTLET_PRINT_PREFLIGHTS=window.GAUNTLET_PRINT_PREFLIGHTS||[]");
+    expect(print).toContain("for(const preflight of window.GAUNTLET_PRINT_PREFLIGHTS){await preflight();}");
+    expect(production).toContain("const preflights = window.GAUNTLET_PRINT_PREFLIGHTS = window.GAUNTLET_PRINT_PREFLIGHTS || []");
+    expect(production).toContain("preflights.push(async () =>");
+    expect(production).not.toContain("previousPreparePrint");
+    expect(production).not.toContain("removeEventListener('load'");
+  });
+
   it("runs the stale production-face guard as the final print transform", () => {
     const source = read("deckbuilder/production-print.js");
     expect(source).toContain('deckbuilder.registerPrintTransform("production-face-guard", guardProductionFaces, 100)');
