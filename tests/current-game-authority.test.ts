@@ -411,6 +411,8 @@ describe('complete current-game authority', () => {
     expect(livePublicationVerifier).not.toContain('/pages/builds');
     expect(livePublicationVerifier).toContain('waitForLiveCutover');
     expect(livePublicationVerifier).toContain('Gauntlet v0\\.7\\.1 Browser Rulebook');
+    expect(livePublicationVerifier).toContain('rulebookVisibleText');
+    expect(livePublicationVerifier).toContain("replace(/<!--[\\s\\S]*?-->/g, '')");
   });
 
   it('keeps the maintained Rulebook on the v0.7.1 release identity', () => {
