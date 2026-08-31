@@ -414,22 +414,20 @@ function setGambit(
     );
   }
 
-  const mandate = state.turnState?.gambitMandate;
-  const mandatedCardIsAble = Boolean(
-    mandate
-    && mandate.playerId === playerId
-    && state.players[playerId].zones.hand.includes(mandate.instanceId)
-    && cardEligibleForV070BattleRole(
-      state.cardInstances[mandate.instanceId]?.cardId ?? '',
-      'gambit',
-    )
-    && !(battle.attackerGambitProhibited && playerId === battle.attacker),
+  const ableMandates = (state.turnState?.gambitMandates ?? []).filter(
+    mandate =>
+      mandate.playerId === playerId
+      && state.players[playerId].zones.hand.includes(mandate.instanceId)
+      && cardEligibleForV070BattleRole(
+        state.cardInstances[mandate.instanceId]?.cardId ?? '',
+        'gambit',
+      )
+      && !(battle.attackerGambitProhibited && playerId === battle.attacker),
   );
   if (instanceId !== undefined
-    && mandatedCardIsAble
-    && instanceId !== mandate?.instanceId) {
+    && ableMandates.some(mandate => mandate.instanceId !== instanceId)) {
     throw new V070GameActionError(
-      'Confession requires that Gambit to be set if the player sets a Gambit and the chosen card is still able.',
+      'Confession requires every still-able mandated Gambit instruction to be satisfied if the player sets a Gambit.',
     );
   }
 
