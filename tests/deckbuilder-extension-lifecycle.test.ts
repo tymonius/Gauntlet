@@ -15,7 +15,7 @@ const extensions = [
   "deckbuilder/metadata-ui.js",
   "deckbuilder/print.js",
   "deckbuilder/print-duplex-sheet-pairing.js",
-  "deckbuilder/print-window-portrait-fixes.js",
+  "deckbuilder/print-summary.js",
   "deckbuilder/custom-print-loader.js",
   "deckbuilder/print-capital-ledger.js",
   "deckbuilder/print-request.js",
