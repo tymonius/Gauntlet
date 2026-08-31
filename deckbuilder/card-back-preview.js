@@ -59,7 +59,7 @@
 
     const updatePreview = () => {
       const faction = selectedFaction();
-      const src = `/tts/back-renderer/index.html?faction=${encodeURIComponent(faction)}`;
+      const src = productionPrint().backSource(faction);
       if (frame.dataset.faction !== faction) {
         frame.dataset.faction = faction;
         frame.src = src;
