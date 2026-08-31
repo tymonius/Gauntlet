@@ -164,14 +164,21 @@ http://localhost:8000/card-reference/
 http://localhost:8000/playtest/
 ~~~
 
-For the active rules-aware digital engine:
+For the rules-aware digital-engine codebase:
 
 ~~~bash
 npm install
 npm run typecheck
 npm test
-npm run dev:cli
-npm run dev:gui
+~~~
+
+The promoted engine API lives at `src/content/current.ts`. The current published digital-rules target is v0.7.1, while the promoted implementation is still based on the v0.7.0 engine baseline; treat that as migration work still in progress, not current-release parity.
+
+The interactive CLI/GUI runners are legacy pre-current-engine scaffolding and are named accordingly:
+
+~~~bash
+npm run dev:legacy:cli
+npm run dev:legacy:gui
 ~~~
 
 ## Current development priorities

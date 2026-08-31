@@ -4,12 +4,14 @@ This directory contains the preserved legacy prototype plus the incremental migr
 
 ## Current authority boundary
 
-The published digital-rules baseline is **v0.7.0**. Engine-facing released content is loaded from:
+The **current published digital-rules target is v0.7.1**. The v0.7.1 release manifest declares `public_defaults.digital_rules: v0.7.1`, and current tabletop/gameplay authority lives outside this engine under the maintained current authority surfaces.
+
+The **implemented promoted engine baseline is still v0.7.0**. Engine-facing released content currently loads from:
 
 - `releases/v0.7.0/Gauntlet_v0.7.0_Canonical_Data.json`
 - `releases/v0.7.0/Gauntlet_v0.7.0_Manifest.json`
 
-The release manifest identifies `digital_rules: v0.7.0`. The published package is authoritative. Transitional v0.6.4 candidate bundles and earlier releases remain provenance and implementation history, not the current engine content source.
+That difference is an explicit implementation lag, not an alternate authority claim. `content/current.ts` is the promoted engine API boundary, but until v0.7.1 migration is completed it must not be interpreted as proof of full parity with the current published digital-rules target.
 
 ## Migration layers
 
@@ -20,13 +22,13 @@ The release manifest identifies `digital_rules: v0.7.0`. The published package i
 - `content/v063.ts` — immutable v0.6.3 release adapter retained for historical/versioned regression tests.
 - `state/`, `effects/`, `cards/`, `cli/`, and `gui/` — pre-faction/earlier playable architecture. Useful scaffolding, but not presumed v0.7.0-compatible.
 
-The live `content/current.ts` boundary identifies v0.7.0 and exposes only the released shared-rules API plus the authoritative starter/setup and private-view surfaces. Historical procedure libraries are not re-exported through `current.ts`; migration work must import their explicit versioned modules until a procedure is revalidated and promoted deliberately.
+The promoted `content/current.ts` boundary currently identifies the v0.7.0 implementation baseline and exposes only that promoted shared-rules/starter/setup/private-view surface. Historical procedure libraries are not re-exported through `current.ts`; migration work must import explicit versioned modules until a procedure is revalidated and promoted deliberately.
 
 Issue #741 tracks completion of the playable engine against the current released rules.
 
-## v0.7.0 content delta
+## Implemented v0.7.0 content baseline
 
-The current release contains:
+The currently implemented v0.7.0 engine content baseline contains:
 
 - 142 playable titles;
 - 52 Neutral cards;
@@ -44,11 +46,11 @@ From the repository root:
 npm install
 npm run typecheck
 npm test
-npm run dev:cli
-npm run dev:gui
+npm run dev:legacy:cli
+npm run dev:legacy:gui
 ```
 
-The broad development commands still exercise legacy/versioned code as well as current migration work. Passing them demonstrates repository consistency, not complete v0.7.0 parity.
+The broad test/typecheck commands exercise legacy/versioned code as well as promoted migration work. The interactive `dev:legacy:*` runners execute the earlier playable architecture only. Passing any of these demonstrates repository consistency, not v0.7.1 parity.
 
 ## Reuse policy
 
