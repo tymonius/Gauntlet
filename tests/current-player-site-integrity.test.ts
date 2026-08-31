@@ -159,7 +159,7 @@ describe("v0.7.1 player-site release", () => {
     expect(corpus).toContain("releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md");
     expect(corpus).toContain("releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json");
     expect(corpus).not.toContain("loadV064CandidateRulesCorpus");
-    expect(workerEntry).toContain('import worker from "./worker-v070.js";');
+    expect(workerEntry).toContain('import worker from "./worker-v071.js";');
     expect(workerEntry).toContain('import v063Worker from "./worker-v063.js";');
   });
 

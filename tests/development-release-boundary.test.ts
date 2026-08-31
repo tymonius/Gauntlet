@@ -20,7 +20,7 @@ describe('development and published-release boundary', () => {
     expect(releaseTarget.releaseTag).toBe('v0.7.0');
     expect(currentGame.version).not.toBe(releaseTarget.releaseTag);
     expect(materializer).toContain('pull_request:');
-    expect(releaseBuilder).toContain('if (authority.version !== RELEASE_VERSION)');
+    expect(releaseBuilder).toContain('[RELEASE_VERSION, CANDIDATE_VERSION].includes(authority.version)');
     expect(releaseBuilder).toContain('validateFrozenReleaseSources');
   });
 

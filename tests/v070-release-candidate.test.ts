@@ -109,14 +109,14 @@ describe('v0.7.0 historical publication boundary', () => {
     expect(materializer).toContain('Gauntlet_v0.7.0_Arcane_Trait_Mark.png');
     expect(materializer).toContain('pull_request:');
     expect(materializer).toContain('peace_treaty_threshold, 6');
-    expect(materializer).toContain('peace_treaty_threshold, 6');
+    expect(materializer).toContain('Ratify six different Proposals');
     expect(v070Corpus).toContain('peace_treaty_threshold !== 6');
     expect(v070Corpus).toContain('Ratify six different Proposals');
     expect(releaseBuilder).toContain('repairAndValidateFrozenReleaseSources');
+    expect(releaseBuilder).toContain("'Ratify five different Proposals'");
+    expect(releaseBuilder).toContain("'Ratify six different Proposals'");
     expect(releaseBuilder).toContain('peace_treaty_threshold !== 6');
-    expect(releaseBuilder).toContain('six-Proposal Peace Treaty threshold');
-    expect(releaseBuilder).toContain('peace_treaty_threshold !== 6');
-    expect(releaseBuilder).toContain('[RELEASE_VERSION, CANDIDATE_VERSION].includes(authority.version)');
+    expect(releaseBuilder).toContain('if (authority.version !== RELEASE_VERSION)');
   });
 
   it('keeps final publication explicit, dated, and TTS-gated', () => {
