@@ -421,7 +421,7 @@ function validateDeck() {
   const pointTotal = entries.reduce((sum, entry) => sum + entry.qty * entry.card.cost, 0);
   const factionCardCount = entries.filter(entry => entry.card.faction === state.factionId).reduce((sum, entry) => sum + entry.qty, 0);
   const errors = [];
-  const warnings = ["Territory selection is not yet included in this development build."];
+  const warnings = [];
 
   if (!state.factionId) errors.push("Choose a faction.");
   if (!state.leaderId) errors.push("Choose a leader.");
