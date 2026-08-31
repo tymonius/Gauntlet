@@ -24,6 +24,8 @@ That difference is an explicit implementation lag, not an alternate authority cl
 
 The promoted `content/current.ts` boundary currently identifies the v0.7.0 implementation baseline and exposes only that promoted shared-rules/starter/setup/private-view surface. Historical procedure libraries are not re-exported through `current.ts`; migration work must import explicit versioned modules until a procedure is revalidated and promoted deliberately.
 
+There is intentionally no generic `content/index.ts` barrel. Active code must import `content/current.ts` when it means the promoted engine surface, or an explicit versioned adapter such as `content/v06.ts`, `content/v063.ts`, or `content/v070.ts` when it means a historical or released rules generation.
+
 Issue #741 tracks completion of the playable engine against the current released rules.
 
 ## Implemented v0.7.0 content baseline
