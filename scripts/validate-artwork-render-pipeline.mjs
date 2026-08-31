@@ -9,7 +9,7 @@ const contracts = [
   {
     path: 'card-design/index.html',
     requires: [
-      '../tts/artwork-direction-overrides.js',
+      'current-card-catalog.js',
       '../tts/artwork-crop.js',
     ],
   },
