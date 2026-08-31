@@ -82,7 +82,7 @@ describe("Deckbuilder production printing", () => {
     expect(printTransform).toContain('transform: rotate(90deg);');
     expect(printTransform).toContain('production-component-landscape-rotate');
     expect(printTransform).toContain('&orientation=landscape');
-    expect(supplementalPrintTransform).toContain('&rules=${encodeURIComponent(selectedRulesetMode())}');
+    expect(supplementalPrintTransform).toContain('productionPrint().componentSource(PRODUCTION_LEDGER_COMPONENT_ID, side)');
     expect(componentRenderJs).toContain('card.dataset.parchmentLoaded === "true" && dimensionsReady(card)');
     expect(cardBackCss).toContain('transform: translate(-50%, -50%) rotate(90deg);');
     expect(backRender).toContain("params.get('rotation') === '180'");
