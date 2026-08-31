@@ -69,6 +69,18 @@ describe('Browser Rulebook card anatomy guide', () => {
       expect(section).toContain(`**${heading}:**`);
     }
 
+    for (const [heading, faction] of Object.entries(
+      currentGame.gameplay.card_rules.effect_headings.faction_specific_headings
+    )) {
+      expect(section).toContain(`**${heading}:** *(${faction} only.)*`);
+      const cardsUsingHeading = currentGame.gameplay.cards.filter(
+        (card: { allegiance?: string; effects?: Array<{ label?: string }> }) =>
+          (card.effects || []).some(effect => effect.label === heading)
+      );
+      expect(cardsUsingHeading.length).toBeGreaterThan(0);
+      expect(cardsUsingHeading.every((card: { allegiance?: string }) => card.allegiance === faction)).toBe(true);
+    }
+
     for (const heading of retiredHeadings) {
       expect(printedHeadings).not.toContain(heading);
     }
