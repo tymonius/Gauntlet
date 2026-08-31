@@ -153,74 +153,7 @@ p{margin:0}
 .card-table.three-row{height:10.5in}
 .card-table.two-row{height:7in}
 .card-table td{width:2.5in;height:3.5in;min-width:2.5in;max-width:2.5in;min-height:3.5in;max-height:3.5in;padding:0;border:0;vertical-align:top;overflow:hidden}
-.print-card{--card-text-size:7pt;--card-label-size:6.8pt;position:relative;width:2.5in;height:3.5in;overflow:hidden;border:1px solid #111;background:#fff}
-.main-card{display:grid;grid-template-rows:.38in 1fr .16in}
-.card-header{position:relative;display:flex;align-items:center;min-height:.38in;padding:.05in .42in .05in .1in;background:#d7d7d7!important;border-bottom:1px solid #111;box-shadow:inset 0 0 0 999px #d7d7d7}
-.card-name{font-size:12.1pt;font-weight:800;line-height:1.02}
-.cost-circle{position:absolute;top:.065in;right:.065in;display:flex;align-items:center;justify-content:center;width:.28in;height:.28in;border:1.25px solid #111;border-radius:50%;background:#fff!important;font-size:10.6pt;font-weight:900;line-height:1;text-align:center}
-.unique-flag{position:absolute;top:.42in;right:.07in;font-size:6pt;font-weight:900;text-transform:uppercase}
-.card-body{min-height:0;overflow:hidden;padding:.075in .1in .055in}
-.rules-section+.rules-section{margin-top:.055in;padding-top:.045in;border-top:1px solid #bbb}
-.card-label{margin-bottom:.022in;font-size:var(--card-label-size);font-weight:900;line-height:1;text-transform:uppercase;letter-spacing:.035em}
-.card-text{font-size:var(--card-text-size);line-height:1.08;white-space:pre-line;overflow-wrap:anywhere}
-.rules-section.reminder .card-text{font-style:italic}
-.card-footer{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.04in;padding:.035in .06in;background:#d7d7d7!important;border-top:1px solid #111;box-shadow:inset 0 0 0 999px #d7d7d7;font-size:5.1pt;line-height:1}
-.card-footer span:first-child{font-weight:800;text-align:left}
-.card-footer span:nth-child(2){font-size:4.7pt;text-align:center}
-.card-footer span:last-child{text-align:right}
-.leader-card{--card-text-size:5.75pt;--card-label-size:5.55pt;display:grid;grid-template-rows:1.15in 1fr .16in}
-.leader-art{position:relative;overflow:hidden;border-bottom:1px solid #111;background:#ccc}
-.leader-art img{width:100%;height:100%;object-fit:cover;object-position:center top;filter:grayscale(100%)}
-.leader-art::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 38%,rgba(0,0,0,.82))}
-.leader-faction,.leader-title{position:absolute;z-index:1;left:.09in;color:#fff;text-shadow:0 1px 2px #000}
-.leader-faction{bottom:.3in;font-size:5.8pt;font-weight:900;text-transform:uppercase;letter-spacing:.08em}
-.leader-title{right:.08in;bottom:.07in;font-size:13.4pt;font-weight:900;line-height:.95}
-.leader-card-body{min-height:0;overflow:hidden;padding:.06in .09in .045in}
-.leader-intro{margin-bottom:.045in;padding-bottom:.04in;border-bottom:1px solid #999}
-.leader-tagline{font-size:6.5pt;font-style:italic}
-.leader-role{margin-top:.018in;font-size:5.5pt;font-weight:800;text-transform:uppercase}
-.reference-card,.purge-card{--card-text-size:5.65pt;--card-label-size:5.45pt;display:grid;grid-template-rows:.42in .22in 1fr .16in}
-.reference-card.no-subtitle,.purge-card{grid-template-rows:.42in 1fr .16in}
-.supplemental-header{display:flex;align-items:center;padding:.06in .09in;background:#d1d1d1!important;border-bottom:1px solid #111;box-shadow:inset 0 0 0 999px #d1d1d1;font-size:11pt;font-weight:900;line-height:1;text-transform:uppercase}
-.supplemental-subtitle{display:flex;align-items:center;padding:.025in .09in;background:#eee!important;border-bottom:1px solid #bbb;font-size:5.8pt;font-weight:800;text-transform:uppercase;letter-spacing:.045em}
-.reference-body{min-height:0;overflow:hidden;padding:.06in .09in .04in}
-.reference-section+.reference-section{margin-top:.045in;padding-top:.035in;border-top:1px solid #ccc}
-.reference-footer{display:flex;align-items:center;justify-content:center;padding:.025in .06in;background:#e1e1e1!important;border-top:1px solid #111;font-size:4.9pt;font-weight:700;text-align:center}
-.purge-intro{margin-bottom:.045in;font-size:var(--card-text-size);line-height:1.08}
-.purge-list{display:grid;gap:.04in}
-.purge-row{display:grid;grid-template-columns:.28in 1fr;gap:.055in;align-items:start;padding-top:.03in;border-top:1px solid #bbb}
-.purge-cost{display:flex;align-items:center;justify-content:center;width:.25in;height:.25in;border:1px solid #111;border-radius:50%;font-size:8pt;font-weight:900;line-height:1}
-.purge-text{font-size:var(--card-text-size);line-height:1.06}
-.purge-reminder{margin-top:.05in;padding-top:.04in;border-top:1px solid #888;font-size:calc(var(--card-text-size) - .3pt);line-height:1.04;font-style:italic}
-.tracker-card{position:relative;background:repeating-linear-gradient(135deg,#fff 0,#fff .08in,#f3f3f3 .08in,#f3f3f3 .16in)}.capital-tracker-card{display:grid;grid-template-rows:.42in 1fr .16in;background:#173e32!important;color:#fff}.capital-tracker-body{padding:.1in;display:grid;grid-template-columns:1fr 1fr;gap:.08in}.capital-box{height:.85in;border:1px solid #bd9850;padding:.06in;text-align:center}.capital-box span{display:block;color:#ecd699;font-size:5.4pt;font-weight:900;text-transform:uppercase}.capital-box div{height:.42in;margin-top:.06in;border-bottom:1px solid #fff}.capital-tracker-body p{grid-column:1/-1;font-size:6pt;line-height:1.18}.deed-card{display:flex;flex-direction:column;padding:.075in;background:#f3ead7!important;text-align:center}.deed-banner{margin:-.075in -.075in .16in;padding:.095in .04in .08in;border-bottom:1.5px solid #bd9850;background:#173e32!important;color:#fff7dc;font-family:Georgia,serif;font-size:13.5pt;font-weight:700;letter-spacing:.19em;text-transform:uppercase}.deed-seal{display:flex;align-items:center;justify-content:center;width:.82in;height:.82in;margin:0 auto .13in;border:3px double #bd9850;border-radius:50%;color:#173e32;font-family:Georgia,serif;font-size:30pt;font-weight:700}.deed-title{margin-bottom:.12in;color:#173e32;font-family:Georgia,serif;font-size:11.5pt;font-weight:700}.deed-rule{margin:0 auto .1in;max-width:2.05in;font-family:Georgia,serif;font-size:6.6pt;line-height:1.16}.deed-note{margin-top:auto;padding-top:.065in;border-top:.8px solid #bd9850;color:#5b2d2c;font-size:5.2pt;font-weight:700;text-transform:uppercase}
-.tracker-title{position:absolute;top:.09in;left:.1in;right:.1in;font-size:11.2pt;font-weight:900;line-height:1;text-align:center;text-transform:uppercase;letter-spacing:.035em}
-.tracker-note{position:absolute;top:.38in;left:.14in;right:.14in;font-size:5.6pt;line-height:1.12;text-align:center}
-.tracker-step{position:absolute;left:.16in;right:.16in;border-top:1.4px solid #111}
-.tracker-step-value{position:absolute;left:0;top:-.14in;display:flex;align-items:center;justify-content:center;width:.28in;height:.28in;border:1px solid #111;border-radius:50%;background:#fff;font-size:8.5pt;font-weight:900}
-.tracker-step-label{position:absolute;right:0;top:-.11in;background:#fff;padding-left:.04in;font-size:5.6pt;font-weight:800;text-transform:uppercase}
-.tracker-zero{position:absolute;left:.12in;right:.12in;bottom:.18in;font-size:5.5pt;font-weight:900;text-align:center;text-transform:uppercase}
-.tracker-footer{position:absolute;left:0;right:0;bottom:0;height:.14in;padding-top:.02in;border-top:1px solid #111;background:#ddd!important;font-size:4.7pt;text-align:center}
-.proposal-card{--card-text-size:6.45pt;--card-label-size:6.15pt;display:grid;grid-template-rows:.21in .55in auto 1fr .16in}
-.proposal-banner{display:flex;align-items:center;justify-content:center;background:#ddd!important;border-bottom:1px solid #111;font-size:5.6pt;font-weight:900;text-transform:uppercase;letter-spacing:.08em}
-.proposal-card.treaty .proposal-banner{background:#bcbcbc!important;box-shadow:inset 0 0 0 999px #bcbcbc}
-.proposal-title-row{position:relative;display:flex;align-items:center;padding:.05in .45in .045in .09in;border-bottom:1px solid #aaa}
-.proposal-number{font-size:5.4pt;font-weight:800;text-transform:uppercase}
-.proposal-title{font-size:11.2pt;font-weight:900;line-height:1.02}
-.stake-seal{position:absolute;top:.12in;right:.08in;display:flex;align-items:center;justify-content:center;width:.31in;height:.31in;border:1.2px solid #111;border-radius:50%;font-size:9pt;font-weight:900}
-.requirement{padding:.04in .09in;border-bottom:1px solid #bbb;background:#f3f3f3!important;font-size:5.7pt;line-height:1.08}
-.proposal-body{min-height:0;overflow:hidden;padding:.07in .09in .04in}
-.proposal-effect+.proposal-effect{margin-top:.07in;padding-top:.055in;border-top:1px solid #aaa}
-.proposal-effect{font-size:var(--card-text-size);line-height:1.1}
-.proposal-footer{display:flex;align-items:center;justify-content:center;padding:.02in .05in;background:#ddd!important;border-top:1px solid #111;font-size:4.6pt;text-align:center}
-.rite-card{--card-text-size:6pt;--card-label-size:5.8pt;display:grid;grid-template-rows:.22in .55in auto 1fr .16in;background:#f3edf7!important}.rite-card.completed{background:#e5d8ed!important}.rite-banner{display:flex;align-items:center;justify-content:center;border-bottom:1px solid #4b3158;background:#d7c4e0!important;color:#321c3e;font-size:5.5pt;font-weight:900;text-transform:uppercase;letter-spacing:.08em}.rite-icon{display:flex;align-items:center;justify-content:center;font-size:24pt;color:#533564}.rite-title{padding:0 .08in .045in;border-bottom:1px solid #7c6188;font-family:Georgia,serif;font-size:11.4pt;font-weight:700;text-align:center}.rite-body{min-height:0;overflow:hidden;padding:.055in .085in .035in}.rite-section,.rite-complete,.rite-progress{font-size:var(--card-text-size);line-height:1.08}.rite-section+.rite-section,.rite-progress{margin-top:.045in;padding-top:.038in;border-top:1px solid #b7a4bf}.rite-footer{display:flex;align-items:center;justify-content:center;min-height:.16in;padding:.025in .055in;border-top:1px solid #4b3158;background:#d7c4e0!important;font-size:4.7pt;line-height:1;text-align:center}
-.territory{--card-text-size:8pt;--card-label-size:7pt}
-.territory-inner{position:absolute;top:0;left:2.5in;width:3.5in;height:2.5in;transform:rotate(90deg);transform-origin:top left;display:grid;grid-template-rows:.36in 1fr .16in;overflow:hidden}
-.territory-header{display:flex;align-items:end;gap:.08in;padding:.05in .1in;background:#d7d7d7!important;border-bottom:1px solid #111;box-shadow:inset 0 0 0 999px #d7d7d7}
-.territory-type{font-size:7pt;font-weight:900;text-transform:uppercase;white-space:nowrap}
-.territory-name{font-size:12.6pt;font-weight:800;line-height:1}
-.territory-body{overflow:hidden;padding:.08in .1in}
-.territory .card-text{font-size:var(--card-text-size);line-height:1.12}
-.territory-footer{display:flex;justify-content:space-between;align-items:center;padding:.035in .06in;background:#d7d7d7!important;border-top:1px solid #111;box-shadow:inset 0 0 0 999px #d7d7d7;font-size:5.1pt}
+.print-card{position:relative;width:2.5in;height:3.5in;overflow:hidden}
 @page{size:letter;margin:.25in .1in .04in .1in}
 </style>
 </head>
@@ -231,8 +164,7 @@ ${supplemental.dedicatedPages.join("")}
 <script>
 function nextFrame(){return new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));}
 function waitForImages(){return Promise.all(Array.from(document.images).map(image=>image.complete?Promise.resolve():new Promise(resolve=>{image.addEventListener('load',resolve,{once:true});image.addEventListener('error',resolve,{once:true});})));}
-function fitPrintCards(){document.querySelectorAll('.fit-target').forEach(target=>{const territory=target.classList.contains('territory-inner');const leader=target.classList.contains('leader-card');const reference=target.classList.contains('reference-card')||target.classList.contains('purge-card');const proposal=target.classList.contains('proposal-card');let textSize=territory?8:(leader?5.75:(reference?5.65:(proposal?6.45:7)));let labelSize=territory?7:(leader?5.55:(reference?5.45:(proposal?6.15:6.8)));const minimum=territory?5.2:(leader?4.15:(reference?4.3:(proposal?4.8:4.5)));while(target.scrollHeight>target.clientHeight&&textSize>minimum){textSize-=.16;labelSize=Math.max(4,labelSize-.1);target.style.setProperty('--card-text-size',textSize.toFixed(2)+'pt');target.style.setProperty('--card-label-size',labelSize.toFixed(2)+'pt');}});}
-async function preparePrint(){if(document.fonts?.ready){try{await document.fonts.ready;}catch(error){}}await waitForImages();fitPrintCards();document.body.offsetHeight;await nextFrame();await nextFrame();setTimeout(()=>window.print(),300);}
+async function preparePrint(){if(document.fonts?.ready){try{await document.fonts.ready;}catch(error){}}await waitForImages();document.body.offsetHeight;await nextFrame();await nextFrame();setTimeout(()=>window.print(),300);}
 window.addEventListener('load',preparePrint);
 <\/script>
 </body>
