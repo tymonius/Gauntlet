@@ -28,7 +28,7 @@ describe("Mystics Rite card prototypes", () => {
   it("adds all six double-sided Rites and the Ritual to the unified card-review page", () => {
     expect(reviewPage).toContain('id="rite-cards"');
     expect(reviewPage).toContain('id="riteReviewSections"');
-    expect(reviewPage).toContain('href="#rite-cards"');
+    expect(reviewPage).toContain('data-catalog-kind="rite"');
     expect(reviewPage).toContain('href="rite-card.css"');
     expect(reviewPage).toContain('type="module" src="rite-card.js"');
     expect(reviewPage).not.toContain('data-rite-count>3</span>');
@@ -85,6 +85,8 @@ describe("Mystics Rite card prototypes", () => {
     expect(riteRenderer).toContain('currentDisplayVersion = currentGame.displayVersion');
     expect(riteRenderer).toContain('data-has-reminder="true"');
     expect(riteStyles).toContain('.rite-reminder');
+    expect(ruleColumnStyles).toContain(".card-rules > :is(.card-reminder, .rite-reminder)");
+    expect(ruleColumnStyles).toContain("grid-column: 1 / -1");
     expect(riteValidator).toContain('expectedCardFaces = expectedRites.length * 2 + 1');
     expect(riteValidator).toContain('metric.version !== authority.displayVersion');
     expect(riteValidator).not.toContain('EXPECTED_RITES');

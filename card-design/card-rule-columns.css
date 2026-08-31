@@ -53,8 +53,12 @@
     column-gap: inherit !important;
   }
 
-  /* Reminders are full-width prose and should not enter either shared track. */
-  .gauntlet-card .card-rules > .card-reminder {
+  /* Reminders are full-width prose and should not enter either shared track.
+     Rite reminders predate the shared .card-reminder class and use their own
+     .rite-reminder hook, so include both here. Otherwise Grid auto-placement
+     drops a Rite reminder into the narrow label column and wraps it almost one
+     word per line. */
+  .gauntlet-card .card-rules > :is(.card-reminder, .rite-reminder) {
     grid-column: 1 / -1;
   }
 }
