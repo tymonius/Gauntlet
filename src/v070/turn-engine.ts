@@ -1559,6 +1559,16 @@ function continuePendingActionCard(state: V070GameState): void {
         finishPendingActionCard(state);
       }
       return;
+    case 'neutral-phantom-passage':
+      openControlledTerritoryMovementChoice(
+        state,
+        pending.playerId,
+        pending.instanceId,
+        'Phantom Passage',
+        true,
+        'graveyard',
+      );
+      return;
     case 'neutral-revolution':
       resolveRevolutionAction(state, pending.playerId);
       finishPendingActionCard(state);
@@ -2008,6 +2018,16 @@ function continuePendingActionCard(state: V070GameState): void {
       });
       return;
     }
+    case 'mystics-paths-of-shadow':
+      openControlledTerritoryMovementChoice(
+        state,
+        pending.playerId,
+        pending.instanceId,
+        'Paths of Shadow',
+        false,
+        'discard',
+      );
+      return;
     case 'mystics-dark-omens': {
       const drawn = drawIntoHand(
         state,
