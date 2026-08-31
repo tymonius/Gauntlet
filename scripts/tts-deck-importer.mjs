@@ -248,7 +248,7 @@ export function installStarterTemplateLibrary(save, config) {
   save.ObjectStates = save.ObjectStates.filter(object => object?.GMNotes !== TEMPLATE_LIBRARY_NOTE);
   save.ObjectStates.push({
     Name: 'Bag',
-    Transform: { posX: 0, posY: -30, posZ: 0, rotX: 0, rotY: 0, rotZ: 0, scaleX: 0.1, scaleY: 0.1, scaleZ: 0.1 },
+    Transform: { posX: 0, posY: 5, posZ: 100, rotX: 0, rotY: 0, rotZ: 0, scaleX: 0.1, scaleY: 0.1, scaleZ: 0.1 },
     Nickname: 'Gauntlet Deck Import Template Library',
     Description: 'Internal TTS importer data. Not a gameplay object.',
     GMNotes: TEMPLATE_LIBRARY_NOTE,
