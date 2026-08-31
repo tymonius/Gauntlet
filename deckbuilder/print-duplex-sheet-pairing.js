@@ -156,7 +156,8 @@
   }
 
   function componentMatchesLegacy(component, legacyCard, factionId) {
-    if (component.faction !== factionId) return false;
+    const sharedEveryDeck = !component.faction && component.deckInclusion === "every-deck";
+    if (!sharedEveryDeck && component.faction !== factionId) return false;
     const family = familyForLegacyCard(legacyCard);
     if (!family || component.family !== family) return false;
 
@@ -177,12 +178,18 @@
   function contractComponentForLegacy(legacyCard, currentGame) {
     const explicitId = legacyCard.dataset.contractComponentId;
     if (explicitId) {
-      const explicit = (currentGame.components || []).find(component => component.id === explicitId);
+      const explicit = [
+        ...(currentGame.sharedComponents || []),
+        ...(currentGame.components || []),
+      ].find(component => component.id === explicitId);
       if (explicit) return explicit;
     }
 
     const factionId = String(state.factionId || "").trim().toLowerCase();
-    const matches = (currentGame.components || []).filter(component => componentMatchesLegacy(component, legacyCard, factionId));
+    const matches = [
+      ...(currentGame.sharedComponents || []),
+      ...(currentGame.components || []),
+    ].filter(component => componentMatchesLegacy(component, legacyCard, factionId));
     if (matches.length > 1) {
       throw new Error(`Current-game component contract ambiguously matches ${legacyCardLabels(legacyCard).join(" / ") || "an unnamed supplemental card"}.`);
     }
@@ -452,7 +459,10 @@
       };
     }
 
-    const component = (currentGame.components || []).find(item => item.id === componentId);
+    const component = [
+      ...(currentGame.sharedComponents || []),
+      ...(currentGame.components || []),
+    ].find(item => item.id === componentId);
     const descriptor = component ? renderDescriptorForComponent(component) : null;
     if (!component || !descriptor) return null;
     return {
