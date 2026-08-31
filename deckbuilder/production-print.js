@@ -17,6 +17,7 @@
     componentSource: productionComponentSource,
     componentDescriptor: productionComponentDescriptor,
     frameSource: productionFrameSource,
+    backSource: productionBackSource,
   }));
   deckbuilder.registerPrintTransform("production-rendering", prepareProductionPrintDocument, 40);
   deckbuilder.registerPrintTransform("production-face-guard", guardProductionFaces, 100);
@@ -248,6 +249,12 @@
     return `/card-design/component-print-render.html?kind=${encodeURIComponent(options.kind)}&id=${encodeURIComponent(options.id)}&side=${encodeURIComponent(options.side || "front")}${orientation}&rules=${encodeURIComponent(selectedRulesetMode())}`;
   }
 
+  function productionBackSource(faction, rotation = null) {
+    const safeFaction = String(faction || "intelligence").trim().toLowerCase() || "intelligence";
+    const rotationParam = rotation == null ? "" : `&rotation=${encodeURIComponent(String(rotation))}`;
+    return `/tts/back-renderer/index.html?faction=${encodeURIComponent(safeFaction)}${rotationParam}`;
+  }
+
   function makeProductionComponent(documentNode, options) {
     const {
       kind,
@@ -471,7 +478,7 @@
     frame.className = "production-back-frame";
     frame.dataset.productionRenderFrame = "true";
     frame.dataset.productionRenderKind = "back";
-    frame.src = `/tts/back-renderer/index.html?faction=${encodeURIComponent(faction)}&rotation=180`;
+    frame.src = productionBackSource(faction, 180);
     frame.title = `${faction} production deck-card back`;
     frame.setAttribute("scrolling", "no");
     frame.setAttribute("loading", "eager");
