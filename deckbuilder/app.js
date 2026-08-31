@@ -91,6 +91,7 @@ const deckbuilderApi = Object.freeze({
   getFaction: () => getFaction(),
   getCard: id => getCard(id),
   deckEntries: () => deckEntries(),
+  slugify: value => slugify(value),
   escapeHtml: value => escapeHtml(value),
 });
 
