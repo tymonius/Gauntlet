@@ -305,7 +305,6 @@
   function enhancedCurrentDeckData() {
     return {
       ...baseCurrentDeckData(),
-      schemaVersion: 2,
       territories: selectedTerritories().map(territory => ({ id: territory.id, name: territory.name, arena: territory.arena }))
     };
   }
