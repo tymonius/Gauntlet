@@ -1,11 +1,3 @@
-@font-face {
-  font-family: "Gauntlet Segoe UI";
-  src: local("Segoe UI"), local("SegoeUI");
-  font-style: normal;
-  font-weight: 400 800;
-  font-display: block;
-}
-
 :root {
   --ink: #181614;
   --muted: #655f56;
@@ -170,7 +162,7 @@ h1 {
 }
 
 .font-inter { --candidate-font: Inter, sans-serif; }
-.font-segoe { --candidate-font: "Gauntlet Segoe UI", monospace; }
+.font-segoe { --candidate-font: "segoe-ui", monospace; }
 .font-roboto { --candidate-font: Roboto, sans-serif; }
 
 .font-column button,
@@ -238,7 +230,7 @@ h1 {
 }
 
 .segoe-unavailable .font-segoe::after {
-  content: "Segoe UI is not installed on this device. This column is fallback text and should not be judged.";
+  content: "Segoe UI did not load from the Adobe Fonts project. This column is fallback text and should not be judged.";
   position: absolute;
   inset: 0;
   z-index: 5;
