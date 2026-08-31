@@ -41,10 +41,10 @@ on:
       - "scripts/render-card-back-specimen.mjs"
       - "scripts/render-leader-card-specimens.mjs"
       - "scripts/validate-territory-mobile-render.mjs"
-      - "scripts/validate-v064-territory-render.mjs"
+      - "scripts/validate-current-territory-render.mjs"
       - "scripts/validate-rite-card-render.mjs"
       - "scripts/validate-proposal-card-render.mjs"
-      - "scripts/validate-v064-card-render.mjs"
+      - "scripts/validate-current-card-render.mjs"
       - ".github/workflows/render-leader-card-specimens.yml"
   workflow_dispatch:
 
@@ -79,22 +79,22 @@ jobs:
         run: node scripts/render-leader-card-specimens.mjs
       - name: Render and validate universal card back
         run: node scripts/render-card-back-specimen.mjs
-      - name: Validate v0.6.4 Territory candidate specimens
-        run: node scripts/validate-v064-territory-render.mjs
+      - name: Validate current Territory specimens
+        run: node scripts/validate-current-territory-render.mjs
       - name: Validate Mystics Rite card specimens
         run: node scripts/validate-rite-card-render.mjs
       - name: Validate Diplomat Proposal card specimens
         run: node scripts/validate-proposal-card-render.mjs
-      - name: Validate v0.6.4 playable-card candidates
-        run: node scripts/validate-v064-card-render.mjs
+      - name: Validate current playable-card specimens
+        run: node scripts/validate-current-card-render.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: gauntlet-card-review-specimens
           path: |
             card-design/generated/leaders/
             card-design/generated/proposals/
-            card-design/generated/territories-v064/
-            card-design/generated/v064-card-candidates/
+            card-design/generated/current-territories/
+            card-design/generated/current-card-candidates/
           if-no-files-found: error
 
   territory-mobile:
