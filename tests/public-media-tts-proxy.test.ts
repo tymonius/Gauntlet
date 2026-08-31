@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 const pagesWorkflow = readFileSync('.github/workflows/deploy-pages.yml', 'utf8');
 const mediaReadme = readFileSync('media/README.md', 'utf8');
+const pagesBoundary = JSON.parse(readFileSync('config/pages-publication-boundary.json', 'utf8'));
 
 describe('GitHub Pages public media contract', () => {
   it('publishes the canonical promotional spread on gauntlet.run without committing the generated raster', () => {
@@ -49,6 +50,21 @@ describe('GitHub Pages public media contract', () => {
       expect(pagesWorkflow).toContain(`"$site/${file}"`);
     }
     expect(pagesWorkflow).toContain('test ! -e "$SITE_DIR/$internal_file"');
+  });
+
+  it('enforces an explicit top-level Pages publication allowlist', () => {
+    expect(pagesWorkflow).toContain("'config/pages-publication-boundary.json'");
+    expect(pagesWorkflow).toContain("Unexpected top-level Pages artifact entries");
+    expect(pagesWorkflow).toContain("Missing required top-level Pages artifact entries");
+
+    for (const root of ['.github', 'config', 'governance', 'scripts', 'src', 'tests', 'workers', 'rulebook-design', 'rulebook-production', 'legacy']) {
+      expect(pagesBoundary.allowedTopLevelEntries).not.toContain(root);
+    }
+
+    for (const root of ['index.html', 'game-data', 'media', 'releases', 'start', 'rulebook', 'card-reference', 'factions', 'deckbuilder', 'rules-arbiter', 'playtest']) {
+      expect(pagesBoundary.requiredTopLevelEntries).toContain(root);
+      expect(pagesBoundary.allowedTopLevelEntries).toContain(root);
+    }
   });
 
   it('preserves the custom domain and enforces the Pages size guard', () => {
