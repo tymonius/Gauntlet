@@ -25,6 +25,17 @@
   deckbuilder.registerSerializeHook(serializeTerritories);
   deckbuilder.registerHydrateHook(hydrateTerritories);
   deckbuilder.registerDeckListHook(territoryDeckListLines);
+  deckbuilder.registerFeature("territories", {
+    selectedIds: () => [...state.territories],
+    selected: () => selectedTerritories(),
+    isReady: () => state.territoryPool.length > 0,
+    setSelectedIds(items) {
+      state.territories = resolveTerritoryIds(items || []);
+      state.pendingTerritories = null;
+      state.selectedTerritoryId = state.territories[0] || state.territoryPool[0]?.id || null;
+      return [...state.territories];
+    },
+  });
 
   document.addEventListener("DOMContentLoaded", installTerritoryIntegration);
 
