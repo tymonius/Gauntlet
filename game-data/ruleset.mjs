@@ -58,7 +58,11 @@ function normalizePublishedComponentContract(source) {
   const contract = clone(source || {});
   contract.components = (contract.components || []).map(component => {
     if (component.id !== 'financiers-capital-ledger') return component;
-    return { ...component, backPolicy: 'twoSided' };
+    return {
+      ...component,
+      backPolicy: 'twoSided',
+      reverse: component.reverse || 'Identical Capital Ledger face',
+    };
   });
   return contract;
 }
