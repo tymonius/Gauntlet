@@ -17,18 +17,9 @@
     --rule-column-gap: 0.03in;
   }
 
-  .proposal-card {
-    --rule-label-max: 0.72in;
-  }
-
-  /* Rite body width is production geometry, not a font-metric decision.
-     The original Rite layout uses a 0.52in label track with a 0.042in gap.
-     Preserve those exact dimensions under subgrid as well, so a machine that
-     lacks locally installed Inter cannot make INTERRUPTED wider and steal
-     horizontal space from the rules body. */
+  .proposal-card,
   .rite-card {
-    --rule-label-max: 0.52in;
-    --rule-column-gap: 0.042in;
+    --rule-label-max: 0.72in;
   }
 
   /* Leader cards now put the named game concept itself in the left track.
@@ -39,11 +30,10 @@
     --rule-column-gap: 0.018in;
   }
 
-  /* Completed Rite count labels use the same fixed production track declared
-     by .rite-unlock-section outside subgrid. */
+  /* Count labels on the completed Rite reference are intentionally compact. */
   .completed-rite-card {
-    --rule-label-max: 0.36in;
-    --rule-column-gap: 0.022in;
+    --rule-label-max: 0.48in;
+    --rule-column-gap: 0.024in;
   }
 
   /* Overlay cards have less horizontal room after the side rail. */
@@ -57,9 +47,6 @@
     column-gap: var(--rule-column-gap) !important;
   }
 
-  .rite-card .card-rules:has(> :is(.rule-section, .rite-unlock-section)) {
-    grid-template-columns: var(--rule-label-max) minmax(0, 1fr);
-  }
 
   :where(.rule-section, .leader-rule-section, .rite-unlock-section) {
     grid-column: 1 / -1;
