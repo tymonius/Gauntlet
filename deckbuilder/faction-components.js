@@ -2,6 +2,7 @@
   const deckbuilder = window.GAUNTLET_DECKBUILDER;
   if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
   const { state } = deckbuilder;
+  const escapeHtml = value => deckbuilder.escapeHtml(value);
   state.currentFactionComponentsReady = false;
 
   deckbuilder.registerRenderHook(renderFactionComponents);
