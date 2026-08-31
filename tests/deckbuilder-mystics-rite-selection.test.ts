@@ -40,11 +40,11 @@ describe('Deckbuilder Mystics Rite selection', () => {
   });
 
   it('loads and recognizes the official starter Rite packages and preserves them during bulk printing', () => {
-    expect(starters).toContain('state.rites = starterRiteIds(preset)');
-    expect(starters).toContain('const currentRites = [...(state.rites || [])].sort()');
-    expect(starters).toContain('if (Array.isArray(state.rites)) state.rites = starterRiteIds()');
-    expect(bulkPrint).toContain('rites: [...(state.rites || [])]');
-    expect(bulkPrint).toContain('state.rites = starterRiteIds(preset)');
+    expect(starters).toContain('ritesApi()?.setSelectedIds?.(starterRiteIds(preset))');
+    expect(starters).toContain('const currentRites = [...(ritesApi()?.selectedIds?.() || [])].sort()');
+    expect(starters).toContain('ritesApi()?.setSelectedIds?.(starterRiteIds())');
+    expect(bulkPrint).toContain('rites: ritesApi()?.selectedIds?.() || []');
+    expect(bulkPrint).toContain('ritesApi()?.setSelectedIds?.(starterRiteIds(preset))');
 
     const mystics = authority.starterDecks.decks.filter((deck: any) => deck.factionId === 'mystics');
     expect(mystics.map((deck: any) => deck.selectedRites)).toEqual([
