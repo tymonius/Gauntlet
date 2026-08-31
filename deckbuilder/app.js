@@ -29,6 +29,7 @@ let sourceLoader = null;
 let selectedRuleset = null;
 let cardPreviewRenderer = null;
 const featureApis = new Map();
+const printTransforms = [];
 
 function requireHook(kind, callback) {
   if (typeof callback !== "function") throw new TypeError(`Deckbuilder ${kind} hook must be a function.`);
@@ -37,6 +38,44 @@ function requireHook(kind, callback) {
     const index = extensionHooks[kind].indexOf(callback);
     if (index >= 0) extensionHooks[kind].splice(index, 1);
   };
+}
+
+function registerPrintTransform(name, callback, priority = 50) {
+  const key = String(name || "").trim();
+  if (!key) throw new TypeError("Deckbuilder print transform name is required.");
+  if (typeof callback !== "function") throw new TypeError(`Deckbuilder print transform ${key} must be a function.`);
+  if (printTransforms.some(transform => transform.name === key)) {
+    throw new Error(`Deckbuilder print transform ${key} is already registered.`);
+  }
+
+  const numericPriority = Number(priority);
+  if (!Number.isFinite(numericPriority)) throw new TypeError(`Deckbuilder print transform ${key} priority must be numeric.`);
+
+  const transform = Object.freeze({
+    name: key,
+    callback,
+    priority: numericPriority,
+    sequence: printTransforms.length,
+  });
+  printTransforms.push(transform);
+  printTransforms.sort((left, right) => left.priority - right.priority || left.sequence - right.sequence);
+
+  return () => {
+    const index = printTransforms.indexOf(transform);
+    if (index >= 0) printTransforms.splice(index, 1);
+  };
+}
+
+function preparePrintDocument(html, context = {}) {
+  let output = String(html ?? "");
+  for (const transform of printTransforms) {
+    const next = transform.callback(output, context);
+    if (typeof next !== "string") {
+      throw new TypeError(`Deckbuilder print transform ${transform.name} must return HTML text.`);
+    }
+    output = next;
+  }
+  return output;
 }
 
 const deckbuilderApi = Object.freeze({
@@ -48,6 +87,8 @@ const deckbuilderApi = Object.freeze({
   registerSerializeHook: callback => requireHook("serialize", callback),
   registerHydrateHook: callback => requireHook("hydrate", callback),
   registerFactionChangeHook: callback => requireHook("factionChange", callback),
+  registerPrintTransform,
+  preparePrintDocument,
   registerFeature(name, api) {
     const key = String(name || "").trim();
     if (!key) throw new TypeError("Deckbuilder feature name is required.");
