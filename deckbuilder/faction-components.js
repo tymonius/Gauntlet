@@ -128,6 +128,7 @@
     if (shared && component.family === "reference-card") return "Shared reference · every deck";
     if (component.family === "proposal-treaty-card") return "Double-sided Proposal / Treaty Article";
     if (component.family === "rite-card") return "Double-sided incomplete / completed Rite";
+    if (component.family === "ritual-card") return "Supplemental Ritual card";
     if (component.family === "tracker") return "Supplemental tracker";
     if (component.family === "reference-card") return "Supplemental reference";
     if (component.family === "ledger") return "Supplemental ledger";
@@ -186,13 +187,6 @@
         meta: "Selected Rite · Double-sided incomplete / completed Rite",
       }))
     ];
-
-    if (state.factionId === "mystics" && currentGame.mystics?.ritual) {
-      items.push({
-        name: currentGame.mystics.ritual.name,
-        meta: "Supplemental Ritual card · Final design",
-      });
-    }
 
     container.className = "deck-list";
     container.innerHTML = items.map(item => `
