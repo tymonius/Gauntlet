@@ -1,4 +1,8 @@
 (() => {
+  const deckbuilder = window.GAUNTLET_DECKBUILDER;
+  if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
+  const { state } = deckbuilder;
+
   const REQUIRED_TERRITORIES = 3;
   const MAX_ARENAS = 1;
   const TERRITORY_WIDTH = 336;
@@ -14,11 +18,11 @@
 
   const territoryElements = {};
   let territoryPreviewResizeObserver = null;
-  const baseRenderAll = renderAll;
-  const baseValidateDeck = validateDeck;
-  const baseValidateAndRender = validateAndRender;
-  const baseCurrentDeckData = currentDeckData;
-  const baseApplyDeckData = applyDeckData;
+
+  deckbuilder.registerRenderHook(renderTerritoryIntegration);
+  deckbuilder.registerValidationHook(extendValidation);
+  deckbuilder.registerSerializeHook(serializeTerritories);
+  deckbuilder.registerHydrateHook(hydrateTerritories);
 
   document.addEventListener("DOMContentLoaded", installTerritoryIntegration);
 
@@ -50,9 +54,7 @@
 
   async function loadTerritories() {
     try {
-      const bootstrap = window.GAUNTLET_DECKBUILDER_BOOTSTRAP;
-      if (typeof bootstrap !== "function") throw new Error("Current Deckbuilder runtime is unavailable.");
-      const currentGame = await bootstrap();
+      const currentGame = await deckbuilder.bootstrap();
       state.territoryPool = (currentGame.territories || []).map(territory => ({
         id: territory.id,
         name: territory.name,
@@ -81,11 +83,13 @@
     }
   }
 
-  function enhancedRenderAll() {
-    baseRenderAll();
+  function renderTerritoryIntegration() {
     renderTerritoryPicker();
     renderDeckTerritories();
     syncSourceStatus();
+    if (territoryElements.territoryMetricCount) {
+      territoryElements.territoryMetricCount.textContent = String(selectedTerritories().length);
+    }
   }
 
   function syncSourceStatus() {
@@ -273,8 +277,7 @@
     });
   }
 
-  function enhancedValidateDeck() {
-    const result = baseValidateDeck();
+  function extendValidation(result) {
     const territories = selectedTerritories();
     const arenaCount = territories.filter(territory => territory.arena).length;
     const errors = [...result.errors];
@@ -295,46 +298,17 @@
     };
   }
 
-  function enhancedValidateAndRender() {
-    baseValidateAndRender();
-    const result = enhancedValidateDeck();
-    if (territoryElements.territoryMetricCount) territoryElements.territoryMetricCount.textContent = result.territoryCount;
-    el.validityText.textContent = result.valid ? "Valid" : "Incomplete";
-  }
-
-  function enhancedCurrentDeckData() {
+  function serializeTerritories(data) {
     return {
-      ...baseCurrentDeckData(),
+      ...data,
       territories: selectedTerritories().map(territory => ({ id: territory.id, name: territory.name, arena: territory.arena }))
     };
   }
 
-  function enhancedApplyDeckData(data) {
+  function hydrateTerritories(data) {
     state.territories = [];
-    baseApplyDeckData(data);
-
     if (state.territoryPool.length) state.territories = resolveTerritoryIds(data.territories || []);
     else state.pendingTerritories = data.territories || [];
-
-    renderAll();
-  }
-
-  async function enhancedCopyDeckList() {
-    const data = enhancedCurrentDeckData();
-    const faction = getFaction();
-    const leader = faction.leaders.find(item => item.id === state.leaderId);
-    const validation = enhancedValidateDeck();
-    const lines = [
-      data.name,
-      `${faction.name} — ${leader?.name || "No leader"}`,
-      `${validation.cardCount} cards · ${validation.pointTotal}/60 value · ${validation.territoryCount}/3 Territories`,
-      "",
-      ...deckEntries().map(({ card, qty }) => `${qty}x ${card.name} (${card.cost}) [${card.factionLabel}]`),
-      "",
-      "Territories:",
-      ...selectedTerritories().map(territory => `- ${territory.name}`)
-    ];
-    await navigator.clipboard.writeText(lines.join("\n"));
   }
 
   function resolveTerritoryIds(items) {
@@ -359,10 +333,4 @@
     return state.territoryPool.find(territory => territory.id === id);
   }
 
-  renderAll = enhancedRenderAll;
-  validateDeck = enhancedValidateDeck;
-  validateAndRender = enhancedValidateAndRender;
-  currentDeckData = enhancedCurrentDeckData;
-  applyDeckData = enhancedApplyDeckData;
-  copyDeckList = enhancedCopyDeckList;
 })();
