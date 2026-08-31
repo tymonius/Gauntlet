@@ -7,7 +7,7 @@ const app = read("deckbuilder/app.js");
 const print = read("deckbuilder/print.js");
 
 const transforms = [
-  ["deckbuilder/print-duplex-sheet-pairing.js", "production-rendering", 40],
+  ["deckbuilder/production-print.js", "production-rendering", 40],
   ["deckbuilder/starter-decks.js", "starter-strategy", 65],
   ["deckbuilder/print-summary.js", "print-summary", 70],
 ] as const;
@@ -63,7 +63,7 @@ describe("Deckbuilder print pipeline", () => {
   });
 
   it("runs the stale production-face guard as the final print transform", () => {
-    const source = read("deckbuilder/print-duplex-sheet-pairing.js");
+    const source = read("deckbuilder/production-print.js");
     expect(source).toContain('deckbuilder.registerPrintTransform("production-face-guard", guardProductionFaces, 100)');
     expect(source).toContain("Outdated print faces survived production rendering");
     expect(source).not.toContain("printWindow.document.close");
