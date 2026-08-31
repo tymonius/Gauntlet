@@ -6,6 +6,7 @@ const read = (path: string) => readFileSync(path, "utf8");
 const app = read("deckbuilder/app.js");
 const runtime = read("deckbuilder/current-runtime.js");
 const extensions = [
+  "deckbuilder/mobile-card-preview.js",
   "deckbuilder/territories.js",
   "deckbuilder/mystics-rites.js",
   "deckbuilder/starter-decks.js",
@@ -15,6 +16,7 @@ const extensions = [
   "deckbuilder/metadata-ui.js",
   "deckbuilder/print.js",
   "deckbuilder/production-print.js",
+  "deckbuilder/card-back-preview.js",
   "deckbuilder/print-summary.js",
   "deckbuilder/custom-print-loader.js",
   "deckbuilder/print-capital-ledger.js",
