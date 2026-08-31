@@ -1464,7 +1464,7 @@ function playActionCard(
         'Foreclosure may be played only during Denouement.',
       );
     }
-    if (!foreclosureTargetPosition(state, playerId)) {
+    if (foreclosureTargetPosition(state, playerId) === null) {
       throw new V070GameActionError(
         'Foreclosure requires the next opposing Territory beyond your Front Line to be unoccupied and its Deed to be yours.',
       );
