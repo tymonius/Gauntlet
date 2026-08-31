@@ -5,19 +5,23 @@ const readRepoFile = (path: string) =>
   readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
 
 describe("Mystics Ritual Deckbuilder component", () => {
-  it("adds the Ritual of Ascension to the Mystics supplemental package", () => {
+  it("derives the Ritual of Ascension package entry from physical component authority", () => {
     const source = readRepoFile("deckbuilder/faction-components.js");
+    const currentGame = JSON.parse(readRepoFile("game-data/current-game.json"));
+    const ritual = currentGame.componentContract.components.find((component: any) => component.id === "mystics-ritual-of-ascension");
 
-    expect(source).toContain('const MYSTICS_RITUAL_COMPONENT_ID = "mystics-ritual-of-ascension"');
-    expect(source).toContain('const ritual = currentGame.mystics?.ritual');
-    expect(source).toContain('packages.mystics.summary.push(`${ritual.name} card`)');
-    expect(source).toContain('title: ritual.name');
-    expect(source).toContain('kind: "ritual"');
-    expect(source).toContain('type: "reference"');
+    expect(ritual).toMatchObject({
+      family: "ritual-card",
+      productionStatus: "ready",
+      backPolicy: "specialBack",
+    });
+    expect(source).toContain('component.family === "reference-card" || component.family === "ritual-card"');
+    expect(source).toContain('const ritual = component.family === "ritual-card" ? currentGame.mystics?.ritual : null;');
+    expect(source).toContain('kind: component.renderSource?.kind || ""');
     expect(source).toContain('label: "Convergence"');
     expect(source).toContain('label: "Complete"');
     expect(source).toContain('label: "Interruption"');
-    expect(source).toContain('contractId: MYSTICS_RITUAL_COMPONENT_ID');
+    expect(source).not.toContain("MYSTICS_RITUAL_COMPONENT_ID");
   });
 
   it("derives Ritual print data from current authority before the print module runs", () => {
