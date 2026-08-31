@@ -156,8 +156,9 @@ describe("v0.6.4 full card-expansion candidate staging", () => {
     expect(divination.effects[0].text).toContain("Otherwise, put it in your Graveyard.");
   });
 
-  it("preserves the v0.6.4 staging document only as provenance for the flattened v0.7.0 card pool", () => {
-    expect(currentAuthority.version).toBe("v0.7.0");
+  it("preserves the v0.6.4 staging document only as provenance for the flattened current card pool", () => {
+    expect(currentAuthority.version).toBe("v0.7.1-candidate");
+    expect(currentAuthority.status).toBe("active-development");
     expect(currentAuthority.provenance.historicalInputs.cardChanges).toBe("/docs/v0.6.4-card-additions.json");
     expect(currentAuthority).not.toHaveProperty("sources");
     expect(currentAuthority).not.toHaveProperty("resolution");
