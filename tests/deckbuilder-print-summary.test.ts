@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const printSummaryTransform = readFileSync("deckbuilder/print-window-portrait-fixes.js", "utf8");
+const printSummaryTransform = readFileSync("deckbuilder/print-summary.js", "utf8");
 
 describe("Deckbuilder print intro summary", () => {
   it("locks the intro and first card rows to the physical first-page geometry", () => {

@@ -26,7 +26,7 @@ describe("Mystics Ritual Deckbuilder component", () => {
 
   it("derives Ritual print data from current authority before the print module runs", () => {
     const html = readRepoFile("deckbuilder/index.html");
-    const componentsIndex = html.indexOf("faction-components.js?v=20260802-1");
+    const componentsIndex = html.indexOf("faction-components.js");
     const printIndex = html.indexOf("print.js");
 
     expect(componentsIndex).toBeGreaterThan(-1);
@@ -35,13 +35,12 @@ describe("Mystics Ritual Deckbuilder component", () => {
     expect(html).not.toContain("completed-supplementals.js");
     expect(html).not.toContain("supplemental-data.js");
   });
-  it("derives completed-Rite progression from current Mystics authority", () => {
+  it("delegates Rite faces to the current production component authority", () => {
     const print = readRepoFile("deckbuilder/print.js");
 
-    expect(print).toContain("state.currentGameData?.mystics");
-    expect(print).toContain("mystics.ritual?.name");
-    expect(print).toContain("mystics.unlocks || []");
+    expect(print).toContain('productionPrint().component(rite.contractId, completed ? "reverse" : "front")');
     expect(print).not.toContain("Ritual of Ascendance");
+    expect(print).not.toContain("rite-completed-copy");
   });
 
 });

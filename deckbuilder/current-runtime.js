@@ -1,24 +1,25 @@
 (() => {
+  const deckbuilder = window.GAUNTLET_DECKBUILDER;
+  if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
+  const { state, factions: FACTIONS, sources: SOURCES } = deckbuilder;
+
   const RELEASED_MODE = "released";
   const CANDIDATE_MODE = "candidate";
-  const PUBLISHED_VERSION = "v0.7.1";
   const requestedRulesetMode = new URLSearchParams(window.location.search).get("rules") === CANDIDATE_MODE
     ? CANDIDATE_MODE
     : RELEASED_MODE;
-  const storageKey = requestedRulesetMode === CANDIDATE_MODE
-    ? "gauntlet-current-game-decks"
-    : "gauntlet-v0.7.1-decks";
   let currentGamePromise = null;
   let hydrated = false;
-
-  state.deckStorageKey = storageKey;
 
   function currentGame() {
     if (!currentGamePromise) {
       currentGamePromise = import("../game-data/ruleset.mjs")
         .then(async module => {
+          state.deckStorageKey = requestedRulesetMode === CANDIDATE_MODE
+            ? "gauntlet-current-game-decks"
+            : `gauntlet-${module.PUBLISHED_VERSION}-decks`;
           const data = await module.loadGameRuleset(requestedRulesetMode);
-          window.GAUNTLET_DECKBUILDER_RULESET = Object.freeze({
+          deckbuilder.setRuleset({
             mode: requestedRulesetMode,
             publishedVersion: module.PUBLISHED_VERSION,
             loadGame: () => currentGame(),
@@ -30,7 +31,6 @@
           state.currentGameVersion = data.version;
           state.currentGameDisplayVersion = data.displayVersion;
           state.currentGameAuthority = data.authorityUrl;
-          window.GAUNTLET_CURRENT_GAME_DATA = data;
           hydrateFactions(data);
           return data;
         });
@@ -59,7 +59,7 @@
       resource: faction.resource || "",
       victory: faction.victory || "",
       leaders: (faction.leaders || []).map(leader => ({
-        id: leader.id || slugify(leader.name),
+        id: leader.id || deckbuilder.slugify(leader.name),
         name: leader.name,
         tagline: leader.note || "",
         role: leader.note || `${faction.name} Leader`,
@@ -86,12 +86,12 @@
     inquisition: sourceFor("inquisition", "Inquisition")
   });
 
-  window.GAUNTLET_DECKBUILDER_LOAD_SOURCE = async function loadCurrentGameSource([faction, source]) {
+  deckbuilder.setSourceLoader(async function loadCurrentGameSource([faction, source]) {
     const data = await currentGame();
     return (data.cards || [])
-      .filter(card => slugify(card.allegiance || "Neutral") === faction)
+      .filter(card => deckbuilder.slugify(card.allegiance || "Neutral") === faction)
       .map(card => ({
-        id: card.id || `${faction}-${slugify(card.name)}`,
+        id: card.id || `${faction}-${deckbuilder.slugify(card.name)}`,
         name: card.name,
         faction,
         factionLabel: card.allegiance || source.label,
@@ -103,13 +103,15 @@
         sections: Object.fromEntries((card.effects || []).map(effect => [effect.label || "Text", effect.text || ""])),
         source: `../card-reference/#${encodeURIComponent(card.id)}`
       }));
-  };
+  });
 
   function deckHasWorkInProgress() {
+    const territories = deckbuilder.feature("territories");
+    const rites = deckbuilder.feature("mysticsRites");
     return Boolean(
       Object.keys(state.deck || {}).length
-      || state.territories?.length
-      || (state.riteSelectionEnabled && state.rites?.length)
+      || territories?.selectedIds?.().length
+      || (rites?.selectionEnabled?.() && rites.selectedIds?.().length)
       || (state.deckName && state.deckName !== "Untitled Gauntlet Deck")
     );
   }
@@ -155,7 +157,7 @@
     }
   }
 
-  window.GAUNTLET_DECKBUILDER_BOOTSTRAP = currentGame;
+  deckbuilder.setAuthorityBootstrap(currentGame);
 
   document.addEventListener("DOMContentLoaded", async () => {
     try {

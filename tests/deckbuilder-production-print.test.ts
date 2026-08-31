@@ -8,10 +8,9 @@ const componentRenderJs = readFileSync("card-design/component-print-render.js", 
 const territoryRender = readFileSync("card-design/territory-print-render.html", "utf8");
 const backRender = readFileSync("tts/back-renderer/index.html", "utf8");
 const cardBackCss = readFileSync("card-design/card-back.css", "utf8");
-const printTransform = readFileSync("deckbuilder/print-duplex-sheet-pairing.js", "utf8");
+const printTransform = readFileSync("deckbuilder/production-print.js", "utf8");
 const supplementalPrintTransform = readFileSync("deckbuilder/print-capital-ledger.js", "utf8");
 const cardBackPolicy = readFileSync("deckbuilder/card-back-preview.js", "utf8");
-const duplexTransform = readFileSync("deckbuilder/print-duplex.js", "utf8");
 const analyticsSync = readFileSync("scripts/sync-google-analytics.mjs", "utf8");
 const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
 const componentContract = currentGame.componentContract;
@@ -37,7 +36,7 @@ describe("Deckbuilder production printing", () => {
   });
 
   it("uses current-game component metadata and preserves intrinsic reverse faces", () => {
-    expect(printTransform).toContain('state.currentGameData || window.GAUNTLET_CURRENT_GAME_DATA');
+    expect(printTransform).toContain('const currentGame = state.currentGameData;');
     expect(printTransform).toContain('currentGame.components');
     expect(printTransform).toContain('component.productionStatus');
     expect(printTransform).toContain('component.backPolicy');
@@ -65,17 +64,17 @@ describe("Deckbuilder production printing", () => {
   });
 
   it("prints standard backs as black and single-sided faction components in faction color automatically", () => {
-    expect(duplexTransform).toContain('cell.querySelector(".main-card, .territory")');
+    expect(printTransform).toContain('pageNeedsStandardBack(frontPage)');
+    expect(printTransform).toContain('replaceProductionBacks(documentNode)');
+    expect(printTransform).toContain('standardBackFaction(frontCell)');
+    expect(printTransform).toContain('frontCell.querySelector(".production-render-card, .production-render-territory")');
+    expect(printTransform).toContain('return "intelligence";');
+    expect(printTransform).toContain('String(state.factionId || "intelligence")');
     expect(printTransform).toContain('production-standard-back');
     expect(printTransform).toContain('/tts/back-renderer/index.html?faction=');
-    expect(printTransform).toContain('if (!useFactionColor) return "intelligence";');
-    expect(cardBackPolicy).toContain('factionColor.checked = false');
-    expect(cardBackPolicy).toContain('factionOption?.remove()');
     expect(cardBackPolicy).toContain('Automatic backs: black for playable cards and Territories');
-    expect(cardBackPolicy).toContain('.production-render-leader');
-    expect(cardBackPolicy).toContain('.production-render-component[data-production-back-policy="standardBack"]');
-    expect(cardBackPolicy).toContain('.deed-card[data-contract-back-policy="standardBack"]');
-    expect(cardBackPolicy).toContain('data-automatic-mixed-back-policy');
+    expect(cardBackPolicy).not.toContain("window.open");
+    expect(cardBackPolicy).not.toContain("document.write");
   });
 
   it("keeps duplex orientation and production-render readiness safeguards", () => {
@@ -83,7 +82,7 @@ describe("Deckbuilder production printing", () => {
     expect(printTransform).toContain('transform: rotate(90deg);');
     expect(printTransform).toContain('production-component-landscape-rotate');
     expect(printTransform).toContain('&orientation=landscape');
-    expect(supplementalPrintTransform).toContain('&rules=${encodeURIComponent(selectedRulesetMode())}');
+    expect(supplementalPrintTransform).toContain('productionPrint().componentSource(PRODUCTION_LEDGER_COMPONENT_ID, side)');
     expect(componentRenderJs).toContain('card.dataset.parchmentLoaded === "true" && dimensionsReady(card)');
     expect(cardBackCss).toContain('transform: translate(-50%, -50%) rotate(90deg);');
     expect(backRender).toContain("params.get('rotation') === '180'");
@@ -92,12 +91,12 @@ describe("Deckbuilder production printing", () => {
   });
 
   it("previews the selected faction component back without exposing a global back-color choice", () => {
-    expect(deckbuilderHtml).toContain('card-back-preview.js?v=20260819-1');
+    expect(deckbuilderHtml).toContain('card-back-preview.js?v=20260831-2');
     expect(cardBackPolicy).toContain('preview.id = "cardBackPreview"');
     expect(cardBackPolicy).toContain('frame.id = "cardBackPreviewFrame"');
-    expect(cardBackPolicy).toContain('/tts/back-renderer/index.html?faction=');
+    expect(cardBackPolicy).toContain('productionPrint().backSource(faction)');
     expect(cardBackPolicy).toContain('factionSelect?.addEventListener("change"');
-    expect(cardBackPolicy).toContain('factionColor.disabled = true');
+    expect(cardBackPolicy).not.toContain("factionColorCardBack");
   });
 
   it("keeps print-only render surfaces analytics-free", () => {

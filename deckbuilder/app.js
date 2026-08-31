@@ -16,6 +16,137 @@ const state = {
 
 const el = {};
 
+const extensionHooks = {
+  render: [],
+  validate: [],
+  serialize: [],
+  hydrate: [],
+  factionChange: [],
+  deckList: [],
+};
+
+let authorityBootstrap = null;
+let sourceLoader = null;
+let selectedRuleset = null;
+let cardPreviewRenderer = null;
+const featureApis = new Map();
+const printTransforms = [];
+
+function requireHook(kind, callback) {
+  if (typeof callback !== "function") throw new TypeError(`Deckbuilder ${kind} hook must be a function.`);
+  extensionHooks[kind].push(callback);
+  return () => {
+    const index = extensionHooks[kind].indexOf(callback);
+    if (index >= 0) extensionHooks[kind].splice(index, 1);
+  };
+}
+
+function registerPrintTransform(name, callback, priority = 50) {
+  const key = String(name || "").trim();
+  if (!key) throw new TypeError("Deckbuilder print transform name is required.");
+  if (typeof callback !== "function") throw new TypeError(`Deckbuilder print transform ${key} must be a function.`);
+  if (printTransforms.some(transform => transform.name === key)) {
+    throw new Error(`Deckbuilder print transform ${key} is already registered.`);
+  }
+
+  const numericPriority = Number(priority);
+  if (!Number.isFinite(numericPriority)) throw new TypeError(`Deckbuilder print transform ${key} priority must be numeric.`);
+
+  const transform = Object.freeze({
+    name: key,
+    callback,
+    priority: numericPriority,
+    sequence: printTransforms.length,
+  });
+  printTransforms.push(transform);
+  printTransforms.sort((left, right) => left.priority - right.priority || left.sequence - right.sequence);
+
+  return () => {
+    const index = printTransforms.indexOf(transform);
+    if (index >= 0) printTransforms.splice(index, 1);
+  };
+}
+
+function preparePrintDocument(html, context = {}) {
+  let output = String(html ?? "");
+  for (const transform of printTransforms) {
+    const next = transform.callback(output, context);
+    if (typeof next !== "string") {
+      throw new TypeError(`Deckbuilder print transform ${transform.name} must return HTML text.`);
+    }
+    output = next;
+  }
+  return output;
+}
+
+const deckbuilderApi = Object.freeze({
+  state,
+  sources: SOURCES,
+  factions: FACTIONS,
+  registerRenderHook: callback => requireHook("render", callback),
+  registerValidationHook: callback => requireHook("validate", callback),
+  registerSerializeHook: callback => requireHook("serialize", callback),
+  registerHydrateHook: callback => requireHook("hydrate", callback),
+  registerFactionChangeHook: callback => requireHook("factionChange", callback),
+  registerDeckListHook: callback => requireHook("deckList", callback),
+  registerPrintTransform,
+  preparePrintDocument,
+  registerFeature(name, api) {
+    const key = String(name || "").trim();
+    if (!key) throw new TypeError("Deckbuilder feature name is required.");
+    if (!api || typeof api !== "object") throw new TypeError(`Deckbuilder feature ${key} must be an object.`);
+    if (featureApis.has(key)) throw new Error(`Deckbuilder feature ${key} is already registered.`);
+    featureApis.set(key, Object.freeze(api));
+    return featureApis.get(key);
+  },
+  feature(name) {
+    return featureApis.get(String(name || "").trim()) || null;
+  },
+  setAuthorityBootstrap(callback) {
+    if (authorityBootstrap && authorityBootstrap !== callback) throw new Error("Deckbuilder authority bootstrap is already configured.");
+    if (typeof callback !== "function") throw new TypeError("Deckbuilder authority bootstrap must be a function.");
+    authorityBootstrap = callback;
+  },
+  bootstrap() {
+    if (typeof authorityBootstrap !== "function") throw new Error("Current Deckbuilder runtime is unavailable.");
+    return authorityBootstrap();
+  },
+  setSourceLoader(callback) {
+    if (sourceLoader && sourceLoader !== callback) throw new Error("Deckbuilder source loader is already configured.");
+    if (typeof callback !== "function") throw new TypeError("Deckbuilder source loader must be a function.");
+    sourceLoader = callback;
+  },
+  loadSource(entry) {
+    if (typeof sourceLoader !== "function") throw new Error("Current Deckbuilder card loader is unavailable.");
+    return sourceLoader(entry);
+  },
+  setRuleset(ruleset) {
+    selectedRuleset = Object.freeze({ ...ruleset });
+    return selectedRuleset;
+  },
+  setCardPreviewRenderer(callback) {
+    if (typeof callback !== "function") throw new TypeError("Deckbuilder card preview renderer must be a function.");
+    cardPreviewRenderer = callback;
+  },
+  ruleset() {
+    return selectedRuleset;
+  },
+  render: () => renderAll(),
+  renderAvailable: () => renderAvailable(),
+  renderFactionOptions: () => renderFactionOptions(),
+  validate: () => validateDeck(),
+  serialize: () => currentDeckData(),
+  hydrate: data => applyDeckData(data),
+  getFaction: () => getFaction(),
+  getCard: id => getCard(id),
+  addCard: id => addCard(id),
+  deckEntries: () => deckEntries(),
+  slugify: value => slugify(value),
+  escapeHtml: value => escapeHtml(value),
+});
+
+window.GAUNTLET_DECKBUILDER = deckbuilderApi;
+
 document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
@@ -23,10 +154,7 @@ async function init() {
   bindEvents();
 
   try {
-    if (typeof window.GAUNTLET_DECKBUILDER_BOOTSTRAP !== "function") {
-      throw new Error("Current Deckbuilder runtime is unavailable.");
-    }
-    await window.GAUNTLET_DECKBUILDER_BOOTSTRAP();
+    await deckbuilderApi.bootstrap();
     renderFactionOptions();
     const pools = await Promise.all(Object.entries(SOURCES).map(loadSource));
     state.cards = pools.flat().sort((a, b) => a.name.localeCompare(b.name));
@@ -72,9 +200,7 @@ function bindEvents() {
 }
 
 async function loadSource(entry) {
-  const loader = window.GAUNTLET_DECKBUILDER_LOAD_SOURCE;
-  if (typeof loader !== "function") throw new Error("Current Deckbuilder card loader is unavailable.");
-  return loader(entry);
+  return deckbuilderApi.loadSource(entry);
 }
 
 function renderAll() {
@@ -86,6 +212,7 @@ function renderAll() {
   renderDeck();
   renderSavedDecks();
   validateAndRender();
+  extensionHooks.render.forEach(hook => hook());
 }
 
 function renderFactionOptions() {
@@ -141,9 +268,11 @@ function changeFaction() {
   }
 
   removed.forEach(cardId => delete state.deck[cardId]);
+  const previousFactionId = state.factionId;
   state.factionId = nextFaction;
   state.leaderId = getFaction()?.leaders[0]?.id || "";
   state.selectedCardId = null;
+  extensionHooks.factionChange.forEach(hook => hook({ previousFactionId, factionId: state.factionId }));
   renderAll();
 }
 
@@ -201,6 +330,11 @@ function renderAvailable() {
 }
 
 function renderCardPreview(card) {
+  if (cardPreviewRenderer) return cardPreviewRenderer(card);
+  return renderDefaultCardPreview(card);
+}
+
+function renderDefaultCardPreview(card) {
   if (!card) {
     el.cardPreview.className = "card-preview empty-state";
     el.cardPreview.textContent = "Select a card to view its active working text.";
@@ -289,7 +423,7 @@ function validateDeck() {
   const pointTotal = entries.reduce((sum, entry) => sum + entry.qty * entry.card.cost, 0);
   const factionCardCount = entries.filter(entry => entry.card.faction === state.factionId).reduce((sum, entry) => sum + entry.qty, 0);
   const errors = [];
-  const warnings = ["Territory selection is not yet included in this development build."];
+  const warnings = [];
 
   if (!state.factionId) errors.push("Choose a faction.");
   if (!state.leaderId) errors.push("Choose a leader.");
@@ -301,7 +435,17 @@ function validateDeck() {
     if (card.faction !== "neutral" && card.faction !== state.factionId) errors.push(`${card.name} is not legal for ${getFaction().name}.`);
   });
 
-  return { cardCount, pointTotal, factionCardCount, errors, warnings, valid: errors.length === 0 };
+  let result = { cardCount, pointTotal, factionCardCount, errors, warnings, valid: errors.length === 0 };
+  for (const hook of extensionHooks.validate) {
+    const next = hook(result);
+    if (next) result = next;
+  }
+  return {
+    ...result,
+    errors: [...(result.errors || [])],
+    warnings: [...(result.warnings || [])],
+    valid: (result.errors || []).length === 0,
+  };
 }
 
 function validateAndRender() {
@@ -320,7 +464,7 @@ function validateAndRender() {
 }
 
 function currentDeckData() {
-  return {
+  let data = {
     schema: "gauntlet-deck",
     schemaVersion: 3,
     gameVersion: state.currentGameVersion || "current-game",
@@ -330,6 +474,11 @@ function currentDeckData() {
     leaderId: state.leaderId,
     cards: deckEntries().map(({ card, qty }) => ({ id: card.id, name: card.name, faction: card.faction, qty }))
   };
+  for (const hook of extensionHooks.serialize) {
+    const next = hook(data);
+    if (next) data = next;
+  }
+  return data;
 }
 
 function saveDeck() {
@@ -398,6 +547,7 @@ function applyDeckData(data) {
     state.deck[card.id] = Number(item.qty) || 0;
   }
 
+  extensionHooks.hydrate.forEach(hook => hook(data));
   renderAll();
 }
 
@@ -411,13 +561,13 @@ async function copyDeckList() {
     `${faction.name} — ${leader?.name || "No leader"}`,
     `${validation.cardCount} cards · ${validation.pointTotal}/60 value`,
     "",
-    ...deckEntries().map(({ card, qty }) => `${qty}x ${card.name} (${card.cost}) [${card.factionLabel}]`),
-    "",
-    `Territories: ${(state.territories || []).map(id => state.territoryPool?.find(item => item.id === id)?.name || id).join(", ") || "None"}`,
-    ...(state.factionId === "mystics"
-      ? [`Rites: ${(state.rites || []).map(id => state.currentGameData?.mystics?.rites?.find(item => item.id === id)?.name || id).join(", ") || "None"}`]
-      : [])
+    ...deckEntries().map(({ card, qty }) => `${qty}x ${card.name} (${card.cost}) [${card.factionLabel}]`)
   ];
+  for (const hook of extensionHooks.deckList) {
+    const extra = hook({ data, validation, faction, leader });
+    if (Array.isArray(extra)) lines.push(...extra.filter(line => line != null).map(String));
+    else if (extra != null) lines.push(String(extra));
+  }
   await navigator.clipboard.writeText(lines.join("\n"));
 }
 

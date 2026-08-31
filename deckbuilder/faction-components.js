@@ -1,11 +1,11 @@
 (() => {
-  state.currentFactionComponentsReady = false;
+  const deckbuilder = window.GAUNTLET_DECKBUILDER;
+  if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
+  const { state } = deckbuilder;
+  const escapeHtml = value => deckbuilder.escapeHtml(value);
+  const ritesApi = () => deckbuilder.feature("mysticsRites");
 
-  const baseRenderAll = renderAll;
-  renderAll = function renderAllWithFactionComponents() {
-    baseRenderAll();
-    renderFactionComponents();
-  };
+  deckbuilder.registerRenderHook(renderFactionComponents);
 
   document.addEventListener("DOMContentLoaded", installFactionComponentDisplay);
 
@@ -25,10 +25,9 @@
     }
 
     try {
-      const currentGame = state.currentGameData || await import("../game-data/ruleset.mjs").then(module => module.loadGameRuleset(module.rulesetModeFromUrl()));
+      const currentGame = state.currentGameData || await deckbuilder.bootstrap();
       state.currentGameData ||= currentGame;
       hydratePrintPackages(currentGame);
-      state.currentFactionComponentsReady = true;
       document.body.dataset.currentFactionComponents = "ready";
     } catch (error) {
       console.error("Unable to project deck components from current-game authority", error);
@@ -121,7 +120,7 @@
 
     }
 
-    window.GAUNTLET_CURRENT_SUPPLEMENTALS = Object.freeze(packages);
+    deckbuilder.registerFeature("supplementalPackages", packages);
   }
 
   function componentMeta(component, shared = false) {
@@ -148,11 +147,11 @@
     const container = document.getElementById("deckFactionComponents");
     if (!container) return;
 
-    const faction = typeof getFaction === "function" ? getFaction() : null;
+    const faction = deckbuilder.getFaction();
     const leader = faction?.leaders?.find(item => item.id === state.leaderId);
     const currentGame = state.currentGameData;
 
-    if (!faction || !leader || !currentGame || !state.currentFactionComponentsReady) {
+    if (!faction || !leader || !currentGame || !deckbuilder.feature("supplementalPackages")) {
       container.className = "deck-list empty-state";
       container.textContent = "Loading current deck components…";
       return;
@@ -167,7 +166,7 @@
       && !(state.factionId === "mystics" && component.family === "rite-card")
     ));
     const selectedRiteItems = state.factionId === "mystics"
-      ? (state.rites || []).map(id => currentGame.mystics?.rites?.find(rite => rite.id === id)).filter(Boolean)
+      ? (ritesApi()?.selectedRites?.() || [])
       : [];
     const items = [
       ...sharedComponents.map(component => ({

@@ -1,4 +1,8 @@
 (() => {
+  const deckbuilder = window.GAUNTLET_DECKBUILDER;
+  if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
+  const { state } = deckbuilder;
+
   const EMAIL_STORAGE_KEY = "gauntlet-print-request-host-email-v1";
   const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const el = {};
@@ -74,13 +78,13 @@
   }
 
   function deckIsValid() {
-    try { return Boolean(validateDeck().valid); }
+    try { return Boolean(deckbuilder.validate().valid); }
     catch { return document.getElementById("validityText")?.textContent?.trim() === "Valid"; }
   }
 
   function buildRequest() {
-    const deck = currentDeckData();
-    const validation = validateDeck();
+    const deck = deckbuilder.serialize();
+    const validation = deckbuilder.validate();
     const factionName = document.getElementById("factionSelect")?.selectedOptions?.[0]?.textContent?.replace(/\s+—.*$/, "").trim() || deck.factionId;
     const leaderName = document.getElementById("leaderSelect")?.selectedOptions?.[0]?.textContent?.trim() || deck.leaderId;
     const playerName = el.printRequestPlayerName.value.trim();

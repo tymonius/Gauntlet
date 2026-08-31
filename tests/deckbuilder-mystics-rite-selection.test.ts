@@ -32,19 +32,21 @@ describe('Deckbuilder Mystics Rite selection', () => {
   });
 
   it('persists selected Rites through current Deck data, save/load, JSON import/export, and copied lists', () => {
-    expect(rites).toContain('schemaVersion: Math.max(3');
+    expect(rites).toContain('deckbuilder.registerSerializeHook(serializeRites)');
+    expect(rites).toContain('deckbuilder.registerHydrateHook(hydrateRites)');
     expect(rites).toContain('selectedRites: isMystics() ? [...state.rites] : []');
     expect(rites).toContain('data.selectedRites || []');
-    expect(rites).toContain('"Rites:"');
+    expect(rites).toContain('function riteDeckListLines()');
+    expect(rites).toContain('Rites: ${names.join(", ") || "None"}');
     expect(rites).toContain('state.pendingRites');
   });
 
   it('loads and recognizes the official starter Rite packages and preserves them during bulk printing', () => {
-    expect(starters).toContain('state.rites = starterRiteIds(preset)');
-    expect(starters).toContain('const currentRites = [...(state.rites || [])].sort()');
-    expect(starters).toContain('if (Array.isArray(state.rites)) state.rites = starterRiteIds()');
-    expect(bulkPrint).toContain('rites: [...(state.rites || [])]');
-    expect(bulkPrint).toContain('state.rites = starterRiteIds(preset)');
+    expect(starters).toContain('ritesApi()?.setSelectedIds?.(starterRiteIds(preset))');
+    expect(starters).toContain('const currentRites = [...(ritesApi()?.selectedIds?.() || [])].sort()');
+    expect(starters).toContain('ritesApi()?.setSelectedIds?.(starterRiteIds())');
+    expect(bulkPrint).toContain('rites: ritesApi()?.selectedIds?.() || []');
+    expect(bulkPrint).toContain('ritesApi()?.setSelectedIds?.(starterRiteIds(preset))');
 
     const mystics = authority.starterDecks.decks.filter((deck: any) => deck.factionId === 'mystics');
     expect(mystics.map((deck: any) => deck.selectedRites)).toEqual([
@@ -56,13 +58,15 @@ describe('Deckbuilder Mystics Rite selection', () => {
   it('prints and displays only the selected Rite package rather than treating the production component subset as the package', () => {
     expect(components).toContain('component.family === "rite-card"');
     expect(components).toContain('const selectedRiteItems = state.factionId === "mystics"');
+    expect(components).toContain('ritesApi()?.selectedRites?.() || []');
+    expect(components).not.toContain('state.rites');
     expect(components).toContain('reminder: rite.reminder?.text || ""');
     expect(print).toContain('(packageData.rites || []).filter(rite => data.selectedRiteIds.includes(rite.id))');
     expect(print).toContain('data.selectedRites.map(rite =>');
     expect(printRequest).toContain('Rites: ${rites.length ? rites.join(", ") : "None selected"}');
   });
 
-  it('keeps candidate snapshots invalid until three legal Rites are chosen while released v0.7.0 uses its fixed three-Rite package', () => {
+  it('enforces the selected ruleset Rite policy while retaining support for fixed Rite packages', () => {
     expect(rites).toContain('state.riteSelectionEnabled = Boolean(policy)');
     expect(rites).toContain('state.rites = isMystics() ? state.ritePool.map(rite => rite.id) : []');
     expect(rites).toContain('state.rites = state.riteSelectionEnabled');

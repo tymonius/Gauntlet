@@ -5,7 +5,7 @@ const componentRenderHtml = readFileSync("card-design/component-print-render.htm
 const componentRenderJs = readFileSync("card-design/component-print-render.js", "utf8");
 const leaderCopyScript = readFileSync("card-design/leader-card-copy.js", "utf8");
 const currentGame = JSON.parse(readFileSync("game-data/current-game.json", "utf8"));
-const printTransform = readFileSync("deckbuilder/print-duplex-sheet-pairing.js", "utf8");
+const printTransform = readFileSync("deckbuilder/production-print.js", "utf8");
 
 describe("Deckbuilder current Leader printing", () => {
   it("loads standardized Leader rules from current-game authority", () => {
@@ -13,7 +13,7 @@ describe("Deckbuilder current Leader printing", () => {
     expect(leaderCopyScript).toContain("import('../game-data/current-game.mjs')");
     expect(leaderCopyScript).toContain('currentGame.leaders');
     expect(leaderCopyScript).not.toContain('leader-card-copy.json');
-    expect(currentGame.version).toBe("v0.7.0");
+    expect(currentGame.version).toBe("v0.7.1");
     expect(currentGame.leaders).toHaveLength(12);
   });
 
@@ -42,12 +42,13 @@ describe("Deckbuilder current Leader printing", () => {
     expect(leaderCopyScript).toContain("window.dispatchEvent(new Event('resize'))");
   });
 
-  it("keeps the Deckbuilder Leader shell only as a handoff to the current production component renderer", () => {
-    expect(printTransform).toContain('replaceProductionLeader(documentNode, currentGame)');
-    expect(printTransform).toContain('currentGame.findLeader?.(faction, leaderId)');
+  it("renders the selected Leader directly through the current production component renderer", () => {
+    expect(printTransform).toContain("function renderProductionLeaderHtml(faction, leader)");
+    expect(printTransform).toContain('currentGame.findLeader?.(factionId, leaderId)');
     expect(printTransform).toContain('kind: "leader"');
-    expect(printTransform).toContain('id: `${faction}-${leader.id}`');
+    expect(printTransform).toContain('id: `${factionId}-${canonicalLeader.id}`');
     expect(printTransform).toContain('/card-design/component-print-render.html?kind=');
+    expect(printTransform).not.toContain("replaceProductionLeader");
   });
 
   it("locks a representative Leader to the finalized current wording", () => {

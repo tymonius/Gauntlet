@@ -11,7 +11,7 @@ const territories = readFileSync('deckbuilder/territories.js', 'utf8');
 const rites = readFileSync('deckbuilder/mystics-rites.js', 'utf8');
 const components = readFileSync('deckbuilder/faction-components.js', 'utf8');
 const bulk = readFileSync('deckbuilder/print-all-starters.js', 'utf8');
-const productionPrint = readFileSync('deckbuilder/print-duplex-sheet-pairing.js', 'utf8');
+const productionPrint = readFileSync('deckbuilder/production-print.js', 'utf8');
 const customPrint = readFileSync('deckbuilder/custom-print.mjs', 'utf8');
 const currentRuntime = readFileSync('game-data/current-game.mjs', 'utf8');
 
@@ -43,26 +43,31 @@ describe('Deckbuilder released / release-candidate ruleset toggle', () => {
 
   it('routes every Deckbuilder authority consumer through the selected shared ruleset bootstrap', () => {
     expect(runtime).toContain('../game-data/ruleset.mjs');
-    expect(runtime).toContain('GAUNTLET_DECKBUILDER_BOOTSTRAP');
-    expect(territories).toContain('window.GAUNTLET_DECKBUILDER_BOOTSTRAP');
-    expect(rites).toContain('window.GAUNTLET_DECKBUILDER_BOOTSTRAP');
+    expect(runtime).toContain('deckbuilder.setAuthorityBootstrap(currentGame)');
+    expect(territories).toContain('await deckbuilder.bootstrap()');
+    expect(rites).toContain('await deckbuilder.bootstrap()');
+    expect(components).toContain('await deckbuilder.bootstrap()');
+    expect(bulk).toContain('await deckbuilder.bootstrap()');
     expect(territories).not.toContain('../game-data/ruleset.mjs');
     expect(rites).not.toContain('../game-data/ruleset.mjs');
-    expect(components).toContain('../game-data/ruleset.mjs');
-    expect(bulk).toContain('../game-data/ruleset.mjs');
+    expect(components).not.toContain('../game-data/ruleset.mjs');
+    expect(bulk).not.toContain('../game-data/ruleset.mjs');
   });
 
-  it('threads the selected ruleset into production and custom-print render surfaces', () => {
+  it('threads the selected ruleset through one production-render source API', () => {
+    expect(productionPrint).toContain('deckbuilder.ruleset()?.mode');
     expect(productionPrint).toContain('&rules=${encodeURIComponent(selectedRulesetMode())}');
-    expect(customPrint).toContain('&rules=${encodeURIComponent(selectedRulesetMode())}');
+    expect(customPrint).toContain('deckbuilder.feature("productionPrintRenderer")');
+    expect(customPrint).not.toContain('selectedRulesetMode');
     expect(currentRuntime).toContain("get('rules') === 'released'");
     expect(currentRuntime).toContain("import('./ruleset.mjs')");
   });
 
   it('keeps saved Deck libraries separate so candidate Decks do not silently appear as released Decks', () => {
-    expect(runtime).toContain('gauntlet-v0.7.1-decks');
+    expect(runtime).toContain('gauntlet-${module.PUBLISHED_VERSION}-decks');
     expect(runtime).toContain('gauntlet-current-game-decks');
     expect(runtime).toContain('requestedRulesetMode === CANDIDATE_MODE');
+    expect(runtime).not.toMatch(/gauntlet-v0\.\d+\.\d+-decks/);
   });
 
   it('treats v0.7.1 Mystics Rites as a pregame choice', () => {

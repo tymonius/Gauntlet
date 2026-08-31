@@ -1,4 +1,10 @@
 (() => {
+  const deckbuilder = window.GAUNTLET_DECKBUILDER;
+  if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
+  const { state } = deckbuilder;
+  const territoriesApi = () => deckbuilder.feature("territories");
+  const ritesApi = () => deckbuilder.feature("mysticsRites");
+
   const EXPECTED_DECK_COUNT = 12;
   let starterDecks = [];
   let starterLoadError = null;
@@ -21,8 +27,7 @@
 
   async function loadStarterDecks() {
     try {
-      const { loadGameRuleset, rulesetModeFromUrl } = await import("../game-data/ruleset.mjs");
-      const currentGame = await loadGameRuleset(rulesetModeFromUrl());
+      const currentGame = await deckbuilder.bootstrap();
       starterDecks = Array.isArray(currentGame.starterDecks)
         ? currentGame.starterDecks.map(deck => ({ ...deck }))
         : [];
@@ -39,7 +44,7 @@
   }
 
   function isReady() {
-    const starterApi = window.GAUNTLET_STARTER_DECKS;
+    const starterApi = deckbuilder.feature("starterDecks");
     const starterTipsReady = typeof starterApi?.getSelectedDeck === "function" && Boolean(starterApi.getSelectedDeck());
     const mysticsRitesReady = document.body.dataset.mysticsRites === "ready";
 
@@ -48,7 +53,7 @@
       starterTipsReady &&
       mysticsRitesReady &&
       state.cards?.length &&
-      state.territoryPool?.length &&
+      territoriesApi()?.isReady?.() &&
       !document.getElementById("printDeckButton")?.disabled
     );
   }
@@ -89,7 +94,7 @@
         button.textContent = `Preparing ${index + 1} of ${EXPECTED_DECK_COUNT}…`;
         applyStarterDeckToState(preset);
 
-        const validation = validateDeck();
+        const validation = deckbuilder.validate();
         if (!validation.valid) {
           throw new Error(`${preset.name} failed Deckbuilder validation while preparing the combined print package.`);
         }
@@ -110,7 +115,7 @@
       window.alert(`Unable to prepare all starter Decks: ${error.message || error}`);
     } finally {
       restoreState(snapshot);
-      renderAll();
+      deckbuilder.render();
       printing = false;
       syncButton(button);
     }
@@ -122,11 +127,9 @@
       factionId: state.factionId,
       leaderId: state.leaderId,
       deck: { ...state.deck },
-      territories: [...(state.territories || [])],
-      rites: [...(state.rites || [])],
-      selectedCardId: state.selectedCardId,
-      selectedTerritoryId: state.selectedTerritoryId,
-      selectedRiteId: state.selectedRiteId
+      territories: territoriesApi()?.selectedIds?.() || [],
+      rites: ritesApi()?.selectedIds?.() || [],
+      selectedCardId: state.selectedCardId
     };
   }
 
@@ -135,22 +138,20 @@
     state.factionId = snapshot.factionId;
     state.leaderId = snapshot.leaderId;
     state.deck = { ...snapshot.deck };
-    state.territories = [...snapshot.territories];
-    state.rites = [...(snapshot.rites || [])];
+    territoriesApi()?.setSelectedIds?.(snapshot.territories || []);
+    ritesApi()?.setSelectedIds?.(snapshot.rites || []);
     state.selectedCardId = snapshot.selectedCardId;
-    state.selectedTerritoryId = snapshot.selectedTerritoryId;
-    state.selectedRiteId = snapshot.selectedRiteId;
   }
 
   function starterRiteIds(preset) {
     if (preset.factionId !== "mystics") return [];
     if (Array.isArray(preset.selectedRites)) return [...preset.selectedRites];
-    const riteApi = window.GAUNTLET_MYSTICS_RITES;
+    const riteApi = ritesApi();
     return riteApi?.selectionEnabled?.() ? [] : (riteApi?.defaultIds?.() || []);
   }
 
   function applyStarterDeckToState(preset) {
-    const faction = FACTIONS.find(item => item.id === preset.factionId);
+    const faction = deckbuilder.factions.find(item => item.id === preset.factionId);
     const leader = faction?.leaders?.find(item => item.id === preset.leaderId);
     if (!faction || !leader) throw new Error(`Missing faction or Leader for ${preset.name}.`);
 
@@ -164,8 +165,9 @@
       deck[card.id] = Number(item.quantity);
     }
 
+    const territoryPool = state.currentGameData?.territories || [];
     const territories = (preset.territories || []).map(name => {
-      const territory = state.territoryPool.find(candidate => candidate.name === name);
+      const territory = territoryPool.find(candidate => candidate.name === name);
       if (!territory) throw new Error(`${preset.name} references missing Territory ${name}.`);
       return territory.id;
     });
@@ -174,33 +176,19 @@
     state.factionId = preset.factionId;
     state.leaderId = preset.leaderId;
     state.deck = deck;
-    state.territories = territories;
-    state.rites = starterRiteIds(preset);
+    territoriesApi()?.setSelectedIds?.(territories);
+    ritesApi()?.setSelectedIds?.(starterRiteIds(preset));
   }
 
   function captureCurrentPrintDocument() {
-    const printButton = document.getElementById("printDeckButton");
-    const inheritedOpen = window.open;
-    let captured = "";
-
-    const fakeDocument = {
-      write(value) { captured += String(value); },
-      close() {}
-    };
-    const fakeWindow = {
-      document: fakeDocument,
-      focus() {}
-    };
-
-    window.open = () => fakeWindow;
-    try {
-      printButton.click();
-    } finally {
-      window.open = inheritedOpen;
+    const printApi = deckbuilder.feature("printDeck");
+    if (typeof printApi?.buildDocument !== "function") {
+      throw new Error("The Deckbuilder print document API is unavailable.");
     }
 
-    if (!captured) throw new Error("The Deckbuilder did not generate a printable document.");
-    return captured;
+    const documentHtml = printApi.buildDocument();
+    if (!documentHtml) throw new Error("The Deckbuilder did not generate a printable document.");
+    return documentHtml;
   }
 
   function combinePrintDocuments(documents) {
@@ -209,18 +197,14 @@
     const first = parsed[0];
     if (!first) throw new Error("No starter Deck print documents were generated.");
 
-    parsed.forEach(frameIntelligencePortraits);
-
     const links = [...first.head.querySelectorAll("link")].map(link => link.outerHTML).join("\n");
     const styles = [...new Set(parsed.flatMap(documentNode =>
       [...documentNode.head.querySelectorAll("style")].map(style => style.textContent)
     ))];
 
-    let printScript = "";
+    const printScripts = [...first.body.querySelectorAll("script")].map(script => script.outerHTML);
     const bodies = parsed.map((documentNode, index) => {
-      const scripts = [...documentNode.body.querySelectorAll("script")];
-      if (!printScript && scripts.length) printScript = scripts[scripts.length - 1].textContent;
-      scripts.forEach(script => script.remove());
+      documentNode.body.querySelectorAll("script").forEach(script => script.remove());
 
       const firstPage = documentNode.body.querySelector(".first-page");
       if (index > 0 && firstPage) firstPage.classList.add("bulk-deck-start");
@@ -241,39 +225,9 @@ ${styles.map(style => `<style>${style}</style>`).join("\n")}
 </head>
 <body class="all-starter-decks-print">
 ${bodies}
-<script>${printScript}<\/script>
+${printScripts.join("\n")}
 </body>
 </html>`;
-  }
-
-  function frameIntelligencePortraits(documentNode) {
-    documentNode.querySelectorAll(".leader-card .leader-art img").forEach(image => {
-      const leaderName = String(image.getAttribute("alt") || "").trim().toLowerCase();
-      if (leaderName !== "ranger" && leaderName !== "spymaster") return;
-
-      const card = image.closest(".leader-card");
-      const art = image.closest(".leader-art");
-      if (!card || !art) return;
-
-      card.classList.add("intelligence-leader-card", `${leaderName}-leader-card`);
-      card.style.setProperty("grid-template-rows", "1.37in 1fr .16in", "important");
-      art.style.setProperty("height", "1.37in", "important");
-      art.style.setProperty("min-height", "1.37in", "important");
-      art.style.setProperty("max-height", "1.37in", "important");
-
-      image.style.setProperty("position", "absolute", "important");
-      image.style.setProperty("left", "0", "important");
-      image.style.setProperty("right", "auto", "important");
-      image.style.setProperty("top", leaderName === "ranger" ? "-.015in" : "-.01in", "important");
-      image.style.setProperty("bottom", "auto", "important");
-      image.style.setProperty("width", "100%", "important");
-      image.style.setProperty("height", "auto", "important");
-      image.style.setProperty("min-width", "100%", "important");
-      image.style.setProperty("max-width", "none", "important");
-      image.style.setProperty("object-fit", "fill", "important");
-      image.style.setProperty("object-position", "initial", "important");
-      image.style.setProperty("transform", "none", "important");
-    });
   }
 
   function escapeHtml(value) {

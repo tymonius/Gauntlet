@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 const customPrint = readFileSync("deckbuilder/custom-print.mjs", "utf8");
 const customPrintCss = readFileSync("deckbuilder/custom-print.css", "utf8");
-const printBootstrap = readFileSync("deckbuilder/print-card-back-orientation.js", "utf8");
+const printBootstrap = readFileSync("deckbuilder/custom-print-loader.js", "utf8");
 const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
 const contract = currentGame.componentContract;
 
@@ -16,7 +16,7 @@ const cardLikeFamilies = new Set(
 
 describe("Deckbuilder custom printing", () => {
   it("loads as an Advanced tool without changing the Deckbuilder HTML shell", () => {
-    expect(printBootstrap).toContain('import("./custom-print.mjs")');
+    expect(printBootstrap).toContain('import("./custom-print.mjs?v=20260831-2")');
     expect(customPrint).toContain('document.querySelector(".advanced-tools")');
     expect(customPrint).toContain("Enable custom printing");
     expect(customPrint).toContain("Custom print sheets");
@@ -63,17 +63,17 @@ describe("Deckbuilder custom printing", () => {
     expect(customPrint).toContain('component.id === "financiers-deed"');
   });
 
-  it("routes every physical card family through canonical production renderers", () => {
-    expect(customPrint).toContain("/card-design/card-print-render.html?card=");
-    expect(customPrint).toContain("/card-design/territory-print-render.html?territory=");
-    expect(customPrint).toContain("/card-design/component-print-render.html?kind=");
-    expect(customPrint).toContain("/tts/back-renderer/index.html?faction=");
-    expect(customPrint).toContain('kind: "leader"');
-    expect(customPrint).toContain('kind: "reference"');
-    expect(customPrint).toContain('kind: "proposal"');
-    expect(customPrint).toContain('kind: "rite"');
-    expect(customPrint).toContain('kind: "ritual"');
-    expect(customPrint).toContain('kind: "supplemental"');
+  it("routes every physical card family through the shared production renderer API", () => {
+    expect(customPrint).toContain('deckbuilder.feature("productionPrintRenderer")');
+    expect(customPrint).toContain("renderer.cardSource(entry.render.id)");
+    expect(customPrint).toContain("renderer.territorySource(entry.render.id)");
+    expect(customPrint).toContain("renderer.frameSource({");
+    expect(customPrint).toContain("renderer.componentSource(entry.render.id, side)");
+    expect(customPrint).toContain("productionPrint().componentDescriptor(component.id)");
+    expect(customPrint).toContain("productionPrint().backSource(safeFaction, 180)");
+    expect(customPrint).not.toContain("/card-design/card-print-render.html?card=");
+    expect(customPrint).not.toContain("/card-design/territory-print-render.html?territory=");
+    expect(customPrint).not.toContain("/card-design/component-print-render.html?kind=");
   });
 
   it("supports mixed portrait and landscape cards on the same 3x3 sheets", () => {

@@ -1,27 +1,14 @@
 (() => {
-  const inheritedOpen = window.open.bind(window);
+  const deckbuilder = window.GAUNTLET_DECKBUILDER;
+  if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
 
-  window.open = function gauntletPrintAwareOpen(...args) {
-    const openedWindow = inheritedOpen(...args);
-    if (!openedWindow?.document || openedWindow.document.__gauntletPortraitWriteWrapped) return openedWindow;
-
-    const inheritedWrite = openedWindow.document.write.bind(openedWindow.document);
-    openedWindow.document.write = html => inheritedWrite(polishPrintDocument(String(html)));
-    openedWindow.document.__gauntletPortraitWriteWrapped = true;
-    return openedWindow;
-  };
+  deckbuilder.registerPrintTransform("print-summary", polishPrintDocument, 70);
 
   function polishPrintDocument(html) {
-    const needsPortraitFraming = /alt=["'](?:Ranger|Spymaster)["']/i.test(html);
-    const needsSummaryPolish = /class=["'][^"']*first-page-summary/i.test(html);
-    if (!needsPortraitFraming && !needsSummaryPolish) return html;
+    if (!/class=["'][^"']*first-page-summary/i.test(html)) return html;
 
     const documentNode = new DOMParser().parseFromString(html, "text/html");
-    let changed = false;
-
-    if (needsSummaryPolish) changed = polishFirstPageSummary(documentNode) || changed;
-    if (needsPortraitFraming) changed = frameIntelligencePortraits(documentNode) || changed;
-
+    const changed = polishFirstPageSummary(documentNode);
     return changed ? `<!doctype html>\n${documentNode.documentElement.outerHTML}` : html;
   }
 
@@ -294,26 +281,30 @@
     const fitScript = documentNode.createElement("script");
     fitScript.dataset.gauntletPrintSummaryFit = "true";
     fitScript.textContent = `(() => {
-  const summary = document.querySelector('.first-page-summary');
-  if (!summary) return;
-  const overflowTargets = () => [
-    summary,
-    ...summary.querySelectorAll('.deck-list, .summary-side, .starter-print-strategy')
-  ];
-  const overflows = () => overflowTargets().some(node => (
-    node.scrollHeight > node.clientHeight + 1 || node.scrollWidth > node.clientWidth + 1
-  ));
-  const fit = () => {
+  const summaries = [...document.querySelectorAll('.first-page-summary')];
+  if (!summaries.length) return;
+
+  const fitSummary = summary => {
+    const overflowTargets = () => [
+      summary,
+      ...summary.querySelectorAll('.deck-list, .summary-side, .starter-print-strategy')
+    ];
+    const overflows = () => overflowTargets().some(node => (
+      node.scrollHeight > node.clientHeight + 1 || node.scrollWidth > node.clientWidth + 1
+    ));
+
     summary.classList.remove('summary-auto-tight', 'summary-auto-tightest');
     if (!overflows()) return;
     summary.classList.add('summary-auto-tight');
     void summary.offsetHeight;
     if (overflows()) summary.classList.add('summary-auto-tightest');
   };
+
+  const fitAll = () => summaries.forEach(fitSummary);
   const run = async () => {
     try { if (document.fonts?.ready) await document.fonts.ready; } catch (error) {}
-    fit();
-    requestAnimationFrame(() => requestAnimationFrame(fit));
+    fitAll();
+    requestAnimationFrame(() => requestAnimationFrame(fitAll));
   };
   if (document.readyState === 'loading') window.addEventListener('load', run, { once: true });
   else run();
@@ -322,38 +313,4 @@
     return true;
   }
 
-  function frameIntelligencePortraits(documentNode) {
-    let changed = false;
-
-    documentNode.querySelectorAll(".leader-card .leader-art img").forEach(image => {
-      const leaderName = String(image.getAttribute("alt") || "").trim().toLowerCase();
-      if (leaderName !== "ranger" && leaderName !== "spymaster") return;
-
-      const card = image.closest(".leader-card");
-      const art = image.closest(".leader-art");
-      if (!card || !art) return;
-
-      changed = true;
-      card.dataset.portraitFraming = "intelligence-wide";
-      card.style.setProperty("grid-template-rows", "1.37in 1fr .16in", "important");
-      art.style.setProperty("height", "1.37in", "important");
-      art.style.setProperty("min-height", "1.37in", "important");
-      art.style.setProperty("max-height", "1.37in", "important");
-
-      image.style.setProperty("position", "absolute", "important");
-      image.style.setProperty("left", "0", "important");
-      image.style.setProperty("right", "auto", "important");
-      image.style.setProperty("top", leaderName === "ranger" ? "-.015in" : "-.01in", "important");
-      image.style.setProperty("bottom", "auto", "important");
-      image.style.setProperty("width", "100%", "important");
-      image.style.setProperty("height", "auto", "important");
-      image.style.setProperty("min-width", "100%", "important");
-      image.style.setProperty("max-width", "none", "important");
-      image.style.setProperty("object-fit", "fill", "important");
-      image.style.setProperty("object-position", "initial", "important");
-      image.style.setProperty("transform", "none", "important");
-    });
-
-    return changed;
-  }
 })();
