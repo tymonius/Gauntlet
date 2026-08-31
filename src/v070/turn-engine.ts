@@ -28,6 +28,7 @@ import {
   nextV070FrontLineTarget,
 } from './front-line';
 import {
+  V070_DEMILITARIZED_ZONE_ID,
   cardIdForV070Overlay,
   expireV070TerritoryTurnRestrictions,
   openV070StartTurnOverlayChoice,
@@ -4375,6 +4376,278 @@ function resolvePenanceChoice(
 
   state.pendingActionEffectChoice = null;
   finishPendingActionCard(state);
+}
+
+function controlledTerritoryMovementCandidatePositions(
+  state: V070GameState,
+  playerId: PlayerId,
+  battleAllowed: boolean,
+  sourceActionInstanceId?: string,
+): number[] {
+  const origin = state.players[playerId].position;
+  if (origin === null) return [];
+
+  const opponentPosition = state.players[otherPlayer(playerId)].position;
+  const hasEntryPayment = state.players[playerId].zones.hand.some(
+    instanceId => instanceId !== sourceActionInstanceId,
+  );
+
+  return state.board
+    .filter(territory => territory.controller === playerId)
+    .filter(territory => territory.position !== origin)
+    .filter(territory => {
+      if (v070DmzBlocksEntryThisTurn(state, territory.position)) {
+        return false;
+      }
+      if (!battleAllowed && opponentPosition === territory.position) {
+        return false;
+      }
+      if (wouldPassOpponent(
+        playerId,
+        origin,
+        territory.position,
+        opponentPosition,
+      )) {
+        return false;
+      }
+
+      const overlays = v070OverlaysAt(state, territory.position);
+      const active = overlays[overlays.length - 1];
+      const requiresEntryDiscard = Boolean(
+        active
+        && cardIdForV070Overlay(state, active)
+          === V070_DEMILITARIZED_ZONE_ID
+        && territory.occupant === null,
+      );
+      return !requiresEntryDiscard || hasEntryPayment;
+    })
+    .map(territory => territory.position);
+}
+
+function openControlledTerritoryMovementChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+  purpose: 'Paths of Shadow' | 'Phantom Passage',
+  battleAllowed: boolean,
+  sourceDestination: 'discard' | 'graveyard',
+): void {
+  const candidatePositions = controlledTerritoryMovementCandidatePositions(
+    state,
+    playerId,
+    battleAllowed,
+    sourceActionInstanceId,
+  );
+  if (candidatePositions.length === 0) {
+    appendV070Event(state, {
+      type: 'action_effect_incomplete',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        sourceActionInstanceId,
+        purpose,
+        reason: 'controlled_territory_move_target_unavailable',
+      },
+    });
+    finishPendingActionCard(
+      state,
+      sourceDestination,
+    );
+    return;
+  }
+
+  state.pendingActionEffectChoice = {
+    kind: 'controlled_territory_move_target',
+    playerId,
+    sourceActionInstanceId,
+    purpose,
+    battleAllowed,
+    sourceDestination,
+    candidatePositions: [...candidatePositions],
+  };
+  appendV070Event(state, {
+    type: 'action_effect_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      kind: 'controlled_territory_move_target',
+      playerId,
+      sourceActionInstanceId,
+      purpose,
+      battleAllowed,
+      territoryPositions: [...candidatePositions],
+    },
+  });
+}
+
+function finalizeControlledTerritoryMoveAction(
+  state: V070GameState,
+  destination: 'discard' | 'graveyard',
+  sourceAlreadyPlaced: boolean,
+): void {
+  const pending = state.pendingActionCard;
+  if (!pending) {
+    throw new V070GameActionError(
+      'No controlled-Territory movement Action is pending resolution.',
+    );
+  }
+
+  if (!sourceAlreadyPlaced) {
+    if (destination === 'discard') {
+      state.players[pending.playerId].zones.discardPile.push(
+        pending.instanceId,
+      );
+    } else {
+      state.players[pending.playerId].zones.graveyard.push(
+        pending.instanceId,
+      );
+    }
+  }
+
+  appendV070Event(state, {
+    type: 'action_card_resolved',
+    actor: pending.playerId,
+    visibility: 'public',
+    payload: {
+      instanceId: pending.instanceId,
+      cardId: pending.cardId,
+      destination,
+    },
+  });
+  state.pendingActionCard = null;
+}
+
+function chooseControlledTerritoryMoveTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  territoryPosition: number,
+  discardInstanceId?: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'controlled_territory_move_target'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId) {
+    throw new V070GameActionError(
+      'No controlled-Territory movement choice is pending for that player.',
+    );
+  }
+
+  const expectedCardId = choice.purpose === 'Paths of Shadow'
+    ? 'mystics-paths-of-shadow'
+    : 'neutral-phantom-passage';
+  if (pending.cardId !== expectedCardId) {
+    throw new V070GameActionError(
+      'The controlled-Territory movement choice does not match its pending Action card.',
+    );
+  }
+
+  const currentCandidates = controlledTerritoryMovementCandidatePositions(
+    state,
+    playerId,
+    choice.battleAllowed,
+    pending.instanceId,
+  );
+  if (!choice.candidatePositions.includes(territoryPosition)
+    || !currentCandidates.includes(territoryPosition)) {
+    throw new V070GameActionError(
+      `${choice.purpose} must move to another currently legal Territory you control.`,
+    );
+  }
+
+  const player = state.players[playerId];
+  const opponentId = otherPlayer(playerId);
+  const opponent = state.players[opponentId];
+  const origin = requirePosition(player);
+  const initiatesBattle = opponent.position === territoryPosition;
+  if (initiatesBattle && !choice.battleAllowed) {
+    throw new V070GameActionError(
+      `${choice.purpose} cannot start a battle.`,
+    );
+  }
+
+  resolveV070OverlayEntryRequirements(
+    state,
+    playerId,
+    territoryPosition,
+    discardInstanceId,
+  );
+
+  state.pendingActionEffectChoice = null;
+  let sourceAlreadyPlaced = false;
+  if (choice.sourceDestination === 'graveyard') {
+    state.players[playerId].zones.graveyard.push(pending.instanceId);
+    sourceAlreadyPlaced = true;
+  }
+
+  moveSettledOccupantOffOrigin(state, playerId, origin);
+  player.position = territoryPosition;
+
+  if (initiatesBattle) {
+    state.battle = createV070BattleOnset({
+      territoryCount: state.board.length,
+      attacker: playerId,
+      defender: opponentId,
+      attackerOrigin: origin,
+      contestedPosition: territoryPosition,
+      positions: {
+        A: state.players.A.position!,
+        B: state.players.B.position!,
+      },
+      defenderControlsContested:
+        territoryAt(state, territoryPosition)?.controller === opponentId,
+    });
+    state.turnState = {
+      ...requireTurnState(state),
+      battleInitiated: true,
+    };
+    appendV070Event(state, {
+      type: 'battle_initiated',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        attacker: playerId,
+        defender: opponentId,
+        attackerOrigin: origin,
+        contestedPosition: territoryPosition,
+        lastStand: false,
+        movementStepSource: choice.purpose,
+        attackerGambitProhibited: false,
+      },
+    });
+  } else {
+    setSettledOccupant(
+      state,
+      playerId,
+      territoryPosition,
+    );
+    appendV070Event(state, {
+      type: 'player_moved',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        choice: 'effect',
+        movementSource: choice.purpose,
+        from: origin,
+        to: territoryPosition,
+      },
+    });
+  }
+
+  finalizeControlledTerritoryMoveAction(
+    state,
+    choice.sourceDestination,
+    sourceAlreadyPlaced,
+  );
+
+  openV070BlockadeChoicesForPositionChange(
+    state,
+    playerId,
+    origin,
+    territoryPosition,
+  );
 }
 
 function chooseSabotageAssetTarget(
