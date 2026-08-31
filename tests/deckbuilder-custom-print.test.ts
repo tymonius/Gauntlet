@@ -87,8 +87,10 @@ describe("Deckbuilder custom printing", () => {
   it("pairs intrinsic reverses automatically and keeps standard backs optional", () => {
     expect(customPrint).toContain('entry.backPolicy === "twoSided"');
     expect(customPrint).toContain('entry.backPolicy === "specialBack"');
-    expect(customPrint).toContain('entry.backPolicy === "ledgerDuplex"');
     expect(customPrint).toContain('entry.backPolicy === "standardBack"');
+    expect(customPrint).not.toContain("ledgerDuplex");
+    const ledger = contract.components.find((component: any) => component.id === "financiers-capital-ledger");
+    expect(ledger?.backPolicy).toBe("twoSided");
     expect(customPrint).toContain("mirrorIndexForLongEdge(frontIndex)");
     expect(customPrint).toContain("flip on the long edge");
     expect(customPrint).toContain("Use canonical card backs");
