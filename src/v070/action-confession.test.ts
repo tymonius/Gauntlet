@@ -95,10 +95,23 @@ function beginBattleAfterOpening(state: V070GameState): V070GameState {
     type: 'pass_opening',
     playerId: 'A',
   });
+  const origin = state.players.A.position!;
+  const tollPayment =
+    state.board.find(space => space.position === origin)?.territoryId ===
+      'territory-toll-bridge'
+      ? inject(
+          state,
+          'A',
+          'neutral-rallying-cry',
+          'hand',
+          'toll-payment',
+        )
+      : undefined;
   state = reduceV070TurnAction(state, {
     type: 'choose_movement',
     playerId: 'A',
     choice: 'advance',
+    territoryDiscardInstanceId: tollPayment,
   });
   expect(state.battle?.attacker).toBe('A');
   expect(state.battle?.defender).toBe('B');
