@@ -85,7 +85,7 @@ function injectHandCard(
 
 function beginBattle(
   territoryId: string,
-  controller: 'A' | 'B' | null,
+  controller: 'A' | 'B',
   beforeAdvance?: (state: V070GameState) => void,
 ): V070GameState {
   let state = openingForA();
