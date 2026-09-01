@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { initializeGame } from '../state';
+import { initializeGame } from '../state/v06';
 import { loadV06CanonicalContent, V06_RULES_VERSION } from './v06';
 
 describe('v0.6 canonical content', () => {

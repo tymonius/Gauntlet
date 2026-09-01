@@ -4,7 +4,7 @@ import {
   activePlayedCards,
 } from '../effects/embargo';
 import type { BattleParticipantState, BattlePlayedCard, GameState, PlayerID } from '../types';
-import type { StateAction } from '../state';
+import type { StateAction } from '../state/v06';
 
 export interface BattleRevealGuidedOption {
   label: string;

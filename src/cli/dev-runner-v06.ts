@@ -2,7 +2,7 @@
 import { createInterface } from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 import type { GameState } from '../types';
-import { applyGameAction, initializeGame } from '../state';
+import { applyGameAction, initializeGame } from '../state/v06';
 import { activeViewer, buildGuidedOptions } from '../dev/guided-options';
 
 function createDevGame(): GameState {

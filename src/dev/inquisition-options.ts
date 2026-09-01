@@ -1,5 +1,5 @@
 import type { GameState, PlayerID } from '../types';
-import type { AppStateAction } from '../state';
+import type { AppStateAction } from '../state/v06';
 import {
   CONFESSION,
   EXCOMMUNICATION,
@@ -12,7 +12,7 @@ import {
   NO_MARTYRS,
   PENANCE,
   TYRANNY,
-} from '../state';
+} from '../state/v06';
 
 export interface InquisitionGuidedOption {
   label: string;

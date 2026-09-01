@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import type { GameState } from '../types';
-import type { StateAction } from '../state';
-import { applyGameAction, initializeGame, toPrivateGameView } from '../state';
+import type { StateAction } from '../state/v06';
+import { applyGameAction, initializeGame, toPrivateGameView } from '../state/v06';
 import { activeViewer, buildGuidedOptions } from '../dev/guided-options';
 
 const PORT = Number(process.env.PORT ?? 5174);

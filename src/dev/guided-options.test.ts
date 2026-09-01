@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { initializeGame } from '../state';
+import { initializeGame } from '../state/v06';
 import type { GameState } from '../types';
 import { buildGuidedOptions } from './guided-options';
 
