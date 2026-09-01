@@ -1,4 +1,4 @@
-import type { BattleCardTarget } from '../effects';
+import type { BattleCardTarget } from '../effects/v06';
 import {
   activeBattleCancellationCards,
   activePlayedCards,
