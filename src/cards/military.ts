@@ -1,5 +1,5 @@
 import type { ActionCardTarget } from '../state/actions';
-import type { CardID, GameEvent, GameState, PlayerID, SpaceID } from '../types';
+import type { CardID, GameEvent, GameState, PlayerID, SpaceID } from '../types/v06';
 import { gainFactionResource } from '../state/resources';
 import { processCounterworksOverlayQueue, queueCounterworksOverlayPlacement } from '../state/neutral-counterworks';
 
