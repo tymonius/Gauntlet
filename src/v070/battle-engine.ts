@@ -63,6 +63,7 @@ import {
   V070_ARENA_SPOILS_OF_WAR_ID,
   V070_FIELD_HOSPITAL_ID,
   V070_OLD_BATTLEFIELD_ID,
+  V070_POISONOUS_GAS_ID,
 } from './territories';
 import {
   useV070SanctionsBlockadeInAftermath,
@@ -173,6 +174,11 @@ export type V070BattleAction =
       playerId: PlayerId;
       use: boolean;
     }
+  | {
+      type: 'resolve_poisonous_gas_reserve_graveyard';
+      playerId: PlayerId;
+      cardInstanceId: string;
+    }
   | { type: 'complete_aftermath'; playerId: PlayerId };
 
 export function reduceV070BattleAction(
@@ -195,6 +201,12 @@ export function reduceV070BattleAction(
     && action.type !== 'resolve_territory_aftermath_choice') {
     throw new V070GameActionError(
       'Resolve the pending Territory Aftermath choice before continuing the Aftermath.',
+    );
+  }
+  if (state.battleRuntime?.pendingPoisonousGasAftermath
+    && action.type !== 'resolve_poisonous_gas_reserve_graveyard') {
+    throw new V070GameActionError(
+      'Resolve the pending Poisonous Gas Reserve loss before continuing the Aftermath.',
     );
   }
   if (state.battleRuntime?.stage === 'choose_tactics'
@@ -355,6 +367,13 @@ export function reduceV070BattleAction(
         next,
         action.playerId,
         action.use,
+      );
+      break;
+    case 'resolve_poisonous_gas_reserve_graveyard':
+      resolvePoisonousGasReserveGraveyard(
+        next,
+        action.playerId,
+        action.cardInstanceId,
       );
       break;
     case 'complete_aftermath':
@@ -796,6 +815,18 @@ function chooseTactic(
   }
 
   const participant = runtime.participants[playerId];
+  const poisonousGas =
+    runtime.activePrintedTerritoryAtOnset?.territoryId ===
+      V070_POISONOUS_GAS_ID;
+  const usedGambit = Boolean(
+    participant.gambit
+    || participant.additionalGambits.length > 0,
+  );
+  if (poisonousGas && usedGambit && instanceId !== undefined) {
+    throw new V070GameActionError(
+      'Poisonous Gas allows a player to employ Gambits or Tactics, but not both.',
+    );
+  }
   if (participant.tacticChoicesMade >= participant.tacticLimit) {
     throw new V070GameActionError(
       `${playerId} has already made all allowed Tactic choices.`,
@@ -1307,6 +1338,199 @@ function resolveAccursedWagerDiscard(
   completeAftermathInternal(state, immediateWinner);
 }
 
+function poisonousGasTactics(
+  runtime: V070BattleRuntime,
+  playerId: PlayerId,
+): V070BattleCardCommitment[] {
+  const participant = runtime.participants[playerId];
+  return [
+    ...(participant.tactic ? [participant.tactic] : []),
+    ...participant.additionalTactics,
+  ];
+}
+
+function openPoisonousGasAftermathChoice(
+  state: V070GameState,
+  immediateWinner: PlayerId | null,
+): boolean {
+  const battle = requireBattle(state);
+  const runtime = requireRuntime(state);
+  if (runtime.poisonousGasAftermathResolved
+    || runtime.pendingPoisonousGasAftermath) {
+    return Boolean(runtime.pendingPoisonousGasAftermath);
+  }
+  if (runtime.activePrintedTerritoryAtOnset?.territoryId !==
+    V070_POISONOUS_GAS_ID) {
+    return false;
+  }
+
+  const needingChoice: PlayerId[] = [];
+  for (const playerId of [battle.attacker, battle.defender]) {
+    if (poisonousGasTactics(runtime, playerId).length > 0) continue;
+    const candidates = runtime.participants[playerId].reserve;
+    if (candidates.length > 0) {
+      needingChoice.push(playerId);
+    } else {
+      appendV070Event(state, {
+        type: 'poisonous_gas_reserve_loss_unavailable',
+        actor: playerId,
+        visibility: 'public',
+        payload: {
+          playerId,
+          reason: 'reserve_empty',
+        },
+      });
+    }
+  }
+
+  if (needingChoice.length === 0) {
+    runtime.poisonousGasAftermathResolved = true;
+    return false;
+  }
+
+  const playerId = needingChoice[0];
+  const candidates = [
+    ...runtime.participants[playerId].reserve,
+  ];
+  runtime.pendingPoisonousGasAftermath = {
+    playerId,
+    candidateInstanceIds: candidates,
+    remainingPlayerIds: needingChoice.slice(1),
+    immediateWinner,
+  };
+  appendV070Event(state, {
+    type: 'poisonous_gas_reserve_loss_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      playerId,
+      candidateCount: candidates.length,
+      mandatory: true,
+    },
+  });
+  appendV070Event(state, {
+    type: 'poisonous_gas_reserve_loss_options',
+    actor: playerId,
+    visibility: playerId,
+    payload: {
+      candidateInstanceIds: candidates,
+    },
+  });
+  return true;
+}
+
+function resolvePoisonousGasReserveGraveyard(
+  state: V070GameState,
+  playerId: PlayerId,
+  cardInstanceId: string,
+): void {
+  const runtime = requireRuntime(state);
+  requireRuntimeStage(runtime, 'aftermath');
+  const pending = runtime.pendingPoisonousGasAftermath;
+  if (!pending || pending.playerId !== playerId) {
+    throw new V070GameActionError(
+      'No Poisonous Gas Reserve loss is pending for that player.',
+    );
+  }
+
+  const currentReserve = runtime.participants[playerId].reserve;
+  if (!pending.candidateInstanceIds.includes(cardInstanceId)
+    || !currentReserve.includes(cardInstanceId)) {
+    throw new V070GameActionError(
+      'Poisonous Gas must choose a card still in that player’s Reserve.',
+    );
+  }
+
+  if (!runtime.poisonousGasReserveGraveyardInstanceIds
+    .includes(cardInstanceId)) {
+    runtime.poisonousGasReserveGraveyardInstanceIds.push(
+      cardInstanceId,
+    );
+  }
+
+  appendV070Event(state, {
+    type: 'poisonous_gas_reserve_loss_selected',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      playerId,
+      instanceId: cardInstanceId,
+      cardId: state.cardInstances[cardInstanceId]?.cardId,
+    },
+  });
+
+  const remaining = [...pending.remainingPlayerIds];
+  const immediateWinner = pending.immediateWinner;
+  runtime.pendingPoisonousGasAftermath = null;
+
+  while (remaining.length > 0) {
+    const nextPlayer = remaining.shift()!;
+    const candidates = [
+      ...runtime.participants[nextPlayer].reserve,
+    ];
+    if (candidates.length === 0) {
+      appendV070Event(state, {
+        type: 'poisonous_gas_reserve_loss_unavailable',
+        actor: nextPlayer,
+        visibility: 'public',
+        payload: {
+          playerId: nextPlayer,
+          reason: 'reserve_empty',
+        },
+      });
+      continue;
+    }
+    runtime.pendingPoisonousGasAftermath = {
+      playerId: nextPlayer,
+      candidateInstanceIds: candidates,
+      remainingPlayerIds: remaining,
+      immediateWinner,
+    };
+    appendV070Event(state, {
+      type: 'poisonous_gas_reserve_loss_pending',
+      actor: nextPlayer,
+      visibility: 'public',
+      payload: {
+        playerId: nextPlayer,
+        candidateCount: candidates.length,
+        mandatory: true,
+      },
+    });
+    appendV070Event(state, {
+      type: 'poisonous_gas_reserve_loss_options',
+      actor: nextPlayer,
+      visibility: nextPlayer,
+      payload: {
+        candidateInstanceIds: candidates,
+      },
+    });
+    return;
+  }
+
+  runtime.poisonousGasAftermathResolved = true;
+  completeAftermathInternal(state, immediateWinner);
+}
+
+function poisonousGasAftermathDestination(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+  role: 'tactic' | 'reserve',
+  normalDestination: 'discard' | 'graveyard',
+): 'discard' | 'graveyard' {
+  const runtime = requireRuntime(state);
+  if (runtime.activePrintedTerritoryAtOnset?.territoryId !==
+    V070_POISONOUS_GAS_ID) {
+    return normalDestination;
+  }
+  if (role === 'tactic') return 'graveyard';
+  if (runtime.poisonousGasReserveGraveyardInstanceIds
+    .includes(instanceId)) {
+    return 'graveyard';
+  }
+  return normalDestination;
+}
+
 function territoryAftermathCandidates(
   state: V070GameState,
   kind: 'field_hospital' | 'old_battlefield' | 'spoils_of_war',
@@ -1575,6 +1799,9 @@ function completeAftermathInternal(
   if (openAccursedWagerAftermathChoice(state, immediateWinner)) {
     return;
   }
+  if (openPoisonousGasAftermathChoice(state, immediateWinner)) {
+    return;
+  }
   if (openTerritoryAftermathChoice(state, immediateWinner)) {
     return;
   }
@@ -1628,7 +1855,13 @@ function completeAftermathInternal(
           runtime,
           playerId,
           instanceId,
-          condemned ? 'graveyard' : 'discard',
+          poisonousGasAftermathDestination(
+            state,
+            playerId,
+            instanceId,
+            'tactic',
+            condemned ? 'graveyard' : 'discard',
+          ),
         ),
         graveyardedDuringAftermath[playerId],
       );
@@ -1657,7 +1890,13 @@ function completeAftermathInternal(
           runtime,
           playerId,
           instanceId,
-          condemned ? 'graveyard' : 'discard',
+          poisonousGasAftermathDestination(
+            state,
+            playerId,
+            instanceId,
+            'tactic',
+            condemned ? 'graveyard' : 'discard',
+          ),
         ),
         graveyardedDuringAftermath[playerId],
       );
@@ -1683,7 +1922,13 @@ function completeAftermathInternal(
           runtime,
           playerId,
           instanceId,
-          'discard',
+          poisonousGasAftermathDestination(
+            state,
+            playerId,
+            instanceId,
+            'reserve',
+            'discard',
+          ),
         ),
         graveyardedDuringAftermath[playerId],
       );
