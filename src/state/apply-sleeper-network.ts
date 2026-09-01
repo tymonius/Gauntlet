@@ -1,4 +1,4 @@
-import type { CardID, GameState, PlayerID } from '../types';
+import type { CardID, GameState, PlayerID } from '../types/v06';
 import type { AppStateAction } from './actions';
 import { applyGameAction as applyExfiltrationGameAction } from './apply-exfiltration';
 import {

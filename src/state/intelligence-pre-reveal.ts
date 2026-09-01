@@ -3,7 +3,7 @@ import type {
   BattlePlayedCard,
   CardID,
   GameState,
-} from '../types';
+} from '../types/v06';
 import {
   battleHasUnresolvedConfessionPreReveal,
   openNextConfessionPreRevealWindow,

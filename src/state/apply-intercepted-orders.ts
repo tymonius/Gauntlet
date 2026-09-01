@@ -1,4 +1,4 @@
-import type { GameState } from '../types';
+import type { GameState } from '../types/v06';
 import type { AppStateAction } from './actions';
 import { applyGameAction as applyFogOfWarGameAction } from './apply-fog-of-war';
 import { continueIntelligenceBattle, openSurveillanceWindowAfterChoice } from './intelligence-battle';

@@ -7,7 +7,7 @@ import type {
   GameState,
   IntelligenceBattleSource,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import type { PassBattleDrawPlayAction, PlayBattleDrawCardAction, ResolveIntelligenceChoiceAction } from './actions';
 import { battleHasUnresolvedIntelligencePreReveal, openNextIntelligencePreRevealWindow } from './intelligence-pre-reveal';
 import { counterintelligenceBlocksFaceDownBattleCardInspection } from './neutral-counterintelligence';

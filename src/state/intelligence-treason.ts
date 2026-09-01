@@ -7,7 +7,7 @@ import type {
   PlayerID,
   SpaceID,
   TreasonTargetOption,
-} from '../types';
+} from '../types/v06';
 import type { ResolveIntelligenceChoiceAction } from './actions';
 import { wasBattleCardObservedBeforeNormalReveal } from './battle-observation';
 import { reconnaissanceWithdrawalAvailable } from './intelligence-reconnaissance-battle';

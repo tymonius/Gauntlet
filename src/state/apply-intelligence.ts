@@ -1,4 +1,4 @@
-import type { BattleParticipantState, CardID, GameState, PlayerID } from '../types';
+import type { BattleParticipantState, CardID, GameState, PlayerID } from '../types/v06';
 import type { AppStateAction, PlayBattleDrawCardAction, StateAction } from './actions';
 import { applyGameAction as applyBaseGameAction } from './apply';
 import {

@@ -1,4 +1,4 @@
-import type { CardID, GameEvent, GameState, PendingIntelligenceChoice, PlayerID } from '../types';
+import type { CardID, GameEvent, GameState, PendingIntelligenceChoice, PlayerID } from '../types/v06';
 import type { AppStateAction, ResolveIntelligenceChoiceAction } from './actions';
 import { bankedAssetCardUseAllowed } from './intelligence-subversion-battle';
 import { recordBankedAssetUse } from './intelligence-mission-triggers';

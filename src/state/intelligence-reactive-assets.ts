@@ -1,4 +1,4 @@
-import type { CardID, GameEvent, GameState, PlayerID, SpaceID } from '../types';
+import type { CardID, GameEvent, GameState, PlayerID, SpaceID } from '../types/v06';
 import type { ResolveIntelligenceChoiceAction } from './actions';
 import { blockBattleHandCard } from './battle-hand-restrictions';
 import { openDiplomatTermsWindow } from './diplomat-terms';

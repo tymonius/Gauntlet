@@ -4,7 +4,7 @@ import type {
   GameEvent,
   GameState,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import { applyIllegalOccupationBattleEffects } from './neutral-illegal-occupation';
 export { activeBankedAssetCopies, bankedAssetCardUseAllowed, bankedAssetUseAllowed } from './banked-assets';
 

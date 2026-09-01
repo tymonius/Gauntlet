@@ -5,7 +5,7 @@ import type {
   GameState,
   PlayerID,
   SpaceID,
-} from '../types';
+} from '../types/v06';
 import type { ActionCardTarget, AppStateAction } from './actions';
 import {
   counterworksOverlayInactive,

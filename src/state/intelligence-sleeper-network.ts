@@ -5,7 +5,7 @@ import type {
   GameState,
   PlayerID,
   SleeperNetworkState,
-} from '../types';
+} from '../types/v06';
 import type { ActionCardTarget, ResolveIntelligenceChoiceAction } from './actions';
 import { bankedAssetCardUseAllowed } from './intelligence-subversion-battle';
 import { insurrectionActionOpportunityActive, consumeInsurrectionActionOpportunity } from './neutral-insurrection';

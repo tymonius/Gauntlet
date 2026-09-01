@@ -1,4 +1,4 @@
-import type { CardID, GameState, PlayerID } from '../types';
+import type { CardID, GameState, PlayerID } from '../types/v06';
 
 export function markBattleCardsObservedBeforeNormalReveal(
   game: GameState,

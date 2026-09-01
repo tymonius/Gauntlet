@@ -181,6 +181,50 @@ describe('digital engine boundary', () => {
     }
   });
 
+  it('pins legacy Intelligence runtime modules to the v0.6 type API', () => {
+    const intelligenceSources = [
+      'src/state/apply-exfiltration.ts',
+      'src/state/apply-fog-of-war.ts',
+      'src/state/apply-fog-overlay.ts',
+      'src/state/apply-intelligence.ts',
+      'src/state/apply-intercepted-orders.ts',
+      'src/state/apply-operational-reassessment.ts',
+      'src/state/apply-post-reveal.ts',
+      'src/state/apply-reconnaissance.ts',
+      'src/state/apply-sleeper-network.ts',
+      'src/state/apply-spies.ts',
+      'src/state/apply-subversion-asset.ts',
+      'src/state/battle-observation.ts',
+      'src/state/intelligence-action-cards.ts',
+      'src/state/intelligence-battle.ts',
+      'src/state/intelligence-exfiltration-battle.ts',
+      'src/state/intelligence-fog-of-war-battle.ts',
+      'src/state/intelligence-fog-overlay.ts',
+      'src/state/intelligence-intercepted-orders-battle.ts',
+      'src/state/intelligence-leaders.ts',
+      'src/state/intelligence-mission-triggers.ts',
+      'src/state/intelligence-missions.ts',
+      'src/state/intelligence-operational-reassessment-battle.ts',
+      'src/state/intelligence-post-reveal-flow.ts',
+      'src/state/intelligence-post-reveal.ts',
+      'src/state/intelligence-pre-reveal.ts',
+      'src/state/intelligence-reactive-assets.ts',
+      'src/state/intelligence-reconnaissance-battle.ts',
+      'src/state/intelligence-simple-battle-effects.ts',
+      'src/state/intelligence-sleeper-network.ts',
+      'src/state/intelligence-spies-battle.ts',
+      'src/state/intelligence-subversion-asset.ts',
+      'src/state/intelligence-subversion-battle.ts',
+      'src/state/intelligence-treason.ts',
+    ];
+
+    for (const path of intelligenceSources) {
+      const source = readFileSync(path, 'utf8');
+      expect(source).toContain("from '../types/v06'");
+      expect(source).not.toMatch(/from ['"]\.\.\/types['"]/);
+    }
+  });
+
   it('keeps the promoted v0.7.0 implementation isolated from legacy architecture', () => {
     const promotedSources = readdirSync('src/v070')
       .filter((name) => name.endsWith('.ts') && !name.endsWith('.test.ts'));
