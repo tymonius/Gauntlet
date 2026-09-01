@@ -333,6 +333,75 @@ export function buyV070Deed(
   };
 }
 
+export interface V070CollateralDeedPurchaseResult
+  extends V070DeedPurchaseResult {
+  capitalPaid: number;
+  collateralValue: number;
+  collateralApplied: number;
+}
+
+export function buyV070DeedWithCollateral(
+  state: V070GameState,
+  buyer: PlayerId,
+  territoryInstanceId: string,
+  collateralValue: number,
+  reason = 'Collateral Deed purchase',
+): V070CollateralDeedPurchaseResult {
+  requireFinancierState(state, buyer);
+  const deed = requireDeed(state, territoryInstanceId);
+  const previousOwner = deed.owner;
+  if (previousOwner === buyer) {
+    throw new V070GameActionError('You already own that Deed.');
+  }
+  if (previousOwner && !isV070FinancierPlayer(state, previousOwner)) {
+    throw new V070GameActionError(
+      'Only an opposing Financier’s Deed may be bought out.',
+    );
+  }
+
+  const collateral = nonnegativeInteger(
+    collateralValue,
+    'Collateral contribution',
+  );
+  const cost = v070DeedCost(state, buyer, territoryInstanceId);
+  const collateralApplied = Math.min(cost, collateral);
+  const capitalPaid = Math.max(0, cost - collateralApplied);
+  spendV070Capital(state, buyer, capitalPaid, reason);
+  deed.owner = buyer;
+
+  appendV070Event(state, {
+    type: 'deed_acquired',
+    actor: buyer,
+    visibility: 'public',
+    payload: {
+      territoryInstanceId,
+      previousOwner,
+      owner: buyer,
+      cost,
+      capitalPaid,
+      collateralValue: collateral,
+      collateralApplied,
+      unusedCollateralValue: collateral - collateralApplied,
+      buyout: previousOwner !== null,
+      deedsOwned: v070DeedsOwned(state, buyer),
+      reason,
+    },
+  });
+
+  checkV070ControllingInterest(state, buyer);
+
+  return {
+    territoryInstanceId,
+    previousOwner,
+    owner: buyer,
+    cost,
+    buyout: previousOwner !== null,
+    capitalPaid,
+    collateralValue: collateral,
+    collateralApplied,
+  };
+}
+
 export function makeV070DeedUnowned(
   state: V070GameState,
   territoryInstanceId: string,

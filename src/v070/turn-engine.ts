@@ -78,6 +78,7 @@ import {
 import {
   applyV070FinancierAfterCapture,
   buyV070Deed,
+  buyV070DeedWithCollateral,
   clampAllV070CapitalToLimits,
   consumeV070FinancialCapacityAction,
   gainV070Capital,
@@ -149,6 +150,16 @@ export type V070TurnAction =
       type: 'resolve_conscription_banking_action';
       playerId: PlayerId;
       targetInstanceId?: string;
+    }
+  | {
+      type: 'choose_leveraged_buyout_deed_target';
+      playerId: PlayerId;
+      territoryPosition: number;
+    }
+  | {
+      type: 'resolve_leveraged_buyout_collateral';
+      playerId: PlayerId;
+      collateralInstanceIds: readonly string[];
     }
   | {
       type: 'choose_clemency_target';
@@ -518,6 +529,14 @@ export function reduceV070TurnAction(
       && action.type === 'resolve_conscription_banking_action'
       && action.playerId === pending.playerId
     ) || (
+      pending.kind === 'leveraged_buyout_deed_target'
+      && action.type === 'choose_leveraged_buyout_deed_target'
+      && action.playerId === pending.playerId
+    ) || (
+      pending.kind === 'leveraged_buyout_collateral'
+      && action.type === 'resolve_leveraged_buyout_collateral'
+      && action.playerId === pending.playerId
+    ) || (
       pending.kind === 'owned_deed_target'
       && action.type === 'choose_owned_deed_target'
       && action.playerId === pending.playerId
@@ -573,6 +592,8 @@ export function reduceV070TurnAction(
       'resolve_manifest_destiny_sacrifice',
       'choose_margin_loan_collateral_target',
       'resolve_conscription_banking_action',
+      'choose_leveraged_buyout_deed_target',
+      'resolve_leveraged_buyout_collateral',
       'choose_owned_deed_target',
       'choose_treasury_card_target',
       'resolve_deed_purchase_choice',
@@ -657,6 +678,20 @@ export function reduceV070TurnAction(
         next,
         action.playerId,
         action.targetInstanceId,
+      );
+      break;
+    case 'choose_leveraged_buyout_deed_target':
+      chooseLeveragedBuyoutDeedTarget(
+        next,
+        action.playerId,
+        action.territoryPosition,
+      );
+      break;
+    case 'resolve_leveraged_buyout_collateral':
+      resolveLeveragedBuyoutCollateral(
+        next,
+        action.playerId,
+        action.collateralInstanceIds,
       );
       break;
     case 'choose_clemency_target':
@@ -1218,6 +1253,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'financiers-corner-the-market',
   'financiers-divestment',
   'financiers-foreclosure',
+  'financiers-leveraged-buyout',
   'financiers-liquidation',
   'financiers-margin-loan',
   'financiers-monetary-crisis',
@@ -1564,12 +1600,23 @@ function playActionCard(
       'financiers-corner-the-market',
       'financiers-divestment',
       'financiers-foreclosure',
+      'financiers-leveraged-buyout',
       'financiers-liquidation',
       'financiers-margin-loan',
     ].includes(card.id)
     && !isV070FinancierPlayer(state, playerId)) {
     throw new V070GameActionError(
       `${card.name} requires the Financiers faction economy.`,
+    );
+  }
+  if (card.id === 'financiers-leveraged-buyout'
+    && leveragedBuyoutAffordableDeedPositions(
+      state,
+      playerId,
+      cardInstanceId,
+    ).length === 0) {
+    throw new V070GameActionError(
+      'Leveraged Buyout requires at least one Deed you can currently purchase with Capital and available collateral.',
     );
   }
   if (card.id === 'financiers-divestment'
@@ -2645,6 +2692,13 @@ function continuePendingActionCard(state: V070GameState): void {
       return;
     case 'financiers-margin-loan':
       resolveMarginLoanBankAction(
+        state,
+        pending.playerId,
+        pending.instanceId,
+      );
+      return;
+    case 'financiers-leveraged-buyout':
+      openLeveragedBuyoutDeedTargetChoice(
         state,
         pending.playerId,
         pending.instanceId,
@@ -4861,6 +4915,315 @@ function chooseMarginLoanCollateralTarget(
 
   state.pendingActionEffectChoice = null;
   finishPendingActionCard(state, 'asset');
+}
+
+function leveragedBuyoutCollateralInstanceIds(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+): string[] {
+  const player = state.players[playerId];
+  return [
+    ...player.zones.hand.filter(instanceId =>
+      instanceId !== sourceActionInstanceId
+    ),
+    ...(player.financiers?.treasury ?? []),
+  ];
+}
+
+function leveragedBuyoutCollateralValue(
+  state: V070GameState,
+  instanceIds: readonly string[],
+): number {
+  return instanceIds.reduce(
+    (total, instanceId) => total + v070CardValue(state, instanceId),
+    0,
+  );
+}
+
+function leveragedBuyoutAffordableDeedPositions(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+): number[] {
+  if (!isV070FinancierPlayer(state, playerId)) return [];
+  const paymentPower =
+    state.players[playerId].financiers!.capital
+    + leveragedBuyoutCollateralValue(
+      state,
+      leveragedBuyoutCollateralInstanceIds(
+        state,
+        playerId,
+        sourceActionInstanceId,
+      ),
+    );
+
+  const positions: number[] = [];
+  for (const territory of state.board) {
+    if (v070DeedOwner(state, territory.territoryInstanceId) === playerId) {
+      continue;
+    }
+    const cost = v070DeedCost(
+      state,
+      playerId,
+      territory.territoryInstanceId,
+    );
+    if (cost <= paymentPower) positions.push(territory.position);
+  }
+  return positions.sort((a, b) => a - b);
+}
+
+function openLeveragedBuyoutDeedTargetChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+): void {
+  const positions = leveragedBuyoutAffordableDeedPositions(
+    state,
+    playerId,
+    sourceActionInstanceId,
+  );
+  if (positions.length === 0) {
+    appendV070Event(state, {
+      type: 'action_effect_incomplete',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        sourceActionInstanceId,
+        purpose: 'Leveraged Buyout',
+        reason: 'no_affordable_deed_after_reactions',
+      },
+    });
+    finishPendingActionCard(state);
+    return;
+  }
+
+  state.pendingActionEffectChoice = {
+    kind: 'leveraged_buyout_deed_target',
+    playerId,
+    sourceActionInstanceId,
+  };
+  appendV070Event(state, {
+    type: 'action_effect_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      kind: 'leveraged_buyout_deed_target',
+      playerId,
+      sourceActionInstanceId,
+      purpose: 'Leveraged Buyout',
+      territoryPositions: positions,
+    },
+  });
+}
+
+function chooseLeveragedBuyoutDeedTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  territoryPosition: number,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'leveraged_buyout_deed_target'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'financiers-leveraged-buyout') {
+    throw new V070GameActionError(
+      'No Leveraged Buyout Deed choice is pending for that player.',
+    );
+  }
+
+  if (!leveragedBuyoutAffordableDeedPositions(
+    state,
+    playerId,
+    pending.instanceId,
+  ).includes(territoryPosition)) {
+    throw new V070GameActionError(
+      'Leveraged Buyout must choose a currently payable Deed you do not own.',
+    );
+  }
+
+  const territory = territoryAt(state, territoryPosition);
+  if (!territory) {
+    throw new V070GameActionError(
+      'The Leveraged Buyout Deed is no longer in the Gauntlet.',
+    );
+  }
+
+  const candidates = leveragedBuyoutCollateralInstanceIds(
+    state,
+    playerId,
+    pending.instanceId,
+  );
+  const cost = v070DeedCost(
+    state,
+    playerId,
+    territory.territoryInstanceId,
+  );
+  state.pendingActionEffectChoice = {
+    kind: 'leveraged_buyout_collateral',
+    playerId,
+    sourceActionInstanceId: pending.instanceId,
+    territoryInstanceId: territory.territoryInstanceId,
+  };
+  appendV070Event(state, {
+    type: 'action_effect_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      kind: 'leveraged_buyout_collateral',
+      playerId,
+      sourceActionInstanceId: pending.instanceId,
+      purpose: 'Leveraged Buyout',
+      territoryPosition,
+      cost,
+      capitalAvailable: state.players[playerId].financiers!.capital,
+      candidateCount: candidates.length,
+      optional: true,
+    },
+  });
+  appendV070Event(state, {
+    type: 'action_effect_choice_options',
+    actor: playerId,
+    visibility: playerId,
+    payload: {
+      kind: 'leveraged_buyout_collateral',
+      sourceActionInstanceId: pending.instanceId,
+      purpose: 'Leveraged Buyout',
+      targetInstanceIds: [...candidates],
+    },
+  });
+}
+
+function resolveLeveragedBuyoutCollateral(
+  state: V070GameState,
+  playerId: PlayerId,
+  collateralInstanceIds: readonly string[],
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'leveraged_buyout_collateral'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'financiers-leveraged-buyout') {
+    throw new V070GameActionError(
+      'No Leveraged Buyout collateral choice is pending for that player.',
+    );
+  }
+
+  if (new Set(collateralInstanceIds).size !== collateralInstanceIds.length) {
+    throw new V070GameActionError(
+      'Leveraged Buyout cannot use the same collateral card twice.',
+    );
+  }
+
+  const currentCandidates = leveragedBuyoutCollateralInstanceIds(
+    state,
+    playerId,
+    pending.instanceId,
+  );
+  if (collateralInstanceIds.some(instanceId =>
+    !currentCandidates.includes(instanceId)
+  )) {
+    throw new V070GameActionError(
+      'Leveraged Buyout collateral must still be in your Hand or Treasury.',
+    );
+  }
+
+  const territory = state.board.find(candidate =>
+    candidate.territoryInstanceId === choice.territoryInstanceId
+  );
+  if (!territory
+    || v070DeedOwner(state, territory.territoryInstanceId) === playerId) {
+    throw new V070GameActionError(
+      'The Leveraged Buyout target is no longer a purchasable Deed.',
+    );
+  }
+
+  const cost = v070DeedCost(
+    state,
+    playerId,
+    territory.territoryInstanceId,
+  );
+  const collateralValue = leveragedBuyoutCollateralValue(
+    state,
+    collateralInstanceIds,
+  );
+  const capital = state.players[playerId].financiers!.capital;
+  if (capital + collateralValue < cost) {
+    throw new V070GameActionError(
+      `Leveraged Buyout requires ${cost} total payment but only ${capital + collateralValue} is available from Capital and selected collateral.`,
+    );
+  }
+
+  const hand = state.players[playerId].zones.hand;
+  const treasury = state.players[playerId].financiers!.treasury;
+  for (const instanceId of collateralInstanceIds) {
+    const handIndex = hand.indexOf(instanceId);
+    if (handIndex >= 0) {
+      hand.splice(handIndex, 1);
+      state.players[playerId].zones.graveyard.push(instanceId);
+      appendV070Event(state, {
+        type: 'card_graveyarded',
+        actor: playerId,
+        visibility: 'public',
+        payload: {
+          instanceId,
+          cardId: state.cardInstances[instanceId]?.cardId,
+          purpose: 'Leveraged Buyout collateral',
+        },
+      });
+      continue;
+    }
+
+    if (!treasury.includes(instanceId)) {
+      throw new V070GameActionError(
+        'Leveraged Buyout collateral left its source zone before payment.',
+      );
+    }
+    removeV070CardFromTreasury(
+      state,
+      playerId,
+      instanceId,
+      'graveyard',
+      'Leveraged Buyout collateral',
+    );
+  }
+
+  const purchase = buyV070DeedWithCollateral(
+    state,
+    playerId,
+    territory.territoryInstanceId,
+    collateralValue,
+    'Leveraged Buyout',
+  );
+  appendV070Event(state, {
+    type: 'leveraged_buyout_resolved',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      sourceActionInstanceId: pending.instanceId,
+      territoryInstanceId: territory.territoryInstanceId,
+      territoryPosition: territory.position,
+      cost: purchase.cost,
+      capitalPaid: purchase.capitalPaid,
+      collateralValue: purchase.collateralValue,
+      collateralApplied: purchase.collateralApplied,
+      unusedCollateralValue:
+        purchase.collateralValue - purchase.collateralApplied,
+      collateralCards: collateralInstanceIds.map(instanceId => ({
+        instanceId,
+        cardId: state.cardInstances[instanceId]?.cardId,
+      })),
+    },
+  });
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state);
 }
 
 function ownedDeedCandidatePositions(
