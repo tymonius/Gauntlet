@@ -55,7 +55,14 @@ import {
   clearV070AccursedWagersForCurrentBattle,
   v070AccursedWagersForCurrentBattle,
 } from './accursed-wager';
-import { applyV070CoreBattleTerritoryEffects } from './territories';
+import {
+  activeV070PrintedBattleTerritory,
+  applyV070CoreBattleTerritoryEffects,
+  applyV070NoQuarterAdditionalRetreat,
+  V070_ARENA_SPOILS_OF_WAR_ID,
+  V070_FIELD_HOSPITAL_ID,
+  V070_OLD_BATTLEFIELD_ID,
+} from './territories';
 import {
   useV070SanctionsBlockadeInAftermath,
   useV070SanctionsCensureAfterRefusal,
@@ -155,6 +162,11 @@ export type V070BattleAction =
       playerId: PlayerId;
       cardInstanceId: string;
     }
+  | {
+      type: 'resolve_territory_aftermath_choice';
+      playerId: PlayerId;
+      cardInstanceId?: string;
+    }
   | { type: 'complete_aftermath'; playerId: PlayerId };
 
 export function reduceV070BattleAction(
@@ -171,6 +183,12 @@ export function reduceV070BattleAction(
     && action.type !== 'resolve_accursed_wager_discard') {
     throw new V070GameActionError(
       'Resolve the pending Accursed Wager discard before continuing the Aftermath.',
+    );
+  }
+  if (state.battleRuntime?.pendingTerritoryAftermathChoice
+    && action.type !== 'resolve_territory_aftermath_choice') {
+    throw new V070GameActionError(
+      'Resolve the pending Territory Aftermath choice before continuing the Aftermath.',
     );
   }
   if (state.pendingAssetLimitChoice && action.type !== 'resolve_asset_limit_removal') {
@@ -306,6 +324,13 @@ export function reduceV070BattleAction(
       break;
     case 'resolve_accursed_wager_discard':
       resolveAccursedWagerDiscard(
+        next,
+        action.playerId,
+        action.cardInstanceId,
+      );
+      break;
+    case 'resolve_territory_aftermath_choice':
+      resolveTerritoryAftermathChoice(
         next,
         action.playerId,
         action.cardInstanceId,
@@ -905,6 +930,7 @@ function finalizeOutcome(
   const runtime = requireRuntime(state);
   const resolution = applyV070BattleOutcome(battle, outcome);
   state.battle = resolution.state;
+  applyV070NoQuarterAdditionalRetreat(state);
   openBattlePositionChangeSanctions(state, state.battle.positions);
   runtime.pendingOutcome = null;
   runtime.stage = 'aftermath';
@@ -1113,6 +1139,244 @@ function resolveAccursedWagerDiscard(
   completeAftermathInternal(state, immediateWinner);
 }
 
+function territoryAftermathCandidates(
+  state: V070GameState,
+  kind: 'field_hospital' | 'old_battlefield' | 'spoils_of_war',
+  playerId: PlayerId,
+): string[] {
+  const runtime = requireRuntime(state);
+  const participant = runtime.participants[playerId];
+
+  if (kind === 'old_battlefield' || kind === 'spoils_of_war') {
+    return [...participant.reserve];
+  }
+
+  const candidates: string[] = [];
+  if (participant.gambit) {
+    candidates.push(participant.gambit.instanceId);
+  }
+  for (const additional of participant.additionalGambits) {
+    candidates.push(additional.instanceId);
+  }
+  if (participant.tactic
+    && v070CondemnationAppliesToPlayerTactic(state, playerId)) {
+    candidates.push(participant.tactic.instanceId);
+  }
+  return candidates;
+}
+
+function openTerritoryAftermathChoice(
+  state: V070GameState,
+  immediateWinner: PlayerId | null,
+): boolean {
+  const battle = requireBattle(state);
+  const runtime = requireRuntime(state);
+  if (runtime.territoryAftermathChoiceResolved
+    || runtime.pendingTerritoryAftermathChoice) {
+    return Boolean(runtime.pendingTerritoryAftermathChoice);
+  }
+
+  const territory = activeV070PrintedBattleTerritory(state);
+  if (!territory) return false;
+
+  let kind:
+    | 'field_hospital'
+    | 'old_battlefield'
+    | 'spoils_of_war'
+    | null = null;
+  let playerId: PlayerId | null = null;
+
+  if (territory.territoryId === V070_FIELD_HOSPITAL_ID) {
+    kind = 'field_hospital';
+    playerId = territory.controller;
+  } else if (territory.territoryId === V070_OLD_BATTLEFIELD_ID) {
+    kind = 'old_battlefield';
+    playerId = territory.controller;
+  } else if (territory.territoryId === V070_ARENA_SPOILS_OF_WAR_ID
+    && battle.winner) {
+    kind = 'spoils_of_war';
+    playerId = battle.winner;
+  }
+
+  if (!kind || !playerId) return false;
+
+  const candidates = territoryAftermathCandidates(
+    state,
+    kind,
+    playerId,
+  );
+  if (candidates.length === 0) {
+    runtime.territoryAftermathChoiceResolved = true;
+    appendV070Event(state, {
+      type: 'territory_aftermath_choice_unavailable',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        kind,
+        playerId,
+        territoryInstanceId: territory.territoryInstanceId,
+        territoryId: territory.territoryId,
+      },
+    });
+    return false;
+  }
+
+  runtime.pendingTerritoryAftermathChoice = {
+    kind,
+    playerId,
+    candidateInstanceIds: [...candidates],
+    immediateWinner,
+  };
+  appendV070Event(state, {
+    type: 'territory_aftermath_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      kind,
+      playerId,
+      territoryInstanceId: territory.territoryInstanceId,
+      territoryId: territory.territoryId,
+      candidateCount: candidates.length,
+      optional: true,
+    },
+  });
+  appendV070Event(state, {
+    type: 'territory_aftermath_choice_options',
+    actor: playerId,
+    visibility: playerId,
+    payload: {
+      kind,
+      candidateInstanceIds: [...candidates],
+    },
+  });
+  return true;
+}
+
+function resolveTerritoryAftermathChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  cardInstanceId?: string,
+): void {
+  const runtime = requireRuntime(state);
+  requireRuntimeStage(runtime, 'aftermath');
+  const pending = runtime.pendingTerritoryAftermathChoice;
+  if (!pending || pending.playerId !== playerId) {
+    throw new V070GameActionError(
+      'No Territory Aftermath choice is pending for that player.',
+    );
+  }
+
+  if (cardInstanceId === undefined) {
+    runtime.pendingTerritoryAftermathChoice = null;
+    runtime.territoryAftermathChoiceResolved = true;
+    appendV070Event(state, {
+      type: 'territory_aftermath_choice_declined',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        kind: pending.kind,
+        playerId,
+      },
+    });
+    completeAftermathInternal(state, pending.immediateWinner);
+    return;
+  }
+
+  const currentCandidates = territoryAftermathCandidates(
+    state,
+    pending.kind,
+    playerId,
+  );
+  if (!pending.candidateInstanceIds.includes(cardInstanceId)
+    || !currentCandidates.includes(cardInstanceId)) {
+    throw new V070GameActionError(
+      'The chosen Territory Aftermath card is no longer an eligible candidate.',
+    );
+  }
+
+  const override = pending.kind === 'field_hospital'
+    ? {
+        source: 'Field Hospital' as const,
+        playerId,
+        instanceId: cardInstanceId,
+        destination: 'discard' as const,
+      }
+    : pending.kind === 'old_battlefield'
+      ? {
+          source: 'Old Battlefield' as const,
+          playerId,
+          instanceId: cardInstanceId,
+          destination: 'graveyard' as const,
+        }
+      : {
+          source: 'Arena: Spoils of War' as const,
+          playerId,
+          instanceId: cardInstanceId,
+          destination: 'hand' as const,
+        };
+
+  runtime.pendingTerritoryAftermathChoice = null;
+  runtime.territoryAftermathChoiceResolved = true;
+  runtime.territoryAftermathOverride = override;
+
+  appendV070Event(state, {
+    type: 'territory_aftermath_choice_resolved',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      kind: pending.kind,
+      playerId,
+      source: override.source,
+      destination: override.destination,
+    },
+  });
+  appendV070Event(state, {
+    type: 'territory_aftermath_choice_identity',
+    actor: playerId,
+    visibility: playerId,
+    payload: {
+      kind: pending.kind,
+      instanceId: cardInstanceId,
+      cardId: state.cardInstances[cardInstanceId]?.cardId,
+    },
+  });
+
+  completeAftermathInternal(state, pending.immediateWinner);
+}
+
+function territoryAftermathDestination(
+  runtime: V070BattleRuntime,
+  playerId: PlayerId,
+  instanceId: string,
+  normalDestination: 'discard' | 'graveyard',
+): 'discard' | 'graveyard' | 'hand' {
+  const override = runtime.territoryAftermathOverride;
+  return override
+    && override.playerId === playerId
+    && override.instanceId === instanceId
+      ? override.destination
+      : normalDestination;
+}
+
+function placeAftermathCard(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+  destination: 'discard' | 'graveyard' | 'hand',
+  graveyarded: string[],
+): void {
+  if (destination === 'graveyard') {
+    state.players[playerId].zones.graveyard.push(instanceId);
+    graveyarded.push(instanceId);
+    return;
+  }
+  if (destination === 'hand') {
+    state.players[playerId].zones.hand.push(instanceId);
+    return;
+  }
+  state.players[playerId].zones.discardPile.push(instanceId);
+}
+
 function completeAftermath(state: V070GameState, playerId: PlayerId): void {
   const battle = requireBattle(state);
   const runtime = requireRuntime(state);
@@ -1143,6 +1407,9 @@ function completeAftermathInternal(
   if (openAccursedWagerAftermathChoice(state, immediateWinner)) {
     return;
   }
+  if (openTerritoryAftermathChoice(state, immediateWinner)) {
+    return;
+  }
 
   const graveyardedDuringAftermath: Record<PlayerId, string[]> = {
     A: [],
@@ -1152,18 +1419,52 @@ function completeAftermathInternal(
   for (const playerId of ['A', 'B'] as const) {
     const participant = runtime.participants[playerId];
     if (participant.gambit) {
-      state.players[playerId].zones.graveyard.push(participant.gambit.instanceId);
-      graveyardedDuringAftermath[playerId].push(participant.gambit.instanceId);
+      const instanceId = participant.gambit.instanceId;
+      placeAftermathCard(
+        state,
+        playerId,
+        instanceId,
+        territoryAftermathDestination(
+          runtime,
+          playerId,
+          instanceId,
+          'graveyard',
+        ),
+        graveyardedDuringAftermath[playerId],
+      );
     }
     for (const additional of participant.additionalGambits) {
-      state.players[playerId].zones.graveyard.push(additional.instanceId);
-      graveyardedDuringAftermath[playerId].push(additional.instanceId);
+      const instanceId = additional.instanceId;
+      placeAftermathCard(
+        state,
+        playerId,
+        instanceId,
+        territoryAftermathDestination(
+          runtime,
+          playerId,
+          instanceId,
+          'graveyard',
+        ),
+        graveyardedDuringAftermath[playerId],
+      );
     }
     if (participant.tactic) {
       const instanceId = participant.tactic.instanceId;
-      if (v070CondemnationAppliesToPlayerTactic(state, playerId)) {
-        state.players[playerId].zones.graveyard.push(instanceId);
-        graveyardedDuringAftermath[playerId].push(instanceId);
+      const condemned =
+        v070CondemnationAppliesToPlayerTactic(state, playerId);
+      placeAftermathCard(
+        state,
+        playerId,
+        instanceId,
+        territoryAftermathDestination(
+          runtime,
+          playerId,
+          instanceId,
+          condemned ? 'graveyard' : 'discard',
+        ),
+        graveyardedDuringAftermath[playerId],
+      );
+      if (condemned) {
         appendV070Event(state, {
           type: 'condemnation_applied',
           actor: otherPlayer(playerId),
@@ -1174,11 +1475,22 @@ function completeAftermathInternal(
             cardId: state.cardInstances[instanceId]?.cardId,
           },
         });
-      } else {
-        state.players[playerId].zones.discardPile.push(instanceId);
       }
     }
-    state.players[playerId].zones.discardPile.push(...participant.reserve);
+    for (const instanceId of participant.reserve) {
+      placeAftermathCard(
+        state,
+        playerId,
+        instanceId,
+        territoryAftermathDestination(
+          runtime,
+          playerId,
+          instanceId,
+          'discard',
+        ),
+        graveyardedDuringAftermath[playerId],
+      );
+    }
   }
 
   for (const playerId of ['A', 'B'] as const) {
