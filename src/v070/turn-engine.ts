@@ -146,6 +146,11 @@ export type V070TurnAction =
       targetInstanceId: string;
     }
   | {
+      type: 'resolve_conscription_banking_action';
+      playerId: PlayerId;
+      targetInstanceId?: string;
+    }
+  | {
       type: 'choose_clemency_target';
       playerId: PlayerId;
       targetInstanceId: string;
@@ -509,6 +514,10 @@ export function reduceV070TurnAction(
       && action.type === 'choose_margin_loan_collateral_target'
       && action.playerId === pending.playerId
     ) || (
+      pending.kind === 'conscription_banking_action'
+      && action.type === 'resolve_conscription_banking_action'
+      && action.playerId === pending.playerId
+    ) || (
       pending.kind === 'owned_deed_target'
       && action.type === 'choose_owned_deed_target'
       && action.playerId === pending.playerId
@@ -563,6 +572,7 @@ export function reduceV070TurnAction(
       'resolve_necromancy_action',
       'resolve_manifest_destiny_sacrifice',
       'choose_margin_loan_collateral_target',
+      'resolve_conscription_banking_action',
       'choose_owned_deed_target',
       'choose_treasury_card_target',
       'resolve_deed_purchase_choice',
@@ -637,6 +647,13 @@ export function reduceV070TurnAction(
       break;
     case 'choose_margin_loan_collateral_target':
       chooseMarginLoanCollateralTarget(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
+      break;
+    case 'resolve_conscription_banking_action':
+      resolveConscriptionBankingAction(
         next,
         action.playerId,
         action.targetInstanceId,
@@ -1172,6 +1189,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'neutral-arcane-knowledge',
   'neutral-capital-punishment',
   'neutral-consolidation',
+  'neutral-conscription',
   'neutral-contraband',
   'neutral-disruption',
   'neutral-forced-march',
@@ -1234,10 +1252,17 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'mystics-threefold-vision',
 ] as const;
 
+interface V070ActionPlayOptions {
+  spendAction?: boolean;
+  source?: string;
+  sourceActionInstanceId?: string;
+}
+
 function playActionCard(
   state: V070GameState,
   playerId: PlayerId,
   cardInstanceId: string,
+  options: V070ActionPlayOptions = {},
 ): void {
   const turnState = requireTurnState(state);
   if (turnState.phase !== 'opening' && turnState.phase !== 'denouement') {
@@ -1601,7 +1626,9 @@ function playActionCard(
     );
   }
 
-  spendTurnAction(state, playerId);
+  if (options.spendAction !== false) {
+    spendTurnAction(state, playerId);
+  }
 
   player.zones.hand.splice(handIndex, 1);
   state.pendingActionCard = {
@@ -1620,6 +1647,13 @@ function playActionCard(
       cardId: card.id,
       phase: turnState.phase,
       actionsRemaining: requireTurnState(state).actionsAvailable,
+      ...(options.spendAction === false
+        ? {
+            actionSpent: false,
+            source: options.source ?? 'effect',
+            sourceActionInstanceId: options.sourceActionInstanceId ?? null,
+          }
+        : {}),
     },
   });
   applyV070BlasphemyForActionPlay(
@@ -1634,6 +1668,139 @@ function playActionCard(
     cardInstanceId,
   );
   if (censureCount === 0) continuePendingActionCard(state);
+}
+
+function actionEffectBanksItsOwnCard(cardId: string): boolean {
+  const card = v070CanonicalContent.cardsById.get(cardId);
+  const action = card?.effects.find(effect => effect.label === 'Action');
+  return action ? /\bbank this card\b/i.test(action.text) : false;
+}
+
+function conscriptionBankingActionCandidateInstanceIds(
+  state: V070GameState,
+  playerId: PlayerId,
+): string[] {
+  return state.players[playerId].zones.hand.filter(instanceId => {
+    const cardId = state.cardInstances[instanceId]?.cardId;
+    if (!cardId
+      || !actionEffectBanksItsOwnCard(cardId)
+      || !(V070_EXECUTABLE_ACTION_CARD_IDS as readonly string[]).includes(cardId)) {
+      return false;
+    }
+
+    try {
+      const probe = structuredClone(state) as V070GameState;
+      probe.pendingActionEffectChoice = null;
+      playActionCard(
+        probe,
+        playerId,
+        instanceId,
+        {
+          spendAction: false,
+          source: 'Conscription legality probe',
+        },
+      );
+      return true;
+    } catch {
+      return false;
+    }
+  });
+}
+
+function openConscriptionBankingActionChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+): void {
+  const candidates = conscriptionBankingActionCandidateInstanceIds(
+    state,
+    playerId,
+  );
+  if (candidates.length === 0) {
+    finishPendingActionCard(state);
+    return;
+  }
+
+  state.pendingActionEffectChoice = {
+    kind: 'conscription_banking_action',
+    playerId,
+    sourceActionInstanceId,
+    candidateInstanceIds: [...candidates],
+  };
+  appendV070Event(state, {
+    type: 'action_effect_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      kind: 'conscription_banking_action',
+      playerId,
+      sourceActionInstanceId,
+      purpose: 'Conscription',
+      optional: true,
+      candidateCount: candidates.length,
+    },
+  });
+  appendV070Event(state, {
+    type: 'action_effect_choice_options',
+    actor: playerId,
+    visibility: playerId,
+    payload: {
+      kind: 'conscription_banking_action',
+      sourceActionInstanceId,
+      purpose: 'Conscription',
+      targetInstanceIds: [...candidates],
+    },
+  });
+}
+
+function resolveConscriptionBankingAction(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId?: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'conscription_banking_action'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'neutral-conscription') {
+    throw new V070GameActionError(
+      'No Conscription immediate banking Action choice is pending for that player.',
+    );
+  }
+
+  if (targetInstanceId === undefined) {
+    state.pendingActionEffectChoice = null;
+    finishPendingActionCard(state);
+    return;
+  }
+
+  if (!choice.candidateInstanceIds.includes(targetInstanceId)
+    || !conscriptionBankingActionCandidateInstanceIds(
+      state,
+      playerId,
+    ).includes(targetInstanceId)) {
+    throw new V070GameActionError(
+      'Conscription must choose a currently legal Hand card whose Action effect banks it, or pass.',
+    );
+  }
+
+  const sourceActionInstanceId = pending.instanceId;
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state);
+
+  playActionCard(
+    state,
+    playerId,
+    targetInstanceId,
+    {
+      spendAction: false,
+      source: 'Conscription',
+      sourceActionInstanceId,
+    },
+  );
 }
 
 function resolveCensureChoice(
@@ -1806,6 +1973,14 @@ function continuePendingActionCard(state: V070GameState): void {
     case 'neutral-consolidation':
       drawIntoHand(state, pending.playerId, 2, 'Consolidation');
       finishPendingActionCard(state);
+      return;
+    case 'neutral-conscription':
+      drawIntoHand(state, pending.playerId, 1, 'Conscription');
+      openConscriptionBankingActionChoice(
+        state,
+        pending.playerId,
+        pending.instanceId,
+      );
       return;
     case 'neutral-contraband':
       state.pendingActionEffectChoice = {
