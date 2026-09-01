@@ -156,6 +156,7 @@ export interface V070GameView {
   bindings: V070BindingView[];
   assetFaceStates: V070GameState['assetFaceStates'];
   territoryTurnRestrictions: V070GameState['territoryTurnRestrictions'];
+  territoryEffectSuppressions: V070GameState['territoryEffectSuppressions'];
   sanctions: V070GameState['sanctions'];
   sanctionTriggerTurns: V070GameState['sanctionTriggerTurns'];
   pendingActionCard: V070GameState['pendingActionCard'];
@@ -200,6 +201,9 @@ export function viewV070GameForPlayer(
     assetFaceStates: state.assetFaceStates.map(face => structuredClone(face)),
     territoryTurnRestrictions: state.territoryTurnRestrictions.map(
       restriction => structuredClone(restriction),
+    ),
+    territoryEffectSuppressions: state.territoryEffectSuppressions.map(
+      suppression => structuredClone(suppression),
     ),
     sanctions: state.sanctions.map(sanction => structuredClone(sanction)),
     sanctionTriggerTurns: { ...state.sanctionTriggerTurns },
