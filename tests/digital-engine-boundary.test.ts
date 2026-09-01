@@ -85,6 +85,26 @@ describe('digital engine boundary', () => {
     }
   });
 
+  it('requires legacy effect consumers to opt into the v0.6 effect API', () => {
+    expect(readdirSync('src/effects')).not.toContain('index.ts');
+
+    const effectConsumers = [
+      'src/dev/battle-reveal-options.ts',
+      'src/state/battle-reveal.ts',
+      'src/state/actions.ts',
+      'src/types/neutral.ts',
+      'src/state/reducer.ts',
+      'src/state/neutral-contingency-plan.test.ts',
+      'src/state/neutral-counterintelligence.test.ts',
+    ];
+
+    for (const path of effectConsumers) {
+      const source = readFileSync(path, 'utf8');
+      expect(source).toContain("from '../effects/v06'");
+      expect(source).not.toMatch(/from ['"]\.\.\/effects['"]/);
+    }
+  });
+
   it('keeps the promoted v0.7.0 implementation isolated from legacy architecture', () => {
     const promotedSources = readdirSync('src/v070')
       .filter((name) => name.endsWith('.ts') && !name.endsWith('.test.ts'));
