@@ -8,6 +8,7 @@ const html = read("deckbuilder/index.html");
 
 describe("Deckbuilder starter count authority", () => {
   it("keeps the current starter set at one Deck per Leader", () => {
+    // Current release expectation is asserted against authority, not used by runtime code.
     const leaderCount = authority.gameplay.factions
       .reduce((sum: number, faction: any) => sum + (faction.leaders || []).length, 0);
     expect(leaderCount).toBe(12);
