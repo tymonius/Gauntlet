@@ -6,7 +6,7 @@ import type {
   GameEvent,
   GameState,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import type { ActionCardTarget, ResolveMysticsChoiceAction } from './actions';
 import { battleDiceCount, deterministicBattleDiceValues, selectBattleDieResult } from './battle-dice';
 import { sacrificeMysticHandCard } from './mystics-conversion';
