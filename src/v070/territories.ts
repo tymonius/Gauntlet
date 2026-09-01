@@ -179,6 +179,15 @@ export function v070DisruptedSupplyLinesTerritoryForPlayer(
   return territory;
 }
 
+function v070DisruptedSupplyLinesEligibleAssets(
+  state: V070GameState,
+  playerId: PlayerId,
+): string[] {
+  return state.players[playerId].zones.assetBank.filter(instanceId =>
+    !state.assetFaceStates.some(face => face.instanceId === instanceId)
+  );
+}
+
 export function v070DisruptedSupplyLinesSelectionRequired(
   state: V070GameState,
   playerId: PlayerId,
@@ -187,7 +196,7 @@ export function v070DisruptedSupplyLinesSelectionRequired(
     state,
     playerId,
   );
-  const assets = state.players[playerId].zones.assetBank;
+  const assets = v070DisruptedSupplyLinesEligibleAssets(state, playerId);
   if (!territory || assets.length <= 1) return false;
 
   const selection = state.disruptedSupplyLinesSelections[playerId];
@@ -210,15 +219,18 @@ export function chooseV070DisruptedSupplyLinesActiveAsset(
       'Disrupted Supply Lines Asset selection requires the player to be there while its printed effect is active.',
     );
   }
-  const assets = state.players[playerId].zones.assetBank;
+  const assets = v070DisruptedSupplyLinesEligibleAssets(
+    state,
+    playerId,
+  );
   if (assets.length <= 1) {
     throw new V070GameActionError(
-      'Disrupted Supply Lines requires a choice only when the player has more than one Asset.',
+      'Disrupted Supply Lines requires a choice only when the player has more than one face-up Asset.',
     );
   }
   if (!assets.includes(assetInstanceId)) {
     throw new V070GameActionError(
-      'Disrupted Supply Lines must choose one Asset in that player’s Asset bank.',
+      'Disrupted Supply Lines must choose one face-up Asset in that player’s Asset bank.',
     );
   }
   if (!v070DisruptedSupplyLinesSelectionRequired(state, playerId)) {
@@ -254,7 +266,10 @@ export function v070DisruptedSupplyLinesAssetActive(
     state,
     playerId,
   );
-  const assets = state.players[playerId].zones.assetBank;
+  const assets = v070DisruptedSupplyLinesEligibleAssets(
+    state,
+    playerId,
+  );
   if (!territory || assets.length <= 1) return true;
 
   const selection = state.disruptedSupplyLinesSelections[playerId];
