@@ -1,5 +1,5 @@
 import { v06CanonicalContent } from '../content/v06';
-import type { CardID } from '../types';
+import type { CardID } from '../types/v06';
 
 export interface IntelligenceCardDefinition {
   id: CardID;

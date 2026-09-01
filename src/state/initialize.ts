@@ -1,4 +1,4 @@
-import type { BoardSpaceState, BoardState, CardID, GameEvent, GameID, GameState, PlayerID, PlayerState, TerritoryID } from '../types';
+import type { BoardSpaceState, BoardState, CardID, GameEvent, GameID, GameState, PlayerID, PlayerState, TerritoryID } from '../types/v06';
 import { createInitialFactionResources } from './resources';
 import { assertValidGameSetup } from './validation';
 

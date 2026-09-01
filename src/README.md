@@ -20,7 +20,7 @@ That difference is an explicit implementation lag, not an alternate authority cl
 - `v064/` — transitional Onset implementation retained as historical migration evidence after its relevant shared procedures were audited into `v070/rules.ts`.
 - `v063/` — substantial validated procedure library from the v0.6.3 migration: setup, Front Line/Capture, copied/repeated effects, Arcane Knowledge, Manifest Destiny, dynamic Territories/Deeds, and all printed Territory/Arena procedures. These remain explicitly versioned until individually revalidated against v0.7.0.
 - `content/v063.ts` — immutable v0.6.3 release adapter retained for historical/versioned regression tests.
-- `state/`, `effects/`, `cards/`, and `dev/` — pre-faction/earlier playable architecture. Useful scaffolding, but not presumed v0.7.0-compatible. Aggregate legacy APIs are explicitly versioned as `state/v06.ts` and `effects/v06.ts`; no generic state/effects barrels are maintained.\n- `cli/` and `gui/` — explicitly versioned v0.6 legacy interactive runners only; older generic v0.5.6 runners are preserved under `legacy/digital-engine-dev-runners/` as non-executable provenance.
+- `state/`, `effects/`, `cards/`, `types/`, and `dev/` — pre-faction/earlier playable architecture. Useful scaffolding, but not presumed v0.7.0-compatible. Aggregate legacy APIs are explicitly versioned as `state/v06.ts`, `effects/v06.ts`, `cards/v06.ts`, and `types/v06.ts`. Generic state/effects barrels are removed; `cards/index.ts` and `types/index.ts` remain only as deprecated compatibility shims while their broader legacy consumer sets are migrated.\n- `cli/` and `gui/` — explicitly versioned v0.6 legacy interactive runners only; older generic v0.5.6 runners are preserved under `legacy/digital-engine-dev-runners/` as non-executable provenance.
 
 The promoted `content/current.ts` boundary currently identifies the v0.7.0 implementation baseline and exposes only that promoted shared-rules/starter/setup/private-view surface. Historical procedure libraries are not re-exported through `current.ts`; migration work must import explicit versioned modules until a procedure is revalidated and promoted deliberately.
 
@@ -59,6 +59,8 @@ The broad test/typecheck commands exercise legacy/versioned code as well as prom
 Reuse architecture and procedures deliberately. A historical handler is evidence, not authority. New or retained gameplay behavior must be checked against the published v0.7.0 Rulebook and canonical data before it is exposed through the current engine surface.
 
 The promoted `src/v070/` implementation must remain structurally isolated from the legacy `state/`, `dev/`, `cards/`, `effects/`, and `reconstruction/` trees. Shared code may move into an explicitly current/version-neutral module only after its authority and compatibility are established.
+
+The legacy development helpers under `src/dev/` and the legacy CLI/GUI runners use explicit v0.6 aggregate boundaries for state, effects, and types. Three dev helpers still use the deprecated generic card barrel because direct `cards/v06` imports expose an existing ESM cycle in the old state/card architecture; that compatibility dependency is intentional until the cycle is removed.
 
 
 ## Battle execution boundary

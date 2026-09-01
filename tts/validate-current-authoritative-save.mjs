@@ -13,6 +13,7 @@ const PLAYER_TOKEN_NOTE_PREFIX = 'gauntlet:starter-utility:player-token:';
 const BATTLE_DIE_NOTE_PREFIX = 'gauntlet:starter-utility:battle-die:';
 const PRIVATE_PARKING_NOTE_PREFIX = 'gauntlet:private-parking:';
 const TABLE_TEXT_NOTE_PREFIX = 'gauntlet:table-layout:';
+const SHARED_RULEBOOK_NOTE = 'gauntlet:shared-rulebook';
 const TERRITORY_TAG = 'gauntlet-territory';
 const TERRITORY_OVERLAY_TAG = 'gauntlet-territory-overlay';
 const DEED_TAG = 'gauntlet-deed';
@@ -106,6 +107,25 @@ function validateEnvironment(save) {
   }
 }
 
+function validateSharedRulebook(save) {
+  const rulebooks = (save.ObjectStates || []).filter(object => object?.GMNotes === SHARED_RULEBOOK_NOTE);
+  if (rulebooks.length !== 1) throw new Error(`Expected exactly one shared Rulebook Custom PDF; found ${rulebooks.length}.`);
+
+  const rulebook = rulebooks[0];
+  if (rulebook.Name !== 'Custom_PDF' || !rulebook.CustomPDF) {
+    throw new Error('Shared Rulebook must be a TTS Custom_PDF object.');
+  }
+  if (!close(rulebook.Transform?.posX, 11.4) || !close(rulebook.Transform?.posZ, 0) || !close(rulebook.Transform?.rotY, 90)) {
+    throw new Error('Shared Rulebook is not parked in the neutral east-center table space.');
+  }
+  if (!isContentVersionedReleaseAsset(String(rulebook.CustomPDF.PDFUrl || ''), '_TTS_Rulebook.pdf')) {
+    throw new Error('Shared Rulebook must load the content-versioned TTS reader-order Rulebook PDF.');
+  }
+  if (Number(rulebook.CustomPDF.PDFPage) !== 0 || Number(rulebook.CustomPDF.PDFPageOffset) !== 0) {
+    throw new Error('Shared Rulebook must open at the beginning of the PDF.');
+  }
+}
+
 function validateTableWorkspace(save) {
   if ((save.VectorLines || []).length !== 38) {
     throw new Error(`Expected 38 visible table outline lines; found ${save.VectorLines?.length || 0}.`);
@@ -142,8 +162,8 @@ function validateTableWorkspace(save) {
   if (territory.length !== 8 || territory.some(point => point.Rotation !== undefined)) {
     throw new Error('Territory table snaps must constrain position only so Y rotation remains available to indicate control.');
   }
-  if (deeds.length !== 16 || deeds.some(point => !close(Math.abs(point.Position?.x), 4.35) || point.Rotation !== undefined)) {
-    throw new Error('Deed table snaps must constrain position only at ±4.35 so Y rotation remains available to indicate ownership.');
+  if (deeds.length !== 16 || deeds.some(point => !close(Math.abs(point.Position?.x), 3.95) || point.Rotation !== undefined)) {
+    throw new Error('Deed table snaps must constrain position only at ±3.95 so Y rotation remains available to indicate ownership.');
   }
   if (faction.length !== 24) throw new Error(`Expected 24 Faction Zone card snaps; found ${faction.length}.`);
   if (deedStackMagnets.length) throw new Error('Deed stacks must use ordinary Faction Zone magnets; dedicated Deed-stack magnets are forbidden.');
@@ -629,6 +649,7 @@ async function main() {
   ]);
 
   validateEnvironment(save);
+  validateSharedRulebook(save);
   validateTableWorkspace(save);
   validateHandsAndSeats(save);
   const bags = validateBagsAndUtilities(save, manifest);

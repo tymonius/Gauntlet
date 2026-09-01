@@ -1,4 +1,4 @@
-import type { CardID, PlayerID, TerritoryID } from '../types';
+import type { CardID, PlayerID, TerritoryID } from '../types/v06';
 import type { InitializeGameInput, PlayerSetupInput } from './initialize';
 
 export interface ValidationIssue {

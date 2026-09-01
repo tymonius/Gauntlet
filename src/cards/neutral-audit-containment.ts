@@ -1,4 +1,4 @@
-import type { CardID } from '../types';
+import type { CardID } from '../types/v06';
 import {
   coreCardPlayRules,
   type CardPlayOrigin,

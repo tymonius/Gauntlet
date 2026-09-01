@@ -55,6 +55,12 @@ export interface V070TerritoryTurnRestriction {
   turnNumber: number;
 }
 
+export interface V070DisruptedSupplyLinesSelection {
+  playerId: PlayerId;
+  territoryInstanceId: string;
+  activeAssetInstanceId: string;
+}
+
 export interface V070TerritoryEffectSuppression {
   source: 'pathfinders';
   sourceActionInstanceId: string;
@@ -538,6 +544,9 @@ export interface V070GameState {
   bindings: V070Binding[];
   nextBindingSequence: number;
   assetFaceStates: V070AssetFaceState[];
+  disruptedSupplyLinesSelections: Partial<
+    Record<PlayerId, V070DisruptedSupplyLinesSelection>
+  >;
   territoryTurnRestrictions: V070TerritoryTurnRestriction[];
   territoryEffectSuppressions: V070TerritoryEffectSuppression[];
   sanctions: V070SanctionAssociation[];
@@ -679,6 +688,7 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
     bindings: [],
     nextBindingSequence: 1,
     assetFaceStates: [],
+    disruptedSupplyLinesSelections: {},
     territoryTurnRestrictions: [],
     territoryEffectSuppressions: [],
     sanctions: [],

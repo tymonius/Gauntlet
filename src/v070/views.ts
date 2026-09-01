@@ -187,6 +187,8 @@ export interface V070GameView {
   accursedWagers: V070GameState['accursedWagers'];
   bindings: V070BindingView[];
   assetFaceStates: V070GameState['assetFaceStates'];
+  disruptedSupplyLinesSelections:
+    V070GameState['disruptedSupplyLinesSelections'];
   territoryTurnRestrictions: V070GameState['territoryTurnRestrictions'];
   territoryEffectSuppressions: V070GameState['territoryEffectSuppressions'];
   sanctions: V070GameState['sanctions'];
@@ -231,6 +233,9 @@ export function viewV070GameForPlayer(
     ),
     bindings: viewBindings(state, viewer),
     assetFaceStates: state.assetFaceStates.map(face => structuredClone(face)),
+    disruptedSupplyLinesSelections: structuredClone(
+      state.disruptedSupplyLinesSelections,
+    ),
     territoryTurnRestrictions: state.territoryTurnRestrictions.map(
       restriction => structuredClone(restriction),
     ),

@@ -210,13 +210,22 @@ The current package assembles the authoritative supplemental quantities across t
 
 `scripts/generate-tts-save.mjs` creates a two-player Review Scaffold with:
 
-- White and Green hand/reserve zones;
+- White and Green hand/reserve zones plus wide private tabletop Hand parking strips;
 - six center-line Gauntlet snap points;
+- both Asset Banks grouped on the west side;
+- a dedicated shared Battle Zone between the Asset Banks, with compact overlapping snap rows for multiple Gambits and Tactics;
+- combined Faction / Leader & References workspaces on the east side;
+- compact Draw and Discard areas near the Gauntlet;
+- deliberately isolated Graveyards at the outer east edge;
+- Deed snap columns at **x = ±3.95**, close to the Territory column;
 - one battle d6 per player;
-- one Player Token per player; and
+- one Player Token per player;
+- one shared in-table **Custom PDF Rulebook** using a reader-order half-letter PDF derived from the imposed stable Rulebook and published as a content-versioned TTS network asset; and
 - one selectable starter Bag for every current starter.
 
-The base scaffold receives the authoritative table layout, is assembled with faction supplementals, and is then validated by `tts/validate-v070-authoritative-save.mjs`. Validation is fail-closed: it checks the generated save as written and does not repair object geometry.
+The shared Rulebook is parked in the neutral east-center gap between the two combined Faction / Leader & References workspaces, opposite the west-side Battle Zone. `scripts/generate-tts-rulebook-reader.mjs` de-imposes the print booklet into sequential half-letter reader pages, and TTS loads that content-versioned hosted PDF. It opens at the beginning and remains a normal shared TTS object rather than duplicating the rules into scripted UI.
+
+The base scaffold receives the authoritative table layout, is assembled with faction supplementals, and is then validated by `tts/validate-current-authoritative-save.mjs`. Validation is fail-closed: it checks the generated save as written and does not repair object geometry.
 
 Behavioral tests construct the returned save JSON and verify the core table structure, starter core contents, landscape Territory presentation, supplemental packaging, tracker geometry, and HTTPS custom-object URLs. Actual TTS usability still requires in-game QA.
 

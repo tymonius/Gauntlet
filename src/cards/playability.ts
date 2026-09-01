@@ -1,4 +1,4 @@
-import type { CardID } from '../types';
+import type { CardID } from '../types/v06';
 
 export type CardPlayTiming = 'action' | 'battle_hand_commit' | 'battle_draw_play';
 export type CardPlayOrigin = 'hand' | 'battle_draw';

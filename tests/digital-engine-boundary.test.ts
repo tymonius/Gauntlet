@@ -105,6 +105,82 @@ describe('digital engine boundary', () => {
     }
   });
 
+  it('keeps the generic card barrel as a deprecated v0.6 compatibility shim only', () => {
+    const cardIndex = readFileSync('src/cards/index.ts', 'utf8');
+    expect(cardIndex).toContain('@deprecated');
+    expect(cardIndex).toContain("export * from './v06';");
+    expect(cardIndex).not.toContain("export * from './military'");
+    expect(cardIndex).not.toContain("export * from './intelligence'");
+  });
+
+  it('keeps the generic type barrel as a deprecated v0.6 compatibility shim only', () => {
+    const typeIndex = readFileSync('src/types/index.ts', 'utf8');
+    expect(typeIndex).toContain('@deprecated');
+    expect(typeIndex).toContain("export * from './v06';");
+    expect(typeIndex).not.toContain("export * from './game'");
+    expect(typeIndex).not.toContain("export * from './battle'");
+  });
+
+  it('pins legacy development surfaces to explicit v0.6 aggregate APIs', () => {
+    const devConsumers = [
+      'src/cli/dev-runner-v06.ts',
+      'src/gui/dev-server-v06.ts',
+      'src/dev/battle-reveal-options.ts',
+      'src/dev/guided-options.test.ts',
+      'src/dev/guided-options.ts',
+      'src/dev/inquisition-options.ts',
+      'src/dev/intelligence-battle-options.ts',
+      'src/dev/intelligence-options.ts',
+      'src/dev/mystics-options.ts',
+      'src/dev/neutral-options.test.ts',
+      'src/dev/neutral-options.ts',
+    ];
+
+    for (const path of devConsumers) {
+      const source = readFileSync(path, 'utf8');
+      expect(source).not.toMatch(/from ['"]\.\.\/types['"]/);
+    }
+  });
+
+  it('pins legacy card-definition modules to the v0.6 type API', () => {
+    const cardSources = [
+      'src/cards/intelligence.ts',
+      'src/cards/diplomats.ts',
+      'src/cards/neutral-audit-containment.ts',
+      'src/cards/financiers.ts',
+      'src/cards/military.ts',
+      'src/cards/playability.ts',
+    ];
+
+    for (const path of cardSources) {
+      const source = readFileSync(path, 'utf8');
+      expect(source).not.toMatch(/from ['"]\.\.\/types['"]/);
+    }
+  });
+
+  it('pins foundational legacy state modules to the v0.6 type API', () => {
+    const stateCoreSources = [
+      'src/state/initialize.ts',
+      'src/state/validation.ts',
+      'src/state/views.ts',
+      'src/state/actions.ts',
+      'src/state/reducer.ts',
+      'src/state/draw.ts',
+      'src/state/pipeline.ts',
+      'src/state/win.ts',
+      'src/state/resources.ts',
+      'src/state/banked-assets.ts',
+      'src/state/asset-facing.ts',
+      'src/state/v06-board.ts',
+      'src/state/battle-dice.ts',
+    ];
+
+    for (const path of stateCoreSources) {
+      const source = readFileSync(path, 'utf8');
+      expect(source).not.toMatch(/from ['"]\.\.\/types['"]/);
+    }
+  });
+
   it('keeps the promoted v0.7.0 implementation isolated from legacy architecture', () => {
     const promotedSources = readdirSync('src/v070')
       .filter((name) => name.endsWith('.ts') && !name.endsWith('.test.ts'));

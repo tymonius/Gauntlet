@@ -17,6 +17,8 @@ The legacy aggregate API is intentionally versioned as `src/state/v06.ts`. There
 
 These modules remain useful implementation evidence, but they must not be treated as authority for current v0.7.x behavior without deliberate revalidation and promotion.
 
+Foundational legacy state modules use the explicit `../types/v06` type boundary. These imports are type-only and are intentionally migrated independently from runtime `cards` imports, which still participate in an older circular module graph.
+
 ## Hidden information rule
 
 The authoritative `GameState` contains all private information. UI and network clients using this legacy architecture should receive only one of these derived views:

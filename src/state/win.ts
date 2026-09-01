@@ -1,4 +1,4 @@
-import type { GameState, PlayerID, SpaceID } from '../types';
+import type { GameState, PlayerID, SpaceID } from '../types/v06';
 
 export type WinConditionReason = 'opponent_heartland_occupied';
 

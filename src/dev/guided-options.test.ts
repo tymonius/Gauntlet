@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { initializeGame } from '../state/v06';
-import type { GameState } from '../types';
+import type { GameState } from '../types/v06';
 import { buildGuidedOptions } from './guided-options';
 
 function game(): GameState {

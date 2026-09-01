@@ -1,4 +1,4 @@
-import type { GameState } from '../types';
+import type { GameState } from '../types/v06';
 import { evaluateIntelligenceMissionRequirements } from './intelligence-mission-triggers';
 import { reconcileIntelligenceState } from './intelligence-missions';
 import {

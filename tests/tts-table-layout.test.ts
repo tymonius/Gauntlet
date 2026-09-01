@@ -59,7 +59,7 @@ describe('authoritative TTS table layout', () => {
     ]);
     expect(territory.every(point => point.Rotation === undefined)).toBe(true);
     expect(deeds).toHaveLength(16);
-    expect(deeds.every(point => Math.abs(point.Position.x) === 4.35)).toBe(true);
+    expect(deeds.every(point => Math.abs(point.Position.x) === 3.95)).toBe(true);
     expect(deeds.every(point => point.Rotation === undefined)).toBe(true);
     expect(snaps).toHaveLength(108);
     expect(snaps.filter(point => point.Tags?.includes('gauntlet-deed-stack'))).toHaveLength(0);

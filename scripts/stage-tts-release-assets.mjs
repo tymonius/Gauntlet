@@ -108,6 +108,9 @@ async function stageReleaseAssets() {
     throw new Error(`Supplemental manifest must declare starter-faction save assembly; found ${supplementalManifest.placement?.assembly || 'missing'}.`);
   }
 
+  const { generateTtsRulebookReader } = await import('./generate-tts-rulebook-reader.mjs');
+  await generateTtsRulebookReader();
+
   const prefix = assetPrefix(release.version);
   const records = [];
   const seenNames = new Set();
@@ -121,6 +124,15 @@ async function stageReleaseAssets() {
       environment.kind,
     );
   }
+
+  addAsset(
+    records,
+    seenNames,
+    'rulebook-reader.pdf',
+    `${prefix}_Rulebook.pdf`,
+    'rulebook-reader',
+    { pageFormat: 'half-letter', pageOrder: 'reading' },
+  );
 
   for (const sheet of cardManifest.sheets || []) {
     addAsset(

@@ -1,5 +1,5 @@
 import { v06CanonicalContent } from '../content/v06';
-import type { CardID, GameState, PlayerID } from '../types';
+import type { CardID, GameState, PlayerID } from '../types/v06';
 import type { AppStateAction } from '../state/v06';
 import {
   canBeginRiteOfCrossing,

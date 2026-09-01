@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { createInterface } from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
-import type { GameState } from '../types';
+import type { GameState } from '../types/v06';
 import { applyGameAction, initializeGame } from '../state/v06';
 import { activeViewer, buildGuidedOptions } from '../dev/guided-options';
 
