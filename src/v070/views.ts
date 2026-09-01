@@ -1,5 +1,10 @@
 import type { PlayerId } from './rules';
-import type { V070GameEvent, V070GameState, V070SetupStage } from './engine';
+import type {
+  V070GameEvent,
+  V070GameState,
+  V070MissionSlot,
+  V070SetupStage,
+} from './engine';
 import { effectiveV070AssetLimit } from './assets';
 import type {
   V070BattleCardCommitment,
@@ -400,9 +405,7 @@ function viewPlayer(
 
 function viewMissionSlot(
   state: V070GameState,
-  mission: V070GameState['players'][PlayerId]['intelligence'] extends infer T
-    ? T extends { activeMission: infer M } ? M : never
-    : never,
+  mission: V070MissionSlot | null,
   owner: boolean,
 ): V070MissionSlotView | null {
   if (!mission) return null;
