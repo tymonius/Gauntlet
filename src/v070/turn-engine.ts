@@ -129,6 +129,11 @@ import {
   v070TollBridgeAdvanceCostActive,
   v070TurnStartTerritoryPlan,
 } from './territories';
+import {
+  releaseV070SmugglersRunStashForUse,
+  returnV070SmugglersRunStashAtStartTurn,
+  stashV070SmugglersRunCard,
+} from './smugglers-run';
 
 export type V070TurnAction =
   | { type: 'resolve_capture'; playerId: PlayerId }
@@ -150,6 +155,17 @@ export type V070TurnAction =
       assetInstanceId: string;
     }
   | { type: 'play_action_card'; playerId: PlayerId; cardInstanceId: string }
+  | {
+      type: 'stash_smugglers_run_card';
+      playerId: PlayerId;
+      cardInstanceId: string;
+    }
+  | { type: 'play_smugglers_run_stash_action'; playerId: PlayerId }
+  | {
+      type: 'return_smugglers_run_stash';
+      playerId: PlayerId;
+      territoryInstanceId: string;
+    }
   | {
       type: 'intelligence_start_mission';
       playerId: PlayerId;
@@ -739,6 +755,23 @@ export function reduceV070TurnAction(
     case 'play_action_card':
       playActionCard(next, action.playerId, action.cardInstanceId);
       break;
+    case 'stash_smugglers_run_card':
+      stashSmugglersRunCard(
+        next,
+        action.playerId,
+        action.cardInstanceId,
+      );
+      break;
+    case 'play_smugglers_run_stash_action':
+      playSmugglersRunStashAction(next, action.playerId);
+      break;
+    case 'return_smugglers_run_stash':
+      returnV070SmugglersRunStashAtStartTurn(
+        next,
+        action.playerId,
+        action.territoryInstanceId,
+      );
+      break;
     case 'intelligence_start_mission':
       intelligenceStartMission(
         next,
@@ -1281,6 +1314,49 @@ function drawTurnCard(
     requireTurnState(state),
   );
   appendPhaseEvent(state);
+}
+
+function stashSmugglersRunCard(
+  state: V070GameState,
+  playerId: PlayerId,
+  cardInstanceId: string,
+): void {
+  const phase = requireTurnState(state).phase;
+  if (phase !== 'opening' && phase !== 'denouement') {
+    throw new V070GameActionError(
+      "Smuggler's Run stash Action is legal only during Opening or Denouement.",
+    );
+  }
+
+  spendTurnAction(state, playerId);
+  stashV070SmugglersRunCard(
+    state,
+    playerId,
+    cardInstanceId,
+  );
+}
+
+function playSmugglersRunStashAction(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  const phase = requireTurnState(state).phase;
+  if (phase !== 'opening' && phase !== 'denouement') {
+    throw new V070GameActionError(
+      "A Smuggler's Run stashed Action may be played only during Opening or Denouement.",
+    );
+  }
+
+  const cardInstanceId = releaseV070SmugglersRunStashForUse(
+    state,
+    playerId,
+    phase,
+  );
+  playActionCard(
+    state,
+    playerId,
+    cardInstanceId,
+  );
 }
 
 function bankAsset(
