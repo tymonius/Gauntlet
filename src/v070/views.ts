@@ -69,6 +69,10 @@ export interface V070BattleRuntimeView {
   gambitOrderOverride: V070BattleRuntime['gambitOrderOverride'];
   pendingOutcome: V070BattleRuntime['pendingOutcome'];
   pendingAccursedWager: V070BattleRuntime['pendingAccursedWager'];
+  activePrintedTerritoryAtOnset:
+    V070BattleRuntime['activePrintedTerritoryAtOnset'];
+  gambitProhibitedPlayers:
+    V070BattleRuntime['gambitProhibitedPlayers'];
   unsupportedEffects: V070UnsupportedBattleEffect[];
 }
 
@@ -456,6 +460,13 @@ function viewBattleRuntime(
     pendingAccursedWager: runtime.pendingAccursedWager
       ? structuredClone(runtime.pendingAccursedWager)
       : null,
+    activePrintedTerritoryAtOnset:
+      runtime.activePrintedTerritoryAtOnset
+        ? structuredClone(runtime.activePrintedTerritoryAtOnset)
+        : null,
+    gambitProhibitedPlayers: [
+      ...runtime.gambitProhibitedPlayers,
+    ],
     unsupportedEffects: runtime.unsupportedEffects.map(effect => structuredClone(effect)),
   };
 }
