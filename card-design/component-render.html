@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+    <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Gauntlet canonical component render</title>
+  <base href="/card-design/">
+  <link rel="preconnect" href="https://use.typekit.net">
+  <link rel="preconnect" href="https://p.typekit.net" crossorigin>
+  <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css">
+  <link rel="stylesheet" href="/design-tokens.css">
+  <link rel="stylesheet" href="/card-design/card-design.css">
+  <link rel="stylesheet" href="/card-design/card-design-refinement.css">
+  <link rel="stylesheet" href="/card-design/faction-specimens.css">
+  <link rel="stylesheet" href="/card-design/leader-card.css">
+  <link rel="stylesheet" href="/card-design/proposal-card.css">
+  <link rel="stylesheet" href="/card-design/rite-card.css">
+  <link rel="stylesheet" href="/card-design/reference-card.css">
+  <link rel="stylesheet" href="/card-design/supplemental-card.css">
+  <link rel="stylesheet" href="/card-design/supplemental-refinements.css">
+  <link rel="stylesheet" href="/card-design/capital-ledger.css">
+  <link rel="stylesheet" href="/card-design/deed-card.css">
+  <style>
+    html,
+    body,
+    #renderTarget {
+      width: 2.5in;
+      height: 3.5in;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    body {
+      position: relative;
+    }
+
+    #leaderReviewSections,
+    #proposalReviewSections,
+    #riteReviewSections,
+    #supplementalReviewSections {
+      position: fixed;
+      left: -10000px;
+      top: 0;
+      width: 1200px;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    #renderTarget > .gauntlet-card {
+      display: block;
+      width: 2.5in;
+      height: 3.5in;
+      margin: 0;
+    }
+
+    .screen-only {
+      display: none !important;
+    }
+  </style>
+  <script src="/card-design/card-review.js" defer></script>
+  <script type="module" src="/card-design/leader-card-copy.js"></script>
+  <script type="module" src="/card-design/proposal-card.js"></script>
+  <script type="module" src="/card-design/rite-card.js"></script>
+  <script type="module" src="/card-design/supplemental-card.js"></script>
+  <script src="/card-design/card-design.js" defer></script>
+  <script src="/tts/artwork-crop.js" defer></script>
+  <script src="/card-design/component-render.js" defer></script>
+</head>
+<body class="faction-specimen-page">
+  <div id="leaderReviewSections" aria-hidden="true"></div>
+  <div id="proposalReviewSections" aria-hidden="true"></div>
+  <div id="riteReviewSections" aria-hidden="true"></div>
+  <div id="supplementalReviewSections" aria-hidden="true"></div>
+  <main id="renderTarget" aria-live="polite"></main>
+</body>
+</html>
