@@ -106,34 +106,31 @@ function validateEnvironment(save) {
 }
 
 function validateTableWorkspace(save) {
-  if ((save.VectorLines || []).length !== 40) {
-    throw new Error(`Expected 40 visible table outline lines; found ${save.VectorLines?.length || 0}. Both visible Hand parking guides must remain present; only Manifest Destiny extensions are invisible.`);
+  if ((save.VectorLines || []).length !== 38) {
+    throw new Error(`Expected 38 visible table outline lines; found ${save.VectorLines?.length || 0}.`);
   }
-  if ((save.SnapPoints || []).length !== 78) throw new Error(`Expected 78 final table snaps; found ${save.SnapPoints?.length || 0}.`);
+  if ((save.SnapPoints || []).length !== 108) throw new Error(`Expected 108 final table snaps; found ${save.SnapPoints?.length || 0}.`);
 
-  const whiteLeaderOutlines = (save.VectorLines || []).filter(line => {
+  const matchingOutline = (minX, maxX, minZ, maxZ) => (save.VectorLines || []).filter(line => {
     const xs = (line.points3 || []).map(point => Number(point.x));
     const zs = (line.points3 || []).map(point => Number(point.z));
     return xs.length === 4 && zs.length === 4
-      && close(Math.min(...xs), -17.55) && close(Math.max(...xs), -6.95)
-      && close(Math.min(...zs), -20.35) && close(Math.max(...zs), -11.45);
+      && close(Math.min(...xs), minX) && close(Math.max(...xs), maxX)
+      && close(Math.min(...zs), minZ) && close(Math.max(...zs), maxZ);
   });
-  const greenLeaderOutlines = (save.VectorLines || []).filter(line => {
-    const xs = (line.points3 || []).map(point => Number(point.x));
-    const zs = (line.points3 || []).map(point => Number(point.z));
-    return xs.length === 4 && zs.length === 4
-      && close(Math.min(...xs), 6.95) && close(Math.max(...xs), 17.55)
-      && close(Math.min(...zs), 11.45) && close(Math.max(...zs), 20.35);
-  });
-  if (whiteLeaderOutlines.length !== 2 || greenLeaderOutlines.length !== 2) {
-    throw new Error('Leader & References outlines must fit the fully extended nested tracker assembly for both players.');
+
+  if (matchingOutline(-18.7, -6.1, -4.3, 4.3).length !== 2) {
+    throw new Error('Shared west-side Battle Zone outline is missing or malformed.');
+  }
+  if (matchingOutline(6.15, 16.65, -15.3, -4.7).length !== 2
+    || matchingOutline(6.15, 16.65, 4.7, 15.3).length !== 2) {
+    throw new Error('Combined Faction / Leader & References outlines are missing or malformed.');
   }
 
-  const whiteLeaderXs = [-16.3, -13.6, -10.9, -8.2];
-  const greenLeaderXs = whiteLeaderXs.map(x => -x);
-  if (whiteLeaderXs.some(x => !close(findSnap(save, x, -18.6)?.Rotation?.y, 180))
-    || greenLeaderXs.some(x => !close(findSnap(save, x, 18.6)?.Rotation?.y, 0))) {
-    throw new Error('Leader & References snaps must sit at the player-side bottom of each workspace so tracker travel extends inward/upward.');
+  const leaderXs = [7.65, 10.15, 12.65, 15.15];
+  if (leaderXs.some(x => !close(findSnap(save, x, -13.4)?.Rotation?.y, 180))
+    || leaderXs.some(x => !close(findSnap(save, x, 13.4)?.Rotation?.y, 0))) {
+    throw new Error('Leader/reference snaps are not anchored in the combined east-side faction workspaces.');
   }
 
   const territory = save.SnapPoints.filter(point => point.Tags?.includes(TERRITORY_TAG));
@@ -156,30 +153,52 @@ function validateTableWorkspace(save) {
     throw new Error('Green/north Faction Zone card snaps are not facing the Green seat.');
   }
 
-  const whiteWorkspace = [[-1.55, -13.55], [1.55, -13.55], [0, -18.25], [17.15, -17.75]];
-  const greenWorkspace = whiteWorkspace.map(([x, z]) => [-x, -z]);
-  if (whiteWorkspace.some(([x, z]) => !close(findSnap(save, x, z)?.Rotation?.y, 180))) {
-    throw new Error('One or more White/south Draw/Discard/Hand/Graveyard snaps are not facing the White seat.');
+  const whitePublic = [[-1.6, -14.25], [1.6, -14.25], [18.7, -15.1]];
+  const greenPublic = [[-1.6, 14.25], [1.6, 14.25], [18.7, 15.1]];
+  if (whitePublic.some(([x, z]) => !close(findSnap(save, x, z)?.Rotation?.y, 180))) {
+    throw new Error('One or more White/south Draw/Discard/Graveyard snaps are not facing the White seat.');
   }
-  if (greenWorkspace.some(([x, z]) => !close(findSnap(save, x, z)?.Rotation?.y, 0))) {
-    throw new Error('One or more Green/north Draw/Discard/Hand/Graveyard snaps are not facing the Green seat.');
+  if (greenPublic.some(([x, z]) => !close(findSnap(save, x, z)?.Rotation?.y, 0))) {
+    throw new Error('One or more Green/north Draw/Discard/Graveyard snaps are not facing the Green seat.');
   }
 
-  const labels = (save.ObjectStates || []).filter(object => String(object?.GMNotes || '').startsWith('gauntlet:table-layout:'));
-  if (labels.length !== 28) throw new Error(`Expected 28 visible table-label objects; found ${labels.length}.`);
-  const whiteLeaderLabel = labels.find(object => object.GMNotes === 'gauntlet:table-layout:white-leader-references:label');
-  const greenLeaderLabel = labels.find(object => object.GMNotes === 'gauntlet:table-layout:green-leader-references:label');
-  if (!whiteLeaderLabel || !close(whiteLeaderLabel.Transform?.posZ, -20.69, 0.01)
-    || !greenLeaderLabel || !close(greenLeaderLabel.Transform?.posZ, 20.69, 0.01)) {
-    throw new Error('Leader & References labels must remain on the map-side of the table artwork.');
+  const whitePrivate = save.SnapPoints.filter(point => close(point.Position?.z, -18.65));
+  const greenPrivate = save.SnapPoints.filter(point => close(point.Position?.z, 18.65));
+  if (whitePrivate.length !== 6 || whitePrivate.some(point => !close(point.Rotation?.y, 180))
+    || greenPrivate.length !== 6 || greenPrivate.some(point => !close(point.Rotation?.y, 0))) {
+    throw new Error('Wide private tabletop Hand parking strips must provide six player-facing snap positions each.');
   }
-  const handLabels = labels.filter(object => object.Text?.Text === 'Hand');
-  if (handLabels.length !== 4) throw new Error(`Expected visible Hand parking labels/shadows for both players; found ${handLabels.length}.`);
+
+  const whiteAssets = save.SnapPoints.filter(point => close(point.Position?.z, -8.3) && Number(point.Position?.x) < -6);
+  const greenAssets = save.SnapPoints.filter(point => close(point.Position?.z, 8.3) && Number(point.Position?.x) < -6);
+  if (whiteAssets.length !== 7 || greenAssets.length !== 7) {
+    throw new Error('Each west-side Asset Bank must provide seven compact snap positions.');
+  }
+
+  const whiteBattle = save.SnapPoints.filter(point => close(point.Position?.z, -2.15));
+  const greenBattle = save.SnapPoints.filter(point => close(point.Position?.z, 2.15));
+  if (whiteBattle.length !== 10 || whiteBattle.some(point => !close(point.Rotation?.y, 180))
+    || greenBattle.length !== 10 || greenBattle.some(point => !close(point.Rotation?.y, 0))) {
+    throw new Error('Battle Zone must provide four Gambit and six Tactic snap positions per player.');
+  }
+
+  const labels = (save.ObjectStates || []).filter(object => String(object?.GMNotes || '').startsWith(TABLE_TEXT_NOTE_PREFIX));
+  if (labels.length !== 32) throw new Error(`Expected 32 table labels/shadows; found ${labels.length}.`);
+  const whiteFactionLabel = labels.find(object => object.GMNotes === 'gauntlet:table-layout:white-faction-zone:label');
+  const greenFactionLabel = labels.find(object => object.GMNotes === 'gauntlet:table-layout:green-faction-zone:label');
+  if (!whiteFactionLabel || !close(whiteFactionLabel.Transform?.posZ, -15.64, 0.01)
+    || !greenFactionLabel || !close(greenFactionLabel.Transform?.posZ, 15.64, 0.01)) {
+    throw new Error('Combined Faction / Leader & References labels are not in the expected east-side workspaces.');
+  }
   const whiteHandLabel = labels.find(object => object.GMNotes === 'gauntlet:table-layout:white-hand:label');
   const greenHandLabel = labels.find(object => object.GMNotes === 'gauntlet:table-layout:green-hand:label');
-  if (!whiteHandLabel || !close(whiteHandLabel.Transform?.posZ, -20.59, 0.01)
-    || !greenHandLabel || !close(greenHandLabel.Transform?.posZ, 20.59, 0.01)) {
-    throw new Error('Visible Hand parking labels are not in the expected player workspaces.');
+  if (!whiteHandLabel || !close(whiteHandLabel.Transform?.posZ, -20.44, 0.01)
+    || !greenHandLabel || !close(greenHandLabel.Transform?.posZ, 20.44, 0.01)) {
+    throw new Error('Private / Hand labels are not in the expected player-edge strips.');
+  }
+  if (labels.filter(object => object.Text?.Text === 'Gambits').length !== 4
+    || labels.filter(object => object.Text?.Text === 'Tactics').length !== 4) {
+    throw new Error('Battle Zone Gambit/Tactic labels are incomplete.');
   }
 }
 
@@ -194,12 +213,12 @@ function validateHandsAndSeats(save) {
   if (!white || !green) throw new Error('Missing White or Green hand transform.');
 
   const expectedHands = [
-    [white, 'White', -23.25, 0, -18.25],
-    [green, 'Green', 23.25, 180, 18.25],
+    [white, 'White', -22.7, 0, -18.65],
+    [green, 'Green', 22.7, 180, 18.65],
   ];
   for (const [hand, side, z, rotY, parkingZ] of expectedHands) {
     if (!close(hand.Transform?.posX, 0) || !close(hand.Transform?.posY, 4) || !close(hand.Transform?.posZ, z) || !close(hand.Transform?.rotY, rotY)
-      || !close(hand.Transform?.scaleX, 12) || !close(hand.Transform?.scaleY, 6) || !close(hand.Transform?.scaleZ, 4)) {
+      || !close(hand.Transform?.scaleX, 14) || !close(hand.Transform?.scaleY, 6) || !close(hand.Transform?.scaleZ, 4)) {
       throw new Error(`${side} Reserve hand transform does not match the outward-only geometry.`);
     }
     if (zoneContainsPoint(hand.Transform, 0, parkingZ)) {
@@ -209,8 +228,8 @@ function validateHandsAndSeats(save) {
 
   // Reserve must not swallow ordinary public workspaces.
   for (const [hand, side, publicPoints] of [
-    [white, 'White', [[-1.55, -13.55], [1.55, -13.55], [17.15, -17.75]]],
-    [green, 'Green', [[1.55, 13.55], [-1.55, 13.55], [-17.15, 17.75]]],
+    [white, 'White', [[-1.6, -14.25], [1.6, -14.25], [18.7, -15.1]]],
+    [green, 'Green', [[-1.6, 14.25], [1.6, 14.25], [18.7, 15.1]]],
   ]) {
     if (publicPoints.some(([x, z]) => zoneContainsPoint(hand.Transform, x, z))) {
       throw new Error(`${side} private Hand zone overlaps Draw, Discard, or Graveyard.`);
@@ -227,13 +246,13 @@ function validateHandsAndSeats(save) {
   if (parkingZones.length !== 2 || fogVolumes.length !== 2) {
     throw new Error(`Expected exactly two player-private tabletop parking Hidden Zones; found ${parkingZones.length} parking / ${fogVolumes.length} total hidden zones.`);
   }
-  for (const [side, z, rotY] of [['White', -19, 0], ['Green', 19, 180]]) {
+  for (const [side, z, rotY] of [['White', -19.05, 0], ['Green', 19.05, 180]]) {
     const zone = parkingZones.find(object => object.FogColor === side);
     if (!zone || zone.GMNotes !== `${PRIVATE_PARKING_NOTE_PREFIX}${side.toLowerCase()}`
       || zone.FogReverseHiding !== false || zone.FogSeethrough !== true || zone.FogHidePointers !== true || zone.Hands !== false
       || !close(zone.Transform?.posX, 0) || !close(zone.Transform?.posY, 3) || !close(zone.Transform?.posZ, z)
-      || !close(zone.Transform?.rotY, rotY) || !close(zone.Transform?.scaleX, 7)
-      || !close(zone.Transform?.scaleY, 6) || !close(zone.Transform?.scaleZ, 6.5)) {
+      || !close(zone.Transform?.rotY, rotY) || !close(zone.Transform?.scaleX, 14)
+      || !close(zone.Transform?.scaleY, 6) || !close(zone.Transform?.scaleZ, 4.2)) {
       throw new Error(`${side} tabletop parking Hidden Zone is missing or malformed.`);
     }
   }
