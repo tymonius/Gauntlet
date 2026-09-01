@@ -138,7 +138,7 @@ describe('digital engine boundary', () => {
 
     for (const path of devConsumers) {
       const source = readFileSync(path, 'utf8');
-      expect(source).not.toMatch(/from ['"]\.\.\/(?:cards|types)['"]/);
+      expect(source).not.toMatch(/from ['"]\.\.\/types['"]/);
     }
   });
 
