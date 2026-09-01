@@ -131,7 +131,7 @@ describe('v0.7.0 Ruined Storehouse Territory', () => {
       'neutral-rallying-cry',
       'declined-top',
     );
-    const drawTop = state.players.A.zones.drawPile.at(-1)!;
+    const drawTop = state.players.A.zones.drawPile[0]!;
 
     state = reduceV070TurnAction(state, {
       type: 'draw_turn_card',
