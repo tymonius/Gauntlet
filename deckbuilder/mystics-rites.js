@@ -19,6 +19,7 @@
 
   const riteElements = {};
   let ritePreviewResizeObserver = null;
+  let ritesReady = false;
 
   deckbuilder.registerRenderHook(renderRiteIntegration);
   deckbuilder.registerValidationHook(extendValidation);
@@ -33,6 +34,7 @@
     requiredCount: () => state.riteSelectedCount,
     selectionEnabled: () => state.riteSelectionEnabled,
     defaultIds: () => state.ritePool.map(rite => rite.id),
+    isReady: () => ritesReady,
     setSelectedIds(items) {
       state.pendingRites = null;
       state.rites = isMystics()
@@ -100,11 +102,11 @@
         state.selectedRiteId = state.ritePool[0]?.id || null;
       }
 
-      document.body.dataset.mysticsRites = "ready";
+      ritesReady = true;
       deckbuilder.render();
     } catch (error) {
+      ritesReady = false;
       console.error("Unable to load Mystics Rites", error);
-      document.body.dataset.mysticsRites = "error";
       if (riteElements.riteList) {
         riteElements.riteList.className = "compact-rite-list empty-state";
         riteElements.riteList.textContent = "Unable to load Rites from the current-game authority.";
