@@ -58,6 +58,8 @@ The broad test/typecheck commands exercise legacy/versioned code as well as prom
 
 Reuse architecture and procedures deliberately. A historical handler is evidence, not authority. New or retained gameplay behavior must be checked against the published v0.7.0 Rulebook and canonical data before it is exposed through the current engine surface.
 
+The promoted `src/v070/` implementation must remain structurally isolated from the legacy `state/`, `dev/`, `cards/`, `effects/`, and `reconstruction/` trees. Shared code may move into an explicitly current/version-neutral module only after its authority and compatibility are established.
+
 
 ## Battle execution boundary
 

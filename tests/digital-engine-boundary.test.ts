@@ -62,4 +62,18 @@ describe('digital engine boundary', () => {
       expect(source).not.toMatch(/from ['"]\.\.\/content['"]/);
     }
   });
+  it('keeps the promoted v0.7.0 implementation isolated from legacy architecture', () => {
+    const promotedSources = readdirSync('src/v070')
+      .filter((name) => name.endsWith('.ts') && !name.endsWith('.test.ts'));
+
+    const legacyImport = /from ['"]\.\.\/(?:state|dev|cards|effects|reconstruction)(?:\/|['"])/;
+    const historicalContentImport = /from ['"]\.\.\/content\/v06(?:1|2|3|4)?['"]/;
+
+    for (const name of promotedSources) {
+      const source = readFileSync(`src/v070/${name}`, 'utf8');
+      expect(source).not.toMatch(legacyImport);
+      expect(source).not.toMatch(historicalContentImport);
+    }
+  });
+
 });
