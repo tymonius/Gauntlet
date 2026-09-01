@@ -4,6 +4,8 @@
   const { state } = deckbuilder;
   const territoriesApi = () => deckbuilder.feature("territories");
   const ritesApi = () => deckbuilder.feature("mysticsRites");
+  const currentGame = () => deckbuilder.currentGame();
+  const currentGameLabel = () => currentGame()?.displayVersion || currentGame()?.version || "current";
 
   let starterDecks = [];
   let expectedDeckCount = 0;
@@ -171,7 +173,7 @@
       deck[card.id] = Number(item.quantity);
     }
 
-    const territoryPool = state.currentGameData?.territories || [];
+    const territoryPool = currentGame()?.territories || [];
     const territories = (preset.territories || []).map(name => {
       const territory = territoryPool.find(candidate => candidate.name === name);
       if (!territory) throw new Error(`${preset.name} references missing Territory ${name}.`);
@@ -222,7 +224,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>All ${expectedDeckCount} Gauntlet ${escapeHtml(state.currentGameDisplayVersion || state.currentGameVersion || "current")} Starter Decks</title>
+<title>All ${expectedDeckCount} Gauntlet ${escapeHtml(currentGameLabel())} Starter Decks</title>
 ${links}
 ${styles.map(style => `<style>${style}</style>`).join("\n")}
 <style>
