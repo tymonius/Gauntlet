@@ -175,6 +175,19 @@ export function evaluateHostedUrls(save) {
         });
       }
     }
+
+    const pdfUrl = object?.CustomPDF?.PDFUrl;
+    if (pdfUrl) {
+      urlCount += 1;
+      if (!/^https:\/\//i.test(String(pdfUrl))) {
+        blockers.push({
+          id: object.GUID || object.Nickname || 'custom-pdf',
+          kind: 'hosted-url',
+          status: 'invalid',
+          reason: `PDFUrl is not HTTPS: ${pdfUrl}`,
+        });
+      }
+    }
   });
   return { blockers, urlCount };
 }
