@@ -19,6 +19,7 @@ on:
       - 'scripts/generate-tts-supplemental-assets.mjs'
       - 'scripts/generate-tts-finalized-supplementals.mjs'
       - 'scripts/stage-tts-release-assets.mjs'
+      - 'scripts/generate-tts-rulebook-reader.mjs'
       - 'scripts/generate-tts-save.mjs'
       - 'scripts/assemble-tts-supplemental-save.mjs'
       - 'scripts/tts-deck-importer.mjs'
@@ -106,6 +107,7 @@ jobs:
             scripts/generate-tts-supplemental-assets.mjs
             scripts/generate-tts-finalized-supplementals.mjs
             scripts/stage-tts-release-assets.mjs
+            scripts/generate-tts-rulebook-reader.mjs
             scripts/generate-tts-save.mjs
             scripts/assemble-tts-supplemental-save.mjs
             scripts/tts-deck-importer.mjs
@@ -212,7 +214,7 @@ jobs:
                     scripts/generate-tts-starter-decks.mjs)
                       render_starters=true
                       ;;
-                    scripts/generate-tts-environment-assets.mjs|scripts/stage-tts-release-assets.mjs|tts/assets/environment/*|config/release-lifecycle.json|config/github-release-contract.json)
+                    scripts/generate-tts-environment-assets.mjs|scripts/generate-tts-rulebook-reader.mjs|scripts/stage-tts-release-assets.mjs|tts/assets/environment/*|config/release-lifecycle.json|config/github-release-contract.json)
                       stage_assets=true
                       ;;
                     scripts/check-tts-release-readiness.mjs|scripts/promote-tts-save.mjs)
