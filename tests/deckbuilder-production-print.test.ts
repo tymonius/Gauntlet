@@ -74,6 +74,11 @@ describe("Deckbuilder production printing", () => {
     expect(printTransform).toContain('String(state.factionId || "intelligence")');
     expect(printTransform).toContain('production-standard-back');
     expect(printTransform).toContain('/tts/back-renderer/index.html?faction=');
+    expect(printTransform).toContain('wrapper.dataset.productionInlineBack = "true"');
+    expect(printTransform).toContain('back.dataset.gauntletCardBack = ""');
+    expect(printTransform).toContain('stylesheet.href = "/card-design/card-back.css"');
+    expect(printTransform).toContain('script.src = "/card-design/card-back.js"');
+    expect(printTransform).not.toContain('frame.className = "production-back-frame"');
     expect(cardBackPolicy).toContain('Automatic backs: black for playable cards and Territories');
     expect(cardBackPolicy).not.toContain("window.open");
     expect(cardBackPolicy).not.toContain("document.write");
@@ -100,7 +105,9 @@ describe("Deckbuilder production printing", () => {
     expect(cardBackCss).toContain('transform: translate(-50%, -50%) rotate(90deg);');
     expect(backRender).toContain("params.get('rotation') === '180'");
     expect(printTransform).toContain("await Promise.all(frames.map(waitForFrame))");
+    expect(printTransform).toContain("inlineBacks.some(back => !back.querySelector('.gauntlet-card-back__frame'))");
     expect(printTransform).toContain("Printing was stopped so the Deck is not printed with incomplete cards");
+    expect(printTransform).toContain("Printing was stopped so the Deck is not printed with incomplete backs");
   });
 
   it("isolates standalone supplemental production renders and their reference-source loading", () => {
