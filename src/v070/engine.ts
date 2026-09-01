@@ -346,6 +346,17 @@ export type V070PendingActionEffectChoice =
       candidateInstanceIds: string[];
     }
   | {
+      kind: 'leveraged_buyout_deed_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'leveraged_buyout_collateral';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      territoryInstanceId: string;
+    }
+  | {
       kind: 'owned_deed_target';
       playerId: PlayerId;
       sourceActionInstanceId: string;
