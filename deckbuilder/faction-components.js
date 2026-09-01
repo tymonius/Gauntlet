@@ -25,8 +25,7 @@
     }
 
     try {
-      const currentGame = state.currentGameData || await deckbuilder.bootstrap();
-      state.currentGameData ||= currentGame;
+      const currentGame = deckbuilder.currentGame() || await deckbuilder.bootstrap();
       hydratePrintPackages(currentGame);
     } catch (error) {
       console.error("Unable to project deck components from current-game authority", error);
@@ -147,7 +146,7 @@
 
     const faction = deckbuilder.getFaction();
     const leader = faction?.leaders?.find(item => item.id === state.leaderId);
-    const currentGame = state.currentGameData;
+    const currentGame = deckbuilder.currentGame();
 
     if (!faction || !leader || !currentGame || !deckbuilder.feature("supplementalPackages")) {
       container.className = "deck-list empty-state";
