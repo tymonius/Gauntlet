@@ -31,6 +31,18 @@ describe('Deckbuilder Mystics Rite selection', () => {
     expect(riteCss).toContain('.compact-rite-row.chosen');
   });
 
+  it('projects the selected ruleset Rite count into player-facing Deckbuilder presentation', () => {
+    expect(html).toContain('id="riteRequiredCount"');
+    expect(html).toContain('id="riteInstructionCount"');
+    expect(html).toContain('<span id="riteSelectedCount" class="pill">0 / —</span>');
+    expect(html).not.toContain('Choose exactly three different Rites');
+    expect(html).not.toContain('<span id="riteMetricCount">0</span> / 3');
+    expect(html).not.toContain('Mystics imports also use the three Rites selected in this Deck.');
+    expect(rites).toContain('riteElements.riteRequiredCount.textContent = String(state.riteSelectedCount)');
+    expect(rites).toContain('riteElements.riteInstructionCount.textContent = String(state.riteSelectedCount)');
+    expect(rites).not.toContain('FALLBACK_SELECTED_COUNT');
+  });
+
   it('persists selected Rites through current Deck data, save/load, JSON import/export, and copied lists', () => {
     expect(rites).toContain('deckbuilder.registerSerializeHook(serializeRites)');
     expect(rites).toContain('deckbuilder.registerHydrateHook(hydrateRites)');
@@ -63,6 +75,7 @@ describe('Deckbuilder Mystics Rite selection', () => {
     expect(components).toContain('reminder: rite.reminder?.text || ""');
     expect(print).toContain('(packageData.rites || []).filter(rite => data.selectedRiteIds.includes(rite.id))');
     expect(print).toContain('data.selectedRites.map(rite =>');
+    expect(print).not.toContain('three double-sided rite cards');
     expect(printRequest).toContain('Rites: ${rites.length ? rites.join(", ") : "None selected"}');
   });
 

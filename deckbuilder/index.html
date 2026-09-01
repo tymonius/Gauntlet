@@ -135,7 +135,7 @@
       </article>
       <article id="riteMetricCard" class="metric-card" hidden>
         <span>Rites</span>
-        <strong><span id="riteMetricCount">0</span> / 3</strong>
+        <strong><span id="riteMetricCount">0</span> / <span id="riteRequiredCount">—</span></strong>
       </article>
       <article id="validityCard" class="metric-card validation-card">
         <span>Deck status</span>
@@ -238,10 +238,10 @@
           <div class="panel-heading">
             <div>
               <h2>Rites</h2>
-              <p class="muted">Choose exactly three different Rites. You are under no obligation to reveal a selected Rite until you begin it.</p>
+              <p class="muted">Choose exactly <span id="riteInstructionCount">—</span> different Rites. You are under no obligation to reveal a selected Rite until you begin it.</p>
             </div>
             <div class="panel-tools">
-              <span id="riteSelectedCount" class="pill">0 / 3</span>
+              <span id="riteSelectedCount" class="pill">0 / —</span>
               <button id="clearRitesButton" type="button" class="text-button danger">Clear</button>
             </div>
           </div>
@@ -325,7 +325,7 @@
             <li>Copy the TTS Deck Code.</li>
             <li>In TTS, sit in White or Green, open Deck Import, paste the code, and import the custom starter kit.</li>
           </ol>
-          <p class="muted">The imported Bag keeps the matching Leader and faction components while replacing the playable Deck and Territory stack. Mystics imports also use the three Rites selected in this Deck.</p>
+          <p class="muted">The imported Bag keeps the matching Leader and faction components while replacing the playable Deck and Territory stack. Mystics imports also use the Rites selected in this Deck.</p>
         </div>
         <div class="button-row">
           <button id="copyTtsDeckCodeButton" type="button" class="secondary" hidden>Copy TTS Deck Code</button>
@@ -388,11 +388,11 @@
   <script src="current-runtime.js?v=20260831-2" defer></script>
   <script src="mobile-card-preview.js?v=20260819-1" defer></script>
   <script src="territories.js?v=20260831-4" defer></script>
-  <script src="mystics-rites.js?v=20260901-1" defer></script>
+  <script src="mystics-rites.js?v=20260901-2" defer></script>
   <script type="module" src="tts-export.mjs?v=20260831-1"></script>
   <script src="faction-components.js?v=20260901-1" defer></script>
-  <script src="production-print.js?v=20260831-6" defer></script>
-  <script src="print.js?v=20260831-6" defer></script>
+  <script src="production-print.js?v=20260901-1" defer></script>
+  <script src="print.js?v=20260901-1" defer></script>
   <script src="card-back-preview.js?v=20260831-2" defer></script>
   <script src="print-capital-ledger.js?v=20260831-1" defer></script>
   <script src="starter-decks.js?v=20260901-1" defer></script>

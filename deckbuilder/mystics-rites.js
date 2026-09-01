@@ -5,7 +5,6 @@
   const escapeHtml = value => deckbuilder.escapeHtml(value);
 
   const MYSTICS_FACTION_ID = "mystics";
-  const FALLBACK_SELECTED_COUNT = 3;
   const CARD_WIDTH = 240;
   const CARD_HEIGHT = 336;
   const MAX_PREVIEW_WIDTH = 300;
@@ -14,7 +13,7 @@
   state.rites = [];
   state.selectedRiteId = null;
   state.pendingRites = null;
-  state.riteSelectedCount = FALLBACK_SELECTED_COUNT;
+  state.riteSelectedCount = 0;
   state.riteSelectionEnabled = false;
 
   const riteElements = {};
@@ -49,8 +48,8 @@
 
   function installRiteIntegration() {
     for (const id of [
-      "mysticsRitesPanel", "riteSelectedCount", "clearRitesButton", "riteList", "ritePreview",
-      "riteMetricCard", "riteMetricCount", "deckRitesSection", "deckRites"
+      "mysticsRitesPanel", "riteSelectedCount", "riteInstructionCount", "clearRitesButton", "riteList", "ritePreview",
+      "riteMetricCard", "riteMetricCount", "riteRequiredCount", "deckRitesSection", "deckRites"
     ]) riteElements[id] = document.getElementById(id);
 
     riteElements.clearRitesButton?.addEventListener("click", () => {
@@ -131,6 +130,8 @@
     if (riteElements.riteMetricCard) riteElements.riteMetricCard.hidden = !selectable;
     if (riteElements.deckRitesSection) riteElements.deckRitesSection.hidden = !mystics;
     if (riteElements.riteMetricCount) riteElements.riteMetricCount.textContent = String(state.rites.length);
+    if (riteElements.riteRequiredCount) riteElements.riteRequiredCount.textContent = String(state.riteSelectedCount);
+    if (riteElements.riteInstructionCount) riteElements.riteInstructionCount.textContent = String(state.riteSelectedCount);
     if (riteElements.riteSelectedCount) {
       riteElements.riteSelectedCount.textContent = `${state.rites.length} / ${state.riteSelectedCount}`;
     }

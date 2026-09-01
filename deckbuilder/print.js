@@ -222,7 +222,6 @@ window.addEventListener('load',preparePrint,{once:true});
       ? data.territories.map(territory => `<li>${escapeHtml(territory.name)}</li>`).join("")
       : "<li>None selected</li>";
     const supplementalItems = data.supplementalRequirements
-      .filter(item => !(data.faction.id === "mystics" && /three double-sided rite cards/i.test(item)))
       .map(item => `<li>${escapeHtml(item)}</li>`).join("");
     const riteSummary = data.selectedRites?.length
       ? `<div class="summary-block"><h2>Rites</h2><ul class="summary-list">${data.selectedRites.map(rite => `<li>${escapeHtml(rite.name)}</li>`).join("")}</ul></div>`
