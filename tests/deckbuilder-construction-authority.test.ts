@@ -43,6 +43,11 @@ describe("Deckbuilder construction authority", () => {
     expect(app).not.toContain("/60 value");
   });
 
+  it("allows empty Territory resets before construction authority is available", () => {
+    expect(territories).toContain("const entries = items || []");
+    expect(territories).toContain("if (!entries.length) return []");
+  });
+
   it("keeps Territory count and Arena limits under Territory extension ownership", () => {
     expect(territories).toContain("constructionRules().territoriesPerPlayer");
     expect(territories).toContain("rules.maximumArenas");
