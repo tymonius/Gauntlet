@@ -18,6 +18,17 @@ function esc(value) {
   })[character]);
 }
 
+function componentRenderSource(id, side = 'front') {
+  const params = new URLSearchParams({ kind: 'proposal', id, side });
+  const rules = new URLSearchParams(window.location.search).get('rules');
+  if (rules) params.set('rules', rules);
+  return `/card-design/component-render.html?${params.toString()}`;
+}
+
+function componentReviewFrame(id, label, side = 'front') {
+  return `<iframe class="component-review-frame" loading="lazy" src="${esc(componentRenderSource(id, side))}" title="${esc(label)} canonical Card Design render"></iframe>`;
+}
+
 function ruleSection(label, text) {
   return `<section class="rule-section"><h4>${esc(label)}</h4><p>${esc(text)}</p></section>`;
 }
@@ -96,14 +107,19 @@ export function proposalFace(proposal, ratified = false, version = currentDispla
 }
 
 function reviewPair(proposal) {
+  const faces = catalogFilter
+    ? `<div class="proposal-face">${componentReviewFrame(proposal.id, `${proposal.name} Proposal`, 'front')}</div>
+      <div class="proposal-face">${componentReviewFrame(proposal.id, `${proposal.name} Treaty Article`, 'reverse')}</div>`
+    : `<div class="proposal-face">${proposalFace(proposal, false)}</div>
+      <div class="proposal-face">${proposalFace(proposal, true)}</div>`;
+
   return `<article class="proposal-review-pair catalog-pair-tile" id="proposal-${esc(proposal.id)}" aria-labelledby="proposal-${esc(proposal.id)}-title">
     <header class="catalog-item-heading screen-only">
       <strong id="proposal-${esc(proposal.id)}-title">${esc(proposal.name)}</strong>
       <span>Stake ${Number(proposal.stake)}</span>
     </header>
     <div class="proposal-face-grid">
-      <div class="proposal-face">${proposalFace(proposal, false)}</div>
-      <div class="proposal-face">${proposalFace(proposal, true)}</div>
+      ${faces}
     </div>
   </article>`;
 }
@@ -130,7 +146,7 @@ async function renderProposalCatalog() {
     root.dataset.proposalCount = String(proposals.length);
     root.dataset.proposalAuthority = currentGame.authorityUrl;
     root.innerHTML = `<div class="proposal-review-block">${proposals.map(reviewPair).join('')}</div>`;
-    await loadProposalArtwork(root);
+    if (!catalogFilter) await loadProposalArtwork(root);
   } catch (error) {
     root.innerHTML = `<p class="review-note">Unable to load complete Proposal set: ${esc(error.message)}</p>`;
     console.error(error);
