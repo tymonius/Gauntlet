@@ -61,6 +61,14 @@ export interface V070BattleParticipantView {
   tiebreakRolls: number[];
 }
 
+export interface V070TerritoryAftermathChoiceView {
+  kind: 'field_hospital' | 'old_battlefield' | 'spoils_of_war';
+  playerId: PlayerId;
+  candidateCount: number;
+  immediateWinner: PlayerId | null;
+  candidateInstanceIds?: string[];
+}
+
 export interface V070BattleRuntimeView {
   stage: V070BattleRuntime['stage'];
   participants: Record<PlayerId, V070BattleParticipantView>;
@@ -69,6 +77,8 @@ export interface V070BattleRuntimeView {
   gambitOrderOverride: V070BattleRuntime['gambitOrderOverride'];
   pendingOutcome: V070BattleRuntime['pendingOutcome'];
   pendingAccursedWager: V070BattleRuntime['pendingAccursedWager'];
+  pendingTerritoryAftermathChoice:
+    V070TerritoryAftermathChoiceView | null;
   activePrintedTerritoryAtOnset:
     V070BattleRuntime['activePrintedTerritoryAtOnset'];
   gambitProhibitedPlayers:
@@ -460,6 +470,28 @@ function viewBattleRuntime(
     pendingAccursedWager: runtime.pendingAccursedWager
       ? structuredClone(runtime.pendingAccursedWager)
       : null,
+    pendingTerritoryAftermathChoice:
+      runtime.pendingTerritoryAftermathChoice
+        ? {
+            kind: runtime.pendingTerritoryAftermathChoice.kind,
+            playerId:
+              runtime.pendingTerritoryAftermathChoice.playerId,
+            candidateCount:
+              runtime.pendingTerritoryAftermathChoice
+                .candidateInstanceIds.length,
+            immediateWinner:
+              runtime.pendingTerritoryAftermathChoice.immediateWinner,
+            ...(runtime.pendingTerritoryAftermathChoice.playerId ===
+              viewer
+              ? {
+                  candidateInstanceIds: [
+                    ...runtime.pendingTerritoryAftermathChoice
+                      .candidateInstanceIds,
+                  ],
+                }
+              : {}),
+          }
+        : null,
     activePrintedTerritoryAtOnset:
       runtime.activePrintedTerritoryAtOnset
         ? structuredClone(runtime.activePrintedTerritoryAtOnset)
