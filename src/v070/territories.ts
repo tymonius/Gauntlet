@@ -13,6 +13,8 @@ import {
 export const V070_QUICKSAND_ID = 'territory-quicksand' as const;
 export const V070_DIFFICULT_TERRAIN_ID =
   'territory-difficult-terrain' as const;
+export const V070_RUINED_STOREHOUSE_ID =
+  'territory-ruined-storehouse' as const;
 export const V070_SUPPLY_DEPOT_ID = 'territory-supply-depot' as const;
 export const V070_REFUGE_ID = 'territory-refuge' as const;
 export const V070_COMMAND_TENT_ID = 'territory-command-tent' as const;
@@ -132,6 +134,26 @@ export function v070TurnStartTerritoryPlan(
       territory.territoryId === V070_COMMAND_TENT_ID
       && territory.controller === playerId,
   };
+}
+
+export function v070RuinedStorehouseDrawAvailable(
+  state: V070GameState,
+  playerId: PlayerId,
+): boolean {
+  const position = state.players[playerId].position;
+  if (position === null) return false;
+  const territory = territoryAtV070Position(state, position);
+  return Boolean(
+    territory
+    && territory.territoryId === V070_RUINED_STOREHOUSE_ID
+    && state.players[playerId].zones.discardPile.length > 0
+    && v070PrintedTerritoryEffectActive(
+      state,
+      territory,
+      playerId,
+      'draw',
+    ),
+  );
 }
 
 export function v070QuicksandCapsMovement(
