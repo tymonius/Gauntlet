@@ -1,5 +1,5 @@
 import type { ActionCardTarget, ResolveFinancierChoiceAction } from './actions';
-import type { CardID, GameEvent, GameState, PlayerID, SpaceID } from '../types';
+import type { CardID, GameEvent, GameState, PlayerID, SpaceID } from '../types/v06';
 import { drawFromDeck } from './draw';
 import { activeBankedAssetCopies, bankedAssetCardUseAllowed } from './intelligence-subversion-battle';
 import { cardValue, deedCost, deedOwner } from './financiers';

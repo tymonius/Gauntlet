@@ -1,5 +1,5 @@
 import { v06CanonicalContent } from '../content/v06';
-import type { CardID, GameEvent, GameState, PlayerID, SpaceID } from '../types';
+import type { CardID, GameEvent, GameState, PlayerID, SpaceID } from '../types/v06';
 import { gainFactionResource, setFactionResource, spendFactionResource } from './resources';
 
 export class FinancierError extends Error {

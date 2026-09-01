@@ -1,4 +1,4 @@
-import type { BattlePlayedCard, BattleState, CardID, GameEvent, GameState, PendingFinancierChoice, PlayerID } from '../types';
+import type { BattlePlayedCard, BattleState, CardID, GameEvent, GameState, PendingFinancierChoice, PlayerID } from '../types/v06';
 import type { ResolveFinancierChoiceAction } from './actions';
 import { cardValue, deedOwner, subsidizeCost } from './financiers';
 import { gainFactionResource, spendFactionResource } from './resources';

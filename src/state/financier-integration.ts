@@ -1,4 +1,4 @@
-import type { BattleState, CardID, GameEvent, GameState, PlayerID, SpaceID } from '../types';
+import type { BattleState, CardID, GameEvent, GameState, PlayerID, SpaceID } from '../types/v06';
 import type { ResolveFinancierChoiceAction } from './actions';
 import {
   buyDeed,
