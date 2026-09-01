@@ -3,7 +3,7 @@ import {
   EffectRegistry,
   baseBattleEffectHandlers,
   totalModifiersFor,
-} from '../effects';
+} from '../effects/v06';
 import type {
   BattleParticipantState,
   BattlePlayedCard,

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getCardPlayRule } from '../cards';
-import { EffectRegistry, baseBattleEffectHandlers, totalModifiersFor } from '../effects';
+import { EffectRegistry, baseBattleEffectHandlers, totalModifiersFor } from '../effects/v06';
 import type { BattleParticipantState, GameState, PlayerID } from '../types';
 import { applyGameAction } from './apply-neutral';
 import { initializeGame } from './initialize';
