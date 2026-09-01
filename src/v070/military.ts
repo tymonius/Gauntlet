@@ -4,6 +4,7 @@ import {
   type V070GameState,
 } from './engine';
 import {
+  beginEffectGrantedV070Movement,
   retreatV070Position,
   type PlayerId,
 } from './rules';
@@ -101,6 +102,69 @@ export function useV070GeneralOnward(
   });
 }
 
+export function v070GeneralRoutAvailableAtEndOfAftermath(
+  state: V070GameState,
+): boolean {
+  const battle = state.battle;
+  const runtime = state.battleRuntime;
+  if (!battle
+    || !runtime
+    || runtime.stage !== 'aftermath'
+    || !runtime.aftermathCardsCleared
+    || runtime.pendingRunGauntletWinner
+    || battle.winner !== battle.attacker) {
+    return false;
+  }
+  const attacker = state.players[battle.attacker];
+  return attacker.leaderId === 'general'
+    && Boolean(attacker.military)
+    && (attacker.military?.command ?? 0) >= 2;
+}
+
+export function useV070GeneralRout(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  requireMilitaryLeader(state, playerId, 'general', 'Rout');
+  const battle = state.battle;
+  const runtime = state.battleRuntime;
+  if (!battle
+    || !runtime
+    || runtime.stage !== 'aftermath'
+    || !runtime.aftermathCardsCleared
+    || !runtime.routWindowOpen
+    || battle.winner !== playerId
+    || battle.attacker !== playerId) {
+    throw new V070GameActionError(
+      'Rout may be used only at the end of Aftermath after winning as attacker.',
+    );
+  }
+  if (!state.turnState) {
+    throw new V070GameActionError(
+      'Rout requires the active turn movement context.',
+    );
+  }
+
+  spendV070MilitaryCommand(state, playerId, 2, 'Rout');
+  const phase = state.turnState.phase;
+  state.turnState = beginEffectGrantedV070Movement(
+    state.turnState,
+    1,
+    {
+      source: 'General Rout',
+      choiceRestriction: 'advance_required',
+      battleRestriction: 'allowed',
+    },
+  );
+  state.battle = null;
+  state.battleRuntime = null;
+
+  appendOrderEvent(state, playerId, 'Rout', 2, {
+    phase,
+    movementRemaining: 1,
+  });
+}
+
 export function useV070GeneralRally(
   state: V070GameState,
   playerId: PlayerId,
@@ -153,6 +217,7 @@ export function useV070CommandantRepel(
   if (!battle
     || !runtime
     || runtime.stage !== 'aftermath'
+    || runtime.aftermathCardsCleared
     || battle.winner !== playerId
     || battle.defender !== playerId
     || battle.loser !== battle.attacker) {
@@ -198,6 +263,7 @@ export function useV070CommandantFortify(
   if (!battle
     || !runtime
     || runtime.stage !== 'aftermath'
+    || runtime.aftermathCardsCleared
     || battle.winner !== playerId) {
     throw new V070GameActionError(
       'Fortify may be used during Aftermath only after winning the battle.',
