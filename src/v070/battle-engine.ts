@@ -67,6 +67,7 @@ import {
   V070_POISONOUS_GAS_ID,
   v070DisruptedSupplyLinesSelectionRequired,
 } from './territories';
+import { releaseV070SmugglersRunStashForUse } from './smugglers-run';
 import {
   useV070SanctionsBlockadeInAftermath,
   useV070SanctionsCensureAfterRefusal,
@@ -154,6 +155,7 @@ export type V070BattleAction =
   | { type: 'resolve_political_capital'; playerId: PlayerId; cardInstanceIds: readonly string[] }
   | { type: 'proceed_from_onset'; playerId: PlayerId }
   | { type: 'set_gambit'; playerId: PlayerId; cardInstanceId?: string }
+  | { type: 'set_smugglers_run_gambit'; playerId: PlayerId }
   | { type: 'reveal_gambits'; playerId: PlayerId }
   | { type: 'choose_tactic'; playerId: PlayerId; cardInstanceId?: string }
   | { type: 'reveal_tactics'; playerId: PlayerId }
@@ -349,6 +351,9 @@ export function reduceV070BattleAction(
     case 'set_gambit':
       setGambit(next, action.playerId, action.cardInstanceId);
       break;
+    case 'set_smugglers_run_gambit':
+      setSmugglersRunGambit(next, action.playerId);
+      break;
     case 'reveal_gambits':
       revealBattleRole(next, action.playerId, 'gambit');
       break;
@@ -510,6 +515,18 @@ function unsupportedOnsetFeatures(state: V070GameState): string[] {
   }
 
   return result;
+}
+
+function setSmugglersRunGambit(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  const instanceId = releaseV070SmugglersRunStashForUse(
+    state,
+    playerId,
+    'battle',
+  );
+  setGambit(state, playerId, instanceId);
 }
 
 function setGambit(
