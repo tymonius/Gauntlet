@@ -65,7 +65,10 @@ import {
   voluntarilyDiscardableV070AssetInstanceIds,
   voluntarilyReturnableV070AssetInstanceIds,
 } from './assets';
-import { bindV070CardFromPlayerZone } from './bindings';
+import {
+  bindV070CardFromPlayerZone,
+  bindV070PendingActionCard,
+} from './bindings';
 import {
   applyV070BlasphemyForActionPlay,
   gainV070Conviction,
@@ -170,6 +173,11 @@ export type V070TurnAction =
       type: 'choose_speculation_territory_target';
       playerId: PlayerId;
       territoryPosition: number;
+    }
+  | {
+      type: 'choose_capital_gains_treasury_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
     }
   | {
       type: 'choose_clemency_target';
@@ -551,6 +559,10 @@ export function reduceV070TurnAction(
       && action.type === 'choose_speculation_territory_target'
       && action.playerId === pending.playerId
     ) || (
+      pending.kind === 'capital_gains_treasury_target'
+      && action.type === 'choose_capital_gains_treasury_target'
+      && action.playerId === pending.playerId
+    ) || (
       pending.kind === 'owned_deed_target'
       && action.type === 'choose_owned_deed_target'
       && action.playerId === pending.playerId
@@ -609,6 +621,7 @@ export function reduceV070TurnAction(
       'choose_leveraged_buyout_deed_target',
       'resolve_leveraged_buyout_collateral',
       'choose_speculation_territory_target',
+      'choose_capital_gains_treasury_target',
       'choose_owned_deed_target',
       'choose_treasury_card_target',
       'resolve_deed_purchase_choice',
@@ -714,6 +727,13 @@ export function reduceV070TurnAction(
         next,
         action.playerId,
         action.territoryPosition,
+      );
+      break;
+    case 'choose_capital_gains_treasury_target':
+      chooseCapitalGainsTreasuryTarget(
+        next,
+        action.playerId,
+        action.targetInstanceId,
       );
       break;
     case 'choose_clemency_target':
@@ -1271,6 +1291,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'neutral-tactical-planning',
   'diplomats-clemency',
   'diplomats-detente',
+  'financiers-capital-gains',
   'financiers-compound-interest',
   'financiers-corner-the-market',
   'financiers-divestment',
@@ -1620,6 +1641,7 @@ function playActionCard(
     pendingBankReplacementV070AssetInstanceIds(state, playerId, cardInstanceId);
   }
   if ([
+      'financiers-capital-gains',
       'financiers-corner-the-market',
       'financiers-divestment',
       'financiers-foreclosure',
@@ -1641,6 +1663,12 @@ function playActionCard(
     ).length === 0) {
     throw new V070GameActionError(
       'Leveraged Buyout requires at least one Deed you can currently purchase with Capital and available collateral.',
+    );
+  }
+  if (card.id === 'financiers-capital-gains'
+    && state.players[playerId].financiers!.treasury.length === 0) {
+    throw new V070GameActionError(
+      'Capital Gains requires at least one card in your Treasury.',
     );
   }
   if (card.id === 'financiers-speculation'
@@ -2736,6 +2764,13 @@ function continuePendingActionCard(state: V070GameState): void {
       return;
     case 'financiers-speculation':
       openSpeculationTerritoryTargetChoice(
+        state,
+        pending.playerId,
+        pending.instanceId,
+      );
+      return;
+    case 'financiers-capital-gains':
+      openCapitalGainsTreasuryTargetChoice(
         state,
         pending.playerId,
         pending.instanceId,
@@ -4952,6 +4987,94 @@ function chooseMarginLoanCollateralTarget(
 
   state.pendingActionEffectChoice = null;
   finishPendingActionCard(state, 'asset');
+}
+
+function openCapitalGainsTreasuryTargetChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+): void {
+  const treasury = state.players[playerId].financiers?.treasury ?? [];
+  if (treasury.length === 0) {
+    appendV070Event(state, {
+      type: 'action_effect_incomplete',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        sourceActionInstanceId,
+        purpose: 'Capital Gains',
+        reason: 'required_treasury_target_unavailable_after_reactions',
+      },
+    });
+    finishPendingActionCard(state);
+    return;
+  }
+
+  state.pendingActionEffectChoice = {
+    kind: 'capital_gains_treasury_target',
+    playerId,
+    sourceActionInstanceId,
+  };
+  appendV070Event(state, {
+    type: 'action_effect_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      kind: 'capital_gains_treasury_target',
+      playerId,
+      sourceActionInstanceId,
+      purpose: 'Capital Gains',
+      targetInstanceIds: [...treasury],
+    },
+  });
+}
+
+function chooseCapitalGainsTreasuryTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'capital_gains_treasury_target'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'financiers-capital-gains') {
+    throw new V070GameActionError(
+      'No Capital Gains Treasury choice is pending for that player.',
+    );
+  }
+
+  const treasury = state.players[playerId].financiers?.treasury ?? [];
+  if (!treasury.includes(targetInstanceId)) {
+    throw new V070GameActionError(
+      'Capital Gains must bind to a card still in your Treasury.',
+    );
+  }
+
+  bindV070PendingActionCard(state, {
+    hostId: targetInstanceId,
+    owner: playerId,
+    cardInstanceId: pending.instanceId,
+    faceUp: true,
+    purpose: 'Capital Gains',
+  });
+  appendV070Event(state, {
+    type: 'capital_gains_bound',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      sourceActionInstanceId: pending.instanceId,
+      treasuryCardInstanceId: targetInstanceId,
+      treasuryCardId: state.cardInstances[targetInstanceId]?.cardId,
+      turnNumber: state.turnNumber,
+    },
+  });
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state, 'binding');
 }
 
 function openSpeculationTerritoryTargetChoice(
@@ -7854,7 +7977,8 @@ function finishPendingActionCard(
     | 'overlay'
     | 'asset'
     | 'territory'
-    | 'speculation' = 'discard',
+    | 'speculation'
+    | 'binding' = 'discard',
 ): void {
   const pending = state.pendingActionCard;
   if (!pending) throw new V070GameActionError('No Action card is pending resolution.');
@@ -7886,6 +8010,14 @@ function finishPendingActionCard(
     )) {
       throw new V070GameActionError(
         'An Action card can resolve to Speculation only after it is tracking a Territory.',
+      );
+    }
+  } else if (destination === 'binding') {
+    if (!state.bindings.some(
+      binding => binding.cardInstanceId === pending.instanceId,
+    )) {
+      throw new V070GameActionError(
+        'An Action card can resolve to Binding only after it is bound to a host.',
       );
     }
   } else if (!state.players[pending.playerId].zones.assetBank.includes(pending.instanceId)) {

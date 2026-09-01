@@ -50,6 +50,7 @@ import {
   type V070BattleRuntime
 } from './battle-types';
 import { resolveV070AssetLimitRemoval } from './assets';
+import { resolveV070CapitalGainsOnBattleLoss } from './financiers';
 import {
   useV070SanctionsBlockadeInAftermath,
   useV070SanctionsCensureAfterRefusal,
@@ -891,6 +892,7 @@ function finalizeOutcome(
     },
   });
 
+  resolveV070CapitalGainsOnBattleLoss(state, outcome.loser);
   settleV070RefusedTermsOutcome(state, outcome);
   if (state.stage === 'ended') return;
   if (resolution.victory) completeAftermathInternal(state, resolution.victory.winner);

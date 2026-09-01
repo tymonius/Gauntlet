@@ -126,13 +126,129 @@ export function bindV070CardFromPlayerZone(
   return structuredClone(binding);
 }
 
+export interface BindV070PendingActionCardInput {
+  hostId: string;
+  owner: PlayerId;
+  cardInstanceId: string;
+  faceUp: boolean;
+  purpose: string;
+}
+
+export function bindV070PendingActionCard(
+  state: V070GameState,
+  input: BindV070PendingActionCardInput,
+): V070Binding {
+  if (!input.hostId.trim()) {
+    throw new V070GameActionError('A bound card requires a host.');
+  }
+  if (!input.purpose.trim()) {
+    throw new V070GameActionError('A bound card requires a binding purpose.');
+  }
+  if (isV070CardBound(state, input.cardInstanceId)) {
+    throw new V070GameActionError('That card is already bound.');
+  }
+  const pending = state.pendingActionCard;
+  if (!pending
+    || pending.playerId !== input.owner
+    || pending.instanceId !== input.cardInstanceId) {
+    throw new V070GameActionError(
+      'A pending Action binding must use the currently resolving Action card.',
+    );
+  }
+
+  const instance = state.cardInstances[input.cardInstanceId];
+  if (!instance || instance.owner !== input.owner) {
+    throw new V070GameActionError(
+      'A bound card must be a known card owned by the stated player.',
+    );
+  }
+
+  const binding: V070Binding = {
+    hostId: input.hostId,
+    cardInstanceId: input.cardInstanceId,
+    owner: input.owner,
+    faceUp: input.faceUp,
+    purpose: input.purpose,
+    sequence: state.nextBindingSequence,
+  };
+  state.nextBindingSequence += 1;
+  state.bindings.push(binding);
+
+  appendV070Event(state, {
+    type: 'card_bound',
+    actor: input.owner,
+    visibility: 'public',
+    payload: {
+      hostId: input.hostId,
+      owner: input.owner,
+      faceUp: input.faceUp,
+      purpose: input.purpose,
+      sequence: binding.sequence,
+      ...(input.faceUp
+        ? {
+            cardInstanceId: input.cardInstanceId,
+            cardId: instance.cardId,
+          }
+        : {}),
+    },
+  });
+
+  if (!input.faceUp) {
+    appendV070Event(state, {
+      type: 'bound_card_identity',
+      actor: input.owner,
+      visibility: input.owner,
+      payload: {
+        hostId: input.hostId,
+        cardInstanceId: input.cardInstanceId,
+        cardId: instance.cardId,
+        purpose: input.purpose,
+        sequence: binding.sequence,
+      },
+    });
+  }
+
+  return structuredClone(binding);
+}
+
 export function releaseV070BoundCards(
   state: V070GameState,
   hostId: string,
   destination: V070BindingReleaseDestination,
   purpose: string,
 ): string[] {
-  const bindings = v070BindingsForHost(state, hostId);
+  return releaseV070BindingRecords(
+    state,
+    v070BindingsForHost(state, hostId),
+    destination,
+    purpose,
+  );
+}
+
+export function releaseV070BoundCardsForPurpose(
+  state: V070GameState,
+  hostId: string,
+  bindingPurpose: string,
+  destination: V070BindingReleaseDestination,
+  purpose: string,
+): string[] {
+  const bindings = v070BindingsForHost(state, hostId).filter(
+    binding => binding.purpose === bindingPurpose,
+  );
+  return releaseV070BindingRecords(
+    state,
+    bindings,
+    destination,
+    purpose,
+  );
+}
+
+function releaseV070BindingRecords(
+  state: V070GameState,
+  bindings: readonly V070Binding[],
+  destination: V070BindingReleaseDestination,
+  purpose: string,
+): string[] {
   if (bindings.length === 0) return [];
 
   const released = new Set(bindings.map(binding => binding.cardInstanceId));
@@ -163,7 +279,7 @@ export function releaseV070BoundCards(
       actor: binding.owner,
       visibility: 'public',
       payload: {
-        hostId,
+        hostId: binding.hostId,
         owner: binding.owner,
         destination,
         purpose,
@@ -183,7 +299,7 @@ export function releaseV070BoundCards(
         actor: binding.owner,
         visibility: binding.owner,
         payload: {
-          hostId,
+          hostId: binding.hostId,
           destination,
           purpose,
           sequence: binding.sequence,
