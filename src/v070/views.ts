@@ -52,6 +52,9 @@ export interface V070BattleParticipantView {
   reserveCount: number;
   reserve?: V070VisibleCard[];
   tactic: V070BattleCardView;
+  additionalTactics: V070BattleCardView[];
+  tacticLimit: number;
+  tacticChoicesMade: number;
   battleModifier: number;
   advantage: number;
   disadvantage: number;
@@ -82,6 +85,10 @@ export interface V070BattleRuntimeView {
   activePrintedTerritoryAtOnset:
     V070BattleRuntime['activePrintedTerritoryAtOnset'];
   assetInactivePlayers: V070BattleRuntime['assetInactivePlayers'];
+  trainingGroundsRedrawPlayer:
+    V070BattleRuntime['trainingGroundsRedrawPlayer'];
+  trainingGroundsRedrawResolved:
+    V070BattleRuntime['trainingGroundsRedrawResolved'];
   gambitProhibitedPlayers:
     V070BattleRuntime['gambitProhibitedPlayers'];
   unsupportedEffects: V070UnsupportedBattleEffect[];
@@ -498,6 +505,9 @@ function viewBattleRuntime(
         ? structuredClone(runtime.activePrintedTerritoryAtOnset)
         : null,
     assetInactivePlayers: [...runtime.assetInactivePlayers],
+    trainingGroundsRedrawPlayer: runtime.trainingGroundsRedrawPlayer,
+    trainingGroundsRedrawResolved:
+      runtime.trainingGroundsRedrawResolved,
     gambitProhibitedPlayers: [
       ...runtime.gambitProhibitedPlayers,
     ],
@@ -522,6 +532,11 @@ function viewBattleParticipant(
     reserveCount: participant.reserve.length,
     reserve: owner ? visibleCards(state, participant.reserve) : undefined,
     tactic: viewBattleCommitment(state, participant.tactic, owner),
+    additionalTactics: participant.additionalTactics.map(commitment =>
+      viewBattleCommitment(state, commitment, owner)
+    ),
+    tacticLimit: participant.tacticLimit,
+    tacticChoicesMade: participant.tacticChoicesMade,
     battleModifier: participant.battleModifier,
     advantage: participant.advantage,
     disadvantage: participant.disadvantage,
