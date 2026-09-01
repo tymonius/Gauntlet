@@ -20,7 +20,7 @@ That difference is an explicit implementation lag, not an alternate authority cl
 - `v064/` — transitional Onset implementation retained as historical migration evidence after its relevant shared procedures were audited into `v070/rules.ts`.
 - `v063/` — substantial validated procedure library from the v0.6.3 migration: setup, Front Line/Capture, copied/repeated effects, Arcane Knowledge, Manifest Destiny, dynamic Territories/Deeds, and all printed Territory/Arena procedures. These remain explicitly versioned until individually revalidated against v0.7.0.
 - `content/v063.ts` — immutable v0.6.3 release adapter retained for historical/versioned regression tests.
-- `state/`, `effects/`, `cards/`, `cli/`, and `gui/` — pre-faction/earlier playable architecture. Useful scaffolding, but not presumed v0.7.0-compatible.
+- `state/`, `effects/`, `cards/`, and `dev/` — pre-faction/earlier playable architecture. Useful scaffolding, but not presumed v0.7.0-compatible.\n- `cli/` and `gui/` — explicitly versioned v0.6 legacy interactive runners only; older generic v0.5.6 runners are preserved under `legacy/digital-engine-dev-runners/` as non-executable provenance.
 
 The promoted `content/current.ts` boundary currently identifies the v0.7.0 implementation baseline and exposes only that promoted shared-rules/starter/setup/private-view surface. Historical procedure libraries are not re-exported through `current.ts`; migration work must import explicit versioned modules until a procedure is revalidated and promoted deliberately.
 
