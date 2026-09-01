@@ -50,7 +50,15 @@ export function v070PrintedTerritoryEffectActive(
   if (territory.blank) return false;
   if (activeV070Overlay(state, territory.position)) return false;
 
-  if (timing === 'movement'
+  const movementWindow =
+    state.turnState?.phase === 'movement'
+    && (
+      timing === 'movement'
+      || timing === 'battle'
+      || timing === 'aftermath'
+      || timing === 'continuous'
+    );
+  if (movementWindow
     && state.territoryEffectSuppressions.some(suppression =>
       suppression.playerId === playerId
       && suppression.territoryInstanceId ===
@@ -264,4 +272,98 @@ export function expireV070TerritoryEffectSuppressions(
       !(suppression.playerId === playerId
         && suppression.turnNumber <= state.turnNumber)
     );
+}
+
+
+export const V070_GARRISON_ID = 'territory-garrison' as const;
+export const V070_EXPOSED_FLANK_ID =
+  'territory-exposed-flank' as const;
+export const V070_HIGH_GROUND_ID = 'territory-high-ground' as const;
+export const V070_WATCHTOWER_ID = 'territory-watchtower' as const;
+export const V070_ARENA_TERRITORY_IDS = new Set([
+  'territory-arena-spoils-of-war',
+  'territory-arena-no-quarter',
+  'territory-arena-single-combat',
+  'territory-arena-grand-melee',
+]);
+
+export function applyV070CoreBattleTerritoryEffects(
+  state: V070GameState,
+): void {
+  const battle = state.battle;
+  const runtime = state.battleRuntime;
+  if (!battle || !runtime || battle.lastStand) return;
+
+  const territory = territoryAtV070Position(
+    state,
+    battle.contestedPosition,
+  );
+  if (!territory) return;
+  if (!v070PrintedTerritoryEffectActive(
+    state,
+    territory,
+    battle.attacker,
+    'battle',
+  )) {
+    return;
+  }
+
+  runtime.activePrintedTerritoryAtOnset = {
+    territoryInstanceId: territory.territoryInstanceId,
+    territoryId: territory.territoryId,
+  };
+
+  const applied: string[] = [];
+  if (territory.territoryId === V070_GARRISON_ID
+    && territory.controller === battle.defender) {
+    runtime.participants[battle.defender].reserveBonus += 1;
+    applied.push('defender_reserve_plus_one');
+  }
+
+  if (territory.territoryId === V070_HIGH_GROUND_ID) {
+    runtime.participants[battle.defender].advantage += 1;
+    applied.push('defender_advantage');
+  }
+
+  if (territory.territoryId === V070_WATCHTOWER_ID
+    && territory.controller === battle.defender) {
+    runtime.gambitOrderOverride = {
+      source: 'watchtower',
+      firstPlayer: battle.attacker,
+      secondPlayer: battle.defender,
+      nextPlayer: battle.attacker,
+      firstCommitmentFaceUp: true,
+    };
+    applied.push('attacker_gambit_first_face_up');
+  }
+
+  const counterattack =
+    territory.controller === battle.attacker;
+  if (territory.territoryId === V070_EXPOSED_FLANK_ID
+    && counterattack) {
+    runtime.gambitProhibitedPlayers.push(battle.defender);
+    applied.push('occupier_gambit_prohibited_on_counterattack');
+  }
+
+  if (V070_ARENA_TERRITORY_IDS.has(territory.territoryId)) {
+    state.battle = {
+      ...battle,
+      defensiveEdgeRemoved: true,
+    };
+    applied.push('defensive_edge_removed');
+  }
+
+  if (applied.length > 0) {
+    appendV070Event(state, {
+      type: 'territory_battle_effect_applied',
+      actor: battle.attacker,
+      visibility: 'public',
+      payload: {
+        territoryInstanceId: territory.territoryInstanceId,
+        territoryPosition: territory.position,
+        territoryId: territory.territoryId,
+        effects: [...applied],
+      },
+    });
+  }
 }
