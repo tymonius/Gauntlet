@@ -35,6 +35,7 @@ import {
 import { expireV070SanctionsAfterAcceptance } from './sanctions';
 import { openV070BlockadeChoicesForPositionChange } from './movement-triggers';
 import { clearV070AccursedWagersForCurrentBattle } from './accursed-wager';
+import { assertV070GraveyardExitAllowed } from './territories';
 
 export const V070_EXECUTABLE_PROPOSAL_IDS = [
   'de-escalation',
@@ -1627,6 +1628,7 @@ function moveOptionalGraveyardCardToDiscard(
   const player = state.players[playerId];
   const index = player.zones.graveyard.indexOf(instanceId);
   if (index < 0) throw new V070GameActionError('That card is not in the player’s Graveyard.');
+  assertV070GraveyardExitAllowed(state, purpose);
   player.zones.graveyard.splice(index, 1);
   player.zones.discardPile.push(instanceId);
 
