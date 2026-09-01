@@ -34,6 +34,11 @@ import {
   v070SpeculationTargetPositions,
 } from './speculation';
 import {
+  armV070AccursedWager,
+  attachV070AccursedWagersToBattle,
+  expireV070AccursedWagersAtTurnEnd,
+} from './accursed-wager';
+import {
   V070_DEMILITARIZED_ZONE_ID,
   cardIdForV070Overlay,
   expireV070TerritoryTurnRestrictions,
@@ -1321,6 +1326,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'military-high-command',
   'military-invasion',
   'military-reserve-force',
+  'mystics-accursed-wager',
   'mystics-circle-of-bones',
   'mystics-dark-omens',
   'mystics-necromancy',
@@ -2845,6 +2851,14 @@ function continuePendingActionCard(state: V070GameState): void {
       });
       return;
     }
+    case 'mystics-accursed-wager':
+      armV070AccursedWager(
+        state,
+        pending.playerId,
+        pending.instanceId,
+      );
+      finishPendingActionCard(state);
+      return;
     case 'mystics-necromancy': {
       const candidates = necromancyReclaimCandidateInstanceIds(
         state,
@@ -7038,6 +7052,11 @@ function chooseControlledTerritoryMoveTarget(
         attackerGambitProhibited: false,
       },
     });
+    attachV070AccursedWagersToBattle(
+      state,
+      playerId,
+      state.events.length - 1,
+    );
   } else {
     setSettledOccupant(
       state,
@@ -8212,6 +8231,11 @@ function chooseMovement(
           movementStep.battleRestriction === 'allowed_no_gambit',
       },
     });
+    attachV070AccursedWagersToBattle(
+      state,
+      playerId,
+      state.events.length - 1,
+    );
     openV070BlockadeChoicesForPositionChange(
       state,
       playerId,
@@ -8306,6 +8330,7 @@ function completeCleanup(
     });
   }
 
+  expireV070AccursedWagersAtTurnEnd(state, playerId);
   clampAllV070CapitalToLimits(state);
 
   const next = otherPlayer(playerId);

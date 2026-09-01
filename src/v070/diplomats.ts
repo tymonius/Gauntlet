@@ -34,6 +34,7 @@ import {
 
 import { expireV070SanctionsAfterAcceptance } from './sanctions';
 import { openV070BlockadeChoicesForPositionChange } from './movement-triggers';
+import { clearV070AccursedWagersForCurrentBattle } from './accursed-wager';
 
 export const V070_EXECUTABLE_PROPOSAL_IDS = [
   'de-escalation',
@@ -1703,6 +1704,10 @@ function finishOnsetWithoutBattle(state: V070GameState): void {
     }
   }
 
+  clearV070AccursedWagersForCurrentBattle(
+    state,
+    'battle ended during Onset without a losing player',
+  );
   state.battle = null;
   state.battleRuntime = null;
 
@@ -1728,6 +1733,10 @@ function endGameFromFrontLine(
   state.stage = 'ended';
   state.winner = playerId;
   state.turnState = null;
+  clearV070AccursedWagersForCurrentBattle(
+    state,
+    'battle ended by immediate Front Line victory',
+  );
   state.battle = null;
   state.battleRuntime = null;
   appendV070Event(state, {
