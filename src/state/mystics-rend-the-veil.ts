@@ -6,7 +6,7 @@ import type {
   GameState,
   PendingRendTheVeilChoice,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import type { ResolveMysticsChoiceAction } from './actions';
 import {
   addReplayedBattleCard,
