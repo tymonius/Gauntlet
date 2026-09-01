@@ -7,7 +7,7 @@ import type {
   InquisitionTyrannyTargetOption,
   PendingInquisitionTyrannyChoice,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import type { ResolveInquisitionChoiceAction } from './actions';
 import { recordBankedAssetUse } from './intelligence-mission-triggers';
 import { bankedAssetUseAllowed, activeBankedAssetCopies, bankedAssetCardUseAllowed } from './intelligence-subversion-battle';

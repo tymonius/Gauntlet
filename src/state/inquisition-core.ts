@@ -8,7 +8,7 @@ import type {
   GameEvent,
   GameState,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import { HERESY } from './inquisition-heresy';
 import { isArcaneCard } from './mystics-ritual';
 import { gainFactionResource } from './resources';

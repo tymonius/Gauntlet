@@ -2,7 +2,7 @@ import type {
   GameState,
   InquisitionPurgeMode,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import type { ResolveInquisitionChoiceAction } from './actions';
 import {
   defaultLeaderAbilityRegistry,
