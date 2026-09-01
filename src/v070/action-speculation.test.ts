@@ -71,7 +71,7 @@ function injectHandCard(
   return instanceId;
 }
 
-function completeRestOfTurn(
+function advanceToCleanup(
   state: V070GameState,
   playerId: 'A' | 'B',
 ): V070GameState {
@@ -107,7 +107,13 @@ function completeRestOfTurn(
     });
   }
   expect(state.turnState?.phase).toBe('cleanup');
+  return state;
+}
 
+function completeCleanup(
+  state: V070GameState,
+  playerId: 'A' | 'B',
+): V070GameState {
   const hand = state.players[playerId].zones.hand;
   const excess = Math.max(0, hand.length - 3);
   return reduceV070TurnAction(state, {
@@ -115,6 +121,16 @@ function completeRestOfTurn(
     playerId,
     discardInstanceIds: hand.slice(0, excess),
   });
+}
+
+function completeRestOfTurn(
+  state: V070GameState,
+  playerId: 'A' | 'B',
+): V070GameState {
+  return completeCleanup(
+    advanceToCleanup(state, playerId),
+    playerId,
+  );
 }
 
 function placeSpeculation(
@@ -224,13 +240,14 @@ describe('v0.7.0 Speculation Action', () => {
     state = completeRestOfTurn(state, 'B');
     expect(state.activePlayer).toBe('A');
 
+    state = advanceToCleanup(state, 'A');
     const target = state.board.find(
       territory =>
         territory.territoryInstanceId === placed.targetInstanceId,
     )!;
     target.controller = 'B';
 
-    state = completeRestOfTurn(state, 'A');
+    state = completeCleanup(state, 'A');
 
     expect(state.activePlayer).toBe('B');
     expect(state.turnState?.phase).toBe('capture');
