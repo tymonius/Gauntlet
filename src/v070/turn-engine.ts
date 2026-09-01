@@ -122,13 +122,18 @@ import {
   v070DifficultTerrainEntryActive,
   v070QuicksandCapsMovement,
   v070RefugeFallBackDrawActive,
+  v070RuinedStorehouseDrawAvailable,
   v070TollBridgeAdvanceCostActive,
   v070TurnStartTerritoryPlan,
 } from './territories';
 
 export type V070TurnAction =
   | { type: 'resolve_capture'; playerId: PlayerId }
-  | { type: 'draw_turn_card'; playerId: PlayerId }
+  | {
+      type: 'draw_turn_card';
+      playerId: PlayerId;
+      useRuinedStorehouse?: boolean;
+    }
   | { type: 'pass_opening'; playerId: PlayerId }
   | {
       type: 'bank_asset';
@@ -695,7 +700,11 @@ export function reduceV070TurnAction(
       resolveCapture(next, action.playerId);
       break;
     case 'draw_turn_card':
-      drawTurnCard(next, action.playerId);
+      drawTurnCard(
+        next,
+        action.playerId,
+        Boolean(action.useRuinedStorehouse),
+      );
       break;
     case 'pass_opening':
       passOpening(next, action.playerId);
@@ -1142,10 +1151,61 @@ function resolveCapture(state: V070GameState, playerId: PlayerId): void {
   appendPhaseEvent(state);
 }
 
-function drawTurnCard(state: V070GameState, playerId: PlayerId): void {
+function drawTurnCard(
+  state: V070GameState,
+  playerId: PlayerId,
+  useRuinedStorehouse = false,
+): void {
   requirePhase(state, 'draw');
-  const result = drawV070Cards(state, playerId, 1, 'turn_draw');
   const player = state.players[playerId];
+
+  if (useRuinedStorehouse) {
+    if (!v070RuinedStorehouseDrawAvailable(state, playerId)) {
+      throw new V070GameActionError(
+        'Ruined Storehouse can replace the turn draw only while the player is there, its printed effect is active, and their Discard Pile is nonempty.',
+      );
+    }
+
+    const instanceId = player.zones.discardPile.pop()!;
+    player.zones.hand.push(instanceId);
+    appendV070Event(state, {
+      type: 'turn_card_drawn',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        count: 1,
+        source: 'ruined_storehouse',
+        reshuffles: 0,
+        exhausted: false,
+      },
+    });
+    appendV070Event(state, {
+      type: 'turn_card_identity',
+      actor: playerId,
+      visibility: playerId,
+      payload: {
+        cardInstanceIds: [instanceId],
+        source: 'ruined_storehouse',
+      },
+    });
+    appendV070Event(state, {
+      type: 'territory_effect_applied',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        territoryId: 'territory-ruined-storehouse',
+        effect: 'draw_top_discard_instead',
+      },
+    });
+
+    state.turnState = advanceV070TurnPhase(
+      requireTurnState(state),
+    );
+    appendPhaseEvent(state);
+    return;
+  }
+
+  const result = drawV070Cards(state, playerId, 1, 'turn_draw');
   player.zones.hand.push(...result.drawn);
 
   appendV070Event(state, {
@@ -1154,6 +1214,7 @@ function drawTurnCard(state: V070GameState, playerId: PlayerId): void {
     visibility: 'public',
     payload: {
       count: result.drawn.length,
+      source: 'draw_pile',
       reshuffles: result.reshuffles,
       exhausted: result.exhausted,
     },
@@ -1165,11 +1226,14 @@ function drawTurnCard(state: V070GameState, playerId: PlayerId): void {
       visibility: playerId,
       payload: {
         cardInstanceIds: [...result.drawn],
+        source: 'draw_pile',
       },
     });
   }
 
-  state.turnState = advanceV070TurnPhase(requireTurnState(state));
+  state.turnState = advanceV070TurnPhase(
+    requireTurnState(state),
+  );
   appendPhaseEvent(state);
 }
 
