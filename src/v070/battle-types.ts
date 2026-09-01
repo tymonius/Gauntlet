@@ -170,6 +170,7 @@ export interface V070BattleRuntime {
     territoryInstanceId: string;
     territoryId: string;
   } | null;
+  assetInactivePlayers: PlayerId[];
   gambitProhibitedPlayers: PlayerId[];
   unsupportedEffects: V070UnsupportedBattleEffect[];
 }
@@ -222,6 +223,7 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     territoryAftermathOverride: null,
     activeOverlayAtOnset: null,
     activePrintedTerritoryAtOnset: null,
+    assetInactivePlayers: [],
     gambitProhibitedPlayers: [],
     unsupportedEffects: [],
   };
