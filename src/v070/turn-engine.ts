@@ -117,10 +117,12 @@ import {
 } from './intelligence';
 import {
   assertV070GraveyardExitAllowed,
+  chooseV070DisruptedSupplyLinesActiveAsset,
   expireV070TerritoryEffectSuppressions,
   payV070TollBridgeAdvanceCost,
   suppressV070PrintedTerritoryDuringMovement,
   v070DifficultTerrainEntryActive,
+  v070DisruptedSupplyLinesSelectionRequired,
   v070QuicksandCapsMovement,
   v070RefugeFallBackDrawActive,
   v070RuinedStorehouseDrawAvailable,
@@ -415,6 +417,11 @@ export type V070TurnAction =
       choice: 'discard' | 'withdraw';
       discardInstanceId?: string;
     }
+  | {
+      type: 'choose_disrupted_supply_lines_active_asset';
+      playerId: PlayerId;
+      assetInstanceId: string;
+    }
   | { type: 'pass_denouement'; playerId: PlayerId }
   | { type: 'complete_cleanup'; playerId: PlayerId; discardInstanceIds?: readonly string[] };
 
@@ -433,6 +440,19 @@ export function reduceV070TurnAction(
   }
   if (state.battle) {
     throw new V070GameActionError('Resolve the active battle before continuing the turn.');
+  }
+  if (state.activePlayer
+    && v070DisruptedSupplyLinesSelectionRequired(
+      state,
+      state.activePlayer,
+    )
+    && (
+      action.type !== 'choose_disrupted_supply_lines_active_asset'
+      || action.playerId !== state.activePlayer
+    )) {
+    throw new V070GameActionError(
+      'Choose the active Asset for Disrupted Supply Lines before continuing the turn.',
+    );
   }
   if (state.pendingTurnChoice && action.type !== 'resolve_start_turn_overlay_choice') {
     throw new V070GameActionError('Resolve the pending start-of-turn Overlay choice first.');
@@ -1030,6 +1050,13 @@ export function reduceV070TurnAction(
         action.playerId,
         action.choice,
         action.discardInstanceId,
+      );
+      break;
+    case 'choose_disrupted_supply_lines_active_asset':
+      chooseV070DisruptedSupplyLinesActiveAsset(
+        next,
+        action.playerId,
+        action.assetInstanceId,
       );
       break;
     case 'pass_denouement':

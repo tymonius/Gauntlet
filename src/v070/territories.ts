@@ -15,6 +15,8 @@ export const V070_DIFFICULT_TERRAIN_ID =
   'territory-difficult-terrain' as const;
 export const V070_RUINED_STOREHOUSE_ID =
   'territory-ruined-storehouse' as const;
+export const V070_DISRUPTED_SUPPLY_LINES_ID =
+  'territory-disrupted-supply-lines' as const;
 export const V070_SUPPLY_DEPOT_ID = 'territory-supply-depot' as const;
 export const V070_REFUGE_ID = 'territory-refuge' as const;
 export const V070_COMMAND_TENT_ID = 'territory-command-tent' as const;
@@ -156,6 +158,129 @@ export function v070RuinedStorehouseDrawAvailable(
     ),
   );
 }
+
+export function v070DisruptedSupplyLinesTerritoryForPlayer(
+  state: V070GameState,
+  playerId: PlayerId,
+): V070BoardTerritory | null {
+  const position = state.players[playerId].position;
+  if (position === null) return null;
+  const territory = territoryAtV070Position(state, position);
+  if (!territory
+    || territory.territoryId !== V070_DISRUPTED_SUPPLY_LINES_ID
+    || !v070PrintedTerritoryEffectActive(
+      state,
+      territory,
+      state.activePlayer ?? playerId,
+      'continuous',
+    )) {
+    return null;
+  }
+  return territory;
+}
+
+function v070DisruptedSupplyLinesEligibleAssets(
+  state: V070GameState,
+  playerId: PlayerId,
+): string[] {
+  return state.players[playerId].zones.assetBank.filter(instanceId =>
+    !state.assetFaceStates.some(face => face.instanceId === instanceId)
+  );
+}
+
+export function v070DisruptedSupplyLinesSelectionRequired(
+  state: V070GameState,
+  playerId: PlayerId,
+): boolean {
+  const territory = v070DisruptedSupplyLinesTerritoryForPlayer(
+    state,
+    playerId,
+  );
+  const assets = v070DisruptedSupplyLinesEligibleAssets(state, playerId);
+  if (!territory || assets.length <= 1) return false;
+
+  const selection = state.disruptedSupplyLinesSelections[playerId];
+  return !selection
+    || selection.territoryInstanceId !== territory.territoryInstanceId
+    || !assets.includes(selection.activeAssetInstanceId);
+}
+
+export function chooseV070DisruptedSupplyLinesActiveAsset(
+  state: V070GameState,
+  playerId: PlayerId,
+  assetInstanceId: string,
+): void {
+  const territory = v070DisruptedSupplyLinesTerritoryForPlayer(
+    state,
+    playerId,
+  );
+  if (!territory) {
+    throw new V070GameActionError(
+      'Disrupted Supply Lines Asset selection requires the player to be there while its printed effect is active.',
+    );
+  }
+  const assets = v070DisruptedSupplyLinesEligibleAssets(
+    state,
+    playerId,
+  );
+  if (assets.length <= 1) {
+    throw new V070GameActionError(
+      'Disrupted Supply Lines requires a choice only when the player has more than one face-up Asset.',
+    );
+  }
+  if (!assets.includes(assetInstanceId)) {
+    throw new V070GameActionError(
+      'Disrupted Supply Lines must choose one face-up Asset in that player’s Asset bank.',
+    );
+  }
+  if (!v070DisruptedSupplyLinesSelectionRequired(state, playerId)) {
+    throw new V070GameActionError(
+      'That player has already chosen their active Asset for this Disrupted Supply Lines state.',
+    );
+  }
+
+  state.disruptedSupplyLinesSelections[playerId] = {
+    playerId,
+    territoryInstanceId: territory.territoryInstanceId,
+    activeAssetInstanceId: assetInstanceId,
+  };
+  appendV070Event(state, {
+    type: 'disrupted_supply_lines_asset_selected',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      territoryInstanceId: territory.territoryInstanceId,
+      territoryPosition: territory.position,
+      assetInstanceId,
+      cardId: state.cardInstances[assetInstanceId]?.cardId,
+    },
+  });
+}
+
+export function v070DisruptedSupplyLinesAssetActive(
+  state: V070GameState,
+  playerId: PlayerId,
+  assetInstanceId: string,
+): boolean {
+  const territory = v070DisruptedSupplyLinesTerritoryForPlayer(
+    state,
+    playerId,
+  );
+  const assets = v070DisruptedSupplyLinesEligibleAssets(
+    state,
+    playerId,
+  );
+  if (!territory || assets.length <= 1) return true;
+
+  const selection = state.disruptedSupplyLinesSelections[playerId];
+  return Boolean(
+    selection
+    && selection.territoryInstanceId === territory.territoryInstanceId
+    && selection.activeAssetInstanceId === assetInstanceId
+    && assets.includes(assetInstanceId),
+  );
+}
+
 
 export function v070QuicksandCapsMovement(
   state: V070GameState,
