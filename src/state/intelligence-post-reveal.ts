@@ -3,7 +3,7 @@ import type {
   BattlePlayedCard,
   CardID,
   GameState,
-} from '../types';
+} from '../types/v06';
 import { battleEffectCanStillResolve } from './intelligence-operational-reassessment-battle';
 import { reconnaissanceWithdrawalAvailable } from './intelligence-reconnaissance-battle';
 import {
