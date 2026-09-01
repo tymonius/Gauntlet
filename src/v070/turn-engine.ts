@@ -1365,12 +1365,6 @@ function financierPlayMarket(
   }
 
   const player = state.players[playerId];
-  if (turnState.phase === 'denouement'
-    && turnState.denouementCardActionBlockedByTerritory) {
-    throw new V070GameActionError(
-      'Difficult Terrain prevents playing a card for its Action effect during Denouement this turn.',
-    );
-  }
   const handIndex = player.zones.hand.indexOf(cardInstanceId);
   if (handIndex < 0) {
     throw new V070GameActionError(
@@ -1519,6 +1513,12 @@ function playActionCard(
   if (turnState.phase !== 'opening' && turnState.phase !== 'denouement') {
     throw new V070GameActionError(
       'A printed Action card may normally be played only during Opening or Denouement.',
+    );
+  }
+  if (turnState.phase === 'denouement'
+    && turnState.denouementCardActionBlockedByTerritory) {
+    throw new V070GameActionError(
+      'Difficult Terrain prevents playing a card for its Action effect during Denouement this turn.',
     );
   }
 
