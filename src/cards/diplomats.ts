@@ -1,4 +1,4 @@
-import type { ProposalDefinition, ProposalID } from '../types';
+import type { ProposalDefinition, ProposalID } from '../types/v06';
 
 export const diplomatProposalDefinitions: readonly ProposalDefinition[] = [
   { id: 'de-escalation', name: 'De-escalation', stake: 0, requirement: 'None', accepted: 'Both players withdraw. Accepting player: +1 Card.', refused: 'Diplomat: +1 Card.' },

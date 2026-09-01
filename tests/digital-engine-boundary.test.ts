@@ -142,6 +142,22 @@ describe('digital engine boundary', () => {
     }
   });
 
+  it('pins legacy card-definition modules to the v0.6 type API', () => {
+    const cardSources = [
+      'src/cards/intelligence.ts',
+      'src/cards/diplomats.ts',
+      'src/cards/neutral-audit-containment.ts',
+      'src/cards/financiers.ts',
+      'src/cards/military.ts',
+      'src/cards/playability.ts',
+    ];
+
+    for (const path of cardSources) {
+      const source = readFileSync(path, 'utf8');
+      expect(source).not.toMatch(/from ['"]\.\.\/types['"]/);
+    }
+  });
+
   it('keeps the promoted v0.7.0 implementation isolated from legacy architecture', () => {
     const promotedSources = readdirSync('src/v070')
       .filter((name) => name.endsWith('.ts') && !name.endsWith('.test.ts'));
