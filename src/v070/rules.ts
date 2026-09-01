@@ -133,6 +133,7 @@ export interface V070TurnState {
   movementStepQueue: V070MovementStep[];
   territoryMovementBonus: number;
   denouementCardActionBlockedByTerritory: boolean;
+  commandTentCardActionFirst: boolean;
   startTurnTerritoryEffectsApplied: boolean;
   gambitMandates: V070GambitMandate[];
 }
@@ -411,6 +412,7 @@ export function createV070TurnState(additionalActions = 0): V070TurnState {
     movementStepQueue: [],
     territoryMovementBonus: 0,
     denouementCardActionBlockedByTerritory: false,
+    commandTentCardActionFirst: false,
     startTurnTerritoryEffectsApplied: false,
     gambitMandates: [],
   };

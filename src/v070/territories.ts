@@ -15,6 +15,7 @@ export const V070_DIFFICULT_TERRAIN_ID =
   'territory-difficult-terrain' as const;
 export const V070_SUPPLY_DEPOT_ID = 'territory-supply-depot' as const;
 export const V070_REFUGE_ID = 'territory-refuge' as const;
+export const V070_COMMAND_TENT_ID = 'territory-command-tent' as const;
 export const V070_KINGS_ROAD_ID = 'territory-king-s-road' as const;
 export const V070_TOLL_BRIDGE_ID = 'territory-toll-bridge' as const;
 
@@ -33,6 +34,8 @@ export interface V070TurnStartTerritoryPlan {
   supplyDepotCards: number;
   kingsRoadMovementBonus: number;
   denouementCardActionBlocked: boolean;
+  commandTentAdditionalActions: number;
+  commandTentCardActionFirst: boolean;
 }
 
 export function territoryAtV070Position(
@@ -86,6 +89,8 @@ export function v070TurnStartTerritoryPlan(
       supplyDepotCards: 0,
       kingsRoadMovementBonus: 0,
       denouementCardActionBlocked: false,
+      commandTentAdditionalActions: 0,
+      commandTentCardActionFirst: false,
     };
   }
 
@@ -101,6 +106,8 @@ export function v070TurnStartTerritoryPlan(
       supplyDepotCards: 0,
       kingsRoadMovementBonus: 0,
       denouementCardActionBlocked: false,
+      commandTentAdditionalActions: 0,
+      commandTentCardActionFirst: false,
     };
   }
 
@@ -116,6 +123,14 @@ export function v070TurnStartTerritoryPlan(
         : 0,
     denouementCardActionBlocked:
       territory.territoryId === V070_DIFFICULT_TERRAIN_ID,
+    commandTentAdditionalActions:
+      territory.territoryId === V070_COMMAND_TENT_ID
+      && territory.controller === playerId
+        ? 1
+        : 0,
+    commandTentCardActionFirst:
+      territory.territoryId === V070_COMMAND_TENT_ID
+      && territory.controller === playerId,
   };
 }
 
