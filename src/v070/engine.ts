@@ -55,6 +55,15 @@ export interface V070TerritoryTurnRestriction {
   turnNumber: number;
 }
 
+export interface V070TerritoryEffectSuppression {
+  source: 'pathfinders';
+  sourceActionInstanceId: string;
+  playerId: PlayerId;
+  territoryInstanceId: string;
+  turnNumber: number;
+  scope: 'movement';
+}
+
 export interface V070PlayerZones {
   drawPile: string[];
   hand: string[];
@@ -524,6 +533,7 @@ export interface V070GameState {
   nextBindingSequence: number;
   assetFaceStates: V070AssetFaceState[];
   territoryTurnRestrictions: V070TerritoryTurnRestriction[];
+  territoryEffectSuppressions: V070TerritoryEffectSuppression[];
   sanctions: V070SanctionAssociation[];
   sanctionTriggerTurns: Record<string, number>;
   pendingActionCard: V070PendingActionCard | null;
@@ -664,6 +674,7 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
     nextBindingSequence: 1,
     assetFaceStates: [],
     territoryTurnRestrictions: [],
+    territoryEffectSuppressions: [],
     sanctions: [],
     sanctionTriggerTurns: {},
     pendingActionCard: null,
