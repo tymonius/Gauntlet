@@ -177,6 +177,7 @@ export interface V070BattleRuntime {
   territoryAftermathOverride: V070TerritoryAftermathOverride | null;
   pendingPoisonousGasAftermath:
     V070PoisonousGasAftermathRuntime | null;
+  poisonousGasAftermathResolved: boolean;
   poisonousGasReserveGraveyardInstanceIds: string[];
   activeOverlayAtOnset: string | null;
   activePrintedTerritoryAtOnset: {
@@ -237,6 +238,7 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     territoryAftermathChoiceResolved: false,
     territoryAftermathOverride: null,
     pendingPoisonousGasAftermath: null,
+    poisonousGasAftermathResolved: false,
     poisonousGasReserveGraveyardInstanceIds: [],
     activeOverlayAtOnset: null,
     activePrintedTerritoryAtOnset: null,
