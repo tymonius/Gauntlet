@@ -16,6 +16,7 @@ const TABLE_IMAGE_SOURCE = 'environment/campaign-map-table.png';
 const PANORAMA_IMAGE_SOURCE = 'environment/command-tent-panorama.png';
 const STARTER_DECK_NOTE_PREFIX = 'gauntlet:starter-deck:';
 const STARTER_TERRITORY_STACK_NOTE_PREFIX = 'gauntlet:starter-territories:';
+const SHARED_RULEBOOK_NOTE = 'gauntlet:shared-rulebook';
 
 
 function jsonText(value) {
@@ -67,6 +68,40 @@ function requireHostedUrl(releaseAssets, sourceFile) {
   if (!url) throw new Error(`Hosted TTS release manifest does not map source file ${sourceFile}.`);
   if (!/^https:\/\//i.test(url)) throw new Error(`Hosted TTS URL for ${sourceFile} is not HTTPS: ${url}`);
   return url;
+}
+
+function rulebookReleaseUrl(releaseAssets, version) {
+  const repository = String(releaseAssets?.repository || '').trim();
+  const releaseTag = String(releaseAssets?.releaseTag || '').trim();
+  if (!repository || !releaseTag) throw new Error('Hosted TTS release manifest does not declare repository/releaseTag for the shared Rulebook.');
+  const assetName = `Gauntlet_${version}_Rulebook_Booklet.pdf`;
+  return `https://github.com/${repository}/releases/download/${encodeURIComponent(releaseTag)}/${encodeURIComponent(assetName)}`;
+}
+
+function makeSharedRulebook(version, releaseAssets, guid) {
+  const rulebook = {
+    ...objectBase(
+      'Custom_PDF',
+      `Gauntlet ${version} Rulebook`,
+      'Shared table Rulebook · current stable rules',
+      transform(11.4, 1.2, 0, 90, 1, 1, 1),
+      guid,
+    ),
+    GMNotes: SHARED_RULEBOOK_NOTE,
+    Grid: false,
+    Snap: false,
+    Sticky: false,
+    IgnoreFoW: false,
+    MeasureMovement: false,
+    DragSelectable: true,
+    CustomPDF: {
+      PDFUrl: rulebookReleaseUrl(releaseAssets, version),
+      PDFPassword: '',
+      PDFPage: 0,
+      PDFPageOffset: 0,
+    },
+  };
+  return rulebook;
 }
 
 function makeCustomDeckState(faceUrl, backUrl, numWidth, numHeight) {
@@ -300,6 +335,7 @@ function buildTtsSave(starterManifest, releaseAssets) {
   const panoramaUrl = requireHostedUrl(releaseAssets, PANORAMA_IMAGE_SOURCE);
 
   const guid = makeGuidFactory();
+  const rulebook = makeSharedRulebook(version, releaseAssets, guid());
   const starterKits = starters.map(starter => buildStarterKit(starter, releaseAssets, starterBagTransform(starter, starters), guid));
   const territoryZ = [-7.5, -4.5, -1.5, 1.5, 4.5, 7.5];
   const snapPoints = territoryZ.map(z => ({ Position: vector(0, 0, z) }));
@@ -359,7 +395,7 @@ function buildTtsSave(starterManifest, releaseAssets) {
       TurnColor: 'White',
     },
     SnapPoints: snapPoints,
-    ObjectStates: starterKits,
+    ObjectStates: [rulebook, ...starterKits],
   };
 }
 
@@ -406,4 +442,4 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   });
 }
 
-export { buildStarterKit, buildTtsSave, makeCustomDeckState, requireHostedUrl, starterBagTransform };
+export { buildStarterKit, buildTtsSave, makeCustomDeckState, makeSharedRulebook, requireHostedUrl, rulebookReleaseUrl, starterBagTransform };
