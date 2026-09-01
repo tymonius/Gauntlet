@@ -107,7 +107,7 @@ function validateEnvironment(save) {
   }
 }
 
-function validateSharedRulebook(save, version) {
+function validateSharedRulebook(save) {
   const rulebooks = (save.ObjectStates || []).filter(object => object?.GMNotes === SHARED_RULEBOOK_NOTE);
   if (rulebooks.length !== 1) throw new Error(`Expected exactly one shared Rulebook Custom PDF; found ${rulebooks.length}.`);
 
@@ -118,15 +118,8 @@ function validateSharedRulebook(save, version) {
   if (!close(rulebook.Transform?.posX, 11.4) || !close(rulebook.Transform?.posZ, 0) || !close(rulebook.Transform?.rotY, 90)) {
     throw new Error('Shared Rulebook is not parked in the neutral east-center table space.');
   }
-  const expectedPath = `/tymonius/Gauntlet/releases/download/${version}/Gauntlet_${version}_Rulebook_Booklet.pdf`;
-  let url;
-  try {
-    url = new URL(String(rulebook.CustomPDF.PDFUrl || ''));
-  } catch {
-    throw new Error('Shared Rulebook PDF URL is invalid.');
-  }
-  if (url.protocol !== 'https:' || url.hostname !== 'github.com' || url.pathname !== expectedPath) {
-    throw new Error('Shared Rulebook must load the stable versioned GitHub Release Rulebook PDF.');
+  if (!isContentVersionedReleaseAsset(String(rulebook.CustomPDF.PDFUrl || ''), '_TTS_Rulebook.pdf')) {
+    throw new Error('Shared Rulebook must load the content-versioned TTS reader-order Rulebook PDF.');
   }
   if (Number(rulebook.CustomPDF.PDFPage) !== 0 || Number(rulebook.CustomPDF.PDFPageOffset) !== 0) {
     throw new Error('Shared Rulebook must open at the beginning of the PDF.');
@@ -656,7 +649,7 @@ async function main() {
   ]);
 
   validateEnvironment(save);
-  validateSharedRulebook(save, release.version);
+  validateSharedRulebook(save);
   validateTableWorkspace(save);
   validateHandsAndSeats(save);
   const bags = validateBagsAndUtilities(save, manifest);
