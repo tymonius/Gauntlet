@@ -13,6 +13,7 @@ const PLAYER_TOKEN_NOTE_PREFIX = 'gauntlet:starter-utility:player-token:';
 const BATTLE_DIE_NOTE_PREFIX = 'gauntlet:starter-utility:battle-die:';
 const PRIVATE_PARKING_NOTE_PREFIX = 'gauntlet:private-parking:';
 const TABLE_TEXT_NOTE_PREFIX = 'gauntlet:table-layout:';
+const SHARED_RULEBOOK_NOTE = 'gauntlet:shared-rulebook';
 const TERRITORY_TAG = 'gauntlet-territory';
 const TERRITORY_OVERLAY_TAG = 'gauntlet-territory-overlay';
 const DEED_TAG = 'gauntlet-deed';
@@ -103,6 +104,25 @@ function validateEnvironment(save) {
   }
   if (tableUrl.includes('raw.githubusercontent.com') || skyUrl.includes('raw.githubusercontent.com')) {
     throw new Error('Raw branch URLs are forbidden for TTS environment images.');
+  }
+}
+
+function validateSharedRulebook(save) {
+  const rulebooks = (save.ObjectStates || []).filter(object => object?.GMNotes === SHARED_RULEBOOK_NOTE);
+  if (rulebooks.length !== 1) throw new Error(`Expected exactly one shared Rulebook Custom PDF; found ${rulebooks.length}.`);
+
+  const rulebook = rulebooks[0];
+  if (rulebook.Name !== 'Custom_PDF' || !rulebook.CustomPDF) {
+    throw new Error('Shared Rulebook must be a TTS Custom_PDF object.');
+  }
+  if (!close(rulebook.Transform?.posX, 11.4) || !close(rulebook.Transform?.posZ, 0) || !close(rulebook.Transform?.rotY, 90)) {
+    throw new Error('Shared Rulebook is not parked in the neutral east-center table space.');
+  }
+  if (!isContentVersionedReleaseAsset(String(rulebook.CustomPDF.PDFUrl || ''), '_TTS_Rulebook.pdf')) {
+    throw new Error('Shared Rulebook must load the content-versioned TTS reader-order Rulebook PDF.');
+  }
+  if (Number(rulebook.CustomPDF.PDFPage) !== 0 || Number(rulebook.CustomPDF.PDFPageOffset) !== 0) {
+    throw new Error('Shared Rulebook must open at the beginning of the PDF.');
   }
 }
 
@@ -629,6 +649,7 @@ async function main() {
   ]);
 
   validateEnvironment(save);
+  validateSharedRulebook(save);
   validateTableWorkspace(save);
   validateHandsAndSeats(save);
   const bags = validateBagsAndUtilities(save, manifest);

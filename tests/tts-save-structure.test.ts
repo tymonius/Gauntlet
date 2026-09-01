@@ -9,6 +9,7 @@ const files = {
   leader: 'leaders/military-general.png',
   table: 'environment/campaign-map-table.png',
   panorama: 'environment/command-tent-panorama.png',
+  rulebook: 'rulebook-reader.pdf',
   territories: ['territories/one.png', 'territories/two.png', 'territories/three.png'],
 };
 
@@ -22,6 +23,7 @@ const releaseAssets = {
     files.leader,
     files.table,
     files.panorama,
+    files.rulebook,
     ...files.territories,
   ].map((file) => [file, `https://example.invalid/${version}/${file}`])),
 };
@@ -88,6 +90,13 @@ describe('generated TTS table structure', () => {
     expect(save.Sky).toBe('Sky_Museum');
     expect(save.TableURL).toBe(`https://example.invalid/${version}/${files.table}`);
     expect(save.SkyURL).toBe(`https://example.invalid/${version}/${files.panorama}`);
+  });
+
+  it('adds one shared reader-order Rulebook to the base save', () => {
+    const rulebook = save.ObjectStates.find((object) => object.GMNotes === 'gauntlet:shared-rulebook');
+    expect(rulebook?.Name).toBe('Custom_PDF');
+    expect(rulebook?.CustomPDF?.PDFUrl).toBe(`https://example.invalid/${version}/${files.rulebook}`);
+    expect(rulebook?.Transform).toMatchObject({ posX: 11.4, posZ: 0, rotY: 90 });
   });
 
   it('creates exactly the White and Green native TTS player hand configurations', () => {

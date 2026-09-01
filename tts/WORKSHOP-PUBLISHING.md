@@ -43,6 +43,27 @@ The earlier `tts/release-qa/v0.7.1-candidate.json` record remains preserved as p
 
 The public Workshop item is now live as **v0.7.1** at the permanent URL above.
 
+### 2026-09-01 official table-layout maintenance
+
+The v0.7.1 TTS save was refreshed after post-release table-layout review. The updated save is the current official Gauntlet v0.7.1 TTS project save and keeps the same game/release version.
+
+The accepted maintenance layout now also includes one shared **Gauntlet v0.7.1 Rulebook** as a native TTS Custom PDF object. The TTS package de-imposes the stable print booklet into sequential half-letter reader pages and publishes that reader-order PDF as a content-versioned TTS network asset. The object sits in the neutral east-center space between the two Faction / Leader & References workspaces.
+
+The accepted maintenance layout:
+
+- keeps the Gauntlet as the central board;
+- places both Asset Banks on the west side with a dedicated shared Battle Zone between them;
+- gives each player compact overlapping Battle staging for multiple Gambits and especially multiple Tactics;
+- combines each Faction Zone with its Leader/reference workspace on the east side;
+- keeps Draw and Discard compact near the Gauntlet;
+- keeps Graveyards deliberately isolated at the outer east edge;
+- uses wide private/Hand parking strips along the player edges; and
+- moves the two Deed snap columns inward to **x = ±3.95** so Deeds sit closer to the Territory column.
+
+The final accepted Review Scaffold passed machine readiness with no blockers and was promoted to final mod identity as **Gauntlet v0.7.1**. This is a post-release maintenance revision of v0.7.1, not a new rules release.
+
+Synchronizing the permanent Steam Workshop item to this maintenance save remains a publication action outside the GitHub source repository; until that upload is performed, subscribed Workshop copies may still contain the prior v0.7.1 table geometry.
+
 Any additional subscribed-copy smoke testing, hosted-asset verification, or publication-specific defects discovered after the live update are post-release maintenance evidence. They do not reopen the completed v0.7.1 promotion gate unless they reveal a concrete release defect.
 
 ## v0.7.0 history
