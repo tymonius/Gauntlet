@@ -101,6 +101,9 @@ export interface V070BattleParticipantRuntime {
   reserve: string[];
   reserveBonus: number;
   tactic: V070BattleCardCommitment | null | undefined;
+  additionalTactics: V070BattleCardCommitment[];
+  tacticLimit: number;
+  tacticChoicesMade: number;
   battleModifier: number;
   advantage: number;
   disadvantage: number;
@@ -121,7 +124,7 @@ export interface V070UnsupportedBattleEffect {
 }
 
 export interface V070GambitOrderOverride {
-  source: 'neutral_observers';
+  source: 'neutral_observers' | 'watchtower';
   firstPlayer: PlayerId;
   secondPlayer: PlayerId;
   nextPlayer: PlayerId | null;
@@ -133,6 +136,26 @@ export interface V070RefusedTermsContext {
   opponent: PlayerId;
 }
 
+export interface V070AccursedWagerAftermathRuntime {
+  loser: PlayerId;
+  remainingSourceActionInstanceIds: string[];
+  immediateWinner: PlayerId | null;
+}
+
+export interface V070TerritoryAftermathChoiceRuntime {
+  kind: 'field_hospital' | 'old_battlefield' | 'spoils_of_war';
+  playerId: PlayerId;
+  candidateInstanceIds: string[];
+  immediateWinner: PlayerId | null;
+}
+
+export interface V070TerritoryAftermathOverride {
+  source: 'Field Hospital' | 'Old Battlefield' | 'Arena: Spoils of War';
+  playerId: PlayerId;
+  instanceId: string;
+  destination: 'discard' | 'graveyard' | 'hand';
+}
+
 export interface V070BattleRuntime {
   stage: V070BattleRuntimeStage;
   participants: Record<PlayerId, V070BattleParticipantRuntime>;
@@ -140,7 +163,20 @@ export interface V070BattleRuntime {
   refusedTermsContext: V070RefusedTermsContext | null;
   gambitOrderOverride: V070GambitOrderOverride | null;
   pendingOutcome: V070BattleOutcome | null;
+  pendingAccursedWager: V070AccursedWagerAftermathRuntime | null;
+  pendingTerritoryAftermathChoice:
+    V070TerritoryAftermathChoiceRuntime | null;
+  territoryAftermathChoiceResolved: boolean;
+  territoryAftermathOverride: V070TerritoryAftermathOverride | null;
   activeOverlayAtOnset: string | null;
+  activePrintedTerritoryAtOnset: {
+    territoryInstanceId: string;
+    territoryId: string;
+  } | null;
+  assetInactivePlayers: PlayerId[];
+  trainingGroundsRedrawPlayer: PlayerId | null;
+  trainingGroundsRedrawResolved: boolean;
+  gambitProhibitedPlayers: PlayerId[];
   unsupportedEffects: V070UnsupportedBattleEffect[];
 }
 
@@ -186,7 +222,16 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     refusedTermsContext: null,
     gambitOrderOverride: null,
     pendingOutcome: null,
+    pendingAccursedWager: null,
+    pendingTerritoryAftermathChoice: null,
+    territoryAftermathChoiceResolved: false,
+    territoryAftermathOverride: null,
     activeOverlayAtOnset: null,
+    activePrintedTerritoryAtOnset: null,
+    assetInactivePlayers: [],
+    trainingGroundsRedrawPlayer: null,
+    trainingGroundsRedrawResolved: false,
+    gambitProhibitedPlayers: [],
     unsupportedEffects: [],
   };
 }
@@ -198,6 +243,9 @@ function createParticipant(): V070BattleParticipantRuntime {
     reserve: [],
     reserveBonus: 0,
     tactic: undefined,
+    additionalTactics: [],
+    tacticLimit: 1,
+    tacticChoicesMade: 0,
     battleModifier: 0,
     advantage: 0,
     disadvantage: 0,

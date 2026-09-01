@@ -162,25 +162,25 @@ describe('v0.7.0 printed Action cards and Sanctions: Censure', () => {
     )).toBe(true);
   });
 
-  test('unsupported printed Action effects fail explicitly without spending the Action or moving the card', () => {
+  test('a card without a printed Action effect fails without spending the Action or moving the card', () => {
     const state = openingForB();
-    const unsupported = 'test-B-unsupported-neutral-manifest-destiny';
-    state.cardInstances[unsupported] = {
-      instanceId: unsupported,
-      cardId: 'neutral-manifest-destiny',
+    const nonAction = 'test-B-non-action-neutral-entrenchment';
+    state.cardInstances[nonAction] = {
+      instanceId: nonAction,
+      cardId: 'neutral-entrenchment',
       owner: 'B',
     };
-    state.players.B.zones.hand.push(unsupported);
+    state.players.B.zones.hand.push(nonAction);
 
     expect(() => reduceV070TurnAction(state, {
       type: 'play_action_card',
       playerId: 'B',
-      cardInstanceId: unsupported,
-    })).toThrow(/not yet executable/);
+      cardInstanceId: nonAction,
+    })).toThrow(/no printed Action effect/);
 
     expect(state.turnState?.actionsAvailable).toBe(1);
     expect(state.turnState?.actionsTaken.opening).toBe(0);
-    expect(state.players.B.zones.hand).toContain(unsupported);
+    expect(state.players.B.zones.hand).toContain(nonAction);
   });
 
   test('Censure may be banked from Hand after that opponent refuses Terms and remembers the refusing opponent', () => {

@@ -1,5 +1,10 @@
 import type { PlayerId } from './rules';
-import type { V070GameEvent, V070GameState, V070SetupStage } from './engine';
+import type {
+  V070GameEvent,
+  V070GameState,
+  V070MissionSlot,
+  V070SetupStage,
+} from './engine';
 import { effectiveV070AssetLimit } from './assets';
 import type {
   V070BattleCardCommitment,
@@ -47,6 +52,9 @@ export interface V070BattleParticipantView {
   reserveCount: number;
   reserve?: V070VisibleCard[];
   tactic: V070BattleCardView;
+  additionalTactics: V070BattleCardView[];
+  tacticLimit: number;
+  tacticChoicesMade: number;
   battleModifier: number;
   advantage: number;
   disadvantage: number;
@@ -56,6 +64,14 @@ export interface V070BattleParticipantView {
   tiebreakRolls: number[];
 }
 
+export interface V070TerritoryAftermathChoiceView {
+  kind: 'field_hospital' | 'old_battlefield' | 'spoils_of_war';
+  playerId: PlayerId;
+  candidateCount: number;
+  immediateWinner: PlayerId | null;
+  candidateInstanceIds?: string[];
+}
+
 export interface V070BattleRuntimeView {
   stage: V070BattleRuntime['stage'];
   participants: Record<PlayerId, V070BattleParticipantView>;
@@ -63,6 +79,18 @@ export interface V070BattleRuntimeView {
   refusedTermsContext: V070BattleRuntime['refusedTermsContext'];
   gambitOrderOverride: V070BattleRuntime['gambitOrderOverride'];
   pendingOutcome: V070BattleRuntime['pendingOutcome'];
+  pendingAccursedWager: V070BattleRuntime['pendingAccursedWager'];
+  pendingTerritoryAftermathChoice:
+    V070TerritoryAftermathChoiceView | null;
+  activePrintedTerritoryAtOnset:
+    V070BattleRuntime['activePrintedTerritoryAtOnset'];
+  assetInactivePlayers: V070BattleRuntime['assetInactivePlayers'];
+  trainingGroundsRedrawPlayer:
+    V070BattleRuntime['trainingGroundsRedrawPlayer'];
+  trainingGroundsRedrawResolved:
+    V070BattleRuntime['trainingGroundsRedrawResolved'];
+  gambitProhibitedPlayers:
+    V070BattleRuntime['gambitProhibitedPlayers'];
   unsupportedEffects: V070UnsupportedBattleEffect[];
 }
 
@@ -88,6 +116,20 @@ export interface V070FinancierView {
   financierFeatureActionSpentTurn: number | null;
 }
 
+export interface V070MissionSlotView {
+  set: true;
+  startedTurn: number;
+  card?: V070VisibleCard;
+}
+
+export interface V070IntelligenceView {
+  intel: number;
+  operationProgress: number;
+  activeMission: V070MissionSlotView | null;
+  specialOperation: V070MissionSlotView | null;
+  missionControlUsedTurn: number | null;
+}
+
 export interface V070PlayerViewState {
   id: PlayerId;
   name: string;
@@ -104,6 +146,17 @@ export interface V070PlayerViewState {
   diplomats: V070GameState['players'][PlayerId]['diplomats'];
   inquisition: V070InquisitionView | null;
   financiers: V070FinancierView | null;
+  intelligence: V070IntelligenceView | null;
+}
+
+export interface V070SpeculationView {
+  instanceId: string;
+  cardId: string;
+  owner: PlayerId;
+  territoryInstanceId: string;
+  territoryPosition: number;
+  territoryId: string;
+  placedTurn: number;
 }
 
 export interface V070GameView {
@@ -120,9 +173,12 @@ export interface V070GameView {
   battle: V070GameState['battle'];
   battleRuntime: V070BattleRuntimeView | null;
   overlays: V070OverlayView[];
+  speculations: V070SpeculationView[];
+  accursedWagers: V070GameState['accursedWagers'];
   bindings: V070BindingView[];
   assetFaceStates: V070GameState['assetFaceStates'];
   territoryTurnRestrictions: V070GameState['territoryTurnRestrictions'];
+  territoryEffectSuppressions: V070GameState['territoryEffectSuppressions'];
   sanctions: V070GameState['sanctions'];
   sanctionTriggerTurns: V070GameState['sanctionTriggerTurns'];
   pendingActionCard: V070GameState['pendingActionCard'];
@@ -159,10 +215,17 @@ export function viewV070GameForPlayer(
       ? viewBattleRuntime(state, state.battleRuntime, viewer)
       : null,
     overlays: viewOverlays(state),
+    speculations: viewSpeculations(state),
+    accursedWagers: state.accursedWagers.map(
+      wager => structuredClone(wager),
+    ),
     bindings: viewBindings(state, viewer),
     assetFaceStates: state.assetFaceStates.map(face => structuredClone(face)),
     territoryTurnRestrictions: state.territoryTurnRestrictions.map(
       restriction => structuredClone(restriction),
+    ),
+    territoryEffectSuppressions: state.territoryEffectSuppressions.map(
+      suppression => structuredClone(suppression),
     ),
     sanctions: state.sanctions.map(sanction => structuredClone(sanction)),
     sanctionTriggerTurns: { ...state.sanctionTriggerTurns },
@@ -200,6 +263,34 @@ function viewPendingActionEffectChoice(
     visible.candidateInstanceIds = [];
   }
   return visible;
+}
+
+function viewSpeculations(
+  state: V070GameState,
+): V070SpeculationView[] {
+  return state.speculations.map(speculation => {
+    const instance = state.cardInstances[speculation.instanceId];
+    if (!instance) {
+      throw new Error(
+        `Unknown Speculation card instance ${speculation.instanceId}.`,
+      );
+    }
+    const territory = state.board.find(
+      candidate =>
+        candidate.territoryInstanceId === speculation.territoryInstanceId,
+    );
+    if (!territory) {
+      throw new Error(
+        `Speculation ${speculation.instanceId} tracks missing Territory ${speculation.territoryInstanceId}.`,
+      );
+    }
+    return {
+      ...structuredClone(speculation),
+      cardId: instance.cardId,
+      territoryPosition: territory.position,
+      territoryId: territory.territoryId,
+    };
+  });
 }
 
 function viewBindings(
@@ -317,7 +408,50 @@ function viewPlayer(
             player.financiers.financierFeatureActionSpentTurn,
         }
       : null,
+    intelligence: player.intelligence
+      ? {
+          intel: player.intelligence.intel,
+          operationProgress: player.intelligence.operationProgress,
+          activeMission: viewMissionSlot(
+            state,
+            player.intelligence.activeMission,
+            isOwner,
+          ),
+          specialOperation: viewMissionSlot(
+            state,
+            player.intelligence.specialOperation,
+            isOwner,
+          ),
+          missionControlUsedTurn:
+            player.intelligence.missionControlUsedTurn,
+        }
+      : null,
   };
+}
+
+function viewMissionSlot(
+  state: V070GameState,
+  mission: V070MissionSlot | null,
+  owner: boolean,
+): V070MissionSlotView | null {
+  if (!mission) return null;
+  const result: V070MissionSlotView = {
+    set: true,
+    startedTurn: mission.startedTurn,
+  };
+  if (owner) {
+    const instance = state.cardInstances[mission.instanceId];
+    if (!instance) {
+      throw new Error(
+        `Unknown Mission card instance ${mission.instanceId}.`,
+      );
+    }
+    result.card = {
+      instanceId: mission.instanceId,
+      cardId: instance.cardId,
+    };
+  }
+  return result;
 }
 
 function viewBattleRuntime(
@@ -341,6 +475,42 @@ function viewBattleRuntime(
     pendingOutcome: runtime.pendingOutcome
       ? structuredClone(runtime.pendingOutcome)
       : null,
+    pendingAccursedWager: runtime.pendingAccursedWager
+      ? structuredClone(runtime.pendingAccursedWager)
+      : null,
+    pendingTerritoryAftermathChoice:
+      runtime.pendingTerritoryAftermathChoice
+        ? {
+            kind: runtime.pendingTerritoryAftermathChoice.kind,
+            playerId:
+              runtime.pendingTerritoryAftermathChoice.playerId,
+            candidateCount:
+              runtime.pendingTerritoryAftermathChoice
+                .candidateInstanceIds.length,
+            immediateWinner:
+              runtime.pendingTerritoryAftermathChoice.immediateWinner,
+            ...(runtime.pendingTerritoryAftermathChoice.playerId ===
+              viewer
+              ? {
+                  candidateInstanceIds: [
+                    ...runtime.pendingTerritoryAftermathChoice
+                      .candidateInstanceIds,
+                  ],
+                }
+              : {}),
+          }
+        : null,
+    activePrintedTerritoryAtOnset:
+      runtime.activePrintedTerritoryAtOnset
+        ? structuredClone(runtime.activePrintedTerritoryAtOnset)
+        : null,
+    assetInactivePlayers: [...runtime.assetInactivePlayers],
+    trainingGroundsRedrawPlayer: runtime.trainingGroundsRedrawPlayer,
+    trainingGroundsRedrawResolved:
+      runtime.trainingGroundsRedrawResolved,
+    gambitProhibitedPlayers: [
+      ...runtime.gambitProhibitedPlayers,
+    ],
     unsupportedEffects: runtime.unsupportedEffects.map(effect => structuredClone(effect)),
   };
 }
@@ -362,6 +532,11 @@ function viewBattleParticipant(
     reserveCount: participant.reserve.length,
     reserve: owner ? visibleCards(state, participant.reserve) : undefined,
     tactic: viewBattleCommitment(state, participant.tactic, owner),
+    additionalTactics: participant.additionalTactics.map(commitment =>
+      viewBattleCommitment(state, commitment, owner)
+    ),
+    tacticLimit: participant.tacticLimit,
+    tacticChoicesMade: participant.tacticChoicesMade,
     battleModifier: participant.battleModifier,
     advantage: participant.advantage,
     disadvantage: participant.disadvantage,

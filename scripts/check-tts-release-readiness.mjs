@@ -6,6 +6,7 @@ import { CURRENT_ALIAS_ROOT, resolveCurrentTtsRelease, ROOT } from './tts-curren
 
 const GENERATED_READY_FAMILIES = new Set(['proposal-treaty-card', 'ledger', 'deed-card']);
 const SUPPLEMENTAL_NOTE_PREFIX = 'gauntlet:supplemental:';
+const STARTER_KIT_NOTE_PREFIX = 'gauntlet:starter-kit:';
 const STRICT_TARGET_STATUSES = new Set(['release-candidate']);
 
 function walkObjects(objects, visit) {
@@ -93,7 +94,10 @@ export function evaluateStarterAssembly(starterManifest, supplementalManifest, s
   const blockers = [];
   const readyComponents = supplementalManifest.ready || [];
 
-  const bags = (save.ObjectStates || []).filter(object => object?.Name === 'Bag');
+  const bags = (save.ObjectStates || []).filter(object => (
+    object?.Name === 'Bag'
+    && String(object?.GMNotes || '').startsWith(STARTER_KIT_NOTE_PREFIX)
+  ));
   const bagByNickname = new Map(bags.map(bag => [bag.Nickname, bag]));
   let expectedCopies = 0;
   let assembledCopies = 0;
@@ -133,7 +137,7 @@ export function evaluateStarterAssembly(starterManifest, supplementalManifest, s
       id: 'starter-bag-count',
       kind: 'starter-bag',
       status: `${bags.length}/${(starterManifest.decks || []).length}`,
-      reason: `Generated save contains ${bags.length} starter Bags for ${(starterManifest.decks || []).length} starter manifests.`,
+      reason: `Generated save contains ${bags.length} visible starter Bags for ${(starterManifest.decks || []).length} starter manifests.`,
     });
   }
 

@@ -131,6 +131,10 @@ export interface V070TurnState {
   movementSequenceSource: V070MovementSequenceSource | null;
   pendingNormalMovementSteps: V070MovementStep[];
   movementStepQueue: V070MovementStep[];
+  territoryMovementBonus: number;
+  denouementCardActionBlockedByTerritory: boolean;
+  commandTentCardActionFirst: boolean;
+  startTurnTerritoryEffectsApplied: boolean;
   gambitMandates: V070GambitMandate[];
 }
 
@@ -406,6 +410,10 @@ export function createV070TurnState(additionalActions = 0): V070TurnState {
     movementSequenceSource: null,
     pendingNormalMovementSteps: [],
     movementStepQueue: [],
+    territoryMovementBonus: 0,
+    denouementCardActionBlockedByTerritory: false,
+    commandTentCardActionFirst: false,
+    startTurnTerritoryEffectsApplied: false,
     gambitMandates: [],
   };
 }
@@ -575,6 +583,36 @@ export function beginNormalV070Movement(state: V070TurnState, additionalMovement
     movementSequenceSource: 'normal',
     pendingNormalMovementSteps: [],
     movementStepQueue: queue,
+  };
+}
+
+export function endV070MovementSequence(
+  state: V070TurnState,
+): V070TurnState {
+  return {
+    ...state,
+    movementRemaining: 0,
+    movementSequenceOpen: false,
+    movementSequenceSource: null,
+    movementStepQueue: [],
+  };
+}
+
+export function capV070NormalMovementToOneStep(
+  state: V070TurnState,
+): V070TurnState {
+  if (!state.movementSequenceOpen
+    || state.movementSequenceSource !== 'normal') {
+    throw new Error(
+      'A Territory movement cap applies only to an open normal Movement sequence.',
+    );
+  }
+  const first = state.movementStepQueue[0];
+  if (!first) return endV070MovementSequence(state);
+  return {
+    ...state,
+    movementRemaining: 1,
+    movementStepQueue: [structuredClone(first)],
   };
 }
 

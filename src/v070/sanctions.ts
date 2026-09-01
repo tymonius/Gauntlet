@@ -18,7 +18,7 @@ import {
 } from './overlays';
 import {
   clearV070AssetFaceState,
-  isV070AssetFaceUp,
+  isV070AssetActive,
 } from './asset-face-state';
 
 export const V070_SANCTIONS_CENSURE_ID = 'diplomats-sanctions-censure';
@@ -321,7 +321,7 @@ export function openV070CensureChoicesForActionPlay(
     && sanction.kind === 'asset'
     && state.cardInstances[sanction.instanceId]?.cardId === V070_SANCTIONS_CENSURE_ID
     && state.players[sanction.owner].zones.assetBank.includes(sanction.instanceId)
-    && isV070AssetFaceUp(state, sanction.instanceId)
+    && isV070AssetActive(state, sanction.instanceId)
     && state.sanctionTriggerTurns[sanction.instanceId] !== state.turnNumber
   );
 

@@ -68,6 +68,7 @@ function startAttackingDiplomatBattle(
   state.board.forEach(space => { space.occupant = null; });
   state.board[2].occupant = 'A';
   state.board[3].occupant = 'B';
+  state.board[3].blank = true;
 
   state = reduceV070TurnAction(state, { type: 'resolve_capture', playerId: 'A' });
   state = reduceV070TurnAction(state, { type: 'draw_turn_card', playerId: 'A' });
@@ -95,12 +96,14 @@ function startDiplomatDefendingCounterattack(
     state.players.A.position = 5;
     state.players.B.position = 6;
     state.board[5].occupant = 'A';
+    state.board[5].blank = true;
   } else {
     state.players.A.position = 2;
     state.players.B.position = 3;
     state.board.forEach(space => { space.occupant = null; });
     state.board[2].controller = 'B';
     state.board[2].occupant = 'A';
+    state.board[2].blank = true;
     state.board[3].occupant = 'B';
   }
   refreshV070ControlledTerritories(state);

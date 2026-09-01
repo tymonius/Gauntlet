@@ -1,4 +1,4 @@
-import { V06_RULES_VERSION, v06CanonicalContent } from '../content';
+import { V06_RULES_VERSION, v06CanonicalContent } from '../content/v06';
 import type { CardID, GameID, GameState, PlayerID, TerritoryID } from '../types';
 import { initializeGame } from './initialize';
 import { createV06StandardBoard } from './v06-board';

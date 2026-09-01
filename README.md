@@ -69,7 +69,7 @@ The v0.7.1 playable pool contains **142 cards**: **52 Neutral cards and 15 cards
 - [Deckbuilder](https://gauntlet.run/deckbuilder/) — build, validate, save, export, randomize, and print complete v0.7.1 Deck packages.
 - [Rules Arbiter](https://gauntlet.run/rules-arbiter/) — current rules lookup and adjudication surface.
 - [Playtest tools](https://gauntlet.run/playtest/) — tracked/formal playtest workflows and feedback tools.
-- [Tabletop Simulator](https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635) — public v0.7.0 Workshop mod with all twelve starter kits.
+- [Tabletop Simulator](https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635) — public v0.7.1 Workshop mod with all twelve starter kits, the six-Rite Mystics package, and Deck Code import.
 
 ## Canonical source hierarchy
 
@@ -164,19 +164,26 @@ http://localhost:8000/card-reference/
 http://localhost:8000/playtest/
 ~~~
 
-For the active rules-aware digital engine:
+For the rules-aware digital-engine codebase:
 
 ~~~bash
 npm install
 npm run typecheck
 npm test
-npm run dev:cli
-npm run dev:gui
+~~~
+
+The promoted engine API lives at `src/content/current.ts`. Its published digital-rules target is the current release declared by the release lifecycle and current manifest; the promoted implementation may lag that target during migration, so consult `src/README.md` for the implementation baseline rather than assuming current-release parity.
+
+The interactive CLI/GUI runners are legacy pre-current-engine scaffolding and are named accordingly:
+
+~~~bash
+npm run dev:legacy:cli
+npm run dev:legacy:gui
 ~~~
 
 ## Current development priorities
 
-See [Gauntlet Development Status](docs/Gauntlet_Development_Status.md). The immediate release-followup emphasis is broad human playtesting, matchup/faction balance, winner/loser experience, self-serve onboarding, completion of the separately gated Tabletop Simulator QA/promotion, and active synchronization of the rules-aware digital engine with the published tabletop authority.
+See [Gauntlet Development Status](docs/Gauntlet_Development_Status.md). The immediate release-followup emphasis is broad human playtesting, matchup/faction balance, winner/loser experience, self-serve onboarding, post-release Tabletop Simulator smoke testing/maintenance, and active synchronization of the rules-aware digital engine with the published tabletop authority.
 
 ## Copyright and use
 

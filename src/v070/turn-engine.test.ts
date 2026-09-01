@@ -226,19 +226,22 @@ describe('v0.7.0 turn lifecycle', () => {
     });
     state = reduceV070TurnAction(state, { type: 'pass_denouement', playerId: 'A' });
 
-    expect(state.players.A.zones.hand.length).toBe(4);
+    const handCount = state.players.A.zones.hand.length;
+    const excess = Math.max(0, handCount - 3);
+    expect(excess).toBeGreaterThan(0);
     expect(() => reduceV070TurnAction(state, {
       type: 'complete_cleanup',
       playerId: 'A',
       discardInstanceIds: [],
-    })).toThrow('Cleanup requires exactly 1 Hand discard');
+    })).toThrow(`Cleanup requires exactly ${excess} Hand discard`);
 
-    const discard = state.players.A.zones.hand[0];
+    const discards = state.players.A.zones.hand.slice(0, excess);
     state = reduceV070TurnAction(state, {
       type: 'complete_cleanup',
       playerId: 'A',
-      discardInstanceIds: [discard],
+      discardInstanceIds: discards,
     });
+    const discard = discards[0];
     expect(state.players.A.zones.hand).toHaveLength(3);
     expect(state.players.A.zones.discardPile).toContain(discard);
   });

@@ -55,6 +55,15 @@ export interface V070TerritoryTurnRestriction {
   turnNumber: number;
 }
 
+export interface V070TerritoryEffectSuppression {
+  source: 'pathfinders';
+  sourceActionInstanceId: string;
+  playerId: PlayerId;
+  territoryInstanceId: string;
+  turnNumber: number;
+  scope: 'movement';
+}
+
 export interface V070PlayerZones {
   drawPile: string[];
   hand: string[];
@@ -215,6 +224,12 @@ export type V070PendingActionEffectChoice =
         | 'Spirit Hollow';
     }
   | {
+      kind: 'territory_effect_suppression_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      purpose: 'Pathfinders';
+    }
+  | {
       kind: 'forced_asset_target';
       playerId: PlayerId;
       assetOwnerId: PlayerId;
@@ -238,7 +253,8 @@ export type V070PendingActionEffectChoice =
         | 'Anathema'
         | 'Reserve Force'
         | 'Extraordinary Rendition'
-        | 'Sleeper Network';
+        | 'Sleeper Network'
+        | 'Margin Loan';
       replacementInstanceIds: string[];
     }
   | {
@@ -327,6 +343,50 @@ export type V070PendingActionEffectChoice =
       reclaimCandidateInstanceIds: string[];
     }
   | {
+      kind: 'manifest_destiny_sacrifice';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      minimumAssetCount: number;
+      candidateAssetInstanceIds: string[];
+    }
+  | {
+      kind: 'margin_loan_collateral_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'conscription_banking_action';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'leveraged_buyout_deed_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'leveraged_buyout_collateral';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      territoryInstanceId: string;
+    }
+  | {
+      kind: 'speculation_territory_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'capital_gains_treasury_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
+      kind: 'operational_reassessment_mission_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
       kind: 'owned_deed_target';
       playerId: PlayerId;
       sourceActionInstanceId: string;
@@ -382,6 +442,19 @@ export interface V070FinancierState {
   financierFeatureActionSpentTurn: number | null;
 }
 
+export interface V070MissionSlot {
+  instanceId: string;
+  startedTurn: number;
+}
+
+export interface V070IntelligenceState {
+  intel: number;
+  operationProgress: number;
+  activeMission: V070MissionSlot | null;
+  specialOperation: V070MissionSlot | null;
+  missionControlUsedTurn: number | null;
+}
+
 export interface V070DeedState {
   territoryInstanceId: string;
   owner: PlayerId | null;
@@ -403,6 +476,7 @@ export interface V070PlayerState {
   diplomats: V070DiplomatState | null;
   inquisition: V070InquisitionState | null;
   financiers: V070FinancierState | null;
+  intelligence: V070IntelligenceState | null;
 }
 
 export interface V070BoardTerritory {
@@ -413,6 +487,20 @@ export interface V070BoardTerritory {
   controller: PlayerId;
   occupant: PlayerId | null;
   blank?: boolean;
+}
+
+export interface V070SpeculationState {
+  instanceId: string;
+  owner: PlayerId;
+  territoryInstanceId: string;
+  placedTurn: number;
+}
+
+export interface V070AccursedWagerState {
+  sourceActionInstanceId: string;
+  owner: PlayerId;
+  armedTurn: number;
+  battleInitiatedEventIndex: number | null;
 }
 
 export interface V070SetupState {
@@ -445,10 +533,13 @@ export interface V070GameState {
   battleRuntime: V070BattleRuntime | null;
   overlays: V070OverlayAttachment[];
   nextOverlaySequence: number;
+  speculations: V070SpeculationState[];
+  accursedWagers: V070AccursedWagerState[];
   bindings: V070Binding[];
   nextBindingSequence: number;
   assetFaceStates: V070AssetFaceState[];
   territoryTurnRestrictions: V070TerritoryTurnRestriction[];
+  territoryEffectSuppressions: V070TerritoryEffectSuppression[];
   sanctions: V070SanctionAssociation[];
   sanctionTriggerTurns: Record<string, number>;
   pendingActionCard: V070PendingActionCard | null;
@@ -551,6 +642,15 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
             financierFeatureActionSpentTurn: null,
           }
         : null,
+      intelligence: starter.definition.factionId === 'intelligence'
+        ? {
+            intel: 0,
+            operationProgress: 0,
+            activeMission: null,
+            specialOperation: null,
+            missionControlUsedTurn: null,
+          }
+        : null,
     };
   }
 
@@ -574,10 +674,13 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
     battleRuntime: null,
     overlays: [],
     nextOverlaySequence: 1,
+    speculations: [],
+    accursedWagers: [],
     bindings: [],
     nextBindingSequence: 1,
     assetFaceStates: [],
     territoryTurnRestrictions: [],
+    territoryEffectSuppressions: [],
     sanctions: [],
     sanctionTriggerTurns: {},
     pendingActionCard: null,
