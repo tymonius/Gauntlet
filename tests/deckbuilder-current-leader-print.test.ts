@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 const componentRenderHtml = readFileSync("card-design/component-print-render.html", "utf8");
 const componentRenderJs = readFileSync("card-design/component-print-render.js", "utf8");
+const leaderStyles = readFileSync("card-design/leader-card.css", "utf8");
 const leaderCopyScript = readFileSync("card-design/leader-card-copy.js", "utf8");
 const currentGame = JSON.parse(readFileSync("game-data/current-game.json", "utf8"));
 const printTransform = readFileSync("deckbuilder/production-print.js", "utf8");
@@ -40,6 +41,17 @@ describe("Deckbuilder current Leader printing", () => {
     expect(leaderCopyScript).toContain("root.dataset.leaderCopyReady = 'true'");
     expect(leaderCopyScript).toContain("root.dataset.leaderCopyError = error?.message || String(error)");
     expect(leaderCopyScript).toContain("window.dispatchEvent(new Event('resize'))");
+  });
+
+  it("preserves the Card Design artwork crop when a Leader is production-printed", () => {
+    expect(leaderStyles).toContain(".leader-card .card-art img");
+    expect(leaderStyles).toContain("object-position: center 16%;");
+    expect(leaderStyles).toContain(".leader-card.commandant-card .card-art img");
+    expect(leaderStyles).toContain("object-position: center 14%;");
+    expect(componentRenderJs).toContain('if (kind === "leader") {');
+    expect(componentRenderJs).toContain('card.dataset.artDirectionApplied = "leader-css";');
+    expect(componentRenderJs.indexOf('card.dataset.artDirectionApplied = "leader-css";'))
+      .toBeLessThan(componentRenderJs.indexOf("const artworkId = canonicalArtworkId(card);"));
   });
 
   it("renders the selected Leader directly through the current production component renderer", () => {
