@@ -81,6 +81,7 @@ export interface V070BattleRuntimeView {
     V070TerritoryAftermathChoiceView | null;
   activePrintedTerritoryAtOnset:
     V070BattleRuntime['activePrintedTerritoryAtOnset'];
+  assetInactivePlayers: V070BattleRuntime['assetInactivePlayers'];
   gambitProhibitedPlayers:
     V070BattleRuntime['gambitProhibitedPlayers'];
   unsupportedEffects: V070UnsupportedBattleEffect[];
@@ -496,6 +497,7 @@ function viewBattleRuntime(
       runtime.activePrintedTerritoryAtOnset
         ? structuredClone(runtime.activePrintedTerritoryAtOnset)
         : null,
+    assetInactivePlayers: [...runtime.assetInactivePlayers],
     gambitProhibitedPlayers: [
       ...runtime.gambitProhibitedPlayers,
     ],
