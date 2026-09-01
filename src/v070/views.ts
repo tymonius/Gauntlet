@@ -106,6 +106,16 @@ export interface V070PlayerViewState {
   financiers: V070FinancierView | null;
 }
 
+export interface V070SpeculationView {
+  instanceId: string;
+  cardId: string;
+  owner: PlayerId;
+  territoryInstanceId: string;
+  territoryPosition: number;
+  territoryId: string;
+  placedTurn: number;
+}
+
 export interface V070GameView {
   rulesVersion: V070GameState['rulesVersion'];
   gameId: string;
@@ -120,6 +130,7 @@ export interface V070GameView {
   battle: V070GameState['battle'];
   battleRuntime: V070BattleRuntimeView | null;
   overlays: V070OverlayView[];
+  speculations: V070SpeculationView[];
   bindings: V070BindingView[];
   assetFaceStates: V070GameState['assetFaceStates'];
   territoryTurnRestrictions: V070GameState['territoryTurnRestrictions'];
@@ -159,6 +170,7 @@ export function viewV070GameForPlayer(
       ? viewBattleRuntime(state, state.battleRuntime, viewer)
       : null,
     overlays: viewOverlays(state),
+    speculations: viewSpeculations(state),
     bindings: viewBindings(state, viewer),
     assetFaceStates: state.assetFaceStates.map(face => structuredClone(face)),
     territoryTurnRestrictions: state.territoryTurnRestrictions.map(
@@ -200,6 +212,34 @@ function viewPendingActionEffectChoice(
     visible.candidateInstanceIds = [];
   }
   return visible;
+}
+
+function viewSpeculations(
+  state: V070GameState,
+): V070SpeculationView[] {
+  return state.speculations.map(speculation => {
+    const instance = state.cardInstances[speculation.instanceId];
+    if (!instance) {
+      throw new Error(
+        `Unknown Speculation card instance ${speculation.instanceId}.`,
+      );
+    }
+    const territory = state.board.find(
+      candidate =>
+        candidate.territoryInstanceId === speculation.territoryInstanceId,
+    );
+    if (!territory) {
+      throw new Error(
+        `Speculation ${speculation.instanceId} tracks missing Territory ${speculation.territoryInstanceId}.`,
+      );
+    }
+    return {
+      ...structuredClone(speculation),
+      cardId: instance.cardId,
+      territoryPosition: territory.position,
+      territoryId: territory.territoryId,
+    };
+  });
 }
 
 function viewBindings(
