@@ -1,4 +1,4 @@
-import type { BattleState, GameState, PlayerID } from '../types';
+import type { BattleState, GameState, PlayerID } from '../types/v06';
 import type { AppStateAction } from './actions';
 import { applyGameAction as applySubversionAssetGameAction } from './apply-subversion-asset';
 import { isSubversionAssetChoice } from './intelligence-subversion-asset';
