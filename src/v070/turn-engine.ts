@@ -134,6 +134,7 @@ import {
   returnV070SmugglersRunStashAtStartTurn,
   stashV070SmugglersRunCard,
 } from './smugglers-run';
+import { useV070GeneralOnward } from './military';
 
 export type V070TurnAction =
   | { type: 'resolve_capture'; playerId: PlayerId }
@@ -143,6 +144,7 @@ export type V070TurnAction =
       useRuinedStorehouse?: boolean;
     }
   | { type: 'pass_opening'; playerId: PlayerId }
+  | { type: 'use_general_onward'; playerId: PlayerId }
   | {
       type: 'bank_asset';
       playerId: PlayerId;
@@ -1067,6 +1069,9 @@ export function reduceV070TurnAction(
         action.choice,
         action.discardInstanceId,
       );
+      break;
+    case 'use_general_onward':
+      useV070GeneralOnward(next, action.playerId);
       break;
     case 'choose_movement':
       chooseMovement(
