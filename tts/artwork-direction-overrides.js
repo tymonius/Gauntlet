@@ -15,7 +15,6 @@ window.GAUNTLET_ART_DIRECTION = Object.freeze({
   "diplomats-ambassador": {"focusY":0.071},
   "diplomats-diplomatic-latitude": {"focusY":0.2},
   "diplomats-senator": {"focusY":0.037},
-  "financiers-banker": {"focusY":0},
   "financiers-executive": {"focusY":0.095},
   "financiers-war-bonds": {"focus":[0.368,0.572],"zoom":1.06},
   "inquisition-grand-inquisitor": {"focusY":0.075},
