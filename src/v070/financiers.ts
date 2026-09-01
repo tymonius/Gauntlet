@@ -1,4 +1,5 @@
 import { v070CanonicalContent } from '../content/v070';
+import { releaseV070BoundCardsForPurpose } from './bindings';
 import {
   V070GameActionError,
   appendV070Event,
@@ -186,6 +187,14 @@ export function removeV070CardFromTreasury(
       'That card is not in the player’s Treasury.',
     );
   }
+  releaseV070BoundCardsForPurpose(
+    state,
+    instanceId,
+    'Capital Gains',
+    'discard',
+    `${reason}: Treasury host left before Capital Gains completed`,
+  );
+
   financier.treasury.splice(index, 1);
 
   if (destination === 'hand') {
@@ -453,6 +462,8 @@ export function applyV070FinancierAfterCapture(
     });
   }
 
+  resolveV070CapitalGainsAfterIncome(state, playerId);
+
   const treasuryValue = v070TreasuryValue(state, playerId);
   const controlledTerritories = state.board.filter(
     territory => territory.controller === playerId,
@@ -475,6 +486,128 @@ export function applyV070FinancierAfterCapture(
     financier.financialCapacityTurn = null;
     financier.financialCapacityUsedTurn = null;
     financier.financierFeatureActionSpentTurn = null;
+  }
+}
+
+function capitalGainsBindings(
+  state: V070GameState,
+  playerId: PlayerId,
+) {
+  return state.bindings
+    .filter(binding =>
+      binding.owner === playerId
+      && binding.purpose === 'Capital Gains'
+    )
+    .sort((a, b) => a.sequence - b.sequence);
+}
+
+function capitalGainsPlacedTurn(
+  state: V070GameState,
+  capitalGainsInstanceId: string,
+): number | null {
+  const event = [...state.events].reverse().find(candidate =>
+    candidate.type === 'capital_gains_bound'
+    && (
+      candidate.payload as {
+        sourceActionInstanceId?: string;
+      } | undefined
+    )?.sourceActionInstanceId === capitalGainsInstanceId
+  );
+  const turnNumber = (
+    event?.payload as { turnNumber?: number } | undefined
+  )?.turnNumber;
+  return Number.isInteger(turnNumber) ? turnNumber! : null;
+}
+
+export function resolveV070CapitalGainsAfterIncome(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  const financier = state.players[playerId]?.financiers;
+  if (!financier) return;
+
+  for (const binding of capitalGainsBindings(state, playerId)) {
+    if (!state.bindings.some(candidate =>
+      candidate.cardInstanceId === binding.cardInstanceId
+      && candidate.purpose === 'Capital Gains'
+    )) {
+      continue;
+    }
+    const placedTurn = capitalGainsPlacedTurn(
+      state,
+      binding.cardInstanceId,
+    );
+    if (placedTurn === null || placedTurn >= state.turnNumber) continue;
+    if (!financier.treasury.includes(binding.hostId)) {
+      releaseV070BoundCardsForPurpose(
+        state,
+        binding.hostId,
+        'Capital Gains',
+        'discard',
+        'Capital Gains Treasury host unavailable after income',
+      );
+      continue;
+    }
+
+    const value = cardValue(state, binding.hostId);
+    removeV070CardFromTreasury(
+      state,
+      playerId,
+      binding.hostId,
+      'hand',
+      'Capital Gains maturity after income',
+    );
+    gainV070Capital(
+      state,
+      playerId,
+      value,
+      'Capital Gains after income',
+    );
+    appendV070Event(state, {
+      type: 'capital_gains_matured',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        sourceActionInstanceId: binding.cardInstanceId,
+        treasuryCardInstanceId: binding.hostId,
+        treasuryCardId: state.cardInstances[binding.hostId]?.cardId,
+        value,
+      },
+    });
+  }
+}
+
+export function resolveV070CapitalGainsOnBattleLoss(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  const financier = state.players[playerId]?.financiers;
+  if (!financier) return;
+
+  const hosts = [
+    ...new Set(
+      capitalGainsBindings(state, playerId)
+        .map(binding => binding.hostId),
+    ),
+  ];
+  for (const hostId of hosts) {
+    if (financier.treasury.includes(hostId)) {
+      removeV070CardFromTreasury(
+        state,
+        playerId,
+        hostId,
+        'discard',
+        'Capital Gains lost battle before maturity',
+      );
+    } else {
+      releaseV070BoundCardsForPurpose(
+        state,
+        hostId,
+        'Capital Gains',
+        'discard',
+        'Capital Gains lost battle before maturity',
+      );
+    }
   }
 }
 
