@@ -8,7 +8,7 @@ const compatibilityPrint = readFileSync("deckbuilder/print-capital-ledger.js", "
 const deckPrint = readFileSync("deckbuilder/print.js", "utf8");
 const packageProjection = readFileSync("deckbuilder/faction-components.js", "utf8");
 const deckbuilderHtml = readFileSync("deckbuilder/index.html", "utf8");
-const componentRenderer = readFileSync("card-design/component-print-render.js", "utf8");
+const componentRenderer = readFileSync("card-design/component-render.js", "utf8");
 
 const components = contract.components as Array<Record<string, any>>;
 const sharedComponents = contract.sharedComponents as Array<Record<string, any>>;
