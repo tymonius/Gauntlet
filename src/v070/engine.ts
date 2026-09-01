@@ -448,6 +448,11 @@ export interface V070FinancierState {
   financierFeatureActionSpentTurn: number | null;
 }
 
+export interface V070MilitaryState {
+  command: number;
+  commandGainTurn: number | null;
+}
+
 export interface V070MissionSlot {
   instanceId: string;
   startedTurn: number;
@@ -479,6 +484,7 @@ export interface V070PlayerState {
   position: number | null;
   controlledTerritories: string[];
   reshuffleCount: number;
+  military: V070MilitaryState | null;
   diplomats: V070DiplomatState | null;
   inquisition: V070InquisitionState | null;
   financiers: V070FinancierState | null;
@@ -627,6 +633,12 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
       position: null,
       controlledTerritories: [],
       reshuffleCount: 0,
+      military: starter.definition.factionId === 'military'
+        ? {
+            command: 0,
+            commandGainTurn: null,
+          }
+        : null,
       diplomats: starter.definition.factionId === 'diplomats'
         ? {
             influence: 1,
