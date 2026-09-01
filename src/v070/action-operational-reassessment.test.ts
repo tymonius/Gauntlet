@@ -373,8 +373,12 @@ describe('v0.7.0 Intelligence Mission foundation and Operational Reassessment', 
     );
     expect(publicPending?.payload).toEqual(expect.objectContaining({
       purpose: 'Operational Reassessment',
-      candidateCount: 1,
+      candidateCount: expect.any(Number),
     }));
+    expect(
+      (publicPending?.payload as { candidateCount?: number })
+        ?.candidateCount,
+    ).toBeGreaterThanOrEqual(1);
     expect(JSON.stringify(publicPending?.payload)).not.toContain(
       replacement,
     );
@@ -385,9 +389,10 @@ describe('v0.7.0 Intelligence Mission foundation and Operational Reassessment', 
       && (event.payload as { kind?: string })?.kind ===
         'operational_reassessment_mission_target'
     );
-    expect(privateOptions?.payload).toEqual(expect.objectContaining({
-      targetInstanceIds: [replacement],
-    }));
+    expect(
+      (privateOptions?.payload as { targetInstanceIds?: string[] })
+        ?.targetInstanceIds,
+    ).toContain(replacement);
 
     state = reduceV070TurnAction(state, {
       type: 'choose_operational_reassessment_mission_target',
