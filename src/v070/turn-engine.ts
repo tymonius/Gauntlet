@@ -1043,9 +1043,14 @@ function applyV070TurnStartTerritoryEffects(
   const plan = v070TurnStartTerritoryPlan(state, playerId);
   state.turnState = {
     ...turnState,
+    actionsAvailable:
+      turnState.actionsAvailable
+      + plan.commandTentAdditionalActions,
     territoryMovementBonus: plan.kingsRoadMovementBonus,
     denouementCardActionBlockedByTerritory:
       plan.denouementCardActionBlocked,
+    commandTentCardActionFirst:
+      plan.commandTentCardActionFirst,
     startTurnTerritoryEffectsApplied: true,
   };
 
@@ -1087,6 +1092,19 @@ function applyV070TurnStartTerritoryEffects(
       payload: {
         territoryId: 'territory-difficult-terrain',
         effect: 'denouement_card_action_blocked',
+      },
+    });
+  }
+  if (plan.commandTentAdditionalActions > 0) {
+    appendV070Event(state, {
+      type: 'territory_effect_applied',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        territoryId: 'territory-command-tent',
+        effect: 'additional_action_and_cross_phase',
+        additionalActions: plan.commandTentAdditionalActions,
+        firstActionEachPhase: 'card_action',
       },
     });
   }
@@ -1203,9 +1221,20 @@ function spendTurnAction(
   state: V070GameState,
   playerId: PlayerId,
   financierFeatureName?: string,
+  cardAction = false,
 ): void {
   const turnState = requireTurnState(state);
   const financierFeature = Boolean(financierFeatureName);
+
+  if (turnState.commandTentCardActionFirst
+    && (turnState.phase === 'opening'
+      || turnState.phase === 'denouement')
+    && turnState.actionsTaken[turnState.phase] === 0
+    && !cardAction) {
+    throw new V070GameActionError(
+      'Command Tent requires the first Action taken in each Action phase to play a card for its Action effect.',
+    );
+  }
 
   try {
     state.turnState = spendV070Action(turnState);
@@ -1944,7 +1973,7 @@ function playActionCard(
   }
 
   if (options.spendAction !== false) {
-    spendTurnAction(state, playerId);
+    spendTurnAction(state, playerId, undefined, true);
   }
 
   player.zones.hand.splice(handIndex, 1);
