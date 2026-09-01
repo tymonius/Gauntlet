@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { imposedPlacementForLogicalPage } from '../scripts/generate-tts-rulebook-reader.mjs';
+import { imposedPlacementForLogicalPage } from '../scripts/tts-rulebook-imposition.mjs';
 
 describe('TTS Rulebook reader de-imposition', () => {
   it('reconstructs logical reading order from booklet imposition', () => {
