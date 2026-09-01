@@ -86,6 +86,7 @@ import {
 import { preventV070OpposingHandReveal } from './counterintelligence';
 import {
   faceUpV070AssetInstanceIds,
+  isV070AssetActive,
   isV070AssetFaceUp,
   restoreV070AssetsAtTurnStart,
   turnV070AssetFaceDownUntilPlayerNextTurn,
@@ -7666,7 +7667,7 @@ function sequestrationKeepOptions(
   const rendition = bank.find(instanceId =>
     state.cardInstances[instanceId]?.cardId
       === 'intelligence-extraordinary-rendition'
-    && isV070AssetFaceUp(state, instanceId)
+    && isV070AssetActive(state, instanceId)
   );
   return rendition
     ? bank.filter(instanceId => instanceId !== rendition)
@@ -7830,7 +7831,7 @@ function resolveSequestrationDiscards(
     const rendition = discard.find(instanceId =>
       state.cardInstances[instanceId]?.cardId
         === 'intelligence-extraordinary-rendition'
-      && isV070AssetFaceUp(state, instanceId)
+      && isV070AssetActive(state, instanceId)
     );
     if (rendition) {
       discard = [
@@ -8334,7 +8335,7 @@ function resolveManifestDestinySacrifice(
   const extraordinary = assetInstanceIds.find(instanceId =>
     state.cardInstances[instanceId]?.cardId ===
       'intelligence-extraordinary-rendition'
-    && isV070AssetFaceUp(state, instanceId)
+    && isV070AssetActive(state, instanceId)
   );
   const orderedAssets = extraordinary
     ? [

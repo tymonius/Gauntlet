@@ -16,7 +16,7 @@ import {
 } from './engine';
 import {
   clearV070AssetFaceState,
-  isV070AssetFaceUp,
+  isV070AssetActive,
 } from './asset-face-state';
 import { drawV070Cards } from './turn-engine';
 import { advanceV070FrontLine } from './front-line';
@@ -1564,7 +1564,7 @@ function discardSpecificHandCard(
 function hasBankedCard(state: V070GameState, playerId: PlayerId, cardId: string): boolean {
   return state.players[playerId].zones.assetBank.some(instanceId =>
     state.cardInstances[instanceId]?.cardId === cardId
-    && isV070AssetFaceUp(state, instanceId)
+    && isV070AssetActive(state, instanceId)
   );
 }
 
@@ -1578,7 +1578,7 @@ function requireCardInZone(
   const player = state.players[playerId];
   if (!player.zones[zone].includes(instanceId)
     || state.cardInstances[instanceId]?.cardId !== expectedCardId
-    || (zone === 'assetBank' && !isV070AssetFaceUp(state, instanceId))) {
+    || (zone === 'assetBank' && !isV070AssetActive(state, instanceId))) {
     throw new V070GameActionError(`${expectedCardId} is not available in the required zone.`);
   }
 }

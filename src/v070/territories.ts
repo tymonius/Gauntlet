@@ -434,3 +434,105 @@ export function activeV070PrintedBattleTerritory(
       && territory.territoryId === snapshot.territoryId,
   ) ?? null;
 }
+
+
+export const V070_FORTIFIED_PASS_ID =
+  'territory-fortified-pass' as const;
+export const V070_INSURGENCY_ID =
+  'territory-insurgency' as const;
+export const V070_ARENA_SINGLE_COMBAT_ID =
+  'territory-arena-single-combat' as const;
+export const V070_ARENA_GRAND_MELEE_ID =
+  'territory-arena-grand-melee' as const;
+export const V070_TRAINING_GROUNDS_ID =
+  'territory-training-grounds' as const;
+
+export function v070PlayerInOccupation(
+  state: V070GameState,
+  playerId: PlayerId,
+): boolean {
+  const position = state.players[playerId].position;
+  if (position === null) return false;
+  const territory = territoryAtV070Position(state, position);
+  return Boolean(
+    territory
+    && territory.controller !== playerId
+    && territory.occupant === playerId,
+  );
+}
+
+export function v070PlayerAssetsInactiveByContinuousTerritory(
+  state: V070GameState,
+  playerId: PlayerId,
+): boolean {
+  const position = state.players[playerId].position;
+  if (position === null) return false;
+  const territory = territoryAtV070Position(state, position);
+  return Boolean(
+    territory
+    && territory.territoryId === V070_INSURGENCY_ID
+    && v070PlayerInOccupation(state, playerId)
+    && v070PrintedTerritoryEffectActive(
+      state,
+      territory,
+      state.activePlayer ?? playerId,
+      'continuous',
+    ),
+  );
+}
+
+export function applyV070AdvancedBattleTerritoryEffects(
+  state: V070GameState,
+): void {
+  const battle = state.battle;
+  const runtime = state.battleRuntime;
+  if (!battle || !runtime || battle.lastStand) return;
+  const territory = activeV070PrintedBattleTerritory(state);
+  if (!territory) return;
+
+  const inactive = new Set(runtime.assetInactivePlayers);
+  const effects: string[] = [];
+
+  if (territory.territoryId === V070_FORTIFIED_PASS_ID
+    && territory.controller === battle.defender) {
+    inactive.add(battle.attacker);
+    effects.push('attacker_assets_inactive');
+  }
+
+  if (territory.territoryId === V070_ARENA_SINGLE_COMBAT_ID) {
+    inactive.add(battle.attacker);
+    inactive.add(battle.defender);
+    effects.push('all_assets_inactive');
+  }
+
+  if (territory.territoryId === V070_ARENA_GRAND_MELEE_ID) {
+    for (const playerId of [battle.attacker, battle.defender]) {
+      runtime.participants[playerId].reserveBonus += 1;
+      runtime.participants[playerId].tacticLimit += 1;
+    }
+    effects.push('each_player_reserve_plus_one');
+    effects.push('each_player_tactic_plus_one');
+  }
+
+  if (territory.territoryId === V070_TRAINING_GROUNDS_ID
+    && territory.controller === battle.defender) {
+    runtime.trainingGroundsRedrawPlayer = battle.defender;
+    effects.push('defender_may_redraw_reserve_before_tactics');
+  }
+
+  runtime.assetInactivePlayers = [...inactive];
+
+  if (effects.length > 0) {
+    appendV070Event(state, {
+      type: 'territory_battle_effect_applied',
+      actor: battle.attacker,
+      visibility: 'public',
+      payload: {
+        territoryInstanceId: territory.territoryInstanceId,
+        territoryPosition: territory.position,
+        territoryId: territory.territoryId,
+        effects,
+      },
+    });
+  }
+}

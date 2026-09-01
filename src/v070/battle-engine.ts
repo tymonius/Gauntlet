@@ -58,6 +58,7 @@ import {
 import {
   activeV070PrintedBattleTerritory,
   applyV070CoreBattleTerritoryEffects,
+  applyV070AdvancedBattleTerritoryEffects,
   applyV070NoQuarterAdditionalRetreat,
   V070_ARENA_SPOILS_OF_WAR_ID,
   V070_FIELD_HOSPITAL_ID,
@@ -71,7 +72,7 @@ import {
 import { openV070BlockadeChoicesForPositionChange } from './movement-triggers';
 import {
   clearV070AssetFaceState,
-  isV070AssetFaceUp,
+  isV070AssetActive,
 } from './asset-face-state';
 import {
   applyV070BlasphemyForBattleReveal,
@@ -167,6 +168,11 @@ export type V070BattleAction =
       playerId: PlayerId;
       cardInstanceId?: string;
     }
+  | {
+      type: 'resolve_training_grounds_redraw';
+      playerId: PlayerId;
+      use: boolean;
+    }
   | { type: 'complete_aftermath'; playerId: PlayerId };
 
 export function reduceV070BattleAction(
@@ -189,6 +195,14 @@ export function reduceV070BattleAction(
     && action.type !== 'resolve_territory_aftermath_choice') {
     throw new V070GameActionError(
       'Resolve the pending Territory Aftermath choice before continuing the Aftermath.',
+    );
+  }
+  if (state.battleRuntime?.stage === 'choose_tactics'
+    && state.battleRuntime.trainingGroundsRedrawPlayer
+    && !state.battleRuntime.trainingGroundsRedrawResolved
+    && action.type !== 'resolve_training_grounds_redraw') {
+    throw new V070GameActionError(
+      'Resolve the pending Training Grounds Reserve redraw choice before choosing Tactics.',
     );
   }
   if (state.pendingAssetLimitChoice && action.type !== 'resolve_asset_limit_removal') {
@@ -336,6 +350,13 @@ export function reduceV070BattleAction(
         action.cardInstanceId,
       );
       break;
+    case 'resolve_training_grounds_redraw':
+      resolveTrainingGroundsRedraw(
+        next,
+        action.playerId,
+        action.use,
+      );
+      break;
     case 'complete_aftermath':
       completeAftermath(next, action.playerId);
       break;
@@ -387,6 +408,7 @@ function ensureBattleRuntime(state: V070GameState): V070BattleRuntime {
       state.battle.contestedPosition,
     );
     applyV070CoreBattleTerritoryEffects(state);
+    applyV070AdvancedBattleTerritoryEffects(state);
     initializeV070TermsWindow(state);
   }
   return state.battleRuntime;
@@ -427,7 +449,7 @@ function unsupportedOnsetFeatures(state: V070GameState): string[] {
     const player = state.players[playerId];
 
     for (const instanceId of player.zones.assetBank) {
-      if (!isV070AssetFaceUp(state, instanceId)) continue;
+      if (!isV070AssetActive(state, instanceId)) continue;
       const cardId = state.cardInstances[instanceId]?.cardId;
       const card = cardId ? v070CanonicalContent.cardsById.get(cardId) : undefined;
       const onsetAsset = card?.effects.find(effect =>
@@ -599,7 +621,10 @@ function revealBattleRole(
           ...participant.additionalGambits,
         ];
       }
-      return normal ? [normal] : [];
+      return [
+        ...(normal ? [normal] : []),
+        ...participant.additionalTactics,
+      ];
     })
     .filter((item): item is V070BattleCardCommitment => Boolean(item));
 
@@ -649,6 +674,111 @@ function revealBattleRole(
   }
 
   runtime.stage = role === 'gambit' ? 'choose_tactics' : 'outcome';
+  if (role === 'gambit') openTrainingGroundsRedrawChoice(state);
+}
+
+function openTrainingGroundsRedrawChoice(
+  state: V070GameState,
+): void {
+  const runtime = requireRuntime(state);
+  const playerId = runtime.trainingGroundsRedrawPlayer;
+  if (!playerId || runtime.trainingGroundsRedrawResolved) return;
+
+  const reserveCount = runtime.participants[playerId].reserve.length;
+  if (reserveCount === 0) {
+    runtime.trainingGroundsRedrawResolved = true;
+    appendV070Event(state, {
+      type: 'training_grounds_redraw_unavailable',
+      actor: playerId,
+      visibility: 'public',
+      payload: { reserveCount: 0 },
+    });
+    return;
+  }
+
+  appendV070Event(state, {
+    type: 'training_grounds_redraw_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      playerId,
+      reserveCount,
+      optional: true,
+    },
+  });
+}
+
+function resolveTrainingGroundsRedraw(
+  state: V070GameState,
+  playerId: PlayerId,
+  use: boolean,
+): void {
+  const runtime = requireRuntime(state);
+  requireRuntimeStage(runtime, 'choose_tactics');
+  if (runtime.trainingGroundsRedrawPlayer !== playerId
+    || runtime.trainingGroundsRedrawResolved) {
+    throw new V070GameActionError(
+      'No Training Grounds Reserve redraw is pending for that player.',
+    );
+  }
+
+  const participant = runtime.participants[playerId];
+  const oldReserve = [...participant.reserve];
+  runtime.trainingGroundsRedrawResolved = true;
+
+  if (!use) {
+    appendV070Event(state, {
+      type: 'training_grounds_redraw_declined',
+      actor: playerId,
+      visibility: 'public',
+      payload: { reserveCount: oldReserve.length },
+    });
+    return;
+  }
+
+  participant.reserve = [];
+  state.players[playerId].zones.discardPile.push(...oldReserve);
+  for (const instanceId of oldReserve) {
+    appendV070Event(state, {
+      type: 'card_discarded',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        instanceId,
+        cardId: state.cardInstances[instanceId]?.cardId,
+        purpose: 'Training Grounds Reserve redraw',
+      },
+    });
+  }
+
+  const result = drawV070Cards(
+    state,
+    playerId,
+    oldReserve.length,
+    'training_grounds_reserve_redraw',
+  );
+  participant.reserve = result.drawn;
+
+  appendV070Event(state, {
+    type: 'training_grounds_redraw_resolved',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      discardedCount: oldReserve.length,
+      drawnCount: result.drawn.length,
+      reshuffles: result.reshuffles,
+      exhausted: result.exhausted,
+    },
+  });
+  appendV070Event(state, {
+    type: 'reserve_identity',
+    actor: playerId,
+    visibility: playerId,
+    payload: {
+      cardInstanceIds: [...result.drawn],
+      purpose: 'Training Grounds',
+    },
+  });
 }
 
 function chooseTactic(
@@ -658,44 +788,82 @@ function chooseTactic(
 ): void {
   const runtime = requireRuntime(state);
   requireRuntimeStage(runtime, 'choose_tactics');
-  const participant = runtime.participants[playerId];
-  if (participant.tactic !== undefined) {
-    throw new V070GameActionError(`${playerId} has already made a Tactic choice.`);
+  if (runtime.trainingGroundsRedrawPlayer
+    && !runtime.trainingGroundsRedrawResolved) {
+    throw new V070GameActionError(
+      'Resolve Training Grounds before choosing Tactics.',
+    );
   }
 
+  const participant = runtime.participants[playerId];
+  if (participant.tacticChoicesMade >= participant.tacticLimit) {
+    throw new V070GameActionError(
+      `${playerId} has already made all allowed Tactic choices.`,
+    );
+  }
+
+  const choiceNumber = participant.tacticChoicesMade + 1;
   if (instanceId === undefined) {
-    participant.tactic = null;
+    if (choiceNumber === 1) participant.tactic = null;
+    participant.tacticChoicesMade += 1;
     appendV070Event(state, {
       type: 'tactic_passed',
       actor: playerId,
       visibility: 'public',
+      payload: {
+        choiceNumber,
+        tacticLimit: participant.tacticLimit,
+      },
     });
   } else {
     const index = participant.reserve.indexOf(instanceId);
-    if (index < 0) throw new V070GameActionError('A normal Tactic must be chosen from Reserve.');
+    if (index < 0) {
+      throw new V070GameActionError(
+        'A normal Tactic must be chosen from Reserve.',
+      );
+    }
 
     const cardId = requireCardInstance(state, instanceId).cardId;
     if (!cardEligibleForV070BattleRole(cardId, 'tactic')) {
-      throw new V070GameActionError(`${cardId} is not eligible to be chosen as a Tactic.`);
+      throw new V070GameActionError(
+        `${cardId} is not eligible to be chosen as a Tactic.`,
+      );
     }
 
     participant.reserve.splice(index, 1);
-    participant.tactic = commitment(instanceId, playerId, 'tactic');
+    const chosen = commitment(instanceId, playerId, 'tactic');
+    if (choiceNumber === 1) {
+      participant.tactic = chosen;
+    } else {
+      participant.additionalTactics.push(chosen);
+    }
+    participant.tacticChoicesMade += 1;
+
     appendV070Event(state, {
       type: 'tactic_chosen',
       actor: playerId,
       visibility: 'public',
-      payload: { faceDown: true },
+      payload: {
+        faceDown: true,
+        choiceNumber,
+        tacticLimit: participant.tacticLimit,
+      },
     });
     appendV070Event(state, {
       type: 'tactic_identity',
       actor: playerId,
       visibility: playerId,
-      payload: { instanceId, cardId },
+      payload: {
+        instanceId,
+        cardId,
+        choiceNumber,
+      },
     });
   }
 
-  if (bothBattleChoicesMade(runtime, 'tactic')) runtime.stage = 'reveal_tactics';
+  if (bothBattleChoicesMade(runtime, 'tactic')) {
+    runtime.stage = 'reveal_tactics';
+  }
 }
 
 function submitBattleDice(
@@ -855,7 +1023,7 @@ function useSafeConduct(
   const index = player.zones.assetBank.indexOf(cardInstanceId);
   if (index < 0
     || state.cardInstances[cardInstanceId]?.cardId !== 'diplomats-safe-conduct'
-    || !isV070AssetFaceUp(state, cardInstanceId)) {
+    || !isV070AssetActive(state, cardInstanceId)) {
     throw new V070GameActionError('Choose a banked Safe Conduct to use.');
   }
 
@@ -918,7 +1086,7 @@ function safeConductAvailable(
 
   return state.players[playerId].zones.assetBank.some(instanceId =>
     state.cardInstances[instanceId]?.cardId === 'diplomats-safe-conduct'
-    && isV070AssetFaceUp(state, instanceId)
+    && isV070AssetActive(state, instanceId)
   );
 }
 
@@ -1477,6 +1645,35 @@ function completeAftermathInternal(
         });
       }
     }
+    for (const additionalTactic of participant.additionalTactics) {
+      const instanceId = additionalTactic.instanceId;
+      const condemned =
+        v070CondemnationAppliesToPlayerTactic(state, playerId);
+      placeAftermathCard(
+        state,
+        playerId,
+        instanceId,
+        territoryAftermathDestination(
+          runtime,
+          playerId,
+          instanceId,
+          condemned ? 'graveyard' : 'discard',
+        ),
+        graveyardedDuringAftermath[playerId],
+      );
+      if (condemned) {
+        appendV070Event(state, {
+          type: 'condemnation_applied',
+          actor: otherPlayer(playerId),
+          visibility: 'public',
+          payload: {
+            tacticOwner: playerId,
+            instanceId,
+            cardId: state.cardInstances[instanceId]?.cardId,
+          },
+        });
+      }
+    }
     for (const instanceId of participant.reserve) {
       placeAftermathCard(
         state,
@@ -1552,8 +1749,14 @@ function bothBattleChoicesMade(
   runtime: V070BattleRuntime,
   role: 'gambit' | 'tactic',
 ): boolean {
-  return runtime.participants.A[role] !== undefined
-    && runtime.participants.B[role] !== undefined;
+  if (role === 'tactic') {
+    return (['A', 'B'] as const).every(playerId => {
+      const participant = runtime.participants[playerId];
+      return participant.tacticChoicesMade >= participant.tacticLimit;
+    });
+  }
+  return runtime.participants.A.gambit !== undefined
+    && runtime.participants.B.gambit !== undefined;
 }
 
 function bothBattleTotalsReady(runtime: V070BattleRuntime): boolean {
