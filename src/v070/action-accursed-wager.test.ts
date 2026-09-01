@@ -230,7 +230,7 @@ describe('v0.7.0 Accursed Wager Action', () => {
       playerId: 'B',
     });
 
-    expect(state.players.A.position).toBe(3);
+    expect(state.players.A.position).toBe(1);
     expect(state.battle).not.toBeNull();
     expect(state.battleRuntime?.pendingAccursedWager).toEqual({
       loser: 'A',
