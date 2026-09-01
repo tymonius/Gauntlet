@@ -1,15 +1,2 @@
-export * from './ids';
-export * from './zones';
-export * from './resources';
-export * from './leader';
-export * from './military';
-export * from './diplomats';
-export * from './financiers';
-export * from './intelligence';
-export * from './mystics';
-export * from './inquisition';
-export * from './neutral';
-export * from './player';
-export * from './board';
-export * from './battle';
-export * from './game';
+/** @deprecated Legacy v0.6 compatibility barrel. New legacy consumers should import './v06' explicitly. */
+export * from './v06';
