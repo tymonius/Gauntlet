@@ -486,7 +486,8 @@ async function hydrateReferenceCards() {
     root.dataset.referenceCardsReady = 'true';
     return;
   }
-  const records = await loadReferenceRecords();
+  const requestedReferenceIds = referenceComponents.map(({ component }) => component.referenceId);
+  const records = await loadReferenceRecords(requestedReferenceIds);
   const recordsById = new Map(records.map(record => [record.id, record]));
   const missing = referenceComponents.filter(({ component }) => !recordsById.has(component.referenceId));
   if (missing.length) throw new Error(`Reference-card contract mismatch: ${missing.map(({ component }) => component.referenceId).join(', ')}`);

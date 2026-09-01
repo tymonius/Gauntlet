@@ -91,13 +91,15 @@ describe("Deckbuilder production printing", () => {
     expect(printTransform).toContain("Printing was stopped so the Deck is not printed with incomplete cards");
   });
 
-  it("isolates standalone supplemental production renders to the requested component", () => {
+  it("isolates standalone supplemental production renders and their reference-source loading", () => {
     expect(supplementalRenderer).toContain("function isolatedComponentRenderId()");
     expect(supplementalRenderer).toContain("/\\/component-print-render\\.html$/");
     expect(supplementalRenderer).toContain("component.id === isolatedId");
     expect(supplementalRenderer).toContain("component.contractId === isolatedId");
     expect(supplementalRenderer).toContain("component.referenceId === isolatedId");
     expect(supplementalRenderer).toContain("filteredGroups = groups");
+    expect(supplementalRenderer).toContain("const requestedReferenceIds = referenceComponents.map");
+    expect(supplementalRenderer).toContain("loadReferenceRecords(requestedReferenceIds)");
   });
 
   it("keeps first-page duplex fronts below the deck summary and aligns their reverse sheet", () => {
