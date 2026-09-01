@@ -18,6 +18,7 @@ export const V070_RUINED_STOREHOUSE_ID =
 export const V070_SUPPLY_DEPOT_ID = 'territory-supply-depot' as const;
 export const V070_REFUGE_ID = 'territory-refuge' as const;
 export const V070_COMMAND_TENT_ID = 'territory-command-tent' as const;
+export const V070_MONASTERY_ID = 'territory-monastery' as const;
 export const V070_KINGS_ROAD_ID = 'territory-king-s-road' as const;
 export const V070_TOLL_BRIDGE_ID = 'territory-toll-bridge' as const;
 
@@ -499,6 +500,43 @@ export function v070PlayerInOccupation(
     && territory.occupant === playerId,
   );
 }
+
+export function v070MonasteryBlocksGraveyardExit(
+  state: V070GameState,
+): boolean {
+  return state.board.some(territory => {
+    if (territory.territoryId !== V070_MONASTERY_ID
+      || !territory.controller
+      || territory.occupant !== territory.controller
+      || state.players[territory.controller].position !== territory.position) {
+      return false;
+    }
+    return v070PrintedTerritoryEffectActive(
+      state,
+      territory,
+      state.activePlayer ?? territory.controller,
+      'continuous',
+    );
+  });
+}
+
+export function assertV070GraveyardExitAllowed(
+  state: V070GameState,
+  purpose: string,
+): void {
+  if (!v070MonasteryBlocksGraveyardExit(state)) return;
+  throw new V070GameActionError(
+    `Monastery prevents cards from leaving either player's Graveyard while its controller is there (${purpose}).`,
+  );
+}
+
+export function v070MonasterySuppressesArcaneBattleEffects(
+  state: V070GameState,
+): boolean {
+  return state.battleRuntime?.activePrintedTerritoryAtOnset?.territoryId ===
+    V070_MONASTERY_ID;
+}
+
 
 export function v070PlayerAssetsInactiveByContinuousTerritory(
   state: V070GameState,
