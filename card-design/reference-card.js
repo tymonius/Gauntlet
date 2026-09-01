@@ -404,8 +404,13 @@ function parseBespokeReferenceFace(markdown, face, componentName, side) {
   return { title, sections };
 }
 
-export async function loadReferenceRecords() {
+export async function loadReferenceRecords(componentIds = null) {
   const currentGame = await loadCurrentGame();
+  const requestedIds = componentIds == null
+    ? null
+    : new Set((Array.isArray(componentIds) ? componentIds : [componentIds])
+      .map(value => String(value || '').trim())
+      .filter(Boolean));
   const components = [
     ...(currentGame.sharedComponents || []),
     ...(currentGame.components || []),
@@ -413,8 +418,12 @@ export async function loadReferenceRecords() {
     component.family === 'reference-card'
     && component.referenceFaces?.front
     && component.referenceFaces?.reverse
+    && (!requestedIds || requestedIds.has(component.id))
   ));
-  if (!components.length) throw new Error('Current-game authority declares no reference cards.');
+  if (!components.length) {
+    if (requestedIds) throw new Error(`Current-game authority cannot resolve requested reference card(s): ${[...requestedIds].join(', ')}.`);
+    throw new Error('Current-game authority declares no reference cards.');
+  }
 
   const sourceCache = new Map();
   const records = [];
