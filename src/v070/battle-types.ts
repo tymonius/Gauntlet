@@ -133,6 +133,12 @@ export interface V070RefusedTermsContext {
   opponent: PlayerId;
 }
 
+export interface V070AccursedWagerAftermathRuntime {
+  loser: PlayerId;
+  remainingSourceActionInstanceIds: string[];
+  immediateWinner: PlayerId | null;
+}
+
 export interface V070BattleRuntime {
   stage: V070BattleRuntimeStage;
   participants: Record<PlayerId, V070BattleParticipantRuntime>;
@@ -140,6 +146,7 @@ export interface V070BattleRuntime {
   refusedTermsContext: V070RefusedTermsContext | null;
   gambitOrderOverride: V070GambitOrderOverride | null;
   pendingOutcome: V070BattleOutcome | null;
+  pendingAccursedWager: V070AccursedWagerAftermathRuntime | null;
   activeOverlayAtOnset: string | null;
   unsupportedEffects: V070UnsupportedBattleEffect[];
 }
@@ -186,6 +193,7 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     refusedTermsContext: null,
     gambitOrderOverride: null,
     pendingOutcome: null,
+    pendingAccursedWager: null,
     activeOverlayAtOnset: null,
     unsupportedEffects: [],
   };
