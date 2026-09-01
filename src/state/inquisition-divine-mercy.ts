@@ -10,7 +10,7 @@ import type {
   GameState,
   InquisitionDivineMercyBattleQueueEntry,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import { GameActionError } from './reducer';
 import { gainFactionResource } from './resources';
 
