@@ -121,6 +121,27 @@ describe('digital engine boundary', () => {
     expect(typeIndex).not.toContain("export * from './battle'");
   });
 
+  it('pins legacy development surfaces to explicit v0.6 aggregate APIs', () => {
+    const devConsumers = [
+      'src/cli/dev-runner-v06.ts',
+      'src/gui/dev-server-v06.ts',
+      'src/dev/battle-reveal-options.ts',
+      'src/dev/guided-options.test.ts',
+      'src/dev/guided-options.ts',
+      'src/dev/inquisition-options.ts',
+      'src/dev/intelligence-battle-options.ts',
+      'src/dev/intelligence-options.ts',
+      'src/dev/mystics-options.ts',
+      'src/dev/neutral-options.test.ts',
+      'src/dev/neutral-options.ts',
+    ];
+
+    for (const path of devConsumers) {
+      const source = readFileSync(path, 'utf8');
+      expect(source).not.toMatch(/from ['"]\.\.\/(?:cards|types)['"]/);
+    }
+  });
+
   it('keeps the promoted v0.7.0 implementation isolated from legacy architecture', () => {
     const promotedSources = readdirSync('src/v070')
       .filter((name) => name.endsWith('.ts') && !name.endsWith('.test.ts'));
