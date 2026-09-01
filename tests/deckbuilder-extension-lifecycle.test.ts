@@ -37,6 +37,7 @@ describe("Deckbuilder extension architecture", () => {
     expect(app).toContain('registerDeckListHook: callback => requireHook("deckList", callback)');
     expect(app).toContain("registerFeature(name, api)");
     expect(app).toContain("setAuthorityBootstrap(callback)");
+    expect(app).toContain("currentGame()");
     expect(app).toContain("setSourceLoader(callback)");
     expect(app).toContain("setCardPreviewRenderer(callback)");
     expect(app).toContain("registerPrintTransform,");
@@ -57,6 +58,26 @@ describe("Deckbuilder extension architecture", () => {
       expect(source, `${path} replaces window.open`).not.toMatch(/window\.open\s*=/);
       expect(source, `${path} replaces document.write`).not.toMatch(/document\.write\s*=/);
       expect(source, `${path} publishes a side-channel GAUNTLET global`).not.toMatch(/window\.GAUNTLET_(?!DECKBUILDER\b)[A-Z0-9_]+\s*=/);
+    }
+  });
+
+  it("keeps runtime-owned current-game authority behind the core API", () => {
+    for (const { path, source } of extensions) {
+      expect(source, `${path} reads runtime-owned current-game state directly`)
+        .not.toMatch(/state\.currentGame(?:Data|Version|DisplayVersion|Authority)/);
+    }
+
+    for (const path of [
+      "deckbuilder/faction-components.js",
+      "deckbuilder/starter-decks.js",
+      "deckbuilder/print-request.js",
+      "deckbuilder/print-all-starters.js",
+      "deckbuilder/custom-print.mjs",
+      "deckbuilder/production-print.js",
+      "deckbuilder/print.js",
+      "deckbuilder/territories.js",
+    ]) {
+      expect(read(path), `${path} bypasses the current-game API`).toContain("deckbuilder.currentGame()");
     }
   });
 
