@@ -1,4 +1,4 @@
-import type { BattleState, CardID, GameEvent, GameState, PendingMilitaryChoice, PlayerID, RecentBattleResult } from '../types';
+import type { BattleState, CardID, GameEvent, GameState, PendingMilitaryChoice, PlayerID, RecentBattleResult } from '../types/v06';
 import { gainFactionResource, setFactionResource } from './resources';
 import { lossOrRetreatBenefitsSuppressed } from './inquisition-no-martyrs';
 import { bankedAssetCardUseAllowed, bankedAssetUseAllowed } from './banked-assets';
