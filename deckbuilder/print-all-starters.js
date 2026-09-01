@@ -46,7 +46,7 @@
   function isReady() {
     const starterApi = deckbuilder.feature("starterDecks");
     const starterTipsReady = typeof starterApi?.getSelectedDeck === "function" && Boolean(starterApi.getSelectedDeck());
-    const mysticsRitesReady = document.body.dataset.mysticsRites === "ready";
+    const mysticsRitesReady = ritesApi()?.isReady?.() === true;
 
     return Boolean(
       starterDecks.length === EXPECTED_DECK_COUNT &&
