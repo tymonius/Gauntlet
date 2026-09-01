@@ -6,7 +6,7 @@ import type {
   PendingPathsOfShadowChoice,
   PlayerID,
   SpaceID,
-} from '../types';
+} from '../types/v06';
 import type { ActionCardTarget, ResolveMysticsChoiceAction } from './actions';
 import { GameActionError } from './reducer';
 import { lossOrRetreatBenefitsSuppressed } from './inquisition-no-martyrs';
