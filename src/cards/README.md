@@ -6,4 +6,4 @@ The explicit aggregate API is `src/cards/v06.ts`. The generic `src/cards/index.t
 
 Current promoted gameplay implementation under `src/v070/` does not depend on this directory.
 
-New code must not treat the generic barrel as current authority. When touching a legacy consumer, prefer migrating its import to `../cards/v06`; current engine work should use current/versioned authority instead.
+New code must not treat the generic barrel as current authority. The card-definition modules themselves now use the explicit `../types/v06` type boundary. When touching another legacy consumer, prefer migrating its aggregate imports to explicit v0.6 paths; current engine work should use current/versioned authority instead.
