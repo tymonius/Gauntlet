@@ -77,7 +77,7 @@ function makeSharedRulebook(version, releaseAssets, guid) {
       'Custom_PDF',
       `Gauntlet ${version} Rulebook`,
       'Shared table Rulebook · current stable rules',
-      transform(11.4, 1.2, 0, 90, 1, 1, 1),
+      transform(11.4, 1.2, 0, 90, 2.55, 1, 2.55),
       guid,
     ),
     GMNotes: SHARED_RULEBOOK_NOTE,
