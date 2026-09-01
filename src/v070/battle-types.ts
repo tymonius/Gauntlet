@@ -101,6 +101,9 @@ export interface V070BattleParticipantRuntime {
   reserve: string[];
   reserveBonus: number;
   tactic: V070BattleCardCommitment | null | undefined;
+  additionalTactics: V070BattleCardCommitment[];
+  tacticLimit: number;
+  tacticChoicesMade: number;
   battleModifier: number;
   advantage: number;
   disadvantage: number;
@@ -171,6 +174,8 @@ export interface V070BattleRuntime {
     territoryId: string;
   } | null;
   assetInactivePlayers: PlayerId[];
+  trainingGroundsRedrawPlayer: PlayerId | null;
+  trainingGroundsRedrawResolved: boolean;
   gambitProhibitedPlayers: PlayerId[];
   unsupportedEffects: V070UnsupportedBattleEffect[];
 }
@@ -224,6 +229,8 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     activeOverlayAtOnset: null,
     activePrintedTerritoryAtOnset: null,
     assetInactivePlayers: [],
+    trainingGroundsRedrawPlayer: null,
+    trainingGroundsRedrawResolved: false,
     gambitProhibitedPlayers: [],
     unsupportedEffects: [],
   };
@@ -236,6 +243,9 @@ function createParticipant(): V070BattleParticipantRuntime {
     reserve: [],
     reserveBonus: 0,
     tactic: undefined,
+    additionalTactics: [],
+    tacticLimit: 1,
+    tacticChoicesMade: 0,
     battleModifier: 0,
     advantage: 0,
     disadvantage: 0,
