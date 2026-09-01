@@ -83,14 +83,15 @@ jobs:
 
           await addFirstOfType('Leader', 'General');
           await addFirstOfType('Territory');
+          await addFirstOfType('Reference', 'Universal Reference');
           await addFirstOfType('Proposal / Treaty');
           await addFirstOfType('Rite');
           await addFirstOfType('Capital Ledger');
 
           const selectedRows = page.locator('#customPrintSelection .custom-print-row');
-          if (await selectedRows.count() !== 5) throw new Error(`Expected 5 selected physical cards, found ${await selectedRows.count()}`);
+          if (await selectedRows.count() !== 6) throw new Error(`Expected 6 selected physical cards, found ${await selectedRows.count()}`);
           const summary = await page.locator('#customPrintSummary').textContent();
-          if (!summary?.includes('5 physical cards') || !summary.includes('1 front sheet') || !summary.includes('2 print pages')) {
+          if (!summary?.includes('6 physical cards') || !summary.includes('1 front sheet') || !summary.includes('2 print pages')) {
             throw new Error(`Unexpected custom print summary: ${summary}`);
           }
 
@@ -106,9 +107,10 @@ jobs:
           if (await printPage.locator('.custom-back-page').count() !== 1) throw new Error('Expected one paired reverse sheet.');
           const frontFrames = await printPage.locator('.custom-front-page [data-custom-render-frame]').count();
           const backFrames = await printPage.locator('.custom-back-page [data-custom-render-frame]').count();
-          if (frontFrames !== 5 || backFrames !== 5) throw new Error(`Expected 5 front and 5 reverse/back frames, found ${frontFrames}/${backFrames}`);
+          if (frontFrames !== 6 || backFrames !== 6) throw new Error(`Expected 6 front and 6 reverse/back frames, found ${frontFrames}/${backFrames}`);
           if (await printPage.locator('.custom-landscape-rotate').count() < 1) throw new Error('Mixed custom sheet did not include a rotated landscape card.');
           if (await printPage.locator('iframe[src*="kind=leader"]').count() < 1) throw new Error('Leader production renderer was not used.');
+          if (await printPage.locator('iframe[src*="kind=reference"]').count() < 2) throw new Error('Reference front/reverse renderers were not paired.');
           if (await printPage.locator('iframe[src*="kind=proposal"]').count() < 2) throw new Error('Proposal front/reverse renderers were not paired.');
           if (await printPage.locator('iframe[src*="kind=rite"]').count() < 2) throw new Error('Rite front/reverse renderers were not paired.');
           if (await printPage.locator('iframe[src*="financiers-capital-ledger"]').count() < 2) throw new Error('Capital Ledger identical-face duplex render was not paired.');
