@@ -1,4 +1,4 @@
-import type { BattleState, GameState } from '../types';
+import type { BattleState, GameState } from '../types/v06';
 import type { AppStateAction } from './actions';
 import { applyGameAction as applyMysticsGameAction } from './apply-mystics';
 import {
