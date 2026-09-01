@@ -108,6 +108,15 @@
     const image = card?.querySelector?.(".card-art img:not([hidden])");
     if (!image) return;
 
+    // Leader artwork positioning is part of the Card Design Leader stylesheet.
+    // Do not replace its approved center 16% crop (or the Commandant-specific
+    // 14% crop) with TTS/art-direction overrides when the same card is detached
+    // into the production print viewport.
+    if (kind === "leader") {
+      card.dataset.artDirectionApplied = "leader-css";
+      return;
+    }
+
     const artworkId = canonicalArtworkId(card);
     const direction = window.GAUNTLET_ART_DIRECTION?.[artworkId];
     if (!direction || typeof direction !== "object" || !Object.keys(direction).length) {
