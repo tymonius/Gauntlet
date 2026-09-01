@@ -462,6 +462,13 @@ export interface V070SpeculationState {
   placedTurn: number;
 }
 
+export interface V070AccursedWagerState {
+  sourceActionInstanceId: string;
+  owner: PlayerId;
+  armedTurn: number;
+  battleInitiatedEventIndex: number | null;
+}
+
 export interface V070SetupState {
   stage: V070SetupStage;
   firstPlayerRolls: Partial<Record<PlayerId, number>>;
@@ -493,6 +500,7 @@ export interface V070GameState {
   overlays: V070OverlayAttachment[];
   nextOverlaySequence: number;
   speculations: V070SpeculationState[];
+  accursedWagers: V070AccursedWagerState[];
   bindings: V070Binding[];
   nextBindingSequence: number;
   assetFaceStates: V070AssetFaceState[];
@@ -623,6 +631,7 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
     overlays: [],
     nextOverlaySequence: 1,
     speculations: [],
+    accursedWagers: [],
     bindings: [],
     nextBindingSequence: 1,
     assetFaceStates: [],
