@@ -2,11 +2,14 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const deckbuilderHtml = readFileSync("deckbuilder/index.html", "utf8");
-const playableRender = readFileSync("card-design/card-print-render.html", "utf8");
-const componentRenderHtml = readFileSync("card-design/component-print-render.html", "utf8");
-const componentRenderJs = readFileSync("card-design/component-print-render.js", "utf8");
+const playableRender = readFileSync("card-design/card-review-render.html", "utf8");
+const playableLegacyAlias = readFileSync("card-design/card-print-render.html", "utf8");
+const componentRenderHtml = readFileSync("card-design/component-render.html", "utf8");
+const componentLegacyAlias = readFileSync("card-design/component-print-render.html", "utf8");
+const componentRenderJs = readFileSync("card-design/component-render.js", "utf8");
 const supplementalRenderer = readFileSync("card-design/supplemental-card.js", "utf8");
-const territoryRender = readFileSync("card-design/territory-print-render.html", "utf8");
+const territoryRender = readFileSync("card-design/territory-review-render.html", "utf8");
+const territoryLegacyAlias = readFileSync("card-design/territory-print-render.html", "utf8");
 const backRender = readFileSync("tts/back-renderer/index.html", "utf8");
 const cardBackCss = readFileSync("card-design/card-back.css", "utf8");
 const printTransform = readFileSync("deckbuilder/production-print.js", "utf8");
@@ -32,9 +35,9 @@ describe("Deckbuilder production printing", () => {
     for (const kind of ['leader', 'proposal', 'reference', 'rite', 'ritual', 'tracker', 'supplemental']) {
       expect(componentRenderJs).toContain(`"${kind}"`);
     }
-    expect(printTransform).toContain('/card-design/card-print-render.html?card=');
-    expect(printTransform).toContain('/card-design/territory-print-render.html?territory=');
-    expect(printTransform).toContain('/card-design/component-print-render.html?kind=');
+    expect(printTransform).toContain('/card-design/card-review-render.html?card=');
+    expect(printTransform).toContain('/card-design/territory-review-render.html?territory=');
+    expect(printTransform).toContain('/card-design/component-render.html?kind=');
   });
 
   it("uses current-game component metadata and preserves intrinsic reverse faces", () => {
@@ -112,7 +115,7 @@ describe("Deckbuilder production printing", () => {
 
   it("isolates standalone supplemental production renders and their reference-source loading", () => {
     expect(supplementalRenderer).toContain("function isolatedComponentRenderId()");
-    expect(supplementalRenderer).toContain("/\\/component-print-render\\.html$/");
+    expect(supplementalRenderer).toContain("/\\/component-render\\.html$/");
     expect(supplementalRenderer).toContain("component.id === isolatedId");
     expect(supplementalRenderer).toContain("component.contractId === isolatedId");
     expect(supplementalRenderer).toContain("component.referenceId === isolatedId");
@@ -138,9 +141,19 @@ describe("Deckbuilder production printing", () => {
     expect(cardBackPolicy).not.toContain("factionColorCardBack");
   });
 
-  it("keeps print-only render surfaces analytics-free", () => {
-    expect(analyticsSync).toContain('"card-design/card-print-render.html"');
-    expect(analyticsSync).toContain('"card-design/component-print-render.html"');
-    expect(analyticsSync).toContain('"card-design/territory-print-render.html"');
+  it("keeps canonical embedded render surfaces analytics-free and legacy routes as aliases only", () => {
+    for (const path of [
+      '"card-design/card-review-render.html"',
+      '"card-design/component-render.html"',
+      '"card-design/territory-review-render.html"',
+    ]) {
+      expect(analyticsSync).toContain(path);
+    }
+    expect(playableLegacyAlias).toContain('/card-design/card-review-render.html');
+    expect(componentLegacyAlias).toContain('/card-design/component-render.html');
+    expect(territoryLegacyAlias).toContain('/card-design/territory-review-render.html');
+    expect(playableLegacyAlias).not.toContain('/card-design/card-review-render.js');
+    expect(componentLegacyAlias).not.toContain('/card-design/component-render.js');
+    expect(territoryLegacyAlias).not.toContain('/card-design/territory-review-render.js');
   });
 });
