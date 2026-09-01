@@ -13,6 +13,7 @@ const PLAYER_TOKEN_NOTE_PREFIX = 'gauntlet:starter-utility:player-token:';
 const BATTLE_DIE_NOTE_PREFIX = 'gauntlet:starter-utility:battle-die:';
 const PRIVATE_PARKING_NOTE_PREFIX = 'gauntlet:private-parking:';
 const TABLE_TEXT_NOTE_PREFIX = 'gauntlet:table-layout:';
+const SHARED_RULEBOOK_NOTE = 'gauntlet:shared-rulebook';
 const TERRITORY_TAG = 'gauntlet-territory';
 const TERRITORY_OVERLAY_TAG = 'gauntlet-territory-overlay';
 const DEED_TAG = 'gauntlet-deed';
@@ -103,6 +104,32 @@ function validateEnvironment(save) {
   }
   if (tableUrl.includes('raw.githubusercontent.com') || skyUrl.includes('raw.githubusercontent.com')) {
     throw new Error('Raw branch URLs are forbidden for TTS environment images.');
+  }
+}
+
+function validateSharedRulebook(save, version) {
+  const rulebooks = (save.ObjectStates || []).filter(object => object?.GMNotes === SHARED_RULEBOOK_NOTE);
+  if (rulebooks.length !== 1) throw new Error(`Expected exactly one shared Rulebook Custom PDF; found ${rulebooks.length}.`);
+
+  const rulebook = rulebooks[0];
+  if (rulebook.Name !== 'Custom_PDF' || !rulebook.CustomPDF) {
+    throw new Error('Shared Rulebook must be a TTS Custom_PDF object.');
+  }
+  if (!close(rulebook.Transform?.posX, 11.4) || !close(rulebook.Transform?.posZ, 0) || !close(rulebook.Transform?.rotY, 90)) {
+    throw new Error('Shared Rulebook is not parked in the neutral east-center table space.');
+  }
+  const expectedPath = `/tymonius/Gauntlet/releases/download/${version}/Gauntlet_${version}_Rulebook_Booklet.pdf`;
+  let url;
+  try {
+    url = new URL(String(rulebook.CustomPDF.PDFUrl || ''));
+  } catch {
+    throw new Error('Shared Rulebook PDF URL is invalid.');
+  }
+  if (url.protocol !== 'https:' || url.hostname !== 'github.com' || url.pathname !== expectedPath) {
+    throw new Error('Shared Rulebook must load the stable versioned GitHub Release Rulebook PDF.');
+  }
+  if (Number(rulebook.CustomPDF.PDFPage) !== 0 || Number(rulebook.CustomPDF.PDFPageOffset) !== 0) {
+    throw new Error('Shared Rulebook must open at the beginning of the PDF.');
   }
 }
 
@@ -629,6 +656,7 @@ async function main() {
   ]);
 
   validateEnvironment(save);
+  validateSharedRulebook(save, release.version);
   validateTableWorkspace(save);
   validateHandsAndSeats(save);
   const bags = validateBagsAndUtilities(save, manifest);
