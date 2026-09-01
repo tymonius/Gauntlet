@@ -156,6 +156,13 @@ export interface V070TerritoryAftermathOverride {
   destination: 'discard' | 'graveyard' | 'hand';
 }
 
+export interface V070PoisonousGasAftermathRuntime {
+  playerId: PlayerId;
+  candidateInstanceIds: string[];
+  remainingPlayerIds: PlayerId[];
+  immediateWinner: PlayerId | null;
+}
+
 export interface V070BattleRuntime {
   stage: V070BattleRuntimeStage;
   participants: Record<PlayerId, V070BattleParticipantRuntime>;
@@ -168,6 +175,9 @@ export interface V070BattleRuntime {
     V070TerritoryAftermathChoiceRuntime | null;
   territoryAftermathChoiceResolved: boolean;
   territoryAftermathOverride: V070TerritoryAftermathOverride | null;
+  pendingPoisonousGasAftermath:
+    V070PoisonousGasAftermathRuntime | null;
+  poisonousGasReserveGraveyardInstanceIds: string[];
   activeOverlayAtOnset: string | null;
   activePrintedTerritoryAtOnset: {
     territoryInstanceId: string;
@@ -226,6 +236,8 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     pendingTerritoryAftermathChoice: null,
     territoryAftermathChoiceResolved: false,
     territoryAftermathOverride: null,
+    pendingPoisonousGasAftermath: null,
+    poisonousGasReserveGraveyardInstanceIds: [],
     activeOverlayAtOnset: null,
     activePrintedTerritoryAtOnset: null,
     assetInactivePlayers: [],
