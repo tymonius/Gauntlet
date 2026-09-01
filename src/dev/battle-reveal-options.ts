@@ -3,7 +3,7 @@ import {
   activeBattleCancellationCards,
   activePlayedCards,
 } from '../effects/embargo';
-import type { BattleParticipantState, BattlePlayedCard, GameState, PlayerID } from '../types';
+import type { BattleParticipantState, BattlePlayedCard, GameState, PlayerID } from '../types/v06';
 import type { StateAction } from '../state/v06';
 
 export interface BattleRevealGuidedOption {
