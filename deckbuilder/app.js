@@ -138,6 +138,9 @@ const deckbuilderApi = Object.freeze({
     if (typeof authorityBootstrap !== "function") throw new Error("Current Deckbuilder runtime is unavailable.");
     return authorityBootstrap();
   },
+  currentGame() {
+    return state.currentGameData || null;
+  },
   setSourceLoader(callback) {
     if (sourceLoader && sourceLoader !== callback) throw new Error("Deckbuilder source loader is already configured.");
     if (typeof callback !== "function") throw new TypeError("Deckbuilder source loader must be a function.");
