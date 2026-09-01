@@ -6,7 +6,7 @@ import type {
   GameState,
   InquisitionPenanceBattleQueueEntry,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import type { ResolveInquisitionChoiceAction } from './actions';
 import { GameActionError } from './reducer';
 import { gainFactionResource } from './resources';
