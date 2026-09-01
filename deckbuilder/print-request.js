@@ -90,7 +90,7 @@
     const playerName = el.printRequestPlayerName.value.trim();
     const note = el.printRequestNote.value.trim();
     const territories = Array.isArray(deck.territories) ? deck.territories.map(item => item.name || item.id).filter(Boolean) : [];
-    const riteById = new Map((state.currentGameData?.mystics?.rites || []).map(rite => [rite.id, rite.name]));
+    const riteById = new Map((deckbuilder.currentGame()?.mystics?.rites || []).map(rite => [rite.id, rite.name]));
     const rites = deck.factionId === "mystics"
       ? (deck.selectedRites || []).map(id => riteById.get(id) || id)
       : [];
