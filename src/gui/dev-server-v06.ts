@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
-import type { GameState } from '../types';
+import type { GameState } from '../types/v06';
 import type { StateAction } from '../state/v06';
 import { applyGameAction, initializeGame, toPrivateGameView } from '../state/v06';
 import { activeViewer, buildGuidedOptions } from '../dev/guided-options';
