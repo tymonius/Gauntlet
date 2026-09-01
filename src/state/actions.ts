@@ -1,5 +1,5 @@
 import type { CardID, InquisitionPurgeMode, IntelligenceMissionKind, MysticRiteId, PlayerID, ProposalID, SpaceID } from '../types';
-import type { BattleCardTarget } from '../effects';
+import type { BattleCardTarget } from '../effects/v06';
 
 export type ActionCardTarget =
   | { kind: 'player'; playerId: PlayerID }
