@@ -210,8 +210,14 @@ The current package assembles the authoritative supplemental quantities across t
 
 `scripts/generate-tts-save.mjs` creates a two-player Review Scaffold with:
 
-- White and Green hand/reserve zones;
+- White and Green hand/reserve zones plus wide private tabletop Hand parking strips;
 - six center-line Gauntlet snap points;
+- both Asset Banks grouped on the west side;
+- a dedicated shared Battle Zone between the Asset Banks, with compact overlapping snap rows for multiple Gambits and Tactics;
+- combined Faction / Leader & References workspaces on the east side;
+- compact Draw and Discard areas near the Gauntlet;
+- deliberately isolated Graveyards at the outer east edge;
+- Deed snap columns at **x = ±3.95**, close to the Territory column;
 - one battle d6 per player;
 - one Player Token per player; and
 - one selectable starter Bag for every current starter.
