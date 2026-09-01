@@ -113,6 +113,14 @@ describe('digital engine boundary', () => {
     expect(cardIndex).not.toContain("export * from './intelligence'");
   });
 
+  it('keeps the generic type barrel as a deprecated v0.6 compatibility shim only', () => {
+    const typeIndex = readFileSync('src/types/index.ts', 'utf8');
+    expect(typeIndex).toContain('@deprecated');
+    expect(typeIndex).toContain("export * from './v06';");
+    expect(typeIndex).not.toContain("export * from './game'");
+    expect(typeIndex).not.toContain("export * from './battle'");
+  });
+
   it('keeps the promoted v0.7.0 implementation isolated from legacy architecture', () => {
     const promotedSources = readdirSync('src/v070')
       .filter((name) => name.endsWith('.ts') && !name.endsWith('.test.ts'));
