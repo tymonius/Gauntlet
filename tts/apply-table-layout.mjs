@@ -43,7 +43,7 @@ const TERRITORY_OVERLAY_CARD_NAMES = new Set([
 const PRIMARY_TERRITORY_Z = Object.freeze([-7.5, -4.5, -1.5, 1.5, 4.5, 7.5]);
 const EXPANSION_TERRITORY_Z = Object.freeze([-10.5, 10.5]);
 const ALL_TERRITORY_Z = Object.freeze([EXPANSION_TERRITORY_Z[0], ...PRIMARY_TERRITORY_Z, EXPANSION_TERRITORY_Z[1]]);
-const DEED_X = Object.freeze([-4.35, 4.35]);
+const DEED_X = Object.freeze([-3.95, 3.95]);
 
 const TABLE_MARK_Y = 1.01;
 const TERRITORY_SLOT_WIDTH = 3.8;
