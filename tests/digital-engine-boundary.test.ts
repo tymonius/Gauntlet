@@ -284,6 +284,33 @@ describe('digital engine boundary', () => {
     }
   });
 
+  it('pins legacy Inquisition runtime modules to the v0.6 type API', () => {
+    const inquisitionSources = [
+      'src/state/apply-inquisition.ts',
+      'src/state/inquisition-accusation.ts',
+      'src/state/inquisition-act-of-faith.ts',
+      'src/state/inquisition-burning-at-the-stake.ts',
+      'src/state/inquisition-confession.ts',
+      'src/state/inquisition-core.ts',
+      'src/state/inquisition-divine-mercy.ts',
+      'src/state/inquisition-excommunication.ts',
+      'src/state/inquisition-guilt-by-association.ts',
+      'src/state/inquisition-hellfire.ts',
+      'src/state/inquisition-heresy.ts',
+      'src/state/inquisition-leaders.ts',
+      'src/state/inquisition-no-martyrs.ts',
+      'src/state/inquisition-penance.ts',
+      'src/state/inquisition-purge.ts',
+      'src/state/inquisition-tyranny.ts',
+    ];
+
+    for (const path of inquisitionSources) {
+      const source = readFileSync(path, 'utf8');
+      expect(source).toContain("from '../types/v06'");
+      expect(source).not.toMatch(/from ['"]\.\.\/types['"]/);
+    }
+  });
+
   it('keeps the promoted v0.7.0 implementation isolated from legacy architecture', () => {
     const promotedSources = readdirSync('src/v070')
       .filter((name) => name.endsWith('.ts') && !name.endsWith('.test.ts'));

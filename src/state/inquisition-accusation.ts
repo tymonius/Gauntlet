@@ -10,7 +10,7 @@ import type {
   GameState,
   InquisitionAccusationQueueEntry,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import { gainFactionResource } from './resources';
 import { GameActionError } from './reducer';
 
