@@ -136,9 +136,9 @@ describe('final Universal Reference and reference-title fitting', () => {
   it('exports and production-prints the ready shared reference instead of leaving it as a placeholder', () => {
     expect(supplementalGenerator).toContain('const sharedSupplementals = (contract.sharedComponents || [])');
     expect(supplementalGenerator).toContain("faction: component.faction || 'neutral'");
-    expect(deckbuilderComponents).toContain('bridgeSharedReferencesIntoPrintAuthority(currentGame)');
-    expect(deckbuilderComponents).toContain('component.productionStatus === "ready"');
-    expect(deckbuilderComponents).toContain('const printSharedReferences = sharedReferences.map(sharedReferencePrintCandidate)');
-    expect(deckbuilderComponents).toContain('components: Object.freeze([...factionComponents, ...printSharedReferences])');
+    expect(deckbuilderComponents).toContain('const sharedCardComponents = (currentGame.sharedComponents || []).filter(component => (');
+    expect(deckbuilderComponents).toContain('component.cardLike && component.deckInclusion === "every-deck"');
+    expect(deckbuilderComponents).toContain('const components = [...sharedCardComponents, ...factionComponents]');
+    expect(deckbuilderComponents).toContain('.map(component => projectPrintComponent(component, currentGame))');
   });
 });
