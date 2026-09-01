@@ -6,7 +6,7 @@ import type {
   GameState,
   PlayerID,
   PlayerState,
-} from '../types';
+} from '../types/v06';
 
 export interface ResourceDefinition {
   key: FactionResourceKey;
