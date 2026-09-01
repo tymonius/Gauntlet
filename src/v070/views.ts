@@ -72,6 +72,14 @@ export interface V070TerritoryAftermathChoiceView {
   candidateInstanceIds?: string[];
 }
 
+export interface V070PoisonousGasAftermathView {
+  playerId: PlayerId;
+  candidateCount: number;
+  remainingPlayerIds: PlayerId[];
+  immediateWinner: PlayerId | null;
+  candidateInstanceIds?: string[];
+}
+
 export interface V070BattleRuntimeView {
   stage: V070BattleRuntime['stage'];
   participants: Record<PlayerId, V070BattleParticipantView>;
@@ -82,6 +90,8 @@ export interface V070BattleRuntimeView {
   pendingAccursedWager: V070BattleRuntime['pendingAccursedWager'];
   pendingTerritoryAftermathChoice:
     V070TerritoryAftermathChoiceView | null;
+  pendingPoisonousGasAftermath:
+    V070PoisonousGasAftermathView | null;
   activePrintedTerritoryAtOnset:
     V070BattleRuntime['activePrintedTerritoryAtOnset'];
   assetInactivePlayers: V070BattleRuntime['assetInactivePlayers'];
@@ -494,6 +504,28 @@ function viewBattleRuntime(
               ? {
                   candidateInstanceIds: [
                     ...runtime.pendingTerritoryAftermathChoice
+                      .candidateInstanceIds,
+                  ],
+                }
+              : {}),
+          }
+        : null,
+    pendingPoisonousGasAftermath:
+      runtime.pendingPoisonousGasAftermath
+        ? {
+            playerId: runtime.pendingPoisonousGasAftermath.playerId,
+            candidateCount:
+              runtime.pendingPoisonousGasAftermath
+                .candidateInstanceIds.length,
+            remainingPlayerIds: [
+              ...runtime.pendingPoisonousGasAftermath.remainingPlayerIds,
+            ],
+            immediateWinner:
+              runtime.pendingPoisonousGasAftermath.immediateWinner,
+            ...(runtime.pendingPoisonousGasAftermath.playerId === viewer
+              ? {
+                  candidateInstanceIds: [
+                    ...runtime.pendingPoisonousGasAftermath
                       .candidateInstanceIds,
                   ],
                 }
