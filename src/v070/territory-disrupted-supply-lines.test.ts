@@ -6,7 +6,10 @@ import {
 } from './engine';
 import { reduceV070TurnAction } from './turn-engine';
 import { reduceV070BattleAction } from './battle-engine';
-import { isV070AssetActive } from './asset-face-state';
+import {
+  isV070AssetActive,
+  turnV070AssetFaceDownUntilPlayerNextTurn,
+} from './asset-face-state';
 import { placeV070OverlayFromHand } from './overlays';
 
 const militaryA = 'military-general-forward-doctrine';
@@ -136,6 +139,38 @@ describe('v0.7.0 Disrupted Supply Lines Territory', () => {
       'only',
     );
     expect(isV070AssetActive(state, only)).toBe(true);
+    state = reduceV070TurnAction(state, {
+      type: 'resolve_capture',
+      playerId: 'A',
+    });
+    expect(state.turnState?.phase).toBe('draw');
+  });
+
+  test('face-down Assets do not consume the one active-Asset choice', () => {
+    let state = putAAtDisruptedSupplyLines();
+    const active = inject(
+      state,
+      'A',
+      'neutral-counterintelligence',
+      'assetBank',
+      'face-up',
+    );
+    const faceDown = inject(
+      state,
+      'A',
+      'neutral-fortifications',
+      'assetBank',
+      'face-down',
+    );
+    turnV070AssetFaceDownUntilPlayerNextTurn(state, {
+      instanceId: faceDown,
+      changedBy: 'B',
+      restoreAtPlayer: 'B',
+      reason: 'Disrupted Supply Lines test',
+    });
+
+    expect(isV070AssetActive(state, active)).toBe(true);
+    expect(isV070AssetActive(state, faceDown)).toBe(false);
     state = reduceV070TurnAction(state, {
       type: 'resolve_capture',
       playerId: 'A',
