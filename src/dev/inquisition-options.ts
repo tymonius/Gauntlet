@@ -1,4 +1,4 @@
-import type { GameState, PlayerID } from '../types';
+import type { GameState, PlayerID } from '../types/v06';
 import type { AppStateAction } from '../state/v06';
 import {
   CONFESSION,

@@ -1,5 +1,5 @@
 import { militaryCardDefinitions } from '../cards';
-import type { GameState, PlayerID } from '../types';
+import type { GameState, PlayerID } from '../types/v06';
 import type { NeutralAppStateAction } from '../state/v06';
 import {
   blackCovenantActionBindings,
