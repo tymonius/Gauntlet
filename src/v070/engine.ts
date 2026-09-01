@@ -357,6 +357,11 @@ export type V070PendingActionEffectChoice =
       territoryInstanceId: string;
     }
   | {
+      kind: 'speculation_territory_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
       kind: 'owned_deed_target';
       playerId: PlayerId;
       sourceActionInstanceId: string;
@@ -445,6 +450,13 @@ export interface V070BoardTerritory {
   blank?: boolean;
 }
 
+export interface V070SpeculationState {
+  instanceId: string;
+  owner: PlayerId;
+  territoryInstanceId: string;
+  placedTurn: number;
+}
+
 export interface V070SetupState {
   stage: V070SetupStage;
   firstPlayerRolls: Partial<Record<PlayerId, number>>;
@@ -475,6 +487,7 @@ export interface V070GameState {
   battleRuntime: V070BattleRuntime | null;
   overlays: V070OverlayAttachment[];
   nextOverlaySequence: number;
+  speculations: V070SpeculationState[];
   bindings: V070Binding[];
   nextBindingSequence: number;
   assetFaceStates: V070AssetFaceState[];
@@ -604,6 +617,7 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
     battleRuntime: null,
     overlays: [],
     nextOverlaySequence: 1,
+    speculations: [],
     bindings: [],
     nextBindingSequence: 1,
     assetFaceStates: [],
