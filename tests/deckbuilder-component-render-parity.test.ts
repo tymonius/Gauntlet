@@ -2,16 +2,54 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const catalog = readFileSync("card-design/index.html", "utf8");
-const catalogOverlay = readFileSync("card-design/current-card-catalog.js", "utf8");
-const componentPrintRenderer = readFileSync("card-design/component-print-render.html", "utf8");
-const cardReviewRenderer = readFileSync("card-design/card-review-render.html", "utf8");
-const cardPrintRenderer = readFileSync("card-design/card-print-render.html", "utf8");
-const territoryReviewRenderer = readFileSync("card-design/territory-review-render.html", "utf8");
-const territoryPrintRenderer = readFileSync("card-design/territory-print-render.html", "utf8");
+const cardReview = readFileSync("card-design/card-review.js", "utf8");
+const proposalDesign = readFileSync("card-design/proposal-card.js", "utf8");
+const riteDesign = readFileSync("card-design/rite-card.js", "utf8");
+const supplementalDesign = readFileSync("card-design/supplemental-card.js", "utf8");
+const compositor = readFileSync("card-design/artwork-compositor.js", "utf8");
+const componentRenderer = readFileSync("card-design/component-render.html", "utf8");
+const componentRendererJs = readFileSync("card-design/component-render.js", "utf8");
+const cardRenderer = readFileSync("card-design/card-review-render.html", "utf8");
+const territoryRenderer = readFileSync("card-design/territory-review-render.html", "utf8");
+const cardLegacyAlias = readFileSync("card-design/card-print-render.html", "utf8");
+const componentLegacyAlias = readFileSync("card-design/component-print-render.html", "utf8");
+const componentLegacyJs = readFileSync("card-design/component-print-render.js", "utf8");
+const territoryLegacyAlias = readFileSync("card-design/territory-print-render.html", "utf8");
 const productionPrint = readFileSync("deckbuilder/production-print.js", "utf8");
+const ttsLeaders = readFileSync("scripts/generate-tts-leader-assets.mjs", "utf8");
+const ttsSupplementals = readFileSync("scripts/generate-tts-supplemental-assets.mjs", "utf8");
 
-describe("Deckbuilder production render shell parity", () => {
-  it("loads every current component-specific style and refinement layer used by Card Design", () => {
+describe("single Card Design render authority", () => {
+  it("uses one canonical embedded face route for each physical face family", () => {
+    expect(productionPrint).toContain("/card-design/card-review-render.html?card=");
+    expect(productionPrint).toContain("/card-design/territory-review-render.html?territory=");
+    expect(productionPrint).toContain("/card-design/component-render.html?kind=");
+    expect(productionPrint).not.toContain("/card-design/card-print-render.html?card=");
+    expect(productionPrint).not.toContain("/card-design/territory-print-render.html?territory=");
+    expect(productionPrint).not.toContain("/card-design/component-print-render.html?kind=");
+
+    expect(ttsLeaders).toContain("/card-design/component-render.html");
+    expect(ttsSupplementals).toContain("/card-design/component-render.html");
+  });
+
+  it("makes the /card-design catalog consume the same canonical component frames", () => {
+    expect(catalog).toContain('id="leaderReviewSections"');
+    expect(catalog).toContain('id="proposalReviewSections"');
+    expect(catalog).toContain('id="riteReviewSections"');
+    expect(catalog).toContain('id="supplementalReviewSections"');
+
+    expect(cardReview).toContain("/card-design/component-render.html?");
+    expect(cardReview).toContain("componentReviewFrame('leader'");
+    expect(proposalDesign).toContain("/card-design/component-render.html?");
+    expect(proposalDesign).toContain("componentReviewFrame(proposal.id");
+    expect(riteDesign).toContain("/card-design/component-render.html?");
+    expect(riteDesign).toContain("componentReviewFrame('rite'");
+    expect(riteDesign).toContain("componentReviewFrame('ritual'");
+    expect(supplementalDesign).toContain("/card-design/component-render.html?");
+    expect(supplementalDesign).toContain("canonicalComponentFrame(component");
+  });
+
+  it("keeps all component construction and fitting inside the canonical component renderer", () => {
     for (const dependency of [
       "leader-card.css",
       "proposal-card.css",
@@ -20,57 +58,33 @@ describe("Deckbuilder production render shell parity", () => {
       "supplemental-card.css",
       "supplemental-refinements.css",
       "deed-card.css",
-    ]) {
-      expect(catalog).toContain(dependency);
-      expect(componentPrintRenderer).toContain(`/card-design/${dependency}`);
-    }
-  });
-
-  it("loads every current component rendering layer needed by the Card Design catalog", () => {
-    for (const dependency of [
       "proposal-card.js",
       "rite-card.js",
       "supplemental-card.js",
+      "leader-card-copy.js",
     ]) {
-      expect(catalog).toContain(dependency);
-      expect(componentPrintRenderer).toContain(`/card-design/${dependency}`);
+      expect(componentRenderer).toContain(dependency);
     }
-
-    expect(catalogOverlay).toContain("./leader-card-copy.js");
-    expect(componentPrintRenderer).toContain("/card-design/leader-card-copy.js");
+    expect(componentRenderer).toContain("/card-design/component-render.js");
+    expect(componentRendererJs).toContain("applyCanonicalArtworkDirection(card)");
+    expect(componentRendererJs).toContain("target.replaceChildren(card)");
   });
 
-  it("keeps the supplemental refinement layer after the supplemental base styles", () => {
-    const refinementIndex = componentPrintRenderer.indexOf("/card-design/supplemental-refinements.css");
-    const supplementalBaseIndex = componentPrintRenderer.indexOf("/card-design/supplemental-card.css");
-
-    expect(refinementIndex).toBeGreaterThan(supplementalBaseIndex);
+  it("lets the artwork compositor edit canonical component frames rather than a parallel direct face", () => {
+    expect(compositor).toContain("url.pathname.endsWith('/card-design/component-render.html')");
+    expect(compositor).toContain("componentArtworkId(componentKind, componentId, componentSide)");
+    expect(compositor).toContain("kind: territoryId ? 'territory' : componentId ? 'component' : 'card'");
   });
 
-  it("keeps playable-card print styling and renderer dependencies aligned with the Card Design review shell", () => {
-    for (const dependency of [
-      "/design-tokens.css",
-      "/card-design/card-design.css",
-      "/card-design/card-design-refinement.css",
-      "/card-design/faction-specimens.css",
-      "/tts/renderer/renderer.css",
-      "/card-design/card-review-render.js",
-    ]) {
-      expect(cardReviewRenderer).toContain(dependency);
-      expect(cardPrintRenderer).toContain(dependency);
-    }
-  });
-
-  it("keeps Territory print styling and renderer dependencies aligned with the Card Design review shell", () => {
-    for (const dependency of [
-      "/design-tokens.css",
-      "/card-design/card-design-refinement.css",
-      "/tts/territory-renderer/territory-renderer.css",
-      "/card-design/territory-review-render.js",
-    ]) {
-      expect(territoryReviewRenderer).toContain(dependency);
-      expect(territoryPrintRenderer).toContain(dependency);
-    }
+  it("retains legacy print URLs only as redirects to canonical face routes", () => {
+    expect(cardLegacyAlias).toContain("/card-design/card-review-render.html");
+    expect(componentLegacyAlias).toContain("/card-design/component-render.html");
+    expect(territoryLegacyAlias).toContain("/card-design/territory-review-render.html");
+    expect(cardLegacyAlias).toContain("window.location.replace(target)");
+    expect(componentLegacyAlias).toContain("window.location.replace(target)");
+    expect(territoryLegacyAlias).toContain("window.location.replace(target)");
+    expect(componentLegacyJs).not.toContain("selectedCard");
+    expect(componentLegacyJs).not.toContain("applyCanonicalArtworkDirection");
   });
 
   it("stops the final print package if any legacy card face survives direct production rendering", () => {
@@ -91,5 +105,12 @@ describe("Deckbuilder production render shell parity", () => {
     }
     expect(productionPrint).toContain('deckbuilder.registerPrintTransform("production-face-guard", guardProductionFaces, 100)');
     expect(productionPrint).toContain("Outdated print faces survived production rendering");
+  });
+
+  it("keeps playable and Territory canonical render pages singular rather than maintaining print copies", () => {
+    expect(cardRenderer).toContain("/card-design/card-review-render.js");
+    expect(territoryRenderer).toContain("/card-design/territory-review-render.js");
+    expect(cardLegacyAlias).not.toContain("/card-design/card-review-render.js");
+    expect(territoryLegacyAlias).not.toContain("/card-design/territory-review-render.js");
   });
 });
