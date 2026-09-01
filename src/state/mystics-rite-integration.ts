@@ -6,7 +6,7 @@ import type {
   GameState,
   MysticRiteId,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import type { BeginMysticRiteAction, ResolveMysticsChoiceAction } from './actions';
 import {
   beginRiteOfBlood,

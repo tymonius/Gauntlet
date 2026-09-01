@@ -8,7 +8,7 @@ import type {
   PlayerID,
   SpaceID,
   SpiritHollowChoiceState,
-} from '../types';
+} from '../types/v06';
 import type { ActionCardTarget, ResolveMysticsChoiceAction } from './actions';
 import { triggerMateriaPrimaAfterHandSacrifice } from './mystics-conversion';
 import { GameActionError } from './reducer';

@@ -9,7 +9,7 @@ import type {
   PlayerState,
   PublicMysticsState,
   SpaceID,
-} from '../types';
+} from '../types/v06';
 
 export const MYSTICS_ARCANE_CARD_IDS = [
   'mystics-dark-omens',

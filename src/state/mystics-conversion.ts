@@ -8,7 +8,7 @@ import type {
   GameState,
   PlayerID,
   PlayerState,
-} from '../types';
+} from '../types/v06';
 import type { ResolveMysticsChoiceAction, UseMysticTransmutationAction } from './actions';
 import { drawFromDeck } from './draw';
 import { cardValue } from './financiers';

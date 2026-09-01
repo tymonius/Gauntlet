@@ -8,7 +8,7 @@ import type {
   PendingWitchcraftChoice,
   PlayerID,
   WitchcraftTargetOption,
-} from '../types';
+} from '../types/v06';
 import type { ResolveMysticsChoiceAction } from './actions';
 import { activeBankedAssetCopies } from './intelligence-subversion-battle';
 import { sacrificeMysticHandCard } from './mystics-conversion';
