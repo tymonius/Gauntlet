@@ -13,6 +13,7 @@ const printTransform = readFileSync("deckbuilder/production-print.js", "utf8");
 const supplementalPrintTransform = readFileSync("deckbuilder/print-capital-ledger.js", "utf8");
 const cardBackPolicy = readFileSync("deckbuilder/card-back-preview.js", "utf8");
 const analyticsSync = readFileSync("scripts/sync-google-analytics.mjs", "utf8");
+const currentGameLoader = readFileSync("game-data/current-game.mjs", "utf8");
 const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
 const componentContract = currentGame.componentContract;
 
@@ -76,6 +77,17 @@ describe("Deckbuilder production printing", () => {
     expect(cardBackPolicy).toContain('Automatic backs: black for playable cards and Territories');
     expect(cardBackPolicy).not.toContain("window.open");
     expect(cardBackPolicy).not.toContain("document.write");
+  });
+
+  it("reuses the Deckbuilder's already-loaded game authority inside production print iframes", () => {
+    expect(printTransform).toContain("installProductionAuthorityBridge(documentNode)");
+    expect(printTransform).toContain('window.__gauntletProductionAuthorityBridge = {');
+    expect(printTransform).toContain('window.opener?.GAUNTLET_DECKBUILDER?.state?.currentGameData');
+    expect(printTransform).toContain('rulesetMode: ${JSON.stringify(rulesetMode)}');
+    expect(currentGameLoader).toContain("function bridgedProductionGame()");
+    expect(currentGameLoader).toContain("window.top.__gauntletProductionAuthorityBridge");
+    expect(currentGameLoader).toContain("requestedMode !== bridge.rulesetMode");
+    expect(currentGameLoader).toContain("if (bridged) return bridged;");
   });
 
   it("keeps duplex orientation and production-render readiness safeguards", () => {

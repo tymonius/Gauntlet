@@ -41,9 +41,29 @@
     }
     addDuplexInstructions(documentNode);
     injectProductionPrintStyles(documentNode);
+    installProductionAuthorityBridge(documentNode);
     installProductionReadinessGate(documentNode);
 
     return `<!doctype html>\n${documentNode.documentElement.outerHTML}`;
+  }
+
+  function installProductionAuthorityBridge(documentNode) {
+    const script = documentNode.createElement("script");
+    script.dataset.productionAuthorityBridge = "true";
+    const rulesetMode = selectedRulesetMode();
+    script.textContent = `(() => {
+  try {
+    const runtime = window.opener?.GAUNTLET_DECKBUILDER?.state?.currentGameData || null;
+    if (!runtime) return;
+    window.__gauntletProductionAuthorityBridge = {
+      rulesetMode: ${JSON.stringify(rulesetMode)},
+      runtime,
+    };
+  } catch (error) {
+    console.warn('Unable to bridge Deckbuilder authority into production print frames', error);
+  }
+})();`;
+    documentNode.head.prepend(script);
   }
 
   function guardProductionFaces(html) {

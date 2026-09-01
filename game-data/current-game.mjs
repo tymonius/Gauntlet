@@ -245,12 +245,33 @@ async function resolveCurrentGame() {
   });
 }
 
+function requestedRulesetMode() {
+  if (typeof window === 'undefined') return '';
+  return new URLSearchParams(window.location.search).get('rules') || '';
+}
+
 function explicitlyRequestsReleasedRuleset() {
-  if (typeof window === 'undefined') return false;
-  return new URLSearchParams(window.location.search).get('rules') === 'released';
+  return requestedRulesetMode() === 'released';
+}
+
+function bridgedProductionGame() {
+  if (typeof window === 'undefined' || window === window.top) return null;
+  try {
+    const bridge = window.top.__gauntletProductionAuthorityBridge;
+    const runtime = bridge?.runtime;
+    if (!runtime?.cards?.length || !runtime?.territories?.length || !runtime?.componentContract) return null;
+
+    const requestedMode = requestedRulesetMode();
+    if (requestedMode && bridge.rulesetMode && requestedMode !== bridge.rulesetMode) return null;
+    return runtime;
+  } catch {
+    return null;
+  }
 }
 
 async function resolveRequestedGame() {
+  const bridged = bridgedProductionGame();
+  if (bridged) return bridged;
   if (!explicitlyRequestsReleasedRuleset()) return resolveCurrentGame();
   const { loadPublishedGame } = await import('./ruleset.mjs');
   return loadPublishedGame();

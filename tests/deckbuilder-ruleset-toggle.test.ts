@@ -59,7 +59,9 @@ describe('Deckbuilder released / release-candidate ruleset toggle', () => {
     expect(productionPrint).toContain('&rules=${encodeURIComponent(selectedRulesetMode())}');
     expect(customPrint).toContain('deckbuilder.feature("productionPrintRenderer")');
     expect(customPrint).not.toContain('selectedRulesetMode');
-    expect(currentRuntime).toContain("get('rules') === 'released'");
+    expect(currentRuntime).toContain("function requestedRulesetMode()");
+    expect(currentRuntime).toContain("return requestedRulesetMode() === 'released';");
+    expect(currentRuntime).toContain("requestedMode !== bridge.rulesetMode");
     expect(currentRuntime).toContain("import('./ruleset.mjs')");
   });
 
