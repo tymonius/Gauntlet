@@ -16,6 +16,7 @@ const RULEBOOK_PATH = path.join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Rulebo
 const CANONICAL_PATH = path.join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Canonical_Data.json`);
 const STARTERS_PATH = path.join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Starter_Decks.json`);
 const PROVENANCE_PATH = path.join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Source_Provenance.json`);
+const READER_PATH = path.join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Rulebook.pdf`);
 const BOOKLET_PATH = path.join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Rulebook_Booklet.pdf`);
 const MANIFEST_PATH = path.join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Manifest.json`);
 const CARD_ANATOMY_PATH = path.join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Card_Anatomy.png`);
@@ -264,9 +265,10 @@ try {
 }
 
 const reportPath = path.join(PRODUCTION_DIR, 'production-report.json');
+const sourceReader = path.join(PRODUCTION_DIR, 'Gauntlet_v0.6.1_Rulebook.pdf');
 const sourceBooklet = path.join(PRODUCTION_DIR, 'Gauntlet_v0.6.1_Rulebook_Booklet.pdf');
-if (!fs.existsSync(reportPath) || !fs.existsSync(sourceBooklet)) {
-  throw new Error('Approved Rulebook production pipeline did not emit its report and booklet PDF.');
+if (!fs.existsSync(reportPath) || !fs.existsSync(sourceReader) || !fs.existsSync(sourceBooklet)) {
+  throw new Error('Approved Rulebook production pipeline did not emit its reader-order and booklet PDFs.');
 }
 const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
 if (report.reader?.report?.missing?.length !== 0) throw new Error('Approved Rulebook renderer omitted source tokens.');
@@ -276,8 +278,10 @@ if (!String(report.reader?.bodyFamily || '').toLowerCase().includes('adobe-caslo
 if (!String(report.reader?.utilityFamily || '').includes('Inter')) throw new Error(`Unexpected Rulebook utility typography: ${report.reader?.utilityFamily}.`);
 
 fs.mkdirSync(RELEASE_DIR, { recursive: true });
+fs.copyFileSync(sourceReader, READER_PATH);
 fs.copyFileSync(sourceBooklet, BOOKLET_PATH);
 
+const readerBytes = fs.readFileSync(READER_PATH);
 const bookletBytes = fs.readFileSync(BOOKLET_PATH);
 const bookletPages = Number(report.outputs?.bookletSides);
 const logicalPages = Number(report.outputs?.readerPages);
@@ -309,7 +313,7 @@ const publicRoutes = {
   rules_arbiter: '/rules-arbiter/',
 };
 
-const payloadFiles = [RULEBOOK_PATH, BOOKLET_PATH, CARD_ANATOMY_PATH, ARCANE_TRAIT_PATH, CANONICAL_PATH, STARTERS_PATH, PROVENANCE_PATH].map(file => {
+const payloadFiles = [RULEBOOK_PATH, READER_PATH, BOOKLET_PATH, CARD_ANATOMY_PATH, ARCANE_TRAIT_PATH, CANONICAL_PATH, STARTERS_PATH, PROVENANCE_PATH].map(file => {
   const bytes = fs.readFileSync(file);
   return { path: path.basename(file), sha256: hash(bytes), bytes: bytes.length };
 });
@@ -343,7 +347,7 @@ const manifest = {
     factions: canonical?.gameplay?.factions?.length ?? provenance.counts?.factions,
     leaders: provenance.counts?.leaders,
     starter_decks: starters?.decks?.length ?? provenance.counts?.starter_decks,
-    print_pdfs: 1,
+    print_pdfs: 2,
     json_exports: 3,
     static_figures: 2,
   },
@@ -361,6 +365,13 @@ const manifest = {
     path.basename(PROVENANCE_PATH),
   ],
   pdf_outputs: [
+    {
+      key: 'rulebook-reader',
+      path: path.basename(READER_PATH),
+      pages: logicalPages,
+      sha256: hash(readerBytes),
+      bytes: readerBytes.length,
+    },
     {
       key: 'rulebook-booklet',
       path: path.basename(BOOKLET_PATH),
@@ -394,5 +405,6 @@ const manifest = {
 };
 
 fs.writeFileSync(MANIFEST_PATH, jsonText(manifest));
-console.log(`Materialized ${RELEASE_VERSION} booklet: ${logicalPages} logical pages, ${bookletPages} imposed sides.`);
-console.log(`Booklet SHA-256: ${manifest.pdf_outputs[0].sha256}`);
+console.log(`Materialized ${RELEASE_VERSION} Rulebook: ${logicalPages} reader-order pages, ${bookletPages} imposed sides.`);
+console.log(`Reader SHA-256: ${manifest.pdf_outputs.find(output => output.key === 'rulebook-reader').sha256}`);
+console.log(`Booklet SHA-256: ${manifest.pdf_outputs.find(output => output.key === 'rulebook-booklet').sha256}`);
