@@ -32,7 +32,7 @@
       console.error("Unable to project deck components from current-game authority", error);
     }
 
-    renderFactionComponents();
+    deckbuilder.render();
   }
 
   function printComponentType(component) {
