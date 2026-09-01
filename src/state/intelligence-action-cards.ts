@@ -1,5 +1,5 @@
 import { intelligenceMissionCardIds } from '../cards';
-import type { CardID, GameEvent, GameState, PlayerID, PlayerState } from '../types';
+import type { CardID, GameEvent, GameState, PlayerID, PlayerState } from '../types/v06';
 import type { ActionCardTarget, ResolveIntelligenceChoiceAction } from './actions';
 import { drawFromDeck } from './draw';
 import {
