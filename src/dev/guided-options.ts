@@ -1,6 +1,6 @@
 import { militaryCardDefinitions } from '../cards';
 import type { GameState, PlayerID } from '../types';
-import type { NeutralAppStateAction } from '../state';
+import type { NeutralAppStateAction } from '../state/v06';
 import {
   blackCovenantActionBindings,
   blackCovenantBattleBindings,
@@ -10,7 +10,7 @@ import {
   inquisitionCardTitle,
   legalExcommunicationSelections,
   toPrivateGameView,
-} from '../state';
+} from '../state/v06';
 import { buildBattleRevealOptions } from './battle-reveal-options';
 import { buildInquisitionPurgeOptions, buildPendingInquisitionOptions } from './inquisition-options';
 import { buildIntelligenceBattleOptions } from './intelligence-battle-options';
