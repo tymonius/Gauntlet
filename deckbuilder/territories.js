@@ -339,9 +339,11 @@
   }
 
   function resolveTerritoryIds(items) {
+    const entries = items || [];
+    if (!entries.length) return [];
     const ids = [];
     const rules = constructionRules();
-    for (const item of items || []) {
+    for (const item of entries) {
       const id = typeof item === "string" ? item : item.id;
       const name = typeof item === "string" ? item : item.name;
       const territory = getTerritory(id) || state.territoryPool.find(candidate => candidate.name === name);
