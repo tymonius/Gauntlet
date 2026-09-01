@@ -85,6 +85,8 @@ function makePlayersAdjacent(state: V070GameState): void {
   for (const territory of state.board) territory.occupant = null;
   state.board[2].occupant = 'A';
   state.board[3].occupant = 'B';
+  // This fixture isolates Accursed Wager, not printed Territory effects.
+  state.board[2].blank = true;
 }
 
 function initiateBattleAsB(state: V070GameState): V070GameState {
