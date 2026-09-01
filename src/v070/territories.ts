@@ -436,6 +436,8 @@ export function activeV070PrintedBattleTerritory(
 }
 
 
+export const V070_POISONOUS_GAS_ID =
+  'territory-poisonous-gas' as const;
 export const V070_FORTIFIED_PASS_ID =
   'territory-fortified-pass' as const;
 export const V070_INSURGENCY_ID =
