@@ -55,6 +55,7 @@ import {
   clearV070AccursedWagersForCurrentBattle,
   v070AccursedWagersForCurrentBattle,
 } from './accursed-wager';
+import { applyV070CoreBattleTerritoryEffects } from './territories';
 import {
   useV070SanctionsBlockadeInAftermath,
   useV070SanctionsCensureAfterRefusal,
@@ -360,6 +361,7 @@ function ensureBattleRuntime(state: V070GameState): V070BattleRuntime {
       state,
       state.battle.contestedPosition,
     );
+    applyV070CoreBattleTerritoryEffects(state);
     initializeV070TermsWindow(state);
   }
   return state.battleRuntime;
@@ -429,11 +431,13 @@ function setGambit(
 
   const participant = runtime.participants[playerId];
   const battle = requireBattle(state);
-  if (battle.attackerGambitProhibited
-    && playerId === battle.attacker
-    && instanceId !== undefined) {
+  const gambitProhibited =
+    (battle.attackerGambitProhibited
+      && playerId === battle.attacker)
+    || runtime.gambitProhibitedPlayers.includes(playerId);
+  if (gambitProhibited && instanceId !== undefined) {
     throw new V070GameActionError(
-      'The attacker cannot set a Gambit in this battle.',
+      `${playerId} cannot set a Gambit in this battle.`,
     );
   }
 
@@ -445,7 +449,7 @@ function setGambit(
         state.cardInstances[mandate.instanceId]?.cardId ?? '',
         'gambit',
       )
-      && !(battle.attackerGambitProhibited && playerId === battle.attacker),
+      && !gambitProhibited,
   );
   if (instanceId !== undefined
     && ableMandates.some(mandate => mandate.instanceId !== instanceId)) {
