@@ -1,13 +1,13 @@
 import { v06CanonicalContent } from '../content/v06';
 import type { CardID, GameState, PlayerID } from '../types';
-import type { AppStateAction } from '../state';
+import type { AppStateAction } from '../state/v06';
 import {
   canBeginRiteOfCrossing,
   canUseTransmutation,
   circleOfBonesActionTargets,
   isArcaneCard,
   spiritHollowActionTargets,
-} from '../state';
+} from '../state/v06';
 
 export interface MysticGuidedOption {
   label: string;
