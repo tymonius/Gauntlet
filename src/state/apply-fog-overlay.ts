@@ -1,4 +1,4 @@
-import type { GameState } from '../types';
+import type { GameState } from '../types/v06';
 import type { AppStateAction } from './actions';
 import { applyGameAction as applySleeperNetworkGameAction } from './apply-sleeper-network';
 import {
