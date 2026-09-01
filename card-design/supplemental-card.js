@@ -147,8 +147,34 @@ function buildSupplementalGroups(currentGame) {
   ].filter(group => group.cards.length);
 }
 
+function isolatedComponentRenderId() {
+  if (!/\/component-print-render\.html$/.test(window.location.pathname)) return '';
+  return String(new URLSearchParams(window.location.search).get('id') || '').trim();
+}
+
 function filterSupplementalGroups(groups) {
-  if (!catalogFilter) return groups;
+  const isolatedId = isolatedComponentRenderId();
+  let filteredGroups = groups;
+
+  // The standalone production renderer only needs the one requested
+  // supplemental component. Rendering and fitting every current tracker and
+  // reference card in every iframe makes Deckbuilder print sheets fan out into
+  // many redundant full-catalog hydrations; reference faces can then miss the
+  // production-render timeout under normal browser concurrency.
+  if (isolatedId) {
+    filteredGroups = groups
+      .map(group => ({
+        ...group,
+        cards: group.cards.filter(component => (
+          component.id === isolatedId
+          || component.contractId === isolatedId
+          || component.referenceId === isolatedId
+        )),
+      }))
+      .filter(group => group.cards.length);
+  }
+
+  if (!catalogFilter) return filteredGroups;
 
   const familyForType = {
     tracker: 'tracker',
@@ -157,7 +183,7 @@ function filterSupplementalGroups(groups) {
     deed: 'deed-card',
   };
 
-  return groups
+  return filteredGroups
     .filter(group => catalogFilter.factionMatches(group.faction))
     .map(group => {
       let cards = group.cards;
