@@ -106,6 +106,12 @@ import {
   v070FinancialCapacityAvailable,
   v070FinancierFeatureActionSpentThisTurn,
 } from './financiers';
+import {
+  isV070IntelligencePlayer,
+  returnV070ActiveMissionToHand,
+  startV070MissionFromHand,
+  v070MissionEligibleHandInstanceIds,
+} from './intelligence';
 
 export type V070TurnAction =
   | { type: 'resolve_capture'; playerId: PlayerId }
@@ -123,6 +129,11 @@ export type V070TurnAction =
       assetInstanceId: string;
     }
   | { type: 'play_action_card'; playerId: PlayerId; cardInstanceId: string }
+  | {
+      type: 'intelligence_start_mission';
+      playerId: PlayerId;
+      cardInstanceId: string;
+    }
   | {
       type: 'financier_place_treasury';
       playerId: PlayerId;
@@ -181,6 +192,11 @@ export type V070TurnAction =
     }
   | {
       type: 'choose_capital_gains_treasury_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
+      type: 'choose_operational_reassessment_mission_target';
       playerId: PlayerId;
       targetInstanceId: string;
     }
@@ -568,6 +584,10 @@ export function reduceV070TurnAction(
       && action.type === 'choose_capital_gains_treasury_target'
       && action.playerId === pending.playerId
     ) || (
+      pending.kind === 'operational_reassessment_mission_target'
+      && action.type === 'choose_operational_reassessment_mission_target'
+      && action.playerId === pending.playerId
+    ) || (
       pending.kind === 'owned_deed_target'
       && action.type === 'choose_owned_deed_target'
       && action.playerId === pending.playerId
@@ -627,6 +647,7 @@ export function reduceV070TurnAction(
       'resolve_leveraged_buyout_collateral',
       'choose_speculation_territory_target',
       'choose_capital_gains_treasury_target',
+      'choose_operational_reassessment_mission_target',
       'choose_owned_deed_target',
       'choose_treasury_card_target',
       'resolve_deed_purchase_choice',
@@ -663,6 +684,13 @@ export function reduceV070TurnAction(
       break;
     case 'play_action_card':
       playActionCard(next, action.playerId, action.cardInstanceId);
+      break;
+    case 'intelligence_start_mission':
+      intelligenceStartMission(
+        next,
+        action.playerId,
+        action.cardInstanceId,
+      );
       break;
     case 'financier_place_treasury':
       financierPlaceTreasury(next, action.playerId, action.cardInstanceId);
@@ -736,6 +764,13 @@ export function reduceV070TurnAction(
       break;
     case 'choose_capital_gains_treasury_target':
       chooseCapitalGainsTreasuryTarget(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
+      break;
+    case 'choose_operational_reassessment_mission_target':
+      chooseOperationalReassessmentMissionTarget(
         next,
         action.playerId,
         action.targetInstanceId,
@@ -1126,6 +1161,51 @@ function spendTurnAction(
   }
 }
 
+function requireIntelligenceDenouement(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  requirePhase(state, 'denouement');
+  if (!isV070IntelligencePlayer(state, playerId)) {
+    throw new V070GameActionError(
+      `${playerId} is not using the Intelligence faction.`,
+    );
+  }
+}
+
+function intelligenceStartMission(
+  state: V070GameState,
+  playerId: PlayerId,
+  cardInstanceId: string,
+): void {
+  requireIntelligenceDenouement(state, playerId);
+  const intelligence = state.players[playerId].intelligence!;
+  if (intelligence.activeMission) {
+    throw new V070GameActionError(
+      'You may have only one Active Mission.',
+    );
+  }
+  if (intelligence.specialOperation) {
+    throw new V070GameActionError(
+      'You cannot start a Mission while a Special Operation is active.',
+    );
+  }
+  if (!v070MissionEligibleHandInstanceIds(state, playerId)
+    .includes(cardInstanceId)) {
+    throw new V070GameActionError(
+      'Start Mission requires an eligible Intelligence Mission card from your Hand.',
+    );
+  }
+
+  spendTurnAction(state, playerId);
+  startV070MissionFromHand(
+    state,
+    playerId,
+    cardInstanceId,
+    'Start Mission Faction Feature',
+  );
+}
+
 function requireFinancierDenouement(
   state: V070GameState,
   playerId: PlayerId,
@@ -1320,6 +1400,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'inquisition-guilt-by-association',
   'intelligence-assassins',
   'intelligence-extraordinary-rendition',
+  'intelligence-operational-reassessment',
   'intelligence-regime-change',
   'intelligence-sleeper-network',
   'intelligence-spies',
@@ -1629,6 +1710,27 @@ function playActionCard(
       );
     }
     pendingBankReplacementV070AssetInstanceIds(state, playerId, cardInstanceId);
+  }
+  if (card.id === 'intelligence-operational-reassessment') {
+    if (!isV070IntelligencePlayer(state, playerId)) {
+      throw new V070GameActionError(
+        'Operational Reassessment requires the Intelligence faction.',
+      );
+    }
+    if (!state.players[playerId].intelligence!.activeMission) {
+      throw new V070GameActionError(
+        'Operational Reassessment requires an Active Mission.',
+      );
+    }
+    if (v070MissionEligibleHandInstanceIds(
+      state,
+      playerId,
+      [cardInstanceId],
+    ).length === 0) {
+      throw new V070GameActionError(
+        'Operational Reassessment requires another eligible Intelligence Mission card in your Hand.',
+      );
+    }
   }
   if (card.id === 'intelligence-extraordinary-rendition') {
     if (state.players[otherPlayer(playerId)].zones.hand.length === 0) {
@@ -3039,6 +3141,13 @@ function continuePendingActionCard(state: V070GameState): void {
       });
       return;
     }
+    case 'intelligence-operational-reassessment':
+      openOperationalReassessmentMissionChoice(
+        state,
+        pending.playerId,
+        pending.instanceId,
+      );
+      return;
     case 'intelligence-assassins': {
       const opponentId = otherPlayer(pending.playerId);
       const revealed = revealV070Hand(
@@ -5001,6 +5110,138 @@ function chooseMarginLoanCollateralTarget(
 
   state.pendingActionEffectChoice = null;
   finishPendingActionCard(state, 'asset');
+}
+
+function openOperationalReassessmentMissionChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+): void {
+  const candidates = v070MissionEligibleHandInstanceIds(
+    state,
+    playerId,
+    [sourceActionInstanceId],
+  );
+  if (candidates.length === 0) {
+    appendV070Event(state, {
+      type: 'action_effect_incomplete',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        sourceActionInstanceId,
+        purpose: 'Operational Reassessment',
+        reason: 'replacement_mission_unavailable_after_reactions',
+      },
+    });
+    finishPendingActionCard(state);
+    return;
+  }
+
+  state.pendingActionEffectChoice = {
+    kind: 'operational_reassessment_mission_target',
+    playerId,
+    sourceActionInstanceId,
+  };
+  appendV070Event(state, {
+    type: 'action_effect_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      kind: 'operational_reassessment_mission_target',
+      playerId,
+      sourceActionInstanceId,
+      purpose: 'Operational Reassessment',
+      candidateCount: candidates.length,
+    },
+  });
+  appendV070Event(state, {
+    type: 'action_effect_choice_options',
+    actor: playerId,
+    visibility: playerId,
+    payload: {
+      kind: 'operational_reassessment_mission_target',
+      sourceActionInstanceId,
+      purpose: 'Operational Reassessment',
+      targetInstanceIds: [...candidates],
+    },
+  });
+}
+
+function chooseOperationalReassessmentMissionTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'operational_reassessment_mission_target'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'intelligence-operational-reassessment') {
+    throw new V070GameActionError(
+      'No Operational Reassessment Mission choice is pending for that player.',
+    );
+  }
+
+  const activeMission =
+    state.players[playerId].intelligence?.activeMission;
+  if (!activeMission) {
+    throw new V070GameActionError(
+      'Operational Reassessment requires the original Active Mission to remain active until replacement.',
+    );
+  }
+
+  const candidates = v070MissionEligibleHandInstanceIds(
+    state,
+    playerId,
+    [pending.instanceId],
+  );
+  if (!candidates.includes(targetInstanceId)) {
+    throw new V070GameActionError(
+      'Operational Reassessment must choose another eligible Intelligence Mission card still in your Hand.',
+    );
+  }
+
+  const returnedMissionInstanceId = activeMission.instanceId;
+  returnV070ActiveMissionToHand(
+    state,
+    playerId,
+    'Operational Reassessment',
+  );
+  startV070MissionFromHand(
+    state,
+    playerId,
+    targetInstanceId,
+    'Operational Reassessment',
+  );
+
+  appendV070Event(state, {
+    type: 'operational_reassessment_resolved',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      playerId,
+      startedTurn: state.turnNumber,
+    },
+  });
+  appendV070Event(state, {
+    type: 'operational_reassessment_identity',
+    actor: playerId,
+    visibility: playerId,
+    payload: {
+      returnedMissionInstanceId,
+      returnedMissionCardId:
+        state.cardInstances[returnedMissionInstanceId]?.cardId,
+      newMissionInstanceId: targetInstanceId,
+      newMissionCardId:
+        state.cardInstances[targetInstanceId]?.cardId,
+    },
+  });
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state);
 }
 
 function openCapitalGainsTreasuryTargetChoice(

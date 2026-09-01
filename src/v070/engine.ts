@@ -367,6 +367,11 @@ export type V070PendingActionEffectChoice =
       sourceActionInstanceId: string;
     }
   | {
+      kind: 'operational_reassessment_mission_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
       kind: 'owned_deed_target';
       playerId: PlayerId;
       sourceActionInstanceId: string;
@@ -422,6 +427,19 @@ export interface V070FinancierState {
   financierFeatureActionSpentTurn: number | null;
 }
 
+export interface V070MissionSlot {
+  instanceId: string;
+  startedTurn: number;
+}
+
+export interface V070IntelligenceState {
+  intel: number;
+  operationProgress: number;
+  activeMission: V070MissionSlot | null;
+  specialOperation: V070MissionSlot | null;
+  missionControlUsedTurn: number | null;
+}
+
 export interface V070DeedState {
   territoryInstanceId: string;
   owner: PlayerId | null;
@@ -443,6 +461,7 @@ export interface V070PlayerState {
   diplomats: V070DiplomatState | null;
   inquisition: V070InquisitionState | null;
   financiers: V070FinancierState | null;
+  intelligence: V070IntelligenceState | null;
 }
 
 export interface V070BoardTerritory {
@@ -605,6 +624,15 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
             financialCapacityTurn: null,
             financialCapacityUsedTurn: null,
             financierFeatureActionSpentTurn: null,
+          }
+        : null,
+      intelligence: starter.definition.factionId === 'intelligence'
+        ? {
+            intel: 0,
+            operationProgress: 0,
+            activeMission: null,
+            specialOperation: null,
+            missionControlUsedTurn: null,
           }
         : null,
     };

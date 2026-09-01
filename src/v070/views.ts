@@ -1,5 +1,10 @@
 import type { PlayerId } from './rules';
-import type { V070GameEvent, V070GameState, V070SetupStage } from './engine';
+import type {
+  V070GameEvent,
+  V070GameState,
+  V070MissionSlot,
+  V070SetupStage,
+} from './engine';
 import { effectiveV070AssetLimit } from './assets';
 import type {
   V070BattleCardCommitment,
@@ -89,6 +94,20 @@ export interface V070FinancierView {
   financierFeatureActionSpentTurn: number | null;
 }
 
+export interface V070MissionSlotView {
+  set: true;
+  startedTurn: number;
+  card?: V070VisibleCard;
+}
+
+export interface V070IntelligenceView {
+  intel: number;
+  operationProgress: number;
+  activeMission: V070MissionSlotView | null;
+  specialOperation: V070MissionSlotView | null;
+  missionControlUsedTurn: number | null;
+}
+
 export interface V070PlayerViewState {
   id: PlayerId;
   name: string;
@@ -105,6 +124,7 @@ export interface V070PlayerViewState {
   diplomats: V070GameState['players'][PlayerId]['diplomats'];
   inquisition: V070InquisitionView | null;
   financiers: V070FinancierView | null;
+  intelligence: V070IntelligenceView | null;
 }
 
 export interface V070SpeculationView {
@@ -362,7 +382,50 @@ function viewPlayer(
             player.financiers.financierFeatureActionSpentTurn,
         }
       : null,
+    intelligence: player.intelligence
+      ? {
+          intel: player.intelligence.intel,
+          operationProgress: player.intelligence.operationProgress,
+          activeMission: viewMissionSlot(
+            state,
+            player.intelligence.activeMission,
+            isOwner,
+          ),
+          specialOperation: viewMissionSlot(
+            state,
+            player.intelligence.specialOperation,
+            isOwner,
+          ),
+          missionControlUsedTurn:
+            player.intelligence.missionControlUsedTurn,
+        }
+      : null,
   };
+}
+
+function viewMissionSlot(
+  state: V070GameState,
+  mission: V070MissionSlot | null,
+  owner: boolean,
+): V070MissionSlotView | null {
+  if (!mission) return null;
+  const result: V070MissionSlotView = {
+    set: true,
+    startedTurn: mission.startedTurn,
+  };
+  if (owner) {
+    const instance = state.cardInstances[mission.instanceId];
+    if (!instance) {
+      throw new Error(
+        `Unknown Mission card instance ${mission.instanceId}.`,
+      );
+    }
+    result.card = {
+      instanceId: mission.instanceId,
+      cardId: instance.cardId,
+    };
+  }
+  return result;
 }
 
 function viewBattleRuntime(
