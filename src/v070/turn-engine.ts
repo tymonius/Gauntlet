@@ -116,6 +116,7 @@ import {
   v070MissionEligibleHandInstanceIds,
 } from './intelligence';
 import {
+  assertV070GraveyardExitAllowed,
   expireV070TerritoryEffectSuppressions,
   payV070TollBridgeAdvanceCost,
   suppressV070PrintedTerritoryDuringMovement,
@@ -1653,6 +1654,11 @@ function playActionCard(
     throw new V070GameActionError(
       `The printed Action effect of ${card.name} is not yet executable in v0.7.0.`,
     );
+  }
+  if (card.id === 'neutral-arcane-knowledge'
+    || card.id === 'mystics-soul-for-soul'
+    || card.id === 'inquisition-divine-mercy') {
+    assertV070GraveyardExitAllowed(state, card.name);
   }
   if (card.id === 'diplomats-clemency'
     && state.players[otherPlayer(playerId)].zones.graveyard.length === 0) {
@@ -3790,6 +3796,7 @@ function chooseRecoveryActionTarget(
     if (index < 0) {
       throw new V070GameActionError('Arcane Knowledge must target a card in your Graveyard.');
     }
+    assertV070GraveyardExitAllowed(state, 'Arcane Knowledge');
     player.zones.graveyard.splice(index, 1);
     player.zones.discardPile.push(targetInstanceId);
     appendV070Event(state, {
@@ -3822,6 +3829,7 @@ function chooseRecoveryActionTarget(
       );
     }
 
+    assertV070GraveyardExitAllowed(state, 'Divine Mercy');
     graveyard.splice(index, 1);
     state.players[choice.opponentId].zones.discardPile.push(targetInstanceId);
     appendV070Event(state, {
@@ -3916,6 +3924,7 @@ function chooseSoulForSoulTargets(
     );
   }
 
+  assertV070GraveyardExitAllowed(state, 'Soul for Soul');
   player.zones.hand.splice(handIndex, 1);
   player.zones.graveyard.splice(graveyardIndex, 1);
   player.zones.hand.push(graveyardInstanceId);
@@ -4989,6 +4998,9 @@ function resolveNecromancyAction(
     throw new V070GameActionError(
       'Necromancy may reclaim only non-Necromancy cards currently in your Graveyard.',
     );
+  }
+  if (targetInstanceIds.length > 0) {
+    assertV070GraveyardExitAllowed(state, 'Necromancy');
   }
 
   const player = state.players[playerId];
@@ -8262,6 +8274,7 @@ function resolveClemencyChoice(
   }
 
   if (response === 'recycle') {
+    assertV070GraveyardExitAllowed(state, 'Clemency');
     graveyard.splice(targetIndex, 1);
     state.players[playerId].zones.discardPile.push(choice.targetInstanceId);
     appendV070Event(state, {

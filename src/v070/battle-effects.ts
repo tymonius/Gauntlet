@@ -3,6 +3,7 @@ import { appendV070Event, type V070GameState } from './engine';
 import { drawV070Cards } from './turn-engine';
 import type { PlayerId } from './rules';
 import { faceUpV070AssetInstanceIds } from './asset-face-state';
+import { v070MonasterySuppressesArcaneBattleEffects } from './territories';
 import type {
   V070BattleCardCommitment,
   V070UnsupportedBattleEffect,
@@ -185,6 +186,23 @@ export function resolveV070SupportedRevealEffects(
 
   for (const commitment of ordered) {
     const cardId = requireCardId(state, commitment.instanceId);
+    const card = v070CanonicalContent.cardsById.get(cardId);
+    if (v070MonasterySuppressesArcaneBattleEffects(state)
+      && card?.trait === 'Arcane') {
+      appendV070Event(state, {
+        type: 'battle_card_effect_suppressed',
+        actor: commitment.owner,
+        visibility: 'public',
+        payload: {
+          instanceId: commitment.instanceId,
+          cardId,
+          role: commitment.role,
+          reason: 'Monastery',
+        },
+      });
+      continue;
+    }
+
     const handler = handlersByCardId.get(cardId);
     if (!handler) throw new Error(`Missing validated handler for ${cardId}.`);
 
@@ -219,6 +237,10 @@ function unsupportedForCommitment(
   const cardId = requireCardId(state, commitment.instanceId);
   const card = v070CanonicalContent.cardsById.get(cardId);
   if (!card) throw new Error(`Unknown canonical card ${cardId}.`);
+  if (v070MonasterySuppressesArcaneBattleEffects(state)
+    && card.trait === 'Arcane') {
+    return [];
+  }
 
   const relevant = card.effects.filter(effect =>
     effect.label === (commitment.role === 'gambit' ? 'Gambit' : 'Tactic')
