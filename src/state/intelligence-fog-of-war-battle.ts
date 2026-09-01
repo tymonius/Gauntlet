@@ -5,7 +5,7 @@ import type {
   GameEvent,
   GameState,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import type { ResolveIntelligenceChoiceAction } from './actions';
 
 const FOG_OF_WAR = 'intelligence-fog-of-war';
