@@ -118,6 +118,9 @@ function validateSharedRulebook(save) {
   if (!close(rulebook.Transform?.posX, 11.4) || !close(rulebook.Transform?.posZ, 0) || !close(rulebook.Transform?.rotY, 90)) {
     throw new Error('Shared Rulebook is not parked in the neutral east-center table space.');
   }
+  if (!close(rulebook.Transform?.scaleX, 2.55) || !close(rulebook.Transform?.scaleY, 1) || !close(rulebook.Transform?.scaleZ, 2.55)) {
+    throw new Error('Shared Rulebook must use the approved physical-table scale of 2.55×.');
+  }
   if (!isContentVersionedReleaseAsset(String(rulebook.CustomPDF.PDFUrl || ''), '_TTS_Rulebook.pdf')) {
     throw new Error('Shared Rulebook must load the content-versioned TTS reader-order Rulebook PDF.');
   }
