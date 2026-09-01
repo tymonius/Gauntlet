@@ -19,7 +19,7 @@ describe('TTS Leader assets', () => {
   });
 
   it('captures the shared Card Design Leader surface instead of duplicating Leader rules or crop logic', () => {
-    expect(exporter).toContain('/card-design/component-print-render.html');
+    expect(exporter).toContain('/card-design/component-render.html');
     expect(exporter).toContain("url.searchParams.set('kind', 'leader')");
     expect(exporter).toContain("url.searchParams.set('version', displayVersion)");
     expect(exporter).toContain("return '#renderTarget > .leader-card'");
