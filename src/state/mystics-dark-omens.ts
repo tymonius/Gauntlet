@@ -6,7 +6,7 @@ import type {
   GameEvent,
   GameState,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import type { ResolveMysticsChoiceAction } from './actions';
 import { drawFromDeck } from './draw';
 import { sacrificeMysticHandCard } from './mystics-conversion';

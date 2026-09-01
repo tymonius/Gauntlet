@@ -25,6 +25,8 @@ The legacy Diplomat runtime subsystem likewise imports its shared engine shapes 
 
 The legacy Financier runtime subsystem follows the same explicit `../types/v06` type-only boundary.
 
+The legacy Mystics runtime subsystem also uses `../types/v06` exclusively for type-only shared engine shapes.
+
 ## Hidden information rule
 
 The authoritative `GameState` contains all private information. UI and network clients using this legacy architecture should receive only one of these derived views:

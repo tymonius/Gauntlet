@@ -7,7 +7,7 @@ import type {
   PendingNecromancyActionChoice,
   PendingNecromancyBattleChoice,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import type { ResolveMysticsChoiceAction } from './actions';
 import { drawFromDeck } from './draw';
 import { triggerMateriaPrimaAfterHandSacrifice } from './mystics-conversion';

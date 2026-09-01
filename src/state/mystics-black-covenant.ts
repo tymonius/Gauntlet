@@ -8,7 +8,7 @@ import type {
   GameState,
   PendingBlackCovenantBattleChoice,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import type {
   ActionCardTarget,
   ResolveMysticsChoiceAction,
