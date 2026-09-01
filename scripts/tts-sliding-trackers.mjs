@@ -51,7 +51,7 @@ export async function captureProductionTracker(page, baseUrl, record, outputPath
   const componentId = String(record.renderSource?.componentId || '').trim();
   if (!componentId) throw new Error(`Tracker ${record.id} has no production component id.`);
 
-  const url = new URL('/card-design/component-print-render.html', baseUrl);
+  const url = new URL('/card-design/component-render.html', baseUrl);
   url.searchParams.set('kind', 'tracker');
   url.searchParams.set('id', componentId);
   url.searchParams.set('side', 'front');
