@@ -1,5 +1,5 @@
 import { destinationForCardPlay } from '../cards';
-import type { CardID, DiplomatSanctionState, GameEvent, GameState, PlayerID, SpaceID } from '../types';
+import type { CardID, DiplomatSanctionState, GameEvent, GameState, PlayerID, SpaceID } from '../types/v06';
 import { drawFromDeck } from './draw';
 import { gainFactionResource } from './resources';
 import {
