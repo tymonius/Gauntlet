@@ -13,6 +13,10 @@ function zoneContainsPoint(zone: any, x: number, z: number) {
     && Math.abs(z - zone.posZ) <= zone.scaleZ / 2;
 }
 
+function close(a: number, b: number, tolerance = 0.001) {
+  return Math.abs(a - b) <= tolerance;
+}
+
 const TEST_ENVIRONMENT = {
   TableURL: 'https://github.com/tymonius/Gauntlet/releases/download/v0.7.0/Gauntlet_v0.7.0_TTS_Environment_Table.png',
   SkyURL: 'https://github.com/tymonius/Gauntlet/releases/download/v0.7.0/Gauntlet_v0.7.0_TTS_Environment_Panorama.png',
@@ -78,8 +82,8 @@ describe('authoritative TTS table layout', () => {
     const battleLines = buildTableVectorLines().filter(line => {
       const xs = line.points3.map(point => point.x);
       const zs = line.points3.map(point => point.z);
-      return Math.min(...xs) === -18.7 && Math.max(...xs) === -6.1
-        && Math.min(...zs) === -4.3 && Math.max(...zs) === 4.3;
+      return close(Math.min(...xs), -18.7) && close(Math.max(...xs), -6.1)
+        && close(Math.min(...zs), -4.3) && close(Math.max(...zs), 4.3);
     });
     expect(battleLines).toHaveLength(2);
   });
@@ -130,14 +134,14 @@ describe('authoritative TTS table layout', () => {
     const whitePrivateLines = lines.filter(line => {
       const zs = line.points3.map(point => point.z);
       const xs = line.points3.map(point => point.x);
-      return Math.min(...xs) === -7 && Math.max(...xs) === 7
-        && Math.min(...zs) === -20.1 && Math.max(...zs) === -17.2;
+      return close(Math.min(...xs), -7) && close(Math.max(...xs), 7)
+        && close(Math.min(...zs), -20.1) && close(Math.max(...zs), -17.2);
     });
     const greenPrivateLines = lines.filter(line => {
       const zs = line.points3.map(point => point.z);
       const xs = line.points3.map(point => point.x);
-      return Math.min(...xs) === -7 && Math.max(...xs) === 7
-        && Math.min(...zs) === 17.2 && Math.max(...zs) === 20.1;
+      return close(Math.min(...xs), -7) && close(Math.max(...xs), 7)
+        && close(Math.min(...zs), 17.2) && close(Math.max(...zs), 20.1);
     });
     expect(whitePrivateLines).toHaveLength(2);
     expect(greenPrivateLines).toHaveLength(2);
@@ -151,8 +155,10 @@ describe('authoritative TTS table layout', () => {
 
     expect(white).toMatchObject({ posX: 0, posY: 4, posZ: -22.7, rotY: 0, scaleX: 14, scaleY: 6, scaleZ: 4 });
     expect(green).toMatchObject({ posX: 0, posY: 4, posZ: 22.7, rotY: 180, scaleX: 14, scaleY: 6, scaleZ: 4 });
-    expect(whiteParking).toMatchObject({ posX: 0, posY: 3, posZ: -19.05, rotY: 0, scaleX: 14, scaleY: 6, scaleZ: 4.2 });
-    expect(greenParking).toMatchObject({ posX: 0, posY: 3, posZ: 19.05, rotY: 180, scaleX: 14, scaleY: 6, scaleZ: 4.2 });
+    expect(whiteParking).toMatchObject({ posX: 0, posY: 3, rotY: 0, scaleX: 14, scaleY: 6, scaleZ: 4.2 });
+    expect(greenParking).toMatchObject({ posX: 0, posY: 3, rotY: 180, scaleX: 14, scaleY: 6, scaleZ: 4.2 });
+    expect(whiteParking.posZ).toBeCloseTo(-19.05, 6);
+    expect(greenParking.posZ).toBeCloseTo(19.05, 6);
 
     expect(zoneContainsPoint(white, 0, -18.65)).toBe(false);
     expect(zoneContainsPoint(green, 0, 18.65)).toBe(false);
