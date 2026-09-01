@@ -38,6 +38,7 @@
     if (printCardBacks) {
       ensureStandardBackPages(documentNode);
       replaceProductionBacks(documentNode);
+      installInlineCardBackRenderer(documentNode);
     }
     addDuplexInstructions(documentNode);
     injectProductionPrintStyles(documentNode);
@@ -492,18 +493,35 @@
   function makeProductionDeckBack(documentNode, faction) {
     const wrapper = documentNode.createElement("article");
     wrapper.className = "print-card production-render-back";
-    wrapper.setAttribute("aria-label", `${faction} production deck-card back, rotated 180 degrees for duplex printing`);
+    wrapper.dataset.productionInlineBack = "true";
+    wrapper.setAttribute("aria-label", `${faction} production deck-card back`);
 
-    const frame = documentNode.createElement("iframe");
-    frame.className = "production-back-frame";
-    frame.dataset.productionRenderFrame = "true";
-    frame.dataset.productionRenderKind = "back";
-    frame.src = productionBackSource(faction, 180);
-    frame.title = `${faction} production deck-card back`;
-    frame.setAttribute("scrolling", "no");
-    frame.setAttribute("loading", "eager");
-    wrapper.append(frame);
+    const back = documentNode.createElement("div");
+    back.className = "gauntlet-card-back";
+    back.dataset.gauntletCardBack = "";
+    back.dataset.cardBackFaction = faction;
+    wrapper.append(back);
     return wrapper;
+  }
+
+  function installInlineCardBackRenderer(documentNode) {
+    if (!documentNode.querySelector("[data-production-inline-back]")) return;
+
+    if (!documentNode.querySelector('link[data-production-card-back-style]')) {
+      const stylesheet = documentNode.createElement("link");
+      stylesheet.rel = "stylesheet";
+      stylesheet.href = "/card-design/card-back.css";
+      stylesheet.dataset.productionCardBackStyle = "true";
+      documentNode.head.append(stylesheet);
+    }
+
+    if (!documentNode.querySelector('script[data-production-card-back-renderer]')) {
+      const script = documentNode.createElement("script");
+      script.type = "module";
+      script.src = "/card-design/card-back.js";
+      script.dataset.productionCardBackRenderer = "true";
+      documentNode.head.append(script);
+    }
   }
 
   function addDuplexInstructions(documentNode) {
@@ -592,8 +610,7 @@
   height: 3.5in;
 }
 .production-card-frame,
-.production-component-frame,
-.production-back-frame {
+.production-component-frame {
   display: block;
   width: 2.5in;
   height: 3.5in;
@@ -666,15 +683,9 @@
     const deadline = performance.now() + timeoutMs;
     while (performance.now() < deadline) {
       try {
-        const doc = frame.contentDocument;
-        const body = doc?.body;
-        const kind = frame.dataset.productionRenderKind;
-        if (kind === 'back') {
-          if (doc?.readyState === 'complete' && doc.querySelector('.gauntlet-card-back__frame')) return 'true';
-        } else {
-          const status = body?.dataset?.renderReady;
-          if (status === 'true' || status === 'error') return status;
-        }
+        const body = frame.contentDocument?.body;
+        const status = body?.dataset?.renderReady;
+        if (status === 'true' || status === 'error') return status;
       } catch (error) {
         console.error('Unable to inspect production print frame', frame.src, error);
         return 'error';
@@ -686,6 +697,11 @@
   }
 
   preflights.push(async () => {
+    const inlineBacks = [...document.querySelectorAll('[data-production-inline-back]')];
+    if (inlineBacks.some(back => !back.querySelector('.gauntlet-card-back__frame'))) {
+      throw new Error('One or more production card backs failed to finish rendering. Printing was stopped so the Deck is not printed with incomplete backs.');
+    }
+
     const frames = [...document.querySelectorAll('[data-production-render-frame]')];
     const results = await Promise.all(frames.map(waitForFrame));
     if (results.some(result => result !== 'true')) {
