@@ -89,6 +89,13 @@ describe('final Universal Reference and reference-title fitting', () => {
     expect(titleWrapStyles).toContain('-webkit-line-clamp: 2');
   });
 
+  it('can load only requested reference records for isolated production renders', () => {
+    expect(referenceRenderer).toContain('export async function loadReferenceRecords(componentIds = null)');
+    expect(referenceRenderer).toContain('const requestedIds = componentIds == null');
+    expect(referenceRenderer).toContain('(!requestedIds || requestedIds.has(component.id))');
+    expect(referenceRenderer).toContain('Current-game authority cannot resolve requested reference card(s)');
+  });
+
   it('loads the neutral Universal styling on both review and standalone TTS render surfaces', () => {
     expect(ruleColumns).toContain('@import url("universal-reference.css")');
     expect(universalStyles).toContain('.reference-card[data-component-id="universal-reference"]');
