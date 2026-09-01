@@ -10,7 +10,7 @@ import type {
   GameState,
   InquisitionExcommunicationBattleQueueEntry,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import { cardValue } from './financiers';
 import { gainFactionResource } from './resources';
 import { GameActionError } from './reducer';
