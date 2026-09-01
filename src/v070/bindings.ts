@@ -6,7 +6,11 @@ import {
 } from './engine';
 import type { PlayerId } from './rules';
 
-export type V070BindablePlayerZone = 'hand' | 'discardPile' | 'graveyard';
+export type V070BindablePlayerZone =
+  | 'hand'
+  | 'discardPile'
+  | 'graveyard'
+  | 'treasury';
 export type V070BindingReleaseDestination = 'discard' | 'graveyard' | 'hand';
 
 export interface BindV070CardFromPlayerZoneInput {
@@ -58,7 +62,14 @@ export function bindV070CardFromPlayerZone(
     );
   }
 
-  const zone = state.players[input.owner].zones[input.sourceZone];
+  const zone = input.sourceZone === 'treasury'
+    ? state.players[input.owner].financiers?.treasury
+    : state.players[input.owner].zones[input.sourceZone];
+  if (!zone) {
+    throw new V070GameActionError(
+      'Treasury-sourced binding requires the card owner to be a Financier.',
+    );
+  }
   const index = zone.indexOf(input.cardInstanceId);
   if (index < 0) {
     throw new V070GameActionError(

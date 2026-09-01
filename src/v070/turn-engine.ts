@@ -141,6 +141,11 @@ export type V070TurnAction =
       territoryPosition?: number;
     }
   | {
+      type: 'choose_margin_loan_collateral_target';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
       type: 'choose_clemency_target';
       playerId: PlayerId;
       targetInstanceId: string;
@@ -500,6 +505,10 @@ export function reduceV070TurnAction(
       && action.type === 'resolve_manifest_destiny_sacrifice'
       && action.playerId === pending.playerId
     ) || (
+      pending.kind === 'margin_loan_collateral_target'
+      && action.type === 'choose_margin_loan_collateral_target'
+      && action.playerId === pending.playerId
+    ) || (
       pending.kind === 'owned_deed_target'
       && action.type === 'choose_owned_deed_target'
       && action.playerId === pending.playerId
@@ -553,6 +562,7 @@ export function reduceV070TurnAction(
       'choose_sleeper_network_bind_target',
       'resolve_necromancy_action',
       'resolve_manifest_destiny_sacrifice',
+      'choose_margin_loan_collateral_target',
       'choose_owned_deed_target',
       'choose_treasury_card_target',
       'resolve_deed_purchase_choice',
@@ -623,6 +633,13 @@ export function reduceV070TurnAction(
         next,
         action.playerId,
         action.territoryPosition,
+      );
+      break;
+    case 'choose_margin_loan_collateral_target':
+      chooseMarginLoanCollateralTarget(
+        next,
+        action.playerId,
+        action.targetInstanceId,
       );
       break;
     case 'choose_clemency_target':
@@ -1184,6 +1201,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'financiers-divestment',
   'financiers-foreclosure',
   'financiers-liquidation',
+  'financiers-margin-loan',
   'financiers-monetary-crisis',
   'financiers-tariffs',
   'financiers-war-bonds',
@@ -1522,6 +1540,7 @@ function playActionCard(
       'financiers-divestment',
       'financiers-foreclosure',
       'financiers-liquidation',
+      'financiers-margin-loan',
     ].includes(card.id)
     && !isV070FinancierPlayer(state, playerId)) {
     throw new V070GameActionError(
@@ -1538,6 +1557,22 @@ function playActionCard(
     && state.players[playerId].financiers!.treasury.length === 0) {
     throw new V070GameActionError(
       'Liquidation requires at least one card in your Treasury.',
+    );
+  }
+  if (card.id === 'financiers-margin-loan') {
+    if (marginLoanCollateralCandidateInstanceIds(
+      state,
+      playerId,
+      cardInstanceId,
+    ).length === 0) {
+      throw new V070GameActionError(
+        'Margin Loan requires one other card in your Hand or Treasury as collateral.',
+      );
+    }
+    pendingBankReplacementV070AssetInstanceIds(
+      state,
+      playerId,
+      cardInstanceId,
     );
   }
   if (card.id === 'financiers-foreclosure') {
@@ -2428,6 +2463,13 @@ function continuePendingActionCard(state: V070GameState): void {
       return;
     case 'financiers-liquidation':
       openTreasuryCardTargetChoice(
+        state,
+        pending.playerId,
+        pending.instanceId,
+      );
+      return;
+    case 'financiers-margin-loan':
+      resolveMarginLoanBankAction(
         state,
         pending.playerId,
         pending.instanceId,
@@ -4417,6 +4459,21 @@ function choosePendingAssetBankReplacement(
     return;
   }
 
+  if (choice.purpose === 'Margin Loan') {
+    if (pending.cardId !== 'financiers-margin-loan') {
+      throw new V070GameActionError(
+        'Margin Loan replacement state does not match its pending Action card.',
+      );
+    }
+    completeMarginLoanBankAction(
+      state,
+      playerId,
+      pending.instanceId,
+      replaceAssetInstanceId,
+    );
+    return;
+  }
+
   if (choice.purpose === 'Reserve Force'
     || choice.purpose === 'Extraordinary Rendition'
     || choice.purpose === 'Sleeper Network') {
@@ -4452,6 +4509,183 @@ function choosePendingAssetBankReplacement(
     pending.cardId,
     replaceAssetInstanceId,
   );
+}
+
+function marginLoanCollateralCandidateInstanceIds(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+): string[] {
+  const player = state.players[playerId];
+  const treasury = player.financiers?.treasury ?? [];
+  return [
+    ...player.zones.hand.filter(instanceId =>
+      instanceId !== sourceActionInstanceId
+    ),
+    ...treasury,
+  ];
+}
+
+function resolveMarginLoanBankAction(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+): void {
+  const replacements = pendingBankReplacementV070AssetInstanceIds(
+    state,
+    playerId,
+    sourceActionInstanceId,
+  );
+  if (replacements.length > 0) {
+    state.pendingActionEffectChoice = {
+      kind: 'pending_asset_bank_replacement',
+      playerId,
+      sourceActionInstanceId,
+      purpose: 'Margin Loan',
+      replacementInstanceIds: [...replacements],
+    };
+    appendV070Event(state, {
+      type: 'action_effect_choice_pending',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        kind: 'pending_asset_bank_replacement',
+        playerId,
+        sourceActionInstanceId,
+        purpose: 'Margin Loan',
+        replacementInstanceIds: [...replacements],
+      },
+    });
+    return;
+  }
+
+  completeMarginLoanBankAction(
+    state,
+    playerId,
+    sourceActionInstanceId,
+  );
+}
+
+function completeMarginLoanBankAction(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+  replaceAssetInstanceId?: string,
+): void {
+  bankV070AssetFromPendingAction(
+    state,
+    playerId,
+    sourceActionInstanceId,
+    'Margin Loan',
+    replaceAssetInstanceId,
+  );
+
+  const candidates = marginLoanCollateralCandidateInstanceIds(
+    state,
+    playerId,
+    sourceActionInstanceId,
+  );
+  if (candidates.length === 0) {
+    appendV070Event(state, {
+      type: 'action_effect_incomplete',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        sourceActionInstanceId,
+        purpose: 'Margin Loan',
+        reason: 'required_collateral_unavailable_after_reactions',
+      },
+    });
+    finishPendingActionCard(state, 'asset');
+    return;
+  }
+
+  state.pendingActionEffectChoice = {
+    kind: 'margin_loan_collateral_target',
+    playerId,
+    sourceActionInstanceId,
+  };
+  appendV070Event(state, {
+    type: 'action_effect_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      kind: 'margin_loan_collateral_target',
+      playerId,
+      sourceActionInstanceId,
+      purpose: 'Margin Loan',
+      candidateCount: candidates.length,
+    },
+  });
+  appendV070Event(state, {
+    type: 'action_effect_choice_options',
+    actor: playerId,
+    visibility: playerId,
+    payload: {
+      kind: 'margin_loan_collateral_target',
+      sourceActionInstanceId,
+      purpose: 'Margin Loan',
+      targetInstanceIds: [...candidates],
+    },
+  });
+}
+
+function chooseMarginLoanCollateralTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'margin_loan_collateral_target'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'financiers-margin-loan') {
+    throw new V070GameActionError(
+      'No Margin Loan collateral choice is pending for that player.',
+    );
+  }
+
+  const player = state.players[playerId];
+  const fromHand = player.zones.hand.includes(targetInstanceId);
+  const fromTreasury =
+    player.financiers?.treasury.includes(targetInstanceId) ?? false;
+  if (!fromHand && !fromTreasury) {
+    throw new V070GameActionError(
+      'Margin Loan collateral must still be in your Hand or Treasury.',
+    );
+  }
+
+  const cardId = state.cardInstances[targetInstanceId]?.cardId;
+  const card = cardId
+    ? v070CanonicalContent.cardsById.get(cardId)
+    : undefined;
+  if (!card) {
+    throw new V070GameActionError(
+      'Margin Loan collateral must be a known card instance.',
+    );
+  }
+
+  bindV070CardFromPlayerZone(state, {
+    hostId: pending.instanceId,
+    owner: playerId,
+    cardInstanceId: targetInstanceId,
+    sourceZone: fromHand ? 'hand' : 'treasury',
+    faceUp: true,
+    purpose: 'Margin Loan',
+  });
+  gainV070Capital(
+    state,
+    playerId,
+    card.cost + 2,
+    'Margin Loan',
+  );
+  grantAdditionalAction(state, playerId, 'Margin Loan');
+
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state, 'asset');
 }
 
 function ownedDeedCandidatePositions(

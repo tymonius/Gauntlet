@@ -238,7 +238,8 @@ export type V070PendingActionEffectChoice =
         | 'Anathema'
         | 'Reserve Force'
         | 'Extraordinary Rendition'
-        | 'Sleeper Network';
+        | 'Sleeper Network'
+        | 'Margin Loan';
       replacementInstanceIds: string[];
     }
   | {
@@ -332,6 +333,11 @@ export type V070PendingActionEffectChoice =
       sourceActionInstanceId: string;
       minimumAssetCount: number;
       candidateAssetInstanceIds: string[];
+    }
+  | {
+      kind: 'margin_loan_collateral_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
     }
   | {
       kind: 'owned_deed_target';
