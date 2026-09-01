@@ -139,6 +139,20 @@ export interface V070AccursedWagerAftermathRuntime {
   immediateWinner: PlayerId | null;
 }
 
+export interface V070TerritoryAftermathChoiceRuntime {
+  kind: 'field_hospital' | 'old_battlefield' | 'spoils_of_war';
+  playerId: PlayerId;
+  candidateInstanceIds: string[];
+  immediateWinner: PlayerId | null;
+}
+
+export interface V070TerritoryAftermathOverride {
+  source: 'Field Hospital' | 'Old Battlefield' | 'Arena: Spoils of War';
+  playerId: PlayerId;
+  instanceId: string;
+  destination: 'discard' | 'graveyard' | 'hand';
+}
+
 export interface V070BattleRuntime {
   stage: V070BattleRuntimeStage;
   participants: Record<PlayerId, V070BattleParticipantRuntime>;
@@ -147,6 +161,10 @@ export interface V070BattleRuntime {
   gambitOrderOverride: V070GambitOrderOverride | null;
   pendingOutcome: V070BattleOutcome | null;
   pendingAccursedWager: V070AccursedWagerAftermathRuntime | null;
+  pendingTerritoryAftermathChoice:
+    V070TerritoryAftermathChoiceRuntime | null;
+  territoryAftermathChoiceResolved: boolean;
+  territoryAftermathOverride: V070TerritoryAftermathOverride | null;
   activeOverlayAtOnset: string | null;
   activePrintedTerritoryAtOnset: {
     territoryInstanceId: string;
@@ -199,6 +217,9 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     gambitOrderOverride: null,
     pendingOutcome: null,
     pendingAccursedWager: null,
+    pendingTerritoryAftermathChoice: null,
+    territoryAftermathChoiceResolved: false,
+    territoryAftermathOverride: null,
     activeOverlayAtOnset: null,
     activePrintedTerritoryAtOnset: null,
     gambitProhibitedPlayers: [],

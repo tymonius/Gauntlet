@@ -5,7 +5,10 @@ import {
   type V070GameState,
 } from './engine';
 import { activeV070Overlay } from './overlays';
-import type { PlayerId } from './rules';
+import {
+  retreatV070Position,
+  type PlayerId,
+} from './rules';
 
 export const V070_QUICKSAND_ID = 'territory-quicksand' as const;
 export const V070_DIFFICULT_TERRAIN_ID =
@@ -368,4 +371,66 @@ export function applyV070CoreBattleTerritoryEffects(
       },
     });
   }
+}
+
+
+export const V070_FIELD_HOSPITAL_ID =
+  'territory-field-hospital' as const;
+export const V070_OLD_BATTLEFIELD_ID =
+  'territory-old-battlefield' as const;
+export const V070_ARENA_SPOILS_OF_WAR_ID =
+  'territory-arena-spoils-of-war' as const;
+export const V070_ARENA_NO_QUARTER_ID =
+  'territory-arena-no-quarter' as const;
+
+export function applyV070NoQuarterAdditionalRetreat(
+  state: V070GameState,
+): boolean {
+  const battle = state.battle;
+  const runtime = state.battleRuntime;
+  if (!battle
+    || !runtime
+    || runtime.activePrintedTerritoryAtOnset?.territoryId !==
+      V070_ARENA_NO_QUARTER_ID
+    || !battle.loser) {
+    return false;
+  }
+
+  const loser = battle.loser;
+  const from = battle.positions[loser];
+  const to = retreatV070Position(
+    loser,
+    from,
+    battle.territoryCount,
+  );
+  if (to === from) return false;
+
+  battle.positions[loser] = to;
+  appendV070Event(state, {
+    type: 'territory_aftermath_retreat',
+    actor: loser,
+    visibility: 'public',
+    payload: {
+      territoryId: V070_ARENA_NO_QUARTER_ID,
+      loser,
+      from,
+      to,
+      additionalRetreat: 1,
+    },
+  });
+  return true;
+}
+
+export function activeV070PrintedBattleTerritory(
+  state: V070GameState,
+): V070BoardTerritory | null {
+  const snapshot =
+    state.battleRuntime?.activePrintedTerritoryAtOnset;
+  if (!snapshot) return null;
+  return state.board.find(
+    territory =>
+      territory.territoryInstanceId ===
+        snapshot.territoryInstanceId
+      && territory.territoryId === snapshot.territoryId,
+  ) ?? null;
 }
