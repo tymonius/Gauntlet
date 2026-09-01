@@ -1,5 +1,5 @@
 import type { ActionCardTarget, ResolveFinancierChoiceAction } from './actions';
-import type { CardID, GameEvent, GameState, PendingFinancierChoice, PlayerID, SpaceID } from '../types';
+import type { CardID, GameEvent, GameState, PendingFinancierChoice, PlayerID, SpaceID } from '../types/v06';
 import { cardValue, buyDeed, checkControllingInterest, deedCost, deedOwner } from './financiers';
 
 export const FINANCIER_ACQUISITION_CARDS = {
