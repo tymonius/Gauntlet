@@ -6,6 +6,7 @@ import {
 import type { PlayerId } from './rules';
 import { replaceV070CaptureWithOverlay } from './overlays';
 import { expireV070BlockadesForControlLoss } from './sanctions';
+import { discardV070SmugglersRunStashForControlLoss } from './smugglers-run';
 
 export interface V070FrontLineCapture {
   position: number;
@@ -48,6 +49,11 @@ export function advanceV070FrontLine(
 
     const previousController = target.controller;
     target.controller = playerId;
+    discardV070SmugglersRunStashForControlLoss(
+      state,
+      target.territoryInstanceId,
+      previousController,
+    );
     expireV070BlockadesForControlLoss(
       state,
       target.territoryInstanceId,
