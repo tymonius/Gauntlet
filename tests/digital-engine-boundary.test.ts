@@ -311,6 +311,19 @@ describe('digital engine boundary', () => {
     }
   });
 
+  it('pins legacy Military runtime modules to the v0.6 type API', () => {
+    const militarySources = [
+      'src/state/military-interactions.ts',
+      'src/state/military-timing.ts',
+    ];
+
+    for (const path of militarySources) {
+      const source = readFileSync(path, 'utf8');
+      expect(source).toContain("from '../types/v06'");
+      expect(source).not.toMatch(/from ['"]\.\.\/types['"]/);
+    }
+  });
+
   it('keeps the promoted v0.7.0 implementation isolated from legacy architecture', () => {
     const promotedSources = readdirSync('src/v070')
       .filter((name) => name.endsWith('.ts') && !name.endsWith('.test.ts'));
