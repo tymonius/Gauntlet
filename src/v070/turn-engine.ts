@@ -29,6 +29,11 @@ import {
 } from './front-line';
 import { insertV070TerritoryAtPlayerEnd } from './gauntlet';
 import {
+  placeV070Speculation,
+  resolveV070SpeculationsAtTurnStart,
+  v070SpeculationTargetPositions,
+} from './speculation';
+import {
   V070_DEMILITARIZED_ZONE_ID,
   cardIdForV070Overlay,
   expireV070TerritoryTurnRestrictions,
@@ -160,6 +165,11 @@ export type V070TurnAction =
       type: 'resolve_leveraged_buyout_collateral';
       playerId: PlayerId;
       collateralInstanceIds: readonly string[];
+    }
+  | {
+      type: 'choose_speculation_territory_target';
+      playerId: PlayerId;
+      territoryPosition: number;
     }
   | {
       type: 'choose_clemency_target';
@@ -537,6 +547,10 @@ export function reduceV070TurnAction(
       && action.type === 'resolve_leveraged_buyout_collateral'
       && action.playerId === pending.playerId
     ) || (
+      pending.kind === 'speculation_territory_target'
+      && action.type === 'choose_speculation_territory_target'
+      && action.playerId === pending.playerId
+    ) || (
       pending.kind === 'owned_deed_target'
       && action.type === 'choose_owned_deed_target'
       && action.playerId === pending.playerId
@@ -594,6 +608,7 @@ export function reduceV070TurnAction(
       'resolve_conscription_banking_action',
       'choose_leveraged_buyout_deed_target',
       'resolve_leveraged_buyout_collateral',
+      'choose_speculation_territory_target',
       'choose_owned_deed_target',
       'choose_treasury_card_target',
       'resolve_deed_purchase_choice',
@@ -692,6 +707,13 @@ export function reduceV070TurnAction(
         next,
         action.playerId,
         action.collateralInstanceIds,
+      );
+      break;
+    case 'choose_speculation_territory_target':
+      chooseSpeculationTerritoryTarget(
+        next,
+        action.playerId,
+        action.territoryPosition,
       );
       break;
     case 'choose_clemency_target':
@@ -1257,6 +1279,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'financiers-liquidation',
   'financiers-margin-loan',
   'financiers-monetary-crisis',
+  'financiers-speculation',
   'financiers-tariffs',
   'financiers-war-bonds',
   'inquisition-accusation',
@@ -1603,6 +1626,7 @@ function playActionCard(
       'financiers-leveraged-buyout',
       'financiers-liquidation',
       'financiers-margin-loan',
+      'financiers-speculation',
     ].includes(card.id)
     && !isV070FinancierPlayer(state, playerId)) {
     throw new V070GameActionError(
@@ -1617,6 +1641,12 @@ function playActionCard(
     ).length === 0) {
     throw new V070GameActionError(
       'Leveraged Buyout requires at least one Deed you can currently purchase with Capital and available collateral.',
+    );
+  }
+  if (card.id === 'financiers-speculation'
+    && v070SpeculationTargetPositions(state, playerId).length === 0) {
+    throw new V070GameActionError(
+      'Speculation requires a Territory you neither control nor occupy.',
     );
   }
   if (card.id === 'financiers-divestment'
@@ -2699,6 +2729,13 @@ function continuePendingActionCard(state: V070GameState): void {
       return;
     case 'financiers-leveraged-buyout':
       openLeveragedBuyoutDeedTargetChoice(
+        state,
+        pending.playerId,
+        pending.instanceId,
+      );
+      return;
+    case 'financiers-speculation':
+      openSpeculationTerritoryTargetChoice(
         state,
         pending.playerId,
         pending.instanceId,
@@ -4915,6 +4952,81 @@ function chooseMarginLoanCollateralTarget(
 
   state.pendingActionEffectChoice = null;
   finishPendingActionCard(state, 'asset');
+}
+
+function openSpeculationTerritoryTargetChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceActionInstanceId: string,
+): void {
+  const positions = v070SpeculationTargetPositions(state, playerId);
+  if (positions.length === 0) {
+    appendV070Event(state, {
+      type: 'action_effect_incomplete',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        sourceActionInstanceId,
+        purpose: 'Speculation',
+        reason: 'required_territory_target_unavailable_after_reactions',
+      },
+    });
+    finishPendingActionCard(state);
+    return;
+  }
+
+  state.pendingActionEffectChoice = {
+    kind: 'speculation_territory_target',
+    playerId,
+    sourceActionInstanceId,
+  };
+  appendV070Event(state, {
+    type: 'action_effect_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      kind: 'speculation_territory_target',
+      playerId,
+      sourceActionInstanceId,
+      purpose: 'Speculation',
+      territoryPositions: positions,
+    },
+  });
+}
+
+function chooseSpeculationTerritoryTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  territoryPosition: number,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'speculation_territory_target'
+    || choice.playerId !== playerId
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'financiers-speculation') {
+    throw new V070GameActionError(
+      'No Speculation Territory choice is pending for that player.',
+    );
+  }
+
+  if (!v070SpeculationTargetPositions(state, playerId)
+    .includes(territoryPosition)) {
+    throw new V070GameActionError(
+      'Speculation must target a Territory you currently neither control nor occupy.',
+    );
+  }
+
+  placeV070Speculation(
+    state,
+    playerId,
+    pending.instanceId,
+    territoryPosition,
+  );
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state, 'speculation');
 }
 
 function leveragedBuyoutCollateralInstanceIds(
@@ -7741,7 +7853,8 @@ function finishPendingActionCard(
     | 'graveyard'
     | 'overlay'
     | 'asset'
-    | 'territory' = 'discard',
+    | 'territory'
+    | 'speculation' = 'discard',
 ): void {
   const pending = state.pendingActionCard;
   if (!pending) throw new V070GameActionError('No Action card is pending resolution.');
@@ -7765,6 +7878,14 @@ function finishPendingActionCard(
     )) {
       throw new V070GameActionError(
         'An Action card can resolve to Territory only after it has entered the Gauntlet.',
+      );
+    }
+  } else if (destination === 'speculation') {
+    if (!state.speculations.some(
+      speculation => speculation.instanceId === pending.instanceId,
+    )) {
+      throw new V070GameActionError(
+        'An Action card can resolve to Speculation only after it is tracking a Territory.',
       );
     }
   } else if (!state.players[pending.playerId].zones.assetBank.includes(pending.instanceId)) {
@@ -8069,6 +8190,7 @@ function completeCleanup(
     payload: { turnNumber: state.turnNumber, phase: state.turnState.phase },
   });
 
+  resolveV070SpeculationsAtTurnStart(state, next);
   openV070StartTurnOverlayChoice(state, next);
 }
 
