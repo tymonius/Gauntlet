@@ -21,6 +21,17 @@ function esc(value) {
   })[character]);
 }
 
+function componentRenderSource(kind, id, side = 'front') {
+  const params = new URLSearchParams({ kind, id, side });
+  const rules = new URLSearchParams(window.location.search).get('rules');
+  if (rules) params.set('rules', rules);
+  return `/card-design/component-render.html?${params.toString()}`;
+}
+
+function componentReviewFrame(kind, id, label, side = 'front') {
+  return `<iframe class="component-review-frame" loading="lazy" src="${esc(componentRenderSource(kind, id, side))}" title="${esc(label)} canonical Card Design render"></iframe>`;
+}
+
 function riteTypeLabel(label = 'Rite') {
   return `<div class="rite-type-line"><span class="rite-faction-emblem" aria-hidden="true"></span><span>${esc(label)}</span></div>`;
 }
@@ -113,27 +124,37 @@ function ritualFace() {
 }
 
 function reviewPair(rite) {
+  const faces = catalogFilter
+    ? `<div class="rite-face">${componentReviewFrame('rite', rite.id, `${rite.name} Rite`, 'front')}</div>
+      <div class="rite-face">${componentReviewFrame('rite', rite.id, `${rite.name} Completed Rite`, 'reverse')}</div>`
+    : `<div class="rite-face">${riteFace(rite, false)}</div>
+      <div class="rite-face">${riteFace(rite, true)}</div>`;
+
   return `<article class="rite-review-pair catalog-pair-tile" id="rite-${esc(rite.id)}" aria-labelledby="rite-${esc(rite.id)}-title">
     <header class="catalog-item-heading screen-only">
       <strong id="rite-${esc(rite.id)}-title">${esc(rite.name)}</strong>
       <span>Rite</span>
     </header>
     <div class="rite-face-grid">
-      <div class="rite-face">${riteFace(rite, false)}</div>
-      <div class="rite-face">${riteFace(rite, true)}</div>
+      ${faces}
     </div>
   </article>`;
 }
 
 function ritualReview() {
+  const faces = catalogFilter
+    ? `<div class="rite-face">${componentReviewFrame('ritual', RITUAL.id, `${RITUAL.name} Ritual`, 'front')}</div>
+      <div class="rite-face">${componentReviewFrame('ritual', RITUAL.id, `${RITUAL.name} Ritual back`, 'reverse')}</div>`
+    : `<div class="rite-face">${ritualFace()}</div>
+      <div class="rite-face">${ritualCardBack()}</div>`;
+
   return `<article class="rite-review-pair ritual-review catalog-pair-tile" id="ritual-ascension" aria-labelledby="ritual-ascension-title">
     <header class="catalog-item-heading screen-only">
       <strong id="ritual-ascension-title">${esc(RITUAL.name)}</strong>
       <span>Ritual</span>
     </header>
     <div class="rite-face-grid ritual-face-grid">
-      <div class="rite-face">${ritualFace()}</div>
-      <div class="rite-face">${ritualCardBack()}</div>
+      ${faces}
     </div>
   </article>`;
 }
