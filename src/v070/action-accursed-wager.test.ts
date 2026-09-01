@@ -372,7 +372,7 @@ describe('v0.7.0 Accursed Wager Action', () => {
     expect(state.events.some(event =>
       event.type === 'accursed_wager_expired'
       && (event.payload as { sourceActionInstanceIds?: string[] })
-        ?.sourceActionInstanceIds.includes(played.source)
+        ?.sourceActionInstanceIds?.includes(played.source)
     )).toBe(true);
   });
 });
