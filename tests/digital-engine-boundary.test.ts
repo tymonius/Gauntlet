@@ -256,6 +256,34 @@ describe('digital engine boundary', () => {
     }
   });
 
+  it('pins legacy Mystics runtime modules to the v0.6 type API', () => {
+    const mysticsSources = [
+      'src/state/apply-grave-ward.ts',
+      'src/state/apply-mystics.ts',
+      'src/state/mystics-accursed-wager.ts',
+      'src/state/mystics-black-covenant.ts',
+      'src/state/mystics-circle-of-bones.ts',
+      'src/state/mystics-conversion.ts',
+      'src/state/mystics-dark-omens.ts',
+      'src/state/mystics-fates-toll.ts',
+      'src/state/mystics-grave-ward.ts',
+      'src/state/mystics-necromancy.ts',
+      'src/state/mystics-paths-of-shadow.ts',
+      'src/state/mystics-rend-the-veil.ts',
+      'src/state/mystics-rite-integration.ts',
+      'src/state/mystics-ritual.ts',
+      'src/state/mystics-soul-for-soul.ts',
+      'src/state/mystics-spirit-hollow.ts',
+      'src/state/mystics-witchcraft.ts',
+    ];
+
+    for (const path of mysticsSources) {
+      const source = readFileSync(path, 'utf8');
+      expect(source).toContain("from '../types/v06'");
+      expect(source).not.toMatch(/from ['"]\.\.\/types['"]/);
+    }
+  });
+
   it('keeps the promoted v0.7.0 implementation isolated from legacy architecture', () => {
     const promotedSources = readdirSync('src/v070')
       .filter((name) => name.endsWith('.ts') && !name.endsWith('.test.ts'));
