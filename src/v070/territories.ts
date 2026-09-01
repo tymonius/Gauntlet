@@ -51,12 +51,14 @@ export function v070PrintedTerritoryEffectActive(
   if (activeV070Overlay(state, territory.position)) return false;
 
   const movementWindow =
-    state.turnState?.phase === 'movement'
-    && (
-      timing === 'movement'
-      || timing === 'battle'
-      || timing === 'aftermath'
-      || timing === 'continuous'
+    timing === 'movement'
+    || (
+      state.turnState?.phase === 'movement'
+      && (
+        timing === 'battle'
+        || timing === 'aftermath'
+        || timing === 'continuous'
+      )
     );
   if (movementWindow
     && state.territoryEffectSuppressions.some(suppression =>
