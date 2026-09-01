@@ -58,12 +58,14 @@ import {
 import {
   activeV070PrintedBattleTerritory,
   applyV070CoreBattleTerritoryEffects,
+  chooseV070DisruptedSupplyLinesActiveAsset,
   applyV070AdvancedBattleTerritoryEffects,
   applyV070NoQuarterAdditionalRetreat,
   V070_ARENA_SPOILS_OF_WAR_ID,
   V070_FIELD_HOSPITAL_ID,
   V070_OLD_BATTLEFIELD_ID,
   V070_POISONOUS_GAS_ID,
+  v070DisruptedSupplyLinesSelectionRequired,
 } from './territories';
 import {
   useV070SanctionsBlockadeInAftermath,
@@ -179,6 +181,11 @@ export type V070BattleAction =
       playerId: PlayerId;
       cardInstanceId: string;
     }
+  | {
+      type: 'choose_disrupted_supply_lines_active_asset';
+      playerId: PlayerId;
+      assetInstanceId: string;
+    }
   | { type: 'complete_aftermath'; playerId: PlayerId };
 
 export function reduceV070BattleAction(
@@ -190,6 +197,21 @@ export function reduceV070BattleAction(
   }
   if (action.playerId !== state.battle.attacker && action.playerId !== state.battle.defender) {
     throw new V070GameActionError('Only battle participants may act in this battle.');
+  }
+  const disruptedSelectionPlayers = [
+    state.battle.attacker,
+    state.battle.defender,
+  ].filter(playerId =>
+    v070DisruptedSupplyLinesSelectionRequired(state, playerId)
+  );
+  if (disruptedSelectionPlayers.length > 0
+    && (
+      action.type !== 'choose_disrupted_supply_lines_active_asset'
+      || !disruptedSelectionPlayers.includes(action.playerId)
+    )) {
+    throw new V070GameActionError(
+      'Choose each required active Asset for Disrupted Supply Lines before continuing the battle.',
+    );
   }
   if (state.battleRuntime?.pendingAccursedWager
     && action.type !== 'resolve_accursed_wager_discard') {
@@ -374,6 +396,13 @@ export function reduceV070BattleAction(
         next,
         action.playerId,
         action.cardInstanceId,
+      );
+      break;
+    case 'choose_disrupted_supply_lines_active_asset':
+      chooseV070DisruptedSupplyLinesActiveAsset(
+        next,
+        action.playerId,
+        action.assetInstanceId,
       );
       break;
     case 'complete_aftermath':
