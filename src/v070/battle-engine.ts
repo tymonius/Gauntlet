@@ -58,6 +58,7 @@ import {
 import {
   activeV070PrintedBattleTerritory,
   applyV070CoreBattleTerritoryEffects,
+  applyV070AdvancedBattleTerritoryEffects,
   applyV070NoQuarterAdditionalRetreat,
   V070_ARENA_SPOILS_OF_WAR_ID,
   V070_FIELD_HOSPITAL_ID,
@@ -387,6 +388,7 @@ function ensureBattleRuntime(state: V070GameState): V070BattleRuntime {
       state.battle.contestedPosition,
     );
     applyV070CoreBattleTerritoryEffects(state);
+    applyV070AdvancedBattleTerritoryEffects(state);
     initializeV070TermsWindow(state);
   }
   return state.battleRuntime;
