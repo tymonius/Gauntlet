@@ -105,6 +105,14 @@ describe('digital engine boundary', () => {
     }
   });
 
+  it('keeps the generic card barrel as a deprecated v0.6 compatibility shim only', () => {
+    const cardIndex = readFileSync('src/cards/index.ts', 'utf8');
+    expect(cardIndex).toContain('@deprecated');
+    expect(cardIndex).toContain("export * from './v06';");
+    expect(cardIndex).not.toContain("export * from './military'");
+    expect(cardIndex).not.toContain("export * from './intelligence'");
+  });
+
   it('keeps the promoted v0.7.0 implementation isolated from legacy architecture', () => {
     const promotedSources = readdirSync('src/v070')
       .filter((name) => name.endsWith('.ts') && !name.endsWith('.test.ts'));
