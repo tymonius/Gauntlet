@@ -40,7 +40,7 @@
     "tts:components:check": "node scripts/tts-component-contract.mjs",
     "tts:supplementals:check": "node scripts/generate-tts-supplemental-assets.mjs --check",
     "tts:finalized-supplementals:check": "node scripts/generate-tts-finalized-supplementals.mjs --check",
-    "tts:check": "npm run tts:components:check && npm run tts:supplementals:check && npm run tts:finalized-supplementals:check && node scripts/generate-tts-card-assets.mjs --check && node scripts/generate-tts-territory-assets.mjs --check && node scripts/generate-tts-leader-assets.mjs --check && node scripts/generate-tts-starter-decks.mjs --check && node scripts/generate-tts-save.mjs --check && node tts/apply-table-layout.mjs --check && node scripts/assemble-tts-supplemental-save.mjs --check && node --check scripts/tts-supplemental-geometry.mjs && node --check scripts/promote-tts-save.mjs",
+    "tts:check": "npm run tts:components:check && npm run tts:supplementals:check && npm run tts:finalized-supplementals:check && node scripts/generate-tts-card-assets.mjs --check && node scripts/generate-tts-territory-assets.mjs --check && node scripts/generate-tts-leader-assets.mjs --check && node scripts/generate-tts-starter-decks.mjs --check && node --check scripts/generate-tts-rulebook-reader.mjs && node scripts/generate-tts-save.mjs --check && node tts/apply-table-layout.mjs --check && node scripts/assemble-tts-supplemental-save.mjs --check && node --check scripts/tts-supplemental-geometry.mjs && node --check scripts/promote-tts-save.mjs",
     "tts:catalog": "node scripts/generate-tts-card-assets.mjs --catalog-only",
     "tts:cards": "node scripts/generate-tts-card-assets.mjs",
     "tts:territories": "node scripts/generate-tts-territory-assets.mjs",
@@ -48,7 +48,7 @@
     "tts:starters": "node scripts/generate-tts-starter-decks.mjs",
     "tts:supplementals": "node scripts/generate-tts-supplemental-assets.mjs",
     "tts:finalized-supplementals": "node scripts/generate-tts-finalized-supplementals.mjs",
-    "tts:release:stage": "npm run tts:environment && node scripts/stage-tts-release-assets.mjs",
+    "tts:release:stage": "npm run tts:environment && npm run tts:rulebook:reader && node scripts/stage-tts-release-assets.mjs",
     "tts:release:status": "node scripts/check-tts-release-readiness.mjs",
     "tts:release:strict": "node scripts/check-tts-release-readiness.mjs --strict",
     "tts:save:base": "node scripts/generate-tts-save.mjs",
@@ -70,7 +70,8 @@
     "publishing:check": "node scripts/sync-publishing-authority.mjs",
     "publishing:sync": "node scripts/sync-publishing-authority.mjs --write",
     "dev:legacy:cli": "tsx src/cli/dev-runner-v06.ts",
-    "dev:legacy:gui": "tsx src/gui/dev-server-v06.ts"
+    "dev:legacy:gui": "tsx src/gui/dev-server-v06.ts",
+    "tts:rulebook:reader": "node scripts/generate-tts-rulebook-reader.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
@@ -78,6 +79,7 @@
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8",
-    "sharp": "^0.33.5"
+    "sharp": "^0.33.5",
+    "pdf-lib": "^1.17.1"
   }
 }
