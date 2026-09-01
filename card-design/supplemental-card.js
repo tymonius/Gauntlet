@@ -148,7 +148,7 @@ function buildSupplementalGroups(currentGame) {
 }
 
 function isolatedComponentRenderId() {
-  if (!/\/component-print-render\.html$/.test(window.location.pathname)) return '';
+  if (!/\/component-render\.html$/.test(window.location.pathname)) return '';
   return String(new URLSearchParams(window.location.search).get('id') || '').trim();
 }
 
