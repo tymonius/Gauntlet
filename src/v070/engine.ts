@@ -362,6 +362,11 @@ export type V070PendingActionEffectChoice =
       sourceActionInstanceId: string;
     }
   | {
+      kind: 'capital_gains_treasury_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+    }
+  | {
       kind: 'owned_deed_target';
       playerId: PlayerId;
       sourceActionInstanceId: string;
