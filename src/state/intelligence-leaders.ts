@@ -1,5 +1,5 @@
 import { intelligenceMissionCardIds } from '../cards';
-import type { CardID, GameEvent, GameState, PlayerID, SpaceID } from '../types';
+import type { CardID, GameEvent, GameState, PlayerID, SpaceID } from '../types/v06';
 import type { ResolveIntelligenceChoiceAction } from './actions';
 import { startMissionControlMission } from './intelligence-missions';
 import { hasFactionResource, spendFactionResource } from './resources';
