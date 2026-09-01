@@ -6,7 +6,7 @@ import type {
   InquisitionFinalJudgmentPurgeOption,
   InquisitionPurgeMode,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import type {
   ResolveInquisitionChoiceAction,
   UseInquisitionPurgeAction,
