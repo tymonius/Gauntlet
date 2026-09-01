@@ -71,7 +71,7 @@ import {
 import { openV070BlockadeChoicesForPositionChange } from './movement-triggers';
 import {
   clearV070AssetFaceState,
-  isV070AssetFaceUp,
+  isV070AssetActive,
 } from './asset-face-state';
 import {
   applyV070BlasphemyForBattleReveal,
@@ -427,7 +427,7 @@ function unsupportedOnsetFeatures(state: V070GameState): string[] {
     const player = state.players[playerId];
 
     for (const instanceId of player.zones.assetBank) {
-      if (!isV070AssetFaceUp(state, instanceId)) continue;
+      if (!isV070AssetActive(state, instanceId)) continue;
       const cardId = state.cardInstances[instanceId]?.cardId;
       const card = cardId ? v070CanonicalContent.cardsById.get(cardId) : undefined;
       const onsetAsset = card?.effects.find(effect =>
@@ -855,7 +855,7 @@ function useSafeConduct(
   const index = player.zones.assetBank.indexOf(cardInstanceId);
   if (index < 0
     || state.cardInstances[cardInstanceId]?.cardId !== 'diplomats-safe-conduct'
-    || !isV070AssetFaceUp(state, cardInstanceId)) {
+    || !isV070AssetActive(state, cardInstanceId)) {
     throw new V070GameActionError('Choose a banked Safe Conduct to use.');
   }
 
@@ -918,7 +918,7 @@ function safeConductAvailable(
 
   return state.players[playerId].zones.assetBank.some(instanceId =>
     state.cardInstances[instanceId]?.cardId === 'diplomats-safe-conduct'
-    && isV070AssetFaceUp(state, instanceId)
+    && isV070AssetActive(state, instanceId)
   );
 }
 
