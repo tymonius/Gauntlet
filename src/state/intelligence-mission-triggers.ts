@@ -4,7 +4,7 @@ import type {
   IntelligenceMissionKind,
   IntelligenceMissionState,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import { markIntelligenceMissionRequirement } from './intelligence-missions';
 
 const SPIES = 'intelligence-spies';
