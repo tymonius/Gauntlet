@@ -10,6 +10,7 @@
   let starterLoadError = null;
   let printing = false;
 
+  deckbuilder.registerRenderHook(syncCurrentButton);
   document.addEventListener("DOMContentLoaded", installAllStarterPrintButton);
 
   function installAllStarterPrintButton() {
@@ -17,12 +18,8 @@
     if (!button) return;
 
     button.addEventListener("click", printAllStarterDecks);
+    syncButton(button);
     loadStarterDecks();
-
-    const readyCheck = window.setInterval(() => {
-      syncButton(button);
-      if (starterLoadError || isReady()) window.clearInterval(readyCheck);
-    }, 100);
   }
 
   async function loadStarterDecks() {
@@ -60,6 +57,11 @@
       territoriesApi()?.isReady?.() &&
       !document.getElementById("printDeckButton")?.disabled
     );
+  }
+
+  function syncCurrentButton() {
+    const button = document.getElementById("printAllStarterDecksButton");
+    if (button) syncButton(button);
   }
 
   function syncButton(button) {
