@@ -1,4 +1,4 @@
-import type { GameState } from '../types';
+import type { GameState } from '../types/v06';
 import { openNextFinancierChoice } from './financier-battle-cards';
 import { buildFinancierPreDiceChoices } from './financier-pre-dice';
 import { maybeOpenSubsidizeWindow } from './financier-integration';
