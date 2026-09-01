@@ -63,6 +63,7 @@ export interface V070BattleRuntimeView {
   refusedTermsContext: V070BattleRuntime['refusedTermsContext'];
   gambitOrderOverride: V070BattleRuntime['gambitOrderOverride'];
   pendingOutcome: V070BattleRuntime['pendingOutcome'];
+  pendingAccursedWager: V070BattleRuntime['pendingAccursedWager'];
   unsupportedEffects: V070UnsupportedBattleEffect[];
 }
 
@@ -131,6 +132,7 @@ export interface V070GameView {
   battleRuntime: V070BattleRuntimeView | null;
   overlays: V070OverlayView[];
   speculations: V070SpeculationView[];
+  accursedWagers: V070GameState['accursedWagers'];
   bindings: V070BindingView[];
   assetFaceStates: V070GameState['assetFaceStates'];
   territoryTurnRestrictions: V070GameState['territoryTurnRestrictions'];
@@ -171,6 +173,9 @@ export function viewV070GameForPlayer(
       : null,
     overlays: viewOverlays(state),
     speculations: viewSpeculations(state),
+    accursedWagers: state.accursedWagers.map(
+      wager => structuredClone(wager),
+    ),
     bindings: viewBindings(state, viewer),
     assetFaceStates: state.assetFaceStates.map(face => structuredClone(face)),
     territoryTurnRestrictions: state.territoryTurnRestrictions.map(
@@ -380,6 +385,9 @@ function viewBattleRuntime(
       : null,
     pendingOutcome: runtime.pendingOutcome
       ? structuredClone(runtime.pendingOutcome)
+      : null,
+    pendingAccursedWager: runtime.pendingAccursedWager
+      ? structuredClone(runtime.pendingAccursedWager)
       : null,
     unsupportedEffects: runtime.unsupportedEffects.map(effect => structuredClone(effect)),
   };
