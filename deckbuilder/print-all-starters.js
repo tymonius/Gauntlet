@@ -5,8 +5,8 @@
   const territoriesApi = () => deckbuilder.feature("territories");
   const ritesApi = () => deckbuilder.feature("mysticsRites");
 
-  const EXPECTED_DECK_COUNT = 12;
   let starterDecks = [];
+  let expectedDeckCount = 0;
   let starterLoadError = null;
   let printing = false;
 
@@ -28,11 +28,15 @@
   async function loadStarterDecks() {
     try {
       const currentGame = await deckbuilder.bootstrap();
+      expectedDeckCount = (currentGame.factions || [])
+        .reduce((sum, faction) => sum + (faction.leaders || []).length, 0);
+      if (!expectedDeckCount) throw new Error("Current-game authority exposes no Leaders for starter Deck coverage.");
+
       starterDecks = Array.isArray(currentGame.starterDecks)
         ? currentGame.starterDecks.map(deck => ({ ...deck }))
         : [];
-      if (starterDecks.length !== EXPECTED_DECK_COUNT) {
-        throw new Error(`Expected ${EXPECTED_DECK_COUNT} starter Decks but found ${starterDecks.length}.`);
+      if (starterDecks.length !== expectedDeckCount) {
+        throw new Error(`Expected one starter Deck per Leader (${expectedDeckCount}) but found ${starterDecks.length}.`);
       }
     } catch (error) {
       starterLoadError = error;
@@ -49,7 +53,7 @@
     const mysticsRitesReady = ritesApi()?.isReady?.() === true;
 
     return Boolean(
-      starterDecks.length === EXPECTED_DECK_COUNT &&
+      expectedDeckCount > 0 && starterDecks.length === expectedDeckCount &&
       starterTipsReady &&
       mysticsRitesReady &&
       state.cards?.length &&
@@ -62,11 +66,11 @@
     if (printing) return;
 
     button.disabled = !isReady();
-    button.textContent = "Print all 12 starter decks";
+    button.textContent = expectedDeckCount ? `Print all ${expectedDeckCount} starter decks` : "Print all starter decks";
     button.title = starterLoadError
       ? "The starter Deck definitions could not be loaded"
       : isReady()
-        ? "Open one printable package containing all twelve complete recommended starter Decks"
+        ? `Open one printable package containing all ${expectedDeckCount} complete recommended starter Decks`
         : "Waiting for card, Territory, and starter Deck data";
   }
 
@@ -85,13 +89,13 @@
 
     printing = true;
     button.disabled = true;
-    button.textContent = `Preparing 0 of ${EXPECTED_DECK_COUNT}…`;
-    outputWindow.document.write(`<!doctype html><title>Preparing all starter Decks</title><body style="font-family:Arial,sans-serif;padding:2rem"><h1>Preparing all twelve starter Decks…</h1><p>This window will open the print dialog when the complete package is ready.</p></body>`);
+    button.textContent = `Preparing 0 of ${expectedDeckCount}…`;
+    outputWindow.document.write(`<!doctype html><title>Preparing all starter Decks</title><body style="font-family:Arial,sans-serif;padding:2rem"><h1>Preparing all ${expectedDeckCount} starter Decks…</h1><p>This window will open the print dialog when the complete package is ready.</p></body>`);
     outputWindow.document.close();
 
     try {
       starterDecks.forEach((preset, index) => {
-        button.textContent = `Preparing ${index + 1} of ${EXPECTED_DECK_COUNT}…`;
+        button.textContent = `Preparing ${index + 1} of ${expectedDeckCount}…`;
         applyStarterDeckToState(preset);
 
         const validation = deckbuilder.validate();
@@ -216,7 +220,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>All 12 Gauntlet ${escapeHtml(state.currentGameDisplayVersion || state.currentGameVersion || "current")} Starter Decks</title>
+<title>All ${expectedDeckCount} Gauntlet ${escapeHtml(state.currentGameDisplayVersion || state.currentGameVersion || "current")} Starter Decks</title>
 ${links}
 ${styles.map(style => `<style>${style}</style>`).join("\n")}
 <style>
