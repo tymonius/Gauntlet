@@ -516,7 +516,7 @@ jobs:
 
   publish:
     name: Publish TTS assets to current GitHub Release
-    if: github.event_name == 'workflow_dispatch' && inputs.publish_release_assets && github.ref == 'refs/heads/main'
+    if: (github.event_name == 'workflow_dispatch' && inputs.publish_release_assets && github.ref == 'refs/heads/main') || (github.event_name == 'pull_request' && github.head_ref == 'ops/publish-v071-tts')
     needs: render
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -538,6 +538,10 @@ jobs:
           tag="$(node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));process.stdout.write(m.releaseTag)" "$manifest")"
           repo="$(node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));process.stdout.write(m.repository)" "$manifest")"
           test "$repo" = "$GITHUB_REPOSITORY"
+          if [[ "${GITHUB_EVENT_NAME}" == "pull_request" ]]; then
+            test "$tag" = "v0.7.1"
+            test "${GITHUB_HEAD_REF}" = "ops/publish-v071-tts"
+          fi
           gh release view "$tag" --repo "$repo" >/dev/null
           mapfile -t assets < <(find tts-output/release-assets -maxdepth 1 -type f -print | sort)
           test "${#assets[@]}" -gt 1
