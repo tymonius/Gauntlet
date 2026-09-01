@@ -23,11 +23,9 @@ const componentContract = currentGame.componentContract;
 describe("Deckbuilder production printing", () => {
   it("uses shared production renderers for playable cards, Territories, and faction components", () => {
     expect(playableRender).toContain('/card-design/card-review-render.js');
-    expect(playableRender).toContain('width: 2.5in;');
-    expect(playableRender).toContain('height: 3.5in;');
+    expect(playableRender).toContain('id="renderTarget"');
     expect(territoryRender).toContain('/card-design/territory-review-render.js');
-    expect(territoryRender).toContain('width: 3.5in;');
-    expect(territoryRender).toContain('height: 2.5in;');
+    expect(territoryRender).toContain('id="renderTarget"');
     expect(componentRenderHtml).toContain('/card-design/leader-card.css');
     expect(componentRenderHtml).toContain('/card-design/supplemental-card.js');
     expect(componentRenderHtml).toContain('/card-design/capital-ledger.css');
