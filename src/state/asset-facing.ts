@@ -1,4 +1,4 @@
-import type { CardID, PlayerState } from '../types';
+import type { CardID, PlayerState } from '../types/v06';
 
 function removeOne(cards: CardID[], cardId: CardID): boolean {
   const index = cards.indexOf(cardId);
