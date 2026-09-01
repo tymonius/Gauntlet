@@ -181,6 +181,9 @@ describe("v0.7.0 Smuggler's Run Territory", () => {
     expect(JSON.stringify(opponentView)).not.toContain(card);
 
     state = moveToDenouement(state);
+    // Supply an explicit extra Action so this assertion reaches the
+    // one-stash rule rather than failing on the normal one-Action turn budget.
+    state.turnState!.actionsAvailable = 1;
     const second = inject(
       state,
       'A',
@@ -209,6 +212,9 @@ describe("v0.7.0 Smuggler's Run Territory", () => {
       cardInstanceId: card,
     });
     state = moveToDenouement(state);
+    // Stashing spent the normal Action. Supply one additional Action to
+    // exercise the separate permission to play the stashed Action effect.
+    state.turnState!.actionsAvailable = 1;
     const actionsBefore = state.turnState!.actionsAvailable;
 
     state = reduceV070TurnAction(state, {
