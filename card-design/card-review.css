@@ -73,6 +73,24 @@
   box-shadow: 0 0.16in 0.36in var(--card-shadow);
 }
 
+.component-review-frame {
+  display: block;
+  width: 2.5in;
+  height: 3.5in;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0.12in;
+  background: transparent;
+  box-shadow: 0 0.16in 0.36in var(--card-shadow);
+}
+
+.component-review-frame-landscape {
+  width: 3.5in;
+  height: 2.5in;
+}
+
+
 .review-card-label,
 .leader-review-label,
 .territory-review-label {
@@ -199,7 +217,8 @@
   }
 
   .full-card-review-frame,
-  .territory-review-frame {
+  .territory-review-frame,
+  .component-review-frame {
     box-shadow: none;
   }
 }
