@@ -219,10 +219,13 @@ The current package assembles the authoritative supplemental quantities across t
 - deliberately isolated Graveyards at the outer east edge;
 - Deed snap columns at **x = ±3.95**, close to the Territory column;
 - one battle d6 per player;
-- one Player Token per player; and
+- one Player Token per player;
+- one shared in-table **Custom PDF Rulebook** using the stable versioned GitHub Release PDF; and
 - one selectable starter Bag for every current starter.
 
-The base scaffold receives the authoritative table layout, is assembled with faction supplementals, and is then validated by `tts/validate-v070-authoritative-save.mjs`. Validation is fail-closed: it checks the generated save as written and does not repair object geometry.
+The shared Rulebook is parked in the neutral east-center gap between the two combined Faction / Leader & References workspaces, opposite the west-side Battle Zone. It opens at the beginning of the v0.7.1 Rulebook PDF and remains a normal shared TTS object rather than duplicating the rules into scripted UI.
+
+The base scaffold receives the authoritative table layout, is assembled with faction supplementals, and is then validated by `tts/validate-current-authoritative-save.mjs`. Validation is fail-closed: it checks the generated save as written and does not repair object geometry.
 
 Behavioral tests construct the returned save JSON and verify the core table structure, starter core contents, landscape Territory presentation, supplemental packaging, tracker geometry, and HTTPS custom-object URLs. Actual TTS usability still requires in-game QA.
 
