@@ -1130,13 +1130,13 @@ function completeAftermathInternal(
   const battle = requireBattle(state);
   const runtime = requireRuntime(state);
 
-  if (openAccursedWagerAftermathChoice(state, immediateWinner)) {
-    return;
-  }
-
   state.players.A.position = battle.positions.A;
   state.players.B.position = battle.positions.B;
   syncBoardOccupants(state);
+
+  if (openAccursedWagerAftermathChoice(state, immediateWinner)) {
+    return;
+  }
 
   const graveyardedDuringAftermath: Record<PlayerId, string[]> = {
     A: [],
