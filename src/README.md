@@ -60,7 +60,7 @@ Reuse architecture and procedures deliberately. A historical handler is evidence
 
 The promoted `src/v070/` implementation must remain structurally isolated from the legacy `state/`, `dev/`, `cards/`, `effects/`, and `reconstruction/` trees. Shared code may move into an explicitly current/version-neutral module only after its authority and compatibility are established.
 
-The legacy development helpers under `src/dev/` and the legacy CLI/GUI runners use the explicit v0.6 aggregate boundaries for state, effects, card definitions, and types. Compatibility shims exist only to support older untouched consumers, not as preferred import targets.
+The legacy development helpers under `src/dev/` and the legacy CLI/GUI runners use explicit v0.6 aggregate boundaries for state, effects, and types. Three dev helpers still use the deprecated generic card barrel because direct `cards/v06` imports expose an existing ESM cycle in the old state/card architecture; that compatibility dependency is intentional until the cycle is removed.
 
 
 ## Battle execution boundary
