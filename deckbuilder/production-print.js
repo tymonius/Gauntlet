@@ -544,12 +544,13 @@
   break-after: page !important;
   page-break-after: always !important;
 }
-.duplex-page .card-table,
 .deck-card-back-page .card-table {
   position: absolute;
   inset: 0;
 }
 .deck-card-back-page.first-page-back .card-table.two-row {
+  top: 3.5in;
+  bottom: auto;
   height: 7in !important;
 }
 .first-page-back-spacer {

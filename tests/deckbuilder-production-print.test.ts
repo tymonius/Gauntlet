@@ -5,6 +5,7 @@ const deckbuilderHtml = readFileSync("deckbuilder/index.html", "utf8");
 const playableRender = readFileSync("card-design/card-print-render.html", "utf8");
 const componentRenderHtml = readFileSync("card-design/component-print-render.html", "utf8");
 const componentRenderJs = readFileSync("card-design/component-print-render.js", "utf8");
+const supplementalRenderer = readFileSync("card-design/supplemental-card.js", "utf8");
 const territoryRender = readFileSync("card-design/territory-print-render.html", "utf8");
 const backRender = readFileSync("tts/back-renderer/index.html", "utf8");
 const cardBackCss = readFileSync("card-design/card-back.css", "utf8");
@@ -88,6 +89,23 @@ describe("Deckbuilder production printing", () => {
     expect(backRender).toContain("params.get('rotation') === '180'");
     expect(printTransform).toContain("await Promise.all(frames.map(waitForFrame))");
     expect(printTransform).toContain("Printing was stopped so the Deck is not printed with incomplete cards");
+  });
+
+  it("isolates standalone supplemental production renders to the requested component", () => {
+    expect(supplementalRenderer).toContain("function isolatedComponentRenderId()");
+    expect(supplementalRenderer).toContain("/\\/component-print-render\\.html$/");
+    expect(supplementalRenderer).toContain("component.id === isolatedId");
+    expect(supplementalRenderer).toContain("component.contractId === isolatedId");
+    expect(supplementalRenderer).toContain("component.referenceId === isolatedId");
+    expect(supplementalRenderer).toContain("filteredGroups = groups");
+  });
+
+  it("keeps first-page duplex fronts below the deck summary and aligns their reverse sheet", () => {
+    expect(printTransform).not.toContain(".duplex-page .card-table,");
+    expect(printTransform).toContain(".deck-card-back-page .card-table {");
+    expect(printTransform).toContain(".deck-card-back-page.first-page-back .card-table.two-row {");
+    expect(printTransform).toContain("top: 3.5in;");
+    expect(printTransform).toContain("bottom: auto;");
   });
 
   it("previews the selected faction component back without exposing a global back-color choice", () => {
