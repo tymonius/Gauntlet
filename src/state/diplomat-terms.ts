@@ -1,5 +1,5 @@
 import { destinationForCardPlay, diplomatProposalDefinitions, diplomatProposalsById } from '../cards';
-import type { CardID, GameEvent, GameState, PlayerID, ProposalDefinition, ProposalID } from '../types';
+import type { CardID, GameEvent, GameState, PlayerID, ProposalDefinition, ProposalID } from '../types/v06';
 import { drawFromDeck } from './draw';
 import { gainFactionResource, spendFactionResource } from './resources';
 

@@ -21,6 +21,8 @@ Foundational legacy state modules use the explicit `../types/v06` type boundary.
 
 The legacy Intelligence runtime subsystem follows the same rule: its state/effect modules import shared engine shapes through `../types/v06` using type-only imports, while existing runtime card imports remain untouched.
 
+The legacy Diplomat runtime subsystem likewise imports its shared engine shapes through `../types/v06` using type-only imports.
+
 ## Hidden information rule
 
 The authoritative `GameState` contains all private information. UI and network clients using this legacy architecture should receive only one of these derived views:
