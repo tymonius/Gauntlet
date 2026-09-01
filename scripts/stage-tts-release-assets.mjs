@@ -122,6 +122,15 @@ async function stageReleaseAssets() {
     );
   }
 
+  addAsset(
+    records,
+    seenNames,
+    'rulebook-reader.pdf',
+    `${prefix}_Rulebook.pdf`,
+    'rulebook-reader',
+    { pageFormat: 'half-letter', pageOrder: 'reading' },
+  );
+
   for (const sheet of cardManifest.sheets || []) {
     addAsset(
       records,
