@@ -4,11 +4,13 @@ import {
   applyV070MovementChoice,
   beginEffectGrantedV070Movement,
   beginNormalV070Movement,
+  capV070NormalMovementToOneStep,
   canInitiateV070LastStand,
   currentV070MovementStep,
   createV070BattleOnset,
   createV070LastStandOnset,
   createV070TurnState,
+  endV070MovementSequence,
   grantCurrentPhaseV070Actions,
   queueNormalV070MovementStep,
   spendV070Action,
@@ -112,6 +114,15 @@ import {
   startV070MissionFromHand,
   v070MissionEligibleHandInstanceIds,
 } from './intelligence';
+import {
+  expireV070TerritoryEffectSuppressions,
+  payV070TollBridgeAdvanceCost,
+  v070DifficultTerrainEntryActive,
+  v070QuicksandCapsMovement,
+  v070RefugeFallBackDrawActive,
+  v070TollBridgeAdvanceCostActive,
+  v070TurnStartTerritoryPlan,
+} from './territories';
 
 export type V070TurnAction =
   | { type: 'resolve_capture'; playerId: PlayerId }
@@ -383,6 +394,7 @@ export type V070TurnAction =
       playerId: PlayerId;
       choice: MovementChoice;
       discardInstanceId?: string;
+      territoryDiscardInstanceId?: string;
     }
   | {
       type: 'resolve_start_turn_overlay_choice';
@@ -975,7 +987,13 @@ export function reduceV070TurnAction(
       );
       break;
     case 'choose_movement':
-      chooseMovement(next, action.playerId, action.choice, action.discardInstanceId);
+      chooseMovement(
+        next,
+        action.playerId,
+        action.choice,
+        action.discardInstanceId,
+        action.territoryDiscardInstanceId,
+      );
       break;
     case 'resolve_start_turn_overlay_choice':
       resolveV070StartTurnOverlayChoice(
@@ -996,8 +1014,68 @@ export function reduceV070TurnAction(
   return next;
 }
 
+function applyV070TurnStartTerritoryEffects(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  const turnState = requireTurnState(state);
+  if (turnState.startTurnTerritoryEffectsApplied) return;
+
+  const plan = v070TurnStartTerritoryPlan(state, playerId);
+  state.turnState = {
+    ...turnState,
+    territoryMovementBonus: plan.kingsRoadMovementBonus,
+    denouementCardActionBlockedByTerritory:
+      plan.denouementCardActionBlocked,
+    startTurnTerritoryEffectsApplied: true,
+  };
+
+  if (plan.supplyDepotCards > 0) {
+    drawIntoHand(
+      state,
+      playerId,
+      plan.supplyDepotCards,
+      'Supply Depot',
+    );
+    appendV070Event(state, {
+      type: 'territory_effect_applied',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        territoryId: 'territory-supply-depot',
+        effect: 'start_turn_card',
+        amount: plan.supplyDepotCards,
+      },
+    });
+  }
+  if (plan.kingsRoadMovementBonus > 0) {
+    appendV070Event(state, {
+      type: 'territory_effect_applied',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        territoryId: 'territory-king-s-road',
+        effect: 'movement_bonus',
+        amount: plan.kingsRoadMovementBonus,
+      },
+    });
+  }
+  if (plan.denouementCardActionBlocked) {
+    appendV070Event(state, {
+      type: 'territory_effect_applied',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        territoryId: 'territory-difficult-terrain',
+        effect: 'denouement_card_action_blocked',
+      },
+    });
+  }
+}
+
 function resolveCapture(state: V070GameState, playerId: PlayerId): void {
   requirePhase(state, 'capture');
+  applyV070TurnStartTerritoryEffects(state, playerId);
   const target = nextV070FrontLineTarget(state, playerId);
 
   if (target) {
@@ -1435,6 +1513,12 @@ function playActionCard(
   if (turnState.phase !== 'opening' && turnState.phase !== 'denouement') {
     throw new V070GameActionError(
       'A printed Action card may normally be played only during Opening or Denouement.',
+    );
+  }
+  if (turnState.phase === 'denouement'
+    && turnState.denouementCardActionBlockedByTerritory) {
+    throw new V070GameActionError(
+      'Difficult Terrain prevents playing a card for its Action effect during Denouement this turn.',
     );
   }
 
@@ -8335,8 +8419,27 @@ function drawIntoHand(
 
 function passOpening(state: V070GameState, playerId: PlayerId): void {
   requirePhase(state, 'opening');
-  const turnState = advanceV070TurnPhase(requireTurnState(state));
-  state.turnState = beginNormalV070Movement(turnState);
+  const current = requireTurnState(state);
+  const turnState = advanceV070TurnPhase(current);
+  state.turnState = beginNormalV070Movement(
+    turnState,
+    current.territoryMovementBonus,
+  );
+  if (v070QuicksandCapsMovement(state, playerId)) {
+    state.turnState = capV070NormalMovementToOneStep(
+      requireTurnState(state),
+    );
+    appendV070Event(state, {
+      type: 'territory_movement_restricted',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        territoryId: 'territory-quicksand',
+        maxPositions: 1,
+        blocksMovementIncrease: true,
+      },
+    });
+  }
 
   appendV070Event(state, {
     type: 'opening_passed',
@@ -8351,6 +8454,7 @@ function chooseMovement(
   playerId: PlayerId,
   choice: MovementChoice,
   discardInstanceId?: string,
+  territoryDiscardInstanceId?: string,
 ): void {
   const turnState = requireTurnState(state);
   const sequenceSource = turnState.movementSequenceSource;
@@ -8364,8 +8468,10 @@ function chooseMovement(
   }
 
   if (choice === 'hold') {
-    if (discardInstanceId) {
-      throw new V070GameActionError('Hold has no Territory Overlay entry cost.');
+    if (discardInstanceId || territoryDiscardInstanceId) {
+      throw new V070GameActionError(
+        'Hold has no Territory or Overlay entry cost.',
+      );
     }
     state.turnState = applyV070MovementChoice(turnState, choice);
     appendV070Event(state, {
@@ -8394,6 +8500,13 @@ function chooseMovement(
     throw new V070GameActionError('No current movement step is available.');
   }
   const initiatesBattle = opponent.position === destination;
+  const tollBridgeCostRequired =
+    choice === 'advance'
+    && v070TollBridgeAdvanceCostActive(
+      state,
+      playerId,
+      origin,
+    );
   let nextMovementState;
   try {
     nextMovementState = applyV070MovementChoice(
@@ -8407,12 +8520,40 @@ function chooseMovement(
     );
   }
 
+  if (tollBridgeCostRequired) {
+    payV070TollBridgeAdvanceCost(
+      state,
+      playerId,
+      territoryDiscardInstanceId,
+    );
+  } else if (territoryDiscardInstanceId) {
+    throw new V070GameActionError(
+      'No Territory movement cost requires that discard.',
+    );
+  }
+
   resolveV070OverlayEntryRequirements(
     state,
     playerId,
     destination,
     discardInstanceId,
   );
+
+  const difficultTerrainEntered =
+    v070DifficultTerrainEntryActive(
+      state,
+      playerId,
+      destination,
+    );
+  if (difficultTerrainEntered) {
+    nextMovementState = endV070MovementSequence(
+      nextMovementState,
+    );
+    nextMovementState = {
+      ...nextMovementState,
+      denouementCardActionBlockedByTerritory: true,
+    };
+  }
 
   if (initiatesBattle) {
     const lastStand = canInitiateV070LastStand({
@@ -8506,6 +8647,38 @@ function chooseMovement(
     payload: { choice, from: origin, to: destination },
   });
 
+  if (difficultTerrainEntered) {
+    appendV070Event(state, {
+      type: 'territory_effect_applied',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        territoryId: 'territory-difficult-terrain',
+        effect: 'movement_ended_on_entry',
+        territoryPosition: destination,
+      },
+    });
+  }
+
+  if (choice === 'fall_back'
+    && v070RefugeFallBackDrawActive(
+      state,
+      playerId,
+      destination,
+    )) {
+    drawIntoHand(state, playerId, 1, 'Refuge');
+    appendV070Event(state, {
+      type: 'territory_effect_applied',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        territoryId: 'territory-refuge',
+        effect: 'fall_back_draw',
+        territoryPosition: destination,
+      },
+    });
+  }
+
   openV070BlockadeChoicesForPositionChange(
     state,
     playerId,
@@ -8572,6 +8745,7 @@ function completeCleanup(
   }
 
   expireV070AccursedWagersAtTurnEnd(state, playerId);
+  expireV070TerritoryEffectSuppressions(state, playerId);
   clampAllV070CapitalToLimits(state);
 
   const next = otherPlayer(playerId);
@@ -8588,6 +8762,7 @@ function completeCleanup(
     payload: { turnNumber: state.turnNumber, phase: state.turnState.phase },
   });
 
+  applyV070TurnStartTerritoryEffects(state, next);
   resolveV070SpeculationsAtTurnStart(state, next);
   openV070StartTurnOverlayChoice(state, next);
 }
