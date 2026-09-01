@@ -1,7 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { starterBagTransform } from '../scripts/generate-tts-save.mjs';
+import { makeSharedRulebook, rulebookReleaseUrl, starterBagTransform } from '../scripts/generate-tts-save.mjs';
 
 const publisher = readFileSync('scripts/generate-tts-save.mjs', 'utf8');
 const validator = readFileSync('tts/validate-current-authoritative-save.mjs', 'utf8');
@@ -64,6 +64,28 @@ describe('TTS save publisher', () => {
       expect(position.posZ).toBeCloseTo(z, 6);
       expect(position.rotY).toBe(rotY);
     }
+  });
+
+  it('adds one shared Custom PDF Rulebook in the neutral east-center table space', () => {
+    const releaseAssets = { repository: 'tymonius/Gauntlet', releaseTag: 'v0.7.1' };
+    expect(rulebookReleaseUrl(releaseAssets, 'v0.7.1')).toBe(
+      'https://github.com/tymonius/Gauntlet/releases/download/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf',
+    );
+
+    const rulebook = makeSharedRulebook('v0.7.1', releaseAssets, 'abc123');
+    expect(rulebook).toMatchObject({
+      Name: 'Custom_PDF',
+      Nickname: 'Gauntlet v0.7.1 Rulebook',
+      GMNotes: 'gauntlet:shared-rulebook',
+      Transform: { posX: 11.4, posZ: 0, rotY: 90 },
+      CustomPDF: {
+        PDFUrl: 'https://github.com/tymonius/Gauntlet/releases/download/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf',
+        PDFPage: 0,
+        PDFPageOffset: 0,
+      },
+    });
+    expect(publisher).toContain('ObjectStates: [rulebook, ...starterKits]');
+    expect(validator).toContain('validateSharedRulebook(save, release.version)');
   });
 
   it('creates the base two-player scaffold before authoritative table layout is applied', () => {
