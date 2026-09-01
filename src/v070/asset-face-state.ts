@@ -5,12 +5,33 @@ import {
   type V070GameState,
 } from './engine';
 import type { PlayerId } from './rules';
+import { v070PlayerAssetsInactiveByContinuousTerritory } from './territories';
 
 export function isV070AssetFaceUp(
   state: V070GameState,
   instanceId: string,
 ): boolean {
   return !state.assetFaceStates.some(face => face.instanceId === instanceId);
+}
+
+export function isV070AssetActive(
+  state: V070GameState,
+  instanceId: string,
+): boolean {
+  if (!isV070AssetFaceUp(state, instanceId)) return false;
+  const owner = assetOwnerInBank(state, instanceId);
+  if (!owner) return false;
+
+  if (state.battleRuntime?.assetInactivePlayers.includes(owner)) {
+    return false;
+  }
+  if (v070PlayerAssetsInactiveByContinuousTerritory(
+    state,
+    owner,
+  )) {
+    return false;
+  }
+  return true;
 }
 
 export function faceUpV070AssetInstanceIds(
