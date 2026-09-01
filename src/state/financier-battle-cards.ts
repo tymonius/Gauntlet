@@ -1,5 +1,5 @@
 import type { ResolveFinancierChoiceAction } from './actions';
-import type { BattlePlayedCard, BattleState, CardID, GameEvent, GameState, PendingFinancierChoice, PlayerID } from '../types';
+import type { BattlePlayedCard, BattleState, CardID, GameEvent, GameState, PendingFinancierChoice, PlayerID } from '../types/v06';
 import { buildCornerTheMarketChoice } from './financier-acquisition-cards';
 import { buyDeed, cardValue, checkControllingInterest, deedCost, deedOwner } from './financiers';
 import { gainFactionResource } from './resources';
