@@ -1,4 +1,4 @@
-import type { BattleParticipantState, GameEvent, GameState, PlayerID } from '../types';
+import type { BattleParticipantState, GameEvent, GameState, PlayerID } from '../types/v06';
 import type { RollBattleDieAction } from './actions';
 import { GameActionError, type ApplyGameActionResult } from './reducer';
 
