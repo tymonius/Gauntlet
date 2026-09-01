@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { GameState } from '../types';
 import { initializeGame } from './initialize';
-import { applyGameAction } from './index';
+import { applyGameAction } from './v06';
 import { createValidSetup } from './test-helpers';
 
 function createPipelineGame(): GameState {
