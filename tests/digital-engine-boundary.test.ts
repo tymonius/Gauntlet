@@ -62,6 +62,29 @@ describe('digital engine boundary', () => {
       expect(source).not.toMatch(/from ['"]\.\.\/content['"]/);
     }
   });
+  it('requires legacy state consumers to opt into the v0.6 state API', () => {
+    expect(readdirSync('src/state')).not.toContain('index.ts');
+
+    const stateConsumers = [
+      'src/cli/dev-runner-v06.ts',
+      'src/gui/dev-server-v06.ts',
+      'src/dev/battle-reveal-options.ts',
+      'src/dev/inquisition-options.ts',
+      'src/dev/mystics-options.ts',
+      'src/dev/neutral-options.ts',
+      'src/dev/guided-options.ts',
+      'src/content/v06.test.ts',
+      'src/dev/guided-options.test.ts',
+      'src/dev/neutral-options.test.ts',
+    ];
+
+    for (const path of stateConsumers) {
+      const source = readFileSync(path, 'utf8');
+      expect(source).toContain("from '../state/v06'");
+      expect(source).not.toMatch(/from ['"]\.\.\/state['"]/);
+    }
+  });
+
   it('keeps the promoted v0.7.0 implementation isolated from legacy architecture', () => {
     const promotedSources = readdirSync('src/v070')
       .filter((name) => name.endsWith('.ts') && !name.endsWith('.test.ts'));
