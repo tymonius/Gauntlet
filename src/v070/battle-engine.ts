@@ -436,9 +436,11 @@ function setGambit(
       && playerId === battle.attacker)
     || runtime.gambitProhibitedPlayers.includes(playerId);
   if (gambitProhibited && instanceId !== undefined) {
-    throw new V070GameActionError(
-      `${playerId} cannot set a Gambit in this battle.`,
-    );
+    const message = battle.attackerGambitProhibited
+      && playerId === battle.attacker
+        ? 'The attacker cannot set a Gambit in this battle.'
+        : `${playerId} cannot set a Gambit in this battle.`;
+    throw new V070GameActionError(message);
   }
 
   const ableMandates = (state.turnState?.gambitMandates ?? []).filter(
