@@ -142,8 +142,8 @@ function validateTableWorkspace(save) {
   if (territory.length !== 8 || territory.some(point => point.Rotation !== undefined)) {
     throw new Error('Territory table snaps must constrain position only so Y rotation remains available to indicate control.');
   }
-  if (deeds.length !== 16 || deeds.some(point => !close(Math.abs(point.Position?.x), 4.35) || point.Rotation !== undefined)) {
-    throw new Error('Deed table snaps must constrain position only at ±4.35 so Y rotation remains available to indicate ownership.');
+  if (deeds.length !== 16 || deeds.some(point => !close(Math.abs(point.Position?.x), 3.95) || point.Rotation !== undefined)) {
+    throw new Error('Deed table snaps must constrain position only at ±3.95 so Y rotation remains available to indicate ownership.');
   }
   if (faction.length !== 24) throw new Error(`Expected 24 Faction Zone card snaps; found ${faction.length}.`);
   if (deedStackMagnets.length) throw new Error('Deed stacks must use ordinary Faction Zone magnets; dedicated Deed-stack magnets are forbidden.');
