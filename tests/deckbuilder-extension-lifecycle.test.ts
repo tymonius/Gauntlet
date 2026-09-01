@@ -163,6 +163,18 @@ describe("Deckbuilder extension architecture", () => {
     expect(bulk).toContain("ritesApi()?.setSelectedIds?.(starterRiteIds(preset))");
   });
 
+  it("drives print readiness through render lifecycle hooks rather than polling", () => {
+    const print = read("deckbuilder/print.js");
+    const bulk = read("deckbuilder/print-all-starters.js");
+    const components = read("deckbuilder/faction-components.js");
+
+    expect(print).toContain("deckbuilder.registerRenderHook(syncPrintButton)");
+    expect(bulk).toContain("deckbuilder.registerRenderHook(syncCurrentButton)");
+    expect(components).toContain("deckbuilder.render()");
+    expect(print).not.toContain("setInterval");
+    expect(bulk).not.toContain("setInterval");
+  });
+
   it("routes custom and bulk tools through the selected Deckbuilder authority", () => {
     expect(read("deckbuilder/custom-print.mjs")).toContain("await deckbuilder.bootstrap()");
     expect(read("deckbuilder/print-all-starters.js")).toContain("await deckbuilder.bootstrap()");

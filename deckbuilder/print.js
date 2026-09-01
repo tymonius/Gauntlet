@@ -23,6 +23,7 @@
     buildDocument: buildCurrentPrintDocument,
     open: openPrintView,
   }));
+  deckbuilder.registerRenderHook(syncPrintButton);
 
   document.addEventListener("DOMContentLoaded", installPrintButton);
 
@@ -31,17 +32,20 @@
     if (!button) return;
 
     button.addEventListener("click", openPrintView);
+    syncPrintButton();
+  }
 
-    const readyCheck = window.setInterval(() => {
-      const ready = state.cards.length > 0
-        && territoriesApi()?.isReady?.()
-        && Boolean(deckbuilder.feature("supplementalPackages"));
-      button.disabled = !ready;
-      button.title = ready
-        ? "Open a printable deck package for printing or saving as PDF"
-        : "Waiting for card and Territory sources to load";
-      if (ready) window.clearInterval(readyCheck);
-    }, 100);
+  function syncPrintButton() {
+    const button = document.getElementById("printDeckButton");
+    if (!button) return;
+
+    const ready = state.cards.length > 0
+      && territoriesApi()?.isReady?.()
+      && Boolean(deckbuilder.feature("supplementalPackages"));
+    button.disabled = !ready;
+    button.title = ready
+      ? "Open a printable deck package for printing or saving as PDF"
+      : "Waiting for card and Territory sources to load";
   }
 
   function openPrintView() {
