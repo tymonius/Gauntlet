@@ -48,6 +48,8 @@ function activeBattle(): V070GameState {
   state.board.forEach(space => { space.occupant = null; });
   state.board[2].occupant = 'A';
   state.board[3].occupant = 'B';
+  // Reveal-effect tests use a neutral contested Territory.
+  state.board[3].blank = true;
 
   state = reduceV070TurnAction(state, { type: 'resolve_capture', playerId: 'A' });
   state = reduceV070TurnAction(state, { type: 'draw_turn_card', playerId: 'A' });
