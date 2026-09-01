@@ -74,6 +74,7 @@ function activeBattle(): V070GameState {
   state.players.A.position = 2;
   state.players.B.position = 3;
   syncOccupants(state);
+  state.board[3].blank = true;
 
   state = reduceV070TurnAction(state, { type: 'resolve_capture', playerId: 'A' });
   state = reduceV070TurnAction(state, { type: 'draw_turn_card', playerId: 'A' });
