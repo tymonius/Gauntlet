@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { V06_RULES_VERSION, v06CanonicalContent } from '../content';
+import { V06_RULES_VERSION, v06CanonicalContent } from '../content/v06';
 import { GameSetupValidationError } from './validation';
 import { initializeV06Game, validateV06GameSetup, type V06GameSetupInput } from './v06-setup';
 
