@@ -78,7 +78,7 @@ describe('TTS save publisher', () => {
       Name: 'Custom_PDF',
       Nickname: 'Gauntlet v0.7.1 Rulebook',
       GMNotes: 'gauntlet:shared-rulebook',
-      Transform: { posX: 11.4, posZ: 0, rotY: 90 },
+      Transform: { posX: 11.4, posZ: 0, rotY: 90, scaleX: 2.55, scaleY: 1, scaleZ: 2.55 },
       CustomPDF: {
         PDFUrl: 'https://github.com/tymonius/Gauntlet/releases/download/v0.7.1/Gauntlet_v0.7.1_TTS_Rulebook.pdf?v=123456789abc',
         PDFPage: 0,
@@ -88,6 +88,7 @@ describe('TTS save publisher', () => {
     expect(publisher).toContain("const RULEBOOK_READER_SOURCE = 'rulebook-reader.pdf'");
     expect(publisher).toContain('ObjectStates: [rulebook, ...starterKits]');
     expect(validator).toContain("isContentVersionedReleaseAsset(String(rulebook.CustomPDF.PDFUrl || ''), '_TTS_Rulebook.pdf')");
+    expect(validator).toContain("approved physical-table scale of 2.55×");
   });
 
   it('creates the base two-player scaffold before authoritative table layout is applied', () => {
