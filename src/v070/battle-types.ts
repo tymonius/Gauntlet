@@ -121,7 +121,7 @@ export interface V070UnsupportedBattleEffect {
 }
 
 export interface V070GambitOrderOverride {
-  source: 'neutral_observers';
+  source: 'neutral_observers' | 'watchtower';
   firstPlayer: PlayerId;
   secondPlayer: PlayerId;
   nextPlayer: PlayerId | null;
@@ -148,6 +148,11 @@ export interface V070BattleRuntime {
   pendingOutcome: V070BattleOutcome | null;
   pendingAccursedWager: V070AccursedWagerAftermathRuntime | null;
   activeOverlayAtOnset: string | null;
+  activePrintedTerritoryAtOnset: {
+    territoryInstanceId: string;
+    territoryId: string;
+  } | null;
+  gambitProhibitedPlayers: PlayerId[];
   unsupportedEffects: V070UnsupportedBattleEffect[];
 }
 
@@ -195,6 +200,8 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     pendingOutcome: null,
     pendingAccursedWager: null,
     activeOverlayAtOnset: null,
+    activePrintedTerritoryAtOnset: null,
+    gambitProhibitedPlayers: [],
     unsupportedEffects: [],
   };
 }
