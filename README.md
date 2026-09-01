@@ -172,7 +172,7 @@ npm run typecheck
 npm test
 ~~~
 
-The promoted engine API lives at `src/content/current.ts`. The current published digital-rules target is v0.7.1, while the promoted implementation is still based on the v0.7.0 engine baseline; treat that as migration work still in progress, not current-release parity.
+The promoted engine API lives at `src/content/current.ts`. Its published digital-rules target is the current release declared by the release lifecycle and current manifest; the promoted implementation may lag that target during migration, so consult `src/README.md` for the implementation baseline rather than assuming current-release parity.
 
 The interactive CLI/GUI runners are legacy pre-current-engine scaffolding and are named accordingly:
 
