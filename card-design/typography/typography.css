@@ -88,6 +88,20 @@ button, input { font: inherit; }
   font-size: .72rem;
 }
 
+.comparison-link {
+  color: var(--crimson-dark);
+  font-family: var(--font-interface);
+  font-size: .78rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.comparison-link:hover,
+.comparison-link:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 button {
   min-height: 42px;
   padding: 0 17px;
