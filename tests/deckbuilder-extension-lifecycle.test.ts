@@ -133,6 +133,20 @@ describe("Deckbuilder extension architecture", () => {
     expect(read("deckbuilder/faction-components.js")).toContain('deckbuilder.registerFeature("supplementalPackages"');
   });
 
+  it("uses feature readiness instead of document-body readiness side channels", () => {
+    const rites = read("deckbuilder/mystics-rites.js");
+    const starters = read("deckbuilder/starter-decks.js");
+    const components = read("deckbuilder/faction-components.js");
+    const bulk = read("deckbuilder/print-all-starters.js");
+
+    expect(rites).toContain("isReady: () => ritesReady");
+    expect(bulk).toContain("ritesApi()?.isReady?.() === true");
+    expect(rites).not.toContain("dataset.mysticsRites");
+    expect(bulk).not.toContain("dataset.mysticsRites");
+    expect(starters).not.toContain("dataset.currentGameCards");
+    expect(components).not.toContain("dataset.currentFactionComponents");
+  });
+
   it("keeps starter workflows on extension feature APIs rather than extension-owned state", () => {
     const starters = read("deckbuilder/starter-decks.js");
     const bulk = read("deckbuilder/print-all-starters.js");

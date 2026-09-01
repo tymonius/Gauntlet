@@ -46,7 +46,6 @@
 
       await waitForCurrentGamePool();
       currentGameReady = true;
-      document.body.dataset.currentGameCards = "ready";
 
       const data = state.currentGameData?.starterDeckData;
       if (!data || !Array.isArray(data.decks)) {

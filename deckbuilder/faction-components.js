@@ -28,10 +28,8 @@
       const currentGame = state.currentGameData || await deckbuilder.bootstrap();
       state.currentGameData ||= currentGame;
       hydratePrintPackages(currentGame);
-      document.body.dataset.currentFactionComponents = "ready";
     } catch (error) {
       console.error("Unable to project deck components from current-game authority", error);
-      document.body.dataset.currentFactionComponents = "error";
     }
 
     renderFactionComponents();
