@@ -507,6 +507,21 @@ export function applyV070AdvancedBattleTerritoryEffects(
     effects.push('all_assets_inactive');
   }
 
+  if (territory.territoryId === V070_ARENA_GRAND_MELEE_ID) {
+    for (const playerId of [battle.attacker, battle.defender]) {
+      runtime.participants[playerId].reserveBonus += 1;
+      runtime.participants[playerId].tacticLimit += 1;
+    }
+    effects.push('each_player_reserve_plus_one');
+    effects.push('each_player_tactic_plus_one');
+  }
+
+  if (territory.territoryId === V070_TRAINING_GROUNDS_ID
+    && territory.controller === battle.defender) {
+    runtime.trainingGroundsRedrawPlayer = battle.defender;
+    effects.push('defender_may_redraw_reserve_before_tactics');
+  }
+
   runtime.assetInactivePlayers = [...inactive];
 
   if (effects.length > 0) {
