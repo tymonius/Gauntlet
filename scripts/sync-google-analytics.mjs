@@ -32,7 +32,11 @@ const ANALYTICS_EXCLUDED_FILES = new Set([
   "card-design/capital-ledger-preview.html",
   "card-design/deed-ornament-study.html",
   "card-design/deed-rule-font-study.html",
-  // Print-only production render surfaces; they are embedded by Deckbuilder.
+  // Canonical embedded card-face surfaces; parent pages own analytics.
+  "card-design/card-review-render.html",
+  "card-design/component-render.html",
+  "card-design/territory-review-render.html",
+  // Legacy aliases retained only for old bookmarks/callers.
   "card-design/card-print-render.html",
   "card-design/component-print-render.html",
   "card-design/territory-print-render.html",
