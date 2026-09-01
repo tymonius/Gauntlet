@@ -5,7 +5,10 @@ import {
   type V070GameState,
 } from './engine';
 import type { PlayerId } from './rules';
-import { v070PlayerAssetsInactiveByContinuousTerritory } from './territories';
+import {
+  v070DisruptedSupplyLinesAssetActive,
+  v070PlayerAssetsInactiveByContinuousTerritory,
+} from './territories';
 
 export function isV070AssetFaceUp(
   state: V070GameState,
@@ -28,6 +31,13 @@ export function isV070AssetActive(
   if (v070PlayerAssetsInactiveByContinuousTerritory(
     state,
     owner,
+  )) {
+    return false;
+  }
+  if (!v070DisruptedSupplyLinesAssetActive(
+    state,
+    owner,
+    instanceId,
   )) {
     return false;
   }
