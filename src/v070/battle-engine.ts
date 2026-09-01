@@ -52,6 +52,10 @@ import {
 import { resolveV070AssetLimitRemoval } from './assets';
 import { resolveV070CapitalGainsOnBattleLoss } from './financiers';
 import {
+  clearV070AccursedWagersForCurrentBattle,
+  v070AccursedWagersForCurrentBattle,
+} from './accursed-wager';
+import {
   useV070SanctionsBlockadeInAftermath,
   useV070SanctionsCensureAfterRefusal,
   useV070SanctionsEmbargoAfterRefusal,
@@ -145,6 +149,11 @@ export type V070BattleAction =
   | { type: 'submit_tiebreak_roll'; playerId: PlayerId; value: number }
   | { type: 'use_safe_conduct'; playerId: PlayerId; cardInstanceId: string }
   | { type: 'pass_loss_replacement'; playerId: PlayerId }
+  | {
+      type: 'resolve_accursed_wager_discard';
+      playerId: PlayerId;
+      cardInstanceId: string;
+    }
   | { type: 'complete_aftermath'; playerId: PlayerId };
 
 export function reduceV070BattleAction(
@@ -156,6 +165,12 @@ export function reduceV070BattleAction(
   }
   if (action.playerId !== state.battle.attacker && action.playerId !== state.battle.defender) {
     throw new V070GameActionError('Only battle participants may act in this battle.');
+  }
+  if (state.battleRuntime?.pendingAccursedWager
+    && action.type !== 'resolve_accursed_wager_discard') {
+    throw new V070GameActionError(
+      'Resolve the pending Accursed Wager discard before continuing the Aftermath.',
+    );
   }
   if (state.pendingAssetLimitChoice && action.type !== 'resolve_asset_limit_removal') {
     throw new V070GameActionError(
@@ -287,6 +302,13 @@ export function reduceV070BattleAction(
       break;
     case 'pass_loss_replacement':
       passLossReplacement(next, action.playerId);
+      break;
+    case 'resolve_accursed_wager_discard':
+      resolveAccursedWagerDiscard(
+        next,
+        action.playerId,
+        action.cardInstanceId,
+      );
       break;
     case 'complete_aftermath':
       completeAftermath(next, action.playerId);
@@ -911,6 +933,180 @@ function openBattlePositionChangeSanctions(
   }
 }
 
+function openAccursedWagerAftermathChoice(
+  state: V070GameState,
+  immediateWinner: PlayerId | null,
+): boolean {
+  const battle = requireBattle(state);
+  const runtime = requireRuntime(state);
+  const wagers = v070AccursedWagersForCurrentBattle(state);
+  if (wagers.length === 0) return false;
+
+  if (!battle.loser) {
+    clearV070AccursedWagersForCurrentBattle(
+      state,
+      'battle ended without a losing player',
+    );
+    return false;
+  }
+
+  const loser = battle.loser;
+  const hand = state.players[loser].zones.hand;
+  if (hand.length === 0) {
+    appendV070Event(state, {
+      type: 'accursed_wager_no_discard',
+      actor: loser,
+      visibility: 'public',
+      payload: {
+        loser,
+        sourceActionInstanceIds: wagers.map(
+          wager => wager.sourceActionInstanceId,
+        ),
+        reason: 'loser_hand_empty',
+      },
+    });
+    clearV070AccursedWagersForCurrentBattle(
+      state,
+      'losing player had no card in Hand',
+    );
+    return false;
+  }
+
+  runtime.pendingAccursedWager = {
+    loser,
+    remainingSourceActionInstanceIds: wagers.map(
+      wager => wager.sourceActionInstanceId,
+    ),
+    immediateWinner,
+  };
+  appendV070Event(state, {
+    type: 'accursed_wager_discard_pending',
+    actor: loser,
+    visibility: 'public',
+    payload: {
+      loser,
+      sourceActionInstanceId:
+        runtime.pendingAccursedWager.remainingSourceActionInstanceIds[0],
+      remainingCount:
+        runtime.pendingAccursedWager.remainingSourceActionInstanceIds.length,
+      candidateCount: hand.length,
+    },
+  });
+  appendV070Event(state, {
+    type: 'accursed_wager_discard_options',
+    actor: loser,
+    visibility: loser,
+    payload: {
+      sourceActionInstanceId:
+        runtime.pendingAccursedWager.remainingSourceActionInstanceIds[0],
+      targetInstanceIds: [...hand],
+    },
+  });
+  return true;
+}
+
+function resolveAccursedWagerDiscard(
+  state: V070GameState,
+  playerId: PlayerId,
+  cardInstanceId: string,
+): void {
+  const runtime = requireRuntime(state);
+  requireRuntimeStage(runtime, 'aftermath');
+  const pending = runtime.pendingAccursedWager;
+  if (!pending || pending.loser !== playerId) {
+    throw new V070GameActionError(
+      'No Accursed Wager discard is pending for that player.',
+    );
+  }
+
+  const hand = state.players[playerId].zones.hand;
+  const index = hand.indexOf(cardInstanceId);
+  if (index < 0) {
+    throw new V070GameActionError(
+      'Accursed Wager must put one card from the losing player’s Hand in their Graveyard.',
+    );
+  }
+
+  const sourceActionInstanceId =
+    pending.remainingSourceActionInstanceIds[0];
+  hand.splice(index, 1);
+  state.players[playerId].zones.graveyard.push(cardInstanceId);
+  appendV070Event(state, {
+    type: 'card_graveyarded',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      instanceId: cardInstanceId,
+      cardId: state.cardInstances[cardInstanceId]?.cardId,
+      purpose: 'Accursed Wager',
+      sourceActionInstanceId,
+    },
+  });
+  appendV070Event(state, {
+    type: 'accursed_wager_resolved',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      loser: playerId,
+      sourceActionInstanceId,
+      discardedInstanceId: cardInstanceId,
+      discardedCardId: state.cardInstances[cardInstanceId]?.cardId,
+    },
+  });
+
+  pending.remainingSourceActionInstanceIds.shift();
+
+  if (pending.remainingSourceActionInstanceIds.length > 0
+    && state.players[playerId].zones.hand.length > 0) {
+    appendV070Event(state, {
+      type: 'accursed_wager_discard_pending',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        loser: playerId,
+        sourceActionInstanceId:
+          pending.remainingSourceActionInstanceIds[0],
+        remainingCount: pending.remainingSourceActionInstanceIds.length,
+        candidateCount: state.players[playerId].zones.hand.length,
+      },
+    });
+    appendV070Event(state, {
+      type: 'accursed_wager_discard_options',
+      actor: playerId,
+      visibility: playerId,
+      payload: {
+        sourceActionInstanceId:
+          pending.remainingSourceActionInstanceIds[0],
+        targetInstanceIds: [...state.players[playerId].zones.hand],
+      },
+    });
+    return;
+  }
+
+  if (pending.remainingSourceActionInstanceIds.length > 0) {
+    appendV070Event(state, {
+      type: 'accursed_wager_no_discard',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        loser: playerId,
+        sourceActionInstanceIds: [
+          ...pending.remainingSourceActionInstanceIds,
+        ],
+        reason: 'loser_hand_exhausted',
+      },
+    });
+  }
+
+  const immediateWinner = pending.immediateWinner;
+  runtime.pendingAccursedWager = null;
+  clearV070AccursedWagersForCurrentBattle(
+    state,
+    'Accursed Wager Aftermath resolved',
+  );
+  completeAftermathInternal(state, immediateWinner);
+}
+
 function completeAftermath(state: V070GameState, playerId: PlayerId): void {
   const battle = requireBattle(state);
   const runtime = requireRuntime(state);
@@ -933,6 +1129,10 @@ function completeAftermathInternal(
 ): void {
   const battle = requireBattle(state);
   const runtime = requireRuntime(state);
+
+  if (openAccursedWagerAftermathChoice(state, immediateWinner)) {
+    return;
+  }
 
   state.players.A.position = battle.positions.A;
   state.players.B.position = battle.positions.B;
