@@ -225,6 +225,20 @@ describe('digital engine boundary', () => {
     }
   });
 
+  it('pins legacy Diplomat runtime modules to the v0.6 type API', () => {
+    const diplomatSources = [
+      'src/state/diplomat-cards.ts',
+      'src/state/diplomat-persistent.ts',
+      'src/state/diplomat-terms.ts',
+    ];
+
+    for (const path of diplomatSources) {
+      const source = readFileSync(path, 'utf8');
+      expect(source).toContain("from '../types/v06'");
+      expect(source).not.toMatch(/from ['"]\.\.\/types['"]/);
+    }
+  });
+
   it('keeps the promoted v0.7.0 implementation isolated from legacy architecture', () => {
     const promotedSources = readdirSync('src/v070')
       .filter((name) => name.endsWith('.ts') && !name.endsWith('.test.ts'));
