@@ -1,5 +1,5 @@
-import { getCardPlayRule } from '../cards';
-import type { CardID, GameState, PlayerID } from '../types';
+import { getCardPlayRule } from '../cards/v06';
+import type { CardID, GameState, PlayerID } from '../types/v06';
 import type { NeutralAppStateAction } from '../state/v06';
 
 export interface NeutralGuidedOption {
