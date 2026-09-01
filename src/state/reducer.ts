@@ -17,7 +17,7 @@ import type {
   PlayerID,
   PlayerState,
   SpaceID,
-} from '../types';
+} from '../types/v06';
 import type { ActionResult, GameAction } from './actions';
 import { drawFromDeck } from './draw';
 import { applyNoMartyrsOutcome } from './inquisition-no-martyrs';

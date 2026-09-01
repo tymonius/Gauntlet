@@ -1,4 +1,4 @@
-import type { BoardSpaceState, BoardState, PlayerID, TerritoryID } from '../types';
+import type { BoardSpaceState, BoardState, PlayerID, TerritoryID } from '../types/v06';
 import type { V06PlayerSetupInput } from './v06-setup';
 
 function endpoint(

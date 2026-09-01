@@ -1,4 +1,4 @@
-import type { CardID, GameState, PlayerID } from '../types';
+import type { CardID, GameState, PlayerID } from '../types/v06';
 import { faceUpAssetCopies } from './asset-facing';
 import { illegalOccupationSuppressesBankedAssets } from './neutral-illegal-occupation';
 

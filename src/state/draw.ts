@@ -1,4 +1,4 @@
-import type { CardID, PlayerState } from '../types';
+import type { CardID, PlayerState } from '../types/v06';
 
 export interface DrawOptions {
   count: number;

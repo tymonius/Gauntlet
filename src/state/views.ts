@@ -21,7 +21,7 @@ import type {
   PublicPlayerView,
   PlayerID,
   PlayerState,
-} from '../types';
+} from '../types/v06';
 import { canResolveIntelligenceAction } from './intelligence-action-cards';
 import { availableBattleHandCards } from './battle-hand-restrictions';
 import { confessionLegalHandCommitCards } from './inquisition-confession';

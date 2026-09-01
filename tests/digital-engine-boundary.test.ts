@@ -158,6 +158,29 @@ describe('digital engine boundary', () => {
     }
   });
 
+  it('pins foundational legacy state modules to the v0.6 type API', () => {
+    const stateCoreSources = [
+      'src/state/initialize.ts',
+      'src/state/validation.ts',
+      'src/state/views.ts',
+      'src/state/actions.ts',
+      'src/state/reducer.ts',
+      'src/state/draw.ts',
+      'src/state/pipeline.ts',
+      'src/state/win.ts',
+      'src/state/resources.ts',
+      'src/state/banked-assets.ts',
+      'src/state/asset-facing.ts',
+      'src/state/v06-board.ts',
+      'src/state/battle-dice.ts',
+    ];
+
+    for (const path of stateCoreSources) {
+      const source = readFileSync(path, 'utf8');
+      expect(source).not.toMatch(/from ['"]\.\.\/types['"]/);
+    }
+  });
+
   it('keeps the promoted v0.7.0 implementation isolated from legacy architecture', () => {
     const promotedSources = readdirSync('src/v070')
       .filter((name) => name.endsWith('.ts') && !name.endsWith('.test.ts'));
