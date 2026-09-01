@@ -5,8 +5,8 @@ const currentGame = JSON.parse(readFileSync("game-data/current-game.json", "utf8
 const compatibilityPrint = readFileSync("deckbuilder/print-capital-ledger.js", "utf8");
 const productionPrint = readFileSync("deckbuilder/production-print.js", "utf8");
 const deckPrint = readFileSync("deckbuilder/print.js", "utf8");
-const componentPrintHtml = readFileSync("card-design/component-print-render.html", "utf8");
-const componentPrintJs = readFileSync("card-design/component-print-render.js", "utf8");
+const componentPrintHtml = readFileSync("card-design/component-render.html", "utf8");
+const componentPrintJs = readFileSync("card-design/component-render.js", "utf8");
 const deedScript = readFileSync("card-design/deed-card.js", "utf8");
 
 describe("Deckbuilder finalized supplemental printing", () => {
