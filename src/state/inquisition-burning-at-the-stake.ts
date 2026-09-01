@@ -6,7 +6,7 @@ import type {
   GameState,
   InquisitionBurningAtTheStakeBattleQueueEntry,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import type { ResolveInquisitionChoiceAction } from './actions';
 import { cardValue } from './financiers';
 import { HERESY } from './inquisition-heresy';
