@@ -223,7 +223,7 @@ The current package assembles the authoritative supplemental quantities across t
 - one shared in-table **Custom PDF Rulebook** using a reader-order half-letter PDF derived from the imposed stable Rulebook and published as a content-versioned TTS network asset; and
 - one selectable starter Bag for every current starter.
 
-The shared Rulebook is parked in the neutral east-center gap between the two combined Faction / Leader & References workspaces, opposite the west-side Battle Zone. `scripts/generate-tts-rulebook-reader.mjs` de-imposes the print booklet into sequential half-letter reader pages, and TTS loads that content-versioned hosted PDF. It opens at the beginning and remains a normal shared TTS object rather than duplicating the rules into scripted UI.
+The shared Rulebook is parked in the neutral east-center gap between the two combined Faction / Leader & References workspaces, opposite the west-side Battle Zone. Its tabletop object uses the approved 2.55× scale so it reads as a physical half-letter rulebook rather than another card-sized component. `scripts/generate-tts-rulebook-reader.mjs` de-imposes the print booklet into sequential half-letter reader pages, and TTS loads that content-versioned hosted PDF. It opens at the beginning and remains a normal shared TTS object rather than duplicating the rules into scripted UI.
 
 The base scaffold receives the authoritative table layout, is assembled with faction supplementals, and is then validated by `tts/validate-current-authoritative-save.mjs`. Validation is fail-closed: it checks the generated save as written and does not repair object geometry.
 
