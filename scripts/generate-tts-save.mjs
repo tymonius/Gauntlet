@@ -14,6 +14,7 @@ const FACTION_COLORS = Object.freeze({
 });
 const TABLE_IMAGE_SOURCE = 'environment/campaign-map-table.png';
 const PANORAMA_IMAGE_SOURCE = 'environment/command-tent-panorama.png';
+const RULEBOOK_READER_SOURCE = 'rulebook-reader.pdf';
 const STARTER_DECK_NOTE_PREFIX = 'gauntlet:starter-deck:';
 const STARTER_TERRITORY_STACK_NOTE_PREFIX = 'gauntlet:starter-territories:';
 const SHARED_RULEBOOK_NOTE = 'gauntlet:shared-rulebook';
@@ -70,14 +71,6 @@ function requireHostedUrl(releaseAssets, sourceFile) {
   return url;
 }
 
-function rulebookReleaseUrl(releaseAssets, version) {
-  const repository = String(releaseAssets?.repository || '').trim();
-  const releaseTag = String(releaseAssets?.releaseTag || '').trim();
-  if (!repository || !releaseTag) throw new Error('Hosted TTS release manifest does not declare repository/releaseTag for the shared Rulebook.');
-  const assetName = `Gauntlet_${version}_Rulebook_Booklet.pdf`;
-  return `https://github.com/${repository}/releases/download/${encodeURIComponent(releaseTag)}/${encodeURIComponent(assetName)}`;
-}
-
 function makeSharedRulebook(version, releaseAssets, guid) {
   const rulebook = {
     ...objectBase(
@@ -95,7 +88,7 @@ function makeSharedRulebook(version, releaseAssets, guid) {
     MeasureMovement: false,
     DragSelectable: true,
     CustomPDF: {
-      PDFUrl: rulebookReleaseUrl(releaseAssets, version),
+      PDFUrl: requireHostedUrl(releaseAssets, RULEBOOK_READER_SOURCE),
       PDFPassword: '',
       PDFPage: 0,
       PDFPageOffset: 0,
@@ -442,4 +435,4 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   });
 }
 
-export { buildStarterKit, buildTtsSave, makeCustomDeckState, makeSharedRulebook, requireHostedUrl, rulebookReleaseUrl, starterBagTransform };
+export { buildStarterKit, buildTtsSave, makeCustomDeckState, makeSharedRulebook, requireHostedUrl, starterBagTransform };
