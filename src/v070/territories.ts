@@ -446,8 +446,6 @@ export const V070_ARENA_GRAND_MELEE_ID =
   'territory-arena-grand-melee' as const;
 export const V070_TRAINING_GROUNDS_ID =
   'territory-training-grounds' as const;
-export const V070_POISONOUS_GAS_ID =
-  'territory-poisonous-gas' as const;
 
 export function v070PlayerInOccupation(
   state: V070GameState,
