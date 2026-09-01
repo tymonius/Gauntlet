@@ -224,6 +224,12 @@ export type V070PendingActionEffectChoice =
         | 'Spirit Hollow';
     }
   | {
+      kind: 'territory_effect_suppression_target';
+      playerId: PlayerId;
+      sourceActionInstanceId: string;
+      purpose: 'Pathfinders';
+    }
+  | {
       kind: 'forced_asset_target';
       playerId: PlayerId;
       assetOwnerId: PlayerId;

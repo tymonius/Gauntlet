@@ -117,6 +117,7 @@ import {
 import {
   expireV070TerritoryEffectSuppressions,
   payV070TollBridgeAdvanceCost,
+  suppressV070PrintedTerritoryDuringMovement,
   v070DifficultTerrainEntryActive,
   v070QuicksandCapsMovement,
   v070RefugeFallBackDrawActive,
@@ -290,6 +291,11 @@ export type V070TurnAction =
     }
   | {
       type: 'choose_territory_overlay_target';
+      playerId: PlayerId;
+      territoryPosition: number;
+    }
+  | {
+      type: 'choose_territory_effect_suppression_target';
       playerId: PlayerId;
       territoryPosition: number;
     }
@@ -504,6 +510,10 @@ export function reduceV070TurnAction(
       && action.type === 'choose_territory_overlay_target'
       && action.playerId === pending.playerId
     ) || (
+      pending.kind === 'territory_effect_suppression_target'
+      && action.type === 'choose_territory_effect_suppression_target'
+      && action.playerId === pending.playerId
+    ) || (
       pending.kind === 'forced_asset_target'
       && action.type === 'choose_forced_asset_target'
       && action.playerId === pending.playerId
@@ -636,6 +646,7 @@ export function reduceV070TurnAction(
       'resolve_penance_choice',
       'resolve_scouting_report_choice',
       'choose_territory_overlay_target',
+      'choose_territory_effect_suppression_target',
       'choose_forced_asset_target',
       'choose_pending_asset_bank_replacement',
       'choose_soul_for_soul_targets',
@@ -873,6 +884,13 @@ export function reduceV070TurnAction(
       break;
     case 'choose_territory_overlay_target':
       chooseTerritoryOverlayTarget(next, action.playerId, action.territoryPosition);
+      break;
+    case 'choose_territory_effect_suppression_target':
+      chooseTerritoryEffectSuppressionTarget(
+        next,
+        action.playerId,
+        action.territoryPosition,
+      );
       break;
     case 'choose_forced_asset_target':
       chooseForcedAssetTarget(next, action.playerId, action.targetInstanceId);
@@ -1441,6 +1459,7 @@ export const V070_EXECUTABLE_ACTION_CARD_IDS = [
   'neutral-landslide',
   'neutral-manifest-destiny',
   'neutral-new-recruits',
+  'neutral-pathfinders',
   'neutral-phantom-passage',
   'neutral-revolution',
   'neutral-reserves',
@@ -2515,6 +2534,28 @@ function continuePendingActionCard(state: V070GameState): void {
       )) {
         finishPendingActionCard(state);
       }
+      return;
+    case 'neutral-pathfinders':
+      state.pendingActionEffectChoice = {
+        kind: 'territory_effect_suppression_target',
+        playerId: pending.playerId,
+        sourceActionInstanceId: pending.instanceId,
+        purpose: 'Pathfinders',
+      };
+      appendV070Event(state, {
+        type: 'action_effect_choice_pending',
+        actor: pending.playerId,
+        visibility: 'public',
+        payload: {
+          kind: 'territory_effect_suppression_target',
+          playerId: pending.playerId,
+          sourceActionInstanceId: pending.instanceId,
+          purpose: 'Pathfinders',
+          territoryPositions: state.board.map(
+            territory => territory.position,
+          ),
+        },
+      });
       return;
     case 'neutral-phantom-passage':
       openControlledTerritoryMovementChoice(
@@ -6359,6 +6400,42 @@ type V070LocalPlacementOverlayActionCardId =
   | 'mystics-circle-of-bones'
   | 'mystics-nature-s-altar'
   | 'mystics-spirit-hollow';
+
+function chooseTerritoryEffectSuppressionTarget(
+  state: V070GameState,
+  playerId: PlayerId,
+  territoryPosition: number,
+): void {
+  const choice = state.pendingActionEffectChoice;
+  const pending = state.pendingActionCard;
+  if (!choice
+    || choice.kind !== 'territory_effect_suppression_target'
+    || choice.playerId !== playerId
+    || choice.purpose !== 'Pathfinders'
+    || !pending
+    || pending.instanceId !== choice.sourceActionInstanceId
+    || pending.cardId !== 'neutral-pathfinders') {
+    throw new V070GameActionError(
+      'No Pathfinders Territory target choice is pending for that player.',
+    );
+  }
+  if (!state.board.some(
+    territory => territory.position === territoryPosition,
+  )) {
+    throw new V070GameActionError(
+      'Pathfinders must choose a Territory currently in the Gauntlet.',
+    );
+  }
+
+  suppressV070PrintedTerritoryDuringMovement(
+    state,
+    playerId,
+    territoryPosition,
+    pending.instanceId,
+  );
+  state.pendingActionEffectChoice = null;
+  finishPendingActionCard(state);
+}
 
 function chooseTerritoryOverlayTarget(
   state: V070GameState,
