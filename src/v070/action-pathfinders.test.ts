@@ -130,7 +130,7 @@ describe('v0.7.0 Pathfinders Action', () => {
       state,
       target,
       'A',
-      'battle',
+      'movement',
     )).toBe(false);
     expect(state.events.some(event =>
       event.type === 'territory_effect_suppressed'
