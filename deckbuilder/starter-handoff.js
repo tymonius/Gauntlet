@@ -2,6 +2,7 @@
   const deckbuilder = window.GAUNTLET_DECKBUILDER;
   if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
   const { state, factions: FACTIONS } = deckbuilder;
+  const constructionRules = () => deckbuilder.constructionRules();
 
   const params = new URLSearchParams(window.location.search);
   const factionId = String(params.get("faction") || "").trim();
@@ -55,6 +56,8 @@
   }
 
   function injectPanel() {
+    const rules = constructionRules();
+    const territoryLabel = `${rules.territoriesPerPlayer} Territor${rules.territoriesPerPlayer === 1 ? "y" : "ies"}`;
     const app = document.getElementById("app");
     const setup = app?.querySelector(".setup-panel");
     if (!app || !setup || document.getElementById("starterHandoffPanel")) return;
@@ -68,7 +71,7 @@
       <div class="starter-handoff-copy">
         <p class="eyebrow">New-player print mode</p>
         <h2>${escapeHandoffHtml(leader.name)} of the ${escapeHandoffHtml(faction.name)}</h2>
-        <p id="starterHandoffStatus">Loading the recommended starter Deck and its three Territories…</p>
+        <p id="starterHandoffStatus">Loading the recommended starter Deck and its ${territoryLabel}…</p>
         <div class="starter-handoff-actions">
           <button id="starterHandoffPrint" type="button" disabled>Print starter Deck</button>
           <a class="button-like secondary" href="../start/">Change faction or Leader</a>
@@ -125,7 +128,9 @@
       backsCheckbox.checked = Boolean(baseBacksCheckbox?.checked);
       printButton.disabled = false;
       panel?.classList.add("is-ready");
-      setStatus(`${preset.name} is loaded: ${Number(preset.cardCount) || 30} cards, three Territories, the ${leader.name} Leader, strategy notes, references, and required printable components.`, "success");
+      const rules = constructionRules();
+      const territoryLabel = `${rules.territoriesPerPlayer} Territor${rules.territoriesPerPlayer === 1 ? "y" : "ies"}`;
+      setStatus(`${preset.name} is loaded: ${Number(preset.cardCount) || rules.minimumCards} cards, ${territoryLabel}, the ${leader.name} Leader, strategy notes, references, and required printable components.`, "success");
       panel?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 120);
   }

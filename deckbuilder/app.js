@@ -79,6 +79,33 @@ function preparePrintDocument(html, context = {}) {
   return output;
 }
 
+function constructionRules() {
+  const source = state.currentGameData?.deckConstruction;
+  if (!source) throw new Error("Selected ruleset has no Deck construction authority.");
+
+  const positiveInteger = (value, label) => {
+    const number = Number(value);
+    if (!Number.isInteger(number) || number <= 0) {
+      throw new Error(`Selected ruleset has invalid Deck construction value for ${label}.`);
+    }
+    return number;
+  };
+  const nonNegativeInteger = (value, label) => {
+    const number = Number(value);
+    if (!Number.isInteger(number) || number < 0) {
+      throw new Error(`Selected ruleset has invalid Deck construction value for ${label}.`);
+    }
+    return number;
+  };
+
+  return Object.freeze({
+    minimumCards: positiveInteger(source.minimum_cards ?? source.minimumCards, "minimum cards"),
+    maximumDeckbuildingValue: positiveInteger(source.maximum_deckbuilding_value ?? source.maximumDeckbuildingValue, "maximum Deckbuilding value"),
+    territoriesPerPlayer: positiveInteger(source.territories_per_player ?? source.territoriesPerPlayer, "Territories per player"),
+    maximumArenas: nonNegativeInteger(source.maximum_arenas ?? source.maximumArenas, "maximum Arenas"),
+  });
+}
+
 const deckbuilderApi = Object.freeze({
   state,
   sources: SOURCES,
@@ -131,6 +158,7 @@ const deckbuilderApi = Object.freeze({
   ruleset() {
     return selectedRuleset;
   },
+  constructionRules,
   render: () => renderAll(),
   renderAvailable: () => renderAvailable(),
   renderFactionOptions: () => renderFactionOptions(),
@@ -171,7 +199,7 @@ async function init() {
 function cacheElements() {
   for (const id of [
     "app", "dataStatus", "deckName", "factionSelect", "leaderSelect", "leaderPreview",
-    "cardCount", "pointTotal", "factionCardCount", "validityCard", "validityText",
+    "cardCount", "minimumCardCount", "pointTotal", "maximumDeckbuildingValue", "factionCardCount", "validityCard", "validityText",
     "validationList", "savedDeckSelect", "saveDeckButton", "loadDeckButton", "deleteDeckButton",
     "copyDeckButton", "exportJsonButton", "importJson", "importJsonButton", "cardSearch",
     "allegianceFilter", "costFilter", "availableCount", "availableCards", "cardPreview",
@@ -424,18 +452,24 @@ function validateDeck() {
   const factionCardCount = entries.filter(entry => entry.card.faction === state.factionId).reduce((sum, entry) => sum + entry.qty, 0);
   const errors = [];
   const warnings = [];
+  const rules = constructionRules();
 
   if (!state.factionId) errors.push("Choose a faction.");
   if (!state.leaderId) errors.push("Choose a leader.");
-  if (cardCount < 30) errors.push(`Add at least ${30 - cardCount} more playable card${30 - cardCount === 1 ? "" : "s"}.`);
-  if (pointTotal > 60) errors.push(`Remove ${pointTotal - 60} value.`);
+  if (cardCount < rules.minimumCards) {
+    const missing = rules.minimumCards - cardCount;
+    errors.push(`Add at least ${missing} more playable card${missing === 1 ? "" : "s"}.`);
+  }
+  if (pointTotal > rules.maximumDeckbuildingValue) {
+    errors.push(`Remove ${pointTotal - rules.maximumDeckbuildingValue} value.`);
+  }
 
   entries.forEach(({ card, qty }) => {
     if (card.unique && qty > 1) errors.push(`${card.name} is Unique: maximum one copy.`);
     if (card.faction !== "neutral" && card.faction !== state.factionId) errors.push(`${card.name} is not legal for ${getFaction().name}.`);
   });
 
-  let result = { cardCount, pointTotal, factionCardCount, errors, warnings, valid: errors.length === 0 };
+  let result = { cardCount, pointTotal, factionCardCount, constructionRules: rules, errors, warnings, valid: errors.length === 0 };
   for (const hook of extensionHooks.validate) {
     const next = hook(result);
     if (next) result = next;
@@ -451,7 +485,9 @@ function validateDeck() {
 function validateAndRender() {
   const result = validateDeck();
   el.cardCount.textContent = result.cardCount;
+  el.minimumCardCount.textContent = result.constructionRules.minimumCards;
   el.pointTotal.textContent = result.pointTotal;
+  el.maximumDeckbuildingValue.textContent = result.constructionRules.maximumDeckbuildingValue;
   el.factionCardCount.textContent = result.factionCardCount;
   el.validityText.textContent = result.valid ? "Card-valid" : "Incomplete";
   el.validityCard.classList.toggle("valid", result.valid);
@@ -559,7 +595,7 @@ async function copyDeckList() {
   const lines = [
     data.name,
     `${faction.name} — ${leader?.name || "No leader"}`,
-    `${validation.cardCount} cards · ${validation.pointTotal}/60 value`,
+    `${validation.cardCount} cards · ${validation.pointTotal}/${validation.constructionRules.maximumDeckbuildingValue} value`,
     "",
     ...deckEntries().map(({ card, qty }) => `${qty}x ${card.name} (${card.cost}) [${card.factionLabel}]`)
   ];

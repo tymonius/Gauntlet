@@ -4,8 +4,7 @@
   const { state } = deckbuilder;
   const escapeHtml = value => deckbuilder.escapeHtml(value);
 
-  const REQUIRED_TERRITORIES = 3;
-  const MAX_ARENAS = 1;
+  const constructionRules = () => deckbuilder.constructionRules();
   const TERRITORY_WIDTH = 336;
   const TERRITORY_HEIGHT = 240;
   const MAX_TERRITORY_PREVIEW_WIDTH = 360;
@@ -41,7 +40,7 @@
 
   function installTerritoryIntegration() {
     for (const id of [
-      "territoryMetricCount", "territorySearch", "territoryCategory", "territoryAvailableCount",
+      "territoryMetricCount", "territoryRequiredCount", "territorySearch", "territoryCategory", "territoryAvailableCount",
       "territoryList", "territoryPreview", "clearTerritoriesButton", "deckTerritories"
     ]) territoryElements[id] = document.getElementById(id);
 
@@ -103,6 +102,9 @@
     if (territoryElements.territoryMetricCount) {
       territoryElements.territoryMetricCount.textContent = String(selectedTerritories().length);
     }
+    if (territoryElements.territoryRequiredCount) {
+      territoryElements.territoryRequiredCount.textContent = String(constructionRules().territoriesPerPlayer);
+    }
   }
 
   function syncSourceStatus() {
@@ -152,12 +154,13 @@
       state.selectedTerritoryId = territories[0].id;
     }
 
+    const rules = constructionRules();
+    const selectedArenaCount = selectedTerritories().filter(item => item.arena).length;
     territories.forEach(territory => {
       const selected = state.territories.includes(territory.id);
-      const arenaSelected = selectedTerritories().some(item => item.arena);
       const unavailable = !selected && (
-        state.territories.length >= REQUIRED_TERRITORIES ||
-        (territory.arena && arenaSelected)
+        state.territories.length >= rules.territoriesPerPlayer ||
+        (territory.arena && selectedArenaCount >= rules.maximumArenas)
       );
 
       const row = document.createElement("article");
@@ -198,10 +201,11 @@
     }
 
     const selected = state.territories.includes(territory.id);
-    const arenaSelected = selectedTerritories().some(item => item.arena);
+    const rules = constructionRules();
+    const selectedArenaCount = selectedTerritories().filter(item => item.arena).length;
     const unavailable = !selected && (
-      state.territories.length >= REQUIRED_TERRITORIES ||
-      (territory.arena && arenaSelected)
+      state.territories.length >= rules.territoriesPerPlayer ||
+      (territory.arena && selectedArenaCount >= rules.maximumArenas)
     );
     const rulesetMode = new URLSearchParams(window.location.search).get("rules") === "candidate" ? "candidate" : "released";
     const rendererUrl = `../card-design/territory-review-render.html?territory=${encodeURIComponent(territory.id)}&rules=${encodeURIComponent(rulesetMode)}`;
@@ -255,8 +259,9 @@
     if (state.territories.includes(id)) {
       state.territories = state.territories.filter(item => item !== id);
     } else {
-      if (state.territories.length >= REQUIRED_TERRITORIES) return;
-      if (territory.arena && selectedTerritories().some(item => item.arena)) return;
+      const rules = constructionRules();
+      if (state.territories.length >= rules.territoriesPerPlayer) return;
+      if (territory.arena && selectedTerritories().filter(item => item.arena).length >= rules.maximumArenas) return;
       state.territories = [...state.territories, id];
     }
 
@@ -297,10 +302,13 @@
     const errors = [...result.errors];
     const warnings = [...result.warnings];
 
-    if (territories.length !== REQUIRED_TERRITORIES) {
-      errors.push(`Choose exactly ${REQUIRED_TERRITORIES} different Territories (${territories.length}/${REQUIRED_TERRITORIES} selected).`);
+    const rules = constructionRules();
+    if (territories.length !== rules.territoriesPerPlayer) {
+      errors.push(`Choose exactly ${rules.territoriesPerPlayer} different Territories (${territories.length}/${rules.territoriesPerPlayer} selected).`);
     }
-    if (arenaCount > MAX_ARENAS) errors.push(`Choose no more than ${MAX_ARENAS} Arena.`);
+    if (arenaCount > rules.maximumArenas) {
+      errors.push(`Choose no more than ${rules.maximumArenas} Arena${rules.maximumArenas === 1 ? "" : "s"}.`);
+    }
 
     return {
       ...result,
@@ -331,14 +339,17 @@
   }
 
   function resolveTerritoryIds(items) {
+    const entries = items || [];
+    if (!entries.length) return [];
     const ids = [];
-    for (const item of items || []) {
+    const rules = constructionRules();
+    for (const item of entries) {
       const id = typeof item === "string" ? item : item.id;
       const name = typeof item === "string" ? item : item.name;
       const territory = getTerritory(id) || state.territoryPool.find(candidate => candidate.name === name);
       if (!territory || ids.includes(territory.id)) continue;
-      if (territory.arena && ids.map(getTerritory).filter(Boolean).some(candidate => candidate.arena)) continue;
-      if (ids.length >= REQUIRED_TERRITORIES) break;
+      if (territory.arena && ids.map(getTerritory).filter(Boolean).filter(candidate => candidate.arena).length >= rules.maximumArenas) continue;
+      if (ids.length >= rules.territoriesPerPlayer) break;
       ids.push(territory.id);
     }
     return ids;

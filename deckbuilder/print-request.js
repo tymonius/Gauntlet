@@ -104,7 +104,7 @@
       `Faction: ${factionName}`,
       `Leader: ${leaderName}`,
       `Playable cards: ${validation.cardCount}`,
-      `Deck value: ${validation.pointTotal}/60`,
+      `Deck value: ${validation.pointTotal}/${validation.constructionRules.maximumDeckbuildingValue}`,
       `Territories: ${territories.length ? territories.join(" → ") : "None selected"}`,
       ...(deck.factionId === "mystics" ? [`Rites: ${rites.length ? rites.join(", ") : "None selected"}`] : []),
       ...(note ? [`Note: ${note}`] : []),
