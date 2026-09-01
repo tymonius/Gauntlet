@@ -78,11 +78,8 @@ function openingForA(
     playerId: 'A',
     choice: 'advance',
   });
-  state = reduceV070BattleAction(state, {
-    type: 'proceed_from_onset',
-    playerId: 'A',
-  });
-  expect(state.battleRuntime?.stage).toBe('set_gambits');
+  expect(state.battle).not.toBeNull();
+  expect(state.battleRuntime).toBeNull();
   return state;
 }
 
@@ -107,6 +104,12 @@ function resolveBattle(
   winner: 'A' | 'B',
   gambits: Partial<Record<'A' | 'B', string>> = {},
 ): V070GameState {
+  if (!state.battleRuntime || state.battleRuntime.stage === 'onset') {
+    state = reduceV070BattleAction(state, {
+      type: 'proceed_from_onset',
+      playerId: 'A',
+    });
+  }
   state = reduceV070BattleAction(state, {
     type: 'set_gambit',
     playerId: 'A',
@@ -310,11 +313,6 @@ describe('v0.7.0 core Territory Aftermath effects', () => {
     state.battle!.attackerOrigin = 4;
     state.battle!.contestedPosition = 5;
     state.battle!.positions = { A: 4, B: 5 };
-    state.battleRuntime = null;
-    state = reduceV070BattleAction(state, {
-      type: 'proceed_from_onset',
-      playerId: 'A',
-    });
     state = resolveBattle(state, 'A');
 
     // B's normal retreat reaches 6 and the extra retreat cannot go farther.
@@ -336,12 +334,6 @@ describe('v0.7.0 core Territory Aftermath effects', () => {
       territoryInstanceId: state.board[3].territoryInstanceId,
       turnNumber: state.turnNumber,
       scope: 'movement',
-    });
-    // Reinitialize battle runtime so the suppression is observed at Onset.
-    state.battleRuntime = null;
-    state = reduceV070BattleAction(state, {
-      type: 'proceed_from_onset',
-      playerId: 'A',
     });
     state = resolveBattle(state, 'A');
 
