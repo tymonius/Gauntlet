@@ -163,6 +163,8 @@ describe('v0.7.0 Military leaders', () => {
     expect(state.turnState?.movementSequenceSource).toBe('effect');
     expect(state.turnState?.movementStepQueue[0]?.source).toBe('General Rout');
 
+    // Keep the follow-up battle focused on Military sequencing, not a printed Territory.
+    state.board.forEach(space => { space.blank = true; });
     state = reduceV070TurnAction(state, {
       type: 'choose_movement',
       playerId: 'A',
