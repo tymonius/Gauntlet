@@ -13,6 +13,8 @@
 
   if (window.location.origin !== PUBLIC_ORIGIN) return;
 
+  window.GAUNTLET_ART_DIRECTION_DRAFT_HYDRATION = 'pending';
+
   const publishStyle = document.createElement('style');
   publishStyle.textContent = `
     .art-compositor-publish-actions { display: block; margin-top: 9px; }
@@ -114,6 +116,13 @@
     window.dispatchEvent(new CustomEvent('gauntlet-artwork-authoring-status', { detail }));
   }
 
+  function setDraftHydration(status) {
+    window.GAUNTLET_ART_DIRECTION_DRAFT_HYDRATION = status;
+    window.dispatchEvent(new CustomEvent('gauntlet-art-direction-draft-hydration', {
+      detail: { status },
+    }));
+  }
+
   function readDrafts() {
     try {
       const parsed = JSON.parse(localStorage.getItem(DRAFTS_KEY) || '{}');
@@ -176,13 +185,12 @@
       const openPrs = await prResponse.json().catch(() => []);
       const openPr = Array.isArray(openPrs) ? openPrs[0] : null;
 
-      // A working branch with no open batch is not authoring state. Do not
-      // hydrate it. During the migration audit, preserve any already-local
-      // browser drafts so Card Design can visibly flag and recover them before
-      // the obsolete fallback store is retired.
+      // Browser-local composition state is valid only as a mirror of an open
+      // artwork batch. The migration audit is complete, so an idle authoring
+      // branch must also clear any legacy browser-only drafts.
       if (!openPr?.number) {
         currentBatchPr = null;
-        return false;
+        return installWorkingDirections({});
       }
 
       currentBatchPr = {
@@ -224,9 +232,18 @@
       const changed = installWorkingDirections(directionDelta(canonicalDirections, workingDirections));
       if (changed && reloadIfChanged) window.location.reload();
       return changed;
-    })().finally(() => {
-      hydrationPromise = null;
-    });
+    })()
+      .then(result => {
+        setDraftHydration('ready');
+        return result;
+      })
+      .catch(error => {
+        setDraftHydration('error');
+        throw error;
+      })
+      .finally(() => {
+        hydrationPromise = null;
+      });
 
     return hydrationPromise;
   }
@@ -419,10 +436,9 @@
 
   consumeAuthFragment();
 
-  // Only an open artwork batch may populate browser draft state. The working
-  // branch by itself is never authoritative. Existing browser drafts are left
-  // intact temporarily so the divergence audit can expose any unpublished
-  // compositions before that legacy storage is retired.
+  // Only an open artwork batch may populate browser draft state. With the
+  // migration audit complete, no-PR browser state is erased rather than
+  // permitted to survive as a second visual authority.
   hydrateWorkingDirections({ reloadIfChanged: true }).catch(error => {
     announce({ kind: 'error', message: error instanceof Error ? error.message : String(error) });
   });

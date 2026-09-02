@@ -3,6 +3,7 @@ export const CANDIDATE_MODE = 'candidate';
 export const PUBLISHED_VERSION = 'v0.7.1';
 export const PUBLISHED_AUTHORITY_URL = '/releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json';
 export const PUBLISHED_STARTER_DECKS_URL = '/releases/v0.7.1/Gauntlet_v0.7.1_Starter_Decks.json';
+export const CURRENT_VISUAL_AUTHORITY_URL = '/game-data/current-game.json';
 
 let publishedPromise = null;
 let candidatePromise = null;
@@ -70,7 +71,7 @@ function normalizePublishedComponentContract(source, authority) {
   return contract;
 }
 
-export function normalizePublishedGame(authority, starterDeckData) {
+export function normalizePublishedGame(authority, starterDeckData, visualAuthority = null) {
   if (!authority?.gameplay || !Array.isArray(authority.gameplay.cards) || !Array.isArray(authority.gameplay.territories)) {
     throw new Error('Published Gauntlet authority is incomplete.');
   }
@@ -94,12 +95,18 @@ export function normalizePublishedGame(authority, starterDeckData) {
   const starterDecks = starterDeckData.decks.map(clone);
   const componentContract = normalizePublishedComponentContract(authority.component_contract, authority);
   const factionFeatures = clone(authority.faction_features || {});
-  const artDirection = {};
+  if (visualAuthority && (visualAuthority.authority !== 'current-game' || typeof visualAuthority.artDirection !== 'object')) {
+    throw new Error('Current Card Design visual authority is incomplete.');
+  }
+  // Ruleset selection controls gameplay/copy only. Artwork composition is a
+  // single current Card Design authority shared by released and candidate views.
+  const artDirection = clone(visualAuthority?.artDirection || {});
 
   return Object.freeze({
     schemaVersion: Number(authority.schema_version) || 1,
     authority: 'published-release',
     authorityUrl: PUBLISHED_AUTHORITY_URL,
+    visualAuthorityUrl: visualAuthority ? CURRENT_VISUAL_AUTHORITY_URL : null,
     version,
     displayVersion: version,
     status: authority.status || 'published',
@@ -138,7 +145,7 @@ export function normalizePublishedGame(authority, starterDeckData) {
     findStarterDeck(faction, leader) {
       return starterDecks.find(deck => deck.factionId === faction && deck.leaderId === leader) || null;
     },
-    artDirectionFor() { return null; },
+    artDirectionFor(id) { return artDirection[id] ? clone(artDirection[id]) : null; },
   });
 }
 
@@ -147,8 +154,9 @@ export function loadPublishedGame() {
     publishedPromise = Promise.all([
       loadJson(PUBLISHED_AUTHORITY_URL),
       loadJson(PUBLISHED_STARTER_DECKS_URL),
+      loadJson(CURRENT_VISUAL_AUTHORITY_URL),
     ])
-      .then(([authority, starters]) => normalizePublishedGame(authority, starters))
+      .then(([authority, starters, visualAuthority]) => normalizePublishedGame(authority, starters, visualAuthority))
       .catch(error => {
         publishedPromise = null;
         throw error;

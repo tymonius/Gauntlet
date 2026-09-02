@@ -44,16 +44,44 @@
     window.dispatchEvent(new CustomEvent('gauntlet-art-direction-drafts-changed'));
   }
 
+  function draftHydrationPending() {
+    return window.GAUNTLET_ART_DIRECTION_DRAFT_HYDRATION === 'pending';
+  }
+
+  function canonicalDirectionState(target) {
+    const resolved = target.resolve?.();
+    const targetWindow = resolved?.window || target.window || null;
+
+    if (target.sourceElement instanceof HTMLIFrameElement) {
+      const map = targetWindow?.GAUNTLET_ART_DIRECTION;
+      if (!map || typeof map !== 'object') return { ready: false, direction: {} };
+      const source = map[target.id];
+      return {
+        ready: true,
+        direction: source && typeof source === 'object' ? { ...source } : {},
+      };
+    }
+
+    const map = window.GAUNTLET_ART_DIRECTION;
+    if (!map || typeof map !== 'object') return { ready: false, direction: {} };
+    const source = map[target.id];
+    return {
+      ready: true,
+      direction: source && typeof source === 'object' ? { ...source } : {},
+    };
+  }
+
   function canonicalDirection(target) {
-    const source = target.window?.GAUNTLET_ART_DIRECTION?.[target.id] ?? window.GAUNTLET_ART_DIRECTION?.[target.id];
-    return source && typeof source === 'object' ? { ...source } : {};
+    return canonicalDirectionState(target).direction;
   }
 
   function stableDirection(target) {
-    const drafts = readDrafts();
-    if (Object.prototype.hasOwnProperty.call(drafts, target.id)) {
-      const draft = drafts[target.id];
-      return draft && typeof draft === 'object' ? { ...draft } : {};
+    if (!draftHydrationPending()) {
+      const drafts = readDrafts();
+      if (Object.prototype.hasOwnProperty.call(drafts, target.id)) {
+        const draft = drafts[target.id];
+        return draft && typeof draft === 'object' ? { ...draft } : {};
+      }
     }
     return canonicalDirection(target);
   }
@@ -75,11 +103,15 @@
   }
 
   function draftDiffersFromCanonical(target) {
+    if (draftHydrationPending()) return false;
+    const canonical = canonicalDirectionState(target);
+    if (!canonical.ready) return false;
+
     const drafts = readDrafts();
     if (!Object.prototype.hasOwnProperty.call(drafts, target.id)) return false;
     const draft = drafts[target.id];
     return directionSignature(target, draft && typeof draft === 'object' ? draft : {})
-      !== directionSignature(target, canonicalDirection(target));
+      !== directionSignature(target, canonical.direction);
   }
 
   function focusFrom(direction, axis) {
@@ -189,7 +221,7 @@
     summary.innerHTML = '';
 
     const strong = document.createElement('strong');
-    strong.textContent = `${items.length} unpublished artwork composition${items.length === 1 ? '' : 's'} differ from current-game.json.`;
+    strong.textContent = `${items.length} saved artwork composition${items.length === 1 ? ' has' : 's have'} not been published to current-game.json.`;
     const detail = document.createElement('span');
     detail.textContent = items.map(item => item.label).join(', ');
     summary.append(strong, detail);
@@ -216,7 +248,7 @@
         badge.dataset.artDirectionId = target.id;
         host.append(badge);
       }
-      if (badge.textContent !== 'UNPUBLISHED ART POSITION') badge.textContent = 'UNPUBLISHED ART POSITION';
+      if (badge.textContent !== 'SAVED — NOT PUBLISHED') badge.textContent = 'SAVED — NOT PUBLISHED';
       divergences.set(target.id, { id: target.id, label: target.label });
     } else {
       badge?.remove();
@@ -251,6 +283,7 @@
   }
 
   function applySavedDirection(target) {
+    if (draftHydrationPending()) return;
     const direction = stableDirection({ ...target, window: target.resolve()?.window });
     if (!Object.keys(direction).length) return;
     applyDirection(target, direction);
@@ -263,19 +296,23 @@
       if (!target) return;
       installLauncher(target);
       updateDivergenceMarker(target);
-      const drafts = readDrafts();
-      if (Object.prototype.hasOwnProperty.call(drafts, target.id)) {
-        const draft = drafts[target.id];
-        applyDirection(target, draft && typeof draft === 'object' ? draft : {});
+      if (!draftHydrationPending()) {
+        const drafts = readDrafts();
+        if (Object.prototype.hasOwnProperty.call(drafts, target.id)) {
+          const draft = drafts[target.id];
+          applyDirection(target, draft && typeof draft === 'object' ? draft : {});
+        }
       }
       if (frame.dataset.artCompositorLoadHook !== 'true') {
         frame.dataset.artCompositorLoadHook = 'true';
         frame.addEventListener('load', () => {
           installLauncher(target);
-          const savedDrafts = readDrafts();
-          if (Object.prototype.hasOwnProperty.call(savedDrafts, target.id)) {
-            const saved = savedDrafts[target.id];
-            requestAnimationFrame(() => applyDirection(target, saved && typeof saved === 'object' ? saved : {}));
+          if (!draftHydrationPending()) {
+            const savedDrafts = readDrafts();
+            if (Object.prototype.hasOwnProperty.call(savedDrafts, target.id)) {
+              const saved = savedDrafts[target.id];
+              requestAnimationFrame(() => applyDirection(target, saved && typeof saved === 'object' ? saved : {}));
+            }
           }
         });
       }
@@ -742,6 +779,7 @@
     scan();
     window.addEventListener('gauntlet-art-direction-ready', queueScan);
     window.addEventListener('gauntlet-art-direction-drafts-changed', queueScan);
+    window.addEventListener('gauntlet-art-direction-draft-hydration', queueScan);
     window.addEventListener('gauntlet-artwork-authoring-status', queueScan);
     new MutationObserver(queueScan).observe(document.body, { childList: true, subtree: true });
     window.addEventListener('load', scan);

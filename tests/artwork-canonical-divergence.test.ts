@@ -12,22 +12,29 @@ describe('artwork composition canonical guardrails', () => {
     expect(currentGame.artDirection['financiers-banker']).toEqual({ focusY: 0 });
   });
 
-  it('visibly identifies unpublished browser/working-batch composition drift', () => {
+  it('visibly identifies real unpublished working-batch composition drift only after canonical state is ready', () => {
     expect(compositor).toContain('draftDiffersFromCanonical(target)');
     expect(compositor).toContain('art-compositor-divergent-source');
-    expect(compositor).toContain('UNPUBLISHED ART POSITION');
+    expect(compositor).toContain('SAVED — NOT PUBLISHED');
     expect(compositor).toContain('GAUNTLET_ART_DIRECTION_DIVERGENCES');
+    expect(compositor).toContain('not been published to current-game.json');
+    expect(compositor).toContain('draftHydrationPending()');
+    expect(compositor).toContain('canonicalDirectionState(target)');
+    expect(compositor).toContain('if (!canonical.ready) return false');
+    expect(compositor).toContain("gauntlet-art-direction-draft-hydration");
     expect(compositorCss).toContain('outline: 4px solid #c62828');
     expect(compositorCss).toContain('art-compositor-divergence-summary');
   });
 
-  it('never hydrates an idle working branch as Card Design authority', () => {
+  it('retires browser-only drafts whenever there is no verified open artwork batch', () => {
     expect(authoringClient).toContain('const WORKING_PR_API');
+    expect(authoringClient).toContain("GAUNTLET_ART_DIRECTION_DRAFT_HYDRATION = 'pending'");
     expect(authoringClient).toContain('if (!openPr?.number)');
-    expect(authoringClient).toContain('return false;');
+    expect(authoringClient).toContain('return installWorkingDirections({});');
     expect(authoringClient).toContain('directionDelta(canonicalDirections, workingDirections)');
-    expect(authoringClient).toContain('branch by itself is never authoritative');
-    expect(authoringClient).toContain('Existing browser drafts are left');
+    expect(authoringClient).toContain("setDraftHydration('ready')");
+    expect(authoringClient).toContain("setDraftHydration('error')");
+    expect(authoringClient).toContain('no-PR browser state is erased');
   });
 
   it('supports unpublished removal of a canonical override without losing the distinction', () => {
@@ -44,6 +51,7 @@ describe('artwork composition canonical guardrails', () => {
   });
 
   it('forces browsers to load the guardrail-enabled authoring client', () => {
-    expect(targets).toContain('artwork-authoring-client.js?v=20260902-1');
+    expect(targets).toContain("GAUNTLET_ART_DIRECTION_DRAFT_HYDRATION = 'pending'");
+    expect(targets).toContain('artwork-authoring-client.js?v=20260902-2');
   });
 });

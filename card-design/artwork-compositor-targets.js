@@ -7,6 +7,12 @@
   `;
   document.head.append(style);
 
+  // Mark public draft hydration as pending before the dynamically loaded
+  // authoring client can race the core compositor's first scan.
+  if (window.location.origin === 'https://gauntlet.run') {
+    window.GAUNTLET_ART_DIRECTION_DRAFT_HYDRATION = 'pending';
+  }
+
   // The public catalog is static, so canonical saves are bridged through the
   // authenticated artwork-authoring Worker. The client is a no-op on the local
   // authoring server, where /api/art-direction continues to write the repo file
@@ -14,7 +20,7 @@
   // authoring or batch-publication code in the browser cache.
   const authoringClient = document.createElement('script');
   authoringClient.async = false;
-  authoringClient.src = 'artwork-authoring-client.js?v=20260902-1';
+  authoringClient.src = 'artwork-authoring-client.js?v=20260902-2';
   document.head.append(authoringClient);
 
   // Publish runs through a separate reliability shim so a transient Worker or

@@ -138,6 +138,36 @@ async function main() {
         omitBackground: true,
       });
     }
+
+    const readBankerComposition = () => leaderPage.locator('.leader-card').evaluate(card => {
+      const image = card.querySelector('.card-art img');
+      return {
+        applied: card.dataset.artDirectionApplied || '',
+        objectPosition: image?.style.objectPosition || '',
+        transform: image?.style.transform || '',
+        transformOrigin: image?.style.transformOrigin || '',
+        focusX: image?.dataset.artFocusX || '',
+        focusY: image?.dataset.artFocusY || '',
+        zoom: image?.dataset.artZoom || '',
+      };
+    });
+
+    await leaderPage.goto(`${baseUrl}/card-design/component-render.html?kind=leader&id=financiers-banker&side=front&rules=candidate`, { waitUntil: 'load' });
+    await leaderPage.waitForFunction(() => document.body.dataset.renderReady === 'true');
+    const bankerCandidateComposition = await readBankerComposition();
+
+    await leaderPage.goto(`${baseUrl}/card-design/component-render.html?kind=leader&id=financiers-banker&side=front&rules=released`, { waitUntil: 'load' });
+    await leaderPage.waitForFunction(() => document.body.dataset.renderReady === 'true');
+    const bankerReleasedComposition = await readBankerComposition();
+
+    if (
+      bankerCandidateComposition.applied !== 'financiers-banker'
+      || bankerReleasedComposition.applied !== 'financiers-banker'
+      || JSON.stringify(bankerReleasedComposition) !== JSON.stringify(bankerCandidateComposition)
+    ) {
+      throw new Error(`Released Deckbuilder Banker composition drifted from Card Design: ${JSON.stringify({ bankerCandidateComposition, bankerReleasedComposition })}.`);
+    }
+
     await leaderPage.close();
 
     const names = leaders.map(record => record.name);
@@ -240,7 +270,7 @@ async function main() {
     await territoryPage.locator('.territory-card').screenshot({ path: join(OUTPUT, 'territory-review-smoke.png'), omitBackground: true });
     await territoryPage.close();
 
-    await writeFile(join(OUTPUT, 'metrics.json'), `${JSON.stringify({ currentVersion: current.version, displayVersion: expectedVersion, fonts, leaders, playable, territory }, null, 2)}\n`);
+    await writeFile(join(OUTPUT, 'metrics.json'), `${JSON.stringify({ currentVersion: current.version, displayVersion: expectedVersion, fonts, leaders, bankerCandidateComposition, bankerReleasedComposition, playable, territory }, null, 2)}\n`);
   } finally {
     await browser.close();
     await new Promise(resolveDone => server.close(resolveDone));

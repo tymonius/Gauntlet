@@ -208,6 +208,7 @@ async function resolveCurrentGame() {
     schemaVersion: authority.schemaVersion,
     authority: authority.authority,
     authorityUrl: CURRENT_GAME_AUTHORITY_URL,
+    visualAuthorityUrl: CURRENT_GAME_AUTHORITY_URL,
     version: authority.version,
     displayVersion: authority.displayVersion,
     status: authority.status,

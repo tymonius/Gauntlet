@@ -20,6 +20,7 @@ const supplementalPrintTransform = readFileSync("deckbuilder/print-capital-ledge
 const cardBackPolicy = readFileSync("deckbuilder/card-back-preview.js", "utf8");
 const analyticsSync = readFileSync("scripts/sync-google-analytics.mjs", "utf8");
 const currentGameLoader = readFileSync("game-data/current-game.mjs", "utf8");
+const rulesetLoader = readFileSync("game-data/ruleset.mjs", "utf8");
 const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
 const componentContract = currentGame.componentContract;
 
@@ -62,7 +63,7 @@ describe("Deckbuilder production printing", () => {
   });
 
   it("uses current-game component metadata and preserves intrinsic reverse faces", () => {
-    expect(printTransform).toContain('const currentGame = state.currentGameData;');
+    expect(printTransform).toContain('const currentGame = resolvedCurrentGame();');
     expect(printTransform).toContain('currentGame.components');
     expect(printTransform).toContain('component.productionStatus');
     expect(printTransform).toContain('component.backPolicy');
@@ -95,7 +96,7 @@ describe("Deckbuilder production printing", () => {
     expect(printTransform).toContain('standardBackFaction(frontCell)');
     expect(printTransform).toContain('frontCell.querySelector(".production-render-card, .production-render-territory")');
     expect(printTransform).toContain('return "intelligence";');
-    expect(printTransform).toContain('String(state.factionId || "intelligence")');
+    expect(printTransform).toContain('String(deckState().factionId || "intelligence")');
     expect(printTransform).toContain('production-standard-back');
     expect(printTransform).toContain('/tts/back-renderer/index.html?faction=');
     expect(printTransform).toContain('wrapper.dataset.productionInlineBack = "true"');
@@ -108,10 +109,19 @@ describe("Deckbuilder production printing", () => {
     expect(cardBackPolicy).not.toContain("document.write");
   });
 
+  it("keeps released print content on the one current Card Design visual authority", () => {
+    expect(rulesetLoader).toContain("CURRENT_VISUAL_AUTHORITY_URL");
+    expect(rulesetLoader).toContain("loadJson(CURRENT_VISUAL_AUTHORITY_URL)");
+    expect(rulesetLoader).toContain("visualAuthority?.artDirection");
+    expect(rulesetLoader).toContain("artDirectionFor(id)");
+    expect(rulesetLoader).not.toContain("const artDirection = {};");
+    expect(currentGameLoader).toContain("visualAuthorityUrl: CURRENT_GAME_AUTHORITY_URL");
+  });
+
   it("reuses the Deckbuilder's already-loaded game authority inside production print iframes", () => {
     expect(printTransform).toContain("installProductionAuthorityBridge(documentNode)");
     expect(printTransform).toContain('window.__gauntletProductionAuthorityBridge = {');
-    expect(printTransform).toContain('window.opener?.GAUNTLET_DECKBUILDER?.state?.currentGameData');
+    expect(printTransform).toContain('window.opener?.GAUNTLET_DECKBUILDER?.currentGame?.()');
     expect(printTransform).toContain('rulesetMode: ${JSON.stringify(rulesetMode)}');
     expect(currentGameLoader).toContain("function bridgedProductionGame()");
     expect(currentGameLoader).toContain("window.top.__gauntletProductionAuthorityBridge");

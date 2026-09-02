@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { normalizePublishedGame, rulesetModeFromUrl } from '../game-data/ruleset.mjs';
+import { CURRENT_VISUAL_AUTHORITY_URL, normalizePublishedGame, rulesetModeFromUrl } from '../game-data/ruleset.mjs';
 
 const published = JSON.parse(readFileSync('releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json', 'utf8'));
 const starters = JSON.parse(readFileSync('releases/v0.7.1/Gauntlet_v0.7.1_Starter_Decks.json', 'utf8'));
@@ -25,7 +25,7 @@ describe('Deckbuilder released / release-candidate ruleset toggle', () => {
   });
 
   it('normalizes the immutable v0.7.1 release into the Deckbuilder runtime shape', () => {
-    const game = normalizePublishedGame(published, starters);
+    const game = normalizePublishedGame(published, starters, current);
     expect(game.version).toBe('v0.7.1');
     expect(game.authorityUrl).toContain('/releases/v0.7.1/');
     expect(game.cards).toHaveLength(published.gameplay.cards.length);
@@ -33,6 +33,9 @@ describe('Deckbuilder released / release-candidate ruleset toggle', () => {
     expect(game.starterDecks).toHaveLength(12);
     expect(game.mystics.rites).toHaveLength(6);
     expect(game.mystics.selectionPolicy).toMatchObject({ poolSize: 6, selectedCount: 3 });
+    expect(game.visualAuthorityUrl).toBe(CURRENT_VISUAL_AUTHORITY_URL);
+    expect(game.artDirection).toEqual(current.artDirection);
+    expect(game.artDirectionFor('financiers-banker')).toEqual({ focusY: 0 });
   });
 
   it('keeps the current authority synchronized to the released source', () => {
@@ -52,6 +55,13 @@ describe('Deckbuilder released / release-candidate ruleset toggle', () => {
     expect(rites).not.toContain('../game-data/ruleset.mjs');
     expect(components).not.toContain('../game-data/ruleset.mjs');
     expect(bulk).not.toContain('../game-data/ruleset.mjs');
+  });
+
+  it('keeps Card Design composition canonical even when Deckbuilder content uses the released ruleset', () => {
+    expect(current.artDirection['financiers-banker']).toEqual({ focusY: 0 });
+    expect(runtime).toContain('loadGameRuleset(requestedRulesetMode)');
+    expect(readFileSync('game-data/ruleset.mjs', 'utf8')).toContain('loadJson(CURRENT_VISUAL_AUTHORITY_URL)');
+    expect(readFileSync('game-data/ruleset.mjs', 'utf8')).not.toContain('const artDirection = {};');
   });
 
   it('threads the selected ruleset through one production-render source API', () => {
