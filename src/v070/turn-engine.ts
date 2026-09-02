@@ -9277,6 +9277,12 @@ function chooseMovement(
   if (state.pendingSanctionChoices.length > 0) return;
 
   if (!state.turnState.movementSequenceOpen
+    && movementStep.source === 'Relentless Pursuit') {
+    completeV070RelentlessPursuitTransition(state, playerId);
+    return;
+  }
+
+  if (!state.turnState.movementSequenceOpen
     && (sequenceSource === 'normal'
       || movementStep.source === 'General Rout')) {
     state.turnState = advanceV070TurnPhase(state.turnState);
@@ -9345,16 +9351,92 @@ function completeCleanup(
   expireV070TerritoryTurnRestrictions(state);
   restoreV070AssetsAtTurnStart(state, next);
 
+  const pursuit = state.pendingRelentlessPursuit;
+  if (pursuit) {
+    if (pursuit.playerId !== next
+      || pursuit.defeatedAttackerId !== playerId) {
+      throw new Error(
+        'Relentless Pursuit turn transition does not match the defeated attacker.',
+      );
+    }
+    state.turnState = beginEffectGrantedV070Movement(
+      state.turnState,
+      1,
+      {
+        source: 'Relentless Pursuit',
+        choiceRestriction: 'advance_required',
+        battleRestriction: 'allowed',
+      },
+    );
+    appendV070Event(state, {
+      type: 'relentless_pursuit_movement_started',
+      actor: next,
+      visibility: 'public',
+      payload: {
+        defeatedAttackerId: playerId,
+        turnNumber: state.turnNumber,
+        from: state.players[next].position,
+      },
+    });
+    return;
+  }
+
+  beginV070TurnAfterTransition(state, next);
+}
+
+
+export function completeV070RelentlessPursuitTransition(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  const pending = state.pendingRelentlessPursuit;
+  if (!pending
+    || pending.playerId !== playerId
+    || state.activePlayer !== playerId
+    || !state.turnState
+    || state.turnState.phase !== 'capture'
+    || state.turnState.movementSequenceOpen) {
+    throw new V070GameActionError(
+      'Relentless Pursuit is not ready to return to the normal turn sequence.',
+    );
+  }
+
+  state.pendingRelentlessPursuit = null;
+  appendV070Event(state, {
+    type: 'relentless_pursuit_completed',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      defeatedAttackerId: pending.defeatedAttackerId,
+      triggeredTurn: pending.triggeredTurn,
+      turnNumber: state.turnNumber,
+      position: state.players[playerId].position,
+    },
+  });
+  beginV070TurnAfterTransition(state, playerId);
+}
+
+function beginV070TurnAfterTransition(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  if (!state.turnState || state.activePlayer !== playerId) {
+    throw new Error('Turn-start transition requires the active player.');
+  }
+
   appendV070Event(state, {
     type: 'turn_started',
-    actor: next,
+    actor: playerId,
     visibility: 'public',
-    payload: { turnNumber: state.turnNumber, phase: state.turnState.phase },
+    payload: {
+      turnNumber: state.turnNumber,
+      phase: state.turnState.phase,
+    },
   });
 
-  applyV070TurnStartTerritoryEffects(state, next);
-  resolveV070SpeculationsAtTurnStart(state, next);
-  openV070StartTurnOverlayChoice(state, next);
+  applyV070TurnStartTerritoryEffects(state, playerId);
+  resolveV070SpeculationsAtTurnStart(state, playerId);
+  openV070StartTurnOverlayChoice(state, playerId);
 }
 
 function movementDelta(playerId: PlayerId, choice: Exclude<MovementChoice, 'hold'>): number {
