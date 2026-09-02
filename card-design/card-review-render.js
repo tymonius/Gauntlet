@@ -91,9 +91,8 @@ await (async () => {
     const displayVersion = versionOverride || await resolveDisplayVersion(currentGame);
     const card = sourceCard;
     const faction = slugify(card.allegiance);
-    const sourceArtwork = await resolveFirstArtwork(card, faction, imageExists);
-    let artwork = sourceArtwork;
-    if (normalizedPrintArtwork && sourceArtwork) {
+    let artwork = null;
+    if (normalizedPrintArtwork) {
       const normalizedArtwork = `/images/print-artwork/cards/${encodeURIComponent(card.id)}.jpg`;
       if (!await imageExists(normalizedArtwork)) {
         throw new Error(`Normalized print artwork is unavailable for ${card.id}.`);
@@ -101,6 +100,8 @@ await (async () => {
       artwork = normalizedArtwork;
       document.body.dataset.printArtworkNormalized = 'true';
       document.body.dataset.printArtworkSource = normalizedArtwork;
+    } else {
+      artwork = await resolveFirstArtwork(card, faction, imageExists);
     }
     const preview = {
       id: card.id,
