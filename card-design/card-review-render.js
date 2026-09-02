@@ -1,6 +1,7 @@
 import { resolveFirstArtwork, slugify } from './card-artwork-resolver.js';
 import { loadCurrentGame } from '../game-data/current-game.mjs';
 import { installPrintArtworkFinalizer } from './print-artwork-normalizer.js';
+import { mergeArtDirectionDrafts } from './art-direction-drafts.mjs';
 
 await (async () => {
   const params = new URLSearchParams(window.location.search);
@@ -119,7 +120,8 @@ await (async () => {
       playableCards: [preview],
       missingArtwork: artwork ? [] : [preview.id],
     };
-    window.GAUNTLET_ART_DIRECTION = currentGame.artDirection;
+    window.GAUNTLET_ART_DIRECTION = mergeArtDirectionDrafts(currentGame.artDirection || {});
+    document.body.dataset.artDirectionDraftsApplied = 'true';
 
     // Production layout is content-sensitive. Explicitly request the exact
     // display and reading faces before either shared renderer is allowed to
