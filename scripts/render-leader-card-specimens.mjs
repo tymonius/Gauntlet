@@ -173,7 +173,7 @@ async function main() {
       fitWarning: card.classList.contains('fit-warning'),
       titleFit: card.dataset.titleFit,
       parchmentLoaded: card.dataset.parchmentLoaded,
-      artworkSource: card.querySelector('.card-art img')?.src || '',
+      artworkSource: card.querySelector('.card-art img')?.currentSrc || card.querySelector('.card-art img')?.src || '',
       normalizedArtwork: document.body.dataset.printArtworkNormalized,
       normalizedArtworkSource: document.body.dataset.printArtworkSource,
     }));
