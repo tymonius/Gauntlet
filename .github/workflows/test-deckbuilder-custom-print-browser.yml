@@ -118,7 +118,7 @@ jobs:
           if (await playableFrame.count() !== 1) throw new Error('Playable card did not request normalized print artwork.');
           const playableFrameState = await playableFrame.evaluate(frame => ({
             normalized: frame.contentDocument?.body?.dataset.printArtworkNormalized || '',
-            source: frame.contentDocument?.querySelector('.card-art img')?.getAttribute('src') || '',
+            source: frame.contentDocument?.querySelector('.card-art img')?.currentSrc || frame.contentDocument?.querySelector('.card-art img')?.src || '',
           }));
           if (playableFrameState.normalized !== 'true' || !playableFrameState.source.includes('/images/print-artwork/cards/neutral-rallying-cry.jpg')) {
             throw new Error(`Playable print artwork normalization failed: ${JSON.stringify(playableFrameState)}`);
