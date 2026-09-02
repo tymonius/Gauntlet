@@ -194,7 +194,7 @@
   }
 
   function productionCardSource(cardId) {
-    return `/card-design/card-review-render.html?card=${encodeURIComponent(cardId)}&fit=production&rules=${encodeURIComponent(selectedRulesetMode())}`;
+    return `/card-design/card-review-render.html?card=${encodeURIComponent(cardId)}&fit=production&printArtwork=normalized&rules=${encodeURIComponent(selectedRulesetMode())}`;
   }
 
   function productionTerritorySource(territoryId) {
