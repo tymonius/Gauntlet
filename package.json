@@ -59,7 +59,7 @@
     "tts:build": "npm run tts:components:check && npm run tts:cards && npm run tts:territories && npm run tts:leaders && npm run tts:starters",
     "tts:package": "npm run tts:build && npm run tts:supplementals && npm run tts:finalized-supplementals && npm run tts:release:stage && npm run tts:save && npm run tts:save:assemble && node tts/validate-current-authoritative-save.mjs && npm run tts:release:status",
     "preview:v063:cards": "node scripts/generate-v063-production-card-preview.mjs",
-    "media:check": "node scripts/generate-card-media-assets.mjs --check && node scripts/generate-card-media-compositions.mjs --check && node scripts/generate-print-artwork.mjs --check",
+    "media:check": "node scripts/generate-card-media-assets.mjs --check && node scripts/generate-card-media-compositions.mjs --check",
     "media:build": "node scripts/generate-card-media-library.mjs",
     "test:watch": "vitest",
     "tts:environment": "node scripts/generate-tts-environment-assets.mjs",
@@ -70,9 +70,7 @@
     "publishing:check": "node scripts/sync-publishing-authority.mjs",
     "publishing:sync": "node scripts/sync-publishing-authority.mjs --write",
     "dev:legacy:cli": "tsx src/cli/dev-runner-v06.ts",
-    "dev:legacy:gui": "tsx src/gui/dev-server-v06.ts",
-    "print:artwork": "node scripts/generate-print-artwork.mjs",
-    "print:artwork:check": "node scripts/generate-print-artwork.mjs --check"
+    "dev:legacy:gui": "tsx src/gui/dev-server-v06.ts"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
