@@ -5495,14 +5495,14 @@ function resolveNecromancyAction(
       },
     });
     state.pendingActionCard = null;
+
+    drawIntoHand(state, playerId, 1, 'Necromancy');
+    grantAdditionalAction(state, playerId, 'Necromancy');
     openV070MysticInvocationAfterActionEffect(
       state,
       playerId,
       pending.instanceId,
     );
-
-    drawIntoHand(state, playerId, 1, 'Necromancy');
-    grantAdditionalAction(state, playerId, 'Necromancy');
     return;
   }
 
