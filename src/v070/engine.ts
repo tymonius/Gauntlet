@@ -86,6 +86,16 @@ export interface V070SanctionAssociation {
   kind: 'asset' | 'overlay';
 }
 
+export interface V070PendingPurgeChoice {
+  purgerId: PlayerId;
+  opponentId: PlayerId;
+  printedCost: 3 | 4;
+  paidCost: number;
+  source: 'normal' | 'final_judgment';
+  chooserId: PlayerId;
+  kind: 'opponent_hand_discard' | 'revealed_hand_target';
+}
+
 export interface V070PendingAssetLimitChoice {
   playerId: PlayerId;
   effectiveLimit: number;
@@ -438,6 +448,9 @@ export interface V070DiplomatState {
 export interface V070InquisitionState {
   conviction: number;
   normalConvictionGainTurn: number | null;
+  purgeActionTurn: number | null;
+  finalJudgmentUsedTurn: number | null;
+  relentlessPursuitUsedTurn: number | null;
 }
 
 export interface V070FinancierState {
@@ -567,6 +580,7 @@ export interface V070GameState {
   pendingActionEffectChoice: V070PendingActionEffectChoice | null;
   pendingSanctionChoices: V070PendingSanctionChoice[];
   pendingAssetLimitChoice: V070PendingAssetLimitChoice | null;
+  pendingPurgeChoice: V070PendingPurgeChoice | null;
   pendingTurnChoice: V070PendingTurnChoice | null;
   winner: PlayerId | null;
   events: V070GameEvent[];
@@ -655,6 +669,9 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
         ? {
             conviction: 0,
             normalConvictionGainTurn: null,
+            purgeActionTurn: null,
+            finalJudgmentUsedTurn: null,
+            relentlessPursuitUsedTurn: null,
           }
         : null,
       financiers: starter.definition.factionId === 'financiers'
@@ -716,6 +733,7 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
     pendingActionEffectChoice: null,
     pendingSanctionChoices: [],
     pendingAssetLimitChoice: null,
+    pendingPurgeChoice: null,
     pendingTurnChoice: null,
     winner: null,
     events: [],
