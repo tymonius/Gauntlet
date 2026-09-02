@@ -45,6 +45,7 @@ describe("Deckbuilder production printing", () => {
     expect(printTransform).toContain("&fit=production&printArtwork=normalized&rules=");
     expect(playableRenderJs).toContain("/images/print-artwork/cards/");
     expect(playableRenderJs).toContain("Normalized print artwork is unavailable");
+    expect(printArtworkGenerator).toContain("resolveFirstArtwork");
     expect(printArtworkGenerator).toContain("const SHORT_EDGE = 960;");
     expect(printArtworkGenerator).toContain("const LONG_EDGE = 1800;");
     expect(printArtworkGenerator).toContain("const JPEG_QUALITY = 95;");
