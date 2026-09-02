@@ -1,3 +1,49 @@
+.art-compositor-divergent-source {
+  outline: 4px solid #c62828 !important;
+  outline-offset: 4px;
+  box-shadow:
+    0 0 0 7px rgb(198 40 40 / 0.22),
+    0 0 22px rgb(198 40 40 / 0.28) !important;
+}
+
+.art-compositor-divergence-badge {
+  width: max-content;
+  max-width: 100%;
+  margin: 0.45rem auto 0;
+  padding: 0.35rem 0.55rem;
+  border-radius: 999px;
+  background: #b71c1c;
+  color: #fff;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.16);
+  font: 800 0.66rem/1 system-ui, sans-serif;
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+
+.art-compositor-divergence-summary {
+  display: grid;
+  gap: 0.22rem;
+  margin: 0 auto 1.1rem;
+  width: min(1180px, calc(100% - 2rem));
+  box-sizing: border-box;
+  padding: 0.8rem 1rem;
+  border: 2px solid #b71c1c;
+  border-radius: 10px;
+  background: #fff1f1;
+  color: #6d1010;
+  box-shadow: 0 4px 16px rgb(90 0 0 / 0.12);
+  font: 600 0.82rem/1.35 system-ui, sans-serif;
+}
+
+.art-compositor-divergence-summary strong {
+  color: #9b1111;
+  font-weight: 800;
+}
+
+.art-compositor-divergence-summary span {
+  overflow-wrap: anywhere;
+}
+
 .art-compositor-launch {
   appearance: none;
   border: 1px solid color-mix(in srgb, var(--ink, #2f2923) 24%, transparent);
@@ -350,5 +396,12 @@
 
 @media print {
   .art-compositor-dialog,
-  .art-compositor-launch { display: none !important; }
+  .art-compositor-launch,
+  .art-compositor-divergence-badge,
+  .art-compositor-divergence-summary { display: none !important; }
+
+  .art-compositor-divergent-source {
+    outline: none !important;
+    box-shadow: none !important;
+  }
 }

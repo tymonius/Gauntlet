@@ -15,6 +15,7 @@
   let compareMode = 'manual';
   let pointerState = null;
   let scanQueued = false;
+  const divergences = new Map();
 
   const ui = {};
 
@@ -29,16 +30,56 @@
 
   function writeDraft(id, direction) {
     const drafts = readDrafts();
-    if (Object.keys(direction).length) drafts[id] = direction;
-    else delete drafts[id];
+    drafts[id] = Object.keys(direction).length ? direction : null;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(drafts));
+    window.dispatchEvent(new CustomEvent('gauntlet-art-direction-drafts-changed'));
+  }
+
+  function clearDraft(id) {
+    const drafts = readDrafts();
+    if (!Object.prototype.hasOwnProperty.call(drafts, id)) return;
+    delete drafts[id];
+    if (Object.keys(drafts).length) localStorage.setItem(STORAGE_KEY, JSON.stringify(drafts));
+    else localStorage.removeItem(STORAGE_KEY);
+    window.dispatchEvent(new CustomEvent('gauntlet-art-direction-drafts-changed'));
+  }
+
+  function canonicalDirection(target) {
+    const source = target.window?.GAUNTLET_ART_DIRECTION?.[target.id] ?? window.GAUNTLET_ART_DIRECTION?.[target.id];
+    return source && typeof source === 'object' ? { ...source } : {};
   }
 
   function stableDirection(target) {
-    const draft = readDrafts()[target.id];
-    if (draft && typeof draft === 'object') return { ...draft };
-    const source = target.window?.GAUNTLET_ART_DIRECTION?.[target.id] || window.GAUNTLET_ART_DIRECTION?.[target.id];
-    return source && typeof source === 'object' ? { ...source } : {};
+    const drafts = readDrafts();
+    if (Object.prototype.hasOwnProperty.call(drafts, target.id)) {
+      const draft = drafts[target.id];
+      return draft && typeof draft === 'object' ? { ...draft } : {};
+    }
+    return canonicalDirection(target);
+  }
+
+  function directionSignature(target, direction) {
+    const resolved = target.resolve?.();
+    const crop = resolved?.window?.GauntletArtworkCrop || window.GauntletArtworkCrop;
+    if (crop?.normalizeDirection) {
+      const normalized = crop.normalizeDirection(direction || {});
+      return JSON.stringify({
+        fit: normalized.fit,
+        focusX: normalized.focusX,
+        focusY: normalized.focusY,
+        smart: normalized.smart,
+        zoom: normalized.zoom,
+      });
+    }
+    return JSON.stringify(direction || {});
+  }
+
+  function draftDiffersFromCanonical(target) {
+    const drafts = readDrafts();
+    if (!Object.prototype.hasOwnProperty.call(drafts, target.id)) return false;
+    const draft = drafts[target.id];
+    return directionSignature(target, draft && typeof draft === 'object' ? draft : {})
+      !== directionSignature(target, canonicalDirection(target));
   }
 
   function focusFrom(direction, axis) {
@@ -122,6 +163,67 @@
     return target.sourceElement.closest('.leader-specimen, .specimen-column, .territory-review-item, .proposal-specimen, .rite-specimen, .supplemental-specimen') || target.sourceElement.parentElement;
   }
 
+  function divergenceBadgeFor(host, id) {
+    return [...host.querySelectorAll(':scope > .art-compositor-divergence-badge')]
+      .find(badge => badge.dataset.artDirectionId === id) || null;
+  }
+
+  function renderDivergenceSummary() {
+    const existing = document.querySelector('.art-compositor-divergence-summary');
+    const items = [...divergences.values()].sort((a, b) => a.label.localeCompare(b.label));
+    window.GAUNTLET_ART_DIRECTION_DIVERGENCES = Object.freeze(items.map(item => Object.freeze({ ...item })));
+
+    if (!items.length) {
+      existing?.remove();
+      return;
+    }
+
+    const signature = JSON.stringify(items);
+    if (existing?.dataset.divergenceSignature === signature) return;
+
+    const summary = existing || document.createElement('aside');
+    summary.className = 'art-compositor-divergence-summary screen-only';
+    summary.dataset.divergenceSignature = signature;
+    summary.setAttribute('role', 'status');
+    summary.setAttribute('aria-live', 'polite');
+    summary.innerHTML = '';
+
+    const strong = document.createElement('strong');
+    strong.textContent = `${items.length} unpublished artwork composition${items.length === 1 ? '' : 's'} differ from current-game.json.`;
+    const detail = document.createElement('span');
+    detail.textContent = items.map(item => item.label).join(', ');
+    summary.append(strong, detail);
+
+    if (!existing) {
+      const main = document.querySelector('.developer-catalog-main');
+      if (main) main.prepend(summary);
+      else document.body.prepend(summary);
+    }
+  }
+
+  function updateDivergenceMarker(target) {
+    const host = hostFor(target);
+    if (!host) return;
+    const divergent = draftDiffersFromCanonical(target);
+    target.sourceElement.classList.toggle('art-compositor-divergent-source', divergent);
+    target.sourceElement.toggleAttribute('data-art-direction-divergent', divergent);
+
+    let badge = divergenceBadgeFor(host, target.id);
+    if (divergent) {
+      if (!badge) {
+        badge = document.createElement('span');
+        badge.className = 'art-compositor-divergence-badge screen-only';
+        badge.dataset.artDirectionId = target.id;
+        host.append(badge);
+      }
+      if (badge.textContent !== 'UNPUBLISHED ART POSITION') badge.textContent = 'UNPUBLISHED ART POSITION';
+      divergences.set(target.id, { id: target.id, label: target.label });
+    } else {
+      badge?.remove();
+      divergences.delete(target.id);
+    }
+  }
+
   function installLauncher(target) {
     const host = hostFor(target);
     if (!host || host.querySelector(':scope > .art-compositor-launch')) return;
@@ -155,18 +257,26 @@
   }
 
   function scan() {
+    divergences.clear();
     document.querySelectorAll('iframe').forEach((frame) => {
       const target = iframeTarget(frame);
       if (!target) return;
       installLauncher(target);
-      const draft = readDrafts()[target.id];
-      if (draft) applyDirection(target, draft);
+      updateDivergenceMarker(target);
+      const drafts = readDrafts();
+      if (Object.prototype.hasOwnProperty.call(drafts, target.id)) {
+        const draft = drafts[target.id];
+        applyDirection(target, draft && typeof draft === 'object' ? draft : {});
+      }
       if (frame.dataset.artCompositorLoadHook !== 'true') {
         frame.dataset.artCompositorLoadHook = 'true';
         frame.addEventListener('load', () => {
           installLauncher(target);
-          const saved = readDrafts()[target.id];
-          if (saved) requestAnimationFrame(() => applyDirection(target, saved));
+          const savedDrafts = readDrafts();
+          if (Object.prototype.hasOwnProperty.call(savedDrafts, target.id)) {
+            const saved = savedDrafts[target.id];
+            requestAnimationFrame(() => applyDirection(target, saved && typeof saved === 'object' ? saved : {}));
+          }
         });
       }
     });
@@ -175,8 +285,10 @@
       const target = directTarget(card);
       if (!target) return;
       installLauncher(target);
+      updateDivergenceMarker(target);
       applySavedDirection(target);
     });
+    renderDivergenceSummary();
   }
 
   function queueScan() {
@@ -443,7 +555,9 @@
     ui.fit.value = fitFrom(sourceDirection);
     ui.title.textContent = target.label;
     ui.source.textContent = `${target.id} · ${Math.round(rect.width)}×${Math.round(rect.height)} art window`;
-    ui.status.textContent = '';
+    ui.status.textContent = draftDiffersFromCanonical(target)
+      ? 'This artwork position is unpublished and differs from current-game.json.'
+      : '';
     preview.classList.toggle('territory-art', target.kind === 'territory');
     preview.classList.toggle('card-art', target.kind !== 'territory');
     preview.style.aspectRatio = `${rect.width} / ${rect.height}`;
@@ -494,19 +608,26 @@
   async function savePosition() {
     if (!state) return;
     const direction = directionFromControls();
-    let sourceSaved = false;
+    let payload = {};
     try {
       const response = await fetch(SAVE_ENDPOINT, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ id: state.id, direction }),
       });
-      if (response.ok) sourceSaved = (await response.json().catch(() => ({})))?.saved === true;
-    } catch {
-      sourceSaved = false;
+      payload = await response.json().catch(() => ({}));
+      if (!response.ok || payload?.saved !== true) {
+        throw new Error(payload?.error || `Artwork position save failed (${response.status}).`);
+      }
+    } catch (error) {
+      ui.status.textContent = `Save failed. Nothing was persisted outside this open editor: ${error instanceof Error ? error.message : String(error)}`;
+      return;
     }
 
-    writeDraft(state.id, direction);
+    const unpublished = Boolean(payload?.pr?.number);
+    if (unpublished) writeDraft(state.id, direction);
+    else clearDraft(state.id);
+
     state.sourceDirection = { ...direction };
     if (state.window?.GauntletArtworkCrop) {
       state.window.GauntletArtworkCrop.apply(state.image, direction, {
@@ -514,9 +635,13 @@
         label: state.label,
       });
     }
-    ui.status.textContent = sourceSaved
-      ? 'Saved to game-data/current-game.json and applied to this review surface.'
-      : 'Saved as a browser draft and applied here. Run `node scripts/card-design-server.mjs` to write the current-game authority directly.';
+    queueScan();
+
+    ui.status.textContent = unpublished
+      ? `Saved to unpublished artwork batch PR #${payload.pr.number}; the red card marker remains until that batch is published.`
+      : 'Saved to game-data/current-game.json. Reloading the canonical catalog to verify the persisted position…';
+
+    if (!unpublished) window.setTimeout(() => window.location.reload(), 500);
   }
 
   function cropMetrics() {
@@ -616,6 +741,8 @@
     ensureDialog();
     scan();
     window.addEventListener('gauntlet-art-direction-ready', queueScan);
+    window.addEventListener('gauntlet-art-direction-drafts-changed', queueScan);
+    window.addEventListener('gauntlet-artwork-authoring-status', queueScan);
     new MutationObserver(queueScan).observe(document.body, { childList: true, subtree: true });
     window.addEventListener('load', scan);
   }

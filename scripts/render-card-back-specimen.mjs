@@ -309,6 +309,51 @@ async function main() {
         document.querySelector('#leader-cards .component-review-frame')?.contentDocument?.body?.dataset.renderReady === 'true'
       ));
       await validateEmbeddedFrameInspector(leaderPage, leaderFrame, 'Leader card');
+
+      const bankerFrame = leaderPage.locator(
+        '#leader-cards .component-review-frame[src*="kind=leader"][src*="id=financiers-banker"]'
+      ).first();
+      await bankerFrame.waitFor();
+      await leaderPage.waitForFunction(() => (
+        [...document.querySelectorAll('#leader-cards .component-review-frame')]
+          .find(frame => frame.src.includes('id=financiers-banker'))
+          ?.contentDocument?.body?.dataset.renderReady === 'true'
+      ));
+      await leaderPage.evaluate(() => {
+        localStorage.setItem(
+          'gauntlet.art-direction-drafts.v1',
+          JSON.stringify({ 'financiers-banker': { focusY: 0.31 } }),
+        );
+        window.dispatchEvent(new CustomEvent('gauntlet-art-direction-drafts-changed'));
+      });
+      await leaderPage.waitForFunction(() => {
+        const frame = [...document.querySelectorAll('#leader-cards .component-review-frame')]
+          .find(candidate => candidate.src.includes('id=financiers-banker'));
+        return frame?.classList.contains('art-compositor-divergent-source')
+          && document.querySelector('.art-compositor-divergence-summary')
+          && [...document.querySelectorAll('.art-compositor-divergence-badge')]
+            .some(badge => badge.dataset.artDirectionId === 'financiers-banker'
+              && badge.textContent === 'UNPUBLISHED ART POSITION');
+      });
+      const divergentStyle = await bankerFrame.evaluate(frame => ({
+        outlineColor: getComputedStyle(frame).outlineColor,
+        outlineWidth: getComputedStyle(frame).outlineWidth,
+      }));
+      if (divergentStyle.outlineColor !== 'rgb(198, 40, 40)' || divergentStyle.outlineWidth !== '4px') {
+        throw new Error(`Banker unpublished-art marker is not visibly red: ${JSON.stringify(divergentStyle)}.`);
+      }
+
+      await leaderPage.evaluate(() => {
+        localStorage.removeItem('gauntlet.art-direction-drafts.v1');
+        window.dispatchEvent(new CustomEvent('gauntlet-art-direction-drafts-changed'));
+      });
+      await leaderPage.waitForFunction(() => {
+        const frame = [...document.querySelectorAll('#leader-cards .component-review-frame')]
+          .find(candidate => candidate.src.includes('id=financiers-banker'));
+        return frame
+          && !frame.classList.contains('art-compositor-divergent-source')
+          && !document.querySelector('.art-compositor-divergence-summary');
+      });
     } finally {
       await leaderPage.close();
     }
