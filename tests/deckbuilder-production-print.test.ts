@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 
 const deckbuilderHtml = readFileSync("deckbuilder/index.html", "utf8");
 const playableRender = readFileSync("card-design/card-review-render.html", "utf8");
+const playableRenderJs = readFileSync("card-design/card-review-render.js", "utf8");
+const printArtworkNormalizer = readFileSync("card-design/print-artwork-normalizer.js", "utf8");
 const playableLegacyAlias = readFileSync("card-design/card-print-render.html", "utf8");
 const componentRenderHtml = readFileSync("card-design/component-render.html", "utf8");
 const componentLegacyAlias = readFileSync("card-design/component-print-render.html", "utf8");
@@ -36,6 +38,18 @@ describe("Deckbuilder production printing", () => {
     expect(printTransform).toContain('/card-design/card-review-render.html?card=');
     expect(printTransform).toContain('/card-design/territory-review-render.html?territory=');
     expect(printTransform).toContain('/card-design/component-render.html?kind=');
+  });
+
+  it("normalizes only playable-card artwork for direct printing while leaving the card face live", () => {
+    expect(printTransform).toContain("&fit=production&printArtwork=normalized&rules=");
+    expect(playableRenderJs).toContain("normalizePrintArtworkSource(sourceArtwork)");
+    expect(printArtworkNormalizer).toContain("const DEFAULT_MAX_EDGE = 1000;");
+    expect(printArtworkNormalizer).toContain("colorSpace: 'srgb'");
+    expect(printArtworkNormalizer).toContain("'image/png'");
+    expect(printArtworkNormalizer).toContain("__gauntletPrintArtworkCache");
+    expect(printArtworkNormalizer).toContain("host.URL.createObjectURL(blob)");
+    expect(printTransform).not.toContain("data:image/png");
+    expect(printTransform).not.toContain("canvas.toBlob");
   });
 
   it("uses current-game component metadata and preserves intrinsic reverse faces", () => {
