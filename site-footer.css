@@ -1,0 +1,115 @@
+.ga-site-footer {
+  --ga-footer-ink: var(--ink, #181614);
+  --ga-footer-muted: var(--muted, #655f56);
+  --ga-footer-line: var(--line, rgba(49, 42, 32, 0.2));
+  width: min(1180px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 42px 0 80px;
+  display: grid;
+  grid-template-columns: minmax(340px, 400px) minmax(0, 1fr);
+  gap: clamp(42px, 7vw, 96px);
+  align-items: start;
+  border-top: 1px solid var(--ga-footer-line);
+  color: var(--ga-footer-muted);
+  background: transparent;
+  font-family: var(--font-interface, Arial, Helvetica, sans-serif);
+  font-size: .84rem;
+  line-height: 1.35;
+}
+
+.ga-site-footer__identity {
+  min-width: 0;
+}
+
+.ga-site-footer__wordmark {
+  width: 260px;
+  max-width: 100%;
+  display: block;
+}
+
+.ga-site-footer__wordmark img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.ga-site-footer__copyright {
+  margin: 13px 0 0;
+  color: var(--ga-footer-muted);
+  white-space: nowrap;
+}
+
+.ga-site-footer__publisher {
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.ga-site-footer__publisher-mark {
+  width: 28px;
+  height: auto;
+  flex: 0 0 auto;
+  opacity: .8;
+}
+
+.ga-site-footer__publisher-copy {
+  margin: 0;
+  color: var(--ga-footer-muted);
+  line-height: 1.25;
+}
+
+.ga-site-footer__publisher-copy span {
+  display: block;
+  white-space: nowrap;
+}
+
+.ga-site-footer__links {
+  margin: 0;
+  padding: 13px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  align-content: flex-start;
+  gap: 10px 16px;
+  color: var(--ga-footer-muted);
+  font-family: var(--font-interface, Arial, Helvetica, sans-serif);
+}
+
+.ga-site-footer__links a {
+  color: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.ga-site-footer__links a:hover,
+.ga-site-footer__links a:focus-visible {
+  color: var(--crimson, #8f1f25);
+}
+
+@media (max-width: 760px) {
+  .ga-site-footer {
+    width: min(100% - 28px, 1180px);
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding-bottom: 64px;
+  }
+
+  .ga-site-footer__links {
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 380px) {
+  .ga-site-footer__wordmark {
+    width: 235px;
+  }
+
+  .ga-site-footer__copyright {
+    white-space: normal;
+  }
+
+  .ga-site-footer__publisher-copy span {
+    white-space: normal;
+  }
+}
