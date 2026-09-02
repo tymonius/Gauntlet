@@ -36,7 +36,7 @@ on:
       - "images/*.svg"
       - "images/faction-symbols/*.svg"
       - "images/artwork/territories/*"
-      - "images/artwork/cards/territories/**"
+      - "images/artwork/cards/**"
       - "images/artwork/supplemental/**"
       - "scripts/render-card-back-specimen.mjs"
       - "scripts/render-leader-card-specimens.mjs"
