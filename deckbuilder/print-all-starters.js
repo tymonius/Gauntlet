@@ -152,7 +152,7 @@
   }
 
   function applyStarterDeckToState(preset) {
-    const faction = deckbuilder.factions.find(item => item.id === preset.factionId);
+    const faction = deckbuilder.factionCatalog().find(item => item.id === preset.factionId);
     const leader = faction?.leaders?.find(item => item.id === preset.leaderId);
     if (!faction || !leader) throw new Error(`Missing faction or Leader for ${preset.name}.`);
 
