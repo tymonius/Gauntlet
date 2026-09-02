@@ -30,6 +30,9 @@ describe('v0.7.0 Inquisition Conviction core', () => {
     expect(state.players.A.inquisition).toEqual({
       conviction: 0,
       normalConvictionGainTurn: null,
+      purgeActionTurn: null,
+      finalJudgmentUsedTurn: null,
+      relentlessPursuitUsedTurn: null,
     });
     expect(v070Conviction(state, 'A')).toBe(0);
     expect(state.players.B.inquisition).toBeNull();
@@ -159,10 +162,20 @@ describe('v0.7.0 Inquisition Conviction core', () => {
     gainV070Conviction(state, 'A', 2, 'public resource');
 
     expect(viewV070GameForPlayer(state, 'A').players.A.inquisition)
-      .toEqual({ conviction: 2 });
+      .toEqual({
+        conviction: 2,
+        normalConvictionGainTurn: null,
+        purgeActionTurn: null,
+        finalJudgmentUsedTurn: null,
+        relentlessPursuitUsedTurn: null,
+      });
     expect(viewV070GameForPlayer(state, 'B').players.A.inquisition)
-      .toEqual({ conviction: 2 });
-    expect(viewV070GameForPlayer(state, 'A').players.A.inquisition)
-      .not.toHaveProperty('normalConvictionGainTurn');
+      .toEqual({
+        conviction: 2,
+        normalConvictionGainTurn: null,
+        purgeActionTurn: null,
+        finalJudgmentUsedTurn: null,
+        relentlessPursuitUsedTurn: null,
+      });
   });
 });
