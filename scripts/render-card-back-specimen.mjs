@@ -189,7 +189,9 @@ function validateCardMetrics(faction, metrics) {
 
 async function validateEmbeddedFrameInspector(page, sourceFrame, label) {
   await sourceFrame.scrollIntoViewIfNeeded();
-  const embedded = sourceFrame.contentFrame();
+  const frameHandle = await sourceFrame.elementHandle();
+  const embedded = await frameHandle?.contentFrame();
+  if (!embedded) throw new Error(`${label} canonical component iframe did not expose a content frame.`);
   const card = embedded.locator('.leader-card').first();
   await card.waitFor();
   await embedded.waitForFunction(() => document.querySelector('.leader-card')?.classList.contains('card-inspectable'));
