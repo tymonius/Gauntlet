@@ -47,6 +47,7 @@
   <link rel="stylesheet" href="homepage-card-showcase.css" />
   <link rel="stylesheet" href="declaration-typography.css" />
   <link rel="stylesheet" href="rules-assistant/widget.css" />
+  <link rel="stylesheet" href="/site-footer.css?v=20260902-1" />
 </head>
 <body>
   <header class="site-header">
@@ -342,25 +343,30 @@
     </section>
   </main>
 
-  <footer>
-    <div>
-      <strong>Gauntlet</strong>
-      <p class="footer-publisher-line">
-        <img class="footer-publisher-mark" src="images/branding/tds-games-mark.svg" alt="" aria-hidden="true" />
-        <span><!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT --> · <!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises<!-- /PUBLISHING-FACT --></span>
-      </p>
+  <footer class="ga-site-footer" data-gauntlet-footer="standard">
+    <div class="ga-site-footer__identity">
+      <a class="ga-site-footer__wordmark" href="/" aria-label="Gauntlet home">
+        <img src="/images/Gauntlet.svg" alt="" aria-hidden="true" />
+      </a>
+      <p class="ga-site-footer__copyright"><!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT --></p>
+      <div class="ga-site-footer__publisher">
+        <img class="ga-site-footer__publisher-mark" src="/images/branding/tds-games-mark.svg" alt="" aria-hidden="true" />
+        <p class="ga-site-footer__publisher-copy">
+          <span><!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT --> ·</span>
+          <span><!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises<!-- /PUBLISHING-FACT --></span>
+        </p>
+      </div>
     </div>
-    <div class="footer-links">
-      <a href="rulebook/">Browser Rulebook</a>
-      <a href="card-reference/">Card Reference</a>
-      <a href="releases/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf">Rulebook booklet</a>
-      <a href="docs/README.md">Documentation</a>
-      <a href="rules-arbiter/">Rules Arbiter</a>
+    <nav class="ga-site-footer__links" aria-label="Footer navigation">
+      <a href="/rulebook/">Browser Rulebook</a>
+      <a href="/card-reference/">Card Reference</a>
+      <a href="/deckbuilder/">Deckbuilder</a>
+      <a href="/factions/">Factions</a>
+      <a href="/rules-arbiter/">Rules Arbiter</a>
+      <a href="/start/">Start</a>
       <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener noreferrer">Tabletop Simulator</a>
-      <a href="#updates">Project updates</a>
       <a href="https://github.com/tymonius/Gauntlet">GitHub</a>
-    </div>
-    <p class="copyright"><!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT --></p>
+    </nav>
   </footer>
 
   <noscript>
