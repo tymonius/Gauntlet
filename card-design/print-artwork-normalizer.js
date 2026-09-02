@@ -11,10 +11,11 @@ function cacheHost() {
 
 function sharedCache() {
   const host = cacheHost();
-  if (!(host.__gauntletPrintArtworkCache instanceof Map)) {
+  const existing = host.__gauntletPrintArtworkCache;
+  if (!existing || typeof existing.get !== 'function' || typeof existing.set !== 'function') {
     Object.defineProperty(host, '__gauntletPrintArtworkCache', {
       configurable: true,
-      value: new Map(),
+      value: new host.Map(),
     });
   }
   return host.__gauntletPrintArtworkCache;
@@ -75,8 +76,7 @@ async function normalizeLoadedImage(image) {
       context.drawImage(image, 0, 0, dimensions.width, dimensions.height);
 
       const blob = await canvasBlob(canvas);
-      const host = cacheHost();
-      const url = host.URL.createObjectURL(blob);
+      const url = URL.createObjectURL(blob);
       return Object.freeze({
         url,
         source,
