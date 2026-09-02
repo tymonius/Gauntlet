@@ -818,7 +818,9 @@ export function reduceV070TurnAction(
   const activeTurnState = state.turnState;
   if (activeTurnState?.movementSequenceOpen
     && activeTurnState.movementSequenceSource === 'effect'
-    && action.type !== 'choose_movement') {
+    && action.type !== 'choose_movement'
+    && action.type !== 'use_mystic_invocation'
+    && action.type !== 'pass_mystic_invocation') {
     throw new V070GameActionError(
       'Resolve the effect-granted movement sequence before continuing the turn.',
     );
