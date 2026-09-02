@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { BattleState } from '../types';
+import type { BattleState } from '../types/v06';
 import { initializeGame } from './initialize';
 import {
   LeaderAbilityError,

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { BattleParticipantState, BattlePlayedCard, BattleState, CardID, GameState, PlayerID } from '../types';
+import type { BattleParticipantState, BattlePlayedCard, BattleState, CardID, GameState, PlayerID } from '../types/v06';
 import { buildGuidedOptions } from '../dev/guided-options';
 import { initializeGame } from './initialize';
 import { applyGameAction } from './apply-intelligence';

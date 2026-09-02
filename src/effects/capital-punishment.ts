@@ -2,7 +2,7 @@ import type {
   BattleParticipantState,
   BattlePlayedCard,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import type { EffectHandler } from './types';
 
 export const CAPITAL_PUNISHMENT = 'neutral-capital-punishment';
