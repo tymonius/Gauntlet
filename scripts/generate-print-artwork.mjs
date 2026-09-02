@@ -3,6 +3,7 @@ import { join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import sharp from 'sharp';
 
+import { resolveFirstArtwork } from '../card-design/card-artwork-resolver.js';
 import { buildCatalog } from './tts-current-catalog.mjs';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
@@ -25,6 +26,20 @@ function sourcePath(artwork) {
   return resolve(ROOT, String(artwork || '').replace(/^\/+/, ''));
 }
 
+async function fileExists(source) {
+  try {
+    await stat(sourcePath(source));
+    return true;
+  } catch (error) {
+    if (error?.code === 'ENOENT') return false;
+    throw error;
+  }
+}
+
+async function canonicalArtwork(card) {
+  return resolveFirstArtwork(card, card.faction, fileExists);
+}
+
 function targetDimensions(width, height) {
   const sourceWidth = Number(width) || 0;
   const sourceHeight = Number(height) || 0;
@@ -42,8 +57,9 @@ function targetDimensions(width, height) {
 }
 
 async function normalizeArtwork(card, outputRoot) {
-  if (!card.artwork) throw new Error(`Playable card ${card.id} has no canonical artwork source.`);
-  const source = sourcePath(card.artwork);
+  const artwork = await canonicalArtwork(card);
+  if (!artwork) throw new Error(`Playable card ${card.id} has no canonical artwork source.`);
+  const source = sourcePath(artwork);
   const metadata = await sharp(source, { failOn: 'error' }).metadata();
   const dimensions = targetDimensions(metadata.width, metadata.height);
   const output = join(outputRoot, 'cards', `${card.id}.jpg`);
@@ -70,7 +86,7 @@ async function normalizeArtwork(card, outputRoot) {
     id: card.id,
     name: card.name,
     faction: card.faction,
-    source: String(card.artwork),
+    source: String(artwork),
     file: `cards/${card.id}.jpg`,
     sourcePixels: {
       width: Number(metadata.width),
@@ -93,8 +109,9 @@ async function main() {
 
   if (checkOnly) {
     for (const card of catalog.playableCards) {
-      if (!card.artwork) throw new Error(`Playable card ${card.id} has no canonical artwork source.`);
-      const metadata = await sharp(sourcePath(card.artwork), { failOn: 'error' }).metadata();
+      const artwork = await canonicalArtwork(card);
+      if (!artwork) throw new Error(`Playable card ${card.id} has no canonical artwork source.`);
+      const metadata = await sharp(sourcePath(artwork), { failOn: 'error' }).metadata();
       targetDimensions(metadata.width, metadata.height);
     }
     console.log(`Print artwork source check passed for ${catalog.playableCards.length} playable cards at ${SHORT_EDGE}px short edge / ${LONG_EDGE}px long-edge cap.`);
