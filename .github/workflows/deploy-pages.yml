@@ -17,7 +17,6 @@ on:
       - 'tts/renderer/**'
       - 'card-design/**'
       - 'scripts/generate-card-media-*.mjs'
-      - 'scripts/generate-print-artwork.mjs'
       - 'scripts/generate-tts-card-assets.mjs'
       - 'scripts/tts-current-catalog.mjs'
       - 'scripts/current-game-authority.mjs'
@@ -98,13 +97,6 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-
-      - name: Generate printer-friendly playable artwork
-        shell: bash
-        run: |
-          set -euo pipefail
-          npm run print:artwork -- --output="$SITE_DIR/images/print-artwork"
-          test -s "$SITE_DIR/images/print-artwork/manifest.json"
 
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
@@ -226,28 +218,6 @@ jobs:
           test "$bytes" -lt 950000000
 
           test -s "$SITE_DIR/images/media/all-factions-promotional-showcase.png"
-          test -s "$SITE_DIR/images/print-artwork/manifest.json"
-          SITE="$SITE_DIR" PRINT_ART_MANIFEST="$SITE_DIR/images/print-artwork/manifest.json" node <<'NODE'
-          const fs = require('fs');
-          const path = require('path');
-          const manifest = JSON.parse(fs.readFileSync(process.env.PRINT_ART_MANIFEST, 'utf8'));
-          const currentGame = JSON.parse(fs.readFileSync(path.join(process.env.SITE, 'game-data', 'current-game.json'), 'utf8'));
-          const expectedCount = currentGame.gameplay?.cards?.length || 0;
-          if (!expectedCount || manifest.cardCount !== expectedCount || manifest.cards?.length !== manifest.cardCount) {
-            throw new Error(`Unexpected normalized print-artwork count: ${manifest.cardCount}; expected ${expectedCount}`);
-          }
-          for (const card of manifest.cards) {
-            const file = path.join(path.dirname(process.env.PRINT_ART_MANIFEST), card.file);
-            if (!fs.existsSync(file) || fs.statSync(file).size < 10000) {
-              throw new Error(`Missing normalized print artwork: ${card.id}`);
-            }
-            if (Math.max(card.pixels.width, card.pixels.height) > 1800) {
-              throw new Error(`Normalized print artwork exceeded long-edge cap: ${card.id}`);
-            }
-          }
-          console.log(`Validated ${manifest.cardCount} normalized print artwork derivatives.`);
-          NODE
-
           for image in \
             "hero sketch.png" \
             "general.png" \
