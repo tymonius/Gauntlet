@@ -22,7 +22,7 @@
   deckbuilder.registerPrintTransform("production-rendering", prepareProductionPrintDocument, 40);
   deckbuilder.registerPrintTransform("production-face-guard", guardProductionFaces, 100);
   function resolvedCurrentGame() {
-    const currentGame = state.currentGameData;
+    const currentGame = deckbuilder.currentGame();
     if (!currentGame?.cards?.length || !currentGame?.territories?.length || !currentGame?.componentContract) {
       throw new Error("The shared current-game authority has not finished loading.");
     }
@@ -54,7 +54,7 @@
     const rulesetMode = selectedRulesetMode();
     script.textContent = `(() => {
   try {
-    const runtime = window.opener?.GAUNTLET_DECKBUILDER?.state?.currentGameData || null;
+    const runtime = window.opener?.GAUNTLET_DECKBUILDER?.currentGame?.() || null;
     if (!runtime) return;
     window.__gauntletProductionAuthorityBridge = {
       rulesetMode: ${JSON.stringify(rulesetMode)},

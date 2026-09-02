@@ -5,6 +5,7 @@
   const escapeHtml = value => deckbuilder.escapeHtml(value);
 
   const constructionRules = () => deckbuilder.constructionRules();
+  const currentGameLabel = () => deckbuilder.currentGame()?.displayVersion || "Current game";
   const TERRITORY_WIDTH = 336;
   const TERRITORY_HEIGHT = 240;
   const MAX_TERRITORY_PREVIEW_WIDTH = 360;
@@ -110,7 +111,7 @@
   function syncSourceStatus() {
     const dataStatus = document.getElementById("dataStatus");
     if (!state.territoryPool.length || !dataStatus) return;
-    dataStatus.textContent = `${state.currentGameDisplayVersion || "Current game"} · ${state.cards.length} active cards + ${state.territoryPool.length} Territories loaded`;
+    dataStatus.textContent = `${currentGameLabel()} · ${state.cards.length} active cards + ${state.territoryPool.length} Territories loaded`;
   }
 
   function filteredTerritories() {

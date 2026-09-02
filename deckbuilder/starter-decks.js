@@ -6,6 +6,8 @@
   const escapeHtml = value => deckbuilder.escapeHtml(value);
   const territoriesApi = () => deckbuilder.feature("territories");
   const ritesApi = () => deckbuilder.feature("mysticsRites");
+  const currentGame = () => deckbuilder.currentGame();
+  const currentGameLabel = () => currentGame()?.displayVersion || currentGame()?.version || "current";
 
   const STARTER_TIP_SOURCE = "starter-first-game-tips.json";
   let starterDecks = [];
@@ -47,7 +49,7 @@
       await waitForCurrentGamePool();
       currentGameReady = true;
 
-      const data = state.currentGameData?.starterDeckData;
+      const data = currentGame()?.starterDeckData;
       if (!data || !Array.isArray(data.decks)) {
         throw new Error("Current-game authority did not provide starter Deck data.");
       }
@@ -67,7 +69,7 @@
   async function waitForCurrentGamePool() {
     const deadline = Date.now() + 10000;
     while (Date.now() < deadline) {
-      if (state.currentGameVersion && state.currentGameData?.starterDecks?.length && Array.isArray(state.cards) && state.cards.length && territoriesApi()?.isReady?.()) return;
+      if (currentGame()?.starterDecks?.length && Array.isArray(state.cards) && state.cards.length && territoriesApi()?.isReady?.()) return;
       await new Promise(resolve => window.setTimeout(resolve, 25));
     }
     throw new Error("Timed out waiting for the shared current-game card, Territory, and starter Deck pool.");
@@ -166,7 +168,7 @@
     return Boolean(
       selectedStarterDeck() &&
       currentGameReady &&
-      state.currentGameVersion &&
+      currentGame()?.version &&
       state.cards.length &&
       territoriesApi()?.isReady?.()
     );
@@ -187,7 +189,7 @@
     button.title = loadError
       ? "Recommended Decks could not be loaded"
       : starterDeckReady()
-        ? `Replace the current Deck with the recommended ${state.currentGameDisplayVersion || "current"} preset for this Leader`
+        ? `Replace the current Deck with the recommended ${currentGameLabel()} preset for this Leader`
         : "Waiting for current-game card, Territory, and starter Deck data";
   }
 
@@ -215,7 +217,7 @@
     preview.innerHTML = `
       <div class="starter-deck-heading">
         <div>
-          <p class="eyebrow">Recommended ${escapeHtml(state.currentGameDisplayVersion || "current")} playtest Deck</p>
+          <p class="eyebrow">Recommended ${escapeHtml(currentGameLabel())} playtest Deck</p>
           <h3>${escapeHtml(preset.name)}</h3>
         </div>
         <div class="starter-deck-metrics">
@@ -234,7 +236,7 @@
   }
 
   function riteName(riteId) {
-    const rites = state.currentGameData?.mystics?.rites || [];
+    const rites = currentGame()?.mystics?.rites || [];
     return rites.find(rite => rite.id === riteId)?.name || riteId;
   }
 
@@ -351,7 +353,7 @@
 
     const territoryIds = [];
     const missingTerritories = [];
-    const territoryPool = state.currentGameData?.territories || [];
+    const territoryPool = currentGame()?.territories || [];
     for (const name of preset.territories) {
       const territory = territoryPool.find(candidate => candidate.name === name);
       if (!territory) missingTerritories.push(name);
