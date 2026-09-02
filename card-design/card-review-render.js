@@ -93,8 +93,8 @@ await (async () => {
     const faction = slugify(card.allegiance);
     let artwork = null;
     if (normalizedPrintArtwork) {
-      const normalizedArtwork = `images/print-artwork/cards/${encodeURIComponent(card.id)}.jpg`;
-      if (!await imageExists(normalizedArtwork)) {
+      const normalizedArtwork = `images/print-artwork/cards/${encodeURIComponent(card.id)}.png`;
+      if (!await imageExists(`/${normalizedArtwork}`)) {
         throw new Error(`Normalized print artwork is unavailable for ${card.id}.`);
       }
       artwork = normalizedArtwork;
