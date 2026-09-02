@@ -134,8 +134,9 @@ function validateModernPublicPage(html, route) {
   assert(html.includes('property="og:image"'), `${route} is missing Open Graph image metadata.`);
   assert(html.includes('name="twitter:card" content="summary_large_image"'), `${route} is missing Twitter card metadata.`);
   assert(html.includes('/site-polish.css'), `${route} does not load shared public-site polish styles.`);
-  assert(html.includes('class="skip-link" href="#main-content"'), `${route} is missing the skip-to-content link.`);
-  assert(/<main\b[^>]*id=(['"])main-content\1/i.test(html), `${route} main landmark is missing id="main-content".`);
+  const skipTarget = html.match(/class=(['"])skip-link\1[^>]*href=(['"])#([^'"]+)\2/i)?.[3];
+  assert(skipTarget, `${route} is missing the skip-to-content link.`);
+  assert(new RegExp(`<main\\b[^>]*id=(["'])${skipTarget}\\1`, 'i').test(html), `${route} skip link does not target its main landmark.`);
   assert(html.includes('site-edition-badge'), `${route} is missing the current-edition indicator.`);
   assert(html.includes('/analytics-consent.js'), `${route} does not use opt-in analytics consent.`);
   assert(!html.includes('googletagmanager.com/gtag/js?id='), `${route} loads Google Analytics before consent.`);
