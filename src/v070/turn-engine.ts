@@ -8980,7 +8980,8 @@ function chooseMovement(
   if (state.pendingSanctionChoices.length > 0) return;
 
   if (!state.turnState.movementSequenceOpen
-    && sequenceSource === 'normal') {
+    && (sequenceSource === 'normal'
+      || movementStep.source === 'General Rout')) {
     state.turnState = advanceV070TurnPhase(state.turnState);
     appendPhaseEvent(state);
   }
