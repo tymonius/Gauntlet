@@ -150,8 +150,12 @@ import {
 import {
   beginV070MysticRite,
   beginV070MysticRitual,
+  openV070MysticInvocationAfterActionEffect,
+  passV070MysticInvocation,
   recordV070MysticQualifyingHandSacrifice,
   resolveV070MysticCrossingAfterCapture,
+  useV070MysticInvocation,
+  v070MysticInvocationPendingPlayers,
 } from './mystics';
 
 export type V070TurnAction =
@@ -179,6 +183,12 @@ export type V070TurnAction =
       discardInstanceId: string;
       graveyardInstanceId: string;
     }
+  | {
+      type: 'use_mystic_invocation';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | { type: 'pass_mystic_invocation'; playerId: PlayerId }
   | {
       type: 'inquisition_purge';
       playerId: PlayerId;
@@ -538,6 +548,18 @@ export function reduceV070TurnAction(
   if (state.pendingTurnChoice && action.type !== 'resolve_start_turn_overlay_choice') {
     throw new V070GameActionError('Resolve the pending start-of-turn Overlay choice first.');
   }
+  const invocationPlayers = v070MysticInvocationPendingPlayers(state);
+  if (invocationPlayers.length > 0) {
+    const resolvingInvocation =
+      (action.type === 'use_mystic_invocation'
+        || action.type === 'pass_mystic_invocation')
+      && invocationPlayers.includes(action.playerId);
+    if (!resolvingInvocation) {
+      throw new V070GameActionError(
+        'Resolve or decline the pending Mystics Invocation before continuing the turn.',
+      );
+    }
+  }
   if (state.pendingPurgeChoice
     && (
       action.type !== 'resolve_inquisition_purge_hand_choice'
@@ -826,6 +848,16 @@ export function reduceV070TurnAction(
       break;
     case 'mystics_begin_ritual':
       mysticsBeginRitual(next, action);
+      break;
+    case 'use_mystic_invocation':
+      useV070MysticInvocation(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
+      break;
+    case 'pass_mystic_invocation':
+      passV070MysticInvocation(next, action.playerId);
       break;
     case 'inquisition_purge':
       inquisitionPurge(
@@ -5461,6 +5493,11 @@ function resolveNecromancyAction(
       },
     });
     state.pendingActionCard = null;
+    openV070MysticInvocationAfterActionEffect(
+      state,
+      playerId,
+      pending.instanceId,
+    );
 
     drawIntoHand(state, playerId, 1, 'Necromancy');
     grantAdditionalAction(state, playerId, 'Necromancy');
@@ -7946,6 +7983,11 @@ function finalizeControlledTerritoryMoveAction(
     },
   });
   state.pendingActionCard = null;
+  openV070MysticInvocationAfterActionEffect(
+    state,
+    pending.playerId,
+    pending.instanceId,
+  );
 }
 
 function chooseControlledTerritoryMoveTarget(
@@ -9058,6 +9100,11 @@ function finishPendingActionCard(
     },
   });
   state.pendingActionCard = null;
+  openV070MysticInvocationAfterActionEffect(
+    state,
+    pending.playerId,
+    pending.instanceId,
+  );
 }
 
 function drawIntoHand(
