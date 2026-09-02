@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { GameState } from '../types';
+import type { GameState } from '../types/v06';
 import { applyGameAction } from './apply-inquisition';
 import { initializeGame } from './initialize';
 import {
