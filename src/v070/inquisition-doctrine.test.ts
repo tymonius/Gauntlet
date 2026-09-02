@@ -284,6 +284,11 @@ describe('v0.7.0 Inquisition doctrine integration', () => {
       type: 'complete_aftermath',
       playerId: 'A',
     });
+    expect(state.battleRuntime?.finalJudgmentWindowOpen).toBe(true);
+    state = reduceV070BattleAction(state, {
+      type: 'pass_grand_inquisitor_final_judgment',
+      playerId: 'A',
+    });
 
     expect(state.players.B.zones.graveyard).toContain(tactic);
     expect(state.players.B.zones.discardPile).not.toContain(tactic);
