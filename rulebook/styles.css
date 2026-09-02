@@ -242,6 +242,27 @@ footer {
 
 .rulebook-toc .toc-primary { margin-top: 5px; color: var(--ink); font-weight: 800; }
 .rulebook-toc .toc-secondary { padding-left: 18px; font-size: 0.78rem; }
+.rulebook-toc .toc-faction {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.rulebook-toc .toc-faction::before {
+  content: "";
+  width: 1.05rem;
+  height: 1.05rem;
+  flex: 0 0 auto;
+  background: var(--toc-accent);
+  -webkit-mask: var(--faction-symbol) center / contain no-repeat;
+  mask: var(--faction-symbol) center / contain no-repeat;
+}
+.rulebook-toc .toc-faction:hover,
+.rulebook-toc .toc-faction:focus-visible,
+.rulebook-toc .toc-faction[aria-current="location"] {
+  border-left-color: var(--toc-accent);
+  color: var(--toc-accent);
+  background: color-mix(in srgb, var(--toc-accent) 7%, transparent);
+}
 .rulebook-toc a:hover,
 .rulebook-toc a:focus-visible,
 .rulebook-toc a[aria-current="location"] {
