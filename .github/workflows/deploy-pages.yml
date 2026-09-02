@@ -231,8 +231,10 @@ jobs:
           const fs = require('fs');
           const path = require('path');
           const manifest = JSON.parse(fs.readFileSync(process.env.PRINT_ART_MANIFEST, 'utf8'));
-          if (manifest.cardCount !== 142 || manifest.cards?.length !== manifest.cardCount) {
-            throw new Error(`Unexpected normalized print-artwork count: ${manifest.cardCount}`);
+          const currentGame = JSON.parse(fs.readFileSync(path.join(process.env.SITE, 'game-data', 'current-game.json'), 'utf8'));
+          const expectedCount = currentGame.gameplay?.cards?.length || 0;
+          if (!expectedCount || manifest.cardCount !== expectedCount || manifest.cards?.length !== manifest.cardCount) {
+            throw new Error(`Unexpected normalized print-artwork count: ${manifest.cardCount}; expected ${expectedCount}`);
           }
           for (const card of manifest.cards) {
             const file = path.join(path.dirname(process.env.PRINT_ART_MANIFEST), card.file);
