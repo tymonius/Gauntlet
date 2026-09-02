@@ -476,6 +476,11 @@ export function resolveV070MysticRitualVictory(
 
   const mystics = requireMystics(state, winner);
   if (!mystics.ritual.active) return false;
+  const ritualBindings = v070BindingsForHost(
+    state,
+    ritualHostId(winner),
+  );
+  if (ritualBindings.length !== 3) return false;
 
   releaseV070BoundCards(
     state,
