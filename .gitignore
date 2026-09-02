@@ -6,7 +6,6 @@ coverage/
 .env.local
 tts/generated/
 media/generated/
-images/print-artwork/
 
 # Private ChatGPT export and conversation-audit material.
 # These files may contain complete personal conversation history and must remain local.
