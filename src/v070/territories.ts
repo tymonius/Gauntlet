@@ -71,16 +71,33 @@ export function v070PrintedTerritoryEffectActive(
         || timing === 'continuous'
       )
     );
-  if (movementWindow
-    && state.territoryEffectSuppressions.some(suppression =>
-      suppression.playerId === playerId
-      && suppression.territoryInstanceId ===
-        territory.territoryInstanceId
-      && suppression.turnNumber === state.turnNumber
-      && suppression.scope === 'movement'
-    )) {
+  const suppressed = state.territoryEffectSuppressions.some(suppression => {
+    if (suppression.territoryInstanceId !== territory.territoryInstanceId
+      || suppression.turnNumber !== state.turnNumber) {
+      return false;
+    }
+    if (suppression.scope === 'movement') {
+      return movementWindow && suppression.playerId === playerId;
+    }
+    if (suppression.scope === 'turn') {
+      if (suppression.playerId === playerId) return true;
+      return Boolean(
+        state.battle
+        && (
+          timing === 'battle'
+          || timing === 'aftermath'
+          || timing === 'continuous'
+        )
+        && (
+          state.battle.attacker === suppression.playerId
+          || state.battle.defender === suppression.playerId
+        )
+        && territory.position === state.battle.contestedPosition
+      );
+    }
     return false;
-  }
+  });
+  if (suppressed) return false;
   return true;
 }
 
@@ -437,8 +454,11 @@ export function expireV070TerritoryEffectSuppressions(
 ): void {
   state.territoryEffectSuppressions =
     state.territoryEffectSuppressions.filter(suppression =>
-      !(suppression.playerId === playerId
-        && suppression.turnNumber <= state.turnNumber)
+      !(suppression.turnNumber <= state.turnNumber
+        && (
+          suppression.playerId === playerId
+          || suppression.source === 'fieldcraft'
+        ))
     );
 }
 

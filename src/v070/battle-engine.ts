@@ -55,6 +55,10 @@ import {
   resolveV070CapitalGainsOnBattleLoss,
 } from './financiers';
 import {
+  recordV070IntelligenceBattleOutcomeForMission,
+  useV070RangerFieldcraft,
+} from './intelligence';
+import {
   clearV070AccursedWagersForCurrentBattle,
   v070AccursedWagersForCurrentBattle,
 } from './accursed-wager';
@@ -205,6 +209,11 @@ export type V070BattleAction =
   | { type: 'use_commandant_repel'; playerId: PlayerId }
   | { type: 'use_commandant_fortify'; playerId: PlayerId }
   | { type: 'use_general_rout'; playerId: PlayerId }
+  | {
+      type: 'use_ranger_fieldcraft';
+      playerId: PlayerId;
+      territoryPosition: number;
+    }
   | { type: 'complete_aftermath'; playerId: PlayerId };
 
 export function reduceV070BattleAction(
@@ -224,6 +233,7 @@ export function reduceV070BattleAction(
     v070DisruptedSupplyLinesSelectionRequired(state, playerId)
   );
   if (disruptedSelectionPlayers.length > 0
+    && action.type !== 'use_ranger_fieldcraft'
     && (
       action.type !== 'choose_disrupted_supply_lines_active_asset'
       || !disruptedSelectionPlayers.includes(action.playerId)
@@ -277,6 +287,17 @@ export function reduceV070BattleAction(
   }
 
   const next = structuredClone(state) as V070GameState;
+
+  if (action.type === 'use_ranger_fieldcraft' && !next.battleRuntime) {
+    useV070RangerFieldcraft(
+      next,
+      action.playerId,
+      action.territoryPosition,
+    );
+    ensureBattleRuntime(next);
+    return next;
+  }
+
   ensureBattleRuntime(next);
 
   switch (action.type) {
@@ -456,6 +477,20 @@ export function reduceV070BattleAction(
     case 'use_general_rout':
       useGeneralRoutAtEndOfAftermath(next, action.playerId);
       break;
+    case 'use_ranger_fieldcraft': {
+      const runtime = requireRuntime(next);
+      if (runtime.stage !== 'onset' && runtime.stage !== 'aftermath') {
+        throw new V070GameActionError(
+          'Fieldcraft may be used during a battle only before the relevant printed Territory effect resolves.',
+        );
+      }
+      useV070RangerFieldcraft(
+        next,
+        action.playerId,
+        action.territoryPosition,
+      );
+      break;
+    }
     case 'complete_aftermath':
       completeAftermath(next, action.playerId);
       break;
@@ -1221,6 +1256,7 @@ function finalizeOutcome(
   const runtime = requireRuntime(state);
   const resolution = applyV070BattleOutcome(battle, outcome);
   state.battle = resolution.state;
+  recordV070IntelligenceBattleOutcomeForMission(state, outcome);
   recordV070ExecutiveHostileTakeoverEligibility(
     state,
     outcome.winner,
