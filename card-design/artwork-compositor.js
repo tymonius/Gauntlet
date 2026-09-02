@@ -178,8 +178,12 @@
       return;
     }
 
+    const signature = JSON.stringify(items);
+    if (existing?.dataset.divergenceSignature === signature) return;
+
     const summary = existing || document.createElement('aside');
     summary.className = 'art-compositor-divergence-summary screen-only';
+    summary.dataset.divergenceSignature = signature;
     summary.setAttribute('role', 'status');
     summary.setAttribute('aria-live', 'polite');
     summary.innerHTML = '';
@@ -212,7 +216,7 @@
         badge.dataset.artDirectionId = target.id;
         host.append(badge);
       }
-      badge.textContent = 'UNPUBLISHED ART POSITION';
+      if (badge.textContent !== 'UNPUBLISHED ART POSITION') badge.textContent = 'UNPUBLISHED ART POSITION';
       divergences.set(target.id, { id: target.id, label: target.label });
     } else {
       badge?.remove();
@@ -253,6 +257,7 @@
   }
 
   function scan() {
+    divergences.clear();
     document.querySelectorAll('iframe').forEach((frame) => {
       const target = iframeTarget(frame);
       if (!target) return;
