@@ -1,9 +1,9 @@
 (() => {
   const deckbuilder = window.GAUNTLET_DECKBUILDER;
   if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
-  const { state } = deckbuilder;
   const escapeHtml = value => deckbuilder.escapeHtml(value);
   const ritesApi = () => deckbuilder.feature("mysticsRites");
+  const deckState = () => deckbuilder.deckState();
 
   deckbuilder.registerRenderHook(renderFactionComponents);
 
@@ -145,7 +145,8 @@
     if (!container) return;
 
     const faction = deckbuilder.getFaction();
-    const leader = faction?.leaders?.find(item => item.id === state.leaderId);
+    const leader = deckbuilder.getLeader();
+    const current = deckState();
     const currentGame = deckbuilder.currentGame();
 
     if (!faction || !leader || !currentGame || !deckbuilder.feature("supplementalPackages")) {
@@ -158,11 +159,11 @@
       component.cardLike && component.deckInclusion === "every-deck"
     ));
     const components = (currentGame.components || []).filter(component => (
-      component.faction === state.factionId
+      component.faction === current.factionId
       && component.deckInclusion !== "every-deck"
-      && !(state.factionId === "mystics" && component.family === "rite-card")
+      && !(current.factionId === "mystics" && component.family === "rite-card")
     ));
-    const selectedRiteItems = state.factionId === "mystics"
+    const selectedRiteItems = current.factionId === "mystics"
       ? (ritesApi()?.selectedRites?.() || [])
       : [];
     const items = [
