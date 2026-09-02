@@ -1,0 +1,147 @@
+.info-main {
+  width: min(1180px, calc(100% - 40px));
+  margin: 0 auto;
+}
+
+.info-hero {
+  padding: 88px 0 64px;
+  max-width: 840px;
+}
+
+.info-hero h1 {
+  margin-bottom: 22px;
+  font-size: clamp(3.5rem, 8vw, 6.8rem);
+}
+
+.info-hero .lede {
+  max-width: 760px;
+  color: var(--muted);
+  font-size: clamp(1.15rem, 2vw, 1.4rem);
+  line-height: 1.65;
+}
+
+.info-section {
+  padding: 64px 0;
+  border-top: 1px solid var(--line);
+}
+
+.info-section__grid {
+  display: grid;
+  grid-template-columns: minmax(180px, .34fr) minmax(0, 1fr);
+  gap: clamp(36px, 7vw, 92px);
+  align-items: start;
+}
+
+.info-section h2 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 1;
+  font-weight: 500;
+}
+
+.info-copy {
+  max-width: 760px;
+}
+
+.info-copy p,
+.info-copy li {
+  color: #3f3a34;
+  font-size: 1.02rem;
+  line-height: 1.7;
+}
+
+.info-copy p:last-child,
+.info-copy ul:last-child {
+  margin-bottom: 0;
+}
+
+.info-copy a {
+  color: var(--crimson-dark);
+  font-weight: 700;
+}
+
+.info-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.info-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 30px 0 0;
+}
+
+.info-fact {
+  padding: 20px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.info-fact strong {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 1.3rem;
+}
+
+.faq-list {
+  display: grid;
+  gap: 12px;
+}
+
+.faq-list details {
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.faq-list summary {
+  padding: 20px 22px;
+  cursor: pointer;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 1.18rem;
+  font-weight: 650;
+}
+
+.faq-list details > div {
+  padding: 0 22px 22px;
+}
+
+.error-code {
+  margin: 0 0 10px;
+  color: var(--crimson);
+  font-family: var(--sans);
+  font-size: .82rem;
+  font-weight: 800;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.error-page {
+  min-height: 58vh;
+  display: grid;
+  align-items: center;
+}
+
+@media (max-width: 760px) {
+  .info-main {
+    width: min(100% - 28px, 1180px);
+  }
+
+  .info-hero {
+    padding-top: 64px;
+  }
+
+  .info-section__grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .info-facts {
+    grid-template-columns: 1fr;
+  }
+}
