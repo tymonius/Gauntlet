@@ -166,15 +166,30 @@ async function main() {
     await page.locator('#leader-cards').screenshot({ path: join(OUTPUT, 'leader-card-review-page.png') });
 
     const playablePage = await context.newPage();
-    await playablePage.goto(`${baseUrl}/card-design/card-review-render.html?fit=production&card=neutral-rallying-cry`, { waitUntil: 'load' });
+    await playablePage.goto(`${baseUrl}/card-design/card-review-render.html?fit=production&printArtwork=normalized&card=neutral-rallying-cry`, { waitUntil: 'load' });
     await playablePage.waitForFunction(() => document.body.dataset.renderReady === 'true');
     const playable = await playablePage.locator('.gauntlet-card').evaluate(card => ({
       title: card.querySelector('.card-title')?.textContent?.trim(),
       fitWarning: card.classList.contains('fit-warning'),
       titleFit: card.dataset.titleFit,
       parchmentLoaded: card.dataset.parchmentLoaded,
+      artworkSource: card.querySelector('.card-art img')?.src || '',
+      normalizedArtwork: document.body.dataset.printArtworkNormalized,
+      normalizedPixels: document.body.dataset.printArtworkPixels,
+      sourcePixels: document.body.dataset.printArtworkSourcePixels,
     }));
-    if (playable.title !== 'Rallying Cry' || playable.fitWarning || playable.titleFit !== 'true' || playable.parchmentLoaded !== 'true') {
+    const [normalizedWidth, normalizedHeight] = String(playable.normalizedPixels || '').split('x').map(Number);
+    if (
+      playable.title !== 'Rallying Cry'
+      || playable.fitWarning
+      || playable.titleFit !== 'true'
+      || playable.parchmentLoaded !== 'true'
+      || playable.normalizedArtwork !== 'true'
+      || !playable.artworkSource.startsWith('blob:')
+      || !normalizedWidth
+      || !normalizedHeight
+      || Math.max(normalizedWidth, normalizedHeight) > 1800
+    ) {
       throw new Error(`Current playable-card renderer failed smoke validation: ${JSON.stringify(playable)}.`);
     }
     await playablePage.locator('.gauntlet-card').screenshot({ path: join(OUTPUT, 'playable-card-review-smoke.png'), omitBackground: true });
