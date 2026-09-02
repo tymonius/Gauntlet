@@ -6,7 +6,7 @@ import type {
   GameState,
   PlayerID,
   RevolutionBattleExchangeState,
-} from '../types';
+} from '../types/v06';
 import type { ResolveNeutralChoiceAction } from './actions';
 import { drawFromDeck } from './draw';
 import { GameActionError } from './reducer';

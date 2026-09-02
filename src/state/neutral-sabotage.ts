@@ -1,4 +1,4 @@
-import type { CardID, GameEvent, GameState, PlayerID } from '../types';
+import type { CardID, GameEvent, GameState, PlayerID } from '../types/v06';
 import type { PlayActionCardAction } from './actions';
 import { faceUpAssetCopies, reconcileFaceDownAssets } from './asset-facing';
 import { GameActionError } from './reducer';

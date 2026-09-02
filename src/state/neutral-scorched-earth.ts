@@ -6,7 +6,7 @@ import type {
   GameState,
   PlayerID,
   ScorchedEarthAssetQueueEntry,
-} from '../types';
+} from '../types/v06';
 import type { ResolveNeutralChoiceAction } from './actions';
 import { activeBankedAssetCopies, bankedAssetUseAllowed } from './banked-assets';
 import { lossOrRetreatBenefitsSuppressed } from './inquisition-no-martyrs';

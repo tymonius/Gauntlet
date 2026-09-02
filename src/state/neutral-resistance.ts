@@ -6,7 +6,7 @@ import type {
   GameState,
   PlayerID,
   ResistanceBattleCleanupEntry,
-} from '../types';
+} from '../types/v06';
 import type { ResolveNeutralChoiceAction } from './actions';
 import { reconcileFaceDownAssets } from './asset-facing';
 import { activeBankedAssetCopies } from './banked-assets';

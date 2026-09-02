@@ -5,7 +5,7 @@ import type {
   PlayerID,
   ResolvedBattleModifier,
   SpaceID,
-} from '../types';
+} from '../types/v06';
 import { GameActionError } from './reducer';
 
 export const FORCED_MARCH = 'neutral-forced-march';

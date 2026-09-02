@@ -5,7 +5,7 @@ import type {
   GameState,
   PlayerID,
   SequestrationActionState,
-} from '../types';
+} from '../types/v06';
 import type { ResolveNeutralChoiceAction } from './actions';
 import { GameActionError } from './reducer';
 

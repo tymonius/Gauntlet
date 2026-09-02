@@ -7,7 +7,7 @@ import type {
   PlayerID,
   ScoutingReportActionMode,
   ScoutingReportBattleTargetOption,
-} from '../types';
+} from '../types/v06';
 import type { PlayActionCardAction, ResolveNeutralChoiceAction } from './actions';
 import {
   counterintelligenceBlocksFaceDownBattleCardInspection,

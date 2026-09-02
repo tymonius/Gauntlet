@@ -5,7 +5,7 @@ import type {
   GameEvent,
   GameState,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import type { ResolveBattleAction, ResolveNeutralChoiceAction } from './actions';
 import { activeBankedAssetCopies } from './banked-assets';
 import { lossOrRetreatBenefitsSuppressed } from './inquisition-no-martyrs';

@@ -3,7 +3,7 @@ import type {
   GameState,
   PlayerID,
   SpaceID,
-} from '../types';
+} from '../types/v06';
 import { GameActionError } from './reducer';
 
 export const INVASION = 'neutral-invasion';

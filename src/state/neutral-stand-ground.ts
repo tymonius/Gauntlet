@@ -6,7 +6,7 @@ import type {
   GameState,
   PendingMilitaryChoice,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import type {
   ResolveBattleAction,
   ResolveMilitaryChoiceAction,

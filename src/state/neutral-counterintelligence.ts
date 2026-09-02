@@ -4,7 +4,7 @@ import type {
   GameEvent,
   GameState,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import { bankedAssetCardUseAllowed } from './intelligence-subversion-battle';
 
 export const COUNTERINTELLIGENCE = 'neutral-counterintelligence';

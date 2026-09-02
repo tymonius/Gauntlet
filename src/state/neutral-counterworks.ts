@@ -8,7 +8,7 @@ import type {
   PlayerID,
   SpaceID,
   TerritoryOverlayState,
-} from '../types';
+} from '../types/v06';
 import type { ResolveBattleRevealAction, ResolveNeutralChoiceAction } from './actions';
 import { reconcileFaceDownAssets } from './asset-facing';
 import { faceUpAssetCopies } from './asset-facing';

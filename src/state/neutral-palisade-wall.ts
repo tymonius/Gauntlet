@@ -4,7 +4,7 @@ import type {
   GameEvent,
   GameState,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import type { ResolveNeutralChoiceAction } from './actions';
 import { bankedAssetCardUseAllowed, bankedAssetUseAllowed } from './banked-assets';
 import { counterintelligenceAssetActive } from './neutral-counterintelligence';

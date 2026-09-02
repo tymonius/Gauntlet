@@ -345,6 +345,66 @@ describe('digital engine boundary', () => {
     }
   });
 
+  it('pins legacy Neutral runtime modules to the v0.6 type API', () => {
+    const neutralSources = [
+      'src/state/neutral-advance-guard.ts',
+      'src/state/neutral-arcane-knowledge.ts',
+      'src/state/neutral-armistice.ts',
+      'src/state/neutral-assimilation.ts',
+      'src/state/neutral-bombardment.ts',
+      'src/state/neutral-capital-punishment.ts',
+      'src/state/neutral-conscription.ts',
+      'src/state/neutral-consolidation.ts',
+      'src/state/neutral-contingency-plan.ts',
+      'src/state/neutral-contraband.ts',
+      'src/state/neutral-counterintelligence.ts',
+      'src/state/neutral-counterworks.ts',
+      'src/state/neutral-court-martial.ts',
+      'src/state/neutral-decoys-battle.ts',
+      'src/state/neutral-decoys.ts',
+      'src/state/neutral-disruption.ts',
+      'src/state/neutral-entrenchment.ts',
+      'src/state/neutral-fealty.ts',
+      'src/state/neutral-foothold.ts',
+      'src/state/neutral-forced-march.ts',
+      'src/state/neutral-fortifications.ts',
+      'src/state/neutral-illegal-occupation.ts',
+      'src/state/neutral-insurrection.ts',
+      'src/state/neutral-invasion.ts',
+      'src/state/neutral-liberation.ts',
+      'src/state/neutral-new-recruits.ts',
+      'src/state/neutral-palisade-wall.ts',
+      'src/state/neutral-pathfinders.ts',
+      'src/state/neutral-protracted-siege.ts',
+      'src/state/neutral-rallying-cry.ts',
+      'src/state/neutral-redemption.ts',
+      'src/state/neutral-reinforcements.ts',
+      'src/state/neutral-requisition.ts',
+      'src/state/neutral-reserves.ts',
+      'src/state/neutral-resistance.ts',
+      'src/state/neutral-resourcefulness.ts',
+      'src/state/neutral-revolution.ts',
+      'src/state/neutral-rousing-speech.ts',
+      'src/state/neutral-sabotage.ts',
+      'src/state/neutral-salvage.ts',
+      'src/state/neutral-scorched-earth.ts',
+      'src/state/neutral-scouting-report.ts',
+      'src/state/neutral-sedition.ts',
+      'src/state/neutral-sequestration.ts',
+      'src/state/neutral-stand-ground.ts',
+      'src/state/neutral-strategic-withdrawal.ts',
+      'src/state/neutral-supplies.ts',
+      'src/state/neutral-tactical-planning.ts',
+      'src/state/neutral-valor.ts',
+    ];
+
+    for (const path of neutralSources) {
+      const source = readFileSync(path, 'utf8');
+      expect(source).toContain("from '../types/v06'");
+      expect(source).not.toMatch(/from ['"]\.\.\/types['"]/);
+    }
+  });
+
   it('keeps the promoted v0.7.0 implementation isolated from legacy architecture', () => {
     const promotedSources = readdirSync('src/v070')
       .filter((name) => name.endsWith('.ts') && !name.endsWith('.test.ts'));
