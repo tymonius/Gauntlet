@@ -77,7 +77,7 @@
   outline-offset: 3px;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   .site-header {
     flex-wrap: wrap;
     padding: 12px 0 14px;
