@@ -127,12 +127,23 @@ function validateCanonicalFooter(html, route) {
 
 function validateModernPublicPage(html, route) {
   const expectedCanonical = new URL(route, 'https://gauntlet.run').href;
+  assert(/<html\b[^>]*lang=(['"])en\1/i.test(html), `${route} is missing the document language.`);
+  assert(/<title>[^<]+<\/title>/i.test(html), `${route} is missing a page title.`);
   assert(/<meta\s+name=(['"])description\1\s+content=(['"])[^'"]+\2/i.test(html), `${route} is missing a meta description.`);
+  assert(!/user-scalable\s*=\s*no|maximum-scale\s*=\s*1/i.test(html), `${route} disables browser zoom.`);
   assert(html.includes(`rel="canonical" href="${expectedCanonical}"`), `${route} canonical URL drifted from ${expectedCanonical}.`);
+  assert(html.includes(`property="og:url" content="${expectedCanonical}"`), `${route} Open Graph URL drifted from the canonical URL.`);
+  assert(html.includes('property="og:site_name" content="Gauntlet"'), `${route} is missing the Open Graph site name.`);
   assert(html.includes('property="og:title"'), `${route} is missing Open Graph title metadata.`);
   assert(html.includes('property="og:description"'), `${route} is missing Open Graph description metadata.`);
   assert(html.includes('property="og:image"'), `${route} is missing Open Graph image metadata.`);
   assert(html.includes('name="twitter:card" content="summary_large_image"'), `${route} is missing Twitter card metadata.`);
+  assert(html.includes('name="twitter:title"'), `${route} is missing Twitter title metadata.`);
+  assert(html.includes('name="twitter:description"'), `${route} is missing Twitter description metadata.`);
+  assert(html.includes('name="twitter:image"'), `${route} is missing Twitter image metadata.`);
+  assert(html.includes('rel="icon"'), `${route} is missing favicon metadata.`);
+  assert(html.includes('rel="apple-touch-icon"'), `${route} is missing Apple touch icon metadata.`);
+  assert(html.includes('name="theme-color"'), `${route} is missing theme-color metadata.`);
   assert(html.includes('/site-polish.css'), `${route} does not load shared public-site polish styles.`);
   const skipTarget = html.match(/class=(['"])skip-link\1[^>]*href=(['"])#([^'"]+)\2/i)?.[3];
   assert(skipTarget, `${route} is missing the skip-to-content link.`);
