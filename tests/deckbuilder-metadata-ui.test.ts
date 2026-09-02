@@ -8,7 +8,7 @@ const css = readFileSync("deckbuilder/metadata-ui.css", "utf8");
 describe("Deckbuilder metadata hierarchy", () => {
   it("loads the shared metadata cleanup alongside the rendered card preview", () => {
     expect(loader).toContain('metadata-ui.css?v=20260819-2');
-    expect(loader).toContain('metadata-ui.js?v=20260819-2');
+    expect(loader).toContain('metadata-ui.js?v=20260902-1');
   });
 
   it("keeps card value circular while converting other compact metadata to boxes", () => {

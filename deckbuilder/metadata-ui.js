@@ -1,8 +1,9 @@
 (() => {
   const deckbuilder = window.GAUNTLET_DECKBUILDER;
   if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
-  const { state } = deckbuilder;
   const escapeHtml = value => deckbuilder.escapeHtml(value);
+  const deckState = () => deckbuilder.deckState();
+  const cardCatalog = () => deckbuilder.cardCatalog();
 
   deckbuilder.registerRenderHook(refineAll);
 
@@ -66,10 +67,10 @@
 
       const name = title?.querySelector("strong")?.textContent.trim();
       if (!name) return;
-      const card = state.cards.find(candidate => candidate.name === name);
+      const card = cardCatalog().find(candidate => candidate.name === name);
       if (!card) return;
 
-      const quantity = Number(state.deck?.[card.id] || 0);
+      const quantity = Number(deckState().deck?.[card.id] || 0);
       const value = Number(card.cost || 0);
       const total = quantity * value;
       const stats = row.querySelector(".deck-stats");

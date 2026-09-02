@@ -230,6 +230,20 @@ describe("Deckbuilder extension architecture", () => {
     expect(components).toContain("deckbuilder.getLeader()");
   });
 
+  it("keeps metadata and starter handoff behind the core Deck state API", () => {
+    const metadata = read("deckbuilder/metadata-ui.js");
+    const handoff = read("deckbuilder/starter-handoff.js");
+
+    expect(metadata).not.toMatch(/\bstate\./);
+    expect(metadata).toContain("deckbuilder.deckState()");
+    expect(metadata).toContain("deckbuilder.cardCatalog()");
+
+    expect(handoff).not.toMatch(/\bstate\./);
+    expect(handoff).toContain("deckbuilder.replaceDeckState({");
+    expect(handoff).toContain("factionId: faction.id");
+    expect(handoff).toContain("leaderId: leader.id");
+  });
+
   it("drives print readiness through render lifecycle hooks rather than polling", () => {
     const print = read("deckbuilder/print.js");
     const bulk = read("deckbuilder/print-all-starters.js");
