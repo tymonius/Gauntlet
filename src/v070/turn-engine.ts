@@ -95,6 +95,7 @@ import {
   applyV070FinancierAfterCapture,
   buyV070Deed,
   buyV070DeedWithCollateral,
+  buyV070DeedWithLineOfCredit,
   clampAllV070CapitalToLimits,
   consumeV070FinancialCapacityAction,
   gainV070Capital,
@@ -106,6 +107,7 @@ import {
   v070DeedCost,
   v070DeedOwner,
   v070DeedsOwned,
+  v070ExecutiveHostileTakeoverTerritory,
   v070FinancialCapacityAvailable,
   v070FinancierFeatureActionSpentThisTurn,
 } from './financiers';
@@ -182,6 +184,11 @@ export type V070TurnAction =
       type: 'financier_buy_deed';
       playerId: PlayerId;
       territoryPosition: number;
+      collateralInstanceId?: string;
+    }
+  | {
+      type: 'financier_hostile_takeover';
+      playerId: PlayerId;
     }
   | {
       type: 'financier_play_market';
@@ -788,7 +795,15 @@ export function reduceV070TurnAction(
       financierPlaceTreasury(next, action.playerId, action.cardInstanceId);
       break;
     case 'financier_buy_deed':
-      financierBuyDeed(next, action.playerId, action.territoryPosition);
+      financierBuyDeed(
+        next,
+        action.playerId,
+        action.territoryPosition,
+        action.collateralInstanceId,
+      );
+      break;
+    case 'financier_hostile_takeover':
+      financierHostileTakeover(next, action.playerId);
       break;
     case 'financier_play_market':
       financierPlayMarket(
@@ -1542,6 +1557,7 @@ function financierBuyDeed(
   state: V070GameState,
   playerId: PlayerId,
   territoryPosition: number,
+  collateralInstanceId?: string,
 ): void {
   requireFinancierDenouement(state, playerId);
   const territory = territoryAt(state, territoryPosition);
@@ -1557,6 +1573,31 @@ function financierBuyDeed(
     territory.territoryInstanceId,
   );
   const capital = state.players[playerId].financiers!.capital;
+
+  if (collateralInstanceId) {
+    const cardId = state.cardInstances[collateralInstanceId]?.cardId;
+    const card = cardId ? v070CanonicalContent.cardsById.get(cardId) : undefined;
+    if (!card) {
+      throw new V070GameActionError('Line of Credit requires a known collateral card.');
+    }
+    const collateralContribution = Math.min(card.cost, Math.floor(cost / 2));
+    const capitalRequired = Math.max(0, cost - collateralContribution);
+    if (capital < capitalRequired) {
+      throw new V070GameActionError(
+        `That Deed requires ${capitalRequired} Capital after Line of Credit but only ${capital} is available.`,
+      );
+    }
+
+    spendTurnAction(state, playerId, 'Buy / Buy Out Deed');
+    buyV070DeedWithLineOfCredit(
+      state,
+      playerId,
+      territory.territoryInstanceId,
+      collateralInstanceId,
+    );
+    return;
+  }
+
   if (capital < cost) {
     throw new V070GameActionError(
       `That Deed costs ${cost} Capital but only ${capital} is available.`,
@@ -1570,6 +1611,66 @@ function financierBuyDeed(
     territory.territoryInstanceId,
     'Financier Buy / Buy Out Deed Faction Feature',
   );
+}
+
+
+function financierHostileTakeover(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  requireFinancierDenouement(state, playerId);
+  const player = state.players[playerId];
+  if (player.leaderId !== 'executive') {
+    throw new V070GameActionError(
+      'Hostile Takeover requires the Executive Leader.',
+    );
+  }
+
+  const territory = v070ExecutiveHostileTakeoverTerritory(state, playerId);
+  if (!territory) {
+    throw new V070GameActionError(
+      'Hostile Takeover requires a qualifying attacker win this turn while still occupying that enemy Territory.',
+    );
+  }
+
+  const cost = v070DeedCost(state, playerId, territory.territoryInstanceId);
+  const capital = player.financiers!.capital;
+  if (capital < cost) {
+    throw new V070GameActionError(
+      `That Deed costs ${cost} Capital but only ${capital} is available.`,
+    );
+  }
+
+  spendTurnAction(state, playerId);
+  buyV070Deed(
+    state,
+    playerId,
+    territory.territoryInstanceId,
+    'Executive Hostile Takeover',
+  );
+
+  player.financiers!.hostileTakeoverTurn = null;
+  player.financiers!.hostileTakeoverTerritoryInstanceId = null;
+
+  if (state.stage === 'ended') return;
+
+  const advance = advanceV070FrontLine(
+    state,
+    playerId,
+    1,
+    'Executive Hostile Takeover',
+  );
+  if (advance.reachedOpponentEnd) {
+    state.stage = 'ended';
+    state.winner = playerId;
+    state.turnState = null;
+    appendV070Event(state, {
+      type: 'game_won',
+      actor: playerId,
+      visibility: 'public',
+      payload: { route: 'final_territory_capture' },
+    });
+  }
 }
 
 function financierPlayMarket(
