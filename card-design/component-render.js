@@ -17,10 +17,14 @@
 
 
   async function loadCanonicalArtDirection() {
-    const { loadCurrentGame } = await import("/game-data/current-game.mjs");
+    const [{ loadCurrentGame }, { mergeArtDirectionDrafts }] = await Promise.all([
+      import("/game-data/current-game.mjs"),
+      import("/card-design/art-direction-drafts.mjs"),
+    ]);
     const currentGame = await loadCurrentGame();
-    window.GAUNTLET_ART_DIRECTION = currentGame.artDirection || {};
+    window.GAUNTLET_ART_DIRECTION = mergeArtDirectionDrafts(currentGame.artDirection || {});
     document.body.dataset.artDirectionAuthority = currentGame.authorityUrl || "/game-data/current-game.json";
+    document.body.dataset.artDirectionDraftsApplied = "true";
   }
 
   function applyRenderViewport() {
