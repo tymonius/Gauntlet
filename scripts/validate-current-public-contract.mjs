@@ -200,7 +200,7 @@ assert.equal(bookletPdf.getPageCount(), bookletEntry.pages, 'Published booklet p
 const routeValues = Object.values(manifest.public_routes ?? {}).filter((route) => typeof route === 'string');
 const releaseLandingRoute = `/${currentVersion}/`;
 const changelogRoute = '/changelog/';
-const siteInfoRoutes = ['/about/', '/faq/'];
+const siteInfoRoutes = ['/about/', '/faq/', '/privacy/'];
 const withdrawnVersionRoutes = Object.entries(lifecycle.releases ?? {})
   .filter(([, release]) => release?.status === 'withdrawn')
   .flatMap(([version]) => [`/${version}/`, `/releases/${version}/`]);
