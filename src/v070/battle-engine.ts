@@ -14,7 +14,10 @@ import {
   appendV070Event,
   type V070GameState,
 } from './engine';
-import { drawV070Cards } from './turn-engine';
+import {
+  completeV070RelentlessPursuitTransition,
+  drawV070Cards,
+} from './turn-engine';
 import { resolveV070SupportedRevealEffects } from './battle-effects';
 import {
   activeV070OverlayAtBattleOnset,
@@ -2426,6 +2429,17 @@ function finalizeCompletedAftermath(state: V070GameState): void {
     );
   }
   if (state.pendingSanctionChoices.length > 0) return;
+
+  if (state.pendingRelentlessPursuit
+    && state.activePlayer === state.pendingRelentlessPursuit.playerId
+    && state.turnState.phase === 'capture'
+    && !state.turnState.movementSequenceOpen) {
+    completeV070RelentlessPursuitTransition(
+      state,
+      state.pendingRelentlessPursuit.playerId,
+    );
+    return;
+  }
 
   if (state.turnState.phase === 'movement') {
     state.turnState = advanceV070TurnPhase(state.turnState);
