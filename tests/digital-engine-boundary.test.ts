@@ -105,6 +105,16 @@ describe('digital engine boundary', () => {
     }
   });
 
+  it('keeps every legacy runtime effect module off the generic type barrel', () => {
+    const runtimeEffectSources = readdirSync('src/effects')
+      .filter((name) => name.endsWith('.ts') && !name.endsWith('.test.ts'));
+
+    for (const name of runtimeEffectSources) {
+      const source = readFileSync(`src/effects/${name}`, 'utf8');
+      expect(source).not.toMatch(/from ['"]\.\.\/types['"]/);
+    }
+  });
+
   it('keeps the generic card barrel as a deprecated v0.6 compatibility shim only', () => {
     const cardIndex = readFileSync('src/cards/index.ts', 'utf8');
     expect(cardIndex).toContain('@deprecated');
