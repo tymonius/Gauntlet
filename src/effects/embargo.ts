@@ -3,7 +3,7 @@ import type {
   BattlePlayedCard,
   CardID,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import type { BattleCardTarget, EffectContext } from './types';
 
 export const BATTLE_CANCELLATION_CARD_IDS = [

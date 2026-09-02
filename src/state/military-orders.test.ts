@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { BattleState } from '../types';
+import type { BattleState } from '../types/v06';
 import { applyGameAction } from './apply';
 import { initializeGame } from './initialize';
 import { legalLeaderAbilitiesFor, useLeaderAbility } from './leader-abilities';

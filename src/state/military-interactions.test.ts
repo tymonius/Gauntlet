@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { initializeGame } from './initialize';
 import { resolveMilitaryChoice } from './military-interactions';
 import { createValidSetup } from './test-helpers';
-import type { GameState, PendingMilitaryChoice, RecentBattleResult } from '../types';
+import type { GameState, PendingMilitaryChoice, RecentBattleResult } from '../types/v06';
 
 function game(): GameState {
   const state = initializeGame(createValidSetup({
