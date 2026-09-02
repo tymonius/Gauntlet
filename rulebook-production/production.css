@@ -7,12 +7,30 @@
 #booklet-root{display:none}
 .production-document .page{--page-accent:var(--active-accent)}
 .production-document .page-inner{gap:0}
-.production-document .page[data-faction="Military"]{--page-accent:#8f1f25}
-.production-document .page[data-faction="Diplomats"]{--page-accent:#244b8f}
-.production-document .page[data-faction="Financiers"]{--page-accent:#276744}
-.production-document .page[data-faction="Intelligence"]{--page-accent:#34373b}
-.production-document .page[data-faction="Mystics"]{--page-accent:#603d78}
-.production-document .page[data-faction="Inquisition"]{--page-accent:#9a6e21}
+.production-document .page[data-faction="Military"]{--page-accent:#8f1f25;--faction-symbol:url("../images/faction-symbols/military.svg")}
+.production-document .page[data-faction="Diplomats"]{--page-accent:#244b8f;--faction-symbol:url("../images/faction-symbols/diplomats.svg")}
+.production-document .page[data-faction="Financiers"]{--page-accent:#276744;--faction-symbol:url("../images/faction-symbols/financiers.svg")}
+.production-document .page[data-faction="Intelligence"]{--page-accent:#34373b;--faction-symbol:url("../images/faction-symbols/intelligence.svg")}
+.production-document .page[data-faction="Mystics"]{--page-accent:#603d78;--faction-symbol:url("../images/faction-symbols/mystics.svg")}
+.production-document .page[data-faction="Inquisition"]{--page-accent:#9a6e21;--faction-symbol:url("../images/faction-symbols/inquisition.svg")}
+.production-document .page[data-faction]::before{
+  content:"";
+  position:absolute;
+  bottom:-.48in;
+  width:2.55in;
+  aspect-ratio:1;
+  z-index:0;
+  background:var(--page-accent);
+  opacity:.05;
+  -webkit-mask:var(--faction-symbol) center / contain no-repeat;
+  mask:var(--faction-symbol) center / contain no-repeat;
+  pointer-events:none;
+}
+.production-document .page[data-faction].right::before{right:-.44in}
+.production-document .page[data-faction].left::before{left:-.44in}
+.production-document .page[data-faction] .page-inner{position:relative;z-index:1}
+.production-document .page[data-faction] .footer-rule,
+.production-document .page[data-faction] .folio{z-index:1}
 .production-document .page[data-faction] .chapter-number,
 .production-document .page[data-faction] .faction-name,
 .production-document .page[data-faction] .leader-name,
