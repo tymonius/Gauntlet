@@ -175,20 +175,16 @@ async function main() {
       parchmentLoaded: card.dataset.parchmentLoaded,
       artworkSource: card.querySelector('.card-art img')?.src || '',
       normalizedArtwork: document.body.dataset.printArtworkNormalized,
-      normalizedPixels: document.body.dataset.printArtworkPixels,
-      sourcePixels: document.body.dataset.printArtworkSourcePixels,
+      normalizedArtworkSource: document.body.dataset.printArtworkSource,
     }));
-    const [normalizedWidth, normalizedHeight] = String(playable.normalizedPixels || '').split('x').map(Number);
     if (
       playable.title !== 'Rallying Cry'
       || playable.fitWarning
       || playable.titleFit !== 'true'
       || playable.parchmentLoaded !== 'true'
       || playable.normalizedArtwork !== 'true'
-      || !playable.artworkSource.startsWith('blob:')
-      || !normalizedWidth
-      || !normalizedHeight
-      || Math.max(normalizedWidth, normalizedHeight) > 1800
+      || !playable.artworkSource.includes('/images/print-artwork/cards/neutral-rallying-cry.jpg')
+      || playable.normalizedArtworkSource !== '/images/print-artwork/cards/neutral-rallying-cry.jpg'
     ) {
       throw new Error(`Current playable-card renderer failed smoke validation: ${JSON.stringify(playable)}.`);
     }
