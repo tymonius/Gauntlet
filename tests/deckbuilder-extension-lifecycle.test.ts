@@ -51,6 +51,15 @@ describe("Deckbuilder extension architecture", () => {
     expect(read("deckbuilder/print.js")).toContain('deckbuilder.registerFeature("printDeck"');
   });
 
+  it("does not expose shared mutable core state to extensions", () => {
+    expect(app).not.toContain("\n  state,\n  sources: SOURCES,");
+
+    for (const { path, source } of extensions) {
+      expect(source, `${path} reads the removed public state property`).not.toContain("deckbuilder.state");
+      expect(source, `${path} destructures removed public state`).not.toMatch(/const\s*\{\s*state(?:\s*,|\s*\})/);
+    }
+  });
+
   it("does not let extensions replace core functions by assignment", () => {
     const replacement = /^\s*(renderAll|validateDeck|validateAndRender|currentDeckData|applyDeckData|changeFaction|copyDeckList|renderCardPreview)\s*=/m;
     for (const { path, source } of extensions) {
