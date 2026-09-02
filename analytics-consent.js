@@ -13,6 +13,7 @@ window.gtag("consent", "default", {
 });
 
 let analyticsLoaded = false;
+window[`ga-disable-${MEASUREMENT_ID}`] = true;
 
 function readChoice() {
   try { return localStorage.getItem(STORAGE_KEY); } catch { return null; }
@@ -25,6 +26,7 @@ function writeChoice(value) {
 function loadAnalytics() {
   if (analyticsLoaded) return;
   analyticsLoaded = true;
+  window[`ga-disable-${MEASUREMENT_ID}`] = false;
   window.gtag("consent", "update", {
     analytics_storage: "granted",
     ad_storage: "denied",
@@ -52,6 +54,7 @@ function applyChoice(choice) {
   if (choice === "accepted") {
     loadAnalytics();
   } else if (choice === "rejected") {
+    window[`ga-disable-${MEASUREMENT_ID}`] = true;
     window.gtag("consent", "update", {
       analytics_storage: "denied",
       ad_storage: "denied",
@@ -85,6 +88,7 @@ function showBanner() {
 }
 
 function openPreferences() {
+  window[`ga-disable-${MEASUREMENT_ID}`] = true;
   writeChoice("");
   removeBanner();
   showBanner();
