@@ -45,6 +45,8 @@ jobs:
             /faq/index.html
             /privacy/index.html
             /contact/**/index.html
+            /accessibility/index.html
+            /press/index.html
             /404.html
             /robots.txt
             /sitemap.xml
@@ -58,6 +60,8 @@ jobs:
             /rules-arbiter/index.html
             /playtest/**/index.html
             /site-footer.css
+            /site-polish.css
+            /analytics-consent.js
             /design-tokens.css
             /images/faction-symbols/*.svg
             /releases/*/Gauntlet_*_Manifest.json

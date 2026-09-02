@@ -16,27 +16,25 @@
   <script src="/analytics-consent.js?v=20260902-1" defer></script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Contact Gauntlet for general, publishing, press, business, or website questions." />
-  <link rel="canonical" href="https://gauntlet.run/contact/" />
+  <meta name="description" content="Accessibility practices, current improvements, known limitations, and how to report an accessibility problem on gauntlet.run." />
+  <link rel="canonical" href="https://gauntlet.run/accessibility/" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Gauntlet" />
   <meta property="og:locale" content="en_US" />
-  <meta property="og:url" content="https://gauntlet.run/contact/" />
-  <meta property="og:title" content="Contact — Gauntlet" />
-  <meta property="og:description" content="Contact Gauntlet for general, publishing, press, business, or website questions." />
+  <meta property="og:url" content="https://gauntlet.run/accessibility/" />
+  <meta property="og:title" content="Accessibility — Gauntlet" />
+  <meta property="og:description" content="Accessibility practices, current improvements, known limitations, and how to report an accessibility problem on gauntlet.run." />
   <meta property="og:image" content="https://gauntlet.run/images/social/gauntlet-og-1200x630-v2.jpg" />
   <meta property="og:image:alt" content="The Spirit Walker, mounted General, and Grand Inquisitor before a fortified Gauntlet at sunset." />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Contact — Gauntlet" />
-  <meta name="twitter:description" content="Contact Gauntlet for general, publishing, press, business, or website questions." />
+  <meta name="twitter:title" content="Accessibility — Gauntlet" />
+  <meta name="twitter:description" content="Accessibility practices, current improvements, known limitations, and how to report an accessibility problem on gauntlet.run." />
   <meta name="twitter:image" content="https://gauntlet.run/images/social/gauntlet-og-1200x630-v2.jpg" />
   <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
   <meta name="theme-color" content="#8f1f25" />
-  <title>Contact — Gauntlet</title>
-  <link rel="preconnect" href="https://use.typekit.net" />
-  <link rel="preconnect" href="https://p.typekit.net" crossorigin />
+  <title>Accessibility — Gauntlet</title>
   <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
   <link rel="stylesheet" href="/site.css?v=20260902-2" />
   <link rel="stylesheet" href="/site-info.css?v=20260902-2" />
@@ -46,10 +44,10 @@
 <body>
   <a class="skip-link" href="#main-content">Skip to main content</a>
   <header class="site-header">
-    <a class="brand" href="/" aria-label="Gauntlet home — current playtest edition v0.7.1">
+    <a class="brand" href="/" aria-label="Gauntlet home">
       <span class="brand-mark" aria-hidden="true">G</span>
       <span>Gauntlet</span>
-          <span class="site-edition-badge" aria-label="Current playtest edition v0.7.1">v0.7.1</span>
+      <span class="site-edition-badge" aria-label="Current playtest edition v0.7.1">v0.7.1</span>
     </a>
     <nav aria-label="Primary navigation">
       <a href="/start/">Start</a>
@@ -63,61 +61,34 @@
   </header>
   <main id="main-content" tabindex="-1" class="info-main">
     <section class="info-hero">
-      <p class="eyebrow">Contact</p>
-      <h1>Get in touch.</h1>
-      <p class="lede">For general questions, publishing or business inquiries, press and media, or website issues, send a message here.</p>
+      <p class="eyebrow">Site information</p>
+      <h1>Accessibility.</h1>
+      <p class="lede">Gauntlet is intended to be usable across keyboards, touch devices, screen magnification, and assistive technology. Accessibility is treated as part of the public-site design rather than a separate mode.</p>
     </section>
-
     <section class="info-section">
       <div class="info-section__grid">
-        <div>
-          <h2>Message</h2>
-          <p class="contact-route-note">Rules questions are better handled by the <a href="/rules-arbiter/">Rules Arbiter</a>. Structured playtest feedback belongs in the <a href="/playtest/">playtest tools</a>.</p>
+        <h2>Current work</h2>
+        <div class="info-copy">
+          <p>The current public-site pass covers keyboard access, visible focus indicators, a skip-to-content link, semantic navigation and main landmarks, labeled form controls, descriptive alternatives for meaningful images, browser zoom, reduced-motion preferences, and access to the primary navigation on smaller screens.</p>
+          <p>Core public pages also share the same header and footer contracts so accessibility fixes can be applied consistently instead of page by page.</p>
         </div>
-        <form class="contact-form" action="https://formsubmit.co/tymon.scott+gauntlet@gmail.com" method="post">
-          <input type="hidden" name="_subject" value="Gauntlet website contact" />
-          <input type="hidden" name="_next" value="https://gauntlet.run/contact/thanks/" />
-          <input type="hidden" name="_template" value="table" />
-          <input type="hidden" name="_url" value="https://gauntlet.run/contact/" />
-          <label class="contact-honey" aria-hidden="true">
-            Leave this field empty
-            <input type="text" name="_honey" tabindex="-1" autocomplete="off" />
-          </label>
-
-          <div class="contact-form__row">
-            <label>
-              Name
-              <input type="text" name="name" autocomplete="name" required />
-            </label>
-            <label>
-              Email
-              <input type="email" name="email" autocomplete="email" inputmode="email" required />
-            </label>
-          </div>
-
-          <label>
-            Topic
-            <select name="topic" required>
-              <option value="" selected disabled>Select a topic</option>
-              <option>General</option>
-              <option>Business / Publishing</option>
-              <option>Press / Media</option>
-              <option>Website issue</option>
-              <option>Accessibility</option>
-              <option>Other</option>
-            </select>
-          </label>
-
-          <label>
-            Message
-            <textarea name="message" rows="9" required></textarea>
-          </label>
-
-          <div class="contact-form__submit">
-            <button class="button primary" type="submit">Send message</button>
-            <p>Submitting this form sends the information above through FormSubmit for delivery by email. See <a href="/privacy/">Privacy</a>.</p>
-          </div>
-        </form>
+      </div>
+    </section>
+    <section class="info-section">
+      <div class="info-section__grid">
+        <h2>Known limitations</h2>
+        <div class="info-copy">
+          <p>Gauntlet contains dense card faces, diagrams, and interactive game tools whose full visual information is not always reproduced in an equivalent nonvisual format. Tabletop Simulator itself also introduces accessibility limitations outside gauntlet.run.</p>
+          <p>These are treated as ongoing product limitations rather than claims of full WCAG conformance.</p>
+        </div>
+      </div>
+    </section>
+    <section class="info-section">
+      <div class="info-section__grid">
+        <h2>Report a problem</h2>
+        <div class="info-copy">
+          <p>Accessibility problems can be reported through <a href="/contact/">Contact</a>. Include the page, what you were trying to do, and the browser or assistive technology involved when possible.</p>
+        </div>
       </div>
     </section>
   </main>

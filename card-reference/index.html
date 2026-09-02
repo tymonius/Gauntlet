@@ -1,14 +1,19 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <meta name="gauntlet-analytics-id" content="G-8YYYZJGGPE" />
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-8YYYZJGGPE');
+    gtag("consent", "default", {
+      analytics_storage: "denied",
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+      wait_for_update: 500
+    });
   </script>
+  <script src="/analytics-consent.js?v=20260902-1" defer></script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
@@ -17,6 +22,18 @@
   <meta name="description" content="Search every Gauntlet v0.7.1 production card, faction component, and Territory, with complete production-rendered faces and artwork." />
   <title>Gauntlet v0.7.1 Card Reference</title>
   <link rel="canonical" href="https://gauntlet.run/card-reference/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Gauntlet" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:url" content="https://gauntlet.run/card-reference/" />
+  <meta property="og:title" content="Gauntlet v0.7.1 Card Reference" />
+  <meta property="og:description" content="Search every Gauntlet v0.7.1 production card, faction component, and Territory, with complete production-rendered faces and artwork." />
+  <meta property="og:image" content="https://gauntlet.run/images/social/gauntlet-og-1200x630-v2.jpg" />
+  <meta property="og:image:alt" content="The Spirit Walker, mounted General, and Grand Inquisitor before a fortified Gauntlet at sunset." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Gauntlet v0.7.1 Card Reference" />
+  <meta name="twitter:description" content="Search every Gauntlet v0.7.1 production card, faction component, and Territory, with complete production-rendered faces and artwork." />
+  <meta name="twitter:image" content="https://gauntlet.run/images/social/gauntlet-og-1200x630-v2.jpg" />
   <link rel="stylesheet" href="site.css" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="faction-colors.css" />
@@ -25,12 +42,15 @@
   <link rel="stylesheet" href="card-inspection.css" />
   <link rel="stylesheet" href="../arcane-trait-markers.css" />
   <link rel="stylesheet" href="/site-footer.css?v=20260902-2" />
+  <link rel="stylesheet" href="/site-polish.css?v=20260902-1" />
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <header class="site-header">
-    <a class="brand" href="../" aria-label="Gauntlet home">
+    <a class="brand" href="../" aria-label="Gauntlet home — current playtest edition v0.7.1">
       <span class="brand-mark" aria-hidden="true">G</span>
       <span>Gauntlet</span>
+          <span class="site-edition-badge" aria-label="Current playtest edition v0.7.1">v0.7.1</span>
     </a>
     <nav aria-label="Primary navigation">
       <a href="/start/">Start</a>
@@ -43,7 +63,7 @@
     </nav>
   </header>
 
-  <main class="reference-main">
+  <main id="main-content" tabindex="-1" class="reference-main">
     <section class="reference-hero" aria-labelledby="reference-title">
       <div>
         <p class="eyebrow">Quick rules lookup · v0.7.1 production</p>

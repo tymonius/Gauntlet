@@ -1,18 +1,35 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <meta name="gauntlet-analytics-id" content="G-8YYYZJGGPE" />
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-8YYYZJGGPE');
+    gtag("consent", "default", {
+      analytics_storage: "denied",
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+      wait_for_update: 500
+    });
   </script>
+  <script src="/analytics-consent.js?v=20260902-1" defer></script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="How gauntlet.run handles analytics, newsletter subscriptions, browser-stored data, playtest information, and rules feedback." />
   <link rel="canonical" href="https://gauntlet.run/privacy/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Gauntlet" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:url" content="https://gauntlet.run/privacy/" />
+  <meta property="og:title" content="Privacy — Gauntlet" />
+  <meta property="og:description" content="How gauntlet.run handles analytics, newsletter subscriptions, browser-stored data, playtest information, and rules feedback." />
+  <meta property="og:image" content="https://gauntlet.run/images/social/gauntlet-og-1200x630-v2.jpg" />
+  <meta property="og:image:alt" content="The Spirit Walker, mounted General, and Grand Inquisitor before a fortified Gauntlet at sunset." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Privacy — Gauntlet" />
+  <meta name="twitter:description" content="How gauntlet.run handles analytics, newsletter subscriptions, browser-stored data, playtest information, and rules feedback." />
+  <meta name="twitter:image" content="https://gauntlet.run/images/social/gauntlet-og-1200x630-v2.jpg" />
   <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
@@ -24,12 +41,15 @@
   <link rel="stylesheet" href="/site.css?v=20260902-2" />
   <link rel="stylesheet" href="/site-info.css?v=20260902-1" />
   <link rel="stylesheet" href="/site-footer.css?v=20260902-2" />
+  <link rel="stylesheet" href="/site-polish.css?v=20260902-1" />
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <header class="site-header">
-    <a class="brand" href="/" aria-label="Gauntlet home">
+    <a class="brand" href="/" aria-label="Gauntlet home — current playtest edition v0.7.1">
       <span class="brand-mark" aria-hidden="true">G</span>
       <span>Gauntlet</span>
+          <span class="site-edition-badge" aria-label="Current playtest edition v0.7.1">v0.7.1</span>
     </a>
     <nav aria-label="Primary navigation">
       <a href="/start/">Start</a>
@@ -41,7 +61,7 @@
       <a href="/rules-arbiter/">Rules Arbiter</a>
     </nav>
   </header>
-  <main class="info-main">
+  <main id="main-content" tabindex="-1" class="info-main">
     <section class="info-hero">
       <p class="eyebrow">Site information</p>
       <h1>Privacy.</h1>
@@ -52,7 +72,8 @@
       <div class="info-section__grid">
         <h2>Analytics</h2>
         <div class="info-copy">
-          <p>Some public pages use Google Analytics to understand general site usage, such as which pages are visited and how visitors reach the site. Analytics data is used to understand and improve the public website rather than to operate player accounts; gauntlet.run does not currently provide player accounts.</p>
+          <p>Current public pages offer optional Google Analytics to understand general site usage, such as which pages are visited and how visitors reach the site. Analytics is disabled by default and the Google Analytics tag is not loaded unless you choose to allow analytics. The preference is stored in your browser so it can be respected on later visits.</p>
+          <p><button class="button secondary" type="button" data-analytics-preferences>Change analytics preference</button></p>
         </div>
       </div>
     </section>
@@ -99,7 +120,7 @@
       <div class="info-section__grid">
         <h2>Changes</h2>
         <div class="info-copy">
-          <p>This notice may be revised as the site adds or changes services, including future email, account, commerce, or communication features.</p>
+          <p>This notice may be revised as the site adds or changes services, including future email, account, commerce, or communication features. Accessibility practices and known limitations are described on the <a href="/accessibility/">Accessibility page</a>.</p>
           <p>Last updated September 2, 2026.</p>
         </div>
       </div>

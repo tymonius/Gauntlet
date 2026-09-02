@@ -1,29 +1,49 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <meta name="gauntlet-analytics-id" content="G-8YYYZJGGPE" />
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-8YYYZJGGPE');
+    gtag("consent", "default", {
+      analytics_storage: "denied",
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+      wait_for_update: 500
+    });
   </script>
+  <script src="/analytics-consent.js?v=20260902-1" defer></script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#8f1f25" />
   <meta name="description" content="Ask gameplay questions against the current Gauntlet v0.7.1 rules." />
   <title>Gauntlet v0.7.1 Rules Arbiter</title>
   <link rel="canonical" href="https://gauntlet.run/rules-arbiter/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Gauntlet" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:url" content="https://gauntlet.run/rules-arbiter/" />
+  <meta property="og:title" content="Gauntlet v0.7.1 Rules Arbiter" />
+  <meta property="og:description" content="Ask gameplay questions against the current Gauntlet v0.7.1 rules." />
+  <meta property="og:image" content="https://gauntlet.run/images/social/gauntlet-og-1200x630-v2.jpg" />
+  <meta property="og:image:alt" content="The Spirit Walker, mounted General, and Grand Inquisitor before a fortified Gauntlet at sunset." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Gauntlet v0.7.1 Rules Arbiter" />
+  <meta name="twitter:description" content="Ask gameplay questions against the current Gauntlet v0.7.1 rules." />
+  <meta name="twitter:image" content="https://gauntlet.run/images/social/gauntlet-og-1200x630-v2.jpg" />
   <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="/site-footer.css?v=20260902-2" />
+  <link rel="stylesheet" href="/site-polish.css?v=20260902-1" />
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <header class="arbiter-header">
-    <a class="brand" href="../" aria-label="Gauntlet home"><span aria-hidden="true">G</span><strong>Gauntlet</strong></a>
+    <a class="brand" href="../" aria-label="Gauntlet home — current playtest edition v0.7.1"><span aria-hidden="true">G</span><strong>Gauntlet</strong>      <span class="site-edition-badge" aria-label="Current playtest edition v0.7.1">v0.7.1</span>
+    </a>
     <nav aria-label="Primary navigation">
       <a href="/start/">Start</a>
       <a href="/#game">Game</a>
@@ -35,7 +55,7 @@
     </nav>
   </header>
 
-  <main class="arbiter-shell">
+  <main id="main-content" tabindex="-1" class="arbiter-shell">
     <section class="arbiter-panel">
       <p class="eyebrow">Rules support · v0.7.1</p>
       <h1>Rules Arbiter</h1>

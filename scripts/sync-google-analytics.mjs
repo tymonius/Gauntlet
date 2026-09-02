@@ -9,6 +9,7 @@ const ANALYTICS_EXCLUDED_FILES = new Set([
   "playtest/session/index.html",
   "playtest/batch/index.html",
   "playtest/player-mat/index.html",
+  "playtest/sheet/index.html",
   "images/tools/mystics_rite_completed_P22_compositor_v2.html",
   "artifacts/reconstruction/clean-v0.6.3/browser-rulebook/index.html",
   "artifacts/reconstruction/clean-v0.6.3/rules-arbiter/index.html",
@@ -55,7 +56,7 @@ function normalizePackageRoot(value) {
 }
 
 // The current release package index is a redirect shim. Analytics belongs on
-// the canonical public landing page (/v0.6.3/), not on the package directory.
+// the canonical public release landing page, not on the package directory.
 try {
   const lifecycle = JSON.parse(await readFile(path.join(ROOT, "config/release-lifecycle.json"), "utf8"));
   const current = lifecycle.releases?.[lifecycle.current_release];
@@ -66,14 +67,19 @@ try {
   if (error?.code !== "ENOENT") throw error;
 }
 
-const GOOGLE_TAG = `  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=${MEASUREMENT_ID}"></script>
+const GOOGLE_TAG = `  <meta name="gauntlet-analytics-id" content="${MEASUREMENT_ID}" />
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', '${MEASUREMENT_ID}');
-  </script>`;
+    gtag("consent", "default", {
+      analytics_storage: "denied",
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+      wait_for_update: 500
+    });
+  </script>
+  <script src="/analytics-consent.js?v=20260902-1" defer></script>`;
 
 async function findHtmlFiles(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -106,11 +112,11 @@ for (const filePath of eligibleFiles) {
   }
 }
 if (CHECK_ONLY && missing.length) {
-  console.error(`Google Analytics tag ${MEASUREMENT_ID} is missing from:`);
+  console.error(`Analytics configuration ${MEASUREMENT_ID} is missing from:`);
   for (const file of missing) console.error(`- ${file}`);
   process.exitCode = 1;
 } else if (CHECK_ONLY) {
-  console.log(`Google Analytics tag ${MEASUREMENT_ID} is present in all ${eligibleFiles.length} eligible HTML files; ${ANALYTICS_EXCLUDED_FILES.size} private, redirect, development, or print-only pages are intentionally excluded.`);
+  console.log(`Analytics configuration ${MEASUREMENT_ID} is present in all ${eligibleFiles.length} eligible HTML files; ${ANALYTICS_EXCLUDED_FILES.size} private, redirect, development, or print-only pages are intentionally excluded.`);
 } else {
-  console.log(`Added Google Analytics tag ${MEASUREMENT_ID} to ${updated} HTML files.`);
+  console.log(`Added opt-in analytics configuration ${MEASUREMENT_ID} to ${updated} HTML files.`);
 }

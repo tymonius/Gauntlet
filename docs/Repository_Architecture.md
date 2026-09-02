@@ -109,6 +109,8 @@ The current top-level directory inventory is enforced by `scripts/validate-repos
 | `faq/` | Public project FAQ surface |
 | `privacy/` | Public privacy/data-handling notice |
 | `contact/` | Public contact form and submission confirmation surface |
+| `accessibility/` | Public accessibility practices and known-limitations surface |
+| `press/` | Public press/media information and reference-asset surface |
 
 ### Production tooling
 

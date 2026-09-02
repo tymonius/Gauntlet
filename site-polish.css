@@ -1,0 +1,116 @@
+.skip-link {
+  position: fixed;
+  left: 16px;
+  top: 12px;
+  z-index: 10000;
+  padding: 10px 14px;
+  border: 2px solid currentColor;
+  background: #fffaf0;
+  color: #5f1418;
+  font: 700 .9rem/1.2 Arial, Helvetica, sans-serif;
+  text-decoration: none;
+  transform: translateY(-180%);
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.site-edition-badge {
+  margin-left: 2px;
+  padding: 3px 7px 2px;
+  border: 1px solid rgba(101, 95, 86, .34);
+  border-radius: 999px;
+  color: var(--muted, #655f56);
+  font: 700 .65rem/1.2 var(--font-interface, Arial, Helvetica, sans-serif);
+  letter-spacing: .035em;
+  white-space: nowrap;
+}
+
+#main-content {
+  scroll-margin-top: 18px;
+}
+
+.analytics-consent {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 9999;
+  width: min(460px, calc(100% - 36px));
+  padding: 18px;
+  border: 1px solid rgba(49, 42, 32, .28);
+  background: #fffaf0;
+  color: #181614;
+  box-shadow: 0 20px 60px rgba(24, 22, 20, .22);
+  font-family: var(--font-interface, Arial, Helvetica, sans-serif);
+}
+.analytics-consent p {
+  margin: 0;
+  font-size: .88rem;
+  line-height: 1.55;
+}
+.analytics-consent a {
+  color: #5f1418;
+  font-weight: 700;
+}
+.analytics-consent__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.analytics-consent button {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid #5f1418;
+  border-radius: 2px;
+  background: transparent;
+  color: #5f1418;
+  font: 750 .82rem/1 var(--font-interface, Arial, Helvetica, sans-serif);
+  cursor: pointer;
+}
+.analytics-consent button[data-consent="accept"] {
+  background: #5f1418;
+  color: #fff7e8;
+}
+.analytics-consent button:focus-visible {
+  outline: 3px solid rgba(143, 31, 37, .38);
+  outline-offset: 3px;
+}
+
+@media (max-width: 1000px) {
+  .site-header {
+    flex-wrap: wrap;
+    padding: 12px 0 14px;
+  }
+  .site-header nav[aria-label="Primary navigation"] {
+    order: 3;
+    width: 100%;
+    display: flex !important;
+    gap: 16px;
+    overflow-x: auto;
+    padding: 4px 0 3px;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+  .site-header nav[aria-label="Primary navigation"] a {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 620px) {
+  .site-edition-badge {
+    font-size: .6rem;
+  }
+  .analytics-consent {
+    right: 12px;
+    bottom: 12px;
+    width: calc(100% - 24px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skip-link {
+    transition: none;
+  }
+}

@@ -125,6 +125,36 @@ function validateCanonicalFooter(html, route) {
   );
 }
 
+function validateModernPublicPage(html, route) {
+  const expectedCanonical = new URL(route, 'https://gauntlet.run').href;
+  assert(/<html\b[^>]*lang=(['"])en\1/i.test(html), `${route} is missing the document language.`);
+  assert(/<title>[^<]+<\/title>/i.test(html), `${route} is missing a page title.`);
+  assert(/<meta\s+name=(['"])description\1\s+content=(['"])[^'"]+\2/i.test(html), `${route} is missing a meta description.`);
+  assert(!/user-scalable\s*=\s*no|maximum-scale\s*=\s*1/i.test(html), `${route} disables browser zoom.`);
+  assert(html.includes(`rel="canonical" href="${expectedCanonical}"`), `${route} canonical URL drifted from ${expectedCanonical}.`);
+  assert(html.includes(`property="og:url" content="${expectedCanonical}"`), `${route} Open Graph URL drifted from the canonical URL.`);
+  assert(html.includes('property="og:site_name" content="Gauntlet"'), `${route} is missing the Open Graph site name.`);
+  assert(html.includes('property="og:title"'), `${route} is missing Open Graph title metadata.`);
+  assert(html.includes('property="og:description"'), `${route} is missing Open Graph description metadata.`);
+  assert(html.includes('property="og:image"'), `${route} is missing Open Graph image metadata.`);
+  assert(html.includes('name="twitter:card" content="summary_large_image"'), `${route} is missing Twitter card metadata.`);
+  assert(html.includes('name="twitter:title"'), `${route} is missing Twitter title metadata.`);
+  assert(html.includes('name="twitter:description"'), `${route} is missing Twitter description metadata.`);
+  assert(html.includes('name="twitter:image"'), `${route} is missing Twitter image metadata.`);
+  assert(html.includes('rel="icon"'), `${route} is missing favicon metadata.`);
+  assert(html.includes('rel="apple-touch-icon"'), `${route} is missing Apple touch icon metadata.`);
+  assert(html.includes('name="theme-color"'), `${route} is missing theme-color metadata.`);
+  assert(html.includes('/site-polish.css'), `${route} does not load shared public-site polish styles.`);
+  const skipTarget = html.match(/class=(['"])skip-link\1[^>]*href=(['"])#([^'"]+)\2/i)?.[3];
+  assert(skipTarget, `${route} is missing the skip-to-content link.`);
+  const mainMatch = html.match(new RegExp(`<main\\b[^>]*id=(["'])${skipTarget}\\1[^>]*>`, 'i'))?.[0];
+  assert(mainMatch, `${route} skip link does not target its main landmark.`);
+  assert(/\\btabindex=(["'])-1\\1/i.test(mainMatch), `${route} skip target is not programmatically focusable.`);
+  assert(html.includes('site-edition-badge'), `${route} is missing the current-edition indicator.`);
+  assert(html.includes('/analytics-consent.js'), `${route} does not use opt-in analytics consent.`);
+  assert(!html.includes('googletagmanager.com/gtag/js?id='), `${route} loads Google Analytics before consent.`);
+}
+
 function brandHomeRef(html, route) {
   const brand = html.match(/<a\b[^>]*class=(['"])[^'"]*\bbrand\b[^'"]*\1[^>]*>/i)?.[0];
   assert(brand, `${route} is missing the shared brand link.`);
@@ -167,6 +197,16 @@ const footerOnlyRoutes = [
   '/playtest/session/',
   '/playtest/tracked/',
 ];
+const consentPlaytestRoutes = [
+  '/playtest/analysis/',
+  '/playtest/analysis/integrity/',
+  '/playtest/feedback/',
+  '/playtest/guide/',
+  '/playtest/host/',
+  '/playtest/onboarding/',
+  '/playtest/retrospective/',
+  '/playtest/tracked/',
+];
 
 const lifecycle = JSON.parse(await getText('/config/release-lifecycle.json'));
 const currentVersion = lifecycle.current_release;
@@ -205,7 +245,7 @@ assert.equal(bookletPdf.getPageCount(), bookletEntry.pages, 'Published booklet p
 const routeValues = Object.values(manifest.public_routes ?? {}).filter((route) => typeof route === 'string');
 const releaseLandingRoute = `/${currentVersion}/`;
 const changelogRoute = '/changelog/';
-const siteInfoRoutes = ['/about/', '/faq/', '/privacy/', '/contact/'];
+const siteInfoRoutes = ['/about/', '/faq/', '/privacy/', '/contact/', '/accessibility/', '/press/'];
 const withdrawnVersionRoutes = Object.entries(lifecycle.releases ?? {})
   .filter(([, release]) => release?.status === 'withdrawn')
   .flatMap(([version]) => [`/${version}/`, `/releases/${version}/`]);
@@ -260,12 +300,21 @@ for (const [route, html] of pages) {
   if (!canonicalFooterExceptions.has(route)) {
     validateCanonicalFooter(html, route);
   }
+  validateModernPublicPage(html, route);
 }
 
 for (const route of footerOnlyRoutes) {
   const html = await getText(route);
   if (!canonicalFooterExceptions.has(route)) {
     validateCanonicalFooter(html, route);
+  }
+  if (consentPlaytestRoutes.includes(route)) {
+    assert(html.includes('/analytics-consent.js'), `${route} does not use opt-in analytics consent.`);
+    assert(!html.includes('googletagmanager.com/gtag/js?id='), `${route} loads Google Analytics before consent.`);
+    const skipTarget = html.match(/class=(['"])skip-link\1[^>]*href=(['"])#([^'"]+)\2/i)?.[3];
+    assert(skipTarget, `${route} is missing the skip-to-content link.`);
+    const mainMatch = html.match(new RegExp(`<main\\b[^>]*id=(["'])${skipTarget}\\1[^>]*>`, 'i'))?.[0];
+    assert(mainMatch && /\\btabindex=(["'])-1\\1/i.test(mainMatch), `${route} skip target is not focusable.`);
   }
 }
 
@@ -274,12 +323,16 @@ assert(notFoundPage.includes('name="robots" content="noindex,follow"'), '404 pag
 assert.deepEqual(primaryNavigationLinks(notFoundPage, '/404.html'), canonicalPrimaryNavigation, '404 primary navigation drifted.');
 assert.equal(brandHomeRef(notFoundPage, '/404.html'), '/', '404 brand link does not return to the site root.');
 validateCanonicalFooter(notFoundPage, '/404.html');
+assert(notFoundPage.includes('/analytics-consent.js'), '404 page does not use opt-in analytics consent.');
+assert(!notFoundPage.includes('googletagmanager.com/gtag/js?id='), '404 page loads Google Analytics before consent.');
 
 const contactThanks = await getText('/contact/thanks/');
 assert(contactThanks.includes('name="robots" content="noindex,follow"'), 'Contact confirmation page must remain out of search indexes.');
 assert.deepEqual(primaryNavigationLinks(contactThanks, '/contact/thanks/'), canonicalPrimaryNavigation, 'Contact confirmation primary navigation drifted.');
 assert.equal(brandHomeRef(contactThanks, '/contact/thanks/'), '/', 'Contact confirmation brand link does not return to the site root.');
 validateCanonicalFooter(contactThanks, '/contact/thanks/');
+assert(contactThanks.includes('/analytics-consent.js'), 'Contact confirmation page does not use opt-in analytics consent.');
+assert(!contactThanks.includes('googletagmanager.com/gtag/js?id='), 'Contact confirmation page loads Google Analytics before consent.');
 
 const robots = await getText('/robots.txt');
 assert(robots.includes('Sitemap: https://gauntlet.run/sitemap.xml'), 'robots.txt does not advertise the canonical sitemap.');
