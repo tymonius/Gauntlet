@@ -1,7 +1,6 @@
 (() => {
   const deckbuilder = window.GAUNTLET_DECKBUILDER;
   if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
-  const { factions: FACTIONS } = deckbuilder;
   const constructionRules = () => deckbuilder.constructionRules();
 
   const params = new URLSearchParams(window.location.search);
@@ -34,7 +33,7 @@
     try {
       await deckbuilder.bootstrap();
 
-      faction = FACTIONS.find(item => item.id === factionId && item.status === "ready") || null;
+      faction = deckbuilder.factionCatalog().find(item => item.id === factionId && item.status === "ready") || null;
       requestedLeader = faction?.leaders.find(item => item.id === leaderId) || null;
       leader = requestedLeader;
       if (!faction || !leader) return;
