@@ -83,6 +83,15 @@ import {
   applyV070NormalAftermathConviction,
   v070CondemnationAppliesToPlayerTactic,
 } from './inquisition';
+import {
+  gainV070MilitaryCommandForBattleWin,
+  useV070CommandantEntrench,
+  useV070CommandantFortify,
+  useV070CommandantRepel,
+  useV070GeneralRally,
+  useV070GeneralRout,
+  v070GeneralRoutAvailableAtEndOfAftermath,
+} from './military';
 
 export const V070_NORMAL_BATTLE_DICE = 1 as const;
 
@@ -188,6 +197,11 @@ export type V070BattleAction =
       playerId: PlayerId;
       assetInstanceId: string;
     }
+  | { type: 'use_general_rally'; playerId: PlayerId }
+  | { type: 'use_commandant_entrench'; playerId: PlayerId }
+  | { type: 'use_commandant_repel'; playerId: PlayerId }
+  | { type: 'use_commandant_fortify'; playerId: PlayerId }
+  | { type: 'use_general_rout'; playerId: PlayerId }
   | { type: 'complete_aftermath'; playerId: PlayerId };
 
 export function reduceV070BattleAction(
@@ -249,6 +263,13 @@ export function reduceV070BattleAction(
   if (state.pendingSanctionChoices.length > 0) {
     throw new V070GameActionError(
       'Resolve the pending Sanction movement choice before continuing the battle.',
+    );
+  }
+  if (state.battleRuntime?.routWindowOpen
+    && action.type !== 'use_general_rout'
+    && action.type !== 'complete_aftermath') {
+    throw new V070GameActionError(
+      'Resolve or decline the pending General Rout opportunity before continuing.',
     );
   }
 
@@ -409,6 +430,28 @@ export function reduceV070BattleAction(
         action.playerId,
         action.assetInstanceId,
       );
+      break;
+    case 'use_general_rally':
+      useV070GeneralRally(next, action.playerId);
+      break;
+    case 'use_commandant_entrench':
+      useV070CommandantEntrench(next, action.playerId);
+      break;
+    case 'use_commandant_repel':
+      useV070CommandantRepel(next, action.playerId);
+      break;
+    case 'use_commandant_fortify': {
+      const result = useV070CommandantFortify(next, action.playerId);
+      if (result.reachedOpponentEnd) {
+        requireRuntime(next).pendingGameVictory = {
+          winner: action.playerId,
+          route: 'final_territory_capture',
+        };
+      }
+      break;
+    }
+    case 'use_general_rout':
+      useGeneralRoutAtEndOfAftermath(next, action.playerId);
       break;
     case 'complete_aftermath':
       completeAftermath(next, action.playerId);
@@ -1175,6 +1218,7 @@ function finalizeOutcome(
   const runtime = requireRuntime(state);
   const resolution = applyV070BattleOutcome(battle, outcome);
   state.battle = resolution.state;
+  gainV070MilitaryCommandForBattleWin(state, outcome.winner);
   applyV070NoQuarterAdditionalRetreat(state);
   openBattlePositionChangeSanctions(state, state.battle.positions);
   runtime.pendingOutcome = null;
@@ -1828,6 +1872,13 @@ function completeAftermath(state: V070GameState, playerId: PlayerId): void {
   if (playerId !== battle.attacker) {
     throw new V070GameActionError('The attacker advances the shared Aftermath procedure.');
   }
+
+  if (runtime.routWindowOpen) {
+    runtime.routWindowOpen = false;
+    finalizeCompletedAftermath(state);
+    return;
+  }
+
   completeAftermathInternal(state, null);
 }
 
@@ -1838,156 +1889,176 @@ function completeAftermathInternal(
   const battle = requireBattle(state);
   const runtime = requireRuntime(state);
 
+  if (immediateWinner && !runtime.pendingGameVictory) {
+    runtime.pendingGameVictory = {
+      winner: immediateWinner,
+      route: 'last_stand',
+    };
+  }
+
   state.players.A.position = battle.positions.A;
   state.players.B.position = battle.positions.B;
   syncBoardOccupants(state);
 
-  if (openAccursedWagerAftermathChoice(state, immediateWinner)) {
-    return;
-  }
-  if (openPoisonousGasAftermathChoice(state, immediateWinner)) {
-    return;
-  }
-  if (openTerritoryAftermathChoice(state, immediateWinner)) {
-    return;
-  }
+  if (!runtime.aftermathCardsCleared) {
+    if (openAccursedWagerAftermathChoice(state, immediateWinner)) return;
+    if (openPoisonousGasAftermathChoice(state, immediateWinner)) return;
+    if (openTerritoryAftermathChoice(state, immediateWinner)) return;
 
-  const graveyardedDuringAftermath: Record<PlayerId, string[]> = {
-    A: [],
-    B: [],
-  };
+    const graveyardedDuringAftermath: Record<PlayerId, string[]> = {
+      A: [],
+      B: [],
+    };
 
-  for (const playerId of ['A', 'B'] as const) {
-    const participant = runtime.participants[playerId];
-    if (participant.gambit) {
-      const instanceId = participant.gambit.instanceId;
-      placeAftermathCard(
-        state,
-        playerId,
-        instanceId,
-        territoryAftermathDestination(
-          runtime,
+    for (const playerId of ['A', 'B'] as const) {
+      const participant = runtime.participants[playerId];
+      if (participant.gambit) {
+        const instanceId = participant.gambit.instanceId;
+        placeAftermathCard(
+          state,
           playerId,
           instanceId,
-          'graveyard',
-        ),
-        graveyardedDuringAftermath[playerId],
-      );
-    }
-    for (const additional of participant.additionalGambits) {
-      const instanceId = additional.instanceId;
-      placeAftermathCard(
-        state,
-        playerId,
-        instanceId,
-        territoryAftermathDestination(
-          runtime,
+          territoryAftermathDestination(runtime, playerId, instanceId, 'graveyard'),
+          graveyardedDuringAftermath[playerId],
+        );
+      }
+      for (const additional of participant.additionalGambits) {
+        const instanceId = additional.instanceId;
+        placeAftermathCard(
+          state,
           playerId,
           instanceId,
-          'graveyard',
-        ),
-        graveyardedDuringAftermath[playerId],
-      );
-    }
-    if (participant.tactic) {
-      const instanceId = participant.tactic.instanceId;
-      const condemned =
-        v070CondemnationAppliesToPlayerTactic(state, playerId);
-      placeAftermathCard(
-        state,
-        playerId,
-        instanceId,
-        territoryAftermathDestination(
-          runtime,
+          territoryAftermathDestination(runtime, playerId, instanceId, 'graveyard'),
+          graveyardedDuringAftermath[playerId],
+        );
+      }
+      if (participant.tactic) {
+        const instanceId = participant.tactic.instanceId;
+        const condemned = v070CondemnationAppliesToPlayerTactic(state, playerId);
+        placeAftermathCard(
+          state,
           playerId,
           instanceId,
-          poisonousGasAftermathDestination(
-            state,
+          territoryAftermathDestination(
+            runtime,
             playerId,
             instanceId,
-            'tactic',
-            condemned ? 'graveyard' : 'discard',
+            poisonousGasAftermathDestination(
+              state,
+              playerId,
+              instanceId,
+              'tactic',
+              condemned ? 'graveyard' : 'discard',
+            ),
           ),
-        ),
-        graveyardedDuringAftermath[playerId],
-      );
-      if (condemned) {
-        appendV070Event(state, {
-          type: 'condemnation_applied',
-          actor: otherPlayer(playerId),
-          visibility: 'public',
-          payload: {
-            tacticOwner: playerId,
+          graveyardedDuringAftermath[playerId],
+        );
+        if (condemned) {
+          appendV070Event(state, {
+            type: 'condemnation_applied',
+            actor: otherPlayer(playerId),
+            visibility: 'public',
+            payload: {
+              tacticOwner: playerId,
+              instanceId,
+              cardId: state.cardInstances[instanceId]?.cardId,
+            },
+          });
+        }
+      }
+      for (const additionalTactic of participant.additionalTactics) {
+        const instanceId = additionalTactic.instanceId;
+        const condemned = v070CondemnationAppliesToPlayerTactic(state, playerId);
+        placeAftermathCard(
+          state,
+          playerId,
+          instanceId,
+          territoryAftermathDestination(
+            runtime,
+            playerId,
             instanceId,
-            cardId: state.cardInstances[instanceId]?.cardId,
-          },
-        });
+            poisonousGasAftermathDestination(
+              state,
+              playerId,
+              instanceId,
+              'tactic',
+              condemned ? 'graveyard' : 'discard',
+            ),
+          ),
+          graveyardedDuringAftermath[playerId],
+        );
+        if (condemned) {
+          appendV070Event(state, {
+            type: 'condemnation_applied',
+            actor: otherPlayer(playerId),
+            visibility: 'public',
+            payload: {
+              tacticOwner: playerId,
+              instanceId,
+              cardId: state.cardInstances[instanceId]?.cardId,
+            },
+          });
+        }
+      }
+      for (const instanceId of participant.reserve) {
+        placeAftermathCard(
+          state,
+          playerId,
+          instanceId,
+          territoryAftermathDestination(
+            runtime,
+            playerId,
+            instanceId,
+            poisonousGasAftermathDestination(state, playerId, instanceId, 'reserve', 'discard'),
+          ),
+          graveyardedDuringAftermath[playerId],
+        );
       }
     }
-    for (const additionalTactic of participant.additionalTactics) {
-      const instanceId = additionalTactic.instanceId;
-      const condemned =
-        v070CondemnationAppliesToPlayerTactic(state, playerId);
-      placeAftermathCard(
-        state,
-        playerId,
-        instanceId,
-        territoryAftermathDestination(
-          runtime,
-          playerId,
-          instanceId,
-          poisonousGasAftermathDestination(
-            state,
-            playerId,
-            instanceId,
-            'tactic',
-            condemned ? 'graveyard' : 'discard',
-          ),
-        ),
-        graveyardedDuringAftermath[playerId],
-      );
-      if (condemned) {
-        appendV070Event(state, {
-          type: 'condemnation_applied',
-          actor: otherPlayer(playerId),
-          visibility: 'public',
-          payload: {
-            tacticOwner: playerId,
-            instanceId,
-            cardId: state.cardInstances[instanceId]?.cardId,
-          },
-        });
-      }
-    }
-    for (const instanceId of participant.reserve) {
-      placeAftermathCard(
-        state,
-        playerId,
-        instanceId,
-        territoryAftermathDestination(
-          runtime,
-          playerId,
-          instanceId,
-          poisonousGasAftermathDestination(
-            state,
-            playerId,
-            instanceId,
-            'reserve',
-            'discard',
-          ),
-        ),
-        graveyardedDuringAftermath[playerId],
-      );
-    }
-  }
 
-  for (const playerId of ['A', 'B'] as const) {
-    applyV070NormalAftermathConviction(
+    for (const playerId of ['A', 'B'] as const) {
+      applyV070NormalAftermathConviction(
+        state,
+        playerId,
+        graveyardedDuringAftermath[otherPlayer(playerId)],
+      );
+    }
+
+    resolveV070OverlayAfterBattle(
       state,
-      playerId,
-      graveyardedDuringAftermath[otherPlayer(playerId)],
+      battle.contestedPosition,
+      runtime.activeOverlayAtOnset,
     );
+    runtime.aftermathCardsCleared = true;
   }
+
+  if (runtime.pendingGameVictory) {
+    finalizeCompletedAftermath(state);
+    return;
+  }
+
+  if (v070GeneralRoutAvailableAtEndOfAftermath(state)) {
+    runtime.routWindowOpen = true;
+    appendV070Event(state, {
+      type: 'military_order_window_opened',
+      actor: battle.attacker,
+      visibility: 'public',
+      payload: { order: 'Rout', timing: 'end_of_aftermath' },
+    });
+    return;
+  }
+
+  finalizeCompletedAftermath(state);
+}
+
+function useGeneralRoutAtEndOfAftermath(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  const battle = requireBattle(state);
+  const runtime = requireRuntime(state);
+  useV070GeneralRout(state, playerId);
+  runtime.routWindowOpen = false;
 
   appendV070Event(state, {
     type: 'battle_aftermath_complete',
@@ -2000,24 +2071,47 @@ function completeAftermathInternal(
     },
   });
 
-  resolveV070OverlayAfterBattle(
-    state,
-    battle.contestedPosition,
-    runtime.activeOverlayAtOnset,
-  );
+  state.battle = null;
+  state.battleRuntime = null;
+
+  appendV070Event(state, {
+    type: 'military_rout_movement_started',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      from: state.players[playerId].position,
+      contestedPosition: battle.contestedPosition,
+    },
+  });
+}
+
+function finalizeCompletedAftermath(state: V070GameState): void {
+  const runtime = requireRuntime(state);
+  const pendingGameVictory = runtime.pendingGameVictory;
+
+  appendV070Event(state, {
+    type: 'battle_aftermath_complete',
+    visibility: 'public',
+    payload: {
+      positions: {
+        A: state.players.A.position,
+        B: state.players.B.position,
+      },
+    },
+  });
 
   state.battle = null;
   state.battleRuntime = null;
 
-  if (immediateWinner) {
+  if (pendingGameVictory) {
     state.stage = 'ended';
-    state.winner = immediateWinner;
+    state.winner = pendingGameVictory.winner;
     state.turnState = null;
     appendV070Event(state, {
       type: 'game_won',
-      actor: immediateWinner,
+      actor: pendingGameVictory.winner,
       visibility: 'public',
-      payload: { route: 'last_stand' },
+      payload: { route: pendingGameVictory.route },
     });
     return;
   }
