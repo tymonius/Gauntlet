@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /playtest/analysis/
+Disallow: /playtest/batch/
+Disallow: /playtest/host/
+Disallow: /playtest/session/
+Disallow: /playtest/tracked/
+
+Sitemap: https://gauntlet.run/sitemap.xml
