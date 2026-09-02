@@ -64,19 +64,11 @@ async function main() {
   const page = await context.newPage();
 
   try {
-    await page.goto(`${baseUrl}/card-design/?type=all#leader-cards`, { waitUntil: 'load' });
-    await page.waitForSelector('.leader-card');
-    await page.waitForFunction(count => document.querySelectorAll('.full-card-review-frame').length === count, 142);
-    await page.waitForFunction(count => document.querySelectorAll('.territory-review-frame').length === count, 25);
-    await page.waitForFunction(count => document.querySelectorAll('.leader-card').length === count, expectedLeaderNames.length);
-    await page.waitForFunction(() => [...document.querySelectorAll('.leader-card .card-art img')].every(image => image.complete && image.naturalWidth > 0));
-    await page.evaluate(async () => document.fonts?.ready);
-
-    const fonts = await page.evaluate(() => ({
-      title: document.fonts.check('12px "p22-1722-pro"'),
-      rules: document.fonts.check('12px "adobe-caslon-pro"'),
-    }));
-    if (!fonts.title || !fonts.rules) throw new Error(`Required card fonts failed to load: ${JSON.stringify(fonts)}.`);
+    await page.goto(`${baseUrl}/card-design/?type=leader#leader-cards`, { waitUntil: 'load' });
+    await page.waitForFunction(count => document.querySelectorAll('#leader-cards .component-review-frame').length === count, expectedLeaderNames.length);
+    await page.waitForFunction(() => [...document.querySelectorAll('#leader-cards .component-review-frame')].every(frame => (
+      frame.contentDocument?.body?.dataset.renderReady === 'true'
+    )));
 
     const catalogLayout = await page.evaluate(() => {
       const bodyStyles = getComputedStyle(document.body);
@@ -95,39 +87,58 @@ async function main() {
         cardWidth: bodyStyles.getPropertyValue('--catalog-card-width').trim(),
         territoryWidth: bodyStyles.getPropertyValue('--catalog-territory-width').trim(),
         deedWidth: bodyStyles.getPropertyValue('--catalog-deed-width').trim(),
-        playable: gridMetrics('.full-card-review-grid'),
         leaders: gridMetrics('.leader-review-grid'),
-        territories: gridMetrics('.territory-review-grid'),
       };
     });
     if (!catalogLayout.cardWidth || !catalogLayout.territoryWidth || !catalogLayout.deedWidth) {
       throw new Error(`Catalog production-size variables are undefined: ${JSON.stringify(catalogLayout)}.`);
     }
     for (const [name, metrics] of Object.entries({
-      playable: catalogLayout.playable,
       leaders: catalogLayout.leaders,
-      territories: catalogLayout.territories,
     })) {
       if (metrics.childCount > 1 && metrics.firstSixRows >= Math.min(6, metrics.childCount)) {
         throw new Error(`Catalog ${name} grid collapsed to one item per row: ${JSON.stringify(metrics)}.`);
       }
     }
 
-    const leaders = await page.locator('.leader-card').evaluateAll(cards => cards.map(card => {
-      const rect = card.getBoundingClientRect();
-      const portrait = card.querySelector('.card-art img');
-      return {
-        name: card.querySelector('.card-title')?.textContent?.trim() || '',
-        faction: card.dataset.faction || '',
-        width: rect.width,
-        height: rect.height,
-        fitWarning: card.classList.contains('fit-warning'),
-        titleFit: card.dataset.titleFit,
-        parchmentLoaded: card.dataset.parchmentLoaded,
-        portraitLoaded: Boolean(portrait?.complete && portrait?.naturalWidth > 0),
-        portraitPath: portrait ? new URL(portrait.src).pathname : '',
-      };
-    }));
+    const leaderPage = await context.newPage();
+    const leaders = [];
+    let fonts = null;
+    for (const sourceLeader of current.leaders || []) {
+      const renderId = `${sourceLeader.faction}-${slugify(sourceLeader.name)}`;
+      await leaderPage.goto(`${baseUrl}/card-design/component-render.html?kind=leader&id=${encodeURIComponent(renderId)}&side=front`, { waitUntil: 'load' });
+      await leaderPage.waitForFunction(() => document.body.dataset.renderReady === 'true');
+      if (!fonts) {
+        await leaderPage.evaluate(async () => document.fonts?.ready);
+        fonts = await leaderPage.evaluate(() => ({
+          title: document.fonts.check('12px "p22-1722-pro"'),
+          rules: document.fonts.check('12px "adobe-caslon-pro"'),
+        }));
+        if (!fonts.title || !fonts.rules) throw new Error(`Required card fonts failed to load: ${JSON.stringify(fonts)}.`);
+      }
+
+      const leader = await leaderPage.locator('.leader-card').evaluate(card => {
+        const rect = card.getBoundingClientRect();
+        const portrait = card.querySelector('.card-art img');
+        return {
+          name: card.querySelector('.card-title')?.textContent?.trim() || '',
+          faction: card.dataset.faction || '',
+          width: rect.width,
+          height: rect.height,
+          fitWarning: card.classList.contains('fit-warning'),
+          titleFit: card.dataset.titleFit,
+          parchmentLoaded: card.dataset.parchmentLoaded,
+          portraitLoaded: Boolean(portrait?.complete && portrait?.naturalWidth > 0),
+          portraitPath: portrait ? new URL(portrait.src).pathname : '',
+        };
+      });
+      leaders.push(leader);
+      await leaderPage.locator('.leader-card').screenshot({
+        path: join(OUTPUT, `${slugify(sourceLeader.name)}.png`),
+        omitBackground: true,
+      });
+    }
+    await leaderPage.close();
 
     const names = leaders.map(record => record.name);
     if (expectedLeaderNames.some(name => !names.includes(name))) throw new Error(`Leader catalog is incomplete: ${JSON.stringify(names)}.`);
@@ -138,31 +149,64 @@ async function main() {
       if (!leader.portraitPath.startsWith('/images/') || leader.portraitPath.includes('/sketches/')) throw new Error(`Leader portrait is not using the production image source: ${JSON.stringify(leader)}.`);
     }
 
-    const territoryFrames = await page.locator('.territory-review-frame').evaluateAll(frames => frames.map(frame => {
-      const rect = frame.getBoundingClientRect();
-      return { width: rect.width, height: rect.height };
-    }));
-    if (territoryFrames.some(frame => Math.abs(frame.width - TERRITORY_WIDTH) > 0.25 || Math.abs(frame.height - TERRITORY_HEIGHT) > 0.25)) {
-      throw new Error(`Unexpected Territory frame geometry: ${JSON.stringify(territoryFrames)}.`);
-    }
-
     await page.locator('#leader-cards').screenshot({ path: join(OUTPUT, 'leader-card-review-page.png') });
-    for (const leader of leaders) {
-      await page.locator('.leader-card').filter({ has: page.locator('.card-title', { hasText: leader.name }) }).first()
-        .screenshot({ path: join(OUTPUT, `${slugify(leader.name)}.png`), omitBackground: true });
-    }
 
     const playablePage = await context.newPage();
+    const readPlayableMetrics = () => playablePage.locator('.gauntlet-card').evaluate(card => {
+      const rect = card.getBoundingClientRect();
+      const art = card.querySelector('.card-art img');
+      const interior = card.querySelector('.card-interior');
+      return {
+        title: card.querySelector('.card-title')?.textContent?.trim(),
+        width: rect.width,
+        height: rect.height,
+        fitWarning: card.classList.contains('fit-warning'),
+        titleFit: card.dataset.titleFit,
+        parchmentLoaded: card.dataset.parchmentLoaded,
+        rulesScale: card.style.getPropertyValue('--rules-scale'),
+        artHeight: interior?.style.getPropertyValue('--art-height') || '',
+        artworkSource: art?.currentSrc || art?.src || '',
+        artObjectPosition: art?.style.objectPosition || '',
+        artTransform: art?.style.transform || '',
+        artTransformOrigin: art?.style.transformOrigin || '',
+        artCrop: art?.dataset.artCrop || '',
+        artCropX: art?.dataset.artCropX || '',
+        artCropY: art?.dataset.artCropY || '',
+        artFocusX: art?.dataset.artFocusX || '',
+        artFocusY: art?.dataset.artFocusY || '',
+        artZoom: art?.dataset.artZoom || '',
+        normalizedArtwork: document.body.dataset.printArtworkNormalized || '',
+        normalizedArtworkSource: document.body.dataset.printArtworkSource || '',
+      };
+    });
+
     await playablePage.goto(`${baseUrl}/card-design/card-review-render.html?fit=production&card=neutral-rallying-cry`, { waitUntil: 'load' });
     await playablePage.waitForFunction(() => document.body.dataset.renderReady === 'true');
-    const playable = await playablePage.locator('.gauntlet-card').evaluate(card => ({
-      title: card.querySelector('.card-title')?.textContent?.trim(),
-      fitWarning: card.classList.contains('fit-warning'),
-      titleFit: card.dataset.titleFit,
-      parchmentLoaded: card.dataset.parchmentLoaded,
-    }));
-    if (playable.title !== 'Rallying Cry' || playable.fitWarning || playable.titleFit !== 'true' || playable.parchmentLoaded !== 'true') {
-      throw new Error(`Current playable-card renderer failed smoke validation: ${JSON.stringify(playable)}.`);
+    const canonicalPlayable = await readPlayableMetrics();
+
+    await playablePage.goto(`${baseUrl}/card-design/card-review-render.html?fit=production&printArtwork=normalized&card=neutral-rallying-cry`, { waitUntil: 'load' });
+    await playablePage.waitForFunction(() => document.body.dataset.renderReady === 'true');
+    const playable = await readPlayableMetrics();
+
+    const parityFields = [
+      'title', 'width', 'height', 'fitWarning', 'titleFit', 'parchmentLoaded',
+      'rulesScale', 'artHeight', 'artObjectPosition', 'artTransform', 'artTransformOrigin',
+      'artCrop', 'artCropX', 'artCropY', 'artFocusX', 'artFocusY', 'artZoom',
+    ];
+    const parityMismatch = parityFields.find(field => playable[field] !== canonicalPlayable[field]);
+    if (
+      playable.title !== 'Rallying Cry'
+      || Math.abs(playable.width - CARD_WIDTH) > 0.25
+      || Math.abs(playable.height - CARD_HEIGHT) > 0.25
+      || playable.fitWarning
+      || playable.titleFit !== 'true'
+      || playable.parchmentLoaded !== 'true'
+      || playable.normalizedArtwork !== 'true'
+      || !playable.artworkSource.startsWith('blob:')
+      || !playable.normalizedArtworkSource.includes('/images/artwork/cards/')
+      || parityMismatch
+    ) {
+      throw new Error(`Current playable-card print parity failed: ${JSON.stringify({ canonicalPlayable, playable, parityMismatch })}.`);
     }
     await playablePage.locator('.gauntlet-card').screenshot({ path: join(OUTPUT, 'playable-card-review-smoke.png'), omitBackground: true });
     await playablePage.close();
@@ -170,14 +214,27 @@ async function main() {
     const territoryPage = await context.newPage();
     await territoryPage.goto(`${baseUrl}/card-design/territory-review-render.html?territory=territory-smuggler-s-pass`, { waitUntil: 'load' });
     await territoryPage.waitForFunction(() => document.body.dataset.renderReady === 'true');
-    const territory = await territoryPage.locator('.territory-card').evaluate(card => ({
-      title: card.querySelector('.territory-title')?.textContent?.trim(),
-      fitWarning: card.classList.contains('fit-warning'),
-      titleFit: card.dataset.titleFit,
-      parchmentLoaded: card.dataset.parchmentLoaded,
-      version: card.querySelector('.territory-footer span:last-child')?.textContent?.trim(),
-    }));
-    if (territory.title !== "Smuggler's Run" || territory.fitWarning || territory.titleFit !== 'true' || territory.parchmentLoaded !== 'true' || territory.version !== expectedVersion) {
+    const territory = await territoryPage.locator('.territory-card').evaluate(card => {
+      const rect = card.getBoundingClientRect();
+      return {
+        title: card.querySelector('.territory-title')?.textContent?.trim(),
+        width: rect.width,
+        height: rect.height,
+        fitWarning: card.classList.contains('fit-warning'),
+        titleFit: card.dataset.titleFit,
+        parchmentLoaded: card.dataset.parchmentLoaded,
+        version: card.querySelector('.territory-footer span:last-child')?.textContent?.trim(),
+      };
+    });
+    if (
+      territory.title !== "Smuggler's Run"
+      || Math.abs(territory.width - TERRITORY_WIDTH) > 0.25
+      || Math.abs(territory.height - TERRITORY_HEIGHT) > 0.25
+      || territory.fitWarning
+      || territory.titleFit !== 'true'
+      || territory.parchmentLoaded !== 'true'
+      || territory.version !== expectedVersion
+    ) {
       throw new Error(`Current Territory renderer failed smoke validation: ${JSON.stringify(territory)}; expected ${expectedVersion}.`);
     }
     await territoryPage.locator('.territory-card').screenshot({ path: join(OUTPUT, 'territory-review-smoke.png'), omitBackground: true });

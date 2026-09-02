@@ -191,7 +191,7 @@ async function renderLeaderAssets(release, leaders, componentContract) {
 
     for (let index = 0; index < leaders.length; index += 1) {
       const leader = leaders[index];
-      const url = new URL('/card-design/component-print-render.html', baseUrl);
+      const url = new URL('/card-design/component-render.html', baseUrl);
       url.searchParams.set('kind', 'leader');
       url.searchParams.set('id', `${leader.faction}-${leader.id}`);
       url.searchParams.set('side', 'front');
@@ -267,7 +267,7 @@ async function renderLeaderAssets(release, leaders, componentContract) {
         releasePackageRoot: release.releasePackageRoot,
         publishedVersion: release.publishedVersion || release.version,
       },
-      sourceSurface: 'card-design/component-print-render.html',
+      sourceSurface: 'card-design/component-render.html',
       componentContract: 'config/tts-component-contract.json',
       output: {
         cardPixels: { width: CARD_WIDTH, height: CARD_HEIGHT },

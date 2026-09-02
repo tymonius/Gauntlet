@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const componentRenderer = readFileSync("card-design/component-print-render.js", "utf8");
+const componentRenderer = readFileSync("card-design/component-render.js", "utf8");
 
 describe("production component print readiness", () => {
   it("replays the shared card preparation lifecycle after an asynchronously inserted component exists", () => {

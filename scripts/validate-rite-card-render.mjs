@@ -66,27 +66,24 @@ async function main() {
 
   try {
     await page.goto(`${baseUrl}/card-design/?type=rite#rite-cards`, { waitUntil: 'load' });
-    await page.waitForFunction(expected => document.querySelectorAll('.rite-card').length === expected, expectedCardFaces);
-    await page.waitForFunction(() => [...document.querySelectorAll('.rite-card')].every(card => (
-      card.dataset.parchmentLoaded === 'true'
-      && card.dataset.titleFit === 'true'
-      && card.querySelector('.card-interior')?.style.getPropertyValue('--art-height')
-    )));
-    await page.waitForFunction(() => [...document.querySelectorAll('.completed-rite-card .rite-completed-panel > img')].every(image => (
-      image.complete && image.naturalWidth > 0 && image.naturalHeight > 0
-    )));
-    await page.waitForFunction(() => {
-      const image = document.querySelector('#ritual-ascension .ritual-card .card-art > img');
-      return image?.complete && image.naturalWidth > 0 && image.naturalHeight > 0;
+    const expectedFrames = expectedRites.length * 2 + 2;
+    await page.waitForFunction(expected => (
+      document.querySelectorAll('#rite-cards .component-review-frame').length === expected
+    ), expectedFrames);
+    await page.locator('#rite-cards .component-review-frame').evaluateAll(frames => {
+      frames.forEach(frame => { frame.loading = 'eager'; });
     });
-    await page.waitForFunction(() => {
-      const image = document.querySelector('#ritual-ascension .ritual-card-back__image-window > img');
-      return image?.complete && image.naturalWidth > 0 && image.naturalHeight > 0;
-    });
+    await page.waitForFunction(() => [...document.querySelectorAll('#rite-cards .component-review-frame')].every(frame => (
+      frame.contentDocument?.body?.dataset.renderReady === 'true'
+    )));
     await page.evaluate(async () => document.fonts?.ready);
     await page.waitForTimeout(150);
 
-    const metrics = await page.locator('.rite-card').evaluateAll(cards => cards.map(card => {
+    const metrics = await page.locator('#rite-cards .component-review-frame').evaluateAll(frames => frames.flatMap(frame => {
+      const doc = frame.contentDocument;
+      const card = doc?.querySelector('.rite-card');
+      if (!card) return [];
+      const view = doc.defaultView;
       const rect = card.getBoundingClientRect();
       const art = card.querySelector('.card-art')?.getBoundingClientRect();
       const completed = card.classList.contains('completed-rite-card');
@@ -95,7 +92,7 @@ async function main() {
       const completedImage = card.querySelector('.rite-completed-panel > img');
       const completedImageRect = completedImage?.getBoundingClientRect();
       const ritualImage = ritual ? card.querySelector('.card-art > img') : null;
-      return {
+      return [{
         name: card.querySelector('.card-title')?.textContent?.trim(),
         type: card.querySelector('.card-footer span:nth-child(2)')?.textContent?.trim(),
         width: rect.width,
@@ -105,7 +102,7 @@ async function main() {
         fitWarning: card.classList.contains('fit-warning'),
         titleFit: card.dataset.titleFit,
         parchmentLoaded: card.dataset.parchmentLoaded,
-        rulesScale: Number.parseFloat(getComputedStyle(card).getPropertyValue('--rules-scale')) || 1,
+        rulesScale: Number.parseFloat(view?.getComputedStyle(card).getPropertyValue('--rules-scale')) || 1,
         completed,
         ritual,
         cardBack: card.dataset.cardBack,
@@ -122,7 +119,7 @@ async function main() {
         ritualImageNaturalWidth: ritualImage?.naturalWidth || 0,
         ritualImageNaturalHeight: ritualImage?.naturalHeight || 0,
         ritualImagePath: ritualImage ? new URL(ritualImage.currentSrc || ritualImage.src).pathname : '',
-      };
+      }];
     }));
 
     if (metrics.length !== expectedCardFaces) throw new Error(`Expected ${expectedRites.length * 2} Rite faces plus the Ritual, found ${metrics.length} cards.`);
@@ -160,14 +157,17 @@ async function main() {
     }
 
     const ritualReview = await page.locator('#ritual-ascension').evaluate(section => {
-      const back = section.querySelector('.ritual-card-back');
+      const frames = [...section.querySelectorAll('.component-review-frame')];
+      const backFrame = frames.find(frame => new URL(frame.src).searchParams.get('side') === 'reverse') || frames[1];
+      const backDocument = backFrame?.contentDocument;
+      const back = backDocument?.querySelector('.ritual-card-back');
       const backRect = back?.getBoundingClientRect();
       const image = back?.querySelector('.ritual-card-back__image-window > img');
       return {
         standardCardBack: section.dataset.standardCardBack,
-        completedFaces: section.querySelectorAll('.completed-rite-card').length,
+        completedFaces: frames.reduce((count, frame) => count + (frame.contentDocument?.querySelectorAll('.completed-rite-card').length || 0), 0),
         faces: section.querySelectorAll('.rite-face').length,
-        dedicatedBacks: section.querySelectorAll('.ritual-card-back').length,
+        dedicatedBacks: frames.reduce((count, frame) => count + (frame.contentDocument?.querySelectorAll('.ritual-card-back').length || 0), 0),
         backWidth: backRect?.width || 0,
         backHeight: backRect?.height || 0,
         backImageNaturalWidth: image?.naturalWidth || 0,

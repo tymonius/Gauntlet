@@ -218,7 +218,6 @@ jobs:
           test "$bytes" -lt 950000000
 
           test -s "$SITE_DIR/images/media/all-factions-promotional-showcase.png"
-
           for image in \
             "hero sketch.png" \
             "general.png" \

@@ -22,9 +22,9 @@ describe('finalized TTS supplemental exports', () => {
 
   it('captures finalized components only from the Card Design production authority', () => {
     const generator = readFileSync('scripts/generate-tts-finalized-supplementals.mjs', 'utf8');
-    const componentRenderer = readFileSync('card-design/component-print-render.js', 'utf8');
+    const componentRenderer = readFileSync('card-design/component-render.js', 'utf8');
 
-    expect(generator).toContain('/card-design/component-print-render.html');
+    expect(generator).toContain('/card-design/component-render.html');
     expect(generator).toContain("return { kind: 'proposal', id: item.proposalId }");
     expect(generator).toContain("return { kind: 'supplemental', id: component.id }");
     expect(generator).toContain("url.searchParams.set('version', displayVersion)");

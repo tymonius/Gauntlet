@@ -1,11 +1,13 @@
 import { resolveFirstArtwork, slugify } from './card-artwork-resolver.js';
 import { loadCurrentGame } from '../game-data/current-game.mjs';
+import { installPrintArtworkFinalizer } from './print-artwork-normalizer.js';
 
 await (async () => {
   const params = new URLSearchParams(window.location.search);
   const cardId = params.get('card');
   const productionFit = params.get('fit') === 'production';
   const versionOverride = String(params.get('version') || '').trim();
+  const normalizedPrintArtwork = String(params.get('printArtwork') || '').trim().toLowerCase() === 'normalized';
   const target = document.getElementById('renderTarget');
 
   function sectionsFromEffects(effects) {
@@ -91,6 +93,10 @@ await (async () => {
     const card = sourceCard;
     const faction = slugify(card.allegiance);
     const artwork = await resolveFirstArtwork(card, faction, imageExists);
+    if (normalizedPrintArtwork) {
+      if (!artwork) throw new Error(`Canonical artwork is unavailable for ${card.id}.`);
+      installPrintArtworkFinalizer();
+    }
     const preview = {
       id: card.id,
       kind: 'playable',

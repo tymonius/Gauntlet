@@ -1,14 +1,12 @@
 import { loadCurrentGame } from '../game-data/current-game.mjs';
-import './leader-card-copy.js';
-
 async function syncCurrentGameCatalogCopy() {
   try {
     const currentGame = await loadCurrentGame();
     const cards = currentGame.cards || [];
 
-    // Direct component cards (Leaders, Proposals, Rites, references) share the
-    // same committed composition authority as playable-card/territory frames.
-    // Do not source these positions from the legacy generated TTS override file.
+    // The catalog, Deckbuilder, and TTS all consume the same canonical Card
+    // Design face frames. This map is exposed here only so the compositor can
+    // inspect/edit the same committed composition authority as those frames.
     window.GAUNTLET_ART_DIRECTION = currentGame.artDirection || {};
     window.dispatchEvent(new CustomEvent('gauntlet-art-direction-ready', {
       detail: { authority: currentGame.authorityUrl },

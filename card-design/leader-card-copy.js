@@ -205,4 +205,4 @@ async function applyLeaderCardCopy() {
   }
 }
 
-applyLeaderCardCopy();
+if (!document.body?.classList.contains('developer-catalog-page')) applyLeaderCardCopy();

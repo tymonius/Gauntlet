@@ -491,7 +491,7 @@ function productionComponentRequest(record) {
 
 async function captureCard(page, baseUrl, record, side, outputPath, displayVersion) {
   const request = productionComponentRequest(record);
-  const url = new URL('/card-design/component-print-render.html', baseUrl);
+  const url = new URL('/card-design/component-render.html', baseUrl);
   url.searchParams.set('kind', request.kind);
   url.searchParams.set('id', request.id);
   url.searchParams.set('side', side);

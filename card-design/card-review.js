@@ -35,6 +35,19 @@
     return items.slice().sort((a, b) => String(selector(a) || '').localeCompare(String(selector(b) || '')));
   }
 
+  function componentRenderSource(kind, id, side = 'front', orientation = 'portrait') {
+    const params = new URLSearchParams({ kind, id, side });
+    if (orientation === 'landscape') params.set('orientation', 'landscape');
+    const rules = new URLSearchParams(window.location.search).get('rules');
+    if (rules) params.set('rules', rules);
+    return `/card-design/component-render.html?${params.toString()}`;
+  }
+
+  function componentReviewFrame(kind, id, label, side = 'front', orientation = 'portrait') {
+    const landscape = orientation === 'landscape';
+    return `<iframe class="component-review-frame${landscape ? ' component-review-frame-landscape' : ''}" loading="lazy" src="${esc(componentRenderSource(kind, id, side, orientation))}" title="${esc(label)} canonical Card Design render"></iframe>`;
+  }
+
   async function currentGame() {
     if (!currentGamePromise) {
       currentGamePromise = import('../game-data/current-game.mjs').then(module => module.loadCurrentGame());
@@ -51,8 +64,13 @@
   }
 
   function leaderCard(leader, version) {
+    const specimenId = `${leader.faction}-${slugify(leader.name)}`;
+    if (catalogFilter()) {
+      return `<div class="leader-specimen" id="${specimenId}"><p class="leader-review-label screen-only"><strong>${esc(leader.name)}</strong><span>${esc(leader.note)}</span></p>${componentReviewFrame('leader', specimenId, `${leader.name} ${leader.factionLabel} Leader`)}</div>`;
+    }
+
     const extra = leader.name === 'Commandant' ? ' commandant-card' : '';
-    return `<div class="leader-specimen" id="${leader.faction}-${slugify(leader.name)}"><p class="leader-review-label screen-only"><strong>${esc(leader.name)}</strong><span>${esc(leader.note)}</span></p><article class="gauntlet-card faction-component-card leader-card ${esc(leader.faction)}-card${extra}" data-faction="${esc(leader.faction)}" data-art-max="1.86" data-art-min="1.34" data-title-min="10" aria-label="${esc(leader.name)} ${esc(leader.factionLabel)} Leader card"><div class="card-interior"><header class="card-heading"><h3 class="card-title">${esc(leader.name)}</h3><div class="leader-faction-line"><span class="leader-faction-emblem" aria-hidden="true"></span><span>${esc(leader.factionLabel)}</span></div></header><figure class="card-art has-image"><img src="${esc(leader.image)}" alt="Portrait of the ${esc(leader.name)}" /></figure><div class="card-rules">${(leader.sections || []).map(section=>`<section class="leader-rule-section"><h4>${esc(section.name)}${section.cost?`<span>${esc(section.cost)}</span>`:''}</h4><p>${esc(leaderSectionText(section))}</p></section>`).join('')}</div><footer class="card-footer"><span>${esc(leader.factionLabel)}</span><span>Leader</span><span>${esc(version)}</span></footer></div></article></div>`;
+    return `<div class="leader-specimen" id="${specimenId}"><p class="leader-review-label screen-only"><strong>${esc(leader.name)}</strong><span>${esc(leader.note)}</span></p><article class="gauntlet-card faction-component-card leader-card ${esc(leader.faction)}-card${extra}" data-faction="${esc(leader.faction)}" data-art-max="1.86" data-art-min="1.34" data-title-min="10" aria-label="${esc(leader.name)} ${esc(leader.factionLabel)} Leader card"><div class="card-interior"><header class="card-heading"><h3 class="card-title">${esc(leader.name)}</h3><div class="leader-faction-line"><span class="leader-faction-emblem" aria-hidden="true"></span><span>${esc(leader.factionLabel)}</span></div></header><figure class="card-art has-image"><img src="${esc(leader.image)}" alt="Portrait of the ${esc(leader.name)}" /></figure><div class="card-rules">${(leader.sections || []).map(section=>`<section class="leader-rule-section"><h4>${esc(section.name)}${section.cost?`<span>${esc(section.cost)}</span>`:''}</h4><p>${esc(leaderSectionText(section))}</p></section>`).join('')}</div><footer class="card-footer"><span>${esc(leader.factionLabel)}</span><span>Leader</span><span>${esc(version)}</span></footer></div></article></div>`;
   }
 
   async function renderLeaders() {

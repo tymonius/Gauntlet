@@ -62,17 +62,31 @@
     return direction.fit === 'contain' ? 'contain' : 'cover';
   }
 
+  function componentArtworkId(kind, id, side) {
+    const reverse = side === 'reverse' || side === 'back' || side === 'treaty' || side === 'completed';
+    if (kind === 'leader') return id;
+    if (kind === 'proposal') return `proposal-${id}${reverse ? '-ratified' : ''}`;
+    if (kind === 'rite') return `rite-${id}${reverse ? '-completed' : ''}`;
+    if (kind === 'ritual') return `ritual-${id}`;
+    return id;
+  }
+
   function iframeTarget(frame) {
     let url;
     try { url = new URL(frame.src, location.href); } catch { return null; }
     const cardId = url.searchParams.get('card');
     const territoryId = url.searchParams.get('territory');
-    const id = cardId || territoryId;
+    const componentKind = url.pathname.endsWith('/card-design/component-render.html')
+      ? String(url.searchParams.get('kind') || '').trim().toLowerCase()
+      : '';
+    const componentId = componentKind ? String(url.searchParams.get('id') || '').trim() : '';
+    const componentSide = String(url.searchParams.get('side') || 'front').trim().toLowerCase();
+    const id = cardId || territoryId || (componentId ? componentArtworkId(componentKind, componentId, componentSide) : '');
     if (!id) return null;
     return {
       id,
-      label: frame.title?.replace(/\s+v0\.6\.[0-9].*$/i, '').trim() || id,
-      kind: territoryId ? 'territory' : 'card',
+      label: frame.title?.replace(/\s+v0\.6\.[0-9].*$/i, '').replace(/\s+canonical Card Design render$/i, '').trim() || id,
+      kind: territoryId ? 'territory' : componentId ? 'component' : 'card',
       sourceElement: frame,
       resolve() {
         const doc = frame.contentDocument;

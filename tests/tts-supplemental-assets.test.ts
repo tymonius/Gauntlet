@@ -9,7 +9,7 @@ const generator = readFileSync('scripts/generate-tts-supplemental-assets.mjs', '
 const trackerHelper = readFileSync('scripts/tts-sliding-trackers.mjs', 'utf8');
 const geometry = readFileSync('scripts/tts-supplemental-geometry.mjs', 'utf8');
 const productionSupplementals = readFileSync('card-design/supplemental-card.js', 'utf8');
-const componentRenderer = readFileSync('card-design/component-print-render.js', 'utf8');
+const componentRenderer = readFileSync('card-design/component-render.js', 'utf8');
 const riteDesign = readFileSync('card-design/rite-card.js', 'utf8');
 const referenceCss = readFileSync('card-design/reference-card.css', 'utf8');
 const referenceDividerCss = readFileSync('card-design/reference-divider-rules.css', 'utf8');
@@ -82,7 +82,7 @@ describe('TTS supplemental component exports', () => {
     expect(bloodText).toContain(currentGame.mystics.rites.find((rite: any) => rite.id === 'blood').complete);
     expect(crossingText).toContain(currentGame.mystics.rites.find((rite: any) => rite.id === 'crossing').begin);
     expect(crossingText).not.toContain('Ritual of Ascendance');
-    expect(generator).toContain('/card-design/component-print-render.html');
+    expect(generator).toContain('/card-design/component-render.html');
     expect(generator).toContain("return { kind: 'rite', id: String(record.id).replace(/^mystics-rite-/, '') }");
     expect(generator).not.toContain('/tts/supplemental-renderer/');
     expect(riteDesign).toContain('class="rite-faction-emblem"');
@@ -173,7 +173,7 @@ describe('TTS supplemental component exports', () => {
 
   it('maps the actual rendered registration lines onto the live tracker collider', () => {
     expect(generator).toContain('captureProductionTracker');
-    expect(trackerHelper).toContain('/card-design/component-print-render.html');
+    expect(trackerHelper).toContain('/card-design/component-render.html');
     expect(trackerHelper).toContain("url.searchParams.set('kind', 'tracker')");
     expect(trackerHelper).toContain("url.searchParams.set('version', displayVersion)");
     expect(trackerHelper).toContain('.tracker-registration-line');

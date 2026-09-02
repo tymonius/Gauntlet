@@ -148,7 +148,7 @@ function buildSupplementalGroups(currentGame) {
 }
 
 function isolatedComponentRenderId() {
-  if (!/\/component-print-render\.html$/.test(window.location.pathname)) return '';
+  if (!/\/component-render\.html$/.test(window.location.pathname)) return '';
   return String(new URLSearchParams(window.location.search).get('id') || '').trim();
 }
 
@@ -381,6 +381,37 @@ function referenceLoadingFace(component, faction, factionLabel, sideName) {
   </article>`;
 }
 
+function canonicalComponentRenderKind(component) {
+  if (component.referenceId) return 'reference';
+  if (component.tracker) return 'tracker';
+  return 'supplemental';
+}
+
+function canonicalComponentRenderId(component) {
+  return component.referenceId || component.id;
+}
+
+function canonicalComponentOrientation(component) {
+  return component.family === 'deed-card' ? 'landscape' : 'portrait';
+}
+
+function canonicalComponentRenderSource(component, side = 'front') {
+  const params = new URLSearchParams({
+    kind: canonicalComponentRenderKind(component),
+    id: canonicalComponentRenderId(component),
+    side,
+  });
+  if (canonicalComponentOrientation(component) === 'landscape') params.set('orientation', 'landscape');
+  const rules = new URLSearchParams(window.location.search).get('rules');
+  if (rules) params.set('rules', rules);
+  return `/card-design/component-render.html?${params.toString()}`;
+}
+
+function canonicalComponentFrame(component, label, side = 'front') {
+  const landscape = canonicalComponentOrientation(component) === 'landscape';
+  return `<iframe class="component-review-frame${landscape ? ' component-review-frame-landscape' : ''}" loading="lazy" src="${esc(canonicalComponentRenderSource(component, side))}" title="${esc(label)} canonical Card Design render"></iframe>`;
+}
+
 function componentFace(component, faction, factionLabel, faceLabel = '') {
   if (component.referenceId) return referenceLoadingFace(component, faction, factionLabel, /^reverse$/i.test(faceLabel) ? 'reverse' : 'front');
   if (component.ledger) return capitalLedgerMarkup(currentDisplayVersion);
@@ -407,6 +438,26 @@ function componentSpecimen(component, faction, factionLabel) {
       : component.ledger
         ? `${designLabel} · identical duplex ledger`
         : `${designLabel} · ${quantityText}`;
+
+  if (catalogFilter) {
+    const orientationClass = canonicalComponentOrientation(component) === 'landscape' ? ' supplemental-review-landscape' : '';
+    if (component.doubleSided) {
+      return `<article class="supplemental-review-item supplemental-review-pair${orientationClass}" id="supplemental-${esc(faction)}-${esc(component.id)}" data-contract-component-id="${esc(component.contractId)}">
+        <div class="supplemental-item-heading screen-only"><strong>${esc(component.name)}</strong><span>${esc(statusText)}</span></div>
+        <div class="supplemental-face-grid">
+          <div class="supplemental-face" data-reference-face="front"><p class="supplemental-face-label screen-only"><strong>Front</strong></p>${canonicalComponentFrame(component, `${component.name} front`, 'front')}</div>
+          <div class="supplemental-face" data-reference-face="reverse"><p class="supplemental-face-label screen-only"><strong>Reverse</strong></p>${canonicalComponentFrame(component, `${component.name} reverse`, 'reverse')}</div>
+        </div>
+      </article>`;
+    }
+
+    return `<article class="supplemental-review-item${orientationClass}" id="supplemental-${esc(faction)}-${esc(component.id)}" data-contract-component-id="${esc(component.contractId)}">
+      <div class="supplemental-item-heading screen-only"><strong>${esc(component.name)}</strong><span>${esc(statusText)}</span></div>
+      <div class="supplemental-face-grid supplemental-single-face-grid">
+        <div class="supplemental-face">${canonicalComponentFrame(component, component.name)}</div>
+      </div>
+    </article>`;
+  }
 
   if (component.doubleSided) {
     const faceDescription = component.ledger
@@ -536,6 +587,14 @@ async function renderCurrentSupplementals() {
     supplementalGroups = filterSupplementalGroups(allGroups);
     root.dataset.currentGameAuthority = currentGame.authorityUrl;
     renderSupplementalMarkup(allGroups);
+    if (catalogFilter) {
+      // The developer catalog consumes the same canonical component frames as
+      // Deckbuilder and TTS. Direct tracker/reference fitting stays inside each
+      // component-render iframe and cannot diverge in the outer catalog.
+      root.dataset.referenceCardsReady = 'true';
+      root.dataset.trackerLayoutsReady = 'true';
+      return;
+    }
     await layoutTrackerCards();
     await hydrateReferenceCards();
   } catch (error) {

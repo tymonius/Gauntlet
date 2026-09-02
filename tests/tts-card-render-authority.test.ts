@@ -9,8 +9,8 @@ const supplementalGenerator = readFileSync('scripts/generate-tts-supplemental-as
 const finalizedGenerator = readFileSync('scripts/generate-tts-finalized-supplementals.mjs', 'utf8');
 const trackerCapture = readFileSync('scripts/tts-sliding-trackers.mjs', 'utf8');
 const geometry = readFileSync('scripts/tts-supplemental-geometry.mjs', 'utf8');
-const componentShell = readFileSync('card-design/component-print-render.html', 'utf8');
-const componentRenderer = readFileSync('card-design/component-print-render.js', 'utf8');
+const componentShell = readFileSync('card-design/component-render.html', 'utf8');
+const componentRenderer = readFileSync('card-design/component-render.js', 'utf8');
 const sharedCardDesign = readFileSync('card-design/card-design.js', 'utf8');
 const designTokens = readFileSync('design-tokens.css', 'utf8');
 const playableRenderer = readFileSync('card-design/card-review-render.js', 'utf8');
@@ -34,17 +34,17 @@ describe('TTS card render authority', () => {
     expect(territoryGenerator).toContain('/card-design/territory-review-render.html');
     expect(territoryGenerator).not.toContain('/tts/territory-renderer/?territory=');
 
-    expect(leaderGenerator).toContain('/card-design/component-print-render.html');
+    expect(leaderGenerator).toContain('/card-design/component-render.html');
     expect(leaderGenerator).not.toContain("page.goto(`${baseUrl}/card-design/`");
     expect(leaderGenerator).not.toContain('GauntletArtworkCrop.apply');
 
-    expect(supplementalGenerator).toContain('/card-design/component-print-render.html');
+    expect(supplementalGenerator).toContain('/card-design/component-render.html');
     expect(supplementalGenerator).not.toContain('/tts/supplemental-renderer/');
 
-    expect(finalizedGenerator).toContain('/card-design/component-print-render.html');
+    expect(finalizedGenerator).toContain('/card-design/component-render.html');
     expect(finalizedGenerator).not.toContain('/tts/finalized-supplemental-renderer/');
 
-    expect(trackerCapture).toContain('/card-design/component-print-render.html');
+    expect(trackerCapture).toContain('/card-design/component-render.html');
     expect(trackerCapture).not.toContain("page.goto(`${baseUrl}/card-design/`");
   });
 

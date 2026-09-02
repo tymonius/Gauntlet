@@ -50,6 +50,15 @@
   grid-template-columns: minmax(0, 2.5in);
 }
 
+.supplemental-review-landscape {
+  grid-column: 1 / -1;
+}
+
+.supplemental-review-landscape .supplemental-face-grid {
+  grid-template-columns: minmax(0, 3.5in);
+}
+
+
 /* site.css intentionally styles the public page footer with a constrained
    width and auto margins. Card metadata also uses semantic <footer> elements,
    so keep those global page rules from leaking into production card faces. */

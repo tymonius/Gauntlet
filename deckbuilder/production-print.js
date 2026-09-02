@@ -194,11 +194,11 @@
   }
 
   function productionCardSource(cardId) {
-    return `/card-design/card-print-render.html?card=${encodeURIComponent(cardId)}&fit=production&rules=${encodeURIComponent(selectedRulesetMode())}`;
+    return `/card-design/card-review-render.html?card=${encodeURIComponent(cardId)}&fit=production&printArtwork=normalized&rules=${encodeURIComponent(selectedRulesetMode())}`;
   }
 
   function productionTerritorySource(territoryId) {
-    return `/card-design/territory-print-render.html?territory=${encodeURIComponent(territoryId)}&rules=${encodeURIComponent(selectedRulesetMode())}`;
+    return `/card-design/territory-review-render.html?territory=${encodeURIComponent(territoryId)}&rules=${encodeURIComponent(selectedRulesetMode())}`;
   }
 
   function productionCardHtml(card) {
@@ -267,7 +267,7 @@
   function productionFrameSource(options) {
     if (options.kind === "external") return options.src;
     const orientation = options.orientation === "landscape" ? "&orientation=landscape" : "";
-    return `/card-design/component-print-render.html?kind=${encodeURIComponent(options.kind)}&id=${encodeURIComponent(options.id)}&side=${encodeURIComponent(options.side || "front")}${orientation}&rules=${encodeURIComponent(selectedRulesetMode())}`;
+    return `/card-design/component-render.html?kind=${encodeURIComponent(options.kind)}&id=${encodeURIComponent(options.id)}&side=${encodeURIComponent(options.side || "front")}${orientation}&rules=${encodeURIComponent(selectedRulesetMode())}`;
   }
 
   function productionBackSource(faction, rotation = null) {

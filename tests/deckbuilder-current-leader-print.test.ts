@@ -1,8 +1,9 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const componentRenderHtml = readFileSync("card-design/component-print-render.html", "utf8");
-const componentRenderJs = readFileSync("card-design/component-print-render.js", "utf8");
+const componentRenderHtml = readFileSync("card-design/component-render.html", "utf8");
+const componentRenderJs = readFileSync("card-design/component-render.js", "utf8");
+const leaderStyles = readFileSync("card-design/leader-card.css", "utf8");
 const leaderCopyScript = readFileSync("card-design/leader-card-copy.js", "utf8");
 const currentGame = JSON.parse(readFileSync("game-data/current-game.json", "utf8"));
 const printTransform = readFileSync("deckbuilder/production-print.js", "utf8");
@@ -42,12 +43,19 @@ describe("Deckbuilder current Leader printing", () => {
     expect(leaderCopyScript).toContain("window.dispatchEvent(new Event('resize'))");
   });
 
+  it("keeps Banker on the approved Card Design crop instead of a stale per-surface override", () => {
+    expect(currentGame.artDirection["financiers-banker"]).toBeUndefined();
+    expect(leaderStyles).toContain(".leader-card .card-art img");
+    expect(leaderStyles).toContain("object-position: center 16%;");
+    expect(componentRenderJs).toContain('card.dataset.artDirectionApplied = "css-default"');
+  });
+
   it("renders the selected Leader directly through the current production component renderer", () => {
     expect(printTransform).toContain("function renderProductionLeaderHtml(faction, leader)");
     expect(printTransform).toContain('currentGame.findLeader?.(factionId, leaderId)');
     expect(printTransform).toContain('kind: "leader"');
     expect(printTransform).toContain('id: `${factionId}-${canonicalLeader.id}`');
-    expect(printTransform).toContain('/card-design/component-print-render.html?kind=');
+    expect(printTransform).toContain('/card-design/component-render.html?kind=');
     expect(printTransform).not.toContain("replaceProductionLeader");
   });
 

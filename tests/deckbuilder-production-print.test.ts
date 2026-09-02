@@ -2,11 +2,17 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const deckbuilderHtml = readFileSync("deckbuilder/index.html", "utf8");
-const playableRender = readFileSync("card-design/card-print-render.html", "utf8");
-const componentRenderHtml = readFileSync("card-design/component-print-render.html", "utf8");
-const componentRenderJs = readFileSync("card-design/component-print-render.js", "utf8");
+const playableRender = readFileSync("card-design/card-review-render.html", "utf8");
+const playableRenderJs = readFileSync("card-design/card-review-render.js", "utf8");
+const printArtworkNormalizer = readFileSync("card-design/print-artwork-normalizer.js", "utf8");
+const playableRendererJs = readFileSync("tts/renderer/renderer.js", "utf8");
+const playableLegacyAlias = readFileSync("card-design/card-print-render.html", "utf8");
+const componentRenderHtml = readFileSync("card-design/component-render.html", "utf8");
+const componentLegacyAlias = readFileSync("card-design/component-print-render.html", "utf8");
+const componentRenderJs = readFileSync("card-design/component-render.js", "utf8");
 const supplementalRenderer = readFileSync("card-design/supplemental-card.js", "utf8");
-const territoryRender = readFileSync("card-design/territory-print-render.html", "utf8");
+const territoryRender = readFileSync("card-design/territory-review-render.html", "utf8");
+const territoryLegacyAlias = readFileSync("card-design/territory-print-render.html", "utf8");
 const backRender = readFileSync("tts/back-renderer/index.html", "utf8");
 const cardBackCss = readFileSync("card-design/card-back.css", "utf8");
 const printTransform = readFileSync("deckbuilder/production-print.js", "utf8");
@@ -20,11 +26,9 @@ const componentContract = currentGame.componentContract;
 describe("Deckbuilder production printing", () => {
   it("uses shared production renderers for playable cards, Territories, and faction components", () => {
     expect(playableRender).toContain('/card-design/card-review-render.js');
-    expect(playableRender).toContain('width: 2.5in;');
-    expect(playableRender).toContain('height: 3.5in;');
+    expect(playableRender).toContain('id="renderTarget"');
     expect(territoryRender).toContain('/card-design/territory-review-render.js');
-    expect(territoryRender).toContain('width: 3.5in;');
-    expect(territoryRender).toContain('height: 2.5in;');
+    expect(territoryRender).toContain('id="renderTarget"');
     expect(componentRenderHtml).toContain('/card-design/leader-card.css');
     expect(componentRenderHtml).toContain('/card-design/supplemental-card.js');
     expect(componentRenderHtml).toContain('/card-design/capital-ledger.css');
@@ -32,9 +36,29 @@ describe("Deckbuilder production printing", () => {
     for (const kind of ['leader', 'proposal', 'reference', 'rite', 'ritual', 'tracker', 'supplemental']) {
       expect(componentRenderJs).toContain(`"${kind}"`);
     }
-    expect(printTransform).toContain('/card-design/card-print-render.html?card=');
-    expect(printTransform).toContain('/card-design/territory-print-render.html?territory=');
-    expect(printTransform).toContain('/card-design/component-print-render.html?kind=');
+    expect(printTransform).toContain('/card-design/card-review-render.html?card=');
+    expect(printTransform).toContain('/card-design/territory-review-render.html?territory=');
+    expect(printTransform).toContain('/card-design/component-render.html?kind=');
+  });
+
+  it("normalizes only playable-card artwork after canonical crop/fitting while leaving the card face live", () => {
+    expect(printTransform).toContain("&fit=production&printArtwork=normalized&rules=");
+    expect(playableRenderJs).toContain("installPrintArtworkFinalizer()");
+    expect(playableRenderJs).toContain("await resolveFirstArtwork(card, faction, imageExists)");
+    expect(printArtworkNormalizer).toContain("const SHORT_EDGE = 960;");
+    expect(printArtworkNormalizer).toContain("const LONG_EDGE = 1800;");
+    expect(printArtworkNormalizer).toContain("cropSnapshot(artImage)");
+    expect(printArtworkNormalizer).toContain("restoreCrop(artImage, snapshot)");
+    expect(printArtworkNormalizer).toContain("canvas.toBlob");
+    expect(printArtworkNormalizer).toContain("'image/png'");
+    expect(printArtworkNormalizer).toContain("alpha: false");
+    expect(printArtworkNormalizer).toContain("colorSpace: 'srgb'");
+    expect(printArtworkNormalizer).toContain("__gauntletPrintArtworkCache");
+    expect(playableRendererJs).toContain("window.GAUNTLET_RENDER_FINALIZE");
+    expect(playableRendererJs.indexOf("window.GAUNTLET_RENDER_FINALIZE")).toBeLessThan(
+      playableRendererJs.indexOf("document.body.dataset.renderReady = 'true'")
+    );
+    expect(printTransform).not.toContain("data:image");
   });
 
   it("uses current-game component metadata and preserves intrinsic reverse faces", () => {
@@ -112,7 +136,7 @@ describe("Deckbuilder production printing", () => {
 
   it("isolates standalone supplemental production renders and their reference-source loading", () => {
     expect(supplementalRenderer).toContain("function isolatedComponentRenderId()");
-    expect(supplementalRenderer).toContain("/\\/component-print-render\\.html$/");
+    expect(supplementalRenderer).toContain("/\\/component-render\\.html$/");
     expect(supplementalRenderer).toContain("component.id === isolatedId");
     expect(supplementalRenderer).toContain("component.contractId === isolatedId");
     expect(supplementalRenderer).toContain("component.referenceId === isolatedId");
@@ -138,9 +162,19 @@ describe("Deckbuilder production printing", () => {
     expect(cardBackPolicy).not.toContain("factionColorCardBack");
   });
 
-  it("keeps print-only render surfaces analytics-free", () => {
-    expect(analyticsSync).toContain('"card-design/card-print-render.html"');
-    expect(analyticsSync).toContain('"card-design/component-print-render.html"');
-    expect(analyticsSync).toContain('"card-design/territory-print-render.html"');
+  it("keeps canonical embedded render surfaces analytics-free and legacy routes as aliases only", () => {
+    for (const path of [
+      '"card-design/card-review-render.html"',
+      '"card-design/component-render.html"',
+      '"card-design/territory-review-render.html"',
+    ]) {
+      expect(analyticsSync).toContain(path);
+    }
+    expect(playableLegacyAlias).toContain('/card-design/card-review-render.html');
+    expect(componentLegacyAlias).toContain('/card-design/component-render.html');
+    expect(territoryLegacyAlias).toContain('/card-design/territory-review-render.html');
+    expect(playableLegacyAlias).not.toContain('/card-design/card-review-render.js');
+    expect(componentLegacyAlias).not.toContain('/card-design/component-render.js');
+    expect(territoryLegacyAlias).not.toContain('/card-design/territory-review-render.js');
   });
 });

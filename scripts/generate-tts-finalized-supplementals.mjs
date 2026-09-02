@@ -146,7 +146,7 @@ function productionComponentRequest(item) {
 
 async function captureComponent(page, baseUrl, item, side, outputPath, displayVersion) {
   const request = productionComponentRequest(item);
-  const url = new URL('/card-design/component-print-render.html', baseUrl);
+  const url = new URL('/card-design/component-render.html', baseUrl);
   url.searchParams.set('kind', request.kind);
   url.searchParams.set('id', request.id);
   url.searchParams.set('side', side);
