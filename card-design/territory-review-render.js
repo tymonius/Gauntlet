@@ -1,4 +1,5 @@
 import { loadCurrentGame } from '../game-data/current-game.mjs';
+import { mergeArtDirectionDrafts } from './art-direction-drafts.mjs';
 
 await (async () => {
   const params = new URLSearchParams(window.location.search);
@@ -106,7 +107,8 @@ await (async () => {
       sourceHierarchy: [currentGame.authorityUrl],
       territories: [preview],
     };
-    window.GAUNTLET_ART_DIRECTION = currentGame.artDirection;
+    window.GAUNTLET_ART_DIRECTION = mergeArtDirectionDrafts(currentGame.artDirection || {});
+    document.body.dataset.artDirectionDraftsApplied = 'true';
 
     await loadScript('/tts/artwork-crop.js');
     await loadScript('/tts/territory-renderer/territory-renderer.js');
