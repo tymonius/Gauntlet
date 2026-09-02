@@ -154,10 +154,10 @@ async function main() {
     await page.locator('#leader-cards').screenshot({ path: join(OUTPUT, 'leader-card-review-page.png') });
 
     const playablePage = await context.newPage();
-    await playablePage.goto(`${baseUrl}/card-design/card-review-render.html?fit=production&printArtwork=normalized&card=neutral-rallying-cry`, { waitUntil: 'load' });
-    await playablePage.waitForFunction(() => document.body.dataset.renderReady === 'true');
-    const playable = await playablePage.locator('.gauntlet-card').evaluate(card => {
+    const readPlayableMetrics = () => playablePage.locator('.gauntlet-card').evaluate(card => {
       const rect = card.getBoundingClientRect();
+      const art = card.querySelector('.card-art img');
+      const interior = card.querySelector('.card-interior');
       return {
         title: card.querySelector('.card-title')?.textContent?.trim(),
         width: rect.width,
@@ -165,11 +165,37 @@ async function main() {
         fitWarning: card.classList.contains('fit-warning'),
         titleFit: card.dataset.titleFit,
         parchmentLoaded: card.dataset.parchmentLoaded,
-        artworkSource: card.querySelector('.card-art img')?.currentSrc || card.querySelector('.card-art img')?.src || '',
-        normalizedArtwork: document.body.dataset.printArtworkNormalized,
-        normalizedArtworkSource: document.body.dataset.printArtworkSource,
+        rulesScale: card.style.getPropertyValue('--rules-scale'),
+        artHeight: interior?.style.getPropertyValue('--art-height') || '',
+        artworkSource: art?.currentSrc || art?.src || '',
+        artObjectPosition: art?.style.objectPosition || '',
+        artTransform: art?.style.transform || '',
+        artTransformOrigin: art?.style.transformOrigin || '',
+        artCrop: art?.dataset.artCrop || '',
+        artCropX: art?.dataset.artCropX || '',
+        artCropY: art?.dataset.artCropY || '',
+        artFocusX: art?.dataset.artFocusX || '',
+        artFocusY: art?.dataset.artFocusY || '',
+        artZoom: art?.dataset.artZoom || '',
+        normalizedArtwork: document.body.dataset.printArtworkNormalized || '',
+        normalizedArtworkSource: document.body.dataset.printArtworkSource || '',
       };
     });
+
+    await playablePage.goto(`${baseUrl}/card-design/card-review-render.html?fit=production&card=neutral-rallying-cry`, { waitUntil: 'load' });
+    await playablePage.waitForFunction(() => document.body.dataset.renderReady === 'true');
+    const canonicalPlayable = await readPlayableMetrics();
+
+    await playablePage.goto(`${baseUrl}/card-design/card-review-render.html?fit=production&printArtwork=normalized&card=neutral-rallying-cry`, { waitUntil: 'load' });
+    await playablePage.waitForFunction(() => document.body.dataset.renderReady === 'true');
+    const playable = await readPlayableMetrics();
+
+    const parityFields = [
+      'title', 'width', 'height', 'fitWarning', 'titleFit', 'parchmentLoaded',
+      'rulesScale', 'artHeight', 'artObjectPosition', 'artTransform', 'artTransformOrigin',
+      'artCrop', 'artCropX', 'artCropY', 'artFocusX', 'artFocusY', 'artZoom',
+    ];
+    const parityMismatch = parityFields.find(field => playable[field] !== canonicalPlayable[field]);
     if (
       playable.title !== 'Rallying Cry'
       || Math.abs(playable.width - CARD_WIDTH) > 0.25
@@ -178,10 +204,11 @@ async function main() {
       || playable.titleFit !== 'true'
       || playable.parchmentLoaded !== 'true'
       || playable.normalizedArtwork !== 'true'
-      || !playable.artworkSource.includes('/images/print-artwork/cards/neutral-rallying-cry.png')
-      || playable.normalizedArtworkSource !== '/images/print-artwork/cards/neutral-rallying-cry.png'
+      || !playable.artworkSource.startsWith('blob:')
+      || !playable.normalizedArtworkSource.includes('/images/artwork/cards/')
+      || parityMismatch
     ) {
-      throw new Error(`Current playable-card renderer failed smoke validation: ${JSON.stringify(playable)}.`);
+      throw new Error(`Current playable-card print parity failed: ${JSON.stringify({ canonicalPlayable, playable, parityMismatch })}.`);
     }
     await playablePage.locator('.gauntlet-card').screenshot({ path: join(OUTPUT, 'playable-card-review-smoke.png'), omitBackground: true });
     await playablePage.close();
