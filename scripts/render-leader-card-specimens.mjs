@@ -87,9 +87,7 @@ async function main() {
         cardWidth: bodyStyles.getPropertyValue('--catalog-card-width').trim(),
         territoryWidth: bodyStyles.getPropertyValue('--catalog-territory-width').trim(),
         deedWidth: bodyStyles.getPropertyValue('--catalog-deed-width').trim(),
-        playable: gridMetrics('.full-card-review-grid'),
         leaders: gridMetrics('.leader-review-grid'),
-        territories: gridMetrics('.territory-review-grid'),
       };
     });
     if (!catalogLayout.cardWidth || !catalogLayout.territoryWidth || !catalogLayout.deedWidth) {
