@@ -136,7 +136,9 @@ function validateModernPublicPage(html, route) {
   assert(html.includes('/site-polish.css'), `${route} does not load shared public-site polish styles.`);
   const skipTarget = html.match(/class=(['"])skip-link\1[^>]*href=(['"])#([^'"]+)\2/i)?.[3];
   assert(skipTarget, `${route} is missing the skip-to-content link.`);
-  assert(new RegExp(`<main\\b[^>]*id=(["'])${skipTarget}\\1`, 'i').test(html), `${route} skip link does not target its main landmark.`);
+  const mainMatch = html.match(new RegExp(`<main\\b[^>]*id=(["'])${skipTarget}\\1[^>]*>`, 'i'))?.[0];
+  assert(mainMatch, `${route} skip link does not target its main landmark.`);
+  assert(/\\btabindex=(["'])-1\\1/i.test(mainMatch), `${route} skip target is not programmatically focusable.`);
   assert(html.includes('site-edition-badge'), `${route} is missing the current-edition indicator.`);
   assert(html.includes('/analytics-consent.js'), `${route} does not use opt-in analytics consent.`);
   assert(!html.includes('googletagmanager.com/gtag/js?id='), `${route} loads Google Analytics before consent.`);
@@ -182,6 +184,16 @@ const footerOnlyRoutes = [
   '/playtest/onboarding/',
   '/playtest/retrospective/',
   '/playtest/session/',
+  '/playtest/tracked/',
+];
+const consentPlaytestRoutes = [
+  '/playtest/analysis/',
+  '/playtest/analysis/integrity/',
+  '/playtest/feedback/',
+  '/playtest/guide/',
+  '/playtest/host/',
+  '/playtest/onboarding/',
+  '/playtest/retrospective/',
   '/playtest/tracked/',
 ];
 
@@ -284,6 +296,14 @@ for (const route of footerOnlyRoutes) {
   const html = await getText(route);
   if (!canonicalFooterExceptions.has(route)) {
     validateCanonicalFooter(html, route);
+  }
+  if (consentPlaytestRoutes.includes(route)) {
+    assert(html.includes('/analytics-consent.js'), `${route} does not use opt-in analytics consent.`);
+    assert(!html.includes('googletagmanager.com/gtag/js?id='), `${route} loads Google Analytics before consent.`);
+    const skipTarget = html.match(/class=(['"])skip-link\1[^>]*href=(['"])#([^'"]+)\2/i)?.[3];
+    assert(skipTarget, `${route} is missing the skip-to-content link.`);
+    const mainMatch = html.match(new RegExp(`<main\\b[^>]*id=(["'])${skipTarget}\\1[^>]*>`, 'i'))?.[0];
+    assert(mainMatch && /\\btabindex=(["'])-1\\1/i.test(mainMatch), `${route} skip target is not focusable.`);
   }
 }
 
