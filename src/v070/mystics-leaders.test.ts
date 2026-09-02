@@ -362,6 +362,54 @@ describe('v0.7.0 Mystics progression and leaders', () => {
     )?.controller).toBe('A');
   });
 
+  test('Invocation opens after an Arcane Action resolves and moves one Graveyard card to Discard once per turn', () => {
+    let state = toDenouement(readyGame());
+    setCompletedRites(state, 'A', 1);
+    const target = injectCard(
+      state,
+      'A',
+      'neutral-rallying-cry',
+      'invocation-target',
+      'graveyard',
+    );
+    const source = injectCard(
+      state,
+      'A',
+      'mystics-accursed-wager',
+      'invocation-source',
+      'hand',
+    );
+
+    state = reduceV070TurnAction(state, {
+      type: 'play_action_card',
+      playerId: 'A',
+      cardInstanceId: source,
+    });
+
+    expect(state.players.A.mystics?.invocationPending)
+      .toEqual(expect.objectContaining({
+        sourceInstanceId: source,
+        sourceCardId: 'mystics-accursed-wager',
+        duringBattle: false,
+      }));
+    expect(() => reduceV070TurnAction(state, {
+      type: 'pass_denouement',
+      playerId: 'A',
+    })).toThrow(/pending Mystics Invocation/);
+
+    state = reduceV070TurnAction(state, {
+      type: 'use_mystic_invocation',
+      playerId: 'A',
+      targetInstanceId: target,
+    });
+
+    expect(state.players.A.zones.graveyard).not.toContain(target);
+    expect(state.players.A.zones.discardPile).toContain(target);
+    expect(state.players.A.mystics?.invocationUsedTurn)
+      .toBe(state.turnNumber);
+    expect(state.players.A.mystics?.invocationPending).toBeNull();
+  });
+
   test('Transmutation adds card value and Alchemist Materia Prima waits until after battle Aftermath', () => {
     let state = activeBattle();
     setCompletedRites(state, 'A', 2);
@@ -419,11 +467,16 @@ describe('v0.7.0 Mystics progression and leaders', () => {
       'military-commandant-holdfast',
       'mystics-spirit-walker-unbroken-circle',
     );
-    setCompletedRites(state, 'B', 2);
-    const blood = state.players.B.mystics!.rites.blood;
-    blood.status = 'begun';
-    blood.begunTurn = state.turnNumber - 1;
-    blood.completedTurn = null;
+    const mystics = state.players.B.mystics!;
+    mystics.rites.echoes.status = 'begun';
+    mystics.rites.echoes.begunTurn = state.turnNumber - 1;
+    mystics.rites.echoes.completedTurn = null;
+    mystics.rites.blood.status = 'completed';
+    mystics.rites.blood.begunTurn = null;
+    mystics.rites.blood.completedTurn = state.turnNumber - 2;
+    mystics.rites.crossing.status = 'completed';
+    mystics.rites.crossing.begunTurn = null;
+    mystics.rites.crossing.completedTurn = state.turnNumber - 2;
 
     const tooSmall = injectCard(
       state,
@@ -465,7 +518,7 @@ describe('v0.7.0 Mystics progression and leaders', () => {
       cardInstanceId: valid,
     });
 
-    expect(state.players.B.mystics?.rites.blood.status).toBe('begun');
+    expect(state.players.B.mystics?.rites.echoes.status).toBe('begun');
     expect(state.players.B.zones.graveyard).toContain(valid);
     expect(state.players.B.mystics?.guardiansUsedTurn)
       .toBe(state.turnNumber);
