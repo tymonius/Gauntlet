@@ -1,7 +1,6 @@
 (() => {
   const deckbuilder = window.GAUNTLET_DECKBUILDER;
   if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
-  const { state } = deckbuilder;
   const getFaction = () => deckbuilder.getFaction();
   const deckEntries = () => deckbuilder.deckEntries();
   const validateDeck = () => deckbuilder.validate();
@@ -9,6 +8,8 @@
   const territoriesApi = () => deckbuilder.feature("territories");
   const ritesApi = () => deckbuilder.feature("mysticsRites");
   const currentGameLabel = () => deckbuilder.currentGame()?.displayVersion || deckbuilder.currentGame()?.version || "current";
+  const deckState = () => deckbuilder.deckState();
+  const cardCatalog = () => deckbuilder.cardCatalog();
   const productionPrint = () => {
     const renderer = deckbuilder.feature("productionPrintRenderer");
     if (!renderer) throw new Error("Deckbuilder production print renderer is unavailable.");
@@ -40,7 +41,7 @@
     const button = document.getElementById("printDeckButton");
     if (!button) return;
 
-    const ready = state.cards.length > 0
+    const ready = cardCatalog().length > 0
       && territoriesApi()?.isReady?.()
       && Boolean(deckbuilder.feature("supplementalPackages"));
     button.disabled = !ready;
@@ -77,7 +78,7 @@
 
   function readPrintData() {
     const faction = getFaction();
-    const leader = faction?.leaders.find(item => item.id === state.leaderId);
+    const leader = deckbuilder.getLeader();
     if (!faction || !leader) {
       window.alert("Choose a completed faction and leader before printing.");
       return null;
@@ -92,16 +93,18 @@
       components: []
     };
 
+    const current = deckState();
+
     return {
-      name: state.deckName.trim() || `Untitled ${currentGameLabel()} Deck`,
+      name: current.deckName.trim() || `Untitled ${currentGameLabel()} Deck`,
       versionLabel: currentGameLabel(),
       faction,
       leader,
       entries,
       cards,
       territories,
-      selectedRiteIds: state.factionId === "mystics" ? (ritesApi()?.selectedIds?.() || []) : [],
-      selectedRites: state.factionId === "mystics" ? (ritesApi()?.selectedRites?.() || []) : [],
+      selectedRiteIds: current.factionId === "mystics" ? (ritesApi()?.selectedIds?.() || []) : [],
+      selectedRites: current.factionId === "mystics" ? (ritesApi()?.selectedRites?.() || []) : [],
       validation: validateDeck(),
       constructionRules: deckbuilder.constructionRules(),
       supplementalPackage,

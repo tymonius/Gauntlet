@@ -211,6 +211,25 @@ describe("Deckbuilder extension architecture", () => {
     expect(app).toContain("Deckbuilder core state references an unavailable Leader.");
   });
 
+  it("keeps print and faction-component consumers behind the core Deck state API", () => {
+    const print = read("deckbuilder/print.js");
+    const production = read("deckbuilder/production-print.js");
+    const components = read("deckbuilder/faction-components.js");
+
+    for (const [path, source] of [
+      ["deckbuilder/print.js", print],
+      ["deckbuilder/production-print.js", production],
+      ["deckbuilder/faction-components.js", components],
+    ]) {
+      expect(source, `${path} reads shared core state directly`).not.toMatch(/\bstate\./);
+      expect(source, `${path} bypasses the core Deck snapshot API`).toContain("deckbuilder.deckState()");
+    }
+
+    expect(print).toContain("deckbuilder.cardCatalog()");
+    expect(print).toContain("deckbuilder.getLeader()");
+    expect(components).toContain("deckbuilder.getLeader()");
+  });
+
   it("drives print readiness through render lifecycle hooks rather than polling", () => {
     const print = read("deckbuilder/print.js");
     const bulk = read("deckbuilder/print-all-starters.js");

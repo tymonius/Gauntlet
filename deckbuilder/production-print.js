@@ -1,8 +1,8 @@
 (() => {
   const deckbuilder = window.GAUNTLET_DECKBUILDER;
   if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
-  const { state } = deckbuilder;
   const escapeHtml = value => deckbuilder.escapeHtml(value);
+  const deckState = () => deckbuilder.deckState();
 
   const COLUMNS = 3;
   const RENDER_TIMEOUT_MS = 30000;
@@ -104,8 +104,9 @@
 
   function renderProductionLeaderHtml(faction, leader) {
     const currentGame = resolvedCurrentGame();
-    const factionId = String(faction?.id || state.factionId || "").trim().toLowerCase();
-    const leaderId = String(leader?.id || state.leaderId || "").trim().toLowerCase();
+    const current = deckState();
+    const factionId = String(faction?.id || current.factionId || "").trim().toLowerCase();
+    const leaderId = String(leader?.id || current.leaderId || "").trim().toLowerCase();
     const canonicalLeader = currentGame.findLeader?.(factionId, leaderId)
       || currentGame.leaders?.find(item => item.faction === factionId && item.id === leaderId);
     if (!canonicalLeader) {
@@ -486,7 +487,7 @@
       return "intelligence";
     }
 
-    const faction = String(state.factionId || "intelligence").trim().toLowerCase();
+    const faction = String(deckState().factionId || "intelligence").trim().toLowerCase();
     return faction || "intelligence";
   }
 
