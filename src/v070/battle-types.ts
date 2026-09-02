@@ -181,7 +181,10 @@ export interface V070BattleRuntime {
   poisonousGasReserveGraveyardInstanceIds: string[];
   aftermathCardsCleared: boolean;
   routWindowOpen: boolean;
-  pendingRunGauntletWinner: PlayerId | null;
+  pendingGameVictory: {
+    winner: PlayerId;
+    route: 'last_stand' | 'final_territory_capture';
+  } | null;
   activeOverlayAtOnset: string | null;
   activePrintedTerritoryAtOnset: {
     territoryInstanceId: string;
@@ -245,7 +248,7 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     poisonousGasReserveGraveyardInstanceIds: [],
     aftermathCardsCleared: false,
     routWindowOpen: false,
-    pendingRunGauntletWinner: null,
+    pendingGameVictory: null,
     activeOverlayAtOnset: null,
     activePrintedTerritoryAtOnset: null,
     assetInactivePlayers: [],
