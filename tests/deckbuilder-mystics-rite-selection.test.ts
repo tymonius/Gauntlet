@@ -27,7 +27,7 @@ describe('Deckbuilder Mystics Rite selection', () => {
     expect(html).toContain('mystics-rites.css');
     expect(html).toContain('mystics-rites.js');
     expect(rites).toContain('../card-design/component-print-render.html?kind=rite&id=');
-    expect(rites).toContain('Choose exactly ${state.riteSelectedCount} different Rites');
+    expect(rites).toContain('Choose exactly ${riteState.selectedCount} different Rites');
     expect(riteCss).toContain('.compact-rite-row.chosen');
   });
 
@@ -38,19 +38,19 @@ describe('Deckbuilder Mystics Rite selection', () => {
     expect(html).not.toContain('Choose exactly three different Rites');
     expect(html).not.toContain('<span id="riteMetricCount">0</span> / 3');
     expect(html).not.toContain('Mystics imports also use the three Rites selected in this Deck.');
-    expect(rites).toContain('riteElements.riteRequiredCount.textContent = String(state.riteSelectedCount)');
-    expect(rites).toContain('riteElements.riteInstructionCount.textContent = String(state.riteSelectedCount)');
+    expect(rites).toContain('riteElements.riteRequiredCount.textContent = String(riteState.selectedCount)');
+    expect(rites).toContain('riteElements.riteInstructionCount.textContent = String(riteState.selectedCount)');
     expect(rites).not.toContain('FALLBACK_SELECTED_COUNT');
   });
 
   it('persists selected Rites through current Deck data, save/load, JSON import/export, and copied lists', () => {
     expect(rites).toContain('deckbuilder.registerSerializeHook(serializeRites)');
     expect(rites).toContain('deckbuilder.registerHydrateHook(hydrateRites)');
-    expect(rites).toContain('selectedRites: isMystics() ? [...state.rites] : []');
+    expect(rites).toContain('selectedRites: isMystics() ? [...riteState.selectedIds] : []');
     expect(rites).toContain('data.selectedRites || []');
     expect(rites).toContain('function riteDeckListLines()');
     expect(rites).toContain('Rites: ${names.join(", ") || "None"}');
-    expect(rites).toContain('state.pendingRites');
+    expect(rites).toContain('riteState.pending');
   });
 
   it('loads and recognizes the official starter Rite packages and preserves them during bulk printing', () => {
@@ -80,10 +80,10 @@ describe('Deckbuilder Mystics Rite selection', () => {
   });
 
   it('enforces the selected ruleset Rite policy while retaining support for fixed Rite packages', () => {
-    expect(rites).toContain('state.riteSelectionEnabled = Boolean(policy)');
-    expect(rites).toContain('state.rites = isMystics() ? state.ritePool.map(rite => rite.id) : []');
-    expect(rites).toContain('state.rites = state.riteSelectionEnabled');
-    expect(rites).toContain('errors.push(`Choose exactly ${state.riteSelectedCount} different Rites');
+    expect(rites).toContain('riteState.selectionEnabled = Boolean(policy)');
+    expect(rites).toContain('riteState.selectedIds = isMystics() ? riteState.pool.map(rite => rite.id) : []');
+    expect(rites).toContain('riteState.selectedIds = riteState.selectionEnabled');
+    expect(rites).toContain('errors.push(`Choose exactly ${riteState.selectedCount} different Rites');
     expect(rites).not.toContain('selectedRites || ["echoes", "blood", "crossing"]');
   });
 });
