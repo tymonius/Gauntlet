@@ -1,5 +1,6 @@
 import { resolveFirstArtwork, slugify } from './card-artwork-resolver.js';
 import { loadCurrentGame } from '../game-data/current-game.mjs';
+import { installPrintArtworkFinalizer } from './print-artwork-normalizer.js';
 
 await (async () => {
   const params = new URLSearchParams(window.location.search);
@@ -91,17 +92,10 @@ await (async () => {
     const displayVersion = versionOverride || await resolveDisplayVersion(currentGame);
     const card = sourceCard;
     const faction = slugify(card.allegiance);
-    let artwork = null;
+    const artwork = await resolveFirstArtwork(card, faction, imageExists);
     if (normalizedPrintArtwork) {
-      const normalizedArtwork = `images/print-artwork/cards/${encodeURIComponent(card.id)}.png`;
-      if (!await imageExists(`/${normalizedArtwork}`)) {
-        throw new Error(`Normalized print artwork is unavailable for ${card.id}.`);
-      }
-      artwork = normalizedArtwork;
-      document.body.dataset.printArtworkNormalized = 'true';
-      document.body.dataset.printArtworkSource = `/${normalizedArtwork}`;
-    } else {
-      artwork = await resolveFirstArtwork(card, faction, imageExists);
+      if (!artwork) throw new Error(`Canonical artwork is unavailable for ${card.id}.`);
+      installPrintArtworkFinalizer();
     }
     const preview = {
       id: card.id,
