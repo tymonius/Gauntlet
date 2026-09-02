@@ -69,9 +69,9 @@ describe('Deckbuilder Mystics Rite selection', () => {
 
   it('prints and displays only the selected Rite package rather than treating the production component subset as the package', () => {
     expect(components).toContain('component.family === "rite-card"');
-    expect(components).toContain('const selectedRiteItems = state.factionId === "mystics"');
+    expect(components).toContain('const selectedRiteItems = current.factionId === "mystics"');
     expect(components).toContain('ritesApi()?.selectedRites?.() || []');
-    expect(components).not.toContain('state.rites');
+    expect(components).not.toContain('const { state }');
     expect(components).toContain('reminder: rite.reminder?.text || ""');
     expect(print).toContain('(packageData.rites || []).filter(rite => data.selectedRiteIds.includes(rite.id))');
     expect(print).toContain('data.selectedRites.map(rite =>');
