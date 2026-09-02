@@ -128,6 +128,13 @@ function replaceDeckState(next = {}) {
   return deckState();
 }
 
+function setDeckStorageKey(value) {
+  const key = String(value || "").trim();
+  if (!key) throw new TypeError("Deckbuilder storage key is required.");
+  state.deckStorageKey = key;
+  return key;
+}
+
 function constructionRules() {
   const source = readCurrentGame()?.deckConstruction;
   if (!source) throw new Error("Selected ruleset has no Deck construction authority.");
@@ -219,6 +226,7 @@ const deckbuilderApi = Object.freeze({
   deckState,
   cardCatalog,
   replaceDeckState,
+  setDeckStorageKey,
   render: () => renderAll(),
   renderAvailable: () => renderAvailable(),
   renderFactionOptions: () => renderFactionOptions(),
