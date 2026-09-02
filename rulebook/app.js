@@ -36,12 +36,12 @@ let activeMode = RELEASED_MODE;
 let sectionObserver = null;
 
 const FACTIONS = new Map([
-  ['Military', '#8f1f25'],
-  ['Diplomats', '#244b8f'],
-  ['Financiers', '#276744'],
-  ['Intelligence', '#34373b'],
-  ['Mystics', '#603d78'],
-  ['Inquisition', '#9a6e21'],
+  ['Military', { color: '#8f1f25', symbol: "url('/images/faction-symbols/military.svg')" }],
+  ['Diplomats', { color: '#244b8f', symbol: "url('/images/faction-symbols/diplomats.svg')" }],
+  ['Financiers', { color: '#276744', symbol: "url('/images/faction-symbols/financiers.svg')" }],
+  ['Intelligence', { color: '#34373b', symbol: "url('/images/faction-symbols/intelligence.svg')" }],
+  ['Mystics', { color: '#603d78', symbol: "url('/images/faction-symbols/mystics.svg')" }],
+  ['Inquisition', { color: '#9a6e21', symbol: "url('/images/faction-symbols/inquisition.svg')" }],
 ]);
 
 const LEADERS = new Set([
@@ -81,9 +81,12 @@ function buildToc(headings) {
     link.className = level === 1 ? 'toc-primary' : 'toc-secondary';
     if (/^Part\s+[IVX]+\b/.test(label)) link.classList.add('toc-part');
     if (/^\d+\.\s+/.test(label)) link.classList.add('toc-chapter');
-    if (FACTIONS.has(chapterLabel)) {
+    const faction = FACTIONS.get(chapterLabel);
+    if (faction) {
       link.classList.add('toc-faction');
-      link.style.setProperty('--toc-accent', FACTIONS.get(chapterLabel));
+      link.dataset.faction = chapterLabel;
+      link.style.setProperty('--toc-accent', faction.color);
+      link.style.setProperty('--faction-symbol', faction.symbol);
     }
     fragment.append(link);
   });
@@ -116,8 +119,10 @@ function decoratePublication() {
         heading.classList.add('chapter-heading');
         heading.dataset.chapterTitle = chapterTitle;
         if (activeFaction) {
+          const faction = FACTIONS.get(activeFaction);
           heading.classList.add('faction-heading');
           heading.dataset.faction = activeFaction;
+          heading.style.setProperty('--faction-symbol', faction.symbol);
         }
 
         const number = document.createElement('span');
