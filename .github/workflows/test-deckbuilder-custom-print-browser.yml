@@ -10,6 +10,7 @@ on:
       - "card-design/**"
       - "game-data/current-game.json"
       - "game-data/**"
+      - "scripts/generate-print-artwork.mjs"
       - ".github/workflows/test-deckbuilder-custom-print-browser.yml"
   workflow_dispatch:
 
