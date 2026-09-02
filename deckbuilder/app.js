@@ -26,6 +26,7 @@ const extensionHooks = {
 };
 
 let authorityBootstrap = null;
+let currentGameAccessor = null;
 let sourceLoader = null;
 let selectedRuleset = null;
 let cardPreviewRenderer = null;
@@ -79,8 +80,12 @@ function preparePrintDocument(html, context = {}) {
   return output;
 }
 
+function readCurrentGame() {
+  return typeof currentGameAccessor === "function" ? currentGameAccessor() : null;
+}
+
 function constructionRules() {
-  const source = state.currentGameData?.deckConstruction;
+  const source = readCurrentGame()?.deckConstruction;
   if (!source) throw new Error("Selected ruleset has no Deck construction authority.");
 
   const positiveInteger = (value, label) => {
@@ -134,9 +139,17 @@ const deckbuilderApi = Object.freeze({
     if (typeof callback !== "function") throw new TypeError("Deckbuilder authority bootstrap must be a function.");
     authorityBootstrap = callback;
   },
+  setCurrentGameAccessor(callback) {
+    if (currentGameAccessor && currentGameAccessor !== callback) throw new Error("Deckbuilder current-game accessor is already configured.");
+    if (typeof callback !== "function") throw new TypeError("Deckbuilder current-game accessor must be a function.");
+    currentGameAccessor = callback;
+  },
   bootstrap() {
     if (typeof authorityBootstrap !== "function") throw new Error("Current Deckbuilder runtime is unavailable.");
     return authorityBootstrap();
+  },
+  currentGame() {
+    return readCurrentGame();
   },
   setSourceLoader(callback) {
     if (sourceLoader && sourceLoader !== callback) throw new Error("Deckbuilder source loader is already configured.");
@@ -500,11 +513,12 @@ function validateAndRender() {
 }
 
 function currentDeckData() {
+  const currentGame = readCurrentGame();
   let data = {
     schema: "gauntlet-deck",
     schemaVersion: 3,
-    gameVersion: state.currentGameVersion || "current-game",
-    gameAuthority: state.currentGameAuthority || "/game-data/current-game.json",
+    gameVersion: currentGame?.version || "current-game",
+    gameAuthority: currentGame?.authorityUrl || "/game-data/current-game.json",
     name: state.deckName.trim() || "Untitled Gauntlet Deck",
     factionId: state.factionId,
     leaderId: state.leaderId,
@@ -565,7 +579,7 @@ function applyDeckData(data) {
   if (data.schema !== "gauntlet-deck" || data.schemaVersion !== 3) {
     throw new Error("This is not a current Gauntlet Deck export.");
   }
-  const currentVersion = state.currentGameVersion || "current-game";
+  const currentVersion = readCurrentGame()?.version || "current-game";
   if (data.gameVersion && data.gameVersion !== currentVersion) {
     throw new Error(`This Deck was exported for ${data.gameVersion}; current authority is ${currentVersion}.`);
   }
