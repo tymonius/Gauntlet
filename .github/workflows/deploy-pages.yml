@@ -98,6 +98,13 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Generate printer-friendly playable artwork
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run print:artwork -- --output="$SITE_DIR/images/print-artwork"
+          test -s "$SITE_DIR/images/print-artwork/manifest.json"
+
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
@@ -218,6 +225,25 @@ jobs:
           test "$bytes" -lt 950000000
 
           test -s "$SITE_DIR/images/media/all-factions-promotional-showcase.png"
+          test -s "$SITE_DIR/images/print-artwork/manifest.json"
+          PRINT_ART_MANIFEST="$SITE_DIR/images/print-artwork/manifest.json" node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+          const manifest = JSON.parse(fs.readFileSync(process.env.PRINT_ART_MANIFEST, 'utf8'));
+          if (manifest.cardCount !== 142 || manifest.cards?.length !== manifest.cardCount) {
+            throw new Error(`Unexpected normalized print-artwork count: ${manifest.cardCount}`);
+          }
+          for (const card of manifest.cards) {
+            const file = path.join(path.dirname(process.env.PRINT_ART_MANIFEST), card.file);
+            if (!fs.existsSync(file) || fs.statSync(file).size < 10000) {
+              throw new Error(`Missing normalized print artwork: ${card.id}`);
+            }
+            if (Math.max(card.pixels.width, card.pixels.height) > 1800) {
+              throw new Error(`Normalized print artwork exceeded long-edge cap: ${card.id}`);
+            }
+          }
+          console.log(`Validated ${manifest.cardCount} normalized print artwork derivatives.`);
+          NODE
 
           for image in \
             "hero sketch.png" \
