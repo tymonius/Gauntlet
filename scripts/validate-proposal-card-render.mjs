@@ -78,6 +78,9 @@ async function main() {
     await page.waitForFunction(expected => (
       document.querySelectorAll('#proposal-cards .component-review-frame').length === expected
     ), EXPECTED_FACES);
+    await page.locator('#proposal-cards .component-review-frame').evaluateAll(frames => {
+      frames.forEach(frame => { frame.loading = 'eager'; });
+    });
     await page.waitForFunction(count => {
       const root = document.querySelector('#proposalReviewSections');
       return root?.dataset.proposalCount === String(count)
