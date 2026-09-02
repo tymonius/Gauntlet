@@ -120,7 +120,7 @@ jobs:
             normalized: frame.contentDocument?.body?.dataset.printArtworkNormalized || '',
             source: frame.contentDocument?.querySelector('.card-art img')?.currentSrc || frame.contentDocument?.querySelector('.card-art img')?.src || '',
           }));
-          if (playableFrameState.normalized !== 'true' || !playableFrameState.source.includes('/images/print-artwork/cards/neutral-rallying-cry.jpg')) {
+          if (playableFrameState.normalized !== 'true' || !playableFrameState.source.includes('/images/print-artwork/cards/neutral-rallying-cry.png')) {
             throw new Error(`Playable print artwork normalization failed: ${JSON.stringify(playableFrameState)}`);
           }
           if (await printPage.locator('iframe[src*="kind=leader"]').count() < 1) throw new Error('Leader production renderer was not used.');
