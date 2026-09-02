@@ -62,12 +62,12 @@ export interface V070DisruptedSupplyLinesSelection {
 }
 
 export interface V070TerritoryEffectSuppression {
-  source: 'pathfinders';
+  source: 'pathfinders' | 'fieldcraft';
   sourceActionInstanceId: string;
   playerId: PlayerId;
   territoryInstanceId: string;
   turnNumber: number;
-  scope: 'movement';
+  scope: 'movement' | 'turn';
 }
 
 export interface V070PlayerZones {
@@ -454,6 +454,8 @@ export interface V070FinancierState {
 export interface V070MissionSlot {
   instanceId: string;
   startedTurn: number;
+  satisfiedTurn: number | null;
+  progressFlags: string[];
 }
 
 export interface V070IntelligenceState {
@@ -462,6 +464,7 @@ export interface V070IntelligenceState {
   activeMission: V070MissionSlot | null;
   specialOperation: V070MissionSlot | null;
   missionControlUsedTurn: number | null;
+  fieldcraftUsedTurn: number | null;
 }
 
 export interface V070MilitaryState {
@@ -673,6 +676,7 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
             activeMission: null,
             specialOperation: null,
             missionControlUsedTurn: null,
+            fieldcraftUsedTurn: null,
           }
         : null,
     };
