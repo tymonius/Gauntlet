@@ -6,7 +6,7 @@ import type {
   GameState,
   PlayerID,
   SeditionBattleQueueEntry,
-} from '../types';
+} from '../types/v06';
 import type {
   PlayActionCardAction,
   ResolveBattleRevealAction,

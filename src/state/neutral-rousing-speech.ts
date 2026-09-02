@@ -5,7 +5,7 @@ import type {
   GameEvent,
   GameState,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import type { ResolveNeutralChoiceAction } from './actions';
 import { faceUpAssetCopies, faceUpAssetCount } from './asset-facing';
 import { drawFromDeck } from './draw';

@@ -6,7 +6,7 @@ import type {
   PlayerID,
   ResolvedBattleModifier,
   SpaceID,
-} from '../types';
+} from '../types/v06';
 import type { PlayActionCardAction } from './actions';
 import { GameActionError } from './reducer';
 import { territoryPrintedEffectIsActive } from './territory-printed-effects';

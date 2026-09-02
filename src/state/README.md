@@ -33,6 +33,8 @@ The remaining legacy Military runtime modules use the same explicit `../types/v0
 
 Shared legacy state support modules—including battle helpers, leader abilities, Territory overlays/effects, and v0.6 setup—also use the explicit `../types/v06` type-only boundary.
 
+Neutral card runtime modules likewise import shared engine shapes only through the explicit `../types/v06` type-only boundary.
+
 ## Hidden information rule
 
 The authoritative `GameState` contains all private information. UI and network clients using this legacy architecture should receive only one of these derived views:

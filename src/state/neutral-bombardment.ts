@@ -7,7 +7,7 @@ import type {
   PlayerID,
   SpaceID,
   TerritoryOverlayState,
-} from '../types';
+} from '../types/v06';
 import type { ResolveBattleRevealAction } from './actions';
 import { resolveBattleRevealCancellations } from './battle-reveal';
 import {

@@ -6,7 +6,7 @@ import type {
   GameEvent,
   GameState,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import type { ResolveNeutralChoiceAction } from './actions';
 import { drawFromDeck } from './draw';
 import { activeBankedAssetCopies, bankedAssetUseAllowed } from './intelligence-subversion-battle';

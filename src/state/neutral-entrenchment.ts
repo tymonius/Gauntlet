@@ -4,7 +4,7 @@ import type {
   GameState,
   PlayerID,
   SpaceID,
-} from '../types';
+} from '../types/v06';
 import { bankedAssetCardUseAllowed } from './intelligence-subversion-battle';
 import { GameActionError } from './reducer';
 

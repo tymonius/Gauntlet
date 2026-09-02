@@ -1,4 +1,4 @@
-import type { BattleParticipantState, BattlePlayedCard, CardID } from '../types';
+import type { BattleParticipantState, BattlePlayedCard, CardID } from '../types/v06';
 
 export const DECOYS = 'neutral-decoys';
 

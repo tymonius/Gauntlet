@@ -5,7 +5,7 @@ import type {
   GameState,
   PlayerID,
   ResolvedBattleModifier,
-} from '../types';
+} from '../types/v06';
 import { bankedAssetCardUseAllowed } from './intelligence-subversion-battle';
 
 export const FEALTY = 'neutral-fealty';

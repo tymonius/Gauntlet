@@ -8,7 +8,7 @@ import type {
   GameState,
   PlayerID,
   SpaceID,
-} from '../types';
+} from '../types/v06';
 import type { ResolveNeutralChoiceAction } from './actions';
 import { effectiveAssetBankLimit, removeBlockadesAfterControlChange } from './diplomat-persistent';
 import { activeBankedAssetCopies, bankedAssetUseAllowed } from './intelligence-subversion-battle';

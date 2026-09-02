@@ -4,7 +4,7 @@ import type {
   GameEvent,
   GameState,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import { faceUpAssetCopies } from './asset-facing';
 
 export const ILLEGAL_OCCUPATION = 'neutral-illegal-occupation';

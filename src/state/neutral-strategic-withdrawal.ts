@@ -7,7 +7,7 @@ import type {
   GameState,
   PlayerID,
   StrategicWithdrawalBattleTargetOption,
-} from '../types';
+} from '../types/v06';
 import type {
   PlayActionCardAction,
   ResolveBattleAction,

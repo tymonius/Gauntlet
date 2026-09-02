@@ -4,7 +4,7 @@ import type {
   GameEvent,
   GameState,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import { activeBankedAssetCopies } from './banked-assets';
 import { drawFromDeck } from './draw';
 

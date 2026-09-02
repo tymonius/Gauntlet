@@ -1,4 +1,4 @@
-import type { CardID, GameEvent, GameState, PlayerID } from '../types';
+import type { CardID, GameEvent, GameState, PlayerID } from '../types/v06';
 import { drawFromDeck } from './draw';
 
 export const CONTINGENCY_PLAN = 'neutral-contingency-plan';
