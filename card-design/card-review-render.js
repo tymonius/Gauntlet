@@ -1,5 +1,4 @@
 import { resolveFirstArtwork, slugify } from './card-artwork-resolver.js';
-import { normalizePrintArtworkSource } from './print-artwork-normalizer.js';
 import { loadCurrentGame } from '../game-data/current-game.mjs';
 
 await (async () => {
@@ -7,6 +6,7 @@ await (async () => {
   const cardId = params.get('card');
   const productionFit = params.get('fit') === 'production';
   const versionOverride = String(params.get('version') || '').trim();
+  const normalizedPrintArtwork = String(params.get('printArtwork') || '').trim().toLowerCase() === 'normalized';
   const target = document.getElementById('renderTarget');
 
   function sectionsFromEffects(effects) {
@@ -92,7 +92,16 @@ await (async () => {
     const card = sourceCard;
     const faction = slugify(card.allegiance);
     const sourceArtwork = await resolveFirstArtwork(card, faction, imageExists);
-    const artwork = await normalizePrintArtworkSource(sourceArtwork);
+    let artwork = sourceArtwork;
+    if (normalizedPrintArtwork && sourceArtwork) {
+      const normalizedArtwork = `/images/print-artwork/cards/${encodeURIComponent(card.id)}.jpg`;
+      if (!await imageExists(normalizedArtwork)) {
+        throw new Error(`Normalized print artwork is unavailable for ${card.id}.`);
+      }
+      artwork = normalizedArtwork;
+      document.body.dataset.printArtworkNormalized = 'true';
+      document.body.dataset.printArtworkSource = normalizedArtwork;
+    }
     const preview = {
       id: card.id,
       kind: 'playable',
