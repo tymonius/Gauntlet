@@ -46,6 +46,7 @@ describe("Deckbuilder production printing", () => {
     expect(printArtworkNormalizer).toContain("const DEFAULT_SHORT_EDGE = 960;");
     expect(printArtworkNormalizer).toContain("const DEFAULT_LONG_EDGE = 1800;");
     expect(printArtworkNormalizer).toContain("shortEdge / Math.min(sourceWidth, sourceHeight)");
+    expect(printArtworkNormalizer).toContain("alpha: false");
     expect(printArtworkNormalizer).toContain("colorSpace: 'srgb'");
     expect(printArtworkNormalizer).toContain("'image/png'");
     expect(printArtworkNormalizer).toContain("__gauntletPrintArtworkCache");
