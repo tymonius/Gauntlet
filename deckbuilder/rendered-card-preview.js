@@ -1,8 +1,8 @@
 (() => {
   const deckbuilder = window.GAUNTLET_DECKBUILDER;
   if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
-  const { state } = deckbuilder;
   const escapeHtml = value => deckbuilder.escapeHtml(value);
+  const deckState = () => deckbuilder.deckState();
 
   const CARD_WIDTH = 240;
   const CARD_HEIGHT = 336;
@@ -22,7 +22,7 @@
       return;
     }
 
-    const quantity = Number(state.deck?.[card.id] || 0);
+    const quantity = Number(deckState().deck?.[card.id] || 0);
     const uniqueAtLimit = Boolean(card.unique && quantity >= 1);
     const rendererUrl = `../card-design/card-review-render.html?card=${encodeURIComponent(card.id)}`;
 
