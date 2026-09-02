@@ -195,15 +195,30 @@ async function validateEmbeddedFrameInspector(page, sourceFrame, label) {
   const card = embedded.locator('.leader-card').first();
   await card.waitFor();
   await embedded.waitForFunction(() => document.querySelector('.leader-card')?.classList.contains('card-inspectable'));
+
+  const sourceCrop = await embedded.locator('.leader-card .card-art img').evaluate(image => ({
+    objectPosition: image.style.objectPosition,
+    transform: image.style.transform,
+    transformOrigin: image.style.transformOrigin,
+    artCrop: image.dataset.artCrop || '',
+    artFocusX: image.dataset.artFocusX || '',
+    artFocusY: image.dataset.artFocusY || '',
+    artZoom: image.dataset.artZoom || '',
+  }));
   await card.click();
 
   const dialog = page.locator('.card-inspection-dialog[open]').first();
   await dialog.waitFor();
+  await page.waitForFunction(() => (
+    document.querySelector('.card-inspection-dialog[open] .card-inspection-frame')
+      ?.contentDocument?.body?.dataset.renderReady === 'true'
+  ));
   const inspection = await dialog.evaluate(element => {
     const frame = element.querySelector('.card-inspection-frame');
     const frameRect = frame?.getBoundingClientRect();
     const stage = element.querySelector('.card-inspection-stage');
     const stageRect = stage?.getBoundingClientRect();
+    const image = frame?.contentDocument?.querySelector('.leader-card .card-art img');
     return {
       open: element.open,
       position: getComputedStyle(element).position,
@@ -213,6 +228,15 @@ async function validateEmbeddedFrameInspector(page, sourceFrame, label) {
       stageWidth: stageRect?.width || 0,
       stageHeight: stageRect?.height || 0,
       inspectionSource: frame?.src || '',
+      crop: image ? {
+        objectPosition: image.style.objectPosition,
+        transform: image.style.transform,
+        transformOrigin: image.style.transformOrigin,
+        artCrop: image.dataset.artCrop || '',
+        artFocusX: image.dataset.artFocusX || '',
+        artFocusY: image.dataset.artFocusY || '',
+        artZoom: image.dataset.artZoom || '',
+      } : null,
     };
   });
 
@@ -224,6 +248,9 @@ async function validateEmbeddedFrameInspector(page, sourceFrame, label) {
   }
   if (!inspection.inspectionSource.includes('inspection=1')) {
     throw new Error(`${label} embedded inspector did not request canonical inspection mode: ${JSON.stringify(inspection)}.`);
+  }
+  if (JSON.stringify(inspection.crop) !== JSON.stringify(sourceCrop)) {
+    throw new Error(`${label} inspection crop drifted from the catalog face: ${JSON.stringify({ sourceCrop, inspectionCrop: inspection.crop })}.`);
   }
 
   await dialog.locator('.card-inspection-close').click();
@@ -302,13 +329,25 @@ async function main() {
 
     const leaderPage = await browser.newPage({ viewport: { width: 1100, height: 1000 }, deviceScaleFactor: 2 });
     try {
+      // Reproduce the developer compositor state that exposed the regression:
+      // a local draft must be consumed inside every canonical render surface,
+      // not applied only by the catalog parent after the iframe is ready.
+      await leaderPage.goto(baseUrl, { waitUntil: 'load' });
+      await leaderPage.evaluate(() => localStorage.setItem(
+        'gauntlet.art-direction-drafts.v1',
+        JSON.stringify({ 'financiers-banker': { focus: [0.41, 0.27], zoom: 1.08 } }),
+      ));
       await leaderPage.goto(`${baseUrl}/card-design/?type=leader#leader-cards`, { waitUntil: 'load' });
-      const leaderFrame = leaderPage.locator('#leader-cards .component-review-frame').first();
+      const leaderFrame = leaderPage.locator(
+        '#leader-cards .component-review-frame[src*="kind=leader"][src*="id=financiers-banker"]'
+      ).first();
       await leaderFrame.waitFor();
       await leaderPage.waitForFunction(() => (
-        document.querySelector('#leader-cards .component-review-frame')?.contentDocument?.body?.dataset.renderReady === 'true'
+        [...document.querySelectorAll('#leader-cards .component-review-frame')]
+          .find(frame => frame.src.includes('id=financiers-banker'))
+          ?.contentDocument?.body?.dataset.renderReady === 'true'
       ));
-      await validateEmbeddedFrameInspector(leaderPage, leaderFrame, 'Leader card');
+      await validateEmbeddedFrameInspector(leaderPage, leaderFrame, 'Banker Leader card');
     } finally {
       await leaderPage.close();
     }
