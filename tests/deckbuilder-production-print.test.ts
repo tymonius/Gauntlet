@@ -43,7 +43,9 @@ describe("Deckbuilder production printing", () => {
   it("normalizes only playable-card artwork for direct printing while leaving the card face live", () => {
     expect(printTransform).toContain("&fit=production&printArtwork=normalized&rules=");
     expect(playableRenderJs).toContain("normalizePrintArtworkSource(sourceArtwork)");
-    expect(printArtworkNormalizer).toContain("const DEFAULT_MAX_EDGE = 1000;");
+    expect(printArtworkNormalizer).toContain("const DEFAULT_SHORT_EDGE = 960;");
+    expect(printArtworkNormalizer).toContain("const DEFAULT_LONG_EDGE = 1800;");
+    expect(printArtworkNormalizer).toContain("shortEdge / Math.min(sourceWidth, sourceHeight)");
     expect(printArtworkNormalizer).toContain("colorSpace: 'srgb'");
     expect(printArtworkNormalizer).toContain("'image/png'");
     expect(printArtworkNormalizer).toContain("__gauntletPrintArtworkCache");
