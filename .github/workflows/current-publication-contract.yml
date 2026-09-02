@@ -44,6 +44,7 @@ jobs:
             /about/index.html
             /faq/index.html
             /privacy/index.html
+            /contact/**/index.html
             /404.html
             /robots.txt
             /sitemap.xml
