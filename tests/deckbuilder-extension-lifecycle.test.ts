@@ -13,7 +13,6 @@ const extensions = [
   "deckbuilder/starter-handoff.js",
   "deckbuilder/faction-components.js",
   "deckbuilder/rendered-card-preview.js",
-  "deckbuilder/metadata-ui.js",
   "deckbuilder/print.js",
   "deckbuilder/production-print.js",
   "deckbuilder/card-back-preview.js",
@@ -228,6 +227,15 @@ describe("Deckbuilder extension architecture", () => {
     expect(print).toContain("deckbuilder.cardCatalog()");
     expect(print).toContain("deckbuilder.getLeader()");
     expect(components).toContain("deckbuilder.getLeader()");
+  });
+
+  it("keeps starter handoff behind the core Deck state API", () => {
+    const handoff = read("deckbuilder/starter-handoff.js");
+
+    expect(handoff).not.toMatch(/\bstate\./);
+    expect(handoff).toContain("deckbuilder.replaceDeckState({");
+    expect(handoff).toContain("factionId: faction.id");
+    expect(handoff).toContain("leaderId: leader.id");
   });
 
   it("drives print readiness through render lifecycle hooks rather than polling", () => {
