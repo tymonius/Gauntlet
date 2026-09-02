@@ -446,6 +446,9 @@ export interface V070FinancierState {
   financialCapacityTurn: number | null;
   financialCapacityUsedTurn: number | null;
   financierFeatureActionSpentTurn: number | null;
+  deedPurchaseTurn: number | null;
+  hostileTakeoverTurn: number | null;
+  hostileTakeoverTerritoryInstanceId: string | null;
 }
 
 export interface V070MissionSlot {
@@ -658,6 +661,9 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
             financialCapacityTurn: null,
             financialCapacityUsedTurn: null,
             financierFeatureActionSpentTurn: null,
+            deedPurchaseTurn: null,
+            hostileTakeoverTurn: null,
+            hostileTakeoverTerritoryInstanceId: null,
           }
         : null,
       intelligence: starter.definition.factionId === 'intelligence'
