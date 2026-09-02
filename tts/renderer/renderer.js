@@ -85,6 +85,17 @@
         { id: card.id, label: card.name },
       );
     }
+
+    if (typeof window.GAUNTLET_RENDER_FINALIZE === 'function') {
+      try {
+        await window.GAUNTLET_RENDER_FINALIZE({ element, artImage, card });
+      } catch (error) {
+        document.body.dataset.renderReady = 'error';
+        document.body.dataset.renderErrorMessage = error?.message || String(error);
+        console.error(error);
+        return;
+      }
+    }
     document.body.dataset.renderReady = 'true';
   }, { once: true });
 
