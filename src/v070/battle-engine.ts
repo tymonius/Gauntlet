@@ -118,10 +118,13 @@ import {
   passV070GuardiansOfTheCircle,
   prepareV070MysticLossInterruption,
   recordV070MysticCrossingEligibility,
+  passV070MysticInvocation,
   resolveV070MateriaPrimaAfterAftermath,
   resolveV070MysticRitualVictory,
   useV070GuardiansOfTheCircle,
+  useV070MysticInvocation,
   useV070MysticTransmutation,
+  v070MysticInvocationPendingPlayers,
 } from './mystics';
 
 export const V070_NORMAL_BATTLE_DICE = 1 as const;
@@ -239,6 +242,12 @@ export type V070BattleAction =
       cardInstanceId: string;
     }
   | {
+      type: 'use_mystic_invocation';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | { type: 'pass_mystic_invocation'; playerId: PlayerId }
+  | {
       type: 'use_guardians_of_the_circle';
       playerId: PlayerId;
       cardInstanceId: string;
@@ -334,6 +343,18 @@ export function reduceV070BattleAction(
     throw new V070GameActionError(
       'Resolve the pending Final Judgment Purge choice before continuing the battle.',
     );
+  }
+  const invocationPlayers = v070MysticInvocationPendingPlayers(state);
+  if (invocationPlayers.length > 0) {
+    const resolvingInvocation =
+      (action.type === 'use_mystic_invocation'
+        || action.type === 'pass_mystic_invocation')
+      && invocationPlayers.includes(action.playerId);
+    if (!resolvingInvocation) {
+      throw new V070GameActionError(
+        'Resolve or decline the pending Mystics Invocation before continuing the battle.',
+      );
+    }
   }
   if (state.battleRuntime?.guardiansWindowOpen
     && action.type !== 'use_guardians_of_the_circle'
@@ -561,6 +582,16 @@ export function reduceV070BattleAction(
         action.playerId,
         action.cardInstanceId,
       );
+      break;
+    case 'use_mystic_invocation':
+      useV070MysticInvocation(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
+      break;
+    case 'pass_mystic_invocation':
+      passV070MysticInvocation(next, action.playerId);
       break;
     case 'use_guardians_of_the_circle':
       useV070GuardiansOfTheCircle(
