@@ -176,6 +176,8 @@ export function recordV070MysticBattleEffectApplied(
   if (!isV070MysticPlayer(state, playerId)) return;
   const mystics = requireMystics(state, playerId);
   const rite = mystics.rites.echoes;
+  const invocationWasUnlocked =
+    v070MysticCompletedRiteCount(state, playerId) >= 1;
 
   if (rite.status === 'begun'
     && rite.begunTurn !== null
@@ -210,12 +212,14 @@ export function recordV070MysticBattleEffectApplied(
     }
   }
 
-  openV070MysticInvocationAfterEffect(
-    state,
-    playerId,
-    sourceInstanceId,
-    true,
-  );
+  if (invocationWasUnlocked) {
+    openV070MysticInvocationAfterEffect(
+      state,
+      playerId,
+      sourceInstanceId,
+      true,
+    );
+  }
 }
 
 export function openV070MysticInvocationAfterActionEffect(
