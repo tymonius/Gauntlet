@@ -39,6 +39,10 @@ describe("Deckbuilder extension architecture", () => {
     expect(app).toContain("setAuthorityBootstrap(callback)");
     expect(app).toContain("setCurrentGameAccessor(callback)");
     expect(app).toContain("currentGame()");
+    expect(app).toContain("deckState,");
+    expect(app).toContain("cardCatalog,");
+    expect(app).toContain("replaceDeckState,");
+    expect(app).toContain("getLeader: () => getLeader()");
     expect(app).toContain("setSourceLoader(callback)");
     expect(app).toContain("setCardPreviewRenderer(callback)");
     expect(app).toContain("registerPrintTransform,");
@@ -188,6 +192,23 @@ describe("Deckbuilder extension architecture", () => {
     expect(starters).toContain("ritesApi()?.setSelectedIds?.(starterRiteIds(preset))");
     expect(bulk).toContain("territoriesApi()?.setSelectedIds?.(territories)");
     expect(bulk).toContain("ritesApi()?.setSelectedIds?.(starterRiteIds(preset))");
+  });
+
+  it("keeps starter workflows behind the core Deck state API", () => {
+    const starters = read("deckbuilder/starter-decks.js");
+    const bulk = read("deckbuilder/print-all-starters.js");
+
+    for (const source of [starters, bulk]) {
+      expect(source).not.toMatch(/\bstate\./);
+      expect(source).toContain("deckbuilder.deckState()");
+      expect(source).toContain("deckbuilder.cardCatalog()");
+      expect(source).toContain("deckbuilder.replaceDeckState(");
+    }
+
+    expect(starters).toContain("deckbuilder.getLeader()");
+    expect(app).toContain("function replaceDeckState(next = {})");
+    expect(app).toContain("Deckbuilder core state references an unavailable faction.");
+    expect(app).toContain("Deckbuilder core state references an unavailable Leader.");
   });
 
   it("drives print readiness through render lifecycle hooks rather than polling", () => {
