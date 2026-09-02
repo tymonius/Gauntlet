@@ -75,24 +75,25 @@ async function main() {
 
   try {
     await page.goto(`${baseUrl}/card-design/?type=proposal#proposal-cards`, { waitUntil: 'load' });
-    await page.waitForFunction(expected => document.querySelectorAll('.proposal-card').length === expected, EXPECTED_FACES);
+    await page.waitForFunction(expected => (
+      document.querySelectorAll('#proposal-cards .component-review-frame').length === expected
+    ), EXPECTED_FACES);
     await page.waitForFunction(count => {
       const root = document.querySelector('#proposalReviewSections');
       return root?.dataset.proposalCount === String(count)
         && root?.dataset.proposalAuthority === '/game-data/current-game.json';
     }, EXPECTED_PROPOSALS);
-    await page.waitForFunction(() => [...document.querySelectorAll('.proposal-card')].every(card => (
-      card.dataset.parchmentLoaded === 'true'
-      && card.dataset.titleFit === 'true'
-      && card.querySelector('.card-interior')?.style.getPropertyValue('--art-height')
-    )));
-    await page.waitForFunction(() => [...document.querySelectorAll('.proposal-ratified-panel .proposal-wax-seal')].every(image => (
-      image.complete && image.naturalWidth > 0 && image.naturalHeight > 0
+    await page.waitForFunction(() => [...document.querySelectorAll('#proposal-cards .component-review-frame')].every(frame => (
+      frame.contentDocument?.body?.dataset.renderReady === 'true'
     )));
     await page.evaluate(async () => document.fonts?.ready);
     await page.waitForTimeout(150);
 
-    const metrics = await page.locator('.proposal-card').evaluateAll(cards => cards.map(card => {
+    const metrics = await page.locator('#proposal-cards .component-review-frame').evaluateAll(frames => frames.flatMap(frame => {
+      const doc = frame.contentDocument;
+      const card = doc?.querySelector('.proposal-card');
+      if (!card) return [];
+      const view = doc.defaultView;
       const rect = card.getBoundingClientRect();
       const art = card.querySelector('.card-art')?.getBoundingClientRect();
       const seal = card.querySelector('.proposal-wax-seal');
@@ -101,7 +102,7 @@ async function main() {
         label: section.querySelector('h4')?.textContent?.trim() || '',
         text: section.querySelector('p')?.textContent?.trim() || '',
       }));
-      return {
+      return [{
         name: card.querySelector('.card-title')?.textContent?.trim() || '',
         type: card.querySelector('.card-footer span:nth-child(2)')?.textContent?.trim() || '',
         version: card.querySelector('.card-footer span:nth-child(3)')?.textContent?.trim() || '',
@@ -113,7 +114,7 @@ async function main() {
         fitWarning: card.classList.contains('fit-warning'),
         titleFit: card.dataset.titleFit,
         parchmentLoaded: card.dataset.parchmentLoaded,
-        rulesScale: Number.parseFloat(getComputedStyle(card).getPropertyValue('--rules-scale')) || 1,
+        rulesScale: Number.parseFloat(view?.getComputedStyle(card).getPropertyValue('--rules-scale')) || 1,
         pendingArtwork: Boolean(card.querySelector('.proposal-art-pending')),
         ratifiedPanel: Boolean(card.querySelector('.proposal-ratified-panel')),
         sealWidth: sealRect?.width || 0,
@@ -121,7 +122,7 @@ async function main() {
         sealNaturalWidth: seal?.naturalWidth || 0,
         sealNaturalHeight: seal?.naturalHeight || 0,
         ruleSections,
-      };
+      }];
     }));
 
     if (metrics.length !== EXPECTED_FACES) {
