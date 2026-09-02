@@ -62,7 +62,7 @@ async function normalizeSource(source, shortEdge, longEdge) {
   canvas.height = height;
 
   const context = canvas.getContext('2d', {
-    alpha: true,
+    alpha: false,
     colorSpace: 'srgb',
   });
   if (!context) throw new Error('This browser cannot create the normalized print artwork canvas.');
