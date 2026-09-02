@@ -320,6 +320,20 @@ footer {
 .chapter-heading .heading-anchor { grid-column: 3; }
 
 .rulebook-content .faction-heading { border-top-width: 5px; }
+.rulebook-content .faction-heading .chapter-title {
+  display: flex;
+  align-items: center;
+  gap: .42em;
+}
+.rulebook-content .faction-heading .chapter-title::before {
+  content: "";
+  width: .9em;
+  height: .9em;
+  flex: 0 0 auto;
+  background: var(--chapter-accent);
+  -webkit-mask: var(--faction-symbol) center / contain no-repeat;
+  mask: var(--faction-symbol) center / contain no-repeat;
+}
 .rulebook-content [data-faction="Military"] { --chapter-accent: #8f1f25; }
 .rulebook-content [data-faction="Diplomats"] { --chapter-accent: #244b8f; }
 .rulebook-content [data-faction="Financiers"] { --chapter-accent: #276744; }
