@@ -56,7 +56,7 @@ function normalizePackageRoot(value) {
 }
 
 // The current release package index is a redirect shim. Analytics belongs on
-// the canonical public landing page (/v0.6.3/), not on the package directory.
+// the canonical public release landing page, not on the package directory.
 try {
   const lifecycle = JSON.parse(await readFile(path.join(ROOT, "config/release-lifecycle.json"), "utf8"));
   const current = lifecycle.releases?.[lifecycle.current_release];
