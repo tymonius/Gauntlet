@@ -43,17 +43,18 @@ describe("Deckbuilder production printing", () => {
 
   it("normalizes only playable-card artwork for direct printing while leaving the card face live", () => {
     expect(printTransform).toContain("&fit=production&printArtwork=normalized&rules=");
-    expect(playableRenderJs).toContain("/images/print-artwork/cards/");
+    expect(playableRenderJs).toContain("images/print-artwork/cards/");
     expect(playableRenderJs).toContain("Normalized print artwork is unavailable");
     expect(printArtworkGenerator).toContain("resolveFirstArtwork");
     expect(printArtworkGenerator).toContain("const SHORT_EDGE = 960;");
     expect(printArtworkGenerator).toContain("const LONG_EDGE = 1800;");
-    expect(printArtworkGenerator).toContain("const JPEG_QUALITY = 95;");
+    expect(printArtworkGenerator).toContain("const PNG_COMPRESSION_LEVEL = 9;");
     expect(printArtworkGenerator).toContain("SHORT_EDGE / Math.min(sourceWidth, sourceHeight)");
     expect(printArtworkGenerator).toContain(".flatten({ background: ART_WINDOW_BACKGROUND })");
     expect(printArtworkGenerator).toContain(".toColourspace('srgb')");
-    expect(printArtworkGenerator).toContain("chromaSubsampling: '4:4:4'");
-    expect(printArtworkGenerator).toContain("cards/${card.id}.jpg");
+    expect(printArtworkGenerator).toContain("adaptiveFiltering: true");
+    expect(printArtworkGenerator).toContain("palette: false");
+    expect(printArtworkGenerator).toContain("cards/${card.id}.png");
     expect(deployPages).toContain('npm run print:artwork -- --output="$SITE_DIR/images/print-artwork"');
     expect(printTransform).not.toContain("data:image");
     expect(printTransform).not.toContain("canvas.toBlob");
