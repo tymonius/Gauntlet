@@ -40,6 +40,7 @@ jobs:
             /artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md
             /releases/v0.6.3/**
             /images/sketches/
+            /images/faction-symbols/*.svg
 
       - name: Use Node.js
         uses: actions/setup-node@v4
