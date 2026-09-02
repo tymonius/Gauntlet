@@ -230,6 +230,44 @@ describe('v0.7.0 Inquisition Purge and leaders', () => {
     expect(state.turnState?.actionsTaken.denouement).toBe(1);
   });
 
+  test('Purge 1 combined-value mode moves up to two Discard cards totaling value 2 or less', () => {
+    let state = readyGame(
+      'inquisition-grand-inquisitor-final-judgment',
+      'military-commandant-holdfast',
+    );
+    state = toOpening(state, 'A');
+    state.players.A.inquisition!.conviction = 1;
+    const first = injectCard(
+      state,
+      'B',
+      'neutral-rallying-cry',
+      'combined-first',
+      'discardPile',
+    );
+    const second = injectCard(
+      state,
+      'B',
+      'neutral-new-recruits',
+      'combined-second',
+      'discardPile',
+    );
+
+    state = reduceV070TurnAction(state, {
+      type: 'inquisition_purge',
+      playerId: 'A',
+      printedCost: 1,
+      discardMode: 'combined',
+      targetInstanceIds: [first, second],
+    });
+
+    expect(state.players.A.inquisition?.conviction).toBe(0);
+    expect(state.players.B.zones.discardPile).not.toContain(first);
+    expect(state.players.B.zones.discardPile).not.toContain(second);
+    expect(state.players.B.zones.graveyard).toEqual(
+      expect.arrayContaining([first, second]),
+    );
+  });
+
   test('Purge 3 spends Conviction and lets the opponent choose the Hand card', () => {
     let state = readyGame(
       'inquisition-grand-inquisitor-final-judgment',
