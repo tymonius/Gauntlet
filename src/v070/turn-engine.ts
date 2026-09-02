@@ -134,6 +134,7 @@ import {
   returnV070SmugglersRunStashAtStartTurn,
   stashV070SmugglersRunCard,
 } from './smugglers-run';
+import { useV070GeneralOnward } from './military';
 
 export type V070TurnAction =
   | { type: 'resolve_capture'; playerId: PlayerId }
@@ -143,6 +144,7 @@ export type V070TurnAction =
       useRuinedStorehouse?: boolean;
     }
   | { type: 'pass_opening'; playerId: PlayerId }
+  | { type: 'use_general_onward'; playerId: PlayerId }
   | {
       type: 'bank_asset';
       playerId: PlayerId;
@@ -745,6 +747,9 @@ export function reduceV070TurnAction(
       break;
     case 'pass_opening':
       passOpening(next, action.playerId);
+      break;
+    case 'use_general_onward':
+      useV070GeneralOnward(next, action.playerId);
       break;
     case 'bank_asset':
       bankAsset(next, action.playerId, action.cardInstanceId, action.replaceAssetInstanceId);
@@ -8975,7 +8980,8 @@ function chooseMovement(
   if (state.pendingSanctionChoices.length > 0) return;
 
   if (!state.turnState.movementSequenceOpen
-    && sequenceSource === 'normal') {
+    && (sequenceSource === 'normal'
+      || movementStep.source === 'General Rout')) {
     state.turnState = advanceV070TurnPhase(state.turnState);
     appendPhaseEvent(state);
   }
