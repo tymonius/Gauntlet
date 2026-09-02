@@ -14,7 +14,10 @@ import {
   appendV070Event,
   type V070GameState,
 } from './engine';
-import { drawV070Cards } from './turn-engine';
+import {
+  completeV070RelentlessPursuitTransition,
+  drawV070Cards,
+} from './turn-engine';
 import { resolveV070SupportedRevealEffects } from './battle-effects';
 import {
   activeV070OverlayAtBattleOnset,
@@ -99,6 +102,16 @@ import {
   useV070GeneralRout,
   v070GeneralRoutAvailableAtEndOfAftermath,
 } from './military';
+import {
+  useV070GrandInquisitorFinalJudgment,
+  useV070WitchHunterRelentlessPursuit,
+  v070GrandInquisitorFinalJudgmentAvailable,
+  v070WitchHunterRelentlessPursuitAvailable,
+} from './inquisition-leaders';
+import {
+  resolveV070PurgeHandChoice,
+  type V070PurgePrintedCost,
+} from './purge';
 
 export const V070_NORMAL_BATTLE_DICE = 1 as const;
 
@@ -210,6 +223,22 @@ export type V070BattleAction =
   | { type: 'use_commandant_fortify'; playerId: PlayerId }
   | { type: 'use_general_rout'; playerId: PlayerId }
   | {
+      type: 'use_grand_inquisitor_final_judgment';
+      playerId: PlayerId;
+      printedCost: V070PurgePrintedCost;
+      discardMode?: 'top' | 'combined';
+      targetInstanceIds?: readonly string[];
+      assetInstanceId?: string;
+    }
+  | { type: 'pass_grand_inquisitor_final_judgment'; playerId: PlayerId }
+  | { type: 'use_witch_hunter_relentless_pursuit'; playerId: PlayerId }
+  | { type: 'pass_witch_hunter_relentless_pursuit'; playerId: PlayerId }
+  | {
+      type: 'resolve_inquisition_purge_hand_choice';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
       type: 'use_ranger_fieldcraft';
       playerId: PlayerId;
       territoryPosition: number;
@@ -276,6 +305,26 @@ export function reduceV070BattleAction(
   if (state.pendingSanctionChoices.length > 0) {
     throw new V070GameActionError(
       'Resolve the pending Sanction movement choice before continuing the battle.',
+    );
+  }
+  if (state.pendingPurgeChoice
+    && action.type !== 'resolve_inquisition_purge_hand_choice') {
+    throw new V070GameActionError(
+      'Resolve the pending Final Judgment Purge choice before continuing the battle.',
+    );
+  }
+  if (state.battleRuntime?.finalJudgmentWindowOpen
+    && action.type !== 'use_grand_inquisitor_final_judgment'
+    && action.type !== 'pass_grand_inquisitor_final_judgment') {
+    throw new V070GameActionError(
+      'Resolve or decline the pending Final Judgment opportunity before continuing.',
+    );
+  }
+  if (state.battleRuntime?.relentlessPursuitWindowOpen
+    && action.type !== 'use_witch_hunter_relentless_pursuit'
+    && action.type !== 'pass_witch_hunter_relentless_pursuit') {
+    throw new V070GameActionError(
+      'Resolve or decline the pending Relentless Pursuit opportunity before continuing.',
     );
   }
   if (state.battleRuntime?.routWindowOpen
@@ -476,6 +525,37 @@ export function reduceV070BattleAction(
     }
     case 'use_general_rout':
       useGeneralRoutAtEndOfAftermath(next, action.playerId);
+      break;
+    case 'use_grand_inquisitor_final_judgment':
+      useGrandInquisitorFinalJudgmentAtEndOfAftermath(
+        next,
+        action.playerId,
+        action.printedCost,
+        {
+          discardMode: action.discardMode,
+          targetInstanceIds: action.targetInstanceIds,
+          assetInstanceId: action.assetInstanceId,
+        },
+      );
+      break;
+    case 'pass_grand_inquisitor_final_judgment':
+      passGrandInquisitorFinalJudgment(next, action.playerId);
+      break;
+    case 'use_witch_hunter_relentless_pursuit':
+      useWitchHunterRelentlessPursuitAtEndOfAftermath(
+        next,
+        action.playerId,
+      );
+      break;
+    case 'pass_witch_hunter_relentless_pursuit':
+      passWitchHunterRelentlessPursuit(next, action.playerId);
+      break;
+    case 'resolve_inquisition_purge_hand_choice':
+      resolveFinalJudgmentPurgeHandChoice(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
       break;
     case 'use_ranger_fieldcraft': {
       const runtime = requireRuntime(next);
@@ -2082,6 +2162,38 @@ function completeAftermathInternal(
     return;
   }
 
+  const finalJudgmentPlayer =
+    v070GrandInquisitorFinalJudgmentAvailable(state);
+  if (finalJudgmentPlayer) {
+    runtime.finalJudgmentWindowOpen = true;
+    appendV070Event(state, {
+      type: 'inquisition_leader_window_opened',
+      actor: finalJudgmentPlayer,
+      visibility: 'public',
+      payload: {
+        ability: 'Final Judgment',
+        timing: 'after_battle_cards_cleared',
+      },
+    });
+    return;
+  }
+
+  const relentlessPursuitPlayer =
+    v070WitchHunterRelentlessPursuitAvailable(state);
+  if (relentlessPursuitPlayer) {
+    runtime.relentlessPursuitWindowOpen = true;
+    appendV070Event(state, {
+      type: 'inquisition_leader_window_opened',
+      actor: relentlessPursuitPlayer,
+      visibility: 'public',
+      payload: {
+        ability: 'Relentless Pursuit',
+        timing: 'after_battle_cards_cleared',
+      },
+    });
+    return;
+  }
+
   if (v070GeneralRoutAvailableAtEndOfAftermath(state)) {
     runtime.routWindowOpen = true;
     appendV070Event(state, {
@@ -2094,6 +2206,156 @@ function completeAftermathInternal(
   }
 
   finalizeCompletedAftermath(state);
+}
+
+
+function useGrandInquisitorFinalJudgmentAtEndOfAftermath(
+  state: V070GameState,
+  playerId: PlayerId,
+  printedCost: V070PurgePrintedCost,
+  options: {
+    discardMode?: 'top' | 'combined';
+    targetInstanceIds?: readonly string[];
+    assetInstanceId?: string;
+  },
+): void {
+  const runtime = requireRuntime(state);
+  if (!runtime.finalJudgmentWindowOpen
+    || v070GrandInquisitorFinalJudgmentAvailable(state) !== playerId) {
+    throw new V070GameActionError(
+      'Final Judgment is not pending for that player.',
+    );
+  }
+
+  const result = useV070GrandInquisitorFinalJudgment(
+    state,
+    playerId,
+    printedCost,
+    options,
+  );
+  runtime.finalJudgmentWindowOpen = false;
+  if (!result.pendingChoice) {
+    completeAftermathInternal(state, null);
+  }
+}
+
+function passGrandInquisitorFinalJudgment(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  const runtime = requireRuntime(state);
+  if (!runtime.finalJudgmentWindowOpen
+    || v070GrandInquisitorFinalJudgmentAvailable(state) !== playerId) {
+    throw new V070GameActionError(
+      'Final Judgment is not pending for that player.',
+    );
+  }
+
+  runtime.finalJudgmentWindowOpen = false;
+  appendV070Event(state, {
+    type: 'inquisition_leader_window_declined',
+    actor: playerId,
+    visibility: 'public',
+    payload: { ability: 'Final Judgment' },
+  });
+  finalizeCompletedAftermath(state);
+}
+
+function resolveFinalJudgmentPurgeHandChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const pending = state.pendingPurgeChoice;
+  if (!pending || pending.source !== 'final_judgment') {
+    throw new V070GameActionError(
+      'No Final Judgment Purge choice is pending.',
+    );
+  }
+  resolveV070PurgeHandChoice(state, playerId, targetInstanceId);
+  completeAftermathInternal(state, null);
+}
+
+function useWitchHunterRelentlessPursuitAtEndOfAftermath(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  const runtime = requireRuntime(state);
+  if (!runtime.relentlessPursuitWindowOpen
+    || v070WitchHunterRelentlessPursuitAvailable(state) !== playerId) {
+    throw new V070GameActionError(
+      'Relentless Pursuit is not pending for that player.',
+    );
+  }
+
+  useV070WitchHunterRelentlessPursuit(state, playerId);
+  runtime.relentlessPursuitWindowOpen = false;
+  finalizeAftermathForRelentlessPursuit(state, playerId);
+}
+
+function passWitchHunterRelentlessPursuit(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  const runtime = requireRuntime(state);
+  if (!runtime.relentlessPursuitWindowOpen
+    || v070WitchHunterRelentlessPursuitAvailable(state) !== playerId) {
+    throw new V070GameActionError(
+      'Relentless Pursuit is not pending for that player.',
+    );
+  }
+
+  runtime.relentlessPursuitWindowOpen = false;
+  appendV070Event(state, {
+    type: 'inquisition_leader_window_declined',
+    actor: playerId,
+    visibility: 'public',
+    payload: { ability: 'Relentless Pursuit' },
+  });
+  finalizeCompletedAftermath(state);
+}
+
+function finalizeAftermathForRelentlessPursuit(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  const runtime = requireRuntime(state);
+
+  appendV070Event(state, {
+    type: 'battle_aftermath_complete',
+    visibility: 'public',
+    payload: {
+      positions: {
+        A: state.players.A.position,
+        B: state.players.B.position,
+      },
+    },
+  });
+
+  state.battle = null;
+  state.battleRuntime = null;
+
+  let turnState = state.turnState;
+  if (!turnState) {
+    throw new Error(
+      'Relentless Pursuit requires the defeated attacker to have an active turn.',
+    );
+  }
+  while (turnState.phase !== 'cleanup') {
+    turnState = advanceV070TurnPhase(turnState);
+  }
+  state.turnState = turnState;
+
+  appendV070Event(state, {
+    type: 'turn_ended_by_relentless_pursuit',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      defeatedAttackerId:
+        state.pendingRelentlessPursuit?.defeatedAttackerId,
+      nextPhase: 'cleanup',
+    },
+  });
 }
 
 function useGeneralRoutAtEndOfAftermath(
@@ -2161,18 +2423,36 @@ function finalizeCompletedAftermath(state: V070GameState): void {
     return;
   }
 
-  if (!state.turnState || state.turnState.phase !== 'movement') {
-    throw new Error('A completed movement battle must return to the Movement phase boundary.');
+  if (!state.turnState) {
+    throw new Error(
+      'A completed battle requires an active turn boundary.',
+    );
   }
   if (state.pendingSanctionChoices.length > 0) return;
 
-  state.turnState = advanceV070TurnPhase(state.turnState);
-  appendV070Event(state, {
-    type: 'turn_phase',
-    actor: state.activePlayer ?? undefined,
-    visibility: 'public',
-    payload: { turnNumber: state.turnNumber, phase: state.turnState.phase },
-  });
+  if (state.pendingRelentlessPursuit
+    && state.activePlayer === state.pendingRelentlessPursuit.playerId
+    && state.turnState.phase === 'capture'
+    && !state.turnState.movementSequenceOpen) {
+    completeV070RelentlessPursuitTransition(
+      state,
+      state.pendingRelentlessPursuit.playerId,
+    );
+    return;
+  }
+
+  if (state.turnState.phase === 'movement') {
+    state.turnState = advanceV070TurnPhase(state.turnState);
+    appendV070Event(state, {
+      type: 'turn_phase',
+      actor: state.activePlayer ?? undefined,
+      visibility: 'public',
+      payload: {
+        turnNumber: state.turnNumber,
+        phase: state.turnState.phase,
+      },
+    });
+  }
 }
 
 function bothBattleChoicesMade(
