@@ -410,6 +410,57 @@ describe('v0.7.0 Mystics progression and leaders', () => {
     expect(state.players.A.mystics?.invocationPending).toBeNull();
   });
 
+  test('Invocation resolves before Fate\'s Toll effect-granted movement continues', () => {
+    let state = toDenouement(readyGame());
+    setCompletedRites(state, 'A', 1);
+    const target = injectCard(
+      state,
+      'A',
+      'neutral-rallying-cry',
+      'invocation-before-movement',
+      'graveyard',
+    );
+    const source = injectCard(
+      state,
+      'A',
+      'mystics-fate-s-toll',
+      'invocation-fates-toll',
+      'hand',
+    );
+    const payment = injectCard(
+      state,
+      'A',
+      'neutral-new-recruits',
+      'invocation-fates-payment',
+      'hand',
+    );
+
+    state = reduceV070TurnAction(state, {
+      type: 'play_action_card',
+      playerId: 'A',
+      cardInstanceId: source,
+    });
+    state = reduceV070TurnAction(state, {
+      type: 'choose_fates_toll_cost',
+      playerId: 'A',
+      targetInstanceId: payment,
+    });
+
+    expect(state.players.A.mystics?.invocationPending).not.toBeNull();
+    expect(state.turnState?.movementSequenceOpen).toBe(true);
+    expect(state.turnState?.movementSequenceSource).toBe('effect');
+
+    state = reduceV070TurnAction(state, {
+      type: 'use_mystic_invocation',
+      playerId: 'A',
+      targetInstanceId: target,
+    });
+
+    expect(state.players.A.mystics?.invocationPending).toBeNull();
+    expect(state.turnState?.movementSequenceOpen).toBe(true);
+    expect(state.players.A.zones.discardPile).toContain(target);
+  });
+
   test('Transmutation adds card value and Alchemist Materia Prima waits until after battle Aftermath', () => {
     let state = activeBattle();
     setCompletedRites(state, 'A', 2);
