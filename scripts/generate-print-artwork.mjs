@@ -10,7 +10,7 @@ const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const DEFAULT_OUTPUT_ROOT = join(ROOT, 'images', 'print-artwork');
 const SHORT_EDGE = 960;
 const LONG_EDGE = 1800;
-const JPEG_QUALITY = 95;
+const PNG_COMPRESSION_LEVEL = 9;
 const ART_WINDOW_BACKGROUND = Object.freeze({ r: 138, g: 122, b: 103 });
 
 function jsonText(value) {
@@ -62,7 +62,7 @@ async function normalizeArtwork(card, outputRoot) {
   const source = sourcePath(artwork);
   const metadata = await sharp(source, { failOn: 'error' }).metadata();
   const dimensions = targetDimensions(metadata.width, metadata.height);
-  const output = join(outputRoot, 'cards', `${card.id}.jpg`);
+  const output = join(outputRoot, 'cards', `${card.id}.png`);
 
   await sharp(source, { failOn: 'error' })
     .rotate()
@@ -73,10 +73,10 @@ async function normalizeArtwork(card, outputRoot) {
     })
     .flatten({ background: ART_WINDOW_BACKGROUND })
     .toColourspace('srgb')
-    .jpeg({
-      quality: JPEG_QUALITY,
-      chromaSubsampling: '4:4:4',
-      mozjpeg: true,
+    .png({
+      compressionLevel: PNG_COMPRESSION_LEVEL,
+      adaptiveFiltering: true,
+      palette: false,
       force: true,
     })
     .toFile(output);
@@ -87,7 +87,7 @@ async function normalizeArtwork(card, outputRoot) {
     name: card.name,
     faction: card.faction,
     source: String(artwork),
-    file: `cards/${card.id}.jpg`,
+    file: `cards/${card.id}.png`,
     sourcePixels: {
       width: Number(metadata.width),
       height: Number(metadata.height),
@@ -132,9 +132,9 @@ async function main() {
       purpose: 'Deckbuilder direct-print artwork only; card typography/layout remain live canonical Card Design output',
       shortEdge: SHORT_EDGE,
       longEdgeCap: LONG_EDGE,
-      format: 'jpeg',
-      quality: JPEG_QUALITY,
-      chromaSubsampling: '4:4:4',
+      format: 'png',
+      lossless: true,
+      compressionLevel: PNG_COMPRESSION_LEVEL,
       colorSpace: 'sRGB',
       alpha: 'flattened against canonical card-art background',
     },
@@ -153,4 +153,4 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   });
 }
 
-export { ART_WINDOW_BACKGROUND, JPEG_QUALITY, LONG_EDGE, SHORT_EDGE, targetDimensions };
+export { ART_WINDOW_BACKGROUND, LONG_EDGE, PNG_COMPRESSION_LEVEL, SHORT_EDGE, targetDimensions };
