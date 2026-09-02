@@ -153,6 +153,7 @@ export interface V070PlayerViewState {
   position: number | null;
   controlledTerritories: string[];
   assetLimit: number;
+  military: V070GameState['players'][PlayerId]['military'];
   diplomats: V070GameState['players'][PlayerId]['diplomats'];
   inquisition: V070InquisitionView | null;
   financiers: V070FinancierView | null;
@@ -409,6 +410,7 @@ function viewPlayer(
     position: player.position,
     controlledTerritories: [...player.controlledTerritories],
     assetLimit: effectiveV070AssetLimit(state, playerId),
+    military: player.military ? structuredClone(player.military) : null,
     diplomats: player.diplomats ? structuredClone(player.diplomats) : null,
     inquisition: player.inquisition
       ? { conviction: player.inquisition.conviction }
