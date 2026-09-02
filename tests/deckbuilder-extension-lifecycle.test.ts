@@ -41,6 +41,9 @@ describe("Deckbuilder extension architecture", () => {
     expect(app).toContain("currentGame()");
     expect(app).toContain("deckState,");
     expect(app).toContain("cardCatalog,");
+    expect(app).toContain("factionCatalog,");
+    expect(app).toContain("setFactionCatalog,");
+    expect(app).toContain("setSourceCatalog,");
     expect(app).toContain("replaceDeckState,");
     expect(app).toContain("setDeckStorageKey,");
     expect(app).toContain("getLeader: () => getLeader()");
@@ -57,6 +60,26 @@ describe("Deckbuilder extension architecture", () => {
     for (const { path, source } of extensions) {
       expect(source, `${path} reads the removed public state property`).not.toContain("deckbuilder.state");
       expect(source, `${path} destructures removed public state`).not.toMatch(/const\s*\{\s*state(?:\s*,|\s*\})/);
+    }
+  });
+
+  it("does not expose mutable faction or source catalogs to extensions", () => {
+    const handoff = read("deckbuilder/starter-handoff.js");
+    const bulk = read("deckbuilder/print-all-starters.js");
+
+    expect(app).not.toContain("sources: SOURCES,");
+    expect(app).not.toContain("factions: FACTIONS,");
+    expect(runtime).not.toContain("factions: FACTIONS");
+    expect(runtime).not.toContain("sources: SOURCES");
+    expect(runtime).toContain("deckbuilder.setFactionCatalog(");
+    expect(runtime).toContain("deckbuilder.setSourceCatalog({");
+    expect(handoff).toContain("deckbuilder.factionCatalog()");
+    expect(bulk).toContain("deckbuilder.factionCatalog()");
+    expect(bulk).not.toContain("deckbuilder.factions");
+
+    for (const { path, source } of extensions) {
+      expect(source, `${path} reads the removed faction collection`).not.toContain("deckbuilder.factions");
+      expect(source, `${path} reads the removed source collection`).not.toContain("deckbuilder.sources");
     }
   });
 
