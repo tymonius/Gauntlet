@@ -320,6 +320,18 @@ export function reduceV070BattleAction(
       'Resolve the pending Poisonous Gas Reserve loss before continuing the Aftermath.',
     );
   }
+  const invocationPlayers = v070MysticInvocationPendingPlayers(state);
+  if (invocationPlayers.length > 0) {
+    const resolvingInvocation =
+      (action.type === 'use_mystic_invocation'
+        || action.type === 'pass_mystic_invocation')
+      && invocationPlayers.includes(action.playerId);
+    if (!resolvingInvocation) {
+      throw new V070GameActionError(
+        'Resolve or decline the pending Mystics Invocation before continuing the battle.',
+      );
+    }
+  }
   if (state.battleRuntime?.stage === 'choose_tactics'
     && state.battleRuntime.trainingGroundsRedrawPlayer
     && !state.battleRuntime.trainingGroundsRedrawResolved
@@ -343,18 +355,6 @@ export function reduceV070BattleAction(
     throw new V070GameActionError(
       'Resolve the pending Final Judgment Purge choice before continuing the battle.',
     );
-  }
-  const invocationPlayers = v070MysticInvocationPendingPlayers(state);
-  if (invocationPlayers.length > 0) {
-    const resolvingInvocation =
-      (action.type === 'use_mystic_invocation'
-        || action.type === 'pass_mystic_invocation')
-      && invocationPlayers.includes(action.playerId);
-    if (!resolvingInvocation) {
-      throw new V070GameActionError(
-        'Resolve or decline the pending Mystics Invocation before continuing the battle.',
-      );
-    }
   }
   if (state.battleRuntime?.guardiansWindowOpen
     && action.type !== 'use_guardians_of_the_circle'
