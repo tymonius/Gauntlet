@@ -50,6 +50,7 @@ describe('artwork composition canonical guardrails', () => {
   });
 
   it('forces browsers to load the guardrail-enabled authoring client', () => {
+    expect(targets).toContain("GAUNTLET_ART_DIRECTION_DRAFT_HYDRATION = 'pending'");
     expect(targets).toContain('artwork-authoring-client.js?v=20260902-2');
   });
 });
