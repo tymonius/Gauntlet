@@ -1,7 +1,7 @@
 (() => {
   const deckbuilder = window.GAUNTLET_DECKBUILDER;
   if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
-  const { state, factions: FACTIONS, sources: SOURCES } = deckbuilder;
+  const { factions: FACTIONS, sources: SOURCES } = deckbuilder;
 
   const RELEASED_MODE = "released";
   const CANDIDATE_MODE = "candidate";
@@ -16,9 +16,9 @@
     if (!currentGamePromise) {
       currentGamePromise = import("../game-data/ruleset.mjs")
         .then(async module => {
-          state.deckStorageKey = requestedRulesetMode === CANDIDATE_MODE
+          deckbuilder.setDeckStorageKey(requestedRulesetMode === CANDIDATE_MODE
             ? "gauntlet-current-game-decks"
-            : `gauntlet-${module.PUBLISHED_VERSION}-decks`;
+            : `gauntlet-${module.PUBLISHED_VERSION}-decks`);
           const data = await module.loadGameRuleset(requestedRulesetMode);
           deckbuilder.setRuleset({
             mode: requestedRulesetMode,
@@ -64,12 +64,17 @@
         rules: leaderRules(leader)
       }))
     })));
-    if (!FACTIONS.some(faction => faction.id === state.factionId)) {
-      state.factionId = FACTIONS[0]?.id || "";
-    }
-    const selected = FACTIONS.find(faction => faction.id === state.factionId);
-    if (selected && !selected.leaders.some(leader => leader.id === state.leaderId)) {
-      state.leaderId = selected.leaders[0]?.id || "";
+    const current = deckbuilder.deckState();
+    const factionId = FACTIONS.some(faction => faction.id === current.factionId)
+      ? current.factionId
+      : (FACTIONS[0]?.id || "");
+    const selected = FACTIONS.find(faction => faction.id === factionId);
+    const leaderId = selected?.leaders.some(leader => leader.id === current.leaderId)
+      ? current.leaderId
+      : (selected?.leaders[0]?.id || "");
+
+    if (factionId && leaderId && (factionId !== current.factionId || leaderId !== current.leaderId)) {
+      deckbuilder.replaceDeckState({ ...current, factionId, leaderId });
     }
   }
 
@@ -104,13 +109,14 @@
   });
 
   function deckHasWorkInProgress() {
+    const current = deckbuilder.deckState();
     const territories = deckbuilder.feature("territories");
     const rites = deckbuilder.feature("mysticsRites");
     return Boolean(
-      Object.keys(state.deck || {}).length
+      Object.keys(current.deck || {}).length
       || territories?.selectedIds?.().length
       || (rites?.selectionEnabled?.() && rites.selectedIds?.().length)
-      || (state.deckName && state.deckName !== "Untitled Gauntlet Deck")
+      || (current.deckName && current.deckName !== "Untitled Gauntlet Deck")
     );
   }
 
