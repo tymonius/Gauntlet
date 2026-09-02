@@ -20,6 +20,7 @@ const supplementalPrintTransform = readFileSync("deckbuilder/print-capital-ledge
 const cardBackPolicy = readFileSync("deckbuilder/card-back-preview.js", "utf8");
 const analyticsSync = readFileSync("scripts/sync-google-analytics.mjs", "utf8");
 const currentGameLoader = readFileSync("game-data/current-game.mjs", "utf8");
+const rulesetLoader = readFileSync("game-data/ruleset.mjs", "utf8");
 const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
 const componentContract = currentGame.componentContract;
 
@@ -106,6 +107,15 @@ describe("Deckbuilder production printing", () => {
     expect(cardBackPolicy).toContain('Automatic backs: black for playable cards and Territories');
     expect(cardBackPolicy).not.toContain("window.open");
     expect(cardBackPolicy).not.toContain("document.write");
+  });
+
+  it("keeps released print content on the one current Card Design visual authority", () => {
+    expect(rulesetLoader).toContain("CURRENT_VISUAL_AUTHORITY_URL");
+    expect(rulesetLoader).toContain("loadJson(CURRENT_VISUAL_AUTHORITY_URL)");
+    expect(rulesetLoader).toContain("visualAuthority?.artDirection");
+    expect(rulesetLoader).toContain("artDirectionFor(id)");
+    expect(rulesetLoader).not.toContain("const artDirection = {};");
+    expect(currentGameLoader).toContain("visualAuthorityUrl: CURRENT_GAME_AUTHORITY_URL");
   });
 
   it("reuses the Deckbuilder's already-loaded game authority inside production print iframes", () => {
