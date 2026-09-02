@@ -125,6 +125,22 @@ function validateCanonicalFooter(html, route) {
   );
 }
 
+function validateModernPublicPage(html, route) {
+  const expectedCanonical = new URL(route, 'https://gauntlet.run').href;
+  assert(/<meta\s+name=(['"])description\1\s+content=(['"])[^'"]+\2/i.test(html), `${route} is missing a meta description.`);
+  assert(html.includes(`rel="canonical" href="${expectedCanonical}"`), `${route} canonical URL drifted from ${expectedCanonical}.`);
+  assert(html.includes('property="og:title"'), `${route} is missing Open Graph title metadata.`);
+  assert(html.includes('property="og:description"'), `${route} is missing Open Graph description metadata.`);
+  assert(html.includes('property="og:image"'), `${route} is missing Open Graph image metadata.`);
+  assert(html.includes('name="twitter:card" content="summary_large_image"'), `${route} is missing Twitter card metadata.`);
+  assert(html.includes('/site-polish.css'), `${route} does not load shared public-site polish styles.`);
+  assert(html.includes('class="skip-link" href="#main-content"'), `${route} is missing the skip-to-content link.`);
+  assert(/<main\b[^>]*id=(['"])main-content\1/i.test(html), `${route} main landmark is missing id="main-content".`);
+  assert(html.includes('site-edition-badge'), `${route} is missing the current-edition indicator.`);
+  assert(html.includes('/analytics-consent.js'), `${route} does not use opt-in analytics consent.`);
+  assert(!html.includes('googletagmanager.com/gtag/js?id='), `${route} loads Google Analytics before consent.`);
+}
+
 function brandHomeRef(html, route) {
   const brand = html.match(/<a\b[^>]*class=(['"])[^'"]*\bbrand\b[^'"]*\1[^>]*>/i)?.[0];
   assert(brand, `${route} is missing the shared brand link.`);
@@ -205,7 +221,7 @@ assert.equal(bookletPdf.getPageCount(), bookletEntry.pages, 'Published booklet p
 const routeValues = Object.values(manifest.public_routes ?? {}).filter((route) => typeof route === 'string');
 const releaseLandingRoute = `/${currentVersion}/`;
 const changelogRoute = '/changelog/';
-const siteInfoRoutes = ['/about/', '/faq/', '/privacy/', '/contact/'];
+const siteInfoRoutes = ['/about/', '/faq/', '/privacy/', '/contact/', '/accessibility/', '/press/'];
 const withdrawnVersionRoutes = Object.entries(lifecycle.releases ?? {})
   .filter(([, release]) => release?.status === 'withdrawn')
   .flatMap(([version]) => [`/${version}/`, `/releases/${version}/`]);
@@ -260,6 +276,7 @@ for (const [route, html] of pages) {
   if (!canonicalFooterExceptions.has(route)) {
     validateCanonicalFooter(html, route);
   }
+  validateModernPublicPage(html, route);
 }
 
 for (const route of footerOnlyRoutes) {
@@ -274,12 +291,16 @@ assert(notFoundPage.includes('name="robots" content="noindex,follow"'), '404 pag
 assert.deepEqual(primaryNavigationLinks(notFoundPage, '/404.html'), canonicalPrimaryNavigation, '404 primary navigation drifted.');
 assert.equal(brandHomeRef(notFoundPage, '/404.html'), '/', '404 brand link does not return to the site root.');
 validateCanonicalFooter(notFoundPage, '/404.html');
+assert(notFoundPage.includes('/analytics-consent.js'), '404 page does not use opt-in analytics consent.');
+assert(!notFoundPage.includes('googletagmanager.com/gtag/js?id='), '404 page loads Google Analytics before consent.');
 
 const contactThanks = await getText('/contact/thanks/');
 assert(contactThanks.includes('name="robots" content="noindex,follow"'), 'Contact confirmation page must remain out of search indexes.');
 assert.deepEqual(primaryNavigationLinks(contactThanks, '/contact/thanks/'), canonicalPrimaryNavigation, 'Contact confirmation primary navigation drifted.');
 assert.equal(brandHomeRef(contactThanks, '/contact/thanks/'), '/', 'Contact confirmation brand link does not return to the site root.');
 validateCanonicalFooter(contactThanks, '/contact/thanks/');
+assert(contactThanks.includes('/analytics-consent.js'), 'Contact confirmation page does not use opt-in analytics consent.');
+assert(!contactThanks.includes('googletagmanager.com/gtag/js?id='), 'Contact confirmation page loads Google Analytics before consent.');
 
 const robots = await getText('/robots.txt');
 assert(robots.includes('Sitemap: https://gauntlet.run/sitemap.xml'), 'robots.txt does not advertise the canonical sitemap.');
