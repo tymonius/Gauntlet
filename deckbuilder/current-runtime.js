@@ -1,7 +1,6 @@
 (() => {
   const deckbuilder = window.GAUNTLET_DECKBUILDER;
   if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
-  const { factions: FACTIONS, sources: SOURCES } = deckbuilder;
 
   const RELEASED_MODE = "released";
   const CANDIDATE_MODE = "candidate";
@@ -49,7 +48,7 @@
   function hydrateFactions(data) {
     if (hydrated) return;
     hydrated = true;
-    FACTIONS.splice(0, FACTIONS.length, ...(data.factions || []).map(faction => ({
+    const factions = deckbuilder.setFactionCatalog((data.factions || []).map(faction => ({
       id: faction.id,
       name: faction.name,
       status: "ready",
@@ -65,10 +64,10 @@
       }))
     })));
     const current = deckbuilder.deckState();
-    const factionId = FACTIONS.some(faction => faction.id === current.factionId)
+    const factionId = factions.some(faction => faction.id === current.factionId)
       ? current.factionId
-      : (FACTIONS[0]?.id || "");
-    const selected = FACTIONS.find(faction => faction.id === factionId);
+      : (factions[0]?.id || "");
+    const selected = factions.find(faction => faction.id === factionId);
     const leaderId = selected?.leaders.some(leader => leader.id === current.leaderId)
       ? current.leaderId
       : (selected?.leaders[0]?.id || "");
@@ -79,7 +78,7 @@
   }
 
   const sourceFor = (id, label) => ({ label, path: "/game-data/current-game.json", canonicalFaction: id });
-  Object.assign(SOURCES, {
+  deckbuilder.setSourceCatalog({
     neutral: sourceFor("neutral", "Neutral"),
     military: sourceFor("military", "Military"),
     diplomats: sourceFor("diplomats", "Diplomats"),
