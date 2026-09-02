@@ -23,6 +23,7 @@ import {
   appendV070Event,
   deterministicV070Shuffle,
   type V070GameState,
+  type V070MysticRiteId,
   type V070PlayerState,
 } from './engine';
 import {
@@ -146,6 +147,12 @@ import {
   startV070Purge,
   type V070PurgePrintedCost,
 } from './purge';
+import {
+  beginV070MysticRite,
+  beginV070MysticRitual,
+  recordV070MysticQualifyingHandSacrifice,
+  resolveV070MysticCrossingAfterCapture,
+} from './mystics';
 
 export type V070TurnAction =
   | { type: 'resolve_capture'; playerId: PlayerId }
@@ -156,6 +163,22 @@ export type V070TurnAction =
     }
   | { type: 'pass_opening'; playerId: PlayerId }
   | { type: 'use_general_onward'; playerId: PlayerId }
+  | {
+      type: 'mystics_begin_rite';
+      playerId: PlayerId;
+      riteId: V070MysticRiteId;
+      echoesGraveyardInstanceId?: string;
+      echoesHandInstanceId?: string;
+      bloodCostInstanceId?: string;
+      crossingCostInstanceId?: string;
+    }
+  | {
+      type: 'mystics_begin_ritual';
+      playerId: PlayerId;
+      handInstanceId: string;
+      discardInstanceId: string;
+      graveyardInstanceId: string;
+    }
   | {
       type: 'inquisition_purge';
       playerId: PlayerId;
@@ -798,6 +821,12 @@ export function reduceV070TurnAction(
     case 'use_general_onward':
       useV070GeneralOnward(next, action.playerId);
       break;
+    case 'mystics_begin_rite':
+      mysticsBeginRite(next, action);
+      break;
+    case 'mystics_begin_ritual':
+      mysticsBeginRitual(next, action);
+      break;
     case 'inquisition_purge':
       inquisitionPurge(
         next,
@@ -1318,6 +1347,7 @@ function resolveCapture(state: V070GameState, playerId: PlayerId): void {
   }
 
   applyV070FinancierAfterCapture(state, playerId);
+  resolveV070MysticCrossingAfterCapture(state, playerId);
 
   state.turnState = advanceV070TurnPhase(requireTurnState(state));
   appendPhaseEvent(state);
@@ -1644,6 +1674,42 @@ function spendTurnAction(
       );
     }
   }
+}
+
+function mysticsBeginRite(
+  state: V070GameState,
+  action: Extract<V070TurnAction, { type: 'mystics_begin_rite' }>,
+): void {
+  requirePhase(state, 'denouement');
+  spendTurnAction(state, action.playerId);
+  beginV070MysticRite(
+    state,
+    action.playerId,
+    action.riteId,
+    {
+      echoesGraveyardInstanceId: action.echoesGraveyardInstanceId,
+      echoesHandInstanceId: action.echoesHandInstanceId,
+      bloodCostInstanceId: action.bloodCostInstanceId,
+      crossingCostInstanceId: action.crossingCostInstanceId,
+    },
+  );
+}
+
+function mysticsBeginRitual(
+  state: V070GameState,
+  action: Extract<V070TurnAction, { type: 'mystics_begin_ritual' }>,
+): void {
+  requirePhase(state, 'denouement');
+  spendTurnAction(state, action.playerId);
+  beginV070MysticRitual(
+    state,
+    action.playerId,
+    {
+      handInstanceId: action.handInstanceId,
+      discardInstanceId: action.discardInstanceId,
+      graveyardInstanceId: action.graveyardInstanceId,
+    },
+  );
 }
 
 function requireIntelligenceDenouement(
