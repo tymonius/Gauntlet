@@ -40,6 +40,7 @@ on:
       - "images/artwork/supplemental/**"
       - "scripts/render-card-back-specimen.mjs"
       - "scripts/render-leader-card-specimens.mjs"
+      - "scripts/generate-print-artwork.mjs"
       - "scripts/validate-territory-mobile-render.mjs"
       - "scripts/validate-current-territory-render.mjs"
       - "scripts/validate-rite-card-render.mjs"
@@ -75,6 +76,8 @@ jobs:
       - name: Install Playwright Chromium
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install chromium
+      - name: Generate printer-friendly playable artwork
+        run: npm run print:artwork
       - name: Render and validate card review catalog
         run: node scripts/render-leader-card-specimens.mjs
       - name: Render and validate universal card back
