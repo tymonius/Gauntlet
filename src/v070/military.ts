@@ -111,7 +111,7 @@ export function v070GeneralRoutAvailableAtEndOfAftermath(
     || !runtime
     || runtime.stage !== 'aftermath'
     || !runtime.aftermathCardsCleared
-    || runtime.pendingRunGauntletWinner
+    || runtime.pendingGameVictory
     || battle.winner !== battle.attacker) {
     return false;
   }
@@ -156,8 +156,6 @@ export function useV070GeneralRout(
       battleRestriction: 'allowed',
     },
   );
-  state.battle = null;
-  state.battleRuntime = null;
 
   appendOrderEvent(state, playerId, 'Rout', 2, {
     phase,
