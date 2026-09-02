@@ -65,18 +65,12 @@ async function main() {
 
   try {
     await page.goto(`${baseUrl}/card-design/?type=all#leader-cards`, { waitUntil: 'load' });
-    await page.waitForSelector('.leader-card');
     await page.waitForFunction(count => document.querySelectorAll('.full-card-review-frame').length === count, 142);
     await page.waitForFunction(count => document.querySelectorAll('.territory-review-frame').length === count, 25);
-    await page.waitForFunction(count => document.querySelectorAll('.leader-card').length === count, expectedLeaderNames.length);
-    await page.waitForFunction(() => [...document.querySelectorAll('.leader-card .card-art img')].every(image => image.complete && image.naturalWidth > 0));
-    await page.evaluate(async () => document.fonts?.ready);
-
-    const fonts = await page.evaluate(() => ({
-      title: document.fonts.check('12px "p22-1722-pro"'),
-      rules: document.fonts.check('12px "adobe-caslon-pro"'),
-    }));
-    if (!fonts.title || !fonts.rules) throw new Error(`Required card fonts failed to load: ${JSON.stringify(fonts)}.`);
+    await page.waitForFunction(count => document.querySelectorAll('#leader-cards .component-review-frame').length === count, expectedLeaderNames.length);
+    await page.waitForFunction(() => [...document.querySelectorAll('#leader-cards .component-review-frame')].every(frame => (
+      frame.contentDocument?.body?.dataset.renderReady === 'true'
+    )));
 
     const catalogLayout = await page.evaluate(() => {
       const bodyStyles = getComputedStyle(document.body);
@@ -113,21 +107,44 @@ async function main() {
       }
     }
 
-    const leaders = await page.locator('.leader-card').evaluateAll(cards => cards.map(card => {
-      const rect = card.getBoundingClientRect();
-      const portrait = card.querySelector('.card-art img');
-      return {
-        name: card.querySelector('.card-title')?.textContent?.trim() || '',
-        faction: card.dataset.faction || '',
-        width: rect.width,
-        height: rect.height,
-        fitWarning: card.classList.contains('fit-warning'),
-        titleFit: card.dataset.titleFit,
-        parchmentLoaded: card.dataset.parchmentLoaded,
-        portraitLoaded: Boolean(portrait?.complete && portrait?.naturalWidth > 0),
-        portraitPath: portrait ? new URL(portrait.src).pathname : '',
-      };
-    }));
+    const leaderPage = await context.newPage();
+    const leaders = [];
+    let fonts = null;
+    for (const sourceLeader of current.leaders || []) {
+      const renderId = `${sourceLeader.faction}-${slugify(sourceLeader.name)}`;
+      await leaderPage.goto(`${baseUrl}/card-design/component-render.html?kind=leader&id=${encodeURIComponent(renderId)}&side=front`, { waitUntil: 'load' });
+      await leaderPage.waitForFunction(() => document.body.dataset.renderReady === 'true');
+      if (!fonts) {
+        await leaderPage.evaluate(async () => document.fonts?.ready);
+        fonts = await leaderPage.evaluate(() => ({
+          title: document.fonts.check('12px "p22-1722-pro"'),
+          rules: document.fonts.check('12px "adobe-caslon-pro"'),
+        }));
+        if (!fonts.title || !fonts.rules) throw new Error(`Required card fonts failed to load: ${JSON.stringify(fonts)}.`);
+      }
+
+      const leader = await leaderPage.locator('.leader-card').evaluate(card => {
+        const rect = card.getBoundingClientRect();
+        const portrait = card.querySelector('.card-art img');
+        return {
+          name: card.querySelector('.card-title')?.textContent?.trim() || '',
+          faction: card.dataset.faction || '',
+          width: rect.width,
+          height: rect.height,
+          fitWarning: card.classList.contains('fit-warning'),
+          titleFit: card.dataset.titleFit,
+          parchmentLoaded: card.dataset.parchmentLoaded,
+          portraitLoaded: Boolean(portrait?.complete && portrait?.naturalWidth > 0),
+          portraitPath: portrait ? new URL(portrait.src).pathname : '',
+        };
+      });
+      leaders.push(leader);
+      await leaderPage.locator('.leader-card').screenshot({
+        path: join(OUTPUT, `${slugify(sourceLeader.name)}.png`),
+        omitBackground: true,
+      });
+    }
+    await leaderPage.close();
 
     const names = leaders.map(record => record.name);
     if (expectedLeaderNames.some(name => !names.includes(name))) throw new Error(`Leader catalog is incomplete: ${JSON.stringify(names)}.`);
@@ -147,10 +164,6 @@ async function main() {
     }
 
     await page.locator('#leader-cards').screenshot({ path: join(OUTPUT, 'leader-card-review-page.png') });
-    for (const leader of leaders) {
-      await page.locator('.leader-card').filter({ has: page.locator('.card-title', { hasText: leader.name }) }).first()
-        .screenshot({ path: join(OUTPUT, `${slugify(leader.name)}.png`), omitBackground: true });
-    }
 
     const playablePage = await context.newPage();
     await playablePage.goto(`${baseUrl}/card-design/card-review-render.html?fit=production&card=neutral-rallying-cry`, { waitUntil: 'load' });
