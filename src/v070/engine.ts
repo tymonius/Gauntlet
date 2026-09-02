@@ -491,6 +491,33 @@ export interface V070MilitaryState {
   commandGainTurn: number | null;
 }
 
+export type V070MysticRiteId = 'echoes' | 'blood' | 'crossing';
+export type V070MysticRiteStatus = 'incomplete' | 'begun' | 'completed';
+
+export interface V070MysticRiteState {
+  status: V070MysticRiteStatus;
+  begunTurn: number | null;
+  completedTurn: number | null;
+  territoryInstanceId: string | null;
+}
+
+export interface V070MysticRitualState {
+  active: boolean;
+  begunTurn: number | null;
+}
+
+export interface V070MysticsState {
+  rites: Record<V070MysticRiteId, V070MysticRiteState>;
+  riteCompletedTurn: number | null;
+  crossingEligibilityTurn: number | null;
+  crossingEligibilityTerritoryInstanceId: string | null;
+  transmutationUsedTurn: number | null;
+  materiaPrimaUsedTurn: number | null;
+  materiaPrimaPendingDraw: boolean;
+  guardiansUsedTurn: number | null;
+  ritual: V070MysticRitualState;
+}
+
 export interface V070DeedState {
   territoryInstanceId: string;
   owner: PlayerId | null;
@@ -510,6 +537,7 @@ export interface V070PlayerState {
   controlledTerritories: string[];
   reshuffleCount: number;
   military: V070MilitaryState | null;
+  mystics: V070MysticsState | null;
   diplomats: V070DiplomatState | null;
   inquisition: V070InquisitionState | null;
   financiers: V070FinancierState | null;
@@ -662,6 +690,41 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
       reshuffleCount: 0,
       military: starter.definition.factionId === 'military'
         ? { command: 0, commandGainTurn: null }
+        : null,
+      mystics: starter.definition.factionId === 'mystics'
+        ? {
+            rites: {
+              echoes: {
+                status: 'incomplete',
+                begunTurn: null,
+                completedTurn: null,
+                territoryInstanceId: null,
+              },
+              blood: {
+                status: 'incomplete',
+                begunTurn: null,
+                completedTurn: null,
+                territoryInstanceId: null,
+              },
+              crossing: {
+                status: 'incomplete',
+                begunTurn: null,
+                completedTurn: null,
+                territoryInstanceId: null,
+              },
+            },
+            riteCompletedTurn: null,
+            crossingEligibilityTurn: null,
+            crossingEligibilityTerritoryInstanceId: null,
+            transmutationUsedTurn: null,
+            materiaPrimaUsedTurn: null,
+            materiaPrimaPendingDraw: false,
+            guardiansUsedTurn: null,
+            ritual: {
+              active: false,
+              begunTurn: null,
+            },
+          }
         : null,
       diplomats: starter.definition.factionId === 'diplomats'
         ? {
