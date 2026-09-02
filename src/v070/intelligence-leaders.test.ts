@@ -160,7 +160,7 @@ describe('v0.7.0 Intelligence leaders', () => {
     const opponentGambit = injectHandCard(
       state,
       'B',
-      'intelligence-disinformation',
+      'neutral-new-recruits',
       'opponent-gambit',
     );
     state = openBattle(state);
