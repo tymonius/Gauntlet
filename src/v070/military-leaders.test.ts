@@ -193,6 +193,41 @@ describe('v0.7.0 Military leaders', () => {
     expect(state.players.A.military?.command).toBe(0);
   });
 
+  test('Commandant Fortify spends newly available Command to advance the Front Line', () => {
+    let state = noCardBattleAtOutcome();
+    state.players.B.military!.command = 1;
+    state.board[3].controller = 'A';
+    state.players.A.controlledTerritories = state.board
+      .filter(space => space.controller === 'A')
+      .map(space => space.territoryId);
+    state.players.B.controlledTerritories = state.board
+      .filter(space => space.controller === 'B')
+      .map(space => space.territoryId);
+
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice',
+      playerId: 'A',
+      values: [2],
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice',
+      playerId: 'B',
+      values: [2],
+    });
+
+    expect(state.battle?.winner).toBe('B');
+    expect(state.players.B.military?.command).toBe(2);
+    expect(state.board[3].controller).toBe('A');
+
+    state = reduceV070BattleAction(state, {
+      type: 'use_commandant_fortify',
+      playerId: 'B',
+    });
+
+    expect(state.players.B.military?.command).toBe(0);
+    expect(state.board[3].controller).toBe('B');
+  });
+
   test('a defensive win on the opponent turn grants Command and can pay for Repel', () => {
     let state = noCardBattleAtOutcome();
 
