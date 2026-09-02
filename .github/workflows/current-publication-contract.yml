@@ -41,6 +41,11 @@ jobs:
             /v0.7.0/index.html
             /v0.7.1/index.html
             /changelog/index.html
+            /about/index.html
+            /faq/index.html
+            /404.html
+            /robots.txt
+            /sitemap.xml
             /start/index.html
             /start/styles.css
             /rulebook/index.html
