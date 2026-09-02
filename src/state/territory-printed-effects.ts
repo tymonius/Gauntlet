@@ -1,5 +1,5 @@
 import { v06CanonicalContent } from '../content/v06';
-import type { BoardSpaceState, GameState, PlayerID, SpaceID } from '../types';
+import type { BoardSpaceState, GameState, PlayerID, SpaceID } from '../types/v06';
 import { counterworksOverlayInactive } from './neutral-counterworks';
 import { topTerritoryOverlay } from './territory-overlays';
 

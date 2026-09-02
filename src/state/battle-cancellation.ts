@@ -1,5 +1,5 @@
 import type { CardCancellation } from '../effects/types';
-import type { BattleParticipantState, BattlePlayedCard, GameState, PlayerState } from '../types';
+import type { BattleParticipantState, BattlePlayedCard, GameState, PlayerState } from '../types/v06';
 
 function participantFor(game: GameState, owner: string): BattleParticipantState | undefined {
   if (!game.battle) return undefined;

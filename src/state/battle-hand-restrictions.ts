@@ -1,4 +1,4 @@
-import type { BattleParticipantState, BattleState, CardID, PlayerID } from '../types';
+import type { BattleParticipantState, BattleState, CardID, PlayerID } from '../types/v06';
 
 function counts(cards: CardID[]): Map<CardID, number> {
   const result = new Map<CardID, number>();

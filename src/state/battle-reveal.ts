@@ -1,5 +1,5 @@
 import { EffectRegistry, baseBattleEffectHandlers, totalModifiersFor } from '../effects/v06';
-import type { GameEvent, GameState, PlayerID } from '../types';
+import type { GameEvent, GameState, PlayerID } from '../types/v06';
 import type { ResolveBattleRevealAction } from './actions';
 import { applySubversionBattleRestrictions } from './intelligence-subversion-battle';
 import { applyBattleCancellations } from './battle-cancellation';

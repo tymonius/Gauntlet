@@ -1,5 +1,5 @@
 import { V06_RULES_VERSION, v06CanonicalContent } from '../content/v06';
-import type { CardID, GameID, GameState, PlayerID, TerritoryID } from '../types';
+import type { CardID, GameID, GameState, PlayerID, TerritoryID } from '../types/v06';
 import { initializeGame } from './initialize';
 import { createV06StandardBoard } from './v06-board';
 import { GameSetupValidationError, type ValidationIssue, type ValidationResult } from './validation';

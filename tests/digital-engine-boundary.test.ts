@@ -324,6 +324,27 @@ describe('digital engine boundary', () => {
     }
   });
 
+  it('pins shared legacy state support modules to the v0.6 type API', () => {
+    const supportSources = [
+      'src/state/apply-neutral.ts',
+      'src/state/apply.ts',
+      'src/state/battle-cancellation.ts',
+      'src/state/battle-effect-replay.ts',
+      'src/state/battle-hand-restrictions.ts',
+      'src/state/battle-reveal.ts',
+      'src/state/leader-abilities.ts',
+      'src/state/territory-overlays.ts',
+      'src/state/territory-printed-effects.ts',
+      'src/state/v06-setup.ts',
+    ];
+
+    for (const path of supportSources) {
+      const source = readFileSync(path, 'utf8');
+      expect(source).toContain("from '../types/v06'");
+      expect(source).not.toMatch(/from ['"]\.\.\/types['"]/);
+    }
+  });
+
   it('keeps the promoted v0.7.0 implementation isolated from legacy architecture', () => {
     const promotedSources = readdirSync('src/v070')
       .filter((name) => name.endsWith('.ts') && !name.endsWith('.test.ts'));
