@@ -227,7 +227,7 @@ jobs:
 
           test -s "$SITE_DIR/images/media/all-factions-promotional-showcase.png"
           test -s "$SITE_DIR/images/print-artwork/manifest.json"
-          PRINT_ART_MANIFEST="$SITE_DIR/images/print-artwork/manifest.json" node <<'NODE'
+          SITE="$SITE_DIR" PRINT_ART_MANIFEST="$SITE_DIR/images/print-artwork/manifest.json" node <<'NODE'
           const fs = require('fs');
           const path = require('path');
           const manifest = JSON.parse(fs.readFileSync(process.env.PRINT_ART_MANIFEST, 'utf8'));
