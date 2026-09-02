@@ -176,13 +176,13 @@
       const openPrs = await prResponse.json().catch(() => []);
       const openPr = Array.isArray(openPrs) ? openPrs[0] : null;
 
-      // A working branch with no open batch is not authoring state. Never let a
-      // stale branch silently override current-game.json in the review catalog.
+      // A working branch with no open batch is not authoring state. Do not
+      // hydrate it. During the migration audit, preserve any already-local
+      // browser drafts so Card Design can visibly flag and recover them before
+      // the obsolete fallback store is retired.
       if (!openPr?.number) {
         currentBatchPr = null;
-        const changed = installWorkingDirections({});
-        if (changed && reloadIfChanged) window.location.reload();
-        return changed;
+        return false;
       }
 
       currentBatchPr = {
@@ -420,8 +420,9 @@
   consumeAuthFragment();
 
   // Only an open artwork batch may populate browser draft state. The working
-  // branch by itself is never authoritative: without an open PR, stale branch
-  // contents are discarded and the catalog falls back to current-game.json.
+  // branch by itself is never authoritative. Existing browser drafts are left
+  // intact temporarily so the divergence audit can expose any unpublished
+  // compositions before that legacy storage is retired.
   hydrateWorkingDirections({ reloadIfChanged: true }).catch(error => {
     announce({ kind: 'error', message: error instanceof Error ? error.message : String(error) });
   });
