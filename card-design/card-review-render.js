@@ -1,4 +1,5 @@
 import { resolveFirstArtwork, slugify } from './card-artwork-resolver.js';
+import { normalizePrintArtworkSource } from './print-artwork-normalizer.js';
 import { loadCurrentGame } from '../game-data/current-game.mjs';
 
 await (async () => {
@@ -90,7 +91,8 @@ await (async () => {
     const displayVersion = versionOverride || await resolveDisplayVersion(currentGame);
     const card = sourceCard;
     const faction = slugify(card.allegiance);
-    const artwork = await resolveFirstArtwork(card, faction, imageExists);
+    const sourceArtwork = await resolveFirstArtwork(card, faction, imageExists);
+    const artwork = await normalizePrintArtworkSource(sourceArtwork);
     const preview = {
       id: card.id,
       kind: 'playable',
