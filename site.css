@@ -373,16 +373,17 @@ footer {
 }
 footer strong { color: var(--ink); font-family: var(--serif); font-size: 1.25rem; }
 footer p { margin: 7px 0 0; }
-.footer-publisher {
+.footer-publisher-line {
   display: flex;
-  align-items: center;
-  gap: 14px;
+  align-items: flex-start;
+  gap: 8px;
 }
 .footer-publisher-mark {
-  width: 44px;
+  width: 24px;
   height: auto;
   flex: 0 0 auto;
-  opacity: .9;
+  margin-top: 1px;
+  opacity: .78;
 }
 .footer-links { display: flex; flex-wrap: wrap; gap: 20px; }
 .footer-links a { text-decoration: none; }
