@@ -112,9 +112,13 @@ import {
   v070FinancierFeatureActionSpentThisTurn,
 } from './financiers';
 import {
+  completeV070ActiveMission,
   isV070IntelligencePlayer,
+  recordV070IntelligenceHandRevealForMission,
   returnV070ActiveMissionToHand,
   startV070MissionFromHand,
+  useV070RangerFieldcraft,
+  useV070SpymasterMissionControl,
   v070MissionEligibleHandInstanceIds,
 } from './intelligence';
 import {
@@ -174,6 +178,16 @@ export type V070TurnAction =
       type: 'intelligence_start_mission';
       playerId: PlayerId;
       cardInstanceId: string;
+    }
+  | {
+      type: 'intelligence_complete_mission';
+      playerId: PlayerId;
+      missionControlCardInstanceId?: string;
+    }
+  | {
+      type: 'use_ranger_fieldcraft';
+      playerId: PlayerId;
+      territoryPosition: number;
     }
   | {
       type: 'financier_place_treasury';
@@ -789,6 +803,20 @@ export function reduceV070TurnAction(
         next,
         action.playerId,
         action.cardInstanceId,
+      );
+      break;
+    case 'intelligence_complete_mission':
+      intelligenceCompleteMission(
+        next,
+        action.playerId,
+        action.missionControlCardInstanceId,
+      );
+      break;
+    case 'use_ranger_fieldcraft':
+      useV070RangerFieldcraft(
+        next,
+        action.playerId,
+        action.territoryPosition,
       );
       break;
     case 'financier_place_treasury':
@@ -1518,6 +1546,25 @@ function intelligenceStartMission(
     cardInstanceId,
     'Start Mission Faction Feature',
   );
+}
+
+
+function intelligenceCompleteMission(
+  state: V070GameState,
+  playerId: PlayerId,
+  missionControlCardInstanceId?: string,
+): void {
+  requireIntelligenceDenouement(state, playerId);
+  spendTurnAction(state, playerId);
+  completeV070ActiveMission(state, playerId);
+
+  if (missionControlCardInstanceId !== undefined) {
+    useV070SpymasterMissionControl(
+      state,
+      playerId,
+      missionControlCardInstanceId,
+    );
+  }
 }
 
 function requireFinancierDenouement(
@@ -4460,6 +4507,12 @@ function revealV070Hand(
       })),
     },
   });
+  recordV070IntelligenceHandRevealForMission(
+    state,
+    actor,
+    owner,
+    instanceIds.length,
+  );
   return instanceIds;
 }
 
