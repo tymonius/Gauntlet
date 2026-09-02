@@ -69,9 +69,11 @@
   padding: 13px 0 0;
   display: flex;
   flex-wrap: wrap;
+  justify-content: flex-end;
   align-items: flex-start;
   align-content: flex-start;
   gap: 10px 16px;
+  text-align: right;
   color: var(--ga-footer-muted);
   font-family: var(--font-interface, Arial, Helvetica, sans-serif);
 }
