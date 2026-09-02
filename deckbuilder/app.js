@@ -98,6 +98,43 @@ function cardCatalog() {
   return [...state.cards];
 }
 
+function cloneFaction(faction) {
+  return {
+    ...faction,
+    leaders: (Array.isArray(faction?.leaders) ? faction.leaders : []).map(leader => ({
+      ...leader,
+      rules: (Array.isArray(leader?.rules) ? leader.rules : []).map(rule => Array.isArray(rule) ? [...rule] : rule),
+    })),
+  };
+}
+
+function factionCatalog() {
+  return FACTIONS.map(cloneFaction);
+}
+
+function setFactionCatalog(items) {
+  if (!Array.isArray(items)) throw new TypeError("Deckbuilder faction catalog must be an array.");
+  FACTIONS.splice(0, FACTIONS.length, ...items.map(cloneFaction));
+  return factionCatalog();
+}
+
+function setSourceCatalog(entries) {
+  if (!entries || typeof entries !== "object" || Array.isArray(entries)) {
+    throw new TypeError("Deckbuilder source catalog must be an object.");
+  }
+
+  const next = Object.fromEntries(Object.entries(entries).map(([id, source]) => {
+    if (!id || !source || typeof source !== "object" || Array.isArray(source)) {
+      throw new TypeError("Deckbuilder source catalog contains an invalid entry.");
+    }
+    return [id, { ...source }];
+  }));
+
+  Object.keys(SOURCES).forEach(id => delete SOURCES[id]);
+  Object.assign(SOURCES, next);
+  return Object.fromEntries(Object.entries(SOURCES).map(([id, source]) => [id, { ...source }]));
+}
+
 function replaceDeckState(next = {}) {
   const factionId = next.factionId ?? state.factionId;
   const faction = FACTIONS.find(item => item.id === factionId && item.status === "ready");
@@ -163,8 +200,6 @@ function constructionRules() {
 }
 
 const deckbuilderApi = Object.freeze({
-  sources: SOURCES,
-  factions: FACTIONS,
   registerRenderHook: callback => requireHook("render", callback),
   registerValidationHook: callback => requireHook("validate", callback),
   registerSerializeHook: callback => requireHook("serialize", callback),
@@ -224,6 +259,9 @@ const deckbuilderApi = Object.freeze({
   constructionRules,
   deckState,
   cardCatalog,
+  factionCatalog,
+  setFactionCatalog,
+  setSourceCatalog,
   replaceDeckState,
   setDeckStorageKey,
   render: () => renderAll(),
