@@ -8,6 +8,7 @@
   const escapeHtml = value => deckbuilder.escapeHtml(value);
   const territoriesApi = () => deckbuilder.feature("territories");
   const ritesApi = () => deckbuilder.feature("mysticsRites");
+  const currentGameLabel = () => deckbuilder.currentGame()?.displayVersion || deckbuilder.currentGame()?.version || "current";
   const productionPrint = () => {
     const renderer = deckbuilder.feature("productionPrintRenderer");
     if (!renderer) throw new Error("Deckbuilder production print renderer is unavailable.");
@@ -92,8 +93,8 @@
     };
 
     return {
-      name: state.deckName.trim() || `Untitled ${state.currentGameDisplayVersion || state.currentGameVersion || "current"} Deck`,
-      versionLabel: state.currentGameDisplayVersion || state.currentGameVersion || "current",
+      name: state.deckName.trim() || `Untitled ${currentGameLabel()} Deck`,
+      versionLabel: currentGameLabel(),
       faction,
       leader,
       entries,
