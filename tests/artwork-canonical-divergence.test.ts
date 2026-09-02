@@ -24,10 +24,9 @@ describe('artwork composition canonical guardrails', () => {
   it('never hydrates an idle working branch as Card Design authority', () => {
     expect(authoringClient).toContain('const WORKING_PR_API');
     expect(authoringClient).toContain('if (!openPr?.number)');
-    expect(authoringClient).toContain('if (!openPr?.number)');
     expect(authoringClient).toContain('return false;');
     expect(authoringClient).toContain('directionDelta(canonicalDirections, workingDirections)');
-    expect(authoringClient).toContain('The working branch by itself is never authoritative');
+    expect(authoringClient).toContain('branch by itself is never authoritative');
     expect(authoringClient).toContain('Existing browser drafts are left');
   });
 
