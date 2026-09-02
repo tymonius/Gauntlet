@@ -100,7 +100,7 @@ function footerNavigationLinks(html, route) {
   const nav = footer[2].match(/<nav\b[^>]*aria-label=(['"])Footer navigation\1[^>]*>([\s\S]*?)<\/nav>/i);
   assert(nav, `${route} canonical site footer is missing Footer navigation.`);
   return [...nav[2].matchAll(/<a\b[^>]*href=(['"])(.*?)\1[^>]*>([\s\S]*?)<\/a>/gi)].map((match) => ({
-    href: normalizeNavigationRef(route, match[2]),
+    href: /^https?:/i.test(match[2]) ? match[2] : normalizeNavigationRef(route, match[2]),
     label: match[3].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim(),
   }));
 }
