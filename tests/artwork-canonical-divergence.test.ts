@@ -15,8 +15,9 @@ describe('artwork composition canonical guardrails', () => {
   it('visibly identifies real unpublished working-batch composition drift only after canonical state is ready', () => {
     expect(compositor).toContain('draftDiffersFromCanonical(target)');
     expect(compositor).toContain('art-compositor-divergent-source');
-    expect(compositor).toContain('UNPUBLISHED ART POSITION');
+    expect(compositor).toContain('SAVED — NOT PUBLISHED');
     expect(compositor).toContain('GAUNTLET_ART_DIRECTION_DIVERGENCES');
+    expect(compositor).toContain('not been published to current-game.json');
     expect(compositor).toContain('draftHydrationPending()');
     expect(compositor).toContain('canonicalDirectionState(target)');
     expect(compositor).toContain('if (!canonical.ready) return false');
