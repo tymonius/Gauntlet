@@ -64,9 +64,7 @@ async function main() {
   const page = await context.newPage();
 
   try {
-    await page.goto(`${baseUrl}/card-design/?type=all#leader-cards`, { waitUntil: 'load' });
-    await page.waitForFunction(count => document.querySelectorAll('.full-card-review-frame').length === count, 142);
-    await page.waitForFunction(count => document.querySelectorAll('.territory-review-frame').length === count, 25);
+    await page.goto(`${baseUrl}/card-design/?type=leader#leader-cards`, { waitUntil: 'load' });
     await page.waitForFunction(count => document.querySelectorAll('#leader-cards .component-review-frame').length === count, expectedLeaderNames.length);
     await page.waitForFunction(() => [...document.querySelectorAll('#leader-cards .component-review-frame')].every(frame => (
       frame.contentDocument?.body?.dataset.renderReady === 'true'
@@ -98,9 +96,7 @@ async function main() {
       throw new Error(`Catalog production-size variables are undefined: ${JSON.stringify(catalogLayout)}.`);
     }
     for (const [name, metrics] of Object.entries({
-      playable: catalogLayout.playable,
       leaders: catalogLayout.leaders,
-      territories: catalogLayout.territories,
     })) {
       if (metrics.childCount > 1 && metrics.firstSixRows >= Math.min(6, metrics.childCount)) {
         throw new Error(`Catalog ${name} grid collapsed to one item per row: ${JSON.stringify(metrics)}.`);
@@ -155,30 +151,29 @@ async function main() {
       if (!leader.portraitPath.startsWith('/images/') || leader.portraitPath.includes('/sketches/')) throw new Error(`Leader portrait is not using the production image source: ${JSON.stringify(leader)}.`);
     }
 
-    const territoryFrames = await page.locator('.territory-review-frame').evaluateAll(frames => frames.map(frame => {
-      const rect = frame.getBoundingClientRect();
-      return { width: rect.width, height: rect.height };
-    }));
-    if (territoryFrames.some(frame => Math.abs(frame.width - TERRITORY_WIDTH) > 0.25 || Math.abs(frame.height - TERRITORY_HEIGHT) > 0.25)) {
-      throw new Error(`Unexpected Territory frame geometry: ${JSON.stringify(territoryFrames)}.`);
-    }
-
     await page.locator('#leader-cards').screenshot({ path: join(OUTPUT, 'leader-card-review-page.png') });
 
     const playablePage = await context.newPage();
     await playablePage.goto(`${baseUrl}/card-design/card-review-render.html?fit=production&printArtwork=normalized&card=neutral-rallying-cry`, { waitUntil: 'load' });
     await playablePage.waitForFunction(() => document.body.dataset.renderReady === 'true');
-    const playable = await playablePage.locator('.gauntlet-card').evaluate(card => ({
-      title: card.querySelector('.card-title')?.textContent?.trim(),
-      fitWarning: card.classList.contains('fit-warning'),
-      titleFit: card.dataset.titleFit,
-      parchmentLoaded: card.dataset.parchmentLoaded,
-      artworkSource: card.querySelector('.card-art img')?.currentSrc || card.querySelector('.card-art img')?.src || '',
-      normalizedArtwork: document.body.dataset.printArtworkNormalized,
-      normalizedArtworkSource: document.body.dataset.printArtworkSource,
-    }));
+    const playable = await playablePage.locator('.gauntlet-card').evaluate(card => {
+      const rect = card.getBoundingClientRect();
+      return {
+        title: card.querySelector('.card-title')?.textContent?.trim(),
+        width: rect.width,
+        height: rect.height,
+        fitWarning: card.classList.contains('fit-warning'),
+        titleFit: card.dataset.titleFit,
+        parchmentLoaded: card.dataset.parchmentLoaded,
+        artworkSource: card.querySelector('.card-art img')?.currentSrc || card.querySelector('.card-art img')?.src || '',
+        normalizedArtwork: document.body.dataset.printArtworkNormalized,
+        normalizedArtworkSource: document.body.dataset.printArtworkSource,
+      };
+    });
     if (
       playable.title !== 'Rallying Cry'
+      || Math.abs(playable.width - CARD_WIDTH) > 0.25
+      || Math.abs(playable.height - CARD_HEIGHT) > 0.25
       || playable.fitWarning
       || playable.titleFit !== 'true'
       || playable.parchmentLoaded !== 'true'
@@ -194,14 +189,27 @@ async function main() {
     const territoryPage = await context.newPage();
     await territoryPage.goto(`${baseUrl}/card-design/territory-review-render.html?territory=territory-smuggler-s-pass`, { waitUntil: 'load' });
     await territoryPage.waitForFunction(() => document.body.dataset.renderReady === 'true');
-    const territory = await territoryPage.locator('.territory-card').evaluate(card => ({
-      title: card.querySelector('.territory-title')?.textContent?.trim(),
-      fitWarning: card.classList.contains('fit-warning'),
-      titleFit: card.dataset.titleFit,
-      parchmentLoaded: card.dataset.parchmentLoaded,
-      version: card.querySelector('.territory-footer span:last-child')?.textContent?.trim(),
-    }));
-    if (territory.title !== "Smuggler's Run" || territory.fitWarning || territory.titleFit !== 'true' || territory.parchmentLoaded !== 'true' || territory.version !== expectedVersion) {
+    const territory = await territoryPage.locator('.territory-card').evaluate(card => {
+      const rect = card.getBoundingClientRect();
+      return {
+        title: card.querySelector('.territory-title')?.textContent?.trim(),
+        width: rect.width,
+        height: rect.height,
+        fitWarning: card.classList.contains('fit-warning'),
+        titleFit: card.dataset.titleFit,
+        parchmentLoaded: card.dataset.parchmentLoaded,
+        version: card.querySelector('.territory-footer span:last-child')?.textContent?.trim(),
+      };
+    });
+    if (
+      territory.title !== "Smuggler's Run"
+      || Math.abs(territory.width - TERRITORY_WIDTH) > 0.25
+      || Math.abs(territory.height - TERRITORY_HEIGHT) > 0.25
+      || territory.fitWarning
+      || territory.titleFit !== 'true'
+      || territory.parchmentLoaded !== 'true'
+      || territory.version !== expectedVersion
+    ) {
       throw new Error(`Current Territory renderer failed smoke validation: ${JSON.stringify(territory)}; expected ${expectedVersion}.`);
     }
     await territoryPage.locator('.territory-card').screenshot({ path: join(OUTPUT, 'territory-review-smoke.png'), omitBackground: true });
