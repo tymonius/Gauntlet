@@ -63,7 +63,7 @@ describe("Deckbuilder production printing", () => {
   });
 
   it("uses current-game component metadata and preserves intrinsic reverse faces", () => {
-    expect(printTransform).toContain('const currentGame = state.currentGameData;');
+    expect(printTransform).toContain('const currentGame = resolvedCurrentGame();');
     expect(printTransform).toContain('currentGame.components');
     expect(printTransform).toContain('component.productionStatus');
     expect(printTransform).toContain('component.backPolicy');
@@ -96,7 +96,7 @@ describe("Deckbuilder production printing", () => {
     expect(printTransform).toContain('standardBackFaction(frontCell)');
     expect(printTransform).toContain('frontCell.querySelector(".production-render-card, .production-render-territory")');
     expect(printTransform).toContain('return "intelligence";');
-    expect(printTransform).toContain('String(state.factionId || "intelligence")');
+    expect(printTransform).toContain('String(deckState().factionId || "intelligence")');
     expect(printTransform).toContain('production-standard-back');
     expect(printTransform).toContain('/tts/back-renderer/index.html?faction=');
     expect(printTransform).toContain('wrapper.dataset.productionInlineBack = "true"');
@@ -121,7 +121,7 @@ describe("Deckbuilder production printing", () => {
   it("reuses the Deckbuilder's already-loaded game authority inside production print iframes", () => {
     expect(printTransform).toContain("installProductionAuthorityBridge(documentNode)");
     expect(printTransform).toContain('window.__gauntletProductionAuthorityBridge = {');
-    expect(printTransform).toContain('window.opener?.GAUNTLET_DECKBUILDER?.state?.currentGameData');
+    expect(printTransform).toContain('window.opener?.GAUNTLET_DECKBUILDER?.currentGame?.()');
     expect(printTransform).toContain('rulesetMode: ${JSON.stringify(rulesetMode)}');
     expect(currentGameLoader).toContain("function bridgedProductionGame()");
     expect(currentGameLoader).toContain("window.top.__gauntletProductionAuthorityBridge");
