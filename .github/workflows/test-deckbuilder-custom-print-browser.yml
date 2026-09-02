@@ -34,6 +34,9 @@ jobs:
       - name: Install matching Playwright package
         run: npm install --no-audit --no-fund --no-save playwright@1.62.1
 
+      - name: Generate printer-friendly playable artwork
+        run: npm run print:artwork
+
       - name: Serve repository
         run: python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
 
@@ -81,6 +84,7 @@ jobs:
             await page.fill('#customPrintSearch', '');
           }
 
+          await addFirstOfType('Playable card', 'Rallying Cry');
           await addFirstOfType('Leader', 'General');
           await addFirstOfType('Territory');
           await addFirstOfType('Reference', 'Universal Reference');
@@ -89,9 +93,9 @@ jobs:
           await addFirstOfType('Capital Ledger');
 
           const selectedRows = page.locator('#customPrintSelection .custom-print-row');
-          if (await selectedRows.count() !== 6) throw new Error(`Expected 6 selected physical cards, found ${await selectedRows.count()}`);
+          if (await selectedRows.count() !== 7) throw new Error(`Expected 7 selected physical cards, found ${await selectedRows.count()}`);
           const summary = await page.locator('#customPrintSummary').textContent();
-          if (!summary?.includes('6 physical cards') || !summary.includes('1 front sheet') || !summary.includes('2 print pages')) {
+          if (!summary?.includes('7 physical cards') || !summary.includes('1 front sheet') || !summary.includes('2 print pages')) {
             throw new Error(`Unexpected custom print summary: ${summary}`);
           }
 
@@ -107,8 +111,17 @@ jobs:
           if (await printPage.locator('.custom-back-page').count() !== 1) throw new Error('Expected one paired reverse sheet.');
           const frontFrames = await printPage.locator('.custom-front-page [data-custom-render-frame]').count();
           const backFrames = await printPage.locator('.custom-back-page [data-custom-render-frame]').count();
-          if (frontFrames !== 6 || backFrames !== 6) throw new Error(`Expected 6 front and 6 reverse/back frames, found ${frontFrames}/${backFrames}`);
+          if (frontFrames !== 7 || backFrames !== 7) throw new Error(`Expected 7 front and 7 reverse/back frames, found ${frontFrames}/${backFrames}`);
           if (await printPage.locator('.custom-landscape-rotate').count() < 1) throw new Error('Mixed custom sheet did not include a rotated landscape card.');
+          const playableFrame = printPage.locator('iframe[src*="card-review-render.html"][src*="printArtwork=normalized"]').first();
+          if (await playableFrame.count() !== 1) throw new Error('Playable card did not request normalized print artwork.');
+          const playableFrameState = await playableFrame.evaluate(frame => ({
+            normalized: frame.contentDocument?.body?.dataset.printArtworkNormalized || '',
+            source: frame.contentDocument?.querySelector('.card-art img')?.getAttribute('src') || '',
+          }));
+          if (playableFrameState.normalized !== 'true' || !playableFrameState.source.includes('/images/print-artwork/cards/neutral-rallying-cry.jpg')) {
+            throw new Error(`Playable print artwork normalization failed: ${JSON.stringify(playableFrameState)}`);
+          }
           if (await printPage.locator('iframe[src*="kind=leader"]').count() < 1) throw new Error('Leader production renderer was not used.');
           if (await printPage.locator('iframe[src*="kind=reference"]').count() < 2) throw new Error('Reference front/reverse renderers were not paired.');
           if (await printPage.locator('iframe[src*="kind=proposal"]').count() < 2) throw new Error('Proposal front/reverse renderers were not paired.');
