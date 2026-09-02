@@ -9,6 +9,7 @@
     ? CANDIDATE_MODE
     : RELEASED_MODE;
   let currentGamePromise = null;
+  let currentGameSnapshot = null;
   let hydrated = false;
 
   function currentGame() {
@@ -27,10 +28,7 @@
           return data;
         })
         .then(data => {
-          state.currentGameData = data;
-          state.currentGameVersion = data.version;
-          state.currentGameDisplayVersion = data.displayVersion;
-          state.currentGameAuthority = data.authorityUrl;
+          currentGameSnapshot = data;
           hydrateFactions(data);
           return data;
         });
@@ -157,6 +155,7 @@
     }
   }
 
+  deckbuilder.setCurrentGameAccessor(() => currentGameSnapshot);
   deckbuilder.setAuthorityBootstrap(currentGame);
 
   document.addEventListener("DOMContentLoaded", async () => {
