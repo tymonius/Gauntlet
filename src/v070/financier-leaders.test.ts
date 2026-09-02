@@ -6,7 +6,10 @@ import {
 } from './engine';
 import { reduceV070TurnAction } from './turn-engine';
 import { reduceV070BattleAction } from './battle-engine';
-import { buyV070DeedWithLineOfCredit } from './financiers';
+import {
+  buyV070Deed,
+  buyV070DeedWithLineOfCredit,
+} from './financiers';
 
 function readyGame(
   financierStarter: 'financiers-banker-sound-investment' | 'financiers-executive-hostile-expansion',
@@ -193,7 +196,6 @@ describe('v0.7.0 Financier leaders', () => {
       'second-purchase',
     );
 
-    const { buyV070Deed } = await import('./financiers');
     buyV070Deed(
       state,
       'A',
