@@ -333,7 +333,7 @@ async function main() {
           && document.querySelector('.art-compositor-divergence-summary')
           && [...document.querySelectorAll('.art-compositor-divergence-badge')]
             .some(badge => badge.dataset.artDirectionId === 'financiers-banker'
-              && badge.textContent === 'UNPUBLISHED ART POSITION');
+              && badge.textContent === 'SAVED — NOT PUBLISHED');
       });
       const divergentStyle = await bankerFrame.evaluate(frame => ({
         outlineColor: getComputedStyle(frame).outlineColor,
