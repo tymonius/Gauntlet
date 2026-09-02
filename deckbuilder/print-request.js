@@ -1,7 +1,6 @@
 (() => {
   const deckbuilder = window.GAUNTLET_DECKBUILDER;
   if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
-  const { state } = deckbuilder;
 
   const EMAIL_STORAGE_KEY = "gauntlet-print-request-host-email-v1";
   const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

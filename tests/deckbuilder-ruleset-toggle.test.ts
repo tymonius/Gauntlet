@@ -83,9 +83,9 @@ describe('Deckbuilder released / release-candidate ruleset toggle', () => {
   });
 
   it('treats v0.7.1 Mystics Rites as a pregame choice', () => {
-    expect(rites).toContain('state.riteSelectionEnabled = Boolean(policy)');
-    expect(rites).toContain('state.riteSelectedCount = state.riteSelectionEnabled ? selectedCount : rites.length');
-    expect(rites).toContain('const selectable = mystics && state.riteSelectionEnabled');
-    expect(rites).toContain('state.ritePool.map(rite => rite.id)');
+    expect(rites).toContain('riteState.selectionEnabled = Boolean(policy)');
+    expect(rites).toContain('riteState.selectedCount = riteState.selectionEnabled ? selectedCount : rites.length');
+    expect(rites).toContain('const selectable = mystics && riteState.selectionEnabled');
+    expect(rites).toContain('riteState.pool.map(rite => rite.id)');
   });
 });

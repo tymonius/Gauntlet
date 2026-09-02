@@ -1,20 +1,21 @@
 (() => {
   const deckbuilder = window.GAUNTLET_DECKBUILDER;
   if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
-  const { state } = deckbuilder;
   const escapeHtml = value => deckbuilder.escapeHtml(value);
 
   const MYSTICS_FACTION_ID = "mystics";
+  const deckState = () => deckbuilder.deckState();
+  const riteState = {
+    pool: [],
+    selectedIds: [],
+    selectedId: null,
+    pending: null,
+    selectedCount: 0,
+    selectionEnabled: false,
+  };
   const CARD_WIDTH = 240;
   const CARD_HEIGHT = 336;
   const MAX_PREVIEW_WIDTH = 300;
-
-  state.ritePool = [];
-  state.rites = [];
-  state.selectedRiteId = null;
-  state.pendingRites = null;
-  state.riteSelectedCount = 0;
-  state.riteSelectionEnabled = false;
 
   const riteElements = {};
   let ritePreviewResizeObserver = null;
@@ -28,19 +29,19 @@
   deckbuilder.registerDeckListHook(riteDeckListLines);
 
   deckbuilder.registerFeature("mysticsRites", {
-    selectedIds: () => [...state.rites],
+    selectedIds: () => [...riteState.selectedIds],
     selectedRites: () => selectedRites(),
-    requiredCount: () => state.riteSelectedCount,
-    selectionEnabled: () => state.riteSelectionEnabled,
-    defaultIds: () => state.ritePool.map(rite => rite.id),
+    requiredCount: () => riteState.selectedCount,
+    selectionEnabled: () => riteState.selectionEnabled,
+    defaultIds: () => riteState.pool.map(rite => rite.id),
     isReady: () => ritesReady,
     setSelectedIds(items) {
-      state.pendingRites = null;
-      state.rites = isMystics()
-        ? (state.riteSelectionEnabled ? resolveRiteIds(items || []) : state.ritePool.map(rite => rite.id))
+      riteState.pending = null;
+      riteState.selectedIds = isMystics()
+        ? (riteState.selectionEnabled ? resolveRiteIds(items || []) : riteState.pool.map(rite => rite.id))
         : [];
-      state.selectedRiteId = state.rites[0] || state.ritePool[0]?.id || null;
-      return [...state.rites];
+      riteState.selectedId = riteState.selectedIds[0] || riteState.pool[0]?.id || null;
+      return [...riteState.selectedIds];
     },
   });
 
@@ -53,9 +54,9 @@
     ]) riteElements[id] = document.getElementById(id);
 
     riteElements.clearRitesButton?.addEventListener("click", () => {
-      if (state.rites.length && !confirm("Remove all selected Rites?")) return;
-      state.rites = [];
-      state.selectedRiteId = state.ritePool[0]?.id || null;
+      if (riteState.selectedIds.length && !confirm("Remove all selected Rites?")) return;
+      riteState.selectedIds = [];
+      riteState.selectedId = riteState.pool[0]?.id || null;
       deckbuilder.render();
     });
 
@@ -76,7 +77,7 @@
         throw new Error("Selected ruleset has an invalid Mystics Rite selection count.");
       }
 
-      state.ritePool = rites.map(rite => ({
+      riteState.pool = rites.map(rite => ({
         id: String(rite.id),
         name: String(rite.name),
         begin: String(rite.begin || ""),
@@ -84,21 +85,21 @@
         interrupted: String(rite.interrupted || ""),
         reminder: rite.reminder?.text ? String(rite.reminder.text) : "",
       }));
-      state.riteSelectionEnabled = Boolean(policy);
-      state.riteSelectedCount = state.riteSelectionEnabled ? selectedCount : rites.length;
+      riteState.selectionEnabled = Boolean(policy);
+      riteState.selectedCount = riteState.selectionEnabled ? selectedCount : rites.length;
 
-      if (!state.riteSelectionEnabled) {
-        state.rites = isMystics() ? state.ritePool.map(rite => rite.id) : [];
-        state.pendingRites = null;
-      } else if (state.pendingRites) {
-        state.rites = resolveRiteIds(state.pendingRites);
-        state.pendingRites = null;
+      if (!riteState.selectionEnabled) {
+        riteState.selectedIds = isMystics() ? riteState.pool.map(rite => rite.id) : [];
+        riteState.pending = null;
+      } else if (riteState.pending) {
+        riteState.selectedIds = resolveRiteIds(riteState.pending);
+        riteState.pending = null;
       } else {
-        state.rites = resolveRiteIds(state.rites);
+        riteState.selectedIds = resolveRiteIds(riteState.selectedIds);
       }
 
-      if (!state.selectedRiteId || !getRite(state.selectedRiteId)) {
-        state.selectedRiteId = state.ritePool[0]?.id || null;
+      if (!riteState.selectedId || !getRite(riteState.selectedId)) {
+        riteState.selectedId = riteState.pool[0]?.id || null;
       }
 
       ritesReady = true;
@@ -120,20 +121,20 @@
   }
 
   function isMystics() {
-    return state.factionId === MYSTICS_FACTION_ID;
+    return deckState().factionId === MYSTICS_FACTION_ID;
   }
 
   function syncRiteMetric() {
     const mystics = isMystics();
-    const selectable = mystics && state.riteSelectionEnabled;
+    const selectable = mystics && riteState.selectionEnabled;
     if (riteElements.mysticsRitesPanel) riteElements.mysticsRitesPanel.hidden = !selectable;
     if (riteElements.riteMetricCard) riteElements.riteMetricCard.hidden = !selectable;
     if (riteElements.deckRitesSection) riteElements.deckRitesSection.hidden = !mystics;
-    if (riteElements.riteMetricCount) riteElements.riteMetricCount.textContent = String(state.rites.length);
-    if (riteElements.riteRequiredCount) riteElements.riteRequiredCount.textContent = String(state.riteSelectedCount);
-    if (riteElements.riteInstructionCount) riteElements.riteInstructionCount.textContent = String(state.riteSelectedCount);
+    if (riteElements.riteMetricCount) riteElements.riteMetricCount.textContent = String(riteState.selectedIds.length);
+    if (riteElements.riteRequiredCount) riteElements.riteRequiredCount.textContent = String(riteState.selectedCount);
+    if (riteElements.riteInstructionCount) riteElements.riteInstructionCount.textContent = String(riteState.selectedCount);
     if (riteElements.riteSelectedCount) {
-      riteElements.riteSelectedCount.textContent = `${state.rites.length} / ${state.riteSelectedCount}`;
+      riteElements.riteSelectedCount.textContent = `${riteState.selectedIds.length} / ${riteState.selectedCount}`;
     }
   }
 
@@ -143,27 +144,27 @@
     if (!list || !preview) return;
 
     syncRiteMetric();
-    if (!isMystics() || !state.riteSelectionEnabled) {
+    if (!isMystics() || !riteState.selectionEnabled) {
       ritePreviewResizeObserver?.disconnect();
       return;
     }
 
-    if (!state.ritePool.length) {
+    if (!riteState.pool.length) {
       list.className = "compact-rite-list empty-state";
       list.textContent = "Loading Rites…";
       renderRitePreview(null);
       return;
     }
 
-    if (!getRite(state.selectedRiteId)) state.selectedRiteId = state.ritePool[0].id;
+    if (!getRite(riteState.selectedId)) riteState.selectedId = riteState.pool[0].id;
 
     list.className = "compact-rite-list";
     list.innerHTML = "";
-    for (const rite of state.ritePool) {
-      const selected = state.rites.includes(rite.id);
-      const unavailable = !selected && state.rites.length >= state.riteSelectedCount;
+    for (const rite of riteState.pool) {
+      const selected = riteState.selectedIds.includes(rite.id);
+      const unavailable = !selected && riteState.selectedIds.length >= riteState.selectedCount;
       const row = document.createElement("article");
-      row.className = `compact-rite-row${rite.id === state.selectedRiteId ? " selected" : ""}${selected ? " chosen" : ""}`;
+      row.className = `compact-rite-row${rite.id === riteState.selectedId ? " selected" : ""}${selected ? " chosen" : ""}`;
       row.innerHTML = `
         <div>
           <div class="compact-card-title"><strong>${escapeHtml(rite.name)}</strong></div>
@@ -176,14 +177,14 @@
       `;
 
       row.addEventListener("click", event => {
-        state.selectedRiteId = rite.id;
+        riteState.selectedId = rite.id;
         if (event.target.closest("button")) toggleRite(rite.id);
         else renderRitePicker();
       });
       list.append(row);
     }
 
-    renderRitePreview(getRite(state.selectedRiteId));
+    renderRitePreview(getRite(riteState.selectedId));
   }
 
   function renderRitePreview(rite) {
@@ -198,8 +199,8 @@
       return;
     }
 
-    const selected = state.rites.includes(rite.id);
-    const unavailable = !selected && state.rites.length >= state.riteSelectedCount;
+    const selected = riteState.selectedIds.includes(rite.id);
+    const unavailable = !selected && riteState.selectedIds.length >= riteState.selectedCount;
     const rulesetMode = new URLSearchParams(window.location.search).get("rules") === "candidate" ? "candidate" : "released";
     const rendererUrl = `../card-design/component-print-render.html?kind=rite&id=${encodeURIComponent(rite.id)}&side=front&rules=${encodeURIComponent(rulesetMode)}`;
 
@@ -250,14 +251,14 @@
   }
 
   function toggleRite(id) {
-    if (!isMystics() || !state.riteSelectionEnabled || !getRite(id)) return;
-    if (state.rites.includes(id)) {
-      state.rites = state.rites.filter(item => item !== id);
+    if (!isMystics() || !riteState.selectionEnabled || !getRite(id)) return;
+    if (riteState.selectedIds.includes(id)) {
+      riteState.selectedIds = riteState.selectedIds.filter(item => item !== id);
     } else {
-      if (state.rites.length >= state.riteSelectedCount) return;
-      state.rites = [...state.rites, id];
+      if (riteState.selectedIds.length >= riteState.selectedCount) return;
+      riteState.selectedIds = [...riteState.selectedIds, id];
     }
-    state.selectedRiteId = id;
+    riteState.selectedId = id;
     deckbuilder.render();
   }
 
@@ -279,15 +280,15 @@
         <div>
           <div class="deck-title"><strong>${escapeHtml(rite.name)}</strong></div>
           <div class="deck-stats">
-            <span class="mini-pill">${state.riteSelectionEnabled ? "Selected Rite" : "Included Rite"}</span>
+            <span class="mini-pill">${riteState.selectionEnabled ? "Selected Rite" : "Included Rite"}</span>
             <span class="mini-pill">Disclosure optional until begun</span>
           </div>
         </div>
-        ${state.riteSelectionEnabled ? `<button type="button" class="secondary danger" data-remove-rite="${escapeHtml(rite.id)}">Remove</button>` : ""}
+        ${riteState.selectionEnabled ? `<button type="button" class="secondary danger" data-remove-rite="${escapeHtml(rite.id)}">Remove</button>` : ""}
       </article>
     `).join("");
 
-    if (state.riteSelectionEnabled) {
+    if (riteState.selectionEnabled) {
       container.querySelectorAll("[data-remove-rite]").forEach(button => {
         button.addEventListener("click", () => toggleRite(button.dataset.removeRite));
       });
@@ -298,22 +299,22 @@
     const errors = [...result.errors];
     const warnings = [...result.warnings];
 
-    if (isMystics() && state.riteSelectionEnabled) {
-      const validIds = new Set(state.ritePool.map(rite => rite.id));
-      const distinct = new Set(state.rites);
-      if (state.ritePool.length && (
-        state.rites.length !== state.riteSelectedCount
-        || distinct.size !== state.rites.length
-        || state.rites.some(id => !validIds.has(id))
+    if (isMystics() && riteState.selectionEnabled) {
+      const validIds = new Set(riteState.pool.map(rite => rite.id));
+      const distinct = new Set(riteState.selectedIds);
+      if (riteState.pool.length && (
+        riteState.selectedIds.length !== riteState.selectedCount
+        || distinct.size !== riteState.selectedIds.length
+        || riteState.selectedIds.some(id => !validIds.has(id))
       )) {
-        errors.push(`Choose exactly ${state.riteSelectedCount} different Rites (${state.rites.length}/${state.riteSelectedCount} selected).`);
+        errors.push(`Choose exactly ${riteState.selectedCount} different Rites (${riteState.selectedIds.length}/${riteState.selectedCount} selected).`);
       }
     }
 
     return {
       ...result,
-      riteCount: isMystics() ? state.rites.length : 0,
-      requiredRites: isMystics() ? state.riteSelectedCount : 0,
+      riteCount: isMystics() ? riteState.selectedIds.length : 0,
+      requiredRites: isMystics() ? riteState.selectedCount : 0,
       errors,
       warnings,
       valid: errors.length === 0,
@@ -329,33 +330,33 @@
   function serializeRites(data) {
     return {
       ...data,
-      selectedRites: isMystics() ? [...state.rites] : [],
+      selectedRites: isMystics() ? [...riteState.selectedIds] : [],
     };
   }
 
   function hydrateRites(data) {
-    state.rites = [];
+    riteState.selectedIds = [];
 
-    if (state.factionId === MYSTICS_FACTION_ID) {
-      if (state.ritePool.length) {
-        state.rites = state.riteSelectionEnabled
+    if (deckState().factionId === MYSTICS_FACTION_ID) {
+      if (riteState.pool.length) {
+        riteState.selectedIds = riteState.selectionEnabled
           ? resolveRiteIds(data.selectedRites || [])
-          : state.ritePool.map(rite => rite.id);
+          : riteState.pool.map(rite => rite.id);
       } else {
-        state.pendingRites = data.selectedRites || [];
+        riteState.pending = data.selectedRites || [];
       }
     } else {
-      state.pendingRites = null;
+      riteState.pending = null;
     }
   }
 
   function resetRitesForFaction({ previousFactionId, factionId }) {
     if (factionId === previousFactionId) return;
-    state.rites = factionId === MYSTICS_FACTION_ID && !state.riteSelectionEnabled
-      ? state.ritePool.map(rite => rite.id)
+    riteState.selectedIds = factionId === MYSTICS_FACTION_ID && !riteState.selectionEnabled
+      ? riteState.pool.map(rite => rite.id)
       : [];
-    state.pendingRites = null;
-    state.selectedRiteId = state.ritePool[0]?.id || null;
+    riteState.pending = null;
+    riteState.selectedId = riteState.pool[0]?.id || null;
   }
 
   function resolveRiteIds(items) {
@@ -363,20 +364,20 @@
     for (const item of items || []) {
       const id = typeof item === "string" ? item : item?.id;
       const name = typeof item === "string" ? "" : item?.name;
-      const rite = getRite(id) || state.ritePool.find(candidate => candidate.name === name);
+      const rite = getRite(id) || riteState.pool.find(candidate => candidate.name === name);
       if (!rite || ids.includes(rite.id)) continue;
-      if (ids.length >= state.riteSelectedCount) break;
+      if (ids.length >= riteState.selectedCount) break;
       ids.push(rite.id);
     }
     return ids;
   }
 
   function selectedRites() {
-    return state.rites.map(getRite).filter(Boolean);
+    return riteState.selectedIds.map(getRite).filter(Boolean);
   }
 
   function getRite(id) {
-    return state.ritePool.find(rite => rite.id === id);
+    return riteState.pool.find(rite => rite.id === id);
   }
 
 })();

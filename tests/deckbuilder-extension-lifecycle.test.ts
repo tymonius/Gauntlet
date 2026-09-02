@@ -51,6 +51,15 @@ describe("Deckbuilder extension architecture", () => {
     expect(read("deckbuilder/print.js")).toContain('deckbuilder.registerFeature("printDeck"');
   });
 
+  it("does not expose shared mutable core state to extensions", () => {
+    expect(app).not.toContain("\n  state,\n  sources: SOURCES,");
+
+    for (const { path, source } of extensions) {
+      expect(source, `${path} reads the removed public state property`).not.toContain("deckbuilder.state");
+      expect(source, `${path} destructures removed public state`).not.toMatch(/const\s*\{\s*state(?:\s*,|\s*\})/);
+    }
+  });
+
   it("does not let extensions replace core functions by assignment", () => {
     const replacement = /^\s*(renderAll|validateDeck|validateAndRender|currentDeckData|applyDeckData|changeFaction|copyDeckList|renderCardPreview)\s*=/m;
     for (const { path, source } of extensions) {
@@ -99,18 +108,19 @@ describe("Deckbuilder extension architecture", () => {
     expect(runtime).toContain("deckbuilder.setDeckStorageKey(");
   });
 
-  it("keeps Territory and Rite state behind their owning feature modules", () => {
-    expect(runtime).not.toMatch(/state\.(?:territories|territoryPool|selectedTerritoryId|pendingTerritories)/);
-    expect(runtime).not.toMatch(/state\.(?:rites|ritePool|selectedRiteId|pendingRites|riteSelectionEnabled)/);
+  it("keeps Territory and Rite state private to their owning feature modules", () => {
+    const territories = read("deckbuilder/territories.js");
+    const rites = read("deckbuilder/mystics-rites.js");
 
-    for (const { path, source } of extensions) {
-      if (path !== "deckbuilder/territories.js") {
-        expect(source, `${path} reads Territory-owned state directly`).not.toMatch(/state\.(?:territories|territoryPool|selectedTerritoryId|pendingTerritories)/);
-      }
-      if (path !== "deckbuilder/mystics-rites.js") {
-        expect(source, `${path} reads Rite-owned state directly`).not.toMatch(/state\.(?:rites|ritePool|selectedRiteId|pendingRites|riteSelectionEnabled)/);
-      }
-    }
+    expect(territories).not.toContain("deckbuilder.state");
+    expect(territories).not.toContain("const { state }");
+    expect(territories).toContain("const territoryState = {");
+    expect(territories).toContain("deckbuilder.cardCatalog()");
+
+    expect(rites).not.toContain("deckbuilder.state");
+    expect(rites).not.toContain("const { state }");
+    expect(rites).toContain("const riteState = {");
+    expect(rites).toContain("deckbuilder.deckState()");
   });
 
   it("keeps extension-specific copied Deck lines out of core", () => {

@@ -163,7 +163,6 @@ function constructionRules() {
 }
 
 const deckbuilderApi = Object.freeze({
-  state,
   sources: SOURCES,
   factions: FACTIONS,
   registerRenderHook: callback => requireHook("render", callback),
