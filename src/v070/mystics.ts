@@ -24,6 +24,7 @@ const RITUAL_GRAVEYARD_PURPOSE = 'Mystics Ritual of Ascension graveyard card';
 export interface BeginV070MysticRiteOptions {
   echoesGraveyardInstanceId?: string;
   echoesHandInstanceId?: string;
+  bloodCostInstanceId?: string;
   crossingCostInstanceId?: string;
 }
 
@@ -708,7 +709,7 @@ function beginBlood(
   playerId: PlayerId,
   options: BeginV070MysticRiteOptions,
 ): void {
-  const cardInstanceId = options.crossingCostInstanceId;
+  const cardInstanceId = options.bloodCostInstanceId;
   if (!cardInstanceId) {
     throw new V070GameActionError(
       'Rite of Blood requires one card from your Hand.',
