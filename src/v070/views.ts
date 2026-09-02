@@ -132,6 +132,7 @@ export interface V070FinancierView {
 export interface V070MissionSlotView {
   set: true;
   startedTurn: number;
+  satisfied?: boolean;
   card?: V070VisibleCard;
 }
 
@@ -141,6 +142,7 @@ export interface V070IntelligenceView {
   activeMission: V070MissionSlotView | null;
   specialOperation: V070MissionSlotView | null;
   missionControlUsedTurn: number | null;
+  fieldcraftUsedTurn: number | null;
 }
 
 export interface V070PlayerViewState {
@@ -448,6 +450,8 @@ function viewPlayer(
           ),
           missionControlUsedTurn:
             player.intelligence.missionControlUsedTurn,
+          fieldcraftUsedTurn:
+            player.intelligence.fieldcraftUsedTurn,
         }
       : null,
   };
@@ -474,6 +478,7 @@ function viewMissionSlot(
       instanceId: mission.instanceId,
       cardId: instance.cardId,
     };
+    result.satisfied = mission.satisfiedTurn !== null;
   }
   return result;
 }
