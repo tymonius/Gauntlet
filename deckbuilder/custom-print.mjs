@@ -149,7 +149,7 @@ function disableCustomPrinting() {
 }
 
 async function loadCatalog() {
-  let game = deckbuilder.state.currentGameData;
+  let game = deckbuilder.currentGame();
   if (!game?.componentContract) game = await deckbuilder.bootstrap();
   if (!game?.cards?.length || !game?.territories?.length || !game?.leaders?.length) throw new Error("Current-game card authority is incomplete.");
   catalog = buildCatalog(game);
