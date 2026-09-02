@@ -151,6 +151,19 @@ const canonicalFooterNavigation = [
 // /playtest/player-mat/ and /playtest/sheet/ are intentionally outside the public-page
 // contract because their footers are part of the document itself rather than site chrome.
 const canonicalFooterExceptions = new Map();
+const footerOnlyRoutes = [
+  '/playtest/',
+  '/playtest/analysis/',
+  '/playtest/analysis/integrity/',
+  '/playtest/batch/',
+  '/playtest/feedback/',
+  '/playtest/guide/',
+  '/playtest/host/',
+  '/playtest/onboarding/',
+  '/playtest/retrospective/',
+  '/playtest/session/',
+  '/playtest/tracked/',
+];
 
 const lifecycle = JSON.parse(await getText('/config/release-lifecycle.json'));
 const currentVersion = lifecycle.current_release;
@@ -239,6 +252,13 @@ for (const [route, html] of pages) {
     `${route} primary navigation drifted from the canonical global header.`,
   );
   assert.equal(brandHomeRef(html, route), '/', `${route} brand link does not return to the site root.`);
+  if (!canonicalFooterExceptions.has(route)) {
+    validateCanonicalFooter(html, route);
+  }
+}
+
+for (const route of footerOnlyRoutes) {
+  const html = await getText(route);
   if (!canonicalFooterExceptions.has(route)) {
     validateCanonicalFooter(html, route);
   }
