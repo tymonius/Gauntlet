@@ -140,9 +140,7 @@ const canonicalFooterNavigation = [
   { href: '/rulebook/', label: 'Browser Rulebook' },
   { href: '/card-reference/', label: 'Card Reference' },
   { href: '/deckbuilder/', label: 'Deckbuilder' },
-  { href: '/factions/', label: 'Factions' },
   { href: '/rules-arbiter/', label: 'Rules Arbiter' },
-  { href: '/start/', label: 'Start' },
   { href: 'https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635', label: 'Tabletop Simulator' },
   { href: 'https://github.com/tymonius/Gauntlet', label: 'GitHub' },
 ];
