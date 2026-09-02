@@ -96,6 +96,12 @@ export interface V070PendingPurgeChoice {
   kind: 'opponent_hand_discard' | 'revealed_hand_target';
 }
 
+export interface V070PendingRelentlessPursuit {
+  playerId: PlayerId;
+  defeatedAttackerId: PlayerId;
+  triggeredTurn: number;
+}
+
 export interface V070PendingAssetLimitChoice {
   playerId: PlayerId;
   effectiveLimit: number;
@@ -581,6 +587,7 @@ export interface V070GameState {
   pendingSanctionChoices: V070PendingSanctionChoice[];
   pendingAssetLimitChoice: V070PendingAssetLimitChoice | null;
   pendingPurgeChoice: V070PendingPurgeChoice | null;
+  pendingRelentlessPursuit: V070PendingRelentlessPursuit | null;
   pendingTurnChoice: V070PendingTurnChoice | null;
   winner: PlayerId | null;
   events: V070GameEvent[];
@@ -734,6 +741,7 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
     pendingSanctionChoices: [],
     pendingAssetLimitChoice: null,
     pendingPurgeChoice: null,
+    pendingRelentlessPursuit: null,
     pendingTurnChoice: null,
     winner: null,
     events: [],
