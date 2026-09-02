@@ -202,6 +202,7 @@ describe('v0.7.0 Intelligence Mission foundation and Operational Reassessment', 
       activeMission: null,
       specialOperation: null,
       missionControlUsedTurn: null,
+      fieldcraftUsedTurn: null,
     });
     expect(state.players.A.intelligence).toBeNull();
   });
@@ -226,6 +227,8 @@ describe('v0.7.0 Intelligence Mission foundation and Operational Reassessment', 
     expect(state.players.B.intelligence?.activeMission).toEqual({
       instanceId: mission,
       startedTurn: state.turnNumber,
+      satisfiedTurn: null,
+      progressFlags: [],
     });
     expect(state.players.B.zones.hand).not.toContain(mission);
     expect(state.turnState?.actionsAvailable).toBe(0);
@@ -236,6 +239,7 @@ describe('v0.7.0 Intelligence Mission foundation and Operational Reassessment', 
     expect(ownerView.players.B.intelligence?.activeMission).toEqual({
       set: true,
       startedTurn: state.turnNumber,
+      satisfied: false,
       card: {
         instanceId: mission,
         cardId: 'intelligence-spies',
@@ -405,6 +409,8 @@ describe('v0.7.0 Intelligence Mission foundation and Operational Reassessment', 
     expect(state.players.B.intelligence?.activeMission).toEqual({
       instanceId: replacement,
       startedTurn: state.turnNumber,
+      satisfiedTurn: null,
+      progressFlags: [],
     });
     expect(v070ActiveMissionCanCompleteThisTurn(state, 'B')).toBe(false);
     expect(state.players.B.zones.discardPile).toContain(source);
