@@ -18,7 +18,10 @@ import {
   clearV070AssetFaceState,
   isV070AssetActive,
 } from './asset-face-state';
-import { drawV070Cards } from './turn-engine';
+import {
+  completeV070RelentlessPursuitTransition,
+  drawV070Cards,
+} from './turn-engine';
 import { advanceV070FrontLine } from './front-line';
 import {
   V070_DEMILITARIZED_ZONE_ID,
@@ -1713,18 +1716,36 @@ function finishOnsetWithoutBattle(state: V070GameState): void {
   state.battle = null;
   state.battleRuntime = null;
 
-  if (!state.turnState || state.turnState.phase !== 'movement') {
-    throw new Error('Terms accepted during movement must return to the post-Movement turn boundary.');
+  if (!state.turnState) {
+    throw new Error(
+      'Terms accepted during a battle require an active turn boundary.',
+    );
   }
   if (state.pendingSanctionChoices.length > 0) return;
 
-  state.turnState = advanceV070TurnPhase(state.turnState);
-  appendV070Event(state, {
-    type: 'turn_phase',
-    actor: state.activePlayer ?? undefined,
-    visibility: 'public',
-    payload: { turnNumber: state.turnNumber, phase: state.turnState.phase },
-  });
+  if (state.pendingRelentlessPursuit
+    && state.activePlayer === state.pendingRelentlessPursuit.playerId
+    && state.turnState.phase === 'capture'
+    && !state.turnState.movementSequenceOpen) {
+    completeV070RelentlessPursuitTransition(
+      state,
+      state.pendingRelentlessPursuit.playerId,
+    );
+    return;
+  }
+
+  if (state.turnState.phase === 'movement') {
+    state.turnState = advanceV070TurnPhase(state.turnState);
+    appendV070Event(state, {
+      type: 'turn_phase',
+      actor: state.activePlayer ?? undefined,
+      visibility: 'public',
+      payload: {
+        turnNumber: state.turnNumber,
+        phase: state.turnState.phase,
+      },
+    });
+  }
 }
 
 function endGameFromFrontLine(
