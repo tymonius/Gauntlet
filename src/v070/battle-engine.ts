@@ -50,7 +50,10 @@ import {
   type V070BattleRuntime
 } from './battle-types';
 import { resolveV070AssetLimitRemoval } from './assets';
-import { resolveV070CapitalGainsOnBattleLoss } from './financiers';
+import {
+  recordV070ExecutiveHostileTakeoverEligibility,
+  resolveV070CapitalGainsOnBattleLoss,
+} from './financiers';
 import {
   clearV070AccursedWagersForCurrentBattle,
   v070AccursedWagersForCurrentBattle,
@@ -1218,6 +1221,12 @@ function finalizeOutcome(
   const runtime = requireRuntime(state);
   const resolution = applyV070BattleOutcome(battle, outcome);
   state.battle = resolution.state;
+  recordV070ExecutiveHostileTakeoverEligibility(
+    state,
+    outcome.winner,
+    battle.attacker,
+    battle.contestedPosition,
+  );
   gainV070MilitaryCommandForBattleWin(state, outcome.winner);
   applyV070NoQuarterAdditionalRetreat(state);
   openBattlePositionChangeSanctions(state, state.battle.positions);

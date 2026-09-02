@@ -315,6 +315,7 @@ export function buyV070Deed(
   const cost = v070DeedCost(state, buyer, territoryInstanceId);
   spendV070Capital(state, buyer, cost, reason);
   deed.owner = buyer;
+  requireFinancierState(state, buyer).deedPurchaseTurn = state.turnNumber;
 
   appendV070Event(state, {
     type: 'deed_acquired',
@@ -377,6 +378,7 @@ export function buyV070DeedWithCollateral(
   const capitalPaid = Math.max(0, cost - collateralApplied);
   spendV070Capital(state, buyer, capitalPaid, reason);
   deed.owner = buyer;
+  requireFinancierState(state, buyer).deedPurchaseTurn = state.turnNumber;
 
   appendV070Event(state, {
     type: 'deed_acquired',
@@ -409,6 +411,136 @@ export function buyV070DeedWithCollateral(
     collateralValue: collateral,
     collateralApplied,
   };
+}
+
+
+export function v070BankerLineOfCreditAvailable(
+  state: V070GameState,
+  playerId: PlayerId,
+): boolean {
+  const player = state.players[playerId];
+  return Boolean(
+    player?.financiers
+    && player.leaderId === 'banker'
+    && player.financiers.deedPurchaseTurn !== state.turnNumber
+  );
+}
+
+export function buyV070DeedWithLineOfCredit(
+  state: V070GameState,
+  buyer: PlayerId,
+  territoryInstanceId: string,
+  collateralInstanceId: string,
+): V070CollateralDeedPurchaseResult {
+  const player = state.players[buyer];
+  const financier = requireFinancierState(state, buyer);
+  if (player.leaderId !== 'banker') {
+    throw new V070GameActionError('Line of Credit requires the Banker Leader.');
+  }
+  if (financier.deedPurchaseTurn === state.turnNumber) {
+    throw new V070GameActionError(
+      'Line of Credit applies only to the first Deed purchase each turn.',
+    );
+  }
+
+  const handIndex = player.zones.hand.indexOf(collateralInstanceId);
+  const treasuryIndex = financier.treasury.indexOf(collateralInstanceId);
+  if (handIndex < 0 && treasuryIndex < 0) {
+    throw new V070GameActionError(
+      'Line of Credit collateral must be one card from Hand or Treasury.',
+    );
+  }
+
+  const collateralCardValue = cardValue(state, collateralInstanceId);
+  const cost = v070DeedCost(state, buyer, territoryInstanceId);
+  const collateralContribution = Math.min(
+    collateralCardValue,
+    Math.floor(cost / 2),
+  );
+  const result = buyV070DeedWithCollateral(
+    state,
+    buyer,
+    territoryInstanceId,
+    collateralContribution,
+    'Banker Line of Credit',
+  );
+
+  if (handIndex >= 0) {
+    player.zones.hand.splice(handIndex, 1);
+  } else {
+    financier.treasury.splice(treasuryIndex, 1);
+  }
+  player.zones.discardPile.push(collateralInstanceId);
+
+  appendV070Event(state, {
+    type: 'line_of_credit_used',
+    actor: buyer,
+    visibility: 'public',
+    payload: {
+      territoryInstanceId,
+      collateralInstanceId,
+      collateralCardValue,
+      collateralContribution,
+      capitalPaid: result.capitalPaid,
+    },
+  });
+
+  return result;
+}
+
+export function recordV070ExecutiveHostileTakeoverEligibility(
+  state: V070GameState,
+  winner: PlayerId,
+  battleAttacker: PlayerId,
+  contestedPosition: number,
+): void {
+  if (winner !== battleAttacker) return;
+  const player = state.players[winner];
+  const financier = player?.financiers;
+  if (!financier || player.leaderId !== 'executive') return;
+
+  const territory = state.board.find(
+    candidate => candidate.position === contestedPosition,
+  );
+  if (!territory || territory.controller === winner) return;
+
+  financier.hostileTakeoverTurn = state.turnNumber;
+  financier.hostileTakeoverTerritoryInstanceId = territory.territoryInstanceId;
+
+  appendV070Event(state, {
+    type: 'hostile_takeover_available',
+    actor: winner,
+    visibility: 'public',
+    payload: {
+      turnNumber: state.turnNumber,
+      territoryInstanceId: territory.territoryInstanceId,
+      territoryPosition: territory.position,
+    },
+  });
+}
+
+export function v070ExecutiveHostileTakeoverTerritory(
+  state: V070GameState,
+  playerId: PlayerId,
+) {
+  const player = state.players[playerId];
+  const financier = player?.financiers;
+  if (!financier
+    || player.leaderId !== 'executive'
+    || financier.hostileTakeoverTurn !== state.turnNumber
+    || !financier.hostileTakeoverTerritoryInstanceId) {
+    return null;
+  }
+  const territory = state.board.find(candidate =>
+    candidate.territoryInstanceId === financier.hostileTakeoverTerritoryInstanceId
+  ) ?? null;
+  if (!territory
+    || territory.controller === playerId
+    || territory.occupant !== playerId
+    || player.position !== territory.position) {
+    return null;
+  }
+  return territory;
 }
 
 export function makeV070DeedUnowned(

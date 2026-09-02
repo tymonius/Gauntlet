@@ -124,6 +124,9 @@ export interface V070FinancierView {
   financialCapacityTurn: number | null;
   financialCapacityUsedTurn: number | null;
   financierFeatureActionSpentTurn: number | null;
+  deedPurchaseTurn: number | null;
+  hostileTakeoverTurn: number | null;
+  hostileTakeoverTerritoryInstanceId: string | null;
 }
 
 export interface V070MissionSlotView {
@@ -423,6 +426,10 @@ function viewPlayer(
           financialCapacityUsedTurn: player.financiers.financialCapacityUsedTurn,
           financierFeatureActionSpentTurn:
             player.financiers.financierFeatureActionSpentTurn,
+          deedPurchaseTurn: player.financiers.deedPurchaseTurn,
+          hostileTakeoverTurn: player.financiers.hostileTakeoverTurn,
+          hostileTakeoverTerritoryInstanceId:
+            player.financiers.hostileTakeoverTerritoryInstanceId,
         }
       : null,
     intelligence: player.intelligence

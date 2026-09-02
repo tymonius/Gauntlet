@@ -126,6 +126,9 @@ describe('v0.7.0 Financier economy core', () => {
       financialCapacityTurn: null,
       financialCapacityUsedTurn: null,
       financierFeatureActionSpentTurn: null,
+      deedPurchaseTurn: null,
+      hostileTakeoverTurn: null,
+      hostileTakeoverTerritoryInstanceId: null,
     });
     expect(state.deeds).toHaveLength(6);
     expect(state.deeds.every(deed => deed.owner === null)).toBe(true);
