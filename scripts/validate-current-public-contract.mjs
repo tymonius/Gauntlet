@@ -94,6 +94,30 @@ function primaryNavigationLinks(html, route) {
     label: match[3].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim(),
   }));
 }
+function footerNavigationLinks(html, route) {
+  const footer = html.match(/<footer\b[^>]*data-gauntlet-footer=(['"])standard\1[^>]*>([\s\S]*?)<\/footer>/i);
+  assert(footer, `${route} is missing the canonical site footer.`);
+  const nav = footer[2].match(/<nav\b[^>]*aria-label=(['"])Footer navigation\1[^>]*>([\s\S]*?)<\/nav>/i);
+  assert(nav, `${route} canonical site footer is missing Footer navigation.`);
+  return [...nav[2].matchAll(/<a\b[^>]*href=(['"])(.*?)\1[^>]*>([\s\S]*?)<\/a>/gi)].map((match) => ({
+    href: /^https?:/i.test(match[2]) ? match[2] : normalizeNavigationRef(route, match[2]),
+    label: match[3].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim(),
+  }));
+}
+
+function validateCanonicalFooter(html, route) {
+  assert(html.includes('/site-footer.css'), `${route} does not load the shared site-footer stylesheet.`);
+  assert(html.includes('/images/Gauntlet.svg'), `${route} footer does not use the canonical Gauntlet wordmark.`);
+  assert(html.includes('/images/branding/tds-games-mark.svg'), `${route} footer does not use the TDS Games mark.`);
+  assert(html.includes('Published by TDS Games'), `${route} footer is missing the TDS Games publisher line.`);
+  assert(html.includes('An imprint of Misty Hollow Enterprises'), `${route} footer is missing the parent-imprint line.`);
+  assert(html.includes('Copyright © 2026 Tymon Scott. All rights reserved.'), `${route} footer is missing the canonical copyright notice.`);
+  assert.deepEqual(
+    footerNavigationLinks(html, route),
+    canonicalFooterNavigation,
+    `${route} footer navigation drifted from the canonical site footer.`,
+  );
+}
 
 function brandHomeRef(html, route) {
   const brand = html.match(/<a\b[^>]*class=(['"])[^'"]*\bbrand\b[^'"]*\1[^>]*>/i)?.[0];
@@ -111,6 +135,34 @@ const canonicalPrimaryNavigation = [
   { href: '/deckbuilder/', label: 'Deckbuilder' },
   { href: '/card-reference/', label: 'Card Reference' },
   { href: '/rules-arbiter/', label: 'Rules Arbiter' },
+];
+const canonicalFooterNavigation = [
+  { href: '/rulebook/', label: 'Browser Rulebook' },
+  { href: '/card-reference/', label: 'Card Reference' },
+  { href: '/deckbuilder/', label: 'Deckbuilder' },
+  { href: '/factions/', label: 'Factions' },
+  { href: '/rules-arbiter/', label: 'Rules Arbiter' },
+  { href: '/start/', label: 'Start' },
+  { href: 'https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635', label: 'Tabletop Simulator' },
+  { href: 'https://github.com/tymonius/Gauntlet', label: 'GitHub' },
+];
+
+// Footer exceptions must be explicit and justified. Printed playtest artifacts such as
+// /playtest/player-mat/ and /playtest/sheet/ are intentionally outside the public-page
+// contract because their footers are part of the document itself rather than site chrome.
+const canonicalFooterExceptions = new Map();
+const footerOnlyRoutes = [
+  '/playtest/',
+  '/playtest/analysis/',
+  '/playtest/analysis/integrity/',
+  '/playtest/batch/',
+  '/playtest/feedback/',
+  '/playtest/guide/',
+  '/playtest/host/',
+  '/playtest/onboarding/',
+  '/playtest/retrospective/',
+  '/playtest/session/',
+  '/playtest/tracked/',
 ];
 
 const lifecycle = JSON.parse(await getText('/config/release-lifecycle.json'));
@@ -200,6 +252,16 @@ for (const [route, html] of pages) {
     `${route} primary navigation drifted from the canonical global header.`,
   );
   assert.equal(brandHomeRef(html, route), '/', `${route} brand link does not return to the site root.`);
+  if (!canonicalFooterExceptions.has(route)) {
+    validateCanonicalFooter(html, route);
+  }
+}
+
+for (const route of footerOnlyRoutes) {
+  const html = await getText(route);
+  if (!canonicalFooterExceptions.has(route)) {
+    validateCanonicalFooter(html, route);
+  }
 }
 
 const rulebookRoute = manifest.public_routes?.rulebook || '/rulebook/';

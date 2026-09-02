@@ -49,6 +49,8 @@ jobs:
             /factions/*/index.html
             /deckbuilder/index.html
             /rules-arbiter/index.html
+            /playtest/**/index.html
+            /site-footer.css
             /design-tokens.css
             /images/faction-symbols/*.svg
             /releases/*/Gauntlet_*_Manifest.json
