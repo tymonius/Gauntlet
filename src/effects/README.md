@@ -7,3 +7,5 @@ It is **not** the promoted current engine effect API. Current promoted gameplay 
 The aggregate legacy effect registry is intentionally exposed as `src/effects/v06.ts`. There is no generic `effects/index.ts` barrel; consumers must opt into the v0.6 implementation explicitly.
 
 The individual handlers remain useful migration evidence, but no handler should be reused by the promoted engine without revalidation against current rules authority.
+
+Legacy runtime effect modules must not import the deprecated generic `../types` compatibility barrel. Where they use the shared aggregate type API, they opt into `../types/v06` explicitly through type-only imports.
