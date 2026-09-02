@@ -233,6 +233,7 @@ export function reduceV070BattleAction(
     v070DisruptedSupplyLinesSelectionRequired(state, playerId)
   );
   if (disruptedSelectionPlayers.length > 0
+    && action.type !== 'use_ranger_fieldcraft'
     && (
       action.type !== 'choose_disrupted_supply_lines_active_asset'
       || !disruptedSelectionPlayers.includes(action.playerId)
@@ -286,6 +287,17 @@ export function reduceV070BattleAction(
   }
 
   const next = structuredClone(state) as V070GameState;
+
+  if (action.type === 'use_ranger_fieldcraft' && !next.battleRuntime) {
+    useV070RangerFieldcraft(
+      next,
+      action.playerId,
+      action.territoryPosition,
+    );
+    ensureBattleRuntime(next);
+    return next;
+  }
+
   ensureBattleRuntime(next);
 
   switch (action.type) {
