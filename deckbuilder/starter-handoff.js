@@ -1,7 +1,7 @@
 (() => {
   const deckbuilder = window.GAUNTLET_DECKBUILDER;
   if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
-  const { state, factions: FACTIONS } = deckbuilder;
+  const { factions: FACTIONS } = deckbuilder;
   const constructionRules = () => deckbuilder.constructionRules();
 
   const params = new URLSearchParams(window.location.search);
@@ -19,11 +19,6 @@
   };
 
   if (params.get("starter") !== "1") return;
-
-  state.deckName = "";
-  state.deck = {};
-  deckbuilder.feature("territories")?.setSelectedIds?.([]);
-  deckbuilder.feature("mysticsRites")?.setSelectedIds?.([]);
 
   let leader = null;
   let panel = null;
@@ -44,8 +39,15 @@
       leader = requestedLeader;
       if (!faction || !leader) return;
 
-      state.factionId = faction.id;
-      state.leaderId = leader.id;
+      deckbuilder.replaceDeckState({
+        deckName: "",
+        factionId: faction.id,
+        leaderId: leader.id,
+        deck: {},
+        selectedCardId: null,
+      });
+      deckbuilder.feature("territories")?.setSelectedIds?.([]);
+      deckbuilder.feature("mysticsRites")?.setSelectedIds?.([]);
       deckbuilder.renderFactionOptions();
       deckbuilder.render();
       injectPanel();
