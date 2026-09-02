@@ -10,7 +10,6 @@ on:
       - "card-design/**"
       - "game-data/current-game.json"
       - "game-data/**"
-      - "scripts/generate-print-artwork.mjs"
       - ".github/workflows/test-deckbuilder-custom-print-browser.yml"
   workflow_dispatch:
 
@@ -34,9 +33,6 @@ jobs:
 
       - name: Install matching Playwright package
         run: npm install --no-audit --no-fund --no-save playwright@1.62.1
-
-      - name: Generate printer-friendly playable artwork
-        run: npm run print:artwork
 
       - name: Serve repository
         run: python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
@@ -119,8 +115,9 @@ jobs:
           const playableFrameState = await playableFrame.evaluate(frame => ({
             normalized: frame.contentDocument?.body?.dataset.printArtworkNormalized || '',
             source: frame.contentDocument?.querySelector('.card-art img')?.currentSrc || frame.contentDocument?.querySelector('.card-art img')?.src || '',
+            originalSource: frame.contentDocument?.body?.dataset.printArtworkSource || '',
           }));
-          if (playableFrameState.normalized !== 'true' || !playableFrameState.source.includes('/images/print-artwork/cards/neutral-rallying-cry.png')) {
+          if (playableFrameState.normalized !== 'true' || !playableFrameState.source.startsWith('blob:') || !playableFrameState.originalSource.includes('/images/artwork/cards/')) {
             throw new Error(`Playable print artwork normalization failed: ${JSON.stringify(playableFrameState)}`);
           }
           if (await printPage.locator('iframe[src*="kind=leader"]').count() < 1) throw new Error('Leader production renderer was not used.');
