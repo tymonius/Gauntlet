@@ -1,0 +1,120 @@
+.mini-pill {
+  border-radius: 2px;
+  padding: 0.16rem 0.42rem;
+  background: rgba(255, 250, 242, 0.82);
+}
+
+.value-badge {
+  width: 1.55rem;
+  min-width: 1.55rem;
+  height: 1.55rem;
+  padding: 0;
+  border-radius: 50%;
+  color: var(--ink);
+  background: #fffaf2;
+  font-variant-numeric: tabular-nums;
+}
+
+.meta-tag {
+  border-radius: 2px;
+}
+
+.faction-tag {
+  color: #5d554b;
+  background: rgba(247, 241, 230, 0.9);
+}
+
+.quantity-tag {
+  color: var(--accent-dark);
+  border-color: rgba(143, 31, 37, 0.28);
+  background: rgba(143, 31, 37, 0.055);
+}
+
+.detail-tag {
+  color: var(--muted);
+  background: rgba(255, 253, 248, 0.72);
+}
+
+.deck-row .deck-title {
+  gap: 0.46rem;
+}
+
+.deck-row .deck-stats {
+  margin-top: 0.42rem;
+}
+
+.deck-stat-strip {
+  display: flex;
+  align-items: center;
+  gap: 0.32rem;
+  width: max-content;
+  max-width: 100%;
+  font-family: var(--sans);
+}
+
+.deck-stat {
+  min-width: 3.35rem;
+  padding: 0.26rem 0.46rem 0.3rem;
+  display: grid;
+  gap: 0.04rem;
+}
+
+.deck-stat-box {
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: rgba(255, 250, 242, 0.76);
+}
+
+.deck-stat-value {
+  min-width: 2.4rem;
+  padding: 0.08rem 0;
+  justify-items: center;
+  background: transparent;
+}
+
+.deck-stat-label {
+  color: var(--muted);
+  font-size: 0.56rem;
+  font-weight: 850;
+  letter-spacing: 0.09em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.deck-stat strong {
+  color: var(--ink);
+  font-size: 0.76rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.deck-value-medallion {
+  display: grid;
+  place-items: center;
+  margin-top: 0.08rem;
+  border: 1px solid var(--line);
+  font-size: 0.76rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.deck-stat-total strong {
+  color: var(--accent-dark);
+}
+
+.deck-unique-tag {
+  align-self: center;
+  margin-left: 0.06rem;
+}
+
+@media (max-width: 520px) {
+  .deck-stat {
+    min-width: 2.85rem;
+    padding-inline: 0.36rem;
+  }
+
+  .deck-stat-value {
+    min-width: 2.25rem;
+    padding-inline: 0;
+  }
+}
