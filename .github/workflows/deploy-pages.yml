@@ -17,6 +17,7 @@ on:
       - 'tts/renderer/**'
       - 'card-design/**'
       - 'scripts/generate-card-media-*.mjs'
+      - 'scripts/generate-print-artwork.mjs'
       - 'scripts/generate-tts-card-assets.mjs'
       - 'scripts/tts-current-catalog.mjs'
       - 'scripts/current-game-authority.mjs'
