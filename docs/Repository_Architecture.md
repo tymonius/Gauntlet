@@ -105,6 +105,10 @@ The current top-level directory inventory is enforced by `scripts/validate-repos
 | `src/` | Active rules-aware digital engine; older modules within it may still be transitional/historical and must be classified during engine cleanup |
 | `rules-arbiter/` | Current static Rules Arbiter browser shell; implementation/service logic lives under `rules-assistant/` |
 | `changelog/` | Current player-facing changelog surface |
+| `about/` | Public project/about information surface |
+| `faq/` | Public project FAQ surface |
+| `privacy/` | Public privacy/data-handling notice |
+| `contact/` | Public contact form and submission confirmation surface |
 
 ### Production tooling
 

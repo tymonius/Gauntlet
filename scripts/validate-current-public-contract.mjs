@@ -112,10 +112,16 @@ function validateCanonicalFooter(html, route) {
   assert(html.includes('Published by TDS Games'), `${route} footer is missing the TDS Games publisher line.`);
   assert(html.includes('An imprint of Misty Hollow Enterprises'), `${route} footer is missing the parent-imprint line.`);
   assert(html.includes('Copyright © 2026 Tymon Scott. All rights reserved.'), `${route} footer is missing the canonical copyright notice.`);
+  const footerLinks = footerNavigationLinks(html, route);
   assert.deepEqual(
-    footerNavigationLinks(html, route),
+    footerLinks,
     canonicalFooterNavigation,
     `${route} footer navigation drifted from the canonical site footer.`,
+  );
+  const primaryHrefs = new Set(canonicalPrimaryNavigation.map(({ href }) => href));
+  assert(
+    !footerLinks.some(({ href }) => primaryHrefs.has(href)),
+    `${route} footer repeats a canonical primary-navigation destination.`,
   );
 }
 
@@ -137,12 +143,11 @@ const canonicalPrimaryNavigation = [
   { href: '/rules-arbiter/', label: 'Rules Arbiter' },
 ];
 const canonicalFooterNavigation = [
-  { href: '/rulebook/', label: 'Browser Rulebook' },
-  { href: '/card-reference/', label: 'Card Reference' },
-  { href: '/deckbuilder/', label: 'Deckbuilder' },
-  { href: '/rules-arbiter/', label: 'Rules Arbiter' },
+  { href: '/about/', label: 'About' },
+  { href: '/faq/', label: 'FAQ' },
+  { href: '/contact/', label: 'Contact' },
   { href: 'https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635', label: 'Tabletop Simulator' },
-  { href: 'https://github.com/tymonius/Gauntlet', label: 'GitHub' },
+  { href: '/privacy/', label: 'Privacy' },
 ];
 
 // Footer exceptions must be explicit and justified. Printed playtest artifacts such as
@@ -200,6 +205,7 @@ assert.equal(bookletPdf.getPageCount(), bookletEntry.pages, 'Published booklet p
 const routeValues = Object.values(manifest.public_routes ?? {}).filter((route) => typeof route === 'string');
 const releaseLandingRoute = `/${currentVersion}/`;
 const changelogRoute = '/changelog/';
+const siteInfoRoutes = ['/about/', '/faq/', '/privacy/', '/contact/'];
 const withdrawnVersionRoutes = Object.entries(lifecycle.releases ?? {})
   .filter(([, release]) => release?.status === 'withdrawn')
   .flatMap(([version]) => [`/${version}/`, `/releases/${version}/`]);
@@ -220,6 +226,7 @@ const corePages = [
   '/',
   releaseLandingRoute,
   changelogRoute,
+  ...siteInfoRoutes,
   ...routeValues,
   ...factions.map((slug) => `/factions/${slug}/`),
 ];
@@ -260,6 +267,27 @@ for (const route of footerOnlyRoutes) {
   if (!canonicalFooterExceptions.has(route)) {
     validateCanonicalFooter(html, route);
   }
+}
+
+const notFoundPage = await getText('/404.html');
+assert(notFoundPage.includes('name="robots" content="noindex,follow"'), '404 page must remain out of search indexes.');
+assert.deepEqual(primaryNavigationLinks(notFoundPage, '/404.html'), canonicalPrimaryNavigation, '404 primary navigation drifted.');
+assert.equal(brandHomeRef(notFoundPage, '/404.html'), '/', '404 brand link does not return to the site root.');
+validateCanonicalFooter(notFoundPage, '/404.html');
+
+const contactThanks = await getText('/contact/thanks/');
+assert(contactThanks.includes('name="robots" content="noindex,follow"'), 'Contact confirmation page must remain out of search indexes.');
+assert.deepEqual(primaryNavigationLinks(contactThanks, '/contact/thanks/'), canonicalPrimaryNavigation, 'Contact confirmation primary navigation drifted.');
+assert.equal(brandHomeRef(contactThanks, '/contact/thanks/'), '/', 'Contact confirmation brand link does not return to the site root.');
+validateCanonicalFooter(contactThanks, '/contact/thanks/');
+
+const robots = await getText('/robots.txt');
+assert(robots.includes('Sitemap: https://gauntlet.run/sitemap.xml'), 'robots.txt does not advertise the canonical sitemap.');
+
+const sitemap = await getText('/sitemap.xml');
+for (const route of ['/', ...siteInfoRoutes, releaseLandingRoute, changelogRoute, ...routeValues, ...factions.map((slug) => `/factions/${slug}/`)]) {
+  const expectedUrl = new URL(route, 'https://gauntlet.run').href;
+  assert(sitemap.includes(`<loc>${expectedUrl}</loc>`), `sitemap.xml is missing ${expectedUrl}.`);
 }
 
 const rulebookRoute = manifest.public_routes?.rulebook || '/rulebook/';
