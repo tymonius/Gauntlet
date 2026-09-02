@@ -1,4 +1,4 @@
-import type { BattleState, CardID, GameState, PlayerID, SpaceID } from '../types';
+import type { BattleState, CardID, GameState, PlayerID, SpaceID } from '../types/v06';
 
 export type EffectTiming =
   | 'battle_started'
