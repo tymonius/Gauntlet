@@ -244,6 +244,13 @@ describe("Deckbuilder extension architecture", () => {
     expect(handoff).toContain("leaderId: leader.id");
   });
 
+  it("keeps rendered card preview behind the core Deck state API", () => {
+    const preview = read("deckbuilder/rendered-card-preview.js");
+
+    expect(preview).not.toMatch(/\bstate\./);
+    expect(preview).toContain("deckbuilder.deckState()");
+  });
+
   it("drives print readiness through render lifecycle hooks rather than polling", () => {
     const print = read("deckbuilder/print.js");
     const bulk = read("deckbuilder/print-all-starters.js");
