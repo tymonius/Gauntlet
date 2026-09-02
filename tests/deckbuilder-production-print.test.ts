@@ -4,7 +4,8 @@ import { describe, expect, it } from "vitest";
 const deckbuilderHtml = readFileSync("deckbuilder/index.html", "utf8");
 const playableRender = readFileSync("card-design/card-review-render.html", "utf8");
 const playableRenderJs = readFileSync("card-design/card-review-render.js", "utf8");
-const printArtworkNormalizer = readFileSync("card-design/print-artwork-normalizer.js", "utf8");
+const printArtworkGenerator = readFileSync("scripts/generate-print-artwork.mjs", "utf8");
+const deployPages = readFileSync(".github/workflows/deploy-pages.yml", "utf8");
 const playableLegacyAlias = readFileSync("card-design/card-print-render.html", "utf8");
 const componentRenderHtml = readFileSync("card-design/component-render.html", "utf8");
 const componentLegacyAlias = readFileSync("card-design/component-print-render.html", "utf8");
@@ -42,16 +43,18 @@ describe("Deckbuilder production printing", () => {
 
   it("normalizes only playable-card artwork for direct printing while leaving the card face live", () => {
     expect(printTransform).toContain("&fit=production&printArtwork=normalized&rules=");
-    expect(playableRenderJs).toContain("normalizePrintArtworkSource(sourceArtwork)");
-    expect(printArtworkNormalizer).toContain("const DEFAULT_SHORT_EDGE = 960;");
-    expect(printArtworkNormalizer).toContain("const DEFAULT_LONG_EDGE = 1800;");
-    expect(printArtworkNormalizer).toContain("shortEdge / Math.min(sourceWidth, sourceHeight)");
-    expect(printArtworkNormalizer).toContain("alpha: false");
-    expect(printArtworkNormalizer).toContain("colorSpace: 'srgb'");
-    expect(printArtworkNormalizer).toContain("'image/png'");
-    expect(printArtworkNormalizer).toContain("__gauntletPrintArtworkCache");
-    expect(printArtworkNormalizer).toContain("host.URL.createObjectURL(blob)");
-    expect(printTransform).not.toContain("data:image/png");
+    expect(playableRenderJs).toContain("/images/print-artwork/cards/");
+    expect(playableRenderJs).toContain("Normalized print artwork is unavailable");
+    expect(printArtworkGenerator).toContain("const SHORT_EDGE = 960;");
+    expect(printArtworkGenerator).toContain("const LONG_EDGE = 1800;");
+    expect(printArtworkGenerator).toContain("const JPEG_QUALITY = 95;");
+    expect(printArtworkGenerator).toContain("SHORT_EDGE / Math.min(sourceWidth, sourceHeight)");
+    expect(printArtworkGenerator).toContain(".flatten({ background: ART_WINDOW_BACKGROUND })");
+    expect(printArtworkGenerator).toContain(".toColourspace('srgb')");
+    expect(printArtworkGenerator).toContain("chromaSubsampling: '4:4:4'");
+    expect(printArtworkGenerator).toContain("cards/${card.id}.jpg");
+    expect(deployPages).toContain('npm run print:artwork -- --output="$SITE_DIR/images/print-artwork"');
+    expect(printTransform).not.toContain("data:image");
     expect(printTransform).not.toContain("canvas.toBlob");
   });
 
