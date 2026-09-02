@@ -84,6 +84,50 @@ function readCurrentGame() {
   return typeof currentGameAccessor === "function" ? currentGameAccessor() : null;
 }
 
+function deckState() {
+  return Object.freeze({
+    deckName: state.deckName,
+    factionId: state.factionId,
+    leaderId: state.leaderId,
+    deck: Object.freeze({ ...state.deck }),
+    selectedCardId: state.selectedCardId,
+  });
+}
+
+function cardCatalog() {
+  return [...state.cards];
+}
+
+function replaceDeckState(next = {}) {
+  const factionId = next.factionId ?? state.factionId;
+  const faction = FACTIONS.find(item => item.id === factionId && item.status === "ready");
+  if (!faction) throw new Error("Deckbuilder core state references an unavailable faction.");
+
+  const leaderId = next.leaderId ?? state.leaderId;
+  if (!faction.leaders.some(leader => leader.id === leaderId)) {
+    throw new Error("Deckbuilder core state references an unavailable Leader.");
+  }
+
+  const deck = next.deck ? { ...next.deck } : { ...state.deck };
+  for (const [cardId, quantity] of Object.entries(deck)) {
+    const card = getCard(cardId);
+    const qty = Number(quantity);
+    if (!card || !Number.isFinite(qty) || qty < 0) {
+      throw new Error(`Deckbuilder core state contains an invalid card entry: ${cardId}.`);
+    }
+    if (card.faction !== "neutral" && card.faction !== factionId) {
+      throw new Error(`${card.name} is not legal for ${faction.name}.`);
+    }
+  }
+
+  state.deckName = next.deckName ?? state.deckName;
+  state.factionId = factionId;
+  state.leaderId = leaderId;
+  state.deck = deck;
+  state.selectedCardId = Object.hasOwn(next, "selectedCardId") ? next.selectedCardId : state.selectedCardId;
+  return deckState();
+}
+
 function constructionRules() {
   const source = readCurrentGame()?.deckConstruction;
   if (!source) throw new Error("Selected ruleset has no Deck construction authority.");
@@ -172,6 +216,9 @@ const deckbuilderApi = Object.freeze({
     return selectedRuleset;
   },
   constructionRules,
+  deckState,
+  cardCatalog,
+  replaceDeckState,
   render: () => renderAll(),
   renderAvailable: () => renderAvailable(),
   renderFactionOptions: () => renderFactionOptions(),
@@ -179,6 +226,7 @@ const deckbuilderApi = Object.freeze({
   serialize: () => currentDeckData(),
   hydrate: data => applyDeckData(data),
   getFaction: () => getFaction(),
+  getLeader: () => getLeader(),
   getCard: id => getCard(id),
   addCard: id => addCard(id),
   deckEntries: () => deckEntries(),
@@ -643,6 +691,10 @@ function importDeckJson() {
 }
 
 function getFaction() { return FACTIONS.find(faction => faction.id === state.factionId); }
+function getLeader() {
+  const faction = getFaction();
+  return faction?.leaders.find(leader => leader.id === state.leaderId) || null;
+}
 function getCard(id) { return state.cards.find(card => card.id === id); }
 function slugify(value) { return value.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
 function escapeHtml(value) { return String(value ?? "").replace(/[&<>'"]/g, character => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[character]); }

@@ -1,11 +1,12 @@
 (() => {
   const deckbuilder = window.GAUNTLET_DECKBUILDER;
   if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
-  const { state } = deckbuilder;
   const territoriesApi = () => deckbuilder.feature("territories");
   const ritesApi = () => deckbuilder.feature("mysticsRites");
   const currentGame = () => deckbuilder.currentGame();
   const currentGameLabel = () => currentGame()?.displayVersion || currentGame()?.version || "current";
+  const deckState = () => deckbuilder.deckState();
+  const cardCatalog = () => deckbuilder.cardCatalog();
 
   let starterDecks = [];
   let expectedDeckCount = 0;
@@ -55,7 +56,7 @@
       expectedDeckCount > 0 && starterDecks.length === expectedDeckCount &&
       starterTipsReady &&
       mysticsRitesReady &&
-      state.cards?.length &&
+      cardCatalog().length &&
       territoriesApi()?.isReady?.() &&
       !document.getElementById("printDeckButton")?.disabled
     );
@@ -131,24 +132,16 @@
 
   function snapshotState() {
     return {
-      deckName: state.deckName,
-      factionId: state.factionId,
-      leaderId: state.leaderId,
-      deck: { ...state.deck },
+      core: deckState(),
       territories: territoriesApi()?.selectedIds?.() || [],
       rites: ritesApi()?.selectedIds?.() || [],
-      selectedCardId: state.selectedCardId
     };
   }
 
   function restoreState(snapshot) {
-    state.deckName = snapshot.deckName;
-    state.factionId = snapshot.factionId;
-    state.leaderId = snapshot.leaderId;
-    state.deck = { ...snapshot.deck };
+    deckbuilder.replaceDeckState(snapshot.core);
     territoriesApi()?.setSelectedIds?.(snapshot.territories || []);
     ritesApi()?.setSelectedIds?.(snapshot.rites || []);
-    state.selectedCardId = snapshot.selectedCardId;
   }
 
   function starterRiteIds(preset) {
@@ -165,7 +158,7 @@
 
     const deck = {};
     for (const item of preset.cards || []) {
-      const card = state.cards.find(candidate =>
+      const card = cardCatalog().find(candidate =>
         candidate.name === item.name &&
         (candidate.faction === "neutral" || candidate.faction === preset.factionId)
       );
@@ -180,10 +173,13 @@
       return territory.id;
     });
 
-    state.deckName = `${leader.name} — ${preset.name}`;
-    state.factionId = preset.factionId;
-    state.leaderId = preset.leaderId;
-    state.deck = deck;
+    deckbuilder.replaceDeckState({
+      deckName: `${leader.name} — ${preset.name}`,
+      factionId: preset.factionId,
+      leaderId: preset.leaderId,
+      deck,
+      selectedCardId: null,
+    });
     territoriesApi()?.setSelectedIds?.(territories);
     ritesApi()?.setSelectedIds?.(starterRiteIds(preset));
   }
