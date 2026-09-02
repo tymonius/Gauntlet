@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { PlayerState } from '../types';
+import type { PlayerState } from '../types/v06';
 import { drawFromDeck } from './draw';
 
 function player(deck: string[], discard: string[] = [], graveyard: string[] = []): PlayerState {
