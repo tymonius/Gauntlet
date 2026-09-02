@@ -1,13 +1,14 @@
 (() => {
   const deckbuilder = window.GAUNTLET_DECKBUILDER;
   if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
-  const { state } = deckbuilder;
   const deckEntries = () => deckbuilder.deckEntries();
   const escapeHtml = value => deckbuilder.escapeHtml(value);
   const territoriesApi = () => deckbuilder.feature("territories");
   const ritesApi = () => deckbuilder.feature("mysticsRites");
   const currentGame = () => deckbuilder.currentGame();
   const currentGameLabel = () => currentGame()?.displayVersion || currentGame()?.version || "current";
+  const deckState = () => deckbuilder.deckState();
+  const cardCatalog = () => deckbuilder.cardCatalog();
 
   const STARTER_TIP_SOURCE = "starter-first-game-tips.json";
   let starterDecks = [];
@@ -69,7 +70,7 @@
   async function waitForCurrentGamePool() {
     const deadline = Date.now() + 10000;
     while (Date.now() < deadline) {
-      if (currentGame()?.starterDecks?.length && Array.isArray(state.cards) && state.cards.length && territoriesApi()?.isReady?.()) return;
+      if (currentGame()?.starterDecks?.length && cardCatalog().length && territoriesApi()?.isReady?.()) return;
       await new Promise(resolve => window.setTimeout(resolve, 25));
     }
     throw new Error("Timed out waiting for the shared current-game card, Territory, and starter Deck pool.");
@@ -94,17 +95,18 @@
   }
 
   function starterRiteIds(preset = null) {
-    if ((preset?.factionId || state.factionId) !== "mystics") return [];
+    if ((preset?.factionId || deckState().factionId) !== "mystics") return [];
     if (Array.isArray(preset?.selectedRites)) return [...preset.selectedRites];
     const riteApi = ritesApi();
     return riteApi?.selectionEnabled?.() ? [] : (riteApi?.defaultIds?.() || []);
   }
 
   function resetCurrentDeck() {
-    const hasCards = Object.keys(state.deck).length > 0;
+    const current = deckState();
+    const hasCards = Object.keys(current.deck).length > 0;
     const hasTerritories = Boolean(territoriesApi()?.selectedIds?.().length);
     const hasRites = Boolean(ritesApi()?.selectedIds?.().length);
-    const hasName = Boolean(state.deckName.trim());
+    const hasName = Boolean(current.deckName.trim());
 
     if (
       (hasCards || hasTerritories || hasRites || hasName) &&
@@ -114,24 +116,28 @@
       )
     ) return;
 
-    state.deck = {};
+    deckbuilder.replaceDeckState({
+      ...current,
+      deckName: "",
+      deck: {},
+      selectedCardId: null,
+    });
     territoriesApi()?.setSelectedIds?.([]);
     ritesApi()?.setSelectedIds?.(starterRiteIds());
-    state.deckName = "";
-    state.selectedCardId = null;
     deckbuilder.render();
   }
 
   function selectedStarterDeck() {
+    const current = deckState();
     return starterDecks.find(deck =>
-      deck.factionId === state.factionId &&
-      deck.leaderId === state.leaderId
+      deck.factionId === current.factionId &&
+      deck.leaderId === current.leaderId
     ) || null;
   }
 
   function matchingCurrentStarterDeck() {
     const preset = selectedStarterDeck();
-    if (!preset || !state.cards.length || !territoriesApi()?.isReady?.()) return null;
+    if (!preset || !cardCatalog().length || !territoriesApi()?.isReady?.()) return null;
 
     const currentCards = new Map();
     for (const { card, qty } of deckEntries()) {
@@ -169,7 +175,7 @@
       selectedStarterDeck() &&
       currentGameReady &&
       currentGame()?.version &&
-      state.cards.length &&
+      cardCatalog().length &&
       territoriesApi()?.isReady?.()
     );
   }
@@ -180,7 +186,7 @@
 
     const preset = selectedStarterDeck();
     const faction = deckbuilder.getFaction();
-    const leader = faction?.leaders.find(item => item.id === state.leaderId);
+    const leader = deckbuilder.getLeader();
 
     button.disabled = !starterDeckReady();
     button.textContent = preset && leader
@@ -323,10 +329,10 @@
   function loadRecommendedDeck() {
     const preset = selectedStarterDeck();
     const faction = deckbuilder.getFaction();
-    const leader = faction?.leaders.find(item => item.id === state.leaderId);
+    const leader = deckbuilder.getLeader();
     if (!preset || !faction || !leader || !starterDeckReady()) return;
 
-    const hasCurrentDeck = Object.keys(state.deck).length > 0
+    const hasCurrentDeck = Object.keys(deckState().deck).length > 0
       || Boolean(territoriesApi()?.selectedIds?.().length)
       || Boolean(ritesApi()?.selectedIds?.().length);
     if (
@@ -338,7 +344,7 @@
     const missingCards = [];
 
     for (const item of preset.cards) {
-      const card = state.cards.find(candidate =>
+      const card = cardCatalog().find(candidate =>
         candidate.name === item.name &&
         (candidate.faction === "neutral" || candidate.faction === preset.factionId)
       );
@@ -370,11 +376,14 @@
       return;
     }
 
-    state.deckName = `${leader.name} — ${preset.name}`;
-    state.deck = deck;
+    deckbuilder.replaceDeckState({
+      ...deckState(),
+      deckName: `${leader.name} — ${preset.name}`,
+      deck,
+      selectedCardId: null,
+    });
     territoriesApi()?.setSelectedIds?.(territoryIds);
     ritesApi()?.setSelectedIds?.(starterRiteIds(preset));
-    state.selectedCardId = null;
 
     deckbuilder.render();
 
