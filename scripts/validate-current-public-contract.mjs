@@ -112,10 +112,16 @@ function validateCanonicalFooter(html, route) {
   assert(html.includes('Published by TDS Games'), `${route} footer is missing the TDS Games publisher line.`);
   assert(html.includes('An imprint of Misty Hollow Enterprises'), `${route} footer is missing the parent-imprint line.`);
   assert(html.includes('Copyright © 2026 Tymon Scott. All rights reserved.'), `${route} footer is missing the canonical copyright notice.`);
+  const footerLinks = footerNavigationLinks(html, route);
   assert.deepEqual(
-    footerNavigationLinks(html, route),
+    footerLinks,
     canonicalFooterNavigation,
     `${route} footer navigation drifted from the canonical site footer.`,
+  );
+  const primaryHrefs = new Set(canonicalPrimaryNavigation.map(({ href }) => href));
+  assert(
+    !footerLinks.some(({ href }) => primaryHrefs.has(href)),
+    `${route} footer repeats a canonical primary-navigation destination.`,
   );
 }
 
@@ -137,12 +143,11 @@ const canonicalPrimaryNavigation = [
   { href: '/rules-arbiter/', label: 'Rules Arbiter' },
 ];
 const canonicalFooterNavigation = [
-  { href: '/rulebook/', label: 'Browser Rulebook' },
-  { href: '/card-reference/', label: 'Card Reference' },
-  { href: '/deckbuilder/', label: 'Deckbuilder' },
-  { href: '/rules-arbiter/', label: 'Rules Arbiter' },
   { href: '/about/', label: 'About' },
+  { href: '/faq/', label: 'FAQ' },
   { href: '/contact/', label: 'Contact' },
+  { href: 'https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635', label: 'Tabletop Simulator' },
+  { href: '/privacy/', label: 'Privacy' },
 ];
 
 // Footer exceptions must be explicit and justified. Printed playtest artifacts such as
