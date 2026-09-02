@@ -17,23 +17,7 @@ The legacy aggregate API is intentionally versioned as `src/state/v06.ts`. There
 
 These modules remain useful implementation evidence, but they must not be treated as authority for current v0.7.x behavior without deliberate revalidation and promotion.
 
-Foundational legacy state modules use the explicit `../types/v06` type boundary. These imports are type-only and are intentionally migrated independently from runtime `cards` imports, which still participate in an older circular module graph.
-
-The legacy Intelligence runtime subsystem follows the same rule: its state/effect modules import shared engine shapes through `../types/v06` using type-only imports, while existing runtime card imports remain untouched.
-
-The legacy Diplomat runtime subsystem likewise imports its shared engine shapes through `../types/v06` using type-only imports.
-
-The legacy Financier runtime subsystem follows the same explicit `../types/v06` type-only boundary.
-
-The legacy Mystics runtime subsystem also uses `../types/v06` exclusively for type-only shared engine shapes.
-
-The legacy Inquisition runtime subsystem likewise uses the explicit `../types/v06` type-only boundary.
-
-The remaining legacy Military runtime modules use the same explicit `../types/v06` type-only boundary.
-
-Shared legacy state support modules—including battle helpers, leader abilities, Territory overlays/effects, and v0.6 setup—also use the explicit `../types/v06` type-only boundary.
-
-Neutral card runtime modules likewise import shared engine shapes only through the explicit `../types/v06` type-only boundary.
+Legacy runtime state modules must not import the deprecated generic `../types` compatibility barrel. Where they use the shared aggregate type API, they opt into `../types/v06` explicitly. These type-only boundaries are intentionally maintained independently from runtime `cards` imports, which still participate in the older circular module graph.
 
 ## Hidden information rule
 
