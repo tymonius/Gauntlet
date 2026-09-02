@@ -142,7 +142,7 @@ const canonicalFooterNavigation = [
   { href: '/deckbuilder/', label: 'Deckbuilder' },
   { href: '/rules-arbiter/', label: 'Rules Arbiter' },
   { href: '/about/', label: 'About' },
-  { href: 'https://github.com/tymonius/Gauntlet', label: 'GitHub' },
+  { href: '/contact/', label: 'Contact' },
 ];
 
 // Footer exceptions must be explicit and justified. Printed playtest artifacts such as
@@ -200,7 +200,7 @@ assert.equal(bookletPdf.getPageCount(), bookletEntry.pages, 'Published booklet p
 const routeValues = Object.values(manifest.public_routes ?? {}).filter((route) => typeof route === 'string');
 const releaseLandingRoute = `/${currentVersion}/`;
 const changelogRoute = '/changelog/';
-const siteInfoRoutes = ['/about/', '/faq/', '/privacy/'];
+const siteInfoRoutes = ['/about/', '/faq/', '/privacy/', '/contact/'];
 const withdrawnVersionRoutes = Object.entries(lifecycle.releases ?? {})
   .filter(([, release]) => release?.status === 'withdrawn')
   .flatMap(([version]) => [`/${version}/`, `/releases/${version}/`]);
@@ -269,6 +269,12 @@ assert(notFoundPage.includes('name="robots" content="noindex,follow"'), '404 pag
 assert.deepEqual(primaryNavigationLinks(notFoundPage, '/404.html'), canonicalPrimaryNavigation, '404 primary navigation drifted.');
 assert.equal(brandHomeRef(notFoundPage, '/404.html'), '/', '404 brand link does not return to the site root.');
 validateCanonicalFooter(notFoundPage, '/404.html');
+
+const contactThanks = await getText('/contact/thanks/');
+assert(contactThanks.includes('name="robots" content="noindex,follow"'), 'Contact confirmation page must remain out of search indexes.');
+assert.deepEqual(primaryNavigationLinks(contactThanks, '/contact/thanks/'), canonicalPrimaryNavigation, 'Contact confirmation primary navigation drifted.');
+assert.equal(brandHomeRef(contactThanks, '/contact/thanks/'), '/', 'Contact confirmation brand link does not return to the site root.');
+validateCanonicalFooter(contactThanks, '/contact/thanks/');
 
 const robots = await getText('/robots.txt');
 assert(robots.includes('Sitemap: https://gauntlet.run/sitemap.xml'), 'robots.txt does not advertise the canonical sitemap.');
