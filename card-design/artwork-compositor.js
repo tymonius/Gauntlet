@@ -221,7 +221,7 @@
     summary.innerHTML = '';
 
     const strong = document.createElement('strong');
-    strong.textContent = `${items.length} unpublished artwork composition${items.length === 1 ? '' : 's'} differ from current-game.json.`;
+    strong.textContent = `${items.length} saved artwork composition${items.length === 1 ? ' has' : 's have'} not been published to current-game.json.`;
     const detail = document.createElement('span');
     detail.textContent = items.map(item => item.label).join(', ');
     summary.append(strong, detail);
@@ -248,7 +248,7 @@
         badge.dataset.artDirectionId = target.id;
         host.append(badge);
       }
-      if (badge.textContent !== 'UNPUBLISHED ART POSITION') badge.textContent = 'UNPUBLISHED ART POSITION';
+      if (badge.textContent !== 'SAVED — NOT PUBLISHED') badge.textContent = 'SAVED — NOT PUBLISHED';
       divergences.set(target.id, { id: target.id, label: target.label });
     } else {
       badge?.remove();
