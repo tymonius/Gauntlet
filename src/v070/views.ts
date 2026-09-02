@@ -101,6 +101,8 @@ export interface V070BattleRuntimeView {
     V070BattleRuntime['trainingGroundsRedrawResolved'];
   gambitProhibitedPlayers:
     V070BattleRuntime['gambitProhibitedPlayers'];
+  finalJudgmentWindowOpen: boolean;
+  relentlessPursuitWindowOpen: boolean;
   unsupportedEffects: V070UnsupportedBattleEffect[];
 }
 
@@ -116,6 +118,10 @@ export interface V070PlayerZoneView {
 
 export interface V070InquisitionView {
   conviction: number;
+  normalConvictionGainTurn: number | null;
+  purgeActionTurn: number | null;
+  finalJudgmentUsedTurn: number | null;
+  relentlessPursuitUsedTurn: number | null;
 }
 
 export interface V070FinancierView {
@@ -203,6 +209,9 @@ export interface V070GameView {
   pendingActionEffectChoice: V070GameState['pendingActionEffectChoice'];
   pendingSanctionChoices: V070GameState['pendingSanctionChoices'];
   pendingAssetLimitChoice: V070GameState['pendingAssetLimitChoice'];
+  pendingPurgeChoice: V070GameState['pendingPurgeChoice'];
+  pendingRelentlessPursuit:
+    V070GameState['pendingRelentlessPursuit'];
   pendingTurnChoice: V070GameState['pendingTurnChoice'];
   winner: PlayerId | null;
   events: V070GameEvent[];
@@ -259,6 +268,12 @@ export function viewV070GameForPlayer(
     ),
     pendingAssetLimitChoice: state.pendingAssetLimitChoice
       ? structuredClone(state.pendingAssetLimitChoice)
+      : null,
+    pendingPurgeChoice: state.pendingPurgeChoice
+      ? structuredClone(state.pendingPurgeChoice)
+      : null,
+    pendingRelentlessPursuit: state.pendingRelentlessPursuit
+      ? structuredClone(state.pendingRelentlessPursuit)
       : null,
     pendingTurnChoice: state.pendingTurnChoice
       ? structuredClone(state.pendingTurnChoice)
@@ -418,7 +433,16 @@ function viewPlayer(
     military: player.military ? structuredClone(player.military) : null,
     diplomats: player.diplomats ? structuredClone(player.diplomats) : null,
     inquisition: player.inquisition
-      ? { conviction: player.inquisition.conviction }
+      ? {
+          conviction: player.inquisition.conviction,
+          normalConvictionGainTurn:
+            player.inquisition.normalConvictionGainTurn,
+          purgeActionTurn: player.inquisition.purgeActionTurn,
+          finalJudgmentUsedTurn:
+            player.inquisition.finalJudgmentUsedTurn,
+          relentlessPursuitUsedTurn:
+            player.inquisition.relentlessPursuitUsedTurn,
+        }
       : null,
     financiers: player.financiers
       ? {
@@ -562,6 +586,9 @@ function viewBattleRuntime(
     gambitProhibitedPlayers: [
       ...runtime.gambitProhibitedPlayers,
     ],
+    finalJudgmentWindowOpen: runtime.finalJudgmentWindowOpen,
+    relentlessPursuitWindowOpen:
+      runtime.relentlessPursuitWindowOpen,
     unsupportedEffects: runtime.unsupportedEffects.map(effect => structuredClone(effect)),
   };
 }
