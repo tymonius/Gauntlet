@@ -1,4 +1,5 @@
-const DEFAULT_MAX_EDGE = 1000;
+const DEFAULT_SHORT_EDGE = 960;
+const DEFAULT_LONG_EDGE = 1800;
 
 function requestedProfile() {
   const value = String(new URLSearchParams(window.location.search).get('printArtwork') || '').trim().toLowerCase();
@@ -43,13 +44,17 @@ function canvasBlob(canvas) {
   });
 }
 
-async function normalizeSource(source, maxEdge) {
+async function normalizeSource(source, shortEdge, longEdge) {
   const image = await loadImage(source);
   const sourceWidth = Number(image.naturalWidth) || 0;
   const sourceHeight = Number(image.naturalHeight) || 0;
   if (!sourceWidth || !sourceHeight) throw new Error(`Normalized print artwork has invalid dimensions: ${source}`);
 
-  const scale = Math.min(1, maxEdge / Math.max(sourceWidth, sourceHeight));
+  const scale = Math.min(
+    1,
+    shortEdge / Math.min(sourceWidth, sourceHeight),
+    longEdge / Math.max(sourceWidth, sourceHeight),
+  );
   const width = Math.max(1, Math.round(sourceWidth * scale));
   const height = Math.max(1, Math.round(sourceHeight * scale));
   const canvas = document.createElement('canvas');
@@ -86,13 +91,14 @@ export function normalizedPrintArtworkRequested() {
 export async function normalizePrintArtworkSource(source, options = {}) {
   if (!source || !normalizedPrintArtworkRequested()) return source;
 
-  const maxEdge = Math.max(64, Math.round(Number(options.maxEdge) || DEFAULT_MAX_EDGE));
+  const shortEdge = Math.max(64, Math.round(Number(options.shortEdge) || DEFAULT_SHORT_EDGE));
+  const longEdge = Math.max(shortEdge, Math.round(Number(options.longEdge) || DEFAULT_LONG_EDGE));
   const absolute = new URL(source, window.location.href).href;
-  const key = `${absolute}|png|${maxEdge}`;
+  const key = `${absolute}|png|${shortEdge}x${longEdge}`;
   const cache = sharedCache();
 
   if (!cache.has(key)) {
-    cache.set(key, normalizeSource(absolute, maxEdge).catch(error => {
+    cache.set(key, normalizeSource(absolute, shortEdge, longEdge).catch(error => {
       cache.delete(key);
       throw error;
     }));
@@ -100,11 +106,12 @@ export async function normalizePrintArtworkSource(source, options = {}) {
 
   const record = await cache.get(key);
   document.body.dataset.printArtworkNormalized = 'true';
-  document.body.dataset.printArtworkMaxEdge = String(maxEdge);
+  document.body.dataset.printArtworkShortEdge = String(shortEdge);
+  document.body.dataset.printArtworkLongEdge = String(longEdge);
   document.body.dataset.printArtworkSourcePixels = `${record.sourceWidth}x${record.sourceHeight}`;
   document.body.dataset.printArtworkPixels = `${record.width}x${record.height}`;
   document.body.dataset.printArtworkBytes = String(record.bytes);
   return record.url;
 }
 
-export { DEFAULT_MAX_EDGE };
+export { DEFAULT_SHORT_EDGE, DEFAULT_LONG_EDGE };
