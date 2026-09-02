@@ -14,7 +14,7 @@
   // authoring or batch-publication code in the browser cache.
   const authoringClient = document.createElement('script');
   authoringClient.async = false;
-  authoringClient.src = 'artwork-authoring-client.js?v=20260902-1';
+  authoringClient.src = 'artwork-authoring-client.js?v=20260902-2';
   document.head.append(authoringClient);
 
   // Publish runs through a separate reliability shim so a transient Worker or
