@@ -187,6 +187,47 @@ function validateCardMetrics(faction, metrics) {
   }
 }
 
+async function validateEmbeddedFrameInspector(page, sourceFrame, label) {
+  await sourceFrame.scrollIntoViewIfNeeded();
+  const embedded = sourceFrame.contentFrame();
+  const card = embedded.locator('.leader-card').first();
+  await card.waitFor();
+  await embedded.waitForFunction(() => document.querySelector('.leader-card')?.classList.contains('card-inspectable'));
+  await card.click();
+
+  const dialog = page.locator('.card-inspection-dialog[open]').first();
+  await dialog.waitFor();
+  const inspection = await dialog.evaluate(element => {
+    const frame = element.querySelector('.card-inspection-frame');
+    const frameRect = frame?.getBoundingClientRect();
+    const stage = element.querySelector('.card-inspection-stage');
+    const stageRect = stage?.getBoundingClientRect();
+    return {
+      open: element.open,
+      position: getComputedStyle(element).position,
+      hasFrame: Boolean(frame),
+      frameWidth: frameRect?.width || 0,
+      frameHeight: frameRect?.height || 0,
+      stageWidth: stageRect?.width || 0,
+      stageHeight: stageRect?.height || 0,
+      inspectionSource: frame?.src || '',
+    };
+  });
+
+  if (!inspection.open || inspection.position !== 'fixed' || !inspection.hasFrame) {
+    throw new Error(`${label} did not open through the shared embedded-frame inspector: ${JSON.stringify(inspection)}.`);
+  }
+  if (inspection.frameWidth <= 240 || inspection.frameHeight <= 336 || inspection.stageWidth <= 240 || inspection.stageHeight <= 336) {
+    throw new Error(`${label} embedded inspector did not enlarge the canonical frame: ${JSON.stringify(inspection)}.`);
+  }
+  if (!inspection.inspectionSource.includes('inspection=1')) {
+    throw new Error(`${label} embedded inspector did not request canonical inspection mode: ${JSON.stringify(inspection)}.`);
+  }
+
+  await dialog.locator('.card-inspection-close').click();
+  await page.waitForFunction(() => !document.querySelector('.card-inspection-dialog[open]'));
+}
+
 async function validateSharedInspector(page, source, cloneSelector, label) {
   await source.scrollIntoViewIfNeeded();
   await page.waitForFunction(selector => document.querySelector(selector)?.classList.contains('card-inspectable'), cloneSelector === '.gauntlet-card-back' ? '[data-gauntlet-card-back][data-card-back-faction="intelligence"]' : '.leader-card');
@@ -260,9 +301,12 @@ async function main() {
     const leaderPage = await browser.newPage({ viewport: { width: 1100, height: 1000 }, deviceScaleFactor: 2 });
     try {
       await leaderPage.goto(`${baseUrl}/card-design/?type=leader#leader-cards`, { waitUntil: 'load' });
-      const leader = leaderPage.locator('.leader-card').first();
-      await leader.waitFor();
-      await validateSharedInspector(leaderPage, leader, '.leader-card', 'Leader card');
+      const leaderFrame = leaderPage.locator('#leader-cards .component-review-frame').first();
+      await leaderFrame.waitFor();
+      await leaderPage.waitForFunction(() => (
+        document.querySelector('#leader-cards .component-review-frame')?.contentDocument?.body?.dataset.renderReady === 'true'
+      ));
+      await validateEmbeddedFrameInspector(leaderPage, leaderFrame, 'Leader card');
     } finally {
       await leaderPage.close();
     }
