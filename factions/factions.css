@@ -196,6 +196,9 @@ body.faction-page::after {
   padding: 34px;
   display: flex;
   flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
   color: var(--ink);
   border: 1px solid var(--line);
   border-top: 6px solid var(--faction);
@@ -203,6 +206,24 @@ body.faction-page::after {
   box-shadow: 0 14px 44px rgba(55,38,18,.08);
   text-decoration: none;
   transition: transform .18s ease, box-shadow .18s ease;
+}
+.faction-hub-card > * {
+  position: relative;
+  z-index: 1;
+}
+.faction-hub-card::after {
+  content: "";
+  width: clamp(170px, 46%, 220px);
+  aspect-ratio: 1;
+  position: absolute;
+  right: -24px;
+  bottom: -42px;
+  z-index: 0;
+  background: var(--faction);
+  opacity: .075;
+  -webkit-mask: var(--faction-symbol) center / contain no-repeat;
+  mask: var(--faction-symbol) center / contain no-repeat;
+  pointer-events: none;
 }
 
 .faction-hub-card.faction-military { --faction: #9e262c; }
@@ -251,6 +272,11 @@ body.faction-page::after {
   .leader-profile-art { min-height: 330px; }
   .factions-intro { margin: 0 auto; padding: 70px 0 50px; }
   .faction-hub-card { min-height: 320px; }
+  .faction-hub-card::after {
+    width: 190px;
+    right: -22px;
+    bottom: -34px;
+  }
 }
 
 /* Normalize legacy page references to the current top-level portrait assets. */
