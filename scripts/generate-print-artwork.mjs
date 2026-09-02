@@ -1,6 +1,6 @@
 import { mkdir, rm, stat, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import sharp from 'sharp';
 
 import { buildCatalog } from './tts-current-catalog.mjs';
@@ -129,9 +129,11 @@ async function main() {
   console.log(`Generated ${records.length} normalized print artwork derivatives (${totalBytes} bytes) in ${outputRoot}.`);
 }
 
-main().catch(error => {
-  console.error(error.stack || error.message || error);
-  process.exitCode = 1;
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch(error => {
+    console.error(error.stack || error.message || error);
+    process.exitCode = 1;
+  });
+}
 
 export { ART_WINDOW_BACKGROUND, JPEG_QUALITY, LONG_EDGE, SHORT_EDGE, targetDimensions };
