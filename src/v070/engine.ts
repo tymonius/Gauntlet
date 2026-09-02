@@ -506,11 +506,20 @@ export interface V070MysticRitualState {
   begunTurn: number | null;
 }
 
+export interface V070MysticInvocationPending {
+  sourceInstanceId: string;
+  sourceCardId: string;
+  openedTurn: number;
+  duringBattle: boolean;
+}
+
 export interface V070MysticsState {
   rites: Record<V070MysticRiteId, V070MysticRiteState>;
   riteCompletedTurn: number | null;
   crossingEligibilityTurn: number | null;
   crossingEligibilityTerritoryInstanceId: string | null;
+  invocationUsedTurn: number | null;
+  invocationPending: V070MysticInvocationPending | null;
   transmutationUsedTurn: number | null;
   materiaPrimaUsedTurn: number | null;
   materiaPrimaPendingDraw: boolean;
@@ -716,6 +725,8 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
             riteCompletedTurn: null,
             crossingEligibilityTurn: null,
             crossingEligibilityTerritoryInstanceId: null,
+            invocationUsedTurn: null,
+            invocationPending: null,
             transmutationUsedTurn: null,
             materiaPrimaUsedTurn: null,
             materiaPrimaPendingDraw: false,
