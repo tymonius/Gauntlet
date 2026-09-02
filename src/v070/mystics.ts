@@ -13,6 +13,7 @@ import {
   v070BindingsForHost,
 } from './bindings';
 import { drawV070Cards } from './card-draw';
+import { assertV070GraveyardExitAllowed } from './territories';
 import type { PlayerId } from './rules';
 
 const ECHOES_GRAVEYARD_PURPOSE = 'Mystics Rite of Echoes graveyard card';
@@ -175,37 +176,138 @@ export function recordV070MysticBattleEffectApplied(
   if (!isV070MysticPlayer(state, playerId)) return;
   const mystics = requireMystics(state, playerId);
   const rite = mystics.rites.echoes;
-  if (rite.status !== 'begun'
-    || rite.begunTurn === null
-    || rite.begunTurn >= state.turnNumber
-    || mystics.riteCompletedTurn === state.turnNumber) {
-    return;
+
+  if (rite.status === 'begun'
+    && rite.begunTurn !== null
+    && rite.begunTurn < state.turnNumber
+    && mystics.riteCompletedTurn !== state.turnNumber) {
+    const hostId = riteHostId(playerId, 'echoes');
+    const handBinding = v070BindingsForHost(state, hostId)
+      .find(binding => binding.purpose === ECHOES_HAND_PURPOSE);
+
+    if (handBinding && handBinding.cardInstanceId !== sourceInstanceId) {
+      const boundCardId =
+        state.cardInstances[handBinding.cardInstanceId]?.cardId;
+      const sourceCardId =
+        state.cardInstances[sourceInstanceId]?.cardId;
+      if (boundCardId && boundCardId === sourceCardId) {
+        releaseV070BoundCardsForPurpose(
+          state,
+          hostId,
+          ECHOES_GRAVEYARD_PURPOSE,
+          'discard',
+          'Rite of Echoes completion',
+        );
+        releaseV070BoundCardsForPurpose(
+          state,
+          hostId,
+          ECHOES_HAND_PURPOSE,
+          'graveyard',
+          'Rite of Echoes completion',
+        );
+        completeRite(state, playerId, 'echoes');
+      }
+    }
   }
 
-  const hostId = riteHostId(playerId, 'echoes');
-  const handBinding = v070BindingsForHost(state, hostId)
-    .find(binding => binding.purpose === ECHOES_HAND_PURPOSE);
-  if (!handBinding || handBinding.cardInstanceId === sourceInstanceId) return;
-
-  const boundCardId = state.cardInstances[handBinding.cardInstanceId]?.cardId;
-  const sourceCardId = state.cardInstances[sourceInstanceId]?.cardId;
-  if (!boundCardId || boundCardId !== sourceCardId) return;
-
-  releaseV070BoundCardsForPurpose(
+  openV070MysticInvocationAfterEffect(
     state,
-    hostId,
-    ECHOES_GRAVEYARD_PURPOSE,
-    'discard',
-    'Rite of Echoes completion',
+    playerId,
+    sourceInstanceId,
+    true,
   );
-  releaseV070BoundCardsForPurpose(
+}
+
+export function openV070MysticInvocationAfterActionEffect(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceInstanceId: string,
+): void {
+  openV070MysticInvocationAfterEffect(
     state,
-    hostId,
-    ECHOES_HAND_PURPOSE,
-    'graveyard',
-    'Rite of Echoes completion',
+    playerId,
+    sourceInstanceId,
+    false,
   );
-  completeRite(state, playerId, 'echoes');
+}
+
+export function v070MysticInvocationPendingPlayers(
+  state: V070GameState,
+): PlayerId[] {
+  return (['A', 'B'] as const).filter(
+    playerId => Boolean(state.players[playerId].mystics?.invocationPending),
+  );
+}
+
+export function useV070MysticInvocation(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const mystics = requireMystics(state, playerId);
+  const pending = mystics.invocationPending;
+  if (!pending) {
+    throw new V070GameActionError(
+      'Invocation is not pending for that player.',
+    );
+  }
+  if (mystics.invocationUsedTurn === state.turnNumber) {
+    throw new V070GameActionError(
+      'Invocation may be used only once per turn.',
+    );
+  }
+
+  const graveyard = state.players[playerId].zones.graveyard;
+  const index = graveyard.indexOf(targetInstanceId);
+  if (index < 0) {
+    throw new V070GameActionError(
+      'Invocation must choose one card currently in your Graveyard.',
+    );
+  }
+
+  assertV070GraveyardExitAllowed(state, 'Invocation');
+  graveyard.splice(index, 1);
+  state.players[playerId].zones.discardPile.push(targetInstanceId);
+  mystics.invocationUsedTurn = state.turnNumber;
+  mystics.invocationPending = null;
+
+  appendV070Event(state, {
+    type: 'mystic_invocation_used',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      sourceInstanceId: pending.sourceInstanceId,
+      sourceCardId: pending.sourceCardId,
+      targetInstanceId,
+      targetCardId: state.cardInstances[targetInstanceId]?.cardId,
+      duringBattle: pending.duringBattle,
+    },
+  });
+}
+
+export function passV070MysticInvocation(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  const mystics = requireMystics(state, playerId);
+  const pending = mystics.invocationPending;
+  if (!pending) {
+    throw new V070GameActionError(
+      'Invocation is not pending for that player.',
+    );
+  }
+
+  mystics.invocationPending = null;
+  appendV070Event(state, {
+    type: 'mystic_invocation_declined',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      sourceInstanceId: pending.sourceInstanceId,
+      sourceCardId: pending.sourceCardId,
+      duringBattle: pending.duringBattle,
+    },
+  });
 }
 
 export function completeV070MysticBloodAfterBattleWin(
@@ -643,6 +745,53 @@ export function resolveV070MateriaPrimaAfterAftermath(
     mystics.materiaPrimaPendingDraw = false;
     drawMateriaPrima(state, playerId, 'battle sacrifice');
   }
+}
+
+function openV070MysticInvocationAfterEffect(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceInstanceId: string,
+  duringBattle: boolean,
+): void {
+  if (!isV070MysticPlayer(state, playerId)) return;
+  const mystics = requireMystics(state, playerId);
+  if (v070MysticCompletedRiteCount(state, playerId) < 1
+    || mystics.invocationUsedTurn === state.turnNumber
+    || mystics.invocationPending
+    || state.players[playerId].zones.graveyard.length === 0) {
+    return;
+  }
+
+  const sourceCardId = state.cardInstances[sourceInstanceId]?.cardId;
+  if (!sourceCardId || !isV070ArcaneCardId(sourceCardId)) return;
+
+  mystics.invocationPending = {
+    sourceInstanceId,
+    sourceCardId,
+    openedTurn: state.turnNumber,
+    duringBattle,
+  };
+
+  appendV070Event(state, {
+    type: 'mystic_invocation_window_opened',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      sourceInstanceId,
+      sourceCardId,
+      duringBattle,
+      candidateCount: state.players[playerId].zones.graveyard.length,
+    },
+  });
+  appendV070Event(state, {
+    type: 'mystic_invocation_options',
+    actor: playerId,
+    visibility: playerId,
+    payload: {
+      sourceInstanceId,
+      targetInstanceIds: [...state.players[playerId].zones.graveyard],
+    },
+  });
 }
 
 function beginEchoes(
