@@ -16,7 +16,7 @@ import { beginDeedPurchase, beginHostileTakeover, beginPlayTheMarket, clearFinan
 import { gainFactionResource } from './resources';
 import { runPostActionAutomationPipeline } from './pipeline';
 import { isOpponentBeyondGauntletSpace, isOwnBeyondGauntletSpace } from './v06-board';
-import type { BattleState, GameEvent, GameState, PlayerID, RecentBattleResult, SpaceID } from '../types';
+import type { BattleState, GameEvent, GameState, PlayerID, RecentBattleResult, SpaceID } from '../types/v06';
 
 const LAST_STAND_DEFENDER_BONUS_EFFECT = 'last_stand_defender_bonus';
 const LAST_STAND_DEFENDER_BONUS = 1;

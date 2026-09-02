@@ -7,7 +7,7 @@ import type {
   LeaderAbilityUsageState,
   LegalLeaderAbilityOption,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import { spendFactionResource } from './resources';
 
 export interface LeaderAbilityDefinition {

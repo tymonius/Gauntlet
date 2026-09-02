@@ -4,7 +4,7 @@ import type {
   CardID,
   GameState,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import { GameActionError } from './reducer';
 
 /**

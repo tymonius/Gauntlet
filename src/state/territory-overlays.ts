@@ -6,7 +6,7 @@ import type {
   SpaceID,
   TerritoryOverlayKind,
   TerritoryOverlayState,
-} from '../types';
+} from '../types/v06';
 
 const LEGACY_RUINS_OVERLAY_CARDS = new Set([
   'neutral-siege-weaponry',
