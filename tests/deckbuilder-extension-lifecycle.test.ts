@@ -42,6 +42,7 @@ describe("Deckbuilder extension architecture", () => {
     expect(app).toContain("deckState,");
     expect(app).toContain("cardCatalog,");
     expect(app).toContain("replaceDeckState,");
+    expect(app).toContain("setDeckStorageKey,");
     expect(app).toContain("getLeader: () => getLeader()");
     expect(app).toContain("setSourceLoader(callback)");
     expect(app).toContain("setCardPreviewRenderer(callback)");
@@ -89,6 +90,13 @@ describe("Deckbuilder extension architecture", () => {
     ]) {
       expect(read(path), `${path} bypasses the current-game API`).toContain("deckbuilder.currentGame()");
     }
+  });
+
+  it("keeps the current runtime behind the core Deck state API", () => {
+    expect(runtime).not.toMatch(/\bstate\./);
+    expect(runtime).toContain("deckbuilder.deckState()");
+    expect(runtime).toContain("deckbuilder.replaceDeckState(");
+    expect(runtime).toContain("deckbuilder.setDeckStorageKey(");
   });
 
   it("keeps Territory and Rite state behind their owning feature modules", () => {
