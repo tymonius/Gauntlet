@@ -70,6 +70,9 @@ async function main() {
     await page.waitForFunction(expected => (
       document.querySelectorAll('#rite-cards .component-review-frame').length === expected
     ), expectedFrames);
+    await page.locator('#rite-cards .component-review-frame').evaluateAll(frames => {
+      frames.forEach(frame => { frame.loading = 'eager'; });
+    });
     await page.waitForFunction(() => [...document.querySelectorAll('#rite-cards .component-review-frame')].every(frame => (
       frame.contentDocument?.body?.dataset.renderReady === 'true'
     )));
