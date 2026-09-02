@@ -258,14 +258,20 @@
       if (!target) return;
       installLauncher(target);
       updateDivergenceMarker(target);
-      const draft = readDrafts()[target.id];
-      if (draft) applyDirection(target, draft);
+      const drafts = readDrafts();
+      if (Object.prototype.hasOwnProperty.call(drafts, target.id)) {
+        const draft = drafts[target.id];
+        applyDirection(target, draft && typeof draft === 'object' ? draft : {});
+      }
       if (frame.dataset.artCompositorLoadHook !== 'true') {
         frame.dataset.artCompositorLoadHook = 'true';
         frame.addEventListener('load', () => {
           installLauncher(target);
-          const saved = readDrafts()[target.id];
-          if (saved) requestAnimationFrame(() => applyDirection(target, saved));
+          const savedDrafts = readDrafts();
+          if (Object.prototype.hasOwnProperty.call(savedDrafts, target.id)) {
+            const saved = savedDrafts[target.id];
+            requestAnimationFrame(() => applyDirection(target, saved && typeof saved === 'object' ? saved : {}));
+          }
         });
       }
     });
