@@ -141,7 +141,7 @@ const canonicalFooterNavigation = [
   { href: '/card-reference/', label: 'Card Reference' },
   { href: '/deckbuilder/', label: 'Deckbuilder' },
   { href: '/rules-arbiter/', label: 'Rules Arbiter' },
-  { href: 'https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635', label: 'Tabletop Simulator' },
+  { href: '/about/', label: 'About' },
   { href: 'https://github.com/tymonius/Gauntlet', label: 'GitHub' },
 ];
 
@@ -200,6 +200,7 @@ assert.equal(bookletPdf.getPageCount(), bookletEntry.pages, 'Published booklet p
 const routeValues = Object.values(manifest.public_routes ?? {}).filter((route) => typeof route === 'string');
 const releaseLandingRoute = `/${currentVersion}/`;
 const changelogRoute = '/changelog/';
+const siteInfoRoutes = ['/about/', '/faq/'];
 const withdrawnVersionRoutes = Object.entries(lifecycle.releases ?? {})
   .filter(([, release]) => release?.status === 'withdrawn')
   .flatMap(([version]) => [`/${version}/`, `/releases/${version}/`]);
@@ -220,6 +221,7 @@ const corePages = [
   '/',
   releaseLandingRoute,
   changelogRoute,
+  ...siteInfoRoutes,
   ...routeValues,
   ...factions.map((slug) => `/factions/${slug}/`),
 ];
@@ -260,6 +262,21 @@ for (const route of footerOnlyRoutes) {
   if (!canonicalFooterExceptions.has(route)) {
     validateCanonicalFooter(html, route);
   }
+}
+
+const notFoundPage = await getText('/404.html');
+assert(notFoundPage.includes('name="robots" content="noindex,follow"'), '404 page must remain out of search indexes.');
+assert.deepEqual(primaryNavigationLinks(notFoundPage, '/404.html'), canonicalPrimaryNavigation, '404 primary navigation drifted.');
+assert.equal(brandHomeRef(notFoundPage, '/404.html'), '/', '404 brand link does not return to the site root.');
+validateCanonicalFooter(notFoundPage, '/404.html');
+
+const robots = await getText('/robots.txt');
+assert(robots.includes('Sitemap: https://gauntlet.run/sitemap.xml'), 'robots.txt does not advertise the canonical sitemap.');
+
+const sitemap = await getText('/sitemap.xml');
+for (const route of ['/', ...siteInfoRoutes, releaseLandingRoute, changelogRoute, ...routeValues, ...factions.map((slug) => `/factions/${slug}/`)]) {
+  const expectedUrl = new URL(route, 'https://gauntlet.run').href;
+  assert(sitemap.includes(`<loc>${expectedUrl}</loc>`), `sitemap.xml is missing ${expectedUrl}.`);
 }
 
 const rulebookRoute = manifest.public_routes?.rulebook || '/rulebook/';
