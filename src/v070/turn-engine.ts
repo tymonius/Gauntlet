@@ -4407,6 +4407,11 @@ function chooseSoulForSoulTargets(
       graveyardToHandCardId: state.cardInstances[graveyardInstanceId]?.cardId,
     },
   });
+  recordV070MysticQualifyingHandSacrifice(
+    state,
+    playerId,
+    'Soul for Soul',
+  );
 
   state.pendingActionEffectChoice = null;
   finishPendingActionCard(state);
@@ -4578,6 +4583,11 @@ function moveDarkOmensDrawnCardToGraveyard(
       purpose: 'Dark Omens',
     },
   });
+  recordV070MysticQualifyingHandSacrifice(
+    state,
+    playerId,
+    'Dark Omens',
+  );
 }
 
 function revealTopV070DrawCards(
@@ -5504,6 +5514,13 @@ function resolveNecromancyAction(
       })),
     },
   });
+  if (handToGraveyard.length > 0) {
+    recordV070MysticQualifyingHandSacrifice(
+      state,
+      playerId,
+      'Necromancy',
+    );
+  }
 
   state.pendingActionEffectChoice = null;
   finishPendingActionCard(state, 'graveyard');
@@ -8193,6 +8210,11 @@ function chooseFatesTollCost(
       purpose: "Fate's Toll",
     },
   });
+  recordV070MysticQualifyingHandSacrifice(
+    state,
+    playerId,
+    "Fate's Toll",
+  );
 
   state.pendingActionEffectChoice = null;
   if (pending.phase === 'opening') {
