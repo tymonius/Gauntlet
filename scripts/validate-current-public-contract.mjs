@@ -128,10 +128,8 @@ function brandHomeRef(html, route) {
 }
 
 const canonicalPrimaryNavigation = [
-  { href: '/start/', label: 'Start' },
   { href: '/#game', label: 'Game' },
   { href: '/rulebook/', label: 'Rules' },
-  { href: '/factions/', label: 'Factions' },
   { href: '/deckbuilder/', label: 'Deckbuilder' },
   { href: '/card-reference/', label: 'Card Reference' },
   { href: '/rules-arbiter/', label: 'Rules Arbiter' },
