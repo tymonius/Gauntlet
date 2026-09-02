@@ -183,8 +183,8 @@ async function main() {
       || playable.titleFit !== 'true'
       || playable.parchmentLoaded !== 'true'
       || playable.normalizedArtwork !== 'true'
-      || !playable.artworkSource.includes('/images/print-artwork/cards/neutral-rallying-cry.jpg')
-      || playable.normalizedArtworkSource !== '/images/print-artwork/cards/neutral-rallying-cry.jpg'
+      || !playable.artworkSource.includes('/images/print-artwork/cards/neutral-rallying-cry.png')
+      || playable.normalizedArtworkSource !== '/images/print-artwork/cards/neutral-rallying-cry.png'
     ) {
       throw new Error(`Current playable-card renderer failed smoke validation: ${JSON.stringify(playable)}.`);
     }
