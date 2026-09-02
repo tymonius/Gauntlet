@@ -141,6 +141,11 @@ import {
   stashV070SmugglersRunCard,
 } from './smugglers-run';
 import { useV070GeneralOnward } from './military';
+import {
+  resolveV070PurgeHandChoice,
+  startV070Purge,
+  type V070PurgePrintedCost,
+} from './purge';
 
 export type V070TurnAction =
   | { type: 'resolve_capture'; playerId: PlayerId }
@@ -151,6 +156,19 @@ export type V070TurnAction =
     }
   | { type: 'pass_opening'; playerId: PlayerId }
   | { type: 'use_general_onward'; playerId: PlayerId }
+  | {
+      type: 'inquisition_purge';
+      playerId: PlayerId;
+      printedCost: V070PurgePrintedCost;
+      discardMode?: 'top' | 'combined';
+      targetInstanceIds?: readonly string[];
+      assetInstanceId?: string;
+    }
+  | {
+      type: 'resolve_inquisition_purge_hand_choice';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
   | {
       type: 'bank_asset';
       playerId: PlayerId;
@@ -472,7 +490,8 @@ export function reduceV070TurnAction(
     || action.type === 'choose_forced_asset_target'
     || action.type === 'resolve_accusation_choice'
     || action.type === 'choose_sequestration_keep_asset'
-    || action.type === 'resolve_penance_choice') {
+    || action.type === 'resolve_penance_choice'
+    || action.type === 'resolve_inquisition_purge_hand_choice') {
     requirePlayingGame(state);
   } else {
     requirePlayingTurn(state, action.playerId);
@@ -495,6 +514,13 @@ export function reduceV070TurnAction(
   }
   if (state.pendingTurnChoice && action.type !== 'resolve_start_turn_overlay_choice') {
     throw new V070GameActionError('Resolve the pending start-of-turn Overlay choice first.');
+  }
+  if (state.pendingPurgeChoice
+    && (
+      action.type !== 'resolve_inquisition_purge_hand_choice'
+      || action.playerId !== state.pendingPurgeChoice.chooserId
+    )) {
+    throw new V070GameActionError('Resolve the pending Purge choice first.');
   }
   if (state.pendingSanctionChoices.length > 0) {
     const pending = state.pendingSanctionChoices[0];
@@ -771,6 +797,25 @@ export function reduceV070TurnAction(
       break;
     case 'use_general_onward':
       useV070GeneralOnward(next, action.playerId);
+      break;
+    case 'inquisition_purge':
+      inquisitionPurge(
+        next,
+        action.playerId,
+        action.printedCost,
+        {
+          discardMode: action.discardMode,
+          targetInstanceIds: action.targetInstanceIds,
+          assetInstanceId: action.assetInstanceId,
+        },
+      );
+      break;
+    case 'resolve_inquisition_purge_hand_choice':
+      resolveV070PurgeHandChoice(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
       break;
     case 'bank_asset':
       bankAsset(next, action.playerId, action.cardInstanceId, action.replaceAssetInstanceId);
@@ -1362,6 +1407,104 @@ function drawTurnCard(
     requireTurnState(state),
   );
   appendPhaseEvent(state);
+}
+
+
+function inquisitionPurge(
+  state: V070GameState,
+  playerId: PlayerId,
+  printedCost: V070PurgePrintedCost,
+  options: {
+    discardMode?: 'top' | 'combined';
+    targetInstanceIds?: readonly string[];
+    assetInstanceId?: string;
+  },
+): void {
+  const turnState = requireTurnState(state);
+  if (turnState.phase !== 'opening' && turnState.phase !== 'denouement') {
+    throw new V070GameActionError(
+      'Purge may be used only during Opening or Denouement.',
+    );
+  }
+  const inquisition = state.players[playerId].inquisition;
+  if (!inquisition) {
+    throw new V070GameActionError(
+      `${playerId} is not using the Inquisition faction.`,
+    );
+  }
+  if (inquisition.purgeActionTurn === state.turnNumber) {
+    throw new V070GameActionError(
+      'An Action may be spent on Purge only once per turn.',
+    );
+  }
+
+  spendInquisitionPurgeAction(state, playerId);
+  startV070Purge(
+    state,
+    playerId,
+    printedCost,
+    'normal',
+    options,
+  );
+  inquisition.purgeActionTurn = state.turnNumber;
+
+  appendV070Event(state, {
+    type: 'purge_action_used',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      turnNumber: state.turnNumber,
+      phase: turnState.phase,
+      printedCost,
+    },
+  });
+}
+
+function spendInquisitionPurgeAction(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  const before = requireTurnState(state);
+  const phase = before.phase;
+  if (phase !== 'opening' && phase !== 'denouement') {
+    throw new V070GameActionError(
+      'Purge may be used only during an Action phase.',
+    );
+  }
+
+  try {
+    spendTurnAction(state, playerId);
+  } catch (error) {
+    const message = error instanceof Error
+      ? error.message
+      : 'That Purge Action cannot be spent now.';
+    const canUseOtherPhasePermission =
+      phase === 'denouement'
+      && before.actionsAvailable === 0
+      && before.actionsTaken.opening > 0
+      && before.actionsTaken.denouement === 0;
+
+    if (!canUseOtherPhasePermission
+      || message !== 'No Actions remain this turn.') {
+      throw error;
+    }
+
+    state.turnState = {
+      ...before,
+      actionsTaken: {
+        ...before.actionsTaken,
+        denouement: before.actionsTaken.denouement + 1,
+      },
+    };
+  }
+
+  if (phase === 'opening') {
+    const current = requireTurnState(state);
+    state.turnState = {
+      ...current,
+      actionsAvailable: current.actionsAvailable + 1,
+    };
+  }
 }
 
 function stashSmugglersRunCard(
