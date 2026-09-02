@@ -13,6 +13,7 @@ const extensions = [
   "deckbuilder/starter-handoff.js",
   "deckbuilder/faction-components.js",
   "deckbuilder/rendered-card-preview.js",
+  "deckbuilder/metadata-ui.js",
   "deckbuilder/print.js",
   "deckbuilder/production-print.js",
   "deckbuilder/card-back-preview.js",
@@ -229,8 +230,13 @@ describe("Deckbuilder extension architecture", () => {
     expect(components).toContain("deckbuilder.getLeader()");
   });
 
-  it("keeps starter handoff behind the core Deck state API", () => {
+  it("keeps metadata and starter handoff behind the core Deck state API", () => {
+    const metadata = read("deckbuilder/metadata-ui.js");
     const handoff = read("deckbuilder/starter-handoff.js");
+
+    expect(metadata).not.toMatch(/\bstate\./);
+    expect(metadata).toContain("deckbuilder.deckState()");
+    expect(metadata).toContain("deckbuilder.cardCatalog()");
 
     expect(handoff).not.toMatch(/\bstate\./);
     expect(handoff).toContain("deckbuilder.replaceDeckState({");
