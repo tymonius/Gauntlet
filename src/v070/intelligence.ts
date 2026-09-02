@@ -5,7 +5,6 @@ import {
   type V070GameState,
 } from './engine';
 import {
-  otherPlayer,
   type PlayerId,
   type V070BattleOutcome,
 } from './rules';
@@ -588,6 +587,10 @@ export function v070ActiveMissionCanCompleteThisTurn(
     intelligence?.activeMission
     && intelligence.activeMission.startedTurn < state.turnNumber,
   );
+}
+
+function otherPlayer(playerId: PlayerId): PlayerId {
+  return playerId === 'A' ? 'B' : 'A';
 }
 
 function requireIntelligenceState(
