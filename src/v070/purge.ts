@@ -10,6 +10,7 @@ import {
   v070Conviction,
 } from './inquisition';
 import type { PlayerId } from './rules';
+import { preventV070OpposingHandReveal } from './counterintelligence';
 
 export type V070PurgePrintedCost = 1 | 2 | 3 | 4;
 export type V070PurgeSource = 'normal' | 'final_judgment';
@@ -137,7 +138,22 @@ export function startV070Purge(
       appendPendingChoiceEvent(state);
       return { pendingChoice: true, paidCost };
     case 4:
-      revealOpponentHand(state, purgerId, opponentId);
+      if (!revealOpponentHand(state, purgerId, opponentId)) {
+        appendV070Event(state, {
+          type: 'purge_resolved',
+          actor: purgerId,
+          visibility: 'public',
+          payload: {
+            printedCost,
+            paidCost,
+            source,
+            opponentId,
+            targetInstanceIds: [],
+            preventedBy: 'Counterintelligence',
+          },
+        });
+        return { pendingChoice: false, paidCost };
+      }
       state.pendingPurgeChoice = {
         purgerId,
         opponentId,
@@ -339,7 +355,16 @@ function revealOpponentHand(
   state: V070GameState,
   purgerId: PlayerId,
   opponentId: PlayerId,
-): void {
+): boolean {
+  if (preventV070OpposingHandReveal(
+    state,
+    purgerId,
+    opponentId,
+    'Inquisition Purge 4',
+  )) {
+    return false;
+  }
+
   const cards = state.players[opponentId].zones.hand.map(instanceId => ({
     instanceId,
     cardId: state.cardInstances[instanceId]?.cardId,
@@ -355,6 +380,7 @@ function revealOpponentHand(
       instanceIds: cards.map(card => card.instanceId),
     },
   });
+  return true;
 }
 
 function appendPendingChoiceEvent(state: V070GameState): void {
