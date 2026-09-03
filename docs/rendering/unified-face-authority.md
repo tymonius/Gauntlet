@@ -1,6 +1,6 @@
 # Unified Face Authority
 
-Status: foundation only; no production consumer cutover
+Status: Stage 2 in progress; no production consumer cutover
 
 ## Why this exists
 
@@ -87,6 +87,10 @@ It also owns the single template-to-orientation registry.
 - complete styling/template dependencies
 - version and authority provenance
 - immutable resolved output for every one of the 242 faces
+
+Stage 2 is implemented in parallel in `card-design/face-spec.mjs`. It resolves all 242 IDs through the Stage 1 catalog and attaches canonical content source data, template stylesheet dependencies, artwork-source policy, artwork-composition provenance, pairing/back policy, and authority/version provenance.
+
+A FaceSpec also carries an explicit readiness audit. Missing authority is reported as an issue instead of silently falling back. Current examples include artwork that still relies on the legacy smart/default crop and tracker presentation values that still live only in the historical renderer. Those gaps must be promoted into canonical data before Stage 3 can declare those faces production-ready.
 
 ### Stage 3 — clean renderer
 - one `face-render.html?id=...`
