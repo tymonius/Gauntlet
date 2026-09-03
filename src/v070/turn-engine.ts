@@ -5880,6 +5880,7 @@ function resolveNecromancyAction(
       playerId,
       pending.instanceId,
     );
+    continueSleeperNetworkBoundActionQueue(state);
     return;
   }
 
@@ -9485,6 +9486,7 @@ function finishPendingActionCard(
     pending.playerId,
     pending.instanceId,
   );
+  continueSleeperNetworkBoundActionQueue(state);
 }
 
 function drawIntoHand(
