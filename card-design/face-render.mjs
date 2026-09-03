@@ -93,7 +93,11 @@ async function applyCanonicalArtwork(spec, result) {
   if (!artwork || artwork.role === 'template') return;
 
   if (artwork.role === 'full-face') {
-    if (result.artworkImage) await attachArtwork(result.artworkImage, artwork.source);
+    if (result.artworkImage) {
+      const source = await attachArtwork(result.artworkImage, artwork.source);
+      result.element.dataset.artworkSource = source;
+      result.element.dataset.artworkLoaded = 'true';
+    }
     return;
   }
 
@@ -110,6 +114,7 @@ async function applyCanonicalArtwork(spec, result) {
   if (!crop) throw new Error(`Canonical artwork composition failed for ${spec.id}.`);
   result.element.dataset.artDirectionApplied = artwork.composition.id;
   result.element.dataset.artworkSource = source;
+  result.element.dataset.artworkLoaded = 'true';
 }
 
 const FITTERS = Object.freeze({
