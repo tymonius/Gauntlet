@@ -106,7 +106,7 @@ async function main() {
     let fonts = null;
     for (const sourceLeader of current.leaders || []) {
       const renderId = `${sourceLeader.faction}-${slugify(sourceLeader.name)}`;
-      await leaderPage.goto(`${baseUrl}/card-design/face-render.html?kind=leader&id=${encodeURIComponent(renderId)}&side=front`, { waitUntil: 'load' });
+      await leaderPage.goto(`${baseUrl}/card-design/face-render.html?id=${encodeURIComponent(`leader:${renderId}`)}`, { waitUntil: 'load' });
       await leaderPage.waitForFunction(() => document.body.dataset.renderReady === 'true');
       if (!fonts) {
         await leaderPage.evaluate(async () => document.fonts?.ready);
@@ -152,11 +152,11 @@ async function main() {
       };
     });
 
-    await leaderPage.goto(`${baseUrl}/card-design/face-render.html?kind=leader&id=financiers-banker&side=front&rules=candidate`, { waitUntil: 'load' });
+    await leaderPage.goto(`${baseUrl}/card-design/face-render.html?id=${encodeURIComponent('leader:financiers-banker')}&rules=candidate`, { waitUntil: 'load' });
     await leaderPage.waitForFunction(() => document.body.dataset.renderReady === 'true');
     const bankerCandidateComposition = await readBankerComposition();
 
-    await leaderPage.goto(`${baseUrl}/card-design/face-render.html?kind=leader&id=financiers-banker&side=front&rules=released`, { waitUntil: 'load' });
+    await leaderPage.goto(`${baseUrl}/card-design/face-render.html?id=${encodeURIComponent('leader:financiers-banker')}&rules=released`, { waitUntil: 'load' });
     await leaderPage.waitForFunction(() => document.body.dataset.renderReady === 'true');
     const bankerReleasedComposition = await readBankerComposition();
 
