@@ -20,6 +20,10 @@ const QUERY_ALIASES = {
   arrangement: ["arrange", "arranged"],
   territory: ["territories"],
   territories: ["territory"],
+  purchase: ["buy", "buying"],
+  purchased: ["purchase", "buy", "buying"],
+  buy: ["purchase", "buying"],
+  buying: ["buy", "purchase"],
   aftermath: ["battle result", "destinations", "retreat"],
   withdrawal: ["no winner", "no loser", "end battle"],
   deck: ["draw pile", "playable deck"],
@@ -32,6 +36,13 @@ const QUERY_ALIASES = {
   asset: ["asset bank", "banked asset"],
   win: ["victory", "last stand", "run the gauntlet"]
 };
+
+const QUERY_PHRASE_ALIASES = [
+  {
+    pattern: /\b(?:cards?|hand)\b.*\bstart\b|\bstart\b.*\b(?:cards?|hand)\b/i,
+    aliases: ["setup", "opening hand"]
+  }
+];
 
 const CANONICAL_DATA_PATH = "releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json";
 const RULEBOOK_PATH = "releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md";
@@ -249,7 +260,7 @@ export function retrieveRules(corpus, query, options = {}) {
   const documents = Array.isArray(corpus?.documents) ? corpus.documents : [];
   const normalizedQuery = normalizeText(query);
   const baseQueryTokens = tokenize(query);
-  const queryTokens = expandQueryTokens(baseQueryTokens);
+  const queryTokens = expandQueryTokens(baseQueryTokens, normalizedQuery);
   const queryPhrases = buildPhrases(baseQueryTokens);
 
   return documents
@@ -457,10 +468,17 @@ function deduplicateDocuments(documents) {
   });
 }
 
-function expandQueryTokens(tokens) {
+function expandQueryTokens(tokens, normalizedQuery = "") {
   const expanded = new Set(tokens);
   for (const token of tokens) {
     const aliases = QUERY_ALIASES[token] || [];
+    for (const alias of aliases) {
+      tokenize(alias).forEach((part) => expanded.add(part));
+    }
+  }
+  for (const { pattern, aliases } of QUERY_PHRASE_ALIASES) {
+    pattern.lastIndex = 0;
+    if (!pattern.test(normalizedQuery)) continue;
     for (const alias of aliases) {
       tokenize(alias).forEach((part) => expanded.add(part));
     }
