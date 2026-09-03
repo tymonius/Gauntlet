@@ -128,6 +128,10 @@ export function allowSiteAssets(contentSecurityPolicy, origin = DEFAULT_SITE_ORI
   return policy;
 }
 
+function withoutPaidModel(env) {
+  return { ...env, OPENAI_API_KEY: undefined };
+}
+
 function rewriteVersionedPath(request) {
   const versionedUrl = new URL(request.url);
   versionedUrl.pathname = versionedUrl.pathname.includes("health") ? "/api/health" : "/api/rules";
@@ -160,21 +164,21 @@ export default {
       url.pathname === "/api/v061/rules" || url.pathname === "/v061/rules" ||
       url.pathname === "/api/v061/health" || url.pathname === "/v061/health"
     ) {
-      return v061Worker.fetch(rewriteVersionedPath(request), env, context);
+      return v061Worker.fetch(rewriteVersionedPath(request), withoutPaidModel(env), context);
     }
 
     if (
       url.pathname === "/api/v063/rules" || url.pathname === "/v063/rules" ||
       url.pathname === "/api/v063/health" || url.pathname === "/v063/health"
     ) {
-      return v063Worker.fetch(rewriteVersionedPath(request), env, context);
+      return v063Worker.fetch(rewriteVersionedPath(request), withoutPaidModel(env), context);
     }
 
     if (
       url.pathname === "/api/v070/rules" || url.pathname === "/v070/rules" ||
       url.pathname === "/api/v070/health" || url.pathname === "/v070/health"
     ) {
-      return v070Worker.fetch(rewriteVersionedPath(request), env, context);
+      return v070Worker.fetch(rewriteVersionedPath(request), withoutPaidModel(env), context);
     }
 
     if (
@@ -190,9 +194,9 @@ export default {
     // Preserve historical clients while the unversioned route advances to v0.7.1.
     if (url.pathname === "/api/rules" || url.pathname === "/rules") {
       const requestedVersion = await requestedRulesVersion(request);
-      if (requestedVersion === "v0.6.1") return v061Worker.fetch(request, env, context);
-      if (requestedVersion === "v0.6.3") return v063Worker.fetch(request, env, context);
-      if (requestedVersion === "v0.7.0") return v070Worker.fetch(request, env, context);
+      if (requestedVersion === "v0.6.1") return v061Worker.fetch(request, withoutPaidModel(env), context);
+      if (requestedVersion === "v0.6.3") return v063Worker.fetch(request, withoutPaidModel(env), context);
+      if (requestedVersion === "v0.7.0") return v070Worker.fetch(request, withoutPaidModel(env), context);
       return worker.fetch(request, env, context);
     }
 
@@ -201,11 +205,11 @@ export default {
       url.pathname === "/api/v062/rules" || url.pathname === "/v062/rules" ||
       url.pathname === "/api/v062/health" || url.pathname === "/v062/health"
     ) {
-      return publishedWorker.fetch(request, env, context);
+      return publishedWorker.fetch(request, withoutPaidModel(env), context);
     }
 
     if (url.pathname.startsWith("/api/v062-candidate/") || url.pathname.startsWith("/v062-candidate/")) {
-      return candidateWorker.fetch(rewriteCandidatePath(request), env, context);
+      return candidateWorker.fetch(rewriteCandidatePath(request), withoutPaidModel(env), context);
     }
 
     if (url.pathname === "/api/admin/review-export-checkpoint") {
