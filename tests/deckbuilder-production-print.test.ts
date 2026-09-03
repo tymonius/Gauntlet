@@ -27,41 +27,23 @@ const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8
 const componentContract = currentGame.componentContract;
 
 describe("Deckbuilder production printing", () => {
-  it("uses shared production renderers for playable cards, Territories, and faction components", () => {
-    expect(playableRender).toContain('/card-design/card-review-render.js');
-    expect(playableRender).toContain('id="renderTarget"');
-    expect(territoryRender).toContain('/card-design/territory-review-render.js');
-    expect(territoryRender).toContain('id="renderTarget"');
-    expect(componentRenderHtml).toContain('/card-design/leader-card.css');
-    expect(componentRenderHtml).toContain('/card-design/supplemental-card.js');
-    expect(componentRenderHtml).toContain('/card-design/capital-ledger.css');
-    expect(componentRenderHtml).toContain('/card-design/deed-card.css');
-    for (const kind of ['leader', 'proposal', 'reference', 'rite', 'ritual', 'tracker', 'supplemental']) {
-      expect(componentRenderJs).toContain(`"${kind}"`);
-    }
-    expect(printTransform).toContain('/card-design/card-review-render.html?card=');
-    expect(printTransform).toContain('/card-design/territory-review-render.html?territory=');
-    expect(printTransform).toContain('/card-design/component-render.html?kind=');
+  it("uses the one canonical face renderer for every printed physical face", () => {
+    expect(printTransform).toContain('/card-design/face-render.html?id=');
+    expect(printTransform).toContain('faceRenderSource(`card:${cardId}`)');
+    expect(printTransform).toContain('faceRenderSource(`territory:${territoryId}`)');
+    expect(printTransform).toContain('return `component:${componentId}:${options.side || "front"}`');
+    expect(printTransform).toContain('faceRenderSource(`back:${safeFaction}`)');
+    expect(printTransform).not.toContain('/card-design/card-review-render.html?card=');
+    expect(printTransform).not.toContain('/card-design/territory-review-render.html?territory=');
+    expect(printTransform).not.toContain('/card-design/component-render.html?kind=');
+    expect(printTransform).not.toContain('/card-design/card-back-render.html?faction=');
   });
 
-  it("normalizes only playable-card artwork after canonical crop/fitting while leaving the card face live", () => {
-    expect(printTransform).toContain("&fit=production&printArtwork=normalized&rules=");
-    expect(playableRenderJs).toContain("installPrintArtworkFinalizer()");
-    expect(playableRenderJs).toContain("await resolveFirstArtwork(card, faction, imageExists)");
-    expect(printArtworkNormalizer).toContain("const SHORT_EDGE = 960;");
-    expect(printArtworkNormalizer).toContain("const LONG_EDGE = 1800;");
-    expect(printArtworkNormalizer).toContain("cropSnapshot(artImage)");
-    expect(printArtworkNormalizer).toContain("restoreCrop(artImage, snapshot)");
-    expect(printArtworkNormalizer).toContain("canvas.toBlob");
-    expect(printArtworkNormalizer).toContain("'image/png'");
-    expect(printArtworkNormalizer).toContain("alpha: false");
-    expect(printArtworkNormalizer).toContain("colorSpace: 'srgb'");
-    expect(printArtworkNormalizer).toContain("__gauntletPrintArtworkCache");
-    expect(playableRendererJs).toContain("window.GAUNTLET_RENDER_FINALIZE");
-    expect(playableRendererJs.indexOf("window.GAUNTLET_RENDER_FINALIZE")).toBeLessThan(
-      playableRendererJs.indexOf("document.body.dataset.renderReady = 'true'")
-    );
+  it("prints the canonical face directly without a print-only artwork normalization renderer", () => {
+    expect(printTransform).not.toContain("printArtwork=normalized");
+    expect(printTransform).not.toContain("fit=production");
     expect(printTransform).not.toContain("data:image");
+    expect(printTransform).toContain('/card-design/face-render.html?id=');
   });
 
   it("uses current-game component metadata and preserves intrinsic reverse faces", () => {
@@ -100,10 +82,10 @@ describe("Deckbuilder production printing", () => {
     expect(printTransform).toContain('return "intelligence";');
     expect(printTransform).toContain('String(deckState().factionId || "intelligence")');
     expect(printTransform).toContain('production-standard-back');
-    expect(printTransform).toContain('/card-design/card-back-render.html?faction=');
+    expect(printTransform).toContain('faceRenderSource(`back:${safeFaction}`)');
     expect(printTransform).toContain('frame.className = "production-back-frame"');
     expect(printTransform).toContain('frame.dataset.productionRenderKind = "back"');
-    expect(printTransform).toContain('frame.src = productionBackSource(faction, 180)');
+    expect(printTransform).toContain('frame.src = productionBackSource(faction)');
     expect(printTransform).not.toContain('data-production-inline-back');
     expect(printTransform).not.toContain('installInlineCardBackRenderer');
     expect(cardBackPolicy).toContain('Automatic backs: black for playable cards and Territories');
@@ -122,11 +104,11 @@ describe("Deckbuilder production printing", () => {
 
   it("reuses the Deckbuilder's already-loaded game authority inside production print iframes", () => {
     expect(printTransform).toContain("installProductionAuthorityBridge(documentNode)");
-    expect(printTransform).toContain('window.__gauntletProductionAuthorityBridge = {');
+    expect(printTransform).toContain('window.__gauntletFaceAuthorityBridge = {');
     expect(printTransform).toContain('window.opener?.GAUNTLET_DECKBUILDER?.currentGame?.()');
     expect(printTransform).toContain('rulesetMode: ${JSON.stringify(rulesetMode)}');
-    expect(currentGameLoader).toContain("function bridgedProductionGame()");
-    expect(currentGameLoader).toContain("window.top.__gauntletProductionAuthorityBridge");
+    expect(currentGameLoader).toContain("function bridgedRenderGame()");
+    expect(currentGameLoader).toContain("window.top.__gauntletFaceAuthorityBridge");
     expect(currentGameLoader).toContain("requestedMode !== bridge.rulesetMode");
     expect(currentGameLoader).toContain("if (bridged) return bridged;");
   });
@@ -155,11 +137,11 @@ describe("Deckbuilder production printing", () => {
     expect(printTransform).toContain('mirrorIndexForLongEdge(frontIndex)');
     expect(printTransform).toContain('transform: rotate(90deg);');
     expect(printTransform).toContain('production-component-landscape-rotate');
-    expect(printTransform).toContain('&orientation=landscape');
+    expect(printTransform).not.toContain('&orientation=landscape');
     expect(supplementalPrintTransform).toContain('productionPrint().componentSource(PRODUCTION_LEDGER_COMPONENT_ID, side)');
-    expect(componentRenderJs).toContain('card.dataset.parchmentLoaded === "true" && dimensionsReady(card)');
+    expect(printTransform).toContain('productionFaceId(options)');
     expect(cardBackCss).toContain('transform: translate(-50%, -50%) rotate(90deg);');
-    expect(backRender).toContain("params.get('rotation') === '180'");
+    expect(printTransform).not.toContain('rotation=180');
     expect(printTransform).toContain("await Promise.all(frames.map(waitForFrame))");
     expect(printTransform).toContain("frame.dataset.productionRenderKind === 'back'");
     expect(printTransform).toContain("doc.querySelector('.gauntlet-card-back__frame')");
@@ -202,9 +184,9 @@ describe("Deckbuilder production printing", () => {
     ]) {
       expect(analyticsSync).toContain(path);
     }
-    expect(playableLegacyAlias).toContain('/card-design/card-review-render.html');
+    expect(playableLegacyAlias).toContain('/card-design/face-render.html');
     expect(componentLegacyAlias).toContain('/card-design/component-render.html');
-    expect(territoryLegacyAlias).toContain('/card-design/territory-review-render.html');
+    expect(territoryLegacyAlias).toContain('/card-design/face-render.html');
     expect(playableLegacyAlias).not.toContain('/card-design/card-review-render.js');
     expect(componentLegacyAlias).not.toContain('/card-design/component-render.js');
     expect(territoryLegacyAlias).not.toContain('/card-design/territory-review-render.js');
