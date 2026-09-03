@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const cardScript = readFileSync("card-design/card-design.js", "utf8");
-const rendererScript = readFileSync("tts/renderer/renderer.js", "utf8");
+const rendererScript = readFileSync("card-design/playable-card-renderer.js", "utf8");
 
 describe("card title fitting", () => {
   it("allows long one-line titles to shrink below the previous clipping floor", () => {

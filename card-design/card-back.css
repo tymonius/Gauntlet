@@ -281,7 +281,26 @@
     padding: 0;
   }
 
+  /*
+    Chromium's paged-media compositor can otherwise leak transformed/masked
+    descendants from a card in the final table row into the page fragment.
+    Force a compositor-level clip on both the physical back and its oversized
+    rotated pattern window; overflow:hidden alone is not a reliable print clip.
+  */
   .gauntlet-card-back {
+    overflow: clip;
+    contain: paint;
+    clip-path: inset(0 round 0.125in);
     box-shadow: none;
+  }
+
+  .gauntlet-card-back__pattern-window {
+    overflow: clip;
+    contain: paint;
+    clip-path: inset(0 round 0.055in);
+  }
+
+  .gauntlet-card-back__pattern-window::after {
+    mix-blend-mode: normal;
   }
 }

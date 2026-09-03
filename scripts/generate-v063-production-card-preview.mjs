@@ -142,13 +142,12 @@ function previewHtml() {
   <link rel="stylesheet" href="/card-design/card-design.css">
   <link rel="stylesheet" href="/card-design/card-design-refinement.css">
   <link rel="stylesheet" href="/card-design/faction-specimens.css">
-  <link rel="stylesheet" href="/tts/renderer/renderer.css">
+  <link rel="stylesheet" href="/card-design/playable-card-renderer.css">
 </head>
 <body class="faction-specimen-page">
   <main id="renderTarget" aria-live="polite"></main>
   <script src="/artifacts/v0.6.3/production-render/catalog.js"></script>
-  <script src="/tts/artwork-direction-overrides.js"></script>
-  <script src="/tts/artwork-crop.js"></script>
+  <script src="/card-design/artwork-crop.js"></script>
   <script src="/artifacts/v0.6.3/production-render/renderer-production.js"></script>
   <script src="/card-design/card-design.js"></script>
 </body>
@@ -165,7 +164,7 @@ async function writePreviewSurface(catalog) {
   );
   await writeFile(join(OUTPUT_ROOT, 'renderer.html'), previewHtml());
 
-  const productionRendererPath = join(ROOT, 'tts', 'renderer', 'renderer.js');
+  const productionRendererPath = join(ROOT, 'card-design', 'playable-card-renderer.js');
   const rendererSource = await readFile(productionRendererPath, 'utf8');
   await writeFile(join(OUTPUT_ROOT, 'renderer-production.js'), rendererSource);
 }
@@ -354,3 +353,4 @@ async function main() {
 }
 
 await main();
+

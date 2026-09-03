@@ -2,8 +2,8 @@ import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const generator = readFileSync("scripts/generate-tts-territory-assets.mjs", "utf8");
-const renderer = readFileSync("tts/territory-renderer/territory-renderer.js", "utf8");
-const rendererStyles = readFileSync("tts/territory-renderer/territory-renderer.css", "utf8");
+const renderer = readFileSync("card-design/territory-card-renderer.js", "utf8");
+const rendererStyles = readFileSync("card-design/territory-card-renderer.css", "utf8");
 const playableStyles = readFileSync("card-design/card-design.css", "utf8");
 const refinedPlayableStyles = readFileSync("card-design/card-design-refinement.css", "utf8");
 const sharedStyles = readFileSync("card-design/territory-card.css", "utf8");
@@ -27,7 +27,7 @@ describe("TTS Territory assets", () => {
   it("reuses one shared Gauntlet-family frame in the renderer and specimen pages", () => {
     expect(rendererStyles).toContain("@import url('/card-design/territory-card.css')");
     expect(specimenPage).toContain('href="territory-card.css"');
-    expect(territoryReviewPage).toContain('/tts/territory-renderer/territory-renderer.css');
+    expect(territoryReviewPage).toContain('/card-design/territory-card-renderer.css');
     expect(dedicatedSpecimenPage).toContain('href="../territory-card.css"');
     expect(sharedStyles).toContain("padding: 0.075in");
     expect(sharedStyles).toContain("border-radius: 0.125in");
@@ -84,8 +84,8 @@ describe("TTS Territory assets", () => {
     expect(sharedStyles).toContain("border-top: 0");
     expect(dedicatedSpecimenPage).toContain("same mounted-print frame as a normal card");
     expect(dedicatedSpecimenPage).toContain("open parchment spacing rather than a divider");
-    expect(territoryReviewScript).toContain("/tts/territory-renderer/territory-renderer.js");
-    expect(territoryReviewScript).toContain("/tts/artwork-crop.js");
+    expect(territoryReviewScript).toContain("/card-design/territory-card-renderer.js");
+    expect(territoryReviewScript).toContain("/card-design/artwork-crop.js");
     expect(dedicatedSpecimenPage).toContain('class="territory-art has-image"');
   });
 
@@ -104,16 +104,16 @@ describe("TTS Territory assets", () => {
     expect(specimenPage).toContain('<span data-arena-count>4</span>');
     expect(reviewScript).toContain("const current = await currentGame()");
     expect(reviewScript).toContain("current.territories || []");
-    expect(reviewScript).toContain("territoryGroup('standard','Territories',ordinary,current.displayVersion)");
-    expect(reviewScript).toContain("territoryGroup('arenas','Arenas',arenas,current.displayVersion)");
+    expect(reviewScript).toContain("territories.map(territory => territoryItem(territory, current.displayVersion))");
+    expect(reviewScript).toContain("const arenas = territories.filter(territory => territory.arena)");
     expect(reviewScript).toContain('class="territory-review-frame"');
     expect(reviewScript).toContain("territory-review-render.html?territory=");
-    expect(territoryReviewScript).toContain("import { loadCurrentGame } from '../game-data/current-game.mjs'");
-    expect(territoryReviewScript).toContain("const currentGame = await loadCurrentGame()");
+    expect(territoryReviewScript).toContain("import { loadRenderContext } from './render-context.mjs'");
+    expect(territoryReviewScript).toContain("const renderContext = await loadRenderContext()");
     expect(territoryReviewScript).toContain("currentGame.findTerritory(territoryId)");
     expect(territoryReviewScript).toContain("source: currentGame.authorityUrl");
     expect(territoryReviewScript).not.toContain("Gauntlet_v0.6.3_Canonical_Data.json");
-    expect(territoryReviewPage).toContain("Gauntlet v0.7.0 Territory Review Render");
+    expect(territoryReviewPage).toContain("Gauntlet canonical Territory render");
     expect(dedicatedSpecimenPage).toContain("Gauntlet Territory Card Mockup");
     expect(dedicatedSpecimenPage).toContain('aria-label="High Ground Territory card-front prototype"');
   });

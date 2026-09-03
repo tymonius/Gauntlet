@@ -9,18 +9,27 @@
   const TIMEOUT_MS = 30000;
   const supportedKinds = new Set(["leader", "proposal", "reference", "rite", "ritual", "tracker", "supplemental"]);
   const landscape = orientation === "landscape";
-  const renderWidth = landscape ? "3.5in" : "2.5in";
-  const renderHeight = landscape ? "2.5in" : "3.5in";
+  let renderContext = null;
+  let renderWidth = "";
+  let renderHeight = "";
 
   const delay = ms => new Promise(resolve => window.setTimeout(resolve, ms));
   const reverseSide = () => side === "reverse" || side === "back" || side === "treaty" || side === "completed";
 
 
-  async function loadCanonicalArtDirection() {
-    const { loadCurrentGame } = await import("/game-data/current-game.mjs");
-    const currentGame = await loadCurrentGame();
-    window.GAUNTLET_ART_DIRECTION = currentGame.artDirection || {};
-    document.body.dataset.artDirectionAuthority = currentGame.authorityUrl || "/game-data/current-game.json";
+  async function loadCanonicalRenderContext() {
+    const [{ loadRenderContext }, { surfaceCssSize }] = await Promise.all([
+      import("/card-design/render-context.mjs"),
+      import("/card-design/production-surface.mjs"),
+    ]);
+    renderContext = await loadRenderContext();
+    const size = surfaceCssSize(orientation);
+    renderWidth = size.width;
+    renderHeight = size.height;
+    window.GAUNTLET_ART_DIRECTION = renderContext.artDirection || {};
+    document.body.dataset.gameplayAuthority = renderContext.gameplayAuthorityUrl;
+    document.body.dataset.artDirectionAuthority = renderContext.visualAuthorityUrl;
+    document.body.dataset.renderContextReady = "true";
   }
 
   function applyRenderViewport() {
@@ -109,10 +118,9 @@
     if (!image) return;
 
     const artworkId = canonicalArtworkId(card);
-    const direction = window.GAUNTLET_ART_DIRECTION?.[artworkId];
-    if (!direction || typeof direction !== "object" || !Object.keys(direction).length) {
-      card.dataset.artDirectionApplied = "css-default";
-      return;
+    const direction = renderContext.artDirectionFor(artworkId);
+    if (!direction || typeof direction !== "object") {
+      throw new Error(`Canonical artwork direction is unavailable for ${artworkId}.`);
     }
     if (!window.GauntletArtworkCrop?.apply) {
       throw new Error(`Production artwork crop engine is unavailable for ${artworkId}.`);
@@ -305,7 +313,7 @@
     if (document.readyState !== "complete") {
       await new Promise(resolve => window.addEventListener("load", resolve, { once: true }));
     }
-    await loadCanonicalArtDirection();
+    await loadCanonicalRenderContext();
 
     const deadline = performance.now() + TIMEOUT_MS;
     let card = null;

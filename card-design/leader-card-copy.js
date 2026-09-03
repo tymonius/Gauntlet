@@ -1,3 +1,5 @@
+import { loadRenderGame } from './render-context.mjs';
+
 const STYLE_URL = './leader-card-copy.css';
 const CATALOG_FILTER = document.body?.classList.contains('developer-catalog-page')
   ? window.GauntletCatalogFilter || null
@@ -137,7 +139,7 @@ function applyCopyToLeader(root, leaderId, copy, source, specimenId = '') {
 }
 
 async function loadLeaderAuthority() {
-  const currentGame = await import('../game-data/current-game.mjs').then(module => module.loadCurrentGame());
+  const currentGame = await loadRenderGame();
   const leaders = Object.fromEntries((currentGame.leaders || []).map(leader => [leader.id, leader]));
   if (!Object.keys(leaders).length) throw new Error('Current-game authority contains no Leader definitions.');
   return {

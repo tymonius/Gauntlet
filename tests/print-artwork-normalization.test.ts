@@ -8,7 +8,7 @@ import {
 
 const normalizer = readFileSync('card-design/print-artwork-normalizer.js', 'utf8');
 const cardSurface = readFileSync('card-design/card-review-render.js', 'utf8');
-const renderer = readFileSync('tts/renderer/renderer.js', 'utf8');
+const renderer = readFileSync('card-design/playable-card-renderer.js', 'utf8');
 const printTransform = readFileSync('deckbuilder/production-print.js', 'utf8');
 const deployPages = readFileSync('.github/workflows/deploy-pages.yml', 'utf8');
 

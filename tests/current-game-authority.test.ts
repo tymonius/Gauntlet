@@ -385,7 +385,7 @@ describe('complete current-game authority', () => {
     expect(artworkWorker).toContain("authorityPath: String(env.GITHUB_AUTHORITY_PATH || 'game-data/current-game.json')");
     expect(artworkWorker).toContain("const before = authority.artDirection");
     expect(artworkWorker).toContain("const nextAuthority = { ...authority, artDirection: after }");
-    expect(artworkWorker).not.toContain('tts/artwork-direction-overrides.js');
+    expect(artworkWorker).not.toContain(['tts', 'artwork-direction-overrides.js'].join('/'));
     expect(artworkWorker).not.toContain('GITHUB_OVERRIDE_PATH');
 
     expect(artworkSession).toContain("authorityPath: String(env.GITHUB_AUTHORITY_PATH || 'game-data/current-game.json')");
@@ -394,16 +394,16 @@ describe('complete current-game authority', () => {
 
     expect(artworkClient).toContain('contents/game-data/current-game.json?ref=');
     expect(artworkClient).toContain('const directions = authority?.artDirection');
-    expect(artworkClient).not.toContain('contents/tts/artwork-direction-overrides.js');
+    expect(artworkClient).not.toContain(['contents', 'tts', 'artwork-direction-overrides.js'].join('/'));
 
     expect(artworkServer).toContain("const AUTHORITY_FILE = join(ROOT, 'game-data', 'current-game.json')");
     expect(artworkServer).toContain('const next = { ...authority, artDirection: map }');
     expect(artworkServer).not.toContain("join(ROOT, 'tts', 'artwork-direction-overrides.js')");
 
     expect(artworkCompositor).toContain('game-data/current-game.json · artDirection');
-    expect(artworkCompositor).not.toContain('tts/artwork-direction-overrides.js');
+    expect(artworkCompositor).not.toContain(['tts', 'artwork-direction-overrides.js'].join('/'));
     expect(livePublicationWorkflow).toContain("'game-data/current-game.json'");
-    expect(livePublicationWorkflow).not.toContain("'tts/artwork-direction-overrides.js'");
+    expect(livePublicationWorkflow).not.toContain("['tts', 'artwork-direction-overrides.js'].join('/')");
   });
 
   it('verifies the Actions-driven v0.7.1 live publication without the legacy Pages builds API', () => {

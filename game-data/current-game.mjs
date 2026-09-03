@@ -1,3 +1,5 @@
+import { resolveArtDirection, validateVisualPolicy } from './art-direction.mjs';
+
 export const CURRENT_GAME_AUTHORITY_URL = '/game-data/current-game.json';
 
 let currentGamePromise = null;
@@ -120,6 +122,7 @@ function validateAuthority(authority) {
   if (!authority.version || !authority.displayVersion || !authority.gameplay || !authority.provenance) {
     throw new Error('Current-game authority is missing identity, gameplay, or provenance.');
   }
+  validateVisualPolicy(authority.visualPolicy);
   for (const forbidden of ['sources', 'resolution', 'baseVersion', 'factionOverrides']) {
     if (Object.prototype.hasOwnProperty.call(authority, forbidden)) {
       throw new Error(`Current-game authority still exposes transitional field ${forbidden}.`);
@@ -201,6 +204,7 @@ async function resolveCurrentGame() {
   const leaders = authority.leaders.map(runtimeLeader);
   const starterDeckData = clone(authority.starterDecks);
   const starterDecks = starterDeckData.decks.map(clone);
+  const visualPolicy = clone(authority.visualPolicy || {});
   const artDirection = clone(authority.artDirection || {});
   const componentContract = clone(authority.componentContract || {});
 
@@ -231,6 +235,7 @@ async function resolveCurrentGame() {
     starterDecks: Object.freeze(starterDecks),
     starterDeckData: Object.freeze(starterDeckData),
     arcaneSymbol: Object.freeze(clone(authority.arcaneSymbol || {})),
+    visualPolicy: Object.freeze(visualPolicy),
     artDirection: Object.freeze(artDirection),
     mystics: Object.freeze(clone(authority.mystics || {})),
     componentContract: Object.freeze(componentContract),
@@ -241,7 +246,7 @@ async function resolveCurrentGame() {
     findLeader(faction, id) { return factions.find(item => item.id === faction)?.leaders.find(leader => leader.id === id) || null; },
     findFactionFeatures(faction) { return clone(authority.factionFeatures[faction] || []); },
     findStarterDeck(faction, leader) { return starterDecks.find(deck => deck.factionId === faction && deck.leaderId === leader) || null; },
-    artDirectionFor(id) { return artDirection[id] ? clone(artDirection[id]) : null; },
+    artDirectionFor(id) { return clone(resolveArtDirection(visualPolicy, artDirection, id)); },
     slugify,
   });
 }

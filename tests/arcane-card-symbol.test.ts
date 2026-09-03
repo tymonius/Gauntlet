@@ -7,7 +7,7 @@ import {
   validateV064ArcaneSymbolSource,
 } from "../rules-assistant/v064-candidate-corpus.js";
 
-const renderer = readFileSync("tts/renderer/renderer.js", "utf8");
+const renderer = readFileSync("card-design/playable-card-renderer.js", "utf8");
 const factionCss = readFileSync("card-design/faction-specimens.css", "utf8");
 const markerUi = readFileSync("arcane-trait-markers.js", "utf8");
 const markerUiCss = readFileSync("arcane-trait-markers.css", "utf8");

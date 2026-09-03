@@ -123,7 +123,7 @@ jobs:
             const analytics = uncertain || exact('scripts/sync-google-analytics.mjs') || exact('index.html') || matches(/^(?:start|rulebook|card-reference|deckbuilder|rules-arbiter)\/[^/]*\.html$/) || matches(/^factions\/(?:[^/]+\/)?[^/]*\.html$/);
             const tts = uncertain || matches(/^scripts\/generate-tts-/) || under('tts/') || under('artifacts/tts/') || under('data/cards/') || under('data/territories/');
             const media = uncertain || matches(/^scripts\/generate-card-media-/) || under('images/artwork/') || under('artifacts/media/') || under('data/cards/');
-            const renderer = uncertain || exact('tts/renderer/renderer.js') || exact('scripts/validate-v063-card-rendering-conventions.mjs');
+            const renderer = uncertain || exact('card-design/playable-card-renderer.js') || exact('scripts/validate-v063-card-rendering-conventions.mjs');
             const relevant = code || types || analytics || tts || media || renderer;
 
             core.setOutput('relevant', String(relevant));
