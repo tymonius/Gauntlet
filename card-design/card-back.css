@@ -165,13 +165,10 @@
 .gauntlet-card-back__pattern {
   position: absolute;
   z-index: 0;
-  top: 50%;
-  left: 50%;
-  width: 5.4in;
-  height: 5.4in;
-  max-width: none;
-  transform: translate(-50%, -50%) rotate(78deg);
-  transform-origin: center;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
   user-select: none;
 }
