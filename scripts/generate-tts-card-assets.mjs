@@ -116,7 +116,7 @@ async function validateRenderedCard(page, card) {
 
 async function renderProductionBack(page, baseUrl, outputRoot, faction) {
   await page.setViewportSize({ width: 520, height: 700 });
-  await page.goto(`${baseUrl}/card-design/face-render.html?kind=back&id=${encodeURIComponent(faction)}&side=back`, { waitUntil: 'load' });
+  await page.goto(`${baseUrl}/card-design/face-render.html?id=${encodeURIComponent(`back:${faction}`)}`, { waitUntil: 'load' });
   const back = page.locator('.gauntlet-card-back');
   await back.waitFor();
   await page.waitForFunction(
