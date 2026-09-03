@@ -186,7 +186,7 @@ describe('v0.7.0 replay and save-state envelopes', () => {
       },
     });
     expect(state.battle).not.toBeNull();
-    expect(state.battleRuntime?.stage).toBe('onset');
+    expect(state.battleRuntime).toBeNull();
 
     state = reduceV070RecordedAction(state, {
       domain: 'battle',
