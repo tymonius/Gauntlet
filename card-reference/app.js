@@ -390,10 +390,15 @@ function buildResultSummary() {
 }
 
 function selectEntry(id) {
+  const restoreResultFocus = document.activeElement instanceof HTMLElement
+    && document.activeElement.classList.contains('reference-row');
   state.selectedId = id;
   const nextHash = `#${encodeURIComponent(id)}`;
   if (window.location.hash !== nextHash) history.replaceState(null, '', nextHash);
   render();
+  if (restoreResultFocus) {
+    el.resultList.querySelector('.reference-row.selected')?.focus({ preventScroll: true });
+  }
 }
 
 function applyHashSelection() {
@@ -409,6 +414,7 @@ function renderPreview(entry) {
   if (!entry) {
     el.preview.className = 'reference-preview empty-state';
     delete el.preview.dataset.faction;
+    el.preview.removeAttribute('aria-label');
     el.preview.textContent = 'Select a result to view its complete production component.';
     return;
   }
