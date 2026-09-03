@@ -947,11 +947,6 @@ function assertBankedMarginLoan(
       'Margin Loan must still be banked to resolve repayment or voluntary Default.',
     );
   }
-  if (!isV070AssetActive(state, instanceId)) {
-    throw new V070GameActionError(
-      'Margin Loan must be active to resolve its printed Asset effect.',
-    );
-  }
 }
 
 function beginSleeperNetworkBoundActionQueue(
