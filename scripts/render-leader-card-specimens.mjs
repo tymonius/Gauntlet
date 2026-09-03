@@ -104,8 +104,8 @@ async function main() {
     const leaders = [];
     let fonts = null;
     for (const sourceLeader of current.leaders || []) {
-      const renderId = `${sourceLeader.faction}-${slugify(sourceLeader.name)}`;
-      await leaderPage.goto(`${baseUrl}/card-design/component-render.html?kind=leader&id=${encodeURIComponent(renderId)}&side=front`, { waitUntil: 'load' });
+      const faceId = `leader:${sourceLeader.faction}-${sourceLeader.id}`;
+      await leaderPage.goto(`${baseUrl}/card-design/face-render.html?id=${encodeURIComponent(faceId)}`, { waitUntil: 'load' });
       await leaderPage.waitForFunction(() => document.body.dataset.renderReady === 'true');
       if (!fonts) {
         await leaderPage.evaluate(async () => document.fonts?.ready);
@@ -151,20 +151,12 @@ async function main() {
       };
     });
 
-    await leaderPage.goto(`${baseUrl}/card-design/component-render.html?kind=leader&id=financiers-banker&side=front&rules=candidate`, { waitUntil: 'load' });
+    await leaderPage.goto(`${baseUrl}/card-design/face-render.html?id=${encodeURIComponent('leader:financiers-banker')}`, { waitUntil: 'load' });
     await leaderPage.waitForFunction(() => document.body.dataset.renderReady === 'true');
-    const bankerCandidateComposition = await readBankerComposition();
+    const bankerComposition = await readBankerComposition();
 
-    await leaderPage.goto(`${baseUrl}/card-design/component-render.html?kind=leader&id=financiers-banker&side=front&rules=released`, { waitUntil: 'load' });
-    await leaderPage.waitForFunction(() => document.body.dataset.renderReady === 'true');
-    const bankerReleasedComposition = await readBankerComposition();
-
-    if (
-      bankerCandidateComposition.applied !== 'financiers-banker'
-      || bankerReleasedComposition.applied !== 'financiers-banker'
-      || JSON.stringify(bankerReleasedComposition) !== JSON.stringify(bankerCandidateComposition)
-    ) {
-      throw new Error(`Released Deckbuilder Banker composition drifted from Card Design: ${JSON.stringify({ bankerCandidateComposition, bankerReleasedComposition })}.`);
+    if (bankerComposition.applied !== 'financiers-banker') {
+      throw new Error(`Canonical Banker composition was not applied: ${JSON.stringify(bankerComposition)}.`);
     }
 
     await leaderPage.close();
@@ -209,20 +201,10 @@ async function main() {
       };
     });
 
-    await playablePage.goto(`${baseUrl}/card-design/card-review-render.html?fit=production&card=neutral-rallying-cry`, { waitUntil: 'load' });
-    await playablePage.waitForFunction(() => document.body.dataset.renderReady === 'true');
-    const canonicalPlayable = await readPlayableMetrics();
-
-    await playablePage.goto(`${baseUrl}/card-design/card-review-render.html?fit=production&printArtwork=normalized&card=neutral-rallying-cry`, { waitUntil: 'load' });
+    await playablePage.goto(`${baseUrl}/card-design/face-render.html?id=${encodeURIComponent('card:neutral-rallying-cry')}`, { waitUntil: 'load' });
     await playablePage.waitForFunction(() => document.body.dataset.renderReady === 'true');
     const playable = await readPlayableMetrics();
 
-    const parityFields = [
-      'title', 'width', 'height', 'fitWarning', 'titleFit', 'parchmentLoaded',
-      'rulesScale', 'artHeight', 'artObjectPosition', 'artTransform', 'artTransformOrigin',
-      'artCrop', 'artCropX', 'artCropY', 'artFocusX', 'artFocusY', 'artZoom',
-    ];
-    const parityMismatch = parityFields.find(field => playable[field] !== canonicalPlayable[field]);
     if (
       playable.title !== 'Rallying Cry'
       || Math.abs(playable.width - CARD_WIDTH) > 0.25
@@ -230,18 +212,15 @@ async function main() {
       || playable.fitWarning
       || playable.titleFit !== 'true'
       || playable.parchmentLoaded !== 'true'
-      || playable.normalizedArtwork !== 'true'
-      || !playable.artworkSource.startsWith('blob:')
-      || !playable.normalizedArtworkSource.includes('/images/artwork/cards/')
-      || parityMismatch
+      || !playable.artworkSource.includes('/images/artwork/cards/')
     ) {
-      throw new Error(`Current playable-card print parity failed: ${JSON.stringify({ canonicalPlayable, playable, parityMismatch })}.`);
+      throw new Error(`Current playable-card face validation failed: ${JSON.stringify(playable)}.`);
     }
     await playablePage.locator('.gauntlet-card').screenshot({ path: join(OUTPUT, 'playable-card-review-smoke.png'), omitBackground: true });
     await playablePage.close();
 
     const territoryPage = await context.newPage();
-    await territoryPage.goto(`${baseUrl}/card-design/territory-review-render.html?territory=territory-smuggler-s-pass`, { waitUntil: 'load' });
+    await territoryPage.goto(`${baseUrl}/card-design/face-render.html?id=${encodeURIComponent('territory:territory-smuggler-s-pass')}`, { waitUntil: 'load' });
     await territoryPage.waitForFunction(() => document.body.dataset.renderReady === 'true');
     const territory = await territoryPage.locator('.territory-card').evaluate(card => {
       const rect = card.getBoundingClientRect();
@@ -269,7 +248,7 @@ async function main() {
     await territoryPage.locator('.territory-card').screenshot({ path: join(OUTPUT, 'territory-review-smoke.png'), omitBackground: true });
     await territoryPage.close();
 
-    await writeFile(join(OUTPUT, 'metrics.json'), `${JSON.stringify({ currentVersion: current.version, displayVersion: expectedVersion, fonts, leaders, bankerCandidateComposition, bankerReleasedComposition, playable, territory }, null, 2)}\n`);
+    await writeFile(join(OUTPUT, 'metrics.json'), `${JSON.stringify({ currentVersion: current.version, displayVersion: expectedVersion, fonts, leaders, bankerComposition, playable, territory }, null, 2)}\n`);
   } finally {
     await browser.close();
     await new Promise(resolveDone => server.close(resolveDone));
