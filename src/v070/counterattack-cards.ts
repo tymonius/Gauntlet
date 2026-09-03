@@ -175,6 +175,58 @@ export function v070CounterattackBattleCardAftermathDestination(
   return normalDestination;
 }
 
+export function openV070FootholdAssetAftermathWindow(
+  state: V070GameState,
+): boolean {
+  const battle = state.battle;
+  const runtime = state.battleRuntime;
+  if (!battle
+    || !runtime
+    || runtime.stage !== 'aftermath'
+    || runtime.aftermathCardsCleared
+    || runtime.footholdAssetWindowResolved
+    || !battle.winner
+    || battle.winner !== battle.defender
+    || !runtime.counterattackAtOnset) {
+    return false;
+  }
+
+  const playerId = battle.winner;
+  const eligible = state.players[playerId].zones.assetBank.filter(
+    instanceId =>
+      state.cardInstances[instanceId]?.cardId === 'neutral-foothold'
+      && isV070AssetActive(state, instanceId),
+  );
+  if (eligible.length === 0) {
+    runtime.footholdAssetWindowResolved = true;
+    return false;
+  }
+
+  runtime.footholdAssetWindowPlayer = playerId;
+  runtime.footholdAssetEligibleInstanceIds = [...eligible];
+
+  appendV070Event(state, {
+    type: 'foothold_asset_window_opened',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      playerId,
+      eligibleCount: eligible.length,
+      optional: true,
+    },
+  });
+  appendV070Event(state, {
+    type: 'foothold_asset_options',
+    actor: playerId,
+    visibility: playerId,
+    payload: {
+      playerId,
+      assetInstanceIds: [...eligible],
+    },
+  });
+  return true;
+}
+
 export function useV070FootholdAssetAfterCounterattackWin(
   state: V070GameState,
   playerId: PlayerId,
@@ -186,22 +238,26 @@ export function useV070FootholdAssetAfterCounterattackWin(
     || !runtime
     || runtime.stage !== 'aftermath'
     || runtime.aftermathCardsCleared
+    || runtime.footholdAssetWindowPlayer !== playerId
     || battle.winner !== playerId
     || battle.defender !== playerId
     || !runtime.counterattackAtOnset) {
     throw new V070GameActionError(
-      'Foothold may be used only after winning while defending against a Counterattack.',
+      'Foothold is not pending for that player.',
     );
   }
 
-  if (!state.players[playerId].zones.assetBank.includes(
-    assetInstanceId
+  if (!runtime.footholdAssetEligibleInstanceIds.includes(
+    assetInstanceId,
   )
+    || !state.players[playerId].zones.assetBank.includes(
+      assetInstanceId,
+    )
     || state.cardInstances[assetInstanceId]?.cardId !==
       'neutral-foothold'
     || !isV070AssetActive(state, assetInstanceId)) {
     throw new V070GameActionError(
-      'Choose an active banked Foothold to use.',
+      'Choose an active banked Foothold from the pending window.',
     );
   }
 
@@ -229,6 +285,70 @@ export function useV070FootholdAssetAfterCounterattackWin(
       drawCount: 2,
     },
   });
+
+  const remaining = runtime.footholdAssetEligibleInstanceIds.filter(
+    instanceId =>
+      instanceId !== assetInstanceId
+      && state.players[playerId].zones.assetBank.includes(instanceId)
+      && isV070AssetActive(state, instanceId),
+  );
+  runtime.footholdAssetEligibleInstanceIds = remaining;
+  if (remaining.length === 0) {
+    closeFootholdAssetWindow(runtime);
+    return;
+  }
+
+  appendV070Event(state, {
+    type: 'foothold_asset_window_continues',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      playerId,
+      eligibleCount: remaining.length,
+      optional: true,
+    },
+  });
+  appendV070Event(state, {
+    type: 'foothold_asset_options',
+    actor: playerId,
+    visibility: playerId,
+    payload: {
+      playerId,
+      assetInstanceIds: [...remaining],
+    },
+  });
+}
+
+export function passV070FootholdAssetAfterCounterattackWin(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  const runtime = state.battleRuntime;
+  if (!runtime
+    || runtime.footholdAssetWindowPlayer !== playerId) {
+    throw new V070GameActionError(
+      'Foothold is not pending for that player.',
+    );
+  }
+
+  appendV070Event(state, {
+    type: 'foothold_asset_window_declined',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      remainingCount:
+        runtime.footholdAssetEligibleInstanceIds.length,
+    },
+  });
+  closeFootholdAssetWindow(runtime);
+}
+
+function closeFootholdAssetWindow(
+  runtime: NonNullable<V070GameState['battleRuntime']>,
+): void {
+  runtime.footholdAssetWindowPlayer = null;
+  runtime.footholdAssetEligibleInstanceIds = [];
+  runtime.footholdAssetWindowResolved = true;
 }
 
 function drawIntoHand(
