@@ -13,6 +13,7 @@ window.gtag("consent", "default", {
 });
 
 let analyticsLoaded = false;
+let preferencesReturnFocus = null;
 window[`ga-disable-${MEASUREMENT_ID}`] = true;
 
 function readChoice() {
@@ -64,6 +65,14 @@ function applyChoice(choice) {
   }
 }
 
+function restorePreferencesFocus() {
+  const target = preferencesReturnFocus;
+  preferencesReturnFocus = null;
+  if (target instanceof HTMLElement && target.isConnected) {
+    target.focus({ preventScroll: true });
+  }
+}
+
 function showBanner() {
   if (document.querySelector(".analytics-consent")) return;
   const region = document.createElement("aside");
@@ -83,11 +92,17 @@ function showBanner() {
     writeChoice(choice);
     applyChoice(choice);
     removeBanner();
+    restorePreferencesFocus();
   });
   document.body.append(region);
 }
 
-function openPreferences() {
+function openPreferences(event) {
+  preferencesReturnFocus = event?.currentTarget instanceof HTMLElement
+    ? event.currentTarget
+    : document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
   window[`ga-disable-${MEASUREMENT_ID}`] = true;
   writeChoice("");
   removeBanner();
