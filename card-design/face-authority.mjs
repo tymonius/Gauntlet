@@ -46,6 +46,15 @@ function faceId(namespace, id, side = '') {
   return side ? `${base}:${side}` : base;
 }
 
+function normalizeFaction(value) {
+  return String(value || 'neutral')
+    .trim()
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '') || 'neutral';
+}
+
 function templateSurface(template) {
   const definition = FACE_TEMPLATES[template];
   if (!definition) throw new Error(`Unknown face template: ${template}.`);
@@ -66,7 +75,7 @@ function addPlayableFaces(catalog, game) {
       orientation: FACE_TEMPLATES.playable.orientation,
       surface: templateSurface('playable'),
       side: 'front',
-      faction: card.allegiance || 'neutral',
+      faction: normalizeFaction(card.allegiance),
       label: card.name,
       backPolicy: 'standardBack',
       source: { collection: 'cards', id: card.id },
@@ -120,7 +129,7 @@ function componentFaces(component) {
     template,
     orientation,
     surface: templateSurface(template),
-    faction: component.faction || 'neutral',
+    faction: normalizeFaction(component.faction),
     label: component.name,
     source: { collection: 'components', id: component.id },
   };
