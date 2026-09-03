@@ -58,13 +58,8 @@
 }
 
 .leader-card .card-art img {
-  object-position: center 16%;
   filter: none;
   mix-blend-mode: normal;
-}
-
-.leader-card.commandant-card .card-art img {
-  object-position: center 14%;
 }
 
 .leader-card .card-rules {
