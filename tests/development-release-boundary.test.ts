@@ -8,11 +8,9 @@ const releaseTarget = JSON.parse(readFileSync('config/tts-release-target.json', 
 const materializer = readFileSync('.github/workflows/materialize-v071-release-package.yml', 'utf8');
 const releaseBuilder = readFileSync('scripts/build-v071-release-source.mjs', 'utf8');
 const ttsCatalog = readFileSync('scripts/tts-current-catalog.mjs', 'utf8');
-const cardValidator = readFileSync('scripts/validate-current-card-render.mjs', 'utf8');
-const territoryValidator = readFileSync('scripts/validate-current-territory-render.mjs', 'utf8');
-const proposalValidator = readFileSync('scripts/validate-proposal-card-render.mjs', 'utf8');
+const cardAuthorityModel = readFileSync('scripts/card-authority/model.mjs', 'utf8');
+const renderedFaceValidator = readFileSync('scripts/card-authority/validate-rendered-faces.mjs', 'utf8');
 const starterValidator = readFileSync('scripts/validate-starter-decks.mjs', 'utf8');
-const riteValidator = readFileSync('scripts/validate-rite-card-render.mjs', 'utf8');
 
 describe('development and published-release boundary', () => {
   it('keeps published v0.7.1 materialization isolated while the TTS target matches the live Workshop release', () => {
@@ -33,15 +31,16 @@ describe('development and published-release boundary', () => {
   });
 
   it('keeps current-development validators version-agnostic', () => {
-    for (const source of [cardValidator, territoryValidator, proposalValidator, starterValidator]) {
+    for (const source of [cardAuthorityModel, renderedFaceValidator, starterValidator]) {
       expect(source).not.toMatch(/authority\.version\s*!==\s*['"]v\d/);
       expect(source).not.toMatch(/requires the complete v\d/);
     }
   });
 
-  it('derives Rite render expectations from the current Rite pool', () => {
-    expect(riteValidator).toContain('const expectedRites = (authority.mystics?.rites || []).map');
-    expect(riteValidator).toContain('const expectedCardFaces = expectedRites.length * 2 + 1');
-    expect(riteValidator).not.toContain('EXPECTED_RITES');
+  it('derives physical-face render scope from current authority rather than family-specific constants', () => {
+    expect(cardAuthorityModel).toContain('expectedFaceIds(authority)');
+    expect(renderedFaceValidator).toContain('resolveAllFaceSpecs(runtimeGameFromAuthority(authority))');
+    expect(renderedFaceValidator).not.toContain('EXPECTED_RITES');
+    expect(renderedFaceValidator).not.toContain('EXPECTED_CATALOG_COUNT');
   });
 });
