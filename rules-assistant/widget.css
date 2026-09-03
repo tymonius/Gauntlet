@@ -58,7 +58,7 @@
 .ga-rules-panel textarea:focus-visible,
 .ga-rules-panel a:focus-visible,
 .ga-rules-panel summary:focus-visible {
-  outline: 3px solid rgba(143, 31, 37, 0.28);
+  outline: 3px solid var(--ga-bronze);
   outline-offset: 2px;
 }
 
