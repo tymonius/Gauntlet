@@ -13,7 +13,7 @@ describe('Deckbuilder Territory preview', () => {
   });
 
   it('scales the native landscape production surface without changing its aspect ratio', () => {
-    expect(territorySource).toContain("import { PRODUCTION_SURFACES } from '../card-design/production-surface.mjs'");
+    expect(territorySource).toContain("import('../card-design/production-surface.mjs')");
     expect(territorySource).toContain('PRODUCTION_SURFACES.landscape.widthCssPx');
     expect(territorySource).toContain('PRODUCTION_SURFACES.landscape.heightCssPx');
     expect(territorySource).not.toContain('const TERRITORY_WIDTH = 336;');
