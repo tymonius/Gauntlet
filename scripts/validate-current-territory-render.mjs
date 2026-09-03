@@ -116,7 +116,8 @@ async function main() {
           version,
           artRectHeight: art?.height || 0,
           artRectWidth: art?.width || 0,
-          sourceHierarchy: window.GAUNTLET_TTS_CATALOG?.sourceHierarchy,
+          gameplayAuthority: document.body.dataset.gameplayAuthority || '',
+          visualAuthority: document.body.dataset.visualAuthority || '',
         };
       });
       metrics.push({ id: territory.id, name: territory.name, ...metric });
@@ -127,7 +128,11 @@ async function main() {
       if (metric.renderedText !== territory.text) {
         throw new Error(`Rendered Territory text drifted for ${territory.name}.`);
       }
-      if (metric.version !== authority.displayVersion || metric.sourceHierarchy?.[0] !== '/game-data/current-game.json') {
+      if (
+        metric.version !== authority.displayVersion
+        || metric.gameplayAuthority !== '/game-data/current-game.json'
+        || metric.visualAuthority !== '/game-data/current-game.json'
+      ) {
         throw new Error(`Territory render is not using the current-game authority for ${territory.name}: ${JSON.stringify(metric)}.`);
       }
       if (metric.fitWarning || metric.titleFit !== 'true' || metric.parchmentLoaded !== 'true') {
