@@ -121,7 +121,7 @@ jobs:
           if (playableFrameState.normalized !== 'true' || !playableFrameState.source.startsWith('blob:') || !playableFrameState.originalSource.includes('/images/artwork/cards/')) {
             throw new Error(`Playable print artwork normalization failed: ${JSON.stringify(playableFrameState)}`);
           }
-          if (await printPage.locator('iframe[src*="kind=leader"]').count() < 1) throw new Error('Leader production renderer was not used.');
+          if (await printPage.locator('iframe[src*="face-render.html"][src*="kind=leader"]').count() < 1) throw new Error('Leader FaceSpec renderer was not used.');
           if (await printPage.locator('iframe[src*="kind=reference"]').count() < 2) throw new Error('Reference front/reverse renderers were not paired.');
           if (await printPage.locator('iframe[src*="kind=proposal"]').count() < 2) throw new Error('Proposal front/reverse renderers were not paired.');
           if (await printPage.locator('iframe[src*="kind=rite"]').count() < 2) throw new Error('Rite front/reverse renderers were not paired.');
@@ -149,7 +149,7 @@ jobs:
           ) {
             throw new Error(`Deed landscape render geometry regressed: ${JSON.stringify(deedState)}`);
           }
-          if (await printPage.locator('iframe[src*="card-back-render.html"]').count() < 2) throw new Error('Canonical standard backs were not added for one-sided cards.');
+          if (await printPage.locator('iframe[src*="face-render.html"][src*="kind=back"]').count() < 2) throw new Error('Canonical FaceSpec standard backs were not added for one-sided cards.');
 
           await page.screenshot({ path: '/tmp/deckbuilder-custom-print-workspace.png', fullPage: true });
           await printPage.screenshot({ path: '/tmp/deckbuilder-custom-print-sheet.png', fullPage: true });
