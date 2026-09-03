@@ -10,6 +10,9 @@ const finalizedGenerator = readFileSync('scripts/generate-tts-finalized-suppleme
 const trackerCapture = readFileSync('scripts/tts-sliding-trackers.mjs', 'utf8');
 const geometry = readFileSync('scripts/tts-supplemental-geometry.mjs', 'utf8');
 const componentShell = readFileSync('card-design/component-render.html', 'utf8');
+const faceShell = readFileSync('card-design/face-render.html', 'utf8');
+const faceRuntime = readFileSync('card-design/face-render.mjs', 'utf8');
+const faceSpec = readFileSync('card-design/face-spec.mjs', 'utf8');
 const componentRenderer = readFileSync('card-design/component-render.js', 'utf8');
 const sharedCardDesign = readFileSync('card-design/card-design.js', 'utf8');
 const designTokens = readFileSync('design-tokens.css', 'utf8');
@@ -33,7 +36,7 @@ describe('TTS card render authority', () => {
     expect(territoryGenerator).toContain('/card-design/territory-review-render.html');
     expect(territoryGenerator).not.toContain('/tts/territory-renderer/?territory=');
 
-    expect(leaderGenerator).toContain('/card-design/component-render.html');
+    expect(leaderGenerator).toContain('/card-design/face-render.html');
     expect(leaderGenerator).not.toContain("page.goto(`${baseUrl}/card-design/`");
     expect(leaderGenerator).not.toContain('GauntletArtworkCrop.apply');
 
@@ -84,6 +87,8 @@ describe('TTS card render authority', () => {
     expect(componentRenderer).toContain('const versionOverride = String(params.get("version") || "").trim()');
     expect(componentRenderer).toContain('if (versionOverride)');
     expect(componentRenderer).toContain('versionNode.textContent = versionOverride');
+    expect(faceRuntime).toContain('request.versionOverride');
+    expect(faceRuntime).toContain('version.textContent = request.versionOverride');
   });
 
   it('applies only current-game artwork direction on every production capture surface', () => {
@@ -101,6 +106,11 @@ describe('TTS card render authority', () => {
     expect(componentRenderer).toContain('await applyCanonicalArtworkDirection(card)');
     expect(componentRenderer).toContain('card.dataset.artDirectionApplied = artworkId');
     expect(componentRenderer).not.toContain('card.dataset.artDirectionApplied = "css-default"');
+
+    expect(faceSpec).toContain('requireExplicitArtworkDirection');
+    expect(faceSpec).toContain('resolved.focusX == null || resolved.focusY == null || resolved.smart !== false');
+    expect(faceRuntime).toContain('spec.artwork.direction');
+    expect(faceRuntime).toContain('card.dataset.artDirectionApplied = spec.artwork.id');
 
     expect(playableFaceRenderer).toContain('Canonical artwork direction is missing');
     expect(playableFaceRenderer).toContain('element.dataset.artDirectionApplied = card.id');
@@ -123,6 +133,8 @@ describe('TTS card render authority', () => {
     expect(sharedCardDesign).toContain('"p22-1722-pro"');
     expect(sharedCardDesign).toContain('"Inter"');
     expect(sharedCardDesign).toContain('await loadProductionFonts()');
+    expect(sharedCardDesign).toContain('window.GauntletCardDesign = Object.freeze');
+    expect(faceRuntime).toContain('window.GauntletCardDesign.prepareCard(card)');
     expect(sharedCardDesign.indexOf('await loadProductionFonts()'))
       .toBeLessThan(sharedCardDesign.indexOf('fitAllCards();'));
     expect(componentRenderer).toContain('document.body.dataset.productionFontsReady');
