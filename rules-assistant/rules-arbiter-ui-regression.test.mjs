@@ -7,12 +7,21 @@ const HERE = fileURLToPath(new URL(".", import.meta.url));
 
 describe("Rules Arbiter welcome and compact UI regressions", () => {
   test("welcome copy is never collapsed into Details and exceptions", () => {
-    const welcome = "Ask me about the v0.6.3 rulebook, cards, Leaders, faction systems, Territories, Gambits, Tactics, battle timing, or victory conditions. If the written rules leave a genuine gap, I will issue a provisional ruling so play can continue.";
+    const welcome = "Set out the question as it arose at the table. I will determine what the v0.7.1 rules require, identify the controlling rule or distinction, and settle the matter as plainly as I can. Where the written rules do not decide it, I will issue a provisional ruling so play may continue.";
 
     expect(presentRulesAnswer({ answer: welcome, rulingStatus: "welcome" })).toEqual({
       answer: welcome,
       details: ""
     });
+  });
+
+  test("widget welcome copy uses the Chief Justice voice instead of generic assistant framing", () => {
+    const widget = readFileSync(`${HERE}/widget.js`, "utf8");
+
+    expect(widget).toContain("Set out the question as it arose at the table.");
+    expect(widget).toContain("identify the controlling rule or distinction");
+    expect(widget).toContain("settle the matter as plainly as I can");
+    expect(widget).not.toContain("Ask me about the v0.7.1 rulebook");
   });
 
   test("generic sentence splitting preserves dotted version numbers", () => {
