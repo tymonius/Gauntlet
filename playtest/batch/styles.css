@@ -97,7 +97,7 @@ form.generator-panel {
   font-family: var(--sans);
 }
 .generator-panel input:focus {
-  outline: 2px solid rgba(163,115,56,.22);
+  outline: 3px solid var(--bronze);
   outline-offset: 1px;
   border-color: var(--developer-gold);
 }

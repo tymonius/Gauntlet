@@ -138,7 +138,7 @@
 .filter-panel input:focus,
 .filter-panel select:focus {
   border-color: var(--crimson);
-  outline: 3px solid rgba(143, 31, 37, .12);
+  outline: 3px solid var(--bronze);
 }
 
 .text-button {

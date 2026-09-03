@@ -223,7 +223,7 @@ input, select, textarea {
 }
 textarea { resize: vertical; }
 input:focus, select:focus, textarea:focus {
-  outline: 3px solid rgba(124, 46, 46, 0.14);
+  outline: 3px solid var(--bronze);
   border-color: rgba(124, 46, 46, 0.48);
 }
 
