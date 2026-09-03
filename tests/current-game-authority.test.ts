@@ -277,7 +277,12 @@ describe('complete current-game authority', () => {
       profile: 'No Action',
       timing: 'During Onset',
     });
-    expect(authority.factionFeatures.military).toEqual([]);
+    expect(authority.factionFeatures.military).toContainEqual({
+      name: 'Orders',
+      profile: 'No Action',
+      timing: "At each Order's stated timing",
+      cost: 'Listed Command',
+    });
 
     for (const leader of authority.leaders) {
       expect(leader.sections.length).toBeGreaterThan(0);
