@@ -379,8 +379,7 @@ function render() {
     row.type = 'button';
     row.className = `reference-row${entry.id === state.selectedId ? ' selected' : ''}`;
     row.dataset.faction = entry.faction;
-    row.setAttribute('role', 'option');
-    row.setAttribute('aria-selected', String(entry.id === state.selectedId));
+    if (entry.id === state.selectedId) row.setAttribute('aria-current', 'true');
     row.innerHTML = `
       <span>
         <span class="reference-row-title">${escapeHtml(entry.name)}</span>
