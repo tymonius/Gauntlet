@@ -311,6 +311,17 @@ function renderAll() {
   extensionHooks.render.forEach(hook => hook());
 }
 
+function findCardAction(container, cardId, action) {
+  return [...container.querySelectorAll("[data-card-id]")]
+    .find(row => row.dataset.cardId === cardId)
+    ?.querySelector(`[data-action="${action}"]`) || null;
+}
+
+function focusCardAction(container, cardId, action, fallback = null) {
+  const target = findCardAction(container, cardId, action) || (typeof fallback === "function" ? fallback() : fallback);
+  target?.focus({ preventScroll: true });
+}
+
 function renderFactionOptions() {
   el.factionSelect.innerHTML = FACTIONS.map(faction => {
     const suffix = faction.status === "ready" ? "" : " — in development";
@@ -403,6 +414,7 @@ function renderAvailable() {
   cards.forEach(card => {
     const row = document.createElement("article");
     row.className = `compact-card-row${card.id === state.selectedCardId ? " selected" : ""}`;
+    row.dataset.cardId = card.id;
     const qty = state.deck[card.id] || 0;
     row.innerHTML = `
       <button
@@ -423,7 +435,10 @@ function renderAvailable() {
       el.availableCards.querySelector(".compact-card-row.selected .compact-row-preview-button")
         ?.focus({ preventScroll: true });
     });
-    row.querySelector('[data-action="add"]').addEventListener("click", () => addCard(card.id));
+    row.querySelector('[data-action="add"]').addEventListener("click", () => {
+      addCard(card.id);
+      focusCardAction(el.availableCards, card.id, "add");
+    });
     el.availableCards.append(row);
   });
 
@@ -456,7 +471,10 @@ function renderDefaultCardPreview(card) {
     ${Object.entries(card.sections).map(([label, text]) => `<section class="card-text-section"><div class="card-text-label">${escapeHtml(label)}</div><p>${escapeHtml(text)}</p></section>`).join("")}
     <div class="button-row"><button id="previewAddButton" type="button">Add to deck</button></div>
   `;
-  document.getElementById("previewAddButton").addEventListener("click", () => addCard(card.id));
+  document.getElementById("previewAddButton").addEventListener("click", () => {
+    addCard(card.id);
+    document.getElementById("previewAddButton")?.focus({ preventScroll: true });
+  });
 }
 
 function addCard(cardId) {
@@ -500,6 +518,7 @@ function renderDeck() {
   entries.forEach(({ card, qty }) => {
     const row = document.createElement("article");
     row.className = "deck-row";
+    row.dataset.cardId = card.id;
     row.innerHTML = `
       <div>
         <div class="deck-title"><strong>${escapeHtml(card.name)}</strong><span class="mini-pill">${escapeHtml(card.factionLabel)}</span></div>
@@ -511,9 +530,18 @@ function renderDeck() {
         <button type="button" class="secondary danger" data-action="remove" aria-label="Remove all ${escapeHtml(card.name)} from deck">×</button>
       </div>
     `;
-    row.querySelector('[data-action="minus"]').addEventListener("click", () => removeCard(card.id));
-    row.querySelector('[data-action="plus"]').addEventListener("click", () => addCard(card.id));
-    row.querySelector('[data-action="remove"]').addEventListener("click", () => removeAll(card.id));
+    row.querySelector('[data-action="minus"]').addEventListener("click", () => {
+      removeCard(card.id);
+      focusCardAction(el.deckCards, card.id, "minus", () => findCardAction(el.availableCards, card.id, "add"));
+    });
+    row.querySelector('[data-action="plus"]').addEventListener("click", () => {
+      addCard(card.id);
+      focusCardAction(el.deckCards, card.id, "plus", () => findCardAction(el.availableCards, card.id, "add"));
+    });
+    row.querySelector('[data-action="remove"]').addEventListener("click", () => {
+      removeAll(card.id);
+      focusCardAction(el.availableCards, card.id, "add", el.clearDeckButton);
+    });
     el.deckCards.append(row);
   });
 }
