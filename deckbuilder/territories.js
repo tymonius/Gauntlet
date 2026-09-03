@@ -136,6 +136,22 @@
       });
   }
 
+  function findTerritoryToggle(id) {
+    return [...(territoryElements.territoryList?.querySelectorAll("[data-territory-id]") || [])]
+      .find(row => row.dataset.territoryId === id)
+      ?.querySelector('[data-action="toggle"]') || null;
+  }
+
+  function restoreTerritoryFocus(id, target) {
+    const pickerToggle = () => findTerritoryToggle(id);
+    const previewToggle = () => document.getElementById("previewTerritoryButton");
+    const fallback = territoryElements.clearTerritoriesButton;
+    const focusTarget = target === "preview"
+      ? previewToggle() || pickerToggle() || fallback
+      : pickerToggle() || previewToggle() || fallback;
+    focusTarget?.focus({ preventScroll: true });
+  }
+
   function renderTerritoryPicker() {
     const list = territoryElements.territoryList;
     if (!list) return;
@@ -173,6 +189,7 @@
 
       const row = document.createElement("article");
       row.className = `compact-territory-row${territory.id === territoryState.selectedId ? " selected" : ""}${selected ? " chosen" : ""}`;
+      row.dataset.territoryId = territory.id;
       row.innerHTML = `
         <button
           type="button"
@@ -198,7 +215,7 @@
       });
       row.querySelector('[data-action="toggle"]').addEventListener("click", () => {
         territoryState.selectedId = territory.id;
-        toggleTerritory(territory.id);
+        toggleTerritory(territory.id, "picker");
       });
       list.append(row);
     });
@@ -242,7 +259,7 @@
       ${territory.watchlist !== "None" ? `<section class="territory-watchlist rendered-territory-watchlist"><strong>Playtest watchlist:</strong> ${escapeHtml(territory.watchlist)}</section>` : ""}
       <div class="button-row rendered-territory-preview-actions"><button id="previewTerritoryButton" type="button" class="${selected ? "secondary danger" : ""}" ${unavailable ? "disabled" : ""}>${selected ? "Remove Territory" : "Choose Territory"}</button></div>
     `;
-    document.getElementById("previewTerritoryButton")?.addEventListener("click", () => toggleTerritory(territory.id));
+    document.getElementById("previewTerritoryButton")?.addEventListener("click", () => toggleTerritory(territory.id, "preview"));
     installTerritoryPreviewScaling();
   }
 
@@ -270,7 +287,7 @@
     frame.style.transform = `translateX(-50%) scale(${scale})`;
   }
 
-  function toggleTerritory(id) {
+  function toggleTerritory(id, focusTarget = null) {
     const territory = getTerritory(id);
     if (!territory) return;
 
@@ -285,6 +302,7 @@
 
     territoryState.selectedId = id;
     deckbuilder.render();
+    if (focusTarget) restoreTerritoryFocus(id, focusTarget);
   }
 
   function renderDeckTerritories() {
@@ -309,7 +327,7 @@
         </div>
         <div class="deck-actions"><button type="button" class="secondary danger" aria-label="Remove ${escapeHtml(territory.name)}">×</button></div>
       `;
-      row.querySelector("button").addEventListener("click", () => toggleTerritory(territory.id));
+      row.querySelector("button").addEventListener("click", () => toggleTerritory(territory.id, "picker"));
       container.append(row);
     });
   }
