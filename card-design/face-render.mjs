@@ -100,26 +100,28 @@ async function applyCanonicalArtwork(spec, result) {
   result.element.dataset.artworkSource = source;
 }
 
+const FITTERS = Object.freeze({
+  none: () => {},
+  generic: fitGenericCard,
+  territory: fitTerritory,
+});
+
 async function prepareFace(spec, result) {
   const element = result.element;
-  const hasParchmentSurface = Boolean(
-    element.matches('.territory-card')
-    || element.querySelector('.card-interior, .reference-card-interior')
-  );
+  const preparation = result.preparation || { parchment: false, fit: 'none' };
 
-  if (hasParchmentSurface && spec.template !== 'standard-back' && !(spec.template === 'ritual' && spec.side === 'reverse')) {
-    await loadParchment(element, spec.faction);
+  if (preparation.parchment) {
+    const parchmentFaction = preparation.parchment === 'neutral' ? 'neutral' : spec.faction;
+    await loadParchment(element, parchmentFaction);
   }
 
   await applyCanonicalArtwork(spec, result);
   await waitForImages(element);
   await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
-  if (element.matches('.territory-card')) {
-    fitTerritory(element);
-  } else if (element.matches('.gauntlet-card[data-art-max]')) {
-    fitGenericCard(element);
-  }
+  const fitter = FITTERS[preparation.fit || 'none'];
+  if (!fitter) throw new Error(`Face ${spec.id} requested unknown fit contract ${preparation.fit}.`);
+  fitter(element);
 
   if (element.classList.contains('fit-warning')) {
     throw new Error(`Face ${spec.id} does not fit its canonical production surface.`);
