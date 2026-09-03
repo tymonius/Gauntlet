@@ -38,7 +38,7 @@ describe("v0.7.1 Rules Arbiter QA foundation", () => {
   });
 
   test("v0.7.1 prompt preserves timing, zone, classification, and gap semantics", () => {
-    expect(workerV071).toContain('export const BEHAVIOR_REVISION = "v071-qa-20260903-7"');
+    expect(workerV071).toContain('export const BEHAVIOR_REVISION = "v071-qa-20260903-8"');
     expect(workerV071).toContain("additional Actions changes the number of available Actions, not the legal phase or timing");
     expect(workerV071).toContain("A bound card is outside normal zones");
     expect(workerV071).toContain("Never invent the target of an unlabeled numerical bonus");
@@ -61,13 +61,17 @@ describe("v0.7.1 Rules Arbiter QA foundation", () => {
     expect(workerV071).toContain("failure.upstreamCategory = error.upstreamCategory");
   });
 
-  test("v0.7.1 prompt uses the Chief Justice voice without roleplay or archaic legalese", () => {
+  test("v0.7.1 prompt gives the Chief Justice a responsive, living judicial voice", () => {
     expect(workerV071).toContain("VOICE — CHIEF JUSTICE");
-    expect(workerV071).toContain("calm, lucid, compact, judicial, and authoritative");
-    expect(workerV071).toContain("holding first; controlling rule; application; consequence");
-    expect(workerV071).toContain("Sound formal but not archaic");
-    expect(workerV071).toContain("Do not roleplay, introduce yourself as the Chief Justice");
-    expect(workerV071).toContain("Do not sacrifice brevity, clarity, source fidelity, classification accuracy");
+    expect(workerV071).toContain("measured, exact, decisive, and restrained");
+    expect(workerV071).toContain("a living participant in the conversation, not a mechanical dispenser of rulings");
+    expect(workerV071).toContain("Do not force every answer into an identical structure");
+    expect(workerV071).toContain("The distinction is controlling");
+    expect(workerV071).toContain("placement is not movement; occupation is not control");
+    expect(workerV071).toContain("customer-service language, chatbot filler, modern slang");
+    expect(workerV071).toContain("Do not roleplay a courtroom, introduce yourself as the Chief Justice");
+    expect(workerV071).toContain("intelligent eighteenth-century magistrate");
+    expect(workerV071).not.toContain("John Marshall");
   });
 
   test("benchmark has broad coverage and preserves every live review interaction", () => {

@@ -33,7 +33,10 @@ describe('v0.7.1 live Rules Arbiter QA transport handling', () => {
     expect(workflow).toContain("GAUNTLET_RULES_QA_CONCURRENCY: '1'");
     expect(workflow).toContain("GAUNTLET_RULES_QA_MAX_ATTEMPTS: '2'");
     expect(workflow).toContain("GAUNTLET_RULES_QA_INTER_CASE_DELAY_MS: '750'");
-    expect(runner).toContain('const benchmarkCases = caseLimit ? benchmark.cases.slice(0, caseLimit) : benchmark.cases');
+    expect(workflow).toContain('10-case representative paid Rules Arbiter smoke test');
+    expect(runner).toContain('function selectBenchmarkCases(cases, limit)');
+    expect(runner).toContain('benchmark.smokeCaseIds');
+    expect(runner).toContain('const benchmarkCases = selectBenchmarkCases(benchmark.cases, caseLimit)');
     expect(runner).not.toContain('const attempts = Math.min(maxAttempts, 3)');
   });
 });
