@@ -134,17 +134,6 @@ footer {
   line-height: 1.08;
 }
 .arbiter-voice p { margin: 0; }
-.arbiter-voice cite {
-  display: block;
-  margin-top: .7rem;
-  color: var(--crimson-dark);
-  font-family: var(--sans);
-  font-size: .72rem;
-  font-style: normal;
-  font-weight: 800;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-}
 .eyebrow {
   margin: 0 0 14px;
   color: var(--crimson);
