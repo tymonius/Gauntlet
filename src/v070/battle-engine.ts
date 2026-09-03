@@ -2055,11 +2055,19 @@ function territoryAftermathDestination(
   instanceId: string,
   normalDestination: 'discard' | 'graveyard',
 ): 'discard' | 'graveyard' | 'hand' {
-  const override = runtime.territoryAftermathOverride;
-  return override
-    && override.playerId === playerId
-    && override.instanceId === instanceId
-      ? override.destination
+  const cardOverride =
+    runtime.battleCardAftermathDestinationOverrides.find(
+      override =>
+        override.playerId === playerId
+        && override.instanceId === instanceId,
+    );
+  if (cardOverride) return cardOverride.destination;
+
+  const territoryOverride = runtime.territoryAftermathOverride;
+  return territoryOverride
+    && territoryOverride.playerId === playerId
+    && territoryOverride.instanceId === instanceId
+      ? territoryOverride.destination
       : normalDestination;
 }
 
