@@ -8,6 +8,7 @@ const currentGame = JSON.parse(readFileSync("game-data/current-game.json", "utf8
 const mysticsAuthority = currentGame.mystics;
 const riteStyles = readFileSync("card-design/rite-card.css", "utf8");
 const leaderStyles = readFileSync("card-design/leader-card.css", "utf8");
+const factionComponentStyles = readFileSync("card-design/faction-component.css", "utf8");
 const ruleColumnStyles = readFileSync("card-design/card-rule-columns.css", "utf8");
 const completedRiteArtwork = readFileSync("images/artwork/supplemental/mystics/rite-completed.webp");
 
@@ -37,7 +38,7 @@ describe("Mystics Rite card prototypes", () => {
     }
     expect(reviewPage).toContain('<strong data-ritual-count>1</strong> Ritual');
     expect(mysticsAuthority.rites.map((item: any) => item.name)).toEqual(riteNames);
-    expect(riteRenderer).toContain("import { loadCurrentGame } from '../game-data/current-game.mjs'");
+    expect(riteRenderer).toContain("import { loadRenderGame } from './render-context.mjs'");
     expect(riteRenderer).toContain("RITES.map(reviewPair).join('')");
     expect(riteRenderer).toContain("ritualReview()");
   });
@@ -47,9 +48,10 @@ describe("Mystics Rite card prototypes", () => {
     expect(riteRenderer).toContain('data-faction="mystics"');
     expect(riteRenderer).toContain("rite-faction-emblem");
     expect(riteRenderer).not.toContain("value-medallion");
-    expect(leaderStyles).toContain("--component-heading-height: 0.50in");
-    expect(leaderStyles).toContain("--component-subheading-font-size: 6.25pt");
-    expect(leaderStyles).toContain("--component-subheading-icon-size: 0.18in");
+    expect(factionComponentStyles).toContain("--component-heading-height: 0.50in");
+    expect(factionComponentStyles).toContain("--component-subheading-font-size: 6.25pt");
+    expect(factionComponentStyles).toContain("--component-subheading-icon-size: 0.18in");
+    expect(leaderStyles).toContain('@import url("./faction-component.css")');
     expect(riteStyles).toContain("grid-template-rows: var(--component-heading-height, 0.50in) var(--art-height) auto 0.18in");
     expect(riteStyles).toContain("font-size: var(--component-subheading-font-size, 6.25pt)");
     expect(riteStyles).toContain("width: var(--component-subheading-icon-size, 0.18in)");
