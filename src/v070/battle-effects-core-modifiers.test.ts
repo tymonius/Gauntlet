@@ -285,6 +285,89 @@ describe('v0.7.0 core battle-effect modifiers', () => {
     expect(privateIdentity).toBeDefined();
   });
 
+  test('Consolidation defers its +1 Card until its attacker wins on an opponent-controlled Territory', () => {
+    let state = startBattle();
+    const consolidation = injectHandCard(
+      state,
+      'A',
+      'neutral-consolidation',
+      'consolidation',
+    );
+
+    state = revealGambits(state, consolidation);
+    expect(state.battleRuntime?.aftermathDrawEffects).toEqual([
+      {
+        owner: 'A',
+        sourceInstanceId: consolidation,
+        sourceCardId: 'neutral-consolidation',
+        count: 1,
+      },
+    ]);
+
+    state = toOutcome(state);
+    const handBeforeOutcome = state.players.A.zones.hand.length;
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice',
+      playerId: 'A',
+      values: [6],
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice',
+      playerId: 'B',
+      values: [1],
+    });
+
+    expect(state.battle?.winner).toBe('A');
+    expect(state.players.A.zones.hand).toHaveLength(handBeforeOutcome + 1);
+    expect(state.battleRuntime?.aftermathDrawEffects).toEqual([]);
+    expect(state.events.some(event =>
+      event.type === 'battle_card_aftermath_draw'
+      && (
+        event.payload as { sourceCardId?: string } | undefined
+      )?.sourceCardId === 'neutral-consolidation'
+    )).toBe(true);
+  });
+
+  test('Foothold gains Advantage while defending a Counterattack and defers its win draw until Aftermath', () => {
+    let state = startBattle();
+    const contested = state.battle!.contestedPosition;
+    state.board.find(space => space.position === contested)!.controller = 'A';
+    const foothold = injectHandCard(
+      state,
+      'B',
+      'neutral-foothold',
+      'foothold',
+    );
+
+    state = revealGambits(state, undefined, foothold);
+    expect(state.battleRuntime?.participants.B.advantage).toBe(1);
+    expect(state.battleRuntime?.aftermathDrawEffects).toEqual([
+      {
+        owner: 'B',
+        sourceInstanceId: foothold,
+        sourceCardId: 'neutral-foothold',
+        count: 1,
+      },
+    ]);
+
+    state = toOutcome(state);
+    const handBeforeOutcome = state.players.B.zones.hand.length;
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice',
+      playerId: 'A',
+      values: [1],
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice',
+      playerId: 'B',
+      values: [6, 6],
+    });
+
+    expect(state.battle?.winner).toBe('B');
+    expect(state.players.B.zones.hand).toHaveLength(handBeforeOutcome + 1);
+    expect(state.battleRuntime?.aftermathDrawEffects).toEqual([]);
+  });
+
   test('Pathfinders gains +1 only when the contested Territory has an active printed effect', () => {
     let active = startBattle('territory-high-ground');
     const activePathfinders = injectHandCard(
