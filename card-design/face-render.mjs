@@ -221,6 +221,9 @@ async function main() {
   document.body.dataset.gameplayAuthority = spec.provenance.gameplay;
   document.body.dataset.visualAuthority = spec.provenance.visual;
   document.body.dataset.faceProductionReady = String(spec.readiness.productionReady);
+  if (spec.artwork?.composition?.id) {
+    document.body.dataset.artDirectionId = spec.artwork.composition.id;
+  }
 
   if (!spec.readiness.productionReady) {
     throw new Error(`Face ${spec.id} is not ready for the clean renderer: ${spec.readiness.issues.join(', ')}.`);
