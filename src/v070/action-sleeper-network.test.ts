@@ -7,7 +7,7 @@ import {
 import { reduceV070TurnAction } from './turn-engine';
 import { v070BindingsForHost } from './bindings';
 import {
-  assertV070ForcedAssetChoicesSupported,
+  removeV070AssetForced,
 } from './assets';
 import { viewV070GameForPlayer } from './views';
 
@@ -242,7 +242,79 @@ describe('v0.7.0 Sleeper Network Action', () => {
     expect(v070BindingsForHost(state, source)).toHaveLength(1);
   });
 
-  test('forced Removal remains explicitly blocked until the later Sleeper Network Asset lifecycle is implemented', () => {
+  test('offers one optional face-down binding at the end of each later turn up to Territory capacity', () => {
+    let state = openingForB();
+    const source = inject(
+      state,
+      'intelligence-sleeper-network',
+      'hand',
+      'source',
+    );
+    const initialBound = inject(
+      state,
+      'neutral-rallying-cry',
+      'hand',
+      'initial-bound',
+    );
+
+    state = reduceV070TurnAction(state, {
+      type: 'play_action_card',
+      playerId: 'B',
+      cardInstanceId: source,
+    });
+    state = reduceV070TurnAction(state, {
+      type: 'choose_sleeper_network_bind_target',
+      playerId: 'B',
+      targetInstanceId: initialBound,
+    });
+
+    state.turnNumber += 2;
+    state.turnState!.phase = 'denouement';
+    const laterBound = inject(
+      state,
+      'neutral-pathfinders',
+      'hand',
+      'later-bound',
+    );
+
+    state = reduceV070TurnAction(state, {
+      type: 'pass_denouement',
+      playerId: 'B',
+    });
+
+    expect(state.pendingSleeperNetworkChoice).toEqual({
+      kind: 'end_turn_bind',
+      playerId: 'B',
+      hostInstanceId: source,
+    });
+
+    state = reduceV070TurnAction(state, {
+      type: 'resolve_sleeper_network_end_turn_bind',
+      playerId: 'B',
+      targetInstanceId: laterBound,
+    });
+
+    expect(v070BindingsForHost(state, source)).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          cardInstanceId: initialBound,
+          faceUp: false,
+        }),
+        expect.objectContaining({
+          cardInstanceId: laterBound,
+          faceUp: false,
+        }),
+      ]),
+    );
+    const opponentView = viewV070GameForPlayer(state, 'A');
+    expect(
+      opponentView.bindings
+        .filter(binding => binding.hostId === source)
+        .every(binding => !('card' in binding)),
+    ).toBe(true);
+  });
+
+  test('normal activation reveals the network and plays every currently legal bound Action without spending more Actions', () => {
     let state = openingForB();
     const source = inject(
       state,
@@ -268,7 +340,94 @@ describe('v0.7.0 Sleeper Network Action', () => {
       targetInstanceId: bound,
     });
 
-    expect(() => assertV070ForcedAssetChoicesSupported(state, 'B'))
-      .toThrow(/sleeper-network.*unsupported/i);
+    state.turnState!.actionsAvailable = 1;
+    state = reduceV070TurnAction(state, {
+      type: 'use_sleeper_network_asset',
+      playerId: 'B',
+      assetInstanceId: source,
+    });
+
+    expect(state.players.B.zones.graveyard).toContain(source);
+    expect(state.pendingSleeperNetworkChoice).toMatchObject({
+      kind: 'bound_action_queue',
+      playerId: 'B',
+      hostInstanceId: source,
+      mode: 'activate',
+      playedCount: 0,
+    });
+    expect(viewV070GameForPlayer(state, 'A').bindings).toEqual([
+      expect.objectContaining({
+        hostId: source,
+        faceUp: true,
+        card: {
+          instanceId: bound,
+          cardId: 'neutral-rallying-cry',
+        },
+      }),
+    ]);
+
+    state = reduceV070TurnAction(state, {
+      type: 'resolve_sleeper_network_bound_action',
+      playerId: 'B',
+      targetInstanceId: bound,
+    });
+
+    expect(state.turnState?.actionsAvailable).toBe(0);
+    expect(state.players.B.zones.discardPile).toContain(bound);
+    expect(state.pendingSleeperNetworkChoice).toBeNull();
+    expect(v070BindingsForHost(state, source)).toEqual([]);
+  });
+
+  test('forced Removal reveals bound cards and immediately plays exactly one legal Action outside the normal Action phases', () => {
+    let state = openingForB();
+    const source = inject(
+      state,
+      'intelligence-sleeper-network',
+      'hand',
+      'source',
+    );
+    const bound = inject(
+      state,
+      'neutral-rallying-cry',
+      'hand',
+      'bound',
+    );
+
+    state = reduceV070TurnAction(state, {
+      type: 'play_action_card',
+      playerId: 'B',
+      cardInstanceId: source,
+    });
+    state = reduceV070TurnAction(state, {
+      type: 'choose_sleeper_network_bind_target',
+      playerId: 'B',
+      targetInstanceId: bound,
+    });
+
+    state.turnState!.phase = 'capture';
+    removeV070AssetForced(
+      state,
+      'B',
+      source,
+      'discard',
+      'test forced Removal',
+    );
+
+    expect(state.players.B.zones.discardPile).toContain(source);
+    expect(state.pendingSleeperNetworkChoice).toMatchObject({
+      kind: 'bound_action_queue',
+      mode: 'removed',
+      playedCount: 0,
+    });
+
+    state = reduceV070TurnAction(state, {
+      type: 'resolve_sleeper_network_bound_action',
+      playerId: 'B',
+      targetInstanceId: bound,
+    });
+
+    expect(state.players.B.zones.discardPile).toContain(bound);
+    expect(state.pendingSleeperNetworkChoice).toBeNull();
+    expect(v070BindingsForHost(state, source)).toEqual([]);
   });
 });
