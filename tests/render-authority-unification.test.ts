@@ -22,7 +22,23 @@ const ttsCatalog = readFileSync('scripts/tts-current-catalog.mjs', 'utf8');
 const cardReference = readFileSync('card-reference/app.js', 'utf8');
 const inspection = readFileSync('card-reference/card-inspection.js', 'utf8');
 const deckbuilderPreview = readFileSync('deckbuilder/rendered-card-preview.js', 'utf8');
+const deckbuilderTerritories = readFileSync('deckbuilder/territories.js', 'utf8');
+const cardDesignReview = readFileSync('card-design/card-review.js', 'utf8');
 const productionPrint = readFileSync('deckbuilder/production-print.js', 'utf8');
+const ttsCardGenerator = readFileSync('scripts/generate-tts-card-assets.mjs', 'utf8');
+const ttsLeaderGenerator = readFileSync('scripts/generate-tts-leader-assets.mjs', 'utf8');
+const ttsTerritoryGenerator = readFileSync('scripts/generate-tts-territory-assets.mjs', 'utf8');
+const ttsSupplementalGenerator = readFileSync('scripts/generate-tts-supplemental-assets.mjs', 'utf8');
+const ttsFinalizedGenerator = readFileSync('scripts/generate-tts-finalized-supplementals.mjs', 'utf8');
+const ttsTrackerCapture = readFileSync('scripts/tts-sliding-trackers.mjs', 'utf8');
+const ttsGeometry = readFileSync('scripts/tts-supplemental-geometry.mjs', 'utf8');
+const currentCardValidator = readFileSync('scripts/validate-current-card-render.mjs', 'utf8');
+const currentTerritoryValidator = readFileSync('scripts/validate-current-territory-render.mjs', 'utf8');
+const proposalValidator = readFileSync('scripts/validate-proposal-card-render.mjs', 'utf8');
+const riteValidator = readFileSync('scripts/validate-rite-card-render.mjs', 'utf8');
+const territoryMobileValidator = readFileSync('scripts/validate-territory-mobile-render.mjs', 'utf8');
+const leaderSpecimens = readFileSync('scripts/render-leader-card-specimens.mjs', 'utf8');
+const backSpecimens = readFileSync('scripts/render-card-back-specimen.mjs', 'utf8');
 
 describe('complete canonical render authority', () => {
   it('makes current-game data the complete default artwork-composition authority', () => {
@@ -103,17 +119,51 @@ describe('complete canonical render authority', () => {
       heightIn: 3.5,
       widthCssPx: 240,
       heightCssPx: 336,
+      widthRasterPx: 400,
+      heightRasterPx: 560,
     });
     expect(PRODUCTION_SURFACES.landscape).toMatchObject({
       widthIn: 3.5,
       heightIn: 2.5,
       widthCssPx: 336,
       heightCssPx: 240,
+      widthRasterPx: 560,
+      heightRasterPx: 400,
     });
     expect(componentRender).toContain('surfaceCssSize(orientation)');
     expect(cardReference).toContain('PRODUCTION_SURFACES');
     expect(inspection).toContain('PRODUCTION_SURFACES');
     expect(deckbuilderPreview).toContain('PRODUCTION_SURFACES.portrait');
+    expect(deckbuilderTerritories).toContain('PRODUCTION_SURFACES.landscape');
+    expect(cardDesignReview).toContain('PRODUCTION_SURFACES.landscape');
+
+    for (const consumer of [
+      ttsCardGenerator,
+      ttsLeaderGenerator,
+      ttsTerritoryGenerator,
+      ttsSupplementalGenerator,
+      ttsFinalizedGenerator,
+      ttsTrackerCapture,
+      ttsGeometry,
+      currentCardValidator,
+      currentTerritoryValidator,
+      proposalValidator,
+      riteValidator,
+      territoryMobileValidator,
+      leaderSpecimens,
+      backSpecimens,
+    ]) {
+      expect(consumer).toContain('../card-design/production-surface.mjs');
+    }
+    for (const generator of [
+      ttsCardGenerator,
+      ttsLeaderGenerator,
+      ttsSupplementalGenerator,
+    ]) {
+      expect(generator).not.toMatch(/const (?:CSS_)?CARD_(?:WIDTH|HEIGHT) = (?:240|336|400|560);/);
+    }
+    expect(ttsTerritoryGenerator).not.toMatch(/const (?:CSS_)?(?:TTS_CARD|TERRITORY)_(?:WIDTH|HEIGHT) = (?:240|336|400|560);/);
+    expect(ttsTrackerCapture).not.toMatch(/const (?:CSS_CARD|PHYSICAL_CARD)_(?:WIDTH|HEIGHT) = (?:2\.5|3\.5|240|336);/);
   });
 
   it('keeps back policy data-driven and card backs on the Card Design render surface', () => {

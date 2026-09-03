@@ -1,7 +1,10 @@
-const SNAP_Y = 0.12;
+import { productionSurface } from '../card-design/production-surface.mjs';
 
-export const STANDARD_CARD_SHORT_EDGE = 2.5;
-export const STANDARD_CARD_LONG_EDGE = 3.5;
+const SNAP_Y = 0.12;
+const PORTRAIT_SURFACE = productionSurface('portrait');
+
+export const STANDARD_CARD_SHORT_EDGE = PORTRAIT_SURFACE.widthIn;
+export const STANDARD_CARD_LONG_EDGE = PORTRAIT_SURFACE.heightIn;
 export const CUSTOM_TILE_CARD_LINEAR_SCALE = 1.5;
 export const ROUNDED_RECTANGLE_TILE_TYPE = 3;
 export const LANDSCAPE_TTS_CELL_ROTATION_DEGREES = 90;

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { PRODUCTION_SURFACES } from '../card-design/production-surface.mjs';
 import {
   CUSTOM_TILE_CARD_LINEAR_SCALE,
   ROUNDED_RECTANGLE_TILE_TYPE,
@@ -10,18 +11,21 @@ import {
 function trackerComponent() {
   return {
     id: 'diplomats-influence-tracker',
-    physicalScale: { cardWidth: 2.5, cardHeight: 3.5 },
+    physicalScale: {
+      cardWidth: PRODUCTION_SURFACES.portrait.widthIn,
+      cardHeight: PRODUCTION_SURFACES.portrait.heightIn,
+    },
     tts: {
-      widthScale: 2.5,
-      heightScale: 3.5,
+      widthScale: PRODUCTION_SURFACES.portrait.widthIn,
+      heightScale: PRODUCTION_SURFACES.portrait.heightIn,
       snapTag: 'gauntlet-tracker-influence',
       // These are actual bottom-to-line fractions from the rendered tracker.
       // The first gap is intentionally larger than subsequent scale spacing.
       snapPoints: [
         { value: 0, rendererTravelPx: 0, registrationFraction: 0 },
-        { value: 1, rendererTravelPx: 51.54688, registrationFraction: 51.54688 / 336 },
-        { value: 2, rendererTravelPx: 74.65625, registrationFraction: 74.65625 / 336 },
-        { value: 3, rendererTravelPx: 97.76563, registrationFraction: 97.76563 / 336 },
+        { value: 1, rendererTravelPx: 51.54688, registrationFraction: 51.54688 / PRODUCTION_SURFACES.portrait.heightCssPx },
+        { value: 2, rendererTravelPx: 74.65625, registrationFraction: 74.65625 / PRODUCTION_SURFACES.portrait.heightCssPx },
+        { value: 3, rendererTravelPx: 97.76563, registrationFraction: 97.76563 / PRODUCTION_SURFACES.portrait.heightCssPx },
       ],
     },
   };
@@ -32,8 +36,8 @@ describe('TTS physical component sizing', () => {
     const component = trackerComponent();
     const presentation = trackerPresentation(component);
 
-    expect(STANDARD_CARD_SHORT_EDGE).toBe(2.5);
-    expect(STANDARD_CARD_LONG_EDGE).toBe(3.5);
+    expect(STANDARD_CARD_SHORT_EDGE).toBe(PRODUCTION_SURFACES.portrait.widthIn);
+    expect(STANDARD_CARD_LONG_EDGE).toBe(PRODUCTION_SURFACES.portrait.heightIn);
     expect(CUSTOM_TILE_CARD_LINEAR_SCALE).toBe(1.5);
     expect(ROUNDED_RECTANGLE_TILE_TYPE).toBe(3);
 

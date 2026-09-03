@@ -13,22 +13,21 @@ import {
   resolveStandardBackFile,
 } from './tts-component-contract.mjs';
 import { LANDSCAPE_TTS_CELL_ROTATION_DEGREES } from './tts-supplemental-geometry.mjs';
+import {
+  surfaceCssPixels,
+  surfaceDeviceScale,
+  surfaceRasterPixels,
+} from '../card-design/production-surface.mjs';
 
-// Territory artwork is authored and exported landscape at 560x400. TTS custom
-// cards derive their physical aspect from the card-sheet cell, so the hosted
-// sheet uses the same 400x560 portrait cells as ordinary Gauntlet cards and
-// quarter-turns the landscape Territory artwork +90 degrees inside that portrait cell so
-// TTS's native sideways-card orientation reads upright in player hands. Seat/camera
-// orientation is handled separately by native Hand transforms; Territory Y rotation
-// remains gameplay state for control.
-const TERRITORY_WIDTH = 560;
-const TERRITORY_HEIGHT = 400;
-const TTS_CARD_WIDTH = 400;
-const TTS_CARD_HEIGHT = 560;
-const CSS_TERRITORY_WIDTH = 336;
-const CSS_TERRITORY_HEIGHT = 240;
-const CSS_TTS_CARD_WIDTH = 240;
-const CSS_TTS_CARD_HEIGHT = 336;
+// Territory artwork is authored/exported on the canonical landscape production
+// surface. TTS custom cards still use the canonical portrait card cell and
+// quarter-turn the landscape raster +90 degrees inside that cell so native
+// SidewaysCard presentation reads upright in player hands.
+const { width: TERRITORY_WIDTH, height: TERRITORY_HEIGHT } = surfaceRasterPixels('landscape');
+const { width: TTS_CARD_WIDTH, height: TTS_CARD_HEIGHT } = surfaceRasterPixels('portrait');
+const { width: CSS_TERRITORY_WIDTH, height: CSS_TERRITORY_HEIGHT } = surfaceCssPixels('landscape');
+const { width: CSS_TTS_CARD_WIDTH, height: CSS_TTS_CARD_HEIGHT } = surfaceCssPixels('portrait');
+const TERRITORY_DEVICE_SCALE_FACTOR = surfaceDeviceScale('landscape');
 const SHEET_COLUMNS = 7;
 const SHEET_ROWS = 4;
 const HIDDEN_SLOT = SHEET_COLUMNS * SHEET_ROWS - 1;
@@ -165,7 +164,7 @@ async function renderTerritories(catalog, componentContract) {
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
     viewport: { width: 620, height: 500 },
-    deviceScaleFactor: TERRITORY_WIDTH / CSS_TERRITORY_WIDTH,
+    deviceScaleFactor: TERRITORY_DEVICE_SCALE_FACTOR,
   });
   const page = await context.newPage();
 

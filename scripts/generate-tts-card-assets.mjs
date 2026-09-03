@@ -13,11 +13,15 @@ import {
   loadTtsComponentContract,
   resolveStandardBackFile,
 } from './tts-component-contract.mjs';
+import {
+  surfaceCssPixels,
+  surfaceDeviceScale,
+  surfaceRasterPixels,
+} from '../card-design/production-surface.mjs';
 
-const CARD_WIDTH = 400;
-const CARD_HEIGHT = 560;
-const CSS_CARD_WIDTH = 240;
-const CSS_CARD_HEIGHT = 336;
+const { width: CARD_WIDTH, height: CARD_HEIGHT } = surfaceRasterPixels('portrait');
+const { width: CSS_CARD_WIDTH, height: CSS_CARD_HEIGHT } = surfaceCssPixels('portrait');
+const DEVICE_SCALE_FACTOR = surfaceDeviceScale('portrait');
 const SHEET_COLUMNS = 10;
 const SHEET_ROWS = 7;
 const HIDDEN_SLOT = SHEET_COLUMNS * SHEET_ROWS - 1;
@@ -188,7 +192,7 @@ async function renderAssets(catalog, componentContract) {
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
     viewport: { width: 520, height: 700 },
-    deviceScaleFactor: CARD_WIDTH / CSS_CARD_WIDTH,
+    deviceScaleFactor: DEVICE_SCALE_FACTOR,
   });
   const page = await context.newPage();
 

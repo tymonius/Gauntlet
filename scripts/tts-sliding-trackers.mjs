@@ -1,7 +1,12 @@
-const CSS_CARD_WIDTH = 240;
-const CSS_CARD_HEIGHT = 336;
-const PHYSICAL_CARD_WIDTH = 2.5;
-const PHYSICAL_CARD_HEIGHT = 3.5;
+import {
+  productionSurface,
+  surfaceCssPixels,
+} from '../card-design/production-surface.mjs';
+
+const PORTRAIT_SURFACE = productionSurface('portrait');
+const { width: CSS_CARD_WIDTH, height: CSS_CARD_HEIGHT } = surfaceCssPixels('portrait');
+const PHYSICAL_CARD_WIDTH = PORTRAIT_SURFACE.widthIn;
+const PHYSICAL_CARD_HEIGHT = PORTRAIT_SURFACE.heightIn;
 
 function round(value, places = 6) {
   const factor = 10 ** places;

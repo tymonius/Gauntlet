@@ -15,8 +15,12 @@
     selectedId: null,
     pending: null,
   };
-  const TERRITORY_WIDTH = 336;
-  const TERRITORY_HEIGHT = 240;
+  let TERRITORY_WIDTH = 0;
+  let TERRITORY_HEIGHT = 0;
+  const territorySurfaceReady = import('../card-design/production-surface.mjs').then(({ PRODUCTION_SURFACES }) => {
+    TERRITORY_WIDTH = PRODUCTION_SURFACES.landscape.widthCssPx;
+    TERRITORY_HEIGHT = PRODUCTION_SURFACES.landscape.heightCssPx;
+  });
   const MAX_TERRITORY_PREVIEW_WIDTH = 360;
 
   const territoryElements = {};
@@ -41,7 +45,8 @@
 
   document.addEventListener("DOMContentLoaded", installTerritoryIntegration);
 
-  function installTerritoryIntegration() {
+  async function installTerritoryIntegration() {
+    await territorySurfaceReady;
     for (const id of [
       "territoryMetricCount", "territoryRequiredCount", "territorySearch", "territoryCategory", "territoryAvailableCount",
       "territoryList", "territoryPreview", "clearTerritoriesButton", "deckTerritories"

@@ -3,13 +3,12 @@ import { mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { extname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadCurrentGameAuthority } from './current-game-authority.mjs';
+import { surfaceCssPixels } from '../card-design/production-surface.mjs';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const OUTPUT = join(ROOT, 'card-design', 'generated', 'leaders');
-const CARD_WIDTH = 240;
-const CARD_HEIGHT = 336;
-const TERRITORY_WIDTH = 336;
-const TERRITORY_HEIGHT = 240;
+const { width: CARD_WIDTH, height: CARD_HEIGHT } = surfaceCssPixels('portrait');
+const { width: TERRITORY_WIDTH, height: TERRITORY_HEIGHT } = surfaceCssPixels('landscape');
 
 function slugify(value) {
   return String(value).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
