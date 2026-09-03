@@ -147,6 +147,7 @@
         state.leaderId = leader.id;
         saveState();
         renderChoice();
+        focusSelectedLeader(leader.id);
       });
 
       const portrait = document.createElement("img");
@@ -176,6 +177,12 @@
       : faction.summary;
     renderStarterPreview(selectedStarterDeck());
     syncPrintAction();
+  }
+
+  function focusSelectedLeader(leaderId) {
+    const target = [...el.leaderChoices.querySelectorAll('input[name="leader"]')]
+      .find(input => input.value === leaderId);
+    target?.focus({ preventScroll: true });
   }
 
   async function loadCurrentAuthority() {
