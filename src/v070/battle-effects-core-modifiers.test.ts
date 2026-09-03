@@ -368,6 +368,59 @@ describe('v0.7.0 core battle-effect modifiers', () => {
     expect(state.battleRuntime?.aftermathDrawEffects).toEqual([]);
   });
 
+  test('Accursed Wager battle text reuses the existing losing-player Aftermath discard queue', () => {
+    let state = startBattle();
+    const wager = injectHandCard(
+      state,
+      'A',
+      'mystics-accursed-wager',
+      'battle-wager',
+    );
+    const target = state.players.B.zones.hand[0];
+
+    state = revealGambits(state, wager);
+    expect(state.battleRuntime?.stage).toBe('choose_tactics');
+    expect(state.battleRuntime?.unsupportedEffects).toEqual([]);
+    expect(state.battleRuntime?.battleAccursedWagerInstanceIds)
+      .toEqual([wager]);
+
+    state = toOutcome(state);
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice',
+      playerId: 'A',
+      values: [6],
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice',
+      playerId: 'B',
+      values: [1],
+    });
+    expect(state.battle?.loser).toBe('B');
+
+    state = reduceV070BattleAction(state, {
+      type: 'complete_aftermath',
+      playerId: 'A',
+    });
+
+    expect(state.battleRuntime?.pendingAccursedWager).toEqual({
+      loser: 'B',
+      remainingSourceActionInstanceIds: [wager],
+      immediateWinner: null,
+    });
+
+    state = reduceV070BattleAction(state, {
+      type: 'resolve_accursed_wager_discard',
+      playerId: 'B',
+      cardInstanceId: target,
+    });
+
+    expect(state.players.B.zones.hand).not.toContain(target);
+    expect(state.players.B.zones.graveyard).toContain(target);
+    expect(state.battleRuntime).toBeNull();
+    expect(state.battle).toBeNull();
+    expect(state.players.A.zones.graveyard).toContain(wager);
+  });
+
   test('Pathfinders gains +1 only when the contested Territory has an active printed effect', () => {
     let active = startBattle('territory-high-ground');
     const activePathfinders = injectHandCard(
