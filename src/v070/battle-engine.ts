@@ -18,7 +18,11 @@ import {
   completeV070RelentlessPursuitTransition,
   drawV070Cards,
 } from './turn-engine';
-import { resolveV070SupportedRevealEffects } from './battle-effects';
+import {
+  applyV070BattleCardAdditionalRetreats,
+  resolveV070SupportedRevealEffects,
+  resolveV070UnbrokenRanksCommand,
+} from './battle-effects';
 import {
   activeV070OverlayAtBattleOnset,
   resolveV070OverlayAfterBattle,
@@ -1430,7 +1434,9 @@ function finalizeOutcome(
   completeV070MysticBloodAfterBattleWin(state, outcome.winner);
   resolveV070MysticRitualVictory(state, outcome.winner);
   gainV070MilitaryCommandForBattleWin(state, outcome.winner);
+  resolveV070UnbrokenRanksCommand(state, outcome.winner);
   applyV070NoQuarterAdditionalRetreat(state);
+  applyV070BattleCardAdditionalRetreats(state);
   openBattlePositionChangeSanctions(state, state.battle.positions);
   runtime.pendingOutcome = null;
   runtime.stage = 'aftermath';
