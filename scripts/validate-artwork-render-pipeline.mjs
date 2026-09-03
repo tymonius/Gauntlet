@@ -7,65 +7,97 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
 const contracts = [
   {
-    path: 'card-design/card-review-render.js',
+    path: 'card-design/face-render.mjs',
     requires: [
-      'loadRenderContext',
-      '/card-design/artwork-crop.js',
-      '/card-design/playable-card-renderer.js',
-      'renderContext.artDirectionFor(card.id)',
+      'loadRenderGame',
+      'resolveFaceSpec',
+      'rendererForTemplate(spec.template)',
+      'await applyCanonicalArtwork(spec, result)',
     ],
   },
   {
-    path: 'card-design/territory-review-render.js',
-    requires: [
-      'loadRenderContext',
-      '/card-design/artwork-crop.js',
-      '/card-design/territory-card-renderer.js',
-      'renderContext.artDirectionFor(territory.id)',
-    ],
+    path: 'card-design/card-review.js',
+    requires: ['/card-design/face-render.html?id='],
   },
   {
-    path: 'card-design/component-render.js',
-    requires: [
-      'loadCanonicalRenderContext',
-      'renderContext.artDirectionFor(artworkId)',
-      'surfaceCssSize(orientation)',
-      'await applyCanonicalArtworkDirection(card)',
-    ],
+    path: 'card-design/proposal-card.js',
+    requires: ['/card-design/face-render.html?id='],
   },
   {
-    path: 'card-design/component-render.html',
-    requires: ['/card-design/artwork-crop.js'],
+    path: 'card-design/rite-card.js',
+    requires: ['/card-design/face-render.html?id='],
   },
   {
-    path: 'tts/renderer/index.html',
-    requires: ['/card-design/card-review-render.html'],
-  },
-  {
-    path: 'tts/territory-renderer/index.html',
-    requires: ['/card-design/territory-review-render.html'],
-  },
-  {
-    path: 'tts/supplemental-renderer/index.html',
-    requires: ['/card-design/component-render.html'],
-  },
-  {
-    path: 'tts/finalized-supplemental-renderer/index.html',
-    requires: ['/card-design/component-render.html'],
-  },
-  {
-    path: 'tts/back-renderer/index.html',
-    requires: ['/card-design/card-back-render.html'],
+    path: 'card-design/supplemental-card.js',
+    requires: ['/card-design/face-render.html?id='],
   },
   {
     path: 'card-reference/app.js',
     requires: [
-      '../card-design/card-review-render.html?card=',
-      '../card-design/territory-review-render.html?territory=',
-      '../card-design/component-render.html?',
+      '../card-design/face-render.html?id=',
       'PRODUCTION_SURFACES',
     ],
   },
+  {
+    path: 'deckbuilder/production-print.js',
+    requires: ['/card-design/face-render.html?id='],
+  },
+  {
+    path: 'deckbuilder/rendered-card-preview.js',
+    requires: ['../card-design/face-render.html?id='],
+  },
+  {
+    path: 'deckbuilder/territories.js',
+    requires: ['../card-design/face-render.html?id='],
+  },
+  {
+    path: 'scripts/generate-tts-card-assets.mjs',
+    requires: ['/card-design/face-render.html?id='],
+  },
+  {
+    path: 'scripts/generate-tts-leader-assets.mjs',
+    requires: ['/card-design/face-render.html'],
+  },
+  {
+    path: 'scripts/generate-tts-territory-assets.mjs',
+    requires: ['/card-design/face-render.html?id='],
+  },
+  {
+    path: 'scripts/generate-tts-supplemental-assets.mjs',
+    requires: ['/card-design/face-render.html'],
+  },
+  {
+    path: 'scripts/generate-tts-finalized-supplementals.mjs',
+    requires: ['/card-design/face-render.html'],
+  },
+  {
+    path: 'scripts/tts-sliding-trackers.mjs',
+    requires: ['/card-design/face-render.html'],
+  },
+];
+
+const productionConsumers = [
+  'card-design/card-review.js',
+  'card-design/proposal-card.js',
+  'card-design/rite-card.js',
+  'card-design/supplemental-card.js',
+  'card-reference/app.js',
+  'deckbuilder/production-print.js',
+  'deckbuilder/rendered-card-preview.js',
+  'deckbuilder/territories.js',
+  'scripts/generate-tts-card-assets.mjs',
+  'scripts/generate-tts-leader-assets.mjs',
+  'scripts/generate-tts-territory-assets.mjs',
+  'scripts/generate-tts-supplemental-assets.mjs',
+  'scripts/generate-tts-finalized-supplementals.mjs',
+  'scripts/tts-sliding-trackers.mjs',
+];
+
+const retiredProductionRoutes = [
+  'card-review-render.html?',
+  'territory-review-render.html?',
+  'component-render.html?',
+  'card-back-render.html?',
 ];
 
 const failures = [];
@@ -74,6 +106,15 @@ for (const contract of contracts) {
   for (const required of contract.requires) {
     if (!source.includes(required)) {
       failures.push(`${contract.path} must consume canonical render authority via ${required}`);
+    }
+  }
+}
+
+for (const path of productionConsumers) {
+  const source = await readFile(join(ROOT, path), 'utf8');
+  for (const retired of retiredProductionRoutes) {
+    if (source.includes(retired)) {
+      failures.push(`${path} still depends on retired production route ${retired}`);
     }
   }
 }
@@ -87,4 +128,4 @@ if (failures.length) {
 
 console.log('Artwork render pipeline contract passed.');
 console.log('Card Design owns face rendering, artwork composition, and physical card geometry.');
-console.log('Card Reference, Deckbuilder, and TTS consume canonical render surfaces.');
+console.log('Card Design review, Card Reference, Deckbuilder, printing, and TTS consume the unified canonical face route.');

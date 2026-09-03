@@ -480,27 +480,10 @@ function generatedReverseFileFor(record) {
   return `supplementals/reverses/${record.id}.png`;
 }
 
-function productionComponentRequest(record) {
-  if (record.renderer === 'reference-card') {
-    return { kind: 'reference', id: record.id };
-  }
-  if (record.renderer === 'rite-card') {
-    return { kind: 'rite', id: String(record.id).replace(/^mystics-rite-/, '') };
-  }
-  if (record.renderer === 'ritual-card') {
-    return { kind: 'ritual', id: String(record.id).replace(/^mystics-ritual-of-/, '') };
-  }
-  throw new Error(`No card-design production component request for ${record.id} (${record.renderer}).`);
-}
-
 async function captureCard(page, baseUrl, record, side, outputPath, displayVersion) {
-  const request = productionComponentRequest(record);
-  const url = new URL('/card-design/component-render.html', baseUrl);
-  url.searchParams.set('kind', request.kind);
-  url.searchParams.set('id', request.id);
-  url.searchParams.set('side', side);
-  url.searchParams.set('orientation', 'portrait');
-  if (displayVersion) url.searchParams.set('version', displayVersion);
+  void displayVersion;
+  const url = new URL('/card-design/face-render.html', baseUrl);
+  url.searchParams.set('id', `component:${record.id}:${side}`);
 
   await page.goto(url.toString(), { waitUntil: 'load' });
   await page.waitForSelector('#renderTarget > .gauntlet-card');

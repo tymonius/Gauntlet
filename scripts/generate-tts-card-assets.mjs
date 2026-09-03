@@ -120,7 +120,7 @@ async function validateRenderedCard(page, card) {
 
 async function renderProductionBack(page, baseUrl, outputRoot, faction) {
   await page.setViewportSize({ width: 520, height: 700 });
-  await page.goto(`${baseUrl}/card-design/card-back-render.html?faction=${encodeURIComponent(faction)}`, { waitUntil: 'load' });
+  await page.goto(`${baseUrl}/card-design/face-render.html?id=${encodeURIComponent(`back:${faction}`)}`, { waitUntil: 'load' });
   const back = page.locator('.gauntlet-card-back');
   await back.waitFor();
   await page.waitForFunction(
@@ -200,7 +200,7 @@ async function renderAssets(catalog, componentContract) {
     let fontsValidated = false;
     for (const card of catalog.playableCards) {
       await page.setViewportSize({ width: 520, height: 700 });
-      await page.goto(`${baseUrl}/card-design/card-review-render.html?fit=production&card=${encodeURIComponent(card.id)}&version=${encodeURIComponent(release.displayVersion || release.version)}`, { waitUntil: 'load' });
+      await page.goto(`${baseUrl}/card-design/face-render.html?id=${encodeURIComponent(`card:${card.id}`)}`, { waitUntil: 'load' });
       await page.waitForSelector('.gauntlet-card');
       await page.waitForFunction(() => document.body.dataset.renderReady === 'true');
 

@@ -2,6 +2,16 @@ import { loadCurrentGame } from '../game-data/current-game.mjs';
 
 let renderContextPromise = null;
 
+function publishTopLevelRenderBridge(game) {
+  if (typeof window === 'undefined' || window !== window.top) return;
+  const requested = new URLSearchParams(window.location.search).get('rules');
+  window.__gauntletProductionAuthorityBridge = Object.freeze({
+    rulesetMode: requested === 'released' ? 'released' : 'candidate',
+    renderMode: 'preview',
+    runtime: game,
+  });
+}
+
 function freezeContext(game) {
   const context = {
     game,
@@ -24,7 +34,10 @@ export function loadRenderContext() {
     // loadCurrentGame() already resolves the requested rules= mode and uses the
     // Deckbuilder production authority bridge when present.
     renderContextPromise = loadCurrentGame()
-      .then(freezeContext)
+      .then(game => {
+        publishTopLevelRenderBridge(game);
+        return freezeContext(game);
+      })
       .catch(error => {
         renderContextPromise = null;
         throw error;

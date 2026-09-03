@@ -50,12 +50,13 @@ describe("Deckbuilder current Leader printing", () => {
     expect(componentRenderJs).toContain('card.dataset.artDirectionApplied = "css-default"');
   });
 
-  it("renders the selected Leader directly through the current production component renderer", () => {
+  it("renders the selected Leader through the unified canonical face route", () => {
     expect(printTransform).toContain("function renderProductionLeaderHtml(faction, leader)");
     expect(printTransform).toContain('currentGame.findLeader?.(factionId, leaderId)');
     expect(printTransform).toContain('kind: "leader"');
-    expect(printTransform).toContain('id: `${factionId}-${canonicalLeader.id}`');
-    expect(printTransform).toContain('/card-design/component-render.html?kind=');
+    expect(printTransform).toContain('faceId: `leader:${factionId}-${canonicalLeader.id}`');
+    expect(printTransform).toContain('/card-design/face-render.html?id=');
+    expect(printTransform).not.toContain('/card-design/component-render.html?kind=');
     expect(printTransform).not.toContain("replaceProductionLeader");
   });
 

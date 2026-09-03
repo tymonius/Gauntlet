@@ -26,16 +26,17 @@ const ttsLeaders = readFileSync("scripts/generate-tts-leader-assets.mjs", "utf8"
 const ttsSupplementals = readFileSync("scripts/generate-tts-supplemental-assets.mjs", "utf8");
 
 describe("single Card Design render authority", () => {
-  it("uses one canonical embedded face route for each physical face family", () => {
-    expect(productionPrint).toContain("/card-design/card-review-render.html?card=");
-    expect(productionPrint).toContain("/card-design/territory-review-render.html?territory=");
-    expect(productionPrint).toContain("/card-design/component-render.html?kind=");
+  it("uses one canonical embedded face route for every physical face", () => {
+    expect(productionPrint).toContain("/card-design/face-render.html?id=");
+    expect(productionPrint).not.toContain("/card-design/card-review-render.html?card=");
+    expect(productionPrint).not.toContain("/card-design/territory-review-render.html?territory=");
+    expect(productionPrint).not.toContain("/card-design/component-render.html?kind=");
     expect(productionPrint).not.toContain("/card-design/card-print-render.html?card=");
     expect(productionPrint).not.toContain("/card-design/territory-print-render.html?territory=");
     expect(productionPrint).not.toContain("/card-design/component-print-render.html?kind=");
 
-    expect(ttsLeaders).toContain("/card-design/component-render.html");
-    expect(ttsSupplementals).toContain("/card-design/component-render.html");
+    expect(ttsLeaders).toContain("/card-design/face-render.html");
+    expect(ttsSupplementals).toContain("/card-design/face-render.html");
   });
 
   it("makes the /card-design catalog consume the same canonical component frames", () => {
@@ -44,18 +45,18 @@ describe("single Card Design render authority", () => {
     expect(catalog).toContain('id="riteReviewSections"');
     expect(catalog).toContain('id="supplementalReviewSections"');
 
-    expect(cardReview).toContain("/card-design/component-render.html?");
-    expect(cardReview).toContain("componentReviewFrame('leader'");
-    expect(proposalDesign).toContain("/card-design/component-render.html?");
-    expect(proposalDesign).toContain("componentReviewFrame(proposal.id");
-    expect(riteDesign).toContain("/card-design/component-render.html?");
-    expect(riteDesign).toContain("componentReviewFrame('rite'");
-    expect(riteDesign).toContain("componentReviewFrame('ritual'");
-    expect(supplementalDesign).toContain("/card-design/component-render.html?");
+    expect(cardReview).toContain("/card-design/face-render.html?id=");
+    expect(cardReview).toContain("faceReviewFrame(`leader:");
+    expect(proposalDesign).toContain("/card-design/face-render.html?id=");
+    expect(proposalDesign).toContain("component:diplomats-proposal-");
+    expect(riteDesign).toContain("/card-design/face-render.html?id=");
+    expect(riteDesign).toContain("mystics-rite-");
+    expect(riteDesign).toContain("mystics-ritual-of-");
+    expect(supplementalDesign).toContain("/card-design/face-render.html?id=");
     expect(supplementalDesign).toContain("canonicalComponentFrame(component");
   });
 
-  it("keeps all component construction and fitting inside the canonical component renderer", () => {
+  it("keeps the historical component renderer intact as the Stage 4/Stage 6 comparison oracle", () => {
     for (const dependency of [
       "leader-card.css",
       "proposal-card.css",
@@ -82,7 +83,7 @@ describe("single Card Design render authority", () => {
     expect(compositor).toContain("kind: territoryId ? 'territory' : componentId ? 'component' : 'card'");
   });
 
-  it("retains legacy print URLs only as redirects to canonical face routes", () => {
+  it("retains legacy print URLs only as redirects to historical family routes until Stage 6", () => {
     expect(cardLegacyAlias).toContain("/card-design/card-review-render.html");
     expect(componentLegacyAlias).toContain("/card-design/component-render.html");
     expect(territoryLegacyAlias).toContain("/card-design/territory-review-render.html");
@@ -93,8 +94,9 @@ describe("single Card Design render authority", () => {
   });
 
 
-  it("removes internal consumers and parallel TTS face implementations", () => {
-    expect(cardReference).toContain("../card-design/component-render.html?");
+  it("moves internal consumers to face-render while retaining redirect-only TTS compatibility shells", () => {
+    expect(cardReference).toContain("../card-design/face-render.html?id=");
+    expect(cardReference).not.toContain("../card-design/component-render.html?");
     expect(cardReference).not.toContain("component-print-render.html");
 
     expect(playableRenderPage).toContain("/card-design/playable-card-renderer.css");

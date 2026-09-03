@@ -57,6 +57,7 @@
     if (!runtime) return;
     window.__gauntletProductionAuthorityBridge = {
       rulesetMode: ${JSON.stringify(rulesetMode)},
+      renderMode: 'print',
       runtime,
     };
   } catch (error) {
@@ -119,6 +120,7 @@
       side: "front",
       backPolicy: "standardBack",
       componentId: `leader:${factionId}:${canonicalLeader.id}`,
+      faceId: `leader:${factionId}-${canonicalLeader.id}`,
     });
   }
 
@@ -144,7 +146,7 @@
 
   function productionComponentSource(componentId, side = "front") {
     const descriptor = productionComponentDescriptor(componentId);
-    return productionFrameSource({ ...descriptor, side });
+    return productionFrameSource({ ...descriptor, componentId, side });
   }
 
   function renderProductionComponentHtml(componentId, side = "front") {
@@ -194,11 +196,11 @@
   }
 
   function productionCardSource(cardId) {
-    return `/card-design/card-review-render.html?card=${encodeURIComponent(cardId)}&fit=production&printArtwork=normalized&rules=${encodeURIComponent(selectedRulesetMode())}`;
+    return `/card-design/face-render.html?id=${encodeURIComponent(`card:${cardId}`)}`;
   }
 
   function productionTerritorySource(territoryId) {
-    return `/card-design/territory-review-render.html?territory=${encodeURIComponent(territoryId)}&rules=${encodeURIComponent(selectedRulesetMode())}`;
+    return `/card-design/face-render.html?id=${encodeURIComponent(`territory:${territoryId}`)}`;
   }
 
   function productionCardHtml(card) {
@@ -266,14 +268,18 @@
 
   function productionFrameSource(options) {
     if (options.kind === "external") return options.src;
-    const orientation = options.orientation === "landscape" ? "&orientation=landscape" : "";
-    return `/card-design/component-render.html?kind=${encodeURIComponent(options.kind)}&id=${encodeURIComponent(options.id)}&side=${encodeURIComponent(options.side || "front")}${orientation}&rules=${encodeURIComponent(selectedRulesetMode())}`;
+    const side = options.side || "front";
+    const faceId = String(options.faceId || (
+      options.componentId ? `component:${options.componentId}:${side}` : ""
+    )).trim();
+    if (!faceId) throw new Error("Production component has no canonical face id.");
+    return `/card-design/face-render.html?id=${encodeURIComponent(faceId)}`;
   }
 
   function productionBackSource(faction, rotation = null) {
     const safeFaction = String(faction || "intelligence").trim().toLowerCase() || "intelligence";
-    const rotationParam = rotation == null ? "" : `&rotation=${encodeURIComponent(String(rotation))}`;
-    return `/card-design/card-back-render.html?faction=${encodeURIComponent(safeFaction)}${rotationParam}`;
+    void rotation;
+    return `/card-design/face-render.html?id=${encodeURIComponent(`back:${safeFaction}`)}`;
   }
 
   function makeProductionComponent(documentNode, options) {

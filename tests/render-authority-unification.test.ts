@@ -169,9 +169,11 @@ describe('complete canonical render authority', () => {
     expect(ttsTrackerCapture).not.toMatch(/const (?:CSS_CARD|PHYSICAL_CARD)_(?:WIDTH|HEIGHT) = (?:2\.5|3\.5|240|336);/);
   });
 
-  it('keeps back policy data-driven and card backs on the Card Design render surface', () => {
+  it('keeps back policy data-driven and card backs on the unified face surface', () => {
     expect(productionPrint).toContain('component.backPolicy || "standardBack"');
-    expect(productionPrint).toContain('/card-design/card-back-render.html?faction=');
+    expect(productionPrint).toContain('/card-design/face-render.html?id=');
+    expect(productionPrint).toContain('back:');
+    expect(productionPrint).not.toContain('/card-design/card-back-render.html?faction=');
     expect(productionPrint).not.toContain('/tts/back-renderer/index.html?faction=');
   });
 });

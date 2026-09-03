@@ -23,10 +23,6 @@ export function buildReadyTrackerRecord(component, renderer = 'sliding-tracker')
   if (component.tts.snapPositions !== 'renderer-derived') {
     throw new Error(`Ready tracker ${component.id} must derive snap registration from the production renderer.`);
   }
-  if (!component.renderSource?.componentId) {
-    throw new Error(`Ready tracker ${component.id} has no production component id.`);
-  }
-
   return {
     id: component.id,
     name: component.name,
@@ -53,15 +49,9 @@ export function buildReadyTrackerRecord(component, renderer = 'sliding-tracker')
 }
 
 export async function captureProductionTracker(page, baseUrl, record, outputPath, displayVersion = '') {
-  const componentId = String(record.renderSource?.componentId || '').trim();
-  if (!componentId) throw new Error(`Tracker ${record.id} has no production component id.`);
-
-  const url = new URL('/card-design/component-render.html', baseUrl);
-  url.searchParams.set('kind', 'tracker');
-  url.searchParams.set('id', componentId);
-  url.searchParams.set('side', 'front');
-  url.searchParams.set('orientation', 'portrait');
-  if (displayVersion) url.searchParams.set('version', displayVersion);
+  void displayVersion;
+  const url = new URL('/card-design/face-render.html', baseUrl);
+  url.searchParams.set('id', `component:${record.id}:front`);
   await page.goto(url.toString(), { waitUntil: 'load' });
   await page.waitForFunction(() => (
     document.body.dataset.renderReady === 'true'

@@ -18,15 +18,13 @@ function esc(value) {
   })[character]);
 }
 
-function componentRenderSource(id, side = 'front') {
-  const params = new URLSearchParams({ kind: 'proposal', id, side });
-  const rules = new URLSearchParams(window.location.search).get('rules');
-  if (rules) params.set('rules', rules);
-  return `/card-design/component-render.html?${params.toString()}`;
+function faceRenderSource(id, side = 'front') {
+  const faceId = `component:diplomats-proposal-${id}:${side}`;
+  return `/card-design/face-render.html?id=${encodeURIComponent(faceId)}`;
 }
 
 function componentReviewFrame(id, label, side = 'front') {
-  return `<iframe class="component-review-frame" loading="lazy" src="${esc(componentRenderSource(id, side))}" title="${esc(label)} canonical Card Design render"></iframe>`;
+  return `<iframe class="component-review-frame" loading="lazy" src="${esc(faceRenderSource(id, side))}" title="${esc(label)} canonical Card Design render"></iframe>`;
 }
 
 function ruleSection(label, text) {

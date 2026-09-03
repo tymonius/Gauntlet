@@ -7,8 +7,8 @@ import {
 } from '../card-design/print-artwork-normalizer.js';
 
 const normalizer = readFileSync('card-design/print-artwork-normalizer.js', 'utf8');
-const cardSurface = readFileSync('card-design/card-review-render.js', 'utf8');
-const renderer = readFileSync('card-design/playable-card-renderer.js', 'utf8');
+const faceRender = readFileSync('card-design/face-render.mjs', 'utf8');
+const playableTemplate = readFileSync('card-design/face-templates/playable.mjs', 'utf8');
 const printTransform = readFileSync('deckbuilder/production-print.js', 'utf8');
 const deployPages = readFileSync('.github/workflows/deploy-pages.yml', 'utf8');
 
@@ -23,11 +23,15 @@ describe('printer-friendly playable artwork normalization', () => {
   });
 
   it('resolves canonical crop first, then swaps only the raster payload to lossless sRGB PNG', () => {
-    expect(printTransform).toContain('printArtwork=normalized');
-    expect(cardSurface).toContain('installPrintArtworkFinalizer()');
-    expect(cardSurface).toContain('await resolveFirstArtwork(card, faction, imageExists)');
-    expect(renderer).toContain("GauntletArtworkCrop?.apply");
-    expect(renderer).toContain('window.GAUNTLET_RENDER_FINALIZE');
+    expect(printTransform).toContain("renderMode: 'print'");
+    expect(printTransform).not.toContain('printArtwork=normalized');
+    expect(playableTemplate).toContain("printArtwork: 'normalized'");
+    expect(faceRender).toContain('await applyCanonicalArtwork(spec, result)');
+    expect(faceRender).toContain('await applyPrintPreparation(preparation, result)');
+    expect(faceRender.indexOf('await applyCanonicalArtwork(spec, result)')).toBeLessThan(
+      faceRender.indexOf('await applyPrintPreparation(preparation, result)')
+    );
+    expect(faceRender).toContain("await import('./print-artwork-normalizer.js')");
     expect(normalizer).toContain('cropSnapshot(artImage)');
     expect(normalizer).toContain('restoreCrop(artImage, snapshot)');
     expect(normalizer).toContain("'image/png'");
@@ -39,6 +43,6 @@ describe('printer-friendly playable artwork normalization', () => {
   it('does not add a second tracked or Pages-hosted card-art source', () => {
     expect(deployPages).not.toContain('images/print-artwork');
     expect(deployPages).not.toContain('print:artwork');
-    expect(cardSurface).not.toContain('/images/print-artwork/cards/');
+    expect(faceRender).not.toContain('/images/print-artwork/cards/');
   });
 });
