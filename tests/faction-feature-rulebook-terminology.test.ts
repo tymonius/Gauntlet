@@ -6,29 +6,74 @@ const rulebook = read('rulebook/player-facing/current-rulebook.md');
 const currentGame = JSON.parse(read('game-data/current-game.json'));
 
 describe('Faction Feature Rulebook terminology', () => {
-  it('keeps the maintained Rulebook aligned with the current component taxonomy', () => {
+  const chapterHeadings: Record<string, string> = {
+    military: '# 13. Military',
+    diplomats: '# 14. Diplomats',
+    financiers: '# 15. Financiers',
+    intelligence: '# 16. Intelligence',
+    mystics: '# 17. Mystics',
+    inquisition: '# 18. Inquisition',
+  };
+
+  function factionFeatureSection(faction: string) {
+    const chapter = chapterHeadings[faction];
+    const chapterStart = rulebook.indexOf(chapter);
+    expect(chapterStart).toBeGreaterThanOrEqual(0);
+    const featureStart = rulebook.indexOf('## Faction Features', chapterStart);
+    const componentsStart = rulebook.indexOf('## Components and setup', featureStart);
+    expect(featureStart).toBeGreaterThan(chapterStart);
+    expect(componentsStart).toBeGreaterThan(featureStart);
+    return rulebook.slice(featureStart, componentsStart);
+  }
+
+  it('lists every structured shared Faction Feature in its faction chapter using one consistent descriptor format', () => {
     expect(rulebook).toContain('# 5. Actions, Faction Features, Leader Abilities, and Assets');
     expect(rulebook).toContain('A **Faction Feature** is a named rule, option, procedure, passive effect, or special mechanic shared by a faction.');
     expect(rulebook).toContain('A **Leader Ability** is supplied specifically by your chosen Leader.');
     expect(rulebook).toContain('**1 Action**, **No Action**, or **Automatic**');
 
-    expect(rulebook).toContain('Names such as **Terms**, **Purge**, **Mission**, **Rite**, and **Surveillance**');
-    expect(rulebook).toContain('Terms are a Diplomat Faction Feature used during Onset');
+    for (const [faction, features] of Object.entries(currentGame.factionFeatures) as [string, any[]][]) {
+      const section = factionFeatureSection(faction);
+      if (!features.length) {
+        expect(section).toContain('- **None.**');
+        continue;
+      }
 
-    expect(rulebook).toContain('Military **Orders** are the named Leader Ability for the General and Commandant.');
-    expect(rulebook).toContain('**Terms** and **Leverage** are Diplomat Faction Features marked **No Action**.');
-    expect(rulebook).toContain('at least one Action spent that turn must be spent on a Financier Faction Feature marked **1 Action**');
-    expect(rulebook).toContain('**Hostile Takeover — Executive Leader Ability:**');
-    expect(rulebook).toContain("**Line of Credit** is the Banker's Leader Ability.");
+      for (const feature of features) {
+        const descriptor = [
+          feature.name,
+          feature.profile,
+          feature.timing,
+          feature.cost,
+          feature.limit,
+        ].filter(Boolean).join(' · ');
+        expect(section).toContain(`- **${descriptor}.`);
+      }
+    }
 
-    expect(rulebook).toContain('**Surveillance** and **Interference** are shared Faction Features marked **No Action**.');
-    expect(rulebook).toContain('**Fieldcraft** and **Mission Control** are Leader Abilities.');
+    const financiers = factionFeatureSection('financiers');
+    expect(financiers).toContain('**Subsidize — No Action · Before dice.** Spend Capital to increase your battle total.');
+    expect(financiers).toContain('**Financial Capacity — No Action · After Capture.**');
+    expect(financiers).toContain('**Income — Automatic · After Capture.**');
+    expect(financiers).toContain('**Hostile Takeover** is the Executive\'s Leader Ability.');
+    expect(financiers).toContain('**Line of Credit** is the Banker\'s Leader Ability.');
 
-    expect(rulebook).toContain('Mystics have the following Faction Features marked **1 Action · Denouement**:');
-    expect(rulebook).toContain('**Invocation** and **Transmutation** are Faction Features marked **No Action**; **Convergence** is **Automatic**.');
+    const intelligence = factionFeatureSection('intelligence');
+    expect(intelligence).toContain('**Gambit Surveillance — No Action · During battle · 1 Intel · Once per battle.**');
+    expect(intelligence).toContain('**Tactic Surveillance — No Action · During battle · 1 Intel per card · Once per battle.**');
+    expect(intelligence).toContain('**Interference — No Action · Immediately after reveal · +2 Intel per removed card.**');
+    expect(intelligence).toContain('**Direct Interference — No Action · Face-up opposing card · 2 Intel.**');
 
-    expect(rulebook).toContain('**Purge is an Inquisition Faction Feature marked 1 Action · Opening or Denouement · Once per turn.**');
-    expect(rulebook).toContain("Final Judgment is the Grand Inquisitor's Leader Ability.");
+    const mystics = factionFeatureSection('mystics');
+    expect(mystics).toContain('**Invocation — No Action · After applying an Arcane card effect · Once per turn.**');
+    expect(mystics).toContain('**Transmutation — No Action · Before dice · Once per turn.**');
+    expect(mystics).toContain('**Convergence — Automatic · During a Ritual battle you initiated.**');
+
+    const inquisition = factionFeatureSection('inquisition');
+    expect(inquisition).toContain('**Conviction — Automatic · First qualifying Aftermath each turn.**');
+    expect(inquisition).toContain('**Condemnation — Automatic · Aftermath.**');
+    expect(inquisition).toContain('**Blasphemy — Automatic · Opposing Arcane Action or reveal.**');
+    expect(inquisition).toContain('**Purification — Automatic · Opponent\'s start-of-turn Draw.**');
 
     expect(rulebook).not.toMatch(/\bFaction Actions?\b/u);
     expect(rulebook).not.toMatch(/\bFaction Abilit(?:y|ies)\b/u);
