@@ -7635,19 +7635,35 @@
   },
   "artDirection": {
     "diplomats-ambassador": {
-      "focusY": 0.071
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.071,
+      "smart": false,
+      "zoom": 1
     },
     "diplomats-diplomatic-latitude": {
       "focusY": 0.2
     },
     "diplomats-senator": {
-      "focusY": 0.037
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.037,
+      "smart": false,
+      "zoom": 1
     },
     "financiers-banker": {
-      "focusY": 0
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0,
+      "smart": false,
+      "zoom": 1
     },
     "financiers-executive": {
-      "focusY": 0.095
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.095,
+      "smart": false,
+      "zoom": 1
     },
     "financiers-war-bonds": {
       "focus": [
@@ -7657,19 +7673,35 @@
       "zoom": 1.06
     },
     "inquisition-grand-inquisitor": {
-      "focusY": 0.075
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.075,
+      "smart": false,
+      "zoom": 1
     },
     "intelligence-sleeper-network": {
       "focusY": 0.763
     },
     "intelligence-spymaster": {
-      "focusY": 0.126
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.126,
+      "smart": false,
+      "zoom": 1
     },
     "military-commandant": {
-      "focusY": 0.099
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.099,
+      "smart": false,
+      "zoom": 1
     },
     "mystics-alchemist": {
-      "focusY": 0.095
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.095,
+      "smart": false,
+      "zoom": 1
     },
     "mystics-necromancy": {
       "focusY": 0.398
@@ -7736,6 +7768,34 @@
     },
     "rite-equivalence": {
       "focusY": 0
+    },
+    "military-general": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.16,
+      "smart": false,
+      "zoom": 1
+    },
+    "intelligence-ranger": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.16,
+      "smart": false,
+      "zoom": 1
+    },
+    "mystics-spirit-walker": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.16,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-witch-hunter": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.16,
+      "smart": false,
+      "zoom": 1
     }
   }
 }
