@@ -43,6 +43,9 @@
    Clip only that outer edge so the artwork continues to blend into the paper
    without changing scale, placement, or the historical source files. */
 .intentional-blank.hero-plate-page .hero-plate img{
+  height:auto;
+  max-height:100%;
+  display:block;
   -webkit-clip-path:inset(2px 0);
   clip-path:inset(2px 0);
 }
