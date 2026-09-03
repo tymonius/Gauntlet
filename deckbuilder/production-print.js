@@ -267,13 +267,14 @@
   function productionFrameSource(options) {
     if (options.kind === "external") return options.src;
     const orientation = options.orientation === "landscape" ? "&orientation=landscape" : "";
-    return `/card-design/component-render.html?kind=${encodeURIComponent(options.kind)}&id=${encodeURIComponent(options.id)}&side=${encodeURIComponent(options.side || "front")}${orientation}&rules=${encodeURIComponent(selectedRulesetMode())}`;
+    const surface = options.kind === "leader" ? "face-render.html" : "component-render.html";
+    return `/card-design/${surface}?kind=${encodeURIComponent(options.kind)}&id=${encodeURIComponent(options.id)}&side=${encodeURIComponent(options.side || "front")}${orientation}&rules=${encodeURIComponent(selectedRulesetMode())}`;
   }
 
   function productionBackSource(faction, rotation = null) {
     const safeFaction = String(faction || "intelligence").trim().toLowerCase() || "intelligence";
     const rotationParam = rotation == null ? "" : `&rotation=${encodeURIComponent(String(rotation))}`;
-    return `/card-design/card-back-render.html?faction=${encodeURIComponent(safeFaction)}${rotationParam}`;
+    return `/card-design/face-render.html?kind=back&id=${encodeURIComponent(safeFaction)}&side=back${rotationParam}`;
   }
 
   function makeProductionComponent(documentNode, options) {
