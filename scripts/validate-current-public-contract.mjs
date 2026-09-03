@@ -129,7 +129,7 @@ function validateModernPublicPage(html, route) {
   const expectedCanonical = new URL(route, 'https://gauntlet.run').href;
   assert(/<html\b[^>]*lang=(['"])en\1/i.test(html), `${route} is missing the document language.`);
   assert(/<title>[^<]+<\/title>/i.test(html), `${route} is missing a page title.`);
-  assert(/<meta\s+name=(['"])description\1\s+content=(['"])[^'"]+\2/i.test(html), `${route} is missing a meta description.`);
+  assert(/<meta\s+name=(['"])description\1\s+content=(?:"[^"]+"|'[^']+')/i.test(html), `${route} is missing a meta description.`);
   assert(!/user-scalable\s*=\s*no|maximum-scale\s*=\s*1/i.test(html), `${route} disables browser zoom.`);
   assert(html.includes(`rel="canonical" href="${expectedCanonical}"`), `${route} canonical URL drifted from ${expectedCanonical}.`);
   assert(html.includes(`property="og:url" content="${expectedCanonical}"`), `${route} Open Graph URL drifted from the canonical URL.`);
