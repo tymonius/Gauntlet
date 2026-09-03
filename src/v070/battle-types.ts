@@ -195,6 +195,9 @@ export interface V070BattleRuntime {
   additionalRetreatEffects: V070AdditionalRetreatEffect[];
   militaryOrderUsedPlayers: PlayerId[];
   unbrokenRanksInstanceIds: string[];
+  counterattackAtOnset: boolean;
+  footholdBattleInstanceIds: string[];
+  battleCardBankOnWinInstanceIds: string[];
   pendingGameVictory: {
     winner: PlayerId;
     route:
@@ -272,6 +275,9 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     additionalRetreatEffects: [],
     militaryOrderUsedPlayers: [],
     unbrokenRanksInstanceIds: [],
+    counterattackAtOnset: false,
+    footholdBattleInstanceIds: [],
+    battleCardBankOnWinInstanceIds: [],
     pendingGameVictory: null,
     activeOverlayAtOnset: null,
     activePrintedTerritoryAtOnset: null,
