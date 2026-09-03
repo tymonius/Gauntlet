@@ -1,6 +1,7 @@
 import { loadRenderGame } from './render-context.mjs';
 import { resolveFaceSpec } from './face-spec.mjs';
 import { rendererForTemplate } from './face-template-registry.mjs';
+import { fitReferenceCard } from './reference-card.js';
 import {
   attachArtwork,
   fitGenericCard,
@@ -106,6 +107,7 @@ const FITTERS = Object.freeze({
   generic: fitGenericCard,
   territory: fitTerritory,
   tracker: fitTracker,
+  reference: fitReferenceCard,
 });
 
 async function prepareFace(spec, result) {

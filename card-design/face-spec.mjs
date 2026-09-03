@@ -40,6 +40,7 @@ export const FACE_TEMPLATE_CONTRACTS = Object.freeze({
       '/card-design/faction-specimens.css',
       '/card-design/reference-card.css',
       '/card-design/universal-reference.css',
+      '/card-design/supplemental-refinements.css',
     ]),
     artworkRole: 'none',
   }),
@@ -220,6 +221,7 @@ function componentPayload(game, face, component) {
       source: component.source || null,
       authoritySource: component.authoritySource || null,
       selector: clone(selectedFace),
+      presentation: clone(component.presentation?.reference || null),
     };
   }
 
@@ -405,8 +407,8 @@ function readinessIssues(face, content, artwork) {
   }
 
   if (face.template === 'reference') {
-    issues.push('reference-presentation-still-legacy');
     if (!content.source) issues.push('reference-source-missing');
+    if (!content.selector) issues.push('reference-selector-missing');
   }
 
   return Object.freeze(issues);

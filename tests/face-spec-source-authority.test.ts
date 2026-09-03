@@ -72,7 +72,11 @@ describe('complete FaceSpec source authority', () => {
     expect(rite.content).toMatchObject({ type: 'rite', mode: 'active', rite: { id: 'blood' } });
     expect(riteReverse.content).toMatchObject({ type: 'rite', mode: 'completed', rite: { id: 'crossing' } });
     expect(ritualReverse.content).toMatchObject({ type: 'ritual', mode: 'reverse', ritual: { id: 'ascension' } });
-    expect(reference.content).toMatchObject({ type: 'reference', selector: { title: 'Turn & Battle' } });
+    expect(reference.content).toMatchObject({
+      type: 'reference',
+      source: 'card-design/reference-copy/v0.7.0/universal-reference.md',
+      selector: { title: 'Turn & Battle' },
+    });
     expect(tracker.content).toMatchObject({
       type: 'tracker',
       trackedValue: { name: 'Command' },
@@ -128,8 +132,7 @@ describe('complete FaceSpec source authority', () => {
     expect(tracker.readiness).toEqual({ productionReady: true, issues: [] });
 
     const reference = resolveFaceSpec(game, 'component:universal-reference:front');
-    expect(reference.readiness.productionReady).toBe(false);
-    expect(reference.readiness.issues).toContain('reference-presentation-still-legacy');
+    expect(reference.readiness).toEqual({ productionReady: true, issues: [] });
 
     const general = resolveFaceSpec(game, 'leader:military-general');
     expect(general.readiness.productionReady).toBe(false);
