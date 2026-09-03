@@ -373,7 +373,7 @@ async function loadStoredHistory(env, sessionId) {
   if (!env?.DB || !sessionId) return [];
   try {
     const rows = await env.DB.prepare(`
-      SELECT question, answer, ruling_status
+      SELECT question, answer, COALESCE(ruling_status_v2, ruling_status) AS ruling_status
       FROM rules_interactions
       WHERE session_id = ? AND game_version = ?
       ORDER BY sequence_index DESC, created_at DESC
