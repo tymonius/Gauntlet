@@ -49,5 +49,6 @@ export function render(spec) {
   return {
     element,
     artworkImage: ratified ? null : element.querySelector('.card-art img'),
+    preparation: { parchment: true, fit: 'generic' },
   };
 }
