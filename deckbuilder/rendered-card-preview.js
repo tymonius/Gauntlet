@@ -25,7 +25,7 @@
 
     const quantity = Number(deckState().deck?.[card.id] || 0);
     const uniqueAtLimit = Boolean(card.unique && quantity >= 1);
-    const rendererUrl = `../card-design/card-review-render.html?card=${encodeURIComponent(card.id)}`;
+    const rendererUrl = `../card-design/face-render.html?id=${encodeURIComponent(`card:${card.id}`)}`;
 
     cardPreview.className = "card-preview rendered-card-preview";
     cardPreview.innerHTML = `
