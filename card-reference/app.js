@@ -111,13 +111,15 @@ function normalizeCard(card) {
     uniqueRule: card.unique_rule || '',
     sections: normalizeEffects(card.effects),
     rulesNotes: normalizeNotes(card.rules_notes),
-    rendererUrl: `../card-design/card-review-render.html?card=${encodeURIComponent(card.id)}`
+    orientation: 'portrait',
+    faces: [{ label: 'Card', orientation: 'portrait', rendererUrl: buildFaceRendererUrl(`card:${card.id}`) }],
+    rendererUrl: buildFaceRendererUrl(`card:${card.id}`)
   };
 }
 
 function normalizeTerritory(territory) {
   const arena = Boolean(territory.arena) || String(territory.type).toLowerCase() === 'arena';
-  const rendererUrl = `../card-design/territory-review-render.html?territory=${encodeURIComponent(territory.id)}`;
+  const rendererUrl = buildFaceRendererUrl(`territory:${territory.id}`);
   return {
     id: territory.id || `territory-${slugify(territory.name)}`,
     type: 'territory',
@@ -128,15 +130,16 @@ function normalizeTerritory(territory) {
     arena,
     sections: normalizeEffects(territory.effects, 'Effect'),
     rulesNotes: normalizeNotes(territory.rules_notes),
-    faces: [{ label: arena ? 'Arena' : 'Territory', rendererUrl }],
+    orientation: 'landscape',
+    faces: [{ label: arena ? 'Arena' : 'Territory', orientation: 'landscape', rendererUrl }],
     rendererUrl
   };
 }
 
 function normalizeLeader(leader) {
   const faction = slugify(leader.faction || 'neutral');
-  const rendererId = `${faction}-${slugify(leader.name)}`;
-  const rendererUrl = buildComponentRendererUrl('leader', rendererId);
+  const faceId = `leader:${faction}-${leader.id}`;
+  const rendererUrl = buildFaceRendererUrl(faceId);
   return {
     id: `leader-${faction}-${leader.id}`,
     type: 'leader',
@@ -147,7 +150,8 @@ function normalizeLeader(leader) {
     sections: {},
     rulesNotes: [],
     searchText: JSON.stringify(leader),
-    faces: [{ label: 'Leader', rendererUrl }],
+    orientation: 'portrait',
+    faces: [{ label: 'Leader', orientation: 'portrait', rendererUrl }],
     rendererUrl
   };
 }
@@ -157,10 +161,8 @@ function normalizeComponent(component, currentGame) {
   if (!type) throw new Error(`Unsupported card-like component family ${component.family} for ${component.id}.`);
 
   const faction = slugify(component.faction || 'neutral');
-  const rendererKind = componentRendererKind(component);
-  const rendererId = componentRendererId(component);
   const orientation = componentRenderOrientation(component);
-  const faces = componentFaces(component, rendererKind, rendererId, orientation);
+  const faces = componentFaces(component, orientation);
   const linkedData = linkedComponentData(component, currentGame);
 
   return {
@@ -190,33 +192,15 @@ function componentTypeForFamily(family) {
   })[family] || '';
 }
 
-function componentRendererKind(component) {
-  return ({
-    'proposal-treaty-card': 'proposal',
-    'rite-card': 'rite',
-    'ritual-card': 'ritual',
-    'reference-card': 'reference',
-    tracker: 'tracker',
-    ledger: 'supplemental',
-    'deed-card': 'supplemental'
-  })[component.family] || 'supplemental';
-}
-
-function componentRendererId(component) {
-  if (component.family === 'proposal-treaty-card') {
-    return component.id.replace(/^diplomats-proposal-/, '');
-  }
-  return String(component.renderSource?.componentId || component.id || '').trim();
-}
-
 function componentRenderOrientation(component) {
   return component.family === 'deed-card' ? 'landscape' : 'portrait';
 }
 
-function componentFaces(component, rendererKind, rendererId, orientation = 'portrait') {
+function componentFaces(component, orientation = 'portrait') {
   const face = (label, side = 'front') => ({
     label,
-    rendererUrl: buildComponentRendererUrl(rendererKind, rendererId, side, orientation)
+    orientation,
+    rendererUrl: buildFaceRendererUrl(`component:${component.id}:${side}`)
   });
 
   if (component.family === 'proposal-treaty-card') {
@@ -241,17 +225,15 @@ function linkedComponentData(component, currentGame) {
     return currentGame.proposals.find(proposal => proposal.id === id) || null;
   }
   if (component.family === 'rite-card') {
-    const id = componentRendererId(component);
+    const id = String(component.renderSource?.componentId || component.id.replace(/^mystics-rite-/, '')).trim();
     return currentGame.mystics?.rites?.find(rite => rite.id === id) || null;
   }
   if (component.family === 'ritual-card') return currentGame.mystics?.ritual || null;
   return null;
 }
 
-function buildComponentRendererUrl(kind, id, side = 'front', orientation = 'portrait') {
-  const params = new URLSearchParams({ kind, id, side });
-  if (orientation === 'landscape') params.set('orientation', 'landscape');
-  return `../card-design/component-render.html?${params.toString()}`;
+function buildFaceRendererUrl(faceId) {
+  return `../card-design/face-render.html?id=${encodeURIComponent(faceId)}`;
 }
 
 function normalizeEffects(effects, unlabeledName = 'Text') {
@@ -431,7 +413,7 @@ function renderPreview(entry) {
     return;
   }
 
-  const faces = entry.faces?.length ? entry.faces : [{ label: 'Front', rendererUrl: entry.rendererUrl }];
+  const faces = entry.faces?.length ? entry.faces : [{ label: 'Front', orientation: entry.orientation || 'portrait', rendererUrl: entry.rendererUrl }];
   const activeFace = faces[0];
   const kicker = entry.type === 'territory'
     ? (entry.arena ? 'Arena' : 'Territory')
@@ -466,6 +448,7 @@ function renderPreview(entry) {
       <iframe
         class="rendered-card-frame"
         src="${escapeHtml(activeFace.rendererUrl)}"
+        data-render-orientation="${escapeHtml(activeFace.orientation || entry.orientation || 'portrait')}"
         title="${escapeHtml(entry.name)} complete rendered card"
         loading="eager"
         scrolling="no"
@@ -494,7 +477,10 @@ function switchPreviewFace(entry, faceIndex) {
 
   const frame = el.preview.querySelector('.rendered-card-frame');
   const standalone = document.getElementById('standaloneRender');
-  if (frame) frame.src = face.rendererUrl;
+  if (frame) {
+    frame.src = face.rendererUrl;
+    frame.dataset.renderOrientation = face.orientation || entry.orientation || 'portrait';
+  }
   if (standalone) standalone.href = face.rendererUrl;
 
   el.preview.querySelectorAll('[data-face-index]').forEach(button => {
@@ -520,10 +506,8 @@ function scaleRenderStage(stage) {
   const frame = stage.querySelector('.rendered-card-frame');
   if (!frame) return;
 
-  const frameUrl = new URL(frame.src, window.location.href);
-  const landscape = frameUrl.pathname.includes('/card-design/territory-review-render.html')
-    || frameUrl.searchParams.get('orientation') === 'landscape';
-  const surface = landscape ? PRODUCTION_SURFACES.landscape : PRODUCTION_SURFACES.portrait;
+  const orientation = frame.dataset.renderOrientation === 'landscape' ? 'landscape' : 'portrait';
+  const surface = PRODUCTION_SURFACES[orientation];
   const availableWidth = Math.max(0, stage.clientWidth);
   const targetWidth = Math.min(CARD_RENDER_MAX_WIDTH, availableWidth || surface.widthCssPx);
   const scale = targetWidth / surface.widthCssPx;
