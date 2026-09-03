@@ -27,6 +27,7 @@ describe('Stage 4 unified face parity gate', () => {
     expect(validator).toContain('legacyRoute(spec)');
     expect(validator).toContain("base.set('kind', 'supplemental')");
     expect(validator).toContain("base.set('kind', 'tracker')");
+    expect(validator).toContain("base.set('kind', 'reference')");
     expect(validator).toContain("spec.content.component.renderSource?.componentId");
     expect(validator).toContain("readiness: 'card-back'");
     expect(validator).toContain('waitForLegacyRender(legacyPage, legacy)');
@@ -52,6 +53,26 @@ describe('Stage 4 unified face parity gate', () => {
     expect(leaderStyles).toContain('@import url("./faction-component.css")');
     expect(leaderStyles).not.toContain('--component-parchment-tint');
     expect(faceSpec).toContain("'/card-design/faction-component.css'");
+  });
+
+  it('fits legacy supplemental faces after explicitly loading the shared production fonts', () => {
+    expect(supplementalCard).toContain("import { loadProductionFonts } from './face-preparation.mjs'");
+    expect(supplementalCard).toContain('await loadProductionFonts();');
+    expect(supplementalCard).not.toContain('waitForCanonicalProductionFonts');
+    expect(supplementalCard.indexOf('await loadProductionFonts();')).toBeLessThan(
+      supplementalCard.indexOf('await layoutTrackerCards();')
+    );
+    expect(supplementalCard.indexOf('await loadProductionFonts();')).toBeLessThan(
+      supplementalCard.indexOf('await hydrateReferenceCards();')
+    );
+  });
+
+  it('fits legacy references only after mounting them at final production geometry', () => {
+    expect(componentRenderer).toContain('target.replaceChildren(card);');
+    expect(componentRenderer).toContain('const { fitReferenceCard } = await import("/card-design/reference-card.js")');
+    expect(componentRenderer.indexOf('target.replaceChildren(card);')).toBeLessThan(
+      componentRenderer.indexOf('const { fitReferenceCard } = await import("/card-design/reference-card.js")')
+    );
   });
 
   it('keeps Operation Progress presentation in canonical data instead of component-specific CSS', () => {

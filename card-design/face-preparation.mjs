@@ -223,6 +223,18 @@ export function fitGenericCard(card) {
   card.dataset.productionFit = fits ? 'fit' : 'warning';
 }
 
+function territoryTextOverflows(element) {
+  return Boolean(element && element.scrollWidth > element.clientWidth + 0.5);
+}
+
+function territoryFooterOverflows(footer) {
+  if (!footer || footer.scrollHeight > footer.clientHeight + 0.5) return true;
+  return Array.from(footer.querySelectorAll('span')).some(label => (
+    label.scrollWidth > label.clientWidth + 0.5
+    || label.scrollHeight > label.clientHeight + 0.5
+  ));
+}
+
 function territoryBodyOverflows(body, art, effect) {
   if (!body || !art || !effect) return true;
   const bodyRect = body.getBoundingClientRect();
@@ -230,9 +242,7 @@ function territoryBodyOverflows(body, art, effect) {
   const effectRect = effect.getBoundingClientRect();
   const style = getComputedStyle(body);
   const gap = Number.parseFloat(style.rowGap || style.gap || '0') || 0;
-  return artRect.height < TERRITORY_MINIMUM_ART_HEIGHT - 0.5
-    || effectRect.bottom + gap > bodyRect.bottom + 0.5
-    || effect.scrollHeight > effect.clientHeight + 0.5;
+  return artRect.height + gap + effectRect.height > bodyRect.height + 0.5;
 }
 
 export function fitTerritory(card) {
@@ -245,26 +255,30 @@ export function fitTerritory(card) {
   if (!title || !body || !art || !effect || !footer || !interior) throw new Error('Territory template is missing fit structure.');
 
   let titleSize = Number.parseFloat(getComputedStyle(title).fontSize);
-  while (title.scrollWidth > title.clientWidth + 0.5 && titleSize > TERRITORY_MINIMUM_TITLE_SIZE) {
+  let effectScale = 1;
+
+  while (territoryTextOverflows(title) && titleSize > TERRITORY_MINIMUM_TITLE_SIZE) {
     titleSize = Math.max(TERRITORY_MINIMUM_TITLE_SIZE, titleSize - TITLE_STEP);
     title.style.fontSize = `${titleSize}px`;
     forceLayout(card);
   }
 
-  let effectScale = 1;
   if (territoryBodyOverflows(body, art, effect)) {
     card.classList.add('compact');
     forceLayout(card);
   }
+
   while (territoryBodyOverflows(body, art, effect) && effectScale > 0.78) {
     effectScale = Math.max(0.78, effectScale - TERRITORY_EFFECT_STEP);
     card.style.setProperty('--effect-scale', effectScale.toFixed(2));
     forceLayout(card);
   }
+
   if (territoryBodyOverflows(body, art, effect)) {
     art.style.minHeight = `${TERRITORY_MINIMUM_ART_HEIGHT}px`;
     forceLayout(card);
   }
+
   while (territoryBodyOverflows(body, art, effect) && effectScale > TERRITORY_MINIMUM_EFFECT_SCALE) {
     effectScale = Math.max(TERRITORY_MINIMUM_EFFECT_SCALE, effectScale - TERRITORY_EFFECT_STEP);
     card.style.setProperty('--effect-scale', effectScale.toFixed(2));
@@ -278,15 +292,17 @@ export function fitTerritory(card) {
   const artSpansBody = Math.abs(artRect.left - bodyRect.left) <= 0.75
     && Math.abs(artRect.right - bodyRect.right) <= 0.75;
   const footerFits = footerRect.bottom <= interiorRect.bottom + 0.5
-    && footer.scrollHeight <= footer.clientHeight + 0.5;
+    && !territoryFooterOverflows(footer);
+  const titleFits = !territoryTextOverflows(title);
   const fits = !territoryBodyOverflows(body, art, effect)
-    && title.scrollWidth <= title.clientWidth + 0.5
+    && titleFits
     && footerFits
     && Boolean(effect.textContent.trim())
     && artRect.height >= TERRITORY_MINIMUM_ART_HEIGHT - 0.5
+    && artRect.width > 0
     && artSpansBody;
 
-  card.dataset.titleFit = title.scrollWidth <= title.clientWidth + 0.5 ? 'true' : 'false';
+  card.dataset.titleFit = titleFits ? 'true' : 'false';
   card.dataset.effectScale = effectScale.toFixed(2);
   card.dataset.artHeight = artRect.height.toFixed(2);
   card.dataset.artWidth = artRect.width.toFixed(2);
@@ -294,7 +310,6 @@ export function fitTerritory(card) {
   card.classList.toggle('fit-warning', !fits);
   card.dataset.productionFit = fits ? 'fit' : 'warning';
 }
-
 
 function fitTrackerTitle(card) {
   const title = card?.querySelector('.tracker-heading h3');

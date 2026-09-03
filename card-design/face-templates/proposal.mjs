@@ -48,7 +48,7 @@ export function render(spec) {
   element.dataset.faceTemplate = spec.template;
   return {
     element,
-    artworkImage: ratified ? null : element.querySelector('.card-art img'),
+    artworkImage: element.querySelector('.card-art img'),
     preparation: { parchment: true, fit: 'generic' },
   };
 }

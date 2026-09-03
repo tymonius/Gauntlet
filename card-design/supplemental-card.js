@@ -6,6 +6,7 @@ import {
 } from './reference-card.js';
 import { capitalLedgerMarkup } from './capital-ledger.js';
 import { loadRenderGame } from './render-context.mjs';
+import { loadProductionFonts } from './face-preparation.mjs';
 
 const FACTION_LABELS = Object.freeze({
   military: 'Military',
@@ -554,6 +555,12 @@ async function renderCurrentSupplementals() {
       root.dataset.trackerLayoutsReady = 'true';
       return;
     }
+
+    // Supplemental fitting must use the same explicitly loaded production
+    // fonts as every other production surface. document.fonts.ready alone can
+    // resolve before the Typekit faces have been requested, which made long
+    // reference titles fit against a fallback font and then change after load.
+    await loadProductionFonts();
     await layoutTrackerCards();
     await hydrateReferenceCards();
   } catch (error) {

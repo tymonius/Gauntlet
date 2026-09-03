@@ -9,7 +9,8 @@ describe('art-direction materialization migration', () => {
     expect(script).toContain("'artwork-composition-not-explicit'");
     expect(script).toContain("'artwork-composition-not-final'");
     expect(script).toContain("spec.artwork?.role === 'crop'");
-    expect(script).toContain('if (targets.length !== 210)');
+    expect(script).toContain("if (!targets.length)");
+    expect(script).not.toContain('targets.length !== 210');
   });
 
   it('materializes the currently rendered crop outcome as explicit non-smart authority', () => {
@@ -26,6 +27,8 @@ describe('art-direction materialization migration', () => {
   });
 
   it('runs in CI and publishes only a candidate artifact, not a production mutation', () => {
+    expect(workflow).toContain('workflow_dispatch:');
+    expect(workflow).not.toContain('pull_request:');
     expect(workflow).toContain('node scripts/materialize-art-direction.mjs');
     expect(workflow).toContain('materialized-art-direction');
     expect(script).not.toContain('writeFile(' + JSON.stringify('game-data/current-game.json'));

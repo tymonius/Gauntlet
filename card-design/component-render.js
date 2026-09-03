@@ -354,6 +354,19 @@
     card.style.width = renderWidth;
     card.style.height = renderHeight;
     target.replaceChildren(card);
+
+    // Reference fitting depends on the final physical mount width. The legacy
+    // source catalog is intentionally offscreen and wide, so a fit performed
+    // there is not production geometry. Re-run the canonical reference fitter
+    // only after the selected face has been mounted at its final surface.
+    if (kind === "reference") {
+      const { fitReferenceCard } = await import("/card-design/reference-card.js");
+      const referenceFit = fitReferenceCard(card);
+      if (referenceFit.overflow) {
+        throw new Error(`Reference ${id} does not fit after final production mounting.`);
+      }
+    }
+
     await applyCanonicalArtworkDirection(card);
     document.getElementById("leaderReviewSections")?.remove();
     document.getElementById("proposalReviewSections")?.remove();
