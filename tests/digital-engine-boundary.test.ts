@@ -168,18 +168,14 @@ describe('digital engine boundary', () => {
     }
   });
 
-  it('keeps the generic card barrel as a deprecated v0.6 compatibility shim only', () => {
-    const cardIndex = readFileSync('src/cards/index.ts', 'utf8');
-    expect(cardIndex).toContain('@deprecated');
-    expect(cardIndex).toContain("export * from './v06';");
-    expect(cardIndex).not.toContain("export * from './military'");
-    expect(cardIndex).not.toContain("export * from './intelligence'");
+  it('has retired the generic card compatibility barrel', () => {
+    expect(readdirSync('src/cards')).not.toContain('index.ts');
   });
 
-  it('has no runtime imports that resolve to the generic card barrel', () => {
+  it('has no source or test imports that resolve to the retired generic card barrel', () => {
     const offenders: string[] = [];
 
-    for (const path of sourceFilesUnder('src').filter((path) => !/\.(?:test|spec)\.[cm]?[jt]sx?$/.test(path))) {
+    for (const path of [...sourceFilesUnder('src'), ...sourceFilesUnder('tests')]) {
       const source = readFileSync(path, 'utf8');
       for (const specifier of importedSpecifiers(source)) {
         if (resolvesToGenericCardBarrel(path, specifier)) {
@@ -188,7 +184,7 @@ describe('digital engine boundary', () => {
       }
     }
 
-    expect(offenders.sort()).toEqual([]);
+    expect(offenders).toEqual([]);
   });
 
   it('keeps Military card definitions free of state-engine imports', () => {

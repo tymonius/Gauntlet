@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cardCanBePlayedAt, getCardPlayRule } from '../cards';
+import { cardCanBePlayedAt, getCardPlayRule } from '../cards/v06';
 import { ARCANE_KNOWLEDGE } from './neutral-arcane-knowledge';
 
 describe('Neutral Arcane Knowledge audit containment', () => {

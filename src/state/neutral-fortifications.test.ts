@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getCardPlayRule } from '../cards';
+import { getCardPlayRule } from '../cards/playability';
 import { buildPendingNeutralOptions } from '../dev/neutral-options';
 import type {
   BattleParticipantState,
