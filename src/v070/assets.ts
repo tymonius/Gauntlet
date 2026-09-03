@@ -17,7 +17,6 @@ import {
 
 const REMOVAL_LIFECYCLE_UNSUPPORTED = new Set([
   'financiers-margin-loan',
-  'intelligence-sleeper-network',
 ]);
 
 export type V070AssetAction = {
@@ -192,6 +191,40 @@ export function discardV070AssetAsAction(
     playerId,
     instanceId,
     'Asset discard Action',
+  );
+}
+
+export function activateV070SleeperNetworkAsset(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+): void {
+  if (state.cardInstances[instanceId]?.cardId !== 'intelligence-sleeper-network') {
+    throw new V070GameActionError('Sleeper Network activation requires the banked Sleeper Network.');
+  }
+  if (!state.players[playerId].zones.assetBank.includes(instanceId)) {
+    throw new V070GameActionError('Sleeper Network must be banked before it can be activated.');
+  }
+  if (!isV070AssetActive(state, instanceId)) {
+    throw new V070GameActionError('Sleeper Network must be active to use its Asset Action.');
+  }
+  if (state.pendingSleeperNetworkChoice) {
+    throw new V070GameActionError('Resolve the pending Sleeper Network procedure first.');
+  }
+
+  moveBankedAsset(
+    state,
+    playerId,
+    instanceId,
+    'graveyard',
+    'Sleeper Network activation',
+    false,
+  );
+  beginSleeperNetworkBoundActionQueue(
+    state,
+    playerId,
+    instanceId,
+    'activate',
   );
 }
 
@@ -668,7 +701,10 @@ function moveBankedAsset(
     },
   });
 
-  if (v070BindingsForHost(state, instanceId).length > 0) {
+  const preserveBindings =
+    cardId === 'intelligence-sleeper-network'
+    && (removed || reason === 'Sleeper Network activation');
+  if (v070BindingsForHost(state, instanceId).length > 0 && !preserveBindings) {
     releaseV070BoundCards(
       state,
       instanceId,
@@ -695,6 +731,15 @@ function resolveV070RemovedAssetTrigger(
   instanceId: string,
   cardId: string,
 ): void {
+  if (cardId === 'intelligence-sleeper-network') {
+    beginSleeperNetworkBoundActionQueue(
+      state,
+      playerId,
+      instanceId,
+      'removed',
+    );
+    return;
+  }
   if (cardId !== 'neutral-contingency-plan') return;
 
   const purpose = 'Contingency Plan';
@@ -725,6 +770,42 @@ function resolveV070RemovedAssetTrigger(
       },
     });
   }
+}
+
+function beginSleeperNetworkBoundActionQueue(
+  state: V070GameState,
+  playerId: PlayerId,
+  hostInstanceId: string,
+  mode: 'activate' | 'removed',
+): void {
+  const bindings = state.bindings
+    .filter(binding => binding.hostId === hostInstanceId)
+    .sort((a, b) => a.sequence - b.sequence);
+  if (bindings.length === 0) return;
+
+  for (const binding of bindings) binding.faceUp = true;
+  state.pendingSleeperNetworkChoice = {
+    kind: 'bound_action_queue',
+    playerId,
+    hostInstanceId,
+    mode,
+    playedCount: 0,
+  };
+
+  appendV070Event(state, {
+    type: 'sleeper_network_revealed',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      hostInstanceId,
+      mode,
+      boundCards: bindings.map(binding => ({
+        instanceId: binding.cardInstanceId,
+        cardId: state.cardInstances[binding.cardInstanceId]?.cardId,
+        sequence: binding.sequence,
+      })),
+    },
+  });
 }
 
 function assertForcedRemovalLifecycleSupported(

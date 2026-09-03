@@ -209,6 +209,7 @@ export interface V070GameView {
   sanctionTriggerTurns: V070GameState['sanctionTriggerTurns'];
   pendingActionCard: V070GameState['pendingActionCard'];
   pendingActionEffectChoice: V070GameState['pendingActionEffectChoice'];
+  pendingSleeperNetworkChoice: V070GameState['pendingSleeperNetworkChoice'];
   pendingSanctionChoices: V070GameState['pendingSanctionChoices'];
   pendingAssetLimitChoice: V070GameState['pendingAssetLimitChoice'];
   pendingPurgeChoice: V070GameState['pendingPurgeChoice'];
@@ -265,6 +266,9 @@ export function viewV070GameForPlayer(
       ? structuredClone(state.pendingActionCard)
       : null,
     pendingActionEffectChoice: viewPendingActionEffectChoice(state, viewer),
+    pendingSleeperNetworkChoice: state.pendingSleeperNetworkChoice
+      ? structuredClone(state.pendingSleeperNetworkChoice)
+      : null,
     pendingSanctionChoices: state.pendingSanctionChoices.map(
       choice => structuredClone(choice),
     ),

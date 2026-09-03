@@ -61,6 +61,7 @@ import { openV070BlockadeChoicesForPositionChange } from './movement-triggers';
 import { drawV070Cards, type V070DrawResult } from './card-draw';
 export { drawV070Cards, type V070DrawResult } from './card-draw';
 import {
+  activateV070SleeperNetworkAsset,
   bankV070AssetFromPendingAction,
   bankV070AssetWithInherentAction,
   discardV070AssetAsAction,
@@ -76,6 +77,8 @@ import {
 import {
   bindV070CardFromPlayerZone,
   bindV070PendingActionCard,
+  releaseV070BoundCards,
+  v070BindingsForHost,
 } from './bindings';
 import {
   applyV070BlasphemyForActionPlay,
@@ -212,6 +215,21 @@ export type V070TurnAction =
       type: 'discard_asset';
       playerId: PlayerId;
       assetInstanceId: string;
+    }
+  | {
+      type: 'use_sleeper_network_asset';
+      playerId: PlayerId;
+      assetInstanceId: string;
+    }
+  | {
+      type: 'resolve_sleeper_network_end_turn_bind';
+      playerId: PlayerId;
+      targetInstanceId?: string;
+    }
+  | {
+      type: 'resolve_sleeper_network_bound_action';
+      playerId: PlayerId;
+      targetInstanceId: string;
     }
   | { type: 'play_action_card'; playerId: PlayerId; cardInstanceId: string }
   | {
@@ -522,6 +540,7 @@ export function reduceV070TurnAction(
   if (action.type === 'resolve_clemency_choice'
     || action.type === 'choose_forced_asset_target'
     || action.type === 'resolve_accusation_choice'
+    || action.type === 'resolve_sleeper_network_bound_action'
     || action.type === 'choose_sequestration_keep_asset'
     || action.type === 'resolve_penance_choice'
     || action.type === 'resolve_inquisition_purge_hand_choice') {
@@ -573,6 +592,23 @@ export function reduceV070TurnAction(
       && action.type === 'resolve_censure_choice';
     if (!resolvingCensure) {
       throw new V070GameActionError('Resolve the pending Sanction choice first.');
+    }
+  }
+  if (state.pendingSleeperNetworkChoice
+    && !state.pendingActionCard
+    && !state.pendingActionEffectChoice
+    && state.pendingSanctionChoices.length === 0) {
+    const pending = state.pendingSleeperNetworkChoice;
+    const validContinuation =
+      pending.kind === 'end_turn_bind'
+        ? action.type === 'resolve_sleeper_network_end_turn_bind'
+          && action.playerId === pending.playerId
+        : action.type === 'resolve_sleeper_network_bound_action'
+          && action.playerId === pending.playerId;
+    if (!validContinuation) {
+      throw new V070GameActionError(
+        'Resolve the pending Sleeper Network procedure before continuing the turn.',
+      );
     }
   }
   if (state.pendingActionEffectChoice) {
@@ -885,6 +921,27 @@ export function reduceV070TurnAction(
       break;
     case 'discard_asset':
       discardAsset(next, action.playerId, action.assetInstanceId);
+      break;
+    case 'use_sleeper_network_asset':
+      useSleeperNetworkAsset(
+        next,
+        action.playerId,
+        action.assetInstanceId,
+      );
+      break;
+    case 'resolve_sleeper_network_end_turn_bind':
+      resolveSleeperNetworkEndTurnBind(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
+      break;
+    case 'resolve_sleeper_network_bound_action':
+      resolveSleeperNetworkBoundAction(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
       break;
     case 'play_action_card':
       playActionCard(next, action.playerId, action.cardInstanceId);
@@ -1640,6 +1697,323 @@ function discardAsset(
   discardV070AssetAsAction(state, playerId, assetInstanceId);
 }
 
+function useSleeperNetworkAsset(
+  state: V070GameState,
+  playerId: PlayerId,
+  assetInstanceId: string,
+): void {
+  const phase = requireTurnState(state).phase;
+  if (phase !== 'opening' && phase !== 'denouement') {
+    throw new V070GameActionError(
+      'Sleeper Network may be activated as an Action only during Opening or Denouement.',
+    );
+  }
+  spendTurnAction(state, playerId);
+  activateV070SleeperNetworkAsset(state, playerId, assetInstanceId);
+  continueSleeperNetworkBoundActionQueue(state);
+}
+
+function sleeperNetworkWasBankedThisTurn(
+  state: V070GameState,
+  playerId: PlayerId,
+  hostInstanceId: string,
+): boolean {
+  return state.events.some(event => {
+    if (event.type !== 'asset_banked' || event.actor !== playerId) return false;
+    const payload = event.payload as {
+      instanceId?: string;
+      turnNumber?: number;
+    } | undefined;
+    return payload?.instanceId === hostInstanceId
+      && payload.turnNumber === state.turnNumber;
+  });
+}
+
+function openSleeperNetworkEndTurnBindChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  if (state.pendingSleeperNetworkChoice) return;
+
+  const hostInstanceId = state.players[playerId].zones.assetBank.find(
+    instanceId =>
+      state.cardInstances[instanceId]?.cardId === 'intelligence-sleeper-network'
+      && isV070AssetActive(state, instanceId),
+  );
+  if (!hostInstanceId
+    || sleeperNetworkWasBankedThisTurn(state, playerId, hostInstanceId)) {
+    return;
+  }
+
+  const capacity = state.players[playerId].controlledTerritories.length;
+  const boundCount = v070BindingsForHost(state, hostInstanceId).length;
+  if (boundCount >= capacity || state.players[playerId].zones.hand.length === 0) {
+    return;
+  }
+
+  state.pendingSleeperNetworkChoice = {
+    kind: 'end_turn_bind',
+    playerId,
+    hostInstanceId,
+  };
+  appendV070Event(state, {
+    type: 'sleeper_network_end_turn_bind_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      hostInstanceId,
+      capacity,
+      boundCount,
+      optional: true,
+    },
+  });
+}
+
+function resolveSleeperNetworkEndTurnBind(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId?: string,
+): void {
+  const pending = state.pendingSleeperNetworkChoice;
+  if (!pending
+    || pending.kind !== 'end_turn_bind'
+    || pending.playerId !== playerId) {
+    throw new V070GameActionError(
+      'No Sleeper Network end-of-turn binding choice is pending for that player.',
+    );
+  }
+
+  if (targetInstanceId === undefined) {
+    state.pendingSleeperNetworkChoice = null;
+    appendV070Event(state, {
+      type: 'sleeper_network_end_turn_bind_declined',
+      actor: playerId,
+      visibility: 'public',
+      payload: { hostInstanceId: pending.hostInstanceId },
+    });
+    return;
+  }
+
+  const hand = state.players[playerId].zones.hand;
+  if (!hand.includes(targetInstanceId)) {
+    throw new V070GameActionError(
+      'Sleeper Network must bind a card currently in your Hand.',
+    );
+  }
+  if (!state.players[playerId].zones.assetBank.includes(pending.hostInstanceId)
+    || !isV070AssetActive(state, pending.hostInstanceId)) {
+    throw new V070GameActionError(
+      'Sleeper Network is no longer an active banked Asset.',
+    );
+  }
+  const capacity = state.players[playerId].controlledTerritories.length;
+  if (v070BindingsForHost(state, pending.hostInstanceId).length >= capacity) {
+    throw new V070GameActionError(
+      'Sleeper Network is already at its current binding maximum.',
+    );
+  }
+
+  bindV070CardFromPlayerZone(state, {
+    hostId: pending.hostInstanceId,
+    owner: playerId,
+    cardInstanceId: targetInstanceId,
+    sourceZone: 'hand',
+    faceUp: false,
+    purpose: 'Sleeper Network',
+  });
+  state.pendingSleeperNetworkChoice = null;
+  appendV070Event(state, {
+    type: 'sleeper_network_card_bound_at_turn_end',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      hostInstanceId: pending.hostInstanceId,
+      boundCount: v070BindingsForHost(state, pending.hostInstanceId).length,
+      faceDown: true,
+    },
+  });
+}
+
+function sleeperNetworkLegalBoundActionInstanceIds(
+  state: V070GameState,
+): string[] {
+  const pending = state.pendingSleeperNetworkChoice;
+  if (!pending || pending.kind !== 'bound_action_queue') return [];
+
+  return v070BindingsForHost(state, pending.hostInstanceId)
+    .map(binding => binding.cardInstanceId)
+    .filter(instanceId => {
+      const cardId = state.cardInstances[instanceId]?.cardId;
+      const card = cardId ? v070CanonicalContent.cardsById.get(cardId) : undefined;
+      if (!card?.effects.some(effect => effect.label === 'Action')) return false;
+
+      const probe = structuredClone(state) as V070GameState;
+      probe.pendingSleeperNetworkChoice = null;
+      const bindingIndex = probe.bindings.findIndex(
+        binding =>
+          binding.hostId === pending.hostInstanceId
+          && binding.cardInstanceId === instanceId,
+      );
+      if (bindingIndex < 0) return false;
+      probe.bindings.splice(bindingIndex, 1);
+      probe.players[pending.playerId].zones.hand.push(instanceId);
+
+      try {
+        playActionCard(
+          probe,
+          pending.playerId,
+          instanceId,
+          {
+            spendAction: false,
+            source: 'Sleeper Network',
+            sourceActionInstanceId: pending.hostInstanceId,
+            allowOutsideActionPhase: pending.mode === 'removed',
+          },
+        );
+        return true;
+      } catch {
+        return false;
+      }
+    });
+}
+
+function finishSleeperNetworkBoundActionQueue(
+  state: V070GameState,
+  reason: string,
+): void {
+  const pending = state.pendingSleeperNetworkChoice;
+  if (!pending || pending.kind !== 'bound_action_queue') return;
+
+  const remaining = v070BindingsForHost(
+    state,
+    pending.hostInstanceId,
+  ).map(binding => binding.cardInstanceId);
+  if (remaining.length > 0) {
+    releaseV070BoundCards(
+      state,
+      pending.hostInstanceId,
+      'discard',
+      reason,
+    );
+  }
+  state.pendingSleeperNetworkChoice = null;
+  appendV070Event(state, {
+    type: 'sleeper_network_resolved',
+    actor: pending.playerId,
+    visibility: 'public',
+    payload: {
+      hostInstanceId: pending.hostInstanceId,
+      mode: pending.mode,
+      playedCount: pending.playedCount,
+      discardedCount: remaining.length,
+    },
+  });
+}
+
+function continueSleeperNetworkBoundActionQueue(
+  state: V070GameState,
+): void {
+  const pending = state.pendingSleeperNetworkChoice;
+  if (!pending || pending.kind !== 'bound_action_queue') return;
+  if (state.pendingActionCard
+    || state.pendingActionEffectChoice
+    || state.pendingSanctionChoices.length > 0) {
+    return;
+  }
+
+  if (pending.mode === 'removed' && pending.playedCount >= 1) {
+    finishSleeperNetworkBoundActionQueue(
+      state,
+      'Sleeper Network Removed resolution complete',
+    );
+    return;
+  }
+
+  const candidates = sleeperNetworkLegalBoundActionInstanceIds(state);
+  if (candidates.length === 0) {
+    finishSleeperNetworkBoundActionQueue(
+      state,
+      pending.mode === 'removed'
+        ? 'Sleeper Network Removed with no legal Action'
+        : 'Sleeper Network activation complete',
+    );
+    return;
+  }
+
+  appendV070Event(state, {
+    type: 'sleeper_network_bound_action_choice_pending',
+    actor: pending.playerId,
+    visibility: 'public',
+    payload: {
+      hostInstanceId: pending.hostInstanceId,
+      mode: pending.mode,
+      remainingLegalActionCount: candidates.length,
+      mandatory: true,
+    },
+  });
+}
+
+function resolveSleeperNetworkBoundAction(
+  state: V070GameState,
+  playerId: PlayerId,
+  targetInstanceId: string,
+): void {
+  const pending = state.pendingSleeperNetworkChoice;
+  if (!pending
+    || pending.kind !== 'bound_action_queue'
+    || pending.playerId !== playerId) {
+    throw new V070GameActionError(
+      'No Sleeper Network bound-Action choice is pending for that player.',
+    );
+  }
+
+  const candidates = sleeperNetworkLegalBoundActionInstanceIds(state);
+  if (!candidates.includes(targetInstanceId)) {
+    throw new V070GameActionError(
+      'Sleeper Network must choose a bound card whose Action effect can currently be played.',
+    );
+  }
+
+  const bindingIndex = state.bindings.findIndex(
+    binding =>
+      binding.hostId === pending.hostInstanceId
+      && binding.cardInstanceId === targetInstanceId,
+  );
+  if (bindingIndex < 0) {
+    throw new V070GameActionError(
+      'The selected Sleeper Network card is no longer bound.',
+    );
+  }
+  state.bindings.splice(bindingIndex, 1);
+  state.players[playerId].zones.hand.push(targetInstanceId);
+  pending.playedCount += 1;
+
+  appendV070Event(state, {
+    type: 'sleeper_network_bound_action_started',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      hostInstanceId: pending.hostInstanceId,
+      instanceId: targetInstanceId,
+      cardId: state.cardInstances[targetInstanceId]?.cardId,
+      mode: pending.mode,
+      playedCount: pending.playedCount,
+    },
+  });
+
+  playActionCard(
+    state,
+    playerId,
+    targetInstanceId,
+    {
+      spendAction: false,
+      source: 'Sleeper Network',
+      sourceActionInstanceId: pending.hostInstanceId,
+      allowOutsideActionPhase: pending.mode === 'removed',
+    },
+  );
+}
+
 function spendTurnAction(
   state: V070GameState,
   playerId: PlayerId,
@@ -2114,6 +2488,7 @@ interface V070ActionPlayOptions {
   spendAction?: boolean;
   source?: string;
   sourceActionInstanceId?: string;
+  allowOutsideActionPhase?: boolean;
 }
 
 function playActionCard(
@@ -2123,7 +2498,9 @@ function playActionCard(
   options: V070ActionPlayOptions = {},
 ): void {
   const turnState = requireTurnState(state);
-  if (turnState.phase !== 'opening' && turnState.phase !== 'denouement') {
+  if (turnState.phase !== 'opening'
+    && turnState.phase !== 'denouement'
+    && !options.allowOutsideActionPhase) {
     throw new V070GameActionError(
       'A printed Action card may normally be played only during Opening or Denouement.',
     );
@@ -5503,6 +5880,7 @@ function resolveNecromancyAction(
       playerId,
       pending.instanceId,
     );
+    continueSleeperNetworkBoundActionQueue(state);
     return;
   }
 
@@ -7990,6 +8368,7 @@ function finalizeControlledTerritoryMoveAction(
     pending.playerId,
     pending.instanceId,
   );
+  continueSleeperNetworkBoundActionQueue(state);
 }
 
 function chooseControlledTerritoryMoveTarget(
@@ -9107,6 +9486,7 @@ function finishPendingActionCard(
     pending.playerId,
     pending.instanceId,
   );
+  continueSleeperNetworkBoundActionQueue(state);
 }
 
 function drawIntoHand(
@@ -9437,6 +9817,7 @@ function passDenouement(state: V070GameState, playerId: PlayerId): void {
     visibility: 'public',
   });
   appendPhaseEvent(state);
+  openSleeperNetworkEndTurnBindChoice(state, playerId);
 }
 
 function completeCleanup(
