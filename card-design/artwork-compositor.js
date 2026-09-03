@@ -149,19 +149,25 @@
     try { url = new URL(frame.src, location.href); } catch { return null; }
     const cardId = url.searchParams.get('card');
     const territoryId = url.searchParams.get('territory');
-    const componentRoute = url.pathname.endsWith('/card-design/component-render.html')
-      || url.pathname.endsWith('/card-design/face-render.html');
+    const faceRoute = url.pathname.endsWith('/card-design/face-render.html');
+    const componentRoute = url.pathname.endsWith('/card-design/component-render.html');
     const componentKind = componentRoute
       ? String(url.searchParams.get('kind') || '').trim().toLowerCase()
       : '';
     const componentId = componentKind ? String(url.searchParams.get('id') || '').trim() : '';
     const componentSide = String(url.searchParams.get('side') || 'front').trim().toLowerCase();
-    const id = cardId || territoryId || (componentId ? componentArtworkId(componentKind, componentId, componentSide) : '');
+    const faceArtworkId = faceRoute
+      ? String(frame.contentDocument?.body?.dataset.faceArtworkId || '').trim()
+      : '';
+    const id = cardId
+      || territoryId
+      || faceArtworkId
+      || (componentId ? componentArtworkId(componentKind, componentId, componentSide) : '');
     if (!id) return null;
     return {
       id,
       label: frame.title?.replace(/\s+v0\.6\.[0-9].*$/i, '').replace(/\s+canonical Card Design render$/i, '').trim() || id,
-      kind: territoryId ? 'territory' : componentId ? 'component' : 'card',
+      kind: territoryId ? 'territory' : faceArtworkId ? 'face' : componentId ? 'component' : 'card',
       sourceElement: frame,
       resolve() {
         const doc = frame.contentDocument;
