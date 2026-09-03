@@ -6,7 +6,7 @@ const configuredApiEndpoint = window.GAUNTLET_RULES_ASSISTANT_ENDPOINT || "https
 const CONFIG = {
   apiEndpoint: configuredApiEndpoint,
   feedbackEndpoint: window.GAUNTLET_RULES_FEEDBACK_ENDPOINT || inferFeedbackEndpoint(configuredApiEndpoint),
-  assistantName: "Rules Arbiter",
+  assistantName: "Chief Justice",
   version: "v0.7.1",
   maxQuestionLength: 600,
   localResultLimit: 5,
@@ -55,9 +55,9 @@ class GauntletRulesAssistant {
     root.className = "ga-rules-assistant";
     root.dataset.gauntletRulesAssistant = "";
     root.innerHTML = `
-      <button class="ga-rules-launcher" type="button" aria-label="Open Gauntlet rules assistant" aria-expanded="false">
+      <button class="ga-rules-launcher" type="button" aria-label="Open the Chief Justice rules assistant" aria-expanded="false">
         <span class="ga-rules-launcher-mark" aria-hidden="true">?</span>
-        <span class="ga-rules-launcher-label">Ask the rules</span>
+        <span class="ga-rules-launcher-label">Ask the Chief Justice</span>
       </button>
       <section class="ga-rules-panel" role="dialog" aria-modal="false" aria-labelledby="ga-rules-title" hidden>
         <header class="ga-rules-header">
@@ -71,15 +71,15 @@ class GauntletRulesAssistant {
               decoding="async"
             />
             <div class="ga-rules-header-copy">
-              <p class="ga-rules-eyebrow">Gauntlet ${escapeHtml(CONFIG.version)}</p>
+              <p class="ga-rules-eyebrow">GAUNTLET RULES ARBITER</p>
               <h2 id="ga-rules-title">${escapeHtml(CONFIG.assistantName)}</h2>
             </div>
           </div>
           <button class="ga-rules-close" type="button" aria-label="Close rules assistant">×</button>
         </header>
         <details class="ga-rules-notice">
-          <summary>About the Rules Arbiter</summary>
-          <p>Answers use the canonical ${escapeHtml(CONFIG.version)} sources. When those rules do not decide a gameplay interaction, the Arbiter issues a clearly labeled provisional ruling for the rest of the current game and logs it for designer review. Questions, answers, citations, ruling status, and optional feedback may be logged to improve the rules and this tool. When opened from a formal playtest session, the sheet serial and session identifier are included automatically. Printed rules and component text remain authoritative over provisional rulings.</p>
+          <summary>About the Chief Justice</summary>
+          <p>Answers use the canonical ${escapeHtml(CONFIG.version)} sources. When those rules do not decide a gameplay interaction, the Chief Justice issues a clearly labeled provisional ruling for the rest of the current game and logs it for designer review. Questions, answers, citations, ruling status, and optional feedback may be logged to improve the rules and this tool. When opened from a formal playtest session, the sheet serial and session identifier are included automatically. Printed rules and component text remain authoritative over provisional rulings.</p>
         </details>
         <div class="ga-rules-messages" aria-live="polite" aria-label="Rules conversation"></div>
         <div class="ga-rules-suggestions" aria-label="Suggested questions"></div>
@@ -139,7 +139,7 @@ class GauntletRulesAssistant {
     this.elements.messages.innerHTML = "";
     this.appendMessage({
       role: "assistant",
-      answer: "Ask me about the v0.7.1 rulebook, cards, Leaders, faction systems, Territories, Gambits, Tactics, battle timing, or victory conditions. If the written rules leave a genuine gap, I will issue a provisional ruling so play can continue.",
+      answer: "Set out the question as it arose at the table. I will determine what the rules require, identify the controlling rule or distinction, and settle the matter as plainly as I can. Where the written rules do not decide it, I will issue a provisional ruling so play may continue.",
       rulingStatus: "welcome",
       sources: []
     });
