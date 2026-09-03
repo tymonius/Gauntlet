@@ -1,4 +1,5 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { CURRENT_RULES_VERSION } from '../src/content/current';
 
@@ -8,6 +9,48 @@ const currentManifest = JSON.parse(
   readFileSync(`releases/${lifecycle.current_release}/Gauntlet_${lifecycle.current_release}_Manifest.json`, 'utf8'),
 );
 const engineReadme = readFileSync('src/README.md', 'utf8');
+
+function sourceFilesUnder(root: string): string[] {
+  const files: string[] = [];
+
+  for (const entry of readdirSync(root, { withFileTypes: true })) {
+    const path = `${root}/${entry.name}`;
+    if (entry.isDirectory()) {
+      files.push(...sourceFilesUnder(path));
+      continue;
+    }
+
+    if (/\.(?:[cm]?[jt]sx?)$/.test(entry.name)) files.push(path);
+  }
+
+  return files;
+}
+
+function importedSpecifiers(source: string): string[] {
+  const specifiers: string[] = [];
+  const patterns = [
+    /\bfrom\s+['"]([^'"]+)['"]/g,
+    /\bimport\s+['"]([^'"]+)['"]/g,
+    /\bimport\s*\(\s*['"]([^'"]+)['"]\s*\)/g,
+    /\brequire\s*\(\s*['"]([^'"]+)['"]\s*\)/g,
+  ];
+
+  for (const pattern of patterns) {
+    for (const match of source.matchAll(pattern)) specifiers.push(match[1]);
+  }
+
+  return specifiers;
+}
+
+function resolvesToGenericTypeBarrel(path: string, specifier: string): boolean {
+  if (!specifier.startsWith('.')) return false;
+
+  const resolved = resolve(dirname(path), specifier);
+  const barrel = resolve('src/types');
+  return resolved === barrel
+    || resolved === resolve(barrel, 'index')
+    || resolved === resolve(barrel, 'index.ts');
+}
 
 describe('digital engine boundary', () => {
   it('does not present legacy interactive runners as current engine entrypoints', () => {
@@ -105,11 +148,11 @@ describe('digital engine boundary', () => {
     }
   });
 
-  it('keeps every legacy runtime effect module off the generic type barrel', () => {
-    const runtimeEffectSources = readdirSync('src/effects')
-      .filter((name) => name.endsWith('.ts') && !name.endsWith('.test.ts'));
+  it('keeps every legacy effect module off the generic type barrel', () => {
+    const effectSources = readdirSync('src/effects')
+      .filter((name) => name.endsWith('.ts'));
 
-    for (const name of runtimeEffectSources) {
+    for (const name of effectSources) {
       const source = readFileSync(`src/effects/${name}`, 'utf8');
       expect(source).not.toMatch(/from ['"]\.\.\/types['"]/);
     }
@@ -123,12 +166,23 @@ describe('digital engine boundary', () => {
     expect(cardIndex).not.toContain("export * from './intelligence'");
   });
 
-  it('keeps the generic type barrel as a deprecated v0.6 compatibility shim only', () => {
-    const typeIndex = readFileSync('src/types/index.ts', 'utf8');
-    expect(typeIndex).toContain('@deprecated');
-    expect(typeIndex).toContain("export * from './v06';");
-    expect(typeIndex).not.toContain("export * from './game'");
-    expect(typeIndex).not.toContain("export * from './battle'");
+  it('has retired the generic type compatibility barrel', () => {
+    expect(readdirSync('src/types')).not.toContain('index.ts');
+  });
+
+  it('has no source or test imports that resolve to the retired generic type barrel', () => {
+    const offenders: string[] = [];
+
+    for (const path of [...sourceFilesUnder('src'), ...sourceFilesUnder('tests')]) {
+      const source = readFileSync(path, 'utf8');
+      for (const specifier of importedSpecifiers(source)) {
+        if (resolvesToGenericTypeBarrel(path, specifier)) {
+          offenders.push(`${path}: ${specifier}`);
+        }
+      }
+    }
+
+    expect(offenders).toEqual([]);
   });
 
   it('pins legacy development surfaces to explicit v0.6 aggregate APIs', () => {
@@ -168,11 +222,11 @@ describe('digital engine boundary', () => {
     }
   });
 
-  it('keeps every legacy runtime state module off the generic type barrel', () => {
-    const runtimeStateSources = readdirSync('src/state')
-      .filter((name) => name.endsWith('.ts') && !name.endsWith('.test.ts'));
+  it('keeps every legacy state module off the generic type barrel', () => {
+    const stateSources = readdirSync('src/state')
+      .filter((name) => name.endsWith('.ts'));
 
-    for (const name of runtimeStateSources) {
+    for (const name of stateSources) {
       const source = readFileSync(`src/state/${name}`, 'utf8');
       expect(source).not.toMatch(/from ['"]\.\.\/types['"]/);
     }
