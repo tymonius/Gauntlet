@@ -40,7 +40,8 @@
     if (orientation === 'landscape') params.set('orientation', 'landscape');
     const rules = new URLSearchParams(window.location.search).get('rules');
     if (rules) params.set('rules', rules);
-    return `/card-design/component-render.html?${params.toString()}`;
+    const surface = kind === 'leader' ? 'face-render.html' : 'component-render.html';
+    return `/card-design/${surface}?${params.toString()}`;
   }
 
   function componentReviewFrame(kind, id, label, side = 'front', orientation = 'portrait') {
