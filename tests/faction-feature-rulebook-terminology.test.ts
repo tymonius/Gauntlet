@@ -30,7 +30,7 @@ describe('Faction Feature Rulebook terminology', () => {
     expect(rulebook).toContain('# 5. Actions, Faction Features, Leader Abilities, and Assets');
     expect(rulebook).toContain('A **Faction Feature** is a named faction-specific mechanic shared by a faction.');
     expect(rulebook).toContain('A Faction Feature may have several uses, modes, or procedures');
-    expect(rulebook).toContain('A **Leader Ability** is supplied specifically by your chosen Leader.');
+    expect(rulebook).toContain('A **Leader Ability** is supplied specifically by your chosen Leader');
     expect(rulebook).toContain('**1 Action**, **No Action**, or **Automatic**');
 
     for (const [faction, features] of Object.entries(currentGame.factionFeatures) as [string, any[]][]) {
