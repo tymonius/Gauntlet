@@ -147,13 +147,38 @@ async function prepareFace(spec, result) {
   }
 }
 
+function inspectionContract(spec, result) {
+  const element = result?.element;
+  if (!(element instanceof HTMLElement) || spec.template === 'standard-back' || result.inspection === false) return null;
+
+  const explicit = result.inspection && typeof result.inspection === 'object'
+    ? result.inspection
+    : null;
+  return {
+    card: explicit?.card ?? element.matches('.gauntlet-card, .territory-card'),
+    artworkImage: explicit?.artworkImage ?? result.artworkImage ?? null,
+  };
+}
+
+function embeddedInInspectionHost() {
+  try {
+    return window.frameElement?.dataset.faceInspectionHost === 'true';
+  } catch {
+    return false;
+  }
+}
+
 function installEmbeddedInspection(spec, result) {
-  if (window.self === window.top || !result.inspection) return;
+  if (window.self === window.top) return;
+
+  const inspection = inspectionContract(spec, result);
+  if (!inspection) return;
 
   const element = result.element;
   const label = spec.label || element.getAttribute('aria-label') || 'Gauntlet face';
+  const inspectionHost = embeddedInInspectionHost();
 
-  if (result.inspection.card) {
+  if (inspection.card && !inspectionHost) {
     element.classList.add('card-inspectable');
     element.tabIndex = 0;
     element.setAttribute('role', 'button');
@@ -179,7 +204,7 @@ function installEmbeddedInspection(spec, result) {
     });
   }
 
-  const image = result.inspection.artworkImage;
+  const image = inspection.artworkImage;
   const frame = image?.closest('figure');
   if (!(image instanceof HTMLImageElement) || !frame || !(image.currentSrc || image.src)) return;
 
@@ -195,6 +220,7 @@ function installEmbeddedInspection(spec, result) {
     source: image.currentSrc || image.src,
     label,
     faceId: spec.id,
+    orientation: spec.orientation,
   }, window.location.origin);
 
   frame.addEventListener('click', event => {
