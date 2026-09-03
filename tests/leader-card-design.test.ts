@@ -38,7 +38,7 @@ describe("Leader card design", () => {
   it("uses the shared poker-card shell and mounted portrait frame for all twelve Leaders", () => {
     expect(currentGame.leaders.map((item: any) => item.name)).toEqual(leaderNames);
     expect(currentGame.leaders).toHaveLength(12);
-    expect(leaderCatalog).toContain("const leaders = current.leaders.filter");
+    expect(leaderCatalog).toContain("current.leaders.filter(leader => leader.faction === faction)");
     expect(leaderCatalog).toContain('class="gauntlet-card faction-component-card leader-card');
     expect(leaderCatalog).toContain('class="card-art has-image"');
     expect(leaderStyles).toContain("grid-template-rows: var(--component-heading-height) var(--art-height) auto 0.18in");
@@ -82,7 +82,7 @@ describe("Leader card design", () => {
     for (const symbol of factionSymbols) {
       expect(symbol.source).toContain('<svg');
       expect(symbol.source).toMatch(/viewBox="[^"]+"/);
-      expect(leaderStyles).toContain(`url("../images/faction-symbols/${symbol.name}.svg")`);
+      expect(factionComponentStyles).toContain(`url("../images/faction-symbols/${symbol.name}.svg")`);
       expect(currentGame.leaders.some((item: any) => item.faction === symbol.name)).toBe(true);
     }
     expect(leaderCatalog).toContain('class="leader-faction-emblem"');
