@@ -96,7 +96,7 @@
         <div class="rating-scale" role="radiogroup" aria-label="${label}">
           ${[1, 2, 3, 4, 5].map((value) => `
             <label class="rating-option" title="${RATING_LABELS[value]}">
-              <input type="radio" name="rating_${key}" value="${value}" data-rating="${key}" />
+              <input type="radio" name="rating_${key}" value="${value}" data-rating="${key}" aria-label="${value} — ${RATING_LABELS[value]}" />
               <span aria-hidden="true">${value}</span>
             </label>`).join("")}
         </div>
