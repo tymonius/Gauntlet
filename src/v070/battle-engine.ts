@@ -26,6 +26,7 @@ import {
 } from './battle-effects';
 import {
   activeV070OverlayAtBattleOnset,
+  placeV070OverlayFromBattle,
   resolveV070OverlayAfterBattle,
 } from './overlays';
 import {
@@ -2074,6 +2075,41 @@ function territoryAftermathDestination(
       : normalDestination;
 }
 
+function resolveBattleCardAftermathOverlayPlacements(
+  state: V070GameState,
+): void {
+  const battle = requireBattle(state);
+  const runtime = requireRuntime(state);
+  const placements = [...runtime.battleCardAftermathOverlayPlacements];
+  runtime.battleCardAftermathOverlayPlacements = [];
+
+  for (const placement of placements) {
+    if (placement.condition === 'owner_win'
+      && battle.winner !== placement.owner) {
+      continue;
+    }
+
+    placeV070OverlayFromBattle(
+      state,
+      placement.owner,
+      placement.sourceInstanceId,
+      battle.contestedPosition,
+      `${placement.sourceCardId} battle Aftermath`,
+    );
+    appendV070Event(state, {
+      type: 'battle_card_aftermath_overlay_placed',
+      actor: placement.owner,
+      visibility: 'public',
+      payload: {
+        sourceInstanceId: placement.sourceInstanceId,
+        sourceCardId: placement.sourceCardId,
+        territoryPosition: battle.contestedPosition,
+        condition: placement.condition,
+      },
+    });
+  }
+}
+
 function placeAftermathCard(
   state: V070GameState,
   playerId: PlayerId,
@@ -2081,6 +2117,9 @@ function placeAftermathCard(
   destination: 'discard' | 'graveyard' | 'hand',
   graveyarded: string[],
 ): void {
+  if (state.overlays.some(overlay => overlay.instanceId === instanceId)) {
+    return;
+  }
   if (destination === 'graveyard') {
     state.players[playerId].zones.graveyard.push(instanceId);
     graveyarded.push(instanceId);
@@ -2138,6 +2177,8 @@ function completeAftermathInternal(
     if (openAccursedWagerAftermathChoice(state, immediateWinner)) return;
     if (openPoisonousGasAftermathChoice(state, immediateWinner)) return;
     if (openTerritoryAftermathChoice(state, immediateWinner)) return;
+
+    resolveBattleCardAftermathOverlayPlacements(state);
 
     const graveyardedDuringAftermath: Record<PlayerId, string[]> = {
       A: [],
