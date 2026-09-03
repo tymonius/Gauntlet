@@ -73,13 +73,14 @@ describe("single Card Design render authority", () => {
       "proposal-card.js",
       "rite-card.js",
       "supplemental-card.js",
-      "leader-card-copy.js",
     ]) {
       expect(componentRenderer).toContain(dependency);
     }
     expect(componentRenderer).toContain("/card-design/component-render.js");
     expect(componentRendererJs).toContain("applyCanonicalArtworkDirection(card)");
     expect(componentRendererJs).toContain("target.replaceChildren(card)");
+    expect(componentRenderer).not.toContain("leader-card-copy.js");
+    expect(componentRenderer).not.toContain('id="leaderReviewSections"');
     expect(faceSpec).toContain("template: 'leader'");
     expect(faceSpec).toContain("requireExplicitArtworkDirection");
     expect(leaderFace).toContain("leader-card--standardized");
