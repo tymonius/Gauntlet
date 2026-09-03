@@ -173,6 +173,7 @@ async function runInfrastructurePreflight() {
   return {
     httpStatus: last?.response?.status || null,
     errorCode: last?.payload?.errorCode || null,
+    upstreamStatus: Number.isInteger(last?.payload?.upstreamStatus) ? last.payload.upstreamStatus : null,
     error: last?.payload?.error || last?.error?.message || "Unknown production endpoint failure",
     rawResponse: last?.payload ? null : String(last?.responseText || "").slice(0, 4000)
   };
@@ -313,6 +314,7 @@ if (infrastructureFailure) {
     "\nLive Rules Arbiter QA benchmark was not run because the production endpoint failed preflight."
     + "\nHTTP status: " + (infrastructureFailure.httpStatus ?? "none")
     + "\nError code: " + (infrastructureFailure.errorCode || "unavailable")
+    + "\nUpstream status: " + (infrastructureFailure.upstreamStatus ?? "unavailable")
     + "\nError: " + infrastructureFailure.error
   );
   console.log("Report: " + outputPath);
