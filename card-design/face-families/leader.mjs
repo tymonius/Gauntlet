@@ -86,3 +86,10 @@ export function renderLeaderFace(spec) {
     </div>
   </article>`;
 }
+
+export function mountFace(target, spec) {
+  target.innerHTML = renderLeaderFace(spec);
+  const card = target.firstElementChild;
+  if (!(card instanceof HTMLElement)) throw new Error(`Leader FaceSpec ${spec.id} did not mount a card element.`);
+  return card;
+}
