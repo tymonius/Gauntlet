@@ -149,7 +149,9 @@
     try { url = new URL(frame.src, location.href); } catch { return null; }
     const cardId = url.searchParams.get('card');
     const territoryId = url.searchParams.get('territory');
-    const componentKind = url.pathname.endsWith('/card-design/component-render.html')
+    const componentRoute = url.pathname.endsWith('/card-design/component-render.html')
+      || url.pathname.endsWith('/card-design/face-render.html');
+    const componentKind = componentRoute
       ? String(url.searchParams.get('kind') || '').trim().toLowerCase()
       : '';
     const componentId = componentKind ? String(url.searchParams.get('id') || '').trim() : '';
