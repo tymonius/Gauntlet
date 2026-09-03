@@ -12,7 +12,8 @@
     "leaders",
     "named cards",
     "retrieval grounding",
-    "conversation continuity"
+    "conversation continuity",
+    "Chief Justice voice"
   ],
   "cases": [
     {
@@ -28,9 +29,8 @@
       "id": "core-setup-starting-territory",
       "category": "core",
       "question": "How is my Starting Territory determined?",
-      "expectedClassification": "explicit",
+      "expectedClassification": "inferred",
       "expectedSourcePatterns": [
-        "Starting Territory",
         "Place each Player Token on the Territory at that player's end"
       ]
     },
@@ -1041,5 +1041,17 @@
       ],
       "expectedTopic": "Purge"
     }
+  ],
+  "smokeCaseIds": [
+    "core-setup-starting-territory",
+    "military-additional-tactics",
+    "diplomats-leverage-target",
+    "financiers-capacity-opening",
+    "intel-interference",
+    "mystics-transmutation",
+    "inq-blasphemy",
+    "card-necromancy",
+    "live-deed-contiguity",
+    "conversation-followup-pronoun"
   ]
 }
