@@ -8,9 +8,10 @@ const supplemental = readFileSync('card-design/supplemental-card.js', 'utf8');
 const supplementalRefinements = readFileSync('card-design/supplemental-refinements.css', 'utf8');
 const referenceRenderer = readFileSync('card-design/reference-card.js', 'utf8');
 const referenceCss = readFileSync('card-design/reference-card.css', 'utf8');
-const componentRenderer = readFileSync('card-design/component-render.js', 'utf8');
+const faceRuntime = readFileSync('card-design/face-render.mjs', 'utf8');
+const faceSpec = readFileSync('card-design/face-spec.mjs', 'utf8');
+const referenceTemplate = readFileSync('card-design/face-templates/reference.mjs', 'utf8');
 const legacyTtsRendererHtml = readFileSync('tts/supplemental-renderer/index.html', 'utf8');
-const componentRendererHtml = readFileSync('card-design/component-render.html', 'utf8');
 
 describe('production faction reference cards', () => {
   it('renders the complete seven-card contract as fourteen physical faces', () => {
@@ -173,13 +174,13 @@ describe('production faction reference cards', () => {
   });
 
   it('reuses the canonical Card Design reference renderer for TTS and every other consumer', () => {
-    expect(legacyTtsRendererHtml).toContain('/card-design/component-render.html');
-    expect(componentRenderer).toContain('kind === "reference"');
-    expect(componentRenderer).toContain('.reference-card[data-component-id=');
-    expect(componentRenderer).toContain('validateReferenceVisualContract(card)');
-    expect(componentRendererHtml).toContain('/card-design/card-design.css');
-    expect(componentRendererHtml).toContain('/card-design/reference-card.css');
-    expect(componentRendererHtml).toContain('/card-design/supplemental-refinements.css');
-    expect(componentRendererHtml).toContain('https://use.typekit.net/vgm6nwi.css');
+    expect(legacyTtsRendererHtml).toContain('/card-design/face-render.html');
+    expect(referenceTemplate).toContain('loadReferenceRecordForFaceSpec(spec)');
+    expect(referenceTemplate).toContain('referenceCardMarkup(record, spec.side');
+    expect(referenceRenderer).toContain('validateReferenceVisualContract');
+    expect(faceRuntime).toContain('rendererForTemplate(spec.template)');
+    expect(faceSpec).toContain("'/card-design/card-design.css'");
+    expect(faceSpec).toContain("'/card-design/reference-card.css'");
+    expect(faceSpec).toContain("'/card-design/supplemental-refinements.css'");
   });
 });
