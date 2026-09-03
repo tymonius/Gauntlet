@@ -16,8 +16,21 @@ describe('v0.7.1 live Rules Arbiter QA transport handling', () => {
     expect(runner).toContain('Upstream category:');
   });
 
-  it('runs the production sweep serially with a small inter-case delay', () => {
+  it('requires explicit manual confirmation before making paid API calls', () => {
+    expect(workflow).toContain('workflow_dispatch:');
+    expect(workflow).not.toContain('pull_request:');
+    expect(workflow).not.toContain('push:');
+    expect(workflow).toContain('confirm_paid_api:');
+    expect(workflow).toContain('I understand this workflow makes paid OpenAI API calls');
+  });
+
+  it('defaults manual QA to a bounded smoke scope and serial execution', () => {
+    expect(workflow).toContain('default: smoke');
+    expect(workflow).toContain('GAUNTLET_RULES_QA_LIMIT=10');
+    expect(workflow).toContain('GAUNTLET_RULES_QA_LIMIT=0');
     expect(workflow).toContain("GAUNTLET_RULES_QA_CONCURRENCY: '1'");
-    expect(workflow).toContain("GAUNTLET_RULES_QA_INTER_CASE_DELAY_MS: '500'");
+    expect(workflow).toContain("GAUNTLET_RULES_QA_MAX_ATTEMPTS: '2'");
+    expect(workflow).toContain("GAUNTLET_RULES_QA_INTER_CASE_DELAY_MS: '750'");
+    expect(runner).toContain('const benchmarkCases = caseLimit ? benchmark.cases.slice(0, caseLimit) : benchmark.cases');
   });
 });
