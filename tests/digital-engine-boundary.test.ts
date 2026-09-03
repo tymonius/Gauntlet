@@ -218,11 +218,13 @@ describe('digital engine boundary', () => {
     expect(offenders).toEqual([]);
   });
 
-  it('keeps the explicit legacy effect aggregate free of initialization side effects', () => {
-    const source = readFileSync('src/effects/v06.ts', 'utf8');
-    expect(source).not.toMatch(/^\s*import\b/m);
-    expect(source).not.toMatch(/\.(?:push|pop|shift|unshift|splice|sort|reverse)\s*\(/);
-    expect(source).not.toMatch(/^\s*(?:if|for|while|do)\b/m);
+  it('keeps explicit legacy aggregate APIs free of initialization side effects', () => {
+    for (const directory of RETIRED_LEGACY_BARRELS) {
+      const source = readFileSync(`src/${directory}/v06.ts`, 'utf8');
+      expect(source).not.toMatch(/^\s*import\b/m);
+      expect(source).not.toMatch(/\.(?:push|pop|shift|unshift|splice|sort|reverse)\s*\(/);
+      expect(source).not.toMatch(/^\s*(?:if|for|while|do)\b/m);
+    }
   });
 
   it('keeps legacy effect modules independent from state/card/dev runtime layers', () => {
@@ -243,13 +245,6 @@ describe('digital engine boundary', () => {
     }
 
     expect(offenders).toEqual([]);
-  });
-
-  it('keeps the explicit legacy card aggregate free of initialization side effects', () => {
-    const source = readFileSync('src/cards/v06.ts', 'utf8');
-    expect(source).not.toMatch(/^\s*import\b/m);
-    expect(source).not.toMatch(/\.(?:push|pop|shift|unshift|splice|sort|reverse)\s*\(/);
-    expect(source).not.toMatch(/^\s*(?:if|for|while|do)\b/m);
   });
 
   it('keeps legacy card definitions independent from state/effect/dev runtime layers', () => {
