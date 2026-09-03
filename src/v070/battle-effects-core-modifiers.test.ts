@@ -368,6 +368,167 @@ describe('v0.7.0 core battle-effect modifiers', () => {
     expect(state.battleRuntime?.aftermathDrawEffects).toEqual([]);
   });
 
+  test('Conscription adds one live Reserve card and one additional normal Tactic choice at Gambit reveal', () => {
+    let state = startBattle();
+    const conscription = injectHandCard(
+      state,
+      'A',
+      'neutral-conscription',
+      'conscription',
+    );
+
+    state = reduceV070BattleAction(state, {
+      type: 'set_gambit',
+      playerId: 'A',
+      cardInstanceId: conscription,
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'set_gambit',
+      playerId: 'B',
+    });
+
+    const reserveBeforeReveal =
+      state.battleRuntime!.participants.A.reserve.length;
+    expect(state.battleRuntime?.participants.A.tacticLimit).toBe(1);
+
+    state = reduceV070BattleAction(state, {
+      type: 'reveal_gambits',
+      playerId: 'A',
+    });
+
+    expect(state.battleRuntime?.participants.A.reserve.length)
+      .toBe(reserveBeforeReveal + 1);
+    expect(state.battleRuntime?.participants.A.tacticLimit).toBe(2);
+    expect(state.battleRuntime?.stage).toBe('choose_tactics');
+    expect(state.battleRuntime?.unsupportedEffects).toEqual([]);
+
+    const [firstA, secondA] =
+      state.battleRuntime!.participants.A.reserve;
+    state = reduceV070BattleAction(state, {
+      type: 'choose_tactic',
+      playerId: 'A',
+      cardInstanceId: firstA,
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'choose_tactic',
+      playerId: 'A',
+      cardInstanceId: secondA,
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'choose_tactic',
+      playerId: 'B',
+    });
+
+    expect(state.battleRuntime?.participants.A.additionalTactics)
+      .toHaveLength(1);
+    expect(state.battleRuntime?.stage).toBe('reveal_tactics');
+  });
+
+  test('Disinformation gains Advantage against an opposing Gambit and returns itself to Hand when battle cards clear', () => {
+    let state = startBattle();
+    const disinformation = injectHandCard(
+      state,
+      'A',
+      'intelligence-disinformation',
+      'disinformation',
+    );
+    const opposingGambit = injectHandCard(
+      state,
+      'B',
+      'neutral-rallying-cry',
+      'opposing-gambit',
+    );
+
+    state = revealGambits(
+      state,
+      disinformation,
+      opposingGambit,
+    );
+
+    expect(state.battleRuntime?.participants.A.advantage).toBe(1);
+    expect(
+      state.battleRuntime?.battleCardAftermathDestinationOverrides,
+    ).toContainEqual({
+      sourceCardId: 'intelligence-disinformation',
+      playerId: 'A',
+      instanceId: disinformation,
+      destination: 'hand',
+    });
+
+    state = toOutcome(state);
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice',
+      playerId: 'A',
+      values: [6, 6],
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice',
+      playerId: 'B',
+      values: [1],
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'complete_aftermath',
+      playerId: 'A',
+    });
+
+    expect(state.players.A.zones.hand).toContain(disinformation);
+    expect(state.players.A.zones.graveyard).not.toContain(disinformation);
+    expect(state.players.B.zones.graveyard).toContain(opposingGambit);
+  });
+
+  test('Accursed Wager battle text reuses the existing losing-player Aftermath discard queue', () => {
+    let state = startBattle();
+    const wager = injectHandCard(
+      state,
+      'A',
+      'mystics-accursed-wager',
+      'battle-wager',
+    );
+    const target = state.players.B.zones.hand[0];
+
+    state = revealGambits(state, wager);
+    expect(state.battleRuntime?.stage).toBe('choose_tactics');
+    expect(state.battleRuntime?.unsupportedEffects).toEqual([]);
+    expect(state.battleRuntime?.battleAccursedWagerInstanceIds)
+      .toEqual([wager]);
+
+    state = toOutcome(state);
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice',
+      playerId: 'A',
+      values: [6],
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice',
+      playerId: 'B',
+      values: [1],
+    });
+    expect(state.battle?.loser).toBe('B');
+
+    state = reduceV070BattleAction(state, {
+      type: 'complete_aftermath',
+      playerId: 'A',
+    });
+
+    expect(state.battleRuntime?.pendingAccursedWager).toEqual({
+      loser: 'B',
+      remainingSourceActionInstanceIds: [wager],
+      immediateWinner: null,
+    });
+
+    state = reduceV070BattleAction(state, {
+      type: 'resolve_accursed_wager_discard',
+      playerId: 'B',
+      cardInstanceId: target,
+    });
+
+    expect(state.players.B.zones.hand).not.toContain(target);
+    expect(state.players.B.zones.graveyard).toContain(target);
+    expect(state.battleRuntime).toBeNull();
+    expect(state.battle).toBeNull();
+    expect(state.players.A.zones.graveyard).toContain(wager);
+  });
+
   test('Pathfinders gains +1 only when the contested Territory has an active printed effect', () => {
     let active = startBattle('territory-high-ground');
     const activePathfinders = injectHandCard(

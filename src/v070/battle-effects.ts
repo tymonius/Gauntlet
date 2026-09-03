@@ -32,6 +32,22 @@ export interface V070BattleEffectHandler {
 }
 
 const handlers: V070BattleEffectHandler[] = [
+  {
+    cardId: 'mystics-accursed-wager',
+    expectedText: 'In the Aftermath, the losing player puts one card from their Hand in their Graveyard, if able.',
+    timing: 'reveal',
+    apply: ({ state, commitment }) => {
+      const runtime = state.battleRuntime;
+      if (!runtime) throw new Error('Battle effects require an active battle runtime.');
+      if (!runtime.battleAccursedWagerInstanceIds.includes(
+        commitment.instanceId,
+      )) {
+        runtime.battleAccursedWagerInstanceIds.push(
+          commitment.instanceId,
+        );
+      }
+    },
+  },
   modifier('neutral-new-recruits', '+1 Battle Total.', 1),
   modifier('neutral-rallying-cry', '+1 Battle Total.', 1),
   modifier('diplomats-gunboat-diplomacy', '+2 Battle Total.', 2),
@@ -202,6 +218,26 @@ const handlers: V070BattleEffectHandler[] = [
     },
   },
   {
+    cardId: 'intelligence-disinformation',
+    expectedText: 'When Gambits are revealed, if the opponent also set a Gambit, gain Advantage. In the Aftermath, return this card to your Hand instead of putting it in your Graveyard.',
+    timing: 'reveal',
+    apply: ({ state, owner, opponent, commitment }) => {
+      if (commitment.role !== 'gambit') return;
+      const opponentParticipant = participant(state, opponent);
+      if (opponentParticipant.gambit
+        || opponentParticipant.additionalGambits.length > 0) {
+        participant(state, owner).advantage += 1;
+      }
+      registerBattleCardAftermathDestination(
+        state,
+        owner,
+        commitment.instanceId,
+        'intelligence-disinformation',
+        'hand',
+      );
+    },
+  },
+  {
     cardId: 'neutral-fealty',
     expectedText: 'Ignore one Disadvantage affecting you during this battle. If you have no Disadvantage, +1 Battle Total instead.',
     timing: 'reveal',
@@ -218,6 +254,48 @@ const handlers: V070BattleEffectHandler[] = [
     apply: ({ state, owner }) => {
       if (activeV070PrintedBattleTerritory(state)) {
         participant(state, owner).battleModifier += 1;
+      }
+    },
+  },
+  {
+    cardId: 'neutral-conscription',
+    expectedText: 'When Gambits are revealed: +1 Reserve, +1 Tactic.',
+    timing: 'reveal',
+    apply: ({ state, owner, commitment }) => {
+      if (commitment.role !== 'gambit') return;
+      const draw = drawV070Cards(
+        state,
+        owner,
+        1,
+        'Conscription battle Reserve',
+      );
+      const current = participant(state, owner);
+      current.reserve.push(...draw.drawn);
+      current.tacticLimit += 1;
+
+      appendV070Event(state, {
+        type: 'battle_reserve_cards_added',
+        actor: owner,
+        visibility: 'public',
+        payload: {
+          sourceInstanceId: commitment.instanceId,
+          sourceCardId: 'neutral-conscription',
+          count: draw.drawn.length,
+          reshuffles: draw.reshuffles,
+          exhausted: draw.exhausted,
+          tacticLimitDelta: 1,
+        },
+      });
+      if (draw.drawn.length > 0) {
+        appendV070Event(state, {
+          type: 'reserve_identity',
+          actor: owner,
+          visibility: owner,
+          payload: {
+            cardInstanceIds: [...draw.drawn],
+            purpose: 'Conscription',
+          },
+        });
       }
     },
   },
@@ -519,6 +597,23 @@ function modifier(cardId: string, expectedText: string, amount: number): V070Bat
       participant(state, owner).battleModifier += amount;
     },
   };
+}
+
+function registerBattleCardAftermathDestination(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+  sourceCardId: string,
+  destination: 'discard' | 'graveyard' | 'hand',
+): void {
+  const runtime = state.battleRuntime;
+  if (!runtime) throw new Error('Battle effects require an active battle runtime.');
+  runtime.battleCardAftermathDestinationOverrides.push({
+    sourceCardId,
+    playerId,
+    instanceId,
+    destination,
+  });
 }
 
 function registerAftermathDraw(
