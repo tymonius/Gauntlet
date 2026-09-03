@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "version": "v0.6.4-candidate",
+  "base_version": "v0.6.3",
+  "status": "accepted current-development rules migration",
+  "change_type": "collapse-pending-battle-into-onset",
+  "mechanics_changed": true,
+  "summary": "Onset replaces Pending Battle as the first phase of the battle sequence. During Onset, establish the battle context, resolve Terms when applicable, determine whether the battle proceeds, and resolve other pre-Gambit effects before setting Gambits.",
+  "battle": {
+    "sequence": [
+      "onset",
+      "set_gambits",
+      "form_reserves",
+      "reveal_gambits",
+      "choose_tactics",
+      "reveal_tactics",
+      "outcome",
+      "aftermath"
+    ],
+    "remove_fields": [
+      "pending_sequence"
+    ],
+    "onset": "When movement initiates a battle, enter Onset. Establish the attacker, defender, contested Position, and attacker's previous Position. Resolve Terms first when applicable. If the battle is prevented or a player withdraws during Onset, end the battle sequence without setting Gambits and without a battle result. Otherwise resolve other effects that apply during Onset or before Gambits are set, then proceed to Gambits.",
+    "onset_steps": [
+      "Establish the attacker, defender, contested Position, and attacker's previous Position.",
+      "Resolve Terms first when applicable.",
+      "If the battle has been prevented or a player withdraws, end the battle sequence.",
+      "Resolve other effects that apply during Onset or before Gambits are set.",
+      "If the battle still proceeds, continue to Gambits."
+    ],
+    "withdrawal": "Withdrawal during Onset ends the battle sequence without a winner or battle result. No Gambits are set and no Aftermath occurs. After Onset has completed and the battle has proceeded to Gambits, a later withdrawal completes the remaining non-result Aftermath steps and clears committed battle cards normally.",
+    "battle_fought": "A battle sequence that ends during Onset is not a battle fought, won, or lost. Once Onset completes and the sequence proceeds to Gambits, the battle has proceeded for effects that care whether a battle occurred.",
+    "movement": "Entering the opponent's Position initiates a battle and ends that movement sequence. Effects that grant movement may initiate a battle unless they say otherwise.",
+    "terms": "Terms are resolved during Onset after the attacker, defender, contested Position, and attacker's previous Position are established, and before other pre-Gambit effects. The attacker has the first opportunity to offer Terms. If the attacker passes, the defender may offer. Once either player offers Terms, the other cannot offer Terms in that battle sequence even if the Proposal is refused. Accepted Terms end the battle sequence during Onset. Refused Terms apply their Refused effect and any refusal modifiers, then Onset continues unless that effect ends the sequence."
+  },
+  "terminology": {
+    "removed_term": "Pending Battle",
+    "replacement": "Onset",
+    "movement_wording": "Movement initiates a battle; it does not create a pending battle.",
+    "timing_wording": "Effects formerly keyed to when a battle would begin resolve during Onset unless their text gives another timing."
+  },
+  "card_text_overrides": [
+    {
+      "id": "neutral-advance-guard",
+      "label": "Action",
+      "text": "During Opening, during your Movement this turn, you may move one additional Position. If that additional movement initiates a battle, you cannot set a Gambit in that battle."
+    },
+    {
+      "id": "neutral-forced-march",
+      "label": "Action",
+      "text": "During Opening, during your Movement this turn, you may move one additional Position. This additional movement cannot initiate a battle."
+    },
+    {
+      "id": "mystics-nature-s-altar",
+      "label": "Overlay",
+      "text": "During your Opening, while you are here, you may use the Begin a Rite Faction Feature. A Rite begun this way may complete this turn if you control this Territory when its completion condition and timing are satisfied."
+    }
+  ],
+  "rulebook_overrides": [
+    {
+      "id": "battle-onset",
+      "heading": "Onset",
+      "body": "Onset is the first phase of the battle sequence. When movement initiates a battle, establish the attacker, defender, contested Position, and attacker's previous Position. Resolve Terms first when applicable. If the battle is prevented or a player withdraws during Onset, end the battle sequence without setting Gambits, without a battle result, and without an Aftermath. Otherwise resolve other effects that apply during Onset or before Gambits are set, then proceed to Gambits. A battle sequence that ends during Onset is not a battle fought, won, or lost."
+    },
+    {
+      "id": "battle-terms",
+      "heading": "Offering Terms during Onset",
+      "body": "Terms are a Diplomat Faction Feature marked No Action, resolved during Onset after the attacker, defender, contested Position, and attacker's previous Position are established, and before other pre-Gambit effects. To offer Terms, choose one eligible Proposal, confirm its Requirement, confirm enough available Influence for its Stake, lower available Influence by the Stake, then the opponent accepts or refuses. A Diplomat may normally offer one Proposal in a battle sequence. In a Diplomat mirror, the attacker has the first opportunity to offer Terms; if the attacker passes, the defender may offer. Once either player offers Terms, the other cannot offer Terms in that battle sequence even if the Proposal is refused."
+    },
+    {
+      "id": "battle-accepted-terms",
+      "heading": "Accepted Terms",
+      "body": "When Terms are accepted during Onset: apply the Proposal's Accepted effect; return the Stake; if the Proposal is unratified, flip it to its Treaty Article side; if newly ratified, gain 1 Influence; then apply effects that occur after acceptance. The battle sequence ends during Onset. No battle is fought, no Gambits are set, and there is no winner, loser, or Aftermath. Unless the Proposal says otherwise, the attacker withdraws and the defender remains at the contested Position. An already-ratified Proposal grants no default ratification reward."
+    },
+    {
+      "id": "battle-refused-terms",
+      "heading": "Refused Terms",
+      "body": "When Terms are refused during Onset, apply the Proposal's Refused effect and any refusal modifiers, then continue Onset. Resolve any remaining effects that apply during Onset or before Gambits are set; if the sequence still proceeds, continue to Gambits. Before dice are rolled, the Diplomat may use Leverage. If the Diplomat wins the resulting battle, return the Stake and, if eligible, impose and ratify the Proposal with its normal reward. If the Diplomat loses, lose the Stake and do not ratify the Proposal. If the battle later ends without a winner, return the Stake and do not impose the Proposal. Withdrawal after refused Terms produces no winner."
+    },
+    {
+      "id": "battle-withdrawal",
+      "heading": "Withdrawal",
+      "body": "Withdrawal during Onset ends the battle sequence without a winner or battle result. No Gambits are set and no Aftermath occurs. After Onset has completed and the battle has proceeded to Gambits, a later withdrawal completes the remaining non-result Aftermath steps and clears committed battle cards normally."
+    },
+    {
+      "id": "battle-movement",
+      "heading": "Movement and battles",
+      "body": "Entering the opponent's Position initiates a battle and ends that movement sequence. Effects that grant movement may initiate a battle unless they say otherwise."
+    }
+  ]
+}
