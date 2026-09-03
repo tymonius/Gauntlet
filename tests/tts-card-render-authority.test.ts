@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
@@ -114,6 +114,16 @@ describe('TTS card render authority', () => {
     expect(existsSync(['tts', 'renderer', 'renderer.js'].join('/'))).toBe(false);
     expect(existsSync(['tts', 'territory-renderer', 'territory-renderer.js'].join('/'))).toBe(false);
     expect(existsSync(['tts', 'finalized-supplemental-renderer', 'renderer.js'].join('/'))).toBe(false);
+
+    for (const compatibilityDir of [
+      'renderer',
+      'territory-renderer',
+      'back-renderer',
+      'supplemental-renderer',
+      'finalized-supplemental-renderer',
+    ]) {
+      expect(readdirSync(['tts', compatibilityDir].join('/')).sort()).toEqual(['index.html']);
+    }
   });
 
   it('loads the canonical web fonts before shared content-sensitive fitting', () => {
