@@ -172,7 +172,7 @@ async function renderTerritories(catalog, componentContract) {
     let fontsValidated = false;
     for (const territory of catalog.territories) {
       await page.setViewportSize({ width: 620, height: 500 });
-      await page.goto(`${baseUrl}/card-design/territory-review-render.html?territory=${encodeURIComponent(territory.id)}&version=${encodeURIComponent(release.displayVersion || release.version)}`, { waitUntil: 'load' });
+      await page.goto(`${baseUrl}/card-design/face-render.html?id=${encodeURIComponent(`territory:${territory.id}`)}`, { waitUntil: 'load' });
       await page.waitForSelector('.territory-card');
       await page.waitForFunction(() => document.body.dataset.renderReady === 'true');
 

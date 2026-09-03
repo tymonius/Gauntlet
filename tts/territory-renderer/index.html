@@ -6,11 +6,14 @@
   <title>Gauntlet Territory renderer redirect</title>
   <script>
     (() => {
-      const target = new URL("/card-design/territory-review-render.html", window.location.origin);
-      for (const [key, value] of new URLSearchParams(window.location.search)) {
-        target.searchParams.append(key, value);
+      const params = new URLSearchParams(window.location.search);
+      const territory = String(params.get('territory') || params.get('id') || '').trim();
+      if (!territory) {
+        document.documentElement.dataset.redirectError = 'missing-territory';
+        return;
       }
-      target.hash = window.location.hash;
+      const target = new URL('/card-design/face-render.html', window.location.origin);
+      target.searchParams.set('id', `territory:${territory}`);
       window.location.replace(target);
     })();
   </script>

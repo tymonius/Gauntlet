@@ -54,9 +54,14 @@ describe('complete canonical render authority', () => {
     expect(resolveArtDirection(currentGame.visualPolicy, currentGame.artDirection, 'missing-id')).toEqual(
       currentGame.visualPolicy.artDirectionDefault,
     );
-    expect(resolveArtDirection(currentGame.visualPolicy, currentGame.artDirection, 'financiers-banker')).toEqual({
-      ...currentGame.visualPolicy.artDirectionDefault,
+    expect(resolveArtDirection(currentGame.visualPolicy, currentGame.artDirection, 'financiers-banker')).toEqual(
+      currentGame.artDirection['financiers-banker'],
+    );
+    expect(currentGame.artDirection['financiers-banker']).toMatchObject({
+      smart: false,
+      focusX: 0.5,
       focusY: 0,
+      zoom: 1,
     });
 
     expect(currentValidation).toContain('validateVisualPolicy(authority.visualPolicy)');
@@ -171,7 +176,8 @@ describe('complete canonical render authority', () => {
 
   it('keeps back policy data-driven and card backs on the Card Design render surface', () => {
     expect(productionPrint).toContain('component.backPolicy || "standardBack"');
-    expect(productionPrint).toContain('/card-design/card-back-render.html?faction=');
+    expect(productionPrint).toContain('faceRenderSource(`back:${safeFaction}`)');
+    expect(productionPrint).not.toContain('/card-design/card-back-render.html?faction=');
     expect(productionPrint).not.toContain('/tts/back-renderer/index.html?faction=');
   });
 });

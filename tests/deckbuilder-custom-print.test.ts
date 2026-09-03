@@ -16,7 +16,7 @@ const cardLikeFamilies = new Set(
 
 describe("Deckbuilder custom printing", () => {
   it("loads as an Advanced tool without changing the Deckbuilder HTML shell", () => {
-    expect(printBootstrap).toContain('import("./custom-print.mjs?v=20260831-2")');
+    expect(printBootstrap).toMatch(/import\("\.\/custom-print\.mjs\?v=[^"]+"\)/);
     expect(customPrint).toContain('document.querySelector(".advanced-tools")');
     expect(customPrint).toContain("Enable custom printing");
     expect(customPrint).toContain("Custom print sheets");
@@ -68,9 +68,10 @@ describe("Deckbuilder custom printing", () => {
     expect(customPrint).toContain("renderer.cardSource(entry.render.id)");
     expect(customPrint).toContain("renderer.territorySource(entry.render.id)");
     expect(customPrint).toContain("renderer.frameSource({");
+    expect(customPrint).toContain("faceId: `leader:${entry.render.id}`");
     expect(customPrint).toContain("renderer.componentSource(entry.render.id, side)");
     expect(customPrint).toContain("productionPrint().componentDescriptor(component.id)");
-    expect(customPrint).toContain("productionPrint().backSource(safeFaction, 180)");
+    expect(customPrint).toContain("productionPrint().backSource(safeFaction)");
     expect(customPrint).not.toContain("/card-design/card-print-render.html?card=");
     expect(customPrint).not.toContain("/card-design/territory-print-render.html?territory=");
     expect(customPrint).not.toContain("/card-design/component-print-render.html?kind=");

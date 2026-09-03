@@ -39,17 +39,13 @@
     return items.slice().sort((a, b) => String(selector(a) || '').localeCompare(String(selector(b) || '')));
   }
 
-  function componentRenderSource(kind, id, side = 'front', orientation = 'portrait') {
-    const params = new URLSearchParams({ kind, id, side });
-    if (orientation === 'landscape') params.set('orientation', 'landscape');
-    const rules = new URLSearchParams(window.location.search).get('rules');
-    if (rules) params.set('rules', rules);
-    return `/card-design/component-render.html?${params.toString()}`;
+  function faceRenderSource(faceId) {
+    return `/card-design/face-render.html?id=${encodeURIComponent(faceId)}`;
   }
 
-  function componentReviewFrame(kind, id, label, side = 'front', orientation = 'portrait') {
+  function componentReviewFrame(faceId, label, orientation = 'portrait') {
     const landscape = orientation === 'landscape';
-    return `<iframe class="component-review-frame${landscape ? ' component-review-frame-landscape' : ''}" loading="lazy" src="${esc(componentRenderSource(kind, id, side, orientation))}" title="${esc(label)} canonical Card Design render"></iframe>`;
+    return `<iframe class="component-review-frame${landscape ? ' component-review-frame-landscape' : ''}" loading="lazy" src="${esc(faceRenderSource(faceId))}" title="${esc(label)} canonical Card Design render"></iframe>`;
   }
 
   async function currentGame() {
@@ -70,7 +66,7 @@
   function leaderCard(leader, version) {
     const specimenId = `${leader.faction}-${slugify(leader.name)}`;
     if (catalogFilter()) {
-      return `<div class="leader-specimen" id="${specimenId}"><p class="leader-review-label screen-only"><strong>${esc(leader.name)}</strong><span>${esc(leader.note)}</span></p>${componentReviewFrame('leader', specimenId, `${leader.name} ${leader.factionLabel} Leader`)}</div>`;
+      return `<div class="leader-specimen" id="${specimenId}"><p class="leader-review-label screen-only"><strong>${esc(leader.name)}</strong><span>${esc(leader.note)}</span></p>${componentReviewFrame(`leader:${leader.faction}-${leader.id}`, `${leader.name} ${leader.factionLabel} Leader`)}</div>`;
     }
 
     const extra = leader.name === 'Commandant' ? ' commandant-card' : '';
@@ -118,7 +114,7 @@
         let list = cards.filter(card => slugify(card.allegiance) === faction);
         if (catalogFilter()?.sort === 'name') list = alphabetical(list);
         if (!list.length) return '';
-        return `<section class="review-faction-block" id="playable-${faction}" aria-labelledby="playable-${faction}-title"><div class="review-faction-heading screen-only"><h3 id="playable-${faction}-title">${esc(label)}</h3><span>${list.length} cards</span></div><div class="full-card-review-grid">${list.map(card=>`<div class="specimen-column"><p class="review-card-label screen-only"><strong title="${esc(card.name)}">${esc(card.name)}</strong><span>Value ${Number(card.cost)}</span></p><iframe class="full-card-review-frame" loading="lazy" src="card-review-render.html?fit=production&amp;card=${encodeURIComponent(card.id)}" title="${esc(card.name)} ${esc(current.displayVersion)} production render"></iframe></div>`).join('')}</div></section>`;
+        return `<section class="review-faction-block" id="playable-${faction}" aria-labelledby="playable-${faction}-title"><div class="review-faction-heading screen-only"><h3 id="playable-${faction}-title">${esc(label)}</h3><span>${list.length} cards</span></div><div class="full-card-review-grid">${list.map(card=>`<div class="specimen-column"><p class="review-card-label screen-only"><strong title="${esc(card.name)}">${esc(card.name)}</strong><span>Value ${Number(card.cost)}</span></p><iframe class="full-card-review-frame" loading="lazy" src="${esc(faceRenderSource(`card:${card.id}`))}" title="${esc(card.name)} ${esc(current.displayVersion)} production render"></iframe></div>`).join('')}</div></section>`;
       }).join('');
     } catch (error) {
       root.innerHTML = `<p class="review-note">Unable to load current playable-card catalog: ${esc(error.message)}</p>`;
@@ -128,7 +124,7 @@
 
   function territoryItem(territory, version) {
     const meta = territory.arena ? `Arena · No. ${Number(territory.number)}` : `No. ${Number(territory.number)}`;
-    return `<div class="territory-review-item"><p class="territory-review-label screen-only"><strong title="${esc(territory.name)}">${esc(territory.name)}</strong><span>${esc(meta)}</span></p><iframe class="territory-review-frame" loading="lazy" src="territory-review-render.html?territory=${encodeURIComponent(territory.id)}" title="${esc(territory.name)} ${esc(version)} Territory render"></iframe></div>`;
+    return `<div class="territory-review-item"><p class="territory-review-label screen-only"><strong title="${esc(territory.name)}">${esc(territory.name)}</strong><span>${esc(meta)}</span></p><iframe class="territory-review-frame" loading="lazy" src="${esc(faceRenderSource(`territory:${territory.id}`))}" title="${esc(territory.name)} ${esc(version)} Territory render"></iframe></div>`;
   }
 
   async function renderTerritories() {
@@ -237,7 +233,6 @@
     territoryInspectionSource = sourceFrame || null;
     const url = new URL(href, window.location.href);
     if (url.origin !== window.location.origin) return;
-    url.searchParams.set('inspection', '1');
     territoryInspectionFrame = document.createElement('iframe');
     territoryInspectionFrame.className = 'card-inspection-frame territory-inspection-frame';
     territoryInspectionFrame.src = url.href;
@@ -264,13 +259,14 @@
     if (event.origin !== window.location.origin) return;
     const sourceFrame = Array.from(document.querySelectorAll('iframe')).find(frame => frame.contentWindow === event.source);
     if (!sourceFrame) return;
-    if (event.data?.type === 'gauntlet-territory-inspect') {
+    if (sourceFrame === territoryInspectionFrame) return;
+    if (event.data?.type === 'gauntlet-face-inspect' || event.data?.type === 'gauntlet-territory-inspect') {
       const href = String(event.data.href || '');
       if (!href) return;
       openTerritoryInspection(href, String(event.data.label || 'Gauntlet Territory'), sourceFrame);
       return;
     }
-    if (event.data?.type === 'gauntlet-territory-art-inspect') {
+    if (event.data?.type === 'gauntlet-face-art-inspect' || event.data?.type === 'gauntlet-territory-art-inspect') {
       const source = String(event.data.source || '');
       if (!source) return;
       openTerritoryArtworkInspection(source, String(event.data.label || 'Gauntlet Territory'));

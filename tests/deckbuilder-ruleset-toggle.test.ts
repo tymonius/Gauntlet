@@ -70,13 +70,14 @@ describe('Deckbuilder released / release-candidate ruleset toggle', () => {
     expect(readFileSync('game-data/ruleset.mjs', 'utf8')).not.toContain('const artDirection = {};');
   });
 
-  it('threads the selected ruleset through one production-render source API', () => {
+  it('threads the selected ruleset through the generic face-authority bridge', () => {
     expect(productionPrint).toContain('deckbuilder.ruleset()?.mode');
-    expect(productionPrint).toContain('&rules=${encodeURIComponent(selectedRulesetMode())}');
+    expect(productionPrint).toContain('window.__gauntletFaceAuthorityBridge');
+    expect(productionPrint).not.toContain('&rules=');
     expect(customPrint).toContain('deckbuilder.feature("productionPrintRenderer")');
     expect(customPrint).not.toContain('selectedRulesetMode');
     expect(currentRuntime).toContain("function requestedRulesetMode()");
-    expect(currentRuntime).toContain("return requestedRulesetMode() === 'released';");
+    expect(currentRuntime).toContain("window.top.__gauntletFaceAuthorityBridge");
     expect(currentRuntime).toContain("requestedMode !== bridge.rulesetMode");
     expect(currentRuntime).toContain("import('./ruleset.mjs')");
   });

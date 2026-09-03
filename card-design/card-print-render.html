@@ -6,9 +6,14 @@
   <title>Gauntlet canonical render redirect</title>
   <script>
     (() => {
-      const target = new URL("/card-design/card-review-render.html", window.location.origin);
-      target.search = window.location.search;
-      target.hash = window.location.hash;
+      const params = new URLSearchParams(window.location.search);
+      const card = String(params.get('card') || params.get('id') || '').trim();
+      if (!card) {
+        document.documentElement.dataset.redirectError = 'missing-card';
+        return;
+      }
+      const target = new URL('/card-design/face-render.html', window.location.origin);
+      target.searchParams.set('id', `card:${card}`);
       window.location.replace(target);
     })();
   </script>

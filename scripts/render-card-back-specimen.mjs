@@ -206,8 +206,8 @@ async function validateEmbeddedFrameInspector(page, sourceFrame, label) {
   if (inspection.frameWidth <= PORTRAIT_CSS.width || inspection.frameHeight <= PORTRAIT_CSS.height || inspection.stageWidth <= PORTRAIT_CSS.width || inspection.stageHeight <= PORTRAIT_CSS.height) {
     throw new Error(`${label} embedded inspector did not enlarge the canonical frame: ${JSON.stringify(inspection)}.`);
   }
-  if (!inspection.inspectionSource.includes('inspection=1')) {
-    throw new Error(`${label} embedded inspector did not request canonical inspection mode: ${JSON.stringify(inspection)}.`);
+  if (!inspection.inspectionSource.includes('/card-design/face-render.html?id=')) {
+    throw new Error(`${label} embedded inspector did not preserve canonical face identity: ${JSON.stringify(inspection)}.`);
   }
 
   await dialog.locator('.card-inspection-close').click();
@@ -295,12 +295,12 @@ async function main() {
       await validateEmbeddedFrameInspector(leaderPage, leaderFrame, 'Leader card');
 
       const bankerFrame = leaderPage.locator(
-        '#leader-cards .component-review-frame[src*="kind=leader"][src*="id=financiers-banker"]'
+        '#leader-cards .component-review-frame[src*="face-render.html"][src*="financiers-banker"]'
       ).first();
       await bankerFrame.waitFor();
       await leaderPage.waitForFunction(() => (
         [...document.querySelectorAll('#leader-cards .component-review-frame')]
-          .find(frame => frame.src.includes('id=financiers-banker'))
+          .find(frame => frame.src.includes('financiers-banker'))
           ?.contentDocument?.body?.dataset.renderReady === 'true'
       ));
       await leaderPage.evaluate(() => {
@@ -312,7 +312,7 @@ async function main() {
       });
       await leaderPage.waitForFunction(() => {
         const frame = [...document.querySelectorAll('#leader-cards .component-review-frame')]
-          .find(candidate => candidate.src.includes('id=financiers-banker'));
+          .find(candidate => candidate.src.includes('financiers-banker'));
         return frame?.classList.contains('art-compositor-divergent-source')
           && document.querySelector('.art-compositor-divergence-summary')
           && [...document.querySelectorAll('.art-compositor-divergence-badge')]
@@ -333,7 +333,7 @@ async function main() {
       });
       await leaderPage.waitForFunction(() => {
         const frame = [...document.querySelectorAll('#leader-cards .component-review-frame')]
-          .find(candidate => candidate.src.includes('id=financiers-banker'));
+          .find(candidate => candidate.src.includes('financiers-banker'));
         return frame
           && !frame.classList.contains('art-compositor-divergent-source')
           && !document.querySelector('.art-compositor-divergence-summary');

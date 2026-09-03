@@ -44,7 +44,7 @@ async function standalone(browser, options, screenshotPath) {
   const context = await browser.newContext(options);
   const page = await context.newPage();
   try {
-    await page.goto(`${BASE}/card-design/territory-review-render.html?territory=${ID}`, { waitUntil: 'load' });
+    await page.goto(`${BASE}/card-design/face-render.html?id=${encodeURIComponent(`territory:${ID}`)}`, { waitUntil: 'load' });
     await ready(page);
     await page.waitForTimeout(150);
     const result = await metrics(page);
@@ -62,7 +62,7 @@ async function inspection(browser, options, screenshotPath) {
   const page = await context.newPage();
   try {
     await page.goto(`${BASE}/card-design/?type=territory#territories`, { waitUntil: 'load' });
-    const sourceSelector = `iframe.territory-review-frame[src*="territory=${ID}"]`;
+    const sourceSelector = `iframe.territory-review-frame[src*="face-render.html"][src*="${ID}"]`;
     const source = page.locator(sourceSelector);
     await source.waitFor({ state: 'attached', timeout: 30000 });
 

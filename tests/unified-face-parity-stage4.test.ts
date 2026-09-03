@@ -83,11 +83,11 @@ describe('Stage 4 unified face parity gate', () => {
     expect(supplementalStyles).not.toContain('[data-component-id="operation-progress-tracker"]');
   });
 
-  it('runs as a dedicated CI check and preserves production isolation', () => {
+  it('runs as a dedicated migration proof while production consumers use the clean route', () => {
     expect(workflow).toContain('node scripts/validate-unified-face-parity.mjs');
     expect(workflow).toContain('unified-face-parity');
-    expect(productionPrint).not.toContain('/card-design/face-render.html');
-    expect(cardReference).not.toContain('/card-design/face-render.html');
+    expect(productionPrint).toContain('/card-design/face-render.html?id=');
+    expect(cardReference).toContain('../card-design/face-render.html?id=');
     expect(componentRenderer).not.toContain('/card-design/face-render.html');
   });
 });

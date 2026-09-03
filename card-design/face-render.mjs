@@ -41,7 +41,17 @@ function loadStylesheet(href) {
     link.href = href;
     link.dataset.faceStyle = href;
     link.addEventListener('load', resolve, { once: true });
-    link.addEventListener('error', () => reject(new Error(`Face stylesheet failed to load: ${href}`)), { once: true });
+    link.addEventListener('error', () => {
+      // Chromium can report a stylesheet error when a nested remote @import
+      // fails even though the same-origin stylesheet itself was parsed.
+      // Preserve fail-closed behavior for a genuinely missing local sheet.
+      if (link.sheet) {
+        console.warn(`Face stylesheet loaded with a nested resource failure: ${href}`);
+        resolve();
+        return;
+      }
+      reject(new Error(`Face stylesheet failed to load: ${href}`));
+    }, { once: true });
     document.head.append(link);
   });
 }
@@ -83,7 +93,11 @@ async function applyCanonicalArtwork(spec, result) {
   if (!artwork || artwork.role === 'template') return;
 
   if (artwork.role === 'full-face') {
-    if (result.artworkImage) await attachArtwork(result.artworkImage, artwork.source);
+    if (result.artworkImage) {
+      const source = await attachArtwork(result.artworkImage, artwork.source);
+      result.element.dataset.artworkSource = source;
+      result.element.dataset.artworkLoaded = 'true';
+    }
     return;
   }
 
@@ -100,6 +114,7 @@ async function applyCanonicalArtwork(spec, result) {
   if (!crop) throw new Error(`Canonical artwork composition failed for ${spec.id}.`);
   result.element.dataset.artDirectionApplied = artwork.composition.id;
   result.element.dataset.artworkSource = source;
+  result.element.dataset.artworkLoaded = 'true';
 }
 
 const FITTERS = Object.freeze({
@@ -132,6 +147,69 @@ async function prepareFace(spec, result) {
   }
 }
 
+function installEmbeddedInspection(spec, result) {
+  if (window.self === window.top || !result.inspection) return;
+
+  const element = result.element;
+  const label = spec.label || element.getAttribute('aria-label') || 'Gauntlet face';
+
+  if (result.inspection.card) {
+    element.classList.add('card-inspectable');
+    element.tabIndex = 0;
+    element.setAttribute('role', 'button');
+    element.setAttribute('aria-haspopup', 'dialog');
+    element.title = 'Open enlarged card view';
+
+    const openCard = () => window.parent.postMessage({
+      type: 'gauntlet-face-inspect',
+      href: window.location.href,
+      label,
+      faceId: spec.id,
+      orientation: spec.orientation,
+    }, window.location.origin);
+
+    element.addEventListener('click', event => {
+      if (event.button !== 0) return;
+      openCard();
+    });
+    element.addEventListener('keydown', event => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      openCard();
+    });
+  }
+
+  const image = result.inspection.artworkImage;
+  const frame = image?.closest('figure');
+  if (!(image instanceof HTMLImageElement) || !frame || !(image.currentSrc || image.src)) return;
+
+  frame.classList.add('art-inspectable');
+  frame.tabIndex = 0;
+  frame.setAttribute('role', 'button');
+  frame.setAttribute('aria-haspopup', 'dialog');
+  frame.setAttribute('aria-label', `View full uncropped artwork for ${label}`);
+  frame.title = 'View full uncropped artwork';
+
+  const openArtwork = () => window.parent.postMessage({
+    type: 'gauntlet-face-art-inspect',
+    source: image.currentSrc || image.src,
+    label,
+    faceId: spec.id,
+  }, window.location.origin);
+
+  frame.addEventListener('click', event => {
+    if (event.button !== 0) return;
+    event.stopPropagation();
+    openArtwork();
+  });
+  frame.addEventListener('keydown', event => {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+    event.stopPropagation();
+    openArtwork();
+  });
+}
+
 function reportError(error) {
   const message = error?.stack || error?.message || String(error);
   console.error(error);
@@ -151,6 +229,9 @@ async function main() {
   if (!target) throw new Error('Canonical face renderer is missing #renderTarget.');
 
   const game = await loadRenderGame();
+  // Embedded authoring tools consume the same canonical visual-authority map
+  // that FaceSpec resolved against; no renderer-family reconstruction is needed.
+  window.GAUNTLET_ART_DIRECTION = game.artDirection || {};
   const spec = resolveFaceSpec(game, faceIdFromLocation());
 
   document.body.dataset.faceId = spec.id;
@@ -158,6 +239,9 @@ async function main() {
   document.body.dataset.gameplayAuthority = spec.provenance.gameplay;
   document.body.dataset.visualAuthority = spec.provenance.visual;
   document.body.dataset.faceProductionReady = String(spec.readiness.productionReady);
+  if (spec.artwork?.composition?.id) {
+    document.body.dataset.artDirectionId = spec.artwork.composition.id;
+  }
 
   if (!spec.readiness.productionReady) {
     throw new Error(`Face ${spec.id} is not ready for the clean renderer: ${spec.readiness.issues.join(', ')}.`);
@@ -178,6 +262,7 @@ async function main() {
   target.replaceChildren(result.element);
 
   await prepareFace(spec, result);
+  installEmbeddedInspection(spec, result);
   document.body.dataset.renderReady = 'true';
 }
 

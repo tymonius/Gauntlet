@@ -30,5 +30,11 @@ export function render(spec) {
 
   element.dataset.faceId = spec.id;
   element.dataset.faceTemplate = spec.template;
-  return { element, artworkImage: element.querySelector('.territory-art img'), preparation: { parchment: 'neutral', fit: 'territory' } };
+  const artworkImage = element.querySelector('.territory-art img');
+  return {
+    element,
+    artworkImage,
+    preparation: { parchment: 'neutral', fit: 'territory' },
+    inspection: { card: true, artworkImage },
+  };
 }

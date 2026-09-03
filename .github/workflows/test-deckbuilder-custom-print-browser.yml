@@ -111,23 +111,23 @@ jobs:
           const backFrames = await printPage.locator('.custom-back-page [data-custom-render-frame]').count();
           if (frontFrames !== 8 || backFrames !== 8) throw new Error(`Expected 8 front and 8 reverse/back frames, found ${frontFrames}/${backFrames}`);
           if (await printPage.locator('.custom-landscape-rotate').count() < 1) throw new Error('Mixed custom sheet did not include a rotated landscape card.');
-          const playableFrame = printPage.locator('iframe[src*="card-review-render.html"][src*="printArtwork=normalized"]').first();
-          if (await playableFrame.count() !== 1) throw new Error('Playable card did not request normalized print artwork.');
+          const playableFrame = printPage.locator('iframe[src*="face-render.html"][src*="card%3Aneutral-rallying-cry"]').first();
+          if (await playableFrame.count() !== 1) throw new Error('Playable card did not use the canonical face renderer.');
           const playableFrameState = await playableFrame.evaluate(frame => ({
-            normalized: frame.contentDocument?.body?.dataset.printArtworkNormalized || '',
+            ready: frame.contentDocument?.body?.dataset.renderReady || '',
+            faceId: frame.contentDocument?.body?.dataset.faceId || '',
             source: frame.contentDocument?.querySelector('.card-art img')?.currentSrc || frame.contentDocument?.querySelector('.card-art img')?.src || '',
-            originalSource: frame.contentDocument?.body?.dataset.printArtworkSource || '',
           }));
-          if (playableFrameState.normalized !== 'true' || !playableFrameState.source.startsWith('blob:') || !playableFrameState.originalSource.includes('/images/artwork/cards/')) {
-            throw new Error(`Playable print artwork normalization failed: ${JSON.stringify(playableFrameState)}`);
+          if (playableFrameState.ready !== 'true' || playableFrameState.faceId !== 'card:neutral-rallying-cry' || !playableFrameState.source.includes('/images/artwork/cards/')) {
+            throw new Error(`Playable canonical face failed: ${JSON.stringify(playableFrameState)}`);
           }
-          if (await printPage.locator('iframe[src*="kind=leader"]').count() < 1) throw new Error('Leader production renderer was not used.');
-          if (await printPage.locator('iframe[src*="kind=reference"]').count() < 2) throw new Error('Reference front/reverse renderers were not paired.');
-          if (await printPage.locator('iframe[src*="kind=proposal"]').count() < 2) throw new Error('Proposal front/reverse renderers were not paired.');
-          if (await printPage.locator('iframe[src*="kind=rite"]').count() < 2) throw new Error('Rite front/reverse renderers were not paired.');
-          if (await printPage.locator('iframe[src*="financiers-capital-ledger"]').count() < 2) throw new Error('Capital Ledger identical-face duplex render was not paired.');
-          const deedFrame = printPage.locator('iframe[src*="id=financiers-deed"][src*="orientation=landscape"]').first();
-          if (await deedFrame.count() !== 1) throw new Error('Deed production renderer was not requested as landscape.');
+          if (await printPage.locator('iframe[src*="leader%3Amilitary-general"]').count() < 1) throw new Error('Leader canonical face was not used.');
+          if (await printPage.locator('iframe[src*="component%3Auniversal-reference%3A"]').count() < 2) throw new Error('Reference front/reverse faces were not paired.');
+          if (await printPage.locator('iframe[src*="component%3Adiplomats-proposal-"]').count() < 2) throw new Error('Proposal front/reverse faces were not paired.');
+          if (await printPage.locator('iframe[src*="component%3Amystics-rite-"]').count() < 2) throw new Error('Rite front/reverse faces were not paired.');
+          if (await printPage.locator('iframe[src*="component%3Afinanciers-capital-ledger%3A"]').count() < 2) throw new Error('Capital Ledger identical-face duplex render was not paired.');
+          const deedFrame = printPage.locator('iframe[src*="component%3Afinanciers-deed%3Afront"]').first();
+          if (await deedFrame.count() !== 1) throw new Error('Deed canonical landscape face was not requested.');
           const deedState = await deedFrame.evaluate(frame => {
             const card = frame.contentDocument?.querySelector('.deed-card');
             const cardRect = card?.getBoundingClientRect();
@@ -149,7 +149,7 @@ jobs:
           ) {
             throw new Error(`Deed landscape render geometry regressed: ${JSON.stringify(deedState)}`);
           }
-          if (await printPage.locator('iframe[src*="card-back-render.html"]').count() < 2) throw new Error('Canonical standard backs were not added for one-sided cards.');
+          if (await printPage.locator('iframe[src*="back%3A"]').count() < 2) throw new Error('Canonical standard-back faces were not added for one-sided cards.');
 
           await page.screenshot({ path: '/tmp/deckbuilder-custom-print-workspace.png', fullPage: true });
           await printPage.screenshot({ path: '/tmp/deckbuilder-custom-print-sheet.png', fullPage: true });

@@ -226,8 +226,7 @@
       territoryState.selectedIds.length >= rules.territoriesPerPlayer ||
       (territory.arena && selectedArenaCount >= rules.maximumArenas)
     );
-    const rulesetMode = new URLSearchParams(window.location.search).get("rules") === "candidate" ? "candidate" : "released";
-    const rendererUrl = `../card-design/territory-review-render.html?territory=${encodeURIComponent(territory.id)}&rules=${encodeURIComponent(rulesetMode)}`;
+    const rendererUrl = `../card-design/face-render.html?id=${encodeURIComponent(`territory:${territory.id}`)}`;
 
     preview.className = "territory-preview rendered-territory-preview";
     preview.innerHTML = `

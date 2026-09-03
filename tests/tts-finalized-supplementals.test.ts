@@ -20,18 +20,17 @@ describe('finalized TTS supplemental exports', () => {
     expect(deeds[0].backPolicy).toBe('standardBack');
   });
 
-  it('captures finalized components only from the Card Design production authority', () => {
+  it('captures finalized components only from the unified Card Design face authority', () => {
     const generator = readFileSync('scripts/generate-tts-finalized-supplementals.mjs', 'utf8');
-    const componentRenderer = readFileSync('card-design/component-render.js', 'utf8');
+    const faceRuntime = readFileSync('card-design/face-render.mjs', 'utf8');
 
-    expect(generator).toContain('/card-design/component-render.html');
-    expect(generator).toContain("return { kind: 'proposal', id: item.proposalId }");
-    expect(generator).toContain("return { kind: 'supplemental', id: component.id }");
-    expect(generator).toContain("url.searchParams.set('version', displayVersion)");
+    expect(generator).toContain('/card-design/face-render.html');
+    expect(generator).toContain('component:${item.component.id}:${side}');
+    expect(generator).not.toContain('/card-design/component-render.html');
+    expect(generator).not.toContain("url.searchParams.set('version'");
     expect(generator).not.toContain('/tts/finalized-supplemental-renderer/');
-    expect(componentRenderer).toContain('const supportedKinds = new Set');
-    expect(componentRenderer).toContain('"leader", "proposal", "reference", "rite", "ritual", "tracker", "supplemental"');
-    expect(componentRenderer).toContain('versionOverride');
+    expect(faceRuntime).toContain('resolveFaceSpec(game, faceIdFromLocation())');
+    expect(faceRuntime).toContain('rendererForTemplate(spec.template)');
   });
 
   it('normalizes landscape Deed artwork into a standard portrait TTS image cell', () => {
