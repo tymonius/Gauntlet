@@ -39,6 +39,7 @@ const ANALYTICS_EXCLUDED_FILES = new Set([
   // Canonical embedded card-face surfaces; parent pages own analytics.
   "card-design/card-review-render.html",
   "card-design/component-render.html",
+  "card-design/face-render.html",
   "card-design/territory-review-render.html",
   // Legacy aliases retained only for old bookmarks/callers.
   "card-design/card-print-render.html",
