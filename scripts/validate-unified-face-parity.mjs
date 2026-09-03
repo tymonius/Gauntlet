@@ -109,6 +109,13 @@ function legacyRoute(spec) {
     return { path: `/card-design/component-render.html?${base}`, selector: '#renderTarget > *' };
   }
 
+  if (spec.template === 'tracker') {
+    base.set('kind', 'tracker');
+    base.set('id', spec.content.component.renderSource?.componentId || spec.content.component.id);
+    base.set('side', 'front');
+    return { path: `/card-design/component-render.html?${base}`, selector: '#renderTarget > *' };
+  }
+
   if (spec.template === 'ledger' || spec.template === 'deed') {
     base.set('kind', 'supplemental');
     base.set('id', spec.content.component.id);
