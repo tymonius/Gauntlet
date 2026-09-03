@@ -73,6 +73,9 @@ describe('complete canonical render authority', () => {
     expect(faceSpec).toContain("loadRenderContext");
     expect(faceSpec).toContain("requireExplicitArtworkDirection");
     expect(faceRender).toContain("resolveFaceSpec");
+    expect(faceRender).toContain("resolveFaceSpec(request.faceId)");
+    expect(faceRender).not.toContain("query.get('kind')");
+    expect(faceRender).not.toContain("query.get('side')");
     expect(faceRender).toContain("window.GauntletCardDesign.prepareCard(card)");
     expect(componentRender).toContain('loadRenderContext');
     expect(componentRender).toContain('renderContext.artDirectionFor(artworkId)');
@@ -143,7 +146,7 @@ describe('complete canonical render authority', () => {
 
   it('keeps back policy data-driven and card backs on the Card Design render surface', () => {
     expect(productionPrint).toContain('component.backPolicy || "standardBack"');
-    expect(productionPrint).toContain('/card-design/face-render.html?kind=back&id=');
+    expect(productionPrint).toContain('/card-design/face-render.html?id=');
     expect(productionPrint).not.toContain('/card-design/card-back-render.html?faction=');
     expect(productionPrint).not.toContain('/tts/back-renderer/index.html?faction=');
     expect(cardBackAlias).toContain('/card-design/face-render.html');
