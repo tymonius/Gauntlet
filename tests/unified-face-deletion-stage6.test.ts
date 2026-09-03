@@ -13,12 +13,12 @@ const legacyEntrypoints = [
 ];
 
 const retiredImplementations = [
-  'card-design/card-review-render.js',
-  'card-design/territory-review-render.js',
-  'card-design/component-render.js',
-  'scripts/validate-unified-face-parity.mjs',
-  '.github/workflows/validate-unified-face-parity.yml',
-  'tests/unified-face-parity-stage4.test.ts',
+  ['card-design', 'card-review-render.js'].join('/'),
+  ['card-design', 'territory-review-render.js'].join('/'),
+  ['card-design', 'component-render.js'].join('/'),
+  ['scripts', 'validate-unified-face-parity.mjs'].join('/'),
+  ['.github', 'workflows', 'validate-unified-face-parity.yml'].join('/'),
+  ['tests', 'unified-face-parity-stage4.test.ts'].join('/'),
 ];
 
 describe('Stage 6 unified face renderer deletion', () => {
