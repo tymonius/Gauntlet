@@ -368,6 +368,58 @@ describe('v0.7.0 core battle-effect modifiers', () => {
     expect(state.battleRuntime?.aftermathDrawEffects).toEqual([]);
   });
 
+  test('Disinformation gains Advantage against an opposing Gambit and returns itself to Hand when battle cards clear', () => {
+    let state = startBattle();
+    const disinformation = injectHandCard(
+      state,
+      'A',
+      'intelligence-disinformation',
+      'disinformation',
+    );
+    const opposingGambit = injectHandCard(
+      state,
+      'B',
+      'neutral-rallying-cry',
+      'opposing-gambit',
+    );
+
+    state = revealGambits(
+      state,
+      disinformation,
+      opposingGambit,
+    );
+
+    expect(state.battleRuntime?.participants.A.advantage).toBe(1);
+    expect(
+      state.battleRuntime?.battleCardAftermathDestinationOverrides,
+    ).toContainEqual({
+      sourceCardId: 'intelligence-disinformation',
+      playerId: 'A',
+      instanceId: disinformation,
+      destination: 'hand',
+    });
+
+    state = toOutcome(state);
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice',
+      playerId: 'A',
+      values: [6, 6],
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice',
+      playerId: 'B',
+      values: [1],
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'complete_aftermath',
+      playerId: 'A',
+    });
+
+    expect(state.players.A.zones.hand).toContain(disinformation);
+    expect(state.players.A.zones.graveyard).not.toContain(disinformation);
+    expect(state.players.B.zones.graveyard).toContain(opposingGambit);
+  });
+
   test('Pathfinders gains +1 only when the contested Territory has an active printed effect', () => {
     let active = startBattle('territory-high-ground');
     const activePathfinders = injectHandCard(
