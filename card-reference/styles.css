@@ -73,9 +73,17 @@
 .filter-panel {
   padding: 24px;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 18px;
   position: sticky;
   top: 18px;
+}
+
+.filter-panel > *,
+.filter-heading > *,
+.reference-metrics,
+.reference-metrics > * {
+  min-width: 0;
 }
 
 .filter-heading,
@@ -112,6 +120,8 @@
 .filter-panel input,
 .filter-panel select {
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   min-height: 44px;
   padding: 9px 11px;
   color: var(--ink);
@@ -145,7 +155,7 @@
 
 .reference-metrics {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
   padding-top: 6px;
 }
@@ -404,7 +414,7 @@
   .reference-hero { min-height: auto; padding: 58px 0 46px; gap: 28px; }
   .reference-hero h1 { font-size: clamp(3.4rem, 19vw, 5.1rem); }
   .reference-app { padding-bottom: 78px; }
-  .filter-panel { grid-template-columns: 1fr; }
+  .filter-panel { grid-template-columns: minmax(0, 1fr); }
   .filter-heading, .search-field, .reference-metrics { grid-column: auto; }
   .reference-metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .browser-heading { display: block; }
