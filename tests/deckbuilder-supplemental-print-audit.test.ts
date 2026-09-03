@@ -8,7 +8,8 @@ const compatibilityPrint = readFileSync("deckbuilder/print-capital-ledger.js", "
 const deckPrint = readFileSync("deckbuilder/print.js", "utf8");
 const packageProjection = readFileSync("deckbuilder/faction-components.js", "utf8");
 const deckbuilderHtml = readFileSync("deckbuilder/index.html", "utf8");
-const componentRenderer = readFileSync("card-design/component-render.js", "utf8");
+const faceRuntime = readFileSync("card-design/face-render.mjs", "utf8");
+const faceSpec = readFileSync("card-design/face-spec.mjs", "utf8");
 
 const components = contract.components as Array<Record<string, any>>;
 const sharedComponents = contract.sharedComponents as Array<Record<string, any>>;
@@ -120,8 +121,9 @@ describe("Deckbuilder supplemental print audit", () => {
     expect(productionPrint).toContain('["proposal-treaty-card", "ledger", "deed-card"].includes(component.family)');
   });
 
-  it("keeps the production component renderer fail-closed on any future placeholder face", () => {
-    expect(componentRenderer).toContain('if (card.classList.contains("supplemental-placeholder-card"))');
-    expect(componentRenderer).toContain('throw new Error(`Component ${id} still resolves to a production-layout placeholder.`)');
+  it("keeps the unified renderer fail-closed on incomplete physical-face authority", () => {
+    expect(faceSpec).toContain("productionReady: issues.length === 0");
+    expect(faceRuntime).toContain("if (!spec.readiness.productionReady)");
+    expect(faceRuntime).toContain("spec.readiness.issues.join");
   });
 });
