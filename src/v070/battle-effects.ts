@@ -8,6 +8,7 @@ import type {
   V070BattleCardCommitment,
   V070UnsupportedBattleEffect,
 } from './battle-types';
+import { recordV070MysticBattleEffectApplied } from './mystics';
 
 export type V070BattleEffectTiming = 'reveal';
 
@@ -224,6 +225,11 @@ export function resolveV070SupportedRevealEffects(
         timing: handler.timing,
       },
     });
+    recordV070MysticBattleEffectApplied(
+      state,
+      commitment.owner,
+      commitment.instanceId,
+    );
   }
 
   return [];

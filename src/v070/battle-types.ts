@@ -183,9 +183,14 @@ export interface V070BattleRuntime {
   routWindowOpen: boolean;
   finalJudgmentWindowOpen: boolean;
   relentlessPursuitWindowOpen: boolean;
+  guardiansWindowOpen: boolean;
+  mysticLossInterruptionResolved: boolean;
   pendingGameVictory: {
     winner: PlayerId;
-    route: 'last_stand' | 'final_territory_capture';
+    route:
+      | 'last_stand'
+      | 'final_territory_capture'
+      | 'ritual_of_ascension';
   } | null;
   activeOverlayAtOnset: string | null;
   activePrintedTerritoryAtOnset: {
@@ -252,6 +257,8 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     routWindowOpen: false,
     finalJudgmentWindowOpen: false,
     relentlessPursuitWindowOpen: false,
+    guardiansWindowOpen: false,
+    mysticLossInterruptionResolved: false,
     pendingGameVictory: null,
     activeOverlayAtOnset: null,
     activePrintedTerritoryAtOnset: null,

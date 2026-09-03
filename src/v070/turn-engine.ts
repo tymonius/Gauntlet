@@ -23,6 +23,7 @@ import {
   appendV070Event,
   deterministicV070Shuffle,
   type V070GameState,
+  type V070MysticRiteId,
   type V070PlayerState,
 } from './engine';
 import {
@@ -146,6 +147,16 @@ import {
   startV070Purge,
   type V070PurgePrintedCost,
 } from './purge';
+import {
+  beginV070MysticRite,
+  beginV070MysticRitual,
+  openV070MysticInvocationAfterActionEffect,
+  passV070MysticInvocation,
+  recordV070MysticQualifyingHandSacrifice,
+  resolveV070MysticCrossingAfterCapture,
+  useV070MysticInvocation,
+  v070MysticInvocationPendingPlayers,
+} from './mystics';
 
 export type V070TurnAction =
   | { type: 'resolve_capture'; playerId: PlayerId }
@@ -156,6 +167,28 @@ export type V070TurnAction =
     }
   | { type: 'pass_opening'; playerId: PlayerId }
   | { type: 'use_general_onward'; playerId: PlayerId }
+  | {
+      type: 'mystics_begin_rite';
+      playerId: PlayerId;
+      riteId: V070MysticRiteId;
+      echoesGraveyardInstanceId?: string;
+      echoesHandInstanceId?: string;
+      bloodCostInstanceId?: string;
+      crossingCostInstanceId?: string;
+    }
+  | {
+      type: 'mystics_begin_ritual';
+      playerId: PlayerId;
+      handInstanceId: string;
+      discardInstanceId: string;
+      graveyardInstanceId: string;
+    }
+  | {
+      type: 'use_mystic_invocation';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | { type: 'pass_mystic_invocation'; playerId: PlayerId }
   | {
       type: 'inquisition_purge';
       playerId: PlayerId;
@@ -515,6 +548,18 @@ export function reduceV070TurnAction(
   if (state.pendingTurnChoice && action.type !== 'resolve_start_turn_overlay_choice') {
     throw new V070GameActionError('Resolve the pending start-of-turn Overlay choice first.');
   }
+  const invocationPlayers = v070MysticInvocationPendingPlayers(state);
+  if (invocationPlayers.length > 0) {
+    const resolvingInvocation =
+      (action.type === 'use_mystic_invocation'
+        || action.type === 'pass_mystic_invocation')
+      && invocationPlayers.includes(action.playerId);
+    if (!resolvingInvocation) {
+      throw new V070GameActionError(
+        'Resolve or decline the pending Mystics Invocation before continuing the turn.',
+      );
+    }
+  }
   if (state.pendingPurgeChoice
     && (
       action.type !== 'resolve_inquisition_purge_hand_choice'
@@ -773,7 +818,9 @@ export function reduceV070TurnAction(
   const activeTurnState = state.turnState;
   if (activeTurnState?.movementSequenceOpen
     && activeTurnState.movementSequenceSource === 'effect'
-    && action.type !== 'choose_movement') {
+    && action.type !== 'choose_movement'
+    && action.type !== 'use_mystic_invocation'
+    && action.type !== 'pass_mystic_invocation') {
     throw new V070GameActionError(
       'Resolve the effect-granted movement sequence before continuing the turn.',
     );
@@ -797,6 +844,22 @@ export function reduceV070TurnAction(
       break;
     case 'use_general_onward':
       useV070GeneralOnward(next, action.playerId);
+      break;
+    case 'mystics_begin_rite':
+      mysticsBeginRite(next, action);
+      break;
+    case 'mystics_begin_ritual':
+      mysticsBeginRitual(next, action);
+      break;
+    case 'use_mystic_invocation':
+      useV070MysticInvocation(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
+      break;
+    case 'pass_mystic_invocation':
+      passV070MysticInvocation(next, action.playerId);
       break;
     case 'inquisition_purge':
       inquisitionPurge(
@@ -1318,6 +1381,7 @@ function resolveCapture(state: V070GameState, playerId: PlayerId): void {
   }
 
   applyV070FinancierAfterCapture(state, playerId);
+  resolveV070MysticCrossingAfterCapture(state, playerId);
 
   state.turnState = advanceV070TurnPhase(requireTurnState(state));
   appendPhaseEvent(state);
@@ -1644,6 +1708,42 @@ function spendTurnAction(
       );
     }
   }
+}
+
+function mysticsBeginRite(
+  state: V070GameState,
+  action: Extract<V070TurnAction, { type: 'mystics_begin_rite' }>,
+): void {
+  requirePhase(state, 'denouement');
+  spendTurnAction(state, action.playerId);
+  beginV070MysticRite(
+    state,
+    action.playerId,
+    action.riteId,
+    {
+      echoesGraveyardInstanceId: action.echoesGraveyardInstanceId,
+      echoesHandInstanceId: action.echoesHandInstanceId,
+      bloodCostInstanceId: action.bloodCostInstanceId,
+      crossingCostInstanceId: action.crossingCostInstanceId,
+    },
+  );
+}
+
+function mysticsBeginRitual(
+  state: V070GameState,
+  action: Extract<V070TurnAction, { type: 'mystics_begin_ritual' }>,
+): void {
+  requirePhase(state, 'denouement');
+  spendTurnAction(state, action.playerId);
+  beginV070MysticRitual(
+    state,
+    action.playerId,
+    {
+      handInstanceId: action.handInstanceId,
+      discardInstanceId: action.discardInstanceId,
+      graveyardInstanceId: action.graveyardInstanceId,
+    },
+  );
 }
 
 function requireIntelligenceDenouement(
@@ -4341,6 +4441,11 @@ function chooseSoulForSoulTargets(
       graveyardToHandCardId: state.cardInstances[graveyardInstanceId]?.cardId,
     },
   });
+  recordV070MysticQualifyingHandSacrifice(
+    state,
+    playerId,
+    'Soul for Soul',
+  );
 
   state.pendingActionEffectChoice = null;
   finishPendingActionCard(state);
@@ -4512,6 +4617,11 @@ function moveDarkOmensDrawnCardToGraveyard(
       purpose: 'Dark Omens',
     },
   });
+  recordV070MysticQualifyingHandSacrifice(
+    state,
+    playerId,
+    'Dark Omens',
+  );
 }
 
 function revealTopV070DrawCards(
@@ -5388,6 +5498,11 @@ function resolveNecromancyAction(
 
     drawIntoHand(state, playerId, 1, 'Necromancy');
     grantAdditionalAction(state, playerId, 'Necromancy');
+    openV070MysticInvocationAfterActionEffect(
+      state,
+      playerId,
+      pending.instanceId,
+    );
     return;
   }
 
@@ -5438,6 +5553,13 @@ function resolveNecromancyAction(
       })),
     },
   });
+  if (handToGraveyard.length > 0) {
+    recordV070MysticQualifyingHandSacrifice(
+      state,
+      playerId,
+      'Necromancy',
+    );
+  }
 
   state.pendingActionEffectChoice = null;
   finishPendingActionCard(state, 'graveyard');
@@ -7863,6 +7985,11 @@ function finalizeControlledTerritoryMoveAction(
     },
   });
   state.pendingActionCard = null;
+  openV070MysticInvocationAfterActionEffect(
+    state,
+    pending.playerId,
+    pending.instanceId,
+  );
 }
 
 function chooseControlledTerritoryMoveTarget(
@@ -8127,6 +8254,11 @@ function chooseFatesTollCost(
       purpose: "Fate's Toll",
     },
   });
+  recordV070MysticQualifyingHandSacrifice(
+    state,
+    playerId,
+    "Fate's Toll",
+  );
 
   state.pendingActionEffectChoice = null;
   if (pending.phase === 'opening') {
@@ -8970,6 +9102,11 @@ function finishPendingActionCard(
     },
   });
   state.pendingActionCard = null;
+  openV070MysticInvocationAfterActionEffect(
+    state,
+    pending.playerId,
+    pending.instanceId,
+  );
 }
 
 function drawIntoHand(

@@ -112,6 +112,20 @@ import {
   resolveV070PurgeHandChoice,
   type V070PurgePrintedCost,
 } from './purge';
+import {
+  applyV070MysticConvergence,
+  completeV070MysticBloodAfterBattleWin,
+  passV070GuardiansOfTheCircle,
+  prepareV070MysticLossInterruption,
+  recordV070MysticCrossingEligibility,
+  passV070MysticInvocation,
+  resolveV070MateriaPrimaAfterAftermath,
+  resolveV070MysticRitualVictory,
+  useV070GuardiansOfTheCircle,
+  useV070MysticInvocation,
+  useV070MysticTransmutation,
+  v070MysticInvocationPendingPlayers,
+} from './mystics';
 
 export const V070_NORMAL_BATTLE_DICE = 1 as const;
 
@@ -223,6 +237,23 @@ export type V070BattleAction =
   | { type: 'use_commandant_fortify'; playerId: PlayerId }
   | { type: 'use_general_rout'; playerId: PlayerId }
   | {
+      type: 'use_mystic_transmutation';
+      playerId: PlayerId;
+      cardInstanceId: string;
+    }
+  | {
+      type: 'use_mystic_invocation';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | { type: 'pass_mystic_invocation'; playerId: PlayerId }
+  | {
+      type: 'use_guardians_of_the_circle';
+      playerId: PlayerId;
+      cardInstanceId: string;
+    }
+  | { type: 'pass_guardians_of_the_circle'; playerId: PlayerId }
+  | {
       type: 'use_grand_inquisitor_final_judgment';
       playerId: PlayerId;
       printedCost: V070PurgePrintedCost;
@@ -289,6 +320,18 @@ export function reduceV070BattleAction(
       'Resolve the pending Poisonous Gas Reserve loss before continuing the Aftermath.',
     );
   }
+  const invocationPlayers = v070MysticInvocationPendingPlayers(state);
+  if (invocationPlayers.length > 0) {
+    const resolvingInvocation =
+      (action.type === 'use_mystic_invocation'
+        || action.type === 'pass_mystic_invocation')
+      && invocationPlayers.includes(action.playerId);
+    if (!resolvingInvocation) {
+      throw new V070GameActionError(
+        'Resolve or decline the pending Mystics Invocation before continuing the battle.',
+      );
+    }
+  }
   if (state.battleRuntime?.stage === 'choose_tactics'
     && state.battleRuntime.trainingGroundsRedrawPlayer
     && !state.battleRuntime.trainingGroundsRedrawResolved
@@ -311,6 +354,13 @@ export function reduceV070BattleAction(
     && action.type !== 'resolve_inquisition_purge_hand_choice') {
     throw new V070GameActionError(
       'Resolve the pending Final Judgment Purge choice before continuing the battle.',
+    );
+  }
+  if (state.battleRuntime?.guardiansWindowOpen
+    && action.type !== 'use_guardians_of_the_circle'
+    && action.type !== 'pass_guardians_of_the_circle') {
+    throw new V070GameActionError(
+      'Resolve or decline the pending Guardians of the Circle opportunity before continuing.',
     );
   }
   if (state.battleRuntime?.finalJudgmentWindowOpen
@@ -526,6 +576,33 @@ export function reduceV070BattleAction(
     case 'use_general_rout':
       useGeneralRoutAtEndOfAftermath(next, action.playerId);
       break;
+    case 'use_mystic_transmutation':
+      useV070MysticTransmutation(
+        next,
+        action.playerId,
+        action.cardInstanceId,
+      );
+      break;
+    case 'use_mystic_invocation':
+      useV070MysticInvocation(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
+      break;
+    case 'pass_mystic_invocation':
+      passV070MysticInvocation(next, action.playerId);
+      break;
+    case 'use_guardians_of_the_circle':
+      useV070GuardiansOfTheCircle(
+        next,
+        action.playerId,
+        action.cardInstanceId,
+      );
+      break;
+    case 'pass_guardians_of_the_circle':
+      passV070GuardiansOfTheCircle(next, action.playerId);
+      break;
     case 'use_grand_inquisitor_final_judgment':
       useGrandInquisitorFinalJudgmentAtEndOfAftermath(
         next,
@@ -621,6 +698,7 @@ function ensureBattleRuntime(state: V070GameState): V070BattleRuntime {
       state,
       state.battle.contestedPosition,
     );
+    applyV070MysticConvergence(state);
     applyV070CoreBattleTerritoryEffects(state);
     applyV070AdvancedBattleTerritoryEffects(state);
     initializeV070TermsWindow(state);
@@ -1343,6 +1421,14 @@ function finalizeOutcome(
     battle.attacker,
     battle.contestedPosition,
   );
+  recordV070MysticCrossingEligibility(
+    state,
+    outcome.winner,
+    battle.attacker,
+    battle.contestedPosition,
+  );
+  completeV070MysticBloodAfterBattleWin(state, outcome.winner);
+  resolveV070MysticRitualVictory(state, outcome.winner);
   gainV070MilitaryCommandForBattleWin(state, outcome.winner);
   applyV070NoQuarterAdditionalRetreat(state);
   openBattlePositionChangeSanctions(state, state.battle.positions);
@@ -1359,6 +1445,10 @@ function finalizeOutcome(
       tiebreakRounds: outcome.tiebreakRounds,
     },
   });
+
+  if (!runtime.pendingGameVictory) {
+    prepareV070MysticLossInterruption(state, outcome.loser);
+  }
 
   resolveV070CapitalGainsOnBattleLoss(state, outcome.loser);
   settleV070RefusedTermsOutcome(state, outcome);
@@ -2331,6 +2421,7 @@ function finalizeAftermathForRelentlessPursuit(
       },
     },
   });
+  resolveV070MateriaPrimaAfterAftermath(state);
 
   state.battle = null;
   state.battleRuntime = null;
@@ -2377,6 +2468,7 @@ function useGeneralRoutAtEndOfAftermath(
       },
     },
   });
+  resolveV070MateriaPrimaAfterAftermath(state);
 
   state.battle = null;
   state.battleRuntime = null;
@@ -2406,6 +2498,7 @@ function finalizeCompletedAftermath(state: V070GameState): void {
       },
     },
   });
+  resolveV070MateriaPrimaAfterAftermath(state);
 
   state.battle = null;
   state.battleRuntime = null;

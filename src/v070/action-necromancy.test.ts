@@ -193,7 +193,12 @@ describe('v0.7.0 Necromancy Action', () => {
       targetInstanceIds: [],
     });
 
-    expect(state.players.B.zones.hand).toEqual([]);
+    expect(state.players.B.zones.hand).toHaveLength(1);
+    expect(state.players.B.mystics?.materiaPrimaUsedTurn)
+      .toBe(state.turnNumber);
+    expect(state.events.some(event =>
+      event.type === 'mystic_materia_prima_resolved'
+    )).toBe(true);
     expect(state.players.B.zones.graveyard).toEqual(
       expect.arrayContaining([handCard, source]),
     );
