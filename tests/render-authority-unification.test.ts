@@ -5,6 +5,7 @@ import { PRODUCTION_SURFACES } from '../card-design/production-surface.mjs';
 
 const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
 const currentRuntime = readFileSync('game-data/current-game.mjs', 'utf8');
+const currentValidation = readFileSync('game-data/current-game-validation.mjs', 'utf8');
 const releasedRuntime = readFileSync('game-data/ruleset.mjs', 'utf8');
 const renderContext = readFileSync('card-design/render-context.mjs', 'utf8');
 const componentRender = readFileSync('card-design/component-render.js', 'utf8');
@@ -41,7 +42,8 @@ describe('complete canonical render authority', () => {
       focusY: 0,
     });
 
-    expect(currentRuntime).toContain('validateVisualPolicy(authority.visualPolicy)');
+    expect(currentValidation).toContain('validateVisualPolicy(authority.visualPolicy)');
+    expect(currentRuntime).toContain('validateCurrentGameAuthority(authority)');
     expect(currentRuntime).toContain('resolveArtDirection(visualPolicy, artDirection, id)');
     expect(releasedRuntime).toContain('validateVisualPolicy(visualAuthority.visualPolicy)');
     expect(releasedRuntime).toContain('resolveArtDirection(visualPolicy, artDirection, id)');
