@@ -222,6 +222,48 @@ const handlers: V070BattleEffectHandler[] = [
     },
   },
   {
+    cardId: 'neutral-conscription',
+    expectedText: 'When Gambits are revealed: +1 Reserve, +1 Tactic.',
+    timing: 'reveal',
+    apply: ({ state, owner, commitment }) => {
+      if (commitment.role !== 'gambit') return;
+      const draw = drawV070Cards(
+        state,
+        owner,
+        1,
+        'Conscription battle Reserve',
+      );
+      const current = participant(state, owner);
+      current.reserve.push(...draw.drawn);
+      current.tacticLimit += 1;
+
+      appendV070Event(state, {
+        type: 'battle_reserve_cards_added',
+        actor: owner,
+        visibility: 'public',
+        payload: {
+          sourceInstanceId: commitment.instanceId,
+          sourceCardId: 'neutral-conscription',
+          count: draw.drawn.length,
+          reshuffles: draw.reshuffles,
+          exhausted: draw.exhausted,
+          tacticLimitDelta: 1,
+        },
+      });
+      if (draw.drawn.length > 0) {
+        appendV070Event(state, {
+          type: 'reserve_identity',
+          actor: owner,
+          visibility: owner,
+          payload: {
+            cardInstanceIds: [...draw.drawn],
+            purpose: 'Conscription',
+          },
+        });
+      }
+    },
+  },
+  {
     cardId: 'neutral-tactical-planning',
     expectedText: 'When Gambits are revealed: +1 Reserve. Tactic limit unchanged.',
     timing: 'reveal',
