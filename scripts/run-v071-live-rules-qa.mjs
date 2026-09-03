@@ -150,38 +150,21 @@ async function requestAttempt(body) {
 }
 
 async function runInfrastructurePreflight() {
-  const item = benchmarkCases[0];
-  const body = {
-    question: item.question,
-    history: Array.isArray(item.history) ? item.history : [],
-    sessionId: "qa_v071_preflight_" + runStamp,
-    rulesVersion: benchmark.rulesVersion
-  };
-
-  let last = null;
-  const attempts = Math.min(maxAttempts, 3);
-  for (let attempt = 1; attempt <= attempts; attempt += 1) {
-    last = await requestAttempt(body);
-    if (last.response?.ok && last.payload) return null;
-
-    if (attempt < attempts) {
-      const delayMs = 2000 * attempt;
-      console.log(
-        "PREFLIGHT RETRY " + attempt + "/" + attempts + " after "
-        + (last.response?.status ? "HTTP " + last.response.status : (last.error?.name || "request error"))
-        + " (" + delayMs + " ms)"
-      );
-      await new Promise((resolve) => setTimeout(resolve, delayMs));
-    }
+  const result = await postCase(benchmarkCases[0], 0);
+  if (result.httpStatus === 200 && result.payload) {
+    return { failure: null, result };
   }
 
   return {
-    httpStatus: last?.response?.status || null,
-    errorCode: last?.payload?.errorCode || null,
-    upstreamStatus: Number.isInteger(last?.payload?.upstreamStatus) ? last.payload.upstreamStatus : null,
-    upstreamCategory: last?.payload?.upstreamCategory || null,
-    error: last?.payload?.error || last?.error?.message || "Unknown production endpoint failure",
-    rawResponse: last?.payload ? null : String(last?.responseText || "").slice(0, 4000)
+    failure: {
+      httpStatus: result.httpStatus,
+      errorCode: result.payload?.errorCode || null,
+      upstreamStatus: Number.isInteger(result.payload?.upstreamStatus) ? result.payload.upstreamStatus : null,
+      upstreamCategory: result.payload?.upstreamCategory || null,
+      error: result.payload?.error || result.failures[0] || "Unknown production endpoint failure",
+      rawResponse: result.payload ? null : result.rawResponse
+    },
+    result
   };
 }
 
@@ -267,7 +250,7 @@ async function postCase(item, index) {
   };
 }
 
-async function runPool(items) {
+async function runPool(items, startIndex = 0) {
   const results = new Array(items.length);
   let next = 0;
 
@@ -275,9 +258,10 @@ async function runPool(items) {
     while (true) {
       const index = next++;
       if (index >= items.length) return;
-      results[index] = await postCase(items[index], index);
+      const absoluteIndex = startIndex + index;
+      results[index] = await postCase(items[index], absoluteIndex);
       const status = results[index].failures.length ? "FAIL" : "PASS";
-      console.log(status + " " + String(index + 1).padStart(3, "0") + "/" + items.length + " " + items[index].id + " (" + results[index].latencyMs + " ms)");
+      console.log(status + " " + String(absoluteIndex + 1).padStart(3, "0") + "/" + benchmarkCases.length + " " + items[index].id + " (" + results[index].latencyMs + " ms)");
       for (const failure of results[index].failures) console.log("  - " + failure);
       if (interCaseDelayMs > 0 && next < items.length) {
         await new Promise((resolve) => setTimeout(resolve, interCaseDelayMs));
@@ -289,7 +273,8 @@ async function runPool(items) {
   return results;
 }
 
-const infrastructureFailure = await runInfrastructurePreflight();
+const preflight = await runInfrastructurePreflight();
+const infrastructureFailure = preflight.failure;
 if (infrastructureFailure) {
   const report = {
     schema: "gauntlet.rules-arbiter-live-qa.v1",
@@ -303,7 +288,7 @@ if (infrastructureFailure) {
     infrastructureFailure,
     summary: {
       total: benchmarkCases.length,
-      attempted: 0,
+      attempted: 1,
       passed: 0,
       failed: 0,
       warned: 0,
@@ -311,7 +296,7 @@ if (infrastructureFailure) {
       benchmarkStatus: "not_run",
       classifications: {}
     },
-    results: []
+    results: [preflight.result]
   };
 
   mkdirSync(dirname(outputPath), { recursive: true });
@@ -328,7 +313,10 @@ if (infrastructureFailure) {
   process.exit(1);
 }
 
-const results = await runPool(benchmarkCases);
+const remainingResults = benchmarkCases.length > 1
+  ? await runPool(benchmarkCases.slice(1), 1)
+  : [];
+const results = [preflight.result, ...remainingResults];
 const failed = results.filter((item) => item.failures.length);
 const warned = results.filter((item) => item.warnings.length);
 const classifications = {};

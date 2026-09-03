@@ -5,13 +5,15 @@ const runner = readFileSync('scripts/run-v071-live-rules-qa.mjs', 'utf8');
 const workflow = readFileSync('.github/workflows/v071-rules-arbiter-live-qa.yml', 'utf8');
 
 describe('v0.7.1 live Rules Arbiter QA transport handling', () => {
-  it('fails fast when the production endpoint cannot pass a real rules preflight', () => {
+  it('uses the first bounded QA case as the production preflight', () => {
     expect(runner).toContain('async function runInfrastructurePreflight()');
     expect(runner).toContain('benchmarkStatus: "not_run"');
+    expect(runner).toContain('const result = await postCase(benchmarkCases[0], 0)');
+    expect(runner).toContain('const results = [preflight.result, ...remainingResults]');
     expect(runner).toContain('production endpoint failed preflight');
-    expect(runner).toContain('errorCode: last?.payload?.errorCode || null');
-    expect(runner).toContain('upstreamStatus: Number.isInteger(last?.payload?.upstreamStatus)');
-    expect(runner).toContain('upstreamCategory: last?.payload?.upstreamCategory || null');
+    expect(runner).toContain('errorCode: result.payload?.errorCode || null');
+    expect(runner).toContain('upstreamStatus: Number.isInteger(result.payload?.upstreamStatus)');
+    expect(runner).toContain('upstreamCategory: result.payload?.upstreamCategory || null');
     expect(runner).toContain('Upstream status:');
     expect(runner).toContain('Upstream category:');
   });
@@ -32,5 +34,6 @@ describe('v0.7.1 live Rules Arbiter QA transport handling', () => {
     expect(workflow).toContain("GAUNTLET_RULES_QA_MAX_ATTEMPTS: '2'");
     expect(workflow).toContain("GAUNTLET_RULES_QA_INTER_CASE_DELAY_MS: '750'");
     expect(runner).toContain('const benchmarkCases = caseLimit ? benchmark.cases.slice(0, caseLimit) : benchmark.cases');
+    expect(runner).not.toContain('const attempts = Math.min(maxAttempts, 3)');
   });
 });
