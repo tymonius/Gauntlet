@@ -50,6 +50,7 @@
   <link rel="stylesheet" href="factions/homepage.css" />
   <link rel="stylesheet" href="gameplay-showcase.css" />
   <link rel="stylesheet" href="homepage-card-showcase.css" />
+  <link rel="stylesheet" href="homepage-rules-arbiter.css?v=20260903-1" />
   <link rel="stylesheet" href="declaration-typography.css" />
   <link rel="stylesheet" href="rules-assistant/widget.css?v=20260903-1" />
   <link rel="stylesheet" href="/site-footer.css?v=20260902-2" />
@@ -263,25 +264,30 @@
     </section>
 
     <section id="rules-assistant" class="section assistant-section">
+      <div class="assistant-copy">
+        <p class="eyebrow declaration-overline">Rules support at the table</p>
+        <h2>Ask the Chief Justice.</h2>
+        <p>
+          Use the floating <strong>Ask the Chief Justice</strong> control to settle questions of card text, battle timing, Territory interactions, faction systems, and victory conditions from the published rules and cards.
+        </p>
+        <p>
+          The Chief Justice identifies the controlling rule or distinction and states the result plainly. Where the written rules do not decide the matter, he issues a provisional ruling so play may continue.
+        </p>
+        <p class="assistant-note">
+          The relevant rulebook and card sources are included with each answer, so the ruling can be checked against the written rules. If the AI service is unavailable, the Chief Justice falls back to direct canonical source lookup rather than leaving the table without rules support.
+        </p>
+        <button class="button primary assistant-open" type="button" data-open-rules-assistant>Ask the Chief Justice</button>
+      </div>
       <figure class="assistant-portrait" aria-hidden="true">
         <img
-          src="/images/rules-arbiter/chief-justice-rules-arbiter-popup.webp"
+          src="/images/rules-arbiter/chief-justice-rules-arbiter.webp"
           alt=""
-          width="216"
-          height="270"
+          width="1214"
+          height="1295"
           loading="lazy"
           decoding="async"
         />
       </figure>
-      <div class="assistant-copy">
-        <p class="eyebrow declaration-overline">Rules support at the table</p>
-        <h2>Ask the Rules Arbiter.</h2>
-        <p>
-          Use the floating <strong>Ask the rules</strong> control to look up card text, battle timing, territory interactions, faction systems, and victory conditions from the published v0.7.1 sources.
-        </p>
-        <p class="assistant-note">The source passages remain visible with every answer. When the AI service is unavailable, exact canonical source lookup still works in the browser.</p>
-      </div>
-      <button class="button primary assistant-open" type="button" data-open-rules-assistant>Ask a rule question</button>
     </section>
 
     <section id="tools" class="section tools-section">
