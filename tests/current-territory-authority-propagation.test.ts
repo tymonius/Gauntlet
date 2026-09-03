@@ -27,7 +27,7 @@ describe('historical v0.6.4 Territory derivation and current authority propagati
     expect(reviewRenderer).not.toContain('v0.6.4-territories.json');
     expect(reviewRenderer).not.toContain('EXPECTED_SOURCE_ISSUE');
     expect(reviewRenderer).not.toContain('Gauntlet_v0.6.3_Canonical_Data.json');
-    expect(reviewPage).toContain('Gauntlet v0.7.0 Territory Review Render');
+    expect(reviewPage).toContain('Gauntlet canonical Territory render');
   });
 
   it('preserves the accepted High Ground wording in the flattened authority and specimen', () => {
