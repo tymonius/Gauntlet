@@ -228,6 +228,7 @@ function componentPayload(game, face, component) {
       type: 'tracker',
       component: clone(component),
       trackedValue: clone(component.trackedValue || null),
+      presentation: clone(component.presentation?.tracker || null),
     };
   }
 
@@ -399,8 +400,8 @@ function readinessIssues(face, content, artwork) {
   }
 
   if (face.template === 'tracker') {
-    issues.push('tracker-presentation-still-legacy');
     if (!content.trackedValue) issues.push('tracker-value-authority-missing');
+    if (!content.presentation) issues.push('tracker-presentation-missing');
   }
 
   if (face.template === 'reference') {
