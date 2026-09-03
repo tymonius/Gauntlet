@@ -2425,17 +2425,22 @@ function completeAftermathInternal(
     };
   }
 
-  state.players.A.position = battle.positions.A;
-  state.players.B.position = battle.positions.B;
-  syncBoardOccupants(state);
+  if (!runtime.aftermathPositionsSynchronized) {
+    state.players.A.position = battle.positions.A;
+    state.players.B.position = battle.positions.B;
+    syncBoardOccupants(state);
+    runtime.aftermathPositionsSynchronized = true;
+  }
 
   if (!runtime.aftermathCardsCleared) {
     if (openAccursedWagerAftermathChoice(state, immediateWinner)) return;
     if (openPoisonousGasAftermathChoice(state, immediateWinner)) return;
     if (openTerritoryAftermathChoice(state, immediateWinner)) return;
 
-    resolveBattleCardAftermathOverlayPlacements(state);
-    resolveBattleCardAftermathTerritoryInsertions(state);
+    if (advanceBattleAftermathControlledEffects(
+      state,
+      immediateWinner,
+    )) return;
 
     const graveyardedDuringAftermath: Record<PlayerId, string[]> = {
       A: [],
