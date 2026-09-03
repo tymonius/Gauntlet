@@ -177,7 +177,7 @@ describe('production faction reference cards', () => {
     expect(legacyTtsRendererHtml).toContain('/card-design/face-render.html');
     expect(referenceTemplate).toContain('loadReferenceRecordForFaceSpec(spec)');
     expect(referenceTemplate).toContain('referenceCardMarkup(record, spec.side');
-    expect(referenceRenderer).toContain('validateReferenceVisualContract');
+    expect(referenceRenderer).toContain('reference-watermark');
     expect(faceRuntime).toContain('rendererForTemplate(spec.template)');
     expect(faceSpec).toContain("'/card-design/card-design.css'");
     expect(faceSpec).toContain("'/card-design/reference-card.css'");
