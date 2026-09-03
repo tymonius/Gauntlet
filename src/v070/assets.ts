@@ -391,6 +391,48 @@ export function bankV070AssetFromPendingAction(
   });
 }
 
+export function bankV070AssetFromBattleEffect(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+  purpose: string,
+): void {
+  const card = canonicalCardForInstance(state, instanceId);
+  if (!cardHasAssetEffect(card)) {
+    throw new V070GameActionError(
+      'A battle effect may bank only a card with an Asset effect.',
+    );
+  }
+  if (violatesSingleBankedCopy(state, playerId, card)) {
+    throw new V070GameActionError(
+      `${card.name} violates its single-banked-copy restriction.`,
+    );
+  }
+  if (state.players[playerId].zones.assetBank.includes(instanceId)) {
+    throw new V070GameActionError('That battle card is already banked.');
+  }
+
+  state.players[playerId].zones.assetBank.push(instanceId);
+  appendV070Event(state, {
+    type: 'asset_banked',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      instanceId,
+      cardId: card.id,
+      purpose,
+      effectiveLimit: effectiveV070AssetLimit(state, playerId),
+      turnNumber: state.turnNumber,
+    },
+  });
+  openV070AssetLimitEnforcement(
+    state,
+    playerId,
+    purpose,
+    instanceId,
+  );
+}
+
 export function bankV070AssetFromHand(
   state: V070GameState,
   playerId: PlayerId,
