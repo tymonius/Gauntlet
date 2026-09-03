@@ -38,13 +38,19 @@ describe("v0.7.1 Rules Arbiter QA foundation", () => {
   });
 
   test("v0.7.1 prompt preserves timing, zone, classification, and gap semantics", () => {
-    expect(workerV071).toContain('export const BEHAVIOR_REVISION = "v071-qa-20260903-4"');
+    expect(workerV071).toContain('export const BEHAVIOR_REVISION = "v071-qa-20260903-5"');
     expect(workerV071).toContain("additional Actions changes the number of available Actions, not the legal phase or timing");
     expect(workerV071).toContain("A bound card is outside normal zones");
     expect(workerV071).toContain("Never invent the target of an unlabeled numerical bonus");
     expect(workerV071).toContain('Do not label an explicit or inferred answer "Table ruling"');
     expect(workerV071).toContain('begin the answer with exactly "Provisional Arbiter Ruling:"');
     expect(workerV071).toContain('do not discuss retrieval mechanics or say "the supplied passages/text/sources"');
+  });
+
+  test("v0.7.1 model failures expose only the upstream HTTP status", () => {
+    expect(workerV071).toContain("error.upstreamStatus = response.status");
+    expect(workerV071).toContain('failure.upstreamStatus = error.upstreamStatus');
+    expect(workerV071).not.toContain("errorBody.slice(0, 500)");
   });
 
   test("v0.7.1 prompt uses the Chief Justice voice without roleplay or archaic legalese", () => {
