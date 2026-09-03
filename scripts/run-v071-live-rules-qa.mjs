@@ -13,14 +13,24 @@ const benchmark = JSON.parse(readFileSync(benchmarkPath, "utf8"));
 const startedAt = new Date().toISOString();
 const runStamp = Date.now().toString(36);
 
+function normalizeQaText(value) {
+  return String(value || "")
+    .normalize("NFKD")
+    .replace(/[’‘]/g, "'")
+    .replace(/[–—]/g, "-")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function sourceText(source) {
-  return [
+  return normalizeQaText([
     source?.title,
     source?.excerpt,
     source?.sourcePath,
     source?.canonicalId,
     source?.id
-  ].filter(Boolean).join("\n").toLowerCase();
+  ].filter(Boolean).join("\n"));
 }
 
 function significantTopicTerms(value) {
@@ -34,6 +44,7 @@ function inspectAnswer(item, payload) {
   const failures = [];
   const warnings = [];
   const answer = String(payload?.answer || "");
+  const normalizedAnswer = normalizeQaText(answer);
   const sources = Array.isArray(payload?.sources) ? payload.sources : [];
   const rulingStatus = String(payload?.rulingStatus || "");
 
@@ -48,6 +59,12 @@ function inspectAnswer(item, payload) {
   if (/\*\*|__|\x60/.test(answer) || /^\s*#{1,6}\s/m.test(answer)) {
     failures.push("presentation: answer contains unsupported Markdown syntax");
   }
+  if (["explicit", "inferred"].includes(rulingStatus) && /^\s*table ruling:/i.test(answer)) {
+    failures.push('presentation: explicit/inferred answer uses the provisional-sounding "Table ruling" label');
+  }
+  if (["explicit", "inferred"].includes(rulingStatus) && /\b(?:supplied passages|supplied text|supplied sources)\b/i.test(answer)) {
+    failures.push("presentation: written-rule answer exposes internal source/retrieval framing");
+  }
 
   if (["explicit", "inferred"].includes(rulingStatus) && sources.length < 1) {
     failures.push("citations: written-rule answer has no selected source");
@@ -61,17 +78,31 @@ function inspectAnswer(item, payload) {
 
   const haystacks = sources.map(sourceText);
   for (const pattern of item.expectedSourcePatterns || []) {
-    const normalized = String(pattern).toLowerCase();
+    const normalized = normalizeQaText(pattern);
     if (!haystacks.some((text) => text.includes(normalized))) {
       failures.push('citations: expected governing source pattern "' + pattern + '" not selected');
     }
   }
 
+  for (const pattern of item.expectedAnswerPatterns || []) {
+    const normalized = normalizeQaText(pattern);
+    if (!normalizedAnswer.includes(normalized)) {
+      failures.push('answer: expected pattern "' + pattern + '" was not present');
+    }
+  }
+
+  for (const pattern of item.forbiddenAnswerPatterns || []) {
+    const normalized = normalizeQaText(pattern);
+    if (normalized && normalizedAnswer.includes(normalized)) {
+      failures.push('answer: forbidden pattern "' + pattern + '" was present');
+    }
+  }
+
   if (item.expectedTopic) {
     const terms = significantTopicTerms(item.expectedTopic);
-    const lowerAnswer = answer.toLowerCase();
-    if (terms.length && !terms.some((term) => lowerAnswer.includes(term))) {
-      failures.push('continuity: answer does not appear to address expected topic "' + item.expectedTopic + '"');
+    const continuityText = normalizeQaText(answer + "\n" + sources.map((source) => source?.title || "").join("\n"));
+    if (terms.length && !terms.some((term) => continuityText.includes(term))) {
+      failures.push('continuity: answer and selected sources do not appear to address expected topic "' + item.expectedTopic + '"');
     }
   }
 
@@ -125,6 +156,8 @@ async function postCase(item, index) {
       history: item.history || [],
       expectedClassification: item.expectedClassification,
       expectedSourcePatterns: item.expectedSourcePatterns || [],
+      expectedAnswerPatterns: item.expectedAnswerPatterns || [],
+      forbiddenAnswerPatterns: item.forbiddenAnswerPatterns || [],
       expectedTopic: item.expectedTopic || null,
       sessionId,
       httpStatus: response.status,
@@ -142,6 +175,8 @@ async function postCase(item, index) {
       history: item.history || [],
       expectedClassification: item.expectedClassification,
       expectedSourcePatterns: item.expectedSourcePatterns || [],
+      expectedAnswerPatterns: item.expectedAnswerPatterns || [],
+      forbiddenAnswerPatterns: item.forbiddenAnswerPatterns || [],
       expectedTopic: item.expectedTopic || null,
       sessionId,
       httpStatus: null,
