@@ -467,12 +467,11 @@ export function bankV070AssetFromPendingAction(
       throw new V070GameActionError('That banked Asset cannot be replaced now.');
     }
 
-    moveBankedAssetToDiscard(
+    replaceV070BankedAsset(
       state,
       playerId,
       replacement,
       purpose,
-      false,
     );
     appendV070Event(state, {
       type: 'asset_replaced',
@@ -542,12 +541,11 @@ export function bankV070AssetFromHand(
     if (!replaceable.includes(replacement)) {
       throw new V070GameActionError('That banked Asset cannot be replaced now.');
     }
-    moveBankedAssetToDiscard(
+    replaceV070BankedAsset(
       state,
       playerId,
       replacement,
       options.purpose,
-      false,
     );
     appendV070Event(state, {
       type: 'asset_replaced',
@@ -715,6 +713,30 @@ export function replaceableV070AssetInstanceIds(
     }
     return true;
   });
+}
+
+function replaceV070BankedAsset(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+  reason: string,
+): void {
+  if (state.cardInstances[instanceId]?.cardId === 'financiers-margin-loan') {
+    resolveV070MarginLoanDefault(
+      state,
+      playerId,
+      instanceId,
+      'Margin Loan Default on Asset replacement',
+    );
+    return;
+  }
+  moveBankedAssetToDiscard(
+    state,
+    playerId,
+    instanceId,
+    reason,
+    false,
+  );
 }
 
 function moveBankedAssetToDiscard(
