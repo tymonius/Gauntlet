@@ -555,6 +555,11 @@ function validateDeck() {
   };
 }
 
+function deckStatusLabel(result) {
+  if (result.cardCount < result.constructionRules.minimumCards) return "Incomplete";
+  return result.valid ? "Valid" : "Invalid";
+}
+
 function validateAndRender() {
   const result = validateDeck();
   el.cardCount.textContent = result.cardCount;
@@ -562,7 +567,7 @@ function validateAndRender() {
   el.pointTotal.textContent = result.pointTotal;
   el.maximumDeckbuildingValue.textContent = result.constructionRules.maximumDeckbuildingValue;
   el.factionCardCount.textContent = result.factionCardCount;
-  el.validityText.textContent = result.valid ? "Card-valid" : "Incomplete";
+  el.validityText.textContent = deckStatusLabel(result);
   el.validityCard.classList.toggle("valid", result.valid);
   el.validityCard.classList.toggle("invalid", !result.valid);
 

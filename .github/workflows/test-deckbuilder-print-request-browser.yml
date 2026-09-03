@@ -63,7 +63,7 @@ jobs:
             if (!response?.ok()) throw new Error(`Deckbuilder returned ${response?.status()}`);
             await page.waitForSelector('#starterHandoffPanel.is-ready', { timeout: 20000 });
             await page.waitForSelector('#printRequestForm');
-            await page.waitForFunction(() => document.querySelector('#validityText')?.textContent === 'Card-valid');
+            await page.waitForFunction(() => document.querySelector('#validityText')?.textContent === 'Valid');
 
             await page.fill('#printRequestPlayerName', 'Tymon');
             await page.fill('#printRequestHostEmail', 'host@example.com');
@@ -121,7 +121,7 @@ jobs:
             await page.click('#importJsonButton');
             await page.waitForFunction(() => document.querySelector('#cardCount')?.textContent === '30');
             await page.waitForFunction(() => document.querySelector('#territoryMetricCount')?.textContent === '3');
-            await page.waitForFunction(() => document.querySelector('#validityText')?.textContent === 'Card-valid');
+            await page.waitForFunction(() => document.querySelector('#validityText')?.textContent === 'Valid');
 
             await page.screenshot({ path: `/tmp/deckbuilder-print-request-${suffix}.png`, fullPage: true });
             if (errors.length) throw new Error(`Deckbuilder printing request ${suffix} errors:\n${errors.join('\n')}`);
