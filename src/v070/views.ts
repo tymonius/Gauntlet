@@ -210,6 +210,7 @@ export interface V070GameView {
   pendingActionCard: V070GameState['pendingActionCard'];
   pendingActionEffectChoice: V070GameState['pendingActionEffectChoice'];
   pendingSleeperNetworkChoice: V070GameState['pendingSleeperNetworkChoice'];
+  pendingMarginLoanChoice: V070GameState['pendingMarginLoanChoice'];
   pendingSanctionChoices: V070GameState['pendingSanctionChoices'];
   pendingAssetLimitChoice: V070GameState['pendingAssetLimitChoice'];
   pendingPurgeChoice: V070GameState['pendingPurgeChoice'];
@@ -268,6 +269,9 @@ export function viewV070GameForPlayer(
     pendingActionEffectChoice: viewPendingActionEffectChoice(state, viewer),
     pendingSleeperNetworkChoice: state.pendingSleeperNetworkChoice
       ? structuredClone(state.pendingSleeperNetworkChoice)
+      : null,
+    pendingMarginLoanChoice: state.pendingMarginLoanChoice
+      ? structuredClone(state.pendingMarginLoanChoice)
       : null,
     pendingSanctionChoices: state.pendingSanctionChoices.map(
       choice => structuredClone(choice),

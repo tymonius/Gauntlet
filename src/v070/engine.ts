@@ -131,6 +131,11 @@ export type V070PendingSleeperNetworkChoice =
       playedCount: number;
     };
 
+export interface V070PendingMarginLoanChoice {
+  playerId: PlayerId;
+  hostInstanceIds: string[];
+}
+
 export type V070PendingActionEffectChoice =
   | {
       kind: 'clemency_target';
@@ -636,6 +641,7 @@ export interface V070GameState {
   pendingActionCard: V070PendingActionCard | null;
   pendingActionEffectChoice: V070PendingActionEffectChoice | null;
   pendingSleeperNetworkChoice: V070PendingSleeperNetworkChoice | null;
+  pendingMarginLoanChoice: V070PendingMarginLoanChoice | null;
   pendingSanctionChoices: V070PendingSanctionChoice[];
   pendingAssetLimitChoice: V070PendingAssetLimitChoice | null;
   pendingPurgeChoice: V070PendingPurgeChoice | null;
@@ -828,6 +834,7 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
     pendingActionCard: null,
     pendingActionEffectChoice: null,
     pendingSleeperNetworkChoice: null,
+    pendingMarginLoanChoice: null,
     pendingSanctionChoices: [],
     pendingAssetLimitChoice: null,
     pendingPurgeChoice: null,

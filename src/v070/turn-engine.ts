@@ -70,6 +70,8 @@ import {
   discardV070AssetVoluntarily,
   pendingBankReplacementV070AssetInstanceIds,
   removeV070AssetForced,
+  resolveV070MarginLoanDefault,
+  resolveV070MarginLoanRepayment,
   returnV070AssetVoluntarilyToHand,
   voluntarilyDiscardableV070AssetInstanceIds,
   voluntarilyReturnableV070AssetInstanceIds,
@@ -108,6 +110,7 @@ import {
   markV070FinancierFeatureActionSpent,
   placeV070CardInTreasury,
   removeV070CardFromTreasury,
+  spendV070Capital,
   v070DeedCost,
   v070DeedOwner,
   v070DeedsOwned,
@@ -167,6 +170,12 @@ export type V070TurnAction =
       type: 'draw_turn_card';
       playerId: PlayerId;
       useRuinedStorehouse?: boolean;
+    }
+  | {
+      type: 'resolve_margin_loan_after_income';
+      playerId: PlayerId;
+      assetInstanceId: string;
+      choice: 'repay' | 'default' | 'leave';
     }
   | { type: 'pass_opening'; playerId: PlayerId }
   | { type: 'use_general_onward'; playerId: PlayerId }
@@ -567,6 +576,15 @@ export function reduceV070TurnAction(
   if (state.pendingTurnChoice && action.type !== 'resolve_start_turn_overlay_choice') {
     throw new V070GameActionError('Resolve the pending start-of-turn Overlay choice first.');
   }
+  if (state.pendingMarginLoanChoice
+    && (
+      action.type !== 'resolve_margin_loan_after_income'
+      || action.playerId !== state.pendingMarginLoanChoice.playerId
+    )) {
+    throw new V070GameActionError(
+      'Resolve or decline the pending Margin Loan post-income choice before continuing the turn.',
+    );
+  }
   const invocationPlayers = v070MysticInvocationPendingPlayers(state);
   if (invocationPlayers.length > 0) {
     const resolvingInvocation =
@@ -873,6 +891,14 @@ export function reduceV070TurnAction(
         next,
         action.playerId,
         Boolean(action.useRuinedStorehouse),
+      );
+      break;
+    case 'resolve_margin_loan_after_income':
+      resolveMarginLoanAfterIncomeChoice(
+        next,
+        action.playerId,
+        action.assetInstanceId,
+        action.choice,
       );
       break;
     case 'pass_opening':
@@ -1338,22 +1364,39 @@ function applyV070TurnStartTerritoryEffects(
   };
 
   if (plan.supplyDepotCards > 0) {
-    drawIntoHand(
+    const blockingMarginLoans = activeMarginLoanInstanceIds(
       state,
       playerId,
-      plan.supplyDepotCards,
-      'Supply Depot',
     );
-    appendV070Event(state, {
-      type: 'territory_effect_applied',
-      actor: playerId,
-      visibility: 'public',
-      payload: {
-        territoryId: 'territory-supply-depot',
-        effect: 'start_turn_card',
-        amount: plan.supplyDepotCards,
-      },
-    });
+    if (blockingMarginLoans.length > 0) {
+      appendV070Event(state, {
+        type: 'margin_loan_turn_draw_blocked',
+        actor: playerId,
+        visibility: 'public',
+        payload: {
+          marginLoanInstanceIds: [...blockingMarginLoans],
+          source: 'Supply Depot',
+          count: plan.supplyDepotCards,
+        },
+      });
+    } else {
+      drawIntoHand(
+        state,
+        playerId,
+        plan.supplyDepotCards,
+        'Supply Depot',
+      );
+      appendV070Event(state, {
+        type: 'territory_effect_applied',
+        actor: playerId,
+        visibility: 'public',
+        payload: {
+          territoryId: 'territory-supply-depot',
+          effect: 'start_turn_card',
+          amount: plan.supplyDepotCards,
+        },
+      });
+    }
   }
   if (plan.kingsRoadMovementBonus > 0) {
     appendV070Event(state, {
@@ -1442,6 +1485,174 @@ function resolveCapture(state: V070GameState, playerId: PlayerId): void {
 
   state.turnState = advanceV070TurnPhase(requireTurnState(state));
   appendPhaseEvent(state);
+  openMarginLoanAfterIncomeChoice(state, playerId);
+}
+
+function activeMarginLoanInstanceIds(
+  state: V070GameState,
+  playerId: PlayerId,
+): string[] {
+  return state.players[playerId].zones.assetBank.filter(instanceId =>
+    state.cardInstances[instanceId]?.cardId === 'financiers-margin-loan'
+    && isV070AssetActive(state, instanceId)
+  );
+}
+
+function marginLoanCollateralInstanceId(
+  state: V070GameState,
+  hostInstanceId: string,
+): string {
+  const collateral = v070BindingsForHost(state, hostInstanceId)
+    .filter(binding => binding.purpose === 'Margin Loan')
+    .map(binding => binding.cardInstanceId);
+  if (collateral.length !== 1) {
+    throw new V070GameActionError(
+      'A banked Margin Loan must have exactly one bound collateral card.',
+    );
+  }
+  return collateral[0];
+}
+
+function marginLoanCollateralValue(
+  state: V070GameState,
+  hostInstanceId: string,
+): number {
+  const collateralInstanceId = marginLoanCollateralInstanceId(
+    state,
+    hostInstanceId,
+  );
+  const cardId = state.cardInstances[collateralInstanceId]?.cardId;
+  const card = cardId
+    ? v070CanonicalContent.cardsById.get(cardId)
+    : undefined;
+  if (!card) {
+    throw new V070GameActionError(
+      'Margin Loan collateral must be a known canonical card.',
+    );
+  }
+  return card.cost;
+}
+
+function openMarginLoanAfterIncomeChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  if (!state.players[playerId].financiers) return;
+  const hostInstanceIds = activeMarginLoanInstanceIds(state, playerId);
+  if (hostInstanceIds.length === 0) return;
+
+  state.pendingMarginLoanChoice = {
+    playerId,
+    hostInstanceIds: [...hostInstanceIds],
+  };
+  appendV070Event(state, {
+    type: 'margin_loan_after_income_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      hostInstanceIds: [...hostInstanceIds],
+      count: hostInstanceIds.length,
+      optional: true,
+    },
+  });
+}
+
+function resolveMarginLoanAfterIncomeChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  assetInstanceId: string,
+  choice: 'repay' | 'default' | 'leave',
+): void {
+  const pending = state.pendingMarginLoanChoice;
+  if (!pending || pending.playerId !== playerId) {
+    throw new V070GameActionError(
+      'No Margin Loan post-income choice is pending for that player.',
+    );
+  }
+
+  while (pending.hostInstanceIds.length > 0
+    && !activeMarginLoanInstanceIds(state, playerId).includes(
+      pending.hostInstanceIds[0],
+    )) {
+    pending.hostInstanceIds.shift();
+  }
+  const current = pending.hostInstanceIds[0];
+  if (!current) {
+    state.pendingMarginLoanChoice = null;
+    return;
+  }
+  if (assetInstanceId !== current) {
+    throw new V070GameActionError(
+      'Resolve Margin Loan post-income choices in Asset Bank order.',
+    );
+  }
+
+  const collateralInstanceId = marginLoanCollateralInstanceId(
+    state,
+    current,
+  );
+  const collateralValue = marginLoanCollateralValue(
+    state,
+    current,
+  );
+  let repaymentCost: number | null = null;
+
+  if (choice === 'repay') {
+    repaymentCost = collateralValue + 3;
+    spendV070Capital(
+      state,
+      playerId,
+      repaymentCost,
+      'Margin Loan repayment',
+    );
+    resolveV070MarginLoanRepayment(
+      state,
+      playerId,
+      current,
+    );
+  } else if (choice === 'default') {
+    resolveV070MarginLoanDefault(
+      state,
+      playerId,
+      current,
+      'Margin Loan voluntary Default after income',
+    );
+  }
+
+  appendV070Event(state, {
+    type: 'margin_loan_after_income_choice_resolved',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      instanceId: current,
+      collateralInstanceId,
+      collateralValue,
+      choice,
+      repaymentCost,
+    },
+  });
+
+  pending.hostInstanceIds.shift();
+  while (pending.hostInstanceIds.length > 0
+    && !activeMarginLoanInstanceIds(state, playerId).includes(
+      pending.hostInstanceIds[0],
+    )) {
+    pending.hostInstanceIds.shift();
+  }
+  if (pending.hostInstanceIds.length === 0) {
+    state.pendingMarginLoanChoice = null;
+  } else {
+    appendV070Event(state, {
+      type: 'margin_loan_after_income_choice_pending',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        hostInstanceIds: [...pending.hostInstanceIds],
+        count: pending.hostInstanceIds.length,
+        optional: true,
+      },
+    });
+  }
 }
 
 function drawTurnCard(
@@ -1451,6 +1662,26 @@ function drawTurnCard(
 ): void {
   requirePhase(state, 'draw');
   const player = state.players[playerId];
+
+  const blockingMarginLoans = activeMarginLoanInstanceIds(
+    state,
+    playerId,
+  );
+  if (blockingMarginLoans.length > 0) {
+    appendV070Event(state, {
+      type: 'margin_loan_turn_draw_blocked',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        marginLoanInstanceIds: [...blockingMarginLoans],
+      },
+    });
+    state.turnState = advanceV070TurnPhase(
+      requireTurnState(state),
+    );
+    appendPhaseEvent(state);
+    return;
+  }
 
   if (useRuinedStorehouse) {
     if (!v070RuinedStorehouseDrawAvailable(state, playerId)) {
