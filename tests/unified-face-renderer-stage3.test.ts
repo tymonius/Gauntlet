@@ -55,7 +55,9 @@ describe('Stage 3 unified face renderer', () => {
   it('fails closed when authority is incomplete instead of invoking a fallback renderer', () => {
     expect(runtime).toContain('if (!spec.readiness.productionReady)');
     expect(runtime).toContain('spec.readiness.issues.join');
-    expect(faceSpec).toContain("'artwork-composition-not-final'");
+    expect(faceSpec).toContain("'artwork-composition-missing'");
+    expect(faceSpec).not.toContain("'artwork-composition-not-explicit'");
+    expect(faceSpec).not.toContain("'artwork-composition-not-final'");
     expect(faceSpec).not.toContain("'tracker-presentation-still-legacy'");
     expect(faceSpec).toContain("'tracker-presentation-missing'");
     expect(faceSpec).not.toContain("'reference-presentation-still-legacy'");
