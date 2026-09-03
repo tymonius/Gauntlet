@@ -300,7 +300,7 @@ async function main() {
       await bankerFrame.waitFor();
       await leaderPage.waitForFunction(() => (
         [...document.querySelectorAll('#leader-cards .component-review-frame')]
-          .find(frame => frame.src.includes('id=financiers-banker'))
+          .find(frame => frame.src.includes('financiers-banker'))
           ?.contentDocument?.body?.dataset.renderReady === 'true'
       ));
       await leaderPage.evaluate(() => {
@@ -312,7 +312,7 @@ async function main() {
       });
       await leaderPage.waitForFunction(() => {
         const frame = [...document.querySelectorAll('#leader-cards .component-review-frame')]
-          .find(candidate => candidate.src.includes('id=financiers-banker'));
+          .find(candidate => candidate.src.includes('financiers-banker'));
         return frame?.classList.contains('art-compositor-divergent-source')
           && document.querySelector('.art-compositor-divergence-summary')
           && [...document.querySelectorAll('.art-compositor-divergence-badge')]
@@ -333,7 +333,7 @@ async function main() {
       });
       await leaderPage.waitForFunction(() => {
         const frame = [...document.querySelectorAll('#leader-cards .component-review-frame')]
-          .find(candidate => candidate.src.includes('id=financiers-banker'));
+          .find(candidate => candidate.src.includes('financiers-banker'));
         return frame
           && !frame.classList.contains('art-compositor-divergent-source')
           && !document.querySelector('.art-compositor-divergence-summary');
