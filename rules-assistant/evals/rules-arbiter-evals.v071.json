@@ -386,27 +386,32 @@
       "id": "diplomats-leverage",
       "category": "diplomats",
       "question": "How does Leverage work?",
-      "expectedClassification": "provisional",
+      "expectedClassification": "explicit",
       "expectedSourcePatterns": [
         "Leverage"
       ],
       "forbiddenAnswerPatterns": [
-        "bonus to your dice result"
+        "dice result"
+      ],
+      "expectedAnswerPatterns": [
+        "battle total"
       ]
     },
     {
       "id": "diplomats-leverage-target",
       "category": "diplomats",
       "question": "What does the Leverage bonus add to?",
-      "expectedClassification": "provisional",
+      "expectedClassification": "explicit",
       "expectedSourcePatterns": [
         "Leverage"
       ],
       "forbiddenAnswerPatterns": [
-        "bonus to your dice result",
-        "bonus to your battle total"
+        "dice result"
       ],
-      "origin": "live-answer-qa-2026-09-03"
+      "origin": "live-answer-qa-2026-09-03",
+      "expectedAnswerPatterns": [
+        "battle total"
+      ]
     },
     {
       "id": "diplomats-peace-treaty",
