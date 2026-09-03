@@ -48,19 +48,66 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Stage tracked website
+      - name: Stage explicit public website
         shell: bash
         run: |
           set -euo pipefail
           site="$RUNNER_TEMP/gauntlet-pages"
           rm -rf "$site"
           mkdir -p "$site"
-          git archive --format=tar HEAD | tar -xf - -C "$site"
 
-          # Keep the public site below GitHub Pages' 1 GB published-site limit.
-          # These are authoring/reconstruction/generated surfaces, not live site dependencies.
+          # GitHub Pages is a deployment artifact, not a mirror of the repository.
+          # Preserve stable public/application paths while excluding source-only,
+          # historical-authoring, CI, and repository-maintenance roots by default.
+          public_directories=(
+            about
+            accessibility
+            assets
+            card-design
+            card-reference
+            changelog
+            config
+            contact
+            deckbuilder
+            deckbuilder-v0.5
+            deckbuilder-v0.6
+            faction-sheets
+            factions
+            faq
+            game-data
+            images
+            playtest
+            press
+            privacy
+            releases
+            rulebook
+            rules-arbiter
+            rules-assistant
+            start
+            tts
+            v0.6.2
+            v0.6.3
+            v0.7.0
+            v0.7.1
+          )
+
+          root_public_files=(404.html CNAME index.html)
+          while IFS= read -r -d '' file; do
+            root_public_files+=("${file#./}")
+          done < <(
+            find . -maxdepth 1 -type f \
+              \( -name '*.css' -o -name '*.js' -o -name '*.ico' -o -name '*.png' \
+                 -o -name '*.svg' -o -name '*.webp' -o -name '*.jpg' -o -name '*.jpeg' \
+                 -o -name '*.webmanifest' -o -name '*.xml' -o -name '*.txt' \) \
+              -print0
+          )
+
+          git archive --format=tar HEAD -- "${root_public_files[@]}" "${public_directories[@]}" \
+            | tar -xf - -C "$site"
+
+          # Keep large authoring/source subsets out of the deployed artifact while retaining
+          # the production asset namespaces that current public pages consume.
           rm -rf \
-            "$site/artifacts" \
             "$site/images/3d" \
             "$site/images/sketches" \
             "$site/images/tools" \
@@ -83,6 +130,14 @@ jobs:
           rm -f \
             "$site/releases/v0.6.0/Gauntlet_v0.6.0_Rulebook_Booklet_Print.pdf" \
             "$site/releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.pdf"
+
+          # Source-only repository roots must never re-enter Pages implicitly. Add a path to
+          # public_directories above only when it is intentionally part of the deployed site.
+          for excluded in \
+            .github artifacts docs governance legacy media rulebook-design rulebook-production \
+            scripts src tests workers; do
+            test ! -e "$site/$excluded"
+          done
 
           test -s "$site/index.html"
           test -s "$site/CNAME"
