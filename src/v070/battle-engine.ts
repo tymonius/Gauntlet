@@ -122,6 +122,8 @@ import {
 import {
   applyV070CounterattackAssetOnsetEffects,
   initializeV070CounterattackBattle,
+  openV070FootholdAssetAftermathWindow,
+  passV070FootholdAssetAfterCounterattackWin,
   resolveV070FootholdBattleDraws,
   useV070FootholdAssetAfterCounterattackWin,
   v070CounterattackBattleCardAftermathDestination,
@@ -273,6 +275,7 @@ export type V070BattleAction =
       playerId: PlayerId;
       assetInstanceId: string;
     }
+  | { type: 'pass_foothold_asset'; playerId: PlayerId }
   | {
       type: 'use_grand_inquisitor_final_judgment';
       playerId: PlayerId;
@@ -374,6 +377,13 @@ export function reduceV070BattleAction(
     && action.type !== 'resolve_inquisition_purge_hand_choice') {
     throw new V070GameActionError(
       'Resolve the pending Final Judgment Purge choice before continuing the battle.',
+    );
+  }
+  if (state.battleRuntime?.footholdAssetWindowPlayer
+    && action.type !== 'use_foothold_asset'
+    && action.type !== 'pass_foothold_asset') {
+    throw new V070GameActionError(
+      'Resolve or decline the pending Foothold Asset opportunity before continuing the battle.',
     );
   }
   if (state.battleRuntime?.guardiansWindowOpen
@@ -628,6 +638,12 @@ export function reduceV070BattleAction(
         next,
         action.playerId,
         action.assetInstanceId,
+      );
+      break;
+    case 'pass_foothold_asset':
+      passV070FootholdAssetAfterCounterattackWin(
+        next,
+        action.playerId,
       );
       break;
     case 'use_grand_inquisitor_final_judgment':
@@ -2166,6 +2182,7 @@ function completeAftermathInternal(
   syncBoardOccupants(state);
 
   if (!runtime.aftermathCardsCleared) {
+    if (openV070FootholdAssetAftermathWindow(state)) return;
     if (openAccursedWagerAftermathChoice(state, immediateWinner)) return;
     if (openPoisonousGasAftermathChoice(state, immediateWinner)) return;
     if (openTerritoryAftermathChoice(state, immediateWinner)) return;
