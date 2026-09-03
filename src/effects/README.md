@@ -8,4 +8,4 @@ The aggregate legacy effect registry is intentionally exposed as `src/effects/v0
 
 The individual handlers remain useful migration evidence, but no handler should be reused by the promoted engine without revalidation against current rules authority.
 
-Legacy runtime effect modules must not import the deprecated generic `../types` compatibility barrel. Where they use the shared aggregate type API, they opt into `../types/v06` explicitly through type-only imports.
+Legacy runtime effect modules must not import the retired generic `../types` compatibility barrel. They also remain independent from the legacy state, card, and development runtime layers; shared read-only Asset eligibility policy lives in `asset-policy.ts` so state may consume effect policy without effects reaching back into state.

@@ -5,9 +5,13 @@ import type {
   GameState,
   PlayerID,
 } from '../types/v06';
-import { faceUpAssetCopies } from './asset-facing';
+import { ILLEGAL_OCCUPATION } from '../effects/asset-policy';
 
-export const ILLEGAL_OCCUPATION = 'neutral-illegal-occupation';
+export {
+  ILLEGAL_OCCUPATION,
+  illegalOccupationSourceFor,
+  illegalOccupationSuppressesBankedAssets,
+} from '../effects/asset-policy';
 const ILLEGAL_OCCUPATION_BATTLE_RESOLUTION = 'neutral_illegal_occupation_battle';
 
 function active(card?: BattlePlayedCard): card is BattlePlayedCard {
@@ -41,30 +45,6 @@ function publicLog(
     payload,
     visibility: 'public',
   } satisfies GameEvent);
-}
-
-/**
- * Returns the controller whose banked Illegal Occupation is suppressing the
- * target player's Asset Bank, if any. The source Asset must itself be active.
- */
-export function illegalOccupationSourceFor(
-  game: GameState,
-  targetPlayerId: PlayerID,
-): PlayerID | undefined {
-  const occupied = game.board.spaces.find((space) => space.occupant === targetPlayerId);
-  if (!occupied || occupied.kind !== 'territory') return undefined;
-  const sourcePlayerId = occupied.controller;
-  if (!sourcePlayerId || sourcePlayerId === targetPlayerId) return undefined;
-  if (faceUpAssetCopies(game.players[sourcePlayerId], ILLEGAL_OCCUPATION) < 1) return undefined;
-  if (game.battle?.bankedAssetUseProhibited?.includes(sourcePlayerId)) return undefined;
-  return sourcePlayerId;
-}
-
-export function illegalOccupationSuppressesBankedAssets(
-  game: GameState,
-  targetPlayerId: PlayerID,
-): boolean {
-  return Boolean(illegalOccupationSourceFor(game, targetPlayerId));
 }
 
 /**
