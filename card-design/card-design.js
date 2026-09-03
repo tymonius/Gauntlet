@@ -638,7 +638,10 @@
 
   async function prepareCard(card) {
     if (!(card instanceof HTMLElement)) throw new Error('prepareCard requires a rendered card element.');
-    await loadProductionFonts();
+    const fontsReady = await loadProductionFonts();
+    if (!fontsReady) {
+      throw new Error(document.body.dataset.productionFontError || 'Production fonts failed to load.');
+    }
     await waitForImages(card);
     await loadParchments([card]);
     fitCard(card);
