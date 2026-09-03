@@ -13,6 +13,7 @@ on:
       - 'images/artwork/cards/**'
       - 'images/artwork/card-backgrounds/**'
       - 'images/sketches/*.png'
+      - 'images/sketches/hero-sketches/hero sketch.png'
       - 'rulebook/**'
       - 'tts/renderer/**'
       - 'card-design/**'
@@ -69,10 +70,13 @@ jobs:
             "$site/releases/v0.6.3-withdrawn" \
             "$site/tts/v0.7.0"
 
-          # The Rulebook uses the top-level sketch PNGs as live hero/Leader artwork.
+          # The Rulebook uses the top-level sketch PNG URLs as live hero/Leader artwork.
           # Publish those files without carrying the much larger sketch-authoring subdirectories.
+          # The original hero study is stored once with its alternate studies and staged here
+          # under the historical public filename for URL compatibility.
           mkdir -p "$site/images/sketches"
           find images/sketches -maxdepth 1 -type f -name '*.png' -exec cp '{}' "$site/images/sketches/" ';'
+          cp "images/sketches/hero-sketches/hero sketch.png" "$site/images/sketches/hero sketch.png"
 
           # Editable release-source documents are retained in Git but are not public-site assets.
           find "$site/releases" -type f -name '*.docx' -delete
