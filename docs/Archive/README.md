@@ -10,6 +10,10 @@ Current work should begin with:
 
 ## Archive groups
 
+### `v0.6.3-development/`
+
+Candidate rules, card-language normalization, closeout matrices, implementation records, and starter-finalization material from the v0.6.3 development cycle. The original withdrawn publication evidence remains immutable under `releases/v0.6.3-withdrawn/`; the certified reconstructed historical release remains under `releases/v0.6.3/`.
+
 ### `v0.6.2-development/`
 
 Implementation ledgers, candidate rules/reference documents, compatibility audits, starter candidate data, release closeout records, and Wave B–E review/test matrices from the v0.6.2 development cycle. Withdrawn immutable publication evidence remains under `releases/v0.6.2-withdrawn/`.
