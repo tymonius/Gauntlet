@@ -20,6 +20,7 @@ import {
 } from './turn-engine';
 import {
   applyV070BattleCardAdditionalRetreats,
+  resolveV070AftermathDrawEffects,
   resolveV070SupportedRevealEffects,
   resolveV070UnbrokenRanksCommand,
 } from './battle-effects';
@@ -1451,6 +1452,7 @@ function finalizeOutcome(
       tiebreakRounds: outcome.tiebreakRounds,
     },
   });
+  resolveV070AftermathDrawEffects(state, outcome.winner);
 
   if (!runtime.pendingGameVictory) {
     prepareV070MysticLossInterruption(state, outcome.loser);

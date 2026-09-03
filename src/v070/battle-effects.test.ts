@@ -112,6 +112,8 @@ describe('v0.7.0 audited reveal-effect registry', () => {
       'neutral-entrenchment',
       'neutral-advance-guard',
       'neutral-contingency-plan',
+      'neutral-consolidation',
+      'neutral-foothold',
       'neutral-insurrection',
       'neutral-illegal-occupation',
       'neutral-sequestration',
