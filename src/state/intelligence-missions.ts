@@ -1,4 +1,4 @@
-import { intelligenceCardsById, intelligenceMissionCardIds } from '../cards';
+import { intelligenceCardsById, intelligenceMissionCardIds } from '../cards/intelligence';
 import type { CardID, GameEvent, GameState, IntelligenceMissionKind, IntelligenceMissionState, PlayerID, PlayerState } from '../types/v06';
 import { gainFactionResource, hasFactionResource, spendFactionResource } from './resources';
 import { bankedAssetUseAllowed, bankedAssetCardUseAllowed } from './intelligence-subversion-battle';

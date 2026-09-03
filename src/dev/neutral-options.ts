@@ -1,4 +1,4 @@
-import { getCardPlayRule } from '../cards';
+import { getCardPlayRule } from '../cards/playability';
 import type { CardID, GameState, PlayerID } from '../types/v06';
 import type { NeutralAppStateAction } from '../state/v06';
 

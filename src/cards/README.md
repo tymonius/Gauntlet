@@ -2,7 +2,7 @@
 
 This directory contains card-definition and playability helpers for the earlier playable v0.6 digital architecture.
 
-The explicit aggregate API is `src/cards/v06.ts`. The generic `src/cards/index.ts` remains temporarily as a **deprecated compatibility shim** because the legacy state/dev regression surface has many existing `../cards` imports.
+The explicit aggregate API is `src/cards/v06.ts`. The generic `src/cards/index.ts` remains temporarily as a **deprecated compatibility shim** for three runtime consumers tied to the legacy Military initialization cycle: `src/state/apply.ts`, `src/state/neutral-assimilation.ts`, and `src/dev/guided-options.ts`. Other runtime consumers import the specific legacy card module they actually need.
 
 Current promoted gameplay implementation under `src/v070/` does not depend on this directory.
 

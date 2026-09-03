@@ -1,4 +1,4 @@
-import { intelligenceCardsById, intelligenceMissionCardIds } from '../cards';
+import { intelligenceCardsById, intelligenceMissionCardIds } from '../cards/intelligence';
 import type { GameState, PlayerID } from '../types/v06';
 import type { AppStateAction } from '../state/actions';
 import { specialOperationIntelCost, specialOperationReady } from '../state/intelligence-missions';
