@@ -85,10 +85,7 @@
     flex-wrap: wrap;
     padding: 12px 0 14px;
   }
-  .site-header nav,
-  .global-header nav,
-  .rulebook-header nav,
-  .arbiter-header nav {
+  :is(.site-header, .global-header, .rulebook-header, .arbiter-header) > :is(nav, .header-actions) {
     order: 3;
     width: 100%;
     display: flex !important;
@@ -98,11 +95,10 @@
     scrollbar-width: thin;
     -webkit-overflow-scrolling: touch;
   }
-  .site-header nav a,
-  .global-header nav a,
-  .rulebook-header nav a,
-  .arbiter-header nav a {
+  :is(.site-header, .global-header, .rulebook-header, .arbiter-header) > :is(nav, .header-actions) a {
+    min-height: 32px;
     display: inline-flex !important;
+    align-items: center;
     flex: 0 0 auto;
     white-space: nowrap;
   }
