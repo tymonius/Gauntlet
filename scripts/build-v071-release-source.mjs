@@ -6,10 +6,8 @@ import { applyV070CanonicalCorrections, applyV070RulebookCorrections } from '../
 import { synchronizeKnownRulebookClaims, validateKnownRulebookClaims } from '../rulebook/player-facing/rule-facts.js';
 
 const RELEASE_VERSION = 'v0.7.1';
-const RELEASE_NAME = 'Mystics Rites & Deck Import';
 const CANDIDATE_VERSION = 'v0.7.1-candidate';
 const RELEASE_DIR = join(ROOT, 'releases', RELEASE_VERSION);
-const PUBLIC_DIR = join(ROOT, RELEASE_VERSION);
 const CURRENT_GAME_SOURCE = 'game-data/current-game.json';
 const CURRENT_RULEBOOK_SOURCE = 'rulebook/player-facing/current-rulebook.md';
 
@@ -158,110 +156,69 @@ if (![RELEASE_VERSION, CANDIDATE_VERSION].includes(authority.version)) {
   validateAuthority(authority);
 
   const rulebook = addCardAnatomyFigures(currentRulebookSource);
-const canonicalData = {
-  schema_version: 2,
-  release_version: RELEASE_VERSION,
-  source_version: RELEASE_VERSION,
-  source_authority: `/${CURRENT_GAME_SOURCE}`,
-  status: 'published',
-  provenance: {
+  const canonicalData = {
+    schema_version: 2,
+    release_version: RELEASE_VERSION,
+    source_version: RELEASE_VERSION,
+    source_authority: `/${CURRENT_GAME_SOURCE}`,
+    status: 'published',
+    provenance: {
+      current_game_authority: CURRENT_GAME_SOURCE,
+      current_rulebook_authority: CURRENT_RULEBOOK_SOURCE,
+      historical_derivation: clone(authority.provenance),
+      note: 'The v0.7.1 release is copied from complete current authorities. Historical derivation inputs are provenance only and are not layered during publication.',
+    },
+    gameplay: clone(authority.gameplay),
+    proposals: clone(authority.proposals),
+    arcane_symbol: clone(authority.arcaneSymbol),
+    component_contract: clone(authority.componentContract),
+    faction_feature_taxonomy: clone(authority.factionFeatureTaxonomy),
+    faction_features: clone(authority.factionFeatures),
+    leaders: clone(authority.leaders),
+    mystics: clone(authority.mystics),
+  };
+
+  const starterDecks = {
+    ...clone(authority.starterDecks),
+    version: RELEASE_VERSION,
+    release_version: RELEASE_VERSION,
+    source_version: RELEASE_VERSION,
+    source_authority: `/${CURRENT_GAME_SOURCE}`,
+  };
+
+  const canonicalText = jsonText(canonicalData);
+  const starterText = jsonText(starterDecks);
+  const authoritySetId = sha256(Buffer.from(`${rulebook}\n${canonicalText}\n${starterText}`, 'utf8'));
+  const sourceProvenance = {
+    schema_version: 2,
+    release_version: RELEASE_VERSION,
+    source_version: RELEASE_VERSION,
+    authority_set_id: authoritySetId,
     current_game_authority: CURRENT_GAME_SOURCE,
     current_rulebook_authority: CURRENT_RULEBOOK_SOURCE,
     historical_derivation: clone(authority.provenance),
-    note: 'The v0.7.1 release is copied from complete current authorities. Historical derivation inputs are provenance only and are not layered during publication.',
-  },
-  gameplay: clone(authority.gameplay),
-  proposals: clone(authority.proposals),
-  arcane_symbol: clone(authority.arcaneSymbol),
-  component_contract: clone(authority.componentContract),
-  faction_feature_taxonomy: clone(authority.factionFeatureTaxonomy),
-  faction_features: clone(authority.factionFeatures),
-  leaders: clone(authority.leaders),
-  mystics: clone(authority.mystics),
-};
+    publication_derived_assets: {
+      card_anatomy_figure: 'releases/v0.7.1/Gauntlet_v0.7.1_Card_Anatomy.png',
+    },
+    counts: {
+      playable_cards: authority.gameplay.cards.length,
+      territories: authority.gameplay.territories.length,
+      factions: authority.gameplay.factions.length,
+      leaders: authority.leaders.length,
+      proposals: authority.proposals.length,
+      starter_decks: authority.starterDecks.decks.length,
+    },
+  };
 
-const starterDecks = {
-  ...clone(authority.starterDecks),
-  version: RELEASE_VERSION,
-  release_version: RELEASE_VERSION,
-  source_version: RELEASE_VERSION,
-  source_authority: `/${CURRENT_GAME_SOURCE}`,
-};
+  await mkdir(RELEASE_DIR, { recursive: true });
+  await Promise.all([
+    writeText(join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Rulebook.md`), rulebook),
+    writeText(join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Canonical_Data.json`), canonicalText),
+    writeText(join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Starter_Decks.json`), starterText),
+    writeText(join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Source_Provenance.json`), jsonText(sourceProvenance)),
+  ]);
 
-const canonicalText = jsonText(canonicalData);
-const starterText = jsonText(starterDecks);
-const authoritySetId = sha256(Buffer.from(`${rulebook}\n${canonicalText}\n${starterText}`, 'utf8'));
-const sourceProvenance = {
-  schema_version: 2,
-  release_version: RELEASE_VERSION,
-  source_version: RELEASE_VERSION,
-  authority_set_id: authoritySetId,
-  current_game_authority: CURRENT_GAME_SOURCE,
-  current_rulebook_authority: CURRENT_RULEBOOK_SOURCE,
-  historical_derivation: clone(authority.provenance),
-  publication_derived_assets: {
-    card_anatomy_figure: 'releases/v0.7.1/Gauntlet_v0.7.1_Card_Anatomy.png',
-  },
-  counts: {
-    playable_cards: authority.gameplay.cards.length,
-    territories: authority.gameplay.territories.length,
-    factions: authority.gameplay.factions.length,
-    leaders: authority.leaders.length,
-    proposals: authority.proposals.length,
-    starter_decks: authority.starterDecks.decks.length,
-  },
-};
-
-await mkdir(RELEASE_DIR, { recursive: true });
-await mkdir(PUBLIC_DIR, { recursive: true });
-await Promise.all([
-  writeText(join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Rulebook.md`), rulebook),
-  writeText(join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Canonical_Data.json`), canonicalText),
-  writeText(join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Starter_Decks.json`), starterText),
-  writeText(join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Source_Provenance.json`), jsonText(sourceProvenance)),
-]);
-
-const landing = `<!doctype html>
-<html lang="en">
-<head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-8YYYZJGGPE');
-  </script>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
-  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
-  <title>Gauntlet ${RELEASE_VERSION}</title>
-  <meta name="description" content="Gauntlet ${RELEASE_VERSION} — ${RELEASE_NAME}">
-  <link rel="stylesheet" href="../site.css">
-</head>
-<body>
-  <header class="site-header">
-    <a class="brand" href="/" aria-label="Gauntlet home"><span class="brand-mark" aria-hidden="true">G</span><span>Gauntlet</span></a>
-    <nav aria-label="Primary navigation">
-      <a href="/start/">Start</a><a href="/#game">Game</a><a href="/rulebook/">Rules</a><a href="/factions/">Factions</a><a href="/deckbuilder/">Deckbuilder</a><a href="/card-reference/">Card Reference</a><a href="/rules-arbiter/">Rules Arbiter</a>
-    </nav>
-  </header>
-  <main class="page-shell">
-    <p class="eyebrow">Published playtest release</p>
-    <h1>Gauntlet ${RELEASE_VERSION}</h1>
-    <p><strong>${RELEASE_NAME}</strong></p>
-    <p>This release finalizes the expanded six-Rite Mystics package and enables Deckbuilder-to-Tabletop-Simulator deck codes while preserving the v0.7.0 core game.</p>
-    <p><a href="../start/">Start playing</a> · <a href="../rulebook/">Rulebook</a> · <a href="../deckbuilder/">Deckbuilder</a> · <a href="../card-reference/">Card reference</a></p>
-    <p><a href="../releases/${RELEASE_VERSION}/Gauntlet_${RELEASE_VERSION}_Rulebook_Booklet.pdf">Download the printable Rulebook booklet</a></p>
-  </main>
-</body>
-</html>
-`;
-await writeText(join(PUBLIC_DIR, 'index.html'), landing);
-
-console.log(`Materialized ${RELEASE_VERSION} directly from complete current authorities.`);
-console.log(`Authority set: ${authoritySetId}`);
-console.log(`Cards: ${authority.gameplay.cards.length}; Territories: ${authority.gameplay.territories.length}; Starter Decks: ${authority.starterDecks.decks.length}.`);
+  console.log(`Materialized ${RELEASE_VERSION} directly from complete current authorities.`);
+  console.log(`Authority set: ${authoritySetId}`);
+  console.log(`Cards: ${authority.gameplay.cards.length}; Territories: ${authority.gameplay.territories.length}; Starter Decks: ${authority.starterDecks.decks.length}.`);
 }

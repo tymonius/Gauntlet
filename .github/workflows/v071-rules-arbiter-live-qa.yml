@@ -50,6 +50,33 @@ jobs:
             echo "Running a 10-case representative paid Rules Arbiter smoke test."
           fi
 
+      - name: Verify frozen v0.7.1 corpus matches current authority
+        run: |
+          set -euo pipefail
+          node scripts/build-v071-release-source.mjs
+          corpus_files=(
+            releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md
+            releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json
+            releases/v0.7.1/Gauntlet_v0.7.1_Starter_Decks.json
+            releases/v0.7.1/Gauntlet_v0.7.1_Source_Provenance.json
+          )
+          if ! git diff --exit-code -- "${corpus_files[@]}"; then
+            echo "::error::The tracked v0.7.1 published corpus is stale. Merge the generated release refresh before spending on live Rules Arbiter QA."
+            exit 1
+          fi
+          node <<'NODE'
+          const { appendFileSync, readFileSync } = await import("node:fs");
+          const manifest = JSON.parse(readFileSync("releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json", "utf8"));
+          const provenance = JSON.parse(readFileSync("releases/v0.7.1/Gauntlet_v0.7.1_Source_Provenance.json", "utf8"));
+          const expected = String(provenance.authority_set_id || "").trim();
+          if (!expected || manifest.authority_set_id !== expected) {
+            console.error("The v0.7.1 manifest and source provenance do not identify the same authority set.");
+            process.exit(1);
+          }
+          appendFileSync(process.env.GITHUB_ENV, `EXPECTED_RULES_AUTHORITY_SET=${expected}\n`);
+          console.log(`Expected Rules Arbiter authority set: ${expected}`);
+          NODE
+
       - name: Wait for deployed Rules Arbiter revision
         env:
           RULES_HEALTH_ENDPOINT: https://gauntlet-rules-assistant.tymon-scott.workers.dev/health
@@ -81,6 +108,57 @@ jobs:
           }
 
           console.error(`Production Rules Arbiter never reported behavior revision ${expected}.`);
+          process.exit(1);
+          NODE
+
+      - name: Verify published corpus and refresh Worker cache
+        env:
+          RULES_PUBLIC_MANIFEST: https://gauntlet.run/releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json
+          RULES_CORPUS_HEALTH_ENDPOINT: https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/v071/corpus-health
+        run: |
+          node <<'NODE'
+          const expected = process.env.EXPECTED_RULES_AUTHORITY_SET;
+          const manifestEndpoint = process.env.RULES_PUBLIC_MANIFEST;
+          const corpusEndpoint = process.env.RULES_CORPUS_HEALTH_ENDPOINT;
+          const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+          let published = false;
+          for (let attempt = 1; attempt <= 120; attempt += 1) {
+            try {
+              const url = `${manifestEndpoint}?qa=${encodeURIComponent(process.env.GITHUB_SHA || "manual")}&attempt=${attempt}`;
+              const response = await fetch(url, { cache: "no-store" });
+              const payload = response.ok ? await response.json() : null;
+              const actual = payload?.authority_set_id || "missing";
+              console.log(`Published corpus check ${attempt}/120: ${actual}`);
+              if (response.ok && actual === expected) {
+                published = true;
+                break;
+              }
+            } catch (error) {
+              console.log(`Published corpus check ${attempt}/120: ${error.message}`);
+            }
+            if (attempt < 120) await sleep(5000);
+          }
+          if (!published) {
+            console.error(`gauntlet.run never published Rules Arbiter authority set ${expected}. No paid QA calls were made.`);
+            process.exit(1);
+          }
+
+          for (let attempt = 1; attempt <= 20; attempt += 1) {
+            try {
+              const url = `${corpusEndpoint}?qa=${encodeURIComponent(process.env.GITHUB_SHA || "manual")}&attempt=${attempt}`;
+              const response = await fetch(url, { cache: "no-store" });
+              const payload = response.ok ? await response.json() : null;
+              const actual = payload?.authoritySetId || "missing";
+              console.log(`Worker corpus check ${attempt}/20: ${actual}`);
+              if (response.ok && payload?.ok === true && actual === expected) process.exit(0);
+            } catch (error) {
+              console.log(`Worker corpus check ${attempt}/20: ${error.message}`);
+            }
+            if (attempt < 20) await sleep(3000);
+          }
+
+          console.error(`Production Rules Arbiter did not load authority set ${expected}. No paid QA calls were made.`);
           process.exit(1);
           NODE
 
