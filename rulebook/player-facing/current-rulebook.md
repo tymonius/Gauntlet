@@ -1378,9 +1378,9 @@ Withdrawal produces no winner. Return the Stake and do not impose the Proposal.
 
 #### Leverage
 
-Before dice are rolled in a battle following refused Terms, the Diplomat may spend Influence for Leverage:
+Before dice are rolled in a battle following refused Terms, the Diplomat may spend Influence for Leverage to increase the Diplomat's battle total:
 
-| Bonus | Total Influence cost |
+| Battle Total bonus | Total Influence cost |
 |---:|---:|
 | +1 | 1 |
 | +2 | 3 |
