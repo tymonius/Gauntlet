@@ -7118,13 +7118,13 @@
         "name": "Missions",
         "profile": "1 Action",
         "timing": "Denouement",
-        "cost": "Abort: Intel equal to Mission value"
+        "cost": "Abort cost: Intel equal to Mission value"
       },
       {
         "name": "Special Operations",
         "profile": "1 Action",
         "timing": "Denouement",
-        "cost": "Completion: Territories in Gauntlet minus card value, minimum 1 Intel"
+        "cost": "Completion cost: Territories in Gauntlet minus card value, minimum 1 Intel"
       },
       {
         "name": "Surveillance",
