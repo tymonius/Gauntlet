@@ -78,7 +78,14 @@ describe('complete current-game authority', () => {
     expect(authority.leaders).toHaveLength(12);
     expect(authority.proposals).toHaveLength(9);
     expect(authority.starterDecks.decks).toHaveLength(12);
-    expect(Object.keys(authority.artDirection).length).toBeGreaterThan(0);
+    expect(Object.keys(authority.artDirection)).toHaveLength(210);
+    for (const [id, direction] of Object.entries(authority.artDirection) as [string, any][]) {
+      expect(id).toBeTruthy();
+      expect(direction).toMatchObject({ fit: 'cover', smart: false });
+      expect(Number.isFinite(direction.focusX)).toBe(true);
+      expect(Number.isFinite(direction.focusY)).toBe(true);
+      expect(Number.isFinite(direction.zoom)).toBe(true);
+    }
     expect(authority.componentContract).toBeTruthy();
     expect(authority.arcaneSymbol).toBeTruthy();
     expect(authority.mystics).toBeTruthy();
