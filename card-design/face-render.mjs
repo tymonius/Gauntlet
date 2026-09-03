@@ -10,7 +10,8 @@ function params() {
   const kind = String(query.get('kind') || (query.has('faction') ? 'back' : '')).trim().toLowerCase();
   const id = String(query.get('id') || query.get('faction') || '').trim();
   const side = String(query.get('side') || (kind === 'back' ? 'back' : 'front')).trim().toLowerCase();
-  return { kind, id, side };
+  const versionOverride = String(query.get('version') || '').trim();
+  return { kind, id, side, versionOverride };
 }
 
 function reportError(error) {
@@ -114,7 +115,8 @@ async function main() {
   const target = document.getElementById('renderTarget');
   if (!target) throw new Error('Canonical face renderer is missing its render target.');
 
-  const spec = await resolveFaceSpec(params());
+  const request = params();
+  const spec = await resolveFaceSpec(request);
   document.body.dataset.faceSpecId = spec.id;
   document.body.dataset.faceSpecKind = spec.kind;
   document.body.dataset.gameplayAuthority = spec.gameplayAuthorityUrl;
@@ -130,6 +132,13 @@ async function main() {
 
   const face = family.mountFace(target, spec);
   if (!(face instanceof HTMLElement)) throw new Error(`Face family ${spec.template} did not return a mounted element.`);
+
+  if (request.versionOverride) {
+    const footer = face.querySelectorAll('.card-footer span');
+    const version = footer.item(footer.length - 1);
+    if (version) version.textContent = request.versionOverride;
+    face.dataset.renderVersionOverride = request.versionOverride;
+  }
 
   await waitForImages(face);
   if (face.classList.contains('gauntlet-card') && spec.template !== 'card-back') {
