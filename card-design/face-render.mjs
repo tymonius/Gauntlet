@@ -7,11 +7,10 @@ const FAMILY_MODULES = Object.freeze({
 
 function params() {
   const query = new URLSearchParams(window.location.search);
-  const kind = String(query.get('kind') || (query.has('faction') ? 'back' : '')).trim().toLowerCase();
-  const id = String(query.get('id') || query.get('faction') || '').trim();
-  const side = String(query.get('side') || (kind === 'back' ? 'back' : 'front')).trim().toLowerCase();
+  const faceId = String(query.get('id') || '').trim();
   const versionOverride = String(query.get('version') || '').trim();
-  return { kind, id, side, versionOverride };
+  if (!faceId) throw new Error('Canonical face renderer requires exactly one face id.');
+  return { faceId, versionOverride };
 }
 
 function reportError(error) {
@@ -116,7 +115,7 @@ async function main() {
   if (!target) throw new Error('Canonical face renderer is missing its render target.');
 
   const request = params();
-  const spec = await resolveFaceSpec(request);
+  const spec = await resolveFaceSpec(request.faceId);
   document.body.dataset.faceSpecId = spec.id;
   document.body.dataset.faceSpecKind = spec.kind;
   document.body.dataset.gameplayAuthority = spec.gameplayAuthorityUrl;
