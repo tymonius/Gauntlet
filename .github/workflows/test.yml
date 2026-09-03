@@ -124,7 +124,8 @@ jobs:
             const tts = uncertain || matches(/^scripts\/generate-tts-/) || under('tts/') || under('artifacts/tts/') || under('data/cards/') || under('data/territories/');
             const media = uncertain || matches(/^scripts\/generate-card-media-/) || under('images/artwork/') || under('artifacts/media/') || under('data/cards/');
             const renderer = uncertain || exact('card-design/playable-card-renderer.js') || exact('scripts/validate-v063-card-rendering-conventions.mjs');
-            const relevant = code || types || analytics || tts || media || renderer;
+            const accessibility = uncertain || matches(/\.html$/) || exact('tests/public-static-accessibility.test.ts');
+            const relevant = code || types || analytics || tts || media || renderer || accessibility;
 
             core.setOutput('relevant', String(relevant));
             core.setOutput('code', String(code));
@@ -134,6 +135,7 @@ jobs:
             core.setOutput('tts', String(tts));
             core.setOutput('media', String(media));
             core.setOutput('renderer', String(renderer));
+            core.setOutput('accessibility', String(accessibility));
             core.setOutput('changed_tests', JSON.stringify(changedTests));
             core.setOutput('related_sources', JSON.stringify(relatedSources));
             core.setOutput('retired_sources', JSON.stringify(retiredSources));
@@ -150,6 +152,7 @@ jobs:
                 ['TTS', String(tts)],
                 ['Card renderer', String(renderer)],
                 ['Media', String(media)],
+                ['Public static accessibility', String(accessibility)],
               ])
               .write();
 
@@ -220,6 +223,10 @@ jobs:
           if (( ${#related_sources[@]} )); then
             npx vitest related --run --passWithNoTests "${related_sources[@]}"
           fi
+
+      - name: Run public static accessibility contract when HTML changes
+        if: steps.scope.outputs.accessibility == 'true'
+        run: npx vitest run tests/public-static-accessibility.test.ts
 
       - name: Verify analytics only when analytics-bearing pages change
         if: steps.scope.outputs.analytics == 'true'
