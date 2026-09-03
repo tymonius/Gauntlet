@@ -185,6 +185,45 @@ const handlers: V070BattleEffectHandler[] = [
     },
   },
   {
+    cardId: 'neutral-tactical-planning',
+    expectedText: 'When Gambits are revealed: +1 Reserve. Tactic limit unchanged.',
+    timing: 'reveal',
+    apply: ({ state, owner, commitment }) => {
+      if (commitment.role !== 'gambit') return;
+      const draw = drawV070Cards(
+        state,
+        owner,
+        1,
+        'Tactical Planning battle Reserve',
+      );
+      participant(state, owner).reserve.push(...draw.drawn);
+
+      appendV070Event(state, {
+        type: 'battle_reserve_cards_added',
+        actor: owner,
+        visibility: 'public',
+        payload: {
+          sourceInstanceId: commitment.instanceId,
+          sourceCardId: 'neutral-tactical-planning',
+          count: draw.drawn.length,
+          reshuffles: draw.reshuffles,
+          exhausted: draw.exhausted,
+        },
+      });
+      if (draw.drawn.length > 0) {
+        appendV070Event(state, {
+          type: 'reserve_identity',
+          actor: owner,
+          visibility: owner,
+          payload: {
+            cardInstanceIds: [...draw.drawn],
+            purpose: 'Tactical Planning',
+          },
+        });
+      }
+    },
+  },
+  {
     cardId: 'neutral-court-martial',
     expectedText: 'Opponent gains Disadvantage. If they lose, after their normal retreat: Retreat +1, if able.',
     timing: 'reveal',

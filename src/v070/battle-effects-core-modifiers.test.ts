@@ -233,6 +233,58 @@ describe('v0.7.0 core battle-effect modifiers', () => {
     expect(ordinary.battleRuntime?.stage).toBe('choose_tactics');
   });
 
+  test('Tactical Planning adds one card to the live Reserve when Gambits reveal without increasing Tactic limit', () => {
+    let state = startBattle();
+    const tacticalPlanning = injectHandCard(
+      state,
+      'A',
+      'neutral-tactical-planning',
+      'reserve',
+    );
+
+    state = reduceV070BattleAction(state, {
+      type: 'set_gambit',
+      playerId: 'A',
+      cardInstanceId: tacticalPlanning,
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'set_gambit',
+      playerId: 'B',
+    });
+
+    expect(state.battleRuntime?.stage).toBe('reveal_gambits');
+    const reserveBeforeReveal =
+      state.battleRuntime!.participants.A.reserve.length;
+    expect(state.battleRuntime?.participants.A.tacticLimit).toBe(1);
+
+    state = reduceV070BattleAction(state, {
+      type: 'reveal_gambits',
+      playerId: 'A',
+    });
+
+    expect(state.battleRuntime?.participants.A.reserve.length)
+      .toBe(reserveBeforeReveal + 1);
+    expect(state.battleRuntime?.participants.A.tacticLimit).toBe(1);
+    expect(state.battleRuntime?.stage).toBe('choose_tactics');
+    expect(state.battleRuntime?.unsupportedEffects).toEqual([]);
+
+    const added = state.events.find(event =>
+      event.type === 'battle_reserve_cards_added'
+      && (
+        event.payload as { sourceCardId?: string } | undefined
+      )?.sourceCardId === 'neutral-tactical-planning'
+    );
+    expect(added).toBeDefined();
+    const privateIdentity = state.events.find(event =>
+      event.type === 'reserve_identity'
+      && event.visibility === 'A'
+      && (
+        event.payload as { purpose?: string } | undefined
+      )?.purpose === 'Tactical Planning'
+    );
+    expect(privateIdentity).toBeDefined();
+  });
+
   test('Pathfinders gains +1 only when the contested Territory has an active printed effect', () => {
     let active = startBattle('territory-high-ground');
     const activePathfinders = injectHandCard(
