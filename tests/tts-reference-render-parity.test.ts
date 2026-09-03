@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const legacyRenderer = readFileSync('tts/supplemental-renderer/index.html', 'utf8');
@@ -13,6 +13,7 @@ describe('TTS faction-reference renderer parity', () => {
     expect(legacyRenderer).toContain("kind = 'reference'");
     expect(existsSync(['tts', 'supplemental-renderer', 'supplemental-renderer.js'].join('/'))).toBe(false);
     expect(existsSync(['tts', 'supplemental-renderer', 'supplemental-renderer.css'].join('/'))).toBe(false);
+    expect(readdirSync('tts/supplemental-renderer').sort()).toEqual(['index.html']);
   });
 
   it('loads the complete production reference styling from the canonical component surface', () => {
