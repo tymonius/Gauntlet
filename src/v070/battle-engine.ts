@@ -219,6 +219,11 @@ export type V070BattleAction =
       cardInstanceId: string;
     }
   | {
+      type: 'resolve_battle_aftermath_controlled_effect';
+      playerId: PlayerId;
+      sourceInstanceId: string;
+    }
+  | {
       type: 'resolve_territory_aftermath_choice';
       playerId: PlayerId;
       cardInstanceId?: string;
@@ -313,6 +318,12 @@ export function reduceV070BattleAction(
     && action.type !== 'resolve_accursed_wager_discard') {
     throw new V070GameActionError(
       'Resolve the pending Accursed Wager discard before continuing the Aftermath.',
+    );
+  }
+  if (state.battleRuntime?.pendingBattleAftermathControlledEffectChoice
+    && action.type !== 'resolve_battle_aftermath_controlled_effect') {
+    throw new V070GameActionError(
+      'Resolve the pending shared-timing Aftermath card effect before continuing the Aftermath.',
     );
   }
   if (state.battleRuntime?.pendingTerritoryAftermathChoice
@@ -531,6 +542,13 @@ export function reduceV070BattleAction(
         next,
         action.playerId,
         action.cardInstanceId,
+      );
+      break;
+    case 'resolve_battle_aftermath_controlled_effect':
+      resolveBattleAftermathControlledEffectChoice(
+        next,
+        action.playerId,
+        action.sourceInstanceId,
       );
       break;
     case 'resolve_territory_aftermath_choice':
