@@ -28,6 +28,7 @@ export * from '../v070/assets';
 export * from '../v070/sanctions';
 export * from '../v070/movement-triggers';
 export * from '../v070/views';
+export * from '../v070/replay';
 
 /** Historical v0.6.x procedure libraries are intentionally not re-exported here.
  * Import an explicit versioned module when working with migration evidence.
