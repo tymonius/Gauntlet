@@ -116,6 +116,16 @@ The same validator is designed to expand automatically: as canonical authority b
 
 Current blocked faces remain blocked intentionally. Stage 4 must promote their remaining crop/reference/tracker presentation behavior into canonical authority before the clean renderer can reach full-catalog parity.
 
+### Materializing legacy crop outcomes
+
+The first Stage 4 authority migration is deliberately separated into capture and adoption.
+
+`scripts/materialize-art-direction.mjs` renders every artwork-bearing face currently blocked by either `artwork-composition-not-explicit` or `artwork-composition-not-final` through the existing live renderer, reads the actual applied crop outcome, and emits an explicit candidate direction with `smart:false`. It does not mutate `current-game.json`.
+
+The candidate artifact records the source face and legacy crop mode for provenance. Shared art-direction keys must agree exactly or the capture fails.
+
+After the artifact is reviewed, a separate adoption change may merge those explicit values into canonical visual authority. The full parity gate must then prove that the clean renderer reproduces the existing approved appearance before any consumer cutover.
+
 ### Stage 5 — atomic consumer cutover
 Move Card Design review, Card Reference, Deckbuilder, printing, TTS, and inspection to the single face route together.
 
