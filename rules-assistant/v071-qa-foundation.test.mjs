@@ -38,7 +38,7 @@ describe("v0.7.1 Rules Arbiter QA foundation", () => {
   });
 
   test("v0.7.1 prompt preserves timing, zone, classification, and gap semantics", () => {
-    expect(workerV071).toContain('export const BEHAVIOR_REVISION = "v071-qa-20260903-5"');
+    expect(workerV071).toContain('export const BEHAVIOR_REVISION = "v071-qa-20260903-6"');
     expect(workerV071).toContain("additional Actions changes the number of available Actions, not the legal phase or timing");
     expect(workerV071).toContain("A bound card is outside normal zones");
     expect(workerV071).toContain("Never invent the target of an unlabeled numerical bonus");
@@ -51,6 +51,14 @@ describe("v0.7.1 Rules Arbiter QA foundation", () => {
     expect(workerV071).toContain("error.upstreamStatus = response.status");
     expect(workerV071).toContain('failure.upstreamStatus = error.upstreamStatus');
     expect(workerV071).not.toContain("errorBody.slice(0, 500)");
+  });
+
+  test("v0.7.1 classifies upstream model failures without exposing provider bodies", () => {
+    expect(workerV071).toContain("function classifyUpstreamFailure(status, providerError)");
+    expect(workerV071).toContain('"credit_balance_exhausted"');
+    expect(workerV071).toContain('"project_spend_limit_exceeded"');
+    expect(workerV071).toContain('if (status === 429) return "rate_limited"');
+    expect(workerV071).toContain("failure.upstreamCategory = error.upstreamCategory");
   });
 
   test("v0.7.1 prompt uses the Chief Justice voice without roleplay or archaic legalese", () => {
