@@ -33,7 +33,8 @@ describe("single Card Design render authority", () => {
   it("uses one canonical embedded face route for each physical face family", () => {
     expect(productionPrint).toContain("/card-design/card-review-render.html?card=");
     expect(productionPrint).toContain("/card-design/territory-review-render.html?territory=");
-    expect(productionPrint).toContain("/card-design/component-render.html?kind=");
+    expect(productionPrint).toContain('options.kind === "leader" ? "face-render.html" : "component-render.html"');
+    expect(productionPrint).toContain('/card-design/${surface}?kind=');
     expect(productionPrint).not.toContain("/card-design/card-print-render.html?card=");
     expect(productionPrint).not.toContain("/card-design/territory-print-render.html?territory=");
     expect(productionPrint).not.toContain("/card-design/component-print-render.html?kind=");
