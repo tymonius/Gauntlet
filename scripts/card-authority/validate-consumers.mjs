@@ -72,6 +72,11 @@ async function collectSourceFiles(directory, output) {
   }
 }
 
+function suppliesCanonicalIdentity(source) {
+  return source.includes('face-render.html?id=')
+    || (source.includes('face-render.html') && /searchParams\.set\(['"]id['"]/.test(source));
+}
+
 export async function discoverPhysicalFaceConsumers() {
   const candidates = [];
 
@@ -89,7 +94,8 @@ export async function discoverPhysicalFaceConsumers() {
   const consumers = [];
   for (const path of [...new Set(candidates)].sort()) {
     const source = await readFile(resolve(ROOT, path), 'utf8');
-    if (source.includes('face-render.html') || LEGACY_RENDER_ROUTES.some(route => source.includes(route))) {
+    const hasLegacyRoute = LEGACY_RENDER_ROUTES.some(route => source.includes(route));
+    if (suppliesCanonicalIdentity(source) || hasLegacyRoute) {
       consumers.push(Object.freeze({ path, source }));
     }
   }
@@ -115,10 +121,7 @@ export function validateConsumerSource(path, source) {
 
   const windows = faceRouteWindows(source);
   invariant(windows.length > 0, `${path} does not route physical faces through face-render.html.`);
-
-  const suppliesIdentity = source.includes('face-render.html?id=')
-    || /searchParams\.set\(['"]id['"]/.test(source);
-  invariant(suppliesIdentity, `${path} reaches the canonical renderer without supplying canonical face identity.`);
+  invariant(suppliesCanonicalIdentity(source), `${path} reaches the canonical renderer without supplying canonical face identity.`);
 
   for (const window of windows) {
     for (const parameter of RENDER_BEHAVIOR_PARAMETERS) {
