@@ -92,7 +92,7 @@ describe('complete FaceSpec source authority', () => {
     expect(playable.artwork).toMatchObject({
       role: 'crop',
       source: { mode: 'first-existing' },
-      composition: { id: 'mystics-accursed-wager', explicit: false },
+      composition: { id: 'mystics-accursed-wager', explicit: true },
     });
     expect(playable.artwork.source.candidates.length).toBeGreaterThan(0);
 
@@ -102,15 +102,21 @@ describe('complete FaceSpec source authority', () => {
       source: { mode: 'exact', src: '/images/banker.png' },
       composition: { id: 'financiers-banker', explicit: true },
     });
-    expect(banker.readiness.productionReady).toBe(false);
-    expect(banker.readiness.issues).toContain('artwork-composition-not-final');
+    expect(banker.readiness).toEqual({ productionReady: true, issues: [] });
 
     const general = resolveFaceSpec(game, 'leader:military-general');
     expect(general.artwork.composition).toMatchObject({
       id: 'military-general',
-      explicit: false,
+      explicit: true,
+      direction: {
+        fit: 'cover',
+        focusX: 0.5,
+        focusY: 0.16,
+        smart: false,
+        zoom: 1,
+      },
     });
-    expect(general.readiness.issues).toContain('artwork-composition-not-explicit');
+    expect(general.readiness).toEqual({ productionReady: true, issues: [] });
 
     const crossingCompleted = resolveFaceSpec(game, 'component:mystics-rite-crossing:reverse');
     expect(crossingCompleted.artwork).toMatchObject({
@@ -135,14 +141,34 @@ describe('complete FaceSpec source authority', () => {
     expect(reference.readiness).toEqual({ productionReady: true, issues: [] });
 
     const general = resolveFaceSpec(game, 'leader:military-general');
-    expect(general.readiness.productionReady).toBe(false);
-    expect(general.readiness.issues).toContain('artwork-composition-not-explicit');
+    expect(general.readiness).toEqual({ productionReady: true, issues: [] });
 
     const deed = resolveFaceSpec(game, 'component:financiers-deed:front');
     expect(deed.readiness).toEqual({ productionReady: true, issues: [] });
 
     const cardBack = resolveFaceSpec(game, 'back:intelligence');
     expect(cardBack.readiness).toEqual({ productionReady: true, issues: [] });
+  });
+
+  it('has explicit final composition authority for every crop-bearing face', () => {
+    const specs = resolveAllFaceSpecs(game);
+    const cropSpecs = specs.filter(spec => spec.artwork?.role === 'crop');
+    expect(cropSpecs).toHaveLength(210);
+    expect(Object.keys(authority.artDirection)).toHaveLength(210);
+    for (const spec of cropSpecs) {
+      expect(spec.artwork?.composition).toMatchObject({
+        explicit: true,
+        direction: {
+          fit: expect.stringMatching(/^(cover|contain)$/),
+          focusX: expect.any(Number),
+          focusY: expect.any(Number),
+          smart: false,
+          zoom: expect.any(Number),
+        },
+      });
+      expect(spec.readiness).toEqual({ productionReady: true, issues: [] });
+    }
+    expect(specs.every(spec => spec.readiness.productionReady)).toBe(true);
   });
 
   it('does not alter or depend on any production render route', () => {
