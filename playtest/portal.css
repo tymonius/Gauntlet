@@ -1,4 +1,4 @@
-.playtest-hero{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(300px,.75fr);gap:clamp(2rem,5vw,5rem);padding:clamp(4rem,8vw,8rem) max(5vw,2rem);align-items:center;background:linear-gradient(135deg,#f4efe6 0%,#e8dfd1 100%);border-bottom:1px solid rgba(49,42,34,.18)}
+.playtest-hero{width:min(1180px,calc(100% - 40px));margin:0 auto;display:grid;grid-template-columns:minmax(0,1.45fr) minmax(290px,.7fr);gap:3.5rem;padding:5.5rem 0 5rem;align-items:center;background:transparent;border-bottom:1px solid var(--line)}
 .playtest-hero h1{font-size:clamp(3.2rem,7vw,6.6rem);line-height:.92;max-width:11ch;margin:.35rem 0 1.2rem}
 .playtest-hero h1 span{color:#8f1f25}
 .hero-lede{font-size:clamp(1.05rem,1.7vw,1.35rem);line-height:1.65;max-width:68ch}
@@ -9,4 +9,4 @@
 .route-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.2rem;margin-top:2rem}.route-grid article{border:1px solid rgba(49,42,34,.18);padding:1.7rem;background:#fff}.route-kicker{font-size:.78rem;text-transform:uppercase;letter-spacing:.13em;font-weight:700;color:#8f1f25}.route-grid h3{font-size:1.55rem;margin:.35rem 0 .75rem}.route-grid article>p:not(.route-kicker){line-height:1.6;color:#565049}.route-actions{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin-top:1.25rem}.text-link{font-weight:700;color:#6f171d}
 .evidence-section{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:end;border-top:1px solid rgba(49,42,34,.18)}.evidence-section h2{font-size:clamp(2rem,4vw,3.4rem);max-width:16ch}.evidence-section>p{font-size:1.1rem;line-height:1.7;color:#554e45}
 @media(max-width:950px){.playtest-hero{grid-template-columns:1fr}.flow-grid{grid-template-columns:1fr 1fr}.route-grid{grid-template-columns:1fr}.evidence-section{grid-template-columns:1fr}}
-@media(max-width:620px){.playtest-hero{padding:3rem 1.2rem}.playtest-hero h1{font-size:3.6rem}.flow-grid{grid-template-columns:1fr}.flow-grid li{min-height:0}.hero-actions{align-items:stretch}.hero-actions .button{width:100%;text-align:center}}
+@media(max-width:620px){.playtest-hero{width:min(100% - 28px,1180px);padding:3.2rem 0}.playtest-hero h1{font-size:3.6rem}.flow-grid{grid-template-columns:1fr}.flow-grid li{min-height:0}.hero-actions{align-items:stretch}.hero-actions .button{width:100%;text-align:center}}
