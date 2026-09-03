@@ -92,12 +92,16 @@ function brandV070ProductionSurface() {
     if (surface === PRODUCTION_HTML_PATH) {
       branded = applyCurrentBackCoverPublishing(branded);
       const productionStylesheet = '<link rel="stylesheet" href="production.css" />';
+      const headMarker = '</head>';
       if (!branded.includes(productionStylesheet)) {
         throw new Error('v0.7.1 Rulebook production surface is missing the shared production stylesheet.');
       }
+      if (!branded.includes(headMarker)) {
+        throw new Error('v0.7.1 Rulebook production surface is missing the document head boundary.');
+      }
       branded = branded.replace(
-        productionStylesheet,
-        `${productionStylesheet}\n<link rel="stylesheet" href="v071-publication.css" />`,
+        headMarker,
+        '<link rel="stylesheet" href="v071-publication.css" />\n' + headMarker,
       );
     }
     if (/0\.(?:6\.3|7\.0)/.test(branded)) {
