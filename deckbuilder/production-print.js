@@ -16,6 +16,7 @@
     territorySource: productionTerritorySource,
     componentSource: productionComponentSource,
     componentDescriptor: productionComponentDescriptor,
+    faceSource: productionFaceSource,
     frameSource: productionFrameSource,
     backSource: productionBackSource,
   }));
@@ -115,6 +116,7 @@
     return productionComponentHtml({
       kind: "leader",
       id: `${factionId}-${canonicalLeader.id}`,
+      faceId: `leader:${factionId}-${canonicalLeader.id}`,
       label: `${canonicalLeader.name} Leader`,
       side: "front",
       backPolicy: "standardBack",
@@ -264,17 +266,24 @@
       || (new URLSearchParams(window.location.search).get("rules") === "candidate" ? "candidate" : "released");
   }
 
+  function productionFaceSource(faceId, version = "") {
+    const normalized = String(faceId || "").trim();
+    if (!normalized) throw new Error("Canonical production face source requires a face ID.");
+    const versionParam = version ? `&version=${encodeURIComponent(version)}` : "";
+    return `/card-design/face-render.html?id=${encodeURIComponent(normalized)}${versionParam}`;
+  }
+
   function productionFrameSource(options) {
     if (options.kind === "external") return options.src;
+    if (options.faceId) return productionFaceSource(options.faceId);
+
     const orientation = options.orientation === "landscape" ? "&orientation=landscape" : "";
-    const surface = options.kind === "leader" ? "face-render.html" : "component-render.html";
-    return `/card-design/${surface}?kind=${encodeURIComponent(options.kind)}&id=${encodeURIComponent(options.id)}&side=${encodeURIComponent(options.side || "front")}${orientation}&rules=${encodeURIComponent(selectedRulesetMode())}`;
+    return `/card-design/component-render.html?kind=${encodeURIComponent(options.kind)}&id=${encodeURIComponent(options.id)}&side=${encodeURIComponent(options.side || "front")}${orientation}&rules=${encodeURIComponent(selectedRulesetMode())}`;
   }
 
   function productionBackSource(faction, rotation = null) {
     const safeFaction = String(faction || "intelligence").trim().toLowerCase() || "intelligence";
-    const rotationParam = rotation == null ? "" : `&rotation=${encodeURIComponent(String(rotation))}`;
-    return `/card-design/face-render.html?kind=back&id=${encodeURIComponent(safeFaction)}&side=back${rotationParam}`;
+    return productionFaceSource(`back:${safeFaction}`);
   }
 
   function makeProductionComponent(documentNode, options) {
