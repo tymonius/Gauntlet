@@ -64,6 +64,13 @@ export interface V070BattleParticipantView {
   tiebreakRolls: number[];
 }
 
+export interface V070BattleAftermathControlledEffectChoiceView {
+  playerId: PlayerId;
+  candidateCount: number;
+  immediateWinner: PlayerId | null;
+  candidateSourceInstanceIds?: string[];
+}
+
 export interface V070TerritoryAftermathChoiceView {
   kind: 'field_hospital' | 'old_battlefield' | 'spoils_of_war';
   playerId: PlayerId;
@@ -88,6 +95,8 @@ export interface V070BattleRuntimeView {
   gambitOrderOverride: V070BattleRuntime['gambitOrderOverride'];
   pendingOutcome: V070BattleRuntime['pendingOutcome'];
   pendingAccursedWager: V070BattleRuntime['pendingAccursedWager'];
+  pendingBattleAftermathControlledEffectChoice:
+    V070BattleAftermathControlledEffectChoiceView | null;
   pendingTerritoryAftermathChoice:
     V070TerritoryAftermathChoiceView | null;
   pendingPoisonousGasAftermath:
@@ -542,6 +551,30 @@ function viewBattleRuntime(
     pendingAccursedWager: runtime.pendingAccursedWager
       ? structuredClone(runtime.pendingAccursedWager)
       : null,
+    pendingBattleAftermathControlledEffectChoice:
+      runtime.pendingBattleAftermathControlledEffectChoice
+        ? {
+            playerId:
+              runtime.pendingBattleAftermathControlledEffectChoice
+                .playerId,
+            candidateCount:
+              runtime.pendingBattleAftermathControlledEffectChoice
+                .candidateSourceInstanceIds.length,
+            immediateWinner:
+              runtime.pendingBattleAftermathControlledEffectChoice
+                .immediateWinner,
+            ...(runtime.pendingBattleAftermathControlledEffectChoice
+              .playerId === viewer
+              ? {
+                  candidateSourceInstanceIds: [
+                    ...runtime
+                      .pendingBattleAftermathControlledEffectChoice
+                      .candidateSourceInstanceIds,
+                  ],
+                }
+              : {}),
+          }
+        : null,
     pendingTerritoryAftermathChoice:
       runtime.pendingTerritoryAftermathChoice
         ? {
