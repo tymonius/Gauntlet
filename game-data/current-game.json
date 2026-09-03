@@ -7659,6 +7659,14 @@
     "inquisition-grand-inquisitor": {
       "focusY": 0.075
     },
+    "inquisition-witch-hunter": {
+      "focusX": 0.5,
+      "focusY": 0.16
+    },
+    "intelligence-ranger": {
+      "focusX": 0.5,
+      "focusY": 0.16
+    },
     "intelligence-sleeper-network": {
       "focusY": 0.763
     },
@@ -7668,11 +7676,19 @@
     "military-commandant": {
       "focusY": 0.099
     },
+    "military-general": {
+      "focusX": 0.5,
+      "focusY": 0.16
+    },
     "mystics-alchemist": {
       "focusY": 0.095
     },
     "mystics-necromancy": {
       "focusY": 0.398
+    },
+    "mystics-spirit-walker": {
+      "focusX": 0.5,
+      "focusY": 0.16
     },
     "rite-blood": {
       "focusY": 0.995
