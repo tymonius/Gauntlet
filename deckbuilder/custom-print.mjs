@@ -410,6 +410,7 @@ function cardFrameHtml(entry, side) {
     src = renderer.territorySource(entry.render.id);
   } else if (entry.render.surface === "leader") {
     src = renderer.frameSource({
+      faceId: `leader:${entry.render.id}`,
       kind: "leader",
       id: entry.render.id,
       side,
@@ -425,7 +426,7 @@ function cardFrameHtml(entry, side) {
 
 function backFrameHtml(faction) {
   const safeFaction = BACK_VARIANTS.has(faction) ? faction : "intelligence";
-  const src = productionPrint().backSource(safeFaction, 180);
+  const src = productionPrint().backSource(safeFaction);
   return `<iframe class="custom-back-frame" data-custom-render-frame data-custom-render-kind="back" src="${escapeHtml(src)}" title="${escapeHtml(safeFaction)} card back" scrolling="no" loading="eager"></iframe>`;
 }
 function canonicalBackFactionForEntry(entry) {
