@@ -1,7 +1,7 @@
 import baseWorker from "./index.js";
 
 const DEFAULT_ORIGIN = "https://gauntlet.run";
-const CURRENT_RULES_VERSION = "v0.7.0";
+const CURRENT_RULES_VERSION = "v0.7.1";
 const TOKEN_PATTERN = /^[A-Za-z0-9_-]{24,96}$/;
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const CREATION_LIMIT_PER_DAY = 12;
@@ -13,6 +13,11 @@ const FACTIONS = Object.freeze({
   intelligence: Object.freeze({ name: "Intelligence", leaders: Object.freeze({ ranger: "Ranger", spymaster: "Spymaster" }) }),
   mystics: Object.freeze({ name: "Mystics", leaders: Object.freeze({ alchemist: "Alchemist", "spirit-walker": "Spirit Walker" }) }),
   inquisition: Object.freeze({ name: "Inquisition", leaders: Object.freeze({ "grand-inquisitor": "Grand Inquisitor", "witch-hunter": "Witch Hunter" }) })
+});
+
+const MYSTICS_STARTER_RITES = Object.freeze({
+  alchemist: Object.freeze(["echoes", "blood", "equivalence"]),
+  "spirit-walker": Object.freeze(["crossing", "shattering", "consecration"])
 });
 
 class HttpError extends Error {
@@ -82,6 +87,7 @@ async function createTrackedGame(request, env, headers) {
   const displayName = cleanString(body.displayName, 80);
   if (!displayName) throw new HttpError(400, "Enter your name");
   const choice = cleanChoice(body.faction, body.leader);
+  const selectedRites = selectedRitesForChoice(choice, CURRENT_RULES_VERSION);
   const selectionReason = cleanString(body.selectionReason, 1000);
   if (!selectionReason) throw new HttpError(400, "Describe what made this faction or Leader appeal to you");
   await enforceCreationLimit(request, env);
@@ -146,6 +152,7 @@ async function createTrackedGame(request, env, headers) {
     faction: choice.faction,
     leader: choice.leader,
     selectionReason,
+    selectedRites,
     identityMethod: "tracked_creator"
   }, now);
 
@@ -167,6 +174,7 @@ async function createTrackedGame(request, env, headers) {
     seatIndex: 1,
     faction: choice.faction,
     leader: choice.leader,
+    selectedRites,
     playMode,
     createdAt: now
   }, 201, headers);
@@ -192,6 +200,7 @@ async function joinTrackedGame(token, request, env, headers) {
       seatIndex: Number(participant.seat_index),
       faction: participant.faction,
       leader: participant.leader,
+      selectedRites: selectedRitesForStored(participant.faction, participant.leader, session.rules_version),
       joinedAt: participant.joined_at
     }, 200, headers);
   }
@@ -204,6 +213,7 @@ async function joinTrackedGame(token, request, env, headers) {
   const displayName = cleanString(body.displayName, 80);
   if (!displayName) throw new HttpError(400, "Enter your name");
   const choice = cleanChoice(body.faction, body.leader);
+  const selectedRites = selectedRitesForChoice(choice, session.rules_version);
   const selectionReason = cleanString(body.selectionReason, 1000);
   if (!selectionReason) throw new HttpError(400, "Describe what made this faction or Leader appeal to you");
   const occupiedRows = rowsFromResult(await env.DB.prepare(
@@ -239,6 +249,7 @@ async function joinTrackedGame(token, request, env, headers) {
     faction: choice.faction,
     leader: choice.leader,
     selectionReason,
+    selectedRites,
     identityMethod: "tracked_join"
   }, now);
 
@@ -250,6 +261,7 @@ async function joinTrackedGame(token, request, env, headers) {
     seatIndex,
     faction: choice.faction,
     leader: choice.leader,
+    selectedRites,
     joinedAt: now
   }, 201, headers);
 }
@@ -263,7 +275,7 @@ async function recordTrackedEvent(token, request, env, headers) {
   const allowed = new Set(["game_started", "game_completed", "game_stopped", "note", "diagnostic_flag"]);
   if (!allowed.has(eventType)) throw new HttpError(400, "Unsupported tracked-game event");
 
-  const players = await readPlayers(session.id, env.DB);
+  const players = await readPlayers(session.id, env.DB, session.rules_version);
   if (eventType === "game_started" && players.length !== 2) {
     throw new HttpError(409, "Both players must join before the game starts");
   }
@@ -341,7 +353,7 @@ async function submitSharedResult(token, request, env, headers) {
   requireOpen(session);
   const body = await readJson(request);
   const participant = await requireParticipant(session.id, body.participantId, body.participantToken, env.DB);
-  const players = await readPlayers(session.id, env.DB);
+  const players = await readPlayers(session.id, env.DB, session.rules_version);
   if (players.length !== 2) throw new HttpError(409, "Both players must join before results are submitted");
   const playerIds = new Set(players.map((player) => player.participantId));
   const result = normalizeSharedResult(body.result, playerIds);
@@ -500,7 +512,10 @@ async function readTrackedReview(token, request, env, headers) {
   return json({
     session: state,
     result: result ? mapResult(result) : null,
-    responses: responses.map(mapResponse),
+    responses: responses.map((row) => ({
+      ...mapResponse(row),
+      selectedRites: selectedRitesForStored(row.faction, row.leader, session.rules_version)
+    })),
     arbiterLinks,
     events,
     generatedAt: new Date().toISOString()
@@ -528,7 +543,7 @@ async function maybeFinalize(session, db) {
 }
 
 async function trackedPublicState(session, db) {
-  const players = await readPlayers(session.id, db);
+  const players = await readPlayers(session.id, db, session.rules_version);
   const result = await db.prepare(
     "SELECT completion_status, submitted_at FROM playtest_session_results WHERE session_id = ?"
   ).bind(session.id).first();
@@ -567,7 +582,7 @@ async function trackedPublicState(session, db) {
   };
 }
 
-async function readPlayers(sessionId, db) {
+async function readPlayers(sessionId, db, rulesVersion) {
   const rows = rowsFromResult(await db.prepare(
     `SELECT p.id AS participant_id, p.display_name, p.seat_index, p.faction,
             p.leader, p.selection_reason, p.joined_at,
@@ -583,6 +598,7 @@ async function readPlayers(sessionId, db) {
     seatIndex: Number(row.seat_index),
     faction: row.faction,
     leader: row.leader,
+    selectedRites: selectedRitesForStored(row.faction, row.leader, rulesVersion),
     selectionReasonCaptured: Boolean(cleanString(row.selection_reason, 1000)),
     joinedAt: row.joined_at,
     responseSubmitted: Number(row.response_submitted) === 1
@@ -754,6 +770,18 @@ function mapResponse(row) {
   };
 }
 
+function selectedRitesForChoice(choice, rulesVersion) {
+  if (rulesVersion !== CURRENT_RULES_VERSION || choice.faction !== "mystics") return [];
+  return [...(MYSTICS_STARTER_RITES[choice.leaderId] || [])];
+}
+
+function selectedRitesForStored(faction, leader, rulesVersion) {
+  if (rulesVersion !== CURRENT_RULES_VERSION || faction !== "mystics") return [];
+  const leaderId = Object.entries(FACTIONS.mystics.leaders)
+    .find(([, name]) => name === leader)?.[0];
+  return leaderId ? [...(MYSTICS_STARTER_RITES[leaderId] || [])] : [];
+}
+
 function cleanChoice(factionValue, leaderValue) {
   const faction = cleanString(factionValue, 32).toLowerCase();
   const factionData = FACTIONS[faction];
@@ -793,7 +821,7 @@ async function enforceCreationLimit(request, env) {
   const dayKey = now.slice(0, 10);
   const address = cleanString(request.headers.get("cf-connecting-ip") || "local", 120);
   const agent = cleanString(request.headers.get("user-agent") || "unknown", 300);
-  const salt = cleanString(env.TRACKED_CREATION_SALT || "gauntlet-tracked-v070", 256);
+  const salt = cleanString(env.TRACKED_CREATION_SALT || "gauntlet-tracked-v071", 256);
   const clientHash = await sha256(`${salt}|${address}|${agent}`);
   const row = await env.DB.prepare(
     "SELECT created_count FROM playtest_public_creation_limits WHERE client_hash = ? AND day_key = ?"
@@ -812,7 +840,7 @@ async function enforceCreationLimit(request, env) {
 
 async function uniqueSerial(db) {
   for (let attempt = 0; attempt < 8; attempt += 1) {
-    const serial = `G070-${randomCode(8)}`;
+    const serial = `G071-${randomCode(8)}`;
     const existing = await db.prepare("SELECT 1 AS found FROM playtest_sessions WHERE sheet_serial = ?")
       .bind(serial).first();
     if (!existing) return serial;
