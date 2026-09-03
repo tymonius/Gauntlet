@@ -15,6 +15,8 @@ const territoryRender = readFileSync("card-design/territory-review-render.html",
 const territoryLegacyAlias = readFileSync("card-design/territory-print-render.html", "utf8");
 const backRender = readFileSync("card-design/card-back-render.html", "utf8");
 const cardBackCss = readFileSync("card-design/card-back.css", "utf8");
+const cardBackJs = readFileSync("card-design/card-back.js", "utf8");
+const cardBackPattern = readFileSync("card-design/card-back-pattern.svg", "utf8");
 const printTransform = readFileSync("deckbuilder/production-print.js", "utf8");
 const supplementalPrintTransform = readFileSync("deckbuilder/print-capital-ledger.js", "utf8");
 const cardBackPolicy = readFileSync("deckbuilder/card-back-preview.js", "utf8");
@@ -127,6 +129,15 @@ describe("Deckbuilder production printing", () => {
     expect(currentGameLoader).toContain("window.top.__gauntletProductionAuthorityBridge");
     expect(currentGameLoader).toContain("requestedMode !== bridge.rulesetMode");
     expect(currentGameLoader).toContain("if (bridged) return bridged;");
+  });
+
+  it("flattens the dense faction-symbol pattern into one vector paint surface", () => {
+    expect(cardBackJs).toContain('/card-design/card-back-pattern.svg');
+    expect(cardBackJs).not.toContain('PATTERN_ROWS');
+    expect(cardBackJs).not.toContain('gauntlet-card-back__symbol');
+    expect(cardBackCss).not.toContain('-webkit-mask: var(--card-back-symbol)');
+    expect(cardBackPattern).toContain('<use href="#military"');
+    expect(cardBackPattern).toContain('<use href="#inquisition"');
   });
 
   it("isolates card backs from mixed-surface print compositing at page boundaries", () => {
