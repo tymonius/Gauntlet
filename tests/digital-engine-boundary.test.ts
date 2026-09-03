@@ -142,14 +142,14 @@ describe('digital engine boundary', () => {
   });
 
   it('keeps the promoted v0.7.0 implementation isolated from legacy architecture', () => {
-    const promotedSources = readdirSync('src/v070')
-      .filter((name) => name.endsWith('.ts') && !name.endsWith('.test.ts'));
+    const promotedSources = sourceFilesUnder('src/v070')
+      .filter((path) => !/\.(?:test|spec)\.[cm]?[jt]sx?$/.test(path));
 
     const legacyImport = /from ['"]\.\.\/(?:state|dev|cards|effects|reconstruction)(?:\/|['"])/;
     const historicalContentImport = /from ['"]\.\.\/content\/v06(?:1|2|3|4)?['"]/;
 
-    for (const name of promotedSources) {
-      const source = readFileSync(`src/v070/${name}`, 'utf8');
+    for (const path of promotedSources) {
+      const source = readFileSync(path, 'utf8');
       expect(source).not.toMatch(legacyImport);
       expect(source).not.toMatch(historicalContentImport);
     }
