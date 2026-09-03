@@ -312,6 +312,28 @@ function setRulesetUi(mode, currentGame = null, distinctCandidate = false) {
   }
 }
 
+function scrollToLocationHash() {
+  const rawHash = window.location.hash.replace(/^#/, '');
+  if (!rawHash) return false;
+
+  let targetId = rawHash;
+  try {
+    targetId = decodeURIComponent(rawHash);
+  } catch {
+    // Leave malformed fragments untouched; getElementById will simply fail.
+  }
+
+  const target = document.getElementById(targetId);
+  if (!target) return false;
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      target.scrollIntoView({ block: 'start', behavior: 'auto' });
+    });
+  });
+  return true;
+}
+
 function initializeControls() {
   rulesAssistantButton?.addEventListener('click', () => {
     document.querySelector('.ga-rules-launcher')?.click();
@@ -350,6 +372,10 @@ function initializeControls() {
 
   window.addEventListener('popstate', () => {
     renderRulebook(modeFromUrl());
+  });
+
+  window.addEventListener('hashchange', () => {
+    scrollToLocationHash();
   });
 }
 
@@ -491,6 +517,7 @@ async function renderRulebook(mode) {
     observeSections();
     setRulesetUi(activeMode, currentGame, distinctCandidate);
     document.dispatchEvent(new CustomEvent('gauntlet:rulebook-rendered', { detail: { mode: activeMode } }));
+    scrollToLocationHash();
 
     const sectionCount = Math.max(
       0,
