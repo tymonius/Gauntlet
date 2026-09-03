@@ -99,25 +99,28 @@ describe('digital engine boundary', () => {
     expect(currentSource).not.toContain("from '../state'");
   });
 
-  it('requires content consumers to choose current or an explicit version', () => {
+  it('keeps legacy architecture pinned to explicit v0.6 content', () => {
     expect(readdirSync('src/content')).not.toContain('index.ts');
 
-    const legacyConsumers = [
-      'src/cards/intelligence.ts',
-      'src/state/v06-setup.ts',
-      'src/state/financiers.ts',
-      'src/dev/mystics-options.ts',
-      'src/state/inquisition-purge.ts',
-      'src/state/mystics-conversion.ts',
-      'src/state/inquisition-guilt-by-association.ts',
-      'src/state/v06-setup.test.ts',
-    ];
+    const offenders: string[] = [];
+    const legacyRoots = ['src/state', 'src/cards', 'src/dev'];
+    const v06Content = resolve('src/content/v06');
 
-    for (const path of legacyConsumers) {
-      const source = readFileSync(path, 'utf8');
-      expect(source).toContain("from '../content/v06'");
-      expect(source).not.toMatch(/from ['"]\.\.\/content['"]/);
+    for (const root of legacyRoots) {
+      for (const path of sourceFilesUnder(root)) {
+        const source = readFileSync(path, 'utf8');
+        for (const specifier of importedSpecifiers(source)) {
+          if (!resolvesUnderSourceDirectory(path, specifier, 'content')) continue;
+
+          const resolved = resolve(dirname(path), specifier).replace(/\.ts$/, '');
+          if (resolved !== v06Content) {
+            offenders.push(`${path}: ${specifier}`);
+          }
+        }
+      }
     }
+
+    expect(offenders).toEqual([]);
   });
   it('has retired every generic legacy aggregate barrel', () => {
     for (const directory of RETIRED_LEGACY_BARRELS) {
