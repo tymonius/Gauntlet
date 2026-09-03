@@ -80,10 +80,10 @@ describe('Stage 3 unified face renderer', () => {
     expect(runtime).toContain('reference: fitReferenceCard');
   });
 
-  it('does not cut any production consumer over during parallel construction', () => {
+  it('keeps the Stage 3 renderer contract intact after the Stage 5 consumer cutover', () => {
     expect(componentRenderer).not.toContain('/card-design/face-render.html');
-    expect(productionPrint).not.toContain('/card-design/face-render.html');
-    expect(cardReference).not.toContain('/card-design/face-render.html');
+    expect(productionPrint).toContain('/card-design/face-render.html?id=');
+    expect(cardReference).toContain('../card-design/face-render.html?id=');
   });
 
   it('contains no compatibility routing or family-specific public aliases', () => {
