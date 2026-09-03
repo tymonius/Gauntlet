@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { BattleParticipantState, GameState, PlayerID } from '../types';
+import type { BattleParticipantState, GameState, PlayerID } from '../types/v06';
 import { applyGameAction } from './apply-intelligence';
 import { initializeGame } from './initialize';
 import { failIntelligenceMission } from './intelligence-missions';
