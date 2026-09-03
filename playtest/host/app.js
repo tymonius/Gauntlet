@@ -21,6 +21,14 @@
     renderStandalone(data.standalone || []);
   }
 
+  function focusReplacement(list, key, headingId) {
+    const card = key
+      ? [...list.querySelectorAll("[data-host-record-key]")].find(item => item.dataset.hostRecordKey === String(key))
+      : null;
+    const target = card?.querySelector("a[href], button:not([disabled])") || document.getElementById(headingId);
+    target?.focus({ preventScroll: true });
+  }
+
   function renderEvents(events) {
     el.eventList.replaceChildren();
     if (!events.length) {
@@ -30,12 +38,11 @@
       return;
     }
 
-    events
-      .slice()
-      .sort(sortRecent)
-      .forEach((event) => {
+    const orderedEvents = events.slice().sort(sortRecent);
+    orderedEvents.forEach((event, index) => {
         const card = document.createElement("article");
         card.className = "host-event-card";
+        card.dataset.hostRecordKey = String(event.code || event.dashboardUrl || event.sheetSerial || index);
         const title = event.sheetSerial || "Game-night event";
         card.innerHTML = `
           <div class="host-event-head">
@@ -61,9 +68,12 @@
         card.querySelector('[data-action="copy-participant"]')?.addEventListener("click", () => copy(event.participantUrl, "Participant link copied."));
         card.querySelector('[data-action="forget-event"]')?.addEventListener("click", () => {
           if (!window.confirm(`Forget ${title} on this browser? This does not close the event.`)) return;
+          const neighbor = orderedEvents[index + 1] || orderedEvents[index - 1] || null;
+          const neighborKey = neighbor ? String(neighbor.code || neighbor.dashboardUrl || neighbor.sheetSerial || "") : "";
           registry.forgetEvent(event.code);
           setStatus("Event removed from Host Home.");
           render();
+          focusReplacement(el.eventList, neighborKey, "events-title");
         });
 
         renderTables(card.querySelector("[data-table-list]"), event.games || []);
@@ -114,13 +124,12 @@
       return;
     }
 
-    sessions
-      .slice()
-      .sort(sortRecent)
-      .forEach((session) => {
+    const orderedSessions = sessions.slice().sort(sortRecent);
+    orderedSessions.forEach((session, index) => {
         const card = document.createElement("article");
         card.className = "host-standalone-card";
         const identity = session.sessionId || session.code || session.hostUrl;
+        card.dataset.hostRecordKey = String(identity || index);
         const title = session.sheetSerial || "Coded playtest sheet";
         card.innerHTML = `
           <div class="host-standalone-head">
@@ -139,9 +148,12 @@
         `;
         card.querySelector('[data-action="copy-standalone"]')?.addEventListener("click", () => copy(session.joinUrl, "Player link copied."));
         card.querySelector('[data-action="forget-standalone"]')?.addEventListener("click", () => {
+          const neighbor = orderedSessions[index + 1] || orderedSessions[index - 1] || null;
+          const neighborKey = neighbor ? String(neighbor.sessionId || neighbor.code || neighbor.hostUrl || "") : "";
           registry.forgetStandalone(identity);
           setStatus("Standalone session removed from Host Home.");
           render();
+          focusReplacement(el.standaloneList, neighborKey, "standalone-title");
         });
         el.standaloneList.append(card);
       });
