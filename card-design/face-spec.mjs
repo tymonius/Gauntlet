@@ -41,6 +41,7 @@ export const FACE_TEMPLATE_CONTRACTS = Object.freeze({
       '/card-design/faction-specimens.css',
       '/card-design/reference-card.css',
       '/card-design/universal-reference.css',
+      '/card-design/supplemental-card.css',
       '/card-design/supplemental-refinements.css',
     ]),
     artworkRole: 'none',
