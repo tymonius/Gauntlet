@@ -1,4 +1,4 @@
-import type { BattleCardTarget } from '../effects/v06';
+import type { BattleCardTarget } from './battle';
 import type { CardID, PlayerID, SpaceID } from './ids';
 
 export type DecoysAssetZone = 'asset_bank' | 'hand' | 'discard' | 'graveyard' | 'removed';
