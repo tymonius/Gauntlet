@@ -159,16 +159,16 @@ replaceOnce(
   `  if (!result.utilityFamily.includes('Inter')) throw new Error(\`Approved utility typography was not retained: \${result.utilityFamily}\`);
   if (!result.interLoaded) throw new Error('Inter is named in the approved utility stack but is not actually loaded.');
   if (result.leaderPortraitBlendModes.some(mode => mode !== 'multiply')) {
-    throw new Error(`v0.7.1 Leader portrait blending regressed: ${JSON.stringify(result.leaderPortraitBlendModes)}.`);
+    throw new Error('v0.7.1 Leader portrait blending regressed: ' + JSON.stringify(result.leaderPortraitBlendModes) + '.');
   }
   if (result.heroPlateBlendModes.some(mode => mode !== 'multiply')) {
-    throw new Error(`v0.7.1 hero-plate blending regressed: ${JSON.stringify(result.heroPlateBlendModes)}.`);
+    throw new Error('v0.7.1 hero-plate blending regressed: ' + JSON.stringify(result.heroPlateBlendModes) + '.');
   }
   if (result.factionInnerStacking.some(zIndex => zIndex !== 'auto')) {
-    throw new Error(`v0.7.1 faction page content unexpectedly creates a stacking context: ${JSON.stringify(result.factionInnerStacking)}.`);
+    throw new Error('v0.7.1 faction page content unexpectedly creates a stacking context: ' + JSON.stringify(result.factionInnerStacking) + '.');
   }
   if (result.factionIsolation.some(value => value !== 'isolate')) {
-    throw new Error(`v0.7.1 faction page watermark isolation is missing: ${JSON.stringify(result.factionIsolation)}.`);
+    throw new Error('v0.7.1 faction page watermark isolation is missing: ' + JSON.stringify(result.factionIsolation) + '.');
   }
 
   const expectedLeaderPairs = [
