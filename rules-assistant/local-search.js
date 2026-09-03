@@ -41,6 +41,14 @@ const QUERY_PHRASE_ALIASES = [
   {
     pattern: /\b(?:cards?|hand)\b.*\bstart\b|\bstart\b.*\b(?:cards?|hand)\b/i,
     aliases: ["setup", "opening hand"]
+  },
+  {
+    pattern: /\bstarting territory\b/i,
+    aliases: ["setup", "arrange territories", "place player tokens", "own end"]
+  },
+  {
+    pattern: /\b(?:cards?|card)\b.*\bdiscard pile\b|\bdiscard pile\b.*\b(?:cards?|card)\b/i,
+    aliases: ["playing a card for its action effect", "tactics reserve aftermath"]
   }
 ];
 
