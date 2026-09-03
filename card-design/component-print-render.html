@@ -1,17 +1,12 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-legacy-face-route="component">
 <head>
-  <meta charset="utf-8">
-  <meta name="robots" content="noindex,nofollow">
-  <title>Gauntlet canonical render redirect</title>
-  <script>
-    (() => {
-      const target = new URL("/card-design/component-render.html", window.location.origin);
-      target.search = window.location.search;
-      target.hash = window.location.hash;
-      window.location.replace(target);
-    })();
-  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Gauntlet legacy component print redirect</title>
 </head>
-<body></body>
+<body data-legacy-face-route="component">
+  <script type="module" src="/card-design/legacy-face-redirect.mjs"></script>
+</body>
 </html>

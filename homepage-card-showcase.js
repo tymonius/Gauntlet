@@ -55,7 +55,7 @@ async function initializeShowcase(root) {
 
       const frame = document.createElement('iframe');
       frame.className = 'card-showcase-frame';
-      frame.src = `/card-design/card-showcase-embed.html?card=${encodeURIComponent(placement.id)}&fit=production&releaseTarget=tts`;
+      frame.src = `/card-design/face-render.html?id=${encodeURIComponent(`card:${placement.id}`)}`;
       frame.title = `${name} card render`;
       frame.tabIndex = -1;
       frame.loading = 'lazy';

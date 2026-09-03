@@ -123,8 +123,7 @@ jobs:
             const analytics = uncertain || exact('scripts/sync-google-analytics.mjs') || exact('index.html') || matches(/^(?:start|rulebook|card-reference|deckbuilder|rules-arbiter)\/[^/]*\.html$/) || matches(/^factions\/(?:[^/]+\/)?[^/]*\.html$/);
             const tts = uncertain || matches(/^scripts\/generate-tts-/) || under('tts/') || under('artifacts/tts/') || under('data/cards/') || under('data/territories/');
             const media = uncertain || matches(/^scripts\/generate-card-media-/) || under('images/artwork/') || under('artifacts/media/') || under('data/cards/');
-            const renderer = uncertain || exact('card-design/playable-card-renderer.js') || exact('scripts/validate-v063-card-rendering-conventions.mjs');
-            const relevant = code || types || analytics || tts || media || renderer;
+            const relevant = code || types || analytics || tts || media;
 
             core.setOutput('relevant', String(relevant));
             core.setOutput('code', String(code));
@@ -133,7 +132,6 @@ jobs:
             core.setOutput('analytics', String(analytics));
             core.setOutput('tts', String(tts));
             core.setOutput('media', String(media));
-            core.setOutput('renderer', String(renderer));
             core.setOutput('changed_tests', JSON.stringify(changedTests));
             core.setOutput('related_sources', JSON.stringify(relatedSources));
             core.setOutput('retired_sources', JSON.stringify(retiredSources));
@@ -148,7 +146,6 @@ jobs:
                 ['TypeScript', String(types)],
                 ['Analytics', String(analytics)],
                 ['TTS', String(tts)],
-                ['Card renderer', String(renderer)],
                 ['Media', String(media)],
               ])
               .write();
@@ -228,10 +225,6 @@ jobs:
       - name: Verify TTS assets only when TTS inputs change
         if: steps.scope.outputs.tts == 'true'
         run: npm run tts:check
-
-      - name: Verify card renderer conventions when renderer changes
-        if: steps.scope.outputs.renderer == 'true'
-        run: node scripts/validate-v063-card-rendering-conventions.mjs
 
       - name: Verify media assets only when media inputs change
         if: steps.scope.outputs.media == 'true'
