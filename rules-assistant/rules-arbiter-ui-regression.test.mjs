@@ -44,6 +44,18 @@ describe("Rules Arbiter welcome and compact UI regressions", () => {
     expect(css).toMatch(/\.ga-rules-suggestion\s*\{[\s\S]*max-width:\s*none;/);
   });
 
+  test("widget identifies the Rules Arbiter with the Chief Justice artwork", () => {
+    const widget = readFileSync(`${HERE}/widget.js`, "utf8");
+    const css = readFileSync(`${HERE}/widget.css`, "utf8");
+    const portrait = readFileSync(`${HERE}/../images/rules-arbiter/chief-justice-rules-arbiter-popup.webp`);
+
+    expect(widget).toContain('class="ga-rules-chief-justice"');
+    expect(widget).toContain('/images/rules-arbiter/chief-justice-rules-arbiter-popup.webp');
+    expect(css).toMatch(/\.ga-rules-header-identity\s*\{[\s\S]*grid-template-columns:\s*132px\s+minmax\(0,\s*1fr\);/);
+    expect(css).toMatch(/\.ga-rules-chief-justice\s*\{[\s\S]*width:\s*132px;/);
+    expect(portrait.byteLength).toBeGreaterThan(1000);
+  });
+
   test("widget uses the current square editorial design language", () => {
     const css = readFileSync(`${HERE}/widget.css`, "utf8");
     const feedbackCss = readFileSync(`${HERE}/feedback.css`, "utf8");
