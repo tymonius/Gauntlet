@@ -44,6 +44,12 @@ describe("Rules Arbiter welcome and compact UI regressions", () => {
     expect(css).toMatch(/\.ga-rules-suggestion\s*\{[\s\S]*max-width:\s*none;/);
   });
 
+  test("widget uses a solid high-contrast keyboard focus indicator", () => {
+    const css = readFileSync(`${HERE}/widget.css`, "utf8");
+    expect(css).toMatch(/\.ga-rules-launcher:focus-visible,[\s\S]*outline:\s*3px\s+solid\s+var\(--ga-bronze\);/);
+    expect(css).not.toContain("outline: 3px solid rgba(143, 31, 37, 0.28);");
+  });
+
   test("widget identifies the Rules Arbiter with the Chief Justice artwork", () => {
     const widget = readFileSync(`${HERE}/widget.js`, "utf8");
     const css = readFileSync(`${HERE}/widget.css`, "utf8");
