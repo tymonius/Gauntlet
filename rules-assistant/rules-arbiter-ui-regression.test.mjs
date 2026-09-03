@@ -7,7 +7,7 @@ const HERE = fileURLToPath(new URL(".", import.meta.url));
 
 describe("Rules Arbiter welcome and compact UI regressions", () => {
   test("welcome copy is never collapsed into Details and exceptions", () => {
-    const welcome = "Set out the question as it arose at the table. I will determine what the v0.7.1 rules require, identify the controlling rule or distinction, and settle the matter as plainly as I can. Where the written rules do not decide it, I will issue a provisional ruling so play may continue.";
+    const welcome = "Set out the question as it arose at the table. I will determine what the rules require, identify the controlling rule or distinction, and settle the matter as plainly as I can. Where the written rules do not decide it, I will issue a provisional ruling so play may continue.";
 
     expect(presentRulesAnswer({ answer: welcome, rulingStatus: "welcome" })).toEqual({
       answer: welcome,
@@ -22,6 +22,7 @@ describe("Rules Arbiter welcome and compact UI regressions", () => {
     expect(widget).toContain("identify the controlling rule or distinction");
     expect(widget).toContain("settle the matter as plainly as I can");
     expect(widget).not.toContain("Ask me about the v0.7.1 rulebook");
+    expect(widget).not.toMatch(/v0\.\d+\.\d+/);
   });
 
   test("generic sentence splitting preserves dotted version numbers", () => {
