@@ -1,0 +1,48 @@
+name: v0.7.1 Rules Arbiter live answer QA
+
+on:
+  pull_request:
+    paths:
+      - 'rules-assistant/evals/rules-arbiter-evals.v071.json'
+      - 'rules-assistant/local-search.js'
+      - 'rules-assistant/worker-v071.js'
+      - 'scripts/run-v071-live-rules-qa.mjs'
+      - '.github/workflows/v071-rules-arbiter-live-qa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run live Rules Arbiter QA
+        id: qa
+        continue-on-error: true
+        env:
+          GAUNTLET_RULES_QA_CONCURRENCY: '4'
+          GAUNTLET_RULES_QA_TIMEOUT_MS: '45000'
+        run: node scripts/run-v071-live-rules-qa.mjs
+
+      - name: Upload live QA report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v071-rules-arbiter-live-qa
+          path: artifacts/rules-qa/v071-live-answer-run.json
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Enforce live QA result
+        if: steps.qa.outcome != 'success'
+        run: exit 1
