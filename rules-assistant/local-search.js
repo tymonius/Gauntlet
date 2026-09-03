@@ -12,9 +12,18 @@ const QUERY_ALIASES = {
   battle: ["combat", "fight"],
   fight: ["battle"],
   hand: ["gambit", "reserve", "persistent private cards"],
-  gambit: ["hand", "graveyard", "set gambit"],
+  gambit: ["gambit area", "graveyard", "set gambit"],
   reserve: ["temporary cards", "tactic", "battle draw"],
-  tactic: ["reserve", "discard pile", "choose tactic"],
+  tactic: ["tactic area", "reserve", "discard pile", "choose tactic"],
+  arrange: ["arrangement"],
+  arranged: ["arrangement"],
+  arrangement: ["arrange", "arranged"],
+  territory: ["territories"],
+  territories: ["territory"],
+  purchase: ["buy", "buying"],
+  purchased: ["purchase", "buy", "buying"],
+  buy: ["purchase", "buying"],
+  buying: ["buy", "purchase"],
   aftermath: ["battle result", "destinations", "retreat"],
   withdrawal: ["no winner", "no loser", "end battle"],
   deck: ["draw pile", "playable deck"],
@@ -27,6 +36,13 @@ const QUERY_ALIASES = {
   asset: ["asset bank", "banked asset"],
   win: ["victory", "last stand", "run the gauntlet"]
 };
+
+const QUERY_PHRASE_ALIASES = [
+  {
+    pattern: /\b(?:cards?|hand)\b.*\bstart\b|\bstart\b.*\b(?:cards?|hand)\b/i,
+    aliases: ["setup", "opening hand"]
+  }
+];
 
 const CANONICAL_DATA_PATH = "releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json";
 const RULEBOOK_PATH = "releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md";
@@ -243,13 +259,14 @@ export function retrieveRules(corpus, query, options = {}) {
   const limit = Math.max(1, Math.min(Number(options.limit) || 6, 12));
   const documents = Array.isArray(corpus?.documents) ? corpus.documents : [];
   const normalizedQuery = normalizeText(query);
-  const queryTokens = expandQueryTokens(tokenize(query));
-  const queryPhrases = buildPhrases(queryTokens);
+  const baseQueryTokens = tokenize(query);
+  const queryTokens = expandQueryTokens(baseQueryTokens, normalizedQuery);
+  const queryPhrases = buildPhrases(baseQueryTokens);
 
   return documents
     .map((document) => ({
       document,
-      score: scoreDocument(document, normalizedQuery, queryTokens, queryPhrases)
+      score: scoreDocument(document, normalizedQuery, baseQueryTokens, queryTokens, queryPhrases)
     }))
     .filter((item) => item.score > 0)
     .sort((a, b) => b.score - a.score || a.document.title.localeCompare(b.document.title))
@@ -301,11 +318,14 @@ export function buildLocalFallbackAnswer(query, results, version = "v0.6.3") {
   };
 }
 
-function scoreDocument(document, normalizedQuery, queryTokens, queryPhrases) {
+function scoreDocument(document, normalizedQuery, baseQueryTokens, queryTokens, queryPhrases) {
   const title = normalizeText(document.title);
   const heading = normalizeText(document.heading || "");
   const body = normalizeText(document.body);
   const searchText = document.searchText || `${title} ${heading} ${body}`;
+  const titleTokens = new Set(tokenize(title));
+  const headingTokens = new Set(tokenize(heading));
+  const searchTokens = new Set(tokenize(searchText));
   let score = 0;
 
   if (normalizedQuery && title.includes(normalizedQuery)) score += 120;
@@ -313,10 +333,11 @@ function scoreDocument(document, normalizedQuery, queryTokens, queryPhrases) {
 
   const rawTitle = stripKindPrefix(title);
   if (rawTitle.length > 2 && normalizedQuery.includes(rawTitle)) score += 95;
+  if (heading.length > 2 && normalizedQuery.includes(heading)) score += 90;
 
   for (const token of queryTokens) {
-    if (title.includes(token)) score += 18;
-    if (heading.includes(token)) score += 14;
+    if (titleTokens.has(token)) score += 18;
+    if (headingTokens.has(token)) score += 14;
     const bodyMatches = countOccurrences(body, token);
     score += Math.min(bodyMatches, 8) * 2.5;
   }
@@ -327,8 +348,8 @@ function scoreDocument(document, normalizedQuery, queryTokens, queryPhrases) {
     if (body.includes(phrase)) score += 10;
   }
 
-  const matchedTokens = queryTokens.filter((token) => searchText.includes(token)).length;
-  if (queryTokens.length && matchedTokens === queryTokens.length) score += 20;
+  const matchedBaseTokens = baseQueryTokens.filter((token) => searchTokens.has(token)).length;
+  if (baseQueryTokens.length && matchedBaseTokens === baseQueryTokens.length) score += 20;
   if (document.kind === "rulebook") score += 2;
   return score;
 }
@@ -447,10 +468,17 @@ function deduplicateDocuments(documents) {
   });
 }
 
-function expandQueryTokens(tokens) {
+function expandQueryTokens(tokens, normalizedQuery = "") {
   const expanded = new Set(tokens);
   for (const token of tokens) {
     const aliases = QUERY_ALIASES[token] || [];
+    for (const alias of aliases) {
+      tokenize(alias).forEach((part) => expanded.add(part));
+    }
+  }
+  for (const { pattern, aliases } of QUERY_PHRASE_ALIASES) {
+    pattern.lastIndex = 0;
+    if (!pattern.test(normalizedQuery)) continue;
     for (const alias of aliases) {
       tokenize(alias).forEach((part) => expanded.add(part));
     }
