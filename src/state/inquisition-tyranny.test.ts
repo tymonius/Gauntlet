@@ -4,7 +4,7 @@ import type {
   BattlePlayedCard,
   GameState,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import { buildPendingInquisitionOptions } from '../dev/inquisition-options';
 import { applyGameAction } from './apply-inquisition';
 import { continueIntelligencePostRevealFlow } from './intelligence-post-reveal-flow';

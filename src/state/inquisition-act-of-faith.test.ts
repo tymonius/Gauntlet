@@ -4,7 +4,7 @@ import type {
   BattleState,
   GameState,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import { applyGameAction } from './apply-inquisition';
 import {
   ACT_OF_FAITH,
