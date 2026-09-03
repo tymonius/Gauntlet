@@ -297,7 +297,27 @@ try {
   assert.equal(legacyRead.sheetSerial, "G061-LEGACY1");
   assert.equal(legacyRead.status, "closed");
 
-  console.log("Validated v0.7.1 event and standalone creation, G071/EV071 serials, table-game onboarding and Arbiter linkage, closure, rejection of new v0.6.1 creation, and read compatibility for stored v0.6.1 sessions.");
+  const priorReleaseToken = "legacy-v070-session-token-000001";
+  const priorReleaseHostKey = "legacy-v070-host-key-000001";
+  const priorReleaseSessionId = "33333333-3333-4333-8333-333333333333";
+  await db.prepare(`INSERT INTO playtest_sessions
+    (id, token_hash, host_key_hash, sheet_serial, rules_version, status, created_at,
+     metadata_json, session_kind, event_session_id)
+    VALUES (?, ?, ?, 'G070-LEGACY1', 'v0.7.0', 'closed', ?, '{}', 'game', NULL)`)
+    .bind(
+      priorReleaseSessionId,
+      sha256(priorReleaseToken),
+      sha256(priorReleaseHostKey),
+      "2026-08-29T00:00:00.000Z"
+    ).run();
+
+  const priorReleaseRead = await json(await call(`/api/sessions/${priorReleaseToken}`), 200);
+  assert.equal(priorReleaseRead.sessionId, priorReleaseSessionId);
+  assert.equal(priorReleaseRead.rulesVersion, "v0.7.0");
+  assert.equal(priorReleaseRead.sheetSerial, "G070-LEGACY1");
+  assert.equal(priorReleaseRead.status, "closed");
+
+  console.log("Validated v0.7.1 event and standalone creation, G071/EV071 serials, table-game onboarding and Arbiter linkage, closure, rejection of older-version creation, and read compatibility for stored v0.6.1/v0.7.0 sessions.");
 } finally {
   db.close();
 }
