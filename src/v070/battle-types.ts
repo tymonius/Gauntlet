@@ -185,6 +185,7 @@ export interface V070BattleRuntime {
   gambitOrderOverride: V070GambitOrderOverride | null;
   pendingOutcome: V070BattleOutcome | null;
   pendingAccursedWager: V070AccursedWagerAftermathRuntime | null;
+  battleAccursedWagerInstanceIds: string[];
   pendingTerritoryAftermathChoice:
     V070TerritoryAftermathChoiceRuntime | null;
   territoryAftermathChoiceResolved: boolean;
@@ -265,6 +266,7 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     gambitOrderOverride: null,
     pendingOutcome: null,
     pendingAccursedWager: null,
+    battleAccursedWagerInstanceIds: [],
     pendingTerritoryAftermathChoice: null,
     territoryAftermathChoiceResolved: false,
     territoryAftermathOverride: null,
