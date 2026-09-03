@@ -185,6 +185,8 @@
       row.querySelector('[data-action="preview"]').addEventListener("click", () => {
         riteState.selectedId = rite.id;
         renderRitePicker();
+        list.querySelector(".compact-rite-row.selected .compact-row-preview-button")
+          ?.focus({ preventScroll: true });
       });
       row.querySelector('[data-action="toggle"]').addEventListener("click", () => {
         riteState.selectedId = rite.id;

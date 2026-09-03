@@ -420,6 +420,8 @@ function renderAvailable() {
     row.querySelector('[data-action="preview"]').addEventListener("click", () => {
       state.selectedCardId = card.id;
       renderAvailable();
+      el.availableCards.querySelector(".compact-card-row.selected .compact-row-preview-button")
+        ?.focus({ preventScroll: true });
     });
     row.querySelector('[data-action="add"]').addEventListener("click", () => addCard(card.id));
     el.availableCards.append(row);
