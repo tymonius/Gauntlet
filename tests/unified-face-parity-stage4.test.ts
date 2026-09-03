@@ -9,6 +9,10 @@ const componentRenderer = readFileSync('card-design/component-render.js', 'utf8'
 const factionComponent = readFileSync('card-design/faction-component.css', 'utf8');
 const leaderStyles = readFileSync('card-design/leader-card.css', 'utf8');
 const faceSpec = readFileSync('card-design/face-spec.mjs', 'utf8');
+const currentGame = readFileSync('game-data/current-game.json', 'utf8');
+const trackerTemplate = readFileSync('card-design/face-templates/tracker.mjs', 'utf8');
+const supplementalCard = readFileSync('card-design/supplemental-card.js', 'utf8');
+const supplementalStyles = readFileSync('card-design/supplemental-card.css', 'utf8');
 
 describe('Stage 4 unified face parity gate', () => {
   it('audits the complete canonical catalog rather than a hand-picked family list', () => {
@@ -48,6 +52,13 @@ describe('Stage 4 unified face parity gate', () => {
     expect(leaderStyles).toContain('@import url("./faction-component.css")');
     expect(leaderStyles).not.toContain('--component-parchment-tint');
     expect(faceSpec).toContain("'/card-design/faction-component.css'");
+  });
+
+  it('keeps Operation Progress presentation in canonical data instead of component-specific CSS', () => {
+    expect(currentGame).toContain('"titleLetterSpacingEm": 0');
+    expect(trackerTemplate).toContain('presentation.titleLetterSpacingEm');
+    expect(supplementalCard).toContain('titleLetterSpacingEm');
+    expect(supplementalStyles).not.toContain('[data-component-id="operation-progress-tracker"]');
   });
 
   it('runs as a dedicated CI check and preserves production isolation', () => {
