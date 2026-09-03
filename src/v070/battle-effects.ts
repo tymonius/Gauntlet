@@ -125,6 +125,25 @@ const handlers: V070BattleEffectHandler[] = [
     },
   },
   {
+    cardId: 'neutral-illegal-occupation',
+    expectedText: 'Counterattack — their Assets are inactive during this battle; gain Advantage.',
+    timing: 'reveal',
+    apply: ({ state, owner, opponent }) => {
+      if (!isCounterattack(state)) return;
+      suppressBattleAssets(state, opponent);
+      participant(state, owner).advantage += 1;
+    },
+  },
+  {
+    cardId: 'neutral-sequestration',
+    expectedText: 'All Assets are inactive during this battle.',
+    timing: 'reveal',
+    apply: ({ state }) => {
+      suppressBattleAssets(state, 'A');
+      suppressBattleAssets(state, 'B');
+    },
+  },
+  {
     cardId: 'neutral-rousing-speech',
     expectedText: 'If the opponent has more face-up Assets than you, gain Advantage.',
     timing: 'reveal',
@@ -382,6 +401,17 @@ function modifier(cardId: string, expectedText: string, amount: number): V070Bat
 function participant(state: V070GameState, playerId: PlayerId) {
   if (!state.battleRuntime) throw new Error('Battle effects require an active battle runtime.');
   return state.battleRuntime.participants[playerId];
+}
+
+function suppressBattleAssets(
+  state: V070GameState,
+  playerId: PlayerId,
+): void {
+  const runtime = state.battleRuntime;
+  if (!runtime) throw new Error('Battle effects require an active battle runtime.');
+  if (!runtime.assetInactivePlayers.includes(playerId)) {
+    runtime.assetInactivePlayers.push(playerId);
+  }
 }
 
 function isCounterattack(state: V070GameState): boolean {

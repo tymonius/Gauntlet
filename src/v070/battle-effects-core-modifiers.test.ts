@@ -7,6 +7,7 @@ import {
 import { reduceV070TurnAction } from './turn-engine';
 import { reduceV070BattleAction } from './battle-engine';
 import { retreatV070Position } from './rules';
+import { isV070AssetActive } from './asset-face-state';
 
 function startBattle(
   territoryId?: string,
@@ -104,6 +105,22 @@ function injectHandCard(
   return instanceId;
 }
 
+function injectBankedAsset(
+  state: V070GameState,
+  owner: 'A' | 'B',
+  cardId: string,
+  suffix: string,
+): string {
+  const instanceId = `core-asset-${owner}-${suffix}-${cardId}`;
+  state.cardInstances[instanceId] = {
+    instanceId,
+    cardId,
+    owner,
+  };
+  state.players[owner].zones.assetBank.push(instanceId);
+  return instanceId;
+}
+
 function revealGambits(
   state: V070GameState,
   aCard?: string,
@@ -141,6 +158,81 @@ function toOutcome(state: V070GameState): V070GameState {
 }
 
 describe('v0.7.0 core battle-effect modifiers', () => {
+  test('Sequestration makes both players Assets inactive without removing them from their banks', () => {
+    let state = startBattle();
+    const sequestration = injectHandCard(
+      state,
+      'A',
+      'neutral-sequestration',
+      'sequestration',
+    );
+    const aAsset = injectBankedAsset(
+      state,
+      'A',
+      'neutral-counterintelligence',
+      'a',
+    );
+    const bAsset = injectBankedAsset(
+      state,
+      'B',
+      'neutral-counterintelligence',
+      'b',
+    );
+
+    state = revealGambits(state, sequestration);
+
+    expect(new Set(state.battleRuntime?.assetInactivePlayers))
+      .toEqual(new Set(['A', 'B']));
+    expect(isV070AssetActive(state, aAsset)).toBe(false);
+    expect(isV070AssetActive(state, bAsset)).toBe(false);
+    expect(state.players.A.zones.assetBank).toContain(aAsset);
+    expect(state.players.B.zones.assetBank).toContain(bAsset);
+    expect(state.battleRuntime?.stage).toBe('choose_tactics');
+  });
+
+  test('Illegal Occupation applies only in a Counterattack and suppresses the opponent Assets when it does', () => {
+    let counterattack = startBattle();
+    const contested = counterattack.battle!.contestedPosition;
+    counterattack.board.find(space => space.position === contested)!.controller = 'A';
+    const illegalOccupation = injectHandCard(
+      counterattack,
+      'A',
+      'neutral-illegal-occupation',
+      'counterattack',
+    );
+    const opponentAsset = injectBankedAsset(
+      counterattack,
+      'B',
+      'neutral-counterintelligence',
+      'opponent',
+    );
+
+    counterattack = revealGambits(
+      counterattack,
+      illegalOccupation,
+    );
+
+    expect(counterattack.battleRuntime?.participants.A.advantage).toBe(1);
+    expect(counterattack.battleRuntime?.assetInactivePlayers).toContain('B');
+    expect(isV070AssetActive(counterattack, opponentAsset)).toBe(false);
+
+    let ordinary = startBattle();
+    const ordinaryIllegalOccupation = injectHandCard(
+      ordinary,
+      'A',
+      'neutral-illegal-occupation',
+      'ordinary',
+    );
+    ordinary = revealGambits(
+      ordinary,
+      ordinaryIllegalOccupation,
+    );
+
+    expect(ordinary.battleRuntime?.participants.A.advantage).toBe(0);
+    expect(ordinary.battleRuntime?.assetInactivePlayers).toEqual([]);
+    expect(ordinary.battleRuntime?.stage).toBe('choose_tactics');
+  });
+
   test('Pathfinders gains +1 only when the contested Territory has an active printed effect', () => {
     let active = startBattle('territory-high-ground');
     const activePathfinders = injectHandCard(
