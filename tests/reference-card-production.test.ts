@@ -125,9 +125,10 @@ describe('production faction reference cards', () => {
     expect(referenceCss).toContain('.reference-card[data-faction="mystics"]');
     expect(referenceCss).toContain('.reference-card[data-faction="inquisition"]');
 
-    expect(referenceRenderer).toContain('DIPLOMAT_REFERENCE_STYLE_ID');
-    expect(referenceRenderer).toContain('[data-reference-section="leverage"] .reference-panel-content');
-    expect(referenceRenderer).toContain('grid-template-columns: repeat(4, minmax(0, 1fr))');
+    expect(referenceRenderer).not.toContain('DIPLOMAT_REFERENCE_STYLE_ID');
+    expect(referenceRenderer).not.toContain('installDiplomatReferenceStyles');
+    expect(referenceCss).toContain('[data-reference-section="leverage"] .reference-panel-content');
+    expect(referenceCss).toContain('grid-template-columns: repeat(4, minmax(0, 1fr))');
 
     expect(supplementalRefinements).toContain('.reference-card[data-component-id="financiers-reference"] .reference-card-header');
     expect(supplementalRefinements).toContain('content: "Financiers"');
@@ -163,6 +164,12 @@ describe('production faction reference cards', () => {
     expect(referenceCss).toContain('flex: 0 0 auto');
     expect(supplemental).toContain('Reference-card text cannot fit at the readability floor');
     expect(referenceCss).toContain('.reference-card[data-fit-warning="true"]');
+  });
+
+  it('keeps reference presentation selectors in canonical component data rather than a renderer-local map', () => {
+    expect(referenceRenderer).not.toContain('REFERENCE_PRESENTATION');
+    expect(referenceRenderer).toContain('record.presentation?.selectors');
+    expect(referenceRenderer).toContain('component.presentation?.reference');
   });
 
   it('reuses the canonical Card Design reference renderer for TTS and every other consumer', () => {

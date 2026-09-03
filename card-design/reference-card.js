@@ -13,189 +13,6 @@ const FACTION_LABELS = Object.freeze({
 const REFERENCE_TITLE_MIN_PT = 8.4;
 const CSS_PX_PER_PT = 96 / 72;
 
-// Presentation-only selectors for guide-derived reference cards. Bespoke
-// player-aid copy already contains only printable material, so it renders its
-// face sections directly instead of re-filtering them through this map.
-const REFERENCE_PRESENTATION = Object.freeze({
-  'financiers-reference': {
-    front: {
-      'Capital and Capital Ledger': ['paragraph:1', 'paragraph:2'],
-      'Financial Capacity': ['paragraph:0', 'paragraph:1', 'paragraph:2'],
-      Income: ['paragraph:0'],
-      'Controlling Interest': ['paragraph:0'],
-    },
-    reverse: {
-      'Buying and buying out Deeds': ['paragraph:0', 'paragraph:1', 'paragraph:2', 'paragraph:3', 'table:0', 'paragraph:4', 'paragraph:6'],
-      'Play the Market': ['paragraph:0', 'table:0'],
-      Subsidize: ['paragraph:0', 'table:0', 'paragraph:1'],
-    },
-  },
-  'intelligence-mission-reference': {
-    front: {
-      Intel: ['paragraph:0'],
-      'Operation Progress': ['paragraph:0'],
-      'Starting a Mission': ['paragraph:0', 'list:0'],
-      'Completing a Mission': ['paragraph:0', 'list:0', 'paragraph:1'],
-    },
-    reverse: {
-      'Aborting and failing': ['paragraph:0', 'paragraph:1'],
-      'Starting a Special Operation': ['list:0', 'paragraph:1', 'paragraph:2'],
-      'Readiness and completion': ['paragraph:0', 'paragraph:1', 'paragraph:2', 'paragraph:3'],
-    },
-  },
-  'intelligence-operations-reference': {
-    front: {
-      'Gambit Surveillance': ['paragraph:0', 'paragraph:1'],
-      'Tactic Surveillance': ['paragraph:0', 'paragraph:1', 'paragraph:2'],
-      'Interference after Surveillance': ['paragraph:0', 'list:0', 'paragraph:1'],
-    },
-    reverse: {
-      'Direct Interference': ['paragraph:0'],
-      'Intelligence mirrors': ['list:0'],
-    },
-  },
-  'mystics-reference': {
-    front: {
-      'Beginning a Rite': ['paragraph:0', 'list:0'],
-      Progression: ['list:0'],
-      Invocation: ['paragraph:0', 'paragraph:1'],
-      Transmutation: ['paragraph:0', 'paragraph:1'],
-    },
-    reverse: {
-      'Bound cards': ['paragraph:0'],
-      'Beginning the Ritual': ['paragraph:0', 'list:0'],
-      Convergence: ['paragraph:0', 'paragraph:1'],
-      Completion: ['paragraph:0'],
-      Interruption: ['paragraph:0', 'paragraph:2'],
-    },
-  },
-  'inquisition-doctrine-reference': {
-    front: {
-      Conviction: ['rule:0', 'list:0'],
-      Condemnation: ['rule:0', 'paragraph:0'],
-    },
-    reverse: {
-      Blasphemy: ['rule:0', 'paragraph:0'],
-      Purification: ['paragraph:0', 'paragraph:1'],
-    },
-  },
-  'inquisition-purge-reference': {
-    front: {
-      Purge: ['paragraph:0', 'table:0', 'paragraph:1', 'paragraph:2'],
-    },
-    reverse: {
-      'Faction Actions': ['rule:0', 'list:0'],
-      'Final Judgment — Grand Inquisitor': ['rule:0', 'paragraph:0'],
-    },
-  },
-});
-
-const DIPLOMAT_REFERENCE_STYLE_ID = 'diplomat-reference-card-layout';
-
-function installDiplomatReferenceStyles() {
-  if (typeof document === 'undefined' || document.getElementById(DIPLOMAT_REFERENCE_STYLE_ID)) return;
-  const style = document.createElement('style');
-  style.id = DIPLOMAT_REFERENCE_STYLE_ID;
-  style.textContent = `
-.reference-card[data-component-id="diplomats-reference"] .reference-body {
-  display: flex;
-  flex-direction: column;
-  gap: var(--reference-section-gap);
-  padding: 0.026in 0.068in 0.022in;
-}
-.reference-card[data-component-id="diplomats-reference"][data-reference-side="front"] .reference-panel:first-child {
-  grid-column: auto;
-}
-.reference-card[data-component-id="diplomats-reference"] .reference-panel + .reference-panel {
-  padding-top: calc(0.014in * var(--reference-rules-scale));
-  border-top: 0.55px solid color-mix(in srgb, var(--component-accent-ink) 30%, transparent);
-}
-.reference-card[data-component-id="diplomats-reference"] .reference-panel-heading {
-  padding-bottom: calc(0.006in * var(--reference-rules-scale));
-}
-.reference-card[data-component-id="diplomats-reference"] .reference-panel-heading h4 {
-  color: var(--component-accent-ink);
-  font-size: calc(4.85pt * var(--reference-rules-scale));
-  letter-spacing: 0.055em;
-}
-.reference-card[data-component-id="diplomats-reference"] .reference-prose {
-  font-size: calc(6pt * var(--reference-rules-scale));
-  line-height: 1.075;
-}
-.reference-card[data-component-id="diplomats-reference"] .reference-option-list li {
-  grid-template-columns: 0.065in minmax(0, 1fr);
-  gap: 0.018in;
-  font-size: calc(5.85pt * var(--reference-rules-scale));
-  line-height: 1.06;
-}
-.reference-card[data-component-id="diplomats-reference"] .reference-option-mark {
-  width: 0.042in;
-  height: 0.042in;
-  margin-top: 0.024in;
-}
-.reference-card[data-component-id="diplomats-reference"] .reference-option-list li + li {
-  margin-top: calc(0.004in * var(--reference-rules-scale));
-  padding-top: 0;
-  border-top: 0;
-}
-.reference-card[data-component-id="diplomats-reference"] .reference-callout {
-  grid-template-columns: minmax(0.72in, 0.82in) minmax(0, 1fr);
-  column-gap: 0.025in;
-}
-.reference-card[data-component-id="diplomats-reference"] .reference-callout-label {
-  color: var(--component-accent-ink);
-  font-size: calc(4.4pt * var(--reference-rules-scale));
-  letter-spacing: 0.028em;
-}
-.reference-card[data-component-id="diplomats-reference"] .reference-callout p {
-  font-size: calc(5.8pt * var(--reference-rules-scale));
-  line-height: 1.06;
-}
-.reference-card[data-component-id="diplomats-reference"] .reference-callout + .reference-callout {
-  padding-top: calc(0.005in * var(--reference-rules-scale));
-  border-top: 0;
-}
-.reference-card[data-component-id="diplomats-reference"] [data-reference-section="leverage"] .reference-panel-content {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  column-gap: 0.020in;
-  row-gap: calc(0.006in * var(--reference-rules-scale));
-  align-items: start;
-}
-.reference-card[data-component-id="diplomats-reference"] [data-reference-section="leverage"] .reference-prose {
-  grid-column: 1 / -1;
-}
-.reference-card[data-component-id="diplomats-reference"] [data-reference-section="leverage"] .reference-callout {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  align-items: center;
-  gap: calc(0.002in * var(--reference-rules-scale));
-  padding: calc(0.006in * var(--reference-rules-scale)) 0;
-  border-top: 0;
-  border-left: 0.45px solid color-mix(in srgb, var(--component-accent-ink) 22%, transparent);
-  text-align: center;
-}
-.reference-card[data-component-id="diplomats-reference"] [data-reference-section="leverage"] .reference-callout:first-of-type {
-  border-left: 0;
-}
-.reference-card[data-component-id="diplomats-reference"] [data-reference-section="leverage"] .reference-callout-label {
-  font-size: calc(5.25pt * var(--reference-rules-scale));
-}
-.reference-card[data-component-id="diplomats-reference"] [data-reference-section="leverage"] .reference-callout p {
-  font-size: calc(5.55pt * var(--reference-rules-scale));
-  white-space: nowrap;
-}
-.reference-card[data-component-id="diplomats-reference"][data-reference-side="reverse"] .reference-face-title {
-  font-size: 10.9pt;
-  letter-spacing: 0.018em;
-}
-`;
-  document.head.append(style);
-}
-
-installDiplomatReferenceStyles();
-
 function esc(value) {
   return String(value ?? '').replace(/[&<>'"]/g, character => ({
     '&': '&amp;',
@@ -404,6 +221,38 @@ function parseBespokeReferenceFace(markdown, face, componentName, side) {
   return { title, sections };
 }
 
+export async function loadReferenceRecordForFaceSpec(spec) {
+  const content = spec?.content;
+  const component = content?.component;
+  const sideName = String(spec?.side || '').trim();
+  if (content?.type !== 'reference' || !component?.id || !content?.source || !content?.selector || !sideName) {
+    throw new Error(`Face ${spec?.id || '(unknown)'} is missing canonical reference source data.`);
+  }
+
+  const sourceUrl = `/${String(content.source).replace(/^\/+/, '')}`;
+  const response = await fetch(sourceUrl, { cache: 'no-store' });
+  if (!response.ok) {
+    throw new Error(`Reference source request failed for ${component.id}: ${response.status}`);
+  }
+  const markdown = await response.text();
+  const parseFace = content.copyMode === 'bespoke' ? parseBespokeReferenceFace : parseReferenceFace;
+  const face = parseFace(markdown, content.selector, component.name, sideName);
+
+  return {
+    id: component.id,
+    name: component.name,
+    faction: component.faction || 'neutral',
+    family: component.family,
+    copyMode: content.copyMode || 'guide-derived',
+    presentation: content.presentation || component.presentation?.reference || null,
+    source: spec.provenance?.gameplay || '/game-data/current-game.json',
+    version: spec.provenance?.displayVersion || spec.provenance?.version || 'Reference',
+    faces: {
+      [sideName]: face,
+    },
+  };
+}
+
 export async function loadReferenceRecords(componentIds = null) {
   const currentGame = await loadCurrentGame();
   const requestedIds = componentIds == null
@@ -451,6 +300,7 @@ export async function loadReferenceRecords(componentIds = null) {
       faction: component.faction || 'neutral',
       family: component.family,
       copyMode: component.copyMode || 'guide-derived',
+      presentation: component.presentation?.reference || null,
       source: currentGame.authorityUrl,
       version: currentGame.displayVersion,
       faces: {
@@ -471,7 +321,7 @@ function typedBlock(blocks, type, index, sourceName) {
 
 function selectedSectionBlocks(record, sideName, section) {
   if (record.copyMode === 'bespoke') return section.blocks;
-  const selectors = REFERENCE_PRESENTATION[record.id]?.[sideName]?.[section.sourceHeading];
+  const selectors = record.presentation?.selectors?.[sideName]?.[section.sourceHeading];
   if (!selectors) return section.blocks;
 
   return selectors.map(selector => {
