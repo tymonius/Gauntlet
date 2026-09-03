@@ -29,7 +29,7 @@
   border: 1px solid var(--line);
   border-radius: 2px;
   background: rgba(255, 252, 244, .62);
-  cursor: pointer;
+  cursor: default;
 }
 
 .compact-rite-row.selected {
