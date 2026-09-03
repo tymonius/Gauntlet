@@ -285,6 +285,7 @@ button {
 }
 
 @media print {
+  .skip-link { display: none !important; }
   @page { size: Letter landscape; margin: 0; }
   html, body { background: white; }
   body { font-family: "Noto Sans", Arial, sans-serif; }
