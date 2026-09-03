@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 
 const leaderRedirect = readFileSync("card-design/leaders.html", "utf8");
 const leaderCatalog = readFileSync("card-design/card-review.js", "utf8");
+const leaderFace = readFileSync("card-design/face-families/leader.mjs", "utf8");
+const faceSpec = readFileSync("card-design/face-spec.mjs", "utf8");
 const currentGame = JSON.parse(readFileSync("game-data/current-game.json", "utf8"));
 const reviewPage = readFileSync("card-design/index.html", "utf8");
 const leaderStyles = readFileSync("card-design/leader-card.css", "utf8");
@@ -37,9 +39,10 @@ describe("Leader card design", () => {
   it("uses the shared poker-card shell and mounted portrait frame for all twelve Leaders", () => {
     expect(currentGame.leaders.map((item: any) => item.name)).toEqual(leaderNames);
     expect(currentGame.leaders).toHaveLength(12);
-    expect(leaderCatalog).toContain("const leaders = current.leaders.filter");
-    expect(leaderCatalog).toContain('class="gauntlet-card faction-component-card leader-card');
-    expect(leaderCatalog).toContain('class="card-art has-image"');
+    expect(leaderCatalog).toContain("current.leaders.filter(leader => leader.faction === faction)");
+    expect(leaderCatalog).toContain("kind === 'leader' ? 'face-render.html' : 'component-render.html'");
+    expect(leaderFace).toContain('class="gauntlet-card faction-component-card leader-card leader-card--standardized');
+    expect(leaderFace).toContain('class="card-art has-image"');
     expect(leaderStyles).toContain("grid-template-rows: var(--component-heading-height) var(--art-height) auto 0.18in");
     expect(leaderStyles).toContain("--art-height: 1.86in");
     expect(refinementStyles).toContain("0 0 0 0.007in rgba(231, 212, 176, 0.78)");
@@ -59,14 +62,15 @@ describe("Leader card design", () => {
   });
 
   it("removes playable-card value and generic Leader labels from the body", () => {
-    expect(leaderCatalog).not.toContain("value-medallion");
-    expect(leaderCatalog).not.toContain("Leader Ability");
-    expect(leaderCatalog).not.toContain("Supplemental Leader");
+    expect(leaderFace).not.toContain("value-medallion");
+    expect(leaderFace).not.toContain("Leader Ability");
+    expect(leaderFace).not.toContain("Supplemental Leader");
   });
 
   it("identifies faction, component type, and version in the metadata footer", () => {
-    expect(leaderCatalog).toContain('<span>${esc(leader.factionLabel)}</span><span>Leader</span><span>${esc(version)}</span>');
-    expect(leaderCatalog).not.toContain("<span>Command</span>");
+    expect(leaderFace).toContain('<span>Leader</span>');
+    expect(leaderFace).toContain('<span>${esc(spec.displayVersion)}</span>');
+    expect(leaderFace).not.toContain("<span>Command</span>");
   });
 
   it("uses full-color production portraits from the main image directory", () => {
@@ -84,13 +88,13 @@ describe("Leader card design", () => {
       expect(leaderStyles).toContain(`url("../images/faction-symbols/${symbol.name}.svg")`);
       expect(currentGame.leaders.some((item: any) => item.faction === symbol.name)).toBe(true);
     }
-    expect(leaderCatalog).toContain('class="leader-faction-emblem"');
+    expect(leaderFace).toContain('class="leader-faction-emblem"');
     expect(leaderStyles).toContain("-webkit-mask: var(--faction-symbol)");
     expect(leaderStyles).toContain("mask: var(--faction-symbol)");
   });
 
   it("tints Leader and reusable faction-component parchment without tinting art", () => {
-    expect(leaderCatalog).toContain("faction-component-card leader-card");
+    expect(leaderFace).toContain("faction-component-card leader-card");
     expect(leaderStyles).toContain(".faction-component-card .card-interior::after");
     expect(leaderStyles).toContain("mix-blend-mode: multiply");
     expect(leaderStyles).toContain("--component-parchment-tint: rgba(145, 28, 38, 0.15)");
@@ -120,9 +124,22 @@ describe("Leader card design", () => {
     expect(leaderStyles).toContain("grid-template-columns: 0.63in minmax(0, 1fr)");
   });
 
-  it("preserves the full head through top-biased portrait crops", () => {
-    expect(leaderStyles).toContain("object-position: center 16%");
-    expect(leaderStyles).toContain("object-position: center 14%");
+  it("keeps every Leader crop fully authored in canonical visual authority", () => {
+    for (const leader of currentGame.leaders) {
+      const id = `${leader.faction}-${leader.id}`;
+      const direction = currentGame.artDirection[id];
+      expect(direction).toMatchObject({
+        fit: "cover",
+        focusX: expect.any(Number),
+        focusY: expect.any(Number),
+        smart: false,
+        zoom: expect.any(Number),
+      });
+    }
+    expect(currentGame.artDirection["military-general"].focusY).toBe(0.16);
+    expect(leaderStyles).not.toContain("object-position:");
+    expect(faceSpec).toContain("requireExplicitArtworkDirection");
+    expect(faceSpec).toContain("resolved.smart !== false");
   });
 
   it("gives the metadata footer sufficient height and leading", () => {
