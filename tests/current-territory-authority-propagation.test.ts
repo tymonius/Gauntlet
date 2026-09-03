@@ -19,7 +19,9 @@ describe('historical v0.6.4 Territory derivation and current authority propagati
   });
 
   it('binds the browser/TTS review renderer directly to current-game authority', () => {
-    expect(reviewRenderer).toContain('loadCurrentGame');
+    expect(reviewRenderer).toContain("import { loadRenderContext } from './render-context.mjs'");
+    expect(reviewRenderer).toContain('const renderContext = await loadRenderContext()');
+    expect(reviewRenderer).toContain('const currentGame = renderContext.game');
     expect(reviewRenderer).toContain('currentGame.findTerritory(territoryId)');
     expect(reviewRenderer).toContain('source: currentGame.authorityUrl');
     expect(reviewRenderer).not.toContain('v0.6.4-territories.json');
