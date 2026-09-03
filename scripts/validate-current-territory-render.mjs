@@ -85,7 +85,7 @@ async function main() {
   try {
     for (const territory of source.territories) {
       await page.goto(
-        `${baseUrl}/card-design/territory-review-render.html?territory=${encodeURIComponent(territory.id)}`,
+        `${baseUrl}/card-design/face-render.html?id=${encodeURIComponent(`territory:${territory.id}`)}`,
         { waitUntil: 'load' },
       );
       await page.waitForFunction(() => document.body.dataset.renderReady === 'true');
