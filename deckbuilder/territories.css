@@ -29,7 +29,7 @@
   border: 1px solid var(--line);
   border-radius: 2px;
   background: rgba(255, 253, 248, 0.95);
-  cursor: pointer;
+  cursor: default;
 }
 
 .compact-territory-row:hover,
