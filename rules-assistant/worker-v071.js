@@ -5,6 +5,7 @@ import {
   defaultV071SourceUrls,
   loadV071RulesCorpus
 } from "./v071-public-corpus.js";
+import { persistSmartInteraction } from "./rules-persistence.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
 const FALLBACK_MODEL = "gpt-5.6-terra";
@@ -85,7 +86,8 @@ export default {
         deterministicRuleAnswers: false,
         interactionLogging: Boolean(env.DB),
         sessionRulingContinuity: Boolean(env.DB),
-        formalPlaytestLinking: false,
+        formalPlaytestLinking: Boolean(env.DB),
+        reviewDiagnostics: Boolean(env.DB),
         provisionalRulings: true,
         confidenceDerivedFromSupport: true,
         model: env.OPENAI_MODEL || FALLBACK_MODEL
@@ -122,15 +124,28 @@ export default {
 
     const suppliedHistory = sanitizeHistory(payload?.history);
     const sessionId = sanitizeSessionId(payload?.sessionId);
+    const playtestSessionId = sanitizeContextValue(payload?.playtestSessionId);
+    const sheetSerial = sanitizeContextValue(payload?.sheetSerial);
 
     try {
       const corpus = await getCorpus(env);
       const storedHistory = await loadStoredHistory(env, sessionId);
       const history = mergeConversationHistory(storedHistory, suppliedHistory);
-      const retrieval = retrieveRules(corpus, contextualQuery(question, history), {
+      const retrievalQuery = contextualQuery(question, history);
+      const retrieval = retrieveRules(corpus, retrievalQuery, {
         limit: 10,
         excerptLength: 1300
       });
+      const diagnostics = {
+        questionPlan: null,
+        retrievalQueries: [retrievalQuery],
+        candidateSources: retrieval.map(toDiagnosticSource),
+        reasoningEffort: env.OPENAI_REASONING_EFFORT || "low",
+        verification: null,
+        retryCount: 0,
+        gameState: null,
+        corpusHash: corpus.authoritySetId || ""
+      };
 
       if (!env.OPENAI_API_KEY) {
         const fallback = buildLocalFallbackAnswer(question, retrieval, RULES_VERSION);
@@ -142,6 +157,20 @@ export default {
           sources: fallback.sources,
           executionPath: "local-source-lookup"
         };
+        result.interactionId = await persistSmartInteraction(env, {
+          sessionId,
+          playtestSessionId,
+          sheetSerial,
+          question,
+          answer: fallback.answer,
+          gameVersion: RULES_VERSION,
+          rulingStatus: fallback.rulingStatus,
+          confidence: fallback.confidence,
+          mode: "source_lookup",
+          model: null,
+          sources: fallback.sources,
+          diagnostics
+        });
         return answerResponse(result, origin);
       }
 
@@ -162,8 +191,10 @@ export default {
         sources,
         executionPath: "model"
       };
-      result.interactionId = await persistInteraction(env, {
+      result.interactionId = await persistSmartInteraction(env, {
         sessionId,
+        playtestSessionId,
+        sheetSerial,
         question,
         answer,
         gameVersion: RULES_VERSION,
@@ -171,7 +202,8 @@ export default {
         confidence,
         mode: "ai",
         model: env.OPENAI_MODEL || FALLBACK_MODEL,
-        sources
+        sources,
+        diagnostics
       });
       return answerResponse(result, origin);
     } catch (error) {
@@ -362,69 +394,21 @@ async function loadStoredHistory(env, sessionId) {
   }
 }
 
-async function persistInteraction(env, record) {
-  if (!env?.DB) return null;
-  try {
-    const previous = await env.DB.prepare(`
-      SELECT id, sequence_index
-      FROM rules_interactions
-      WHERE session_id = ?
-      ORDER BY sequence_index DESC, created_at DESC
-      LIMIT 1
-    `).bind(record.sessionId).first();
+function sanitizeContextValue(value) {
+  const normalized = String(value || "").trim();
+  return /^[a-zA-Z0-9_.:-]{3,120}$/.test(normalized) ? normalized : null;
+}
 
-    const id = crypto.randomUUID();
-    const sequenceIndex = Number(previous?.sequence_index || 0) + 1;
-    const now = new Date().toISOString();
-    const sourceRows = Array.isArray(record.sources) ? record.sources.slice(0, 6) : [];
-    const statements = [
-      env.DB.prepare(`
-        INSERT INTO rules_interactions (
-          id, session_id, previous_interaction_id, sequence_index, created_at, updated_at,
-          question, answer, game_version, ruling_status, confidence, answer_mode, model,
-          source_count, playtest_session_id, sheet_serial, review_status,
-          issue_types_json, reviewer_notes, resolution
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, 'unreviewed', '[]', '', '')
-      `).bind(
-        id,
-        record.sessionId,
-        previous?.id || null,
-        sequenceIndex,
-        now,
-        now,
-        record.question,
-        record.answer,
-        record.gameVersion,
-        record.rulingStatus,
-        record.confidence,
-        record.mode,
-        record.model || null,
-        sourceRows.length
-      )
-    ];
-
-    sourceRows.forEach((source, index) => {
-      statements.push(env.DB.prepare(`
-        INSERT INTO rules_interaction_sources (
-          interaction_id, ordinal, source_id, title, source_path, source_url, excerpt
-        ) VALUES (?, ?, ?, ?, ?, ?, ?)
-      `).bind(
-        id,
-        index + 1,
-        String(source.id || "").slice(0, 80),
-        String(source.title || "Canonical source").slice(0, 300),
-        String(source.sourcePath || "").slice(0, 500),
-        String(source.sourceUrl || "").slice(0, 1000),
-        String(source.excerpt || "").slice(0, 4000)
-      ));
-    });
-
-    await env.DB.batch(statements);
-    return id;
-  } catch (error) {
-    console.error("Could not persist Rules Arbiter interaction", error);
-    return null;
-  }
+function toDiagnosticSource(source) {
+  return {
+    id: String(source?.id || ""),
+    canonicalId: String(source?.canonicalId || ""),
+    title: String(source?.title || ""),
+    kind: String(source?.kind || ""),
+    sourcePath: String(source?.sourcePath || ""),
+    sourceUrl: String(source?.sourceUrl || ""),
+    score: Number(source?.score || 0)
+  };
 }
 
 function answerResponse(result, origin) {
