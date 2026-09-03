@@ -102,15 +102,14 @@ describe('complete FaceSpec source authority', () => {
       source: { mode: 'exact', src: '/images/banker.png' },
       composition: { id: 'financiers-banker', explicit: true },
     });
-    expect(banker.readiness.productionReady).toBe(false);
-    expect(banker.readiness.issues).toContain('artwork-composition-not-final');
+    expect(banker.readiness).toEqual({ productionReady: true, issues: [] });
 
     const general = resolveFaceSpec(game, 'leader:military-general');
     expect(general.artwork.composition).toMatchObject({
       id: 'military-general',
       explicit: false,
     });
-    expect(general.readiness.issues).toContain('artwork-composition-not-explicit');
+    expect(general.readiness).toEqual({ productionReady: true, issues: [] });
 
     const crossingCompleted = resolveFaceSpec(game, 'component:mystics-rite-crossing:reverse');
     expect(crossingCompleted.artwork).toMatchObject({
@@ -127,7 +126,7 @@ describe('complete FaceSpec source authority', () => {
     });
   });
 
-  it('surfaces unresolved presentation authority instead of hiding fallbacks', () => {
+  it('resolves current presentation and artwork authority without hidden fallbacks', () => {
     const tracker = resolveFaceSpec(game, 'component:military-command-tracker:front');
     expect(tracker.readiness).toEqual({ productionReady: true, issues: [] });
 
@@ -135,8 +134,7 @@ describe('complete FaceSpec source authority', () => {
     expect(reference.readiness).toEqual({ productionReady: true, issues: [] });
 
     const general = resolveFaceSpec(game, 'leader:military-general');
-    expect(general.readiness.productionReady).toBe(false);
-    expect(general.readiness.issues).toContain('artwork-composition-not-explicit');
+    expect(general.readiness).toEqual({ productionReady: true, issues: [] });
 
     const deed = resolveFaceSpec(game, 'component:financiers-deed:front');
     expect(deed.readiness).toEqual({ productionReady: true, issues: [] });
