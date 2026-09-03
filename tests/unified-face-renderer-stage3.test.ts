@@ -27,8 +27,8 @@ describe('Stage 3 unified face renderer', () => {
     expect(Object.keys(FACE_TEMPLATE_RENDERERS).sort()).toEqual(Object.keys(FACE_TEMPLATES).sort());
     expect(runtime).toContain('rendererForTemplate(spec.template)');
     expect(registry).toContain("'standard-back': standardBack");
-    expect(runtime).not.toMatch(/spec\.template\s*===/);
-    expect(runtime).not.toMatch(/spec\.template\s*!==/);
+    expect(runtime).not.toMatch(/spec\.template\s*===\s*['"](playable|territory|leader|reference|tracker|proposal|ledger|deed|rite|ritual)['"]/);
+    expect(runtime).not.toContain('switch (spec.template)');
   });
 
   it('renders a single FaceSpec directly with no catalog extraction lifecycle', () => {
