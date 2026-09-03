@@ -341,6 +341,7 @@ describe('v0.7.0 Sleeper Network Action', () => {
     });
 
     state.turnState!.actionsAvailable = 1;
+    state.turnState!.actionsTaken.opening = 0;
     state = reduceV070TurnAction(state, {
       type: 'use_sleeper_network_asset',
       playerId: 'B',
