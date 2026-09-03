@@ -7,6 +7,9 @@ coverage/
 tts/generated/
 media/generated/
 
+# Legacy parchment upload/transport fragments; production uses direct PNG assets.
+images/artwork/card-backgrounds/*.b64*
+
 # Private ChatGPT export and conversation-audit material.
 # These files may contain complete personal conversation history and must remain local.
 **/conversations-*.json

@@ -23,4 +23,6 @@ The following historical reference names now resolve conceptually to their appro
 
 Likewise, the original hero study belongs with its alternate studies at `sketches/hero-sketches/hero sketch.png`; a duplicate root copy should not be retained.
 
+Legacy base64/multipart parchment upload fragments are not source assets. Production uses the full-resolution `*-parchment-v2.png` files directly, so `.b64` sidecars belong outside Git.
+
 Large-format source artwork may legitimately remain large. Size alone is not grounds for deleting a unique approved/source asset.
