@@ -5,7 +5,7 @@ import type {
   BattlePlayedCard,
   GameState,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import { applyGameAction } from './apply-neutral';
 import { initializeGame } from './initialize';
 import { FOOTHOLD } from './neutral-foothold';

@@ -3,11 +3,17 @@ import { appendV070Event, type V070GameState } from './engine';
 import { drawV070Cards } from './turn-engine';
 import type { PlayerId } from './rules';
 import { faceUpV070AssetInstanceIds } from './asset-face-state';
-import { v070MonasterySuppressesArcaneBattleEffects } from './territories';
+import {
+  activeV070PrintedBattleTerritory,
+  v070MonasterySuppressesArcaneBattleEffects,
+} from './territories';
+import { retreatV070Position } from './rules';
+import { gainV070MilitaryCommandFromEffect } from './military';
 import type {
   V070BattleCardCommitment,
   V070UnsupportedBattleEffect,
 } from './battle-types';
+import { recordV070MysticBattleEffectApplied } from './mystics';
 
 export type V070BattleEffectTiming = 'reveal';
 
@@ -149,6 +155,43 @@ const handlers: V070BattleEffectHandler[] = [
       else current.battleModifier += 1;
     },
   },
+  {
+    cardId: 'neutral-pathfinders',
+    expectedText: 'If this battle is on a Territory with an active printed effect, +1 Battle Total.',
+    timing: 'reveal',
+    apply: ({ state, owner }) => {
+      if (activeV070PrintedBattleTerritory(state)) {
+        participant(state, owner).battleModifier += 1;
+      }
+    },
+  },
+  {
+    cardId: 'neutral-court-martial',
+    expectedText: 'Opponent gains Disadvantage. If they lose, after their normal retreat: Retreat +1, if able.',
+    timing: 'reveal',
+    apply: ({ state, opponent, commitment }) => {
+      participant(state, opponent).disadvantage += 1;
+      state.battleRuntime!.additionalRetreatEffects.push({
+        sourceInstanceId: commitment.instanceId,
+        sourceCardId: 'neutral-court-martial',
+        targetPlayer: opponent,
+        steps: 1,
+      });
+    },
+  },
+  {
+    cardId: 'military-unbroken-ranks',
+    expectedText: 'If you win this battle and used no Orders during it, +1 Command.',
+    timing: 'reveal',
+    apply: ({ state, commitment }) => {
+      if (!state.battleRuntime!.unbrokenRanksInstanceIds
+        .includes(commitment.instanceId)) {
+        state.battleRuntime!.unbrokenRanksInstanceIds.push(
+          commitment.instanceId,
+        );
+      }
+    },
+  },
 ];
 
 const handlersByCardId = new Map(handlers.map(handler => [handler.cardId, handler]));
@@ -224,6 +267,11 @@ export function resolveV070SupportedRevealEffects(
         timing: handler.timing,
       },
     });
+    recordV070MysticBattleEffectApplied(
+      state,
+      commitment.owner,
+      commitment.instanceId,
+    );
   }
 
   return [];
@@ -259,6 +307,65 @@ function unsupportedForCommitment(
     text: effect.text,
     encounteredAt,
   }));
+}
+
+export function applyV070BattleCardAdditionalRetreats(
+  state: V070GameState,
+): void {
+  const battle = state.battle;
+  const runtime = state.battleRuntime;
+  if (!battle || !runtime || !battle.loser) return;
+
+  const loser = battle.loser;
+  for (const effect of runtime.additionalRetreatEffects) {
+    if (effect.targetPlayer !== loser) continue;
+    for (let step = 0; step < effect.steps; step += 1) {
+      const from = battle.positions[loser];
+      const to = retreatV070Position(
+        loser,
+        from,
+        battle.territoryCount,
+      );
+      if (to === from) break;
+      battle.positions[loser] = to;
+      appendV070Event(state, {
+        type: 'battle_card_aftermath_retreat',
+        actor: loser,
+        visibility: 'public',
+        payload: {
+          sourceInstanceId: effect.sourceInstanceId,
+          sourceCardId: effect.sourceCardId,
+          loser,
+          from,
+          to,
+          additionalRetreat: 1,
+        },
+      });
+    }
+  }
+}
+
+export function resolveV070UnbrokenRanksCommand(
+  state: V070GameState,
+  winner: PlayerId,
+): void {
+  const runtime = state.battleRuntime;
+  if (!runtime
+    || runtime.militaryOrderUsedPlayers.includes(winner)
+    || runtime.unbrokenRanksInstanceIds.length === 0) {
+    return;
+  }
+
+  for (const instanceId of runtime.unbrokenRanksInstanceIds) {
+    if (state.cardInstances[instanceId]?.owner !== winner) continue;
+    gainV070MilitaryCommandFromEffect(
+      state,
+      winner,
+      1,
+      'Unbroken Ranks',
+      instanceId,
+    );
+  }
 }
 
 function modifier(cardId: string, expectedText: string, amount: number): V070BattleEffectHandler {

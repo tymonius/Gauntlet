@@ -8,8 +8,9 @@ const supplemental = readFileSync('card-design/supplemental-card.js', 'utf8');
 const supplementalRefinements = readFileSync('card-design/supplemental-refinements.css', 'utf8');
 const referenceRenderer = readFileSync('card-design/reference-card.js', 'utf8');
 const referenceCss = readFileSync('card-design/reference-card.css', 'utf8');
-const ttsRenderer = readFileSync('tts/supplemental-renderer/supplemental-renderer.js', 'utf8');
-const ttsRendererHtml = readFileSync('tts/supplemental-renderer/index.html', 'utf8');
+const componentRenderer = readFileSync('card-design/component-render.js', 'utf8');
+const legacyTtsRendererHtml = readFileSync('tts/supplemental-renderer/index.html', 'utf8');
+const componentRendererHtml = readFileSync('card-design/component-render.html', 'utf8');
 
 describe('production faction reference cards', () => {
   it('renders the complete seven-card contract as fourteen physical faces', () => {
@@ -20,7 +21,7 @@ describe('production faction reference cards', () => {
     expect(references.every((component: any) => component.designStatus === 'final')).toBe(true);
 
     expect(supplemental).toContain("referenceId: hasReferenceFaces ? component.id : ''");
-    expect(supplemental).toContain("doubleSided: ledger || component.backPolicy === 'twoSided'");
+    expect(supplemental).toContain("doubleSided: component.backPolicy === 'twoSided'");
     expect(supplemental).toContain("filter(component => component.faction === faction && supportedFamilies.has(component.family))");
     expect(supplemental).toContain("for (const sideName of ['front', 'reverse'])");
   });
@@ -164,15 +165,14 @@ describe('production faction reference cards', () => {
     expect(referenceCss).toContain('.reference-card[data-fit-warning="true"]');
   });
 
-  it('reuses the production renderer, standard card chrome, and production typefaces for TTS', () => {
-    expect(ttsRenderer).toContain("from '/card-design/reference-card.js'");
-    expect(ttsRenderer).toContain("String(record.source || '').includes('/reference-copy/')");
-    expect(ttsRenderer).toContain("record.copyMode = 'bespoke'");
-    expect(ttsRenderer).toContain('referenceCardMarkup(record, sideName');
-    expect(ttsRenderer).toContain('fitReferenceCard(card)');
-    expect(ttsRendererHtml).toContain('/card-design/card-design.css');
-    expect(ttsRendererHtml).toContain('/card-design/reference-card.css');
-    expect(ttsRendererHtml).toContain('/card-design/supplemental-refinements.css');
-    expect(ttsRendererHtml).toContain('https://use.typekit.net/vgm6nwi.css');
+  it('reuses the canonical Card Design reference renderer for TTS and every other consumer', () => {
+    expect(legacyTtsRendererHtml).toContain('/card-design/component-render.html');
+    expect(componentRenderer).toContain('kind === "reference"');
+    expect(componentRenderer).toContain('.reference-card[data-component-id=');
+    expect(componentRenderer).toContain('validateReferenceVisualContract(card)');
+    expect(componentRendererHtml).toContain('/card-design/card-design.css');
+    expect(componentRendererHtml).toContain('/card-design/reference-card.css');
+    expect(componentRendererHtml).toContain('/card-design/supplemental-refinements.css');
+    expect(componentRendererHtml).toContain('https://use.typekit.net/vgm6nwi.css');
   });
 });

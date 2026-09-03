@@ -7,63 +7,63 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
 const contracts = [
   {
-    path: 'card-design/index.html',
-    requires: [
-      'current-card-catalog.js',
-      '../tts/artwork-crop.js',
-    ],
-  },
-  {
     path: 'card-design/card-review-render.js',
     requires: [
-      "loadCurrentGame",
-      "window.GAUNTLET_ART_DIRECTION = currentGame.artDirection",
-      '/tts/artwork-crop.js',
+      'loadRenderContext',
+      '/card-design/artwork-crop.js',
+      '/card-design/playable-card-renderer.js',
+      'renderContext.artDirectionFor(card.id)',
     ],
   },
   {
     path: 'card-design/territory-review-render.js',
     requires: [
-      "loadCurrentGame",
-      "window.GAUNTLET_ART_DIRECTION = currentGame.artDirection",
-      '/tts/artwork-crop.js',
+      'loadRenderContext',
+      '/card-design/artwork-crop.js',
+      '/card-design/territory-card-renderer.js',
+      'renderContext.artDirectionFor(territory.id)',
     ],
+  },
+  {
+    path: 'card-design/component-render.js',
+    requires: [
+      'loadCanonicalRenderContext',
+      'renderContext.artDirectionFor(artworkId)',
+      'surfaceCssSize(orientation)',
+      'await applyCanonicalArtworkDirection(card)',
+    ],
+  },
+  {
+    path: 'card-design/component-render.html',
+    requires: ['/card-design/artwork-crop.js'],
   },
   {
     path: 'tts/renderer/index.html',
-    requires: [
-      '/tts/generated/current/catalog.js',
-      '/tts/artwork-crop.js',
-      '/tts/renderer/renderer.js',
-    ],
-    forbids: ['/tts/artwork-direction-overrides.js'],
+    requires: ['/card-design/card-review-render.html'],
   },
   {
     path: 'tts/territory-renderer/index.html',
-    requires: [
-      '/tts/generated/current/catalog.js',
-      '/tts/artwork-crop.js',
-      '/tts/territory-renderer/territory-renderer.js',
-    ],
-    forbids: ['/tts/artwork-direction-overrides.js'],
+    requires: ['/card-design/territory-review-render.html'],
+  },
+  {
+    path: 'tts/supplemental-renderer/index.html',
+    requires: ['/card-design/component-render.html'],
   },
   {
     path: 'tts/finalized-supplemental-renderer/index.html',
-    requires: ['/tts/artwork-crop.js'],
-    forbids: ['/tts/artwork-direction-overrides.js'],
+    requires: ['/card-design/component-render.html'],
   },
   {
-    path: 'tts/finalized-supplemental-renderer/renderer.js',
-    requires: [
-      'loadCurrentGame',
-      'window.GAUNTLET_ART_DIRECTION = currentGame.artDirection || {}',
-    ],
+    path: 'tts/back-renderer/index.html',
+    requires: ['/card-design/card-back-render.html'],
   },
   {
     path: 'card-reference/app.js',
     requires: [
       '../card-design/card-review-render.html?card=',
       '../card-design/territory-review-render.html?territory=',
+      '../card-design/component-render.html?',
+      'PRODUCTION_SURFACES',
     ],
   },
 ];
@@ -73,12 +73,7 @@ for (const contract of contracts) {
   const source = await readFile(join(ROOT, contract.path), 'utf8');
   for (const required of contract.requires) {
     if (!source.includes(required)) {
-      failures.push(`${contract.path} must use shared artwork rendering via ${required}`);
-    }
-  }
-  for (const forbidden of contract.forbids || []) {
-    if (source.includes(forbidden)) {
-      failures.push(`${contract.path} must not load legacy artwork direction via ${forbidden}`);
+      failures.push(`${contract.path} must consume canonical render authority via ${required}`);
     }
   }
 }
@@ -86,10 +81,10 @@ for (const contract of contracts) {
 if (failures.length) {
   console.error('Artwork render pipeline contract failed:\n');
   for (const failure of failures) console.error(`- ${failure}`);
-  console.error('\nRendered-card surfaces must consume the shared composition source instead of maintaining output-specific positioning.');
+  console.error('\nCard-like output surfaces must consume Card Design authority instead of maintaining parallel render logic.');
   process.exit(1);
 }
 
 console.log('Artwork render pipeline contract passed.');
-console.log('Saved card compositions propagate through /card-design, Card Reference, and TTS renderers.');
-console.log('Future card-rendering surfaces (including Deckbuilder viewing/printing) should reuse the canonical current-game composition authority plus the shared crop pipeline.');
+console.log('Card Design owns face rendering, artwork composition, and physical card geometry.');
+console.log('Card Reference, Deckbuilder, and TTS consume canonical render surfaces.');

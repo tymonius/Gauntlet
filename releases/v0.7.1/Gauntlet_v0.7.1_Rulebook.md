@@ -2000,13 +2000,13 @@ Bound cards follow the shared rules. If a Rite or Ritual binding ends without an
 
 #### Invocation
 
-> Once per turn, after applying the Action, Gambit, Tactic, or Gambit or Tactic effect of an Arcane card you played, set, or chose, you may move one card from your Graveyard to your Discard Pile.
+> Once per turn, after applying the Action, Gambit, or Tactic effect of an Arcane card you played, set, or chose, you may move one card from your Graveyard to your Discard Pile.<!-- RULE-FACT:mystics.invocation.text -->
 
 A copied effect does not trigger Invocation unless the Arcane card is itself played, set, or chosen again and its printed effect is applied.
 
 #### Transmutation
 
-> Once per turn, before dice are rolled in a battle involving you, you may put one card from your Hand in your Graveyard. Add its value to your battle total.
+> Once per turn, before dice are rolled in a battle, you may put one card from your Hand in your Graveyard. Add its value to your battle total.<!-- RULE-FACT:mystics.transmutation.text -->
 
 The card is not played and none of its printed effects apply. Supplemental components cannot be used.
 

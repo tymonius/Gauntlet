@@ -5,7 +5,7 @@ import type {
   BattlePlayedCard,
   GameState,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import { buildPendingNeutralOptions } from '../dev/neutral-options';
 import { applyGameAction } from './apply-neutral';
 import { initializeGame } from './initialize';

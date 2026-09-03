@@ -98,15 +98,8 @@ async function cardMetrics(back) {
     const patternWindowStyle = getComputedStyle(patternWindow);
     const surfaceStyle = getComputedStyle(patternWindow, '::after');
     const pattern = element.querySelector('.gauntlet-card-back__pattern');
+    const patternRect = pattern.getBoundingClientRect();
     const patternStyle = getComputedStyle(pattern);
-    const rows = [...element.querySelectorAll('.gauntlet-card-back__pattern-row')];
-    const firstRowStyle = rows[0] ? getComputedStyle(rows[0]) : null;
-    const symbols = [...element.querySelectorAll('.gauntlet-card-back__symbol')];
-    const firstSymbolStyle = symbols[0] ? getComputedStyle(symbols[0]) : null;
-    const firstColumnTrack = firstRowStyle
-      ? Number.parseFloat(firstRowStyle.gridTemplateColumns.split(' ')[0])
-      : Number.NaN;
-    const symbolWidth = firstSymbolStyle ? Number.parseFloat(firstSymbolStyle.width) : Number.NaN;
 
     return {
       width: rect.width,
@@ -126,17 +119,13 @@ async function cardMetrics(back) {
       surfaceBackground: surfaceStyle.backgroundImage,
       surfaceOpacity: surfaceStyle.opacity,
       surfaceBlendMode: surfaceStyle.mixBlendMode,
-      patternWidth: Number.parseFloat(patternStyle.width),
-      patternHeight: Number.parseFloat(patternStyle.height),
-      patternRowTransforms: rows.slice(0, 4).map(row => getComputedStyle(row).transform),
-      symbolCount: symbols.length,
-      symbolsMasked: symbols.every(symbol => {
-        const style = getComputedStyle(symbol);
-        return (style.maskImage || style.webkitMaskImage) !== 'none';
-      }),
-      symbolBackground: firstSymbolStyle?.backgroundColor || '',
-      symbolCellGap: firstColumnTrack - symbolWidth,
+      patternWidth: patternRect.width,
+      patternHeight: patternRect.height,
       patternTransform: patternStyle.transform,
+      patternSource: pattern.currentSrc || pattern.src || '',
+      patternComplete: Boolean(pattern.complete),
+      patternNaturalWidth: Number(pattern.naturalWidth || 0),
+      patternNaturalHeight: Number(pattern.naturalHeight || 0),
       wordmarkWidth: wordmarkRect.width,
       wordmarkHeight: wordmarkRect.height,
       wordmarkBackground: wordmarkStyle.backgroundColor,
@@ -166,21 +155,14 @@ function validateCardMetrics(faction, metrics) {
   if (metrics.surfaceBackground === 'none' || metrics.surfaceOpacity !== '0.055' || metrics.surfaceBlendMode !== 'soft-light') {
     throw new Error(`${faction} card-back printed-stock grain did not render correctly: ${JSON.stringify(metrics)}.`);
   }
-  if (metrics.symbolCount !== 1296 || !metrics.symbolsMasked || metrics.wordmarkMask === 'none') {
+  if (!metrics.patternComplete || metrics.patternNaturalWidth <= 0 || metrics.patternNaturalHeight <= 0 || !metrics.patternSource.includes('/card-design/card-back-pattern.svg') || metrics.wordmarkMask === 'none') {
     throw new Error(`${faction} card-back assets failed to render: ${JSON.stringify(metrics)}.`);
   }
-  if (metrics.patternTransform === 'none') {
-    throw new Error(`${faction} card-back tiling field is not rotated as one surface: ${JSON.stringify(metrics)}.`);
+  if (metrics.patternTransform !== 'none') {
+    throw new Error(`${faction} card-back pattern must not rely on a transformed HTML paint layer: ${JSON.stringify(metrics)}.`);
   }
-  const patternWindowDiagonal = Math.hypot(metrics.patternWindowWidth, metrics.patternWindowHeight);
-  if (Math.min(metrics.patternWidth, metrics.patternHeight) <= patternWindowDiagonal) {
-    throw new Error(`${faction} card-back tiling surface does not cover every rotated corner: ${JSON.stringify(metrics)}.`);
-  }
-  if (new Set(metrics.patternRowTransforms).size < 4) {
-    throw new Error(`${faction} card-back tiling no longer uses the interlocked four-phase lattice: ${JSON.stringify(metrics)}.`);
-  }
-  if (!Number.isFinite(metrics.symbolCellGap) || metrics.symbolCellGap > 3 || metrics.symbolBackground !== 'rgba(0, 0, 0, 0.42)') {
-    throw new Error(`${faction} card-back faction icons are not the approved dense dark pattern: ${JSON.stringify(metrics)}.`);
+  if (Math.abs(metrics.patternWidth - metrics.patternWindowWidth) > 0.25 || Math.abs(metrics.patternHeight - metrics.patternWindowHeight) > 0.25) {
+    throw new Error(`${faction} card-back pattern does not exactly cover its clipped window: ${JSON.stringify(metrics)}.`);
   }
   if (metrics.wordmarkBackground !== 'rgb(255, 249, 241)' || metrics.wordmarkHeight < 230 || metrics.wordmarkWidth > 66 || metrics.wordmarkHeight <= metrics.wordmarkWidth || metrics.wordmarkFrameClearance < 12) {
     throw new Error(`${faction} card-back wordmark changed from the approved warm-ivory treatment: ${JSON.stringify(metrics)}.`);

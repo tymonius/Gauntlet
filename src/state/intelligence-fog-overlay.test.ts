@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { GameState, PlayerID } from '../types';
+import type { GameState, PlayerID } from '../types/v06';
 import { applyGameAction } from './apply-fog-overlay';
 import { consumeFogOfWarOverlayAfterBattle, FOG_OF_WAR_OVERLAY } from './intelligence-fog-overlay';
 import { initializeGame } from './initialize';

@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const catalog = readFileSync("card-design/index.html", "utf8");
@@ -13,9 +13,15 @@ const cardRenderer = readFileSync("card-design/card-review-render.html", "utf8")
 const territoryRenderer = readFileSync("card-design/territory-review-render.html", "utf8");
 const cardLegacyAlias = readFileSync("card-design/card-print-render.html", "utf8");
 const componentLegacyAlias = readFileSync("card-design/component-print-render.html", "utf8");
-const componentLegacyJs = readFileSync("card-design/component-print-render.js", "utf8");
 const territoryLegacyAlias = readFileSync("card-design/territory-print-render.html", "utf8");
 const productionPrint = readFileSync("deckbuilder/production-print.js", "utf8");
+const cardReference = readFileSync("card-reference/app.js", "utf8");
+const playableRenderPage = readFileSync("card-design/card-review-render.html", "utf8");
+const territoryRenderPage = readFileSync("card-design/territory-review-render.html", "utf8");
+const legacyTtsPlayable = readFileSync("tts/renderer/index.html", "utf8");
+const legacyTtsTerritory = readFileSync("tts/territory-renderer/index.html", "utf8");
+const legacyTtsSupplemental = readFileSync("tts/supplemental-renderer/index.html", "utf8");
+const legacyTtsFinalized = readFileSync("tts/finalized-supplemental-renderer/index.html", "utf8");
 const ttsLeaders = readFileSync("scripts/generate-tts-leader-assets.mjs", "utf8");
 const ttsSupplementals = readFileSync("scripts/generate-tts-supplemental-assets.mjs", "utf8");
 
@@ -83,8 +89,36 @@ describe("single Card Design render authority", () => {
     expect(cardLegacyAlias).toContain("window.location.replace(target)");
     expect(componentLegacyAlias).toContain("window.location.replace(target)");
     expect(territoryLegacyAlias).toContain("window.location.replace(target)");
-    expect(componentLegacyJs).not.toContain("selectedCard");
-    expect(componentLegacyJs).not.toContain("applyCanonicalArtworkDirection");
+    expect(existsSync(["card-design", "component-print-render.js"].join("/"))).toBe(false);
+  });
+
+
+  it("removes internal consumers and parallel TTS face implementations", () => {
+    expect(cardReference).toContain("../card-design/component-render.html?");
+    expect(cardReference).not.toContain("component-print-render.html");
+
+    expect(playableRenderPage).toContain("/card-design/playable-card-renderer.css");
+    expect(playableRenderPage).not.toContain(["/tts", "renderer", "renderer.css"].join("/"));
+    expect(territoryRenderPage).toContain("/card-design/territory-card-renderer.css");
+    expect(territoryRenderPage).not.toContain(["/tts", "territory-renderer", "territory-renderer.css"].join("/"));
+
+    expect(legacyTtsPlayable).toContain("/card-design/card-review-render.html");
+    expect(legacyTtsTerritory).toContain("/card-design/territory-review-render.html");
+    expect(legacyTtsSupplemental).toContain("/card-design/component-render.html");
+    expect(legacyTtsFinalized).toContain("/card-design/component-render.html");
+
+    for (const obsolete of [
+      ["tts", "renderer", "renderer.js"].join("/"),
+      ["tts", "renderer", "renderer.css"].join("/"),
+      ["tts", "territory-renderer", "territory-renderer.js"].join("/"),
+      ["tts", "territory-renderer", "territory-renderer.css"].join("/"),
+      ["tts", "supplemental-renderer", "supplemental-renderer.js"].join("/"),
+      ["tts", "supplemental-renderer", "supplemental-renderer.css"].join("/"),
+      ["tts", "finalized-supplemental-renderer", "renderer.js"].join("/"),
+      ["tts", "finalized-supplemental-renderer", "renderer.css"].join("/"),
+    ]) {
+      expect(existsSync(obsolete)).toBe(false);
+    }
   });
 
   it("stops the final print package if any legacy card face survives direct production rendering", () => {

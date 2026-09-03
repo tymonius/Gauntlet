@@ -103,6 +103,7 @@ export interface V070BattleRuntimeView {
     V070BattleRuntime['gambitProhibitedPlayers'];
   finalJudgmentWindowOpen: boolean;
   relentlessPursuitWindowOpen: boolean;
+  guardiansWindowOpen: boolean;
   unsupportedEffects: V070UnsupportedBattleEffect[];
 }
 
@@ -165,6 +166,7 @@ export interface V070PlayerViewState {
   controlledTerritories: string[];
   assetLimit: number;
   military: V070GameState['players'][PlayerId]['military'];
+  mystics: V070GameState['players'][PlayerId]['mystics'];
   diplomats: V070GameState['players'][PlayerId]['diplomats'];
   inquisition: V070InquisitionView | null;
   financiers: V070FinancierView | null;
@@ -431,6 +433,7 @@ function viewPlayer(
     controlledTerritories: [...player.controlledTerritories],
     assetLimit: effectiveV070AssetLimit(state, playerId),
     military: player.military ? structuredClone(player.military) : null,
+    mystics: player.mystics ? structuredClone(player.mystics) : null,
     diplomats: player.diplomats ? structuredClone(player.diplomats) : null,
     inquisition: player.inquisition
       ? {
@@ -589,6 +592,7 @@ function viewBattleRuntime(
     finalJudgmentWindowOpen: runtime.finalJudgmentWindowOpen,
     relentlessPursuitWindowOpen:
       runtime.relentlessPursuitWindowOpen,
+    guardiansWindowOpen: runtime.guardiansWindowOpen,
     unsupportedEffects: runtime.unsupportedEffects.map(effect => structuredClone(effect)),
   };
 }

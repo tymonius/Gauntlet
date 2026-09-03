@@ -1,7 +1,9 @@
-import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
-import { dirname, extname, join, relative, resolve, sep } from 'node:path';
+import { access, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadCurrentGameAuthority } from './current-game-authority.mjs';
+import { resolveFirstArtwork } from '../card-design/card-artwork-resolver.js';
+import { resolveArtDirection } from '../game-data/art-direction.mjs';
 
 export const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 export const CURRENT_ALIAS_ROOT = join(ROOT, 'tts', 'generated', 'current');
@@ -25,7 +27,6 @@ export const PLAYABLE_BACK_FACTIONS = Object.freeze([
   'inquisition',
 ]);
 
-const ART_EXTENSIONS = new Set(['.png', '.webp', '.jpg', '.jpeg']);
 const CURRENT_GAME_SOURCE = 'game-data/current-game.json';
 const LIFECYCLE_SOURCE = 'config/release-lifecycle.json';
 const GITHUB_RELEASE_CONTRACT_SOURCE = 'config/github-release-contract.json';
@@ -152,7 +153,11 @@ export async function loadCurrentLeaders() {
       faction: factionId,
       factionLabel: leader.factionLabel || factionId,
       canonicalImage: leader.image || null,
-      artDirection: authority.artDirection?.[`${factionId}-${id}`] || authority.artDirection?.[id] || leader.artDirection || null,
+      artDirection: resolveArtDirection(
+        authority.visualPolicy,
+        authority.artDirection || {},
+        authority.artDirection?.[`${factionId}-${id}`] ? `${factionId}-${id}` : id,
+      ),
       source: CURRENT_GAME_SOURCE,
     }));
   }
@@ -211,49 +216,18 @@ function territoryFromCanonical(territory, source) {
   };
 }
 
-async function walkImages(directory, files = []) {
-  let entries;
+async function repositoryArtworkExists(source) {
+  const relativeSource = String(source || '').replace(/^\/+/, '');
+  if (!relativeSource) return false;
   try {
-    entries = await readdir(directory, { withFileTypes: true });
+    await access(join(ROOT, relativeSource));
+    return true;
   } catch (error) {
-    if (error.code === 'ENOENT') return files;
+    if (error?.code === 'ENOENT') return false;
     throw error;
   }
-
-  for (const entry of entries) {
-    const fullPath = join(directory, entry.name);
-    if (entry.isDirectory()) await walkImages(fullPath, files);
-    else if (ART_EXTENSIONS.has(extname(entry.name).toLowerCase())) files.push(fullPath);
-  }
-  return files;
 }
 
-function artworkKeys(file) {
-  const base = slugify(file.slice(0, -extname(file).length).split(sep).at(-1));
-  const keys = new Set([base]);
-  keys.add(base.replace(/-(?:alt|alternate|v\d+|\d+)$/, ''));
-  return [...keys].filter(Boolean);
-}
-
-async function buildArtworkIndex() {
-  const files = await walkImages(join(ROOT, 'images', 'artwork', 'cards'));
-  const index = new Map();
-  for (const file of files) {
-    for (const key of artworkKeys(file)) {
-      if (!index.has(key)) index.set(key, []);
-      index.get(key).push(file);
-    }
-  }
-  return index;
-}
-
-function chooseArtwork(card, artworkIndex) {
-  const matches = artworkIndex.get(slugify(card.name)) || [];
-  if (!matches.length) return null;
-  const factionFolder = `${sep}${card.faction}${sep}`;
-  const preferred = matches.find((path) => path.includes(factionFolder)) || matches[0];
-  return relative(ROOT, preferred).split(sep).join('/');
-}
 
 function stableCardSort(a, b) {
   const groupDifference = GROUP_ORDER.indexOf(a.faction) - GROUP_ORDER.indexOf(b.faction);
@@ -277,21 +251,20 @@ export async function buildCatalog() {
   const playableCards = gameplay.cards
     .map((card) => ({
       ...playableCardFromCanonical(card, CURRENT_GAME_SOURCE),
-      artDirection: artDirection[card.id] || card.artDirection || null,
+      artDirection: resolveArtDirection(authority.visualPolicy, artDirection, card.id),
     }))
     .sort(stableCardSort);
   const territories = gameplay.territories
     .map((territory) => ({
       ...territoryFromCanonical(territory, CURRENT_GAME_SOURCE),
-      artDirection: artDirection[territory.id] || territory.artDirection || null,
+      artDirection: resolveArtDirection(authority.visualPolicy, artDirection, territory.id),
     }))
     .sort((a, b) => a.name.localeCompare(b.name, 'en-US'));
 
-  const artworkIndex = await buildArtworkIndex();
-  const cardsWithArtwork = playableCards.map((card) => ({
+  const cardsWithArtwork = await Promise.all(playableCards.map(async (card) => ({
     ...card,
-    artwork: chooseArtwork(card, artworkIndex),
-  }));
+    artwork: await resolveFirstArtwork(card, card.faction, repositoryArtworkExists),
+  })));
 
   const ids = [...cardsWithArtwork, ...territories].map((item) => item.id);
   if (new Set(ids).size !== ids.length) throw new Error('Duplicate current-game component IDs detected.');

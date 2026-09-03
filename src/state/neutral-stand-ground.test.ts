@@ -8,7 +8,7 @@ import type {
   PendingMilitaryChoice,
   PlayerID,
   RecentBattleResult,
-} from '../types';
+} from '../types/v06';
 import { applyGameAction } from './apply-neutral';
 import { initializeGame } from './initialize';
 import { NO_MARTYRS } from './inquisition-no-martyrs';

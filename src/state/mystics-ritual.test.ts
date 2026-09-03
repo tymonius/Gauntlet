@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { GameState, MysticRiteId } from '../types';
+import type { GameState, MysticRiteId } from '../types/v06';
 import { initializeGame } from './initialize';
 import {
   beginRiteOfBlood,

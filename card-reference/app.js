@@ -1,6 +1,6 @@
+import { PRODUCTION_SURFACES } from '../card-design/production-surface.mjs';
+
 const RULEBOOK_URL = '../rulebook/';
-const CARD_RENDER_WIDTH = 240;
-const CARD_RENDER_HEIGHT = 336;
 const CARD_RENDER_MAX_WIDTH = 420;
 
 const FACTION_LABELS = {
@@ -244,7 +244,7 @@ function linkedComponentData(component, currentGame) {
 
 function buildComponentRendererUrl(kind, id, side = 'front') {
   const params = new URLSearchParams({ kind, id, side });
-  return `../card-design/component-print-render.html?${params.toString()}`;
+  return `../card-design/component-render.html?${params.toString()}`;
 }
 
 function normalizeEffects(effects, unlabeledName = 'Text') {
@@ -514,11 +514,16 @@ function scaleRenderStage(stage) {
   const frame = stage.querySelector('.rendered-card-frame');
   if (!frame) return;
 
+  const surface = frame.src.includes('/card-design/territory-review-render.html')
+    ? PRODUCTION_SURFACES.landscape
+    : PRODUCTION_SURFACES.portrait;
   const availableWidth = Math.max(0, stage.clientWidth);
-  const targetWidth = Math.min(CARD_RENDER_MAX_WIDTH, availableWidth || CARD_RENDER_WIDTH);
-  const scale = targetWidth / CARD_RENDER_WIDTH;
+  const targetWidth = Math.min(CARD_RENDER_MAX_WIDTH, availableWidth || surface.widthCssPx);
+  const scale = targetWidth / surface.widthCssPx;
 
-  stage.style.height = `${CARD_RENDER_HEIGHT * scale}px`;
+  frame.style.width = `${surface.widthCssPx}px`;
+  frame.style.height = `${surface.heightCssPx}px`;
+  stage.style.height = `${surface.heightCssPx * scale}px`;
   frame.style.transform = `translateX(-50%) scale(${scale})`;
 }
 

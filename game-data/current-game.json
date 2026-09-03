@@ -23,6 +23,15 @@
       "mysticsRites": "/docs/v0.7.1-mystics-rites.json"
     }
   },
+  "visualPolicy": {
+    "artDirectionDefault": {
+      "fit": "cover",
+      "focusX": null,
+      "focusY": null,
+      "smart": true,
+      "zoom": 1
+    }
+  },
   "gameplay": {
     "deck_construction": {
       "maximum_deckbuilding_value": 60,

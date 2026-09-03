@@ -78,13 +78,16 @@
     await waitFor(() => Boolean(interior?.style.getPropertyValue('--art-height')), RENDER_TIMEOUT_MS);
     await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     fitForTts(element);
-    if (card.artDirection && Object.keys(card.artDirection).length) {
-      window.GauntletArtworkCrop?.apply(
-        artImage,
-        card.artDirection,
-        { id: card.id, label: card.name },
-      );
+    if (!card.artDirection || typeof card.artDirection !== 'object') {
+      throw new Error(`Canonical artwork direction is missing for ${card.id}.`);
     }
+    const cropResult = window.GauntletArtworkCrop?.apply(
+      artImage,
+      card.artDirection,
+      { id: card.id, label: card.name },
+    );
+    if (!cropResult) throw new Error(`Canonical artwork direction failed for ${card.id}.`);
+    element.dataset.artDirectionApplied = card.id;
 
     if (typeof window.GAUNTLET_RENDER_FINALIZE === 'function') {
       try {

@@ -5,7 +5,7 @@ const deckbuilderHtml = readFileSync("deckbuilder/index.html", "utf8");
 const playableRender = readFileSync("card-design/card-review-render.html", "utf8");
 const playableRenderJs = readFileSync("card-design/card-review-render.js", "utf8");
 const printArtworkNormalizer = readFileSync("card-design/print-artwork-normalizer.js", "utf8");
-const playableRendererJs = readFileSync("tts/renderer/renderer.js", "utf8");
+const playableRendererJs = readFileSync("card-design/playable-card-renderer.js", "utf8");
 const playableLegacyAlias = readFileSync("card-design/card-print-render.html", "utf8");
 const componentRenderHtml = readFileSync("card-design/component-render.html", "utf8");
 const componentLegacyAlias = readFileSync("card-design/component-print-render.html", "utf8");
@@ -13,8 +13,10 @@ const componentRenderJs = readFileSync("card-design/component-render.js", "utf8"
 const supplementalRenderer = readFileSync("card-design/supplemental-card.js", "utf8");
 const territoryRender = readFileSync("card-design/territory-review-render.html", "utf8");
 const territoryLegacyAlias = readFileSync("card-design/territory-print-render.html", "utf8");
-const backRender = readFileSync("tts/back-renderer/index.html", "utf8");
+const backRender = readFileSync("card-design/card-back-render.html", "utf8");
 const cardBackCss = readFileSync("card-design/card-back.css", "utf8");
+const cardBackJs = readFileSync("card-design/card-back.js", "utf8");
+const cardBackPattern = readFileSync("card-design/card-back-pattern.svg", "utf8");
 const printTransform = readFileSync("deckbuilder/production-print.js", "utf8");
 const supplementalPrintTransform = readFileSync("deckbuilder/print-capital-ledger.js", "utf8");
 const cardBackPolicy = readFileSync("deckbuilder/card-back-preview.js", "utf8");
@@ -98,12 +100,12 @@ describe("Deckbuilder production printing", () => {
     expect(printTransform).toContain('return "intelligence";');
     expect(printTransform).toContain('String(deckState().factionId || "intelligence")');
     expect(printTransform).toContain('production-standard-back');
-    expect(printTransform).toContain('/tts/back-renderer/index.html?faction=');
-    expect(printTransform).toContain('wrapper.dataset.productionInlineBack = "true"');
-    expect(printTransform).toContain('back.dataset.gauntletCardBack = ""');
-    expect(printTransform).toContain('stylesheet.href = "/card-design/card-back.css"');
-    expect(printTransform).toContain('script.src = "/card-design/card-back.js"');
-    expect(printTransform).not.toContain('frame.className = "production-back-frame"');
+    expect(printTransform).toContain('/card-design/card-back-render.html?faction=');
+    expect(printTransform).toContain('frame.className = "production-back-frame"');
+    expect(printTransform).toContain('frame.dataset.productionRenderKind = "back"');
+    expect(printTransform).toContain('frame.src = productionBackSource(faction, 180)');
+    expect(printTransform).not.toContain('data-production-inline-back');
+    expect(printTransform).not.toContain('installInlineCardBackRenderer');
     expect(cardBackPolicy).toContain('Automatic backs: black for playable cards and Territories');
     expect(cardBackPolicy).not.toContain("window.open");
     expect(cardBackPolicy).not.toContain("document.write");
@@ -129,6 +131,26 @@ describe("Deckbuilder production printing", () => {
     expect(currentGameLoader).toContain("if (bridged) return bridged;");
   });
 
+  it("flattens the dense faction-symbol pattern into one vector paint surface", () => {
+    expect(cardBackJs).toContain('/card-design/card-back-pattern.svg');
+    expect(cardBackJs).not.toContain('PATTERN_ROWS');
+    expect(cardBackJs).not.toContain('gauntlet-card-back__symbol');
+    expect(cardBackCss).not.toContain('-webkit-mask: var(--card-back-symbol)');
+    expect(cardBackPattern).toContain('<use href="#military"');
+    expect(cardBackPattern).toContain('<use href="#inquisition"');
+  });
+
+  it("isolates card backs from mixed-surface print compositing at page boundaries", () => {
+    expect(cardBackCss).toContain("contain: paint;");
+    expect(cardBackCss).toContain("clip-path: inset(0 round 0.125in);");
+    expect(cardBackCss).toContain("clip-path: inset(0 round 0.055in);");
+    expect(cardBackCss).toContain("mix-blend-mode: normal;");
+    expect(printTransform).toContain("break-inside: avoid-page !important;");
+    expect(printTransform).toContain("page-break-inside: avoid !important;");
+    expect(printTransform).toContain("clip-path: inset(0);");
+    expect(printTransform).toContain("isolation: isolate;");
+  });
+
   it("keeps duplex orientation and production-render readiness safeguards", () => {
     expect(printTransform).toContain('mirrorIndexForLongEdge(frontIndex)');
     expect(printTransform).toContain('transform: rotate(90deg);');
@@ -139,9 +161,9 @@ describe("Deckbuilder production printing", () => {
     expect(cardBackCss).toContain('transform: translate(-50%, -50%) rotate(90deg);');
     expect(backRender).toContain("params.get('rotation') === '180'");
     expect(printTransform).toContain("await Promise.all(frames.map(waitForFrame))");
-    expect(printTransform).toContain("inlineBacks.some(back => !back.querySelector('.gauntlet-card-back__frame'))");
+    expect(printTransform).toContain("frame.dataset.productionRenderKind === 'back'");
+    expect(printTransform).toContain("doc.querySelector('.gauntlet-card-back__frame')");
     expect(printTransform).toContain("Printing was stopped so the Deck is not printed with incomplete cards");
-    expect(printTransform).toContain("Printing was stopped so the Deck is not printed with incomplete backs");
   });
 
   it("isolates standalone supplemental production renders and their reference-source loading", () => {

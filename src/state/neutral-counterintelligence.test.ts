@@ -6,7 +6,7 @@ import type {
   BattlePlayedCard,
   GameState,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import { applyGameAction } from './apply-neutral';
 import { applyConfessionAction, CONFESSION } from './inquisition-confession';
 import { applyBurningAtTheStakeAction, BURNING_AT_THE_STAKE } from './inquisition-burning-at-the-stake';

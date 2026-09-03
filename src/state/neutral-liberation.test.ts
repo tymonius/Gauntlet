@@ -5,7 +5,7 @@ import type {
   BattleState,
   GameState,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import { applyGameAction } from './apply-neutral';
 import { initializeGame } from './initialize';
 import { LIBERATION } from './neutral-liberation';

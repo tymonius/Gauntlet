@@ -1,31 +1,19 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-8YYYZJGGPE');
-  </script>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
-  <title>Gauntlet TTS Territory Renderer</title>
-  <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
-  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
-  <link rel="preconnect" href="https://use.typekit.net">
-  <link rel="preconnect" href="https://p.typekit.net" crossorigin>
-  <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css">
-  <link rel="stylesheet" href="/design-tokens.css">
-  <link rel="stylesheet" href="/tts/territory-renderer/territory-renderer.css">
+  <title>Gauntlet Territory renderer redirect</title>
+  <script>
+    (() => {
+      const target = new URL("/card-design/territory-review-render.html", window.location.origin);
+      for (const [key, value] of new URLSearchParams(window.location.search)) {
+        target.searchParams.append(key, value);
+      }
+      target.hash = window.location.hash;
+      window.location.replace(target);
+    })();
+  </script>
 </head>
-<body>
-  <main id="renderTarget" aria-live="polite"></main>
-  <script src="/tts/generated/current/catalog.js"></script>
-  <script src="/tts/artwork-crop.js"></script>
-  <script src="/tts/territory-renderer/territory-renderer.js"></script>
-</body>
+<body></body>
 </html>

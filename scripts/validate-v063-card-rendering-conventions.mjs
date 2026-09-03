@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 
-const rendererPath = process.env.V063_CARD_RENDERER ?? 'tts/renderer/renderer.js';
+const rendererPath = process.env.V063_CARD_RENDERER ?? 'card-design/playable-card-renderer.js';
 const source = readFileSync(rendererPath, 'utf8');
 
 const match = source.match(/const COMPACT_INSTRUCTION_PATTERN = (\/.*\/g);/);

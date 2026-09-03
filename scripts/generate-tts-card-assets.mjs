@@ -116,7 +116,7 @@ async function validateRenderedCard(page, card) {
 
 async function renderProductionBack(page, baseUrl, outputRoot, faction) {
   await page.setViewportSize({ width: 520, height: 700 });
-  await page.goto(`${baseUrl}/tts/back-renderer/?faction=${encodeURIComponent(faction)}`, { waitUntil: 'load' });
+  await page.goto(`${baseUrl}/card-design/card-back-render.html?faction=${encodeURIComponent(faction)}`, { waitUntil: 'load' });
   const back = page.locator('.gauntlet-card-back');
   await back.waitFor();
   await page.waitForFunction(
@@ -130,20 +130,36 @@ async function renderProductionBack(page, baseUrl, outputRoot, faction) {
     const wordmark = element.querySelector('.gauntlet-card-back__wordmark');
     const pattern = element.querySelector('.gauntlet-card-back__pattern');
     const wordmarkStyle = wordmark ? getComputedStyle(wordmark) : null;
+    const patternRect = pattern?.getBoundingClientRect();
     return {
       width: rect.width,
       height: rect.height,
       faction: element.dataset.cardBackFaction,
       wordmarkMask: wordmarkStyle ? (wordmarkStyle.maskImage || wordmarkStyle.webkitMaskImage) : 'none',
       patternTransform: pattern ? getComputedStyle(pattern).transform : 'none',
+      patternSource: pattern?.currentSrc || pattern?.src || '',
+      patternComplete: Boolean(pattern?.complete),
+      patternNaturalWidth: Number(pattern?.naturalWidth || 0),
+      patternNaturalHeight: Number(pattern?.naturalHeight || 0),
+      patternWidth: patternRect?.width || 0,
+      patternHeight: patternRect?.height || 0,
     };
   });
 
   if (metrics.faction !== faction || Math.abs(metrics.width - CSS_CARD_WIDTH) > 0.25 || Math.abs(metrics.height - CSS_CARD_HEIGHT) > 0.25) {
     throw new Error(`Production ${faction} back rendered with unexpected geometry: ${JSON.stringify(metrics)}.`);
   }
-  if (metrics.wordmarkMask === 'none' || metrics.patternTransform === 'none') {
-    throw new Error(`Production ${faction} back did not load the shared wordmark/pattern treatment.`);
+  if (
+    metrics.wordmarkMask === 'none'
+    || !metrics.patternComplete
+    || metrics.patternNaturalWidth <= 0
+    || metrics.patternNaturalHeight <= 0
+    || !metrics.patternSource.includes('/card-design/card-back-pattern.svg')
+    || metrics.patternTransform !== 'none'
+    || Math.abs(metrics.patternWidth - (CSS_CARD_WIDTH - 16.4)) > 0.5
+    || Math.abs(metrics.patternHeight - (CSS_CARD_HEIGHT - 16.4)) > 0.5
+  ) {
+    throw new Error(`Production ${faction} back did not load the flattened shared wordmark/pattern treatment: ${JSON.stringify(metrics)}.`);
   }
 
   const file = `backs/${faction}.png`;

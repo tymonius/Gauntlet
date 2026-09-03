@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { BattleParticipantState, BattlePlayedCard, BattleState, GameState, PlayerID } from '../types';
+import type { BattleParticipantState, BattlePlayedCard, BattleState, GameState, PlayerID } from '../types/v06';
 import { buildPendingInquisitionOptions } from '../dev/inquisition-options';
 import { applyGameAction } from './apply-inquisition';
 import { initializeGame } from './initialize';

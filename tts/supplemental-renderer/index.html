@@ -2,31 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
-  <title>Gauntlet TTS Supplemental Renderer</title>
-  <!-- Match the Card Review catalog's production component stylesheet stack.
-       leader-card.css owns the shared .faction-component-card variables used by
-       Leaders, trackers, and faction references; omitting it changes parchment
-       tint, footer tint, accent ink, and faction-symbol resolution. -->
-  <link rel="preconnect" href="https://use.typekit.net">
-  <link rel="preconnect" href="https://p.typekit.net" crossorigin>
-  <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css">
-  <link rel="stylesheet" href="/design-tokens.css">
-  <link rel="stylesheet" href="/card-design/card-design.css">
-  <link rel="stylesheet" href="/card-design/faction-specimens.css">
-  <link rel="stylesheet" href="/card-design/leader-card.css">
-  <link rel="stylesheet" href="/tts/supplemental-renderer/supplemental-renderer.css">
-  <link rel="stylesheet" href="/card-design/reference-card.css">
-  <link rel="stylesheet" href="/card-design/supplemental-refinements.css">
-  <link rel="stylesheet" href="/card-design/universal-reference.css">
-  <link rel="stylesheet" href="/tts/supplemental-renderer/gauntlet-emblem.css">
-  <style>
-    *{box-sizing:border-box}html,body{margin:0;background:transparent}body{min-width:0}
-  </style>
+  <title>Gauntlet supplemental renderer redirect</title>
+  <script>(() => {
+      const params = new URLSearchParams(window.location.search);
+      const component = String(params.get('component') || '').trim();
+      const side = String(params.get('side') || 'front').trim();
+      let kind = '';
+      let id = component;
+      if (component.startsWith('mystics-rite-')) {
+        kind = 'rite';
+        id = component.replace(/^mystics-rite-/, '');
+      } else if (component.endsWith('-reference') || component === 'universal-reference') {
+        kind = 'reference';
+      }
+      if (!kind || !id) {
+        document.documentElement.dataset.redirectError = 'unsupported-component';
+        return;
+      }
+      const target = new URL('/card-design/component-render.html', window.location.origin);
+      target.searchParams.set('kind', kind);
+      target.searchParams.set('id', id);
+      target.searchParams.set('side', side);
+      target.searchParams.set('orientation', 'portrait');
+      window.location.replace(target);
+    })();</script>
 </head>
-<body class="faction-specimen-page">
-  <main id="renderTarget"></main>
-  <script type="module" src="/tts/supplemental-renderer/supplemental-renderer.js"></script>
-</body>
+<body></body>
 </html>

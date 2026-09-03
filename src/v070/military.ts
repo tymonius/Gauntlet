@@ -67,6 +67,42 @@ export function spendV070MilitaryCommand(
   military.command -= amount;
 }
 
+export function gainV070MilitaryCommandFromEffect(
+  state: V070GameState,
+  playerId: PlayerId,
+  amount: number,
+  reason: string,
+  sourceInstanceId?: string,
+): void {
+  const military = state.players[playerId]?.military;
+  if (!military) return;
+  if (!Number.isInteger(amount) || amount < 1) {
+    throw new V070GameActionError(
+      'Military effect Command gains must be positive integers.',
+    );
+  }
+
+  const before = military.command;
+  military.command = Math.min(
+    V070_MILITARY_COMMAND_MAX,
+    military.command + amount,
+  );
+
+  appendV070Event(state, {
+    type: 'military_command_gained',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      amount: military.command - before,
+      balance: military.command,
+      capped: military.command - before < amount,
+      turnNumber: state.turnNumber,
+      reason,
+      sourceInstanceId,
+    },
+  });
+}
+
 export function useV070GeneralOnward(
   state: V070GameState,
   playerId: PlayerId,
@@ -332,6 +368,14 @@ function appendOrderEvent(
   cost: number,
   details: Record<string, unknown>,
 ): void {
+  const runtime = state.battleRuntime;
+  if (state.battle
+    && runtime
+    && runtime.stage !== 'aftermath'
+    && !runtime.militaryOrderUsedPlayers.includes(playerId)) {
+    runtime.militaryOrderUsedPlayers.push(playerId);
+  }
+
   appendV070Event(state, {
     type: 'military_order_used',
     actor: playerId,

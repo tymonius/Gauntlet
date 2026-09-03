@@ -89,7 +89,17 @@ function brandV070ProductionSurface() {
     let branded = source
       .replace(/0\.(?:6\.3|7\.0)/g, '0.7.1')
       .replace(/First Playtest Revision/g, RELEASE_NAME);
-    if (surface === PRODUCTION_HTML_PATH) branded = applyCurrentBackCoverPublishing(branded);
+    if (surface === PRODUCTION_HTML_PATH) {
+      branded = applyCurrentBackCoverPublishing(branded);
+      const productionStylesheet = '<link rel="stylesheet" href="production.css" />';
+      if (!branded.includes(productionStylesheet)) {
+        throw new Error('v0.7.1 Rulebook production surface is missing the shared production stylesheet.');
+      }
+      branded = branded.replace(
+        productionStylesheet,
+        `${productionStylesheet}\n<link rel="stylesheet" href="v071-publication.css" />`,
+      );
+    }
     if (/0\.(?:6\.3|7\.0)/.test(branded)) {
       throw new Error(`v0.7.1 Rulebook production surface still contains prior-release branding: ${relative(surface)}.`);
     }

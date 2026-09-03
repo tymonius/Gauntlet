@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { BattleState, GameState } from '../types';
+import type { BattleState, GameState } from '../types/v06';
 import { EffectRegistry, totalModifiersFor } from './registry';
 import {
   fortificationsAssetHandler,

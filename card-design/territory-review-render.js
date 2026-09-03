@@ -1,4 +1,4 @@
-import { loadCurrentGame } from '../game-data/current-game.mjs';
+import { loadRenderContext } from './render-context.mjs';
 
 await (async () => {
   const params = new URLSearchParams(window.location.search);
@@ -84,7 +84,8 @@ await (async () => {
 
   try {
     if (!territoryId) throw new Error('No Territory selected.');
-    const currentGame = await loadCurrentGame();
+    const renderContext = await loadRenderContext();
+    const currentGame = renderContext.game;
     const territory = currentGame.findTerritory(territoryId);
     if (!territory) throw new Error(`Unknown current Territory: ${territoryId}`);
 
@@ -98,7 +99,7 @@ await (async () => {
       status: territory.status || 'Current candidate',
       text: String(territory.text || '').trim(),
       source: currentGame.authorityUrl,
-      artDirection: currentGame.artDirectionFor(territory.id) || territory.artDirection,
+      artDirection: renderContext.artDirectionFor(territory.id),
     };
     window.GAUNTLET_TTS_CATALOG = {
       schemaVersion: 1,
@@ -108,8 +109,8 @@ await (async () => {
     };
     window.GAUNTLET_ART_DIRECTION = currentGame.artDirection;
 
-    await loadScript('/tts/artwork-crop.js');
-    await loadScript('/tts/territory-renderer/territory-renderer.js');
+    await loadScript('/card-design/artwork-crop.js');
+    await loadScript('/card-design/territory-card-renderer.js');
 
     if (document.readyState === 'complete') window.dispatchEvent(new Event('load'));
     await waitFor(() => document.body.dataset.renderReady === 'true');
