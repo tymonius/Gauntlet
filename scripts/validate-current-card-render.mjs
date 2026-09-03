@@ -106,7 +106,7 @@ async function main() {
 
     for (const sourceCard of source.cards) {
       const page = await context.newPage();
-      await page.goto(`${baseUrl}/card-design/card-review-render.html?fit=production&card=${encodeURIComponent(sourceCard.id)}`, { waitUntil: 'load' });
+      await page.goto(`${baseUrl}/card-design/face-render.html?id=${encodeURIComponent(`card:${sourceCard.id}`)}`, { waitUntil: 'load' });
       await page.waitForSelector('.gauntlet-card');
       await page.waitForFunction(() => document.body.dataset.renderReady === 'true');
       await page.evaluate(async () => document.fonts?.ready);
