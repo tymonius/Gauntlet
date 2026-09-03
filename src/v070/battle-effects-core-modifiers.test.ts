@@ -549,6 +549,7 @@ describe('v0.7.0 core battle-effect modifiers', () => {
         owner: 'A',
         sourceInstanceId: circle,
         sourceCardId: 'mystics-circle-of-bones',
+        territoryInstanceId: contestedTerritoryInstanceId,
         condition: 'always',
       });
 
@@ -784,6 +785,117 @@ describe('v0.7.0 core battle-effect modifiers', () => {
     )).toBe(false);
     expect(defenderState.players.B.zones.graveyard)
       .toContain(manifestDefender);
+  });
+
+  test('same-owner Aftermath transforms use player-selected order and stable Territory identity', () => {
+    let state = startBattle();
+    const contestedTerritoryInstanceId =
+      state.board.find(
+        space => space.position === state.battle!.contestedPosition,
+      )!.territoryInstanceId;
+    const circle = injectHandCard(
+      state,
+      'A',
+      'mystics-circle-of-bones',
+      'shared-timing-circle',
+    );
+
+    state = revealGambits(state, circle);
+
+    const manifest =
+      'core-effect-A-shared-timing-manifest-neutral-manifest-destiny';
+    state.cardInstances[manifest] = {
+      instanceId: manifest,
+      cardId: 'neutral-manifest-destiny',
+      owner: 'A',
+    };
+    state.battleRuntime!.participants.A.reserve.push(manifest);
+
+    state = reduceV070BattleAction(state, {
+      type: 'choose_tactic',
+      playerId: 'A',
+      cardInstanceId: manifest,
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'choose_tactic',
+      playerId: 'B',
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'reveal_tactics',
+      playerId: 'A',
+    });
+
+    expect(state.battleRuntime?.unsupportedEffects).toEqual([]);
+    expect(state.battleRuntime?.battleCardAftermathOverlayPlacements)
+      .toContainEqual(expect.objectContaining({
+        sourceInstanceId: circle,
+        territoryInstanceId: contestedTerritoryInstanceId,
+      }));
+    expect(state.battleRuntime?.battleCardAftermathTerritoryInsertions)
+      .toContainEqual(expect.objectContaining({
+        sourceInstanceId: manifest,
+      }));
+
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice',
+      playerId: 'A',
+      values: [6],
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice',
+      playerId: 'B',
+      values: [1],
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'complete_aftermath',
+      playerId: 'A',
+    });
+
+    expect(
+      state.battleRuntime?.pendingBattleAftermathControlledEffectChoice,
+    ).toEqual({
+      playerId: 'A',
+      candidateSourceInstanceIds:
+        expect.arrayContaining([circle, manifest]),
+      immediateWinner: null,
+    });
+
+    state = reduceV070BattleAction(state, {
+      type: 'resolve_battle_aftermath_controlled_effect',
+      playerId: 'A',
+      sourceInstanceId: manifest,
+    });
+
+    const inserted = state.board.find(
+      space => space.territoryInstanceId === manifest,
+    );
+    const contested = state.board.find(
+      space =>
+        space.territoryInstanceId === contestedTerritoryInstanceId,
+    );
+    const circleOverlay = state.overlays.find(
+      overlay => overlay.instanceId === circle,
+    );
+
+    expect(inserted).toEqual(expect.objectContaining({
+      position: 3,
+      territoryId: 'neutral-manifest-destiny',
+      controller: 'A',
+      blank: true,
+    }));
+    expect(contested).toEqual(expect.objectContaining({
+      position: 4,
+      occupant: 'A',
+    }));
+    expect(state.players.A.position).toBe(4);
+    expect(circleOverlay).toEqual(expect.objectContaining({
+      territoryInstanceId: contestedTerritoryInstanceId,
+    }));
+    expect(circleOverlay?.territoryInstanceId).not.toBe(
+      inserted?.territoryInstanceId,
+    );
+    expect(state.battle).toBeNull();
+    expect(state.battleRuntime).toBeNull();
   });
 
   test('Pathfinders gains +1 only when the contested Territory has an active printed effect', () => {
