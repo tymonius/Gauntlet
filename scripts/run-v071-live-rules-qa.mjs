@@ -6,9 +6,10 @@ const endpoint = process.env.GAUNTLET_RULES_QA_ENDPOINT
 const benchmarkPath = resolve("rules-assistant/evals/rules-arbiter-evals.v071.json");
 const outputPath = resolve(process.env.GAUNTLET_RULES_QA_OUTPUT
   || "artifacts/rules-qa/v071-live-answer-run.json");
-const concurrency = Math.max(1, Math.min(Number(process.env.GAUNTLET_RULES_QA_CONCURRENCY) || 2, 8));
+const concurrency = Math.max(1, Math.min(Number(process.env.GAUNTLET_RULES_QA_CONCURRENCY) || 1, 8));
 const requestTimeoutMs = Math.max(5000, Number(process.env.GAUNTLET_RULES_QA_TIMEOUT_MS) || 45000);
 const maxAttempts = Math.max(1, Math.min(Number(process.env.GAUNTLET_RULES_QA_MAX_ATTEMPTS) || 5, 8));
+const interCaseDelayMs = Math.max(0, Number(process.env.GAUNTLET_RULES_QA_INTER_CASE_DELAY_MS) || 500);
 const retryableStatuses = new Set([429, 502, 503, 504]);
 
 const benchmark = JSON.parse(readFileSync(benchmarkPath, "utf8"));
@@ -143,6 +144,40 @@ async function requestAttempt(body) {
   }
 }
 
+async function runInfrastructurePreflight() {
+  const item = benchmark.cases[0];
+  const body = {
+    question: item.question,
+    history: Array.isArray(item.history) ? item.history : [],
+    sessionId: "qa_v071_preflight_" + runStamp,
+    rulesVersion: benchmark.rulesVersion
+  };
+
+  let last = null;
+  const attempts = Math.min(maxAttempts, 3);
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    last = await requestAttempt(body);
+    if (last.response?.ok && last.payload) return null;
+
+    if (attempt < attempts) {
+      const delayMs = 2000 * attempt;
+      console.log(
+        "PREFLIGHT RETRY " + attempt + "/" + attempts + " after "
+        + (last.response?.status ? "HTTP " + last.response.status : (last.error?.name || "request error"))
+        + " (" + delayMs + " ms)"
+      );
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+  }
+
+  return {
+    httpStatus: last?.response?.status || null,
+    errorCode: last?.payload?.errorCode || null,
+    error: last?.payload?.error || last?.error?.message || "Unknown production endpoint failure",
+    rawResponse: last?.payload ? null : String(last?.responseText || "").slice(0, 4000)
+  };
+}
+
 async function postCase(item, index) {
   const sessionId = "qa_v071_" + String(index + 1).padStart(3, "0") + "_" + runStamp;
   const body = {
@@ -237,11 +272,51 @@ async function runPool(items) {
       const status = results[index].failures.length ? "FAIL" : "PASS";
       console.log(status + " " + String(index + 1).padStart(3, "0") + "/" + items.length + " " + items[index].id + " (" + results[index].latencyMs + " ms)");
       for (const failure of results[index].failures) console.log("  - " + failure);
+      if (interCaseDelayMs > 0 && next < items.length) {
+        await new Promise((resolve) => setTimeout(resolve, interCaseDelayMs));
+      }
     }
   }
 
   await Promise.all(Array.from({ length: concurrency }, () => worker()));
   return results;
+}
+
+const infrastructureFailure = await runInfrastructurePreflight();
+if (infrastructureFailure) {
+  const report = {
+    schema: "gauntlet.rules-arbiter-live-qa.v1",
+    rulesVersion: benchmark.rulesVersion,
+    endpoint,
+    startedAt,
+    completedAt: new Date().toISOString(),
+    concurrency,
+    maxAttempts,
+    interCaseDelayMs,
+    infrastructureFailure,
+    summary: {
+      total: benchmark.cases.length,
+      attempted: 0,
+      passed: 0,
+      failed: 0,
+      warned: 0,
+      passRate: null,
+      benchmarkStatus: "not_run",
+      classifications: {}
+    },
+    results: []
+  };
+
+  mkdirSync(dirname(outputPath), { recursive: true });
+  writeFileSync(outputPath, JSON.stringify(report, null, 2) + "\n");
+  console.error(
+    "\nLive Rules Arbiter QA benchmark was not run because the production endpoint failed preflight."
+    + "\nHTTP status: " + (infrastructureFailure.httpStatus ?? "none")
+    + "\nError code: " + (infrastructureFailure.errorCode || "unavailable")
+    + "\nError: " + infrastructureFailure.error
+  );
+  console.log("Report: " + outputPath);
+  process.exit(1);
 }
 
 const results = await runPool(benchmark.cases);
@@ -261,6 +336,8 @@ const report = {
   completedAt: new Date().toISOString(),
   concurrency,
   maxAttempts,
+  interCaseDelayMs,
+  infrastructureFailure: null,
   summary: {
     total: results.length,
     passed: results.length - failed.length,
