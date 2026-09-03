@@ -197,6 +197,9 @@ export interface V070BattleRuntime {
   unbrokenRanksInstanceIds: string[];
   counterattackAtOnset: boolean;
   footholdBattleInstanceIds: string[];
+  footholdAssetWindowPlayer: PlayerId | null;
+  footholdAssetEligibleInstanceIds: string[];
+  footholdAssetWindowResolved: boolean;
   battleCardBankOnWinInstanceIds: string[];
   pendingGameVictory: {
     winner: PlayerId;
@@ -277,6 +280,9 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     unbrokenRanksInstanceIds: [],
     counterattackAtOnset: false,
     footholdBattleInstanceIds: [],
+    footholdAssetWindowPlayer: null,
+    footholdAssetEligibleInstanceIds: [],
+    footholdAssetWindowResolved: false,
     battleCardBankOnWinInstanceIds: [],
     pendingGameVictory: null,
     activeOverlayAtOnset: null,
