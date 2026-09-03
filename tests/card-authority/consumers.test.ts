@@ -1,15 +1,20 @@
 import { describe, expect, it } from 'vitest';
 import {
-  CARD_AUTHORITY_CONSUMERS,
+  discoverPhysicalFaceConsumers,
   validateConsumerContract,
   validateConsumerSource,
 } from '../../scripts/card-authority/validate-consumers.mjs';
 
 describe('canonical physical-face consumers', () => {
-  it('routes every declared live consumer through face-render.html with canonical identity only', async () => {
+  it('discovers live physical-face consumers and routes all of them through face-render.html with canonical identity only', async () => {
+    const discovered = await discoverPhysicalFaceConsumers();
     const summary = await validateConsumerContract();
-    expect(summary.consumers).toBe(CARD_AUTHORITY_CONSUMERS.length);
+
+    expect(summary.consumers).toBe(discovered.length);
     expect(summary.routes).toBeGreaterThanOrEqual(summary.consumers);
+    expect(summary.paths).toContain('homepage-card-showcase.js');
+    expect(summary.paths).toContain('deckbuilder/production-print.js');
+    expect(summary.paths).toContain('card-reference/app.js');
   });
 
   it('rejects caller-selected renderer behavior', () => {
@@ -24,5 +29,12 @@ describe('canonical physical-face consumers', () => {
       'synthetic-consumer.js',
       "const next = '/card-design/face-render.html?id=card:test'; const old = '/card-design/card-review-render.html?card=test';",
     )).toThrow(/retired renderer route/);
+  });
+
+  it('rejects the retired homepage showcase shim that escaped the Stage 6 cutover', () => {
+    expect(() => validateConsumerSource(
+      'synthetic-homepage.js',
+      "frame.src = '/card-design/card-showcase-embed.html?card=test&fit=production&releaseTarget=tts';",
+    )).toThrow(/retired renderer route card-showcase-embed\.html/);
   });
 });
