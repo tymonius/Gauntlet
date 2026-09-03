@@ -95,10 +95,37 @@ footer {
   background: rgba(255, 250, 240, 0.92);
   box-shadow: var(--shadow);
 }
+.arbiter-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(250px, .92fr);
+  gap: clamp(14px, 2.5vw, 30px);
+  align-items: end;
+  margin-bottom: 1.35rem;
+}
+.arbiter-intro__copy { min-width: 0; }
 .arbiter-panel h1 {
   margin: 0 0 18px;
   font: 500 clamp(3rem, 7vw, 6rem)/.92 var(--serif);
   letter-spacing: -.045em;
+}
+.arbiter-voice {
+  max-width: 36rem;
+  margin: 1rem 0 0;
+  color: #4b4339;
+  font: italic 1.02rem/1.55 var(--reading);
+}
+.arbiter-portrait {
+  margin: -12px -16px -4px 0;
+  display: flex;
+  align-self: end;
+  justify-content: center;
+  pointer-events: none;
+}
+.arbiter-portrait img {
+  display: block;
+  width: min(100%, 390px);
+  height: auto;
+  filter: drop-shadow(0 14px 20px rgba(41, 30, 16, .18));
 }
 .eyebrow {
   margin: 0 0 14px;
@@ -177,6 +204,15 @@ footer strong { color: var(--ink); }
   .arbiter-header nav { gap: 12px 18px; }
   .arbiter-shell { grid-template-columns: 1fr; }
   .authority-card { order: -1; }
+}
+
+@media (max-width: 720px) {
+  .arbiter-intro { grid-template-columns: 1fr; }
+  .arbiter-portrait {
+    width: min(100%, 560px);
+    margin: -.35rem auto -.15rem;
+  }
+  .arbiter-portrait img { width: min(100%, 520px); }
 }
 
 @media (max-width: 620px) {
