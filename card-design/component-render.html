@@ -13,9 +13,7 @@
       const source = new URL(window.location.href);
       if (String(source.searchParams.get('kind') || '').toLowerCase() !== 'leader') return;
       const target = new URL('/card-design/face-render.html', source.origin);
-      target.searchParams.set('kind', 'leader');
-      target.searchParams.set('id', source.searchParams.get('id') || '');
-      target.searchParams.set('side', source.searchParams.get('side') || 'front');
+      target.searchParams.set('id', `leader:${source.searchParams.get('id') || ''}`);
       for (const key of ['rules', 'inspection', 'version']) {
         const value = source.searchParams.get(key);
         if (value) target.searchParams.set(key, value);
