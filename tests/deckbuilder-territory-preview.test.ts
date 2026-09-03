@@ -6,7 +6,8 @@ const previewCss = readFileSync('deckbuilder/rendered-card-preview.css', 'utf8')
 
 describe('Deckbuilder Territory preview', () => {
   it('uses the production Territory renderer instead of rebuilding Territory text', () => {
-    expect(territorySource).toContain('../card-design/territory-review-render.html?territory=');
+    expect(territorySource).toContain('../card-design/face-render.html?id=');
+    expect(territorySource).toContain('territory:${territory.id}');
     expect(territorySource).toContain('deckbuilder-territory-render-frame');
     expect(territorySource).toContain('complete rendered Territory card');
     expect(territorySource).not.toContain('<div class="card-text-label">Effect</div>');

@@ -117,7 +117,8 @@ describe("TTS Territory assets", () => {
     expect(reviewScript).toContain("territories.map(territory => territoryItem(territory, current.displayVersion))");
     expect(reviewScript).toContain("const arenas = territories.filter(territory => territory.arena)");
     expect(reviewScript).toContain('class="territory-review-frame"');
-    expect(reviewScript).toContain("territory-review-render.html?territory=");
+    expect(reviewScript).toContain("/card-design/face-render.html?id=");
+    expect(reviewScript).toContain("territory:${territory.id}");
     expect(territoryReviewScript).toContain("import { loadRenderContext } from './render-context.mjs'");
     expect(territoryReviewScript).toContain("const renderContext = await loadRenderContext()");
     expect(territoryReviewScript).toContain("currentGame.findTerritory(territoryId)");

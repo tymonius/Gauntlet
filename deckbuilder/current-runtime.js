@@ -29,6 +29,11 @@
         })
         .then(data => {
           currentGameSnapshot = data;
+          window.__gauntletProductionAuthorityBridge = Object.freeze({
+            rulesetMode: requestedRulesetMode,
+            renderMode: 'preview',
+            runtime: data,
+          });
           hydrateFactions(data);
           return data;
         });

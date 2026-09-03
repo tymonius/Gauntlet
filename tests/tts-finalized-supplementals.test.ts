@@ -24,7 +24,8 @@ describe('finalized TTS supplemental exports', () => {
     const generator = readFileSync('scripts/generate-tts-finalized-supplementals.mjs', 'utf8');
     const componentRenderer = readFileSync('card-design/component-render.js', 'utf8');
 
-    expect(generator).toContain('/card-design/component-render.html');
+    expect(generator).toContain('/card-design/face-render.html');
+    expect(generator).not.toContain('/card-design/component-render.html');
     expect(generator).toContain("return { kind: 'proposal', id: item.proposalId }");
     expect(generator).toContain("return { kind: 'supplemental', id: component.id }");
     expect(generator).toContain("url.searchParams.set('version', displayVersion)");

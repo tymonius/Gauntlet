@@ -340,30 +340,13 @@ function referenceLoadingFace(component, faction, factionLabel, sideName) {
   </article>`;
 }
 
-function canonicalComponentRenderKind(component) {
-  if (component.referenceId) return 'reference';
-  if (component.tracker) return 'tracker';
-  return 'supplemental';
-}
-
-function canonicalComponentRenderId(component) {
-  return component.referenceId || component.id;
-}
-
 function canonicalComponentOrientation(component) {
   return component.family === 'deed-card' ? 'landscape' : 'portrait';
 }
 
 function canonicalComponentRenderSource(component, side = 'front') {
-  const params = new URLSearchParams({
-    kind: canonicalComponentRenderKind(component),
-    id: canonicalComponentRenderId(component),
-    side,
-  });
-  if (canonicalComponentOrientation(component) === 'landscape') params.set('orientation', 'landscape');
-  const rules = new URLSearchParams(window.location.search).get('rules');
-  if (rules) params.set('rules', rules);
-  return `/card-design/component-render.html?${params.toString()}`;
+  const faceId = `component:${component.contractId}:${side}`;
+  return `/card-design/face-render.html?id=${encodeURIComponent(faceId)}`;
 }
 
 function canonicalComponentFrame(component, label, side = 'front') {
@@ -549,7 +532,7 @@ async function renderCurrentSupplementals() {
     if (catalogFilter) {
       // The developer catalog consumes the same canonical component frames as
       // Deckbuilder and TTS. Direct tracker/reference fitting stays inside each
-      // component-render iframe and cannot diverge in the outer catalog.
+      // face-render iframe and cannot diverge in the outer catalog.
       root.dataset.referenceCardsReady = 'true';
       root.dataset.trackerLayoutsReady = 'true';
       return;

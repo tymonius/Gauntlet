@@ -1,6 +1,6 @@
 # Unified Face Authority
 
-Status: Stage 4 in progress; no production consumer cutover
+Status: Stage 5 in progress; Stage 4 full-catalog parity certified
 
 ## Why this exists
 
@@ -90,7 +90,7 @@ It also owns the single template-to-orientation registry.
 
 Stage 2 is implemented in parallel in `card-design/face-spec.mjs`. It resolves all 242 IDs through the Stage 1 catalog and attaches canonical content source data, template stylesheet dependencies, artwork-source policy, artwork-composition provenance, pairing/back policy, and authority/version provenance.
 
-A FaceSpec also carries an explicit readiness audit. Missing authority is reported as an issue instead of silently falling back. Current examples include artwork that still relies on the legacy smart/default crop and reference-card presentation that still lives in the historical renderer. Tracker presentation has now been promoted into current-game authority and can render directly through the clean FaceSpec path.
+A FaceSpec also carries an explicit readiness audit. Missing authority is reported as an issue instead of silently falling back. Tracker and Reference presentation are canonical, and all current crop-bearing faces now carry explicit final art direction in current-game authority.
 
 ### Stage 3 — clean renderer
 - one `face-render.html?id=...`
@@ -100,9 +100,9 @@ A FaceSpec also carries an explicit readiness audit. Missing authority is report
 
 Stage 3 now has a parallel, non-production `face-render.html` surface. It accepts only `id`, resolves the FaceSpec, loads the template declared by that spec through one internal registry, constructs exactly one face, applies canonical resources, and runs deterministic preparation. The runtime contains no Leader/Deed/Territory/etc. route dispatch.
 
-The template boundary may declare preparation behavior such as parchment treatment and fitting strategy; that declaration is internal FaceSpec/template data, not a caller decision. Missing authority remains fail-closed. Tracker faces now render directly from canonical presentation data. Reference templates deliberately cannot render yet because their remaining presentation authority still lives in legacy code, and artwork-bearing faces with unresolved smart/default crops are rejected before rendering.
+The template boundary may declare preparation behavior such as parchment treatment and fitting strategy; that declaration is internal FaceSpec/template data, not a caller decision. Missing authority remains fail-closed. All current face families now render directly through the clean FaceSpec path.
 
-No existing Card Design, Card Reference, Deckbuilder, print, TTS, or inspection consumer points at this surface yet.
+Stage 5 moves every current production consumer to this surface together.
 
 ### Stage 4 — parity
 - render all 242 faces
@@ -114,7 +114,7 @@ Stage 4 now has a dedicated browser parity gate. `scripts/validate-unified-face-
 
 The same validator is designed to expand automatically: as canonical authority blockers are removed, those faces move from the blocked inventory into clean-versus-legacy comparison without changing the parity harness. A face cannot silently bypass the gate.
 
-Current blocked faces remain blocked intentionally. Stage 4 must promote their remaining crop/reference/tracker presentation behavior into canonical authority before the clean renderer can reach full-catalog parity.
+Stage 4 is certified for the current catalog: 242 total faces, 242 production-ready faces, 0 authority blockers, 242 clean-versus-current comparisons, and 0 parity failures.
 
 ### Materializing legacy crop outcomes
 
@@ -124,10 +124,12 @@ The first Stage 4 authority migration is deliberately separated into capture and
 
 The candidate artifact records the source face and legacy crop mode for provenance. Shared art-direction keys must agree exactly or the capture fails.
 
-After the artifact is reviewed, a separate adoption change may merge those explicit values into canonical visual authority. The full parity gate must then prove that the clean renderer reproduces the existing approved appearance before any consumer cutover.
+The reviewed materialization was adopted into canonical visual authority, and the full parity gate proved that the clean renderer reproduces the approved current appearance before consumer cutover.
 
 ### Stage 5 — atomic consumer cutover
 Move Card Design review, Card Reference, Deckbuilder, printing, TTS, and inspection to the single face route together.
+
+The Stage 5 cutover uses `face-render.html?id=<canonical-face-id>` everywhere. Callers no longer select `kind`, `side`, `orientation`, or a renderer URL. Deckbuilder ruleset selection is passed as same-origin authority context rather than encoded into physical-face routing. The historical family render surfaces remain present only for Stage 4/legacy verification until Stage 6 deletion.
 
 ### Stage 6 — deletion
 Delete historical component/card/Territory render surfaces and only then add compatibility redirects for any externally useful legacy URLs.

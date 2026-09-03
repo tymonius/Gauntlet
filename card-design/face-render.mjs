@@ -110,6 +110,32 @@ const FITTERS = Object.freeze({
   reference: fitReferenceCard,
 });
 
+function productionRenderMode() {
+  try {
+    if (window.top && window.top.location.origin === window.location.origin) {
+      return String(window.top.__gauntletProductionAuthorityBridge?.renderMode || '').trim();
+    }
+  } catch {}
+  return '';
+}
+
+async function applyPrintPreparation(preparation, result) {
+  if (productionRenderMode() !== 'print' || !preparation.printArtwork) return;
+  if (preparation.printArtwork !== 'normalized') {
+    throw new Error(`Unknown print artwork contract ${preparation.printArtwork}.`);
+  }
+  if (!result.artworkImage) {
+    throw new Error('Print artwork normalization was requested without an artwork image.');
+  }
+
+  const { installPrintArtworkFinalizer } = await import('./print-artwork-normalizer.js');
+  installPrintArtworkFinalizer();
+  await window.GAUNTLET_RENDER_FINALIZE({
+    element: result.element,
+    artImage: result.artworkImage,
+  });
+}
+
 async function prepareFace(spec, result) {
   const element = result.element;
   const preparation = result.preparation || { parchment: false, fit: 'none' };
@@ -126,6 +152,7 @@ async function prepareFace(spec, result) {
   const fitter = FITTERS[preparation.fit || 'none'];
   if (!fitter) throw new Error(`Face ${spec.id} requested unknown fit contract ${preparation.fit}.`);
   fitter(element);
+  await applyPrintPreparation(preparation, result);
 
   if (element.classList.contains('fit-warning')) {
     throw new Error(`Face ${spec.id} does not fit its canonical production surface.`);

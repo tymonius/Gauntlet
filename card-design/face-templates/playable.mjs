@@ -54,5 +54,9 @@ export function render(spec) {
 
   element.dataset.faceId = spec.id;
   element.dataset.faceTemplate = spec.template;
-  return { element, artworkImage: element.querySelector('.card-art img'), preparation: { parchment: true, fit: 'generic' } };
+  return {
+    element,
+    artworkImage: element.querySelector('.card-art img'),
+    preparation: { parchment: true, fit: 'generic', printArtwork: 'normalized' },
+  };
 }

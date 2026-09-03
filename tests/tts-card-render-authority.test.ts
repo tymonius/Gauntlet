@@ -27,23 +27,29 @@ const universalReference = readFileSync('card-design/universal-reference.css', '
 
 describe('TTS card render authority', () => {
   it('uses Card Design as the only card-face render authority', () => {
-    expect(cardGenerator).toContain('/card-design/card-review-render.html');
+    expect(cardGenerator).toContain('/card-design/face-render.html?id=');
+    expect(cardGenerator).not.toContain('/card-design/card-review-render.html');
     expect(cardGenerator).not.toContain('/tts/renderer/?card=');
 
-    expect(territoryGenerator).toContain('/card-design/territory-review-render.html');
+    expect(territoryGenerator).toContain('/card-design/face-render.html?id=');
+    expect(territoryGenerator).not.toContain('/card-design/territory-review-render.html');
     expect(territoryGenerator).not.toContain('/tts/territory-renderer/?territory=');
 
-    expect(leaderGenerator).toContain('/card-design/component-render.html');
+    expect(leaderGenerator).toContain('/card-design/face-render.html');
+    expect(leaderGenerator).not.toContain('/card-design/component-render.html');
     expect(leaderGenerator).not.toContain("page.goto(`${baseUrl}/card-design/`");
     expect(leaderGenerator).not.toContain('GauntletArtworkCrop.apply');
 
-    expect(supplementalGenerator).toContain('/card-design/component-render.html');
+    expect(supplementalGenerator).toContain('/card-design/face-render.html');
+    expect(supplementalGenerator).not.toContain('/card-design/component-render.html');
     expect(supplementalGenerator).not.toContain('/tts/supplemental-renderer/');
 
-    expect(finalizedGenerator).toContain('/card-design/component-render.html');
+    expect(finalizedGenerator).toContain('/card-design/face-render.html');
+    expect(finalizedGenerator).not.toContain('/card-design/component-render.html');
     expect(finalizedGenerator).not.toContain('/tts/finalized-supplemental-renderer/');
 
-    expect(trackerCapture).toContain('/card-design/component-render.html');
+    expect(trackerCapture).toContain('/card-design/face-render.html');
+    expect(trackerCapture).not.toContain('/card-design/component-render.html');
     expect(trackerCapture).not.toContain("page.goto(`${baseUrl}/card-design/`");
   });
 
@@ -69,12 +75,12 @@ describe('TTS card render authority', () => {
     expect(currentGame.version).toBe('v0.7.1');
     expect(currentGame.displayVersion).toBe('v0.7.1');
 
-    expect(cardGenerator).toContain('version=${encodeURIComponent(release.displayVersion || release.version)}');
-    expect(territoryGenerator).toContain('version=${encodeURIComponent(release.displayVersion || release.version)}');
-    expect(supplementalGenerator).toContain('release.displayVersion || release.version');
-    expect(finalizedGenerator).toContain('release.displayVersion || release.version');
-    expect(leaderGenerator).toContain("url.searchParams.set('version', displayVersion)");
-    expect(trackerCapture).toContain("url.searchParams.set('version', displayVersion)");
+    expect(cardGenerator).not.toContain('version=${encodeURIComponent(release.displayVersion || release.version)}');
+    expect(territoryGenerator).not.toContain('version=${encodeURIComponent(release.displayVersion || release.version)}');
+    expect(leaderGenerator).not.toContain("url.searchParams.set('version', displayVersion)");
+    expect(supplementalGenerator).not.toContain("url.searchParams.set('version'");
+    expect(finalizedGenerator).not.toContain("url.searchParams.set('version'");
+    expect(trackerCapture).not.toContain("url.searchParams.set('version', displayVersion)");
 
     expect(playableRenderer).toContain("const versionOverride = String(params.get('version') || '').trim()");
     expect(playableRenderer).toContain('const displayVersion = versionOverride || await resolveDisplayVersion(currentGame)');

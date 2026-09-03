@@ -137,25 +137,10 @@ function maxExistingDeckId(manifest) {
   return Math.max(199, ...(manifest.ready || []).map(record => Number(record.tts?.deckId) || 0));
 }
 
-function productionComponentRequest(item) {
-  const component = item.component;
-  if (component.family === 'proposal-treaty-card') {
-    return { kind: 'proposal', id: item.proposalId };
-  }
-  if (component.family === 'ledger' || component.family === 'deed-card') {
-    return { kind: 'supplemental', id: component.id };
-  }
-  throw new Error(`No card-design production component request for ${component.id} (${component.family}).`);
-}
-
 async function captureComponent(page, baseUrl, item, side, outputPath, displayVersion) {
-  const request = productionComponentRequest(item);
-  const url = new URL('/card-design/component-render.html', baseUrl);
-  url.searchParams.set('kind', request.kind);
-  url.searchParams.set('id', request.id);
-  url.searchParams.set('side', side);
-  url.searchParams.set('orientation', item.orientation);
-  if (displayVersion) url.searchParams.set('version', displayVersion);
+  void displayVersion;
+  const url = new URL('/card-design/face-render.html', baseUrl);
+  url.searchParams.set('id', `component:${item.component.id}:${side}`);
 
   await page.goto(url.toString(), { waitUntil: 'load' });
   await page.waitForSelector('#renderTarget > .gauntlet-card');

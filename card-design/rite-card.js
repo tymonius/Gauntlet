@@ -21,15 +21,13 @@ function esc(value) {
   })[character]);
 }
 
-function componentRenderSource(kind, id, side = 'front') {
-  const params = new URLSearchParams({ kind, id, side });
-  const rules = new URLSearchParams(window.location.search).get('rules');
-  if (rules) params.set('rules', rules);
-  return `/card-design/component-render.html?${params.toString()}`;
+function faceRenderSource(componentId, side = 'front') {
+  const faceId = `component:${componentId}:${side}`;
+  return `/card-design/face-render.html?id=${encodeURIComponent(faceId)}`;
 }
 
-function componentReviewFrame(kind, id, label, side = 'front') {
-  return `<iframe class="component-review-frame" loading="lazy" src="${esc(componentRenderSource(kind, id, side))}" title="${esc(label)} canonical Card Design render"></iframe>`;
+function componentReviewFrame(componentId, label, side = 'front') {
+  return `<iframe class="component-review-frame" loading="lazy" src="${esc(faceRenderSource(componentId, side))}" title="${esc(label)} canonical Card Design render"></iframe>`;
 }
 
 function riteTypeLabel(label = 'Rite') {
@@ -125,8 +123,8 @@ function ritualFace() {
 
 function reviewPair(rite) {
   const faces = catalogFilter
-    ? `<div class="rite-face">${componentReviewFrame('rite', rite.id, `${rite.name} Rite`, 'front')}</div>
-      <div class="rite-face">${componentReviewFrame('rite', rite.id, `${rite.name} Completed Rite`, 'reverse')}</div>`
+    ? `<div class="rite-face">${componentReviewFrame(`mystics-rite-${rite.id}`, `${rite.name} Rite`, 'front')}</div>
+      <div class="rite-face">${componentReviewFrame(`mystics-rite-${rite.id}`, `${rite.name} Completed Rite`, 'reverse')}</div>`
     : `<div class="rite-face">${riteFace(rite, false)}</div>
       <div class="rite-face">${riteFace(rite, true)}</div>`;
 
@@ -143,8 +141,8 @@ function reviewPair(rite) {
 
 function ritualReview() {
   const faces = catalogFilter
-    ? `<div class="rite-face">${componentReviewFrame('ritual', RITUAL.id, `${RITUAL.name} Ritual`, 'front')}</div>
-      <div class="rite-face">${componentReviewFrame('ritual', RITUAL.id, `${RITUAL.name} Ritual back`, 'reverse')}</div>`
+    ? `<div class="rite-face">${componentReviewFrame(`mystics-ritual-of-${RITUAL.id}`, `${RITUAL.name} Ritual`, 'front')}</div>
+      <div class="rite-face">${componentReviewFrame(`mystics-ritual-of-${RITUAL.id}`, `${RITUAL.name} Ritual back`, 'reverse')}</div>`
     : `<div class="rite-face">${ritualFace()}</div>
       <div class="rite-face">${ritualCardBack()}</div>`;
 
