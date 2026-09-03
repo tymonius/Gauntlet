@@ -118,6 +118,7 @@ async function main() {
   const spec = await resolveFaceSpec(request.faceId);
   document.body.dataset.faceSpecId = spec.id;
   document.body.dataset.faceSpecKind = spec.kind;
+  document.body.dataset.faceArtworkId = spec.artwork?.id || '';
   document.body.dataset.gameplayAuthority = spec.gameplayAuthorityUrl;
   document.body.dataset.visualAuthority = spec.visualAuthorityUrl;
   window.GAUNTLET_ART_DIRECTION = Object.freeze(
