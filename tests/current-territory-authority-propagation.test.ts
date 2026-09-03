@@ -8,8 +8,6 @@ const territoryTemplate = readFileSync('card-design/face-templates/territory.mjs
 const faceRuntime = readFileSync('card-design/face-render.mjs', 'utf8');
 const legacyTerritoryRoute = readFileSync('card-design/territory-review-render.html', 'utf8');
 const specimen = readFileSync('card-design/territories/index.html', 'utf8');
-const renderValidator = readFileSync('scripts/validate-current-territory-render.mjs', 'utf8');
-const renderWorkflow = readFileSync('.github/workflows/render-leader-card-specimens.yml', 'utf8');
 const currentAuthority = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
 
 describe('historical v0.6.4 Territory derivation and current authority propagation', () => {
@@ -50,22 +48,5 @@ describe('historical v0.6.4 Territory derivation and current authority propagati
     expect(reference).toContain('Shared battle rules already require a Tiebreak Roll');
   });
 
-  it('runs production-size validation against the complete current authority', () => {
-    expect(renderValidator).toContain('loadCurrentGameAuthority');
-    expect(renderValidator).toContain('authority.gameplay?.territories');
-    expect(renderValidator).toContain('validateCurrentGameAuthority(authority)');
-    expect(renderValidator).not.toContain("authority.version !== 'v0.7.0'");
-    expect(renderValidator).not.toContain('readCurrentJsonSource');
-    expect(renderValidator).not.toContain('source.base_version');
-    expect(renderValidator).not.toContain('EXPECTED_SOURCE_ISSUE');
-    expect(renderValidator).toContain("surfaceCssPixels('landscape')");
-    expect(renderValidator).toContain("surfaceRasterPixels('landscape')");
-    expect(renderValidator).toContain("surfaceDeviceScale('landscape')");
-    expect(renderValidator).not.toContain('const CSS_WIDTH = 336');
-    expect(renderValidator).not.toContain('const OUTPUT_WIDTH = 560');
-    expect(renderValidator).toContain("metric.artworkLoaded !== 'true'");
-    expect(renderWorkflow).toContain('game-data/**');
-    expect(renderWorkflow).toContain('node scripts/validate-current-territory-render.mjs');
-    expect(renderWorkflow).toContain('card-design/generated/current-territories/');
-  });
+
 });

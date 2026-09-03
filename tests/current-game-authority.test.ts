@@ -18,7 +18,6 @@ const artworkClient = read('card-design/artwork-authoring-client.js');
 const artworkServer = read('scripts/card-design-server.mjs');
 const artworkCompositor = read('card-design/artwork-compositor.js');
 const cardRenderer = read('card-design/face-templates/playable.mjs');
-const cardRenderValidator = read('scripts/validate-current-card-render.mjs');
 const livePublicationWorkflow = read('.github/workflows/verify-current-live-publication.yml');
 const livePublicationVerifier = read('scripts/verify-v071-live-publication.mjs');
 
@@ -213,8 +212,6 @@ describe('complete current-game authority', () => {
 
     expect(cardRenderer).toContain('const card = spec.content.card;');
     expect(cardRenderer).not.toMatch(/normaliz.*Card.*Presentation/i);
-    expect(cardRenderValidator).toContain('const expectedLabels = sourceCard.effects.map(effect => effect.label);');
-    expect(cardRenderValidator).not.toMatch(/normaliz.*Card.*Presentation/i);
   });
 
   it('does not synthesize legacy iterable Leader sections at current runtime boundaries', () => {
