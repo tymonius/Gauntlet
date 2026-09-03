@@ -42,21 +42,17 @@ function importedSpecifiers(source: string): string[] {
   return specifiers;
 }
 
-function resolvesToGenericTypeBarrel(path: string, specifier: string): boolean {
+const RETIRED_LEGACY_BARRELS = ['state', 'effects', 'cards', 'types'] as const;
+
+function resolvesToGenericLegacyBarrel(
+  path: string,
+  specifier: string,
+  directory: typeof RETIRED_LEGACY_BARRELS[number],
+): boolean {
   if (!specifier.startsWith('.')) return false;
 
   const resolved = resolve(dirname(path), specifier);
-  const barrel = resolve('src/types');
-  return resolved === barrel
-    || resolved === resolve(barrel, 'index')
-    || resolved === resolve(barrel, 'index.ts');
-}
-
-function resolvesToGenericCardBarrel(path: string, specifier: string): boolean {
-  if (!specifier.startsWith('.')) return false;
-
-  const resolved = resolve(dirname(path), specifier);
-  const barrel = resolve('src/cards');
+  const barrel = resolve(`src/${directory}`);
   return resolved === barrel
     || resolved === resolve(barrel, 'index')
     || resolved === resolve(barrel, 'index.ts');
@@ -115,71 +111,22 @@ describe('digital engine boundary', () => {
       expect(source).not.toMatch(/from ['"]\.\.\/content['"]/);
     }
   });
-  it('requires legacy state consumers to opt into the v0.6 state API', () => {
-    expect(readdirSync('src/state')).not.toContain('index.ts');
-
-    const stateConsumers = [
-      'src/cli/dev-runner-v06.ts',
-      'src/gui/dev-server-v06.ts',
-      'src/dev/battle-reveal-options.ts',
-      'src/dev/inquisition-options.ts',
-      'src/dev/mystics-options.ts',
-      'src/dev/neutral-options.ts',
-      'src/dev/guided-options.ts',
-      'src/content/v06.test.ts',
-      'src/dev/guided-options.test.ts',
-      'src/dev/neutral-options.test.ts',
-    ];
-
-    for (const path of stateConsumers) {
-      const source = readFileSync(path, 'utf8');
-      expect(source).toContain("from '../state/v06'");
-      expect(source).not.toMatch(/from ['"]\.\.\/state['"]/);
+  it('has retired every generic legacy aggregate barrel', () => {
+    for (const directory of RETIRED_LEGACY_BARRELS) {
+      expect(readdirSync(`src/${directory}`)).not.toContain('index.ts');
     }
   });
 
-  it('requires legacy effect consumers to opt into the v0.6 effect API', () => {
-    expect(readdirSync('src/effects')).not.toContain('index.ts');
-
-    const effectConsumers = [
-      'src/dev/battle-reveal-options.ts',
-      'src/state/battle-reveal.ts',
-      'src/state/actions.ts',
-      'src/types/neutral.ts',
-      'src/state/reducer.ts',
-      'src/state/neutral-contingency-plan.test.ts',
-      'src/state/neutral-counterintelligence.test.ts',
-    ];
-
-    for (const path of effectConsumers) {
-      const source = readFileSync(path, 'utf8');
-      expect(source).toContain("from '../effects/v06'");
-      expect(source).not.toMatch(/from ['"]\.\.\/effects['"]/);
-    }
-  });
-
-  it('keeps every legacy effect module off the generic type barrel', () => {
-    const effectSources = readdirSync('src/effects')
-      .filter((name) => name.endsWith('.ts'));
-
-    for (const name of effectSources) {
-      const source = readFileSync(`src/effects/${name}`, 'utf8');
-      expect(source).not.toMatch(/from ['"]\.\.\/types['"]/);
-    }
-  });
-
-  it('has retired the generic card compatibility barrel', () => {
-    expect(readdirSync('src/cards')).not.toContain('index.ts');
-  });
-
-  it('has no source or test imports that resolve to the retired generic card barrel', () => {
+  it('has no source or test imports that resolve to a retired generic legacy barrel', () => {
     const offenders: string[] = [];
 
     for (const path of [...sourceFilesUnder('src'), ...sourceFilesUnder('tests')]) {
       const source = readFileSync(path, 'utf8');
       for (const specifier of importedSpecifiers(source)) {
-        if (resolvesToGenericCardBarrel(path, specifier)) {
-          offenders.push(`${path}: ${specifier}`);
+        for (const directory of RETIRED_LEGACY_BARRELS) {
+          if (resolvesToGenericLegacyBarrel(path, specifier, directory)) {
+            offenders.push(`${path}: ${specifier} -> src/${directory}`);
+          }
         }
       }
     }
@@ -194,81 +141,15 @@ describe('digital engine boundary', () => {
     expect(existsSync('src/state/military-card-effects.ts')).toBe(true);
   });
 
-  it('has retired the generic type compatibility barrel', () => {
-    expect(readdirSync('src/types')).not.toContain('index.ts');
-  });
-
-  it('has no source or test imports that resolve to the retired generic type barrel', () => {
-    const offenders: string[] = [];
-
-    for (const path of [...sourceFilesUnder('src'), ...sourceFilesUnder('tests')]) {
-      const source = readFileSync(path, 'utf8');
-      for (const specifier of importedSpecifiers(source)) {
-        if (resolvesToGenericTypeBarrel(path, specifier)) {
-          offenders.push(`${path}: ${specifier}`);
-        }
-      }
-    }
-
-    expect(offenders).toEqual([]);
-  });
-
-  it('pins legacy development surfaces to explicit v0.6 aggregate APIs', () => {
-    const devConsumers = [
-      'src/cli/dev-runner-v06.ts',
-      'src/gui/dev-server-v06.ts',
-      'src/dev/battle-reveal-options.ts',
-      'src/dev/guided-options.test.ts',
-      'src/dev/guided-options.ts',
-      'src/dev/inquisition-options.ts',
-      'src/dev/intelligence-battle-options.ts',
-      'src/dev/intelligence-options.ts',
-      'src/dev/mystics-options.ts',
-      'src/dev/neutral-options.test.ts',
-      'src/dev/neutral-options.ts',
-    ];
-
-    for (const path of devConsumers) {
-      const source = readFileSync(path, 'utf8');
-      expect(source).not.toMatch(/from ['"]\.\.\/types['"]/);
-    }
-  });
-
-  it('pins legacy card-definition modules to the v0.6 type API', () => {
-    const cardSources = [
-      'src/cards/intelligence.ts',
-      'src/cards/diplomats.ts',
-      'src/cards/neutral-audit-containment.ts',
-      'src/cards/financiers.ts',
-      'src/cards/military.ts',
-      'src/cards/playability.ts',
-    ];
-
-    for (const path of cardSources) {
-      const source = readFileSync(path, 'utf8');
-      expect(source).not.toMatch(/from ['"]\.\.\/types['"]/);
-    }
-  });
-
-  it('keeps every legacy state module off the generic type barrel', () => {
-    const stateSources = readdirSync('src/state')
-      .filter((name) => name.endsWith('.ts'));
-
-    for (const name of stateSources) {
-      const source = readFileSync(`src/state/${name}`, 'utf8');
-      expect(source).not.toMatch(/from ['"]\.\.\/types['"]/);
-    }
-  });
-
   it('keeps the promoted v0.7.0 implementation isolated from legacy architecture', () => {
-    const promotedSources = readdirSync('src/v070')
-      .filter((name) => name.endsWith('.ts') && !name.endsWith('.test.ts'));
+    const promotedSources = sourceFilesUnder('src/v070')
+      .filter((path) => !/\.(?:test|spec)\.[cm]?[jt]sx?$/.test(path));
 
     const legacyImport = /from ['"]\.\.\/(?:state|dev|cards|effects|reconstruction)(?:\/|['"])/;
     const historicalContentImport = /from ['"]\.\.\/content\/v06(?:1|2|3|4)?['"]/;
 
-    for (const name of promotedSources) {
-      const source = readFileSync(`src/v070/${name}`, 'utf8');
+    for (const path of promotedSources) {
+      const source = readFileSync(path, 'utf8');
       expect(source).not.toMatch(legacyImport);
       expect(source).not.toMatch(historicalContentImport);
     }
