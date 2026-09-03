@@ -148,6 +148,7 @@ export interface V070BattleCardAftermathOverlayPlacement {
   sourceInstanceId: string;
   sourceCardId: string;
   owner: PlayerId;
+  territoryInstanceId: string;
   condition: 'always' | 'owner_win';
 }
 
@@ -157,6 +158,12 @@ export interface V070BattleCardAftermathTerritoryInsertion {
   owner: PlayerId;
   condition: 'owner_win_as_attacker';
   location: 'front_line';
+}
+
+export interface V070BattleAftermathControlledEffectChoiceRuntime {
+  playerId: PlayerId;
+  candidateSourceInstanceIds: string[];
+  immediateWinner: PlayerId | null;
 }
 
 export interface V070GambitOrderOverride {
@@ -208,6 +215,9 @@ export interface V070BattleRuntime {
   pendingOutcome: V070BattleOutcome | null;
   pendingAccursedWager: V070AccursedWagerAftermathRuntime | null;
   battleAccursedWagerInstanceIds: string[];
+  pendingBattleAftermathControlledEffectChoice:
+    V070BattleAftermathControlledEffectChoiceRuntime | null;
+  battleAftermathControlledEffectNextPlayer: PlayerId | null;
   pendingTerritoryAftermathChoice:
     V070TerritoryAftermathChoiceRuntime | null;
   territoryAftermathChoiceResolved: boolean;
@@ -295,6 +305,8 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     pendingOutcome: null,
     pendingAccursedWager: null,
     battleAccursedWagerInstanceIds: [],
+    pendingBattleAftermathControlledEffectChoice: null,
+    battleAftermathControlledEffectNextPlayer: null,
     pendingTerritoryAftermathChoice: null,
     territoryAftermathChoiceResolved: false,
     territoryAftermathOverride: null,
