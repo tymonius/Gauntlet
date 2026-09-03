@@ -2,6 +2,8 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const catalogHtml = readFileSync('card-design/index.html', 'utf8');
+const cardReview = readFileSync('card-design/card-review.js', 'utf8');
+const faceRuntime = readFileSync('card-design/face-render.mjs', 'utf8');
 const inspectionHistory = readFileSync('card-design/card-inspection-history.js', 'utf8');
 const supplemental = readFileSync('card-design/supplemental-card.js', 'utf8');
 const supplementalRefinements = readFileSync('card-design/supplemental-refinements.css', 'utf8');
@@ -28,6 +30,22 @@ describe('Card Design inspection navigation', () => {
     expect(supplemental).toContain("if (inspectionReady) loadingCard.classList.add('card-inspectable')");
     expect(supplemental).toContain("for (const sideName of ['front', 'reverse'])");
     expect(supplemental).not.toContain('loadingCard.replaceWith(rendered)');
+  });
+
+  it('keeps unified face previews inspectable without recursive modal inspection', () => {
+    expect(faceRuntime).toContain("element.matches('.gauntlet-card, .territory-card')");
+    expect(faceRuntime).toContain("window.frameElement?.dataset.faceInspectionHost === 'true'");
+    expect(faceRuntime).toContain("type: 'gauntlet-face-inspect'");
+    expect(faceRuntime).toContain("type: 'gauntlet-face-art-inspect'");
+
+    expect(cardReview).toContain('CARD_WIDTH = PRODUCTION_SURFACES.portrait.widthCssPx');
+    expect(cardReview).toContain("territoryInspectionFrame.dataset.faceInspectionHost = 'true'");
+    expect(cardReview).toContain("event.data?.orientation === 'landscape'");
+
+    const artworkHandler = cardReview.indexOf("event.data?.type === 'gauntlet-face-art-inspect'");
+    const inspectionFrameGuard = cardReview.indexOf('if (sourceFrame === territoryInspectionFrame) return;');
+    expect(artworkHandler).toBeGreaterThan(-1);
+    expect(inspectionFrameGuard).toBeGreaterThan(artworkHandler);
   });
 });
 
