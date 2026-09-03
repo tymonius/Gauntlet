@@ -18,6 +18,8 @@ describe('Maintained current Rulebook source', () => {
     expect(currentRulebook).toContain('### Rite of Equivalence');
     expect(currentRulebook).toContain('Ratify six different Proposals');
     expect(currentRulebook).toContain('if six different Proposals are ratified');
+    expect(currentRulebook).toContain("spend Influence for Leverage to increase the Diplomat's battle total");
+    expect(currentRulebook).toContain('| Battle Total bonus | Total Influence cost |');
     expect(currentRulebook).not.toContain('Ratify five different Proposals');
     expect(currentRulebook).not.toContain('if five different Proposals are ratified');
     expect(browserApp).toContain("const CURRENT_SOURCE_URL = './player-facing/current-rulebook.md';");
