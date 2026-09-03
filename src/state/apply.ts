@@ -1,4 +1,4 @@
-import { applyMilitaryActionEffect, removeCapturedEncampments, resolveMilitaryEndTurn } from '../cards';
+import { applyMilitaryActionEffect, removeCapturedEncampments, resolveMilitaryEndTurn } from './military-card-effects';
 import type { GameAction, StateAction, UseDiplomatCardAction } from './actions';
 import { applyGameAction as applyGameActionWithoutAutomation, GameActionError, type ApplyGameActionResult } from './reducer';
 import { resolveBattleReveal } from './battle-reveal';

@@ -10,6 +10,6 @@ Legacy dev helpers should use the explicit v0.6 aggregate boundaries where the o
 - `../effects/v06`
 - `../types/v06`
 
-The generic `../cards` compatibility barrel is still used by `guided-options.ts` because its Military card-definition import participates in the existing legacy ESM initialization cycle between `cards/military.ts` and the state engine. `intelligence-options.ts` and `neutral-options.ts` now bypass the aggregate barrel through their pure card modules. Do not remove the remaining shim dependency until the Military state procedures are separated from card definitions and the full legacy test suite stays green.
+Legacy development helpers no longer use the generic `../cards` compatibility barrel. Military card definitions are now pure metadata, with stateful Military card procedures separated into `src/state/military-card-effects.ts`, so `guided-options.ts` can import `../cards/military` directly without relying on the former ESM initialization cycle.
 
 Direct imports of specific legacy state procedures remain acceptable inside this historical/dev layer, but current engine code must not depend on this directory.

@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { initializeGame } from '../state/initialize';
 import { createValidSetup } from '../state/test-helpers';
-import { applyMilitaryActionEffect, militaryCardDefinitions, resolveMilitaryEndTurn } from './military';
+import { applyMilitaryActionEffect, resolveMilitaryEndTurn } from '../state/military-card-effects';
+import { militaryCardDefinitions } from './military';
 
 function militaryGame() {
   return initializeGame(createValidSetup({

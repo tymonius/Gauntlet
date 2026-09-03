@@ -1,4 +1,4 @@
-import { removeCapturedEncampments } from '../cards';
+import { removeCapturedEncampments } from './military-card-effects';
 import type {
   BattlePlayedCard,
   BattleState,

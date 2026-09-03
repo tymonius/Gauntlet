@@ -176,7 +176,7 @@ describe('digital engine boundary', () => {
     expect(cardIndex).not.toContain("export * from './intelligence'");
   });
 
-  it('limits the generic card barrel to the remaining Military initialization-cycle consumers', () => {
+  it('has no runtime imports that resolve to the generic card barrel', () => {
     const offenders: string[] = [];
 
     for (const path of sourceFilesUnder('src').filter((path) => !/\.(?:test|spec)\.[cm]?[jt]sx?$/.test(path))) {
@@ -188,11 +188,14 @@ describe('digital engine boundary', () => {
       }
     }
 
-    expect(offenders.sort()).toEqual([
-      'src/dev/guided-options.ts: ../cards',
-      'src/state/apply.ts: ../cards',
-      'src/state/neutral-assimilation.ts: ../cards',
-    ]);
+    expect(offenders.sort()).toEqual([]);
+  });
+
+  it('keeps Military card definitions free of state-engine imports', () => {
+    const militaryCards = readFileSync('src/cards/military.ts', 'utf8');
+    expect(militaryCards).not.toMatch(/from ['"]\.\.\/state(?:\/|['"])/);
+    expect(militaryCards).not.toContain('GameState');
+    expect(existsSync('src/state/military-card-effects.ts')).toBe(true);
   });
 
   it('has retired the generic type compatibility barrel', () => {

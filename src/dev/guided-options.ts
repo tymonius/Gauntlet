@@ -1,4 +1,4 @@
-import { militaryCardDefinitions } from '../cards';
+import { militaryCardDefinitions } from '../cards/military';
 import type { GameState, PlayerID } from '../types/v06';
 import type { NeutralAppStateAction } from '../state/v06';
 import {
