@@ -149,7 +149,7 @@ function validateModernPublicPage(html, route) {
   assert(skipTarget, `${route} is missing the skip-to-content link.`);
   const mainMatch = html.match(new RegExp(`<main\\b[^>]*id=(["'])${skipTarget}\\1[^>]*>`, 'i'))?.[0];
   assert(mainMatch, `${route} skip link does not target its main landmark.`);
-  assert(/\\btabindex=(["'])-1\\1/i.test(mainMatch), `${route} skip target is not programmatically focusable.`);
+  assert(/\btabindex=(["'])-1\1/i.test(mainMatch), `${route} skip target is not programmatically focusable.`);
   assert(html.includes('site-edition-badge'), `${route} is missing the current-edition indicator.`);
   assert(html.includes('/analytics-consent.js'), `${route} does not use opt-in analytics consent.`);
   assert(!html.includes('googletagmanager.com/gtag/js?id='), `${route} loads Google Analytics before consent.`);
@@ -314,7 +314,7 @@ for (const route of footerOnlyRoutes) {
     const skipTarget = html.match(/class=(['"])skip-link\1[^>]*href=(['"])#([^'"]+)\2/i)?.[3];
     assert(skipTarget, `${route} is missing the skip-to-content link.`);
     const mainMatch = html.match(new RegExp(`<main\\b[^>]*id=(["'])${skipTarget}\\1[^>]*>`, 'i'))?.[0];
-    assert(mainMatch && /\\btabindex=(["'])-1\\1/i.test(mainMatch), `${route} skip target is not focusable.`);
+    assert(mainMatch && /\btabindex=(["'])-1\1/i.test(mainMatch), `${route} skip target is not focusable.`);
   }
 }
 
