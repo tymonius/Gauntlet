@@ -75,9 +75,10 @@ jobs:
         id: qa
         continue-on-error: true
         env:
-          GAUNTLET_RULES_QA_CONCURRENCY: '2'
+          GAUNTLET_RULES_QA_CONCURRENCY: '1'
           GAUNTLET_RULES_QA_TIMEOUT_MS: '45000'
           GAUNTLET_RULES_QA_MAX_ATTEMPTS: '5'
+          GAUNTLET_RULES_QA_INTER_CASE_DELAY_MS: '500'
         run: node scripts/run-v071-live-rules-qa.mjs
 
       - name: Upload live QA report

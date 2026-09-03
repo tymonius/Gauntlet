@@ -8,7 +8,7 @@ import {
 import { persistSmartInteraction } from "./rules-persistence.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260903-3";
+export const BEHAVIOR_REVISION = "v071-qa-20260903-4";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 let corpusPromise;
 
@@ -147,11 +147,14 @@ export default {
     const playtestSessionId = sanitizeContextValue(payload?.playtestSessionId);
     const sheetSerial = sanitizeContextValue(payload?.sheetSerial);
 
+    let failureStage = "corpus";
     try {
       const corpus = await getCorpus(env);
+      failureStage = "history";
       const storedHistory = await loadStoredHistory(env, sessionId);
       const history = mergeConversationHistory(storedHistory, suppliedHistory);
       const retrievalQuery = contextualQuery(question, history);
+      failureStage = "retrieval";
       const retrieval = retrieveRules(corpus, retrievalQuery, {
         limit: 10,
         excerptLength: 1300
@@ -168,6 +171,7 @@ export default {
       };
 
       if (!env.OPENAI_API_KEY) {
+        failureStage = "persistence";
         const fallback = buildLocalFallbackAnswer(question, retrieval, RULES_VERSION);
         const result = {
           answer: fallback.answer,
@@ -194,6 +198,7 @@ export default {
         return answerResponse(result, origin);
       }
 
+      failureStage = "model";
       const modelResult = await askOpenAI({ env, request, question, history, sources: retrieval });
       let sources = selectUsedSources(retrieval, modelResult.source_ids);
       const rulingStatus = normalizeRulingStatus(modelResult.ruling_status, sources.length);
@@ -211,6 +216,7 @@ export default {
         sources,
         executionPath: "model"
       };
+      failureStage = "persistence";
       result.interactionId = await persistSmartInteraction(env, {
         sessionId,
         playtestSessionId,
@@ -227,8 +233,11 @@ export default {
       });
       return answerResponse(result, origin);
     } catch (error) {
-      console.error("v0.7.1 Rules Arbiter failure", error);
-      return json({ error: "The Rules Arbiter could not complete the request." }, 502, origin);
+      console.error(`v0.7.1 Rules Arbiter failure during ${failureStage}`, error);
+      return json({
+        error: "The Rules Arbiter could not complete the request.",
+        errorCode: `rules_${failureStage}_failed`
+      }, 502, origin);
     }
   }
 };
