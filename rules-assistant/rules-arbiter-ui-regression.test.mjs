@@ -17,12 +17,24 @@ describe("Rules Arbiter welcome and compact UI regressions", () => {
 
   test("widget welcome copy uses the Chief Justice voice instead of generic assistant framing", () => {
     const widget = readFileSync(`${HERE}/widget.js`, "utf8");
+    const welcome = widget.match(/renderWelcome\(\)[\s\S]*?answer: "([^"]+)"/)?.[1] || "";
 
-    expect(widget).toContain("Set out the question as it arose at the table.");
-    expect(widget).toContain("identify the controlling rule or distinction");
-    expect(widget).toContain("settle the matter as plainly as I can");
+    expect(welcome).toContain("Set out the question as it arose at the table.");
+    expect(welcome).toContain("identify the controlling rule or distinction");
+    expect(welcome).toContain("settle the matter as plainly as I can");
+    expect(welcome).not.toMatch(/v0\.\d+\.\d+/);
     expect(widget).not.toContain("Ask me about the v0.7.1 rulebook");
-    expect(widget).not.toMatch(/v0\.\d+\.\d+/);
+  });
+
+  test("player-facing identity distinguishes the Rules Arbiter feature from the Chief Justice", () => {
+    const widget = readFileSync(`${HERE}/widget.js`, "utf8");
+
+    expect(widget).toContain('assistantName: "Chief Justice"');
+    expect(widget).toContain('<p class="ga-rules-eyebrow">GAUNTLET RULES ARBITER</p>');
+    expect(widget).toContain('<span class="ga-rules-launcher-label">Ask the Chief Justice</span>');
+    expect(widget).toContain('<summary>About the Chief Justice</summary>');
+    expect(widget).not.toContain('assistantName: "Rules Arbiter"');
+    expect(widget).not.toContain('Gauntlet ${escapeHtml(CONFIG.version)}</p>');
   });
 
   test("generic sentence splitting preserves dotted version numbers", () => {
