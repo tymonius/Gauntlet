@@ -7128,7 +7128,7 @@
         "name": "Special Operations",
         "profile": "1 Action",
         "timing": "Denouement",
-        "cost": "Completion cost: Territories in Gauntlet minus card value, minimum 1 Intel"
+        "cost": "Completion cost: Territories in the Gauntlet minus card value, minimum 1 Intel"
       },
       {
         "name": "Surveillance",
