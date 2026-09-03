@@ -68,9 +68,10 @@ describe("Deckbuilder custom printing", () => {
     expect(customPrint).toContain("renderer.cardSource(entry.render.id)");
     expect(customPrint).toContain("renderer.territorySource(entry.render.id)");
     expect(customPrint).toContain("renderer.frameSource({");
+    expect(customPrint).toContain("faceId: `leader:${entry.render.id}`");
     expect(customPrint).toContain("renderer.componentSource(entry.render.id, side)");
     expect(customPrint).toContain("productionPrint().componentDescriptor(component.id)");
-    expect(customPrint).toContain("productionPrint().backSource(safeFaction, 180)");
+    expect(customPrint).toContain("productionPrint().backSource(safeFaction)");
     expect(customPrint).not.toContain("/card-design/card-print-render.html?card=");
     expect(customPrint).not.toContain("/card-design/territory-print-render.html?territory=");
     expect(customPrint).not.toContain("/card-design/component-print-render.html?kind=");
