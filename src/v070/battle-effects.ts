@@ -183,6 +183,19 @@ const handlers: V070BattleEffectHandler[] = [
     },
   },
   {
+    cardId: 'neutral-manifest-destiny',
+    expectedText: 'In the Aftermath, if you win as the attacker, insert this card into the Gauntlet at your Front Line as a blank Territory you control.',
+    timing: 'reveal',
+    apply: ({ state, owner, commitment }) => {
+      registerBattleCardAftermathTerritoryInsertion(
+        state,
+        owner,
+        commitment.instanceId,
+        'neutral-manifest-destiny',
+      );
+    },
+  },
+  {
     cardId: 'neutral-contingency-plan',
     expectedText: 'If your opponent controls more Territories than you, +2 Battle Total.',
     timing: 'reveal',
@@ -625,6 +638,23 @@ function modifier(cardId: string, expectedText: string, amount: number): V070Bat
       participant(state, owner).battleModifier += amount;
     },
   };
+}
+
+function registerBattleCardAftermathTerritoryInsertion(
+  state: V070GameState,
+  owner: PlayerId,
+  sourceInstanceId: string,
+  sourceCardId: string,
+): void {
+  const runtime = state.battleRuntime;
+  if (!runtime) throw new Error('Battle effects require an active battle runtime.');
+  runtime.battleCardAftermathTerritoryInsertions.push({
+    owner,
+    sourceInstanceId,
+    sourceCardId,
+    condition: 'owner_win_as_attacker',
+    location: 'front_line',
+  });
 }
 
 function registerBattleCardAftermathOverlayPlacement(
