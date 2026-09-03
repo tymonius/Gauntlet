@@ -97,8 +97,7 @@
     return parchmentPromises.get(faction);
   }
 
-  async function loadParchments() {
-    const cards = Array.from(document.querySelectorAll('.gauntlet-card'));
+  async function loadParchments(cards = Array.from(document.querySelectorAll('.gauntlet-card'))) {
     await Promise.all(cards.map(async card => {
       const faction = factionForCard(card);
       try {
@@ -627,24 +626,42 @@
     }
   }
 
-  async function prepareCards() {
-    integrateLongCardReview();
-    await loadProductionFonts();
-
-    await Promise.all(Array.from(document.images).map(image => {
+  async function waitForImages(root = document) {
+    await Promise.all(Array.from(root.querySelectorAll?.('img') || []).map(image => {
       if (image.complete) return Promise.resolve();
       return new Promise(resolve => {
         image.addEventListener('load', resolve, { once: true });
         image.addEventListener('error', resolve, { once: true });
       });
     }));
+  }
 
+  async function prepareCard(card) {
+    if (!(card instanceof HTMLElement)) throw new Error('prepareCard requires a rendered card element.');
+    await loadProductionFonts();
+    await waitForImages(card);
+    await loadParchments([card]);
+    fitCard(card);
+    installCardInspection();
+    return card;
+  }
+
+  async function prepareCards() {
+    integrateLongCardReview();
+    await loadProductionFonts();
+    await waitForImages(document);
     await loadParchments();
     requestAnimationFrame(() => requestAnimationFrame(() => {
       fitAllCards();
       installCardInspection();
     }));
   }
+
+  window.GauntletCardDesign = Object.freeze({
+    prepareCard,
+    fitCard,
+    loadProductionFonts,
+  });
 
   window.addEventListener('load', prepareCards);
   window.addEventListener('beforeprint', fitAllCards);
