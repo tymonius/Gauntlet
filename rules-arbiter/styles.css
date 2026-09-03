@@ -95,37 +95,55 @@ footer {
   background: rgba(255, 250, 240, 0.92);
   box-shadow: var(--shadow);
 }
-.arbiter-intro {
-  display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(250px, .92fr);
-  gap: clamp(14px, 2.5vw, 30px);
-  align-items: end;
-  margin-bottom: 1.35rem;
+.arbiter-heading {
+  width: 100%;
+  margin-bottom: clamp(22px, 3vw, 34px);
 }
-.arbiter-intro__copy { min-width: 0; }
 .arbiter-panel h1 {
-  margin: 0 0 18px;
+  margin: 0;
   font: 500 clamp(3rem, 7vw, 6rem)/.92 var(--serif);
   letter-spacing: -.045em;
 }
-.arbiter-voice {
-  max-width: 36rem;
-  margin: 1rem 0 0;
-  color: #4b4339;
-  font: italic 1.02rem/1.55 var(--reading);
+.arbiter-persona {
+  display: grid;
+  grid-template-columns: minmax(280px, 1.08fr) minmax(240px, .92fr);
+  gap: clamp(24px, 4vw, 46px);
+  align-items: center;
+  margin: 0 0 clamp(22px, 3vw, 34px);
 }
 .arbiter-portrait {
-  margin: -12px -16px -4px 0;
+  margin: 0;
   display: flex;
-  align-self: end;
-  justify-content: center;
+  align-items: flex-end;
+  justify-content: flex-start;
   pointer-events: none;
 }
 .arbiter-portrait img {
   display: block;
-  width: min(100%, 390px);
+  width: min(100%, 440px);
   height: auto;
   filter: drop-shadow(0 14px 20px rgba(41, 30, 16, .18));
+}
+.arbiter-voice {
+  margin: 0;
+  color: var(--crimson);
+  font-family: var(--font-flavor);
+  font-size: clamp(1.7rem, 3.2vw, 2.6rem);
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.08;
+}
+.arbiter-voice p { margin: 0; }
+.arbiter-voice cite {
+  display: block;
+  margin-top: .7rem;
+  color: var(--crimson-dark);
+  font-family: var(--sans);
+  font-size: .72rem;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
 }
 .eyebrow {
   margin: 0 0 14px;
@@ -136,7 +154,7 @@ footer {
   letter-spacing: .16em;
   text-transform: uppercase;
 }
-.lede { max-width: 760px; color: #413b34; font: 1.16rem/1.65 var(--reading); }
+.lede { max-width: none; margin: 0; color: #413b34; font: 1.16rem/1.65 var(--reading); }
 .source-boundary {
   margin: 1.4rem 0;
   padding: 1rem 1.1rem;
@@ -207,12 +225,21 @@ footer strong { color: var(--ink); }
 }
 
 @media (max-width: 720px) {
-  .arbiter-intro { grid-template-columns: 1fr; }
+  .arbiter-persona {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
   .arbiter-portrait {
     width: min(100%, 560px);
-    margin: -.35rem auto -.15rem;
+    margin-inline: auto;
+    justify-content: center;
   }
   .arbiter-portrait img { width: min(100%, 520px); }
+  .arbiter-voice {
+    max-width: 32rem;
+    margin-inline: auto;
+    text-align: center;
+  }
 }
 
 @media (max-width: 620px) {
