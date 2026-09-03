@@ -47,7 +47,7 @@ jobs:
             echo "Running the full paid Rules Arbiter benchmark."
           else
             echo "GAUNTLET_RULES_QA_LIMIT=10" >> "$GITHUB_ENV"
-            echo "Running a 10-case paid Rules Arbiter smoke test."
+            echo "Running a 10-case representative paid Rules Arbiter smoke test."
           fi
 
       - name: Wait for deployed Rules Arbiter revision
