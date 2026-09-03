@@ -137,6 +137,12 @@ replaceOnce(
       leaderPortraitBlendModes: [...document.querySelectorAll('#reader-root > .leader-page .leader-portrait img')].map(image => getComputedStyle(image).mixBlendMode),
       heroPlateBlendModes: [...document.querySelectorAll('#reader-root > .intentional-blank .hero-plate img')].map(image => getComputedStyle(image).mixBlendMode),
       heroPlateClipPaths: [...document.querySelectorAll('#reader-root > .intentional-blank .hero-plate img')].map(image => getComputedStyle(image).clipPath),
+      heroPlateElementMatchesRaster: [...document.querySelectorAll('#reader-root > .intentional-blank .hero-plate img')].map(image => {
+        const rect = image.getBoundingClientRect();
+        const renderedRatio = rect.width / rect.height;
+        const rasterRatio = image.naturalWidth / image.naturalHeight;
+        return Number.isFinite(renderedRatio) && Number.isFinite(rasterRatio) && Math.abs(renderedRatio - rasterRatio) < 0.01;
+      }),
       factionInnerStacking: [...document.querySelectorAll('#reader-root > .page[data-faction] .page-inner')].map(inner => getComputedStyle(inner).zIndex),
       factionIsolation: [...document.querySelectorAll('#reader-root > .page[data-faction]')].map(page => getComputedStyle(page).isolation),
       openerPages: [...document.querySelectorAll('#reader-root > .part-opener, #reader-root > .faction-opener')].map(page => ({ anchor: page.dataset.anchor || '', pageNumber: Number(page.dataset.page), classes: page.className })),
@@ -167,6 +173,9 @@ replaceOnce(
   }
   if (result.heroPlateClipPaths.some(value => value === 'none' || !value.includes('2px'))) {
     throw new Error('v0.7.1 hero-plate edge clipping is missing: ' + JSON.stringify(result.heroPlateClipPaths) + '.');
+  }
+  if (result.heroPlateElementMatchesRaster.some(value => value !== true)) {
+    throw new Error('v0.7.1 hero-plate element no longer matches the source raster bounds: ' + JSON.stringify(result.heroPlateElementMatchesRaster) + '.');
   }
   if (result.factionInnerStacking.some(zIndex => zIndex !== 'auto')) {
     throw new Error('v0.7.1 faction page content unexpectedly creates a stacking context: ' + JSON.stringify(result.factionInnerStacking) + '.');
