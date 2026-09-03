@@ -19,12 +19,17 @@ const ttsCards = readFileSync('scripts/generate-tts-card-assets.mjs', 'utf8');
 describe('FaceSpec renderer v2 foundation', () => {
   it('defines one immutable request-to-FaceSpec boundary for migrated families', () => {
     expect(faceSpec).toContain("export async function resolveFaceSpec");
-    expect(faceSpec).toContain("normalizedKind === 'leader'");
-    expect(faceSpec).toContain("normalizedKind === 'back'");
+    expect(faceSpec).toContain("function parseFaceId(faceId)");
+    expect(faceSpec).toContain("parsed.namespace === 'leader'");
+    expect(faceSpec).toContain("parsed.namespace === 'back'");
+    expect(faceSpec).toContain("export function leaderFaceId");
+    expect(faceSpec).toContain("export function cardBackFaceId");
     expect(faceSpec).toContain("surfaceCssSize(orientation)");
     expect(faceSpec).toContain("backPolicy: 'standardBack'");
     expect(faceSpec).toContain("requireExplicitArtworkDirection");
-    expect(faceRuntime).toContain("const spec = await resolveFaceSpec(request)");
+    expect(faceRuntime).toContain("const spec = await resolveFaceSpec(request.faceId)");
+    expect(faceRuntime).not.toContain("query.get('kind')");
+    expect(faceRuntime).not.toContain("query.get('side')");
     expect(faceRuntime).toContain("family.mountFace(target, spec)");
     expect(faceShell).not.toContain('leaderReviewSections');
     expect(faceShell).not.toContain('proposalReviewSections');
@@ -61,17 +66,21 @@ describe('FaceSpec renderer v2 foundation', () => {
 
   it('renders card backs through the same face surface and keeps the old back URL as a redirect only', () => {
     expect(cardBackFace).toContain("renderCardBack");
-    expect(productionPrint).toContain('/card-design/face-render.html?kind=back&id=');
-    expect(ttsCards).toContain('/card-design/face-render.html?kind=back&id=');
+    expect(productionPrint).toContain('/card-design/face-render.html?id=');
+    expect(productionPrint).toContain('back:${safeFaction}');
+    expect(ttsCards).toContain('back:${faction}');
     expect(cardBackAlias).toContain('/card-design/face-render.html');
     expect(cardBackAlias).toContain('window.location.replace(target)');
     expect(cardBackAlias).not.toContain('card-back.js');
   });
 
   it('moves every migrated consumer onto FaceSpec rather than keeping parallel Leader/back surfaces', () => {
-    expect(cardReview).toContain("kind === 'leader' ? 'face-render.html' : 'component-render.html'");
-    expect(productionPrint).toContain('options.kind === "leader" ? "face-render.html" : "component-render.html"');
-    expect(cardReference).toContain("buildFaceRendererUrl('leader', rendererId)");
+    expect(cardReview).toContain("faceReviewFrame(faceId");
+    expect(cardReview).not.toContain("kind === 'leader' ? 'face-render.html' : 'component-render.html'");
+    expect(productionPrint).toContain("if (options.faceId) return productionFaceSource(options.faceId)");
+    expect(productionPrint).not.toContain('options.kind === "leader" ? "face-render.html" : "component-render.html"');
+    expect(cardReference).toContain("buildFaceRendererUrl(rendererId)");
+    expect(cardReference).toContain("leader:${faction}-${leader.id}");
     expect(ttsLeaders).toContain('/card-design/face-render.html');
     expect(ttsLeaders).not.toContain('/card-design/component-render.html');
     expect(ttsCards).not.toContain('/card-design/card-back-render.html');
