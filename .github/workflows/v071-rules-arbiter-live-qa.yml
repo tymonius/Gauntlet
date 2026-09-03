@@ -42,7 +42,7 @@ jobs:
           RULES_HEALTH_ENDPOINT: https://gauntlet-rules-assistant.tymon-scott.workers.dev/health
         run: |
           node <<'NODE'
-          const { readFileSync } = require("node:fs");
+          const { readFileSync } = await import("node:fs");
           const workerSource = readFileSync("rules-assistant/worker-v071.js", "utf8");
           const revisionMatch = workerSource.match(/export const BEHAVIOR_REVISION = "([^"]+)"/);
           if (!revisionMatch) {
