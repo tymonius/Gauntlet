@@ -94,7 +94,8 @@ describe('complete FaceSpec source authority', () => {
       source: { mode: 'exact', src: '/images/banker.png' },
       composition: { id: 'financiers-banker', explicit: true },
     });
-    expect(banker.readiness.productionReady).toBe(true);
+    expect(banker.readiness.productionReady).toBe(false);
+    expect(banker.readiness.issues).toContain('artwork-composition-not-final');
 
     const general = resolveFaceSpec(game, 'leader:military-general');
     expect(general.artwork.composition).toMatchObject({
@@ -122,6 +123,10 @@ describe('complete FaceSpec source authority', () => {
     const tracker = resolveFaceSpec(game, 'component:military-command-tracker:front');
     expect(tracker.readiness.productionReady).toBe(false);
     expect(tracker.readiness.issues).toContain('tracker-presentation-still-legacy');
+
+    const reference = resolveFaceSpec(game, 'component:universal-reference:front');
+    expect(reference.readiness.productionReady).toBe(false);
+    expect(reference.readiness.issues).toContain('reference-presentation-still-legacy');
 
     const general = resolveFaceSpec(game, 'leader:military-general');
     expect(general.readiness.productionReady).toBe(false);
