@@ -4,7 +4,8 @@ import { describe, expect, it } from "vitest";
 const source = JSON.parse(readFileSync("docs/v0.6.4-card-additions.json", "utf8"));
 const catalogPage = readFileSync("card-design/index.html", "utf8");
 const catalogOverlay = readFileSync("card-design/current-card-catalog.js", "utf8");
-const cardRenderer = readFileSync("card-design/card-review-render.js", "utf8");
+const faceSpec = readFileSync("card-design/face-spec.mjs", "utf8");
+const playableTemplate = readFileSync("card-design/face-templates/playable.mjs", "utf8");
 const currentAuthority = JSON.parse(readFileSync("game-data/current-game.json", "utf8"));
 const starterDecks = currentAuthority.starterDecks;
 
@@ -177,10 +178,11 @@ describe("v0.6.4 full card-expansion candidate staging", () => {
     expect(catalogOverlay).not.toContain("removeRetiredCards");
     expect(catalogOverlay).not.toContain("installV064PlaytestCards");
 
-    expect(cardRenderer).toContain("loadCurrentGame");
-    expect(cardRenderer).toContain("currentGame.findCard(cardId)");
-    expect(cardRenderer).toContain("source: currentGame.authorityUrl");
-    expect(cardRenderer).not.toContain("/artifacts/reconstruction/clean-v0.6.3/downstream/canonical-data.json");
-    expect(cardRenderer).not.toContain("/docs/v0.6.4-card-additions.json");
+    expect(faceSpec).toContain("(game.cards || []).find(item => item.id === id)");
+    expect(faceSpec).toContain("return { type: 'playable', card: clone(card) }");
+    expect(playableTemplate).toContain("const card = spec.content.card;");
+    expect(playableTemplate).toContain("spec.provenance.displayVersion");
+    expect(faceSpec).not.toContain("/artifacts/reconstruction/clean-v0.6.3/downstream/canonical-data.json");
+    expect(faceSpec).not.toContain("/docs/v0.6.4-card-additions.json");
   });
 });
