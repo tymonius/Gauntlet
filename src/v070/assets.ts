@@ -9,15 +9,17 @@ import {
 } from './engine';
 import type { PlayerId } from './rules';
 import { drawV070Cards } from './card-draw';
-import { releaseV070BoundCards, v070BindingsForHost } from './bindings';
+import {
+  releaseV070BoundCards,
+  releaseV070BoundCardsForPurpose,
+  v070BindingsForHost,
+} from './bindings';
 import {
   clearV070AssetFaceState,
   isV070AssetActive,
 } from './asset-face-state';
 
-const REMOVAL_LIFECYCLE_UNSUPPORTED = new Set([
-  'financiers-margin-loan',
-]);
+const REMOVAL_LIFECYCLE_UNSUPPORTED = new Set<string>();
 
 export type V070AssetAction = {
   type: 'resolve_asset_limit_removal';
@@ -192,6 +194,86 @@ export function discardV070AssetAsAction(
     instanceId,
     'Asset discard Action',
   );
+}
+
+export function resolveV070MarginLoanRepayment(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+): string[] {
+  assertBankedMarginLoan(state, playerId, instanceId);
+  const collateral = marginLoanCollateralInstanceIds(state, instanceId);
+  if (collateral.length !== 1) {
+    throw new V070GameActionError(
+      'A banked Margin Loan must have exactly one bound collateral card to be repaid.',
+    );
+  }
+
+  releaseV070BoundCardsForPurpose(
+    state,
+    instanceId,
+    'Margin Loan',
+    'hand',
+    'Margin Loan repayment',
+  );
+  moveBankedAsset(
+    state,
+    playerId,
+    instanceId,
+    'discard',
+    'Margin Loan repayment',
+    false,
+  );
+  appendV070Event(state, {
+    type: 'margin_loan_repaid',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      instanceId,
+      collateralInstanceIds: [...collateral],
+    },
+  });
+  return collateral;
+}
+
+export function resolveV070MarginLoanDefault(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+  reason = 'Margin Loan default',
+): string[] {
+  assertBankedMarginLoan(state, playerId, instanceId);
+  const collateral = marginLoanCollateralInstanceIds(state, instanceId);
+
+  if (collateral.length > 0) {
+    releaseV070BoundCardsForPurpose(
+      state,
+      instanceId,
+      'Margin Loan',
+      'graveyard',
+      reason,
+    );
+  }
+  moveBankedAsset(
+    state,
+    playerId,
+    instanceId,
+    'graveyard',
+    reason,
+    false,
+  );
+  appendV070Event(state, {
+    type: 'margin_loan_defaulted',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      instanceId,
+      collateralInstanceIds: [...collateral],
+      removed: false,
+      reason,
+    },
+  });
+  return collateral;
 }
 
 export function activateV070SleeperNetworkAsset(
@@ -702,8 +784,9 @@ function moveBankedAsset(
   });
 
   const preserveBindings =
-    cardId === 'intelligence-sleeper-network'
-    && (removed || reason === 'Sleeper Network activation');
+    (cardId === 'intelligence-sleeper-network'
+      && (removed || reason === 'Sleeper Network activation'))
+    || (cardId === 'financiers-margin-loan' && removed);
   if (v070BindingsForHost(state, instanceId).length > 0 && !preserveBindings) {
     releaseV070BoundCards(
       state,
@@ -731,6 +814,14 @@ function resolveV070RemovedAssetTrigger(
   instanceId: string,
   cardId: string,
 ): void {
+  if (cardId === 'financiers-margin-loan') {
+    resolveRemovedMarginLoanDefault(
+      state,
+      playerId,
+      instanceId,
+    );
+    return;
+  }
   if (cardId === 'intelligence-sleeper-network') {
     beginSleeperNetworkBoundActionQueue(
       state,
@@ -769,6 +860,75 @@ function resolveV070RemovedAssetTrigger(
         sourceInstanceId: instanceId,
       },
     });
+  }
+}
+
+function resolveRemovedMarginLoanDefault(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+): void {
+  const collateral = marginLoanCollateralInstanceIds(state, instanceId);
+  if (collateral.length > 0) {
+    releaseV070BoundCardsForPurpose(
+      state,
+      instanceId,
+      'Margin Loan',
+      'graveyard',
+      'Margin Loan Default after Removal',
+    );
+  }
+
+  const player = state.players[playerId];
+  const handIndex = player.zones.hand.indexOf(instanceId);
+  if (handIndex >= 0) player.zones.hand.splice(handIndex, 1);
+  const discardIndex = player.zones.discardPile.indexOf(instanceId);
+  if (discardIndex >= 0) player.zones.discardPile.splice(discardIndex, 1);
+  if (!player.zones.graveyard.includes(instanceId)) {
+    player.zones.graveyard.push(instanceId);
+  }
+
+  appendV070Event(state, {
+    type: 'margin_loan_defaulted',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      instanceId,
+      collateralInstanceIds: [...collateral],
+      removed: true,
+      reason: 'Margin Loan Default after Removal',
+    },
+  });
+}
+
+function marginLoanCollateralInstanceIds(
+  state: V070GameState,
+  instanceId: string,
+): string[] {
+  return v070BindingsForHost(state, instanceId)
+    .filter(binding => binding.purpose === 'Margin Loan')
+    .map(binding => binding.cardInstanceId);
+}
+
+function assertBankedMarginLoan(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+): void {
+  if (state.cardInstances[instanceId]?.cardId !== 'financiers-margin-loan') {
+    throw new V070GameActionError(
+      'Margin Loan lifecycle resolution requires a Margin Loan Asset.',
+    );
+  }
+  if (!state.players[playerId].zones.assetBank.includes(instanceId)) {
+    throw new V070GameActionError(
+      'Margin Loan must still be banked to resolve repayment or voluntary Default.',
+    );
+  }
+  if (!isV070AssetActive(state, instanceId)) {
+    throw new V070GameActionError(
+      'Margin Loan must be active to resolve its printed Asset effect.',
+    );
   }
 }
 
