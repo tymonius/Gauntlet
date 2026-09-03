@@ -2,8 +2,9 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const reviewPage = readFileSync("card-design/index.html", "utf8");
-const componentRenderPage = readFileSync("card-design/component-render.html", "utf8");
-const componentRenderScript = readFileSync("card-design/component-render.js", "utf8");
+const faceAuthority = readFileSync("card-design/face-authority.mjs", "utf8");
+const faceSpec = readFileSync("card-design/face-spec.mjs", "utf8");
+const deedTemplate = readFileSync("card-design/face-templates/deed.mjs", "utf8");
 const productionSurface = readFileSync("card-design/production-surface.mjs", "utf8");
 const ornamentStudy = readFileSync("card-design/deed-ornament-study.html", "utf8");
 const deedDivider = readFileSync("card-design/deed-ornamental-divider.svg", "utf8");
@@ -37,14 +38,14 @@ describe("Financier Deed card", () => {
     expect(supplementalRenderer).toContain("import { deedCardMarkup } from './deed-card.js';");
     expect(supplementalRenderer).toContain("if (component.family === 'deed-card') return deedCardMarkup();");
     expect(deedScript).not.toContain("supplemental-placeholder-card");
-    expect(componentRenderScript).not.toContain("historical supplemental shell");
+    expect(deedTemplate).not.toContain("supplemental-placeholder-card");
   });
 
-  it("loads dedicated Deed styles in both the review and shared production renderer", () => {
+  it("loads dedicated Deed styles in both the review catalog and canonical FaceSpec", () => {
     expect(reviewPage).toContain('href="deed-card.css"');
     expect(reviewPage.indexOf('href="deed-card.css"')).toBeGreaterThan(reviewPage.indexOf('href="supplemental-card.css"'));
-    expect(componentRenderPage).toContain('href="/card-design/deed-card.css"');
-    expect(componentRenderPage.indexOf('/card-design/deed-card.css')).toBeGreaterThan(componentRenderPage.indexOf('/card-design/supplemental-card.css'));
+    expect(faceSpec).toContain("'/card-design/deed-card.css'");
+    expect(faceSpec.indexOf("'/card-design/deed-card.css'")).toBeGreaterThan(faceSpec.indexOf("'/card-design/supplemental-card.css'"));
   });
 
   it("renders the Deed in the same 3.5 by 2.5 inch landscape format as Territories", () => {
@@ -53,10 +54,8 @@ describe("Financier Deed card", () => {
     expect(deedStyles).toContain('data-contract-component-id="financiers-deed"');
     expect(deedStyles).toContain("width: 3.5in");
     expect(deedStyles).toContain("height: 2.5in");
-    expect(componentRenderScript).toContain("surfaceCssSize(orientation)");
-    expect(componentRenderScript.indexOf("await loadCanonicalRenderContext();")).toBeLessThan(
-      componentRenderScript.indexOf("applyRenderViewport();")
-    );
+    expect(faceAuthority).toContain("deed: Object.freeze({ orientation: 'landscape' })");
+    expect(deedTemplate).toContain('class="gauntlet-card faction-component-card deed-card financiers-card"');
     expect(productionSurface).toContain("widthIn: 3.5");
     expect(productionSurface).toContain("heightIn: 2.5");
     expect(productionSurface).toContain("widthCssPx: 336");
