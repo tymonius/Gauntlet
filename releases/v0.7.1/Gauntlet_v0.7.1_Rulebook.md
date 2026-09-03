@@ -303,7 +303,7 @@ An Action may be used to:
 - use one **Faction Feature** or **Leader Ability** marked **1 Action**, when its timing permits; or
 - discard one Asset you control.
 
-A **Faction Feature** is a named rule, option, procedure, passive effect, or special mechanic shared by a faction. A **Leader Ability** is supplied specifically by your chosen Leader.
+A **Faction Feature** is a named faction-specific mechanic shared by a faction. A Faction Feature may have several uses, modes, or procedures; those remain parts of the same Feature rather than becoming separate Features. A **Leader Ability** is supplied specifically by your chosen Leader and may provide a specific option used through a shared Faction Feature.
 
 Neither term implies whether an Action is spent. Each Feature or Ability states the properties that matter in play: **1 Action**, **No Action**, or **Automatic**, together with its timing, resource cost, frequency, and other limits as applicable.
 
@@ -367,9 +367,9 @@ To play a card for its Action effect:
 
 ### Faction Features
 
-A **Faction Feature** is a named faction-specific rule, option, procedure, passive effect, or special mechanic shared by the faction.
+A **Faction Feature** is a named faction-specific mechanic shared by the faction.
 
-Names such as **Terms**, **Purge**, **Mission**, **Rite**, **Surveillance**, and similar faction mechanics remain the names of those Features; they are not separate top-level rules categories.
+Names such as **Orders**, **Terms**, **Deeds**, **Missions**, **Surveillance**, **Rites**, and **Purge** are Features. A Feature may contain several related procedures or uses. For example, Surveillance covers both Gambit and Tactic surveillance rather than treating those as separate Faction Features.
 
 The faction chapter and Faction Reference state each Feature's Action profile, timing, resource cost, frequency, and other limits. A Feature marked **1 Action** may be used only by spending an Action at a legal timing. A Feature marked **No Action** or **Automatic** does not consume the player's normal Action.
 
@@ -379,7 +379,7 @@ A **Leader Ability** is a mechanic supplied specifically by the chosen Leader.
 
 Leader Abilities use the same **1 Action**, **No Action**, and **Automatic** profiles as Faction Features. Their timing, resource costs, frequency, and other limits are stated on the Leader Card and in the relevant faction chapter.
 
-Military **Orders** are the named Leader Ability for the General and Commandant. Each individual Order states its Command cost and timing.
+Military **Orders** are a shared Faction Feature. The individual Orders available to the chosen Leader are that Leader's Leader Abilities. Each Order states its Command cost and timing.
 
 ### Discarding an Asset as an Action
 
@@ -1190,7 +1190,9 @@ Military has no alternate victory condition. It wins by running the Gauntlet.
 
 ## Faction Features
 
-Military has no shared Faction Feature that spends an Action. **Orders** are Leader Abilities, not Faction Features. Each Order states its Command cost and timing and does not spend an Action. Playing a Military card for its Action effect still uses the normal Action rules.
+- **Orders — No Action · At each Order's stated timing · Listed Command.** Spend Command to use one of the Orders supplied by your chosen Leader. **Orders** is the shared Military Faction Feature; each individual Order is a Leader Ability. The General provides Onward, Rally, and Rout. The Commandant provides Entrench, Repel, and Fortify.<!-- RULE-FACT:faction-features.military.orders -->
+
+Playing a Military card for its Action effect still uses the normal Action rules.
 
 ## Components and setup
 
@@ -1292,7 +1294,10 @@ Accepted or successfully imposed Proposals become Treaty Articles. Ratify six<!-
 
 ## Faction Features
 
-**Terms** and **Leverage** are Diplomat Faction Features marked **No Action**. Terms is used during Onset before other pre-Gambit effects, and Leverage is used before dice are rolled after refused Terms. Playing a Diplomat card for its Action effect still uses the normal Action rules.
+- **Terms — No Action · During Onset.** Offer one eligible Proposal whose Requirement is satisfied and stake its listed Influence. The opponent accepts or refuses; accepted Terms end the battle sequence, while refused Terms continue toward battle.<!-- RULE-FACT:faction-features.diplomats.terms -->
+- **Leverage — No Action · Before dice after refused Terms · Triangular Influence cost.** Spend available Influence to increase the Diplomat's battle total. +1 / +2 / +3 / +4 costs 1 / 3 / 6 / 10 Influence; the progression continues without a fixed maximum. Staked Influence cannot be spent as Leverage.<!-- RULE-FACT:faction-features.diplomats.leverage -->
+
+Playing a Diplomat card for its Action effect still uses the normal Action rules.
 
 ## Components and setup
 
@@ -1382,9 +1387,9 @@ Withdrawal produces no winner. Return the Stake and do not impose the Proposal.
 
 #### Leverage
 
-Before dice are rolled in a battle following refused Terms, the Diplomat may spend Influence for Leverage:
+Before dice are rolled in a battle following refused Terms, the Diplomat may spend Influence for Leverage to increase the Diplomat's battle total:
 
-| Bonus | Total Influence cost |
+| Battle Total bonus | Total Influence cost |
 |---:|---:|
 | +1 | 1 |
 | +2 | 3 |
@@ -1543,14 +1548,14 @@ Deed ownership is independent of token position and Territory control. Own the D
 
 ## Faction Features
 
-Financiers have the following shared Faction Features marked **1 Action · Denouement**:
+- **Treasury — 1 Action · Denouement.** Place one card from Hand face up in Treasury. Its value increases your Capital limit.<!-- RULE-FACT:faction-features.financiers.treasury -->
+- **Deeds — 1 Action · Denouement · Current Deed cost.** Buy an unowned Deed or buy out an opposing Financier's Deed by paying its full current cost.<!-- RULE-FACT:faction-features.financiers.deeds -->
+- **Play the Market — 1 Action · Denouement · Discard 1 card from Hand.** Roll one die and gain Capital according to the result.<!-- RULE-FACT:faction-features.financiers.play-the-market -->
+- **Subsidize — No Action · Before dice · Triangular Capital cost.** Spend Capital to increase your battle total. +1 / +2 / +3 / +4 costs 1 / 3 / 6 / 10 Capital; the progression continues without a fixed maximum.<!-- RULE-FACT:faction-features.financiers.subsidize -->
+- **Financial Capacity — No Action · After Capture.** If your Treasury value is greater than the number of Territories you control, you may take one Action in Opening and one Action in Denouement that turn. At least one must be a Financier Faction Feature marked 1 Action.<!-- RULE-FACT:faction-features.financiers.financial-capacity -->
+- **Income — Automatic · After Capture.** Gain 1 Capital for each Deed you own.<!-- RULE-FACT:faction-features.financiers.income -->
 
-- **Place a card in Treasury:** Place one card from your Hand face up in your Treasury.
-- **Buy or buy out a Deed:** Pay the full current cost to acquire one unowned Deed or buy out one opposing Financier's Deed.
-- **Play the Market:** Discard one card from Hand, roll one die, and gain Capital according to the result.
-**Hostile Takeover — Executive Leader Ability:** After winning a battle as the attacker that turn and becoming the occupier of the enemy Territory, spend 1 Action during Denouement to buy or buy out its Deed; a successful purchase also gives you control of that Territory.
-
-When Financial Capacity grants an additional Action, at least one Action spent that turn must be spent on a Financier Faction Feature marked **1 Action**. **Line of Credit** is the Banker's Leader Ability. **Subsidize** is a shared Faction Feature marked **No Action**; neither is part of the 1-Action feature list above.
+**Hostile Takeover** is the Executive's Leader Ability. **Line of Credit** is the Banker's Leader Ability. Neither is a shared Faction Feature.
 
 ## Components and setup
 
@@ -1744,15 +1749,12 @@ Complete enough Missions to make a **Special Operation** ready, satisfy its hidd
 
 ## Faction Features
 
-Intelligence has the following Faction Features marked **1 Action · Denouement**:
+- **Missions — 1 Action · Denouement · Abort cost: Intel equal to Mission value.** Spend an Action to start an eligible Mission, complete a satisfied Active Mission, or abort the Active Mission. Starting places the card face down; completing grants 1 Operation Progress and Intel equal to its value; aborting sends it to the Discard Pile after paying its Intel cost.<!-- RULE-FACT:faction-features.intelligence.missions -->
+- **Special Operations — 1 Action · Denouement · Completion cost: Territories in the Gauntlet minus card value, minimum 1 Intel.** When ready, spend an Action to start a Special Operation. On a later Denouement, if its requirement is satisfied and readiness remains valid, spend an Action, reveal it, pay the completion cost, and win immediately.<!-- RULE-FACT:faction-features.intelligence.special-operations -->
+- **Surveillance — No Action · After opposing Gambit or Tactic choice · 1 Intel per revealed card · Once per battle at each stage.** After the opponent sets a face-down Gambit, spend 1 Intel to reveal it. After the opponent chooses face-down Tactics, spend 1 Intel per Tactic you reveal. The Gambit and Tactic opportunities are separate.<!-- RULE-FACT:faction-features.intelligence.surveillance -->
+- **Interference — No Action · Immediately after reveal or face-up opposing choice · 2 Intel per removed card.** Immediately after revealing an opposing card through Surveillance, pay 2 additional Intel per card to return a Gambit to Hand or a Tactic to Reserve; its owner may replace it from the same source. If an opposing effect sets or chooses a card face up, you may use Interference directly at that response timing for 2 Intel.<!-- RULE-FACT:faction-features.intelligence.interference -->
 
-- **Start a Mission:** Place one eligible Intelligence card from Hand face down as your Active Mission.
-- **Complete a Mission:** Reveal a satisfied Active Mission, gain its Mission reward, and put it in your Discard Pile.
-- **Abort a Mission:** Reveal the Active Mission, spend Intel equal to its value, and put it in your Discard Pile.
-- **Start a Special Operation:** When ready, place one eligible Intelligence card from Hand face down as your Special Operation.
-- **Complete a Special Operation:** Reveal a satisfied, ready Special Operation, pay its Intel cost, and win the game.
-
-**Surveillance** and **Interference** are shared Faction Features marked **No Action**. **Fieldcraft** and **Mission Control** are Leader Abilities. Mission Control may start a Mission without spending an Action because that Leader Ability expressly permits it.
+**Fieldcraft** and **Mission Control** are Leader Abilities, not shared Faction Features.
 
 ## Components and setup
 
@@ -1939,12 +1941,13 @@ To win through Ritual, bind three cards from three different zones, initiate a b
 
 ## Faction Features
 
-Mystics have the following Faction Features marked **1 Action · Denouement**:
+- **Rites — 1 Action · Denouement · Printed Begin cost.** Choose one incomplete selected Rite you may legally begin, reveal it, and follow its Begin instruction. Rite completion and interruption then follow that Rite's printed conditions automatically.<!-- RULE-FACT:faction-features.mystics.rites -->
+- **Invocation — No Action · After applying an Arcane card effect · Once per turn.** After applying the Action, Gambit, or Tactic effect of an Arcane card you played, set, or chose, move one card from your Graveyard to your Discard Pile.<!-- RULE-FACT:faction-features.mystics.invocation -->
+- **Transmutation — No Action · Before dice · Put 1 card from Hand in Graveyard · Once per turn.** Put one card from Hand in your Graveyard and add its value to your battle total.<!-- RULE-FACT:faction-features.mystics.transmutation -->
+- **Ritual of Ascension — 1 Action · Denouement after 3 Rites · Bind 3 Arcane cards.** After completing all three selected Rites, bind one Arcane card from Hand, one from the Discard Pile, and one from the Graveyard to begin the Ritual.<!-- RULE-FACT:faction-features.mystics.ritual-of-ascension -->
+- **Convergence — Automatic · During a Ritual battle you initiated.** Add +1 to your battle total for each card bound to the Ritual.<!-- RULE-FACT:faction-features.mystics.convergence -->
 
-- **Begin a Rite:** Choose an incomplete selected Rite you may legally begin, reveal it, and pay its beginning cost.
-- **Begin the Ritual of Ascension:** After completing all three selected Rites, bind the required Arcane cards from Hand, Discard Pile, and Graveyard.
-
-Completing a Rite is automatic when that Rite's completion condition and timing are satisfied. **Invocation** and **Transmutation** are Faction Features marked **No Action**; **Convergence** is **Automatic**. The Alchemist and Spirit Walker mechanics are Leader Abilities.
+**Materia Prima** and **Guardians of the Circle** are Leader Abilities, not shared Faction Features.
 
 ## Components and setup
 
@@ -2166,15 +2169,13 @@ Spend Conviction on **Purges** that remove cards and Assets. The first time on y
 
 ## Faction Features
 
-**Purge is an Inquisition Faction Feature marked 1 Action · Opening or Denouement · Once per turn.**
+- **Purge — 1 Action · Opening or Denouement · Listed Conviction · Once per turn.** Spend the listed Conviction to perform one Purge. If one Action that turn is Purge, you may also take one Action in the other Action phase that turn; Purge never permits two Actions in one phase.<!-- RULE-FACT:faction-features.inquisition.purge -->
+- **Conviction — Automatic · First qualifying Aftermath each turn.** The first time each turn one or more opposing cards enter the Graveyard during the Aftermath of a battle involving you, gain 1 Conviction, to a maximum of 4.<!-- RULE-FACT:faction-features.inquisition.conviction -->
+- **Condemnation — Automatic · Aftermath.** During the Aftermath of battles involving you, opposing Tactics go to their owner's Graveyard instead of their Discard Pile.<!-- RULE-FACT:faction-features.inquisition.condemnation -->
+- **Blasphemy — Automatic · Opposing Arcane Action or reveal.** Gain 1 Conviction whenever an opponent plays an Arcane card for its Action effect or reveals an Arcane Gambit or Tactic they control, to a maximum of 4.<!-- RULE-FACT:faction-features.inquisition.blasphemy -->
+- **Purification — Automatic · Opponent's start-of-turn Draw.** After the opponent's normal start-of-turn draw attempt, if they draw no cards because both their Draw Pile and Discard Pile are empty, win immediately.<!-- RULE-FACT:faction-features.inquisition.purification -->
 
-> **Purge — Faction Feature · 1 Action · Opening or Denouement · Once per turn:** Spend the listed Conviction to perform one Purge. If one Action that turn is Purge, you may also take one Action in the other Action phase that turn.
-
-- Purge may occupy either Action phase.
-- The other Action must occupy the other phase.
-- Purge never permits two Actions in one phase.
-- You may spend an Action on Purge no more than once per turn.
-- A Purge directly permitted without taking an Action, such as Final Judgment, is separate and does not consume the once-per-turn permission to spend an Action on Purge or activate the two-phase permission.
+**Final Judgment** and **Relentless Pursuit** are Leader Abilities, not shared Faction Features.
 
 ## Components and setup
 
