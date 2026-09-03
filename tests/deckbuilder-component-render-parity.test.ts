@@ -9,6 +9,10 @@ const supplementalDesign = readFileSync("card-design/supplemental-card.js", "utf
 const compositor = readFileSync("card-design/artwork-compositor.js", "utf8");
 const componentRenderer = readFileSync("card-design/component-render.html", "utf8");
 const componentRendererJs = readFileSync("card-design/component-render.js", "utf8");
+const faceRenderer = readFileSync("card-design/face-render.mjs", "utf8");
+const faceSpec = readFileSync("card-design/face-spec.mjs", "utf8");
+const leaderFace = readFileSync("card-design/face-families/leader.mjs", "utf8");
+const cardBackAlias = readFileSync("card-design/card-back-render.html", "utf8");
 const cardRenderer = readFileSync("card-design/card-review-render.html", "utf8");
 const territoryRenderer = readFileSync("card-design/territory-review-render.html", "utf8");
 const cardLegacyAlias = readFileSync("card-design/card-print-render.html", "utf8");
@@ -34,7 +38,8 @@ describe("single Card Design render authority", () => {
     expect(productionPrint).not.toContain("/card-design/territory-print-render.html?territory=");
     expect(productionPrint).not.toContain("/card-design/component-print-render.html?kind=");
 
-    expect(ttsLeaders).toContain("/card-design/component-render.html");
+    expect(productionPrint).toContain("face-render.html");
+    expect(ttsLeaders).toContain("/card-design/face-render.html");
     expect(ttsSupplementals).toContain("/card-design/component-render.html");
   });
 
@@ -44,7 +49,7 @@ describe("single Card Design render authority", () => {
     expect(catalog).toContain('id="riteReviewSections"');
     expect(catalog).toContain('id="supplementalReviewSections"');
 
-    expect(cardReview).toContain("/card-design/component-render.html?");
+    expect(cardReview).toContain("kind === 'leader' ? 'face-render.html' : 'component-render.html'");
     expect(cardReview).toContain("componentReviewFrame('leader'");
     expect(proposalDesign).toContain("/card-design/component-render.html?");
     expect(proposalDesign).toContain("componentReviewFrame(proposal.id");
@@ -55,7 +60,7 @@ describe("single Card Design render authority", () => {
     expect(supplementalDesign).toContain("canonicalComponentFrame(component");
   });
 
-  it("keeps all component construction and fitting inside the canonical component renderer", () => {
+  it("keeps migrated Leader construction in FaceSpec and remaining component construction in the legacy component surface", () => {
     for (const dependency of [
       "leader-card.css",
       "proposal-card.css",
@@ -74,10 +79,15 @@ describe("single Card Design render authority", () => {
     expect(componentRenderer).toContain("/card-design/component-render.js");
     expect(componentRendererJs).toContain("applyCanonicalArtworkDirection(card)");
     expect(componentRendererJs).toContain("target.replaceChildren(card)");
+    expect(faceSpec).toContain("template: 'leader'");
+    expect(faceSpec).toContain("requireExplicitArtworkDirection");
+    expect(leaderFace).toContain("leader-card--standardized");
+    expect(faceRenderer).toContain("window.GauntletCardDesign.prepareCard(card)");
   });
 
   it("lets the artwork compositor edit canonical component frames rather than a parallel direct face", () => {
     expect(compositor).toContain("url.pathname.endsWith('/card-design/component-render.html')");
+    expect(compositor).toContain("url.pathname.endsWith('/card-design/face-render.html')");
     expect(compositor).toContain("componentArtworkId(componentKind, componentId, componentSide)");
     expect(compositor).toContain("kind: territoryId ? 'territory' : componentId ? 'component' : 'card'");
   });
@@ -89,11 +99,14 @@ describe("single Card Design render authority", () => {
     expect(cardLegacyAlias).toContain("window.location.replace(target)");
     expect(componentLegacyAlias).toContain("window.location.replace(target)");
     expect(territoryLegacyAlias).toContain("window.location.replace(target)");
+    expect(cardBackAlias).toContain("/card-design/face-render.html");
+    expect(cardBackAlias).toContain("window.location.replace(target)");
     expect(existsSync(["card-design", "component-print-render.js"].join("/"))).toBe(false);
   });
 
 
   it("removes internal consumers and parallel TTS face implementations", () => {
+    expect(cardReference).toContain("../card-design/face-render.html?");
     expect(cardReference).toContain("../card-design/component-render.html?");
     expect(cardReference).not.toContain("component-print-render.html");
 
