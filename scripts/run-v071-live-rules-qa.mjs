@@ -17,7 +17,33 @@ const caseLimit = Number.isFinite(requestedCaseLimit) && requestedCaseLimit > 0
 const retryableStatuses = new Set([429, 502, 503, 504]);
 
 const benchmark = JSON.parse(readFileSync(benchmarkPath, "utf8"));
-const benchmarkCases = caseLimit ? benchmark.cases.slice(0, caseLimit) : benchmark.cases;
+
+function selectBenchmarkCases(cases, limit) {
+  if (!limit) return cases;
+
+  const byId = new Map(cases.map((item) => [item.id, item]));
+  const selected = [];
+  const seen = new Set();
+
+  for (const id of Array.isArray(benchmark.smokeCaseIds) ? benchmark.smokeCaseIds : []) {
+    const item = byId.get(id);
+    if (!item || seen.has(id)) continue;
+    selected.push(item);
+    seen.add(id);
+    if (selected.length >= limit) return selected;
+  }
+
+  for (const item of cases) {
+    if (seen.has(item.id)) continue;
+    selected.push(item);
+    seen.add(item.id);
+    if (selected.length >= limit) break;
+  }
+
+  return selected;
+}
+
+const benchmarkCases = selectBenchmarkCases(benchmark.cases, caseLimit);
 const startedAt = new Date().toISOString();
 const runStamp = Date.now().toString(36);
 
@@ -46,6 +72,32 @@ function significantTopicTerms(value) {
     .toLowerCase()
     .split(/[^a-z0-9]+/)
     .filter((term) => term.length > 2 && !["the", "and", "that", "this", "does", "work"].includes(term));
+}
+
+function inspectChiefJusticeVoice(answer) {
+  const failures = [];
+  const warnings = [];
+  const text = String(answer || "").trim();
+
+  if (!text) return { failures, warnings };
+
+  if (/^\s*(?:sure|absolutely|certainly|basically|yep|yeah|okay)[,!.:\s-]/i.test(text)) {
+    failures.push("voice: answer opens with canned or conspicuously modern conversational filler");
+  }
+  if (/\b(?:no problem|happy to help|great question|you(?:'|’)re right)\b/i.test(text)) {
+    failures.push("voice: answer uses customer-service or chatbot-style conversational filler");
+  }
+  if (/\b(?:whereas|hereby|heretofore|henceforth|hear ye)\b/i.test(text)) {
+    failures.push("voice: answer uses prohibited faux-legal or archaic language");
+  }
+  if (/\b(?:i am|i(?:'|’)m)\s+(?:the\s+)?chief justice\b/i.test(text) || /\blitigant\b/i.test(text)) {
+    failures.push("voice: answer roleplays the Chief Justice or addresses the player as a litigant");
+  }
+  if (text.length > 1400) {
+    warnings.push("voice: answer is unusually long for a table ruling");
+  }
+
+  return { failures, warnings };
 }
 
 function inspectAnswer(item, payload) {
@@ -116,6 +168,12 @@ function inspectAnswer(item, payload) {
 
   if (/\b(?:v0\.6\.[0-9]|battle hand|defender'?s advantage)\b/i.test(answer)) {
     warnings.push("terminology: answer may contain retired or older-edition language");
+  }
+
+  if (payload?.executionPath === "model") {
+    const voice = inspectChiefJusticeVoice(answer);
+    failures.push(...voice.failures);
+    warnings.push(...voice.warnings);
   }
 
   return { failures, warnings };
@@ -319,6 +377,8 @@ const remainingResults = benchmarkCases.length > 1
 const results = [preflight.result, ...remainingResults];
 const failed = results.filter((item) => item.failures.length);
 const warned = results.filter((item) => item.warnings.length);
+const voiceFailed = results.filter((item) => item.failures.some((failure) => failure.startsWith("voice:")));
+const voiceWarned = results.filter((item) => item.warnings.some((warning) => warning.startsWith("voice:")));
 const classifications = {};
 for (const item of results) {
   const actual = item.payload?.rulingStatus || "no_response";
@@ -330,6 +390,7 @@ const report = {
   rulesVersion: benchmark.rulesVersion,
   benchmarkCaseCount: benchmark.cases.length,
   executedCaseCount: benchmarkCases.length,
+  executedCaseIds: benchmarkCases.map((item) => item.id),
   endpoint,
   startedAt,
   completedAt: new Date().toISOString(),
@@ -343,7 +404,11 @@ const report = {
     failed: failed.length,
     warned: warned.length,
     passRate: results.length ? (results.length - failed.length) / results.length : 0,
-    classifications
+    classifications,
+    voice: {
+      failedCases: voiceFailed.length,
+      warnedCases: voiceWarned.length
+    }
   },
   results
 };
