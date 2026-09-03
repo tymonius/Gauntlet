@@ -5,6 +5,9 @@ coverage/
 .env
 .env.local
 tts/generated/
+# Versioned TTS network assets are generated and hosted from GitHub Releases, not tracked here.
+tts/v*/assets/
+tts/v*/Gauntlet_*_TTS_Mod.json
 media/generated/
 
 # Private ChatGPT export and conversation-audit material.
