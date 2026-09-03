@@ -109,7 +109,7 @@ try {
   assert.deepEqual(health, {
     ok: true,
     service: "gauntlet-playtest-sessions",
-    version: "v0.7.0",
+    version: "v0.7.1",
     database: true,
     sessionCreationConfigured: true,
     onboardingSupported: true,
@@ -122,20 +122,20 @@ try {
     authorization: adminToken,
     body: { rulesVersion: "v0.6.1" }
   }), 400);
-  assert.match(rejectedLegacyCreation.error, /v0\.7\.0 sessions only/i);
+  assert.match(rejectedLegacyCreation.error, /v0\.7\.1 sessions only/i);
 
   const event = await json(await call("/api/sessions", {
     method: "POST",
     authorization: adminToken,
     body: {
-      rulesVersion: "v0.7.0",
+      rulesVersion: "v0.7.1",
       sessionKind: "event",
-      metadata: { label: "Automated v0.7.0 game night" }
+      metadata: { label: "Automated v0.7.1 game night" }
     }
   }), 201);
-  assert.equal(event.rulesVersion, "v0.7.0");
+  assert.equal(event.rulesVersion, "v0.7.1");
   assert.equal(event.sessionKind, "event");
-  assert.match(event.sheetSerial, /^EV070-[A-Z0-9]{8}$/);
+  assert.match(event.sheetSerial, /^EV071-[A-Z0-9]{8}$/);
   assert.equal(event.onboardingUrl, `${origin}/playtest/onboarding/?code=${encodeURIComponent(event.joinToken)}`);
   assert.equal(event.onboardingHostUrl, `${event.onboardingUrl}&host=${encodeURIComponent(event.hostKey)}`);
 
@@ -166,15 +166,15 @@ try {
   const createdGames = await json(await call(`/api/sessions/${event.joinToken}/games`, {
     method: "POST",
     headers: { "X-Host-Key": event.hostKey },
-    body: { count: 2, metadata: { source: "automated-v070-event-e2e" } }
+    body: { count: 2, metadata: { source: "automated-v071-event-e2e" } }
   }), 201);
   assert.equal(createdGames.games.length, 2);
   const [gameOne, gameTwo] = createdGames.games;
   for (const game of createdGames.games) {
-    assert.equal(game.rulesVersion, "v0.7.0");
+    assert.equal(game.rulesVersion, "v0.7.1");
     assert.equal(game.sessionKind, "game");
     assert.equal(game.eventSessionId, event.sessionId);
-    assert.match(game.sheetSerial, /^G070-[A-Z0-9]{8}$/);
+    assert.match(game.sheetSerial, /^G071-[A-Z0-9]{8}$/);
   }
 
   const roster = await json(await call(`/api/sessions/${gameOne.joinToken}/event-participants`), 200);
@@ -209,10 +209,10 @@ try {
   await db.prepare(`INSERT INTO rules_interactions
     (id, session_id, sequence_index, created_at, updated_at, question, answer,
      game_version, ruling_status, confidence, answer_mode, source_count)
-    VALUES (?, ?, 1, ?, ?, ?, ?, 'v0.7.0', 'explicit', 'high', 'retrieval_only', 1)`)
+    VALUES (?, ?, 1, ?, ?, ?, ?, 'v0.7.1', 'explicit', 'high', 'retrieval_only', 1)`)
     .bind(
       interactionId,
-      "arbiter-v070-event-game-e2e",
+      "arbiter-v071-event-game-e2e",
       "2026-08-16T00:00:00.000Z",
       "2026-08-16T00:00:00.000Z",
       "Where does a Gambit go?",
@@ -227,13 +227,13 @@ try {
       classification: "explicit",
       question: "Where does a Gambit go?",
       answer: "A Gambit normally goes to its owner's Graveyard during the Aftermath.",
-      sources: [{ title: "v0.7.0 Rulebook", section: "Aftermath" }]
+      sources: [{ title: "v0.7.1 Rulebook", section: "Aftermath" }]
     }
   }), 201);
   assert.equal(linked.participantId, seatOne.participantId);
 
   const gameAfterActivity = await json(await call(`/api/sessions/${gameOne.joinToken}`), 200);
-  assert.equal(gameAfterActivity.rulesVersion, "v0.7.0");
+  assert.equal(gameAfterActivity.rulesVersion, "v0.7.1");
   assert.equal(gameAfterActivity.participantCount, 2);
   assert.equal(gameAfterActivity.arbiterQuestionCount, 1);
 
@@ -268,13 +268,13 @@ try {
     method: "POST",
     authorization: adminToken,
     body: {
-      rulesVersion: "v0.7.0",
-      sheetSerial: "G070-STD001",
+      rulesVersion: "v0.7.1",
+      sheetSerial: "G071-STD001",
       metadata: { formal: true }
     }
   }), 201);
-  assert.equal(standalone.rulesVersion, "v0.7.0");
-  assert.equal(standalone.sheetSerial, "G070-STD001");
+  assert.equal(standalone.rulesVersion, "v0.7.1");
+  assert.equal(standalone.sheetSerial, "G071-STD001");
   assert.equal(standalone.sessionKind, "game");
 
   const legacyToken = "legacy-v061-session-token-000001";
@@ -297,7 +297,27 @@ try {
   assert.equal(legacyRead.sheetSerial, "G061-LEGACY1");
   assert.equal(legacyRead.status, "closed");
 
-  console.log("Validated v0.7.0 event and standalone creation, G070/EV070 serials, table-game onboarding and Arbiter linkage, closure, rejection of new v0.6.1 creation, and read compatibility for stored v0.6.1 sessions.");
+  const priorReleaseToken = "legacy-v070-session-token-000001";
+  const priorReleaseHostKey = "legacy-v070-host-key-000001";
+  const priorReleaseSessionId = "33333333-3333-4333-8333-333333333333";
+  await db.prepare(`INSERT INTO playtest_sessions
+    (id, token_hash, host_key_hash, sheet_serial, rules_version, status, created_at,
+     metadata_json, session_kind, event_session_id)
+    VALUES (?, ?, ?, 'G070-LEGACY1', 'v0.7.0', 'closed', ?, '{}', 'game', NULL)`)
+    .bind(
+      priorReleaseSessionId,
+      sha256(priorReleaseToken),
+      sha256(priorReleaseHostKey),
+      "2026-08-29T00:00:00.000Z"
+    ).run();
+
+  const priorReleaseRead = await json(await call(`/api/sessions/${priorReleaseToken}`), 200);
+  assert.equal(priorReleaseRead.sessionId, priorReleaseSessionId);
+  assert.equal(priorReleaseRead.rulesVersion, "v0.7.0");
+  assert.equal(priorReleaseRead.sheetSerial, "G070-LEGACY1");
+  assert.equal(priorReleaseRead.status, "closed");
+
+  console.log("Validated v0.7.1 event and standalone creation, G071/EV071 serials, table-game onboarding and Arbiter linkage, closure, rejection of older-version creation, and read compatibility for stored v0.6.1/v0.7.0 sessions.");
 } finally {
   db.close();
 }

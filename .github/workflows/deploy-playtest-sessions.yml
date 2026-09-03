@@ -8,7 +8,7 @@ on:
       - "rules-assistant/local-search.js"
       - "rules-assistant/v063-public-corpus.js"
       - "playtest/**"
-      - "scripts/validate_v070_playtest_sessions.py"
+      - "scripts/validate_v071_playtest_sessions.py"
       - "scripts/test_v063_formal_session_e2e.mjs"
       - "package.json"
       - ".github/workflows/deploy-playtest-sessions.yml"
@@ -21,7 +21,7 @@ on:
       - "rules-assistant/local-search.js"
       - "rules-assistant/v063-public-corpus.js"
       - "playtest/**"
-      - "scripts/validate_v070_playtest_sessions.py"
+      - "scripts/validate_v071_playtest_sessions.py"
       - "scripts/test_v063_formal_session_e2e.mjs"
       - "package.json"
       - ".github/workflows/deploy-playtest-sessions.yml"
@@ -70,7 +70,7 @@ jobs:
           npm run test:playtest-sessions
           npm run test:formal-session-e2e
           npm run test:tracked-session-e2e
-          python scripts/validate_v070_playtest_sessions.py
+          python scripts/validate_v071_playtest_sessions.py
 
   deploy:
     if: ${{ github.event_name != 'pull_request' }}
@@ -134,7 +134,7 @@ jobs:
           from pathlib import Path
 
           sessions = json.loads(Path('/tmp/session-health.json').read_text())
-          if not sessions.get('ok') or sessions.get('version') != 'v0.7.0':
+          if not sessions.get('ok') or sessions.get('version') != 'v0.7.1':
               raise SystemExit(f'Playtest session health failed: {sessions}')
           if not sessions.get('database'):
               raise SystemExit(f'Playtest session D1 binding unavailable: {sessions}')
@@ -168,5 +168,5 @@ jobs:
               raise SystemExit(f'Standalone feedback unavailable: {sessions}')
           if not sessions.get('completeStandaloneContextSupported'):
               raise SystemExit(f'Complete standalone context unavailable: {sessions}')
-          print('Verified production v0.7.0 playtest sessions, journals, closure controls, complete standalone feedback, compiled analysis, and audited exclusions.')
+          print('Verified production v0.7.1 playtest sessions, journals, closure controls, complete standalone feedback, compiled analysis, and audited exclusions.')
           PY

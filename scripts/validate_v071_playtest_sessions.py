@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the current v0.7.0 playtest workflow and location-aware self-serve playtest contract."""
+"""Validate the current v0.7.1 playtest workflow and location-aware self-serve playtest contract."""
 
 from __future__ import annotations
 
@@ -53,17 +53,18 @@ def main() -> int:
         return fail(errors)
 
     require("workers/playtest-sessions/src/index.js", [
-        'const CURRENT_RULES_VERSION = "v0.7.0"',
-        'const GAME_SERIAL_PREFIX = "G070"',
-        'const EVENT_SERIAL_PREFIX = "EV070"',
-        'const SERIAL_PATTERN = /^G070-',
+        'const CURRENT_RULES_VERSION = "v0.7.1"',
+        'const GAME_SERIAL_PREFIX = "G071"',
+        'const EVENT_SERIAL_PREFIX = "EV071"',
+        'const SERIAL_PATTERN = /^G071-',
         "SESSION_ADMIN_TOKEN",
         "eventGamesSupported",
         "playerAttributionSupported",
     ], errors)
     require("workers/playtest-sessions/src/tracked.js", [
-        'const CURRENT_RULES_VERSION = "v0.7.0"',
-        'const serial = `G070-${randomCode(8)}`',
+        'const CURRENT_RULES_VERSION = "v0.7.1"',
+        'const serial = `G071-${randomCode(8)}`',
+        'const MYSTICS_STARTER_RITES = Object.freeze({',
         'playMode',
         '"diagnostic_flag"',
         '"feels_decided"',
@@ -80,7 +81,7 @@ def main() -> int:
         "selection_reason",
     ], errors)
     require("playtest/index.html", [
-        "Self-serve playtesting · canonical v0.7.0",
+        "Self-serve playtesting · canonical v0.7.1",
         "Start a self-serve playtest",
         "Together in person",
         "Playing remotely",
@@ -102,6 +103,7 @@ def main() -> int:
         'id="feltDecidedWhen"',
         'id="agencyAfterDecided"',
         "3790840635",
+        "v0.7.1",
     ], errors)
     require("playtest/tracked/app.js", [
         "requestedPlayMode",
@@ -157,11 +159,11 @@ def main() -> int:
 
     if errors:
         return fail(errors)
-    print("Validated v0.7.0 location-aware self-serve playtests, physical/TTS/facilitated compatibility, G070/EV070 runtime identity, live diagnostics, private decision-point feedback, and current terminology.")
+    print("Validated v0.7.1 location-aware self-serve playtests, physical/TTS/facilitated compatibility, G071/EV071 runtime identity, live diagnostics, private decision-point feedback, and current terminology.")
     return 0
 
 def fail(errors: list[str]) -> int:
-    print("Gauntlet v0.7.0 playtest validation failed:", file=sys.stderr)
+    print("Gauntlet v0.7.1 playtest validation failed:", file=sys.stderr)
     for error in errors:
         print(f"- {error}", file=sys.stderr)
     return 1

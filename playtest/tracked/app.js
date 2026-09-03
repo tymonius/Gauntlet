@@ -21,6 +21,14 @@
     mystics: { name: "Mystics", color: "#5d347e", leaders: { alchemist: "Alchemist", "spirit-walker": "Spirit Walker" } },
     inquisition: { name: "Inquisition", color: "#a67a27", leaders: { "grand-inquisitor": "Grand Inquisitor", "witch-hunter": "Witch Hunter" } }
   });
+  const RITE_NAMES = Object.freeze({
+    echoes: "Rite of Echoes",
+    blood: "Rite of Blood",
+    crossing: "Rite of Crossing",
+    shattering: "Rite of Shattering",
+    consecration: "Rite of Consecration",
+    equivalence: "Rite of Equivalence"
+  });
   const RATINGS = Object.freeze([
     ["expectationMatch", "Expectation matched play", "Did the faction page accurately represent the experience?"],
     ["leaderDistinction", "Leader felt distinct", "Did this Leader create a meaningful identity?"],
@@ -190,7 +198,8 @@
     el.joinedPanel.hidden = !joinedPlayer;
     if (joinedPlayer) {
       el.joinedHeading.textContent = `Seat ${joinedPlayer.seatIndex}: ${joinedPlayer.displayName}`;
-      el.joinedCopy.textContent = `${joinedPlayer.leader} of the ${FACTIONS[joinedPlayer.faction]?.name || titleCase(joinedPlayer.faction)}. Rules Arbiter questions from this device will be attributed to you.`;
+      const riteCopy = formatSelectedRites(joinedPlayer.selectedRites);
+      el.joinedCopy.textContent = `${joinedPlayer.leader} of the ${FACTIONS[joinedPlayer.faction]?.name || titleCase(joinedPlayer.faction)}.${riteCopy ? ` Selected Rites: ${riteCopy}.` : ""} Rules Arbiter questions from this device will be attributed to you.`;
     }
 
     el.playPanel.hidden = !open || !joinedPlayer || !full;
@@ -228,6 +237,7 @@
           <span class="seat">Seat ${seatIndex}</span>
           <h3>${escapeHtml(player.displayName)}</h3>
           <p><strong>${escapeHtml(player.leader)}</strong> · ${escapeHtml(faction?.name || titleCase(player.faction))}</p>
+          ${player.selectedRites?.length ? `<p><strong>Selected Rites:</strong> ${escapeHtml(formatSelectedRites(player.selectedRites))}</p>` : ""}
           <p class="response-state">${player.responseSubmitted ? "Response submitted" : "Response pending"}</p>`;
       }
       el.playerCards.append(card);
@@ -252,7 +262,7 @@
 
     if (mode === "tts") {
       el.transportEyebrow.textContent = "Remote play · Tabletop Simulator";
-      el.transportTitle.textContent = "Open the v0.7.0 Workshop mod.";
+      el.transportTitle.textContent = "Open the v0.7.1 Workshop mod.";
       el.transportCopy.textContent = "One player hosts a multiplayer room. Each player takes the starter kit matching their selected Leader, then the creator records Game started here when setup is complete.";
       el.ttsWorkshopLink.hidden = false;
       el.physicalSetupLink.hidden = true;
@@ -500,20 +510,26 @@
     const rows = state.review.responses.length ? state.review.responses : [{}];
     const headers = [
       "sheet_serial", "status", "play_mode", "completion_status", "duration_minutes", "victory_route",
-      "seat", "player", "faction", "leader", "pregame_attraction", "fun", "pacing", "meaningful_decisions",
+      "seat", "player", "faction", "leader", "selected_rites", "pregame_attraction", "fun", "pacing", "meaningful_decisions",
       "battle_tension", "rules_clarity", "faction_clarity", "table_organization",
       "expectation_match", "leader_distinction", "felt_decided_when", "agency_after_decided",
       "decisive_cause", "play_again", "comments"
     ];
     const body = rows.map((response) => [
       state.session.sheetSerial, state.session.status, state.session.playMode || "", result.completionStatus || "", result.durationMinutes || "", result.victoryRoute || "",
-      response.seatIndex || "", response.displayName || "", response.faction || "", response.leader || "", response.factionInterest || "",
+      response.seatIndex || "", response.displayName || "", response.faction || "", response.leader || "", formatSelectedRites(response.selectedRites), response.factionInterest || "",
       response.fun || "", response.pacing || "", response.meaningfulDecisions || "", response.battleTension || "", response.rulesClarity || "", response.factionClarity || "",
       response.tableOrganization || "", response.expectationMatch || "", response.leaderDistinction || "", response.feltDecidedWhen || "",
       response.agencyAfterDecided || "", response.decisiveCause || "", response.playAgain == null ? "" : response.playAgain ? "yes" : "no", response.comments || ""
     ]);
     const csv = [headers, ...body].map((row) => row.map(csvCell).join(",")).join("\n");
     downloadBlob(`${state.session.sheetSerial}-tracked-playtest.csv`, `${csv}\n`, "text/csv");
+  }
+
+  function formatSelectedRites(value) {
+    return Array.isArray(value)
+      ? value.map((id) => RITE_NAMES[id] || titleCase(id)).join(", ")
+      : "";
   }
 
   function populateFactionSelect(factionSelect, leaderSelect) {

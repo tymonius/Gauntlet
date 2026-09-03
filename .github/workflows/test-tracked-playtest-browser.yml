@@ -77,7 +77,7 @@ jobs:
             };
             const game = {
               sessionId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
-              sheetSerial: 'G070-TRACK001', rulesVersion: 'v0.7.0', status: 'open', lifecycleState: 'joining',
+              sheetSerial: 'G071-TRACK001', rulesVersion: 'v0.7.1', status: 'open', lifecycleState: 'joining',
               playMode: 'tts', createdAt: '2026-08-02T12:00:00.000Z', closedAt: null, players: [playerOne], playerCount: 1,
               resultSubmitted: false, responseCount: 0, arbiterQuestionCount: 0, complete: false
             };
