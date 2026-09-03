@@ -28,7 +28,8 @@ describe('Faction Feature Rulebook terminology', () => {
 
   it('lists every structured shared Faction Feature in its faction chapter using one consistent descriptor format', () => {
     expect(rulebook).toContain('# 5. Actions, Faction Features, Leader Abilities, and Assets');
-    expect(rulebook).toContain('A **Faction Feature** is a named rule, option, procedure, passive effect, or special mechanic shared by a faction.');
+    expect(rulebook).toContain('A **Faction Feature** is a named faction-specific mechanic shared by a faction.');
+    expect(rulebook).toContain('A Faction Feature may have several uses, modes, or procedures');
     expect(rulebook).toContain('A **Leader Ability** is supplied specifically by your chosen Leader.');
     expect(rulebook).toContain('**1 Action**, **No Action**, or **Automatic**');
 
@@ -40,33 +41,43 @@ describe('Faction Feature Rulebook terminology', () => {
       }
 
       for (const feature of features) {
-        const descriptor = [
-          feature.name,
+        const details = [
           feature.profile,
           feature.timing,
           feature.cost,
           feature.limit,
         ].filter(Boolean).join(' · ');
-        expect(section).toContain(`- **${descriptor}.`);
+        expect(section).toContain(`- **${feature.name} — ${details}.`);
       }
     }
 
+    const military = factionFeatureSection('military');
+    expect(military).toContain("**Orders — No Action · At each Order's stated timing · Listed Command.**");
+    expect(military).toContain('**Orders** is the shared Military Faction Feature; each individual Order is a Leader Ability.');
+
     const financiers = factionFeatureSection('financiers');
-    expect(financiers).toContain('**Subsidize — No Action · Before dice.** Spend Capital to increase your battle total.');
+    expect(financiers).toContain('**Deeds — 1 Action · Denouement · Current Deed cost.**');
+    expect(financiers).toContain('**Subsidize — No Action · Before dice · Triangular Capital cost.** Spend Capital to increase your battle total.');
     expect(financiers).toContain('**Financial Capacity — No Action · After Capture.**');
     expect(financiers).toContain('**Income — Automatic · After Capture.**');
     expect(financiers).toContain('**Hostile Takeover** is the Executive\'s Leader Ability.');
     expect(financiers).toContain('**Line of Credit** is the Banker\'s Leader Ability.');
 
     const intelligence = factionFeatureSection('intelligence');
-    expect(intelligence).toContain('**Gambit Surveillance — No Action · During battle · 1 Intel · Once per battle.**');
-    expect(intelligence).toContain('**Tactic Surveillance — No Action · During battle · 1 Intel per card · Once per battle.**');
-    expect(intelligence).toContain('**Interference — No Action · Immediately after reveal · +2 Intel per removed card.**');
-    expect(intelligence).toContain('**Direct Interference — No Action · Face-up opposing card · 2 Intel.**');
+    expect(intelligence).toContain('**Missions — 1 Action · Denouement · Abort cost: Intel equal to Mission value.**');
+    expect(intelligence).toContain('**Special Operations — 1 Action · Denouement · Completion cost: Territories in the Gauntlet minus card value, minimum 1 Intel.**');
+    expect(intelligence).toContain('**Surveillance — No Action · After opposing Gambit or Tactic choice · 1 Intel per revealed card · Once per battle at each stage.**');
+    expect(intelligence).toContain('The Gambit and Tactic opportunities are separate.');
+    expect(intelligence).toContain('**Interference — No Action · Immediately after reveal or face-up opposing choice · 2 Intel per removed card.**');
+    expect(intelligence).not.toContain('**Gambit Surveillance —');
+    expect(intelligence).not.toContain('**Tactic Surveillance —');
+    expect(intelligence).not.toContain('**Direct Interference —');
 
     const mystics = factionFeatureSection('mystics');
+    expect(mystics).toContain('**Rites — 1 Action · Denouement · Printed Begin cost.**');
     expect(mystics).toContain('**Invocation — No Action · After applying an Arcane card effect · Once per turn.**');
-    expect(mystics).toContain('**Transmutation — No Action · Before dice · Once per turn.**');
+    expect(mystics).toContain('**Transmutation — No Action · Before dice · Put 1 card from Hand in Graveyard · Once per turn.**');
+    expect(mystics).toContain('**Ritual of Ascension — 1 Action · Denouement after 3 Rites · Bind 3 Arcane cards.**');
     expect(mystics).toContain('**Convergence — Automatic · During a Ritual battle you initiated.**');
 
     const inquisition = factionFeatureSection('inquisition');
@@ -90,14 +101,24 @@ describe('Faction Feature Rulebook terminology', () => {
       'No Action',
     ]);
 
+    expect(currentGame.factionFeatures.military).toEqual([
+      { name: 'Orders', profile: 'No Action', timing: "At each Order's stated timing", cost: 'Listed Command' },
+    ]);
     expect(currentGame.factionFeatures.diplomats).toEqual([
       { name: 'Terms', profile: 'No Action', timing: 'During Onset' },
-      { name: 'Leverage', profile: 'No Action', timing: 'Before dice after refused Terms' },
+      { name: 'Leverage', profile: 'No Action', timing: 'Before dice after refused Terms', cost: 'Triangular Influence cost' },
+    ]);
+    expect(currentGame.factionFeatures.intelligence.map((feature: any) => feature.name)).toEqual([
+      'Missions',
+      'Special Operations',
+      'Surveillance',
+      'Interference',
     ]);
     expect(currentGame.factionFeatures.inquisition).toContainEqual({
       name: 'Purge',
       profile: '1 Action',
       timing: 'Opening or Denouement',
+      cost: 'Listed Conviction',
       limit: 'Once per turn',
     });
 
@@ -113,10 +134,11 @@ describe('Faction Feature Rulebook terminology', () => {
 
     const general = currentGame.leaders.find((leader: any) => leader.id === 'general');
     expect(general.sections[1]).toMatchObject({
-      classification: 'Leader Ability',
+      classification: 'Faction Feature',
       name: 'Orders',
     });
     expect(general.sections[1].items).toContainEqual(expect.objectContaining({
+      classification: 'Leader Ability',
       name: 'Onward',
       cost: '1 Command',
       descriptor: 'No Action · During Movement',
