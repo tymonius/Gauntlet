@@ -39,6 +39,7 @@ class GauntletRulesAssistant {
     this.busy = false;
     this.isOpen = false;
     this.elements = {};
+    this.returnFocusTo = null;
     this.sessionId = getOrCreateSessionId();
     this.playtestContext = getPlaytestContext();
   }
@@ -55,11 +56,11 @@ class GauntletRulesAssistant {
     root.className = "ga-rules-assistant";
     root.dataset.gauntletRulesAssistant = "";
     root.innerHTML = `
-      <button class="ga-rules-launcher" type="button" aria-label="Open the Chief Justice rules assistant" aria-expanded="false">
+      <button class="ga-rules-launcher" type="button" aria-label="Open the Chief Justice rules assistant" aria-expanded="false" aria-controls="ga-rules-panel" aria-haspopup="dialog">
         <span class="ga-rules-launcher-mark" aria-hidden="true">?</span>
         <span class="ga-rules-launcher-label">Ask the Chief Justice</span>
       </button>
-      <section class="ga-rules-panel" role="dialog" aria-modal="false" aria-labelledby="ga-rules-title" hidden>
+      <section id="ga-rules-panel" class="ga-rules-panel" role="dialog" aria-modal="false" aria-labelledby="ga-rules-title" hidden>
         <header class="ga-rules-header">
           <div class="ga-rules-header-identity">
             <img
@@ -81,7 +82,7 @@ class GauntletRulesAssistant {
           <summary>About the Chief Justice</summary>
           <p>Answers use the canonical ${escapeHtml(CONFIG.version)} sources. When those rules do not decide a gameplay interaction, the Chief Justice issues a clearly labeled provisional ruling for the rest of the current game and logs it for designer review. Questions, answers, citations, ruling status, and optional feedback may be logged to improve the rules and this tool. When opened from a formal playtest session, the sheet serial and session identifier are included automatically. Printed rules and component text remain authoritative over provisional rulings.</p>
         </details>
-        <div class="ga-rules-messages" aria-live="polite" aria-label="Rules conversation"></div>
+        <div class="ga-rules-messages" role="log" aria-live="polite" aria-relevant="additions text" aria-label="Rules conversation"></div>
         <div class="ga-rules-suggestions" aria-label="Suggested questions"></div>
         <form class="ga-rules-form">
           <label class="ga-rules-input-label" for="ga-rules-question">Rule question</label>
@@ -90,7 +91,7 @@ class GauntletRulesAssistant {
             <button class="ga-rules-send" type="submit">Ask</button>
           </div>
           <div class="ga-rules-form-meta">
-            <span class="ga-rules-status">Ready</span>
+            <span class="ga-rules-status" role="status">Ready</span>
             <button class="ga-rules-clear" type="button">Clear</button>
           </div>
         </form>
@@ -162,6 +163,12 @@ class GauntletRulesAssistant {
   }
 
   open() {
+    if (!this.isOpen) {
+      const activeElement = document.activeElement;
+      this.returnFocusTo = activeElement instanceof HTMLElement && activeElement !== document.body
+        ? activeElement
+        : this.elements.launcher;
+    }
     this.isOpen = true;
     this.elements.panel.hidden = false;
     this.elements.launcher.setAttribute("aria-expanded", "true");
@@ -169,18 +176,20 @@ class GauntletRulesAssistant {
     window.setTimeout(() => this.elements.input.focus(), 120);
   }
 
-  close() {
+  close(focusTarget = null) {
     this.isOpen = false;
     this.elements.root.classList.remove("is-open");
     this.elements.launcher.setAttribute("aria-expanded", "false");
     window.setTimeout(() => {
       if (!this.isOpen) this.elements.panel.hidden = true;
     }, 180);
-    this.elements.launcher.focus();
+    const target = focusTarget || (this.returnFocusTo?.isConnected ? this.returnFocusTo : this.elements.launcher);
+    this.returnFocusTo = null;
+    target.focus();
   }
 
   toggle() {
-    this.isOpen ? this.close() : this.open();
+    this.isOpen ? this.close(this.elements.launcher) : this.open();
   }
 
   clear() {
