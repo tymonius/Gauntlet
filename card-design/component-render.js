@@ -308,12 +308,11 @@
     if (!supportedKinds.has(kind)) throw new Error(`Unsupported production component kind: ${kind}`);
     if (!["portrait", "landscape"].includes(orientation)) throw new Error(`Unsupported production component orientation: ${orientation}`);
 
-    applyRenderViewport();
-
     if (document.readyState !== "complete") {
       await new Promise(resolve => window.addEventListener("load", resolve, { once: true }));
     }
     await loadCanonicalRenderContext();
+    applyRenderViewport();
 
     const deadline = performance.now() + TIMEOUT_MS;
     let card = null;
