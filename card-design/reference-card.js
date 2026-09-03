@@ -178,6 +178,7 @@ function parseReferenceFace(markdown, face, componentName, side) {
   }
   return {
     title: String(face.title).trim(),
+    presentation: face.presentation || null,
     sections: face.sections.map(selector => parseReferenceSection(markdown, selector, componentName)),
   };
 }
@@ -218,7 +219,7 @@ function parseBespokeReferenceFace(markdown, face, componentName, side) {
   flushSection();
 
   if (!sections.length) throw new Error(`${componentName} bespoke ${side} face has no printable sections.`);
-  return { title, sections };
+  return { title, presentation: face.presentation || null, sections };
 }
 
 export async function loadReferenceRecordForFaceSpec(spec) {
@@ -411,12 +412,20 @@ export function referenceCardMarkup(record, sideName, options = {}) {
   const version = options.version || record.version || 'Reference';
   const componentName = shortComponentName(record.name);
   const sections = face.sections.map(renderSection).join('');
+  const titlePresentation = face.presentation || {};
+  const titleFontSizePt = Number(titlePresentation.titleFontSizePt);
+  const titleLetterSpacingEm = Number(titlePresentation.titleLetterSpacingEm);
+  const titleStyle = [
+    Number.isFinite(titleFontSizePt) ? `font-size:${titleFontSizePt}pt` : '',
+    Number.isFinite(titleLetterSpacingEm) ? `letter-spacing:${titleLetterSpacingEm}em` : '',
+  ].filter(Boolean).join(';');
+  const titleStyleAttribute = titleStyle ? ` style="${titleStyle}"` : '';
 
   return `<article class="gauntlet-card faction-component-card reference-card" data-faction="${esc(record.faction)}" data-component-id="${esc(record.id)}" data-reference-side="${esc(sideName)}" aria-label="${esc(record.name)} — ${esc(face.title)}">
     <div class="reference-card-interior">
       <span class="reference-watermark" aria-hidden="true"></span>
       <header class="reference-card-header">
-        <h3 class="reference-face-title">${esc(face.title)}</h3>
+        <h3 class="reference-face-title"${titleStyleAttribute}>${esc(face.title)}</h3>
         <div class="reference-type-line"><span class="reference-faction-emblem" aria-hidden="true"></span><span>${esc(componentName)}</span></div>
       </header>
       <div class="reference-body">${sections}</div>

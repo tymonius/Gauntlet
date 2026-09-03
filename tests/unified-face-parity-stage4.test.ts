@@ -55,24 +55,25 @@ describe('Stage 4 unified face parity gate', () => {
     expect(faceSpec).toContain("'/card-design/faction-component.css'");
   });
 
-  it('fits legacy supplemental faces after explicitly loading the shared production fonts', () => {
-    expect(supplementalCard).toContain("import { loadProductionFonts } from './face-preparation.mjs'");
-    expect(supplementalCard).toContain('await loadProductionFonts();');
+  it('does not make unrelated supplemental/proposal/rite rendering wait on reference font fitting', () => {
+    expect(supplementalCard).not.toContain("import { loadProductionFonts } from './face-preparation.mjs'");
+    expect(supplementalCard).not.toContain('await loadProductionFonts();');
     expect(supplementalCard).not.toContain('waitForCanonicalProductionFonts');
-    expect(supplementalCard.indexOf('await loadProductionFonts();')).toBeLessThan(
-      supplementalCard.indexOf('await layoutTrackerCards();')
-    );
-    expect(supplementalCard.indexOf('await loadProductionFonts();')).toBeLessThan(
-      supplementalCard.indexOf('await hydrateReferenceCards();')
-    );
   });
 
   it('fits legacy references only after mounting them at final production geometry', () => {
     expect(componentRenderer).toContain('target.replaceChildren(card);');
-    expect(componentRenderer).toContain('const { fitReferenceCard } = await import("/card-design/reference-card.js")');
+    expect(componentRenderer).toContain('const [{ fitReferenceCard }, { loadProductionFonts }] = await Promise.all([');
+    expect(componentRenderer).toContain('await loadProductionFonts();');
     expect(componentRenderer.indexOf('target.replaceChildren(card);')).toBeLessThan(
-      componentRenderer.indexOf('const { fitReferenceCard } = await import("/card-design/reference-card.js")')
+      componentRenderer.indexOf('const [{ fitReferenceCard }, { loadProductionFonts }] = await Promise.all([')
     );
+  });
+
+  it('keeps Diplomat reverse title treatment in canonical face data instead of component-specific CSS', () => {
+    expect(currentGame).toContain('"titleFontSizePt": 10.9');
+    expect(currentGame).toContain('"titleLetterSpacingEm": 0.018');
+    expect(supplementalStyles).not.toContain('[data-component-id="diplomats-reference"][data-reference-side="reverse"]');
   });
 
   it('keeps Operation Progress presentation in canonical data instead of component-specific CSS', () => {

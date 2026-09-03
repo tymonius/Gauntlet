@@ -4859,7 +4859,11 @@
                 "heading": "Peace Treaty",
                 "depth": 3
               }
-            ]
+            ],
+            "presentation": {
+              "titleFontSizePt": 10.9,
+              "titleLetterSpacingEm": 0.018
+            }
           }
         },
         "tts": {

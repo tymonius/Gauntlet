@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getCardPlayRule } from '../cards';
+import { getCardPlayRule } from '../cards/v06';
 import type {
   BattleParticipantState,
   BattlePlayedCard,

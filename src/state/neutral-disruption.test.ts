@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { getCardPlayRule } from '../cards';
+import { getCardPlayRule } from '../cards/playability';
 import { buildBattleRevealOptions } from '../dev/battle-reveal-options';
 import type {
   BattleParticipantState,
