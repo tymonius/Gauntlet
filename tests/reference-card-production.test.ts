@@ -72,7 +72,8 @@ describe('production faction reference cards', () => {
 
     const operationsCopy = readFileSync(operations.source, 'utf8');
     expect(operations.referenceFaces.reverse.title).toBe('Mirrors & Replacements');
-    expect(operationsCopy).toContain('| Gambit Surveillance | No Action · 1 Intel · Once per battle |');
+    expect(operationsCopy).toContain('| Surveillance | No Action · 1 Intel per revealed card · Gambit and Tactic stages |');
+    expect(operationsCopy).toContain('### Gambit Surveillance');
     expect(operationsCopy).toContain('### Intelligence Mirror');
     expect(operationsCopy).toContain('After a replacement, continue the current stage without another Surveillance, Interference, reveal, or response window.');
 
