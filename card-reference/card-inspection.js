@@ -53,6 +53,7 @@
         <div class="card-reference-card-stage" aria-hidden="false">
           <iframe
             class="card-reference-inspection-frame"
+            data-face-inspection-host="true"
             title="Enlarged Gauntlet card"
             scrolling="no"
           ></iframe>
@@ -86,15 +87,25 @@
     const data = event.data;
     if (!data || typeof data !== 'object') return;
 
-    if (data.type === 'gauntlet-card-inspect' || data.type === 'gauntlet-territory-inspect') {
+    if (
+      data.type === 'gauntlet-face-inspect'
+      || data.type === 'gauntlet-card-inspect'
+      || data.type === 'gauntlet-territory-inspect'
+    ) {
       const href = sameOriginUrl(data.href);
       if (!href) return;
-      const format = data.type === 'gauntlet-territory-inspect' ? 'landscape' : 'portrait';
+      const format = data.type === 'gauntlet-territory-inspect' || data.orientation === 'landscape'
+        ? 'landscape'
+        : 'portrait';
       openCard(href, data.label, true, format);
       return;
     }
 
-    if (data.type === 'gauntlet-art-inspect' || data.type === 'gauntlet-territory-art-inspect') {
+    if (
+      data.type === 'gauntlet-face-art-inspect'
+      || data.type === 'gauntlet-art-inspect'
+      || data.type === 'gauntlet-territory-art-inspect'
+    ) {
       const source = sameOriginUrl(data.source);
       if (!source) return;
       openArtwork(source, data.label);
@@ -123,7 +134,9 @@
 
   function inspectionRenderUrl(href) {
     const url = new URL(href, window.location.href);
-    url.searchParams.set('inspection', '1');
+    if (!url.pathname.endsWith('/card-design/face-render.html')) {
+      url.searchParams.set('inspection', '1');
+    }
     return url.href;
   }
 

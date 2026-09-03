@@ -1,7 +1,11 @@
 (() => {
+  let CARD_WIDTH = 0;
+  let CARD_HEIGHT = 0;
   let TERRITORY_WIDTH = 0;
   let TERRITORY_HEIGHT = 0;
-  const territorySurfaceReady = import('./production-surface.mjs').then(({ PRODUCTION_SURFACES }) => {
+  const inspectionSurfaceReady = import('./production-surface.mjs').then(({ PRODUCTION_SURFACES }) => {
+    CARD_WIDTH = PRODUCTION_SURFACES.portrait.widthCssPx;
+    CARD_HEIGHT = PRODUCTION_SURFACES.portrait.heightCssPx;
     TERRITORY_WIDTH = PRODUCTION_SURFACES.landscape.widthCssPx;
     TERRITORY_HEIGHT = PRODUCTION_SURFACES.landscape.heightCssPx;
     layoutTerritoryInspection();
@@ -14,6 +18,7 @@
   let territoryInspectionStage;
   let territoryInspectionFrame;
   let territoryInspectionSource;
+  let territoryInspectionOrientation = 'landscape';
   let territoryArtworkImage;
 
   const slugify = value => String(value ?? '').toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
@@ -186,20 +191,23 @@
   }
 
   function layoutTerritoryInspection() {
-    if (!territoryInspectionStage || !territoryInspectionFrame || !TERRITORY_WIDTH || !TERRITORY_HEIGHT) return;
+    if (!territoryInspectionStage || !territoryInspectionFrame || !CARD_WIDTH || !CARD_HEIGHT || !TERRITORY_WIDTH || !TERRITORY_HEIGHT) return;
+    const landscape = territoryInspectionOrientation === 'landscape';
+    const width = landscape ? TERRITORY_WIDTH : CARD_WIDTH;
+    const height = landscape ? TERRITORY_HEIGHT : CARD_HEIGHT;
     const horizontalMargin = Math.min(96, window.innerWidth * 0.1);
     const verticalMargin = Math.min(96, window.innerHeight * 0.1);
     const availableWidth = Math.max(1, window.innerWidth - horizontalMargin);
     const availableHeight = Math.max(1, window.innerHeight - verticalMargin);
     const scale = Math.min(
       INSPECTION_MAX_SCALE,
-      availableWidth / TERRITORY_WIDTH,
-      availableHeight / TERRITORY_HEIGHT,
+      availableWidth / width,
+      availableHeight / height,
     );
-    territoryInspectionStage.style.width = `${TERRITORY_WIDTH * scale}px`;
-    territoryInspectionStage.style.height = `${TERRITORY_HEIGHT * scale}px`;
-    territoryInspectionFrame.style.width = `${TERRITORY_WIDTH}px`;
-    territoryInspectionFrame.style.height = `${TERRITORY_HEIGHT}px`;
+    territoryInspectionStage.style.width = `${width * scale}px`;
+    territoryInspectionStage.style.height = `${height * scale}px`;
+    territoryInspectionFrame.style.width = `${width}px`;
+    territoryInspectionFrame.style.height = `${height}px`;
     territoryInspectionFrame.style.transform = `scale(${scale})`;
   }
 
@@ -226,15 +234,17 @@
     if (source instanceof HTMLElement) source.focus({ preventScroll: true });
   }
 
-  function openTerritoryInspection(href, label, sourceFrame) {
+  function openTerritoryInspection(href, label, sourceFrame, orientation = 'portrait') {
     const dialog = ensureTerritoryInspectionDialog();
     closeTerritoryArtworkInspection();
     territoryInspectionStage.replaceChildren();
     territoryInspectionSource = sourceFrame || null;
+    territoryInspectionOrientation = orientation === 'landscape' ? 'landscape' : 'portrait';
     const url = new URL(href, window.location.href);
     if (url.origin !== window.location.origin) return;
     territoryInspectionFrame = document.createElement('iframe');
     territoryInspectionFrame.className = 'card-inspection-frame territory-inspection-frame';
+    territoryInspectionFrame.dataset.faceInspectionHost = 'true';
     territoryInspectionFrame.src = url.href;
     territoryInspectionFrame.title = `Enlarged ${label}`;
     territoryInspectionStage.append(territoryInspectionFrame);
@@ -259,21 +269,26 @@
     if (event.origin !== window.location.origin) return;
     const sourceFrame = Array.from(document.querySelectorAll('iframe')).find(frame => frame.contentWindow === event.source);
     if (!sourceFrame) return;
+
+    if (event.data?.type === 'gauntlet-face-art-inspect' || event.data?.type === 'gauntlet-territory-art-inspect') {
+      const source = String(event.data.source || '');
+      if (!source) return;
+      openTerritoryArtworkInspection(source, String(event.data.label || 'Gauntlet card'));
+      return;
+    }
+
     if (sourceFrame === territoryInspectionFrame) return;
     if (event.data?.type === 'gauntlet-face-inspect' || event.data?.type === 'gauntlet-territory-inspect') {
       const href = String(event.data.href || '');
       if (!href) return;
-      openTerritoryInspection(href, String(event.data.label || 'Gauntlet Territory'), sourceFrame);
-      return;
-    }
-    if (event.data?.type === 'gauntlet-face-art-inspect' || event.data?.type === 'gauntlet-territory-art-inspect') {
-      const source = String(event.data.source || '');
-      if (!source) return;
-      openTerritoryArtworkInspection(source, String(event.data.label || 'Gauntlet Territory'));
+      const orientation = event.data?.type === 'gauntlet-territory-inspect' || event.data?.orientation === 'landscape'
+        ? 'landscape'
+        : 'portrait';
+      openTerritoryInspection(href, String(event.data.label || 'Gauntlet card'), sourceFrame, orientation);
     }
   }
 
-  territorySurfaceReady.catch(error => console.error('Production surface geometry failed to load.', error));
+  inspectionSurfaceReady.catch(error => console.error('Production surface geometry failed to load.', error));
   renderLeaders();
   renderPlayable();
   renderTerritories();
