@@ -12,7 +12,7 @@ describe('Maintained current Rulebook source', () => {
     expect(currentRulebook).toContain('# 5. Actions, Faction Features, Leader Abilities, and Assets');
     expect(currentRulebook).toContain('## Card anatomy');
     expect(currentRulebook).toContain('Onset is the first phase of the battle sequence.');
-    expect(currentRulebook).toContain('choose exactly three different Rites from the six-Rite pool');
+    expect(currentRulebook).toMatch(/choose exactly three(?:<!--[^>]+-->)? different Rites from the six(?:<!--[^>]+-->)?-Rite pool/);
     expect(currentRulebook).toContain('### Rite of Shattering');
     expect(currentRulebook).toContain('### Rite of Consecration');
     expect(currentRulebook).toContain('### Rite of Equivalence');
