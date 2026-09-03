@@ -41,7 +41,17 @@ function loadStylesheet(href) {
     link.href = href;
     link.dataset.faceStyle = href;
     link.addEventListener('load', resolve, { once: true });
-    link.addEventListener('error', () => reject(new Error(`Face stylesheet failed to load: ${href}`)), { once: true });
+    link.addEventListener('error', () => {
+      // Chromium can report a stylesheet error when a nested remote @import
+      // fails even though the same-origin stylesheet itself was parsed.
+      // Preserve fail-closed behavior for a genuinely missing local sheet.
+      if (link.sheet) {
+        console.warn(`Face stylesheet loaded with a nested resource failure: ${href}`);
+        resolve();
+        return;
+      }
+      reject(new Error(`Face stylesheet failed to load: ${href}`));
+    }, { once: true });
     document.head.append(link);
   });
 }
