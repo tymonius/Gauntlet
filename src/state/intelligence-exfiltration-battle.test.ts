@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { BattleParticipantState, BattlePlayedCard, GameState, PlayerID } from '../types';
+import type { BattleParticipantState, BattlePlayedCard, GameState, PlayerID } from '../types/v06';
 import { applyGameAction } from './apply-exfiltration';
 import { initializeGame } from './initialize';
 import { createV06StandardBoard } from './v06-board';

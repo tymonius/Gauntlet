@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { BattleParticipantState, BattlePlayedCard, GameState, PlayerID } from '../types';
+import type { BattleParticipantState, BattlePlayedCard, GameState, PlayerID } from '../types/v06';
 import { applyGameAction } from './apply-fog-of-war';
 import { continueIntelligenceBattle } from './intelligence-battle';
 import { initializeGame } from './initialize';
