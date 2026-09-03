@@ -17,7 +17,7 @@ The legacy aggregate API is intentionally versioned as `src/state/v06.ts`. There
 
 These modules remain useful implementation evidence, but they must not be treated as authority for current v0.7.x behavior without deliberate revalidation and promotion.
 
-Legacy runtime state modules must not import the deprecated generic `../types` compatibility barrel. Where they use the shared aggregate type API, they opt into `../types/v06` explicitly. These type-only boundaries are intentionally maintained independently from runtime `cards` imports, which still participate in the older circular module graph.
+Legacy runtime state modules must not import the retired generic `../types` or `../cards` compatibility barrels. Where they need aggregate legacy APIs, they opt into explicit v0.6 boundaries such as `../types/v06`; otherwise they import the specific card module they require. The former Military card→state initialization cycle was removed by separating stateful Military procedures into `military-card-effects.ts`.
 
 ## Hidden information rule
 
