@@ -145,7 +145,7 @@ These paths should not receive new product behavior except explicit compatibilit
 | Path | Role |
 |---|---|
 | `releases/` | Immutable published release packages |
-| `artifacts/` | Reconstruction/build/QA evidence; each subtree should be audited for retention need |
+| `artifacts/` | Reconstruction/build/QA evidence; retain semantic inputs and unique QA/provenance records, but leave reproducible render output untracked once any required frozen release copy is preserved |
 | `legacy/` | Historical implementation provenance that is explicitly non-authoritative |
 | `tts/v*/` | Versioned TTS release artifacts/evidence; do not treat as authoring source |
 

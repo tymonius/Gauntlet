@@ -7,6 +7,9 @@ coverage/
 tts/generated/
 media/generated/
 
+# Reproducible historical build output. Frozen publication copies live under releases/.
+artifacts/v0.6.3/print-candidate/pdf/
+
 # Private ChatGPT export and conversation-audit material.
 # These files may contain complete personal conversation history and must remain local.
 **/conversations-*.json
