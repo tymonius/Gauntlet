@@ -178,7 +178,7 @@ describe('v0.7.0 Counterattack cards', () => {
     let state = counterattackBattle();
     inject(
       state,
-      'B',
+      'A',
       'neutral-resistance',
       'asset',
       'assetBank',
@@ -186,10 +186,11 @@ describe('v0.7.0 Counterattack cards', () => {
 
     state = proceedToGambits(state);
     expect(state.battleRuntime?.counterattackAtOnset).toBe(true);
-    expect(state.battleRuntime?.participants.B.reserveBonus).toBe(2);
+    expect(state.battleRuntime?.participants.A.reserveBonus).toBe(2);
+    expect(state.battleRuntime?.participants.B.reserveBonus).toBe(0);
 
     state = revealGambits(state);
-    expect(state.battleRuntime?.participants.B.reserve).toHaveLength(
+    expect(state.battleRuntime?.participants.A.reserve).toHaveLength(
       v070CanonicalContent.content.battle.normal_reserve_size + 2,
     );
   });
@@ -251,88 +252,88 @@ describe('v0.7.0 Counterattack cards', () => {
     let state = counterattackBattle();
     const illegalOccupation = inject(
       state,
-      'B',
+      'A',
       'neutral-illegal-occupation',
       'gambit',
       'hand',
     );
-    const attackerAsset = inject(
+    const defenderAsset = inject(
       state,
-      'A',
+      'B',
       'neutral-contingency-plan',
-      'attacker-asset',
+      'defender-asset',
       'assetBank',
     );
 
     state = proceedToGambits(state);
-    expect(isV070AssetActive(state, attackerAsset)).toBe(true);
+    expect(isV070AssetActive(state, defenderAsset)).toBe(true);
 
     state = revealGambits(
       state,
-      undefined,
       illegalOccupation,
+      undefined,
     );
 
-    expect(state.battleRuntime?.participants.B.advantage).toBe(1);
-    expect(state.battleRuntime?.assetInactivePlayers).toContain('A');
-    expect(isV070AssetActive(state, attackerAsset)).toBe(false);
+    expect(state.battleRuntime?.participants.A.advantage).toBe(1);
+    expect(state.battleRuntime?.assetInactivePlayers).toContain('B');
+    expect(isV070AssetActive(state, defenderAsset)).toBe(false);
   });
 
   test('Resistance battle card banks itself on a win and uses normal Asset-limit enforcement', () => {
     let state = counterattackBattle();
     const resistance = inject(
       state,
-      'B',
+      'A',
       'neutral-resistance',
       'gambit',
       'hand',
     );
 
-    // Fill B's normal two-Asset bank so Resistance must open the
+    // Fill A's normal two-Asset bank so Resistance must open the
     // shared enforcement choice when it banks itself.
     inject(
       state,
-      'B',
+      'A',
       'neutral-contingency-plan',
       'limit-one',
       'assetBank',
     );
     inject(
       state,
-      'B',
+      'A',
       'neutral-foothold',
       'limit-two',
       'assetBank',
     );
 
     state = proceedToGambits(state);
-    state = revealGambits(state, undefined, resistance);
-    expect(state.battleRuntime?.participants.B.advantage).toBe(1);
+    state = revealGambits(state, resistance, undefined);
+    expect(state.battleRuntime?.participants.A.advantage).toBe(1);
 
     state = toOutcome(state);
     state = reduceV070BattleAction(state, {
       type: 'submit_battle_dice',
       playerId: 'A',
-      values: [1],
+      values: [6, 1],
     });
     state = reduceV070BattleAction(state, {
       type: 'submit_battle_dice',
       playerId: 'B',
-      values: [6, 1],
+      values: [1],
     });
-    expect(state.battle?.winner).toBe('B');
+    expect(state.battle?.winner).toBe('A');
 
     state = reduceV070BattleAction(state, {
       type: 'complete_aftermath',
       playerId: 'A',
     });
 
-    expect(state.players.B.zones.assetBank).toContain(resistance);
-    expect(state.players.B.zones.graveyard).not.toContain(resistance);
-    expect(state.players.B.zones.discardPile).not.toContain(resistance);
+    expect(state.players.A.zones.assetBank).toContain(resistance);
+    expect(state.players.A.zones.graveyard).not.toContain(resistance);
+    expect(state.players.A.zones.discardPile).not.toContain(resistance);
     expect(state.pendingAssetLimitChoice).toEqual(
       expect.objectContaining({
-        playerId: 'B',
+        playerId: 'A',
         excess: 1,
         sourceInstanceId: resistance,
       }),
