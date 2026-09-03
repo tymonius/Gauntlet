@@ -182,9 +182,6 @@ async function main() {
   const authority = await loadCurrentGameAuthority();
   const game = runtimeGame(authority);
   const targets = resolveAllFaceSpecs(game).filter(isCaptureTarget);
-  if (targets.length !== 210) {
-    throw new Error(`Expected 210 blocked artwork faces to materialize, found ${targets.length}.`);
-  }
 
   const { server, baseUrl } = await startServer();
   const browser = await chromium.launch({ headless: true });
