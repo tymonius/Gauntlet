@@ -9,7 +9,12 @@ describe('art-direction materialization migration', () => {
     expect(script).toContain("'artwork-composition-not-explicit'");
     expect(script).toContain("'artwork-composition-not-final'");
     expect(script).toContain("spec.artwork?.role === 'crop'");
-    expect(script).toContain('if (targets.length !== 210)');
+    expect(script).not.toContain('targets.length !== 210');
+  });
+
+  it('remains valid when the current catalog has no crop-authority blockers', () => {
+    expect(script).toContain('faceCount: targets.length');
+    expect(script).toContain('directionCount: entries.length');
   });
 
   it('materializes the currently rendered crop outcome as explicit non-smart authority', () => {
