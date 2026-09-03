@@ -17,20 +17,20 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#8f1f25" />
-  <meta name="description" content="Ask gameplay questions against the current Gauntlet v0.7.1 rules." />
-  <title>Gauntlet v0.7.1 Rules Arbiter</title>
+  <meta name="description" content="Settle Gauntlet gameplay questions with the Chief Justice, with current Rulebook and card sources included in each ruling." />
+  <title>Chief Justice — Gauntlet Rules Arbiter</title>
   <link rel="canonical" href="https://gauntlet.run/rules-arbiter/" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Gauntlet" />
   <meta property="og:locale" content="en_US" />
   <meta property="og:url" content="https://gauntlet.run/rules-arbiter/" />
-  <meta property="og:title" content="Gauntlet v0.7.1 Rules Arbiter" />
-  <meta property="og:description" content="Ask gameplay questions against the current Gauntlet v0.7.1 rules." />
+  <meta property="og:title" content="Chief Justice — Gauntlet Rules Arbiter" />
+  <meta property="og:description" content="Settle Gauntlet gameplay questions with the Chief Justice, with current Rulebook and card sources included in each ruling." />
   <meta property="og:image" content="https://gauntlet.run/images/social/gauntlet-og-1200x630-v2.jpg" />
   <meta property="og:image:alt" content="The Spirit Walker, mounted General, and Grand Inquisitor before a fortified Gauntlet at sunset." />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Gauntlet v0.7.1 Rules Arbiter" />
-  <meta name="twitter:description" content="Ask gameplay questions against the current Gauntlet v0.7.1 rules." />
+  <meta name="twitter:title" content="Chief Justice — Gauntlet Rules Arbiter" />
+  <meta name="twitter:description" content="Settle Gauntlet gameplay questions with the Chief Justice, with current Rulebook and card sources included in each ruling." />
   <meta name="twitter:image" content="https://gauntlet.run/images/social/gauntlet-og-1200x630-v2.jpg" />
   <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
@@ -58,11 +58,11 @@
   <main id="main-content" tabindex="-1" class="arbiter-shell">
     <section class="arbiter-panel">
       <div class="arbiter-heading">
-        <p class="eyebrow">Rules support · v0.7.1</p>
-        <h1>Rules Arbiter</h1>
+        <p class="eyebrow">Gauntlet Rules Arbiter · v0.7.1</p>
+        <h1>Chief Justice</h1>
       </div>
 
-      <p class="lede">Ask about setup, cards, battles, faction systems, Territories, or victory conditions. Answers include the relevant current Rulebook sources so you can verify the ruling at the table.</p>
+      <p class="lede">Bring a rules question to the Chief Justice. He answers from the current published rules and cards, identifies the controlling rule or distinction, and includes the relevant sources so the ruling can be checked at the table.</p>
 
       <div class="arbiter-persona">
         <figure class="arbiter-portrait">
@@ -81,8 +81,8 @@
       </div>
 
       <div class="source-boundary">
-        <strong>At the table:</strong>
-        the Arbiter distinguishes explicit rules from interpretations and provisional rulings when the written rules do not fully resolve a situation.
+        <strong>How rulings work:</strong>
+        the Chief Justice distinguishes explicit rules from interpretations and clearly identified provisional rulings when the written rules do not fully resolve a situation.
       </div>
 
       <div class="question-chips" aria-label="Suggested questions">
@@ -94,11 +94,11 @@
 
       <form id="arbiterForm" class="arbiter-form">
         <label for="question"><strong>Rules question</strong></label>
-        <textarea id="question" maxlength="600" placeholder="Ask about setup, cards, battles, factions, Territories, or victory." required></textarea>
-        <button type="submit">Ask the Rules Arbiter</button>
+        <textarea id="question" maxlength="600" placeholder="Set out the rules question as it arose at the table." required></textarea>
+        <button type="submit">Ask the Chief Justice</button>
       </form>
 
-      <p id="arbiterStatus" class="arbiter-status" role="status" aria-live="polite">Connecting to the current Rules Arbiter…</p>
+      <p id="arbiterStatus" class="arbiter-status" role="status" aria-live="polite">Connecting to the Chief Justice…</p>
       <div id="answer" class="arbiter-answer" aria-live="polite" aria-atomic="true"></div>
     </section>
 
@@ -107,7 +107,7 @@
       <p><a href="../rulebook/">Browser Rulebook</a></p>
       <p><a href="../card-reference/">Card Reference</a></p>
       <p><a href="../deckbuilder/">Deckbuilder</a></p>
-      <p class="small">Answers include source passages. If the network service is unavailable, this page falls back to local Rulebook lookup.</p>
+      <p class="small">Rulings include source passages. If the AI service is unavailable, this page falls back to direct local Rulebook lookup.</p>
     </aside>
   </main>
 
