@@ -19,9 +19,9 @@ Capital may exceed the limit temporarily. At the end of every turn, reduce Capit
 | Feature | Use |
 |---|---|
 | Treasury | 1 Action · Denouement |
-| Buy / Buy Out Deed | 1 Action · Denouement |
-| Play the Market | 1 Action · Denouement |
-| Subsidize | No Action · Before dice |
+| Deeds | 1 Action · Denouement · Current Deed cost |
+| Play the Market | 1 Action · Denouement · Discard 1 card |
+| Subsidize | No Action · Before dice · Capital cost |
 | Financial Capacity | No Action · After Capture |
 | Income | Automatic · After Capture |
 

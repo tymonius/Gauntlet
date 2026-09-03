@@ -14,19 +14,22 @@ function validateLeader(leader) {
   const sections = requireCurrentArray(leader.sections, `${leader.id} Leader sections`);
   if (!sections.length) throw new Error(`Current Leader ${leader.id} has no sections.`);
 
-  const classifications = new Set(['Faction Victory', 'Leader Ability', 'Resource', 'Progression']);
+  const classifications = new Set(['Faction Victory', 'Faction Feature', 'Leader Ability', 'Resource', 'Progression']);
   for (const section of sections) {
     if (!section?.name || !classifications.has(section.classification)) {
       throw new Error(`Current Leader ${leader.id} has an invalid section classification.`);
     }
     if (section.items !== undefined) {
-      const items = requireCurrentArray(section.items, `${leader.id} grouped Leader Ability items`);
-      if (section.classification !== 'Leader Ability' || !items.length) {
-        throw new Error(`Current Leader ${leader.id} groups items outside a Leader Ability.`);
+      const items = requireCurrentArray(section.items, `${leader.id} grouped ability items`);
+      if (!['Faction Feature', 'Leader Ability'].includes(section.classification) || !items.length) {
+        throw new Error(`Current Leader ${leader.id} groups items outside a Faction Feature or Leader Ability.`);
       }
       for (const item of items) {
         if (!item?.name || !item?.text) {
           throw new Error(`Current Leader ${leader.id} has an incomplete grouped ability.`);
+        }
+        if (section.classification === 'Faction Feature' && item.classification !== 'Leader Ability') {
+          throw new Error(`Current Leader ${leader.id} Faction Feature items must be classified as Leader Abilities.`);
         }
       }
     }
@@ -34,7 +37,10 @@ function validateLeader(leader) {
   if (!sections.some(section => section.classification === 'Faction Victory')) {
     throw new Error(`Current Leader ${leader.id} is missing Faction Victory.`);
   }
-  if (!sections.some(section => section.classification === 'Leader Ability')) {
+  const hasLeaderAbility = sections.some(section => section.classification === 'Leader Ability')
+    || sections.some(section => section.classification === 'Faction Feature'
+      && section.items?.some(item => item.classification === 'Leader Ability'));
+  if (!hasLeaderAbility) {
     throw new Error(`Current Leader ${leader.id} is missing Leader Ability.`);
   }
 }
@@ -85,8 +91,19 @@ function validateFactionFeatures(authority) {
       }
     }
   }
-  if (authority.factionFeatures.military.length) {
-    throw new Error('Military Orders are Leader Abilities and must not appear as shared Military Faction Features.');
+  const militaryFeatures = authority.factionFeatures.military;
+  if (militaryFeatures.length !== 1 || militaryFeatures[0]?.name !== 'Orders') {
+    throw new Error('Military must expose Orders as its shared Faction Feature.');
+  }
+  for (const leader of requireCurrentArray(authority.leaders, 'Leaders')) {
+    if (leader.faction !== 'military') continue;
+    const orders = leader.sections?.find(section => section.name === 'Orders');
+    if (!orders || orders.classification !== 'Faction Feature') {
+      throw new Error(`Current Military Leader ${leader.id} must expose Orders as a Faction Feature section.`);
+    }
+    if (!orders.items?.length || orders.items.some(item => item.classification !== 'Leader Ability')) {
+      throw new Error(`Current Military Leader ${leader.id} must classify each individual Order as a Leader Ability.`);
+    }
   }
 }
 

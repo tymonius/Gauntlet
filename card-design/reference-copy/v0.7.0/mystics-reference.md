@@ -12,10 +12,10 @@
 
 | Feature | Use |
 |---|---|
-| Begin a Rite | 1 Action · Denouement |
+| Rites | 1 Action · Denouement · Printed Begin cost |
 | Invocation | No Action · Once per turn |
 | Transmutation | No Action · Once per turn · Before dice |
-| Begin Ritual | 1 Action · Denouement · After 3 Rites |
+| Ritual of Ascension | 1 Action · Denouement · After 3 Rites |
 | Convergence | Automatic · During Ritual battle you initiated |
 
 ### Begin a Rite
