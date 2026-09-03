@@ -61,9 +61,19 @@ class GauntletRulesAssistant {
       </button>
       <section class="ga-rules-panel" role="dialog" aria-modal="false" aria-labelledby="ga-rules-title" hidden>
         <header class="ga-rules-header">
-          <div>
-            <p class="ga-rules-eyebrow">Gauntlet ${escapeHtml(CONFIG.version)}</p>
-            <h2 id="ga-rules-title">${escapeHtml(CONFIG.assistantName)}</h2>
+          <div class="ga-rules-header-identity">
+            <img
+              class="ga-rules-chief-justice"
+              src="/images/rules-arbiter/chief-justice-rules-arbiter-popup.webp"
+              alt="The Chief Justice holding a gavel"
+              width="216"
+              height="270"
+              decoding="async"
+            />
+            <div class="ga-rules-header-copy">
+              <p class="ga-rules-eyebrow">Gauntlet ${escapeHtml(CONFIG.version)}</p>
+              <h2 id="ga-rules-title">${escapeHtml(CONFIG.assistantName)}</h2>
+            </div>
           </div>
           <button class="ga-rules-close" type="button" aria-label="Close rules assistant">×</button>
         </header>
