@@ -10,6 +10,10 @@ Current work should begin with:
 
 ## Archive groups
 
+### `v0.6.2-development/`
+
+Implementation ledgers, candidate rules/reference documents, compatibility audits, starter candidate data, release closeout records, and Wave B–E review/test matrices from the v0.6.2 development cycle. Withdrawn immutable publication evidence remains under `releases/v0.6.2-withdrawn/`.
+
 ### `v0.6.1-development/`
 
 Post-v0.6.0 implementation records for the first v0.6.1 playtest revision, including its implementation ledger, Neutral and Territory pool snapshots, Rulebook layering standard, and publication record. The frozen v0.6.1 release remains under `releases/v0.6.1/`.
