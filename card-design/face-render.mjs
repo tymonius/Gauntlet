@@ -132,6 +132,69 @@ async function prepareFace(spec, result) {
   }
 }
 
+function installEmbeddedInspection(spec, result) {
+  if (window.self === window.top || !result.inspection) return;
+
+  const element = result.element;
+  const label = spec.label || element.getAttribute('aria-label') || 'Gauntlet face';
+
+  if (result.inspection.card) {
+    element.classList.add('card-inspectable');
+    element.tabIndex = 0;
+    element.setAttribute('role', 'button');
+    element.setAttribute('aria-haspopup', 'dialog');
+    element.title = 'Open enlarged card view';
+
+    const openCard = () => window.parent.postMessage({
+      type: 'gauntlet-face-inspect',
+      href: window.location.href,
+      label,
+      faceId: spec.id,
+      orientation: spec.orientation,
+    }, window.location.origin);
+
+    element.addEventListener('click', event => {
+      if (event.button !== 0) return;
+      openCard();
+    });
+    element.addEventListener('keydown', event => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      openCard();
+    });
+  }
+
+  const image = result.inspection.artworkImage;
+  const frame = image?.closest('figure');
+  if (!(image instanceof HTMLImageElement) || !frame || !(image.currentSrc || image.src)) return;
+
+  frame.classList.add('art-inspectable');
+  frame.tabIndex = 0;
+  frame.setAttribute('role', 'button');
+  frame.setAttribute('aria-haspopup', 'dialog');
+  frame.setAttribute('aria-label', `View full uncropped artwork for ${label}`);
+  frame.title = 'View full uncropped artwork';
+
+  const openArtwork = () => window.parent.postMessage({
+    type: 'gauntlet-face-art-inspect',
+    source: image.currentSrc || image.src,
+    label,
+    faceId: spec.id,
+  }, window.location.origin);
+
+  frame.addEventListener('click', event => {
+    if (event.button !== 0) return;
+    event.stopPropagation();
+    openArtwork();
+  });
+  frame.addEventListener('keydown', event => {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+    event.stopPropagation();
+    openArtwork();
+  });
+}
+
 function reportError(error) {
   const message = error?.stack || error?.message || String(error);
   console.error(error);
@@ -178,6 +241,7 @@ async function main() {
   target.replaceChildren(result.element);
 
   await prepareFace(spec, result);
+  installEmbeddedInspection(spec, result);
   document.body.dataset.renderReady = 'true';
 }
 
