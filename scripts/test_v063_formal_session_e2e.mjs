@@ -166,7 +166,7 @@ try {
   const createdGames = await json(await call(`/api/sessions/${event.joinToken}/games`, {
     method: "POST",
     headers: { "X-Host-Key": event.hostKey },
-    body: { count: 2, metadata: { source: "automated-v070-event-e2e" } }
+    body: { count: 2, metadata: { source: "automated-v071-event-e2e" } }
   }), 201);
   assert.equal(createdGames.games.length, 2);
   const [gameOne, gameTwo] = createdGames.games;
@@ -212,7 +212,7 @@ try {
     VALUES (?, ?, 1, ?, ?, ?, ?, 'v0.7.1', 'explicit', 'high', 'retrieval_only', 1)`)
     .bind(
       interactionId,
-      "arbiter-v070-event-game-e2e",
+      "arbiter-v071-event-game-e2e",
       "2026-08-16T00:00:00.000Z",
       "2026-08-16T00:00:00.000Z",
       "Where does a Gambit go?",
