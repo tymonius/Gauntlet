@@ -311,39 +311,31 @@ function artworkSpec(game, face, content) {
   }
 
   if (face.template === 'proposal') {
-    if (content.mode === 'ratified') {
-      return {
-        role: 'template',
-        source: {
-          mode: 'exact',
-          src: '/images/artwork/supplemental/diplomats/ratified-wax-seal.webp',
-        },
-        composition: null,
-      };
-    }
-    const artId = `proposal-${content.proposal.id}`;
+    const suffix = content.mode === 'ratified' ? '-ratified' : '';
+    const artId = `proposal-${content.proposal.id}${suffix}`;
     return {
       role: 'crop',
       source: {
         mode: 'exact',
-        src: `/images/artwork/cards/diplomats/proposals/${content.proposal.id}.png`,
+        src: content.mode === 'ratified'
+          ? '/images/artwork/supplemental/diplomats/ratified-wax-seal.webp'
+          : `/images/artwork/cards/diplomats/proposals/${content.proposal.id}.png`,
       },
       composition: artDirectionSpec(game, artId),
     };
   }
 
   if (face.template === 'rite') {
-    if (content.mode === 'completed') {
-      return {
-        role: 'template',
-        source: { mode: 'exact', src: content.completedArtwork || null },
-        composition: null,
-      };
-    }
-    const artId = `rite-${content.rite.id}`;
+    const suffix = content.mode === 'completed' ? '-completed' : '';
+    const artId = `rite-${content.rite.id}${suffix}`;
     return {
       role: 'crop',
-      source: { mode: 'exact', src: content.rite.artwork || null },
+      source: {
+        mode: 'exact',
+        src: content.mode === 'completed'
+          ? (content.completedArtwork || null)
+          : (content.rite.artwork || null),
+      },
       composition: artDirectionSpec(game, artId),
     };
   }
