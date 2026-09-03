@@ -5,8 +5,10 @@ const sharedInspection = readFileSync('card-reference/card-inspection.js', 'utf8
 
 describe('shared card inspector orientation', () => {
   it('uses renderer-reported orientation for unified face inspection', () => {
-    expect(sharedInspection).toContain("portrait: Object.freeze({ width: 240, height: 336 })");
-    expect(sharedInspection).toContain("landscape: Object.freeze({ width: 336, height: 240 })");
+    expect(sharedInspection).toContain('width: PRODUCTION_SURFACES.portrait.widthCssPx');
+    expect(sharedInspection).toContain('height: PRODUCTION_SURFACES.portrait.heightCssPx');
+    expect(sharedInspection).toContain('width: PRODUCTION_SURFACES.landscape.widthCssPx');
+    expect(sharedInspection).toContain('height: PRODUCTION_SURFACES.landscape.heightCssPx');
     expect(sharedInspection).toContain("data.type === 'gauntlet-face-inspect'");
     expect(sharedInspection).toContain("data.type === 'gauntlet-territory-inspect' || data.orientation === 'landscape'");
     expect(sharedInspection).toContain('data-face-inspection-host="true"');
