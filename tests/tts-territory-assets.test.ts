@@ -39,7 +39,7 @@ describe("TTS Territory assets", () => {
   it("reuses one shared Gauntlet-family frame in the renderer and specimen pages", () => {
     expect(rendererStyles).toContain("@import url('/card-design/territory-card.css')");
     expect(specimenPage).toContain('href="territory-card.css"');
-    expect(territoryReviewPage).toContain('/card-design/territory-card-renderer.css');
+    expect(faceSpec).toContain("'/card-design/territory-card-renderer.css'");
     expect(dedicatedSpecimenPage).toContain('href="../territory-card.css"');
     expect(sharedStyles).toContain("padding: 0.075in");
     expect(sharedStyles).toContain("border-radius: 0.125in");
