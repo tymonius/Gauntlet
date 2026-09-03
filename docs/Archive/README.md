@@ -6,9 +6,13 @@ Current work should begin with:
 
 - [Documentation Index](../README.md)
 - [Development Status](../Gauntlet_Development_Status.md)
-- [v0.6.0 Release Package](../../releases/v0.6.0/README.md)
+- [Current v0.7.1 Release Package](../../releases/v0.7.1/)
 
 ## Archive groups
+
+### `v0.6.1-development/`
+
+Post-v0.6.0 implementation records for the first v0.6.1 playtest revision, including its implementation ledger, Neutral and Territory pool snapshots, Rulebook layering standard, and publication record. The frozen v0.6.1 release remains under `releases/v0.6.1/`.
 
 ### `v0.6-development/`
 
