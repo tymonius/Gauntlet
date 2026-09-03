@@ -155,6 +155,34 @@ const handlers: V070BattleEffectHandler[] = [
     },
   },
   {
+    cardId: 'mystics-circle-of-bones',
+    expectedText: 'In the Aftermath, place this Overlay on the contested Territory.',
+    timing: 'reveal',
+    apply: ({ state, owner, commitment }) => {
+      registerBattleCardAftermathOverlayPlacement(
+        state,
+        owner,
+        commitment.instanceId,
+        'mystics-circle-of-bones',
+        'always',
+      );
+    },
+  },
+  {
+    cardId: 'neutral-battlefield-plunder',
+    expectedText: 'In the Aftermath, if you win, place this Overlay on the contested Territory.',
+    timing: 'reveal',
+    apply: ({ state, owner, commitment }) => {
+      registerBattleCardAftermathOverlayPlacement(
+        state,
+        owner,
+        commitment.instanceId,
+        'neutral-battlefield-plunder',
+        'owner_win',
+      );
+    },
+  },
+  {
     cardId: 'neutral-contingency-plan',
     expectedText: 'If your opponent controls more Territories than you, +2 Battle Total.',
     timing: 'reveal',
@@ -597,6 +625,23 @@ function modifier(cardId: string, expectedText: string, amount: number): V070Bat
       participant(state, owner).battleModifier += amount;
     },
   };
+}
+
+function registerBattleCardAftermathOverlayPlacement(
+  state: V070GameState,
+  owner: PlayerId,
+  sourceInstanceId: string,
+  sourceCardId: string,
+  condition: 'always' | 'owner_win',
+): void {
+  const runtime = state.battleRuntime;
+  if (!runtime) throw new Error('Battle effects require an active battle runtime.');
+  runtime.battleCardAftermathOverlayPlacements.push({
+    owner,
+    sourceInstanceId,
+    sourceCardId,
+    condition,
+  });
 }
 
 function registerBattleCardAftermathDestination(
