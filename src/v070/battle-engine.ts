@@ -56,7 +56,10 @@ import {
   type V070BattleCardCommitment,
   type V070BattleRuntime
 } from './battle-types';
-import { resolveV070AssetLimitRemoval } from './assets';
+import {
+  bankV070AssetFromBattleEffect,
+  resolveV070AssetLimitRemoval,
+} from './assets';
 import {
   recordV070ExecutiveHostileTakeoverEligibility,
   resolveV070CapitalGainsOnBattleLoss,
@@ -116,6 +119,14 @@ import {
   resolveV070PurgeHandChoice,
   type V070PurgePrintedCost,
 } from './purge';
+import {
+  applyV070CounterattackAssetOnsetEffects,
+  initializeV070CounterattackBattle,
+  resolveV070FootholdBattleDraws,
+  useV070FootholdAssetAfterCounterattackWin,
+  v070CounterattackBattleCardAftermathDestination,
+  type V070BattleCardAftermathDestination,
+} from './counterattack-cards';
 import {
   applyV070MysticConvergence,
   completeV070MysticBloodAfterBattleWin,
@@ -257,6 +268,11 @@ export type V070BattleAction =
       cardInstanceId: string;
     }
   | { type: 'pass_guardians_of_the_circle'; playerId: PlayerId }
+  | {
+      type: 'use_foothold_asset';
+      playerId: PlayerId;
+      assetInstanceId: string;
+    }
   | {
       type: 'use_grand_inquisitor_final_judgment';
       playerId: PlayerId;
@@ -607,6 +623,13 @@ export function reduceV070BattleAction(
     case 'pass_guardians_of_the_circle':
       passV070GuardiansOfTheCircle(next, action.playerId);
       break;
+    case 'use_foothold_asset':
+      useV070FootholdAssetAfterCounterattackWin(
+        next,
+        action.playerId,
+        action.assetInstanceId,
+      );
+      break;
     case 'use_grand_inquisitor_final_judgment':
       useGrandInquisitorFinalJudgmentAtEndOfAftermath(
         next,
@@ -702,9 +725,11 @@ function ensureBattleRuntime(state: V070GameState): V070BattleRuntime {
       state,
       state.battle.contestedPosition,
     );
+    initializeV070CounterattackBattle(state);
     applyV070MysticConvergence(state);
     applyV070CoreBattleTerritoryEffects(state);
     applyV070AdvancedBattleTerritoryEffects(state);
+    applyV070CounterattackAssetOnsetEffects(state);
     initializeV070TermsWindow(state);
   }
   return state.battleRuntime;
@@ -1452,6 +1477,8 @@ function finalizeOutcome(
     },
   });
 
+  resolveV070FootholdBattleDraws(state, outcome.winner);
+
   if (!runtime.pendingGameVictory) {
     prepareV070MysticLossInterruption(state, outcome.loser);
   }
@@ -2065,7 +2092,7 @@ function placeAftermathCard(
   state: V070GameState,
   playerId: PlayerId,
   instanceId: string,
-  destination: 'discard' | 'graveyard' | 'hand',
+  destination: V070BattleCardAftermathDestination,
   graveyarded: string[],
 ): void {
   if (destination === 'graveyard') {
@@ -2075,6 +2102,15 @@ function placeAftermathCard(
   }
   if (destination === 'hand') {
     state.players[playerId].zones.hand.push(instanceId);
+    return;
+  }
+  if (destination === 'asset') {
+    bankV070AssetFromBattleEffect(
+      state,
+      playerId,
+      instanceId,
+      'Resistance battle effect',
+    );
     return;
   }
   state.players[playerId].zones.discardPile.push(instanceId);
@@ -2252,6 +2288,8 @@ function completeAftermathInternal(
     );
     runtime.aftermathCardsCleared = true;
   }
+
+  if (state.pendingAssetLimitChoice) return;
 
   if (runtime.pendingGameVictory) {
     finalizeCompletedAftermath(state);
