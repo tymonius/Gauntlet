@@ -1483,14 +1483,19 @@ function openAccursedWagerAftermathChoice(
 ): boolean {
   const battle = requireBattle(state);
   const runtime = requireRuntime(state);
-  const wagers = v070AccursedWagersForCurrentBattle(state);
-  if (wagers.length === 0) return false;
+  const actionWagers = v070AccursedWagersForCurrentBattle(state);
+  const sourceInstanceIds = [
+    ...actionWagers.map(wager => wager.sourceActionInstanceId),
+    ...runtime.battleAccursedWagerInstanceIds,
+  ];
+  if (sourceInstanceIds.length === 0) return false;
 
   if (!battle.loser) {
     clearV070AccursedWagersForCurrentBattle(
       state,
       'battle ended without a losing player',
     );
+    runtime.battleAccursedWagerInstanceIds = [];
     return false;
   }
 
@@ -1503,9 +1508,7 @@ function openAccursedWagerAftermathChoice(
       visibility: 'public',
       payload: {
         loser,
-        sourceActionInstanceIds: wagers.map(
-          wager => wager.sourceActionInstanceId,
-        ),
+        sourceActionInstanceIds: [...sourceInstanceIds],
         reason: 'loser_hand_empty',
       },
     });
@@ -1513,14 +1516,13 @@ function openAccursedWagerAftermathChoice(
       state,
       'losing player had no card in Hand',
     );
+    runtime.battleAccursedWagerInstanceIds = [];
     return false;
   }
 
   runtime.pendingAccursedWager = {
     loser,
-    remainingSourceActionInstanceIds: wagers.map(
-      wager => wager.sourceActionInstanceId,
-    ),
+    remainingSourceActionInstanceIds: [...sourceInstanceIds],
     immediateWinner,
   };
   appendV070Event(state, {
@@ -1648,6 +1650,7 @@ function resolveAccursedWagerDiscard(
     state,
     'Accursed Wager Aftermath resolved',
   );
+  runtime.battleAccursedWagerInstanceIds = [];
   completeAftermathInternal(state, immediateWinner);
 }
 
@@ -2055,11 +2058,19 @@ function territoryAftermathDestination(
   instanceId: string,
   normalDestination: 'discard' | 'graveyard',
 ): 'discard' | 'graveyard' | 'hand' {
-  const override = runtime.territoryAftermathOverride;
-  return override
-    && override.playerId === playerId
-    && override.instanceId === instanceId
-      ? override.destination
+  const cardOverride =
+    runtime.battleCardAftermathDestinationOverrides.find(
+      override =>
+        override.playerId === playerId
+        && override.instanceId === instanceId,
+    );
+  if (cardOverride) return cardOverride.destination;
+
+  const territoryOverride = runtime.territoryAftermathOverride;
+  return territoryOverride
+    && territoryOverride.playerId === playerId
+    && territoryOverride.instanceId === instanceId
+      ? territoryOverride.destination
       : normalDestination;
 }
 

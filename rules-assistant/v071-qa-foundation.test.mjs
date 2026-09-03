@@ -30,6 +30,13 @@ describe("v0.7.1 Rules Arbiter QA foundation", () => {
     expect(workerV071.match(/persistSmartInteraction\(env/g)?.length).toBeGreaterThanOrEqual(2);
   });
 
+  test("v0.7.1 prompt prioritizes the immediately preceding exchange for ambiguous follow-ups", () => {
+    expect(workerV071).toContain('For follow-up questions using words such as "that", "it", "this", "those"');
+    expect(workerV071).toContain("IMMEDIATELY PRECEDING EXCHANGE — resolve ambiguous follow-ups here first");
+    expect(workerV071).toContain("const immediateHistory = history.slice(-2)");
+    expect(workerV071).toContain("const earlierHistory = history.slice(0, -2)");
+  });
+
   test("benchmark has broad coverage and preserves every live review interaction", () => {
     expect(benchmark.schema).toBe("gauntlet.rules-arbiter-evals.v2");
     expect(benchmark.rulesVersion).toBe("v0.7.1");

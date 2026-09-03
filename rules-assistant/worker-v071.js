@@ -40,6 +40,7 @@ Requirements:
 5. Cite only supplied source IDs that actually support the answer. Explicit or inferred answers require at least one supporting source.
 6. Keep the answer direct and useful at the table.
 7. Write the answer as plain text only. The Rules Arbiter widget does not render Markdown. Do not use Markdown emphasis markers, backticks, headings, tables, or other formatting syntax. Write formulas directly, for example: Deed cost = min(Deeds you own + 1, 6) + position modifier + buyout premium.
+8. For follow-up questions using words such as "that", "it", "this", "those", "explain that", or "what does that mean", resolve the referent against the immediately preceding exchange first. Do not jump back to an older topic when the latest exchange supplies a coherent referent. An explicit subject named in the current question overrides this rule.
 ${ADJUDICATION_GUIDE}
 
 Return only the required JSON object.`;
@@ -237,12 +238,18 @@ async function askOpenAI({ env, request, question, history, sources }) {
       ].join("\n")).join("\n\n---\n\n")
     : "No sufficiently relevant clean source passage was retrieved.";
 
-  const historyText = history.length
-    ? history.map((item) => {
-        const label = item.rulingStatus ? ` [${item.rulingStatus}]` : "";
-        return `${item.role.toUpperCase()}${label}: ${item.content}`;
-      }).join("\n")
-    : "No prior conversation or session ruling.";
+  const formatHistoryItem = (item) => {
+    const label = item.rulingStatus ? ` [${item.rulingStatus}]` : "";
+    return `${item.role.toUpperCase()}${label}: ${item.content}`;
+  };
+  const immediateHistory = history.slice(-2);
+  const earlierHistory = history.slice(0, -2);
+  const immediateHistoryText = immediateHistory.length
+    ? immediateHistory.map(formatHistoryItem).join("\n")
+    : "No immediately preceding exchange.";
+  const earlierHistoryText = earlierHistory.length
+    ? earlierHistory.map(formatHistoryItem).join("\n")
+    : "No earlier conversation or session ruling.";
 
   const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
@@ -264,7 +271,8 @@ async function askOpenAI({ env, request, question, history, sources }) {
             type: "input_text",
             text: [
               `QUESTION\n${question}`,
-              `RECENT CONVERSATION AND SESSION RULINGS\n${historyText}`,
+              `IMMEDIATELY PRECEDING EXCHANGE — resolve ambiguous follow-ups here first\n${immediateHistoryText}`,
+              `EARLIER CONVERSATION AND SESSION RULINGS\n${earlierHistoryText}`,
               `CANONICAL SOURCES\n${sourceText}`
             ].join("\n\n")
           }]
