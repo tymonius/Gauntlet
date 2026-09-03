@@ -75,12 +75,12 @@
 
       <form id="arbiterForm" class="arbiter-form">
         <label for="question"><strong>Rules question</strong></label>
-        <textarea id="question" maxlength="600" placeholder="Ask about setup, cards, battles, factions, Territories, or victory."></textarea>
+        <textarea id="question" maxlength="600" placeholder="Ask about setup, cards, battles, factions, Territories, or victory." required></textarea>
         <button type="submit">Ask the Rules Arbiter</button>
       </form>
 
-      <p id="arbiterStatus" class="arbiter-status">Connecting to the current Rules Arbiter…</p>
-      <div id="answer" class="arbiter-answer" aria-live="polite"></div>
+      <p id="arbiterStatus" class="arbiter-status" role="status" aria-live="polite">Connecting to the current Rules Arbiter…</p>
+      <div id="answer" class="arbiter-answer" aria-live="polite" aria-atomic="true"></div>
     </section>
 
     <aside class="authority-card">

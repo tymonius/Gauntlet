@@ -183,7 +183,6 @@ footer strong { color: var(--ink); }
   .arbiter-header,
   .arbiter-shell,
   footer { width: min(100% - 28px, 1180px); }
-  .arbiter-header nav { display: none; }
   .arbiter-shell { padding-block: 42px; }
   .arbiter-panel,
   .authority-card { padding: 24px; }
