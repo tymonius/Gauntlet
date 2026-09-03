@@ -114,14 +114,40 @@
 }
 
 .ga-rules-header {
+  min-height: 158px;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: space-between;
-  gap: 18px;
-  padding: 17px 18px 15px;
+  gap: 10px;
+  padding: 0 14px 0 0;
+  overflow: hidden;
   border-bottom: 1px solid var(--ga-line);
   background: var(--ga-paper);
   color: var(--ga-ink);
+}
+
+.ga-rules-header-identity {
+  min-width: 0;
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: 132px minmax(0, 1fr);
+  align-items: center;
+}
+
+.ga-rules-chief-justice {
+  align-self: end;
+  display: block;
+  width: 132px;
+  height: auto;
+  margin: 0 0 -1px -2px;
+  filter: drop-shadow(0 8px 12px rgba(47, 38, 26, 0.13));
+  pointer-events: none;
+  user-select: none;
+}
+
+.ga-rules-header-copy {
+  min-width: 0;
+  padding: 20px 0 18px 8px;
 }
 
 .ga-rules-eyebrow {
@@ -145,8 +171,11 @@
 }
 
 .ga-rules-close {
+  flex: 0 0 auto;
+  align-self: flex-start;
   width: 34px;
   height: 34px;
+  margin-top: 12px;
   border: 1px solid var(--ga-line-dark);
   border-radius: 0;
   background: transparent;
@@ -496,6 +525,28 @@
   .ga-rules-launcher-mark {
     width: 46px;
     border-right: 0;
+  }
+
+  .ga-rules-header {
+    min-height: 126px;
+    padding-right: 10px;
+  }
+
+  .ga-rules-header-identity {
+    grid-template-columns: 104px minmax(0, 1fr);
+  }
+
+  .ga-rules-chief-justice {
+    width: 104px;
+    margin-left: 0;
+  }
+
+  .ga-rules-header-copy {
+    padding: 14px 0 12px 5px;
+  }
+
+  .ga-rules-header h2 {
+    font-size: 23px;
   }
 
   .ga-rules-panel {
