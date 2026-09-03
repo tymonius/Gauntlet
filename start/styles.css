@@ -100,17 +100,38 @@ body{background:radial-gradient(circle at 10% 5%,rgba(143,31,37,.1),transparent 
 @media(max-width:620px){.start-hero{padding:3.2rem 0}}
 
 /* Canonical faction symbols inherit each faction's own color. */
-.faction-choice.military{--faction:#9e252c}
-.faction-choice.diplomats{--faction:#315d9e}
-.faction-choice.financiers{--faction:#267051}
-.faction-choice.intelligence{--faction:#2d3134}
-.faction-choice.mystics{--faction:#674487}
-.faction-choice.inquisition{--faction:#b18b34}
+.faction-choice.military{--faction:#9e252c;--faction-symbol:url("/images/faction-symbols/military.svg")}
+.faction-choice.diplomats{--faction:#315d9e;--faction-symbol:url("/images/faction-symbols/diplomats.svg")}
+.faction-choice.financiers{--faction:#267051;--faction-symbol:url("/images/faction-symbols/financiers.svg")}
+.faction-choice.intelligence{--faction:#2d3134;--faction-symbol:url("/images/faction-symbols/intelligence.svg")}
+.faction-choice.mystics{--faction:#674487;--faction-symbol:url("/images/faction-symbols/mystics.svg")}
+.faction-choice.inquisition{--faction:#b18b34;--faction-symbol:url("/images/faction-symbols/inquisition.svg")}
 .choice-mark.faction-symbol-asset{
   color:var(--faction);
   background:currentColor;
   -webkit-mask:var(--faction-symbol) center/68% 68% no-repeat;
   mask:var(--faction-symbol) center/68% 68% no-repeat;
+}
+.faction-choice{
+  isolation:isolate;
+}
+.faction-choice > *{
+  position:relative;
+  z-index:1;
+}
+.faction-choice::after{
+  content:"";
+  position:absolute;
+  right:-24px;
+  bottom:-42px;
+  width:clamp(150px,46%,190px);
+  aspect-ratio:1;
+  z-index:0;
+  background:var(--faction);
+  opacity:.075;
+  -webkit-mask:var(--faction-symbol) center/contain no-repeat;
+  mask:var(--faction-symbol) center/contain no-repeat;
+  pointer-events:none;
 }
 
 /* Leader option cards stay typographic; the approved portrait appears only in the current-choice panel. */
