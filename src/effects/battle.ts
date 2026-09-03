@@ -1,6 +1,9 @@
 import type { BattleParticipantState, CardID, GameState, PlayerID } from '../types/v06';
 import { bankedAssetCardUseAllowed } from './asset-policy';
+import { capitalPunishmentCleanupHandler } from './capital-punishment';
+import { disruptionBattleHandler } from './disruption';
 import { validateEmbargoTargets } from './embargo';
+import { sabotageBattleHandler } from './sabotage';
 import type { BattleCardTarget, EffectHandler } from './types';
 
 function participantCardCount(participant: BattleParticipantState, cardId: CardID): number {
@@ -424,6 +427,8 @@ export const neutralAttritionAssetHandler: EffectHandler = {
 
 export const baseBattleEffectHandlers: EffectHandler[] = [
   tradeBanBattleHandler,
+  disruptionBattleHandler,
+  sabotageBattleHandler,
   heartlandDefenseBonusHandler,
   fortificationsAssetHandler,
   fortificationsBattleHandler,
@@ -434,4 +439,5 @@ export const baseBattleEffectHandlers: EffectHandler[] = [
   attritionAssetHandler,
   neutralAttritionBattleHandler,
   neutralAttritionAssetHandler,
+  capitalPunishmentCleanupHandler,
 ];
