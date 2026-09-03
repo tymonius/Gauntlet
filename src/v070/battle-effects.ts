@@ -135,14 +135,6 @@ const handlers: V070BattleEffectHandler[] = [
     },
   },
   {
-    cardId: 'intelligence-subversion',
-    expectedText: 'Opposing Assets cannot be used during this battle.',
-    timing: 'reveal',
-    apply: ({ state, opponent }) => {
-      suppressBattleAssets(state, opponent);
-    },
-  },
-  {
     cardId: 'neutral-sequestration',
     expectedText: 'All Assets are inactive during this battle.',
     timing: 'reveal',
