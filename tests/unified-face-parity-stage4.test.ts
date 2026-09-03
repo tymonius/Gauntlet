@@ -55,14 +55,23 @@ describe('Stage 4 unified face parity gate', () => {
     expect(faceSpec).toContain("'/card-design/faction-component.css'");
   });
 
-  it('fits legacy supplemental faces only after canonical production fonts are loaded', () => {
-    expect(supplementalCard).toContain('waitForCanonicalProductionFonts');
-    expect(supplementalCard).toContain("document.body?.dataset.productionFontsReady");
-    expect(supplementalCard.indexOf('await waitForCanonicalProductionFonts();')).toBeLessThan(
+  it('fits legacy supplemental faces after explicitly loading the shared production fonts', () => {
+    expect(supplementalCard).toContain("import { loadProductionFonts } from './face-preparation.mjs'");
+    expect(supplementalCard).toContain('await loadProductionFonts();');
+    expect(supplementalCard).not.toContain('waitForCanonicalProductionFonts');
+    expect(supplementalCard.indexOf('await loadProductionFonts();')).toBeLessThan(
       supplementalCard.indexOf('await layoutTrackerCards();')
     );
-    expect(supplementalCard.indexOf('await waitForCanonicalProductionFonts();')).toBeLessThan(
+    expect(supplementalCard.indexOf('await loadProductionFonts();')).toBeLessThan(
       supplementalCard.indexOf('await hydrateReferenceCards();')
+    );
+  });
+
+  it('fits legacy references only after mounting them at final production geometry', () => {
+    expect(componentRenderer).toContain('target.replaceChildren(card);');
+    expect(componentRenderer).toContain('const { fitReferenceCard } = await import("/card-design/reference-card.js")');
+    expect(componentRenderer.indexOf('target.replaceChildren(card);')).toBeLessThan(
+      componentRenderer.indexOf('const { fitReferenceCard } = await import("/card-design/reference-card.js")')
     );
   });
 
