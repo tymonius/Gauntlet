@@ -8,6 +8,10 @@ const currentRuntime = readFileSync('game-data/current-game.mjs', 'utf8');
 const currentValidation = readFileSync('game-data/current-game-validation.mjs', 'utf8');
 const releasedRuntime = readFileSync('game-data/ruleset.mjs', 'utf8');
 const renderContext = readFileSync('card-design/render-context.mjs', 'utf8');
+const faceSpec = readFileSync('card-design/face-spec.mjs', 'utf8');
+const faceRender = readFileSync('card-design/face-render.mjs', 'utf8');
+const leaderFace = readFileSync('card-design/face-families/leader.mjs', 'utf8');
+const cardBackAlias = readFileSync('card-design/card-back-render.html', 'utf8');
 const componentRender = readFileSync('card-design/component-render.js', 'utf8');
 const componentRenderHtml = readFileSync('card-design/component-render.html', 'utf8');
 const playableSurface = readFileSync('card-design/card-review-render.js', 'utf8');
@@ -38,9 +42,22 @@ describe('complete canonical render authority', () => {
       currentGame.visualPolicy.artDirectionDefault,
     );
     expect(resolveArtDirection(currentGame.visualPolicy, currentGame.artDirection, 'financiers-banker')).toEqual({
-      ...currentGame.visualPolicy.artDirectionDefault,
+      fit: 'cover',
+      focusX: 0.5,
       focusY: 0,
+      smart: false,
+      zoom: 1,
     });
+    for (const leader of currentGame.leaders) {
+      const id = `${leader.faction}-${leader.id}`;
+      expect(currentGame.artDirection[id]).toMatchObject({
+        fit: 'cover',
+        focusX: expect.any(Number),
+        focusY: expect.any(Number),
+        smart: false,
+        zoom: expect.any(Number),
+      });
+    }
 
     expect(currentValidation).toContain('validateVisualPolicy(authority.visualPolicy)');
     expect(currentRuntime).toContain('validateCurrentGameAuthority(authority)');
@@ -54,6 +71,10 @@ describe('complete canonical render authority', () => {
     expect(renderContext).toContain('renderContextPromise = loadCurrentGame()');
     expect(renderContext).toContain('visualAuthorityUrl');
     expect(renderContext).toContain('artDirectionFor(id)');
+    expect(faceSpec).toContain("loadRenderContext");
+    expect(faceSpec).toContain("requireExplicitArtworkDirection");
+    expect(faceRender).toContain("resolveFaceSpec");
+    expect(faceRender).toContain("window.GauntletCardDesign.prepareCard(card)");
     expect(componentRender).toContain('loadRenderContext');
     expect(componentRender).toContain('renderContext.artDirectionFor(artworkId)');
     expect(playableSurface).toContain('loadRenderContext');
@@ -66,6 +87,8 @@ describe('complete canonical render authority', () => {
   });
 
   it('keeps crop behavior and face implementations under Card Design ownership', () => {
+    expect(faceRender).toContain("/card-design/artwork-crop.js");
+    expect(leaderFace).toContain("leader-card--standardized");
     expect(componentRenderHtml).toContain('/card-design/artwork-crop.js');
     expect(playableSurface).toContain("loadScript('/card-design/artwork-crop.js')");
     expect(playableSurface).toContain("loadScript('/card-design/playable-card-renderer.js')");
@@ -110,6 +133,7 @@ describe('complete canonical render authority', () => {
       widthCssPx: 336,
       heightCssPx: 240,
     });
+    expect(faceSpec).toContain('surfaceCssSize(orientation)');
     expect(componentRender).toContain('surfaceCssSize(orientation)');
     expect(cardReference).toContain('PRODUCTION_SURFACES');
     expect(inspection).toContain('PRODUCTION_SURFACES');
@@ -118,7 +142,10 @@ describe('complete canonical render authority', () => {
 
   it('keeps back policy data-driven and card backs on the Card Design render surface', () => {
     expect(productionPrint).toContain('component.backPolicy || "standardBack"');
-    expect(productionPrint).toContain('/card-design/card-back-render.html?faction=');
+    expect(productionPrint).toContain('/card-design/face-render.html?kind=back&id=');
+    expect(productionPrint).not.toContain('/card-design/card-back-render.html?faction=');
     expect(productionPrint).not.toContain('/tts/back-renderer/index.html?faction=');
+    expect(cardBackAlias).toContain('/card-design/face-render.html');
+    expect(cardBackAlias).toContain("window.location.replace(target)");
   });
 });
