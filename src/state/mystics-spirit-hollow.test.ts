@@ -5,7 +5,7 @@ import type {
   BattleState,
   GameState,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import { buildGuidedOptions } from '../dev/guided-options';
 import { applyGameAction } from './apply-mystics';
 import { initializeGame } from './initialize';

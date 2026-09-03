@@ -4,7 +4,7 @@ import type {
   BattlePlayedCard,
   GameState,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import { applyGameAction } from './apply-mystics';
 import { initializeGame } from './initialize';
 import {
