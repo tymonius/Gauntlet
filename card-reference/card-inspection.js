@@ -43,10 +43,11 @@
   function buildDialog() {
     dialog = document.createElement('dialog');
     dialog.className = 'card-reference-inspection-dialog';
+    dialog.setAttribute('aria-labelledby', 'card-reference-inspection-label');
     dialog.innerHTML = `
       <div class="card-reference-inspection-toolbar">
         <button class="card-reference-inspection-back" type="button" hidden>← Back to card</button>
-        <span class="card-reference-inspection-label" aria-live="polite"></span>
+        <span id="card-reference-inspection-label" class="card-reference-inspection-label" aria-live="polite"></span>
         <button class="card-reference-inspection-close" type="button" aria-label="Close inspection">×</button>
       </div>
       <div class="card-reference-inspection-body">
@@ -230,6 +231,7 @@
     currentLabel = String(label || currentLabel || 'Gauntlet card').trim() || 'Gauntlet card';
     const labelElement = dialog.querySelector('.card-reference-inspection-label');
     labelElement.textContent = currentLabel;
+    if (cardFrame) cardFrame.title = `Enlarged ${currentLabel}`;
   }
 
   function openCard(href, label, pushHistory = true, cardFormat = 'portrait') {
