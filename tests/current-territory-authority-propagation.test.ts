@@ -52,10 +52,11 @@ describe('historical v0.6.4 Territory derivation and current authority propagati
     expect(renderValidator).not.toContain('readCurrentJsonSource');
     expect(renderValidator).not.toContain('source.base_version');
     expect(renderValidator).not.toContain('EXPECTED_SOURCE_ISSUE');
-    expect(renderValidator).toContain('const CSS_WIDTH = 336');
-    expect(renderValidator).toContain('const CSS_HEIGHT = 240');
-    expect(renderValidator).toContain('const OUTPUT_WIDTH = 560');
-    expect(renderValidator).toContain('const OUTPUT_HEIGHT = 400');
+    expect(renderValidator).toContain("surfaceCssPixels('landscape')");
+    expect(renderValidator).toContain("surfaceRasterPixels('landscape')");
+    expect(renderValidator).toContain("surfaceDeviceScale('landscape')");
+    expect(renderValidator).not.toContain('const CSS_WIDTH = 336');
+    expect(renderValidator).not.toContain('const OUTPUT_WIDTH = 560');
     expect(renderValidator).toContain("metric.artworkLoaded !== 'true'");
     expect(renderWorkflow).toContain('game-data/**');
     expect(renderWorkflow).toContain('node scripts/validate-current-territory-render.mjs');

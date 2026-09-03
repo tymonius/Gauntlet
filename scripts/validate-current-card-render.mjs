@@ -3,11 +3,11 @@ import { mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { extname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadCurrentGameAuthority, validateCurrentGameAuthority, CURRENT_GAME_AUTHORITY_SOURCE } from './current-game-authority.mjs';
+import { surfaceCssPixels } from '../card-design/production-surface.mjs';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const OUTPUT = join(ROOT, 'card-design', 'generated', 'current-card-candidates');
-const CARD_WIDTH = 240;
-const CARD_HEIGHT = 336;
+const { width: CARD_WIDTH, height: CARD_HEIGHT } = surfaceCssPixels('portrait');
 const EXPECTED_CATALOG_COUNT = 142;
 
 function slugify(value) {

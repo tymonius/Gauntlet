@@ -2,7 +2,9 @@ import { createServer } from 'node:http';
 import { mkdir, readFile, stat } from 'node:fs/promises';
 import { extname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { surfaceCssPixels } from '../card-design/production-surface.mjs';
 
+const PORTRAIT_CSS = surfaceCssPixels('portrait');
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const OUTPUT = join(ROOT, 'card-design', 'generated', 'leaders');
 
@@ -137,7 +139,7 @@ async function cardMetrics(back) {
 
 function validateCardMetrics(faction, metrics) {
   const expected = FACTIONS[faction];
-  if (Math.abs(metrics.width - 240) > 0.25 || Math.abs(metrics.height - 336) > 0.25) {
+  if (Math.abs(metrics.width - PORTRAIT_CSS.width) > 0.25 || Math.abs(metrics.height - PORTRAIT_CSS.height) > 0.25) {
     throw new Error(`${faction} card-back geometry changed: ${metrics.width} × ${metrics.height}.`);
   }
   if (metrics.borderBackground !== expected.border || metrics.borderOutline !== expected.outline || metrics.borderRule !== expected.rule) {
@@ -201,7 +203,7 @@ async function validateEmbeddedFrameInspector(page, sourceFrame, label) {
   if (!inspection.open || inspection.position !== 'fixed' || !inspection.hasFrame) {
     throw new Error(`${label} did not open through the shared embedded-frame inspector: ${JSON.stringify(inspection)}.`);
   }
-  if (inspection.frameWidth <= 240 || inspection.frameHeight <= 336 || inspection.stageWidth <= 240 || inspection.stageHeight <= 336) {
+  if (inspection.frameWidth <= PORTRAIT_CSS.width || inspection.frameHeight <= PORTRAIT_CSS.height || inspection.stageWidth <= PORTRAIT_CSS.width || inspection.stageHeight <= PORTRAIT_CSS.height) {
     throw new Error(`${label} embedded inspector did not enlarge the canonical frame: ${JSON.stringify(inspection)}.`);
   }
   if (!inspection.inspectionSource.includes('inspection=1')) {
@@ -238,7 +240,7 @@ async function validateSharedInspector(page, source, cloneSelector, label) {
   if (!inspection.open || inspection.position !== 'fixed' || !inspection.hasClone) {
     throw new Error(`${label} did not open in the shared fixed card inspector: ${JSON.stringify(inspection)}.`);
   }
-  if (inspection.cloneWidth <= 240 || inspection.cloneHeight <= 336 || inspection.stageWidth <= 240 || inspection.stageHeight <= 336) {
+  if (inspection.cloneWidth <= PORTRAIT_CSS.width || inspection.cloneHeight <= PORTRAIT_CSS.height || inspection.stageWidth <= PORTRAIT_CSS.width || inspection.stageHeight <= PORTRAIT_CSS.height) {
     throw new Error(`${label} inspector did not enlarge the selected card: ${JSON.stringify(inspection)}.`);
   }
 
@@ -370,7 +372,7 @@ async function main() {
       if (Math.abs(bleedMetrics.width - 264) > 0.25 || Math.abs(bleedMetrics.height - 360) > 0.25) {
         throw new Error(`${faction} card-back bleed proof is not 2.75 × 3.75in: ${JSON.stringify(bleedMetrics)}.`);
       }
-      if (Math.abs(bleedMetrics.cardWidth - 240) > 0.25 || Math.abs(bleedMetrics.cardHeight - 336) > 0.25) {
+      if (Math.abs(bleedMetrics.cardWidth - PORTRAIT_CSS.width) > 0.25 || Math.abs(bleedMetrics.cardHeight - PORTRAIT_CSS.height) > 0.25) {
         throw new Error(`${faction} card-back trim changed inside the bleed proof: ${JSON.stringify(bleedMetrics)}.`);
       }
       if (Math.abs(bleedMetrics.insetLeft - 12) > 0.25 || Math.abs(bleedMetrics.insetTop - 12) > 0.25 || bleedMetrics.background !== FACTIONS[faction].border) {

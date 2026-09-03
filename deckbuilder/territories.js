@@ -1,3 +1,5 @@
+import { PRODUCTION_SURFACES } from '../card-design/production-surface.mjs';
+
 (() => {
   const deckbuilder = window.GAUNTLET_DECKBUILDER;
   if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
@@ -15,8 +17,8 @@
     selectedId: null,
     pending: null,
   };
-  const TERRITORY_WIDTH = 336;
-  const TERRITORY_HEIGHT = 240;
+  const TERRITORY_WIDTH = PRODUCTION_SURFACES.landscape.widthCssPx;
+  const TERRITORY_HEIGHT = PRODUCTION_SURFACES.landscape.heightCssPx;
   const MAX_TERRITORY_PREVIEW_WIDTH = 360;
 
   const territoryElements = {};

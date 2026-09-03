@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { PRODUCTION_SURFACES } from "../card-design/production-surface.mjs";
 
 const generator = readFileSync("scripts/generate-tts-territory-assets.mjs", "utf8");
 const renderer = readFileSync("card-design/territory-card-renderer.js", "utf8");
@@ -15,11 +16,20 @@ const dedicatedSpecimenPage = readFileSync("card-design/territories/index.html",
 const packageJson = JSON.parse(readFileSync("package.json", "utf8"));
 
 describe("TTS Territory assets", () => {
-  it("uses landscape component dimensions", () => {
-    expect(generator).toContain("const TERRITORY_WIDTH = 560");
-    expect(generator).toContain("const TERRITORY_HEIGHT = 400");
-    expect(generator).toContain("const CSS_TERRITORY_WIDTH = 336");
-    expect(generator).toContain("const CSS_TERRITORY_HEIGHT = 240");
+  it("uses the shared landscape production-surface dimensions", () => {
+    expect(PRODUCTION_SURFACES.landscape).toMatchObject({
+      widthIn: 3.5,
+      heightIn: 2.5,
+      widthCssPx: 336,
+      heightCssPx: 240,
+      widthRasterPx: 560,
+      heightRasterPx: 400,
+    });
+    expect(generator).toContain("surfaceRasterPixels('landscape')");
+    expect(generator).toContain("surfaceCssPixels('landscape')");
+    expect(generator).toContain("surfaceDeviceScale('landscape')");
+    expect(generator).not.toContain("const TERRITORY_WIDTH = 560");
+    expect(generator).not.toContain("const CSS_TERRITORY_WIDTH = 336");
     expect(sharedStyles).toContain("width: 3.5in");
     expect(sharedStyles).toContain("height: 2.5in");
   });

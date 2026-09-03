@@ -3,15 +3,18 @@ import { mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { extname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadCurrentGameAuthority, validateCurrentGameAuthority, CURRENT_GAME_AUTHORITY_SOURCE } from './current-game-authority.mjs';
+import {
+  CSS_PIXELS_PER_INCH,
+  surfaceCssPixels,
+  surfaceDeviceScale,
+  surfaceRasterPixels,
+} from '../card-design/production-surface.mjs';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const OUTPUT = join(ROOT, 'card-design', 'generated', 'current-territories');
-const CSS_WIDTH = 336;
-const CSS_HEIGHT = 240;
-const CSS_PIXELS_PER_INCH = 96;
-const OUTPUT_WIDTH = 560;
-const OUTPUT_HEIGHT = 400;
-const DEVICE_SCALE = OUTPUT_WIDTH / CSS_WIDTH;
+const { width: CSS_WIDTH, height: CSS_HEIGHT } = surfaceCssPixels('landscape');
+const { width: OUTPUT_WIDTH, height: OUTPUT_HEIGHT } = surfaceRasterPixels('landscape');
+const DEVICE_SCALE = surfaceDeviceScale('landscape');
 const MINIMUM_READABLE_EFFECT_SCALE = 0.78;
 const MINIMUM_ARTWORK_HEIGHT = 0.78 * CSS_PIXELS_PER_INCH;
 

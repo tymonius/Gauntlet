@@ -16,11 +16,15 @@ import {
   buildReadyTrackerRecord,
   captureProductionTracker,
 } from './tts-sliding-trackers.mjs';
+import {
+  surfaceCssPixels,
+  surfaceDeviceScale,
+  surfaceRasterPixels,
+} from '../card-design/production-surface.mjs';
 
-const CARD_WIDTH = 400;
-const CARD_HEIGHT = 560;
-const CSS_CARD_WIDTH = 240;
-const CSS_CARD_HEIGHT = 336;
+const { width: CARD_WIDTH, height: CARD_HEIGHT } = surfaceRasterPixels('portrait');
+const { width: CSS_CARD_WIDTH, height: CSS_CARD_HEIGHT } = surfaceCssPixels('portrait');
+const DEVICE_SCALE_FACTOR = surfaceDeviceScale('portrait');
 const FIRST_SUPPLEMENTAL_DECK_ID = 200;
 const SUPPORTED_RENDERERS = new Map([
   ['rite-card', 'rite-card'],
@@ -550,7 +554,7 @@ export async function renderSupplementalAssets(release, catalog) {
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
     viewport: { width: 320, height: 420 },
-    deviceScaleFactor: CARD_WIDTH / CSS_CARD_WIDTH,
+    deviceScaleFactor: DEVICE_SCALE_FACTOR,
   });
   const page = await context.newPage();
 

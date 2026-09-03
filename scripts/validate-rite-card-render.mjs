@@ -3,11 +3,11 @@ import { mkdir, readFile, stat } from 'node:fs/promises';
 import { extname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadCurrentGameAuthority } from './current-game-authority.mjs';
+import { surfaceCssPixels } from '../card-design/production-surface.mjs';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const OUTPUT = join(ROOT, 'card-design', 'generated', 'leaders');
-const CARD_WIDTH = 240;
-const CARD_HEIGHT = 336;
+const { width: CARD_WIDTH, height: CARD_HEIGHT } = surfaceCssPixels('portrait');
 const EXPECTED_RITUAL = 'Ritual of Ascension';
 const RITUAL_CARD_BACK_ID = 'ritual-ascension';
 const RITUAL_FRONT_ART_PATH = '/images/artwork/cards/mystics/rites-and-rituals/ritual-of-ascension.png';

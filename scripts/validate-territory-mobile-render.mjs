@@ -1,13 +1,13 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { chromium, webkit, devices } from 'playwright';
+import { CSS_PIXELS_PER_INCH, surfaceCssPixels } from '../card-design/production-surface.mjs';
 
 const BASE = process.env.TERRITORY_TEST_BASE_URL || 'http://127.0.0.1:4173';
 const OUTPUT = 'card-design/generated/leaders';
 const ID = 'territory-difficult-terrain';
-const WIDTH = 336;
-const HEIGHT = 240;
-const ART_FLOOR = 0.78 * 96;
+const { width: WIDTH, height: HEIGHT } = surfaceCssPixels('landscape');
+const ART_FLOOR = 0.78 * CSS_PIXELS_PER_INCH;
 const CROSS_ENGINE_ART_TOLERANCE = 2.25;
 
 async function ready(frame) {

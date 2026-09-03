@@ -32,9 +32,12 @@ describe('TTS Leader assets', () => {
     expect(readme).toContain('does not maintain a second copy of Leader rules or layout');
   });
 
-  it('captures exact 400 by 560 Leader rasters without fractional-position inflation', () => {
-    expect(exporter).toContain('const CARD_WIDTH = 400');
-    expect(exporter).toContain('const CARD_HEIGHT = 560');
+  it('captures exact production-surface Leader rasters without fractional-position inflation', () => {
+    expect(exporter).toContain("surfaceRasterPixels('portrait')");
+    expect(exporter).toContain("surfaceCssPixels('portrait')");
+    expect(exporter).toContain("surfaceDeviceScale('portrait')");
+    expect(exporter).not.toContain('const CARD_WIDTH = 400');
+    expect(exporter).not.toContain('const CARD_HEIGHT = 560');
     expect(exporter).toContain("scale: 'device'");
     expect(exporter).toContain('width: CSS_CARD_WIDTH');
     expect(exporter).toContain('height: CSS_CARD_HEIGHT');
