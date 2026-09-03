@@ -58,6 +58,14 @@ function resolvesToGenericLegacyBarrel(
     || resolved === resolve(barrel, 'index.ts');
 }
 
+function resolvesUnderSourceDirectory(path: string, specifier: string, directory: string): boolean {
+  if (!specifier.startsWith('.')) return false;
+
+  const resolved = resolve(dirname(path), specifier);
+  const root = resolve(`src/${directory}`);
+  return resolved === root || resolved.startsWith(`${root}${sep}`);
+}
+
 describe('digital engine boundary', () => {
   it('does not present legacy interactive runners as current engine entrypoints', () => {
     expect(packageJson.scripts['dev:cli']).toBeUndefined();
@@ -134,17 +142,17 @@ describe('digital engine boundary', () => {
     expect(offenders).toEqual([]);
   });
 
-  it('keeps the legacy type layer independent from effect runtime', () => {
+  it('keeps the legacy type layer independent from runtime layers', () => {
     const offenders: string[] = [];
-    const effectsRoot = resolve('src/effects');
+    const forbiddenDirectories = ['state', 'effects', 'cards', 'dev'];
 
     for (const path of sourceFilesUnder('src/types')) {
       const source = readFileSync(path, 'utf8');
       for (const specifier of importedSpecifiers(source)) {
-        if (!specifier.startsWith('.')) continue;
-        const resolved = resolve(dirname(path), specifier);
-        if (resolved === effectsRoot || resolved.startsWith(`${effectsRoot}${sep}`)) {
-          offenders.push(`${path}: ${specifier}`);
+        for (const directory of forbiddenDirectories) {
+          if (resolvesUnderSourceDirectory(path, specifier, directory)) {
+            offenders.push(`${path}: ${specifier} -> src/${directory}`);
+          }
         }
       }
     }
@@ -152,10 +160,24 @@ describe('digital engine boundary', () => {
     expect(offenders).toEqual([]);
   });
 
-  it('keeps Military card definitions free of state-engine imports', () => {
-    const militaryCards = readFileSync('src/cards/military.ts', 'utf8');
-    expect(militaryCards).not.toMatch(/from ['"]\.\.\/state(?:\/|['"])/);
-    expect(militaryCards).not.toContain('GameState');
+  it('keeps legacy card definitions independent from state/effect/dev runtime layers', () => {
+    const offenders: string[] = [];
+    const forbiddenDirectories = ['state', 'effects', 'dev'];
+    const cardSources = sourceFilesUnder('src/cards')
+      .filter((path) => !/\.(?:test|spec)\.[cm]?[jt]sx?$/.test(path));
+
+    for (const path of cardSources) {
+      const source = readFileSync(path, 'utf8');
+      for (const specifier of importedSpecifiers(source)) {
+        for (const directory of forbiddenDirectories) {
+          if (resolvesUnderSourceDirectory(path, specifier, directory)) {
+            offenders.push(`${path}: ${specifier} -> src/${directory}`);
+          }
+        }
+      }
+    }
+
+    expect(offenders).toEqual([]);
     expect(existsSync('src/state/military-card-effects.ts')).toBe(true);
   });
 
