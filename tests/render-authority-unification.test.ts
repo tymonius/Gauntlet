@@ -18,7 +18,6 @@ const playableSurface = readFileSync('card-design/card-review-render.js', 'utf8'
 const playableRenderer = readFileSync('card-design/playable-card-renderer.js', 'utf8');
 const territorySurface = readFileSync('card-design/territory-review-render.js', 'utf8');
 const territoryRenderer = readFileSync('card-design/territory-card-renderer.js', 'utf8');
-const leaderCopy = readFileSync('card-design/leader-card-copy.js', 'utf8');
 const proposals = readFileSync('card-design/proposal-card.js', 'utf8');
 const rites = readFileSync('card-design/rite-card.js', 'utf8');
 const supplementals = readFileSync('card-design/supplemental-card.js', 'utf8');
@@ -80,10 +79,12 @@ describe('complete canonical render authority', () => {
     expect(playableSurface).toContain('loadRenderContext');
     expect(territorySurface).toContain('loadRenderContext');
 
-    for (const builder of [leaderCopy, proposals, rites, supplementals]) {
+    for (const builder of [proposals, rites, supplementals]) {
       expect(builder).toContain("loadRenderGame");
       expect(builder).not.toContain("loadCurrentGame");
     }
+    expect(componentRenderHtml).not.toContain('/card-design/leader-card-copy.js');
+    expect(componentRenderHtml).not.toContain('id="leaderReviewSections"');
   });
 
   it('keeps crop behavior and face implementations under Card Design ownership', () => {
