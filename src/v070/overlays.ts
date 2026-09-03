@@ -90,6 +90,22 @@ export function placeV070OverlayFromPendingAction(
   );
 }
 
+export function placeV070OverlayFromBattle(
+  state: V070GameState,
+  owner: PlayerId,
+  instanceId: string,
+  territoryPosition: number,
+  source: string,
+): V070OverlayAttachment {
+  return attachV070Overlay(
+    state,
+    owner,
+    instanceId,
+    territoryPosition,
+    source,
+  );
+}
+
 function attachV070Overlay(
   state: V070GameState,
   owner: PlayerId,

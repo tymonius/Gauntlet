@@ -144,6 +144,21 @@ export interface V070BattleCardAftermathDestinationOverride {
   destination: 'discard' | 'graveyard' | 'hand';
 }
 
+export interface V070BattleCardAftermathOverlayPlacement {
+  sourceInstanceId: string;
+  sourceCardId: string;
+  owner: PlayerId;
+  condition: 'always' | 'owner_win';
+}
+
+export interface V070BattleCardAftermathTerritoryInsertion {
+  sourceInstanceId: string;
+  sourceCardId: string;
+  owner: PlayerId;
+  condition: 'owner_win_as_attacker';
+  location: 'front_line';
+}
+
 export interface V070GambitOrderOverride {
   source: 'neutral_observers' | 'watchtower';
   firstPlayer: PlayerId;
@@ -211,6 +226,10 @@ export interface V070BattleRuntime {
   aftermathDrawEffects: V070AftermathDrawEffect[];
   battleCardAftermathDestinationOverrides:
     V070BattleCardAftermathDestinationOverride[];
+  battleCardAftermathOverlayPlacements:
+    V070BattleCardAftermathOverlayPlacement[];
+  battleCardAftermathTerritoryInsertions:
+    V070BattleCardAftermathTerritoryInsertion[];
   militaryOrderUsedPlayers: PlayerId[];
   unbrokenRanksInstanceIds: string[];
   pendingGameVictory: {
@@ -291,6 +310,8 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     additionalRetreatEffects: [],
     aftermathDrawEffects: [],
     battleCardAftermathDestinationOverrides: [],
+    battleCardAftermathOverlayPlacements: [],
+    battleCardAftermathTerritoryInsertions: [],
     militaryOrderUsedPlayers: [],
     unbrokenRanksInstanceIds: [],
     pendingGameVictory: null,
