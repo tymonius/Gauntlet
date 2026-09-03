@@ -8,7 +8,7 @@ import {
 import { persistSmartInteraction } from "./rules-persistence.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260903-6";
+export const BEHAVIOR_REVISION = "v071-qa-20260903-7";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 let corpusPromise;
 
@@ -170,7 +170,11 @@ export default {
         corpusHash: corpus.authoritySetId || ""
       };
 
-      if (!env.OPENAI_API_KEY) {
+      const modelBudget = env.OPENAI_API_KEY
+        ? await reserveModelRequest(request, env)
+        : { allowed: false, reason: "model_not_configured" };
+
+      if (!env.OPENAI_API_KEY || !modelBudget.allowed) {
         failureStage = "persistence";
         const fallback = buildLocalFallbackAnswer(question, retrieval, RULES_VERSION);
         const result = {
@@ -179,7 +183,7 @@ export default {
           confidence: fallback.confidence,
           responseType: "source_lookup",
           sources: fallback.sources,
-          executionPath: "local-source-lookup"
+          executionPath: env.OPENAI_API_KEY ? "local-budget-fallback" : "local-source-lookup"
         };
         result.interactionId = await persistSmartInteraction(env, {
           sessionId,
@@ -193,7 +197,7 @@ export default {
           mode: "source_lookup",
           model: null,
           sources: fallback.sources,
-          diagnostics
+          diagnostics: { ...diagnostics, modelBudget }
         });
         return answerResponse(result, origin);
       }
@@ -261,6 +265,70 @@ async function getCorpus(env) {
     });
   }
   return corpusPromise;
+}
+
+function positiveInteger(value, fallback) {
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+async function reserveModelRequest(request, env) {
+  if (!env.DB) {
+    return { allowed: false, reason: "budget_store_unavailable" };
+  }
+
+  const now = new Date();
+  const timestamp = now.toISOString();
+  const safetyId = await makeSafetyIdentifier(request, env);
+  const counters = [
+    {
+      scope: "ip_hour",
+      bucket: `${timestamp.slice(0, 13)}:${safetyId}`,
+      limit: positiveInteger(env.RULES_MODEL_REQUESTS_PER_IP_HOUR, 12)
+    },
+    {
+      scope: "global_day",
+      bucket: timestamp.slice(0, 10),
+      limit: positiveInteger(env.RULES_MODEL_REQUESTS_PER_DAY, 50)
+    },
+    {
+      scope: "global_month",
+      bucket: timestamp.slice(0, 7),
+      limit: positiveInteger(env.RULES_MODEL_REQUESTS_PER_MONTH, 200)
+    }
+  ];
+
+  try {
+    const statements = counters.map(({ scope, bucket, limit }) => env.DB.prepare(`
+      INSERT INTO rules_model_usage_budget (scope, bucket, request_count, updated_at)
+      VALUES (?, ?, 1, ?)
+      ON CONFLICT(scope, bucket) DO UPDATE SET
+        request_count = request_count + 1,
+        updated_at = excluded.updated_at
+      WHERE request_count < ?
+    `).bind(scope, bucket, timestamp, limit));
+
+    const results = await env.DB.batch(statements);
+    const blockedIndex = counters.findIndex((_, index) =>
+      Number(results?.[index]?.meta?.changes || 0) < 1
+    );
+    if (blockedIndex >= 0) {
+      return {
+        allowed: false,
+        reason: `${counters[blockedIndex].scope}_limit_reached`,
+        limits: Object.fromEntries(counters.map(({ scope, limit }) => [scope, limit]))
+      };
+    }
+
+    return {
+      allowed: true,
+      reason: "reserved",
+      limits: Object.fromEntries(counters.map(({ scope, limit }) => [scope, limit]))
+    };
+  } catch (error) {
+    console.error("Rules Arbiter model budget reservation failed closed", error);
+    return { allowed: false, reason: "budget_store_error" };
+  }
 }
 
 async function askOpenAI({ env, request, question, history, sources }) {
