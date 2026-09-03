@@ -135,39 +135,36 @@
     return direction.fit === 'contain' ? 'contain' : 'cover';
   }
 
-  function componentArtworkId(kind, id, side) {
-    const reverse = side === 'reverse' || side === 'back' || side === 'treaty' || side === 'completed';
-    if (kind === 'leader') return id;
-    if (kind === 'proposal') return `proposal-${id}${reverse ? '-ratified' : ''}`;
-    if (kind === 'rite') return `rite-${id}${reverse ? '-completed' : ''}`;
-    if (kind === 'ritual') return `ritual-${id}`;
-    return id;
-  }
-
   function iframeTarget(frame) {
     let url;
     try { url = new URL(frame.src, location.href); } catch { return null; }
-    const cardId = url.searchParams.get('card');
-    const territoryId = url.searchParams.get('territory');
-    const componentKind = url.pathname.endsWith('/card-design/component-render.html')
-      ? String(url.searchParams.get('kind') || '').trim().toLowerCase()
-      : '';
-    const componentId = componentKind ? String(url.searchParams.get('id') || '').trim() : '';
-    const componentSide = String(url.searchParams.get('side') || 'front').trim().toLowerCase();
-    const id = cardId || territoryId || (componentId ? componentArtworkId(componentKind, componentId, componentSide) : '');
-    if (!id) return null;
+    if (!url.pathname.endsWith('/card-design/face-render.html')) return null;
+
+    const doc = frame.contentDocument;
+    const targetWindow = frame.contentWindow;
+    const id = String(doc?.body?.dataset.artDirectionId || '').trim();
+    const faceId = String(doc?.body?.dataset.faceId || url.searchParams.get('id') || '').trim();
+    if (!id || !targetWindow) return null;
+
+    const resolve = () => {
+      const currentDocument = frame.contentDocument;
+      const currentWindow = frame.contentWindow;
+      const image = currentDocument?.querySelector('.card-art img, .territory-art img');
+      const artFrame = image?.closest('.card-art, .territory-art');
+      return currentWindow && image && artFrame
+        ? { window: currentWindow, document: currentDocument, image, frame: artFrame }
+        : null;
+    };
+    const resolved = resolve();
+    const territory = Boolean(resolved?.frame?.classList.contains('territory-art'));
+
     return {
       id,
-      label: frame.title?.replace(/\s+v0\.6\.[0-9].*$/i, '').replace(/\s+canonical Card Design render$/i, '').trim() || id,
-      kind: territoryId ? 'territory' : componentId ? 'component' : 'card',
+      faceId,
+      label: frame.title?.replace(/\s+canonical Card Design render$/i, '').trim() || faceId || id,
+      kind: territory ? 'territory' : 'card',
       sourceElement: frame,
-      resolve() {
-        const doc = frame.contentDocument;
-        const targetWindow = frame.contentWindow;
-        const image = doc?.querySelector('.card-art img, .territory-art img');
-        const artFrame = image?.closest('.card-art, .territory-art');
-        return targetWindow && image && artFrame ? { window: targetWindow, document: doc, image, frame: artFrame } : null;
-      },
+      resolve,
     };
   }
 
@@ -292,6 +289,11 @@
   function scan() {
     divergences.clear();
     document.querySelectorAll('iframe').forEach((frame) => {
+      if (frame.dataset.artCompositorLoadHook !== 'true') {
+        frame.dataset.artCompositorLoadHook = 'true';
+        frame.addEventListener('load', () => queueScan());
+      }
+
       const target = iframeTarget(frame);
       if (!target) return;
       installLauncher(target);
@@ -302,19 +304,6 @@
           const draft = drafts[target.id];
           applyDirection(target, draft && typeof draft === 'object' ? draft : {});
         }
-      }
-      if (frame.dataset.artCompositorLoadHook !== 'true') {
-        frame.dataset.artCompositorLoadHook = 'true';
-        frame.addEventListener('load', () => {
-          installLauncher(target);
-          if (!draftHydrationPending()) {
-            const savedDrafts = readDrafts();
-            if (Object.prototype.hasOwnProperty.call(savedDrafts, target.id)) {
-              const saved = savedDrafts[target.id];
-              requestAnimationFrame(() => applyDirection(target, saved && typeof saved === 'object' ? saved : {}));
-            }
-          }
-        });
       }
     });
 
