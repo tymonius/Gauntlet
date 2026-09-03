@@ -313,6 +313,7 @@ h3 span { color: var(--muted); font-size: 7.1pt; font-weight: 600; }
 }
 
 @media print {
+  .skip-link { display: none !important; }
   @page { size: Letter portrait; margin: 0; }
   html, body { background: white; }
   body { font-family: "Noto Sans", Arial, sans-serif; }
