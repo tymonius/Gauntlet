@@ -25,9 +25,12 @@ const ANALYTICS_EXCLUDED_FILES = new Set([
   "artifacts/reconstruction/clean-v0.6.3/deckbuilder/index.html",
   // Render-only TTS capture surfaces; they are not public navigation pages.
   "tts/back-renderer/index.html",
+  "tts/renderer/index.html",
+  "tts/territory-renderer/index.html",
   "tts/supplemental-renderer/index.html",
   "tts/finalized-supplemental-renderer/index.html",
   // Embedded/render-only card surfaces; parent pages own analytics.
+  "card-design/card-back-render.html",
   "card-design/card-showcase-embed.html",
   // Internal card-design review/study surfaces; they are not public navigation pages.
   "card-design/capital-ledger-preview.html",
