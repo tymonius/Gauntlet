@@ -1,0 +1,165 @@
+name: Card Authority
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  scope:
+    name: Classify card-authority changes
+    runs-on: ubuntu-latest
+    outputs:
+      render: ${{ steps.scope.outputs.render }}
+    steps:
+      - name: Determine whether rendered-face validation is required
+        id: scope
+        uses: actions/github-script@v7
+        with:
+          script: |
+            let names = [];
+            let render = context.eventName !== 'pull_request';
+
+            if (context.eventName === 'pull_request') {
+              const files = await github.paginate(github.rest.pulls.listFiles, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.issue.number,
+                per_page: 100,
+              });
+              names = files.map(file => file.filename);
+
+              const exact = value => names.includes(value);
+              const under = prefix => names.some(file => file.startsWith(prefix));
+              const oneOf = values => values.some(exact);
+
+              render = Boolean(
+                under('game-data/')
+                || under('card-design/')
+                || under('images/artwork/')
+                || under('card-reference/')
+                || under('deckbuilder/')
+                || under('scripts/card-authority/')
+                || under('tests/card-authority/')
+                || exact('design-tokens.css')
+                || exact('images/Gauntlet.svg')
+                || oneOf([
+                  'scripts/generate-tts-card-assets.mjs',
+                  'scripts/generate-tts-leader-assets.mjs',
+                  'scripts/generate-tts-territory-assets.mjs',
+                  'scripts/generate-tts-supplemental-assets.mjs',
+                  'scripts/generate-tts-finalized-supplementals.mjs',
+                  'scripts/tts-sliding-trackers.mjs',
+                  'package.json',
+                  'package-lock.json',
+                  '.github/workflows/card-authority.yml',
+                ])
+              );
+            }
+
+            core.setOutput('render', String(render));
+            core.summary
+              .addHeading('Card Authority CI')
+              .addTable([
+                [{data: 'Contract', header: true}, {data: 'Run?', header: true}],
+                ['Current authority + face catalog + consumers', 'true'],
+                ['All canonical rendered faces', String(render)],
+              ])
+              .write();
+
+  authority:
+    name: Authority model
+    needs: scope
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Validate semantic card authority
+        run: npm run card-authority:check
+
+  render:
+    name: Render every canonical face
+    needs: [scope, authority]
+    if: needs.scope.outputs.render == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Resolve Playwright version
+        id: playwright-version
+        shell: bash
+        run: echo "version=$(node -p "require('playwright/package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Restore Chromium cache
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}-chromium
+
+      - name: Install Chromium
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install chromium
+
+      - name: Validate every canonical rendered face
+        run: npm run card-authority:render
+
+      - name: Upload card authority render report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: card-authority-render-report
+          path: artifacts/card-authority/
+          if-no-files-found: error
+
+  gate:
+    name: Gate
+    if: always()
+    needs: [scope, authority, render]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every applicable card-authority contract
+        env:
+          SCOPE: ${{ needs.scope.result }}
+          AUTHORITY: ${{ needs.authority.result }}
+          RENDER: ${{ needs.render.result }}
+        run: |
+          set -euo pipefail
+          for entry in             "scope:$SCOPE"             "authority:$AUTHORITY"             "render:$RENDER"; do
+            name="${entry%%:*}"
+            result="${entry#*:}"
+            case "$result" in
+              success|skipped) ;;
+              *) echo "$name contract result: $result" >&2; exit 1 ;;
+            esac
+          done
+          echo 'Card authority contract passed.'
