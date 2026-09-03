@@ -27,7 +27,7 @@
 .feedback-form-layout textarea{min-height:7rem;resize:vertical;line-height:1.45}
 .feedback-form-layout input:focus,
 .feedback-form-layout select:focus,
-.feedback-form-layout textarea:focus{outline:2px solid rgba(211,110,94,.55);outline-offset:2px;border-color:rgba(211,110,94,.55)}
+.feedback-form-layout textarea:focus{outline:3px solid var(--bronze);outline-offset:2px;border-color:var(--bronze)}
 .choice-grid{display:grid;gap:.85rem;margin:0 0 1rem}
 .choice-card{display:flex;gap:.85rem;align-items:flex-start;padding:1rem;border:1px solid rgba(255,255,255,.12);border-radius:14px;background:rgba(255,255,255,.04);line-height:1.4}
 .choice-card input{flex:0 0 auto;width:1.15rem;height:1.15rem;margin-top:.15rem}
@@ -41,7 +41,7 @@
 .rating-option span{display:flex;align-items:center;justify-content:center;min-height:2.7rem;border-radius:12px;border:1px solid rgba(255,255,255,.15);background:rgba(17,17,17,.55);font-weight:700;transition:border-color .15s ease,background .15s ease,transform .15s ease,box-shadow .15s ease}
 .rating-option:hover span{border-color:rgba(211,110,94,.5)}
 .rating-option input:checked + span{background:rgba(143,31,37,.42);border-color:rgba(211,110,94,.75);box-shadow:0 0 0 1px rgba(211,110,94,.35) inset}
-.rating-option input:focus-visible + span{outline:2px solid rgba(211,110,94,.65);outline-offset:2px}
+.rating-option input:focus-visible + span{outline:3px solid var(--bronze);outline-offset:2px}
 .privacy-note{margin:0 0 1rem;color:rgba(255,245,235,.82);line-height:1.5;padding:1rem;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1)}
 .form-status{margin-top:.85rem;min-height:1.35rem}
 .success-panel{max-width:760px;margin:2rem auto}
