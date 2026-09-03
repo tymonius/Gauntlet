@@ -531,6 +531,30 @@
     return direction;
   }
 
+  function explicitDirectionFromResolved(result) {
+    if (!result || !Number.isFinite(Number(result.focusX)) || !Number.isFinite(Number(result.focusY))) {
+      throw new Error('Artwork compositor could not resolve an explicit crop position.');
+    }
+    return {
+      fit: ui.fit.value === 'contain' ? 'contain' : 'cover',
+      focusX: round(Number(result.focusX) / 100, 4),
+      focusY: round(Number(result.focusY) / 100, 4),
+      smart: false,
+      zoom: round(clamp(Number.parseFloat(ui.zoomNumber.value) || 1, MIN_ZOOM, MAX_ZOOM), 4),
+    };
+  }
+
+  function resolveExplicitDirection() {
+    if (!state || !previewImage.complete || !previewImage.naturalWidth || !window.GauntletArtworkCrop) {
+      throw new Error('Artwork compositor preview is not ready to materialize.');
+    }
+    const result = window.GauntletArtworkCrop.apply(previewImage, directionFromControls(), {
+      id: `${SMART_ID_PREFIX}${state.id}`,
+      label: state.label,
+    });
+    return explicitDirectionFromResolved(result);
+  }
+
   function renderPreview() {
     if (!state || !previewImage.complete || !previewImage.naturalWidth) return;
     if (!window.GauntletArtworkCrop) {
@@ -547,7 +571,9 @@
     ui.yResolved.textContent = `${compareMode === 'smart' || ui.yAuto.checked ? 'Smart' : 'Manual'} → ${Number(result.focusY).toFixed(1)}%`;
     preview.dataset.resolvedX = String(result.focusX);
     preview.dataset.resolvedY = String(result.focusY);
-    ui.output.textContent = overrideLine(state.id, directionFromControls());
+    if (compareMode !== 'smart') {
+      ui.output.textContent = overrideLine(state.id, explicitDirectionFromResolved(result));
+    }
     const crosshair = preview.querySelector('.art-compositor-crosshair');
     crosshair.style.left = `${result.focusX}%`;
     crosshair.style.top = `${result.focusY}%`;
@@ -562,6 +588,7 @@
     }
     if (direction.zoom !== undefined) parts.push(`zoom: ${direction.zoom}`);
     if (direction.fit !== undefined) parts.push(`fit: "${direction.fit}"`);
+    if (direction.smart === false) parts.push('smart: false');
     return `'${id.replaceAll("'", "\\'")}': { ${parts.join(', ')} },`;
   }
 
@@ -635,16 +662,28 @@
   async function copyOverride() {
     if (!state) return;
     try {
-      await navigator.clipboard.writeText(overrideLine(state.id, directionFromControls()));
-      ui.status.textContent = 'Override copied.';
-    } catch {
-      ui.status.textContent = 'Clipboard access was unavailable; select the override text manually.';
+      const direction = resolveExplicitDirection();
+      await navigator.clipboard.writeText(overrideLine(state.id, direction));
+      renderPreview();
+      ui.status.textContent = 'Explicit production override copied.';
+    } catch (error) {
+      renderPreview();
+      ui.status.textContent = error instanceof Error
+        ? `Copy failed: ${error.message}`
+        : 'Clipboard access was unavailable; select the override text manually.';
     }
   }
 
   async function savePosition() {
     if (!state) return;
-    const direction = directionFromControls();
+    let direction;
+    try {
+      direction = resolveExplicitDirection();
+      renderPreview();
+    } catch (error) {
+      ui.status.textContent = `Save failed before persistence: ${error instanceof Error ? error.message : String(error)}`;
+      return;
+    }
     let payload = {};
     try {
       const response = await fetch(SAVE_ENDPOINT, {

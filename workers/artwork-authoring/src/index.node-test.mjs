@@ -23,6 +23,9 @@ test('art direction source round-trips without eval', () => {
     'z-card': { focusY: 0.4 },
   });
   assert.deepEqual(normalizeArtDirection({ focusX: 62.5 }), { focusX: 0.625 });
+  const explicit = { fit: 'cover', focusX: 0.5, focusY: 0.4182, smart: false, zoom: 1 };
+  assert.deepEqual(normalizeArtDirection(explicit), explicit);
+  assert.deepEqual(updateArtDirectionMap({}, 'explicit-card', explicit), { 'explicit-card': explicit });
   assert.deepEqual(updateArtDirectionMap({ 'a-card': { focusX: 0.6 } }, 'a-card', {}), {});
 });
 
