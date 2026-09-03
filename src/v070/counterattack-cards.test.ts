@@ -235,6 +235,17 @@ describe('v0.7.0 Counterattack cards', () => {
       handBeforeOutcome + 1,
     );
 
+    state = reduceV070BattleAction(state, {
+      type: 'complete_aftermath',
+      playerId: 'A',
+    });
+    expect(state.battleRuntime?.footholdAssetWindowPlayer).toBe('B');
+    expect(state.battleRuntime?.aftermathCardsCleared).toBe(false);
+    expect(() => reduceV070BattleAction(state, {
+      type: 'complete_aftermath',
+      playerId: 'A',
+    })).toThrow(/pending Foothold Asset opportunity/);
+
     const handBeforeAsset = state.players.B.zones.hand.length;
     state = reduceV070BattleAction(state, {
       type: 'use_foothold_asset',
@@ -242,6 +253,7 @@ describe('v0.7.0 Counterattack cards', () => {
       assetInstanceId: footholdAsset,
     });
 
+    expect(state.battleRuntime?.footholdAssetWindowPlayer).toBeNull();
     expect(state.players.B.zones.assetBank).not.toContain(footholdAsset);
     expect(state.players.B.zones.discardPile).toContain(footholdAsset);
     expect(state.players.B.zones.hand).toHaveLength(
