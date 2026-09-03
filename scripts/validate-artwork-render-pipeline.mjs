@@ -7,64 +7,75 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
 const contracts = [
   {
-    path: 'card-design/card-review-render.js',
+    path: 'card-design/face-render.mjs',
     requires: [
-      'loadRenderContext',
-      '/card-design/artwork-crop.js',
-      '/card-design/playable-card-renderer.js',
-      'renderContext.artDirectionFor(card.id)',
+      "resolveFaceSpec(game, faceIdFromLocation())",
+      'rendererForTemplate(spec.template)',
+      'await loadProductionFonts()',
+      'await applyCanonicalArtwork(spec, result)',
+      'window.GauntletArtworkCrop.apply',
+      'document.body.dataset.gameplayAuthority',
+      'document.body.dataset.visualAuthority',
     ],
   },
   {
-    path: 'card-design/territory-review-render.js',
+    path: 'card-design/face-spec.mjs',
     requires: [
-      'loadRenderContext',
-      '/card-design/artwork-crop.js',
-      '/card-design/territory-card-renderer.js',
-      'renderContext.artDirectionFor(territory.id)',
+      'FACE_TEMPLATE_CONTRACTS',
+      'artworkCandidates(card, faction)',
+      'territoryArtworkCandidates(territory)',
+      'composition: artDirectionSpec(game, card.id)',
+      'composition: artDirectionSpec(game, territory.id)',
+      'productionReady: issues.length === 0',
     ],
   },
   {
-    path: 'card-design/component-render.js',
+    path: 'card-design/face-template-registry.mjs',
     requires: [
-      'loadCanonicalRenderContext',
-      'renderContext.artDirectionFor(artworkId)',
-      'surfaceCssSize(orientation)',
-      'await applyCanonicalArtworkDirection(card)',
+      'playable',
+      'territory',
+      'leader',
+      'reference',
+      'tracker',
+      'proposal',
+      'ledger',
+      'deed',
+      'rite',
+      'ritual',
+      "'standard-back'",
     ],
   },
   {
-    path: 'card-design/component-render.html',
-    requires: ['/card-design/artwork-crop.js'],
-  },
-  {
-    path: 'tts/renderer/index.html',
-    requires: ['/card-design/card-review-render.html'],
-  },
-  {
-    path: 'tts/territory-renderer/index.html',
-    requires: ['/card-design/territory-review-render.html'],
-  },
-  {
-    path: 'tts/supplemental-renderer/index.html',
-    requires: ['/card-design/component-render.html'],
-  },
-  {
-    path: 'tts/finalized-supplemental-renderer/index.html',
-    requires: ['/card-design/component-render.html'],
-  },
-  {
-    path: 'tts/back-renderer/index.html',
-    requires: ['/card-design/card-back-render.html'],
+    path: 'deckbuilder/production-print.js',
+    requires: [
+      '/card-design/face-render.html?id=',
+      'faceRenderSource(`card:${cardId}`)',
+      'faceRenderSource(`territory:${territoryId}`)',
+      'faceRenderSource(`back:${safeFaction}`)',
+    ],
   },
   {
     path: 'card-reference/app.js',
     requires: [
-      '../card-design/card-review-render.html?card=',
-      '../card-design/territory-review-render.html?territory=',
-      '../card-design/component-render.html?',
+      '../card-design/face-render.html?id=',
       'PRODUCTION_SURFACES',
     ],
+  },
+  {
+    path: 'scripts/generate-tts-card-assets.mjs',
+    requires: ['/card-design/face-render.html'],
+  },
+  {
+    path: 'scripts/generate-tts-territory-assets.mjs',
+    requires: ['/card-design/face-render.html'],
+  },
+  {
+    path: 'scripts/generate-tts-supplemental-assets.mjs',
+    requires: ['/card-design/face-render.html'],
+  },
+  {
+    path: 'scripts/generate-tts-finalized-supplementals.mjs',
+    requires: ['/card-design/face-render.html'],
   },
 ];
 
@@ -73,7 +84,7 @@ for (const contract of contracts) {
   const source = await readFile(join(ROOT, contract.path), 'utf8');
   for (const required of contract.requires) {
     if (!source.includes(required)) {
-      failures.push(`${contract.path} must consume canonical render authority via ${required}`);
+      failures.push(`${contract.path} must consume unified face authority via ${required}`);
     }
   }
 }
@@ -81,10 +92,10 @@ for (const contract of contracts) {
 if (failures.length) {
   console.error('Artwork render pipeline contract failed:\n');
   for (const failure of failures) console.error(`- ${failure}`);
-  console.error('\nCard-like output surfaces must consume Card Design authority instead of maintaining parallel render logic.');
+  console.error('\nAll physical-face consumers must resolve canonical FaceSpec authority and render through face-render.html.');
   process.exit(1);
 }
 
 console.log('Artwork render pipeline contract passed.');
-console.log('Card Design owns face rendering, artwork composition, and physical card geometry.');
-console.log('Card Reference, Deckbuilder, and TTS consume canonical render surfaces.');
+console.log('FaceSpec owns face identity, artwork composition, template dependencies, and provenance.');
+console.log('Card Design owns the one physical-face renderer; Card Reference, Deckbuilder, and TTS consume it.');

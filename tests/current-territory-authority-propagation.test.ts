@@ -3,8 +3,10 @@ import { describe, expect, it } from 'vitest';
 
 const historical = JSON.parse(readFileSync('docs/v0.6.4-territories.json', 'utf8'));
 const reference = readFileSync('docs/v0.6.4-territory-reference.md', 'utf8');
-const reviewRenderer = readFileSync('card-design/territory-review-render.js', 'utf8');
-const reviewPage = readFileSync('card-design/territory-review-render.html', 'utf8');
+const faceSpec = readFileSync('card-design/face-spec.mjs', 'utf8');
+const territoryTemplate = readFileSync('card-design/face-templates/territory.mjs', 'utf8');
+const faceRuntime = readFileSync('card-design/face-render.mjs', 'utf8');
+const legacyTerritoryRoute = readFileSync('card-design/territory-review-render.html', 'utf8');
 const specimen = readFileSync('card-design/territories/index.html', 'utf8');
 const renderValidator = readFileSync('scripts/validate-current-territory-render.mjs', 'utf8');
 const renderWorkflow = readFileSync('.github/workflows/render-leader-card-specimens.yml', 'utf8');
@@ -18,16 +20,18 @@ describe('historical v0.6.4 Territory derivation and current authority propagati
     expect(currentAuthority).not.toHaveProperty('sources');
   });
 
-  it('binds the browser/TTS review renderer directly to current-game authority', () => {
-    expect(reviewRenderer).toContain("import { loadRenderContext } from './render-context.mjs'");
-    expect(reviewRenderer).toContain('const renderContext = await loadRenderContext()');
-    expect(reviewRenderer).toContain('const currentGame = renderContext.game');
-    expect(reviewRenderer).toContain('currentGame.findTerritory(territoryId)');
-    expect(reviewRenderer).toContain('source: currentGame.authorityUrl');
-    expect(reviewRenderer).not.toContain('v0.6.4-territories.json');
-    expect(reviewRenderer).not.toContain('EXPECTED_SOURCE_ISSUE');
-    expect(reviewRenderer).not.toContain('Gauntlet_v0.6.3_Canonical_Data.json');
-    expect(reviewPage).toContain('Gauntlet canonical Territory render');
+  it('binds Territory faces to current-game authority through FaceSpec only', () => {
+    expect(faceSpec).toContain("(game.territories || []).find(item => item.id === id)");
+    expect(faceSpec).toContain("return { type: 'territory', territory: clone(territory) }");
+    expect(faceSpec).toContain("composition: artDirectionSpec(game, territory.id)");
+    expect(territoryTemplate).toContain("const territory = spec.content.territory;");
+    expect(faceRuntime).toContain("document.body.dataset.gameplayAuthority = spec.provenance.gameplay");
+    expect(faceRuntime).toContain("document.body.dataset.visualAuthority = spec.provenance.visual");
+    expect(faceSpec).not.toContain('v0.6.4-territories.json');
+    expect(faceSpec).not.toContain('Gauntlet_v0.6.3_Canonical_Data.json');
+
+    expect(legacyTerritoryRoute).toContain('data-legacy-face-route="territory"');
+    expect(legacyTerritoryRoute).toContain('/card-design/legacy-face-redirect.mjs');
   });
 
   it('preserves the accepted High Ground wording in the flattened authority and specimen', () => {
