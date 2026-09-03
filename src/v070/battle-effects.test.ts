@@ -115,6 +115,7 @@ describe('v0.7.0 audited reveal-effect registry', () => {
       'neutral-insurrection',
       'neutral-illegal-occupation',
       'neutral-sequestration',
+      'neutral-tactical-planning',
       'neutral-rousing-speech',
       'neutral-resourcefulness',
       'neutral-fealty',
