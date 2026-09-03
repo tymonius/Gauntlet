@@ -91,7 +91,7 @@ class GauntletRulesAssistant {
             <button class="ga-rules-send" type="submit">Ask</button>
           </div>
           <div class="ga-rules-form-meta">
-            <span class="ga-rules-status" role="status">Ready</span>
+            <span class="ga-rules-status" role="status" tabindex="-1">Ready</span>
             <button class="ga-rules-clear" type="button">Clear</button>
           </div>
         </form>
@@ -211,14 +211,18 @@ class GauntletRulesAssistant {
     }
 
     this.open();
+    const activeElement = document.activeElement;
+    const moveFocusForBusyState = this.elements.form.contains(activeElement)
+      || this.elements.suggestions.contains(activeElement);
     this.busy = true;
-    this.elements.send.disabled = true;
-    this.elements.input.disabled = true;
-    this.elements.suggestions.hidden = true;
     this.elements.input.value = "";
     this.appendMessage({ role: "user", answer: question, sources: [] });
     const loading = this.appendLoadingMessage();
     this.setStatus("Checking canonical sources…");
+    if (moveFocusForBusyState) this.elements.status.focus({ preventScroll: true });
+    this.elements.send.disabled = true;
+    this.elements.input.disabled = true;
+    this.elements.suggestions.hidden = true;
 
     try {
       const answer = await this.requestAnswer(question);
