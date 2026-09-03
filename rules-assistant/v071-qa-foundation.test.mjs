@@ -37,6 +37,16 @@ describe("v0.7.1 Rules Arbiter QA foundation", () => {
     expect(workerV071).toContain("const earlierHistory = history.slice(0, -2)");
   });
 
+  test("v0.7.1 prompt preserves timing, zone, classification, and gap semantics", () => {
+    expect(workerV071).toContain('export const BEHAVIOR_REVISION = "v071-qa-20260903-2"');
+    expect(workerV071).toContain("additional Actions changes the number of available Actions, not the legal phase or timing");
+    expect(workerV071).toContain("A bound card is outside normal zones");
+    expect(workerV071).toContain("Never invent the target of an unlabeled numerical bonus");
+    expect(workerV071).toContain('Do not label an explicit or inferred answer "Table ruling"');
+    expect(workerV071).toContain('begin the answer with exactly "Provisional Arbiter Ruling:"');
+    expect(workerV071).toContain('do not discuss retrieval mechanics or say "the supplied passages/text/sources"');
+  });
+
   test("benchmark has broad coverage and preserves every live review interaction", () => {
     expect(benchmark.schema).toBe("gauntlet.rules-arbiter-evals.v2");
     expect(benchmark.rulesVersion).toBe("v0.7.1");
@@ -73,6 +83,8 @@ describe("v0.7.1 Rules Arbiter QA foundation", () => {
       expect(Array.isArray(item.expectedSourcePatterns)).toBe(true);
       expect(item.expectedSourcePatterns.length).toBeGreaterThan(0);
       expect(["explicit", "inferred", "provisional", "out_of_scope"]).toContain(item.expectedClassification);
+      if (item.expectedAnswerPatterns) expect(Array.isArray(item.expectedAnswerPatterns)).toBe(true);
+      if (item.forbiddenAnswerPatterns) expect(Array.isArray(item.forbiddenAnswerPatterns)).toBe(true);
       if (item.category === "conversation") {
         expect(Array.isArray(item.history)).toBe(true);
         expect(item.history.length).toBeGreaterThan(0);

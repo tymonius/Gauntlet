@@ -28,11 +28,11 @@ export async function handleReviewIntelligence(request, env) {
 
   if (request.method === "GET" && url.pathname === "/api/admin/summary") {
     const results = await env.DB.batch([
-      env.DB.prepare("SELECT COUNT(*) AS count FROM rules_interactions"),
-      env.DB.prepare("SELECT COUNT(*) AS count FROM rules_interactions WHERE review_status = 'unreviewed'"),
-      env.DB.prepare("SELECT COUNT(*) AS count FROM rules_interactions WHERE feedback_rating IN ('unclear', 'incorrect')"),
-      env.DB.prepare("SELECT COUNT(*) AS count FROM rules_interactions WHERE COALESCE(ruling_status_v2, ruling_status) = 'provisional'"),
-      env.DB.prepare("SELECT COUNT(*) AS count FROM rules_interactions WHERE confidence = 'low'")
+      env.DB.prepare("SELECT COUNT(*) AS count FROM rules_interactions WHERE session_id NOT LIKE 'qa_v071_%'"),
+      env.DB.prepare("SELECT COUNT(*) AS count FROM rules_interactions WHERE session_id NOT LIKE 'qa_v071_%' AND review_status = 'unreviewed'"),
+      env.DB.prepare("SELECT COUNT(*) AS count FROM rules_interactions WHERE session_id NOT LIKE 'qa_v071_%' AND feedback_rating IN ('unclear', 'incorrect')"),
+      env.DB.prepare("SELECT COUNT(*) AS count FROM rules_interactions WHERE session_id NOT LIKE 'qa_v071_%' AND COALESCE(ruling_status_v2, ruling_status) = 'provisional'"),
+      env.DB.prepare("SELECT COUNT(*) AS count FROM rules_interactions WHERE session_id NOT LIKE 'qa_v071_%' AND confidence = 'low'")
     ]);
     const provisional = countFromBatch(results[3]);
     return jsonResponse({
@@ -236,7 +236,7 @@ async function getSnapshot(corpus) {
 }
 
 async function listInteractions(env, url, origin) {
-  const conditions = [];
+  const conditions = ["session_id NOT LIKE 'qa_v071_%'"];
   const params = [];
   const q = String(url.searchParams.get("q") || "").trim().slice(0, 200);
   const reviewStatus = String(url.searchParams.get("reviewStatus") || "").trim();

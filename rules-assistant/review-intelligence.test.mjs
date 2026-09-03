@@ -33,3 +33,9 @@ test("production entry preserves review, admin, and normal answer routes", () =>
   expect(entry).toContain("return smartWorker.fetch(request, env, context)");
   expect(entry).toContain("return reliableWorker.fetch(request, env, context)");
 });
+
+
+test("automated v0.7.1 QA sessions stay out of normal review queues", () => {
+  expect(worker).toContain("session_id NOT LIKE 'qa_v071_%'");
+  expect(worker.match(/session_id NOT LIKE 'qa_v071_%'/g)?.length).toBeGreaterThanOrEqual(2);
+});
