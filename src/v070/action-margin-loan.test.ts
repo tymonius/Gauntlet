@@ -312,6 +312,64 @@ describe('v0.7.0 Margin Loan initial Action', () => {
     });
   });
 
+  test('replacing an unsettled Margin Loan causes Default before the new Asset is banked', () => {
+    let state = openingForFinancierB();
+    const source = inject(
+      state,
+      'financiers-margin-loan',
+      'hand',
+      'source',
+    );
+    const collateral = inject(
+      state,
+      'neutral-manifest-destiny',
+      'hand',
+      'collateral',
+    );
+
+    state = reduceV070TurnAction(state, {
+      type: 'play_action_card',
+      playerId: 'B',
+      cardInstanceId: source,
+    });
+    state = reduceV070TurnAction(state, {
+      type: 'choose_margin_loan_collateral_target',
+      playerId: 'B',
+      targetInstanceId: collateral,
+    });
+
+    inject(state, 'neutral-fortifications', 'assetBank', 'fill-1');
+    inject(state, 'neutral-fealty', 'assetBank', 'fill-2');
+    const replacementAsset = inject(
+      state,
+      'neutral-counterintelligence',
+      'hand',
+      'replacement',
+    );
+
+    state = reduceV070TurnAction(state, {
+      type: 'bank_asset',
+      playerId: 'B',
+      cardInstanceId: replacementAsset,
+      replaceAssetInstanceId: source,
+    });
+
+    expect(state.players.B.zones.assetBank).toContain(replacementAsset);
+    expect(state.players.B.zones.assetBank).not.toContain(source);
+    expect(state.players.B.zones.graveyard).toEqual(
+      expect.arrayContaining([source, collateral]),
+    );
+    expect(v070BindingsForHost(state, source)).toEqual([]);
+    expect(
+      state.events.some(event =>
+        event.type === 'margin_loan_defaulted'
+        && (
+          event.payload as { reason?: string } | undefined
+        )?.reason === 'Margin Loan Default on Asset replacement'
+      ),
+    ).toBe(true);
+  });
+
   test('after later-turn income, leaving the loan outstanding keeps it banked and blocks the turn draw', () => {
     let state = openingForFinancierB();
     const source = inject(
