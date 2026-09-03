@@ -52,6 +52,16 @@ function resolvesToGenericTypeBarrel(path: string, specifier: string): boolean {
     || resolved === resolve(barrel, 'index.ts');
 }
 
+function resolvesToGenericCardBarrel(path: string, specifier: string): boolean {
+  if (!specifier.startsWith('.')) return false;
+
+  const resolved = resolve(dirname(path), specifier);
+  const barrel = resolve('src/cards');
+  return resolved === barrel
+    || resolved === resolve(barrel, 'index')
+    || resolved === resolve(barrel, 'index.ts');
+}
+
 describe('digital engine boundary', () => {
   it('does not present legacy interactive runners as current engine entrypoints', () => {
     expect(packageJson.scripts['dev:cli']).toBeUndefined();
@@ -164,6 +174,25 @@ describe('digital engine boundary', () => {
     expect(cardIndex).toContain("export * from './v06';");
     expect(cardIndex).not.toContain("export * from './military'");
     expect(cardIndex).not.toContain("export * from './intelligence'");
+  });
+
+  it('limits the generic card barrel to the remaining Military initialization-cycle consumers', () => {
+    const offenders: string[] = [];
+
+    for (const path of sourceFilesUnder('src').filter((path) => !/\.(?:test|spec)\.[cm]?[jt]sx?$/.test(path))) {
+      const source = readFileSync(path, 'utf8');
+      for (const specifier of importedSpecifiers(source)) {
+        if (resolvesToGenericCardBarrel(path, specifier)) {
+          offenders.push(`${path}: ${specifier}`);
+        }
+      }
+    }
+
+    expect(offenders.sort()).toEqual([
+      'src/dev/guided-options.ts: ../cards',
+      'src/state/apply.ts: ../cards',
+      'src/state/neutral-assimilation.ts: ../cards',
+    ]);
   });
 
   it('has retired the generic type compatibility barrel', () => {

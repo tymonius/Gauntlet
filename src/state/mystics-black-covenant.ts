@@ -1,4 +1,4 @@
-import { cardCanBePlayedAt, getCardPlayRule } from '../cards';
+import { cardCanBePlayedAt, getCardPlayRule } from '../cards/playability';
 import type {
   BattleParticipantState,
   BattlePlayedCard,

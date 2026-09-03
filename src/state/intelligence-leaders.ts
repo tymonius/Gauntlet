@@ -1,4 +1,4 @@
-import { intelligenceMissionCardIds } from '../cards';
+import { intelligenceMissionCardIds } from '../cards/intelligence';
 import type { CardID, GameEvent, GameState, PlayerID, SpaceID } from '../types/v06';
 import type { ResolveIntelligenceChoiceAction } from './actions';
 import { startMissionControlMission } from './intelligence-missions';

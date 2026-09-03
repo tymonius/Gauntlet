@@ -1,4 +1,4 @@
-import { cardCanBePlayedAt } from '../cards';
+import { cardCanBePlayedAt } from '../cards/playability';
 import type { BattleParticipantState, BattlePlayedCard, CardID, GameEvent, GameState, PendingMilitaryTimingChoice, PlayerID } from '../types/v06';
 import { drawFromDeck } from './draw';
 import { bankedAssetCardUseAllowed } from './intelligence-subversion-battle';
