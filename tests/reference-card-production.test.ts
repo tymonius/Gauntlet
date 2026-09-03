@@ -65,7 +65,8 @@ describe('production faction reference cards', () => {
 
     const missionCopy = readFileSync(mission.source, 'utf8');
     expect(mission.referenceFaces.reverse.title).toBe('Special Operations');
-    expect(missionCopy).toContain('| Start Mission | 1 Action · Denouement |');
+    expect(missionCopy).toContain('| Missions | 1 Action · Denouement |');
+    expect(missionCopy).toContain('### Start a Mission');
     expect(missionCopy).toContain('Increment **Operation Progress by 1**.');
     expect(missionCopy).toContain('**Territories currently in the Gauntlet − card value**');
 
