@@ -202,6 +202,26 @@ const handlers: V070BattleEffectHandler[] = [
     },
   },
   {
+    cardId: 'intelligence-disinformation',
+    expectedText: 'When Gambits are revealed, if the opponent also set a Gambit, gain Advantage. In the Aftermath, return this card to your Hand instead of putting it in your Graveyard.',
+    timing: 'reveal',
+    apply: ({ state, owner, opponent, commitment }) => {
+      if (commitment.role !== 'gambit') return;
+      const opponentParticipant = participant(state, opponent);
+      if (opponentParticipant.gambit
+        || opponentParticipant.additionalGambits.length > 0) {
+        participant(state, owner).advantage += 1;
+      }
+      registerBattleCardAftermathDestination(
+        state,
+        owner,
+        commitment.instanceId,
+        'intelligence-disinformation',
+        'hand',
+      );
+    },
+  },
+  {
     cardId: 'neutral-fealty',
     expectedText: 'Ignore one Disadvantage affecting you during this battle. If you have no Disadvantage, +1 Battle Total instead.',
     timing: 'reveal',
@@ -519,6 +539,23 @@ function modifier(cardId: string, expectedText: string, amount: number): V070Bat
       participant(state, owner).battleModifier += amount;
     },
   };
+}
+
+function registerBattleCardAftermathDestination(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+  sourceCardId: string,
+  destination: 'discard' | 'graveyard' | 'hand',
+): void {
+  const runtime = state.battleRuntime;
+  if (!runtime) throw new Error('Battle effects require an active battle runtime.');
+  runtime.battleCardAftermathDestinationOverrides.push({
+    sourceCardId,
+    playerId,
+    instanceId,
+    destination,
+  });
 }
 
 function registerAftermathDraw(
