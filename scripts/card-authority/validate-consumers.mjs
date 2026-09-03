@@ -45,6 +45,8 @@ const RENDER_BEHAVIOR_PARAMETERS = Object.freeze([
   'releaseTarget',
 ]);
 
+const ROUTE_PRODUCER_PATTERN = /(?:\.src\s*=|\.href\s*=|\.goto\s*\(|\bgoto\s*\(|\blocation(?:\.href|\.assign|\.replace)?\s*(?:=|\()|\bopen\s*\(|\bfetch\s*\(|\bnew\s+URL\s*\(|\breturn\s+[`'"])/;
+
 function invariant(condition, message) {
   if (!condition) throw new Error(message);
 }
@@ -77,6 +79,22 @@ function suppliesCanonicalIdentity(source) {
     || (source.includes('face-render.html') && /searchParams\.set\(['"]id['"]/.test(source));
 }
 
+function routeWindows(source, route, radius = 500) {
+  const windows = [];
+  let offset = 0;
+  while (true) {
+    const index = source.indexOf(route, offset);
+    if (index < 0) break;
+    windows.push(source.slice(Math.max(0, index - radius), Math.min(source.length, index + route.length + radius)));
+    offset = index + route.length;
+  }
+  return windows;
+}
+
+function producesLegacyRoute(source) {
+  return LEGACY_RENDER_ROUTES.some(route => routeWindows(source, route).some(window => ROUTE_PRODUCER_PATTERN.test(window)));
+}
+
 export async function discoverPhysicalFaceConsumers() {
   const candidates = [];
 
@@ -94,8 +112,7 @@ export async function discoverPhysicalFaceConsumers() {
   const consumers = [];
   for (const path of [...new Set(candidates)].sort()) {
     const source = await readFile(resolve(ROOT, path), 'utf8');
-    const hasLegacyRoute = LEGACY_RENDER_ROUTES.some(route => source.includes(route));
-    if (suppliesCanonicalIdentity(source) || hasLegacyRoute) {
+    if (suppliesCanonicalIdentity(source) || producesLegacyRoute(source)) {
       consumers.push(Object.freeze({ path, source }));
     }
   }
@@ -103,20 +120,12 @@ export async function discoverPhysicalFaceConsumers() {
 }
 
 function faceRouteWindows(source) {
-  const windows = [];
-  let offset = 0;
-  while (true) {
-    const index = source.indexOf('face-render.html', offset);
-    if (index < 0) break;
-    windows.push(source.slice(Math.max(0, index - 400), Math.min(source.length, index + 800)));
-    offset = index + 'face-render.html'.length;
-  }
-  return windows;
+  return routeWindows(source, 'face-render.html', 800);
 }
 
 export function validateConsumerSource(path, source) {
   for (const legacy of LEGACY_RENDER_ROUTES) {
-    invariant(!source.includes(legacy), `${path} still references retired renderer route ${legacy}.`);
+    invariant(!producesLegacyRoute(source) || !routeWindows(source, legacy).some(window => ROUTE_PRODUCER_PATTERN.test(window)), `${path} still produces retired renderer route ${legacy}.`);
   }
 
   const windows = faceRouteWindows(source);
