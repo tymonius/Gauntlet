@@ -32,6 +32,22 @@ export interface V070BattleEffectHandler {
 }
 
 const handlers: V070BattleEffectHandler[] = [
+  {
+    cardId: 'mystics-accursed-wager',
+    expectedText: 'In the Aftermath, the losing player puts one card from their Hand in their Graveyard, if able.',
+    timing: 'reveal',
+    apply: ({ state, commitment }) => {
+      const runtime = state.battleRuntime;
+      if (!runtime) throw new Error('Battle effects require an active battle runtime.');
+      if (!runtime.battleAccursedWagerInstanceIds.includes(
+        commitment.instanceId,
+      )) {
+        runtime.battleAccursedWagerInstanceIds.push(
+          commitment.instanceId,
+        );
+      }
+    },
+  },
   modifier('neutral-new-recruits', '+1 Battle Total.', 1),
   modifier('neutral-rallying-cry', '+1 Battle Total.', 1),
   modifier('diplomats-gunboat-diplomacy', '+2 Battle Total.', 2),
