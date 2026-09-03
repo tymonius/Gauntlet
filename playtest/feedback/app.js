@@ -142,6 +142,7 @@
       el.receiptCode.textContent = payload.receipt;
       el.feedbackForm.hidden = true;
       el.successPanel.hidden = false;
+      el.successPanel.focus({ preventScroll: true });
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (error) {
       setStatus(error.message || "Feedback could not be submitted.", "error");
@@ -171,6 +172,7 @@
     el.successPanel.hidden = true;
     el.feedbackForm.hidden = false;
     setStatus("");
+    el.displayName.focus({ preventScroll: true });
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
