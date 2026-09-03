@@ -192,10 +192,7 @@ async function renderLeaderAssets(release, leaders, componentContract) {
     for (let index = 0; index < leaders.length; index += 1) {
       const leader = leaders[index];
       const url = new URL('/card-design/face-render.html', baseUrl);
-      url.searchParams.set('kind', 'leader');
-      url.searchParams.set('id', `${leader.faction}-${leader.id}`);
-      url.searchParams.set('side', 'front');
-      url.searchParams.set('orientation', 'portrait');
+      url.searchParams.set('id', `leader:${leader.faction}-${leader.id}`);
       url.searchParams.set('version', displayVersion);
 
       await page.goto(url.toString(), { waitUntil: 'load' });
