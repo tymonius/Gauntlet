@@ -1,13 +1,6 @@
 name: Materialize canonical art direction
 
 on:
-  pull_request:
-    paths:
-      - "game-data/**"
-      - "card-design/**"
-      - "images/artwork/**"
-      - "scripts/materialize-art-direction.mjs"
-      - ".github/workflows/materialize-art-direction.yml"
   workflow_dispatch:
 
 permissions:
