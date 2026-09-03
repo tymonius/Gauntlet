@@ -51,7 +51,7 @@ a { color: inherit; }
 button, input, select, textarea { font-family: var(--sans); }
 h1, h2, h3, p { margin-top: 0; }
 h1, h2, h3 { font-family: var(--serif); }
-:focus-visible { outline: 3px solid rgba(143, 31, 37, 0.38); outline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--bronze); outline-offset: 3px; }
 
 .global-header,
 .tool-hero,

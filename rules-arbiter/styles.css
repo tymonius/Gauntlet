@@ -170,7 +170,7 @@ footer {
 footer p { margin: 0; }
 footer strong { color: var(--ink); }
 
-:focus-visible { outline: 3px solid rgba(143,31,37,.38); outline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--bronze); outline-offset: 3px; }
 
 @media (max-width: 900px) {
   .arbiter-header { align-items: flex-start; flex-direction: column; padding-block: 16px; }
