@@ -644,6 +644,148 @@ describe('v0.7.0 core battle-effect modifiers', () => {
     expect(lossState.players.A.zones.graveyard).toContain(plunderLoss);
   });
 
+  test('Manifest Destiny becomes a blank Front Line Territory only when its owner wins as attacker', () => {
+    let winState = startBattle();
+    const contestedBefore =
+      winState.board.find(
+        space => space.position === winState.battle!.contestedPosition,
+      )!.territoryInstanceId;
+    const manifestWin = injectHandCard(
+      winState,
+      'A',
+      'neutral-manifest-destiny',
+      'manifest-win',
+    );
+    const boardLengthBefore = winState.board.length;
+    const deedCountBefore = winState.deeds.length;
+
+    winState = revealGambits(winState, manifestWin);
+    expect(winState.battleRuntime?.unsupportedEffects).toEqual([]);
+    expect(
+      winState.battleRuntime?.battleCardAftermathTerritoryInsertions,
+    ).toContainEqual({
+      owner: 'A',
+      sourceInstanceId: manifestWin,
+      sourceCardId: 'neutral-manifest-destiny',
+      condition: 'owner_win_as_attacker',
+      location: 'front_line',
+    });
+
+    winState = toOutcome(winState);
+    winState = reduceV070BattleAction(winState, {
+      type: 'submit_battle_dice',
+      playerId: 'A',
+      values: [6],
+    });
+    winState = reduceV070BattleAction(winState, {
+      type: 'submit_battle_dice',
+      playerId: 'B',
+      values: [1],
+    });
+    expect(winState.battle?.winner).toBe('A');
+    expect(winState.battle?.attacker).toBe('A');
+
+    winState = reduceV070BattleAction(winState, {
+      type: 'complete_aftermath',
+      playerId: 'A',
+    });
+
+    expect(winState.board).toHaveLength(boardLengthBefore + 1);
+    expect(winState.deeds).toHaveLength(deedCountBefore + 1);
+    expect(winState.board).toContainEqual(
+      expect.objectContaining({
+        territoryInstanceId: manifestWin,
+        territoryId: 'neutral-manifest-destiny',
+        contributedBy: 'A',
+        controller: 'A',
+        position: 3,
+        blank: true,
+      }),
+    );
+    expect(winState.deeds.some(
+      deed => deed.territoryInstanceId === manifestWin,
+    )).toBe(true);
+    expect(
+      winState.board.find(
+        space => space.territoryInstanceId === contestedBefore,
+      ),
+    ).toEqual(expect.objectContaining({
+      position: 4,
+      occupant: 'A',
+    }));
+    expect(winState.players.A.position).toBe(4);
+    expect(winState.players.A.zones.graveyard)
+      .not.toContain(manifestWin);
+    expect(winState.players.A.zones.discardPile)
+      .not.toContain(manifestWin);
+
+    let lossState = startBattle();
+    const manifestLoss = injectHandCard(
+      lossState,
+      'A',
+      'neutral-manifest-destiny',
+      'manifest-loss',
+    );
+    lossState = revealGambits(lossState, manifestLoss);
+    lossState = toOutcome(lossState);
+    lossState = reduceV070BattleAction(lossState, {
+      type: 'submit_battle_dice',
+      playerId: 'A',
+      values: [1],
+    });
+    lossState = reduceV070BattleAction(lossState, {
+      type: 'submit_battle_dice',
+      playerId: 'B',
+      values: [6],
+    });
+    lossState = reduceV070BattleAction(lossState, {
+      type: 'complete_aftermath',
+      playerId: 'A',
+    });
+
+    expect(lossState.board.some(
+      space => space.territoryInstanceId === manifestLoss,
+    )).toBe(false);
+    expect(lossState.players.A.zones.graveyard)
+      .toContain(manifestLoss);
+
+    let defenderState = startBattle();
+    const manifestDefender = injectHandCard(
+      defenderState,
+      'B',
+      'neutral-manifest-destiny',
+      'manifest-defender',
+    );
+    defenderState = revealGambits(
+      defenderState,
+      undefined,
+      manifestDefender,
+    );
+    defenderState = toOutcome(defenderState);
+    defenderState = reduceV070BattleAction(defenderState, {
+      type: 'submit_battle_dice',
+      playerId: 'A',
+      values: [1],
+    });
+    defenderState = reduceV070BattleAction(defenderState, {
+      type: 'submit_battle_dice',
+      playerId: 'B',
+      values: [6],
+    });
+    expect(defenderState.battle?.winner).toBe('B');
+    expect(defenderState.battle?.attacker).toBe('A');
+    defenderState = reduceV070BattleAction(defenderState, {
+      type: 'complete_aftermath',
+      playerId: 'A',
+    });
+
+    expect(defenderState.board.some(
+      space => space.territoryInstanceId === manifestDefender,
+    )).toBe(false);
+    expect(defenderState.players.B.zones.graveyard)
+      .toContain(manifestDefender);
+  });
+
   test('Pathfinders gains +1 only when the contested Territory has an active printed effect', () => {
     let active = startBattle('territory-high-ground');
     const activePathfinders = injectHandCard(
