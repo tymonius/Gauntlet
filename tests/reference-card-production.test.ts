@@ -79,7 +79,8 @@ describe('production faction reference cards', () => {
 
     const mysticsCopy = readFileSync(mystics.source, 'utf8');
     expect(mystics.referenceFaces.reverse.title).toBe('Ritual of Ascension');
-    expect(mysticsCopy).toContain('| Begin a Rite | 1 Action · Denouement |');
+    expect(mysticsCopy).toContain('| Rites | 1 Action · Denouement · Printed Begin cost |');
+    expect(mysticsCopy).toContain('### Begin a Rite');
     expect(mysticsCopy).toContain('**1st Rite:** Unlock **Invocation**.');
     expect(mysticsCopy).toContain('you may move **1 card from your Graveyard to your Discard Pile**');
     expect(mysticsCopy).toContain('After a **Withdrawal**, the Ritual remains underway.');
