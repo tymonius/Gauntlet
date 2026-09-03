@@ -5,7 +5,7 @@ import type {
   BattlePlayedCard,
   GameState,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import { applyGameAction } from './apply-neutral';
 import { activeBankedAssetCopies } from './banked-assets';
 import { initializeGame } from './initialize';

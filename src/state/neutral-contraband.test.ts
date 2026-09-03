@@ -6,7 +6,7 @@ import type {
   CardID,
   GameState,
   PlayerID,
-} from '../types';
+} from '../types/v06';
 import { applyGameAction } from './apply-neutral';
 import { continueIntelligenceBattle } from './intelligence-battle';
 import { initializeGame } from './initialize';
