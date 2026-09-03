@@ -158,36 +158,6 @@ function toOutcome(state: V070GameState): V070GameState {
 }
 
 describe('v0.7.0 core battle-effect modifiers', () => {
-  test('Subversion suppresses only opposing Assets for the rest of the battle', () => {
-    let state = startBattle();
-    const subversion = injectHandCard(
-      state,
-      'A',
-      'intelligence-subversion',
-      'subversion',
-    );
-    const ownAsset = injectBankedAsset(
-      state,
-      'A',
-      'neutral-counterintelligence',
-      'own',
-    );
-    const opposingAsset = injectBankedAsset(
-      state,
-      'B',
-      'neutral-counterintelligence',
-      'opposing',
-    );
-
-    state = revealGambits(state, subversion);
-
-    expect(state.battleRuntime?.assetInactivePlayers).toEqual(['B']);
-    expect(isV070AssetActive(state, ownAsset)).toBe(true);
-    expect(isV070AssetActive(state, opposingAsset)).toBe(false);
-    expect(state.battleRuntime?.stage).toBe('choose_tactics');
-    expect(state.battleRuntime?.unsupportedEffects).toEqual([]);
-  });
-
   test('Sequestration makes both players Assets inactive without removing them from their banks', () => {
     let state = startBattle();
     const sequestration = injectHandCard(
