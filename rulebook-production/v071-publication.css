@@ -38,3 +38,11 @@
   -webkit-mask-position:left -.62in bottom -.72in;
   mask-position:left -.62in bottom -.72in;
 }
+
+/* The source hero sketches carry a one-pixel raster edge at the top and bottom.
+   Clip only that outer edge so the artwork continues to blend into the paper
+   without changing scale, placement, or the historical source files. */
+.intentional-blank.hero-plate-page .hero-plate img{
+  -webkit-clip-path:inset(2px 0);
+  clip-path:inset(2px 0);
+}
