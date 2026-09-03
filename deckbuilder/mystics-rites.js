@@ -179,7 +179,7 @@
             ${selected ? '<span class="mini-pill">Selected</span>' : ""}
           </span>
         </button>
-        <button type="button" data-action="toggle" class="${selected ? "secondary danger" : ""}" ${unavailable ? "disabled" : ""}>${selected ? "Remove" : "Choose"}</button>
+        <button type="button" data-action="toggle" class="${selected ? "secondary danger" : ""}" aria-label="${selected ? "Remove" : "Choose"} ${escapeHtml(rite.name)}" ${unavailable ? "disabled" : ""}>${selected ? "Remove" : "Choose"}</button>
       `;
 
       row.querySelector('[data-action="preview"]').addEventListener("click", () => {
@@ -295,7 +295,7 @@
             <span class="mini-pill">Disclosure optional until begun</span>
           </div>
         </div>
-        ${riteState.selectionEnabled ? `<button type="button" class="secondary danger" data-remove-rite="${escapeHtml(rite.id)}">Remove</button>` : ""}
+        ${riteState.selectionEnabled ? `<button type="button" class="secondary danger" data-remove-rite="${escapeHtml(rite.id)}" aria-label="Remove ${escapeHtml(rite.name)}">Remove</button>` : ""}
       </article>
     `).join("");
 
