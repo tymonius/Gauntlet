@@ -114,8 +114,22 @@ export interface V070PendingActionCard {
   playerId: PlayerId;
   instanceId: string;
   cardId: string;
-  phase: 'opening' | 'denouement';
+  phase: V070TurnState['phase'];
 }
+
+export type V070PendingSleeperNetworkChoice =
+  | {
+      kind: 'end_turn_bind';
+      playerId: PlayerId;
+      hostInstanceId: string;
+    }
+  | {
+      kind: 'bound_action_queue';
+      playerId: PlayerId;
+      hostInstanceId: string;
+      mode: 'activate' | 'removed';
+      playedCount: number;
+    };
 
 export type V070PendingActionEffectChoice =
   | {
@@ -621,6 +635,7 @@ export interface V070GameState {
   sanctionTriggerTurns: Record<string, number>;
   pendingActionCard: V070PendingActionCard | null;
   pendingActionEffectChoice: V070PendingActionEffectChoice | null;
+  pendingSleeperNetworkChoice: V070PendingSleeperNetworkChoice | null;
   pendingSanctionChoices: V070PendingSanctionChoice[];
   pendingAssetLimitChoice: V070PendingAssetLimitChoice | null;
   pendingPurgeChoice: V070PendingPurgeChoice | null;
@@ -812,6 +827,7 @@ export function createV070StarterGame(input: CreateV070StarterGameInput): V070Ga
     sanctionTriggerTurns: {},
     pendingActionCard: null,
     pendingActionEffectChoice: null,
+    pendingSleeperNetworkChoice: null,
     pendingSanctionChoices: [],
     pendingAssetLimitChoice: null,
     pendingPurgeChoice: null,
