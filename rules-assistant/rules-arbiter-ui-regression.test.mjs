@@ -7,12 +7,34 @@ const HERE = fileURLToPath(new URL(".", import.meta.url));
 
 describe("Rules Arbiter welcome and compact UI regressions", () => {
   test("welcome copy is never collapsed into Details and exceptions", () => {
-    const welcome = "Ask me about the v0.6.3 rulebook, cards, Leaders, faction systems, Territories, Gambits, Tactics, battle timing, or victory conditions. If the written rules leave a genuine gap, I will issue a provisional ruling so play can continue.";
+    const welcome = "Set out the question as it arose at the table. I will determine what the rules require, identify the controlling rule or distinction, and settle the matter as plainly as I can. Where the written rules do not decide it, I will issue a provisional ruling so play may continue.";
 
     expect(presentRulesAnswer({ answer: welcome, rulingStatus: "welcome" })).toEqual({
       answer: welcome,
       details: ""
     });
+  });
+
+  test("widget welcome copy uses the Chief Justice voice instead of generic assistant framing", () => {
+    const widget = readFileSync(`${HERE}/widget.js`, "utf8");
+    const welcome = widget.match(/renderWelcome\(\)[\s\S]*?answer: "([^"]+)"/)?.[1] || "";
+
+    expect(welcome).toContain("Set out the question as it arose at the table.");
+    expect(welcome).toContain("identify the controlling rule or distinction");
+    expect(welcome).toContain("settle the matter as plainly as I can");
+    expect(welcome).not.toMatch(/v0\.\d+\.\d+/);
+    expect(widget).not.toContain("Ask me about the v0.7.1 rulebook");
+  });
+
+  test("player-facing identity distinguishes the Rules Arbiter feature from the Chief Justice", () => {
+    const widget = readFileSync(`${HERE}/widget.js`, "utf8");
+
+    expect(widget).toContain('assistantName: "Chief Justice"');
+    expect(widget).toContain('<p class="ga-rules-eyebrow">GAUNTLET RULES ARBITER</p>');
+    expect(widget).toContain('<span class="ga-rules-launcher-label">Ask the Chief Justice</span>');
+    expect(widget).toContain('<summary>About the Chief Justice</summary>');
+    expect(widget).not.toContain('assistantName: "Rules Arbiter"');
+    expect(widget).not.toContain('Gauntlet ${escapeHtml(CONFIG.version)}</p>');
   });
 
   test("generic sentence splitting preserves dotted version numbers", () => {
