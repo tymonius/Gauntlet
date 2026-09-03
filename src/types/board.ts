@@ -1,11 +1,11 @@
-import type { PlayerID, SpaceID, TerritoryID } from './ids';
+import type { CardID, PlayerID, SpaceID, TerritoryID } from './ids';
 export type SpaceKind = 'heartland' | 'endpoint' | 'territory' | 'arena';
 export type EndpointRole = 'before_gauntlet' | 'beyond_gauntlet';
 
 export type TerritoryOverlayKind = 'standard' | 'ruins';
 
 export interface TerritoryOverlayState {
-  cardId: import('./ids').CardID;
+  cardId: CardID;
   owner: PlayerID;
   faceUp: boolean;
   /** Explicit role for overlays whose physical card becomes persistent Ruins. */
