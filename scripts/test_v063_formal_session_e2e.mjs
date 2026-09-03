@@ -122,7 +122,7 @@ try {
     authorization: adminToken,
     body: { rulesVersion: "v0.6.1" }
   }), 400);
-  assert.match(rejectedLegacyCreation.error, /v0\.7\.0 sessions only/i);
+  assert.match(rejectedLegacyCreation.error, /v0\.7\.1 sessions only/i);
 
   const event = await json(await call("/api/sessions", {
     method: "POST",
