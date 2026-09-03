@@ -388,7 +388,7 @@ class GauntletRulesAssistant {
     section.className = "ga-rules-feedback";
     section.innerHTML = `
       <p>Did this answer your question?</p>
-      <div class="ga-rules-feedback-buttons">
+      <div class="ga-rules-feedback-buttons" role="group" aria-label="Did this answer your question?">
         <button type="button" data-rating="yes">Yes</button>
         <button type="button" data-rating="unclear">Unclear</button>
         <button type="button" data-rating="incorrect">Incorrect</button>
@@ -402,10 +402,11 @@ class GauntletRulesAssistant {
           <button type="button" data-cancel>Cancel</button>
         </div>
       </form>
-      <p class="ga-rules-feedback-status" aria-live="polite"></p>
+      <p class="ga-rules-feedback-status" role="status" tabindex="-1"></p>
     `;
 
     let selectedRating = null;
+    let selectedButton = null;
     const buttons = [...section.querySelectorAll("[data-rating]")];
     const form = section.querySelector("form");
     const textarea = section.querySelector("textarea");
@@ -416,11 +417,15 @@ class GauntletRulesAssistant {
       form.hidden = true;
       status.textContent = text;
       section.classList.add("is-complete");
+      status.focus();
+      selectedRating = null;
+      selectedButton = null;
     };
 
     for (const button of buttons) {
       button.addEventListener("click", async () => {
         selectedRating = button.dataset.rating;
+        selectedButton = button;
         if (selectedRating === "yes") {
           status.textContent = "Sending…";
           try {
@@ -449,9 +454,12 @@ class GauntletRulesAssistant {
     });
 
     form.querySelector("[data-cancel]").addEventListener("click", () => {
+      const focusTarget = selectedButton;
       form.hidden = true;
       selectedRating = null;
+      selectedButton = null;
       textarea.value = "";
+      focusTarget?.focus();
     });
 
     return section;
