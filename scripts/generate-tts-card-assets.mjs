@@ -202,8 +202,15 @@ async function renderAssets(catalog, componentContract) {
     for (const card of catalog.playableCards) {
       await page.setViewportSize({ width: 520, height: 700 });
       await page.goto(`${baseUrl}/card-design/face-render.html?id=${encodeURIComponent(`card:${card.id}`)}`, { waitUntil: 'load' });
-      await page.waitForSelector('.gauntlet-card');
-      await page.waitForFunction(() => document.body.dataset.renderReady === 'true');
+      await page.waitForFunction(() => document.body.dataset.renderReady === 'true' || document.body.dataset.renderReady === 'error');
+      const renderState = await page.evaluate(() => ({
+        ready: document.body.dataset.renderReady || '',
+        message: document.body.dataset.renderErrorMessage || '',
+      }));
+      if (renderState.ready !== 'true') {
+        throw new Error(`Canonical face renderer failed for playable card ${card.id}: ${renderState.message || 'unspecified render error'}`);
+      }
+      await page.waitForSelector('.gauntlet-card', { state: 'attached' });
 
       if (!fontsValidated) {
         const fonts = await page.evaluate(async () => {
