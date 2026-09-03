@@ -21,6 +21,25 @@ body {
   line-height: 1.2;
 }
 
+.skip-link {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1000;
+  padding: 0.62rem 0.88rem;
+  border-radius: 8px;
+  color: white;
+  background: var(--accent);
+  font-weight: 800;
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+.skip-link:focus {
+  transform: none;
+  outline: 3px solid white;
+  outline-offset: 3px;
+}
+
 button { font: inherit; }
 button {
   border: 1px solid var(--accent);
