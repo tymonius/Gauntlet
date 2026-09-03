@@ -61,7 +61,7 @@ describe('TTS supplemental component exports', () => {
     const { catalog } = await buildSupplementalCatalog(contract);
     expect(catalog.ready.some((component: any) => component.id === ritual.id && component.renderer === 'ritual-card')).toBe(true);
     expect(generator).toContain("['ritual-card', 'ritual-card']");
-    expect(generator).toContain("return { kind: 'ritual', id: String(record.id).replace(/^mystics-ritual-of-/, '') }");
+    expect(generator).toContain('component:${record.id}:${side}');
   });
   it('exports the ready Mystics Rites as source-driven two-sided cards', async () => {
     const riteCards = contract.components.filter((component: any) => component.family === 'rite-card');
@@ -82,8 +82,9 @@ describe('TTS supplemental component exports', () => {
     expect(bloodText).toContain(currentGame.mystics.rites.find((rite: any) => rite.id === 'blood').complete);
     expect(crossingText).toContain(currentGame.mystics.rites.find((rite: any) => rite.id === 'crossing').begin);
     expect(crossingText).not.toContain('Ritual of Ascendance');
-    expect(generator).toContain('/card-design/component-render.html');
-    expect(generator).toContain("return { kind: 'rite', id: String(record.id).replace(/^mystics-rite-/, '') }");
+    expect(generator).toContain('/card-design/face-render.html');
+    expect(generator).toContain('component:${record.id}:${side}');
+    expect(generator).not.toContain('/card-design/component-render.html');
     expect(generator).not.toContain('/tts/supplemental-renderer/');
     expect(riteDesign).toContain('class="rite-faction-emblem"');
     expect(riteDesign).toContain('completedArtwork(rite)');
@@ -128,7 +129,7 @@ describe('TTS supplemental component exports', () => {
     expect(JSON.stringify(byId.get('inquisition-purge-reference'))).toContain('Direct Purges');
     expect(JSON.stringify(byId.get('inquisition-purge-reference'))).not.toContain('Final Judgment');
 
-    expect(generator).toContain("return { kind: 'reference', id: record.id }");
+    expect(generator).toContain('component:${record.id}:${side}');
     expect(componentRenderer).toContain('"reference"');
     expect(componentRenderer).toContain('versionOverride');
     expect(referenceCss).toContain('.reference-watermark');
@@ -175,9 +176,11 @@ describe('TTS supplemental component exports', () => {
 
   it('maps the actual rendered registration lines onto the live tracker collider', () => {
     expect(generator).toContain('captureProductionTracker');
-    expect(trackerHelper).toContain('/card-design/component-render.html');
-    expect(trackerHelper).toContain("url.searchParams.set('kind', 'tracker')");
-    expect(trackerHelper).toContain("url.searchParams.set('version', displayVersion)");
+    expect(trackerHelper).toContain('/card-design/face-render.html');
+    expect(trackerHelper).toContain('component:${componentId}:front');
+    expect(trackerHelper).not.toContain('/card-design/component-render.html');
+    expect(trackerHelper).not.toContain("url.searchParams.set('kind'");
+    expect(trackerHelper).not.toContain("url.searchParams.set('version'");
     expect(trackerHelper).toContain('.tracker-registration-line');
     expect(trackerHelper).toContain('registrationFraction: rendererTravelPx / rect.height');
     expect(trackerHelper).toContain('{ value: 0, rendererTravelPx: 0, registrationFraction: 0 }');
