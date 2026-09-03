@@ -78,11 +78,17 @@
 }
 
 @media (max-width: 1000px) {
-  .site-header {
+  .site-header,
+  .global-header,
+  .rulebook-header,
+  .arbiter-header {
     flex-wrap: wrap;
     padding: 12px 0 14px;
   }
-  .site-header nav[aria-label="Primary navigation"] {
+  .site-header nav,
+  .global-header nav,
+  .rulebook-header nav,
+  .arbiter-header nav {
     order: 3;
     width: 100%;
     display: flex !important;
@@ -92,7 +98,11 @@
     scrollbar-width: thin;
     -webkit-overflow-scrolling: touch;
   }
-  .site-header nav[aria-label="Primary navigation"] a {
+  .site-header nav a,
+  .global-header nav a,
+  .rulebook-header nav a,
+  .arbiter-header nav a {
+    display: inline-flex !important;
     flex: 0 0 auto;
     white-space: nowrap;
   }
