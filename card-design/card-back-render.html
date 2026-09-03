@@ -7,9 +7,7 @@
   <script>
     const source = new URL(window.location.href);
     const target = new URL('/card-design/face-render.html', source.origin);
-    target.searchParams.set('kind', 'back');
-    target.searchParams.set('id', source.searchParams.get('faction') || 'intelligence');
-    target.searchParams.set('side', 'back');
+    target.searchParams.set('id', `back:${source.searchParams.get('faction') || 'intelligence'}`);
     const rules = source.searchParams.get('rules');
     if (rules) target.searchParams.set('rules', rules);
     window.location.replace(target);
