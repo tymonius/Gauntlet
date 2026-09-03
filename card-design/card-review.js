@@ -35,13 +35,21 @@
     return items.slice().sort((a, b) => String(selector(a) || '').localeCompare(String(selector(b) || '')));
   }
 
+  function faceRenderSource(faceId) {
+    return `/card-design/face-render.html?id=${encodeURIComponent(faceId)}`;
+  }
+
   function componentRenderSource(kind, id, side = 'front', orientation = 'portrait') {
     const params = new URLSearchParams({ kind, id, side });
     if (orientation === 'landscape') params.set('orientation', 'landscape');
     const rules = new URLSearchParams(window.location.search).get('rules');
     if (rules) params.set('rules', rules);
-    const surface = kind === 'leader' ? 'face-render.html' : 'component-render.html';
-    return `/card-design/${surface}?${params.toString()}`;
+    return `/card-design/component-render.html?${params.toString()}`;
+  }
+
+  function faceReviewFrame(faceId, label, orientation = 'portrait') {
+    const landscape = orientation === 'landscape';
+    return `<iframe class="component-review-frame${landscape ? ' component-review-frame-landscape' : ''}" loading="lazy" src="${esc(faceRenderSource(faceId))}" title="${esc(label)} canonical Card Design render"></iframe>`;
   }
 
   function componentReviewFrame(kind, id, label, side = 'front', orientation = 'portrait') {
@@ -58,7 +66,8 @@
 
   function leaderCard(leader, version) {
     const specimenId = `${leader.faction}-${leader.id}`;
-    return `<div class="leader-specimen" id="${esc(specimenId)}"><p class="leader-review-label screen-only"><strong>${esc(leader.name)}</strong><span>${esc(leader.note)}</span></p>${componentReviewFrame('leader', specimenId, `${leader.name} ${leader.factionLabel} Leader`)}</div>`;
+    const faceId = `leader:${specimenId}`;
+    return `<div class="leader-specimen" id="${esc(specimenId)}"><p class="leader-review-label screen-only"><strong>${esc(leader.name)}</strong><span>${esc(leader.note)}</span></p>${faceReviewFrame(faceId, `${leader.name} ${leader.factionLabel} Leader`)}</div>`;
   }
 
   async function renderLeaders() {
