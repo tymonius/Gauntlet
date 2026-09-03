@@ -15,6 +15,7 @@ const playableRenderer = readFileSync('card-design/playable-card-renderer.js', '
 const territorySurface = readFileSync('card-design/territory-review-render.js', 'utf8');
 const territoryRenderer = readFileSync('card-design/territory-card-renderer.js', 'utf8');
 const leaderCopy = readFileSync('card-design/leader-card-copy.js', 'utf8');
+const leaderStyles = readFileSync('card-design/leader-card.css', 'utf8');
 const proposals = readFileSync('card-design/proposal-card.js', 'utf8');
 const rites = readFileSync('card-design/rite-card.js', 'utf8');
 const supplementals = readFileSync('card-design/supplemental-card.js', 'utf8');
@@ -47,6 +48,10 @@ describe('complete canonical render authority', () => {
     expect(currentRuntime).toContain('resolveArtDirection(visualPolicy, artDirection, id)');
     expect(releasedRuntime).toContain('validateVisualPolicy(visualAuthority.visualPolicy)');
     expect(releasedRuntime).toContain('resolveArtDirection(visualPolicy, artDirection, id)');
+
+    const leaderDirectionIds = currentGame.leaders.map((leader: any) => `${leader.faction}-${leader.id}`);
+    expect(leaderDirectionIds.every((id: string) => Object.prototype.hasOwnProperty.call(currentGame.artDirection, id))).toBe(true);
+    expect(leaderStyles).not.toContain('object-position:');
   });
 
   it('loads one immutable render context per face and shares it with component builders', () => {
