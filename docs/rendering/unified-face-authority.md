@@ -90,7 +90,7 @@ It also owns the single template-to-orientation registry.
 
 Stage 2 is implemented in parallel in `card-design/face-spec.mjs`. It resolves all 242 IDs through the Stage 1 catalog and attaches canonical content source data, template stylesheet dependencies, artwork-source policy, artwork-composition provenance, pairing/back policy, and authority/version provenance.
 
-A FaceSpec also carries an explicit readiness audit. Missing authority is reported as an issue instead of silently falling back. Current examples include artwork that still relies on the legacy smart/default crop and tracker presentation values that still live only in the historical renderer. Those gaps must be promoted into canonical data before Stage 3 can declare those faces production-ready.
+A FaceSpec also carries an explicit readiness audit. Missing authority is reported as an issue instead of silently falling back. Current examples include artwork that still relies on the legacy smart/default crop and reference-card presentation that still lives in the historical renderer. Tracker presentation has now been promoted into current-game authority and can render directly through the clean FaceSpec path.
 
 ### Stage 3 — clean renderer
 - one `face-render.html?id=...`
@@ -100,7 +100,7 @@ A FaceSpec also carries an explicit readiness audit. Missing authority is report
 
 Stage 3 now has a parallel, non-production `face-render.html` surface. It accepts only `id`, resolves the FaceSpec, loads the template declared by that spec through one internal registry, constructs exactly one face, applies canonical resources, and runs deterministic preparation. The runtime contains no Leader/Deed/Territory/etc. route dispatch.
 
-The template boundary may declare preparation behavior such as parchment treatment and fitting strategy; that declaration is internal FaceSpec/template data, not a caller decision. Missing authority remains fail-closed. Reference and tracker templates deliberately cannot render yet because their remaining presentation authority still lives in legacy code, and artwork-bearing faces with unresolved smart/default crops are rejected before rendering.
+The template boundary may declare preparation behavior such as parchment treatment and fitting strategy; that declaration is internal FaceSpec/template data, not a caller decision. Missing authority remains fail-closed. Tracker faces now render directly from canonical presentation data. Reference templates deliberately cannot render yet because their remaining presentation authority still lives in legacy code, and artwork-bearing faces with unresolved smart/default crops are rejected before rendering.
 
 No existing Card Design, Card Reference, Deckbuilder, print, TTS, or inspection consumer points at this surface yet.
 

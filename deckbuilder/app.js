@@ -405,20 +405,23 @@ function renderAvailable() {
     row.className = `compact-card-row${card.id === state.selectedCardId ? " selected" : ""}`;
     const qty = state.deck[card.id] || 0;
     row.innerHTML = `
-      <div>
-        <div class="compact-card-title"><strong>${escapeHtml(card.name)}</strong><span class="mini-pill">${card.cost}</span></div>
-        <div class="compact-card-meta"><span class="mini-pill">${escapeHtml(card.factionLabel)}</span><span class="mini-pill">${escapeHtml(card.complexity)}</span>${qty ? `<span class="mini-pill">${qty} in deck</span>` : ""}</div>
-      </div>
-      <button type="button">Add</button>
+      <button
+        type="button"
+        class="compact-row-preview-button"
+        data-action="preview"
+        aria-label="Preview ${escapeHtml(card.name)}"
+        ${card.id === state.selectedCardId ? 'aria-current="true"' : ""}
+      >
+        <span class="compact-card-title"><strong>${escapeHtml(card.name)}</strong><span class="mini-pill">${card.cost}</span></span>
+        <span class="compact-card-meta"><span class="mini-pill">${escapeHtml(card.factionLabel)}</span><span class="mini-pill">${escapeHtml(card.complexity)}</span>${qty ? `<span class="mini-pill">${qty} in deck</span>` : ""}</span>
+      </button>
+      <button type="button" data-action="add" aria-label="Add ${escapeHtml(card.name)} to deck">Add</button>
     `;
-    row.addEventListener("click", event => {
-      if (event.target.tagName !== "BUTTON") {
-        state.selectedCardId = card.id;
-        renderAvailable();
-        return;
-      }
-      addCard(card.id);
+    row.querySelector('[data-action="preview"]').addEventListener("click", () => {
+      state.selectedCardId = card.id;
+      renderAvailable();
     });
+    row.querySelector('[data-action="add"]').addEventListener("click", () => addCard(card.id));
     el.availableCards.append(row);
   });
 
@@ -501,9 +504,9 @@ function renderDeck() {
         <div class="deck-stats"><span class="mini-pill">${qty}×</span><span class="mini-pill">${card.cost} each</span><span class="mini-pill">${qty * card.cost} value</span>${card.unique ? `<span class="mini-pill">Unique</span>` : ""}</div>
       </div>
       <div class="deck-actions">
-        <button type="button" class="secondary" data-action="minus">−</button>
-        <button type="button" data-action="plus">+</button>
-        <button type="button" class="secondary danger" data-action="remove">×</button>
+        <button type="button" class="secondary" data-action="minus" aria-label="Remove one ${escapeHtml(card.name)} from deck">−</button>
+        <button type="button" data-action="plus" aria-label="Add another ${escapeHtml(card.name)} to deck">+</button>
+        <button type="button" class="secondary danger" data-action="remove" aria-label="Remove all ${escapeHtml(card.name)} from deck">×</button>
       </div>
     `;
     row.querySelector('[data-action="minus"]').addEventListener("click", () => removeCard(card.id));

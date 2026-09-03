@@ -130,6 +130,13 @@ export interface V070AdditionalRetreatEffect {
   steps: number;
 }
 
+export interface V070AftermathDrawEffect {
+  sourceInstanceId: string;
+  sourceCardId: string;
+  owner: PlayerId;
+  count: number;
+}
+
 export interface V070GambitOrderOverride {
   source: 'neutral_observers' | 'watchtower';
   firstPlayer: PlayerId;
@@ -193,6 +200,7 @@ export interface V070BattleRuntime {
   guardiansWindowOpen: boolean;
   mysticLossInterruptionResolved: boolean;
   additionalRetreatEffects: V070AdditionalRetreatEffect[];
+  aftermathDrawEffects: V070AftermathDrawEffect[];
   militaryOrderUsedPlayers: PlayerId[];
   unbrokenRanksInstanceIds: string[];
   pendingGameVictory: {
@@ -270,6 +278,7 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     guardiansWindowOpen: false,
     mysticLossInterruptionResolved: false,
     additionalRetreatEffects: [],
+    aftermathDrawEffects: [],
     militaryOrderUsedPlayers: [],
     unbrokenRanksInstanceIds: [],
     pendingGameVictory: null,

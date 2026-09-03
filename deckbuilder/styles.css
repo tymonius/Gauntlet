@@ -491,7 +491,27 @@ label {
   background: rgba(255, 253, 248, 0.95);
 }
 
-.compact-card-row { cursor: pointer; }
+.compact-card-row { cursor: default; }
+
+.compact-row-preview-button {
+  width: 100%;
+  min-height: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: inherit;
+  background: transparent;
+  box-shadow: none;
+  font: inherit;
+  text-align: left;
+}
+
+.compact-row-preview-button:hover:not(:disabled),
+.compact-row-preview-button:focus-visible {
+  transform: none;
+  background: transparent;
+  box-shadow: none;
+}
 
 .compact-card-row:hover,
 .compact-card-row.selected {

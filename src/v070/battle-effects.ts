@@ -102,6 +102,43 @@ const handlers: V070BattleEffectHandler[] = [
     },
   },
   {
+    cardId: 'neutral-consolidation',
+    expectedText: 'In the Aftermath, if you won as the attacker on a Territory your opponent controls, +1 Card.',
+    timing: 'reveal',
+    apply: ({ state, owner, opponent, commitment }) => {
+      const battle = state.battle;
+      if (!battle || battle.attacker !== owner || battle.lastStand) return;
+      const territory = state.board.find(
+        item => item.position === battle.contestedPosition,
+      );
+      if (territory?.controller !== opponent) return;
+      registerAftermathDraw(
+        state,
+        owner,
+        commitment.instanceId,
+        'neutral-consolidation',
+        1,
+      );
+    },
+  },
+  {
+    cardId: 'neutral-foothold',
+    expectedText: 'If you are defending against a Counterattack, gain Advantage. In the Aftermath, if you win, +1 Card.',
+    timing: 'reveal',
+    apply: ({ state, owner, commitment }) => {
+      if (state.battle?.defender === owner && isCounterattack(state)) {
+        participant(state, owner).advantage += 1;
+      }
+      registerAftermathDraw(
+        state,
+        owner,
+        commitment.instanceId,
+        'neutral-foothold',
+        1,
+      );
+    },
+  },
+  {
     cardId: 'neutral-contingency-plan',
     expectedText: 'If your opponent controls more Territories than you, +2 Battle Total.',
     timing: 'reveal',
@@ -181,6 +218,45 @@ const handlers: V070BattleEffectHandler[] = [
     apply: ({ state, owner }) => {
       if (activeV070PrintedBattleTerritory(state)) {
         participant(state, owner).battleModifier += 1;
+      }
+    },
+  },
+  {
+    cardId: 'neutral-tactical-planning',
+    expectedText: 'When Gambits are revealed: +1 Reserve. Tactic limit unchanged.',
+    timing: 'reveal',
+    apply: ({ state, owner, commitment }) => {
+      if (commitment.role !== 'gambit') return;
+      const draw = drawV070Cards(
+        state,
+        owner,
+        1,
+        'Tactical Planning battle Reserve',
+      );
+      participant(state, owner).reserve.push(...draw.drawn);
+
+      appendV070Event(state, {
+        type: 'battle_reserve_cards_added',
+        actor: owner,
+        visibility: 'public',
+        payload: {
+          sourceInstanceId: commitment.instanceId,
+          sourceCardId: 'neutral-tactical-planning',
+          count: draw.drawn.length,
+          reshuffles: draw.reshuffles,
+          exhausted: draw.exhausted,
+        },
+      });
+      if (draw.drawn.length > 0) {
+        appendV070Event(state, {
+          type: 'reserve_identity',
+          actor: owner,
+          visibility: owner,
+          payload: {
+            cardInstanceIds: [...draw.drawn],
+            purpose: 'Tactical Planning',
+          },
+        });
       }
     },
   },
@@ -364,6 +440,53 @@ export function applyV070BattleCardAdditionalRetreats(
   }
 }
 
+export function resolveV070AftermathDrawEffects(
+  state: V070GameState,
+  winner: PlayerId,
+): void {
+  const runtime = state.battleRuntime;
+  if (!runtime || runtime.aftermathDrawEffects.length === 0) return;
+
+  const effects = [...runtime.aftermathDrawEffects];
+  runtime.aftermathDrawEffects = [];
+
+  for (const effect of effects) {
+    if (effect.owner !== winner) continue;
+
+    const draw = drawV070Cards(
+      state,
+      effect.owner,
+      effect.count,
+      `${effect.sourceCardId} Aftermath`,
+    );
+    state.players[effect.owner].zones.hand.push(...draw.drawn);
+
+    appendV070Event(state, {
+      type: 'battle_card_aftermath_draw',
+      actor: effect.owner,
+      visibility: 'public',
+      payload: {
+        sourceInstanceId: effect.sourceInstanceId,
+        sourceCardId: effect.sourceCardId,
+        count: draw.drawn.length,
+        reshuffles: draw.reshuffles,
+        exhausted: draw.exhausted,
+      },
+    });
+    if (draw.drawn.length > 0) {
+      appendV070Event(state, {
+        type: 'drawn_card_identity',
+        actor: effect.owner,
+        visibility: effect.owner,
+        payload: {
+          cardInstanceIds: [...draw.drawn],
+          purpose: `${effect.sourceCardId} Aftermath`,
+        },
+      });
+    }
+  }
+}
+
 export function resolveV070UnbrokenRanksCommand(
   state: V070GameState,
   winner: PlayerId,
@@ -396,6 +519,23 @@ function modifier(cardId: string, expectedText: string, amount: number): V070Bat
       participant(state, owner).battleModifier += amount;
     },
   };
+}
+
+function registerAftermathDraw(
+  state: V070GameState,
+  owner: PlayerId,
+  sourceInstanceId: string,
+  sourceCardId: string,
+  count: number,
+): void {
+  const runtime = state.battleRuntime;
+  if (!runtime) throw new Error('Battle effects require an active battle runtime.');
+  runtime.aftermathDrawEffects.push({
+    owner,
+    sourceInstanceId,
+    sourceCardId,
+    count,
+  });
 }
 
 function participant(state: V070GameState, playerId: PlayerId) {

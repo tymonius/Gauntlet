@@ -90,6 +90,30 @@ function validateFactionFeatures(authority) {
   }
 }
 
+function validateTrackerPresentation(authority) {
+  const components = [
+    ...requireCurrentArray(authority.componentContract?.components, 'component contract components'),
+    ...requireCurrentArray(authority.componentContract?.sharedComponents, 'shared component contract components'),
+  ];
+  for (const component of components.filter(item => item?.family === 'tracker')) {
+    const presentation = component.presentation?.tracker;
+    const scaleMaximum = Number(presentation?.scaleMaximum);
+    const labelSizePt = Number(presentation?.labelSizePt);
+    if (
+      !presentation
+      || !Number.isInteger(scaleMaximum)
+      || scaleMaximum <= 0
+      || !Number.isFinite(labelSizePt)
+      || labelSizePt <= 0
+      || !String(presentation.title || '').trim()
+      || typeof presentation.capLabel !== 'string'
+      || !String(presentation.instruction || '').trim()
+    ) {
+      throw new Error(`Current tracker ${component.id || '(missing id)'} has incomplete presentation authority.`);
+    }
+  }
+}
+
 export function validateCurrentGameAuthority(authority) {
   if (authority?.schemaVersion !== 2 || authority?.authority !== 'current-game') {
     throw new Error('Invalid complete current-game authority.');
@@ -113,6 +137,7 @@ export function validateCurrentGameAuthority(authority) {
   requireCurrentArray(authority.leaders, 'Leaders');
   validateMysticsStarterRites(authority);
   validateFactionFeatures(authority);
+  validateTrackerPresentation(authority);
   authority.leaders.forEach(validateLeader);
 
   const ids = new Set();

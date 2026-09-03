@@ -5,6 +5,7 @@ import {
   attachArtwork,
   fitGenericCard,
   fitTerritory,
+  fitTracker,
   loadParchment,
   loadProductionFonts,
 } from './face-preparation.mjs';
@@ -104,6 +105,7 @@ const FITTERS = Object.freeze({
   none: () => {},
   generic: fitGenericCard,
   territory: fitTerritory,
+  tracker: fitTracker,
 });
 
 async function prepareFace(spec, result) {

@@ -4751,6 +4751,15 @@
           "layer": 1,
           "snapTag": "military-command",
           "snapPositions": "renderer-derived"
+        },
+        "presentation": {
+          "tracker": {
+            "scaleMaximum": 4,
+            "labelSizePt": 11.2,
+            "title": "Command Tracker",
+            "capLabel": "Standard Command cap · 2",
+            "instruction": "Place faction leader card on top of this tracker and slide it upward or downward to align the bottom edge with the line above your current Command value."
+          }
         }
       },
       {
@@ -4784,6 +4793,15 @@
           "layer": 1,
           "snapTag": "diplomats-influence",
           "snapPositions": "renderer-derived"
+        },
+        "presentation": {
+          "tracker": {
+            "scaleMaximum": 10,
+            "labelSizePt": 7.9,
+            "title": "Influence Tracker",
+            "capLabel": "Standard Influence cap · 10",
+            "instruction": "Place faction leader card on top of this tracker and slide it upward or downward to align the bottom edge with the line above your current Influence value."
+          }
         }
       },
       {
@@ -5085,6 +5103,15 @@
           "layer": 1,
           "snapTag": "financiers-capital-limit",
           "snapPositions": "renderer-derived"
+        },
+        "presentation": {
+          "tracker": {
+            "scaleMaximum": 15,
+            "labelSizePt": 6.8,
+            "title": "Capital Limit Tracker",
+            "capLabel": "Maximum Capital Limit · Uncapped",
+            "instruction": "Place faction leader card on top of this tracker and slide it upward or downward to align the bottom edge with the line above your current Capital Limit value."
+          }
         }
       },
       {
@@ -5270,6 +5297,15 @@
           "layer": 2,
           "snapTag": "intelligence-intel",
           "snapPositions": "renderer-derived"
+        },
+        "presentation": {
+          "tracker": {
+            "scaleMaximum": 12,
+            "labelSizePt": 7.2,
+            "title": "Intel Tracker",
+            "capLabel": "Standard Intel cap · none",
+            "instruction": "Place faction leader card on top of this tracker and slide it upward or downward to align the bottom edge with the line above your current Intel value."
+          }
         }
       },
       {
@@ -5304,6 +5340,15 @@
           "layer": 1,
           "snapTag": "intelligence-operation-progress",
           "snapPositions": "renderer-derived"
+        },
+        "presentation": {
+          "tracker": {
+            "scaleMaximum": 8,
+            "labelSizePt": 6.8,
+            "title": "Operation Progress",
+            "capLabel": "",
+            "instruction": "Place the Intel Tracker and faction leader card on top of this tracker. Slide them together upward or downward to align the bottom edge of the Intel Tracker with the line above your current Operation Progress value."
+          }
         }
       },
       {
@@ -5674,6 +5719,15 @@
           "layer": 1,
           "snapTag": "inquisition-conviction",
           "snapPositions": "renderer-derived"
+        },
+        "presentation": {
+          "tracker": {
+            "scaleMaximum": 4,
+            "labelSizePt": 10.4,
+            "title": "Conviction Tracker",
+            "capLabel": "Standard Conviction cap · 4",
+            "instruction": "Place faction leader card on top of this tracker and slide it upward or downward to align the bottom edge with the line above your current Conviction value."
+          }
         }
       }
     ],
