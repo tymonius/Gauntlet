@@ -39,6 +39,7 @@ Requirements:
 4. For a provisional ruling, clearly distinguish the judgment from written authority, explain the closest supplied analogy or adjudication principle, and state that it applies for the rest of the current game and is logged for designer review.
 5. Cite only supplied source IDs that actually support the answer. Explicit or inferred answers require at least one supporting source.
 6. Keep the answer direct and useful at the table.
+7. Write the answer as plain text only. The Rules Arbiter widget does not render Markdown. Do not use Markdown emphasis markers, backticks, headings, tables, or other formatting syntax. Write formulas directly, for example: Deed cost = min(Deeds you own + 1, 6) + position modifier + buyout premium.
 ${ADJUDICATION_GUIDE}
 
 Return only the required JSON object.`;
