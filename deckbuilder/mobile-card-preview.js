@@ -93,6 +93,12 @@
   function handleDocumentClick(event) {
     if (!(event.target instanceof Element)) return;
 
+    const previewButton = event.target.closest(".compact-row-preview-button");
+    if (previewButton && mobileQuery.matches) {
+      window.requestAnimationFrame(() => openPreview());
+      return;
+    }
+
     const cardRow = event.target.closest(".compact-card-row");
     if (cardRow && !event.target.closest("button") && mobileQuery.matches) {
       window.requestAnimationFrame(() => openPreview());
@@ -187,10 +193,9 @@
     document.body.classList.remove("mobile-card-preview-open");
     preview.setAttribute("aria-hidden", mobileQuery.matches ? "true" : "false");
 
-    const selectedRow = document.querySelector(".compact-card-row.selected");
-    if (selectedRow instanceof HTMLElement) {
-      selectedRow.tabIndex = -1;
-      selectedRow.focus({ preventScroll: true });
+    const selectedPreviewButton = document.querySelector(".compact-card-row.selected .compact-row-preview-button");
+    if (selectedPreviewButton instanceof HTMLElement) {
+      selectedPreviewButton.focus({ preventScroll: true });
     }
   }
 
