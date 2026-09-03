@@ -132,8 +132,10 @@ describe("streamlined tracked playtests", () => {
     expect(migration).toContain("playtest_public_creation_limits");
     expect(worker).toContain("CREATION_LIMIT_PER_DAY");
     expect(worker).toContain("cf-connecting-ip");
-    expect(worker).toContain('const CURRENT_RULES_VERSION = "v0.7.0"');
-    expect(worker).toContain('const serial = `G070-${randomCode(8)}`');
+    expect(worker).toContain('const CURRENT_RULES_VERSION = "v0.7.1"');
+    expect(worker).toContain('const serial = `G071-${randomCode(8)}`');
+    expect(worker).toContain("MYSTICS_STARTER_RITES");
+    expect(worker).toContain("selectedRites");
     expect(worker).not.toContain("SESSION_ADMIN_TOKEN");
   });
 });
