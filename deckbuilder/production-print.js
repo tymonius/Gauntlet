@@ -55,12 +55,12 @@
   try {
     const runtime = window.opener?.GAUNTLET_DECKBUILDER?.currentGame?.() || null;
     if (!runtime) return;
-    window.__gauntletProductionAuthorityBridge = {
+    window.__gauntletFaceAuthorityBridge = {
       rulesetMode: ${JSON.stringify(rulesetMode)},
       runtime,
     };
   } catch (error) {
-    console.warn('Unable to bridge Deckbuilder authority into production print frames', error);
+    console.warn('Unable to bridge Deckbuilder authority into canonical face frames', error);
   }
 })();`;
     documentNode.head.prepend(script);
