@@ -138,6 +138,22 @@
     }
   }
 
+  function findRiteToggle(id) {
+    return [...(riteElements.riteList?.querySelectorAll("[data-rite-id]") || [])]
+      .find(row => row.dataset.riteId === id)
+      ?.querySelector('[data-action="toggle"]') || null;
+  }
+
+  function restoreRiteFocus(id, target) {
+    const pickerToggle = () => findRiteToggle(id);
+    const previewToggle = () => document.getElementById("previewRiteButton");
+    const fallback = riteElements.clearRitesButton;
+    const focusTarget = target === "preview"
+      ? previewToggle() || pickerToggle() || fallback
+      : pickerToggle() || previewToggle() || fallback;
+    focusTarget?.focus({ preventScroll: true });
+  }
+
   function renderRitePicker() {
     const list = riteElements.riteList;
     const preview = riteElements.ritePreview;
@@ -165,6 +181,7 @@
       const unavailable = !selected && riteState.selectedIds.length >= riteState.selectedCount;
       const row = document.createElement("article");
       row.className = `compact-rite-row${rite.id === riteState.selectedId ? " selected" : ""}${selected ? " chosen" : ""}`;
+      row.dataset.riteId = rite.id;
       row.innerHTML = `
         <button
           type="button"
@@ -190,7 +207,7 @@
       });
       row.querySelector('[data-action="toggle"]').addEventListener("click", () => {
         riteState.selectedId = rite.id;
-        toggleRite(rite.id);
+        toggleRite(rite.id, "picker");
       });
       list.append(row);
     }
@@ -236,7 +253,7 @@
         <button id="previewRiteButton" type="button" class="${selected ? "secondary danger" : ""}" ${unavailable ? "disabled" : ""}>${selected ? "Remove Rite" : "Choose Rite"}</button>
       </div>
     `;
-    document.getElementById("previewRiteButton")?.addEventListener("click", () => toggleRite(rite.id));
+    document.getElementById("previewRiteButton")?.addEventListener("click", () => toggleRite(rite.id, "preview"));
     installRitePreviewScaling();
   }
 
@@ -261,7 +278,7 @@
     frame.style.transform = `translateX(-50%) scale(${scale})`;
   }
 
-  function toggleRite(id) {
+  function toggleRite(id, focusTarget = null) {
     if (!isMystics() || !riteState.selectionEnabled || !getRite(id)) return;
     if (riteState.selectedIds.includes(id)) {
       riteState.selectedIds = riteState.selectedIds.filter(item => item !== id);
@@ -271,6 +288,7 @@
     }
     riteState.selectedId = id;
     deckbuilder.render();
+    if (focusTarget) restoreRiteFocus(id, focusTarget);
   }
 
   function renderDeckRites() {
@@ -301,7 +319,7 @@
 
     if (riteState.selectionEnabled) {
       container.querySelectorAll("[data-remove-rite]").forEach(button => {
-        button.addEventListener("click", () => toggleRite(button.dataset.removeRite));
+        button.addEventListener("click", () => toggleRite(button.dataset.removeRite, "picker"));
       });
     }
   }
