@@ -32,6 +32,30 @@ function leaderRenderId(leader) {
   return `${leader.faction}-${leader.id}`;
 }
 
+export function leaderFaceId(leaderOrRenderId) {
+  const renderId = typeof leaderOrRenderId === 'string'
+    ? leaderOrRenderId
+    : leaderRenderId(leaderOrRenderId);
+  return `leader:${renderId}`;
+}
+
+export function cardBackFaceId(faction) {
+  return `back:${String(faction || '').trim().toLowerCase()}`;
+}
+
+function parseFaceId(faceId) {
+  const normalized = String(faceId || '').trim();
+  const separator = normalized.indexOf(':');
+  if (separator <= 0 || separator === normalized.length - 1) {
+    throw new Error(`Invalid canonical FaceSpec id: ${normalized || '(missing)'}.`);
+  }
+  return Object.freeze({
+    id: normalized,
+    namespace: normalized.slice(0, separator).toLowerCase(),
+    localId: normalized.slice(separator + 1),
+  });
+}
+
 function requireExplicitArtworkDirection(context, artworkId) {
   const raw = context.artDirection?.[artworkId];
   if (!raw || typeof raw !== 'object') {
@@ -68,19 +92,18 @@ function commonSpec(context, options) {
   };
 }
 
-function leaderSpec(context, requestedId, side) {
-  if (side !== 'front') throw new Error('Leader faces currently expose only the front side.');
+function leaderSpec(context, requestedId) {
   const leader = (context.game.leaders || []).find(item => leaderRenderId(item) === requestedId);
   if (!leader) throw new Error(`Unknown Leader face: ${requestedId}.`);
 
   const artworkId = leaderRenderId(leader);
   return Object.freeze({
     ...commonSpec(context, {
-      id: artworkId,
+      id: leaderFaceId(artworkId),
       kind: 'leader',
       family: 'leader',
       template: 'leader',
-      side,
+      side: 'front',
       orientation: 'portrait',
       label: `${leader.name} ${leader.factionLabel} Leader`,
       faction: leader.faction,
@@ -96,14 +119,13 @@ function leaderSpec(context, requestedId, side) {
   });
 }
 
-function cardBackSpec(context, requestedId, side) {
-  if (side !== 'front' && side !== 'back') throw new Error(`Unsupported card-back side: ${side}.`);
+function cardBackSpec(context, requestedId) {
   const faction = String(requestedId || '').trim().toLowerCase();
   if (!FACTIONS.includes(faction)) throw new Error(`Unknown card-back faction: ${requestedId}.`);
 
   return Object.freeze({
     ...commonSpec(context, {
-      id: `card-back-${faction}`,
+      id: cardBackFaceId(faction),
       kind: 'back',
       family: 'card-back',
       template: 'card-back',
@@ -118,18 +140,16 @@ function cardBackSpec(context, requestedId, side) {
   });
 }
 
-export async function resolveFaceSpec({ kind, id, side = 'front' }) {
-  const normalizedKind = String(kind || '').trim().toLowerCase();
-  const normalizedId = String(id || '').trim();
-  const normalizedSide = String(side || 'front').trim().toLowerCase();
-  if (!normalizedKind || !normalizedId) throw new Error('FaceSpec resolution requires kind and id.');
-
+export async function resolveFaceSpec(faceId) {
+  const parsed = parseFaceId(faceId);
   const context = await loadRenderContext();
-  if (normalizedKind === 'leader') return leaderSpec(context, normalizedId, normalizedSide);
-  if (normalizedKind === 'back') return cardBackSpec(context, normalizedId, normalizedSide);
-  throw new Error(`FaceSpec family is not migrated yet: ${normalizedKind}.`);
+
+  if (parsed.namespace === 'leader') return leaderSpec(context, parsed.localId);
+  if (parsed.namespace === 'back') return cardBackSpec(context, parsed.localId);
+
+  throw new Error(`FaceSpec namespace is not migrated yet: ${parsed.namespace}.`);
 }
 
-export function migratedFaceKinds() {
+export function migratedFaceNamespaces() {
   return Object.freeze(['leader', 'back']);
 }
