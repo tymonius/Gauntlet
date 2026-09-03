@@ -224,6 +224,9 @@ async function main() {
   if (!target) throw new Error('Canonical face renderer is missing #renderTarget.');
 
   const game = await loadRenderGame();
+  // Embedded authoring tools consume the same canonical visual-authority map
+  // that FaceSpec resolved against; no renderer-family reconstruction is needed.
+  window.GAUNTLET_ART_DIRECTION = game.artDirection || {};
   const spec = resolveFaceSpec(game, faceIdFromLocation());
 
   document.body.dataset.faceId = spec.id;
