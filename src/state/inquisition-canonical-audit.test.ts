@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getCardPlayRule } from '../cards';
+import { getCardPlayRule } from '../cards/playability';
 import type { GameState, PlayerID } from '../types/v06';
 import { buildPendingInquisitionOptions } from '../dev/inquisition-options';
 import { applyGameAction } from './apply-inquisition';
