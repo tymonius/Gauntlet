@@ -55,6 +55,17 @@ describe('Stage 4 unified face parity gate', () => {
     expect(faceSpec).toContain("'/card-design/faction-component.css'");
   });
 
+  it('fits legacy supplemental faces only after canonical production fonts are loaded', () => {
+    expect(supplementalCard).toContain('waitForCanonicalProductionFonts');
+    expect(supplementalCard).toContain("document.body?.dataset.productionFontsReady");
+    expect(supplementalCard.indexOf('await waitForCanonicalProductionFonts();')).toBeLessThan(
+      supplementalCard.indexOf('await layoutTrackerCards();')
+    );
+    expect(supplementalCard.indexOf('await waitForCanonicalProductionFonts();')).toBeLessThan(
+      supplementalCard.indexOf('await hydrateReferenceCards();')
+    );
+  });
+
   it('keeps Operation Progress presentation in canonical data instead of component-specific CSS', () => {
     expect(currentGame).toContain('"titleLetterSpacingEm": 0');
     expect(trackerTemplate).toContain('presentation.titleLetterSpacingEm');
