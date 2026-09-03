@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 const read = (path: string) => readFileSync(path, 'utf8');
 const authority = JSON.parse(read('game-data/current-game.json'));
 const runtime = read('game-data/current-game.mjs');
+const sharedValidation = read('game-data/current-game-validation.mjs');
 const rulesetRuntime = read('game-data/ruleset.mjs');
 const leaderCatalog = read('card-design/card-review.js');
 const nodeAuthority = read('scripts/current-game-authority.mjs');
@@ -350,17 +351,28 @@ describe('complete current-game authority', () => {
     expect(mystics.progression).toBe('Rites');
   });
 
-  it('loads the complete authority directly in browser and Node runtimes', () => {
+  it('loads the complete authority through one shared structural validator in browser and Node runtimes', () => {
     expect(runtime).toContain("const authority = await loadJson(CURRENT_GAME_AUTHORITY_URL)");
-    expect(runtime).toContain("authority?.schemaVersion !== 2");
-    expect(runtime).toContain('validateMysticsStarterRites(authority)');
+    expect(runtime).toContain("from './current-game-validation.mjs'");
+    expect(runtime).toContain('validateCurrentGameAuthority(authority)');
+    expect(runtime).not.toContain('function validateMysticsStarterRites');
+    expect(runtime).not.toContain('function validateFactionFeatures');
+    expect(runtime).not.toContain('function validateAuthority');
     expect(runtime).not.toContain('Promise.all([');
     expect(runtime).not.toContain('CURRENT_ART_DIRECTION_SOURCE_URL');
     expect(runtime).not.toContain('card_text_overrides');
 
+    expect(sharedValidation).toContain("authority?.schemaVersion !== 2");
+    expect(sharedValidation).toContain('validateVisualPolicy(authority.visualPolicy)');
+    expect(sharedValidation).toContain('validateMysticsStarterRites(authority)');
+    expect(sharedValidation).toContain('validateFactionFeatures(authority)');
+    expect(sharedValidation).toContain('authority.leaders.forEach(validateLeader)');
+
     expect(nodeAuthority).toContain("CURRENT_GAME_AUTHORITY_SOURCE = 'game-data/current-game.json'");
     expect(nodeAuthority).toContain('export async function loadCurrentGameAuthority()');
-    expect(nodeAuthority).toContain('Invalid Mystics starter Rite package');
+    expect(nodeAuthority).toContain('validateSharedCurrentGameAuthority(authority)');
+    expect(nodeAuthority).toContain('validateAuthorityEmbeddedFacts(authority)');
+    expect(nodeAuthority).not.toContain('Invalid Mystics starter Rite package');
     expect(nodeAuthority).not.toContain('readCurrentJsonSource');
     expect(nodeAuthority).not.toContain('resolveCurrentSourcePath');
   });
