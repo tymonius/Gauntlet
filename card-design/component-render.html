@@ -8,6 +8,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>Gauntlet canonical component render</title>
+  <script>
+    (() => {
+      const source = new URL(window.location.href);
+      if (String(source.searchParams.get('kind') || '').toLowerCase() !== 'leader') return;
+      const target = new URL('/card-design/face-render.html', source.origin);
+      target.searchParams.set('kind', 'leader');
+      target.searchParams.set('id', source.searchParams.get('id') || '');
+      target.searchParams.set('side', source.searchParams.get('side') || 'front');
+      for (const key of ['rules', 'inspection', 'version']) {
+        const value = source.searchParams.get(key);
+        if (value) target.searchParams.set(key, value);
+      }
+      window.location.replace(target);
+    })();
+  </script>
   <base href="/card-design/">
   <link rel="preconnect" href="https://use.typekit.net">
   <link rel="preconnect" href="https://p.typekit.net" crossorigin>
