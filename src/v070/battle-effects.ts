@@ -9,6 +9,12 @@ import {
 } from './territories';
 import { retreatV070Position } from './rules';
 import { gainV070MilitaryCommandFromEffect } from './military';
+import {
+  applyV070FootholdBattleEffect,
+  applyV070IllegalOccupationBattleEffect,
+  applyV070ResistanceBattleEffect,
+  v070BattleIsCounterattack,
+} from './counterattack-cards';
 import type {
   V070BattleCardCommitment,
   V070UnsupportedBattleEffect,
@@ -190,6 +196,38 @@ const handlers: V070BattleEffectHandler[] = [
           commitment.instanceId,
         );
       }
+    },
+  },
+  {
+    cardId: 'neutral-foothold',
+    expectedText: 'If you are defending against a Counterattack, gain Advantage. In the Aftermath, if you win, +1 Card.',
+    timing: 'reveal',
+    apply: ({ state, owner, commitment }) => {
+      applyV070FootholdBattleEffect(
+        state,
+        owner,
+        commitment.instanceId,
+      );
+    },
+  },
+  {
+    cardId: 'neutral-illegal-occupation',
+    expectedText: 'Counterattack — their Assets are inactive during this battle; gain Advantage.',
+    timing: 'reveal',
+    apply: ({ state, owner }) => {
+      applyV070IllegalOccupationBattleEffect(state, owner);
+    },
+  },
+  {
+    cardId: 'neutral-resistance',
+    expectedText: 'Counterattack — gain Advantage. In the Aftermath, if you win, bank this card.',
+    timing: 'reveal',
+    apply: ({ state, owner, commitment }) => {
+      applyV070ResistanceBattleEffect(
+        state,
+        owner,
+        commitment.instanceId,
+      );
     },
   },
 ];
@@ -385,10 +423,7 @@ function participant(state: V070GameState, playerId: PlayerId) {
 }
 
 function isCounterattack(state: V070GameState): boolean {
-  const battle = state.battle;
-  if (!battle || battle.lastStand) return false;
-  const territory = state.board.find(item => item.position === battle.contestedPosition);
-  return territory?.controller === battle.attacker;
+  return v070BattleIsCounterattack(state);
 }
 
 function otherActiveBattleCardHasCost(
