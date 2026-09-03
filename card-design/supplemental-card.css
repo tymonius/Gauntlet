@@ -337,14 +337,6 @@
   color: var(--component-accent-ink);
 }
 
-/* The reverse Diplomat face has a longer historical title than the tracker
-   heading rail can carry at the standard display setting. Keep it on one line
-   and reduce only this face enough to preserve the full title. */
-.reference-card[data-component-id="diplomats-reference"][data-reference-side="reverse"] .reference-face-title {
-  font-size: 10.9pt;
-  letter-spacing: 0.018em;
-}
-
 @media screen and (max-width: 760px) {
   .supplemental-review-grid,
   .supplemental-face-grid {
