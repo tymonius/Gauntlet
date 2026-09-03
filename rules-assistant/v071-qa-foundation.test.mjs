@@ -26,6 +26,7 @@ describe("v0.7.1 Rules Arbiter QA foundation", () => {
     expect(workerV071).toContain("candidateSources: retrieval.map(toDiagnosticSource)");
     expect(workerV071).toContain("corpusHash: corpus.authoritySetId ||");
     expect(workerV071).toContain('mode: "source_lookup"');
+    expect(workerV071).toContain("COALESCE(ruling_status_v2, ruling_status) AS ruling_status");
     expect(workerV071.match(/persistSmartInteraction\(env/g)?.length).toBeGreaterThanOrEqual(2);
   });
 
