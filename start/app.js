@@ -115,6 +115,11 @@
   }
 
   function renderChoice() {
+    const focusedLeaderId = document.activeElement instanceof HTMLInputElement
+      && document.activeElement.name === "leader"
+      && el.leaderChoices.contains(document.activeElement)
+      ? document.activeElement.value
+      : "";
     const faction = FACTIONS[state.factionId];
     document.querySelectorAll('input[name="faction"]').forEach(input => {
       input.checked = input.value === state.factionId;
@@ -147,7 +152,6 @@
         state.leaderId = leader.id;
         saveState();
         renderChoice();
-        focusSelectedLeader(leader.id);
       });
 
       const portrait = document.createElement("img");
@@ -177,6 +181,7 @@
       : faction.summary;
     renderStarterPreview(selectedStarterDeck());
     syncPrintAction();
+    if (focusedLeaderId && focusedLeaderId === state.leaderId) focusSelectedLeader(focusedLeaderId);
   }
 
   function focusSelectedLeader(leaderId) {
