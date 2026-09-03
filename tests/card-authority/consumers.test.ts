@@ -24,11 +24,16 @@ describe('canonical physical-face consumers', () => {
     )).toThrow(/renderer behavior parameter orientation/);
   });
 
-  it('rejects legacy renderer routes even when a canonical route is also present', () => {
+  it('rejects executable legacy renderer routes even when a canonical route is also present', () => {
     expect(() => validateConsumerSource(
       'synthetic-consumer.js',
-      "const next = '/card-design/face-render.html?id=card:test'; const old = '/card-design/card-review-render.html?card=test';",
-    )).toThrow(/retired renderer route/);
+      "const next = '/card-design/face-render.html?id=card:test'; frame.src = '/card-design/card-review-render.html?card=test';",
+    )).toThrow(/retired renderer route card-review-render\.html/);
+  });
+
+  it('does not mistake passive filename registries for physical-face consumers', async () => {
+    const discovered = await discoverPhysicalFaceConsumers();
+    expect(discovered.map(item => item.path)).not.toContain('scripts/sync-google-analytics.mjs');
   });
 
   it('rejects the retired homepage showcase shim that escaped the Stage 6 cutover', () => {
