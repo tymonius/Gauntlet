@@ -1,4 +1,4 @@
-import { validateVisualPolicy } from './art-direction.mjs';
+import { validateArtDirectionOverrides, validateVisualPolicy } from './art-direction.mjs';
 
 export function requireCurrentArray(value, label) {
   if (!Array.isArray(value)) {
@@ -122,6 +122,7 @@ export function validateCurrentGameAuthority(authority) {
     throw new Error('Current-game authority is missing identity, gameplay, or provenance.');
   }
   validateVisualPolicy(authority.visualPolicy);
+  validateArtDirectionOverrides(authority.artDirection);
   for (const forbidden of ['sources', 'resolution', 'baseVersion', 'factionOverrides']) {
     if (Object.prototype.hasOwnProperty.call(authority, forbidden)) {
       throw new Error(`Current-game authority still exposes transitional field ${forbidden}.`);
