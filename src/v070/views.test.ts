@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { createV070StarterGame, reduceV070SetupAction } from './engine';
+import { createV070BattleRuntime } from './battle-types';
 import { viewV070GameForPlayer } from './views';
 
 const input = {
@@ -73,6 +74,38 @@ describe('v0.7.0 private player views', () => {
     expect(aView.players.B.territoryCandidates).toBeUndefined();
     expect(bView.players.B.territoryOrder)
       .toEqual([...state.players.B.territoryCandidates].reverse());
+  });
+
+  test('shows shared-timing Aftermath options only to the player making the choice', () => {
+    const state = createV070StarterGame(input);
+    state.battleRuntime = createV070BattleRuntime();
+    state.battleRuntime.stage = 'aftermath';
+    state.battleRuntime.pendingBattleAftermathControlledEffectChoice = {
+      playerId: 'A',
+      candidateSourceInstanceIds: ['choice-one', 'choice-two'],
+      immediateWinner: null,
+    };
+
+    const aView = viewV070GameForPlayer(state, 'A');
+    const bView = viewV070GameForPlayer(state, 'B');
+
+    expect(
+      aView.battleRuntime
+        ?.pendingBattleAftermathControlledEffectChoice,
+    ).toEqual({
+      playerId: 'A',
+      candidateCount: 2,
+      immediateWinner: null,
+      candidateSourceInstanceIds: ['choice-one', 'choice-two'],
+    });
+    expect(
+      bView.battleRuntime
+        ?.pendingBattleAftermathControlledEffectChoice,
+    ).toEqual({
+      playerId: 'A',
+      candidateCount: 2,
+      immediateWinner: null,
+    });
   });
 
   test('filters private event payloads to the intended player', () => {
