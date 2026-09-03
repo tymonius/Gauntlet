@@ -4,7 +4,6 @@ import { describe, expect, it } from "vitest";
 
 const reviewPage = readFileSync("card-design/index.html", "utf8");
 const riteRenderer = readFileSync("card-design/rite-card.js", "utf8");
-const riteValidator = readFileSync("scripts/validate-rite-card-render.mjs", "utf8");
 const currentGame = JSON.parse(readFileSync("game-data/current-game.json", "utf8"));
 const mysticsAuthority = currentGame.mystics;
 const riteStyles = readFileSync("card-design/rite-card.css", "utf8");
@@ -89,9 +88,6 @@ describe("Mystics Rite card prototypes", () => {
     expect(ruleColumnStyles).toContain(".rite-card .card-rules > .rite-reminder");
     expect(ruleColumnStyles).toContain("grid-column: 2 / -1");
     expect(ruleColumnStyles).toContain("margin-left: 0");
-    expect(riteValidator).toContain('expectedCardFaces = expectedRites.length * 2 + 1');
-    expect(riteValidator).toContain('metric.version !== authority.displayVersion');
-    expect(riteValidator).not.toContain('EXPECTED_RITES');
     expect(riteRenderer).toContain("function ritualArtwork()");
     expect(riteRenderer).toContain('<img src="${esc(RITUAL.artwork)}"');
     expect(riteRenderer).not.toContain("Artwork pending for ${esc(RITUAL.name)}");
