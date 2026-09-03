@@ -529,6 +529,121 @@ describe('v0.7.0 core battle-effect modifiers', () => {
     expect(state.players.A.zones.graveyard).toContain(wager);
   });
 
+  test('Circle of Bones becomes an Overlay on the contested Territory before battle cards clear', () => {
+    let state = startBattle();
+    const contestedPosition = state.battle!.contestedPosition;
+    const contestedTerritoryInstanceId =
+      state.board.find(space => space.position === contestedPosition)!
+        .territoryInstanceId;
+    const circle = injectHandCard(
+      state,
+      'A',
+      'mystics-circle-of-bones',
+      'circle-overlay',
+    );
+
+    state = revealGambits(state, circle);
+    expect(state.battleRuntime?.unsupportedEffects).toEqual([]);
+    expect(state.battleRuntime?.battleCardAftermathOverlayPlacements)
+      .toContainEqual({
+        owner: 'A',
+        sourceInstanceId: circle,
+        sourceCardId: 'mystics-circle-of-bones',
+        condition: 'always',
+      });
+
+    state = toOutcome(state);
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice',
+      playerId: 'A',
+      values: [6],
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'submit_battle_dice',
+      playerId: 'B',
+      values: [1],
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'complete_aftermath',
+      playerId: 'A',
+    });
+
+    expect(state.overlays).toContainEqual(
+      expect.objectContaining({
+        instanceId: circle,
+        owner: 'A',
+        territoryInstanceId: contestedTerritoryInstanceId,
+      }),
+    );
+    expect(state.players.A.zones.graveyard).not.toContain(circle);
+    expect(state.players.A.zones.discardPile).not.toContain(circle);
+  });
+
+  test('Battlefield Plunder becomes an Overlay only if its owner wins', () => {
+    let winState = startBattle();
+    const winPosition = winState.battle!.contestedPosition;
+    const plunderWin = injectHandCard(
+      winState,
+      'A',
+      'neutral-battlefield-plunder',
+      'plunder-win',
+    );
+
+    winState = revealGambits(winState, plunderWin);
+    winState = toOutcome(winState);
+    winState = reduceV070BattleAction(winState, {
+      type: 'submit_battle_dice',
+      playerId: 'A',
+      values: [6],
+    });
+    winState = reduceV070BattleAction(winState, {
+      type: 'submit_battle_dice',
+      playerId: 'B',
+      values: [1],
+    });
+    winState = reduceV070BattleAction(winState, {
+      type: 'complete_aftermath',
+      playerId: 'A',
+    });
+
+    expect(winState.overlays.some(overlay =>
+      overlay.instanceId === plunderWin
+      && winState.board.find(space => space.position === winPosition)
+        ?.territoryInstanceId === overlay.territoryInstanceId
+    )).toBe(true);
+    expect(winState.players.A.zones.graveyard).not.toContain(plunderWin);
+
+    let lossState = startBattle();
+    const plunderLoss = injectHandCard(
+      lossState,
+      'A',
+      'neutral-battlefield-plunder',
+      'plunder-loss',
+    );
+
+    lossState = revealGambits(lossState, plunderLoss);
+    lossState = toOutcome(lossState);
+    lossState = reduceV070BattleAction(lossState, {
+      type: 'submit_battle_dice',
+      playerId: 'A',
+      values: [1],
+    });
+    lossState = reduceV070BattleAction(lossState, {
+      type: 'submit_battle_dice',
+      playerId: 'B',
+      values: [6],
+    });
+    lossState = reduceV070BattleAction(lossState, {
+      type: 'complete_aftermath',
+      playerId: 'A',
+    });
+
+    expect(lossState.overlays.some(overlay =>
+      overlay.instanceId === plunderLoss
+    )).toBe(false);
+    expect(lossState.players.A.zones.graveyard).toContain(plunderLoss);
+  });
+
   test('Pathfinders gains +1 only when the contested Territory has an active printed effect', () => {
     let active = startBattle('territory-high-ground');
     const activePathfinders = injectHandCard(
