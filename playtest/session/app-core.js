@@ -271,9 +271,10 @@
   function showError(title, message) {
     setLoading(false);
     el.sessionApp.hidden = true;
-    el.errorPanel.hidden = false;
     el.errorTitle.textContent = title;
     el.errorMessage.textContent = message;
+    el.errorPanel.hidden = false;
+    el.errorPanel.focus({ preventScroll: true });
     el.sheetSerial.textContent = "Unavailable";
     el.sessionStatus.textContent = "Use printed serial";
   }

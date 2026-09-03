@@ -735,9 +735,10 @@
   function showError(title, message) {
     el.sessionApp.hidden = true;
     el.createPanel.hidden = true;
-    el.errorPanel.hidden = false;
     el.errorTitle.textContent = title;
     el.errorMessage.textContent = message;
+    el.errorPanel.hidden = false;
+    el.errorPanel.focus({ preventScroll: true });
   }
 
   function setStatus(element, message, kind = "") {
