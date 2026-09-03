@@ -135,7 +135,8 @@ function normalizeTerritory(territory) {
 
 function normalizeLeader(leader) {
   const faction = slugify(leader.faction || 'neutral');
-  const rendererUrl = buildComponentRendererUrl('leader', leader.id);
+  const rendererId = `${faction}-${slugify(leader.name)}`;
+  const rendererUrl = buildComponentRendererUrl('leader', rendererId);
   return {
     id: `leader-${faction}-${leader.id}`,
     type: 'leader',
