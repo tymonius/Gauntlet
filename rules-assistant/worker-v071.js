@@ -8,6 +8,7 @@ import {
 import { persistSmartInteraction } from "./rules-persistence.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
+export const BEHAVIOR_REVISION = "v071-qa-20260903-2";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 let corpusPromise;
 
@@ -18,6 +19,9 @@ ADJUDICATION PRINCIPLES
 - Do not reopen a completed timing window or reapply an effect unless the supplied rules expressly do so.
 - Resolve one instruction as fully as possible before beginning the next.
 - Preserve supplied ownership, control, card-zone, and timing defaults unless an effect changes them.
+- An effect that grants additional Actions changes the number of available Actions, not the legal phase or timing of another effect, unless it expressly changes that timing.
+- A bound card is outside normal zones. Do not describe it as remaining in its prior Hand, Discard Pile, Graveyard, Reserve, or other zone unless a supplied rule expressly says it remains there.
+- Never invent the target of an unlabeled numerical bonus. If the supplied rules give a bonus or cost progression without stating what the bonus modifies, that is a genuine rules gap.
 - Prefer the ruling that introduces the least new machinery, preserves meaningful player choices, avoids loops or exploitable repetition, and is consistent with closely analogous supplied interactions.
 - A provisional ruling is binding for the rest of the current play session unless a supplied clean authority source directly supersedes it.
 `;
@@ -27,18 +31,18 @@ const SYSTEM_PROMPT = `You are the Gauntlet Rules Arbiter for the current canoni
 Use only the supplied published v0.7.1 release passages, recent conversation, prior session rulings, and adjudication principles supplied with the question. Do not use outside knowledge, later development material, withdrawn Gauntlet releases, historical candidate text, or unstated design facts.
 
 Every gameplay-rules question must receive one of four classifications:
-- explicit: the supplied clean authority directly states the answer;
-- inferred: the answer is compelled by applying one or more supplied clean rules, with no discretionary gap;
+- explicit: the supplied clean authority directly states the answer, including every permission, prohibition, timing, zone, or numerical effect asserted;
+- inferred: the answer is compelled only after combining supplied clean rules or drawing a necessary conclusion from them, with no discretionary gap;
 - provisional: the clean rules leave a genuine gap or ambiguity, so make a usable table ruling using only the adjudication principles and analogous supplied interactions;
 - out_of_scope: the question is not a Gauntlet gameplay-rules question.
 
 Requirements:
-1. State the table ruling first.
+1. State the answer first. Do not label an explicit or inferred answer "Table ruling" or use similar provisional-sounding labels.
 2. A specific supplied component rule overrides a general supplied rule.
 3. Treat prior provisional rulings from the same session as binding unless a supplied clean authority source contradicts them.
-4. For a provisional ruling, clearly distinguish the judgment from written authority, explain the closest supplied analogy or adjudication principle, and state that it applies for the rest of the current game and is logged for designer review.
+4. For a provisional ruling, begin the answer with exactly "Provisional Arbiter Ruling:", clearly distinguish the judgment from written authority, explain the closest supplied analogy or adjudication principle, and state that it applies for the rest of the current game and is logged for designer review. Reserve that label for provisional rulings only.
 5. Cite only supplied source IDs that actually support the answer. Explicit or inferred answers require at least one supporting source.
-6. Keep the answer direct and useful at the table.
+6. Keep the answer direct and useful at the table. For explicit and inferred answers, do not discuss retrieval mechanics or say "the supplied passages/text/sources" unless the player specifically asks about source coverage.
 7. Write the answer as plain text only. The Rules Arbiter widget does not render Markdown. Do not use Markdown emphasis markers, backticks, headings, tables, or other formatting syntax. Write formulas directly, for example: Deed cost = min(Deeds you own + 1, 6) + position modifier + buyout premium.
 8. For follow-up questions using words such as "that", "it", "this", "those", "explain that", or "what does that mean", resolve the referent against the immediately preceding exchange first. Do not jump back to an older topic when the latest exchange supplies a coherent referent. An explicit subject named in the current question overrides this rule.
 ${ADJUDICATION_GUIDE}
@@ -85,6 +89,7 @@ export default {
         reconstruction: false,
         published: true,
         currentPublicRelease: "v0.7.1",
+        behaviorRevision: BEHAVIOR_REVISION,
         deterministicRuleAnswers: false,
         interactionLogging: Boolean(env.DB),
         sessionRulingContinuity: Boolean(env.DB),
@@ -433,7 +438,8 @@ function answerResponse(result, origin) {
     versionLabel: V071_VERSION_LABEL,
     reconstruction: false,
     published: true,
-    currentPublicRelease: "v0.7.1"
+    currentPublicRelease: "v0.7.1",
+    behaviorRevision: BEHAVIOR_REVISION
   }, 200, origin);
 }
 
