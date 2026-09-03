@@ -107,11 +107,11 @@ try {
     method: "POST",
     body: {
       displayName: "Alice",
-      faction: "diplomats",
-      leader: "ambassador",
+      faction: "mystics",
+      leader: "alchemist",
       creationSource: "e2e",
       selectionSource: "standalone-onboarding",
-      selectionReason: "Negotiation and political leverage sounded most interesting.",
+      selectionReason: "The Alchemist Rite package sounded most interesting.",
       playMode: "tts"
     }
   }), 201);
@@ -120,7 +120,8 @@ try {
   assert.match(created.joinToken, /^[A-Za-z0-9_-]{24,96}$/);
   assert.match(created.participantToken, /^[A-Za-z0-9_-]{24,96}$/);
   assert.equal(created.seatIndex, 1);
-  assert.equal(created.leader, "Ambassador");
+  assert.equal(created.leader, "Alchemist");
+  assert.deepEqual(created.selectedRites, ["echoes", "blood", "equivalence"]);
   assert.equal(created.playMode, "tts");
   assert.equal(created.joinUrl, `${origin}/playtest/tracked/?code=${encodeURIComponent(created.joinToken)}`);
   assert.equal(created.reviewUrl, `${created.joinUrl}&host=${encodeURIComponent(created.hostKey)}`);
@@ -131,6 +132,7 @@ try {
   assert.equal(initial.playMode, "tts");
   assert.equal(initial.playerCount, 1);
   assert.equal(initial.players[0].displayName, "Alice");
+  assert.deepEqual(initial.players[0].selectedRites, ["echoes", "blood", "equivalence"]);
   assert.equal(initial.players[0].responseSubmitted, false);
   assert.equal(initial.resultSubmitted, false);
   assert.equal("participantToken" in initial.players[0], false);
@@ -146,6 +148,7 @@ try {
   }), 201);
   assert.equal(playerTwo.seatIndex, 2);
   assert.equal(playerTwo.leader, "General");
+  assert.deepEqual(playerTwo.selectedRites, []);
   assert.equal(playerTwo.session.lifecycleState, "ready");
 
   const thirdPlayer = await json(await call(`/api/tracked-games/${created.joinToken}/join`, {
@@ -252,7 +255,7 @@ try {
         agencyAfterDecided: "some",
         decisiveCause: "A late counterattack changed which routes still felt plausible.",
         playAgain: true,
-        comments: "Terms created the most memorable decisions."
+        comments: "The Rite sequence created the most memorable decisions."
       }
     })
   }), 201);
@@ -262,7 +265,7 @@ try {
 
   const publicAfterResponse = await json(await call(`/api/tracked-games/${created.joinToken}`), 200);
   assert.equal(publicAfterResponse.responseCount, 1);
-  assert.equal(JSON.stringify(publicAfterResponse).includes("Terms created"), false);
+  assert.equal(JSON.stringify(publicAfterResponse).includes("Rite sequence"), false);
 
   const wrongReview = await json(await call(`/api/tracked-games/${created.joinToken}/review?host=wrong`), 403);
   assert.match(wrongReview.error, /review key/i);
@@ -270,8 +273,9 @@ try {
   const partialReview = await json(await call(`/api/tracked-games/${created.joinToken}/review?host=${encodeURIComponent(created.hostKey)}`), 200);
   assert.equal(partialReview.result.durationMinutes, 74);
   assert.equal(partialReview.responses.length, 1);
-  assert.equal(partialReview.responses[0].factionInterest, "Negotiation and political leverage sounded most interesting.");
-  assert.equal(partialReview.responses[0].comments, "Terms created the most memorable decisions.");
+  assert.equal(partialReview.responses[0].factionInterest, "The Alchemist Rite package sounded most interesting.");
+  assert.deepEqual(partialReview.responses[0].selectedRites, ["echoes", "blood", "equivalence"]);
+  assert.equal(partialReview.responses[0].comments, "The Rite sequence created the most memorable decisions.");
   assert.equal(partialReview.responses[0].feltDecidedWhen, "late");
   assert.equal(partialReview.responses[0].agencyAfterDecided, "some");
   assert.equal(partialReview.events.some((event) =>
@@ -329,6 +333,8 @@ try {
   assert.equal(finalReview.session.status, "closed");
   assert.equal(finalReview.responses.length, 2);
   assert.deepEqual(finalReview.responses.map((response) => response.displayName), ["Alice", "Ben"]);
+  assert.deepEqual(finalReview.responses[0].selectedRites, ["echoes", "blood", "equivalence"]);
+  assert.deepEqual(finalReview.responses[1].selectedRites, []);
   assert.equal(finalReview.events.some((event) => event.eventType === "tracked_session_submitted"), true);
 
   console.log("Validated v0.7.1 public tracked creation -> two player seats -> authenticated milestones -> player-attributed Arbiter linkage -> shared result -> two private responses -> automatic closure -> private review/export data.");
