@@ -61,6 +61,13 @@ export interface BattleParticipantState {
   retreated: boolean;
 }
 
+export interface BattleCardTarget {
+  sourceCardId: CardID;
+  sourceOwner: PlayerID;
+  targetCardId: CardID;
+  targetOwner: PlayerID;
+}
+
 export interface BattleCardTargetOption {
   sourceCardId: CardID;
   sourceOwner: PlayerID;

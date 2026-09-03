@@ -1,5 +1,5 @@
 import type { FactionResourceKey } from './resources';
-import type { GamePhase } from './game';
+import type { GamePhase } from './phase';
 
 export type LeaderAbilityTiming =
   | 'action_opportunity'
