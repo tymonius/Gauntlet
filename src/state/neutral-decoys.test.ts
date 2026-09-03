@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getCardPlayRule } from '../cards';
-import type { CardID, GameState } from '../types';
+import type { CardID, GameState } from '../types/v06';
 import { applyGameAction } from './apply-neutral';
 import {
   captureDecoysAssetSnapshot,

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { GameState, PlayerID } from '../types';
+import type { GameState, PlayerID } from '../types/v06';
 import { applyGameAction } from './apply-neutral';
 import { ENTRENCHMENT } from './neutral-entrenchment';
 import { initializeV06Game, type V06GameSetupInput } from './v06-setup';

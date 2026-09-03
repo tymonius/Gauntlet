@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getCardPlayRule } from '../cards';
-import type { BattleParticipantState, BattlePlayedCard, GameState, PlayerID } from '../types';
+import type { BattleParticipantState, BattlePlayedCard, GameState, PlayerID } from '../types/v06';
 import { applyGameAction } from './apply-neutral';
 import { initializeGame } from './initialize';
 import { bankedAssetUseAllowed } from './banked-assets';
