@@ -13,6 +13,7 @@ const interCaseDelayMs = Math.max(0, Number(process.env.GAUNTLET_RULES_QA_INTER_
 const retryableStatuses = new Set([429, 502, 503, 504]);
 
 const benchmark = JSON.parse(readFileSync(benchmarkPath, "utf8"));
+const benchmarkCases = caseLimit ? benchmark.cases.slice(0, caseLimit) : benchmark.cases;
 const startedAt = new Date().toISOString();
 const runStamp = Date.now().toString(36);
 
@@ -145,7 +146,7 @@ async function requestAttempt(body) {
 }
 
 async function runInfrastructurePreflight() {
-  const item = benchmark.cases[0];
+  const item = benchmarkCases[0];
   const body = {
     question: item.question,
     history: Array.isArray(item.history) ? item.history : [],
@@ -203,7 +204,7 @@ async function postCase(item, index) {
     if (attempts < maxAttempts) {
       const delayMs = 1200 * attempts;
       console.log(
-        "RETRY " + String(index + 1).padStart(3, "0") + "/" + benchmark.cases.length
+        "RETRY " + String(index + 1).padStart(3, "0") + "/" + benchmarkCases.length
         + " " + item.id + " after "
         + (status ? "HTTP " + status : (last.error?.name || "request error"))
         + " (" + delayMs + " ms)"
@@ -297,7 +298,7 @@ if (infrastructureFailure) {
     interCaseDelayMs,
     infrastructureFailure,
     summary: {
-      total: benchmark.cases.length,
+      total: benchmarkCases.length,
       attempted: 0,
       passed: 0,
       failed: 0,
@@ -323,7 +324,7 @@ if (infrastructureFailure) {
   process.exit(1);
 }
 
-const results = await runPool(benchmark.cases);
+const results = await runPool(benchmarkCases);
 const failed = results.filter((item) => item.failures.length);
 const warned = results.filter((item) => item.warnings.length);
 const classifications = {};
@@ -335,6 +336,8 @@ for (const item of results) {
 const report = {
   schema: "gauntlet.rules-arbiter-live-qa.v1",
   rulesVersion: benchmark.rulesVersion,
+  benchmarkCaseCount: benchmark.cases.length,
+  executedCaseCount: benchmarkCases.length,
   endpoint,
   startedAt,
   completedAt: new Date().toISOString(),
