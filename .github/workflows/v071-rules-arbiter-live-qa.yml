@@ -39,11 +39,17 @@ jobs:
       - name: Wait for deployed Rules Arbiter revision
         if: github.event_name != 'pull_request'
         env:
-          EXPECTED_BEHAVIOR_REVISION: v071-qa-20260903-2
           RULES_HEALTH_ENDPOINT: https://gauntlet-rules-assistant.tymon-scott.workers.dev/health
         run: |
           node <<'NODE'
-          const expected = process.env.EXPECTED_BEHAVIOR_REVISION;
+          const { readFileSync } = require("node:fs");
+          const workerSource = readFileSync("rules-assistant/worker-v071.js", "utf8");
+          const revisionMatch = workerSource.match(/export const BEHAVIOR_REVISION = "([^"]+)"/);
+          if (!revisionMatch) {
+            console.error("Could not resolve BEHAVIOR_REVISION from rules-assistant/worker-v071.js.");
+            process.exit(1);
+          }
+          const expected = revisionMatch[1];
           const endpoint = process.env.RULES_HEALTH_ENDPOINT;
           const attempts = 40;
           const delayMs = 15000;
