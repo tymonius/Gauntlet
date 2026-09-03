@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { intelligenceCardDefinitions, intelligenceMissionCardIds } from '../cards';
+import { intelligenceCardDefinitions, intelligenceMissionCardIds } from '../cards/intelligence';
 import { buildGuidedOptions } from '../dev/guided-options';
 import { toPrivateGameView, toPublicGameView } from './views';
 import { applyGameAction } from './apply-intelligence';
