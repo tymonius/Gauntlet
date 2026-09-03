@@ -38,7 +38,44 @@
   }
 
   function handleKeydown(event) {
+    if (event.key === "Tab" && open) {
+      trapModalFocus(event);
+      return;
+    }
     if (event.key === "Escape" && open) closePreview();
+  }
+
+  function trapModalFocus(event) {
+    if (!preview) return;
+
+    const focusable = Array.from(preview.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), iframe, [contenteditable="true"], [tabindex]:not([tabindex="-1"])',
+    )).filter(element => element instanceof HTMLElement && !element.hidden && element.getClientRects().length > 0);
+
+    if (!focusable.length) {
+      event.preventDefault();
+      preview.focus?.({ preventScroll: true });
+      return;
+    }
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const active = document.activeElement;
+
+    if (!preview.contains(active)) {
+      event.preventDefault();
+      (event.shiftKey ? last : first).focus({ preventScroll: true });
+      return;
+    }
+    if (event.shiftKey && active === first) {
+      event.preventDefault();
+      last.focus({ preventScroll: true });
+      return;
+    }
+    if (!event.shiftKey && active === last) {
+      event.preventDefault();
+      first.focus({ preventScroll: true });
+    }
   }
 
   function openPreview() {
