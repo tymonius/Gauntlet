@@ -119,7 +119,11 @@ function legacyRoute(spec) {
 
   if (spec.template === 'standard-back') {
     base.set('faction', spec.content.faction);
-    return { path: `/card-design/card-back-render.html?${base}`, selector: '.gauntlet-card-back' };
+    return {
+      path: `/card-design/card-back-render.html?${base}`,
+      selector: '.gauntlet-card-back',
+      readiness: 'card-back',
+    };
   }
 
   return null;
@@ -139,6 +143,24 @@ async function waitForRender(page) {
     error: document.body.dataset.renderErrorMessage || document.body.dataset.renderError || '',
   }));
   if (state.ready !== 'true') throw new Error(`Render failed: ${state.error || 'unknown error'}`);
+}
+
+async function waitForLegacyRender(page, legacy) {
+  if (legacy.readiness === 'card-back') {
+    await page.waitForFunction(() => {
+      const back = document.querySelector('.gauntlet-card-back');
+      const pattern = back?.querySelector('.gauntlet-card-back__pattern');
+      return Boolean(
+        back
+        && pattern
+        && pattern.complete
+        && pattern.naturalWidth > 0
+        && pattern.naturalHeight > 0
+      );
+    }, null, { timeout: 30000 });
+    return;
+  }
+  await waitForRender(page);
 }
 
 async function metrics(locator) {
@@ -262,7 +284,7 @@ async function main() {
         const cleanMetrics = await metrics(cleanRoot);
 
         await legacyPage.goto(legacyUrl, { waitUntil: 'load' });
-        await waitForRender(legacyPage);
+        await waitForLegacyRender(legacyPage, legacy);
         const legacyRoot = legacyPage.locator(legacy.selector).first();
         await legacyRoot.waitFor();
         const legacyMetrics = await metrics(legacyRoot);
