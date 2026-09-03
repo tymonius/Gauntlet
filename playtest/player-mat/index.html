@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <header class="screen-header screen-only">
     <div>
       <p class="eyebrow">Gauntlet v0.7.1 play aid</p>
@@ -19,7 +20,7 @@
     <button type="button" onclick="window.print()">Print / Save PDF</button>
   </header>
 
-  <main class="mat-shell">
+  <main id="main-content" tabindex="-1" class="mat-shell">
     <section class="player-mat" aria-labelledby="mat-title">
       <header class="mat-header">
         <div>
