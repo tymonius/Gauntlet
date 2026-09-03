@@ -119,6 +119,7 @@
       side: "front",
       backPolicy: "standardBack",
       componentId: `leader:${factionId}:${canonicalLeader.id}`,
+      faceId: `leader:${factionId}-${canonicalLeader.id}`,
     });
   }
 
@@ -193,12 +194,16 @@
     return `<article class="${escapeHtml(className)}" data-production-component-kind="${escapeHtml(kind)}" data-production-component-id="${escapeHtml(componentId)}" data-production-component-render-id="${escapeHtml(id)}" data-production-component-side="${escapeHtml(side)}" data-production-back-policy="${escapeHtml(backPolicy)}" data-production-orientation="${escapeHtml(orientation)}" aria-label="${escapeHtml(label)} production render">${content}</article>`;
   }
 
+  function faceRenderSource(faceId) {
+    return `/card-design/face-render.html?id=${encodeURIComponent(faceId)}`;
+  }
+
   function productionCardSource(cardId) {
-    return `/card-design/card-review-render.html?card=${encodeURIComponent(cardId)}&fit=production&printArtwork=normalized&rules=${encodeURIComponent(selectedRulesetMode())}`;
+    return faceRenderSource(`card:${cardId}`);
   }
 
   function productionTerritorySource(territoryId) {
-    return `/card-design/territory-review-render.html?territory=${encodeURIComponent(territoryId)}&rules=${encodeURIComponent(selectedRulesetMode())}`;
+    return faceRenderSource(`territory:${territoryId}`);
   }
 
   function productionCardHtml(card) {
@@ -264,16 +269,21 @@
       || (new URLSearchParams(window.location.search).get("rules") === "candidate" ? "candidate" : "released");
   }
 
-  function productionFrameSource(options) {
-    if (options.kind === "external") return options.src;
-    const orientation = options.orientation === "landscape" ? "&orientation=landscape" : "";
-    return `/card-design/component-render.html?kind=${encodeURIComponent(options.kind)}&id=${encodeURIComponent(options.id)}&side=${encodeURIComponent(options.side || "front")}${orientation}&rules=${encodeURIComponent(selectedRulesetMode())}`;
+  function productionFaceId(options) {
+    if (options.faceId) return String(options.faceId);
+    const componentId = String(options.componentId || options.id || "").trim();
+    if (!componentId) throw new Error("Production component has no canonical face identity.");
+    return `component:${componentId}:${options.side || "front"}`;
   }
 
-  function productionBackSource(faction, rotation = null) {
+  function productionFrameSource(options) {
+    if (options.kind === "external") return options.src;
+    return faceRenderSource(productionFaceId(options));
+  }
+
+  function productionBackSource(faction) {
     const safeFaction = String(faction || "intelligence").trim().toLowerCase() || "intelligence";
-    const rotationParam = rotation == null ? "" : `&rotation=${encodeURIComponent(String(rotation))}`;
-    return `/card-design/card-back-render.html?faction=${encodeURIComponent(safeFaction)}${rotationParam}`;
+    return faceRenderSource(`back:${safeFaction}`);
   }
 
   function makeProductionComponent(documentNode, options) {
@@ -499,7 +509,7 @@
     frame.className = "production-back-frame";
     frame.dataset.productionRenderFrame = "true";
     frame.dataset.productionRenderKind = "back";
-    frame.src = productionBackSource(faction, 180);
+    frame.src = productionBackSource(faction);
     frame.title = `${faction} production deck-card back`;
     frame.setAttribute("scrolling", "no");
     frame.setAttribute("loading", "eager");
