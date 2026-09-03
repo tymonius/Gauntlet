@@ -98,10 +98,11 @@ function explicitlyRequestsReleasedRuleset() {
   return requestedRulesetMode() === 'released';
 }
 
-function bridgedProductionGame() {
+function bridgedRenderGame() {
   if (typeof window === 'undefined' || window === window.top) return null;
   try {
-    const bridge = window.top.__gauntletProductionAuthorityBridge;
+    const bridge = window.top.__gauntletFaceAuthorityBridge
+      || window.top.__gauntletProductionAuthorityBridge;
     const runtime = bridge?.runtime;
     if (!runtime?.cards?.length || !runtime?.territories?.length || !runtime?.componentContract) return null;
 
@@ -114,7 +115,7 @@ function bridgedProductionGame() {
 }
 
 async function resolveRequestedGame() {
-  const bridged = bridgedProductionGame();
+  const bridged = bridgedRenderGame();
   if (bridged) return bridged;
   if (!explicitlyRequestsReleasedRuleset()) return resolveCurrentGame();
   const { loadPublishedGame } = await import('./ruleset.mjs');
