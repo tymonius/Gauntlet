@@ -245,6 +245,13 @@ describe('digital engine boundary', () => {
     expect(offenders).toEqual([]);
   });
 
+  it('keeps the explicit legacy card aggregate free of initialization side effects', () => {
+    const source = readFileSync('src/cards/v06.ts', 'utf8');
+    expect(source).not.toMatch(/^\s*import\b/m);
+    expect(source).not.toMatch(/\.(?:push|pop|shift|unshift|splice|sort|reverse)\s*\(/);
+    expect(source).not.toMatch(/^\s*(?:if|for|while|do)\b/m);
+  });
+
   it('keeps legacy card definitions independent from state/effect/dev runtime layers', () => {
     const offenders: string[] = [];
     const forbiddenDirectories = ['state', 'effects', 'dev'];
