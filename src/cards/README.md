@@ -2,7 +2,7 @@
 
 This directory contains card-definition and playability helpers for the earlier playable v0.6 digital architecture.
 
-The explicit legacy aggregate API is `src/cards/v06.ts`. The former generic `src/cards/index.ts` compatibility barrel has been retired; legacy consumers must choose the explicit v0.6 aggregate or, where practical, import the specific card module they actually need.
+The explicit legacy aggregate API is `src/cards/v06.ts`. The former generic `src/cards/index.ts` compatibility barrel has been retired; legacy consumers must choose the explicit v0.6 aggregate or, where practical, import the specific card module they actually need. The aggregate is a pure re-export surface; temporary Neutral audit containment is encoded directly in the playability table rather than applied through import-time mutation.
 
 Current promoted gameplay implementation under `src/v070/` does not depend on this directory.
 

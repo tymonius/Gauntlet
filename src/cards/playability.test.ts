@@ -24,6 +24,17 @@ describe('card playability rules', () => {
     expect(cardCanBePlayedAt('card-valor', 'action', 'hand')).toBe(false);
   });
 
+  it('encodes Neutral audit containment directly in the playability table', () => {
+    expect(getCardPlayRule('neutral-arcane-knowledge')).toMatchObject({
+      timings: ['action'],
+      allowedOrigins: ['hand'],
+      defaultDestinationByOrigin: { hand: 'discard' },
+      requiresTarget: true,
+    });
+    expect(getCardPlayRule('neutral-assimilation')?.defaultDestinationByOrigin.hand).toBe('asset_bank');
+    expect(getCardPlayRule('neutral-armistice')?.defaultDestinationByOrigin.hand).toBe('asset_bank');
+  });
+
   it('permits unknown cards until their rules are encoded', () => {
     expect(cardCanBePlayedAt('card-not-yet-modeled', 'battle_hand_commit', 'hand')).toBe(true);
   });
