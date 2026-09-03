@@ -110,9 +110,10 @@ function legacyRoute(spec) {
   }
 
   if (spec.template === 'ledger' || spec.template === 'deed') {
-    base.set('kind', spec.template);
+    base.set('kind', 'supplemental');
     base.set('id', spec.content.component.id);
     base.set('side', spec.side === 'reverse' ? 'reverse' : 'front');
+    if (spec.orientation === 'landscape') base.set('orientation', 'landscape');
     return { path: `/card-design/component-render.html?${base}`, selector: '#renderTarget > *' };
   }
 
@@ -246,73 +247,86 @@ async function main() {
     for (const spec of ready) {
       const legacy = legacyRoute(spec);
       if (!legacy) {
-        failures.push({ id: spec.id, reason: `No legacy parity route for template ${spec.template}.` });
+        failures.push({ id: spec.id, template: spec.template, reason: `No legacy parity route for template ${spec.template}.` });
         continue;
       }
 
       const cleanUrl = `${baseUrl}/card-design/face-render.html?id=${encodeURIComponent(spec.id)}`;
-      await cleanPage.goto(cleanUrl, { waitUntil: 'load' });
-      await waitForRender(cleanPage);
-      const cleanRoot = cleanPage.locator('#renderTarget > *').first();
-      await cleanRoot.waitFor();
-      const cleanMetrics = await metrics(cleanRoot);
-
       const legacyUrl = `${baseUrl}${legacy.path}`;
-      await legacyPage.goto(legacyUrl, { waitUntil: 'load' });
-      await waitForRender(legacyPage);
-      const legacyRoot = legacyPage.locator(legacy.selector).first();
-      await legacyRoot.waitFor();
-      const legacyMetrics = await metrics(legacyRoot);
 
-      const expectedWidth = spec.surface.widthCssPx;
-      const expectedHeight = spec.surface.heightCssPx;
-      const geometryOkay = Math.abs(cleanMetrics.width - expectedWidth) <= 0.25
-        && Math.abs(cleanMetrics.height - expectedHeight) <= 0.25
-        && Math.abs(legacyMetrics.width - expectedWidth) <= 0.25
-        && Math.abs(legacyMetrics.height - expectedHeight) <= 0.25;
+      try {
+        await cleanPage.goto(cleanUrl, { waitUntil: 'load' });
+        await waitForRender(cleanPage);
+        const cleanRoot = cleanPage.locator('#renderTarget > *').first();
+        await cleanRoot.waitFor();
+        const cleanMetrics = await metrics(cleanRoot);
 
-      const filename = safeFilename(spec.id);
-      const cleanBuffer = await cleanRoot.screenshot({
-        path: join(OUTPUT, 'clean', `${filename}.png`),
-        omitBackground: false,
-      });
-      const legacyBuffer = await legacyRoot.screenshot({
-        path: join(OUTPUT, 'legacy', `${filename}.png`),
-        omitBackground: false,
-      });
-      const diff = await pixelDiff(cleanBuffer, legacyBuffer);
+        await legacyPage.goto(legacyUrl, { waitUntil: 'load' });
+        await waitForRender(legacyPage);
+        const legacyRoot = legacyPage.locator(legacy.selector).first();
+        await legacyRoot.waitFor();
+        const legacyMetrics = await metrics(legacyRoot);
 
-      const textParity = cleanMetrics.text === legacyMetrics.text;
-      const imageParity = JSON.stringify(cleanMetrics.imagePaths) === JSON.stringify(legacyMetrics.imagePaths);
-      const cropParity = ['artObjectPosition', 'artTransform', 'artFocusX', 'artFocusY', 'artZoom']
-        .every(field => cleanMetrics[field] === legacyMetrics[field]);
-      const passes = geometryOkay
-        && cleanMetrics.imageLoaded
-        && legacyMetrics.imageLoaded
-        && !cleanMetrics.fitWarning
-        && !legacyMetrics.fitWarning
-        && textParity
-        && imageParity
-        && cropParity
-        && diff.comparable
-        && diff.changedPixelRatio <= MAX_CHANGED_PIXEL_RATIO;
+        const expectedWidth = spec.surface.widthCssPx;
+        const expectedHeight = spec.surface.heightCssPx;
+        const geometryOkay = Math.abs(cleanMetrics.width - expectedWidth) <= 0.25
+          && Math.abs(cleanMetrics.height - expectedHeight) <= 0.25
+          && Math.abs(legacyMetrics.width - expectedWidth) <= 0.25
+          && Math.abs(legacyMetrics.height - expectedHeight) <= 0.25;
 
-      const comparison = {
-        id: spec.id,
-        template: spec.template,
-        cleanUrl,
-        legacyUrl,
-        passes,
-        geometryOkay,
-        textParity,
-        imageParity,
-        cropParity,
-        pixelDiff: diff,
-        clean: cleanMetrics,
-        legacy: legacyMetrics,
-      };
-      comparisons.push(comparison);
-      if (!passes) failures.push(comparison);
+        const filename = safeFilename(spec.id);
+        const cleanBuffer = await cleanRoot.screenshot({
+          path: join(OUTPUT, 'clean', `${filename}.png`),
+          omitBackground: false,
+        });
+        const legacyBuffer = await legacyRoot.screenshot({
+          path: join(OUTPUT, 'legacy', `${filename}.png`),
+          omitBackground: false,
+        });
+        const diff = await pixelDiff(cleanBuffer, legacyBuffer);
+
+        const textParity = cleanMetrics.text === legacyMetrics.text;
+        const imageParity = JSON.stringify(cleanMetrics.imagePaths) === JSON.stringify(legacyMetrics.imagePaths);
+        const cropParity = ['artObjectPosition', 'artTransform', 'artFocusX', 'artFocusY', 'artZoom']
+          .every(field => cleanMetrics[field] === legacyMetrics[field]);
+        const passes = geometryOkay
+          && cleanMetrics.imageLoaded
+          && legacyMetrics.imageLoaded
+          && !cleanMetrics.fitWarning
+          && !legacyMetrics.fitWarning
+          && textParity
+          && imageParity
+          && cropParity
+          && diff.comparable
+          && diff.changedPixelRatio <= MAX_CHANGED_PIXEL_RATIO;
+
+        const comparison = {
+          id: spec.id,
+          template: spec.template,
+          cleanUrl,
+          legacyUrl,
+          passes,
+          geometryOkay,
+          textParity,
+          imageParity,
+          cropParity,
+          pixelDiff: diff,
+          clean: cleanMetrics,
+          legacy: legacyMetrics,
+        };
+        comparisons.push(comparison);
+        if (!passes) failures.push(comparison);
+      } catch (error) {
+        const failure = {
+          id: spec.id,
+          template: spec.template,
+          cleanUrl,
+          legacyUrl,
+          reason: error?.stack || error?.message || String(error),
+        };
+        comparisons.push({ ...failure, passes: false });
+        failures.push(failure);
+      }
     }
   } finally {
     await cleanPage.close();
