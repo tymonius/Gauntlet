@@ -1,6 +1,6 @@
 # Unified Face Authority
 
-Status: Stage 3 in progress; no production consumer cutover
+Status: Stage 4 in progress; no production consumer cutover
 
 ## Why this exists
 
@@ -109,6 +109,12 @@ No existing Card Design, Card Reference, Deckbuilder, print, TTS, or inspection 
 - compare geometry and approved visual specimens
 - validate fonts, artwork, crop, overflow, and paired-face behavior
 - print-page/browser tests for portrait and landscape faces
+
+Stage 4 now has a dedicated browser parity gate. `scripts/validate-unified-face-parity.mjs` resolves the entire 242-face catalog, separates production-ready faces from authority-blocked faces, and compares every ready clean face against the current live renderer in the same Chromium context. The gate checks exact physical geometry, visible copy, loaded image sources, applied crop state, overflow, and an element screenshot pixel diff. CI uploads both clean and legacy screenshots plus the machine-readable blocker/parity report.
+
+The same validator is designed to expand automatically: as canonical authority blockers are removed, those faces move from the blocked inventory into clean-versus-legacy comparison without changing the parity harness. A face cannot silently bypass the gate.
+
+Current blocked faces remain blocked intentionally. Stage 4 must promote their remaining crop/reference/tracker presentation behavior into canonical authority before the clean renderer can reach full-catalog parity.
 
 ### Stage 5 — atomic consumer cutover
 Move Card Design review, Card Reference, Deckbuilder, printing, TTS, and inspection to the single face route together.
