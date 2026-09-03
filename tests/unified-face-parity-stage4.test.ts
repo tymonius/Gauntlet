@@ -18,6 +18,7 @@ describe('Stage 4 unified face parity gate', () => {
   it('compares each ready clean face to the existing production renderer in one browser context', () => {
     expect(validator).toContain("face-render.html?id=");
     expect(validator).toContain('legacyRoute(spec)');
+    expect(validator).toContain("base.set('kind', 'supplemental')");
     expect(validator).toContain('pixelDiff(cleanBuffer, legacyBuffer)');
     expect(validator).toContain('geometryOkay');
     expect(validator).toContain('textParity');
@@ -30,6 +31,7 @@ describe('Stage 4 unified face parity gate', () => {
     expect(validator).toContain('blockedFaces: blocked.length');
     expect(validator).toContain('blockerCounts');
     expect(validator).toContain('blockers: blockerGroups');
+    expect(validator).toContain('comparisons.push({ ...failure, passes: false })');
   });
 
   it('runs as a dedicated CI check and preserves production isolation', () => {
