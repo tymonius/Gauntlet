@@ -35,7 +35,7 @@ describe('Deckbuilder released / release-candidate ruleset toggle', () => {
     expect(game.mystics.selectionPolicy).toMatchObject({ poolSize: 6, selectedCount: 3 });
     expect(game.visualAuthorityUrl).toBe(CURRENT_VISUAL_AUTHORITY_URL);
     expect(game.artDirection).toEqual(current.artDirection);
-    expect(game.artDirectionFor('financiers-banker')).toEqual({ ...current.visualPolicy.artDirectionDefault, focusY: 0 });
+    expect(game.artDirectionFor('financiers-banker')).toEqual(current.artDirection['financiers-banker']);
   });
 
   it('keeps the current authority synchronized to the released source', () => {
@@ -58,7 +58,13 @@ describe('Deckbuilder released / release-candidate ruleset toggle', () => {
   });
 
   it('keeps Card Design composition canonical even when Deckbuilder content uses the released ruleset', () => {
-    expect(current.artDirection['financiers-banker']).toEqual({ focusY: 0 });
+    expect(current.artDirection['financiers-banker']).toEqual({
+      fit: 'cover',
+      focusX: 0.5,
+      focusY: 0,
+      smart: false,
+      zoom: 1,
+    });
     expect(runtime).toContain('loadGameRuleset(requestedRulesetMode)');
     expect(readFileSync('game-data/ruleset.mjs', 'utf8')).toContain('loadJson(CURRENT_VISUAL_AUTHORITY_URL)');
     expect(readFileSync('game-data/ruleset.mjs', 'utf8')).not.toContain('const artDirection = {};');
