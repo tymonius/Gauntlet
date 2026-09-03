@@ -169,7 +169,16 @@ function splitSentences(raw) {
 }
 
 function clean(value) {
-  return String(value || "").replace(/\s+/g, " ").trim();
+  return stripUnsupportedMarkdown(String(value || ""))
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function stripUnsupportedMarkdown(value) {
+  return String(value || "")
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/__([^_]+)__/g, "$1")
+    .replace(/`([^`]+)`/g, "$1");
 }
 
 if (typeof document !== "undefined" && !document.querySelector("link[data-gauntlet-rules-answer-styles]")) {
