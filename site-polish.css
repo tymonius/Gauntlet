@@ -73,7 +73,7 @@
   color: #fff7e8;
 }
 .analytics-consent button:focus-visible {
-  outline: 3px solid rgba(143, 31, 37, .38);
+  outline: 3px solid var(--bronze);
   outline-offset: 3px;
 }
 
