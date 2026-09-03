@@ -155,27 +155,40 @@
 
 .reference-metrics {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
   padding-top: 6px;
-}
-
-.reference-metrics div {
-  padding: 13px;
   border: 1px solid var(--line);
   background: rgba(255, 252, 244, .7);
 }
 
+.reference-metrics div {
+  min-width: 0;
+  padding: 9px 11px;
+  display: grid;
+  grid-template-columns: 3.2rem minmax(0, 1fr);
+  gap: 10px;
+  align-items: baseline;
+  border-top: 1px solid var(--line);
+}
+
+.reference-metrics div:first-child {
+  border-top: 0;
+}
+
 .reference-metrics strong {
   display: block;
-  margin-bottom: 4px;
+  margin: 0;
   font-family: var(--serif);
-  font-size: 1.55rem;
+  font-size: 1.45rem;
 }
 
 .reference-metrics span {
-  font-size: .58rem;
-  line-height: 1.35;
+  min-width: 0;
+  font-size: .62rem;
+  line-height: 1.25;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 .browser-panel { min-width: 0; }
@@ -407,6 +420,20 @@
   .reference-app { grid-template-columns: 1fr; }
   .filter-panel { position: static; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .filter-heading, .search-field, .reference-metrics { grid-column: 1 / -1; }
+  .reference-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    border: 0;
+    background: transparent;
+  }
+  .reference-metrics div {
+    padding: 13px;
+    display: block;
+    border: 1px solid var(--line);
+    background: rgba(255, 252, 244, .7);
+  }
+  .reference-metrics strong { margin-bottom: 4px; font-size: 1.55rem; }
+  .reference-metrics span { font-size: .58rem; line-height: 1.35; }
 }
 
 @media (max-width: 700px) {
@@ -416,7 +443,24 @@
   .reference-app { padding-bottom: 78px; }
   .filter-panel { grid-template-columns: minmax(0, 1fr); }
   .filter-heading, .search-field, .reference-metrics { grid-column: auto; }
-  .reference-metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .reference-metrics {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    border: 1px solid var(--line);
+    background: rgba(255, 252, 244, .7);
+  }
+  .reference-metrics div {
+    padding: 9px 11px;
+    display: grid;
+    grid-template-columns: 3.2rem minmax(0, 1fr);
+    gap: 10px;
+    border: 0;
+    border-top: 1px solid var(--line);
+    background: transparent;
+  }
+  .reference-metrics div:first-child { border-top: 0; }
+  .reference-metrics strong { margin: 0; font-size: 1.45rem; }
+  .reference-metrics span { font-size: .62rem; line-height: 1.25; }
   .browser-heading { display: block; }
   .result-summary { margin-top: 9px; text-align: left; }
   .reference-browser { grid-template-columns: 1fr; min-height: 0; }

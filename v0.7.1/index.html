@@ -1,31 +1,60 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <meta name="gauntlet-analytics-id" content="G-8YYYZJGGPE" />
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-8YYYZJGGPE');
+    gtag("consent", "default", {
+      analytics_storage: "denied",
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+      wait_for_update: 500
+    });
   </script>
+  <script src="/analytics-consent.js?v=20260902-1" defer></script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
+  <meta name="theme-color" content="#8f1f25" />
   <title>Gauntlet v0.7.1</title>
   <meta name="description" content="Gauntlet v0.7.1 — Mystics Rites & Deck Import">
+  <link rel="canonical" href="https://gauntlet.run/v0.7.1/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Gauntlet" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:url" content="https://gauntlet.run/v0.7.1/" />
+  <meta property="og:title" content="Gauntlet v0.7.1" />
+  <meta property="og:description" content="Gauntlet v0.7.1 — Mystics Rites & Deck Import" />
+  <meta property="og:image" content="https://gauntlet.run/images/social/gauntlet-og-1200x630-v2.jpg" />
+  <meta property="og:image:alt" content="The Spirit Walker, mounted General, and Grand Inquisitor before a fortified Gauntlet at sunset." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Gauntlet v0.7.1" />
+  <meta name="twitter:description" content="Gauntlet v0.7.1 — Mystics Rites & Deck Import" />
+  <meta name="twitter:image" content="https://gauntlet.run/images/social/gauntlet-og-1200x630-v2.jpg" />
   <link rel="stylesheet" href="../site.css">
+  <link rel="stylesheet" href="/site-footer.css?v=20260902-2" />
+  <link rel="stylesheet" href="/site-polish.css?v=20260902-1" />
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <header class="site-header">
-    <a class="brand" href="/" aria-label="Gauntlet home"><span class="brand-mark" aria-hidden="true">G</span><span>Gauntlet</span></a>
+    <a class="brand" href="/" aria-label="Gauntlet home"><span class="brand-mark" aria-hidden="true">G</span><span>Gauntlet</span>      <span class="site-edition-badge" aria-label="Current playtest edition v0.7.1">v0.7.1</span>
+    </a>
     <nav aria-label="Primary navigation">
-      <a href="/start/">Start</a><a href="/#game">Game</a><a href="/rulebook/">Rules</a><a href="/factions/">Factions</a><a href="/deckbuilder/">Deckbuilder</a><a href="/card-reference/">Card Reference</a><a href="/rules-arbiter/">Rules Arbiter</a>
+      <a href="/start/">Start</a>
+      <a href="/playtest/">Playtest</a>
+      <a href="/rulebook/">Rules</a>
+      <a href="/factions/">Factions</a>
+      <a href="/deckbuilder/">Deckbuilder</a>
+      <a href="/card-reference/">Card Reference</a>
+      <a href="/rules-arbiter/">Rules Arbiter</a>
     </nav>
   </header>
-  <main class="page-shell">
+  <main id="main-content" tabindex="-1" class="page-shell">
     <p class="eyebrow">Published playtest release</p>
     <h1>Gauntlet v0.7.1</h1>
     <p><strong>Mystics Rites & Deck Import</strong></p>
@@ -33,5 +62,27 @@
     <p><a href="../start/">Start playing</a> · <a href="../rulebook/">Rulebook</a> · <a href="../deckbuilder/">Deckbuilder</a> · <a href="../card-reference/">Card reference</a></p>
     <p><a href="../releases/v0.7.1/Gauntlet_v0.7.1_Rulebook_Booklet.pdf">Download the printable Rulebook booklet</a></p>
   </main>
+<footer class="ga-site-footer" data-gauntlet-footer="standard">
+    <div class="ga-site-footer__identity">
+      <a class="ga-site-footer__wordmark" href="/" aria-label="Gauntlet home">
+        <img src="/images/Gauntlet.svg" alt="" aria-hidden="true" />
+      </a>
+      <p class="ga-site-footer__copyright"><!-- PUBLISHING-FACT:copyright.notice -->Copyright © 2026 Tymon Scott. All rights reserved.<!-- /PUBLISHING-FACT --></p>
+      <div class="ga-site-footer__publisher">
+        <img class="ga-site-footer__publisher-mark" src="/images/branding/tds-games-mark.svg" alt="" aria-hidden="true" />
+        <p class="ga-site-footer__publisher-copy">
+          <span><!-- PUBLISHING-FACT:publisher.line -->Published by TDS Games<!-- /PUBLISHING-FACT --> ·</span>
+          <span><!-- PUBLISHING-FACT:publisher.parent_line -->An imprint of Misty Hollow Enterprises<!-- /PUBLISHING-FACT --></span>
+        </p>
+      </div>
+    </div>
+    <nav class="ga-site-footer__links" aria-label="Footer navigation">
+      <a href="/about/">About</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/contact/">Contact</a>
+      <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635" target="_blank" rel="noopener noreferrer">Tabletop Simulator</a>
+      <a href="/privacy/">Privacy</a>
+    </nav>
+  </footer>
 </body>
 </html>
