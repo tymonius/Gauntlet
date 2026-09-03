@@ -139,7 +139,7 @@ class GauntletRulesAssistant {
     this.elements.messages.innerHTML = "";
     this.appendMessage({
       role: "assistant",
-      answer: "Set out the question as it arose at the table. I will determine what the v0.7.1 rules require, identify the controlling rule or distinction, and settle the matter as plainly as I can. Where the written rules do not decide it, I will issue a provisional ruling so play may continue.",
+      answer: "Set out the question as it arose at the table. I will determine what the rules require, identify the controlling rule or distinction, and settle the matter as plainly as I can. Where the written rules do not decide it, I will issue a provisional ruling so play may continue.",
       rulingStatus: "welcome",
       sources: []
     });
