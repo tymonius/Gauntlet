@@ -11,6 +11,12 @@ describe('card reference production component integration', () => {
     expect(app).not.toContain("buildComponentRendererUrl('leader', leader.id)");
   });
 
+  it('renders the Financiers Deed at its canonical landscape geometry', () => {
+    expect(app).toContain("return component.family === 'deed-card' ? 'landscape' : 'portrait';");
+    expect(app).toContain("if (orientation === 'landscape') params.set('orientation', 'landscape');");
+    expect(app).toContain("frameUrl.searchParams.get('orientation') === 'landscape'");
+  });
+
   it('keeps filter controls inside the fixed-width filter panel', () => {
     expect(styles).toContain('grid-template-columns: minmax(0, 1fr);');
     expect(styles).toContain('.filter-panel > *,');
