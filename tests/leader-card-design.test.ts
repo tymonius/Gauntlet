@@ -6,6 +6,7 @@ const leaderCatalog = readFileSync("card-design/card-review.js", "utf8");
 const currentGame = JSON.parse(readFileSync("game-data/current-game.json", "utf8"));
 const reviewPage = readFileSync("card-design/index.html", "utf8");
 const leaderStyles = readFileSync("card-design/leader-card.css", "utf8");
+const factionComponentStyles = readFileSync("card-design/faction-component.css", "utf8");
 const refinementStyles = readFileSync("card-design/card-design-refinement.css", "utf8");
 const factionSymbols = [
   "military",
@@ -46,10 +47,10 @@ describe("Leader card design", () => {
   });
 
   it("uses a shorter component header with a substantially more legible faction subheading", () => {
-    expect(leaderStyles).toContain("--component-heading-height: 0.50in");
-    expect(leaderStyles).toContain("--component-subheading-font-size: 6.25pt");
-    expect(leaderStyles).toContain("--component-subheading-icon-size: 0.18in");
-    expect(leaderStyles).toContain("--component-subheading-gap: 0.045in");
+    expect(factionComponentStyles).toContain("--component-heading-height: 0.50in");
+    expect(factionComponentStyles).toContain("--component-subheading-font-size: 6.25pt");
+    expect(factionComponentStyles).toContain("--component-subheading-icon-size: 0.18in");
+    expect(factionComponentStyles).toContain("--component-subheading-gap: 0.045in");
     expect(leaderStyles).toContain("gap: 0.012in");
     expect(leaderStyles).toContain("padding: 0.028in 0.09in 0.022in");
     expect(leaderStyles).toContain("font-size: var(--component-subheading-font-size)");
@@ -91,19 +92,19 @@ describe("Leader card design", () => {
 
   it("tints Leader and reusable faction-component parchment without tinting art", () => {
     expect(leaderCatalog).toContain("faction-component-card leader-card");
-    expect(leaderStyles).toContain(".faction-component-card .card-interior::after");
-    expect(leaderStyles).toContain("mix-blend-mode: multiply");
-    expect(leaderStyles).toContain("--component-parchment-tint: rgba(145, 28, 38, 0.15)");
+    expect(factionComponentStyles).toContain(".faction-component-card .card-interior::after");
+    expect(factionComponentStyles).toContain("mix-blend-mode: multiply");
+    expect(factionComponentStyles).toContain("--component-parchment-tint: rgba(145, 28, 38, 0.15)");
     expect(leaderStyles).toContain(".leader-card .card-art img");
   });
 
   it("uses a darker faction-specific tint for the metadata footer", () => {
-    expect(leaderStyles).toContain("--component-footer-tint: rgba(145, 28, 38, 0.22)");
-    expect(leaderStyles).toContain("--component-footer-tint: rgba(38, 79, 145, 0.20)");
-    expect(leaderStyles).toContain("--component-footer-tint: rgba(34, 112, 68, 0.20)");
-    expect(leaderStyles).toContain("--component-footer-tint: rgba(40, 40, 39, 0.18)");
-    expect(leaderStyles).toContain("--component-footer-tint: rgba(93, 52, 126, 0.20)");
-    expect(leaderStyles).toContain("--component-footer-tint: rgba(166, 122, 39, 0.22)");
+    expect(factionComponentStyles).toContain("--component-footer-tint: rgba(145, 28, 38, 0.22)");
+    expect(factionComponentStyles).toContain("--component-footer-tint: rgba(38, 79, 145, 0.20)");
+    expect(factionComponentStyles).toContain("--component-footer-tint: rgba(34, 112, 68, 0.20)");
+    expect(factionComponentStyles).toContain("--component-footer-tint: rgba(40, 40, 39, 0.18)");
+    expect(factionComponentStyles).toContain("--component-footer-tint: rgba(93, 52, 126, 0.20)");
+    expect(factionComponentStyles).toContain("--component-footer-tint: rgba(166, 122, 39, 0.22)");
     expect(leaderStyles).toContain("background: var(--component-footer-tint)");
   });
 
@@ -120,9 +121,22 @@ describe("Leader card design", () => {
     expect(leaderStyles).toContain("grid-template-columns: 0.63in minmax(0, 1fr)");
   });
 
-  it("preserves the full head through top-biased portrait crops", () => {
-    expect(leaderStyles).toContain("object-position: center 16%");
-    expect(leaderStyles).toContain("object-position: center 14%");
+  it("keeps Leader artwork composition in canonical data rather than CSS", () => {
+    for (const leader of currentGame.leaders) {
+      const id = `${leader.faction}-${leader.id}`;
+      expect(currentGame.artDirection[id]).toMatchObject({
+        fit: "cover",
+        focusX: expect.any(Number),
+        focusY: expect.any(Number),
+        smart: false,
+        zoom: expect.any(Number),
+      });
+    }
+    expect(currentGame.artDirection["military-general"].focusY).toBe(0.16);
+    expect(currentGame.artDirection["intelligence-ranger"].focusY).toBe(0.16);
+    expect(currentGame.artDirection["mystics-spirit-walker"].focusY).toBe(0.16);
+    expect(currentGame.artDirection["inquisition-witch-hunter"].focusY).toBe(0.16);
+    expect(leaderStyles).not.toContain("object-position:");
   });
 
   it("gives the metadata footer sufficient height and leading", () => {
