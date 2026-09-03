@@ -118,6 +118,15 @@
     if (!image) return;
 
     const artworkId = canonicalArtworkId(card);
+    const hasExplicitDirection = Boolean(
+      renderContext.artDirection
+      && Object.prototype.hasOwnProperty.call(renderContext.artDirection, artworkId)
+    );
+    if (!hasExplicitDirection) {
+      card.dataset.artDirectionApplied = "css-default";
+      return;
+    }
+
     const direction = renderContext.artDirectionFor(artworkId);
     if (!direction || typeof direction !== "object") {
       throw new Error(`Canonical artwork direction is unavailable for ${artworkId}.`);
