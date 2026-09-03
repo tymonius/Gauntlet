@@ -72,8 +72,8 @@
       "key": "rulebook-booklet",
       "path": "Gauntlet_v0.7.1_Rulebook_Booklet.pdf",
       "pages": 50,
-      "sha256": "5fd5ce3b3a4d66eae115173b93ba86f0a66e7d332aad89cfd6c4ad0875acf858",
-      "bytes": 31356347
+      "sha256": "4f0ec149da116575faa94aaa53bc3d3215836f0ceb69825775f92eb9b5575a10",
+      "bytes": 31358666
     }
   ],
   "payload_files": [
@@ -84,8 +84,8 @@
     },
     {
       "path": "Gauntlet_v0.7.1_Rulebook_Booklet.pdf",
-      "sha256": "5fd5ce3b3a4d66eae115173b93ba86f0a66e7d332aad89cfd6c4ad0875acf858",
-      "bytes": 31356347
+      "sha256": "4f0ec149da116575faa94aaa53bc3d3215836f0ceb69825775f92eb9b5575a10",
+      "bytes": 31358666
     },
     {
       "path": "Gauntlet_v0.7.1_Card_Anatomy.png",
