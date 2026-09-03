@@ -77,6 +77,7 @@ describe('complete FaceSpec source authority', () => {
       source: 'card-design/reference-copy/v0.7.0/universal-reference.md',
       selector: { title: 'Turn & Battle' },
     });
+    expect(reference.dependencies.styles).toContain('/card-design/supplemental-card.css');
     expect(tracker.content).toMatchObject({
       type: 'tracker',
       trackedValue: { name: 'Command' },
