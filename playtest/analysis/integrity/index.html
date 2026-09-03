@@ -154,10 +154,10 @@
     </section>
   </main>
 
-  <dialog id="excludeDialog" class="exclude-dialog">
+  <dialog id="excludeDialog" class="exclude-dialog" aria-labelledby="exclude-dialog-title" aria-describedby="excludeTarget">
     <form id="excludeForm" method="dialog">
       <p class="eyebrow">Remove from research dataset</p>
-      <h2>Exclude this record?</h2>
+      <h2 id="exclude-dialog-title">Exclude this record?</h2>
       <p id="excludeTarget"></p>
       <input id="excludeTargetType" type="hidden" />
       <input id="excludeTargetId" type="hidden" />
