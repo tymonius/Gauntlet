@@ -8,8 +8,12 @@ const outputPath = resolve(process.env.GAUNTLET_RULES_QA_OUTPUT
   || "artifacts/rules-qa/v071-live-answer-run.json");
 const concurrency = Math.max(1, Math.min(Number(process.env.GAUNTLET_RULES_QA_CONCURRENCY) || 1, 8));
 const requestTimeoutMs = Math.max(5000, Number(process.env.GAUNTLET_RULES_QA_TIMEOUT_MS) || 45000);
-const maxAttempts = Math.max(1, Math.min(Number(process.env.GAUNTLET_RULES_QA_MAX_ATTEMPTS) || 5, 8));
+const maxAttempts = Math.max(1, Math.min(Number(process.env.GAUNTLET_RULES_QA_MAX_ATTEMPTS) || 2, 8));
 const interCaseDelayMs = Math.max(0, Number(process.env.GAUNTLET_RULES_QA_INTER_CASE_DELAY_MS) || 500);
+const requestedCaseLimit = Number(process.env.GAUNTLET_RULES_QA_LIMIT);
+const caseLimit = Number.isFinite(requestedCaseLimit) && requestedCaseLimit > 0
+  ? Math.max(1, Math.floor(requestedCaseLimit))
+  : null;
 const retryableStatuses = new Set([429, 502, 503, 504]);
 
 const benchmark = JSON.parse(readFileSync(benchmarkPath, "utf8"));
