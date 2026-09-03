@@ -27,16 +27,27 @@ jobs:
         run: npm install --no-audit --no-fund --no-save playwright@1.62.1
 
       - name: Validate Territory mobile render stability
+        shell: bash
         run: |
+          set -euo pipefail
           python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/gauntlet-territory-server.log 2>&1 &
           server_pid=$!
           trap 'kill "$server_pid"' EXIT
+
+          ready=false
           for attempt in {1..50}; do
             if curl -fsS http://127.0.0.1:4173/card-design/ > /dev/null; then
+              ready=true
               break
             fi
             sleep 0.1
           done
+
+          if [[ "$ready" != "true" ]]; then
+            cat /tmp/gauntlet-territory-server.log >&2 || true
+            exit 1
+          fi
+
           TERRITORY_TEST_BASE_URL=http://127.0.0.1:4173 node scripts/validate-territory-mobile-render.mjs
 
       - uses: actions/upload-artifact@v4
