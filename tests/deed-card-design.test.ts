@@ -54,6 +54,9 @@ describe("Financier Deed card", () => {
     expect(deedStyles).toContain("width: 3.5in");
     expect(deedStyles).toContain("height: 2.5in");
     expect(componentRenderScript).toContain("surfaceCssSize(orientation)");
+    expect(componentRenderScript.indexOf("await loadCanonicalRenderContext();")).toBeLessThan(
+      componentRenderScript.indexOf("applyRenderViewport();")
+    );
     expect(productionSurface).toContain("widthIn: 3.5");
     expect(productionSurface).toContain("heightIn: 2.5");
     expect(productionSurface).toContain("widthCssPx: 336");

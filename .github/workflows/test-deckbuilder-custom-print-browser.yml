@@ -88,11 +88,12 @@ jobs:
           await addFirstOfType('Proposal / Treaty');
           await addFirstOfType('Rite');
           await addFirstOfType('Capital Ledger');
+          await addFirstOfType('Deed', 'Deed');
 
           const selectedRows = page.locator('#customPrintSelection .custom-print-row');
-          if (await selectedRows.count() !== 7) throw new Error(`Expected 7 selected physical cards, found ${await selectedRows.count()}`);
+          if (await selectedRows.count() !== 8) throw new Error(`Expected 8 selected physical cards, found ${await selectedRows.count()}`);
           const summary = await page.locator('#customPrintSummary').textContent();
-          if (!summary?.includes('7 physical cards') || !summary.includes('1 front sheet') || !summary.includes('2 print pages')) {
+          if (!summary?.includes('8 physical cards') || !summary.includes('1 front sheet') || !summary.includes('2 print pages')) {
             throw new Error(`Unexpected custom print summary: ${summary}`);
           }
 
@@ -108,7 +109,7 @@ jobs:
           if (await printPage.locator('.custom-back-page').count() !== 1) throw new Error('Expected one paired reverse sheet.');
           const frontFrames = await printPage.locator('.custom-front-page [data-custom-render-frame]').count();
           const backFrames = await printPage.locator('.custom-back-page [data-custom-render-frame]').count();
-          if (frontFrames !== 7 || backFrames !== 7) throw new Error(`Expected 7 front and 7 reverse/back frames, found ${frontFrames}/${backFrames}`);
+          if (frontFrames !== 8 || backFrames !== 8) throw new Error(`Expected 8 front and 8 reverse/back frames, found ${frontFrames}/${backFrames}`);
           if (await printPage.locator('.custom-landscape-rotate').count() < 1) throw new Error('Mixed custom sheet did not include a rotated landscape card.');
           const playableFrame = printPage.locator('iframe[src*="card-review-render.html"][src*="printArtwork=normalized"]').first();
           if (await playableFrame.count() !== 1) throw new Error('Playable card did not request normalized print artwork.');
@@ -125,6 +126,29 @@ jobs:
           if (await printPage.locator('iframe[src*="kind=proposal"]').count() < 2) throw new Error('Proposal front/reverse renderers were not paired.');
           if (await printPage.locator('iframe[src*="kind=rite"]').count() < 2) throw new Error('Rite front/reverse renderers were not paired.');
           if (await printPage.locator('iframe[src*="financiers-capital-ledger"]').count() < 2) throw new Error('Capital Ledger identical-face duplex render was not paired.');
+          const deedFrame = printPage.locator('iframe[src*="id=financiers-deed"][src*="orientation=landscape"]').first();
+          if (await deedFrame.count() !== 1) throw new Error('Deed production renderer was not requested as landscape.');
+          const deedState = await deedFrame.evaluate(frame => {
+            const card = frame.contentDocument?.querySelector('.deed-card');
+            const cardRect = card?.getBoundingClientRect();
+            const rootRect = frame.contentDocument?.documentElement?.getBoundingClientRect();
+            return {
+              ready: frame.contentDocument?.body?.dataset.renderReady || '',
+              rootWidth: rootRect?.width || 0,
+              rootHeight: rootRect?.height || 0,
+              cardWidth: cardRect?.width || 0,
+              cardHeight: cardRect?.height || 0,
+            };
+          });
+          if (
+            deedState.ready !== 'true'
+            || Math.abs(deedState.rootWidth - 336) > 0.5
+            || Math.abs(deedState.rootHeight - 240) > 0.5
+            || Math.abs(deedState.cardWidth - 336) > 0.5
+            || Math.abs(deedState.cardHeight - 240) > 0.5
+          ) {
+            throw new Error(`Deed landscape render geometry regressed: ${JSON.stringify(deedState)}`);
+          }
           if (await printPage.locator('iframe[src*="card-back-render.html"]').count() < 2) throw new Error('Canonical standard backs were not added for one-sided cards.');
 
           await page.screenshot({ path: '/tmp/deckbuilder-custom-print-workspace.png', fullPage: true });
