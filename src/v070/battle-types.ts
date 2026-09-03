@@ -123,6 +123,13 @@ export interface V070UnsupportedBattleEffect {
   encounteredAt: 'reveal_gambits' | 'reveal_tactics';
 }
 
+export interface V070AdditionalRetreatEffect {
+  sourceInstanceId: string;
+  sourceCardId: string;
+  targetPlayer: PlayerId;
+  steps: number;
+}
+
 export interface V070GambitOrderOverride {
   source: 'neutral_observers' | 'watchtower';
   firstPlayer: PlayerId;
@@ -185,6 +192,9 @@ export interface V070BattleRuntime {
   relentlessPursuitWindowOpen: boolean;
   guardiansWindowOpen: boolean;
   mysticLossInterruptionResolved: boolean;
+  additionalRetreatEffects: V070AdditionalRetreatEffect[];
+  militaryOrderUsedPlayers: PlayerId[];
+  unbrokenRanksInstanceIds: string[];
   pendingGameVictory: {
     winner: PlayerId;
     route:
@@ -259,6 +269,9 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     relentlessPursuitWindowOpen: false,
     guardiansWindowOpen: false,
     mysticLossInterruptionResolved: false,
+    additionalRetreatEffects: [],
+    militaryOrderUsedPlayers: [],
+    unbrokenRanksInstanceIds: [],
     pendingGameVictory: null,
     activeOverlayAtOnset: null,
     activePrintedTerritoryAtOnset: null,
