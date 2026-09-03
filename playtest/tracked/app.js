@@ -252,7 +252,7 @@
 
     if (mode === "tts") {
       el.transportEyebrow.textContent = "Remote play · Tabletop Simulator";
-      el.transportTitle.textContent = "Open the v0.7.0 Workshop mod.";
+      el.transportTitle.textContent = "Open the v0.7.1 Workshop mod.";
       el.transportCopy.textContent = "One player hosts a multiplayer room. Each player takes the starter kit matching their selected Leader, then the creator records Game started here when setup is complete.";
       el.ttsWorkshopLink.hidden = false;
       el.physicalSetupLink.hidden = true;
