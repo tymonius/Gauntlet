@@ -7048,8 +7048,8 @@
     "publication_unlocked": false
   },
   "factionFeatureTaxonomy": {
-    "factionFeature": "A named faction-specific rule, option, procedure, passive effect, or special mechanic shared by the faction. The term does not imply Action use.",
-    "leaderAbility": "A mechanic supplied by the chosen Leader rather than shared by the faction.",
+    "factionFeature": "A named faction-specific mechanic shared by the faction. A Faction Feature may have multiple uses, modes, or procedures; those are described under the feature rather than treated as separate Features.",
+    "leaderAbility": "A mechanic or option supplied specifically by the chosen Leader rather than shared by the faction. A Leader Ability may provide a specific option used through a shared Faction Feature, such as an individual Military Order.",
     "actionProfiles": {
       "1 Action": "Using the Feature or Ability spends one Action at its stated legal phase or timing.",
       "No Action": "Use at the stated timing without spending an Action. This does not grant another Action.",
@@ -7057,7 +7057,14 @@
     }
   },
   "factionFeatures": {
-    "military": [],
+    "military": [
+      {
+        "name": "Orders",
+        "profile": "No Action",
+        "timing": "At each Order's stated timing",
+        "cost": "Listed Command"
+      }
+    ],
     "diplomats": [
       {
         "name": "Terms",
@@ -7067,7 +7074,8 @@
       {
         "name": "Leverage",
         "profile": "No Action",
-        "timing": "Before dice after refused Terms"
+        "timing": "Before dice after refused Terms",
+        "cost": "Triangular Influence cost"
       }
     ],
     "financiers": [
@@ -7077,19 +7085,22 @@
         "timing": "Denouement"
       },
       {
-        "name": "Buy / Buy Out Deed",
+        "name": "Deeds",
         "profile": "1 Action",
-        "timing": "Denouement"
+        "timing": "Denouement",
+        "cost": "Current Deed cost"
       },
       {
         "name": "Play the Market",
         "profile": "1 Action",
-        "timing": "Denouement"
+        "timing": "Denouement",
+        "cost": "Discard 1 card from Hand"
       },
       {
         "name": "Subsidize",
         "profile": "No Action",
-        "timing": "Before dice"
+        "timing": "Before dice",
+        "cost": "Triangular Capital cost"
       },
       {
         "name": "Financial Capacity",
@@ -7104,62 +7115,37 @@
     ],
     "intelligence": [
       {
-        "name": "Start Mission",
+        "name": "Missions",
         "profile": "1 Action",
-        "timing": "Denouement"
+        "timing": "Denouement",
+        "cost": "Abort: Intel equal to Mission value"
       },
       {
-        "name": "Complete Mission",
+        "name": "Special Operations",
         "profile": "1 Action",
-        "timing": "Denouement"
+        "timing": "Denouement",
+        "cost": "Completion: Territories in Gauntlet minus card value, minimum 1 Intel"
       },
       {
-        "name": "Abort Mission",
-        "profile": "1 Action",
-        "timing": "Denouement"
-      },
-      {
-        "name": "Start Special Operation",
-        "profile": "1 Action",
-        "timing": "Denouement"
-      },
-      {
-        "name": "Complete Special Operation",
-        "profile": "1 Action",
-        "timing": "Denouement"
-      },
-      {
-        "name": "Gambit Surveillance",
+        "name": "Surveillance",
         "profile": "No Action",
-        "timing": "During battle",
-        "cost": "1 Intel",
-        "limit": "Once per battle"
-      },
-      {
-        "name": "Tactic Surveillance",
-        "profile": "No Action",
-        "timing": "During battle",
-        "cost": "1 Intel per card",
-        "limit": "Once per battle"
+        "timing": "After opposing Gambit or Tactic choice",
+        "cost": "1 Intel per card revealed",
+        "limit": "Once per battle at each stage"
       },
       {
         "name": "Interference",
         "profile": "No Action",
-        "timing": "Immediately after reveal",
-        "cost": "+2 Intel per removed card"
-      },
-      {
-        "name": "Direct Interference",
-        "profile": "No Action",
-        "timing": "Face-up opposing card",
-        "cost": "2 Intel"
+        "timing": "Immediately after reveal or face-up opposing choice",
+        "cost": "2 Intel per removed card"
       }
     ],
     "mystics": [
       {
-        "name": "Begin a Rite",
+        "name": "Rites",
         "profile": "1 Action",
-        "timing": "Denouement"
+        "timing": "Denouement",
+        "cost": "Printed Begin cost"
       },
       {
         "name": "Invocation",
@@ -7171,12 +7157,14 @@
         "name": "Transmutation",
         "profile": "No Action",
         "timing": "Before dice",
+        "cost": "Put 1 card from Hand in Graveyard",
         "limit": "Once per turn"
       },
       {
-        "name": "Begin Ritual",
+        "name": "Ritual of Ascension",
         "profile": "1 Action",
-        "timing": "Denouement after 3 Rites"
+        "timing": "Denouement after 3 Rites",
+        "cost": "Bind 3 Arcane cards"
       },
       {
         "name": "Convergence",
@@ -7189,6 +7177,7 @@
         "name": "Purge",
         "profile": "1 Action",
         "timing": "Opening or Denouement",
+        "cost": "Listed Conviction",
         "limit": "Once per turn"
       },
       {
@@ -7228,28 +7217,32 @@
           "text": "Capture the Territory at the opponent's end, or force a Last Stand and win the resulting battle."
         },
         {
-          "classification": "Leader Ability",
+          "classification": "Faction Feature",
           "name": "Orders",
           "items": [
             {
               "name": "Onward",
               "cost": "1 Command",
               "descriptor": "No Action · During Movement",
-              "text": "During your Movement, move one additional Position. This may start a Battle."
+              "text": "During your Movement, move one additional Position. This may start a Battle.",
+              "classification": "Leader Ability"
             },
             {
               "name": "Rally",
               "cost": "1 Command",
               "descriptor": "No Action · Before dice · Attacking",
-              "text": "Add +1 to your battle total in a battle you initiated."
+              "text": "Add +1 to your battle total in a battle you initiated.",
+              "classification": "Leader Ability"
             },
             {
               "name": "Rout",
               "cost": "2 Command",
               "descriptor": "No Action · End of Aftermath · Win as attacker",
-              "text": "Advance one Position. This movement may initiate a battle."
+              "text": "Advance one Position. This movement may initiate a battle.",
+              "classification": "Leader Ability"
             }
-          ]
+          ],
+          "text": "Orders are the Military Faction Feature. This Leader supplies the following Leader Abilities as Orders."
         },
         {
           "classification": "Resource",
@@ -7273,28 +7266,32 @@
           "text": "Capture the Territory at the opponent's end, or force a Last Stand and win the resulting battle."
         },
         {
-          "classification": "Leader Ability",
+          "classification": "Faction Feature",
           "name": "Orders",
           "items": [
             {
               "name": "Entrench",
               "cost": "1 Command",
               "descriptor": "No Action · Before dice · Defending",
-              "text": "Add +1 to your battle total in a battle you did not initiate."
+              "text": "Add +1 to your battle total in a battle you did not initiate.",
+              "classification": "Leader Ability"
             },
             {
               "name": "Repel",
               "cost": "1 Command",
               "descriptor": "No Action · Aftermath · Win as defender",
-              "text": "After the opponent's normal retreat, they retreat one additional Position, if able."
+              "text": "After the opponent's normal retreat, they retreat one additional Position, if able.",
+              "classification": "Leader Ability"
             },
             {
               "name": "Fortify",
               "cost": "2 Command",
               "descriptor": "No Action · Aftermath · Win while occupying enemy Territory",
-              "text": "Advance your Front Line by one Territory, if able."
+              "text": "Advance your Front Line by one Territory, if able.",
+              "classification": "Leader Ability"
             }
-          ]
+          ],
+          "text": "Orders are the Military Faction Feature. This Leader supplies the following Leader Abilities as Orders."
         },
         {
           "classification": "Resource",
