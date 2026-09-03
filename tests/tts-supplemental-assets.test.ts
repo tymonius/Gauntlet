@@ -9,7 +9,9 @@ const generator = readFileSync('scripts/generate-tts-supplemental-assets.mjs', '
 const trackerHelper = readFileSync('scripts/tts-sliding-trackers.mjs', 'utf8');
 const geometry = readFileSync('scripts/tts-supplemental-geometry.mjs', 'utf8');
 const productionSupplementals = readFileSync('card-design/supplemental-card.js', 'utf8');
-const componentRenderer = readFileSync('card-design/component-render.js', 'utf8');
+const faceRuntime = readFileSync('card-design/face-render.mjs', 'utf8');
+const faceSpec = readFileSync('card-design/face-spec.mjs', 'utf8');
+const referenceTemplate = readFileSync('card-design/face-templates/reference.mjs', 'utf8');
 const riteDesign = readFileSync('card-design/rite-card.js', 'utf8');
 const referenceCss = readFileSync('card-design/reference-card.css', 'utf8');
 const referenceDividerCss = readFileSync('card-design/reference-divider-rules.css', 'utf8');
@@ -88,10 +90,10 @@ describe('TTS supplemental component exports', () => {
     expect(generator).not.toContain('/tts/supplemental-renderer/');
     expect(riteDesign).toContain('class="rite-faction-emblem"');
     expect(riteDesign).toContain('completedArtwork(rite)');
-    expect(componentRenderer).toContain('await loadCanonicalRenderContext()');
-    expect(componentRenderer).toContain('window.GAUNTLET_ART_DIRECTION = renderContext.artDirection || {}');
-    expect(componentRenderer).toContain('document.body.dataset.productionFontsReady');
-    expect(componentRenderer).not.toContain('preloadProductionFonts');
+    expect(faceRuntime).toContain('const game = await loadRenderGame()');
+    expect(faceRuntime).toContain('window.GAUNTLET_ART_DIRECTION = game.artDirection || {}');
+    expect(faceRuntime).toContain('await loadProductionFonts()');
+    expect(faceRuntime).not.toContain('preloadProductionFonts');
   });
 
   it('treats every physical reference card as ready public two-sided material', async () => {
@@ -130,8 +132,9 @@ describe('TTS supplemental component exports', () => {
     expect(JSON.stringify(byId.get('inquisition-purge-reference'))).not.toContain('Final Judgment');
 
     expect(generator).toContain('component:${record.id}:${side}');
-    expect(componentRenderer).toContain('"reference"');
-    expect(componentRenderer).toContain('versionOverride');
+    expect(referenceTemplate).toContain('loadReferenceRecordForFaceSpec(spec)');
+    expect(referenceTemplate).toContain('spec.provenance.displayVersion');
+    expect(faceSpec).toContain("if (face.template === 'reference')");
     expect(referenceCss).toContain('.reference-watermark');
     expect(referenceCss).toContain('.reference-table');
     expect(referenceDividerCss).toContain('border-top: 0 !important');
