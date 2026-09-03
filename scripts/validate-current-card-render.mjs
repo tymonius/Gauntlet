@@ -127,8 +127,9 @@ async function main() {
           rulesScale: Number(rulesScaleText),
           labels,
           arcaneMarkerCount: card.querySelectorAll('.card-title .arcane-trait-marker').length,
-          gameVersion: window.GAUNTLET_TTS_CATALOG?.gameVersion,
-          sourceHierarchy: window.GAUNTLET_TTS_CATALOG?.sourceHierarchy,
+          version: card.querySelector('.card-footer span:nth-child(3)')?.textContent?.trim() || '',
+          gameplayAuthority: document.body.dataset.gameplayAuthority || '',
+          visualAuthority: document.body.dataset.visualAuthority || '',
         };
       });
 
@@ -144,8 +145,11 @@ async function main() {
       if (!Number.isFinite(metric.rulesScale) || metric.rulesScale <= 0) {
         throw new Error(`Invalid rules scale for ${sourceCard.name}: ${JSON.stringify(metric)}.`);
       }
-      if (metric.gameVersion !== authority.displayVersion
-        || metric.sourceHierarchy?.[0] !== '/game-data/current-game.json') {
+      if (
+        metric.version !== authority.displayVersion
+        || metric.gameplayAuthority !== '/game-data/current-game.json'
+        || metric.visualAuthority !== '/game-data/current-game.json'
+      ) {
         throw new Error(`Current card render is not using the current-game authority: ${JSON.stringify(metric)}.`);
       }
       if (metric.arcaneMarkerCount !== (sourceCard.trait === 'Arcane' ? 1 : 0)) {
