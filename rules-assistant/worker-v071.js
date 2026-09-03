@@ -8,9 +8,11 @@ import {
 import { persistSmartInteraction } from "./rules-persistence.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260903-8";
+export const BEHAVIOR_REVISION = "v071-qa-20260903-9";
 const FALLBACK_MODEL = "gpt-5.6-terra";
+const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 let corpusPromise;
+let corpusLoadedAt = 0;
 
 const ADJUDICATION_GUIDE = `
 ADJUDICATION PRINCIPLES
@@ -90,6 +92,32 @@ export default {
     if (request.method === "OPTIONS") {
       if (!origin) return json({ error: "Origin not allowed." }, 403, null);
       return new Response(null, { status: 204, headers: cors(origin) });
+    }
+
+    if (
+      request.method === "GET" &&
+      ["/corpus-health", "/api/corpus-health", "/v071/corpus-health", "/api/v071/corpus-health"].includes(url.pathname)
+    ) {
+      try {
+        const corpus = await getCorpus(env, { force: true });
+        return json({
+          ok: true,
+          service: "gauntlet-rules-assistant",
+          version: RULES_VERSION,
+          currentPublicRelease: "v0.7.1",
+          behaviorRevision: BEHAVIOR_REVISION,
+          authoritySetId: corpus.authoritySetId || ""
+        }, 200, origin);
+      } catch (error) {
+        console.error("v0.7.1 Rules Arbiter corpus health failure", error);
+        return json({
+          ok: false,
+          service: "gauntlet-rules-assistant",
+          version: RULES_VERSION,
+          behaviorRevision: BEHAVIOR_REVISION,
+          error: "The published Rules Arbiter corpus could not be refreshed."
+        }, 502, origin);
+      }
     }
 
     if (
@@ -255,14 +283,23 @@ export default {
   }
 };
 
-async function getCorpus(env) {
+async function getCorpus(env, { force = false } = {}) {
+  const cacheExpired = corpusLoadedAt > 0 && Date.now() - corpusLoadedAt >= CORPUS_CACHE_TTL_MS;
+  if (force || cacheExpired) {
+    corpusPromise = null;
+    corpusLoadedAt = 0;
+  }
   if (!corpusPromise) {
     const urls = defaultV071SourceUrls(env.SITE_ORIGIN || "https://gauntlet.run");
     corpusPromise = loadV071RulesCorpus({
       ...urls,
       fetchImpl: fetch
+    }).then((corpus) => {
+      corpusLoadedAt = Date.now();
+      return corpus;
     }).catch((error) => {
       corpusPromise = null;
+      corpusLoadedAt = 0;
       throw error;
     });
   }
