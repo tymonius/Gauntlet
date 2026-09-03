@@ -135,8 +135,8 @@ function normalizeTerritory(territory) {
 
 function normalizeLeader(leader) {
   const faction = slugify(leader.faction || 'neutral');
-  const rendererId = `${faction}-${slugify(leader.name)}`;
-  const rendererUrl = buildComponentRendererUrl('leader', rendererId);
+  const rendererId = `${faction}-${leader.id}`;
+  const rendererUrl = buildFaceRendererUrl('leader', rendererId);
   return {
     id: `leader-${faction}-${leader.id}`,
     type: 'leader',
@@ -246,6 +246,11 @@ function linkedComponentData(component, currentGame) {
   }
   if (component.family === 'ritual-card') return currentGame.mystics?.ritual || null;
   return null;
+}
+
+function buildFaceRendererUrl(kind, id, side = 'front') {
+  const params = new URLSearchParams({ kind, id, side });
+  return `../card-design/face-render.html?${params.toString()}`;
 }
 
 function buildComponentRendererUrl(kind, id, side = 'front', orientation = 'portrait') {
