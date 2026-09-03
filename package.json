@@ -70,6 +70,7 @@
     "publishing:check": "node scripts/sync-publishing-authority.mjs",
     "publishing:sync": "node scripts/sync-publishing-authority.mjs --write",
     "dev:v070:cli": "tsx src/cli/dev-runner-v070.ts",
+    "dev:v070:gui": "tsx src/gui/dev-server-v070.ts",
     "dev:legacy:cli": "tsx src/cli/dev-runner-v06.ts",
     "dev:legacy:gui": "tsx src/gui/dev-server-v06.ts"
   },
