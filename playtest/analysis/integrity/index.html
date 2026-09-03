@@ -144,9 +144,9 @@
           <div><p class="eyebrow">Provenance</p><h2 id="history-title">Exclusion audit history.</h2></div>
           <p>Every exclusion and restoration remains visible even after a record returns to the active dataset.</p>
         </div>
-        <div class="table-scroll">
+        <div class="table-scroll" tabindex="0" role="region" aria-label="Exclusion audit history table">
           <table class="audit-table">
-            <thead><tr><th>Status</th><th>Target</th><th>Reason</th><th>Excluded</th><th>Restored</th></tr></thead>
+            <thead><tr><th scope="col">Status</th><th scope="col">Target</th><th scope="col">Reason</th><th scope="col">Excluded</th><th scope="col">Restored</th></tr></thead>
             <tbody id="historyRows"></tbody>
           </table>
         </div>
