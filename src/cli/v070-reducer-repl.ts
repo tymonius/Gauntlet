@@ -1,21 +1,10 @@
 import {
-  reduceV070SetupAction,
-  type V070GameState,
-  type V070SetupAction,
-} from '../v070/engine';
-import {
-  reduceV070TurnAction,
-  type V070TurnAction,
-} from '../v070/turn-engine';
-import {
-  reduceV070BattleAction,
-  type V070BattleAction,
-} from '../v070/battle-engine';
+  reduceV070RecordedAction,
+  type V070RecordedAction,
+} from '../v070/replay';
+import type { V070GameState } from '../v070/engine';
 
-export type V070CliReducerCommand =
-  | { domain: 'setup'; action: V070SetupAction }
-  | { domain: 'turn'; action: V070TurnAction }
-  | { domain: 'battle'; action: V070BattleAction };
+export type V070CliReducerCommand = V070RecordedAction;
 
 export function parseV070CliReducerCommand(
   line: string,
@@ -55,14 +44,7 @@ export function applyV070CliReducerCommand(
   state: V070GameState,
   command: V070CliReducerCommand,
 ): V070GameState {
-  switch (command.domain) {
-    case 'setup':
-      return reduceV070SetupAction(state, command.action);
-    case 'turn':
-      return reduceV070TurnAction(state, command.action);
-    case 'battle':
-      return reduceV070BattleAction(state, command.action);
-  }
+  return reduceV070RecordedAction(state, command);
 }
 
 function isRecord(
