@@ -3,7 +3,7 @@
     window.GAUNTLET_PLAYTEST_SESSION_ENDPOINT ||
     "https://gauntlet-playtest-sessions.tymon-scott.workers.dev"
   ).replace(/\/$/, "");
-  const CURRENT_RULES_VERSION = "v0.7.0";
+  const CURRENT_RULES_VERSION = "v0.7.1";
   const LABEL_STORAGE_KEY = "gauntlet_playtest_host_event_labels_v1";
   const registry = window.GauntletHostRegistry;
   if (!registry) return;
