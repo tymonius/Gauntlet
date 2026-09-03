@@ -10,6 +10,7 @@ import {
 } from './battle-engine';
 import { isV070AssetActive } from './asset-face-state';
 import { v070CanonicalContent } from '../content/v070';
+import { effectiveV070AssetLimit } from './assets';
 
 function readyGame(): V070GameState {
   let state = createV070StarterGame({
@@ -289,22 +290,19 @@ describe('v0.7.0 Counterattack cards', () => {
       'hand',
     );
 
-    // Fill A's normal two-Asset bank so Resistance must open the
-    // shared enforcement choice when it banks itself.
-    inject(
-      state,
-      'A',
-      'neutral-contingency-plan',
-      'limit-one',
-      'assetBank',
-    );
-    inject(
-      state,
-      'A',
-      'neutral-foothold',
-      'limit-two',
-      'assetBank',
-    );
+    // Fill A's current effective Asset limit so Resistance must
+    // open the shared enforcement choice when it banks itself.
+    const assetLimit = effectiveV070AssetLimit(state, 'A');
+    for (let index = 0; index < assetLimit; index += 1) {
+      inject(
+        state,
+        'A',
+        'neutral-foothold',
+        `limit-${index}`,
+        'assetBank',
+      );
+    }
+    expect(state.players.A.zones.assetBank).toHaveLength(assetLimit);
 
     state = proceedToGambits(state);
     state = revealGambits(state, resistance, undefined);
