@@ -137,6 +137,13 @@ export interface V070AftermathDrawEffect {
   count: number;
 }
 
+export interface V070BattleCardAftermathDestinationOverride {
+  sourceCardId: string;
+  playerId: PlayerId;
+  instanceId: string;
+  destination: 'discard' | 'graveyard' | 'hand';
+}
+
 export interface V070GambitOrderOverride {
   source: 'neutral_observers' | 'watchtower';
   firstPlayer: PlayerId;
@@ -185,6 +192,7 @@ export interface V070BattleRuntime {
   gambitOrderOverride: V070GambitOrderOverride | null;
   pendingOutcome: V070BattleOutcome | null;
   pendingAccursedWager: V070AccursedWagerAftermathRuntime | null;
+  battleAccursedWagerInstanceIds: string[];
   pendingTerritoryAftermathChoice:
     V070TerritoryAftermathChoiceRuntime | null;
   territoryAftermathChoiceResolved: boolean;
@@ -201,6 +209,8 @@ export interface V070BattleRuntime {
   mysticLossInterruptionResolved: boolean;
   additionalRetreatEffects: V070AdditionalRetreatEffect[];
   aftermathDrawEffects: V070AftermathDrawEffect[];
+  battleCardAftermathDestinationOverrides:
+    V070BattleCardAftermathDestinationOverride[];
   militaryOrderUsedPlayers: PlayerId[];
   unbrokenRanksInstanceIds: string[];
   pendingGameVictory: {
@@ -265,6 +275,7 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     gambitOrderOverride: null,
     pendingOutcome: null,
     pendingAccursedWager: null,
+    battleAccursedWagerInstanceIds: [],
     pendingTerritoryAftermathChoice: null,
     territoryAftermathChoiceResolved: false,
     territoryAftermathOverride: null,
@@ -279,6 +290,7 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     mysticLossInterruptionResolved: false,
     additionalRetreatEffects: [],
     aftermathDrawEffects: [],
+    battleCardAftermathDestinationOverrides: [],
     militaryOrderUsedPlayers: [],
     unbrokenRanksInstanceIds: [],
     pendingGameVictory: null,
