@@ -4,29 +4,20 @@
   <meta charset="utf-8">
   <meta name="robots" content="noindex,nofollow">
   <title>Gauntlet supplemental renderer redirect</title>
-  <script>(() => {
+  <script>
+    (() => {
       const params = new URLSearchParams(window.location.search);
       const component = String(params.get('component') || '').trim();
-      const side = String(params.get('side') || 'front').trim();
-      let kind = '';
-      let id = component;
-      if (component.startsWith('mystics-rite-')) {
-        kind = 'rite';
-        id = component.replace(/^mystics-rite-/, '');
-      } else if (component.endsWith('-reference') || component === 'universal-reference') {
-        kind = 'reference';
-      }
-      if (!kind || !id) {
-        document.documentElement.dataset.redirectError = 'unsupported-component';
+      const side = String(params.get('side') || 'front').trim() === 'reverse' ? 'reverse' : 'front';
+      if (!component) {
+        document.documentElement.dataset.redirectError = 'missing-component';
         return;
       }
-      const target = new URL('/card-design/component-render.html', window.location.origin);
-      target.searchParams.set('kind', kind);
-      target.searchParams.set('id', id);
-      target.searchParams.set('side', side);
-      target.searchParams.set('orientation', 'portrait');
+      const target = new URL('/card-design/face-render.html', window.location.origin);
+      target.searchParams.set('id', `component:${component}:${side}`);
       window.location.replace(target);
-    })();</script>
+    })();
+  </script>
 </head>
 <body></body>
 </html>
