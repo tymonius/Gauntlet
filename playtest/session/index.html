@@ -73,7 +73,7 @@
               <p class="eyebrow">Live record</p>
               <h2 id="summarySerial">Session</h2>
             </div>
-            <span id="statusPill" class="status-pill">Open</span>
+            <span id="statusPill" class="status-pill" role="status" tabindex="-1">Open</span>
           </div>
           <dl>
             <div><dt>Rules version</dt><dd id="rulesVersion">v0.7.1</dd></div>
@@ -108,9 +108,9 @@
           </form>
         </section>
 
-        <section id="joinedPanel" class="panel joined-panel" hidden>
+        <section id="joinedPanel" class="panel joined-panel" hidden tabindex="-1" aria-labelledby="joinedTitle">
           <p class="eyebrow">Connected</p>
-          <h2>You are linked to this playtest sheet.</h2>
+          <h2 id="joinedTitle">You are linked to this playtest sheet.</h2>
           <p id="joinedCopy">Questions and feedback submitted through the Rules Arbiter will include this session.</p>
           <button id="openArbiter" type="button">Ask the Rules Arbiter</button>
         </section>
