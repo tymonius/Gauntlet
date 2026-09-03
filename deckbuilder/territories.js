@@ -193,6 +193,8 @@
       row.querySelector('[data-action="preview"]').addEventListener("click", () => {
         territoryState.selectedId = territory.id;
         renderTerritoryPicker();
+        list.querySelector(".compact-territory-row.selected .compact-row-preview-button")
+          ?.focus({ preventScroll: true });
       });
       row.querySelector('[data-action="toggle"]').addEventListener("click", () => {
         territoryState.selectedId = territory.id;
