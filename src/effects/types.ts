@@ -1,4 +1,8 @@
-import type { BattleState, CardID, GameState, PlayerID, SpaceID } from '../types/v06';
+import type { BattleCardTarget, BattleState } from '../types/battle';
+import type { GameState } from '../types/game';
+import type { CardID, PlayerID, SpaceID } from '../types/ids';
+
+export type { BattleCardTarget } from '../types/battle';
 
 export type EffectTiming =
   | 'battle_started'
@@ -8,13 +12,6 @@ export type EffectTiming =
   | 'before_battle_resolution'
   | 'after_battle_resolution'
   | 'card_destination';
-
-export interface BattleCardTarget {
-  sourceCardId: CardID;
-  sourceOwner: PlayerID;
-  targetCardId: CardID;
-  targetOwner: PlayerID;
-}
 
 export interface EffectContext {
   game: GameState;

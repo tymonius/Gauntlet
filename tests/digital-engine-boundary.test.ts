@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
+import { dirname, resolve, sep } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { CURRENT_RULES_VERSION } from '../src/content/current';
 
@@ -127,6 +127,24 @@ describe('digital engine boundary', () => {
           if (resolvesToGenericLegacyBarrel(path, specifier, directory)) {
             offenders.push(`${path}: ${specifier} -> src/${directory}`);
           }
+        }
+      }
+    }
+
+    expect(offenders).toEqual([]);
+  });
+
+  it('keeps the legacy type layer independent from effect runtime', () => {
+    const offenders: string[] = [];
+    const effectsRoot = resolve('src/effects');
+
+    for (const path of sourceFilesUnder('src/types')) {
+      const source = readFileSync(path, 'utf8');
+      for (const specifier of importedSpecifiers(source)) {
+        if (!specifier.startsWith('.')) continue;
+        const resolved = resolve(dirname(path), specifier);
+        if (resolved === effectsRoot || resolved.startsWith(`${effectsRoot}${sep}`)) {
+          offenders.push(`${path}: ${specifier}`);
         }
       }
     }
