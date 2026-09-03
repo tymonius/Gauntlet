@@ -1,4 +1,4 @@
-import { cardCanBePlayedAt, destinationForCardPlay, getCardPlayRule } from '../cards';
+import { cardCanBePlayedAt, destinationForCardPlay, getCardPlayRule } from '../cards/playability';
 import { activeBattleCancellationCards } from '../effects/embargo';
 import type {
   BattleCardTargetOption,

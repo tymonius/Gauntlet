@@ -1,4 +1,4 @@
-import { getCardPlayRule } from '../cards';
+import { getCardPlayRule } from '../cards/playability';
 import type {
   CardID,
   GameEvent,

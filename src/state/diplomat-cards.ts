@@ -1,4 +1,4 @@
-import { diplomatProposalsById } from '../cards';
+import { diplomatProposalsById } from '../cards/diplomats';
 import type { CardID, GameEvent, GameState, PlayerID, ProposalID } from '../types/v06';
 import { drawFromDeck } from './draw';
 import { bankedAssetUseAllowed, bankedAssetCardUseAllowed } from './intelligence-subversion-battle';

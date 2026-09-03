@@ -1,4 +1,4 @@
-import { cardCanBePlayedAt, destinationForCardPlay } from '../cards';
+import { cardCanBePlayedAt, destinationForCardPlay } from '../cards/playability';
 import type {
   CardID,
   GameEvent,

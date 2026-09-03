@@ -1,4 +1,4 @@
-import { cardCanBePlayedAt } from '../cards';
+import { cardCanBePlayedAt } from '../cards/playability';
 import type {
   BattleParticipantState,
   BattlePlayedCard,
