@@ -292,6 +292,32 @@ async function main() {
       ));
       await validateEmbeddedFrameInspector(leaderPage, leaderFrame, 'Leader card');
 
+      const generalFrame = leaderPage.locator(
+        '#leader-cards .component-review-frame[src*="kind=leader"][src*="id=military-general"]'
+      ).first();
+      await generalFrame.waitFor();
+      await leaderPage.waitForFunction(() => (
+        [...document.querySelectorAll('#leader-cards .component-review-frame')]
+          .find(frame => frame.src.includes('id=military-general'))
+          ?.contentDocument?.body?.dataset.renderReady === 'true'
+      ));
+      const generalCrop = await generalFrame.evaluate(frame => {
+        const card = frame.contentDocument?.querySelector('.leader-card');
+        const image = card?.querySelector('.card-art img');
+        return {
+          applied: card?.dataset.artDirectionApplied || '',
+          objectPosition: image ? getComputedStyle(image).objectPosition : '',
+          cropMode: image?.dataset.artCrop || '',
+        };
+      });
+      if (
+        generalCrop.applied !== 'css-default'
+        || generalCrop.objectPosition !== '50% 16%'
+        || generalCrop.cropMode
+      ) {
+        throw new Error(`General lost its approved CSS artwork crop: ${JSON.stringify(generalCrop)}.`);
+      }
+
       const bankerFrame = leaderPage.locator(
         '#leader-cards .component-review-frame[src*="kind=leader"][src*="id=financiers-banker"]'
       ).first();
