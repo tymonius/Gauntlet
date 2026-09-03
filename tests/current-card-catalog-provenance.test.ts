@@ -158,8 +158,8 @@ describe("v0.6.4 full card-expansion candidate staging", () => {
   });
 
   it("preserves the v0.6.4 staging document only as provenance for the flattened current card pool", () => {
-    expect(currentAuthority.version).toBe("v0.7.1-candidate");
-    expect(currentAuthority.status).toBe("active-development");
+    expect(currentAuthority.version).toBe("v0.7.1");
+    expect(currentAuthority.status).toBe("current-release");
     expect(currentAuthority.provenance.historicalInputs.cardChanges).toBe("/docs/v0.6.4-card-additions.json");
     expect(currentAuthority).not.toHaveProperty("sources");
     expect(currentAuthority).not.toHaveProperty("resolution");
