@@ -7690,107 +7690,1474 @@
   },
   "artDirection": {
     "diplomats-ambassador": {
-      "focusY": 0.071
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.071,
+      "smart": false,
+      "zoom": 1
     },
     "diplomats-diplomatic-latitude": {
-      "focusY": 0.2
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.2,
+      "smart": false,
+      "zoom": 1
     },
     "diplomats-senator": {
-      "focusY": 0.037
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.037,
+      "smart": false,
+      "zoom": 1
     },
     "financiers-banker": {
-      "focusY": 0
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0,
+      "smart": false,
+      "zoom": 1
     },
     "financiers-executive": {
-      "focusY": 0.095
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.095,
+      "smart": false,
+      "zoom": 1
     },
     "financiers-war-bonds": {
-      "focus": [
-        0.368,
-        0.572
-      ],
+      "fit": "cover",
+      "focusX": 0.368,
+      "focusY": 0.572,
+      "smart": false,
       "zoom": 1.06
     },
     "inquisition-grand-inquisitor": {
-      "focusY": 0.075
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.075,
+      "smart": false,
+      "zoom": 1
     },
     "intelligence-sleeper-network": {
-      "focusY": 0.763
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.763,
+      "smart": false,
+      "zoom": 1
     },
     "intelligence-spymaster": {
-      "focusY": 0.126
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.126,
+      "smart": false,
+      "zoom": 1
     },
     "military-commandant": {
-      "focusY": 0.099
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.099,
+      "smart": false,
+      "zoom": 1
     },
     "mystics-alchemist": {
-      "focusY": 0.095
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.095,
+      "smart": false,
+      "zoom": 1
     },
     "mystics-necromancy": {
-      "focusY": 0.398
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.398,
+      "smart": false,
+      "zoom": 1
     },
     "rite-blood": {
-      "focusY": 0.995
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.995,
+      "smart": false,
+      "zoom": 1
     },
     "rite-crossing-completed": {
-      "focusY": 0.413
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.413,
+      "smart": false,
+      "zoom": 1
     },
     "rite-echoes": {
-      "focusY": 0.105
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.105,
+      "smart": false,
+      "zoom": 1
     },
     "territory-arena-grand-melee": {
-      "focusY": 0.747
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.747,
+      "smart": false,
+      "zoom": 1
     },
     "territory-arena-single-combat": {
-      "focusY": 0.26
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.26,
+      "smart": false,
+      "zoom": 1
     },
     "territory-arena-spoils-of-war": {
-      "focusY": 0.442
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.442,
+      "smart": false,
+      "zoom": 1
     },
     "territory-disrupted-supply-lines": {
-      "focusY": 0.271
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.271,
+      "smart": false,
+      "zoom": 1
     },
     "territory-exposed-flank": {
-      "focusY": 0.524
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.524,
+      "smart": false,
+      "zoom": 1
     },
     "territory-field-hospital": {
-      "focusY": 0.406
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.406,
+      "smart": false,
+      "zoom": 1
     },
     "territory-high-ground": {
-      "focusY": 0.068
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.068,
+      "smart": false,
+      "zoom": 1
     },
     "territory-king-s-road": {
-      "focusY": 0.534
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.534,
+      "smart": false,
+      "zoom": 1
     },
     "territory-monastery": {
-      "focusY": 0.603
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.603,
+      "smart": false,
+      "zoom": 1
     },
     "territory-poisonous-gas": {
-      "focusY": 0.575
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.575,
+      "smart": false,
+      "zoom": 1
     },
     "territory-quicksand": {
-      "focusY": 0.702
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.702,
+      "smart": false,
+      "zoom": 1
     },
     "territory-refuge": {
-      "focusY": 0.463
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.463,
+      "smart": false,
+      "zoom": 1
     },
     "territory-ruined-storehouse": {
-      "focusY": 0.454
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.454,
+      "smart": false,
+      "zoom": 1
     },
     "territory-smuggler-s-pass": {
-      "focusY": 0.648
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.648,
+      "smart": false,
+      "zoom": 1
     },
     "territory-supply-depot": {
-      "focusY": 0.523
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.523,
+      "smart": false,
+      "zoom": 1
     },
     "territory-toll-bridge": {
-      "focusY": 0.463
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.463,
+      "smart": false,
+      "zoom": 1
     },
     "territory-watchtower": {
-      "focusY": 0.229
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.229,
+      "smart": false,
+      "zoom": 1
     },
     "rite-equivalence": {
-      "focusY": 0
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0,
+      "smart": false,
+      "zoom": 1
+    },
+    "diplomats-clemency": {
+      "fit": "cover",
+      "focusX": 0.4375,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "diplomats-demilitarized-zone": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 1,
+      "smart": false,
+      "zoom": 1
+    },
+    "diplomats-detente": {
+      "fit": "cover",
+      "focusX": 0.75,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "diplomats-diplomatic-divination": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "diplomats-good-faith": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "diplomats-gunboat-diplomacy": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 1,
+      "smart": false,
+      "zoom": 1
+    },
+    "diplomats-neutral-observers": {
+      "fit": "cover",
+      "focusX": 0.75,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "diplomats-nonbinding-resolution": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.375,
+      "smart": false,
+      "zoom": 1
+    },
+    "diplomats-plenipotentiary": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.1667,
+      "smart": false,
+      "zoom": 1
+    },
+    "diplomats-safe-conduct": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "diplomats-sanctions-blockade": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 1,
+      "smart": false,
+      "zoom": 1
+    },
+    "diplomats-sanctions-censure": {
+      "fit": "cover",
+      "focusX": 0.375,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "diplomats-sanctions-embargo": {
+      "fit": "cover",
+      "focusX": 0,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "diplomats-trade-concessions": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.3158,
+      "smart": false,
+      "zoom": 1
+    },
+    "financiers-actuarial-alchemy": {
+      "fit": "cover",
+      "focusX": 0,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "financiers-capital-gains": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "financiers-compound-interest": {
+      "fit": "cover",
+      "focusX": 0.3125,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "financiers-corner-the-market": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "financiers-divestment": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "financiers-foreclosure": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "financiers-leveraged-buyout": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0,
+      "smart": false,
+      "zoom": 1
+    },
+    "financiers-liquidation": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "financiers-margin-loan": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5301,
+      "smart": false,
+      "zoom": 1
+    },
+    "financiers-monetary-crisis": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "financiers-property-dues": {
+      "fit": "cover",
+      "focusX": 0.4167,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "financiers-speculation": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0,
+      "smart": false,
+      "zoom": 1
+    },
+    "financiers-tariffs": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "financiers-underwriting": {
+      "fit": "cover",
+      "focusX": 0.8125,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-accusation": {
+      "fit": "cover",
+      "focusX": 0.8125,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-act-of-faith": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-anathema": {
+      "fit": "cover",
+      "focusX": 0.4545,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-burning-at-the-stake": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-confession": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.3333,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-divine-mercy": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-excommunication": {
+      "fit": "cover",
+      "focusX": 0,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-guilt-by-association": {
+      "fit": "cover",
+      "focusX": 0.5833,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-hellfire": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-heresy": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-malleus-maleficarum": {
+      "fit": "cover",
+      "focusX": 0.4375,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-martyrdom": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-penance": {
+      "fit": "cover",
+      "focusX": 0.375,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-retribution": {
+      "fit": "cover",
+      "focusX": 0.375,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-tyranny": {
+      "fit": "cover",
+      "focusX": 0,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "inquisition-witch-hunter": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.16,
+      "smart": false,
+      "zoom": 1
+    },
+    "intelligence-assassins": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0,
+      "smart": false,
+      "zoom": 1
+    },
+    "intelligence-deep-cover": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "intelligence-disinformation": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "intelligence-exfiltration": {
+      "fit": "cover",
+      "focusX": 0.75,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "intelligence-extraordinary-rendition": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "intelligence-fog-of-war": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.6053,
+      "smart": false,
+      "zoom": 1
+    },
+    "intelligence-intercepted-orders": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "intelligence-operational-reassessment": {
+      "fit": "cover",
+      "focusX": 0.5833,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "intelligence-ranger": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.16,
+      "smart": false,
+      "zoom": 1
+    },
+    "intelligence-reconnaissance": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.25,
+      "smart": false,
+      "zoom": 1
+    },
+    "intelligence-regime-change": {
+      "fit": "cover",
+      "focusX": 0.3125,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "intelligence-spectral-surveillance": {
+      "fit": "cover",
+      "focusX": 0.1875,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "intelligence-spies": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.2727,
+      "smart": false,
+      "zoom": 1
+    },
+    "intelligence-subversion": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.1667,
+      "smart": false,
+      "zoom": 1
+    },
+    "intelligence-treason": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.3333,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-battlefield-promotion": {
+      "fit": "cover",
+      "focusX": 0.5625,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-brothers-in-arms": {
+      "fit": "cover",
+      "focusX": 0,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-countercharge": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-encampment": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.6,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-field-command": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.7857,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-general": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.16,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-give-chase": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.8636,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-high-command": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-hold-the-line": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-invasion": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-rearguard": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-reserve-force": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5556,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-shock-and-awe": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.3,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-unbroken-ranks": {
+      "fit": "cover",
+      "focusX": 0,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-war-crimes": {
+      "fit": "cover",
+      "focusX": 0.7,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "military-war-witch": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "mystics-accursed-wager": {
+      "fit": "cover",
+      "focusX": 0.5625,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "mystics-black-covenant": {
+      "fit": "cover",
+      "focusX": 0.375,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "mystics-circle-of-bones": {
+      "fit": "cover",
+      "focusX": 0.6,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "mystics-dark-omens": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "mystics-fate-s-toll": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "mystics-grave-ward": {
+      "fit": "cover",
+      "focusX": 0.3125,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "mystics-nature-s-altar": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0,
+      "smart": false,
+      "zoom": 1
+    },
+    "mystics-paths-of-shadow": {
+      "fit": "cover",
+      "focusX": 0.5625,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "mystics-rend-the-veil": {
+      "fit": "cover",
+      "focusX": 0.4167,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "mystics-sacrifice-recovery": {
+      "fit": "cover",
+      "focusX": 0,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "mystics-soul-for-soul": {
+      "fit": "cover",
+      "focusX": 0.4375,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "mystics-spirit-hollow": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0,
+      "smart": false,
+      "zoom": 1
+    },
+    "mystics-spirit-walker": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.16,
+      "smart": false,
+      "zoom": 1
+    },
+    "mystics-threefold-vision": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "mystics-witchcraft": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-advance-guard": {
+      "fit": "cover",
+      "focusX": 0,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-arcane-knowledge": {
+      "fit": "cover",
+      "focusX": 0,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-armistice": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-assimilation": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-attrition": {
+      "fit": "cover",
+      "focusX": 0.375,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-battlefield-plunder": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-bombardment": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.2308,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-capital-punishment": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-conscription": {
+      "fit": "cover",
+      "focusX": 0.1875,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-consolidation": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-contingency-plan": {
+      "fit": "cover",
+      "focusX": 0.5625,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-contraband": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-counterintelligence": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-counterworks": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-court-martial": {
+      "fit": "cover",
+      "focusX": 0.5625,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-decoys": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-disruption": {
+      "fit": "cover",
+      "focusX": 0.3333,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-entrenchment": {
+      "fit": "cover",
+      "focusX": 0.4375,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-fealty": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-foothold": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-forced-march": {
+      "fit": "cover",
+      "focusX": 0.5625,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-fortifications": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-illegal-occupation": {
+      "fit": "cover",
+      "focusX": 0,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-insurrection": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-landslide": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.6,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-liberation": {
+      "fit": "cover",
+      "focusX": 0.1875,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-manifest-destiny": {
+      "fit": "cover",
+      "focusX": 0,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-new-recruits": {
+      "fit": "cover",
+      "focusX": 0.6875,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-palisade-wall": {
+      "fit": "cover",
+      "focusX": 0.6667,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-pathfinders": {
+      "fit": "cover",
+      "focusX": 0.1875,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-phantom-passage": {
+      "fit": "cover",
+      "focusX": 0.5625,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-protracted-siege": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.4286,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-rallying-cry": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-redemption": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-reinforcements": {
+      "fit": "cover",
+      "focusX": 0.5625,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-requisition": {
+      "fit": "cover",
+      "focusX": 0.1875,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-reserves": {
+      "fit": "cover",
+      "focusX": 0.25,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-resistance": {
+      "fit": "cover",
+      "focusX": 1,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-resourcefulness": {
+      "fit": "cover",
+      "focusX": 0.1875,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-revolution": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-rousing-speech": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-sabotage": {
+      "fit": "cover",
+      "focusX": 0.3333,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-salvage": {
+      "fit": "cover",
+      "focusX": 0.75,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-scorched-earth": {
+      "fit": "cover",
+      "focusX": 0.4167,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-scouting-report": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-sedition": {
+      "fit": "cover",
+      "focusX": 0,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-sequestration": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-stand-ground": {
+      "fit": "cover",
+      "focusX": 0.7813,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-strategic-withdrawal": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-supplies": {
+      "fit": "cover",
+      "focusX": 0.25,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-tactical-planning": {
+      "fit": "cover",
+      "focusX": 0.8125,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "neutral-valor": {
+      "fit": "cover",
+      "focusX": 0,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-capitulation": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.7692,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-capitulation-ratified": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5238,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-de-escalation": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.2308,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-de-escalation-ratified": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5238,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-diplomatic-recognition": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.6154,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-diplomatic-recognition-ratified": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5238,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-mutual-disarmament": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.2308,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-mutual-disarmament-ratified": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5238,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-open-channels": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.2308,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-open-channels-ratified": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5238,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-orderly-withdrawal": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.6154,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-orderly-withdrawal-ratified": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5238,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-prisoner-exchange": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.7692,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-prisoner-exchange-ratified": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5238,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-rebuilding-pact": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5385,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-rebuilding-pact-ratified": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5238,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-ultimatum": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.3846,
+      "smart": false,
+      "zoom": 1
+    },
+    "proposal-ultimatum-ratified": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5238,
+      "smart": false,
+      "zoom": 1
+    },
+    "rite-blood-completed": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.381,
+      "smart": false,
+      "zoom": 1
+    },
+    "rite-consecration": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0,
+      "smart": false,
+      "zoom": 1
+    },
+    "rite-consecration-completed": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.381,
+      "smart": false,
+      "zoom": 1
+    },
+    "rite-crossing": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0,
+      "smart": false,
+      "zoom": 1
+    },
+    "rite-echoes-completed": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.381,
+      "smart": false,
+      "zoom": 1
+    },
+    "rite-equivalence-completed": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.381,
+      "smart": false,
+      "zoom": 1
+    },
+    "rite-shattering": {
+      "fit": "cover",
+      "focusX": 0.5833,
+      "focusY": 0.52,
+      "smart": false,
+      "zoom": 1
+    },
+    "rite-shattering-completed": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.381,
+      "smart": false,
+      "zoom": 1
+    },
+    "ritual-ascension": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.375,
+      "smart": false,
+      "zoom": 1
+    },
+    "territory-arena-no-quarter": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5,
+      "smart": false,
+      "zoom": 1
+    },
+    "territory-command-tent": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.2787,
+      "smart": false,
+      "zoom": 1
+    },
+    "territory-difficult-terrain": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.4182,
+      "smart": false,
+      "zoom": 1
+    },
+    "territory-fortified-pass": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.5,
+      "smart": false,
+      "zoom": 1
+    },
+    "territory-garrison": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0,
+      "smart": false,
+      "zoom": 1
+    },
+    "territory-insurgency": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.0714,
+      "smart": false,
+      "zoom": 1
+    },
+    "territory-old-battlefield": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.625,
+      "smart": false,
+      "zoom": 1
+    },
+    "territory-training-grounds": {
+      "fit": "cover",
+      "focusX": 0.5,
+      "focusY": 0.3455,
+      "smart": false,
+      "zoom": 1
     }
   }
 }
