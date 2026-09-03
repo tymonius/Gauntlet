@@ -1364,22 +1364,39 @@ function applyV070TurnStartTerritoryEffects(
   };
 
   if (plan.supplyDepotCards > 0) {
-    drawIntoHand(
+    const blockingMarginLoans = activeMarginLoanInstanceIds(
       state,
       playerId,
-      plan.supplyDepotCards,
-      'Supply Depot',
     );
-    appendV070Event(state, {
-      type: 'territory_effect_applied',
-      actor: playerId,
-      visibility: 'public',
-      payload: {
-        territoryId: 'territory-supply-depot',
-        effect: 'start_turn_card',
-        amount: plan.supplyDepotCards,
-      },
-    });
+    if (blockingMarginLoans.length > 0) {
+      appendV070Event(state, {
+        type: 'margin_loan_turn_draw_blocked',
+        actor: playerId,
+        visibility: 'public',
+        payload: {
+          marginLoanInstanceIds: [...blockingMarginLoans],
+          source: 'Supply Depot',
+          count: plan.supplyDepotCards,
+        },
+      });
+    } else {
+      drawIntoHand(
+        state,
+        playerId,
+        plan.supplyDepotCards,
+        'Supply Depot',
+      );
+      appendV070Event(state, {
+        type: 'territory_effect_applied',
+        actor: playerId,
+        visibility: 'public',
+        payload: {
+          territoryId: 'territory-supply-depot',
+          effect: 'start_turn_card',
+          amount: plan.supplyDepotCards,
+        },
+      });
+    }
   }
   if (plan.kingsRoadMovementBonus > 0) {
     appendV070Event(state, {
