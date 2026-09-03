@@ -135,7 +135,8 @@ function normalizeTerritory(territory) {
 
 function normalizeLeader(leader) {
   const faction = slugify(leader.faction || 'neutral');
-  const rendererUrl = buildComponentRendererUrl('leader', leader.id);
+  const rendererId = `${faction}-${slugify(leader.name)}`;
+  const rendererUrl = buildComponentRendererUrl('leader', rendererId);
   return {
     id: `leader-${faction}-${leader.id}`,
     type: 'leader',
@@ -158,7 +159,8 @@ function normalizeComponent(component, currentGame) {
   const faction = slugify(component.faction || 'neutral');
   const rendererKind = componentRendererKind(component);
   const rendererId = componentRendererId(component);
-  const faces = componentFaces(component, rendererKind, rendererId);
+  const orientation = componentRenderOrientation(component);
+  const faces = componentFaces(component, rendererKind, rendererId, orientation);
   const linkedData = linkedComponentData(component, currentGame);
 
   return {
@@ -207,10 +209,14 @@ function componentRendererId(component) {
   return String(component.renderSource?.componentId || component.id || '').trim();
 }
 
-function componentFaces(component, rendererKind, rendererId) {
+function componentRenderOrientation(component) {
+  return component.family === 'deed-card' ? 'landscape' : 'portrait';
+}
+
+function componentFaces(component, rendererKind, rendererId, orientation = 'portrait') {
   const face = (label, side = 'front') => ({
     label,
-    rendererUrl: buildComponentRendererUrl(rendererKind, rendererId, side)
+    rendererUrl: buildComponentRendererUrl(rendererKind, rendererId, side, orientation)
   });
 
   if (component.family === 'proposal-treaty-card') {
@@ -242,8 +248,9 @@ function linkedComponentData(component, currentGame) {
   return null;
 }
 
-function buildComponentRendererUrl(kind, id, side = 'front') {
+function buildComponentRendererUrl(kind, id, side = 'front', orientation = 'portrait') {
   const params = new URLSearchParams({ kind, id, side });
+  if (orientation === 'landscape') params.set('orientation', 'landscape');
   return `../card-design/component-render.html?${params.toString()}`;
 }
 
@@ -514,9 +521,10 @@ function scaleRenderStage(stage) {
   const frame = stage.querySelector('.rendered-card-frame');
   if (!frame) return;
 
-  const surface = frame.src.includes('/card-design/territory-review-render.html')
-    ? PRODUCTION_SURFACES.landscape
-    : PRODUCTION_SURFACES.portrait;
+  const frameUrl = new URL(frame.src, window.location.href);
+  const landscape = frameUrl.pathname.includes('/card-design/territory-review-render.html')
+    || frameUrl.searchParams.get('orientation') === 'landscape';
+  const surface = landscape ? PRODUCTION_SURFACES.landscape : PRODUCTION_SURFACES.portrait;
   const availableWidth = Math.max(0, stage.clientWidth);
   const targetWidth = Math.min(CARD_RENDER_MAX_WIDTH, availableWidth || surface.widthCssPx);
   const scale = targetWidth / surface.widthCssPx;
