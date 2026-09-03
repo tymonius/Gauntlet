@@ -10,9 +10,7 @@
 
   if (kind === "leader") {
     const redirect = new URL("/card-design/face-render.html", window.location.origin);
-    redirect.searchParams.set("kind", "leader");
-    redirect.searchParams.set("id", id);
-    redirect.searchParams.set("side", side);
+    redirect.searchParams.set("id", `leader:${id}`);
     for (const key of ["rules", "inspection", "version"]) {
       const value = params.get(key);
       if (value) redirect.searchParams.set(key, value);
