@@ -1,5 +1,5 @@
 import type { BattleParticipantState, CardID, GameState, PlayerID } from '../types/v06';
-import { bankedAssetCardUseAllowed } from '../state/banked-assets';
+import { bankedAssetCardUseAllowed } from './asset-policy';
 import { validateEmbargoTargets } from './embargo';
 import type { BattleCardTarget, EffectHandler } from './types';
 

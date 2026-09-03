@@ -218,6 +218,26 @@ describe('digital engine boundary', () => {
     expect(offenders).toEqual([]);
   });
 
+  it('keeps legacy effect modules independent from state/card/dev runtime layers', () => {
+    const offenders: string[] = [];
+    const forbiddenDirectories = ['state', 'cards', 'dev'];
+    const effectSources = sourceFilesUnder('src/effects')
+      .filter((path) => !/\.(?:test|spec)\.[cm]?[jt]sx?$/.test(path));
+
+    for (const path of effectSources) {
+      const source = readFileSync(path, 'utf8');
+      for (const specifier of importedSpecifiers(source)) {
+        for (const directory of forbiddenDirectories) {
+          if (resolvesUnderSourceDirectory(path, specifier, directory)) {
+            offenders.push(`${path}: ${specifier} -> src/${directory}`);
+          }
+        }
+      }
+    }
+
+    expect(offenders).toEqual([]);
+  });
+
   it('keeps legacy card definitions independent from state/effect/dev runtime layers', () => {
     const offenders: string[] = [];
     const forbiddenDirectories = ['state', 'effects', 'dev'];
