@@ -10,8 +10,9 @@ import type { PendingMilitaryChoice, PendingMilitaryTimingChoice } from './milit
 import type { PendingAccursedWagerAftermath, PendingMysticsChoice } from './mystics';
 import type { ArmisticeAssetQueueEntry, CounterworksOverlayPlacementRequest, CourtMartialCleanupRequest, DecoysAssetQueueEntry, FootholdAssetQueueEntry, PendingNeutralChoice, RedemptionBattleReturns, RedemptionDiscardQueueEntry, RequisitionBattleQueueEntry, ResistanceBattleCleanupEntry, RousingSpeechAssetQueueEntry, NeutralSabotageAssetSuppression, ReservesBattleTopdecks, RevolutionBattleExchangeState, SequestrationActionState, SalvageBattleQueueEntry, ScorchedEarthAssetQueueEntry, SeditionBattleQueueEntry, SuppliesAssetQueueEntry, SuppliesBattleQueueEntry } from './neutral';
 import type { PlayerState, PrivatePlayerView, PublicPlayerView } from './player';
+import type { GamePhase } from './phase';
 
-export type GamePhase = 'setup' | 'turn_start' | 'action_before_movement' | 'movement' | 'battle' | 'action_after_movement' | 'cleanup' | 'game_over';
+export type { GamePhase } from './phase';
 
 export interface GameEvent { id: string; turn: number; actor?: PlayerID; type: string; message: string; payload?: unknown; visibility: 'public' | 'private' | 'system'; visibleTo?: PlayerID[]; }
 export interface PendingAssetBankDiscard { playerId: PlayerID; limit: number; discardCount: number; options: CardID[]; }

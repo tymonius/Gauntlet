@@ -142,6 +142,46 @@ describe('digital engine boundary', () => {
     expect(offenders).toEqual([]);
   });
 
+  it('keeps the legacy type graph acyclic', () => {
+    const typeFiles = sourceFilesUnder('src/types')
+      .filter((path) => path.endsWith('.ts') && !path.endsWith('.d.ts'));
+    const absoluteToPath = new Map(typeFiles.map((path) => [resolve(path), path]));
+    const graph = new Map<string, string[]>();
+
+    for (const path of typeFiles) {
+      const dependencies: string[] = [];
+      const source = readFileSync(path, 'utf8');
+      for (const specifier of importedSpecifiers(source)) {
+        if (!specifier.startsWith('.')) continue;
+        const target = resolve(dirname(path), specifier);
+        const targetPath = absoluteToPath.get(target) || absoluteToPath.get(`${target}.ts`);
+        if (targetPath) dependencies.push(targetPath);
+      }
+      graph.set(path, dependencies);
+    }
+
+    const visiting = new Set<string>();
+    const visited = new Set<string>();
+    const cycles: string[] = [];
+
+    const visit = (path: string, stack: string[]) => {
+      if (visiting.has(path)) {
+        const start = stack.indexOf(path);
+        cycles.push([...stack.slice(start), path].join(' -> '));
+        return;
+      }
+      if (visited.has(path)) return;
+
+      visiting.add(path);
+      for (const dependency of graph.get(path) || []) visit(dependency, [...stack, path]);
+      visiting.delete(path);
+      visited.add(path);
+    };
+
+    for (const path of typeFiles) visit(path, []);
+    expect(cycles).toEqual([]);
+  });
+
   it('keeps the legacy type layer independent from runtime layers', () => {
     const offenders: string[] = [];
     const forbiddenDirectories = ['state', 'effects', 'cards', 'dev'];

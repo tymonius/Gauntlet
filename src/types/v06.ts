@@ -1,6 +1,7 @@
 export * from './ids';
 export * from './zones';
 export * from './resources';
+export * from './phase';
 export * from './leader';
 export * from './military';
 export * from './diplomats';
