@@ -1,4 +1,4 @@
-import { loadCurrentGame } from '../game-data/current-game.mjs';
+import { loadRenderGame } from './render-context.mjs';
 
 let RITES = [];
 let RITUAL = {};
@@ -166,7 +166,7 @@ async function renderRites() {
     return;
   }
   try {
-    const currentGame = await loadCurrentGame();
+    const currentGame = await loadRenderGame();
     const mystics = currentGame.mystics || {};
     RITES = Array.isArray(mystics.rites) ? mystics.rites : [];
     if (catalogFilter?.sort === 'name') RITES = RITES.slice().sort((a, b) => a.name.localeCompare(b.name));

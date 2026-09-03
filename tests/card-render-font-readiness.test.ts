@@ -6,7 +6,7 @@ const renderSource = readFileSync("card-design/card-review-render.js", "utf8");
 describe("production card font readiness", () => {
   it("loads the production display and reading faces before layout scripts run", () => {
     const fontLoad = renderSource.indexOf("await loadCardFonts(card);");
-    const rendererLoad = renderSource.indexOf("await loadScript('/tts/renderer/renderer.js');");
+    const rendererLoad = renderSource.indexOf("await loadScript('/card-design/playable-card-renderer.js');");
     const cardDesignLoad = renderSource.indexOf("await loadScript('/card-design/card-design.js');");
 
     expect(renderSource).toContain('document.fonts.load');

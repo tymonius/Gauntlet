@@ -1,7 +1,14 @@
-(() => {
+(async () => {
+  const { PRODUCTION_SURFACES } = await import('../card-design/production-surface.mjs');
   const CARD_FORMATS = Object.freeze({
-    portrait: Object.freeze({ width: 240, height: 336 }),
-    landscape: Object.freeze({ width: 336, height: 240 }),
+    portrait: Object.freeze({
+      width: PRODUCTION_SURFACES.portrait.widthCssPx,
+      height: PRODUCTION_SURFACES.portrait.heightCssPx,
+    }),
+    landscape: Object.freeze({
+      width: PRODUCTION_SURFACES.landscape.widthCssPx,
+      height: PRODUCTION_SURFACES.landscape.heightCssPx,
+    }),
   });
   const MAX_SCALE = 2.35;
   const INSPECTION_HISTORY_KEY = 'gauntletCardInspection';
@@ -291,4 +298,6 @@
     currentCardHref = '';
     applyCardFormat('portrait');
   }
-})();
+})().catch(error => {
+  console.error('Card inspection failed to initialize.', error);
+});

@@ -12,7 +12,7 @@
     ensureStylesheet("rendered-card-preview.css?v=20260819-2", "deckbuilder-rendered-card-preview");
     ensureStylesheet("metadata-ui.css?v=20260819-2", "deckbuilder-metadata-ui");
     ensureStylesheet("../card-reference/card-inspection.css?v=20260819-2", "shared-card-inspection");
-    ensureScript("rendered-card-preview.js?v=20260902-1", "deckbuilder-rendered-card-preview");
+    ensureScript("rendered-card-preview.js?v=20260902-2", "deckbuilder-rendered-card-preview");
     ensureScript("metadata-ui.js?v=20260902-1", "deckbuilder-metadata-ui");
     ensureScript("../card-reference/card-inspection.js?v=20260819-2", "shared-card-inspection");
   }

@@ -1,3 +1,5 @@
+import { resolveArtDirection, validateVisualPolicy } from './art-direction.mjs';
+
 export const RELEASED_MODE = 'released';
 export const CANDIDATE_MODE = 'candidate';
 export const PUBLISHED_VERSION = 'v0.7.1';
@@ -98,8 +100,10 @@ export function normalizePublishedGame(authority, starterDeckData, visualAuthori
   if (visualAuthority && (visualAuthority.authority !== 'current-game' || typeof visualAuthority.artDirection !== 'object')) {
     throw new Error('Current Card Design visual authority is incomplete.');
   }
+  if (visualAuthority) validateVisualPolicy(visualAuthority.visualPolicy);
   // Ruleset selection controls gameplay/copy only. Artwork composition is a
   // single current Card Design authority shared by released and candidate views.
+  const visualPolicy = clone(visualAuthority?.visualPolicy || {});
   const artDirection = clone(visualAuthority?.artDirection || {});
 
   return Object.freeze({
@@ -129,6 +133,7 @@ export function normalizePublishedGame(authority, starterDeckData, visualAuthori
     starterDecks: Object.freeze(starterDecks),
     starterDeckData: Object.freeze(clone(starterDeckData)),
     arcaneSymbol: Object.freeze(clone(authority.arcane_symbol || {})),
+    visualPolicy: Object.freeze(visualPolicy),
     artDirection: Object.freeze(artDirection),
     mystics: Object.freeze(clone(authority.mystics || {})),
     componentContract: Object.freeze(componentContract),
@@ -145,7 +150,7 @@ export function normalizePublishedGame(authority, starterDeckData, visualAuthori
     findStarterDeck(faction, leader) {
       return starterDecks.find(deck => deck.factionId === faction && deck.leaderId === leader) || null;
     },
-    artDirectionFor(id) { return artDirection[id] ? clone(artDirection[id]) : null; },
+    artDirectionFor(id) { return clone(resolveArtDirection(visualPolicy, artDirection, id)); },
   });
 }
 

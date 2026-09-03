@@ -5,7 +5,7 @@ import {
   referenceCardMarkup,
 } from './reference-card.js';
 import { capitalLedgerMarkup } from './capital-ledger.js';
-import { loadCurrentGame } from '../game-data/current-game.mjs';
+import { loadRenderGame } from './render-context.mjs';
 
 const FACTION_LABELS = Object.freeze({
   military: 'Military',
@@ -581,7 +581,7 @@ async function renderCurrentSupplementals() {
     return;
   }
   try {
-    const currentGame = await loadCurrentGame();
+    const currentGame = await loadRenderGame();
     currentDisplayVersion = currentGame.displayVersion;
     const allGroups = buildSupplementalGroups(currentGame);
     supplementalGroups = filterSupplementalGroups(allGroups);

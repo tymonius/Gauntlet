@@ -18,7 +18,8 @@ const expectedIds = [
 
 const cardDesign = readFileSync("card-design/card-design.js", "utf8");
 const renderSurface = readFileSync("card-design/long-card-render.html", "utf8");
-const renderer = readFileSync("tts/renderer/renderer.js", "utf8");
+const renderer = readFileSync("card-design/playable-card-renderer.js", "utf8");
+const renderBridge = readFileSync("card-design/long-card-render.js", "utf8");
 const catalogSource = readFileSync("card-design/generated/v0.6.3/long-card-review-catalog.js", "utf8");
 const catalog = JSON.parse(catalogSource.slice(catalogSource.indexOf("{"), catalogSource.lastIndexOf("};") + 1));
 
@@ -38,8 +39,10 @@ describe("v0.6.3 long-card render review", () => {
 
   it("renders through the shared production card renderer without the TTS rescue fit", () => {
     expect(renderSurface).toContain("/card-design/generated/v0.6.3/long-card-review-catalog.js");
-    expect(renderSurface).toContain("/tts/renderer/renderer.js");
-    expect(renderSurface).toContain("/card-design/card-design.js");
+    expect(renderSurface).toContain("/card-design/long-card-render.js");
+    expect(renderBridge).toContain("/card-design/playable-card-renderer.js");
+    expect(renderBridge).toContain("renderContext.artDirectionFor(card.id)");
+    expect(renderBridge).toContain("/card-design/card-design.js");
     expect(renderer).toContain("get('fit') === 'production'");
     expect(renderer).toContain("element.dataset.productionFit");
     expect(renderer).toContain("fitForTts(element);");

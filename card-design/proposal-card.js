@@ -1,4 +1,4 @@
-import { loadCurrentGame } from '../game-data/current-game.mjs';
+import { loadRenderGame } from './render-context.mjs';
 
 const PROPOSAL_ART_ROOT = '/images/artwork/cards/diplomats/proposals';
 const RATIFIED_SEAL_SOURCE = '/images/artwork/supplemental/diplomats/ratified-wax-seal.webp';
@@ -137,7 +137,7 @@ async function renderProposalCatalog() {
     return;
   }
   try {
-    const currentGame = await loadCurrentGame();
+    const currentGame = await loadRenderGame();
     let proposals = Array.isArray(currentGame.proposals) ? currentGame.proposals : [];
     if (catalogFilter?.sort === 'name') proposals = proposals.slice().sort((a, b) => a.name.localeCompare(b.name));
     if (!proposals.length) throw new Error('Current-game authority has no Proposals.');

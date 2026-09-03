@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const territoryStyles = readFileSync("card-design/territory-card.css", "utf8");
-const territoryRendererStyles = readFileSync("tts/territory-renderer/territory-renderer.css", "utf8");
+const territoryRendererStyles = readFileSync("card-design/territory-card-renderer.css", "utf8");
 
 describe("Territory effect layout", () => {
   it("lets effect text claim its natural height before artwork", () => {

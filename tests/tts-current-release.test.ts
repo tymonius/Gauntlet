@@ -16,8 +16,9 @@ const savePublisher = readFileSync('scripts/generate-tts-save.mjs', 'utf8');
 const supplementalAssembler = readFileSync('scripts/assemble-tts-supplemental-save.mjs', 'utf8');
 const cardRenderer = readFileSync('tts/renderer/index.html', 'utf8');
 const territoryRenderer = readFileSync('tts/territory-renderer/index.html', 'utf8');
-const supplementalRenderer = readFileSync('tts/supplemental-renderer/supplemental-renderer.js', 'utf8');
-const backRenderer = readFileSync('tts/back-renderer/index.html', 'utf8');
+const supplementalRendererAlias = readFileSync('tts/supplemental-renderer/index.html', 'utf8');
+const backRenderer = readFileSync('card-design/card-back-render.html', 'utf8');
+const legacyBackRenderer = readFileSync('tts/back-renderer/index.html', 'utf8');
 const workflow = readFileSync('.github/workflows/generate-tts-card-assets.yml', 'utf8');
 const readme = readFileSync('tts/README.md', 'utf8');
 const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
@@ -35,7 +36,7 @@ const releaseAgnosticRuntimeText = [
   supplementalAssembler,
   cardRenderer,
   territoryRenderer,
-  supplementalRenderer,
+  supplementalRendererAlias,
 ].join('\n');
 
 describe('durable current-game TTS pipeline', () => {
@@ -113,25 +114,26 @@ describe('durable current-game TTS pipeline', () => {
     expect(starterGenerator).toContain('deckCount: decks.length');
   });
 
-  it('uses a generated current alias for browser and manifest consumers', () => {
+  it('uses generated current aliases for TTS package metadata, not as a parallel browser renderer', () => {
     expect(catalogSource).toContain("join(ROOT, 'tts', 'generated', 'current')");
     expect(catalogSource).toContain("writeFile(join(CURRENT_ALIAS_ROOT, 'catalog.js'), catalogJs)");
-    expect(cardRenderer).toContain('/tts/generated/current/catalog.js');
-    expect(territoryRenderer).toContain('/tts/generated/current/catalog.js');
     expect(leaderGenerator).toContain("join(CURRENT_ALIAS_ROOT, 'leader-manifest.json')");
     expect(starterGenerator).toContain("join(CURRENT_ALIAS_ROOT, 'starter-deck-manifest.json')");
     expect(supplementalGenerator).toContain("join(CURRENT_ALIAS_ROOT, 'supplemental-catalog.json')");
-    expect(supplementalRenderer).toContain('/tts/generated/current/supplemental-catalog.json');
+    expect(cardRenderer).toContain('/card-design/card-review-render.html');
+    expect(territoryRenderer).toContain('/card-design/territory-review-render.html');
+    expect(supplementalRendererAlias).toContain('/card-design/component-render.html');
   });
 
   it('renders all six production backs from the shared reviewed component', () => {
     for (const faction of ['military', 'diplomats', 'financiers', 'intelligence', 'mystics', 'inquisition']) {
       expect(catalogSource).toContain(`'${faction}'`);
     }
-    expect(cardGenerator).toContain('/tts/back-renderer/?faction=');
+    expect(cardGenerator).toContain('/card-design/card-back-render.html?faction=');
     expect(cardGenerator).toContain("const file = `backs/${faction}.png`");
     expect(backRenderer).toContain('/card-design/card-back.css');
     expect(backRenderer).toContain('/card-design/card-back.js');
+    expect(legacyBackRenderer).toContain('/card-design/card-back-render.html');
   });
 
   it('records the standard-back policy without leaking Neutral-card identity', () => {

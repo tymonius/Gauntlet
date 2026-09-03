@@ -1,11 +1,12 @@
-(() => {
+(async () => {
   const deckbuilder = window.GAUNTLET_DECKBUILDER;
   if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
   const escapeHtml = value => deckbuilder.escapeHtml(value);
   const deckState = () => deckbuilder.deckState();
 
-  const CARD_WIDTH = 240;
-  const CARD_HEIGHT = 336;
+  const { PRODUCTION_SURFACES } = await import("../card-design/production-surface.mjs");
+  const CARD_WIDTH = PRODUCTION_SURFACES.portrait.widthCssPx;
+  const CARD_HEIGHT = PRODUCTION_SURFACES.portrait.heightCssPx;
   const MAX_PREVIEW_WIDTH = 300;
   let resizeObserver = null;
 
@@ -78,4 +79,6 @@
   } else {
     document.addEventListener("DOMContentLoaded", () => deckbuilder.renderAvailable(), { once: true });
   }
-})();
+})().catch(error => {
+  console.error("Deckbuilder rendered-card preview failed to initialize.", error);
+});

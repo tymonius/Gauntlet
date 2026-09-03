@@ -1,5 +1,5 @@
 import { resolveFirstArtwork, slugify } from './card-artwork-resolver.js';
-import { loadCurrentGame } from '../game-data/current-game.mjs';
+import { loadRenderContext } from './render-context.mjs';
 import { installPrintArtworkFinalizer } from './print-artwork-normalizer.js';
 
 await (async () => {
@@ -85,7 +85,8 @@ await (async () => {
   try {
     if (!cardId) throw new Error('No card selected.');
 
-    const currentGame = await loadCurrentGame();
+    const renderContext = await loadRenderContext();
+    const currentGame = renderContext.game;
     const sourceCard = currentGame.findCard(cardId);
     if (!sourceCard) throw new Error(`Unknown current card: ${cardId}`);
 
@@ -111,6 +112,7 @@ await (async () => {
       sections: sectionsFromEffects(card.effects),
       source: currentGame.authorityUrl,
       artwork,
+      artDirection: renderContext.artDirectionFor(card.id),
     };
     window.GAUNTLET_TTS_CATALOG = {
       schemaVersion: 1,
@@ -126,8 +128,8 @@ await (async () => {
     // measure the card; FontFaceSet.ready alone can resolve before a newly
     // inserted card has caused those faces to be requested.
     await loadCardFonts(card);
-    await loadScript('/tts/artwork-crop.js');
-    await loadScript('/tts/renderer/renderer.js');
+    await loadScript('/card-design/artwork-crop.js');
+    await loadScript('/card-design/playable-card-renderer.js');
     await loadScript('/card-design/card-design.js');
 
     // Dynamic loading may finish after the document's native load event. Replay

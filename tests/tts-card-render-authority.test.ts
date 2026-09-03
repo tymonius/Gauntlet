@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
@@ -15,12 +15,11 @@ const sharedCardDesign = readFileSync('card-design/card-design.js', 'utf8');
 const designTokens = readFileSync('design-tokens.css', 'utf8');
 const playableRenderer = readFileSync('card-design/card-review-render.js', 'utf8');
 const territoryRenderer = readFileSync('card-design/territory-review-render.js', 'utf8');
-const playableTtsRenderer = readFileSync('tts/renderer/renderer.js', 'utf8');
-const territoryTtsRenderer = readFileSync('tts/territory-renderer/territory-renderer.js', 'utf8');
+const playableFaceRenderer = readFileSync('card-design/playable-card-renderer.js', 'utf8');
+const territoryFaceRenderer = readFileSync('card-design/territory-card-renderer.js', 'utf8');
 const playableTtsShell = readFileSync('tts/renderer/index.html', 'utf8');
 const territoryTtsShell = readFileSync('tts/territory-renderer/index.html', 'utf8');
 const finalizedTtsShell = readFileSync('tts/finalized-supplemental-renderer/index.html', 'utf8');
-const finalizedTtsRenderer = readFileSync('tts/finalized-supplemental-renderer/renderer.js', 'utf8');
 const cardDesignCatalog = readFileSync('card-design/current-card-catalog.js', 'utf8');
 const cardDesignShell = readFileSync('card-design/index.html', 'utf8');
 const dividerRules = readFileSync('card-design/reference-divider-rules.css', 'utf8');
@@ -93,23 +92,28 @@ describe('TTS card render authority', () => {
     expect(currentGame.artDirection['rite-equivalence']).toBeTruthy();
 
     expect(cardDesignCatalog).toContain('window.GAUNTLET_ART_DIRECTION = currentGame.artDirection || {}');
-    expect(cardDesignShell).not.toContain('../tts/artwork-direction-overrides.js');
+    expect(cardDesignShell).not.toContain(['..', 'tts', 'artwork-direction-overrides.js'].join('/'));
 
-    expect(componentRenderer).toContain('async function loadCanonicalArtDirection()');
-    expect(componentRenderer).toContain('await import("/game-data/current-game.mjs")');
-    expect(componentRenderer).toContain('window.GAUNTLET_ART_DIRECTION = currentGame.artDirection || {}');
+    expect(componentRenderer).toContain('async function loadCanonicalRenderContext()');
+    expect(componentRenderer).toContain('import("/card-design/render-context.mjs")');
+    expect(componentRenderer).toContain('renderContext.artDirectionFor(artworkId)');
     expect(componentRenderer).toContain('function canonicalArtworkId(card)');
-    expect(componentRenderer).toContain('window.GAUNTLET_ART_DIRECTION?.[artworkId]');
     expect(componentRenderer).toContain('await applyCanonicalArtworkDirection(card)');
     expect(componentRenderer).toContain('card.dataset.artDirectionApplied = artworkId');
-    expect(componentRenderer).toContain('card.dataset.artDirectionApplied = "css-default"');
+    expect(componentRenderer).not.toContain('card.dataset.artDirectionApplied = "css-default"');
 
-    expect(playableTtsRenderer).toContain('if (card.artDirection && Object.keys(card.artDirection).length)');
-    expect(territoryTtsRenderer).toContain('if (territory.artDirection && Object.keys(territory.artDirection).length)');
-    expect(playableTtsShell).not.toContain('/tts/artwork-direction-overrides.js');
-    expect(territoryTtsShell).not.toContain('/tts/artwork-direction-overrides.js');
-    expect(finalizedTtsShell).not.toContain('/tts/artwork-direction-overrides.js');
-    expect(finalizedTtsRenderer).toContain('window.GAUNTLET_ART_DIRECTION = currentGame.artDirection || {}');
+    expect(playableFaceRenderer).toContain('Canonical artwork direction is missing');
+    expect(playableFaceRenderer).toContain('element.dataset.artDirectionApplied = card.id');
+    expect(territoryFaceRenderer).toContain('Canonical artwork direction is missing');
+    expect(territoryFaceRenderer).toContain('card.dataset.artDirectionApplied = territory.id');
+
+    expect(playableTtsShell).toContain('/card-design/card-review-render.html');
+    expect(territoryTtsShell).toContain('/card-design/territory-review-render.html');
+    expect(finalizedTtsShell).toContain('/card-design/component-render.html');
+    expect(existsSync(['tts', 'artwork-direction-overrides.js'].join('/'))).toBe(false);
+    expect(existsSync(['tts', 'renderer', 'renderer.js'].join('/'))).toBe(false);
+    expect(existsSync(['tts', 'territory-renderer', 'territory-renderer.js'].join('/'))).toBe(false);
+    expect(existsSync(['tts', 'finalized-supplemental-renderer', 'renderer.js'].join('/'))).toBe(false);
   });
 
   it('loads the canonical web fonts before shared content-sensitive fitting', () => {

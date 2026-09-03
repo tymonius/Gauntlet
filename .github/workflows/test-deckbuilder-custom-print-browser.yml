@@ -125,7 +125,7 @@ jobs:
           if (await printPage.locator('iframe[src*="kind=proposal"]').count() < 2) throw new Error('Proposal front/reverse renderers were not paired.');
           if (await printPage.locator('iframe[src*="kind=rite"]').count() < 2) throw new Error('Rite front/reverse renderers were not paired.');
           if (await printPage.locator('iframe[src*="financiers-capital-ledger"]').count() < 2) throw new Error('Capital Ledger identical-face duplex render was not paired.');
-          if (await printPage.locator('iframe[src*="back-renderer"]').count() < 2) throw new Error('Standard backs were not added for one-sided cards.');
+          if (await printPage.locator('iframe[src*="card-back-render.html"]').count() < 2) throw new Error('Canonical standard backs were not added for one-sided cards.');
 
           await page.screenshot({ path: '/tmp/deckbuilder-custom-print-workspace.png', fullPage: true });
           await printPage.screenshot({ path: '/tmp/deckbuilder-custom-print-sheet.png', fullPage: true });

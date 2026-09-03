@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const renderer = readFileSync("tts/renderer/renderer.js", "utf8");
+const renderer = readFileSync("card-design/playable-card-renderer.js", "utf8");
 const canonical = JSON.parse(
   readFileSync("releases/v0.6.2-withdrawn/Gauntlet_v0.6.2_Canonical_Data.json", "utf8"),
 );

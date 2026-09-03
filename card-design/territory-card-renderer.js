@@ -62,13 +62,16 @@
     ]);
     await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     fitTerritory(card);
-    if (territory.artDirection && Object.keys(territory.artDirection).length) {
-      window.GauntletArtworkCrop?.apply(
-        card.querySelector('.territory-art img:not([hidden])'),
-        territory.artDirection,
-        { id: territory.id, label: territory.name },
-      );
+    if (!territory.artDirection || typeof territory.artDirection !== 'object') {
+      throw new Error(`Canonical artwork direction is missing for ${territory.id}.`);
     }
+    const cropResult = window.GauntletArtworkCrop?.apply(
+      card.querySelector('.territory-art img:not([hidden])'),
+      territory.artDirection,
+      { id: territory.id, label: territory.name },
+    );
+    if (!cropResult) throw new Error(`Canonical artwork direction failed for ${territory.id}.`);
+    card.dataset.artDirectionApplied = territory.id;
     document.body.dataset.renderReady = 'true';
   }
 

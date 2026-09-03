@@ -35,7 +35,7 @@ describe('Deckbuilder released / release-candidate ruleset toggle', () => {
     expect(game.mystics.selectionPolicy).toMatchObject({ poolSize: 6, selectedCount: 3 });
     expect(game.visualAuthorityUrl).toBe(CURRENT_VISUAL_AUTHORITY_URL);
     expect(game.artDirection).toEqual(current.artDirection);
-    expect(game.artDirectionFor('financiers-banker')).toEqual({ focusY: 0 });
+    expect(game.artDirectionFor('financiers-banker')).toEqual({ ...current.visualPolicy.artDirectionDefault, focusY: 0 });
   });
 
   it('keeps the current authority synchronized to the released source', () => {
