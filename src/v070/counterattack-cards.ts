@@ -52,30 +52,31 @@ export function applyV070CounterattackAssetOnsetEffects(
   const runtime = state.battleRuntime;
   if (!runtime || !runtime.counterattackAtOnset) return;
 
-  for (const playerId of ['A', 'B'] as const) {
-    const resistanceAssets =
-      state.players[playerId].zones.assetBank.filter(instanceId =>
-        state.cardInstances[instanceId]?.cardId === 'neutral-resistance'
-        && isV070AssetActive(state, instanceId)
-      );
-    if (resistanceAssets.length === 0) continue;
+  const playerId = state.battle?.attacker;
+  if (!playerId) return;
 
-    runtime.participants[playerId].reserveBonus +=
-      resistanceAssets.length * 2;
+  const resistanceAssets =
+    state.players[playerId].zones.assetBank.filter(instanceId =>
+      state.cardInstances[instanceId]?.cardId === 'neutral-resistance'
+      && isV070AssetActive(state, instanceId)
+    );
+  if (resistanceAssets.length === 0) return;
 
-    appendV070Event(state, {
-      type: 'counterattack_asset_effect_applied',
-      actor: playerId,
-      visibility: 'public',
-      payload: {
-        cardId: 'neutral-resistance',
-        instanceIds: [...resistanceAssets],
-        reserveBonus: resistanceAssets.length * 2,
-        totalReserveBonus:
-          runtime.participants[playerId].reserveBonus,
-      },
-    });
-  }
+  runtime.participants[playerId].reserveBonus +=
+    resistanceAssets.length * 2;
+
+  appendV070Event(state, {
+    type: 'counterattack_asset_effect_applied',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      cardId: 'neutral-resistance',
+      instanceIds: [...resistanceAssets],
+      reserveBonus: resistanceAssets.length * 2,
+      totalReserveBonus:
+        runtime.participants[playerId].reserveBonus,
+    },
+  });
 }
 
 export function applyV070FootholdBattleEffect(
@@ -90,10 +91,9 @@ export function applyV070FootholdBattleEffect(
   if (runtime.counterattackAtOnset
     && battle.defender === owner) {
     runtime.participants[owner].advantage += 1;
-  }
-
-  if (!runtime.footholdBattleInstanceIds.includes(sourceInstanceId)) {
-    runtime.footholdBattleInstanceIds.push(sourceInstanceId);
+    if (!runtime.footholdBattleInstanceIds.includes(sourceInstanceId)) {
+      runtime.footholdBattleInstanceIds.push(sourceInstanceId);
+    }
   }
 }
 
@@ -102,7 +102,13 @@ export function applyV070IllegalOccupationBattleEffect(
   owner: PlayerId,
 ): void {
   const runtime = state.battleRuntime;
-  if (!runtime || !runtime.counterattackAtOnset) return;
+  const battle = state.battle;
+  if (!runtime
+    || !battle
+    || !runtime.counterattackAtOnset
+    || battle.attacker !== owner) {
+    return;
+  }
 
   const opponent: PlayerId = owner === 'A' ? 'B' : 'A';
   if (!runtime.assetInactivePlayers.includes(opponent)) {
@@ -117,11 +123,15 @@ export function applyV070ResistanceBattleEffect(
   sourceInstanceId: string,
 ): void {
   const runtime = state.battleRuntime;
-  if (!runtime) return;
-
-  if (runtime.counterattackAtOnset) {
-    runtime.participants[owner].advantage += 1;
+  const battle = state.battle;
+  if (!runtime
+    || !battle
+    || !runtime.counterattackAtOnset
+    || battle.attacker !== owner) {
+    return;
   }
+
+  runtime.participants[owner].advantage += 1;
   if (!runtime.battleCardBankOnWinInstanceIds.includes(
     sourceInstanceId
   )) {
