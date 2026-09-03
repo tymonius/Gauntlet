@@ -533,6 +533,19 @@ async function hydrateReferenceCards() {
   root.dataset.referenceCardsReady = 'true';
 }
 
+async function waitForCanonicalProductionFonts(timeoutMs = 30000) {
+  const deadline = performance.now() + timeoutMs;
+  while (performance.now() < deadline) {
+    const state = document.body?.dataset.productionFontsReady;
+    if (state === 'true') return;
+    if (state === 'false') {
+      throw new Error(document.body.dataset.productionFontError || 'Canonical production fonts failed to load.');
+    }
+    await new Promise(resolve => window.setTimeout(resolve, 25));
+  }
+  throw new Error('Timed out waiting for canonical production fonts before supplemental fitting.');
+}
+
 async function renderCurrentSupplementals() {
   if (!root) return;
   if (catalogFilter && !catalogFilter.typeMatches('supplemental', 'tracker', 'reference', 'ledger', 'deed')) {
@@ -554,6 +567,12 @@ async function renderCurrentSupplementals() {
       root.dataset.trackerLayoutsReady = 'true';
       return;
     }
+
+    // Supplemental fitting must use the same explicitly loaded production
+    // fonts as every other production surface. document.fonts.ready alone can
+    // resolve before the Typekit faces have been requested, which made long
+    // reference titles fit against a fallback font and then change after load.
+    await waitForCanonicalProductionFonts();
     await layoutTrackerCards();
     await hydrateReferenceCards();
   } catch (error) {
