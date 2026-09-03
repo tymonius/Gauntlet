@@ -37,6 +37,10 @@
       "dialogStatus", "cancelExclude"
     ]) el[id] = document.getElementById(id);
 
+    for (const target of [el.integrityApp, el.activeRecords, el.excludedRecords]) {
+      if (target) target.tabIndex = -1;
+    }
+
     el.accessForm?.addEventListener("submit", unlock);
     el.refreshData?.addEventListener("click", refresh);
     el.lockPage?.addEventListener("click", lock);
@@ -67,6 +71,7 @@
       el.integrityApp.hidden = false;
       render();
       setConnection("Protected data loaded", "");
+      focusRegion(el.integrityApp);
     } catch (error) {
       setStatus(el.accessStatus, error.message || "Integrity data could not be loaded.", "error");
     } finally {
@@ -215,6 +220,7 @@
       el.excludeDialog.close();
       render();
       setConnection("Dataset updated", "");
+      focusRegion(el.excludedRecords);
     } catch (error) {
       setStatus(el.dialogStatus, error.message || "The record could not be excluded.", "error");
     } finally {
@@ -236,6 +242,7 @@
       });
       render();
       setConnection("Record restored", "");
+      focusRegion(el.activeRecords);
     } catch (error) {
       window.alert(error.message || "The record could not be restored.");
       button.disabled = false;
@@ -256,6 +263,12 @@
     try { payload = await response.json(); } catch { /* handled below */ }
     if (!response.ok) throw new Error(payload?.error || `Integrity service returned ${response.status}.`);
     return payload;
+  }
+
+  function focusRegion(target) {
+    if (!target || target.hidden) return;
+    target.focus({ preventScroll: true });
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   function setBusy(form, busy) {
