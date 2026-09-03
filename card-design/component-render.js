@@ -7,6 +7,19 @@
   const versionOverride = String(params.get("version") || "").trim();
   const target = document.getElementById("renderTarget");
   const TIMEOUT_MS = 30000;
+
+  if (kind === "leader") {
+    const redirect = new URL("/card-design/face-render.html", window.location.origin);
+    redirect.searchParams.set("kind", "leader");
+    redirect.searchParams.set("id", id);
+    redirect.searchParams.set("side", side);
+    for (const key of ["rules", "inspection", "version"]) {
+      const value = params.get(key);
+      if (value) redirect.searchParams.set(key, value);
+    }
+    window.location.replace(redirect);
+    return;
+  }
   const supportedKinds = new Set(["leader", "proposal", "reference", "rite", "ritual", "tracker", "supplemental"]);
   const landscape = orientation === "landscape";
   let renderContext = null;
