@@ -1,5 +1,5 @@
 import { artworkCandidates } from './card-artwork-resolver.js';
-import { resolveFace } from './face-authority.mjs';
+import { listFaces, resolveFace } from './face-authority.mjs';
 import { hasExplicitArtDirection, resolveArtDirection } from '../game-data/art-direction.mjs';
 
 const BASE_CARD_STYLES = Object.freeze([
@@ -447,20 +447,7 @@ export function resolveFaceSpec(game, faceId) {
 }
 
 export function resolveAllFaceSpecs(game) {
-  const { listFaces } = requireListFaces();
   return Object.freeze(listFaces(game).map(face => resolveFaceSpec(game, face.id)));
-}
-
-function requireListFaces() {
-  // Kept behind one function so the public resolver remains centered on face
-  // identity rather than teaching callers about the catalog implementation.
-  return { listFaces: game => [...new Map([...gameFaceEntries(game)]).values()] };
-}
-
-function* gameFaceEntries(game) {
-  // resolveAllFaceSpecs is intentionally implemented without exporting catalog
-  // internals. The IDs are obtained from the same authority module dynamically.
-  throw new Error('resolveAllFaceSpecs requires listFaceIds(); use resolveFaceSpecs() instead.');
 }
 
 export function resolveFaceSpecs(game, faceIds) {
