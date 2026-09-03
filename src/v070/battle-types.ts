@@ -226,6 +226,7 @@ export interface V070BattleRuntime {
     V070PoisonousGasAftermathRuntime | null;
   poisonousGasAftermathResolved: boolean;
   poisonousGasReserveGraveyardInstanceIds: string[];
+  aftermathPositionsSynchronized: boolean;
   aftermathCardsCleared: boolean;
   routWindowOpen: boolean;
   finalJudgmentWindowOpen: boolean;
@@ -313,6 +314,7 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     pendingPoisonousGasAftermath: null,
     poisonousGasAftermathResolved: false,
     poisonousGasReserveGraveyardInstanceIds: [],
+    aftermathPositionsSynchronized: false,
     aftermathCardsCleared: false,
     routWindowOpen: false,
     finalJudgmentWindowOpen: false,
