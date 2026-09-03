@@ -25,6 +25,16 @@ describe("Rules Arbiter welcome and compact UI regressions", () => {
     expect(presented.details).toBe("A third sentence belongs in the collapsed details.");
   });
 
+  test("plain-text presentation removes unsupported inline Markdown markers", () => {
+    const presented = presentRulesAnswer({
+      answer: "The Deed's cost is **min(your Deeds + 1, 6)**, then add **-1** if you control it, **0** if you occupy it, or **+1** if neither; then add the `buyout premium` if an opponent owns it.",
+      rulingStatus: "explicit"
+    });
+
+    expect(presented.answer).toBe("The Deed's cost is min(your Deeds + 1, 6), then add -1 if you control it, 0 if you occupy it, or +1 if neither; then add the buyout premium if an opponent owns it.");
+    expect(presented.details).toBe("");
+  });
+
   test("suggested questions wrap into the panel instead of creating a horizontal scroller", () => {
     const css = readFileSync(`${HERE}/answer-presentation.css`, "utf8");
 
