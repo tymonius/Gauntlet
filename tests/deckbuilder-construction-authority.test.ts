@@ -43,6 +43,14 @@ describe("Deckbuilder construction authority", () => {
     expect(app).not.toContain("/60 value");
   });
 
+  it("uses player-facing Deck status labels with Incomplete reserved for a short main deck", () => {
+    expect(app).toContain("function deckStatusLabel(result)");
+    expect(app).toContain('result.cardCount < result.constructionRules.minimumCards');
+    expect(app).toContain('return "Incomplete"');
+    expect(app).toContain('return result.valid ? "Valid" : "Invalid"');
+    expect(app).not.toContain('"Card-valid"');
+  });
+
   it("allows empty Territory resets before construction authority is available", () => {
     expect(territories).toContain("const entries = items || []");
     expect(territories).toContain("if (!entries.length) return []");
