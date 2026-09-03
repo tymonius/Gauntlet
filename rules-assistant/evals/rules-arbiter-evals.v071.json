@@ -30,7 +30,8 @@
       "question": "How is my Starting Territory determined?",
       "expectedClassification": "explicit",
       "expectedSourcePatterns": [
-        "Starting Territory"
+        "Starting Territory",
+        "Place each Player Token on the Territory at that player's end"
       ]
     },
     {
@@ -57,7 +58,11 @@
       "question": "When do cards go to the Discard Pile?",
       "expectedClassification": "explicit",
       "expectedSourcePatterns": [
-        "Discard Pile"
+        "Discard Pile",
+        "Playing a card for its Action effect"
+      ],
+      "expectedAnswerPatterns": [
+        "Action effect"
       ]
     },
     {
@@ -381,10 +386,27 @@
       "id": "diplomats-leverage",
       "category": "diplomats",
       "question": "How does Leverage work?",
-      "expectedClassification": "explicit",
+      "expectedClassification": "provisional",
       "expectedSourcePatterns": [
         "Leverage"
+      ],
+      "forbiddenAnswerPatterns": [
+        "bonus to your dice result"
       ]
+    },
+    {
+      "id": "diplomats-leverage-target",
+      "category": "diplomats",
+      "question": "What does the Leverage bonus add to?",
+      "expectedClassification": "provisional",
+      "expectedSourcePatterns": [
+        "Leverage"
+      ],
+      "forbiddenAnswerPatterns": [
+        "bonus to your dice result",
+        "bonus to your battle total"
+      ],
+      "origin": "live-answer-qa-2026-09-03"
     },
     {
       "id": "diplomats-peace-treaty",
@@ -438,7 +460,31 @@
       "expectedClassification": "explicit",
       "expectedSourcePatterns": [
         "Financial Capacity"
+      ],
+      "expectedAnswerPatterns": [
+        "normally legal only during Denouement"
+      ],
+      "forbiddenAnswerPatterns": [
+        "use one in Opening",
+        "use a Financier Faction Feature in Opening"
       ]
+    },
+    {
+      "id": "financiers-capacity-opening",
+      "category": "financiers",
+      "question": "If Financial Capacity gives me two Actions, can I buy a Deed during Opening?",
+      "expectedClassification": "explicit",
+      "expectedSourcePatterns": [
+        "Financial Capacity",
+        "Faction Features"
+      ],
+      "expectedAnswerPatterns": [
+        "Denouement"
+      ],
+      "forbiddenAnswerPatterns": [
+        "Yes"
+      ],
+      "origin": "live-answer-qa-2026-09-03"
     },
     {
       "id": "financiers-treasury",
@@ -744,6 +790,9 @@
       "expectedClassification": "explicit",
       "expectedSourcePatterns": [
         "Extraordinary Rendition"
+      ],
+      "forbiddenAnswerPatterns": [
+        "remains in the opponent's Hand"
       ]
     },
     {
