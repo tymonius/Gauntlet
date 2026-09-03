@@ -37,6 +37,8 @@ describe('TTS card render authority', () => {
     expect(territoryGenerator).not.toContain('/tts/territory-renderer/?territory=');
 
     expect(leaderGenerator).toContain('/card-design/face-render.html');
+    expect(leaderGenerator).toContain("url.searchParams.set('id', `leader:${leader.faction}-${leader.id}`)");
+    expect(leaderGenerator).not.toContain("url.searchParams.set('kind'");
     expect(leaderGenerator).not.toContain("page.goto(`${baseUrl}/card-design/`");
     expect(leaderGenerator).not.toContain('GauntletArtworkCrop.apply');
 
