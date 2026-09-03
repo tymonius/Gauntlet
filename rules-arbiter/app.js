@@ -15,7 +15,7 @@ const status = document.getElementById("arbiterStatus");
 const suggestions = document.querySelectorAll("[data-question]");
 const submitButton = form?.querySelector('button[type="submit"]');
 const READY_STATUS = endpoint
-  ? "Connected to the current v0.7.1 Rules Arbiter; local Rulebook lookup is available as a fallback."
+  ? "Connected to the Chief Justice; current v0.7.1 local Rulebook lookup is available as a fallback."
   : "Current v0.7.1 local Rulebook lookup mode.";
 
 let corpusPromise;
@@ -54,7 +54,7 @@ form.addEventListener("submit", async (event) => {
       }
     ].slice(-12);
   } catch (error) {
-    answer.innerHTML = `<p class="arbiter-error"><strong>Rules Arbiter unavailable.</strong> ${escapeHtml(error.message)}</p>`;
+    answer.innerHTML = `<p class="arbiter-error"><strong>Chief Justice unavailable.</strong> ${escapeHtml(error.message)}</p>`;
   } finally {
     setBusy(false);
     status.textContent = READY_STATUS;
@@ -150,7 +150,7 @@ function rulingLabel(value) {
   const statusValue = String(value || "source_lookup").toLowerCase();
   if (statusValue === "explicit") return "Explicit Rule";
   if (statusValue === "inferred") return "Rules Interpretation";
-  if (statusValue === "provisional") return "Provisional Arbiter Ruling";
+  if (statusValue === "provisional") return "Provisional Ruling";
   if (statusValue === "out_of_scope") return "Out of Scope";
   return "Source lookup";
 }
@@ -158,7 +158,7 @@ function rulingLabel(value) {
 function setBusy(busy) {
   input.disabled = busy;
   submitButton.disabled = busy;
-  submitButton.textContent = busy ? "Checking…" : "Ask the Rules Arbiter";
+  submitButton.textContent = busy ? "Checking…" : "Ask the Chief Justice";
 }
 
 function getSessionId() {
