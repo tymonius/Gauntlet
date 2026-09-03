@@ -8,8 +8,8 @@ Every physical Gauntlet face is resolved once into a complete `FaceSpec`. Review
 
 ## Invariants
 
-1. **One request → one FaceSpec → one mounted face.**
-   The production renderer does not build a catalog, wait for a hidden specimen, clone it, or reparent it.
+1. **One face ID → one FaceSpec → one mounted face.**
+   Every production consumer calls the same route, `face-render.html?id=<canonical-face-id>`. The caller never supplies a card kind, family, template, side, or renderer choice. Those are resolved from the face ID inside Card Design. The production renderer does not build a catalog, wait for a hidden specimen, clone it, or reparent it.
 
 2. **Appearance authority is data, not selector accidents.**
    Per-card artwork composition belongs in current visual authority. Production CSS contains template geometry and design tokens only.
@@ -23,14 +23,16 @@ Every physical Gauntlet face is resolved once into a complete `FaceSpec`. Review
 5. **Legacy routes are aliases, not alternate implementations.**
    Once a family migrates, old routes redirect to `face-render.html`.
 
-6. **Downstream systems do not own face internals.**
-   Deckbuilder, Card Reference, and TTS may select a FaceSpec and package its output. They do not maintain card markup, crop rules, or faction-specific visual exceptions.
+6. **Downstream systems do not own face internals or face type dispatch.**
+   Deckbuilder, Card Reference, and TTS pass only a canonical face ID to the face renderer and may then place or package its output. They do not choose a Leader renderer versus a playable-card renderer, maintain card markup, crop rules, or faction-specific visual exceptions.
 
 ## Phase 1
 
 Migrated:
 - Leader fronts
 - Standard faction card backs
+
+Canonical IDs currently use namespaces only to keep identities collision-free (for example, `leader:military-general` and `back:intelligence`). The namespace is interpreted only by the FaceSpec resolver; it is not a downstream rendering decision.
 
 The Phase 1 renderer consists of:
 - `card-design/face-spec.mjs` — authority resolver
