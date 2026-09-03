@@ -187,7 +187,7 @@
             ${selected ? '<span class="mini-pill">Selected</span>' : ""}
           </span>
         </button>
-        <button type="button" data-action="toggle" class="${selected ? "secondary danger" : ""}" ${unavailable ? "disabled" : ""}>${selected ? "Remove" : "Choose"}</button>
+        <button type="button" data-action="toggle" class="${selected ? "secondary danger" : ""}" aria-label="${selected ? "Remove" : "Choose"} ${escapeHtml(territory.name)}" ${unavailable ? "disabled" : ""}>${selected ? "Remove" : "Choose"}</button>
       `;
 
       row.querySelector('[data-action="preview"]').addEventListener("click", () => {
