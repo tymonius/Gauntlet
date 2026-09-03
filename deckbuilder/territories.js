@@ -1,5 +1,3 @@
-import { PRODUCTION_SURFACES } from '../card-design/production-surface.mjs';
-
 (() => {
   const deckbuilder = window.GAUNTLET_DECKBUILDER;
   if (!deckbuilder) throw new Error("Deckbuilder core API is unavailable.");
@@ -17,8 +15,12 @@ import { PRODUCTION_SURFACES } from '../card-design/production-surface.mjs';
     selectedId: null,
     pending: null,
   };
-  const TERRITORY_WIDTH = PRODUCTION_SURFACES.landscape.widthCssPx;
-  const TERRITORY_HEIGHT = PRODUCTION_SURFACES.landscape.heightCssPx;
+  let TERRITORY_WIDTH = 0;
+  let TERRITORY_HEIGHT = 0;
+  const territorySurfaceReady = import('../card-design/production-surface.mjs').then(({ PRODUCTION_SURFACES }) => {
+    TERRITORY_WIDTH = PRODUCTION_SURFACES.landscape.widthCssPx;
+    TERRITORY_HEIGHT = PRODUCTION_SURFACES.landscape.heightCssPx;
+  });
   const MAX_TERRITORY_PREVIEW_WIDTH = 360;
 
   const territoryElements = {};
@@ -43,7 +45,8 @@ import { PRODUCTION_SURFACES } from '../card-design/production-surface.mjs';
 
   document.addEventListener("DOMContentLoaded", installTerritoryIntegration);
 
-  function installTerritoryIntegration() {
+  async function installTerritoryIntegration() {
+    await territorySurfaceReady;
     for (const id of [
       "territoryMetricCount", "territoryRequiredCount", "territorySearch", "territoryCategory", "territoryAvailableCount",
       "territoryList", "territoryPreview", "clearTerritoriesButton", "deckTerritories"
