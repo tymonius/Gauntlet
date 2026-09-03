@@ -11,7 +11,9 @@ describe('v0.7.1 live Rules Arbiter QA transport handling', () => {
     expect(runner).toContain('production endpoint failed preflight');
     expect(runner).toContain('errorCode: last?.payload?.errorCode || null');
     expect(runner).toContain('upstreamStatus: Number.isInteger(last?.payload?.upstreamStatus)');
+    expect(runner).toContain('upstreamCategory: last?.payload?.upstreamCategory || null');
     expect(runner).toContain('Upstream status:');
+    expect(runner).toContain('Upstream category:');
   });
 
   it('runs the production sweep serially with a small inter-case delay', () => {

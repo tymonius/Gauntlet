@@ -8,7 +8,7 @@ import {
 import { persistSmartInteraction } from "./rules-persistence.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260903-5";
+export const BEHAVIOR_REVISION = "v071-qa-20260903-6";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 let corpusPromise;
 
@@ -241,6 +241,9 @@ export default {
       if (failureStage === "model" && Number.isInteger(error?.upstreamStatus)) {
         failure.upstreamStatus = error.upstreamStatus;
       }
+      if (failureStage === "model" && error?.upstreamCategory) {
+        failure.upstreamCategory = error.upstreamCategory;
+      }
       return json(failure, 502, origin);
     }
   }
@@ -322,15 +325,40 @@ async function askOpenAI({ env, request, question, history, sources }) {
   });
 
   if (!response.ok) {
-    await response.text();
+    const errorBody = await response.text();
+    let providerError = null;
+    try {
+      providerError = JSON.parse(errorBody)?.error || null;
+    } catch {
+      providerError = null;
+    }
     const error = new Error(`OpenAI request failed (${response.status}).`);
     error.upstreamStatus = response.status;
+    error.upstreamCategory = classifyUpstreamFailure(response.status, providerError);
     throw error;
   }
   const payload = await response.json();
   const outputText = extractOutputText(payload);
   if (!outputText) throw new Error("OpenAI returned no output text.");
   return JSON.parse(outputText);
+}
+
+function classifyUpstreamFailure(status, providerError) {
+  const code = String(providerError?.code || "").trim();
+  const type = String(providerError?.type || "").trim();
+  const knownQuotaCodes = new Set([
+    "credit_balance_exhausted",
+    "organization_usage_limit_exceeded",
+    "organization_spend_limit_exceeded",
+    "project_spend_limit_exceeded"
+  ]);
+  if (knownQuotaCodes.has(code)) return code;
+  if (type === "insufficient_quota") return code || "insufficient_quota";
+  if (status === 429) return "rate_limited";
+  if (status === 401 || status === 403) return "authentication_or_access";
+  if (status === 400 || status === 404 || status === 422) return "invalid_request";
+  if (status >= 500) return "upstream_server_error";
+  return "upstream_error";
 }
 
 function contextualQuery(question, history) {
