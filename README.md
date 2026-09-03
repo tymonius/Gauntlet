@@ -174,13 +174,14 @@ npm test
 
 The promoted engine API lives at `src/content/current.ts`. Its published digital-rules target is the current release declared by the release lifecycle and current manifest; the promoted implementation may lag that target during migration, so consult `src/README.md` for the implementation baseline rather than assuming current-release parity.
 
-The promoted v0.7.0 engine has a reducer-level developer CLI using the certified v0.7.0 starter package:
+The promoted v0.7.0 engine has reducer-level developer CLI and GUI surfaces using the certified v0.7.0 starter package:
 
 ~~~bash
 npm run dev:v070:cli
+npm run dev:v070:gui
 ~~~
 
-It exposes setup, turn, and battle reducer actions directly and preserves explicit unsupported-effect halts. The older CLI/GUI runners remain legacy pre-current-engine scaffolding:
+Both expose setup, turn, and battle reducer actions directly and preserve explicit unsupported-effect halts. The GUI defaults to player-scoped hidden-information views, with full state available only through an explicit developer inspection action. The older CLI/GUI runners remain legacy pre-current-engine scaffolding:
 
 ~~~bash
 npm run dev:legacy:cli
