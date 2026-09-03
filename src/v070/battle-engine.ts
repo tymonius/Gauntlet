@@ -26,8 +26,10 @@ import {
 } from './battle-effects';
 import {
   activeV070OverlayAtBattleOnset,
+  placeV070OverlayFromBattle,
   resolveV070OverlayAfterBattle,
 } from './overlays';
+import { insertV070TerritoryAtFrontLine } from './gauntlet';
 import {
   applyV070Leverage,
   initializeV070TermsWindow,
@@ -2074,6 +2076,88 @@ function territoryAftermathDestination(
       : normalDestination;
 }
 
+function resolveBattleCardAftermathOverlayPlacements(
+  state: V070GameState,
+): void {
+  const battle = requireBattle(state);
+  const runtime = requireRuntime(state);
+  const placements = [...runtime.battleCardAftermathOverlayPlacements];
+  runtime.battleCardAftermathOverlayPlacements = [];
+
+  for (const placement of placements) {
+    if (placement.condition === 'owner_win'
+      && battle.winner !== placement.owner) {
+      continue;
+    }
+
+    placeV070OverlayFromBattle(
+      state,
+      placement.owner,
+      placement.sourceInstanceId,
+      battle.contestedPosition,
+      `${placement.sourceCardId} battle Aftermath`,
+    );
+    appendV070Event(state, {
+      type: 'battle_card_aftermath_overlay_placed',
+      actor: placement.owner,
+      visibility: 'public',
+      payload: {
+        sourceInstanceId: placement.sourceInstanceId,
+        sourceCardId: placement.sourceCardId,
+        territoryPosition: battle.contestedPosition,
+        condition: placement.condition,
+      },
+    });
+  }
+}
+
+function resolveBattleCardAftermathTerritoryInsertions(
+  state: V070GameState,
+): void {
+  const battle = requireBattle(state);
+  const runtime = requireRuntime(state);
+  const insertions = [
+    ...runtime.battleCardAftermathTerritoryInsertions,
+  ];
+  runtime.battleCardAftermathTerritoryInsertions = [];
+
+  for (const insertion of insertions) {
+    if (insertion.condition === 'owner_win_as_attacker'
+      && (battle.winner !== insertion.owner
+        || battle.attacker !== insertion.owner)) {
+      continue;
+    }
+
+    const result = insertV070TerritoryAtFrontLine(
+      state,
+      insertion.owner,
+      {
+        territoryInstanceId: insertion.sourceInstanceId,
+        territoryId: insertion.sourceCardId,
+        contributedBy: insertion.owner,
+        blank: true,
+      },
+      `${insertion.sourceCardId} battle Aftermath`,
+    );
+
+    appendV070Event(state, {
+      type: 'battle_card_aftermath_territory_inserted',
+      actor: insertion.owner,
+      visibility: 'public',
+      payload: {
+        sourceInstanceId: insertion.sourceInstanceId,
+        sourceCardId: insertion.sourceCardId,
+        insertedPosition: result.insertedPosition,
+        location: insertion.location,
+        condition: insertion.condition,
+        playerTokenMovementOccurred:
+          result.playerTokenMovementOccurred,
+        enteredTerritory: result.enteredTerritory,
+      },
+    });
+  }
+}
+
 function placeAftermathCard(
   state: V070GameState,
   playerId: PlayerId,
@@ -2081,6 +2165,12 @@ function placeAftermathCard(
   destination: 'discard' | 'graveyard' | 'hand',
   graveyarded: string[],
 ): void {
+  if (state.overlays.some(overlay => overlay.instanceId === instanceId)
+    || state.board.some(
+      territory => territory.territoryInstanceId === instanceId,
+    )) {
+    return;
+  }
   if (destination === 'graveyard') {
     state.players[playerId].zones.graveyard.push(instanceId);
     graveyarded.push(instanceId);
@@ -2138,6 +2228,9 @@ function completeAftermathInternal(
     if (openAccursedWagerAftermathChoice(state, immediateWinner)) return;
     if (openPoisonousGasAftermathChoice(state, immediateWinner)) return;
     if (openTerritoryAftermathChoice(state, immediateWinner)) return;
+
+    resolveBattleCardAftermathOverlayPlacements(state);
+    resolveBattleCardAftermathTerritoryInsertions(state);
 
     const graveyardedDuringAftermath: Record<PlayerId, string[]> = {
       A: [],
