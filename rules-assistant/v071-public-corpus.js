@@ -40,6 +40,10 @@ function requireBinding(manifest, key, digest) {
   }
 }
 
+function stripRulebookAnnotations(value) {
+  return String(value || '').replace(/<!--[\s\S]*?-->/g, '');
+}
+
 export function validateV071PublishedData({ canonicalData, manifest, provenance, rulebookMarkdown } = {}) {
   if (!canonicalData || canonicalData.release_version !== V071_RULES_VERSION) {
     throw new Error('Published v0.7.1 canonical data has the wrong release identity.');
@@ -71,7 +75,7 @@ export function validateV071PublishedData({ canonicalData, manifest, provenance,
     throw new Error('Published v0.7.1 Mystics Rite authority must contain a six-Rite pool with exactly three selected.');
   }
 
-  const rulebook = String(rulebookMarkdown || '');
+  const rulebook = stripRulebookAnnotations(rulebookMarkdown);
   if (
     !rulebook.includes('Ratify six different Proposals')
     || !rulebook.includes('if six different Proposals are ratified')
