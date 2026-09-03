@@ -27,6 +27,7 @@ describe('Stage 4 unified face parity gate', () => {
     expect(validator).toContain('legacyRoute(spec)');
     expect(validator).toContain("base.set('kind', 'supplemental')");
     expect(validator).toContain("base.set('kind', 'tracker')");
+    expect(validator).toContain("base.set('kind', 'reference')");
     expect(validator).toContain("spec.content.component.renderSource?.componentId");
     expect(validator).toContain("readiness: 'card-back'");
     expect(validator).toContain('waitForLegacyRender(legacyPage, legacy)');
