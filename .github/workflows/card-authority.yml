@@ -50,6 +50,10 @@ jobs:
                 || exact('design-tokens.css')
                 || exact('images/Gauntlet.svg')
                 || oneOf([
+                  'index.html',
+                  'homepage-card-showcase.js',
+                  'homepage-card-showcase.css',
+                  'media/compositions.json',
                   'scripts/generate-tts-card-assets.mjs',
                   'scripts/generate-tts-leader-assets.mjs',
                   'scripts/generate-tts-territory-assets.mjs',
@@ -68,8 +72,8 @@ jobs:
               .addHeading('Card Authority CI')
               .addTable([
                 [{data: 'Contract', header: true}, {data: 'Run?', header: true}],
-                ['Current authority + face catalog + consumers', 'true'],
-                ['All canonical rendered faces', String(render)],
+                ['Current authority + face catalog + discovered consumers', 'true'],
+                ['Canonical rendered faces + homepage showcase', String(render)],
               ])
               .write();
 
@@ -97,7 +101,7 @@ jobs:
         run: npm run card-authority:check
 
   render:
-    name: Render every canonical face
+    name: Render canonical faces and consumer surfaces
     needs: [scope, authority]
     if: needs.scope.outputs.render == 'true'
     runs-on: ubuntu-latest
@@ -132,6 +136,9 @@ jobs:
 
       - name: Validate every canonical rendered face
         run: npm run card-authority:render
+
+      - name: Validate homepage card showcase consumer
+        run: node scripts/card-authority/validate-homepage-showcase.mjs
 
       - name: Upload card authority render report
         if: always()
