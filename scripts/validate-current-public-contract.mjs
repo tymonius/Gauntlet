@@ -303,6 +303,19 @@ for (const [route, html] of pages) {
   validateModernPublicPage(html, route);
 }
 
+const printableAccessibilityRoutes = [
+  '/playtest/player-mat/',
+  '/playtest/sheet/',
+];
+
+for (const route of printableAccessibilityRoutes) {
+  const html = await getText(route);
+  const skipTarget = html.match(/class=(['"])skip-link\\1[^>]*href=(['"])#([^'"]+)\\2/i)?.[3];
+  assert(skipTarget, `${route} is missing the skip-to-content link.`);
+  const mainMatch = html.match(new RegExp(`<main\\\\b[^>]*id=(["'])${skipTarget}\\\\1[^>]*>`, 'i'))?.[0];
+  assert(mainMatch && /\\btabindex=(["'])-1\\1/i.test(mainMatch), `${route} skip target is not focusable.`);
+}
+
 for (const route of footerOnlyRoutes) {
   const html = await getText(route);
   if (!canonicalFooterExceptions.has(route)) {
