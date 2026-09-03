@@ -8,7 +8,7 @@ import {
 import { persistSmartInteraction } from "./rules-persistence.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260903-4";
+export const BEHAVIOR_REVISION = "v071-qa-20260903-5";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 let corpusPromise;
 
@@ -234,10 +234,14 @@ export default {
       return answerResponse(result, origin);
     } catch (error) {
       console.error(`v0.7.1 Rules Arbiter failure during ${failureStage}`, error);
-      return json({
+      const failure = {
         error: "The Rules Arbiter could not complete the request.",
         errorCode: `rules_${failureStage}_failed`
-      }, 502, origin);
+      };
+      if (failureStage === "model" && Number.isInteger(error?.upstreamStatus)) {
+        failure.upstreamStatus = error.upstreamStatus;
+      }
+      return json(failure, 502, origin);
     }
   }
 };
@@ -318,8 +322,10 @@ async function askOpenAI({ env, request, question, history, sources }) {
   });
 
   if (!response.ok) {
-    const errorBody = await response.text();
-    throw new Error(`OpenAI request failed (${response.status}): ${errorBody.slice(0, 500)}`);
+    await response.text();
+    const error = new Error(`OpenAI request failed (${response.status}).`);
+    error.upstreamStatus = response.status;
+    throw error;
   }
   const payload = await response.json();
   const outputText = extractOutputText(payload);
