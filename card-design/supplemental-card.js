@@ -200,15 +200,17 @@ function trackerFace(component, faction, factionLabel) {
     instruction,
     title,
     capLabel,
+    titleLetterSpacingEm,
   } = component.tracker;
   const resourceName = component.resourceName || component.name.replace(/\s+Tracker$/i, '');
+  const titleSpacing = titleLetterSpacingEm == null ? '' : ` style="letter-spacing:${Number(titleLetterSpacingEm)}em"`;
   return `<article class="gauntlet-card faction-component-card sliding-tracker-card ${esc(faction)}-card" data-faction="${esc(faction)}" data-component-id="${esc(component.id)}" data-contract-component-id="${esc(component.contractId)}" aria-label="${esc(component.name)} sliding tracker, physical scale 0 through ${max}">
     <div class="card-interior tracker-interior">
       <span class="tracker-watermark" aria-hidden="true"></span>
       <header class="tracker-heading">
         <span class="tracker-faction-emblem" aria-hidden="true"></span>
         <span class="tracker-faction-name">${esc(factionLabel)}</span>
-        <h3>${esc(title)}</h3>
+        <h3${titleSpacing}>${esc(title)}</h3>
         ${capLabel
           ? `<p class="tracker-cap">${esc(capLabel)}</p>`
           : '<p class="tracker-cap tracker-cap-empty" aria-hidden="true"></p>'}

@@ -6,6 +6,7 @@ const BASE_CARD_STYLES = Object.freeze([
   '/design-tokens.css',
   '/card-design/card-design.css',
   '/card-design/card-design-refinement.css',
+  '/card-design/faction-component.css',
 ]);
 
 export const FACE_TEMPLATE_CONTRACTS = Object.freeze({

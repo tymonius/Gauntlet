@@ -31,7 +31,16 @@ export function render(spec) {
   const title = String(presentation.title || component.name || resourceName).trim();
   const capLabel = String(presentation.capLabel || '');
   const instruction = String(presentation.instruction || '').trim();
+  const titleLetterSpacingEm = presentation.titleLetterSpacingEm == null
+    ? null
+    : Number(presentation.titleLetterSpacingEm);
+  if (titleLetterSpacingEm != null && !Number.isFinite(titleLetterSpacingEm)) {
+    throw new Error(`Tracker FaceSpec ${spec.id} has invalid title letter spacing.`);
+  }
   if (!resourceName || !title || !instruction) throw new Error(`Tracker FaceSpec ${spec.id} has incomplete presentation copy.`);
+  const titleStyle = titleLetterSpacingEm == null
+    ? ''
+    : ` style="letter-spacing:${titleLetterSpacingEm}em"`;
 
   const faction = spec.faction || component.faction || 'neutral';
   const label = factionLabel(faction);
@@ -47,7 +56,7 @@ export function render(spec) {
         <header class="tracker-heading">
           <span class="tracker-faction-emblem" aria-hidden="true"></span>
           <span class="tracker-faction-name">${esc(label)}</span>
-          <h3>${esc(title)}</h3>
+          <h3${titleStyle}>${esc(title)}</h3>
           ${capLabel
             ? `<p class="tracker-cap">${esc(capLabel)}</p>`
             : '<p class="tracker-cap tracker-cap-empty" aria-hidden="true"></p>'}

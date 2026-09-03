@@ -5346,6 +5346,7 @@
             "scaleMaximum": 8,
             "labelSizePt": 6.8,
             "title": "Operation Progress",
+            "titleLetterSpacingEm": 0,
             "capLabel": "",
             "instruction": "Place the Intel Tracker and faction leader card on top of this tracker. Slide them together upward or downward to align the bottom edge of the Intel Tracker with the line above your current Operation Progress value."
           }
