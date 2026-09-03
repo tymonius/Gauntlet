@@ -34,6 +34,6 @@ describe('v0.7.1 live Rules Arbiter QA transport handling', () => {
     expect(workflow).toContain("GAUNTLET_RULES_QA_MAX_ATTEMPTS: '2'");
     expect(workflow).toContain("GAUNTLET_RULES_QA_INTER_CASE_DELAY_MS: '750'");
     expect(runner).toContain('const benchmarkCases = caseLimit ? benchmark.cases.slice(0, caseLimit) : benchmark.cases');
-    expect(runner).not.toContain('const body = {\n    question: item.question');
+    expect(runner.match(/question: item\\.question/g)?.length).toBe(1);
   });
 });
