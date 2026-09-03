@@ -1,6 +1,6 @@
 # Unified Face Authority
 
-Status: Stage 2 in progress; no production consumer cutover
+Status: Stage 3 in progress; no production consumer cutover
 
 ## Why this exists
 
@@ -97,6 +97,12 @@ A FaceSpec also carries an explicit readiness audit. Missing authority is report
 - one renderer runtime
 - template registry internal to Card Design
 - direct rendering; no hidden catalogs, cloning, reparenting, or replayed page lifecycle
+
+Stage 3 now has a parallel, non-production `face-render.html` surface. It accepts only `id`, resolves the FaceSpec, loads the template declared by that spec through one internal registry, constructs exactly one face, applies canonical resources, and runs deterministic preparation. The runtime contains no Leader/Deed/Territory/etc. route dispatch.
+
+The template boundary may declare preparation behavior such as parchment treatment and fitting strategy; that declaration is internal FaceSpec/template data, not a caller decision. Missing authority remains fail-closed. Reference and tracker templates deliberately cannot render yet because their remaining presentation authority still lives in legacy code, and artwork-bearing faces with unresolved smart/default crops are rejected before rendering.
+
+No existing Card Design, Card Reference, Deckbuilder, print, TTS, or inspection consumer points at this surface yet.
 
 ### Stage 4 — parity
 - render all 242 faces

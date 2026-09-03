@@ -33,6 +33,7 @@ describe('unified physical face authority', () => {
     const general = resolveFace(game, 'leader:military-general');
     const deed = resolveFace(game, 'component:financiers-deed:front');
     const territory = resolveFace(game, `territory:${game.territories[0].id}`);
+    const playable = resolveFace(game, `card:${game.cards[0].id}`);
 
     expect(general).toMatchObject({
       template: 'leader',
@@ -52,6 +53,7 @@ describe('unified physical face authority', () => {
       side: 'front',
       backPolicy: 'standardBack',
     });
+    expect(playable.faction).toBe(String(game.cards[0].allegiance).toLowerCase());
   });
 
   it('derives paired faces from physical component policy instead of renderer-specific side logic', () => {
