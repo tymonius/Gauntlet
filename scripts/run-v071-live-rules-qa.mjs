@@ -6,8 +6,10 @@ const endpoint = process.env.GAUNTLET_RULES_QA_ENDPOINT
 const benchmarkPath = resolve("rules-assistant/evals/rules-arbiter-evals.v071.json");
 const outputPath = resolve(process.env.GAUNTLET_RULES_QA_OUTPUT
   || "artifacts/rules-qa/v071-live-answer-run.json");
-const concurrency = Math.max(1, Math.min(Number(process.env.GAUNTLET_RULES_QA_CONCURRENCY) || 4, 8));
+const concurrency = Math.max(1, Math.min(Number(process.env.GAUNTLET_RULES_QA_CONCURRENCY) || 2, 8));
 const requestTimeoutMs = Math.max(5000, Number(process.env.GAUNTLET_RULES_QA_TIMEOUT_MS) || 45000);
+const maxAttempts = Math.max(1, Math.min(Number(process.env.GAUNTLET_RULES_QA_MAX_ATTEMPTS) || 5, 8));
+const retryableStatuses = new Set([429, 502, 503, 504]);
 
 const benchmark = JSON.parse(readFileSync(benchmarkPath, "utf8"));
 const startedAt = new Date().toISOString();
@@ -113,18 +115,9 @@ function inspectAnswer(item, payload) {
   return { failures, warnings };
 }
 
-async function postCase(item, index) {
+async function requestAttempt(body) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), requestTimeoutMs);
-  const sessionId = "qa_v071_" + String(index + 1).padStart(3, "0") + "_" + runStamp;
-  const body = {
-    question: item.question,
-    history: Array.isArray(item.history) ? item.history : [],
-    sessionId,
-    rulesVersion: benchmark.rulesVersion
-  };
-  const begin = performance.now();
-
   try {
     const response = await fetch(endpoint, {
       method: "POST",
@@ -142,53 +135,94 @@ async function postCase(item, index) {
       payload = JSON.parse(responseText);
     } catch {
     }
-
-    const latencyMs = Math.round(performance.now() - begin);
-    const transportFailures = [];
-    if (!response.ok) transportFailures.push("http: " + response.status);
-    if (!payload) transportFailures.push("http: response was not JSON");
-    const inspected = payload ? inspectAnswer(item, payload) : { failures: [], warnings: [] };
-
-    return {
-      id: item.id,
-      category: item.category,
-      question: item.question,
-      history: item.history || [],
-      expectedClassification: item.expectedClassification,
-      expectedSourcePatterns: item.expectedSourcePatterns || [],
-      expectedAnswerPatterns: item.expectedAnswerPatterns || [],
-      forbiddenAnswerPatterns: item.forbiddenAnswerPatterns || [],
-      expectedTopic: item.expectedTopic || null,
-      sessionId,
-      httpStatus: response.status,
-      latencyMs,
-      payload,
-      rawResponse: payload ? null : responseText.slice(0, 4000),
-      failures: [...transportFailures, ...inspected.failures],
-      warnings: inspected.warnings
-    };
+    return { response, responseText, payload, error: null };
   } catch (error) {
-    return {
-      id: item.id,
-      category: item.category,
-      question: item.question,
-      history: item.history || [],
-      expectedClassification: item.expectedClassification,
-      expectedSourcePatterns: item.expectedSourcePatterns || [],
-      expectedAnswerPatterns: item.expectedAnswerPatterns || [],
-      forbiddenAnswerPatterns: item.forbiddenAnswerPatterns || [],
-      expectedTopic: item.expectedTopic || null,
-      sessionId,
-      httpStatus: null,
-      latencyMs: Math.round(performance.now() - begin),
-      payload: null,
-      rawResponse: null,
-      failures: ["request: " + (error?.name || "Error") + ": " + (error?.message || String(error))],
-      warnings: []
-    };
+    return { response: null, responseText: "", payload: null, error };
   } finally {
     clearTimeout(timeout);
   }
+}
+
+async function postCase(item, index) {
+  const sessionId = "qa_v071_" + String(index + 1).padStart(3, "0") + "_" + runStamp;
+  const body = {
+    question: item.question,
+    history: Array.isArray(item.history) ? item.history : [],
+    sessionId,
+    rulesVersion: benchmark.rulesVersion
+  };
+  const begin = performance.now();
+  let last = null;
+  let attempts = 0;
+
+  for (attempts = 1; attempts <= maxAttempts; attempts += 1) {
+    last = await requestAttempt(body);
+    const status = last.response?.status || null;
+    const retryableError = last.error?.name === "AbortError"
+      || last.error?.name === "TypeError";
+    const retryableResponse = status != null && retryableStatuses.has(status);
+    if (!retryableError && !retryableResponse) break;
+
+    if (attempts < maxAttempts) {
+      const delayMs = 1200 * attempts;
+      console.log(
+        "RETRY " + String(index + 1).padStart(3, "0") + "/" + benchmark.cases.length
+        + " " + item.id + " after "
+        + (status ? "HTTP " + status : (last.error?.name || "request error"))
+        + " (" + delayMs + " ms)"
+      );
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+  }
+
+  const latencyMs = Math.round(performance.now() - begin);
+  if (last?.response) {
+    const transportFailures = [];
+    if (!last.response.ok) transportFailures.push("http: " + last.response.status);
+    if (!last.payload) transportFailures.push("http: response was not JSON");
+    const inspected = last.payload ? inspectAnswer(item, last.payload) : { failures: [], warnings: [] };
+
+    return {
+      id: item.id,
+      category: item.category,
+      question: item.question,
+      history: item.history || [],
+      expectedClassification: item.expectedClassification,
+      expectedSourcePatterns: item.expectedSourcePatterns || [],
+      expectedAnswerPatterns: item.expectedAnswerPatterns || [],
+      forbiddenAnswerPatterns: item.forbiddenAnswerPatterns || [],
+      expectedTopic: item.expectedTopic || null,
+      sessionId,
+      attempts,
+      httpStatus: last.response.status,
+      latencyMs,
+      payload: last.payload,
+      rawResponse: last.payload ? null : last.responseText.slice(0, 4000),
+      failures: [...transportFailures, ...inspected.failures],
+      warnings: inspected.warnings
+    };
+  }
+
+  const error = last?.error;
+  return {
+    id: item.id,
+    category: item.category,
+    question: item.question,
+    history: item.history || [],
+    expectedClassification: item.expectedClassification,
+    expectedSourcePatterns: item.expectedSourcePatterns || [],
+    expectedAnswerPatterns: item.expectedAnswerPatterns || [],
+    forbiddenAnswerPatterns: item.forbiddenAnswerPatterns || [],
+    expectedTopic: item.expectedTopic || null,
+    sessionId,
+    attempts,
+    httpStatus: null,
+    latencyMs,
+    payload: null,
+    rawResponse: null,
+    failures: ["request: " + (error?.name || "Error") + ": " + (error?.message || String(error))],
+    warnings: []
+  };
 }
 
 async function runPool(items) {
@@ -226,6 +260,7 @@ const report = {
   startedAt,
   completedAt: new Date().toISOString(),
   concurrency,
+  maxAttempts,
   summary: {
     total: results.length,
     passed: results.length - failed.length,
