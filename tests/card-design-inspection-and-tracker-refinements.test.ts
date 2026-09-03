@@ -10,7 +10,7 @@ const supplementalRefinements = readFileSync('card-design/supplemental-refinemen
 const supplementalCss = readFileSync('card-design/supplemental-card.css', 'utf8');
 const deckbuilderMobilePreview = readFileSync('deckbuilder/mobile-card-preview.js', 'utf8');
 const sharedInspection = readFileSync('card-reference/card-inspection.js', 'utf8');
-const ttsSupplementalHtml = readFileSync('tts/supplemental-renderer/index.html', 'utf8');
+const faceSpec = readFileSync('card-design/face-spec.mjs', 'utf8');
 
 describe('Card Design inspection navigation', () => {
   it('uses a history entry so browser Back closes an open card inspection', () => {
@@ -66,7 +66,7 @@ describe('Deckbuilder inspection navigation', () => {
 describe('supplemental visual refinements', () => {
   it('aligns reference-card watermark geometry with the sliding trackers everywhere they render', () => {
     expect(catalogHtml).toContain('supplemental-refinements.css');
-    expect(ttsSupplementalHtml).toContain('/card-design/supplemental-refinements.css');
+    expect(faceSpec).toContain("'/card-design/supplemental-refinements.css'");
     expect(supplementalCss).toContain('right: 0.20in;');
     expect(supplementalCss).toContain('bottom: 0.32in;');
     expect(supplementalCss).toContain('width: 1.72in;');
