@@ -169,63 +169,11 @@
   left: 50%;
   width: 5.4in;
   height: 5.4in;
-  display: grid;
-  grid-template-rows: repeat(36, 0.132in);
-  align-content: center;
+  max-width: none;
   transform: translate(-50%, -50%) rotate(78deg);
   transform-origin: center;
-}
-
-.gauntlet-card-back__pattern-row {
-  display: grid;
-  grid-template-columns: repeat(36, 0.145in);
-  align-items: center;
-  justify-content: center;
-  justify-items: center;
-}
-
-.gauntlet-card-back__pattern-row:nth-child(4n + 2) {
-  transform: translateX(0.0725in);
-}
-
-.gauntlet-card-back__pattern-row:nth-child(4n + 3) {
-  transform: translateX(0.03625in);
-}
-
-.gauntlet-card-back__pattern-row:nth-child(4n) {
-  transform: translateX(0.10875in);
-}
-
-.gauntlet-card-back__symbol {
-  width: 0.135in;
-  height: 0.135in;
-  background: var(--card-back-pattern);
-  -webkit-mask: var(--card-back-symbol) center / contain no-repeat;
-  mask: var(--card-back-symbol) center / contain no-repeat;
-}
-
-.gauntlet-card-back__symbol.military {
-  --card-back-symbol: url("../images/faction-symbols/military.svg");
-}
-
-.gauntlet-card-back__symbol.diplomats {
-  --card-back-symbol: url("../images/faction-symbols/diplomats.svg");
-}
-
-.gauntlet-card-back__symbol.financiers {
-  --card-back-symbol: url("../images/faction-symbols/financiers.svg");
-}
-
-.gauntlet-card-back__symbol.intelligence {
-  --card-back-symbol: url("../images/faction-symbols/intelligence.svg");
-}
-
-.gauntlet-card-back__symbol.mystics {
-  --card-back-symbol: url("../images/faction-symbols/mystics.svg");
-}
-
-.gauntlet-card-back__symbol.inquisition {
-  --card-back-symbol: url("../images/faction-symbols/inquisition.svg");
+  pointer-events: none;
+  user-select: none;
 }
 
 .gauntlet-card-back__frame {
