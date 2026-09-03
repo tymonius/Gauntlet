@@ -43,5 +43,5 @@ export function render(spec) {
   );
   element.dataset.faceId = spec.id;
   element.dataset.faceTemplate = spec.template;
-  return { element };
+  return { element, preparation: { parchment: true, fit: 'none' } };
 }
