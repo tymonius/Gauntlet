@@ -1,8 +1,11 @@
-import { PRODUCTION_SURFACES } from './production-surface.mjs';
-
 (() => {
-  const TERRITORY_WIDTH = PRODUCTION_SURFACES.landscape.widthCssPx;
-  const TERRITORY_HEIGHT = PRODUCTION_SURFACES.landscape.heightCssPx;
+  let TERRITORY_WIDTH = 0;
+  let TERRITORY_HEIGHT = 0;
+  const territorySurfaceReady = import('./production-surface.mjs').then(({ PRODUCTION_SURFACES }) => {
+    TERRITORY_WIDTH = PRODUCTION_SURFACES.landscape.widthCssPx;
+    TERRITORY_HEIGHT = PRODUCTION_SURFACES.landscape.heightCssPx;
+    layoutTerritoryInspection();
+  });
   const INSPECTION_MAX_SCALE = 2.4;
   const FACTION_ORDER = [['neutral','Neutral'],['military','Military'],['diplomats','Diplomats'],['financiers','Financiers'],['intelligence','Intelligence'],['mystics','Mystics'],['inquisition','Inquisition']];
 
@@ -187,7 +190,7 @@ import { PRODUCTION_SURFACES } from './production-surface.mjs';
   }
 
   function layoutTerritoryInspection() {
-    if (!territoryInspectionStage || !territoryInspectionFrame) return;
+    if (!territoryInspectionStage || !territoryInspectionFrame || !TERRITORY_WIDTH || !TERRITORY_HEIGHT) return;
     const horizontalMargin = Math.min(96, window.innerWidth * 0.1);
     const verticalMargin = Math.min(96, window.innerHeight * 0.1);
     const availableWidth = Math.max(1, window.innerWidth - horizontalMargin);
@@ -274,6 +277,7 @@ import { PRODUCTION_SURFACES } from './production-surface.mjs';
     }
   }
 
+  territorySurfaceReady.catch(error => console.error('Production surface geometry failed to load.', error));
   renderLeaders();
   renderPlayable();
   renderTerritories();
