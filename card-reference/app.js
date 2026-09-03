@@ -135,8 +135,8 @@ function normalizeTerritory(territory) {
 
 function normalizeLeader(leader) {
   const faction = slugify(leader.faction || 'neutral');
-  const rendererId = `${faction}-${leader.id}`;
-  const rendererUrl = buildFaceRendererUrl('leader', rendererId);
+  const rendererId = `leader:${faction}-${leader.id}`;
+  const rendererUrl = buildFaceRendererUrl(rendererId);
   return {
     id: `leader-${faction}-${leader.id}`,
     type: 'leader',
@@ -248,8 +248,8 @@ function linkedComponentData(component, currentGame) {
   return null;
 }
 
-function buildFaceRendererUrl(kind, id, side = 'front') {
-  const params = new URLSearchParams({ kind, id, side });
+function buildFaceRendererUrl(faceId) {
+  const params = new URLSearchParams({ id: faceId });
   return `../card-design/face-render.html?${params.toString()}`;
 }
 
