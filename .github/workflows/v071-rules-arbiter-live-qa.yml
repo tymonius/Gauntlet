@@ -1,24 +1,21 @@
 name: v0.7.1 Rules Arbiter live answer QA
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'rules-assistant/evals/rules-arbiter-evals.v071.json'
-      - 'rules-assistant/local-search.js'
-      - 'rules-assistant/worker-v071.js'
-      - 'rules-assistant/review-intelligence.js'
-      - 'scripts/run-v071-live-rules-qa.mjs'
-      - '.github/workflows/v071-rules-arbiter-live-qa.yml'
-  pull_request:
-    paths:
-      - 'rules-assistant/evals/rules-arbiter-evals.v071.json'
-      - 'rules-assistant/local-search.js'
-      - 'rules-assistant/worker-v071.js'
-      - 'scripts/run-v071-live-rules-qa.mjs'
-      - '.github/workflows/v071-rules-arbiter-live-qa.yml'
   workflow_dispatch:
+    inputs:
+      scope:
+        description: Paid API test scope
+        required: true
+        default: smoke
+        type: choice
+        options:
+          - smoke
+          - full
+      confirm_paid_api:
+        description: I understand this workflow makes paid OpenAI API calls
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -28,6 +25,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
+      - name: Require paid-API confirmation
+        run: |
+          if [ "${{ inputs.confirm_paid_api }}" != "true" ]; then
+            echo "Paid API confirmation was not provided."
+            exit 1
+          fi
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -36,8 +40,17 @@ jobs:
         with:
           node-version: 22
 
+      - name: Configure paid QA scope
+        run: |
+          if [ "${{ inputs.scope }}" = "full" ]; then
+            echo "GAUNTLET_RULES_QA_LIMIT=0" >> "$GITHUB_ENV"
+            echo "Running the full paid Rules Arbiter benchmark."
+          else
+            echo "GAUNTLET_RULES_QA_LIMIT=10" >> "$GITHUB_ENV"
+            echo "Running a 10-case paid Rules Arbiter smoke test."
+          fi
+
       - name: Wait for deployed Rules Arbiter revision
-        if: github.event_name != 'pull_request'
         env:
           RULES_HEALTH_ENDPOINT: https://gauntlet-rules-assistant.tymon-scott.workers.dev/health
         run: |
@@ -77,8 +90,8 @@ jobs:
         env:
           GAUNTLET_RULES_QA_CONCURRENCY: '1'
           GAUNTLET_RULES_QA_TIMEOUT_MS: '45000'
-          GAUNTLET_RULES_QA_MAX_ATTEMPTS: '5'
-          GAUNTLET_RULES_QA_INTER_CASE_DELAY_MS: '500'
+          GAUNTLET_RULES_QA_MAX_ATTEMPTS: '2'
+          GAUNTLET_RULES_QA_INTER_CASE_DELAY_MS: '750'
         run: node scripts/run-v071-live-rules-qa.mjs
 
       - name: Upload live QA report
@@ -90,10 +103,6 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-      - name: Report pull-request live QA result
-        if: github.event_name == 'pull_request' && steps.qa.outcome != 'success'
-        run: echo "Live production QA found failures. The report is informational on pull requests because branch Worker changes are not deployed yet."
-
-      - name: Enforce deployed live QA result
-        if: github.event_name != 'pull_request' && steps.qa.outcome != 'success'
+      - name: Enforce live QA result
+        if: steps.qa.outcome != 'success'
         run: exit 1
