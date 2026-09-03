@@ -387,18 +387,8 @@ function readinessIssues(face, content, artwork) {
     if (!hasSource) issues.push('artwork-source-missing');
 
     const composition = artwork.composition;
-    if (!composition?.explicit) {
-      issues.push('artwork-composition-not-explicit');
-    } else {
-      const direction = composition.direction || {};
-      if (
-        direction.smart !== false
-        || !Number.isFinite(Number(direction.focusX))
-        || !Number.isFinite(Number(direction.focusY))
-        || !Number.isFinite(Number(direction.zoom))
-      ) {
-        issues.push('artwork-composition-not-final');
-      }
+    if (!composition?.direction) {
+      issues.push('artwork-composition-missing');
     }
   }
 
