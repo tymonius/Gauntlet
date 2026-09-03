@@ -1,19 +1,6 @@
 import type { CardID, PlayerID, SpaceID } from './ids';
 
-export type TerritoryOverlayKind = 'standard' | 'ruins';
-
-export interface TerritoryOverlayState {
-  cardId: CardID;
-  owner: PlayerID;
-  faceUp: boolean;
-  /** Explicit role for overlays whose physical card becomes persistent Ruins. */
-  kind?: TerritoryOverlayKind;
-  /** Occupier whose pending capture this Overlay tracks, when applicable. */
-  captureDelayOccupier?: PlayerID;
-  bombardmentSource?: 'action' | 'battle';
-  bombardmentBattleId?: string;
-  bombardmentOrigin?: 'hand' | 'battle_draw' | 'replayed';
-}
+export type { TerritoryOverlayKind, TerritoryOverlayState } from './board';
 
 export interface MilitaryCardState {
   storedCards: Partial<Record<CardID, CardID>>;

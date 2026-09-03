@@ -1,8 +1,21 @@
 import type { PlayerID, SpaceID, TerritoryID } from './ids';
-import type { TerritoryOverlayState } from './military';
-
 export type SpaceKind = 'heartland' | 'endpoint' | 'territory' | 'arena';
 export type EndpointRole = 'before_gauntlet' | 'beyond_gauntlet';
+
+export type TerritoryOverlayKind = 'standard' | 'ruins';
+
+export interface TerritoryOverlayState {
+  cardId: import('./ids').CardID;
+  owner: PlayerID;
+  faceUp: boolean;
+  /** Explicit role for overlays whose physical card becomes persistent Ruins. */
+  kind?: TerritoryOverlayKind;
+  /** Occupier whose pending capture this Overlay tracks, when applicable. */
+  captureDelayOccupier?: PlayerID;
+  bombardmentSource?: 'action' | 'battle';
+  bombardmentBattleId?: string;
+  bombardmentOrigin?: 'hand' | 'battle_draw' | 'replayed';
+}
 
 export interface BoardSpaceState {
   id: SpaceID;

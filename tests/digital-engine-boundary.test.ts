@@ -182,6 +182,24 @@ describe('digital engine boundary', () => {
     expect(cycles).toEqual([]);
   });
 
+  it('keeps core legacy type modules independent from faction-specific type modules', () => {
+    const coreModules = ['ids', 'zones', 'resources', 'phase', 'battle', 'board', 'leader'];
+    const factionModules = new Set(['military', 'diplomats', 'financiers', 'intelligence', 'mystics', 'inquisition', 'neutral']);
+    const offenders: string[] = [];
+
+    for (const moduleName of coreModules) {
+      const path = `src/types/${moduleName}.ts`;
+      const source = readFileSync(path, 'utf8');
+      for (const specifier of importedSpecifiers(source)) {
+        if (!specifier.startsWith('./')) continue;
+        const target = specifier.slice(2).replace(/\.ts$/, '');
+        if (factionModules.has(target)) offenders.push(`${path}: ${specifier}`);
+      }
+    }
+
+    expect(offenders).toEqual([]);
+  });
+
   it('keeps the legacy type layer independent from runtime layers', () => {
     const offenders: string[] = [];
     const forbiddenDirectories = ['state', 'effects', 'cards', 'dev'];
