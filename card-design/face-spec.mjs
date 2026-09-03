@@ -381,7 +381,21 @@ function readinessIssues(face, content, artwork) {
       ? Boolean(source.src)
       : Array.isArray(source.candidates) && source.candidates.length > 0;
     if (!hasSource) issues.push('artwork-source-missing');
-    if (!artwork.composition?.explicit) issues.push('artwork-composition-not-explicit');
+
+    const composition = artwork.composition;
+    if (!composition?.explicit) {
+      issues.push('artwork-composition-not-explicit');
+    } else {
+      const direction = composition.direction || {};
+      if (
+        direction.smart !== false
+        || !Number.isFinite(Number(direction.focusX))
+        || !Number.isFinite(Number(direction.focusY))
+        || !Number.isFinite(Number(direction.zoom))
+      ) {
+        issues.push('artwork-composition-not-final');
+      }
+    }
   }
 
   if (face.template === 'tracker') {
@@ -389,8 +403,9 @@ function readinessIssues(face, content, artwork) {
     if (!content.trackedValue) issues.push('tracker-value-authority-missing');
   }
 
-  if (face.template === 'reference' && !content.source) {
-    issues.push('reference-source-missing');
+  if (face.template === 'reference') {
+    issues.push('reference-presentation-still-legacy');
+    if (!content.source) issues.push('reference-source-missing');
   }
 
   return Object.freeze(issues);
