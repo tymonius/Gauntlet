@@ -73,7 +73,11 @@ describe('complete FaceSpec source authority', () => {
     expect(riteReverse.content).toMatchObject({ type: 'rite', mode: 'completed', rite: { id: 'crossing' } });
     expect(ritualReverse.content).toMatchObject({ type: 'ritual', mode: 'reverse', ritual: { id: 'ascension' } });
     expect(reference.content).toMatchObject({ type: 'reference', selector: { title: 'Turn & Battle' } });
-    expect(tracker.content).toMatchObject({ type: 'tracker', trackedValue: { name: 'Command' } });
+    expect(tracker.content).toMatchObject({
+      type: 'tracker',
+      trackedValue: { name: 'Command' },
+      presentation: { scaleMaximum: 4, labelSizePt: 11.2, title: 'Command Tracker' },
+    });
     expect(ledger.content).toMatchObject({ type: 'ledger', openingBalance: 2, blankRows: 11 });
     expect(deed.content).toMatchObject({ type: 'deed' });
     expect(back.content).toEqual({ type: 'standard-back', faction: 'intelligence' });
@@ -119,10 +123,9 @@ describe('complete FaceSpec source authority', () => {
     });
   });
 
-  it('surfaces unresolved legacy presentation authority instead of hiding fallbacks', () => {
+  it('surfaces unresolved presentation authority instead of hiding fallbacks', () => {
     const tracker = resolveFaceSpec(game, 'component:military-command-tracker:front');
-    expect(tracker.readiness.productionReady).toBe(false);
-    expect(tracker.readiness.issues).toContain('tracker-presentation-still-legacy');
+    expect(tracker.readiness).toEqual({ productionReady: true, issues: [] });
 
     const reference = resolveFaceSpec(game, 'component:universal-reference:front');
     expect(reference.readiness.productionReady).toBe(false);

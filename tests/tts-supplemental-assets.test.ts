@@ -156,12 +156,14 @@ describe('TTS supplemental component exports', () => {
     expect(intel.trackedValue.maximum).toBeNull();
     expect(progress.trackedValue.maximum).toBeNull();
 
-    expect(productionSupplementals).toMatch(/'military-command-tracker'\s*:\s*\{[\s\S]*?max:\s*4/);
-    expect(productionSupplementals).toMatch(/'diplomats-influence-tracker'\s*:\s*\{[\s\S]*?max:\s*10/);
-    expect(productionSupplementals).toMatch(/'financiers-capital-limit-tracker'\s*:\s*\{[\s\S]*?max:\s*15/);
-    expect(productionSupplementals).toMatch(/'intelligence-intel-tracker'\s*:\s*\{[\s\S]*?max:\s*12/);
-    expect(productionSupplementals).toMatch(/'intelligence-operation-progress-tracker'\s*:\s*\{[\s\S]*?max:\s*8/);
-    expect(productionSupplementals).toMatch(/'inquisition-conviction-tracker'\s*:\s*\{[\s\S]*?max:\s*4/);
+    expect(command.presentation?.tracker?.scaleMaximum).toBe(4);
+    expect(trackers.find((component: any) => component.id === 'diplomats-influence-tracker')?.presentation?.tracker?.scaleMaximum).toBe(10);
+    expect(capitalLimit.presentation?.tracker?.scaleMaximum).toBe(15);
+    expect(intel.presentation?.tracker?.scaleMaximum).toBe(12);
+    expect(progress.presentation?.tracker?.scaleMaximum).toBe(8);
+    expect(trackers.find((component: any) => component.id === 'inquisition-conviction-tracker')?.presentation?.tracker?.scaleMaximum).toBe(4);
+    expect(productionSupplementals).toContain('component.presentation?.tracker');
+    expect(productionSupplementals).not.toContain('const TRACKER_PRESENTATION');
 
     const { catalog } = await buildSupplementalCatalog(contract);
     const readyTrackers = catalog.ready.filter((component: any) => component.representation === 'sliding-tracker');

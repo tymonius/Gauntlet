@@ -12,6 +12,9 @@ const TERRITORY_EFFECT_STEP = 0.01;
 const TERRITORY_MINIMUM_TITLE_SIZE = 8 * CSS_PIXELS_PER_POINT;
 const TERRITORY_MINIMUM_ART_HEIGHT = 0.55 * CSS_PIXELS_PER_INCH;
 const TERRITORY_MINIMUM_EFFECT_SCALE = 0.68;
+const TRACKER_CAP_INSTRUCTION_GAP_IN = 0.02;
+const TRACKER_INSTRUCTION_SCALE_GAP_IN = 0.05;
+const TRACKER_TITLE_MINIMUM_SIZE = 9.5 * CSS_PIXELS_PER_POINT;
 
 const PARCHMENT_SOURCES = Object.freeze({
   neutral: '/images/artwork/card-backgrounds/neutral-parchment-v2.png',
@@ -288,6 +291,66 @@ export function fitTerritory(card) {
   card.dataset.artHeight = artRect.height.toFixed(2);
   card.dataset.artWidth = artRect.width.toFixed(2);
   card.dataset.artSpansBody = String(artSpansBody);
+  card.classList.toggle('fit-warning', !fits);
+  card.dataset.productionFit = fits ? 'fit' : 'warning';
+}
+
+
+function fitTrackerTitle(card) {
+  const title = card?.querySelector('.tracker-heading h3');
+  if (!title) throw new Error('Tracker template is missing its title.');
+
+  title.style.removeProperty('font-size');
+  forceLayout(title);
+  let size = Number.parseFloat(getComputedStyle(title).fontSize);
+  if (!Number.isFinite(size)) throw new Error('Tracker title has no computed font size.');
+
+  while (title.scrollWidth > title.clientWidth + 0.5 && size > TRACKER_TITLE_MINIMUM_SIZE) {
+    size = Math.max(TRACKER_TITLE_MINIMUM_SIZE, size - 0.25);
+    title.style.fontSize = `${size}px`;
+    forceLayout(title);
+  }
+
+  const fits = title.scrollWidth <= title.clientWidth + 0.5;
+  card.dataset.trackerTitleFit = fits ? 'true' : 'false';
+  return fits;
+}
+
+export function fitTracker(card) {
+  const interior = card?.querySelector('.tracker-interior');
+  const heading = card?.querySelector('.tracker-heading');
+  const instructions = card?.querySelector('.tracker-instructions');
+  const scale = card?.querySelector('.tracker-scale');
+  const footer = card?.querySelector('.tracker-footer');
+  if (!interior || !heading || !instructions || !scale || !footer) {
+    throw new Error('Tracker template is missing canonical layout structure.');
+  }
+
+  const titleFits = fitTrackerTitle(card);
+  const interiorRect = interior.getBoundingClientRect();
+  const headingRect = heading.getBoundingClientRect();
+  const instructionTop = headingRect.bottom - interiorRect.top + (TRACKER_CAP_INSTRUCTION_GAP_IN * CSS_PIXELS_PER_INCH);
+  instructions.style.top = `${instructionTop}px`;
+  forceLayout(card);
+
+  const instructionRect = instructions.getBoundingClientRect();
+  const footerRect = footer.getBoundingClientRect();
+  const scaleTop = instructionRect.bottom - interiorRect.top + (TRACKER_INSTRUCTION_SCALE_GAP_IN * CSS_PIXELS_PER_INCH);
+  const scaleBottom = Math.max(0, interiorRect.bottom - footerRect.top);
+
+  scale.style.top = `${scaleTop}px`;
+  scale.style.bottom = `${scaleBottom}px`;
+  scale.style.height = 'auto';
+  card.dataset.trackerLayout = 'measured';
+
+  const scaleRect = scale.getBoundingClientRect();
+  const fits = titleFits
+    && instructionTop >= 0
+    && scaleTop >= instructionTop
+    && scaleRect.top >= instructionRect.bottom - 0.5
+    && scaleRect.bottom <= footerRect.top + 0.5
+    && footerRect.bottom <= interiorRect.bottom + 0.5;
+
   card.classList.toggle('fit-warning', !fits);
   card.dataset.productionFit = fits ? 'fit' : 'warning';
 }
