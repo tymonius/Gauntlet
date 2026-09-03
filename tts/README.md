@@ -24,7 +24,8 @@ All TTS card faces are captured from the production **Card Design** surfaces. TT
 
 - playable cards: `card-design/card-review-render.html`;
 - Territories: `card-design/territory-review-render.html`;
-- Leaders, trackers, references, Rites, Proposals/Treaties, Capital Ledger, and Deeds: `card-design/component-print-render.html`.
+- Leaders: `card-design/face-render.html` via canonical FaceSpec.
+- Trackers, references, Rites, Proposals/Treaties, Capital Ledger, and Deeds: `card-design/component-render.html` until those families migrate to FaceSpec.
 
 This means parchment, faction symbols, border colors, artwork framing, reference-card divider policy, the Universal Reference G watermark, typography, and component geometry come from the same CSS/markup that powers `/card-design`. The older standalone TTS render pages are not valid card-face authorities.
 
