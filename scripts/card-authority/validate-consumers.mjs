@@ -1,23 +1,26 @@
 #!/usr/bin/env node
-import { readFile } from 'node:fs/promises';
-import { resolve } from 'node:path';
+import { readdir, readFile } from 'node:fs/promises';
+import { extname, join, relative, resolve } from 'node:path';
 import { ROOT } from '../current-game-authority.mjs';
 
-export const CARD_AUTHORITY_CONSUMERS = Object.freeze([
-  'card-design/card-review.js',
-  'card-design/supplemental-card.js',
-  'card-design/proposal-card.js',
-  'card-design/rite-card.js',
-  'card-reference/app.js',
-  'deckbuilder/production-print.js',
-  'deckbuilder/rendered-card-preview.js',
-  'deckbuilder/territories.js',
-  'scripts/generate-tts-card-assets.mjs',
-  'scripts/generate-tts-leader-assets.mjs',
-  'scripts/generate-tts-territory-assets.mjs',
-  'scripts/generate-tts-supplemental-assets.mjs',
-  'scripts/generate-tts-finalized-supplementals.mjs',
-  'scripts/tts-sliding-trackers.mjs',
+const LIVE_SOURCE_DIRS = Object.freeze([
+  'card-design',
+  'card-reference',
+  'deckbuilder',
+  'factions',
+  'playtest',
+  'rulebook',
+  'rules-arbiter',
+  'scripts',
+  'start',
+  'tts',
+  'workers',
+]);
+
+const SOURCE_EXTENSIONS = new Set(['.html', '.js', '.mjs']);
+const EXCLUDED_DIRECTORIES = new Set(['generated', 'node_modules']);
+const EXCLUDED_PATH_PREFIXES = Object.freeze([
+  'scripts/card-authority/',
 ]);
 
 const LEGACY_RENDER_ROUTES = Object.freeze([
@@ -25,6 +28,9 @@ const LEGACY_RENDER_ROUTES = Object.freeze([
   'territory-review-render.html',
   'component-render.html',
   'card-back-render.html',
+  'card-showcase-embed.html',
+  'card-review-render.js',
+  'territory-review-render.js',
 ]);
 
 const RENDER_BEHAVIOR_PARAMETERS = Object.freeze([
@@ -36,10 +42,58 @@ const RENDER_BEHAVIOR_PARAMETERS = Object.freeze([
   'version',
   'fit',
   'printArtwork',
+  'releaseTarget',
 ]);
 
 function invariant(condition, message) {
   if (!condition) throw new Error(message);
+}
+
+function normalized(path) {
+  return path.split('\\').join('/');
+}
+
+function isSourcePath(path) {
+  const value = normalized(path);
+  return SOURCE_EXTENSIONS.has(extname(value))
+    && !/(?:^|\/)[^/]+\.(?:test|spec)\.(?:js|mjs)$/.test(value)
+    && !EXCLUDED_PATH_PREFIXES.some(prefix => value.startsWith(prefix));
+}
+
+async function collectSourceFiles(directory, output) {
+  for (const entry of await readdir(directory, { withFileTypes: true })) {
+    const absolute = join(directory, entry.name);
+    if (entry.isDirectory()) {
+      if (!EXCLUDED_DIRECTORIES.has(entry.name)) await collectSourceFiles(absolute, output);
+      continue;
+    }
+    const path = normalized(relative(ROOT, absolute));
+    if (isSourcePath(path)) output.push(path);
+  }
+}
+
+export async function discoverPhysicalFaceConsumers() {
+  const candidates = [];
+
+  for (const entry of await readdir(ROOT, { withFileTypes: true })) {
+    if (entry.isFile()) {
+      const path = normalized(entry.name);
+      if (isSourcePath(path)) candidates.push(path);
+    }
+  }
+
+  for (const directory of LIVE_SOURCE_DIRS) {
+    await collectSourceFiles(resolve(ROOT, directory), candidates);
+  }
+
+  const consumers = [];
+  for (const path of [...new Set(candidates)].sort()) {
+    const source = await readFile(resolve(ROOT, path), 'utf8');
+    if (source.includes('face-render.html') || LEGACY_RENDER_ROUTES.some(route => source.includes(route))) {
+      consumers.push(Object.freeze({ path, source }));
+    }
+  }
+  return Object.freeze(consumers);
 }
 
 function faceRouteWindows(source) {
@@ -55,12 +109,12 @@ function faceRouteWindows(source) {
 }
 
 export function validateConsumerSource(path, source) {
-  const windows = faceRouteWindows(source);
-  invariant(windows.length > 0, `${path} does not route physical faces through face-render.html.`);
-
   for (const legacy of LEGACY_RENDER_ROUTES) {
     invariant(!source.includes(legacy), `${path} still references retired renderer route ${legacy}.`);
   }
+
+  const windows = faceRouteWindows(source);
+  invariant(windows.length > 0, `${path} does not route physical faces through face-render.html.`);
 
   const suppliesIdentity = source.includes('face-render.html?id=')
     || /searchParams\.set\(['"]id['"]/.test(source);
@@ -81,14 +135,12 @@ export function validateConsumerSource(path, source) {
 }
 
 export async function validateConsumerContract() {
-  const results = [];
-  for (const path of CARD_AUTHORITY_CONSUMERS) {
-    const source = await readFile(resolve(ROOT, path), 'utf8');
-    results.push(validateConsumerSource(path, source));
-  }
+  const discovered = await discoverPhysicalFaceConsumers();
+  const results = discovered.map(({ path, source }) => validateConsumerSource(path, source));
   return Object.freeze({
     consumers: results.length,
     routes: results.reduce((sum, result) => sum + result.routeMentions, 0),
+    paths: Object.freeze(results.map(result => result.path)),
     results: Object.freeze(results),
   });
 }
