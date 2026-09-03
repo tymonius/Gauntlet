@@ -36,6 +36,10 @@ const ANALYTICS_EXCLUDED_FILES = new Set([
   "card-design/card-review-render.html",
   "card-design/component-render.html",
   "card-design/territory-review-render.html",
+  "card-design/card-back-render.html",
+  // Legacy TTS renderer routes are redirect aliases only.
+  "tts/renderer/index.html",
+  "tts/territory-renderer/index.html",
   // Legacy aliases retained only for old bookmarks/callers.
   "card-design/card-print-render.html",
   "card-design/component-print-render.html",
