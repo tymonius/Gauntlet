@@ -120,9 +120,15 @@ describe("Leader card design", () => {
     expect(leaderStyles).toContain("grid-template-columns: 0.63in minmax(0, 1fr)");
   });
 
-  it("preserves the full head through top-biased portrait crops", () => {
-    expect(leaderStyles).toContain("object-position: center 16%");
-    expect(leaderStyles).toContain("object-position: center 14%");
+  it("keeps every Leader artwork composition in canonical visual authority rather than CSS", () => {
+    const directionIds = new Set(Object.keys(currentGame.artDirection || {}));
+    const leaderDirectionIds = currentGame.leaders.map((leader: any) => `${leader.faction}-${leader.id}`);
+    expect(leaderDirectionIds.every((id: string) => directionIds.has(id))).toBe(true);
+    expect(currentGame.artDirection["military-general"]).toMatchObject({
+      focusX: 0.5,
+      focusY: 0.16,
+    });
+    expect(leaderStyles).not.toContain("object-position:");
   });
 
   it("gives the metadata footer sufficient height and leading", () => {
