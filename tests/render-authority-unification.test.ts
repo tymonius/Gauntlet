@@ -10,6 +10,7 @@ const releasedRuntime = readFileSync('game-data/ruleset.mjs', 'utf8');
 const renderContext = readFileSync('card-design/render-context.mjs', 'utf8');
 const componentRender = readFileSync('card-design/component-render.js', 'utf8');
 const componentRenderHtml = readFileSync('card-design/component-render.html', 'utf8');
+const cardDesignIndex = readFileSync('card-design/index.html', 'utf8');
 const playableSurface = readFileSync('card-design/card-review-render.js', 'utf8');
 const playableRenderer = readFileSync('card-design/playable-card-renderer.js', 'utf8');
 const territorySurface = readFileSync('card-design/territory-review-render.js', 'utf8');
@@ -83,6 +84,8 @@ describe('complete canonical render authority', () => {
 
   it('keeps crop behavior and face implementations under Card Design ownership', () => {
     expect(componentRenderHtml).toContain('/card-design/artwork-crop.js');
+    expect(cardDesignIndex).toContain('src="artwork-crop.js"');
+    expect(cardDesignIndex).not.toContain('../tts/artwork-crop.js');
     expect(playableSurface).toContain("loadScript('/card-design/artwork-crop.js')");
     expect(playableSurface).toContain("loadScript('/card-design/playable-card-renderer.js')");
     expect(territorySurface).toContain("loadScript('/card-design/artwork-crop.js')");
