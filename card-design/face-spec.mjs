@@ -73,6 +73,7 @@ export const FACE_TEMPLATE_CONTRACTS = Object.freeze({
     styles: Object.freeze([
       ...BASE_CARD_STYLES,
       '/card-design/faction-specimens.css',
+      '/card-design/supplemental-card.css',
       '/card-design/deed-card.css',
     ]),
     artworkRole: 'none',
