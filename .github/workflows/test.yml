@@ -123,7 +123,8 @@ jobs:
             const analytics = uncertain || exact('scripts/sync-google-analytics.mjs') || exact('index.html') || matches(/^(?:start|rulebook|card-reference|deckbuilder|rules-arbiter)\/[^/]*\.html$/) || matches(/^factions\/(?:[^/]+\/)?[^/]*\.html$/);
             const tts = uncertain || matches(/^scripts\/generate-tts-/) || under('tts/') || under('artifacts/tts/') || under('data/cards/') || under('data/territories/');
             const media = uncertain || matches(/^scripts\/generate-card-media-/) || under('images/artwork/') || under('artifacts/media/') || under('data/cards/');
-            const relevant = code || types || analytics || tts || media;
+            const accessibility = uncertain || matches(/\.html$/) || exact('tests/public-static-accessibility.test.ts');
+            const relevant = code || types || analytics || tts || media || accessibility;
 
             core.setOutput('relevant', String(relevant));
             core.setOutput('code', String(code));
@@ -132,6 +133,7 @@ jobs:
             core.setOutput('analytics', String(analytics));
             core.setOutput('tts', String(tts));
             core.setOutput('media', String(media));
+            core.setOutput('accessibility', String(accessibility));
             core.setOutput('changed_tests', JSON.stringify(changedTests));
             core.setOutput('related_sources', JSON.stringify(relatedSources));
             core.setOutput('retired_sources', JSON.stringify(retiredSources));
@@ -147,6 +149,7 @@ jobs:
                 ['Analytics', String(analytics)],
                 ['TTS', String(tts)],
                 ['Media', String(media)],
+                ['Public static accessibility', String(accessibility)],
               ])
               .write();
 
@@ -217,6 +220,10 @@ jobs:
           if (( ${#related_sources[@]} )); then
             npx vitest related --run --passWithNoTests "${related_sources[@]}"
           fi
+
+      - name: Run public static accessibility contract when HTML changes
+        if: steps.scope.outputs.accessibility == 'true'
+        run: npx vitest run tests/public-static-accessibility.test.ts
 
       - name: Verify analytics only when analytics-bearing pages change
         if: steps.scope.outputs.analytics == 'true'
