@@ -219,6 +219,11 @@ export type V070BattleAction =
       cardInstanceId: string;
     }
   | {
+      type: 'resolve_battle_aftermath_controlled_effect';
+      playerId: PlayerId;
+      sourceInstanceId: string;
+    }
+  | {
       type: 'resolve_territory_aftermath_choice';
       playerId: PlayerId;
       cardInstanceId?: string;
@@ -313,6 +318,12 @@ export function reduceV070BattleAction(
     && action.type !== 'resolve_accursed_wager_discard') {
     throw new V070GameActionError(
       'Resolve the pending Accursed Wager discard before continuing the Aftermath.',
+    );
+  }
+  if (state.battleRuntime?.pendingBattleAftermathControlledEffectChoice
+    && action.type !== 'resolve_battle_aftermath_controlled_effect') {
+    throw new V070GameActionError(
+      'Resolve the pending shared-timing Aftermath card effect before continuing the Aftermath.',
     );
   }
   if (state.battleRuntime?.pendingTerritoryAftermathChoice
@@ -531,6 +542,13 @@ export function reduceV070BattleAction(
         next,
         action.playerId,
         action.cardInstanceId,
+      );
+      break;
+    case 'resolve_battle_aftermath_controlled_effect':
+      resolveBattleAftermathControlledEffectChoice(
+        next,
+        action.playerId,
+        action.sourceInstanceId,
       );
       break;
     case 'resolve_territory_aftermath_choice':
@@ -2076,25 +2094,118 @@ function territoryAftermathDestination(
       : normalDestination;
 }
 
-function resolveBattleCardAftermathOverlayPlacements(
+type V070BattleAftermathControlledEffectRef = {
+  owner: PlayerId;
+  sourceInstanceId: string;
+  kind: 'overlay' | 'territory';
+};
+
+function pruneIneligibleBattleAftermathControlledEffects(
   state: V070GameState,
 ): void {
   const battle = requireBattle(state);
   const runtime = requireRuntime(state);
-  const placements = [...runtime.battleCardAftermathOverlayPlacements];
-  runtime.battleCardAftermathOverlayPlacements = [];
 
-  for (const placement of placements) {
-    if (placement.condition === 'owner_win'
-      && battle.winner !== placement.owner) {
-      continue;
+  runtime.battleCardAftermathOverlayPlacements =
+    runtime.battleCardAftermathOverlayPlacements.filter(placement =>
+      placement.condition === 'always'
+      || battle.winner === placement.owner
+    );
+  runtime.battleCardAftermathTerritoryInsertions =
+    runtime.battleCardAftermathTerritoryInsertions.filter(insertion =>
+      insertion.condition !== 'owner_win_as_attacker'
+      || (
+        battle.winner === insertion.owner
+        && battle.attacker === insertion.owner
+      )
+    );
+}
+
+function remainingBattleAftermathControlledEffects(
+  state: V070GameState,
+): V070BattleAftermathControlledEffectRef[] {
+  const runtime = requireRuntime(state);
+  return [
+    ...runtime.battleCardAftermathOverlayPlacements.map(placement => ({
+      owner: placement.owner,
+      sourceInstanceId: placement.sourceInstanceId,
+      kind: 'overlay' as const,
+    })),
+    ...runtime.battleCardAftermathTerritoryInsertions.map(insertion => ({
+      owner: insertion.owner,
+      sourceInstanceId: insertion.sourceInstanceId,
+      kind: 'territory' as const,
+    })),
+  ];
+}
+
+function nextBattleAftermathControlledEffectPlayer(
+  state: V070GameState,
+  previousPlayer: PlayerId | null,
+): PlayerId | null {
+  const battle = requireBattle(state);
+  const effects = remainingBattleAftermathControlledEffects(state);
+  const hasEffect = (playerId: PlayerId) =>
+    effects.some(effect => effect.owner === playerId);
+
+  if (previousPlayer === null) {
+    if (hasEffect(battle.attacker)) return battle.attacker;
+    if (hasEffect(battle.defender)) return battle.defender;
+    return null;
+  }
+
+  const other =
+    previousPlayer === battle.attacker
+      ? battle.defender
+      : battle.attacker;
+  if (hasEffect(other)) return other;
+  if (hasEffect(previousPlayer)) return previousPlayer;
+  return null;
+}
+
+function applyBattleAftermathControlledEffect(
+  state: V070GameState,
+  effect: V070BattleAftermathControlledEffectRef,
+): void {
+  const runtime = requireRuntime(state);
+
+  if (effect.kind === 'overlay') {
+    const index = runtime.battleCardAftermathOverlayPlacements.findIndex(
+      placement =>
+        placement.owner === effect.owner
+        && placement.sourceInstanceId === effect.sourceInstanceId,
+    );
+    if (index < 0) {
+      throw new V070GameActionError(
+        'That battle Overlay effect is no longer pending.',
+      );
+    }
+    const [placement] =
+      runtime.battleCardAftermathOverlayPlacements.splice(index, 1);
+    const territory = state.board.find(
+      candidate =>
+        candidate.territoryInstanceId === placement.territoryInstanceId,
+    );
+    if (!territory) {
+      appendV070Event(state, {
+        type: 'battle_card_aftermath_overlay_unavailable',
+        actor: placement.owner,
+        visibility: 'public',
+        payload: {
+          sourceInstanceId: placement.sourceInstanceId,
+          sourceCardId: placement.sourceCardId,
+          territoryInstanceId: placement.territoryInstanceId,
+          reason: 'contested_territory_missing',
+        },
+      });
+      return;
     }
 
     placeV070OverlayFromBattle(
       state,
       placement.owner,
       placement.sourceInstanceId,
-      battle.contestedPosition,
+      territory.position,
       `${placement.sourceCardId} battle Aftermath`,
     );
     appendV070Event(state, {
@@ -2104,58 +2215,152 @@ function resolveBattleCardAftermathOverlayPlacements(
       payload: {
         sourceInstanceId: placement.sourceInstanceId,
         sourceCardId: placement.sourceCardId,
-        territoryPosition: battle.contestedPosition,
+        territoryInstanceId: placement.territoryInstanceId,
+        territoryPosition: territory.position,
         condition: placement.condition,
       },
     });
+    return;
   }
+
+  const index = runtime.battleCardAftermathTerritoryInsertions.findIndex(
+    insertion =>
+      insertion.owner === effect.owner
+      && insertion.sourceInstanceId === effect.sourceInstanceId,
+  );
+  if (index < 0) {
+    throw new V070GameActionError(
+      'That battle Territory-insertion effect is no longer pending.',
+    );
+  }
+  const [insertion] =
+    runtime.battleCardAftermathTerritoryInsertions.splice(index, 1);
+  const result = insertV070TerritoryAtFrontLine(
+    state,
+    insertion.owner,
+    {
+      territoryInstanceId: insertion.sourceInstanceId,
+      territoryId: insertion.sourceCardId,
+      contributedBy: insertion.owner,
+      blank: true,
+    },
+    `${insertion.sourceCardId} battle Aftermath`,
+  );
+
+  appendV070Event(state, {
+    type: 'battle_card_aftermath_territory_inserted',
+    actor: insertion.owner,
+    visibility: 'public',
+    payload: {
+      sourceInstanceId: insertion.sourceInstanceId,
+      sourceCardId: insertion.sourceCardId,
+      insertedPosition: result.insertedPosition,
+      location: insertion.location,
+      condition: insertion.condition,
+      playerTokenMovementOccurred:
+        result.playerTokenMovementOccurred,
+      enteredTerritory: result.enteredTerritory,
+    },
+  });
 }
 
-function resolveBattleCardAftermathTerritoryInsertions(
+function advanceBattleAftermathControlledEffects(
   state: V070GameState,
-): void {
-  const battle = requireBattle(state);
+  immediateWinner: PlayerId | null,
+): boolean {
   const runtime = requireRuntime(state);
-  const insertions = [
-    ...runtime.battleCardAftermathTerritoryInsertions,
-  ];
-  runtime.battleCardAftermathTerritoryInsertions = [];
+  pruneIneligibleBattleAftermathControlledEffects(state);
 
-  for (const insertion of insertions) {
-    if (insertion.condition === 'owner_win_as_attacker'
-      && (battle.winner !== insertion.owner
-        || battle.attacker !== insertion.owner)) {
-      continue;
+  if (runtime.pendingBattleAftermathControlledEffectChoice) return true;
+
+  let nextPlayer =
+    runtime.battleAftermathControlledEffectNextPlayer
+    ?? nextBattleAftermathControlledEffectPlayer(state, null);
+
+  while (nextPlayer) {
+    runtime.battleAftermathControlledEffectNextPlayer = nextPlayer;
+    const candidates = remainingBattleAftermathControlledEffects(state)
+      .filter(effect => effect.owner === nextPlayer);
+
+    if (candidates.length > 1) {
+      runtime.pendingBattleAftermathControlledEffectChoice = {
+        playerId: nextPlayer,
+        candidateSourceInstanceIds: candidates.map(
+          effect => effect.sourceInstanceId,
+        ),
+        immediateWinner,
+      };
+      appendV070Event(state, {
+        type: 'battle_aftermath_controlled_effect_choice_pending',
+        actor: nextPlayer,
+        visibility: 'public',
+        payload: {
+          playerId: nextPlayer,
+          candidateCount: candidates.length,
+        },
+      });
+      appendV070Event(state, {
+        type: 'battle_aftermath_controlled_effect_choice_options',
+        actor: nextPlayer,
+        visibility: nextPlayer,
+        payload: {
+          sourceInstanceIds: candidates.map(
+            effect => effect.sourceInstanceId,
+          ),
+        },
+      });
+      return true;
     }
 
-    const result = insertV070TerritoryAtFrontLine(
-      state,
-      insertion.owner,
-      {
-        territoryInstanceId: insertion.sourceInstanceId,
-        territoryId: insertion.sourceCardId,
-        contributedBy: insertion.owner,
-        blank: true,
-      },
-      `${insertion.sourceCardId} battle Aftermath`,
-    );
+    if (candidates.length === 1) {
+      applyBattleAftermathControlledEffect(state, candidates[0]);
+    }
 
-    appendV070Event(state, {
-      type: 'battle_card_aftermath_territory_inserted',
-      actor: insertion.owner,
-      visibility: 'public',
-      payload: {
-        sourceInstanceId: insertion.sourceInstanceId,
-        sourceCardId: insertion.sourceCardId,
-        insertedPosition: result.insertedPosition,
-        location: insertion.location,
-        condition: insertion.condition,
-        playerTokenMovementOccurred:
-          result.playerTokenMovementOccurred,
-        enteredTerritory: result.enteredTerritory,
-      },
-    });
+    nextPlayer =
+      nextBattleAftermathControlledEffectPlayer(state, nextPlayer);
   }
+
+  runtime.battleAftermathControlledEffectNextPlayer = null;
+  return false;
+}
+
+function resolveBattleAftermathControlledEffectChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  sourceInstanceId: string,
+): void {
+  const runtime = requireRuntime(state);
+  requireRuntimeStage(runtime, 'aftermath');
+  const pending =
+    runtime.pendingBattleAftermathControlledEffectChoice;
+  if (!pending || pending.playerId !== playerId) {
+    throw new V070GameActionError(
+      'No shared-timing Aftermath card-effect choice is pending for that player.',
+    );
+  }
+  if (!pending.candidateSourceInstanceIds.includes(sourceInstanceId)) {
+    throw new V070GameActionError(
+      'That card is not an eligible shared-timing Aftermath effect.',
+    );
+  }
+
+  const effect = remainingBattleAftermathControlledEffects(state)
+    .find(candidate =>
+      candidate.owner === playerId
+      && candidate.sourceInstanceId === sourceInstanceId
+    );
+  if (!effect) {
+    throw new V070GameActionError(
+      'That shared-timing Aftermath effect is no longer available.',
+    );
+  }
+
+  const immediateWinner = pending.immediateWinner;
+  runtime.pendingBattleAftermathControlledEffectChoice = null;
+  applyBattleAftermathControlledEffect(state, effect);
+  runtime.battleAftermathControlledEffectNextPlayer =
+    nextBattleAftermathControlledEffectPlayer(state, playerId);
+  completeAftermathInternal(state, immediateWinner);
 }
 
 function placeAftermathCard(
@@ -2220,17 +2425,22 @@ function completeAftermathInternal(
     };
   }
 
-  state.players.A.position = battle.positions.A;
-  state.players.B.position = battle.positions.B;
-  syncBoardOccupants(state);
+  if (!runtime.aftermathPositionsSynchronized) {
+    state.players.A.position = battle.positions.A;
+    state.players.B.position = battle.positions.B;
+    syncBoardOccupants(state);
+    runtime.aftermathPositionsSynchronized = true;
+  }
 
   if (!runtime.aftermathCardsCleared) {
     if (openAccursedWagerAftermathChoice(state, immediateWinner)) return;
     if (openPoisonousGasAftermathChoice(state, immediateWinner)) return;
     if (openTerritoryAftermathChoice(state, immediateWinner)) return;
 
-    resolveBattleCardAftermathOverlayPlacements(state);
-    resolveBattleCardAftermathTerritoryInsertions(state);
+    if (advanceBattleAftermathControlledEffects(
+      state,
+      immediateWinner,
+    )) return;
 
     const graveyardedDuringAftermath: Record<PlayerId, string[]> = {
       A: [],

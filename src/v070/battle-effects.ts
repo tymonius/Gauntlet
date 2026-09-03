@@ -665,11 +665,20 @@ function registerBattleCardAftermathOverlayPlacement(
   condition: 'always' | 'owner_win',
 ): void {
   const runtime = state.battleRuntime;
-  if (!runtime) throw new Error('Battle effects require an active battle runtime.');
+  const battle = state.battle;
+  if (!runtime || !battle) {
+    throw new Error('Battle effects require an active battle runtime.');
+  }
+  const territory = state.board.find(
+    candidate => candidate.position === battle.contestedPosition,
+  );
+  if (!territory) return;
+
   runtime.battleCardAftermathOverlayPlacements.push({
     owner,
     sourceInstanceId,
     sourceCardId,
+    territoryInstanceId: territory.territoryInstanceId,
     condition,
   });
 }
