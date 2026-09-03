@@ -267,8 +267,11 @@ function territoryArtworkCandidates(territory) {
     String(territory?.id || '').replace(/^territory-/, ''),
     slugify(displayName),
   ].filter(Boolean))];
-  return slugs.flatMap(slug => ['png', 'webp', 'jpg', 'jpeg']
-    .map(extension => `/images/artwork/cards/territories/${slug}.${extension}`));
+  return slugs.flatMap(slug => {
+    const preferred = (slug === 'high-ground' || slug === 'supply-depot') ? 'jpg' : 'png';
+    const extensions = [preferred, ...['png', 'webp', 'jpg', 'jpeg'].filter(extension => extension !== preferred)];
+    return extensions.map(extension => `/images/artwork/cards/territories/${slug}.${extension}`);
+  });
 }
 
 function artDirectionSpec(game, id) {
