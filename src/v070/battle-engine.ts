@@ -2075,17 +2075,25 @@ function resolveTerritoryAftermathChoice(
 }
 
 function territoryAftermathDestination(
+  state: V070GameState,
   runtime: V070BattleRuntime,
   playerId: PlayerId,
   instanceId: string,
   normalDestination: 'discard' | 'graveyard',
-): 'discard' | 'graveyard' | 'hand' {
+): V070BattleCardAftermathDestination {
   const override = runtime.territoryAftermathOverride;
-  return override
+  const territoryDestination = override
     && override.playerId === playerId
     && override.instanceId === instanceId
       ? override.destination
       : normalDestination;
+
+  return v070CounterattackBattleCardAftermathDestination(
+    state,
+    playerId,
+    instanceId,
+    territoryDestination,
+  );
 }
 
 function placeAftermathCard(
@@ -2175,7 +2183,8 @@ function completeAftermathInternal(
           state,
           playerId,
           instanceId,
-          territoryAftermathDestination(runtime, playerId, instanceId, 'graveyard'),
+          territoryAftermathDestination(state,
+            runtime, playerId, instanceId, 'graveyard'),
           graveyardedDuringAftermath[playerId],
         );
       }
@@ -2185,7 +2194,8 @@ function completeAftermathInternal(
           state,
           playerId,
           instanceId,
-          territoryAftermathDestination(runtime, playerId, instanceId, 'graveyard'),
+          territoryAftermathDestination(state,
+            runtime, playerId, instanceId, 'graveyard'),
           graveyardedDuringAftermath[playerId],
         );
       }
@@ -2197,6 +2207,7 @@ function completeAftermathInternal(
           playerId,
           instanceId,
           territoryAftermathDestination(
+            state,
             runtime,
             playerId,
             instanceId,
@@ -2231,6 +2242,7 @@ function completeAftermathInternal(
           playerId,
           instanceId,
           territoryAftermathDestination(
+            state,
             runtime,
             playerId,
             instanceId,
@@ -2263,6 +2275,7 @@ function completeAftermathInternal(
           playerId,
           instanceId,
           territoryAftermathDestination(
+            state,
             runtime,
             playerId,
             instanceId,
