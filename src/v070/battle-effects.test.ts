@@ -104,6 +104,7 @@ function unsupportedGambit(state: V070GameState, owner: 'A' | 'B'): string {
 describe('v0.7.0 audited reveal-effect registry', () => {
   test('locks every supported handler to the released canonical effect text', () => {
     expect(V070_SUPPORTED_REVEAL_EFFECT_IDS).toEqual(expect.arrayContaining([
+      'mystics-accursed-wager',
       'neutral-new-recruits',
       'neutral-rallying-cry',
       'diplomats-gunboat-diplomacy',
@@ -117,7 +118,9 @@ describe('v0.7.0 audited reveal-effect registry', () => {
       'neutral-insurrection',
       'neutral-illegal-occupation',
       'neutral-sequestration',
+      'neutral-conscription',
       'neutral-tactical-planning',
+      'intelligence-disinformation',
       'neutral-rousing-speech',
       'neutral-resourcefulness',
       'neutral-fealty',
