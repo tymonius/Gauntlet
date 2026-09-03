@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getCardPlayRule } from '../cards';
+import { getCardPlayRule } from '../cards/playability';
 import { EffectRegistry, baseBattleEffectHandlers, totalModifiersFor } from '../effects/v06';
 import type {
   BattleParticipantState,

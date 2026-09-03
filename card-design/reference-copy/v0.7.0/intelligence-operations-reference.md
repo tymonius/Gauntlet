@@ -12,10 +12,8 @@
 
 | Feature | Cost / Timing |
 |---|---|
-| Gambit Surveillance | No Action · 1 Intel · Once per battle |
-| Tactic Surveillance | No Action · 1 Intel per card · Once per battle |
-| Interference | No Action · +2 Intel per removed card · Immediately after reveal |
-| Direct Interference | No Action · 2 Intel · Face-up opposing card |
+| Surveillance | No Action · 1 Intel per revealed card · Gambit and Tactic stages |
+| Interference | No Action · 2 Intel per removed card · After reveal or face-up choice |
 
 ### Gambit Surveillance
 
