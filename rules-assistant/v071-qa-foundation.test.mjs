@@ -38,13 +38,22 @@ describe("v0.7.1 Rules Arbiter QA foundation", () => {
   });
 
   test("v0.7.1 prompt preserves timing, zone, classification, and gap semantics", () => {
-    expect(workerV071).toContain('export const BEHAVIOR_REVISION = "v071-qa-20260903-2"');
+    expect(workerV071).toContain('export const BEHAVIOR_REVISION = "v071-qa-20260903-3"');
     expect(workerV071).toContain("additional Actions changes the number of available Actions, not the legal phase or timing");
     expect(workerV071).toContain("A bound card is outside normal zones");
     expect(workerV071).toContain("Never invent the target of an unlabeled numerical bonus");
     expect(workerV071).toContain('Do not label an explicit or inferred answer "Table ruling"');
     expect(workerV071).toContain('begin the answer with exactly "Provisional Arbiter Ruling:"');
     expect(workerV071).toContain('do not discuss retrieval mechanics or say "the supplied passages/text/sources"');
+  });
+
+  test("v0.7.1 prompt uses the Chief Justice voice without roleplay or archaic legalese", () => {
+    expect(workerV071).toContain("VOICE — CHIEF JUSTICE");
+    expect(workerV071).toContain("calm, lucid, compact, judicial, and authoritative");
+    expect(workerV071).toContain("holding first; controlling rule; application; consequence");
+    expect(workerV071).toContain("Sound formal but not archaic");
+    expect(workerV071).toContain("Do not roleplay, introduce yourself as the Chief Justice");
+    expect(workerV071).toContain("Do not sacrifice brevity, clarity, source fidelity, classification accuracy");
   });
 
   test("benchmark has broad coverage and preserves every live review interaction", () => {
