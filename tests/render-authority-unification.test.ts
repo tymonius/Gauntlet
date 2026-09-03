@@ -171,7 +171,8 @@ describe('complete canonical render authority', () => {
 
   it('keeps back policy data-driven and card backs on the Card Design render surface', () => {
     expect(productionPrint).toContain('component.backPolicy || "standardBack"');
-    expect(productionPrint).toContain('/card-design/card-back-render.html?faction=');
+    expect(productionPrint).toContain('faceRenderSource(`back:${safeFaction}`)');
+    expect(productionPrint).not.toContain('/card-design/card-back-render.html?faction=');
     expect(productionPrint).not.toContain('/tts/back-renderer/index.html?faction=');
   });
 });
