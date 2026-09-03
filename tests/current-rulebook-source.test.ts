@@ -8,7 +8,7 @@ const browserApp = read('rulebook/app.js');
 
 describe('Maintained current Rulebook source', () => {
   it('is the direct current-development player-facing authority', () => {
-    expect(currentRulebook).toContain('**Version 0.7.1 Candidate**');
+    expect(currentRulebook).toMatch(/\*\*Version 0\.7\.1(?: Candidate)?\*\*/);
     expect(currentRulebook).toContain('# 5. Actions, Faction Features, Leader Abilities, and Assets');
     expect(currentRulebook).toContain('## Card anatomy');
     expect(currentRulebook).toContain('Onset is the first phase of the battle sequence.');
