@@ -2,33 +2,18 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
-  <title>Gauntlet canonical card-back render</title>
-  <style>
-    *{box-sizing:border-box}
-    html,body{width:2.5in;height:3.5in;margin:0;overflow:hidden;background:transparent}
-    #renderTarget{width:2.5in;height:3.5in;transform-origin:center center}
-    /* The canonical card-back artwork already rotates its wordmark 90 degrees,
-       matching the Territory face orientation inside portrait print slots.
-       Keep the legacy duplex rotation query compatible, but do not rotate the
-       entire back surface another 180 degrees. */
-    html[data-card-back-rotation="180"] #renderTarget{transform:none}
-  </style>
-  <link rel="stylesheet" href="/design-tokens.css">
-  <link rel="stylesheet" href="/card-design/card-back.css">
-</head>
-<body>
-  <main id="renderTarget">
-    <div data-gauntlet-card-back></div>
-  </main>
+  <title>Gauntlet card-back render redirect</title>
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const faction = params.get('faction') || 'intelligence';
-    const rotation = params.get('rotation') === '180' ? '180' : '0';
-    document.documentElement.dataset.cardBackRotation = rotation;
-    document.querySelector('[data-gauntlet-card-back]').dataset.cardBackFaction = faction;
+    const source = new URL(window.location.href);
+    const target = new URL('/card-design/face-render.html', source.origin);
+    target.searchParams.set('kind', 'back');
+    target.searchParams.set('id', source.searchParams.get('faction') || 'intelligence');
+    target.searchParams.set('side', 'back');
+    const rules = source.searchParams.get('rules');
+    if (rules) target.searchParams.set('rules', rules);
+    window.location.replace(target);
   </script>
-  <script type="module" src="/card-design/card-back.js"></script>
-</body>
+</head>
+<body></body>
 </html>
