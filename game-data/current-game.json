@@ -7134,7 +7134,7 @@
         "name": "Surveillance",
         "profile": "No Action",
         "timing": "After opposing Gambit or Tactic choice",
-        "cost": "1 Intel per card revealed",
+        "cost": "1 Intel per revealed card",
         "limit": "Once per battle at each stage"
       },
       {
