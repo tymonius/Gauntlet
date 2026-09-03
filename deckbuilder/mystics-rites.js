@@ -166,20 +166,29 @@
       const row = document.createElement("article");
       row.className = `compact-rite-row${rite.id === riteState.selectedId ? " selected" : ""}${selected ? " chosen" : ""}`;
       row.innerHTML = `
-        <div>
-          <div class="compact-card-title"><strong>${escapeHtml(rite.name)}</strong></div>
-          <div class="compact-card-meta">
+        <button
+          type="button"
+          class="compact-row-preview-button"
+          data-action="preview"
+          aria-label="Preview ${escapeHtml(rite.name)}"
+          ${rite.id === riteState.selectedId ? 'aria-current="true"' : ""}
+        >
+          <span class="compact-card-title"><strong>${escapeHtml(rite.name)}</strong></span>
+          <span class="compact-card-meta">
             <span class="mini-pill">Rite</span>
             ${selected ? '<span class="mini-pill">Selected</span>' : ""}
-          </div>
-        </div>
-        <button type="button" class="${selected ? "secondary danger" : ""}" ${unavailable ? "disabled" : ""}>${selected ? "Remove" : "Choose"}</button>
+          </span>
+        </button>
+        <button type="button" data-action="toggle" class="${selected ? "secondary danger" : ""}" ${unavailable ? "disabled" : ""}>${selected ? "Remove" : "Choose"}</button>
       `;
 
-      row.addEventListener("click", event => {
+      row.querySelector('[data-action="preview"]').addEventListener("click", () => {
         riteState.selectedId = rite.id;
-        if (event.target.closest("button")) toggleRite(rite.id);
-        else renderRitePicker();
+        renderRitePicker();
+      });
+      row.querySelector('[data-action="toggle"]').addEventListener("click", () => {
+        riteState.selectedId = rite.id;
+        toggleRite(rite.id);
       });
       list.append(row);
     }

@@ -174,20 +174,29 @@
       const row = document.createElement("article");
       row.className = `compact-territory-row${territory.id === territoryState.selectedId ? " selected" : ""}${selected ? " chosen" : ""}`;
       row.innerHTML = `
-        <div>
-          <div class="compact-card-title"><strong>${escapeHtml(territory.name)}</strong></div>
-          <div class="compact-card-meta">
+        <button
+          type="button"
+          class="compact-row-preview-button"
+          data-action="preview"
+          aria-label="Preview ${escapeHtml(territory.name)}"
+          ${territory.id === territoryState.selectedId ? 'aria-current="true"' : ""}
+        >
+          <span class="compact-card-title"><strong>${escapeHtml(territory.name)}</strong></span>
+          <span class="compact-card-meta">
             <span class="mini-pill">${territory.arena ? "Arena" : "Territory"}</span>
             ${selected ? '<span class="mini-pill">Selected</span>' : ""}
-          </div>
-        </div>
-        <button type="button" class="${selected ? "secondary danger" : ""}" ${unavailable ? "disabled" : ""}>${selected ? "Remove" : "Choose"}</button>
+          </span>
+        </button>
+        <button type="button" data-action="toggle" class="${selected ? "secondary danger" : ""}" ${unavailable ? "disabled" : ""}>${selected ? "Remove" : "Choose"}</button>
       `;
 
-      row.addEventListener("click", event => {
+      row.querySelector('[data-action="preview"]').addEventListener("click", () => {
         territoryState.selectedId = territory.id;
-        if (event.target.tagName === "BUTTON") toggleTerritory(territory.id);
-        else renderTerritoryPicker();
+        renderTerritoryPicker();
+      });
+      row.querySelector('[data-action="toggle"]').addEventListener("click", () => {
+        territoryState.selectedId = territory.id;
+        toggleTerritory(territory.id);
       });
       list.append(row);
     });
