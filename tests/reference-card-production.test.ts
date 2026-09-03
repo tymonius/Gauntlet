@@ -8,9 +8,10 @@ const supplemental = readFileSync('card-design/supplemental-card.js', 'utf8');
 const supplementalRefinements = readFileSync('card-design/supplemental-refinements.css', 'utf8');
 const referenceRenderer = readFileSync('card-design/reference-card.js', 'utf8');
 const referenceCss = readFileSync('card-design/reference-card.css', 'utf8');
-const componentRenderer = readFileSync('card-design/component-render.js', 'utf8');
+const faceRuntime = readFileSync('card-design/face-render.mjs', 'utf8');
+const faceSpec = readFileSync('card-design/face-spec.mjs', 'utf8');
+const referenceTemplate = readFileSync('card-design/face-templates/reference.mjs', 'utf8');
 const legacyTtsRendererHtml = readFileSync('tts/supplemental-renderer/index.html', 'utf8');
-const componentRendererHtml = readFileSync('card-design/component-render.html', 'utf8');
 
 describe('production faction reference cards', () => {
   it('renders the complete seven-card contract as fourteen physical faces', () => {
@@ -64,19 +65,22 @@ describe('production faction reference cards', () => {
 
     const missionCopy = readFileSync(mission.source, 'utf8');
     expect(mission.referenceFaces.reverse.title).toBe('Special Operations');
-    expect(missionCopy).toContain('| Start Mission | 1 Action · Denouement |');
+    expect(missionCopy).toContain('| Missions | 1 Action · Denouement |');
+    expect(missionCopy).toContain('### Start a Mission');
     expect(missionCopy).toContain('Increment **Operation Progress by 1**.');
     expect(missionCopy).toContain('**Territories currently in the Gauntlet − card value**');
 
     const operationsCopy = readFileSync(operations.source, 'utf8');
     expect(operations.referenceFaces.reverse.title).toBe('Mirrors & Replacements');
-    expect(operationsCopy).toContain('| Gambit Surveillance | No Action · 1 Intel · Once per battle |');
+    expect(operationsCopy).toContain('| Surveillance | No Action · 1 Intel per revealed card · Gambit and Tactic stages |');
+    expect(operationsCopy).toContain('### Gambit Surveillance');
     expect(operationsCopy).toContain('### Intelligence Mirror');
     expect(operationsCopy).toContain('After a replacement, continue the current stage without another Surveillance, Interference, reveal, or response window.');
 
     const mysticsCopy = readFileSync(mystics.source, 'utf8');
     expect(mystics.referenceFaces.reverse.title).toBe('Ritual of Ascension');
-    expect(mysticsCopy).toContain('| Begin a Rite | 1 Action · Denouement |');
+    expect(mysticsCopy).toContain('| Rites | 1 Action · Denouement · Printed Begin cost |');
+    expect(mysticsCopy).toContain('### Begin a Rite');
     expect(mysticsCopy).toContain('**1st Rite:** Unlock **Invocation**.');
     expect(mysticsCopy).toContain('you may move **1 card from your Graveyard to your Discard Pile**');
     expect(mysticsCopy).toContain('After a **Withdrawal**, the Ritual remains underway.');
@@ -173,13 +177,13 @@ describe('production faction reference cards', () => {
   });
 
   it('reuses the canonical Card Design reference renderer for TTS and every other consumer', () => {
-    expect(legacyTtsRendererHtml).toContain('/card-design/component-render.html');
-    expect(componentRenderer).toContain('kind === "reference"');
-    expect(componentRenderer).toContain('.reference-card[data-component-id=');
-    expect(componentRenderer).toContain('validateReferenceVisualContract(card)');
-    expect(componentRendererHtml).toContain('/card-design/card-design.css');
-    expect(componentRendererHtml).toContain('/card-design/reference-card.css');
-    expect(componentRendererHtml).toContain('/card-design/supplemental-refinements.css');
-    expect(componentRendererHtml).toContain('https://use.typekit.net/vgm6nwi.css');
+    expect(legacyTtsRendererHtml).toContain('/card-design/face-render.html');
+    expect(referenceTemplate).toContain('loadReferenceRecordForFaceSpec(spec)');
+    expect(referenceTemplate).toContain('referenceCardMarkup(record, spec.side');
+    expect(referenceRenderer).toContain('reference-watermark');
+    expect(faceRuntime).toContain('rendererForTemplate(spec.template)');
+    expect(faceSpec).toContain("'/card-design/card-design.css'");
+    expect(faceSpec).toContain("'/card-design/reference-card.css'");
+    expect(faceSpec).toContain("'/card-design/supplemental-refinements.css'");
   });
 });

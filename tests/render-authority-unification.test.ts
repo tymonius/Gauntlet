@@ -2,18 +2,18 @@ import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { resolveArtDirection } from '../game-data/art-direction.mjs';
 import { PRODUCTION_SURFACES } from '../card-design/production-surface.mjs';
+import { FACE_TEMPLATES } from '../card-design/face-authority.mjs';
 
 const currentGame = JSON.parse(readFileSync('game-data/current-game.json', 'utf8'));
 const currentRuntime = readFileSync('game-data/current-game.mjs', 'utf8');
 const currentValidation = readFileSync('game-data/current-game-validation.mjs', 'utf8');
 const releasedRuntime = readFileSync('game-data/ruleset.mjs', 'utf8');
 const renderContext = readFileSync('card-design/render-context.mjs', 'utf8');
-const componentRender = readFileSync('card-design/component-render.js', 'utf8');
-const componentRenderHtml = readFileSync('card-design/component-render.html', 'utf8');
+const faceRuntime = readFileSync('card-design/face-render.mjs', 'utf8');
+const faceSpec = readFileSync('card-design/face-spec.mjs', 'utf8');
+const faceRegistry = readFileSync('card-design/face-template-registry.mjs', 'utf8');
 const cardDesignIndex = readFileSync('card-design/index.html', 'utf8');
-const playableSurface = readFileSync('card-design/card-review-render.js', 'utf8');
 const playableRenderer = readFileSync('card-design/playable-card-renderer.js', 'utf8');
-const territorySurface = readFileSync('card-design/territory-review-render.js', 'utf8');
 const territoryRenderer = readFileSync('card-design/territory-card-renderer.js', 'utf8');
 const leaderCopy = readFileSync('card-design/leader-card-copy.js', 'utf8');
 const proposals = readFileSync('card-design/proposal-card.js', 'utf8');
@@ -71,32 +71,34 @@ describe('complete canonical render authority', () => {
     expect(releasedRuntime).toContain('resolveArtDirection(visualPolicy, artDirection, id)');
   });
 
-  it('loads one immutable render context per face and shares it with component builders', () => {
+  it('resolves one immutable render context into one complete FaceSpec', () => {
     expect(renderContext).toContain('let renderContextPromise = null');
     expect(renderContext).toContain('renderContextPromise = loadCurrentGame()');
     expect(renderContext).toContain('visualAuthorityUrl');
     expect(renderContext).toContain('artDirectionFor(id)');
-    expect(componentRender).toContain('loadRenderContext');
-    expect(componentRender).toContain('renderContext.artDirectionFor(artworkId)');
-    expect(playableSurface).toContain('loadRenderContext');
-    expect(territorySurface).toContain('loadRenderContext');
+    expect(faceRuntime).toContain("const game = await loadRenderGame()");
+    expect(faceRuntime).toContain('resolveFaceSpec(game, faceIdFromLocation())');
+    expect(faceRuntime).toContain('rendererForTemplate(spec.template)');
+    expect(faceSpec).toContain('return deepFreeze({');
+    expect(faceSpec).toContain('provenance: authorityProvenance(game)');
+    expect(faceSpec).toContain('productionReady: issues.length === 0');
 
     for (const builder of [leaderCopy, proposals, rites, supplementals]) {
-      expect(builder).toContain("loadRenderGame");
-      expect(builder).not.toContain("loadCurrentGame");
+      expect(builder).toContain('loadRenderGame');
+      expect(builder).not.toContain('loadCurrentGame');
     }
   });
 
-  it('keeps crop behavior and face implementations under Card Design ownership', () => {
-    expect(componentRenderHtml).toContain('/card-design/artwork-crop.js');
+  it('keeps crop policy and template dispatch under the unified Card Design renderer', () => {
     expect(cardDesignIndex).toContain('src="artwork-crop.js"');
     expect(cardDesignIndex).not.toContain('../tts/artwork-crop.js');
-    expect(playableSurface).toContain("loadScript('/card-design/artwork-crop.js')");
-    expect(playableSurface).toContain("loadScript('/card-design/playable-card-renderer.js')");
-    expect(territorySurface).toContain("loadScript('/card-design/artwork-crop.js')");
-    expect(territorySurface).toContain("loadScript('/card-design/territory-card-renderer.js')");
-    expect(playableRenderer).toContain('Canonical artwork direction is missing');
-    expect(territoryRenderer).toContain('Canonical artwork direction is missing');
+    expect(faceRuntime).toContain("loadClassicScript('/card-design/artwork-crop.js'");
+    expect(faceRuntime).toContain('window.GauntletArtworkCrop.apply');
+    expect(faceSpec).toContain('composition: artDirectionSpec(game, card.id)');
+    expect(faceSpec).toContain('composition: artDirectionSpec(game, territory.id)');
+    expect(faceRegistry).toContain('playable');
+    expect(faceRegistry).toContain('territory');
+    expect(faceRegistry).toContain("'standard-back'");
     expect(playableRenderer).not.toContain('css-default');
     expect(territoryRenderer).not.toContain('css-default');
 
@@ -113,15 +115,16 @@ describe('complete canonical render authority', () => {
   });
 
   it('uses one artwork-file resolver for Card Design and TTS generation', () => {
-    expect(ttsCatalog).toContain("resolveFirstArtwork");
-    expect(ttsCatalog).toContain("../card-design/card-artwork-resolver.js");
+    expect(faceSpec).toContain("import { artworkCandidates } from './card-artwork-resolver.js'");
+    expect(ttsCatalog).toContain('resolveFirstArtwork');
+    expect(ttsCatalog).toContain('../card-design/card-artwork-resolver.js');
     expect(ttsCatalog).toContain('repositoryArtworkExists');
     expect(ttsCatalog).not.toContain('walkImages(');
     expect(ttsCatalog).not.toContain('buildArtworkIndex(');
     expect(ttsCatalog).not.toContain('chooseArtwork(');
   });
 
-  it('centralizes physical face geometry for review and inspection consumers', () => {
+  it('centralizes physical face geometry in Face authority and shared production surfaces', () => {
     expect(PRODUCTION_SURFACES.portrait).toMatchObject({
       widthIn: 2.5,
       heightIn: 3.5,
@@ -138,7 +141,9 @@ describe('complete canonical render authority', () => {
       widthRasterPx: 560,
       heightRasterPx: 400,
     });
-    expect(componentRender).toContain('surfaceCssSize(orientation)');
+    expect(FACE_TEMPLATES.playable.orientation).toBe('portrait');
+    expect(FACE_TEMPLATES.territory.orientation).toBe('landscape');
+    expect(FACE_TEMPLATES.deed.orientation).toBe('landscape');
     expect(cardReference).toContain('PRODUCTION_SURFACES');
     expect(inspection).toContain('PRODUCTION_SURFACES');
     expect(deckbuilderPreview).toContain('PRODUCTION_SURFACES.portrait');
@@ -163,21 +168,25 @@ describe('complete canonical render authority', () => {
     ]) {
       expect(consumer).toContain('../card-design/production-surface.mjs');
     }
-    for (const generator of [
-      ttsCardGenerator,
-      ttsLeaderGenerator,
-      ttsSupplementalGenerator,
-    ]) {
-      expect(generator).not.toMatch(/const (?:CSS_)?CARD_(?:WIDTH|HEIGHT) = (?:240|336|400|560);/);
-    }
-    expect(ttsTerritoryGenerator).not.toMatch(/const (?:CSS_)?(?:TTS_CARD|TERRITORY)_(?:WIDTH|HEIGHT) = (?:240|336|400|560);/);
-    expect(ttsTrackerCapture).not.toMatch(/const (?:CSS_CARD|PHYSICAL_CARD)_(?:WIDTH|HEIGHT) = (?:2\.5|3\.5|240|336);/);
   });
 
-  it('keeps back policy data-driven and card backs on the Card Design render surface', () => {
+  it('routes every live output family through canonical face identity', () => {
+    for (const consumer of [
+      productionPrint,
+      cardReference,
+      ttsCardGenerator,
+      ttsTerritoryGenerator,
+      ttsSupplementalGenerator,
+      ttsFinalizedGenerator,
+      ttsTrackerCapture,
+    ]) {
+      expect(consumer).toContain('face-render.html');
+    }
     expect(productionPrint).toContain('component.backPolicy || "standardBack"');
     expect(productionPrint).toContain('faceRenderSource(`back:${safeFaction}`)');
-    expect(productionPrint).not.toContain('/card-design/card-back-render.html?faction=');
-    expect(productionPrint).not.toContain('/tts/back-renderer/index.html?faction=');
+    expect(faceRuntime).toContain("query.get('id')");
+    expect(faceRuntime).not.toContain("query.get('kind')");
+    expect(faceRuntime).not.toContain("query.get('side')");
+    expect(faceRuntime).not.toContain("query.get('orientation')");
   });
 });

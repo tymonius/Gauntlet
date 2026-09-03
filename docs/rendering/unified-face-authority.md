@@ -1,6 +1,6 @@
 # Unified Face Authority
 
-Status: Stage 5 in progress; atomic production consumer cutover
+Status: Stage 6 complete; unified physical-face authority is the only renderer implementation
 
 ## Why this exists
 
@@ -112,7 +112,7 @@ Stage 4 now has a dedicated browser parity gate. `scripts/validate-unified-face-
 
 The same validator is designed to expand automatically: as canonical authority blockers are removed, those faces move from the blocked inventory into clean-versus-legacy comparison without changing the parity harness. A face cannot silently bypass the gate.
 
-Stage 4 completed with all 242 faces production-ready and the clean renderer matching the prior production surfaces across the full catalog. The parity harness remains temporarily in place during cutover as a migration proof until the historical renderers are deleted in Stage 6.
+Stage 4 completed with all 242 faces production-ready and the clean renderer matching the prior production surfaces across the full catalog. The parity harness proved all 242 physical faces before cutover and was retired in Stage 6 after the historical renderer implementations were deleted.
 
 ### Materializing legacy crop outcomes
 
@@ -133,10 +133,25 @@ Stage 5 changes all live face consumers in one branch. Card Design catalog frame
 
 Deckbuilder ruleset selection is carried through an embedded face-authority bridge rather than adding renderer-family or ruleset query parameters to the face route. Landscape rotation remains packaging/layout behavior outside the renderer.
 
-The historical `card-review-render.html`, `territory-review-render.html`, `component-render.html`, and `card-back-render.html` surfaces remain temporarily only for the Stage 4 clean-versus-legacy parity harness and compatibility edges. They are not live production authorities after this cutover.
+The historical renderer implementations are no longer production authorities. Their old HTML entrypoints survive only as thin compatibility shims that translate legacy query parameters into canonical face IDs and immediately redirect to `face-render.html?id=<canonical-face-id>`.
 
 ### Stage 6 — deletion
-Delete historical component/card/Territory render surfaces and only then add compatibility redirects for any externally useful legacy URLs.
+Stage 6 is complete.
+
+The historical playable-card, Territory, component, and card-back renderer implementations have been deleted. The Stage 4 clean-versus-legacy parity script, workflow, and migration-only test were retired with them because there is no second renderer left to compare.
+
+The old HTML entrypoints remain only as compatibility shims:
+
+- `card-review-render.html`
+- `territory-review-render.html`
+- `component-render.html`
+- `card-back-render.html`
+
+Each shim translates its historical query parameters at the edge, resolves the corresponding canonical face ID, validates that face against the unified catalog, and redirects to:
+
+`face-render.html?id=<canonical-face-id>`
+
+No legacy rendering code, template selection, crop policy, side policy, or version authority remains behind those routes.
 
 ## Definition of clean
 

@@ -105,11 +105,4 @@ describe('Stage 5 atomic face consumer cutover', () => {
     expect(cardReference).toContain('frame.dataset.renderOrientation');
   });
 
-  it('keeps legacy surfaces only in the explicit parity harness until Stage 6', () => {
-    const parity = readFileSync('scripts/validate-unified-face-parity.mjs', 'utf8');
-    expect(parity).toContain('card-review-render.html');
-    expect(parity).toContain('territory-review-render.html');
-    expect(parity).toContain('component-render.html');
-    expect(parity).toContain('card-back-render.html');
-  });
 });

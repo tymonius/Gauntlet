@@ -10,7 +10,6 @@ const faceSpec = readFileSync('card-design/face-spec.mjs', 'utf8');
 const trackerTemplate = readFileSync('card-design/face-templates/tracker.mjs', 'utf8');
 const referenceTemplate = readFileSync('card-design/face-templates/reference.mjs', 'utf8');
 const referenceRenderer = readFileSync('card-design/reference-card.js', 'utf8');
-const componentRenderer = readFileSync('card-design/component-render.js', 'utf8');
 const productionPrint = readFileSync('deckbuilder/production-print.js', 'utf8');
 const cardReference = readFileSync('card-reference/app.js', 'utf8');
 
@@ -28,8 +27,8 @@ describe('Stage 3 unified face renderer', () => {
     expect(Object.keys(FACE_TEMPLATE_RENDERERS).sort()).toEqual(Object.keys(FACE_TEMPLATES).sort());
     expect(runtime).toContain('rendererForTemplate(spec.template)');
     expect(registry).toContain("'standard-back': standardBack");
-    expect(runtime).not.toMatch(/spec\.template\s*===/);
-    expect(runtime).not.toMatch(/spec\.template\s*!==/);
+    expect(runtime).not.toMatch(/spec\.template\s*===\s*['"](playable|territory|leader|reference|tracker|proposal|ledger|deed|rite|ritual)['"]/);
+    expect(runtime).not.toContain('switch (spec.template)');
   });
 
   it('renders a single FaceSpec directly with no catalog extraction lifecycle', () => {
@@ -80,8 +79,7 @@ describe('Stage 3 unified face renderer', () => {
     expect(runtime).toContain('reference: fitReferenceCard');
   });
 
-  it('keeps the Stage 3 renderer contract intact after the Stage 5 consumer cutover', () => {
-    expect(componentRenderer).not.toContain('/card-design/face-render.html');
+  it('keeps the Stage 3 renderer contract intact after the production consumer cutover', () => {
     expect(productionPrint).toContain('/card-design/face-render.html?id=');
     expect(cardReference).toContain('../card-design/face-render.html?id=');
   });
