@@ -22,10 +22,8 @@ function esc(value) {
 }
 
 function componentRenderSource(kind, id, side = 'front') {
-  const params = new URLSearchParams({ kind, id, side });
-  const rules = new URLSearchParams(window.location.search).get('rules');
-  if (rules) params.set('rules', rules);
-  return `/card-design/component-render.html?${params.toString()}`;
+  const componentId = kind === 'ritual' ? `mystics-ritual-of-${id}` : `mystics-rite-${id}`;
+  return `/card-design/face-render.html?id=${encodeURIComponent(`component:${componentId}:${side}`)}`;
 }
 
 function componentReviewFrame(kind, id, label, side = 'front') {
