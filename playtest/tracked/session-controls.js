@@ -13,12 +13,14 @@
   let controls = null;
   let closedPanel = null;
   let currentSession = null;
+  let lastFocusedElement = null;
 
   document.addEventListener("DOMContentLoaded", init);
 
   function init() {
     installStyles();
     installPanels();
+    installTransitionFocus();
     bindEvents();
     void refresh();
     window.setInterval(() => void refresh(), 5000);
@@ -51,6 +53,7 @@
     closedPanel.id = "manualClosurePanel";
     closedPanel.className = "tracked-panel manual-closure-panel";
     closedPanel.hidden = true;
+    closedPanel.tabIndex = -1;
 
     const sharePanel = document.getElementById("sharePanel");
     const playersSection = document.querySelector(".players-section");
@@ -61,6 +64,68 @@
     const summary = document.querySelector(".tracked-summary");
     if (summary) summary.insertAdjacentElement("afterend", closedPanel);
     else document.getElementById("sessionApp")?.prepend(closedPanel);
+  }
+
+  function installTransitionFocus() {
+    const focusTargets = ["joinedPanel", "resultSection", "responseSection", "completionPanel"]
+      .map((id) => document.getElementById(id))
+      .filter(Boolean);
+    focusTargets.forEach((element) => { element.tabIndex = -1; });
+
+    document.addEventListener("focusin", (event) => {
+      if (event.target instanceof Element) lastFocusedElement = event.target;
+    });
+
+    const observed = [
+      document.getElementById("joinPanel"),
+      document.getElementById("resultSection"),
+      document.getElementById("responseSection"),
+      controls,
+    ].filter(Boolean);
+
+    const observer = new MutationObserver((records) => {
+      for (const record of records) {
+        if (record.type !== "attributes" || record.attributeName !== "hidden") continue;
+        const panel = record.target;
+        if (!(panel instanceof HTMLElement)) continue;
+
+        if (!panel.hidden) {
+          if (
+            panel.id === "resultSection" &&
+            ["showCompletedResult", "showStoppedResult"].includes(lastFocusedElement?.id || "")
+          ) focusTransitionTarget(panel);
+          continue;
+        }
+
+        if (!(lastFocusedElement instanceof Node) || !panel.contains(lastFocusedElement)) continue;
+
+        if (panel.id === "joinPanel") {
+          focusTransitionTarget(document.getElementById("joinedPanel"));
+        } else if (panel.id === "resultSection") {
+          focusTransitionTarget(document.getElementById("responseSection"));
+        } else if (panel.id === "responseSection") {
+          const completionPanel = document.getElementById("completionPanel");
+          focusTransitionTarget(
+            completionPanel && !completionPanel.hidden
+              ? completionPanel
+              : document.getElementById("joinedPanel")
+          );
+        } else if (panel.id === "sessionEndControls") {
+          focusTransitionTarget(closedPanel);
+        }
+      }
+    });
+
+    observed.forEach((element) => observer.observe(element, { attributes: true, attributeFilter: ["hidden"] }));
+  }
+
+  function focusTransitionTarget(element) {
+    if (!(element instanceof HTMLElement) || element.hidden) return;
+    window.requestAnimationFrame(() => {
+      if (element.hidden) return;
+      element.focus({ preventScroll: true });
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
   }
 
   function bindEvents() {

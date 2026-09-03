@@ -148,3 +148,30 @@ jobs:
           done
           echo 'Live public contract did not converge after the Actions-driven Pages deployment window.' >&2
           exit 1
+
+      - name: Refresh current Rules Arbiter corpus against published authority
+        if: steps.release.outputs.version == 'v0.7.1'
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const expected = JSON.parse(readFileSync('releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json', 'utf8')).authority_set_id;
+          if (!expected) throw new Error('Local v0.7.1 manifest has no authority_set_id.');
+          const endpoint = 'https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/v071/corpus-health';
+          const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+          let last = '';
+          for (let attempt = 1; attempt <= 20; attempt += 1) {
+            try {
+              const response = await fetch(`${endpoint}?publication=${encodeURIComponent(process.env.EXPECTED_SHA)}&attempt=${attempt}`, { cache: 'no-store' });
+              last = await response.text();
+              const payload = response.ok ? JSON.parse(last) : null;
+              if (response.ok && payload?.ok === true && payload.authoritySetId === expected) {
+                console.log(`Rules Arbiter loaded published authority set ${expected} on attempt ${attempt}.`);
+                process.exit(0);
+              }
+            } catch (error) {
+              last = String(error);
+            }
+            if (attempt < 20) await sleep(3000);
+          }
+          throw new Error(`Rules Arbiter did not load published authority set ${expected}: ${last}`);
+          NODE

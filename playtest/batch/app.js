@@ -83,6 +83,7 @@
       el.resultPanel.hidden = false;
       el.printSheets.disabled = false;
       setStatus(`${sessions.length} coded sheet${sessions.length === 1 ? "" : "s"} ready.`, "success");
+      el.resultPanel.focus({ preventScroll: true });
       el.resultPanel.scrollIntoView({ behavior: "smooth", block: "start" });
     } catch (error) {
       console.error(error);
@@ -95,6 +96,7 @@
         el.resultSummary.textContent = "This is a partial batch. Its created sessions are already live. Download the host manifest before leaving this page.";
         el.resultPanel.hidden = false;
         el.printSheets.disabled = true;
+        el.resultPanel.focus({ preventScroll: true });
       }
     } finally {
       setBusy(false);
@@ -224,6 +226,7 @@
     el.resultPanel.hidden = true;
     el.printSheets.disabled = false;
     setStatus("Rendered batch cleared. Existing sessions remain live until closed.");
+    el.generateButton.focus({ preventScroll: true });
   }
 
   function setBusy(busy) {
