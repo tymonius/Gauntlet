@@ -207,8 +207,9 @@ function isStarterInput(
     || !isRecord(value.players)) {
     return false;
   }
+  const players = value.players;
   return ['A', 'B'].every(playerId => {
-    const player = value.players[playerId];
+    const player = players[playerId];
     return isRecord(player)
       && typeof player.name === 'string'
       && typeof player.starterDeckId === 'string';
