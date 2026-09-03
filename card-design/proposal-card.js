@@ -19,10 +19,7 @@ function esc(value) {
 }
 
 function componentRenderSource(id, side = 'front') {
-  const params = new URLSearchParams({ kind: 'proposal', id, side });
-  const rules = new URLSearchParams(window.location.search).get('rules');
-  if (rules) params.set('rules', rules);
-  return `/card-design/component-render.html?${params.toString()}`;
+  return `/card-design/face-render.html?id=${encodeURIComponent(`component:diplomats-proposal-${id}:${side}`)}`;
 }
 
 function componentReviewFrame(id, label, side = 'front') {
