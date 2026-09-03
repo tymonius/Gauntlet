@@ -33,8 +33,9 @@ describe("single Card Design render authority", () => {
   it("uses one canonical embedded face route for each physical face family", () => {
     expect(productionPrint).toContain("/card-design/card-review-render.html?card=");
     expect(productionPrint).toContain("/card-design/territory-review-render.html?territory=");
-    expect(productionPrint).toContain('options.kind === "leader" ? "face-render.html" : "component-render.html"');
-    expect(productionPrint).toContain('/card-design/${surface}?kind=');
+    expect(productionPrint).toContain('if (options.faceId) return productionFaceSource(options.faceId)');
+    expect(productionPrint).toContain('/card-design/face-render.html?id=');
+    expect(productionPrint).not.toContain('options.kind === "leader" ? "face-render.html" : "component-render.html"');
     expect(productionPrint).not.toContain("/card-design/card-print-render.html?card=");
     expect(productionPrint).not.toContain("/card-design/territory-print-render.html?territory=");
     expect(productionPrint).not.toContain("/card-design/component-print-render.html?kind=");
@@ -50,8 +51,8 @@ describe("single Card Design render authority", () => {
     expect(catalog).toContain('id="riteReviewSections"');
     expect(catalog).toContain('id="supplementalReviewSections"');
 
-    expect(cardReview).toContain("kind === 'leader' ? 'face-render.html' : 'component-render.html'");
-    expect(cardReview).toContain("componentReviewFrame('leader'");
+    expect(cardReview).toContain("faceReviewFrame(faceId");
+    expect(cardReview).not.toContain("kind === 'leader' ? 'face-render.html' : 'component-render.html'");
     expect(proposalDesign).toContain("/card-design/component-render.html?");
     expect(proposalDesign).toContain("componentReviewFrame(proposal.id");
     expect(riteDesign).toContain("/card-design/component-render.html?");
@@ -91,7 +92,8 @@ describe("single Card Design render authority", () => {
     expect(compositor).toContain("url.pathname.endsWith('/card-design/component-render.html')");
     expect(compositor).toContain("url.pathname.endsWith('/card-design/face-render.html')");
     expect(compositor).toContain("componentArtworkId(componentKind, componentId, componentSide)");
-    expect(compositor).toContain("kind: territoryId ? 'territory' : componentId ? 'component' : 'card'");
+    expect(compositor).toContain("faceArtworkId");
+    expect(compositor).toContain("kind: territoryId ? 'territory' : faceArtworkId ? 'face' : componentId ? 'component' : 'card'");
   });
 
   it("retains legacy print URLs only as redirects to canonical face routes", () => {
