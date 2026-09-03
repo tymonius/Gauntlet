@@ -37,10 +37,14 @@ async function startServer() {
         response.writeHead(403).end('Forbidden');
         return;
       }
+      const body = await readFile(requested);
       response.writeHead(200, { 'Content-Type': contentType(requested) });
-      response.end(await readFile(requested));
+      response.end(body);
     } catch (error) {
-      response.writeHead(error.code === 'ENOENT' ? 404 : 500).end(error.message);
+      if (!response.headersSent) {
+        response.writeHead(error.code === 'ENOENT' ? 404 : 500);
+      }
+      response.end(error.message);
     }
   });
   await new Promise(resolveDone => server.listen(0, '127.0.0.1', resolveDone));
