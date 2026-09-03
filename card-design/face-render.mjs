@@ -121,6 +121,11 @@ async function main() {
   document.body.dataset.faceSpecKind = spec.kind;
   document.body.dataset.gameplayAuthority = spec.gameplayAuthorityUrl;
   document.body.dataset.visualAuthority = spec.visualAuthorityUrl;
+  window.GAUNTLET_ART_DIRECTION = Object.freeze(
+    spec.artwork
+      ? { [spec.artwork.id]: Object.freeze({ ...spec.artwork.direction }) }
+      : {}
+  );
   applySurface(spec, target);
 
   await Promise.all(spec.styles.map(loadStylesheet));
