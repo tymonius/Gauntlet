@@ -360,7 +360,11 @@
     // there is not production geometry. Re-run the canonical reference fitter
     // only after the selected face has been mounted at its final surface.
     if (kind === "reference") {
-      const { fitReferenceCard } = await import("/card-design/reference-card.js");
+      const [{ fitReferenceCard }, { loadProductionFonts }] = await Promise.all([
+        import("/card-design/reference-card.js"),
+        import("/card-design/face-preparation.mjs"),
+      ]);
+      await loadProductionFonts();
       const referenceFit = fitReferenceCard(card);
       if (referenceFit.overflow) {
         throw new Error(`Reference ${id} does not fit after final production mounting.`);
