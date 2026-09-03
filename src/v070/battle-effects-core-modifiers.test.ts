@@ -233,6 +233,63 @@ describe('v0.7.0 core battle-effect modifiers', () => {
     expect(ordinary.battleRuntime?.stage).toBe('choose_tactics');
   });
 
+  test('Conscription adds one live Reserve card and one additional normal Tactic choice at Gambit reveal', () => {
+    let state = startBattle();
+    const conscription = injectHandCard(
+      state,
+      'A',
+      'neutral-conscription',
+      'conscription',
+    );
+
+    state = reduceV070BattleAction(state, {
+      type: 'set_gambit',
+      playerId: 'A',
+      cardInstanceId: conscription,
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'set_gambit',
+      playerId: 'B',
+    });
+
+    const reserveBeforeReveal =
+      state.battleRuntime!.participants.A.reserve.length;
+    expect(state.battleRuntime?.participants.A.tacticLimit).toBe(1);
+
+    state = reduceV070BattleAction(state, {
+      type: 'reveal_gambits',
+      playerId: 'A',
+    });
+
+    expect(state.battleRuntime?.participants.A.reserve.length)
+      .toBe(reserveBeforeReveal + 1);
+    expect(state.battleRuntime?.participants.A.tacticLimit).toBe(2);
+    expect(state.battleRuntime?.stage).toBe('choose_tactics');
+    expect(state.battleRuntime?.unsupportedEffects).toEqual([]);
+
+    const [firstA, secondA] =
+      state.battleRuntime!.participants.A.reserve;
+    state = reduceV070BattleAction(state, {
+      type: 'choose_tactic',
+      playerId: 'A',
+      cardInstanceId: firstA,
+    });
+    expect(state.battleRuntime?.stage).toBe('choose_tactics');
+    state = reduceV070BattleAction(state, {
+      type: 'choose_tactic',
+      playerId: 'A',
+      cardInstanceId: secondA,
+    });
+    state = reduceV070BattleAction(state, {
+      type: 'choose_tactic',
+      playerId: 'B',
+    });
+
+    expect(state.battleRuntime?.participants.A.additionalTactics)
+      .toHaveLength(1);
+    expect(state.battleRuntime?.stage).toBe('reveal_tactics');
+  });
+
   test('Tactical Planning adds one card to the live Reserve when Gambits reveal without increasing Tactic limit', () => {
     let state = startBattle();
     const tacticalPlanning = injectHandCard(
