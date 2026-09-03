@@ -12,7 +12,7 @@ describe('Universal Reference neutral emblem', () => {
     expect(universalStyles).toContain('background-position: left center');
     expect(universalStyles).toContain('background-size: auto 100%');
     expect(universalStyles).toContain('mask-image: url("../images/Gauntlet.svg")');
-    expect(referenceRenderer).toContain('validateReferenceVisualContract');
+    expect(referenceRenderer).toContain('reference-watermark');
     expect(referenceTemplate).toContain('referenceCardMarkup(record, spec.side');
     expect(legacyTtsAlias).toContain('/card-design/face-render.html');
   });
