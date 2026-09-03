@@ -21,10 +21,21 @@ export function isV070AssetActive(
   state: V070GameState,
   instanceId: string,
 ): boolean {
-  if (!isV070AssetFaceUp(state, instanceId)) return false;
   const owner = assetOwnerInBank(state, instanceId);
   if (!owner) return false;
+  if (!isV070AssetBaseActive(state, owner, instanceId)) return false;
+  return !v070IllegalOccupationSuppressesPlayerAssets(
+    state,
+    owner,
+  );
+}
 
+function isV070AssetBaseActive(
+  state: V070GameState,
+  owner: PlayerId,
+  instanceId: string,
+): boolean {
+  if (!isV070AssetFaceUp(state, instanceId)) return false;
   if (state.battleRuntime?.assetInactivePlayers.includes(owner)) {
     return false;
   }
@@ -42,6 +53,34 @@ export function isV070AssetActive(
     return false;
   }
   return true;
+}
+
+function v070IllegalOccupationSuppressesPlayerAssets(
+  state: V070GameState,
+  playerId: PlayerId,
+): boolean {
+  const opponentId: PlayerId = playerId === 'A' ? 'B' : 'A';
+  const position = state.players[playerId].position;
+  if (position === null) return false;
+
+  const territory = state.board.find(candidate =>
+    candidate.position === position
+  );
+  if (!territory
+    || territory.occupant !== playerId
+    || territory.controller !== opponentId) {
+    return false;
+  }
+
+  return state.players[opponentId].zones.assetBank.some(instanceId =>
+    state.cardInstances[instanceId]?.cardId
+      === 'neutral-illegal-occupation'
+    && isV070AssetBaseActive(
+      state,
+      opponentId,
+      instanceId,
+    )
+  );
 }
 
 export function faceUpV070AssetInstanceIds(
