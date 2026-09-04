@@ -173,7 +173,9 @@ class GauntletRulesAssistant {
     this.elements.panel.hidden = false;
     this.elements.launcher.setAttribute("aria-expanded", "true");
     requestAnimationFrame(() => this.elements.root.classList.add("is-open"));
-    window.setTimeout(() => this.elements.input.focus(), 120);
+    window.setTimeout(() => {
+      if (this.isOpen) this.elements.input.focus();
+    }, 120);
   }
 
   close(focusTarget = null) {
@@ -249,7 +251,7 @@ class GauntletRulesAssistant {
       this.busy = false;
       this.elements.send.disabled = false;
       this.elements.input.disabled = false;
-      this.elements.input.focus();
+      if (this.isOpen) this.elements.input.focus();
       this.scrollToLatest();
     }
   }
@@ -421,7 +423,7 @@ class GauntletRulesAssistant {
       form.hidden = true;
       status.textContent = text;
       section.classList.add("is-complete");
-      status.focus();
+      if (this.isOpen) status.focus();
       selectedRating = null;
       selectedButton = null;
     };
