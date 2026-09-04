@@ -162,6 +162,7 @@ These deployed historical paths should not receive new product behavior except e
 | Path | Current interpretation |
 |---|---|
 | `legacy/digital-prototype-data/` | Historical starter/adapter data; current gameplay authority is `game-data/` |
+| `legacy/digital-engine-reconstruction/` | Preserved clean v0.6.2/v0.6.3 engine reconstruction snapshots moved out of the active `src/` typecheck boundary; historical provenance only | <!-- DOC-HISTORICAL -->
 | `legacy/public-compatibility/` | Canonical repository source for retired browser compatibility surfaces staged to stable public URLs; not current gameplay or rules authority | <!-- DOC-HISTORICAL -->
 | `legacy/public-versions/` | Canonical repository source for historical versioned browser surfaces staged to stable public URLs; not current gameplay or rules authority | <!-- DOC-HISTORICAL -->
 | `legacy/v0.6.1-rulebook-publication/` | Preserved v0.6.1 Rulebook proof/production system; historical publication provenance, not current Rulebook tooling | <!-- DOC-HISTORICAL -->
