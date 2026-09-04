@@ -1,0 +1,35 @@
+{
+  "schema": "gauntlet.rules-arbiter-evals.v071-corrections.v1",
+  "rulesVersion": "v0.7.1",
+  "purpose": "Post-publication corrections to the v0.7.1 live QA benchmark. These corrections fix benchmark expectations without changing rules authority.",
+  "cases": [
+    {
+      "id": "core-setup-starting-territory",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Place each Player Token on the Territory at that player's end"
+      ]
+    },
+    {
+      "id": "mystics-transmutation",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Transmutation"
+      ],
+      "expectedAnswerPatterns": [
+        "battle total"
+      ]
+    },
+    {
+      "id": "live-deed-contiguity",
+      "expectedClassification": "inferred",
+      "classificationBasis": "combined-authority",
+      "expectedSourcePatterns": [
+        "Deeds",
+        "Buying and buying out Deeds"
+      ]
+    }
+  ]
+}
