@@ -23,6 +23,21 @@
       ]
     },
     {
+      "id": "financiers-capacity-opening",
+      "expectedClassification": "explicit",
+      "classificationBasis": "direct-authority",
+      "expectedSourcePatterns": [
+        "Financial Capacity",
+        "Buying and buying out Deeds"
+      ],
+      "expectedAnswerPatterns": [
+        "Denouement"
+      ],
+      "forbiddenAnswerPatterns": [
+        "Yes"
+      ]
+    },
+    {
       "id": "live-deed-contiguity",
       "expectedClassification": "inferred",
       "classificationBasis": "combined-authority",

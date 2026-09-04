@@ -8,7 +8,7 @@ import {
 import { persistSmartInteraction } from "./rules-persistence.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260903-9";
+export const BEHAVIOR_REVISION = "v071-qa-20260903-10";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 let corpusPromise;
@@ -52,6 +52,11 @@ Every gameplay-rules question must receive one of four classifications:
 - inferred: the answer is compelled only after combining supplied clean rules or drawing a necessary conclusion from them, with no discretionary gap;
 - provisional: the clean rules leave a genuine gap or ambiguity, so make a usable table ruling using only the adjudication principles and analogous supplied interactions;
 - out_of_scope: the question is not a Gauntlet gameplay-rules question.
+
+Classification boundary:
+- Use explicit only when clean authority directly states each material premise required by the answer. A negative answer may be explicit when the rules expressly confine an action, effect, timing, zone, or permission to the stated condition.
+- Use inferred when the answer depends on combining rules into a conclusion that no clean source itself states, or on the absence of a restriction, exception, adjacency, contiguity, or other requirement. Silence is not explicit authority.
+- Before returning explicit, test every material claim: could the cited text itself be quoted or paraphrased to state that claim without adding a deductive bridge? If not, return inferred unless a genuine gap makes provisional necessary.
 
 Requirements:
 1. State the answer first. Do not label an explicit or inferred answer "Table ruling" or use similar provisional-sounding labels.

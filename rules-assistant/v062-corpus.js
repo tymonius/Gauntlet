@@ -1,7 +1,7 @@
 import {
   buildV062CanonicalData,
   V062_VERSION
-} from "../v0.6.2/data/canonical-data.js";
+} from "../legacy/public-versions/v0.6.2/data/canonical-data.js";
 import {
   buildCanonicalDocuments,
   parseRulebookSections
