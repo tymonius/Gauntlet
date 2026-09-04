@@ -30,27 +30,6 @@
   scroll-margin-top: 18px;
 }
 
-/* Keep the Inquisition's decorative ochre while using a darker text value on parchment. */
-.faction-card.inquisition small,
-.faction-page.faction-inquisition .faction-hero-copy > .eyebrow,
-.faction-page.faction-inquisition .faction-hero h1 span,
-.faction-page.faction-inquisition .faction-facts dt,
-.faction-page.faction-inquisition .section-heading .eyebrow,
-.faction-page.faction-inquisition .mechanics-grid article > span,
-.faction-page.faction-inquisition .leader-kicker,
-.faction-page.faction-inquisition .faction-next > div > .eyebrow,
-.faction-hub-card.faction-inquisition .hub-kicker,
-.faction-hub-card.faction-inquisition small,
-.faction-hub-card.faction-inquisition strong {
-  color: #815c1c;
-}
-
-/* Faction colors remain unchanged for decoration; small status text uses a slightly darker derived tone. */
-.tracked-main .player-card .response-state {
-  color: var(--faction, #555);
-  color: color-mix(in srgb, var(--faction, #555) 85%, var(--ink, #181614) 15%);
-}
-
 /* Keep Start's unselected starter preview readable on its warm inset surface. */
 .starter-preview.empty-state {
   color: var(--muted, #655f56);
