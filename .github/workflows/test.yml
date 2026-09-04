@@ -22,6 +22,7 @@ jobs:
         with:
           script: |
             let names = [];
+            let activeNames = [];
             let retiredSourceNames = [];
             let uncertain = false;
 
@@ -32,6 +33,7 @@ jobs:
                 'releases/v0.7.0/Gauntlet_v0.7.0_Manifest.json',
                 'v0.7.0/index.html',
               ];
+              activeNames = names;
             } else if (context.eventName === 'pull_request') {
               const files = await github.paginate(github.rest.pulls.listFiles, {
                 owner: context.repo.owner,
@@ -40,6 +42,7 @@ jobs:
                 per_page: 100,
               });
               names = files.map((file) => file.filename);
+              activeNames = files.filter((file) => file.status !== 'removed').map((file) => file.filename);
               retiredSourceNames = files.flatMap((file) => {
                 if (file.status === 'removed') return [file.filename];
                 if (file.status === 'renamed' && file.previous_filename) return [file.previous_filename];
@@ -58,6 +61,7 @@ jobs:
                 });
                 const comparedFiles = comparison.data.files || [];
                 names = comparedFiles.map((file) => file.filename);
+                activeNames = comparedFiles.filter((file) => file.status !== 'removed').map((file) => file.filename);
                 retiredSourceNames = comparedFiles.flatMap((file) => {
                   if (file.status === 'removed') return [file.filename];
                   if (file.status === 'renamed' && file.previous_filename) return [file.previous_filename];
@@ -113,8 +117,8 @@ jobs:
             const testPattern = /(?:^|\/)[^/]+\.(?:test|spec)\.(?:ts|tsx|js|mjs)$/;
             const sourcePattern = /\.(?:ts|tsx|js|mjs)$/;
             const archivedEngineSnapshot = /^legacy\/digital-engine-(?:reconstruction|migration|v06)\//;
-            const changedTests = names.filter((file) => !archivedEngineSnapshot.test(file) && testPattern.test(file));
-            const relatedSources = names.filter((file) => !archivedEngineSnapshot.test(file) && sourcePattern.test(file) && !testPattern.test(file));
+            const changedTests = activeNames.filter((file) => !archivedEngineSnapshot.test(file) && testPattern.test(file));
+            const relatedSources = activeNames.filter((file) => !archivedEngineSnapshot.test(file) && sourcePattern.test(file) && !testPattern.test(file));
             const testWorkflowOnly = names.length === 1 && exact('.github/workflows/test.yml');
             const retiredSources = retiredSourceNames.filter((file) => sourcePattern.test(file) && !testPattern.test(file));
 
