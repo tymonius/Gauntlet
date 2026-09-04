@@ -9,13 +9,14 @@ import {
 
 const BASE_CANONICAL_PATH = "releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json";
 const V062_CANONICAL_PATH = "v0.6.2/data/Gauntlet_v0.6.2_Canonical_Data.json";
+const V062_DEVELOPMENT_ARCHIVE = "docs/Archive/v0.6.2-development";
 
 export const V062_CORPUS_SOURCES = Object.freeze([
-  "docs/Gauntlet_v0.6.2_Shared_Rules_Candidate.md",
-  "docs/Gauntlet_v0.6.2_Shared_Reference_Candidate.md",
-  "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md",
-  "docs/Gauntlet_v0.6.2_Faction_Component_Compatibility_Audit.md",
-  "docs/Gauntlet_v0.6.2_First_Game_and_Tableside_Candidate.md"
+  `${V062_DEVELOPMENT_ARCHIVE}/Gauntlet_v0.6.2_Shared_Rules_Candidate.md`,
+  `${V062_DEVELOPMENT_ARCHIVE}/Gauntlet_v0.6.2_Shared_Reference_Candidate.md`,
+  `${V062_DEVELOPMENT_ARCHIVE}/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md`,
+  `${V062_DEVELOPMENT_ARCHIVE}/Gauntlet_v0.6.2_Faction_Component_Compatibility_Audit.md`,
+  `${V062_DEVELOPMENT_ARCHIVE}/Gauntlet_v0.6.2_First_Game_and_Tableside_Candidate.md`
 ]);
 
 export function defaultV062SourceUrls(siteOrigin = "https://gauntlet.run") {
