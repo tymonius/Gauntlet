@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Materialize evidence-backed legacy asset provenance records.
+"""Materialize or verify evidence-backed legacy asset provenance records.
 
-This helper intentionally refuses to resolve an asset unless the current Git blob is
-byte-for-byte identical to the blob at its documented introduction commit. A family
-may define a default introduction commit, while individual assets may override it when
-repository history proves they entered later.
+The helper refuses to resolve an asset unless the current Git blob is byte-for-byte
+identical to the blob at its documented introduction commit. A family may define a
+default introduction commit, while individual assets may override it when repository
+history proves they entered later.
 """
 
 from __future__ import annotations
@@ -46,7 +46,9 @@ def sha256_file(path: Path) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--write", action="store_true", help="write materialized records to the policy ledger")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--write", action="store_true", help="write materialized records to the policy ledger")
+    mode.add_argument("--check", action="store_true", help="verify the policy ledger exactly matches materialized records")
     args = parser.parse_args()
 
     policy = json.loads(POLICY_PATH.read_text(encoding="utf-8"))
@@ -64,7 +66,7 @@ def main() -> int:
         basis.get("introduction_commit"), "evidence_basis.introduction_commit"
     )
 
-    existing = {record["path"]: record for record in policy.get("assets", [])}
+    current_by_path = {record["path"]: record for record in policy.get("assets", [])}
     materialized: list[dict[str, str]] = []
 
     for candidate in candidates:
@@ -100,13 +102,27 @@ def main() -> int:
         record["sha256"] = sha256_file(absolute)
         materialized.append(record)
 
-    for record in materialized:
-        existing[record["path"]] = record
-    policy["assets"] = [existing[path] for path in sorted(existing)]
-
-    print(f"Materialized {len(materialized)} evidence-backed provenance record(s).")
+    print(f"Materialized {len(materialized)} evidence-backed provenance record(s) in memory.")
     for record in materialized:
         print(f"  {record['path']}  {record['sha256']}")
+
+    if args.check:
+        mismatches = []
+        for expected in materialized:
+            actual = current_by_path.get(expected["path"])
+            if actual != expected:
+                mismatches.append(expected["path"])
+        if mismatches:
+            raise SystemExit(
+                "provenance ledger does not match remediation evidence for: " + ", ".join(mismatches)
+            )
+        print("Remediation manifest and explicit provenance ledger are consistent.")
+        return 0
+
+    merged = dict(current_by_path)
+    for record in materialized:
+        merged[record["path"]] = record
+    policy["assets"] = [merged[path] for path in sorted(merged)]
 
     if args.write:
         POLICY_PATH.write_text(json.dumps(policy, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
