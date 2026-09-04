@@ -1,5 +1,4 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
-import { dirname, resolve, sep } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { CURRENT_RULES_VERSION } from '../src/content/current';
 
@@ -26,57 +25,26 @@ function sourceFilesUnder(root: string): string[] {
   return files;
 }
 
-function importedSpecifiers(source: string): string[] {
-  const specifiers: string[] = [];
-  const patterns = [
-    /\bfrom\s+['"]([^'"]+)['"]/g,
-    /\bimport\s+['"]([^'"]+)['"]/g,
-    /\bimport\s*\(\s*['"]([^'"]+)['"]\s*\)/g,
-    /\brequire\s*\(\s*['"]([^'"]+)['"]\s*\)/g,
-  ];
-
-  for (const pattern of patterns) {
-    for (const match of source.matchAll(pattern)) specifiers.push(match[1]);
-  }
-
-  return specifiers;
-}
-
-const RETIRED_LEGACY_BARRELS = ['state', 'effects', 'cards', 'types'] as const;
-
-function resolvesToGenericLegacyBarrel(
-  path: string,
-  specifier: string,
-  directory: typeof RETIRED_LEGACY_BARRELS[number],
-): boolean {
-  if (!specifier.startsWith('.')) return false;
-
-  const resolved = resolve(dirname(path), specifier);
-  const barrel = resolve(`src/${directory}`);
-  return resolved === barrel
-    || resolved === resolve(barrel, 'index')
-    || resolved === resolve(barrel, 'index.ts');
-}
-
-function resolvesUnderSourceDirectory(path: string, specifier: string, directory: string): boolean {
-  if (!specifier.startsWith('.')) return false;
-
-  const resolved = resolve(dirname(path), specifier);
-  const root = resolve(`src/${directory}`);
-  return resolved === root || resolved.startsWith(`${root}${sep}`);
-}
-
 describe('digital engine boundary', () => {
-  it('does not present legacy interactive runners as current engine entrypoints', () => {
+  it('keeps the old playable v0.6 runners explicitly archived', () => {
     expect(packageJson.scripts['dev:cli']).toBeUndefined();
     expect(packageJson.scripts['dev:gui']).toBeUndefined();
-    expect(packageJson.scripts['dev:legacy:cli']).toBe('tsx src/cli/dev-runner-v06.ts');
-    expect(packageJson.scripts['dev:legacy:gui']).toBe('tsx src/gui/dev-server-v06.ts');
+    expect(packageJson.scripts['dev:legacy:cli']).toBe('tsx legacy/digital-engine-v06/cli/dev-runner-v06.ts');
+    expect(packageJson.scripts['dev:legacy:gui']).toBe('tsx legacy/digital-engine-v06/gui/dev-server-v06.ts');
 
-    expect(readdirSync('src/cli')).not.toContain('dev-runner.ts');
-    expect(readdirSync('src/gui')).not.toContain('dev-server.ts');
+    expect(existsSync('legacy/digital-engine-v06/cli/dev-runner-v06.ts')).toBe(true);
+    expect(existsSync('legacy/digital-engine-v06/gui/dev-server-v06.ts')).toBe(true);
+    expect(readdirSync('src/cli')).not.toContain('dev-runner-v06.ts');
+    expect(readdirSync('src/gui')).not.toContain('dev-server-v06.ts');
     expect(existsSync('legacy/digital-engine-dev-runners/v056-cli-dev-runner.ts.txt')).toBe(true);
     expect(existsSync('legacy/digital-engine-dev-runners/v056-gui-dev-server.ts.txt')).toBe(true);
+  });
+
+  it('quarantines the old playable v0.6 architecture outside active src', () => {
+    for (const directory of ['cards', 'dev', 'effects', 'state', 'types']) {
+      expect(existsSync(`src/${directory}`)).toBe(false);
+      expect(existsSync(`legacy/digital-engine-v06/${directory}`)).toBe(true);
+    }
   });
 
   it('distinguishes the published digital-rules target from the promoted implementation baseline', () => {
@@ -96,190 +64,31 @@ describe('digital engine boundary', () => {
     expect(currentSource).not.toMatch(/from ['"]\.\/v06/);
     expect(currentSource).not.toMatch(/from ['"]\.\.\/v06[234]/);
     expect(currentSource).not.toContain('/reconstruction/');
-    expect(currentSource).not.toContain("from '../state'");
+    expect(currentSource).not.toContain('digital-engine-v06');
   });
 
-  it('requires content consumers to choose current or an explicit version', () => {
-    expect(readdirSync('src/content')).not.toContain('index.ts');
-
-    const legacyConsumers = [
-      'src/cards/intelligence.ts',
-      'src/state/v06-setup.ts',
-      'src/state/financiers.ts',
-      'src/dev/mystics-options.ts',
-      'src/state/inquisition-purge.ts',
-      'src/state/mystics-conversion.ts',
-      'src/state/inquisition-guilt-by-association.ts',
-      'src/state/v06-setup.test.ts',
-    ];
-
-    for (const path of legacyConsumers) {
-      const source = readFileSync(path, 'utf8');
-      expect(source).toContain("from '../content/v06'");
-      expect(source).not.toMatch(/from ['"]\.\.\/content['"]/);
-    }
-  });
-  it('has retired every generic legacy aggregate barrel', () => {
-    for (const directory of RETIRED_LEGACY_BARRELS) {
-      expect(readdirSync(`src/${directory}`)).not.toContain('index.ts');
-    }
-  });
-
-  it('has no source or test imports that resolve to a retired generic legacy barrel', () => {
-    const offenders: string[] = [];
-
-    for (const path of [...sourceFilesUnder('src'), ...sourceFilesUnder('tests')]) {
-      const source = readFileSync(path, 'utf8');
-      for (const specifier of importedSpecifiers(source)) {
-        for (const directory of RETIRED_LEGACY_BARRELS) {
-          if (resolvesToGenericLegacyBarrel(path, specifier, directory)) {
-            offenders.push(`${path}: ${specifier} -> src/${directory}`);
-          }
-        }
-      }
-    }
+  it('keeps active source independent from the archived v0.6 package', () => {
+    const offenders = sourceFilesUnder('src').filter((path) =>
+      readFileSync(path, 'utf8').includes('legacy/digital-engine-v06'),
+    );
 
     expect(offenders).toEqual([]);
   });
 
-  it('keeps the legacy type graph acyclic', () => {
-    const typeFiles = sourceFilesUnder('src/types')
-      .filter((path) => path.endsWith('.ts') && !path.endsWith('.d.ts'));
-    const absoluteToPath = new Map(typeFiles.map((path) => [resolve(path), path]));
-    const graph = new Map<string, string[]>();
-
-    for (const path of typeFiles) {
-      const dependencies: string[] = [];
-      const source = readFileSync(path, 'utf8');
-      for (const specifier of importedSpecifiers(source)) {
-        if (!specifier.startsWith('.')) continue;
-        const target = resolve(dirname(path), specifier);
-        const targetPath = absoluteToPath.get(target) || absoluteToPath.get(`${target}.ts`);
-        if (targetPath) dependencies.push(targetPath);
-      }
-      graph.set(path, dependencies);
-    }
-
-    const visiting = new Set<string>();
-    const visited = new Set<string>();
-    const cycles: string[] = [];
-
-    const visit = (path: string, stack: string[]) => {
-      if (visiting.has(path)) {
-        const start = stack.indexOf(path);
-        cycles.push([...stack.slice(start), path].join(' -> '));
-        return;
-      }
-      if (visited.has(path)) return;
-
-      visiting.add(path);
-      for (const dependency of graph.get(path) || []) visit(dependency, [...stack, path]);
-      visiting.delete(path);
-      visited.add(path);
-    };
-
-    for (const path of typeFiles) visit(path, []);
-    expect(cycles).toEqual([]);
-  });
-
-  it('keeps core legacy type modules independent from faction-specific type modules', () => {
-    const coreModules = ['ids', 'zones', 'resources', 'phase', 'battle', 'board', 'leader'];
-    const factionModules = new Set(['military', 'diplomats', 'financiers', 'intelligence', 'mystics', 'inquisition', 'neutral']);
-    const offenders: string[] = [];
-
-    for (const moduleName of coreModules) {
-      const path = `src/types/${moduleName}.ts`;
-      const source = readFileSync(path, 'utf8');
-      for (const specifier of importedSpecifiers(source)) {
-        if (!specifier.startsWith('./')) continue;
-        const target = specifier.slice(2).replace(/\.ts$/, '');
-        if (factionModules.has(target)) offenders.push(`${path}: ${specifier}`);
-      }
-    }
-
-    expect(offenders).toEqual([]);
-  });
-
-  it('keeps the legacy type layer independent from runtime layers', () => {
-    const offenders: string[] = [];
-    const forbiddenDirectories = ['state', 'effects', 'cards', 'dev'];
-
-    for (const path of sourceFilesUnder('src/types')) {
-      const source = readFileSync(path, 'utf8');
-      for (const specifier of importedSpecifiers(source)) {
-        for (const directory of forbiddenDirectories) {
-          if (resolvesUnderSourceDirectory(path, specifier, directory)) {
-            offenders.push(`${path}: ${specifier} -> src/${directory}`);
-          }
-        }
-      }
-    }
-
-    expect(offenders).toEqual([]);
-  });
-
-  it('keeps explicit legacy aggregate APIs free of initialization side effects', () => {
-    for (const directory of RETIRED_LEGACY_BARRELS) {
-      const source = readFileSync(`src/${directory}/v06.ts`, 'utf8');
-      expect(source).not.toMatch(/^\s*import\b/m);
-      expect(source).not.toMatch(/\.(?:push|pop|shift|unshift|splice|sort|reverse)\s*\(/);
-      expect(source).not.toMatch(/^\s*(?:if|for|while|do)\b/m);
-    }
-  });
-
-  it('keeps legacy effect modules independent from state/card/dev runtime layers', () => {
-    const offenders: string[] = [];
-    const forbiddenDirectories = ['state', 'cards', 'dev'];
-    const effectSources = sourceFilesUnder('src/effects')
-      .filter((path) => !/\.(?:test|spec)\.[cm]?[jt]sx?$/.test(path));
-
-    for (const path of effectSources) {
-      const source = readFileSync(path, 'utf8');
-      for (const specifier of importedSpecifiers(source)) {
-        for (const directory of forbiddenDirectories) {
-          if (resolvesUnderSourceDirectory(path, specifier, directory)) {
-            offenders.push(`${path}: ${specifier} -> src/${directory}`);
-          }
-        }
-      }
-    }
-
-    expect(offenders).toEqual([]);
-  });
-
-  it('keeps legacy card definitions independent from state/effect/dev runtime layers', () => {
-    const offenders: string[] = [];
-    const forbiddenDirectories = ['state', 'effects', 'dev'];
-    const cardSources = sourceFilesUnder('src/cards')
-      .filter((path) => !/\.(?:test|spec)\.[cm]?[jt]sx?$/.test(path));
-
-    for (const path of cardSources) {
-      const source = readFileSync(path, 'utf8');
-      for (const specifier of importedSpecifiers(source)) {
-        for (const directory of forbiddenDirectories) {
-          if (resolvesUnderSourceDirectory(path, specifier, directory)) {
-            offenders.push(`${path}: ${specifier} -> src/${directory}`);
-          }
-        }
-      }
-    }
-
-    expect(offenders).toEqual([]);
-    expect(existsSync('src/state/military-card-effects.ts')).toBe(true);
-  });
-
-  it('keeps the promoted v0.7.0 implementation isolated from legacy architecture', () => {
+  it('keeps the promoted v0.7.0 implementation isolated from historical content adapters', () => {
     const promotedSources = sourceFilesUnder('src/v070')
       .filter((path) => !/\.(?:test|spec)\.[cm]?[jt]sx?$/.test(path));
-
-    const legacyImport = /from ['"]\.\.\/(?:state|dev|cards|effects|reconstruction)(?:\/|['"])/;
     const historicalContentImport = /from ['"]\.\.\/content\/v06(?:1|2|3|4)?['"]/;
 
     for (const path of promotedSources) {
       const source = readFileSync(path, 'utf8');
-      expect(source).not.toMatch(legacyImport);
+      expect(source).not.toContain('legacy/digital-engine-v06');
       expect(source).not.toMatch(historicalContentImport);
     }
   });
 
+  it('keeps archived tests outside default Vitest discovery', () => {
+    const vitestConfig = readFileSync('vitest.config.ts', 'utf8');
+    expect(vitestConfig).toContain("'legacy/**'");
+  });
 });
