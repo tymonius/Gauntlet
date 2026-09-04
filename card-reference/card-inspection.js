@@ -246,13 +246,19 @@
   }
 
   function showCard(updateHistory = true) {
+    const restoreCardFocus = dialog?.open && document.activeElement === backButton;
     artStage.hidden = true;
     artStage.setAttribute('aria-hidden', 'true');
     cardStage.hidden = false;
     cardStage.setAttribute('aria-hidden', 'false');
     backButton.hidden = true;
     if (updateHistory) replaceInspectionHistory();
-    requestAnimationFrame(scaleCardStage);
+    requestAnimationFrame(() => {
+      scaleCardStage();
+      if (restoreCardFocus && dialog?.open && !cardStage.hidden) {
+        cardFrame.focus({ preventScroll: true });
+      }
+    });
   }
 
   function openArtwork(source, label) {
@@ -260,6 +266,7 @@
   }
 
   function showArtwork(source, label, pushHistory) {
+    const wasOpen = dialog.open;
     setLabel(label);
     artImage.src = source;
     artImage.alt = `Full artwork for ${currentLabel}`;
@@ -268,9 +275,11 @@
     artStage.hidden = false;
     artStage.setAttribute('aria-hidden', 'false');
     backButton.hidden = !currentCardHref;
-    const wasOpen = dialog.open;
     openDialog(pushHistory);
-    if (wasOpen) replaceInspectionHistory();
+    if (wasOpen) {
+      replaceInspectionHistory();
+      (backButton.hidden ? closeButton : backButton).focus({ preventScroll: true });
+    }
   }
 
   function openDialog(pushHistory) {
