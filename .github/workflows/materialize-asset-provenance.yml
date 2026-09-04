@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   materialize:
@@ -33,15 +33,3 @@ jobs:
         with:
           name: materialized-asset-provenance
           path: .github/asset-provenance.json
-
-      - name: Commit materialized ledger
-        run: |
-          if git diff --quiet -- .github/asset-provenance.json; then
-            echo "Ledger already materialized."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .github/asset-provenance.json
-          git commit -m "Resolve evidence-backed leader asset provenance"
-          git push
