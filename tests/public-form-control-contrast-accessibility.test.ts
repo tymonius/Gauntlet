@@ -26,6 +26,7 @@ describe("public form control boundary contrast", () => {
     for (const selector of [
       ".contact-form",
       ".filter-panel",
+      ".rulebook-search input",
       ".arbiter-form textarea",
       ".app-shell",
       ".tracked-main",
