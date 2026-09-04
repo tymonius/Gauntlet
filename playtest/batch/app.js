@@ -18,6 +18,7 @@
       "printSheets", "clearBatch", "sessionList", "printBatch"
     ]) el[id] = document.getElementById(id);
 
+    el.generationStatus.tabIndex = -1;
     el.batchForm.addEventListener("submit", generateBatch);
     el.downloadManifest.addEventListener("click", downloadManifest);
     el.printSheets.addEventListener("click", () => window.print());
@@ -36,8 +37,12 @@
     );
     if (!confirmed) return;
 
-    setBusy(true);
+    const busyReturnTarget = document.activeElement instanceof HTMLElement && el.batchForm.contains(document.activeElement)
+      ? document.activeElement
+      : el.generateButton;
     setStatus("Checking the session service…");
+    el.generationStatus.focus({ preventScroll: true });
+    setBusy(true);
     try {
       await checkService();
       sheetTemplate ||= await loadSheetTemplate();
@@ -100,6 +105,7 @@
       }
     } finally {
       setBusy(false);
+      if (el.resultPanel.hidden && busyReturnTarget?.isConnected) busyReturnTarget.focus({ preventScroll: true });
     }
   }
 

@@ -15,4 +15,18 @@ describe("coded playtest batch focus", () => {
     expect(source).toContain('el.resultPanel.hidden = true;');
     expect(source).toContain('el.generateButton.focus({ preventScroll: true });');
   });
+
+  it("moves focus to status before disabling the active generation form", () => {
+    expect(source).toContain("el.generationStatus.tabIndex = -1;");
+    expect(source).toContain("const busyReturnTarget = document.activeElement instanceof HTMLElement && el.batchForm.contains(document.activeElement)");
+    expect(source).toContain('el.generationStatus.focus({ preventScroll: true });');
+    const focusIndex = source.indexOf('el.generationStatus.focus({ preventScroll: true });');
+    const busyIndex = source.indexOf('setBusy(true);');
+    expect(focusIndex).toBeGreaterThan(-1);
+    expect(focusIndex).toBeLessThan(busyIndex);
+  });
+
+  it("restores the originating form control after a total generation failure", () => {
+    expect(source).toContain('if (el.resultPanel.hidden && busyReturnTarget?.isConnected) busyReturnTarget.focus({ preventScroll: true });');
+  });
 });
