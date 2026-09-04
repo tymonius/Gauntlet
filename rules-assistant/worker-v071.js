@@ -73,7 +73,6 @@ Requirements:
 9. When the requested distinction is a concrete source, timing, destination, cost, number, zone, or other named value, state that concrete value. Do not answer circularly with placeholders such as "the Gambit destination" or "the Tactic destination" when the actual destinations are supplied.
 10. Before returning provisional, check the retrieved clean authority for a direct answer to the requested property. If a clean source directly states it, use explicit; if the answer is compelled by combining clean sources, use inferred. Provisional is only for a genuine remaining gap or ambiguity.
 ${ADJUDICATION_GUIDE}
-${CHIEF_JUSTICE_VOICE}
 
 Return only the required JSON object.`;
 
