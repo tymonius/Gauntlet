@@ -12,11 +12,11 @@ const RULEBOOK_SHA256 = '7cca20e8de2eee10332c4e3e82ca5e7abdae3a0af61837bf77caa79
 const CANONICAL_SHA256 = '641c813366a8bcb52f9cb505ada640994d416024deed1f71a6ec59fb24ed2c4c';
 
 const targets = [
-  'docs/Gauntlet_v0.6.3_Cross_Surface_Closeout_Matrix.md',
-  'docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md',
-  'docs/Gauntlet_v0.6.3_Implementation_Ledger.md',
-  'docs/Gauntlet_v0.6.3_Shared_Rules_Candidate.md',
-  'docs/Gauntlet_v0.6.3_Shared_Rules_Test_Matrix.md',
+  'docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_Cross_Surface_Closeout_Matrix.md',
+  'docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md',
+  'docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_Implementation_Ledger.md',
+  'docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_Shared_Rules_Candidate.md',
+  'docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_Shared_Rules_Test_Matrix.md',
   'index.html',
   'start/index.html',
   'factions/military/index.html',
@@ -99,7 +99,7 @@ for (const [relativePath, expectedHash] of certifiedInputs) {
 }
 
 for (const [relativePath, required] of [
-  ['docs/Gauntlet_v0.6.3_Shared_Rules_Candidate.md', 'force the opponent to make a Last Stand and win the resulting battle'],
+  ['docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_Shared_Rules_Candidate.md', 'force the opponent to make a Last Stand and win the resulting battle'],
   ['releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md', 'The resulting contest is a Last Stand battle.'],
   ['releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json', 'force the opponent to make a Last Stand'],
 ]) {

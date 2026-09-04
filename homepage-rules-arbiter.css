@@ -31,6 +31,8 @@
   max-height: 460px;
   object-fit: contain;
   object-position: right bottom;
+  transform: scale(1.24);
+  transform-origin: right bottom;
   filter: drop-shadow(0 18px 28px rgba(18, 7, 7, .3));
 }
 
@@ -47,6 +49,7 @@
 
   .assistant-portrait img {
     width: min(100%, 300px);
+    transform: scale(1.12);
   }
 }
 
@@ -76,5 +79,6 @@
   .assistant-portrait img {
     width: min(78vw, 300px);
     max-height: none;
+    transform: none;
   }
 }
