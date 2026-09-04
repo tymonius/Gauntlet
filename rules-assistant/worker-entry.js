@@ -182,6 +182,18 @@ export default {
     }
 
     if (
+      request.method === "GET" &&
+      [
+        "/corpus-health",
+        "/api/corpus-health",
+        "/v071/corpus-health",
+        "/api/v071/corpus-health"
+      ].includes(url.pathname)
+    ) {
+      return worker.fetch(request, env, context);
+    }
+
+    if (
       url.pathname === "/api/v071/rules" || url.pathname === "/v071/rules" ||
       url.pathname === "/api/v071/health" || url.pathname === "/v071/health"
     ) {
