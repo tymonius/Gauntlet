@@ -3,10 +3,15 @@ import { describe, expect, it } from "vitest";
 
 const source = readFileSync("rules-assistant/widget.js", "utf8");
 
-describe("Rules Assistant close-during-request focus", () => {
+describe("Rules Assistant close focus", () => {
   it("returns focus when the panel closes", () => {
     expect(source).toContain("const target = focusTarget || (this.returnFocusTo?.isConnected ? this.returnFocusTo : this.elements.launcher);");
     expect(source).toContain("target.focus();");
+  });
+
+  it("does not let the delayed open focus steal focus back after an immediate close", () => {
+    expect(source).toContain("window.setTimeout(() => {\n      if (this.isOpen) this.elements.input.focus();\n    }, 120);");
+    expect(source).not.toContain("window.setTimeout(() => this.elements.input.focus(), 120);");
   });
 
   it("does not steal focus back into the hidden panel when a pending request finishes", () => {
