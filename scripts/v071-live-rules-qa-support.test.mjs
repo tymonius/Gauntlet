@@ -28,6 +28,14 @@ test("v0.7.1 live QA corrections align the smoke classification boundary with pu
     classificationBasis: "direct-authority",
     expectedAnswerPatterns: ["battle total"]
   });
+  expect(byId.get("financiers-capacity-opening")).toMatchObject({
+    expectedClassification: "explicit",
+    classificationBasis: "direct-authority",
+    expectedSourcePatterns: ["Financial Capacity", "Buying and buying out Deeds"],
+    expectedAnswerPatterns: ["Denouement"],
+    forbiddenAnswerPatterns: ["Yes"]
+  });
+  expect(byId.get("financiers-capacity-opening").expectedSourcePatterns).not.toContain("Faction Features");
   expect(byId.get("live-deed-contiguity")).toMatchObject({
     expectedClassification: "inferred",
     classificationBasis: "combined-authority",
