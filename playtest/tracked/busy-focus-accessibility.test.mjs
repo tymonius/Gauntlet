@@ -10,6 +10,8 @@ const journal = readFileSync("playtest/tracked/journal.js", "utf8");
 describe("tracked playtest busy focus", () => {
   it("loads the shared focus helper from the tracked session controller", () => {
     expect(controls).toContain('focusScript.src = "busy-focus-accessibility.js?v=20260903-1";');
+    expect(helper).toContain('if (document.readyState === "loading")');
+    expect(helper).toContain("installDynamicFocus();");
   });
 
   it("covers every tracked form that disables its controls during submission", () => {
