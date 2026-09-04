@@ -319,10 +319,11 @@ describe('v0.7.0 Resistance lifecycle', () => {
     expect(state.players.A.zones.discardPile).toContain(replacement);
     expect(state.players.A.zones.removed).not.toContain(replacement);
     expect(state.pendingAssetLimitChoice).toBeNull();
-    expect(state.events.some(event =>
-      event.type === 'asset_removed'
-      && event.payload?.instanceId === replacement
-    )).toBe(false);
+    expect(state.events.some(event => {
+      if (event.type !== 'asset_removed') return false;
+      const payload = event.payload as { instanceId?: string };
+      return payload.instanceId === replacement;
+    })).toBe(false);
   });
 
   test('a player may decline the optional at-limit replacement, leaving Resistance to clear normally', () => {
