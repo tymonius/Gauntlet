@@ -207,11 +207,13 @@ def main() -> int:
     if baseline:
         try:
             git("cat-file", "-e", f"{baseline}^{{commit}}")
-            tree_output = git("ls-tree", "-r", baseline)
-            for line in tree_output.splitlines():
-                if "\t" not in line:
+            # -z makes Git emit path names verbatim instead of C-quoting non-ASCII
+            # names such as détente.png.
+            tree_output = git("ls-tree", "-r", "-z", baseline)
+            for entry in tree_output.split("\0"):
+                if not entry or "\t" not in entry:
                     continue
-                metadata, path = line.split("\t", 1)
+                metadata, path = entry.split("\t", 1)
                 fields = metadata.split()
                 if len(fields) == 3 and fields[1] == "blob":
                     baseline_blobs[path] = fields[2]
