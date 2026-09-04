@@ -1,0 +1,47 @@
+name: Materialize Asset Provenance Remediation
+
+on:
+  push:
+    branches:
+      - audit/resolve-leader-asset-provenance
+    paths:
+      - .github/asset-provenance-remediation.json
+      - .github/scripts/materialize-asset-provenance.py
+      - .github/workflows/materialize-asset-provenance.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Materialize evidence-backed records
+        run: python .github/scripts/materialize-asset-provenance.py --write
+
+      - name: Validate asset provenance
+        run: python .github/scripts/validate-asset-provenance.py
+
+      - name: Upload materialized ledger
+        uses: actions/upload-artifact@v4
+        with:
+          name: materialized-asset-provenance
+          path: .github/asset-provenance.json
+
+      - name: Commit materialized ledger
+        run: |
+          if git diff --quiet -- .github/asset-provenance.json; then
+            echo "Ledger already materialized."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/asset-provenance.json
+          git commit -m "Resolve evidence-backed leader asset provenance"
+          git push
