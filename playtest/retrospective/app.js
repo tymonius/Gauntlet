@@ -20,7 +20,11 @@
     const faction = document.getElementById("retrospectiveFaction");
     const leader = document.getElementById("retrospectiveLeader");
     const playedOn = document.getElementById("playedOn");
+    const status = document.getElementById("formStatus");
     const savedChoice = readJsonStorage(START_STORAGE_KEY);
+
+    status?.setAttribute("role", "status");
+    if (status) status.tabIndex = -1;
 
     populateFactions(faction);
     playedOn.value = localDateValue(new Date());
@@ -47,9 +51,13 @@
     const form = event.currentTarget;
     const status = document.getElementById("formStatus");
     const submit = form.querySelector('button[type="submit"]');
-    submit.disabled = true;
+    const returnFocusTo = document.activeElement instanceof HTMLElement && form.contains(document.activeElement)
+      ? document.activeElement
+      : null;
     status.className = "form-status";
     status.textContent = "Creating the retrospective record…";
+    if (returnFocusTo) status.focus({ preventScroll: true });
+    submit.disabled = true;
 
     try {
       const response = await fetch(`${API_ORIGIN}/api/retrospective-games`, {
@@ -81,6 +89,11 @@
       status.className = "form-status error";
       status.textContent = error.message || "The retrospective record could not be created.";
       submit.disabled = false;
+      if (
+        returnFocusTo &&
+        document.activeElement === status &&
+        returnFocusTo.isConnected
+      ) returnFocusTo.focus({ preventScroll: true });
     }
   }
 
