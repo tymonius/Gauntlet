@@ -93,6 +93,10 @@ function idsFor(tags: ParsedTag[]): string[] {
     .filter((value): value is string => Boolean(value));
 }
 
+function hasClass(tag: ParsedTag, className: string): boolean {
+  return (tag.attributes.get("class") || "").split(/\s+/).includes(className);
+}
+
 const files = PUBLIC_ROOTS.flatMap(collectHtmlFiles).sort();
 
 describe("public static accessibility contract", () => {
@@ -124,6 +128,21 @@ describe("public static accessibility contract", () => {
 
       const duplicates = ids.filter((id, index) => ids.indexOf(id) !== index);
       expect([...new Set(duplicates)], `${path} has duplicate IDs`).toEqual([]);
+
+      const siteHeader = tags.find((tag) => tag.name === "header" && hasClass(tag, "site-header"));
+      if (siteHeader) {
+        const mains = tags.filter((tag) => tag.name === "main");
+        expect(mains.length, `${path} site page should have exactly one main landmark`).toBe(1);
+        const mainId = mains[0]?.attributes.get("id")?.trim() || "";
+        expect(mainId, `${path} main landmark needs an id for skip navigation`).toBeTruthy();
+
+        const skipLinks = tags.filter((tag) => tag.name === "a" && hasClass(tag, "skip-link"));
+        expect(skipLinks.length, `${path} site page should have exactly one skip link`).toBe(1);
+        expect(
+          skipLinks[0]?.attributes.get("href"),
+          `${path} skip link should target the main landmark`,
+        ).toBe(`#${mainId}`);
+      }
 
       const headings = tags
         .map((tag) => /^h([1-6])$/.exec(tag.name))
