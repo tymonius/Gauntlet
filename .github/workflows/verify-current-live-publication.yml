@@ -76,7 +76,7 @@ jobs:
           else
             while IFS= read -r file; do
               case "$file" in
-                rules-assistant/worker-entry.js|rules-assistant/worker-v*.js|rules-assistant/v*-public-corpus.js|rules-assistant/smart-worker.js|rules-assistant/reliable-worker.js|rules-assistant/admin-*.js|rules-assistant/review-*.js|rules-assistant/wrangler.toml)
+                rules-assistant/worker-entry.js|rules-assistant/worker-v*.js|rules-assistant/v*-public-corpus.js|rules-assistant/local-search.js|rules-assistant/smart-worker.js|rules-assistant/reliable-worker.js|rules-assistant/admin-*.js|rules-assistant/review-*.js|rules-assistant/wrangler.toml)
                   worker=true
                   reason=worker_inputs_changed
                   ;;
