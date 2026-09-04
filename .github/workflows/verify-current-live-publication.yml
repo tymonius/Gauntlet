@@ -62,24 +62,67 @@ jobs:
           test -n "$current"
           echo "version=$current" >> "$GITHUB_OUTPUT"
 
-      - name: Determine whether Rules Arbiter deployment changed
+      - name: Determine whether Rules Arbiter Worker needs deployment
         id: scope
         shell: bash
         run: |
           set -euo pipefail
+          worker=false
+          reason=unchanged
+
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             worker=true
+            reason=manual_dispatch
           else
-            worker=false
             while IFS= read -r file; do
               case "$file" in
                 rules-assistant/worker-entry.js|rules-assistant/worker-v*.js|rules-assistant/v*-public-corpus.js|rules-assistant/smart-worker.js|rules-assistant/reliable-worker.js|rules-assistant/admin-*.js|rules-assistant/review-*.js|rules-assistant/wrangler.toml)
                   worker=true
+                  reason=worker_inputs_changed
                   ;;
               esac
             done < <(git diff --name-only HEAD^ HEAD)
           fi
-          echo "worker=$worker" >> "$GITHUB_OUTPUT"
+
+          local_revision=$(node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const source = readFileSync('rules-assistant/worker-v071.js', 'utf8');
+          const match = source.match(/export const BEHAVIOR_REVISION\s*=\s*["']([^"']+)["']/);
+          if (!match) {
+            console.error('Could not read BEHAVIOR_REVISION from rules-assistant/worker-v071.js.');
+            process.exit(1);
+          }
+          process.stdout.write(match[1]);
+          NODE
+          )
+
+          live_revision=$(node --input-type=module <<'NODE'
+          try {
+            const response = await fetch('https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/health', { cache: 'no-store' });
+            if (!response.ok) process.exit(0);
+            const payload = await response.json();
+            process.stdout.write(String(payload?.behaviorRevision || ''));
+          } catch {
+            process.exit(0);
+          }
+          NODE
+          )
+
+          if [[ -z "$live_revision" ]]; then
+            worker=true
+            reason=live_revision_unavailable
+          elif [[ "$live_revision" != "$local_revision" ]]; then
+            worker=true
+            reason=behavior_revision_mismatch
+          fi
+
+          {
+            echo "worker=$worker"
+            echo "reason=$reason"
+            echo "local_revision=$local_revision"
+            echo "live_revision=$live_revision"
+          } >> "$GITHUB_OUTPUT"
+          echo "Rules Arbiter Worker deployment: $worker ($reason; local=$local_revision; live=${live_revision:-unavailable})"
 
       - name: Install verification dependency
         run: npm install --no-save --package-lock=false pdf-lib
@@ -94,7 +137,7 @@ jobs:
           test -n "$CLOUDFLARE_API_TOKEN" || { echo "CLOUDFLARE_API_TOKEN is not configured"; exit 1; }
           test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "CLOUDFLARE_ACCOUNT_ID is not configured"; exit 1; }
 
-      - name: Deploy current Rules Arbiter Worker only when its inputs changed
+      - name: Deploy current Rules Arbiter Worker when deployment is required
         if: steps.scope.outputs.worker == 'true'
         run: npx wrangler deploy --config rules-assistant/wrangler.toml
 
