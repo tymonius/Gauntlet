@@ -423,7 +423,7 @@ class GauntletRulesAssistant {
       form.hidden = true;
       status.textContent = text;
       section.classList.add("is-complete");
-      status.focus();
+      if (this.isOpen) status.focus();
       selectedRating = null;
       selectedButton = null;
     };
