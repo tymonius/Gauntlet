@@ -109,6 +109,10 @@ describe("public static accessibility contract", () => {
       const ids = idsFor(tags);
       const idSet = new Set(ids);
 
+      const documentElement = tags.find((tag) => tag.name === "html");
+      expect(documentElement, `${path} is missing an html element`).toBeDefined();
+      expect(documentElement?.attributes.get("lang")?.trim(), `${path} is missing a document language`).toBeTruthy();
+
       const duplicates = ids.filter((id, index) => ids.indexOf(id) !== index);
       expect([...new Set(duplicates)], `${path} has duplicate IDs`).toEqual([]);
 
@@ -132,6 +136,16 @@ describe("public static accessibility contract", () => {
 
         if (tag.name === "img") {
           expect(tag.attributes.has("alt"), `${path} image is missing alt: ${tag.source}`).toBe(true);
+        }
+
+        if (tag.name === "iframe") {
+          expect(tag.attributes.get("title")?.trim(), `${path} iframe is missing a non-empty title: ${tag.source}`).toBeTruthy();
+        }
+
+        if (tag.name === "dialog") {
+          const label = tag.attributes.get("aria-label")?.trim();
+          const labelledBy = tag.attributes.get("aria-labelledby")?.trim();
+          expect(label || labelledBy, `${path} dialog is missing an accessible name: ${tag.source}`).toBeTruthy();
         }
 
         if (tag.name === "button") {
