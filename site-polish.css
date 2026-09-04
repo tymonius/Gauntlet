@@ -45,6 +45,12 @@
   color: #815c1c;
 }
 
+/* Faction colors remain unchanged for decoration; small status text uses a slightly darker derived tone. */
+.tracked-main .player-card .response-state {
+  color: var(--faction, #555);
+  color: color-mix(in srgb, var(--faction, #555) 85%, var(--ink, #181614) 15%);
+}
+
 .analytics-consent {
   position: fixed;
   right: 18px;
