@@ -27,9 +27,45 @@
     observer.observe(control, { attributes: true, attributeFilter: ["disabled"] });
   }
 
+  function installClosedSessionActions() {
+    const quickActions = document.querySelector(".quick-actions");
+    const eventStatus = enhanceStatus("eventStatus");
+    if (!(quickActions instanceof HTMLElement) || !(eventStatus instanceof HTMLElement)) return;
+
+    const controls = () => [...quickActions.querySelectorAll("button, input, select, textarea")];
+    const syncClosedState = () => {
+      const closed = document.body.classList.contains("session-closed");
+      if (closed) {
+        if (quickActions.contains(document.activeElement)) eventStatus.focus({ preventScroll: true });
+        controls().forEach((control) => {
+          if (!(control instanceof HTMLButtonElement || control instanceof HTMLInputElement || control instanceof HTMLSelectElement || control instanceof HTMLTextAreaElement)) return;
+          if (!control.disabled) {
+            control.disabled = true;
+            control.dataset.closedSessionDisabled = "true";
+          }
+        });
+        return;
+      }
+
+      controls().forEach((control) => {
+        if (!(control instanceof HTMLButtonElement || control instanceof HTMLInputElement || control instanceof HTMLSelectElement || control instanceof HTMLTextAreaElement)) return;
+        if (control.dataset.closedSessionDisabled !== "true") return;
+        control.disabled = false;
+        delete control.dataset.closedSessionDisabled;
+      });
+    };
+
+    new MutationObserver(syncClosedState).observe(document.body, {
+      attributes: true,
+      attributeFilter: ["class"]
+    });
+    syncClosedState();
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
     enhanceStatus("joinStatus");
     enhanceStatus("closeStatus");
+    installClosedSessionActions();
   });
 
   document.addEventListener("submit", (event) => {
