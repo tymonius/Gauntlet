@@ -30,6 +30,13 @@ const ID_REFERENCE_ATTRIBUTES = [
   "aria-owns",
 ];
 
+const FULL_PAGE_HEADER_CLASSES = [
+  "site-header",
+  "global-header",
+  "rulebook-header",
+  "arbiter-header",
+];
+
 type ParsedTag = {
   name: string;
   attributes: Map<string, string>;
@@ -129,8 +136,10 @@ describe("public static accessibility contract", () => {
       const duplicates = ids.filter((id, index) => ids.indexOf(id) !== index);
       expect([...new Set(duplicates)], `${path} has duplicate IDs`).toEqual([]);
 
-      const siteHeader = tags.find((tag) => tag.name === "header" && hasClass(tag, "site-header"));
-      if (siteHeader) {
+      const fullPageHeader = tags.find((tag) =>
+        tag.name === "header" && FULL_PAGE_HEADER_CLASSES.some((className) => hasClass(tag, className))
+      );
+      if (fullPageHeader) {
         const mains = tags.filter((tag) => tag.name === "main");
         expect(mains.length, `${path} site page should have exactly one main landmark`).toBe(1);
         const mainId = mains[0]?.attributes.get("id")?.trim() || "";
