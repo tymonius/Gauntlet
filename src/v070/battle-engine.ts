@@ -20,7 +20,11 @@ import {
   v070PoliticalCapitalPending,
   v070ProposalChoicePending,
 } from './diplomats';
-import { v070MysticInvocationPendingPlayers } from './mystics';
+import {
+  recordV070MysticQualifyingHandSacrifice,
+  v070MysticInvocationPendingPlayers,
+} from './mystics';
+import { assertV070GraveyardExitAllowed } from './territories';
 import {
   V070SpiritHollowAftermathPause,
   openV070SpiritHollowAftermathChoice,
@@ -79,6 +83,16 @@ export function reduceV070BattleAction(
       action.playerId,
       action.handInstanceId,
       action.graveyardInstanceId,
+      {
+        assertGraveyardExitAllowed: () =>
+          assertV070GraveyardExitAllowed(next, 'Spirit Hollow'),
+        recordQualifyingHandSacrifice: () =>
+          recordV070MysticQualifyingHandSacrifice(
+            next,
+            action.playerId,
+            'Spirit Hollow',
+          ),
+      },
     );
     if (openV070SpiritHollowAftermathChoice(next)) return next;
     return resumeV070AfterSpiritHollow(next);

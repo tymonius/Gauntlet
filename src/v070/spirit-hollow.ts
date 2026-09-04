@@ -4,10 +4,13 @@ import {
   type V070GameState,
 } from './engine';
 import type { PlayerId } from './rules';
-import { assertV070GraveyardExitAllowed } from './territories';
-import { recordV070MysticQualifyingHandSacrifice } from './mystics';
 
 export const V070_SPIRIT_HOLLOW_ID = 'mystics-spirit-hollow';
+
+export interface V070SpiritHollowResolutionHooks {
+  assertGraveyardExitAllowed?: () => void;
+  recordQualifyingHandSacrifice?: () => void;
+}
 
 /**
  * The battle core owns card cleanup and later post-clear windows. Spirit Hollow
@@ -136,6 +139,7 @@ export function resolveV070SpiritHollowAftermathChoice(
   playerId: PlayerId,
   handInstanceId?: string,
   graveyardInstanceId?: string,
+  hooks: V070SpiritHollowResolutionHooks = {},
 ): void {
   const runtime = state.battleRuntime;
   const pending = runtime?.pendingSpiritHollowAftermath;
@@ -182,7 +186,7 @@ export function resolveV070SpiritHollowAftermathChoice(
         'Spirit Hollow may recover only one other card that was already in that Graveyard.',
       );
     }
-    assertV070GraveyardExitAllowed(state, 'Spirit Hollow');
+    hooks.assertGraveyardExitAllowed?.();
   }
 
   hand.splice(handIndex, 1);
@@ -195,11 +199,7 @@ export function resolveV070SpiritHollowAftermathChoice(
     state.players[playerId].zones.discardPile.push(graveyardInstanceId);
   }
 
-  recordV070MysticQualifyingHandSacrifice(
-    state,
-    playerId,
-    'Spirit Hollow',
-  );
+  hooks.recordQualifyingHandSacrifice?.();
 
   appendV070Event(state, {
     type: 'spirit_hollow_aftermath_resolved',
