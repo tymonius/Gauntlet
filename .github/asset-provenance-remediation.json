@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "purpose": "Evidence-backed remediation queue for legacy-unresolved governed assets.",
+  "defaults": {
+    "origin": "generated",
+    "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+    "source": "OpenAI ChatGPT image generation in the 'Faction Leader Archetypes' project conversation (2026-07-09; conversation id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034). Accepted generated sheets are recorded in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md. The normalized Gauntlet image set was added by Tymon Scott in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.",
+    "rights": "Project use authorized by Tymon Scott. As between the user and OpenAI, OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights."
+  },
+  "evidence_basis": {
+    "conversation_export": "04_Faction_Leader_Archetypes.md from the user-provided 2026-07-09 ChatGPT export",
+    "repository_log": "docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md",
+    "introduction_commit": "4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931",
+    "rights_reference": "https://openai.com/policies/terms-of-use/"
+  },
+  "assets": [
+    {"path": "images/alchemist.png", "notes": "Alchemist normalized leader image; accepted session artifact logged as alchemist_leader_concept_design_sheet.png."},
+    {"path": "images/ambassador.png", "notes": "Ambassador normalized leader image; accepted session artifact logged as a_detailed_game_character_design_sheet_layout_for.png."},
+    {"path": "images/banker.png", "notes": "Banker normalized leader image; accepted session artifact logged as banker_leader_card_reference_sheet.png."},
+    {"path": "images/commandant.png", "notes": "Commandant normalized leader image; accepted session artifact logged as a_detailed_concept_character_design_sheet_layout_f.png."},
+    {"path": "images/executive.png", "notes": "Executive normalized leader image; accepted session artifact logged as executive_of_the_east_india_company.png."},
+    {"path": "images/general.png", "notes": "General normalized leader image; accepted session artifact logged as a_single_page_concept_art_game_design_sheet_cle.png."},
+    {"path": "images/grand inquisitor.png", "notes": "Grand Inquisitor normalized leader image; accepted session artifact logged as grand_inquisitor_character_design_concept.png."},
+    {"path": "images/ranger.png", "notes": "Ranger normalized leader image; accepted session artifact logged as ranger_intelligence_leader_character_dossier.png."},
+    {"path": "images/senator.png", "notes": "Senator normalized leader image; accepted session artifact logged as a_highly_detailed_infographic_character_sheet_styl.png."},
+    {"path": "images/sketches/alchemist.png", "notes": "Alchemist leader design-sheet/sketch image; accepted session artifact logged as alchemist_leader_concept_design_sheet.png."},
+    {"path": "images/sketches/ambassador.png", "notes": "Ambassador leader design-sheet/sketch image; accepted session artifact logged as a_detailed_game_character_design_sheet_layout_for.png."},
+    {"path": "images/sketches/commandant.png", "notes": "Commandant leader design-sheet/sketch image; accepted session artifact logged as a_detailed_concept_character_design_sheet_layout_f.png."},
+    {"path": "images/sketches/executive.png", "notes": "Executive leader design-sheet/sketch image; accepted session artifact logged as executive_of_the_east_india_company.png."},
+    {"path": "images/sketches/general.png", "notes": "General leader design-sheet/sketch image; accepted session artifact logged as a_single_page_concept_art_game_design_sheet_cle.png."},
+    {"path": "images/sketches/grand inquisitor.png", "notes": "Grand Inquisitor leader design-sheet/sketch image; accepted session artifact logged as grand_inquisitor_character_design_concept.png."},
+    {"path": "images/sketches/ranger.png", "notes": "Ranger leader design-sheet/sketch image; accepted session artifact logged as ranger_intelligence_leader_character_dossier.png."},
+    {"path": "images/sketches/senator.png", "notes": "Senator leader design-sheet/sketch image; accepted session artifact logged as a_highly_detailed_infographic_character_sheet_styl.png."},
+    {"path": "images/sketches/spirit walker.png", "notes": "Spirit Walker leader design-sheet/sketch image; accepted session artifact logged as spirit_walker_character_design_sheet.png."},
+    {"path": "images/sketches/spymaster.png", "notes": "Spymaster leader design-sheet/sketch image; accepted session artifact logged as spy_master_dossier_design_sheet.png."},
+    {"path": "images/sketches/witch hunter.png", "notes": "Witch Hunter leader design-sheet/sketch image; accepted session artifact logged as witch_hunter_character_reference_sheet.png."},
+    {"path": "images/spirit walker.png", "notes": "Spirit Walker normalized leader image; accepted session artifact logged as spirit_walker_character_design_sheet.png."},
+    {"path": "images/spymaster.png", "notes": "Spymaster normalized leader image; accepted session artifact logged as spy_master_dossier_design_sheet.png."},
+    {"path": "images/witch hunter.png", "notes": "Witch Hunter normalized leader image; accepted session artifact logged as witch_hunter_character_reference_sheet.png."}
+  ]
+}
