@@ -113,6 +113,15 @@ describe("public static accessibility contract", () => {
       expect(documentElement, `${path} is missing an html element`).toBeDefined();
       expect(documentElement?.attributes.get("lang")?.trim(), `${path} is missing a document language`).toBeTruthy();
 
+      const viewport = tags.find((tag) =>
+        tag.name === "meta" && tag.attributes.get("name")?.toLowerCase() === "viewport"
+      );
+      expect(viewport, `${path} is missing a viewport meta tag`).toBeDefined();
+      const viewportContent = viewport?.attributes.get("content")?.toLowerCase() || "";
+      expect(viewportContent, `${path} viewport meta tag is empty`).toBeTruthy();
+      expect(viewportContent, `${path} disables browser zoom`).not.toMatch(/user-scalable\s*=\s*(?:no|0)/);
+      expect(viewportContent, `${path} caps browser zoom at 1x`).not.toMatch(/maximum-scale\s*=\s*1(?:\.0+)?(?:\s|,|$)/);
+
       const duplicates = ids.filter((id, index) => ids.indexOf(id) !== index);
       expect([...new Set(duplicates)], `${path} has duplicate IDs`).toEqual([]);
 
@@ -129,6 +138,12 @@ describe("public static accessibility contract", () => {
       }
 
       for (const tag of tags) {
+        if (tag.attributes.has("tabindex")) {
+          const tabindex = Number(tag.attributes.get("tabindex"));
+          expect(Number.isFinite(tabindex), `${path} has an invalid tabindex: ${tag.source}`).toBe(true);
+          expect(tabindex, `${path} uses a positive tabindex that overrides natural focus order: ${tag.source}`).toBeLessThanOrEqual(0);
+        }
+
         if (tag.name === "label" && tag.attributes.has("for")) {
           const target = tag.attributes.get("for") || "";
           expect(idSet.has(target), `${path} label target #${target} does not exist`).toBe(true);
