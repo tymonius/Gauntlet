@@ -195,7 +195,7 @@ function validateCurrentPlayerFacingSurfaces(authority, rulebook) {
 
   const thresholdWord = ruleNumberWord(facts['diplomats.peace_treaty_threshold']);
   for (const path of [
-    'faction-sheets/diplomat.js',
+    'legacy/public-compatibility/faction-sheets/diplomat.js',
     'rules-assistant/answer-presentation.js',
     'rules-assistant/rules-deterministic.js',
   ]) {

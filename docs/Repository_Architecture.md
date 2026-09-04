@@ -128,15 +128,12 @@ The current top-level directory inventory is enforced by `scripts/validate-repos
 
 | Path | Role |
 |---|---|
-| `deckbuilder-v0.5/` | Historical pre-faction Deckbuilder compatibility |
-| `deckbuilder-v0.6/` | Historical faction-era compatibility surface |
-| `faction-sheets/` | Retired printable faction-sheet compatibility surface retained for historical URLs and regression coverage |
 | `v0.7.0/` | Versioned public entry/compatibility surface |
 | `v0.7.1/` | Versioned public entry/compatibility surface |
 
-The stable public URL contracts `/v0.6.2/` and `/v0.6.3/` are materialized by GitHub Pages from `legacy/public-versions/`; no root-level repository source aliases are required for those deployed paths.
+The stable public URL contracts `/deckbuilder-v0.5/`, `/deckbuilder-v0.6/`, and `/faction-sheets/` are materialized by GitHub Pages from `legacy/public-compatibility/`. The stable `/v0.6.2/` and `/v0.6.3/` URLs are materialized from `legacy/public-versions/`. None requires a root-level repository source alias.
 
-These paths should not receive new product behavior except explicit compatibility fixes.
+These deployed historical paths should not receive new product behavior except explicit compatibility fixes.
 
 ### Frozen releases and evidence
 
@@ -166,6 +163,7 @@ These paths should not receive new product behavior except explicit compatibilit
 | Path | Current interpretation |
 |---|---|
 | `legacy/digital-prototype-data/` | Historical starter/adapter data; current gameplay authority is `game-data/` |
+| `legacy/public-compatibility/` | Canonical repository source for retired browser compatibility surfaces staged to stable public URLs; not current gameplay or rules authority | <!-- DOC-HISTORICAL -->
 | `legacy/public-versions/` | Canonical repository source for historical versioned browser surfaces staged to stable public URLs; not current gameplay or rules authority | <!-- DOC-HISTORICAL -->
 | `legacy/v0.6.1-rulebook-publication/` | Preserved v0.6.1 Rulebook proof/production system; historical publication provenance, not current Rulebook tooling | <!-- DOC-HISTORICAL -->
 | `legacy/v0.6.4-candidate/` | Historical v0.6.4 candidate inputs/review records consumed by legacy reproduction/provenance paths; not current gameplay authority | <!-- DOC-HISTORICAL -->

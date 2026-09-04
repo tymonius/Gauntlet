@@ -16,6 +16,7 @@ on:
       - 'rulebook/**'
       - 'tts/renderer/**'
       - 'card-design/**'
+      - 'legacy/public-compatibility/**'
       - 'legacy/public-versions/v0.6.2/**'
       - 'legacy/public-versions/v0.6.3/**'
       - 'scripts/generate-card-media-*.mjs'
@@ -71,9 +72,6 @@ jobs:
             config
             contact
             deckbuilder
-            deckbuilder-v0.5
-            deckbuilder-v0.6
-            faction-sheets
             factions
             faq
             game-data
@@ -110,6 +108,17 @@ jobs:
           for version in v0.6.2 v0.6.3; do
             source="legacy/public-versions/$version"
             target="$site/$version"
+            test -d "$source"
+            rm -rf "$target"
+            mkdir -p "$target"
+            cp -a "$source/." "$target/"
+          done
+
+          # Retired browser applications also live under legacy/, but retain their historical
+          # public URL roots in the deployed Pages artifact.
+          for surface in deckbuilder-v0.5 deckbuilder-v0.6 faction-sheets; do
+            source="legacy/public-compatibility/$surface"
+            target="$site/$surface"
             test -d "$source"
             rm -rf "$target"
             mkdir -p "$target"
@@ -284,6 +293,9 @@ jobs:
           test "$bytes" -lt 950000000
 
           test -s "$SITE_DIR/images/media/all-factions-promotional-showcase.png"
+          test -s "$SITE_DIR/deckbuilder-v0.5/index.html"
+          test -s "$SITE_DIR/deckbuilder-v0.6/index.html"
+          test -s "$SITE_DIR/faction-sheets/index.html"
           test -s "$SITE_DIR/v0.6.2/index.html"
           test -s "$SITE_DIR/v0.6.3/index.html"
           for image in \
