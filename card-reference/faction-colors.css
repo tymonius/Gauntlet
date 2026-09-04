@@ -2,11 +2,6 @@
   color: var(--preview-accent);
 }
 
-/* Keep the Inquisition's canonical ochre for preview accents, but darken normal-size text on parchment. */
-.reference-preview[data-faction="inquisition"] .preview-kicker {
-  color: #815c1c;
-}
-
 .reference-row[data-faction="neutral"] {
   --row-accent: ivory;
 }
