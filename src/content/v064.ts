@@ -1,8 +1,8 @@
 import baseGameplayJson from '../../artifacts/reconstruction/clean-v0.6.3/complete-authority/canonical-structured-data.json';
 import currentGameAuthorityJson from '../../game-data/current-game.json';
-import cardChangesJson from '../../docs/v0.6.4-card-additions.json';
-import rulesSourceJson from '../../docs/v0.6.4-rules.json';
-import territorySourceJson from '../../docs/v0.6.4-territories.json';
+import cardChangesJson from '../../legacy/v0.6.4-candidate/v0.6.4-card-additions.json';
+import rulesSourceJson from '../../legacy/v0.6.4-candidate/v0.6.4-rules.json';
+import territorySourceJson from '../../legacy/v0.6.4-candidate/v0.6.4-territories.json';
 import {
   cleanV063Content,
   type CleanV063Card,
