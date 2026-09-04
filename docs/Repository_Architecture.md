@@ -52,7 +52,7 @@ GitHub Pages is staged from an explicit public-root allowlist rather than from t
 
 Do not reorganize files inside published release packages for repository aesthetics.
 
-Historical redirect/compatibility shells may remain at root when they are serving a public versioned URL. Their presence should be documented rather than mistaken for current source.
+Historical browser source does not need to remain at repository root merely because its public URL is versioned. Pages may stage historical source from an explicit legacy boundary while preserving the stable URL. Temporary root aliases may remain only where maintained repository tooling still depends on the old source location.
 
 ### 5. Parameterize repeated release logic
 
@@ -131,10 +131,10 @@ The current top-level directory inventory is enforced by `scripts/validate-repos
 | `deckbuilder-v0.5/` | Historical pre-faction Deckbuilder compatibility |
 | `deckbuilder-v0.6/` | Historical faction-era compatibility surface |
 | `faction-sheets/` | Retired printable faction-sheet compatibility surface retained for historical URLs and regression coverage |
-| `v0.6.2/` | Historical public/versioned surface |
-| `v0.6.3/` | Historical public/versioned surface |
 | `v0.7.0/` | Versioned public entry/compatibility surface |
 | `v0.7.1/` | Versioned public entry/compatibility surface |
+
+The stable public URL contracts `/v0.6.2/` and `/v0.6.3/` are materialized by GitHub Pages from `legacy/public-versions/`. Their root-level repository names are temporary compatibility aliases rather than independent source directories.
 
 These paths should not receive new product behavior except explicit compatibility fixes.
 
@@ -144,7 +144,7 @@ These paths should not receive new product behavior except explicit compatibilit
 |---|---|
 | `releases/` | Immutable published release packages |
 | `artifacts/` | Reconstruction/build/QA evidence; each subtree should be audited for retention need |
-| `legacy/` | Historical implementation, candidate-data, and version-pinned publication provenance that is explicitly non-authoritative |
+| `legacy/` | Historical implementation, candidate-data, version-pinned publication, and historical public-source provenance that is explicitly non-authoritative |
 | `tts/v*/` | Versioned TTS release artifacts/evidence; do not treat as authoring source |
 
 ### Documentation and project records
@@ -166,9 +166,11 @@ These paths should not receive new product behavior except explicit compatibilit
 | Path | Current interpretation |
 |---|---|
 | `legacy/digital-prototype-data/` | Historical starter/adapter data; current gameplay authority is `game-data/` |
+| `legacy/public-versions/` | Canonical repository source for historical versioned browser surfaces staged to stable public URLs; not current gameplay or rules authority | <!-- DOC-HISTORICAL -->
 | `legacy/v0.6.1-rulebook-publication/` | Preserved v0.6.1 Rulebook proof/production system; historical publication provenance, not current Rulebook tooling | <!-- DOC-HISTORICAL -->
 | `legacy/v0.6.4-candidate/` | Historical v0.6.4 candidate inputs/review records consumed by legacy reproduction/provenance paths; not current gameplay authority | <!-- DOC-HISTORICAL -->
 | root-level Rulebook publication aliases | Compatibility symlinks into consolidated publication provenance; not independent source categories |
+| root-level v0.6.x public aliases | Compatibility symlinks into `legacy/public-versions/`; retained temporarily for maintained repository callers, never deployed as symlinks |
 | version-pinned scripts/workflows | Historical and current production logic are mixed; candidates for parameterization |
 | root-level presentation files | Current deployment dependencies mixed with source organization concerns |
 
