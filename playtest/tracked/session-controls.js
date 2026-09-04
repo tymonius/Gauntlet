@@ -47,7 +47,7 @@
         <button id="closeSession" type="button" class="button secondary">Close session</button>
         <button id="cancelSession" type="button" class="button danger">Cancel session</button>
       </div>
-      <p id="sessionEndStatus" class="form-status" aria-live="polite"></p>`;
+      <p id="sessionEndStatus" class="form-status" role="status" aria-live="polite" tabindex="-1"></p>`;
 
     closedPanel = document.createElement("section");
     closedPanel.id = "manualClosurePanel";
@@ -183,8 +183,13 @@
       : "Close this session? Existing data will be preserved, but no one will be able to join or submit more feedback.");
     if (!confirmed) return;
 
-    setBusy(true);
+    const returnFocusTo = document.activeElement instanceof HTMLElement && controls.contains(document.activeElement)
+      ? document.activeElement
+      : null;
     setStatus(cancel ? "Cancelling session…" : "Closing session…");
+    const busyStatus = controls.querySelector("#sessionEndStatus");
+    if (returnFocusTo && busyStatus instanceof HTMLElement) busyStatus.focus({ preventScroll: true });
+    setBusy(true);
     try {
       const reason = controls.querySelector("#sessionEndReason")?.value.trim() || "";
       const payload = await request(`/api/tracked-games/${encodeURIComponent(code)}/close`, {
@@ -203,6 +208,12 @@
       setStatus(error.message || "The session could not be ended.", "error");
     } finally {
       setBusy(false);
+      if (
+        returnFocusTo &&
+        document.activeElement === busyStatus &&
+        returnFocusTo.isConnected &&
+        !controls.hidden
+      ) returnFocusTo.focus({ preventScroll: true });
     }
   }
 
