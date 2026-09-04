@@ -124,12 +124,15 @@ jobs:
           } >> "$GITHUB_OUTPUT"
           echo "Rules Arbiter Worker deployment: $worker ($reason; local=$local_revision; live=${live_revision:-unavailable})"
 
-      - name: Install verification dependency
-        run: npm install --no-save --package-lock=false pdf-lib
-
-      - name: Install Worker tooling
-        if: steps.scope.outputs.worker == 'true'
-        run: npm install --no-save --package-lock=false wrangler@4
+      - name: Install verification and Worker dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ steps.scope.outputs.worker }}" == "true" ]]; then
+            npm install --no-save --package-lock=false pdf-lib wrangler@4
+          else
+            npm install --no-save --package-lock=false pdf-lib
+          fi
 
       - name: Verify Worker deployment secrets
         if: steps.scope.outputs.worker == 'true'
