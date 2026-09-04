@@ -2,236 +2,35 @@
   "version": 1,
   "baseline_commit": "4e3967a40a926eb6aa7d8b57d73c1f6cd101608d",
   "policy": {
-    "governed_roots": [
-      "images",
-      "card-design"
-    ],
-    "extensions": [
-      ".png",
-      ".jpg",
-      ".jpeg",
-      ".webp",
-      ".gif",
-      ".svg",
-      ".avif",
-      ".bmp",
-      ".tif",
-      ".tiff",
-      ".ico",
-      ".pdf",
-      ".psd",
-      ".ai",
-      ".eps",
-      ".zip",
-      ".3mf",
-      ".stl",
-      ".obj",
-      ".fbx",
-      ".gltf",
-      ".glb",
-      ".blend",
-      ".woff",
-      ".woff2",
-      ".ttf",
-      ".otf",
-      ".mp3",
-      ".ogg",
-      ".wav",
-      ".flac",
-      ".m4a",
-      ".mp4",
-      ".webm",
-      ".mov"
-    ],
-    "ignored_paths": [
-      "images/artwork/_autoscaled/"
-    ],
+    "governed_roots": ["images", "card-design"],
+    "extensions": [".png", ".jpg", ".jpeg", ".webp", ".gif", ".svg", ".avif", ".bmp", ".tif", ".tiff", ".ico", ".pdf", ".psd", ".ai", ".eps", ".zip", ".3mf", ".stl", ".obj", ".fbx", ".gltf", ".glb", ".blend", ".woff", ".woff2", ".ttf", ".otf", ".mp3", ".ogg", ".wav", ".flac", ".m4a", ".mp4", ".webm", ".mov"],
+    "ignored_paths": ["images/artwork/_autoscaled/"],
     "legacy_default_status": "legacy-unresolved"
   },
   "assets": [
-    {
-      "path": "images/alchemist.png",
-      "origin": "generated",
-      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
-      "source": "OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.",
-      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
-      "sha256": "1ed0a21ac58fa24daafd30f4c8e10edef32a3fb2b71fdce05d4e4e170ac83dfd"
-    },
-    {
-      "path": "images/ambassador.png",
-      "origin": "generated",
-      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
-      "source": "OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.",
-      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
-      "sha256": "7fa247a030067a770d1a8b6ebba9de55bc053cba59ea38db32ba73de785980b1"
-    },
-    {
-      "path": "images/banker.png",
-      "origin": "generated",
-      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
-      "source": "OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.",
-      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
-      "sha256": "19da5922421778fd08358db6ee987ecd09698494f0d0a5c9c72bf21f262dd6cc"
-    },
-    {
-      "path": "images/commandant.png",
-      "origin": "generated",
-      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
-      "source": "OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.",
-      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
-      "sha256": "ce96606fe10a530113e64e71451719d10e31f0dfcbb1e6bed5fb6d4dda32d740"
-    },
-    {
-      "path": "images/executive.png",
-      "origin": "generated",
-      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
-      "source": "OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.",
-      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
-      "sha256": "9d883616e6cdabe2dd40228990fca30578af6bf5fd5db6cbefd719e02293224e"
-    },
-    {
-      "path": "images/general.png",
-      "origin": "generated",
-      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
-      "source": "OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.",
-      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
-      "sha256": "55f75e146db262645fd68015ed0b293902074d087a257aa5830bf3a57ae0eacc"
-    },
-    {
-      "path": "images/grand inquisitor.png",
-      "origin": "generated",
-      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
-      "source": "OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.",
-      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
-      "sha256": "42776a8df9e1573cfc35ee8838c06055d503a5716fbd5e972a830a0c6fd8dc18"
-    },
-    {
-      "path": "images/ranger.png",
-      "origin": "generated",
-      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
-      "source": "OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.",
-      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
-      "sha256": "7e1e1a3279f2472ed7819858db09d93d4f9b8f89872a68957fdfce186b005366"
-    },
-    {
-      "path": "images/senator.png",
-      "origin": "generated",
-      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
-      "source": "OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.",
-      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
-      "sha256": "31b3648ae969210c8233b3189a69cbd6d335064c0bac1e9d47622e0b77055c83"
-    },
-    {
-      "path": "images/sketches/alchemist.png",
-      "origin": "generated",
-      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
-      "source": "OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.",
-      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
-      "sha256": "dc535415b4b82b411f79459380a0e984af40fc1b5e4b91d1f413700725288f72"
-    },
-    {
-      "path": "images/sketches/ambassador.png",
-      "origin": "generated",
-      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
-      "source": "OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.",
-      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
-      "sha256": "7648051222d378fd51587d0df6a151a5269d98f0dc564f7da92b732e901f9b4c"
-    },
-    {
-      "path": "images/sketches/commandant.png",
-      "origin": "generated",
-      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
-      "source": "OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.",
-      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
-      "sha256": "f5847708f55008a69052fad1184bb9f57a87cb46f6f29acae1a52a6b1c122026"
-    },
-    {
-      "path": "images/sketches/executive.png",
-      "origin": "generated",
-      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
-      "source": "OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.",
-      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
-      "sha256": "6b458a2d6e2a30b9e4a589f91f4a75bf813ebdb099e769b6989dd70769f2d00e"
-    },
-    {
-      "path": "images/sketches/general.png",
-      "origin": "generated",
-      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
-      "source": "OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.",
-      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
-      "sha256": "507b715d1c2e9a0b27ec415c7b619b4593b727fed520369c1ad23975a53132e2"
-    },
-    {
-      "path": "images/sketches/grand inquisitor.png",
-      "origin": "generated",
-      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
-      "source": "OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.",
-      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
-      "sha256": "701193e532366a2477695c3c239d457d85a48b86838e739a84bb47b9f9aedc70"
-    },
-    {
-      "path": "images/sketches/ranger.png",
-      "origin": "generated",
-      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
-      "source": "OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.",
-      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
-      "sha256": "caaf5c9f1f8139770b281102c3c7e887280518d479068df7af897e9817a5d175"
-    },
-    {
-      "path": "images/sketches/senator.png",
-      "origin": "generated",
-      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
-      "source": "OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.",
-      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
-      "sha256": "a52d360ca0885992ddab623bda0248385bf394dfb666c913966b36fe0d1f1ea8"
-    },
-    {
-      "path": "images/sketches/spirit walker.png",
-      "origin": "generated",
-      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
-      "source": "OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.",
-      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
-      "sha256": "47d89d89b58981d91f6c591b7ded4a9bd9a97b830127dd01b416532a71026b9f"
-    },
-    {
-      "path": "images/sketches/spymaster.png",
-      "origin": "generated",
-      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
-      "source": "OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.",
-      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
-      "sha256": "0d782ce9da01424e8512edf1904d377632d70d8f22b1387c5c47f15d57191de4"
-    },
-    {
-      "path": "images/sketches/witch hunter.png",
-      "origin": "generated",
-      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
-      "source": "OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.",
-      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
-      "sha256": "3fdb5623c6b8b4fb4f98c0eb2726b2244133f11525d4c094fe0b20bffabc00ee"
-    },
-    {
-      "path": "images/spirit walker.png",
-      "origin": "generated",
-      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
-      "source": "OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.",
-      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
-      "sha256": "c36e82fe9157f820eda067cb7ec75f60ae769bb65ec65cd614e8fff2bf8c4ee6"
-    },
-    {
-      "path": "images/spymaster.png",
-      "origin": "generated",
-      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
-      "source": "OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.",
-      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
-      "sha256": "fdda8c9f4c5d8354b6d6acbb43b3702c51c97c30ea509effd82f76771488f926"
-    },
-    {
-      "path": "images/witch hunter.png",
-      "origin": "generated",
-      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
-      "source": "OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.",
-      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
-      "sha256": "894133e882c1b0a24a5806570422bcb1bbfd7c2d0990e4733f10cb47d3b999f7"
-    }
+    {"path":"images/alchemist.png","origin":"generated","creator":"OpenAI image generation, directed and selected by Tymon Scott","source":"OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.","rights":"Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.","sha256":"1ed0a21ac58fa24daafd30f4c8e10edef32a3fb2b71fdce05d4e4e170ac83dfd"},
+    {"path":"images/ambassador.png","origin":"generated","creator":"OpenAI image generation, directed and selected by Tymon Scott","source":"OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.","rights":"Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.","sha256":"7fa247a030067a770d1a8b6ebba9de55bc053cba59ea38db32ba73de785980b1"},
+    {"path":"images/banker.png","origin":"generated","creator":"OpenAI image generation, directed and selected by Tymon Scott","source":"OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.","rights":"Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.","sha256":"19da5922421778fd08358db6ee987ecd09698494f0d0a5c9c72bf21f262dd6cc"},
+    {"path":"images/commandant.png","origin":"generated","creator":"OpenAI image generation, directed and selected by Tymon Scott","source":"OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.","rights":"Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.","sha256":"ce96606fe10a530113e64e71451719d10e31f0dfcbb1e6bed5fb6d4dda32d740"},
+    {"path":"images/executive.png","origin":"generated","creator":"OpenAI image generation, directed and selected by Tymon Scott","source":"OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.","rights":"Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.","sha256":"9d883616e6cdabe2dd40228990fca30578af6bf5fd5db6cbefd719e02293224e"},
+    {"path":"images/general.png","origin":"generated","creator":"OpenAI image generation, directed and selected by Tymon Scott","source":"OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.","rights":"Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.","sha256":"55f75e146db262645fd68015ed0b293902074d087a257aa5830bf3a57ae0eacc"},
+    {"path":"images/grand inquisitor.png","origin":"generated","creator":"OpenAI image generation, directed and selected by Tymon Scott","source":"OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.","rights":"Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.","sha256":"42776a8df9e1573cfc35ee8838c06055d503a5716fbd5e972a830a0c6fd8dc18"},
+    {"path":"images/ranger.png","origin":"generated","creator":"OpenAI image generation, directed and selected by Tymon Scott","source":"OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.","rights":"Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.","sha256":"7e1e1a3279f2472ed7819858db09d93d4f9b8f89872a68957fdfce186b005366"},
+    {"path":"images/senator.png","origin":"generated","creator":"OpenAI image generation, directed and selected by Tymon Scott","source":"OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.","rights":"Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.","sha256":"31b3648ae969210c8233b3189a69cbd6d335064c0bac1e9d47622e0b77055c83"},
+    {"path":"images/sketches/alchemist.png","origin":"generated","creator":"OpenAI image generation, directed and selected by Tymon Scott","source":"OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.","rights":"Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.","sha256":"dc535415b4b82b411f79459380a0e984af40fc1b5e4b91d1f413700725288f72"},
+    {"path":"images/sketches/ambassador.png","origin":"generated","creator":"OpenAI image generation, directed and selected by Tymon Scott","source":"OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.","rights":"Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.","sha256":"7648051222d378fd51587d0df6a151a5269d98f0dc564f7da92b732e901f9b4c"},
+    {"path":"images/sketches/banker.png","origin":"generated","creator":"OpenAI image generation, directed and selected by Tymon Scott","source":"OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.","rights":"Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.","sha256":"92b7ce57a42f6f2ef72460cd53bf9ab4139352d1fca051d744057a1b635c880e"},
+    {"path":"images/sketches/commandant.png","origin":"generated","creator":"OpenAI image generation, directed and selected by Tymon Scott","source":"OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.","rights":"Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.","sha256":"f5847708f55008a69052fad1184bb9f57a87cb46f6f29acae1a52a6b1c122026"},
+    {"path":"images/sketches/executive.png","origin":"generated","creator":"OpenAI image generation, directed and selected by Tymon Scott","source":"OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.","rights":"Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.","sha256":"6b458a2d6e2a30b9e4a589f91f4a75bf813ebdb099e769b6989dd70769f2d00e"},
+    {"path":"images/sketches/general.png","origin":"generated","creator":"OpenAI image generation, directed and selected by Tymon Scott","source":"OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.","rights":"Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.","sha256":"507b715d1c2e9a0b27ec415c7b619b4593b727fed520369c1ad23975a53132e2"},
+    {"path":"images/sketches/grand inquisitor.png","origin":"generated","creator":"OpenAI image generation, directed and selected by Tymon Scott","source":"OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.","rights":"Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.","sha256":"701193e532366a2477695c3c239d457d85a48b86838e739a84bb47b9f9aedc70"},
+    {"path":"images/sketches/ranger.png","origin":"generated","creator":"OpenAI image generation, directed and selected by Tymon Scott","source":"OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.","rights":"Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.","sha256":"caaf5c9f1f8139770b281102c3c7e887280518d479068df7af897e9817a5d175"},
+    {"path":"images/sketches/senator.png","origin":"generated","creator":"OpenAI image generation, directed and selected by Tymon Scott","source":"OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.","rights":"Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.","sha256":"a52d360ca0885992ddab623bda0248385bf394dfb666c913966b36fe0d1f1ea8"},
+    {"path":"images/sketches/spirit walker.png","origin":"generated","creator":"OpenAI image generation, directed and selected by Tymon Scott","source":"OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.","rights":"Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.","sha256":"47d89d89b58981d91f6c591b7ded4a9bd9a97b830127dd01b416532a71026b9f"},
+    {"path":"images/sketches/spymaster.png","origin":"generated","creator":"OpenAI image generation, directed and selected by Tymon Scott","source":"OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.","rights":"Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.","sha256":"0d782ce9da01424e8512edf1904d377632d70d8f22b1387c5c47f15d57191de4"},
+    {"path":"images/sketches/witch hunter.png","origin":"generated","creator":"OpenAI image generation, directed and selected by Tymon Scott","source":"OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.","rights":"Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.","sha256":"3fdb5623c6b8b4fb4f98c0eb2726b2244133f11525d4c094fe0b20bffabc00ee"},
+    {"path":"images/spirit walker.png","origin":"generated","creator":"OpenAI image generation, directed and selected by Tymon Scott","source":"OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.","rights":"Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.","sha256":"c36e82fe9157f820eda067cb7ec75f60ae769bb65ec65cd614e8fff2bf8c4ee6"},
+    {"path":"images/spymaster.png","origin":"generated","creator":"OpenAI image generation, directed and selected by Tymon Scott","source":"OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.","rights":"Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.","sha256":"fdda8c9f4c5d8354b6d6acbb43b3702c51c97c30ea509effd82f76771488f926"},
+    {"path":"images/witch hunter.png","origin":"generated","creator":"OpenAI image generation, directed and selected by Tymon Scott","source":"OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.","rights":"Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.","sha256":"894133e882c1b0a24a5806570422bcb1bbfd7c2d0990e4733f10cb47d3b999f7"}
   ]
 }
