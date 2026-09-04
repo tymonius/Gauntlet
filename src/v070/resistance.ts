@@ -65,6 +65,18 @@ export function v070ResistanceBattleBankReplacementInstanceIds(
   return replaceableV070AssetInstanceIds(state, playerId);
 }
 
+export function v070ResistanceBattleBankNeedsReplacementChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+): boolean {
+  return state.players[playerId].zones.assetBank.length
+    >= effectiveV070AssetLimit(state, playerId)
+    && v070ResistanceBattleBankReplacementInstanceIds(
+      state,
+      playerId,
+    ).length > 0;
+}
+
 export function bankV070ResistanceFromBattle(
   state: V070GameState,
   playerId: PlayerId,
