@@ -74,7 +74,7 @@
     watchFormReturn(start, status, "playPanel");
   });
 
-  document.addEventListener("DOMContentLoaded", () => {
+  function installDynamicFocus() {
     for (const [statusId] of Object.values(FORM_CONFIG)) enhanceStatus(statusId);
     enhanceStatus("liveSyncStatus");
 
@@ -95,5 +95,11 @@
       journalStatus.focus({ preventScroll: true });
     });
     observer.observe(journalForm, { subtree: true, attributes: true, attributeFilter: ["disabled"] });
-  });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", installDynamicFocus, { once: true });
+  } else {
+    installDynamicFocus();
+  }
 })();
