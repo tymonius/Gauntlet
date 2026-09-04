@@ -59,6 +59,7 @@
 /* Light form fields need a visible component boundary even before keyboard focus. */
 .contact-form :is(input:not([type="hidden"]), select, textarea),
 .filter-panel :is(input, select),
+.rulebook-search input,
 .arbiter-form textarea,
 .app-shell :is(input, select, textarea),
 .tracked-main :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea),
