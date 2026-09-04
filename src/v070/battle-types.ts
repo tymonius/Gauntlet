@@ -160,6 +160,13 @@ export interface V070BattleCardAftermathTerritoryInsertion {
   location: 'front_line';
 }
 
+export interface V070BattleCardAftermathAssetBank {
+  sourceInstanceId: string;
+  sourceCardId: string;
+  owner: PlayerId;
+  condition: 'owner_win';
+}
+
 export interface V070BattleAftermathControlledEffectChoiceRuntime {
   playerId: PlayerId;
   candidateSourceInstanceIds: string[];
@@ -241,6 +248,8 @@ export interface V070BattleRuntime {
     V070BattleCardAftermathOverlayPlacement[];
   battleCardAftermathTerritoryInsertions:
     V070BattleCardAftermathTerritoryInsertion[];
+  battleCardAftermathAssetBanks:
+    V070BattleCardAftermathAssetBank[];
   militaryOrderUsedPlayers: PlayerId[];
   unbrokenRanksInstanceIds: string[];
   pendingGameVictory: {
@@ -326,6 +335,7 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     battleCardAftermathDestinationOverrides: [],
     battleCardAftermathOverlayPlacements: [],
     battleCardAftermathTerritoryInsertions: [],
+    battleCardAftermathAssetBanks: [],
     militaryOrderUsedPlayers: [],
     unbrokenRanksInstanceIds: [],
     pendingGameVictory: null,
