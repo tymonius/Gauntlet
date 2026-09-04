@@ -46,7 +46,7 @@ A path that cannot be classified cleanly is a cleanup target.
 
 Current public paths such as `/deckbuilder/`, `/rulebook/`, `/card-reference/`, `/factions/`, `/start/`, and `/playtest/` must not move merely to make the source tree prettier.
 
-The long-term architecture may separate source applications from deployed Pages output, but that migration must first make deployment explicit and preserve stable URLs.
+GitHub Pages is staged from an explicit public-root allowlist rather than from the entire repository tree. Source organization may therefore change independently of deployed URL layout, but every source move must preserve the corresponding stable public path where one exists.
 
 ### 4. Frozen releases stay frozen
 
@@ -119,8 +119,6 @@ The current top-level directory inventory is enforced by `scripts/validate-repos
 | `card-design/` | Card/component rendering and authoring |
 | `tts/` | TTS generation, packaging, renderer support, QA |
 | `scripts/` | Cross-project generation, validation, release, migration, and maintenance tooling |
-| `rulebook-production/` | Rulebook production support |
-| `rulebook-design/` | Rulebook visual/design support |
 | `.github/workflows/` | CI, deployment, publication, and generation automation |
 | `tests/` | Cross-surface and release contract tests |
 | `media/` | Current reproducible card-media/composition configuration and export tooling |
@@ -146,7 +144,7 @@ These paths should not receive new product behavior except explicit compatibilit
 |---|---|
 | `releases/` | Immutable published release packages |
 | `artifacts/` | Reconstruction/build/QA evidence; each subtree should be audited for retention need |
-| `legacy/` | Historical implementation provenance that is explicitly non-authoritative |
+| `legacy/` | Historical implementation, candidate-data, and version-pinned publication provenance that is explicitly non-authoritative |
 | `tts/v*/` | Versioned TTS release artifacts/evidence; do not treat as authoring source |
 
 ### Documentation and project records
@@ -168,6 +166,9 @@ These paths should not receive new product behavior except explicit compatibilit
 | Path | Current interpretation |
 |---|---|
 | `legacy/digital-prototype-data/` | Historical starter/adapter data; current gameplay authority is `game-data/` |
+| `legacy/v0.6.1-rulebook-publication/` | Preserved v0.6.1 Rulebook proof/production system; historical publication provenance, not current Rulebook tooling | <!-- DOC-HISTORICAL -->
+| `legacy/v0.6.4-candidate/` | Historical v0.6.4 candidate inputs/review records consumed by legacy reproduction/provenance paths; not current gameplay authority | <!-- DOC-HISTORICAL -->
+| root-level Rulebook publication aliases | Compatibility symlinks into consolidated publication provenance; not independent source categories |
 | version-pinned scripts/workflows | Historical and current production logic are mixed; candidates for parameterization |
 | root-level presentation files | Current deployment dependencies mixed with source organization concerns |
 
@@ -203,7 +204,7 @@ releases/
 legacy/
 ```
 
-This is a **conceptual dependency target, not an instruction to move every existing directory immediately**. The current GitHub Pages deployment depends on stable root paths. Source/deploy separation must be introduced before current public applications can safely move under `apps/`.
+This is a **conceptual dependency target, not an instruction to move every existing directory immediately**. GitHub Pages now stages an explicit deployed tree, so application and tooling source may move toward these boundaries while stable public URLs remain unchanged.
 
 ## Cleanup sequence
 
@@ -217,15 +218,16 @@ This is a **conceptual dependency target, not an instruction to move every exist
 ### Phase 2 — Tooling consolidation
 
 - Inventory version-pinned release/build scripts and workflows.
-- Extract shared release/print/TTS functions.
+- Move historical version-pinned tooling into explicit legacy boundaries.
+- Extract shared release/print/TTS functions where multiple maintained versions still use the same implementation.
 - Parameterize repeated version-only behavior.
 - Retire obsolete workflows after proving replacement coverage.
 
 ### Phase 3 — Source/deployment separation
 
-- Define explicit build output for GitHub Pages.
-- Preserve current public URLs.
-- Move application source into clearer package boundaries only after deployment no longer depends on source-tree location.
+- Keep GitHub Pages staging explicit rather than mirroring the repository.
+- Preserve current public URLs while source directories are consolidated.
+- Move application source into clearer package boundaries only after verifying each deployed compatibility path.
 
 ### Phase 4 — Digital-engine boundary
 

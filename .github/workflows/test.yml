@@ -168,6 +168,7 @@ jobs:
           found=0
           mapfile -t retired_sources < <(node -e "for (const file of JSON.parse(process.env.RETIRED_SOURCES || '[]')) console.log(file)")
           for retired in "${retired_sources[@]}"; do
+            [[ -e "$retired" ]] && continue
             while IFS= read -r match; do
               [[ -z "$match" ]] && continue
               echo "Dangling reference to retired source $retired: $match" >&2
