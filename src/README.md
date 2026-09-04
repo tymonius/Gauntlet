@@ -1,6 +1,6 @@
 # Gauntlet Digital Engine Work
 
-This directory contains the active digital-engine migration plus explicitly versioned transitional layers. Historical clean reconstruction snapshots live under `legacy/digital-engine-reconstruction/`.
+This directory contains the active digital-engine migration plus explicitly versioned transitional layers. Historical clean reconstruction snapshots and retired migration implementations live under `legacy/`.
 
 ## Current authority boundary
 
@@ -22,10 +22,10 @@ That difference is an explicit implementation lag, not an alternate authority cl
 - `v070/turn-engine.ts` — Capture, Draw, Opening/Movement/Denouement/Cleanup lifecycle, deterministic reshuffles, Front Line capture, and battle initiation.
 - `v070/battle-engine.ts` / `battle-types.ts` — executable Onset→Gambit→Reserve→Tactic→Outcome→Aftermath envelope, battle dice, Defensive Edge/Tiebreak, hidden commitments, and explicit unsupported-effect halts.
 - `v070/views.ts` — player-scoped hidden-information views.
-- `v064/` — transitional Onset implementation retained as historical migration evidence after its relevant shared procedures were audited into `v070/rules.ts`.
 - `v063/` — substantial validated procedure library from the v0.6.3 migration: setup, Front Line/Capture, copied/repeated effects, Arcane Knowledge, Manifest Destiny, dynamic Territories/Deeds, and all printed Territory/Arena procedures. These remain explicitly versioned until individually revalidated against v0.7.0.
 - `content/v063.ts` — immutable v0.6.3 release adapter retained for historical/versioned regression tests.
 - `legacy/digital-engine-reconstruction/` — preserved clean v0.6.2/v0.6.3 reconstruction snapshots formerly under `src/reconstruction/`; retained as historical provenance outside the active `src/**/*.ts` typecheck boundary.
+- `legacy/digital-engine-migration/v0.6.4/` — retired v0.6.4 Onset/movement transition implementation formerly under `src/v064/`; relevant shared procedures were audited into `v070/rules.ts` before archival.
 - `state/`, `effects/`, `cards/`, `types/`, and `dev/` — pre-faction/earlier playable architecture. Useful scaffolding, but not presumed v0.7.0-compatible. Aggregate legacy APIs are explicitly versioned as `state/v06.ts`, `effects/v06.ts`, `cards/v06.ts`, and `types/v06.ts`. The former generic state, effects, cards, and types barrels have all been retired; legacy consumers must use an explicit v0.6 aggregate or a specific legacy module.
 - `cli/` — promoted v0.7.0 reducer REPL plus the explicitly versioned v0.6 legacy CLI. The v0.7.0 runner uses certified starter Decks and the authoritative setup/turn/battle reducers directly; it does not mask unsupported battle effects.
 - `gui/` — promoted v0.7.0 reducer GUI plus the explicitly versioned v0.6 legacy GUI. The promoted GUI uses certified starter Decks, player-scoped views, and the shared recorded-action dispatcher; older generic v0.5.6 runners are preserved under `legacy/digital-engine-dev-runners/` as non-executable provenance.
@@ -62,13 +62,13 @@ npm run dev:legacy:cli
 npm run dev:legacy:gui
 ```
 
-The broad test/typecheck commands exercise legacy/versioned code as well as promoted migration work. `dev:v070:cli` and `dev:v070:gui` expose the promoted v0.7.0 reducer over certified starter Decks; both preserve explicit unsupported-effect halts, and the GUI defaults to player-scoped hidden-information views. They are developer surfaces, not claims of v0.7.1 parity or complete battle-card support. The `dev:legacy:*` runners execute the earlier playable architecture only.
+The broad test/typecheck commands exercise maintained legacy/versioned code that remains under `src/` as well as promoted migration work. Quarantined `legacy/` archives are intentionally outside that default TypeScript/test boundary. `dev:v070:cli` and `dev:v070:gui` expose the promoted v0.7.0 reducer over certified starter Decks; both preserve explicit unsupported-effect halts, and the GUI defaults to player-scoped hidden-information views. They are developer surfaces, not claims of v0.7.1 parity or complete battle-card support. The `dev:legacy:*` runners execute the earlier playable architecture only.
 
 ## Reuse policy
 
 Reuse architecture and procedures deliberately. A historical handler is evidence, not authority. New or retained gameplay behavior must be checked against the published v0.7.0 Rulebook and canonical data before it is exposed through the current engine surface.
 
-The promoted `src/v070/` implementation must remain structurally isolated from the legacy `state/`, `dev/`, `cards/`, and `effects/` trees. Historical clean reconstruction snapshots are quarantined under `legacy/digital-engine-reconstruction/`. Shared code may move into an explicitly current/version-neutral module only after its authority and compatibility are established.
+The promoted `src/v070/` implementation must remain structurally isolated from the legacy `state/`, `dev/`, `cards/`, and `effects/` trees. Historical reconstruction snapshots and retired migration implementations are quarantined under `legacy/digital-engine-reconstruction/` and `legacy/digital-engine-migration/`. Shared code may move into an explicitly current/version-neutral module only after its authority and compatibility are established.
 
 The legacy development helpers under `src/dev/` and the legacy CLI/GUI runners use explicit v0.6 aggregate boundaries for state, effects, and types. The former generic card barrel has been retired as well: Military card definitions are pure metadata, stateful Military procedures live under `src/state/military-card-effects.ts`, and legacy consumers import explicit card modules or `cards/v06.ts` without restoring the old card→state initialization cycle.
 
