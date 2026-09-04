@@ -8,6 +8,11 @@
   const code = String(params.get("code") || "").trim();
   if (!TOKEN_PATTERN.test(code)) return;
 
+  const focusScript = document.createElement("script");
+  focusScript.src = "busy-focus-accessibility.js?v=20260903-1";
+  focusScript.async = false;
+  document.head.append(focusScript);
+
   const storagePrefix = `gauntlet_tracked_${code.slice(0, 16)}`;
   let hostKey = String(params.get("host") || "").trim() || readStorage(`${storagePrefix}_host`);
   let controls = null;
