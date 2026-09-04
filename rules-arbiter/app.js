@@ -135,7 +135,7 @@ function renderAnswer(result) {
     <div class="arbiter-ruling">
       <p class="arbiter-meta"><strong>${escapeHtml(label)}</strong> · ${escapeHtml(result.executionPath || "rules lookup")}</p>
       <p>${escapeHtml(result.answer).replaceAll("\n", "<br>")}</p>
-      ${sources.length ? `<h3>Sources</h3><ol>${sources.map(sourceItem).join("")}</ol>` : ""}
+      ${sources.length ? `<h2 class="arbiter-sources-heading">Sources</h2><ol>${sources.map(sourceItem).join("")}</ol>` : ""}
       <p class="arbiter-boundary">Current ${escapeHtml(result.versionLabel || VERSION_LABEL)} rules sources.</p>
     </div>`;
 }
