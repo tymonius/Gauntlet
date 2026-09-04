@@ -277,6 +277,7 @@ export interface V070BattleRuntime {
     territoryId: string;
   } | null;
   assetInactivePlayers: PlayerId[];
+  assetUseProhibitedPlayers: PlayerId[];
   trainingGroundsRedrawPlayer: PlayerId | null;
   trainingGroundsRedrawResolved: boolean;
   gambitProhibitedPlayers: PlayerId[];
@@ -358,6 +359,7 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     activeOverlayAtOnset: null,
     activePrintedTerritoryAtOnset: null,
     assetInactivePlayers: [],
+    assetUseProhibitedPlayers: [],
     trainingGroundsRedrawPlayer: null,
     trainingGroundsRedrawResolved: false,
     gambitProhibitedPlayers: [],
