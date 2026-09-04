@@ -71,7 +71,11 @@ export function mergeRegressionCandidates(benchmark, bundle) {
       manual.push({ interactionId, reason: "missing or invalid expected classification" });
       continue;
     }
-    if (normalized.expectedClassification !== "out_of_scope" && !normalized.expectedSourcePatterns.length) {
+    if (normalized.expectedClassification === "out_of_scope") {
+      manual.push({ interactionId, reason: "out-of-scope fixtures require manual benchmark handling" });
+      continue;
+    }
+    if (!normalized.expectedSourcePatterns.length) {
       manual.push({ interactionId, reason: "missing governing source patterns" });
       continue;
     }
