@@ -16,6 +16,8 @@ on:
       - 'rulebook/**'
       - 'tts/renderer/**'
       - 'card-design/**'
+      - 'legacy/public-versions/v0.6.2/**'
+      - 'legacy/public-versions/v0.6.3/**'
       - 'scripts/generate-card-media-*.mjs'
       - 'scripts/generate-tts-card-assets.mjs'
       - 'scripts/tts-current-catalog.mjs'
@@ -104,6 +106,17 @@ jobs:
 
           git archive --format=tar HEAD -- "${root_public_files[@]}" "${public_directories[@]}" \
             | tar -xf - -C "$site"
+
+          # Keep historical source under legacy/ while materializing real files at the stable
+          # public version URLs. Root compatibility aliases must not leak into the Pages artifact.
+          for version in v0.6.2 v0.6.3; do
+            source="legacy/public-versions/$version"
+            target="$site/$version"
+            test -d "$source"
+            rm -rf "$target"
+            mkdir -p "$target"
+            cp -a "$source/." "$target/"
+          done
 
           # Keep large authoring/source subsets out of the deployed artifact while retaining
           # the production asset namespaces that current public pages consume.
@@ -273,6 +286,8 @@ jobs:
           test "$bytes" -lt 950000000
 
           test -s "$SITE_DIR/images/media/all-factions-promotional-showcase.png"
+          test -s "$SITE_DIR/v0.6.2/index.html"
+          test -s "$SITE_DIR/v0.6.3/index.html"
           for image in \
             "hero sketch.png" \
             "general.png" \
