@@ -1,9 +1,18 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
+import {
+  applyBenchmarkCorrections,
+  buildContinuityText,
+  normalizeQaText,
+  significantTopicTerms,
+  sourceText,
+  validateClassificationExpectations
+} from "./v071-live-rules-qa-support.mjs";
 
 const endpoint = process.env.GAUNTLET_RULES_QA_ENDPOINT
   || "https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/rules";
 const benchmarkPath = resolve("rules-assistant/evals/rules-arbiter-evals.v071.json");
+const benchmarkCorrectionsPath = resolve("rules-assistant/evals/rules-arbiter-evals.v071-corrections.json");
 const outputPath = resolve(process.env.GAUNTLET_RULES_QA_OUTPUT
   || "artifacts/rules-qa/v071-live-answer-run.json");
 const concurrency = Math.max(1, Math.min(Number(process.env.GAUNTLET_RULES_QA_CONCURRENCY) || 1, 8));
@@ -16,7 +25,13 @@ const caseLimit = Number.isFinite(requestedCaseLimit) && requestedCaseLimit > 0
   : null;
 const retryableStatuses = new Set([429, 502, 503, 504]);
 
-const benchmark = JSON.parse(readFileSync(benchmarkPath, "utf8"));
+const benchmarkBase = JSON.parse(readFileSync(benchmarkPath, "utf8"));
+const benchmarkCorrections = JSON.parse(readFileSync(benchmarkCorrectionsPath, "utf8"));
+const benchmark = applyBenchmarkCorrections(benchmarkBase, benchmarkCorrections);
+const benchmarkValidationFailures = validateClassificationExpectations(benchmark);
+if (benchmarkValidationFailures.length) {
+  throw new Error("Invalid live QA benchmark:\n- " + benchmarkValidationFailures.join("\n- "));
+}
 
 function selectBenchmarkCases(cases, limit) {
   if (!limit) return cases;
@@ -46,33 +61,6 @@ function selectBenchmarkCases(cases, limit) {
 const benchmarkCases = selectBenchmarkCases(benchmark.cases, caseLimit);
 const startedAt = new Date().toISOString();
 const runStamp = Date.now().toString(36);
-
-function normalizeQaText(value) {
-  return String(value || "")
-    .normalize("NFKD")
-    .replace(/[’‘]/g, "'")
-    .replace(/[–—]/g, "-")
-    .toLowerCase()
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function sourceText(source) {
-  return normalizeQaText([
-    source?.title,
-    source?.excerpt,
-    source?.sourcePath,
-    source?.canonicalId,
-    source?.id
-  ].filter(Boolean).join("\n"));
-}
-
-function significantTopicTerms(value) {
-  return String(value || "")
-    .toLowerCase()
-    .split(/[^a-z0-9]+/)
-    .filter((term) => term.length > 2 && !["the", "and", "that", "this", "does", "work"].includes(term));
-}
 
 function inspectChiefJusticeVoice(answer) {
   const failures = [];
@@ -112,7 +100,8 @@ function inspectAnswer(item, payload) {
     failures.push("version: expected " + benchmark.rulesVersion + ", received " + (payload?.version || "missing"));
   }
   if (rulingStatus !== item.expectedClassification) {
-    failures.push("classification: expected " + item.expectedClassification + ", received " + (rulingStatus || "missing"));
+    const basis = item.classificationBasis ? " (" + item.classificationBasis + ")" : "";
+    failures.push("classification: expected " + item.expectedClassification + basis + ", received " + (rulingStatus || "missing"));
   }
   if (!answer.trim()) failures.push("answer: empty");
 
@@ -160,7 +149,7 @@ function inspectAnswer(item, payload) {
 
   if (item.expectedTopic) {
     const terms = significantTopicTerms(item.expectedTopic);
-    const continuityText = normalizeQaText(answer + "\n" + sources.map((source) => source?.title || "").join("\n"));
+    const continuityText = buildContinuityText(answer, sources);
     if (terms.length && !terms.some((term) => continuityText.includes(term))) {
       failures.push('continuity: answer and selected sources do not appear to address expected topic "' + item.expectedTopic + '"');
     }
@@ -271,6 +260,7 @@ async function postCase(item, index) {
       question: item.question,
       history: item.history || [],
       expectedClassification: item.expectedClassification,
+      classificationBasis: item.classificationBasis || null,
       expectedSourcePatterns: item.expectedSourcePatterns || [],
       expectedAnswerPatterns: item.expectedAnswerPatterns || [],
       forbiddenAnswerPatterns: item.forbiddenAnswerPatterns || [],
@@ -293,6 +283,7 @@ async function postCase(item, index) {
     question: item.question,
     history: item.history || [],
     expectedClassification: item.expectedClassification,
+    classificationBasis: item.classificationBasis || null,
     expectedSourcePatterns: item.expectedSourcePatterns || [],
     expectedAnswerPatterns: item.expectedAnswerPatterns || [],
     forbiddenAnswerPatterns: item.forbiddenAnswerPatterns || [],
@@ -337,6 +328,7 @@ if (infrastructureFailure) {
   const report = {
     schema: "gauntlet.rules-arbiter-live-qa.v1",
     rulesVersion: benchmark.rulesVersion,
+    benchmarkCorrections: benchmarkCorrections.cases.map((item) => item.id),
     endpoint,
     startedAt,
     completedAt: new Date().toISOString(),
@@ -389,6 +381,7 @@ const report = {
   schema: "gauntlet.rules-arbiter-live-qa.v1",
   rulesVersion: benchmark.rulesVersion,
   benchmarkCaseCount: benchmark.cases.length,
+  benchmarkCorrections: benchmarkCorrections.cases.map((item) => item.id),
   executedCaseCount: benchmarkCases.length,
   executedCaseIds: benchmarkCases.map((item) => item.id),
   endpoint,
