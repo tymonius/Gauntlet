@@ -155,6 +155,22 @@ const handlers: V070BattleEffectHandler[] = [
     },
   },
   {
+    cardId: 'neutral-resistance',
+    expectedText: 'Counterattack — gain Advantage. In the Aftermath, if you win, bank this card.',
+    timing: 'reveal',
+    apply: ({ state, owner, commitment }) => {
+      if (isCounterattack(state)) {
+        participant(state, owner).advantage += 1;
+      }
+      registerBattleCardAftermathAssetBank(
+        state,
+        owner,
+        commitment.instanceId,
+        'neutral-resistance',
+      );
+    },
+  },
+  {
     cardId: 'mystics-circle-of-bones',
     expectedText: 'In the Aftermath, place this Overlay on the contested Territory.',
     timing: 'reveal',
@@ -638,6 +654,22 @@ function modifier(cardId: string, expectedText: string, amount: number): V070Bat
       participant(state, owner).battleModifier += amount;
     },
   };
+}
+
+function registerBattleCardAftermathAssetBank(
+  state: V070GameState,
+  owner: PlayerId,
+  sourceInstanceId: string,
+  sourceCardId: string,
+): void {
+  const runtime = state.battleRuntime;
+  if (!runtime) throw new Error('Battle effects require an active battle runtime.');
+  runtime.battleCardAftermathAssetBanks.push({
+    owner,
+    sourceInstanceId,
+    sourceCardId,
+    condition: 'owner_win',
+  });
 }
 
 function registerBattleCardAftermathTerritoryInsertion(
