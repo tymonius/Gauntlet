@@ -2,10 +2,9 @@
 """Materialize evidence-backed legacy asset provenance records.
 
 This helper intentionally refuses to resolve an asset unless the current Git blob is
-byte-for-byte identical to the blob at the evidence manifest's introduction commit.
-That keeps remediation conservative: the manifest may describe an evidence family,
-but only unchanged binaries from the documented introduction commit are promoted out
-of legacy-unresolved status.
+byte-for-byte identical to the blob at its documented introduction commit. A family
+may define a default introduction commit, while individual assets may override it when
+repository history proves they entered later.
 """
 
 from __future__ import annotations
@@ -28,6 +27,13 @@ def git(*args: str) -> str:
         stdout=subprocess.PIPE, stderr=subprocess.PIPE,
     )
     return result.stdout.strip()
+
+
+def validate_commit(value: object, label: str) -> str:
+    if not isinstance(value, str) or len(value) != 40:
+        raise SystemExit(f"{label} must be a full commit SHA")
+    git("cat-file", "-e", f"{value}^{{commit}}")
+    return value
 
 
 def sha256_file(path: Path) -> str:
@@ -54,10 +60,9 @@ def main() -> int:
     if not isinstance(defaults, dict) or not isinstance(basis, dict) or not isinstance(candidates, list):
         raise SystemExit("invalid remediation manifest structure")
 
-    introduction_commit = basis.get("introduction_commit")
-    if not isinstance(introduction_commit, str) or len(introduction_commit) != 40:
-        raise SystemExit("evidence_basis.introduction_commit must be a full commit SHA")
-    git("cat-file", "-e", f"{introduction_commit}^{{commit}}")
+    default_introduction_commit = validate_commit(
+        basis.get("introduction_commit"), "evidence_basis.introduction_commit"
+    )
 
     existing = {record["path"]: record for record in policy.get("assets", [])}
     materialized: list[dict[str, str]] = []
@@ -70,14 +75,17 @@ def main() -> int:
         if not absolute.is_file():
             raise SystemExit(f"candidate asset does not exist: {rel}")
 
+        candidate_commit = candidate.get("introduction_commit", default_introduction_commit)
+        introduction_commit = validate_commit(candidate_commit, f"{rel}.introduction_commit")
         try:
             introduced_blob = git("rev-parse", f"{introduction_commit}:{rel}")
         except subprocess.CalledProcessError as exc:
-            raise SystemExit(f"{rel}: not present in documented introduction commit") from exc
+            raise SystemExit(f"{rel}: not present in documented introduction commit {introduction_commit}") from exc
         current_blob = git("hash-object", rel)
         if current_blob != introduced_blob:
             raise SystemExit(
-                f"{rel}: current binary differs from the documented introduction-commit blob; manual review required"
+                f"{rel}: current binary differs from blob at documented introduction commit "
+                f"{introduction_commit}; manual review required"
             )
 
         record: dict[str, str] = {"path": rel}
