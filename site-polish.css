@@ -30,6 +30,11 @@
   scroll-margin-top: 18px;
 }
 
+/* Keep the Inquisition's decorative ochre while using a darker text value on parchment. */
+.faction-card.inquisition small {
+  color: #815c1c;
+}
+
 .analytics-consent {
   position: fixed;
   right: 18px;
