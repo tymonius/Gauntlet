@@ -235,6 +235,8 @@ export interface V070BattleRuntime {
   poisonousGasReserveGraveyardInstanceIds: string[];
   aftermathPositionsSynchronized: boolean;
   aftermathCardsCleared: boolean;
+  footholdAssetWindowPlayer: PlayerId | null;
+  footholdAssetWindowResolved: boolean;
   routWindowOpen: boolean;
   finalJudgmentWindowOpen: boolean;
   relentlessPursuitWindowOpen: boolean;
@@ -325,6 +327,8 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     poisonousGasReserveGraveyardInstanceIds: [],
     aftermathPositionsSynchronized: false,
     aftermathCardsCleared: false,
+    footholdAssetWindowPlayer: null,
+    footholdAssetWindowResolved: false,
     routWindowOpen: false,
     finalJudgmentWindowOpen: false,
     relentlessPursuitWindowOpen: false,
