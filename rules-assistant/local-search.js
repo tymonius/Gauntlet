@@ -270,11 +270,20 @@ export function retrieveRules(corpus, query, options = {}) {
   const baseQueryTokens = tokenize(query);
   const queryTokens = expandQueryTokens(baseQueryTokens, normalizedQuery);
   const queryPhrases = buildPhrases(baseQueryTokens);
+  const conversationFocus = deriveConversationQueryFocus(query);
+  const excerptTokens = [...new Set([...conversationFocus.tokens, ...queryTokens])];
 
   return documents
     .map((document) => ({
       document,
-      score: scoreDocument(document, normalizedQuery, baseQueryTokens, queryTokens, queryPhrases)
+      score: scoreDocument(
+        document,
+        normalizedQuery,
+        baseQueryTokens,
+        queryTokens,
+        queryPhrases,
+        conversationFocus
+      )
     }))
     .filter((item) => item.score > 0)
     .sort((a, b) => b.score - a.score || a.document.title.localeCompare(b.document.title))
@@ -288,9 +297,55 @@ export function retrieveRules(corpus, query, options = {}) {
       kind: document.kind,
       sourcePath: document.sourcePath,
       sourceUrl: document.sourceUrl,
-      excerpt: makeExcerpt(document.body, queryTokens, options.excerptLength || 900),
+      excerpt: makeExcerpt(document.body, excerptTokens, options.excerptLength || 900),
       body: document.body
     }));
+}
+
+export function deriveConversationQueryFocus(query) {
+  const raw = String(query || "").trim();
+  if (!raw) return { contextual: false, tokens: [], phrases: [], segments: [] };
+
+  const segments = raw
+    .split(/(?<=[.!?])\s+|\n+/)
+    .map((segment) => segment.trim())
+    .filter(Boolean)
+    .slice(-5);
+  if (segments.length < 2) {
+    return { contextual: false, tokens: [], phrases: [], segments };
+  }
+
+  const scored = new Map();
+  const presence = new Map();
+  const tokenized = segments.map((segment) => tokenize(segment));
+  tokenized.forEach((tokens, index) => {
+    const weight = index + 1;
+    const unique = new Set(tokens);
+    for (const token of tokens) scored.set(token, (scored.get(token) || 0) + weight);
+    for (const token of unique) presence.set(token, (presence.get(token) || 0) + 1);
+  });
+  for (const [token, count] of presence) {
+    if (count > 1) scored.set(token, (scored.get(token) || 0) + count * 2);
+  }
+
+  const tokens = [...scored.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, 10)
+    .map(([token]) => token);
+
+  const phraseSet = new Set();
+  for (const tokensInSegment of tokenized.slice(-3)) {
+    for (const phrase of buildPhrases(tokensInSegment)) {
+      if (phrase.length >= 4) phraseSet.add(phrase);
+    }
+  }
+
+  return {
+    contextual: true,
+    tokens,
+    phrases: [...phraseSet].slice(-10),
+    segments
+  };
 }
 
 export function buildLocalFallbackAnswer(query, results, version = "v0.6.3") {
@@ -326,7 +381,7 @@ export function buildLocalFallbackAnswer(query, results, version = "v0.6.3") {
   };
 }
 
-function scoreDocument(document, normalizedQuery, baseQueryTokens, queryTokens, queryPhrases) {
+function scoreDocument(document, normalizedQuery, baseQueryTokens, queryTokens, queryPhrases, conversationFocus) {
   const title = normalizeText(document.title);
   const heading = normalizeText(document.heading || "");
   const body = normalizeText(document.body);
@@ -354,6 +409,20 @@ function scoreDocument(document, normalizedQuery, baseQueryTokens, queryTokens, 
     if (phrase.length < 4) continue;
     if (title.includes(phrase)) score += 28;
     if (body.includes(phrase)) score += 10;
+  }
+
+  if (conversationFocus?.contextual) {
+    for (const token of conversationFocus.tokens) {
+      if (titleTokens.has(token)) score += 16;
+      if (headingTokens.has(token)) score += 12;
+      const bodyMatches = countOccurrences(body, token);
+      score += Math.min(bodyMatches, 5) * 3;
+    }
+    for (const phrase of conversationFocus.phrases) {
+      if (title.includes(phrase)) score += 24;
+      if (heading.includes(phrase)) score += 20;
+      if (body.includes(phrase)) score += 12;
+    }
   }
 
   const matchedBaseTokens = baseQueryTokens.filter((token) => searchTokens.has(token)).length;
