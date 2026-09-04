@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cleanV063Content } from '../reconstruction/clean-v063/content';
+import { cleanV063Content } from '../../legacy/digital-engine-reconstruction/clean-v063/content';
 import {
   CURRENT_GAME_AUTHORITY_PATH,
   V064_CANDIDATE_RULES_VERSION,
