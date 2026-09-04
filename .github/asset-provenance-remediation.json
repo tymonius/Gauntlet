@@ -1,42 +1,87 @@
 {
-  "version": 1,
+  "version": 2,
   "purpose": "Evidence-backed remediation queue for legacy-unresolved governed assets.",
-  "defaults": {
-    "origin": "generated",
-    "creator": "OpenAI image generation, directed and selected by Tymon Scott",
-    "source": "OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.",
-    "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights."
-  },
-  "evidence_basis": {
-    "conversation_export": "04_Faction_Leader_Archetypes.md from the user-provided 2026-07-09 ChatGPT export",
-    "repository_log": "docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md",
-    "introduction_commit": "4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931",
-    "rights_reference": "https://openai.com/policies/terms-of-use/"
-  },
-  "assets": [
-    {"path": "images/alchemist.png", "evidence": "accepted session artifact alchemist_leader_concept_design_sheet.png"},
-    {"path": "images/ambassador.png", "evidence": "accepted session artifact a_detailed_game_character_design_sheet_layout_for.png"},
-    {"path": "images/banker.png", "evidence": "accepted session artifact banker_leader_card_reference_sheet.png"},
-    {"path": "images/commandant.png", "evidence": "accepted session artifact a_detailed_concept_character_design_sheet_layout_f.png"},
-    {"path": "images/executive.png", "evidence": "accepted session artifact executive_of_the_east_india_company.png"},
-    {"path": "images/general.png", "evidence": "accepted session artifact a_single_page_concept_art_game_design_sheet_cle.png"},
-    {"path": "images/grand inquisitor.png", "evidence": "accepted session artifact grand_inquisitor_character_design_concept.png"},
-    {"path": "images/ranger.png", "evidence": "accepted session artifact ranger_intelligence_leader_character_dossier.png"},
-    {"path": "images/senator.png", "evidence": "accepted session artifact a_highly_detailed_infographic_character_sheet_styl.png"},
-    {"path": "images/sketches/alchemist.png", "evidence": "accepted session artifact alchemist_leader_concept_design_sheet.png"},
-    {"path": "images/sketches/ambassador.png", "evidence": "accepted session artifact a_detailed_game_character_design_sheet_layout_for.png"},
-    {"path": "images/sketches/banker.png", "introduction_commit": "7c17c85404dec0f01d9182af691a1f02cdb9b2ae", "evidence": "accepted session artifact banker_leader_card_reference_sheet.png; first repository upload is byte-identical to current file"},
-    {"path": "images/sketches/commandant.png", "evidence": "accepted session artifact a_detailed_concept_character_design_sheet_layout_f.png"},
-    {"path": "images/sketches/executive.png", "evidence": "accepted session artifact executive_of_the_east_india_company.png"},
-    {"path": "images/sketches/general.png", "evidence": "accepted session artifact a_single_page_concept_art_game_design_sheet_cle.png"},
-    {"path": "images/sketches/grand inquisitor.png", "evidence": "accepted session artifact grand_inquisitor_character_design_concept.png"},
-    {"path": "images/sketches/ranger.png", "evidence": "accepted session artifact ranger_intelligence_leader_character_dossier.png"},
-    {"path": "images/sketches/senator.png", "evidence": "accepted session artifact a_highly_detailed_infographic_character_sheet_styl.png"},
-    {"path": "images/sketches/spirit walker.png", "evidence": "accepted session artifact spirit_walker_character_design_sheet.png"},
-    {"path": "images/sketches/spymaster.png", "evidence": "accepted session artifact spy_master_dossier_design_sheet.png"},
-    {"path": "images/sketches/witch hunter.png", "evidence": "accepted session artifact witch_hunter_character_reference_sheet.png"},
-    {"path": "images/spirit walker.png", "evidence": "accepted session artifact spirit_walker_character_design_sheet.png"},
-    {"path": "images/spymaster.png", "evidence": "accepted session artifact spy_master_dossier_design_sheet.png"},
-    {"path": "images/witch hunter.png", "evidence": "accepted session artifact witch_hunter_character_reference_sheet.png"}
+  "batches": [
+    {
+      "id": "leader-artwork-2026-09-04",
+      "description": "Faction leader normalized artwork and accepted design-sheet/sketch images.",
+      "defaults": {
+        "origin": "generated",
+        "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+        "source": "OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.",
+        "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights."
+      },
+      "evidence_basis": {
+        "conversation_export": "04_Faction_Leader_Archetypes.md from the user-provided 2026-07-09 ChatGPT export",
+        "repository_log": "docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md",
+        "introduction_commit": "4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931",
+        "rights_reference": "https://openai.com/policies/terms-of-use/"
+      },
+      "assets": [
+        {"path": "images/alchemist.png", "evidence": "accepted session artifact alchemist_leader_concept_design_sheet.png"},
+        {"path": "images/ambassador.png", "evidence": "accepted session artifact a_detailed_game_character_design_sheet_layout_for.png"},
+        {"path": "images/banker.png", "evidence": "accepted session artifact banker_leader_card_reference_sheet.png"},
+        {"path": "images/commandant.png", "evidence": "accepted session artifact a_detailed_concept_character_design_sheet_layout_f.png"},
+        {"path": "images/executive.png", "evidence": "accepted session artifact executive_of_the_east_india_company.png"},
+        {"path": "images/general.png", "evidence": "accepted session artifact a_single_page_concept_art_game_design_sheet_cle.png"},
+        {"path": "images/grand inquisitor.png", "evidence": "accepted session artifact grand_inquisitor_character_design_concept.png"},
+        {"path": "images/ranger.png", "evidence": "accepted session artifact ranger_intelligence_leader_character_dossier.png"},
+        {"path": "images/senator.png", "evidence": "accepted session artifact a_highly_detailed_infographic_character_sheet_styl.png"},
+        {"path": "images/sketches/alchemist.png", "evidence": "accepted session artifact alchemist_leader_concept_design_sheet.png"},
+        {"path": "images/sketches/ambassador.png", "evidence": "accepted session artifact a_detailed_game_character_design_sheet_layout_for.png"},
+        {"path": "images/sketches/banker.png", "introduction_commit": "7c17c85404dec0f01d9182af691a1f02cdb9b2ae", "evidence": "accepted session artifact banker_leader_card_reference_sheet.png; first repository upload is byte-identical to current file"},
+        {"path": "images/sketches/commandant.png", "evidence": "accepted session artifact a_detailed_concept_character_design_sheet_layout_f.png"},
+        {"path": "images/sketches/executive.png", "evidence": "accepted session artifact executive_of_the_east_india_company.png"},
+        {"path": "images/sketches/general.png", "evidence": "accepted session artifact a_single_page_concept_art_game_design_sheet_cle.png"},
+        {"path": "images/sketches/grand inquisitor.png", "evidence": "accepted session artifact grand_inquisitor_character_design_concept.png"},
+        {"path": "images/sketches/ranger.png", "evidence": "accepted session artifact ranger_intelligence_leader_character_dossier.png"},
+        {"path": "images/sketches/senator.png", "evidence": "accepted session artifact a_highly_detailed_infographic_character_sheet_styl.png"},
+        {"path": "images/sketches/spirit walker.png", "evidence": "accepted session artifact spirit_walker_character_design_sheet.png"},
+        {"path": "images/sketches/spymaster.png", "evidence": "accepted session artifact spy_master_dossier_design_sheet.png"},
+        {"path": "images/sketches/witch hunter.png", "evidence": "accepted session artifact witch_hunter_character_reference_sheet.png"},
+        {"path": "images/spirit walker.png", "evidence": "accepted session artifact spirit_walker_character_design_sheet.png"},
+        {"path": "images/spymaster.png", "evidence": "accepted session artifact spy_master_dossier_design_sheet.png"},
+        {"path": "images/witch hunter.png", "evidence": "accepted session artifact witch_hunter_character_reference_sheet.png"}
+      ]
+    },
+    {
+      "id": "mystics-card-artwork-2026-09-04",
+      "description": "Mystics card artwork with exact ChatGPT image-generation prompt/source records in the user's File Library.",
+      "defaults": {
+        "origin": "generated",
+        "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+        "source": "OpenAI ChatGPT image generation for the named Gauntlet Mystics card; the exact generation prompt/source record is identified in this remediation manifest and retained in the user's ChatGPT File Library. Repository history and docs/artwork/card-artwork-tracker.md identify the governed canonical artwork path.",
+        "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights."
+      },
+      "evidence_basis": {
+        "file_library": "Exact ChatGPT image-generation prompt/source records for each listed card artwork, retained in the user's ChatGPT File Library.",
+        "repository_tracker": "docs/artwork/card-artwork-tracker.md",
+        "identity_commit": "29e48a1eb56223255ac1a49c77ea4aaccf0adedd",
+        "rights_reference": "https://openai.com/policies/terms-of-use/"
+      },
+      "assets": [
+        {"path": "images/artwork/cards/mystics/accursed-wager.png", "evidence": "Lanternlit Officers’ High-Stakes Gambit.png", "notes": "Primary generation record: Lanternlit Officers’ High-Stakes Gambit.png in the user's ChatGPT File Library."},
+        {"path": "images/artwork/cards/mystics/black-covenant.png", "evidence": "image-gen-1(20260814-123920).png / Candlelit Pact in the War Room.png", "notes": "Primary generation records: image-gen-1(20260814-123920).png and Candlelit Pact in the War Room.png in the user's ChatGPT File Library."},
+        {"path": "images/artwork/cards/mystics/circle-of-bones.png", "evidence": "Moonlit Bone Ritual in the Forest.png", "notes": "Primary generation record: Moonlit Bone Ritual in the Forest.png in the user's ChatGPT File Library."},
+        {"path": "images/artwork/cards/mystics/dark-omens.png", "evidence": "Candlelit Divination at Dusk.png", "notes": "Primary generation record: Candlelit Divination at Dusk.png in the user's ChatGPT File Library."},
+        {"path": "images/artwork/cards/mystics/fate-s-toll.png", "evidence": "Battlefield Toll Collector Scene.png", "notes": "Primary generation record: Battlefield Toll Collector Scene.png in the user's ChatGPT File Library."},
+        {"path": "images/artwork/cards/mystics/grave-ward.png", "evidence": "Moonlit Graveyard and Distant Encampment.png", "notes": "Primary generation record: Moonlit Graveyard and Distant Encampment.png in the user's ChatGPT File Library."},
+        {"path": "images/artwork/cards/mystics/nature-s-altar.png", "evidence": "Druid Ritual at Stone Altar.png", "notes": "Primary generation record: Druid Ritual at Stone Altar.png in the user's ChatGPT File Library."},
+        {"path": "images/artwork/cards/mystics/necromancy.png", "evidence": "Candlelit Anatomist’s Map Laboratory.png", "notes": "Primary generation record: Candlelit Anatomist’s Map Laboratory.png in the user's ChatGPT File Library."},
+        {"path": "images/artwork/cards/mystics/paths-of-shadow.png", "evidence": "Twilight Path Through Ruins.png", "notes": "Primary generation record: Twilight Path Through Ruins.png in the user's ChatGPT File Library."},
+        {"path": "images/artwork/cards/mystics/reembodiment.png", "evidence": "Spirit Ascension at Dawn.png", "notes": "Primary generation record: Spirit Ascension at Dawn.png in the user's ChatGPT File Library."},
+        {"path": "images/artwork/cards/mystics/rend-the-veil.png", "evidence": "Rift Between Life and Death.png", "notes": "Primary generation record: Rift Between Life and Death.png in the user's ChatGPT File Library."},
+        {"path": "images/artwork/cards/mystics/soul-for-soul.png", "evidence": "Soul Exchange Ritual Painting.png", "notes": "Primary generation record: Soul Exchange Ritual Painting.png in the user's ChatGPT File Library."},
+        {"path": "images/artwork/cards/mystics/spirit-hollow.png", "evidence": "Ghostly Forest Clearing.png", "notes": "Primary generation record: Ghostly Forest Clearing.png in the user's ChatGPT File Library."},
+        {"path": "images/artwork/cards/mystics/threefold-vision.png", "evidence": "Three Visions in Smoke.png", "notes": "Primary generation record: Three Visions in Smoke.png in the user's ChatGPT File Library."},
+        {"path": "images/artwork/cards/mystics/witchcraft.png", "evidence": "Candlelit Witchcraft Ritual Painting.png", "notes": "Primary generation record: Candlelit Witchcraft Ritual Painting.png in the user's ChatGPT File Library."},
+        {"path": "images/artwork/cards/mystics/rites-and-rituals/rite-of-blood.png", "evidence": "image-gen-1(20260814-183034).png / Blood Oath Oil Painting.png", "notes": "Primary generation record includes image-gen-1(20260814-183034).png for Rite of Blood in the user's ChatGPT File Library."},
+        {"path": "images/artwork/cards/mystics/rites-and-rituals/rite-of-consecration.png", "evidence": "Rite of Consecration Painting.png", "notes": "Primary generation record: Rite of Consecration Painting.png in the user's ChatGPT File Library."},
+        {"path": "images/artwork/cards/mystics/rites-and-rituals/rite-of-crossing.png", "evidence": "Rite of Crossing Painting.png", "notes": "Primary generation record: Rite of Crossing Painting.png in the user's ChatGPT File Library."},
+        {"path": "images/artwork/cards/mystics/rites-and-rituals/rite-of-echoes.png", "evidence": "Rite of Echoes Painting.png", "notes": "Primary generation record: Rite of Echoes Painting.png in the user's ChatGPT File Library."},
+        {"path": "images/artwork/cards/mystics/rites-and-rituals/rite-of-equivalence.png", "evidence": "The Alchemist’s Sootbound Balance.png / Rite of Equivalence Painting.png", "notes": "Primary generation record includes The Alchemist’s Sootbound Balance.png for Rite of Equivalence in the user's ChatGPT File Library."},
+        {"path": "images/artwork/cards/mystics/rites-and-rituals/rite-of-shattering.png", "evidence": "Rite of Shattering Painting.png", "notes": "Primary generation record: Rite of Shattering Painting.png in the user's ChatGPT File Library."}
+      ]
+    }
   ]
 }
