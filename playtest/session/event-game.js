@@ -103,10 +103,16 @@
     const joinPanel = document.getElementById("joinPanel");
     if (!joinPanel || readSession(`${storagePrefix}_participant`) || state.session?.status === "closed") return;
 
+    const hadJoinFocus = joinPanel.contains(document.activeElement);
     const identity = readIdentity(state.session.eventSessionId);
     const recognized = state.roster.find((player) => player.participantId === identity.participantId);
-    if (recognized) renderRecognized(joinPanel, recognized, identity);
-    else renderRosterPicker(joinPanel);
+    if (recognized) {
+      renderRecognized(joinPanel, recognized, identity);
+      if (hadJoinFocus) focusEventJoinControl("eventQuickJoin");
+    } else {
+      renderRosterPicker(joinPanel);
+      if (hadJoinFocus) focusEventJoinControl("eventPlayerSelect");
+    }
   }
 
   function renderRecognized(panel, player, identity) {
@@ -120,10 +126,13 @@
       <p class="event-player-summary"><strong>${escapeHtml(player.leader)}</strong> · ${escapeHtml(FACTION_NAMES[player.faction] || player.faction)}</p>
       <button id="eventQuickJoin" type="button">Join game</button>
       <button id="eventChooseAnother" type="button" class="secondary event-link-button">Not you?</button>
-      <p id="eventJoinStatus" class="form-status" aria-live="polite"></p>
+      <p id="eventJoinStatus" class="form-status" role="status" aria-live="polite" tabindex="-1"></p>
     `;
     document.getElementById("eventQuickJoin")?.addEventListener("click", () => joinRosterPlayer(player, identity.participantToken || "", false));
-    document.getElementById("eventChooseAnother")?.addEventListener("click", () => renderRosterPicker(panel));
+    document.getElementById("eventChooseAnother")?.addEventListener("click", () => {
+      renderRosterPicker(panel);
+      focusEventJoinControl("eventPlayerSelect");
+    });
   }
 
   function renderRosterPicker(panel) {
@@ -149,7 +158,7 @@
       </label>
       <button id="eventRosterJoin" type="button">Join game</button>
       <button id="eventGuestToggle" type="button" class="secondary event-link-button">I am not on the roster</button>
-      <p id="eventJoinStatus" class="form-status" aria-live="polite"></p>
+      <p id="eventJoinStatus" class="form-status" role="status" aria-live="polite" tabindex="-1"></p>
     `;
     document.getElementById("eventRosterJoin")?.addEventListener("click", () => {
       const id = document.getElementById("eventPlayerSelect")?.value || "";
@@ -157,7 +166,10 @@
       if (!player) return setStatus("Choose your name first.", "error");
       joinRosterPlayer(player, "", true);
     });
-    document.getElementById("eventGuestToggle")?.addEventListener("click", () => renderGuestForm(panel));
+    document.getElementById("eventGuestToggle")?.addEventListener("click", () => {
+      renderGuestForm(panel);
+      focusEventJoinControl("eventGuestName");
+    });
   }
 
   function renderGuestForm(panel) {
@@ -177,11 +189,21 @@
       <label class="event-field">Leader<select id="eventGuestLeader" disabled><option value="">Choose a faction first</option></select></label>
       <button id="eventGuestJoin" type="button">Join game</button>
       <button id="eventBackToRoster" type="button" class="secondary event-link-button">Back to event roster</button>
-      <p id="eventJoinStatus" class="form-status" aria-live="polite"></p>
+      <p id="eventJoinStatus" class="form-status" role="status" aria-live="polite" tabindex="-1"></p>
     `;
     document.getElementById("eventGuestFaction")?.addEventListener("change", updateGuestLeaders);
     document.getElementById("eventGuestJoin")?.addEventListener("click", joinGuest);
-    document.getElementById("eventBackToRoster")?.addEventListener("click", () => renderRosterPicker(panel));
+    document.getElementById("eventBackToRoster")?.addEventListener("click", () => {
+      renderRosterPicker(panel);
+      focusEventJoinControl("eventPlayerSelect");
+    });
+  }
+
+  function focusEventJoinControl(id) {
+    window.requestAnimationFrame(() => {
+      const target = document.getElementById(id);
+      if (target instanceof HTMLElement) target.focus({ preventScroll: true });
+    });
   }
 
   function updateGuestLeaders() {
@@ -213,7 +235,13 @@
   }
 
   async function joinGame(body) {
+    const joinPanel = document.getElementById("joinPanel");
+    const returnFocusTo = document.activeElement instanceof HTMLElement && joinPanel?.contains(document.activeElement)
+      ? document.activeElement
+      : null;
     setStatus("Joining…");
+    const busyStatus = document.getElementById("eventJoinStatus");
+    if (returnFocusTo && busyStatus instanceof HTMLElement) busyStatus.focus({ preventScroll: true });
     setJoinButtons(true);
     try {
       const response = await nativeFetch(`${API_ORIGIN}/api/sessions/${encodeURIComponent(code)}/join`, {
@@ -240,6 +268,11 @@
     } catch (error) {
       setStatus(error.message || "This game could not be joined.", "error");
       setJoinButtons(false);
+      if (
+        returnFocusTo &&
+        document.activeElement === busyStatus &&
+        returnFocusTo.isConnected
+      ) returnFocusTo.focus({ preventScroll: true });
     }
   }
 
