@@ -51,6 +51,11 @@
   color: color-mix(in srgb, var(--faction, #555) 85%, var(--ink, #181614) 15%);
 }
 
+/* Keep Start's unselected starter preview readable on its warm inset surface. */
+.starter-preview.empty-state {
+  color: var(--muted, #655f56);
+}
+
 .analytics-consent {
   position: fixed;
   right: 18px;
