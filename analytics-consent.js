@@ -16,6 +16,28 @@ let analyticsLoaded = false;
 let preferencesReturnFocus = null;
 window[`ga-disable-${MEASUREMENT_ID}`] = true;
 
+function installReducedMotionScrollGuard() {
+  if (window.gauntletReducedMotionScrollGuardInstalled) return;
+  const nativeScrollIntoView = Element.prototype.scrollIntoView;
+  if (typeof nativeScrollIntoView !== "function" || typeof window.matchMedia !== "function") return;
+
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  Element.prototype.scrollIntoView = function scrollIntoViewRespectingReducedMotion(options) {
+    if (
+      reducedMotion.matches
+      && options
+      && typeof options === "object"
+      && options.behavior === "smooth"
+    ) {
+      return nativeScrollIntoView.call(this, { ...options, behavior: "auto" });
+    }
+    return nativeScrollIntoView.call(this, options);
+  };
+  window.gauntletReducedMotionScrollGuardInstalled = true;
+}
+
+installReducedMotionScrollGuard();
+
 function readChoice() {
   try { return localStorage.getItem(STORAGE_KEY); } catch { return null; }
 }
