@@ -51,6 +51,19 @@ python -c "import hashlib,pathlib; p=pathlib.Path('images/path/to/asset.png'); p
 
 If the binary contents change later, the checksum no longer matches and CI requires the provenance record to be reviewed and updated.
 
+## Legacy remediation workflow
+
+Historical assets are resolved in evidence-backed batches rather than by guessing from filenames or visual appearance.
+
+1. Record the evidence family and candidate paths in `.github/asset-provenance-remediation.json`. Evidence should identify the source conversation, source file, repository history, license, permission, or other basis that actually supports the record.
+2. Run `.github/scripts/materialize-asset-provenance.py --write`. The materializer requires every candidate's current Git blob to be byte-for-byte identical to its blob at the documented introduction commit. A changed binary is rejected for manual review rather than inheriting provenance automatically.
+3. The materializer computes the current file's SHA-256 and writes the resulting explicit records into `.github/asset-provenance.json`.
+4. Run `.github/scripts/validate-asset-provenance.py` before merging the batch.
+
+The materializer is deliberately conservative. A remediation manifest is evidence for a particular asset family, not permission to classify similarly named or visually related files. Files with different or ambiguous repository history remain `legacy-unresolved` until their own lineage is substantiated.
+
+The first remediation batch covers leader artwork whose generation history is supported by the exported `Faction Leader Archetypes` conversation, the archived character-design-sheet log, and the repository commit that introduced the normalized image set. The batch intentionally excludes assets whose binary history does not satisfy the introduction-commit identity check.
+
 ## Enforcement
 
 `.github/scripts/validate-asset-provenance.py` runs in the Governance Integrity workflow. It fails when:
