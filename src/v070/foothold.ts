@@ -6,7 +6,7 @@ import {
 import type { PlayerId } from './rules';
 import { drawV070Cards } from './card-draw';
 import { discardV070AssetByEffect } from './assets';
-import { isV070AssetActive } from './asset-face-state';
+import { isV070AssetUsable } from './asset-face-state';
 import { isV070CounterattackBattle } from './resistance';
 
 export const V070_FOOTHOLD_ID = 'neutral-foothold' as const;
@@ -17,7 +17,7 @@ export function v070FootholdAssetEligibleInstanceIds(
 ): string[] {
   return state.players[playerId].zones.assetBank.filter(instanceId =>
     state.cardInstances[instanceId]?.cardId === V070_FOOTHOLD_ID
-    && isV070AssetActive(state, instanceId)
+    && isV070AssetUsable(state, instanceId)
   );
 }
 
@@ -78,7 +78,7 @@ export function useV070FootholdAssetAfterCounterattackWin(
   );
   if (!eligible.includes(assetInstanceId)) {
     throw new V070GameActionError(
-      'Choose an active banked Foothold from the pending window.',
+      'Choose an active usable banked Foothold from the pending window.',
     );
   }
 
@@ -86,7 +86,7 @@ export function useV070FootholdAssetAfterCounterattackWin(
     instanceId =>
       state.cardInstances[instanceId]?.cardId ===
         'intelligence-extraordinary-rendition'
-      && isV070AssetActive(state, instanceId),
+      && isV070AssetUsable(state, instanceId),
   );
   if (rendition) {
     discardV070AssetByEffect(
