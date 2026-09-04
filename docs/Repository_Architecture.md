@@ -128,12 +128,11 @@ The current top-level directory inventory is enforced by `scripts/validate-repos
 
 | Path | Role |
 |---|---|
-| `v0.7.0/` | Versioned public entry/compatibility surface |
-| `v0.7.1/` | Versioned public entry/compatibility surface |
+| `v0.7.1/` | Versioned public entry/compatibility surface; lifecycle status is defined by `config/release-lifecycle.json` |
 
-The stable public URL contracts `/deckbuilder-v0.5/`, `/deckbuilder-v0.6/`, and `/faction-sheets/` are materialized by GitHub Pages from `legacy/public-compatibility/`. The stable `/v0.6.2/` and `/v0.6.3/` URLs are materialized from `legacy/public-versions/`. None requires a root-level repository source alias.
+The stable public URL contracts `/deckbuilder-v0.5/`, `/deckbuilder-v0.6/`, and `/faction-sheets/` are materialized by GitHub Pages from `legacy/public-compatibility/`. The stable `/v0.6.2/`, `/v0.6.3/`, and `/v0.7.0/` URLs are materialized from `legacy/public-versions/`. None requires a root-level repository source alias.
 
-These deployed historical paths should not receive new product behavior except explicit compatibility fixes.
+These deployed historical paths should not receive new product behavior except explicit compatibility fixes. The release-lifecycle-declared active versioned surface remains a top-level entrypoint until its lifecycle transitions to historical.
 
 ### Frozen releases and evidence
 

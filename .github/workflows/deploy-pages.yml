@@ -19,6 +19,7 @@ on:
       - 'legacy/public-compatibility/**'
       - 'legacy/public-versions/v0.6.2/**'
       - 'legacy/public-versions/v0.6.3/**'
+      - 'legacy/public-versions/v0.7.0/**'
       - 'scripts/generate-card-media-*.mjs'
       - 'scripts/generate-tts-card-assets.mjs'
       - 'scripts/tts-current-catalog.mjs'
@@ -85,7 +86,6 @@ jobs:
             rules-assistant
             start
             tts
-            v0.7.0
             v0.7.1
           )
 
@@ -105,7 +105,7 @@ jobs:
 
           # Keep historical source under legacy/ while materializing real files at the stable
           # public version URLs without exposing the legacy source boundary itself.
-          for version in v0.6.2 v0.6.3; do
+          for version in v0.6.2 v0.6.3 v0.7.0; do
             source="legacy/public-versions/$version"
             target="$site/$version"
             test -d "$source"
@@ -298,6 +298,7 @@ jobs:
           test -s "$SITE_DIR/faction-sheets/index.html"
           test -s "$SITE_DIR/v0.6.2/index.html"
           test -s "$SITE_DIR/v0.6.3/index.html"
+          test -s "$SITE_DIR/v0.7.0/index.html"
           for image in \
             "hero sketch.png" \
             "general.png" \
