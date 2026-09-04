@@ -173,7 +173,9 @@ class GauntletRulesAssistant {
     this.elements.panel.hidden = false;
     this.elements.launcher.setAttribute("aria-expanded", "true");
     requestAnimationFrame(() => this.elements.root.classList.add("is-open"));
-    window.setTimeout(() => this.elements.input.focus(), 120);
+    window.setTimeout(() => {
+      if (this.isOpen) this.elements.input.focus();
+    }, 120);
   }
 
   close(focusTarget = null) {
