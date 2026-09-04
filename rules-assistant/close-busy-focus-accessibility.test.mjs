@@ -18,4 +18,9 @@ describe("Rules Assistant close focus", () => {
     expect(source).toContain("if (this.isOpen) this.elements.input.focus();");
     expect(source).not.toContain("this.elements.input.disabled = false;\n      this.elements.input.focus();");
   });
+
+  it("does not focus completed feedback inside a Rules Assistant that was closed while feedback was saving", () => {
+    expect(source).toContain("if (this.isOpen) status.focus();");
+    expect(source).not.toContain("section.classList.add(\"is-complete\");\n      status.focus();");
+  });
 });
