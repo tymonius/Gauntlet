@@ -183,6 +183,9 @@ footer {
   border-left: 4px solid var(--crimson);
   background: #fbf4ea;
 }
+.arbiter-sources-heading {
+  font-size: 1.17em;
+}
 .arbiter-ruling a,
 .authority-card a { color: var(--crimson-dark); text-underline-offset: 3px; }
 .arbiter-ruling li p { margin: .25rem 0 1rem; }
