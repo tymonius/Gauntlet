@@ -31,7 +31,17 @@
 }
 
 /* Keep the Inquisition's decorative ochre while using a darker text value on parchment. */
-.faction-card.inquisition small {
+.faction-card.inquisition small,
+.faction-page.faction-inquisition .faction-hero-copy > .eyebrow,
+.faction-page.faction-inquisition .faction-hero h1 span,
+.faction-page.faction-inquisition .faction-facts dt,
+.faction-page.faction-inquisition .section-heading .eyebrow,
+.faction-page.faction-inquisition .mechanics-grid article > span,
+.faction-page.faction-inquisition .leader-kicker,
+.faction-page.faction-inquisition .faction-next > div > .eyebrow,
+.faction-hub-card.faction-inquisition .hub-kicker,
+.faction-hub-card.faction-inquisition small,
+.faction-hub-card.faction-inquisition strong {
   color: #815c1c;
 }
 
