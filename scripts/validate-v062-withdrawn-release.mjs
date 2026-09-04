@@ -58,7 +58,7 @@ assert(!homepage.includes('Current canonical playtest edition · v0.6.2'), 'root
 assert(currentContent.includes("CURRENT_RULES_VERSION = 'v0.6.1'"), 'src/content/current.ts is not pinned to v0.6.1');
 assert(publicWidget.includes('version: "v0.6.1"'), 'public Rules Arbiter widget is not pinned to v0.6.1');
 assert(publishedWorker.includes('const RULES_VERSION = "v0.6.2"'), 'explicit historical v0.6.2 Rules Arbiter worker is no longer identifiable');
-assert(fs.existsSync('v0.6.2/reference/index.html'), 'preserved versioned v0.6.2 browser package is missing');
+assert(fs.existsSync('legacy/public-versions/v0.6.2/reference/index.html'), 'preserved historical v0.6.2 browser source is missing');
 
 if (failures.length) {
   console.error('Withdrawn v0.6.2 validation failed:');

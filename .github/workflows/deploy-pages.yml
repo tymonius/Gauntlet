@@ -87,8 +87,6 @@ jobs:
             rules-assistant
             start
             tts
-            v0.6.2
-            v0.6.3
             v0.7.0
             v0.7.1
           )
@@ -108,7 +106,7 @@ jobs:
             | tar -xf - -C "$site"
 
           # Keep historical source under legacy/ while materializing real files at the stable
-          # public version URLs. Root compatibility aliases must not leak into the Pages artifact.
+          # public version URLs without exposing the legacy source boundary itself.
           for version in v0.6.2 v0.6.3; do
             source="legacy/public-versions/$version"
             target="$site/$version"
