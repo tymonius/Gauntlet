@@ -9,6 +9,7 @@ import reliableWorker from "./reliable-worker.js";
 import { ADMIN_PAGE_WITH_INCREMENTAL_EXPORT } from "./admin-incremental-export-page.js";
 import { ADMIN_PAGE_WITH_RULES_INTELLIGENCE } from "./admin-intelligence-page.js";
 import { handleReviewExportCheckpoint } from "./review-export-checkpoint.js";
+import { handleLiveReviewExport } from "./review-export.js";
 import { handleReviewIntelligence } from "./review-intelligence.js";
 
 const ADMIN_PAGE = ADMIN_PAGE_WITH_RULES_INTELLIGENCE || ADMIN_PAGE_WITH_INCREMENTAL_EXPORT;
@@ -226,6 +227,10 @@ export default {
 
     if (url.pathname === "/api/admin/review-export-checkpoint") {
       return handleReviewExportCheckpoint(request, env);
+    }
+
+    if (request.method === "GET" && url.pathname === "/api/admin/export") {
+      return handleLiveReviewExport(request, env);
     }
 
     if (
