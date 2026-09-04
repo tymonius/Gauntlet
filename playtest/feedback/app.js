@@ -37,6 +37,9 @@
       "confusingPoint", "importantObservation", "comments", "formStatus"
     ]) el[id] = document.getElementById(id);
 
+    el.formStatus?.setAttribute("role", "status");
+    if (el.formStatus) el.formStatus.tabIndex = -1;
+
     const today = localDateValue(new Date());
     el.playedOn.max = today;
     el.playedOn.value = today;
@@ -105,8 +108,12 @@
 
   async function submitFeedback(event) {
     event.preventDefault();
-    setBusy(true);
+    const returnFocusTo = document.activeElement instanceof HTMLElement && el.feedbackForm.contains(document.activeElement)
+      ? document.activeElement
+      : null;
     setStatus("Submitting feedback…");
+    if (returnFocusTo) el.formStatus.focus({ preventScroll: true });
+    setBusy(true);
     try {
       const ratings = collectRatings();
       const payload = await request("/api/standalone-feedback", {
@@ -148,6 +155,12 @@
       setStatus(error.message || "Feedback could not be submitted.", "error");
     } finally {
       setBusy(false);
+      if (
+        returnFocusTo &&
+        document.activeElement === el.formStatus &&
+        !el.feedbackForm.hidden &&
+        returnFocusTo.isConnected
+      ) returnFocusTo.focus({ preventScroll: true });
     }
   }
 
