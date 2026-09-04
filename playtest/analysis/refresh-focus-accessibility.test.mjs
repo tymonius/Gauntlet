@@ -5,22 +5,42 @@ const source = readFileSync("playtest/analysis/refresh-focus-accessibility.js", 
 const analysisHtml = readFileSync("playtest/analysis/index.html", "utf8");
 const integrityHtml = readFileSync("playtest/analysis/integrity/index.html", "utf8");
 
-describe("protected dashboard refresh focus", () => {
-  it("loads the focus handoff on both protected dashboards", () => {
+describe("protected dashboard request focus", () => {
+  it("loads the shared focus handoff on both protected dashboards", () => {
     expect(analysisHtml).toContain('<script src="refresh-focus-accessibility.js?v=20260903-1" defer></script>');
     expect(integrityHtml).toContain('<script src="../refresh-focus-accessibility.js?v=20260903-1" defer></script>');
   });
 
-  it("moves focus to refresh status before the button is disabled", () => {
-    expect(source).toContain('document.addEventListener("click", (event) => {');
-    expect(source).toContain('status.focus({ preventScroll: true });');
-    expect(source).toContain('}, true);');
+  it("makes protected request statuses programmatic focus targets", () => {
+    expect(source).toContain('enhanceStatus(document.getElementById("accessStatus"))');
+    expect(source).toContain('enhanceStatus(document.getElementById("dialogStatus"))');
+    expect(source).toContain("enhanceStatus(connectionStatus);");
+    expect(source).toContain('node.setAttribute("role", "status");');
+    expect(source).toContain("node.tabIndex = -1;");
   });
 
-  it("returns focus to Refresh after the async operation re-enables it", () => {
-    expect(source).toContain('function restoreRefreshFocus()');
-    expect(source).toContain('if (!returnFocus || refresh.disabled) return;');
-    expect(source).toContain('refresh.focus({ preventScroll: true });');
+  it("preserves the existing Refresh busy-state handoff", () => {
+    expect(source).toContain("connectionStatus.focus({ preventScroll: true });");
+    expect(source).toContain('if (!returnRefreshFocus || refresh.matches(":disabled")) return;');
+    expect(source).toContain("if (document.activeElement === connectionStatus) refresh.focus({ preventScroll: true });");
     expect(source).toContain('observer.observe(refresh, { attributes: true, attributeFilter: ["disabled"] });');
+  });
+
+  it("covers unlock and exclusion forms without overriding successful transitions", () => {
+    expect(source).toContain("accessForm: {");
+    expect(source).toContain("excludeForm: {");
+    expect(source).toContain('document.getElementById("analysisApp") || document.getElementById("integrityApp")');
+    expect(source).toContain('successTarget: () => document.getElementById("excludedRecords")');
+    expect(source).toContain("watchReturn(origin, config.status, config);");
+    expect(source).toContain("if (contextVisible(context)) {");
+    expect(source).toContain("focusSuccessTarget(config.successTarget?.());");
+  });
+
+  it("hands restore-record focus to status and handles either failure or rerender", () => {
+    expect(source).toContain('closest("[data-restore-id]")');
+    expect(source).toContain("connectionStatus.focus({ preventScroll: true });");
+    expect(source).toContain('successTarget: () => document.getElementById("activeRecords")');
+    expect(source).toContain('document.getElementById("excludedRecords")');
+    expect(source).toContain("if (!control.isConnected) {");
   });
 });
