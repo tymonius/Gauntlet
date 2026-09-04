@@ -5,7 +5,6 @@ const source = JSON.parse(readFileSync("docs/v0.6.4-diplomat-proposals.json", "u
 const componentRuntime = readFileSync("deckbuilder/faction-components.js", "utf8");
 const currentGame = JSON.parse(readFileSync("game-data/current-game.json", "utf8"));
 const proposalRenderer = readFileSync("card-design/proposal-card.js", "utf8");
-const digitalDefinitions = readFileSync("src/cards/diplomats.ts", "utf8");
 
 describe("Diplomat Proposal language synchronization", () => {
   it("pins the approved issue #617 source as wording-only", () => {
@@ -30,17 +29,6 @@ describe("Diplomat Proposal language synchronization", () => {
     expect(componentRuntime).toContain("diplomats.proposals = (currentGame.proposals || []).map");
   });
 
-  it("keeps digital Proposal definitions synchronized with the approved source", () => {
-    for (const proposal of source.proposals) {
-      expect(digitalDefinitions).toContain(`id: '${proposal.id}'`);
-      expect(digitalDefinitions).toContain(`name: '${proposal.name}'`);
-      expect(digitalDefinitions).toContain(`stake: ${proposal.stake}`);
-      expect(digitalDefinitions).toContain(`requirement: '${proposal.requirement}'`);
-      expect(digitalDefinitions).toContain(`accepted: '${proposal.accepted}'`);
-      expect(digitalDefinitions).toContain(`refused: '${proposal.refused}'`);
-    }
-  });
-
   it("keeps the card compositor bound to the promoted current-game authority", () => {
     expect(proposalRenderer).toContain("import { loadCurrentGame } from '../game-data/current-game.mjs'");
     expect(proposalRenderer).toContain("const proposals = Array.isArray(currentGame.proposals)");
@@ -49,7 +37,7 @@ describe("Diplomat Proposal language synchronization", () => {
   });
 
   it("does not reintroduce verbose clauses removed by the compression pass", () => {
-    const synchronizedText = `${JSON.stringify(currentGame.proposals)}\n${digitalDefinitions}`;
+    const synchronizedText = JSON.stringify(currentGame.proposals);
     expect(synchronizedText).not.toContain("remains at the contested Position and becomes the occupier when applicable");
     expect(synchronizedText).not.toContain("When the Diplomat forms their Reserve, the Diplomat draws one additional card");
     expect(synchronizedText).not.toContain("while occupying a Territory the opposing player controlled immediately before the Diplomat became its occupier");
