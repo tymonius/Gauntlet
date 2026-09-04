@@ -166,7 +166,6 @@ These deployed historical paths should not receive new product behavior except e
 | `legacy/public-versions/` | Canonical repository source for historical versioned browser surfaces staged to stable public URLs; not current gameplay or rules authority | <!-- DOC-HISTORICAL -->
 | `legacy/v0.6.1-rulebook-publication/` | Preserved v0.6.1 Rulebook proof/production system; historical publication provenance, not current Rulebook tooling | <!-- DOC-HISTORICAL -->
 | `legacy/v0.6.4-candidate/` | Historical v0.6.4 candidate inputs/review records consumed by legacy reproduction/provenance paths; not current gameplay authority | <!-- DOC-HISTORICAL -->
-| root-level Rulebook publication aliases | Compatibility symlinks into consolidated publication provenance; not independent source categories |
 | version-pinned scripts/workflows | Historical and current production logic are mixed; candidates for parameterization |
 | root-level presentation files | Current deployment dependencies mixed with source organization concerns |
 
