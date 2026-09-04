@@ -14,10 +14,15 @@ const answer = document.getElementById("answer");
 const status = document.getElementById("arbiterStatus");
 const suggestions = document.querySelectorAll("[data-question]");
 const submitButton = form?.querySelector('button[type="submit"]');
+const READY_STATUS = endpoint
+  ? "Connected to the Chief Justice; current v0.7.1 local Rulebook lookup is available as a fallback."
+  : "Current v0.7.1 local Rulebook lookup mode.";
 
 let corpusPromise;
 let history = [];
 const sessionId = getSessionId();
+
+status.tabIndex = -1;
 
 for (const button of suggestions) {
   button.addEventListener("click", () => {
@@ -31,6 +36,9 @@ form.addEventListener("submit", async (event) => {
   const question = input.value.trim();
   if (!question) return;
 
+  const restoreInputFocus = form.contains(document.activeElement);
+  status.textContent = "Checking the current v0.7.1 rules…";
+  if (restoreInputFocus) status.focus({ preventScroll: true });
   setBusy(true);
   answer.innerHTML = "";
   try {
@@ -49,12 +57,12 @@ form.addEventListener("submit", async (event) => {
     answer.innerHTML = `<p class="arbiter-error"><strong>Chief Justice unavailable.</strong> ${escapeHtml(error.message)}</p>`;
   } finally {
     setBusy(false);
+    status.textContent = READY_STATUS;
+    if (restoreInputFocus) input.focus({ preventScroll: true });
   }
 });
 
-status.textContent = endpoint
-  ? "Connected to the Chief Justice; current v0.7.1 local Rulebook lookup is available as a fallback."
-  : "Current v0.7.1 local Rulebook lookup mode.";
+status.textContent = READY_STATUS;
 
 async function askLocal(question) {
   const corpus = await getCorpus();
