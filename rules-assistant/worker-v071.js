@@ -8,9 +8,14 @@ import {
 import { persistSmartInteraction } from "./rules-persistence.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260903-10";
+export const BEHAVIOR_REVISION = "v071-qa-20260903-11";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
+const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
+  "rulebook:gambit-area",
+  "rulebook:tactic-area",
+  "rulebook:clearing-battle-cards"
+];
 let corpusPromise;
 let corpusLoadedAt = 0;
 
@@ -27,8 +32,6 @@ ADJUDICATION PRINCIPLES
 - Prefer the ruling that introduces the least new machinery, preserves meaningful player choices, avoids loops or exploitable repetition, and is consistent with closely analogous supplied interactions.
 - A provisional ruling is binding for the rest of the current play session unless a supplied clean authority source directly supersedes it.
 `;
-
-
 
 const CHIEF_JUSTICE_VOICE = `
 VOICE — CHIEF JUSTICE
@@ -66,7 +69,9 @@ Requirements:
 5. Cite only supplied source IDs that actually support the answer. Explicit or inferred answers require at least one supporting source.
 6. Keep the answer direct and useful at the table. For explicit and inferred answers, do not discuss retrieval mechanics or say "the supplied passages/text/sources" unless the player specifically asks about source coverage.
 7. Write the answer as plain text only. The Rules Arbiter widget does not render Markdown. Do not use Markdown emphasis markers, backticks, headings, tables, or other formatting syntax. Write formulas directly, for example: Deed cost = min(Deeds you own + 1, 6) + position modifier + buyout premium.
-8. For follow-up questions using words such as "that", "it", "this", "those", "explain that", or "what does that mean", resolve the referent against the immediately preceding exchange first. Do not jump back to an older topic when the latest exchange supplies a coherent referent. An explicit subject named in the current question overrides this rule.
+8. Resolve follow-up referents against the immediately preceding exchange first. This includes pronouns and elliptical corrections or fragments such as "which is what", "which are", "where do they go", "no, their destinations", and similar terse follow-ups. Preserve the most recently contrasted property or noun phrase as the active referent; do not reset from that property to the broader objects being compared unless the player does so explicitly.
+9. When the requested distinction is a concrete source, timing, destination, cost, number, zone, or other named value, state that concrete value. Do not answer circularly with placeholders such as "the Gambit destination" or "the Tactic destination" when the actual destinations are supplied.
+10. Before returning provisional, check the retrieved clean authority for a direct answer to the requested property. If a clean source directly states it, use explicit; if the answer is compelled by combining clean sources, use inferred. Provisional is only for a genuine remaining gap or ambiguity.
 ${ADJUDICATION_GUIDE}
 
 Return only the required JSON object.`;
@@ -190,10 +195,11 @@ export default {
       const history = mergeConversationHistory(storedHistory, suppliedHistory);
       const retrievalQuery = contextualQuery(question, history);
       failureStage = "retrieval";
-      const retrieval = retrieveRules(corpus, retrievalQuery, {
+      let retrieval = retrieveRules(corpus, retrievalQuery, {
         limit: 10,
         excerptLength: 1300
       });
+      retrieval = augmentRetrievalForContext(corpus, question, history, retrieval);
       const diagnostics = {
         questionPlan: null,
         retrievalQueries: [retrievalQuery],
@@ -473,9 +479,46 @@ function classifyUpstreamFailure(status, providerError) {
   return "upstream_error";
 }
 
-function contextualQuery(question, history) {
+export function contextualQuery(question, history) {
   const prior = history.slice(-4).map((item) => item.content).filter(Boolean).join(" ").slice(-1800);
   return prior ? `${prior} ${question}` : question;
+}
+
+export function augmentRetrievalForContext(corpus, question, history = [], retrieval = []) {
+  const current = String(question || "").trim().toLowerCase();
+  const recent = history.slice(-6).map((item) => String(item?.content || "")).join(" ").toLowerCase();
+  const combined = `${recent} ${current}`;
+  const currentWordCount = current.split(/\s+/).filter(Boolean).length;
+  const destinationFocus = /\bdestinations?\b/.test(current)
+    || (currentWordCount <= 6 && /\bdestinations?\b/.test(recent));
+  const battleCardFocus = /\bgambits?\b/.test(combined) && /\btactics?\b/.test(combined);
+  if (!destinationFocus || !battleCardFocus) return retrieval;
+
+  const documents = Array.isArray(corpus?.documents) ? corpus.documents : [];
+  const preferred = BATTLE_CARD_DESTINATION_AUTHORITY_IDS
+    .map((canonicalId, index) => {
+      const document = documents.find((candidate) => candidate.id === canonicalId);
+      if (!document) return null;
+      return {
+        id: "",
+        canonicalId,
+        score: Number.MAX_SAFE_INTEGER - index,
+        title: document.title,
+        heading: document.heading,
+        kind: document.kind,
+        sourcePath: document.sourcePath,
+        sourceUrl: document.sourceUrl,
+        excerpt: document.body,
+        body: document.body
+      };
+    })
+    .filter(Boolean);
+  if (!preferred.length) return retrieval;
+
+  const preferredIds = new Set(preferred.map((source) => source.canonicalId));
+  return [...preferred, ...retrieval.filter((source) => !preferredIds.has(source.canonicalId))]
+    .slice(0, 10)
+    .map((source, index) => ({ ...source, id: `S${index + 1}` }));
 }
 
 function normalizeRulingStatus(value, sourceCount) {
@@ -499,13 +542,18 @@ function responseTypeFor(status) {
   return "written_rule";
 }
 
-function ensureProvisionalAnswer(value) {
+export function ensureProvisionalAnswer(value) {
   let answer = String(value || "").trim();
   if (!/^Provisional Arbiter Ruling:/i.test(answer)) {
     answer = `Provisional Arbiter Ruling: ${answer}`;
   }
-  if (!/rest of (this|the) (game|play session)/i.test(answer)) {
-    answer += " Use this ruling for the rest of this game; it has been logged for designer review.";
+  const hasDuration = /rest of (?:this|the(?: current)?|current) (?:game|play session)/i.test(answer);
+  const hasDesignerLog = /logged for designer review/i.test(answer);
+  if (!hasDuration) {
+    answer += " Use this ruling for the rest of this game.";
+  }
+  if (!hasDesignerLog) {
+    answer += " It has been logged for designer review.";
   }
   return answer;
 }
