@@ -8,7 +8,7 @@ import {
   type CleanV063Card,
   type CleanV063Gameplay,
   type CleanV063Territory,
-} from '../reconstruction/clean-v063/content';
+} from '../../legacy/digital-engine-reconstruction/clean-v063/content';
 
 interface CurrentGameAuthorityCompatibility {
   authority: string;
