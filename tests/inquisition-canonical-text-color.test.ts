@@ -1,6 +1,8 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
+const CANONICAL_INQUISITION = "#a67a27";
+
 describe("Inquisition canonical faction color", () => {
   it("keeps canonical ochre across public Inquisition identity surfaces", () => {
     const polish = readFileSync("site-polish.css", "utf8");
@@ -10,11 +12,11 @@ describe("Inquisition canonical faction color", () => {
     const trackedStyles = readFileSync("playtest/tracked/styles.css", "utf8");
     const rulebookApp = readFileSync("rulebook/app.js", "utf8");
 
-    expect(factionStyles).toContain(".faction-inquisition { --faction: #a67a27; --faction-dark: #a67a27;");
-    expect(referenceStyles).toContain("--preview-accent: #a67a27;");
+    expect(factionStyles).toContain(`.faction-inquisition { --faction: ${CANONICAL_INQUISITION}; --faction-dark: ${CANONICAL_INQUISITION};`);
+    expect(referenceStyles).toContain(`--preview-accent: ${CANONICAL_INQUISITION};`);
     expect(referenceFactionColors).toContain("color: var(--preview-accent);");
     expect(trackedStyles).toContain("color:var(--faction,#555)");
-    expect(rulebookApp).toContain("['Inquisition', { color: '#a67a27'");
+    expect(rulebookApp).toContain(`['Inquisition', { color: '${CANONICAL_INQUISITION}'`);
 
     expect(factionStyles).not.toContain("--faction-dark: #66470e");
     expect(rulebookApp).not.toContain("#9a6e21");
