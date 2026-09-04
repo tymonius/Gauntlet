@@ -52,7 +52,7 @@ GitHub Pages is staged from an explicit public-root allowlist rather than from t
 
 Do not reorganize files inside published release packages for repository aesthetics.
 
-Historical browser source does not need to remain at repository root merely because its public URL is versioned. Pages may stage historical source from an explicit legacy boundary while preserving the stable URL. Temporary root aliases may remain only where maintained repository tooling still depends on the old source location.
+Historical browser source does not need to remain at repository root merely because its public URL is versioned. Pages stages historical source from an explicit legacy boundary while preserving the stable URL; maintained repository tooling should reference that source boundary directly rather than recreate root aliases.
 
 ### 5. Parameterize repeated release logic
 
@@ -134,7 +134,7 @@ The current top-level directory inventory is enforced by `scripts/validate-repos
 | `v0.7.0/` | Versioned public entry/compatibility surface |
 | `v0.7.1/` | Versioned public entry/compatibility surface |
 
-The stable public URL contracts `/v0.6.2/` and `/v0.6.3/` are materialized by GitHub Pages from `legacy/public-versions/`. Their root-level repository names are temporary compatibility aliases rather than independent source directories.
+The stable public URL contracts `/v0.6.2/` and `/v0.6.3/` are materialized by GitHub Pages from `legacy/public-versions/`; no root-level repository source aliases are required for those deployed paths.
 
 These paths should not receive new product behavior except explicit compatibility fixes.
 
@@ -170,7 +170,6 @@ These paths should not receive new product behavior except explicit compatibilit
 | `legacy/v0.6.1-rulebook-publication/` | Preserved v0.6.1 Rulebook proof/production system; historical publication provenance, not current Rulebook tooling | <!-- DOC-HISTORICAL -->
 | `legacy/v0.6.4-candidate/` | Historical v0.6.4 candidate inputs/review records consumed by legacy reproduction/provenance paths; not current gameplay authority | <!-- DOC-HISTORICAL -->
 | root-level Rulebook publication aliases | Compatibility symlinks into consolidated publication provenance; not independent source categories |
-| root-level v0.6.x public aliases | Compatibility symlinks into `legacy/public-versions/`; retained temporarily for maintained repository callers, never deployed as symlinks |
 | version-pinned scripts/workflows | Historical and current production logic are mixed; candidates for parameterization |
 | root-level presentation files | Current deployment dependencies mixed with source organization concerns |
 
