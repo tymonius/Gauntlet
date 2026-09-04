@@ -61,6 +61,12 @@ import {
 } from './battle-types';
 import { resolveV070AssetLimitRemoval } from './assets';
 import {
+  applyV070ResistanceAssetOnsetEffects,
+  bankV070ResistanceFromBattle,
+  v070ResistanceBattleBankNeedsReplacementChoice,
+  v070ResistanceBattleBankReplacementInstanceIds,
+} from './resistance';
+import {
   recordV070ExecutiveHostileTakeoverEligibility,
   resolveV070CapitalGainsOnBattleLoss,
 } from './financiers';
@@ -222,6 +228,7 @@ export type V070BattleAction =
       type: 'resolve_battle_aftermath_controlled_effect';
       playerId: PlayerId;
       sourceInstanceId: string;
+      replaceAssetInstanceId?: string;
     }
   | {
       type: 'resolve_territory_aftermath_choice';
@@ -549,6 +556,7 @@ export function reduceV070BattleAction(
         next,
         action.playerId,
         action.sourceInstanceId,
+        action.replaceAssetInstanceId,
       );
       break;
     case 'resolve_territory_aftermath_choice':
@@ -726,6 +734,7 @@ function ensureBattleRuntime(state: V070GameState): V070BattleRuntime {
     applyV070MysticConvergence(state);
     applyV070CoreBattleTerritoryEffects(state);
     applyV070AdvancedBattleTerritoryEffects(state);
+    applyV070ResistanceAssetOnsetEffects(state);
     initializeV070TermsWindow(state);
   }
   return state.battleRuntime;
@@ -2097,7 +2106,7 @@ function territoryAftermathDestination(
 type V070BattleAftermathControlledEffectRef = {
   owner: PlayerId;
   sourceInstanceId: string;
-  kind: 'overlay' | 'territory';
+  kind: 'overlay' | 'territory' | 'asset';
 };
 
 function pruneIneligibleBattleAftermathControlledEffects(
@@ -2119,6 +2128,11 @@ function pruneIneligibleBattleAftermathControlledEffects(
         && battle.attacker === insertion.owner
       )
     );
+  runtime.battleCardAftermathAssetBanks =
+    runtime.battleCardAftermathAssetBanks.filter(bank =>
+      bank.condition !== 'owner_win'
+      || battle.winner === bank.owner
+    );
 }
 
 function remainingBattleAftermathControlledEffects(
@@ -2135,6 +2149,11 @@ function remainingBattleAftermathControlledEffects(
       owner: insertion.owner,
       sourceInstanceId: insertion.sourceInstanceId,
       kind: 'territory' as const,
+    })),
+    ...runtime.battleCardAftermathAssetBanks.map(bank => ({
+      owner: bank.owner,
+      sourceInstanceId: bank.sourceInstanceId,
+      kind: 'asset' as const,
     })),
   ];
 }
@@ -2166,8 +2185,50 @@ function nextBattleAftermathControlledEffectPlayer(
 function applyBattleAftermathControlledEffect(
   state: V070GameState,
   effect: V070BattleAftermathControlledEffectRef,
+  replaceAssetInstanceId?: string,
 ): void {
   const runtime = requireRuntime(state);
+
+  if (effect.kind !== 'asset' && replaceAssetInstanceId) {
+    throw new V070GameActionError(
+      'Asset replacement applies only to an Aftermath effect that banks an Asset.',
+    );
+  }
+
+  if (effect.kind === 'asset') {
+    const index = runtime.battleCardAftermathAssetBanks.findIndex(
+      bank =>
+        bank.owner === effect.owner
+        && bank.sourceInstanceId === effect.sourceInstanceId,
+    );
+    if (index < 0) {
+      throw new V070GameActionError(
+        'That battle Asset-banking effect is no longer pending.',
+      );
+    }
+    const bank = runtime.battleCardAftermathAssetBanks[index];
+    const banked = bankV070ResistanceFromBattle(
+      state,
+      bank.owner,
+      bank.sourceInstanceId,
+      replaceAssetInstanceId,
+    );
+    runtime.battleCardAftermathAssetBanks.splice(index, 1);
+    appendV070Event(state, {
+      type: banked
+        ? 'battle_card_aftermath_asset_banked'
+        : 'battle_card_aftermath_asset_bank_unresolved',
+      actor: bank.owner,
+      visibility: 'public',
+      payload: {
+        sourceInstanceId: bank.sourceInstanceId,
+        sourceCardId: bank.sourceCardId,
+        condition: bank.condition,
+        banked,
+      },
+    });
+    return;
+  }
 
   if (effect.kind === 'overlay') {
     const index = runtime.battleCardAftermathOverlayPlacements.findIndex(
@@ -2264,6 +2325,62 @@ function applyBattleAftermathControlledEffect(
   });
 }
 
+function battleAftermathControlledEffectNeedsChoice(
+  state: V070GameState,
+  effect: V070BattleAftermathControlledEffectRef,
+): boolean {
+  return effect.kind === 'asset'
+    && v070ResistanceBattleBankNeedsReplacementChoice(
+      state,
+      effect.owner,
+    );
+}
+
+function openBattleAftermathControlledEffectChoice(
+  state: V070GameState,
+  playerId: PlayerId,
+  candidates: V070BattleAftermathControlledEffectRef[],
+  immediateWinner: PlayerId | null,
+): void {
+  const runtime = requireRuntime(state);
+  runtime.pendingBattleAftermathControlledEffectChoice = {
+    playerId,
+    candidateSourceInstanceIds: candidates.map(
+      effect => effect.sourceInstanceId,
+    ),
+    immediateWinner,
+  };
+  appendV070Event(state, {
+    type: 'battle_aftermath_controlled_effect_choice_pending',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      playerId,
+      candidateCount: candidates.length,
+    },
+  });
+  appendV070Event(state, {
+    type: 'battle_aftermath_controlled_effect_choice_options',
+    actor: playerId,
+    visibility: playerId,
+    payload: {
+      sourceInstanceIds: candidates.map(
+        effect => effect.sourceInstanceId,
+      ),
+      assetReplacementOptions: candidates
+        .filter(effect => effect.kind === 'asset')
+        .map(effect => ({
+          sourceInstanceId: effect.sourceInstanceId,
+          replaceAssetInstanceIds:
+            v070ResistanceBattleBankReplacementInstanceIds(
+              state,
+              effect.owner,
+            ),
+        })),
+    },
+  });
+}
+
 function advanceBattleAftermathControlledEffects(
   state: V070GameState,
   immediateWinner: PlayerId | null,
@@ -2282,33 +2399,18 @@ function advanceBattleAftermathControlledEffects(
     const candidates = remainingBattleAftermathControlledEffects(state)
       .filter(effect => effect.owner === nextPlayer);
 
-    if (candidates.length > 1) {
-      runtime.pendingBattleAftermathControlledEffectChoice = {
-        playerId: nextPlayer,
-        candidateSourceInstanceIds: candidates.map(
-          effect => effect.sourceInstanceId,
-        ),
+    if (candidates.length > 1
+      || (candidates.length === 1
+        && battleAftermathControlledEffectNeedsChoice(
+          state,
+          candidates[0],
+        ))) {
+      openBattleAftermathControlledEffectChoice(
+        state,
+        nextPlayer,
+        candidates,
         immediateWinner,
-      };
-      appendV070Event(state, {
-        type: 'battle_aftermath_controlled_effect_choice_pending',
-        actor: nextPlayer,
-        visibility: 'public',
-        payload: {
-          playerId: nextPlayer,
-          candidateCount: candidates.length,
-        },
-      });
-      appendV070Event(state, {
-        type: 'battle_aftermath_controlled_effect_choice_options',
-        actor: nextPlayer,
-        visibility: nextPlayer,
-        payload: {
-          sourceInstanceIds: candidates.map(
-            effect => effect.sourceInstanceId,
-          ),
-        },
-      });
+      );
       return true;
     }
 
@@ -2328,6 +2430,7 @@ function resolveBattleAftermathControlledEffectChoice(
   state: V070GameState,
   playerId: PlayerId,
   sourceInstanceId: string,
+  replaceAssetInstanceId?: string,
 ): void {
   const runtime = requireRuntime(state);
   requireRuntimeStage(runtime, 'aftermath');
@@ -2357,7 +2460,11 @@ function resolveBattleAftermathControlledEffectChoice(
 
   const immediateWinner = pending.immediateWinner;
   runtime.pendingBattleAftermathControlledEffectChoice = null;
-  applyBattleAftermathControlledEffect(state, effect);
+  applyBattleAftermathControlledEffect(
+    state,
+    effect,
+    replaceAssetInstanceId,
+  );
   runtime.battleAftermathControlledEffectNextPlayer =
     nextBattleAftermathControlledEffectPlayer(state, playerId);
   completeAftermathInternal(state, immediateWinner);
@@ -2373,7 +2480,8 @@ function placeAftermathCard(
   if (state.overlays.some(overlay => overlay.instanceId === instanceId)
     || state.board.some(
       territory => territory.territoryInstanceId === instanceId,
-    )) {
+    )
+    || state.players[playerId].zones.assetBank.includes(instanceId)) {
     return;
   }
   if (destination === 'graveyard') {
@@ -2619,7 +2727,6 @@ function completeAftermathInternal(
 
   finalizeCompletedAftermath(state);
 }
-
 
 function useGrandInquisitorFinalJudgmentAtEndOfAftermath(
   state: V070GameState,
