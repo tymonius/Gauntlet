@@ -249,7 +249,7 @@ class GauntletRulesAssistant {
       this.busy = false;
       this.elements.send.disabled = false;
       this.elements.input.disabled = false;
-      this.elements.input.focus();
+      if (this.isOpen) this.elements.input.focus();
       this.scrollToLatest();
     }
   }
