@@ -15,14 +15,23 @@ function contrastRatio(foreground: string, background: string): number {
   return (light + 0.05) / (dark + 0.05);
 }
 
-describe("homepage faction label contrast", () => {
-  it("keeps the Inquisition text label above WCAG AA normal-text contrast", () => {
+describe("Inquisition faction text contrast", () => {
+  it("uses a readable ochre for text while leaving decorative faction color available", () => {
     const css = readFileSync("site-polish.css", "utf8");
-    expect(css).toContain(".faction-card.inquisition small");
+    for (const selector of [
+      ".faction-card.inquisition small",
+      ".faction-page.faction-inquisition .faction-facts dt",
+      ".faction-page.faction-inquisition .section-heading .eyebrow",
+      ".faction-page.faction-inquisition .leader-kicker",
+      ".faction-hub-card.faction-inquisition .hub-kicker",
+      ".faction-hub-card.faction-inquisition strong"
+    ]) {
+      expect(css).toContain(selector);
+    }
     expect(css).toContain("color: #815c1c;");
 
-    // The card's translucent #fffcf4 surface over the darkest homepage parchment
-    // resolves to approximately #f6f0e4; test that conservative rendered surface.
-    expect(contrastRatio("#815c1c", "#f6f0e4")).toBeGreaterThanOrEqual(4.5);
+    // #ede4d4 is the darkest endpoint of the public site's parchment body gradient.
+    // Translucent faction-card surfaces render lighter than this conservative case.
+    expect(contrastRatio("#815c1c", "#ede4d4")).toBeGreaterThanOrEqual(4.5);
   });
 });
