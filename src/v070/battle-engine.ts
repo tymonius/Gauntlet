@@ -21,6 +21,11 @@ import {
   v070ProposalChoicePending,
 } from './diplomats';
 import { v070MysticInvocationPendingPlayers } from './mystics';
+import {
+  V070SpiritHollowAftermathPause,
+  openV070SpiritHollowAftermathChoice,
+  resolveV070SpiritHollowAftermathChoice,
+} from './spirit-hollow';
 
 export {
   V070_NORMAL_BATTLE_DICE,
@@ -36,12 +41,27 @@ export type V070BattleAction =
       playerId: PlayerId;
       assetInstanceId: string;
     }
-  | { type: 'pass_foothold_asset'; playerId: PlayerId };
+  | { type: 'pass_foothold_asset'; playerId: PlayerId }
+  | {
+      type: 'resolve_spirit_hollow_aftermath';
+      playerId: PlayerId;
+      handInstanceId?: string;
+      graveyardInstanceId?: string;
+    };
 
 export function reduceV070BattleAction(
   state: V070GameState,
   action: V070BattleAction,
 ): V070GameState {
+  const spiritHollowPending =
+    state.battleRuntime?.pendingSpiritHollowAftermath ?? null;
+  if (spiritHollowPending
+    && action.type !== 'resolve_spirit_hollow_aftermath') {
+    throw new V070GameActionError(
+      'Resolve or decline the pending Spirit Hollow opportunity before continuing the Aftermath.',
+    );
+  }
+
   const pendingPlayer =
     state.battleRuntime?.footholdAssetWindowPlayer ?? null;
   if (pendingPlayer
@@ -50,6 +70,18 @@ export function reduceV070BattleAction(
     throw new V070GameActionError(
       'Resolve or decline the pending Foothold Asset opportunity before continuing the battle.',
     );
+  }
+
+  if (action.type === 'resolve_spirit_hollow_aftermath') {
+    const next = structuredClone(state) as V070GameState;
+    resolveV070SpiritHollowAftermathChoice(
+      next,
+      action.playerId,
+      action.handInstanceId,
+      action.graveyardInstanceId,
+    );
+    if (openV070SpiritHollowAftermathChoice(next)) return next;
+    return resumeV070AfterSpiritHollow(next);
   }
 
   if (action.type === 'use_foothold_asset') {
@@ -78,7 +110,7 @@ export function reduceV070BattleAction(
     if (openV070FootholdAssetAftermathWindow(next)) return next;
   }
 
-  const next = reduceV070BattleActionCore(
+  const next = reduceCoreWithAftermathPauses(
     state,
     action as V070CoreBattleAction,
   );
@@ -97,10 +129,39 @@ function resumeV070AfterFoothold(
       'Foothold can resume only while its battle is active.',
     );
   }
-  return reduceV070BattleActionCore(state, {
+  return reduceCoreWithAftermathPauses(state, {
     type: 'complete_aftermath',
     playerId: battle.attacker,
   });
+}
+
+function resumeV070AfterSpiritHollow(
+  state: V070GameState,
+): V070GameState {
+  const battle = state.battle;
+  if (!battle) {
+    throw new V070GameActionError(
+      'Spirit Hollow can resume only while its battle is active.',
+    );
+  }
+  return reduceCoreWithAftermathPauses(state, {
+    type: 'complete_aftermath',
+    playerId: battle.attacker,
+  });
+}
+
+function reduceCoreWithAftermathPauses(
+  state: V070GameState,
+  action: V070CoreBattleAction,
+): V070GameState {
+  try {
+    return reduceV070BattleActionCore(state, action);
+  } catch (error) {
+    if (error instanceof V070SpiritHollowAftermathPause) {
+      return error.state;
+    }
+    throw error;
+  }
 }
 
 function footholdWindowMayOpen(state: V070GameState): boolean {
@@ -117,6 +178,7 @@ function footholdWindowMayOpen(state: V070GameState): boolean {
     || runtime.pendingBattleAftermathControlledEffectChoice
     || runtime.pendingTerritoryAftermathChoice
     || runtime.pendingPoisonousGasAftermath
+    || runtime.pendingSpiritHollowAftermath
     || runtime.guardiansWindowOpen
     || runtime.finalJudgmentWindowOpen
     || runtime.relentlessPursuitWindowOpen
