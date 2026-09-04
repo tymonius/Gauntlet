@@ -17,7 +17,7 @@
 
     document.addEventListener("click", handleDocumentClick);
     document.addEventListener("keydown", handleKeydown);
-    backdrop.addEventListener("click", closePreview);
+    backdrop.addEventListener("click", () => closePreview());
 
     if (typeof mobileQuery.addEventListener === "function") {
       mobileQuery.addEventListener("change", syncViewportMode);
@@ -103,7 +103,7 @@
     preview.querySelector(".mobile-reference-preview-close")?.focus({ preventScroll: true });
   }
 
-  function closePreview() {
+  function closePreview(restoreFocus = true) {
     if (!preview) return;
 
     open = false;
@@ -112,6 +112,7 @@
     document.body.classList.remove("mobile-reference-preview-open");
     preview.setAttribute("aria-hidden", mobileQuery.matches ? "true" : "false");
 
+    if (!restoreFocus) return;
     const selectedRow = document.querySelector(".reference-row.selected");
     if (selectedRow instanceof HTMLElement) {
       selectedRow.focus({ preventScroll: true });
@@ -127,7 +128,7 @@
     closeButton.className = "mobile-reference-preview-close";
     closeButton.setAttribute("aria-label", "Close card details");
     closeButton.textContent = "×";
-    closeButton.addEventListener("click", closePreview);
+    closeButton.addEventListener("click", () => closePreview());
     preview.prepend(closeButton);
     return closeButton;
   }
@@ -136,7 +137,7 @@
     if (!preview) return;
 
     if (!mobileQuery.matches) {
-      closePreview();
+      closePreview(false);
       preview.removeAttribute("role");
       preview.removeAttribute("aria-modal");
       preview.removeAttribute("aria-hidden");
