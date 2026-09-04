@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "baseline_commit": "4e3967a40a926eb6aa7d8b57d73c1f6cd101608d",
+  "policy": {
+    "governed_roots": [
+      "images",
+      "card-design"
+    ],
+    "extensions": [
+      ".png",
+      ".jpg",
+      ".jpeg",
+      ".webp",
+      ".gif",
+      ".svg",
+      ".avif",
+      ".bmp",
+      ".tif",
+      ".tiff",
+      ".ico",
+      ".pdf",
+      ".psd",
+      ".ai",
+      ".eps",
+      ".zip",
+      ".3mf",
+      ".stl",
+      ".obj",
+      ".fbx",
+      ".gltf",
+      ".glb",
+      ".blend",
+      ".woff",
+      ".woff2",
+      ".ttf",
+      ".otf",
+      ".mp3",
+      ".ogg",
+      ".wav",
+      ".flac",
+      ".m4a",
+      ".mp4",
+      ".webm",
+      ".mov"
+    ],
+    "ignored_paths": [
+      "images/artwork/_autoscaled/"
+    ],
+    "legacy_default_status": "legacy-unresolved"
+  },
+  "assets": []
+}
