@@ -112,7 +112,7 @@ jobs:
 
             const testPattern = /(?:^|\/)[^/]+\.(?:test|spec)\.(?:ts|tsx|js|mjs)$/;
             const sourcePattern = /\.(?:ts|tsx|js|mjs)$/;
-            const archivedEngineSnapshot = /^legacy\/digital-engine-(?:reconstruction|migration)\//;
+            const archivedEngineSnapshot = /^legacy\/digital-engine-(?:reconstruction|migration|v06)\//;
             const changedTests = names.filter((file) => !archivedEngineSnapshot.test(file) && testPattern.test(file));
             const relatedSources = names.filter((file) => !archivedEngineSnapshot.test(file) && sourcePattern.test(file) && !testPattern.test(file));
             const testWorkflowOnly = names.length === 1 && exact('.github/workflows/test.yml');

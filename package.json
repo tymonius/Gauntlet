@@ -71,8 +71,8 @@
     "publishing:sync": "node scripts/sync-publishing-authority.mjs --write",
     "dev:v070:cli": "tsx src/cli/dev-runner-v070.ts",
     "dev:v070:gui": "tsx src/gui/dev-server-v070.ts",
-    "dev:legacy:cli": "tsx src/cli/dev-runner-v06.ts",
-    "dev:legacy:gui": "tsx src/gui/dev-server-v06.ts",
+    "dev:legacy:cli": "tsx legacy/digital-engine-v06/cli/dev-runner-v06.ts",
+    "dev:legacy:gui": "tsx legacy/digital-engine-v06/gui/dev-server-v06.ts",
     "card-authority:check": "node scripts/card-authority/validate-current-game.mjs && node scripts/card-authority/validate-face-catalog.mjs && node scripts/card-authority/validate-consumers.mjs && vitest run tests/card-authority",
     "card-authority:render": "node scripts/card-authority/validate-rendered-faces.mjs"
   },

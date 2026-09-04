@@ -102,7 +102,7 @@ The current top-level directory inventory is enforced by `scripts/validate-repos
 | `rules-assistant/` | Rules Arbiter implementation |
 | `playtest/` | Current playtest browser surfaces |
 | `workers/` | Deployed support services |
-| `src/` | Active rules-aware digital engine; older modules within it may still be transitional/historical and must be classified during engine cleanup |
+| `src/` | Active rules-aware digital engine plus explicitly versioned migration layers still undergoing promotion; quarantined historical engine implementations live under `legacy/` |
 | `rules-arbiter/` | Current static Rules Arbiter browser shell; implementation/service logic lives under `rules-assistant/` |
 | `changelog/` | Current player-facing changelog surface |
 | `about/` | Public project/about information surface |
@@ -164,6 +164,7 @@ These deployed historical paths should not receive new product behavior except e
 | `legacy/digital-prototype-data/` | Historical starter/adapter data; current gameplay authority is `game-data/` |
 | `legacy/digital-engine-reconstruction/` | Preserved clean v0.6.2/v0.6.3 engine reconstruction snapshots moved out of the active `src/` typecheck boundary; historical provenance only | <!-- DOC-HISTORICAL -->
 | `legacy/digital-engine-migration/` | Superseded versioned digital-engine migration implementations archived after relevant behavior was promoted or retired; not part of the active engine boundary | <!-- DOC-HISTORICAL -->
+| `legacy/digital-engine-v06/` | Earlier playable v0.6-era digital engine and opt-in historical dev runners moved out of active `src/`; preserved as implementation/migration evidence, not current digital-rules authority | <!-- DOC-HISTORICAL -->
 | `legacy/public-compatibility/` | Canonical repository source for retired browser compatibility surfaces staged to stable public URLs; not current gameplay or rules authority | <!-- DOC-HISTORICAL -->
 | `legacy/public-versions/` | Canonical repository source for historical versioned browser surfaces staged to stable public URLs; not current gameplay or rules authority | <!-- DOC-HISTORICAL -->
 | `legacy/v0.6.1-rulebook-publication/` | Preserved v0.6.1 Rulebook proof/production system; historical publication provenance, not current Rulebook tooling | <!-- DOC-HISTORICAL -->
