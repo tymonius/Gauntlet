@@ -298,7 +298,7 @@ describe('v0.7.0 Subversion battle Asset-use restriction', () => {
     expect(isV070AssetUsable(state, foothold)).toBe(false);
   });
 
-  test('prevents Safe Conduct after reveal and does not count the failed attempt as Asset use', () => {
+  test('prevents Safe Conduct after reveal without consuming the Asset', () => {
     let state = activeBattle(
       'B',
       'diplomats-ambassador-open-channels',
@@ -355,6 +355,6 @@ describe('v0.7.0 Subversion battle Asset-use restriction', () => {
       cardInstanceId: safeConduct,
     })).toThrow(/Subversion prevents/);
     expect(state.players.A.zones.assetBank).toContain(safeConduct);
-    expect(state.players.A.intelligence?.missionBattleAssetUsed).toBeFalsy();
+    expect(state.players.A.zones.discardPile).not.toContain(safeConduct);
   });
 });
