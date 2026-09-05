@@ -33,7 +33,7 @@ function element(id) {
       remove(...names) { names.forEach((name) => classes.delete(name)); },
       contains(name) { return classes.has(name); }
     },
-    appendChild(child) { children.push(child); },
+    appendChild(child) { children.push(child); if (!this.value && child.value) this.value = child.value; },
     remove() {},
     click() {},
     querySelectorAll() { return []; },
@@ -49,37 +49,41 @@ function response(payload, status = 200) {
   };
 }
 
-test("final admin page keeps the legacy script valid and loads a separate first-party refinement runtime", () => {
+test("refinement runtime remains independently valid JavaScript", () => {
   const page = composedPage();
   const scripts = inlineScriptsFrom(page);
   expect(scripts.length).toBeGreaterThan(0);
   for (const source of scripts) expect(() => new Function(source)).not.toThrow();
   expect(page).toContain(`src="${ADMIN_REFINEMENT_RUNTIME_PATH}"`);
-  expect(page).not.toContain("var rulesTriageEngine=");
   expect(() => new Function(adminRefinementRuntimeSource())).not.toThrow();
+  expect(adminRefinementRuntimeSource()).not.toContain("createTriageEngine");
+  expect(adminRefinementRuntimeSource()).not.toContain("createRefinementScaffoldEngine");
 });
 
-test("standalone refinement runtime actually initializes reviewed backlog triage", async () => {
+test("server-backed runtime initializes reviewed backlog triage", async () => {
   const elements = new Map();
   const get = (id) => {
     if (!elements.has(id)) elements.set(id, element(id));
     return elements.get(id);
   };
-  get("dashboard").classList.remove("hidden");
-
-  const reviewedInteraction = {
-    id: "11111111-1111-4111-8111-111111111111",
-    session_id: "session-a",
-    sequence_index: 1,
-    created_at: "2026-09-04T20:00:00.000Z",
-    question: "When does this effect end?",
-    answer: "The current rules do not specify this clearly.",
-    review_status: "needs_correction",
-    ruling_status: "provisional",
-    confidence: "low",
-    source_count: 0,
-    feedback_rating: "incorrect",
-    issue_types_json: "[\"retrieval_failure\"]"
+  const report = {
+    schema: "gauntlet.rules-triage.v1",
+    generatedAt: "2026-09-05T10:00:00.000Z",
+    scope: "reviewed_backlog",
+    stats: { scope: "reviewed_backlog", eligible: 1, unreviewed: 0, reviewedBacklog: 1, high: 1, medium: 0, low: 0, routine: 0, attention: 1, clusters: 1 },
+    clusters: [{
+      rootCause: "retrieval",
+      label: "Retrieval",
+      count: 1,
+      highCount: 1,
+      mediumCount: 0,
+      maxScore: 100,
+      averageScore: 100,
+      interactionIds: ["11111111-1111-4111-8111-111111111111"],
+      representatives: [{ interactionId: "11111111-1111-4111-8111-111111111111", question: "When does this effect end?", score: 100, priority: "high", reasons: ["Retrieval failed."] }],
+      recommendedAction: "Inspect retrieval."
+    }],
+    interactions: []
   };
 
   const context = {
@@ -106,18 +110,17 @@ test("standalone refinement runtime actually initializes reviewed backlog triage
       getElementById: get,
       createElement(tag) { return element(tag); }
     },
-    MutationObserver: class MutationObserver { observe() {} },
     fetch(path) {
       const value = String(path);
-      if (value === "/api/admin/export?format=json") return Promise.resolve(response({ interactions: [reviewedInteraction], sources: [] }));
-      if (value === "/api/admin/review-intelligence") return Promise.resolve(response({ audits: [], diagnostics: [] }));
-      return Promise.resolve(response({}));
+      if (value === "/api/admin/refinement-triage?scope=reviewed_backlog") return Promise.resolve(response(report));
+      return Promise.resolve(response({ error: "Unexpected path" }, 404));
     },
     setTimeout,
     clearTimeout
   };
 
   vm.runInNewContext(adminRefinementRuntimeSource(), context, { filename: "admin-refinement-runtime.js" });
+  expect(get("triage-status").textContent).toMatch(/initialized/);
   await new Promise((resolve) => setTimeout(resolve, 25));
 
   expect(get("triage-status").textContent).toMatch(/Found 1 reviewed interaction/);
