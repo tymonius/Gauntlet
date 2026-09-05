@@ -122,6 +122,16 @@ PR: [#1469](https://github.com/tymonius/Gauntlet/pull/1469). Branch: `cleanup/pl
 
 Next: validate this documentation tranche, then determine whether the public and facilitated playtest UI modules share enough behavior to consolidate code without changing their distinct workflows.
 
+## Active playtest tooling name
+
+PR: [#1470](https://github.com/tymonius/Gauntlet/pull/1470). Branch: `cleanup/rename-playtest-e2e` (stacked on #1469). The maintained formal-session end-to-end test now has a version-neutral filename matching its package command and active deployment workflow. Its implementation is unchanged; only the misleading retired-version name and references are corrected.
+
+CI is green. Next: audit other active version-named validators individually before deciding whether they are current contracts or historical reconstruction tooling. The immediate boundary is the Rulebook production adapter described below.
+
+## Rulebook production decision
+
+The maintained release renderers still pass their sources through `scripts/build-v063-rulebook-production.py`, which contains presentation transforms and transient paths introduced for the historical reconstruction. Replacing or generalizing that adapter can change generated Rulebook PDFs and therefore needs an explicit decision about whether visual-output refactoring belongs in this cleanup.
+
 ## Architectural queue
 
 Review in highest-level-first order. The result of a review may be "leave it alone."
