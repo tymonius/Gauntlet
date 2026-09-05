@@ -195,6 +195,33 @@ jobs:
           echo 'Live public contract did not converge after the Actions-driven Pages deployment window.' >&2
           exit 1
 
+      - name: Wait for current authority set to reach published site
+        if: steps.release.outputs.version == 'v0.7.1'
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const expected = JSON.parse(readFileSync('releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json', 'utf8')).authority_set_id;
+          if (!expected) throw new Error('Local v0.7.1 manifest has no authority_set_id.');
+          const manifestUrl = 'https://gauntlet.run/releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json';
+          const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+          let last = '';
+          for (let attempt = 1; attempt <= 120; attempt += 1) {
+            try {
+              const response = await fetch(`${manifestUrl}?publication=${encodeURIComponent(process.env.EXPECTED_SHA)}&attempt=${attempt}`, { cache: 'no-store' });
+              last = await response.text();
+              const payload = response.ok ? JSON.parse(last) : null;
+              if (response.ok && payload?.authority_set_id === expected) {
+                console.log(`Published authority set ${expected} verified on attempt ${attempt}.`);
+                process.exit(0);
+              }
+            } catch (error) {
+              last = String(error);
+            }
+            if (attempt < 120) await sleep(5000);
+          }
+          throw new Error(`Published authority set ${expected} did not converge: ${last}`);
+          NODE
+
       - name: Refresh current Rules Arbiter corpus against published authority
         if: steps.release.outputs.version == 'v0.7.1'
         run: |
