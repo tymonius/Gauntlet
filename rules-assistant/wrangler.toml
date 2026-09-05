@@ -1,5 +1,5 @@
 name = "gauntlet-rules-assistant"
-main = "worker-entry-refinement.js"
+main = "admin-refinement-worker.js"
 compatibility_date = "2026-07-29"
 
 [vars]
