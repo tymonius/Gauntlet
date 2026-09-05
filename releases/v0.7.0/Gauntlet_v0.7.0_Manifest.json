@@ -3,8 +3,8 @@
   "release_version": "v0.7.0",
   "name": "Illustrated Cards & Tabletop Simulator",
   "status": "current",
-  "authority_set_id": "5f424f1b293ec3aa592fa50ce374be08ef48cfdcc94369ba4697fe9a38d00953",
-  "publication_date": "2026-08-27",
+  "authority_set_id": "527a39fd3dcd3e3abaf0aefaa0dc8268f41cdc72501843ec8fbd7a6f9cd331b6",
+  "publication_date": null,
   "current_package_path": "releases/v0.7.0/",
   "source_provenance": {
     "source_version": "v0.7.0",
@@ -14,11 +14,11 @@
   "binding_sources": {
     "rulebook": {
       "path": "releases/v0.7.0/Gauntlet_v0.7.0_Rulebook.md",
-      "sha256": "7e9ffe0359989110d09a84e9cb426bfaba0e88feb5b3e6f7446e04961ad6b18f"
+      "sha256": "b9761a962859f8afca55802c5671314e8b6718bb0901241390e9876a92d5175c"
     },
     "canonical_data": {
       "path": "releases/v0.7.0/Gauntlet_v0.7.0_Canonical_Data.json",
-      "sha256": "af5efe9d345b4e1d1fe7aca43c16c9d8904d70e908e70fd507cfe4052a60f48e"
+      "sha256": "a366ead8e912f9ac2b775ed109ae44b24bf9dee6ac0becd5d78dbd9607d72b8e"
     },
     "approved_starters": {
       "path": "releases/v0.7.0/Gauntlet_v0.7.0_Starter_Decks.json",
@@ -26,7 +26,7 @@
     },
     "source_provenance": {
       "path": "releases/v0.7.0/Gauntlet_v0.7.0_Source_Provenance.json",
-      "sha256": "e5ad499330bbd5fd3350e37db9a9acbcebe93bf2d6b1b120c5dd9348870ed615"
+      "sha256": "13cf3a57d84b39af3036d0b7fd81148fec27c2678ec214ab55b6bb53c49cceed"
     },
     "card_anatomy_figure": {
       "path": "releases/v0.7.0/Gauntlet_v0.7.0_Card_Anatomy.png",
@@ -51,8 +51,7 @@
     "website": "v0.7.0",
     "browser_tools": "v0.7.0",
     "rules_arbiter": "v0.7.0",
-    "digital_rules": "v0.7.0",
-    "rulebook": "v0.7.0"
+    "digital_rules": "v0.7.0"
   },
   "public_routes": {
     "start": "/start/",
@@ -72,20 +71,20 @@
       "key": "rulebook-booklet",
       "path": "Gauntlet_v0.7.0_Rulebook_Booklet.pdf",
       "pages": 50,
-      "sha256": "1d42372eb73109fa98fab4d285b61f7152f5a572f1c116b04d1b4b4d58b27dc6",
-      "bytes": 30987804
+      "sha256": "1ed225e8f23dc0cf4e53325b2a495620f9a5c960f941e59eb25896409a196186",
+      "bytes": 30987905
     }
   ],
   "payload_files": [
     {
       "path": "Gauntlet_v0.7.0_Rulebook.md",
-      "sha256": "7e9ffe0359989110d09a84e9cb426bfaba0e88feb5b3e6f7446e04961ad6b18f",
-      "bytes": 114499
+      "sha256": "b9761a962859f8afca55802c5671314e8b6718bb0901241390e9876a92d5175c",
+      "bytes": 114568
     },
     {
       "path": "Gauntlet_v0.7.0_Rulebook_Booklet.pdf",
-      "sha256": "1d42372eb73109fa98fab4d285b61f7152f5a572f1c116b04d1b4b4d58b27dc6",
-      "bytes": 30987804
+      "sha256": "1ed225e8f23dc0cf4e53325b2a495620f9a5c960f941e59eb25896409a196186",
+      "bytes": 30987905
     },
     {
       "path": "Gauntlet_v0.7.0_Card_Anatomy.png",
@@ -99,8 +98,8 @@
     },
     {
       "path": "Gauntlet_v0.7.0_Canonical_Data.json",
-      "sha256": "af5efe9d345b4e1d1fe7aca43c16c9d8904d70e908e70fd507cfe4052a60f48e",
-      "bytes": 254110
+      "sha256": "a366ead8e912f9ac2b775ed109ae44b24bf9dee6ac0becd5d78dbd9607d72b8e",
+      "bytes": 254147
     },
     {
       "path": "Gauntlet_v0.7.0_Starter_Decks.json",
@@ -109,8 +108,8 @@
     },
     {
       "path": "Gauntlet_v0.7.0_Source_Provenance.json",
-      "sha256": "e5ad499330bbd5fd3350e37db9a9acbcebe93bf2d6b1b120c5dd9348870ed615",
-      "bytes": 1638
+      "sha256": "13cf3a57d84b39af3036d0b7fd81148fec27c2678ec214ab55b6bb53c49cceed",
+      "bytes": 2060
     }
   ],
   "rulebook_booklet_provenance": {
