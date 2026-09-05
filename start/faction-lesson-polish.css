@@ -9,6 +9,13 @@
   height: 100%;
 }
 
+/* Normalize the sketches' warm paper toward white before multiplying them into the tile.
+   White becomes visually transparent under multiply, while the graphite linework remains. */
+#factionLesson .faction-leader-lesson::after {
+  filter: grayscale(1) contrast(1.08) brightness(1.06);
+  mix-blend-mode: multiply;
+}
+
 main:has(input[name="leader"][value="general"]:checked) #factionLesson .faction-leader-lesson {
   --leader-lesson-art: url("../images/sketches/general.png");
 }
