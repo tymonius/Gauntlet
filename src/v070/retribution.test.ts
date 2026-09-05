@@ -207,6 +207,10 @@ function defenderWinWithRetribution(options?: {
   };
 }
 
+function hasEvent(state: V070GameState, type: string): boolean {
+  return state.events.some(event => event.type === type);
+}
+
 describe('v0.7.0 Retribution', () => {
   test('opens only for the defender after the attacking opponent loses', () => {
     const { state, retribution } = defenderWinWithRetribution();
@@ -220,7 +224,7 @@ describe('v0.7.0 Retribution', () => {
 
   test('does not trigger an attacker-owned copy', () => {
     let state = activeBattle();
-    inject(
+    const source = inject(
       state,
       'A',
       'inquisition-retribution',
@@ -229,14 +233,16 @@ describe('v0.7.0 Retribution', () => {
     );
     state = resolveBattle(state, 'B');
     state = openAftermathEffects(state);
-    expect(
-      state.battleRuntime?.pendingBattleAftermathControlledEffectChoice,
-    ).toBeNull();
+    expect(state.battle).toBeNull();
+    expect(state.battleRuntime).toBeNull();
+    expect(state.players.A.zones.assetBank).toContain(source);
+    expect(hasEvent(state, 'retribution_used')).toBe(false);
+    expect(hasEvent(state, 'retribution_declined')).toBe(false);
   });
 
   test('does not trigger when the defender loses', () => {
     let state = activeBattle();
-    inject(
+    const source = inject(
       state,
       'B',
       'inquisition-retribution',
@@ -245,9 +251,10 @@ describe('v0.7.0 Retribution', () => {
     );
     state = resolveBattle(state, 'A');
     state = openAftermathEffects(state);
-    expect(
-      state.battleRuntime?.pendingBattleAftermathControlledEffectChoice,
-    ).toBeNull();
+    expect(state.battle).toBeNull();
+    expect(state.battleRuntime).toBeNull();
+    expect(state.players.B.zones.assetBank).toContain(source);
+    expect(hasEvent(state, 'retribution_used')).toBe(false);
   });
 
   test('Battle Subversion suppresses Retribution without opening a reactive window', () => {
@@ -284,12 +291,9 @@ describe('v0.7.0 Retribution', () => {
       assetInstanceId: retribution,
     });
     expect(state.players.B.zones.assetBank).toContain(retribution);
-    expect(
-      state.battleRuntime?.retributionProcessedInstanceIds,
-    ).toContain(retribution);
-    expect(
-      state.battleRuntime?.pendingBattleAftermathControlledEffectChoice,
-    ).toBeNull();
+    expect(hasEvent(state, 'retribution_declined')).toBe(true);
+    expect(state.battle).toBeNull();
+    expect(state.battleRuntime).toBeNull();
   });
 
   test('multiple physical copies are offered separately after a decline', () => {
@@ -323,7 +327,9 @@ describe('v0.7.0 Retribution', () => {
     expect(state.players.B.zones.discardPile).toContain(retribution);
     expect(state.players.B.zones.assetBank).not.toContain(retribution);
     expect(state.players.B.inquisition?.conviction).toBe(before + 2);
-    expect(state.battleRuntime?.pendingRetributionResponse).toBeNull();
+    expect(state.battle).toBeNull();
+    expect(state.battleRuntime).toBeNull();
+    expect(hasEvent(state, 'retribution_resolved')).toBe(true);
   });
 
   test('with opposing Assets, use pauses for the opponent choice', () => {
@@ -471,11 +477,10 @@ describe('v0.7.0 Retribution', () => {
     });
     expect(state.players.A.zones.graveyard).toContain(subversion);
     expect(state.players.B.zones.discardPile).toContain(retribution);
-    expect(state.battleRuntime?.pendingRetributionResponse).toBeNull();
     expect(state.players.B.inquisition?.conviction).toBe(before);
-    expect(
-      state.battleRuntime?.retributionProcessedInstanceIds,
-    ).toContain(retribution);
+    expect(hasEvent(state, 'retribution_negated')).toBe(true);
+    expect(state.battle).toBeNull();
+    expect(state.battleRuntime).toBeNull();
   });
 
   test('response views expose candidate identities only to the responding player', () => {
