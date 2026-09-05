@@ -96,9 +96,13 @@ PR: [#1458](https://github.com/tymonius/Gauntlet/pull/1458). Branch: `cleanup/ar
 
 ## Stale procedure archival
 
-Branch: `cleanup/archive-v063-procedures` (stacked on #1458). Per user direction, do not continue developing stale rules. Preserve the entire stale procedure library and content adapter/test outside active source, and freeze its obsolete closeout scripts with their original blob identities. The maintained engine implementation is unchanged. Historical implementation evidence must not be represented as supported behavior.
+PR: [#1459](https://github.com/tymonius/Gauntlet/pull/1459). Branch: `cleanup/archive-v063-procedures` (stacked on #1458). Per user direction, do not continue developing stale rules. The entire stale procedure library and content adapter/test are preserved outside active source, and its obsolete closeout scripts are frozen with their original blob identities. CI is green. The maintained engine implementation is unchanged.
 
-Next: repair historical validation paths and audit browser/renderer ownership. Full-suite discovery remains a known validation-boundary debt, alongside baseline stale renderer assertions; do not mistake a scoped green CI result for a fully green repository suite.
+## Historical adapter archival
+
+PR: [#1466](https://github.com/tymonius/Gauntlet/pull/1466). Branch: `cleanup/archive-v06-content-adapters` (stacked on #1459). The remaining historical content adapters and shared legacy content types have moved from active `src/content/` into the historical engine package. Old package-level development, validation, release, print, preview, and data commands are removed while source remains for the tooling-lifecycle audit. Historical validators read the archived path.
+
+Next: repair historical validation paths and audit browser/renderer ownership. Full-suite discovery remains a known validation-boundary debt, alongside baseline stale renderer assertions; do not mistake scoped green CI results for a fully green repository suite.
 
 ## Architectural queue
 
