@@ -3,41 +3,32 @@ name: Verify Asset Provenance Remediation
 on:
   pull_request:
     paths:
-      - card-design/deed-ornamental-divider.svg
       - .github/asset-provenance.json
       - .github/asset-provenance-remediation.json
-      - .github/scripts/finalize-deed-ornament-provenance.py
       - .github/scripts/materialize-asset-provenance.py
       - .github/workflows/materialize-asset-provenance.yml
-      - docs/ASSET_PROVENANCE_AUDIT.md
+  push:
+    branches:
+      - main
+    paths:
+      - .github/asset-provenance.json
+      - .github/asset-provenance-remediation.json
+      - .github/scripts/materialize-asset-provenance.py
+      - .github/workflows/materialize-asset-provenance.yml
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  materialize:
+  verify:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout PR branch with full history
+      - name: Checkout full history
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ github.head_ref }}
-      - name: Apply replacement Deed ornament provenance
-        run: python .github/scripts/finalize-deed-ornament-provenance.py
-      - name: Materialize provenance ledger
-        run: python .github/scripts/materialize-asset-provenance.py --write
+      - name: Verify evidence-backed remediation records
+        run: python .github/scripts/materialize-asset-provenance.py --check
       - name: Validate asset provenance
         run: python .github/scripts/validate-asset-provenance.py
-      - name: Commit materialized provenance
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .github/asset-provenance-remediation.json .github/asset-provenance.json docs/ASSET_PROVENANCE_AUDIT.md
-          if git diff --cached --quiet; then
-            echo "No materialization changes."
-          else
-            git commit -m "Document replacement Deed ornament provenance"
-            git push origin HEAD:${{ github.head_ref }}
-          fi
