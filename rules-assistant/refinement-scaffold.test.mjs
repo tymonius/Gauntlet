@@ -41,7 +41,7 @@ const sourceGapTriage = {
   ]
 };
 
-test("builds a cluster-specific branch and PR scaffold", () => {
+test("builds a cluster-specific branch, PR, and resolution scaffold", () => {
   const scaffold = refinementScaffold.buildRefinementScaffold(triage, "conversation_continuity", { generatedAt: "2026-09-05T04:05:00.000Z" });
   expect(scaffold.schema).toBe("gauntlet.rules-refinement-scaffold.v1");
   expect(scaffold.branch.suggestedName).toBe("fix/rules-arbiter-conversation-continuity-20260905");
@@ -49,6 +49,12 @@ test("builds a cluster-specific branch and PR scaffold", () => {
   expect(scaffold.implementationHints.likelyFiles).toContain("rules-assistant/local-search.js");
   expect(scaffold.pullRequest.draft).toBe(true);
   expect(scaffold.remediation.sourceAuthorityRequired).toBe(false);
+  expect(scaffold.resolutionRequest.ledgerPath).toBe("artifacts/rules-refinement/resolution-ledger.json");
+  expect(scaffold.resolutionRequest.rootCause).toBe("conversation_continuity");
+  expect(scaffold.resolutionRequest.interactionIds).toEqual(scaffold.cluster.interactionIds);
+  expect(scaffold.resolutionRequest.requiredStatus).toBe("resolved");
+  expect(scaffold.resolutionRequest.bindingRule).toMatch(/authoritySetId, behaviorRevision, or fix commit/);
+  expect(scaffold.pullRequest.body).toContain("Resolution ledger: REQUIRED");
 });
 
 test("source-gap signals require current game authority remediation before Arbiter changes", () => {
@@ -74,9 +80,10 @@ test("attaches only reviewed regression candidates from the selected cluster", (
   expect(attached.regression.candidateCount).toBe(1);
   expect(attached.regression.readyCount).toBe(1);
   expect(attached.regression.missingInteractionIds).toEqual(["22222222-2222-4222-8222-222222222222"]);
+  expect(attached.resolutionRequest.interactionIds).toEqual(scaffold.cluster.interactionIds);
 });
 
-test("public manifest preserves source-remediation requirement but omits raw player question text", () => {
+test("public manifest preserves source-remediation and resolution requirements but omits raw player question text", () => {
   const scaffold = refinementScaffold.buildRefinementScaffold(sourceGapTriage, "source_specificity");
   const manifest = refinementScaffold.toPublicManifest(scaffold);
   const serialized = JSON.stringify(manifest);
@@ -84,6 +91,8 @@ test("public manifest preserves source-remediation requirement but omits raw pla
   expect(serialized).not.toContain("What happens if neither choice works?");
   expect(manifest.remediation.sourceAuthorityRequired).toBe(true);
   expect(manifest.remediation.reasonSignalCodes).toContain("review_ambiguous_rule");
+  expect(manifest.resolutionRequest.ledgerPath).toBe("artifacts/rules-refinement/resolution-ledger.json");
+  expect(manifest.resolutionRequest.interactionIds).toEqual(sourceGapTriage.clusters[0].interactionIds);
   expect(manifest.privacy.containsPlayerQuestionText).toBe(false);
 });
 
@@ -95,5 +104,6 @@ test("public manifest and PR body omit raw player question text", () => {
   expect(serialized).not.toContain("What about tactics?");
   expect(scaffold.pullRequest.body).not.toContain("Which are?");
   expect(scaffold.pullRequest.body).toContain("11111111-1111-4111-8111-111111111111");
+  expect(scaffold.pullRequest.body).toContain("record the resolved interaction IDs");
   expect(manifest.privacy.containsPlayerQuestionText).toBe(false);
 });
