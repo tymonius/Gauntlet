@@ -87,8 +87,9 @@ describe('digital engine boundary', () => {
     }
   });
 
-  it('keeps archived tests outside default Vitest discovery', () => {
-    const vitestConfig = readFileSync('vitest.config.ts', 'utf8');
-    expect(vitestConfig).toContain("'legacy/**'");
+  it('keeps archived tests outside routine CI changed-test discovery', () => {
+    const workflow = readFileSync('.github/workflows/test.yml', 'utf8');
+    expect(workflow).toContain('digital-engine-(?:reconstruction|migration|v06)');
+    expect(workflow).toContain('!archivedEngineSnapshot.test(file) && testPattern.test(file)');
   });
 });
