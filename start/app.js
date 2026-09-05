@@ -14,7 +14,7 @@
           "You are still playing the same territorial tug-of-war as everyone else. Military simply gives you more leverage from the fights you win."
         ],
         victory: {
-          shared: "Run the Gauntlet: capture the Territory at the opponent's end or win their Last Stand.",
+          shared: "Capture the Territory at the opponent's end or win their Last Stand.",
           alternate: "None. Military wins only by running the Gauntlet."
         }
       },
@@ -58,7 +58,7 @@
           "Those negotiations build a Peace Treaty alongside the normal push-and-pull over Territory."
         ],
         victory: {
-          shared: "Run the Gauntlet: capture the Territory at the opponent's end or win their Last Stand.",
+          shared: "Capture the Territory at the opponent's end or win their Last Stand.",
           alternate: "Peace Treaty: have six different Proposals ratified at the start of your turn."
         }
       },
@@ -102,7 +102,7 @@
           "A strong economy can turn battlefield position into lasting ownership without replacing the normal territorial game."
         ],
         victory: {
-          shared: "Run the Gauntlet: capture the Territory at the opponent's end or win their Last Stand.",
+          shared: "Capture the Territory at the opponent's end or win their Last Stand.",
           alternate: "Controlling Interest: own the Deeds to every Territory currently in the Gauntlet."
         }
       },
@@ -146,7 +146,7 @@
           "Your opponent knows you are working toward something, but not exactly what, so ordinary play becomes a layer of misdirection."
         ],
         victory: {
-          shared: "Run the Gauntlet: capture the Territory at the opponent's end or win their Last Stand.",
+          shared: "Capture the Territory at the opponent's end or win their Last Stand.",
           alternate: "Special Operation: build enough Operation Progress to make one available, then complete its hidden Mission requirement and pay its Intel cost."
         }
       },
@@ -190,7 +190,7 @@
           "Arcane cards and the Graveyard become ingredients for combinations instead of simply cards spent and gone."
         ],
         victory: {
-          shared: "Run the Gauntlet: capture the Territory at the opponent's end or win their Last Stand.",
+          shared: "Capture the Territory at the opponent's end or win their Last Stand.",
           alternate: "Ritual of Ascension: complete all three selected Rites, begin the Ritual, then win a battle you initiate while its three required cards remain bound."
         }
       },
@@ -234,7 +234,7 @@
           "You are still fighting over Territory, but every battle can also make the opponent's Deck thinner and less able to recover."
         ],
         victory: {
-          shared: "Run the Gauntlet: capture the Territory at the opponent's end or win their Last Stand.",
+          shared: "Capture the Territory at the opponent's end or win their Last Stand.",
           alternate: "Purification: leave the opponent unable to make their normal start-of-turn draw because both their Draw Pile and Discard Pile are empty."
         }
       },
