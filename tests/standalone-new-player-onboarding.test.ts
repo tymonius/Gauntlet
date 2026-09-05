@@ -69,6 +69,24 @@ describe("standalone new-player onboarding", () => {
     }
   });
 
+  it("keeps faction lessons conceptual and distinguishes shared from alternate victories", () => {
+    const html = read("start/index.html");
+    const app = read("start/app.js");
+    const css = read("start/styles.css");
+
+    expect(html).toContain("How it fits into Gauntlet");
+    expect(html).toContain("Your ways to win");
+    expect(html).toContain('<ul id="factionLessonSteps"></ul>');
+    expect(app.match(/fit:\s*\[/g)).toHaveLength(6);
+    expect(app.match(/victory:\s*\{/g)).toHaveLength(6);
+    expect(app).toContain("Shared victory");
+    expect(app).toContain("Alternate victory");
+    expect(app).not.toContain("battle involving you");
+    expect(css).toContain("#learn .intro-grid>.intro-card:last-child:nth-child(odd){grid-column:1/-1}");
+    expect(css).toContain("[hidden]{display:none!important}");
+    expect(css).toContain(".faction-lesson-hero::after");
+  });
+
   it("shows recommended Rite order for each Mystics starter alongside its existing setup guidance", () => {
     const starter = read("deckbuilder/starter-decks.js");
     const authority = JSON.parse(read("game-data/current-game.json"));
