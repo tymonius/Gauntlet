@@ -45,14 +45,14 @@ const ANALYTICS_EXCLUDED_FILES = new Set([
   "card-design/card-print-render.html",
   "card-design/component-print-render.html",
   "card-design/territory-print-render.html",
-  // Versioned development/review surfaces are not public analytics pages.
-  "v0.6.3/changes/index.html",
-  "v0.6.3/deckbuilder/index.html",
-  "v0.6.3/quick-reference/index.html",
-  "v0.6.3/reference/index.html",
-  "v0.6.3/rulebook/index.html",
-  "v0.6.3/rules-arbiter/index.html",
-  "v0.6.3/start/index.html"
+  // Historical public-version archive; these are frozen, non-canonical pages.
+  "legacy/public-versions/v0.6.3/changes/index.html",
+  "legacy/public-versions/v0.6.3/deckbuilder/index.html",
+  "legacy/public-versions/v0.6.3/quick-reference/index.html",
+  "legacy/public-versions/v0.6.3/reference/index.html",
+  "legacy/public-versions/v0.6.3/rulebook/index.html",
+  "legacy/public-versions/v0.6.3/rules-arbiter/index.html",
+  "legacy/public-versions/v0.6.3/start/index.html"
 ]);
 
 function normalizePackageRoot(value) {
