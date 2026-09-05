@@ -23,6 +23,9 @@ import {
   resolveV070SubversionAssetBattleChoice,
 } from './subversion-asset';
 import type { V070SubversionAssetBattleContinuation } from './battle-types';
+import {
+  pruneV070ProtractedSiegeAftermathPlacements,
+} from './protracted-siege';
 
 export * from './battle-engine-prewar-bonds';
 
@@ -96,15 +99,22 @@ export function reduceV070BattleAction(
     );
   }
 
+  const prepared = action.type === 'complete_aftermath'
+    ? structuredClone(state) as V070GameState
+    : state;
+  if (action.type === 'complete_aftermath') {
+    pruneV070ProtractedSiegeAftermathPlacements(prepared);
+  }
+
   const controlled = reembodimentControlledBattleEffect(action);
   const beforeHand = controlled
-    ? [...state.players[controlled.playerId].zones.hand]
+    ? [...prepared.players[controlled.playerId].zones.hand]
     : [];
-  const battleOrder = state.battle
-    ? [state.battle.attacker, state.battle.defender] as const
+  const battleOrder = prepared.battle
+    ? [prepared.battle.attacker, prepared.battle.defender] as const
     : null;
   const next = reduceV070BattleActionPreWarBonds(
-    state,
+    prepared,
     action as V070PreWarBondsBattleAction,
   );
 
