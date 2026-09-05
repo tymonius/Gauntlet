@@ -120,7 +120,7 @@ test("server-backed runtime initializes reviewed backlog triage", async () => {
   };
 
   vm.runInNewContext(adminRefinementRuntimeSource(), context, { filename: "admin-refinement-runtime.js" });
-  expect(get("triage-status").textContent).toMatch(/initialized/);
+  expect(get("triage-status").textContent).toMatch(/Mining reviewed interactions/);
   await new Promise((resolve) => setTimeout(resolve, 25));
 
   expect(get("triage-status").textContent).toMatch(/Found 1 reviewed interaction/);
