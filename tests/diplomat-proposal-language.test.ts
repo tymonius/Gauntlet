@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 const componentRuntime = readFileSync("deckbuilder/faction-components.js", "utf8");
 const currentGame = JSON.parse(readFileSync("game-data/current-game.json", "utf8"));
 const proposalRenderer = readFileSync("card-design/proposal-card.js", "utf8");
+const renderContext = readFileSync("card-design/render-context.mjs", "utf8");
 
 describe("Diplomat Proposal language synchronization", () => {
   it("uses the promoted current-game Proposal authority", () => {
@@ -12,9 +13,10 @@ describe("Diplomat Proposal language synchronization", () => {
   });
 
   it("keeps the card compositor bound to the promoted current-game authority", () => {
-    expect(proposalRenderer).toContain("import { loadCurrentGame } from '../game-data/current-game.mjs'");
-    expect(proposalRenderer).toContain("const proposals = Array.isArray(currentGame.proposals)");
+    expect(proposalRenderer).toContain("import { loadRenderGame } from './render-context.mjs'");
+    expect(proposalRenderer).toContain("const currentGame = await loadRenderGame()");
     expect(proposalRenderer).toContain("root.dataset.proposalAuthority = currentGame.authorityUrl");
+    expect(renderContext).toContain("import { loadCurrentGame } from '../game-data/current-game.mjs'");
     expect(proposalRenderer).not.toContain("/docs/v0.6.4-diplomat-proposals.json");
   });
 
