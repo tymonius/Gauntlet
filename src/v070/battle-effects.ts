@@ -17,7 +17,6 @@ import { recordV070MysticBattleEffectApplied } from './mystics';
 import {
   V070_FORTIFICATIONS_BATTLE_TEXT,
   applyV070FortificationsGambitTacticEffect,
-  resolveV070FortificationsCaptureAfterRetreat,
 } from './fortifications';
 
 export type V070BattleEffectTiming = 'reveal';
@@ -514,6 +513,7 @@ export function resolveV070SupportedRevealEffects(
       });
       continue;
     }
+
     const handler = handlersByCardId.get(cardId);
     if (!handler) throw new Error(`Missing validated handler for ${cardId}.`);
 
@@ -618,15 +618,7 @@ export function resolveV070AftermathDrawEffects(
   winner: PlayerId,
 ): void {
   const runtime = state.battleRuntime;
-  if (!runtime) return;
-
-  // Fortifications resolves after the losing defender's retreat but before
-  // ordinary Aftermath card rewards. This also allows a final-Territory
-  // capture to establish pending victory before later voluntary windows.
-  resolveV070FortificationsCaptureAfterRetreat(state, winner);
-  if (runtime.pendingGameVictory || runtime.aftermathDrawEffects.length === 0) {
-    return;
-  }
+  if (!runtime || runtime.aftermathDrawEffects.length === 0) return;
 
   const effects = [...runtime.aftermathDrawEffects];
   runtime.aftermathDrawEffects = [];
