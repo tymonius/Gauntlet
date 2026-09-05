@@ -266,15 +266,25 @@ export function buildCanonicalDocuments(canonicalData, siteOrigin = "https://gau
 export function retrieveRules(corpus, query, options = {}) {
   const limit = Math.max(1, Math.min(Number(options.limit) || 6, 12));
   const documents = Array.isArray(corpus?.documents) ? corpus.documents : [];
-  const normalizedQuery = normalizeText(query);
-  const baseQueryTokens = tokenize(query);
+  const conversationFocus = deriveConversationQueryFocus(query);
+  const scoringQuery = conversationFocus.contextual ? conversationFocus.query : query;
+  const normalizedQuery = normalizeText(scoringQuery);
+  const baseQueryTokens = tokenize(scoringQuery);
   const queryTokens = expandQueryTokens(baseQueryTokens, normalizedQuery);
   const queryPhrases = buildPhrases(baseQueryTokens);
+  const excerptTokens = [...new Set([...conversationFocus.activeTokens, ...conversationFocus.tokens, ...queryTokens])];
 
   return documents
     .map((document) => ({
       document,
-      score: scoreDocument(document, normalizedQuery, baseQueryTokens, queryTokens, queryPhrases)
+      score: scoreDocument(
+        document,
+        normalizedQuery,
+        baseQueryTokens,
+        queryTokens,
+        queryPhrases,
+        conversationFocus
+      )
     }))
     .filter((item) => item.score > 0)
     .sort((a, b) => b.score - a.score || a.document.title.localeCompare(b.document.title))
@@ -288,9 +298,75 @@ export function retrieveRules(corpus, query, options = {}) {
       kind: document.kind,
       sourcePath: document.sourcePath,
       sourceUrl: document.sourceUrl,
-      excerpt: makeExcerpt(document.body, queryTokens, options.excerptLength || 900),
+      excerpt: makeExcerpt(document.body, excerptTokens, options.excerptLength || 900),
       body: document.body
     }));
+}
+
+export function deriveConversationQueryFocus(query) {
+  const raw = String(query || "").trim();
+  const empty = { contextual: false, query: raw, tokens: [], phrases: [], activeTokens: [], activePhrases: [], segments: [] };
+  if (!raw) return empty;
+
+  const segments = raw
+    .split(/(?<=[.!?])\s+|\n+/)
+    .map((segment) => segment.trim())
+    .filter(Boolean)
+    .slice(-6);
+  if (segments.length < 2) {
+    return { ...empty, segments };
+  }
+
+  const finalSegment = segments[segments.length - 1];
+  const finalWordCount = normalizeText(finalSegment).split(/[^a-z0-9]+/).filter(Boolean).length;
+  const terseFollowUp = finalWordCount <= 8;
+  if (!terseFollowUp) {
+    return { ...empty, segments };
+  }
+
+  const recentSegments = segments.slice(-4);
+  const tokenized = recentSegments.map((segment) => tokenize(segment));
+  const genericFollowUpTokens = new Set(["they", "them", "those", "these", "there", "go", "mean", "one", "ones", "same"]);
+  const finalConcreteTokens = tokenize(finalSegment).filter((token) => !genericFollowUpTokens.has(token));
+  const activeSegment = finalConcreteTokens.length
+    ? finalSegment
+    : recentSegments[Math.max(0, recentSegments.length - 2)];
+  const activeTokens = tokenize(activeSegment);
+  const activePhrases = buildPhrases(activeTokens).filter((phrase) => phrase.length >= 4);
+
+  const scored = new Map();
+  const presence = new Map();
+  tokenized.forEach((tokens, index) => {
+    const weight = index + 1;
+    const unique = new Set(tokens);
+    for (const token of tokens) scored.set(token, (scored.get(token) || 0) + weight);
+    for (const token of unique) presence.set(token, (presence.get(token) || 0) + 1);
+  });
+  for (const [token, count] of presence) {
+    if (count > 1) scored.set(token, (scored.get(token) || 0) + count * 2);
+  }
+
+  const tokens = [...scored.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, 10)
+    .map(([token]) => token);
+
+  const phraseSet = new Set();
+  for (const tokensInSegment of tokenized.slice(-3)) {
+    for (const phrase of buildPhrases(tokensInSegment)) {
+      if (phrase.length >= 4) phraseSet.add(phrase);
+    }
+  }
+
+  return {
+    contextual: true,
+    query: recentSegments.join(" "),
+    tokens,
+    phrases: [...phraseSet].slice(-10),
+    activeTokens,
+    activePhrases,
+    segments
+  };
 }
 
 export function buildLocalFallbackAnswer(query, results, version = "v0.6.3") {
@@ -326,7 +402,7 @@ export function buildLocalFallbackAnswer(query, results, version = "v0.6.3") {
   };
 }
 
-function scoreDocument(document, normalizedQuery, baseQueryTokens, queryTokens, queryPhrases) {
+function scoreDocument(document, normalizedQuery, baseQueryTokens, queryTokens, queryPhrases, conversationFocus) {
   const title = normalizeText(document.title);
   const heading = normalizeText(document.heading || "");
   const body = normalizeText(document.body);
@@ -354,6 +430,31 @@ function scoreDocument(document, normalizedQuery, baseQueryTokens, queryTokens, 
     if (phrase.length < 4) continue;
     if (title.includes(phrase)) score += 28;
     if (body.includes(phrase)) score += 10;
+  }
+
+  if (conversationFocus?.contextual) {
+    for (const token of conversationFocus.tokens) {
+      if (titleTokens.has(token)) score += 16;
+      if (headingTokens.has(token)) score += 12;
+      const bodyMatches = countOccurrences(body, token);
+      score += Math.min(bodyMatches, 5) * 3;
+    }
+    for (const phrase of conversationFocus.phrases) {
+      if (title.includes(phrase)) score += 24;
+      if (heading.includes(phrase)) score += 20;
+      if (body.includes(phrase)) score += 12;
+    }
+    for (const token of conversationFocus.activeTokens || []) {
+      if (titleTokens.has(token)) score += 40;
+      if (headingTokens.has(token)) score += 32;
+      const bodyMatches = countOccurrences(body, token);
+      score += Math.min(bodyMatches, 5) * 6;
+    }
+    for (const phrase of conversationFocus.activePhrases || []) {
+      if (title.includes(phrase)) score += 56;
+      if (heading.includes(phrase)) score += 48;
+      if (body.includes(phrase)) score += 24;
+    }
   }
 
   const matchedBaseTokens = baseQueryTokens.filter((token) => searchTokens.has(token)).length;
