@@ -272,7 +272,7 @@ export function retrieveRules(corpus, query, options = {}) {
   const baseQueryTokens = tokenize(scoringQuery);
   const queryTokens = expandQueryTokens(baseQueryTokens, normalizedQuery);
   const queryPhrases = buildPhrases(baseQueryTokens);
-  const excerptTokens = [...new Set([...conversationFocus.tokens, ...queryTokens])];
+  const excerptTokens = [...new Set([...conversationFocus.activeTokens, ...conversationFocus.tokens, ...queryTokens])];
 
   return documents
     .map((document) => ({
@@ -305,7 +305,8 @@ export function retrieveRules(corpus, query, options = {}) {
 
 export function deriveConversationQueryFocus(query) {
   const raw = String(query || "").trim();
-  if (!raw) return { contextual: false, query: "", tokens: [], phrases: [], segments: [] };
+  const empty = { contextual: false, query: raw, tokens: [], phrases: [], activeTokens: [], activePhrases: [], segments: [] };
+  if (!raw) return empty;
 
   const segments = raw
     .split(/(?<=[.!?])\s+|\n+/)
@@ -313,18 +314,26 @@ export function deriveConversationQueryFocus(query) {
     .filter(Boolean)
     .slice(-6);
   if (segments.length < 2) {
-    return { contextual: false, query: raw, tokens: [], phrases: [], segments };
+    return { ...empty, segments };
   }
 
   const finalSegment = segments[segments.length - 1];
   const finalWordCount = normalizeText(finalSegment).split(/[^a-z0-9]+/).filter(Boolean).length;
   const terseFollowUp = finalWordCount <= 8;
   if (!terseFollowUp) {
-    return { contextual: false, query: raw, tokens: [], phrases: [], segments };
+    return { ...empty, segments };
   }
 
   const recentSegments = segments.slice(-4);
   const tokenized = recentSegments.map((segment) => tokenize(segment));
+  const genericFollowUpTokens = new Set(["they", "them", "those", "these", "there", "go", "mean", "one", "ones", "same"]);
+  const finalConcreteTokens = tokenize(finalSegment).filter((token) => !genericFollowUpTokens.has(token));
+  const activeSegment = finalConcreteTokens.length
+    ? finalSegment
+    : recentSegments[Math.max(0, recentSegments.length - 2)];
+  const activeTokens = tokenize(activeSegment);
+  const activePhrases = buildPhrases(activeTokens).filter((phrase) => phrase.length >= 4);
+
   const scored = new Map();
   const presence = new Map();
   tokenized.forEach((tokens, index) => {
@@ -354,6 +363,8 @@ export function deriveConversationQueryFocus(query) {
     query: recentSegments.join(" "),
     tokens,
     phrases: [...phraseSet].slice(-10),
+    activeTokens,
+    activePhrases,
     segments
   };
 }
@@ -432,6 +443,17 @@ function scoreDocument(document, normalizedQuery, baseQueryTokens, queryTokens, 
       if (title.includes(phrase)) score += 24;
       if (heading.includes(phrase)) score += 20;
       if (body.includes(phrase)) score += 12;
+    }
+    for (const token of conversationFocus.activeTokens || []) {
+      if (titleTokens.has(token)) score += 40;
+      if (headingTokens.has(token)) score += 32;
+      const bodyMatches = countOccurrences(body, token);
+      score += Math.min(bodyMatches, 5) * 6;
+    }
+    for (const phrase of conversationFocus.activePhrases || []) {
+      if (title.includes(phrase)) score += 56;
+      if (heading.includes(phrase)) score += 48;
+      if (body.includes(phrase)) score += 24;
     }
   }
 
