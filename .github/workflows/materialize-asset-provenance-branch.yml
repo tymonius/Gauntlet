@@ -1,12 +1,13 @@
-name: Materialize Asset Provenance Remediation
+name: Materialize Mystics Asset Provenance Batch
 
 on:
-  pull_request:
+  push:
+    branches:
+      - audit/resolve-mystics-art-provenance
     paths:
-      - .github/asset-provenance.json
       - .github/asset-provenance-remediation.json
       - .github/scripts/materialize-asset-provenance.py
-      - .github/workflows/materialize-asset-provenance.yml
+      - .github/workflows/materialize-asset-provenance-branch.yml
   workflow_dispatch:
 
 permissions:
@@ -21,10 +22,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Materialize evidence-backed remediation records
+      - name: Materialize evidence-backed records
         run: python .github/scripts/materialize-asset-provenance.py --write
 
-      - name: Validate materialized asset provenance
+      - name: Validate generated ledger
         run: python .github/scripts/validate-asset-provenance.py
 
       - name: Upload materialized ledger

@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Materialize or verify evidence-backed legacy asset provenance records.
 
-The helper refuses to resolve an asset unless the current Git blob is byte-for-byte
-identical to the blob at its documented introduction commit. A family may define a
-default introduction commit, while individual assets may override it when repository
-history proves they entered later.
+Each remediation batch identifies a historical Git checkpoint that must contain the
+same binary as the file currently checked in. The checkpoint may be the original
+introduction commit or a later evidence/identity commit. Per-asset overrides are
+supported. This proves continuity from a documented historical state without falsely
+claiming that a later checkpoint was the asset's first introduction.
 """
 
 from __future__ import annotations
@@ -44,6 +45,34 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def checkpoint_for(candidate: dict, basis: dict, label: str) -> str:
+    for key in ("identity_commit", "introduction_commit"):
+        if key in candidate:
+            return validate_commit(candidate[key], f"{label}.{key}")
+    for key in ("identity_commit", "introduction_commit"):
+        if key in basis:
+            return validate_commit(basis[key], f"{label}.evidence_basis.{key}")
+    raise SystemExit(f"{label}: evidence_basis must define identity_commit or introduction_commit")
+
+
+def normalize_batches(evidence: dict) -> list[dict]:
+    version = evidence.get("version")
+    if version == 1:
+        # Backward compatibility for the first remediation manifest format.
+        return [{
+            "id": "legacy-v1",
+            "defaults": evidence.get("defaults"),
+            "evidence_basis": evidence.get("evidence_basis"),
+            "assets": evidence.get("assets"),
+        }]
+    if version == 2:
+        batches = evidence.get("batches")
+        if not isinstance(batches, list) or not batches:
+            raise SystemExit("version 2 remediation manifest must contain a non-empty batches list")
+        return batches
+    raise SystemExit("unsupported remediation manifest version")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     mode = parser.add_mutually_exclusive_group()
@@ -53,54 +82,58 @@ def main() -> int:
 
     policy = json.loads(POLICY_PATH.read_text(encoding="utf-8"))
     evidence = json.loads(EVIDENCE_PATH.read_text(encoding="utf-8"))
-    if policy.get("version") != 1 or evidence.get("version") != 1:
-        raise SystemExit("policy and remediation manifest must both use version 1")
-
-    defaults = evidence.get("defaults")
-    basis = evidence.get("evidence_basis")
-    candidates = evidence.get("assets")
-    if not isinstance(defaults, dict) or not isinstance(basis, dict) or not isinstance(candidates, list):
-        raise SystemExit("invalid remediation manifest structure")
-
-    default_introduction_commit = validate_commit(
-        basis.get("introduction_commit"), "evidence_basis.introduction_commit"
-    )
+    if policy.get("version") != 1:
+        raise SystemExit("asset provenance policy must use version 1")
 
     current_by_path = {record["path"]: record for record in policy.get("assets", [])}
     materialized: list[dict[str, str]] = []
+    seen_paths: set[str] = set()
 
-    for candidate in candidates:
-        if not isinstance(candidate, dict) or not isinstance(candidate.get("path"), str):
-            raise SystemExit("every remediation candidate must contain a path")
-        rel = candidate["path"]
-        absolute = ROOT / rel
-        if not absolute.is_file():
-            raise SystemExit(f"candidate asset does not exist: {rel}")
+    for batch_index, batch in enumerate(normalize_batches(evidence), start=1):
+        if not isinstance(batch, dict):
+            raise SystemExit(f"batch {batch_index} must be an object")
+        batch_id = batch.get("id", f"batch-{batch_index}")
+        defaults = batch.get("defaults")
+        basis = batch.get("evidence_basis")
+        candidates = batch.get("assets")
+        if not isinstance(defaults, dict) or not isinstance(basis, dict) or not isinstance(candidates, list):
+            raise SystemExit(f"{batch_id}: invalid batch structure")
 
-        candidate_commit = candidate.get("introduction_commit", default_introduction_commit)
-        introduction_commit = validate_commit(candidate_commit, f"{rel}.introduction_commit")
-        try:
-            introduced_blob = git("rev-parse", f"{introduction_commit}:{rel}")
-        except subprocess.CalledProcessError as exc:
-            raise SystemExit(f"{rel}: not present in documented introduction commit {introduction_commit}") from exc
-        current_blob = git("hash-object", rel)
-        if current_blob != introduced_blob:
-            raise SystemExit(
-                f"{rel}: current binary differs from blob at documented introduction commit "
-                f"{introduction_commit}; manual review required"
-            )
+        for candidate in candidates:
+            if not isinstance(candidate, dict) or not isinstance(candidate.get("path"), str):
+                raise SystemExit(f"{batch_id}: every remediation candidate must contain a path")
+            rel = candidate["path"]
+            if rel in seen_paths:
+                raise SystemExit(f"duplicate remediation path across batches: {rel}")
+            seen_paths.add(rel)
 
-        record: dict[str, str] = {"path": rel}
-        for field in REQUIRED:
-            value = candidate.get(field, defaults.get(field))
-            if not isinstance(value, str) or not value.strip():
-                raise SystemExit(f"{rel}: missing remediation field {field}")
-            record[field] = value.strip()
-        notes = candidate.get("notes", defaults.get("notes"))
-        if isinstance(notes, str) and notes.strip():
-            record["notes"] = notes.strip()
-        record["sha256"] = sha256_file(absolute)
-        materialized.append(record)
+            absolute = ROOT / rel
+            if not absolute.is_file():
+                raise SystemExit(f"candidate asset does not exist: {rel}")
+
+            checkpoint = checkpoint_for(candidate, basis, f"{batch_id}:{rel}")
+            try:
+                historical_blob = git("rev-parse", f"{checkpoint}:{rel}")
+            except subprocess.CalledProcessError as exc:
+                raise SystemExit(f"{rel}: not present in documented checkpoint {checkpoint}") from exc
+            current_blob = git("hash-object", rel)
+            if current_blob != historical_blob:
+                raise SystemExit(
+                    f"{rel}: current binary differs from blob at documented checkpoint "
+                    f"{checkpoint}; manual review or a later evidence checkpoint is required"
+                )
+
+            record: dict[str, str] = {"path": rel}
+            for field in REQUIRED:
+                value = candidate.get(field, defaults.get(field))
+                if not isinstance(value, str) or not value.strip():
+                    raise SystemExit(f"{rel}: missing remediation field {field}")
+                record[field] = value.strip()
+            notes = candidate.get("notes", defaults.get("notes"))
+            if isinstance(notes, str) and notes.strip():
+                record["notes"] = notes.strip()
+            record["sha256"] = sha256_file(absolute)
+            materialized.append(record)
 
     print(f"Materialized {len(materialized)} evidence-backed provenance record(s) in memory.")
     for record in materialized:
