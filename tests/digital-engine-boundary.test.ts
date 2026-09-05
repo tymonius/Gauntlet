@@ -26,11 +26,11 @@ function sourceFilesUnder(root: string): string[] {
 }
 
 describe('digital engine boundary', () => {
-  it('keeps the old playable v0.6 runners explicitly archived', () => {
+  it('keeps old playable runners as non-executable historical evidence', () => {
     expect(packageJson.scripts['dev:cli']).toBeUndefined();
     expect(packageJson.scripts['dev:gui']).toBeUndefined();
-    expect(packageJson.scripts['dev:legacy:cli']).toBe('tsx legacy/digital-engine-v06/cli/dev-runner-v06.ts');
-    expect(packageJson.scripts['dev:legacy:gui']).toBe('tsx legacy/digital-engine-v06/gui/dev-server-v06.ts');
+    expect(packageJson.scripts['dev:legacy:cli']).toBeUndefined();
+    expect(packageJson.scripts['dev:legacy:gui']).toBeUndefined();
 
     expect(existsSync('legacy/digital-engine-v06/cli/dev-runner-v06.ts')).toBe(true);
     expect(existsSync('legacy/digital-engine-v06/gui/dev-server-v06.ts')).toBe(true);
@@ -38,6 +38,7 @@ describe('digital engine boundary', () => {
     expect(readdirSync('src/gui')).not.toContain('dev-server-v06.ts');
     expect(existsSync('legacy/digital-engine-dev-runners/v056-cli-dev-runner.ts.txt')).toBe(true);
     expect(existsSync('legacy/digital-engine-dev-runners/v056-gui-dev-server.ts.txt')).toBe(true);
+    expect(Object.keys(packageJson.scripts).filter((name) => name.includes('v062'))).toEqual([]);
   });
 
   it('quarantines the old playable v0.6 architecture outside active src', () => {
@@ -96,6 +97,12 @@ describe('digital engine boundary', () => {
   });
 
   it('keeps candidate content and reconstruction snapshots outside active source', () => {
+    expect(readdirSync('src/content').sort()).toEqual([
+      'current.test.ts',
+      'current.ts',
+      'v070.test.ts',
+      'v070.ts',
+    ]);
     expect(existsSync('src/v063')).toBe(false);
     expect(readdirSync('src/content')).not.toContain('v063.ts');
     expect(readdirSync('src/content')).not.toContain('v064.ts');

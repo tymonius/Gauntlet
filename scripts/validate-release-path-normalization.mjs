@@ -69,7 +69,6 @@ const frozenCandidateScripts = new Set([
   'scripts/finalize-v063-card-conventions.mjs',
   'scripts/generate-v063-canonical-data-candidate.mjs',
   'scripts/generate-v063-player-facing-candidates.mjs',
-  'scripts/generate-v063-production-card-preview.mjs',
   'scripts/validate-v063-browser-development.mjs',
   'scripts/validate-v063-canonical-data-candidate.mjs',
   'scripts/validate-v063-canonical-promotion-boundary.mjs',

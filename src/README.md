@@ -1,6 +1,6 @@
 # Gauntlet Digital Engine Work
 
-This directory contains the active digital-engine migration plus explicitly versioned transitional layers. Historical reconstruction snapshots, retired migration implementations, and the earlier playable v0.6 architecture live under `legacy/`.
+This directory contains the maintained digital-engine implementation. Historical reconstruction snapshots, retired migration implementations, and the earlier playable architecture live under `legacy/`.
 
 ## Current authority boundary
 
@@ -26,13 +26,13 @@ That difference is an explicit implementation lag, not an alternate authority cl
 - `legacy/digital-engine-migration/v0.6.2/` — superseded v0.6.2 rules/card/faction migration code and tests; v0.6.3 owns its required types independently.
 - `legacy/digital-engine-migration/v0.6.3/` — archived stale procedure library, content adapter, and tests. Preserved as implementation evidence only; no further development of those rules.
 - `legacy/digital-engine-migration/v0.6.4/` — retired v0.6.4 Onset/movement transition implementation formerly under `src/v064/`; relevant shared procedures were audited into `v070/rules.ts` before archival. Its unused candidate content adapter and test are preserved in the archived `content/` subdirectory, removing the active import of reconstruction code.
-- `legacy/digital-engine-v06/` — earlier playable v0.6-era architecture formerly split across `src/state/`, `effects/`, `cards/`, `types/`, and `dev/`, together with its explicitly legacy CLI/GUI runners. It remains an opt-in historical harness and migration source, not a current engine dependency.
+- `legacy/digital-engine-v06/` — earlier playable v0.6-era architecture, historical content adapters, and preserved CLI/GUI runner sources. It is non-executable historical evidence, not a current engine dependency or supported development target.
 - `cli/` — promoted v0.7.0 reducer REPL. It uses certified starter Decks and the authoritative setup/turn/battle reducers directly; it does not mask unsupported battle effects.
 - `gui/` — promoted v0.7.0 reducer GUI. It uses certified starter Decks, player-scoped views, and the shared recorded-action dispatcher; older generic v0.5.6 runners are preserved under `legacy/digital-engine-dev-runners/` as non-executable provenance.
 
 The promoted `content/current.ts` boundary currently identifies the v0.7.0 implementation baseline and exposes only that promoted shared-rules/starter/setup/private-view surface. Historical procedure libraries are not re-exported through `current.ts`; new engine work must implement the maintained release contract without depending on archived rule implementations.
 
-There is intentionally no generic `content/index.ts` barrel. Active code must import `content/current.ts` when it means the promoted engine surface, or an explicit versioned adapter such as `content/v06.ts` or `content/v070.ts` when it means a historical or released rules generation.
+There is intentionally no generic `content/index.ts` barrel. Active code must import `content/current.ts` when it means the promoted engine surface, or `content/v070.ts` when it needs that released content contract explicitly.
 
 Issue #741 tracks completion of the playable engine against the current released rules.
 
@@ -58,11 +58,9 @@ npm run typecheck
 npm test
 npm run dev:v070:cli
 npm run dev:v070:gui
-npm run dev:legacy:cli
-npm run dev:legacy:gui
 ```
 
-The broad test/typecheck commands exercise maintained source and explicitly versioned migration work that remains under `src/`. Everything under `legacy/` is intentionally outside the default TypeScript/Vitest authority boundary. `dev:v070:cli` and `dev:v070:gui` expose the promoted v0.7.0 reducer over certified starter Decks; both preserve explicit unsupported-effect halts, and the GUI defaults to player-scoped hidden-information views. They are developer surfaces, not claims of v0.7.1 parity or complete battle-card support. The `dev:legacy:*` commands are explicit opt-in runners for `legacy/digital-engine-v06/` only.
+The broad test/typecheck commands exercise maintained source under `src/`. Everything under `legacy/` is intentionally outside the default TypeScript/Vitest authority boundary and is not exposed through development commands. `dev:v070:cli` and `dev:v070:gui` expose the promoted v0.7.0 reducer over certified starter Decks; both preserve explicit unsupported-effect halts, and the GUI defaults to player-scoped hidden-information views. They are developer surfaces, not claims of v0.7.1 parity or complete battle-card support.
 
 ## Reuse policy
 
