@@ -5,6 +5,9 @@ import {
   type V070GameView as V070PostDrawGameView,
 } from './views-postdraw';
 import { pendingV070WarBondsChoice } from './war-bonds';
+import {
+  viewV070ReembodimentRecoveryForPlayer,
+} from './reembodiment';
 
 export * from './views-postdraw';
 
@@ -15,8 +18,19 @@ export interface V070WarBondsView {
   candidateHandInstanceIds?: string[];
 }
 
+export interface V070ReembodimentRecoveryView {
+  playerId: PlayerId;
+  assetInstanceId: string;
+  sourceLabel: string;
+  triggerValue: number;
+  candidateCount: number;
+  duringBattle: boolean;
+  candidateInstanceIds?: string[];
+}
+
 export type V070GameView = V070PostDrawGameView & {
   pendingWarBondsChoice: V070WarBondsView | null;
+  pendingReembodimentRecovery: V070ReembodimentRecoveryView | null;
 };
 
 export function viewV070GameForPlayer(
@@ -39,9 +53,12 @@ export function viewV070GameForPlayer(
           : {}),
       }
     : null;
+  const pendingReembodimentRecovery =
+    viewV070ReembodimentRecoveryForPlayer(state, viewer);
 
   return {
     ...core,
     pendingWarBondsChoice,
+    pendingReembodimentRecovery,
   };
 }
