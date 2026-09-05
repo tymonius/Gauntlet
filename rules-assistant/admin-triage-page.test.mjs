@@ -11,11 +11,12 @@ test("admin dashboard exposes deterministic triage controls and both scopes", ()
   expect(ADMIN_PAGE_WITH_RULES_TRIAGE).toContain('id="triage-export"');
 });
 
-test("triage page is markup-only so runtime delivery is independently testable", () => {
+test("triage enhancer adds markup only and does not inject its runtime into the legacy script", () => {
   expect(ADMIN_PAGE_WITH_RULES_TRIAGE).toContain("Waiting for refinement runtime");
   expect(ADMIN_PAGE_WITH_RULES_TRIAGE).not.toContain("var rulesTriageEngine=");
-  expect(ADMIN_PAGE_WITH_RULES_TRIAGE).not.toContain("/api/admin/review-intelligence");
-  expect(ADMIN_PAGE_WITH_RULES_TRIAGE).not.toContain("/api/admin/export?format=json");
+  expect(ADMIN_PAGE_WITH_RULES_TRIAGE).not.toContain("createTriageEngine.toString");
+  expect(ADMIN_PAGE_WITH_RULES_TRIAGE).not.toContain("refreshRulesTriage");
+  expect(ADMIN_PAGE_WITH_RULES_TRIAGE).not.toContain("gauntlet:rules-triage");
 });
 
 test("triage enhancement is idempotent", () => {
