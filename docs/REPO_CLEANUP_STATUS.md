@@ -130,7 +130,7 @@ CI is green. Next: audit other active version-named validators individually befo
 
 ## Version-neutral Rulebook production
 
-Branch: `cleanup/version-agnostic-rulebook-production` (stacked on #1470). The user confirmed that durable, version-neutral architecture is a cleanup priority. The maintained v0.7.0 and v0.7.1 renderers now pass their source and release identity explicitly to `scripts/build-rulebook-production.py`; they no longer import the v0.6.3 wrapper, transient path, or renderer. The v0.6.3 entrypoint remains fixed as a historical compatibility wrapper.
+PR: [#1479](https://github.com/tymonius/Gauntlet/pull/1479). Branch: `cleanup/version-agnostic-rulebook-production` (stacked on #1470). The user confirmed that durable, version-neutral architecture is a cleanup priority. The maintained v0.7.0 and v0.7.1 renderers now pass their source and release identity explicitly to `scripts/build-rulebook-production.py`; they no longer import the v0.6.3 wrapper, transient path, or renderer. The v0.6.3 entrypoint remains fixed as a historical compatibility wrapper.
 
 This tranche also repairs the publication ownership boundary left after the root compatibility aliases were retired. Current and historical booklet paths address `legacy/v0.6.1-rulebook-publication/` directly, browser runners accept its repository URL prefix, and generated asset references resolve from canonical repository paths. The shared visual system remains identified as v0.6.1 provenance, while active adapters and workflows are independent of a stale rules version.
 
