@@ -1,6 +1,9 @@
 name: Materialize Replacement Deed Ornament Provenance
 
 on:
+  push:
+    branches:
+      - audit/replace-deed-ornament
   pull_request:
     paths:
       - card-design/deed-ornamental-divider.svg
@@ -17,11 +20,11 @@ jobs:
   materialize:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout PR branch with full history
+      - name: Checkout branch with full history
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ github.head_ref }}
+          ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Add replacement ornament provenance batch
         run: |
@@ -148,5 +151,5 @@ This closes the current legacy-remediation backlog. The governance policy and CI
             echo "No materialization changes."
           else
             git commit -m "Document replacement Deed ornament provenance"
-            git push origin HEAD:${{ github.head_ref }}
+            git push origin HEAD:${{ github.head_ref || github.ref_name }}
           fi
