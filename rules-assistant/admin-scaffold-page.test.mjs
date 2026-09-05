@@ -12,6 +12,13 @@ test("admin dashboard exposes cluster-specific refinement scaffolding", () => {
   expect(page).toContain("buildRefinementScaffold");
 });
 
+test("scaffold shares the authenticated triage runtime instead of creating a second admin client", () => {
+  expect(page).toContain("document.addEventListener('gauntlet:rules-triage'");
+  expect(page).toContain("typeof refreshRulesTriage==='function'");
+  expect(page).toContain("saveFile(blob,'gauntlet-rules-refinement-");
+  expect(page).not.toContain('id="rules-refinement-scaffold-script"');
+});
+
 test("scaffold dashboard stays on read-only admin data paths", () => {
   expect(page).toContain("/api/admin/export?format=json");
   expect(page).toContain("/api/admin/review-intelligence");
@@ -21,4 +28,5 @@ test("scaffold dashboard stays on read-only admin data paths", () => {
 
 test("scaffold enhancer is idempotent", () => {
   expect(enhanceRulesScaffoldAdmin(page)).toBe(page);
+  expect((page.match(/var rulesRefinementScaffoldEngine=/g) || []).length).toBe(1);
 });

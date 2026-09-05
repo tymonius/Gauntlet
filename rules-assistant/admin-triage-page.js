@@ -15,37 +15,45 @@ const TRIAGE_STYLE = String.raw`
 const TRIAGE_HTML = String.raw`    <section id="rules-triage" class="triage-panel">
       <div class="triage-head"><div><p class="eyebrow">Refinement triage</p><h2>Deterministic attention queue</h2><p>Unreviewed live interactions are scored from feedback, confidence, ruling status, recorded authority, retrieval diagnostics, and conversation continuity. Clusters identify likely systemic root causes; no model call is made.</p></div><div class="triage-actions"><button id="triage-refresh" type="button" class="btn alt">Refresh triage</button><button id="triage-export" type="button" class="btn alt" disabled>Export triage JSON</button></div></div>
       <div id="triage-summary" class="triage-summary"><article class="triage-stat"><strong>—</strong><span>High priority</span></article><article class="triage-stat"><strong>—</strong><span>Medium priority</span></article><article class="triage-stat"><strong>—</strong><span>Attention queue</span></article><article class="triage-stat"><strong>—</strong><span>Root-cause clusters</span></article></div>
-      <div id="triage-clusters" class="triage-clusters"><div class="triage-empty">Open the dashboard to calculate triage.</div></div>
-      <p id="triage-status" class="triage-status"></p>
+      <div id="triage-clusters" class="triage-clusters"><div class="triage-empty">Calculating triage…</div></div>
+      <p id="triage-status" class="triage-status">Waiting for the authenticated dashboard.</p>
     </section>
 `;
 
-function browserScript() {
+function runtimeCode() {
   const engineFactory = createTriageEngine.toString();
-  return String.raw`<script id="rules-triage-script">
-(function(){
-  var engine=(${engineFactory})();
-  var lastReport=null,loading=false;
-  var summaryEl=document.getElementById('triage-summary'),clustersEl=document.getElementById('triage-clusters'),statusEl=document.getElementById('triage-status'),exportButton=document.getElementById('triage-export');
-  function esc(value){return String(value==null?'':value).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]})}
-  function adminApi(path){var token=sessionStorage.getItem('gauntlet_rules_admin_token')||'';return fetch(path,{headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'}}).then(function(response){if(response.status===401)throw new Error('Admin token was rejected.');if(!response.ok)throw new Error('Triage request failed: '+response.status);return response.json()})}
-  function stat(value,label){return '<article class="triage-stat"><strong>'+esc(value)+'</strong><span>'+esc(label)+'</span></article>'}
-  function render(report){
-    lastReport=report;exportButton.disabled=false;
-    summaryEl.innerHTML=stat(report.stats.high,'High priority')+stat(report.stats.medium,'Medium priority')+stat(report.stats.attention,'Attention queue')+stat(report.stats.clusters,'Root-cause clusters');
-    if(!report.clusters.length){clustersEl.innerHTML='<div class="triage-empty">No unreviewed interactions currently cross the deterministic attention threshold.</div>';return}
-    clustersEl.innerHTML=report.clusters.map(function(cluster){var reps=cluster.representatives.map(function(item){var why=(item.reasons||[]).slice(0,2).join(' · ');return '<li><span class="triage-score">'+esc(item.score)+'</span> · '+esc(item.question||'(blank question)')+(why?'<span class="triage-reason">'+esc(why)+'</span>':'')+'</li>'}).join('');return '<article class="triage-cluster"><div class="triage-cluster-head"><h3>'+esc(cluster.label)+'</h3><div class="triage-cluster-meta"><span class="badge '+(cluster.highCount?'bad':'')+'">'+esc(cluster.count)+' interaction'+(cluster.count===1?'':'s')+'</span>'+(cluster.highCount?'<span class="badge bad">'+esc(cluster.highCount)+' high</span>':'')+'</div></div><p><strong>Review batch:</strong> '+esc(cluster.count)+' · average score '+esc(cluster.averageScore)+' · max '+esc(cluster.maxScore)+'</p><p>'+esc(cluster.recommendedAction)+'</p><ol>'+reps+'</ol></article>'}).join('');
+  return String.raw`
+  var rulesTriageEngine=(${engineFactory})();
+  var rulesTriageLastReport=null,rulesTriageLoading=false;
+  var rulesTriageSummary=document.getElementById('triage-summary'),rulesTriageClusters=document.getElementById('triage-clusters'),rulesTriageStatus=document.getElementById('triage-status'),rulesTriageExport=document.getElementById('triage-export');
+  function rulesTriageStat(value,labelText){return '<article class="triage-stat"><strong>'+esc(value)+'</strong><span>'+esc(labelText)+'</span></article>'}
+  function renderRulesTriage(report){
+    rulesTriageLastReport=report;rulesTriageExport.disabled=false;
+    rulesTriageSummary.innerHTML=rulesTriageStat(report.stats.high,'High priority')+rulesTriageStat(report.stats.medium,'Medium priority')+rulesTriageStat(report.stats.attention,'Attention queue')+rulesTriageStat(report.stats.clusters,'Root-cause clusters');
+    if(!report.clusters.length){rulesTriageClusters.innerHTML='<div class="triage-empty">'+(report.stats.unreviewed?'No unreviewed interactions currently cross the deterministic attention threshold.':'There are no unreviewed interactions to triage right now.')+'</div>'}
+    else{rulesTriageClusters.innerHTML=report.clusters.map(function(cluster){var reps=cluster.representatives.map(function(item){var why=(item.reasons||[]).slice(0,2).join(' · ');return '<li><span class="triage-score">'+esc(item.score)+'</span> · '+esc(item.question||'(blank question)')+(why?'<span class="triage-reason">'+esc(why)+'</span>':'')+'</li>'}).join('');return '<article class="triage-cluster"><div class="triage-cluster-head"><h3>'+esc(cluster.label)+'</h3><div class="triage-cluster-meta"><span class="badge '+(cluster.highCount?'bad':'')+'">'+esc(cluster.count)+' interaction'+(cluster.count===1?'':'s')+'</span>'+(cluster.highCount?'<span class="badge bad">'+esc(cluster.highCount)+' high</span>':'')+'</div></div><p><strong>Review batch:</strong> '+esc(cluster.count)+' · average score '+esc(cluster.averageScore)+' · max '+esc(cluster.maxScore)+'</p><p>'+esc(cluster.recommendedAction)+'</p><ol>'+reps+'</ol></article>'}).join('')}
+    document.dispatchEvent(new CustomEvent('gauntlet:rules-triage',{detail:report}));
   }
-  function refresh(){if(loading)return Promise.resolve();var token=sessionStorage.getItem('gauntlet_rules_admin_token')||'';if(!token)return Promise.resolve();loading=true;statusEl.textContent='Calculating deterministic triage…';return Promise.all([adminApi('/api/admin/export?format=json'),adminApi('/api/admin/review-intelligence')]).then(function(results){var report=engine.triageInteractions(results[0].interactions||[],results[1]||{});render(report);statusEl.textContent='Scored '+report.stats.unreviewed+' unreviewed interaction'+(report.stats.unreviewed===1?'':'s')+'. '+report.stats.attention+' currently need attention.'}).catch(function(error){statusEl.textContent=error.message}).finally(function(){loading=false})}
-  function saveReport(){if(!lastReport)return;var safe={schema:lastReport.schema,generatedAt:lastReport.generatedAt,source:'Live Rules Arbiter deterministic triage',privacy:{omitted:['anonymous session identifiers','raw IP addresses','OpenAI safety identifiers'],note:'Conversation linkage was used in-memory for continuity scoring but session identifiers are not exported.'},stats:lastReport.stats,clusters:lastReport.clusters,interactions:lastReport.interactions},blob=new Blob([JSON.stringify(safe,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='gauntlet-rules-triage-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},0)}
-  document.getElementById('triage-refresh').addEventListener('click',refresh);
-  exportButton.addEventListener('click',saveReport);
-  var dashboard=document.getElementById('dashboard');
-  function refreshWhenVisible(){if(dashboard&&!dashboard.classList.contains('hidden'))refresh()}
-  if(dashboard)new MutationObserver(refreshWhenVisible).observe(dashboard,{attributes:true,attributeFilter:['class']});
-  setTimeout(refreshWhenVisible,0);
-})();
-</script>`;
+  function refreshRulesTriage(){
+    if(rulesTriageLoading)return Promise.resolve(rulesTriageLastReport);
+    if(!state.token){rulesTriageStatus.textContent='Unlock the dashboard before refreshing triage.';return Promise.resolve(null)}
+    rulesTriageLoading=true;rulesTriageStatus.textContent='Calculating deterministic triage…';
+    return Promise.all([api('/api/admin/export?format=json').then(function(r){return r.json()}),api('/api/admin/review-intelligence').then(function(r){return r.json()})]).then(function(results){var report=rulesTriageEngine.triageInteractions(results[0].interactions||[],results[1]||{});renderRulesTriage(report);rulesTriageStatus.textContent=report.stats.unreviewed?'Scored '+report.stats.unreviewed+' unreviewed interaction'+(report.stats.unreviewed===1?'':'s')+'. '+report.stats.attention+' currently need attention.':'All '+String((results[0].interactions||[]).length)+' recorded interactions are already reviewed; there is nothing new to triage.';return report}).catch(function(error){rulesTriageStatus.textContent=error.message;throw error}).finally(function(){rulesTriageLoading=false})
+  }
+  function saveRulesTriage(){if(!rulesTriageLastReport)return;var safe={schema:rulesTriageLastReport.schema,generatedAt:rulesTriageLastReport.generatedAt,source:'Live Rules Arbiter deterministic triage',privacy:{omitted:['anonymous session identifiers','raw IP addresses','OpenAI safety identifiers'],note:'Conversation linkage was used in-memory for continuity scoring but session identifiers are not exported.'},stats:rulesTriageLastReport.stats,clusters:rulesTriageLastReport.clusters,interactions:rulesTriageLastReport.interactions},blob=new Blob([JSON.stringify(safe,null,2)],{type:'application/json'});saveFile(blob,'gauntlet-rules-triage-'+new Date().toISOString().slice(0,10)+'.json')}
+  document.getElementById('triage-refresh').onclick=function(){refreshRulesTriage().catch(function(){})};
+  rulesTriageExport.onclick=saveRulesTriage;
+  function refreshRulesTriageWhenVisible(){if(dashboard&&!dashboard.classList.contains('hidden'))refreshRulesTriage().catch(function(){})}
+  if(dashboard)new MutationObserver(refreshRulesTriageWhenVisible).observe(dashboard,{attributes:true,attributeFilter:['class']});
+  setTimeout(refreshRulesTriageWhenVisible,0);
+`;
+}
+
+function injectRuntime(page, code) {
+  const marker = "\n}());\n</script>";
+  const index = page.lastIndexOf(marker);
+  if (index < 0) return null;
+  return page.slice(0, index) + `\n${code}` + page.slice(index);
 }
 
 export function enhanceRulesTriageAdmin(page = ADMIN_PAGE_WITH_RULES_INTELLIGENCE) {
@@ -54,8 +62,8 @@ export function enhanceRulesTriageAdmin(page = ADMIN_PAGE_WITH_RULES_INTELLIGENC
   if (!enhanced.includes('<form id="filters" class="filters">')) return page;
   enhanced = enhanced.replace('</style>', `${TRIAGE_STYLE}\n  </style>`);
   enhanced = enhanced.replace('    <form id="filters" class="filters">', `${TRIAGE_HTML}    <form id="filters" class="filters">`);
-  enhanced = enhanced.replace('</body>', `${browserScript()}\n</body>`);
-  return enhanced;
+  const injected = injectRuntime(enhanced, runtimeCode());
+  return injected || page;
 }
 
 export const ADMIN_PAGE_WITH_RULES_TRIAGE = enhanceRulesTriageAdmin();
