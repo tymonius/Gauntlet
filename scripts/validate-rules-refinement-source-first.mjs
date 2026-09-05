@@ -6,7 +6,7 @@ export const SOURCE_AUTHORITY_PATHS = Object.freeze([
   'rulebook/player-facing/current-rulebook.md',
   'game-data/current-game.json',
 ]);
-export const REFINEMENT_LEDGER_PATH = 'rules-assistant/refinement-resolution-ledger.json';
+export const REFINEMENT_LEDGER_PATH = 'artifacts/rules-refinement/resolution-ledger.json';
 export const REFINEMENT_LEDGER_SCHEMA = 'gauntlet.rules-refinement-resolution-ledger.v1';
 
 function normalize(value) {
@@ -159,7 +159,7 @@ function readChangedFiles(filePath) {
 
 function loadChangedManifests(root, changedFiles) {
   return changedFiles
-    .filter((file) => file.startsWith('artifacts/rules-refinement/') && file.endsWith('.json'))
+    .filter((file) => file.startsWith('artifacts/rules-refinement/') && file.endsWith('.json') && file !== REFINEMENT_LEDGER_PATH)
     .map((file) => {
       const absolute = path.join(root, file);
       if (!fs.existsSync(absolute)) return null;
