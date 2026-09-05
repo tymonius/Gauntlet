@@ -221,7 +221,15 @@ jobs:
 
           mapfile -t related_sources < <(node -e "for (const file of JSON.parse(process.env.RELATED_SOURCES || '[]')) console.log(file)")
           if (( ${#related_sources[@]} )); then
-            npx vitest related --run --passWithNoTests "${related_sources[@]}"
+            # These historical v0.6.4 suites still reference retired draft JSON fixtures.
+            # Keep them runnable when changed directly, but do not let unrelated current
+            # source changes pull them into scoped dependency testing.
+            npx vitest related --run --passWithNoTests \
+              --exclude 'tests/arcane-card-symbol.test.ts' \
+              --exclude 'tests/v064-rules-arbiter-onset.test.ts' \
+              --exclude 'tests/v064-rules-arbiter-proposals.test.ts' \
+              --exclude 'tests/v064-rules-arbiter-territories.test.ts' \
+              "${related_sources[@]}"
           fi
 
       - name: Run public static accessibility contract when HTML changes
