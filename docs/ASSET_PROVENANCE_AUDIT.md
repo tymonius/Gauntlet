@@ -7,7 +7,7 @@ This file records evidence-backed remediation of assets that were initially clas
 
 ## Resolved evidence families
 
-The explicit provenance ledger now contains **249 records**. Every remediation record is tied to a historical Git identity checkpoint and the materializer requires the current binary to be byte-for-byte identical to the binary at that checkpoint before writing its SHA-256 record.
+The explicit provenance ledger now contains **367 records** for **368 current governed files**. Every remediation record is tied to a historical Git identity checkpoint and the materializer requires the current binary to be byte-for-byte identical to the binary at that checkpoint before writing its SHA-256 record.
 
 ### Batch 1 — faction leader artwork
 
@@ -35,8 +35,6 @@ This corpus-level remediation uses `asset_prefixes` because the evidence itself 
 **Assets:** 6
 
 The six active faction symbols were directly attested as hybrid project work: OpenAI-generated design concepts produced under Tymon Scott's direction, followed by Tymon's manual cleanup/refinement in Adobe Illustrator. The final active SVGs are therefore recorded as `project-created`, with the generated concept stage documented in their source and rights basis.
-
-Historical candidate files under `images/faction-symbols/candidates/` are intentionally excluded from this batch because their individual lineage has not yet been established.
 
 ### Batch 4 — card parchment backgrounds
 
@@ -114,6 +112,66 @@ The derivative presentation files are recorded as `project-created`; the underly
 
 `images/artwork/supplemental/mystics/rite-completed.webp` is a project-created composite. The 2026-08-13/14 project conversation records iterative generation and selection of the parchment/residue image, followed by the explicit decision to add **Completed** with P22 Declaration Pro rather than relying on generated text. The image-generation component is covered by the existing OpenAI rights basis; the finished typography uses the same Adobe Fonts commercial/output rights basis documented for the Gauntlet wordmark family. The record does not authorize redistribution of the P22 font software.
 
+### Batch 14 — 3D-workflow 2D references and turnarounds
+
+**Status:** Resolved  
+**Assets:** 43
+
+All governed assets under `images/3d/2d assets/` were directly attested by the project owner on 2026-09-05 as created through OpenAI/ChatGPT image generation under Tymon Scott's direction. Some exact repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus therefore contains generated originals, extracted views, turnarounds, and project-edited variants.
+
+The remediation records the corpus as `project-created` because the attestation expressly covers the complete directory and some exact binaries include manual project-authored editing. OpenAI-generated source provenance remains documented in the source and rights fields.
+
+### Batch 15 — reference and reserve artwork
+
+**Status:** Resolved  
+**Assets:** 53
+
+All governed files under `images/artwork/reference/` were directly attested on 2026-09-05 as generated through OpenAI/ChatGPT under Tymon Scott's direction. This includes environment, faction, leader-reference, and reserve/alternate artwork. The project-owner attestation is the primary corpus-level provenance evidence; historical prompts and repository history remain corroborating evidence where available rather than prerequisites for classification.
+
+### Batch 16 — historical hero sketches and plates
+
+**Status:** Resolved  
+**Assets:** 8
+
+The eight remaining hero-sketch and hero-plate files under `images/sketches/` were directly attested on 2026-09-05 as generated through OpenAI/ChatGPT under Tymon Scott's direction. These are separate from the twelve accepted leader design sheets resolved in Batch 1.
+
+### Batch 17 — Diplomats Ratified wax seal
+
+**Status:** Resolved  
+**Assets:** 1
+
+`images/artwork/supplemental/diplomats/ratified-wax-seal.webp` was directly attested on 2026-09-05 as generated through OpenAI/ChatGPT under Tymon Scott's direction.
+
+### Batch 18 — historical/candidate faction symbols
+
+**Status:** Resolved  
+**Assets:** 7
+
+The seven governed historical/candidate Military faction-symbol files under `images/faction-symbols/candidates/` were directly attested on 2026-09-05 as made through OpenAI/ChatGPT under Tymon Scott's direction. They remain historical candidates rather than active faction marks. This provenance classification is distinct from Batch 3, where the active symbols include Tymon's manual Illustrator cleanup/refinement.
+
+### Batch 19 — Chief Justice / Rules Arbiter imagery
+
+**Status:** Resolved  
+**Assets:** 3
+
+The three governed files under `images/rules-arbiter/` were directly attested on 2026-09-05 as generated through OpenAI/ChatGPT under Tymon Scott's direction.
+
+### Batch 20 — remaining site artwork
+
+**Status:** Resolved  
+**Assets:** 2
+
+`images/artwork/site/gauntlet-tts-playtest-table.webp` and `images/artwork/site/homepage-hero-three-leaders.webp` were directly attested on 2026-09-05 as made through OpenAI/ChatGPT under Tymon Scott's direction. They are recorded separately from the command-tent gameplay painting resolved in Batch 12.
+
+### Batch 21 — social-preview composite
+
+**Status:** Resolved  
+**Assets:** 1
+
+`images/social/gauntlet-og-1200x630-v2.jpg` was directly attested on 2026-09-05 as a composite assembled from other images that OpenAI/ChatGPT had generated under Tymon Scott's direction. Repository PR #364 (`https://github.com/tymonius/Gauntlet/pull/364`) independently documents the social-preview artwork and notes that the committed preview was produced through a temporary image-generation workflow. The finished preview is recorded as `project-created`, with its generated input provenance documented in the source chain.
+
+The eight owner-attested families in Batches 14–21 all use repository commit `c9298f61c4a1d734b7652d6b262d67b22fee71d6` as their identity checkpoint. That checkpoint ties the owner's corpus-level attestations to the exact governed binaries subsequently materialized into the ledger.
+
 ## Controls applied
 
 `.github/asset-provenance-remediation.json` records each evidence family and its exact paths or tightly scoped corpus prefixes. `.github/scripts/materialize-asset-provenance.py` refuses to materialize a record unless the current binary is byte-for-byte identical to the binary at its documented historical identity checkpoint, then computes the checked-in file's SHA-256. Production CI runs the materializer in read-only `--check` mode and then runs the normal provenance validator.
@@ -122,24 +180,21 @@ This means similarly named, visually similar, derived, or later-modified files d
 
 ## Remaining legacy backlog
 
-A repository-wide inventory after materializing the thirteen evidence families found **368 current governed files**, **249 explicit records**, and **119 files still `legacy-unresolved`**. It found **zero unrecorded post-baseline anomalies**: every unresolved file is byte-identical to its baseline version rather than a new or silently changed governed asset.
+A fresh repository-wide inventory after materializing Batches 14–21 found:
 
-The remaining unresolved files group as follows:
+- **368 current governed files**;
+- **367 explicit provenance records**;
+- **1 current `legacy-unresolved` file**;
+- **0 unrecorded post-baseline anomalies**.
 
-- `images/artwork/reference/`: 53 — environment/faction/leader references and reserve variants;
-- `images/3d/2d assets/`: 43 — character/reference inputs and turnarounds used in the 3D workflow, distinct from the five resolved Tripo3D output archives;
-- `images/sketches/`: 8 — hero sketch/hero-plate assets outside the accepted leader-art batch;
-- `images/faction-symbols/`: 7 — historical/candidate military-symbol files intentionally excluded from the active-symbol attestation;
-- `images/rules-arbiter/`: 3 — Chief Justice imagery;
-- `images/artwork/site/`: 2 — the TTS playtest-table screenshot and the homepage three-leader hero;
-- `card-design/deed-ornamental-divider.svg`: 1 — traced from an external ornament whose original source/license has not yet been recovered;
-- `images/artwork/supplemental/diplomats/ratified-wax-seal.webp`: 1 — Diplomats supplemental seal graphic;
-- `images/social/gauntlet-og-1200x630-v2.jpg`: 1 — social preview graphic whose source chain includes the still-unresolved homepage hero.
+The sole current unresolved governed asset is:
+
+- `card-design/deed-ornamental-divider.svg` — traced from an external ornament whose original source/license has not yet been recovered.
 
 ### Known external-source exception requiring action
 
-`card-design/deed-ornamental-divider.svg` is intentionally **not** being classified from the project owner's general statement that no other external artwork is known. Repository/project history is more specific: on 2026-08-20 the project owner instructed, **"Just trace the one I found"**, and the resulting divider was traced directly into a clean SVG with no redesign. Repository commit `625174164c31231f026f184162fdbe09dc204398` is titled "Add traced Deed ornamental divider," and PR #834 documents use of the traced ornament. The original ornament's source URL, creator, public-domain status, or license has not been recovered. Until that evidence is found, the divider should remain `legacy-unresolved` or be replaced with an original/verified-licensed ornament.
+`card-design/deed-ornamental-divider.svg` is intentionally **not** being classified from the project owner's general statement that no other external artwork is known. Repository/project history is more specific: on 2026-08-20 the project owner instructed, **"Just trace the one I found"**, and the resulting divider was traced directly into a clean SVG with no redesign. Repository commit `625174164c31231f026f184162fdbe09dc204398` is titled "Add traced Deed ornamental divider," and PR #834 documents use of the traced ornament. The original ornament's source URL, creator, public-domain status, or license has not been recovered.
 
-The project owner has stated that, other than known font/licensing matters, no additional outside visual/3D source is presently known. That statement remains useful audit context but is not used as a blanket origin classification when repository or conversation evidence is more specific or an exact creation workflow has not yet been established.
+Until that evidence is found, the divider should remain `legacy-unresolved` or be replaced with an original or verified-licensed ornament. No other current governed asset remains unresolved by the current-file inventory.
 
-The next remediation pass should prioritize the 43 3D reference inputs/turnarounds, the 53 reference/reserve images, the hero sketch/plate family, Chief Justice imagery, and the remaining site/supplemental graphics. Historical military-symbol candidates should remain separate until their individual lineage is established. Where evidence is insufficient, the asset remains `legacy-unresolved` or becomes a replacement candidate.
+The project owner has stated that, other than known font/licensing matters, no additional outside visual/3D source is presently known. That statement remains useful audit context but is not used to override more specific repository or conversation evidence such as the Deed divider's documented external-source history.
