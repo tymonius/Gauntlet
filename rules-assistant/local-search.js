@@ -266,11 +266,12 @@ export function buildCanonicalDocuments(canonicalData, siteOrigin = "https://gau
 export function retrieveRules(corpus, query, options = {}) {
   const limit = Math.max(1, Math.min(Number(options.limit) || 6, 12));
   const documents = Array.isArray(corpus?.documents) ? corpus.documents : [];
-  const normalizedQuery = normalizeText(query);
-  const baseQueryTokens = tokenize(query);
+  const conversationFocus = deriveConversationQueryFocus(query);
+  const scoringQuery = conversationFocus.contextual ? conversationFocus.query : query;
+  const normalizedQuery = normalizeText(scoringQuery);
+  const baseQueryTokens = tokenize(scoringQuery);
   const queryTokens = expandQueryTokens(baseQueryTokens, normalizedQuery);
   const queryPhrases = buildPhrases(baseQueryTokens);
-  const conversationFocus = deriveConversationQueryFocus(query);
   const excerptTokens = [...new Set([...conversationFocus.tokens, ...queryTokens])];
 
   return documents
@@ -304,20 +305,28 @@ export function retrieveRules(corpus, query, options = {}) {
 
 export function deriveConversationQueryFocus(query) {
   const raw = String(query || "").trim();
-  if (!raw) return { contextual: false, tokens: [], phrases: [], segments: [] };
+  if (!raw) return { contextual: false, query: "", tokens: [], phrases: [], segments: [] };
 
   const segments = raw
     .split(/(?<=[.!?])\s+|\n+/)
     .map((segment) => segment.trim())
     .filter(Boolean)
-    .slice(-5);
+    .slice(-6);
   if (segments.length < 2) {
-    return { contextual: false, tokens: [], phrases: [], segments };
+    return { contextual: false, query: raw, tokens: [], phrases: [], segments };
   }
 
+  const finalSegment = segments[segments.length - 1];
+  const finalWordCount = normalizeText(finalSegment).split(/[^a-z0-9]+/).filter(Boolean).length;
+  const terseFollowUp = finalWordCount <= 8;
+  if (!terseFollowUp) {
+    return { contextual: false, query: raw, tokens: [], phrases: [], segments };
+  }
+
+  const recentSegments = segments.slice(-4);
+  const tokenized = recentSegments.map((segment) => tokenize(segment));
   const scored = new Map();
   const presence = new Map();
-  const tokenized = segments.map((segment) => tokenize(segment));
   tokenized.forEach((tokens, index) => {
     const weight = index + 1;
     const unique = new Set(tokens);
@@ -342,6 +351,7 @@ export function deriveConversationQueryFocus(query) {
 
   return {
     contextual: true,
+    query: recentSegments.join(" "),
     tokens,
     phrases: [...phraseSet].slice(-10),
     segments
@@ -621,7 +631,7 @@ function cleanMarkdown(value) {
     .replace(/^\s*[-*]\s+/gm, "• ")
     .replace(/^\s*\d+\.\s+/gm, (match) => match.trimStart())
     .replace(/\*\*(.*?)\*\*/g, "$1")
-    .replace(/\*(.*?)\*/g, "$1")
+    .replace(/\*(.*?)\*\*/g, "$1")
     .replace(/`([^`]+)`/g, "$1")
     .replace(/\[(.*?)\]\((.*?)\)/g, "$1")
     .replace(/\n{3,}/g, "\n\n")
