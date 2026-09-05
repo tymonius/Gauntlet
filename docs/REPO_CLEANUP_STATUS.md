@@ -100,7 +100,7 @@ PR: [#1459](https://github.com/tymonius/Gauntlet/pull/1459). Branch: `cleanup/ar
 
 ## Historical adapter archival
 
-Branch: `cleanup/archive-v06-content-adapters` (stacked on #1459). Move the remaining historical content adapters and shared legacy content types from active `src/content/` into the historical engine package. Remove the old package-level development, validation, release, print, and data commands while preserving source for the later tooling-lifecycle audit. Update historical validators to read the archived path.
+PR: [#1466](https://github.com/tymonius/Gauntlet/pull/1466). Branch: `cleanup/archive-v06-content-adapters` (stacked on #1459). The remaining historical content adapters and shared legacy content types have moved from active `src/content/` into the historical engine package. Old package-level development, validation, release, print, preview, and data commands are removed while source remains for the tooling-lifecycle audit. Historical validators read the archived path.
 
 Next: repair historical validation paths and audit browser/renderer ownership. Full-suite discovery remains a known validation-boundary debt, alongside baseline stale renderer assertions; do not mistake scoped green CI results for a fully green repository suite.
 
