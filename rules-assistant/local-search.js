@@ -631,7 +631,7 @@ function cleanMarkdown(value) {
     .replace(/^\s*[-*]\s+/gm, "• ")
     .replace(/^\s*\d+\.\s+/gm, (match) => match.trimStart())
     .replace(/\*\*(.*?)\*\*/g, "$1")
-    .replace(/\*(.*?)\*\*/g, "$1")
+    .replace(/\*(.*?)\*/g, "$1")
     .replace(/`([^`]+)`/g, "$1")
     .replace(/\[(.*?)\]\((.*?)\)/g, "$1")
     .replace(/\n{3,}/g, "\n\n")
