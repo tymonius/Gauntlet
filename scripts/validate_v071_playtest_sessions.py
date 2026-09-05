@@ -30,7 +30,7 @@ REQUIRED = [
     "playtest/player-mat/index.html",
     "start/index.html",
     "start/app.js",
-    "scripts/test_v063_formal_session_e2e.mjs",
+    "scripts/test-formal-session-e2e.mjs",
     "scripts/test_tracked_playtest_e2e.mjs",
 ]
 

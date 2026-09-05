@@ -11,7 +11,7 @@
     "test:current-contract": "node scripts/validate-current-public-contract.mjs",
     "test:rules-assistant": "vitest run rules-assistant/*.test.mjs",
     "test:playtest-sessions": "vitest run workers/playtest-sessions/src/*.test.mjs",
-    "test:formal-session-e2e": "node --experimental-sqlite scripts/test_v063_formal_session_e2e.mjs",
+    "test:formal-session-e2e": "node --experimental-sqlite scripts/test-formal-session-e2e.mjs",
     "test:tracked-session-e2e": "node --experimental-sqlite scripts/test_tracked_playtest_e2e.mjs",
     "test:deckbuilder": "node scripts/validate-starter-decks.mjs",
     "analytics:sync": "node scripts/sync-google-analytics.mjs",
