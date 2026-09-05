@@ -328,7 +328,9 @@ describe('v0.7.0 Retribution', () => {
     expect(state.players.B.zones.assetBank).not.toContain(retribution);
     expect(state.players.B.inquisition?.conviction).toBe(before + 2);
     expect(state.battle?.stage).toBe('resolved');
-    expect(state.battleRuntime).toBeNull();
+    expect(state.battleRuntime?.stage).toBe('aftermath');
+    expect(state.battleRuntime?.pendingRetributionResponse ?? null).toBeNull();
+    expect(state.battleRuntime?.finalJudgmentWindowOpen).toBe(true);
     expect(hasEvent(state, 'retribution_resolved')).toBe(true);
   });
 
