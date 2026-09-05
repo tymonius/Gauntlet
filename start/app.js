@@ -89,7 +89,7 @@
       summary: "Build wealth and turn it into control.",
       lesson: {
         title: "Financiers: turn cards into money, then money into property.",
-        intro: "Financiers add an economy to the battlefield. Capital is money you spend, Treasury is where you store cards to increase how much Capital you can keep, and Deeds represent ownership of Territories.",
+        intro: "Financiers add an economy to the battlefield. You begin with 2 Capital. Capital is money you spend, Treasury is where you store cards to increase how much Capital you can keep, and Deeds represent ownership of Territories.",
         steps: [
           "Put cards you can afford to delay into Treasury. The Territories you control plus the value in Treasury determine how much Capital you can keep.",
           "Spend Capital to buy Deeds or power faction effects. Each Deed you own produces more Capital at the start of your turn after Capture, so ownership helps fund more ownership.",
@@ -148,7 +148,7 @@
           firstGame: [
             "Choose Missions that line up with movement and battles you already want to take.",
             "Save Intel when a Territory effect would block a key move or operation; do not spend it just because it is available.",
-            "Use Surveillance and Interference when a hidden card truly threatens a decisive Mission or attack."
+            "Spend Intel to inspect or interfere with a hidden battle card when it could decide an important Mission or attack."
           ]
         },
         {
@@ -171,7 +171,7 @@
       summary: "Build combinations and work toward powerful rituals.",
       lesson: {
         title: "Mystics: complete Rites while playing the normal game.",
-        intro: "Mystics add three public Rites. Each Rite is a longer objective you begin now and complete later while still playing normal Gauntlet. Completing Rites gradually unlocks more of the faction.",
+        intro: "Mystics add three public Rites and can turn the Graveyard—normally outside circulation—into part of their engine. Each Rite is a longer objective you begin now and complete later while still playing normal Gauntlet. Completing Rites gradually unlocks more of the faction.",
         steps: [
           "For your first turns, focus on one Rite whose requirement fits your cards or battlefield position. Do not try to memorize the whole Rite progression at once.",
           "When you complete your first Rite, read the ability it unlocks on your faction reference and start using it from then on. Do the same after your second Rite.",
@@ -187,7 +187,7 @@
           summary: "Turn sacrifices into replacement cards and combinations.",
           ability: "The first qualifying card the Alchemist deliberately sacrifices from Hand on your turn is replaced by drawing a card. Your Leader Card tells you which sacrifices qualify.",
           firstGame: [
-            "Do not think of the Graveyard as only a place for lost cards; Mystics can make use of cards there later.",
+            "Most cards in the Graveyard are normally out of circulation. As the Alchemist, treat those lost cards as future ingredients instead of dead ends.",
             "When a Rite or Arcane effect asks you to sacrifice from Hand, try to make that your first qualifying sacrifice so Materia Prima replaces it.",
             "Focus on the Rite that best matches your current cards or battlefield position instead of trying to advance all three at once."
           ]
