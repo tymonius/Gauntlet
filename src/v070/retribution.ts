@@ -5,11 +5,15 @@ import {
   type V070GameState,
 } from './engine';
 import type { PlayerId } from './rules';
-import { isV070AssetUsable } from './asset-face-state';
 import {
-  discardV070AssetByEffect,
-  putV070AssetInGraveyardByEffect,
-} from './assets';
+  clearV070AssetFaceState,
+  isV070AssetUsable,
+} from './asset-face-state';
+import { discardV070AssetByEffect } from './assets';
+import {
+  releaseV070BoundCards,
+  v070BindingsForHost,
+} from './bindings';
 import { gainV070Conviction } from './inquisition';
 
 export const V070_RETRIBUTION_ID = 'inquisition-retribution' as const;
@@ -202,11 +206,10 @@ export function resolveV070RetributionResponse(
         'Retribution requires choosing one of the responding player’s banked Assets.',
       );
     }
-    putV070AssetInGraveyardByEffect(
+    putBankedAssetInGraveyardForRetribution(
       state,
       playerId,
       assetInstanceId,
-      'Retribution',
     );
   } else {
     if (assetInstanceId) {
@@ -235,6 +238,57 @@ export function resolveV070RetributionResponse(
     },
   });
   return pending.immediateWinner;
+}
+
+function putBankedAssetInGraveyardForRetribution(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+): void {
+  const bank = state.players[playerId].zones.assetBank;
+  const index = bank.indexOf(instanceId);
+  if (index < 0) {
+    throw new V070GameActionError(
+      'Retribution can put only a currently banked Asset in the Graveyard.',
+    );
+  }
+  const cardId = state.cardInstances[instanceId]?.cardId;
+  if (!cardId) {
+    throw new V070GameActionError(
+      `Unknown Asset instance ${instanceId}.`,
+    );
+  }
+
+  bank.splice(index, 1);
+  clearV070AssetFaceState(state, instanceId);
+  state.players[playerId].zones.graveyard.push(instanceId);
+  state.sanctions = state.sanctions.filter(
+    sanction => sanction.instanceId !== instanceId,
+  );
+
+  appendV070Event(state, {
+    type: 'asset_departed',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      instanceId,
+      cardId,
+      destination: 'graveyard',
+      removed: false,
+      reason: 'Retribution',
+    },
+  });
+
+  if (v070BindingsForHost(state, instanceId).length > 0) {
+    releaseV070BoundCards(
+      state,
+      instanceId,
+      cardId === 'military-reserve-force' ? 'graveyard' : 'discard',
+      cardId === 'military-reserve-force'
+        ? 'Reserve Force host left play'
+        : 'bound Asset host left play',
+    );
+  }
 }
 
 function requireAftermathRuntime(state: V070GameState) {
