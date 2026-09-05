@@ -6,6 +6,7 @@ import { ROOT } from '../current-game-authority.mjs';
 
 const OUTPUT = resolve(ROOT, 'artifacts/card-authority');
 const SCREENSHOT = join(OUTPUT, 'homepage-card-showcase.png');
+const STATIC_ROOT = resolve(process.argv[2] || ROOT);
 
 function contentType(path) {
   const extension = extname(path).toLowerCase();
@@ -31,8 +32,8 @@ async function startStaticServer() {
     try {
       const url = new URL(request.url || '/', 'http://127.0.0.1');
       const requestPath = decodeURIComponent(url.pathname).replace(/^\/+/, '');
-      const requested = resolve(ROOT, requestPath || 'index.html');
-      if (!requested.startsWith(`${ROOT}${sep}`) && requested !== join(ROOT, 'index.html')) {
+      const requested = resolve(STATIC_ROOT, requestPath || 'index.html');
+      if (!requested.startsWith(`${STATIC_ROOT}${sep}`) && requested !== join(STATIC_ROOT, 'index.html')) {
         response.writeHead(403).end('Forbidden');
         return;
       }
@@ -59,6 +60,7 @@ async function main() {
     throw new Error('Playwright is required for homepage physical-face consumer validation.');
   }
 
+  await stat(join(STATIC_ROOT, 'index.html'));
   await mkdir(OUTPUT, { recursive: true });
   const { server, baseUrl } = await startStaticServer();
   const browser = await chromium.launch({ headless: true });
@@ -71,7 +73,19 @@ async function main() {
     await page.goto(`${baseUrl}/`, { waitUntil: 'load', timeout: 30000 });
     const stage = page.locator('[data-card-showcase-stage]');
     await stage.scrollIntoViewIfNeeded();
-    await page.waitForFunction(() => document.querySelector('[data-card-showcase-stage]')?.dataset.ready === 'true');
+    await page.waitForFunction(() => {
+      const element = document.querySelector('[data-card-showcase-stage]');
+      return element?.dataset.ready === 'true' || element?.classList.contains('card-showcase-error');
+    }, null, { timeout: 30000 });
+
+    const stageState = await stage.evaluate(element => ({
+      ready: element.dataset.ready || '',
+      error: element.classList.contains('card-showcase-error'),
+      text: element.textContent || '',
+    }));
+    if (stageState.ready !== 'true' || stageState.error) {
+      throw new Error(`Homepage card showcase did not become ready from ${STATIC_ROOT}: ${stageState.text.trim() || 'unknown error'}.`);
+    }
 
     const frames = page.locator('.card-showcase-frame');
     const count = await frames.count();
@@ -122,8 +136,8 @@ async function main() {
     if (pageErrors.length) throw new Error(`Homepage showcase page errors:\n${pageErrors.join('\n')}`);
 
     await page.locator('#cards').screenshot({ path: SCREENSHOT });
-    await writeFile(join(OUTPUT, 'homepage-showcase-report.json'), `${JSON.stringify({ count, results }, null, 2)}\n`);
-    console.log(JSON.stringify({ homepageShowcaseFaces: count, faceIds: results.map(result => result.faceId) }, null, 2));
+    await writeFile(join(OUTPUT, 'homepage-showcase-report.json'), `${JSON.stringify({ staticRoot: STATIC_ROOT, count, results }, null, 2)}\n`);
+    console.log(JSON.stringify({ staticRoot: STATIC_ROOT, homepageShowcaseFaces: count, faceIds: results.map(result => result.faceId) }, null, 2));
   } finally {
     await page.close();
     await context.close();
