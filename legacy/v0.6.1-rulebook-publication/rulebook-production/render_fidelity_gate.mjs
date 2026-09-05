@@ -3,6 +3,8 @@ import { createHash } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 
 const BASE = 'http://127.0.0.1:8000';
+const PUBLICATION_PATH = (process.env.GAUNTLET_PUBLICATION_PATH || '').replace(/^\/+|\/+$/g, '');
+const publicationUrl = relative => PUBLICATION_PATH ? `${PUBLICATION_PATH}/${relative}` : relative;
 const OUT = '/tmp/rulebook-production-fidelity';
 await mkdir(OUT, { recursive: true });
 
@@ -35,9 +37,9 @@ function digest(buffer) {
 }
 
 try {
-  const approved = await open('rulebook-design/print-proof.html');
+  const approved = await open(publicationUrl('rulebook-design/print-proof.html'));
   await approved.evaluate(() => document.body.classList.add('color-edition'));
-  const candidate = await open('rulebook-production/fidelity-gate.html');
+  const candidate = await open(publicationUrl('rulebook-production/fidelity-gate.html'));
 
   const approvedPages = approved.locator('.page');
   const candidatePages = candidate.locator('.page');

@@ -16,3 +16,5 @@ The repository-root compatibility aliases have been retired. `legacy/v0.6.1-rule
 The manual GitHub Actions fidelity workflow executes this preserved subsystem directly and serves this directory as its HTTP root, preserving the original internal `/rulebook-design/` and `/rulebook-production/` browser paths.
 
 Do not add gameplay or Rulebook authority here. Changes should be limited to historical reproducibility and publication compatibility.
+
+Maintained release renderers may reuse this approved presentation engine only through `scripts/build-rulebook-production.py`. That adapter receives its Rulebook source and release identity explicitly; version-specific wrappers remain historical entrypoints. Browser runners set `GAUNTLET_PUBLICATION_PATH` when the repository root, rather than this directory, is the HTTP server root.

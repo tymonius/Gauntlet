@@ -2,12 +2,12 @@
    Historical Rulebook production inputs stay unchanged; this stylesheet is
    injected only by the v0.7.1 materializer. */
 
-.production-document .page[data-faction="Military"]{--faction-symbol:url("../images/faction-symbols/military.svg")}
-.production-document .page[data-faction="Diplomats"]{--faction-symbol:url("../images/faction-symbols/diplomats.svg")}
-.production-document .page[data-faction="Financiers"]{--faction-symbol:url("../images/faction-symbols/financiers.svg")}
-.production-document .page[data-faction="Intelligence"]{--faction-symbol:url("../images/faction-symbols/intelligence.svg")}
-.production-document .page[data-faction="Mystics"]{--faction-symbol:url("../images/faction-symbols/mystics.svg")}
-.production-document .page[data-faction="Inquisition"]{--faction-symbol:url("../images/faction-symbols/inquisition.svg")}
+.production-document .page[data-faction="Military"]{--faction-symbol:url("../../../images/faction-symbols/military.svg")}
+.production-document .page[data-faction="Diplomats"]{--faction-symbol:url("../../../images/faction-symbols/diplomats.svg")}
+.production-document .page[data-faction="Financiers"]{--faction-symbol:url("../../../images/faction-symbols/financiers.svg")}
+.production-document .page[data-faction="Intelligence"]{--faction-symbol:url("../../../images/faction-symbols/intelligence.svg")}
+.production-document .page[data-faction="Mystics"]{--faction-symbol:url("../../../images/faction-symbols/mystics.svg")}
+.production-document .page[data-faction="Inquisition"]{--faction-symbol:url("../../../images/faction-symbols/inquisition.svg")}
 
 .production-document .page[data-faction]{
   isolation:isolate;

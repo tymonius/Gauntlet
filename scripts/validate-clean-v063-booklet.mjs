@@ -33,10 +33,10 @@ assert.equal(manifest.design.isolated_headings, 0);
 assert(manifest.design.typography.title.includes('Georgia'), `Unexpected title face: ${manifest.design.typography.title}`);
 assert(manifest.design.typography.reading.toLowerCase().includes('adobe-caslon-pro'), `Unexpected reading face: ${manifest.design.typography.reading}`);
 assert(manifest.design.typography.utility.includes('Inter'), `Unexpected utility face: ${manifest.design.typography.utility}`);
-for (const required of ['rulebook-design/build_proofs.py','rulebook-design/proof.css','rulebook-design/render_proofs.mjs']) {
+for (const required of ['legacy/v0.6.1-rulebook-publication/rulebook-design/build_proofs.py','legacy/v0.6.1-rulebook-publication/rulebook-design/proof.css','legacy/v0.6.1-rulebook-publication/rulebook-design/render_proofs.mjs']) {
   assert(manifest.design.approved_design_sources.includes(required), `Missing approved design source binding: ${required}`);
 }
-for (const required of ['rulebook-production/build_rulebook.py','rulebook-production/build_complete_rulebook.py','rulebook-production/paginate_rulebook.mjs','rulebook-production/production.css','rulebook-production/render_rulebook.mjs']) {
+for (const required of ['legacy/v0.6.1-rulebook-publication/rulebook-production/build_rulebook.py','legacy/v0.6.1-rulebook-publication/rulebook-production/build_complete_rulebook.py','legacy/v0.6.1-rulebook-publication/rulebook-production/paginate_rulebook.mjs','legacy/v0.6.1-rulebook-publication/rulebook-production/production.css','legacy/v0.6.1-rulebook-publication/rulebook-production/render_rulebook.mjs']) {
   assert(manifest.design.production_sources.includes(required), `Missing production source binding: ${required}`);
 }
 

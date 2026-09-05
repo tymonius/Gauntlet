@@ -24,6 +24,7 @@ jobs:
             /assets/wordmark/
             /config/release-lifecycle.json
             /scripts/build-v063-rulebook-production.py
+            /scripts/build-rulebook-production.py
             /scripts/run-v063-rulebook-renderer.mjs
             /scripts/render-clean-v063-booklet.mjs
             /scripts/validate-clean-v063-booklet.mjs
@@ -34,8 +35,7 @@ jobs:
             /rulebook/index.html
             /rulebook/player-facing/chapter-11.md
             /rulebook/player-facing/corrections.js
-            /rulebook-design/
-            /rulebook-production/
+            /legacy/v0.6.1-rulebook-publication/
             /releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md
             /artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md
             /releases/v0.6.3/**
@@ -61,7 +61,7 @@ jobs:
       - name: Build and validate approved-design booklet
         run: |
           set -euo pipefail
-          python -m py_compile scripts/build-v063-rulebook-production.py
+          python -m py_compile scripts/build-rulebook-production.py scripts/build-v063-rulebook-production.py
           node --check scripts/run-v063-rulebook-renderer.mjs
           node --check scripts/render-clean-v063-booklet.mjs
           node --check scripts/validate-clean-v063-booklet.mjs

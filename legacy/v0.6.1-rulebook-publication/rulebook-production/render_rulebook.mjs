@@ -2,7 +2,8 @@ import { chromium } from 'playwright';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
-const BASE = 'http://127.0.0.1:8000/rulebook-production/full-rulebook.html';
+const PUBLICATION_PATH = (process.env.GAUNTLET_PUBLICATION_PATH || '').replace(/^\/+|\/+$/g, '');
+const BASE = `http://127.0.0.1:8000/${PUBLICATION_PATH ? `${PUBLICATION_PATH}/` : ''}rulebook-production/full-rulebook.html`;
 const OUT = '/tmp/rulebook-production';
 const REQUIRED_ANCHORS = [
   'Part I — Learn to Play',

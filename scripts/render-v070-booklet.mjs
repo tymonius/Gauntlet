@@ -21,10 +21,13 @@ const CARD_ANATOMY_PATH = path.join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Ca
 const ARCANE_TRAIT_PATH = path.join(RELEASE_DIR, `Gauntlet_${RELEASE_VERSION}_Arcane_Trait_Mark.png`);
 const PLAYER_CHAPTER_11_PATH = path.join(ROOT, 'rulebook', 'player-facing', 'chapter-11.md');
 const RELEASE_NOTES_PATH = path.join(ROOT, 'docs', 'releases', 'github', 'v0.7.0.md');
-const TRANSIENT_RULEBOOK_PATH = path.join(ROOT, 'rulebook-production', '.v063-player-facing-input.md');
+const PUBLICATION_ROOT = path.join(ROOT, 'legacy', 'v0.6.1-rulebook-publication');
+const PUBLICATION_URL_PATH = 'legacy/v0.6.1-rulebook-publication';
+const PRODUCTION_SOURCE_DIR = path.join(PUBLICATION_ROOT, 'rulebook-production');
+const TRANSIENT_RULEBOOK_PATH = path.join(PRODUCTION_SOURCE_DIR, '.player-facing-input.md');
 const PRODUCTION_DIR = '/tmp/rulebook-production';
-const PRODUCTION_HTML_PATH = path.join(ROOT, 'rulebook-production', 'full-rulebook.html');
-const PRODUCTION_PAGINATOR_PATH = path.join(ROOT, 'rulebook-production', '.paginate_rulebook_runtime.mjs');
+const PRODUCTION_HTML_PATH = path.join(PRODUCTION_SOURCE_DIR, 'full-rulebook.html');
+const PRODUCTION_PAGINATOR_PATH = path.join(PRODUCTION_SOURCE_DIR, '.paginate_rulebook_runtime.mjs');
 
 const hash = data => crypto.createHash('sha256').update(data).digest('hex');
 const hashFile = file => hash(fs.readFileSync(file));
@@ -34,7 +37,7 @@ const jsonText = value => `${JSON.stringify(value, null, 2)}\n`;
 function run(command, args, options = {}) {
   const result = spawnSync(command, args, {
     cwd: ROOT,
-    env: process.env,
+    env: options.env || process.env,
     stdio: options.capture ? 'pipe' : 'inherit',
     encoding: options.capture ? 'utf8' : undefined,
   });
@@ -53,16 +56,14 @@ function validateReleaseNotesBookletCounts(logicalPages, bookletSides, physicalS
   }
 }
 
-function brandV070ProductionSurface() {
+function finishProductionSurface() {
   const surfaces = [PRODUCTION_HTML_PATH, PRODUCTION_PAGINATOR_PATH];
   for (const surface of surfaces) {
     if (!fs.existsSync(surface)) throw new Error(`Missing approved Rulebook production surface: ${relative(surface)}.`);
     const source = fs.readFileSync(surface, 'utf8');
-    const branded = source
-      .replace(/0\.6\.3/g, '0.7.0')
-      .replace(/First Playtest Revision/g, RELEASE_NAME);
-    if (/0\.6\.3/.test(branded)) {
-      throw new Error(`v0.7.0 Rulebook production surface still contains v0.6.3 branding: ${relative(surface)}.`);
+    const branded = source.replace(/First Playtest Revision/g, RELEASE_NAME);
+    if (/0\.6\.(?:1|3)/.test(branded)) {
+      throw new Error(`v0.7.0 Rulebook production surface still contains prior-release branding: ${relative(surface)}.`);
     }
     if (!/0\.7\.0/.test(branded)) {
       throw new Error(`v0.7.0 Rulebook production surface contains no v0.7.0 identity: ${relative(surface)}.`);
@@ -190,21 +191,27 @@ try {
   await waitForServer('http://127.0.0.1:8000/rulebook/');
   await ensureCardAnatomyFigures();
 
-  run('python', ['rulebook-design/build_proofs.py']);
-  run('python', ['rulebook-production/build_fidelity_gate.py']);
+  run('python', ['legacy/v0.6.1-rulebook-publication/rulebook-design/build_proofs.py']);
+  run('python', ['legacy/v0.6.1-rulebook-publication/rulebook-production/build_fidelity_gate.py']);
   try {
     fs.writeFileSync(TRANSIENT_RULEBOOK_PATH, rulebook);
     fs.writeFileSync(PLAYER_CHAPTER_11_PATH, chapter11 + '\n');
-    run('python', ['scripts/build-v063-rulebook-production.py']);
-    brandV070ProductionSurface();
+    run('python', [
+      'scripts/build-rulebook-production.py',
+      '--source', relative(TRANSIENT_RULEBOOK_PATH),
+      '--version', RELEASE_VERSION,
+      '--validate-player-chapter-11',
+    ]);
+    finishProductionSurface();
   } finally {
     fs.writeFileSync(PLAYER_CHAPTER_11_PATH, originalChapter11);
     fs.rmSync(TRANSIENT_RULEBOOK_PATH, { force: true });
   }
 
-  await waitForServer('http://127.0.0.1:8000/rulebook-production/full-rulebook.html');
-  run('node', ['rulebook-production/render_fidelity_gate.mjs']);
-  run('node', ['scripts/run-v070-rulebook-renderer.mjs']);
+  await waitForServer(`http://127.0.0.1:8000/${PUBLICATION_URL_PATH}/rulebook-production/full-rulebook.html`);
+  const publicationEnv = { ...process.env, GAUNTLET_PUBLICATION_PATH: PUBLICATION_URL_PATH };
+  run('node', ['legacy/v0.6.1-rulebook-publication/rulebook-production/render_fidelity_gate.mjs'], { env: publicationEnv });
+  run('node', ['scripts/run-v070-rulebook-renderer.mjs'], { env: publicationEnv });
 } finally {
   server.kill('SIGTERM');
 }
