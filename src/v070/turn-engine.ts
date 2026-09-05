@@ -30,6 +30,7 @@ import {
   resolveV070ReembodimentRecovery,
   type V070ReembodimentContinuation,
 } from './reembodiment';
+import { resolveV070EncampmentEndOfTurn } from './encampment';
 
 export * from './turn-engine-postdraw';
 
@@ -200,11 +201,18 @@ function reducePostDrawAndObserveReembodiment(
   state: V070GameState,
   action: V070PostDrawTurnAction,
 ): V070GameState {
-  const controlled = reembodimentControlledTurnEffect(state, action);
+  const prepared = action.type === 'complete_cleanup'
+    ? structuredClone(state) as V070GameState
+    : state;
+  if (action.type === 'complete_cleanup') {
+    resolveV070EncampmentEndOfTurn(prepared, action.playerId);
+  }
+
+  const controlled = reembodimentControlledTurnEffect(prepared, action);
   const beforeHand = controlled
-    ? [...state.players[controlled.playerId].zones.hand]
+    ? [...prepared.players[controlled.playerId].zones.hand]
     : [];
-  const next = reduceV070TurnActionPostDraw(state, action);
+  const next = reduceV070TurnActionPostDraw(prepared, action);
   if (!controlled) return next;
 
   const moved = beforeHand.filter(instanceId =>
