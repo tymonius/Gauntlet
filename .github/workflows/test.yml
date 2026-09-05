@@ -103,11 +103,11 @@ jobs:
                 const { scripts: baseScripts = {}, ...baseRuntime } = basePackage;
                 const { scripts: headScripts = {}, ...headRuntime } = headPackage;
                 const runtimeChanged = JSON.stringify(baseRuntime) !== JSON.stringify(headRuntime);
-                const scriptKeys = new Set([...Object.keys(baseScripts), ...Object.keys(headScripts)]);
-                const testScriptChanged = [...scriptKeys].some((key) =>
-                  /^(?:test(?::|$)|typecheck$)/.test(key) && baseScripts[key] !== headScripts[key]
+                const fullSuiteCommands = ['test', 'test:full', 'typecheck'];
+                const testHarnessChanged = fullSuiteCommands.some((key) =>
+                  baseScripts[key] !== headScripts[key]
                 );
-                packageRuntimeChanged = runtimeChanged || testScriptChanged;
+                packageRuntimeChanged = runtimeChanged || testHarnessChanged;
               } catch (error) {
                 core.warning(`Unable to classify package.json change safely: ${error.message}`);
                 packageRuntimeChanged = true;
