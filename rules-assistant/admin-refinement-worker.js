@@ -5,10 +5,14 @@ import {
   adminRefinementRuntimeSource,
   allowAdminRefinementRuntime
 } from "./admin-refinement-runtime.js";
+import { refinementTriage } from "./refinement-triage.js";
+import { refinementScaffold } from "./refinement-scaffold.js";
 
 export * from "./worker-entry.js";
 
 const INLINE_RUNTIME_ID = "rules-refinement-inline-runtime";
+const TRIAGE_API_PATH = "/api/admin/refinement-triage";
+const SCAFFOLD_API_PATH = "/api/admin/refinement-scaffold";
 
 function attachInlineRefinementRuntime(html) {
   const source = String(html || "");
@@ -18,9 +22,83 @@ function attachInlineRefinementRuntime(html) {
   return source.includes("</body>") ? source.replace("</body>", `${tag}\n</body>`) : `${source}\n${tag}`;
 }
 
+function adminSubrequest(request, path) {
+  const url = new URL(path, request.url);
+  return new Request(url, {
+    method: "GET",
+    headers: request.headers
+  });
+}
+
+function jsonResponse(value, status = 200, extraHeaders = {}) {
+  return new Response(JSON.stringify(value), {
+    status,
+    headers: {
+      "Cache-Control": "no-store",
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      ...extraHeaders
+    }
+  });
+}
+
+function normalizedScope(url) {
+  return url.searchParams.get("scope") === "reviewed_backlog" ? "reviewed_backlog" : "unreviewed";
+}
+
+async function loadRefinementReport(request, env, context, scope) {
+  const [exportResponse, intelligenceResponse] = await Promise.all([
+    worker.fetch(adminSubrequest(request, "/api/admin/export?format=json"), env, context),
+    worker.fetch(adminSubrequest(request, "/api/admin/review-intelligence"), env, context)
+  ]);
+
+  if (!exportResponse.ok) return { errorResponse: exportResponse };
+  if (!intelligenceResponse.ok) return { errorResponse: intelligenceResponse };
+
+  const [exportPayload, intelligencePayload] = await Promise.all([
+    exportResponse.json(),
+    intelligenceResponse.json()
+  ]);
+  const report = refinementTriage.triageInteractions(
+    Array.isArray(exportPayload?.interactions) ? exportPayload.interactions : [],
+    intelligencePayload || {},
+    { scope }
+  );
+  return { report };
+}
+
+export async function handleAdminRefinementApi(request, env, context) {
+  const url = new URL(request.url);
+  if (![TRIAGE_API_PATH, SCAFFOLD_API_PATH].includes(url.pathname)) return null;
+  if (request.method !== "GET") return jsonResponse({ error: "Method not allowed." }, 405);
+
+  const scope = normalizedScope(url);
+  const loaded = await loadRefinementReport(request, env, context, scope);
+  if (loaded.errorResponse) return loaded.errorResponse;
+
+  if (url.pathname === TRIAGE_API_PATH) return jsonResponse(loaded.report);
+
+  const rootCause = String(url.searchParams.get("rootCause") || "").trim();
+  if (!/^[a-z_]{2,80}$/.test(rootCause)) {
+    return jsonResponse({ error: "A valid refinement root cause is required." }, 400);
+  }
+  try {
+    const scaffold = refinementScaffold.buildRefinementScaffold(loaded.report, rootCause);
+    return jsonResponse(scaffold, 200, {
+      "Content-Disposition": `attachment; filename="gauntlet-rules-refinement-${rootCause}-${new Date().toISOString().slice(0, 10)}.json"`
+    });
+  } catch (error) {
+    return jsonResponse({ error: error instanceof Error ? error.message : "Could not build refinement scaffold." }, 400);
+  }
+}
+
 export default {
   async fetch(request, env, context) {
     const url = new URL(request.url);
+
+    const refinementResponse = await handleAdminRefinementApi(request, env, context);
+    if (refinementResponse) return refinementResponse;
+
     if (request.method === "GET" && url.pathname === ADMIN_REFINEMENT_RUNTIME_PATH) {
       return new Response(adminRefinementRuntimeSource(), {
         status: 200,
