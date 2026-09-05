@@ -9,3 +9,5 @@ Current maintained scripts belong under `scripts/`. Historical recovery snapshot
 The `v0.6.2/` directory contains both pre-recovery snapshots and the final guarded tooling retained when the withdrawn release was removed from active development. Current release-state validation enforces the withdrawal through `config/release-lifecycle.json`; these snapshots only preserve the historical implementation.
 
 The `v0.6.3/` directory also preserves the retired card-normalization and candidate-authority pipeline. Those scripts document how the withdrawn candidate was assembled; they do not define current rules or supported release commands.
+
+Retired downstream-reconstruction scripts remain here even when their original intermediate source paths no longer exist. Their purpose is historical traceability, not executable recovery from the maintained tree.
