@@ -15,7 +15,7 @@
         ],
         victory: {
           shared: "Run the Gauntlet: capture the Territory at the opponent's end or win their Last Stand.",
-          alternate: "None. Military wins only through the shared battlefield victory."
+          alternate: "None. Military wins only by running the Gauntlet."
         }
       },
       leaders: [
@@ -417,8 +417,8 @@
     el.factionLessonTitle.textContent = faction.lesson.title;
     el.factionLessonIntro.textContent = faction.lesson.intro;
     el.factionLessonVictory.innerHTML = `
-      <span class="victory-line"><strong>Shared victory</strong><span>${escapeHtml(faction.lesson.victory.shared)}</span></span>
-      <span class="victory-line"><strong>Alternate victory</strong><span>${escapeHtml(faction.lesson.victory.alternate)}</span></span>`;
+      <span class="victory-line"><strong>Run the Gauntlet</strong><span>${escapeHtml(faction.lesson.victory.shared)}</span></span>
+      <span class="victory-line"><strong>Faction victory</strong><span>${escapeHtml(faction.lesson.victory.alternate)}</span></span>`;
     el.factionGuideLink.href = `../factions/${state.factionId}/`;
     el.factionGuideLink.textContent = `Open the full ${faction.name} guide ↗`;
 
