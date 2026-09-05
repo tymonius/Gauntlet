@@ -1,0 +1,25 @@
+{
+  "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
+  "updatedAt": "2026-09-05T22:27:00.000Z",
+  "entries": [
+    {
+      "id": "available-choice-rule-v071",
+      "status": "resolved",
+      "rootCause": "source_specificity",
+      "interactionIds": [
+        "f9ae058b-e4de-4140-bd1f-189879e77678"
+      ],
+      "caseIds": [
+        "penance-empty-hand-provisional"
+      ],
+      "resolutionSurface": "rules_authority",
+      "summary": "Added the shared rule that a required choice may select only an actually available option; Penance and Property Dues inherit that rule from current game authority.",
+      "resolvedAt": "2026-09-05T21:07:18.000Z",
+      "binding": {
+        "pullRequest": 1463,
+        "commit": "d4fb1c52a9e73c4167f0748bb096d6699e13c114",
+        "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339"
+      }
+    }
+  ]
+}
