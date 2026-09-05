@@ -1,5 +1,5 @@
 import worker from "./worker-entry.js";
-import { enhanceRulesTriageAdmin } from "./admin-triage-page.js";
+import { enhanceRulesScaffoldAdmin } from "./admin-scaffold-page.js";
 
 export * from "./worker-entry.js";
 
@@ -17,7 +17,7 @@ export default {
     const html = await response.text();
     const headers = new Headers(response.headers);
     headers.delete("Content-Length");
-    return new Response(enhanceRulesTriageAdmin(html), {
+    return new Response(enhanceRulesScaffoldAdmin(html), {
       status: response.status,
       statusText: response.statusText,
       headers
