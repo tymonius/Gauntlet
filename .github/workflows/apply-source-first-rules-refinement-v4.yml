@@ -27,7 +27,9 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: npm install --no-package-lock
+        run: |
+          npm install --no-package-lock
+          npm install --no-package-lock --no-save pdf-lib
 
       - name: Install Chromium for Rulebook rendering
         run: npx playwright install --with-deps chromium
