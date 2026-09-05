@@ -14,6 +14,11 @@ import type {
   V070UnsupportedBattleEffect,
 } from './battle-types';
 import { recordV070MysticBattleEffectApplied } from './mystics';
+import {
+  V070_FORTIFICATIONS_BATTLE_TEXT,
+  applyV070FortificationsGambitTacticEffect,
+  resolveV070FortificationsCaptureAfterRetreat,
+} from './fortifications';
 
 export type V070BattleEffectTiming = 'reveal';
 
@@ -167,6 +172,18 @@ const handlers: V070BattleEffectHandler[] = [
         owner,
         commitment.instanceId,
         'neutral-resistance',
+      );
+    },
+  },
+  {
+    cardId: 'neutral-fortifications',
+    expectedText: V070_FORTIFICATIONS_BATTLE_TEXT,
+    timing: 'reveal',
+    apply: ({ state, owner, commitment }) => {
+      applyV070FortificationsGambitTacticEffect(
+        state,
+        owner,
+        commitment.instanceId,
       );
     },
   },
@@ -497,7 +514,6 @@ export function resolveV070SupportedRevealEffects(
       });
       continue;
     }
-
     const handler = handlersByCardId.get(cardId);
     if (!handler) throw new Error(`Missing validated handler for ${cardId}.`);
 
@@ -602,7 +618,15 @@ export function resolveV070AftermathDrawEffects(
   winner: PlayerId,
 ): void {
   const runtime = state.battleRuntime;
-  if (!runtime || runtime.aftermathDrawEffects.length === 0) return;
+  if (!runtime) return;
+
+  // Fortifications resolves after the losing defender's retreat but before
+  // ordinary Aftermath card rewards. This also allows a final-Territory
+  // capture to establish pending victory before later voluntary windows.
+  resolveV070FortificationsCaptureAfterRetreat(state, winner);
+  if (runtime.pendingGameVictory || runtime.aftermathDrawEffects.length === 0) {
+    return;
+  }
 
   const effects = [...runtime.aftermathDrawEffects];
   runtime.aftermathDrawEffects = [];

@@ -181,6 +181,30 @@ export interface V070SpiritHollowAftermathRuntime {
   candidateGraveyardInstanceIds: string[];
 }
 
+export interface V070FortificationsAssetOnsetRuntime {
+  playerId: PlayerId;
+  candidateAssetInstanceIds: string[];
+}
+
+export interface V070FortificationsScheduledEffect {
+  owner: PlayerId;
+  sourceInstanceId: string;
+  sourceKind: 'asset' | 'battle_card';
+}
+
+export interface V070FortificationsPostTacticsRuntime {
+  playerId: PlayerId;
+  sourceInstanceId: string;
+  drawnInstanceIds: string[];
+  candidateTacticInstanceIds: string[];
+}
+
+export interface V070FortificationsCaptureEffect {
+  owner: PlayerId;
+  sourceInstanceId: string;
+  territoryPosition: number;
+}
+
 export interface V070GambitOrderOverride {
   source: 'neutral_observers' | 'watchtower';
   firstPlayer: PlayerId;
@@ -257,6 +281,11 @@ export type V070SubversionAssetBattleContinuation =
       type: 'apply_resistance_onset_asset';
       playerId: PlayerId;
       assetInstanceId: string;
+    }
+  | {
+      type: 'use_fortifications_asset';
+      playerId: PlayerId;
+      assetInstanceId: string;
     };
 
 export interface V070SubversionAssetBattleRuntime {
@@ -295,6 +324,12 @@ export interface V070BattleRuntime {
   spiritHollowAftermathPlayers: PlayerId[] | null;
   pendingSubversionAssetBattle: V070SubversionAssetBattleRuntime | null;
   resistanceAssetOnsetProcessedInstanceIds: string[];
+  pendingFortificationsAssetOnset: V070FortificationsAssetOnsetRuntime | null;
+  fortificationsAssetOnsetResolved: boolean;
+  fortificationsScheduledEffects: V070FortificationsScheduledEffect[];
+  fortificationsPostTacticsProcessedSourceInstanceIds: string[];
+  pendingFortificationsPostTactics: V070FortificationsPostTacticsRuntime | null;
+  fortificationsCaptureEffects: V070FortificationsCaptureEffect[];
   footholdAssetWindowPlayer: PlayerId | null;
   footholdAssetWindowResolved: boolean;
   routWindowOpen: boolean;
@@ -392,6 +427,12 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     spiritHollowAftermathPlayers: null,
     pendingSubversionAssetBattle: null,
     resistanceAssetOnsetProcessedInstanceIds: [],
+    pendingFortificationsAssetOnset: null,
+    fortificationsAssetOnsetResolved: false,
+    fortificationsScheduledEffects: [],
+    fortificationsPostTacticsProcessedSourceInstanceIds: [],
+    pendingFortificationsPostTactics: null,
+    fortificationsCaptureEffects: [],
     footholdAssetWindowPlayer: null,
     footholdAssetWindowResolved: false,
     routWindowOpen: false,
