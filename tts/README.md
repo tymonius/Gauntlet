@@ -265,6 +265,10 @@ Workshop copy, setup notes, publication-gate history, listing images, and post-p
 
 The v0.7.1 mod is public at https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635. The existing Workshop item was updated in place; its permanent id is unchanged. The stable v0.7.1 QA gate is complete and explicitly Workshop-approved.
 
+## Historical hosted assets
+
+Versioned TTS network binaries are hosted as GitHub Release assets and materialized into public Pages paths during deployment. They are not maintained as a second tracked copy under `tts/v*/`. Historical manual-QA records remain tracked under `tts/release-qa/`.
+
 ## Generated output
 
 Derived output is ignored by Git and written under:
