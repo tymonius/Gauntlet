@@ -4,29 +4,23 @@ import { enhanceRulesScaffoldAdmin } from "./admin-scaffold-page.js";
 
 const page = enhanceRulesScaffoldAdmin(ADMIN_PAGE_WITH_RULES_INTELLIGENCE);
 
-test("admin dashboard exposes cluster-specific refinement scaffolding", () => {
+test("admin dashboard exposes cluster-specific refinement scaffold controls", () => {
   expect(page).toContain('id="rules-triage"');
   expect(page).toContain('id="triage-scaffold-cluster"');
   expect(page).toContain('id="triage-scaffold"');
-  expect(page).toContain("gauntlet.rules-refinement-scaffold.v1");
-  expect(page).toContain("buildRefinementScaffold");
+  expect(page).toContain("No cluster selected");
+  expect(page).toContain("Scaffold refinement");
 });
 
-test("scaffold shares the authenticated triage runtime instead of creating a second admin client", () => {
-  expect(page).toContain("document.addEventListener('gauntlet:rules-triage'");
-  expect(page).toContain("typeof refreshRulesTriage==='function'");
-  expect(page).toContain("saveFile(blob,'gauntlet-rules-refinement-");
-  expect(page).not.toContain('id="rules-refinement-scaffold-script"');
-});
-
-test("scaffold dashboard stays on read-only admin data paths", () => {
-  expect(page).toContain("/api/admin/export?format=json");
-  expect(page).toContain("/api/admin/review-intelligence");
-  expect(page).not.toContain("fetch('/api/rules");
-  expect(page).not.toContain('fetch("/api/rules');
+test("scaffold page is markup-only and does not splice another client into the legacy script", () => {
+  expect(page).not.toContain("var rulesRefinementScaffoldEngine=");
+  expect(page).not.toContain("buildRefinementScaffold");
+  expect(page).not.toContain("document.addEventListener('gauntlet:rules-triage'");
+  expect(page).not.toContain("/api/admin/export?format=json");
+  expect(page).not.toContain("/api/admin/review-intelligence");
 });
 
 test("scaffold enhancer is idempotent", () => {
   expect(enhanceRulesScaffoldAdmin(page)).toBe(page);
-  expect((page.match(/var rulesRefinementScaffoldEngine=/g) || []).length).toBe(1);
+  expect((page.match(/id="triage-scaffold"/g) || []).length).toBe(1);
 });
