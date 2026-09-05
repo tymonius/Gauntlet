@@ -40,8 +40,8 @@ jobs:
           let source = fs.readFileSync(file, 'utf8').replace(/\r\n/g, '\n');
           const heading = '### Choosing among options';
           if (!source.includes(heading)) {
-            const anchor = `- Follow instructions in the order written.\n- Complete as much of an instruction as possible unless the missing part is a required cost, requirement, or target.\n\n### Simultaneous effects`;
-            const replacement = `- Follow instructions in the order written.\n- Complete as much of an instruction as possible unless the missing part is a required cost, requirement, or target.\n\n### Choosing among options\n\nWhen an effect instructs a player to choose among options, that player may choose only an available option. An option is available only if its required costs, requirements, and targets can be satisfied when the choice is made.\n\n- If exactly one option is available, choose that option.\n- If no option is available, the choice does nothing unless the effect says otherwise.\n- After an available option is chosen, complete as much of it as possible normally.\n\n### Simultaneous effects`;
+            const anchor = `## Simultaneous effects and choices\n\n### Shared timing`;
+            const replacement = `## Simultaneous effects and choices\n\n### Choosing among options\n\nWhen an effect instructs a player to choose among options, that player may choose only an available option. An option is available only if its required costs, requirements, and targets can be satisfied when the choice is made.\n\n- If exactly one option is available, choose that option.\n- If no option is available, the choice does nothing unless the effect says otherwise.\n- After an available option is chosen, complete as much of it as possible normally.\n\n### Shared timing`;
             if (!source.includes(anchor)) throw new Error('Could not find the Chapter 11 choice-rule insertion anchor.');
             source = source.replace(anchor, replacement);
             fs.writeFileSync(file, source);
