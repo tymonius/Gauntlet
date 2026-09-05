@@ -116,6 +116,12 @@ PR: [#1468](https://github.com/tymonius/Gauntlet/pull/1468). Branch: `cleanup/co
 
 Next: validate this tranche in CI, then review the broader player-facing browser surface ownership separately from physical-card rendering.
 
+## Playtest runtime documentation
+
+Branch: `cleanup/playtest-runtime-docs` (stacked on #1468). The public playtest and session-service READMEs now identify the maintained authority files instead of presenting a retired release as the runtime baseline. Their new-session serial examples match the deployed worker contract, while older serial families remain explicitly historical.
+
+Next: validate this documentation tranche, then determine whether the public and facilitated playtest UI modules share enough behavior to consolidate code without changing their distinct workflows.
+
 ## Architectural queue
 
 Review in highest-level-first order. The result of a review may be "leave it alone."
