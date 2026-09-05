@@ -79,12 +79,12 @@ Cleanup PRs should link #1430. The issue is the durable queue/history; this file
 
 ## Current tranche
 
-Branch: `cleanup/archive-v062-migration`. Original archival commit: `564e1398`.
+PR: [#1456](https://github.com/tymonius/Gauntlet/pull/1456). Branch: `cleanup/archive-v062-migration`. Original archival commit: `564e1398`.
 
 - Preserve all seven v0.6.2 migration implementation/test files under `legacy/digital-engine-migration/v0.6.2/`.
 - Make v0.6.3 self-contained by moving its four required type shapes into its own rules module and removing the obsolete bridge.
 - Point historical validation readers at the archive and exclude archived digital-engine snapshots from full Vitest discovery as well as CI changed-test routing.
-- Keep current gameplay behavior unchanged; the promoted engine remains v0.7.0 against a published v0.7.1 target.
+- Keep gameplay behavior unchanged; compare the promoted engine entrypoint with release lifecycle/current authority for implementation lag.
 
 Next: audit the remaining v0.6.3 procedure library and historical content adapters against promoted engine coverage. Preserve any still-unpromoted behavior until its role is settled. Gameplay parity work belongs to #741 and must not be silently folded into architectural cleanup.
 
