@@ -3,7 +3,7 @@
   "release_version": "v0.7.1",
   "name": "Mystics Rites & Deck Import",
   "status": "current",
-  "authority_set_id": "bb05fbd37d2ec8f5292277772ab82a9bee32585712a97087d78382c7041c2ac7",
+  "authority_set_id": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339",
   "publication_date": "2026-08-30",
   "current_package_path": "releases/v0.7.1/",
   "source_provenance": {
@@ -14,7 +14,7 @@
   "binding_sources": {
     "rulebook": {
       "path": "releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md",
-      "sha256": "9ce6c76b1ae6b18058d3538dde058e056a866ff583f44eb5fd5d7d3ad1dd0058"
+      "sha256": "484ef65a1afaf6f679e70cb93d81821d0f2122b92b57d4a25b73bfe030841415"
     },
     "canonical_data": {
       "path": "releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json",
@@ -26,7 +26,7 @@
     },
     "source_provenance": {
       "path": "releases/v0.7.1/Gauntlet_v0.7.1_Source_Provenance.json",
-      "sha256": "fef86ec9428485b2c544a57550bbaa40e2c77e7e6827d3f8fcf0bc80cbd0633b"
+      "sha256": "fcef5721d96773d50434b4fcbbf2f8c2ea3fa9e5a89da59db965a54def3583d2"
     },
     "card_anatomy_figure": {
       "path": "releases/v0.7.1/Gauntlet_v0.7.1_Card_Anatomy.png",
@@ -72,20 +72,20 @@
       "key": "rulebook-booklet",
       "path": "Gauntlet_v0.7.1_Rulebook_Booklet.pdf",
       "pages": 50,
-      "sha256": "764a4c6a17654edcfaea8428bd17d210badba5eceea0f656f7a719ac7642f504",
-      "bytes": 31358774
+      "sha256": "a2fa14c1bacfe6b954d83d7db4e52ec21ed6a9a9b86d8132db0a446d2abdb110",
+      "bytes": 31284365
     }
   ],
   "payload_files": [
     {
       "path": "Gauntlet_v0.7.1_Rulebook.md",
-      "sha256": "9ce6c76b1ae6b18058d3538dde058e056a866ff583f44eb5fd5d7d3ad1dd0058",
-      "bytes": 123942
+      "sha256": "484ef65a1afaf6f679e70cb93d81821d0f2122b92b57d4a25b73bfe030841415",
+      "bytes": 124122
     },
     {
       "path": "Gauntlet_v0.7.1_Rulebook_Booklet.pdf",
-      "sha256": "764a4c6a17654edcfaea8428bd17d210badba5eceea0f656f7a719ac7642f504",
-      "bytes": 31358774
+      "sha256": "a2fa14c1bacfe6b954d83d7db4e52ec21ed6a9a9b86d8132db0a446d2abdb110",
+      "bytes": 31284365
     },
     {
       "path": "Gauntlet_v0.7.1_Card_Anatomy.png",
@@ -109,7 +109,7 @@
     },
     {
       "path": "Gauntlet_v0.7.1_Source_Provenance.json",
-      "sha256": "fef86ec9428485b2c544a57550bbaa40e2c77e7e6827d3f8fcf0bc80cbd0633b",
+      "sha256": "fcef5721d96773d50434b4fcbbf2f8c2ea3fa9e5a89da59db965a54def3583d2",
       "bytes": 1540
     }
   ],

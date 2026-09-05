@@ -836,6 +836,10 @@ Use this chapter when card effects interact with one another or with the normal 
 
 ## Simultaneous effects and choices
 
+### Choosing among options
+
+When a rule or effect requires a choice, choose from the options that are actually available. If no valid option is available, that choice is ignored.
+
 ### Shared timing
 
 When multiple controlled effects would apply at the same time:
