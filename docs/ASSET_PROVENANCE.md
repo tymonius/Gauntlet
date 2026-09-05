@@ -55,14 +55,16 @@ If the binary contents change later, the checksum no longer matches and CI requi
 
 Historical assets are resolved in evidence-backed batches rather than by guessing from filenames or visual appearance.
 
-1. Record the evidence family and candidate paths in `.github/asset-provenance-remediation.json`. Evidence should identify the source conversation, source file, repository history, license, permission, or other basis that actually supports the record.
-2. Run `.github/scripts/materialize-asset-provenance.py --write`. The materializer requires every candidate's current Git blob to be byte-for-byte identical to its blob at the documented introduction commit. A changed binary is rejected for manual review rather than inheriting provenance automatically.
-3. The materializer computes the current file's SHA-256 and writes the resulting explicit records into `.github/asset-provenance.json`.
-4. Run `.github/scripts/validate-asset-provenance.py` before merging the batch.
+1. Record the evidence family and candidate scope in `.github/asset-provenance-remediation.json`. Evidence should identify the source conversation, source file, repository history, license, permission, direct project-owner attestation, or other basis that actually supports the record.
+2. Give the batch a historical identity checkpoint. This can be the original introduction commit when known, or a later evidence/attestation checkpoint when the evidence establishes the provenance of the exact binary present at that point.
+3. Normally list candidates explicitly in `assets`. A batch may instead use `asset_prefixes` only when its evidence expressly applies uniformly to the complete, tightly scoped governed corpus under those prefixes. Prefix discovery is not a license to infer provenance for adjacent or merely similar files.
+4. Run `.github/scripts/materialize-asset-provenance.py --write`. The materializer requires every candidate's current Git blob to be byte-for-byte identical to its blob at the documented checkpoint. A changed binary is rejected for manual review rather than inheriting provenance automatically.
+5. The materializer computes the current file's SHA-256 and writes the resulting explicit records into `.github/asset-provenance.json`.
+6. Run `.github/scripts/validate-asset-provenance.py` before merging the batch. Production CI additionally runs the materializer in read-only `--check` mode and requires the checked-in ledger to match the evidence manifest exactly.
 
 The materializer is deliberately conservative. A remediation manifest is evidence for a particular asset family, not permission to classify similarly named or visually related files. Files with different or ambiguous repository history remain `legacy-unresolved` until their own lineage is substantiated.
 
-The first remediation batch covers leader artwork whose generation history is supported by the exported `Faction Leader Archetypes` conversation, the archived character-design-sheet log, and the repository commit that introduced the normalized image set. The batch intentionally excludes assets whose binary history does not satisfy the introduction-commit identity check.
+Current evidence-backed remediation families include the accepted faction-leader artwork, the canonical card-art corpus, active faction symbols, generated card parchment backgrounds, card-back composites, the Gauntlet wordmark/logo family, the TDS Games mark, and paid-plan Tripo3D character-model outputs. The detailed evidence and qualifications for each family are recorded in `docs/ASSET_PROVENANCE_AUDIT.md` and `.github/asset-provenance-remediation.json`.
 
 ## Enforcement
 
