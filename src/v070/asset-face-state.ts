@@ -27,6 +27,34 @@ export function isV070AssetActive(
   return !v070IllegalOccupationSuppressesPlayerAssets(state, owner);
 }
 
+/**
+ * Subversion's "cannot be used" restriction is intentionally distinct from
+ * Asset inactivity. A prohibited Asset remains face up, banked, and active;
+ * its battle-time effect simply cannot be invoked or applied after the
+ * restriction begins.
+ */
+export function v070AssetUseProhibitedDuringBattle(
+  state: V070GameState,
+  playerId: PlayerId,
+): boolean {
+  return Boolean(
+    state.battle
+    && state.battleRuntime?.assetUseProhibitedPlayers.includes(playerId),
+  );
+}
+
+export function isV070AssetUsable(
+  state: V070GameState,
+  instanceId: string,
+): boolean {
+  const owner = assetOwnerInBank(state, instanceId);
+  return Boolean(
+    owner
+    && isV070AssetActive(state, instanceId)
+    && !v070AssetUseProhibitedDuringBattle(state, owner),
+  );
+}
+
 function isV070AssetBaseActive(
   state: V070GameState,
   owner: PlayerId,
@@ -71,6 +99,7 @@ function v070IllegalOccupationSuppressesPlayerAssets(
 
   return state.players[opponentId].zones.assetBank.some(instanceId =>
     state.cardInstances[instanceId]?.cardId === 'neutral-illegal-occupation'
+    && !v070AssetUseProhibitedDuringBattle(state, opponentId)
     && isV070AssetBaseActive(
       state,
       opponentId,
