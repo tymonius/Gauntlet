@@ -1,0 +1,47 @@
+/* Step 4 visual corrections: preserve the normal tile spacing and use the same Leader sketches as the rulebook. */
+#learnFaction .faction-lesson-grid {
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: stretch;
+}
+
+#learnFaction .faction-lesson-grid > .intro-card {
+  height: 100%;
+}
+
+main:has(input[name="leader"][value="general"]:checked) #factionLesson .faction-leader-lesson {
+  --leader-lesson-art: url("../images/sketches/general.png");
+}
+main:has(input[name="leader"][value="commandant"]:checked) #factionLesson .faction-leader-lesson {
+  --leader-lesson-art: url("../images/sketches/commandant.png");
+}
+main:has(input[name="leader"][value="ambassador"]:checked) #factionLesson .faction-leader-lesson {
+  --leader-lesson-art: url("../images/sketches/ambassador.png");
+}
+main:has(input[name="leader"][value="senator"]:checked) #factionLesson .faction-leader-lesson {
+  --leader-lesson-art: url("../images/sketches/senator.png");
+}
+main:has(input[name="leader"][value="banker"]:checked) #factionLesson .faction-leader-lesson {
+  --leader-lesson-art: url("../images/sketches/banker.png");
+}
+main:has(input[name="leader"][value="executive"]:checked) #factionLesson .faction-leader-lesson {
+  --leader-lesson-art: url("../images/sketches/executive.png");
+}
+main:has(input[name="leader"][value="ranger"]:checked) #factionLesson .faction-leader-lesson {
+  --leader-lesson-art: url("../images/sketches/ranger.png");
+}
+main:has(input[name="leader"][value="spymaster"]:checked) #factionLesson .faction-leader-lesson {
+  --leader-lesson-art: url("../images/sketches/spymaster.png");
+}
+main:has(input[name="leader"][value="alchemist"]:checked) #factionLesson .faction-leader-lesson {
+  --leader-lesson-art: url("../images/sketches/alchemist.png");
+}
+main:has(input[name="leader"][value="spirit-walker"]:checked) #factionLesson .faction-leader-lesson {
+  --leader-lesson-art: url("../images/sketches/spirit walker.png");
+}
+main:has(input[name="leader"][value="grand-inquisitor"]:checked) #factionLesson .faction-leader-lesson {
+  --leader-lesson-art: url("../images/sketches/grand inquisitor.png");
+}
+main:has(input[name="leader"][value="witch-hunter"]:checked) #factionLesson .faction-leader-lesson {
+  --leader-lesson-art: url("../images/sketches/witch hunter.png");
+}
