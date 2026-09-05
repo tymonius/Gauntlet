@@ -18,7 +18,6 @@ on:
       - 'releases/v0.6.3/**'
       - 'legacy/public-versions/v0.6.2/**'
       - 'artifacts/v0.6.3/**'
-      - 'scripts/build-v062-release.mjs'
       - 'docs/recovery/frozen-scripts/**'
       - 'docs/recovery/frozen-workflows/**'
   push:
@@ -38,7 +37,6 @@ on:
       - 'releases/v0.6.3/**'
       - 'legacy/public-versions/v0.6.2/**'
       - 'artifacts/v0.6.3/**'
-      - 'scripts/build-v062-release.mjs'
       - 'docs/recovery/frozen-scripts/**'
       - 'docs/recovery/frozen-workflows/**'
   workflow_dispatch:

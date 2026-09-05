@@ -104,6 +104,12 @@ PR: [#1466](https://github.com/tymonius/Gauntlet/pull/1466). Branch: `cleanup/ar
 
 Next: repair historical validation paths and audit browser/renderer ownership. Full-suite discovery remains a known validation-boundary debt, alongside baseline stale renderer assertions; do not mistake scoped green CI results for a fully green repository suite.
 
+## Withdrawn release tooling freeze
+
+PR: [#1467](https://github.com/tymonius/Gauntlet/pull/1467). Branch: `cleanup/freeze-v062-tooling` (stacked on #1466). The remaining v0.6.2 release builders, synchronizers, renderers, and validators have moved from active `scripts/` into frozen recovery evidence with blob locks. Active lifecycle validation continues to enforce the withdrawal, while the test boundary now checks that retired v0.6.2 tooling cannot reappear as maintained entrypoints. <!-- DOC-HISTORICAL -->
+
+Next: validate this tranche in CI, then audit browser/renderer ownership and the stale renderer assertions exposed by the baseline full suite.
+
 ## Architectural queue
 
 Review in highest-level-first order. The result of a review may be "leave it alone."
