@@ -55,12 +55,12 @@ export function v070CurrentTurnHasCompletedBattle(
 }
 
 /**
- * Open the released post-first-battle timing. This is intentionally called
- * only after the battle container has closed, so "during this battle" effects
- * no longer apply to War Bonds.
+ * Open the released post-first-battle timing. When the battle participants are
+ * known, use attacker then defender to preserve the shared-timing rule.
  */
 export function openV070WarBondsAfterFirstBattle(
   state: V070GameState,
+  playerOrder?: readonly PlayerId[],
 ): boolean {
   if (state.battle || state.stage !== 'playing') return false;
   if (state.warBondsFirstBattleTurn === state.turnNumber) return false;
@@ -68,9 +68,11 @@ export function openV070WarBondsAfterFirstBattle(
 
   state.warBondsFirstBattleTurn = state.turnNumber;
   const active = state.activePlayer;
-  const order: PlayerId[] = active
-    ? [active, otherPlayer(active)]
-    : ['A', 'B'];
+  const order: PlayerId[] = playerOrder?.length
+    ? [...playerOrder]
+    : active
+      ? [active, otherPlayer(active)]
+      : ['A', 'B'];
   return openNextV070WarBondsChoice(state, order);
 }
 
