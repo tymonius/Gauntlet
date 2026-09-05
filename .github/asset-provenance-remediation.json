@@ -18,30 +18,103 @@
         "rights_reference": "https://openai.com/policies/terms-of-use/"
       },
       "assets": [
-        {"path": "images/alchemist.png", "evidence": "accepted session artifact alchemist_leader_concept_design_sheet.png"},
-        {"path": "images/ambassador.png", "evidence": "accepted session artifact a_detailed_game_character_design_sheet_layout_for.png"},
-        {"path": "images/banker.png", "evidence": "accepted session artifact banker_leader_card_reference_sheet.png"},
-        {"path": "images/commandant.png", "evidence": "accepted session artifact a_detailed_concept_character_design_sheet_layout_f.png"},
-        {"path": "images/executive.png", "evidence": "accepted session artifact executive_of_the_east_india_company.png"},
-        {"path": "images/general.png", "evidence": "accepted session artifact a_single_page_concept_art_game_design_sheet_cle.png"},
-        {"path": "images/grand inquisitor.png", "evidence": "accepted session artifact grand_inquisitor_character_design_concept.png"},
-        {"path": "images/ranger.png", "evidence": "accepted session artifact ranger_intelligence_leader_character_dossier.png"},
-        {"path": "images/senator.png", "evidence": "accepted session artifact a_highly_detailed_infographic_character_sheet_styl.png"},
-        {"path": "images/sketches/alchemist.png", "evidence": "accepted session artifact alchemist_leader_concept_design_sheet.png"},
-        {"path": "images/sketches/ambassador.png", "evidence": "accepted session artifact a_detailed_game_character_design_sheet_layout_for.png"},
-        {"path": "images/sketches/banker.png", "introduction_commit": "7c17c85404dec0f01d9182af691a1f02cdb9b2ae", "evidence": "accepted session artifact banker_leader_card_reference_sheet.png; first repository upload is byte-identical to current file"},
-        {"path": "images/sketches/commandant.png", "evidence": "accepted session artifact a_detailed_concept_character_design_sheet_layout_f.png"},
-        {"path": "images/sketches/executive.png", "evidence": "accepted session artifact executive_of_the_east_india_company.png"},
-        {"path": "images/sketches/general.png", "evidence": "accepted session artifact a_single_page_concept_art_game_design_sheet_cle.png"},
-        {"path": "images/sketches/grand inquisitor.png", "evidence": "accepted session artifact grand_inquisitor_character_design_concept.png"},
-        {"path": "images/sketches/ranger.png", "evidence": "accepted session artifact ranger_intelligence_leader_character_dossier.png"},
-        {"path": "images/sketches/senator.png", "evidence": "accepted session artifact a_highly_detailed_infographic_character_sheet_styl.png"},
-        {"path": "images/sketches/spirit walker.png", "evidence": "accepted session artifact spirit_walker_character_design_sheet.png"},
-        {"path": "images/sketches/spymaster.png", "evidence": "accepted session artifact spy_master_dossier_design_sheet.png"},
-        {"path": "images/sketches/witch hunter.png", "evidence": "accepted session artifact witch_hunter_character_reference_sheet.png"},
-        {"path": "images/spirit walker.png", "evidence": "accepted session artifact spirit_walker_character_design_sheet.png"},
-        {"path": "images/spymaster.png", "evidence": "accepted session artifact spy_master_dossier_design_sheet.png"},
-        {"path": "images/witch hunter.png", "evidence": "accepted session artifact witch_hunter_character_reference_sheet.png"}
+        {
+          "path": "images/alchemist.png",
+          "evidence": "accepted session artifact alchemist_leader_concept_design_sheet.png"
+        },
+        {
+          "path": "images/ambassador.png",
+          "evidence": "accepted session artifact a_detailed_game_character_design_sheet_layout_for.png"
+        },
+        {
+          "path": "images/banker.png",
+          "evidence": "accepted session artifact banker_leader_card_reference_sheet.png"
+        },
+        {
+          "path": "images/commandant.png",
+          "evidence": "accepted session artifact a_detailed_concept_character_design_sheet_layout_f.png"
+        },
+        {
+          "path": "images/executive.png",
+          "evidence": "accepted session artifact executive_of_the_east_india_company.png"
+        },
+        {
+          "path": "images/general.png",
+          "evidence": "accepted session artifact a_single_page_concept_art_game_design_sheet_cle.png"
+        },
+        {
+          "path": "images/grand inquisitor.png",
+          "evidence": "accepted session artifact grand_inquisitor_character_design_concept.png"
+        },
+        {
+          "path": "images/ranger.png",
+          "evidence": "accepted session artifact ranger_intelligence_leader_character_dossier.png"
+        },
+        {
+          "path": "images/senator.png",
+          "evidence": "accepted session artifact a_highly_detailed_infographic_character_sheet_styl.png"
+        },
+        {
+          "path": "images/sketches/alchemist.png",
+          "evidence": "accepted session artifact alchemist_leader_concept_design_sheet.png"
+        },
+        {
+          "path": "images/sketches/ambassador.png",
+          "evidence": "accepted session artifact a_detailed_game_character_design_sheet_layout_for.png"
+        },
+        {
+          "path": "images/sketches/banker.png",
+          "introduction_commit": "7c17c85404dec0f01d9182af691a1f02cdb9b2ae",
+          "evidence": "accepted session artifact banker_leader_card_reference_sheet.png; first repository upload is byte-identical to current file"
+        },
+        {
+          "path": "images/sketches/commandant.png",
+          "evidence": "accepted session artifact a_detailed_concept_character_design_sheet_layout_f.png"
+        },
+        {
+          "path": "images/sketches/executive.png",
+          "evidence": "accepted session artifact executive_of_the_east_india_company.png"
+        },
+        {
+          "path": "images/sketches/general.png",
+          "evidence": "accepted session artifact a_single_page_concept_art_game_design_sheet_cle.png"
+        },
+        {
+          "path": "images/sketches/grand inquisitor.png",
+          "evidence": "accepted session artifact grand_inquisitor_character_design_concept.png"
+        },
+        {
+          "path": "images/sketches/ranger.png",
+          "evidence": "accepted session artifact ranger_intelligence_leader_character_dossier.png"
+        },
+        {
+          "path": "images/sketches/senator.png",
+          "evidence": "accepted session artifact a_highly_detailed_infographic_character_sheet_styl.png"
+        },
+        {
+          "path": "images/sketches/spirit walker.png",
+          "evidence": "accepted session artifact spirit_walker_character_design_sheet.png"
+        },
+        {
+          "path": "images/sketches/spymaster.png",
+          "evidence": "accepted session artifact spy_master_dossier_design_sheet.png"
+        },
+        {
+          "path": "images/sketches/witch hunter.png",
+          "evidence": "accepted session artifact witch_hunter_character_reference_sheet.png"
+        },
+        {
+          "path": "images/spirit walker.png",
+          "evidence": "accepted session artifact spirit_walker_character_design_sheet.png"
+        },
+        {
+          "path": "images/spymaster.png",
+          "evidence": "accepted session artifact spy_master_dossier_design_sheet.png"
+        },
+        {
+          "path": "images/witch hunter.png",
+          "evidence": "accepted session artifact witch_hunter_character_reference_sheet.png"
+        }
       ]
     },
     {
@@ -81,12 +154,24 @@
         "rights_reference": "https://openai.com/policies/terms-of-use/"
       },
       "assets": [
-        {"path": "images/faction-symbols/diplomats.svg"},
-        {"path": "images/faction-symbols/financiers.svg"},
-        {"path": "images/faction-symbols/inquisition.svg"},
-        {"path": "images/faction-symbols/intelligence.svg"},
-        {"path": "images/faction-symbols/military.svg"},
-        {"path": "images/faction-symbols/mystics.svg"}
+        {
+          "path": "images/faction-symbols/diplomats.svg"
+        },
+        {
+          "path": "images/faction-symbols/financiers.svg"
+        },
+        {
+          "path": "images/faction-symbols/inquisition.svg"
+        },
+        {
+          "path": "images/faction-symbols/intelligence.svg"
+        },
+        {
+          "path": "images/faction-symbols/military.svg"
+        },
+        {
+          "path": "images/faction-symbols/mystics.svg"
+        }
       ]
     },
     {
@@ -143,11 +228,21 @@
         "font_reference": "https://fonts.adobe.com/fonts/p22-declaration-pro"
       },
       "assets": [
-        {"path": "images/Gauntlet-G.svg"},
-        {"path": "images/Gauntlet.svg"},
-        {"path": "images/branding/Gauntlet.ai"},
-        {"path": "images/branding/Gauntlet.png"},
-        {"path": "images/branding/gauntlet-icon.png"}
+        {
+          "path": "images/Gauntlet-G.svg"
+        },
+        {
+          "path": "images/Gauntlet.svg"
+        },
+        {
+          "path": "images/branding/Gauntlet.ai"
+        },
+        {
+          "path": "images/branding/Gauntlet.png"
+        },
+        {
+          "path": "images/branding/gauntlet-icon.png"
+        }
       ]
     },
     {
@@ -164,7 +259,9 @@
         "identity_commit": "fd8e61cf59db30148d86e87fc18c9e42d1cb3a96"
       },
       "assets": [
-        {"path": "images/branding/tds-games-mark.svg"}
+        {
+          "path": "images/branding/tds-games-mark.svg"
+        }
       ]
     },
     {
@@ -183,11 +280,122 @@
         "terms_reference": "https://www.tripo3d.ai/terms"
       },
       "assets": [
-        {"path": "images/3d/Alchemist.zip"},
-        {"path": "images/3d/Ambassador.zip"},
-        {"path": "images/3d/Banker.zip"},
-        {"path": "images/3d/Commandant.zip"},
-        {"path": "images/3d/General.zip"}
+        {
+          "path": "images/3d/Alchemist.zip"
+        },
+        {
+          "path": "images/3d/Ambassador.zip"
+        },
+        {
+          "path": "images/3d/Banker.zip"
+        },
+        {
+          "path": "images/3d/Commandant.zip"
+        },
+        {
+          "path": "images/3d/General.zip"
+        }
+      ]
+    },
+    {
+      "id": "leader-card-derivatives-2026-09-05",
+      "description": "Historical leader-card crops and wrappers derived from already-resolved Gauntlet leader artwork.",
+      "defaults": {
+        "origin": "project-created",
+        "creator": "Tymon Scott / Gauntlet project",
+        "source": "Repository history identifies these files as leader-card crops/cleanups of the established Gauntlet leader artwork. Representative SVG wrappers directly embed the corresponding already-governed leader image (for example images/leader-cards/alchemist.svg embeds ../alchemist.png). July 18, 2026 history includes commits such as a144d3392304b6527700d981369934c4a4caca83 (Add Alchemist leader-card crop) and 75ccfacc71b7dd596bce7a85b7ea05000b5833ab (Add Spirit Walker leader-card crop), plus crop-header cleanup commits for other leaders.",
+        "rights": "Project-created derivative presentation/crop of Gauntlet leader artwork whose source provenance is already explicit in this ledger. No additional third-party source artwork is known to have been incorporated.",
+        "notes": "This record covers the crop/wrapper asset; underlying leader artwork provenance remains independently governed."
+      },
+      "evidence_basis": {
+        "repository_history": "images/leader-cards history on 2026-07-18, including explicit leader-card crop and crop-cleanup commits.",
+        "repository_structure": "SVG variants directly reference the corresponding governed leader artwork.",
+        "identity_commit": "a630d550370d6f87ce069bcd6681901011130750"
+      },
+      "asset_prefixes": [
+        "images/leader-cards/"
+      ]
+    },
+    {
+      "id": "card-back-pattern-derived-2026-09-05",
+      "description": "Deterministic monochrome card-back lattice composed from the active faction symbols.",
+      "defaults": {
+        "origin": "project-created",
+        "creator": "Tymon Scott / Gauntlet project",
+        "source": "Repository history documents card-design/card-back-pattern.svg as a deterministic, self-contained, flattened vector card-back pattern assembled from the approved faction symbol paths. Relevant history includes commits 1cbdae298e9a76cc6f9e1401d14578609186eb90 (Flatten card-back symbol pattern into one SVG surface), fd860f5637bce62f509e5d94b90b6c0f039dca85 (Make card-back pattern self-contained and bake its rotation), and b0eb132938514a2f18f0c60b7909c23f2bad64f6 (Restore deterministic monochrome card-back pattern).",
+        "rights": "Project-created deterministic composite using active faction symbols whose provenance is separately governed in this ledger."
+      },
+      "evidence_basis": {
+        "repository_history": "Documented flattened/self-contained card-back symbol pattern history on 2026-09-03.",
+        "identity_commit": "a630d550370d6f87ce069bcd6681901011130750"
+      },
+      "assets": [
+        {
+          "path": "card-design/card-back-pattern.svg"
+        }
+      ]
+    },
+    {
+      "id": "deckbuilder-qr-derived-2026-09-05",
+      "description": "Project-generated QR code for the canonical Gauntlet deckbuilder URL.",
+      "defaults": {
+        "origin": "project-created",
+        "creator": "Tymon Scott / Gauntlet project",
+        "source": "Repository history documents images/qr/gauntlet-v0.6-deckbuilder.svg as the Gauntlet deckbuilder QR code and repeatedly updates/restores its destination to gauntlet.run. Relevant commits include e3d03c68c182c4ea61947019485b4b09f7ca07b9, f8577f4bcc717577c2b9380ce7717b9bfb6fe168, 75045d622a8225e9141533c1ecaa62fd276e565b, and 61586adee38266f77a5219f0dedc10a585be138b.",
+        "rights": "Project-generated functional encoding of the project-controlled deckbuilder URL; no third-party creative source artwork is incorporated."
+      },
+      "evidence_basis": {
+        "repository_history": "Canonical v0.6 release and deckbuilder QR destination-update history.",
+        "identity_commit": "a630d550370d6f87ce069bcd6681901011130750"
+      },
+      "assets": [
+        {
+          "path": "images/qr/gauntlet-v0.6-deckbuilder.svg"
+        }
+      ]
+    },
+    {
+      "id": "command-tent-gameplay-painting-2026-09-05",
+      "description": "Generated homepage gameplay-showcase painting.",
+      "defaults": {
+        "origin": "generated",
+        "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+        "source": "Gauntlet project conversation on 2026-07-29 records creation of a painted command-tent gameplay showcase matching the established Gauntlet art style; the resulting generated gameplay artwork was named gauntlet-command-tent-gameplay-painting and added to the repository in commit d4cedd89f6db666df86c93e3d76fbe17358d4e5d. The current WebP is the restored/optimized repository form of that project artwork.",
+        "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights."
+      },
+      "evidence_basis": {
+        "project_conversation": "Gauntlet homepage/gameplay artwork work on 2026-07-29.",
+        "repository_history": "d4cedd89f6db666df86c93e3d76fbe17358d4e5d and later restore history.",
+        "identity_commit": "a630d550370d6f87ce069bcd6681901011130750",
+        "rights_reference": "https://openai.com/policies/terms-of-use/"
+      },
+      "assets": [
+        {
+          "path": "images/artwork/site/gauntlet-command-tent-gameplay-painting.webp"
+        }
+      ]
+    },
+    {
+      "id": "mystics-rite-completed-composite-2026-09-05",
+      "description": "Completed-side Mystics Rite graphic composed for Gauntlet from generated residue parchment and licensed outlined/display typography.",
+      "defaults": {
+        "origin": "project-created",
+        "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+        "source": "Gauntlet project conversation on 2026-08-13/14 records the iterative creation and user selection of the Mystics Rite completed-side parchment/residue image, followed by adding the word Completed in P22 Declaration Pro rather than relying on generated text. The repository file images/artwork/supplemental/mystics/rite-completed.webp is the resulting supplemental graphic; repository history includes full-resolution restoration on 2026-08-14.",
+        "rights": "Project-created composite. The source image-generation stage is covered by OpenAI Terms of Use (https://openai.com/policies/terms-of-use/). Adobe Fonts permits commercial design and logo/display use of licensed fonts and conversion to outlines/raster in finished graphics; font software is not redistributed under this record. See https://helpx.adobe.com/fonts/web/font-licensing/font-licensing.html. This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+        "notes": "The finished supplemental graphic is governed as a project composite; generated image residue and typography licensing are documented as component provenance."
+      },
+      "evidence_basis": {
+        "project_conversation": "Mystics completed-side graphic development and selection, 2026-08-13/14.",
+        "repository_history": "Full-resolution Rite artwork restore/upload history on 2026-08-14.",
+        "identity_commit": "a630d550370d6f87ce069bcd6681901011130750",
+        "rights_reference": "https://openai.com/policies/terms-of-use/",
+        "font_license_reference": "https://helpx.adobe.com/fonts/web/font-licensing/font-licensing.html"
+      },
+      "assets": [
+        {
+          "path": "images/artwork/supplemental/mystics/rite-completed.webp"
+        }
       ]
     }
   ]
