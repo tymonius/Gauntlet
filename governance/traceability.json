@@ -49,10 +49,10 @@
       "expected": {"name":"Armistice","cost":4,"trait":null,"unique":false,"action":"Bank this as an Asset. While this is active, neither player can initiate a battle. After your normal Draw step at the start of each of your turns, discard two cards from your hand or discard this. This cannot be voluntarily discarded at another time.","battle":"Resolve effects that cancel cards first. If this is not canceled, end the battle without a winner. Return the attacking player to the position they entered from. Stop resolving Battle effects. Put all other cards still used in the battle in their owners' Discard Piles, then put this in its owner's Graveyard."},
       "canonical": {"status":"complete","paths":["docs/Gauntlet_v0.6_Neutral_Card_Pool.md","releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json","artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json"]},
       "rules_reference": {"status":"complete","paths":["releases/v0.6.0/Gauntlet_v0.6.0_Complete_Card_Reference.md","artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Complete_Card_Reference.md"]},
-      "engine": {"status":"partial","paths":["legacy/digital-engine-v06/state/neutral-armistice.ts","legacy/digital-engine-v06/state/apply-neutral.ts","src/content/v063.ts"]},
+      "engine": {"status":"partial","paths":["legacy/digital-engine-v06/state/neutral-armistice.ts","legacy/digital-engine-v06/state/apply-neutral.ts","legacy/digital-engine-migration/v0.6.3/content/v063.ts"]},
       "deckbuilder": {"status":"unknown","paths":[]},
       "print_art": {"status":"unknown","paths":[]},
-      "tests": {"status":"partial","paths":["legacy/digital-engine-v06/state/neutral-armistice.test.ts","src/v063/cards.test.ts"]},
+      "tests": {"status":"partial","paths":["legacy/digital-engine-v06/state/neutral-armistice.test.ts","legacy/digital-engine-migration/v0.6.3/procedures/cards.test.ts"]},
       "overall_status": "canonicalized",
       "implementation_note": "v0.6.3 canonical content uses start-of-Opening upkeep. The existing gameplay engine still contains the superseded post-Draw implementation and must be updated separately before this decision is fully implemented digitally."
     },
@@ -106,7 +106,7 @@
       "engine": {"status":"not_implemented","paths":[]},
       "deckbuilder": {"status":"unknown","paths":[]},
       "print_art": {"status":"unknown","paths":[]},
-      "tests": {"status":"partial","paths":["src/v063/cards.test.ts"]},
+      "tests": {"status":"partial","paths":["legacy/digital-engine-migration/v0.6.3/procedures/cards.test.ts"]},
       "overall_status": "canonicalized",
       "implementation_note": "v0.6.3 canonical content and reference contain the approved Removal trigger and +2 Battle Total text; gameplay-engine implementation is not part of this correction PR."
     },
@@ -120,7 +120,7 @@
       "engine": {"status":"not_implemented","paths":[]},
       "deckbuilder": {"status":"unknown","paths":[]},
       "print_art": {"status":"unknown","paths":[]},
-      "tests": {"status":"partial","paths":["src/v063/cards.test.ts"]},
+      "tests": {"status":"partial","paths":["legacy/digital-engine-migration/v0.6.3/procedures/cards.test.ts"]},
       "overall_status": "not_implemented",
       "implementation_note": "Canonical v0.6.3 data now explicitly preserves Manifest Destiny as a normal Territory with a normal Deed, but digital playability remains unavailable until dynamic Territory insertion and cleanup are implemented and validated."
     }
