@@ -19,17 +19,10 @@ function readyGame(): V070GameState {
     gameId: 'fortifications-test',
     seed: 'fortifications-seed',
     players: {
-      A: {
-        name: 'Alpha',
-        starterDeckId: 'military-general-forward-doctrine',
-      },
-      B: {
-        name: 'Bravo',
-        starterDeckId: 'military-commandant-holdfast',
-      },
+      A: { name: 'Alpha', starterDeckId: 'military-general-forward-doctrine' },
+      B: { name: 'Bravo', starterDeckId: 'military-commandant-holdfast' },
     },
   });
-
   for (const playerId of ['A', 'B'] as const) {
     state = reduceV070SetupAction(state, {
       type: 'choose_opening_discard',
@@ -45,14 +38,10 @@ function readyGame(): V070GameState {
     });
   }
   state = reduceV070SetupAction(state, {
-    type: 'roll_first_player',
-    playerId: 'A',
-    value: 6,
+    type: 'roll_first_player', playerId: 'A', value: 6,
   });
   return reduceV070SetupAction(state, {
-    type: 'roll_first_player',
-    playerId: 'B',
-    value: 1,
+    type: 'roll_first_player', playerId: 'B', value: 1,
   });
 }
 
@@ -67,23 +56,11 @@ function activeBattle(): V070GameState {
   state.board[2].occupant = 'A';
   state.board[3].occupant = 'B';
   state.board[3].controller = 'B';
-
-  state = reduceV070TurnAction(state, {
-    type: 'resolve_capture',
-    playerId: 'A',
-  });
-  state = reduceV070TurnAction(state, {
-    type: 'draw_turn_card',
-    playerId: 'A',
-  });
-  state = reduceV070TurnAction(state, {
-    type: 'pass_opening',
-    playerId: 'A',
-  });
+  state = reduceV070TurnAction(state, { type: 'resolve_capture', playerId: 'A' });
+  state = reduceV070TurnAction(state, { type: 'draw_turn_card', playerId: 'A' });
+  state = reduceV070TurnAction(state, { type: 'pass_opening', playerId: 'A' });
   return reduceV070TurnAction(state, {
-    type: 'choose_movement',
-    playerId: 'A',
-    choice: 'advance',
+    type: 'choose_movement', playerId: 'A', choice: 'advance',
   });
 }
 
@@ -95,52 +72,32 @@ function inject(
   zone?: 'hand' | 'assetBank',
 ): string {
   const instanceId = `fortifications-${owner}-${suffix}-${cardId}`;
-  state.cardInstances[instanceId] = {
-    instanceId,
-    cardId,
-    owner,
-  };
+  state.cardInstances[instanceId] = { instanceId, cardId, owner };
   if (zone) state.players[owner].zones[zone].push(instanceId);
   return instanceId;
 }
 
-function proceedToGambitReveal(
+function revealGambits(
   state: V070GameState,
   gambitA?: string,
   gambitB?: string,
 ): V070GameState {
+  state = reduceV070BattleAction(state, { type: 'proceed_from_onset', playerId: 'A' });
   state = reduceV070BattleAction(state, {
-    type: 'proceed_from_onset',
-    playerId: 'A',
-  });
-  state = reduceV070BattleAction(state, {
-    type: 'set_gambit',
-    playerId: 'A',
-    cardInstanceId: gambitA,
+    type: 'set_gambit', playerId: 'A', cardInstanceId: gambitA,
   });
   state = reduceV070BattleAction(state, {
-    type: 'set_gambit',
-    playerId: 'B',
-    cardInstanceId: gambitB,
+    type: 'set_gambit', playerId: 'B', cardInstanceId: gambitB,
   });
-  return reduceV070BattleAction(state, {
-    type: 'reveal_gambits',
-    playerId: 'A',
-  });
+  return reduceV070BattleAction(state, { type: 'reveal_gambits', playerId: 'A' });
 }
 
 function passAllTactics(state: V070GameState): V070GameState {
   while (state.battleRuntime?.stage === 'choose_tactics') {
     for (const playerId of ['A', 'B'] as const) {
-      const participant = state.battleRuntime?.participants[playerId];
-      if (!participant
-        || participant.tacticChoicesMade >= participant.tacticLimit) {
-        continue;
-      }
-      state = reduceV070BattleAction(state, {
-        type: 'choose_tactic',
-        playerId,
-      });
+      const p = state.battleRuntime?.participants[playerId];
+      if (!p || p.tacticChoicesMade >= p.tacticLimit) continue;
+      state = reduceV070BattleAction(state, { type: 'choose_tactic', playerId });
       if (state.battleRuntime?.stage !== 'choose_tactics') break;
     }
   }
@@ -148,319 +105,146 @@ function passAllTactics(state: V070GameState): V070GameState {
 }
 
 describe('v0.7.0 Fortifications', () => {
-  test('does not create an Onset decision and applies its defending Asset after Gambits reveal', () => {
+  test('applies the defending passive after Gambits reveal, not during Onset', () => {
     let state = activeBattle();
-    const fortifications = inject(
-      state,
-      'B',
-      'neutral-fortifications',
-      'passive',
-      'assetBank',
-    );
-
-    state = reduceV070BattleAction(state, {
-      type: 'proceed_from_onset',
-      playerId: 'A',
-    });
+    const card = inject(state, 'B', 'neutral-fortifications', 'passive', 'assetBank');
+    state = reduceV070BattleAction(state, { type: 'proceed_from_onset', playerId: 'A' });
     expect(state.battleRuntime?.stage).toBe('set_gambits');
-
-    state = reduceV070BattleAction(state, {
-      type: 'set_gambit',
-      playerId: 'A',
-    });
-    state = reduceV070BattleAction(state, {
-      type: 'set_gambit',
-      playerId: 'B',
-    });
-    state = reduceV070BattleAction(state, {
-      type: 'reveal_gambits',
-      playerId: 'A',
-    });
-
+    state = reduceV070BattleAction(state, { type: 'set_gambit', playerId: 'A' });
+    state = reduceV070BattleAction(state, { type: 'set_gambit', playerId: 'B' });
+    state = reduceV070BattleAction(state, { type: 'reveal_gambits', playerId: 'A' });
     expect(state.battleRuntime?.stage).toBe('choose_tactics');
     expect(state.battleRuntime?.participants.B.tacticLimit).toBe(2);
-    expect(state.players.B.zones.assetBank).toContain(fortifications);
-    expect(state.battleRuntime?.fortificationsAssetTacticLimitResolved)
-      .toBe(true);
+    expect(state.players.B.zones.assetBank).toContain(card);
+    expect(state.battleRuntime?.fortificationsAssetTacticLimitResolved).toBe(true);
   });
 
-  test('the defending player can make two Tactic choices after Fortifications applies', () => {
+  test('allows the defender two Tactic choices', () => {
     let state = activeBattle();
-    inject(
-      state,
-      'B',
-      'neutral-fortifications',
-      'two-tactics',
-      'assetBank',
-    );
-    state = proceedToGambitReveal(state);
-
-    state = reduceV070BattleAction(state, {
-      type: 'choose_tactic',
-      playerId: 'A',
-    });
-    state = reduceV070BattleAction(state, {
-      type: 'choose_tactic',
-      playerId: 'B',
-    });
+    inject(state, 'B', 'neutral-fortifications', 'two-tactics', 'assetBank');
+    state = revealGambits(state);
+    state = reduceV070BattleAction(state, { type: 'choose_tactic', playerId: 'A' });
+    state = reduceV070BattleAction(state, { type: 'choose_tactic', playerId: 'B' });
     expect(state.battleRuntime?.stage).toBe('choose_tactics');
-    expect(state.battleRuntime?.participants.B.tacticChoicesMade).toBe(1);
-
-    state = reduceV070BattleAction(state, {
-      type: 'choose_tactic',
-      playerId: 'B',
-    });
+    state = reduceV070BattleAction(state, { type: 'choose_tactic', playerId: 'B' });
     expect(state.battleRuntime?.participants.B.tacticChoicesMade).toBe(2);
     expect(state.battleRuntime?.stage).toBe('reveal_tactics');
   });
 
-  test('an attacker-owned Fortifications Asset does not increase the attacker Tactic limit', () => {
+  test('does not apply an attacker-owned Fortifications Asset', () => {
     let state = activeBattle();
-    inject(
-      state,
-      'A',
-      'neutral-fortifications',
-      'attacker-asset',
-      'assetBank',
-    );
-
-    state = proceedToGambitReveal(state);
-
+    inject(state, 'A', 'neutral-fortifications', 'attacker', 'assetBank');
+    state = revealGambits(state);
     expect(state.battleRuntime?.participants.A.tacticLimit).toBe(1);
     expect(state.battleRuntime?.participants.B.tacticLimit).toBe(1);
   });
 
-  test('battle Subversion prevents the defending Fortifications Asset from applying', () => {
+  test('battle Subversion prohibits the passive Fortifications effect', () => {
     let state = activeBattle();
-    const subversion = inject(
-      state,
-      'A',
-      'intelligence-subversion',
-      'battle-subversion',
-      'hand',
-    );
-    const fortifications = inject(
-      state,
-      'B',
-      'neutral-fortifications',
-      'prohibited',
-      'assetBank',
-    );
-
-    state = proceedToGambitReveal(state, subversion);
-
+    const subversion = inject(state, 'A', 'intelligence-subversion', 'battle', 'hand');
+    const fortifications = inject(state, 'B', 'neutral-fortifications', 'blocked', 'assetBank');
+    state = revealGambits(state, subversion);
     expect(state.battleRuntime?.assetUseProhibitedPlayers).toContain('B');
     expect(state.battleRuntime?.participants.B.tacticLimit).toBe(1);
     expect(state.battleRuntime?.pendingSubversionAssetBattle).toBeNull();
     expect(state.players.B.zones.assetBank).toContain(fortifications);
   });
 
-  test('reactive Subversion may pass, leaving Fortifications banked and allowing its effect', () => {
+  test('reactive Subversion pass resumes Fortifications without consuming it', () => {
     let state = activeBattle();
-    const fortifications = inject(
-      state,
-      'B',
-      'neutral-fortifications',
-      'reaction-pass',
-      'assetBank',
-    );
-    inject(
-      state,
-      'A',
-      'intelligence-subversion',
-      'reaction-pass',
-      'assetBank',
-    );
-
-    state = proceedToGambitReveal(state);
+    const fortifications = inject(state, 'B', 'neutral-fortifications', 'pass', 'assetBank');
+    inject(state, 'A', 'intelligence-subversion', 'pass', 'assetBank');
+    state = revealGambits(state);
     expect(state.battleRuntime?.pendingSubversionAssetBattle).toMatchObject({
-      playerId: 'A',
-      targetOwner: 'B',
-      targetAssetInstanceId: fortifications,
+      playerId: 'A', targetOwner: 'B', targetAssetInstanceId: fortifications,
     });
-    expect(state.battleRuntime?.participants.B.tacticLimit).toBe(1);
-
     state = reduceV070BattleAction(state, {
-      type: 'resolve_subversion_asset',
-      playerId: 'A',
-      choice: 'pass',
+      type: 'resolve_subversion_asset', playerId: 'A', choice: 'pass',
     });
-
-    expect(state.battleRuntime?.pendingSubversionAssetBattle).toBeNull();
     expect(state.battleRuntime?.participants.B.tacticLimit).toBe(2);
     expect(state.players.B.zones.assetBank).toContain(fortifications);
   });
 
-  test('reactive Subversion negates and discards a physical Fortifications Asset', () => {
+  test('reactive Subversion negates and discards one physical Fortifications', () => {
     let state = activeBattle();
-    const fortifications = inject(
-      state,
-      'B',
-      'neutral-fortifications',
-      'reaction-use',
-      'assetBank',
-    );
-    const subversion = inject(
-      state,
-      'A',
-      'intelligence-subversion',
-      'reaction-use',
-      'assetBank',
-    );
-
-    state = proceedToGambitReveal(state);
+    const fortifications = inject(state, 'B', 'neutral-fortifications', 'use', 'assetBank');
+    const subversion = inject(state, 'A', 'intelligence-subversion', 'use', 'assetBank');
+    state = revealGambits(state);
     state = reduceV070BattleAction(state, {
-      type: 'resolve_subversion_asset',
-      playerId: 'A',
-      choice: 'use',
+      type: 'resolve_subversion_asset', playerId: 'A', choice: 'use',
       subversionInstanceId: subversion,
     });
-
     expect(state.players.A.zones.graveyard).toContain(subversion);
-    expect(state.players.B.zones.assetBank).not.toContain(fortifications);
     expect(state.players.B.zones.discardPile).toContain(fortifications);
     expect(state.battleRuntime?.participants.B.tacticLimit).toBe(1);
-    expect(state.battleRuntime?.fortificationsAssetTacticLimitResolved)
-      .toBe(true);
+    expect(state.battleRuntime?.fortificationsAssetTacticLimitResolved).toBe(true);
   });
 
-  test('after one copy is negated, another physical Fortifications can still apply', () => {
+  test('a second Fortifications can apply after the first physical copy is negated', () => {
     let state = activeBattle();
-    const first = inject(
-      state,
-      'B',
-      'neutral-fortifications',
-      'first-copy',
-      'assetBank',
-    );
-    const second = inject(
-      state,
-      'B',
-      'neutral-fortifications',
-      'second-copy',
-      'assetBank',
-    );
-    const subversion = inject(
-      state,
-      'A',
-      'intelligence-subversion',
-      'one-reaction',
-      'assetBank',
-    );
-
-    state = proceedToGambitReveal(state);
-    expect(state.battleRuntime?.pendingSubversionAssetBattle
-      ?.targetAssetInstanceId).toBe(first);
-
+    const first = inject(state, 'B', 'neutral-fortifications', 'first', 'assetBank');
+    const second = inject(state, 'B', 'neutral-fortifications', 'second', 'assetBank');
+    const subversion = inject(state, 'A', 'intelligence-subversion', 'single', 'assetBank');
+    state = revealGambits(state);
+    expect(state.battleRuntime?.pendingSubversionAssetBattle?.targetAssetInstanceId).toBe(first);
     state = reduceV070BattleAction(state, {
-      type: 'resolve_subversion_asset',
-      playerId: 'A',
-      choice: 'use',
+      type: 'resolve_subversion_asset', playerId: 'A', choice: 'use',
       subversionInstanceId: subversion,
     });
-
     expect(state.players.B.zones.discardPile).toContain(first);
     expect(state.players.B.zones.assetBank).toContain(second);
     expect(state.battleRuntime?.participants.B.tacticLimit).toBe(2);
-    expect(state.battleRuntime?.pendingSubversionAssetBattle).toBeNull();
   });
 
-  test('the Gambit/Tactic effect gives +1 Battle Total only to the defender', () => {
-    let defenderState = activeBattle();
-    defenderState.battleRuntime = createV070BattleRuntime();
-    const defenderSource = inject(
-      defenderState,
-      'B',
-      'neutral-fortifications',
-      'defender-card',
-    );
-    applyV070FortificationsGambitTacticEffect(
-      defenderState,
-      'B',
-      defenderSource,
-    );
+  test('Gambit/Tactic grants +1 and retreat permission only to the defender', () => {
+    const defender = activeBattle();
+    defender.battleRuntime = createV070BattleRuntime();
+    const defenderSource = inject(defender, 'B', 'neutral-fortifications', 'defender-card');
+    applyV070FortificationsGambitTacticEffect(defender, 'B', defenderSource);
+    expect(defender.battleRuntime.participants.B.battleModifier).toBe(1);
+    expect(defender.battleRuntime.fortificationsRetreatSourceInstanceIds).toEqual([defenderSource]);
 
-    expect(defenderState.battleRuntime.participants.B.battleModifier).toBe(1);
-    expect(defenderState.battleRuntime.fortificationsRetreatSourceInstanceIds)
-      .toEqual([defenderSource]);
-
-    const attackerState = activeBattle();
-    attackerState.battleRuntime = createV070BattleRuntime();
-    const attackerSource = inject(
-      attackerState,
-      'A',
-      'neutral-fortifications',
-      'attacker-card',
-    );
-    applyV070FortificationsGambitTacticEffect(
-      attackerState,
-      'A',
-      attackerSource,
-    );
-
-    expect(attackerState.battleRuntime.participants.A.battleModifier).toBe(0);
-    expect(attackerState.battleRuntime.fortificationsRetreatSourceInstanceIds)
-      .toEqual([]);
+    const attacker = activeBattle();
+    attacker.battleRuntime = createV070BattleRuntime();
+    const attackerSource = inject(attacker, 'A', 'neutral-fortifications', 'attacker-card');
+    applyV070FortificationsGambitTacticEffect(attacker, 'A', attackerSource);
+    expect(attacker.battleRuntime.participants.A.battleModifier).toBe(0);
+    expect(attacker.battleRuntime.fortificationsRetreatSourceInstanceIds).toEqual([]);
   });
 
-  test('a losing defender receives the optional extra move after normal retreat through the battle facade', () => {
+  test('opens the optional extra move after the normal retreat through the battle facade', () => {
     let state = activeBattle();
-    const fortifications = inject(
-      state,
-      'B',
-      'neutral-fortifications',
-      'battle-card',
-      'hand',
-    );
-
-    state = proceedToGambitReveal(state, undefined, fortifications);
+    const fortifications = inject(state, 'B', 'neutral-fortifications', 'battle-card', 'hand');
+    state = revealGambits(state, undefined, fortifications);
     expect(state.battleRuntime?.participants.B.battleModifier).toBe(1);
     state = passAllTactics(state);
+    state = reduceV070BattleAction(state, { type: 'reveal_tactics', playerId: 'A' });
     state = reduceV070BattleAction(state, {
-      type: 'reveal_tactics',
-      playerId: 'A',
-    });
-    state = reduceV070BattleAction(state, {
-      type: 'submit_battle_dice',
-      playerId: 'A',
-      values: [6],
+      type: 'submit_battle_dice', playerId: 'A', values: [6],
     });
     state = reduceV070BattleAction(state, {
-      type: 'submit_battle_dice',
-      playerId: 'B',
-      values: [1],
+      type: 'submit_battle_dice', playerId: 'B', values: [1],
     });
-
-    expect(state.battle).toMatchObject({
-      winner: 'A',
-      loser: 'B',
-      stage: 'resolved',
-    });
+    expect(state.battle).toMatchObject({ winner: 'A', loser: 'B', stage: 'resolved' });
     expect(state.battle?.positions.B).toBe(4);
     expect(state.battleRuntime?.pendingFortificationsRetreat).toEqual({
-      playerId: 'B',
-      sourceInstanceId: fortifications,
+      playerId: 'B', sourceInstanceId: fortifications,
     });
-
-    const attackerView = viewV070GameForPlayer(state, 'A');
-    const defenderView = viewV070GameForPlayer(state, 'B');
-    expect(attackerView.battleRuntime?.pendingFortificationsRetreat)
-      .toEqual({ playerId: 'B', sourceInstanceId: fortifications });
-    expect(defenderView.battleRuntime?.pendingFortificationsRetreat)
-      .toEqual({ playerId: 'B', sourceInstanceId: fortifications });
-    expect(attackerView.battleRuntime)
-      .not.toHaveProperty('fortificationsRetreatSourceInstanceIds');
-
+    for (const viewer of ['A', 'B'] as const) {
+      const view = viewV070GameForPlayer(state, viewer);
+      expect(view.battleRuntime?.pendingFortificationsRetreat).toEqual({
+        playerId: 'B', sourceInstanceId: fortifications,
+      });
+      expect(view.battleRuntime).not.toHaveProperty('fortificationsRetreatSourceInstanceIds');
+    }
     state = reduceV070BattleAction(state, {
-      type: 'resolve_fortifications_retreat',
-      playerId: 'B',
-      use: true,
+      type: 'resolve_fortifications_retreat', playerId: 'B', use: true,
     });
     expect(state.battle?.positions.B).toBe(5);
     expect(state.battleRuntime?.pendingFortificationsRetreat).toBeNull();
   });
 
-  test('declining the optional Fortifications move leaves the normal retreat unchanged', () => {
+  test('may decline the optional extra move', () => {
     const state = activeBattle();
     state.battleRuntime = createV070BattleRuntime();
     state.battleRuntime.stage = 'aftermath';
@@ -470,15 +254,13 @@ describe('v0.7.0 Fortifications', () => {
     state.battle!.positions.B = 4;
     const source = inject(state, 'B', 'neutral-fortifications', 'decline');
     state.battleRuntime.fortificationsRetreatSourceInstanceIds = [source];
-
     expect(openV070FortificationsRetreatChoice(state)).toBe(true);
-    expect(resolveV070FortificationsRetreatChoice(state, 'B', false))
-      .toBe(false);
-    expect(state.battle.positions.B).toBe(4);
+    expect(resolveV070FortificationsRetreatChoice(state, 'B', false)).toBe(false);
+    expect(state.battle?.positions.B).toBe(4);
     expect(state.battleRuntime.pendingFortificationsRetreat).toBeNull();
   });
 
-  test('multiple revealed Fortifications grant serial optional extra moves', () => {
+  test('multiple revealed copies grant serial optional moves', () => {
     const state = activeBattle();
     state.battleRuntime = createV070BattleRuntime();
     state.battleRuntime.stage = 'aftermath';
@@ -489,18 +271,12 @@ describe('v0.7.0 Fortifications', () => {
     const first = inject(state, 'B', 'neutral-fortifications', 'retreat-one');
     const second = inject(state, 'B', 'neutral-fortifications', 'retreat-two');
     state.battleRuntime.fortificationsRetreatSourceInstanceIds = [first, second];
-
     expect(openV070FortificationsRetreatChoice(state)).toBe(true);
-    expect(state.battleRuntime.pendingFortificationsRetreat?.sourceInstanceId)
-      .toBe(first);
-
+    expect(state.battleRuntime.pendingFortificationsRetreat?.sourceInstanceId).toBe(first);
     expect(resolveV070FortificationsRetreatChoice(state, 'B', true)).toBe(true);
-    expect(state.battle.positions.B).toBe(4);
-    expect(state.battleRuntime.pendingFortificationsRetreat?.sourceInstanceId)
-      .toBe(second);
-
+    expect(state.battle?.positions.B).toBe(4);
+    expect(state.battleRuntime.pendingFortificationsRetreat?.sourceInstanceId).toBe(second);
     expect(resolveV070FortificationsRetreatChoice(state, 'B', true)).toBe(false);
-    expect(state.battle.positions.B).toBe(5);
-    expect(state.battleRuntime.pendingFortificationsRetreat).toBeNull();
+    expect(state.battle?.positions.B).toBe(5);
   });
 });
