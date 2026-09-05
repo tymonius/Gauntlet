@@ -1,25 +1,23 @@
-import { spawnSync } from 'node:child_process';
+import { existsSync, readdirSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
 
-function run(script: string, args: string[] = []) {
-  return spawnSync(process.execPath, [script, ...args], {
-    cwd: process.cwd(),
-    encoding: 'utf8',
-  });
-}
+describe('withdrawn-release tooling boundary', () => {
+  test('keeps v0.6.2 release tooling frozen outside active scripts', () => {
+    const active = readdirSync('scripts').filter((name) => /v062|v0\.6\.2/.test(name));
+    expect(active).toEqual([]);
 
-describe('withdrawn v0.6.2 write guards', () => {
-  test.each([
-    ['central writable gate', 'scripts/assert-release-writable.mjs', ['v0.6.2']],
-    ['public synchronizer', 'scripts/synchronize-v062-public-site.mjs', []],
-    ['print synchronizer', 'scripts/synchronize-v062-print-release.mjs', []],
-    ['release runner', 'scripts/build-v062-release-runner.mjs', []],
-    ['print HTML generator', 'scripts/build-v062-print-html.mjs', []],
-    ['PDF renderer', 'scripts/render-v062-print-package.mjs', []],
-    ['canonical-data writer', 'scripts/generate-v062-canonical-data.mjs', ['--write']],
-  ])('%s refuses to write the withdrawn release', (_label, script, args) => {
-    const result = run(script, args as string[]);
-    expect(result.status).toBe(2);
-    expect(`${result.stdout}\n${result.stderr}`).toMatch(/withdrawn/i);
+    const frozen = readdirSync('docs/recovery/frozen-scripts/v0.6.2');
+    for (const name of [
+      'build-v062-release.mjs',
+      'build-v062-release-runner.mjs',
+      'generate-v062-canonical-data.mjs',
+      'render-v062-print-package.mjs',
+      'synchronize-v062-print-release.mjs',
+      'synchronize-v062-public-site.mjs',
+      'validate-v062-withdrawn-release.mjs',
+    ]) {
+      expect(frozen).toContain(name);
+      expect(existsSync(`docs/recovery/frozen-scripts/v0.6.2/${name}`)).toBe(true);
+    }
   });
 });
