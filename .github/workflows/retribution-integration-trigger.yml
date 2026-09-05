@@ -16,30 +16,131 @@ jobs:
         with:
           ref: feature/v070-retribution-lifecycle
           fetch-depth: 0
-      - name: Apply stored integration patch
+      - name: Apply Retribution source integration
         shell: python
         run: |
           from pathlib import Path
-          import textwrap
 
-          path = Path('.github/workflows/retribution-integration-patch.yml')
-          lines = path.read_text().splitlines()
-          marker = '      - name: Apply exact Retribution integration edits'
-          start = lines.index(marker)
-          run_index = next(i for i in range(start + 1, len(lines)) if lines[i] == '        run: |')
-          body = []
-          for line in lines[run_index + 1:]:
-              if line and not line.startswith('          '):
-                  break
-              body.append(line[10:] if line.startswith('          ') else '')
-          source = '\n'.join(body) + '\n'
-          exec(compile(source, str(path), 'exec'), {'__name__': '__main__'})
-      - name: Remove temporary integration workflows
-        run: rm .github/workflows/retribution-integration-patch.yml .github/workflows/retribution-integration-trigger.yml
+          def once(text, old, new, label):
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'{label}: expected one match, found {count}')
+              return text.replace(old, new, 1)
+
+          def region(text, start, end, replacement, label):
+              try:
+                  i = text.index(start)
+                  j = text.index(end, i)
+              except ValueError as exc:
+                  raise SystemExit(f'{label}: marker not found') from exc
+              return text[:i] + replacement + text[j:]
+
+          # battle-engine-core.ts
+          path = Path('src/v070/battle-engine-core.ts')
+          text = path.read_text()
+          if "from './retribution';" not in text:
+              anchor = "} from './inquisition';\n"
+              text = once(text, anchor, anchor + "import {\n  applyV070RetributionUse,\n  markV070RetributionProcessed,\n  resolveV070RetributionResponse,\n  v070RetributionEligibleInstanceIds,\n} from './retribution';\n", 'core import')
+
+          if "type: 'pass_retribution_asset'" not in text:
+              marker = "  | {\n      type: 'resolve_territory_aftermath_choice';"
+              addition = "  | {\n      type: 'pass_retribution_asset';\n      playerId: PlayerId;\n      assetInstanceId: string;\n    }\n  | {\n      type: 'resolve_retribution_response';\n      playerId: PlayerId;\n      choice: 'asset' | 'conviction';\n      assetInstanceId?: string;\n    }\n"
+              text = once(text, marker, addition + marker, 'core action union')
+
+          blocker_start = "  if (state.battleRuntime?.pendingBattleAftermathControlledEffectChoice\n"
+          blocker_end = "  if (state.battleRuntime?.pendingTerritoryAftermathChoice\n"
+          blocker = "  if (state.battleRuntime?.pendingBattleAftermathControlledEffectChoice\n    && action.type !== 'resolve_battle_aftermath_controlled_effect'\n    && action.type !== 'pass_retribution_asset') {\n    throw new V070GameActionError(\n      'Resolve the pending shared-timing Aftermath card effect before continuing the Aftermath.',\n    );\n  }\n  if (state.battleRuntime?.pendingRetributionResponse\n    && action.type !== 'resolve_retribution_response') {\n    throw new V070GameActionError(\n      'Resolve the pending Retribution response before continuing the Aftermath.',\n    );\n  }\n"
+          text = region(text, blocker_start, blocker_end, blocker, 'core blockers')
+
+          if "case 'pass_retribution_asset':" not in text:
+              marker = "    case 'resolve_territory_aftermath_choice':"
+              addition = "    case 'pass_retribution_asset':\n      passRetributionControlledEffect(\n        next,\n        action.playerId,\n        action.assetInstanceId,\n      );\n      break;\n    case 'resolve_retribution_response':\n      resolveRetributionResponseInAftermath(\n        next,\n        action.playerId,\n        action.choice,\n        action.assetInstanceId,\n      );\n      break;\n"
+              text = once(text, marker, addition + marker, 'core switch')
+
+          text = once(text, "kind: 'overlay' | 'territory' | 'asset';", "kind: 'overlay' | 'territory' | 'asset' | 'retribution';", 'controlled effect kind')
+
+          start = "function remainingBattleAftermathControlledEffects(\n"
+          end = "function nextBattleAftermathControlledEffectPlayer(\n"
+          replacement = "function remainingBattleAftermathControlledEffects(\n  state: V070GameState,\n): V070BattleAftermathControlledEffectRef[] {\n  const runtime = requireRuntime(state);\n  const battle = requireBattle(state);\n  return [\n    ...runtime.battleCardAftermathOverlayPlacements.map(placement => ({\n      owner: placement.owner,\n      sourceInstanceId: placement.sourceInstanceId,\n      kind: 'overlay' as const,\n    })),\n    ...runtime.battleCardAftermathTerritoryInsertions.map(insertion => ({\n      owner: insertion.owner,\n      sourceInstanceId: insertion.sourceInstanceId,\n      kind: 'territory' as const,\n    })),\n    ...runtime.battleCardAftermathAssetBanks.map(bank => ({\n      owner: bank.owner,\n      sourceInstanceId: bank.sourceInstanceId,\n      kind: 'asset' as const,\n    })),\n    ...v070RetributionEligibleInstanceIds(state, battle.defender)\n      .map(sourceInstanceId => ({\n        owner: battle.defender,\n        sourceInstanceId,\n        kind: 'retribution' as const,\n      })),\n  ];\n}\n\n"
+          text = region(text, start, end, replacement, 'remaining controlled effects')
+
+          old_sig = "function applyBattleAftermathControlledEffect(\n  state: V070GameState,\n  effect: V070BattleAftermathControlledEffectRef,\n  replaceAssetInstanceId?: string,\n): void {"
+          new_sig = "function applyBattleAftermathControlledEffect(\n  state: V070GameState,\n  effect: V070BattleAftermathControlledEffectRef,\n  immediateWinner: PlayerId | null,\n  replaceAssetInstanceId?: string,\n): void {"
+          text = once(text, old_sig, new_sig, 'controlled effect signature')
+          asset_branch = "  if (effect.kind === 'asset') {"
+          retribution_branch = "  if (effect.kind === 'retribution') {\n    applyV070RetributionUse(\n      state,\n      effect.owner,\n      effect.sourceInstanceId,\n      immediateWinner,\n    );\n    return;\n  }\n\n"
+          text = once(text, asset_branch, retribution_branch + asset_branch, 'Retribution application')
+
+          start = "function battleAftermathControlledEffectNeedsChoice(\n"
+          end = "function openBattleAftermathControlledEffectChoice(\n"
+          replacement = "function battleAftermathControlledEffectNeedsChoice(\n  state: V070GameState,\n  effect: V070BattleAftermathControlledEffectRef,\n): boolean {\n  if (effect.kind === 'retribution') return true;\n  return effect.kind === 'asset'\n    && v070ResistanceBattleBankNeedsReplacementChoice(\n      state,\n      effect.owner,\n    );\n}\n\n"
+          text = region(text, start, end, replacement, 'choice requirement')
+
+          text = once(text, "      applyBattleAftermathControlledEffect(state, candidates[0]);", "      applyBattleAftermathControlledEffect(\n        state,\n        candidates[0],\n        immediateWinner,\n      );\n      if (runtime.pendingRetributionResponse) return true;", 'automatic controlled effect')
+
+          start = "function resolveBattleAftermathControlledEffectChoice(\n"
+          end = "function placeAftermathCard(\n"
+          replacement = "function resolveBattleAftermathControlledEffectChoice(\n  state: V070GameState,\n  playerId: PlayerId,\n  sourceInstanceId: string,\n  replaceAssetInstanceId?: string,\n): void {\n  const runtime = requireRuntime(state);\n  requireRuntimeStage(runtime, 'aftermath');\n  const pending = runtime.pendingBattleAftermathControlledEffectChoice;\n  if (!pending || pending.playerId !== playerId) {\n    throw new V070GameActionError(\n      'No shared-timing Aftermath card-effect choice is pending for that player.',\n    );\n  }\n  if (!pending.candidateSourceInstanceIds.includes(sourceInstanceId)) {\n    throw new V070GameActionError(\n      'That card is not an eligible shared-timing Aftermath effect.',\n    );\n  }\n\n  const effect = remainingBattleAftermathControlledEffects(state)\n    .find(candidate =>\n      candidate.owner === playerId\n      && candidate.sourceInstanceId === sourceInstanceId\n    );\n  if (!effect) {\n    throw new V070GameActionError(\n      'That shared-timing Aftermath effect is no longer available.',\n    );\n  }\n\n  const immediateWinner = pending.immediateWinner;\n  runtime.pendingBattleAftermathControlledEffectChoice = null;\n  applyBattleAftermathControlledEffect(\n    state,\n    effect,\n    immediateWinner,\n    replaceAssetInstanceId,\n  );\n  if (runtime.pendingRetributionResponse) return;\n  runtime.battleAftermathControlledEffectNextPlayer =\n    nextBattleAftermathControlledEffectPlayer(state, playerId);\n  completeAftermathInternal(state, immediateWinner);\n}\n\nfunction passRetributionControlledEffect(\n  state: V070GameState,\n  playerId: PlayerId,\n  assetInstanceId: string,\n): void {\n  const runtime = requireRuntime(state);\n  requireRuntimeStage(runtime, 'aftermath');\n  const pending = runtime.pendingBattleAftermathControlledEffectChoice;\n  if (!pending\n    || pending.playerId !== playerId\n    || !pending.candidateSourceInstanceIds.includes(assetInstanceId)\n    || state.cardInstances[assetInstanceId]?.cardId !== 'inquisition-retribution'\n  ) {\n    throw new V070GameActionError(\n      'That Retribution is not an eligible shared-timing Aftermath effect.',\n    );\n  }\n\n  const stillBanked = state.players[playerId].zones.assetBank.includes(\n    assetInstanceId,\n  );\n  if (stillBanked\n    && !v070RetributionEligibleInstanceIds(state, playerId)\n      .includes(assetInstanceId)) {\n    throw new V070GameActionError(\n      'That Retribution is no longer eligible to be declined.',\n    );\n  }\n\n  const immediateWinner = pending.immediateWinner;\n  runtime.pendingBattleAftermathControlledEffectChoice = null;\n  markV070RetributionProcessed(\n    state,\n    playerId,\n    assetInstanceId,\n    stillBanked ? 'declined' : 'negated',\n  );\n  runtime.battleAftermathControlledEffectNextPlayer = stillBanked\n    ? playerId\n    : nextBattleAftermathControlledEffectPlayer(state, playerId);\n  completeAftermathInternal(state, immediateWinner);\n}\n\nfunction resolveRetributionResponseInAftermath(\n  state: V070GameState,\n  playerId: PlayerId,\n  choice: 'asset' | 'conviction',\n  assetInstanceId?: string,\n): void {\n  const runtime = requireRuntime(state);\n  requireRuntimeStage(runtime, 'aftermath');\n  const pending = runtime.pendingRetributionResponse;\n  if (!pending) {\n    throw new V070GameActionError('No Retribution response is pending.');\n  }\n  const owner = pending.owner;\n  const immediateWinner = resolveV070RetributionResponse(\n    state,\n    playerId,\n    choice,\n    assetInstanceId,\n  );\n  runtime.battleAftermathControlledEffectNextPlayer =\n    nextBattleAftermathControlledEffectPlayer(state, owner);\n  completeAftermathInternal(state, immediateWinner);\n}\n\n"
+          text = region(text, start, end, replacement, 'controlled effect resolver')
+          path.write_text(text)
+
+          # assets.ts
+          path = Path('src/v070/assets.ts')
+          text = path.read_text()
+          if 'export function putV070AssetInGraveyardByEffect' not in text:
+              marker = "export function discardV070AssetVoluntarily(\n"
+              helper = "export function putV070AssetInGraveyardByEffect(\n  state: V070GameState,\n  playerId: PlayerId,\n  instanceId: string,\n  purpose: string,\n): void {\n  if (!state.players[playerId].zones.assetBank.includes(instanceId)) {\n    throw new V070GameActionError(\n      'An effect-forced Asset Graveyard move must target a banked Asset.',\n    );\n  }\n  moveBankedAsset(\n    state,\n    playerId,\n    instanceId,\n    'graveyard',\n    purpose,\n    false,\n  );\n}\n\n"
+              text = once(text, marker, helper + marker, 'Asset Graveyard helper')
+          path.write_text(text)
+
+          # battle-types.ts
+          path = Path('src/v070/battle-types.ts')
+          text = path.read_text()
+          old = "  | {\n      type: 'apply_fortifications_tactic_limit_asset';\n      playerId: PlayerId;\n      assetInstanceId: string;\n    };"
+          new = "  | {\n      type: 'apply_fortifications_tactic_limit_asset';\n      playerId: PlayerId;\n      assetInstanceId: string;\n    }\n  | {\n      type: 'resolve_battle_aftermath_controlled_effect';\n      playerId: PlayerId;\n      sourceInstanceId: string;\n      replaceAssetInstanceId?: string;\n    };"
+          text = once(text, old, new, 'Subversion continuation')
+          path.write_text(text)
+
+          # battle-engine-prewar-bonds.ts
+          path = Path('src/v070/battle-engine-prewar-bonds.ts')
+          text = path.read_text()
+          if "V070_RETRIBUTION_ID" not in text:
+              anchor = "} from './fortifications';\n"
+              text = once(text, anchor, anchor + "import { V070_RETRIBUTION_ID } from './retribution';\n", 'prewar import')
+          text = once(text, 'const assetEffect = battleAssetEffectForAction(action);', 'const assetEffect = battleAssetEffectForAction(state, action);', 'asset effect call')
+          text = once(text, "function battleAssetEffectForAction(\n  action: V070BattleAction,", "function battleAssetEffectForAction(\n  state: V070GameState,\n  action: V070BattleAction,", 'asset effect signature')
+          marker = "    default:\n      return null;\n  }\n}\n\nfunction resumeAfterNegatedBattleAsset("
+          retribution_case = "    case 'resolve_battle_aftermath_controlled_effect':\n      if (state.cardInstances[action.sourceInstanceId]?.cardId !==\n        V070_RETRIBUTION_ID) {\n        return null;\n      }\n      return {\n        playerId: action.playerId,\n        assetInstanceId: action.sourceInstanceId,\n        effectLabel: 'Retribution',\n        deferredAction: action,\n      };\n"
+          text = once(text, marker, retribution_case + marker, 'Retribution asset case')
+          resume_marker = "function resumeAfterNegatedBattleAsset(\n  state: V070GameState,\n  deferredAction: V070SubversionAssetBattleContinuation,\n): V070GameState {\n"
+          resume_branch = "  if (deferredAction.type === 'resolve_battle_aftermath_controlled_effect'\n    && state.cardInstances[deferredAction.sourceInstanceId]?.cardId ===\n      V070_RETRIBUTION_ID) {\n    return reduceV070BattleActionInternal(\n      state,\n      {\n        type: 'pass_retribution_asset',\n        playerId: deferredAction.playerId,\n        assetInstanceId: deferredAction.sourceInstanceId,\n      },\n      true,\n    );\n  }\n\n"
+          text = once(text, resume_marker, resume_marker + resume_branch, 'negated Retribution continuation')
+          path.write_text(text)
+
+          # views-core.ts
+          path = Path('src/v070/views-core.ts')
+          text = path.read_text()
+          if 'export interface V070RetributionResponseView' not in text:
+              marker = "export interface V070FortificationsRetreatView {\n  playerId: PlayerId;\n  sourceInstanceId: string;\n}\n"
+              addition = "\nexport interface V070RetributionResponseView {\n  playerId: PlayerId;\n  owner: PlayerId;\n  sourceInstanceId: string;\n  candidateAssetCount: number;\n  immediateWinner: PlayerId | null;\n  candidateAssetInstanceIds?: string[];\n}\n"
+              text = once(text, marker, marker + addition, 'view interface')
+          if 'pendingRetributionResponse:' not in text:
+              marker = "  pendingFortificationsRetreat:\n    V070FortificationsRetreatView | null;\n"
+              text = once(text, marker, marker + "  pendingRetributionResponse:\n    V070RetributionResponseView | null;\n", 'view field')
+          mapping_marker = "    footholdAssetWindowPlayer: runtime.footholdAssetWindowPlayer,"
+          if "runtime.pendingRetributionResponse" not in text:
+              mapping = "    pendingRetributionResponse:\n      runtime.pendingRetributionResponse\n        ? {\n            playerId: runtime.pendingRetributionResponse.playerId,\n            owner: runtime.pendingRetributionResponse.owner,\n            sourceInstanceId: runtime.pendingRetributionResponse.sourceInstanceId,\n            candidateAssetCount:\n              runtime.pendingRetributionResponse.candidateAssetInstanceIds.length,\n            immediateWinner: runtime.pendingRetributionResponse.immediateWinner,\n            ...(runtime.pendingRetributionResponse.playerId === viewer\n              ? {\n                  candidateAssetInstanceIds: [\n                    ...runtime.pendingRetributionResponse.candidateAssetInstanceIds,\n                  ],\n                }\n              : {}),\n          }\n        : null,\n"
+              text = once(text, mapping_marker, mapping + mapping_marker, 'view mapping')
+          path.write_text(text)
+
+          # Temporary workflows are implementation scaffolding only.
+          Path('.github/workflows/retribution-integration-patch.yml').unlink(missing_ok=True)
+          Path('.github/workflows/retribution-integration-trigger.yml').unlink(missing_ok=True)
       - name: Validate integration
         run: |
           npm ci
-          npm run typecheck --if-present
+          npm run typecheck
+          npx vitest run src/v070/battle-decision-views.test.ts src/v070/fortifications.test.ts src/v070/subversion-mission.test.ts
       - name: Commit integrated source
         run: |
           git config user.name "github-actions[bot]"
