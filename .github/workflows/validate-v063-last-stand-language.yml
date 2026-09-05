@@ -5,6 +5,7 @@ on:
     paths:
       - ".github/workflows/validate-v063-last-stand-language.yml"
       - "docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_*.md"
+      - "docs/recovery/frozen-scripts/v0.6.3/generate-v063-canonical-data-candidate.mjs"
       - "factions/**/index.html"
       - "index.html"
       - "legacy/public-versions/v0.6.3/**"
@@ -20,6 +21,7 @@ on:
     paths:
       - ".github/workflows/validate-v063-last-stand-language.yml"
       - "docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_*.md"
+      - "docs/recovery/frozen-scripts/v0.6.3/generate-v063-canonical-data-candidate.mjs"
       - "factions/**/index.html"
       - "index.html"
       - "legacy/public-versions/v0.6.3/**"
@@ -51,7 +53,7 @@ jobs:
             scripts/build-clean-v063-publication-arbiter-web.mjs
             scripts/build-clean-v063-publication-core-web.mjs
             scripts/build-clean-v063-publication-release.mjs
-            scripts/generate-v063-canonical-data-candidate.mjs
+            docs/recovery/frozen-scripts/v0.6.3/generate-v063-canonical-data-candidate.mjs
             scripts/publication-utils.mjs
             rulebook/app.js
             rulebook/player-facing/chapter-11.md
