@@ -96,6 +96,8 @@ describe('digital engine boundary', () => {
   });
 
   it('keeps candidate content and reconstruction snapshots outside active source', () => {
+    expect(existsSync('src/v063')).toBe(false);
+    expect(readdirSync('src/content')).not.toContain('v063.ts');
     expect(readdirSync('src/content')).not.toContain('v064.ts');
     const offenders = sourceFilesUnder('src').filter((path) =>
       /(?:from\s*|import\s*\()['"][^'"]*legacy\/digital-engine-/.test(readFileSync(path, 'utf8')),

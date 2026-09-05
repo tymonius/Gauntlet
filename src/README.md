@@ -22,18 +22,17 @@ That difference is an explicit implementation lag, not an alternate authority cl
 - `v070/turn-engine.ts` — Capture, Draw, Opening/Movement/Denouement/Cleanup lifecycle, deterministic reshuffles, Front Line capture, and battle initiation.
 - `v070/battle-engine.ts` / `battle-types.ts` — executable Onset→Gambit→Reserve→Tactic→Outcome→Aftermath envelope, battle dice, Defensive Edge/Tiebreak, hidden commitments, and explicit unsupported-effect halts.
 - `v070/views.ts` — player-scoped hidden-information views.
-- `v063/` — substantial validated procedure library from the v0.6.3 migration: setup, Front Line/Capture, copied/repeated effects, Arcane Knowledge, Manifest Destiny, dynamic Territories/Deeds, and all printed Territory/Arena procedures. These remain explicitly versioned until individually revalidated against v0.7.0.
-- `content/v063.ts` — immutable v0.6.3 release adapter retained for historical/versioned regression tests.
 - `legacy/digital-engine-reconstruction/` — preserved clean v0.6.2/v0.6.3 reconstruction snapshots formerly under `src/reconstruction/`; retained as historical provenance outside the active `src/**/*.ts` typecheck boundary.
 - `legacy/digital-engine-migration/v0.6.2/` — superseded v0.6.2 rules/card/faction migration code and tests; v0.6.3 owns its required types independently.
+- `legacy/digital-engine-migration/v0.6.3/` — archived stale procedure library, content adapter, and tests. Preserved as implementation evidence only; no further development of those rules.
 - `legacy/digital-engine-migration/v0.6.4/` — retired v0.6.4 Onset/movement transition implementation formerly under `src/v064/`; relevant shared procedures were audited into `v070/rules.ts` before archival. Its unused candidate content adapter and test are preserved in the archived `content/` subdirectory, removing the active import of reconstruction code.
 - `legacy/digital-engine-v06/` — earlier playable v0.6-era architecture formerly split across `src/state/`, `effects/`, `cards/`, `types/`, and `dev/`, together with its explicitly legacy CLI/GUI runners. It remains an opt-in historical harness and migration source, not a current engine dependency.
 - `cli/` — promoted v0.7.0 reducer REPL. It uses certified starter Decks and the authoritative setup/turn/battle reducers directly; it does not mask unsupported battle effects.
 - `gui/` — promoted v0.7.0 reducer GUI. It uses certified starter Decks, player-scoped views, and the shared recorded-action dispatcher; older generic v0.5.6 runners are preserved under `legacy/digital-engine-dev-runners/` as non-executable provenance.
 
-The promoted `content/current.ts` boundary currently identifies the v0.7.0 implementation baseline and exposes only that promoted shared-rules/starter/setup/private-view surface. Historical procedure libraries are not re-exported through `current.ts`; migration work must import explicit versioned modules until a procedure is revalidated and promoted deliberately.
+The promoted `content/current.ts` boundary currently identifies the v0.7.0 implementation baseline and exposes only that promoted shared-rules/starter/setup/private-view surface. Historical procedure libraries are not re-exported through `current.ts`; new engine work must implement the maintained release contract without depending on archived rule implementations.
 
-There is intentionally no generic `content/index.ts` barrel. Active code must import `content/current.ts` when it means the promoted engine surface, or an explicit versioned adapter such as `content/v06.ts`, `content/v063.ts`, or `content/v070.ts` when it means a historical or released rules generation.
+There is intentionally no generic `content/index.ts` barrel. Active code must import `content/current.ts` when it means the promoted engine surface, or an explicit versioned adapter such as `content/v06.ts` or `content/v070.ts` when it means a historical or released rules generation.
 
 Issue #741 tracks completion of the playable engine against the current released rules.
 

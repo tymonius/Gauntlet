@@ -1,6 +1,8 @@
 {
   "schema_version": 1,
   "historical_evidence": [
+    { "path": "docs/recovery/frozen-scripts/v0.6.3/validate-v063-cross-surface-closeout.mjs", "git_object": "2d82d03d29aa97d868f0232f5bf952411d8c4b1c", "kind": "blob", "meaning": "Frozen historical closeout tooling: validate-v063-cross-surface-closeout.mjs" },
+    { "path": "docs/recovery/frozen-scripts/v0.6.3/build-v063-cross-surface-closeout.mjs", "git_object": "81cd8eab3d202f881bd5ffce207a06bc032b330d", "kind": "blob", "meaning": "Frozen historical closeout tooling: build-v063-cross-surface-closeout.mjs" },
     { "path": "releases/v0.6.1", "git_object": "5d209d784213c3fd663807eb08f4453968656f8c", "kind": "tree", "meaning": "Published v0.6.1 package" },
     { "path": "releases/v0.6.2-withdrawn", "git_object": "25da1d1302eec2c32d10bb0ccd6c5ede09907bbc", "kind": "tree", "meaning": "Original published v0.6.2 package; withdrawn evidence" },
     { "path": "releases/v0.6.3-withdrawn", "git_object": "eae8a51b915197bf63d1e21048030b33baed5a45", "kind": "tree", "meaning": "Original published v0.6.3 package; withdrawn evidence" },

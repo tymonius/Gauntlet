@@ -4,9 +4,15 @@ This subtree preserves versioned digital-engine migration implementations that h
 
 ## v0.6.2
 
-`v0.6.2/` contains the superseded v0.6.2 rules/card/faction migration implementation and its tests formerly under `src/v062/`. The still-active v0.6.3 migration layer now owns the four type shapes it needs in its own rules module; no v0.6.2 bridge remains in active source.
+`v0.6.2/` contains the superseded v0.6.2 rules/card/faction migration implementation and its tests formerly under `src/v062/`. The v0.6.3 snapshot owns the four type shapes it needed in its own rules module; no v0.6.2 bridge remains in active source.
 
 The archived v0.6.2 source and tests are historical provenance, not active engine behavior, and are intentionally outside the default TypeScript/Vitest authority boundary.
+
+## v0.6.3
+
+The `procedures/` and `content/` subdirectories preserve the stale migration library, its release adapter, and all associated tests. These are historical snapshots, not maintained rules or an executable package. Their original relative imports and bytes are retained as evidence. Do not continue developing this old rules version.
+
+The obsolete cross-surface closeout builder and validator are preserved under `docs/recovery/frozen-scripts/v0.6.3/` with blob locks in `config/release-locks.json`.
 
 ## v0.6.4
 
