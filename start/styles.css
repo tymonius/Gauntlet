@@ -241,3 +241,26 @@ body{background:radial-gradient(circle at 10% 5%,rgba(143,31,37,.1),transparent 
   .play-mode-grid { grid-template-columns: 1fr; }
   .play-mode-card .button { width: 100%; text-align: center; }
 }
+
+/* Follow-up onboarding polish. */
+[hidden]{display:none!important}
+.leader-choice .leader-summary{display:block;margin-top:.42rem;color:#4f5754;font-size:1rem;line-height:1.5}
+#learn .intro-grid>.intro-card:last-child:nth-child(odd){grid-column:1/-1}
+#learnFaction .intro-grid{align-items:start}
+#factionLessonSteps{display:grid;gap:.7rem;margin:0;padding-left:1.25rem}
+#factionLessonVictory{display:grid;gap:1rem;margin:0}
+.victory-line{display:grid;gap:.2rem}
+.victory-line>strong{font-family:var(--font-interface);font-size:.82rem;letter-spacing:.09em;text-transform:uppercase;color:var(--lesson-faction,var(--start-red))}
+
+#factionLesson[data-faction="military"]{--lesson-faction:#9e262c;--lesson-symbol:url("../images/faction-symbols/military.svg")}
+#factionLesson[data-faction="diplomats"]{--lesson-faction:#264f91;--lesson-symbol:url("../images/faction-symbols/diplomats.svg")}
+#factionLesson[data-faction="financiers"]{--lesson-faction:#227044;--lesson-symbol:url("../images/faction-symbols/financiers.svg")}
+#factionLesson[data-faction="intelligence"]{--lesson-faction:#282827;--lesson-symbol:url("../images/faction-symbols/intelligence.svg")}
+#factionLesson[data-faction="mystics"]{--lesson-faction:#5d347e;--lesson-symbol:url("../images/faction-symbols/mystics.svg")}
+#factionLesson[data-faction="inquisition"]{--lesson-faction:#a67a27;--lesson-symbol:url("../images/faction-symbols/inquisition.svg")}
+#factionLesson .faction-lesson-hero{position:relative;isolation:isolate;overflow:hidden;border-top-color:var(--lesson-faction,var(--start-red))}
+#factionLesson .faction-lesson-hero>*{position:relative;z-index:1}
+#factionLesson .faction-lesson-hero::after{content:"";position:absolute;right:-2rem;bottom:-6rem;width:min(32vw,360px);aspect-ratio:1;z-index:0;pointer-events:none;opacity:.07;background:var(--lesson-faction,var(--start-red));-webkit-mask:var(--lesson-symbol) center/contain no-repeat;mask:var(--lesson-symbol) center/contain no-repeat}
+#factionLesson .intro-grid>.intro-card{border-top:5px solid var(--lesson-faction,var(--start-red))}
+#factionLesson .intro-card>span{color:var(--lesson-faction,var(--start-red))}
+@media(max-width:620px){#learn .intro-grid>.intro-card:last-child:nth-child(odd){grid-column:auto}#factionLesson .faction-lesson-hero::after{right:-4rem;bottom:-3rem;width:260px}}
