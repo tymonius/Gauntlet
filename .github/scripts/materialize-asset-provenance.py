@@ -4,8 +4,8 @@
 Each remediation batch identifies a historical Git checkpoint that must contain the
 same binary as the file currently checked in. The checkpoint may be the original
 introduction commit or a later evidence/identity commit. Per-asset overrides are
-supported. This proves continuity from a documented historical state without falsely
-claiming that a later checkpoint was the asset's first introduction.
+supported. Batches may also name tightly scoped path prefixes when the evidence
+explicitly applies to the complete governed corpus under those prefixes.
 """
 
 from __future__ import annotations
@@ -73,6 +73,33 @@ def normalize_batches(evidence: dict) -> list[dict]:
     raise SystemExit("unsupported remediation manifest version")
 
 
+def is_ignored(rel: str, ignored_paths: tuple[str, ...]) -> bool:
+    for ignored in ignored_paths:
+        normalized = ignored.rstrip("/")
+        if rel == normalized or rel.startswith(normalized + "/"):
+            return True
+    return False
+
+
+def discover_prefix_assets(
+    prefixes: list[str], governed_extensions: set[str], ignored_paths: tuple[str, ...]
+) -> list[str]:
+    discovered: set[str] = set()
+    for prefix in prefixes:
+        if not isinstance(prefix, str) or not prefix.strip():
+            raise SystemExit("asset_prefixes entries must be non-empty strings")
+        normalized = prefix.strip().lstrip("./")
+        output = git("ls-files", "--", normalized)
+        for rel in output.splitlines():
+            if not rel or is_ignored(rel, ignored_paths):
+                continue
+            if Path(rel).suffix.lower() not in governed_extensions:
+                continue
+            if (ROOT / rel).is_file():
+                discovered.add(rel)
+    return sorted(discovered)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     mode = parser.add_mutually_exclusive_group()
@@ -85,6 +112,17 @@ def main() -> int:
     if policy.get("version") != 1:
         raise SystemExit("asset provenance policy must use version 1")
 
+    policy_rules = policy.get("policy", {})
+    governed_extensions = {
+        ext.lower() for ext in policy_rules.get("extensions", [])
+        if isinstance(ext, str) and ext.startswith(".")
+    }
+    ignored_paths = tuple(
+        path for path in policy_rules.get("ignored_paths", []) if isinstance(path, str)
+    )
+    if not governed_extensions:
+        raise SystemExit("asset provenance policy must define governed extensions")
+
     current_by_path = {record["path"]: record for record in policy.get("assets", [])}
     materialized: list[dict[str, str]] = []
     seen_paths: set[str] = set()
@@ -95,13 +133,34 @@ def main() -> int:
         batch_id = batch.get("id", f"batch-{batch_index}")
         defaults = batch.get("defaults")
         basis = batch.get("evidence_basis")
-        candidates = batch.get("assets")
-        if not isinstance(defaults, dict) or not isinstance(basis, dict) or not isinstance(candidates, list):
+        explicit_candidates = batch.get("assets", [])
+        prefixes = batch.get("asset_prefixes", [])
+        if not isinstance(defaults, dict) or not isinstance(basis, dict):
             raise SystemExit(f"{batch_id}: invalid batch structure")
+        if not isinstance(explicit_candidates, list) or not isinstance(prefixes, list):
+            raise SystemExit(f"{batch_id}: assets and asset_prefixes must be lists")
+        if not explicit_candidates and not prefixes:
+            raise SystemExit(f"{batch_id}: batch must contain assets and/or asset_prefixes")
 
-        for candidate in candidates:
+        candidates: list[dict] = []
+        explicit_paths: set[str] = set()
+        for candidate in explicit_candidates:
             if not isinstance(candidate, dict) or not isinstance(candidate.get("path"), str):
                 raise SystemExit(f"{batch_id}: every remediation candidate must contain a path")
+            rel = candidate["path"]
+            if rel in explicit_paths:
+                raise SystemExit(f"{batch_id}: duplicate explicit remediation path: {rel}")
+            explicit_paths.add(rel)
+            candidates.append(candidate)
+
+        for rel in discover_prefix_assets(prefixes, governed_extensions, ignored_paths):
+            if rel not in explicit_paths:
+                candidates.append({"path": rel})
+
+        if not candidates:
+            raise SystemExit(f"{batch_id}: no governed assets found for configured scope")
+
+        for candidate in candidates:
             rel = candidate["path"]
             if rel in seen_paths:
                 raise SystemExit(f"duplicate remediation path across batches: {rel}")
@@ -135,6 +194,7 @@ def main() -> int:
             record["sha256"] = sha256_file(absolute)
             materialized.append(record)
 
+    materialized.sort(key=lambda record: record["path"])
     print(f"Materialized {len(materialized)} evidence-backed provenance record(s) in memory.")
     for record in materialized:
         print(f"  {record['path']}  {record['sha256']}")
