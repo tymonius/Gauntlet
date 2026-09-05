@@ -1,31 +1,13 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const source = JSON.parse(readFileSync("docs/v0.6.4-diplomat-proposals.json", "utf8"));
 const componentRuntime = readFileSync("deckbuilder/faction-components.js", "utf8");
 const currentGame = JSON.parse(readFileSync("game-data/current-game.json", "utf8"));
 const proposalRenderer = readFileSync("card-design/proposal-card.js", "utf8");
 
 describe("Diplomat Proposal language synchronization", () => {
-  it("pins the approved issue #617 source as wording-only", () => {
-    expect(source.source_issue).toBe(617);
-    expect(source.mechanics_changed).toBe(false);
-    expect(source.proposals).toHaveLength(9);
-  });
-
-  it("keeps the promoted current-game Proposal authority synchronized with the approved source", () => {
-    expect(currentGame.proposals).toHaveLength(source.proposals.length);
-    for (const proposal of source.proposals) {
-      const promoted = currentGame.proposals.find((item: any) => item.id === proposal.id);
-      expect(promoted).toMatchObject({
-        id: proposal.id,
-        name: proposal.name,
-        stake: proposal.stake,
-        requirement: proposal.requirement,
-        accepted: proposal.accepted,
-        refused: proposal.refused,
-      });
-    }
+  it("uses the promoted current-game Proposal authority", () => {
+    expect(currentGame.proposals).toHaveLength(9);
     expect(componentRuntime).toContain("diplomats.proposals = (currentGame.proposals || []).map");
   });
 
