@@ -134,7 +134,7 @@ PR: [#1479](https://github.com/tymonius/Gauntlet/pull/1479). Branch: `cleanup/ve
 
 This tranche also repairs the publication ownership boundary left after the root compatibility aliases were retired. Current and historical booklet paths address `legacy/v0.6.1-rulebook-publication/` directly, browser runners accept its repository URL prefix, and generated asset references resolve from canonical repository paths. The shared visual system remains identified as v0.6.1 provenance, while active adapters and workflows are independent of a stale rules version. <!-- DOC-HISTORICAL -->
 
-Validation: the new production-boundary contract and related release/publication tests pass. The v0.7.1 browser pipeline passes source generation and the eight-page visual fidelity gate locally; final PDF pagination is delegated to CI because the local host cannot resolve the external Adobe Typekit resource.
+Validation: all four PR workflows are green at `11036968`. The new production-boundary contract and related release/publication tests pass. The v0.7.1 browser pipeline passes source generation and the eight-page visual fidelity gate locally; final PDF pagination remains covered by its main-target release workflow because the local host cannot resolve the external Adobe Typekit resource.
 
 Next: validate the stacked PR in CI, then continue the audit of active version-named validators. Prefer explicit authority/config inputs over embedded release identities, while leaving genuinely historical reproduction contracts pinned.
 
