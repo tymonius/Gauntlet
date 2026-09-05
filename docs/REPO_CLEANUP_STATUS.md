@@ -148,9 +148,9 @@ Next: continue classifying active version-named validation and reconstruction co
 
 PR: [#1486](https://github.com/tymonius/Gauntlet/pull/1486). Branch: `cleanup/archive-v063-downstream-reconstruction` (stacked on #1482). The uncalled clean-v0.6.3 downstream-data builder and validator have moved unchanged into frozen recovery evidence. Their required starter-catalog module was already absent from the maintained tree, so leaving these files in `scripts/` advertised broken commands. Both Git blobs are release-locked, and a focused boundary test prevents the entrypoints from returning to maintained tooling. <!-- DOC-HISTORICAL -->
 
-Local validation passes: 9 focused architecture tests, TypeScript, all 118 release-recovery locks, release-path normalization, rules-authority governance, and the maintained Last Stand terminology contract.
+Local validation passes: 9 focused architecture tests, TypeScript, all 118 release-recovery locks, release-path normalization, rules-authority governance, and the maintained Last Stand terminology contract. All four PR workflows are green at `051497c0`.
 
-Next: validate [#1486](https://github.com/tymonius/Gauntlet/pull/1486) in CI, then continue the caller-based classification of remaining version-named scripts. The manual reconstruction audit and current publication contract require separate treatment because they still have explicit workflows.
+Next: continue the caller-based classification of remaining version-named scripts. The retired browser-development generator/refiner/validator is the next closed pipeline; the manual reconstruction audit and current publication contract require separate treatment because they still have explicit workflows.
 
 ## Architectural queue
 
