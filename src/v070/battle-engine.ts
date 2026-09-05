@@ -1,5 +1,6 @@
 import {
   V070GameActionError,
+  appendV070Event,
   type V070GameState,
 } from './engine';
 import type { PlayerId } from './rules';
@@ -15,6 +16,7 @@ import {
   openV070FootholdAssetAftermathWindow,
   passV070FootholdAssetAfterCounterattackWin,
   useV070FootholdAssetAfterCounterattackWin,
+  v070FootholdAssetEligibleInstanceIds,
 } from './foothold';
 import {
   v070PoliticalCapitalPending,
@@ -29,13 +31,18 @@ import {
   recordV070IntelligenceBattleAssetUseForMission,
 } from './intelligence';
 import {
-  v070AssetUseProhibitedDuringBattle,
-} from './asset-face-state';
-import {
   V070SpiritHollowAftermathPause,
   openV070SpiritHollowAftermathChoice,
   resolveV070SpiritHollowAftermathChoice,
 } from './spirit-hollow';
+import type {
+  V070SubversionAssetBattleContinuation,
+} from './battle-types';
+import {
+  assertV070BattleAssetEffectUsable,
+  openV070SubversionAssetBattleWindow,
+  resolveV070SubversionAssetBattleChoice,
+} from './subversion-asset';
 
 export {
   V070_NORMAL_BATTLE_DICE,
@@ -57,12 +64,52 @@ export type V070BattleAction =
       playerId: PlayerId;
       handInstanceId?: string;
       graveyardInstanceId?: string;
+    }
+  | {
+      type: 'resolve_subversion_asset';
+      playerId: PlayerId;
+      choice: 'pass' | 'use';
+      subversionInstanceId?: string;
     };
 
 export function reduceV070BattleAction(
   state: V070GameState,
   action: V070BattleAction,
 ): V070GameState {
+  return reduceV070BattleActionInternal(state, action, false);
+}
+
+function reduceV070BattleActionInternal(
+  state: V070GameState,
+  action: V070BattleAction,
+  bypassSubversionInterrupt: boolean,
+): V070GameState {
+  const subversionPending =
+    state.battleRuntime?.pendingSubversionAssetBattle ?? null;
+  if (subversionPending && action.type !== 'resolve_subversion_asset') {
+    throw new V070GameActionError(
+      'Resolve or decline the pending Subversion Asset opportunity before continuing the battle.',
+    );
+  }
+
+  if (action.type === 'resolve_subversion_asset') {
+    const next = structuredClone(state) as V070GameState;
+    const resolved = resolveV070SubversionAssetBattleChoice(
+      next,
+      action.playerId,
+      action.choice,
+      action.subversionInstanceId,
+    );
+    if (!resolved.used) {
+      return reduceV070BattleActionInternal(
+        next,
+        resolved.pending.deferredAction,
+        true,
+      );
+    }
+    return resumeAfterNegatedBattleAsset(next, resolved.pending.deferredAction);
+  }
+
   const spiritHollowPending =
     state.battleRuntime?.pendingSpiritHollowAftermath ?? null;
   if (spiritHollowPending
@@ -82,10 +129,24 @@ export function reduceV070BattleAction(
     );
   }
 
-  if (action.type === 'use_safe_conduct'
-    && v070AssetUseProhibitedDuringBattle(state, action.playerId)) {
-    throw new V070GameActionError(
-      'Subversion prevents that player from using Assets during this battle.',
+  const assetEffect = battleAssetEffectForAction(action);
+  if (assetEffect && !bypassSubversionInterrupt) {
+    const next = structuredClone(state) as V070GameState;
+    if (openV070SubversionAssetBattleWindow(
+      next,
+      assetEffect.playerId,
+      assetEffect.assetInstanceId,
+      assetEffect.effectLabel,
+      assetEffect.deferredAction,
+    )) {
+      return next;
+    }
+  }
+  if (assetEffect) {
+    assertV070BattleAssetEffectUsable(
+      state,
+      assetEffect.playerId,
+      assetEffect.assetInstanceId,
     );
   }
 
@@ -145,16 +206,121 @@ export function reduceV070BattleAction(
     state,
     action as V070CoreBattleAction,
   );
-  if (action.type === 'use_safe_conduct') {
+  if (assetEffect) {
     recordV070IntelligenceBattleAssetUseForMission(
       next,
-      action.playerId,
+      assetEffect.playerId,
     );
   }
   if (footholdWindowMayOpen(next)) {
     openV070FootholdAssetAftermathWindow(next);
   }
   return next;
+}
+
+function battleAssetEffectForAction(
+  action: V070BattleAction,
+): {
+  playerId: PlayerId;
+  assetInstanceId: string;
+  effectLabel: string;
+  deferredAction: V070SubversionAssetBattleContinuation;
+} | null {
+  switch (action.type) {
+    case 'use_plenipotentiary':
+      return {
+        playerId: action.playerId,
+        assetInstanceId: action.cardInstanceId,
+        effectLabel: 'Plenipotentiary',
+        deferredAction: action,
+      };
+    case 'use_good_faith':
+      return {
+        playerId: action.playerId,
+        assetInstanceId: action.cardInstanceId,
+        effectLabel: 'Good Faith',
+        deferredAction: action,
+      };
+    case 'use_neutral_observers':
+      return {
+        playerId: action.playerId,
+        assetInstanceId: action.cardInstanceId,
+        effectLabel: 'Neutral Observers',
+        deferredAction: action,
+      };
+    case 'use_safe_conduct':
+      return {
+        playerId: action.playerId,
+        assetInstanceId: action.cardInstanceId,
+        effectLabel: 'Safe Conduct',
+        deferredAction: action,
+      };
+    case 'use_foothold_asset':
+      return {
+        playerId: action.playerId,
+        assetInstanceId: action.assetInstanceId,
+        effectLabel: 'Foothold',
+        deferredAction: action,
+      };
+    default:
+      return null;
+  }
+}
+
+function resumeAfterNegatedBattleAsset(
+  state: V070GameState,
+  deferredAction: V070SubversionAssetBattleContinuation,
+): V070GameState {
+  if (deferredAction.type === 'use_safe_conduct') {
+    return reduceV070BattleActionInternal(
+      state,
+      {
+        type: 'pass_loss_replacement',
+        playerId: deferredAction.playerId,
+      },
+      true,
+    );
+  }
+
+  if (deferredAction.type === 'use_foothold_asset') {
+    const playerId = deferredAction.playerId;
+    const remaining = v070FootholdAssetEligibleInstanceIds(state, playerId);
+    if (remaining.length > 0) {
+      appendV070Event(state, {
+        type: 'foothold_asset_window_continues',
+        actor: playerId,
+        visibility: 'public',
+        payload: {
+          playerId,
+          eligibleCount: remaining.length,
+          optional: true,
+          afterNegatedAsset: true,
+        },
+      });
+      appendV070Event(state, {
+        type: 'foothold_asset_options',
+        actor: playerId,
+        visibility: playerId,
+        payload: {
+          playerId,
+          assetInstanceIds: [...remaining],
+        },
+      });
+      return state;
+    }
+
+    const runtime = state.battleRuntime;
+    if (!runtime) {
+      throw new V070GameActionError(
+        'Foothold continuation requires an active battle runtime.',
+      );
+    }
+    runtime.footholdAssetWindowPlayer = null;
+    runtime.footholdAssetWindowResolved = true;
+    return resumeV070AfterFoothold(state);
+  }
+
+  return state;
 }
 
 function resumeV070AfterFoothold(
@@ -216,6 +382,7 @@ function footholdWindowMayOpen(state: V070GameState): boolean {
     || runtime.pendingTerritoryAftermathChoice
     || runtime.pendingPoisonousGasAftermath
     || runtime.pendingSpiritHollowAftermath
+    || runtime.pendingSubversionAssetBattle
     || runtime.guardiansWindowOpen
     || runtime.finalJudgmentWindowOpen
     || runtime.relentlessPursuitWindowOpen
