@@ -18,6 +18,15 @@ const EXPECTED_CHOICES = [
   ["inquisition", "witch-hunter"]
 ] as const;
 
+const FACTION_RULEBOOK_CHAPTERS = [
+  ["military", "Military", "13-military", "# 13. Military"],
+  ["diplomats", "Diplomats", "14-diplomats", "# 14. Diplomats"],
+  ["financiers", "Financiers", "15-financiers", "# 15. Financiers"],
+  ["intelligence", "Intelligence", "16-intelligence", "# 16. Intelligence"],
+  ["mystics", "Mystics", "17-mystics", "# 17. Mystics"],
+  ["inquisition", "Inquisition", "18-inquisition", "# 18. Inquisition"]
+] as const;
+
 describe("standalone new-player onboarding", () => {
   it("provides a public five-step path with no event-session dependency", () => {
     const html = read("start/index.html");
@@ -86,6 +95,23 @@ describe("standalone new-player onboarding", () => {
     expect(css).toContain("#learn .intro-grid>.intro-card:last-child:nth-child(odd){grid-column:1/-1}");
     expect(css).toContain("[hidden]{display:none!important}");
     expect(css).toContain(".faction-lesson-hero::after");
+  });
+
+  it("uses faction guides for exploration and exact rulebook chapters after the lesson", () => {
+    const html = read("start/index.html");
+    const app = read("start/app.js");
+    const rulebook = read("rulebook/player-facing/current-rulebook.md");
+
+    expect(app).toContain('el.factionGuideLink.href = `../rulebook/#${RULEBOOK_FACTION_ANCHORS[state.factionId]}`');
+    expect(app).toContain("rulebook chapter ↗");
+    expect(html).toContain('id="factionGuideLink" class="text-link" href="../rulebook/"');
+
+    for (const [factionId, factionName, anchor, heading] of FACTION_RULEBOOK_CHAPTERS) {
+      expect(html).toContain(`href="../factions/${factionId}/"`);
+      expect(app).toContain(`${factionId}: "${anchor}"`);
+      expect(app).toContain(`Open the \${faction.name} rulebook chapter ↗`.replace("\${faction.name}", factionName));
+      expect(rulebook).toContain(heading);
+    }
   });
 
   it("shows recommended Rite order for each Mystics starter alongside its existing setup guidance", () => {
