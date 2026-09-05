@@ -14,7 +14,7 @@ describe('Universal Reference neutral emblem', () => {
     expect(universalStyles).toContain('mask-image: url("../images/Gauntlet.svg")');
     expect(referenceRenderer).toContain('reference-watermark');
     expect(referenceTemplate).toContain('referenceCardMarkup(record, spec.side');
-    expect(legacyTtsAlias).toContain('/card-design/face-render.html');
+    expect(legacyTtsAlias).toContain('/card-design/legacy-face-redirect.mjs');
   });
 
   it('keeps the approved neutral ivory border treatment', () => {

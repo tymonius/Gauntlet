@@ -48,19 +48,26 @@ function componentFaceId(game, kind, id, side) {
 
 export function legacyFaceId(game, route, params) {
   if (route === 'card') {
-    const id = normalized(params.get('card'));
+    const id = normalized(params.get('card') || params.get('id'));
     if (!id) throw new Error('Legacy playable-card URL requires card.');
     return `card:${id}`;
   }
 
   if (route === 'territory') {
-    const id = normalized(params.get('territory'));
+    const id = normalized(params.get('territory') || params.get('id'));
     if (!id) throw new Error('Legacy Territory URL requires territory.');
     return `territory:${id}`;
   }
 
   if (route === 'back') {
     return `back:${normalized(params.get('faction')).toLowerCase() || 'intelligence'}`;
+  }
+
+  if (route === 'canonical-component') {
+    const id = normalized(params.get('component') || params.get('id'));
+    const side = normalized(params.get('side')).toLowerCase() || 'front';
+    if (!id) throw new Error('Legacy component URL requires component.');
+    return `component:${id}:${REVERSE_SIDES.has(side) ? 'reverse' : 'front'}`;
   }
 
   if (route === 'component') {

@@ -176,9 +176,9 @@ describe("Deckbuilder production printing", () => {
     ]) {
       expect(analyticsSync).toContain(path);
     }
-    expect(playableLegacyAlias).toContain('/card-design/face-render.html');
-    expect(componentLegacyAlias).toContain('/card-design/component-render.html');
-    expect(territoryLegacyAlias).toContain('/card-design/face-render.html');
+    expect(playableLegacyAlias).toContain('/card-design/legacy-face-redirect.mjs');
+    expect(componentLegacyAlias).toContain('/card-design/legacy-face-redirect.mjs');
+    expect(territoryLegacyAlias).toContain('/card-design/legacy-face-redirect.mjs');
     expect(playableLegacyAlias).not.toMatch(/card-review-render\.js/);
     expect(componentLegacyAlias).not.toMatch(/component-render\.js/);
     expect(territoryLegacyAlias).not.toMatch(/territory-review-render\.js/);

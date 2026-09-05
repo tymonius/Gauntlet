@@ -120,20 +120,25 @@ describe('durable current-game TTS pipeline', () => {
     expect(leaderGenerator).toContain("join(CURRENT_ALIAS_ROOT, 'leader-manifest.json')");
     expect(starterGenerator).toContain("join(CURRENT_ALIAS_ROOT, 'starter-deck-manifest.json')");
     expect(supplementalGenerator).toContain("join(CURRENT_ALIAS_ROOT, 'supplemental-catalog.json')");
-    expect(cardRenderer).toContain('/card-design/card-review-render.html');
-    expect(territoryRenderer).toContain('/card-design/territory-review-render.html');
-    expect(supplementalRendererAlias).toContain('/card-design/component-render.html');
+    expect(cardRenderer).toContain('data-legacy-face-route="card"');
+    expect(territoryRenderer).toContain('data-legacy-face-route="territory"');
+    expect(supplementalRendererAlias).toContain('data-legacy-face-route="canonical-component"');
+    for (const alias of [cardRenderer, territoryRenderer, supplementalRendererAlias]) {
+      expect(alias).toContain('/card-design/legacy-face-redirect.mjs');
+    }
   });
 
   it('renders all six production backs from the shared reviewed component', () => {
     for (const faction of ['military', 'diplomats', 'financiers', 'intelligence', 'mystics', 'inquisition']) {
       expect(catalogSource).toContain(`'${faction}'`);
     }
-    expect(cardGenerator).toContain('/card-design/card-back-render.html?faction=');
+    expect(cardGenerator).toContain('/card-design/face-render.html');
+    expect(cardGenerator).toContain('back:${faction}');
     expect(cardGenerator).toContain("const file = `backs/${faction}.png`");
-    expect(backRenderer).toContain('/card-design/card-back.css');
-    expect(backRenderer).toContain('/card-design/card-back.js');
-    expect(legacyBackRenderer).toContain('/card-design/card-back-render.html');
+    for (const alias of [backRenderer, legacyBackRenderer]) {
+      expect(alias).toContain('data-legacy-face-route="back"');
+      expect(alias).toContain('/card-design/legacy-face-redirect.mjs');
+    }
   });
 
   it('records the standard-back policy without leaking Neutral-card identity', () => {
