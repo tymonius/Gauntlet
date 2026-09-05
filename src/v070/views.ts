@@ -106,18 +106,9 @@ export interface V070SubversionAssetBattleView {
   candidateSubversionInstanceIds?: string[];
 }
 
-export interface V070FortificationsAssetOnsetView {
-  playerId: PlayerId;
-  candidateCount: number;
-  candidateAssetInstanceIds?: string[];
-}
-
-export interface V070FortificationsPostTacticsView {
+export interface V070FortificationsRetreatView {
   playerId: PlayerId;
   sourceInstanceId: string;
-  drawnCount: number;
-  candidateCount?: number;
-  candidateTacticInstanceIds?: string[];
 }
 
 export interface V070BattleRuntimeView {
@@ -138,10 +129,8 @@ export interface V070BattleRuntimeView {
     V070SpiritHollowAftermathView | null;
   pendingSubversionAssetBattle:
     V070SubversionAssetBattleView | null;
-  pendingFortificationsAssetOnset:
-    V070FortificationsAssetOnsetView | null;
-  pendingFortificationsPostTactics:
-    V070FortificationsPostTacticsView | null;
+  pendingFortificationsRetreat:
+    V070FortificationsRetreatView | null;
   footholdAssetWindowPlayer: PlayerId | null;
   footholdAssetWindowResolved: boolean;
   activePrintedTerritoryAtOnset:
@@ -713,42 +702,12 @@ function viewBattleRuntime(
               : {}),
           }
         : null,
-    pendingFortificationsAssetOnset:
-      runtime.pendingFortificationsAssetOnset
+    pendingFortificationsRetreat:
+      runtime.pendingFortificationsRetreat
         ? {
-            playerId: runtime.pendingFortificationsAssetOnset.playerId,
-            candidateCount:
-              runtime.pendingFortificationsAssetOnset
-                .candidateAssetInstanceIds.length,
-            ...(runtime.pendingFortificationsAssetOnset.playerId === viewer
-              ? {
-                  candidateAssetInstanceIds: [
-                    ...runtime.pendingFortificationsAssetOnset
-                      .candidateAssetInstanceIds,
-                  ],
-                }
-              : {}),
-          }
-        : null,
-    pendingFortificationsPostTactics:
-      runtime.pendingFortificationsPostTactics
-        ? {
-            playerId: runtime.pendingFortificationsPostTactics.playerId,
+            playerId: runtime.pendingFortificationsRetreat.playerId,
             sourceInstanceId:
-              runtime.pendingFortificationsPostTactics.sourceInstanceId,
-            drawnCount:
-              runtime.pendingFortificationsPostTactics.drawnInstanceIds.length,
-            ...(runtime.pendingFortificationsPostTactics.playerId === viewer
-              ? {
-                  candidateCount:
-                    runtime.pendingFortificationsPostTactics
-                      .candidateTacticInstanceIds.length,
-                  candidateTacticInstanceIds: [
-                    ...runtime.pendingFortificationsPostTactics
-                      .candidateTacticInstanceIds,
-                  ],
-                }
-              : {}),
+              runtime.pendingFortificationsRetreat.sourceInstanceId,
           }
         : null,
     footholdAssetWindowPlayer: runtime.footholdAssetWindowPlayer,
