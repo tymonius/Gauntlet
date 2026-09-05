@@ -31,14 +31,16 @@ describe("v0.7.1 Rules Arbiter QA foundation", () => {
   });
 
   test("v0.7.1 prompt prioritizes the immediately preceding exchange for ambiguous follow-ups", () => {
-    expect(workerV071).toContain('For follow-up questions using words such as "that", "it", "this", "those"');
+    expect(workerV071).toContain("Resolve follow-up referents against the immediately preceding exchange first");
+    expect(workerV071).toContain('elliptical corrections or fragments such as "which is what", "which are", "where do they go", "no, their destinations"');
+    expect(workerV071).toContain("Preserve the most recently contrasted property or noun phrase as the active referent");
     expect(workerV071).toContain("IMMEDIATELY PRECEDING EXCHANGE — resolve ambiguous follow-ups here first");
     expect(workerV071).toContain("const immediateHistory = history.slice(-2)");
     expect(workerV071).toContain("const earlierHistory = history.slice(0, -2)");
   });
 
   test("v0.7.1 prompt preserves timing, zone, classification, and gap semantics", () => {
-    expect(workerV071).toContain('export const BEHAVIOR_REVISION = "v071-qa-20260903-10"');
+    expect(workerV071).toContain('export const BEHAVIOR_REVISION = "v071-qa-20260903-11"');
     expect(workerV071).toContain("additional Actions changes the number of available Actions, not the legal phase or timing");
     expect(workerV071).toContain("A bound card is outside normal zones");
     expect(workerV071).toContain("Never invent the target of an unlabeled numerical bonus");
@@ -48,6 +50,9 @@ describe("v0.7.1 Rules Arbiter QA foundation", () => {
     expect(workerV071).toContain('Do not label an explicit or inferred answer "Table ruling"');
     expect(workerV071).toContain('begin the answer with exactly "Provisional Arbiter Ruling:"');
     expect(workerV071).toContain('do not discuss retrieval mechanics or say "the supplied passages/text/sources"');
+    expect(workerV071).toContain("state that concrete value");
+    expect(workerV071).toContain('Do not answer circularly with placeholders such as "the Gambit destination" or "the Tactic destination"');
+    expect(workerV071).toContain("Before returning provisional, check the retrieved clean authority for a direct answer to the requested property");
   });
 
   test("v0.7.1 model failures expose only the upstream HTTP status", () => {

@@ -10,7 +10,7 @@
 .faction-financiers { --faction: #227044; --faction-dark: #124429; --faction-soft: rgba(34,112,68,.11); --faction-symbol: url("/images/faction-symbols/financiers.svg"); }
 .faction-intelligence { --faction: #282827; --faction-dark: #111; --faction-soft: rgba(40,40,39,.11); --faction-symbol: url("/images/faction-symbols/intelligence.svg"); }
 .faction-mystics { --faction: #5d347e; --faction-dark: #38204e; --faction-soft: rgba(93,52,126,.11); --faction-symbol: url("/images/faction-symbols/mystics.svg"); }
-.faction-inquisition { --faction: #a67a27; --faction-dark: #66470e; --faction-soft: rgba(166,122,39,.13); --faction-symbol: url("/images/faction-symbols/inquisition.svg"); }
+.faction-inquisition { --faction: #a67a27; --faction-dark: #a67a27; --faction-soft: rgba(166,122,39,.13); --faction-symbol: url("/images/faction-symbols/inquisition.svg"); }
 
 /* Echo the Start-page selected-faction treatment as a deliberate opening accent:
  * large, stronger than a watermark, offset and partly off-canvas. */

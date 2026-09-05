@@ -1,0 +1,122 @@
+# Repository Cleanup Status
+
+> **Temporary working document.** Delete this file when the repository-wide cleanup tracked by [#1430](https://github.com/tymonius/Gauntlet/issues/1430) is complete.
+
+Last updated: 2026-09-04
+
+## What we are doing
+
+We are cleaning up and reorganizing the **entire Gauntlet repository**, not merely the digital engine.
+
+The governing approach is **top-down architecture first, individual-file cleanup last**.
+
+The objective is to make it obvious:
+
+- what each major repository area is for;
+- which implementation/source is authoritative;
+- which paths are active, transitional, generated, deployed, historical, or obsolete;
+- where a new change belongs;
+- what may be safely retired, quarantined, consolidated, or regenerated.
+
+The key question before touching an individual file is:
+
+> **Should this thing exist here at all, and what architectural role does it serve?**
+
+Do not spend cleanup effort polishing files that may later be moved, merged, regenerated, quarantined, or deleted.
+
+## Order of work
+
+1. **Repository architecture**
+   - establish top-level ownership/lifecycle boundaries;
+   - identify misleading, duplicated, or ambiguous major structures;
+   - make the repository map understandable before local cleanup.
+
+2. **Subsystem architecture**
+   - digital engine;
+   - player-facing browser/playtest surfaces;
+   - canonical game/rules data and generated derivatives;
+   - Deckbuilder;
+   - Rules Arbiter;
+   - release/version/publication infrastructure;
+   - governance/traceability;
+   - build/validation/CI/tooling;
+   - recovery/migration/archive/legacy material.
+
+3. **Implementation consolidation**
+   - distinguish active code from historical/superseded implementations;
+   - determine authority before moving or deleting anything;
+   - promote, consolidate, quarantine, or retire implementations as appropriate;
+   - update imports, scripts, tests, CI, traceability, and documentation to match the new boundaries.
+
+4. **Individual-file cleanup**
+   - dead or duplicate files;
+   - stale tests;
+   - naming and placement;
+   - oversized or badly factored modules;
+   - obsolete comments/references;
+   - formatting and local organization.
+
+## Operating principles
+
+- Prefer one clear authoritative implementation per current concern.
+- Historical snapshots and migration scaffolding must not masquerade as active architecture.
+- Preserve useful historical/recovery evidence deliberately under explicit historical boundaries rather than leaving it intermixed with maintained code.
+- Old does not automatically mean disposable; classify before deleting.
+- Existing duplication does not justify preserving multiple active implementations; determine authority and consolidate.
+- Keep behavior-preserving cleanup separate from intentional rules/product changes where practical.
+- When an architectural boundary changes, update the machinery that encodes that boundary: imports, scripts, tests, CI, traceability, validation, and documentation.
+- Do not descend into file-by-file beautification until the higher-level placement and ownership questions are settled.
+
+## Tracking
+
+Master tracker: [#1430 — Repository cleanup and architecture reorganization](https://github.com/tymonius/Gauntlet/issues/1430)
+
+Cleanup PRs should link #1430. The issue is the durable queue/history; this file is the compact thread-handoff summary.
+
+## Current tranche
+
+[#1427 — Quarantine legacy v0.6 playable engine](https://github.com/tymonius/Gauntlet/pull/1427)
+
+Purpose:
+
+- move the earlier playable v0.6-era `cards`, `effects`, `state`, `types`, and `dev` architecture out of active `src/`;
+- preserve it under `legacy/digital-engine-v06/` as historical/migration evidence;
+- keep legacy runners explicitly opt-in;
+- update validation, CI, documentation, and governance/traceability so archived engine material is not treated as maintained current source;
+- make **no intentional current gameplay/rules behavior change** in this tranche.
+
+This is one subsystem-architecture tranche inside the repo-wide cleanup, not the cleanup project itself.
+
+## Architectural queue
+
+Review in highest-level-first order. The result of a review may be "leave it alone."
+
+1. Repository root / top-level directory ownership and lifecycle boundaries.
+2. Active digital-engine boundary and remaining versioned migration layers.
+3. Player-facing browser/playtest surface ownership and duplication.
+4. Canonical rules/game-data ownership versus generated/derived copies.
+5. Deckbuilder architecture and generated/static dependencies.
+6. Rules Arbiter implementation, source-data, admin/review/export boundaries.
+7. Release/version/publication infrastructure and historical release retention.
+8. Governance/traceability ownership and historical-path handling.
+9. Build, validation, CI, developer tooling, recovery scripts, and frozen historical tooling.
+10. Archive/legacy/generated-output classification and remaining duplicate implementations.
+11. Only after the above stabilize: repository-wide individual-file cleanup.
+
+## Resume protocol for a fresh ChatGPT thread
+
+When the previous thread is exhausted and the user says to continue the repo cleanup:
+
+1. Read this file.
+2. Read [#1430](https://github.com/tymonius/Gauntlet/issues/1430).
+3. Inspect the current/open cleanup PR referenced here and its CI/comments.
+4. Inspect the most recent cleanup PRs if needed to reconstruct exactly what changed.
+5. Continue the highest-level unresolved architectural work; do **not** reinterpret the project as merely the subsystem represented by the current PR.
+6. Before finishing a tranche, update this file if the current tranche, architectural decisions, or next-step queue materially changed.
+7. Link the cleanup PR to #1430.
+
+GitHub/repository state is authoritative for exact current implementation status. Chat/project memory is supplementary.
+
+## Removal condition
+
+Delete `docs/REPO_CLEANUP_STATUS.md` when the architecture cleanup tracked by #1430 is complete and the repository no longer needs a temporary handoff document. The issue should be closed at the same time.

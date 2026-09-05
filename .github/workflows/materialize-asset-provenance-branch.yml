@@ -1,0 +1,35 @@
+name: Materialize Mystics Asset Provenance Batch
+
+on:
+  push:
+    branches:
+      - audit/resolve-mystics-art-provenance
+    paths:
+      - .github/asset-provenance-remediation.json
+      - .github/scripts/materialize-asset-provenance.py
+      - .github/workflows/materialize-asset-provenance-branch.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Materialize evidence-backed records
+        run: python .github/scripts/materialize-asset-provenance.py --write
+
+      - name: Validate generated ledger
+        run: python .github/scripts/validate-asset-provenance.py
+
+      - name: Upload materialized ledger
+        uses: actions/upload-artifact@v4
+        with:
+          name: materialized-mystics-asset-provenance
+          path: .github/asset-provenance.json

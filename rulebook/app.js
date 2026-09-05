@@ -41,7 +41,7 @@ const FACTIONS = new Map([
   ['Financiers', { color: '#276744', symbol: "url('/images/faction-symbols/financiers.svg')" }],
   ['Intelligence', { color: '#34373b', symbol: "url('/images/faction-symbols/intelligence.svg')" }],
   ['Mystics', { color: '#603d78', symbol: "url('/images/faction-symbols/mystics.svg')" }],
-  ['Inquisition', { color: '#9a6e21', symbol: "url('/images/faction-symbols/inquisition.svg')" }],
+  ['Inquisition', { color: '#a67a27', symbol: "url('/images/faction-symbols/inquisition.svg')" }],
 ]);
 
 const LEADERS = new Set([

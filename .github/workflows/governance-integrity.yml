@@ -37,3 +37,6 @@ jobs:
 
       - name: Validate decision provenance and traceability
         run: python .github/scripts/validate-governance.py
+
+      - name: Validate asset provenance
+        run: python .github/scripts/validate-asset-provenance.py
