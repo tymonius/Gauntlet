@@ -90,6 +90,16 @@ Validation: TypeScript and all 130 focused tests pass; all seven archived blobs 
 
 Next: audit the remaining v0.6.3 procedure library and historical content adapters against promoted engine coverage. Preserve any still-unpromoted behavior until its role is settled. Gameplay parity work belongs to #741 and must not be silently folded into architectural cleanup.
 
+## Follow-up tranche
+
+PR: [#1458](https://github.com/tymonius/Gauntlet/pull/1458). Branch: `cleanup/archive-v064-content-adapter` (stacked on #1456). Preserve the unused candidate content adapter/test under the existing migration archive; no maintained consumer imports it. This removes the last active source import of reconstruction snapshots. The remaining versioned procedures stay in place for future revalidation under #741.
+
+## Remaining engine scope
+
+Retain the versioned procedure library as migration evidence and tested implementation under #741. Gameplay promotion and release-target changes are outside behavior-preserving cleanup; no user decision is required to keep the existing boundary. Continue with historical validation readers and browser/renderer ownership.
+
+PR #1456 passed all four CI workflows at `349fef4d`. This follow-up passed TypeScript plus 753 tests in 101 engine/content/boundary files.
+
 ## Architectural queue
 
 Review in highest-level-first order. The result of a review may be "leave it alone."

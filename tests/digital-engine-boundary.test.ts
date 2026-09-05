@@ -95,6 +95,14 @@ describe('digital engine boundary', () => {
     expect(offenders).toEqual([]);
   });
 
+  it('keeps candidate content and reconstruction snapshots outside active source', () => {
+    expect(readdirSync('src/content')).not.toContain('v064.ts');
+    const offenders = sourceFilesUnder('src').filter((path) =>
+      /(?:from\s*|import\s*\()['"][^'"]*legacy\/digital-engine-/.test(readFileSync(path, 'utf8')),
+    );
+    expect(offenders).toEqual([]);
+  });
+
   it('keeps the promoted v0.7.0 implementation isolated from historical content adapters', () => {
     const promotedSources = sourceFilesUnder('src/v070')
       .filter((path) => !/\.(?:test|spec)\.[cm]?[jt]sx?$/.test(path));
