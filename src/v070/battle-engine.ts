@@ -26,6 +26,12 @@ import {
 } from './mystics';
 import { assertV070GraveyardExitAllowed } from './territories';
 import {
+  recordV070IntelligenceBattleAssetUseForMission,
+} from './intelligence';
+import {
+  v070AssetUseProhibitedDuringBattle,
+} from './asset-face-state';
+import {
   V070SpiritHollowAftermathPause,
   openV070SpiritHollowAftermathChoice,
   resolveV070SpiritHollowAftermathChoice,
@@ -76,6 +82,13 @@ export function reduceV070BattleAction(
     );
   }
 
+  if (action.type === 'use_safe_conduct'
+    && v070AssetUseProhibitedDuringBattle(state, action.playerId)) {
+    throw new V070GameActionError(
+      'Subversion prevents that player from using Assets during this battle.',
+    );
+  }
+
   if (action.type === 'resolve_spirit_hollow_aftermath') {
     const next = structuredClone(state) as V070GameState;
     resolveV070SpiritHollowAftermathChoice(
@@ -105,6 +118,10 @@ export function reduceV070BattleAction(
       action.playerId,
       action.assetInstanceId,
     );
+    recordV070IntelligenceBattleAssetUseForMission(
+      next,
+      action.playerId,
+    );
     return remainsOpen ? next : resumeV070AfterFoothold(next);
   }
 
@@ -128,6 +145,12 @@ export function reduceV070BattleAction(
     state,
     action as V070CoreBattleAction,
   );
+  if (action.type === 'use_safe_conduct') {
+    recordV070IntelligenceBattleAssetUseForMission(
+      next,
+      action.playerId,
+    );
+  }
   if (footholdWindowMayOpen(next)) {
     openV070FootholdAssetAftermathWindow(next);
   }
