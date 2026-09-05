@@ -13,7 +13,8 @@ const INLINE_RUNTIME_ID = "rules-refinement-inline-runtime";
 function attachInlineRefinementRuntime(html) {
   const source = String(html || "");
   if (!source || source.includes(`id="${INLINE_RUNTIME_ID}"`)) return source;
-  const tag = `<script id="${INLINE_RUNTIME_ID}">\n${adminRefinementRuntimeSource()}\n</script>`;
+  const startup = "var rulesRefinementStatus=document.getElementById('triage-status');if(rulesRefinementStatus)rulesRefinementStatus.textContent='Refinement runtime starting…';";
+  const tag = `<script id="${INLINE_RUNTIME_ID}">\n${startup}\n${adminRefinementRuntimeSource()}\n</script>`;
   return source.includes("</body>") ? source.replace("</body>", `${tag}\n</body>`) : `${source}\n${tag}`;
 }
 
