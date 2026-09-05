@@ -83,8 +83,10 @@ PR: [#1456](https://github.com/tymonius/Gauntlet/pull/1456). Branch: `cleanup/ar
 
 - Preserve all seven v0.6.2 migration implementation/test files under `legacy/digital-engine-migration/v0.6.2/`.
 - Make v0.6.3 self-contained by moving its four required type shapes into its own rules module and removing the obsolete bridge.
-- Point historical validation readers at the archive and exclude archived digital-engine snapshots from full Vitest discovery as well as CI changed-test routing.
+- Point historical validation readers at the archive; archived snapshots remain excluded from CI changed-test routing. Full-suite discovery alignment belongs to the follow-up validation tranche.
 - Keep gameplay behavior unchanged; compare the promoted engine entrypoint with release lifecycle/current authority for implementation lag.
+
+Validation: TypeScript and all 130 focused tests pass; all seven archived blobs match their originals. The full maintained suite exposes pre-existing failures on unchanged main, including stale historical paths and obsolete renderer assertions. Full-suite discovery changes are separated from this archival PR so that repair can be reviewed explicitly.
 
 Next: audit the remaining v0.6.3 procedure library and historical content adapters against promoted engine coverage. Preserve any still-unpromoted behavior until its role is settled. Gameplay parity work belongs to #741 and must not be silently folded into architectural cleanup.
 
