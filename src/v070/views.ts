@@ -87,6 +87,25 @@ export interface V070PoisonousGasAftermathView {
   candidateInstanceIds?: string[];
 }
 
+export interface V070SpiritHollowAftermathView {
+  playerId: PlayerId;
+  overlayInstanceId: string;
+  territoryInstanceId: string;
+  candidateHandCount: number;
+  candidateGraveyardCount: number;
+  candidateHandInstanceIds?: string[];
+  candidateGraveyardInstanceIds?: string[];
+}
+
+export interface V070SubversionAssetBattleView {
+  playerId: PlayerId;
+  targetOwner: PlayerId;
+  targetAssetInstanceId: string;
+  effectLabel: string;
+  candidateCount: number;
+  candidateSubversionInstanceIds?: string[];
+}
+
 export interface V070BattleRuntimeView {
   stage: V070BattleRuntime['stage'];
   participants: Record<PlayerId, V070BattleParticipantView>;
@@ -101,9 +120,17 @@ export interface V070BattleRuntimeView {
     V070TerritoryAftermathChoiceView | null;
   pendingPoisonousGasAftermath:
     V070PoisonousGasAftermathView | null;
+  pendingSpiritHollowAftermath:
+    V070SpiritHollowAftermathView | null;
+  pendingSubversionAssetBattle:
+    V070SubversionAssetBattleView | null;
+  footholdAssetWindowPlayer: PlayerId | null;
+  footholdAssetWindowResolved: boolean;
   activePrintedTerritoryAtOnset:
     V070BattleRuntime['activePrintedTerritoryAtOnset'];
   assetInactivePlayers: V070BattleRuntime['assetInactivePlayers'];
+  assetUseProhibitedPlayers:
+    V070BattleRuntime['assetUseProhibitedPlayers'];
   trainingGroundsRedrawPlayer:
     V070BattleRuntime['trainingGroundsRedrawPlayer'];
   trainingGroundsRedrawResolved:
@@ -619,11 +646,65 @@ function viewBattleRuntime(
               : {}),
           }
         : null,
+    pendingSpiritHollowAftermath:
+      runtime.pendingSpiritHollowAftermath
+        ? {
+            playerId: runtime.pendingSpiritHollowAftermath.playerId,
+            overlayInstanceId:
+              runtime.pendingSpiritHollowAftermath.overlayInstanceId,
+            territoryInstanceId:
+              runtime.pendingSpiritHollowAftermath.territoryInstanceId,
+            candidateHandCount:
+              runtime.pendingSpiritHollowAftermath
+                .candidateHandInstanceIds.length,
+            candidateGraveyardCount:
+              runtime.pendingSpiritHollowAftermath
+                .candidateGraveyardInstanceIds.length,
+            ...(runtime.pendingSpiritHollowAftermath.playerId === viewer
+              ? {
+                  candidateHandInstanceIds: [
+                    ...runtime.pendingSpiritHollowAftermath
+                      .candidateHandInstanceIds,
+                  ],
+                  candidateGraveyardInstanceIds: [
+                    ...runtime.pendingSpiritHollowAftermath
+                      .candidateGraveyardInstanceIds,
+                  ],
+                }
+              : {}),
+          }
+        : null,
+    pendingSubversionAssetBattle:
+      runtime.pendingSubversionAssetBattle
+        ? {
+            playerId: runtime.pendingSubversionAssetBattle.playerId,
+            targetOwner: runtime.pendingSubversionAssetBattle.targetOwner,
+            targetAssetInstanceId:
+              runtime.pendingSubversionAssetBattle.targetAssetInstanceId,
+            effectLabel: runtime.pendingSubversionAssetBattle.effectLabel,
+            candidateCount:
+              runtime.pendingSubversionAssetBattle
+                .candidateSubversionInstanceIds.length,
+            ...(runtime.pendingSubversionAssetBattle.playerId === viewer
+              ? {
+                  candidateSubversionInstanceIds: [
+                    ...runtime.pendingSubversionAssetBattle
+                      .candidateSubversionInstanceIds,
+                  ],
+                }
+              : {}),
+          }
+        : null,
+    footholdAssetWindowPlayer: runtime.footholdAssetWindowPlayer,
+    footholdAssetWindowResolved: runtime.footholdAssetWindowResolved,
     activePrintedTerritoryAtOnset:
       runtime.activePrintedTerritoryAtOnset
         ? structuredClone(runtime.activePrintedTerritoryAtOnset)
         : null,
     assetInactivePlayers: [...runtime.assetInactivePlayers],
+    assetUseProhibitedPlayers: [
+      ...runtime.assetUseProhibitedPlayers,
+    ],
     trainingGroundsRedrawPlayer: runtime.trainingGroundsRedrawPlayer,
     trainingGroundsRedrawResolved:
       runtime.trainingGroundsRedrawResolved,
