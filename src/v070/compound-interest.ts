@@ -1,3 +1,4 @@
+import { v070CanonicalContent } from '../content/v070';
 import {
   V070GameActionError,
   appendV070Event,
@@ -11,6 +12,18 @@ export const V070_COMPOUND_INTEREST_ID =
 
 export const V070_COMPOUND_INTEREST_ASSET_TEXT =
   'After your normal Draw, if your Treasury contains at least one card, you may reveal the top card of your Draw Pile. Place it face up in your Treasury or put it in your Discard Pile.' as const;
+
+function assertV070CompoundInterestContract(): void {
+  const card = v070CanonicalContent.cardsById.get(V070_COMPOUND_INTEREST_ID);
+  const assetText = card?.effects.find(effect => effect.label === 'Asset')?.text;
+  if (assetText !== V070_COMPOUND_INTEREST_ASSET_TEXT) {
+    throw new Error(
+      'v0.7.0 Compound Interest lifecycle drifted from released canonical Asset text.',
+    );
+  }
+}
+
+assertV070CompoundInterestContract();
 
 export type V070PendingCompoundInterestChoice =
   | {
