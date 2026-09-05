@@ -225,7 +225,7 @@ describe('v0.7.0 Reembodiment', () => {
       type: 'choose_recovery_action_target', playerId: 'A', targetInstanceId: target,
     });
 
-    expect(state.players.A.zones.graveyard).toContain(source);
+    expect(state.players.A.zones.discardPile).toContain(source);
     expect(state.reembodimentFirstQualifyingTurn?.A).toBeUndefined();
     expect(state.pendingReembodimentRecovery ?? null).toBeNull();
   });
