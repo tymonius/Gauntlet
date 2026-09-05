@@ -6,461 +6,121 @@
     {
       "subject_id": "neutral-pathfinders",
       "kind": "card",
-      "decision_ids": [
-        "GNT-DEC-2026-0730-002"
-      ],
-      "expected": {
-        "name": "Pathfinders",
-        "cost": 1,
-        "trait": null,
-        "unique": false,
-        "action": "Choose one Territory. Its printed effect is inactive during your movement this turn.",
-        "battle": "If this battle is on a Territory with an active printed effect, add +1 to your battle total."
-      },
-      "canonical": {
-        "status": "complete",
-        "paths": [
-          "docs/Gauntlet_v0.6_Neutral_Card_Pool.md",
-          "releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json"
-        ]
-      },
-      "rules_reference": {
-        "status": "complete",
-        "paths": [
-          "releases/v0.6.0/Gauntlet_v0.6.0_Complete_Card_Reference.md"
-        ]
-      },
-      "engine": {
-        "status": "complete",
-        "paths": [
-          "src/state/neutral-pathfinders.ts",
-          "src/cards/playability.ts"
-        ]
-      },
-      "deckbuilder": {
-        "status": "unknown",
-        "paths": []
-      },
-      "print_art": {
-        "status": "unknown",
-        "paths": []
-      },
-      "tests": {
-        "status": "complete",
-        "paths": [
-          "src/state/neutral-pathfinders.test.ts",
-          "src/state/neutral-audit-regressions.test.ts"
-        ]
-      },
+      "decision_ids": ["GNT-DEC-2026-0730-002"],
+      "expected": {"name":"Pathfinders","cost":1,"trait":null,"unique":false,"action":"Choose one Territory. Its printed effect is inactive during your movement this turn.","battle":"If this battle is on a Territory with an active printed effect, add +1 to your battle total."},
+      "canonical": {"status":"complete","paths":["docs/Gauntlet_v0.6_Neutral_Card_Pool.md","releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json"]},
+      "rules_reference": {"status":"complete","paths":["releases/v0.6.0/Gauntlet_v0.6.0_Complete_Card_Reference.md"]},
+      "engine": {"status":"complete","paths":["legacy/digital-engine-v06/state/neutral-pathfinders.ts","legacy/digital-engine-v06/cards/playability.ts"]},
+      "deckbuilder": {"status":"unknown","paths":[]},
+      "print_art": {"status":"unknown","paths":[]},
+      "tests": {"status":"complete","paths":["legacy/digital-engine-v06/state/neutral-pathfinders.test.ts","legacy/digital-engine-v06/state/neutral-audit-regressions.test.ts"]},
       "overall_status": "implemented"
     },
     {
       "subject_id": "neutral-assimilation",
       "kind": "card",
-      "decision_ids": [
-        "GNT-DEC-2026-0730-003"
-      ],
-      "expected": {
-        "name": "Assimilation",
-        "cost": 4,
-        "trait": null,
-        "unique": false,
-        "action": "Bank this as an Asset. After you win a battle you initiated on a Territory your opponent controls, you may put this in your Graveyard. If you do, capture that Territory immediately instead of occupying it.",
-        "battle": "If you win as the attacking player on a Territory your opponent controls, capture that Territory immediately instead of occupying it. Put this in your Graveyard after the capture resolves."
-      },
-      "canonical": {
-        "status": "complete",
-        "paths": [
-          "docs/Gauntlet_v0.6_Neutral_Card_Pool.md",
-          "releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json"
-        ]
-      },
-      "rules_reference": {
-        "status": "complete",
-        "paths": [
-          "releases/v0.6.0/Gauntlet_v0.6.0_Complete_Card_Reference.md"
-        ]
-      },
-      "engine": {
-        "status": "complete",
-        "paths": [
-          "src/state/neutral-assimilation.ts",
-          "src/state/apply-neutral.ts"
-        ]
-      },
-      "deckbuilder": {
-        "status": "unknown",
-        "paths": []
-      },
-      "print_art": {
-        "status": "unknown",
-        "paths": []
-      },
-      "tests": {
-        "status": "complete",
-        "paths": [
-          "src/state/neutral-assimilation.test.ts"
-        ]
-      },
+      "decision_ids": ["GNT-DEC-2026-0730-003"],
+      "expected": {"name":"Assimilation","cost":4,"trait":null,"unique":false,"action":"Bank this as an Asset. After you win a battle you initiated on a Territory your opponent controls, you may put this in your Graveyard. If you do, capture that Territory immediately instead of occupying it.","battle":"If you win as the attacking player on a Territory your opponent controls, capture that Territory immediately instead of occupying it. Put this in your Graveyard after the capture resolves."},
+      "canonical": {"status":"complete","paths":["docs/Gauntlet_v0.6_Neutral_Card_Pool.md","releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json"]},
+      "rules_reference": {"status":"complete","paths":["releases/v0.6.0/Gauntlet_v0.6.0_Complete_Card_Reference.md"]},
+      "engine": {"status":"complete","paths":["legacy/digital-engine-v06/state/neutral-assimilation.ts","legacy/digital-engine-v06/state/apply-neutral.ts"]},
+      "deckbuilder": {"status":"unknown","paths":[]},
+      "print_art": {"status":"unknown","paths":[]},
+      "tests": {"status":"complete","paths":["legacy/digital-engine-v06/state/neutral-assimilation.test.ts"]},
       "overall_status": "implemented"
     },
     {
       "subject_id": "neutral-invasion",
       "kind": "card",
-      "decision_ids": [
-        "GNT-DEC-2026-0730-004"
-      ],
-      "expected": {
-        "name": "Invasion",
-        "cost": 4,
-        "trait": null,
-        "unique": false,
-        "action": "Gain two additional positions of movement this turn. Movement granted by this card may be used only to advance. Resolve it one position at a time.",
-        "battle": "If you are the attacking player, draw one additional card when forming your initial Battle Hand and you may choose one additional card from it."
-      },
-      "canonical": {
-        "status": "complete",
-        "paths": [
-          "docs/Gauntlet_v0.6_Neutral_Card_Pool.md",
-          "releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json"
-        ]
-      },
-      "rules_reference": {
-        "status": "complete",
-        "paths": [
-          "releases/v0.6.0/Gauntlet_v0.6.0_Complete_Card_Reference.md"
-        ]
-      },
-      "engine": {
-        "status": "complete",
-        "paths": [
-          "src/state/neutral-invasion.ts",
-          "src/state/reducer.ts"
-        ]
-      },
-      "deckbuilder": {
-        "status": "unknown",
-        "paths": []
-      },
-      "print_art": {
-        "status": "unknown",
-        "paths": []
-      },
-      "tests": {
-        "status": "complete",
-        "paths": [
-          "src/state/neutral-invasion.test.ts"
-        ]
-      },
+      "decision_ids": ["GNT-DEC-2026-0730-004"],
+      "expected": {"name":"Invasion","cost":4,"trait":null,"unique":false,"action":"Gain two additional positions of movement this turn. Movement granted by this card may be used only to advance. Resolve it one position at a time.","battle":"If you are the attacking player, draw one additional card when forming your initial Battle Hand and you may choose one additional card from it."},
+      "canonical": {"status":"complete","paths":["docs/Gauntlet_v0.6_Neutral_Card_Pool.md","releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json"]},
+      "rules_reference": {"status":"complete","paths":["releases/v0.6.0/Gauntlet_v0.6.0_Complete_Card_Reference.md"]},
+      "engine": {"status":"complete","paths":["legacy/digital-engine-v06/state/neutral-invasion.ts","legacy/digital-engine-v06/state/reducer.ts"]},
+      "deckbuilder": {"status":"unknown","paths":[]},
+      "print_art": {"status":"unknown","paths":[]},
+      "tests": {"status":"complete","paths":["legacy/digital-engine-v06/state/neutral-invasion.test.ts"]},
       "overall_status": "implemented"
     },
     {
       "subject_id": "neutral-armistice",
       "kind": "card",
-      "decision_ids": [
-        "GNT-DEC-2026-0730-005",
-        "GNT-DEC-2026-0812-001"
-      ],
-      "expected": {
-        "name": "Armistice",
-        "cost": 4,
-        "trait": null,
-        "unique": false,
-        "action": "Bank this as an Asset. While this is active, neither player can initiate a battle. After your normal Draw step at the start of each of your turns, discard two cards from your hand or discard this. This cannot be voluntarily discarded at another time.",
-        "battle": "Resolve effects that cancel cards first. If this is not canceled, end the battle without a winner. Return the attacking player to the position they entered from. Stop resolving Battle effects. Put all other cards still used in the battle in their owners' Discard Piles, then put this in its owner's Graveyard."
-      },
-      "canonical": {
-        "status": "complete",
-        "paths": [
-          "docs/Gauntlet_v0.6_Neutral_Card_Pool.md",
-          "releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json",
-          "artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json"
-        ]
-      },
-      "rules_reference": {
-        "status": "complete",
-        "paths": [
-          "releases/v0.6.0/Gauntlet_v0.6.0_Complete_Card_Reference.md",
-          "artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Complete_Card_Reference.md"
-        ]
-      },
-      "engine": {
-        "status": "partial",
-        "paths": [
-          "src/state/neutral-armistice.ts",
-          "src/state/apply-neutral.ts",
-          "src/content/v063.ts"
-        ]
-      },
-      "deckbuilder": {
-        "status": "unknown",
-        "paths": []
-      },
-      "print_art": {
-        "status": "unknown",
-        "paths": []
-      },
-      "tests": {
-        "status": "partial",
-        "paths": [
-          "src/state/neutral-armistice.test.ts",
-          "src/v063/cards.test.ts"
-        ]
-      },
+      "decision_ids": ["GNT-DEC-2026-0730-005","GNT-DEC-2026-0812-001"],
+      "expected": {"name":"Armistice","cost":4,"trait":null,"unique":false,"action":"Bank this as an Asset. While this is active, neither player can initiate a battle. After your normal Draw step at the start of each of your turns, discard two cards from your hand or discard this. This cannot be voluntarily discarded at another time.","battle":"Resolve effects that cancel cards first. If this is not canceled, end the battle without a winner. Return the attacking player to the position they entered from. Stop resolving Battle effects. Put all other cards still used in the battle in their owners' Discard Piles, then put this in its owner's Graveyard."},
+      "canonical": {"status":"complete","paths":["docs/Gauntlet_v0.6_Neutral_Card_Pool.md","releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json","artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json"]},
+      "rules_reference": {"status":"complete","paths":["releases/v0.6.0/Gauntlet_v0.6.0_Complete_Card_Reference.md","artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Complete_Card_Reference.md"]},
+      "engine": {"status":"partial","paths":["legacy/digital-engine-v06/state/neutral-armistice.ts","legacy/digital-engine-v06/state/apply-neutral.ts","src/content/v063.ts"]},
+      "deckbuilder": {"status":"unknown","paths":[]},
+      "print_art": {"status":"unknown","paths":[]},
+      "tests": {"status":"partial","paths":["legacy/digital-engine-v06/state/neutral-armistice.test.ts","src/v063/cards.test.ts"]},
       "overall_status": "canonicalized",
       "implementation_note": "v0.6.3 canonical content uses start-of-Opening upkeep. The existing gameplay engine still contains the superseded post-Draw implementation and must be updated separately before this decision is fully implemented digitally."
     },
     {
       "subject_id": "neutral-decoys",
       "kind": "card",
-      "decision_ids": [
-        "GNT-DEC-2026-0730-006"
-      ],
-      "expected": {
-        "name": "Decoys",
-        "cost": 2,
-        "trait": null,
-        "unique": false,
-        "action": "Bank this as an Asset. If an opposing effect would cause one or more of your other Assets to leave play, you may discard this. If you do, choose one affected Asset; it remains in play.",
-        "battle": "An opposing effect that cancels a card used in this battle must target this before another active card you used, if able."
-      },
-      "canonical": {
-        "status": "complete",
-        "paths": [
-          "docs/Gauntlet_v0.6_Neutral_Card_Pool.md",
-          "releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json"
-        ]
-      },
-      "rules_reference": {
-        "status": "complete",
-        "paths": [
-          "releases/v0.6.0/Gauntlet_v0.6.0_Complete_Card_Reference.md"
-        ]
-      },
-      "engine": {
-        "status": "complete",
-        "paths": [
-          "src/state/neutral-decoys.ts",
-          "src/state/neutral-decoys-battle.ts",
-          "src/state/apply-neutral.ts"
-        ]
-      },
-      "deckbuilder": {
-        "status": "unknown",
-        "paths": []
-      },
-      "print_art": {
-        "status": "unknown",
-        "paths": []
-      },
-      "tests": {
-        "status": "complete",
-        "paths": [
-          "src/state/neutral-decoys.test.ts"
-        ]
-      },
+      "decision_ids": ["GNT-DEC-2026-0730-006"],
+      "expected": {"name":"Decoys","cost":2,"trait":null,"unique":false,"action":"Bank this as an Asset. If an opposing effect would cause one or more of your other Assets to leave play, you may discard this. If you do, choose one affected Asset; it remains in play.","battle":"An opposing effect that cancels a card used in this battle must target this before another active card you used, if able."},
+      "canonical": {"status":"complete","paths":["docs/Gauntlet_v0.6_Neutral_Card_Pool.md","releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json"]},
+      "rules_reference": {"status":"complete","paths":["releases/v0.6.0/Gauntlet_v0.6.0_Complete_Card_Reference.md"]},
+      "engine": {"status":"complete","paths":["legacy/digital-engine-v06/state/neutral-decoys.ts","legacy/digital-engine-v06/state/neutral-decoys-battle.ts","legacy/digital-engine-v06/state/apply-neutral.ts"]},
+      "deckbuilder": {"status":"unknown","paths":[]},
+      "print_art": {"status":"unknown","paths":[]},
+      "tests": {"status":"complete","paths":["legacy/digital-engine-v06/state/neutral-decoys.test.ts"]},
       "overall_status": "implemented"
     },
     {
       "subject_id": "neutral-arcane-knowledge",
       "kind": "card",
-      "decision_ids": [
-        "GNT-DEC-2026-0730-007"
-      ],
-      "expected": {
-        "name": "Arcane Knowledge",
-        "cost": 4,
-        "trait": "Arcane",
-        "unique": false,
-        "action": "Move one card from your Graveyard to your Discard Pile.",
-        "battle": "When this is revealed, choose one card in your Graveyard with a Battle effect that can resolve in this battle. Resolve that effect as though you had used it. Leave the chosen card in your Graveyard."
-      },
-      "canonical": {
-        "status": "complete",
-        "paths": [
-          "docs/Gauntlet_v0.6_Neutral_Card_Pool.md",
-          "releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json"
-        ]
-      },
-      "rules_reference": {
-        "status": "complete",
-        "paths": [
-          "releases/v0.6.0/Gauntlet_v0.6.0_Complete_Card_Reference.md"
-        ]
-      },
-      "engine": {
-        "status": "quarantined",
-        "paths": [
-          "src/state/neutral-arcane-knowledge.ts",
-          "src/cards/neutral-audit-containment.ts"
-        ]
-      },
-      "deckbuilder": {
-        "status": "unknown",
-        "paths": []
-      },
-      "print_art": {
-        "status": "unknown",
-        "paths": []
-      },
-      "tests": {
-        "status": "partial",
-        "paths": [
-          "src/state/neutral-arcane-knowledge.test.ts"
-        ]
-      },
+      "decision_ids": ["GNT-DEC-2026-0730-007"],
+      "expected": {"name":"Arcane Knowledge","cost":4,"trait":"Arcane","unique":false,"action":"Move one card from your Graveyard to your Discard Pile.","battle":"When this is revealed, choose one card in your Graveyard with a Battle effect that can resolve in this battle. Resolve that effect as though you had used it. Leave the chosen card in your Graveyard."},
+      "canonical": {"status":"complete","paths":["docs/Gauntlet_v0.6_Neutral_Card_Pool.md","releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json"]},
+      "rules_reference": {"status":"complete","paths":["releases/v0.6.0/Gauntlet_v0.6.0_Complete_Card_Reference.md"]},
+      "engine": {"status":"quarantined","paths":["legacy/digital-engine-v06/state/neutral-arcane-knowledge.ts","legacy/digital-engine-v06/cards/neutral-audit-containment.ts"]},
+      "deckbuilder": {"status":"unknown","paths":[]},
+      "print_art": {"status":"unknown","paths":[]},
+      "tests": {"status":"partial","paths":["legacy/digital-engine-v06/state/neutral-arcane-knowledge.test.ts"]},
       "overall_status": "quarantined",
       "quarantine_reason": "The Battle copier supports only a small allowlist and cannot yet resolve all legally eligible Battle effects at their correct timings."
     },
     {
       "subject_id": "neutral-bombardment",
       "kind": "card",
-      "decision_ids": [
-        "GNT-DEC-2026-0730-008"
-      ],
-      "expected": {
-        "name": "Bombardment",
-        "cost": 4,
-        "trait": null,
-        "unique": false,
-        "action": "Place this face up on the nearest enemy-controlled Territory ahead of you with an active printed effect. While it remains face up there, that Territory's printed effect is inactive. The next time you attack there, put this in its owner's Graveyard if you lose. If you win, or if you capture that Territory without a battle, turn this face down; it becomes a Ruins Overlay.",
-        "battle": "If you are attacking on an enemy-controlled Territory, place this face up on it. That Territory's printed effect is inactive during this battle. If you win, turn this face down; it becomes a Ruins Overlay instead of following its normal destination."
-      },
-      "canonical": {
-        "status": "complete",
-        "paths": [
-          "docs/Gauntlet_v0.6_Neutral_Card_Pool.md",
-          "releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json"
-        ]
-      },
-      "rules_reference": {
-        "status": "complete",
-        "paths": [
-          "releases/v0.6.0/Gauntlet_v0.6.0_Complete_Card_Reference.md"
-        ]
-      },
-      "engine": {
-        "status": "complete",
-        "paths": [
-          "src/state/neutral-bombardment.ts",
-          "src/cards/playability.ts",
-          "src/state/territory-overlays.ts"
-        ]
-      },
-      "deckbuilder": {
-        "status": "unknown",
-        "paths": []
-      },
-      "print_art": {
-        "status": "unknown",
-        "paths": []
-      },
-      "tests": {
-        "status": "complete",
-        "paths": [
-          "src/state/neutral-bombardment.test.ts"
-        ]
-      },
+      "decision_ids": ["GNT-DEC-2026-0730-008"],
+      "expected": {"name":"Bombardment","cost":4,"trait":null,"unique":false,"action":"Place this face up on the nearest enemy-controlled Territory ahead of you with an active printed effect. While it remains face up there, that Territory's printed effect is inactive. The next time you attack there, put this in its owner's Graveyard if you lose. If you win, or if you capture that Territory without a battle, turn this face down; it becomes a Ruins Overlay.","battle":"If you are attacking on an enemy-controlled Territory, place this face up on it. That Territory's printed effect is inactive during this battle. If you win, turn this face down; it becomes a Ruins Overlay instead of following its normal destination."},
+      "canonical": {"status":"complete","paths":["docs/Gauntlet_v0.6_Neutral_Card_Pool.md","releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json"]},
+      "rules_reference": {"status":"complete","paths":["releases/v0.6.0/Gauntlet_v0.6.0_Complete_Card_Reference.md"]},
+      "engine": {"status":"complete","paths":["legacy/digital-engine-v06/state/neutral-bombardment.ts","legacy/digital-engine-v06/cards/playability.ts","legacy/digital-engine-v06/state/territory-overlays.ts"]},
+      "deckbuilder": {"status":"unknown","paths":[]},
+      "print_art": {"status":"unknown","paths":[]},
+      "tests": {"status":"complete","paths":["legacy/digital-engine-v06/state/neutral-bombardment.test.ts"]},
       "overall_status": "implemented"
     },
     {
       "subject_id": "neutral-contingency-plan",
       "kind": "card",
-      "decision_ids": [
-        "GNT-DEC-2026-0812-003"
-      ],
-      "expected": {
-        "name": "Contingency Plan",
-        "cost": 1,
-        "trait": null,
-        "unique": false,
-        "action": "Bank this as an Asset. If you discard this because your Asset limit decreased, draw one card.",
-        "battle": "If your opponent controls more Territories than you, add +1 to your battle total."
-      },
-      "canonical": {
-        "status": "complete",
-        "paths": [
-          "docs/Gauntlet_v0.6_Neutral_Card_Pool.md",
-          "releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json",
-          "artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json"
-        ]
-      },
-      "rules_reference": {
-        "status": "complete",
-        "paths": [
-          "releases/v0.6.0/Gauntlet_v0.6.0_Complete_Card_Reference.md",
-          "artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Complete_Card_Reference.md"
-        ]
-      },
-      "engine": {
-        "status": "not_implemented",
-        "paths": []
-      },
-      "deckbuilder": {
-        "status": "unknown",
-        "paths": []
-      },
-      "print_art": {
-        "status": "unknown",
-        "paths": []
-      },
-      "tests": {
-        "status": "partial",
-        "paths": [
-          "src/v063/cards.test.ts"
-        ]
-      },
+      "decision_ids": ["GNT-DEC-2026-0812-003"],
+      "expected": {"name":"Contingency Plan","cost":1,"trait":null,"unique":false,"action":"Bank this as an Asset. If you discard this because your Asset limit decreased, draw one card.","battle":"If your opponent controls more Territories than you, add +1 to your battle total."},
+      "canonical": {"status":"complete","paths":["docs/Gauntlet_v0.6_Neutral_Card_Pool.md","releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json","artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json"]},
+      "rules_reference": {"status":"complete","paths":["releases/v0.6.0/Gauntlet_v0.6.0_Complete_Card_Reference.md","artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Complete_Card_Reference.md"]},
+      "engine": {"status":"not_implemented","paths":[]},
+      "deckbuilder": {"status":"unknown","paths":[]},
+      "print_art": {"status":"unknown","paths":[]},
+      "tests": {"status":"partial","paths":["src/v063/cards.test.ts"]},
       "overall_status": "canonicalized",
       "implementation_note": "v0.6.3 canonical content and reference contain the approved Removal trigger and +2 Battle Total text; gameplay-engine implementation is not part of this correction PR."
     },
     {
       "subject_id": "neutral-manifest-destiny",
       "kind": "card",
-      "decision_ids": [
-        "GNT-DEC-2026-0730-009",
-        "GNT-DEC-2026-0812-002"
-      ],
-      "expected": {
-        "name": "Manifest Destiny",
-        "cost": 5,
-        "trait": null,
-        "unique": true,
-        "action": "As an additional cost, put every other card in your hand in your Graveyard. Then put banked Assets you control in your Graveyard until you have put at least three cards there this way, including at least one Asset. Add this to your end of the Gauntlet. It becomes a blank Territory under your control.",
-        "battle": "If you win as the attacking player on a Territory your opponent controls, insert this between the contested Territory and the position from which you attacked. It becomes a blank Territory under your control instead of following its normal destination."
-      },
-      "canonical": {
-        "status": "complete",
-        "paths": [
-          "docs/Gauntlet_v0.6_Neutral_Card_Pool.md",
-          "releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json",
-          "artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json"
-        ]
-      },
-      "rules_reference": {
-        "status": "complete",
-        "paths": [
-          "releases/v0.6.0/Gauntlet_v0.6.0_Complete_Card_Reference.md",
-          "artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Complete_Card_Reference.md"
-        ]
-      },
-      "engine": {
-        "status": "not_implemented",
-        "paths": []
-      },
-      "deckbuilder": {
-        "status": "unknown",
-        "paths": []
-      },
-      "print_art": {
-        "status": "unknown",
-        "paths": []
-      },
-      "tests": {
-        "status": "partial",
-        "paths": [
-          "src/v063/cards.test.ts"
-        ]
-      },
+      "decision_ids": ["GNT-DEC-2026-0730-009","GNT-DEC-2026-0812-002"],
+      "expected": {"name":"Manifest Destiny","cost":5,"trait":null,"unique":true,"action":"As an additional cost, put every other card in your hand in your Graveyard. Then put banked Assets you control in your Graveyard until you have put at least three cards there this way, including at least one Asset. Add this to your end of the Gauntlet. It becomes a blank Territory under your control.","battle":"If you win as the attacking player on a Territory your opponent controls, insert this between the contested Territory and the position from which you attacked. It becomes a blank Territory under your control instead of following its normal destination."},
+      "canonical": {"status":"complete","paths":["docs/Gauntlet_v0.6_Neutral_Card_Pool.md","releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json","artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json"]},
+      "rules_reference": {"status":"complete","paths":["releases/v0.6.0/Gauntlet_v0.6.0_Complete_Card_Reference.md","artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Complete_Card_Reference.md"]},
+      "engine": {"status":"not_implemented","paths":[]},
+      "deckbuilder": {"status":"unknown","paths":[]},
+      "print_art": {"status":"unknown","paths":[]},
+      "tests": {"status":"partial","paths":["src/v063/cards.test.ts"]},
       "overall_status": "not_implemented",
       "implementation_note": "Canonical v0.6.3 data now explicitly preserves Manifest Destiny as a normal Territory with a normal Deed, but digital playability remains unavailable until dynamic Territory insertion and cleanup are implemented and validated."
     }
