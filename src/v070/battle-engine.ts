@@ -11,9 +11,15 @@ export function reduceV070BattleAction(
   state: V070GameState,
   action: V070BattleAction,
 ): V070GameState {
+  const battleOrder = state.battle
+    ? [state.battle.attacker, state.battle.defender] as const
+    : null;
   const next = reduceV070BattleActionPreWarBonds(state, action);
   if (!next.battle) {
-    openV070WarBondsAfterFirstBattle(next);
+    openV070WarBondsAfterFirstBattle(
+      next,
+      battleOrder ?? undefined,
+    );
   }
   return next;
 }
