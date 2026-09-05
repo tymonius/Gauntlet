@@ -118,7 +118,7 @@ Next: validate this tranche in CI, then review the broader player-facing browser
 
 ## Playtest runtime documentation
 
-Branch: `cleanup/playtest-runtime-docs` (stacked on #1468). The public playtest and session-service READMEs now identify the maintained authority files instead of presenting a retired release as the runtime baseline. Their new-session serial examples match the deployed worker contract, while older serial families remain explicitly historical.
+PR: [#1469](https://github.com/tymonius/Gauntlet/pull/1469). Branch: `cleanup/playtest-runtime-docs` (stacked on #1468). The public playtest and session-service READMEs now identify the maintained authority files instead of presenting a retired release as the runtime baseline. Their new-session serial examples match the deployed worker contract, while older serial families remain explicitly historical.
 
 Next: validate this documentation tranche, then determine whether the public and facilitated playtest UI modules share enough behavior to consolidate code without changing their distinct workflows.
 
