@@ -40,7 +40,9 @@ export function reduceV070TurnAction(
 ): V070GameState {
   const pendingSubversion = pendingV070SubversionTurnAsset(state);
   const warBondsSubversion = pendingSubversion
-    && isWarBondsContinuation(pendingSubversion.deferredAction)
+    && isWarBondsContinuation(
+      pendingSubversion.deferredAction as unknown,
+    )
     ? pendingSubversion
     : null;
 
@@ -58,13 +60,14 @@ export function reduceV070TurnAction(
       action.choice,
       action.subversionInstanceId,
     );
-    if (!isWarBondsContinuation(resolved.pending.deferredAction)) {
+    const deferred = resolved.pending.deferredAction as unknown;
+    if (!isWarBondsContinuation(deferred)) {
       throw new V070GameActionError(
         'The pending Subversion continuation no longer matches War Bonds.',
       );
     }
 
-    const continuation = resolved.pending.deferredAction;
+    const continuation = deferred;
     if (!resolved.used) {
       applyV070WarBonds(next, continuation);
     }
