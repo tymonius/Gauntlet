@@ -1,13 +1,13 @@
 # Gauntlet Playtest Session Service
 
-**Implementation baseline:** v0.7.0  
-**Current canonical tabletop release:** v0.7.0 — Illustrated Cards & Tabletop Simulator
+**Rules authority:** `game-data/current-game.json`
+**Runtime identity:** `src/index.js`
 
 This Cloudflare Worker and D1-backed API powers Gauntlet's tracked self-serve playtest, facilitated event, feedback, journal, closure, and analysis workflows.
 
-New current game sessions use `G070-…` serials; new event containers use `EV070-…`. The runtime reports `v0.7.0` from `/health` and stores the rules version with every session.
+New game sessions use `G071-…` serials; new event containers use `EV071-…`. The runtime reports its `CURRENT_RULES_VERSION` from `/health` and stores that rules version with every session.
 
-Historical records are version-preserving. Existing v0.6.1/v0.6.3 sessions are read with their stored version and serial rather than rewritten.
+Historical records are version-preserving. Existing `G061`, `G063`, `G070`, `EV061`, `EV063`, and `EV070` records are read with their stored version and serial rather than rewritten.
 
 ## Production Worker chain
 
@@ -46,7 +46,7 @@ The production GitHub workflow applies pending remote migrations **before** depl
 
 | Method | Endpoint | Purpose |
 |---|---|---|
-| POST | `/api/tracked-games` | Publicly create one tracked v0.7.0 game; rate-limited |
+| POST | `/api/tracked-games` | Publicly create one tracked game for the deployed rules version; rate-limited |
 | GET | `/api/tracked-games/:token` | Read public lifecycle/player completion state |
 | POST | `/api/tracked-games/:token/join` | Join one of two authenticated player seats |
 | POST | `/api/tracked-games/:token/event` | Record lifecycle, note, or diagnostic event |
@@ -103,7 +103,7 @@ A tracked session automatically closes when it has two player seats, one shared 
 1. Validate all tests and static contracts.
 2. Apply pending shared D1 migrations.
 3. Deploy the Worker.
-4. Verify `/health` reports `v0.7.0` and all required capability flags.
+4. Verify `/health` matches `CURRENT_RULES_VERSION` and reports all required capability flags.
 5. Smoke-test public tracked creation, two-player join, play-mode persistence, diagnostic event capture, shared result, separate responses, and automatic closure.
 6. Smoke-test facilitator event/session creation and historical record reads.
 7. Deploy/verify static playtest surfaces.

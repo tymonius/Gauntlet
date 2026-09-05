@@ -1,7 +1,7 @@
 # Gauntlet Playtest Tools
 
-**Current canonical tabletop release:** v0.7.0 — Illustrated Cards & Tabletop Simulator  
-**Current session-service baseline:** v0.7.0
+**Rules authority:** `game-data/current-game.json`
+**Session-service identity:** `workers/playtest-sessions/src/index.js`
 
 The playtest subsystem supports three collection modes around one common evidence pipeline:
 
@@ -25,7 +25,7 @@ The ordinary journey is:
 2. continue through `/start/` to browse factions and choose a Leader;
 3. create a public tracked game at `/playtest/tracked/`;
 4. share the join link with the second player;
-5. use the physical tabletop if the players are together, or the v0.7.0 TTS Workshop mod if they are remote;
+5. use the physical tabletop if the players are together, or the published TTS Workshop mod if they are remote;
 6. record the game start;
 7. ask Rules Arbiter questions from the joined player device;
 8. optionally record timestamped diagnostic flags during play;
@@ -34,7 +34,7 @@ The ordinary journey is:
 
 The tracked game closes automatically after exactly one shared result and both player responses are present.
 
-New tracked sessions use `G070-…` serials. Public creation is rate-limited and does not require the facilitator secret.
+New tracked sessions use `G071-…` serials. Public creation is rate-limited and does not require the facilitator secret.
 
 ## Live diagnostic flags
 
@@ -59,9 +59,9 @@ Current public Workshop item:
 https://steamcommunity.com/sharedfiles/filedetails/?id=3790840635
 ```
 
-For remote v0.7.0 self-serve tests, each player uses the locked TTS starter kit matching the Leader selected in the tracked session.
+For remote self-serve tests, each player uses the published TTS starter kit matching the Leader selected in the tracked session.
 
-Deckbuilder → TTS custom-Deck import remains gated to v0.7.1. The self-serve session and feedback pipeline is transport-independent and will also support the native digital client later.
+Deckbuilder → TTS custom-Deck import follows the current-game authority. The self-serve session and feedback pipeline is transport-independent and will also support the native digital client later.
 
 ## Physical play
 
@@ -84,7 +84,7 @@ The existing event workflow remains available:
 - `/playtest/session/` — coded formal game session;
 - `/playtest/batch/` — coded sheet generation.
 
-New current event containers use `EV070-…`; current game sessions use `G070-…`.
+New event containers use `EV071-…`; new game sessions use `G071-…`.
 
 Organizer-created top-level sessions still require `SESSION_ADMIN_TOKEN`. That secret is not used by the public tracked-game API.
 
@@ -115,11 +115,11 @@ Older stored v0.6.1/v0.6.3 records are not rewritten. Reads remain version-prese
 New current records:
 
 ```text
-G070-ABCD2345
-EV070-ABCD2345
+G071-ABCD2345
+EV071-ABCD2345
 ```
 
-Historical `G061`, `G063`, `EV061`, and `EV063` records remain historical evidence.
+Historical `G061`, `G063`, `G070`, `EV061`, `EV063`, and `EV070` records remain historical evidence.
 
 ## Governing principle
 
