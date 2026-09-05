@@ -8,6 +8,24 @@
   margin-inline:auto!important;
 }
 
+/* Complexity is backend-only design metadata. The card reference stopped
+ * exposing it in PR #192; keep the Deckbuilder rows and fallback preview
+ * consistent with that decision. */
+.compact-card-meta>.mini-pill:nth-child(2),
+.card-preview-meta>.mini-pill:nth-child(3){
+  display:none
+}
+
+/* Card Value is a compact numeric marker, not another metadata pill. */
+.compact-card-title>.mini-pill{
+  width:1.45rem;
+  height:1.45rem;
+  flex:0 0 1.45rem;
+  padding:0;
+  border-radius:50%;
+  line-height:1
+}
+
 @media(max-width:760px){
   .global-header{width:min(100% - 28px,1380px)!important}
 }
