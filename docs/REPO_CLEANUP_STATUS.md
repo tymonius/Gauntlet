@@ -90,6 +90,10 @@ Validation: TypeScript and all 130 focused tests pass; all seven archived blobs 
 
 Next: audit the remaining v0.6.3 procedure library and historical content adapters against promoted engine coverage. Preserve any still-unpromoted behavior until its role is settled. Gameplay parity work belongs to #741 and must not be silently folded into architectural cleanup.
 
+## Follow-up tranche
+
+Branch: `cleanup/archive-v064-content-adapter` (stacked on #1456). Preserve the unused candidate content adapter/test under the existing migration archive; no maintained consumer imports it. This removes the last active source import of reconstruction snapshots. The remaining v0.6.3 procedures stay in place pending a deliberate maintenance/promotion decision.
+
 ## Architectural queue
 
 Review in highest-level-first order. The result of a review may be "leave it alone."
