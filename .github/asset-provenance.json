@@ -58,6 +58,393 @@
       "sha256": "d3771f7111487c36c9727b6b9e1389db0d9b4c174723b1643a313770619e3c2c"
     },
     {
+      "path": "images/3d/2d assets/alchemist.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "d5fcd1aad0712ce84156566e4bd4d911ccfda1a44e26a78b4410fe13efa89f92"
+    },
+    {
+      "path": "images/3d/2d assets/alchemist/alchemist front3-4.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "934a1f502d580ce726b52c0f7337aff2f0f6c3b4ec0b652dfe0ad2415cb17b7a"
+    },
+    {
+      "path": "images/3d/2d assets/alchemist/alchemist rear.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "1ded6067798840ee40d5dba6e04f398cf7ec39dcca2651e044aa3e3cf3491e9c"
+    },
+    {
+      "path": "images/3d/2d assets/alchemist/alchemist rear3-4.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "3b50314c65a2b6e68732a4c3ea2dccdd6624947ff566cca41f7672f0cdd75608"
+    },
+    {
+      "path": "images/3d/2d assets/alchemist/alchemist top.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "403b8ebf3ddd86b492418673592dabb68e147c4ce49131d063a179dc68529db7"
+    },
+    {
+      "path": "images/3d/2d assets/alchemist/alchemist-front.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "256c0b4c317884e9d1eb795ba166914aa92baa96ef2f7e845cd9e722b5d9599b"
+    },
+    {
+      "path": "images/3d/2d assets/alchemist/alchemist-right.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "9013353efaf928d6449a5a09b548a9749df7cd98476616681a8ca5b7c743c4c8"
+    },
+    {
+      "path": "images/3d/2d assets/alchemist/alchemist-side.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "29b681fc83653bd925aeb403314434cef3904568f88c9249047ac570b0ec8ccf"
+    },
+    {
+      "path": "images/3d/2d assets/alchemist/alchemist-turnaround.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "a2978b73009c18b80450bb24e2678fb60671800083c2a097e84bdbeda86d783a"
+    },
+    {
+      "path": "images/3d/2d assets/ambassador.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "127ecdd4bead8ed485301c8bc2790f42110919573cd72c63c44ea75169763cc6"
+    },
+    {
+      "path": "images/3d/2d assets/ambassador/ambassador front.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "16a0b8998f85334ee5f06fbb8333251271fd3e905e051a29756f65c6ab73ad90"
+    },
+    {
+      "path": "images/3d/2d assets/ambassador/ambassador left.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "9c9ac1b4f296fb4b9c300fc3cf44f6e5e3b562b78763f2dd11934d8e02151e4d"
+    },
+    {
+      "path": "images/3d/2d assets/ambassador/ambassador rear.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "31b60e488eca91eb159fc6afff6a8dd61340c5df06befebd1508cbd960418977"
+    },
+    {
+      "path": "images/3d/2d assets/ambassador/ambassador right.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "dcd1b285e1c8e74f4271534be5b9271e720c1c6eb2658fc5f9b899bbc6517170"
+    },
+    {
+      "path": "images/3d/2d assets/ambassador/ambassador turnaround.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "af9b167cb67783e0e80638dd027cbeef35f508369fbf0957f44de8c5bd9e4462"
+    },
+    {
+      "path": "images/3d/2d assets/banker.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "7459b7d85b81a57b1f673affa0c302e85ce7c2a49c80f68fdb4cebca00035ec9"
+    },
+    {
+      "path": "images/3d/2d assets/banker/banker front.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "25a85f176a7d26569d0f228a605437fc76363859e79bd0b985f7f94a7796a9de"
+    },
+    {
+      "path": "images/3d/2d assets/banker/banker left.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "36e0acfcd1b7041bec71b1542e7b799242f5dbd6af3b63cb0fb3217812e2a32b"
+    },
+    {
+      "path": "images/3d/2d assets/banker/banker rear.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "b2e95eb4a8ea98df4e917dadf8525b37de899dcda7225d353f5dc18c58dbb46a"
+    },
+    {
+      "path": "images/3d/2d assets/banker/banker right.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "8eeb11c4f62eb88edba60269d57b2676b9dee5a6d258ef2e25cb414376dd2ce2"
+    },
+    {
+      "path": "images/3d/2d assets/banker/banker turnaround.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "559d9949502080236f79b3618c2ae5b5247066790ac6bce7bf014f90874d5d37"
+    },
+    {
+      "path": "images/3d/2d assets/commandant.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "1a8a01cf6258a7bb446230ede9df868ef0481130ff79a1def249d8ca3ea005fd"
+    },
+    {
+      "path": "images/3d/2d assets/commandant/commandant front.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "54229769239c5152ccf64f8edb20705082edc326d5b5de7194fb5ef781b237a8"
+    },
+    {
+      "path": "images/3d/2d assets/commandant/commandant left.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "fc24913c99821987d26c92f9450a0a611de6cf9e70da5d181cdf53092e1ea7bf"
+    },
+    {
+      "path": "images/3d/2d assets/commandant/commandant rear.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "fdfbd552f2cf9d7aa2b1040b0dc01f8464fbaeaa93353385435cbb455db499e3"
+    },
+    {
+      "path": "images/3d/2d assets/commandant/commandant right.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "ce1309d573028b19a0d14e04a264a3715316fbe5ce20f4cd75abc6d6fe8eccb5"
+    },
+    {
+      "path": "images/3d/2d assets/commandant/commandant turnaround.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "b4f4a3cea9bd1261258bfcacfaddb4fdee2cb5e62bf3a411e7f57f7a03e8596d"
+    },
+    {
+      "path": "images/3d/2d assets/executive.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "6a00905efd6f912e921c861fef6624c1aa6957bbf0b9f1132bd846ccbce6e281"
+    },
+    {
+      "path": "images/3d/2d assets/general-heroic.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "379a7f0cfd9641f0aa6f0ad4641c500820e8bf383f5d89bfd0e0000afb4945b0"
+    },
+    {
+      "path": "images/3d/2d assets/general.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "b09d2715c8c83ffad1ae17a7417450599c36dbe2a69908443230a04ebf903786"
+    },
+    {
+      "path": "images/3d/2d assets/general/general front.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "1902faba68f49788a7f4e532927f87f70434303be54850ebda05ee2771b99645"
+    },
+    {
+      "path": "images/3d/2d assets/general/general left.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "fe8b433ca6c9c8cddd9b3b550921877f7f708d8c7e750f21c2a4ab693689fc98"
+    },
+    {
+      "path": "images/3d/2d assets/general/general rear.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "2f193b167db4c0f0db8403627455f3a594b73fcc9da534597e58c98b77cc302b"
+    },
+    {
+      "path": "images/3d/2d assets/general/general right.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "41a5d182463845a5d1820666a7be3f620f3458489f54c1d144f82b2afe6e2f7c"
+    },
+    {
+      "path": "images/3d/2d assets/general/general-turnaround.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "8360269fdf7e0172a6b22efa6b00c3e857a203bf0759274cbafbdb76a2fc2e09"
+    },
+    {
+      "path": "images/3d/2d assets/grand inquisitor.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "4b53b4738d087f5d7248146198945206e8a8c32cceb4dd975313d776d9cda7f0"
+    },
+    {
+      "path": "images/3d/2d assets/ranger.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "e09f66e7faff018f4e5a141b55de5f1308b05b2101fd53622090e58ade455f6a"
+    },
+    {
+      "path": "images/3d/2d assets/senator.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "bccb01c29727fef75aaad2c848760c515277bd8420ca43d821d6d7fda2d3cba4"
+    },
+    {
+      "path": "images/3d/2d assets/senator/senator-alt turnaround.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "36c80477aca7474b50b54d0fedd80291867e41a2c241f00eb674c432584cdeb2"
+    },
+    {
+      "path": "images/3d/2d assets/senator/senator-alt-2 turnaround.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "b4fbfc6c5ec1a0eb0b240421bb6e573b5cfc8c3fc57491cd427e9c8a69c544fe"
+    },
+    {
+      "path": "images/3d/2d assets/spirit walker.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "99fdc6e09b5a062ba097005501152b5c171d70eda0b8e15ed14d5f89467b57f7"
+    },
+    {
+      "path": "images/3d/2d assets/spymaster.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "21b870d384abfa058fbd122fc698d8258a792c23503cfc4aabb48d21ee3dc7ca"
+    },
+    {
+      "path": "images/3d/2d assets/witch hunter.png",
+      "origin": "project-created",
+      "creator": "Tymon Scott / Gauntlet project, using OpenAI-generated source imagery",
+      "source": "Direct project-owner attestation on 2026-09-05: all 2D turnaround/reference assets in images/3d/2d assets/ were created through OpenAI/ChatGPT image generation under Tymon Scott's direction; some repository files were then manually cropped or repositioned by Tymon in Adobe Photoshop. The corpus includes generated originals, extracted views, turnarounds, and project-edited variants.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. Manual Photoshop cropping/repositioning is project-authored derivative editing.",
+      "notes": "Classified as project-created at corpus level because some exact repository binaries include manual Photoshop edits to generated source imagery.",
+      "sha256": "ade9af4dffb5cc505a145651e30490cba65eae23a872581dcdbbca9aa7360354"
+    },
+    {
       "path": "images/3d/Alchemist.zip",
       "origin": "generated",
       "creator": "Tripo3D generation directed by Tymon Scott",
@@ -1866,12 +2253,460 @@
       "sha256": "d01bec9b03601ddd238c450b9b67728c4f1b601451336cb275ba117a84bd1337"
     },
     {
+      "path": "images/artwork/reference/environments/alchemist-study.jpg",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "8a55c29bea6cbdcfd6dfcad3d787e43718b79a499cb9f67f0ee32930dadb793c"
+    },
+    {
+      "path": "images/artwork/reference/environments/factions.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "6a0fe24aca798b2d67544f0ad9c900168700a5a70ef7d3bdb40ef613dffa0cee"
+    },
+    {
+      "path": "images/artwork/reference/environments/forest-ambush-scene.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "3a8a66835084c985479a384abd72554cacf9af87e999e360ec0227bd7a157327"
+    },
+    {
+      "path": "images/artwork/reference/environments/gauntlet.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "49e2f7715597018d4838aa0ce4d14611e0032b8f4e165eed9c23e7c3512f1b77"
+    },
+    {
+      "path": "images/artwork/reference/environments/inquisition-tribunal.jpg",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "da79cc9512ca0157bf748afbd0047cb15ff66a67abb86c664a11798389f1710f"
+    },
+    {
+      "path": "images/artwork/reference/environments/last-stand.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "d928f03c21e557bdf20cf797299683d412ddb226cae7a33823daba7cc7a5c50b"
+    },
+    {
+      "path": "images/artwork/reference/environments/manifest-destiny-alt.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "5e6250b174f4105d5be399ce9892ab7d575b72a14099fd74c609880938b52a10"
+    },
+    {
+      "path": "images/artwork/reference/environments/river-fort.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "970a8cbfabd2f6efd378b35d1929e1ce10c5db5b546cb3065122d80067a684f7"
+    },
+    {
+      "path": "images/artwork/reference/factions/diplomats.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "f0f3ca5ff2ab905995156a652826fb3dfc7f3085be040d57d3c7dffe11c6ee59"
+    },
+    {
+      "path": "images/artwork/reference/factions/financiers.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "bd7a9de187039851ce60b0c3125f579a87018c03dd40500b034ab0e50789ab2d"
+    },
+    {
+      "path": "images/artwork/reference/factions/military.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "66f0cbacac7a9aa5af57f7334eda5520f8fd39d5dd8a3ccc38363be7ccf40efc"
+    },
+    {
+      "path": "images/artwork/reference/leaders/alchemist.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "15387c01318886054760296159c51bf5c2d23437918891922ae612a8a7a1c079"
+    },
+    {
+      "path": "images/artwork/reference/leaders/spirit-walker-design.jpg",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "577f35c035c5c426500458f8f22aa9913559ed62664d908d3504c6cfcc47a92e"
+    },
+    {
+      "path": "images/artwork/reference/leaders/spirit-walker.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "abda6504e049c8a227a38d943335a79a6c39f651810408b432226d0e0e5a6bdb"
+    },
+    {
+      "path": "images/artwork/reference/leaders/spymaster.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "026b5b4cc9b935860ad98d82f70505b20fe1abc09d6de37537499d34fe98862e"
+    },
+    {
+      "path": "images/artwork/reference/reserve/battlefield-column-in-rain.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "16b9846ab9c302f6ff8c981491649fe525535379c46598c7a88b73bd8861b2f6"
+    },
+    {
+      "path": "images/artwork/reference/reserve/battlefield-rescue.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "63a91a040d81e6c815e32779362459b908e67a3098c28df555996c95c96c1d89"
+    },
+    {
+      "path": "images/artwork/reference/reserve/burning-frontier-fort-assault.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "24d012d603f1181a2956bbc7b064fe1da591f547c4953c0f430f1f37f9909bdf"
+    },
+    {
+      "path": "images/artwork/reference/reserve/candlelit-command-room.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "48c70b03dcdc574a23d7a61c6ed90060b3cf7b84f3ea8a513ad3a09368a3ad1c"
+    },
+    {
+      "path": "images/artwork/reference/reserve/checkpoint-search-variant-01.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "0a60611f7aea754bc9bbd2d0f149d5ae6a7dcdcd05a664443d6788aff21f2edd"
+    },
+    {
+      "path": "images/artwork/reference/reserve/checkpoint-search-variant-02.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "81f3355b67ff38aaec0275a3fab84d1931f9f232b97a9aa12a05c342e9255a0c"
+    },
+    {
+      "path": "images/artwork/reference/reserve/checkpoint-search-variant-03.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "6129b2ce5ece5ec1fe681a2e19e5278f830f7a4197065dceb268f0cb81d905fd"
+    },
+    {
+      "path": "images/artwork/reference/reserve/consecration.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "63cdc1bd371d380ce02379a091fb1d4111d136fed59f2c5153c33fc98dafdc81"
+    },
+    {
+      "path": "images/artwork/reference/reserve/countercharge-alt-2.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "5497d50ce0559ee768b817484e5af71851f0b7ae62c8322254cdd5cb476cc4bd"
+    },
+    {
+      "path": "images/artwork/reference/reserve/countercharge-alt.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "d309f8a60c5f9e44b3b320bed4b1dce4169e0c680581f4ff0fff9abe5f8aa0e9"
+    },
+    {
+      "path": "images/artwork/reference/reserve/diplomatic-salon.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "6b3e7fced1c037b53e5681356d29c3d4fc460b3e325268198d2419e2f85a70bb"
+    },
+    {
+      "path": "images/artwork/reference/reserve/extraordinary-rendition-alt.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "e363eb56aaf91ee28a24661945692c4a6649cc4a9faf6900af5285cf312d499e"
+    },
+    {
+      "path": "images/artwork/reference/reserve/forest-scout-rain-01.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "ede6050bb12a08a8e1a8eafc65bdab4aec3cb8757571197d9d00a5397fab13e9"
+    },
+    {
+      "path": "images/artwork/reference/reserve/forest-scout-rain-02.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "3540377e647b687399211fd14470bef2323ad729c92de48ae37b917b23d27d7f"
+    },
+    {
+      "path": "images/artwork/reference/reserve/forest-scout-rain-03.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "d55ec66f1d4a344e31ff135ee98316333f0ef1ab795bef76adbbe25f874a03e3"
+    },
+    {
+      "path": "images/artwork/reference/reserve/fortification-basketworks.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "c2762dffeacdfd8cc3d27f4ca8ab50dffe7cf8819d3627519225ccba48229872"
+    },
+    {
+      "path": "images/artwork/reference/reserve/fortification-fieldworks.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "963b98e3c03aff1c1ee4cc30aeb7cff6628f1628e5e2e3e20bff179aff33fa4d"
+    },
+    {
+      "path": "images/artwork/reference/reserve/fortification-log-wall.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "8f2670d17463833ae7e152f206f87e0e88d71337942f40acabc432fcf8d6c4ba"
+    },
+    {
+      "path": "images/artwork/reference/reserve/fortified-trench-artillery.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "09e368785e9c2e57a90853301553925c6b33e985fc29a1d66d365d2b18254024"
+    },
+    {
+      "path": "images/artwork/reference/reserve/garrison-alt.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "6552dca4e6589cbbc473861c2f85a589c6075de9380ba6402efd2a73639f6056"
+    },
+    {
+      "path": "images/artwork/reference/reserve/insurrection-alt-02.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "8c20549242ffbf32f4ad677eafc160b910b4fa877d5b9e95830ec652c0ea7fff"
+    },
+    {
+      "path": "images/artwork/reference/reserve/insurrection-alt.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "f16dbb0097e504415f0830397aa98969c1a861e2bdc4f5760ff9bd5550b5d40c"
+    },
+    {
+      "path": "images/artwork/reference/reserve/military mystic 2.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "edc5d1c57db12919a8acde7cd356be168f38d1419ef2d1ba928b2d3b66d07248"
+    },
+    {
+      "path": "images/artwork/reference/reserve/military mystic.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "7137797c18957d36a50711b9d0be36cdb43329981aac71752694489ba5addd26"
+    },
+    {
+      "path": "images/artwork/reference/reserve/militia-armory-enlistment.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "469d3d0458914f57330fbe379193a8fcda557261ff6eaa56a064215b64cfc2b1"
+    },
+    {
+      "path": "images/artwork/reference/reserve/reinforcements-redcoat-ridge.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "3a3ac93f9001598605434db7cc7af6e0d4c5550e819f65c47f7fbb708f58ad6c"
+    },
+    {
+      "path": "images/artwork/reference/reserve/reinforcements-sunlit-ridge-01.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "72aaa9c25a6766c368de4d76f6624b5074ed824b598c5ef6c4809ca3eac473e6"
+    },
+    {
+      "path": "images/artwork/reference/reserve/reinforcements-sunlit-ridge-02.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "62f48546d006efe455f7a21dbc22e6e68dfc24947ed56e7e14241f2c3b6788fb"
+    },
+    {
+      "path": "images/artwork/reference/reserve/reserves.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "10cae0a493e46416c2266ef02dc9d95ad5e7acc3635ff3dbaebb91363bd34026"
+    },
+    {
+      "path": "images/artwork/reference/reserve/retribution-alt.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "a058d8a5427c9f689a205e03418cec875e6433191040960f647f1349eb66bfaf"
+    },
+    {
+      "path": "images/artwork/reference/reserve/sabotage-alt.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "5af87ac8296671efafd37ddb8a308b1ce95bcbf4fa17c720ad3c467f3db5807b"
+    },
+    {
+      "path": "images/artwork/reference/reserve/sabotage-wagon-variant-01.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "84481e6a5707c91e83ff168006b6056c991b29d787d9d0eb0019c389b08fc617"
+    },
+    {
+      "path": "images/artwork/reference/reserve/sabotage-wagon-variant-02.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "0045c802ae807c082b26de0490f0159c8e26c9923df4ae9a29451c7b6f9415fa"
+    },
+    {
+      "path": "images/artwork/reference/reserve/sabotage-wagon-variant-03.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "8b699cf7973522020ee2314ac715a709202b7c58afd21f1127df795f90849e58"
+    },
+    {
+      "path": "images/artwork/reference/reserve/sabotage-wagon-variant-04.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "873e4b7679d8c6ae2919b2fc2538b69ecf986462721ee71606378e9669582f3b"
+    },
+    {
+      "path": "images/artwork/reference/reserve/snowy-defensive-line-lantern.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "09d7191e81b6d2d0a5b6e82dc0f907237c8acb9ae2a36d6a6509981eea86f94c"
+    },
+    {
+      "path": "images/artwork/reference/reserve/territorial-claim.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "832b47fcfdc61aca7752ef6d8aeebd6119b07c999dd6f6e824c128aefe2d8430"
+    },
+    {
+      "path": "images/artwork/reference/reserve/trench-command-lantern.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining reference/reserve artwork was generated through OpenAI/ChatGPT image generation under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "798f4be7287b325c087061ed392aa682b5bdcdc2fd126ebaea2c89fd7e09a3a5"
+    },
+    {
       "path": "images/artwork/site/gauntlet-command-tent-gameplay-painting.webp",
       "origin": "generated",
       "creator": "OpenAI image generation, directed and selected by Tymon Scott",
       "source": "Gauntlet project conversation on 2026-07-29 records creation of a painted command-tent gameplay showcase matching the established Gauntlet art style; the resulting generated gameplay artwork was named gauntlet-command-tent-gameplay-painting and added to the repository in commit d4cedd89f6db666df86c93e3d76fbe17358d4e5d. The current WebP is the restored/optimized repository form of that project artwork.",
       "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
       "sha256": "39db4dab1ff76b4797ad8fbe205dd0aba4fb868f6a368460cfc0757370810645"
+    },
+    {
+      "path": "images/artwork/site/gauntlet-tts-playtest-table.webp",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining site images were made through OpenAI/ChatGPT under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "1ab7ea2c130a264b1120fb822e51260887a6dc0b5b1572fc189da4f3cc292377"
+    },
+    {
+      "path": "images/artwork/site/homepage-hero-three-leaders.webp",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the remaining site images were made through OpenAI/ChatGPT under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "a6576d410ed8edc94cd5a27b79bd66982ca1f0f9d8b3c3f328f49a072f1832da"
+    },
+    {
+      "path": "images/artwork/supplemental/diplomats/ratified-wax-seal.webp",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the Diplomats wax-seal image was generated through OpenAI/ChatGPT under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "8352b8150191751ff1d990485c4645e801237aecd5a6c543196223574c8b7e50"
     },
     {
       "path": "images/artwork/supplemental/mystics/rite-completed.webp",
@@ -1949,6 +2784,69 @@
       "source": "OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.",
       "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
       "sha256": "9d883616e6cdabe2dd40228990fca30578af6bf5fd5db6cbefd719e02293224e"
+    },
+    {
+      "path": "images/faction-symbols/candidates/crossed-sabers.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the historical faction-symbol candidates were made through OpenAI/ChatGPT under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "notes": "These are historical/candidate assets, distinct from the six active faction symbols whose final SVGs include Tymon Scott's Illustrator cleanup.",
+      "sha256": "793665f58f0544c6da1ed2b118110e9ef6a27245dc50b7c0d9f7426825de27d3"
+    },
+    {
+      "path": "images/faction-symbols/candidates/military-arming-swords.svg",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the historical faction-symbol candidates were made through OpenAI/ChatGPT under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "notes": "These are historical/candidate assets, distinct from the six active faction symbols whose final SVGs include Tymon Scott's Illustrator cleanup.",
+      "sha256": "0e3550ceb2a71680e4dcaf0b4c017277b126584fa4d7fb42d229f2e891ffc05d"
+    },
+    {
+      "path": "images/faction-symbols/candidates/military-cavalry-sabers.svg",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the historical faction-symbol candidates were made through OpenAI/ChatGPT under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "notes": "These are historical/candidate assets, distinct from the six active faction symbols whose final SVGs include Tymon Scott's Illustrator cleanup.",
+      "sha256": "193ce9239d21749bda1b4fc031912fe38c3c829b867e3457daded48aa2b97b0f"
+    },
+    {
+      "path": "images/faction-symbols/candidates/military-command-swords.svg",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the historical faction-symbol candidates were made through OpenAI/ChatGPT under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "notes": "These are historical/candidate assets, distinct from the six active faction symbols whose final SVGs include Tymon Scott's Illustrator cleanup.",
+      "sha256": "96b1e561431e1cd96e3ae9074dbebd9e62ea16a1e075af4c452c5d5e349969a0"
+    },
+    {
+      "path": "images/faction-symbols/candidates/military-heraldic-swords.svg",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the historical faction-symbol candidates were made through OpenAI/ChatGPT under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "notes": "These are historical/candidate assets, distinct from the six active faction symbols whose final SVGs include Tymon Scott's Illustrator cleanup.",
+      "sha256": "60fc370ce0e37f4e05182be24eec53d91474571634997d0eb75c8b49b8f85cb0"
+    },
+    {
+      "path": "images/faction-symbols/candidates/military-old.svg",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the historical faction-symbol candidates were made through OpenAI/ChatGPT under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "notes": "These are historical/candidate assets, distinct from the six active faction symbols whose final SVGs include Tymon Scott's Illustrator cleanup.",
+      "sha256": "62928091992a77cac16370d60fe01f2fae47fdb186b77668ba0ffe9ffedc6f4e"
+    },
+    {
+      "path": "images/faction-symbols/candidates/military.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the historical faction-symbol candidates were made through OpenAI/ChatGPT under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "notes": "These are historical/candidate assets, distinct from the six active faction symbols whose final SVGs include Tymon Scott's Illustrator cleanup.",
+      "sha256": "374acc2165efc5fe8bedad500cd556e336b674ffd575f55027b358170863aefc"
     },
     {
       "path": "images/faction-symbols/diplomats.svg",
@@ -2127,6 +3025,30 @@
       "sha256": "7e1e1a3279f2472ed7819858db09d93d4f9b8f89872a68957fdfce186b005366"
     },
     {
+      "path": "images/rules-arbiter/chief-justice-homepage.webp",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the Chief Justice / Rules Arbiter images were made through OpenAI/ChatGPT under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "603cf884f7ccaa2672f9c7280ba8ecf8e4100dcaaf2818126fb05873648a823a"
+    },
+    {
+      "path": "images/rules-arbiter/chief-justice-rules-arbiter-popup.webp",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the Chief Justice / Rules Arbiter images were made through OpenAI/ChatGPT under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "61ac3173286795603f965f4f96275c26a0efec96e53cdd4a936b29550f5c6feb"
+    },
+    {
+      "path": "images/rules-arbiter/chief-justice-rules-arbiter.webp",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that the Chief Justice / Rules Arbiter images were made through OpenAI/ChatGPT under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "bed4afb58af08ef3dee4f0124febdbbcc6a28bfa246511c394c3934ddb4aecd0"
+    },
+    {
       "path": "images/senator.png",
       "origin": "generated",
       "creator": "OpenAI image generation, directed and selected by Tymon Scott",
@@ -2191,6 +3113,70 @@
       "sha256": "701193e532366a2477695c3c239d457d85a48b86838e739a84bb47b9f9aedc70"
     },
     {
+      "path": "images/sketches/hero sketch.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that these remaining sketch/hero assets were generated through OpenAI/ChatGPT under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "9b0f49b424e07130a624e46a9aad32e3e979d73c772de90f7ba16682d0ba73f1"
+    },
+    {
+      "path": "images/sketches/hero-plates/alchemist-executive-ambassador.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that these remaining sketch/hero assets were generated through OpenAI/ChatGPT under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "d345314f30153db314fcaa4a22e07afc5603410ea1c01d5d438ab6adb4527eb7"
+    },
+    {
+      "path": "images/sketches/hero-plates/ranger-commandant-senator.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that these remaining sketch/hero assets were generated through OpenAI/ChatGPT under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "c6f6678b73066c3d7583b3cfa86c2e67ecc81790981906c0548b211a982185f3"
+    },
+    {
+      "path": "images/sketches/hero-plates/witch-hunter-banker-spymaster.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that these remaining sketch/hero assets were generated through OpenAI/ChatGPT under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "88c599e669f26f00bdfa6d158fc3e8a568b1205592fbd55ba82fc863f4b69319"
+    },
+    {
+      "path": "images/sketches/hero-sketches/hero sketch 2.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that these remaining sketch/hero assets were generated through OpenAI/ChatGPT under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "c6eb6bb5dddc521cf1665c3b1be6b21bb1fa840a8f981002da307512ffd105b1"
+    },
+    {
+      "path": "images/sketches/hero-sketches/hero sketch 3.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that these remaining sketch/hero assets were generated through OpenAI/ChatGPT under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "a9804ac6ec00d346dd210f0f569c19f34e5b2b705dcb195f9a58afc84d48c179"
+    },
+    {
+      "path": "images/sketches/hero-sketches/hero sketch 4.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that these remaining sketch/hero assets were generated through OpenAI/ChatGPT under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "4ad7d464e9adb5826685c0e48cbb19f318f4cbdcdd7e87619c9e803e0e94b793"
+    },
+    {
+      "path": "images/sketches/hero-sketches/hero sketch.png",
+      "origin": "generated",
+      "creator": "OpenAI image generation, directed and selected by Tymon Scott",
+      "source": "Direct project-owner attestation on 2026-09-05 that these remaining sketch/hero assets were generated through OpenAI/ChatGPT under Tymon Scott's direction.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
+      "sha256": "9b0f49b424e07130a624e46a9aad32e3e979d73c772de90f7ba16682d0ba73f1"
+    },
+    {
       "path": "images/sketches/ranger.png",
       "origin": "generated",
       "creator": "OpenAI image generation, directed and selected by Tymon Scott",
@@ -2229,6 +3215,14 @@
       "source": "OpenAI ChatGPT image generation in the Faction Leader Archetypes conversation (2026-07-09; id 6a4f9ae3-b9bc-83ea-8fcb-08008020a034); accepted assets are documented in docs/Archive/Gauntlet_v0.6_Character_Design_Sheet_Log.md; normalized files were introduced in commit 4bdb43b04ed2eff8e0f0aa7d7da1ebf89557c931.",
       "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights.",
       "sha256": "3fdb5623c6b8b4fb4f98c0eb2726b2244133f11525d4c094fe0b20bffabc00ee"
+    },
+    {
+      "path": "images/social/gauntlet-og-1200x630-v2.jpg",
+      "origin": "project-created",
+      "creator": "OpenAI/ChatGPT compositing under Tymon Scott's direction",
+      "source": "Direct project-owner attestation on 2026-09-05 that the social image was composited from other images generated through OpenAI/ChatGPT under Tymon Scott's direction. Repository PR #364 (https://github.com/tymonius/Gauntlet/pull/364) independently documents the social preview artwork and notes that a temporary image-generation workflow produced the committed asset.",
+      "rights": "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user OpenAI's right, title, and interest, if any, in Output, to the extent permitted by applicable law (https://openai.com/policies/terms-of-use/). This record does not assert copyrightability, uniqueness, or absence of third-party rights. The final composition is a project-created arrangement of those generated Gauntlet inputs.",
+      "sha256": "7f966ba6db132674f4c56a185dbc23e7aad15165872e45d4a95d382688b0fe41"
     },
     {
       "path": "images/spirit walker.png",
