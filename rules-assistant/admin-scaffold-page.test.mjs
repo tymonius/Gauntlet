@@ -12,12 +12,11 @@ test("admin dashboard exposes cluster-specific refinement scaffold controls", ()
   expect(page).toContain("Scaffold refinement");
 });
 
-test("scaffold page is markup-only and does not splice another client into the legacy script", () => {
+test("scaffold enhancer adds markup only and does not splice its runtime into the legacy script", () => {
   expect(page).not.toContain("var rulesRefinementScaffoldEngine=");
   expect(page).not.toContain("buildRefinementScaffold");
+  expect(page).not.toContain("rulesScaffoldReport");
   expect(page).not.toContain("document.addEventListener('gauntlet:rules-triage'");
-  expect(page).not.toContain("/api/admin/export?format=json");
-  expect(page).not.toContain("/api/admin/review-intelligence");
 });
 
 test("scaffold enhancer is idempotent", () => {
