@@ -54,7 +54,7 @@
           "If the opponent accepts, the battle does not happen and the agreement resolves. If they refuse, the battle continues, and the refusal can give you leverage or make the fight more costly for them.",
           "Accepted or successfully imposed Proposals can become ratified Treaty Articles. Each different Article is visible progress toward your political victory."
         ],
-        victory: "Diplomats can still win by running the Gauntlet. They also win at the start of their turn, after Capture, if they have five different ratified Proposals forming the Peace Treaty."
+        victory: "Diplomats can still win by running the Gauntlet. They also win at the start of their turn, after Capture, if they have six different ratified Proposals forming the Peace Treaty."
       },
       leaders: [
         {
@@ -88,12 +88,12 @@
       name: "Financiers",
       summary: "Build wealth and turn it into control.",
       lesson: {
-        title: "Financiers: build an economy inside the battlefield.",
-        intro: "Financiers add Capital, Treasury, and Deeds. Capital is money you spend. Treasury is where you store cards to increase how much Capital you can keep. Deeds are ownership of the six Territories.",
+        title: "Financiers: turn cards into money, then money into property.",
+        intro: "Financiers add an economy to the battlefield. Capital is money you spend, Treasury is where you store cards to increase how much Capital you can keep, and Deeds represent ownership of Territories.",
         steps: [
-          "The Territories you control and the value stored in your Treasury determine how much Capital you can retain. Build that capacity before trying to spend heavily.",
-          "Spend Capital to buy Deeds or power faction effects. Each Deed you own produces more Capital after Capture at the start of your turn, so ownership makes later purchases easier.",
-          "If your Treasury value grows larger than the number of Territories you control, Financial Capacity can give you a second Action that turn. At least one of the two Actions must be a Financier faction Action."
+          "Put cards you can afford to delay into Treasury. The Territories you control plus the value in Treasury determine how much Capital you can keep.",
+          "Spend Capital to buy Deeds or power faction effects. Each Deed you own produces more Capital at the start of your turn after Capture, so ownership helps fund more ownership.",
+          "As your Treasury grows, your faction reference may give you an extra Action through Financial Capacity. You do not need to memorize that rule now—check the reference when your economy gets large enough."
         ],
         victory: "Financiers can run the Gauntlet normally. They also win immediately through Controlling Interest if they own the Deed to every Territory currently in the Gauntlet."
       },
@@ -170,14 +170,14 @@
       name: "Mystics",
       summary: "Build combinations and work toward powerful rituals.",
       lesson: {
-        title: "Mystics: complete three Rites while playing the normal game.",
-        intro: "Mystics add three public Rites. Each Rite is a longer objective: pay its beginning cost, keep its condition intact, and complete it later. Each completed Rite unlocks another faction power.",
+        title: "Mystics: complete Rites while playing the normal game.",
+        intro: "Mystics add three public Rites. Each Rite is a longer objective you begin now and complete later while still playing normal Gauntlet. Completing Rites gradually unlocks more of the faction.",
         steps: [
-          "Your first completed Rite unlocks Invocation, which lets you move one card from the Graveyard back to the Discard Pile after an Arcane card applies its effect once per turn.",
-          "Your second completed Rite unlocks Transmutation, which lets you put one card from Hand into the Graveyard before battle dice and add that card's value to your battle total once per turn.",
-          "After all three Rites are complete, you may begin the Ritual of Ascension by binding one Arcane card from Hand, one from the Discard Pile, and one from the Graveyard. Win a battle while all three remain bound to complete the Ritual."
+          "For your first turns, focus on one Rite whose requirement fits your cards or battlefield position. Do not try to memorize the whole Rite progression at once.",
+          "When you complete your first Rite, read the ability it unlocks on your faction reference and start using it from then on. Do the same after your second Rite.",
+          "After all three Rites are complete, your faction reference explains the Ritual of Ascension and the final battle you need to win for the alternate victory."
         ],
-        victory: "Mystics can run the Gauntlet normally. They also win by completing all three Rites, beginning the Ritual of Ascension, and then winning a battle while the Ritual remains intact."
+        victory: "Mystics can run the Gauntlet normally. Complete all three Rites to unlock the Ritual of Ascension; when you reach that point, follow the faction reference to begin the Ritual and win the required battle."
       },
       leaders: [
         {
@@ -185,11 +185,11 @@
           name: "Alchemist",
           portrait: "/images/alchemist.png",
           summary: "Turn sacrifices into replacement cards and combinations.",
-          ability: "The first card the Alchemist deliberately sacrifices from Hand on the turn through a Rite, Transmutation, or Arcane effect is replaced by drawing a card. If the sacrifice happens during battle, draw after the battle resolves.",
+          ability: "The first qualifying card the Alchemist deliberately sacrifices from Hand on your turn is replaced by drawing a card. Your Leader Card tells you which sacrifices qualify.",
           firstGame: [
-            "Treat Hand, Discard, and Graveyard as places to arrange ingredients, not simply good and bad places for cards to be.",
-            "Plan your first deliberate sacrifice from Hand each turn so Materia Prima replaces it.",
-            "Work toward the Rite whose condition best matches your current cards or battlefield position instead of forcing all three at once."
+            "Do not think of the Graveyard as only a place for lost cards; Mystics can make use of cards there later.",
+            "When a Rite or Arcane effect asks you to sacrifice from Hand, try to make that your first qualifying sacrifice so Materia Prima replaces it.",
+            "Focus on the Rite that best matches your current cards or battlefield position instead of trying to advance all three at once."
           ]
         },
         {
@@ -197,7 +197,7 @@
           name: "Spirit Walker",
           portrait: "/images/spirit%20walker.png",
           summary: "Protect your Rites while they build.",
-          ability: "The first time on your turn that a battle loss would interrupt a begun Rite or Ritual, the Spirit Walker can sacrifice an Arcane card from Hand of sufficient value to keep that progress intact.",
+          ability: "The first time on your turn that losing a battle would interrupt a Rite or Ritual in progress, the Spirit Walker can sacrifice a sufficiently valuable Arcane card from Hand to protect that progress.",
           firstGame: [
             "Begin a Rite early when you can support its condition instead of waiting for a perfect setup.",
             "Once a Rite can be broken by a battle loss, keep a useful Arcane card in Hand as insurance.",
@@ -504,7 +504,7 @@
       el.starterPreview.className = "starter-preview empty-state";
       el.starterPreview.textContent = state.leaderId
         ? "No matching starter Deck was found."
-        : "Choose a Leader and a ready-made first-game Deck will be selected for you.";
+        : "Gauntlet lets you build your own Deck from a large pool of cards. For a first game, choose a Leader and we'll select a pre-built recommended starter Deck for you.";
       return;
     }
 
@@ -512,8 +512,8 @@
     el.starterPreview.innerHTML = `
       <p class="eyebrow">Recommended first-game Deck</p>
       <h4>${escapeHtml(deck.name)}</h4>
-      <div class="starter-meta"><span>${Number(deck.cardCount) || 30} cards</span><span>Ready to play</span></div>
-      <p>No deckbuilding required. This Deck is already built for your chosen Leader and will load automatically when you continue.</p>`;
+      <div class="starter-meta"><span>${Number(deck.cardCount) || 30} cards</span><span>Pre-built</span></div>
+      <p>Gauntlet players can build their own Decks from a large pool of cards. For your first game, this recommended Deck is already built for your chosen Leader so you can learn the game before learning deckbuilding.</p>`;
   }
 
   function syncPrintAction() {
