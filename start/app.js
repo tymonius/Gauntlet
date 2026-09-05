@@ -24,11 +24,10 @@
           name: "General",
           portrait: "/images/general.png",
           summary: "Attack and keep advancing.",
-          ability: "The General's Orders are about attack and tempo: move farther, strengthen a battle you started, or keep advancing after an attacking win.",
+          ability: "The General turns Command into extra aggression—stronger attacks, farther advances, and continued pressure after a win—helping you cross the battlefield faster.",
           firstGame: [
-            "Look for battles you can start on favorable terms; the General wants to be the attacker.",
-            "Spend Command to turn one good turn into more movement or another fight instead of sitting at the 2-Command cap.",
-            "After an attacking win, check whether Rout can keep the pressure going before the opponent recovers."
+            "Start battles when the odds look good; the General is strongest when setting the pace.",
+            "Use Command to keep a successful attack moving before the opponent has time to recover."
           ]
         },
         {
@@ -36,11 +35,10 @@
           name: "Commandant",
           portrait: "/images/commandant.png",
           summary: "Defend, punish attacks, and counterattack.",
-          ability: "The Commandant's Orders are about defense and counterattack: strengthen a defense, drive a failed attacker farther back, and turn a well-held enemy position into progress.",
+          ability: "The Commandant turns Command into stronger defense and punishing counterattacks, making it dangerous for the opponent to attack your position.",
           firstGame: [
-            "Do not feel obligated to rush forward. A strong position can make the opponent attack into you.",
-            "Save Command for the defensive battle that matters; Entrench and Repel make a failed attack hurt.",
-            "Once defense creates space, use the opening to counterattack or secure the ground you are already holding."
+            "Do not rush just because you can. Holding strong ground can force the opponent to attack you on favorable terms.",
+            "When you repel an attack, look for the chance to turn their failure into your counterattack."
           ]
         }
       ]
@@ -68,11 +66,10 @@
           name: "Ambassador",
           portrait: "/images/ambassador.png",
           summary: "Reward accepted deals and keep cards flowing.",
-          ability: "Once per turn, when the opponent accepts your Terms, the Ambassador draws a card. Agreements help advance the Treaty without starving your Hand.",
+          ability: "The Ambassador gets extra cards when the opponent accepts your Terms, so successful deals can advance the Peace Treaty without slowing the rest of your game.",
           firstGame: [
-            "Begin with low-Stake Proposals that are genuinely tempting to accept.",
-            "Vary the Proposals you offer; accepted agreements advance your political plan and keep cards flowing.",
-            "Use battlefield pressure so refusing is not obviously safe. The best offer is one where either answer helps you."
+            "Offer deals the opponent might genuinely want to accept; an easy refusal does little for you.",
+            "Use battlefield pressure to make both choices uncomfortable—the best Proposal helps you whether they accept or fight."
           ]
         },
         {
@@ -80,11 +77,10 @@
           name: "Senator",
           portrait: "/images/senator.png",
           summary: "Take bigger political risks and recover from refusals.",
-          ability: "When refused Terms lead to a battle loss, the Senator can sacrifice cards from Hand to recover Influence that would otherwise be lost.",
+          ability: "The Senator can recover some Influence when a rejected deal ends badly, letting you make bolder Proposals with less risk of one failure wrecking your political plan.",
           firstGame: [
-            "Keep cards in Hand before staking a lot of Influence; those cards are your insurance if the negotiation turns into a lost battle.",
-            "Take larger risks when the payoff matters. The Senator can absorb a bad result better than the Ambassador.",
-            "Make repeated refusals increasingly uncomfortable, but do not risk all of your Influence on one offer."
+            "Keep some cards available before making a high-stakes offer; they can help cushion a bad result.",
+            "Use that safety net to make consequential offers, but do not treat it as permission to gamble everything at once."
           ]
         }
       ]
@@ -112,11 +108,10 @@
           name: "Banker",
           portrait: "/images/banker.png",
           summary: "Use credit and collateral to buy property sooner.",
-          ability: "On the first Deed purchase or buyout of the turn, the Banker can use one card from Hand or Treasury as collateral for part of the price, then pay the rest with Capital.",
+          ability: "The Banker can use cards as collateral when buying Deeds, letting you acquire property sooner than your Capital alone would normally allow.",
           firstGame: [
-            "Put cards you can afford to delay into Treasury early; that grows what you can finance.",
-            "Use Line of Credit to reach an important Deed before your Capital alone could pay for it.",
-            "Do not spend every point of Capital just because you can. Leave yourself enough flexibility for the next purchase or important faction effect."
+            "Build your Treasury early so you have both a stronger economy and useful cards available as collateral.",
+            "Use credit to reach an important Deed sooner, especially when it meaningfully advances Controlling Interest."
           ]
         },
         {
@@ -124,11 +119,10 @@
           name: "Executive",
           portrait: "/images/executive.png",
           summary: "Turn battlefield occupation directly into ownership.",
-          ability: "After winning as the attacker and occupying an enemy Territory, the Executive can spend an Action to buy that Territory's Deed. If it is the next Territory your side could normally capture, the purchase can capture it immediately.",
+          ability: "The Executive can turn a successful attack directly into a Deed purchase—and sometimes an immediate capture—so one battlefield win can advance both territory and ownership at once.",
           firstGame: [
-            "Plan attacks around Territories whose Deeds you can actually afford.",
-            "Keep Capital or collateral available before you attack; a win is strongest when you can buy immediately afterward.",
-            "Look for turns where one attack gives you both battlefield position and property. The Executive wants those two systems to move together."
+            "Attack Territories whose Deeds you can afford; a victory is much more valuable when you can buy the property immediately.",
+            "Keep some Capital ready before attacking so battlefield momentum can become economic momentum too."
           ]
         }
       ]
@@ -156,11 +150,10 @@
           name: "Ranger",
           portrait: "/images/ranger.png",
           summary: "Use terrain and information to keep operations on track.",
-          ability: "Once per turn, the Ranger can spend 1 Intel to ignore a Territory's printed effect when it would interfere with you, your movement, or your battle.",
+          ability: "The Ranger can spend Intel to ignore troublesome Territory effects, helping important Missions and attacks stay on course when the terrain would otherwise disrupt them.",
           firstGame: [
-            "Choose Missions that line up with movement and battles you already want to take.",
-            "Save Intel when a Territory effect would block a key move or operation; do not spend it just because it is available.",
-            "Spend Intel to inspect or interfere with a hidden battle card when it could decide an important Mission or attack."
+            "Choose Missions that line up with moves and battles you already want to make.",
+            "Save Intel for the Territory or hidden battle card that could derail something important instead of spending it at the first opportunity."
           ]
         },
         {
@@ -168,11 +161,10 @@
           name: "Spymaster",
           portrait: "/images/spymaster.png",
           summary: "Chain Missions together quickly.",
-          ability: "Once per turn, after completing a normal Mission, the Spymaster can immediately begin another eligible Mission from Hand without spending an Action.",
+          ability: "After completing a Mission, the Spymaster can start another one on the same turn, making progress toward Special Operation victory faster.",
           firstGame: [
-            "Before completing your current Mission, try to have the next eligible Mission already in Hand.",
-            "Chain Missions so Mission Control never wastes its free start.",
-            "Think one Mission ahead and preserve enough Intel for the Special Operation instead of spending everything on interference."
+            "Try to have your next Mission ready before you finish the current one.",
+            "Keep the chain moving; completed Missions are what bring your Special Operation victory within reach."
           ]
         }
       ]
@@ -200,11 +192,10 @@
           name: "Alchemist",
           portrait: "/images/alchemist.png",
           summary: "Turn sacrifices into replacement cards and combinations.",
-          ability: "The first qualifying card the Alchemist deliberately sacrifices from Hand on your turn is replaced by drawing a card. Your Leader Card tells you which sacrifices qualify.",
+          ability: "The Alchemist replaces some cards you sacrifice with new draws, turning the Mystics' costs into fuel for new combinations instead of simply losing options.",
           firstGame: [
-            "Most cards in the Graveyard are normally out of circulation. As the Alchemist, treat those lost cards as future ingredients instead of dead ends.",
-            "When a Rite or Arcane effect asks you to sacrifice from Hand, try to make that your first qualifying sacrifice so Materia Prima replaces it.",
-            "Focus on the Rite that best matches your current cards or battlefield position instead of trying to advance all three at once."
+            "Think of cards that reach the Graveyard as future ingredients, not necessarily as cards you have lost forever.",
+            "Choose a Rite that fits the cards you already have, then use sacrifices and replacement draws to keep your combinations moving."
           ]
         },
         {
@@ -212,11 +203,10 @@
           name: "Spirit Walker",
           portrait: "/images/spirit%20walker.png",
           summary: "Protect your Rites while they build.",
-          ability: "The first time on your turn that losing a battle would interrupt a Rite or Ritual in progress, the Spirit Walker can sacrifice a sufficiently valuable Arcane card from Hand to protect that progress.",
+          ability: "The Spirit Walker can protect a Rite from being broken by a battle loss, letting you pursue dangerous ritual progress more aggressively than another Mystic could.",
           firstGame: [
-            "Begin a Rite early when you can support its condition instead of waiting for a perfect setup.",
-            "Once a Rite can be broken by a battle loss, keep a useful Arcane card in Hand as insurance.",
-            "You can take a calculated battle risk that another Mystic might avoid because Guardians of the Circle can preserve your progress once per turn."
+            "Begin a Rite when you can support it rather than waiting forever for a perfect setup.",
+            "Keep a useful Arcane card in Hand as insurance when losing a battle could undo your progress."
           ]
         }
       ]
@@ -244,11 +234,10 @@
           name: "Grand Inquisitor",
           portrait: "/images/grand%20inquisitor.png",
           summary: "Turn battle wins into efficient Purges.",
-          ability: "Once per turn after winning a battle, the Grand Inquisitor can immediately Purge without spending an Action and at a reduced Conviction cost.",
+          ability: "Winning a battle lets the Grand Inquisitor follow it with a cheaper Purge, turning battlefield victories into permanent damage to the opponent's resources.",
           firstGame: [
-            "Build some Conviction before committing to a major Purge.",
-            "Choose battles you can win when possible; each victory opens a discounted immediate Purge.",
-            "After a win, remove the resource that will hurt the opponent's next few turns most rather than spending Conviction on a low-impact target."
+            "Build some Conviction, then look for battles you can win to turn that resource into a stronger Purge.",
+            "After a victory, remove something that will keep hurting the opponent rather than spending your Purge on the first target available."
           ]
         },
         {
@@ -256,11 +245,10 @@
           name: "Witch Hunter",
           portrait: "/images/witch%20hunter.png",
           summary: "Punish failed attacks with immediate pursuit.",
-          ability: "After the opponent attacks you and loses, the Witch Hunter can spend 2 Conviction to end their turn immediately and advance one position, possibly starting a counterattack.",
+          ability: "When the opponent attacks and loses, the Witch Hunter can immediately chase them, turning their failed attack into your counteroffensive.",
           firstGame: [
-            "Try to keep 2 Conviction available when the opponent is likely to attack.",
-            "Defend positions that force the opponent to commit. A failed attack can become your counterattack before their turn even finishes.",
-            "Use the immediate advance when the counterattack is favorable; you do not have to pursue every time."
+            "Keep some Conviction in reserve when the opponent looks ready to attack so pursuit remains an option.",
+            "Defend positions that tempt the opponent to commit, then chase only when the counterattack improves your position."
           ]
         }
       ]
