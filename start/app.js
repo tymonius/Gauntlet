@@ -1,52 +1,250 @@
 (() => {
   const STORAGE_KEY = "gauntlet_standalone_onboarding_v1";
+
   const FACTION_PRESENTATION = Object.freeze({
     military: {
       name: "Military",
-      summary: "Turn battlefield victories into Command, then spend it on movement, pressure, defense, and control.",
+      summary: "Win battles and keep the pressure on.",
+      lesson: {
+        title: "Military: win battles, then spend the momentum.",
+        intro: "Military adds one small resource: Command. The first time you win a battle each turn, gain 1 Command, up to 2. Spend Command on the three Orders printed on your Leader.",
+        steps: [
+          "Play normal Gauntlet until you win a battle. That first win gives you 1 Command—even if it happens while defending on the opponent's turn.",
+          "Watch your Leader Card for the moments when an Order can be used. Orders spend Command to move farther, strengthen a battle, push an enemy farther back, or secure ground.",
+          "Command caps at 2, so it is meant to be spent. Turn wins into immediate battlefield advantage instead of saving it forever."
+        ],
+        victory: "Military has no separate alternate victory. Everything it does helps you Run the Gauntlet: capture the Territory at the opponent's end or win their Last Stand."
+      },
       leaders: [
-        { id: "general", name: "General", portrait: "/images/general.png", summary: "Attack, build momentum, and press one victory into the next." },
-        { id: "commandant", name: "Commandant", portrait: "/images/commandant.png", summary: "Absorb attacks, counterattack, and turn defense into control." }
+        {
+          id: "general",
+          name: "General",
+          portrait: "/images/general.png",
+          summary: "Attack and keep advancing.",
+          ability: "The General's Orders are about attack and tempo: move farther, strengthen a battle you started, or keep advancing after an attacking win.",
+          firstGame: [
+            "Look for battles you can start on favorable terms; the General wants to be the attacker.",
+            "Spend Command to turn one good turn into more movement or another fight instead of sitting at the 2-Command cap.",
+            "After an attacking win, check whether Rout can keep the pressure going before the opponent recovers."
+          ]
+        },
+        {
+          id: "commandant",
+          name: "Commandant",
+          portrait: "/images/commandant.png",
+          summary: "Defend, punish attacks, and counterattack.",
+          ability: "The Commandant's Orders are about defense and counterattack: strengthen a defense, drive a failed attacker farther back, and turn a well-held enemy position into progress.",
+          firstGame: [
+            "Do not feel obligated to rush forward. A strong position can make the opponent attack into you.",
+            "Save Command for the defensive battle that matters; Entrench and Repel make a failed attack hurt.",
+            "Once defense creates space, use the opening to counterattack or secure the ground you are already holding."
+          ]
+        }
       ]
     },
+
     diplomats: {
       name: "Diplomats",
-      summary: "Use Influence, Terms, Proposals, concessions, and legitimacy to reshape the conflict.",
+      summary: "Make deals and force difficult choices.",
+      lesson: {
+        title: "Diplomats: turn battles into negotiations.",
+        intro: "Diplomats add Influence and Proposals. When a battle is about to begin, you can offer Terms before either player commits battle cards. Your opponent can accept the deal or refuse it and fight.",
+        steps: [
+          "You begin with 1 Influence. An eligible Proposal tells you what you may offer, how much Influence is at stake, and what happens if the opponent accepts or refuses.",
+          "If the opponent accepts, the battle does not happen and the agreement resolves. If they refuse, the battle continues, and the refusal can give you leverage or make the fight more costly for them.",
+          "Accepted or successfully imposed Proposals can become ratified Treaty Articles. Each different Article is visible progress toward your political victory."
+        ],
+        victory: "Diplomats can still win by running the Gauntlet. They also win at the start of their turn, after Capture, if they have six different ratified Proposals forming the Peace Treaty."
+      },
       leaders: [
-        { id: "ambassador", name: "Ambassador", portrait: "/images/ambassador.png", summary: "Make attractive offers and gain value when the opponent accepts." },
-        { id: "senator", name: "Senator", portrait: "/images/senator.png", summary: "Risk political capital, endure setbacks, and win the long negotiation." }
+        {
+          id: "ambassador",
+          name: "Ambassador",
+          portrait: "/images/ambassador.png",
+          summary: "Reward accepted deals and keep cards flowing.",
+          ability: "Once per turn, when the opponent accepts your Terms, the Ambassador draws a card. Agreements help advance the Treaty without starving your Hand.",
+          firstGame: [
+            "Begin with low-Stake Proposals that are genuinely tempting to accept.",
+            "Vary the Proposals you offer; accepted agreements advance your political plan and keep cards flowing.",
+            "Use battlefield pressure so refusing is not obviously safe. The best offer is one where either answer helps you."
+          ]
+        },
+        {
+          id: "senator",
+          name: "Senator",
+          portrait: "/images/senator.png",
+          summary: "Take bigger political risks and recover from refusals.",
+          ability: "When refused Terms lead to a battle loss, the Senator can sacrifice cards from Hand to recover Influence that would otherwise be lost.",
+          firstGame: [
+            "Keep cards in Hand before staking a lot of Influence; those cards are your insurance if the negotiation turns into a lost battle.",
+            "Take larger risks when the payoff matters. The Senator can absorb a bad result better than the Ambassador.",
+            "Make repeated refusals increasingly uncomfortable, but do not risk all of your Influence on one offer."
+          ]
+        }
       ]
     },
+
     financiers: {
       name: "Financiers",
-      summary: "Convert Capital, Treasury cards, Financial Capacity, Deeds, leverage, and ownership into strategic power.",
+      summary: "Build wealth and turn it into control.",
+      lesson: {
+        title: "Financiers: turn cards into money, then money into property.",
+        intro: "Financiers add an economy to the battlefield. You begin with 2 Capital. Capital is money you spend, Treasury is where you store cards to increase how much Capital you can keep, and Deeds represent ownership of Territories.",
+        steps: [
+          "Put cards you can afford to delay into Treasury. The Territories you control plus the value in Treasury determine how much Capital you can keep.",
+          "Spend Capital to buy Deeds or power faction effects. Each Deed you own produces more Capital at the start of your turn after Capture, so ownership helps fund more ownership.",
+          "As your Treasury grows, your faction reference may give you an extra Action through Financial Capacity. You do not need to memorize that rule now—check the reference when your economy gets large enough."
+        ],
+        victory: "Financiers can run the Gauntlet normally. They also win immediately through Controlling Interest if they own the Deed to every Territory currently in the Gauntlet."
+      },
       leaders: [
-        { id: "banker", name: "Banker", portrait: "/images/banker.png", summary: "Finance purchases flexibly and turn cards into collateral." },
-        { id: "executive", name: "Executive", portrait: "/images/executive.png", summary: "Occupy enemy ground and convert battlefield gains into ownership." }
+        {
+          id: "banker",
+          name: "Banker",
+          portrait: "/images/banker.png",
+          summary: "Use credit and collateral to buy property sooner.",
+          ability: "On the first Deed purchase or buyout of the turn, the Banker can use one card from Hand or Treasury as collateral for part of the price, then pay the rest with Capital.",
+          firstGame: [
+            "Put cards you can afford to delay into Treasury early; that grows what you can finance.",
+            "Use Line of Credit to reach an important Deed before your Capital alone could pay for it.",
+            "Do not spend every point of Capital just because you can. Leave yourself enough flexibility for the next purchase or important faction effect."
+          ]
+        },
+        {
+          id: "executive",
+          name: "Executive",
+          portrait: "/images/executive.png",
+          summary: "Turn battlefield occupation directly into ownership.",
+          ability: "After winning as the attacker and occupying an enemy Territory, the Executive can spend an Action to buy that Territory's Deed. If it is the next Territory your side could normally capture, the purchase can capture it immediately.",
+          firstGame: [
+            "Plan attacks around Territories whose Deeds you can actually afford.",
+            "Keep Capital or collateral available before you attack; a win is strongest when you can buy immediately afterward.",
+            "Look for turns where one attack gives you both battlefield position and property. The Executive wants those two systems to move together."
+          ]
+        }
       ]
     },
+
     intelligence: {
       name: "Intelligence",
-      summary: "Gather Intel, complete Missions, inspect hidden commitments, and disrupt enemy plans.",
+      summary: "Complete hidden objectives and disrupt plans.",
+      lesson: {
+        title: "Intelligence: give yourself a secret objective.",
+        intro: "Intelligence adds face-down Missions and a resource called Intel. Start a Mission, play normal Gauntlet while satisfying its hidden requirement, then spend an Action on a later turn to complete it.",
+        steps: [
+          "Keep one normal Mission in progress face down. Your opponent knows a Mission exists, but not what you are trying to accomplish.",
+          "Completed Missions give you Intel and Operation Progress. Spend Intel to inspect an opponent's hidden battle card; with enough Intel, you can remove that choice from the battle and force a replacement.",
+          "As Operation Progress grows, you can eventually prepare a face-down Special Operation. Satisfy its requirement and pay its Intel cost to complete it."
+        ],
+        victory: "Intelligence can win by running the Gauntlet. Once your Operation Progress exceeds the number of Territories the opponent controls, you can work toward a Special Operation; complete it and pay its Intel cost to win."
+      },
       leaders: [
-        { id: "ranger", name: "Ranger", portrait: "/images/ranger.png", summary: "Master terrain, fieldcraft, and adaptable operations." },
-        { id: "spymaster", name: "Spymaster", portrait: "/images/spymaster.png", summary: "Chain Missions together and coordinate a faster covert campaign." }
+        {
+          id: "ranger",
+          name: "Ranger",
+          portrait: "/images/ranger.png",
+          summary: "Use terrain and information to keep operations on track.",
+          ability: "Once per turn, the Ranger can spend 1 Intel to ignore a Territory's printed effect when it would interfere with you, your movement, or your battle.",
+          firstGame: [
+            "Choose Missions that line up with movement and battles you already want to take.",
+            "Save Intel when a Territory effect would block a key move or operation; do not spend it just because it is available.",
+            "Spend Intel to inspect or interfere with a hidden battle card when it could decide an important Mission or attack."
+          ]
+        },
+        {
+          id: "spymaster",
+          name: "Spymaster",
+          portrait: "/images/spymaster.png",
+          summary: "Chain Missions together quickly.",
+          ability: "Once per turn, after completing a normal Mission, the Spymaster can immediately begin another eligible Mission from Hand without spending an Action.",
+          firstGame: [
+            "Before completing your current Mission, try to have the next eligible Mission already in Hand.",
+            "Chain Missions so Mission Control never wastes its free start.",
+            "Think one Mission ahead and preserve enough Intel for the Special Operation instead of spending everything on interference."
+          ]
+        }
       ]
     },
+
     mystics: {
       name: "Mystics",
-      summary: "Perform Rites, invoke the Arcane, transform cards, and build toward ritual power.",
+      summary: "Build combinations and work toward powerful rituals.",
+      lesson: {
+        title: "Mystics: complete Rites while playing the normal game.",
+        intro: "Mystics add three public Rites and can turn the Graveyard—normally outside circulation—into part of their engine. Each Rite is a longer objective you begin now and complete later while still playing normal Gauntlet. Completing Rites gradually unlocks more of the faction.",
+        steps: [
+          "For your first turns, focus on one Rite whose requirement fits your cards or battlefield position. Do not try to memorize the whole Rite progression at once.",
+          "When you complete your first Rite, read the ability it unlocks on your faction reference and start using it from then on. Do the same after your second Rite.",
+          "After all three Rites are complete, your faction reference explains the Ritual of Ascension and the final battle you need to win for the alternate victory."
+        ],
+        victory: "Mystics can run the Gauntlet normally. Complete all three Rites to unlock the Ritual of Ascension; when you reach that point, follow the faction reference to begin the Ritual and win the required battle."
+      },
       leaders: [
-        { id: "alchemist", name: "Alchemist", portrait: "/images/alchemist.png", summary: "Transmute cards deliberately and construct powerful combinations." },
-        { id: "spirit-walker", name: "Spirit Walker", portrait: "/images/spirit%20walker.png", summary: "Protect begun Rites and the Ritual by sacrificing Arcane cards of sufficient value." }
+        {
+          id: "alchemist",
+          name: "Alchemist",
+          portrait: "/images/alchemist.png",
+          summary: "Turn sacrifices into replacement cards and combinations.",
+          ability: "The first qualifying card the Alchemist deliberately sacrifices from Hand on your turn is replaced by drawing a card. Your Leader Card tells you which sacrifices qualify.",
+          firstGame: [
+            "Most cards in the Graveyard are normally out of circulation. As the Alchemist, treat those lost cards as future ingredients instead of dead ends.",
+            "When a Rite or Arcane effect asks you to sacrifice from Hand, try to make that your first qualifying sacrifice so Materia Prima replaces it.",
+            "Focus on the Rite that best matches your current cards or battlefield position instead of trying to advance all three at once."
+          ]
+        },
+        {
+          id: "spirit-walker",
+          name: "Spirit Walker",
+          portrait: "/images/spirit%20walker.png",
+          summary: "Protect your Rites while they build.",
+          ability: "The first time on your turn that losing a battle would interrupt a Rite or Ritual in progress, the Spirit Walker can sacrifice a sufficiently valuable Arcane card from Hand to protect that progress.",
+          firstGame: [
+            "Begin a Rite early when you can support its condition instead of waiting for a perfect setup.",
+            "Once a Rite can be broken by a battle loss, keep a useful Arcane card in Hand as insurance.",
+            "You can take a calculated battle risk that another Mystic might avoid because Guardians of the Circle can preserve your progress once per turn."
+          ]
+        }
       ]
     },
+
     inquisition: {
       name: "Inquisition",
-      summary: "Build Conviction through condemnation, denial, Graveyard pressure, and Purge.",
+      summary: "Permanently strip away the opponent's resources.",
+      lesson: {
+        title: "Inquisition: make the opponent's battle cards stay gone.",
+        intro: "Normally, Tactics return to the Discard Pile and may be drawn again later. The Inquisition's Condemnation sends opposing Tactics to the Graveyard instead, making those cards permanent losses.",
+        steps: [
+          "The first time each turn opposing cards enter the Graveyard during the aftermath of a battle involving you, gain 1 Conviction, up to 4. You can gain it even when you lost the battle.",
+          "Spend Conviction on Purge to send more of the opponent's resources—such as Assets, cards in Hand, or cards they could draw again—to the Graveyard.",
+          "The longer this continues, the fewer recoverable cards the opponent has. Ordinary battles become an attrition engine even when the battlefield itself is not moving."
+        ],
+        victory: "Inquisition can run the Gauntlet normally. It also wins by Purification if the opponent reaches the start of their turn unable to draw because both their Draw Pile and Discard Pile are empty."
+      },
       leaders: [
-        { id: "grand-inquisitor", name: "Grand Inquisitor", portrait: "/images/grand%20inquisitor.png", summary: "Judge opposing cards and turn battle wins into efficient Purges." },
-        { id: "witch-hunter", name: "Witch Hunter", portrait: "/images/witch%20hunter.png", summary: "Punish failed attacks, pursue retreating enemies, and suppress resources." }
+        {
+          id: "grand-inquisitor",
+          name: "Grand Inquisitor",
+          portrait: "/images/grand%20inquisitor.png",
+          summary: "Turn battle wins into efficient Purges.",
+          ability: "Once per turn after winning a battle, the Grand Inquisitor can immediately Purge without spending an Action and at a reduced Conviction cost.",
+          firstGame: [
+            "Build some Conviction before committing to a major Purge.",
+            "Choose battles you can win when possible; each victory opens a discounted immediate Purge.",
+            "After a win, remove the resource that will hurt the opponent's next few turns most rather than spending Conviction on a low-impact target."
+          ]
+        },
+        {
+          id: "witch-hunter",
+          name: "Witch Hunter",
+          portrait: "/images/witch%20hunter.png",
+          summary: "Punish failed attacks with immediate pursuit.",
+          ability: "After the opponent attacks you and loses, the Witch Hunter can spend 2 Conviction to end their turn immediately and advance one position, possibly starting a counterattack.",
+          firstGame: [
+            "Try to keep 2 Conviction available when the opponent is likely to attack.",
+            "Defend positions that force the opponent to commit. A failed attack can become your counterattack before their turn even finishes.",
+            "Use the immediate advance when the counterattack is favorable; you do not have to pursue every time."
+          ]
+        }
       ]
     }
   });
@@ -57,7 +255,6 @@
   const state = {
     factionId: "",
     leaderId: "",
-    introConfirmed: false,
     starterDecks: [],
     starterLoadError: null
   };
@@ -68,17 +265,14 @@
   async function init() {
     for (const id of [
       "leaderFieldset", "leaderPrompt", "leaderChoices", "selectedHeading", "selectedSummary",
-      "starterPreview", "printForm", "printSelectionHeading", "printSelectionCopy", "introConfirmed",
-      "openStarterDeck", "printStatus"
+      "starterPreview", "factionLessonEmpty", "factionLesson", "factionLessonEyebrow",
+      "factionLessonTitle", "factionLessonIntro", "factionLessonSteps", "factionLessonVictory",
+      "leaderLessonTitle", "leaderLessonAbility", "leaderLessonTips", "factionGuideLink",
+      "printForm", "printSelectionHeading", "printSelectionCopy", "openStarterDeck", "printStatus"
     ]) el[id] = document.getElementById(id);
 
     document.querySelectorAll('input[name="faction"]').forEach(input => {
       input.addEventListener("change", () => selectFaction(input.value));
-    });
-    el.introConfirmed.addEventListener("change", () => {
-      state.introConfirmed = el.introConfirmed.checked;
-      saveState();
-      syncPrintAction();
     });
     el.printForm.addEventListener("submit", openGuidedDeckbuilder);
     installTrackedPlaytestAction();
@@ -96,7 +290,7 @@
     panel.className = "tracked-playtest-start";
     panel.style.cssText = "margin-top:1rem;padding-top:1rem;border-top:1px solid var(--start-line)";
     panel.innerHTML = `
-      <p style="margin:.1rem 0 .75rem;line-height:1.5"><strong>Track this playtest</strong><br><span style="color:#59625f">Create one tracked game, share the join link with your opponent, and record the result and separate player feedback. The next screen will use the in-person or remote mode you selected, or ask where you're playing.</span></p>
+      <p style="margin:.1rem 0 .75rem;line-height:1.5"><strong>Track this playtest</strong><br><span style="color:#59625f">Create one tracked game, share the join link with your opponent, and record the result and separate player feedback.</span></p>
       <button id="startTrackedPlaytest" class="button primary" type="button" disabled>Create tracked playtest</button>`;
     el.openStarterDeck.after(panel);
     el.startTrackedPlaytest = document.getElementById("startTrackedPlaytest");
@@ -111,7 +305,7 @@
       : "";
     renderChoice();
     saveState();
-    document.getElementById("leaderFieldset")?.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.leaderFieldset?.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
   function renderChoice() {
@@ -121,6 +315,7 @@
       ? document.activeElement.value
       : "";
     const faction = FACTIONS[state.factionId];
+
     document.querySelectorAll('input[name="faction"]').forEach(input => {
       input.checked = input.value === state.factionId;
     });
@@ -129,9 +324,10 @@
       el.leaderFieldset.disabled = true;
       el.leaderPrompt.textContent = "Choose a faction first.";
       el.leaderChoices.replaceChildren();
-      el.selectedHeading.textContent = "Choose a faction and leader.";
-      el.selectedSummary.textContent = "Your recommended first-game deck will appear here.";
+      el.selectedHeading.textContent = "Choose a faction and Leader.";
+      el.selectedSummary.textContent = "Your ready-made first-game Deck will appear here.";
       renderStarterPreview(null);
+      renderFactionLesson(null, null);
       syncPrintAction();
       return;
     }
@@ -143,6 +339,7 @@
     faction.leaders.forEach(leader => {
       const label = document.createElement("label");
       label.className = "leader-choice";
+
       const input = document.createElement("input");
       input.type = "radio";
       input.name = "leader";
@@ -175,13 +372,53 @@
     const leader = selectedLeader();
     el.selectedHeading.textContent = leader
       ? `${leader.name} of the ${faction.name}`
-      : `${faction.name} selected — choose a leader.`;
+      : `${faction.name} selected — choose a Leader.`;
     el.selectedSummary.textContent = leader
       ? `${faction.summary} ${leader.summary}`
       : faction.summary;
+
     renderStarterPreview(selectedStarterDeck());
+    renderFactionLesson(faction, leader);
     syncPrintAction();
     if (focusedLeaderId && focusedLeaderId === state.leaderId) focusSelectedLeader(focusedLeaderId);
+  }
+
+  function renderFactionLesson(faction, leader) {
+    if (!faction?.lesson) {
+      el.factionLessonEmpty.hidden = false;
+      el.factionLesson.hidden = true;
+      return;
+    }
+
+    el.factionLessonEmpty.hidden = true;
+    el.factionLesson.hidden = false;
+    el.factionLessonEyebrow.textContent = `${faction.name} · your extra system`;
+    el.factionLessonTitle.textContent = faction.lesson.title;
+    el.factionLessonIntro.textContent = faction.lesson.intro;
+    el.factionLessonVictory.textContent = faction.lesson.victory;
+    el.factionGuideLink.href = `../factions/${state.factionId}/`;
+    el.factionGuideLink.textContent = `Open the full ${faction.name} guide ↗`;
+
+    el.factionLessonSteps.replaceChildren(...faction.lesson.steps.map(step => {
+      const item = document.createElement("li");
+      item.textContent = step;
+      return item;
+    }));
+
+    if (!leader) {
+      el.leaderLessonTitle.textContent = "Choose a Leader above.";
+      el.leaderLessonAbility.textContent = "The faction system stays the same, but the two Leaders can push you toward very different priorities.";
+      el.leaderLessonTips.replaceChildren();
+      return;
+    }
+
+    el.leaderLessonTitle.textContent = `${leader.name}: what to focus on`;
+    el.leaderLessonAbility.textContent = leader.ability;
+    el.leaderLessonTips.replaceChildren(...leader.firstGame.map(tip => {
+      const item = document.createElement("li");
+      item.textContent = tip;
+      return item;
+    }));
   }
 
   function focusSelectedLeader(leaderId) {
@@ -208,35 +445,32 @@
         .filter(leader => leader.faction === faction.id)
         .map(leader => {
           const copy = presentation.leaders?.find(item => item.id === leader.id) || {};
-          return {
+          return Object.freeze({
             id: leader.id,
             name: leader.name,
             portrait: leader.image || copy.portrait || "",
             summary: copy.summary || leader.note || "",
-          };
+            ability: copy.ability || "",
+            firstGame: Object.freeze(copy.firstGame || [])
+          });
         });
+
       return [faction.id, Object.freeze({
         name: faction.name,
         summary: presentation.summary || "",
-        leaders: Object.freeze(leaders),
+        lesson: presentation.lesson || null,
+        leaders: Object.freeze(leaders)
       })];
     })));
   }
 
   async function loadStarterDecks() {
     try {
-      const tipResponse = await fetch("../deckbuilder/starter-first-game-tips.json", { cache: "no-store" });
-      if (!tipResponse.ok) throw new Error(`Starter tip library returned ${tipResponse.status}.`);
-      const tipData = await tipResponse.json();
       const data = currentAuthority?.starterDecks;
       if (!data || !Array.isArray(data.decks)) {
         throw new Error("Current-game authority did not provide starter Deck data.");
       }
-      const tips = tipData?.tips && typeof tipData.tips === "object" ? tipData.tips : {};
-      state.starterDecks = data.decks.map(deck => ({
-        ...deck,
-        firstGameTip: deck.firstGameTip || tips[deck.id] || ""
-      }));
+      state.starterDecks = data.decks;
       state.starterLoadError = null;
     } catch (error) {
       console.error(error);
@@ -258,48 +492,45 @@
   function renderStarterPreview(deck) {
     if (state.starterLoadError) {
       el.starterPreview.className = "starter-preview empty-state";
-      el.starterPreview.textContent = "The starter deck preview could not be loaded. You can still continue to the Deckbuilder after choosing a leader.";
+      el.starterPreview.textContent = "The starter Deck preview could not be loaded. You can still continue after choosing a Leader.";
       return;
     }
     if (!state.starterDecks.length) {
       el.starterPreview.className = "starter-preview empty-state";
-      el.starterPreview.textContent = "Loading the starter deck library…";
+      el.starterPreview.textContent = "Loading the starter Deck library…";
       return;
     }
     if (!deck) {
       el.starterPreview.className = "starter-preview empty-state";
       el.starterPreview.textContent = state.leaderId
-        ? "No matching starter deck was found."
-        : "Choose a leader to preview the matching recommended deck.";
+        ? "No matching starter Deck was found."
+        : "Gauntlet lets you build your own Deck from a large pool of cards. For a first game, choose a Leader and we'll select a pre-built recommended starter Deck for you.";
       return;
     }
 
     el.starterPreview.className = "starter-preview";
     el.starterPreview.innerHTML = `
-      <p class="eyebrow">Recommended first-game deck</p>
+      <p class="eyebrow">Recommended first-game Deck</p>
       <h4>${escapeHtml(deck.name)}</h4>
-      <div class="starter-meta"><span>${Number(deck.cardCount) || 30} cards</span><span>${Number(deck.deckbuildingValue) || 60}/60 value</span></div>
-      <p>${escapeHtml(deck.summary)}</p>
-      <p><strong>Territories, from your end outward:</strong> ${deck.territories.map(escapeHtml).join(" → ")}</p>
-      <p><strong>First-game tip:</strong> ${escapeHtml(deck.firstGameTip)}</p>`;
+      <div class="starter-meta"><span>${Number(deck.cardCount) || 30} cards</span><span>Pre-built</span></div>
+      <p>Gauntlet players can build their own Decks from a large pool of cards. For your first game, this recommended Deck is already built for your chosen Leader so you can learn the game before learning deckbuilding.</p>`;
   }
 
   function syncPrintAction() {
     const faction = FACTIONS[state.factionId];
     const leader = selectedLeader();
     const deck = selectedStarterDeck();
-    const complete = Boolean(faction && leader && state.introConfirmed);
+    const complete = Boolean(faction && leader);
 
-    el.introConfirmed.checked = state.introConfirmed;
     el.openStarterDeck.disabled = !complete;
     if (el.startTrackedPlaytest) el.startTrackedPlaytest.disabled = !complete;
     el.printSelectionHeading.textContent = faction && leader
       ? `${leader.name} of the ${faction.name}`
-      : "Choose a faction and leader first.";
+      : "Choose a faction and Leader first.";
     el.printSelectionCopy.textContent = faction && leader
       ? deck
         ? `${deck.name} will load automatically in the Deckbuilder. Your choice is saved in this browser.`
-        : "The matching starter deck will load automatically in the Deckbuilder. Your choice is saved in this browser."
+        : "The matching starter Deck will load automatically in the Deckbuilder. Your choice is saved in this browser."
       : "Your selection is saved in this browser as you work.";
   }
 
@@ -308,13 +539,8 @@
     const faction = FACTIONS[state.factionId];
     const leader = selectedLeader();
     if (!faction || !leader) {
-      setStatus("Choose a faction and leader before continuing.", "error");
+      setStatus("Choose a faction and Leader before continuing.", "error");
       document.getElementById("choose")?.scrollIntoView({ behavior: "smooth", block: "start" });
-      return;
-    }
-    if (!el.introConfirmed.checked) {
-      setStatus("Confirm that you read the First Game Introduction.", "error");
-      el.introConfirmed.focus();
       return;
     }
 
@@ -330,8 +556,8 @@
   function openTrackedPlaytest() {
     const faction = FACTIONS[state.factionId];
     const leader = selectedLeader();
-    if (!faction || !leader || !state.introConfirmed) {
-      setStatus("Choose a faction and Leader and confirm the First Game Introduction before tracking a game.", "error");
+    if (!faction || !leader) {
+      setStatus("Choose a faction and Leader before tracking a game.", "error");
       return;
     }
     saveState();
@@ -350,7 +576,6 @@
       if (FACTIONS[saved.factionId]) state.factionId = saved.factionId;
       const faction = FACTIONS[state.factionId];
       if (faction?.leaders.some(leader => leader.id === saved.leaderId)) state.leaderId = saved.leaderId;
-      state.introConfirmed = saved.introConfirmed === true;
     } catch {
       // A damaged local preference should not block onboarding.
     }
@@ -361,7 +586,6 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
         factionId: state.factionId,
         leaderId: state.leaderId,
-        introConfirmed: state.introConfirmed,
         updatedAt: new Date().toISOString()
       }));
     } catch {
