@@ -112,7 +112,7 @@ Next: validate this tranche in CI, then audit browser/renderer ownership and the
 
 ## Renderer compatibility consolidation
 
-Branch: `cleanup/consolidate-renderer-aliases` (stacked on #1467). `card-design/face-render.html` remains the single physical-face renderer. Card Design print aliases and all TTS renderer compatibility pages now delegate through `card-design/legacy-face-redirect.mjs`; their public URLs and accepted query parameters remain available without duplicating render or redirect logic. Renderer authority and TTS tests now assert this boundary.
+PR: [#1468](https://github.com/tymonius/Gauntlet/pull/1468). Branch: `cleanup/consolidate-renderer-aliases` (stacked on #1467). `card-design/face-render.html` remains the single physical-face renderer. Card Design print aliases and all TTS renderer compatibility pages now delegate through `card-design/legacy-face-redirect.mjs`; their public URLs and accepted query parameters remain available without duplicating render or redirect logic. Renderer authority and TTS tests now assert this boundary.
 
 Next: validate this tranche in CI, then review the broader player-facing browser surface ownership separately from physical-card rendering.
 
