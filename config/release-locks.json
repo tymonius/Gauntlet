@@ -1,87 +1,593 @@
 {
   "schema_version": 1,
   "historical_evidence": [
-    { "path": "releases/v0.6.1", "git_object": "5d209d784213c3fd663807eb08f4453968656f8c", "kind": "tree", "meaning": "Published v0.6.1 package" },
-    { "path": "releases/v0.6.2-withdrawn", "git_object": "25da1d1302eec2c32d10bb0ccd6c5ede09907bbc", "kind": "tree", "meaning": "Original published v0.6.2 package; withdrawn evidence" },
-    { "path": "releases/v0.6.3-withdrawn", "git_object": "eae8a51b915197bf63d1e21048030b33baed5a45", "kind": "tree", "meaning": "Original published v0.6.3 package; withdrawn evidence" },
-    { "path": "artifacts/v0.6.3", "git_object": "286db1a267ea91c799f039e8b581d785089fd63c", "kind": "tree", "meaning": "Preserved v0.6.3 candidate/closeout evidence at containment" },
-    { "path": "artifacts/reconstruction/v0.6.3-browser-candidate", "git_object": "8f9ddf00d3323412bfb4699b81335531f8024492", "kind": "tree", "meaning": "Relocated pre-publication v0.6.3 browser candidate files removed from the current-version public namespace" },
-    { "path": "docs/recovery/v0.6.1-current-surface-locks.json", "git_object": "e2fa25f42167d5c582f663f807ce618b0a86dace", "kind": "blob", "meaning": "Frozen current-surface snapshot from the v0.6.1 recovery baseline" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.1/build_v061_documents.py", "git_object": "b1e6a3b1e428b243ca7770e6dccf55cfb61d0688", "kind": "blob", "meaning": "Frozen v0.6.1 historical tooling: build_v061_documents.py" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.1/finalize_v061_docx.py", "git_object": "c167c9a5c716c3026d17e649774125682953b4f3", "kind": "blob", "meaning": "Frozen v0.6.1 historical tooling: finalize_v061_docx.py" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.1/finalize_v061_publication.py", "git_object": "156133e1aa1f0f4ecb75ed298ec44340b84d401d", "kind": "blob", "meaning": "Frozen v0.6.1 historical tooling: finalize_v061_publication.py" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.1/finalize_v061_rulebook_publication.py", "git_object": "a0ec9f107e54b60b5363dd7075db8d7313026e1b", "kind": "blob", "meaning": "Frozen v0.6.1 historical tooling: finalize_v061_rulebook_publication.py" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.1/generate_v061_release.py", "git_object": "3a931439a81da5c0835dcc58d888c7c6820b3558", "kind": "blob", "meaning": "Frozen v0.6.1 historical tooling: generate_v061_release.py" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.1/normalize_v061_rulebook_content.py", "git_object": "4a9b1fb2999507393f6f7b01721c8a83fdf4f5f7", "kind": "blob", "meaning": "Frozen v0.6.1 historical tooling: normalize_v061_rulebook_content.py" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.1/sync_v061_deckbuilder.py", "git_object": "09f0858b463b28090720b1987e06aaf7db9db8e9", "kind": "blob", "meaning": "Frozen v0.6.1 historical tooling: sync_v061_deckbuilder.py" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.1/sync_v061_print_supplementals.py", "git_object": "dc1ba9611cee4ade55265e22169911fcfdfd8d86", "kind": "blob", "meaning": "Frozen v0.6.1 historical tooling: sync_v061_print_supplementals.py" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.1/sync_v061_public_rules.py", "git_object": "c904671c53feb8759e02d7394bbb880729eaba78", "kind": "blob", "meaning": "Frozen v0.6.1 historical tooling: sync_v061_public_rules.py" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.1/sync_v061_rulebook.py", "git_object": "96cd606ae12e4859e7809180105fd5f36f49ce1e", "kind": "blob", "meaning": "Frozen v0.6.1 historical tooling: sync_v061_rulebook.py" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.1/sync_v061_rules_assistant.py", "git_object": "609d63ad99597b39814e1e60ca27a59f4f0231f4", "kind": "blob", "meaning": "Frozen v0.6.1 historical tooling: sync_v061_rules_assistant.py" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.1/test_v061_formal_session_e2e.mjs", "git_object": "4edf85b76a0ce1b3c4e84b1f28223ee8f0347544", "kind": "blob", "meaning": "Frozen v0.6.1 historical tooling: test_v061_formal_session_e2e.mjs" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.1/validate_v061_faction_sheet_pdfs.py", "git_object": "c1fa0cdc84e8077ef933b46e9167cd1a550e8cf8", "kind": "blob", "meaning": "Frozen v0.6.1 historical tooling: validate_v061_faction_sheet_pdfs.py" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.1/validate_v061_release.py", "git_object": "ea8903ca98ed09b32251606242239872ef3348b9", "kind": "blob", "meaning": "Frozen v0.6.1 historical tooling: validate_v061_release.py" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.1/validate_v061_rulebook_content.py", "git_object": "28a0790d7e9cd0b011c6c995593c91942aacabc9", "kind": "blob", "meaning": "Frozen v0.6.1 historical tooling: validate_v061_rulebook_content.py" },
-    { "path": "scripts/build-v062-release.mjs", "git_object": "f9046a3b8485b6f1874a7d9403dcca4006709a59", "kind": "blob", "meaning": "Low-level v0.6.2 release source template consumed by the guarded runner" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.2/certify-clean-v062-authority.mjs", "git_object": "6923290aea61ae287363f6fbfc8e6d684ac26a8f", "kind": "blob", "meaning": "Frozen unreachable v0.6.2 historical tooling: certify-clean-v062-authority.mjs" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.2/validate-clean-v062-certification-certified.mjs", "git_object": "e3db3b02b90e13419decc0c00697b9321f09174a", "kind": "blob", "meaning": "Frozen unreachable v0.6.2 historical tooling: validate-clean-v062-certification-certified.mjs" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.2/validate-clean-v062-certification.mjs", "git_object": "1bff137dff504fece0b05664a6b529525003293b", "kind": "blob", "meaning": "Frozen unreachable v0.6.2 historical tooling: validate-clean-v062-certification.mjs" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.2/validate-clean-v062-rulebook.mjs", "git_object": "f2e669c9899f581615eee6da097fe6f6deaf8683", "kind": "blob", "meaning": "Frozen unreachable v0.6.2 historical tooling: validate-clean-v062-rulebook.mjs" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.2/synchronize-v062-public-site.pre-recovery.mjs", "git_object": "317946772840c372464f666de7b3d6cbf9af8ef7", "kind": "blob", "meaning": "Pre-recovery v0.6.2 public synchronizer" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.2/synchronize-v062-print-release.pre-recovery.mjs", "git_object": "a7fe40a79f33c39b2963b026d4fffd4db3f11bec", "kind": "blob", "meaning": "Pre-recovery v0.6.2 print synchronizer" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.2/validate-v062-published-release.pre-recovery.mjs", "git_object": "f8c0308683e3429398c8f3251412b166e088faf5", "kind": "blob", "meaning": "Pre-recovery v0.6.2 published/current validator" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.2/validate-v062-print-package.pre-recovery.mjs", "git_object": "868e8393715cd6367ff6e11a39accb1d2a6cf12a", "kind": "blob", "meaning": "Pre-recovery v0.6.2 print validator" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.2/build-v062-release-runner.pre-recovery.mjs", "git_object": "98d918ec72b459b2b24e3d98c8733834e4c9aa93", "kind": "blob", "meaning": "Pre-recovery v0.6.2 release runner" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.2/build-v062-print-html.pre-recovery.mjs", "git_object": "5760358f86ccaaec47da607b1eadeaf9d18a90a7", "kind": "blob", "meaning": "Pre-recovery v0.6.2 print HTML generator" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.2/render-v062-print-package.pre-recovery.mjs", "git_object": "c57a74395a00c7e1f919313dc32b5afcf720e9c5", "kind": "blob", "meaning": "Pre-recovery v0.6.2 PDF renderer" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.2/generate-v062-canonical-data.pre-recovery.mjs", "git_object": "b011d10efd014a79165a2befc150390bfba977ab", "kind": "blob", "meaning": "Pre-recovery v0.6.2 canonical data generator" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.3/build-v063-print-candidate-html.mjs", "git_object": "3523cdcb7a938b298d254e7738b945d2ba056a5e", "kind": "blob", "meaning": "Frozen v0.6.3 print-candidate HTML builder" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.3/build-v063-release-candidate.mjs", "git_object": "bc955a87fafcfd6657fde29e32924316283ea7ce", "kind": "blob", "meaning": "Frozen v0.6.3 source release-candidate builder" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.3/finalize-v063-canonical-data-candidate.mjs", "git_object": "2f08bbcb4cf2531ed6681da1fb0c8d5b2a108725", "kind": "blob", "meaning": "Frozen v0.6.3 canonical-data candidate finalizer" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.3/generate-v063-complete-card-reference-candidate.mjs", "git_object": "784a77fdf7846b27c2a5a170a610885200bfa707", "kind": "blob", "meaning": "Frozen v0.6.3 complete-card-reference candidate generator" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.3/normalize-v063-player-facing-candidates.mjs", "git_object": "2ed63bd65106e3c6df733aafc70aa8edd801686b", "kind": "blob", "meaning": "Frozen v0.6.3 player-facing candidate normalizer" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.3/render-v063-print-candidate.mjs", "git_object": "2e8a80c171800f6bac2581ff1adbdcba140ada1a", "kind": "blob", "meaning": "Frozen v0.6.3 print-candidate renderer" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.3/validate-v063-canonical-data-candidate.mjs", "git_object": "c08febca84cf0fa62cc3ece0fd851e9f622f9673", "kind": "blob", "meaning": "Frozen v0.6.3 canonical-data candidate validator" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.3/validate-v063-digital-candidate.mjs", "git_object": "c8c939435d596944bdd8f738146a09dc38dc6cef", "kind": "blob", "meaning": "Frozen v0.6.3 digital candidate validator" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.3/validate-v063-player-facing-candidates.mjs", "git_object": "724b79d9af81b825050da0a54e990899f81050aa", "kind": "blob", "meaning": "Frozen v0.6.3 player-facing candidate validator" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.3/validate-v063-print-candidate.mjs", "git_object": "78074ffaa0236bd4658cabfce2a5c7925644fe07", "kind": "blob", "meaning": "Frozen v0.6.3 print-candidate validator" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.3/validate-v063-release-candidate.mjs", "git_object": "d4414e657259de76332f930f5e331bdf0dcb325b", "kind": "blob", "meaning": "Frozen v0.6.3 source release-candidate validator" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.3/validate-v063-rules-arbiter-candidate.mjs", "git_object": "c09c050cdd6635497a5a3ed6dc5592a7bcc8461a", "kind": "blob", "meaning": "Frozen v0.6.3 Rules Arbiter candidate validator" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.2/validate-clean-v062-digital.mjs", "git_object": "8bcaffe51ba8e7ff1099931aa15cc93a6f854545", "kind": "blob", "meaning": "Frozen clean-v0.6.2 digital reconstruction validator" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.2/build-clean-v062-faction-authority.mjs", "git_object": "e65c4eae79650b3bce23d858e571c35cb6fd50c4", "kind": "blob", "meaning": "Frozen clean-v0.6.2 faction-authority reconstruction builder" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.2/normalize-clean-v062-faction-authority.mjs", "git_object": "ec2e09034c8ba005b218abb4371eea632fef4d0d", "kind": "blob", "meaning": "Frozen clean-v0.6.2 faction-authority normalizer" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.2/validate-clean-v062-faction-authority.mjs", "git_object": "bacaef3da24419ae3b01b98a991e3aa67c2ef5c6", "kind": "blob", "meaning": "Frozen clean-v0.6.2 faction-authority validator" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.2/build-clean-v062-rulebook.mjs", "git_object": "01e65d5c2c9c95b4e6771905adb5d9250d8db87f", "kind": "blob", "meaning": "Frozen clean-v0.6.2 Rulebook reconstruction builder" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.2/normalize-clean-v062-rulebook.mjs", "git_object": "e671139dacec6dba4ec964aba485ef90adcfa696", "kind": "blob", "meaning": "Frozen clean-v0.6.2 Rulebook normalizer" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.2/validate-clean-v062-rulebook-certified.mjs", "git_object": "bfab9a5b88b0210ca8b067e4e180e91f27f45e96", "kind": "blob", "meaning": "Frozen clean-v0.6.2 certified Rulebook validator" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.3/build-clean-v063-browser-rulebook.mjs", "git_object": "cebd9cde5d6ac80b6348d79cb6c136dc851a7e48", "kind": "blob", "meaning": "Frozen clean-v0.6.3 Browser Rulebook reconstruction builder" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.3/validate-clean-v063-browser-rulebook.mjs", "git_object": "3c1fe7234d47e790a4ee5964683896464fe9dbdd", "kind": "blob", "meaning": "Frozen clean-v0.6.3 Browser Rulebook validator" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.3/build-clean-v063-card-reference.mjs", "git_object": "8b03a810b337ea9bbbf05f414276f6b53d0726e5", "kind": "blob", "meaning": "Frozen clean-v0.6.3 Card Reference reconstruction builder" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.3/validate-clean-v063-card-reference.mjs", "git_object": "bf05c6a1f8d53f4d85a279faf3297d0b9a8837ca", "kind": "blob", "meaning": "Frozen clean-v0.6.3 Card Reference validator" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.3/validate-clean-v063-rules-arbiter.mjs", "git_object": "1e27a565c9e75da0ecafc9401fabb9b26b305520", "kind": "blob", "meaning": "Frozen clean-v0.6.3 Rules Arbiter reconstruction validator" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.3/build-clean-v063-print-export.mjs", "git_object": "560d1b644d827fb90605e8adba01e6bf51c31f47", "kind": "blob", "meaning": "Frozen clean-v0.6.3 print/export builder" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.3/render-clean-v063-print-export.mjs", "git_object": "0a992381f062f1484b8b2f516d5d05a58f86a655", "kind": "blob", "meaning": "Frozen clean-v0.6.3 print/export renderer" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.3/validate-clean-v063-print-export.mjs", "git_object": "0ae87ad805f522b62a2cf3a3846f47918db503fc", "kind": "blob", "meaning": "Frozen clean-v0.6.3 print/export validator" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.3/validate-clean-v063-start.mjs", "git_object": "678bd3abc64d95814ca0bebaf603401762488b29", "kind": "blob", "meaning": "Frozen clean-v0.6.3 Start reconstruction validator" },
-    { "path": "docs/recovery/frozen-scripts/v0.6.3/validate-clean-v063-faction-pages.mjs", "git_object": "557af0bcad0a11375fc88b5856ed8ce105e95435", "kind": "blob", "meaning": "Frozen clean-v0.6.3 faction-page reconstruction validator" },
-    { "path": "docs/recovery/frozen-workflows/build-clean-v062-digital.yml", "git_object": "bc13322e435703da7abb3a5fcebf5f13f5b5754f", "kind": "blob", "meaning": "Frozen manual clean-v0.6.2 digital reconstruction workflow" },
-    { "path": "docs/recovery/frozen-workflows/build-clean-v062-faction-authority.yml", "git_object": "aae3f9daaac14f47b557d068c1b7ba028812783c", "kind": "blob", "meaning": "Frozen manual clean-v0.6.2 faction-authority reconstruction workflow" },
-    { "path": "docs/recovery/frozen-workflows/build-clean-v062-rulebook.yml", "git_object": "eecafd03e6445bcc1a786472718c68659ebd0388", "kind": "blob", "meaning": "Frozen manual clean-v0.6.2 Rulebook reconstruction workflow" },
-    { "path": "docs/recovery/frozen-workflows/publish-v062-release-historical-guard.yml", "git_object": "8b15808bbab83791db4c0320420b9913f4baf1e6", "kind": "blob", "meaning": "Frozen manual v0.6.2 withdrawn-release guard workflow" },
-    { "path": "docs/recovery/frozen-workflows/build-clean-v063-browser-rulebook.yml", "git_object": "887a62a078c82af9a7c4a8b5a43f36f1bc7f102d", "kind": "blob", "meaning": "Frozen manual clean-v0.6.3 Browser Rulebook reconstruction workflow" },
-    { "path": "docs/recovery/frozen-workflows/build-clean-v063-card-reference.yml", "git_object": "15c7a2bd2e5ce5d28a3cdfb196444aafb8d0356e", "kind": "blob", "meaning": "Frozen manual clean-v0.6.3 Card Reference reconstruction workflow" },
-    { "path": "docs/recovery/frozen-workflows/build-clean-v063-print-export.yml", "git_object": "3c07ac023e04d3e73aa0fefd155724ba3a4b1a83", "kind": "blob", "meaning": "Frozen manual clean-v0.6.3 print/export reconstruction workflow" },
-    { "path": "docs/recovery/frozen-workflows/build-clean-v063-start.yml", "git_object": "973dad3f75fd462bd04a8fd94b9cd2eda22d9adb", "kind": "blob", "meaning": "Frozen manual clean-v0.6.3 Start reconstruction workflow" },
-    { "path": "docs/recovery/frozen-workflows/publish-v062-release.yml", "git_object": "96c342c0c1df21682eeccffc3f1dc0882c285410", "kind": "blob", "meaning": "Pre-containment v0.6.2 source publication workflow" },
-    { "path": "docs/recovery/frozen-workflows/publish-v062-print-package.yml", "git_object": "d2face697cf7b99641159da7b856708ab27ccf59", "kind": "blob", "meaning": "Pre-containment v0.6.2 print publication workflow" },
-    { "path": "docs/recovery/frozen-workflows/render-player-mat.yml", "git_object": "e667302277d046c57c8eca85e575395c3cec0419", "kind": "blob", "meaning": "Pre-containment current-player-mat workflow" },
-    { "path": "docs/recovery/frozen-workflows/test-v061-browser-tools.yml", "git_object": "17f34ef7e316ed1d43bb988615b5386a2763b7fc", "kind": "blob", "meaning": "Pre-containment browser smoke workflow" },
-    { "path": "docs/recovery/frozen-workflows/validate-v063-rules-arbiter-candidate.yml", "git_object": "164f08c19653ebf431af3972a475293e3c273447", "kind": "blob", "meaning": "Pre-containment v0.6.3 Rules Arbiter candidate workflow" },
-    { "path": "docs/recovery/frozen-workflows/build-v063-release-candidate.yml", "git_object": "150b3e71183a094aeb69a92ceaa2a1b8a14ee255", "kind": "blob", "meaning": "Pre-containment v0.6.3 source candidate workflow" },
-    { "path": "docs/recovery/frozen-workflows/build-v063-print-candidate.yml", "git_object": "352eb4ad52281a8cb399ca8d0aa2acbe51cba3c0", "kind": "blob", "meaning": "Pre-containment v0.6.3 print candidate workflow" },
-    { "path": "docs/recovery/frozen-workflows/validate-v063-cross-surface-closeout.yml", "git_object": "799ace1d780f64f04fd27a819ccf1d7eeee7e1ee", "kind": "blob", "meaning": "Pre-containment v0.6.3 cross-surface closeout workflow" }
+    {
+      "path": "releases/v0.6.1",
+      "git_object": "5d209d784213c3fd663807eb08f4453968656f8c",
+      "kind": "tree",
+      "meaning": "Published v0.6.1 package"
+    },
+    {
+      "path": "releases/v0.6.2-withdrawn",
+      "git_object": "25da1d1302eec2c32d10bb0ccd6c5ede09907bbc",
+      "kind": "tree",
+      "meaning": "Original published v0.6.2 package; withdrawn evidence"
+    },
+    {
+      "path": "releases/v0.6.3-withdrawn",
+      "git_object": "eae8a51b915197bf63d1e21048030b33baed5a45",
+      "kind": "tree",
+      "meaning": "Original published v0.6.3 package; withdrawn evidence"
+    },
+    {
+      "path": "artifacts/v0.6.3",
+      "git_object": "286db1a267ea91c799f039e8b581d785089fd63c",
+      "kind": "tree",
+      "meaning": "Preserved v0.6.3 candidate/closeout evidence at containment"
+    },
+    {
+      "path": "artifacts/reconstruction/v0.6.3-browser-candidate",
+      "git_object": "8f9ddf00d3323412bfb4699b81335531f8024492",
+      "kind": "tree",
+      "meaning": "Relocated pre-publication v0.6.3 browser candidate files removed from the current-version public namespace"
+    },
+    {
+      "path": "docs/recovery/v0.6.1-current-surface-locks.json",
+      "git_object": "e2fa25f42167d5c582f663f807ce618b0a86dace",
+      "kind": "blob",
+      "meaning": "Frozen current-surface snapshot from the v0.6.1 recovery baseline"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.1/build_v061_documents.py",
+      "git_object": "b1e6a3b1e428b243ca7770e6dccf55cfb61d0688",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.1 historical tooling: build_v061_documents.py"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.1/finalize_v061_docx.py",
+      "git_object": "c167c9a5c716c3026d17e649774125682953b4f3",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.1 historical tooling: finalize_v061_docx.py"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.1/finalize_v061_publication.py",
+      "git_object": "156133e1aa1f0f4ecb75ed298ec44340b84d401d",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.1 historical tooling: finalize_v061_publication.py"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.1/finalize_v061_rulebook_publication.py",
+      "git_object": "a0ec9f107e54b60b5363dd7075db8d7313026e1b",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.1 historical tooling: finalize_v061_rulebook_publication.py"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.1/generate_v061_release.py",
+      "git_object": "3a931439a81da5c0835dcc58d888c7c6820b3558",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.1 historical tooling: generate_v061_release.py"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.1/normalize_v061_rulebook_content.py",
+      "git_object": "4a9b1fb2999507393f6f7b01721c8a83fdf4f5f7",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.1 historical tooling: normalize_v061_rulebook_content.py"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.1/sync_v061_deckbuilder.py",
+      "git_object": "09f0858b463b28090720b1987e06aaf7db9db8e9",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.1 historical tooling: sync_v061_deckbuilder.py"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.1/sync_v061_print_supplementals.py",
+      "git_object": "dc1ba9611cee4ade55265e22169911fcfdfd8d86",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.1 historical tooling: sync_v061_print_supplementals.py"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.1/sync_v061_public_rules.py",
+      "git_object": "c904671c53feb8759e02d7394bbb880729eaba78",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.1 historical tooling: sync_v061_public_rules.py"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.1/sync_v061_rulebook.py",
+      "git_object": "96cd606ae12e4859e7809180105fd5f36f49ce1e",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.1 historical tooling: sync_v061_rulebook.py"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.1/sync_v061_rules_assistant.py",
+      "git_object": "609d63ad99597b39814e1e60ca27a59f4f0231f4",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.1 historical tooling: sync_v061_rules_assistant.py"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.1/test_v061_formal_session_e2e.mjs",
+      "git_object": "4edf85b76a0ce1b3c4e84b1f28223ee8f0347544",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.1 historical tooling: test_v061_formal_session_e2e.mjs"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.1/validate_v061_faction_sheet_pdfs.py",
+      "git_object": "c1fa0cdc84e8077ef933b46e9167cd1a550e8cf8",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.1 historical tooling: validate_v061_faction_sheet_pdfs.py"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.1/validate_v061_release.py",
+      "git_object": "ea8903ca98ed09b32251606242239872ef3348b9",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.1 historical tooling: validate_v061_release.py"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.1/validate_v061_rulebook_content.py",
+      "git_object": "28a0790d7e9cd0b011c6c995593c91942aacabc9",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.1 historical tooling: validate_v061_rulebook_content.py"
+    },
+    {
+      "path": "scripts/build-v062-release.mjs",
+      "git_object": "f9046a3b8485b6f1874a7d9403dcca4006709a59",
+      "kind": "blob",
+      "meaning": "Low-level v0.6.2 release source template consumed by the guarded runner"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.2/certify-clean-v062-authority.mjs",
+      "git_object": "6923290aea61ae287363f6fbfc8e6d684ac26a8f",
+      "kind": "blob",
+      "meaning": "Frozen unreachable v0.6.2 historical tooling: certify-clean-v062-authority.mjs"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.2/validate-clean-v062-certification-certified.mjs",
+      "git_object": "e3db3b02b90e13419decc0c00697b9321f09174a",
+      "kind": "blob",
+      "meaning": "Frozen unreachable v0.6.2 historical tooling: validate-clean-v062-certification-certified.mjs"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.2/validate-clean-v062-certification.mjs",
+      "git_object": "1bff137dff504fece0b05664a6b529525003293b",
+      "kind": "blob",
+      "meaning": "Frozen unreachable v0.6.2 historical tooling: validate-clean-v062-certification.mjs"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.2/validate-clean-v062-rulebook.mjs",
+      "git_object": "f2e669c9899f581615eee6da097fe6f6deaf8683",
+      "kind": "blob",
+      "meaning": "Frozen unreachable v0.6.2 historical tooling: validate-clean-v062-rulebook.mjs"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.2/synchronize-v062-public-site.pre-recovery.mjs",
+      "git_object": "317946772840c372464f666de7b3d6cbf9af8ef7",
+      "kind": "blob",
+      "meaning": "Pre-recovery v0.6.2 public synchronizer"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.2/synchronize-v062-print-release.pre-recovery.mjs",
+      "git_object": "a7fe40a79f33c39b2963b026d4fffd4db3f11bec",
+      "kind": "blob",
+      "meaning": "Pre-recovery v0.6.2 print synchronizer"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.2/validate-v062-published-release.pre-recovery.mjs",
+      "git_object": "f8c0308683e3429398c8f3251412b166e088faf5",
+      "kind": "blob",
+      "meaning": "Pre-recovery v0.6.2 published/current validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.2/validate-v062-print-package.pre-recovery.mjs",
+      "git_object": "868e8393715cd6367ff6e11a39accb1d2a6cf12a",
+      "kind": "blob",
+      "meaning": "Pre-recovery v0.6.2 print validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.2/build-v062-release-runner.pre-recovery.mjs",
+      "git_object": "98d918ec72b459b2b24e3d98c8733834e4c9aa93",
+      "kind": "blob",
+      "meaning": "Pre-recovery v0.6.2 release runner"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.2/build-v062-print-html.pre-recovery.mjs",
+      "git_object": "5760358f86ccaaec47da607b1eadeaf9d18a90a7",
+      "kind": "blob",
+      "meaning": "Pre-recovery v0.6.2 print HTML generator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.2/render-v062-print-package.pre-recovery.mjs",
+      "git_object": "c57a74395a00c7e1f919313dc32b5afcf720e9c5",
+      "kind": "blob",
+      "meaning": "Pre-recovery v0.6.2 PDF renderer"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.2/generate-v062-canonical-data.pre-recovery.mjs",
+      "git_object": "b011d10efd014a79165a2befc150390bfba977ab",
+      "kind": "blob",
+      "meaning": "Pre-recovery v0.6.2 canonical data generator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/apply-v063-advantage-capitalization.mjs",
+      "git_object": "867eabc96b0a3e6294369269e1ffb199d3bd2ea3",
+      "kind": "blob",
+      "meaning": "Frozen unreachable v0.6.3 card-normalization tooling: apply-v063-advantage-capitalization.mjs"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/apply-v063-asset-language.mjs",
+      "git_object": "0a4c87e819477056a30174f6ed0c2333206927f7",
+      "kind": "blob",
+      "meaning": "Frozen unreachable v0.6.3 card-normalization tooling: apply-v063-asset-language.mjs"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/apply-v063-compact-shorthand.mjs",
+      "git_object": "b848b54277a50a36757699011f5d02a203f02850",
+      "kind": "blob",
+      "meaning": "Frozen unreachable v0.6.3 card-normalization tooling: apply-v063-compact-shorthand.mjs"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/apply-v063-final-artifact-audit.mjs",
+      "git_object": "185f322cdee42ce239ba04502f4dd94e5a9cce22",
+      "kind": "blob",
+      "meaning": "Frozen unreachable v0.6.3 card-normalization tooling: apply-v063-final-artifact-audit.mjs"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/apply-v063-finalized-forward-conventions.mjs",
+      "git_object": "f5a7c13e8eebc9caf042fdc5a7985c4fa63ccf87",
+      "kind": "blob",
+      "meaning": "Frozen unreachable v0.6.3 card-normalization tooling: apply-v063-finalized-forward-conventions.mjs"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/apply-v063-gambit-tactic-headings.mjs",
+      "git_object": "8327257fc01d953ac0954dd874fa8cef20014c92",
+      "kind": "blob",
+      "meaning": "Frozen unreachable v0.6.3 card-normalization tooling: apply-v063-gambit-tactic-headings.mjs"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/apply-v063-general-card-rules.mjs",
+      "git_object": "c006d0ff0d948e4e47d5787d1f4c56f5a285eb70",
+      "kind": "blob",
+      "meaning": "Frozen unreachable v0.6.3 card-normalization tooling: apply-v063-general-card-rules.mjs"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/apply-v063-natural-advantage-wording.mjs",
+      "git_object": "f25fa1d80d3cb0cb576368359ec513dde8a2660d",
+      "kind": "blob",
+      "meaning": "Frozen unreachable v0.6.3 card-normalization tooling: apply-v063-natural-advantage-wording.mjs"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/apply-v063-numeric-shorthand.mjs",
+      "git_object": "ad3391b91ccaf0770c6f6acd88689169adfd1d4b",
+      "kind": "blob",
+      "meaning": "Frozen unreachable v0.6.3 card-normalization tooling: apply-v063-numeric-shorthand.mjs"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/apply-v063-poolwide-card-refinements.mjs",
+      "git_object": "b8a0066df9e092b2ff9bcb3ca83e2bd39d80bcce",
+      "kind": "blob",
+      "meaning": "Frozen unreachable v0.6.3 card-normalization tooling: apply-v063-poolwide-card-refinements.mjs"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/build-v063-card-normalization.mjs",
+      "git_object": "9e8aa151e59ef2c6ad06657479b4b1bfd65ee089",
+      "kind": "blob",
+      "meaning": "Frozen unreachable v0.6.3 card-normalization tooling: build-v063-card-normalization.mjs"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/finalize-v063-card-conventions.mjs",
+      "git_object": "c905f35e695380ced3b64d4f9bfb4429da556f5e",
+      "kind": "blob",
+      "meaning": "Frozen unreachable v0.6.3 card-normalization tooling: finalize-v063-card-conventions.mjs"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/finalize-v063-poolwide-integrity.mjs",
+      "git_object": "67e21fc2ceec1564c6f73e29b74032c2cb610ec7",
+      "kind": "blob",
+      "meaning": "Frozen unreachable v0.6.3 card-normalization tooling: finalize-v063-poolwide-integrity.mjs"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/sync-v063-final-card-mirrors.mjs",
+      "git_object": "eda684ca99cc837265bc1071403bc84dc33ef7ad",
+      "kind": "blob",
+      "meaning": "Frozen unreachable v0.6.3 card-normalization tooling: sync-v063-final-card-mirrors.mjs"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/sync-v063-rulebook-card-text.mjs",
+      "git_object": "222fa1c7b3862226203e82910914b9d4ecbd04ea",
+      "kind": "blob",
+      "meaning": "Frozen unreachable v0.6.3 card-normalization tooling: sync-v063-rulebook-card-text.mjs"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-v063-advantage-stacking.mjs",
+      "git_object": "9466a486a4f3f0f3adc17557f1b135998bd1ca64",
+      "kind": "blob",
+      "meaning": "Frozen unreachable v0.6.3 card-normalization tooling: validate-v063-advantage-stacking.mjs"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-v063-long-card-review.mjs",
+      "git_object": "a12c49c4c41bf3269db1ff126ae313cb1db95944",
+      "kind": "blob",
+      "meaning": "Frozen unreachable v0.6.3 card-normalization tooling: validate-v063-long-card-review.mjs"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/build-v063-print-candidate-html.mjs",
+      "git_object": "3523cdcb7a938b298d254e7738b945d2ba056a5e",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.3 print-candidate HTML builder"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/build-v063-release-candidate.mjs",
+      "git_object": "bc955a87fafcfd6657fde29e32924316283ea7ce",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.3 source release-candidate builder"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/finalize-v063-canonical-data-candidate.mjs",
+      "git_object": "2f08bbcb4cf2531ed6681da1fb0c8d5b2a108725",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.3 canonical-data candidate finalizer"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/generate-v063-complete-card-reference-candidate.mjs",
+      "git_object": "784a77fdf7846b27c2a5a170a610885200bfa707",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.3 complete-card-reference candidate generator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/normalize-v063-player-facing-candidates.mjs",
+      "git_object": "2ed63bd65106e3c6df733aafc70aa8edd801686b",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.3 player-facing candidate normalizer"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/render-v063-print-candidate.mjs",
+      "git_object": "2e8a80c171800f6bac2581ff1adbdcba140ada1a",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.3 print-candidate renderer"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-v063-canonical-data-candidate.mjs",
+      "git_object": "c08febca84cf0fa62cc3ece0fd851e9f622f9673",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.3 canonical-data candidate validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-v063-digital-candidate.mjs",
+      "git_object": "c8c939435d596944bdd8f738146a09dc38dc6cef",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.3 digital candidate validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-v063-player-facing-candidates.mjs",
+      "git_object": "724b79d9af81b825050da0a54e990899f81050aa",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.3 player-facing candidate validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-v063-print-candidate.mjs",
+      "git_object": "78074ffaa0236bd4658cabfce2a5c7925644fe07",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.3 print-candidate validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-v063-release-candidate.mjs",
+      "git_object": "d4414e657259de76332f930f5e331bdf0dcb325b",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.3 source release-candidate validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-v063-rules-arbiter-candidate.mjs",
+      "git_object": "c09c050cdd6635497a5a3ed6dc5592a7bcc8461a",
+      "kind": "blob",
+      "meaning": "Frozen v0.6.3 Rules Arbiter candidate validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.2/validate-clean-v062-digital.mjs",
+      "git_object": "8bcaffe51ba8e7ff1099931aa15cc93a6f854545",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.2 digital reconstruction validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.2/build-clean-v062-faction-authority.mjs",
+      "git_object": "e65c4eae79650b3bce23d858e571c35cb6fd50c4",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.2 faction-authority reconstruction builder"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.2/normalize-clean-v062-faction-authority.mjs",
+      "git_object": "ec2e09034c8ba005b218abb4371eea632fef4d0d",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.2 faction-authority normalizer"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.2/validate-clean-v062-faction-authority.mjs",
+      "git_object": "bacaef3da24419ae3b01b98a991e3aa67c2ef5c6",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.2 faction-authority validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.2/build-clean-v062-rulebook.mjs",
+      "git_object": "01e65d5c2c9c95b4e6771905adb5d9250d8db87f",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.2 Rulebook reconstruction builder"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.2/normalize-clean-v062-rulebook.mjs",
+      "git_object": "e671139dacec6dba4ec964aba485ef90adcfa696",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.2 Rulebook normalizer"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.2/validate-clean-v062-rulebook-certified.mjs",
+      "git_object": "bfab9a5b88b0210ca8b067e4e180e91f27f45e96",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.2 certified Rulebook validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/build-clean-v063-browser-rulebook.mjs",
+      "git_object": "cebd9cde5d6ac80b6348d79cb6c136dc851a7e48",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.3 Browser Rulebook reconstruction builder"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-clean-v063-browser-rulebook.mjs",
+      "git_object": "3c1fe7234d47e790a4ee5964683896464fe9dbdd",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.3 Browser Rulebook validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/build-clean-v063-card-reference.mjs",
+      "git_object": "8b03a810b337ea9bbbf05f414276f6b53d0726e5",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.3 Card Reference reconstruction builder"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-clean-v063-card-reference.mjs",
+      "git_object": "bf05c6a1f8d53f4d85a279faf3297d0b9a8837ca",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.3 Card Reference validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-clean-v063-rules-arbiter.mjs",
+      "git_object": "1e27a565c9e75da0ecafc9401fabb9b26b305520",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.3 Rules Arbiter reconstruction validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/build-clean-v063-print-export.mjs",
+      "git_object": "560d1b644d827fb90605e8adba01e6bf51c31f47",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.3 print/export builder"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/render-clean-v063-print-export.mjs",
+      "git_object": "0a992381f062f1484b8b2f516d5d05a58f86a655",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.3 print/export renderer"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-clean-v063-print-export.mjs",
+      "git_object": "0ae87ad805f522b62a2cf3a3846f47918db503fc",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.3 print/export validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-clean-v063-start.mjs",
+      "git_object": "678bd3abc64d95814ca0bebaf603401762488b29",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.3 Start reconstruction validator"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/validate-clean-v063-faction-pages.mjs",
+      "git_object": "557af0bcad0a11375fc88b5856ed8ce105e95435",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.3 faction-page reconstruction validator"
+    },
+    {
+      "path": "docs/recovery/frozen-workflows/build-clean-v062-digital.yml",
+      "git_object": "bc13322e435703da7abb3a5fcebf5f13f5b5754f",
+      "kind": "blob",
+      "meaning": "Frozen manual clean-v0.6.2 digital reconstruction workflow"
+    },
+    {
+      "path": "docs/recovery/frozen-workflows/build-clean-v062-faction-authority.yml",
+      "git_object": "aae3f9daaac14f47b557d068c1b7ba028812783c",
+      "kind": "blob",
+      "meaning": "Frozen manual clean-v0.6.2 faction-authority reconstruction workflow"
+    },
+    {
+      "path": "docs/recovery/frozen-workflows/build-clean-v062-rulebook.yml",
+      "git_object": "eecafd03e6445bcc1a786472718c68659ebd0388",
+      "kind": "blob",
+      "meaning": "Frozen manual clean-v0.6.2 Rulebook reconstruction workflow"
+    },
+    {
+      "path": "docs/recovery/frozen-workflows/publish-v062-release-historical-guard.yml",
+      "git_object": "8b15808bbab83791db4c0320420b9913f4baf1e6",
+      "kind": "blob",
+      "meaning": "Frozen manual v0.6.2 withdrawn-release guard workflow"
+    },
+    {
+      "path": "docs/recovery/frozen-workflows/build-clean-v063-browser-rulebook.yml",
+      "git_object": "887a62a078c82af9a7c4a8b5a43f36f1bc7f102d",
+      "kind": "blob",
+      "meaning": "Frozen manual clean-v0.6.3 Browser Rulebook reconstruction workflow"
+    },
+    {
+      "path": "docs/recovery/frozen-workflows/build-clean-v063-card-reference.yml",
+      "git_object": "15c7a2bd2e5ce5d28a3cdfb196444aafb8d0356e",
+      "kind": "blob",
+      "meaning": "Frozen manual clean-v0.6.3 Card Reference reconstruction workflow"
+    },
+    {
+      "path": "docs/recovery/frozen-workflows/build-clean-v063-print-export.yml",
+      "git_object": "3c07ac023e04d3e73aa0fefd155724ba3a4b1a83",
+      "kind": "blob",
+      "meaning": "Frozen manual clean-v0.6.3 print/export reconstruction workflow"
+    },
+    {
+      "path": "docs/recovery/frozen-workflows/build-clean-v063-start.yml",
+      "git_object": "973dad3f75fd462bd04a8fd94b9cd2eda22d9adb",
+      "kind": "blob",
+      "meaning": "Frozen manual clean-v0.6.3 Start reconstruction workflow"
+    },
+    {
+      "path": "docs/recovery/frozen-workflows/publish-v062-release.yml",
+      "git_object": "96c342c0c1df21682eeccffc3f1dc0882c285410",
+      "kind": "blob",
+      "meaning": "Pre-containment v0.6.2 source publication workflow"
+    },
+    {
+      "path": "docs/recovery/frozen-workflows/publish-v062-print-package.yml",
+      "git_object": "d2face697cf7b99641159da7b856708ab27ccf59",
+      "kind": "blob",
+      "meaning": "Pre-containment v0.6.2 print publication workflow"
+    },
+    {
+      "path": "docs/recovery/frozen-workflows/render-player-mat.yml",
+      "git_object": "e667302277d046c57c8eca85e575395c3cec0419",
+      "kind": "blob",
+      "meaning": "Pre-containment current-player-mat workflow"
+    },
+    {
+      "path": "docs/recovery/frozen-workflows/test-v061-browser-tools.yml",
+      "git_object": "17f34ef7e316ed1d43bb988615b5386a2763b7fc",
+      "kind": "blob",
+      "meaning": "Pre-containment browser smoke workflow"
+    },
+    {
+      "path": "docs/recovery/frozen-workflows/validate-v063-rules-arbiter-candidate.yml",
+      "git_object": "164f08c19653ebf431af3972a475293e3c273447",
+      "kind": "blob",
+      "meaning": "Pre-containment v0.6.3 Rules Arbiter candidate workflow"
+    },
+    {
+      "path": "docs/recovery/frozen-workflows/build-v063-release-candidate.yml",
+      "git_object": "150b3e71183a094aeb69a92ceaa2a1b8a14ee255",
+      "kind": "blob",
+      "meaning": "Pre-containment v0.6.3 source candidate workflow"
+    },
+    {
+      "path": "docs/recovery/frozen-workflows/build-v063-print-candidate.yml",
+      "git_object": "352eb4ad52281a8cb399ca8d0aa2acbe51cba3c0",
+      "kind": "blob",
+      "meaning": "Pre-containment v0.6.3 print candidate workflow"
+    },
+    {
+      "path": "docs/recovery/frozen-workflows/validate-v063-cross-surface-closeout.yml",
+      "git_object": "799ace1d780f64f04fd27a819ccf1d7eeee7e1ee",
+      "kind": "blob",
+      "meaning": "Pre-containment v0.6.3 cross-surface closeout workflow"
+    },
+    {
+      "path": "docs/recovery/frozen-scripts/v0.6.3/build-clean-v063-complete-authority.mjs",
+      "git_object": "3db81bc3da6f078a65c088c207178566c33c20f5",
+      "kind": "blob",
+      "meaning": "Frozen clean-v0.6.3 complete-authority reconstruction orchestrator"
+    }
   ],
   "maintained_historical_surfaces": [
-    { "path": "v0.6.2", "meaning": "Historical browser access surface. It may receive URL/status maintenance after release-path normalization; immutable v0.6.2 evidence is locked separately at releases/v0.6.2-withdrawn." }
+    {
+      "path": "v0.6.2",
+      "meaning": "Historical browser access surface. It may receive URL/status maintenance after release-path normalization; immutable v0.6.2 evidence is locked separately at releases/v0.6.2-withdrawn."
+    }
   ]
 }
