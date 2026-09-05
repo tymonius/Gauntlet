@@ -1,4 +1,4 @@
-import ledgerData from "./refinement-resolution-ledger.json" with { type: "json" };
+import ledgerData from "../artifacts/rules-refinement/resolution-ledger.json" with { type: "json" };
 
 export const REFINEMENT_RESOLUTION_LEDGER_SCHEMA = "gauntlet.rules-refinement-resolution-ledger.v1";
 export const refinementResolutionLedger = ledgerData;
