@@ -23,7 +23,9 @@ function row(overrides = {}) {
 
 test("routine explicit answers stay out of the attention queue", () => {
   const report = engine.triageInteractions([row()]);
+  expect(report.scope).toBe("unreviewed");
   expect(report.stats.unreviewed).toBe(1);
+  expect(report.stats.eligible).toBe(1);
   expect(report.stats.routine).toBe(1);
   expect(report.stats.attention).toBe(0);
   expect(report.clusters).toEqual([]);
@@ -96,5 +98,65 @@ test("reviewed interactions do not remain in the unreviewed triage queue", () =>
     row({ review_status: "needs_correction", feedback_rating: "incorrect" })
   ]);
   expect(report.stats.unreviewed).toBe(0);
+  expect(report.stats.eligible).toBe(0);
   expect(report.interactions).toEqual([]);
+});
+
+test("reviewed backlog mode surfaces refinement debt without reopening routine correct answers", () => {
+  const routine = row({
+    id: "55555555-5555-4555-8555-555555555555",
+    review_status: "correct"
+  });
+  const correction = row({
+    id: "66666666-6666-4666-8666-666666666666",
+    review_status: "needs_correction",
+    feedback_rating: "incorrect",
+    source_count: 0
+  });
+  const provisional = row({
+    id: "77777777-7777-4777-8777-777777777777",
+    session_id: "session-b",
+    review_status: "correct",
+    ruling_status: "provisional",
+    confidence: "medium",
+    source_count: 2
+  });
+  const report = engine.triageInteractions([routine, correction, provisional], {}, { scope: "reviewed_backlog" });
+  expect(report.scope).toBe("reviewed_backlog");
+  expect(report.stats.unreviewed).toBe(0);
+  expect(report.stats.reviewedBacklog).toBe(2);
+  expect(report.stats.eligible).toBe(2);
+  expect(report.interactions.map((item) => item.interactionId)).not.toContain(routine.id);
+  expect(report.interactions.map((item) => item.interactionId)).toEqual(expect.arrayContaining([correction.id, provisional.id]));
+  expect(report.clusters.map((cluster) => cluster.rootCause)).toEqual(expect.arrayContaining(["retrieval", "provisional_overuse"]));
+});
+
+test("reviewed backlog mode honors audit-only refinement signals", () => {
+  const interaction = row({
+    id: "88888888-8888-4888-8888-888888888888",
+    review_status: "correct"
+  });
+  const report = engine.triageInteractions([interaction], {
+    audits: [{
+      interaction_id: interaction.id,
+      retrieval_assessment: "failure",
+      recommended_action: "retrieval_fix"
+    }]
+  }, { scope: "reviewed_backlog" });
+  expect(report.stats.eligible).toBe(1);
+  expect(report.interactions[0].priority).toBe("high");
+  expect(report.interactions[0].rootCause).toBe("retrieval");
+  expect(report.interactions[0].signalCodes).toEqual(expect.arrayContaining(["audit_retrieval_failure", "audit_retrieval_fix"]));
+});
+
+test("designer-review audit flags remain visible in reviewed backlog triage", () => {
+  const interaction = row({
+    id: "99999999-9999-4999-8999-999999999999",
+    review_status: "correct"
+  });
+  const report = engine.triageInteractions([interaction], {
+    audits: [{ interaction_id: interaction.id, designer_review_required: 1 }]
+  }, { scope: "reviewed_backlog" });
+  expect(report.stats.eligible).toBe(1);
+  expect(report.interactions[0].signalCodes).toContain("designer_review_required");
 });
