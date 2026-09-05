@@ -267,6 +267,12 @@ export type V070SubversionAssetBattleContinuation =
       type: 'apply_fortifications_tactic_limit_asset';
       playerId: PlayerId;
       assetInstanceId: string;
+    }
+  | {
+      type: 'resolve_battle_aftermath_controlled_effect';
+      playerId: PlayerId;
+      sourceInstanceId: string;
+      replaceAssetInstanceId?: string;
     };
 
 export interface V070SubversionAssetBattleRuntime {

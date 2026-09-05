@@ -107,6 +107,12 @@ import {
   v070CondemnationAppliesToPlayerTactic,
 } from './inquisition';
 import {
+  applyV070RetributionUse,
+  markV070RetributionProcessed,
+  resolveV070RetributionResponse,
+  v070RetributionEligibleInstanceIds,
+} from './retribution';
+import {
   gainV070MilitaryCommandForBattleWin,
   useV070CommandantEntrench,
   useV070CommandantFortify,
@@ -231,6 +237,17 @@ export type V070BattleAction =
       replaceAssetInstanceId?: string;
     }
   | {
+      type: 'pass_retribution_asset';
+      playerId: PlayerId;
+      assetInstanceId: string;
+    }
+  | {
+      type: 'resolve_retribution_response';
+      playerId: PlayerId;
+      choice: 'asset' | 'conviction';
+      assetInstanceId?: string;
+    }
+  | {
       type: 'resolve_territory_aftermath_choice';
       playerId: PlayerId;
       cardInstanceId?: string;
@@ -328,9 +345,16 @@ export function reduceV070BattleAction(
     );
   }
   if (state.battleRuntime?.pendingBattleAftermathControlledEffectChoice
-    && action.type !== 'resolve_battle_aftermath_controlled_effect') {
+    && action.type !== 'resolve_battle_aftermath_controlled_effect'
+    && action.type !== 'pass_retribution_asset') {
     throw new V070GameActionError(
       'Resolve the pending shared-timing Aftermath card effect before continuing the Aftermath.',
+    );
+  }
+  if (state.battleRuntime?.pendingRetributionResponse
+    && action.type !== 'resolve_retribution_response') {
+    throw new V070GameActionError(
+      'Resolve the pending Retribution response before continuing the Aftermath.',
     );
   }
   if (state.battleRuntime?.pendingTerritoryAftermathChoice
@@ -557,6 +581,21 @@ export function reduceV070BattleAction(
         action.playerId,
         action.sourceInstanceId,
         action.replaceAssetInstanceId,
+      );
+      break;
+    case 'pass_retribution_asset':
+      passRetributionControlledEffect(
+        next,
+        action.playerId,
+        action.assetInstanceId,
+      );
+      break;
+    case 'resolve_retribution_response':
+      resolveRetributionResponseInAftermath(
+        next,
+        action.playerId,
+        action.choice,
+        action.assetInstanceId,
       );
       break;
     case 'resolve_territory_aftermath_choice':
@@ -2106,7 +2145,7 @@ function territoryAftermathDestination(
 type V070BattleAftermathControlledEffectRef = {
   owner: PlayerId;
   sourceInstanceId: string;
-  kind: 'overlay' | 'territory' | 'asset';
+  kind: 'overlay' | 'territory' | 'asset' | 'retribution';
 };
 
 function pruneIneligibleBattleAftermathControlledEffects(
@@ -2139,6 +2178,7 @@ function remainingBattleAftermathControlledEffects(
   state: V070GameState,
 ): V070BattleAftermathControlledEffectRef[] {
   const runtime = requireRuntime(state);
+  const battle = requireBattle(state);
   return [
     ...runtime.battleCardAftermathOverlayPlacements.map(placement => ({
       owner: placement.owner,
@@ -2155,6 +2195,12 @@ function remainingBattleAftermathControlledEffects(
       sourceInstanceId: bank.sourceInstanceId,
       kind: 'asset' as const,
     })),
+    ...v070RetributionEligibleInstanceIds(state, battle.defender)
+      .map(sourceInstanceId => ({
+        owner: battle.defender,
+        sourceInstanceId,
+        kind: 'retribution' as const,
+      })),
   ];
 }
 
@@ -2185,6 +2231,7 @@ function nextBattleAftermathControlledEffectPlayer(
 function applyBattleAftermathControlledEffect(
   state: V070GameState,
   effect: V070BattleAftermathControlledEffectRef,
+  immediateWinner: PlayerId | null,
   replaceAssetInstanceId?: string,
 ): void {
   const runtime = requireRuntime(state);
@@ -2193,6 +2240,16 @@ function applyBattleAftermathControlledEffect(
     throw new V070GameActionError(
       'Asset replacement applies only to an Aftermath effect that banks an Asset.',
     );
+  }
+
+  if (effect.kind === 'retribution') {
+    applyV070RetributionUse(
+      state,
+      effect.owner,
+      effect.sourceInstanceId,
+      immediateWinner,
+    );
+    return;
   }
 
   if (effect.kind === 'asset') {
@@ -2329,6 +2386,7 @@ function battleAftermathControlledEffectNeedsChoice(
   state: V070GameState,
   effect: V070BattleAftermathControlledEffectRef,
 ): boolean {
+  if (effect.kind === 'retribution') return true;
   return effect.kind === 'asset'
     && v070ResistanceBattleBankNeedsReplacementChoice(
       state,
@@ -2415,7 +2473,12 @@ function advanceBattleAftermathControlledEffects(
     }
 
     if (candidates.length === 1) {
-      applyBattleAftermathControlledEffect(state, candidates[0]);
+      applyBattleAftermathControlledEffect(
+        state,
+        candidates[0],
+        immediateWinner,
+      );
+      if (runtime.pendingRetributionResponse) return true;
     }
 
     nextPlayer =
@@ -2434,8 +2497,7 @@ function resolveBattleAftermathControlledEffectChoice(
 ): void {
   const runtime = requireRuntime(state);
   requireRuntimeStage(runtime, 'aftermath');
-  const pending =
-    runtime.pendingBattleAftermathControlledEffectChoice;
+  const pending = runtime.pendingBattleAftermathControlledEffectChoice;
   if (!pending || pending.playerId !== playerId) {
     throw new V070GameActionError(
       'No shared-timing Aftermath card-effect choice is pending for that player.',
@@ -2463,10 +2525,79 @@ function resolveBattleAftermathControlledEffectChoice(
   applyBattleAftermathControlledEffect(
     state,
     effect,
+    immediateWinner,
     replaceAssetInstanceId,
   );
+  if (runtime.pendingRetributionResponse) return;
   runtime.battleAftermathControlledEffectNextPlayer =
     nextBattleAftermathControlledEffectPlayer(state, playerId);
+  completeAftermathInternal(state, immediateWinner);
+}
+
+function passRetributionControlledEffect(
+  state: V070GameState,
+  playerId: PlayerId,
+  assetInstanceId: string,
+): void {
+  const runtime = requireRuntime(state);
+  requireRuntimeStage(runtime, 'aftermath');
+  const pending = runtime.pendingBattleAftermathControlledEffectChoice;
+  if (!pending
+    || pending.playerId !== playerId
+    || !pending.candidateSourceInstanceIds.includes(assetInstanceId)
+    || state.cardInstances[assetInstanceId]?.cardId !== 'inquisition-retribution'
+  ) {
+    throw new V070GameActionError(
+      'That Retribution is not an eligible shared-timing Aftermath effect.',
+    );
+  }
+
+  const stillBanked = state.players[playerId].zones.assetBank.includes(
+    assetInstanceId,
+  );
+  if (stillBanked
+    && !v070RetributionEligibleInstanceIds(state, playerId)
+      .includes(assetInstanceId)) {
+    throw new V070GameActionError(
+      'That Retribution is no longer eligible to be declined.',
+    );
+  }
+
+  const immediateWinner = pending.immediateWinner;
+  runtime.pendingBattleAftermathControlledEffectChoice = null;
+  markV070RetributionProcessed(
+    state,
+    playerId,
+    assetInstanceId,
+    stillBanked ? 'declined' : 'negated',
+  );
+  runtime.battleAftermathControlledEffectNextPlayer = stillBanked
+    ? playerId
+    : nextBattleAftermathControlledEffectPlayer(state, playerId);
+  completeAftermathInternal(state, immediateWinner);
+}
+
+function resolveRetributionResponseInAftermath(
+  state: V070GameState,
+  playerId: PlayerId,
+  choice: 'asset' | 'conviction',
+  assetInstanceId?: string,
+): void {
+  const runtime = requireRuntime(state);
+  requireRuntimeStage(runtime, 'aftermath');
+  const pending = runtime.pendingRetributionResponse;
+  if (!pending) {
+    throw new V070GameActionError('No Retribution response is pending.');
+  }
+  const owner = pending.owner;
+  const immediateWinner = resolveV070RetributionResponse(
+    state,
+    playerId,
+    choice,
+    assetInstanceId,
+  );
+  runtime.battleAftermathControlledEffectNextPlayer =
+    nextBattleAftermathControlledEffectPlayer(state, owner);
   completeAftermathInternal(state, immediateWinner);
 }
 

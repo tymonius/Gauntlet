@@ -111,6 +111,15 @@ export interface V070FortificationsRetreatView {
   sourceInstanceId: string;
 }
 
+export interface V070RetributionResponseView {
+  playerId: PlayerId;
+  owner: PlayerId;
+  sourceInstanceId: string;
+  candidateAssetCount: number;
+  immediateWinner: PlayerId | null;
+  candidateAssetInstanceIds?: string[];
+}
+
 export interface V070BattleRuntimeView {
   stage: V070BattleRuntime['stage'];
   participants: Record<PlayerId, V070BattleParticipantView>;
@@ -131,6 +140,8 @@ export interface V070BattleRuntimeView {
     V070SubversionAssetBattleView | null;
   pendingFortificationsRetreat:
     V070FortificationsRetreatView | null;
+  pendingRetributionResponse:
+    V070RetributionResponseView | null;
   footholdAssetWindowPlayer: PlayerId | null;
   footholdAssetWindowResolved: boolean;
   activePrintedTerritoryAtOnset:
@@ -708,6 +719,24 @@ function viewBattleRuntime(
             playerId: runtime.pendingFortificationsRetreat.playerId,
             sourceInstanceId:
               runtime.pendingFortificationsRetreat.sourceInstanceId,
+          }
+        : null,
+    pendingRetributionResponse:
+      runtime.pendingRetributionResponse
+        ? {
+            playerId: runtime.pendingRetributionResponse.playerId,
+            owner: runtime.pendingRetributionResponse.owner,
+            sourceInstanceId: runtime.pendingRetributionResponse.sourceInstanceId,
+            candidateAssetCount:
+              runtime.pendingRetributionResponse.candidateAssetInstanceIds.length,
+            immediateWinner: runtime.pendingRetributionResponse.immediateWinner,
+            ...(runtime.pendingRetributionResponse.playerId === viewer
+              ? {
+                  candidateAssetInstanceIds: [
+                    ...runtime.pendingRetributionResponse.candidateAssetInstanceIds,
+                  ],
+                }
+              : {}),
           }
         : null,
     footholdAssetWindowPlayer: runtime.footholdAssetWindowPlayer,
