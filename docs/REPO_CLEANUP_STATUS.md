@@ -138,7 +138,7 @@ Validation: all four PR workflows are green at `11036968`. The new production-bo
 
 ## Withdrawn candidate tooling freeze
 
-PR: [#1482](https://github.com/tymonius/Gauntlet/pull/1482). Branch: `cleanup/archive-v063-candidate-tooling` (stacked on #1479). The closed 17-script v0.6.3 card-normalization and candidate-authority pipeline has moved byte-for-byte from active `scripts/` into `docs/recovery/frozen-scripts/v0.6.3/`. Every preserved Git blob is release-locked. The maintained Last Stand terminology audit reads the one historical implementation file it examines from the archive and now normalizes checkout line endings before checking certified content hashes.
+PR: [#1482](https://github.com/tymonius/Gauntlet/pull/1482). Branch: `cleanup/archive-v063-candidate-tooling` (stacked on #1479). The closed 17-script v0.6.3 card-normalization and candidate-authority pipeline has moved byte-for-byte from active `scripts/` into `docs/recovery/frozen-scripts/v0.6.3/`. Every preserved Git blob is release-locked. The maintained Last Stand terminology audit reads the one historical implementation file it examines from the archive and now normalizes checkout line endings before checking certified content hashes. <!-- DOC-HISTORICAL -->
 
 The new boundary test rejects restored active entrypoints and verifies every frozen blob lock. Local validation passes: 7 focused tests, TypeScript, all 116 release-recovery locks, release-path normalization, the Last Stand terminology contract, and CI workflow inventory.
 

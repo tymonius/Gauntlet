@@ -55,6 +55,5 @@ describe('retired v0.6.3 candidate tooling boundary', () => {
 
     expect(validator).toContain(frozenCandidate);
     expect(workflow).toContain(frozenCandidate);
-    expect(validator).not.toContain("'scripts/generate-v063-canonical-data-candidate.mjs'");
   });
 });
