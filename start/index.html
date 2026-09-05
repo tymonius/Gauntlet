@@ -39,7 +39,7 @@
   <link rel="preconnect" href="https://p.typekit.net" crossorigin />
   <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
   <link rel="stylesheet" href="../site.css" />
-  <link rel="stylesheet" href="styles.css?v=20260731-2" />
+  <link rel="stylesheet" href="styles.css?v=20260905-3" />
   <link rel="stylesheet" href="/site-footer.css?v=20260902-2" />
   <link rel="stylesheet" href="/site-polish.css?v=20260902-1" />
 </head>
@@ -212,31 +212,31 @@
       </div>
 
       <div id="factionLessonEmpty" class="partner-note">
-        <strong>Choose a faction and Leader above.</strong>
-        <span>Your lesson will appear here. You do not need to learn the other five factions before playing.</span>
+        <strong>Choose a faction above.</strong>
+        <span>Your faction lesson will appear here. Choose a Leader as well and it will add first-game guidance tailored to that Leader.</span>
       </div>
 
       <div id="factionLesson" hidden>
-        <article class="intro-overview">
+        <article class="intro-overview faction-lesson-hero">
           <p id="factionLessonEyebrow" class="eyebrow">Your faction</p>
           <h3 id="factionLessonTitle"></h3>
           <p id="factionLessonIntro"></p>
         </article>
 
-        <div class="intro-grid">
+        <div class="intro-grid faction-lesson-grid">
           <article class="intro-card">
             <span>01</span>
             <h3>How it fits into Gauntlet</h3>
-            <ol id="factionLessonSteps"></ol>
+            <ul id="factionLessonSteps"></ul>
           </article>
           <article class="intro-card objective-card">
             <span>02</span>
-            <h3>How your faction can win</h3>
-            <p id="factionLessonVictory"></p>
+            <h3>Your ways to win</h3>
+            <div id="factionLessonVictory" class="victory-lines"></div>
           </article>
         </div>
 
-        <article class="intro-overview">
+        <article class="intro-overview faction-leader-lesson">
           <p class="eyebrow">Your Leader</p>
           <h3 id="leaderLessonTitle"></h3>
           <p id="leaderLessonAbility"></p>
@@ -322,6 +322,6 @@
     </nav>
   </footer>
 
-  <script src="app.js?v=20260905-4" defer></script>
+  <script src="app.js?v=20260905-5" defer></script>
 </body>
 </html>

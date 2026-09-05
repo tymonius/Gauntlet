@@ -7,13 +7,16 @@
       summary: "Win battles and keep the pressure on.",
       lesson: {
         title: "Military: win battles, then spend the momentum.",
-        intro: "Military adds one small resource: Command. The first time you win a battle each turn, gain 1 Command, up to 2. Spend Command on the three Orders printed on your Leader.",
-        steps: [
-          "Play normal Gauntlet until you win a battle. That first win gives you 1 Command—even if it happens while defending on the opponent's turn.",
-          "Watch your Leader Card for the moments when an Order can be used. Orders spend Command to move farther, strengthen a battle, push an enemy farther back, or secure ground.",
-          "Command caps at 2, so it is meant to be spent. Turn wins into immediate battlefield advantage instead of saving it forever."
+        intro: "Military turns the battles you win into Command, a small pool of momentum spent through your Leader's Orders. It does not add a second game plan; it makes the shared battlefield game more forceful.",
+        fit: [
+          "Winning battles builds Command, which you spend on the Orders printed on your Leader.",
+          "The General turns that momentum into attack and pursuit; the Commandant turns it into defense and counterattack.",
+          "You are still playing the same territorial tug-of-war as everyone else. Military simply gives you more leverage from the fights you win."
         ],
-        victory: "Military has no separate alternate victory. Everything it does helps you Run the Gauntlet: capture the Territory at the opponent's end or win their Last Stand."
+        victory: {
+          gauntlet: "Capture the Territory at the opponent's end or win their Last Stand.",
+          faction: "None. Military wins only by running the Gauntlet."
+        }
       },
       leaders: [
         {
@@ -48,13 +51,16 @@
       summary: "Make deals and force difficult choices.",
       lesson: {
         title: "Diplomats: turn battles into negotiations.",
-        intro: "Diplomats add Influence and Proposals. When a battle is about to begin, you can offer Terms before either player commits battle cards. Your opponent can accept the deal or refuse it and fight.",
-        steps: [
-          "You begin with 1 Influence. An eligible Proposal tells you what you may offer, how much Influence is at stake, and what happens if the opponent accepts or refuses.",
-          "If the opponent accepts, the battle does not happen and the agreement resolves. If they refuse, the battle continues, and the refusal can give you leverage or make the fight more costly for them.",
-          "Accepted or successfully imposed Proposals can become ratified Treaty Articles. Each different Article is visible progress toward your political victory."
+        intro: "Diplomats turn the moment before a battle into a negotiation. Influence and Proposals let you offer the opponent a choice: accept a deal and avoid the fight, or refuse and face the consequences.",
+        fit: [
+          "A battle can become a negotiation before either player commits a Gambit or Tactic.",
+          "Accepting a Proposal can avoid the fight. Refusing means the battle goes ahead with the consequences of saying no.",
+          "Those negotiations build a Peace Treaty alongside the normal push-and-pull over Territory."
         ],
-        victory: "Diplomats can still win by running the Gauntlet. They also win at the start of their turn, after Capture, if they have six different ratified Proposals forming the Peace Treaty."
+        victory: {
+          gauntlet: "Capture the Territory at the opponent's end or win their Last Stand.",
+          faction: "Peace Treaty: have six different Proposals ratified at the start of your turn."
+        }
       },
       leaders: [
         {
@@ -88,14 +94,17 @@
       name: "Financiers",
       summary: "Build wealth and turn it into control.",
       lesson: {
-        title: "Financiers: turn cards into money, then money into property.",
-        intro: "Financiers add an economy to the battlefield. You begin with 2 Capital. Capital is money you spend, Treasury is where you store cards to increase how much Capital you can keep, and Deeds represent ownership of Territories.",
-        steps: [
-          "Put cards you can afford to delay into Treasury. The Territories you control plus the value in Treasury determine how much Capital you can keep.",
-          "Spend Capital to buy Deeds or power faction effects. Each Deed you own produces more Capital at the start of your turn after Capture, so ownership helps fund more ownership.",
-          "As your Treasury grows, your faction reference may give you an extra Action through Financial Capacity. You do not need to memorize that rule now—check the reference when your economy gets large enough."
+        title: "Financiers: turn money into property and influence.",
+        intro: "Financiers add an economy to the battlefield. Treasury cards grow your financial capacity, Capital buys influence and property, and Deeds make ownership matter alongside occupation and control.",
+        fit: [
+          "You care about each Territory in two ways: as ground to fight over and as property whose Deed can be owned.",
+          "Cards placed in your Treasury support a larger economy, while Capital lets you buy Deeds and power faction effects.",
+          "A strong economy can turn battlefield position into lasting ownership without replacing the normal territorial game."
         ],
-        victory: "Financiers can run the Gauntlet normally. They also win immediately through Controlling Interest if they own the Deed to every Territory currently in the Gauntlet."
+        victory: {
+          gauntlet: "Capture the Territory at the opponent's end or win their Last Stand.",
+          faction: "Controlling Interest: own the Deeds to every Territory currently in the Gauntlet."
+        }
       },
       leaders: [
         {
@@ -130,13 +139,16 @@
       summary: "Complete hidden objectives and disrupt plans.",
       lesson: {
         title: "Intelligence: give yourself a secret objective.",
-        intro: "Intelligence adds face-down Missions and a resource called Intel. Start a Mission, play normal Gauntlet while satisfying its hidden requirement, then spend an Action on a later turn to complete it.",
-        steps: [
-          "Keep one normal Mission in progress face down. Your opponent knows a Mission exists, but not what you are trying to accomplish.",
-          "Completed Missions give you Intel and Operation Progress. Spend Intel to inspect an opponent's hidden battle card; with enough Intel, you can remove that choice from the battle and force a replacement.",
-          "As Operation Progress grows, you can eventually prepare a face-down Special Operation. Satisfy its requirement and pay its Intel cost to complete it."
+        intro: "Intelligence adds hidden objectives. Missions reward you for accomplishing secret goals inside the normal game, while Intel lets you read and disrupt the opponent's hidden battle choices.",
+        fit: [
+          "A Mission gives you a private objective to pursue while you are already moving, fighting, and using cards normally.",
+          "Completing Missions builds Intel and Operation Progress. Intel can also expose or interfere with hidden battle choices.",
+          "Your opponent knows you are working toward something, but not exactly what, so ordinary play becomes a layer of misdirection."
         ],
-        victory: "Intelligence can win by running the Gauntlet. Once your Operation Progress exceeds the number of Territories the opponent controls, you can work toward a Special Operation; complete it and pay its Intel cost to win."
+        victory: {
+          gauntlet: "Capture the Territory at the opponent's end or win their Last Stand.",
+          faction: "Special Operation: build enough Operation Progress to make one available, then complete its hidden Mission requirement and pay its Intel cost."
+        }
       },
       leaders: [
         {
@@ -170,14 +182,17 @@
       name: "Mystics",
       summary: "Build combinations and work toward powerful rituals.",
       lesson: {
-        title: "Mystics: complete Rites while playing the normal game.",
-        intro: "Mystics add three public Rites and can turn the Graveyard—normally outside circulation—into part of their engine. Each Rite is a longer objective you begin now and complete later while still playing normal Gauntlet. Completing Rites gradually unlocks more of the faction.",
-        steps: [
-          "For your first turns, focus on one Rite whose requirement fits your cards or battlefield position. Do not try to memorize the whole Rite progression at once.",
-          "When you complete your first Rite, read the ability it unlocks on your faction reference and start using it from then on. Do the same after your second Rite.",
-          "After all three Rites are complete, your faction reference explains the Ritual of Ascension and the final battle you need to win for the alternate victory."
+        title: "Mystics: build toward Rites while playing the normal game.",
+        intro: "Mystics add long-term Rites that sit alongside the normal battlefield game. Completing them gradually unlocks more ways to use Arcane cards and cards that would otherwise be stuck in the Graveyard.",
+        fit: [
+          "Your three selected Rites are longer goals layered over the same turns, movement, and battles everyone uses.",
+          "Each completed Rite unlocks another faction tool, so Mystics become more capable as the game develops.",
+          "Arcane cards and the Graveyard become ingredients for combinations instead of simply cards spent and gone."
         ],
-        victory: "Mystics can run the Gauntlet normally. Complete all three Rites to unlock the Ritual of Ascension; when you reach that point, follow the faction reference to begin the Ritual and win the required battle."
+        victory: {
+          gauntlet: "Capture the Territory at the opponent's end or win their Last Stand.",
+          faction: "Ritual of Ascension: complete all three selected Rites, begin the Ritual, then win a battle you initiate while its three required cards remain bound."
+        }
       },
       leaders: [
         {
@@ -212,13 +227,16 @@
       summary: "Permanently strip away the opponent's resources.",
       lesson: {
         title: "Inquisition: make the opponent's battle cards stay gone.",
-        intro: "Normally, Tactics return to the Discard Pile and may be drawn again later. The Inquisition's Condemnation sends opposing Tactics to the Graveyard instead, making those cards permanent losses.",
-        steps: [
-          "The first time each turn opposing cards enter the Graveyard during the aftermath of a battle involving you, gain 1 Conviction, up to 4. You can gain it even when you lost the battle.",
-          "Spend Conviction on Purge to send more of the opponent's resources—such as Assets, cards in Hand, or cards they could draw again—to the Graveyard.",
-          "The longer this continues, the fewer recoverable cards the opponent has. Ordinary battles become an attrition engine even when the battlefield itself is not moving."
+        intro: "The Inquisition turns ordinary card losses into lasting attrition. Opposing Tactics can be condemned to the Graveyard, and those permanent losses help fuel Purges that strip away more resources.",
+        fit: [
+          "Against the Inquisition, battle cards are harder to recycle because opposing Tactics can be condemned to the Graveyard.",
+          "Those permanent losses build Conviction, which powers Purges that remove more of the opponent's recoverable resources.",
+          "You are still fighting over Territory, but every battle can also make the opponent's Deck thinner and less able to recover."
         ],
-        victory: "Inquisition can run the Gauntlet normally. It also wins by Purification if the opponent reaches the start of their turn unable to draw because both their Draw Pile and Discard Pile are empty."
+        victory: {
+          gauntlet: "Capture the Territory at the opponent's end or win their Last Stand.",
+          faction: "Purification: leave the opponent unable to make their normal start-of-turn draw because both their Draw Pile and Discard Pile are empty."
+        }
       },
       leaders: [
         {
@@ -362,7 +380,8 @@
       copy.className = "leader-copy";
       const name = document.createElement("strong");
       name.textContent = leader.name;
-      const summary = document.createElement("small");
+      const summary = document.createElement("span");
+      summary.className = "leader-summary";
       summary.textContent = leader.summary;
       copy.append(name, summary);
       label.append(input, portrait, copy);
@@ -387,21 +406,25 @@
     if (!faction?.lesson) {
       el.factionLessonEmpty.hidden = false;
       el.factionLesson.hidden = true;
+      el.factionLesson.removeAttribute("data-faction");
       return;
     }
 
     el.factionLessonEmpty.hidden = true;
     el.factionLesson.hidden = false;
+    el.factionLesson.dataset.faction = state.factionId;
     el.factionLessonEyebrow.textContent = `${faction.name} · your extra system`;
     el.factionLessonTitle.textContent = faction.lesson.title;
     el.factionLessonIntro.textContent = faction.lesson.intro;
-    el.factionLessonVictory.textContent = faction.lesson.victory;
+    el.factionLessonVictory.innerHTML = `
+      <span class="victory-line"><strong>Run the Gauntlet</strong><span>${escapeHtml(faction.lesson.victory.gauntlet)}</span></span>
+      <span class="victory-line"><strong>Faction victory</strong><span>${escapeHtml(faction.lesson.victory.faction)}</span></span>`;
     el.factionGuideLink.href = `../factions/${state.factionId}/`;
     el.factionGuideLink.textContent = `Open the full ${faction.name} guide ↗`;
 
-    el.factionLessonSteps.replaceChildren(...faction.lesson.steps.map(step => {
+    el.factionLessonSteps.replaceChildren(...faction.lesson.fit.map(point => {
       const item = document.createElement("li");
-      item.textContent = step;
+      item.textContent = point;
       return item;
     }));
 
