@@ -49,7 +49,7 @@
     <a class="brand" href="/" aria-label="Gauntlet home">
       <span class="brand-mark" aria-hidden="true">G</span>
       <span>Gauntlet</span>
-          <span class="site-edition-badge" aria-label="Current playtest edition v0.7.1">v0.7.1</span>
+      <span class="site-edition-badge" aria-label="Current playtest edition v0.7.1">v0.7.1</span>
     </a>
     <nav aria-label="Primary navigation">
       <a href="/start/">Start</a>
@@ -67,7 +67,7 @@
       <div>
         <p class="eyebrow">New to Gauntlet? Start here.</p>
         <h1 id="start-title">Your first game <span>starts here.</span></h1>
-        <p class="hero-lede">Learn the simple core of the game, choose a side, and start playing. You can look up the details when you need them.</p>
+        <p class="hero-lede">Learn the simple core of the game, choose a side, learn the one extra layer your side adds, and start playing. You can look up the details when you need them.</p>
         <div class="hero-actions">
           <a class="button primary" href="#overview">Begin</a>
           <a class="button secondary" href="../rulebook/">Open the rulebook</a>
@@ -77,7 +77,8 @@
         <li><span>1</span><strong>Know the goal</strong><small>See the battlefield and how you win.</small></li>
         <li><span>2</span><strong>Choose a side</strong><small>Pick a faction and one of its two Leaders.</small></li>
         <li><span>3</span><strong>Learn to play</strong><small>See what you do on a turn and in a battle.</small></li>
-        <li><span>4</span><strong>Play</strong><small>Set up a physical or Tabletop Simulator game.</small></li>
+        <li><span>4</span><strong>Learn your faction</strong><small>See the one extra system your chosen side adds.</small></li>
+        <li><span>5</span><strong>Play</strong><small>Set up a physical or Tabletop Simulator game.</small></li>
       </ol>
     </section>
 
@@ -122,34 +123,34 @@
           <p class="eyebrow">Step 2 · Choose a side</p>
           <h2 id="choose-title">Which institution will you lead?</h2>
         </div>
-        <p>Pick the faction and Leader that sound fun. A ready-made starter Deck handles the rest; you do not need to learn all six factions.</p>
+        <p>Pick what sounds fun. You will learn only your chosen faction after the shared rules, and a ready-made starter Deck handles deckbuilding for you.</p>
       </div>
 
       <fieldset class="faction-fieldset">
         <legend>Choose a faction</legend>
         <div class="faction-choice-grid">
           <article class="faction-choice military">
-            <label><input type="radio" name="faction" value="military" required /><span class="choice-mark faction-symbol-asset" aria-hidden="true" style="--faction-symbol:url('/images/faction-symbols/military.svg')"></span><strong>Military</strong><small>Push hard, control movement, and turn battlefield wins into momentum.</small></label>
+            <label><input type="radio" name="faction" value="military" required /><span class="choice-mark faction-symbol-asset" aria-hidden="true" style="--faction-symbol:url('/images/faction-symbols/military.svg')"></span><strong>Military</strong><small>Win battles and keep the pressure on.</small></label>
             <a href="../factions/military/" target="_blank" rel="noopener" aria-label="Explore the full guide — Military faction (opens in a new tab)">Explore the full guide ↗</a>
           </article>
           <article class="faction-choice diplomats">
-            <label><input type="radio" name="faction" value="diplomats" /><span class="choice-mark faction-symbol-asset" aria-hidden="true" style="--faction-symbol:url('/images/faction-symbols/diplomats.svg')"></span><strong>Diplomats</strong><small>Make deals, force difficult choices, and win through negotiation as well as battle.</small></label>
+            <label><input type="radio" name="faction" value="diplomats" /><span class="choice-mark faction-symbol-asset" aria-hidden="true" style="--faction-symbol:url('/images/faction-symbols/diplomats.svg')"></span><strong>Diplomats</strong><small>Make deals and force difficult choices.</small></label>
             <a href="../factions/diplomats/" target="_blank" rel="noopener" aria-label="Explore the full guide — Diplomats faction (opens in a new tab)">Explore the full guide ↗</a>
           </article>
           <article class="faction-choice financiers">
-            <label><input type="radio" name="faction" value="financiers" /><span class="choice-mark faction-symbol-asset" aria-hidden="true" style="--faction-symbol:url('/images/faction-symbols/financiers.svg')"></span><strong>Financiers</strong><small>Build resources, buy advantages, and turn battlefield control into lasting power.</small></label>
+            <label><input type="radio" name="faction" value="financiers" /><span class="choice-mark faction-symbol-asset" aria-hidden="true" style="--faction-symbol:url('/images/faction-symbols/financiers.svg')"></span><strong>Financiers</strong><small>Build wealth and turn it into control.</small></label>
             <a href="../factions/financiers/" target="_blank" rel="noopener" aria-label="Explore the full guide — Financiers faction (opens in a new tab)">Explore the full guide ↗</a>
           </article>
           <article class="faction-choice intelligence">
-            <label><input type="radio" name="faction" value="intelligence" /><span class="choice-mark faction-symbol-asset" aria-hidden="true" style="--faction-symbol:url('/images/faction-symbols/intelligence.svg')"></span><strong>Intelligence</strong><small>Gather information, interfere with plans, and stay a step ahead.</small></label>
+            <label><input type="radio" name="faction" value="intelligence" /><span class="choice-mark faction-symbol-asset" aria-hidden="true" style="--faction-symbol:url('/images/faction-symbols/intelligence.svg')"></span><strong>Intelligence</strong><small>Complete hidden objectives and disrupt plans.</small></label>
             <a href="../factions/intelligence/" target="_blank" rel="noopener" aria-label="Explore the full guide — Intelligence faction (opens in a new tab)">Explore the full guide ↗</a>
           </article>
           <article class="faction-choice mystics">
-            <label><input type="radio" name="faction" value="mystics" /><span class="choice-mark faction-symbol-asset" aria-hidden="true" style="--faction-symbol:url('/images/faction-symbols/mystics.svg')"></span><strong>Mystics</strong><small>Transform cards, build strange combinations, and work toward powerful rituals.</small></label>
+            <label><input type="radio" name="faction" value="mystics" /><span class="choice-mark faction-symbol-asset" aria-hidden="true" style="--faction-symbol:url('/images/faction-symbols/mystics.svg')"></span><strong>Mystics</strong><small>Build combinations and work toward powerful rituals.</small></label>
             <a href="../factions/mystics/" target="_blank" rel="noopener" aria-label="Explore the full guide — Mystics faction (opens in a new tab)">Explore the full guide ↗</a>
           </article>
           <article class="faction-choice inquisition">
-            <label><input type="radio" name="faction" value="inquisition" /><span class="choice-mark faction-symbol-asset" aria-hidden="true" style="--faction-symbol:url('/images/faction-symbols/inquisition.svg')"></span><strong>Inquisition</strong><small>Shut down enemy options, punish overreach, and grind away their resources.</small></label>
+            <label><input type="radio" name="faction" value="inquisition" /><span class="choice-mark faction-symbol-asset" aria-hidden="true" style="--faction-symbol:url('/images/faction-symbols/inquisition.svg')"></span><strong>Inquisition</strong><small>Permanently strip away the opponent's resources.</small></label>
             <a href="../factions/inquisition/" target="_blank" rel="noopener" aria-label="Explore the full guide — Inquisition faction (opens in a new tab)">Explore the full guide ↗</a>
           </article>
         </div>
@@ -200,10 +201,60 @@
       </div>
     </section>
 
+    <section id="learnFaction" class="section intro-section" aria-labelledby="learn-faction-title">
+      <div class="section-heading split-heading">
+        <div>
+          <p class="eyebrow">Step 4 · Learn your faction</p>
+          <h2 id="learn-faction-title">Now add one more layer.</h2>
+        </div>
+        <p>You already know Gauntlet. This section teaches only what your chosen faction adds to that shared game, then gives first-game guidance for your chosen Leader.</p>
+      </div>
+
+      <div id="factionLessonEmpty" class="partner-note">
+        <strong>Choose a faction and Leader above.</strong>
+        <span>Your lesson will appear here. You do not need to learn the other five factions before playing.</span>
+      </div>
+
+      <div id="factionLesson" hidden>
+        <article class="intro-overview">
+          <p id="factionLessonEyebrow" class="eyebrow">Your faction</p>
+          <h3 id="factionLessonTitle"></h3>
+          <p id="factionLessonIntro"></p>
+        </article>
+
+        <div class="intro-grid">
+          <article class="intro-card">
+            <span>01</span>
+            <h3>How it fits into Gauntlet</h3>
+            <ol id="factionLessonSteps"></ol>
+          </article>
+          <article class="intro-card objective-card">
+            <span>02</span>
+            <h3>How your faction can win</h3>
+            <p id="factionLessonVictory"></p>
+          </article>
+        </div>
+
+        <article class="intro-overview">
+          <p class="eyebrow">Your Leader</p>
+          <h3 id="leaderLessonTitle"></h3>
+          <p id="leaderLessonAbility"></p>
+          <p><strong>In your first game:</strong></p>
+          <ul id="leaderLessonTips"></ul>
+          <p><a id="factionGuideLink" class="text-link" href="../factions/">Open the full faction guide ↗</a></p>
+        </article>
+
+        <div class="partner-note">
+          <strong>That's your extra layer.</strong>
+          <span>You do not need to master every faction card before starting. Play the normal game, use this system when it comes up, and read individual cards as you encounter them.</span>
+        </div>
+      </div>
+    </section>
+
     <section id="print" class="section print-section" aria-labelledby="print-title">
       <div class="section-heading split-heading">
         <div>
-          <p class="eyebrow">Step 4 · Play</p>
+          <p class="eyebrow">Step 5 · Play</p>
           <h2 id="print-title">Take your chosen side into a game.</h2>
         </div>
         <p>If you're together, use the physical game. If you're in different locations, use Tabletop Simulator.</p>
@@ -270,6 +321,6 @@
     </nav>
   </footer>
 
-  <script src="app.js?v=20260905-1" defer></script>
+  <script src="app.js?v=20260905-2" defer></script>
 </body>
 </html>
