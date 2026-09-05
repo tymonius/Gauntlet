@@ -15,10 +15,12 @@ export default {
     if (!contentType.includes("text/html")) return response;
 
     const html = await response.text();
+    const headers = new Headers(response.headers);
+    headers.delete("Content-Length");
     return new Response(enhanceRulesTriageAdmin(html), {
       status: response.status,
       statusText: response.statusText,
-      headers: response.headers
+      headers
     });
   }
 };
