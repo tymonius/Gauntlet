@@ -46,6 +46,22 @@ export function pendingV070ReembodimentRecovery(
   return state.pendingReembodimentRecovery ?? null;
 }
 
+export function v070ReembodimentRecoveryCandidateInstanceIds(
+  state: V070GameState,
+  playerId: PlayerId,
+  triggerValue: number,
+  triggeringArcaneInstanceId: string,
+): string[] {
+  return state.players[playerId].zones.graveyard.filter(instanceId => {
+    if (instanceId === triggeringArcaneInstanceId) return false;
+    const instance = state.cardInstances[instanceId];
+    const card = instance
+      ? v070CanonicalContent.cardsById.get(instance.cardId)
+      : undefined;
+    return Boolean(card && card.cost < triggerValue);
+  });
+}
+
 export function recordV070ReembodimentQualifyingTransition(
   state: V070GameState,
   playerId: PlayerId,
@@ -125,7 +141,7 @@ export function recordV070ReembodimentQualifyingTransition(
     return null;
   }
 
-  return {
+  const continuation: V070ReembodimentContinuation = {
     type: 'apply_reembodiment_recovery',
     playerId,
     assetInstanceId,
@@ -135,6 +151,30 @@ export function recordV070ReembodimentQualifyingTransition(
     sourceLabel,
     duringBattle,
   };
+
+  // Subversion answers an opposing Asset effect that would apply. If there is
+  // no legal lower-value card after the controlled effect resolves,
+  // Reembodiment has no applicable recovery effect and opens no reaction.
+  if (v070ReembodimentRecoveryCandidateInstanceIds(
+    state,
+    playerId,
+    trigger.value,
+    trigger.instanceId,
+  ).length === 0) {
+    appendV070Event(state, {
+      type: 'reembodiment_unavailable',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        sourceLabel,
+        reason: 'no_lower_value_graveyard_card',
+        triggerValue: trigger.value,
+      },
+    });
+    return null;
+  }
+
+  return continuation;
 }
 
 export function openV070ReembodimentRecovery(
@@ -156,15 +196,12 @@ export function openV070ReembodimentRecovery(
     return false;
   }
 
-  const candidates = state.players[continuation.playerId].zones.graveyard
-    .filter(instanceId => {
-      if (instanceId === continuation.triggeringArcaneInstanceId) return false;
-      const instance = state.cardInstances[instanceId];
-      const card = instance
-        ? v070CanonicalContent.cardsById.get(instance.cardId)
-        : undefined;
-      return Boolean(card && card.cost < continuation.triggerValue);
-    });
+  const candidates = v070ReembodimentRecoveryCandidateInstanceIds(
+    state,
+    continuation.playerId,
+    continuation.triggerValue,
+    continuation.triggeringArcaneInstanceId,
+  );
 
   if (candidates.length === 0) {
     appendV070Event(state, {
