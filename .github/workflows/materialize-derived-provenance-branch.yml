@@ -9,10 +9,10 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  materialize:
+  verify-and-inventory:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR branch with full history
@@ -21,174 +21,71 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.head_ref }}
 
-      - name: Append substantiated remediation families
+      - name: Verify materialized batch
         run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-
-          path = Path('.github/asset-provenance-remediation.json')
-          data = json.loads(path.read_text(encoding='utf-8'))
-          if data.get('version') != 2 or not isinstance(data.get('batches'), list):
-              raise SystemExit('expected version 2 remediation manifest')
-
-          checkpoint = 'a630d550370d6f87ce069bcd6681901011130750'
-          openai_rights = (
-              "Project use authorized by Tymon Scott. OpenAI Terms of Use assign to the user "
-              "OpenAI's right, title, and interest, if any, in Output, to the extent permitted by "
-              "applicable law (https://openai.com/policies/terms-of-use/). This record does not "
-              "assert copyrightability, uniqueness, or absence of third-party rights."
-          )
-
-          additions = [
-              {
-                  'id': 'leader-card-derivatives-2026-09-05',
-                  'description': 'Historical leader-card crops and wrappers derived from already-resolved Gauntlet leader artwork.',
-                  'defaults': {
-                      'origin': 'project-created',
-                      'creator': 'Tymon Scott / Gauntlet project',
-                      'source': (
-                          'Repository history identifies these files as leader-card crops/cleanups of the established '
-                          'Gauntlet leader artwork. Representative SVG wrappers directly embed the corresponding '
-                          'already-governed leader image (for example images/leader-cards/alchemist.svg embeds '
-                          '../alchemist.png). July 18, 2026 history includes commits such as a144d3392304b6527700d981369934c4a4caca83 '
-                          '(Add Alchemist leader-card crop) and 75ccfacc71b7dd596bce7a85b7ea05000b5833ab '
-                          '(Add Spirit Walker leader-card crop), plus crop-header cleanup commits for other leaders.'
-                      ),
-                      'rights': (
-                          'Project-created derivative presentation/crop of Gauntlet leader artwork whose source '
-                          'provenance is already explicit in this ledger. No additional third-party source artwork '
-                          'is known to have been incorporated.'
-                      ),
-                      'notes': 'This record covers the crop/wrapper asset; underlying leader artwork provenance remains independently governed.'
-                  },
-                  'evidence_basis': {
-                      'repository_history': 'images/leader-cards history on 2026-07-18, including explicit leader-card crop and crop-cleanup commits.',
-                      'repository_structure': 'SVG variants directly reference the corresponding governed leader artwork.',
-                      'identity_commit': checkpoint
-                  },
-                  'asset_prefixes': ['images/leader-cards/']
-              },
-              {
-                  'id': 'card-back-pattern-derived-2026-09-05',
-                  'description': 'Deterministic monochrome card-back lattice composed from the active faction symbols.',
-                  'defaults': {
-                      'origin': 'project-created',
-                      'creator': 'Tymon Scott / Gauntlet project',
-                      'source': (
-                          'Repository history documents card-design/card-back-pattern.svg as a deterministic, '
-                          'self-contained, flattened vector card-back pattern assembled from the approved faction '
-                          'symbol paths. Relevant history includes commits 1cbdae298e9a76cc6f9e1401d14578609186eb90 '
-                          '(Flatten card-back symbol pattern into one SVG surface), fd860f5637bce62f509e5d94b90b6c0f039dca85 '
-                          '(Make card-back pattern self-contained and bake its rotation), and '
-                          'b0eb132938514a2f18f0c60b7909c23f2bad64f6 (Restore deterministic monochrome card-back pattern).'
-                      ),
-                      'rights': 'Project-created deterministic composite using active faction symbols whose provenance is separately governed in this ledger.'
-                  },
-                  'evidence_basis': {
-                      'repository_history': 'Documented flattened/self-contained card-back symbol pattern history on 2026-09-03.',
-                      'identity_commit': checkpoint
-                  },
-                  'assets': [{'path': 'card-design/card-back-pattern.svg'}]
-              },
-              {
-                  'id': 'deckbuilder-qr-derived-2026-09-05',
-                  'description': 'Project-generated QR code for the canonical Gauntlet deckbuilder URL.',
-                  'defaults': {
-                      'origin': 'project-created',
-                      'creator': 'Tymon Scott / Gauntlet project',
-                      'source': (
-                          'Repository history documents images/qr/gauntlet-v0.6-deckbuilder.svg as the Gauntlet '
-                          'deckbuilder QR code and repeatedly updates/restores its destination to gauntlet.run. '
-                          'Relevant commits include e3d03c68c182c4ea61947019485b4b09f7ca07b9, '
-                          'f8577f4bcc717577c2b9380ce7717b9bfb6fe168, 75045d622a8225e9141533c1ecaa62fd276e565b, '
-                          'and 61586adee38266f77a5219f0dedc10a585be138b.'
-                      ),
-                      'rights': 'Project-generated functional encoding of the project-controlled deckbuilder URL; no third-party creative source artwork is incorporated.'
-                  },
-                  'evidence_basis': {
-                      'repository_history': 'Canonical v0.6 release and deckbuilder QR destination-update history.',
-                      'identity_commit': checkpoint
-                  },
-                  'assets': [{'path': 'images/qr/gauntlet-v0.6-deckbuilder.svg'}]
-              },
-              {
-                  'id': 'command-tent-gameplay-painting-2026-09-05',
-                  'description': 'Generated homepage gameplay-showcase painting.',
-                  'defaults': {
-                      'origin': 'generated',
-                      'creator': 'OpenAI image generation, directed and selected by Tymon Scott',
-                      'source': (
-                          'Gauntlet project conversation on 2026-07-29 records creation of a painted command-tent '
-                          'gameplay showcase matching the established Gauntlet art style; the resulting generated '
-                          'gameplay artwork was named gauntlet-command-tent-gameplay-painting and added to the '
-                          'repository in commit d4cedd89f6db666df86c93e3d76fbe17358d4e5d. The current WebP is the '
-                          'restored/optimized repository form of that project artwork.'
-                      ),
-                      'rights': openai_rights
-                  },
-                  'evidence_basis': {
-                      'project_conversation': 'Gauntlet homepage/gameplay artwork work on 2026-07-29.',
-                      'repository_history': 'd4cedd89f6db666df86c93e3d76fbe17358d4e5d and later restore history.',
-                      'identity_commit': checkpoint,
-                      'rights_reference': 'https://openai.com/policies/terms-of-use/'
-                  },
-                  'assets': [{'path': 'images/artwork/site/gauntlet-command-tent-gameplay-painting.webp'}]
-              },
-              {
-                  'id': 'mystics-rite-completed-composite-2026-09-05',
-                  'description': 'Completed-side Mystics Rite graphic composed for Gauntlet from generated residue parchment and licensed outlined/display typography.',
-                  'defaults': {
-                      'origin': 'project-created',
-                      'creator': 'Tymon Scott / Gauntlet project, using OpenAI-generated source imagery',
-                      'source': (
-                          'Gauntlet project conversation on 2026-08-13/14 records the iterative creation and user '
-                          'selection of the Mystics Rite completed-side parchment/residue image, followed by adding '
-                          'the word Completed in P22 Declaration Pro rather than relying on generated text. The '
-                          'repository file images/artwork/supplemental/mystics/rite-completed.webp is the resulting '
-                          'supplemental graphic; repository history includes full-resolution restoration on 2026-08-14.'
-                      ),
-                      'rights': (
-                          "Project-created composite. The source image-generation stage is covered by OpenAI Terms "
-                          "of Use (https://openai.com/policies/terms-of-use/). Adobe Fonts permits commercial design "
-                          "and logo/display use of licensed fonts and conversion to outlines/raster in finished "
-                          "graphics; font software is not redistributed under this record. See "
-                          "https://helpx.adobe.com/fonts/web/font-licensing/font-licensing.html. This record does not "
-                          "assert copyrightability, uniqueness, or absence of third-party rights."
-                      ),
-                      'notes': 'The finished supplemental graphic is governed as a project composite; generated image residue and typography licensing are documented as component provenance.'
-                  },
-                  'evidence_basis': {
-                      'project_conversation': 'Mystics completed-side graphic development and selection, 2026-08-13/14.',
-                      'repository_history': 'Full-resolution Rite artwork restore/upload history on 2026-08-14.',
-                      'identity_commit': checkpoint,
-                      'rights_reference': 'https://openai.com/policies/terms-of-use/',
-                      'font_license_reference': 'https://helpx.adobe.com/fonts/web/font-licensing/font-licensing.html'
-                  },
-                  'assets': [{'path': 'images/artwork/supplemental/mystics/rite-completed.webp'}]
-              }
-          ]
-
-          existing_ids = {batch.get('id') for batch in data['batches']}
-          for batch in additions:
-              if batch['id'] not in existing_ids:
-                  data['batches'].append(batch)
-          path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
-          PY
-
-      - name: Materialize and validate
-        run: |
-          python .github/scripts/materialize-asset-provenance.py --write
+          python .github/scripts/materialize-asset-provenance.py --check
           python .github/scripts/validate-asset-provenance.py
 
-      - name: Commit manifest and ledger
+      - name: Inventory remaining unresolved assets
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .github/asset-provenance-remediation.json .github/asset-provenance.json
-          if git diff --cached --quiet; then
-            echo "No materialization changes."
-          else
-            git commit -m "Materialize derived asset provenance batch"
-            git push origin HEAD:${{ github.head_ref }}
-          fi
+          python - <<'PY'
+          import collections
+          import json
+          import pathlib
+          import subprocess
+
+          policy = json.loads(pathlib.Path('.github/asset-provenance.json').read_text(encoding='utf-8'))
+          rules = policy['policy']
+          baseline = policy['baseline_commit']
+          extensions = {ext.lower() for ext in rules['extensions']}
+          ignored = tuple(p.rstrip('/') for p in rules.get('ignored_paths', []))
+          recorded = {r['path'] for r in policy.get('assets', [])}
+
+          def git(*args):
+              return subprocess.run(['git', *args], check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.strip()
+
+          def is_ignored(path):
+              return any(path == p or path.startswith(p + '/') for p in ignored)
+
+          governed = set()
+          for root in rules['governed_roots']:
+              for rel in git('ls-files', '--', root).splitlines():
+                  if rel and not is_ignored(rel) and pathlib.Path(rel).suffix.lower() in extensions:
+                      governed.add(rel)
+
+          unresolved = []
+          anomalies = []
+          for rel in sorted(governed - recorded):
+              present = subprocess.run(['git', 'cat-file', '-e', f'{baseline}:{rel}'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
+              if not present:
+                  anomalies.append((rel, 'not present at baseline'))
+                  continue
+              if git('rev-parse', f'{baseline}:{rel}') != git('hash-object', rel):
+                  anomalies.append((rel, 'changed from baseline'))
+                  continue
+              unresolved.append(rel)
+
+          groups = collections.Counter()
+          for rel in unresolved:
+              parts = rel.split('/')
+              if rel.startswith('images/artwork/') and len(parts) >= 3:
+                  groups['images/artwork/' + parts[2] + '/'] += 1
+              elif rel.startswith('images/3d/2d assets/'):
+                  groups['images/3d/2d assets/'] += 1
+              elif len(parts) >= 2:
+                  groups['/'.join(parts[:2]) + '/'] += 1
+              else:
+                  groups[parts[0]] += 1
+
+          print(f'GOVERNED={len(governed)} EXPLICIT={len(recorded)} UNRESOLVED={len(unresolved)} ANOMALIES={len(anomalies)}')
+          print('GROUPS')
+          for group, count in sorted(groups.items()):
+              print(f'{count:3}  {group}')
+          print('UNRESOLVED PATHS')
+          for rel in unresolved:
+              print(rel)
+          if anomalies:
+              print('ANOMALIES')
+              for rel, reason in anomalies:
+                  print(f'{rel}: {reason}')
+          PY
