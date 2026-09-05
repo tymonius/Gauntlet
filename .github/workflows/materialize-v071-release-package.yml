@@ -14,12 +14,10 @@ on:
       - images/artwork/cards/**
       - images/artwork/card-backgrounds/**
       - design-tokens.css
-      - rulebook-design/**
-      - rulebook-production/**
+      - legacy/v0.6.1-rulebook-publication/**
       - scripts/build-v071-release-source.mjs
       - scripts/render-v071-booklet.mjs
-      - scripts/build-v063-rulebook-production.py
-      - scripts/run-v063-rulebook-renderer.mjs
+      - scripts/build-rulebook-production.py
       - scripts/run-v071-rulebook-renderer.mjs
       - images/sketches/**
       - .github/workflows/materialize-v071-release-package.yml
@@ -35,12 +33,10 @@ on:
       - images/artwork/cards/**
       - images/artwork/card-backgrounds/**
       - design-tokens.css
-      - rulebook-design/**
-      - rulebook-production/**
+      - legacy/v0.6.1-rulebook-publication/**
       - scripts/build-v071-release-source.mjs
       - scripts/render-v071-booklet.mjs
-      - scripts/build-v063-rulebook-production.py
-      - scripts/run-v063-rulebook-renderer.mjs
+      - scripts/build-rulebook-production.py
       - scripts/run-v071-rulebook-renderer.mjs
       - images/sketches/**
       - .github/workflows/materialize-v071-release-package.yml
@@ -90,7 +86,7 @@ jobs:
       - name: Render approved v0.7.1 Rulebook booklet
         run: |
           node --check scripts/render-v071-booklet.mjs
-          python -m py_compile scripts/build-v063-rulebook-production.py
+          python -m py_compile scripts/build-rulebook-production.py
           node --check scripts/run-v071-rulebook-renderer.mjs
           node scripts/render-v071-booklet.mjs
 

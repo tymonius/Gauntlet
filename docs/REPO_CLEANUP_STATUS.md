@@ -128,9 +128,15 @@ PR: [#1470](https://github.com/tymonius/Gauntlet/pull/1470). Branch: `cleanup/re
 
 CI is green. Next: audit other active version-named validators individually before deciding whether they are current contracts or historical reconstruction tooling. The immediate boundary is the Rulebook production adapter described below.
 
-## Rulebook production decision
+## Version-neutral Rulebook production
 
-The maintained release renderers still pass their sources through `scripts/build-v063-rulebook-production.py`, which contains presentation transforms and transient paths introduced for the historical reconstruction. Replacing or generalizing that adapter can change generated Rulebook PDFs and therefore needs an explicit decision about whether visual-output refactoring belongs in this cleanup.
+Branch: `cleanup/version-agnostic-rulebook-production` (stacked on #1470). The user confirmed that durable, version-neutral architecture is a cleanup priority. The maintained v0.7.0 and v0.7.1 renderers now pass their source and release identity explicitly to `scripts/build-rulebook-production.py`; they no longer import the v0.6.3 wrapper, transient path, or renderer. The v0.6.3 entrypoint remains fixed as a historical compatibility wrapper.
+
+This tranche also repairs the publication ownership boundary left after the root compatibility aliases were retired. Current and historical booklet paths address `legacy/v0.6.1-rulebook-publication/` directly, browser runners accept its repository URL prefix, and generated asset references resolve from canonical repository paths. The shared visual system remains identified as v0.6.1 provenance, while active adapters and workflows are independent of a stale rules version.
+
+Validation: the new production-boundary contract and related release/publication tests pass. The v0.7.1 browser pipeline passes source generation and the eight-page visual fidelity gate locally; final PDF pagination is delegated to CI because the local host cannot resolve the external Adobe Typekit resource.
+
+Next: validate the stacked PR in CI, then continue the audit of active version-named validators. Prefer explicit authority/config inputs over embedded release identities, while leaving genuinely historical reproduction contracts pinned.
 
 ## Architectural queue
 

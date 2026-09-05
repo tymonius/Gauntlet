@@ -10,7 +10,10 @@ const root = process.cwd();
 const cleanRulebookPath = 'artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md';
 const publishedRulebookPath = 'releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md';
 const playerChapter11Path = 'rulebook/player-facing/chapter-11.md';
-const playerProductionInputPath = 'rulebook-production/.v063-player-facing-input.md';
+const publicationRoot = 'legacy/v0.6.1-rulebook-publication';
+const publicationUrlPath = 'legacy/v0.6.1-rulebook-publication';
+const productionSourceDir = `${publicationRoot}/rulebook-production`;
+const playerProductionInputPath = `${productionSourceDir}/.v063-player-facing-input.md`;
 const outDir = 'artifacts/reconstruction/clean-v0.6.3/booklet/generated';
 const sourceHtmlPath = `${outDir}/Gauntlet_v0.6.3_Rulebook_Booklet_Source.html`;
 const readingPdfPath = `${outDir}/Gauntlet_v0.6.3_Rulebook_Booklet_Reading_Order.pdf`;
@@ -31,8 +34,8 @@ const hash = (data) => crypto.createHash('sha256').update(data).digest('hex');
 const fileHash = (relative) => hash(bytes(relative));
 const write = (relative, data) => { const target = path.join(root, relative); fs.mkdirSync(path.dirname(target), { recursive: true }); fs.writeFileSync(target, data); };
 
-function run(command, args) {
-  const result = spawnSync(command, args, { cwd: root, env: process.env, stdio: 'inherit' });
+function run(command, args, options = {}) {
+  const result = spawnSync(command, args, { cwd: root, env: options.env || process.env, stdio: 'inherit' });
   if (result.error) throw result.error;
   if (result.status !== 0) throw new Error(`${command} ${args.join(' ')} failed with exit code ${result.status}.`);
 }
@@ -71,8 +74,8 @@ assert(fs.existsSync(path.join(root, coverAsset)), `Missing booklet artwork: ${c
 
 fs.rmSync(path.join(root, outDir), { recursive: true, force: true });
 fs.rmSync(productionDir, { recursive: true, force: true });
-run('python', ['rulebook-design/build_proofs.py']);
-run('python', ['rulebook-production/build_fidelity_gate.py']);
+run('python', [`${publicationRoot}/rulebook-design/build_proofs.py`]);
+run('python', [`${productionSourceDir}/build_fidelity_gate.py`]);
 
 // Verify immutable recovered evidence first. Then hand the complete reviewed
 // player-facing Rulebook to the approved production adapter through a dedicated
@@ -87,9 +90,10 @@ try {
 
 const server = spawn('python', ['-m', 'http.server', '8000'], { cwd: root, env: process.env, stdio: ['ignore', 'ignore', 'inherit'] });
 try {
-  await waitForServer('http://127.0.0.1:8000/rulebook-production/full-rulebook.html');
-  run('node', ['rulebook-production/render_fidelity_gate.mjs']);
-  run('node', ['scripts/run-v063-rulebook-renderer.mjs']);
+  await waitForServer(`http://127.0.0.1:8000/${publicationUrlPath}/rulebook-production/full-rulebook.html`);
+  const publicationEnv = { ...process.env, GAUNTLET_PUBLICATION_PATH: publicationUrlPath };
+  run('node', [`${productionSourceDir}/render_fidelity_gate.mjs`], { env: publicationEnv });
+  run('node', ['scripts/run-v063-rulebook-renderer.mjs'], { env: publicationEnv });
 } finally { server.kill('SIGTERM'); }
 
 const reportFile = path.join(productionDir, 'production-report.json');
@@ -119,7 +123,7 @@ const readingBytes = fs.readFileSync(readerSource);
 const imposedBytes = fs.readFileSync(bookletSource);
 write(readingPdfPath, readingBytes);
 write(imposedPdfPath, imposedBytes);
-write(sourceHtmlPath, fs.readFileSync(path.join(root, 'rulebook-production/full-rulebook.html')));
+write(sourceHtmlPath, fs.readFileSync(path.join(root, productionSourceDir, 'full-rulebook.html')));
 write(productionReportPath, `${JSON.stringify(report, null, 2)}\n`);
 
 const impositionPairs = (report.booklet?.geometry || []).map(item => item.pages);
@@ -139,8 +143,8 @@ const manifest = {
   design: {
     pipeline: 'approved-rulebook-production', approved_design_pr: approvedDesignPr, production_pr: productionPr,
     adapter: 'scripts/build-v063-rulebook-production.py', renderer_adapter: 'scripts/run-v063-rulebook-renderer.mjs',
-    approved_design_sources: ['rulebook-design/build_proofs.py','rulebook-design/proof.css','rulebook-design/render_proofs.mjs'],
-    production_sources: ['rulebook-production/build_rulebook.py','rulebook-production/build_complete_rulebook.py','rulebook-production/paginate_rulebook.mjs','rulebook-production/production.css','rulebook-production/render_rulebook.mjs'],
+    approved_design_sources: [`${publicationRoot}/rulebook-design/build_proofs.py`,`${publicationRoot}/rulebook-design/proof.css`,`${publicationRoot}/rulebook-design/render_proofs.mjs`],
+    production_sources: [`${productionSourceDir}/build_rulebook.py`,`${productionSourceDir}/build_complete_rulebook.py`,`${productionSourceDir}/paginate_rulebook.mjs`,`${productionSourceDir}/production.css`,`${productionSourceDir}/render_rulebook.mjs`],
     fidelity_gate_passed: true,
     typography: { title: report.reader.titleFamily, reading: report.reader.bodyFamily, utility: report.reader.utilityFamily },
     leader_portraits: report.reader.leaderImages.length,

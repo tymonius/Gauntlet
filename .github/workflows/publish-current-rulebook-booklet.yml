@@ -43,7 +43,7 @@ jobs:
       - name: Build and validate approved Rulebook booklet
         run: |
           set -euo pipefail
-          python -m py_compile scripts/build-v063-rulebook-production.py
+          python -m py_compile scripts/build-rulebook-production.py scripts/build-v063-rulebook-production.py
           node --check scripts/run-v063-rulebook-renderer.mjs
           node --check scripts/render-clean-v063-booklet.mjs
           node --check scripts/validate-clean-v063-booklet.mjs

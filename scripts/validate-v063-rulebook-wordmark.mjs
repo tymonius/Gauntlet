@@ -7,8 +7,8 @@ const read = relative => fs.readFileSync(path.join(root, relative), 'utf8').repl
 const exists = relative => fs.existsSync(path.join(root, relative));
 
 const brandPath = 'brand.css';
-const correctionsPath = 'rulebook-production/publication-corrections.css';
-const approvedCoverPath = 'rulebook-design/build_proofs.py';
+const correctionsPath = 'legacy/v0.6.1-rulebook-publication/rulebook-production/publication-corrections.css';
+const approvedCoverPath = 'legacy/v0.6.1-rulebook-publication/rulebook-design/build_proofs.py';
 const brand = read(brandPath);
 const corrections = read(correctionsPath);
 const approvedCover = read(approvedCoverPath);
@@ -19,7 +19,7 @@ for (const layer of layers) {
   assert(brand.includes(`url("/${layer}")`), `Shared brand treatment does not reference canonical wordmark layer: ${layer}`);
 }
 assert(brand.includes('--gauntlet-wordmark-ratio: 1871.79 / 493.58;'), 'Shared brand treatment lost the canonical wordmark aspect ratio.');
-assert(corrections.includes('@import url("../brand.css");'), 'Rulebook publication corrections do not import the shared canonical brand treatment.');
+assert(corrections.includes('@import url("../../../brand.css");'), 'Rulebook publication corrections do not import the shared canonical brand treatment.');
 
 const coverRule = corrections.match(/\.front-cover h1\s*\{([\s\S]*?)\n\}/)?.[1] ?? '';
 assert(coverRule, 'Rulebook publication corrections are missing the front-cover wordmark rule.');

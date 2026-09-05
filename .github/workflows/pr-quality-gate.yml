@@ -76,6 +76,7 @@ jobs:
 
             const booklet = any(
               exact('.github/workflows/build-clean-v063-booklet.yml'),
+              exact('scripts/build-rulebook-production.py'),
               exact('scripts/build-v063-rulebook-production.py'),
               exact('scripts/run-v063-rulebook-renderer.mjs'),
               exact('scripts/render-clean-v063-booklet.mjs'),
@@ -84,8 +85,7 @@ jobs:
               exact('scripts/publication-utils.mjs'),
               exact('rules-assistant/v063-last-stand-language.js'),
               under('rulebook/player-facing/'),
-              under('rulebook-production/'),
-              under('rulebook-design/'),
+              under('legacy/v0.6.1-rulebook-publication/'),
               exact('artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md'),
               exact('releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md'),
               exact('releases/v0.6.3/Gauntlet_v0.6.3_Rulebook_Booklet.pdf'),

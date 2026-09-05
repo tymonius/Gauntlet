@@ -2,7 +2,7 @@
  * These rules preserve the approved PR #357 design language while correcting
  * issues visible only in the complete production document.
  */
-@import url("../brand.css");
+@import url("../../../brand.css");
 
 /* Chapter numerals and titles share an actual typographic baseline. The wider
    numeral column also prevents double-digit chapters from crowding the title. */

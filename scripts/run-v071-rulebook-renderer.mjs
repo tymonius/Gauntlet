@@ -1,8 +1,8 @@
 import { readFile, writeFile } from 'node:fs/promises';
 
-const sourcePath = new URL('../rulebook-production/render_rulebook.mjs', import.meta.url);
-const runtimePath = new URL('../rulebook-production/.render_rulebook_v071_runtime.mjs', import.meta.url);
-let source = await readFile(sourcePath, 'utf8');
+const sourcePath = new URL('../legacy/v0.6.1-rulebook-publication/rulebook-production/render_rulebook.mjs', import.meta.url);
+const runtimePath = new URL('../legacy/v0.6.1-rulebook-publication/rulebook-production/.render_rulebook_v071_runtime.mjs', import.meta.url);
+let source = (await readFile(sourcePath, 'utf8')).replace(/\r\n/g, '\n');
 
 function replaceOnce(label, original, replacement) {
   const count = source.split(original).length - 1;
