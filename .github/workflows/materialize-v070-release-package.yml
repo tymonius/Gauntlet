@@ -15,8 +15,9 @@ on:
       - images/artwork/cards/**
       - images/artwork/card-backgrounds/**
       - design-tokens.css
-      - rulebook-design/**
-      - rulebook-production/**
+      - legacy/v0.6.1-rulebook-publication/rulebook-design/**
+      - legacy/v0.6.1-rulebook-publication/rulebook-production/**
+      - legacy/public-versions/v0.7.0/**
       - scripts/build-v070-release-source.mjs
       - scripts/render-v070-booklet.mjs
       - scripts/build-v063-rulebook-production.py
@@ -36,8 +37,9 @@ on:
       - images/artwork/cards/**
       - images/artwork/card-backgrounds/**
       - design-tokens.css
-      - rulebook-design/**
-      - rulebook-production/**
+      - legacy/v0.6.1-rulebook-publication/rulebook-design/**
+      - legacy/v0.6.1-rulebook-publication/rulebook-production/**
+      - legacy/public-versions/v0.7.0/**
       - scripts/build-v070-release-source.mjs
       - scripts/render-v070-booklet.mjs
       - scripts/build-v063-rulebook-production.py
@@ -82,6 +84,12 @@ jobs:
           sudo apt-get install -y fonts-inter
           fc-match Inter
 
+      - name: Materialize preserved Rulebook publication tooling
+        run: |
+          rm -rf rulebook-design rulebook-production
+          cp -R legacy/v0.6.1-rulebook-publication/rulebook-design ./rulebook-design
+          cp -R legacy/v0.6.1-rulebook-publication/rulebook-production ./rulebook-production
+
       - name: Build v0.7.0 source snapshot
         run: |
           node --check scripts/build-v070-release-source.mjs
@@ -93,6 +101,13 @@ jobs:
           python -m py_compile scripts/build-v063-rulebook-production.py
           node --check scripts/run-v070-rulebook-renderer.mjs
           node scripts/render-v070-booklet.mjs
+
+      - name: Materialize relocated v0.7.0 public route
+        run: |
+          if [ ! -f v0.7.0/index.html ] && [ -f legacy/public-versions/v0.7.0/index.html ]; then
+            mkdir -p v0.7.0
+            cp legacy/public-versions/v0.7.0/index.html v0.7.0/index.html
+          fi
 
       - name: Validate materialized release package
         run: |
@@ -203,7 +218,12 @@ jobs:
 
           pr_number="$(gh pr list --repo "$GITHUB_REPOSITORY" --head "$branch" --base main --state open --json number --jq '.[0].number // empty')"
           if [[ -z "$pr_number" ]]; then
-            if gh pr create               --repo "$GITHUB_REPOSITORY"               --base main               --head "$branch"               --title "Refresh v0.7.0 release package"               --body "Automated rematerialization of the current v0.7.0 release package after publication-source changes landed on main. This updates the tracked Rulebook booklet PDF and its manifest/provenance outputs without bypassing protected-main review."; then
+            if gh pr create \
+              --repo "$GITHUB_REPOSITORY" \
+              --base main \
+              --head "$branch" \
+              --title "Refresh v0.7.0 release package" \
+              --body "Automated rematerialization of the current v0.7.0 release package after publication-source changes landed on main. This updates the tracked Rulebook booklet PDF and its manifest/provenance outputs without bypassing protected-main review."; then
               pr_number="$(gh pr list --repo "$GITHUB_REPOSITORY" --head "$branch" --base main --state open --json number --jq '.[0].number // empty')"
             else
               echo "::warning::GitHub Actions could not open the refresh PR automatically. The branch is ready at $compare_url."
