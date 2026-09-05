@@ -7,6 +7,10 @@ import {
 } from "./admin-refinement-runtime.js";
 import { refinementTriage } from "./refinement-triage.js";
 import { refinementScaffold } from "./refinement-scaffold.js";
+import {
+  applyRefinementResolutionLedger,
+  refinementResolutionLedger
+} from "./refinement-resolution-ledger.js";
 
 export * from "./worker-entry.js";
 
@@ -59,11 +63,12 @@ async function loadRefinementReport(request, env, context, scope) {
     exportResponse.json(),
     intelligenceResponse.json()
   ]);
-  const report = refinementTriage.triageInteractions(
+  const rawReport = refinementTriage.triageInteractions(
     Array.isArray(exportPayload?.interactions) ? exportPayload.interactions : [],
     intelligencePayload || {},
     { scope }
   );
+  const report = applyRefinementResolutionLedger(rawReport, refinementResolutionLedger);
   return { report };
 }
 
