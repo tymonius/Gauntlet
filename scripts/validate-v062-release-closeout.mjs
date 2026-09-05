@@ -16,8 +16,8 @@ const manifest = JSON.parse(read('v0.6.2/release-manifest.json'));
 const changes = read('docs/Gauntlet_v0.6.2_Returning_Player_Changes.md');
 const checklist = read('docs/Gauntlet_v0.6.2_Release_Closeout_Checklist.md');
 const matrix = read('docs/Gauntlet_v0.6.2_Release_Closeout_Test_Matrix.md');
-const factionsSource = read('src/v062/factions.ts');
-const cardsSource = read('src/v062/cards.ts');
+const factionsSource = read('legacy/digital-engine-migration/v0.6.2/factions.ts');
+const cardsSource = read('legacy/digital-engine-migration/v0.6.2/cards.ts');
 const packageJson = JSON.parse(read('package.json'));
 
 assert(manifest.version === 'v0.6.2', `manifest version is ${String(manifest.version)}`);

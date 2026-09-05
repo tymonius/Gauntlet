@@ -2,7 +2,7 @@
 
 > **Temporary working document.** Delete this file when the repository-wide cleanup tracked by [#1430](https://github.com/tymonius/Gauntlet/issues/1430) is complete.
 
-Last updated: 2026-09-04
+Last updated: 2026-09-05
 
 ## What we are doing
 
@@ -73,19 +73,20 @@ Master tracker: [#1430 — Repository cleanup and architecture reorganization](h
 
 Cleanup PRs should link #1430. The issue is the durable queue/history; this file is the compact thread-handoff summary.
 
+## Completed tranche
+
+[#1427 — Quarantine legacy v0.6 playable engine](https://github.com/tymonius/Gauntlet/pull/1427) merged at `a630d550370d6f87ce069bcd6681901011130750`.
+
 ## Current tranche
 
-[#1427 — Quarantine legacy v0.6 playable engine](https://github.com/tymonius/Gauntlet/pull/1427)
+Branch: `cleanup/archive-v062-migration`. Original archival commit: `564e1398`.
 
-Purpose:
+- Preserve all seven v0.6.2 migration implementation/test files under `legacy/digital-engine-migration/v0.6.2/`.
+- Make v0.6.3 self-contained by moving its four required type shapes into its own rules module and removing the obsolete bridge.
+- Point historical validation readers at the archive and exclude archived digital-engine snapshots from full Vitest discovery as well as CI changed-test routing.
+- Keep current gameplay behavior unchanged; the promoted engine remains v0.7.0 against a published v0.7.1 target.
 
-- move the earlier playable v0.6-era `cards`, `effects`, `state`, `types`, and `dev` architecture out of active `src/`;
-- preserve it under `legacy/digital-engine-v06/` as historical/migration evidence;
-- keep legacy runners explicitly opt-in;
-- update validation, CI, documentation, and governance/traceability so archived engine material is not treated as maintained current source;
-- make **no intentional current gameplay/rules behavior change** in this tranche.
-
-This is one subsystem-architecture tranche inside the repo-wide cleanup, not the cleanup project itself.
+Next: audit the remaining v0.6.3 procedure library and historical content adapters against promoted engine coverage. Preserve any still-unpromoted behavior until its role is settled. Gameplay parity work belongs to #741 and must not be silently folded into architectural cleanup.
 
 ## Architectural queue
 

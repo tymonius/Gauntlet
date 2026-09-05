@@ -48,10 +48,11 @@ describe('digital engine boundary', () => {
   });
 
   it('keeps superseded v0.6.2 executable migration code archived', () => {
-    expect(readdirSync('src/v062')).toEqual(['rules.ts']);
-    const bridge = readFileSync('src/v062/rules.ts', 'utf8');
-    expect(bridge).toContain('type-only bridge');
-    expect(bridge).not.toMatch(/\bexport\s+(?:const|function|class)\b/);
+    expect(existsSync('src/v062')).toBe(false);
+    const dependencies = sourceFilesUnder('src').filter((path) =>
+      /(?:from\s*|import\s*\()['"][^'"]*\/v062(?:\/|['"])/.test(readFileSync(path, 'utf8')),
+    );
+    expect(dependencies).toEqual([]);
 
     for (const file of [
       'accepted-terms.test.ts',

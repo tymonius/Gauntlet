@@ -4,7 +4,7 @@ This subtree preserves versioned digital-engine migration implementations that h
 
 ## v0.6.2
 
-`v0.6.2/` contains the superseded v0.6.2 rules/card/faction migration implementation and its tests formerly under `src/v062/`. The still-active v0.6.3 migration layer only requires a small set of its type shapes, which remain temporarily exposed through the type-only `src/v062/rules.ts` bridge until the v0.6.3 procedures are promoted or retired.
+`v0.6.2/` contains the superseded v0.6.2 rules/card/faction migration implementation and its tests formerly under `src/v062/`. The still-active v0.6.3 migration layer now owns the four type shapes it needs in its own rules module; no v0.6.2 bridge remains in active source.
 
 The archived v0.6.2 source and tests are historical provenance, not active engine behavior, and are intentionally outside the default TypeScript/Vitest authority boundary.
 

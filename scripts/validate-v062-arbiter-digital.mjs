@@ -41,8 +41,8 @@ const workerEntry = read("rules-assistant/worker-entry.js");
 const candidateWorker = read("rules-assistant/worker-v062-candidate.js");
 const corpusSource = read("rules-assistant/v062-corpus.js");
 const deterministicSource = read("rules-assistant/rules-deterministic-v062.js");
-const digitalRules = read("src/v062/rules.ts");
-const digitalTests = read("src/v062/rules.test.ts");
+const digitalRules = read("legacy/digital-engine-migration/v0.6.2/rules.ts");
+const digitalTests = read("legacy/digital-engine-migration/v0.6.2/rules.test.ts");
 const contentLoader = read("src/content/v062.ts");
 
 assert(workerEntry.includes('import worker from "./worker-v061.js"'), "historical v0.6.1 worker is not imported");

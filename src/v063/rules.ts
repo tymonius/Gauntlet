@@ -1,16 +1,15 @@
-import type {
-  MovementChoice,
-  PlayerId,
-  TurnPhase,
-  TurnState,
-} from '../v062/rules';
+export type PlayerId = 'A' | 'B';
+export type TurnPhase = 'capture' | 'draw' | 'opening' | 'movement' | 'denouement' | 'cleanup';
+export type MovementChoice = 'advance' | 'hold' | 'fall_back';
 
-export type {
-  MovementChoice,
-  PlayerId,
-  TurnPhase,
-  TurnState,
-} from '../v062/rules';
+export interface TurnState {
+  phase: TurnPhase;
+  actionsAvailable: number;
+  actionsTaken: Record<'opening' | 'denouement', number>;
+  movementRemaining: number;
+  movementSequenceOpen: boolean;
+  pendingBattleCreated: boolean;
+}
 
 export const V063_TURN_SEQUENCE: readonly TurnPhase[] = [
   'capture',
