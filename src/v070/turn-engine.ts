@@ -31,6 +31,9 @@ import {
   type V070ReembodimentContinuation,
 } from './reembodiment';
 import { resolveV070EncampmentEndOfTurn } from './encampment';
+import {
+  resolveV070ProtractedSiegeDepartures,
+} from './protracted-siege';
 
 export * from './turn-engine-postdraw';
 
@@ -208,11 +211,17 @@ function reducePostDrawAndObserveReembodiment(
     resolveV070EncampmentEndOfTurn(prepared, action.playerId);
   }
 
+  const previousPositions = battleOrPlayerPositions(prepared);
   const controlled = reembodimentControlledTurnEffect(prepared, action);
   const beforeHand = controlled
     ? [...prepared.players[controlled.playerId].zones.hand]
     : [];
   const next = reduceV070TurnActionPostDraw(prepared, action);
+  resolveV070ProtractedSiegeDepartures(
+    next,
+    previousPositions,
+    battleOrPlayerPositions(next),
+  );
   if (!controlled) return next;
 
   const moved = beforeHand.filter(instanceId =>
@@ -240,6 +249,17 @@ function reducePostDrawAndObserveReembodiment(
   }
   openV070ReembodimentRecovery(next, continuation);
   return next;
+}
+
+function battleOrPlayerPositions(
+  state: V070GameState,
+): Record<PlayerId, number> {
+  return state.battle
+    ? { ...state.battle.positions }
+    : {
+        A: state.players.A.position,
+        B: state.players.B.position,
+      };
 }
 
 function reembodimentControlledTurnEffect(
