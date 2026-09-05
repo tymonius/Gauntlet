@@ -92,7 +92,13 @@ Next: audit the remaining v0.6.3 procedure library and historical content adapte
 
 ## Follow-up tranche
 
-Branch: `cleanup/archive-v064-content-adapter` (stacked on #1456). Preserve the unused candidate content adapter/test under the existing migration archive; no maintained consumer imports it. This removes the last active source import of reconstruction snapshots. The remaining v0.6.3 procedures stay in place pending a deliberate maintenance/promotion decision.
+PR: [#1458](https://github.com/tymonius/Gauntlet/pull/1458). Branch: `cleanup/archive-v064-content-adapter` (stacked on #1456). Preserve the unused candidate content adapter/test under the existing migration archive; no maintained consumer imports it. This removes the last active source import of reconstruction snapshots. The remaining versioned procedures stay in place pending a deliberate maintenance/promotion decision.
+
+## Next engine decision
+
+Issue #741 still specifies the previous promoted release contract, while the release lifecycle and published manifest identify a newer digital-rules target. Confirm the target before promoting additional procedures; changing the entrypoint version alone would falsely claim parity. The retained library includes copied/repeated-effect machinery with explicit source identity, cost/choice repetition, and chain-depth rules. Its promoted counterparts need deliberate rule and reducer validation, not an import alias.
+
+Safe cleanup completed here does not settle that gameplay migration choice. PR #1456 passed all four CI workflows at `349fef4d`. This follow-up passed TypeScript plus 753 tests in 101 engine/content/boundary files.
 
 ## Architectural queue
 
