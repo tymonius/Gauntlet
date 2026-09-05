@@ -79,8 +79,8 @@ describe("standalone new-player onboarding", () => {
     expect(html).toContain('<ul id="factionLessonSteps"></ul>');
     expect(app.match(/fit:\s*\[/g)).toHaveLength(6);
     expect(app.match(/victory:\s*\{/g)).toHaveLength(6);
-    expect(app).toContain("Run the Gauntlet");
-    expect(app).toContain("Faction victory");
+    expect(app).toContain('<strong>Run the Gauntlet</strong>');
+    expect(app).toContain('<strong>Faction victory</strong>');
     expect(app).not.toContain("Shared victory");
     expect(app).not.toContain("battle involving you");
     expect(css).toContain("#learn .intro-grid>.intro-card:last-child:nth-child(odd){grid-column:1/-1}");
