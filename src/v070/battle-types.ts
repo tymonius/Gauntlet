@@ -221,6 +221,12 @@ export interface V070PoisonousGasAftermathRuntime {
   immediateWinner: PlayerId | null;
 }
 
+export type V070ResistanceOnsetResumeAction =
+  | { type: 'proceed_from_onset'; playerId: PlayerId }
+  | { type: 'pass_terms'; playerId: PlayerId }
+  | { type: 'offer_terms'; playerId: PlayerId; proposalId: string }
+  | { type: 'return_after_ranger_fieldcraft'; playerId: PlayerId };
+
 export type V070SubversionAssetBattleContinuation =
   | {
       type: 'use_plenipotentiary';
@@ -246,6 +252,11 @@ export type V070SubversionAssetBattleContinuation =
       type: 'use_foothold_asset';
       playerId: PlayerId;
       assetInstanceId: string;
+    }
+  | {
+      type: 'apply_resistance_onset_asset';
+      playerId: PlayerId;
+      assetInstanceId: string;
     };
 
 export interface V070SubversionAssetBattleRuntime {
@@ -255,6 +266,7 @@ export interface V070SubversionAssetBattleRuntime {
   effectLabel: string;
   candidateSubversionInstanceIds: string[];
   deferredAction: V070SubversionAssetBattleContinuation;
+  resistanceOnsetResumeAction?: V070ResistanceOnsetResumeAction;
 }
 
 export interface V070BattleRuntime {
@@ -282,6 +294,7 @@ export interface V070BattleRuntime {
   pendingSpiritHollowAftermath: V070SpiritHollowAftermathRuntime | null;
   spiritHollowAftermathPlayers: PlayerId[] | null;
   pendingSubversionAssetBattle: V070SubversionAssetBattleRuntime | null;
+  resistanceAssetOnsetProcessedInstanceIds: string[];
   footholdAssetWindowPlayer: PlayerId | null;
   footholdAssetWindowResolved: boolean;
   routWindowOpen: boolean;
@@ -378,6 +391,7 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     pendingSpiritHollowAftermath: null,
     spiritHollowAftermathPlayers: null,
     pendingSubversionAssetBattle: null,
+    resistanceAssetOnsetProcessedInstanceIds: [],
     footholdAssetWindowPlayer: null,
     footholdAssetWindowResolved: false,
     routWindowOpen: false,

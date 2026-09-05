@@ -12,8 +12,16 @@ import {
 } from './assets';
 import { isV070AssetActive } from './asset-face-state';
 import { recordV070IntelligenceBattleAssetUseForMission } from './intelligence';
+import { openV070SubversionAssetBattleWindow } from './subversion-asset';
 
 export const V070_RESISTANCE_ID = 'neutral-resistance' as const;
+
+export class V070ResistanceAssetOnsetPause extends Error {
+  constructor(public readonly state: V070GameState) {
+    super('Resistance Onset paused for a Subversion Asset decision.');
+    this.name = 'V070ResistanceAssetOnsetPause';
+  }
+}
 
 export function isV070CounterattackBattle(
   state: V070GameState,
@@ -34,26 +42,74 @@ export function applyV070ResistanceAssetOnsetEffects(
   if (!battle || !runtime || !isV070CounterattackBattle(state)) return;
 
   for (const playerId of [battle.attacker, battle.defender]) {
-    const resistanceCount = state.players[playerId].zones.assetBank.filter(
-      instanceId =>
-        state.cardInstances[instanceId]?.cardId === V070_RESISTANCE_ID
-        && isV070AssetActive(state, instanceId),
-    ).length;
-    if (resistanceCount === 0) continue;
+    for (const instanceId of [...state.players[playerId].zones.assetBank]) {
+      if (runtime.resistanceAssetOnsetProcessedInstanceIds.includes(instanceId)) {
+        continue;
+      }
+      if (state.cardInstances[instanceId]?.cardId !== V070_RESISTANCE_ID
+        || !isV070AssetActive(state, instanceId)) {
+        continue;
+      }
 
-    const bonus = resistanceCount * 2;
-    runtime.participants[playerId].reserveBonus += bonus;
-    recordV070IntelligenceBattleAssetUseForMission(state, playerId);
-    appendV070Event(state, {
-      type: 'resistance_asset_counterattack_reserve',
-      actor: playerId,
-      visibility: 'public',
-      payload: {
-        resistanceCount,
-        reserveBonus: bonus,
-      },
-    });
+      if (openV070SubversionAssetBattleWindow(
+        state,
+        playerId,
+        instanceId,
+        'Resistance',
+        {
+          type: 'apply_resistance_onset_asset',
+          playerId,
+          assetInstanceId: instanceId,
+        },
+      )) {
+        throw new V070ResistanceAssetOnsetPause(state);
+      }
+
+      applyV070ResistanceAssetOnsetInstance(
+        state,
+        playerId,
+        instanceId,
+      );
+    }
   }
+}
+
+export function applyV070ResistanceAssetOnsetInstance(
+  state: V070GameState,
+  playerId: PlayerId,
+  instanceId: string,
+): void {
+  const runtime = state.battleRuntime;
+  if (!runtime || !state.battle || !isV070CounterattackBattle(state)) {
+    throw new V070GameActionError(
+      'Resistance Asset Onset effect requires an active Counterattack.',
+    );
+  }
+  if (runtime.resistanceAssetOnsetProcessedInstanceIds.includes(instanceId)) {
+    return;
+  }
+  if (state.cardInstances[instanceId]?.cardId !== V070_RESISTANCE_ID
+    || !state.players[playerId].zones.assetBank.includes(instanceId)
+    || !isV070AssetActive(state, instanceId)) {
+    throw new V070GameActionError(
+      'Resistance must still be an active banked Asset for its Onset effect to apply.',
+    );
+  }
+
+  runtime.resistanceAssetOnsetProcessedInstanceIds.push(instanceId);
+  runtime.participants[playerId].reserveBonus += 2;
+  recordV070IntelligenceBattleAssetUseForMission(state, playerId);
+
+  appendV070Event(state, {
+    type: 'resistance_asset_counterattack_reserve',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      instanceId,
+      resistanceCount: 1,
+      reserveBonus: 2,
+    },
+  });
 }
 
 export function v070ResistanceBattleBankReplacementInstanceIds(
