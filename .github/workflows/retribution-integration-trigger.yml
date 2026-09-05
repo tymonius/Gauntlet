@@ -1,0 +1,49 @@
+name: Retribution Integration Trigger
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+
+jobs:
+  integrate:
+    if: ${{ github.head_ref == 'feature/v070-retribution-lifecycle' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/v070-retribution-lifecycle
+          fetch-depth: 0
+      - name: Apply stored integration patch
+        shell: python
+        run: |
+          from pathlib import Path
+          import textwrap
+
+          path = Path('.github/workflows/retribution-integration-patch.yml')
+          lines = path.read_text().splitlines()
+          marker = '      - name: Apply exact Retribution integration edits'
+          start = lines.index(marker)
+          run_index = next(i for i in range(start + 1, len(lines)) if lines[i] == '        run: |')
+          body = []
+          for line in lines[run_index + 1:]:
+              if line and not line.startswith('          '):
+                  break
+              body.append(line[10:] if line.startswith('          ') else '')
+          source = '\n'.join(body) + '\n'
+          exec(compile(source, str(path), 'exec'), {'__name__': '__main__'})
+      - name: Remove temporary integration workflows
+        run: rm .github/workflows/retribution-integration-patch.yml .github/workflows/retribution-integration-trigger.yml
+      - name: Validate integration
+        run: |
+          npm ci
+          npm run typecheck --if-present
+      - name: Commit integrated source
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Integrate Retribution into Aftermath timing"
+          git push origin HEAD:feature/v070-retribution-lifecycle
