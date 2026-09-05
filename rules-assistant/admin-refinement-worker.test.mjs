@@ -19,6 +19,7 @@ test("deployed admin response embeds the refinement runtime inline", async () =>
   expect(response.headers.get("Cache-Control")).toBe("no-store");
   expect(response.headers.get("Content-Security-Policy")).toMatch(/script-src[^;]*'unsafe-inline'/);
   expect(html).toContain('id="rules-refinement-inline-runtime"');
+  expect(html).toContain("Refinement runtime starting…");
   expect(html).not.toContain('src="/admin-refinement-runtime.js"');
   expect(html).toContain(adminRefinementRuntimeSource());
 
