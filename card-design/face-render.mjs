@@ -204,6 +204,10 @@ function installEmbeddedInspection(spec, result) {
     });
   }
 
+  // Artwork is a second-level inspection target. In normal preview frames it
+  // remains part of the card's hit area so every click opens the card first.
+  if (!inspectionHost) return;
+
   const image = inspection.artworkImage;
   const frame = image?.closest('figure');
   if (!(image instanceof HTMLImageElement) || !frame || !(image.currentSrc || image.src)) return;
