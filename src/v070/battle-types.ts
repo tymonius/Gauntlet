@@ -181,28 +181,9 @@ export interface V070SpiritHollowAftermathRuntime {
   candidateGraveyardInstanceIds: string[];
 }
 
-export interface V070FortificationsAssetOnsetRuntime {
-  playerId: PlayerId;
-  candidateAssetInstanceIds: string[];
-}
-
-export interface V070FortificationsScheduledEffect {
-  owner: PlayerId;
-  sourceInstanceId: string;
-  sourceKind: 'asset' | 'battle_card';
-}
-
-export interface V070FortificationsPostTacticsRuntime {
+export interface V070FortificationsRetreatRuntime {
   playerId: PlayerId;
   sourceInstanceId: string;
-  drawnInstanceIds: string[];
-  candidateTacticInstanceIds: string[];
-}
-
-export interface V070FortificationsCaptureEffect {
-  owner: PlayerId;
-  sourceInstanceId: string;
-  territoryPosition: number;
 }
 
 export interface V070GambitOrderOverride {
@@ -283,7 +264,7 @@ export type V070SubversionAssetBattleContinuation =
       assetInstanceId: string;
     }
   | {
-      type: 'use_fortifications_asset';
+      type: 'apply_fortifications_tactic_limit_asset';
       playerId: PlayerId;
       assetInstanceId: string;
     };
@@ -324,12 +305,10 @@ export interface V070BattleRuntime {
   spiritHollowAftermathPlayers: PlayerId[] | null;
   pendingSubversionAssetBattle: V070SubversionAssetBattleRuntime | null;
   resistanceAssetOnsetProcessedInstanceIds: string[];
-  pendingFortificationsAssetOnset: V070FortificationsAssetOnsetRuntime | null;
-  fortificationsAssetOnsetResolved: boolean;
-  fortificationsScheduledEffects: V070FortificationsScheduledEffect[];
-  fortificationsPostTacticsProcessedSourceInstanceIds: string[];
-  pendingFortificationsPostTactics: V070FortificationsPostTacticsRuntime | null;
-  fortificationsCaptureEffects: V070FortificationsCaptureEffect[];
+  fortificationsAssetTacticLimitResolved: boolean;
+  fortificationsRetreatSourceInstanceIds: string[];
+  fortificationsRetreatResolvedSourceInstanceIds: string[];
+  pendingFortificationsRetreat: V070FortificationsRetreatRuntime | null;
   footholdAssetWindowPlayer: PlayerId | null;
   footholdAssetWindowResolved: boolean;
   routWindowOpen: boolean;
@@ -427,12 +406,10 @@ export function createV070BattleRuntime(): V070BattleRuntime {
     spiritHollowAftermathPlayers: null,
     pendingSubversionAssetBattle: null,
     resistanceAssetOnsetProcessedInstanceIds: [],
-    pendingFortificationsAssetOnset: null,
-    fortificationsAssetOnsetResolved: false,
-    fortificationsScheduledEffects: [],
-    fortificationsPostTacticsProcessedSourceInstanceIds: [],
-    pendingFortificationsPostTactics: null,
-    fortificationsCaptureEffects: [],
+    fortificationsAssetTacticLimitResolved: false,
+    fortificationsRetreatSourceInstanceIds: [],
+    fortificationsRetreatResolvedSourceInstanceIds: [],
+    pendingFortificationsRetreat: null,
     footholdAssetWindowPlayer: null,
     footholdAssetWindowResolved: false,
     routWindowOpen: false,
