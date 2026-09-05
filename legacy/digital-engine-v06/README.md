@@ -13,4 +13,4 @@ npm run dev:legacy:cli
 npm run dev:legacy:gui
 ```
 
-Default TypeScript and Vitest validation are for maintained/current source and intentionally exclude `legacy/`. Historical tests here are provenance, not current regression authority. Any behavior reused by the promoted engine must be revalidated against current rules authority and moved into an active versioned/current boundary rather than imported from this archive.
+Routine CI test routing treats `legacy/` as outside the maintained/current source surface. Historical tests here are provenance, not current regression authority. Any behavior reused by the promoted engine must be revalidated against current rules authority and moved into an active versioned/current boundary rather than imported from this archive.
