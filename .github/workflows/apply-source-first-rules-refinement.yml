@@ -1,0 +1,80 @@
+name: Apply source-first rules refinement
+
+on:
+  push:
+    branches:
+      - feat/source-first-rules-refinement
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout refinement branch
+        uses: actions/checkout@v4
+        with:
+          ref: feat/source-first-rules-refinement
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium for Rulebook rendering
+        run: npx playwright install --with-deps chromium
+
+      - name: Add the shared available-option rule to current authority
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const file = 'rulebook/player-facing/current-rulebook.md';
+          let source = fs.readFileSync(file, 'utf8').replace(/\r\n/g, '\n');
+          const heading = '### Choosing among options';
+          if (!source.includes(heading)) {
+            const anchor = `- Follow instructions in the order written.\n- Complete as much of an instruction as possible unless the missing part is a required cost, requirement, or target.\n\n### Simultaneous effects`;
+            const replacement = `- Follow instructions in the order written.\n- Complete as much of an instruction as possible unless the missing part is a required cost, requirement, or target.\n\n### Choosing among options\n\nWhen an effect instructs a player to choose among options, that player may choose only an available option. An option is available only if its required costs, requirements, and targets can be satisfied when the choice is made.\n\n- If exactly one option is available, choose that option.\n- If no option is available, the choice does nothing unless the effect says otherwise.\n- After an available option is chosen, complete as much of it as possible normally.\n\n### Simultaneous effects`;
+            if (!source.includes(anchor)) throw new Error('Could not find the Chapter 11 choice-rule insertion anchor.');
+            source = source.replace(anchor, replacement);
+            fs.writeFileSync(file, source);
+          }
+          NODE
+
+      - name: Regenerate current v0.7.1 release authority
+        run: node scripts/build-v071-release-source.mjs
+
+      - name: Regenerate current v0.7.1 Rulebook booklet and manifest
+        run: node scripts/render-v071-booklet.mjs
+
+      - name: Refresh release manifest bindings
+        run: node scripts/refresh-current-release-manifest.mjs
+
+      - name: Validate propagated authority and refinement contracts
+        run: |
+          npx vitest run scripts/validate-available-choice-rule.test.mjs rules-assistant/refinement-scaffold.test.mjs scripts/validate-rules-refinement-source-first.test.mjs
+          npm run rules:authority:check
+          npm run test:current-contract
+
+      - name: Remove one-shot workflow
+        run: rm .github/workflows/apply-source-first-rules-refinement.yml
+
+      - name: Commit propagated authority
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'No generated changes to commit.'
+            exit 0
+          fi
+          git commit -m 'Propagate legal choice rule to current authority'
+          git push origin HEAD:feat/source-first-rules-refinement
