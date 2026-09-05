@@ -24,7 +24,7 @@ const targets = [
   'releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json',
   'rules-assistant/rules-deterministic-v063.js',
   'scripts/build-clean-v063-publication-release.mjs',
-  'scripts/generate-v063-canonical-data-candidate.mjs',
+  'docs/recovery/frozen-scripts/v0.6.3/generate-v063-canonical-data-candidate.mjs',
   'artifacts/reconstruction/v0.6.3-browser-candidate/data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json',
 ];
 
@@ -42,7 +42,7 @@ function read(relativePath) {
 }
 
 function sha256(relativePath) {
-  return crypto.createHash('sha256').update(fs.readFileSync(filePath(relativePath))).digest('hex');
+  return crypto.createHash('sha256').update(read(relativePath), 'utf8').digest('hex');
 }
 
 function reportViolations(relativePath, text) {

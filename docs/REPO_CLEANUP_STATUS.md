@@ -136,7 +136,13 @@ This tranche also repairs the publication ownership boundary left after the root
 
 Validation: all four PR workflows are green at `11036968`. The new production-boundary contract and related release/publication tests pass. The v0.7.1 browser pipeline passes source generation and the eight-page visual fidelity gate locally; final PDF pagination remains covered by its main-target release workflow because the local host cannot resolve the external Adobe Typekit resource.
 
-Next: validate the stacked PR in CI, then continue the audit of active version-named validators. Prefer explicit authority/config inputs over embedded release identities, while leaving genuinely historical reproduction contracts pinned.
+## Withdrawn candidate tooling freeze
+
+PR: [#1482](https://github.com/tymonius/Gauntlet/pull/1482). Branch: `cleanup/archive-v063-candidate-tooling` (stacked on #1479). The closed 17-script v0.6.3 card-normalization and candidate-authority pipeline has moved byte-for-byte from active `scripts/` into `docs/recovery/frozen-scripts/v0.6.3/`. Every preserved Git blob is release-locked. The maintained Last Stand terminology audit reads the one historical implementation file it examines from the archive and now normalizes checkout line endings before checking certified content hashes. <!-- DOC-HISTORICAL -->
+
+The new boundary test rejects restored active entrypoints and verifies every frozen blob lock. Local validation passes: 7 focused tests, TypeScript, all 116 release-recovery locks, release-path normalization, the Last Stand terminology contract, and CI workflow inventory. All four PR workflows are green at `5dc9cbc2`.
+
+Next: continue classifying active version-named validation and reconstruction commands. Prefer explicit authority/config inputs for maintained tools, archive closed withdrawn-release pipelines, and leave genuine historical reproduction contracts pinned. The immediate follow-up is the uncalled downstream reconstruction builder/validator pair, whose retired starter-catalog dependency makes it inoperable from the maintained tree.
 
 ## Architectural queue
 
