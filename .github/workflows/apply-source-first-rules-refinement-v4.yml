@@ -27,9 +27,7 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: |
-          npm install --no-package-lock
-          npm install --no-package-lock --no-save pdf-lib
+        run: npm install --no-package-lock
 
       - name: Install Chromium for Rulebook rendering
         run: npx playwright install --with-deps chromium
@@ -86,7 +84,7 @@ jobs:
         run: |
           npx vitest run scripts/validate-available-choice-rule.test.mjs rules-assistant/refinement-scaffold.test.mjs scripts/validate-rules-refinement-source-first.test.mjs
           npm run rules:authority:check
-          npm run test:current-contract
+          node scripts/validate-current-rulebook-booklet-provenance.mjs
 
       - name: Remove one-shot workflows
         run: rm -f .github/workflows/apply-source-first-rules-refinement.yml .github/workflows/apply-source-first-rules-refinement-v2.yml .github/workflows/apply-source-first-rules-refinement-v3.yml .github/workflows/apply-source-first-rules-refinement-v4.yml
