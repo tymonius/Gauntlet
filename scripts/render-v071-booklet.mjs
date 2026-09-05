@@ -6,6 +6,7 @@ import { chromium } from 'playwright';
 import { applyV070CanonicalCorrections, applyV070RulebookCorrections } from '../rulebook/player-facing/v070-corrections.js';
 import { synchronizeKnownRulebookClaims, validateKnownRulebookClaims } from '../rulebook/player-facing/rule-facts.js';
 import { loadPublishingAuthority } from './publishing-authority.mjs';
+import { prepareLegacyRulebookPublicationCompatibility, cleanupLegacyRulebookPublicationCompatibility } from './legacy-rulebook-publication-compat.mjs';
 
 const ROOT = process.cwd();
 const RELEASE_VERSION = 'v0.7.1';
@@ -246,6 +247,7 @@ const chapter11 = extractChapter11(rulebook);
 const originalChapter11 = fs.readFileSync(PLAYER_CHAPTER_11_PATH);
 
 fs.rmSync(PRODUCTION_DIR, { recursive: true, force: true });
+const publicationCompatibility = prepareLegacyRulebookPublicationCompatibility();
 fs.mkdirSync(path.dirname(TRANSIENT_RULEBOOK_PATH), { recursive: true });
 writeBootstrapManifestForRulebookFigures();
 
@@ -275,6 +277,7 @@ try {
   run('node', ['scripts/run-v071-rulebook-renderer.mjs']);
 } finally {
   server.kill('SIGTERM');
+  cleanupLegacyRulebookPublicationCompatibility(publicationCompatibility);
 }
 
 const reportPath = path.join(PRODUCTION_DIR, 'production-report.json');

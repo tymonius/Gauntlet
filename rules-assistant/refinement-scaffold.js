@@ -1,3 +1,11 @@
+const SOURCE_AUTHORITY_SIGNAL_CODES = new Set([
+  "review_missing_rule",
+  "review_ambiguous_rule",
+  "audit_source_data",
+  "audit_rule_clarification",
+  "audit_rule_change"
+]);
+
 export function createRefinementScaffoldEngine() {
   const TARGETS = {
     conversation_continuity: {
@@ -15,8 +23,14 @@ export function createRefinementScaffoldEngine() {
       ]
     },
     source_specificity: {
-      likelyFiles: ["rules-assistant/v071-public-corpus.js", "rules-assistant/Rules_Arbiter_Adjudication_Guide.md"],
+      likelyFiles: [
+        "rulebook/player-facing/current-rulebook.md",
+        "game-data/current-game.json",
+        "rules-assistant/v071-public-corpus.js"
+      ],
       deterministicChecks: [
+        "npm run rules:authority:check",
+        "npm run test:current-contract",
         "npx vitest related --run --passWithNoTests rules-assistant/evals/rules-arbiter-evals.v071.json"
       ]
     },
@@ -71,6 +85,24 @@ export function createRefinementScaffoldEngine() {
     }
   }
 
+  function sourceAuthorityRemediation(interactions) {
+    const reasonSignalCodes = [...new Set(
+      interactions.flatMap((item) => item.signalCodes || []).filter((code) => SOURCE_AUTHORITY_SIGNAL_CODES.has(code))
+    )];
+    const required = reasonSignalCodes.length > 0;
+    return {
+      sourceAuthorityRequired: required,
+      reasonSignalCodes,
+      authorityFileCandidates: [
+        "rulebook/player-facing/current-rulebook.md",
+        "game-data/current-game.json"
+      ],
+      rule: required
+        ? "Resolve missing or ambiguous game semantics in current game authority before changing Rules Arbiter behavior."
+        : "Confirm that current authority already settles the issue before changing Rules Arbiter behavior."
+    };
+  }
+
   function publicPrBody(scaffold, regression = null, baseline = null) {
     const cluster = scaffold.cluster;
     const regressionLine = regression
@@ -79,6 +111,9 @@ export function createRefinementScaffoldEngine() {
     const baselineLine = baseline
       ? `Deterministic baseline: ${baseline.result.toUpperCase()} (${baseline.command}).`
       : "Deterministic baseline: run by the materialization script after regression fixtures are applied.";
+    const sourceLine = scaffold.remediation?.sourceAuthorityRequired
+      ? "Source authority remediation: REQUIRED — accepted game-rule semantics must be added to current authority before any Arbiter behavior change."
+      : "Source authority remediation: not automatically required — confirm current authority is already explicit before changing Arbiter behavior.";
     return [
       `Addresses the deterministic Rules Arbiter **${scaffold.label}** cluster.`,
       "",
@@ -89,6 +124,7 @@ export function createRefinementScaffoldEngine() {
       `- root cause: \`${scaffold.rootCause}\``,
       `- ${regressionLine}`,
       `- ${baselineLine}`,
+      `- ${sourceLine}`,
       "",
       "Affected interaction IDs:",
       ...cluster.interactionIds.map((id) => `- \`${id}\``),
@@ -96,7 +132,9 @@ export function createRefinementScaffoldEngine() {
       "Implementation guardrails:",
       "- preserve or add deterministic regression coverage before changing behavior",
       "- fix the systemic root cause rather than special-casing one live question",
-      "- do not promote a live answer into rules authority",
+      "- a reviewed live answer is evidence, not rules authority; only an accepted game-rule decision may amend current authority",
+      "- when current authority is missing or ambiguous, correct the game rules at the source before changing Rules Arbiter behavior",
+      "- Rules Arbiter behavior must consume the corrected authority rather than duplicate hidden game semantics in prompts or retrieval logic",
       "- keep paid/model-backed smoke QA manual-only",
       "- run the listed deterministic checks before marking the PR ready",
       "",
@@ -124,6 +162,7 @@ export function createRefinementScaffoldEngine() {
     const target = TARGETS[key] || TARGETS.other_attention;
     const stamp = dateStamp(options.generatedAt || report.generatedAt);
     const branchName = `fix/rules-arbiter-${slug(key)}-${stamp}`;
+    const remediation = sourceAuthorityRemediation(interactions);
     const scaffold = {
       schema: "gauntlet.rules-refinement-scaffold.v1",
       generatedAt: text(options.generatedAt || new Date().toISOString()),
@@ -140,6 +179,7 @@ export function createRefinementScaffoldEngine() {
         interactionIds: [...ids]
       },
       affectedInteractions: interactions,
+      remediation,
       regressionRequest: {
         interactionIds: [...ids],
         rule: "Use only reviewed regression candidates for these interactions; never synthesize authority from triage alone."
@@ -227,6 +267,12 @@ export function createRefinementScaffoldEngine() {
       label: scaffold.label,
       recommendedAction: scaffold.recommendedAction,
       cluster: { ...scaffold.cluster },
+      remediation: scaffold.remediation ? {
+        sourceAuthorityRequired: scaffold.remediation.sourceAuthorityRequired === true,
+        reasonSignalCodes: [...(scaffold.remediation.reasonSignalCodes || [])],
+        authorityFileCandidates: [...(scaffold.remediation.authorityFileCandidates || [])],
+        rule: scaffold.remediation.rule
+      } : null,
       regression: scaffold.regression ? {
         candidateCount: Number(scaffold.regression.candidateCount || 0),
         readyCount: Number(scaffold.regression.readyCount || 0),
@@ -251,6 +297,7 @@ export function createRefinementScaffoldEngine() {
 
   return {
     TARGETS,
+    SOURCE_AUTHORITY_SIGNAL_CODES,
     buildRefinementScaffold,
     attachRegressionCandidates,
     withMaterializationResult,
