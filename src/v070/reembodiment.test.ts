@@ -25,8 +25,8 @@ function readyGame(): V070GameState {
         starterDeckId: 'mystics-alchemist-first-principles',
       },
       B: {
-        name: 'Ranger',
-        starterDeckId: 'intelligence-ranger-fieldcraft',
+        name: 'Commandant',
+        starterDeckId: 'military-commandant-holdfast',
       },
     },
   });
@@ -112,7 +112,9 @@ function moveHandToGraveyard(
   instanceId: string,
 ): void {
   const hand = state.players[playerId].zones.hand;
-  hand.splice(hand.indexOf(instanceId), 1);
+  const index = hand.indexOf(instanceId);
+  expect(index).toBeGreaterThanOrEqual(0);
+  hand.splice(index, 1);
   state.players[playerId].zones.graveyard.push(instanceId);
 }
 
@@ -184,7 +186,7 @@ describe('v0.7.0 Reembodiment', () => {
       triggeringArcaneInstanceId: five,
       triggerValue: 5,
     });
-    openV070ReembodimentRecovery(state, continuation!);
+    expect(openV070ReembodimentRecovery(state, continuation!)).toBe(true);
     expect(state.pendingReembodimentRecovery?.candidateInstanceIds).toContain(four);
   });
 
@@ -249,6 +251,30 @@ describe('v0.7.0 Reembodiment', () => {
     expect(() => reduceV070TurnAction(state, {
       type: 'pass_denouement', playerId: 'A',
     })).toThrow(/Reembodiment recovery/);
+  });
+
+  test('no legal recovery target consumes the first occurrence without opening Subversion', () => {
+    let state = toDenouement(readyGame());
+    inject(state, 'A', 'mystics-sacrifice-recovery', 'asset', 'assetBank');
+    inject(state, 'B', 'intelligence-subversion', 'subversion', 'assetBank');
+    state.players.A.zones.graveyard = [];
+    const cost = inject(state, 'A', 'mystics-dark-omens', 'blood', 'hand');
+
+    state = reduceV070TurnAction(state, {
+      type: 'mystics_begin_rite',
+      playerId: 'A',
+      riteId: 'blood',
+      bloodCostInstanceId: cost,
+    });
+
+    expect(state.reembodimentFirstQualifyingTurn?.A).toBe(state.turnNumber);
+    expect(state.pendingSubversionTurnAsset ?? null).toBeNull();
+    expect(state.pendingReembodimentRecovery ?? null).toBeNull();
+    expect(state.events.some(event =>
+      event.type === 'reembodiment_unavailable'
+      && (event.payload as { reason?: string }).reason
+        === 'no_lower_value_graveyard_card'
+    )).toBe(true);
   });
 
   test('reactive Subversion pass lets Reembodiment apply', () => {
