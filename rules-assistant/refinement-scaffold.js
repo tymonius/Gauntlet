@@ -5,6 +5,7 @@ const SOURCE_AUTHORITY_SIGNAL_CODES = new Set([
   "audit_rule_clarification",
   "audit_rule_change"
 ]);
+const RESOLUTION_LEDGER_PATH = "artifacts/rules-refinement/resolution-ledger.json";
 
 export function createRefinementScaffoldEngine() {
   const TARGETS = {
@@ -103,6 +104,27 @@ export function createRefinementScaffoldEngine() {
     };
   }
 
+  function resolutionRequest(rootCause, interactionIds) {
+    return {
+      ledgerPath: RESOLUTION_LEDGER_PATH,
+      rootCause,
+      interactionIds: [...interactionIds],
+      requiredStatus: "resolved",
+      requiredFields: [
+        "id",
+        "status",
+        "rootCause",
+        "interactionIds",
+        "resolutionSurface",
+        "summary",
+        "resolvedAt",
+        "binding"
+      ],
+      bindingRule: "Bind the merged refinement to at least one authoritySetId, behaviorRevision, or fix commit before merge.",
+      retirementRule: "Only status=resolved entries retire reviewed interactions from the active backlog."
+    };
+  }
+
   function publicPrBody(scaffold, regression = null, baseline = null) {
     const cluster = scaffold.cluster;
     const regressionLine = regression
@@ -114,6 +136,7 @@ export function createRefinementScaffoldEngine() {
     const sourceLine = scaffold.remediation?.sourceAuthorityRequired
       ? "Source authority remediation: REQUIRED — accepted game-rule semantics must be added to current authority before any Arbiter behavior change."
       : "Source authority remediation: not automatically required — confirm current authority is already explicit before changing Arbiter behavior.";
+    const resolutionLine = `Resolution ledger: REQUIRED — record every affected interaction in ${scaffold.resolutionRequest?.ledgerPath || RESOLUTION_LEDGER_PATH} as resolved and bind the fix to its resulting authority set, behavior revision, or commit before merge.`;
     return [
       `Addresses the deterministic Rules Arbiter **${scaffold.label}** cluster.`,
       "",
@@ -125,6 +148,7 @@ export function createRefinementScaffoldEngine() {
       `- ${regressionLine}`,
       `- ${baselineLine}`,
       `- ${sourceLine}`,
+      `- ${resolutionLine}`,
       "",
       "Affected interaction IDs:",
       ...cluster.interactionIds.map((id) => `- \`${id}\``),
@@ -135,6 +159,7 @@ export function createRefinementScaffoldEngine() {
       "- a reviewed live answer is evidence, not rules authority; only an accepted game-rule decision may amend current authority",
       "- when current authority is missing or ambiguous, correct the game rules at the source before changing Rules Arbiter behavior",
       "- Rules Arbiter behavior must consume the corrected authority rather than duplicate hidden game semantics in prompts or retrieval logic",
+      "- record the resolved interaction IDs and durable fix binding in the refinement resolution ledger before merge",
       "- keep paid/model-backed smoke QA manual-only",
       "- run the listed deterministic checks before marking the PR ready",
       "",
@@ -163,6 +188,7 @@ export function createRefinementScaffoldEngine() {
     const stamp = dateStamp(options.generatedAt || report.generatedAt);
     const branchName = `fix/rules-arbiter-${slug(key)}-${stamp}`;
     const remediation = sourceAuthorityRemediation(interactions);
+    const clusterIds = [...ids];
     const scaffold = {
       schema: "gauntlet.rules-refinement-scaffold.v1",
       generatedAt: text(options.generatedAt || new Date().toISOString()),
@@ -176,14 +202,15 @@ export function createRefinementScaffoldEngine() {
         mediumCount: Number(cluster.mediumCount || 0),
         maxScore: Number(cluster.maxScore || 0),
         averageScore: Number(cluster.averageScore || 0),
-        interactionIds: [...ids]
+        interactionIds: clusterIds
       },
       affectedInteractions: interactions,
       remediation,
       regressionRequest: {
-        interactionIds: [...ids],
+        interactionIds: clusterIds,
         rule: "Use only reviewed regression candidates for these interactions; never synthesize authority from triage alone."
       },
+      resolutionRequest: resolutionRequest(key, clusterIds),
       implementationHints: {
         likelyFiles: [...target.likelyFiles],
         deterministicChecks: [...target.deterministicChecks]
@@ -280,6 +307,15 @@ export function createRefinementScaffoldEngine() {
         manualCount: Number(scaffold.regression.manualCount || 0),
         missingInteractionIds: [...(scaffold.regression.missingInteractionIds || [])]
       } : null,
+      resolutionRequest: scaffold.resolutionRequest ? {
+        ledgerPath: scaffold.resolutionRequest.ledgerPath,
+        rootCause: scaffold.resolutionRequest.rootCause,
+        interactionIds: [...(scaffold.resolutionRequest.interactionIds || [])],
+        requiredStatus: scaffold.resolutionRequest.requiredStatus,
+        requiredFields: [...(scaffold.resolutionRequest.requiredFields || [])],
+        bindingRule: scaffold.resolutionRequest.bindingRule,
+        retirementRule: scaffold.resolutionRequest.retirementRule
+      } : null,
       baseline: scaffold.baseline || null,
       implementationHints: {
         likelyFiles: [...(scaffold.implementationHints?.likelyFiles || [])],
@@ -298,6 +334,7 @@ export function createRefinementScaffoldEngine() {
   return {
     TARGETS,
     SOURCE_AUTHORITY_SIGNAL_CODES,
+    RESOLUTION_LEDGER_PATH,
     buildRefinementScaffold,
     attachRegressionCandidates,
     withMaterializationResult,
