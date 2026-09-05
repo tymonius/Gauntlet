@@ -5,6 +5,7 @@ import {
   type V070GameView as V070CoreGameView,
 } from './views-core';
 import { pendingV070SubversionTurnAsset } from './subversion-turn';
+import { pendingV070CompoundInterestChoice } from './compound-interest';
 
 export * from './views-core';
 
@@ -17,8 +18,17 @@ export interface V070SubversionTurnAssetView {
   candidateSubversionInstanceIds?: string[];
 }
 
+export interface V070CompoundInterestView {
+  kind: 'use' | 'destination';
+  playerId: PlayerId;
+  assetInstanceId: string;
+  revealedInstanceId?: string;
+  revealedCardId?: string;
+}
+
 export type V070GameView = V070CoreGameView & {
   pendingSubversionTurnAsset: V070SubversionTurnAssetView | null;
+  pendingCompoundInterestChoice: V070CompoundInterestView | null;
 };
 
 export function viewV070GameForPlayer(
@@ -45,8 +55,28 @@ export function viewV070GameForPlayer(
         }
       : null;
 
+  const compound = pendingV070CompoundInterestChoice(state);
+  const pendingCompoundInterestChoice: V070CompoundInterestView | null =
+    compound
+      ? compound.kind === 'destination'
+        ? {
+            kind: compound.kind,
+            playerId: compound.playerId,
+            assetInstanceId: compound.assetInstanceId,
+            revealedInstanceId: compound.revealedInstanceId,
+            revealedCardId:
+              state.cardInstances[compound.revealedInstanceId]?.cardId,
+          }
+        : {
+            kind: compound.kind,
+            playerId: compound.playerId,
+            assetInstanceId: compound.assetInstanceId,
+          }
+      : null;
+
   return {
     ...core,
     pendingSubversionTurnAsset,
+    pendingCompoundInterestChoice,
   };
 }

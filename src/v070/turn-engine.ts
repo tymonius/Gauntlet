@@ -7,6 +7,7 @@ import {
   advanceV070TurnPhase,
   spendV070Action,
   type PlayerId,
+  type V070TurnState,
 } from './rules';
 import {
   reduceV070TurnAction as reduceV070TurnActionCore,
@@ -21,6 +22,14 @@ import {
   v070FinancialCapacityAvailable,
   v070FinancierFeatureActionSpentThisTurn,
 } from './financiers';
+import {
+  canOpenV070CompoundInterestAfterNormalDraw,
+  openV070CompoundInterestAfterNormalDraw,
+  pendingV070CompoundInterestChoice,
+  resolveV070CompoundInterestDestination,
+  resolveV070CompoundInterestUseChoice,
+  revealV070CompoundInterestTopCard,
+} from './compound-interest';
 import {
   openV070SubversionTurnAssetWindow,
   pendingV070SubversionTurnAsset,
@@ -37,6 +46,16 @@ export type V070TurnAction =
       playerId: PlayerId;
       choice: 'pass' | 'use';
       subversionInstanceId?: string;
+    }
+  | {
+      type: 'resolve_compound_interest_use';
+      playerId: PlayerId;
+      choice: 'pass' | 'use';
+    }
+  | {
+      type: 'resolve_compound_interest_destination';
+      playerId: PlayerId;
+      destination: 'treasury' | 'discard';
     };
 
 export function reduceV070TurnAction(
@@ -47,6 +66,15 @@ export function reduceV070TurnAction(
   if (pendingSubversion && action.type !== 'resolve_subversion_asset') {
     throw new V070GameActionError(
       'Resolve or decline the pending Subversion Asset opportunity before continuing the turn.',
+    );
+  }
+
+  const pendingCompoundInterest = pendingV070CompoundInterestChoice(state);
+  if (pendingCompoundInterest
+    && action.type !== 'resolve_compound_interest_use'
+    && action.type !== 'resolve_compound_interest_destination') {
+    throw new V070GameActionError(
+      'Resolve the pending Compound Interest choice before continuing the turn.',
     );
   }
 
@@ -61,7 +89,7 @@ export function reduceV070TurnAction(
 
     if (resolved.pending.deferredAction.type === 'draw_turn_card') {
       if (resolved.used) {
-        return reduceV070TurnActionCore(
+        return resolveV070NormalDrawWithPostEffects(
           next,
           resolved.pending.deferredAction,
         );
@@ -71,6 +99,21 @@ export function reduceV070TurnAction(
         resolved.pending.targetOwner,
         resolved.pending.targetAssetInstanceId,
       );
+    }
+
+    if (resolved.pending.deferredAction.type === 'compound_interest_reveal') {
+      if (resolved.used) {
+        return completeV070PostDrawTiming(
+          next,
+          resolved.pending.targetOwner,
+        );
+      }
+      revealV070CompoundInterestTopCard(
+        next,
+        resolved.pending.deferredAction.playerId,
+        resolved.pending.deferredAction.assetInstanceId,
+      );
+      return next;
     }
 
     if (resolved.used) {
@@ -83,6 +126,50 @@ export function reduceV070TurnAction(
       next,
       resolved.pending.deferredAction,
     );
+  }
+
+  if (action.type === 'resolve_compound_interest_use') {
+    const next = structuredClone(state) as V070GameState;
+    const resolved = resolveV070CompoundInterestUseChoice(
+      next,
+      action.playerId,
+      action.choice,
+    );
+    if (!resolved.used) {
+      return completeV070PostDrawTiming(next, action.playerId);
+    }
+
+    const continuation = {
+      type: 'compound_interest_reveal' as const,
+      playerId: action.playerId,
+      assetInstanceId: resolved.assetInstanceId,
+    };
+    if (openV070SubversionTurnAssetWindow(
+      next,
+      action.playerId,
+      resolved.assetInstanceId,
+      'Compound Interest',
+      continuation,
+    )) {
+      return next;
+    }
+
+    revealV070CompoundInterestTopCard(
+      next,
+      action.playerId,
+      resolved.assetInstanceId,
+    );
+    return next;
+  }
+
+  if (action.type === 'resolve_compound_interest_destination') {
+    const next = structuredClone(state) as V070GameState;
+    resolveV070CompoundInterestDestination(
+      next,
+      action.playerId,
+      action.destination,
+    );
+    return completeV070PostDrawTiming(next, action.playerId);
   }
 
   const coreAction = action as V070CoreTurnAction;
@@ -121,6 +208,8 @@ export function reduceV070TurnAction(
         tariffsInstanceId,
       );
     }
+
+    return resolveV070NormalDrawWithPostEffects(state, coreAction);
   }
 
   if (coreAction.type === 'use_sleeper_network_asset') {
@@ -155,6 +244,96 @@ export function reduceV070TurnAction(
   }
 
   return reduceV070TurnActionCore(state, coreAction);
+}
+
+function resolveV070NormalDrawWithPostEffects(
+  state: V070GameState,
+  action: Extract<V070CoreTurnAction, { type: 'draw_turn_card' }>,
+): V070GameState {
+  const preDrawTurnState = state.turnState
+    ? structuredClone(state.turnState) as V070TurnState
+    : null;
+  const next = reduceV070TurnActionCore(state, action);
+
+  if (!preDrawTurnState
+    || preDrawTurnState.phase !== 'draw'
+    || !canOpenV070CompoundInterestAfterNormalDraw(
+      next,
+      action.playerId,
+    )) {
+    return next;
+  }
+
+  rewindV070OpeningAfterNormalDraw(
+    next,
+    action.playerId,
+    preDrawTurnState,
+  );
+  if (!openV070CompoundInterestAfterNormalDraw(
+    next,
+    action.playerId,
+  )) {
+    throw new V070GameActionError(
+      'Compound Interest became unavailable while opening its post-Draw choice.',
+    );
+  }
+  return next;
+}
+
+function rewindV070OpeningAfterNormalDraw(
+  state: V070GameState,
+  playerId: PlayerId,
+  preDrawTurnState: V070TurnState,
+): void {
+  const last = state.events[state.events.length - 1];
+  const payload = last?.payload as {
+    turnNumber?: number;
+    phase?: string;
+  } | undefined;
+  if (last?.type !== 'turn_phase'
+    || last.actor !== playerId
+    || payload?.turnNumber !== state.turnNumber
+    || payload.phase !== 'opening') {
+    throw new V070GameActionError(
+      'The normal Draw did not end at the expected Opening phase boundary.',
+    );
+  }
+
+  state.events.pop();
+  state.turnState = structuredClone(preDrawTurnState) as V070TurnState;
+}
+
+function completeV070PostDrawTiming(
+  state: V070GameState,
+  playerId: PlayerId,
+): V070GameState {
+  if (pendingV070CompoundInterestChoice(state)
+    || pendingV070SubversionTurnAsset(state)) {
+    throw new V070GameActionError(
+      'Post-Draw timing cannot complete while an Asset choice remains pending.',
+    );
+  }
+  if (state.stage !== 'playing'
+    || state.activePlayer !== playerId
+    || state.battle
+    || !state.turnState
+    || state.turnState.phase !== 'draw') {
+    throw new V070GameActionError(
+      'Post-Draw Asset timing can complete only during the active player’s Draw step.',
+    );
+  }
+
+  state.turnState = advanceV070TurnPhase(state.turnState);
+  appendV070Event(state, {
+    type: 'turn_phase',
+    actor: playerId,
+    visibility: 'public',
+    payload: {
+      turnNumber: state.turnNumber,
+      phase: state.turnState.phase,
+    },
+  });
+  return state;
 }
 
 function activeMarginLoanInstanceIds(
@@ -209,17 +388,7 @@ function resolveV070TariffsDrawSkip(
     },
   });
 
-  state.turnState = advanceV070TurnPhase(state.turnState);
-  appendV070Event(state, {
-    type: 'turn_phase',
-    actor: playerId,
-    visibility: 'public',
-    payload: {
-      turnNumber: state.turnNumber,
-      phase: state.turnState.phase,
-    },
-  });
-  return state;
+  return completeV070PostDrawTiming(state, playerId);
 }
 
 function spendInterruptedV070AssetAction(

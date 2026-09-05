@@ -26,6 +26,11 @@ export type V070SubversionTurnContinuation =
       type: 'use_sleeper_network_asset';
       playerId: PlayerId;
       assetInstanceId: string;
+    }
+  | {
+      type: 'compound_interest_reveal';
+      playerId: PlayerId;
+      assetInstanceId: string;
     };
 
 export interface V070PendingSubversionTurnAsset {
