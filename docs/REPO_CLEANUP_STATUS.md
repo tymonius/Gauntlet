@@ -124,7 +124,7 @@ Next: validate this documentation tranche, then determine whether the public and
 
 ## Active playtest tooling name
 
-Branch: `cleanup/rename-playtest-e2e` (stacked on #1469). The maintained formal-session end-to-end test now has a version-neutral filename matching its package command and active deployment workflow. Its implementation is unchanged; only the misleading retired-version name and references are corrected.
+PR: [#1470](https://github.com/tymonius/Gauntlet/pull/1470). Branch: `cleanup/rename-playtest-e2e` (stacked on #1469). The maintained formal-session end-to-end test now has a version-neutral filename matching its package command and active deployment workflow. Its implementation is unchanged; only the misleading retired-version name and references are corrected.
 
 Next: validate the renamed entrypoint in CI, then audit other active version-named validators individually before deciding whether they are current contracts or historical reconstruction tooling.
 
