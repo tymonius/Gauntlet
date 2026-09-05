@@ -47,6 +47,26 @@ describe('digital engine boundary', () => {
     }
   });
 
+  it('keeps superseded v0.6.2 executable migration code archived', () => {
+    expect(existsSync('src/v062')).toBe(false);
+    const dependencies = sourceFilesUnder('src').filter((path) =>
+      /(?:from\s*|import\s*\()['"][^'"]*\/v062(?:\/|['"])/.test(readFileSync(path, 'utf8')),
+    );
+    expect(dependencies).toEqual([]);
+
+    for (const file of [
+      'accepted-terms.test.ts',
+      'cards.test.ts',
+      'cards.ts',
+      'factions.test.ts',
+      'factions.ts',
+      'rules.test.ts',
+      'rules.ts',
+    ]) {
+      expect(existsSync(`legacy/digital-engine-migration/v0.6.2/${file}`)).toBe(true);
+    }
+  });
+
   it('distinguishes the published digital-rules target from the promoted implementation baseline', () => {
     const publishedTarget = currentManifest.public_defaults?.digital_rules;
     expect(publishedTarget).toBe(lifecycle.current_release);

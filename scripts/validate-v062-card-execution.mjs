@@ -15,10 +15,10 @@ const assert = (condition, message) => {
   if (!condition) fail(message);
 };
 
-const cardsSource = read('src/v062/cards.ts');
-const cardsTests = read('src/v062/cards.test.ts');
-const factionsSource = read('src/v062/factions.ts');
-const factionsTests = read('src/v062/factions.test.ts');
+const cardsSource = read('legacy/digital-engine-migration/v0.6.2/cards.ts');
+const cardsTests = read('legacy/digital-engine-migration/v0.6.2/cards.test.ts');
+const factionsSource = read('legacy/digital-engine-migration/v0.6.2/factions.ts');
+const factionsTests = read('legacy/digital-engine-migration/v0.6.2/factions.test.ts');
 const packageJson = JSON.parse(read('package.json'));
 const baseData = JSON.parse(read('releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json'));
 const data = buildV062CanonicalData(baseData);
