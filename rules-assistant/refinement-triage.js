@@ -46,6 +46,10 @@ export function createTriageEngine() {
     return text(row?.confidence).toLowerCase();
   }
 
+  function reviewStatus(row) {
+    return text(row?.review_status || row?.reviewStatus || "unreviewed") || "unreviewed";
+  }
+
   function sourceCount(row) {
     const value = Number(row?.source_count);
     return Number.isFinite(value) ? Math.max(0, value) : 0;
@@ -127,6 +131,11 @@ export function createTriageEngine() {
     return text(audit?.[camel] ?? audit?.[snake]);
   }
 
+  function auditBoolean(audit, camel, snake) {
+    const value = audit?.[camel] ?? audit?.[snake];
+    return value === true || value === 1 || text(value).toLowerCase() === "true";
+  }
+
   function addSignal(signals, points, code, detail) {
     if (!points) return;
     signals.push({ points, code, detail });
@@ -175,12 +184,14 @@ export function createTriageEngine() {
     const retrievalAssessment = auditValue(audit, "retrievalAssessment", "retrieval_assessment");
     const classificationAssessment = auditValue(audit, "classificationAssessment", "classification_assessment");
     const recommendedAction = auditValue(audit, "recommendedAction", "recommended_action");
+    const designerReviewRequired = auditBoolean(audit, "designerReviewRequired", "designer_review_required");
     if (historicalAccuracy === "incorrect") addSignal(signals, 40, "audit_incorrect", "Audit found the historical answer incorrect.");
     if (retrievalAssessment === "failure") addSignal(signals, 35, "audit_retrieval_failure", "Audit found retrieval failed.");
     else if (retrievalAssessment === "weak") addSignal(signals, 16, "audit_retrieval_weak", "Audit found retrieval weak.");
-    if (classificationAssessment && !["correct", "indeterminate"].includes(classificationAssessment)) {
+    if (classificationAssessment && !["correct", "indeterminate", "not_applicable"].includes(classificationAssessment)) {
       addSignal(signals, 20, "audit_classification", "Audit recommends a different ruling classification.");
     }
+    if (designerReviewRequired) addSignal(signals, 15, "designer_review_required", "Audit requires designer review before the issue is considered closed.");
 
     if (elliptical) addSignal(signals, 12, "elliptical_followup", "Short or referential follow-up depends on prior conversation context.");
     const fragileFollowup = elliptical && (conf === "low" || status === "provisional" || status === "unresolved" || sources === 0 || feedback === "incorrect" || feedback === "unclear");
@@ -199,7 +210,11 @@ export function createTriageEngine() {
       addSignal(signals, 8, "provisional_with_authority", "A provisional ruling was returned despite recorded authority and non-low confidence.");
     }
     if (recommendedAction === "source_data_fix") addSignal(signals, 18, "audit_source_data", "Audit recommends a source-data fix.");
+    if (recommendedAction === "retrieval_fix") addSignal(signals, 18, "audit_retrieval_fix", "Audit recommends a retrieval fix.");
+    if (recommendedAction === "rule_clarification") addSignal(signals, 18, "audit_rule_clarification", "Audit recommends clarifying the written rule.");
     if (recommendedAction === "prompt_fix") addSignal(signals, 12, "audit_prompt", "Audit recommends a prompt fix.");
+    if (recommendedAction === "versioned_precedent_candidate") addSignal(signals, 12, "audit_precedent", "Audit identified a versioned precedent candidate requiring review.");
+    if (recommendedAction === "rule_change_candidate") addSignal(signals, 12, "audit_rule_change", "Audit identified a rule-change candidate requiring review.");
 
     const score = Math.min(100, signals.reduce((total, signal) => total + signal.points, 0));
     const priority = score >= 50 ? "high" : score >= 25 ? "medium" : score >= 10 ? "low" : "routine";
@@ -221,17 +236,18 @@ export function createTriageEngine() {
     const retrievalQueries = retrievalQueryCount(diagnostic);
 
     if (issues.includes("inconsistent_terminology")) return "terminology_voice";
-    if (issues.includes("missing_rule") || issues.includes("ambiguous_rule") || recommendedAction === "source_data_fix") return "source_specificity";
+    if (issues.includes("missing_rule") || issues.includes("ambiguous_rule") || ["source_data_fix", "rule_clarification", "versioned_precedent_candidate", "rule_change_candidate"].includes(recommendedAction)) return "source_specificity";
     if (score.elliptical && context.previous && (score.fragileFollowup || ["incorrect", "unclear"].includes(feedback))) return "conversation_continuity";
-    if ((classificationAssessment && !["correct", "indeterminate"].includes(classificationAssessment)) || issues.includes("uncovered_interaction")) return "classification";
+    if ((classificationAssessment && !["correct", "indeterminate", "not_applicable"].includes(classificationAssessment)) || issues.includes("uncovered_interaction")) return "classification";
     if ((status === "provisional" || status === "unresolved") && sources > 0 && conf !== "low") return "provisional_overuse";
-    if (issues.includes("retrieval_failure") || ["weak", "failure"].includes(retrievalAssessment) || (status !== "out_of_scope" && sources === 0) || (retrievalQueries > 0 && candidateCount === 0)) return "retrieval";
+    if (issues.includes("retrieval_failure") || recommendedAction === "retrieval_fix" || ["weak", "failure"].includes(retrievalAssessment) || (status !== "out_of_scope" && sources === 0) || (retrievalQueries > 0 && candidateCount === 0)) return "retrieval";
     if (feedback === "unclear" || issues.includes("unclear_explanation")) return "answer_completeness";
     return "other_attention";
   }
 
-  function triageInteractions(rows, intelligence = {}) {
+  function triageInteractions(rows, intelligence = {}, options = {}) {
     const interactions = Array.isArray(rows) ? rows.slice() : [];
+    const scope = text(options?.scope) === "reviewed_backlog" ? "reviewed_backlog" : "unreviewed";
     const diagnosticMap = mapByInteraction(intelligence.diagnostics || []);
     const auditMap = mapByInteraction(intelligence.audits || []);
     const sessions = new Map();
@@ -244,10 +260,13 @@ export function createTriageEngine() {
     }
     for (const sessionRows of sessions.values()) sessionRows.sort(compareConversationRows);
 
+    const unreviewedCount = interactions.filter((row) => reviewStatus(row) === "unreviewed").length;
     const scored = [];
     for (const row of interactions) {
-      const reviewStatus = text(row?.review_status || row?.reviewStatus || "unreviewed");
-      if (reviewStatus && reviewStatus !== "unreviewed") continue;
+      const currentReviewStatus = reviewStatus(row);
+      if (scope === "unreviewed" && currentReviewStatus !== "unreviewed") continue;
+      if (scope === "reviewed_backlog" && currentReviewStatus === "unreviewed") continue;
+
       const id = text(row?.id || row?.interactionId);
       if (!id) continue;
       const sessionRows = sessions.get(text(row?.session_id)) || [];
@@ -260,11 +279,13 @@ export function createTriageEngine() {
         audit: auditMap.get(id) || null
       };
       const scoring = scoreInteraction(row, context);
+      if (scope === "reviewed_backlog" && scoring.score < 10) continue;
       const rootCause = classifyRootCause(row, context, scoring);
       scored.push({
         interactionId: id,
         createdAt: text(row?.created_at),
         question: text(row?.question),
+        reviewStatus: currentReviewStatus,
         score: scoring.score,
         priority: scoring.priority,
         rootCause,
@@ -307,8 +328,12 @@ export function createTriageEngine() {
     return {
       schema: "gauntlet.rules-triage.v1",
       generatedAt: new Date().toISOString(),
+      scope,
       stats: {
-        unreviewed: scored.length,
+        scope,
+        eligible: scored.length,
+        unreviewed: unreviewedCount,
+        reviewedBacklog: scope === "reviewed_backlog" ? scored.length : 0,
         high: scored.filter((item) => item.priority === "high").length,
         medium: scored.filter((item) => item.priority === "medium").length,
         low: scored.filter((item) => item.priority === "low").length,

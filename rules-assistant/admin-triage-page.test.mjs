@@ -19,9 +19,19 @@ test("triage runs inside the authenticated admin runtime", () => {
   expect(ADMIN_PAGE_WITH_RULES_TRIAGE).not.toContain('id="rules-triage-script"');
 });
 
-test("triage renders a useful zero-work state", () => {
+test("triage exposes separate new-interaction and reviewed-backlog scopes", () => {
+  expect(ADMIN_PAGE_WITH_RULES_TRIAGE).toContain('id="triage-scope"');
+  expect(ADMIN_PAGE_WITH_RULES_TRIAGE).toContain('value="unreviewed">New / unreviewed');
+  expect(ADMIN_PAGE_WITH_RULES_TRIAGE).toContain('value="reviewed_backlog">Reviewed backlog');
+  expect(ADMIN_PAGE_WITH_RULES_TRIAGE).toContain("{scope:scope}");
+  expect(ADMIN_PAGE_WITH_RULES_TRIAGE).toContain("Mining reviewed interactions for deterministic refinement signals");
+  expect(ADMIN_PAGE_WITH_RULES_TRIAGE).toContain("reviewed-backlog");
+});
+
+test("triage renders useful zero-work states for both scopes", () => {
   expect(ADMIN_PAGE_WITH_RULES_TRIAGE).toContain("There are no unreviewed interactions to triage right now.");
   expect(ADMIN_PAGE_WITH_RULES_TRIAGE).toContain("there is nothing new to triage");
+  expect(ADMIN_PAGE_WITH_RULES_TRIAGE).toContain("No reviewed interactions currently carry deterministic refinement signals.");
 });
 
 test("triage export omits session identifiers while allowing in-memory conversation linkage", () => {
