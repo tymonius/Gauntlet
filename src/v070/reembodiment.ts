@@ -306,16 +306,8 @@ export function resolveV070ReembodimentRecovery(
       assetInstanceId: pending.assetInstanceId,
       sourceLabel: pending.sourceLabel,
       triggerValue: pending.triggerValue,
-    },
-  });
-  appendV070Event(state, {
-    type: 'reembodiment_recovered_identity',
-    actor: playerId,
-    visibility: playerId,
-    payload: {
       targetInstanceId,
       targetCardId: state.cardInstances[targetInstanceId]?.cardId,
-      triggeringArcaneInstanceId: pending.triggeringArcaneInstanceId,
     },
   });
 }
