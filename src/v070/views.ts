@@ -106,6 +106,11 @@ export interface V070SubversionAssetBattleView {
   candidateSubversionInstanceIds?: string[];
 }
 
+export interface V070FortificationsRetreatView {
+  playerId: PlayerId;
+  sourceInstanceId: string;
+}
+
 export interface V070BattleRuntimeView {
   stage: V070BattleRuntime['stage'];
   participants: Record<PlayerId, V070BattleParticipantView>;
@@ -124,6 +129,8 @@ export interface V070BattleRuntimeView {
     V070SpiritHollowAftermathView | null;
   pendingSubversionAssetBattle:
     V070SubversionAssetBattleView | null;
+  pendingFortificationsRetreat:
+    V070FortificationsRetreatView | null;
   footholdAssetWindowPlayer: PlayerId | null;
   footholdAssetWindowResolved: boolean;
   activePrintedTerritoryAtOnset:
@@ -693,6 +700,14 @@ function viewBattleRuntime(
                   ],
                 }
               : {}),
+          }
+        : null,
+    pendingFortificationsRetreat:
+      runtime.pendingFortificationsRetreat
+        ? {
+            playerId: runtime.pendingFortificationsRetreat.playerId,
+            sourceInstanceId:
+              runtime.pendingFortificationsRetreat.sourceInstanceId,
           }
         : null,
     footholdAssetWindowPlayer: runtime.footholdAssetWindowPlayer,

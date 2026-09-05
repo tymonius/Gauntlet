@@ -14,6 +14,10 @@ import type {
   V070UnsupportedBattleEffect,
 } from './battle-types';
 import { recordV070MysticBattleEffectApplied } from './mystics';
+import {
+  V070_FORTIFICATIONS_BATTLE_TEXT,
+  applyV070FortificationsGambitTacticEffect,
+} from './fortifications';
 
 export type V070BattleEffectTiming = 'reveal';
 
@@ -167,6 +171,18 @@ const handlers: V070BattleEffectHandler[] = [
         owner,
         commitment.instanceId,
         'neutral-resistance',
+      );
+    },
+  },
+  {
+    cardId: 'neutral-fortifications',
+    expectedText: V070_FORTIFICATIONS_BATTLE_TEXT,
+    timing: 'reveal',
+    apply: ({ state, owner, commitment }) => {
+      applyV070FortificationsGambitTacticEffect(
+        state,
+        owner,
+        commitment.instanceId,
       );
     },
   },
