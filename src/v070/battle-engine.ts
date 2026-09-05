@@ -25,6 +25,7 @@ import {
 import type { V070SubversionAssetBattleContinuation } from './battle-types';
 import {
   pruneV070ProtractedSiegeAftermathPlacements,
+  resolveV070ProtractedSiegeDepartures,
 } from './protracted-siege';
 
 export * from './battle-engine-prewar-bonds';
@@ -106,6 +107,7 @@ export function reduceV070BattleAction(
     pruneV070ProtractedSiegeAftermathPlacements(prepared);
   }
 
+  const previousPositions = battleOrPlayerPositions(prepared);
   const controlled = reembodimentControlledBattleEffect(action);
   const beforeHand = controlled
     ? [...prepared.players[controlled.playerId].zones.hand]
@@ -116,6 +118,11 @@ export function reduceV070BattleAction(
   const next = reduceV070BattleActionPreWarBonds(
     prepared,
     action as V070PreWarBondsBattleAction,
+  );
+  resolveV070ProtractedSiegeDepartures(
+    next,
+    previousPositions,
+    battleOrPlayerPositions(next),
   );
 
   if (controlled) {
@@ -151,6 +158,17 @@ export function reduceV070BattleAction(
     );
   }
   return next;
+}
+
+function battleOrPlayerPositions(
+  state: V070GameState,
+): Record<PlayerId, number> {
+  return state.battle
+    ? { ...state.battle.positions }
+    : {
+        A: state.players.A.position,
+        B: state.players.B.position,
+      };
 }
 
 function reembodimentControlledBattleEffect(
