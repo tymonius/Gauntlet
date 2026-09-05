@@ -3,7 +3,7 @@
   const FACTION_PRESENTATION = Object.freeze({
     military: {
       name: "Military",
-      summary: "Turn battlefield victories into Command, then spend it on movement, pressure, defense, and control.",
+      summary: "Push hard, control movement, and turn battlefield wins into momentum.",
       leaders: [
         { id: "general", name: "General", portrait: "/images/general.png", summary: "Attack, build momentum, and press one victory into the next." },
         { id: "commandant", name: "Commandant", portrait: "/images/commandant.png", summary: "Absorb attacks, counterattack, and turn defense into control." }
@@ -11,7 +11,7 @@
     },
     diplomats: {
       name: "Diplomats",
-      summary: "Use Influence, Terms, Proposals, concessions, and legitimacy to reshape the conflict.",
+      summary: "Make deals, force difficult choices, and win through negotiation as well as battle.",
       leaders: [
         { id: "ambassador", name: "Ambassador", portrait: "/images/ambassador.png", summary: "Make attractive offers and gain value when the opponent accepts." },
         { id: "senator", name: "Senator", portrait: "/images/senator.png", summary: "Risk political capital, endure setbacks, and win the long negotiation." }
@@ -19,33 +19,33 @@
     },
     financiers: {
       name: "Financiers",
-      summary: "Convert Capital, Treasury cards, Financial Capacity, Deeds, leverage, and ownership into strategic power.",
+      summary: "Build resources, buy advantages, and turn battlefield control into lasting power.",
       leaders: [
-        { id: "banker", name: "Banker", portrait: "/images/banker.png", summary: "Finance purchases flexibly and turn cards into collateral." },
-        { id: "executive", name: "Executive", portrait: "/images/executive.png", summary: "Occupy enemy ground and convert battlefield gains into ownership." }
+        { id: "banker", name: "Banker", portrait: "/images/banker.png", summary: "Build wealth steadily and turn spare cards into flexible resources." },
+        { id: "executive", name: "Executive", portrait: "/images/executive.png", summary: "Turn occupied enemy ground into lasting economic control." }
       ]
     },
     intelligence: {
       name: "Intelligence",
-      summary: "Gather Intel, complete Missions, inspect hidden commitments, and disrupt enemy plans.",
+      summary: "Gather information, interfere with plans, and stay a step ahead.",
       leaders: [
         { id: "ranger", name: "Ranger", portrait: "/images/ranger.png", summary: "Master terrain, fieldcraft, and adaptable operations." },
-        { id: "spymaster", name: "Spymaster", portrait: "/images/spymaster.png", summary: "Chain Missions together and coordinate a faster covert campaign." }
+        { id: "spymaster", name: "Spymaster", portrait: "/images/spymaster.png", summary: "Build a chain of covert operations and keep the opponent guessing." }
       ]
     },
     mystics: {
       name: "Mystics",
-      summary: "Perform Rites, invoke the Arcane, transform cards, and build toward ritual power.",
+      summary: "Transform cards, build strange combinations, and work toward powerful rituals.",
       leaders: [
-        { id: "alchemist", name: "Alchemist", portrait: "/images/alchemist.png", summary: "Transmute cards deliberately and construct powerful combinations." },
-        { id: "spirit-walker", name: "Spirit Walker", portrait: "/images/spirit%20walker.png", summary: "Protect begun Rites and the Ritual by sacrificing Arcane cards of sufficient value." }
+        { id: "alchemist", name: "Alchemist", portrait: "/images/alchemist.png", summary: "Transform cards deliberately and build powerful combinations." },
+        { id: "spirit-walker", name: "Spirit Walker", portrait: "/images/spirit%20walker.png", summary: "Protect your rituals as they build and trade resources to keep them alive." }
       ]
     },
     inquisition: {
       name: "Inquisition",
-      summary: "Build Conviction through condemnation, denial, Graveyard pressure, and Purge.",
+      summary: "Shut down enemy options, punish overreach, and grind away their resources.",
       leaders: [
-        { id: "grand-inquisitor", name: "Grand Inquisitor", portrait: "/images/grand%20inquisitor.png", summary: "Judge opposing cards and turn battle wins into efficient Purges." },
+        { id: "grand-inquisitor", name: "Grand Inquisitor", portrait: "/images/grand%20inquisitor.png", summary: "Judge the opponent's plays and turn battle wins into lasting suppression." },
         { id: "witch-hunter", name: "Witch Hunter", portrait: "/images/witch%20hunter.png", summary: "Punish failed attacks, pursue retreating enemies, and suppress resources." }
       ]
     }
@@ -57,7 +57,6 @@
   const state = {
     factionId: "",
     leaderId: "",
-    introConfirmed: false,
     starterDecks: [],
     starterLoadError: null
   };
@@ -68,17 +67,12 @@
   async function init() {
     for (const id of [
       "leaderFieldset", "leaderPrompt", "leaderChoices", "selectedHeading", "selectedSummary",
-      "starterPreview", "printForm", "printSelectionHeading", "printSelectionCopy", "introConfirmed",
+      "starterPreview", "printForm", "printSelectionHeading", "printSelectionCopy",
       "openStarterDeck", "printStatus"
     ]) el[id] = document.getElementById(id);
 
     document.querySelectorAll('input[name="faction"]').forEach(input => {
       input.addEventListener("change", () => selectFaction(input.value));
-    });
-    el.introConfirmed.addEventListener("change", () => {
-      state.introConfirmed = el.introConfirmed.checked;
-      saveState();
-      syncPrintAction();
     });
     el.printForm.addEventListener("submit", openGuidedDeckbuilder);
     installTrackedPlaytestAction();
@@ -288,9 +282,8 @@
     const faction = FACTIONS[state.factionId];
     const leader = selectedLeader();
     const deck = selectedStarterDeck();
-    const complete = Boolean(faction && leader && state.introConfirmed);
+    const complete = Boolean(faction && leader);
 
-    el.introConfirmed.checked = state.introConfirmed;
     el.openStarterDeck.disabled = !complete;
     if (el.startTrackedPlaytest) el.startTrackedPlaytest.disabled = !complete;
     el.printSelectionHeading.textContent = faction && leader
@@ -312,11 +305,6 @@
       document.getElementById("choose")?.scrollIntoView({ behavior: "smooth", block: "start" });
       return;
     }
-    if (!el.introConfirmed.checked) {
-      setStatus("Confirm that you read the First Game Introduction.", "error");
-      el.introConfirmed.focus();
-      return;
-    }
 
     saveState();
     const url = new URL("../deckbuilder/", window.location.href);
@@ -330,8 +318,8 @@
   function openTrackedPlaytest() {
     const faction = FACTIONS[state.factionId];
     const leader = selectedLeader();
-    if (!faction || !leader || !state.introConfirmed) {
-      setStatus("Choose a faction and Leader and confirm the First Game Introduction before tracking a game.", "error");
+    if (!faction || !leader) {
+      setStatus("Choose a faction and Leader before tracking a game.", "error");
       return;
     }
     saveState();
@@ -350,7 +338,6 @@
       if (FACTIONS[saved.factionId]) state.factionId = saved.factionId;
       const faction = FACTIONS[state.factionId];
       if (faction?.leaders.some(leader => leader.id === saved.leaderId)) state.leaderId = saved.leaderId;
-      state.introConfirmed = saved.introConfirmed === true;
     } catch {
       // A damaged local preference should not block onboarding.
     }
@@ -361,7 +348,6 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
         factionId: state.factionId,
         leaderId: state.leaderId,
-        introConfirmed: state.introConfirmed,
         updatedAt: new Date().toISOString()
       }));
     } catch {
