@@ -63,12 +63,12 @@ describe("single canonical physical-face render authority", () => {
   });
 
   it("retains print compatibility edges without making them production authorities", () => {
-    expect(cardLegacyAlias).toContain("/card-design/face-render.html");
-    expect(territoryLegacyAlias).toContain("/card-design/face-render.html");
-    expect(componentLegacyAlias).toContain("/card-design/component-render.html");
-    expect(cardLegacyAlias).toContain("window.location.replace(target)");
-    expect(componentLegacyAlias).toContain("window.location.replace(target)");
-    expect(territoryLegacyAlias).toContain("window.location.replace(target)");
+    expect(cardLegacyAlias).toContain('data-legacy-face-route="card"');
+    expect(territoryLegacyAlias).toContain('data-legacy-face-route="territory"');
+    expect(componentLegacyAlias).toContain('data-legacy-face-route="component"');
+    for (const alias of [cardLegacyAlias, componentLegacyAlias, territoryLegacyAlias]) {
+      expect(alias).toContain("/card-design/legacy-face-redirect.mjs");
+    }
     expect(existsSync(["card-design", "component-print-render.js"].join("/"))).toBe(false);
   });
 
@@ -82,7 +82,7 @@ describe("single canonical physical-face render authority", () => {
       legacyTtsSupplemental,
       legacyTtsFinalized,
     ]) {
-      expect(shell).toContain("/card-design/face-render.html");
+      expect(shell).toContain("/card-design/legacy-face-redirect.mjs");
       expect(shell).not.toContain("/card-design/component-render.html");
       expect(shell).not.toContain("/card-design/card-review-render.html");
       expect(shell).not.toContain("/card-design/territory-review-render.html");

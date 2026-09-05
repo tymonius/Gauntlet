@@ -20,13 +20,9 @@ The runtime does not hard-code starter, card, Leader, or Territory counts.
 
 ## Single card-face render authority
 
-All TTS card faces are captured from the production **Card Design** surfaces. TTS owns packaging, not a second visual system:
+All TTS card faces are captured from the canonical `card-design/face-render.html` route using a FaceSpec identity. TTS owns packaging, not a second visual system. The pages under `tts/*-renderer/` and the older Card Design renderer URLs remain compatibility redirects; they delegate query translation to `card-design/legacy-face-redirect.mjs` and contain no rendering implementation.
 
-- playable cards: `card-design/card-review-render.html`;
-- Territories: `card-design/territory-review-render.html`;
-- Leaders, trackers, references, Rites, Proposals/Treaties, Capital Ledger, and Deeds: `card-design/component-print-render.html`.
-
-This means parchment, faction symbols, border colors, artwork framing, reference-card divider policy, the Universal Reference G watermark, typography, and component geometry come from the same CSS/markup that powers `/card-design`. The older standalone TTS render pages are not valid card-face authorities.
+This means parchment, faction symbols, border colors, artwork framing, reference-card divider policy, the Universal Reference G watermark, typography, and component geometry come from the same CSS/markup that powers `/card-design`. Compatibility pages are not valid card-face authorities.
 
 The printed version footer for current TTS captures comes from the current-game authority's `displayVersion`. No separate current-development TTS version override is maintained.
 

@@ -89,7 +89,7 @@ describe('TTS card render authority', () => {
       supplementalTtsShell,
       finalizedTtsShell,
     ]) {
-      expect(shell).toContain('/card-design/face-render.html');
+      expect(shell).toContain('/card-design/legacy-face-redirect.mjs');
       expect(shell).not.toContain('/card-design/component-render.html');
       expect(shell).not.toContain('/card-design/card-review-render.html');
       expect(shell).not.toContain('/card-design/territory-review-render.html');

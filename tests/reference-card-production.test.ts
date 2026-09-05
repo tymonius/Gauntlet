@@ -177,7 +177,7 @@ describe('production faction reference cards', () => {
   });
 
   it('reuses the canonical Card Design reference renderer for TTS and every other consumer', () => {
-    expect(legacyTtsRendererHtml).toContain('/card-design/face-render.html');
+    expect(legacyTtsRendererHtml).toContain('/card-design/legacy-face-redirect.mjs');
     expect(referenceTemplate).toContain('loadReferenceRecordForFaceSpec(spec)');
     expect(referenceTemplate).toContain('referenceCardMarkup(record, spec.side');
     expect(referenceRenderer).toContain('reference-watermark');

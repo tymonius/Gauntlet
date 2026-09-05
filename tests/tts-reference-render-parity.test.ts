@@ -9,8 +9,8 @@ const universalReference = readFileSync('card-design/universal-reference.css', '
 
 describe('TTS faction-reference renderer parity', () => {
   it('redirects the legacy TTS reference surface to the canonical physical face renderer', () => {
-    expect(legacyRenderer).toContain('/card-design/face-render.html');
-    expect(legacyRenderer).toContain('component:${component}:${side}');
+    expect(legacyRenderer).toContain('data-legacy-face-route="canonical-component"');
+    expect(legacyRenderer).toContain('/card-design/legacy-face-redirect.mjs');
     expect(legacyRenderer).not.toContain('/card-design/component-render.html');
     expect(existsSync(['tts', 'supplemental-renderer', 'supplemental-renderer.js'].join('/'))).toBe(false);
     expect(existsSync(['tts', 'supplemental-renderer', 'supplemental-renderer.css'].join('/'))).toBe(false);
