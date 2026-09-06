@@ -1,5 +1,6 @@
 import {
   V070GameActionError,
+  appendV070Event,
   type V070GameState,
 } from './engine';
 import type { PlayerId } from './rules';
@@ -77,6 +78,15 @@ export type V070BattleRevealChoice =
       sourceInstanceId: string;
       /** Opposing Gambits/Tactics whose effects had not taken effect. */
       candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'disruption';
+      owner: PlayerId;
+      opponent: PlayerId;
+      sourceInstanceId: string;
+      role: 'gambit' | 'tactic';
+      /** Opposing cards at this reveal stage whose effects had not taken effect. */
+      candidateInstanceIds: string[];
     };
 
 declare module './battle-types' {
@@ -98,6 +108,37 @@ export function queueV070BattleRevealChoice(
   }
   runtime.battleRevealChoices ??= [];
   runtime.battleRevealChoices.push(choice);
+
+  // Disruption returns its target out of the battle immediately. No other
+  // reveal effect can alter its candidate set once the scheduler pauses, so
+  // open this choice at registration. This also lets the outer battle facade
+  // own its resolution without teaching older stacked facades a new choice.
+  if (choice.kind === 'disruption') {
+    runtime.battleRevealChoiceOpen = true;
+    appendV070Event(state, {
+      type: 'disruption_battle_choice_pending',
+      actor: choice.owner,
+      visibility: 'public',
+      payload: {
+        playerId: choice.owner,
+        sourceInstanceId: choice.sourceInstanceId,
+        sourceCardId: 'neutral-disruption',
+        revealRole: choice.role,
+        candidateCount: choice.candidateInstanceIds.length,
+        mandatory: true,
+      },
+    });
+    appendV070Event(state, {
+      type: 'disruption_battle_choice_options',
+      actor: choice.owner,
+      visibility: choice.owner,
+      payload: {
+        sourceInstanceId: choice.sourceInstanceId,
+        revealRole: choice.role,
+        targetInstanceIds: [...choice.candidateInstanceIds],
+      },
+    });
+  }
 }
 
 export function pendingV070BattleRevealChoice(
