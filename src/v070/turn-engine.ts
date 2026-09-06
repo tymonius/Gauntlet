@@ -253,7 +253,7 @@ function reducePostDrawAndObserveReembodiment(
 
 function battleOrPlayerPositions(
   state: V070GameState,
-): Record<PlayerId, number> {
+): Record<PlayerId, number | null> {
   return state.battle
     ? { ...state.battle.positions }
     : {
