@@ -213,6 +213,8 @@ function installEmbeddedInspection(spec, result) {
   if (!(image instanceof HTMLImageElement) || !frame || !(image.currentSrc || image.src)) return;
 
   frame.classList.add('art-inspectable');
+  frame.style.cursor = 'zoom-in';
+  image.style.cursor = 'zoom-in';
   frame.tabIndex = 0;
   frame.setAttribute('role', 'button');
   frame.setAttribute('aria-haspopup', 'dialog');
