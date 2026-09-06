@@ -1,0 +1,159 @@
+body:has(.gauntlet-card-inspector[open]) {
+  overflow: hidden;
+}
+
+.gauntlet-card-inspector {
+  width: min(96vw, 1180px);
+  height: min(96dvh, 920px);
+  max-width: none;
+  max-height: none;
+  margin: auto;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 18px;
+  background: rgba(30, 25, 21, .96);
+  color: #fffaf0;
+  box-shadow: 0 28px 90px rgba(0, 0, 0, .44);
+  overflow: hidden;
+}
+
+.gauntlet-card-inspector::backdrop {
+  background: rgba(18, 14, 11, .76);
+  backdrop-filter: blur(3px);
+}
+
+.gauntlet-card-inspector-toolbar {
+  min-height: 58px;
+  padding: 8px 10px 8px 14px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, .12);
+  background: rgba(15, 12, 10, .7);
+}
+
+.gauntlet-card-inspector-label {
+  overflow: hidden;
+  font-family: var(--sans, var(--font-interface, Inter, ui-sans-serif, system-ui, sans-serif));
+  font-size: .86rem;
+  font-weight: 750;
+  letter-spacing: .025em;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gauntlet-card-inspector-back,
+.gauntlet-card-inspector-close {
+  border: 1px solid rgba(255, 255, 255, .2);
+  color: #fffaf0;
+  background: rgba(255, 255, 255, .08);
+  font-family: var(--sans, var(--font-interface, Inter, ui-sans-serif, system-ui, sans-serif));
+  cursor: pointer;
+}
+
+.gauntlet-card-inspector-back {
+  min-height: 38px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: .78rem;
+  font-weight: 750;
+}
+
+.gauntlet-card-inspector-close {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 1.65rem;
+  line-height: 1;
+}
+
+.gauntlet-card-inspector-back:hover,
+.gauntlet-card-inspector-close:hover {
+  background: rgba(255, 255, 255, .15);
+}
+
+.gauntlet-card-inspector-body {
+  height: calc(100% - 58px);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  overflow: auto;
+}
+
+.gauntlet-card-inspector-card-stage {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.gauntlet-card-inspector-frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 240px;
+  height: 336px;
+  border: 0;
+  background: transparent;
+  transform-origin: top left;
+}
+
+.gauntlet-card-inspector-art-stage {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  place-items: center;
+}
+
+.gauntlet-card-inspector-art-stage:not([hidden]) {
+  display: grid;
+}
+
+.gauntlet-card-inspector-art-image {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  box-shadow: 0 16px 46px rgba(0, 0, 0, .38);
+}
+
+@media (max-width: 700px) {
+  .gauntlet-card-inspector {
+    width: 100vw;
+    height: 100dvh;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .gauntlet-card-inspector-toolbar {
+    min-height: 54px;
+    padding-left: 10px;
+  }
+
+  .gauntlet-card-inspector-body {
+    height: calc(100% - 54px);
+    padding: 14px;
+  }
+
+  .gauntlet-card-inspector-label {
+    font-size: .78rem;
+  }
+
+  .gauntlet-card-inspector-back {
+    padding: 0 9px;
+    font-size: .72rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gauntlet-card-inspector::backdrop {
+    backdrop-filter: none;
+  }
+}
+
+@media print {
+  .gauntlet-card-inspector {
+    display: none !important;
+  }
+}
