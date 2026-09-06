@@ -190,7 +190,15 @@ PR: [#1510](https://github.com/tymonius/Gauntlet/pull/1510). Branch: `cleanup/ve
 
 Local validation passes: 32 architecture-boundary tests, TypeScript, rules-authority governance, both maintained v0.6.3 language validators, and current lifecycle plan resolution. The end-to-end current build passes source materialization and the eight-page visual fidelity gate locally; final PDF pagination still requires the CI environment's external publication font access. All six automatic PR workflows are green at `d4621fa9`, and the manually dispatched [full PR quality gate](https://github.com/tymonius/Gauntlet/actions/runs/34011069422) passes both current and historical booklet renders. <!-- DOC-HISTORICAL -->
 
-Next: validate both booklet contracts in GitHub Actions, then continue making maintained release publication orchestration lifecycle-driven. The remaining version-specific release builders and live-publication verifier should become release adapters behind current entrypoints rather than define maintained workflow identity.
+The full GitHub Actions gate passes both booklet contracts. Next: continue making maintained release publication orchestration lifecycle-driven. The remaining version-specific release builders and live-publication verifier should become release adapters behind current entrypoints rather than define maintained workflow identity.
+
+## Version-neutral current release materialization
+
+PR: [#1533](https://github.com/tymonius/Gauntlet/pull/1533). Branch: `cleanup/version-agnostic-release-materialization` (stacked on #1510). The automatic current release package workflow now resolves the source builder, booklet renderer, version, and package root through `config/release-lifecycle.json`. Preview artifacts, refresh branches and PRs, validators, and release-finalization commits follow the selected current release without embedding v0.7.1 workflow identity. Version-specific builders remain explicit release adapters at the publication boundary.
+
+The refresh change detector includes untracked files, so a newly promoted release directory cannot be skipped. Local validation passes TypeScript, 32 architecture-boundary tests, four Rules Arbiter synchronization tests, current lifecycle plan resolution, and the CI workflow inventory. The repository's separate conversation-audit attestation still has its pre-existing one-entry status-count mismatch; the governance structure and live-tail checks pass. All automatic PR workflows are green at `99ae4115`, and the manually dispatched [full PR quality gate](https://github.com/tymonius/Gauntlet/actions/runs/34024661434) passes the current publication and both booklet contracts.
+
+Next: make the maintained live-publication verifier lifecycle-driven. Keep deployed release endpoint details in per-release configuration or adapters while giving the active workflow and verifier stable current-release names.
 
 ## Architectural queue
 
