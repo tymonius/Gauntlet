@@ -36,6 +36,8 @@ import {
 } from './tariffs-battle';
 import { applyV070BattleRetreatStep } from './retreat-step';
 import { v070MonasterySuppressesArcaneBattleEffects } from './territories';
+import { v070MysticInvocationPendingPlayers } from './mystics';
+import { pendingV070BattleRevealChoice } from './battle-reveal-choices';
 
 export type {
   V070BattleEffectContext,
@@ -46,6 +48,16 @@ export {
   resolveV070AftermathDrawEffects,
   resolveV070UnbrokenRanksCommand,
 } from './battle-effects-core';
+
+type V070RevealEncounteredAt = 'reveal_gambits' | 'reveal_tactics';
+
+declare module './battle-types' {
+  interface V070BattleRuntime {
+    /** Remaining effects from one simultaneous reveal, already authority-validated. */
+    pendingRevealEffectCommitments?: V070BattleCardCommitment[];
+    pendingRevealEffectEncounteredAt?: V070RevealEncounteredAt | null;
+  }
+}
 
 const landslideHandler: core.V070BattleEffectHandler = {
   cardId: 'neutral-landslide',
@@ -149,79 +161,152 @@ export function v070BattleEffectHandler(
 export function resolveV070SupportedRevealEffects(
   state: V070GameState,
   commitments: readonly V070BattleCardCommitment[],
-  encounteredAt: 'reveal_gambits' | 'reveal_tactics',
+  encounteredAt: V070RevealEncounteredAt,
 ): V070UnsupportedBattleEffect[] {
-  // Validate the complete reveal before mutating live state. This preserves the
-  // fail-closed contract even when core and specialized handlers share timing.
+  // Validate the complete simultaneous reveal before mutating live state. Once
+  // validated, effects may pause between alternating applications for choices.
   const unsupported = commitments.flatMap(commitment =>
     unsupportedRevealEffect(state, commitment, encounteredAt)
   );
   if (unsupported.length > 0) return unsupported;
 
-  for (const commitment of orderedRevealCommitments(state, commitments)) {
-    const cardId = state.cardInstances[commitment.instanceId]?.cardId ?? '';
-    const card = v070CanonicalContent.cardsById.get(cardId);
-    if (!card) throw new Error(`Unknown canonical card ${cardId}.`);
+  const runtime = state.battleRuntime;
+  if (!runtime) throw new Error('Battle effect resolution requires an active runtime.');
+  if ((runtime.pendingRevealEffectCommitments?.length ?? 0) > 0) {
+    throw new Error('Cannot start a new reveal effect sequence while another is paused.');
+  }
 
-    if (v070MonasterySuppressesArcaneBattleEffects(state)
-      && card.trait === 'Arcane') {
-      appendV070Event(state, {
-        type: 'battle_card_effect_suppressed',
-        actor: commitment.owner,
-        visibility: 'public',
-        payload: {
-          instanceId: commitment.instanceId,
-          cardId,
-          role: commitment.role,
-          reason: 'Monastery',
-        },
-      });
-      continue;
+  applyRevealCommitmentsUntilPause(
+    state,
+    orderedRevealCommitments(state, commitments),
+    encounteredAt,
+  );
+  return [];
+}
+
+export function v070BattleRevealEffectsPending(
+  state: V070GameState,
+): boolean {
+  return (state.battleRuntime?.pendingRevealEffectCommitments?.length ?? 0) > 0;
+}
+
+/** Continue an already validated reveal sequence after its interrupt resolves. */
+export function resumeV070SupportedRevealEffects(
+  state: V070GameState,
+): void {
+  const runtime = state.battleRuntime;
+  if (!runtime) {
+    throw new Error('Battle effect resumption requires an active runtime.');
+  }
+  const remaining = runtime.pendingRevealEffectCommitments ?? [];
+  const encounteredAt = runtime.pendingRevealEffectEncounteredAt;
+  if (remaining.length === 0 || !encounteredAt) return;
+
+  runtime.pendingRevealEffectCommitments = [];
+  runtime.pendingRevealEffectEncounteredAt = null;
+  applyRevealCommitmentsUntilPause(
+    state,
+    remaining,
+    encounteredAt,
+  );
+}
+
+function applyRevealCommitmentsUntilPause(
+  state: V070GameState,
+  commitments: readonly V070BattleCardCommitment[],
+  encounteredAt: V070RevealEncounteredAt,
+): void {
+  const runtime = state.battleRuntime;
+  if (!runtime) throw new Error('Battle effect resolution requires an active runtime.');
+
+  for (let index = 0; index < commitments.length; index += 1) {
+    const commitment = commitments[index];
+    applyValidatedRevealCommitment(state, commitment, encounteredAt);
+
+    if (revealEffectInterruptPending(state)) {
+      runtime.pendingRevealEffectCommitments = commitments.slice(index + 1);
+      runtime.pendingRevealEffectEncounteredAt =
+        runtime.pendingRevealEffectCommitments.length > 0
+          ? encounteredAt
+          : null;
+      return;
     }
+  }
 
-    const specialized = specializedHandlers.get(cardId);
-    if (!specialized) {
-      // Core resolves one commitment at a time here so specialized effects keep
-      // their exact attacker/defender alternating position at shared timing.
-      const coreUnsupported = core.resolveV070SupportedRevealEffects(
-        state,
-        [commitment],
-        encounteredAt,
-      );
-      if (coreUnsupported.length > 0) {
-        throw new Error(
-          `Validated core battle effect became unsupported during resolution: ${cardId}.`,
-        );
-      }
-      continue;
-    }
+  runtime.pendingRevealEffectCommitments = [];
+  runtime.pendingRevealEffectEncounteredAt = null;
+}
 
-    specialized.apply({
-      state,
-      owner: commitment.owner,
-      opponent: commitment.owner === 'A' ? 'B' : 'A',
-      commitment,
-    });
+function revealEffectInterruptPending(state: V070GameState): boolean {
+  return Boolean(
+    pendingV070BattleRevealChoice(state)
+    || v070MysticInvocationPendingPlayers(state).length > 0,
+  );
+}
+
+function applyValidatedRevealCommitment(
+  state: V070GameState,
+  commitment: V070BattleCardCommitment,
+  encounteredAt: V070RevealEncounteredAt,
+): void {
+  const cardId = state.cardInstances[commitment.instanceId]?.cardId ?? '';
+  const card = v070CanonicalContent.cardsById.get(cardId);
+  if (!card) throw new Error(`Unknown canonical card ${cardId}.`);
+
+  if (v070MonasterySuppressesArcaneBattleEffects(state)
+    && card.trait === 'Arcane') {
     appendV070Event(state, {
-      type: 'battle_card_effect_applied',
+      type: 'battle_card_effect_suppressed',
       actor: commitment.owner,
       visibility: 'public',
       payload: {
         instanceId: commitment.instanceId,
         cardId,
         role: commitment.role,
-        timing: specialized.timing,
+        reason: 'Monastery',
       },
     });
+    return;
   }
 
-  return [];
+  const specialized = specializedHandlers.get(cardId);
+  if (!specialized) {
+    const coreUnsupported = core.resolveV070SupportedRevealEffects(
+      state,
+      [commitment],
+      encounteredAt,
+    );
+    if (coreUnsupported.length > 0) {
+      throw new Error(
+        `Validated core battle effect became unsupported during resolution: ${cardId}.`,
+      );
+    }
+    return;
+  }
+
+  specialized.apply({
+    state,
+    owner: commitment.owner,
+    opponent: commitment.owner === 'A' ? 'B' : 'A',
+    commitment,
+  });
+  appendV070Event(state, {
+    type: 'battle_card_effect_applied',
+    actor: commitment.owner,
+    visibility: 'public',
+    payload: {
+      instanceId: commitment.instanceId,
+      cardId,
+      role: commitment.role,
+      timing: specialized.timing,
+    },
+  });
 }
 
 function unsupportedRevealEffect(
   state: V070GameState,
   commitment: V070BattleCardCommitment,
-  encounteredAt: 'reveal_gambits' | 'reveal_tactics',
+  encounteredAt: V070RevealEncounteredAt,
 ): V070UnsupportedBattleEffect[] {
   const cardId = state.cardInstances[commitment.instanceId]?.cardId ?? '';
   const card = v070CanonicalContent.cardsById.get(cardId);
