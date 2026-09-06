@@ -10,9 +10,6 @@ on:
         default: false
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 jobs:
   build-booklet:
     runs-on: ubuntu-latest
