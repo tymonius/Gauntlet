@@ -13,6 +13,13 @@ export const V070_ARMISTICE_ID = 'neutral-armistice' as const;
 export const V070_ARMISTICE_BATTLE_TEXT =
   "The attacker withdraws. Put every other Gambit and Tactic still in battle in its owner's Discard Pile, then put this card in its owner's Graveyard." as const;
 
+declare module './battle-types' {
+  interface V070BattleRuntime {
+    /** Set when Armistice has ended the reveal procedure in a late withdrawal. */
+    armisticeWithdrawalResolved?: boolean;
+  }
+}
+
 function validateV070ArmisticeAuthority(): void {
   const card = v070CanonicalContent.cardsById.get(V070_ARMISTICE_ID);
   const effect = card?.effects.find(effect => effect.label === 'Gambit/Tactic');
@@ -93,6 +100,11 @@ export function registerV070ArmisticeBattleEffect(
   state.battle = resolveV070Withdrawal(battle, [battle.attacker]);
   runtime.pendingOutcome = null;
   runtime.stage = 'aftermath';
+  runtime.armisticeWithdrawalResolved = true;
+
+  // The core Gambit reveal path normally opens Training Grounds after reveal
+  // effects finish. This battle has already ended, so suppress that redraw.
+  runtime.trainingGroundsRedrawResolved = true;
 
   for (const playerId of ['A', 'B'] as const) {
     const from = previousPositions[playerId];
