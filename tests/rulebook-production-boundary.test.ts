@@ -1,10 +1,17 @@
 import fs from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { describe, expect, it } from 'vitest';
 
 const read = (path: string) => fs.readFileSync(path, 'utf8');
 
 const adapter = read('scripts/build-rulebook-production.py');
 const historicalAdapter = read('scripts/build-v063-rulebook-production.py');
+const currentAdapter = read('scripts/render-current-rulebook-booklet.mjs');
+const lifecycle = JSON.parse(read('config/release-lifecycle.json'));
+const currentWorkflow = read('.github/workflows/build-current-rulebook-booklet.yml');
+const historicalWorkflow = read('.github/workflows/build-historical-v063-booklet.yml');
+const publishWorkflow = read('.github/workflows/publish-current-rulebook-booklet.yml');
+const qualityGate = read('.github/workflows/pr-quality-gate.yml');
 const currentRenderers = [
   read('scripts/render-v070-booklet.mjs'),
   read('scripts/render-v071-booklet.mjs'),
@@ -43,9 +50,37 @@ describe('Rulebook production ownership', () => {
     }
   });
 
+  it('selects current booklet adapters from release lifecycle instead of a version-pinned workflow', () => {
+    const currentRelease = lifecycle.releases[lifecycle.current_release];
+    const plan = JSON.parse(execFileSync(process.execPath, ['scripts/render-current-rulebook-booklet.mjs', '--plan'], { encoding: 'utf8' }));
+    expect(currentRelease.publication.source_builder).toBe('scripts/build-v071-release-source.mjs');
+    expect(currentRelease.publication.rulebook_booklet_renderer).toBe('scripts/render-v071-booklet.mjs');
+    expect(plan).toMatchObject({
+      version: lifecycle.current_release,
+      releaseRoot: currentRelease.current_package_path.replace(/\/$/, ''),
+      sourceBuilder: currentRelease.publication.source_builder,
+      bookletRenderer: currentRelease.publication.rulebook_booklet_renderer,
+    });
+    expect(currentAdapter).toContain('lifecycle.current_release');
+    expect(currentAdapter).toContain('release.publication?.source_builder');
+    expect(currentAdapter).toContain('release.publication?.rulebook_booklet_renderer');
+    expect(currentAdapter).not.toContain("const RELEASE_VERSION = 'v0.7.1'");
+    expect(currentWorkflow).toContain('node scripts/render-current-rulebook-booklet.mjs');
+    expect(currentWorkflow).not.toContain('build-v063-rulebook-production.py');
+    expect(currentWorkflow).not.toContain('render-clean-v063-booklet.mjs');
+    expect(currentWorkflow).not.toContain('v0.7.1');
+    expect(publishWorkflow).toContain('./.github/workflows/build-current-rulebook-booklet.yml');
+    expect(publishWorkflow).not.toContain('v0.6.3');
+    expect(qualityGate).toContain("uses: ./.github/workflows/build-current-rulebook-booklet.yml");
+    expect(qualityGate).toContain("uses: ./.github/workflows/build-historical-v063-booklet.yml");
+  });
+
   it('retains v0.6.3 as a fixed historical compatibility entrypoint', () => {
     expect(historicalAdapter).toContain('"v0.6.3"');
     expect(historicalAdapter).toContain('".v063-player-facing-input.md"');
     expect(historicalAdapter).toContain('"build-rulebook-production.py"');
+    expect(historicalWorkflow).toContain('Build historical v0.6.3 Rulebook booklet');
+    expect(historicalWorkflow).toContain('scripts/render-clean-v063-booklet.mjs');
+    expect(historicalWorkflow).not.toContain('gauntlet-current-rulebook-booklet');
   });
 });
