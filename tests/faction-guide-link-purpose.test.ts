@@ -17,7 +17,7 @@ describe("faction guide link purpose", () => {
     it(`${page} gives every repeated guide link a faction-specific accessible name`, () => {
       const html = readFileSync(page, "utf8");
       for (const faction of factions) {
-        expect(html).toContain(`aria-label="Explore the ${faction} faction guide (opens in a new tab)"`);
+        expect(html).toContain(`aria-label="Explore the full guide — ${faction} faction (opens in a new tab)"`);
       }
     });
   }
