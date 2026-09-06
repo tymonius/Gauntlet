@@ -182,7 +182,7 @@ PR: [#1508](https://github.com/tymonius/Gauntlet/pull/1508). Branch: `cleanup/ar
 
 Local validation passes: 20 focused tests, TypeScript, all 154 release-recovery locks, release-path normalization, rules-authority governance, the certified player Rulebook validator, and the maintained Last Stand terminology contract.
 
-Next: make the maintained current-Rulebook booklet workflow independent of the v0.6.3-named production pipeline. Preserve the v0.6.3 booklet path as a historical reproduction contract, and route current releases through explicit current-authority inputs and version-neutral entrypoints.
+Next: make the maintained current-Rulebook booklet workflow independent of the v0.6.3-named production pipeline. Preserve the v0.6.3 booklet path as a historical reproduction contract, and route current releases through explicit current-authority inputs and version-neutral entrypoints. <!-- DOC-HISTORICAL -->
 
 ## Architectural queue
 
