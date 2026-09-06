@@ -16,7 +16,8 @@ jobs:
     outputs:
       publication: ${{ steps.scope.outputs.publication }}
       onboarding: ${{ steps.scope.outputs.onboarding }}
-      booklet: ${{ steps.scope.outputs.booklet }}
+      current_booklet: ${{ steps.scope.outputs.current_booklet }}
+      historical_booklet: ${{ steps.scope.outputs.historical_booklet }}
       ci_inventory: ${{ steps.scope.outputs.ci_inventory }}
     steps:
       - name: Determine relevant contracts without checkout
@@ -46,9 +47,9 @@ jobs:
               exact('config/release-lifecycle.json'),
               exact('scripts/validate-current-public-contract.mjs'),
               exact('scripts/validate-current-release-payload.mjs'),
+              exact('scripts/materialize-public-route-compatibility.mjs'),
               exact('.github/workflows/current-publication-contract.yml'),
-              under('releases/v0.6.3/'),
-              under('releases/v0.6.3-reconstructed/'),
+              under('releases/'),
               under('v0.6.3/'),
               under('changelog/'),
               exact('release-surface.css'),
@@ -74,13 +75,30 @@ jobs:
               exact('deckbuilder/starter-decks.js'),
             );
 
-            const booklet = any(
-              exact('.github/workflows/build-clean-v063-booklet.yml'),
+            const currentBooklet = any(
+              exact('.github/workflows/build-current-rulebook-booklet.yml'),
+              exact('.github/workflows/publish-current-rulebook-booklet.yml'),
+              exact('config/release-lifecycle.json'),
+              exact('scripts/render-current-rulebook-booklet.mjs'),
+              exact('scripts/build-v071-release-source.mjs'),
+              exact('scripts/render-v071-booklet.mjs'),
+              exact('scripts/run-v071-rulebook-renderer.mjs'),
               exact('scripts/build-rulebook-production.py'),
+              exact('scripts/publication-utils.mjs'),
+              under('game-data/'),
+              under('rulebook/'),
+              under('legacy/v0.6.1-rulebook-publication/'),
+              under('releases/v0.7.1/'),
+              under('images/sketches/hero-sketches/')
+            );
+
+            const historicalBooklet = any(
+              exact('.github/workflows/build-historical-v063-booklet.yml'),
               exact('scripts/build-v063-rulebook-production.py'),
               exact('scripts/run-v063-rulebook-renderer.mjs'),
               exact('scripts/render-clean-v063-booklet.mjs'),
               exact('scripts/validate-clean-v063-booklet.mjs'),
+              exact('scripts/validate-v063-rulebook-wordmark.mjs'),
               exact('scripts/materialize-clean-v063-booklet.mjs'),
               exact('scripts/publication-utils.mjs'),
               exact('rules-assistant/v063-last-stand-language.js'),
@@ -102,7 +120,8 @@ jobs:
 
             core.setOutput('publication', String(publication));
             core.setOutput('onboarding', String(onboarding));
-            core.setOutput('booklet', String(booklet));
+            core.setOutput('current_booklet', String(currentBooklet));
+            core.setOutput('historical_booklet', String(historicalBooklet));
             core.setOutput('ci_inventory', String(ciInventory));
             core.summary
               .addHeading('PR contract routing')
@@ -110,7 +129,8 @@ jobs:
                 [{data: 'Contract', header: true}, {data: 'Run?', header: true}],
                 ['Current publication', String(publication)],
                 ['Onboarding handoff', String(onboarding)],
-                ['Rulebook booklet', String(booklet)],
+                ['Current Rulebook booklet', String(currentBooklet)],
+                ['Historical v0.6.3 booklet', String(historicalBooklet)],
                 ['CI inventory', String(ciInventory)],
               ])
               .write();
@@ -127,11 +147,17 @@ jobs:
     if: needs.scope.outputs.onboarding == 'true'
     uses: ./.github/workflows/test-standalone-onboarding-browser.yml
 
-  booklet:
-    name: Rulebook booklet contract
+  current_booklet:
+    name: Current Rulebook booklet contract
     needs: scope
-    if: needs.scope.outputs.booklet == 'true'
-    uses: ./.github/workflows/build-clean-v063-booklet.yml
+    if: needs.scope.outputs.current_booklet == 'true'
+    uses: ./.github/workflows/build-current-rulebook-booklet.yml
+
+  historical_booklet:
+    name: Historical v0.6.3 booklet contract
+    needs: scope
+    if: needs.scope.outputs.historical_booklet == 'true'
+    uses: ./.github/workflows/build-historical-v063-booklet.yml
 
   ci_inventory:
     name: CI inventory report
@@ -161,7 +187,7 @@ jobs:
   gate:
     name: Gate
     if: always()
-    needs: [scope, current_publication, onboarding, booklet, ci_inventory]
+    needs: [scope, current_publication, onboarding, current_booklet, historical_booklet, ci_inventory]
     runs-on: ubuntu-latest
     steps:
       - name: Require every routed contract to pass or be irrelevant
@@ -169,7 +195,8 @@ jobs:
           SCOPE: ${{ needs.scope.result }}
           PUBLICATION: ${{ needs.current_publication.result }}
           ONBOARDING: ${{ needs.onboarding.result }}
-          BOOKLET: ${{ needs.booklet.result }}
+          CURRENT_BOOKLET: ${{ needs.current_booklet.result }}
+          HISTORICAL_BOOKLET: ${{ needs.historical_booklet.result }}
           CI_INVENTORY: ${{ needs.ci_inventory.result }}
         run: |
           set -euo pipefail
@@ -177,7 +204,8 @@ jobs:
             "scope:$SCOPE" \
             "publication:$PUBLICATION" \
             "onboarding:$ONBOARDING" \
-            "booklet:$BOOKLET" \
+            "current-booklet:$CURRENT_BOOKLET" \
+            "historical-booklet:$HISTORICAL_BOOKLET" \
             "ci-inventory:$CI_INVENTORY"; do
             name="${entry%%:*}"
             result="${entry#*:}"

@@ -27,6 +27,7 @@ jobs:
             /scripts/validate-current-release-payload.mjs
             /scripts/validate-current-rulebook-booklet-provenance.mjs
             /scripts/validate-github-release-contract.mjs
+            /scripts/materialize-public-route-compatibility.mjs
             /scripts/publication-utils.mjs
             /scripts/verify-v070-live-publication.mjs
             /scripts/verify-v071-live-publication.mjs
@@ -36,9 +37,7 @@ jobs:
             /rulebook/player-facing/corrections.js
             /artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md
             /index.html
-            /legacy/public-versions/v0.6.2/index.html
-            /legacy/public-versions/v0.6.3/index.html
-            /legacy/public-versions/v0.7.0/index.html
+            /legacy/public-versions/
             /v0.7.1/index.html
             /changelog/index.html
             /about/index.html
@@ -71,14 +70,7 @@ jobs:
             /releases/v0.7.1/**
 
       - name: Materialize relocated historical public routes
-        run: |
-          for version in v0.6.2 v0.6.3 v0.7.0; do
-            source="legacy/public-versions/$version/index.html"
-            if [ -f "$source" ]; then
-              mkdir -p "$version"
-              cp "$source" "$version/index.html"
-            fi
-          done
+        run: node scripts/materialize-public-route-compatibility.mjs
 
       - name: Set up Node
         uses: actions/setup-node@v4

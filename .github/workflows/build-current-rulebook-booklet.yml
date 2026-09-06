@@ -1,0 +1,90 @@
+name: Build current Rulebook booklet
+
+on:
+  workflow_call:
+    inputs:
+      publish:
+        description: Commit the generated current release payload to the invoking feature branch.
+        required: false
+        type: boolean
+        default: false
+  workflow_dispatch:
+
+jobs:
+  build-booklet:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Require a feature branch for publication
+        if: inputs.publish
+        run: |
+          if [ "$GITHUB_REF_NAME" = "main" ]; then
+            echo "::error::Publish generated release files from a feature branch so they pass through review and protected-main checks."
+            exit 1
+          fi
+
+      - name: Check out current publication authorities
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Rulebook production dependencies
+        run: |
+          npm install
+          npm install --no-save --package-lock=false pdf-lib
+          npx playwright install --with-deps chromium
+
+      - name: Install publication utility font
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fonts-inter
+          fc-match Inter
+
+      - name: Build lifecycle-selected current Rulebook booklet
+        id: build
+        run: |
+          node --check scripts/render-current-rulebook-booklet.mjs
+          node scripts/render-current-rulebook-booklet.mjs
+
+      - name: Materialize historical public route compatibility
+        run: node scripts/materialize-public-route-compatibility.mjs
+
+      - name: Validate current public publication contract
+        run: |
+          node scripts/validate-current-public-contract.mjs
+          node scripts/validate-current-rulebook-booklet-provenance.mjs
+          node scripts/validate-release-path-normalization.mjs
+
+      - name: Upload current booklet review artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gauntlet-current-rulebook-booklet-${{ steps.build.outputs.version }}
+          path: |
+            ${{ steps.build.outputs.booklet_path }}
+            ${{ steps.build.outputs.manifest_path }}
+          if-no-files-found: error
+
+      - name: Commit current release payload
+        if: inputs.publish
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${{ steps.build.outputs.version }}"
+          release_root="${{ steps.build.outputs.release_root }}"
+          node scripts/commit-generated-files.mjs \
+            "Publish current ${version} Rulebook booklet" -- \
+            "${release_root}/Gauntlet_${version}_Rulebook.md" \
+            "${release_root}/Gauntlet_${version}_Rulebook_Booklet.pdf" \
+            "${release_root}/Gauntlet_${version}_Card_Anatomy.png" \
+            "${release_root}/Gauntlet_${version}_Arcane_Trait_Mark.png" \
+            "${release_root}/Gauntlet_${version}_Canonical_Data.json" \
+            "${release_root}/Gauntlet_${version}_Starter_Decks.json" \
+            "${release_root}/Gauntlet_${version}_Source_Provenance.json" \
+            "${release_root}/Gauntlet_${version}_Manifest.json"

@@ -8,66 +8,6 @@ permissions:
 
 jobs:
   publish-booklet:
-    runs-on: ubuntu-latest
-    timeout-minutes: 40
-    steps:
-      - name: Require a feature branch
-        run: |
-          if [ "$GITHUB_REF_NAME" = "main" ]; then
-            echo "::error::Publish the booklet from a feature branch so the generated binary can pass through review and protected-main checks."
-            exit 1
-          fi
-
-      - name: Checkout publication source
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install Rulebook production dependencies
-        run: |
-          npm install
-          npm install --no-save --package-lock=false pdf-lib
-          npx playwright install --with-deps chromium
-
-      - name: Install publication utility font
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y fonts-inter
-          fc-match Inter
-
-      - name: Build and validate approved Rulebook booklet
-        run: |
-          set -euo pipefail
-          python -m py_compile scripts/build-rulebook-production.py scripts/build-v063-rulebook-production.py
-          node --check scripts/run-v063-rulebook-renderer.mjs
-          node --check scripts/render-clean-v063-booklet.mjs
-          node --check scripts/validate-clean-v063-booklet.mjs
-          node --check scripts/validate-v063-rulebook-wordmark.mjs
-          node scripts/validate-v063-rulebook-wordmark.mjs
-          node scripts/render-clean-v063-booklet.mjs
-          node scripts/validate-clean-v063-booklet.mjs
-
-      - name: Materialize approved booklet into canonical current release payload
-        run: node scripts/materialize-clean-v063-booklet.mjs
-
-      - name: Validate current public publication contract
-        run: |
-          node scripts/validate-current-public-contract.mjs
-          node scripts/validate-current-rulebook-booklet-provenance.mjs
-          node scripts/validate-release-path-normalization.mjs
-
-      - name: Commit canonical booklet payload
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          node scripts/commit-generated-files.mjs \
-            "Publish approved v0.6.3 Rulebook booklet with official wordmark" -- \
-            releases/v0.6.3/Gauntlet_v0.6.3_Rulebook_Booklet.pdf \
-            releases/v0.6.3/Gauntlet_v0.6.3_Manifest.json
+    uses: ./.github/workflows/build-current-rulebook-booklet.yml
+    with:
+      publish: true

@@ -47,7 +47,8 @@ jobs:
           sparse-checkout: |
             .github/workflows/validate-v063-last-stand-language.yml
             .github/workflows/pr-quality-gate.yml
-            .github/workflows/build-clean-v063-booklet.yml
+            .github/workflows/build-historical-v063-booklet.yml
+            .github/workflows/build-current-rulebook-booklet.yml
             scripts/validate-v063-last-stand-language.mjs
             scripts/validate-v063-player-rulebook.mjs
             docs/recovery/frozen-scripts/v0.6.3/build-clean-v063-publication-arbiter-web.mjs

@@ -1,4 +1,4 @@
-name: Build current Rulebook booklet
+name: Build historical v0.6.3 Rulebook booklet
 
 on:
   workflow_call:
@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
-      - name: Check out approved Rulebook production inputs
+      - name: Check out historical Rulebook production inputs
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
@@ -76,10 +76,10 @@ jobs:
           set -euo pipefail
           node scripts/materialize-clean-v063-booklet.mjs
 
-      - name: Upload current booklet review artifact
+      - name: Upload historical booklet review artifact
         uses: actions/upload-artifact@v4
         with:
-          name: gauntlet-current-rulebook-booklet
+          name: gauntlet-historical-v063-rulebook-booklet
           path: |
             artifacts/reconstruction/clean-v0.6.3/booklet/generated/**
             /tmp/rulebook-production-fidelity/**

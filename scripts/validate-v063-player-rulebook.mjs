@@ -118,7 +118,7 @@ if (!read('rules-assistant/v063-last-stand-language.js').includes('applyV063Play
   fail('Browser and Rules Arbiter normalization do not share the player-facing Rulebook correction source.');
 }
 
-const bookletWorkflow = read('.github/workflows/build-clean-v063-booklet.yml');
+const bookletWorkflow = read('.github/workflows/build-historical-v063-booklet.yml');
 if (!bookletWorkflow.includes('/rulebook/player-facing/corrections.js')) {
   fail('Rulebook booklet sparse checkout does not include the shared player-facing corrections source.');
 }
