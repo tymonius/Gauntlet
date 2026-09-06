@@ -1,0 +1,102 @@
+{
+  "schema": "gauntlet.rules-refinement-manifest.v1",
+  "generatedAt": "2026-09-06T02:24:00.000Z",
+  "rootCause": "classification",
+  "label": "Classification",
+  "recommendedAction": "Retire historical interactions whose substantive ruling was correct and whose only audited defect was an overly weak explicit/inferred classification already addressed by the current v0.7.1 classification discipline.",
+  "cluster": {
+    "count": 17,
+    "highCount": 17,
+    "mediumCount": 0,
+    "maxScore": 100,
+    "averageScore": 0,
+    "interactionIds": [
+      "29c07af4-a646-4ded-86d5-f1a55353297c",
+      "49bca11f-0eff-4793-b258-0d973cd9df2b",
+      "0062503d-ec55-4e41-b82e-e3dd5112f279",
+      "d67cc0b1-c2cf-4dfd-930e-9816fee4980b",
+      "e7557f50-6f39-46f3-b83e-960b6e2b291b",
+      "532bca54-b2cc-428b-9c1f-cff785fc1330",
+      "4e443831-6f34-4104-a477-1fe80725b36a",
+      "7ef95ae6-ef18-4e38-ac88-ec0fdc9c8aee",
+      "7fbccdc7-1cf6-47d4-8a56-953ee8515c4f",
+      "bd5ca08e-3dcd-42bc-b361-3ded8d9c9969",
+      "f12b3b83-cfe5-4635-9e7e-55cee81e0493",
+      "47900d8a-cd15-4398-9c3b-1b90aa00595d",
+      "f50d4e37-3c24-4e37-8a8a-cab58a17cc1f",
+      "4ff1c0bb-2ff0-4cf3-b965-90335b9d9a8c",
+      "ab92804c-691b-4857-aee8-539c7efccfd3",
+      "b983bba9-8c4a-41ad-8b5b-fa6ed199ae53",
+      "cec1260e-3e06-4a88-a8da-3a6bff726bc7"
+    ]
+  },
+  "remediation": {
+    "sourceAuthorityRequired": false,
+    "reasonSignalCodes": [
+      "audit_classification"
+    ],
+    "authorityFileCandidates": [
+      "rulebook/player-facing/current-rulebook.md",
+      "game-data/current-game.json"
+    ],
+    "rule": "No source gap was identified for this batch. The historical audits recorded correct substantive answers, current validity, sufficient retrieval, and should_be_explicit classification only."
+  },
+  "regression": {
+    "candidateCount": 17,
+    "readyCount": 0,
+    "alreadyCoveredCount": 17,
+    "manualCount": 0,
+    "missingInteractionIds": []
+  },
+  "resolutionRequest": {
+    "ledgerPath": "artifacts/rules-refinement/resolution-ledger.json",
+    "rootCause": "classification",
+    "interactionIds": [
+      "29c07af4-a646-4ded-86d5-f1a55353297c",
+      "49bca11f-0eff-4793-b258-0d973cd9df2b",
+      "0062503d-ec55-4e41-b82e-e3dd5112f279",
+      "d67cc0b1-c2cf-4dfd-930e-9816fee4980b",
+      "e7557f50-6f39-46f3-b83e-960b6e2b291b",
+      "532bca54-b2cc-428b-9c1f-cff785fc1330",
+      "4e443831-6f34-4104-a477-1fe80725b36a",
+      "7ef95ae6-ef18-4e38-ac88-ec0fdc9c8aee",
+      "7fbccdc7-1cf6-47d4-8a56-953ee8515c4f",
+      "bd5ca08e-3dcd-42bc-b361-3ded8d9c9969",
+      "f12b3b83-cfe5-4635-9e7e-55cee81e0493",
+      "47900d8a-cd15-4398-9c3b-1b90aa00595d",
+      "f50d4e37-3c24-4e37-8a8a-cab58a17cc1f",
+      "4ff1c0bb-2ff0-4cf3-b965-90335b9d9a8c",
+      "ab92804c-691b-4857-aee8-539c7efccfd3",
+      "b983bba9-8c4a-41ad-8b5b-fa6ed199ae53",
+      "cec1260e-3e06-4a88-a8da-3a6bff726bc7"
+    ],
+    "requiredStatus": "resolved",
+    "requiredFields": [
+      "id",
+      "status",
+      "rootCause",
+      "interactionIds",
+      "resolutionSurface",
+      "summary",
+      "resolvedAt",
+      "binding"
+    ],
+    "bindingRule": "Bind the historical batch to the merged classification-discipline behavior change that resolves the audited defect.",
+    "retirementRule": "Only status=resolved entries retire reviewed interactions from the active backlog."
+  },
+  "implementationHints": {
+    "likelyFiles": [
+      "rules-assistant/worker-v071.js",
+      "rules-assistant/v071-qa-foundation.test.mjs"
+    ],
+    "deterministicChecks": [
+      "npx vitest run rules-assistant/v071-qa-foundation.test.mjs",
+      "npx vitest run scripts/validate-rules-refinement-source-first.test.mjs"
+    ]
+  },
+  "privacy": {
+    "containsPlayerQuestionText": false,
+    "containsSessionIdentifiers": false,
+    "note": "Public refinement manifest intentionally omits raw player questions, answers, session identifiers, and diagnostics."
+  }
+}
