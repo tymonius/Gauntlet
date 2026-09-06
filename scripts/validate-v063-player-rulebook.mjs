@@ -140,7 +140,10 @@ if (!financierPage.includes('A successful attack can advance both your territori
   fail('Financiers public faction page no longer explains that Hostile Takeover can turn an attack into both territorial and ownership progress.');
 }
 const inquisitionPage = read('factions/inquisition/index.html');
-if (!inquisitionPage.includes('Leave the opponent unable to make their normal start-of-turn draw because both their Draw Pile and Discard Pile are empty.')) {
+const inquisitionExplainsPurification =
+  inquisitionPage.includes('both their Draw Pile and Discard Pile are empty') &&
+  inquisitionPage.includes('nothing left to draw');
+if (!inquisitionExplainsPurification) {
   fail('Inquisition public faction page no longer explains the approved Purification exhaustion condition.');
 }
 
