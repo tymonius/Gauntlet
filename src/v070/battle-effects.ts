@@ -16,6 +16,11 @@ import {
   registerV070AssassinsBattleEffect,
 } from './assassins-battle';
 import {
+  V070_ATTRITION_BATTLE_TEXT,
+  V070_ATTRITION_ID,
+  registerV070AttritionBattleEffect,
+} from './attrition-battle';
+import {
   V070_CAPITAL_PUNISHMENT_BATTLE_TEXT,
   V070_CAPITAL_PUNISHMENT_ID,
   registerV070CapitalPunishmentBattleEffect,
@@ -127,6 +132,14 @@ const landslideHandler: V070SpecializedBattleEffectHandler = {
   timing: 'reveal',
   apply: ({ state, owner, commitment }) => {
     registerV070LandslideBattleEffect(state, owner, commitment.instanceId);
+  },
+};
+const attritionHandler: V070SpecializedBattleEffectHandler = {
+  cardId: V070_ATTRITION_ID,
+  expectedText: V070_ATTRITION_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070AttritionBattleEffect(state, owner, commitment.instanceId);
   },
 };
 const divineMercyHandler: V070SpecializedBattleEffectHandler = {
@@ -261,6 +274,7 @@ const armisticeHandler: V070SpecializedBattleEffectHandler = {
 
 const specializedHandlers = new Map<string, V070SpecializedBattleEffectHandler>([
   [landslideHandler.cardId, landslideHandler],
+  [attritionHandler.cardId, attritionHandler],
   [divineMercyHandler.cardId, divineMercyHandler],
   [darkOmensHandler.cardId, darkOmensHandler],
   [seditionHandler.cardId, seditionHandler],
