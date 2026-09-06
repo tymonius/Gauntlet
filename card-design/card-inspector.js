@@ -1,5 +1,11 @@
 (async () => {
-  const { PRODUCTION_SURFACES } = await import('../card-design/production-surface.mjs');
+  if (window.GauntletCardInspector?.initialized) return;
+
+  const inspector = window.GauntletCardInspector || {};
+  window.GauntletCardInspector = inspector;
+  inspector.initialized = true;
+
+  const { PRODUCTION_SURFACES } = await import('./production-surface.mjs');
   const CARD_FORMATS = Object.freeze({
     portrait: Object.freeze({
       width: PRODUCTION_SURFACES.portrait.widthCssPx,
@@ -23,7 +29,8 @@
   let currentCardHref = '';
   let currentLabel = 'Gauntlet card';
   let currentCardFormat = 'portrait';
-  let initialized = false;
+  let currentSourceFrame = null;
+  let runtimeInitialized = false;
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init, { once: true });
@@ -32,8 +39,8 @@
   }
 
   function init() {
-    if (initialized) return;
-    initialized = true;
+    if (runtimeInitialized) return;
+    runtimeInitialized = true;
     buildDialog();
     window.addEventListener('message', handleRendererMessage);
     window.addEventListener('resize', scaleCardStage);
@@ -42,35 +49,35 @@
 
   function buildDialog() {
     dialog = document.createElement('dialog');
-    dialog.className = 'card-reference-inspection-dialog';
-    dialog.setAttribute('aria-labelledby', 'card-reference-inspection-label');
+    dialog.className = 'gauntlet-card-inspector';
+    dialog.setAttribute('aria-labelledby', 'gauntlet-card-inspector-label');
     dialog.innerHTML = `
-      <div class="card-reference-inspection-toolbar">
-        <button class="card-reference-inspection-back" type="button" hidden>← Back to card</button>
-        <span id="card-reference-inspection-label" class="card-reference-inspection-label" aria-live="polite"></span>
-        <button class="card-reference-inspection-close" type="button" aria-label="Close inspection">×</button>
+      <div class="gauntlet-card-inspector-toolbar">
+        <button class="gauntlet-card-inspector-back" type="button" hidden>← Back to card</button>
+        <span id="gauntlet-card-inspector-label" class="gauntlet-card-inspector-label" aria-live="polite"></span>
+        <button class="gauntlet-card-inspector-close" type="button" aria-label="Close inspection">×</button>
       </div>
-      <div class="card-reference-inspection-body">
-        <div class="card-reference-card-stage" aria-hidden="false">
+      <div class="gauntlet-card-inspector-body">
+        <div class="gauntlet-card-inspector-card-stage" aria-hidden="false">
           <iframe
-            class="card-reference-inspection-frame"
+            class="gauntlet-card-inspector-frame"
             data-face-inspection-host="true"
             title="Enlarged Gauntlet card"
             scrolling="no"
           ></iframe>
         </div>
-        <div class="card-reference-art-stage" aria-hidden="true" hidden>
-          <img class="card-reference-art-image" alt="" />
+        <div class="gauntlet-card-inspector-art-stage" aria-hidden="true" hidden>
+          <img class="gauntlet-card-inspector-art-image" alt="" />
         </div>
       </div>`;
     document.body.append(dialog);
 
-    cardStage = dialog.querySelector('.card-reference-card-stage');
-    cardFrame = dialog.querySelector('.card-reference-inspection-frame');
-    artStage = dialog.querySelector('.card-reference-art-stage');
-    artImage = dialog.querySelector('.card-reference-art-image');
-    backButton = dialog.querySelector('.card-reference-inspection-back');
-    closeButton = dialog.querySelector('.card-reference-inspection-close');
+    cardStage = dialog.querySelector('.gauntlet-card-inspector-card-stage');
+    cardFrame = dialog.querySelector('.gauntlet-card-inspector-frame');
+    artStage = dialog.querySelector('.gauntlet-card-inspector-art-stage');
+    artImage = dialog.querySelector('.gauntlet-card-inspector-art-image');
+    backButton = dialog.querySelector('.gauntlet-card-inspector-back');
+    closeButton = dialog.querySelector('.gauntlet-card-inspector-close');
 
     backButton.addEventListener('click', showCard);
     closeButton.addEventListener('click', requestCloseInspection);
@@ -89,31 +96,36 @@
     if (!data || typeof data !== 'object') return;
 
     if (
+      data.type === 'gauntlet-face-art-inspect'
+      || data.type === 'gauntlet-art-inspect'
+      || data.type === 'gauntlet-territory-art-inspect'
+    ) {
+      // Artwork inspection is a second-level action. Normal preview frames open
+      // the whole card first; only the enlarged card hosted here may open art.
+      if (!dialog?.open || event.source !== cardFrame?.contentWindow) return;
+      const source = sameOriginUrl(data.source);
+      if (!source) return;
+      openArtwork(source, data.label);
+      return;
+    }
+
+    if (
       data.type === 'gauntlet-face-inspect'
       || data.type === 'gauntlet-card-inspect'
       || data.type === 'gauntlet-territory-inspect'
     ) {
+      if (event.source === cardFrame?.contentWindow) return;
       const href = sameOriginUrl(data.href);
       if (!href) return;
       const format = data.type === 'gauntlet-territory-inspect' || data.orientation === 'landscape'
         ? 'landscape'
         : 'portrait';
-      openCard(href, data.label, true, format);
-      return;
+      openCard(href, data.label, true, format, sourceFrameFor(event.source));
     }
+  }
 
-    if (
-      data.type === 'gauntlet-face-art-inspect'
-      || data.type === 'gauntlet-art-inspect'
-      || data.type === 'gauntlet-territory-art-inspect'
-    ) {
-      // Artwork inspection is only valid from the enlarged card already hosted
-      // inside this dialog. Normal preview frames must open card inspection first.
-      if (!dialog?.open || event.source !== cardFrame?.contentWindow) return;
-      const source = sameOriginUrl(data.source);
-      if (!source) return;
-      openArtwork(source, data.label);
-    }
+  function sourceFrameFor(sourceWindow) {
+    return Array.from(document.querySelectorAll('iframe')).find(frame => frame.contentWindow === sourceWindow) || null;
   }
 
   function handlePopState(event) {
@@ -223,7 +235,7 @@
     }
 
     if (cardHref) {
-      openCard(cardHref, label, false, cardFormat);
+      openCard(cardHref, label, false, cardFormat, currentSourceFrame);
       return;
     }
 
@@ -232,7 +244,7 @@
 
   function setLabel(label) {
     currentLabel = String(label || currentLabel || 'Gauntlet card').trim() || 'Gauntlet card';
-    const labelElement = dialog.querySelector('.card-reference-inspection-label');
+    const labelElement = dialog.querySelector('.gauntlet-card-inspector-label');
     labelElement.textContent = currentLabel;
     if (cardFrame) cardFrame.title = `Enlarged ${currentLabel}`;
   }
@@ -240,15 +252,17 @@
   function replaceCardFrameLocation(href) {
     if (!cardFrame?.contentWindow) return;
     try {
+      // Replacement navigation is deliberate: assigning iframe.src adds a joint
+      // session-history entry, which makes the parent inspector need two Backs.
       cardFrame.contentWindow.location.replace(href);
     } catch {
-      // The inspection renderer is same-origin, but retain a defensive fallback.
       cardFrame.src = href;
     }
   }
 
-  function openCard(href, label, pushHistory = true, cardFormat = 'portrait') {
+  function openCard(href, label, pushHistory = true, cardFormat = 'portrait', sourceFrame = null) {
     currentCardHref = href;
+    currentSourceFrame = sourceFrame || currentSourceFrame;
     applyCardFormat(cardFormat);
     setLabel(label);
     const renderHref = inspectionRenderUrl(href);
@@ -299,6 +313,7 @@
     if (dialog.open) return;
     if (pushHistory) pushInspectionHistory();
     dialog.showModal();
+    document.body.classList.add('gauntlet-card-inspector-open');
   }
 
   function scaleCardStage() {
@@ -328,13 +343,22 @@
 
   function dismissInspection() {
     if (!dialog?.open) return;
+    const sourceFrame = currentSourceFrame;
     dialog.close();
+    document.body.classList.remove('gauntlet-card-inspector-open');
     replaceCardFrameLocation('about:blank');
     artImage.removeAttribute('src');
     artImage.alt = '';
     currentCardHref = '';
+    currentSourceFrame = null;
     applyCardFormat('portrait');
+    if (sourceFrame instanceof HTMLElement && sourceFrame.isConnected) {
+      sourceFrame.focus({ preventScroll: true });
+    }
   }
+
+  inspector.close = requestCloseInspection;
 })().catch(error => {
-  console.error('Card inspection failed to initialize.', error);
+  if (window.GauntletCardInspector) window.GauntletCardInspector.initialized = false;
+  console.error('Card inspector failed to initialize.', error);
 });

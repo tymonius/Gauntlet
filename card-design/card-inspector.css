@@ -1,8 +1,8 @@
-body:has(.card-reference-inspection-dialog[open]) {
+body:has(.gauntlet-card-inspector[open]) {
   overflow: hidden;
 }
 
-.card-reference-inspection-dialog {
+.gauntlet-card-inspector {
   width: min(96vw, 1180px);
   height: min(96dvh, 920px);
   max-width: none;
@@ -17,12 +17,12 @@ body:has(.card-reference-inspection-dialog[open]) {
   overflow: hidden;
 }
 
-.card-reference-inspection-dialog::backdrop {
+.gauntlet-card-inspector::backdrop {
   background: rgba(18, 14, 11, .76);
   backdrop-filter: blur(3px);
 }
 
-.card-reference-inspection-toolbar {
+.gauntlet-card-inspector-toolbar {
   min-height: 58px;
   padding: 8px 10px 8px 14px;
   display: grid;
@@ -33,9 +33,9 @@ body:has(.card-reference-inspection-dialog[open]) {
   background: rgba(15, 12, 10, .7);
 }
 
-.card-reference-inspection-label {
+.gauntlet-card-inspector-label {
   overflow: hidden;
-  font-family: var(--sans);
+  font-family: var(--sans, var(--font-interface, Inter, ui-sans-serif, system-ui, sans-serif));
   font-size: .86rem;
   font-weight: 750;
   letter-spacing: .025em;
@@ -44,16 +44,16 @@ body:has(.card-reference-inspection-dialog[open]) {
   white-space: nowrap;
 }
 
-.card-reference-inspection-back,
-.card-reference-inspection-close {
+.gauntlet-card-inspector-back,
+.gauntlet-card-inspector-close {
   border: 1px solid rgba(255, 255, 255, .2);
   color: #fffaf0;
   background: rgba(255, 255, 255, .08);
-  font-family: var(--sans);
+  font-family: var(--sans, var(--font-interface, Inter, ui-sans-serif, system-ui, sans-serif));
   cursor: pointer;
 }
 
-.card-reference-inspection-back {
+.gauntlet-card-inspector-back {
   min-height: 38px;
   padding: 0 12px;
   border-radius: 999px;
@@ -61,7 +61,7 @@ body:has(.card-reference-inspection-dialog[open]) {
   font-weight: 750;
 }
 
-.card-reference-inspection-close {
+.gauntlet-card-inspector-close {
   width: 40px;
   height: 40px;
   padding: 0;
@@ -70,12 +70,12 @@ body:has(.card-reference-inspection-dialog[open]) {
   line-height: 1;
 }
 
-.card-reference-inspection-back:hover,
-.card-reference-inspection-close:hover {
+.gauntlet-card-inspector-back:hover,
+.gauntlet-card-inspector-close:hover {
   background: rgba(255, 255, 255, .15);
 }
 
-.card-reference-inspection-body {
+.gauntlet-card-inspector-body {
   height: calc(100% - 58px);
   display: grid;
   place-items: center;
@@ -83,12 +83,12 @@ body:has(.card-reference-inspection-dialog[open]) {
   overflow: auto;
 }
 
-.card-reference-card-stage {
+.gauntlet-card-inspector-card-stage {
   position: relative;
   flex: 0 0 auto;
 }
 
-.card-reference-inspection-frame {
+.gauntlet-card-inspector-frame {
   position: absolute;
   top: 0;
   left: 0;
@@ -99,18 +99,18 @@ body:has(.card-reference-inspection-dialog[open]) {
   transform-origin: top left;
 }
 
-.card-reference-art-stage {
+.gauntlet-card-inspector-art-stage {
   width: 100%;
   height: 100%;
   min-height: 0;
   place-items: center;
 }
 
-.card-reference-art-stage:not([hidden]) {
+.gauntlet-card-inspector-art-stage:not([hidden]) {
   display: grid;
 }
 
-.card-reference-art-image {
+.gauntlet-card-inspector-art-image {
   display: block;
   max-width: 100%;
   max-height: 100%;
@@ -119,35 +119,41 @@ body:has(.card-reference-inspection-dialog[open]) {
 }
 
 @media (max-width: 700px) {
-  .card-reference-inspection-dialog {
+  .gauntlet-card-inspector {
     width: 100vw;
     height: 100dvh;
     border: 0;
     border-radius: 0;
   }
 
-  .card-reference-inspection-toolbar {
+  .gauntlet-card-inspector-toolbar {
     min-height: 54px;
     padding-left: 10px;
   }
 
-  .card-reference-inspection-body {
+  .gauntlet-card-inspector-body {
     height: calc(100% - 54px);
     padding: 14px;
   }
 
-  .card-reference-inspection-label {
+  .gauntlet-card-inspector-label {
     font-size: .78rem;
   }
 
-  .card-reference-inspection-back {
+  .gauntlet-card-inspector-back {
     padding: 0 9px;
     font-size: .72rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .card-reference-inspection-dialog::backdrop {
+  .gauntlet-card-inspector::backdrop {
     backdrop-filter: none;
+  }
+}
+
+@media print {
+  .gauntlet-card-inspector {
+    display: none !important;
   }
 }

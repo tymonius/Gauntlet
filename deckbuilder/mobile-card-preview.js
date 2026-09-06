@@ -11,10 +11,10 @@
   function installRenderedCardAssets() {
     ensureStylesheet("rendered-card-preview.css?v=20260819-2", "deckbuilder-rendered-card-preview");
     ensureStylesheet("metadata-ui.css?v=20260819-2", "deckbuilder-metadata-ui");
-    ensureStylesheet("../card-reference/card-inspection.css?v=20260819-2", "shared-card-inspection");
+    ensureStylesheet("../card-design/card-inspector.css?v=20260905-2", "shared-card-inspection");
     ensureScript("rendered-card-preview.js?v=20260902-2", "deckbuilder-rendered-card-preview");
     ensureScript("metadata-ui.js?v=20260902-1", "deckbuilder-metadata-ui");
-    ensureScript("../card-reference/card-inspection.js?v=20260819-2", "shared-card-inspection");
+    ensureScript("../card-design/card-inspector.js?v=20260905-2", "shared-card-inspection");
   }
 
   function ensureStylesheet(href, key) {
