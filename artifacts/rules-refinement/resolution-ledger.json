@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-06T14:05:51.591Z",
+  "updatedAt": "2026-09-06T14:54:16.083Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -239,6 +239,20 @@
       "resolvedAt": "2026-09-06T14:05:51.591Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260906-4"
+      }
+    },
+    {
+      "id": "peace-treaty-timing-retrieval-v071",
+      "status": "resolved",
+      "rootCause": "retrieval",
+      "interactionIds": [
+        "5ea6f396-78bb-4689-8874-fa5368b83413"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "Promote the current v0.7.1 Treaty Articles and Peace Treaty timing authority for sixth-ratification questions and terse timing follow-ups, with Accepted or Refused Terms authority when that path is named.",
+      "resolvedAt": "2026-09-06T14:54:16.083Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260906-5"
       }
     }
   ]
