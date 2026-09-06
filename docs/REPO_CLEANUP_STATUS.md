@@ -180,7 +180,7 @@ Next: freeze the closed historical v0.6.3 publication-construction cluster, remo
 
 PR: [#1508](https://github.com/tymonius/Gauntlet/pull/1508). Branch: `cleanup/archive-v063-publication-tooling` (stacked on #1506). Eleven closed v0.6.3 publication builders, renderers, validators, and the legacy live-publication verifier have moved unchanged into frozen recovery evidence. All eleven Git blobs are release-locked. The maintained current-publication workflow no longer checks out the unused version-specific live verifier, while the Last Stand terminology audit reads only its selected historical publisher evidence from the frozen archive. Cross-platform text hashing keeps the certified checks stable on LF and CRLF worktrees. <!-- DOC-HISTORICAL -->
 
-Local validation passes: 20 focused tests, TypeScript, all 154 release-recovery locks, release-path normalization, rules-authority governance, the certified player Rulebook validator, and the maintained Last Stand terminology contract.
+Local validation passes: 20 focused tests, TypeScript, all 154 release-recovery locks, release-path normalization, rules-authority governance, the certified player Rulebook validator, and the maintained Last Stand terminology contract. All four PR workflows are green at `20757c1f`.
 
 Next: make the maintained current-Rulebook booklet workflow independent of the v0.6.3-named production pipeline. Preserve the v0.6.3 booklet path as a historical reproduction contract, and route current releases through explicit current-authority inputs and version-neutral entrypoints. <!-- DOC-HISTORICAL -->
 
