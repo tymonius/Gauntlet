@@ -38,6 +38,29 @@ export function openV070BattleRevealEffectOrderChoice(
   if (runtime.pendingRevealEffectOrderChoice) return true;
   if (candidateInstanceIds.length < 2) return false;
 
+  // Copies of the same canonical card have the same reveal instruction and
+  // no rules-distinguishable ordering decision. Preserve deterministic legacy
+  // behavior instead of forcing a meaningless UI choice between instances.
+  const cardIds = candidateInstanceIds.map(
+    instanceId => state.cardInstances[instanceId]?.cardId ?? null,
+  );
+  if (cardIds[0] && cardIds.every(cardId => cardId === cardIds[0])) {
+    runtime.pendingRevealForcedInstanceId = candidateInstanceIds[0];
+    appendV070Event(state, {
+      type: 'battle_reveal_effect_order_auto_selected',
+      actor: playerId,
+      visibility: 'public',
+      payload: {
+        playerId,
+        sourceInstanceId: candidateInstanceIds[0],
+        sourceCardId: cardIds[0],
+        equivalentCandidateCount: candidateInstanceIds.length,
+        revealClass: runtime.pendingRevealEffectClass ?? 'ordinary',
+      },
+    });
+    return false;
+  }
+
   runtime.pendingRevealEffectOrderChoice = {
     playerId,
     candidateInstanceIds: [...candidateInstanceIds],
