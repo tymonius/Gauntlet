@@ -37,8 +37,8 @@
 
 /* Let Declaration Pro read as an intentional flavor accent rather than body copy. */
 .faction-page .leader-motto {
-  font-size: clamp(2rem, 3.3vw, 2.9rem);
-  line-height: 1.05;
+  font-size: clamp(3rem, 5vw, 4.5rem);
+  line-height: .95;
 }
 
 /* Light form fields need a visible component boundary even before keyboard focus. */
