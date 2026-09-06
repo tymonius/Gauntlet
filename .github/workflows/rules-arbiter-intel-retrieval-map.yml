@@ -1,0 +1,52 @@
+name: Rules Arbiter Intelligence retrieval map
+
+on:
+  push:
+    branches:
+      - ops/rules-arbiter-high-priority-audit-map
+    paths:
+      - '.github/workflows/rules-arbiter-intel-retrieval-map.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Exercise current Intelligence retrieval
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          import { buildRulesCorpus, retrieveRules } from './rules-assistant/local-search.js';
+          const canonicalData = JSON.parse(readFileSync('./releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json', 'utf8'));
+          const rulebookMarkdown = readFileSync('./releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md', 'utf8');
+          const corpus = buildRulesCorpus({
+            canonicalData,
+            rulebookMarkdown,
+            siteOrigin: 'https://gauntlet.run',
+            rulebookBrowserUrl: 'https://gauntlet.run/rulebook/',
+            canonicalDataUrl: 'https://gauntlet.run/releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json'
+          });
+          const queries = [
+            "Can Intelligence interfere with a Gambit that was already face up?",
+            "My opponent's Gambit was set face up. Can I spend Intel to interfere with it?",
+            "If Surveillance reveals an opposing Gambit, when can I interfere and where does it go?",
+            "After I interfere with a Tactic, can my opponent replace it and can I revise my own Tactic?",
+            "Does using Gambit Surveillance stop me using Tactic Surveillance later in the same battle?",
+            "Can I interfere with more than one opposing Tactic after revealing them?",
+            "What happens if an effect sets a Gambit face up before Surveillance?",
+            "Do I get another Surveillance after my opponent replaces the card I interfered with?"
+          ];
+          console.log('INTEL_RETRIEVAL_BEGIN');
+          for (const query of queries) {
+            const sources = retrieveRules(corpus, query, { limit: 10, excerptLength: 1300 });
+            console.log(JSON.stringify({ query, sources: sources.map((source) => source.canonicalId) }));
+          }
+          console.log('INTEL_RETRIEVAL_END');
+          NODE
