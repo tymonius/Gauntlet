@@ -12,6 +12,8 @@ const currentWorkflow = read('.github/workflows/build-current-rulebook-booklet.y
 const historicalWorkflow = read('.github/workflows/build-historical-v063-booklet.yml');
 const publishWorkflow = read('.github/workflows/publish-current-rulebook-booklet.yml');
 const qualityGate = read('.github/workflows/pr-quality-gate.yml');
+const publicationWorkflow = read('.github/workflows/current-publication-contract.yml');
+const routeMaterializer = read('scripts/materialize-public-route-compatibility.mjs');
 const currentRenderers = [
   read('scripts/render-v070-booklet.mjs'),
   read('scripts/render-v071-booklet.mjs'),
@@ -73,6 +75,10 @@ describe('Rulebook production ownership', () => {
     expect(publishWorkflow).not.toContain('v0.6.3');
     expect(qualityGate).toContain("uses: ./.github/workflows/build-current-rulebook-booklet.yml");
     expect(qualityGate).toContain("uses: ./.github/workflows/build-historical-v063-booklet.yml");
+    expect(currentWorkflow).toContain('node scripts/materialize-public-route-compatibility.mjs');
+    expect(publicationWorkflow).toContain('node scripts/materialize-public-route-compatibility.mjs');
+    expect(routeMaterializer).toContain("path.join(root, 'legacy', 'public-versions')");
+    expect(routeMaterializer).not.toContain("['v0.6.2', 'v0.6.3', 'v0.7.0']");
   });
 
   it('retains v0.6.3 as a fixed historical compatibility entrypoint', () => {

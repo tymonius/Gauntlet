@@ -51,6 +51,9 @@ jobs:
           node --check scripts/render-current-rulebook-booklet.mjs
           node scripts/render-current-rulebook-booklet.mjs
 
+      - name: Materialize historical public route compatibility
+        run: node scripts/materialize-public-route-compatibility.mjs
+
       - name: Validate current public publication contract
         run: |
           node scripts/validate-current-public-contract.mjs
