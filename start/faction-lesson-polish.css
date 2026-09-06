@@ -9,15 +9,24 @@
   height: 100%;
 }
 
-/* Convert the opaque paper sketch to black graphite with luminance-derived
-   alpha at render time. White paper becomes transparent; darker pencil marks
-   survive with proportional opacity. This keeps the canonical PNG sketches
-   untouched and avoids blend-mode approximations. */
+/* Integrate the opaque sketch scans into the lesson card itself. The art side
+   uses the same paper surface as the card; near-white scan paper is normalized
+   to white, then the graphite is multiplied onto that surface. This removes
+   the visible raster rectangle without relying on an external SVG filter. */
+#factionLesson .faction-leader-lesson {
+  background: var(--start-panel);
+  isolation: isolate;
+}
+
+#factionLesson .faction-leader-lesson::before {
+  background: var(--start-panel);
+}
+
 #factionLesson .faction-leader-lesson::after {
   background-color: transparent;
   background-blend-mode: normal;
-  filter: url("leader-sketch-alpha.svg#leader-sketch-alpha");
-  mix-blend-mode: normal;
+  filter: grayscale(1) contrast(1.4) brightness(1.08);
+  mix-blend-mode: multiply;
 }
 
 main:has(input[name="leader"][value="general"]:checked) #factionLesson .faction-leader-lesson {
