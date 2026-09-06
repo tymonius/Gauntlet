@@ -42,11 +42,12 @@
 /* v0.7.1 Leader profiles use the finished woodcut artwork rather than the
    historical sketch scans injected by the reusable publication adapter. The
    source adapter stays wording-neutral and the current publication layer swaps
-   only the rendered presentation asset. Finished woodcuts are shown directly:
-   no grayscale/contrast filter and no multiply blending. */
+   only the rendered presentation asset. The old grayscale/contrast processing
+   is removed; the established print-only multiply compositor is retained so
+   the portraits continue to sit naturally on the booklet paper field. */
 .leader-portrait img{
   filter:none;
-  mix-blend-mode:normal;
+  mix-blend-mode:multiply;
   opacity:1;
 }
 .leader-portrait img[alt="General"]{content:url("../images/woodcuts/general.png")}
