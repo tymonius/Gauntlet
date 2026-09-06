@@ -195,11 +195,12 @@ describe('v0.7.0 Protracted Siege persistent Overlay', () => {
   test('turn movement graveyards Protracted Siege when the opposing token leaves first, but not when its owner leaves', () => {
     let opposing = advanceToMovement(readyGame());
     const aOrigin = opposing.players.A.position;
+    expect(aOrigin).not.toBeNull();
     const opposingSiege = injectOverlay(
       opposing,
       'B',
       'neutral-protracted-siege',
-      aOrigin,
+      aOrigin!,
       'opponent-leaves',
     );
 
@@ -216,11 +217,12 @@ describe('v0.7.0 Protracted Siege persistent Overlay', () => {
 
     let owner = advanceToMovement(readyGame());
     const ownerOrigin = owner.players.A.position;
+    expect(ownerOrigin).not.toBeNull();
     const ownerSiege = injectOverlay(
       owner,
       'A',
       'neutral-protracted-siege',
-      ownerOrigin,
+      ownerOrigin!,
       'owner-leaves',
     );
 
