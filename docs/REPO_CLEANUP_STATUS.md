@@ -160,6 +160,14 @@ Local validation passes: 11 focused architecture tests, TypeScript, all 122 rele
 
 Next: archive the 11 remaining orphaned v0.6.3 editorial/candidate utilities that have no workflow, package command, or maintained importer. Several require candidate or development-site inputs already removed from the active tree. Keep the explicitly invoked reconstruction and publication contracts separate.
 
+## Orphaned editorial tooling freeze
+
+PR: [#1504](https://github.com/tymonius/Gauntlet/pull/1504). Branch: `cleanup/archive-v063-orphaned-validators` (stacked on #1487). Eleven uncalled v0.6.3 editorial synchronizers and candidate validators have moved byte-for-byte into frozen recovery evidence. None had a workflow, package command, or maintained importer; several required withdrawn candidate artifacts or removed development-site inputs. All eleven Git blobs are release-locked, and a focused boundary test prevents their entrypoints from returning to active scripts. <!-- DOC-HISTORICAL -->
+
+Local validation passes: 13 focused architecture tests, TypeScript, all 133 release-recovery locks, release-path normalization, rules-authority governance, and the maintained Last Stand terminology contract.
+
+Next: validate [#1504](https://github.com/tymonius/Gauntlet/pull/1504) in CI, then inspect the remaining version-named scripts through their explicit workflow graph. Reconstruction and publication entrypoints that still have callers require consolidation or deliberate historical retention rather than caller-free archival.
+
 ## Architectural queue
 
 Review in highest-level-first order. The result of a review may be "leave it alone."
