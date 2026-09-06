@@ -2,28 +2,28 @@ const content = document.querySelector('[data-rulebook-content]');
 
 const FACTION_LEADERS = [
   ['Military', [
-    ['General', '../images/sketches/general.png'],
-    ['Commandant', '../images/sketches/commandant.png'],
+    ['General', '../images/woodcuts/general.png'],
+    ['Commandant', '../images/woodcuts/commandant.png'],
   ]],
   ['Diplomats', [
-    ['Ambassador', '../images/sketches/ambassador.png'],
-    ['Senator', '../images/sketches/senator.png'],
+    ['Ambassador', '../images/woodcuts/ambassador.png'],
+    ['Senator', '../images/woodcuts/senator.png'],
   ]],
   ['Financiers', [
-    ['Banker', '../images/sketches/banker.png'],
-    ['Executive', '../images/sketches/executive.png'],
+    ['Banker', '../images/woodcuts/banker.png'],
+    ['Executive', '../images/woodcuts/executive.png'],
   ]],
   ['Intelligence', [
-    ['Ranger', '../images/sketches/ranger.png'],
-    ['Spymaster', '../images/sketches/spymaster.png'],
+    ['Ranger', '../images/woodcuts/ranger.png'],
+    ['Spymaster', '../images/woodcuts/spymaster.png'],
   ]],
   ['Mystics', [
-    ['Alchemist', '../images/sketches/alchemist.png'],
-    ['Spirit Walker', '../images/sketches/spirit%20walker.png'],
+    ['Alchemist', '../images/woodcuts/alchemist.png'],
+    ['Spirit Walker', '../images/woodcuts/spirit-walker.png'],
   ]],
   ['Inquisition', [
-    ['Grand Inquisitor', '../images/sketches/grand%20inquisitor.png'],
-    ['Witch Hunter', '../images/sketches/witch%20hunter.png'],
+    ['Grand Inquisitor', '../images/woodcuts/grand-inquisitor.png'],
+    ['Witch Hunter', '../images/woodcuts/witch-hunter.png'],
   ]],
 ];
 
@@ -48,7 +48,7 @@ function buildGallery(faction, leaders) {
     const image = document.createElement('img');
     image.className = 'leader-portrait';
     image.src = src;
-    image.alt = `${name} Leader sketch`;
+    image.alt = `${name} Leader woodcut`;
     image.loading = 'lazy';
     image.decoding = 'async';
 
