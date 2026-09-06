@@ -9,23 +9,22 @@
   height: 100%;
 }
 
-/* Integrate the opaque sketch scans into the lesson card itself. The art side
-   uses the same paper surface as the card; near-white scan paper is normalized
-   to white, then the graphite is multiplied onto that surface. This removes
-   the visible raster rectangle without relying on an external SVG filter. */
+/* Match the approved Rulebook booklet treatment for the same opaque sketch
+   scans: render against a controlled light-paper surface, apply only the mild
+   grayscale/contrast normalization used by the booklet, and multiply the
+   source field into the paper. Do not isolate this card from its backdrop;
+   the blend needs the paper beneath it to make the white/cream scan field
+   visually disappear while retaining the graphite midtones. */
 #factionLesson .faction-leader-lesson {
   background: var(--start-panel);
-  isolation: isolate;
-}
-
-#factionLesson .faction-leader-lesson::before {
-  background: var(--start-panel);
+  isolation: auto;
 }
 
 #factionLesson .faction-leader-lesson::after {
+  opacity: 1;
   background-color: transparent;
   background-blend-mode: normal;
-  filter: grayscale(1) contrast(1.4) brightness(1.08);
+  filter: grayscale(1) contrast(1.08);
   mix-blend-mode: multiply;
 }
 
@@ -64,4 +63,12 @@ main:has(input[name="leader"][value="grand-inquisitor"]:checked) #factionLesson 
 }
 main:has(input[name="leader"][value="witch-hunter"]:checked) #factionLesson .faction-leader-lesson {
   --leader-lesson-art: url("../images/sketches/witch hunter.png");
+}
+
+/* Keep the existing low-key mobile watermark treatment while preserving the
+   same multiply blend used on desktop. */
+@media (max-width: 620px) {
+  #factionLesson .faction-leader-lesson::after {
+    opacity: .11;
+  }
 }
