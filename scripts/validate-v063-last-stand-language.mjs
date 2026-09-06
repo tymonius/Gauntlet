@@ -23,7 +23,7 @@ const targets = [
   'releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md',
   'releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json',
   'rules-assistant/rules-deterministic-v063.js',
-  'scripts/build-clean-v063-publication-release.mjs',
+  'docs/recovery/frozen-scripts/v0.6.3/build-clean-v063-publication-release.mjs',
   'docs/recovery/frozen-scripts/v0.6.3/generate-v063-canonical-data-candidate.mjs',
   'artifacts/reconstruction/v0.6.3-browser-candidate/data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json',
 ];
@@ -127,16 +127,18 @@ failures += requireOrder(
 );
 
 // Publication owns semantic artifacts, not the version-controlled live UI.
-const coreBuilder = read('scripts/build-clean-v063-publication-core-web.mjs');
+const coreBuilderPath = 'docs/recovery/frozen-scripts/v0.6.3/build-clean-v063-publication-core-web.mjs';
+const coreBuilder = read(coreBuilderPath);
 for (const forbidden of ["prune('rulebook'", "prune('card-reference'"]) {
   if (coreBuilder.includes(forbidden)) {
-    console.error(`scripts/build-clean-v063-publication-core-web.mjs: must not regenerate current web presentation (${forbidden}).`);
+    console.error(`${coreBuilderPath}: must not regenerate current web presentation (${forbidden}).`);
     failures += 1;
   }
 }
-const arbiterBuilder = read('scripts/build-clean-v063-publication-arbiter-web.mjs');
+const arbiterBuilderPath = 'docs/recovery/frozen-scripts/v0.6.3/build-clean-v063-publication-arbiter-web.mjs';
+const arbiterBuilder = read(arbiterBuilderPath);
 if (arbiterBuilder.includes("prune('rules-arbiter'")) {
-  console.error('scripts/build-clean-v063-publication-arbiter-web.mjs: must not regenerate current Rules Arbiter presentation.');
+  console.error(`${arbiterBuilderPath}: must not regenerate current Rules Arbiter presentation.`);
   failures += 1;
 }
 failures += requireText('scripts/publication-utils.mjs', 'normalizeV063LastStandText', 'shared text publication normalizer');

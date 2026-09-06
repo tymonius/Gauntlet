@@ -17,3 +17,5 @@ The withdrawn browser-development builder, refiners, and validator are likewise 
 Orphaned v0.6.3 editorial synchronizers and candidate validators are retained here when they have no maintained caller. Their assertions describe intermediate review states and must not be treated as current rules or release gates.
 
 Uncalled clean-v0.6.3 authority, Rulebook, digital, Deckbuilder, and certification builders or validators are frozen on the same basis. Explicit workflow-backed publication and forensic-audit commands remain under active tooling until their owning workflows are redesigned or retired.
+
+The clean-v0.6.3 publication-construction and live-verification scripts are frozen after the maintained publication contract replaced them. The maintained terminology audit may read selected frozen sources as historical evidence, but it does not execute them.

@@ -50,9 +50,9 @@ jobs:
             .github/workflows/build-clean-v063-booklet.yml
             scripts/validate-v063-last-stand-language.mjs
             scripts/validate-v063-player-rulebook.mjs
-            scripts/build-clean-v063-publication-arbiter-web.mjs
-            scripts/build-clean-v063-publication-core-web.mjs
-            scripts/build-clean-v063-publication-release.mjs
+            docs/recovery/frozen-scripts/v0.6.3/build-clean-v063-publication-arbiter-web.mjs
+            docs/recovery/frozen-scripts/v0.6.3/build-clean-v063-publication-core-web.mjs
+            docs/recovery/frozen-scripts/v0.6.3/build-clean-v063-publication-release.mjs
             docs/recovery/frozen-scripts/v0.6.3/generate-v063-canonical-data-candidate.mjs
             scripts/publication-utils.mjs
             rulebook/app.js

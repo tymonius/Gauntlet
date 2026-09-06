@@ -11,14 +11,14 @@ import {
 
 const root = process.cwd();
 const read = (relative: string) => fs.readFileSync(path.join(root, relative), 'utf8').replace(/\r\n/g, '\n');
-const sha256 = (relative: string) => crypto.createHash('sha256').update(fs.readFileSync(path.join(root, relative))).digest('hex');
+const sha256 = (relative: string) => crypto.createHash('sha256').update(read(relative), 'utf8').digest('hex');
 
 const currentTextSurfaces = [
-  'docs/Gauntlet_v0.6.3_Cross_Surface_Closeout_Matrix.md',
-  'docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md',
-  'docs/Gauntlet_v0.6.3_Implementation_Ledger.md',
-  'docs/Gauntlet_v0.6.3_Shared_Rules_Candidate.md',
-  'docs/Gauntlet_v0.6.3_Shared_Rules_Test_Matrix.md',
+  'docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_Cross_Surface_Closeout_Matrix.md',
+  'docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md',
+  'docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_Implementation_Ledger.md',
+  'docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_Shared_Rules_Candidate.md',
+  'docs/Archive/v0.6.3-development/Gauntlet_v0.6.3_Shared_Rules_Test_Matrix.md',
   'index.html',
   'start/index.html',
   'factions/military/index.html',
@@ -88,7 +88,7 @@ describe('PR #171 Last Stand terminology', () => {
     const rulebookApp = read('rulebook/app.js');
     const corpus = read('rules-assistant/v063-public-corpus.js');
 
-    expect(rulebookApp).toContain("const RELEASE_MANIFEST_URL = '../releases/v0.7.0/Gauntlet_v0.7.0_Manifest.json';");
+    expect(rulebookApp).toContain("const RELEASE_MANIFEST_URL = '../releases/v0.7.1/Gauntlet_v0.7.1_Manifest.json';");
     expect(rulebookApp).toContain('actualHash !== rulebook.sha256');
     expect(rulebookApp).not.toContain('normalizeV063LastStandText(source)');
     expect(corpus).toContain('if (rulebookHash !== CLEAN_V063_RULEBOOK_SHA256)');
@@ -97,8 +97,8 @@ describe('PR #171 Last Stand terminology', () => {
   });
 
   it('does not allow publication scripts to regenerate current web presentation from reconstruction templates', () => {
-    const core = read('scripts/build-clean-v063-publication-core-web.mjs');
-    const arbiter = read('scripts/build-clean-v063-publication-arbiter-web.mjs');
+    const core = read('docs/recovery/frozen-scripts/v0.6.3/build-clean-v063-publication-core-web.mjs');
+    const arbiter = read('docs/recovery/frozen-scripts/v0.6.3/build-clean-v063-publication-arbiter-web.mjs');
 
     expect(core).not.toContain("prune('rulebook'");
     expect(core).not.toContain("prune('card-reference'");

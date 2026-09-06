@@ -6,7 +6,7 @@ import { publicAuthorityNote, RULEBOOK_SHA256, RULEBOOK_SOURCE, PLAYER_CHAPTER_1
 
 const root = process.cwd();
 const read = (relative) => fs.readFileSync(path.join(root, relative), 'utf8').replace(/\r\n/g, '\n');
-const hash = (relative) => crypto.createHash('sha256').update(fs.readFileSync(path.join(root, relative))).digest('hex');
+const hash = (relative) => crypto.createHash('sha256').update(read(relative), 'utf8').digest('hex');
 
 let failures = 0;
 const fail = (message) => { console.error(message); failures += 1; };

@@ -28,7 +28,6 @@ jobs:
             /scripts/validate-current-rulebook-booklet-provenance.mjs
             /scripts/validate-github-release-contract.mjs
             /scripts/publication-utils.mjs
-            /scripts/verify-clean-v063-live-publication.mjs
             /scripts/verify-v070-live-publication.mjs
             /scripts/verify-v071-live-publication.mjs
             /docs/releases/github/*.md
