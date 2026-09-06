@@ -206,7 +206,15 @@ PR: [#1534](https://github.com/tymonius/Gauntlet/pull/1534). Branch: `cleanup/ve
 
 Local validation passes TypeScript, 34 architecture-boundary tests, the affected Rules Arbiter deployment and corpus synchronization gates, release-path normalization, current adapter plan/output resolution, and CI workflow inventory. A full Rules Arbiter directory run has 321 passing tests and four pre-existing stale widget source assertions in unchanged tests. The manually dispatched [full PR quality gate](https://github.com/tymonius/Gauntlet/actions/runs/34025360515) passes the production sparse-checkout current-publication contract and both booklet contracts.
 
-Next: remove or isolate the unreachable v0.7.0-only branches in the maintained GitHub Release publisher. Current GitHub Release publication already selects its live verifier and assets from `config/github-release-contract.json`; historical tags and release-specific verification scripts remain immutable contracts.
+The full GitHub Actions gate passes the current publication and both booklet contracts. Next: remove or isolate the unreachable v0.7.0-only branches in the maintained GitHub Release publisher. Current GitHub Release publication already selects its live verifier and assets from `config/github-release-contract.json`; historical tags and release-specific verification scripts remain immutable contracts.
+
+## Closed v0.7.0 release cutover removal
+
+PR: [#1535](https://github.com/tymonius/Gauntlet/pull/1535). Branch: `cleanup/remove-v070-current-release-branches` (stacked on #1534). The maintained GitHub Release publisher no longer carries the v0.7.0-only TTS precheck and one-time prerelease-promotion branches that became unreachable when v0.7.1 became current. The v0.7.0 finalizer, manual-QA workflow, live verifier, tag target, and historical GitHub Release record remain intact.
+
+Local validation passes publisher syntax, GitHub Release contract validation, and the focused historical-boundary assertion. The selected v0.7.0 test file also exposes one pre-existing stale Card Reference copy assertion in an unchanged test. The [dedicated GitHub Release contract](https://github.com/tymonius/Gauntlet/actions/runs/34025770075) and [full PR quality gate](https://github.com/tymonius/Gauntlet/actions/runs/34025769101) are green.
+
+Next: continue caller-based classification of active version-named workflows and scripts. Keep historical release reproduction and release-specific QA benchmarks pinned; make current-development and current-release orchestration follow their configured authority instead of today's version label.
 
 ## Architectural queue
 
