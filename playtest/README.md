@@ -34,7 +34,7 @@ The ordinary journey is:
 
 The tracked game closes automatically after exactly one shared result and both player responses are present.
 
-New tracked sessions use `G071-…` serials. Public creation is rate-limited and does not require the facilitator secret.
+New tracked sessions use a game serial prefix derived from the rules version being tested; the current v0.7.1 prefix is `G071-…`. Public creation is rate-limited and does not require the facilitator secret.
 
 ## Live diagnostic flags
 
@@ -84,7 +84,7 @@ The existing event workflow remains available:
 - `/playtest/session/` — coded formal game session;
 - `/playtest/batch/` — coded sheet generation.
 
-New event containers use `EV071-…`; new game sessions use `G071-…`.
+New event and game prefixes derive from the rules version being tested. The current v0.7.1 service uses `EV071-…` and `G071-…`.
 
 Organizer-created top-level sessions still require `SESSION_ADMIN_TOKEN`. That secret is not used by the public tracked-game API.
 
@@ -112,14 +112,14 @@ Older stored v0.6.1/v0.6.3 records are not rewritten. Reads remain version-prese
 
 ## Version and serial contract
 
-New current records:
+Current v0.7.1 records:
 
 ```text
 G071-ABCD2345
 EV071-ABCD2345
 ```
 
-Historical `G061`, `G063`, `G070`, `EV061`, `EV063`, and `EV070` records remain historical evidence.
+When the tested rules version advances, newly issued prefixes advance with it. Historical versioned game and event records remain readable as historical evidence.
 
 ## Governing principle
 

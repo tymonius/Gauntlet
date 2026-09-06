@@ -13,6 +13,7 @@ on:
       - 'images/artwork/cards/**'
       - 'images/artwork/card-backgrounds/**'
       - 'images/sketches/*.png'
+      - 'playtest/**'
       - 'rulebook/**'
       - 'tts/renderer/**'
       - 'card-design/**'

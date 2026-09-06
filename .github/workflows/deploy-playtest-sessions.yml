@@ -135,8 +135,13 @@ jobs:
           import json
           from pathlib import Path
 
+          lifecycle = json.loads(Path('config/release-lifecycle.json').read_text())
+          expected_version = str(lifecycle.get('current_release', ''))
+          release = lifecycle.get('releases', {}).get(expected_version, {})
+          if release.get('status') != 'current' or release.get('public_cutover') is not True:
+              raise SystemExit(f'Release lifecycle does not identify an approved current release: {expected_version}')
           sessions = json.loads(Path('/tmp/session-health.json').read_text())
-          if not sessions.get('ok') or sessions.get('version') != 'v0.7.1':
+          if not sessions.get('ok') or sessions.get('version') != expected_version:
               raise SystemExit(f'Playtest session health failed: {sessions}')
           if not sessions.get('database'):
               raise SystemExit(f'Playtest session D1 binding unavailable: {sessions}')
@@ -170,5 +175,5 @@ jobs:
               raise SystemExit(f'Standalone feedback unavailable: {sessions}')
           if not sessions.get('completeStandaloneContextSupported'):
               raise SystemExit(f'Complete standalone context unavailable: {sessions}')
-          print('Verified production v0.7.1 playtest sessions, journals, closure controls, complete standalone feedback, compiled analysis, and audited exclusions.')
+          print(f'Verified production {expected_version} playtest sessions, journals, closure controls, complete standalone feedback, compiled analysis, and audited exclusions.')
           PY
