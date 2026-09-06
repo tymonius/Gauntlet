@@ -164,9 +164,9 @@ Next: archive the 11 remaining orphaned v0.6.3 editorial/candidate utilities tha
 
 PR: [#1504](https://github.com/tymonius/Gauntlet/pull/1504). Branch: `cleanup/archive-v063-orphaned-validators` (stacked on #1487). Eleven uncalled v0.6.3 editorial synchronizers and candidate validators have moved byte-for-byte into frozen recovery evidence. None had a workflow, package command, or maintained importer; several required withdrawn candidate artifacts or removed development-site inputs. All eleven Git blobs are release-locked, and a focused boundary test prevents their entrypoints from returning to active scripts. <!-- DOC-HISTORICAL -->
 
-Local validation passes: 13 focused architecture tests, TypeScript, all 133 release-recovery locks, release-path normalization, rules-authority governance, and the maintained Last Stand terminology contract.
+Local validation passes: 13 focused architecture tests, TypeScript, all 133 release-recovery locks, release-path normalization, rules-authority governance, and the maintained Last Stand terminology contract. All four PR workflows are green at `2f19be0f`.
 
-Next: validate [#1504](https://github.com/tymonius/Gauntlet/pull/1504) in CI, then inspect the remaining version-named scripts through their explicit workflow graph. Reconstruction and publication entrypoints that still have callers require consolidation or deliberate historical retention rather than caller-free archival.
+Next: archive the ten remaining uncalled clean-v0.6.3 reconstruction builders and validators. Reconstruction and publication entrypoints that still have explicit workflow callers require consolidation or deliberate historical retention rather than caller-free archival.
 
 ## Architectural queue
 
