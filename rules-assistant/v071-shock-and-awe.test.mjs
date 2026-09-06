@@ -58,8 +58,9 @@ describe("v0.7.1 Shock and Awe authority retrieval", () => {
     const query = contextualQuery(question, history);
     expect(query).toBe(question);
     const raw = retrieveRules(corpus, query, { limit: 10, excerptLength: 1300 });
-    const rawIds = raw.map((source) => source.canonicalId);
     const ids = augmentRetrievalForContext(corpus, question, history, raw).map((source) => source.canonicalId);
-    expect(ids).toEqual(rawIds);
+    expect(ids).toContain("rulebook:treaty-articles-and-peace-treaty");
+    expect(ids).not.toContain("card:military-shock-and-awe");
+    expect(ids).not.toContain("rulebook:conflicting-victory-benefits");
   });
 });
