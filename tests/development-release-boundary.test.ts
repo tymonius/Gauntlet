@@ -13,6 +13,7 @@ const renderedFaceValidator = readFileSync('scripts/card-authority/validate-rend
 const starterValidator = readFileSync('scripts/validate-starter-decks.mjs', 'utf8');
 const playtestValidator = readFileSync('scripts/validate_current_playtest_sessions.py', 'utf8');
 const playtestWorkflow = readFileSync('.github/workflows/deploy-playtest-sessions.yml', 'utf8');
+const playtestSheetWorkflow = readFileSync('.github/workflows/render-playtest-sheet.yml', 'utf8');
 
 describe('development and published-release boundary', () => {
   it('keeps current release materialization lifecycle-driven while the TTS target matches the live Workshop release', () => {
@@ -56,5 +57,13 @@ describe('development and published-release boundary', () => {
     expect(playtestWorkflow).toContain('scripts/validate_current_playtest_sessions.py');
     expect(playtestWorkflow).toContain('config/release-lifecycle.json');
     expect(playtestWorkflow).not.toContain('validate_v071_playtest_sessions.py');
+  });
+
+  it('names printable playtest-sheet outputs from the lifecycle-selected release', () => {
+    expect(playtestSheetWorkflow).toContain('config/release-lifecycle.json');
+    expect(playtestSheetWorkflow).toContain('steps.release.outputs.pdf');
+    expect(playtestSheetWorkflow).toContain('gauntlet-current-playtest-sheet-${{ steps.release.outputs.version }}');
+    expect(playtestSheetWorkflow).not.toContain('Gauntlet_v0.7.1_Playtest_Sheet');
+    expect(playtestSheetWorkflow).not.toContain('gauntlet-v071-playtest-sheet');
   });
 });
