@@ -1,5 +1,16 @@
 @import url("../brand.css");
 
+/* Finished browser Rulebook hero art is shown directly. The previous cover
+   treatment was designed to soften a sketch scan and would overprocess the
+   replacement woodcut. */
+.hero-art img {
+  filter: none;
+  mix-blend-mode: normal;
+  opacity: 1;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
 .leader-portrait-gallery {
   margin: 26px 0 34px;
   display: grid;
