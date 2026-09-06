@@ -25,38 +25,28 @@ jobs:
           worker_path = Path("rules-assistant/worker-v071.js")
           worker = worker_path.read_text()
           if 'const SHOCK_AND_AWE_AUTHORITY_IDS' not in worker:
-              worker = worker.replace(
-                  'export const BEHAVIOR_REVISION = "v071-qa-20260906-3";',
-                  'export const BEHAVIOR_REVISION = "v071-qa-20260906-4";'
-              )
-              marker = '''const INTELLIGENCE_INTERFERENCE_AUTHORITY_IDS = [
-            "rulebook:gambit-surveillance",
-            "rulebook:tactic-surveillance",
-            "rulebook:interference-after-surveillance",
-            "rulebook:direct-interference",
-            "rulebook:intelligence-mirrors",
-            "rulebook:multiple-gambits-or-tactics",
-            "rulebook:replacing-a-gambit-or-tactic",
-            "rulebook:revising-a-choice"
-          ];'''
-              replacement = marker + '''
-          const SHOCK_AND_AWE_AUTHORITY_IDS = [
+              old_revision = 'export const BEHAVIOR_REVISION = "v071-qa-20260906-3";'
+              new_revision = 'export const BEHAVIOR_REVISION = "v071-qa-20260906-4";'
+              if old_revision not in worker:
+                  raise SystemExit("Expected behavior revision not found")
+              worker = worker.replace(old_revision, new_revision, 1)
+
+              insertion = '''const SHOCK_AND_AWE_AUTHORITY_IDS = [
             "card:military-shock-and-awe",
             "rulebook:conflicting-victory-benefits"
-          ];'''
-              if marker not in worker:
-                  raise SystemExit("Intelligence authority marker not found")
-              worker = worker.replace(marker, replacement, 1)
+          ];
+          '''
+              anchor = 'let corpusPromise;'
+              if anchor not in worker:
+                  raise SystemExit("Corpus promise anchor not found")
+              worker = worker.replace(anchor, insertion + anchor, 1)
 
-              marker = '''  const intelligenceInterferenceFocus = (
-            intelligenceTopic.test(current)
-            || (currentWordCount <= 8 && intelligenceTopic.test(recent) && intelligenceFollowupCue)
-          ) && intelligenceProcedureSubject;
-          const preferredAuthorityIds = intelligenceInterferenceFocus
-            ? INTELLIGENCE_INTERFERENCE_AUTHORITY_IDS
-            : destinationFocus && battleCardFocus
-              ? BATTLE_CARD_DESTINATION_AUTHORITY_IDS
-              : [];'''
+              start_marker = '  const intelligenceInterferenceFocus = ('
+              end_marker = '  if (!preferredAuthorityIds.length) return retrieval;'
+              start = worker.find(start_marker)
+              end = worker.find(end_marker, start)
+              if start < 0 or end < 0:
+                  raise SystemExit("Retrieval augmentation anchors not found")
               replacement = '''  const intelligenceInterferenceFocus = (
             intelligenceTopic.test(current)
             || (currentWordCount <= 8 && intelligenceTopic.test(recent) && intelligenceFollowupCue)
@@ -74,10 +64,9 @@ jobs:
               ? INTELLIGENCE_INTERFERENCE_AUTHORITY_IDS
               : destinationFocus && battleCardFocus
                 ? BATTLE_CARD_DESTINATION_AUTHORITY_IDS
-                : [];'''
-              if marker not in worker:
-                  raise SystemExit("Retrieval augmentation marker not found")
-              worker = worker.replace(marker, replacement, 1)
+                : [];
+          '''
+              worker = worker[:start] + replacement + worker[end:]
               worker_path.write_text(worker)
 
           ledger_path = Path("artifacts/rules-refinement/resolution-ledger.json")
