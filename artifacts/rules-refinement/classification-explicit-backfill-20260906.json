@@ -6,10 +6,6 @@
   "recommendedAction": "Retire historical interactions whose substantive ruling was correct and whose only audited defect was an overly weak explicit/inferred classification already addressed by the current v0.7.1 classification discipline.",
   "cluster": {
     "count": 17,
-    "highCount": 17,
-    "mediumCount": 0,
-    "maxScore": 100,
-    "averageScore": 0,
     "interactionIds": [
       "29c07af4-a646-4ded-86d5-f1a55353297c",
       "49bca11f-0eff-4793-b258-0d973cd9df2b",
