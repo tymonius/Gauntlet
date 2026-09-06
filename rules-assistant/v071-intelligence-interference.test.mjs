@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 import { buildRulesCorpus, retrieveRules } from "./local-search.js";
-import { augmentRetrievalForContext } from "./worker-v071.js";
+import { augmentRetrievalForContext, contextualQuery } from "./worker-v071.js";
 
 const canonicalData = JSON.parse(readFileSync(
   new URL("../releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json", import.meta.url),
@@ -23,7 +23,8 @@ const corpus = buildRulesCorpus({
 
 // Keep this suite deterministic: it exercises retrieval and prompt contracts without model/API calls.
 function augmentedIds(question, history = []) {
-  const raw = retrieveRules(corpus, question, { limit: 10, excerptLength: 1300 });
+  const retrievalQuery = contextualQuery(question, history);
+  const raw = retrieveRules(corpus, retrievalQuery, { limit: 10, excerptLength: 1300 });
   return augmentRetrievalForContext(corpus, question, history, raw).map((source) => source.canonicalId);
 }
 
@@ -68,14 +69,16 @@ describe("v0.7.1 Intelligence Surveillance and Interference", () => {
       { role: "assistant", content: "Yes, at the applicable Intelligence response timing." }
     ];
     const question = "How much does my Deed cost?";
-    const raw = retrieveRules(corpus, question, { limit: 10, excerptLength: 1300 });
+    const retrievalQuery = contextualQuery(question, history);
+    expect(retrievalQuery).toBe(question);
+    const raw = retrieveRules(corpus, retrievalQuery, { limit: 10, excerptLength: 1300 });
     const rawIds = raw.map((source) => source.canonicalId);
     const augmentedIds = augmentRetrievalForContext(corpus, question, history, raw).map((source) => source.canonicalId);
     expect(augmentedIds).toEqual(rawIds);
   });
 
   test("prompt preserves the full procedure instead of collapsing Surveillance and Interference", () => {
-    expect(workerSource).toContain('export const BEHAVIOR_REVISION = "v071-qa-20260906-1"');
+    expect(workerSource).toContain('export const BEHAVIOR_REVISION = "v071-qa-20260906-2"');
     expect(workerSource).toContain("reconstruct the whole applicable sequence");
     expect(workerSource).toContain("replacement-or-pass choices");
     expect(workerSource).toContain("does not reopen an earlier window");

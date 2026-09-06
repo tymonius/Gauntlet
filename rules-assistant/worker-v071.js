@@ -8,7 +8,7 @@ import {
 import { persistSmartInteraction } from "./rules-persistence.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260906-1";
+export const BEHAVIOR_REVISION = "v071-qa-20260906-2";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -490,9 +490,24 @@ function classifyUpstreamFailure(status, providerError) {
   return "upstream_error";
 }
 
-export function contextualQuery(question, history) {
-  const prior = history.slice(-4).map((item) => item.content).filter(Boolean).join(" ").slice(-1800);
-  return prior ? `${prior} ${question}` : question;
+function isContextDependentQuestion(question) {
+  const current = String(question || "").trim().toLowerCase();
+  const words = current.match(/[a-z0-9']+/g) || [];
+  if (!words.length || words.length > 10) return false;
+
+  const referentCue = /\b(?:it|its|they|them|their|that|those|this|these|which|same|both|former|latter|there|then|one|ones|again|another|next|else)\b/.test(current);
+  const continuationCue = /^(?:and|but|so|then|also|okay|ok|no|yes|wait|what about|how about)\b/.test(current);
+  const bareQuestionCue = words.length <= 2 && /^(?:where|which|why|when|how|what)\b/.test(current);
+  return referentCue || continuationCue || bareQuestionCue;
+}
+
+export function contextualQuery(question, history = []) {
+  const current = String(question || "").trim();
+  if (!current || !Array.isArray(history) || !history.length || !isContextDependentQuestion(current)) {
+    return current;
+  }
+  const prior = history.slice(-2).map((item) => String(item?.content || "").trim()).filter(Boolean).join(" ").slice(-1200);
+  return prior ? `${prior} ${current}` : current;
 }
 
 export function augmentRetrievalForContext(corpus, question, history = [], retrieval = []) {

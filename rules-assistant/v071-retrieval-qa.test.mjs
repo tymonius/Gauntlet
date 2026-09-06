@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 import { buildRulesCorpus, retrieveRules } from "./local-search.js";
+import { contextualQuery } from "./worker-v071.js";
 
 const canonicalData = JSON.parse(readFileSync(
   new URL("../releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json", import.meta.url),
@@ -22,11 +23,6 @@ const corpus = buildRulesCorpus({
   rulebookBrowserUrl: "https://gauntlet.run/rulebook/",
   canonicalDataUrl: "https://gauntlet.run/releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json"
 });
-
-function contextualQuery(question, history = []) {
-  const prior = history.slice(-4).map((item) => item.content).filter(Boolean).join(" ").slice(-1800);
-  return prior ? `${prior} ${question}` : question;
-}
 
 function sourceHaystack(source) {
   return [
