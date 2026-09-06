@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const inspectorSource = readFileSync("card-design/card-inspector.js", "utf8");
@@ -49,5 +49,12 @@ describe("shared card inspector", () => {
     expect(reviewSource).not.toContain("territoryInspectionFrame");
     expect(reviewSource).not.toContain("card-inspection-dialog");
     expect(reviewSource).not.toContain("window.addEventListener('message'");
+  });
+
+  it("does not keep parallel legacy inspector implementations", () => {
+    expect(existsSync("card-reference/card-inspection.js")).toBe(false);
+    expect(existsSync("card-reference/card-inspection.css")).toBe(false);
+    expect(existsSync("card-design/card-inspection-history.js")).toBe(false);
+    expect(existsSync("card-design/card-art-lightbox.css")).toBe(false);
   });
 });
