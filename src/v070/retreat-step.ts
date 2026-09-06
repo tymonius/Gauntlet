@@ -3,7 +3,13 @@ import {
   appendV070Event,
   type V070GameState,
 } from './engine';
+import { V070_LANDSLIDE_ID } from './landslide';
 import { openV070BlockadeChoicesForPositionChange } from './movement-triggers';
+import {
+  activeV070Overlay,
+  cardIdForV070Overlay,
+  discardV070Overlay,
+} from './overlays';
 import {
   retreatV070Position,
   type PlayerId,
@@ -20,6 +26,7 @@ export interface V070BattleRetreatStepSource {
     | 'normal_battle_loss'
     | 'territory'
     | 'battle_card'
+    | 'overlay'
     | 'fortifications'
     | 'military_order';
   label: string;
@@ -131,7 +138,60 @@ export function observeV070BattleRetreatStep(
     },
   });
 
+  resolveV070LandslideRetreatLanding(state, playerId, to);
+
   return { playerId, from, to, moved: true };
+}
+
+/**
+ * Landslide is a Retreat-only landing trigger. Keeping it here, after a real
+ * Retreat step has been validated and recorded, prevents Fall Back,
+ * withdrawal, and ordinary movement from accidentally firing it. Each granted
+ * Retreat re-enters the same one-step procedure, so consecutive Landslides
+ * chain one Territory at a time and every intermediate landing remains visible
+ * to other movement triggers.
+ */
+function resolveV070LandslideRetreatLanding(
+  state: V070GameState,
+  playerId: PlayerId,
+  territoryPosition: number,
+): void {
+  const overlay = activeV070Overlay(state, territoryPosition);
+  if (!overlay
+    || cardIdForV070Overlay(state, overlay) !== V070_LANDSLIDE_ID) {
+    return;
+  }
+
+  appendV070Event(state, {
+    type: 'landslide_overlay_retreat_triggered',
+    actor: overlay.owner,
+    visibility: 'public',
+    payload: {
+      overlayInstanceId: overlay.instanceId,
+      overlayCardId: V070_LANDSLIDE_ID,
+      owner: overlay.owner,
+      retreatingPlayerId: playerId,
+      territoryInstanceId: overlay.territoryInstanceId,
+      territoryPosition,
+    },
+  });
+
+  applyV070BattleRetreatStep(
+    state,
+    playerId,
+    {
+      kind: 'overlay',
+      label: 'Landslide',
+      sourceInstanceId: overlay.instanceId,
+      sourceCardId: V070_LANDSLIDE_ID,
+    },
+  );
+
+  discardV070Overlay(
+    state,
+    overlay.instanceId,
+    'Landslide Retreat trigger resolved',
+  );
 }
 
 /**

@@ -6,6 +6,10 @@ import {
 } from './engine';
 import { reduceV070TurnAction } from './turn-engine';
 import { reduceV070BattleAction } from './battle-engine';
+import {
+  placeV070OverlayFromHand,
+  v070OverlaysAt,
+} from './overlays';
 
 function startBattle(territoryId?: string): V070GameState {
   let state = createV070StarterGame({
@@ -101,6 +105,24 @@ function injectHandCard(
   return instanceId;
 }
 
+function setupOverlay(
+  state: V070GameState,
+  owner: 'A' | 'B',
+  cardId: string,
+  suffix: string,
+  territoryPosition: number,
+): string {
+  const instanceId = injectHandCard(state, owner, cardId, suffix);
+  placeV070OverlayFromHand(
+    state,
+    owner,
+    instanceId,
+    territoryPosition,
+    'retreat-step test setup',
+  );
+  return instanceId;
+}
+
 function revealToOutcome(
   state: V070GameState,
   aGambit?: string,
@@ -134,6 +156,19 @@ function revealToOutcome(
   });
 }
 
+function resolveForA(state: V070GameState): V070GameState {
+  state = reduceV070BattleAction(state, {
+    type: 'submit_battle_dice',
+    playerId: 'A',
+    values: [6],
+  });
+  return reduceV070BattleAction(state, {
+    type: 'submit_battle_dice',
+    playerId: 'B',
+    values: [1],
+  });
+}
+
 function retreatEvents(state: V070GameState) {
   return state.events
     .filter(event => event.type === 'battle_retreat_step')
@@ -152,16 +187,7 @@ describe('v0.7.0 shared battle Retreat steps', () => {
   test('observes the normal loss Retreat before Arena: No Quarter adds its next step', () => {
     let state = startBattle('territory-arena-no-quarter');
     state = revealToOutcome(state);
-    state = reduceV070BattleAction(state, {
-      type: 'submit_battle_dice',
-      playerId: 'A',
-      values: [6],
-    });
-    state = reduceV070BattleAction(state, {
-      type: 'submit_battle_dice',
-      playerId: 'B',
-      values: [1],
-    });
+    state = resolveForA(state);
 
     const events = retreatEvents(state);
     expect(events).toHaveLength(2);
@@ -226,16 +252,7 @@ describe('v0.7.0 shared battle Retreat steps', () => {
       'fortifications',
     );
     state = revealToOutcome(state, undefined, fortifications);
-    state = reduceV070BattleAction(state, {
-      type: 'submit_battle_dice',
-      playerId: 'A',
-      values: [6],
-    });
-    state = reduceV070BattleAction(state, {
-      type: 'submit_battle_dice',
-      playerId: 'B',
-      values: [1],
-    });
+    state = resolveForA(state);
 
     expect(state.battleRuntime?.pendingFortificationsRetreat)
       .toEqual(expect.objectContaining({
@@ -291,6 +308,142 @@ describe('v0.7.0 shared battle Retreat steps', () => {
       sourceLabel: 'Commandant Repel',
       from: 2,
       to: 1,
+    }));
+  });
+
+  test('an active Landslide immediately adds one Retreat step and then returns to its owner Discard Pile', () => {
+    let state = startBattle();
+    const landslide = setupOverlay(
+      state,
+      'A',
+      'neutral-landslide',
+      'landslide-at-four',
+      4,
+    );
+
+    state = revealToOutcome(state);
+    state = resolveForA(state);
+
+    const events = retreatEvents(state);
+    expect(events).toHaveLength(2);
+    expect(events[0]).toEqual(expect.objectContaining({
+      playerId: 'B',
+      from: 3,
+      to: 4,
+      sourceKind: 'normal_battle_loss',
+    }));
+    expect(events[1]).toEqual(expect.objectContaining({
+      playerId: 'B',
+      from: 4,
+      to: 5,
+      sourceKind: 'overlay',
+      sourceLabel: 'Landslide',
+      sourceCardId: 'neutral-landslide',
+      sourceInstanceId: landslide,
+    }));
+    expect(state.players.A.zones.discardPile).toContain(landslide);
+    expect(v070OverlaysAt(state, 4).map(overlay => overlay.instanceId))
+      .not.toContain(landslide);
+    expect(state.events.some(event =>
+      event.type === 'landslide_overlay_retreat_triggered'
+      && (event.payload as { retreatingPlayerId?: string }).retreatingPlayerId === 'B'
+    )).toBe(true);
+  });
+
+  test('Landslides chain across consecutive Territories one Retreat step at a time', () => {
+    let state = startBattle();
+    const first = setupOverlay(
+      state,
+      'A',
+      'neutral-landslide',
+      'landslide-at-four',
+      4,
+    );
+    const second = setupOverlay(
+      state,
+      'B',
+      'neutral-landslide',
+      'landslide-at-five',
+      5,
+    );
+
+    state = revealToOutcome(state);
+    state = resolveForA(state);
+
+    const events = retreatEvents(state);
+    expect(events).toHaveLength(3);
+    expect(events.map(event => [
+      event.from,
+      event.to,
+      event.sourceKind,
+    ])).toEqual([
+      [3, 4, 'normal_battle_loss'],
+      [4, 5, 'overlay'],
+      [5, 6, 'overlay'],
+    ]);
+    expect(events[1].sourceInstanceId).toBe(first);
+    expect(events[2].sourceInstanceId).toBe(second);
+    expect(state.players.A.zones.discardPile).toContain(first);
+    expect(state.players.B.zones.discardPile).toContain(second);
+  });
+
+  test('a covered dormant Landslide does not trigger from a Retreat landing', () => {
+    let state = startBattle();
+    const landslide = setupOverlay(
+      state,
+      'A',
+      'neutral-landslide',
+      'covered-landslide',
+      4,
+    );
+    const coveringOverlay = setupOverlay(
+      state,
+      'A',
+      'diplomats-demilitarized-zone',
+      'covering-dmz',
+      4,
+    );
+
+    state = revealToOutcome(state);
+    state = resolveForA(state);
+
+    expect(retreatEvents(state)).toHaveLength(1);
+    expect(v070OverlaysAt(state, 4).map(overlay => overlay.instanceId))
+      .toEqual([landslide, coveringOverlay]);
+    expect(state.players.A.zones.discardPile).not.toContain(landslide);
+  });
+
+  test('Landslide resolves immediately before a later Arena: No Quarter Retreat step', () => {
+    let state = startBattle('territory-arena-no-quarter');
+    const landslide = setupOverlay(
+      state,
+      'A',
+      'neutral-landslide',
+      'landslide-before-no-quarter',
+      4,
+    );
+
+    state = revealToOutcome(state);
+    state = resolveForA(state);
+
+    const events = retreatEvents(state);
+    expect(events).toHaveLength(3);
+    expect(events[0]).toEqual(expect.objectContaining({
+      from: 3,
+      to: 4,
+      sourceKind: 'normal_battle_loss',
+    }));
+    expect(events[1]).toEqual(expect.objectContaining({
+      from: 4,
+      to: 5,
+      sourceKind: 'overlay',
+      sourceInstanceId: landslide,
+    }));
+    expect(events[2]).toEqual(expect.objectContaining({
+      from: 5,
+      to: 6,
+      sourceKind: 'territory',
+      sourceLabel: 'Arena: No Quarter',
     }));
   });
 });
