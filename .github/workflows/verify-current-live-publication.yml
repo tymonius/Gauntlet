@@ -23,6 +23,7 @@ on:
       - 'design-tokens.css'
       - 'images/faction-symbols/**'
       - 'rules-assistant/**'
+      - 'artifacts/rules-refinement/resolution-ledger.json'
   workflow_dispatch:
 
 permissions:
@@ -76,7 +77,7 @@ jobs:
           else
             while IFS= read -r file; do
               case "$file" in
-                rules-assistant/worker-entry.js|rules-assistant/worker-v*.js|rules-assistant/v*-public-corpus.js|rules-assistant/local-search.js|rules-assistant/smart-worker.js|rules-assistant/reliable-worker.js|rules-assistant/admin-*.js|rules-assistant/review-*.js|rules-assistant/wrangler.toml)
+                .github/workflows/verify-current-live-publication.yml|artifacts/rules-refinement/resolution-ledger.json|rules-assistant/worker-entry.js|rules-assistant/worker-v*.js|rules-assistant/v*-public-corpus.js|rules-assistant/local-search.js|rules-assistant/smart-worker.js|rules-assistant/reliable-worker.js|rules-assistant/admin-*.js|rules-assistant/review-*.js|rules-assistant/refinement-*.js|rules-assistant/wrangler.toml)
                   worker=true
                   reason=worker_inputs_changed
                   ;;
