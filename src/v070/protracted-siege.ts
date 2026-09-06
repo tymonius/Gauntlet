@@ -94,13 +94,13 @@ export function preventV070CaptureWithProtractedSiege(
 
 export function resolveV070ProtractedSiegeDepartures(
   state: V070GameState,
-  previousPositions: Record<PlayerId, number>,
-  currentPositions: Record<PlayerId, number>,
+  previousPositions: Record<PlayerId, number | null>,
+  currentPositions: Record<PlayerId, number | null>,
 ): void {
   for (const playerId of ['A', 'B'] as const) {
     const from = previousPositions[playerId];
     const to = currentPositions[playerId];
-    if (from === to) continue;
+    if (from === null || to === null || from === to) continue;
 
     const active = activeV070Overlay(state, from);
     if (!active
