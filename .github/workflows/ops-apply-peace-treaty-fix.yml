@@ -1,0 +1,116 @@
+name: Apply Peace Treaty retrieval fix
+
+on:
+  push:
+    branches:
+      - fix/rules-arbiter-peace-treaty
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/rules-arbiter-peace-treaty
+      - name: Apply deterministic source-first fix
+        shell: python
+        run: |
+          from pathlib import Path
+          import json
+          from datetime import datetime, timezone
+
+          worker_path = Path("rules-assistant/worker-v071.js")
+          worker = worker_path.read_text()
+          if 'const PEACE_TREATY_AUTHORITY_IDS' not in worker:
+              old_revision = 'export const BEHAVIOR_REVISION = "v071-qa-20260906-4";'
+              new_revision = 'export const BEHAVIOR_REVISION = "v071-qa-20260906-5";'
+              if old_revision not in worker:
+                  raise SystemExit("Expected behavior revision not found")
+              worker = worker.replace(old_revision, new_revision, 1)
+
+              anchor = '''const SHOCK_AND_AWE_AUTHORITY_IDS = [
+            "card:military-shock-and-awe",
+            "rulebook:conflicting-victory-benefits"
+          ];'''
+              insertion = anchor + '''
+          const PEACE_TREATY_AUTHORITY_IDS = [
+            "rulebook:treaty-articles-and-peace-treaty"
+          ];'''
+              if anchor not in worker:
+                  raise SystemExit("Shock and Awe authority anchor not found")
+              worker = worker.replace(anchor, insertion, 1)
+
+              marker = '''const shockAndAweAuthorityIds = shockAndAweFocus && /\\bwar crimes\\b/.test(combined)
+            ? [...SHOCK_AND_AWE_AUTHORITY_IDS, "card:military-war-crimes"]
+            : SHOCK_AND_AWE_AUTHORITY_IDS;
+          const preferredAuthorityIds = shockAndAweFocus
+            ? shockAndAweAuthorityIds
+            : intelligenceInterferenceFocus
+              ? INTELLIGENCE_INTERFERENCE_AUTHORITY_IDS
+              : destinationFocus && battleCardFocus
+                ? BATTLE_CARD_DESTINATION_AUTHORITY_IDS
+                : [];'''
+              replacement = '''const shockAndAweAuthorityIds = shockAndAweFocus && /\\bwar crimes\\b/.test(combined)
+            ? [...SHOCK_AND_AWE_AUTHORITY_IDS, "card:military-war-crimes"]
+            : SHOCK_AND_AWE_AUTHORITY_IDS;
+          const peaceTreatyTopic = /\\b(?:peace treaty|treaty articles?|ratif(?:y|ies|ied|ying|ication|ications))\\b/;
+          const peaceTreatyTimingCue = /\\b(?:win|wins|winning|victory|now|immediately|start|next turn|capture|draw|sixth|6th|six|6|again)\\b/.test(current);
+          const proposalVictoryCue = /\\bproposals?\\b/.test(current) && peaceTreatyTimingCue;
+          const recentPeaceTreatyTopic = peaceTreatyTopic.test(recent) || /\\bproposals?\\b/.test(recent);
+          const peaceTreatyFocus = peaceTreatyTopic.test(current)
+            || proposalVictoryCue
+            || (currentWordCount <= 8 && recentPeaceTreatyTopic && peaceTreatyTimingCue);
+          const peaceTreatyAuthorityIds = peaceTreatyFocus
+            ? [
+                ...PEACE_TREATY_AUTHORITY_IDS,
+                ...(/\\baccept(?:ed|s|ing|ance)?\\b/.test(combined) ? ["rulebook:accepted-terms"] : []),
+                ...(/\\b(?:refus(?:e|es|ed|ing|al)|impos(?:e|es|ed|ing))\\b/.test(combined) ? ["rulebook:refused-terms"] : [])
+              ]
+            : PEACE_TREATY_AUTHORITY_IDS;
+          const preferredAuthorityIds = peaceTreatyFocus
+            ? peaceTreatyAuthorityIds
+            : shockAndAweFocus
+              ? shockAndAweAuthorityIds
+              : intelligenceInterferenceFocus
+                ? INTELLIGENCE_INTERFERENCE_AUTHORITY_IDS
+                : destinationFocus && battleCardFocus
+                  ? BATTLE_CARD_DESTINATION_AUTHORITY_IDS
+                  : [];'''
+              if marker not in worker:
+                  raise SystemExit("Retrieval augmentation marker not found")
+              worker = worker.replace(marker, replacement, 1)
+              worker_path.write_text(worker)
+
+          ledger_path = Path("artifacts/rules-refinement/resolution-ledger.json")
+          ledger = json.loads(ledger_path.read_text())
+          entry_id = "peace-treaty-timing-retrieval-v071"
+          if not any(entry.get("id") == entry_id for entry in ledger.get("entries", [])):
+              now = datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
+              ledger["updatedAt"] = now
+              ledger["entries"].append({
+                  "id": entry_id,
+                  "status": "resolved",
+                  "rootCause": "retrieval",
+                  "interactionIds": ["5ea6f396-78bb-4689-8874-fa5368b83413"],
+                  "resolutionSurface": "arbiter_retrieval",
+                  "summary": "Promote the current v0.7.1 Treaty Articles and Peace Treaty timing authority for sixth-ratification questions and terse timing follow-ups, with Accepted or Refused Terms authority when that path is named.",
+                  "resolvedAt": now,
+                  "binding": {"behaviorRevision": "v071-qa-20260906-5"}
+              })
+              ledger_path.write_text(json.dumps(ledger, indent=2) + "\n")
+      - name: Verify syntax
+        run: node --check rules-assistant/worker-v071.js
+      - name: Commit fix
+        run: |
+          if git diff --quiet; then
+            echo "Fix already applied."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add rules-assistant/worker-v071.js artifacts/rules-refinement/resolution-ledger.json
+          git commit -m "Fix Peace Treaty authority retrieval"
+          git push origin HEAD:fix/rules-arbiter-peace-treaty
