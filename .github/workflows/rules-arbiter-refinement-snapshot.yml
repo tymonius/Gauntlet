@@ -1,0 +1,112 @@
+name: Rules Arbiter refinement snapshot
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/rules-arbiter-refinement-snapshot.yml'
+      - 'rules-assistant/**'
+      - 'scripts/build-rules-refinement-snapshot.mjs'
+      - 'artifacts/rules-refinement/resolution-ledger.json'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rules-arbiter-refinement-snapshot-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      SNAPSHOT_DIR: .tmp/rules-refinement-snapshot
+      SNAPSHOT_OUTPUT: artifacts/rules-refinement/live-snapshot.json
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Verify production D1 credentials
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo "CLOUDFLARE_API_TOKEN is not configured"; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "CLOUDFLARE_ACCOUNT_ID is not configured"; exit 1; }
+
+      - name: Read production refinement inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$SNAPSHOT_DIR"
+
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant \
+            --remote \
+            --config rules-assistant/wrangler.toml \
+            --json \
+            --command "SELECT id, session_id, sequence_index, created_at, question, CASE WHEN answer IS NULL OR TRIM(answer) = '' THEN '' ELSE 'present' END AS answer, game_version, ruling_status, ruling_status_v2, confidence, source_count, review_status, issue_types_json, feedback_rating FROM rules_interactions WHERE session_id NOT LIKE 'qa_v071_%' ORDER BY created_at DESC LIMIT 10000" \
+            > "$SNAPSHOT_DIR/interactions.json"
+
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant \
+            --remote \
+            --config rules-assistant/wrangler.toml \
+            --json \
+            --command "SELECT interaction_id, created_at, retrieval_queries_json, candidate_sources_json FROM rules_interaction_diagnostics ORDER BY created_at DESC LIMIT 10000" \
+            > "$SNAPSHOT_DIR/diagnostics.json"
+
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant \
+            --remote \
+            --config rules-assistant/wrangler.toml \
+            --json \
+            --command "SELECT interaction_id, reviewed_at, historical_accuracy, current_validity, retrieval_assessment, classification_assessment, designer_review_required, recommended_action, reviewed_against_version FROM rules_interaction_audits ORDER BY reviewed_at DESC LIMIT 10000" \
+            > "$SNAPSHOT_DIR/audits.json"
+
+      - name: Build privacy-safe reviewed backlog snapshot
+        run: |
+          node scripts/build-rules-refinement-snapshot.mjs \
+            --interactions "$SNAPSHOT_DIR/interactions.json" \
+            --diagnostics "$SNAPSHOT_DIR/diagnostics.json" \
+            --audits "$SNAPSHOT_DIR/audits.json" \
+            --output "$SNAPSHOT_OUTPUT"
+
+      - name: Publish aggregate queue summary
+        run: |
+          node --input-type=module <<'NODE'
+          import { appendFileSync, readFileSync } from 'node:fs';
+          const snapshot = JSON.parse(readFileSync(process.env.SNAPSHOT_OUTPUT, 'utf8'));
+          const stats = snapshot.stats || {};
+          const lines = [
+            '# Rules Arbiter refinement snapshot',
+            '',
+            `Generated: ${snapshot.generatedAt}`,
+            '',
+            '| Queue | Count |',
+            '| --- | ---: |',
+            `| Active reviewed backlog | ${stats.eligible ?? 0} |`,
+            `| High priority | ${stats.high ?? 0} |`,
+            `| Medium priority | ${stats.medium ?? 0} |`,
+            `| Low priority | ${stats.low ?? 0} |`,
+            `| Historical-only | ${stats.historicalOnly ?? 0} |`,
+            `| Resolved by refinement ledger | ${stats.resolvedByRefinement ?? 0} |`,
+            '',
+            '| Root cause | Active | High | Medium | Max score |',
+            '| --- | ---: | ---: | ---: | ---: |',
+            ...snapshot.clusters.map((cluster) => `| ${cluster.label} | ${cluster.count} | ${cluster.highCount} | ${cluster.mediumCount} | ${cluster.maxScore} |`)
+          ];
+          appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${lines.join('\n')}\n`);
+          NODE
+
+      - name: Upload privacy-safe refinement snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: rules-arbiter-refinement-snapshot
+          path: artifacts/rules-refinement/live-snapshot.json
+          if-no-files-found: error
+          retention-days: 14
