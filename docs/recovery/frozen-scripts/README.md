@@ -15,3 +15,5 @@ Retired downstream-reconstruction scripts remain here even when their original i
 The withdrawn browser-development builder, refiners, and validator are likewise preserved as one historical pipeline. They target the removed development site and are not part of the maintained browser architecture.
 
 Orphaned v0.6.3 editorial synchronizers and candidate validators are retained here when they have no maintained caller. Their assertions describe intermediate review states and must not be treated as current rules or release gates.
+
+Uncalled clean-v0.6.3 authority, Rulebook, digital, Deckbuilder, and certification builders or validators are frozen on the same basis. Explicit workflow-backed publication and forensic-audit commands remain under active tooling until their owning workflows are redesigned or retired.

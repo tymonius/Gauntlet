@@ -50,12 +50,6 @@ const frozenCandidateSurfaces = new Set([
 // not current release tooling.
 const frozenCandidateScripts = new Set([
   'scripts/validate-reconstruction-version-plan.mjs',
-  'scripts/build-v063-print-candidate-html.mjs',
-  'scripts/build-v063-release-candidate.mjs',
-  'scripts/validate-v063-release-candidate.mjs',
-  'scripts/render-v063-print-candidate.mjs',
-  'scripts/validate-v063-print-candidate.mjs',
-  'scripts/validate-v063-canonical-data-candidate.mjs',
 ]);
 
 // These current files intentionally name removed paths only to detect/reject
