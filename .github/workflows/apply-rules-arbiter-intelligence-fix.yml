@@ -1,0 +1,81 @@
+name: Apply Intelligence interference refinement
+
+on:
+  push:
+    branches:
+      - fix/rules-arbiter-intelligence-interference
+    paths:
+      - '.github/workflows/apply-rules-arbiter-intelligence-fix.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/rules-arbiter-intelligence-interference
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Apply systemic retrieval and procedure fix
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync, writeFileSync } from 'node:fs';
+
+          const workerPath = 'rules-assistant/worker-v071.js';
+          let worker = readFileSync(workerPath, 'utf8');
+          worker = worker.replace(
+            'export const BEHAVIOR_REVISION = "v071-qa-20260903-11";',
+            'export const BEHAVIOR_REVISION = "v071-qa-20260906-1";'
+          );
+
+          const destinationBlock = `const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [\n  "rulebook:gambit-area",\n  "rulebook:tactic-area",\n  "rulebook:clearing-battle-cards"\n];`;
+          const expandedConstants = `${destinationBlock}\nconst INTELLIGENCE_INTERFERENCE_AUTHORITY_IDS = [\n  "rulebook:gambit-surveillance",\n  "rulebook:tactic-surveillance",\n  "rulebook:interference-after-surveillance",\n  "rulebook:direct-interference",\n  "rulebook:intelligence-mirrors",\n  "rulebook:multiple-gambits-or-tactics",\n  "rulebook:replacing-a-gambit-or-tactic",\n  "rulebook:revising-a-choice"\n];`;
+          if (!worker.includes(destinationBlock)) throw new Error('Could not find destination authority block.');
+          worker = worker.replace(destinationBlock, expandedConstants);
+
+          const promptNeedle = `10. Before returning provisional, check the retrieved clean authority for a direct answer to the requested property. If a clean source directly states it, use explicit; if the answer is compelled by combining clean sources, use inferred. Provisional is only for a genuine remaining gap or ambiguity.`;
+          const promptReplacement = `${promptNeedle}\n11. For a multi-step procedure, reconstruct the whole applicable sequence from the supplied authority before answering. Preserve prerequisites, separate costs, timing windows, destinations, replacement-or-pass choices, revision permissions, and every rule that says a replacement or revision does not reopen an earlier window. Do not collapse distinct Faction Features into one procedure merely because one enables the other.`;
+          if (!worker.includes(promptNeedle)) throw new Error('Could not find prompt requirement insertion point.');
+          worker = worker.replace(promptNeedle, promptReplacement);
+
+          const oldAugment = `  const battleCardFocus = /\\bgambits?\\b/.test(combined) && /\\btactics?\\b/.test(combined);\n  if (!destinationFocus || !battleCardFocus) return retrieval;\n\n  const documents = Array.isArray(corpus?.documents) ? corpus.documents : [];\n  const preferred = BATTLE_CARD_DESTINATION_AUTHORITY_IDS\n    .map((canonicalId, index) => {`;
+          const newAugment = `  const battleCardFocus = /\\bgambits?\\b/.test(combined) && /\\btactics?\\b/.test(combined);\n  const intelligenceInterferenceFocus = /\\b(?:surveillance|interference|interfere|intel)\\b/.test(combined)\n    && /\\b(?:gambits?|tactics?|face[ -]?up|reveals?|replacements?|revis(?:e|ion))\\b/.test(combined);\n  const preferredAuthorityIds = intelligenceInterferenceFocus\n    ? INTELLIGENCE_INTERFERENCE_AUTHORITY_IDS\n    : destinationFocus && battleCardFocus\n      ? BATTLE_CARD_DESTINATION_AUTHORITY_IDS\n      : [];\n  if (!preferredAuthorityIds.length) return retrieval;\n\n  const documents = Array.isArray(corpus?.documents) ? corpus.documents : [];\n  const preferred = preferredAuthorityIds\n    .map((canonicalId, index) => {`;
+          if (!worker.includes(oldAugment)) throw new Error('Could not find retrieval augmentation block.');
+          worker = worker.replace(oldAugment, newAugment);
+          writeFileSync(workerPath, worker);
+
+          const testPath = 'rules-assistant/v071-intelligence-interference.test.mjs';
+          writeFileSync(testPath, `import { readFileSync } from "node:fs";\nimport { describe, expect, test } from "vitest";\nimport { buildRulesCorpus, retrieveRules } from "./local-search.js";\nimport { augmentRetrievalForContext } from "./worker-v071.js";\n\nconst canonicalData = JSON.parse(readFileSync(\n  new URL("../releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json", import.meta.url),\n  "utf8"\n));\nconst rulebookMarkdown = readFileSync(\n  new URL("../releases/v0.7.1/Gauntlet_v0.7.1_Rulebook.md", import.meta.url),\n  "utf8"\n);\nconst workerSource = readFileSync(new URL("./worker-v071.js", import.meta.url), "utf8");\n\nconst corpus = buildRulesCorpus({\n  canonicalData,\n  rulebookMarkdown,\n  siteOrigin: "https://gauntlet.run",\n  rulebookBrowserUrl: "https://gauntlet.run/rulebook/",\n  canonicalDataUrl: "https://gauntlet.run/releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json"\n});\n\nfunction augmentedIds(question, history = []) {\n  const raw = retrieveRules(corpus, question, { limit: 10, excerptLength: 1300 });\n  return augmentRetrievalForContext(corpus, question, history, raw).map((source) => source.canonicalId);\n}\n\ndescribe("v0.7.1 Intelligence Surveillance and Interference", () => {\n  const cases = [\n    {\n      question: "Can Intelligence interfere with a Gambit that was already face up?",\n      expected: ["rulebook:direct-interference", "rulebook:gambit-surveillance"]\n    },\n    {\n      question: "If Surveillance reveals an opposing Gambit, when can I interfere and where does it go?",\n      expected: ["rulebook:gambit-surveillance", "rulebook:interference-after-surveillance"]\n    },\n    {\n      question: "After I interfere with a Tactic, can my opponent replace it and can I revise my own Tactic?",\n      expected: ["rulebook:tactic-surveillance", "rulebook:interference-after-surveillance", "rulebook:replacing-a-gambit-or-tactic", "rulebook:revising-a-choice"]\n    },\n    {\n      question: "Does using Gambit Surveillance stop me using Tactic Surveillance later in the same battle?",\n      expected: ["rulebook:gambit-surveillance", "rulebook:tactic-surveillance"]\n    },\n    {\n      question: "Can I interfere with more than one opposing Tactic after revealing them?",\n      expected: ["rulebook:tactic-surveillance", "rulebook:interference-after-surveillance"]\n    },\n    {\n      question: "Do I get another Surveillance after my opponent replaces the card I interfered with?",\n      expected: ["rulebook:interference-after-surveillance", "rulebook:replacing-a-gambit-or-tactic", "rulebook:revising-a-choice"]\n    }\n  ];\n\n  for (const item of cases) {\n    test(item.question, () => {\n      const ids = augmentedIds(item.question);\n      for (const expected of item.expected) expect(ids).toContain(expected);\n    });\n  }\n\n  test("prompt preserves the full procedure instead of collapsing Surveillance and Interference", () => {\n    expect(workerSource).toContain('export const BEHAVIOR_REVISION = "v071-qa-20260906-1"');\n    expect(workerSource).toContain("reconstruct the whole applicable sequence");\n    expect(workerSource).toContain("replacement-or-pass choices");\n    expect(workerSource).toContain("does not reopen an earlier window");\n    expect(workerSource).toContain("Do not collapse distinct Faction Features into one procedure");\n  });\n});\n`);
+
+          const ledgerPath = 'artifacts/rules-refinement/resolution-ledger.json';
+          const ledger = JSON.parse(readFileSync(ledgerPath, 'utf8'));
+          const id = 'intelligence-surveillance-interference-v071';
+          if (!ledger.entries.some((entry) => entry.id === id)) {
+            ledger.entries.push({
+              id,
+              status: 'resolved',
+              rootCause: 'answer_completeness',
+              resolutionSurface: 'arbiter_retrieval_prompt',
+              summary: 'Force the complete v0.7.1 Surveillance/Interference procedure into Intelligence interaction retrieval and require the Arbiter to preserve prerequisites, separate costs and timings, destinations, replacement/pass choices, revision rights, and no-reopen rules.',
+              interactionIds: ['121ea8a8-717e-454c-a60f-491ef6f2e52f'],
+              resolvedAt: new Date().toISOString(),
+              binding: { behaviorRevision: 'v071-qa-20260906-1' }
+            });
+            ledger.updatedAt = new Date().toISOString();
+          }
+          writeFileSync(ledgerPath, `${JSON.stringify(ledger, null, 2)}\n`);
+          NODE
+      - name: Remove one-shot workflow
+        run: rm .github/workflows/apply-rules-arbiter-intelligence-fix.yml
+      - name: Commit refinement
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add rules-assistant/worker-v071.js rules-assistant/v071-intelligence-interference.test.mjs artifacts/rules-refinement/resolution-ledger.json .github/workflows/apply-rules-arbiter-intelligence-fix.yml
+          git commit -m "Fix Intelligence interference retrieval and sequencing"
+          git push origin HEAD:fix/rules-arbiter-intelligence-interference
