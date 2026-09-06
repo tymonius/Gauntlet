@@ -10,7 +10,7 @@ import {
 } from './rules';
 import { isV070AssetUsable } from './asset-face-state';
 import { recordV070IntelligenceBattleAssetUseForMission } from './intelligence';
-import { openV070BlockadeChoicesForPositionChange } from './movement-triggers';
+import { applyV070BattleRetreatStep } from './retreat-step';
 
 export const V070_FORTIFICATIONS_ID = 'neutral-fortifications' as const;
 export const V070_FORTIFICATIONS_ASSET_TEXT =
@@ -191,43 +191,50 @@ export function resolveV070FortificationsRetreatChoice(
     );
   }
 
-  const from = battle.positions[playerId];
-  const to = retreatV070Position(
-    playerId,
-    from,
-    battle.territoryCount,
-  );
-
-  if (use && to !== from) {
-    battle.positions[playerId] = to;
-    openV070BlockadeChoicesForPositionChange(
+  if (use) {
+    const result = applyV070BattleRetreatStep(
       state,
       playerId,
-      from,
-      to,
-    );
-    appendV070Event(state, {
-      type: 'fortifications_retreat_used',
-      actor: playerId,
-      visibility: 'public',
-      payload: {
-        playerId,
+      {
+        kind: 'fortifications',
+        label: 'Fortifications',
         sourceInstanceId: pending.sourceInstanceId,
-        from,
-        to,
+        sourceCardId: V070_FORTIFICATIONS_ID,
       },
-    });
+    );
+    if (result.moved) {
+      appendV070Event(state, {
+        type: 'fortifications_retreat_used',
+        actor: playerId,
+        visibility: 'public',
+        payload: {
+          playerId,
+          sourceInstanceId: pending.sourceInstanceId,
+          from: result.from,
+          to: result.to,
+        },
+      });
+    } else {
+      appendV070Event(state, {
+        type: 'fortifications_retreat_unavailable',
+        actor: playerId,
+        visibility: 'public',
+        payload: {
+          playerId,
+          sourceInstanceId: pending.sourceInstanceId,
+          position: result.from,
+        },
+      });
+    }
   } else {
     appendV070Event(state, {
-      type: use
-        ? 'fortifications_retreat_unavailable'
-        : 'fortifications_retreat_declined',
+      type: 'fortifications_retreat_declined',
       actor: playerId,
       visibility: 'public',
       payload: {
         playerId,
         sourceInstanceId: pending.sourceInstanceId,
-        position: from,
+        position: battle.positions[playerId],
       },
     });
   }
