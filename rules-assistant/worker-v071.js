@@ -8,7 +8,7 @@ import {
 import { persistSmartInteraction } from "./rules-persistence.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260906-4";
+export const BEHAVIOR_REVISION = "v071-qa-20260906-5";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -29,6 +29,9 @@ const INTELLIGENCE_INTERFERENCE_AUTHORITY_IDS = [
 const SHOCK_AND_AWE_AUTHORITY_IDS = [
   "card:military-shock-and-awe",
   "rulebook:conflicting-victory-benefits"
+];
+const PEACE_TREATY_AUTHORITY_IDS = [
+  "rulebook:treaty-articles-and-peace-treaty"
 ];
 let corpusPromise;
 let corpusLoadedAt = 0;
@@ -536,13 +539,29 @@ const shockAndAweFocus = shockAndAweTopic.test(current)
 const shockAndAweAuthorityIds = shockAndAweFocus && /\bwar crimes\b/.test(combined)
   ? [...SHOCK_AND_AWE_AUTHORITY_IDS, "card:military-war-crimes"]
   : SHOCK_AND_AWE_AUTHORITY_IDS;
-const preferredAuthorityIds = shockAndAweFocus
-  ? shockAndAweAuthorityIds
-  : intelligenceInterferenceFocus
-    ? INTELLIGENCE_INTERFERENCE_AUTHORITY_IDS
-    : destinationFocus && battleCardFocus
-      ? BATTLE_CARD_DESTINATION_AUTHORITY_IDS
-      : [];
+const peaceTreatyTopic = /\b(?:peace treaty|treaty articles?|ratif(?:y|ies|ied|ying|ication|ications))\b/;
+const peaceTreatyTimingCue = /\b(?:win|wins|winning|victory|now|immediately|start|next turn|capture|draw|sixth|6th|six|6|again)\b/.test(current);
+const proposalVictoryCue = /\bproposals?\b/.test(current) && peaceTreatyTimingCue;
+const recentPeaceTreatyTopic = peaceTreatyTopic.test(recent) || /\bproposals?\b/.test(recent);
+const peaceTreatyFocus = peaceTreatyTopic.test(current)
+  || proposalVictoryCue
+  || (currentWordCount <= 8 && recentPeaceTreatyTopic && peaceTreatyTimingCue);
+const peaceTreatyAuthorityIds = peaceTreatyFocus
+  ? [
+      ...PEACE_TREATY_AUTHORITY_IDS,
+      ...(/\baccept(?:ed|s|ing|ance)?\b/.test(combined) ? ["rulebook:accepted-terms"] : []),
+      ...(/\b(?:refus(?:e|es|ed|ing|al)|impos(?:e|es|ed|ing))\b/.test(combined) ? ["rulebook:refused-terms"] : [])
+    ]
+  : PEACE_TREATY_AUTHORITY_IDS;
+const preferredAuthorityIds = peaceTreatyFocus
+  ? peaceTreatyAuthorityIds
+  : shockAndAweFocus
+    ? shockAndAweAuthorityIds
+    : intelligenceInterferenceFocus
+      ? INTELLIGENCE_INTERFERENCE_AUTHORITY_IDS
+      : destinationFocus && battleCardFocus
+        ? BATTLE_CARD_DESTINATION_AUTHORITY_IDS
+        : [];
   if (!preferredAuthorityIds.length) return retrieval;
 
   const documents = Array.isArray(corpus?.documents) ? corpus.documents : [];
