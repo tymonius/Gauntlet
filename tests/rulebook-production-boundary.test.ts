@@ -18,10 +18,8 @@ const currentRenderers = [
   read('scripts/render-v070-booklet.mjs'),
   read('scripts/render-v071-booklet.mjs'),
 ];
-const materializationWorkflows = [
-  read('.github/workflows/materialize-v070-release-package.yml'),
-  read('.github/workflows/materialize-v071-release-package.yml'),
-];
+const historicalMaterializationWorkflow = read('.github/workflows/materialize-v070-release-package.yml');
+const currentMaterializationWorkflow = read('.github/workflows/materialize-current-release-package.yml');
 
 describe('Rulebook production ownership', () => {
   it('makes release identity and source explicit in the maintained adapter', () => {
@@ -43,9 +41,11 @@ describe('Rulebook production ownership', () => {
   });
 
   it('routes current workflows through the version-neutral adapter and canonical publication source', () => {
-    for (const workflow of materializationWorkflows) {
-      expect(workflow).toContain('scripts/build-rulebook-production.py');
-      expect(workflow).toContain('legacy/v0.6.1-rulebook-publication/**');
+    expect(historicalMaterializationWorkflow).toContain('scripts/build-rulebook-production.py');
+    expect(historicalMaterializationWorkflow).toContain('legacy/v0.6.1-rulebook-publication/**');
+    expect(currentMaterializationWorkflow).toContain('scripts/render-current-rulebook-booklet.mjs');
+    expect(currentMaterializationWorkflow).toContain('legacy/v0.6.1-rulebook-publication/**');
+    for (const workflow of [historicalMaterializationWorkflow, currentMaterializationWorkflow]) {
       expect(workflow).not.toContain('scripts/build-v063-rulebook-production.py');
       expect(workflow).not.toContain('scripts/run-v063-rulebook-renderer.mjs');
       expect(workflow).not.toMatch(/^\s*-\s*rulebook-production\/\*\*/m);

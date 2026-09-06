@@ -1,0 +1,180 @@
+name: Materialize current release package
+
+on:
+  push:
+    branches:
+      - main
+      - "release/**-finalize"
+    paths:
+      - game-data/**
+      - docs/v0.6.4-*.json
+      - docs/v0.6.3-starter-decks.json
+      - rulebook/**
+      - card-design/**
+      - images/artwork/cards/**
+      - images/artwork/card-backgrounds/**
+      - design-tokens.css
+      - legacy/v0.6.1-rulebook-publication/**
+      - config/release-lifecycle.json
+      - config/github-release-contract.json
+      - scripts/build-*-release-source.mjs
+      - scripts/render-*-booklet.mjs
+      - scripts/run-*-rulebook-renderer.mjs
+      - scripts/render-current-rulebook-booklet.mjs
+      - scripts/materialize-public-route-compatibility.mjs
+      - images/sketches/**
+      - .github/workflows/materialize-current-release-package.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - game-data/**
+      - docs/v0.6.4-*.json
+      - docs/v0.6.3-starter-decks.json
+      - rulebook/**
+      - card-design/**
+      - images/artwork/cards/**
+      - images/artwork/card-backgrounds/**
+      - design-tokens.css
+      - legacy/v0.6.1-rulebook-publication/**
+      - config/release-lifecycle.json
+      - config/github-release-contract.json
+      - scripts/build-*-release-source.mjs
+      - scripts/render-*-booklet.mjs
+      - scripts/run-*-rulebook-renderer.mjs
+      - scripts/render-current-rulebook-booklet.mjs
+      - scripts/materialize-public-route-compatibility.mjs
+      - images/sketches/**
+      - .github/workflows/materialize-current-release-package.yml
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: materialize-current-release-package-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  materialize:
+    if: ${{ github.event_name == 'pull_request' || !contains(github.event.head_commit.message, 'Refresh current release package') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout publication branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Rulebook production dependencies
+        run: |
+          npm install
+          npm install --no-save --package-lock=false pdf-lib
+          npx playwright install --with-deps chromium
+
+      - name: Install publication utility font
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fonts-inter
+          fc-match Inter
+
+      - name: Materialize lifecycle-selected release package
+        id: build
+        run: |
+          node --check scripts/render-current-rulebook-booklet.mjs
+          node scripts/render-current-rulebook-booklet.mjs
+
+      - name: Materialize historical public route compatibility
+        run: node scripts/materialize-public-route-compatibility.mjs
+
+      - name: Validate materialized current release package
+        run: |
+          node scripts/validate-current-public-contract.mjs
+          node scripts/validate-current-release-payload.mjs
+          node scripts/validate-current-rulebook-booklet-provenance.mjs
+          node scripts/validate-github-release-contract.mjs
+          node scripts/validate-release-path-normalization.mjs
+
+      - name: Upload current release package preview
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: gauntlet-current-release-package-${{ steps.build.outputs.version }}
+          path: ${{ steps.build.outputs.release_root }}/**
+          if-no-files-found: error
+
+      - name: Prepare protected-main release refresh
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          version="${{ steps.build.outputs.version }}"
+          release_root="${{ steps.build.outputs.release_root }}"
+          branch="automation/current-release-package-refresh"
+
+          if [[ -z "$(git status --porcelain -- "$release_root")" ]]; then
+            echo "Generated $version package already matches main."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -C "$branch"
+          git add "$release_root"
+          git commit -m "Refresh current release package ($version)"
+          git push --force origin "HEAD:$branch"
+
+          compare_url="https://github.com/${GITHUB_REPOSITORY}/compare/main...${branch}?expand=1"
+          echo "Generated refresh branch: `$branch`" >> "$GITHUB_STEP_SUMMARY"
+          echo "Refresh PR: $compare_url" >> "$GITHUB_STEP_SUMMARY"
+
+          pr_number="$(gh pr list --repo "$GITHUB_REPOSITORY" --head "$branch" --base main --state open --json number --jq '.[0].number // empty')"
+          if [[ -z "$pr_number" ]]; then
+            if gh pr create \
+              --repo "$GITHUB_REPOSITORY" \
+              --base main \
+              --head "$branch" \
+              --title "Refresh $version release package" \
+              --body "Automated rematerialization of the lifecycle-selected current release package after publication-source changes landed on main. This updates the tracked Rulebook booklet and manifest/provenance payload without bypassing protected-main review."; then
+              pr_number="$(gh pr list --repo "$GITHUB_REPOSITORY" --head "$branch" --base main --state open --json number --jq '.[0].number // empty')"
+            else
+              echo "::warning::GitHub Actions could not open the refresh PR automatically. The branch is ready at $compare_url."
+            fi
+          fi
+
+          if [[ -n "$pr_number" ]]; then
+            echo "Refresh PR #$pr_number is open; dispatching protected-main checks on the generated head commit."
+            gh workflow run test.yml --repo "$GITHUB_REPOSITORY" --ref "$branch"
+            gh workflow run pr-quality-gate.yml --repo "$GITHUB_REPOSITORY" --ref "$branch"
+            gh workflow run governance-integrity.yml --repo "$GITHUB_REPOSITORY" --ref "$branch"
+          fi
+
+      - name: Commit materialized current release package
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release/')
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${{ steps.build.outputs.version }}"
+          release_root="${{ steps.build.outputs.release_root }}"
+          node scripts/commit-generated-files.mjs \
+            "Materialize current release package ($version)" -- \
+            "${release_root}/Gauntlet_${version}_Rulebook.md" \
+            "${release_root}/Gauntlet_${version}_Rulebook_Booklet.pdf" \
+            "${release_root}/Gauntlet_${version}_Card_Anatomy.png" \
+            "${release_root}/Gauntlet_${version}_Arcane_Trait_Mark.png" \
+            "${release_root}/Gauntlet_${version}_Canonical_Data.json" \
+            "${release_root}/Gauntlet_${version}_Starter_Decks.json" \
+            "${release_root}/Gauntlet_${version}_Source_Provenance.json" \
+            "${release_root}/Gauntlet_${version}_Manifest.json"
