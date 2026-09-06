@@ -140,3 +140,32 @@ test("server refinement API preserves admin authorization", async () => {
   );
   expect(response.status).toBe(401);
 });
+
+test("deployed Worker intercepts obvious current non-rules requests before the model path", async () => {
+  const response = await worker.fetch(
+    new Request("https://gauntlet-rules-assistant.example/api/rules", {
+      method: "POST",
+      headers: {
+        Origin: "https://gauntlet.run",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        question: "Can you build me a strong deck for Witch Hunter, geared toward running the gauntlet?",
+        rulesVersion: "v0.7.1",
+        sessionId: "scope-test-session"
+      })
+    }),
+    {
+      SITE_ORIGIN: "https://gauntlet.run",
+      ALLOWED_ORIGINS: "https://gauntlet.run",
+      OPENAI_API_KEY: "must-not-be-used"
+    },
+    {}
+  );
+
+  expect(response.status).toBe(200);
+  const result = await response.json();
+  expect(result.rulingStatus).toBe("out_of_scope");
+  expect(result.executionPath).toBe("deterministic-scope");
+  expect(result.sources).toEqual([]);
+});
