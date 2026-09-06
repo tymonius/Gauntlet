@@ -198,7 +198,15 @@ PR: [#1533](https://github.com/tymonius/Gauntlet/pull/1533). Branch: `cleanup/ve
 
 The refresh change detector includes untracked files, so a newly promoted release directory cannot be skipped. Local validation passes TypeScript, 32 architecture-boundary tests, four Rules Arbiter synchronization tests, current lifecycle plan resolution, and the CI workflow inventory. The repository's separate conversation-audit attestation still has its pre-existing one-entry status-count mismatch; the governance structure and live-tail checks pass. All automatic PR workflows are green at `99ae4115`, and the manually dispatched [full PR quality gate](https://github.com/tymonius/Gauntlet/actions/runs/34024661434) passes the current publication and both booklet contracts.
 
-Next: make the maintained live-publication verifier lifecycle-driven. Keep deployed release endpoint details in per-release configuration or adapters while giving the active workflow and verifier stable current-release names.
+The full GitHub Actions gate passes the current publication and both booklet contracts. Next: make the maintained live-publication verifier lifecycle-driven. Keep deployed release endpoint details in per-release configuration or adapters while giving the active workflow and verifier stable current-release names.
+
+## Version-neutral live-publication verification
+
+PR: [#1534](https://github.com/tymonius/Gauntlet/pull/1534). Branch: `cleanup/version-agnostic-live-publication` (stacked on #1533). The maintained live-publication workflow resolves the current Rules Arbiter worker source, service endpoints, behavior revision, release manifest, and authority-set identity through a validated lifecycle adapter. The v0.7.1 Worker and versioned corpus-health route remain release-specific implementation details; the active deployment reconciliation, health check, and post-publication refresh no longer embed them.
+
+Local validation passes TypeScript, 34 architecture-boundary tests, the affected Rules Arbiter deployment and corpus synchronization gates, release-path normalization, current adapter plan/output resolution, and CI workflow inventory. A full Rules Arbiter directory run has 321 passing tests and four pre-existing stale widget source assertions in unchanged tests. The manually dispatched [full PR quality gate](https://github.com/tymonius/Gauntlet/actions/runs/34025360515) passes the production sparse-checkout current-publication contract and both booklet contracts.
+
+Next: remove or isolate the unreachable v0.7.0-only branches in the maintained GitHub Release publisher. Current GitHub Release publication already selects its live verifier and assets from `config/github-release-contract.json`; historical tags and release-specific verification scripts remain immutable contracts.
 
 ## Architectural queue
 
