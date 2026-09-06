@@ -1,0 +1,210 @@
+name: Apply Rules Arbiter triage continuity fix
+
+on:
+  push:
+    branches: [fix/rules-arbiter-triage-continuity-classification]
+    paths:
+      - '.github/workflows/apply-rules-arbiter-triage-continuity-fix.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  refine:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: fix/rules-arbiter-triage-continuity-classification
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Tighten context-dependent question classification
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          worker_path = Path('rules-assistant/worker-v071.js')
+          worker = worker_path.read_text()
+          worker = worker.replace(
+              'export const BEHAVIOR_REVISION = "v071-qa-20260906-2";',
+              'export const BEHAVIOR_REVISION = "v071-qa-20260906-3";'
+          )
+          old_bare = 'const bareQuestionCue = words.length <= 2 && /^(?:where|which|why|when|how|what)\\b/.test(current);'
+          new_bare = 'const bareQuestionCue = words.length <= 2 && /^(?:where|which|why|when|how|what|who)\\b/.test(current);'
+          if old_bare not in worker:
+              raise SystemExit('worker bare-question cue not found')
+          worker = worker.replace(old_bare, new_bare, 1)
+          worker_path.write_text(worker)
+
+          triage_path = Path('rules-assistant/refinement-triage.js')
+          triage = triage_path.read_text()
+          pattern = re.compile(r'''  function isEllipticalQuestion\(question\) \{.*?\n  \}\n\n  function candidateSourceCount''', re.S)
+          replacement = '''  function isEllipticalQuestion(question) {
+    const value = text(question).toLowerCase();
+    const words = value.match(/[a-z0-9']+/g) || [];
+    if (!words.length || words.length > 10) return false;
+
+    const referentCue = /\\b(?:it|its|they|them|their|that|those|this|these|which|same|both|former|latter|there|then|one|ones|again|another|next|else)\\b/.test(value);
+    const continuationCue = /^(?:and|but|so|then|also|okay|ok|no|yes|wait|what about|how about)\\b/.test(value);
+    const bareQuestionCue = words.length <= 2 && /^(?:where|which|why|when|how|what|who)\\b/.test(value);
+    return referentCue || continuationCue || bareQuestionCue;
+  }
+
+  function candidateSourceCount'''
+          triage, count = pattern.subn(replacement, triage, count=1)
+          if count != 1:
+              raise SystemExit(f'expected one isEllipticalQuestion replacement, got {count}')
+
+          old_order = '''    if (issues.includes("inconsistent_terminology")) return "terminology_voice";
+    if (issues.includes("missing_rule") || issues.includes("ambiguous_rule") || ["source_data_fix", "rule_clarification", "versioned_precedent_candidate", "rule_change_candidate"].includes(recommendedAction)) return "source_specificity";
+    if (score.elliptical && context.previous && (score.fragileFollowup || ["incorrect", "unclear"].includes(feedback))) return "conversation_continuity";
+    if ((classificationAssessment && !["correct", "indeterminate", "not_applicable"].includes(classificationAssessment)) || issues.includes("uncovered_interaction")) return "classification";'''
+          new_order = '''    if (issues.includes("inconsistent_terminology")) return "terminology_voice";
+    if (issues.includes("missing_rule") || issues.includes("ambiguous_rule") || ["source_data_fix", "rule_clarification", "versioned_precedent_candidate", "rule_change_candidate"].includes(recommendedAction)) return "source_specificity";
+    if (recommendedAction === "retrieval_fix") return "retrieval";
+    if (score.elliptical && context.previous && (score.fragileFollowup || ["incorrect", "unclear"].includes(feedback))) return "conversation_continuity";
+    if ((classificationAssessment && !["correct", "indeterminate", "not_applicable"].includes(classificationAssessment)) || issues.includes("uncovered_interaction")) return "classification";'''
+          if old_order not in triage:
+              raise SystemExit('triage root-cause ordering block not found')
+          triage = triage.replace(old_order, new_order, 1)
+          triage_path.write_text(triage)
+
+          contextual_test_path = Path('rules-assistant/v071-contextual-query.test.mjs')
+          contextual_test = contextual_test_path.read_text()
+          anchor = '''  test("treats a bare short question as context-dependent", () => {
+    expect(contextualQuery("How much?", intelligenceHistory)).not.toBe("How much?");
+  });'''
+          addition = '''  test("treats a bare short question as context-dependent", () => {
+    expect(contextualQuery("How much?", intelligenceHistory)).not.toBe("How much?");
+  });
+
+  test("keeps a self-contained wh-question clean while preserving a bare who follow-up", () => {
+    const selfContained = "Who is the General designed after?";
+    expect(contextualQuery(selfContained, intelligenceHistory)).toBe(selfContained);
+    expect(contextualQuery("Who?", intelligenceHistory)).not.toBe("Who?");
+  });'''
+          if anchor not in contextual_test:
+              raise SystemExit('contextual-query test anchor not found')
+          contextual_test_path.write_text(contextual_test.replace(anchor, addition, 1))
+
+          triage_test_path = Path('rules-assistant/refinement-triage.test.mjs')
+          triage_test = triage_test_path.read_text()
+          triage_addition = r'''
+
+test("self-contained wh-questions do not masquerade as conversation-continuity debt", () => {
+  const first = row({
+    id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+    sequence_index: 1,
+    feedback_rating: "incorrect"
+  });
+  const second = row({
+    id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+    sequence_index: 2,
+    created_at: "2026-09-04T20:01:00.000Z",
+    question: "When is an occupied Territory captured?",
+    review_status: "needs_correction",
+    issueTypes: ["incorrect_answer", "retrieval_failure"]
+  });
+  const report = engine.triageInteractions([first, second], {
+    audits: [{
+      interaction_id: second.id,
+      historical_accuracy: "incorrect",
+      retrieval_assessment: "failure",
+      classification_assessment: "should_be_explicit",
+      recommended_action: "retrieval_fix"
+    }]
+  }, { scope: "reviewed_backlog" });
+  const item = report.interactions.find((candidate) => candidate.interactionId === second.id);
+  expect(item.rootCause).toBe("retrieval");
+  expect(item.signalCodes).not.toContain("elliptical_followup");
+  expect(item.signalCodes).not.toContain("fragile_followup");
+});
+
+test("audit retrieval fixes outrank downstream classification symptoms", () => {
+  const interaction = row({
+    id: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+    review_status: "needs_correction",
+    issueTypes: ["incorrect_answer", "retrieval_failure"]
+  });
+  const report = engine.triageInteractions([interaction], {
+    audits: [{
+      interaction_id: interaction.id,
+      retrieval_assessment: "failure",
+      classification_assessment: "should_be_explicit",
+      recommended_action: "retrieval_fix"
+    }]
+  }, { scope: "reviewed_backlog" });
+  expect(report.interactions[0].rootCause).toBe("retrieval");
+});
+
+test("self-contained who questions can surface classification debt without continuity noise", () => {
+  const first = row({
+    id: "dddddddd-dddd-4ddd-8ddd-dddddddddddd",
+    sequence_index: 1
+  });
+  const second = row({
+    id: "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee",
+    sequence_index: 2,
+    created_at: "2026-09-04T20:01:00.000Z",
+    question: "Who is the General designed after?",
+    review_status: "needs_correction",
+    ruling_status: "provisional",
+    confidence: "medium",
+    source_count: 1
+  });
+  const report = engine.triageInteractions([first, second], {
+    audits: [{
+      interaction_id: second.id,
+      retrieval_assessment: "sufficient",
+      classification_assessment: "should_be_out_of_scope",
+      recommended_action: "prompt_fix"
+    }]
+  }, { scope: "reviewed_backlog" });
+  const item = report.interactions.find((candidate) => candidate.interactionId === second.id);
+  expect(item.rootCause).toBe("classification");
+  expect(item.signalCodes).not.toContain("elliptical_followup");
+});
+'''
+          if 'self-contained wh-questions do not masquerade' in triage_test:
+              raise SystemExit('triage regressions already present')
+          triage_test_path.write_text(triage_test.rstrip() + triage_addition + '\n')
+          PY
+
+      - name: Run deterministic Rules Arbiter regressions
+        run: |
+          npx vitest run \
+            rules-assistant/refinement-triage.test.mjs \
+            rules-assistant/v071-contextual-query.test.mjs \
+            rules-assistant/v071-retrieval-qa.test.mjs \
+            rules-assistant/v071-destination-continuity.test.mjs \
+            rules-assistant/v071-intelligence-interference.test.mjs \
+            rules-assistant/v071-qa-foundation.test.mjs
+
+      - name: Remove one-shot workflow
+        run: rm .github/workflows/apply-rules-arbiter-triage-continuity-fix.yml
+
+      - name: Commit refinement
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add rules-assistant/worker-v071.js \
+                  rules-assistant/refinement-triage.js \
+                  rules-assistant/refinement-triage.test.mjs \
+                  rules-assistant/v071-contextual-query.test.mjs \
+                  .github/workflows/apply-rules-arbiter-triage-continuity-fix.yml
+          git commit -m "Correct Rules Arbiter continuity triage"
+          git push origin HEAD:fix/rules-arbiter-triage-continuity-classification
