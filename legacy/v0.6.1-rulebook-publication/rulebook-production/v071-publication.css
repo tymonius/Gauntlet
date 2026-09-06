@@ -63,15 +63,27 @@
 .leader-portrait img[alt="Grand Inquisitor"]{content:url("../images/woodcuts/grand-inquisitor.png")}
 .leader-portrait img[alt="Witch Hunter"]{content:url("../images/woodcuts/witch-hunter.png")}
 
-/* The source hero sketches carry a one-pixel raster edge at the top and bottom.
-   Clip only that outer edge so the artwork continues to blend into the paper
-   without changing scale, placement, or the historical source files. */
+/* The current booklet replaces all four historical hero sketches with their
+   finished woodcut compositions while keeping the proven print compositor.
+   Hero 1 is the front cover; Heroes 2–4 are the illustrated filler plates. */
+.front-cover .cover-art img{
+  content:url("../images/woodcuts/hero compositions/hero 1.png");
+  filter:none;
+  mix-blend-mode:multiply;
+  opacity:1;
+}
 .intentional-blank.hero-plate-page .hero-plate img{
   width:auto;
   height:auto;
   max-width:100%;
   max-height:100%;
   display:block;
+  filter:none;
+  mix-blend-mode:multiply;
+  opacity:1;
   -webkit-clip-path:inset(2px 0);
   clip-path:inset(2px 0);
 }
+.intentional-blank.hero-plate-page .hero-plate img[src$="hero sketch 2.png"]{content:url("../images/woodcuts/hero compositions/hero 2.png")}
+.intentional-blank.hero-plate-page .hero-plate img[src$="hero sketch 3.png"]{content:url("../images/woodcuts/hero compositions/hero 3.png")}
+.intentional-blank.hero-plate-page .hero-plate img[src$="hero sketch 4.png"]{content:url("../images/woodcuts/hero compositions/hero 4.png")}
