@@ -5,9 +5,9 @@
 
 This Cloudflare Worker and D1-backed API powers Gauntlet's tracked self-serve playtest, facilitated event, feedback, journal, closure, and analysis workflows.
 
-New game sessions use `G071-…` serials; new event containers use `EV071-…`. The runtime reports its `CURRENT_RULES_VERSION` from `/health` and stores that rules version with every session.
+New session identifiers derive from the rules version being tested. The current `v0.7.1` release uses `G071-…` for games and `EV071-…` for event containers. The runtime reports its `CURRENT_RULES_VERSION` from `/health` and stores that rules version with every session.
 
-Historical records are version-preserving. Existing `G061`, `G063`, `G070`, `EV061`, `EV063`, and `EV070` records are read with their stored version and serial rather than rewritten.
+Historical records are version-preserving. Previously issued versioned game and event identifiers remain readable with their stored rules version rather than being rewritten.
 
 ## Production Worker chain
 

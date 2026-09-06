@@ -226,11 +226,19 @@ The playtest service workflow and routine repository checks are green. Next: mak
 
 ## Version-neutral printable playtest-sheet outputs
 
-PR: [#1537](https://github.com/tymonius/Gauntlet/pull/1537). Branch: `cleanup/version-neutral-playtest-sheet` (stacked on #1536). The maintained printable-sheet workflow now derives its PDF path, preview path, artifact label, and commit message from the lifecycle-selected current release. Resolving v0.7.1 produces the existing tracked filename. The `G071-PREVIEW` render fixture remains explicit because the serial family is a persisted playtest-service contract.
+PR: [#1537](https://github.com/tymonius/Gauntlet/pull/1537). Branch: `cleanup/version-neutral-playtest-sheet` (stacked on #1536). The maintained printable-sheet workflow now derives its PDF path, preview path, artifact label, and commit message from the lifecycle-selected current release. Resolving v0.7.1 produces the existing tracked filename. The `G071-PREVIEW` render fixture remained explicit pending the session-identifier compatibility decision resolved in #1538.
 
 Local validation passes the six-test development/release boundary suite. The manually dispatched [printable-sheet workflow](https://github.com/tymonius/Gauntlet/actions/runs/34026632056) passes lifecycle resolution, browser rendering, one-page Letter PDF validation, and artifact upload.
 
-Next design boundary: decide whether `G071` and `EV071` are permanent service namespaces or should advance with future rules versions. Existing session URLs, D1 records, and analytics groupings make this a compatibility policy rather than a safe naming-only cleanup.
+The session-identifier policy is resolved in #1538: newly issued game and event serial prefixes advance with the rules version being tested, while historical versioned identifiers remain readable without rewriting stored records.
+
+## Version-derived playtest session identifiers
+
+PR: [#1538](https://github.com/tymonius/Gauntlet/pull/1538). Branch: `cleanup/version-derived-session-identifiers` (stacked on #1537). New game and event session identifiers now derive from one shared rules-version identity. The current v0.7.1 service continues to issue `G071` and `EV071`; a future tested version advances both prefixes from that version. The base and tracked workers share the same release identity, and serial validation continues to recognize previously issued versioned game and event records.
+
+Local validation passes 25 worker tests, 16 architecture tests, the current playtest-service validator, and TypeScript. The [automatic PR checks](https://github.com/tymonius/Gauntlet/actions/runs/34027246154) pass alongside the playtest-service validation, governance, and authority gates.
+
+Next: remove duplicated v0.7.1 identity from maintained playtest clients and service verification. These surfaces should consume or resolve the current playtest identity while preserving release-specific user-facing copy and historical test fixtures where they describe the actual version under test.
 
 ## Architectural queue
 

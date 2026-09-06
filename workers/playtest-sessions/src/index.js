@@ -1,9 +1,12 @@
+import {
+  CURRENT_RULES_VERSION,
+  EVENT_SERIAL_PREFIX,
+  GAME_SERIAL_PREFIX,
+  SERIAL_PATTERN,
+} from "./release-identity.js";
+
 const DEFAULT_ORIGIN = "https://gauntlet.run";
-const CURRENT_RULES_VERSION = "v0.7.1";
-const GAME_SERIAL_PREFIX = "G071";
-const EVENT_SERIAL_PREFIX = "EV071";
 const TOKEN_PATTERN = /^[A-Za-z0-9_-]{24,96}$/;
-const SERIAL_PATTERN = /^G071-[A-Z0-9]{6,12}$/;
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const FACTION_LEADERS = Object.freeze({
   military: ["General", "Commandant"],
@@ -938,7 +941,7 @@ async function readJson(request) {
 
 export function cleanSerial(value) {
   const serial = cleanString(value, 32).toUpperCase();
-  if (!SERIAL_PATTERN.test(serial)) throw new HttpError(400, "Invalid v0.7.1 sheet serial");
+  if (!SERIAL_PATTERN.test(serial)) throw new HttpError(400, "Invalid versioned playtest serial");
   return serial;
 }
 
