@@ -58,6 +58,7 @@ describe("v0.7.1 Mystics Transmutation authority retrieval", () => {
 
   test("keeps the no-printed-effects restriction with the procedure", () => {
     const ids = augmentedIds("If I use Transmutation, does the card I put in my Graveyard also use its printed effect?");
+    expect(ids[0]).toBe("rulebook:transmutation");
     expect(ids).toContain("rulebook:transmutation");
   });
 
