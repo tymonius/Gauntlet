@@ -137,12 +137,12 @@ describe('v0.7.0 historical publication boundary', () => {
     expect(finalizerWorkflow).toContain('git push origin HEAD:release/v0.7.0-cutover');
   });
 
-  it('promotes the existing v0.7.0 hosting prerelease only after live verification', () => {
-    expect(releasePublisher).toContain("current.tag === 'v0.7.0' && hadCurrentReleaseAtStart");
-    expect(releasePublisher).toContain('verifyLive()');
-    expect(releasePublisher).toContain("'release', 'edit', current.tag");
-    expect(releasePublisher).toContain("'--notes-file', current.notes_file");
-    expect(releasePublisher).toContain('the immutable tag target is unchanged');
+  it('keeps closed v0.7.0 cutover behavior out of the current release publisher', () => {
+    expect(releasePublisher).not.toMatch(/current\.tag === ['"]v0\.7\.0/);
+    expect(releasePublisher).not.toContain('validate-v070-tts-manual-qa.mjs');
+    expect(releasePublisher).not.toContain('Promoting the existing v0.7.0 TTS-hosting prerelease');
+    expect(releasePublisher).toContain('const current = contract.current_release');
+    expect(releasePublisher).toContain('current.live_verification_script');
   });
 
 

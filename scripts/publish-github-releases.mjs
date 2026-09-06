@@ -120,14 +120,8 @@ for (const record of contract.historical_releases) {
 }
 
 const current = contract.current_release;
-if (current.tag === 'v0.7.0') {
-  console.log('Checking the mandatory v0.7.0 TTS manual-QA gate before Git tag or GitHub Release publication.');
-  run(process.execPath, ['scripts/validate-v070-tts-manual-qa.mjs']);
-}
-
 let currentTarget = tagTarget(current.tag);
 let currentRelease = releaseView(current.tag);
-const hadCurrentReleaseAtStart = Boolean(currentTarget && currentRelease);
 
 const deferIfMainAdvanced = (phase) => {
   const latestMain = remoteMainHead();
@@ -204,22 +198,6 @@ if (!currentTarget) {
     createCurrentRelease(currentTarget);
     currentRelease = releaseView(current.tag);
   }
-}
-
-if (current.tag === 'v0.7.0' && hadCurrentReleaseAtStart) {
-  if (deferIfMainAdvanced('before promotion of existing hosting prerelease')) process.exit(0);
-  if (!verifyLive()) process.exit(0);
-  if (deferIfMainAdvanced('after promotion verification')) process.exit(0);
-  console.log('Promoting the existing v0.7.0 TTS-hosting prerelease notes in place; the immutable tag target is unchanged.');
-  const editArgs = [
-    'release', 'edit', current.tag,
-    '--repo', repo,
-    '--title', current.title,
-    '--notes-file', current.notes_file,
-  ];
-  if (current.prerelease) editArgs.push('--prerelease');
-  run('gh', editArgs);
-  currentRelease = releaseView(current.tag);
 }
 
 verifyReleaseMetadata(current, currentRelease);
