@@ -174,7 +174,7 @@ PR: [#1506](https://github.com/tymonius/Gauntlet/pull/1506). Branch: `cleanup/ar
 
 Local validation passes: 15 focused architecture tests, TypeScript, all 143 release-recovery locks, release-path normalization, rules-authority governance, and the maintained Last Stand terminology contract.
 
-Next: validate [#1506](https://github.com/tymonius/Gauntlet/pull/1506) in CI, then make the current publication contract independent of its v0.6.3-named validator. Keep explicit historical booklet and forensic reconstruction workflows pinned unless their ownership changes.
+Next: validate [#1506](https://github.com/tymonius/Gauntlet/pull/1506) in CI, then make the maintained publication contract independent of its version-named validator. Keep explicit historical booklet and forensic reconstruction workflows pinned unless their ownership changes.
 
 ## Architectural queue
 
