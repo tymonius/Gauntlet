@@ -47,6 +47,14 @@ export type V070BattleRevealChoice =
       sourceInstanceId: string;
       /** Opposing Hand cards that existed when Penance took effect. */
       candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'property_dues';
+      owner: PlayerId;
+      opponent: PlayerId;
+      sourceInstanceId: string;
+      /** Opposing Hand cards that existed when Property Dues took effect. */
+      candidateInstanceIds: string[];
     };
 
 declare module './battle-types' {
