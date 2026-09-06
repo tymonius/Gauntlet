@@ -1,5 +1,10 @@
 const content = document.querySelector('[data-rulebook-content]');
 
+const heroArt = document.querySelector('.hero-art img');
+if (heroArt) {
+  heroArt.src = '../images/woodcuts/hero compositions/hero 1.png';
+}
+
 const FACTION_LEADERS = [
   ['Military', [
     ['General', '../images/woodcuts/general.png'],
