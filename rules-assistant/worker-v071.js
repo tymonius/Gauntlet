@@ -8,13 +8,23 @@ import {
 import { persistSmartInteraction } from "./rules-persistence.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260903-11";
+export const BEHAVIOR_REVISION = "v071-qa-20260906-1";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
   "rulebook:gambit-area",
   "rulebook:tactic-area",
   "rulebook:clearing-battle-cards"
+];
+const INTELLIGENCE_INTERFERENCE_AUTHORITY_IDS = [
+  "rulebook:gambit-surveillance",
+  "rulebook:tactic-surveillance",
+  "rulebook:interference-after-surveillance",
+  "rulebook:direct-interference",
+  "rulebook:intelligence-mirrors",
+  "rulebook:multiple-gambits-or-tactics",
+  "rulebook:replacing-a-gambit-or-tactic",
+  "rulebook:revising-a-choice"
 ];
 let corpusPromise;
 let corpusLoadedAt = 0;
@@ -72,6 +82,7 @@ Requirements:
 8. Resolve follow-up referents against the immediately preceding exchange first. This includes pronouns and elliptical corrections or fragments such as "which is what", "which are", "where do they go", "no, their destinations", and similar terse follow-ups. Preserve the most recently contrasted property or noun phrase as the active referent; do not reset from that property to the broader objects being compared unless the player does so explicitly.
 9. When the requested distinction is a concrete source, timing, destination, cost, number, zone, or other named value, state that concrete value. Do not answer circularly with placeholders such as "the Gambit destination" or "the Tactic destination" when the actual destinations are supplied.
 10. Before returning provisional, check the retrieved clean authority for a direct answer to the requested property. If a clean source directly states it, use explicit; if the answer is compelled by combining clean sources, use inferred. Provisional is only for a genuine remaining gap or ambiguity.
+11. For a multi-step procedure, reconstruct the whole applicable sequence from the supplied authority before answering. Preserve prerequisites, separate costs, timing windows, destinations, replacement-or-pass choices, revision permissions, and every rule that says a replacement or revision does not reopen an earlier window. Do not collapse distinct Faction Features into one procedure merely because one enables the other.
 ${ADJUDICATION_GUIDE}
 
 Return only the required JSON object.`;
@@ -492,10 +503,22 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
   const destinationFocus = /\bdestinations?\b/.test(current)
     || (currentWordCount <= 6 && /\bdestinations?\b/.test(recent));
   const battleCardFocus = /\bgambits?\b/.test(combined) && /\btactics?\b/.test(combined);
-  if (!destinationFocus || !battleCardFocus) return retrieval;
+  const intelligenceTopic = /\b(?:surveillance|interference|interfer(?:e|es|ed|ing)|intel)\b/;
+  const intelligenceFollowupCue = /\b(?:gambits?|tactics?|cards?|face[ -]?up|reveals?|replac(?:e|es|ed|ing|ement|ements)|revis(?:e|es|ed|ing|ion|ions)|again|another|reopen|that|it|they|them|those)\b/.test(current);
+  const intelligenceProcedureSubject = /\b(?:gambits?|tactics?|cards?|face[ -]?up|reveals?|replac(?:e|es|ed|ing|ement|ements)|revis(?:e|es|ed|ing|ion|ions)|cost|spend|intel)\b/.test(combined);
+  const intelligenceInterferenceFocus = (
+    intelligenceTopic.test(current)
+    || (currentWordCount <= 8 && intelligenceTopic.test(recent) && intelligenceFollowupCue)
+  ) && intelligenceProcedureSubject;
+  const preferredAuthorityIds = intelligenceInterferenceFocus
+    ? INTELLIGENCE_INTERFERENCE_AUTHORITY_IDS
+    : destinationFocus && battleCardFocus
+      ? BATTLE_CARD_DESTINATION_AUTHORITY_IDS
+      : [];
+  if (!preferredAuthorityIds.length) return retrieval;
 
   const documents = Array.isArray(corpus?.documents) ? corpus.documents : [];
-  const preferred = BATTLE_CARD_DESTINATION_AUTHORITY_IDS
+  const preferred = preferredAuthorityIds
     .map((canonicalId, index) => {
       const document = documents.find((candidate) => candidate.id === canonicalId);
       if (!document) return null;
