@@ -60,6 +60,22 @@ describe("v0.7.1 Rules Arbiter retrieval QA", () => {
         ).toBe(true);
       }
 
+      if (Array.isArray(item.expectedTopSourcePatterns)) {
+        const topThree = haystacks.slice(0, 3);
+        for (const pattern of item.expectedTopSourcePatterns) {
+          const normalized = String(pattern).toLowerCase();
+          expect(
+            topThree.some((text) => text.includes(normalized)),
+            [
+              `${item.id}: expected top-three source pattern "${pattern}" was not retrieved.`,
+              `Query: ${query}`,
+              "Top three:",
+              ...sources.slice(0, 3).map((source, index) => `  ${index + 1}. ${source.title} [${source.canonicalId || source.id}]`)
+            ].join("\n")
+          ).toBe(true);
+        }
+      }
+
       if (item.expectedTopic) {
         const topThree = sources.slice(0, 3).map(sourceHaystack).join("\n");
         const topicTerms = String(item.expectedTopic)
