@@ -265,7 +265,7 @@ body{background:radial-gradient(circle at 10% 5%,rgba(143,31,37,.1),transparent 
 #factionLesson .intro-card>span{color:var(--lesson-faction,var(--start-red))}
 @media(max-width:620px){#learn .intro-grid>.intro-card:last-child:nth-child(odd){grid-column:auto}#factionLesson .faction-lesson-hero::after{right:-4rem;bottom:-3rem;width:260px}}
 
-/* Faction-color cards, stable faction tiles, and Leader sketch treatment. */
+/* Faction-color cards, stable faction tiles, and Leader lesson structure. */
 .faction-choice,.faction-choice label,.faction-choice a{box-sizing:border-box;min-width:0}
 .faction-choice .eyebrow,.faction-choice a{color:var(--choice-faction,var(--faction,var(--start-red)))}
 .faction-choice input{accent-color:var(--choice-faction,var(--faction,var(--start-red)))}
@@ -274,21 +274,7 @@ body{background:radial-gradient(circle at 10% 5%,rgba(143,31,37,.1),transparent 
 #learnFaction .faction-lesson-grid{align-items:stretch}
 #learnFaction .faction-lesson-grid>.intro-card{box-sizing:border-box;min-width:0;height:100%}
 #factionLessonVictory,.victory-line{min-width:0}
-#factionLesson .faction-leader-lesson{position:relative;isolation:isolate;overflow:hidden;box-sizing:border-box;min-width:0;min-height:320px;padding-right:clamp(18rem,30vw,24rem);border-top-color:var(--lesson-faction,var(--start-red))}
+#factionLesson .faction-leader-lesson{position:relative;overflow:hidden;box-sizing:border-box;min-width:0;border-top-color:var(--lesson-faction,var(--start-red))}
 #factionLesson .faction-leader-lesson>*{position:relative;z-index:1}
 #factionLesson .faction-leader-lesson>.eyebrow{color:var(--lesson-faction,var(--start-red))}
-#factionLesson .faction-leader-lesson::after{content:"";position:absolute;z-index:0;right:1.25rem;top:1rem;bottom:0;width:clamp(220px,28%,330px);pointer-events:none;opacity:.78;background-image:var(--leader-lesson-art);background-repeat:no-repeat;background-position:center bottom;background-size:contain;mix-blend-mode:multiply}
-main:has(input[name="leader"][value="general"]:checked) #factionLesson .faction-leader-lesson{--leader-lesson-art:url("../images/general.png")}
-main:has(input[name="leader"][value="commandant"]:checked) #factionLesson .faction-leader-lesson{--leader-lesson-art:url("../images/commandant.png")}
-main:has(input[name="leader"][value="ambassador"]:checked) #factionLesson .faction-leader-lesson{--leader-lesson-art:url("../images/ambassador.png")}
-main:has(input[name="leader"][value="senator"]:checked) #factionLesson .faction-leader-lesson{--leader-lesson-art:url("../images/senator.png")}
-main:has(input[name="leader"][value="banker"]:checked) #factionLesson .faction-leader-lesson{--leader-lesson-art:url("../images/banker.png")}
-main:has(input[name="leader"][value="executive"]:checked) #factionLesson .faction-leader-lesson{--leader-lesson-art:url("../images/executive.png")}
-main:has(input[name="leader"][value="ranger"]:checked) #factionLesson .faction-leader-lesson{--leader-lesson-art:url("../images/ranger.png")}
-main:has(input[name="leader"][value="spymaster"]:checked) #factionLesson .faction-leader-lesson{--leader-lesson-art:url("../images/spymaster.png")}
-main:has(input[name="leader"][value="alchemist"]:checked) #factionLesson .faction-leader-lesson{--leader-lesson-art:url("../images/alchemist.png")}
-main:has(input[name="leader"][value="spirit-walker"]:checked) #factionLesson .faction-leader-lesson{--leader-lesson-art:url("../images/spirit walker.png")}
-main:has(input[name="leader"][value="grand-inquisitor"]:checked) #factionLesson .faction-leader-lesson{--leader-lesson-art:url("../images/grand inquisitor.png")}
-main:has(input[name="leader"][value="witch-hunter"]:checked) #factionLesson .faction-leader-lesson{--leader-lesson-art:url("../images/witch hunter.png")}
-@media(max-width:900px){#factionLesson .faction-leader-lesson{padding-right:15rem}#factionLesson .faction-leader-lesson::after{right:.75rem;width:220px}}
-@media(max-width:620px){#learnFaction .faction-lesson-grid{align-items:stretch}#factionLesson .faction-leader-lesson{min-height:0;padding-right:1.35rem}#factionLesson .faction-leader-lesson::after{right:-2rem;top:auto;bottom:-1rem;width:240px;opacity:.11}#factionLesson .faction-leader-lesson>*{text-shadow:0 1px 0 rgba(255,253,248,.9)}}
+@media(max-width:620px){#learnFaction .faction-lesson-grid{align-items:stretch}#factionLesson .faction-leader-lesson>*{text-shadow:0 1px 0 rgba(255,253,248,.9)}}
