@@ -1,5 +1,13 @@
 (() => {
   const STORAGE_KEY = "gauntlet_standalone_onboarding_v1";
+  const RULEBOOK_FACTION_ANCHORS = Object.freeze({
+    military: "13-military",
+    diplomats: "14-diplomats",
+    financiers: "15-financiers",
+    intelligence: "16-intelligence",
+    mystics: "17-mystics",
+    inquisition: "18-inquisition"
+  });
 
   const FACTION_PRESENTATION = Object.freeze({
     military: {
@@ -407,8 +415,8 @@
     el.factionLessonVictory.innerHTML = `
       <span class="victory-line"><strong>Run the Gauntlet</strong><span>${escapeHtml(faction.lesson.victory.gauntlet)}</span></span>
       <span class="victory-line"><strong>Faction victory</strong><span>${escapeHtml(faction.lesson.victory.faction)}</span></span>`;
-    el.factionGuideLink.href = `../factions/${state.factionId}/`;
-    el.factionGuideLink.textContent = `Open the full ${faction.name} guide ↗`;
+    el.factionGuideLink.href = `../rulebook/#${RULEBOOK_FACTION_ANCHORS[state.factionId]}`;
+    el.factionGuideLink.textContent = `Open the ${faction.name} rulebook chapter ↗`;
 
     el.factionLessonSteps.replaceChildren(...faction.lesson.fit.map(point => {
       const item = document.createElement("li");

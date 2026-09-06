@@ -18,6 +18,15 @@ const EXPECTED_CHOICES = [
   ["inquisition", "witch-hunter"]
 ] as const;
 
+const FACTION_RULEBOOK_CHAPTERS = [
+  ["military", "13-military", "# 13. Military"],
+  ["diplomats", "14-diplomats", "# 14. Diplomats"],
+  ["financiers", "15-financiers", "# 15. Financiers"],
+  ["intelligence", "16-intelligence", "# 16. Intelligence"],
+  ["mystics", "17-mystics", "# 17. Mystics"],
+  ["inquisition", "18-inquisition", "# 18. Inquisition"]
+] as const;
+
 describe("standalone new-player onboarding", () => {
   it("provides a public five-step path with no event-session dependency", () => {
     const html = read("start/index.html");
@@ -86,6 +95,22 @@ describe("standalone new-player onboarding", () => {
     expect(css).toContain("#learn .intro-grid>.intro-card:last-child:nth-child(odd){grid-column:1/-1}");
     expect(css).toContain("[hidden]{display:none!important}");
     expect(css).toContain(".faction-lesson-hero::after");
+  });
+
+  it("uses faction guides for exploration and exact rulebook chapters after the lesson", () => {
+    const html = read("start/index.html");
+    const app = read("start/app.js");
+    const rulebook = read("rulebook/player-facing/current-rulebook.md");
+
+    expect(app).toContain('el.factionGuideLink.href = `../rulebook/#${RULEBOOK_FACTION_ANCHORS[state.factionId]}`');
+    expect(app).toContain('el.factionGuideLink.textContent = `Open the ${faction.name} rulebook chapter ↗`');
+    expect(html).toContain('id="factionGuideLink" class="text-link" href="../rulebook/"');
+
+    for (const [factionId, anchor, heading] of FACTION_RULEBOOK_CHAPTERS) {
+      expect(html).toContain(`href="../factions/${factionId}/"`);
+      expect(app).toContain(`${factionId}: "${anchor}"`);
+      expect(rulebook).toContain(heading);
+    }
   });
 
   it("shows recommended Rite order for each Mystics starter alongside its existing setup guidance", () => {
