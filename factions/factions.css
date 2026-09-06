@@ -35,10 +35,14 @@ body.faction-page::after {
 .faction-page .button.secondary { color: var(--faction-dark); border-color: var(--faction-dark); }
 .faction-page .text-link { color: var(--faction-dark); font-family: var(--font-interface); font-weight: 800; text-decoration: none; }
 
-/* Faction guides use the same deliberate typography hierarchy as Start:
- * Georgia for the large structural hero; P22 1722 Pro for human-scale headings;
- * Adobe Caslon for reading text; Inter for labels; P22 Declaration Pro for flavor. */
-.faction-page .section-heading h2,
+/* Preserve the guides' earlier Georgia hierarchy. Standard-weight structural
+ * headings stay Georgia; headings that previously read as heavy/bold Georgia
+ * use P22 1722 Pro. P22 Declaration Pro is reserved for flavor text. */
+.faction-page .section-heading h2 {
+  font-family: var(--font-display-web);
+  font-weight: 500;
+  letter-spacing: -.035em;
+}
 .faction-page .play-grid h3,
 .faction-page .mechanics-grid h3,
 .faction-page .victory-grid h3,
@@ -85,7 +89,7 @@ body.faction-page::after {
 }
 .faction-facts div { padding: 16px 0; border-top: 1px solid var(--line); }
 .faction-facts dt { color: var(--faction); font-family: var(--font-interface); font-size: .72rem; font-weight: 850; letter-spacing: .12em; text-transform: uppercase; }
-.faction-facts dd { margin: 8px 0 0; font-family: var(--font-reading); font-weight: 700; line-height: 1.35; }
+.faction-facts dd { margin: 8px 0 0; font-family: var(--font-display-web); font-weight: 700; line-height: 1.35; }
 
 .hero-leaders {
   display: grid;
@@ -131,7 +135,7 @@ body.faction-page::after {
 .play-grid article { border-top: 4px solid var(--faction); }
 .play-grid h3, .mechanics-grid h3, .victory-grid h3 { margin: 0 0 12px; font-size: 1.45rem; }
 .play-grid p, .mechanics-grid p, .victory-grid p { margin-bottom: 0; color: var(--muted); line-height: 1.65; }
-.mechanics-grid article > span { color: var(--faction); font-family: var(--font-interface); font-style: normal; font-weight: 800; letter-spacing: .08em; }
+.mechanics-grid article > span { color: var(--faction); font-family: var(--font-display-web); font-style: italic; }
 .mechanics-grid h3 { margin-top: 48px; }
 
 .player-fit {
