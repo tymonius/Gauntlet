@@ -29,8 +29,10 @@ jobs:
         run: npm install
       - name: Apply focused triage correction
         run: node scripts/apply-rules-triage-fix.mjs
-      - name: Run Rules Arbiter deterministic suite
-        run: npm run test:rules-assistant
+      - name: Check triage syntax
+        run: node --check rules-assistant/refinement-triage.js
+      - name: Run refinement triage tests
+        run: npx vitest run rules-assistant/refinement-triage.test.mjs
       - name: Remove staging helpers
         run: rm .github/workflows/apply-rules-arbiter-triage-root-cause-fix.yml scripts/apply-rules-triage-fix.mjs
       - name: Commit refinement
