@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-06T01:54:00.000Z",
+  "updatedAt": "2026-09-06T02:24:00.000Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -159,6 +159,41 @@
       "binding": {
         "commit": "fcd901d702aaa4b9136cb36e417aecb6afbe2e93",
         "behaviorRevision": "v071-scope-20260905-1"
+      }
+    },
+    {
+      "id": "explicit-classification-discipline-v071",
+      "status": "resolved",
+      "rootCause": "classification",
+      "interactionIds": [
+        "29c07af4-a646-4ded-86d5-f1a55353297c",
+        "49bca11f-0eff-4793-b258-0d973cd9df2b",
+        "0062503d-ec55-4e41-b82e-e3dd5112f279",
+        "d67cc0b1-c2cf-4dfd-930e-9816fee4980b",
+        "e7557f50-6f39-46f3-b83e-960b6e2b291b",
+        "532bca54-b2cc-428b-9c1f-cff785fc1330",
+        "4e443831-6f34-4104-a477-1fe80725b36a",
+        "7ef95ae6-ef18-4e38-ac88-ec0fdc9c8aee",
+        "7fbccdc7-1cf6-47d4-8a56-953ee8515c4f",
+        "bd5ca08e-3dcd-42bc-b361-3ded8d9c9969",
+        "f12b3b83-cfe5-4635-9e7e-55cee81e0493",
+        "47900d8a-cd15-4398-9c3b-1b90aa00595d",
+        "f50d4e37-3c24-4e37-8a8a-cab58a17cc1f",
+        "4ff1c0bb-2ff0-4cf3-b965-90335b9d9a8c",
+        "ab92804c-691b-4857-aee8-539c7efccfd3",
+        "b983bba9-8c4a-41ad-8b5b-fa6ed199ae53",
+        "cec1260e-3e06-4a88-a8da-3a6bff726bc7"
+      ],
+      "caseIds": [
+        "reviewed-correct-should-be-explicit"
+      ],
+      "resolutionSurface": "arbiter_classification",
+      "summary": "These reviewed interactions had correct substantive rulings, current authority, sufficient retrieval, and only an overly weak classification. PR #1419 tightened the current v0.7.1 explicit-versus-inferred boundary and added deterministic classification-contract coverage; later behavior revisions retain that boundary.",
+      "resolvedAt": "2026-09-04T20:50:44.000Z",
+      "binding": {
+        "pullRequest": 1419,
+        "commit": "0a46040320ee801da299da02d89c34e3aedcfc92",
+        "behaviorRevision": "v071-qa-20260903-10"
       }
     }
   ]
