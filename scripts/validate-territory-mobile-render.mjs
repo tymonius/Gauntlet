@@ -77,7 +77,7 @@ async function inspection(browser, options, screenshotPath) {
     await sourceCard.waitFor({ state: 'attached', timeout: 30000 });
     await sourceCard.evaluate(card => card.click());
 
-    const inspectionSelector = 'iframe.territory-inspection-frame';
+    const inspectionSelector = 'iframe.gauntlet-card-inspector-frame';
     const inspectionElement = page.locator(inspectionSelector);
     await inspectionElement.waitFor({ state: 'attached', timeout: 10000 });
     const inspectionCard = page
@@ -93,7 +93,7 @@ async function inspection(browser, options, screenshotPath) {
     const settled = await metrics(frame);
     await page.waitForTimeout(500);
     const delayed = await metrics(frame);
-    if (screenshotPath) await page.locator('.territory-inspection-dialog').screenshot({ path: screenshotPath });
+    if (screenshotPath) await page.locator('.gauntlet-card-inspector').screenshot({ path: screenshotPath });
     return { settled, delayed };
   } finally {
     await context.close();
