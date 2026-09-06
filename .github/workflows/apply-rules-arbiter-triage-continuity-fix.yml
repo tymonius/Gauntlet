@@ -2,9 +2,10 @@ name: Apply Rules Arbiter triage continuity fix
 
 on:
   push:
-    branches: [fix/rules-arbiter-triage-continuity-classification]
+    branches:
+      - fix/rules-arbiter-triage-continuity-classification
     paths:
-      - '.github/workflows/apply-rules-arbiter-triage-continuity-fix.yml'
+      - .github/workflows/apply-rules-arbiter-triage-continuity-fix.yml
 
 permissions:
   contents: write
@@ -19,192 +20,23 @@ jobs:
         with:
           ref: fix/rules-arbiter-triage-continuity-classification
           fetch-depth: 0
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-
       - name: Install dependencies
         run: npm ci
-
-      - name: Tighten context-dependent question classification
-        shell: bash
-        run: |
-          set -euo pipefail
-          python - <<'PY'
-          from pathlib import Path
-          import re
-
-          worker_path = Path('rules-assistant/worker-v071.js')
-          worker = worker_path.read_text()
-          worker = worker.replace(
-              'export const BEHAVIOR_REVISION = "v071-qa-20260906-2";',
-              'export const BEHAVIOR_REVISION = "v071-qa-20260906-3";'
-          )
-          old_bare = 'const bareQuestionCue = words.length <= 2 && /^(?:where|which|why|when|how|what)\\b/.test(current);'
-          new_bare = 'const bareQuestionCue = words.length <= 2 && /^(?:where|which|why|when|how|what|who)\\b/.test(current);'
-          if old_bare not in worker:
-              raise SystemExit('worker bare-question cue not found')
-          worker = worker.replace(old_bare, new_bare, 1)
-          worker_path.write_text(worker)
-
-          triage_path = Path('rules-assistant/refinement-triage.js')
-          triage = triage_path.read_text()
-          pattern = re.compile(r'''  function isEllipticalQuestion\(question\) \{.*?\n  \}\n\n  function candidateSourceCount''', re.S)
-          replacement = '''  function isEllipticalQuestion(question) {
-    const value = text(question).toLowerCase();
-    const words = value.match(/[a-z0-9']+/g) || [];
-    if (!words.length || words.length > 10) return false;
-
-    const referentCue = /\\b(?:it|its|they|them|their|that|those|this|these|which|same|both|former|latter|there|then|one|ones|again|another|next|else)\\b/.test(value);
-    const continuationCue = /^(?:and|but|so|then|also|okay|ok|no|yes|wait|what about|how about)\\b/.test(value);
-    const bareQuestionCue = words.length <= 2 && /^(?:where|which|why|when|how|what|who)\\b/.test(value);
-    return referentCue || continuationCue || bareQuestionCue;
-  }
-
-  function candidateSourceCount'''
-          triage, count = pattern.subn(replacement, triage, count=1)
-          if count != 1:
-              raise SystemExit(f'expected one isEllipticalQuestion replacement, got {count}')
-
-          old_order = '''    if (issues.includes("inconsistent_terminology")) return "terminology_voice";
-    if (issues.includes("missing_rule") || issues.includes("ambiguous_rule") || ["source_data_fix", "rule_clarification", "versioned_precedent_candidate", "rule_change_candidate"].includes(recommendedAction)) return "source_specificity";
-    if (score.elliptical && context.previous && (score.fragileFollowup || ["incorrect", "unclear"].includes(feedback))) return "conversation_continuity";
-    if ((classificationAssessment && !["correct", "indeterminate", "not_applicable"].includes(classificationAssessment)) || issues.includes("uncovered_interaction")) return "classification";'''
-          new_order = '''    if (issues.includes("inconsistent_terminology")) return "terminology_voice";
-    if (issues.includes("missing_rule") || issues.includes("ambiguous_rule") || ["source_data_fix", "rule_clarification", "versioned_precedent_candidate", "rule_change_candidate"].includes(recommendedAction)) return "source_specificity";
-    if (recommendedAction === "retrieval_fix") return "retrieval";
-    if (score.elliptical && context.previous && (score.fragileFollowup || ["incorrect", "unclear"].includes(feedback))) return "conversation_continuity";
-    if ((classificationAssessment && !["correct", "indeterminate", "not_applicable"].includes(classificationAssessment)) || issues.includes("uncovered_interaction")) return "classification";'''
-          if old_order not in triage:
-              raise SystemExit('triage root-cause ordering block not found')
-          triage = triage.replace(old_order, new_order, 1)
-          triage_path.write_text(triage)
-
-          contextual_test_path = Path('rules-assistant/v071-contextual-query.test.mjs')
-          contextual_test = contextual_test_path.read_text()
-          anchor = '''  test("treats a bare short question as context-dependent", () => {
-    expect(contextualQuery("How much?", intelligenceHistory)).not.toBe("How much?");
-  });'''
-          addition = '''  test("treats a bare short question as context-dependent", () => {
-    expect(contextualQuery("How much?", intelligenceHistory)).not.toBe("How much?");
-  });
-
-  test("keeps a self-contained wh-question clean while preserving a bare who follow-up", () => {
-    const selfContained = "Who is the General designed after?";
-    expect(contextualQuery(selfContained, intelligenceHistory)).toBe(selfContained);
-    expect(contextualQuery("Who?", intelligenceHistory)).not.toBe("Who?");
-  });'''
-          if anchor not in contextual_test:
-              raise SystemExit('contextual-query test anchor not found')
-          contextual_test_path.write_text(contextual_test.replace(anchor, addition, 1))
-
-          triage_test_path = Path('rules-assistant/refinement-triage.test.mjs')
-          triage_test = triage_test_path.read_text()
-          triage_addition = r'''
-
-test("self-contained wh-questions do not masquerade as conversation-continuity debt", () => {
-  const first = row({
-    id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
-    sequence_index: 1,
-    feedback_rating: "incorrect"
-  });
-  const second = row({
-    id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
-    sequence_index: 2,
-    created_at: "2026-09-04T20:01:00.000Z",
-    question: "When is an occupied Territory captured?",
-    review_status: "needs_correction",
-    issueTypes: ["incorrect_answer", "retrieval_failure"]
-  });
-  const report = engine.triageInteractions([first, second], {
-    audits: [{
-      interaction_id: second.id,
-      historical_accuracy: "incorrect",
-      retrieval_assessment: "failure",
-      classification_assessment: "should_be_explicit",
-      recommended_action: "retrieval_fix"
-    }]
-  }, { scope: "reviewed_backlog" });
-  const item = report.interactions.find((candidate) => candidate.interactionId === second.id);
-  expect(item.rootCause).toBe("retrieval");
-  expect(item.signalCodes).not.toContain("elliptical_followup");
-  expect(item.signalCodes).not.toContain("fragile_followup");
-});
-
-test("audit retrieval fixes outrank downstream classification symptoms", () => {
-  const interaction = row({
-    id: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
-    review_status: "needs_correction",
-    issueTypes: ["incorrect_answer", "retrieval_failure"]
-  });
-  const report = engine.triageInteractions([interaction], {
-    audits: [{
-      interaction_id: interaction.id,
-      retrieval_assessment: "failure",
-      classification_assessment: "should_be_explicit",
-      recommended_action: "retrieval_fix"
-    }]
-  }, { scope: "reviewed_backlog" });
-  expect(report.interactions[0].rootCause).toBe("retrieval");
-});
-
-test("self-contained who questions can surface classification debt without continuity noise", () => {
-  const first = row({
-    id: "dddddddd-dddd-4ddd-8ddd-dddddddddddd",
-    sequence_index: 1
-  });
-  const second = row({
-    id: "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee",
-    sequence_index: 2,
-    created_at: "2026-09-04T20:01:00.000Z",
-    question: "Who is the General designed after?",
-    review_status: "needs_correction",
-    ruling_status: "provisional",
-    confidence: "medium",
-    source_count: 1
-  });
-  const report = engine.triageInteractions([first, second], {
-    audits: [{
-      interaction_id: second.id,
-      retrieval_assessment: "sufficient",
-      classification_assessment: "should_be_out_of_scope",
-      recommended_action: "prompt_fix"
-    }]
-  }, { scope: "reviewed_backlog" });
-  const item = report.interactions.find((candidate) => candidate.interactionId === second.id);
-  expect(item.rootCause).toBe("classification");
-  expect(item.signalCodes).not.toContain("elliptical_followup");
-});
-'''
-          if 'self-contained wh-questions do not masquerade' in triage_test:
-              raise SystemExit('triage regressions already present')
-          triage_test_path.write_text(triage_test.rstrip() + triage_addition + '\n')
-          PY
-
-      - name: Run deterministic Rules Arbiter regressions
-        run: |
-          npx vitest run \
-            rules-assistant/refinement-triage.test.mjs \
-            rules-assistant/v071-contextual-query.test.mjs \
-            rules-assistant/v071-retrieval-qa.test.mjs \
-            rules-assistant/v071-destination-continuity.test.mjs \
-            rules-assistant/v071-intelligence-interference.test.mjs \
-            rules-assistant/v071-qa-foundation.test.mjs
-
+      - name: Apply refinement
+        run: echo 'CmZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aAppbXBvcnQgcmUKCndvcmtlcl9wYXRoID0gUGF0aCgicnVsZXMtYXNzaXN0YW50L3dvcmtlci12MDcxLmpzIikKd29ya2VyID0gd29ya2VyX3BhdGgucmVhZF90ZXh0KCkKb2xkX3JldmlzaW9uID0gJ2V4cG9ydCBjb25zdCBCRUhBVklPUl9SRVZJU0lPTiA9ICJ2MDcxLXFhLTIwMjYwOTA2LTIiOycKbmV3X3JldmlzaW9uID0gJ2V4cG9ydCBjb25zdCBCRUhBVklPUl9SRVZJU0lPTiA9ICJ2MDcxLXFhLTIwMjYwOTA2LTMiOycKaWYgb2xkX3JldmlzaW9uIG5vdCBpbiB3b3JrZXI6CiAgICByYWlzZSBTeXN0ZW1FeGl0KCJ3b3JrZXIgYmVoYXZpb3IgcmV2aXNpb24gbm90IGZvdW5kIikKd29ya2VyID0gd29ya2VyLnJlcGxhY2Uob2xkX3JldmlzaW9uLCBuZXdfcmV2aXNpb24sIDEpCgpvbGRfYmFyZSA9IHInY29uc3QgYmFyZVF1ZXN0aW9uQ3VlID0gd29yZHMubGVuZ3RoIDw9IDIgJiYgL14oPzp3aGVyZXx3aGljaHx3aHl8d2hlbnxob3d8d2hhdClcYi8udGVzdChjdXJyZW50KTsnCm5ld19iYXJlID0gcidjb25zdCBiYXJlUXVlc3Rpb25DdWUgPSB3b3Jkcy5sZW5ndGggPD0gMiAmJiAvXig/OndoZXJlfHdoaWNofHdoeXx3aGVufGhvd3x3aGF0fHdobylcYi8udGVzdChjdXJyZW50KTsnCmlmIG9sZF9iYXJlIG5vdCBpbiB3b3JrZXI6CiAgICByYWlzZSBTeXN0ZW1FeGl0KCJ3b3JrZXIgYmFyZS1xdWVzdGlvbiBjdWUgbm90IGZvdW5kIikKd29ya2VyID0gd29ya2VyLnJlcGxhY2Uob2xkX2JhcmUsIG5ld19iYXJlLCAxKQp3b3JrZXJfcGF0aC53cml0ZV90ZXh0KHdvcmtlcikKCnRyaWFnZV9wYXRoID0gUGF0aCgicnVsZXMtYXNzaXN0YW50L3JlZmluZW1lbnQtdHJpYWdlLmpzIikKdHJpYWdlID0gdHJpYWdlX3BhdGgucmVhZF90ZXh0KCkKcGF0dGVybiA9IHJlLmNvbXBpbGUociIgIGZ1bmN0aW9uIGlzRWxsaXB0aWNhbFF1ZXN0aW9uXChxdWVzdGlvblwpIFx7Lio/XG4gIFx9XG5cbiAgZnVuY3Rpb24gY2FuZGlkYXRlU291cmNlQ291bnQiLCByZS5TKQpyZXBsYWNlbWVudCA9ICIiIiAgZnVuY3Rpb24gaXNFbGxpcHRpY2FsUXVlc3Rpb24ocXVlc3Rpb24pIHsKICAgIGNvbnN0IHZhbHVlID0gdGV4dChxdWVzdGlvbikudG9Mb3dlckNhc2UoKTsKICAgIGNvbnN0IHdvcmRzID0gdmFsdWUubWF0Y2goL1thLXowLTknXSsvZykgfHwgW107CiAgICBpZiAoIXdvcmRzLmxlbmd0aCB8fCB3b3Jkcy5sZW5ndGggPiAxMCkgcmV0dXJuIGZhbHNlOwoKICAgIGNvbnN0IHJlZmVyZW50Q3VlID0gL1xcYig/Oml0fGl0c3x0aGV5fHRoZW18dGhlaXJ8dGhhdHx0aG9zZXx0aGlzfHRoZXNlfHdoaWNofHNhbWV8Ym90aHxmb3JtZXJ8bGF0dGVyfHRoZXJlfHRoZW58b25lfG9uZXN8YWdhaW58YW5vdGhlcnxuZXh0fGVsc2UpXFxiLy50ZXN0KHZhbHVlKTsKICAgIGNvbnN0IGNvbnRpbnVhdGlvbkN1ZSA9IC9eKD86YW5kfGJ1dHxzb3x0aGVufGFsc298b2theXxva3xub3x5ZXN8d2FpdHx3aGF0IGFib3V0fGhvdyBhYm91dClcXGIvLnRlc3QodmFsdWUpOwogICAgY29uc3QgYmFyZVF1ZXN0aW9uQ3VlID0gd29yZHMubGVuZ3RoIDw9IDIgJiYgL14oPzp3aGVyZXx3aGljaHx3aHl8d2hlbnxob3d8d2hhdHx3aG8pXFxiLy50ZXN0KHZhbHVlKTsKICAgIHJldHVybiByZWZlcmVudEN1ZSB8fCBjb250aW51YXRpb25DdWUgfHwgYmFyZVF1ZXN0aW9uQ3VlOwogIH0KCiAgZnVuY3Rpb24gY2FuZGlkYXRlU291cmNlQ291bnQiIiIKdHJpYWdlLCBjb3VudCA9IHBhdHRlcm4uc3VibihyZXBsYWNlbWVudCwgdHJpYWdlLCBjb3VudD0xKQppZiBjb3VudCAhPSAxOgogICAgcmFpc2UgU3lzdGVtRXhpdChmImV4cGVjdGVkIG9uZSBpc0VsbGlwdGljYWxRdWVzdGlvbiByZXBsYWNlbWVudCwgZ290IHtjb3VudH0iKQoKb2xkX29yZGVyID0gIiIiICAgIGlmIChpc3N1ZXMuaW5jbHVkZXMoImluY29uc2lzdGVudF90ZXJtaW5vbG9neSIpKSByZXR1cm4gInRlcm1pbm9sb2d5X3ZvaWNlIjsKICAgIGlmIChpc3N1ZXMuaW5jbHVkZXMoIm1pc3NpbmdfcnVsZSIpIHx8IGlzc3Vlcy5pbmNsdWRlcygiYW1iaWd1b3VzX3J1bGUiKSB8fCBbInNvdXJjZV9kYXRhX2ZpeCIsICJydWxlX2NsYXJpZmljYXRpb24iLCAidmVyc2lvbmVkX3ByZWNlZGVudF9jYW5kaWRhdGUiLCAicnVsZV9jaGFuZ2VfY2FuZGlkYXRlIl0uaW5jbHVkZXMocmVjb21tZW5kZWRBY3Rpb24pKSByZXR1cm4gInNvdXJjZV9zcGVjaWZpY2l0eSI7CiAgICBpZiAoc2NvcmUuZWxsaXB0aWNhbCAmJiBjb250ZXh0LnByZXZpb3VzICYmIChzY29yZS5mcmFnaWxlRm9sbG93dXAgfHwgWyJpbmNvcnJlY3QiLCAidW5jbGVhciJdLmluY2x1ZGVzKGZlZWRiYWNrKSkpIHJldHVybiAiY29udmVyc2F0aW9uX2NvbnRpbnVpdHkiOwogICAgaWYgKChjbGFzc2lmaWNhdGlvbkFzc2Vzc21lbnQgJiYgIVsiY29ycmVjdCIsICJpbmRldGVybWluYXRlIiwgIm5vdF9hcHBsaWNhYmxlIl0uaW5jbHVkZXMoY2xhc3NpZmljYXRpb25Bc3Nlc3NtZW50KSkgfHwgaXNzdWVzLmluY2x1ZGVzKCJ1bmNvdmVyZWRfaW50ZXJhY3Rpb24iKSkgcmV0dXJuICJjbGFzc2lmaWNhdGlvbiI7IiIiCm5ld19vcmRlciA9ICIiIiAgICBpZiAoaXNzdWVzLmluY2x1ZGVzKCJpbmNvbnNpc3RlbnRfdGVybWlub2xvZ3kiKSkgcmV0dXJuICJ0ZXJtaW5vbG9neV92b2ljZSI7CiAgICBpZiAoaXNzdWVzLmluY2x1ZGVzKCJtaXNzaW5nX3J1bGUiKSB8fCBpc3N1ZXMuaW5jbHVkZXMoImFtYmlndW91c19ydWxlIikgfHwgWyJzb3VyY2VfZGF0YV9maXgiLCAicnVsZV9jbGFyaWZpY2F0aW9uIiwgInZlcnNpb25lZF9wcmVjZWRlbnRfY2FuZGlkYXRlIiwgInJ1bGVfY2hhbmdlX2NhbmRpZGF0ZSJdLmluY2x1ZGVzKHJlY29tbWVuZGVkQWN0aW9uKSkgcmV0dXJuICJzb3VyY2Vfc3BlY2lmaWNpdHkiOwogICAgaWYgKHJlY29tbWVuZGVkQWN0aW9uID09PSAicmV0cmlldmFsX2ZpeCIpIHJldHVybiAicmV0cmlldmFsIjsKICAgIGlmIChzY29yZS5lbGxpcHRpY2FsICYmIGNvbnRleHQucHJldmlvdXMgJiYgKHNjb3JlLmZyYWdpbGVGb2xsb3d1cCB8fCBbImluY29ycmVjdCIsICJ1bmNsZWFyIl0uaW5jbHVkZXMoZmVlZGJhY2spKSkgcmV0dXJuICJjb252ZXJzYXRpb25fY29udGludWl0eSI7CiAgICBpZiAoKGNsYXNzaWZpY2F0aW9uQXNzZXNzbWVudCAmJiAhWyJjb3JyZWN0IiwgImluZGV0ZXJtaW5hdGUiLCAibm90X2FwcGxpY2FibGUiXS5pbmNsdWRlcyhjbGFzc2lmaWNhdGlvbkFzc2Vzc21lbnQpKSB8fCBpc3N1ZXMuaW5jbHVkZXMoInVuY292ZXJlZF9pbnRlcmFjdGlvbiIpKSByZXR1cm4gImNsYXNzaWZpY2F0aW9uIjsiIiIKaWYgb2xkX29yZGVyIG5vdCBpbiB0cmlhZ2U6CiAgICByYWlzZSBTeXN0ZW1FeGl0KCJ0cmlhZ2Ugcm9vdC1jYXVzZSBvcmRlcmluZyBibG9jayBub3QgZm91bmQiKQp0cmlhZ2UgPSB0cmlhZ2UucmVwbGFjZShvbGRfb3JkZXIsIG5ld19vcmRlciwgMSkKdHJpYWdlX3BhdGgud3JpdGVfdGV4dCh0cmlhZ2UpCgpjb250ZXh0dWFsX3Rlc3RfcGF0aCA9IFBhdGgoInJ1bGVzLWFzc2lzdGFudC92MDcxLWNvbnRleHR1YWwtcXVlcnkudGVzdC5tanMiKQpjb250ZXh0dWFsX3Rlc3QgPSBjb250ZXh0dWFsX3Rlc3RfcGF0aC5yZWFkX3RleHQoKQphbmNob3IgPSAiIiIgIHRlc3QoInRyZWF0cyBhIGJhcmUgc2hvcnQgcXVlc3Rpb24gYXMgY29udGV4dC1kZXBlbmRlbnQiLCAoKSA9PiB7CiAgICBleHBlY3QoY29udGV4dHVhbFF1ZXJ5KCJIb3cgbXVjaD8iLCBpbnRlbGxpZ2VuY2VIaXN0b3J5KSkubm90LnRvQmUoIkhvdyBtdWNoPyIpOwogIH0pOyIiIgphZGRpdGlvbiA9ICIiIiAgdGVzdCgicHJlc2VydmVzIGEgYmFyZSB3aG8gZm9sbG93LXVwIHdoaWxlIGtlZXBpbmcgc2VsZi1jb250YWluZWQgd2gtcXVlc3Rpb25zIGNsZWFuIiwgKCkgPT4gewogICAgY29uc3Qgc2VsZkNvbnRhaW5lZCA9ICJXaG8gaXMgdGhlIEdlbmVyYWwgZGVzaWduZWQgYWZ0ZXI/IjsKICAgIGV4cGVjdChjb250ZXh0dWFsUXVlcnkoc2VsZkNvbnRhaW5lZCwgaW50ZWxsaWdlbmNlSGlzdG9yeSkpLnRvQmUoc2VsZkNvbnRhaW5lZCk7CiAgICBleHBlY3QoY29udGV4dHVhbFF1ZXJ5KCJXaG8/IiwgaW50ZWxsaWdlbmNlSGlzdG9yeSkpLm5vdC50b0JlKCJXaG8/Iik7CiAgfSk7IiIiCmlmIGFuY2hvciBub3QgaW4gY29udGV4dHVhbF90ZXN0OgogICAgcmFpc2UgU3lzdGVtRXhpdCgiY29udGV4dHVhbC1xdWVyeSB0ZXN0IGFuY2hvciBub3QgZm91bmQiKQpjb250ZXh0dWFsX3Rlc3RfcGF0aC53cml0ZV90ZXh0KGNvbnRleHR1YWxfdGVzdC5yZXBsYWNlKGFuY2hvciwgYWRkaXRpb24sIDEpKQoKdHJpYWdlX3Rlc3RfcGF0aCA9IFBhdGgoInJ1bGVzLWFzc2lzdGFudC9yZWZpbmVtZW50LXRyaWFnZS50ZXN0Lm1qcyIpCnRyaWFnZV90ZXN0ID0gdHJpYWdlX3Rlc3RfcGF0aC5yZWFkX3RleHQoKQppZiAic2VsZi1jb250YWluZWQgd2gtcXVlc3Rpb25zIGRvIG5vdCBtYXNxdWVyYWRlIiBpbiB0cmlhZ2VfdGVzdDoKICAgIHJhaXNlIFN5c3RlbUV4aXQoInRyaWFnZSByZWdyZXNzaW9ucyBhbHJlYWR5IHByZXNlbnQiKQp0cmlhZ2VfYWRkaXRpb24gPSByIiIiCgp0ZXN0KCJzZWxmLWNvbnRhaW5lZCB3aC1xdWVzdGlvbnMgZG8gbm90IG1hc3F1ZXJhZGUgYXMgY29udmVyc2F0aW9uLWNvbnRpbnVpdHkgZGVidCIsICgpID0+IHsKICBjb25zdCBmaXJzdCA9IHJvdyh7CiAgICBpZDogImFhYWFhYWFhLWFhYWEtNGFhYS04YWFhLWFhYWFhYWFhYWFhYSIsCiAgICBzZXF1ZW5jZV9pbmRleDogMSwKICAgIGZlZWRiYWNrX3JhdGluZzogImluY29ycmVjdCIKICB9KTsKICBjb25zdCBzZWNvbmQgPSByb3coewogICAgaWQ6ICJiYmJiYmJiYi1iYmJiLTRiYmItOGJiYi1iYmJiYmJiYmJiYmIiLAogICAgc2VxdWVuY2VfaW5kZXg6IDIsCiAgICBjcmVhdGVkX2F0OiAiMjAyNi0wOS0wNFQyMDowMTowMC4wMDBaIiwKICAgIHF1ZXN0aW9uOiAiV2hlbiBpcyBhbiBvY2N1cGllZCBUZXJyaXRvcnkgY2FwdHVyZWQ/IiwKICAgIHJldmlld19zdGF0dXM6ICJuZWVkc19jb3JyZWN0aW9uIiwKICAgIGlzc3VlVHlwZXM6IFsiaW5jb3JyZWN0X2Fuc3dlciIsICJyZXRyaWV2YWxfZmFpbHVyZSJdCiAgfSk7CiAgY29uc3QgcmVwb3J0ID0gZW5naW5lLnRyaWFnZUludGVyYWN0aW9ucyhbZmlyc3QsIHNlY29uZF0sIHsKICAgIGF1ZGl0czogW3sKICAgICAgaW50ZXJhY3Rpb25faWQ6IHNlY29uZC5pZCwKICAgICAgaGlzdG9yaWNhbF9hY2N1cmFjeTogImluY29ycmVjdCIsCiAgICAgIHJldHJpZXZhbF9hc3Nlc3NtZW50OiAiZmFpbHVyZSIsCiAgICAgIGNsYXNzaWZpY2F0aW9uX2Fzc2Vzc21lbnQ6ICJzaG91bGRfYmVfZXhwbGljaXQiLAogICAgICByZWNvbW1lbmRlZF9hY3Rpb246ICJyZXRyaWV2YWxfZml4IgogICAgfV0KICB9LCB7IHNjb3BlOiAicmV2aWV3ZWRfYmFja2xvZyIgfSk7CiAgY29uc3QgaXRlbSA9IHJlcG9ydC5pbnRlcmFjdGlvbnMuZmluZCgoY2FuZGlkYXRlKSA9PiBjYW5kaWRhdGUuaW50ZXJhY3Rpb25JZCA9PT0gc2Vjb25kLmlkKTsKICBleHBlY3QoaXRlbS5yb290Q2F1c2UpLnRvQmUoInJldHJpZXZhbCIpOwogIGV4cGVjdChpdGVtLnNpZ25hbENvZGVzKS5ub3QudG9Db250YWluKCJlbGxpcHRpY2FsX2ZvbGxvd3VwIik7CiAgZXhwZWN0KGl0ZW0uc2lnbmFsQ29kZXMpLm5vdC50b0NvbnRhaW4oImZyYWdpbGVfZm9sbG93dXAiKTsKfSk7Cgp0ZXN0KCJhdWRpdCByZXRyaWV2YWwgZml4ZXMgb3V0cmFuayBkb3duc3RyZWFtIGNsYXNzaWZpY2F0aW9uIHN5bXB0b21zIiwgKCkgPT4gewogIGNvbnN0IGludGVyYWN0aW9uID0gcm93KHsKICAgIGlkOiAiY2NjY2NjY2MtY2NjYy00Y2NjLThjY2MtY2NjY2NjY2NjY2MiLAogICAgcmV2aWV3X3N0YXR1czogIm5lZWRzX2NvcnJlY3Rpb24iLAogICAgaXNzdWVUeXBlczogWyJpbmNvcnJlY3RfYW5zd2VyIiwgInJldHJpZXZhbF9mYWlsdXJlIl0KICB9KTsKICBjb25zdCByZXBvcnQgPSBlbmdpbmUudHJpYWdlSW50ZXJhY3Rpb25zKFtpbnRlcmFjdGlvbl0sIHsKICAgIGF1ZGl0czogW3sKICAgICAgaW50ZXJhY3Rpb25faWQ6IGludGVyYWN0aW9uLmlkLAogICAgICByZXRyaWV2YWxfYXNzZXNzbWVudDogImZhaWx1cmUiLAogICAgICBjbGFzc2lmaWNhdGlvbl9hc3Nlc3NtZW50OiAic2hvdWxkX2JlX2V4cGxpY2l0IiwKICAgICAgcmVjb21tZW5kZWRfYWN0aW9uOiAicmV0cmlldmFsX2ZpeCIKICAgIH1dCiAgfSwgeyBzY29wZTogInJldmlld2VkX2JhY2tsb2ciIH0pOwogIGV4cGVjdChyZXBvcnQuaW50ZXJhY3Rpb25zWzBdLnJvb3RDYXVzZSkudG9CZSgicmV0cmlldmFsIik7Cn0pOwoKdGVzdCgic2VsZi1jb250YWluZWQgd2hvIHF1ZXN0aW9ucyBjYW4gc3VyZmFjZSBjbGFzc2lmaWNhdGlvbiBkZWJ0IHdpdGhvdXQgY29udGludWl0eSBub2lzZSIsICgpID0+IHsKICBjb25zdCBmaXJzdCA9IHJvdyh7CiAgICBpZDogImRkZGRkZGRkLWRkZGQtNGRkZC04ZGRkLWRkZGRkZGRkZGRkZCIsCiAgICBzZXF1ZW5jZV9pbmRleDogMQogIH0pOwogIGNvbnN0IHNlY29uZCA9IHJvdyh7CiAgICBpZDogImVlZWVlZWVlLWVlZWUtNGVlZS04ZWVlLWVlZWVlZWVlZWVlZSIsCiAgICBzZXF1ZW5jZV9pbmRleDogMiwKICAgIGNyZWF0ZWRfYXQ6ICIyMDI2LTA5LTA0VDIwOjAxOjAwLjAwMFoiLAogICAgcXVlc3Rpb246ICJXaG8gaXMgdGhlIEdlbmVyYWwgZGVzaWduZWQgYWZ0ZXI/IiwKICAgIHJldmlld19zdGF0dXM6ICJuZWVkc19jb3JyZWN0aW9uIiwKICAgIHJ1bGluZ19zdGF0dXM6ICJwcm92aXNpb25hbCIsCiAgICBjb25maWRlbmNlOiAibWVkaXVtIiwKICAgIHNvdXJjZV9jb3VudDogMQogIH0pOwogIGNvbnN0IHJlcG9ydCA9IGVuZ2luZS50cmlhZ2VJbnRlcmFjdGlvbnMoW2ZpcnN0LCBzZWNvbmRdLCB7CiAgICBhdWRpdHM6IFt7CiAgICAgIGludGVyYWN0aW9uX2lkOiBzZWNvbmQuaWQsCiAgICAgIHJldHJpZXZhbF9hc3Nlc3NtZW50OiAic3VmZmljaWVudCIsCiAgICAgIGNsYXNzaWZpY2F0aW9uX2Fzc2Vzc21lbnQ6ICJzaG91bGRfYmVfb3V0X29mX3Njb3BlIiwKICAgICAgcmVjb21tZW5kZWRfYWN0aW9uOiAicHJvbXB0X2ZpeCIKICAgIH1dCiAgfSwgeyBzY29wZTogInJldmlld2VkX2JhY2tsb2ciIH0pOwogIGNvbnN0IGl0ZW0gPSByZXBvcnQuaW50ZXJhY3Rpb25zLmZpbmQoKGNhbmRpZGF0ZSkgPT4gY2FuZGlkYXRlLmludGVyYWN0aW9uSWQgPT09IHNlY29uZC5pZCk7CiAgZXhwZWN0KGl0ZW0ucm9vdENhdXNlKS50b0JlKCJjbGFzc2lmaWNhdGlvbiIpOwogIGV4cGVjdChpdGVtLnNpZ25hbENvZGVzKS5ub3QudG9Db250YWluKCJlbGxpcHRpY2FsX2ZvbGxvd3VwIik7Cn0pOwo=' | base64 -d > /tmp/apply.py && python /tmp/apply.py
+      - name: Run deterministic regressions
+        run: npx vitest run rules-assistant/refinement-triage.test.mjs rules-assistant/v071-contextual-query.test.mjs rules-assistant/v071-retrieval-qa.test.mjs rules-assistant/v071-destination-continuity.test.mjs rules-assistant/v071-intelligence-interference.test.mjs rules-assistant/v071-qa-foundation.test.mjs
       - name: Remove one-shot workflow
         run: rm .github/workflows/apply-rules-arbiter-triage-continuity-fix.yml
-
       - name: Commit refinement
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add rules-assistant/worker-v071.js \
-                  rules-assistant/refinement-triage.js \
-                  rules-assistant/refinement-triage.test.mjs \
-                  rules-assistant/v071-contextual-query.test.mjs \
-                  .github/workflows/apply-rules-arbiter-triage-continuity-fix.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add rules-assistant/worker-v071.js rules-assistant/refinement-triage.js rules-assistant/refinement-triage.test.mjs rules-assistant/v071-contextual-query.test.mjs .github/workflows/apply-rules-arbiter-triage-continuity-fix.yml
           git commit -m "Correct Rules Arbiter continuity triage"
           git push origin HEAD:fix/rules-arbiter-triage-continuity-classification
