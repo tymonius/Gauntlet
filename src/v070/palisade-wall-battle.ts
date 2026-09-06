@@ -18,6 +18,7 @@ import {
   markV070BattleCardEffectApplied,
   negateV070BattleCardEffect,
 } from './battle-effect-status';
+import { restrictV070BattleTargetsByDecoys } from './decoys-battle';
 
 export const V070_PALISADE_WALL_ID = 'neutral-palisade-wall' as const;
 export const V070_PALISADE_WALL_BATTLE_TEXT =
@@ -208,12 +209,13 @@ export function eligibleV070PalisadeWallGambits(
     ...participant.additionalGambits,
   ];
 
-  return gambits
+  const eligible = gambits
     .filter(commitment =>
       !isV070BattleCardEffectNegated(state, commitment.instanceId)
       && !hasV070BattleCardEffectApplied(state, commitment.instanceId)
     )
     .map(commitment => commitment.instanceId);
+  return restrictV070BattleTargetsByDecoys(state, opponent, eligible);
 }
 
 function negatePalisadeWallTarget(
