@@ -26,6 +26,11 @@ import {
   registerV070DivineMercyBattleEffect,
 } from './divine-mercy-battle';
 import {
+  V070_DISRUPTION_BATTLE_TEXT,
+  V070_DISRUPTION_ID,
+  registerV070DisruptionBattleEffect,
+} from './disruption-battle';
+import {
   V070_LANDSLIDE_BATTLE_TEXT,
   registerV070LandslideBattleEffect,
 } from './landslide';
@@ -208,6 +213,21 @@ const capitalPunishmentHandler: V070SpecializedBattleEffectHandler = {
     registerV070CapitalPunishmentBattleEffect(state, owner, commitment.instanceId);
   },
 };
+const disruptionHandler: V070SpecializedBattleEffectHandler = {
+  cardId: V070_DISRUPTION_ID,
+  expectedText: V070_DISRUPTION_BATTLE_TEXT,
+  timing: 'reveal',
+  revealClass: 'interference',
+  markAppliedAtRegistration: false,
+  apply: ({ state, owner, commitment }) => {
+    registerV070DisruptionBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+      commitment.role,
+    );
+  },
+};
 
 const specializedHandlers = new Map<string, V070SpecializedBattleEffectHandler>([
   [landslideHandler.cardId, landslideHandler],
@@ -222,6 +242,7 @@ const specializedHandlers = new Map<string, V070SpecializedBattleEffectHandler>(
   [palisadeWallHandler.cardId, palisadeWallHandler],
   [assassinsHandler.cardId, assassinsHandler],
   [capitalPunishmentHandler.cardId, capitalPunishmentHandler],
+  [disruptionHandler.cardId, disruptionHandler],
 ]);
 
 export const V070_SUPPORTED_REVEAL_EFFECT_IDS = [
