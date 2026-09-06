@@ -73,10 +73,17 @@ export function reduceV070BattleAction(
     assertV070DisruptionBattleCardMayBeChosen(state, action.cardInstanceId);
   }
 
-  return reduceV070BattleActionRevealOrder(
+  const next = reduceV070BattleActionRevealOrder(
     state,
     action as V070RevealOrderBattleAction,
   );
+  // The core reveal procedure advances its ordinary stage after returning
+  // from reveal-effect resolution. Armistice instead ended the battle by late
+  // withdrawal, so preserve its Aftermath stage at the outer facade.
+  if (next.battleRuntime?.armisticeWithdrawalResolved) {
+    next.battleRuntime.stage = 'aftermath';
+  }
+  return next;
 }
 
 function continueV070BattleRevealProcedure(state: V070GameState): boolean {
