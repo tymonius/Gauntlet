@@ -21,6 +21,7 @@ const corpus = buildRulesCorpus({
   canonicalDataUrl: "https://gauntlet.run/releases/v0.7.1/Gauntlet_v0.7.1_Canonical_Data.json"
 });
 
+// Keep this suite deterministic: it exercises retrieval and prompt contracts without model/API calls.
 function augmentedIds(question, history = []) {
   const raw = retrieveRules(corpus, question, { limit: 10, excerptLength: 1300 });
   return augmentRetrievalForContext(corpus, question, history, raw).map((source) => source.canonicalId);
