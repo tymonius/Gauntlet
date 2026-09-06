@@ -222,7 +222,15 @@ PR: [#1536](https://github.com/tymonius/Gauntlet/pull/1536). Branch: `cleanup/ve
 
 Local validation passes the current playtest contract, Python syntax, and the five-test development/release boundary suite. The [playtest-session service CI run](https://github.com/tymonius/Gauntlet/actions/runs/34026166364) passes its worker tests, formal-session end-to-end test, tracked-session end-to-end test, and renamed validator.
 
-Next: make the printable current playtest-sheet workflow derive its release identity and generated filenames from lifecycle configuration while retaining the current serial fixture as an explicit service input.
+The playtest service workflow and routine repository checks are green. Next: make the printable current playtest-sheet workflow derive its release identity and generated filenames from lifecycle configuration while retaining the current serial fixture as an explicit service input.
+
+## Version-neutral printable playtest-sheet outputs
+
+PR: [#1537](https://github.com/tymonius/Gauntlet/pull/1537). Branch: `cleanup/version-neutral-playtest-sheet` (stacked on #1536). The maintained printable-sheet workflow now derives its PDF path, preview path, artifact label, and commit message from the lifecycle-selected current release. Resolving v0.7.1 produces the existing tracked filename. The `G071-PREVIEW` render fixture remains explicit because the serial family is a persisted playtest-service contract.
+
+Local validation passes the six-test development/release boundary suite. The manually dispatched [printable-sheet workflow](https://github.com/tymonius/Gauntlet/actions/runs/34026632056) passes lifecycle resolution, browser rendering, one-page Letter PDF validation, and artifact upload.
+
+Next design boundary: decide whether `G071` and `EV071` are permanent service namespaces or should advance with future rules versions. Existing session URLs, D1 records, and analytics groupings make this a compatibility policy rather than a safe naming-only cleanup.
 
 ## Architectural queue
 
