@@ -39,15 +39,51 @@
   mask-position:left -.62in bottom -.72in;
 }
 
-/* The source hero sketches carry a one-pixel raster edge at the top and bottom.
-   Clip only that outer edge so the artwork continues to blend into the paper
-   without changing scale, placement, or the historical source files. */
+/* v0.7.1 Leader profiles use the finished woodcut artwork rather than the
+   historical sketch scans injected by the reusable publication adapter. The
+   source adapter stays wording-neutral and the current publication layer swaps
+   only the rendered presentation asset. The old grayscale/contrast processing
+   is removed; the established print-only multiply compositor is retained so
+   the portraits continue to sit naturally on the booklet paper field. */
+.leader-portrait img{
+  filter:none;
+  mix-blend-mode:multiply;
+  opacity:1;
+}
+.leader-portrait img[alt="General"]{content:url("../images/woodcuts/general.png")}
+.leader-portrait img[alt="Commandant"]{content:url("../images/woodcuts/commandant.png")}
+.leader-portrait img[alt="Ambassador"]{content:url("../images/woodcuts/ambassador.png")}
+.leader-portrait img[alt="Senator"]{content:url("../images/woodcuts/senator.png")}
+.leader-portrait img[alt="Banker"]{content:url("../images/woodcuts/banker.png")}
+.leader-portrait img[alt="Executive"]{content:url("../images/woodcuts/executive.png")}
+.leader-portrait img[alt="Ranger"]{content:url("../images/woodcuts/ranger.png")}
+.leader-portrait img[alt="Spymaster"]{content:url("../images/woodcuts/spymaster.png")}
+.leader-portrait img[alt="Alchemist"]{content:url("../images/woodcuts/alchemist.png")}
+.leader-portrait img[alt="Spirit Walker"]{content:url("../images/woodcuts/spirit-walker.png")}
+.leader-portrait img[alt="Grand Inquisitor"]{content:url("../images/woodcuts/grand-inquisitor.png")}
+.leader-portrait img[alt="Witch Hunter"]{content:url("../images/woodcuts/witch-hunter.png")}
+
+/* The current booklet replaces all four historical hero sketches with their
+   finished woodcut compositions while keeping the proven print compositor.
+   Hero 1 is the front cover; Heroes 2–4 are the illustrated filler plates. */
+.front-cover .cover-art img{
+  content:url("../images/woodcuts/hero compositions/hero 1.png");
+  filter:none;
+  mix-blend-mode:multiply;
+  opacity:1;
+}
 .intentional-blank.hero-plate-page .hero-plate img{
   width:auto;
   height:auto;
   max-width:100%;
   max-height:100%;
   display:block;
+  filter:none;
+  mix-blend-mode:multiply;
+  opacity:1;
   -webkit-clip-path:inset(2px 0);
   clip-path:inset(2px 0);
 }
+.intentional-blank.hero-plate-page .hero-plate img[src$="hero sketch 2.png"]{content:url("../images/woodcuts/hero compositions/hero 2.png")}
+.intentional-blank.hero-plate-page .hero-plate img[src$="hero sketch 3.png"]{content:url("../images/woodcuts/hero compositions/hero 3.png")}
+.intentional-blank.hero-plate-page .hero-plate img[src$="hero sketch 4.png"]{content:url("../images/woodcuts/hero compositions/hero 4.png")}

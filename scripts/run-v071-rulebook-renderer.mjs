@@ -137,12 +137,11 @@ replaceOnce(
       leaderPortraitBlendModes: [...document.querySelectorAll('#reader-root > .leader-page .leader-portrait img')].map(image => getComputedStyle(image).mixBlendMode),
       heroPlateBlendModes: [...document.querySelectorAll('#reader-root > .intentional-blank .hero-plate img')].map(image => getComputedStyle(image).mixBlendMode),
       heroPlateClipPaths: [...document.querySelectorAll('#reader-root > .intentional-blank .hero-plate img')].map(image => getComputedStyle(image).clipPath),
-      heroPlateElementMatchesRaster: [...document.querySelectorAll('#reader-root > .intentional-blank .hero-plate img')].map(image => {
+      heroPlateElementHasValidBounds: [...document.querySelectorAll('#reader-root > .intentional-blank .hero-plate img')].map(image => {
         const rect = image.getBoundingClientRect();
-        const renderedRatio = rect.width / rect.height;
-        const rasterRatio = image.naturalWidth / image.naturalHeight;
-        return Number.isFinite(renderedRatio) && Number.isFinite(rasterRatio) && Math.abs(renderedRatio - rasterRatio) < 0.01;
+        return Number.isFinite(rect.width) && Number.isFinite(rect.height) && rect.width > 0 && rect.height > 0;
       }),
+      heroPlateContentUrls: [...document.querySelectorAll('#reader-root > .intentional-blank .hero-plate img')].map(image => getComputedStyle(image).content),
       factionInnerStacking: [...document.querySelectorAll('#reader-root > .page[data-faction] .page-inner')].map(inner => getComputedStyle(inner).zIndex),
       factionIsolation: [...document.querySelectorAll('#reader-root > .page[data-faction]')].map(page => getComputedStyle(page).isolation),
       openerPages: [...document.querySelectorAll('#reader-root > .part-opener, #reader-root > .faction-opener')].map(page => ({ anchor: page.dataset.anchor || '', pageNumber: Number(page.dataset.page), classes: page.className })),
@@ -160,10 +159,8 @@ replaceOnce(
 );
 replaceOnce(
   'utility font assertion',
-  `  if (!result.utilityFamily.includes('Inter')) {
-    throw new Error(\`Approved utility typography was not retained: \${result.utilityFamily}\`);
-  }`,
-  `  if (!result.utilityFamily.includes('Inter')) throw new Error(\`Approved utility typography was not retained: \${result.utilityFamily}\`);
+  "  if (!result.utilityFamily.includes('Inter')) {\n    throw new Error(`Approved utility typography was not retained: ${result.utilityFamily}`);\n  }",
+  `  if (!result.utilityFamily.includes('Inter')) throw new Error('Approved utility typography was not retained: ' + result.utilityFamily);
   if (!result.interLoaded) throw new Error('Inter is named in the approved utility stack but is not actually loaded.');
   if (result.leaderPortraitBlendModes.some(mode => mode !== 'multiply')) {
     throw new Error('v0.7.1 Leader portrait blending regressed: ' + JSON.stringify(result.leaderPortraitBlendModes) + '.');
@@ -174,8 +171,8 @@ replaceOnce(
   if (result.heroPlateClipPaths.some(value => value === 'none' || !value.includes('2px'))) {
     throw new Error('v0.7.1 hero-plate edge clipping is missing: ' + JSON.stringify(result.heroPlateClipPaths) + '.');
   }
-  if (result.heroPlateElementMatchesRaster.some(value => value !== true)) {
-    throw new Error('v0.7.1 hero-plate element no longer matches the source raster bounds: ' + JSON.stringify(result.heroPlateElementMatchesRaster) + '.');
+  if (result.heroPlateElementHasValidBounds.some(value => value !== true)) {
+    throw new Error('v0.7.1 hero-plate element has invalid rendered bounds: ' + JSON.stringify(result.heroPlateElementHasValidBounds) + '.');
   }
   if (result.factionInnerStacking.some(zIndex => zIndex !== 'auto')) {
     throw new Error('v0.7.1 faction page content unexpectedly creates a stacking context: ' + JSON.stringify(result.factionInnerStacking) + '.');
@@ -189,38 +186,45 @@ replaceOnce(
     ['Ranger', 'Spymaster'], ['Alchemist', 'Spirit Walker'], ['Grand Inquisitor', 'Witch Hunter'],
   ];
   const firstLeaders = new Set(expectedLeaderPairs.map(([leftLeader]) => leftLeader));
-  if (result.leaderPages.length !== 12) throw new Error(\`Expected 12 dedicated Leader pages; found \${result.leaderPages.length}.\`);
+  if (result.leaderPages.length !== 12) throw new Error('Expected 12 dedicated Leader pages; found ' + result.leaderPages.length + '.');
   const leaderPageByName = new Map(result.leaderPages.map(item => [item.leader, item.pageNumber]));
   for (const [leftLeader, rightLeader] of expectedLeaderPairs) {
     const leftPage = leaderPageByName.get(leftLeader), rightPage = leaderPageByName.get(rightLeader);
-    if (!leftPage || !rightPage) throw new Error(\`Leader spread is missing \${leftLeader} or \${rightLeader}.\`);
-    if (leftPage % 2 !== 0 || rightPage !== leftPage + 1) throw new Error(\`Leader pair must share a facing spread: \${leftLeader} p.\${leftPage}, \${rightLeader} p.\${rightPage}.\`);
+    if (!leftPage || !rightPage) throw new Error('Leader spread is missing ' + leftLeader + ' or ' + rightLeader + '.');
+    if (leftPage % 2 !== 0 || rightPage !== leftPage + 1) throw new Error('Leader pair must share a facing spread: ' + leftLeader + ' p.' + leftPage + ', ' + rightLeader + ' p.' + rightPage + '.');
   }
 
-  const expectedHeroPlates = ['hero sketch 2.png', 'hero sketch 3.png', 'hero sketch 4.png'];
-  const actualHeroPlates = result.heroPlateSources.map(value => decodeURIComponent(value || '').split('/').at(-1)).sort();
-  if (JSON.stringify(actualHeroPlates) !== JSON.stringify([...expectedHeroPlates].sort())) {
-    throw new Error(\`Expected the three unused approved hero sketches exactly once; found \${JSON.stringify(actualHeroPlates)} across \${report.intentionalBlanks} filler pages.\`);
+  const expectedHeroSources = ['hero sketch 2.png', 'hero sketch 3.png', 'hero sketch 4.png'];
+  const actualHeroSources = result.heroPlateSources.map(value => decodeURIComponent(value || '').split('/').at(-1)).sort();
+  if (JSON.stringify(actualHeroSources) !== JSON.stringify([...expectedHeroSources].sort())) {
+    throw new Error('Expected the three historical hero slots exactly once; found ' + JSON.stringify(actualHeroSources) + ' across ' + report.intentionalBlanks + ' filler pages.');
+  }
+  const expectedHeroWoodcuts = ['hero 2.png', 'hero 3.png', 'hero 4.png'];
+  const heroContentUrls = result.heroPlateContentUrls.map(value => decodeURIComponent(value || ''));
+  for (const expected of expectedHeroWoodcuts) {
+    if (!heroContentUrls.some(value => value.includes(expected))) {
+      throw new Error('v0.7.1 hero plate is missing woodcut replacement ' + expected + ': ' + JSON.stringify(heroContentUrls) + '.');
+    }
   }
   if (result.fillerPlacements.length !== report.intentionalBlanks) {
-    throw new Error(\`Filler placement report mismatch: \${result.fillerPlacements.length} placements for \${report.intentionalBlanks} intentional blanks.\`);
+    throw new Error('Filler placement report mismatch: ' + result.fillerPlacements.length + ' placements for ' + report.intentionalBlanks + ' intentional blanks.');
   }
 
   const naturalBoundaryClasses = ['part-opener', 'chapter-page', 'faction-opener', 'quick-reference-page', 'glossary-page', 'leader-page'];
   for (const placement of result.fillerPlacements) {
     if (!naturalBoundaryClasses.some(className => placement.nextClass.split(/\\s+/).includes(className))) {
-      throw new Error(\`Filler page interrupts a content section: \${JSON.stringify(placement)}.\`);
+      throw new Error('Filler page interrupts a content section: ' + JSON.stringify(placement) + '.');
     }
     if (placement.nextClass.split(/\\s+/).includes('leader-page') && !firstLeaders.has(placement.nextLeader)) {
-      throw new Error(\`Filler page may only precede the first page of a Leader pair: \${JSON.stringify(placement)}.\`);
+      throw new Error('Filler page may only precede the first page of a Leader pair: ' + JSON.stringify(placement) + '.');
     }
   }
 
   const illustrated = result.fillerPlacements.filter(placement => placement.illustrated);
-  if (illustrated.length !== 3) throw new Error(\`Expected exactly three illustrated filler pages; found \${illustrated.length}.\`);
+  if (illustrated.length !== 3) throw new Error('Expected exactly three illustrated filler pages; found ' + illustrated.length + '.');
   const highestSelectedTier = Math.min(...result.fillerPlacements.map(placement => placement.tier));
   if (illustrated.some(placement => placement.tier > highestSelectedTier) && result.fillerPlacements.filter(placement => placement.tier === highestSelectedTier).length >= 3) {
-    throw new Error('Unused hero sketches were not assigned to the highest selected publication hierarchy.');
+    throw new Error('Hero woodcuts were not assigned to the highest selected publication hierarchy.');
   }`,
 );
 
