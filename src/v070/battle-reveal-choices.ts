@@ -68,6 +68,14 @@ export type V070BattleRevealChoice =
       sourceInstanceId: string;
       /** Opposing Gambits that had not taken effect when Palisade Wall applied. */
       candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'assassins';
+      owner: PlayerId;
+      opponent: PlayerId;
+      sourceInstanceId: string;
+      /** Opposing Gambits that had not taken effect when Assassins applied. */
+      candidateInstanceIds: string[];
     };
 
 declare module './battle-types' {

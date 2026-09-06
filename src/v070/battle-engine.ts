@@ -35,6 +35,10 @@ import {
   resolveV070LandslideAftermathChoice,
 } from './landslide';
 import {
+  openV070AssassinsBattleChoice,
+  resolveV070AssassinsBattleChoice,
+} from './assassins-battle';
+import {
   openV070DivineMercyBattleChoice,
   resolveV070DivineMercyBattleChoice,
 } from './divine-mercy-battle';
@@ -136,6 +140,11 @@ export type V070BattleAction =
     }
   | {
       type: 'resolve_palisade_wall_battle';
+      playerId: PlayerId;
+      targetInstanceId: string;
+    }
+  | {
+      type: 'resolve_assassins_battle';
       playerId: PlayerId;
       targetInstanceId: string;
     };
@@ -276,6 +285,22 @@ export function reduceV070BattleAction(
       continueV070BattleRevealProcedure(next);
       return next;
     }
+
+    if (pendingRevealChoice.kind === 'assassins') {
+      if (action.type !== 'resolve_assassins_battle') {
+        throw new V070GameActionError(
+          'Resolve the pending Assassins Gambit-negation choice before continuing the battle.',
+        );
+      }
+      const next = structuredClone(state) as V070GameState;
+      resolveV070AssassinsBattleChoice(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
+      continueV070BattleRevealProcedure(next);
+      return next;
+    }
   }
 
   if (action.type === 'resolve_divine_mercy_battle') {
@@ -304,6 +329,9 @@ export function reduceV070BattleAction(
   }
   if (action.type === 'resolve_palisade_wall_battle') {
     throw new V070GameActionError('There is no open Palisade Wall battle choice.');
+  }
+  if (action.type === 'resolve_assassins_battle') {
+    throw new V070GameActionError('There is no open Assassins battle choice.');
   }
 
   const pendingRecovery = pendingV070ReembodimentRecovery(state);
@@ -471,6 +499,9 @@ function continueV070BattleRevealProcedure(
           break;
         case 'palisade_wall':
           opened = openV070PalisadeWallBattleChoice(state);
+          break;
+        case 'assassins':
+          opened = openV070AssassinsBattleChoice(state);
           break;
       }
       if (opened) return true;
