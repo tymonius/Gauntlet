@@ -160,15 +160,15 @@ def adapt_glossary_pagination(paginator: str) -> str:
 
 
 def adapt_hero_plate_pool(paginator: str) -> str:
-    """Use each unused hero sketch once; extra signature filler stays visually quiet."""
+    """Use each approved hero woodcut once; extra signature filler stays visually quiet."""
 
     old = """  const heroSources = ['../images/sketches/hero sketch.png'];
   const source = heroSources[heroPlateIndex % heroSources.length];
   heroPlateIndex += 1;"""
     new = """  const heroSources = [
-    '../images/sketches/hero-sketches/hero sketch 2.png',
-    '../images/sketches/hero-sketches/hero sketch 3.png',
-    '../images/sketches/hero-sketches/hero sketch 4.png',
+    '../images/woodcuts/hero compositions/hero 2.png',
+    '../images/woodcuts/hero compositions/hero 3.png',
+    '../images/woodcuts/hero compositions/hero 4.png',
   ];
   const source = heroPlateIndex < heroSources.length ? heroSources[heroPlateIndex] : null;
   heroPlateIndex += 1;
@@ -298,8 +298,8 @@ def adapt_signature_padding(paginator: str) -> str:
       throw new Error(`No natural-boundary filler plan preserves Leader spreads from base padding ${paddingNeeded}. Leaders=${JSON.stringify(leaders)} Candidates=${JSON.stringify(available)}`);
     }
 
-    // Create filler pages in hierarchy order so the three approved unused hero
-    // sketches land at the strongest selected boundaries; any additional pages
+    // Create filler pages in hierarchy order so the three approved hero
+    // woodcuts land at the strongest selected boundaries; any additional pages
     // needed for a full signature remain quiet intentional blanks.
     const plateByCandidate = new Map();
     const artOrder = [...chosen].sort((a, b) => a.tier - b.tier || a.index - b.index);
