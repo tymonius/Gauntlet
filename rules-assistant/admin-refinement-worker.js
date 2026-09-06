@@ -11,6 +11,7 @@ import {
   applyRefinementResolutionLedger,
   refinementResolutionLedger
 } from "./refinement-resolution-ledger.js";
+import { handleV071ScopePrecheck } from "./v071-scope-precheck.js";
 
 export * from "./worker-entry.js";
 
@@ -103,6 +104,9 @@ export default {
 
     const refinementResponse = await handleAdminRefinementApi(request, env, context);
     if (refinementResponse) return refinementResponse;
+
+    const scopeResponse = await handleV071ScopePrecheck(request, env);
+    if (scopeResponse) return scopeResponse;
 
     if (request.method === "GET" && url.pathname === ADMIN_REFINEMENT_RUNTIME_PATH) {
       return new Response(adminRefinementRuntimeSource(), {
