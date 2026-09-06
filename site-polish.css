@@ -35,6 +35,12 @@
   color: var(--muted, #655f56);
 }
 
+/* Let Declaration Pro read as an intentional flavor accent rather than body copy. */
+.faction-page .leader-motto {
+  font-size: clamp(2rem, 3.3vw, 2.9rem);
+  line-height: 1.05;
+}
+
 /* Light form fields need a visible component boundary even before keyboard focus. */
 .contact-form :is(input:not([type="hidden"]), select, textarea),
 .filter-panel :is(input, select),
