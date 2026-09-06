@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-06T00:24:00.000Z",
+  "updatedAt": "2026-09-06T01:54:00.000Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -136,6 +136,29 @@
         "pullRequest": 1435,
         "commit": "834dfff98928a10933a7b83f41f1d194e3dc4e71",
         "behaviorRevision": "v071-qa-20260903-11"
+      }
+    },
+    {
+      "id": "deterministic-out-of-scope-classification-v071",
+      "status": "resolved",
+      "rootCause": "classification",
+      "interactionIds": [
+        "f69aeda4-5334-415d-b396-122fb3ceaaea",
+        "58803435-2351-465e-9dbc-4cccce9ec8b0",
+        "00c0677e-15c1-4ce6-b369-d4f5b135b4c0",
+        "6372e467-23a7-420e-8717-4685d50226e5",
+        "487240d8-48e2-4936-b840-06307d498211",
+        "4506c963-531c-46c5-880f-7b7027824878"
+      ],
+      "caseIds": [
+        "scope-strategy-lore-costume-version-history"
+      ],
+      "resolutionSurface": "arbiter_classification",
+      "summary": "Added a deterministic current-v0.7.1 scope precheck for the reviewed strategy, lore/history, costume/visual-design, morality/design, and version-history request families. These requests now return source-free out_of_scope results before corpus retrieval or model-budget reservation, while deck-construction and Leader rules questions continue to the canonical Rules Arbiter.",
+      "resolvedAt": "2026-09-06T01:54:00.000Z",
+      "binding": {
+        "commit": "fcd901d702aaa4b9136cb36e417aecb6afbe2e93",
+        "behaviorRevision": "v071-scope-20260905-1"
       }
     }
   ]
