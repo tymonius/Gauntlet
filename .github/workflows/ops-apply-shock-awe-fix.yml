@@ -1,0 +1,112 @@
+name: Apply Shock and Awe retrieval fix
+
+on:
+  push:
+    branches:
+      - fix/rules-arbiter-shock-and-awe
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/rules-arbiter-shock-and-awe
+      - name: Apply deterministic source-first fix
+        shell: python
+        run: |
+          from pathlib import Path
+          import json
+          from datetime import datetime, timezone
+
+          worker_path = Path("rules-assistant/worker-v071.js")
+          worker = worker_path.read_text()
+          if 'const SHOCK_AND_AWE_AUTHORITY_IDS' not in worker:
+              worker = worker.replace(
+                  'export const BEHAVIOR_REVISION = "v071-qa-20260906-3";',
+                  'export const BEHAVIOR_REVISION = "v071-qa-20260906-4";'
+              )
+              marker = '''const INTELLIGENCE_INTERFERENCE_AUTHORITY_IDS = [
+            "rulebook:gambit-surveillance",
+            "rulebook:tactic-surveillance",
+            "rulebook:interference-after-surveillance",
+            "rulebook:direct-interference",
+            "rulebook:intelligence-mirrors",
+            "rulebook:multiple-gambits-or-tactics",
+            "rulebook:replacing-a-gambit-or-tactic",
+            "rulebook:revising-a-choice"
+          ];'''
+              replacement = marker + '''
+          const SHOCK_AND_AWE_AUTHORITY_IDS = [
+            "card:military-shock-and-awe",
+            "rulebook:conflicting-victory-benefits"
+          ];'''
+              if marker not in worker:
+                  raise SystemExit("Intelligence authority marker not found")
+              worker = worker.replace(marker, replacement, 1)
+
+              marker = '''  const intelligenceInterferenceFocus = (
+            intelligenceTopic.test(current)
+            || (currentWordCount <= 8 && intelligenceTopic.test(recent) && intelligenceFollowupCue)
+          ) && intelligenceProcedureSubject;
+          const preferredAuthorityIds = intelligenceInterferenceFocus
+            ? INTELLIGENCE_INTERFERENCE_AUTHORITY_IDS
+            : destinationFocus && battleCardFocus
+              ? BATTLE_CARD_DESTINATION_AUTHORITY_IDS
+              : [];'''
+              replacement = '''  const intelligenceInterferenceFocus = (
+            intelligenceTopic.test(current)
+            || (currentWordCount <= 8 && intelligenceTopic.test(recent) && intelligenceFollowupCue)
+          ) && intelligenceProcedureSubject;
+          const shockAndAweTopic = /\\bshock\\s+and\\s+awe\\b/;
+          const shockAndAweFollowupCue = /\\b(?:orders?|move|movement|advance|capture|front line|command|breakthrough|consolidate|retreat|afterward)\\b/.test(current);
+          const shockAndAweFocus = shockAndAweTopic.test(current)
+            || (currentWordCount <= 8 && shockAndAweTopic.test(recent) && shockAndAweFollowupCue);
+          const shockAndAweAuthorityIds = shockAndAweFocus && /\\bwar crimes\\b/.test(combined)
+            ? [...SHOCK_AND_AWE_AUTHORITY_IDS, "card:military-war-crimes"]
+            : SHOCK_AND_AWE_AUTHORITY_IDS;
+          const preferredAuthorityIds = shockAndAweFocus
+            ? shockAndAweAuthorityIds
+            : intelligenceInterferenceFocus
+              ? INTELLIGENCE_INTERFERENCE_AUTHORITY_IDS
+              : destinationFocus && battleCardFocus
+                ? BATTLE_CARD_DESTINATION_AUTHORITY_IDS
+                : [];'''
+              if marker not in worker:
+                  raise SystemExit("Retrieval augmentation marker not found")
+              worker = worker.replace(marker, replacement, 1)
+              worker_path.write_text(worker)
+
+          ledger_path = Path("artifacts/rules-refinement/resolution-ledger.json")
+          ledger = json.loads(ledger_path.read_text())
+          entry_id = "shock-and-awe-same-victory-retrieval-v071"
+          if not any(entry.get("id") == entry_id for entry in ledger.get("entries", [])):
+              now = datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
+              ledger["updatedAt"] = now
+              ledger["entries"].append({
+                  "id": entry_id,
+                  "status": "resolved",
+                  "rootCause": "retrieval",
+                  "interactionIds": ["bc78898c-a5d8-4009-a314-5c346f54156f"],
+                  "resolutionSurface": "arbiter_retrieval",
+                  "summary": "Promote the current v0.7.1 Shock and Awe card and Conflicting victory benefits rule for same-victory restriction questions, including terse follow-ups; include War Crimes authority when the overlap is named.",
+                  "resolvedAt": now,
+                  "binding": {"behaviorRevision": "v071-qa-20260906-4"}
+              })
+              ledger_path.write_text(json.dumps(ledger, indent=2) + "\n")
+      - name: Verify syntax
+        run: node --check rules-assistant/worker-v071.js
+      - name: Commit fix
+        run: |
+          if git diff --quiet; then
+            echo "Fix already applied."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add rules-assistant/worker-v071.js artifacts/rules-refinement/resolution-ledger.json
+          git commit -m "Fix Shock and Awe authority retrieval"
+          git push origin HEAD:fix/rules-arbiter-shock-and-awe
