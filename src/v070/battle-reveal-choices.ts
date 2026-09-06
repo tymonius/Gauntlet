@@ -77,6 +77,15 @@ export type V070BattleRevealChoice =
       sourceInstanceId: string;
       /** Opposing Gambits/Tactics whose effects had not taken effect. */
       candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'disruption';
+      owner: PlayerId;
+      opponent: PlayerId;
+      sourceInstanceId: string;
+      role: 'gambit' | 'tactic';
+      /** Opposing cards at this reveal stage whose effects had not taken effect. */
+      candidateInstanceIds: string[];
     };
 
 declare module './battle-types' {
