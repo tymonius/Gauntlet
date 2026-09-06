@@ -35,6 +35,23 @@ body.faction-page::after {
 .faction-page .button.secondary { color: var(--faction-dark); border-color: var(--faction-dark); }
 .faction-page .text-link { color: var(--faction-dark); font-family: var(--font-interface); font-weight: 800; text-decoration: none; }
 
+/* Faction guides use the same deliberate typography hierarchy as Start:
+ * Georgia for the large structural hero; P22 1722 Pro for human-scale headings;
+ * Adobe Caslon for reading text; Inter for labels; P22 Declaration Pro for flavor. */
+.faction-page .section-heading h2,
+.faction-page .play-grid h3,
+.faction-page .mechanics-grid h3,
+.faction-page .victory-grid h3,
+.faction-page .player-fit h3,
+.faction-page .identity-panel h2,
+.faction-page .faction-next h2,
+.factions-hub .faction-hub-card h2,
+.factions-hub .hub-note h2 {
+  font-family: var(--font-display-historical);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
 .faction-hero, .factions-intro {
   width: min(1180px, calc(100% - 40px));
   margin: 0 auto;
@@ -68,7 +85,7 @@ body.faction-page::after {
 }
 .faction-facts div { padding: 16px 0; border-top: 1px solid var(--line); }
 .faction-facts dt { color: var(--faction); font-family: var(--font-interface); font-size: .72rem; font-weight: 850; letter-spacing: .12em; text-transform: uppercase; }
-.faction-facts dd { margin: 8px 0 0; font-family: var(--font-display-web); font-weight: 700; line-height: 1.35; }
+.faction-facts dd { margin: 8px 0 0; font-family: var(--font-reading); font-weight: 700; line-height: 1.35; }
 
 .hero-leaders {
   display: grid;
@@ -114,7 +131,7 @@ body.faction-page::after {
 .play-grid article { border-top: 4px solid var(--faction); }
 .play-grid h3, .mechanics-grid h3, .victory-grid h3 { margin: 0 0 12px; font-size: 1.45rem; }
 .play-grid p, .mechanics-grid p, .victory-grid p { margin-bottom: 0; color: var(--muted); line-height: 1.65; }
-.mechanics-grid article > span { color: var(--faction); font-family: var(--font-display-web); font-style: italic; }
+.mechanics-grid article > span { color: var(--faction); font-family: var(--font-interface); font-style: normal; font-weight: 800; letter-spacing: .08em; }
 .mechanics-grid h3 { margin-top: 48px; }
 
 .player-fit {
@@ -153,7 +170,7 @@ body.faction-page::after {
 .leader-profile-copy { padding: 52px; align-self: center; }
 .leader-kicker { color: var(--faction); font-family: var(--font-interface); font-size: .75rem; font-weight: 850; letter-spacing: .1em; text-transform: uppercase; }
 .leader-profile h3 { margin: 8px 0 10px; font-family: var(--font-display-historical); font-size: clamp(2.7rem,5vw,4.8rem); font-weight: 400; line-height: .95; }
-.leader-motto { color: var(--faction-dark); font-family: var(--font-reading); font-size: 1.25rem; font-style: italic; }
+.leader-motto { color: var(--faction-dark); font-family: var(--font-flavor); font-size: 1.4rem; font-style: normal; line-height: 1.25; }
 .leader-profile-copy > p:not(.leader-kicker):not(.leader-motto) { color: var(--muted); font-size: 1.02rem; line-height: 1.7; }
 .ability-summary { margin-top: 28px; padding: 22px; border-left: 4px solid var(--faction); background: var(--faction-soft); }
 .ability-summary strong { color: var(--faction-dark); font-family: var(--font-interface); font-size: .73rem; letter-spacing: .1em; text-transform: uppercase; }
