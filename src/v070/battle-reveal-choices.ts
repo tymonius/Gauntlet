@@ -24,6 +24,13 @@ export type V070BattleRevealChoice =
       sourceInstanceId: string;
       /** Face-up opposing Assets that existed when Sedition took effect. */
       candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'requisition';
+      owner: PlayerId;
+      sourceInstanceId: string;
+      /** Voluntarily discardable Assets that existed when Requisition took effect. */
+      candidateInstanceIds: string[];
     };
 
 declare module './battle-types' {
