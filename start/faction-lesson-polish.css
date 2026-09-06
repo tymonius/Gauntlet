@@ -1,4 +1,4 @@
-/* Step 4 visual corrections: preserve the normal tile spacing and use the same Leader sketches as the rulebook. */
+/* Step 4 visual corrections: preserve the normal tile spacing and use the new Leader woodcuts. */
 #learnFaction .faction-lesson-grid {
   gap: 1rem;
   margin-bottom: 1rem;
@@ -9,17 +9,14 @@
   height: 100%;
 }
 
-/* Match the approved Rulebook booklet treatment for the same opaque sketch
-   scans. The portrait is now a real <img>, not a pseudo-element background:
-   mild grayscale/contrast normalization plus multiply blending against a
-   controlled light-paper surface. The card must not isolate the portrait from
-   its paper backdrop, or the white/cream scan field remains visible. */
+/* The woodcuts are finished presentation assets, so render them directly.
+   Disable the legacy sketch pseudo-element and all scan-specific filtering,
+   brightness, contrast, and multiply-blend workarounds. */
 #factionLesson .faction-leader-lesson {
   background: var(--start-panel);
-  isolation: auto;
+  isolation: isolate;
 }
 
-/* Disable the legacy pseudo-element portrait from start/styles.css. */
 #factionLesson .faction-leader-lesson::after {
   content: none;
 }
@@ -37,8 +34,8 @@
   object-position: center bottom;
   opacity: 1;
   pointer-events: none;
-  filter: grayscale(1) contrast(1.08);
-  mix-blend-mode: multiply;
+  filter: none;
+  mix-blend-mode: normal;
 }
 
 @media (max-width: 900px) {
@@ -48,8 +45,8 @@
   }
 }
 
-/* Keep the existing low-key mobile watermark treatment while preserving the
-   same booklet blend and tonal treatment. */
+/* On narrow screens the art remains a subdued watermark so it does not
+   compete with the Leader-specific first-game guidance. */
 @media (max-width: 620px) {
   #factionLesson .faction-leader-lesson > .leader-lesson-art {
     right: -2rem;

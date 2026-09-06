@@ -136,6 +136,17 @@ jobs:
             "$site/releases/v0.6.3-withdrawn" \
             "$site/tts/v0.7.0"
 
+          # Keep newly added source/alternate artwork in Git without publishing redundant
+          # copies. The 12 production Leader woodcuts and all hero compositions remain public.
+          rm -rf "$site/images/rules-arbiter"
+          rm -f \
+            "$site/images/chief justice.png" \
+            "$site/images/chief-justice-rules-arbiter-alt.webp" \
+            "$site/images/chief-justice.png" \
+            "$site/images/prosecutor.png" \
+            "$site/images/rules-arbiter.png" \
+            "$site/images/woodcuts/senator flipped.png"
+
           # The Rulebook uses the top-level sketch PNGs as live hero/Leader artwork.
           # Publish those files without carrying the much larger sketch-authoring subdirectories.
           mkdir -p "$site/images/sketches"

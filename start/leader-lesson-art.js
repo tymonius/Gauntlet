@@ -1,17 +1,17 @@
 (() => {
-  const SKETCHES = Object.freeze({
-    general: "../images/sketches/general.png",
-    commandant: "../images/sketches/commandant.png",
-    ambassador: "../images/sketches/ambassador.png",
-    senator: "../images/sketches/senator.png",
-    banker: "../images/sketches/banker.png",
-    executive: "../images/sketches/executive.png",
-    ranger: "../images/sketches/ranger.png",
-    spymaster: "../images/sketches/spymaster.png",
-    alchemist: "../images/sketches/alchemist.png",
-    "spirit-walker": "../images/sketches/spirit%20walker.png",
-    "grand-inquisitor": "../images/sketches/grand%20inquisitor.png",
-    "witch-hunter": "../images/sketches/witch%20hunter.png"
+  const LEADER_ART = Object.freeze({
+    general: "../images/woodcuts/general.png",
+    commandant: "../images/woodcuts/commandant.png",
+    ambassador: "../images/woodcuts/ambassador.png",
+    senator: "../images/woodcuts/senator.png",
+    banker: "../images/woodcuts/banker.png",
+    executive: "../images/woodcuts/executive.png",
+    ranger: "../images/woodcuts/ranger.png",
+    spymaster: "../images/woodcuts/spymaster.png",
+    alchemist: "../images/woodcuts/alchemist.png",
+    "spirit-walker": "../images/woodcuts/spirit-walker.png",
+    "grand-inquisitor": "../images/woodcuts/grand-inquisitor.png",
+    "witch-hunter": "../images/woodcuts/witch-hunter.png"
   });
 
   document.addEventListener("DOMContentLoaded", () => {
@@ -30,7 +30,7 @@
 
     const sync = () => {
       const leaderId = document.querySelector('input[name="leader"]:checked')?.value || "";
-      const src = SKETCHES[leaderId] || "";
+      const src = LEADER_ART[leaderId] || "";
       if (!src) {
         art.hidden = true;
         art.removeAttribute("src");
