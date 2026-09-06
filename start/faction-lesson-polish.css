@@ -9,14 +9,14 @@
   height: 100%;
 }
 
-/* Blend the opaque sketch paper into the tile itself instead of relying on
-   mix-blend-mode against the surrounding stacking context. The sketch layer
-   uses the exact tile color as its own background; darken keeps that color
-   wherever the raster is lighter and preserves only the darker graphite. */
+/* Convert the opaque paper sketch to black graphite with luminance-derived
+   alpha at render time. White paper becomes transparent; darker pencil marks
+   survive with proportional opacity. This keeps the canonical PNG sketches
+   untouched and avoids blend-mode approximations. */
 #factionLesson .faction-leader-lesson::after {
-  background-color: var(--surface);
-  background-blend-mode: darken;
-  filter: none;
+  background-color: transparent;
+  background-blend-mode: normal;
+  filter: url("leader-sketch-alpha.svg#leader-sketch-alpha");
   mix-blend-mode: normal;
 }
 
