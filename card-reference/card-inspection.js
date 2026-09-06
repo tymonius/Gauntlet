@@ -107,6 +107,9 @@
       || data.type === 'gauntlet-art-inspect'
       || data.type === 'gauntlet-territory-art-inspect'
     ) {
+      // Artwork inspection is only valid from the enlarged card already hosted
+      // inside this dialog. Normal preview frames must open card inspection first.
+      if (!dialog?.open || event.source !== cardFrame?.contentWindow) return;
       const source = sameOriginUrl(data.source);
       if (!source) return;
       openArtwork(source, data.label);
@@ -234,12 +237,22 @@
     if (cardFrame) cardFrame.title = `Enlarged ${currentLabel}`;
   }
 
+  function replaceCardFrameLocation(href) {
+    if (!cardFrame?.contentWindow) return;
+    try {
+      cardFrame.contentWindow.location.replace(href);
+    } catch {
+      // The inspection renderer is same-origin, but retain a defensive fallback.
+      cardFrame.src = href;
+    }
+  }
+
   function openCard(href, label, pushHistory = true, cardFormat = 'portrait') {
     currentCardHref = href;
     applyCardFormat(cardFormat);
     setLabel(label);
     const renderHref = inspectionRenderUrl(href);
-    if (cardFrame.src !== renderHref) cardFrame.src = renderHref;
+    replaceCardFrameLocation(renderHref);
     showCard(false);
     openDialog(pushHistory);
     requestAnimationFrame(scaleCardStage);
@@ -316,7 +329,7 @@
   function dismissInspection() {
     if (!dialog?.open) return;
     dialog.close();
-    cardFrame.src = 'about:blank';
+    replaceCardFrameLocation('about:blank');
     artImage.removeAttribute('src');
     artImage.alt = '';
     currentCardHref = '';
