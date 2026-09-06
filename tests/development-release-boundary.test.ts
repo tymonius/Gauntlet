@@ -11,6 +11,8 @@ const ttsCatalog = readFileSync('scripts/tts-current-catalog.mjs', 'utf8');
 const cardAuthorityModel = readFileSync('scripts/card-authority/model.mjs', 'utf8');
 const renderedFaceValidator = readFileSync('scripts/card-authority/validate-rendered-faces.mjs', 'utf8');
 const starterValidator = readFileSync('scripts/validate-starter-decks.mjs', 'utf8');
+const playtestValidator = readFileSync('scripts/validate_current_playtest_sessions.py', 'utf8');
+const playtestWorkflow = readFileSync('.github/workflows/deploy-playtest-sessions.yml', 'utf8');
 
 describe('development and published-release boundary', () => {
   it('keeps current release materialization lifecycle-driven while the TTS target matches the live Workshop release', () => {
@@ -46,5 +48,13 @@ describe('development and published-release boundary', () => {
     expect(renderedFaceValidator).toContain('resolveAllFaceSpecs(runtimeGameFromAuthority(authority))');
     expect(renderedFaceValidator).not.toContain('EXPECTED_RITES');
     expect(renderedFaceValidator).not.toContain('EXPECTED_CATALOG_COUNT');
+  });
+
+  it('validates the deployed playtest service against the lifecycle-selected current release', () => {
+    expect(playtestValidator).toContain('CURRENT_VERSION = str(LIFECYCLE.get("current_release", ""))');
+    expect(playtestValidator).not.toContain('current v0.7.1 playtest workflow');
+    expect(playtestWorkflow).toContain('scripts/validate_current_playtest_sessions.py');
+    expect(playtestWorkflow).toContain('config/release-lifecycle.json');
+    expect(playtestWorkflow).not.toContain('validate_v071_playtest_sessions.py');
   });
 });

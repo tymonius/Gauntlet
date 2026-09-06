@@ -8,7 +8,8 @@ on:
       - "rules-assistant/local-search.js"
       - "rules-assistant/v063-public-corpus.js"
       - "playtest/**"
-      - "scripts/validate_v071_playtest_sessions.py"
+      - "config/release-lifecycle.json"
+      - "scripts/validate_current_playtest_sessions.py"
       - "scripts/test-formal-session-e2e.mjs"
       - "package.json"
       - ".github/workflows/deploy-playtest-sessions.yml"
@@ -21,7 +22,8 @@ on:
       - "rules-assistant/local-search.js"
       - "rules-assistant/v063-public-corpus.js"
       - "playtest/**"
-      - "scripts/validate_v071_playtest_sessions.py"
+      - "config/release-lifecycle.json"
+      - "scripts/validate_current_playtest_sessions.py"
       - "scripts/test-formal-session-e2e.mjs"
       - "package.json"
       - ".github/workflows/deploy-playtest-sessions.yml"
@@ -70,7 +72,7 @@ jobs:
           npm run test:playtest-sessions
           npm run test:formal-session-e2e
           npm run test:tracked-session-e2e
-          python scripts/validate_v071_playtest_sessions.py
+          python scripts/validate_current_playtest_sessions.py
 
   deploy:
     if: ${{ github.event_name != 'pull_request' }}

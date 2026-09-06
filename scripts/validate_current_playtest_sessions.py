@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
-"""Validate the current v0.7.1 playtest workflow and location-aware self-serve playtest contract."""
+"""Validate the current playtest workflow and location-aware self-serve playtest contract."""
 
 from __future__ import annotations
 
+import json
 import re
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+LIFECYCLE = json.loads((ROOT / "config/release-lifecycle.json").read_text(encoding="utf-8"))
+CURRENT_VERSION = str(LIFECYCLE.get("current_release", ""))
 
 REQUIRED = [
     "rules-assistant/migrations/0003_playtest_sessions.sql",
@@ -45,6 +48,11 @@ def require(path: str, markers: list[str], errors: list[str]) -> None:
 
 def main() -> int:
     errors: list[str] = []
+    release = LIFECYCLE.get("releases", {}).get(CURRENT_VERSION)
+    if not CURRENT_VERSION or not isinstance(release, dict):
+        errors.append("Release lifecycle does not define a current release")
+    elif release.get("status") != "current" or release.get("public_cutover") is not True:
+        errors.append(f"{CURRENT_VERSION} is not the approved current public release")
     for rel in REQUIRED:
         p = ROOT / rel
         if not p.is_file() or p.stat().st_size == 0:
@@ -53,7 +61,7 @@ def main() -> int:
         return fail(errors)
 
     require("workers/playtest-sessions/src/index.js", [
-        'const CURRENT_RULES_VERSION = "v0.7.1"',
+        f'const CURRENT_RULES_VERSION = "{CURRENT_VERSION}"',
         'const GAME_SERIAL_PREFIX = "G071"',
         'const EVENT_SERIAL_PREFIX = "EV071"',
         'const SERIAL_PATTERN = /^G071-',
@@ -62,7 +70,7 @@ def main() -> int:
         "playerAttributionSupported",
     ], errors)
     require("workers/playtest-sessions/src/tracked.js", [
-        'const CURRENT_RULES_VERSION = "v0.7.1"',
+        f'const CURRENT_RULES_VERSION = "{CURRENT_VERSION}"',
         'const serial = `G071-${randomCode(8)}`',
         'const MYSTICS_STARTER_RITES = Object.freeze({',
         'playMode',
@@ -81,7 +89,7 @@ def main() -> int:
         "selection_reason",
     ], errors)
     require("playtest/index.html", [
-        "Self-serve playtesting · canonical v0.7.1",
+        f"Self-serve playtesting · canonical {CURRENT_VERSION}",
         "Start a self-serve playtest",
         "Together in person",
         "Playing remotely",
@@ -103,7 +111,7 @@ def main() -> int:
         'id="feltDecidedWhen"',
         'id="agencyAfterDecided"',
         "3790840635",
-        "v0.7.1",
+        CURRENT_VERSION,
     ], errors)
     require("playtest/tracked/app.js", [
         "requestedPlayMode",
@@ -159,11 +167,11 @@ def main() -> int:
 
     if errors:
         return fail(errors)
-    print("Validated v0.7.1 location-aware self-serve playtests, physical/TTS/facilitated compatibility, G071/EV071 runtime identity, live diagnostics, private decision-point feedback, and current terminology.")
+    print(f"Validated current {CURRENT_VERSION} location-aware self-serve playtests, physical/TTS/facilitated compatibility, G071/EV071 runtime identity, live diagnostics, private decision-point feedback, and current terminology.")
     return 0
 
 def fail(errors: list[str]) -> int:
-    print("Gauntlet v0.7.1 playtest validation failed:", file=sys.stderr)
+    print(f"Gauntlet current {CURRENT_VERSION or 'unknown'} playtest validation failed:", file=sys.stderr)
     for error in errors:
         print(f"- {error}", file=sys.stderr)
     return 1
