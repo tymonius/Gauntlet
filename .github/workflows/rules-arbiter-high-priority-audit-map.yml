@@ -1,0 +1,66 @@
+name: Rules Arbiter high-priority audit map
+
+on:
+  push:
+    branches:
+      - ops/rules-arbiter-high-priority-audit-map
+    paths:
+      - '.github/workflows/rules-arbiter-high-priority-audit-map.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Query privacy-safe high-priority audit metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          IDS="'74607df2-5730-4e2f-9ba4-6aede32d308d','137ee7d3-8c41-42bb-a2de-ae051657d078','cdb61fb6-d270-4452-a445-e7a0acaf29d4','a3c140c1-c03e-4e7b-8d99-27f45e77455b','016e3792-4419-4bd3-8ace-2dd16a520d84','96e17df8-212c-4252-bbe1-654cd2e96973','2207772f-cc40-48e8-8585-7df489cb3d76','6d69603b-0299-4029-a325-b45014c8f901','121ea8a8-717e-454c-a60f-491ef6f2e52f','5ea6f396-78bb-4689-8874-fa5368b83413','bc78898c-a5d8-4009-a314-5c346f54156f','bf6b1049-6329-4ed8-87d6-f12650c820d9','7f152009-3543-4637-808c-3e1ececc3a51','9b1b6d36-4122-4c35-bfb6-6274a36be26a','44f5bb3c-dc46-4db8-82c6-6ffb949f4028','91b91a64-7e4c-4f39-abf7-2fe0768213c4','6aae2d09-3e2f-444d-890b-bd07561c186c','476b8f67-9bdf-4364-8d47-add65b67707e','77507537-64d5-4c8d-a8d1-bada21f7fd44','5990af8d-4276-41a0-bebf-d4b1ff762e09','32cfc27f-1025-4868-a4e5-f97c09edd4a1','4a415d7d-e6fc-4909-8ddf-4784ddeb1ab4','999db05a-01a7-4d4d-85fc-babf8f75d5a5','cdbf21bb-83b7-479c-bca4-e303a0c25b1e','14724479-bfbd-474c-b35c-151fb0483480','cbcae027-954f-4620-a2fc-0cd7164f9762','fcd97287-272d-4a8c-8c1c-5eaa8727cbff','b2bde472-270d-4b6e-82c2-7ab6b92b58f3','332e9263-826f-448b-8ab3-4fcaa1edd90c','eb878722-a732-492f-814e-df3c5ccded9a','d90e20fe-14c2-404d-951e-0b877c18adfc','254cb085-3f0e-4a5d-853e-036568dedd1f','54962556-f04e-428b-89c5-2c193d47cf0f'"
+          mkdir -p .tmp
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json \
+            --command "SELECT interaction_id, current_validity, historical_accuracy, retrieval_assessment, classification_assessment, recommended_action, reviewed_against_version, governing_source_ids_json FROM rules_interaction_audits WHERE interaction_id IN ($IDS) ORDER BY interaction_id" \
+            > .tmp/audits.json
+          npx --yes wrangler@4 d1 execute gauntlet-rules-assistant --remote --config rules-assistant/wrangler.toml --json \
+            --command "SELECT je.value AS source_id, COUNT(*) AS cases FROM rules_interaction_audits AS a, json_each(a.governing_source_ids_json) AS je WHERE a.interaction_id IN ($IDS) GROUP BY je.value ORDER BY cases DESC, source_id" \
+            > .tmp/sources.json
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          function rows(path) {
+            const parsed = JSON.parse(readFileSync(path, 'utf8'));
+            const blocks = Array.isArray(parsed) ? parsed : [parsed];
+            return blocks.flatMap((block) => Array.isArray(block?.results) ? block.results : []);
+          }
+          const audits = rows('.tmp/audits.json');
+          const sources = rows('.tmp/sources.json');
+          console.log('SAFE_AUDIT_MAP_BEGIN');
+          for (const row of audits) {
+            let governing = [];
+            try { governing = JSON.parse(row.governing_source_ids_json || '[]'); } catch {}
+            console.log(JSON.stringify({
+              interactionId: row.interaction_id,
+              currentValidity: row.current_validity,
+              historicalAccuracy: row.historical_accuracy,
+              retrievalAssessment: row.retrieval_assessment,
+              classificationAssessment: row.classification_assessment,
+              recommendedAction: row.recommended_action,
+              reviewedAgainstVersion: row.reviewed_against_version,
+              governingSourceIds: governing
+            }));
+          }
+          console.log('SAFE_AUDIT_MAP_END');
+          console.log('SAFE_SOURCE_COUNTS_BEGIN');
+          for (const row of sources) console.log(JSON.stringify({ sourceId: row.source_id, cases: Number(row.cases || 0) }));
+          console.log('SAFE_SOURCE_COUNTS_END');
+          NODE
