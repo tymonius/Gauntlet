@@ -109,7 +109,7 @@ function putOnTopOfDrawPile(
   state.players[owner].zones.drawPile.unshift(instanceId);
 }
 
-function setAndRevealGambits(
+function setGambits(
   state: V070GameState,
   aGambit?: string,
   bGambit?: string,
@@ -119,15 +119,26 @@ function setAndRevealGambits(
     playerId: 'A',
     cardInstanceId: aGambit,
   });
-  state = reduceV070BattleAction(state, {
+  return reduceV070BattleAction(state, {
     type: 'set_gambit',
     playerId: 'B',
     cardInstanceId: bGambit,
   });
+}
+
+function revealGambits(state: V070GameState): V070GameState {
   return reduceV070BattleAction(state, {
     type: 'reveal_gambits',
     playerId: 'A',
   });
+}
+
+function setAndRevealGambits(
+  state: V070GameState,
+  aGambit?: string,
+  bGambit?: string,
+): V070GameState {
+  return revealGambits(setGambits(state, aGambit, bGambit));
 }
 
 describe('v0.7.0 Dark Omens battle effect', () => {
@@ -146,9 +157,10 @@ describe('v0.7.0 Dark Omens battle effect', () => {
       'drawn-keep',
     );
     state.players.A.zones.hand.push(darkOmens);
-    putOnTopOfDrawPile(state, 'A', drawn);
 
-    state = setAndRevealGambits(state, darkOmens);
+    state = setGambits(state, darkOmens);
+    putOnTopOfDrawPile(state, 'A', drawn);
+    state = revealGambits(state);
 
     expect(state.battleRuntime?.stage).toBe('choose_tactics');
     expect(state.players.A.zones.hand).toContain(drawn);
@@ -193,9 +205,10 @@ describe('v0.7.0 Dark Omens battle effect', () => {
       'drawn-graveyard',
     );
     state.players.A.zones.hand.push(darkOmens);
-    putOnTopOfDrawPile(state, 'A', drawn);
 
-    state = setAndRevealGambits(state, darkOmens);
+    state = setGambits(state, darkOmens);
+    putOnTopOfDrawPile(state, 'A', drawn);
+    state = revealGambits(state);
     state = reduceV070BattleAction(state, {
       type: 'resolve_dark_omens_battle',
       playerId: 'A',
@@ -296,9 +309,10 @@ describe('v0.7.0 Dark Omens battle effect', () => {
       'monastery-draw',
     );
     state.players.A.zones.hand.push(darkOmens);
-    putOnTopOfDrawPile(state, 'A', drawn);
 
-    state = setAndRevealGambits(state, darkOmens);
+    state = setGambits(state, darkOmens);
+    putOnTopOfDrawPile(state, 'A', drawn);
+    state = revealGambits(state);
 
     expect(state.players.A.zones.drawPile[0]).toBe(drawn);
     expect(state.players.A.zones.hand).not.toContain(drawn);
@@ -338,11 +352,17 @@ describe('v0.7.0 Dark Omens battle effect', () => {
     state.players.A.zones.hand.push(darkOmens);
     state.players.B.zones.hand.push(divineMercy);
     state.players.A.zones.graveyard.push(mercyTarget);
+
+    state = setGambits(state, darkOmens, divineMercy);
     putOnTopOfDrawPile(state, 'A', darkDraw);
+    state = revealGambits(state);
 
-    state = setAndRevealGambits(state, darkOmens, divineMercy);
-
-    expect(pendingV070BattleRevealChoice(state)?.kind).toBe('dark_omens');
+    expect(pendingV070BattleRevealChoice(state)).toEqual(
+      expect.objectContaining({
+        kind: 'dark_omens',
+        drawnInstanceId: darkDraw,
+      }),
+    );
     state = reduceV070BattleAction(state, {
       type: 'resolve_dark_omens_battle',
       playerId: 'A',
