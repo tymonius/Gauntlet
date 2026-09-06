@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-06T02:24:00.000Z",
+  "updatedAt": "2026-09-06T08:11:05.017Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -194,6 +194,20 @@
         "pullRequest": 1419,
         "commit": "0a46040320ee801da299da02d89c34e3aedcfc92",
         "behaviorRevision": "v071-qa-20260903-10"
+      }
+    },
+    {
+      "id": "intelligence-surveillance-interference-v071",
+      "status": "resolved",
+      "rootCause": "answer_completeness",
+      "resolutionSurface": "arbiter_retrieval_prompt",
+      "summary": "Force the complete v0.7.1 Surveillance/Interference procedure into Intelligence interaction retrieval and require the Arbiter to preserve prerequisites, separate costs and timings, destinations, replacement/pass choices, revision rights, and no-reopen rules.",
+      "interactionIds": [
+        "121ea8a8-717e-454c-a60f-491ef6f2e52f"
+      ],
+      "resolvedAt": "2026-09-06T08:11:05.017Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260906-1"
       }
     }
   ]
