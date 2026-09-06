@@ -9,11 +9,15 @@
   height: 100%;
 }
 
-/* Normalize the sketches' warm paper toward white before multiplying them into the tile.
-   White becomes visually transparent under multiply, while the graphite linework remains. */
+/* Blend the opaque sketch paper into the tile itself instead of relying on
+   mix-blend-mode against the surrounding stacking context. The sketch layer
+   uses the exact tile color as its own background; darken keeps that color
+   wherever the raster is lighter and preserves only the darker graphite. */
 #factionLesson .faction-leader-lesson::after {
-  filter: grayscale(1) contrast(1.08) brightness(1.06);
-  mix-blend-mode: multiply;
+  background-color: var(--surface);
+  background-blend-mode: darken;
+  filter: none;
+  mix-blend-mode: normal;
 }
 
 main:has(input[name="leader"][value="general"]:checked) #factionLesson .faction-leader-lesson {
