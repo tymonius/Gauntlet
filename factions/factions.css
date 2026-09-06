@@ -170,7 +170,7 @@ body.faction-page::after {
 .leader-profile-copy { padding: 52px; align-self: center; }
 .leader-kicker { color: var(--faction); font-family: var(--font-interface); font-size: .75rem; font-weight: 850; letter-spacing: .1em; text-transform: uppercase; }
 .leader-profile h3 { margin: 8px 0 10px; font-family: var(--font-display-historical); font-size: clamp(2.7rem,5vw,4.8rem); font-weight: 400; line-height: .95; }
-.faction-page .leader-profile .leader-motto { color: var(--faction-dark); font-family: var(--font-flavor); font-size: clamp(3rem,5vw,4.5rem) !important; font-style: normal; line-height: .95 !important; }
+.faction-page .leader-profile .leader-motto { color: var(--faction-dark); font-family: var(--font-flavor); font-size: clamp(2.15rem,3vw,3rem) !important; font-style: normal; line-height: 1.05 !important; }
 .leader-profile-copy > p:not(.leader-kicker):not(.leader-motto) { color: var(--muted); font-size: 1.02rem; line-height: 1.7; }
 .ability-summary { margin-top: 28px; padding: 22px; border-left: 4px solid var(--faction); background: var(--faction-soft); }
 .ability-summary strong { color: var(--faction-dark); font-family: var(--font-interface); font-size: .73rem; letter-spacing: .1em; text-transform: uppercase; }
