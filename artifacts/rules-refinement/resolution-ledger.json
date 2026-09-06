@@ -1,15 +1,20 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-05T22:43:00.000Z",
+  "updatedAt": "2026-09-06T00:15:00.000Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
       "status": "resolved",
       "rootCause": "source_specificity",
       "interactionIds": [
+        "e51db4e3-04d8-4b64-8ce2-16cccad37425",
+        "62972827-f4ac-4988-afe2-072a0ca2a15c",
+        "be288392-b248-4d91-afed-1bbebf368f53",
+        "bb4dd8aa-c23e-4dd6-bc12-5f7fc0917b55",
         "f9ae058b-e4de-4140-bd1f-189879e77678"
       ],
       "caseIds": [
+        "impossible-choice-generic",
         "penance-empty-hand-provisional"
       ],
       "resolutionSurface": "rules_authority",
@@ -18,6 +23,23 @@
       "binding": {
         "pullRequest": 1463,
         "commit": "d4fb1c52a9e73c4167f0748bb096d6699e13c114",
+        "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339"
+      }
+    },
+    {
+      "id": "neutral-observers-fog-order-v071",
+      "status": "resolved",
+      "rootCause": "source_specificity",
+      "interactionIds": [
+        "d1596d7d-5c81-4c3b-9bdd-e227137231de"
+      ],
+      "caseIds": [
+        "neutral-observers-fog-of-war-order"
+      ],
+      "resolutionSurface": "rules_authority",
+      "summary": "Current v0.7.1 card authority explicitly states that Neutral Observers overrides other Gambit-order effects but does not change Tactic order, so Fog may still determine Tactic order.",
+      "resolvedAt": "2026-09-05T21:07:18.000Z",
+      "binding": {
         "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339"
       }
     },
