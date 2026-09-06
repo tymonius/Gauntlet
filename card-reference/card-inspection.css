@@ -1,3 +1,0 @@
-/* Compatibility entry point. Shared inspector styling lives with the canonical
- * Card Design surface and is reused by Card Reference and Deckbuilder. */
-@import url('../card-design/card-inspector.css?v=20260905-1');
