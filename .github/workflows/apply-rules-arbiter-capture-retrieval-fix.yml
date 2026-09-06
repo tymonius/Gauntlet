@@ -1,0 +1,45 @@
+name: Apply Rules Arbiter capture retrieval fix
+
+on:
+  push:
+    branches:
+      - fix/rules-arbiter-capture-retrieval
+    paths:
+      - scripts/apply-rules-capture-retrieval-fix.mjs
+
+permissions:
+  contents: write
+
+jobs:
+  refine:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: fix/rules-arbiter-capture-retrieval
+          fetch-depth: 0
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install --package-lock=false
+      - name: Apply capture retrieval correction
+        run: node scripts/apply-rules-capture-retrieval-fix.mjs
+      - name: Check syntax
+        run: |
+          node --check rules-assistant/local-search.js
+          node --check rules-assistant/worker-v071.js
+      - name: Run focused Rules Arbiter tests
+        run: npx vitest run rules-assistant/v071-retrieval-qa.test.mjs rules-assistant/local-search.test.mjs rules-assistant/refinement-resolution-ledger.test.mjs
+      - name: Remove staging helpers
+        run: rm .github/workflows/apply-rules-arbiter-capture-retrieval-fix.yml scripts/apply-rules-capture-retrieval-fix.mjs
+      - name: Commit refinement
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git commit -m "Strengthen occupied Territory capture retrieval"
+          git push origin HEAD:fix/rules-arbiter-capture-retrieval
