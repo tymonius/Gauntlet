@@ -503,11 +503,13 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
   const destinationFocus = /\bdestinations?\b/.test(current)
     || (currentWordCount <= 6 && /\bdestinations?\b/.test(recent));
   const battleCardFocus = /\bgambits?\b/.test(combined) && /\btactics?\b/.test(combined);
-  const intelligenceTopic = /\b(?:surveillance|interference|interfere|intel)\b/;
+  const intelligenceTopic = /\b(?:surveillance|interference|interfer(?:e|es|ed|ing)|intel)\b/;
+  const intelligenceFollowupCue = /\b(?:gambits?|tactics?|cards?|face[ -]?up|reveals?|replac(?:e|es|ed|ing|ement|ements)|revis(?:e|es|ed|ing|ion|ions)|again|another|reopen|that|it|they|them|those)\b/.test(current);
+  const intelligenceProcedureSubject = /\b(?:gambits?|tactics?|cards?|face[ -]?up|reveals?|replac(?:e|es|ed|ing|ement|ements)|revis(?:e|es|ed|ing|ion|ions)|cost|spend|intel)\b/.test(combined);
   const intelligenceInterferenceFocus = (
     intelligenceTopic.test(current)
-    || (currentWordCount <= 8 && intelligenceTopic.test(recent))
-  ) && /\b(?:gambits?|tactics?|face[ -]?up|reveals?|replacements?|revis(?:e|ion))\b/.test(combined);
+    || (currentWordCount <= 8 && intelligenceTopic.test(recent) && intelligenceFollowupCue)
+  ) && intelligenceProcedureSubject;
   const preferredAuthorityIds = intelligenceInterferenceFocus
     ? INTELLIGENCE_INTERFERENCE_AUTHORITY_IDS
     : destinationFocus && battleCardFocus
