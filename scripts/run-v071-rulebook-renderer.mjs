@@ -76,7 +76,7 @@ replaceOnce(
       review.append(sheet);
     }, pair);
     await page.locator('#reader-spread-review > *').screenshot({
-      path: join(OUT, 'reader-spreads', `spread-${pad(spreadIndex + 1)}-pages-${pair.join('-')}.png`),
+      path: join(OUT, 'reader-spreads', \`spread-\${pad(spreadIndex + 1)}-pages-\${pair.join('-')}.png\`),
     });
   }
   await page.evaluate(() => document.querySelector('#reader-spread-review')?.remove());
@@ -112,7 +112,7 @@ replaceOnce(
       review.append(sheet);
     }, { pageNumbers: pair, finalPage: count });
     await page.locator('#reader-spread-review > *').screenshot({
-      path: join(OUT, 'reader-spreads', `spread-${pad(spreadIndex + 1)}-pages-${pair.join('-')}.png`),
+      path: join(OUT, 'reader-spreads', \`spread-\${pad(spreadIndex + 1)}-pages-\${pair.join('-')}.png\`),
     });
   }
   await page.evaluate(() => {
@@ -160,10 +160,8 @@ replaceOnce(
 );
 replaceOnce(
   'utility font assertion',
-  `  if (!result.utilityFamily.includes('Inter')) {
-    throw new Error(`Approved utility typography was not retained: ${result.utilityFamily}`);
-  }`,
-  `  if (!result.utilityFamily.includes('Inter')) throw new Error(`Approved utility typography was not retained: ${result.utilityFamily}`);
+  "  if (!result.utilityFamily.includes('Inter')) {\n    throw new Error(`Approved utility typography was not retained: ${result.utilityFamily}`);\n  }",
+  `  if (!result.utilityFamily.includes('Inter')) throw new Error('Approved utility typography was not retained: ' + result.utilityFamily);
   if (!result.interLoaded) throw new Error('Inter is named in the approved utility stack but is not actually loaded.');
   if (result.leaderPortraitBlendModes.some(mode => mode !== 'multiply')) {
     throw new Error('v0.7.1 Leader portrait blending regressed: ' + JSON.stringify(result.leaderPortraitBlendModes) + '.');
@@ -189,35 +187,35 @@ replaceOnce(
     ['Ranger', 'Spymaster'], ['Alchemist', 'Spirit Walker'], ['Grand Inquisitor', 'Witch Hunter'],
   ];
   const firstLeaders = new Set(expectedLeaderPairs.map(([leftLeader]) => leftLeader));
-  if (result.leaderPages.length !== 12) throw new Error(`Expected 12 dedicated Leader pages; found ${result.leaderPages.length}.`);
+  if (result.leaderPages.length !== 12) throw new Error('Expected 12 dedicated Leader pages; found ' + result.leaderPages.length + '.');
   const leaderPageByName = new Map(result.leaderPages.map(item => [item.leader, item.pageNumber]));
   for (const [leftLeader, rightLeader] of expectedLeaderPairs) {
     const leftPage = leaderPageByName.get(leftLeader), rightPage = leaderPageByName.get(rightLeader);
-    if (!leftPage || !rightPage) throw new Error(`Leader spread is missing ${leftLeader} or ${rightLeader}.`);
-    if (leftPage % 2 !== 0 || rightPage !== leftPage + 1) throw new Error(`Leader pair must share a facing spread: ${leftLeader} p.${leftPage}, ${rightLeader} p.${rightPage}.`);
+    if (!leftPage || !rightPage) throw new Error('Leader spread is missing ' + leftLeader + ' or ' + rightLeader + '.');
+    if (leftPage % 2 !== 0 || rightPage !== leftPage + 1) throw new Error('Leader pair must share a facing spread: ' + leftLeader + ' p.' + leftPage + ', ' + rightLeader + ' p.' + rightPage + '.');
   }
 
   const expectedHeroPlates = ['hero 2.png', 'hero 3.png', 'hero 4.png'];
   const actualHeroPlates = result.heroPlateSources.map(value => decodeURIComponent(value || '').split('/').at(-1)).sort();
   if (JSON.stringify(actualHeroPlates) !== JSON.stringify([...expectedHeroPlates].sort())) {
-    throw new Error(`Expected the three approved hero woodcuts exactly once; found ${JSON.stringify(actualHeroPlates)} across ${report.intentionalBlanks} filler pages.`);
+    throw new Error('Expected the three approved hero woodcuts exactly once; found ' + JSON.stringify(actualHeroPlates) + ' across ' + report.intentionalBlanks + ' filler pages.');
   }
   if (result.fillerPlacements.length !== report.intentionalBlanks) {
-    throw new Error(`Filler placement report mismatch: ${result.fillerPlacements.length} placements for ${report.intentionalBlanks} intentional blanks.`);
+    throw new Error('Filler placement report mismatch: ' + result.fillerPlacements.length + ' placements for ' + report.intentionalBlanks + ' intentional blanks.');
   }
 
   const naturalBoundaryClasses = ['part-opener', 'chapter-page', 'faction-opener', 'quick-reference-page', 'glossary-page', 'leader-page'];
   for (const placement of result.fillerPlacements) {
-    if (!naturalBoundaryClasses.some(className => placement.nextClass.split(/\s+/).includes(className))) {
-      throw new Error(`Filler page interrupts a content section: ${JSON.stringify(placement)}.`);
+    if (!naturalBoundaryClasses.some(className => placement.nextClass.split(/\\s+/).includes(className))) {
+      throw new Error('Filler page interrupts a content section: ' + JSON.stringify(placement) + '.');
     }
-    if (placement.nextClass.split(/\s+/).includes('leader-page') && !firstLeaders.has(placement.nextLeader)) {
-      throw new Error(`Filler page may only precede the first page of a Leader pair: ${JSON.stringify(placement)}.`);
+    if (placement.nextClass.split(/\\s+/).includes('leader-page') && !firstLeaders.has(placement.nextLeader)) {
+      throw new Error('Filler page may only precede the first page of a Leader pair: ' + JSON.stringify(placement) + '.');
     }
   }
 
   const illustrated = result.fillerPlacements.filter(placement => placement.illustrated);
-  if (illustrated.length !== 3) throw new Error(`Expected exactly three illustrated filler pages; found ${illustrated.length}.`);
+  if (illustrated.length !== 3) throw new Error('Expected exactly three illustrated filler pages; found ' + illustrated.length + '.');
   const highestSelectedTier = Math.min(...result.fillerPlacements.map(placement => placement.tier));
   if (illustrated.some(placement => placement.tier > highestSelectedTier) && result.fillerPlacements.filter(placement => placement.tier === highestSelectedTier).length >= 3) {
     throw new Error('Hero woodcuts were not assigned to the highest selected publication hierarchy.');
