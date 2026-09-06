@@ -1,0 +1,158 @@
+name: Apply Rules Arbiter triage root-cause fix
+
+on:
+  push:
+    branches:
+      - fix/rules-arbiter-triage-root-causes
+    paths:
+      - .github/workflows/apply-rules-arbiter-triage-root-cause-fix.yml
+
+permissions:
+  contents: write
+
+jobs:
+  refine:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: fix/rules-arbiter-triage-root-causes
+          fetch-depth: 0
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Apply focused triage correction
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          triage_path = Path("rules-assistant/refinement-triage.js")
+          triage = triage_path.read_text()
+          old_elliptical = r'''  function isEllipticalQuestion(question) {
+            const value = text(question).toLowerCase();
+            if (!value) return false;
+            const words = value.match(/[a-z0-9'-]+/g) || [];
+            if (words.length <= 5) return true;
+            return /^(which|which are|what about|what does that|what are those|where|when|why|how so|and then|then|those|these|they|them|it|that|this|who)\b/.test(value);
+          }'''
+          new_elliptical = r'''  function isEllipticalQuestion(question) {
+            const value = text(question).toLowerCase();
+            const words = value.match(/[a-z0-9']+/g) || [];
+            if (!words.length || words.length > 10) return false;
+
+            const referentCue = /\b(?:it|its|they|them|their|that|those|this|these|which|same|both|former|latter|there|then|one|ones|again|another|next|else)\b/.test(value);
+            const continuationCue = /^(?:and|but|so|then|also|okay|ok|no|yes|wait|what about|how about)\b/.test(value);
+            const bareQuestionCue = words.length <= 2 && /^(?:where|which|why|when|how|what|who)\b/.test(value);
+            return referentCue || continuationCue || bareQuestionCue;
+          }'''
+          if old_elliptical not in triage:
+              raise SystemExit("elliptical-question block not found")
+          triage = triage.replace(old_elliptical, new_elliptical, 1)
+
+          continuity_line = '    if (score.elliptical && context.previous && (score.fragileFollowup || ["incorrect", "unclear"].includes(feedback))) return "conversation_continuity";'
+          retrieval_precedence = '    if (recommendedAction === "retrieval_fix") return "retrieval";\n'
+          if retrieval_precedence.strip() not in triage:
+              if continuity_line not in triage:
+                  raise SystemExit("continuity root-cause line not found")
+              triage = triage.replace(continuity_line, retrieval_precedence + continuity_line, 1)
+          triage_path.write_text(triage)
+
+          test_path = Path("rules-assistant/refinement-triage.test.mjs")
+          tests = test_path.read_text().rstrip()
+          marker = "self-contained wh-questions do not masquerade as conversation-continuity debt"
+          if marker not in tests:
+              tests += r'''
+
+          test("self-contained wh-questions do not masquerade as conversation-continuity debt", () => {
+            const first = row({
+              id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+              sequence_index: 1,
+              feedback_rating: "incorrect"
+            });
+            const second = row({
+              id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+              sequence_index: 2,
+              created_at: "2026-09-04T20:01:00.000Z",
+              question: "When is an occupied Territory captured?",
+              review_status: "needs_correction",
+              issueTypes: ["incorrect_answer", "retrieval_failure"]
+            });
+            const report = engine.triageInteractions([first, second], {
+              audits: [{
+                interaction_id: second.id,
+                historical_accuracy: "incorrect",
+                retrieval_assessment: "failure",
+                classification_assessment: "should_be_explicit",
+                recommended_action: "retrieval_fix"
+              }]
+            }, { scope: "reviewed_backlog" });
+            const item = report.interactions.find((candidate) => candidate.interactionId === second.id);
+            expect(item.rootCause).toBe("retrieval");
+            expect(item.signalCodes).not.toContain("elliptical_followup");
+            expect(item.signalCodes).not.toContain("fragile_followup");
+          });
+
+          test("audit retrieval fixes outrank downstream classification symptoms", () => {
+            const interaction = row({
+              id: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+              review_status: "needs_correction",
+              issueTypes: ["incorrect_answer", "retrieval_failure"]
+            });
+            const report = engine.triageInteractions([interaction], {
+              audits: [{
+                interaction_id: interaction.id,
+                retrieval_assessment: "failure",
+                classification_assessment: "should_be_explicit",
+                recommended_action: "retrieval_fix"
+              }]
+            }, { scope: "reviewed_backlog" });
+            expect(report.interactions[0].rootCause).toBe("retrieval");
+          });
+
+          test("self-contained who questions can surface classification debt without continuity noise", () => {
+            const first = row({
+              id: "dddddddd-dddd-4ddd-8ddd-dddddddddddd",
+              sequence_index: 1
+            });
+            const second = row({
+              id: "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee",
+              sequence_index: 2,
+              created_at: "2026-09-04T20:01:00.000Z",
+              question: "Who is the General designed after?",
+              review_status: "needs_correction",
+              ruling_status: "provisional",
+              confidence: "medium",
+              source_count: 1
+            });
+            const report = engine.triageInteractions([first, second], {
+              audits: [{
+                interaction_id: second.id,
+                retrieval_assessment: "sufficient",
+                classification_assessment: "should_be_out_of_scope",
+                recommended_action: "prompt_fix"
+              }]
+            }, { scope: "reviewed_backlog" });
+            const item = report.interactions.find((candidate) => candidate.interactionId === second.id);
+            expect(item.rootCause).toBe("classification");
+            expect(item.signalCodes).not.toContain("elliptical_followup");
+          });
+          '''
+          test_path.write_text(tests + "\n")
+          PY
+      - name: Run Rules Arbiter deterministic suite
+        run: npm run test:rules-assistant
+      - name: Remove one-shot workflow
+        run: rm .github/workflows/apply-rules-arbiter-triage-root-cause-fix.yml
+      - name: Commit refinement
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git commit -m "Correct Rules Arbiter triage root causes"
+          git push origin HEAD:fix/rules-arbiter-triage-root-causes
