@@ -199,6 +199,10 @@
       "expectedSourcePatterns": [
         "Normal Capture",
         "Capture"
+      ],
+      "expectedTopSourcePatterns": [
+        "Normal Capture",
+        "Front Line"
       ]
     },
     {

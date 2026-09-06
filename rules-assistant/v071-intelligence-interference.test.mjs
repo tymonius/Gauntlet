@@ -78,7 +78,7 @@ describe("v0.7.1 Intelligence Surveillance and Interference", () => {
   });
 
   test("prompt preserves the full procedure instead of collapsing Surveillance and Interference", () => {
-    expect(workerSource).toContain('export const BEHAVIOR_REVISION = "v071-qa-20260906-2"');
+    expect(workerSource).toContain('export const BEHAVIOR_REVISION = "v071-qa-20260906-3"');
     expect(workerSource).toContain("reconstruct the whole applicable sequence");
     expect(workerSource).toContain("replacement-or-pass choices");
     expect(workerSource).toContain("does not reopen an earlier window");

@@ -122,7 +122,7 @@ def main() -> int:
     ], errors)
     require("start/index.html", [
         "Tabletop Simulator",
-        "begins <strong>Onset</strong>",
+        "Capture. Draw. Act. Move.",
     ], errors)
     require("start/app.js", [
         "Create tracked playtest",

@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-06T08:11:05.017Z",
+  "updatedAt": "2026-09-06T11:49:12.870Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -208,6 +208,23 @@
       "resolvedAt": "2026-09-06T08:11:05.017Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260906-1"
+      }
+    },
+    {
+      "id": "occupied-territory-capture-retrieval-v071",
+      "status": "resolved",
+      "rootCause": "retrieval",
+      "interactionIds": [
+        "6d69603b-0299-4029-a325-b45014c8f901"
+      ],
+      "caseIds": [
+        "core-capture"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "Promote the governing v0.7.1 Normal Capture and Front Line authority for Territory-capture questions and require those passages to appear in the top three retrieval results.",
+      "resolvedAt": "2026-09-06T11:49:12.870Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260906-3"
       }
     }
   ]

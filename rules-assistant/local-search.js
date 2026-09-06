@@ -49,6 +49,10 @@ const QUERY_PHRASE_ALIASES = [
   {
     pattern: /\b(?:cards?|card)\b.*\bdiscard pile\b|\bdiscard pile\b.*\b(?:cards?|card)\b/i,
     aliases: ["playing a card for its action effect", "tactics reserve aftermath"]
+  },
+  {
+    pattern: /\b(?:capture|captured)\b.*\bterritor(?:y|ies)\b|\bterritor(?:y|ies)\b.*\b(?:capture|captured)\b/i,
+    aliases: ["normal capture", "capture step", "front line", "occupation control"]
   }
 ];
 
