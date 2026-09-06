@@ -8,6 +8,7 @@ on:
       - playtest/sheet/index.html
       - playtest/styles.css
       - playtest/README.md
+      - config/release-lifecycle.json
       - .github/workflows/render-playtest-sheet.yml
   pull_request:
     branches:
@@ -16,6 +17,7 @@ on:
       - playtest/sheet/index.html
       - playtest/styles.css
       - playtest/README.md
+      - config/release-lifecycle.json
       - .github/workflows/render-playtest-sheet.yml
       - README.md
   workflow_dispatch:
@@ -47,11 +49,33 @@ jobs:
           npx playwright install --with-deps chromium
           python3 -m pip install pypdf
 
+      - name: Resolve current release output paths
+        id: release
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const lifecycle = JSON.parse(fs.readFileSync('config/release-lifecycle.json', 'utf8'));
+          const version = String(lifecycle.current_release || '');
+          const release = lifecycle.releases?.[version];
+          if (!/^v\d+\.\d+\.\d+$/.test(version) || release?.status !== 'current' || release?.public_cutover !== true) {
+            throw new Error('Release lifecycle does not identify an approved current release.');
+          }
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, [
+            `version=${version}`,
+            `pdf=playtest/Gauntlet_${version}_Playtest_Sheet.pdf`,
+            `preview=playtest/Gauntlet_${version}_Playtest_Sheet_Preview.png`,
+            '',
+          ].join('\n'));
+          NODE
+
       - name: Serve repository
         run: |
           python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
 
       - name: Render Letter-size PDF and preview
+        env:
+          PLAYTEST_SHEET_PDF: ${{ steps.release.outputs.pdf }}
+          PLAYTEST_SHEET_PREVIEW: ${{ steps.release.outputs.preview }}
         run: |
           node --input-type=module <<'NODE'
           import { chromium } from 'playwright';
@@ -66,13 +90,13 @@ jobs:
 
           await page.goto('http://127.0.0.1:8000/playtest/sheet/?serial=G071-PREVIEW', { waitUntil: 'networkidle' });
           await page.screenshot({
-            path: 'playtest/Gauntlet_v0.7.1_Playtest_Sheet_Preview.png',
+            path: process.env.PLAYTEST_SHEET_PREVIEW,
             fullPage: true
           });
 
           await page.emulateMedia({ media: 'print' });
           await page.pdf({
-            path: 'playtest/Gauntlet_v0.7.1_Playtest_Sheet.pdf',
+            path: process.env.PLAYTEST_SHEET_PDF,
             format: 'Letter',
             printBackground: true,
             preferCSSPageSize: true,
@@ -86,12 +110,15 @@ jobs:
           NODE
 
       - name: Validate PDF
+        env:
+          PLAYTEST_SHEET_PDF: ${{ steps.release.outputs.pdf }}
         run: |
           python3 <<'PY'
+          import os
           from pathlib import Path
           from pypdf import PdfReader
 
-          path = Path('playtest/Gauntlet_v0.7.1_Playtest_Sheet.pdf')
+          path = Path(os.environ['PLAYTEST_SHEET_PDF'])
           if not path.exists() or path.stat().st_size < 20_000:
               raise SystemExit('Generated PDF is missing or unexpectedly small')
           reader = PdfReader(str(path))
@@ -122,15 +149,15 @@ jobs:
       - name: Upload rendered sheet
         uses: actions/upload-artifact@v4
         with:
-          name: gauntlet-v071-playtest-sheet
+          name: gauntlet-current-playtest-sheet-${{ steps.release.outputs.version }}
           path: |
-            playtest/Gauntlet_v0.7.1_Playtest_Sheet.pdf
-            playtest/Gauntlet_v0.7.1_Playtest_Sheet_Preview.png
+            ${{ steps.release.outputs.pdf }}
+            ${{ steps.release.outputs.preview }}
           if-no-files-found: error
 
       - name: Commit generated PDF on main
         if: github.event_name == 'push' && github.ref_name == 'main'
         run: |
           node scripts/commit-generated-files.mjs \
-            "Render v0.7.1 printable playtest sheet PDF" \
-            -- playtest/Gauntlet_v0.7.1_Playtest_Sheet.pdf
+            "Render current ${{ steps.release.outputs.version }} printable playtest sheet PDF" \
+            -- "${{ steps.release.outputs.pdf }}"
