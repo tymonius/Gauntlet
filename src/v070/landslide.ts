@@ -14,6 +14,8 @@ import type { PlayerId } from './rules';
 export const V070_LANDSLIDE_ID = 'neutral-landslide' as const;
 export const V070_LANDSLIDE_BATTLE_TEXT =
   'In the Aftermath, if you lose and retreat from a Territory, after retreating you may place this Overlay on the contested Territory.' as const;
+export const V070_LANDSLIDE_OVERLAY_TEXT =
+  "When a player retreats onto this Territory: Retreat +1, if able. Then put this card in its owner's Discard Pile." as const;
 
 export interface V070LandslideAftermathRuntime {
   playerId: PlayerId;
@@ -29,17 +31,20 @@ declare module './battle-types' {
   }
 }
 
-function validateV070LandslideBattleAuthority(): void {
+function validateV070LandslideAuthority(): void {
   const card = v070CanonicalContent.cardsById.get(V070_LANDSLIDE_ID);
-  const effect = card?.effects.find(effect => effect.label === 'Gambit/Tactic');
-  if (!card || effect?.text !== V070_LANDSLIDE_BATTLE_TEXT) {
+  const battleEffect = card?.effects.find(effect => effect.label === 'Gambit/Tactic');
+  const overlayEffect = card?.effects.find(effect => effect.label === 'Overlay');
+  if (!card
+    || battleEffect?.text !== V070_LANDSLIDE_BATTLE_TEXT
+    || overlayEffect?.text !== V070_LANDSLIDE_OVERLAY_TEXT) {
     throw new Error(
-      'v0.7.0 Landslide Gambit/Tactic text drifted from released authority.',
+      'v0.7.0 Landslide text drifted from released authority.',
     );
   }
 }
 
-validateV070LandslideBattleAuthority();
+validateV070LandslideAuthority();
 
 export function registerV070LandslideBattleEffect(
   state: V070GameState,
