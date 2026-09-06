@@ -41,6 +41,10 @@ import {
   resolveV070DarkOmensBattleChoice,
 } from './dark-omens-battle';
 import {
+  openV070SeditionBattleChoice,
+  resolveV070SeditionBattleChoice,
+} from './sedition-battle';
+import {
   isV070BattleRevealChoiceOpen,
   pendingV070BattleRevealChoice,
 } from './battle-reveal-choices';
@@ -69,6 +73,11 @@ export type V070BattleAction =
       type: 'resolve_dark_omens_battle';
       playerId: PlayerId;
       use: boolean;
+    }
+  | {
+      type: 'resolve_sedition_battle';
+      playerId: PlayerId;
+      targetInstanceId: string;
     };
 
 export function reduceV070BattleAction(
@@ -118,6 +127,22 @@ export function reduceV070BattleAction(
       openNextV070BattleRevealChoice(next);
       return next;
     }
+
+    if (pendingRevealChoice.kind === 'sedition') {
+      if (action.type !== 'resolve_sedition_battle') {
+        throw new V070GameActionError(
+          'Resolve the pending Sedition Asset choice before continuing the battle.',
+        );
+      }
+      const next = structuredClone(state) as V070GameState;
+      resolveV070SeditionBattleChoice(
+        next,
+        action.playerId,
+        action.targetInstanceId,
+      );
+      openNextV070BattleRevealChoice(next);
+      return next;
+    }
   }
   if (action.type === 'resolve_divine_mercy_battle') {
     throw new V070GameActionError(
@@ -127,6 +152,11 @@ export function reduceV070BattleAction(
   if (action.type === 'resolve_dark_omens_battle') {
     throw new V070GameActionError(
       'There is no open Dark Omens battle choice.',
+    );
+  }
+  if (action.type === 'resolve_sedition_battle') {
+    throw new V070GameActionError(
+      'There is no open Sedition battle choice.',
     );
   }
 
@@ -290,9 +320,18 @@ function openNextV070BattleRevealChoice(
     if (!pending) return false;
     if (isV070BattleRevealChoiceOpen(state)) return true;
 
-    const opened = pending.kind === 'divine_mercy'
-      ? openV070DivineMercyBattleChoice(state)
-      : openV070DarkOmensBattleChoice(state);
+    let opened = false;
+    switch (pending.kind) {
+      case 'divine_mercy':
+        opened = openV070DivineMercyBattleChoice(state);
+        break;
+      case 'dark_omens':
+        opened = openV070DarkOmensBattleChoice(state);
+        break;
+      case 'sedition':
+        opened = openV070SeditionBattleChoice(state);
+        break;
+    }
     if (opened) return true;
     // An unavailable choice resolves itself. Continue to the next queued
     // shared-timing choice, if any.

@@ -9,6 +9,7 @@ import {
   v070DisruptedSupplyLinesAssetActive,
   v070PlayerAssetsInactiveByContinuousTerritory,
 } from './territories';
+import { v070BattleAssetInstanceInactive } from './battle-asset-state';
 
 export function isV070AssetFaceUp(
   state: V070GameState,
@@ -61,6 +62,7 @@ function isV070AssetBaseActive(
   instanceId: string,
 ): boolean {
   if (!isV070AssetFaceUp(state, instanceId)) return false;
+  if (v070BattleAssetInstanceInactive(state, instanceId)) return false;
   if (state.battleRuntime?.assetInactivePlayers.includes(owner)) {
     return false;
   }
