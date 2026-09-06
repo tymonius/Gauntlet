@@ -16,6 +16,11 @@ describe("shared card inspector", () => {
     );
   });
 
+  it("shows the zoom cursor over artwork that can be inspected from the enlarged card", () => {
+    expect(rendererSource).toContain("frame.style.cursor = 'zoom-in';");
+    expect(rendererSource).toContain("image.style.cursor = 'zoom-in';");
+  });
+
   it("accepts artwork inspection only from the enlarged card iframe", () => {
     expect(inspectorSource).toContain("if (!dialog?.open || event.source !== cardFrame?.contentWindow) return;");
     expect(inspectorSource).toContain("if (event.source === cardFrame?.contentWindow) return;");
