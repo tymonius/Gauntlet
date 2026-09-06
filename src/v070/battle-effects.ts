@@ -6,6 +6,11 @@ import type {
 } from './battle-types';
 import * as core from './battle-effects-core';
 import {
+  V070_DARK_OMENS_BATTLE_TEXT,
+  V070_DARK_OMENS_ID,
+  registerV070DarkOmensBattleEffect,
+} from './dark-omens-battle';
+import {
   V070_DIVINE_MERCY_BATTLE_TEXT,
   V070_DIVINE_MERCY_ID,
   registerV070DivineMercyBattleEffect,
@@ -15,6 +20,7 @@ import {
   registerV070LandslideBattleEffect,
 } from './landslide';
 import { applyV070BattleRetreatStep } from './retreat-step';
+import { v070MonasterySuppressesArcaneBattleEffects } from './territories';
 
 export type {
   V070BattleEffectContext,
@@ -52,9 +58,23 @@ const divineMercyHandler: core.V070BattleEffectHandler = {
   },
 };
 
+const darkOmensHandler: core.V070BattleEffectHandler = {
+  cardId: V070_DARK_OMENS_ID,
+  expectedText: V070_DARK_OMENS_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070DarkOmensBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
 const specializedHandlers = new Map<string, core.V070BattleEffectHandler>([
   [landslideHandler.cardId, landslideHandler],
   [divineMercyHandler.cardId, divineMercyHandler],
+  [darkOmensHandler.cardId, darkOmensHandler],
 ]);
 
 export const V070_SUPPORTED_REVEAL_EFFECT_IDS = [
@@ -74,64 +94,52 @@ export function resolveV070SupportedRevealEffects(
   commitments: readonly V070BattleCardCommitment[],
   encounteredAt: 'reveal_gambits' | 'reveal_tactics',
 ): V070UnsupportedBattleEffect[] {
-  const specialized = commitments.filter(commitment =>
-    specializedHandlers.has(
-      state.cardInstances[commitment.instanceId]?.cardId ?? '',
-    )
+  // Validate the complete reveal before mutating live state. This preserves the
+  // fail-closed contract even when core and specialized handlers share timing.
+  const unsupported = commitments.flatMap(commitment =>
+    unsupportedRevealEffect(state, commitment, encounteredAt)
   );
-  const remaining = commitments.filter(commitment =>
-    !specializedHandlers.has(
-      state.cardInstances[commitment.instanceId]?.cardId ?? '',
-    )
-  );
+  if (unsupported.length > 0) return unsupported;
 
-  // Preserve the registry's all-or-nothing reveal guarantee. Validate every
-  // core and specialized effect before any current state is mutated.
-  if (remaining.length > 0) {
-    const probe = structuredClone(state) as V070GameState;
-    const unsupported = core.resolveV070SupportedRevealEffects(
-      probe,
-      remaining,
-      encounteredAt,
-    );
-    if (unsupported.length > 0) return unsupported;
-  }
-
-  for (const commitment of specialized) {
+  for (const commitment of orderedRevealCommitments(state, commitments)) {
     const cardId = state.cardInstances[commitment.instanceId]?.cardId ?? '';
-    const handler = specializedHandlers.get(cardId);
     const card = v070CanonicalContent.cardsById.get(cardId);
-    const relevant = card?.effects.filter(effect =>
-      effect.label === (commitment.role === 'gambit' ? 'Gambit' : 'Tactic')
-      || effect.label === 'Gambit/Tactic'
-    ) ?? [];
-    if (!handler
-      || relevant.length !== 1
-      || relevant[0]?.text !== handler.expectedText) {
-      return [{
-        owner: commitment.owner,
-        instanceId: commitment.instanceId,
-        cardId,
-        role: commitment.role,
-        label: relevant[0]?.label ?? 'Gambit/Tactic',
-        text: relevant[0]?.text ?? '',
-        encounteredAt,
-      }];
+    if (!card) throw new Error(`Unknown canonical card ${cardId}.`);
+
+    if (v070MonasterySuppressesArcaneBattleEffects(state)
+      && card.trait === 'Arcane') {
+      appendV070Event(state, {
+        type: 'battle_card_effect_suppressed',
+        actor: commitment.owner,
+        visibility: 'public',
+        payload: {
+          instanceId: commitment.instanceId,
+          cardId,
+          role: commitment.role,
+          reason: 'Monastery',
+        },
+      });
+      continue;
     }
-  }
 
-  if (remaining.length > 0) {
-    core.resolveV070SupportedRevealEffects(
-      state,
-      remaining,
-      encounteredAt,
-    );
-  }
+    const specialized = specializedHandlers.get(cardId);
+    if (!specialized) {
+      // Core resolves one commitment at a time here so specialized effects keep
+      // their exact attacker/defender alternating position at shared timing.
+      const coreUnsupported = core.resolveV070SupportedRevealEffects(
+        state,
+        [commitment],
+        encounteredAt,
+      );
+      if (coreUnsupported.length > 0) {
+        throw new Error(
+          `Validated core battle effect became unsupported during resolution: ${cardId}.`,
+        );
+      }
+      continue;
+    }
 
-  for (const commitment of orderedSpecializedCommitments(state, specialized)) {
-    const cardId = state.cardInstances[commitment.instanceId]?.cardId ?? '';
-    const handler = specializedHandlers.get(cardId)!;
-    handler.apply({
+    specialized.apply({
       state,
       owner: commitment.owner,
       opponent: commitment.owner === 'A' ? 'B' : 'A',
@@ -145,7 +153,7 @@ export function resolveV070SupportedRevealEffects(
         instanceId: commitment.instanceId,
         cardId,
         role: commitment.role,
-        timing: handler.timing,
+        timing: specialized.timing,
       },
     });
   }
@@ -153,15 +161,65 @@ export function resolveV070SupportedRevealEffects(
   return [];
 }
 
-function orderedSpecializedCommitments(
+function unsupportedRevealEffect(
+  state: V070GameState,
+  commitment: V070BattleCardCommitment,
+  encounteredAt: 'reveal_gambits' | 'reveal_tactics',
+): V070UnsupportedBattleEffect[] {
+  const cardId = state.cardInstances[commitment.instanceId]?.cardId ?? '';
+  const card = v070CanonicalContent.cardsById.get(cardId);
+  if (!card) throw new Error(`Unknown canonical card ${cardId}.`);
+
+  if (v070MonasterySuppressesArcaneBattleEffects(state)
+    && card.trait === 'Arcane') {
+    return [];
+  }
+
+  const relevant = card.effects.filter(effect =>
+    effect.label === (commitment.role === 'gambit' ? 'Gambit' : 'Tactic')
+    || effect.label === 'Gambit/Tactic'
+  );
+  if (relevant.length === 0) return [];
+
+  const handler = v070BattleEffectHandler(cardId);
+  if (handler
+    && relevant.length === 1
+    && relevant[0]?.text === handler.expectedText) {
+    return [];
+  }
+
+  return relevant.map(effect => ({
+    owner: commitment.owner,
+    instanceId: commitment.instanceId,
+    cardId,
+    role: commitment.role,
+    label: effect.label,
+    text: effect.text,
+    encounteredAt,
+  }));
+}
+
+function orderedRevealCommitments(
   state: V070GameState,
   commitments: readonly V070BattleCardCommitment[],
 ): V070BattleCardCommitment[] {
   const battle = state.battle;
   if (!battle) return [...commitments];
-  return [battle.attacker, battle.defender].flatMap(owner =>
-    commitments.filter(commitment => commitment.owner === owner)
+
+  const attackerQueue = commitments.filter(
+    commitment => commitment.owner === battle.attacker,
   );
+  const defenderQueue = commitments.filter(
+    commitment => commitment.owner === battle.defender,
+  );
+  const ordered: V070BattleCardCommitment[] = [];
+  while (attackerQueue.length > 0 || defenderQueue.length > 0) {
+    const attackerCommitment = attackerQueue.shift();
+    if (attackerCommitment) ordered.push(attackerCommitment);
+    const defenderCommitment = defenderQueue.shift();
+    if (defenderCommitment) ordered.push(defenderCommitment);
+  }
+  return ordered;
 }
 
 export function applyV070BattleCardAdditionalRetreats(
