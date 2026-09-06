@@ -184,6 +184,14 @@ Local validation passes: 20 focused tests, TypeScript, all 154 release-recovery 
 
 Next: make the maintained current-Rulebook booklet workflow independent of the v0.6.3-named production pipeline. Preserve the v0.6.3 booklet path as a historical reproduction contract, and route current releases through explicit current-authority inputs and version-neutral entrypoints. <!-- DOC-HISTORICAL -->
 
+## Version-neutral current booklet routing
+
+PR: [#1510](https://github.com/tymonius/Gauntlet/pull/1510). Branch: `cleanup/version-agnostic-current-booklet` (stacked on #1508). The maintained current-booklet entrypoint now resolves its release identity, package root, source builder, and renderer from `config/release-lifecycle.json`. The manual publisher delegates to the same reusable workflow and commits the complete generated current release payload. The v0.6.3 booklet workflow is explicitly named and routed as a historical reproduction contract, and the PR quality gate evaluates current and historical booklet changes separately. <!-- DOC-HISTORICAL -->
+
+Local validation passes: 32 architecture-boundary tests, TypeScript, rules-authority governance, both maintained v0.6.3 language validators, and current lifecycle plan resolution. The end-to-end current build passes source materialization and the eight-page visual fidelity gate locally; final PDF pagination still requires the CI environment's external publication font access. <!-- DOC-HISTORICAL -->
+
+Next: validate both booklet contracts in GitHub Actions, then continue making maintained release publication orchestration lifecycle-driven. The remaining version-specific release builders and live-publication verifier should become release adapters behind current entrypoints rather than define maintained workflow identity.
+
 ## Architectural queue
 
 Review in highest-level-first order. The result of a review may be "leave it alone."
