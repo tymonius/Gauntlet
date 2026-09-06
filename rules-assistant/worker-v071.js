@@ -8,7 +8,7 @@ import {
 import { persistSmartInteraction } from "./rules-persistence.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260906-5";
+export const BEHAVIOR_REVISION = "v071-qa-20260906-6";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -32,6 +32,9 @@ const SHOCK_AND_AWE_AUTHORITY_IDS = [
 ];
 const PEACE_TREATY_AUTHORITY_IDS = [
   "rulebook:treaty-articles-and-peace-treaty"
+];
+const MYSTICS_TRANSMUTATION_AUTHORITY_IDS = [
+  "rulebook:transmutation"
 ];
 let corpusPromise;
 let corpusLoadedAt = 0;
@@ -553,15 +556,34 @@ const peaceTreatyAuthorityIds = peaceTreatyFocus
       ...(/\b(?:refus(?:e|es|ed|ing|al)|impos(?:e|es|ed|ing))\b/.test(combined) ? ["rulebook:refused-terms"] : [])
     ]
   : PEACE_TREATY_AUTHORITY_IDS;
-const preferredAuthorityIds = peaceTreatyFocus
-  ? peaceTreatyAuthorityIds
-  : shockAndAweFocus
-    ? shockAndAweAuthorityIds
-    : intelligenceInterferenceFocus
-      ? INTELLIGENCE_INTERFERENCE_AUTHORITY_IDS
-      : destinationFocus && battleCardFocus
-        ? BATTLE_CARD_DESTINATION_AUTHORITY_IDS
-        : [];
+const mysticsTransmutationTopic = /\btransmutation\b/;
+const mysticsSecondRiteCue = /\b(?:second|2nd|two|2)\b[^.!?]{0,50}\brites?\b|\brites?\b[^.!?]{0,50}\b(?:second|2nd|two|2)\b/;
+const mysticsProcedureCue = /\b(?:ability|feature|unlock(?:s|ed|ing)?|before dice|dice|hand|graveyard|value|spirit walker|alchemist)\b/.test(combined);
+const mysticsFollowupCue = /\b(?:it|that|same|ability|feature|unlock(?:s|ed|ing)?|before|dice|hand|graveyard|value)\b/.test(current);
+const recentMysticsTransmutationTopic = mysticsTransmutationTopic.test(recent) || mysticsSecondRiteCue.test(recent);
+const mysticsProgressionFocus = mysticsSecondRiteCue.test(current)
+  || (currentWordCount <= 9 && mysticsSecondRiteCue.test(recent) && mysticsFollowupCue);
+const mysticsTransmutationFocus = mysticsTransmutationTopic.test(current)
+  || (mysticsProgressionFocus && mysticsProcedureCue)
+  || (currentWordCount <= 9 && recentMysticsTransmutationTopic && mysticsFollowupCue);
+const mysticsTransmutationAuthorityIds = mysticsTransmutationFocus
+  ? [
+      ...(mysticsProgressionFocus ? ["rulebook:progression"] : []),
+      ...MYSTICS_TRANSMUTATION_AUTHORITY_IDS,
+      ...(/\bspirit walker\b/.test(combined) && mysticsProgressionFocus ? ["rulebook:spirit-walker"] : [])
+    ]
+  : MYSTICS_TRANSMUTATION_AUTHORITY_IDS;
+const preferredAuthorityIds = mysticsTransmutationFocus
+  ? mysticsTransmutationAuthorityIds
+  : peaceTreatyFocus
+    ? peaceTreatyAuthorityIds
+    : shockAndAweFocus
+      ? shockAndAweAuthorityIds
+      : intelligenceInterferenceFocus
+        ? INTELLIGENCE_INTERFERENCE_AUTHORITY_IDS
+        : destinationFocus && battleCardFocus
+          ? BATTLE_CARD_DESTINATION_AUTHORITY_IDS
+          : [];
   if (!preferredAuthorityIds.length) return retrieval;
 
   const documents = Array.isArray(corpus?.documents) ? corpus.documents : [];
