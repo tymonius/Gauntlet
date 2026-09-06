@@ -31,6 +31,14 @@ export type V070BattleRevealChoice =
       sourceInstanceId: string;
       /** Voluntarily discardable Assets that existed when Requisition took effect. */
       candidateInstanceIds: string[];
+    }
+  | {
+      kind: 'tariffs';
+      owner: PlayerId;
+      opponent: PlayerId;
+      sourceInstanceId: string;
+      /** Opposing Hand cards that existed when Tariffs took effect. */
+      candidateInstanceIds: string[];
     };
 
 declare module './battle-types' {
