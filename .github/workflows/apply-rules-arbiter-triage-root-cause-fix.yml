@@ -33,14 +33,13 @@ jobs:
 
           triage_path = Path("rules-assistant/refinement-triage.js")
           triage = triage_path.read_text()
-          old = r'''  function isEllipticalQuestion(question) {
-            const value = text(question).toLowerCase();
-            if (!value) return false;
-            const words = value.match(/[a-z0-9'-]+/g) || [];
-            if (words.length <= 5) return true;
-            return /^(which|which are|what about|what does that|what are those|where|when|why|how so|and then|then|those|these|they|them|it|that|this|who)\b/.test(value);
-          }'''
-          new = r'''  function isEllipticalQuestion(question) {
+          start_marker = "  function isEllipticalQuestion(question) {"
+          end_marker = "  function candidateSourceCount(diagnostic) {"
+          start = triage.find(start_marker)
+          end = triage.find(end_marker, start)
+          if start < 0 or end < 0:
+            raise SystemExit("elliptical-question function boundaries not found")
+          new_block = r'''  function isEllipticalQuestion(question) {
             const value = text(question).toLowerCase();
             const words = value.match(/[a-z0-9']+/g) || [];
             if (!words.length || words.length > 10) return false;
@@ -49,10 +48,10 @@ jobs:
             const continuationCue = /^(?:and|but|so|then|also|okay|ok|no|yes|wait|what about|how about)\b/.test(value);
             const bareQuestionCue = words.length <= 2 && /^(?:where|which|why|when|how|what|who)\b/.test(value);
             return referentCue || continuationCue || bareQuestionCue;
-          }'''
-          if old not in triage:
-            raise SystemExit("elliptical-question block not found")
-          triage = triage.replace(old, new, 1)
+          }
+
+'''
+          triage = triage[:start] + new_block + triage[end:]
 
           continuity = '    if (score.elliptical && context.previous && (score.fragileFollowup || ["incorrect", "unclear"].includes(feedback))) return "conversation_continuity";'
           retrieval = '    if (recommendedAction === "retrieval_fix") return "retrieval";'
