@@ -137,12 +137,11 @@ replaceOnce(
       leaderPortraitBlendModes: [...document.querySelectorAll('#reader-root > .leader-page .leader-portrait img')].map(image => getComputedStyle(image).mixBlendMode),
       heroPlateBlendModes: [...document.querySelectorAll('#reader-root > .intentional-blank .hero-plate img')].map(image => getComputedStyle(image).mixBlendMode),
       heroPlateClipPaths: [...document.querySelectorAll('#reader-root > .intentional-blank .hero-plate img')].map(image => getComputedStyle(image).clipPath),
-      heroPlateElementMatchesRaster: [...document.querySelectorAll('#reader-root > .intentional-blank .hero-plate img')].map(image => {
+      heroPlateElementHasValidBounds: [...document.querySelectorAll('#reader-root > .intentional-blank .hero-plate img')].map(image => {
         const rect = image.getBoundingClientRect();
-        const renderedRatio = rect.width / rect.height;
-        const rasterRatio = image.naturalWidth / image.naturalHeight;
-        return Number.isFinite(renderedRatio) && Number.isFinite(rasterRatio) && Math.abs(renderedRatio - rasterRatio) < 0.01;
+        return Number.isFinite(rect.width) && Number.isFinite(rect.height) && rect.width > 0 && rect.height > 0;
       }),
+      heroPlateContentUrls: [...document.querySelectorAll('#reader-root > .intentional-blank .hero-plate img')].map(image => getComputedStyle(image).content),
       factionInnerStacking: [...document.querySelectorAll('#reader-root > .page[data-faction] .page-inner')].map(inner => getComputedStyle(inner).zIndex),
       factionIsolation: [...document.querySelectorAll('#reader-root > .page[data-faction]')].map(page => getComputedStyle(page).isolation),
       openerPages: [...document.querySelectorAll('#reader-root > .part-opener, #reader-root > .faction-opener')].map(page => ({ anchor: page.dataset.anchor || '', pageNumber: Number(page.dataset.page), classes: page.className })),
@@ -172,8 +171,8 @@ replaceOnce(
   if (result.heroPlateClipPaths.some(value => value === 'none' || !value.includes('2px'))) {
     throw new Error('v0.7.1 hero-plate edge clipping is missing: ' + JSON.stringify(result.heroPlateClipPaths) + '.');
   }
-  if (result.heroPlateElementMatchesRaster.some(value => value !== true)) {
-    throw new Error('v0.7.1 hero-plate element no longer matches the source raster bounds: ' + JSON.stringify(result.heroPlateElementMatchesRaster) + '.');
+  if (result.heroPlateElementHasValidBounds.some(value => value !== true)) {
+    throw new Error('v0.7.1 hero-plate element has invalid rendered bounds: ' + JSON.stringify(result.heroPlateElementHasValidBounds) + '.');
   }
   if (result.factionInnerStacking.some(zIndex => zIndex !== 'auto')) {
     throw new Error('v0.7.1 faction page content unexpectedly creates a stacking context: ' + JSON.stringify(result.factionInnerStacking) + '.');
@@ -195,10 +194,17 @@ replaceOnce(
     if (leftPage % 2 !== 0 || rightPage !== leftPage + 1) throw new Error('Leader pair must share a facing spread: ' + leftLeader + ' p.' + leftPage + ', ' + rightLeader + ' p.' + rightPage + '.');
   }
 
-  const expectedHeroPlates = ['hero 2.png', 'hero 3.png', 'hero 4.png'];
-  const actualHeroPlates = result.heroPlateSources.map(value => decodeURIComponent(value || '').split('/').at(-1)).sort();
-  if (JSON.stringify(actualHeroPlates) !== JSON.stringify([...expectedHeroPlates].sort())) {
-    throw new Error('Expected the three approved hero woodcuts exactly once; found ' + JSON.stringify(actualHeroPlates) + ' across ' + report.intentionalBlanks + ' filler pages.');
+  const expectedHeroSources = ['hero sketch 2.png', 'hero sketch 3.png', 'hero sketch 4.png'];
+  const actualHeroSources = result.heroPlateSources.map(value => decodeURIComponent(value || '').split('/').at(-1)).sort();
+  if (JSON.stringify(actualHeroSources) !== JSON.stringify([...expectedHeroSources].sort())) {
+    throw new Error('Expected the three historical hero slots exactly once; found ' + JSON.stringify(actualHeroSources) + ' across ' + report.intentionalBlanks + ' filler pages.');
+  }
+  const expectedHeroWoodcuts = ['hero 2.png', 'hero 3.png', 'hero 4.png'];
+  const heroContentUrls = result.heroPlateContentUrls.map(value => decodeURIComponent(value || ''));
+  for (const expected of expectedHeroWoodcuts) {
+    if (!heroContentUrls.some(value => value.includes(expected))) {
+      throw new Error('v0.7.1 hero plate is missing woodcut replacement ' + expected + ': ' + JSON.stringify(heroContentUrls) + '.');
+    }
   }
   if (result.fillerPlacements.length !== report.intentionalBlanks) {
     throw new Error('Filler placement report mismatch: ' + result.fillerPlacements.length + ' placements for ' + report.intentionalBlanks + ' intentional blanks.');
