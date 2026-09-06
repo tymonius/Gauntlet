@@ -60,6 +60,14 @@ export type V070BattleRevealChoice =
       kind: 'speculation';
       owner: PlayerId;
       sourceInstanceId: string;
+    }
+  | {
+      kind: 'palisade_wall';
+      owner: PlayerId;
+      opponent: PlayerId;
+      sourceInstanceId: string;
+      /** Opposing Gambits that had not taken effect when Palisade Wall applied. */
+      candidateInstanceIds: string[];
     };
 
 declare module './battle-types' {
