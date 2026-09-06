@@ -95,10 +95,13 @@ export function createTriageEngine() {
 
   function isEllipticalQuestion(question) {
     const value = text(question).toLowerCase();
-    if (!value) return false;
-    const words = value.match(/[a-z0-9'-]+/g) || [];
-    if (words.length <= 5) return true;
-    return /^(which|which are|what about|what does that|what are those|where|when|why|how so|and then|then|those|these|they|them|it|that|this|who)\b/.test(value);
+    const words = value.match(/[a-z0-9']+/g) || [];
+    if (!words.length || words.length > 10) return false;
+
+    const referentCue = /\b(?:it|its|they|them|their|that|those|this|these|which|same|both|former|latter|there|then|one|ones|again|another|next|else)\b/.test(value);
+    const continuationCue = /^(?:and|but|so|then|also|okay|ok|no|yes|wait|what about|how about)\b/.test(value);
+    const bareQuestionCue = words.length <= 2 && /^(?:where|which|why|when|how|what|who)\b/.test(value);
+    return referentCue || continuationCue || bareQuestionCue;
   }
 
   function candidateSourceCount(diagnostic) {
@@ -237,6 +240,7 @@ export function createTriageEngine() {
 
     if (issues.includes("inconsistent_terminology")) return "terminology_voice";
     if (issues.includes("missing_rule") || issues.includes("ambiguous_rule") || ["source_data_fix", "rule_clarification", "versioned_precedent_candidate", "rule_change_candidate"].includes(recommendedAction)) return "source_specificity";
+    if (recommendedAction === "retrieval_fix") return "retrieval";
     if (score.elliptical && context.previous && (score.fragileFollowup || ["incorrect", "unclear"].includes(feedback))) return "conversation_continuity";
     if ((classificationAssessment && !["correct", "indeterminate", "not_applicable"].includes(classificationAssessment)) || issues.includes("uncovered_interaction")) return "classification";
     if ((status === "provisional" || status === "unresolved") && sources > 0 && conf !== "low") return "provisional_overuse";
