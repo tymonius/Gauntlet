@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-06T00:15:00.000Z",
+  "updatedAt": "2026-09-06T00:24:00.000Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -58,6 +58,84 @@
       "resolvedAt": "2026-09-05T21:07:18.000Z",
       "binding": {
         "authoritySetId": "5818de9fa60854af9762887db380257b205f5602c0183b20fdad80e58a060339"
+      }
+    },
+    {
+      "id": "gambit-tactic-destination-followups-retrieval-v071",
+      "status": "resolved",
+      "rootCause": "retrieval",
+      "interactionIds": [
+        "e611c48e-1eb7-44dc-b5ba-eb7d80d01ddb",
+        "13c19e69-b302-4e9b-b171-ee43aab0dfe8",
+        "c042abf8-cf9e-4849-8888-c797ec4dfe6f"
+      ],
+      "caseIds": [
+        "gambit-tactic-destination-followup-chain"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "PR #1435 fixed the reviewed Gambit/Tactic destination follow-up sequence by preserving terse referents, promoting explicit destination authority, and requiring concrete destination values; #1441 generalized recency-aware conversational retrieval.",
+      "resolvedAt": "2026-09-04T23:39:03.000Z",
+      "binding": {
+        "pullRequest": 1435,
+        "commit": "834dfff98928a10933a7b83f41f1d194e3dc4e71",
+        "behaviorRevision": "v071-qa-20260903-11"
+      }
+    },
+    {
+      "id": "gambit-tactic-destination-followups-continuity-v071",
+      "status": "resolved",
+      "rootCause": "conversation_continuity",
+      "interactionIds": [
+        "1d78ba0c-8e2e-437c-97a8-b1caeb39589e"
+      ],
+      "caseIds": [
+        "gambit-tactic-destination-followup-chain"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "PR #1435 fixed the exact reviewed destination follow-up chain, including terse corrections such as 'no, their destinations'; #1441 generalized the conversation-focus behavior.",
+      "resolvedAt": "2026-09-04T23:39:03.000Z",
+      "binding": {
+        "pullRequest": 1435,
+        "commit": "834dfff98928a10933a7b83f41f1d194e3dc4e71",
+        "behaviorRevision": "v071-qa-20260903-11"
+      }
+    },
+    {
+      "id": "gambit-tactic-destination-followups-completeness-v071",
+      "status": "resolved",
+      "rootCause": "answer_completeness",
+      "interactionIds": [
+        "0c558191-c1d6-4f53-a717-63d254102939"
+      ],
+      "caseIds": [
+        "gambit-tactic-destination-followup-chain"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "The opening Gambit/Tactic distinction turn belongs to the exact reviewed destination conversation fixed and regression-covered by PR #1435.",
+      "resolvedAt": "2026-09-04T23:39:03.000Z",
+      "binding": {
+        "pullRequest": 1435,
+        "commit": "834dfff98928a10933a7b83f41f1d194e3dc4e71",
+        "behaviorRevision": "v071-qa-20260903-11"
+      }
+    },
+    {
+      "id": "gambit-tactic-destination-followups-other-v071",
+      "status": "resolved",
+      "rootCause": "other_attention",
+      "interactionIds": [
+        "529b85e1-37a2-4532-8116-0717fa1d2a17"
+      ],
+      "caseIds": [
+        "gambit-tactic-destination-followup-chain"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "This reviewed follow-up is part of the same exact Gambit/Tactic destination conversation fixed and regression-covered by PR #1435.",
+      "resolvedAt": "2026-09-04T23:39:03.000Z",
+      "binding": {
+        "pullRequest": 1435,
+        "commit": "834dfff98928a10933a7b83f41f1d194e3dc4e71",
+        "behaviorRevision": "v071-qa-20260903-11"
       }
     }
   ]
