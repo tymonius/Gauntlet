@@ -152,6 +152,14 @@ Local validation passes: 9 focused architecture tests, TypeScript, all 118 relea
 
 Next: continue the caller-based classification of remaining version-named scripts. The retired browser-development generator/refiner/validator is the next closed pipeline; the manual reconstruction audit and current publication contract require separate treatment because they still have explicit workflows.
 
+## Browser-development tooling freeze
+
+PR: [#1487](https://github.com/tymonius/Gauntlet/pull/1487). Branch: `cleanup/archive-v063-browser-development` (stacked on #1486). The uncalled v0.6.3 browser-development builder, two refiners, and validator have moved unchanged into frozen recovery evidence. They target the removed development site and depend on source files no longer present in the maintained tree. All four Git blobs are release-locked, and a focused boundary test prevents these retired entrypoints from returning to active scripts. <!-- DOC-HISTORICAL -->
+
+Local validation passes: 11 focused architecture tests, TypeScript, all 122 release-recovery locks, release-path normalization, rules-authority governance, and the maintained Last Stand terminology contract. All four PR workflows are green at `c383e777`.
+
+Next: archive the 11 remaining orphaned v0.6.3 editorial/candidate utilities that have no workflow, package command, or maintained importer. Several require candidate or development-site inputs already removed from the active tree. Keep the explicitly invoked reconstruction and publication contracts separate.
+
 ## Architectural queue
 
 Review in highest-level-first order. The result of a review may be "leave it alone."

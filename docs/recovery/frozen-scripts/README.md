@@ -11,3 +11,5 @@ The `v0.6.2/` directory contains both pre-recovery snapshots and the final guard
 The `v0.6.3/` directory also preserves the retired card-normalization and candidate-authority pipeline. Those scripts document how the withdrawn candidate was assembled; they do not define current rules or supported release commands.
 
 Retired downstream-reconstruction scripts remain here even when their original intermediate source paths no longer exist. Their purpose is historical traceability, not executable recovery from the maintained tree.
+
+The withdrawn browser-development builder, refiners, and validator are likewise preserved as one historical pipeline. They target the removed development site and are not part of the maintained browser architecture.
