@@ -45,6 +45,10 @@ import {
   resolveV070DarkOmensBattleChoice,
 } from './dark-omens-battle';
 import {
+  openV070PenanceBattleChoice,
+  resolveV070PenanceBattleChoice,
+} from './penance-battle';
+import {
   openV070RequisitionBattleChoice,
   resolveV070RequisitionBattleChoice,
 } from './requisition-battle';
@@ -99,6 +103,12 @@ export type V070BattleAction =
   | {
       type: 'resolve_tariffs_battle';
       playerId: PlayerId;
+      cardInstanceId?: string;
+    }
+  | {
+      type: 'resolve_penance_battle';
+      playerId: PlayerId;
+      choice: 'graveyard' | 'battle_total';
       cardInstanceId?: string;
     };
 
@@ -196,6 +206,23 @@ export function reduceV070BattleAction(
       continueV070BattleRevealProcedure(next);
       return next;
     }
+
+    if (pendingRevealChoice.kind === 'penance') {
+      if (action.type !== 'resolve_penance_battle') {
+        throw new V070GameActionError(
+          'Resolve the pending Penance choice before continuing the battle.',
+        );
+      }
+      const next = structuredClone(state) as V070GameState;
+      resolveV070PenanceBattleChoice(
+        next,
+        action.playerId,
+        action.choice,
+        action.cardInstanceId,
+      );
+      continueV070BattleRevealProcedure(next);
+      return next;
+    }
   }
   if (action.type === 'resolve_divine_mercy_battle') {
     throw new V070GameActionError(
@@ -220,6 +247,11 @@ export function reduceV070BattleAction(
   if (action.type === 'resolve_tariffs_battle') {
     throw new V070GameActionError(
       'There is no open Tariffs battle choice.',
+    );
+  }
+  if (action.type === 'resolve_penance_battle') {
+    throw new V070GameActionError(
+      'There is no open Penance battle choice.',
     );
   }
 
@@ -399,6 +431,9 @@ function continueV070BattleRevealProcedure(
           break;
         case 'tariffs':
           opened = openV070TariffsBattleChoice(state);
+          break;
+        case 'penance':
+          opened = openV070PenanceBattleChoice(state);
           break;
       }
       if (opened) return true;
