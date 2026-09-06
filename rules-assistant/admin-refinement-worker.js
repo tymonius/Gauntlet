@@ -11,6 +11,7 @@ import {
   applyRefinementResolutionLedger,
   refinementResolutionLedger
 } from "./refinement-resolution-ledger.js";
+import { applyCurrentValidityToRefinementReport } from "./refinement-current-validity.js";
 import { handleV071ScopePrecheck } from "./v071-scope-precheck.js";
 
 export * from "./worker-entry.js";
@@ -69,7 +70,11 @@ async function loadRefinementReport(request, env, context, scope) {
     intelligencePayload || {},
     { scope }
   );
-  const report = applyRefinementResolutionLedger(rawReport, refinementResolutionLedger);
+  const unresolvedReport = applyRefinementResolutionLedger(rawReport, refinementResolutionLedger);
+  const report = applyCurrentValidityToRefinementReport(
+    unresolvedReport,
+    Array.isArray(intelligencePayload?.audits) ? intelligencePayload.audits : []
+  );
   return { report };
 }
 

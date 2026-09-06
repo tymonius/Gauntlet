@@ -91,8 +91,38 @@ test("Worker computes reviewed-backlog triage server-side", async () => {
   expect(report.scope).toBe("reviewed_backlog");
   expect(report.stats.eligible).toBe(1);
   expect(report.stats.high).toBe(1);
+  expect(report.stats.historicalOnly).toBe(0);
   expect(report.stats.resolvedByRefinement).toBe(0);
   expect(report.clusters[0].rootCause).toBe("retrieval");
+});
+
+test("Worker excludes audits that are explicitly historical-only from active backlog", async () => {
+  const interactionId = "11111111-1111-4111-8111-111111111111";
+  const response = await worker.fetch(
+    authorizedRequest("/api/admin/refinement-triage?scope=reviewed_backlog"),
+    refinementEnv({}, {
+      interaction_id: interactionId,
+      current_validity: "superseded",
+      historical_accuracy: "incorrect",
+      retrieval_assessment: "failure",
+      classification_assessment: "correct",
+      recommended_action: "retrieval_fix",
+      reviewed_against_version: "v0.7.1"
+    }),
+    {}
+  );
+  expect(response.status).toBe(200);
+  const report = await response.json();
+  expect(report.stats.eligible).toBe(0);
+  expect(report.stats.historicalOnly).toBe(1);
+  expect(report.clusters).toEqual([]);
+  expect(report.historicalOnly).toEqual([
+    expect.objectContaining({
+      interactionId,
+      currentValidity: "superseded",
+      reviewedAgainstVersion: "v0.7.1"
+    })
+  ]);
 });
 
 test("Worker retires ledger-resolved interactions from active reviewed backlog", async () => {
