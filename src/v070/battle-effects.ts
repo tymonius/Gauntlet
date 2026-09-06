@@ -20,6 +20,11 @@ import {
   registerV070LandslideBattleEffect,
 } from './landslide';
 import {
+  V070_REQUISITION_BATTLE_TEXT,
+  V070_REQUISITION_ID,
+  registerV070RequisitionBattleEffect,
+} from './requisition-battle';
+import {
   V070_SEDITION_BATTLE_TEXT,
   V070_SEDITION_ID,
   registerV070SeditionBattleEffect,
@@ -89,11 +94,25 @@ const seditionHandler: core.V070BattleEffectHandler = {
   },
 };
 
+const requisitionHandler: core.V070BattleEffectHandler = {
+  cardId: V070_REQUISITION_ID,
+  expectedText: V070_REQUISITION_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070RequisitionBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
 const specializedHandlers = new Map<string, core.V070BattleEffectHandler>([
   [landslideHandler.cardId, landslideHandler],
   [divineMercyHandler.cardId, divineMercyHandler],
   [darkOmensHandler.cardId, darkOmensHandler],
   [seditionHandler.cardId, seditionHandler],
+  [requisitionHandler.cardId, requisitionHandler],
 ]);
 
 export const V070_SUPPORTED_REVEAL_EFFECT_IDS = [
