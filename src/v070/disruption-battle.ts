@@ -20,6 +20,7 @@ import {
   negateV070BattleCardEffect,
   v070BattleCommitment,
 } from './battle-effect-status';
+import { restrictV070BattleTargetsByDecoys } from './decoys-battle';
 
 export const V070_DISRUPTION_ID = 'neutral-disruption' as const;
 export const V070_DISRUPTION_BATTLE_TEXT =
@@ -227,13 +228,14 @@ export function eligibleV070DisruptionTargets(
         ...participant.additionalTactics,
       ];
 
-  return commitments
+  const eligible = commitments
     .filter(commitment =>
       commitment.role === role
       && !isV070BattleCardEffectNegated(state, commitment.instanceId)
       && !hasV070BattleCardEffectApplied(state, commitment.instanceId)
     )
     .map(commitment => commitment.instanceId);
+  return restrictV070BattleTargetsByDecoys(state, opponent, eligible);
 }
 
 export function assertV070DisruptionBattleCardMayBeChosen(
