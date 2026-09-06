@@ -216,6 +216,14 @@ Local validation passes publisher syntax, GitHub Release contract validation, an
 
 Next: continue caller-based classification of active version-named workflows and scripts. Keep historical release reproduction and release-specific QA benchmarks pinned; make current-development and current-release orchestration follow their configured authority instead of today's version label.
 
+## Version-neutral playtest service validation
+
+PR: [#1536](https://github.com/tymonius/Gauntlet/pull/1536). Branch: `cleanup/version-neutral-playtest-validation` (stacked on #1535). The deployed playtest-session validator now has a stable current-service name and reads the approved current rules version from `config/release-lifecycle.json`. Lifecycle changes trigger the service workflow. The persisted `G071` and `EV071` session serial families remain explicit service contracts and are unchanged.
+
+Local validation passes the current playtest contract, Python syntax, and the five-test development/release boundary suite. The [playtest-session service CI run](https://github.com/tymonius/Gauntlet/actions/runs/34026166364) passes its worker tests, formal-session end-to-end test, tracked-session end-to-end test, and renamed validator.
+
+Next: make the printable current playtest-sheet workflow derive its release identity and generated filenames from lifecycle configuration while retaining the current serial fixture as an explicit service input.
+
 ## Architectural queue
 
 Review in highest-level-first order. The result of a review may be "leave it alone."
