@@ -28,11 +28,13 @@ jobs:
             /scripts/validate-current-rulebook-booklet-provenance.mjs
             /scripts/validate-github-release-contract.mjs
             /scripts/materialize-public-route-compatibility.mjs
+            /scripts/resolve-current-live-publication.mjs
             /scripts/publication-utils.mjs
             /scripts/verify-v070-live-publication.mjs
             /scripts/verify-v071-live-publication.mjs
             /docs/releases/github/*.md
             /rules-assistant/v063-last-stand-language.js
+            /rules-assistant/worker-v*.js
             /rulebook/player-facing/chapter-11.md
             /rulebook/player-facing/corrections.js
             /artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md
@@ -86,3 +88,4 @@ jobs:
           node scripts/validate-current-release-payload.mjs
           node scripts/validate-current-rulebook-booklet-provenance.mjs
           node scripts/validate-github-release-contract.mjs
+          node scripts/resolve-current-live-publication.mjs --plan
