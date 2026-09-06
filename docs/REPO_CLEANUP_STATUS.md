@@ -172,9 +172,9 @@ Next: archive the ten remaining uncalled clean-v0.6.3 reconstruction builders an
 
 PR: [#1506](https://github.com/tymonius/Gauntlet/pull/1506). Branch: `cleanup/archive-v063-orphaned-reconstruction` (stacked on #1504). Ten uncalled clean-v0.6.3 authority, Rulebook, digital, Deckbuilder, and certification builders or validators have moved unchanged into frozen recovery evidence. All ten Git blobs are release-locked. Stale exceptions for already archived candidate scripts are removed, leaving the historical-script exception set scoped to the one validator that still has an explicit manual-workflow caller. <!-- DOC-HISTORICAL -->
 
-Local validation passes: 15 focused architecture tests, TypeScript, all 143 release-recovery locks, release-path normalization, rules-authority governance, and the maintained Last Stand terminology contract.
+Local validation passes: 15 focused architecture tests, TypeScript, all 143 release-recovery locks, release-path normalization, rules-authority governance, and the maintained Last Stand terminology contract. All four PR workflows are green at `be25b0ae`.
 
-Next: validate [#1506](https://github.com/tymonius/Gauntlet/pull/1506) in CI, then make the maintained publication contract independent of its version-named validator. Keep explicit historical booklet and forensic reconstruction workflows pinned unless their ownership changes.
+Next: freeze the closed historical v0.6.3 publication-construction cluster, remove its unused live verifier from the maintained publication workflow checkout, and repoint the maintained terminology audit at frozen evidence. Keep the current release verifier and explicit historical booklet/forensic workflows separate. <!-- DOC-HISTORICAL -->
 
 ## Architectural queue
 
