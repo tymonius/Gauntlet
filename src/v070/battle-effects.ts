@@ -19,6 +19,11 @@ import {
   V070_LANDSLIDE_BATTLE_TEXT,
   registerV070LandslideBattleEffect,
 } from './landslide';
+import {
+  V070_SEDITION_BATTLE_TEXT,
+  V070_SEDITION_ID,
+  registerV070SeditionBattleEffect,
+} from './sedition-battle';
 import { applyV070BattleRetreatStep } from './retreat-step';
 import { v070MonasterySuppressesArcaneBattleEffects } from './territories';
 
@@ -71,10 +76,24 @@ const darkOmensHandler: core.V070BattleEffectHandler = {
   },
 };
 
+const seditionHandler: core.V070BattleEffectHandler = {
+  cardId: V070_SEDITION_ID,
+  expectedText: V070_SEDITION_BATTLE_TEXT,
+  timing: 'reveal',
+  apply: ({ state, owner, commitment }) => {
+    registerV070SeditionBattleEffect(
+      state,
+      owner,
+      commitment.instanceId,
+    );
+  },
+};
+
 const specializedHandlers = new Map<string, core.V070BattleEffectHandler>([
   [landslideHandler.cardId, landslideHandler],
   [divineMercyHandler.cardId, divineMercyHandler],
   [darkOmensHandler.cardId, darkOmensHandler],
+  [seditionHandler.cardId, seditionHandler],
 ]);
 
 export const V070_SUPPORTED_REVEAL_EFFECT_IDS = [
