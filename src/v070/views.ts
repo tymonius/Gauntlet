@@ -8,6 +8,7 @@ import { pendingV070WarBondsChoice } from './war-bonds';
 import {
   viewV070ReembodimentRecoveryForPlayer,
 } from './reembodiment';
+import { pendingV070LandslideAftermath } from './landslide';
 
 export * from './views-postdraw';
 
@@ -28,9 +29,17 @@ export interface V070ReembodimentRecoveryView {
   candidateInstanceIds?: string[];
 }
 
+export interface V070LandslideAftermathView {
+  playerId: PlayerId;
+  territoryInstanceId: string;
+  candidateCount: number;
+  candidateInstanceIds?: string[];
+}
+
 export type V070GameView = V070PostDrawGameView & {
   pendingWarBondsChoice: V070WarBondsView | null;
   pendingReembodimentRecovery: V070ReembodimentRecoveryView | null;
+  pendingLandslideAftermath: V070LandslideAftermathView | null;
 };
 
 export function viewV070GameForPlayer(
@@ -55,10 +64,24 @@ export function viewV070GameForPlayer(
     : null;
   const pendingReembodimentRecovery =
     viewV070ReembodimentRecoveryForPlayer(state, viewer);
+  const landslide = pendingV070LandslideAftermath(state);
+  const pendingLandslideAftermath: V070LandslideAftermathView | null = landslide
+    ? {
+        playerId: landslide.playerId,
+        territoryInstanceId: landslide.territoryInstanceId,
+        candidateCount: landslide.candidateInstanceIds.length,
+        ...(viewer === landslide.playerId
+          ? {
+              candidateInstanceIds: [...landslide.candidateInstanceIds],
+            }
+          : {}),
+      }
+    : null;
 
   return {
     ...core,
     pendingWarBondsChoice,
     pendingReembodimentRecovery,
+    pendingLandslideAftermath,
   };
 }
