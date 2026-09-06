@@ -34,7 +34,6 @@ const PEACE_TREATY_AUTHORITY_IDS = [
   "rulebook:treaty-articles-and-peace-treaty"
 ];
 const MYSTICS_TRANSMUTATION_AUTHORITY_IDS = [
-  "rulebook:progression",
   "rulebook:transmutation"
 ];
 let corpusPromise;
@@ -562,13 +561,16 @@ const mysticsSecondRiteCue = /\b(?:second|2nd|two|2)\b[^.!?]{0,50}\brites?\b|\br
 const mysticsProcedureCue = /\b(?:ability|feature|unlock(?:s|ed|ing)?|before dice|dice|hand|graveyard|value|spirit walker|alchemist)\b/.test(combined);
 const mysticsFollowupCue = /\b(?:it|that|same|ability|feature|unlock(?:s|ed|ing)?|before|dice|hand|graveyard|value)\b/.test(current);
 const recentMysticsTransmutationTopic = mysticsTransmutationTopic.test(recent) || mysticsSecondRiteCue.test(recent);
+const mysticsProgressionFocus = mysticsSecondRiteCue.test(current)
+  || (currentWordCount <= 9 && mysticsSecondRiteCue.test(recent) && mysticsFollowupCue);
 const mysticsTransmutationFocus = mysticsTransmutationTopic.test(current)
-  || (mysticsSecondRiteCue.test(current) && mysticsProcedureCue)
+  || (mysticsProgressionFocus && mysticsProcedureCue)
   || (currentWordCount <= 9 && recentMysticsTransmutationTopic && mysticsFollowupCue);
 const mysticsTransmutationAuthorityIds = mysticsTransmutationFocus
   ? [
+      ...(mysticsProgressionFocus ? ["rulebook:progression"] : []),
       ...MYSTICS_TRANSMUTATION_AUTHORITY_IDS,
-      ...(/\bspirit walker\b/.test(combined) ? ["rulebook:spirit-walker"] : [])
+      ...(/\bspirit walker\b/.test(combined) && mysticsProgressionFocus ? ["rulebook:spirit-walker"] : [])
     ]
   : MYSTICS_TRANSMUTATION_AUTHORITY_IDS;
 const preferredAuthorityIds = mysticsTransmutationFocus
