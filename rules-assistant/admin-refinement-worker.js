@@ -70,11 +70,11 @@ async function loadRefinementReport(request, env, context, scope) {
     intelligencePayload || {},
     { scope }
   );
-  const currentReport = applyCurrentValidityToRefinementReport(
-    rawReport,
+  const unresolvedReport = applyRefinementResolutionLedger(rawReport, refinementResolutionLedger);
+  const report = applyCurrentValidityToRefinementReport(
+    unresolvedReport,
     Array.isArray(intelligencePayload?.audits) ? intelligencePayload.audits : []
   );
-  const report = applyRefinementResolutionLedger(currentReport, refinementResolutionLedger);
   return { report };
 }
 
