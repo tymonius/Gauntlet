@@ -160,3 +160,71 @@ test("designer-review audit flags remain visible in reviewed backlog triage", ()
   expect(report.stats.eligible).toBe(1);
   expect(report.interactions[0].signalCodes).toContain("designer_review_required");
 });
+
+test("self-contained wh-questions do not masquerade as conversation-continuity debt", () => {
+  const first = row({ id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", sequence_index: 1, feedback_rating: "incorrect" });
+  const second = row({
+    id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+    sequence_index: 2,
+    created_at: "2026-09-04T20:01:00.000Z",
+    question: "When is an occupied Territory captured?",
+    review_status: "needs_correction",
+    issueTypes: ["incorrect_answer", "retrieval_failure"]
+  });
+  const report = engine.triageInteractions([first, second], {
+    audits: [{
+      interaction_id: second.id,
+      historical_accuracy: "incorrect",
+      retrieval_assessment: "failure",
+      classification_assessment: "should_be_explicit",
+      recommended_action: "retrieval_fix"
+    }]
+  }, { scope: "reviewed_backlog" });
+  const item = report.interactions.find((candidate) => candidate.interactionId === second.id);
+  expect(item.rootCause).toBe("retrieval");
+  expect(item.signalCodes).not.toContain("elliptical_followup");
+  expect(item.signalCodes).not.toContain("fragile_followup");
+});
+
+test("audit retrieval fixes outrank downstream classification symptoms", () => {
+  const interaction = row({
+    id: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+    review_status: "needs_correction",
+    issueTypes: ["incorrect_answer", "retrieval_failure"]
+  });
+  const report = engine.triageInteractions([interaction], {
+    audits: [{
+      interaction_id: interaction.id,
+      retrieval_assessment: "failure",
+      classification_assessment: "should_be_explicit",
+      recommended_action: "retrieval_fix"
+    }]
+  }, { scope: "reviewed_backlog" });
+  expect(report.interactions[0].rootCause).toBe("retrieval");
+});
+
+test("self-contained who questions can surface classification debt without continuity noise", () => {
+  const first = row({ id: "dddddddd-dddd-4ddd-8ddd-dddddddddddd", sequence_index: 1 });
+  const second = row({
+    id: "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee",
+    sequence_index: 2,
+    created_at: "2026-09-04T20:01:00.000Z",
+    question: "Who is the General designed after?",
+    review_status: "needs_correction",
+    ruling_status: "provisional",
+    confidence: "medium",
+    source_count: 1
+  });
+  const report = engine.triageInteractions([first, second], {
+    audits: [{
+      interaction_id: second.id,
+      retrieval_assessment: "sufficient",
+      classification_assessment: "should_be_out_of_scope",
+      recommended_action: "prompt_fix"
+    }]
+  }, { scope: "reviewed_backlog" });
+  const item = report.interactions.find((candidate) => candidate.interactionId === second.id);
+  expect(item.rootCause).toBe("classification");
+  expect(item.signalCodes).not.toContain("elliptical_followup");
+});
+
