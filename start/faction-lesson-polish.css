@@ -9,50 +9,49 @@
   height: 100%;
 }
 
-/* Blend the opaque sketch paper into the tile itself instead of relying on
-   mix-blend-mode against the surrounding stacking context. The sketch layer
-   uses the exact tile color as its own background; darken keeps that color
-   wherever the raster is lighter and preserves only the darker graphite. */
+/* The Start page uses SVG wrappers that convert each opaque paper sketch into
+   dark graphite with luminance-derived alpha. The paper is actually removed
+   from the rendered asset, so no blend-mode approximation is required here. */
 #factionLesson .faction-leader-lesson::after {
-  background-color: var(--surface);
-  background-blend-mode: darken;
+  background-color: transparent;
+  background-blend-mode: normal;
   filter: none;
   mix-blend-mode: normal;
 }
 
 main:has(input[name="leader"][value="general"]:checked) #factionLesson .faction-leader-lesson {
-  --leader-lesson-art: url("../images/sketches/general.png");
+  --leader-lesson-art: url("../images/sketches/transparent/general.svg");
 }
 main:has(input[name="leader"][value="commandant"]:checked) #factionLesson .faction-leader-lesson {
-  --leader-lesson-art: url("../images/sketches/commandant.png");
+  --leader-lesson-art: url("../images/sketches/transparent/commandant.svg");
 }
 main:has(input[name="leader"][value="ambassador"]:checked) #factionLesson .faction-leader-lesson {
-  --leader-lesson-art: url("../images/sketches/ambassador.png");
+  --leader-lesson-art: url("../images/sketches/transparent/ambassador.svg");
 }
 main:has(input[name="leader"][value="senator"]:checked) #factionLesson .faction-leader-lesson {
-  --leader-lesson-art: url("../images/sketches/senator.png");
+  --leader-lesson-art: url("../images/sketches/transparent/senator.svg");
 }
 main:has(input[name="leader"][value="banker"]:checked) #factionLesson .faction-leader-lesson {
-  --leader-lesson-art: url("../images/sketches/banker.png");
+  --leader-lesson-art: url("../images/sketches/transparent/banker.svg");
 }
 main:has(input[name="leader"][value="executive"]:checked) #factionLesson .faction-leader-lesson {
-  --leader-lesson-art: url("../images/sketches/executive.png");
+  --leader-lesson-art: url("../images/sketches/transparent/executive.svg");
 }
 main:has(input[name="leader"][value="ranger"]:checked) #factionLesson .faction-leader-lesson {
-  --leader-lesson-art: url("../images/sketches/ranger.png");
+  --leader-lesson-art: url("../images/sketches/transparent/ranger.svg");
 }
 main:has(input[name="leader"][value="spymaster"]:checked) #factionLesson .faction-leader-lesson {
-  --leader-lesson-art: url("../images/sketches/spymaster.png");
+  --leader-lesson-art: url("../images/sketches/transparent/spymaster.svg");
 }
 main:has(input[name="leader"][value="alchemist"]:checked) #factionLesson .faction-leader-lesson {
-  --leader-lesson-art: url("../images/sketches/alchemist.png");
+  --leader-lesson-art: url("../images/sketches/transparent/alchemist.svg");
 }
 main:has(input[name="leader"][value="spirit-walker"]:checked) #factionLesson .faction-leader-lesson {
-  --leader-lesson-art: url("../images/sketches/spirit walker.png");
+  --leader-lesson-art: url("../images/sketches/transparent/spirit-walker.svg");
 }
 main:has(input[name="leader"][value="grand-inquisitor"]:checked) #factionLesson .faction-leader-lesson {
-  --leader-lesson-art: url("../images/sketches/grand inquisitor.png");
+  --leader-lesson-art: url("../images/sketches/transparent/grand-inquisitor.svg");
 }
 main:has(input[name="leader"][value="witch-hunter"]:checked) #factionLesson .faction-leader-lesson {
-  --leader-lesson-art: url("../images/sketches/witch hunter.png");
+  --leader-lesson-art: url("../images/sketches/transparent/witch-hunter.svg");
 }
