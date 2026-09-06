@@ -8,7 +8,7 @@ import {
 import { persistSmartInteraction } from "./rules-persistence.js";
 
 export const RULES_VERSION = V071_RULES_VERSION;
-export const BEHAVIOR_REVISION = "v071-qa-20260906-3";
+export const BEHAVIOR_REVISION = "v071-qa-20260906-4";
 const FALLBACK_MODEL = "gpt-5.6-terra";
 const CORPUS_CACHE_TTL_MS = 5 * 60 * 1000;
 const BATTLE_CARD_DESTINATION_AUTHORITY_IDS = [
@@ -25,6 +25,10 @@ const INTELLIGENCE_INTERFERENCE_AUTHORITY_IDS = [
   "rulebook:multiple-gambits-or-tactics",
   "rulebook:replacing-a-gambit-or-tactic",
   "rulebook:revising-a-choice"
+];
+const SHOCK_AND_AWE_AUTHORITY_IDS = [
+  "card:military-shock-and-awe",
+  "rulebook:conflicting-victory-benefits"
 ];
 let corpusPromise;
 let corpusLoadedAt = 0;
@@ -522,10 +526,19 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
   const intelligenceFollowupCue = /\b(?:gambits?|tactics?|cards?|face[ -]?up|reveals?|replac(?:e|es|ed|ing|ement|ements)|revis(?:e|es|ed|ing|ion|ions)|again|another|reopen|that|it|they|them|those)\b/.test(current);
   const intelligenceProcedureSubject = /\b(?:gambits?|tactics?|cards?|face[ -]?up|reveals?|replac(?:e|es|ed|ing|ement|ements)|revis(?:e|es|ed|ing|ion|ions)|cost|spend|intel)\b/.test(combined);
   const intelligenceInterferenceFocus = (
-    intelligenceTopic.test(current)
-    || (currentWordCount <= 8 && intelligenceTopic.test(recent) && intelligenceFollowupCue)
-  ) && intelligenceProcedureSubject;
-  const preferredAuthorityIds = intelligenceInterferenceFocus
+  intelligenceTopic.test(current)
+  || (currentWordCount <= 8 && intelligenceTopic.test(recent) && intelligenceFollowupCue)
+) && intelligenceProcedureSubject;
+const shockAndAweTopic = /\bshock\s+and\s+awe\b/;
+const shockAndAweFollowupCue = /\b(?:orders?|move|movement|advance|capture|front line|command|breakthrough|consolidate|retreat|afterward)\b/.test(current);
+const shockAndAweFocus = shockAndAweTopic.test(current)
+  || (currentWordCount <= 8 && shockAndAweTopic.test(recent) && shockAndAweFollowupCue);
+const shockAndAweAuthorityIds = shockAndAweFocus && /\bwar crimes\b/.test(combined)
+  ? [...SHOCK_AND_AWE_AUTHORITY_IDS, "card:military-war-crimes"]
+  : SHOCK_AND_AWE_AUTHORITY_IDS;
+const preferredAuthorityIds = shockAndAweFocus
+  ? shockAndAweAuthorityIds
+  : intelligenceInterferenceFocus
     ? INTELLIGENCE_INTERFERENCE_AUTHORITY_IDS
     : destinationFocus && battleCardFocus
       ? BATTLE_CARD_DESTINATION_AUTHORITY_IDS

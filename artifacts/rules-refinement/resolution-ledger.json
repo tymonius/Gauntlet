@@ -1,6 +1,6 @@
 {
   "schema": "gauntlet.rules-refinement-resolution-ledger.v1",
-  "updatedAt": "2026-09-06T11:49:12.870Z",
+  "updatedAt": "2026-09-06T14:05:51.591Z",
   "entries": [
     {
       "id": "available-choice-rule-v071",
@@ -225,6 +225,20 @@
       "resolvedAt": "2026-09-06T11:49:12.870Z",
       "binding": {
         "behaviorRevision": "v071-qa-20260906-3"
+      }
+    },
+    {
+      "id": "shock-and-awe-same-victory-retrieval-v071",
+      "status": "resolved",
+      "rootCause": "retrieval",
+      "interactionIds": [
+        "bc78898c-a5d8-4009-a314-5c346f54156f"
+      ],
+      "resolutionSurface": "arbiter_retrieval",
+      "summary": "Promote the current v0.7.1 Shock and Awe card and Conflicting victory benefits rule for same-victory restriction questions, including terse follow-ups; include War Crimes authority when the overlap is named.",
+      "resolvedAt": "2026-09-06T14:05:51.591Z",
+      "binding": {
+        "behaviorRevision": "v071-qa-20260906-4"
       }
     }
   ]
