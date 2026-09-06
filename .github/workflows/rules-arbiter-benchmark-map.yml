@@ -1,0 +1,51 @@
+name: Rules Arbiter high-priority benchmark map
+
+on:
+  push:
+    branches:
+      - ops/rules-arbiter-high-priority-audit-map
+    paths:
+      - '.github/workflows/rules-arbiter-benchmark-map.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Map reviewed IDs to committed benchmark cases
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const benchmark = JSON.parse(readFileSync('rules-assistant/evals/rules-arbiter-evals.v071.json', 'utf8'));
+          const ids = new Set([
+            '32cfc27f-1025-4868-a4e5-f97c09edd4a1',
+            '4a415d7d-e6fc-4909-8ddf-4784ddeb1ab4',
+            '54962556-f04e-428b-89c5-2c193d47cf0f',
+            '77507537-64d5-4c8d-a8d1-bada21f7fd44',
+            'b2bde472-270d-4b6e-82c2-7ab6b92b58f3',
+            'cbcae027-954f-4620-a2fc-0cd7164f9762',
+            'd90e20fe-14c2-404d-951e-0b877c18adfc',
+            'eb878722-a732-492f-814e-df3c5ccded9a',
+            'fcd97287-272d-4a8c-8c1c-5eaa8727cbff'
+          ]);
+          console.log('BENCHMARK_MAP_BEGIN');
+          for (const id of ids) {
+            const item = benchmark.cases.find((candidate) => candidate.interactionId === id);
+            console.log(JSON.stringify(item ? {
+              interactionId: id,
+              caseId: item.id,
+              category: item.category,
+              expectedClassification: item.expectedClassification,
+              expectedSourcePatterns: item.expectedSourcePatterns,
+              hasAnswerAssertions: Boolean(item.expectedAnswerPatterns?.length || item.forbiddenAnswerPatterns?.length)
+            } : { interactionId: id, caseId: null }));
+          }
+          console.log('BENCHMARK_MAP_END');
+          NODE
