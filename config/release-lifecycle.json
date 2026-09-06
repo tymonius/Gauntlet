@@ -34,7 +34,13 @@
       "publication_date": "2026-08-30",
       "publication": {
         "source_builder": "scripts/build-v071-release-source.mjs",
-        "rulebook_booklet_renderer": "scripts/render-v071-booklet.mjs"
+        "rulebook_booklet_renderer": "scripts/render-v071-booklet.mjs",
+        "rules_arbiter": {
+          "worker_source": "rules-assistant/worker-v071.js",
+          "service_base_url": "https://gauntlet-rules-assistant.tymon-scott.workers.dev",
+          "health_path": "/api/health",
+          "corpus_health_path": "/api/v071/corpus-health"
+        }
       }
     }
   }

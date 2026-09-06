@@ -8,13 +8,16 @@ const workflow = readFileSync(
   resolve(here, "../.github/workflows/verify-current-live-publication.yml"),
   "utf8"
 );
+const lifecycle = JSON.parse(readFileSync(resolve(here, "../config/release-lifecycle.json"), "utf8"));
 
 describe("Rules Arbiter Worker deployment gate", () => {
   it("reconciles the local behavior revision with the live Worker", () => {
     expect(workflow).toContain("Determine whether Rules Arbiter Worker needs deployment");
-    expect(workflow).toContain("rules-assistant/worker-v071.js");
-    expect(workflow).toContain("BEHAVIOR_REVISION");
-    expect(workflow).toContain("https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/health");
+    expect(workflow).toContain("scripts/resolve-current-live-publication.mjs");
+    expect(workflow).not.toContain("rules-assistant/worker-v071.js");
+    expect(workflow).not.toContain("https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/health");
+    expect(lifecycle.releases['v0.7.1'].publication.rules_arbiter.worker_source).toBe('rules-assistant/worker-v071.js');
+    expect(lifecycle.releases['v0.7.1'].publication.rules_arbiter.health_path).toBe('/api/health');
     expect(workflow).toContain("behaviorRevision");
     expect(workflow).toContain("behavior_revision_mismatch");
     expect(workflow).toContain("live_revision_unavailable");

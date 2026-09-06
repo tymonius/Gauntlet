@@ -48,6 +48,8 @@ jobs:
               exact('scripts/validate-current-public-contract.mjs'),
               exact('scripts/validate-current-release-payload.mjs'),
               exact('scripts/materialize-public-route-compatibility.mjs'),
+              exact('scripts/resolve-current-live-publication.mjs'),
+              exact('.github/workflows/verify-current-live-publication.yml'),
               exact('.github/workflows/current-publication-contract.yml'),
               under('releases/'),
               under('v0.6.3/'),

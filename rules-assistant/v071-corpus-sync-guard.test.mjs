@@ -4,6 +4,7 @@ import { describe, expect, test } from "vitest";
 const worker = readFileSync(new URL("./worker-v071.js", import.meta.url), "utf8");
 const liveQa = readFileSync(new URL("../.github/workflows/v071-rules-arbiter-live-qa.yml", import.meta.url), "utf8");
 const publication = readFileSync(new URL("../.github/workflows/verify-current-live-publication.yml", import.meta.url), "utf8");
+const lifecycle = JSON.parse(readFileSync(new URL("../config/release-lifecycle.json", import.meta.url), "utf8"));
 const materializeWorkflow = readFileSync(new URL("../.github/workflows/materialize-current-release-package.yml", import.meta.url), "utf8");
 const materializer = readFileSync(new URL("../scripts/build-v071-release-source.mjs", import.meta.url), "utf8");
 
@@ -40,7 +41,9 @@ describe("v0.7.1 Rules Arbiter corpus synchronization guard", () => {
   test("publication verification refreshes the Worker only after the public site converges", () => {
     expect(publication).toContain("Verify deployed site against the current-publication contract");
     expect(publication).toContain("Refresh current Rules Arbiter corpus against published authority");
-    expect(publication).toContain("/api/v071/corpus-health");
+    expect(publication).toContain("scripts/resolve-current-live-publication.mjs");
+    expect(publication).not.toContain("/api/v071/corpus-health");
+    expect(lifecycle.releases['v0.7.1'].publication.rules_arbiter.corpus_health_path).toBe('/api/v071/corpus-health');
     expect(publication.indexOf("Verify deployed site against the current-publication contract")).toBeLessThan(publication.indexOf("Refresh current Rules Arbiter corpus against published authority"));
   });
 });
