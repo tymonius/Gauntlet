@@ -9,59 +9,55 @@
   height: 100%;
 }
 
-/* Integrate the opaque sketch scans into the lesson card itself. The art side
-   uses the same paper surface as the card; near-white scan paper is normalized
-   to white, then the graphite is multiplied onto that surface. This removes
-   the visible raster rectangle without relying on an external SVG filter. */
+/* Match the approved Rulebook booklet treatment for the same opaque sketch
+   scans. The portrait is now a real <img>, not a pseudo-element background:
+   mild grayscale/contrast normalization plus multiply blending against a
+   controlled light-paper surface. The card must not isolate the portrait from
+   its paper backdrop, or the white/cream scan field remains visible. */
 #factionLesson .faction-leader-lesson {
   background: var(--start-panel);
-  isolation: isolate;
+  isolation: auto;
 }
 
-#factionLesson .faction-leader-lesson::before {
-  background: var(--start-panel);
-}
-
+/* Disable the legacy pseudo-element portrait from start/styles.css. */
 #factionLesson .faction-leader-lesson::after {
-  background-color: transparent;
-  background-blend-mode: normal;
-  filter: grayscale(1) contrast(1.4) brightness(1.08);
+  content: none;
+}
+
+#factionLesson .faction-leader-lesson > .leader-lesson-art {
+  position: absolute;
+  z-index: 0;
+  right: 1.25rem;
+  top: 1rem;
+  bottom: 0;
+  width: clamp(220px, 28%, 330px);
+  height: calc(100% - 1rem);
+  max-width: none;
+  object-fit: contain;
+  object-position: center bottom;
+  opacity: 1;
+  pointer-events: none;
+  filter: grayscale(1) contrast(1.08);
   mix-blend-mode: multiply;
 }
 
-main:has(input[name="leader"][value="general"]:checked) #factionLesson .faction-leader-lesson {
-  --leader-lesson-art: url("../images/sketches/general.png");
+@media (max-width: 900px) {
+  #factionLesson .faction-leader-lesson > .leader-lesson-art {
+    right: .75rem;
+    width: 220px;
+  }
 }
-main:has(input[name="leader"][value="commandant"]:checked) #factionLesson .faction-leader-lesson {
-  --leader-lesson-art: url("../images/sketches/commandant.png");
-}
-main:has(input[name="leader"][value="ambassador"]:checked) #factionLesson .faction-leader-lesson {
-  --leader-lesson-art: url("../images/sketches/ambassador.png");
-}
-main:has(input[name="leader"][value="senator"]:checked) #factionLesson .faction-leader-lesson {
-  --leader-lesson-art: url("../images/sketches/senator.png");
-}
-main:has(input[name="leader"][value="banker"]:checked) #factionLesson .faction-leader-lesson {
-  --leader-lesson-art: url("../images/sketches/banker.png");
-}
-main:has(input[name="leader"][value="executive"]:checked) #factionLesson .faction-leader-lesson {
-  --leader-lesson-art: url("../images/sketches/executive.png");
-}
-main:has(input[name="leader"][value="ranger"]:checked) #factionLesson .faction-leader-lesson {
-  --leader-lesson-art: url("../images/sketches/ranger.png");
-}
-main:has(input[name="leader"][value="spymaster"]:checked) #factionLesson .faction-leader-lesson {
-  --leader-lesson-art: url("../images/sketches/spymaster.png");
-}
-main:has(input[name="leader"][value="alchemist"]:checked) #factionLesson .faction-leader-lesson {
-  --leader-lesson-art: url("../images/sketches/alchemist.png");
-}
-main:has(input[name="leader"][value="spirit-walker"]:checked) #factionLesson .faction-leader-lesson {
-  --leader-lesson-art: url("../images/sketches/spirit walker.png");
-}
-main:has(input[name="leader"][value="grand-inquisitor"]:checked) #factionLesson .faction-leader-lesson {
-  --leader-lesson-art: url("../images/sketches/grand inquisitor.png");
-}
-main:has(input[name="leader"][value="witch-hunter"]:checked) #factionLesson .faction-leader-lesson {
-  --leader-lesson-art: url("../images/sketches/witch hunter.png");
+
+/* Keep the existing low-key mobile watermark treatment while preserving the
+   same booklet blend and tonal treatment. */
+@media (max-width: 620px) {
+  #factionLesson .faction-leader-lesson > .leader-lesson-art {
+    right: -2rem;
+    top: auto;
+    bottom: -1rem;
+    width: 240px;
+    height: auto;
+    max-height: calc(100% + 1rem);
+    opacity: .11;
+  }
 }
