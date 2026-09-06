@@ -503,8 +503,11 @@ export function augmentRetrievalForContext(corpus, question, history = [], retri
   const destinationFocus = /\bdestinations?\b/.test(current)
     || (currentWordCount <= 6 && /\bdestinations?\b/.test(recent));
   const battleCardFocus = /\bgambits?\b/.test(combined) && /\btactics?\b/.test(combined);
-  const intelligenceInterferenceFocus = /\b(?:surveillance|interference|interfere|intel)\b/.test(combined)
-    && /\b(?:gambits?|tactics?|face[ -]?up|reveals?|replacements?|revis(?:e|ion))\b/.test(combined);
+  const intelligenceTopic = /\b(?:surveillance|interference|interfere|intel)\b/;
+  const intelligenceInterferenceFocus = (
+    intelligenceTopic.test(current)
+    || (currentWordCount <= 8 && intelligenceTopic.test(recent))
+  ) && /\b(?:gambits?|tactics?|face[ -]?up|reveals?|replacements?|revis(?:e|ion))\b/.test(combined);
   const preferredAuthorityIds = intelligenceInterferenceFocus
     ? INTELLIGENCE_INTERFERENCE_AUTHORITY_IDS
     : destinationFocus && battleCardFocus

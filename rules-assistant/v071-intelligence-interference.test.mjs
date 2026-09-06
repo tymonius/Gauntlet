@@ -61,6 +61,18 @@ describe("v0.7.1 Intelligence Surveillance and Interference", () => {
     });
   }
 
+  test("does not pin Intelligence authority after the conversation pivots to another topic", () => {
+    const history = [
+      { role: "user", content: "Can I use Interference on that Gambit?" },
+      { role: "assistant", content: "Yes, at the applicable Intelligence response timing." }
+    ];
+    const question = "How much does my Deed cost?";
+    const raw = retrieveRules(corpus, question, { limit: 10, excerptLength: 1300 });
+    const rawIds = raw.map((source) => source.canonicalId);
+    const augmentedIds = augmentRetrievalForContext(corpus, question, history, raw).map((source) => source.canonicalId);
+    expect(augmentedIds).toEqual(rawIds);
+  });
+
   test("prompt preserves the full procedure instead of collapsing Surveillance and Interference", () => {
     expect(workerSource).toContain('export const BEHAVIOR_REVISION = "v071-qa-20260906-1"');
     expect(workerSource).toContain("reconstruct the whole applicable sequence");
