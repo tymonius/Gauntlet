@@ -17,6 +17,10 @@ import {
   pendingV070BattleRevealChoice,
 } from './battle-reveal-choices';
 import {
+  captureV070InitialReserveSnapshots,
+  settleV070DeferredBattleAftermathDestinations,
+} from './battle-aftermath-deferred';
+import {
   assertV070DisruptionBattleCardMayBeChosen,
   openV070DisruptionBattleChoice,
   resolveV070DisruptionBattleChoice,
@@ -62,6 +66,7 @@ export function reduceV070BattleAction(
       action.targetInstanceId,
     );
     continueV070BattleRevealProcedure(next);
+    finalizeOuterBattleTransition(state, next);
     return next;
   }
 
@@ -73,10 +78,35 @@ export function reduceV070BattleAction(
     assertV070DisruptionBattleCardMayBeChosen(state, action.cardInstanceId);
   }
 
-  return reduceV070BattleActionRevealOrder(
+  const next = reduceV070BattleActionRevealOrder(
     state,
     action as V070RevealOrderBattleAction,
   );
+  finalizeOuterBattleTransition(state, next);
+  return next;
+}
+
+function finalizeOuterBattleTransition(
+  previousState: V070GameState,
+  state: V070GameState,
+): void {
+  // The core reveal procedure advances its ordinary stage after returning
+  // from reveal-effect resolution. Armistice instead ended the battle by late
+  // withdrawal, so preserve its Aftermath stage at the outer facade.
+  if (state.battleRuntime?.armisticeWithdrawalResolved) {
+    state.battleRuntime.stage = 'aftermath';
+  }
+
+  // Reserve formation happens inside the inner battle engine after the second
+  // Gambit is set. Snapshot it at the first outer boundary after formation so
+  // later reveal additions, redraws, and Tactic choices cannot rewrite what a
+  // card means by the player's "initial Reserve."
+  captureV070InitialReserveSnapshots(state);
+
+  // Conditional Aftermath destinations settle here while an ordinary battle
+  // still has its runtime, or reconcile from persistent zones if core already
+  // completed the Aftermath (for example after an immediate Last Stand win).
+  settleV070DeferredBattleAftermathDestinations(previousState, state);
 }
 
 function continueV070BattleRevealProcedure(state: V070GameState): boolean {
