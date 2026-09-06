@@ -44,13 +44,28 @@ describe("Host Home game-night event creator", () => {
     const creator = read("playtest/host/create-event.js");
     expect(html).toContain("create-event.css");
     expect(html).toContain("create-event.js");
+    expect(html).toContain('type="module" src="create-event.js');
     expect(html).toContain("Game-night guide");
+    expect(creator).toContain('import { resolveCurrentPlaytestRelease } from "../current-release.js"');
     expect(creator).toContain('fetch(`${API_ORIGIN}/api/sessions`');
     expect(creator).toContain('"Authorization": `Bearer ${adminToken}`');
     expect(creator).toContain('intendedUse: "game-night-event"');
     expect(creator).toContain("created.onboardingUrl");
     expect(creator).toContain("created.onboardingHostUrl");
     expect(creator).toContain("registry.registerEvent");
+    expect(creator).not.toContain('const CURRENT_RULES_VERSION = "v0.7.1"');
+  });
+
+  it("uses the lifecycle-matched service version for batch sessions and manifests", () => {
+    const html = read("playtest/batch/index.html");
+    const batch = read("playtest/batch/app.js");
+    expect(html).toContain('type="module" src="app.js');
+    expect(batch).toContain('import { resolveCurrentPlaytestRelease } from "../current-release.js"');
+    expect(batch).toContain("rulesVersion: release.version");
+    expect(batch).toContain("rulesVersion,");
+    expect(batch).toContain("batchMetadata.rulesVersion");
+    expect(batch).not.toContain('rulesVersion: "v0.7.1"');
+    expect(batch).not.toContain("gauntlet-v063-playtest-batch");
   });
 
   it("does not save the facilitator creation key", () => {

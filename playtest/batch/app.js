@@ -1,3 +1,5 @@
+import { resolveCurrentPlaytestRelease } from "../current-release.js";
+
 (() => {
   const API_ORIGIN = String(
     window.GAUNTLET_PLAYTEST_SESSION_ENDPOINT ||
@@ -44,7 +46,7 @@
     el.generationStatus.focus({ preventScroll: true });
     setBusy(true);
     try {
-      await checkService();
+      const release = await checkService();
       sheetTemplate ||= await loadSheetTemplate();
       sessions = [];
       el.printBatch.replaceChildren();
@@ -59,13 +61,13 @@
         batchId,
         label,
         generatedAt: new Date().toISOString(),
-        rulesVersion: "v0.7.1",
+        rulesVersion: release.version,
         sessionApiOrigin: API_ORIGIN
       };
 
       for (let index = 0; index < count; index += 1) {
         setStatus(`Creating sheet ${index + 1} of ${count}…`);
-        const created = await createSession(adminToken, {
+        const created = await createSession(adminToken, release.version, {
           batchId,
           batchLabel: label,
           batchIndex: index + 1,
@@ -110,15 +112,14 @@
   }
 
   async function checkService() {
-    const response = await fetch(`${API_ORIGIN}/health`, { cache: "no-store" });
-    if (!response.ok) throw new Error(`Session service health check failed (${response.status}).`);
-    const health = await response.json();
-    if (health.version !== "v0.7.1") throw new Error(`Session service reports ${health.version || "an unknown version"}.`);
+    const release = await resolveCurrentPlaytestRelease(API_ORIGIN);
+    const { health } = release;
     if (!health.database) throw new Error("Session service database is not configured.");
     if (!health.sessionCreationConfigured) throw new Error("Session creation secret is not configured.");
+    return release;
   }
 
-  async function createSession(adminToken, metadata) {
+  async function createSession(adminToken, rulesVersion, metadata) {
     const response = await fetch(`${API_ORIGIN}/api/sessions`, {
       method: "POST",
       headers: {
@@ -126,7 +127,7 @@
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        rulesVersion: "v0.7.1",
+        rulesVersion,
         metadata
       })
     });
@@ -212,7 +213,7 @@
     const anchor = document.createElement("a");
     const label = slugify(batchMetadata.label || batchMetadata.batchId.slice(0, 8));
     anchor.href = url;
-    anchor.download = `gauntlet-v063-playtest-batch-${label}.json`;
+    anchor.download = `gauntlet-${batchMetadata.rulesVersion}-playtest-batch-${label}.json`;
     document.body.append(anchor);
     anchor.click();
     anchor.remove();

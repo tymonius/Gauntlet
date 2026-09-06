@@ -1,9 +1,10 @@
+import { resolveCurrentPlaytestRelease } from "../current-release.js";
+
 (() => {
   const API_ORIGIN = String(
     window.GAUNTLET_PLAYTEST_SESSION_ENDPOINT ||
     "https://gauntlet-playtest-sessions.tymon-scott.workers.dev"
   ).replace(/\/$/, "");
-  const CURRENT_RULES_VERSION = "v0.7.1";
   const LABEL_STORAGE_KEY = "gauntlet_playtest_host_event_labels_v1";
   const registry = window.GauntletHostRegistry;
   if (!registry) return;
@@ -69,9 +70,9 @@
     setBusy(true);
     setStatus("Checking the session service…");
     try {
-      await checkService();
+      const release = await checkService();
       setStatus("Creating the event…");
-      const created = await createSession(adminToken, eventLabel);
+      const created = await createSession(adminToken, eventLabel, release.version);
       const urls = resolveEventUrls(created);
       const participant = new URL(urls.participantUrl);
       const dashboard = new URL(urls.dashboardUrl);
@@ -104,18 +105,17 @@
   }
 
   async function checkService() {
-    const response = await fetch(`${API_ORIGIN}/health`, { cache: "no-store" });
-    if (!response.ok) throw new Error(`Session service health check failed (${response.status}).`);
-    const health = await response.json();
-    if (health.version !== CURRENT_RULES_VERSION) throw new Error(`Session service reports ${health.version || "an unknown version"}.`);
+    const release = await resolveCurrentPlaytestRelease(API_ORIGIN);
+    const { health } = release;
     if (!health.database) throw new Error("Session service database is not configured.");
     if (!health.sessionCreationConfigured) throw new Error("Session creation is not configured.");
     if (!health.onboardingSupported || !health.eventGamesSupported) {
       throw new Error("The session service does not report game-night event support.");
     }
+    return release;
   }
 
-  async function createSession(adminToken, eventLabel) {
+  async function createSession(adminToken, eventLabel, rulesVersion) {
     const response = await fetch(`${API_ORIGIN}/api/sessions`, {
       method: "POST",
       headers: {
@@ -123,7 +123,7 @@
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        rulesVersion: CURRENT_RULES_VERSION,
+        rulesVersion,
         sessionKind: "event",
         metadata: {
           generatedFrom: "playtest-host-home",

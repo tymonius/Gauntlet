@@ -60,10 +60,13 @@ jobs:
           if (!/^v\d+\.\d+\.\d+$/.test(version) || release?.status !== 'current' || release?.public_cutover !== true) {
             throw new Error('Release lifecycle does not identify an approved current release.');
           }
+          const versionParts = version.match(/^v(\d+)\.(\d+)\.(\d+)$/);
+          const gameSerialPrefix = `G${versionParts.slice(1).join('')}`;
           fs.appendFileSync(process.env.GITHUB_OUTPUT, [
             `version=${version}`,
             `pdf=playtest/Gauntlet_${version}_Playtest_Sheet.pdf`,
             `preview=playtest/Gauntlet_${version}_Playtest_Sheet_Preview.png`,
+            `preview_serial=${gameSerialPrefix}-PREVIEW`,
             '',
           ].join('\n'));
           NODE
@@ -76,6 +79,7 @@ jobs:
         env:
           PLAYTEST_SHEET_PDF: ${{ steps.release.outputs.pdf }}
           PLAYTEST_SHEET_PREVIEW: ${{ steps.release.outputs.preview }}
+          PLAYTEST_SHEET_SERIAL: ${{ steps.release.outputs.preview_serial }}
         run: |
           node --input-type=module <<'NODE'
           import { chromium } from 'playwright';
@@ -88,7 +92,9 @@ jobs:
             if (message.type() === 'error') errors.push(message.text());
           });
 
-          await page.goto('http://127.0.0.1:8000/playtest/sheet/?serial=G071-PREVIEW', { waitUntil: 'networkidle' });
+          const sheetUrl = new URL('http://127.0.0.1:8000/playtest/sheet/');
+          sheetUrl.searchParams.set('serial', process.env.PLAYTEST_SHEET_SERIAL);
+          await page.goto(sheetUrl.href, { waitUntil: 'networkidle' });
           await page.screenshot({
             path: process.env.PLAYTEST_SHEET_PREVIEW,
             fullPage: true

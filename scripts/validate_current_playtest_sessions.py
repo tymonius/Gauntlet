@@ -22,6 +22,8 @@ REQUIRED = [
     "workers/playtest-sessions/src/release-identity.js",
     "workers/playtest-sessions/src/tracked.js",
     "workers/playtest-sessions/src/analysis.js",
+    ".github/workflows/deploy-playtest-sessions.yml",
+    "playtest/current-release.js",
     "playtest/index.html",
     "playtest/portal.css",
     "playtest/sheet/index.html",
@@ -32,6 +34,8 @@ REQUIRED = [
     "playtest/onboarding/index.html",
     "playtest/guide/index.html",
     "playtest/player-mat/index.html",
+    "playtest/host/create-event.js",
+    "playtest/batch/app.js",
     "start/index.html",
     "start/app.js",
     "scripts/test-formal-session-e2e.mjs",
@@ -90,6 +94,30 @@ def main() -> int:
         "sessionSerialPrefixes",
         "GAME_SERIAL_PREFIX = currentPrefixes.game",
         "EVENT_SERIAL_PREFIX = currentPrefixes.event",
+    ], errors)
+    require("playtest/current-release.js", [
+        'const DEFAULT_LIFECYCLE_URL = "/config/release-lifecycle.json"',
+        "currentPlaytestVersion",
+        "matchCurrentPlaytestRelease",
+        "resolveCurrentPlaytestRelease",
+        "health.version !== version",
+    ], errors)
+    require("playtest/host/create-event.js", [
+        'import { resolveCurrentPlaytestRelease } from "../current-release.js"',
+        "resolveCurrentPlaytestRelease(API_ORIGIN)",
+        "createSession(adminToken, eventLabel, release.version)",
+        "rulesVersion,",
+    ], errors)
+    require("playtest/batch/app.js", [
+        'import { resolveCurrentPlaytestRelease } from "../current-release.js"',
+        "resolveCurrentPlaytestRelease(API_ORIGIN)",
+        "rulesVersion: release.version",
+        "batchMetadata.rulesVersion",
+    ], errors)
+    require(".github/workflows/deploy-playtest-sessions.yml", [
+        "config/release-lifecycle.json",
+        "expected_version = str(lifecycle.get('current_release', ''))",
+        "sessions.get('version') != expected_version",
     ], errors)
     require("rules-assistant/migrations/0010_playtest_decision_experience.sql", [
         "felt_decided_when",
@@ -173,6 +201,13 @@ def main() -> int:
         errors.append("Playtest Worker must deploy the complete Worker chain")
     if "SESSION_ADMIN_TOKEN" in session_toml:
         errors.append("SESSION_ADMIN_TOKEN must remain a Worker secret")
+    for rel in [
+        "playtest/host/create-event.js",
+        "playtest/batch/app.js",
+        ".github/workflows/deploy-playtest-sessions.yml",
+    ]:
+        if 'v0.7.1' in read(rel):
+            errors.append(f"{rel}: maintained playtest orchestration still embeds the current version")
 
     if errors:
         return fail(errors)
